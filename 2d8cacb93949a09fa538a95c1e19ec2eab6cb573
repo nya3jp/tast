@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "fbbb1ade_14699df4",
+        "filename": "src/chromiumos/tast/common/testing/attr/attr.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-18T23:32:01Z",
+      "side": 1,
+      "message": "i believe that this \u0027and\u0027 is correct, but the previous one should be an \u0027or\u0027. thanks!",
+      "parentUuid": "766e7a09_7cf30bac",
+      "range": {
+        "startLine": 39,
+        "startChar": 18,
+        "endLine": 39,
+        "endChar": 21
+      },
+      "revId": "2d8cacb93949a09fa538a95c1e19ec2eab6cb573",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f6390ca0_4dae8b10",
         "filename": "src/chromiumos/tast/common/testing/attr/attr.go",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2017-08-18T23:18:13Z",
       "side": 1,
       "message": "these default statements are a bit verbose given that you\u0027ve covered all cases, right? here and one right below",
+      "range": {
+        "startLine": 97,
+        "startChar": 2,
+        "endLine": 97,
+        "endChar": 10
+      },
+      "revId": "2d8cacb93949a09fa538a95c1e19ec2eab6cb573",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "af51486c_d725909f",
+        "filename": "src/chromiumos/tast/common/testing/attr/attr.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-18T23:32:01Z",
+      "side": 1,
+      "message": "do you mean covered when initially validating the expression? i think the compiler will yell at me if i don\u0027t return something here, but i could remove all the defaults and add a \u0027return false\u0027 at the end of the function instead, i think.",
+      "parentUuid": "f6390ca0_4dae8b10",
       "range": {
         "startLine": 97,
         "startChar": 2,

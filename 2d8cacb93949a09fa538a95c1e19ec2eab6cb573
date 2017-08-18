@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "766e7a09_7cf30bac",
+        "filename": "src/chromiumos/tast/common/testing/attr/attr.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-18T23:18:13Z",
+      "side": 1,
+      "message": "or",
+      "range": {
+        "startLine": 39,
+        "startChar": 18,
+        "endLine": 39,
+        "endChar": 21
+      },
+      "revId": "2d8cacb93949a09fa538a95c1e19ec2eab6cb573",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f6390ca0_4dae8b10",
+        "filename": "src/chromiumos/tast/common/testing/attr/attr.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-18T23:18:13Z",
+      "side": 1,
+      "message": "these default statements are a bit verbose given that you\u0027ve covered all cases, right? here and one right below",
+      "range": {
+        "startLine": 97,
+        "startChar": 2,
+        "endLine": 97,
+        "endChar": 10
+      },
+      "revId": "2d8cacb93949a09fa538a95c1e19ec2eab6cb573",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

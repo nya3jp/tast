@@ -1,0 +1,395 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8bd8a5d8_5ded2137",
+        "filename": "src/chromiumos/tast/common/testing/global.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-19T18:34:08Z",
+      "side": 1,
+      "message": "I expected anything with \"ForTesting\" on it to be used for testing the internal implementation details of the package. I don\u0027t see that (yet). Even so, should this be clearForTesting so that it\u0027s only accessible to the same package?",
+      "range": {
+        "startLine": 42,
+        "startChar": 5,
+        "endLine": 42,
+        "endChar": 20
+      },
+      "revId": "286a109cb982d4ad87a4fb8c338a071f00b99744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "997d7e94_22bfc55d",
+        "filename": "src/chromiumos/tast/common/testing/registry.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-19T18:34:08Z",
+      "side": 1,
+      "message": "This is strange in that AllTests returns a slice that references the internal array (and subject to all the concurrency issues that introduces) and TestsForPattern returns a slice that\u0027s a copy. Should they just all return copies?",
+      "range": {
+        "startLine": 40,
+        "startChar": 0,
+        "endLine": 46,
+        "endChar": 44
+      },
+      "revId": "286a109cb982d4ad87a4fb8c338a071f00b99744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7762de47_77dbff83",
+        "filename": "src/chromiumos/tast/common/testing/registry.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-19T18:34:08Z",
+      "side": 1,
+      "message": "Doesn\u0027t return error if len(tests) \u003d\u003d 0 like other methods. Should it?",
+      "range": {
+        "startLine": 47,
+        "startChar": 19,
+        "endLine": 47,
+        "endChar": 34
+      },
+      "revId": "286a109cb982d4ad87a4fb8c338a071f00b99744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "73d609d7_ac64dec6",
+        "filename": "src/chromiumos/tast/common/testing/registry.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-19T18:34:08Z",
+      "side": 1,
+      "message": "Wow, this is clever. Not sure I\u0027d change anything about it but only making the observation that there\u0027s a surprising amount of power in this.",
+      "range": {
+        "startLine": 96,
+        "startChar": 19,
+        "endLine": 96,
+        "endChar": 35
+      },
+      "revId": "286a109cb982d4ad87a4fb8c338a071f00b99744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9f997e74_1a906ca4",
+        "filename": "src/chromiumos/tast/common/testing/registry_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-19T18:34:08Z",
+      "side": 1,
+      "message": "Tests for TestsForAttrExpr?",
+      "range": {
+        "startLine": 5,
+        "startChar": 8,
+        "endLine": 5,
+        "endChar": 15
+      },
+      "revId": "286a109cb982d4ad87a4fb8c338a071f00b99744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a4ab5d39_d0efb26a",
+        "filename": "src/chromiumos/tast/common/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-19T18:34:08Z",
+      "side": 1,
+      "message": "I\u0027ve heard that context was a bad idea because it\u0027s viral: https://news.ycombinator.com/item?id\u003d14962053\n\nI don\u0027t known enough to have an opinion so feel free to ignore; just relaying.",
+      "range": {
+        "startLine": 8,
+        "startChar": 2,
+        "endLine": 8,
+        "endChar": 9
+      },
+      "revId": "286a109cb982d4ad87a4fb8c338a071f00b99744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "707b686e_6c2bcf29",
+        "filename": "src/chromiumos/tast/common/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-19T18:34:08Z",
+      "side": 1,
+      "message": "be safe",
+      "range": {
+        "startLine": 42,
+        "startChar": 21,
+        "endLine": 42,
+        "endChar": 25
+      },
+      "revId": "286a109cb982d4ad87a4fb8c338a071f00b99744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4872e686_3bb37153",
+        "filename": "src/chromiumos/tast/common/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-19T18:34:08Z",
+      "side": 1,
+      "message": "unused? used later?",
+      "range": {
+        "startLine": 46,
+        "startChar": 1,
+        "endLine": 46,
+        "endChar": 18
+      },
+      "revId": "286a109cb982d4ad87a4fb8c338a071f00b99744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7043018d_23876ce8",
+        "filename": "src/chromiumos/tast/common/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-19T18:34:08Z",
+      "side": 1,
+      "message": "should these share the same mutex? What about serializing on ch and not using a mutex for w?",
+      "range": {
+        "startLine": 53,
+        "startChar": 40,
+        "endLine": 53,
+        "endChar": 41
+      },
+      "revId": "286a109cb982d4ad87a4fb8c338a071f00b99744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "88974d4e_dcfb5d22",
+        "filename": "src/chromiumos/tast/common/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-19T18:34:08Z",
+      "side": 1,
+      "message": "defer?",
+      "range": {
+        "startLine": 159,
+        "startChar": 1,
+        "endLine": 159,
+        "endChar": 17
+      },
+      "revId": "286a109cb982d4ad87a4fb8c338a071f00b99744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4d90e268_d2d2d981",
+        "filename": "src/chromiumos/tast/common/testing/state_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-19T18:34:08Z",
+      "side": 1,
+      "message": "formatting? surprised gofmt didn\u0027t fix this",
+      "range": {
+        "startLine": 85,
+        "startChar": 1,
+        "endLine": 85,
+        "endChar": 98
+      },
+      "revId": "286a109cb982d4ad87a4fb8c338a071f00b99744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "01899477_b39447e1",
+        "filename": "src/chromiumos/tast/common/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-19T18:34:08Z",
+      "side": 1,
+      "message": "public fields for convenience? don\u0027t care either way; just asking.",
+      "range": {
+        "startLine": 27,
+        "startChar": 10,
+        "endLine": 27,
+        "endChar": 16
+      },
+      "revId": "286a109cb982d4ad87a4fb8c338a071f00b99744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6e6b5187_5109e67a",
+        "filename": "src/chromiumos/tast/common/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-19T18:34:08Z",
+      "side": 1,
+      "message": "unused?",
+      "range": {
+        "startLine": 33,
+        "startChar": 1,
+        "endLine": 33,
+        "endChar": 5
+      },
+      "revId": "286a109cb982d4ad87a4fb8c338a071f00b99744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0d8f7a71_3c921781",
+        "filename": "src/chromiumos/tast/common/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-19T18:34:08Z",
+      "side": 1,
+      "message": "wrapping",
+      "range": {
+        "startLine": 38,
+        "startChar": 93,
+        "endLine": 38,
+        "endChar": 94
+      },
+      "revId": "286a109cb982d4ad87a4fb8c338a071f00b99744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ca3737eb_a00b34b4",
+        "filename": "src/chromiumos/tast/common/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-19T18:34:08Z",
+      "side": 1,
+      "message": "Why is this one private in particular?",
+      "range": {
+        "startLine": 42,
+        "startChar": 1,
+        "endLine": 42,
+        "endChar": 4
+      },
+      "revId": "286a109cb982d4ad87a4fb8c338a071f00b99744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "223c6e32_23097eb2",
+        "filename": "src/chromiumos/tast/common/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-19T18:34:08Z",
+      "side": 1,
+      "message": "confused: when does this need to be called that\u0027s not a timeout? I don\u0027t see any other way that this could end?",
+      "range": {
+        "startLine": 53,
+        "startChar": 7,
+        "endLine": 53,
+        "endChar": 17
+      },
+      "revId": "286a109cb982d4ad87a4fb8c338a071f00b99744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "558a92b7_aea240ca",
+        "filename": "src/chromiumos/tast/common/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-19T18:34:08Z",
+      "side": 1,
+      "message": "This is a little odd in that it fills only two fields (so maybe the name should be changed) and even then it unconditionally overwrites pkg. Maybe, just always fill? So, \"populateNameAndPkg\"?",
+      "range": {
+        "startLine": 96,
+        "startChar": 17,
+        "endLine": 96,
+        "endChar": 32
+      },
+      "revId": "286a109cb982d4ad87a4fb8c338a071f00b99744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

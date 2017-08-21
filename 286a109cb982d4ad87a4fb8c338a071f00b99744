@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "d7d7d393_85370dc7",
+        "filename": "src/chromiumos/tast/common/testing/global.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-21T04:24:57Z",
+      "side": 1,
+      "message": "i\u0027m using this for unit tests in a helper package: https://user.git.corp.google.com/derat/tast/+/master/src/chromiumos/tast/common/runner/runner_test.go#24\n\ni\u0027m not sure what the conventions are (if any) about exporting test-only functions in go. i really dislike having these singleton members, but i couldn\u0027t come up with any other way to allow tests to register themselves from init functions -- here\u0027s what test registration looks like right now: https://user.git.corp.google.com/derat/tast/+/master/src/chromiumos/tast/local/tests/example/fail.go#11\n\nthinking about it more, i suppose i could keep the singleton variables here but instead initialize them from outside this package, e.g. by adding a SetGlobalRegistry(reg *Registry) function (and perhaps moving the error list into the Registry struct, which may make more sense in any case). does that feel cleaner to you?",
+      "parentUuid": "8bd8a5d8_5ded2137",
+      "range": {
+        "startLine": 42,
+        "startChar": 5,
+        "endLine": 42,
+        "endChar": 20
+      },
+      "revId": "286a109cb982d4ad87a4fb8c338a071f00b99744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "997d7e94_22bfc55d",
         "filename": "src/chromiumos/tast/common/testing/registry.go",
         "patchSetId": 2
@@ -36,6 +60,30 @@
       "writtenOn": "2017-08-19T18:34:08Z",
       "side": 1,
       "message": "This is strange in that AllTests returns a slice that references the internal array (and subject to all the concurrency issues that introduces) and TestsForPattern returns a slice that\u0027s a copy. Should they just all return copies?",
+      "range": {
+        "startLine": 40,
+        "startChar": 0,
+        "endLine": 46,
+        "endChar": 44
+      },
+      "revId": "286a109cb982d4ad87a4fb8c338a071f00b99744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "003dc059_0fde471d",
+        "filename": "src/chromiumos/tast/common/testing/registry.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-21T04:24:57Z",
+      "side": 1,
+      "message": "whoops, nice catch. my intent was to return a copy from AllTests as well, i believe.",
+      "parentUuid": "997d7e94_22bfc55d",
       "range": {
         "startLine": 40,
         "startChar": 0,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "f043661c_76563361",
+        "filename": "src/chromiumos/tast/common/testing/registry.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-21T04:24:57Z",
+      "side": 1,
+      "message": "this is currently just a helper function for TestsForPatterns; i\u0027ve changed it to be non-exported.",
+      "parentUuid": "7762de47_77dbff83",
+      "range": {
+        "startLine": 47,
+        "startChar": 19,
+        "endLine": 47,
+        "endChar": 34
+      },
+      "revId": "286a109cb982d4ad87a4fb8c338a071f00b99744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "73d609d7_ac64dec6",
         "filename": "src/chromiumos/tast/common/testing/registry.go",
         "patchSetId": 2
@@ -82,6 +154,30 @@
       "writtenOn": "2017-08-19T18:34:08Z",
       "side": 1,
       "message": "Wow, this is clever. Not sure I\u0027d change anything about it but only making the observation that there\u0027s a surprising amount of power in this.",
+      "range": {
+        "startLine": 96,
+        "startChar": 19,
+        "endLine": 96,
+        "endChar": 35
+      },
+      "revId": "286a109cb982d4ad87a4fb8c338a071f00b99744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "94dbdc1e_54e0bde4",
+        "filename": "src/chromiumos/tast/common/testing/registry.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-21T04:24:57Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "73d609d7_ac64dec6",
       "range": {
         "startLine": 96,
         "startChar": 19,
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "7de02d7e_403c043d",
+        "filename": "src/chromiumos/tast/common/testing/registry_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-21T04:24:57Z",
+      "side": 1,
+      "message": "sure, added (some basic tests, since the attr package already has its own tests)",
+      "parentUuid": "9f997e74_1a906ca4",
+      "range": {
+        "startLine": 5,
+        "startChar": 8,
+        "endLine": 5,
+        "endChar": 15
+      },
+      "revId": "286a109cb982d4ad87a4fb8c338a071f00b99744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a4ab5d39_d0efb26a",
         "filename": "src/chromiumos/tast/common/testing/state.go",
         "patchSetId": 2
@@ -128,6 +248,30 @@
       "writtenOn": "2017-08-19T18:34:08Z",
       "side": 1,
       "message": "I\u0027ve heard that context was a bad idea because it\u0027s viral: https://news.ycombinator.com/item?id\u003d14962053\n\nI don\u0027t known enough to have an opinion so feel free to ignore; just relaying.",
+      "range": {
+        "startLine": 8,
+        "startChar": 2,
+        "endLine": 8,
+        "endChar": 9
+      },
+      "revId": "286a109cb982d4ad87a4fb8c338a071f00b99744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "57e5d293_9e307927",
+        "filename": "src/chromiumos/tast/common/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-21T04:24:57Z",
+      "side": 1,
+      "message": "i thought the go team encourages using it everywhere. :-P i\u0027m having a hard time finding it now, but i think i read an official-ish recommendation to pass contexts even when they aren\u0027t currently used but might be in the future.\n\nin any case, i found them pretty useful in this package, both for passing deadlines and for attaching additional data. i don\u0027t see any alternatives offered in that blog post besides \"go 2 should have built-in support for passing contexts to functions\".",
+      "parentUuid": "a4ab5d39_d0efb26a",
       "range": {
         "startLine": 8,
         "startChar": 2,
@@ -163,6 +307,30 @@
     },
     {
       "key": {
+        "uuid": "d70b5e05_97a86310",
+        "filename": "src/chromiumos/tast/common/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-21T04:24:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "707b686e_6c2bcf29",
+      "range": {
+        "startLine": 42,
+        "startChar": 21,
+        "endLine": 42,
+        "endChar": 25
+      },
+      "revId": "286a109cb982d4ad87a4fb8c338a071f00b99744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4872e686_3bb37153",
         "filename": "src/chromiumos/tast/common/testing/state.go",
         "patchSetId": 2
@@ -174,6 +342,30 @@
       "writtenOn": "2017-08-19T18:34:08Z",
       "side": 1,
       "message": "unused? used later?",
+      "range": {
+        "startLine": 46,
+        "startChar": 1,
+        "endLine": 46,
+        "endChar": 18
+      },
+      "revId": "286a109cb982d4ad87a4fb8c338a071f00b99744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b1594b34_e8487b97",
+        "filename": "src/chromiumos/tast/common/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-21T04:24:57Z",
+      "side": 1,
+      "message": "thanks, i think this is dead code that i forgot to delete",
+      "parentUuid": "4872e686_3bb37153",
       "range": {
         "startLine": 46,
         "startChar": 1,
@@ -209,6 +401,30 @@
     },
     {
       "key": {
+        "uuid": "c44fe5ff_db7b7c18",
+        "filename": "src/chromiumos/tast/common/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-21T04:24:57Z",
+      "side": 1,
+      "message": "it turns out that there\u0027s no compelling reason for me to keep \u0027errors\u0027 around either, so i\u0027ve removed this. thanks!",
+      "parentUuid": "7043018d_23876ce8",
+      "range": {
+        "startLine": 53,
+        "startChar": 40,
+        "endLine": 53,
+        "endChar": 41
+      },
+      "revId": "286a109cb982d4ad87a4fb8c338a071f00b99744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "88974d4e_dcfb5d22",
         "filename": "src/chromiumos/tast/common/testing/state.go",
         "patchSetId": 2
@@ -220,6 +436,30 @@
       "writtenOn": "2017-08-19T18:34:08Z",
       "side": 1,
       "message": "defer?",
+      "range": {
+        "startLine": 159,
+        "startChar": 1,
+        "endLine": 159,
+        "endChar": 17
+      },
+      "revId": "286a109cb982d4ad87a4fb8c338a071f00b99744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a03b8855_fe5aa215",
+        "filename": "src/chromiumos/tast/common/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-21T04:24:57Z",
+      "side": 1,
+      "message": "(deleted this function)",
+      "parentUuid": "88974d4e_dcfb5d22",
       "range": {
         "startLine": 159,
         "startChar": 1,
@@ -255,6 +495,30 @@
     },
     {
       "key": {
+        "uuid": "3235bdef_398ec779",
+        "filename": "src/chromiumos/tast/common/testing/state_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-21T04:24:57Z",
+      "side": 1,
+      "message": "in terms of line length, you mean? go doesn\u0027t recommend a limit, as far as i\u0027m aware.",
+      "parentUuid": "4d90e268_d2d2d981",
+      "range": {
+        "startLine": 85,
+        "startChar": 1,
+        "endLine": 85,
+        "endChar": 98
+      },
+      "revId": "286a109cb982d4ad87a4fb8c338a071f00b99744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "01899477_b39447e1",
         "filename": "src/chromiumos/tast/common/testing/test.go",
         "patchSetId": 2
@@ -266,6 +530,30 @@
       "writtenOn": "2017-08-19T18:34:08Z",
       "side": 1,
       "message": "public fields for convenience? don\u0027t care either way; just asking.",
+      "range": {
+        "startLine": 27,
+        "startChar": 10,
+        "endLine": 27,
+        "endChar": 16
+      },
+      "revId": "286a109cb982d4ad87a4fb8c338a071f00b99744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2ed853bc_a87f6bb3",
+        "filename": "src/chromiumos/tast/common/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-21T04:24:57Z",
+      "side": 1,
+      "message": "they\u0027re public so that tests can register literal structs and leave out fields that they don\u0027t care about.",
+      "parentUuid": "01899477_b39447e1",
       "range": {
         "startLine": 27,
         "startChar": 10,
@@ -301,6 +589,30 @@
     },
     {
       "key": {
+        "uuid": "8317f72c_142afd62",
+        "filename": "src/chromiumos/tast/common/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-21T04:24:57Z",
+      "side": 1,
+      "message": "i\u0027m setting it in the initial round of tests (coming in a later change), but it\u0027s correct that the code isn\u0027t doing anything with it right now. it felt like the sort of thing that we\u0027d want to have, though.",
+      "parentUuid": "6e6b5187_5109e67a",
+      "range": {
+        "startLine": 33,
+        "startChar": 1,
+        "endLine": 33,
+        "endChar": 5
+      },
+      "revId": "286a109cb982d4ad87a4fb8c338a071f00b99744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "0d8f7a71_3c921781",
         "filename": "src/chromiumos/tast/common/testing/test.go",
         "patchSetId": 2
@@ -312,6 +624,30 @@
       "writtenOn": "2017-08-19T18:34:08Z",
       "side": 1,
       "message": "wrapping",
+      "range": {
+        "startLine": 38,
+        "startChar": 93,
+        "endLine": 38,
+        "endChar": 94
+      },
+      "revId": "286a109cb982d4ad87a4fb8c338a071f00b99744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b4494310_866b56cc",
+        "filename": "src/chromiumos/tast/common/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-21T04:24:57Z",
+      "side": 1,
+      "message": "i\u0027m happy to wrap comments at 80 columns if that\u0027s something that\u0027s done elsewhere. is it? :-)",
+      "parentUuid": "0d8f7a71_3c921781",
       "range": {
         "startLine": 38,
         "startChar": 93,
@@ -347,6 +683,30 @@
     },
     {
       "key": {
+        "uuid": "4d4e3ccc_a5d49adb",
+        "filename": "src/chromiumos/tast/common/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-21T04:24:57Z",
+      "side": 1,
+      "message": "unlike the other fields, it\u0027s automatically filled and should never be set by tests.",
+      "parentUuid": "ca3737eb_a00b34b4",
+      "range": {
+        "startLine": 42,
+        "startChar": 1,
+        "endLine": 42,
+        "endChar": 4
+      },
+      "revId": "286a109cb982d4ad87a4fb8c338a071f00b99744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "223c6e32_23097eb2",
         "filename": "src/chromiumos/tast/common/testing/test.go",
         "patchSetId": 2
@@ -370,6 +730,30 @@
     },
     {
       "key": {
+        "uuid": "68e21185_2e0fc9dd",
+        "filename": "src/chromiumos/tast/common/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-21T04:24:57Z",
+      "side": 1,
+      "message": "i think i needed to add this since \u0027go vet\u0027 complains about the context being leaked otherwise: https://golang.org/cmd/vet/#hdr-Failure_to_call_the_cancelation_function_returned_by_WithCancel\n\n(maybe i misunderstood the question, though -- what\u0027s \"this\" in your second sentence referring to?)",
+      "parentUuid": "223c6e32_23097eb2",
+      "range": {
+        "startLine": 53,
+        "startChar": 7,
+        "endLine": 53,
+        "endChar": 17
+      },
+      "revId": "286a109cb982d4ad87a4fb8c338a071f00b99744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "558a92b7_aea240ca",
         "filename": "src/chromiumos/tast/common/testing/test.go",
         "patchSetId": 2
@@ -381,6 +765,30 @@
       "writtenOn": "2017-08-19T18:34:08Z",
       "side": 1,
       "message": "This is a little odd in that it fills only two fields (so maybe the name should be changed) and even then it unconditionally overwrites pkg. Maybe, just always fill? So, \"populateNameAndPkg\"?",
+      "range": {
+        "startLine": 96,
+        "startChar": 17,
+        "endLine": 96,
+        "endChar": 32
+      },
+      "revId": "286a109cb982d4ad87a4fb8c338a071f00b99744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "907406d1_40e0ee52",
+        "filename": "src/chromiumos/tast/common/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-21T04:24:57Z",
+      "side": 1,
+      "message": "there shouldn\u0027t be any overwriting, since pkg isn\u0027t exported and shouldn\u0027t be set anywhere else. my intent was that pkg should always come from the actual package name, while Name can also be inferred from the function name, but it\u0027s probably reasonable to give people a way to override it if they need to.\n\npopulateNameAndPkg sounds good, so i\u0027ve renamed it to that.",
+      "parentUuid": "558a92b7_aea240ca",
       "range": {
         "startLine": 96,
         "startChar": 17,

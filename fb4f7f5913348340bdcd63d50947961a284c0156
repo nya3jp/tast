@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "48c4a6c8_b548b117",
+        "filename": "src/chromiumos/tast/common/host/host.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-24T00:02:20Z",
+      "side": 1,
+      "message": "i\u0027m trying to decide how i feel about https://github.com/golang/go/wiki/CodeReviewComments#interfaces. opinions?",
+      "revId": "fb4f7f5913348340bdcd63d50947961a284c0156",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d1ea1841_8dd3cd64",
+        "filename": "src/chromiumos/tast/common/host/host.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-24T00:02:20Z",
+      "side": 1,
+      "message": "the differences in how existing destination paths are handled irks me a bit. curious to get your thoughts.",
+      "revId": "fb4f7f5913348340bdcd63d50947961a284c0156",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b3f5c343_2dd7dd3a",
+        "filename": "src/chromiumos/tast/common/host/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-24T00:02:20Z",
+      "side": 1,
+      "message": "my strong preference for the file-copying functions would\u0027ve been to just use rsync and call it a day, but as far as i\u0027m aware, there\u0027s no way to run rsync over an established ssh connection without creating a tunnel or using ControlMaster. i haven\u0027t run into any elaborate syncing scenarios so far: i just need to copy big test binaries to a DUT, copy a tree of test data to a DUT (having smarting syncing may help here), or copy a directory of test output back to the local machine. from my initial testing, tar --gzip is about the same speed as rsync for those use cases.",
+      "revId": "fb4f7f5913348340bdcd63d50947961a284c0156",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -2,6 +2,75 @@
   "comments": [
     {
       "key": {
+        "uuid": "da447fca_2a76361c",
+        "filename": "src/chromiumos/tast/common/host/files.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-24T22:02:30Z",
+      "side": 1,
+      "message": "I think that these should be defined in the Host interface and the impls that you have here should be inside of sshHost. One reasons is that this remote side impl is assuming that the other end is a Bourne shell with a user profile and $PATH (to find sha1sum for example)--a very SSH-thing to assume. \n\nIf getLocalSHA1\u0027s feels wrong to put in Host, maybe rename Host to Cxn. We can also decompose local and remote operations into LocalHost and RemoteHost members of a Cxn later if we need that kind of abstraction.\n\nDon\u0027t feel strongly, though, so feel free to pass.",
+      "range": {
+        "startLine": 50,
+        "startChar": 5,
+        "endLine": 50,
+        "endChar": 19
+      },
+      "revId": "fb4f7f5913348340bdcd63d50947961a284c0156",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "784ae3d9_e6a83050",
+        "filename": "src/chromiumos/tast/common/host/files.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-24T22:02:30Z",
+      "side": 1,
+      "message": "Feels like we should just fail if a hash has been requested for a missing file. *shrugs*",
+      "range": {
+        "startLine": 55,
+        "startChar": 1,
+        "endLine": 60,
+        "endChar": 57
+      },
+      "revId": "fb4f7f5913348340bdcd63d50947961a284c0156",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eebc1c0b_698cad50",
+        "filename": "src/chromiumos/tast/common/host/files.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-24T22:02:30Z",
+      "side": 1,
+      "message": "Might be a nice place to use two goroutines to get concurrency for each operation. Feel free to pass for now.",
+      "range": {
+        "startLine": 98,
+        "startChar": 1,
+        "endLine": 103,
+        "endChar": 2
+      },
+      "revId": "fb4f7f5913348340bdcd63d50947961a284c0156",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "48c4a6c8_b548b117",
         "filename": "src/chromiumos/tast/common/host/host.go",
         "patchSetId": 1
@@ -16,6 +85,24 @@
       "revId": "fb4f7f5913348340bdcd63d50947961a284c0156",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f9980288_8a42a252",
+        "filename": "src/chromiumos/tast/common/host/host.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-24T22:02:30Z",
+      "side": 1,
+      "message": "Not that familiar with golang patterns but this was a common problem in Java: folks would sometimes return interfaces and lose some nuance of the class that implements that interface. The guidance there seems reasonable in that it recommends returning concrete types in implementations. It\u0027s also seems to be a restating of the Robustness principle: https://en.wikipedia.org/wiki/Robustness_principle .",
+      "parentUuid": "48c4a6c8_b548b117",
+      "revId": "fb4f7f5913348340bdcd63d50947961a284c0156",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -36,6 +123,110 @@
     },
     {
       "key": {
+        "uuid": "02f8d81b_2d44a6c8",
+        "filename": "src/chromiumos/tast/common/host/host.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-24T22:02:30Z",
+      "side": 1,
+      "message": "I personally have a great fondness for the interface on top of rsync\u0027s src and dst. From the manpage:\n\n              rsync -avz foo:src/bar /data/tmp\n\n       This would recursively transfer all files from the directory src/bar on\n       the  machine foo into the /data/tmp/bar directory on the local machine.\n...\n       A  trailing slash on the source changes this behavior to avoid creating\n       an additional directory level at the destination.  You can think  of  a\n       trailing / on a source as meaning \"copy the contents of this directory\"\n       as opposed to \"copy the directory by  name\",  but  in  both  cases  the\n       attributes  of the containing directory are transferred to the contain‐\n       ing directory on the destination.  In other words, each of the  follow‐\n       ing  commands copies the files in the same way, [...]:\n\n              rsync -av /src/foo /dest\n              rsync -av /src/foo/ /dest/foo\n\nWhen there are conflicts, the default behavior is that rsync:\n* will *not* replace directories with a *file* of the same name (thereby deleting the directory), and\n* will replace files with files of the same name\n\nThere are three flags that changes this behavior:\n\n            --ignore-existing       skip updating files that exist on receiver\n        -u, --update                skip files that are newer on the receiver (by mtime)\n            --force                 force deletion of dirs even if not empty\n\nI don\u0027t think that we really need to worry about --update and --force. Perhaps something like --ignore-existing would be worthwhile, though. A bool parameter?\n\nPerhaps also merge PutFile and PutTree into \"PutPath\".",
+      "parentUuid": "d1ea1841_8dd3cd64",
+      "revId": "fb4f7f5913348340bdcd63d50947961a284c0156",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ff58f372_1e0ff35e",
+        "filename": "src/chromiumos/tast/common/host/host.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-24T22:02:30Z",
+      "side": 1,
+      "message": "nit: this kinda feels like an sshHost thing, hot a Host thing. For example, if there were an HttpHost, we almost certainly would not expect it to automatically run within a bash shell environment. If the user wanted that, they would do something like \u0027sh -c \"$INLINE_SHELL_SCRIPT\"\u0027. I\u0027m not sure what the escaping behavior should be then. Feel free to leave it here, though.",
+      "range": {
+        "startLine": 101,
+        "startChar": 5,
+        "endLine": 101,
+        "endChar": 18
+      },
+      "revId": "fb4f7f5913348340bdcd63d50947961a284c0156",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0976781d_d4c3477b",
+        "filename": "src/chromiumos/tast/common/host/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-24T22:02:30Z",
+      "side": 1,
+      "message": "Something went sideways with the syntax highlighting here though I don\u0027t see why. Non-printing whitespace maybe?",
+      "revId": "fb4f7f5913348340bdcd63d50947961a284c0156",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f1e73d42_d754d048",
+        "filename": "src/chromiumos/tast/common/host/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-24T22:02:30Z",
+      "side": 1,
+      "message": "passed to every",
+      "range": {
+        "startLine": 64,
+        "startChar": 38,
+        "endLine": 64,
+        "endChar": 39
+      },
+      "revId": "fb4f7f5913348340bdcd63d50947961a284c0156",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f67ba70c_706a8cc6",
+        "filename": "src/chromiumos/tast/common/host/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-24T22:02:30Z",
+      "side": 1,
+      "message": "Wow, I was surprised how little of the SSH protocol is implemented here. KeepAlive and ControlMaster in particular are sadly missing. Not sure it matters yet but: sads.",
+      "range": {
+        "startLine": 151,
+        "startChar": 12,
+        "endLine": 151,
+        "endChar": 24
+      },
+      "revId": "fb4f7f5913348340bdcd63d50947961a284c0156",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b3f5c343_2dd7dd3a",
         "filename": "src/chromiumos/tast/common/host/ssh.go",
         "patchSetId": 1
@@ -50,6 +241,24 @@
       "revId": "fb4f7f5913348340bdcd63d50947961a284c0156",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c9616e59_80f090b0",
+        "filename": "src/chromiumos/tast/common/host/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-24T22:02:30Z",
+      "side": 1,
+      "message": "This seems fine to me, for now. We can always change it later. In particular, if we ever implement a \"goHost\" concrete implementation of the Host interface, I\u0027d image that that would be a Go static binary on the other end of the connection that does its own crypto and protocol. In that scenario, I think that reaching out to command line tools on the other end of the connection would seem wrong. But, that\u0027s hypothetical at this point. And, to be honest, SSH connections already assume a lot about the remote environment (including running the target user login profile for their login shell).",
+      "parentUuid": "b3f5c343_2dd7dd3a",
+      "revId": "fb4f7f5913348340bdcd63d50947961a284c0156",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

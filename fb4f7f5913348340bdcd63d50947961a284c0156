@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "eae926cd_db60d9f4",
+        "filename": "src/chromiumos/tast/common/host/files.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-26T01:38:09Z",
+      "side": 1,
+      "message": "makes sense. i\u0027ve moved this function and findChangedFiles to be methods on the SSH type, and also moved getLocalSHA1s to be in ssh.go. (i guess it could be a method as well, but it doesn\u0027t actually touch anything on the remote host. i kinda wish that go supported file-level scoping for things like that.)",
+      "parentUuid": "da447fca_2a76361c",
+      "range": {
+        "startLine": 50,
+        "startChar": 5,
+        "endLine": 50,
+        "endChar": 19
+      },
+      "revId": "fb4f7f5913348340bdcd63d50947961a284c0156",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "784ae3d9_e6a83050",
         "filename": "src/chromiumos/tast/common/host/files.go",
         "patchSetId": 1
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "0da3369b_eba63180",
+        "filename": "src/chromiumos/tast/common/host/files.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-26T01:38:09Z",
+      "side": 1,
+      "message": "this is an ugly artifact of how these functions are used (only to push local files to a remote device). :-/ we want an error if there\u0027s a missing local file, since that means we can\u0027t fulfill the request, but we need to ignore missing remote files (since that just means that we don\u0027t need to overwrite that particular file).\n\nif i end up adding a GetTree or similar function that goes in the opposite direction, i\u0027d probably add an \"ignoreEmpty\" arg to both functions that can be used to request the appropriate behavior. it feels a bit premature to do that already, though. does that make sense?",
+      "parentUuid": "784ae3d9_e6a83050",
+      "range": {
+        "startLine": 55,
+        "startChar": 1,
+        "endLine": 60,
+        "endChar": 57
+      },
+      "revId": "fb4f7f5913348340bdcd63d50947961a284c0156",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "eebc1c0b_698cad50",
         "filename": "src/chromiumos/tast/common/host/files.go",
         "patchSetId": 1
@@ -59,6 +107,30 @@
       "writtenOn": "2017-08-24T22:02:30Z",
       "side": 1,
       "message": "Might be a nice place to use two goroutines to get concurrency for each operation. Feel free to pass for now.",
+      "range": {
+        "startLine": 98,
+        "startChar": 1,
+        "endLine": 103,
+        "endChar": 2
+      },
+      "revId": "fb4f7f5913348340bdcd63d50947961a284c0156",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2828c590_4de3af9f",
+        "filename": "src/chromiumos/tast/common/host/files.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-26T01:38:09Z",
+      "side": 1,
+      "message": "nice suggestion! done",
+      "parentUuid": "eebc1c0b_698cad50",
       "range": {
         "startLine": 98,
         "startChar": 1,
@@ -106,6 +178,24 @@
     },
     {
       "key": {
+        "uuid": "17c8eb7d_65a6b7e2",
+        "filename": "src/chromiumos/tast/common/host/host.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-26T01:38:09Z",
+      "side": 1,
+      "message": "i\u0027m getting rid of the interface for now. i\u0027m going to change the thing that\u0027s currently called sshHost to instead be called SSH (not SSHHost because \"Avoid stutter\" in https://blog.golang.org/package-names).",
+      "parentUuid": "f9980288_8a42a252",
+      "revId": "fb4f7f5913348340bdcd63d50947961a284c0156",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d1ea1841_8dd3cd64",
         "filename": "src/chromiumos/tast/common/host/host.go",
         "patchSetId": 1
@@ -141,6 +231,24 @@
     },
     {
       "key": {
+        "uuid": "ff745ec4_98974d5c",
+        "filename": "src/chromiumos/tast/common/host/host.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-26T01:38:09Z",
+      "side": 1,
+      "message": "one of my motivations, which i should\u0027ve been more upfront about, is avoiding round trips (in the form of extra commands) as much as possible.\n\nin the case of PutTree, i\u0027m just running sha1sum to figure out what needs to be copied and then creating the parent dir and running tar -x in a second command (and see also the TODO in ssh.go about possibly skipping sha1sum for small files).\n\nthe one downside to PutTree is that it doesn\u0027t support renaming files. i don\u0027t think i actually depend on this anymore (i did at one point), though, so it\u0027s probably best for me to use it everywhere and just get rid of PutFile.\n\nthe semantics of PutTree seem pretty simple (it overwrites matching files, except gnu tar seems buggy: https://goto.google.com/lhjgy), and dropping PutFile avoids confusing people with differences between its behavior and GetFile\u0027s.\n\nit\u0027s more straightforward to make GetFile behave similarly to rsync (or whatever), since i don\u0027t care about the number of operations that get performed on the local side. i don\u0027t love rsync\u0027s handling of trailing slashes, though, because i feel like it\u0027s quite subtle and particularly easy to get wrong when it\u0027s surrounded by other functions that behave differently. i think i\u0027m leaning towards making GetFile also replace the dest file/dir to match PutTree\u0027s behavior.\n\ndoes that sound okay?",
+      "parentUuid": "02f8d81b_2d44a6c8",
+      "revId": "fb4f7f5913348340bdcd63d50947961a284c0156",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ff58f372_1e0ff35e",
         "filename": "src/chromiumos/tast/common/host/host.go",
         "patchSetId": 1
@@ -152,6 +260,30 @@
       "writtenOn": "2017-08-24T22:02:30Z",
       "side": 1,
       "message": "nit: this kinda feels like an sshHost thing, hot a Host thing. For example, if there were an HttpHost, we almost certainly would not expect it to automatically run within a bash shell environment. If the user wanted that, they would do something like \u0027sh -c \"$INLINE_SHELL_SCRIPT\"\u0027. I\u0027m not sure what the escaping behavior should be then. Feel free to leave it here, though.",
+      "range": {
+        "startLine": 101,
+        "startChar": 5,
+        "endLine": 101,
+        "endChar": 18
+      },
+      "revId": "fb4f7f5913348340bdcd63d50947961a284c0156",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9b7fbded_6654a267",
+        "filename": "src/chromiumos/tast/common/host/host.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-26T01:38:09Z",
+      "side": 1,
+      "message": "hmm. i think that my intent is for the Run and Start functions to guarantee that the commands passed to them will be interpreted by \"a shell\". this seems difficult to avoid, given that the main (and currently, only) implementation of the interface uses ssh. from the spec (rfc 4254, 6.5):\n\n      byte      SSH_MSG_CHANNEL_REQUEST\n      uint32    recipient channel\n      string    \"exec\"\n      boolean   want reply\n      string    command\n\n   This message will request that the server start the execution of the\n   given command.  The \u0027command\u0027 string may contain a path.  Normal\n   precautions MUST be taken to prevent the execution of unauthorized\n   commands.\n\ni suppose that i could make Run and Start take string slices and do the escaping themselves. does that seem better?\n\nmaybe this is all academic at this point since i think i\u0027m convinced that should get rid of the interface, at least until i\u0027m ready to add a second implementation of it.",
+      "parentUuid": "ff58f372_1e0ff35e",
       "range": {
         "startLine": 101,
         "startChar": 5,
@@ -181,6 +313,24 @@
     },
     {
       "key": {
+        "uuid": "25cf2b49_da688f29",
+        "filename": "src/chromiumos/tast/common/host/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-26T01:38:09Z",
+      "side": 1,
+      "message": "interesting. i have syntax highlighting disabled in gerrit (it at least used to make file loads very slow) and didn\u0027t notice this. i\u0027m not sure what\u0027s causing it, but it looks like it starts at the end-of-line comment on line 46. gerrit bug?",
+      "parentUuid": "0976781d_d4c3477b",
+      "revId": "fb4f7f5913348340bdcd63d50947961a284c0156",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f1e73d42_d754d048",
         "filename": "src/chromiumos/tast/common/host/ssh.go",
         "patchSetId": 1
@@ -204,6 +354,30 @@
     },
     {
       "key": {
+        "uuid": "38dc9d0e_a7a8754a",
+        "filename": "src/chromiumos/tast/common/host/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-26T01:38:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f1e73d42_d754d048",
+      "range": {
+        "startLine": 64,
+        "startChar": 38,
+        "endLine": 64,
+        "endChar": 39
+      },
+      "revId": "fb4f7f5913348340bdcd63d50947961a284c0156",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f67ba70c_706a8cc6",
         "filename": "src/chromiumos/tast/common/host/ssh.go",
         "patchSetId": 1
@@ -215,6 +389,30 @@
       "writtenOn": "2017-08-24T22:02:30Z",
       "side": 1,
       "message": "Wow, I was surprised how little of the SSH protocol is implemented here. KeepAlive and ControlMaster in particular are sadly missing. Not sure it matters yet but: sads.",
+      "range": {
+        "startLine": 151,
+        "startChar": 12,
+        "endLine": 151,
+        "endChar": 24
+      },
+      "revId": "fb4f7f5913348340bdcd63d50947961a284c0156",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f1a65b02_3cded979",
+        "filename": "src/chromiumos/tast/common/host/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-26T01:38:09Z",
+      "side": 1,
+      "message": "yeah, i guess there\u0027s a reason it\u0027s in x/. still seems better than what\u0027s available for c++, though. :-)",
+      "parentUuid": "f67ba70c_706a8cc6",
       "range": {
         "startLine": 151,
         "startChar": 12,
@@ -256,6 +454,24 @@
       "side": 1,
       "message": "This seems fine to me, for now. We can always change it later. In particular, if we ever implement a \"goHost\" concrete implementation of the Host interface, I\u0027d image that that would be a Go static binary on the other end of the connection that does its own crypto and protocol. In that scenario, I think that reaching out to command line tools on the other end of the connection would seem wrong. But, that\u0027s hypothetical at this point. And, to be honest, SSH connections already assume a lot about the remote environment (including running the target user login profile for their login shell).",
       "parentUuid": "b3f5c343_2dd7dd3a",
+      "revId": "fb4f7f5913348340bdcd63d50947961a284c0156",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "390a9458_1776deb0",
+        "filename": "src/chromiumos/tast/common/host/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-26T01:38:09Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "c9616e59_80f090b0",
       "revId": "fb4f7f5913348340bdcd63d50947961a284c0156",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false

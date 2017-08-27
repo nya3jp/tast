@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "cc1d3d04_5fcaa8c6",
+        "filename": "src/chromiumos/tast/local/dbusutil/constants.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-27T20:54:36Z",
+      "side": 1,
+      "message": "Even if we could, I\u0027m not sure that would be a good idea: it seems like Tast should be able to get these constants from the SUT. E.g.: a Tast test testing the interaction of networking and the session UI should, ideally, get the SUT DBUS or Mojo addresses from the packages that it\u0027s testing. Perhaps, through a build argument and ebuild .eclass helper that populates that build argument from the dependencies during src_configure. This is a fine shortcut for now, though.",
+      "range": {
+        "startLine": 12,
+        "startChar": 1,
+        "endLine": 12,
+        "endChar": 88
+      },
+      "revId": "7ade552b6685a1207067880d98acd61480d4fa4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cfa362af_712f4262",
+        "filename": "src/chromiumos/tast/local/upstart/upstart.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-27T20:54:36Z",
+      "side": 1,
+      "message": "upstart is abandoned upstream (since 2014) and, I think, it\u0027s only a matter of time before we have to finally do a systemd transition. Can we maybe use sysvinit compatibility tools so that we don\u0027t have to do any work here when we do that? Seems like the \"service\" commands forward to either on any system. Here\u0027s Upstart\u0027s doc about /sbin/service compat:\nhttp://upstart.ubuntu.com/cookbook/#system-v-compatibility-link-debian-and-ubuntu-specific\nAnd systemd /sbin/service compat:\nhttps://www.freedesktop.org/wiki/Software/systemd/Incompatibilities/\n\nFeel free to break this file into another CL, if so.",
+      "range": {
+        "startLine": 7,
+        "startChar": 8,
+        "endLine": 7,
+        "endChar": 15
+      },
+      "revId": "7ade552b6685a1207067880d98acd61480d4fa4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

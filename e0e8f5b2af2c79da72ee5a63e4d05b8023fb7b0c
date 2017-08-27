@@ -22,6 +22,30 @@
       "revId": "e0e8f5b2af2c79da72ee5a63e4d05b8023fb7b0c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "44fc3fc9_9d7b7c70",
+        "filename": "src/chromiumos/tast/common/runner/runner.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-27T15:16:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "31935e1d_53c8ece0",
+      "range": {
+        "startLine": 33,
+        "startChar": 6,
+        "endLine": 33,
+        "endChar": 8
+      },
+      "revId": "e0e8f5b2af2c79da72ee5a63e4d05b8023fb7b0c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

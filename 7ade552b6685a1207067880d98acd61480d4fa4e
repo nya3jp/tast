@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "74ee8969_ff78ac0c",
+        "filename": "src/chromiumos/tast/local/dbusutil/constants.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-28T05:20:33Z",
+      "side": 1,
+      "message": "well, right now the packages that use these constants get them from the system_api package too; that\u0027s ideally the only place the constants would exist. i\u0027ll leave the TODO for now.",
+      "parentUuid": "cc1d3d04_5fcaa8c6",
+      "range": {
+        "startLine": 12,
+        "startChar": 1,
+        "endLine": 12,
+        "endChar": 88
+      },
+      "revId": "7ade552b6685a1207067880d98acd61480d4fa4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "cfa362af_712f4262",
         "filename": "src/chromiumos/tast/local/upstart/upstart.go",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2017-08-27T20:54:36Z",
       "side": 1,
       "message": "upstart is abandoned upstream (since 2014) and, I think, it\u0027s only a matter of time before we have to finally do a systemd transition. Can we maybe use sysvinit compatibility tools so that we don\u0027t have to do any work here when we do that? Seems like the \"service\" commands forward to either on any system. Here\u0027s Upstart\u0027s doc about /sbin/service compat:\nhttp://upstart.ubuntu.com/cookbook/#system-v-compatibility-link-debian-and-ubuntu-specific\nAnd systemd /sbin/service compat:\nhttps://www.freedesktop.org/wiki/Software/systemd/Incompatibilities/\n\nFeel free to break this file into another CL, if so.",
+      "range": {
+        "startLine": 7,
+        "startChar": 8,
+        "endLine": 7,
+        "endChar": 15
+      },
+      "revId": "7ade552b6685a1207067880d98acd61480d4fa4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1232716f_0efa3245",
+        "filename": "src/chromiumos/tast/local/upstart/upstart.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-28T05:20:33Z",
+      "side": 1,
+      "message": "hmm, \u0027service\u0027 doesn\u0027t appear to be present on a recent dev image that i built. i haven\u0027t dug into the upstart source yet to figure out what\u0027s going on.",
+      "parentUuid": "cfa362af_712f4262",
       "range": {
         "startLine": 7,
         "startChar": 8,

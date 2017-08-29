@@ -22,6 +22,30 @@
       "revId": "6250d32e473d4bfeb82cad9761a14e53446e17f1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e38ac65b_2ca6a69a",
+        "filename": "src/chromiumos/tast/local/logs/logs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-29T04:34:05Z",
+      "side": 1,
+      "message": "it\u0027s actually not called by CopyLogFileUpdates. :-) the pattern is to call GetLogInodeSizes before running tests (to get the original sizes), and then pass the resulting InodeSizes map to CopyLogFileUpdates after the tests are done.",
+      "parentUuid": "26c5662e_3f987bba",
+      "range": {
+        "startLine": 22,
+        "startChar": 5,
+        "endLine": 22,
+        "endChar": 21
+      },
+      "revId": "6250d32e473d4bfeb82cad9761a14e53446e17f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0f436d3c_c4bf5f05",
+        "filename": "src/chromiumos/tast/local/chrome/arc.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-29T17:27:51Z",
+      "side": 1,
+      "message": "This is going to run minijail (including setting the process cgroups), nsenter, busybox sh, and getprop every 10 milliseconds. Seems like it\u0027s going to do so much work that it will actually slow down the boot while it\u0027s waiting for for boot to finish. I just measured \"android-sh true\" on a Fizz (Kaby Lake) and it spends ~13ms on average in system calls with ~32ms as the total run time. On slower systems, it\u0027ll be worse.\n\nI just tested this alternative and it doesn\u0027t seem to appreciably increase system load:\n\n  android-sh -c \u0027while true; do getprop sys.boot_completed | grep 1 \u0026\u0026 exit 0; sleep 0.1; done\u0027\n\nIf the exit code is 0, it\u0027s booted.",
+      "range": {
+        "startLine": 19,
+        "startChar": 11,
+        "endLine": 19,
+        "endChar": 16
+      },
+      "revId": "99625a245e1c139cfab0bc4e48e4645b5d5ded72",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9699f5e4_5158a534",
+        "filename": "src/chromiumos/tast/local/chrome/arc.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-29T17:27:51Z",
+      "side": 1,
+      "message": "This is hard to read. Maybe assign the func to a var outside the if statement?",
+      "range": {
+        "startLine": 19,
+        "startChar": 12,
+        "endLine": 22,
+        "endChar": 3
+      },
+      "revId": "99625a245e1c139cfab0bc4e48e4645b5d5ded72",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f35b3f9c_68c2d330",
+        "filename": "src/chromiumos/tast/local/chrome/chrome.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-29T17:27:51Z",
+      "side": 1,
+      "message": "Can we skip restarting UI if it\u0027s already up to save time?",
+      "range": {
+        "startLine": 123,
+        "startChar": 1,
+        "endLine": 126,
+        "endChar": 0
+      },
+      "revId": "99625a245e1c139cfab0bc4e48e4645b5d5ded72",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b9e8cbf6_63d0f8d5",
+        "filename": "src/chromiumos/tast/local/chrome/chrome.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-29T17:27:51Z",
+      "side": 1,
+      "message": "Is this going to have a surprising consequence on tests that attempt to test the opt-in screen?",
+      "range": {
+        "startLine": 148,
+        "startChar": 23,
+        "endLine": 148,
+        "endChar": 56
+      },
+      "revId": "99625a245e1c139cfab0bc4e48e4645b5d5ded72",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

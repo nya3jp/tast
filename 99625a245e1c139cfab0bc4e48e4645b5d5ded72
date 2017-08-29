@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "701940ae_2bbc4444",
+        "filename": "src/chromiumos/tast/local/chrome/arc.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-29T21:11:48Z",
+      "side": 1,
+      "message": "thanks for pointing this out; i didn\u0027t realize it did so much!\n\ni got this command from android (client/common_lib/cros/arc_common.py), but it looks like we\u0027re sleeping two seconds between each invocation there (which is a long time to wait). your suggestion seems like a good compromise.\n\ni\u0027ll probably need to make this a bit more complicated (i\u0027d like to watch the context instead of potentially looping forever). i\u0027ll test this more tomorrow and send an update then. (i am also suspicious of my \"!\u003d 1\" below, which appears backwards... :-/)\n\ni\u0027ll also mention that autotest of course has a second way of doing this in client/common_lib/cros/arc.py:\n\n  def is_android_booted():\n      \"\"\"Return whether Android has completed booting.\"\"\"\n      # We used to check sys.boot_completed system property to detect Android has\n      # booted in Android M, but in Android N it is set long before BOOT_COMPLETED\n      # intent is broadcast. So we read event logs instead.\n      log \u003d _android_shell(\n          \u0027logcat -d -b events *:S arc_system_event\u0027, ignore_status\u003dTrue)\n      return \u0027ArcAppLauncher:started\u0027 in log",
+      "parentUuid": "0f436d3c_c4bf5f05",
+      "range": {
+        "startLine": 19,
+        "startChar": 11,
+        "endLine": 19,
+        "endChar": 16
+      },
+      "revId": "99625a245e1c139cfab0bc4e48e4645b5d5ded72",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "9699f5e4_5158a534",
         "filename": "src/chromiumos/tast/local/chrome/arc.go",
         "patchSetId": 1
@@ -45,6 +69,30 @@
       "revId": "99625a245e1c139cfab0bc4e48e4645b5d5ded72",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e8d9d4ad_436e2fbe",
+        "filename": "src/chromiumos/tast/local/chrome/arc.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-29T21:11:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9699f5e4_5158a534",
+      "range": {
+        "startLine": 19,
+        "startChar": 12,
+        "endLine": 22,
+        "endChar": 3
+      },
+      "revId": "99625a245e1c139cfab0bc4e48e4645b5d5ded72",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "aafe4071_a1554051",
+        "filename": "src/chromiumos/tast/local/chrome/chrome.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-29T21:11:48Z",
+      "side": 1,
+      "message": "i think it\u0027ll be risky to assume that the UI is in a certain state (for example, i\u0027m currently *not* restarting the ui job in Close(), and i think having an already-logged-in user would probably cause problems). we\u0027ll likely need to restart the ui job at least once between each test, and doing so at the beginning of the test seems safer than doing so at the end.",
+      "parentUuid": "f35b3f9c_68c2d330",
+      "range": {
+        "startLine": 123,
+        "startChar": 1,
+        "endLine": 126,
+        "endChar": 0
+      },
+      "revId": "99625a245e1c139cfab0bc4e48e4645b5d5ded72",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b9e8cbf6_63d0f8d5",
         "filename": "src/chromiumos/tast/local/chrome/chrome.go",
         "patchSetId": 1
@@ -82,6 +154,30 @@
       "writtenOn": "2017-08-29T17:27:51Z",
       "side": 1,
       "message": "Is this going to have a surprising consequence on tests that attempt to test the opt-in screen?",
+      "range": {
+        "startLine": 148,
+        "startChar": 23,
+        "endLine": 148,
+        "endChar": 56
+      },
+      "revId": "99625a245e1c139cfab0bc4e48e4645b5d5ded72",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cd993f50_28da3012",
+        "filename": "src/chromiumos/tast/local/chrome/chrome.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-29T21:11:48Z",
+      "side": 1,
+      "message": "i\u0027ll add a comment mentioning this. i believe it matches what we do in autotest at present (see client/common_lib/cros/arc_util.py; arc_common.py defines an additional ARC_MODE_ENABLED_ASYNC mode that isn\u0027t used anywhere, as far as i can tell).",
+      "parentUuid": "b9e8cbf6_63d0f8d5",
       "range": {
         "startLine": 148,
         "startChar": 23,

@@ -143,6 +143,30 @@
     },
     {
       "key": {
+        "uuid": "bdf8e2b8_6f63dda2",
+        "filename": "src/chromiumos/tast/local/chrome/chrome.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-29T22:00:56Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "aafe4071_a1554051",
+      "range": {
+        "startLine": 123,
+        "startChar": 1,
+        "endLine": 126,
+        "endChar": 0
+      },
+      "revId": "99625a245e1c139cfab0bc4e48e4645b5d5ded72",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b9e8cbf6_63d0f8d5",
         "filename": "src/chromiumos/tast/local/chrome/chrome.go",
         "patchSetId": 1
@@ -187,6 +211,30 @@
       "revId": "99625a245e1c139cfab0bc4e48e4645b5d5ded72",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "68b1940e_ae94484c",
+        "filename": "src/chromiumos/tast/local/chrome/chrome.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-29T22:00:56Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "cd993f50_28da3012",
+      "range": {
+        "startLine": 148,
+        "startChar": 23,
+        "endLine": 148,
+        "endChar": 56
+      },
+      "revId": "99625a245e1c139cfab0bc4e48e4645b5d5ded72",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

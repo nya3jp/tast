@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "265cbd9f_d4e7bdd7",
+        "filename": "src/chromiumos/tast/local/data_files.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-30T16:19:53Z",
+      "side": 1,
+      "message": "You\u0027re making a set? Why struct{} instead of maybe bool?",
+      "range": {
+        "startLine": 19,
+        "startChar": 25,
+        "endLine": 19,
+        "endChar": 33
+      },
+      "revId": "d3c3f10ab1a4b62493430d3d35de430ea4581265",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -22,6 +22,30 @@
       "revId": "219f762367b47358382df8cca8599fe59c4646ce",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "11c55d7e_8746f489",
+        "filename": "src/chromiumos/tast/local/power/status.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-30T01:35:01Z",
+      "side": 1,
+      "message": "thanks, i think. :-P\n\ni probably can\u0027t take much credit for this pattern; i think i ripped it off from some suggestions i read long ago about how to make go error-handling less tedious.",
+      "parentUuid": "ec425df5_532b7113",
+      "range": {
+        "startLine": 42,
+        "startChar": 2,
+        "endLine": 51,
+        "endChar": 3
+      },
+      "revId": "219f762367b47358382df8cca8599fe59c4646ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

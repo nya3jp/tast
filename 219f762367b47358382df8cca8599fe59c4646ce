@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ec425df5_532b7113",
+        "filename": "src/chromiumos/tast/local/power/status.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-30T01:30:27Z",
+      "side": 1,
+      "message": "Erg... this is clever. Another way to do this would have been to pass references to the struct fields and their line strings into this function.",
+      "range": {
+        "startLine": 42,
+        "startChar": 2,
+        "endLine": 51,
+        "endChar": 3
+      },
+      "revId": "219f762367b47358382df8cca8599fe59c4646ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

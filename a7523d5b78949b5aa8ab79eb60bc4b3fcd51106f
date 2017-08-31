@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "498af136_d57a1167",
+        "filename": "src/chromiumos/tast/tast/timing/timing.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-31T19:27:11Z",
+      "side": 1,
+      "message": "IMO, this is taking things a bit too far because this is adding testing things into the real, concrete type. Go has interfaces and I think that\u0027s what should be used here. You can drop the timeFunc type declaration and the struct field function calls throughout Log and Stage and then do this like:\n\n  type LogI interface {  // \u003c---Use LogI in all function signatures\n      Stages() []*Stage\n      Time()   time.Time\n  }\n\n  type Log struct {\n      stages  []*Stage\n  }\n\n  func (l *Log) stages() []*Stage {\n      return stages\n  }\n\n  func (l *Log) time() time.Time {\n      return time.Now()\n  }\n\n\n// In tests\n\n  type FakeLog struct {\n      stages  []*Stage\n      time    time.Time\n  }\n\n  func (l *FakeLog) stages() []*Stage {\n      return stages\n  }\n\n  func (l *FakeLog) time() time.Time {\n      return time\n  }\n\n...\n\nDon\u0027t feel strongly, though.",
+      "range": {
+        "startLine": 28,
+        "startChar": 0,
+        "endLine": 28,
+        "endChar": 49
+      },
+      "revId": "a7523d5b78949b5aa8ab79eb60bc4b3fcd51106f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "21f0c501_7c1995ce",
+        "filename": "src/chromiumos/tast/tast/timing/timing.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-08-31T19:27:11Z",
+      "side": 1,
+      "message": "Erg, I\u0027m not happy with these workarounds for Go\u0027s error handling tedium. In this case, I\u0027m not able to clearly reason about what is happening at c.write() below. I would prefer something less complicated even if it\u0027s more verbose.",
+      "range": {
+        "startLine": 140,
+        "startChar": 0,
+        "endLine": 144,
+        "endChar": 2
+      },
+      "revId": "a7523d5b78949b5aa8ab79eb60bc4b3fcd51106f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -10,14 +10,12 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"time"
 
 	"chromiumos/tast/common/control"
 	"chromiumos/tast/common/runner"
-	"chromiumos/tast/common/testing"
 	"chromiumos/tast/local/logs"
 
 	// These packages register their tests via init functions.
@@ -73,50 +71,14 @@ func copyLogUpdates(sizes logs.InodeSizes, mw *control.MessageWriter) (outDir st
 	return outDir
 }
 
-// runTests runs the supplied tests sequentially.
-// baseOutDir contains the base directory under which output will be written.
-// dataDir contains the base directory under which test data files are located.
-// arch contains the machine architecture. The number of failing tests is returned.
-func runTests(tests []*testing.Test, mw *control.MessageWriter, baseOutDir, dataDir, arch string) (numFailed int) {
-	for _, test := range tests {
-		if mw != nil {
-			mw.WriteMessage(&control.TestStart{time.Now(), test.Name})
-		} else {
-			log.Print("Running ", test.Name)
-		}
-
-		outDir := filepath.Join(baseOutDir, test.Name)
-		if err := os.MkdirAll(outDir, 0755); err != nil {
-			runner.Abort(mw, err.Error())
-		}
-
-		ch := make(chan testing.Output)
-		s := testing.NewState(context.Background(), ch, arch, filepath.Join(dataDir, test.DataDir()), outDir, testTimeout)
-
-		done := make(chan bool, 1)
-		go func() {
-			if succeeded := runner.CopyTestOutput(ch, mw); !succeeded {
-				numFailed++
-			}
-			done <- true
-		}()
-		test.Run(s)
-		close(ch)
-		<-done
-
-		if mw != nil {
-			mw.WriteMessage(&control.TestEnd{time.Now(), test.Name})
-		} else {
-			log.Printf("Finished %s", test.Name)
-		}
+func main() {
+	cfg := runner.RunConfig{
+		Ctx:         context.Background(),
+		TestTimeout: testTimeout,
 	}
 
-	return numFailed
-}
-
-func main() {
-	arch := flag.String("arch", "", "machine architecture (see \"uname -m\")")
-	dataDir := flag.String("datadir", "", "directory where data files are located")
+	flag.StringVar(&cfg.Arch, "arch", "", "machine architecture (see \"uname -m\")")
+	flag.StringVar(&cfg.DataDir, "datadir", "", "directory where data files are located")
 	listData := flag.Bool("listdata", false, "print data files needed for tests and exit")
 	report := flag.Bool("report", false, "report progress for calling process")
 	flag.Usage = func() {
@@ -126,39 +88,39 @@ func main() {
 	}
 	flag.Parse()
 
-	var mw *control.MessageWriter
 	if *report {
-		mw = control.NewMessageWriter(os.Stdout)
+		cfg.MessageWriter = control.NewMessageWriter(os.Stdout)
 	}
 
-	tests, err := runner.TestsToRun(flag.Args())
-	if err != nil {
-		runner.Abort(mw, err.Error())
+	var err error
+	if cfg.Tests, err = runner.TestsToRun(flag.Args()); err != nil {
+		runner.Abort(cfg.MessageWriter, err.Error())
 	}
 
 	if *listData {
-		if err := listDataFiles(os.Stdout, tests, *arch); err != nil {
-			runner.Abort(mw, err.Error())
+		if err := listDataFiles(os.Stdout, cfg.Tests, cfg.Arch); err != nil {
+			runner.Abort(cfg.MessageWriter, err.Error())
 		}
 		os.Exit(0)
 	}
 
-	baseOutDir, err := ioutil.TempDir("", "local_tests_data.")
-	if err != nil {
-		runner.Abort(mw, err.Error())
+	if cfg.BaseOutDir, err = ioutil.TempDir("", "local_tests_data."); err != nil {
+		runner.Abort(cfg.MessageWriter, err.Error())
 	}
 
+	// Perform the test run.
 	var logSizes logs.InodeSizes
 	if *report {
-		mw.WriteMessage(&control.RunStart{time.Now(), len(tests)})
-		logSizes = getInitialLogSizes(mw)
+		cfg.MessageWriter.WriteMessage(&control.RunStart{time.Now(), len(cfg.Tests)})
+		logSizes = getInitialLogSizes(cfg.MessageWriter)
 	}
-
-	numFailed := runTests(tests, mw, baseOutDir, *dataDir, *arch)
-
+	numFailed, err := runner.RunTests(cfg)
+	if err != nil {
+		runner.Abort(cfg.MessageWriter, err.Error())
+	}
 	if *report {
-		ld := copyLogUpdates(logSizes, mw)
-		mw.WriteMessage(&control.RunEnd{time.Now(), ld, baseOutDir})
+		logDir := copyLogUpdates(logSizes, cfg.MessageWriter)
+		cfg.MessageWriter.WriteMessage(&control.RunEnd{time.Now(), logDir, cfg.BaseOutDir})
 	}
 
 	// Exit with a nonzero exit code if we were run manually and saw at least one test fail.

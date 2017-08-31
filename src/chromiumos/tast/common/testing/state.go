@@ -56,7 +56,14 @@ func NewState(ctx context.Context, ch chan Output, arch, dataDir, outDir string,
 		dataDir: dataDir,
 		outDir:  outDir,
 	}
-	s.ctx, s.cancel = context.WithTimeout(context.WithValue(ctx, logKey, s), timeout)
+
+	lctx := context.WithValue(ctx, logKey, s)
+	if timeout > 0 {
+		s.ctx, s.cancel = context.WithTimeout(lctx, timeout)
+	} else {
+		s.ctx, s.cancel = context.WithCancel(lctx)
+	}
+
 	return s
 }
 

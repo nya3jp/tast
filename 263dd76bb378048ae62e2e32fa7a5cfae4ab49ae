@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "13823f8c_f12a400e",
+        "filename": "src/chromiumos/tast/tast/logging/logger.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-31T22:47:35Z",
+      "side": 1,
+      "message": "i have a second, experimental implementation of this interface that uses VT100 escape sequences to log the different types of messages differently (Log* is logged normally, Status updates a single status line, and Debug* messages scroll within a shorter fixed region).\n\nit needs a bit more love (e.g. i need to handle wrapped lines more elegantly, and it doesn\u0027t work at all in tmux due to tmux limitations, although it works in screen). i\u0027m still planning to send it out in a later change, but probably after all of the rest of this is in. does that sound reasonable?",
+      "revId": "263dd76bb378048ae62e2e32fa7a5cfae4ab49ae",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

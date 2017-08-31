@@ -6,9 +6,12 @@
 package runner
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"log"
+	"os"
+	"path/filepath"
 	"runtime"
 	"runtime/debug"
 	"strings"
@@ -86,10 +89,10 @@ func indent(s, prefix string) string {
 	return strings.Join(lines, "\n")
 }
 
-// CopyTestOutput reads test output from ch and writes it to mw.
+// copyTestOutput reads test output from ch and writes it to mw.
 // If mw is nil, the output is just logged to os.Stdout.
 // true is returned if the test suceeded.
-func CopyTestOutput(ch chan testing.Output, mw *control.MessageWriter) (succeeded bool) {
+func copyTestOutput(ch chan testing.Output, mw *control.MessageWriter) (succeeded bool) {
 	succeeded = true
 
 	for o := range ch {
@@ -111,4 +114,68 @@ func CopyTestOutput(ch chan testing.Output, mw *control.MessageWriter) (succeede
 	}
 
 	return succeeded
+}
+
+// RunConfig contains a test-running configuration to be passed to RunTests.
+type RunConfig struct {
+	// Ctx is the context to be passed to tests.
+	Ctx context.Context
+	// Tests contains tests to run.
+	Tests []*testing.Test
+	// MessageWriter is used to send messages to the controlling process.
+	// If nil, output is logged to stdout instead.
+	MessageWriter *control.MessageWriter
+	// SetupFunc is run before every test if non-nil.
+	SetupFunc func() error
+	// BaseOutDir contains the base directory under which test output will be written.
+	BaseOutDir string
+	// DataDir contains the base directory under which test data files are located.
+	DataDir string
+	// Arch contains the machine architecture.
+	Arch string
+	// TestTimeout describes the maximum time allotted to each test.
+	TestTimeout time.Duration
+}
+
+// RunTests runs tests as dictated by cfg. The number of failing tests is returned.
+// If an error is encountered in the test harness (as opposed to in a test),
+// it is returned immediately.
+func RunTests(cfg RunConfig) (numFailed int, err error) {
+	for _, test := range cfg.Tests {
+		if cfg.MessageWriter != nil {
+			cfg.MessageWriter.WriteMessage(&control.TestStart{time.Now(), test.Name})
+		} else {
+			log.Print("Running ", test.Name)
+		}
+
+		outDir := filepath.Join(cfg.BaseOutDir, test.Name)
+		if err := os.MkdirAll(outDir, 0755); err != nil {
+			return 0, err
+		}
+
+		if cfg.SetupFunc != nil {
+			cfg.SetupFunc()
+		}
+		ch := make(chan testing.Output)
+		s := testing.NewState(cfg.Ctx, ch, cfg.Arch, filepath.Join(cfg.DataDir, test.DataDir()), outDir, cfg.TestTimeout)
+
+		done := make(chan bool, 1)
+		go func() {
+			if succeeded := copyTestOutput(ch, cfg.MessageWriter); !succeeded {
+				numFailed++
+			}
+			done <- true
+		}()
+		test.Run(s)
+		close(ch)
+		<-done
+
+		if cfg.MessageWriter != nil {
+			cfg.MessageWriter.WriteMessage(&control.TestEnd{time.Now(), test.Name})
+		} else {
+			log.Printf("Finished %s", test.Name)
+		}
+	}
+
+	return numFailed, nil
 }

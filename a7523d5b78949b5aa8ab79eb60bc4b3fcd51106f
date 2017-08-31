@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "97898c93_f2fbd53f",
+        "filename": "src/chromiumos/tast/tast/timing/timing.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-31T21:32:59Z",
+      "side": 1,
+      "message": "(sigh; i lost my first attempt at replying to this to a cros and/or gerrit bug. :-/ writing it in a text editor now)\n\ni think that that would work if i were trying to test code that uses the Log type*, but i\u0027m actually testing the Log type itself here. that is, i want to exercise all of its code, but also provide a way to inject a canned value for \"now\".\n\nthis seemed like the best approach to me for doing that, since it doesn\u0027t leak the testing code outside of the package. would you be more comfortable if i added a NewLog(now func() time.Time) function here, and had the real code pass in time.Now there? then this implementation gets a bit simpler, but the public interface gets slightly more complicated.\n\ni don\u0027t have strong feelings about this. let me know if i misunderstood your recommendation and there\u0027s a better way to do this.\n\n* i think that this is what https://github.com/golang/go/wiki/CodeReviewComments#interfaces is getting at -- i\u0027d still just define the concrete Log type in this package, but the code that\u0027s using it could define its own interface that\u0027s satisfied by Log, and inject a stub implementation in its own tests.",
+      "parentUuid": "498af136_d57a1167",
+      "range": {
+        "startLine": 28,
+        "startChar": 0,
+        "endLine": 28,
+        "endChar": 49
+      },
+      "revId": "a7523d5b78949b5aa8ab79eb60bc4b3fcd51106f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "21f0c501_7c1995ce",
         "filename": "src/chromiumos/tast/tast/timing/timing.go",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2017-08-31T19:27:11Z",
       "side": 1,
       "message": "Erg, I\u0027m not happy with these workarounds for Go\u0027s error handling tedium. In this case, I\u0027m not able to clearly reason about what is happening at c.write() below. I would prefer something less complicated even if it\u0027s more verbose.",
+      "range": {
+        "startLine": 140,
+        "startChar": 0,
+        "endLine": 144,
+        "endChar": 2
+      },
+      "revId": "a7523d5b78949b5aa8ab79eb60bc4b3fcd51106f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "47ee69c4_e3d34475",
+        "filename": "src/chromiumos/tast/tast/timing/timing.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-08-31T21:32:59Z",
+      "side": 1,
+      "message": "i\u0027ve switched to using bufio.Writer, which does something similar (and will persist the error state when passed to child stages) -- see https://blog.golang.org/errors-are-values. does that seem reasonable?",
+      "parentUuid": "21f0c501_7c1995ce",
       "range": {
         "startLine": 140,
         "startChar": 0,

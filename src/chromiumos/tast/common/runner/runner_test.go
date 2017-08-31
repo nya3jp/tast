@@ -6,6 +6,8 @@ package runner
 
 import (
 	"bytes"
+	"context"
+	"io/ioutil"
 	"reflect"
 	gotesting "testing"
 	"time"
@@ -14,7 +16,8 @@ import (
 	"chromiumos/tast/common/testing"
 )
 
-func MyFunc(*testing.State) {}
+func MyFunc(*testing.State)      {}
+func ErrorFunc(s *testing.State) { s.Errorf("error") }
 
 func TestTestsToRun(t *gotesting.T) {
 	const (
@@ -99,8 +102,8 @@ func TestCopyTestOutput(t *gotesting.T) {
 
 	b := bytes.Buffer{}
 	w := control.NewMessageWriter(&b)
-	if CopyTestOutput(ch, w) {
-		t.Error("CopyTestOutput() reported success for failed test")
+	if copyTestOutput(ch, w) {
+		t.Error("copyTestOutput() reported success for failed test")
 	}
 
 	r := control.NewMessageReader(&b)
@@ -115,6 +118,81 @@ func TestCopyTestOutput(t *gotesting.T) {
 		}
 	}
 	if r.More() {
-		t.Error("CopyTestOutput() wrote extra message(s)")
+		t.Error("copyTestOutput() wrote extra message(s)")
+	}
+}
+
+func TestRunTests(t *gotesting.T) {
+	const (
+		name1 = "foo.Test1"
+		name2 = "foo.Test2"
+	)
+
+	defer testing.ClearForTesting()
+	testing.AddTest(&testing.Test{Name: name1, Func: MyFunc})
+	testing.AddTest(&testing.Test{Name: name2, Func: ErrorFunc})
+
+	tmpDir, err := ioutil.TempDir("", "runner_test.")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	b := bytes.Buffer{}
+	numSetupCalls := 0
+	cfg := RunConfig{
+		Ctx:           context.Background(),
+		Tests:         testing.GlobalRegistry().AllTests(),
+		MessageWriter: control.NewMessageWriter(&b),
+		SetupFunc:     func() error { numSetupCalls++; return nil },
+		BaseOutDir:    tmpDir,
+		DataDir:       tmpDir,
+		Arch:          "x86_64",
+	}
+
+	numFailed, err := RunTests(cfg)
+	if err != nil {
+		t.Fatalf("RunTests(%v) failed: %v", cfg, err)
+	}
+	if numFailed != 1 {
+		t.Fatalf("RunTests(%v) reported %d test failure(s); want 1", cfg, numFailed)
+	}
+	if numSetupCalls != len(cfg.Tests) {
+		t.Errorf("RunTests(%v) called setup function %d time(s); want %d", cfg, numSetupCalls, len(cfg.Tests))
+	}
+
+	// Just check some basic details of the control messages.
+	r := control.NewMessageReader(&b)
+	for i, ei := range []interface{}{
+		&control.TestStart{Name: name1},
+		&control.TestEnd{Name: name1},
+		&control.TestStart{Name: name2},
+		&control.TestError{},
+		&control.TestEnd{Name: name2},
+	} {
+		if ai, err := r.ReadMessage(); err != nil {
+			t.Errorf("Failed to read message %d: %v", i, err)
+		} else {
+			switch em := ei.(type) {
+			case *control.TestStart:
+				if am, ok := ai.(*control.TestStart); !ok {
+					t.Errorf("Got %v at %d; want TestStart", ai, i)
+				} else if am.Name != em.Name {
+					t.Errorf("Got TestStart for %q at %d; want %q", am.Name, i, em.Name)
+				}
+			case *control.TestEnd:
+				if am, ok := ai.(*control.TestEnd); !ok {
+					t.Errorf("Got %v at %d; want TestEnd", ai, i)
+				} else if am.Name != em.Name {
+					t.Errorf("Got TestEnd for %q at %d; want %q", am.Name, i, em.Name)
+				}
+			case *control.TestError:
+				if _, ok := ai.(*control.TestError); !ok {
+					t.Errorf("Got %v at %d; want TestError", ai, i)
+				}
+			}
+		}
+	}
+	if r.More() {
+		t.Errorf("RunTests(%v) wrote extra message(s)", cfg)
 	}
 }

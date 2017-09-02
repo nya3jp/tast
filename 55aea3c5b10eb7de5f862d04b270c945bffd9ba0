@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "34ccf953_dd6510b4",
+        "filename": "src/chromiumos/tast/tast/run_cmd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-09-02T15:03:47Z",
+      "side": 1,
+      "message": "Seems like this should be a https://golang.org/pkg/io/ioutil/#TempDir . Also maybe print out the directory path and log filenames before the tests begin so people know where to follow the logs?",
+      "range": {
+        "startLine": 24,
+        "startChar": 19,
+        "endLine": 24,
+        "endChar": 36
+      },
+      "revId": "55aea3c5b10eb7de5f862d04b270c945bffd9ba0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

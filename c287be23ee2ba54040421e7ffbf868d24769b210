@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "988b1df3_585aa5ae",
+        "filename": "src/chromiumos/tast/tast/run/local.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-09-02T04:58:37Z",
+      "side": 1,
+      "message": "i think i just did this so i can get the error message if the program dies with log.Fatal or something similar (i believe that log defaults to using stderr). it might be less of an issue now there\u0027s a RunError control message, but i think i still use this to log the failure message that local_tests writes to stderr -listdata fails.",
+      "parentUuid": "27f1218e_a797f186",
+      "range": {
+        "startLine": 157,
+        "startChar": 29,
+        "endLine": 157,
+        "endChar": 33
+      },
+      "revId": "c287be23ee2ba54040421e7ffbf868d24769b210",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "05f67120_67e1ab8e",
         "filename": "src/chromiumos/tast/tast/run/results.go",
         "patchSetId": 1
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "14067c95_aec6c95d",
+        "filename": "src/chromiumos/tast/tast/run/results.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-09-02T04:58:37Z",
+      "side": 1,
+      "message": "i think that this is correct -- if a message was supplied, it\u0027s prepending a space to separate it from the bracketed progress string.",
+      "parentUuid": "05f67120_67e1ab8e",
+      "range": {
+        "startLine": 82,
+        "startChar": 6,
+        "endLine": 82,
+        "endChar": 9
+      },
+      "revId": "c287be23ee2ba54040421e7ffbf868d24769b210",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "dca62b6f_715dcc6c",
         "filename": "src/chromiumos/tast/tast/run/results.go",
         "patchSetId": 1
@@ -59,6 +107,30 @@
       "writtenOn": "2017-09-01T23:18:26Z",
       "side": 1,
       "message": "I think this whole thing could be filepath.Walk(): https://golang.org/pkg/path/filepath/#Walk",
+      "range": {
+        "startLine": 220,
+        "startChar": 1,
+        "endLine": 242,
+        "endChar": 0
+      },
+      "revId": "c287be23ee2ba54040421e7ffbf868d24769b210",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8e25232f_9d231382",
+        "filename": "src/chromiumos/tast/tast/run/results.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 242,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-09-02T04:58:37Z",
+      "side": 1,
+      "message": "i use that in other places for recursively walking a tree, but i think that what i want here is to just rename all of the top-level files in each test\u0027s output directory. i think that a nested for loop is probably the right thing to use here (especially since i want to skip any output dirs that don\u0027t correspond to existing test dirs).",
+      "parentUuid": "dca62b6f_715dcc6c",
       "range": {
         "startLine": 220,
         "startChar": 1,

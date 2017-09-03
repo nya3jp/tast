@@ -6,6 +6,7 @@ package run
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"os"
 	"os/exec"
@@ -62,25 +63,25 @@ func runRemoteTestBinary(ctx context.Context, bin string, cfg *Config) error {
 	args = append(args, cfg.Patterns...)
 	cmd := exec.Command(bin, args...)
 
-	// Merge stdout and stderr.
-	pr, pw := io.Pipe()
-	cmd.Stdout = pw
-	cmd.Stderr = pw
+	var err error
+	var stdout, stderr io.Reader
+	if stdout, err = cmd.StdoutPipe(); err != nil {
+		return fmt.Errorf("failed to open stdout: %v", err)
+	}
+	if stderr, err = cmd.StderrPipe(); err != nil {
+		return fmt.Errorf("failed to open stderr: %v", err)
+	}
+	stderrReader := newFirstLineReader(stderr)
 
 	if err := cmd.Start(); err != nil {
 		return err
 	}
-
-	// When the command completes, close the pipe so the main goroutine stops reading from it.
-	ch := make(chan error, 1)
-	go func() {
-		err := cmd.Wait()
-		pw.Close()
-		ch <- err
-	}()
-
-	if err := readTestOutput(ctx, cfg.Logger, pr, cfg.ResDir, os.Rename); err != nil {
+	if err := readTestOutput(ctx, cfg.Logger, stdout, cfg.ResDir, os.Rename); err != nil {
 		return err
 	}
-	return <-ch
+	if err := cmd.Wait(); err != nil {
+		ln, _ := stderrReader.getLine(stderrTimeout)
+		return fmt.Errorf("%v: %v", err, ln)
+	}
+	return nil
 }

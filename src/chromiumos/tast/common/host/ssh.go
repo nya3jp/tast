@@ -41,7 +41,7 @@ const (
 	// CloseStdin indicates that stdin should be closed.
 	CloseStdin
 
-	// StdoutAndStderr indicates that stdout and stderr should be merged together.
+	// StdoutAndStderr indicates that stdout and stderr should both be returned separately.
 	StdoutAndStderr OutputMode = iota
 	// Stdout indicates that only stdout should be returned (i.e. stderr should be closed).
 	StdoutOnly

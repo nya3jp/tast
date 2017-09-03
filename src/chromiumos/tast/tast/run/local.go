@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"path/filepath"
 	"strings"
 	"time"
@@ -154,7 +155,7 @@ func getLocalTestCommand(bin string, flags, pats []string) string {
 	for _, p := range pats {
 		ps += " " + host.QuoteShellArg(p)
 	}
-	return fmt.Sprintf("%s %s%s 2>&1", bin, strings.Join(flags, " "), ps)
+	return fmt.Sprintf("%s %s%s", bin, strings.Join(flags, " "), ps)
 }
 
 // getDataFilePaths returns the paths to data files needed for running cfg.Patterns on hst.
@@ -165,11 +166,21 @@ func getDataFilePaths(ctx context.Context, hst *host.SSH, bin string, cfg *Confi
 	}
 
 	args := []string{"-listdata", "-arch", cfg.BuildCfg.Arch}
-	out, err := hst.Run(ctx, getLocalTestCommand(bin, args, cfg.Patterns))
+	cmd := getLocalTestCommand(bin, args, cfg.Patterns)
+
+	handle, err := hst.Start(ctx, cmd, host.CloseStdin, host.StdoutAndStderr)
 	if err != nil {
-		// TODO(derat): Find a more graceful way of returning the error from the host, maybe.
-		return nil, fmt.Errorf("%v: %s", err, strings.Split(string(out), "\n")[0])
+		return nil, err
 	}
+	defer handle.Close(ctx)
+
+	stderrReader := newFirstLineReader(handle.Stderr())
+	out, _ := ioutil.ReadAll(handle.Stdout()) // Wait() also reports output errors.
+	if err = handle.Wait(ctx); err != nil {
+		ln, _ := stderrReader.getLine(stderrTimeout)
+		return nil, fmt.Errorf("%v: %s", err, ln)
+	}
+
 	files := make([]string, 0)
 	err = json.Unmarshal(out, &files)
 	return files, err
@@ -205,11 +216,14 @@ func runLocalTestBinary(ctx context.Context, hst *host.SSH, bin string, cfg *Con
 	cmd := getLocalTestCommand(bin,
 		[]string{"-report", "-arch=" + cfg.BuildCfg.Arch, "-datadir=" + defaultDataDir}, cfg.Patterns)
 	cfg.Logger.Logf("Starting %q on remote host", cmd)
-	handle, err := hst.Start(ctx, cmd, host.CloseStdin, host.StdoutOnly)
+	handle, err := hst.Start(ctx, cmd, host.CloseStdin, host.StdoutAndStderr)
 	if err != nil {
 		return err
 	}
 	defer handle.Close(ctx)
+
+	// Read stderr in the background so it can be included in error messages.
+	stderrReader := newFirstLineReader(handle.Stderr())
 
 	crf := func(src, dst string) error {
 		cfg.Logger.Debugf("Copying %s from host to %s", src, dst)
@@ -225,7 +239,12 @@ func runLocalTestBinary(ctx context.Context, hst *host.SSH, bin string, cfg *Con
 	if err = readTestOutput(ctx, cfg.Logger, handle.Stdout(), cfg.ResDir, crf); err != nil {
 		return err
 	}
-	return handle.Wait(ctx)
+
+	if err := handle.Wait(ctx); err != nil {
+		ln, _ := stderrReader.getLine(stderrTimeout)
+		return fmt.Errorf("%v: %v", err, ln)
+	}
+	return nil
 }
 
 // formatBytes formats bytes as a human-friendly string.

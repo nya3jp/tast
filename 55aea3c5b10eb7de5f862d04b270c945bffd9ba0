@@ -22,6 +22,30 @@
       "revId": "55aea3c5b10eb7de5f862d04b270c945bffd9ba0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "63c3a061_07132de1",
+        "filename": "src/chromiumos/tast/tast/run_cmd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-09-03T00:07:54Z",
+      "side": 1,
+      "message": "i\u0027m not sure about the tempdir part of this. autotest results end up in directories with names like /tmp/test_that_results_jSVJLE, and i find it frustrating to work with them. i prefer sticking with a single base directory and putting results in timestamped subdirectories under it, because it makes it easier to look at and clean up past results.\n\nlogging the results dir early on in addition to at the end of the run makes sense, though -- thanks.",
+      "parentUuid": "34ccf953_dd6510b4",
+      "range": {
+        "startLine": 24,
+        "startChar": 19,
+        "endLine": 24,
+        "endChar": 36
+      },
+      "revId": "55aea3c5b10eb7de5f862d04b270c945bffd9ba0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

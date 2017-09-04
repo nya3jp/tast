@@ -30,9 +30,7 @@ func NewSimple(w io.Writer, flag int, verbose bool) Logger {
 	}
 }
 
-func (s *simpleLogger) Close() error {
-	return nil
-}
+func (s *simpleLogger) Close() error { return nil }
 
 func (s *simpleLogger) Log(args ...interface{}) {
 	s.mutex.Lock()

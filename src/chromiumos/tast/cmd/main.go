@@ -22,11 +22,24 @@ import (
 )
 
 const (
-	signalChannelSize = 3 // capacity of channel used to intercept signals
+	signalChannelSize = 3  // capacity of channel used to intercept signals
+	fancyVerboseLines = 30 // verbose log lines to display in "fancy" mode
 )
 
 // lg should be used throughout the tast executable to log informative messages.
 var lg logging.Logger
+
+// newLogger creates a logging.Logger based on the supplied command-line flags.
+func newLogger(fancy, verbose bool) (logging.Logger, error) {
+	if fancy {
+		l, err := logging.NewFancy(fancyVerboseLines)
+		if err != nil {
+			err = fmt.Errorf("-fancy unsupported: %v", err)
+		}
+		return l, err
+	}
+	return logging.NewSimple(os.Stdout, log.LstdFlags, verbose), nil
+}
 
 // installSignalHandler starts a goroutine that attempts to do some minimal
 // cleanup when the process is being terminated by a signal (which prevents
@@ -61,10 +74,14 @@ func doMain() int {
 	subcommands.Register(&buildCmd{}, "")
 	subcommands.Register(&runCmd{}, "")
 
+	fancy := flag.Bool("fancy", false, "use fancy logging")
 	verbose := flag.Bool("verbose", false, "use verbose logging")
 	flag.Parse()
 
-	lg = logging.NewSimple(os.Stdout, log.LstdFlags, *verbose)
+	var err error
+	if lg, err = newLogger(*fancy, *verbose); err != nil {
+		log.Fatal("Failed to initialize logging: ", err)
+	}
 	defer lg.Close()
 
 	if err := installSignalHandler(); err != nil {

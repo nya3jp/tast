@@ -22,6 +22,30 @@
       "revId": "32697d1941bdf74e536c8c28087bdc65323b192a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d8d21671_41fdf0f3",
+        "filename": "src/chromiumos/tast/tast/fast_build.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-09-05T00:39:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "722f45e8_c5e3bf72",
+      "range": {
+        "startLine": 60,
+        "startChar": 0,
+        "endLine": 61,
+        "endChar": 13
+      },
+      "revId": "32697d1941bdf74e536c8c28087bdc65323b192a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

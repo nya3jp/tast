@@ -19,6 +19,47 @@
     },
     {
       "key": {
+        "uuid": "07424fea_905d6aa8",
+        "filename": "src/chromiumos/tast/local/chrome/chrome.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-09-12T22:22:37Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "d25bb519_6927d5e6",
+      "revId": "a5087cbef1f65990bd9f136f84e0c5b81af180a3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d31e3e66_7adac73b",
+        "filename": "src/chromiumos/tast/local/chrome/chrome.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-09-12T22:22:37Z",
+      "side": 1,
+      "message": "this is hard to read. I\u0027m also a little surprised that Context works fine with anonymous functions",
+      "range": {
+        "startLine": 215,
+        "startChar": 11,
+        "endLine": 223,
+        "endChar": 3
+      },
+      "revId": "a5087cbef1f65990bd9f136f84e0c5b81af180a3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f5dfafb1_642ba35f",
         "filename": "src/chromiumos/tast/local/chrome/chrome.go",
         "patchSetId": 1
@@ -33,6 +74,47 @@
       "revId": "a5087cbef1f65990bd9f136f84e0c5b81af180a3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "db6be9e0_6d441af1",
+        "filename": "src/chromiumos/tast/local/chrome/chrome.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 250,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-09-12T22:22:37Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "f5dfafb1_642ba35f",
+      "revId": "a5087cbef1f65990bd9f136f84e0c5b81af180a3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cdd28691_68c67a04",
+        "filename": "src/chromiumos/tast/local/chrome/extensions.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-09-12T22:22:37Z",
+      "side": 1,
+      "message": "oh god why",
+      "range": {
+        "startLine": 71,
+        "startChar": 15,
+        "endLine": 71,
+        "endChar": 22
+      },
+      "revId": "a5087cbef1f65990bd9f136f84e0c5b81af180a3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +135,24 @@
     },
     {
       "key": {
+        "uuid": "7a2b50bb_b24faf50",
+        "filename": "src/chromiumos/tast/local/chrome/extensions.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-09-12T22:22:37Z",
+      "side": 1,
+      "message": "Well that\u0027s a bit horrifying. Perhaps it\u0027s a public key that should be used to identify the package signature?",
+      "parentUuid": "a4757b6a_0ae25ab8",
+      "revId": "a5087cbef1f65990bd9f136f84e0c5b81af180a3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "73de3326_4cd89565",
         "filename": "src/chromiumos/tast/local/chrome/util.go",
         "patchSetId": 1
@@ -67,6 +167,24 @@
       "revId": "a5087cbef1f65990bd9f136f84e0c5b81af180a3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "71433c6c_202e41a6",
+        "filename": "src/chromiumos/tast/local/chrome/util.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-09-12T22:22:37Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "73de3326_4cd89565",
+      "revId": "a5087cbef1f65990bd9f136f84e0c5b81af180a3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

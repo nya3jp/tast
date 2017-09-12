@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d25bb519_6927d5e6",
+        "filename": "src/chromiumos/tast/local/chrome/chrome.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-09-12T20:26:59Z",
+      "side": 1,
+      "message": "this was fun to figure out.",
+      "revId": "a5087cbef1f65990bd9f136f84e0c5b81af180a3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f5dfafb1_642ba35f",
+        "filename": "src/chromiumos/tast/local/chrome/chrome.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 250,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-09-12T20:26:59Z",
+      "side": 1,
+      "message": "whoops :-(",
+      "revId": "a5087cbef1f65990bd9f136f84e0c5b81af180a3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a4757b6a_0ae25ab8",
+        "filename": "src/chromiumos/tast/local/chrome/extensions.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-09-12T20:26:59Z",
+      "side": 1,
+      "message": "also fun to figure out. i didn\u0027t see any errors without the key, and the extension is still loaded; it just can\u0027t see chrome.autotestPrivate.\n\ni\u0027m still not sure why/where the key is needed (and maybe another key could be used). this looks like it\u0027s our standard \"test key\"; it appears in a few test extensions within the chromium repository.",
+      "revId": "a5087cbef1f65990bd9f136f84e0c5b81af180a3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "73de3326_4cd89565",
+        "filename": "src/chromiumos/tast/local/chrome/util.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-09-12T20:26:59Z",
+      "side": 1,
+      "message": "so... os/user uses strings for uid and gid (presumably for windows and plan 9 compatibility), but os.Chown wants ints and is documented as always returning a syscall.EWINDOWS error when called on windows.",
+      "revId": "a5087cbef1f65990bd9f136f84e0c5b81af180a3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

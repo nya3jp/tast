@@ -60,6 +60,30 @@
     },
     {
       "key": {
+        "uuid": "0eddf1d8_5258a227",
+        "filename": "src/chromiumos/tast/local/chrome/chrome.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-09-12T23:12:16Z",
+      "side": 1,
+      "message": "heh, i thought you wouldn\u0027t like the nested function. updated.\n\nmind elaborating on the surprise around the Context use here? the whole point is kind of that you can pass them all over the place. :-)",
+      "parentUuid": "d31e3e66_7adac73b",
+      "range": {
+        "startLine": 215,
+        "startChar": 11,
+        "endLine": 223,
+        "endChar": 3
+      },
+      "revId": "a5087cbef1f65990bd9f136f84e0c5b81af180a3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f5dfafb1_642ba35f",
         "filename": "src/chromiumos/tast/local/chrome/chrome.go",
         "patchSetId": 1
@@ -118,6 +142,30 @@
     },
     {
       "key": {
+        "uuid": "c6c3e28b_dcb07229",
+        "filename": "src/chromiumos/tast/local/chrome/extensions.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-09-12T23:12:16Z",
+      "side": 1,
+      "message": "the explanation (from components/crx_file/id_util.cc in chrome):\n\n// Converts a normal hexadecimal string into the alphabet used by extensions.\n// We use the characters \u0027a\u0027-\u0027p\u0027 instead of \u00270\u0027-\u0027f\u0027 to avoid ever having a\n// completely numeric host, since some software interprets that as an IP\n// address.\n\ni don\u0027t know why a numeric id would matter, since i think these are always referenced via a custom chrome-extension:// scheme, but maybe that wasn\u0027t always the case. https://crrev.com/126074 is where this came from.\n\nthe one thing that i *really* want to know is where the term \"mp-decimal\" to describe this format comes from (catapult/telemetry uses it too, in telemetry/internal/backends/chrome/crx_id.py: \"Convert bytes to an MPDecimal string\"). i\u0027ve poked around http://www.bytereef.org/mpdecimal/ and can\u0027t find any reference to this.",
+      "parentUuid": "cdd28691_68c67a04",
+      "range": {
+        "startLine": 71,
+        "startChar": 15,
+        "endLine": 71,
+        "endChar": 22
+      },
+      "revId": "a5087cbef1f65990bd9f136f84e0c5b81af180a3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a4757b6a_0ae25ab8",
         "filename": "src/chromiumos/tast/local/chrome/extensions.go",
         "patchSetId": 1
@@ -147,6 +195,24 @@
       "side": 1,
       "message": "Well that\u0027s a bit horrifying. Perhaps it\u0027s a public key that should be used to identify the package signature?",
       "parentUuid": "a4757b6a_0ae25ab8",
+      "revId": "a5087cbef1f65990bd9f136f84e0c5b81af180a3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cc280f07_bd47934f",
+        "filename": "src/chromiumos/tast/local/chrome/extensions.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-09-12T23:12:16Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "7a2b50bb_b24faf50",
       "revId": "a5087cbef1f65990bd9f136f84e0c5b81af180a3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false

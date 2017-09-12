@@ -9,6 +9,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -22,7 +25,8 @@ import (
 )
 
 const (
-	debuggingPort = 9222 // Chrome debugging port
+	chromeUser    = "chronos" // Chrome Unix username
+	debuggingPort = 9222      // Chrome debugging port
 
 	defaultUser   = "testuser@gmail.com"
 	defaultPass   = "testpass"
@@ -57,6 +61,10 @@ type Chrome struct {
 	devt               *devtool.DevTools
 	user, pass, gaiaID string // login credentials
 	keepCryptohome     bool
+
+	extsDir         string // contains subdirs with unpacked extensions
+	autotestExtId   string // ID for extension exposing autotestPrivate API
+	autotestExtConn *Conn  // connection to extension exposing autotestPrivate API
 }
 
 // New restarts the ui job, tells Chrome to enable testing, and logs in.
@@ -72,6 +80,17 @@ func New(ctx context.Context, opts ...option) (*Chrome, error) {
 		opt(c)
 	}
 
+	// Clean up the partially-initialized object on error.
+	toClose := c
+	defer func() {
+		if toClose != nil {
+			toClose.Close(ctx)
+		}
+	}()
+
+	if err := c.writeExtensions(); err != nil {
+		return nil, err
+	}
 	if _, err := c.restartChromeForTesting(ctx); err != nil {
 		return nil, err
 	}
@@ -81,9 +100,10 @@ func New(ctx context.Context, opts ...option) (*Chrome, error) {
 		}
 	}
 	if err := c.logIn(ctx); err != nil {
-		c.Close(ctx)
 		return nil, err
 	}
+
+	toClose = nil
 	return c, nil
 }
 
@@ -92,7 +112,30 @@ func (c *Chrome) Close(ctx context.Context) error {
 	// We're leaving the system in a logged-in state, but at the same time,
 	// restartChromeForTesting restarts the job too, and we can shave a few
 	// seconds off each UI test by not doing it again here... ¯\_(ツ)_/¯
+	if c.autotestExtConn != nil {
+		c.autotestExtConn.Close()
+	}
+	if len(c.extsDir) > 0 {
+		os.RemoveAll(c.extsDir)
+	}
 	return nil
+}
+
+// writeExtensions creates a temporary directory and writes standard extensions needed by
+// tests to it.
+func (c *Chrome) writeExtensions() error {
+	var err error
+	if c.extsDir, err = ioutil.TempDir("", "tast_chrome_extensions."); err != nil {
+		return err
+	}
+	if c.autotestExtId, err = writeAutotestPrivateExtension(
+		filepath.Join(c.extsDir, "autotest_private_ext")); err != nil {
+		return err
+	}
+	// Chrome hangs with a nonsensical "Extension error: Failed to load extension
+	// from: . Manifest file is missing or unreadable." error if an extension directory
+	// is owned by another user.
+	return chownContents(c.extsDir, chromeUser)
 }
 
 // restartChromeForTesting restarts the ui job, asks session_manager to enable Chrome testing,
@@ -113,6 +156,11 @@ func (c *Chrome) restartChromeForTesting(ctx context.Context) (testPath string, 
 		return "", fmt.Errorf("failed to wait for %s: %v", dbusutil.SessionManagerName, err)
 	}
 
+	extDirs, err := getExtensionDirs(c.extsDir)
+	if err != nil {
+		return "", err
+	}
+
 	testing.ContextLog(ctx, "Asking session_manager to enable Chrome testing")
 	obj := bus.Object(dbusutil.SessionManagerName, dbusutil.SessionManagerPath)
 	method := fmt.Sprintf("%s.%s", dbusutil.SessionManagerInterface, "EnableChromeTesting")
@@ -122,6 +170,9 @@ func (c *Chrome) restartChromeForTesting(ctx context.Context) (testPath string, 
 		"--ash-disable-system-sounds", // Disable system startup sound.
 		"--oobe-skip-postlogin",       // Skip post-login screens.
 		"--disable-gaia-services",     // TODO(derat): Reconsider this if/when supporting GAIA login.
+	}
+	if len(extDirs) > 0 {
+		args = append(args, "--load-extension="+strings.Join(extDirs, ","))
 	}
 	if err = obj.Call(method, 0, true, args).Store(&testPath); err != nil {
 		return "", err
@@ -152,6 +203,34 @@ func (c *Chrome) NewConn(ctx context.Context, url string) (*Conn, error) {
 	return newConn(ctx, t.WebSocketDebuggerURL)
 }
 
+// AutotestConn returns a shared connection to the autotestPrivate extension's
+// background page. The connection is lazily created, and this function will
+// block until the extension is loaded or ctx's deadline is reached.
+func (c *Chrome) AutotestConn(ctx context.Context) (*Conn, error) {
+	if c.autotestExtConn != nil {
+		return c.autotestExtConn, nil
+	}
+
+	extUrl := "chrome-extension://" + c.autotestExtId + "/_generated_background_page.html"
+	var target *devtool.Target
+	f := func() bool {
+		ts, err := c.getDevtoolTargets(ctx, func(t *devtool.Target) bool {
+			return t.URL == extUrl
+		})
+		if err == nil && len(ts) > 0 {
+			target = ts[0]
+		}
+		return target != nil
+	}
+	if err := poll(ctx, f); err != nil {
+		return nil, fmt.Errorf("didn't get target: %v", err)
+	}
+
+	var err error
+	c.autotestExtConn, err = newConn(ctx, target.WebSocketDebuggerURL)
+	return c.autotestExtConn, err
+}
+
 // getDevtoolTargets returns all DevTools targets matched by f.
 func (c *Chrome) getDevtoolTargets(ctx context.Context, f func(*devtool.Target) bool) ([]*devtool.Target, error) {
 	all, err := c.devt.List(ctx)
@@ -170,7 +249,7 @@ func (c *Chrome) getDevtoolTargets(ctx context.Context, f func(*devtool.Target) 
 
 // getFirstOOBETarget returns the first OOBE-related DevTools target that it finds.
 // nil is returned if no target is found.
-func (c Chrome) getFirstOOBETarget(ctx context.Context) (*devtool.Target, error) {
+func (c *Chrome) getFirstOOBETarget(ctx context.Context) (*devtool.Target, error) {
 	targets, err := c.getDevtoolTargets(ctx, func(t *devtool.Target) bool {
 		return strings.HasPrefix(t.URL, "chrome://oobe")
 	})
@@ -196,7 +275,6 @@ func (c *Chrome) logIn(ctx context.Context) error {
 		return fmt.Errorf("OOBE target not found: %v", err)
 	}
 
-	testing.ContextLogf(ctx, "Connecting to %s", target.WebSocketDebuggerURL)
 	conn, err := newConn(ctx, target.WebSocketDebuggerURL)
 	if err != nil {
 		return err

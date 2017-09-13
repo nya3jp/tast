@@ -54,7 +54,7 @@ func Local(ctx context.Context, cfg *Config) subcommands.ExitStatus {
 		start := time.Now()
 		src := cfg.BuildCfg.OutPath(localTestsFile)
 		cfg.Logger.Debugf("Building %s from %s to %s", localTestsPackage, cfg.BuildCfg.TestWorkspace, src)
-		if out, err := build.BuildTests(ctx, &cfg.BuildCfg, localTestsPackage, src); err != nil {
+		if out, err := build.BuildTests(ctx, cfg.BuildCfg, localTestsPackage, src); err != nil {
 			cfg.Logger.Logf("Failed building tests: %v\n\n%s", err, out)
 			return subcommands.ExitFailure
 		}

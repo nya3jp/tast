@@ -102,6 +102,7 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 	r.cfg.Target = f.Args()[0]
 	r.cfg.Patterns = f.Args()[1:]
 	r.cfg.Logger = lg
+	r.cfg.BuildCfg.Logger = lg
 
 	if r.cfg.KeyFile == "" {
 		r.cfg.KeyFile = filepath.Join(getTrunkDir(), defaultKeyPath)

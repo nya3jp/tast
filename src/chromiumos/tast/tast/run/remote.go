@@ -38,7 +38,7 @@ func Remote(ctx context.Context, cfg *Config) subcommands.ExitStatus {
 		cfg.Logger.Status("Building tests")
 		start := time.Now()
 		cfg.Logger.Debugf("Building %s from %s to %s", remoteTestsPackage, cfg.BuildCfg.TestWorkspace, bin)
-		if out, err := build.BuildTests(ctx, &cfg.BuildCfg, remoteTestsPackage, bin); err != nil {
+		if out, err := build.BuildTests(ctx, cfg.BuildCfg, remoteTestsPackage, bin); err != nil {
 			cfg.Logger.Logf("Failed building tests: %v\n\n%s", err, out)
 			return subcommands.ExitFailure
 		}

@@ -7,6 +7,8 @@ package build
 import (
 	"flag"
 	"path/filepath"
+
+	"chromiumos/tast/tast/logging"
 )
 
 const (
@@ -16,9 +18,16 @@ const (
 
 // Config describes a configuration for building a test executable.
 type Config struct {
+	// Logger is used to write informational messages.
+	Logger logging.Logger
 	// TestWorkspace is the path to the Go workspace where test source code is stored (i.e.
 	// containing a top-level directory named "src").
 	TestWorkspace string
+	// SysGopath is the path to the Go workspace containing source for test executables' emerged
+	// dependencies. This is typically /usr/lib/gopath (for the host) or
+	// /build/<board>/usr/lib/gopath (for a compiled board). If empty, the directory that appears
+	// to have the most-recently-updated source is used.
+	SysGopath string
 	// Arch is the architecture to build for (as a machine name or processor given by "uname -m").
 	Arch string
 	// OutDir is the path to a directory where compiled code is stored (after appending arch).
@@ -35,6 +44,8 @@ func (c *Config) OutPath(fn string) string {
 func (c *Config) SetFlags(f *flag.FlagSet, trunkDir string) {
 	f.StringVar(&c.Arch, "arch", "", "target architecture (per \"uname -m\")")
 	f.StringVar(&c.OutDir, "outdir", defaultBuildOutDir, "directory storing build artifacts")
+	f.StringVar(&c.SysGopath, "sysgopath", "",
+		"Go workspace containing system package source code (guessed if empty)")
 	f.StringVar(&c.TestWorkspace, "testdir", filepath.Join(trunkDir, defaultTestDir),
 		"Go workspace containing test source code")
 }

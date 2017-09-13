@@ -12,6 +12,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"testing"
+
+	"chromiumos/tast/tast/logging"
 )
 
 func TestBuildTests(t *testing.T) {
@@ -21,8 +23,10 @@ func TestBuildTests(t *testing.T) {
 	}
 	defer os.RemoveAll(tempDir)
 
-	cfg := &Config{
+	cfg := Config{
+		Logger:        logging.NewSimple(ioutil.Discard, 0, false),
 		TestWorkspace: tempDir,
+		SysGopath:     filepath.Join(tempDir, "sys"),
 		OutDir:        filepath.Join(tempDir, "out"),
 	}
 	if cfg.Arch, err = GetLocalArch(); err != nil {

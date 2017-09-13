@@ -19,10 +19,18 @@ type Config struct {
 	// TestWorkspace is the path to the Go workspace where test source code is stored (i.e.
 	// containing a top-level directory named "src").
 	TestWorkspace string
+	// SysGopath is the path to the Go workspace containing source for test executables'
+	// emerged dependencies. This is typically /usr/lib/gopath.
+	SysGopath string
 	// Arch is the architecture to build for (as a machine name or processor given by "uname -m").
 	Arch string
 	// OutDir is the path to a directory where compiled code is stored (after appending arch).
 	OutDir string
+	// PortagePkg is the Portage package that contains the test executable (when tests are
+	// included in a system image rather than being compiled by the tast command).
+	// If non-empty, BuildTests checks that the package's direct dependencies are installed
+	// in the host sysroot before building tests.
+	PortagePkg string
 }
 
 // OutPath returns the path to a file named fn within cfg's architecture-specific output dir.
@@ -35,6 +43,8 @@ func (c *Config) OutPath(fn string) string {
 func (c *Config) SetFlags(f *flag.FlagSet, trunkDir string) {
 	f.StringVar(&c.Arch, "arch", "", "target architecture (per \"uname -m\")")
 	f.StringVar(&c.OutDir, "outdir", defaultBuildOutDir, "directory storing build artifacts")
+	f.StringVar(&c.SysGopath, "sysgopath", "/usr/lib/gopath",
+		"Go workspace containing system package source code (if empty, chosen automatically)")
 	f.StringVar(&c.TestWorkspace, "testdir", filepath.Join(trunkDir, defaultTestDir),
 		"Go workspace containing test source code")
 }

@@ -6,6 +6,7 @@
 package build
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"os/exec"
@@ -13,10 +14,6 @@ import (
 	"strings"
 
 	"chromiumos/tast/tast/timing"
-)
-
-const (
-	sysGopath = "/usr/lib/gopath" // readonly Go workspace where source for system packages are stored
 )
 
 // GetLocalArch returns the local system's architecture as described by "uname -m".
@@ -51,11 +48,27 @@ func BuildTests(ctx context.Context, cfg *Config, pkg, path string) (out []byte,
 		return out, fmt.Errorf("unknown arch %q", cfg.Arch)
 	}
 
+	if cfg.PortagePkg != "" {
+		if missing, err := checkDeps(ctx, cfg.PortagePkg); err != nil {
+			return out, fmt.Errorf("failed checking deps for %s: %v", cfg.PortagePkg, err)
+		} else if len(missing) > 0 {
+			b := bytes.NewBufferString("To install missing dependencies, run:\n\n  sudo emerge -j 16 \\\n")
+			for i, dep := range missing {
+				suffix := ""
+				if i < len(missing)-1 {
+					suffix = " \\"
+				}
+				fmt.Fprintf(b, "    =%s%s\n", dep, suffix)
+			}
+			return b.Bytes(), fmt.Errorf("%s has missing dependencies", cfg.PortagePkg)
+		}
+	}
+
 	pkgDir := filepath.Join(cfg.OutDir, cfg.Arch)
 	cmd := exec.Command(comp, "build", "-i", "-ldflags=-s -w", "-pkgdir", pkgDir, "-o", path, pkg)
 	cmd.Env = []string{
 		"PATH=/usr/bin",
-		"GOPATH=" + strings.Join([]string{cfg.TestWorkspace, sysGopath}, ":"),
+		"GOPATH=" + strings.Join([]string{cfg.TestWorkspace, cfg.SysGopath}, ":"),
 	}
 	if out, err = cmd.CombinedOutput(); err != nil {
 		return out, err

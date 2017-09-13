@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bf864fb4_6f21e8d9",
+        "filename": "src/chromiumos/tast/tast/build/build.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-09-13T20:01:59Z",
+      "side": 1,
+      "message": "I really, really don\u0027t like this. There\u0027s so much automagicalness here. As an alternative, what if this magicalness didn\u0027t exist and instead either /usr/lib/gopath or -sysgopath were mandatory AND tast-${BOARD} were added to /usr/local/bin/task-${BOARD} as a part of setup_board/build_packages --${BOARD}? For an example of how this would work, check out the source of any emerge-${BOARD} script in /usr/local/bin. It\u0027s a very simple wrapper that sets the right board expectations and makes it clear which build root you\u0027re working with by the name of the command invoked.\n\nTrying to avoid hours of frustrating debugging by someone who doesn\u0027t understand what\u0027s going on.",
+      "range": {
+        "startLine": 70,
+        "startChar": 1,
+        "endLine": 78,
+        "endChar": 20
+      },
+      "revId": "1fa17e6b51404dcc80d95f9b233e50340f46357a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

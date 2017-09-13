@@ -22,6 +22,30 @@
       "revId": "1fa17e6b51404dcc80d95f9b233e50340f46357a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "00ff5aa7_25e12664",
+        "filename": "src/chromiumos/tast/tast/build/build.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-09-13T22:37:34Z",
+      "side": 1,
+      "message": "i\u0027m resolutely anti-magic and supportive of pretty much anything that lets me avoid it. :-)\n\nwith that said, i\u0027m not sure how i feel about -${BOARD} symlinks. i don\u0027t like needing to set up new boards to run tests, particularly since the only actual requirement is some source code that\u0027s going to be exactly the same for any board. yes, -sysgopath can be passed to avoid that, but that\u0027ll be one more thing that people need to remember.\n\nas an aside, it\u0027s incredibly frustrating that emerging dev-go/dbus for a board takes 15 seconds, when all it\u0027s doing is checking out a few dozen source files under /usr/lib/go.\n\ni\u0027ll probably start a thread with rahul to see if he has any other ideas. this would all be so much easier if the go dependencies that the tests use were present under src/third_party.",
+      "parentUuid": "bf864fb4_6f21e8d9",
+      "range": {
+        "startLine": 70,
+        "startChar": 1,
+        "endLine": 78,
+        "endChar": 20
+      },
+      "revId": "1fa17e6b51404dcc80d95f9b233e50340f46357a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

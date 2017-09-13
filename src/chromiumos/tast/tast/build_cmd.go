@@ -38,12 +38,18 @@ func (b *buildCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{
 		fmt.Fprintf(os.Stderr, b.Usage())
 		return subcommands.ExitUsageError
 	}
+
 	if b.cfg.Arch == "" {
 		var err error
 		if b.cfg.Arch, err = build.GetLocalArch(); err != nil {
-			lg.Logf("Failed to get local arch: %v\n", err)
+			lg.Log("Failed to get local arch: ", err)
 			return subcommands.ExitFailure
 		}
+	}
+
+	if b.cfg.SysGopath == "" {
+		b.cfg.SysGopath = "/usr/lib/gopath"
+		lg.Logf("Defaulting to system GOPATH %v; use -sysgopath to override", b.cfg.SysGopath)
 	}
 	if out, err := build.BuildTests(ctx, &b.cfg, f.Args()[0], f.Args()[1]); err != nil {
 		lg.Logf("Failed building tests: %v\n%s", err, string(out))

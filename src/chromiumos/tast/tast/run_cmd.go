@@ -14,6 +14,7 @@ import (
 	"strings"
 	"time"
 
+	"chromiumos/tast/tast/build"
 	"chromiumos/tast/tast/run"
 	"chromiumos/tast/tast/timing"
 
@@ -111,8 +112,20 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 	lg.Log("Writing results to ", r.cfg.ResDir)
 	switch r.testType {
 	case localType:
+		if r.cfg.Build && r.cfg.BuildCfg.SysGopath == "" {
+			pat := "/build/*/usr/lib/gopath"
+			if r.cfg.BuildCfg.SysGopath, err = build.FreshestSysGopath(pat); err != nil {
+				lg.Logf("Failed to find system packages' source in %q; try emerging "+
+					"tast-local-tests for an arbitrary board first: %v", pat, err)
+				return subcommands.ExitFailure
+			}
+			lg.Log("Using system GOPATH ", r.cfg.BuildCfg.SysGopath)
+		}
 		return run.Local(ctx, &r.cfg)
 	case remoteType:
+		if r.cfg.BuildCfg.SysGopath == "" {
+			r.cfg.BuildCfg.SysGopath = "/usr/lib/gopath"
+		}
 		return run.Remote(ctx, &r.cfg)
 	}
 	lg.Logf(fmt.Sprintf("Invalid test type %q\n\n%s", r.testType, r.Usage()))

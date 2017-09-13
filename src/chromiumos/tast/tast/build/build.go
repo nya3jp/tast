@@ -8,15 +8,17 @@ package build
 import (
 	"context"
 	"fmt"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"chromiumos/tast/tast/timing"
 )
 
 const (
-	sysGopath = "/usr/lib/gopath" // readonly Go workspace where source for system packages are stored
+	baseTastSrcDir = "src/chromiumos/tast" // dir in system GOPATH containing tast source
 )
 
 // GetLocalArch returns the local system's architecture as described by "uname -m".
@@ -39,6 +41,43 @@ var archToCompiler map[string]string = map[string]string{
 	"aarch64": "armv7a-cros-linux-gnueabi-go",
 }
 
+// latestModTime returns the latest modification time among files within dir.
+// Errors are ignored.
+func latestModTime(dir string) time.Time {
+	var latestTime time.Time
+	wf := func(p string, fi os.FileInfo, err error) error {
+		if err == nil && fi.ModTime().After(latestTime) {
+			latestTime = fi.ModTime()
+		}
+		return nil
+	}
+	filepath.Walk(dir, wf)
+	return latestTime
+}
+
+// FreshestSysGopath attempts to find the most-recently-updated Go workspace containing
+// source code for tests' dependencies among the directories matched by wildcard pattern.
+// Source code is checked out to usr/lib/gopath/ (relative to the root for the host system,
+// and relative to /build/<board> for other boards) when Portage packages are installed.
+func FreshestSysGopath(pattern string) (string, error) {
+	dirs, err := filepath.Glob(pattern)
+	if err != nil {
+		return "", err
+	} else if len(dirs) == 0 {
+		return "", fmt.Errorf("%q didn't match any directories", pattern)
+	}
+
+	var bestDir string
+	var bestTime time.Time
+	for _, dir := range dirs {
+		if t := latestModTime(filepath.Join(dir, baseTastSrcDir)); bestTime.IsZero() || t.After(bestTime) {
+			bestDir = dir
+			bestTime = t
+		}
+	}
+	return bestDir, nil
+}
+
 // BuildTests builds executable package pkg to path as dictated by cfg.
 func BuildTests(ctx context.Context, cfg *Config, pkg, path string) (out []byte, err error) {
 	if tl, ok := timing.FromContext(ctx); ok {
@@ -55,7 +94,7 @@ func BuildTests(ctx context.Context, cfg *Config, pkg, path string) (out []byte,
 	cmd := exec.Command(comp, "build", "-i", "-ldflags=-s -w", "-pkgdir", pkgDir, "-o", path, pkg)
 	cmd.Env = []string{
 		"PATH=/usr/bin",
-		"GOPATH=" + strings.Join([]string{cfg.TestWorkspace, sysGopath}, ":"),
+		"GOPATH=" + strings.Join([]string{cfg.TestWorkspace, cfg.SysGopath}, ":"),
 	}
 	if out, err = cmd.CombinedOutput(); err != nil {
 		return out, err

@@ -19,6 +19,10 @@ type Config struct {
 	// TestWorkspace is the path to the Go workspace where test source code is stored (i.e.
 	// containing a top-level directory named "src").
 	TestWorkspace string
+	// SysGopath is the path to the Go workspace containing source for test executables'
+	// emerged dependencies. This is typically /usr/lib/gopath (for remote tests) or
+	// /build/<board>/usr/lib/gopath (for local tests).
+	SysGopath string
 	// Arch is the architecture to build for (as a machine name or processor given by "uname -m").
 	Arch string
 	// OutDir is the path to a directory where compiled code is stored (after appending arch).
@@ -32,9 +36,12 @@ func (c *Config) OutPath(fn string) string {
 
 // SetFlags adds common build-related flags to f that store values in Config.
 // trunkDir is the path to the Chrome OS checkout (within the chroot).
+// sysGoPath is the default value for Config.SysGopath.
 func (c *Config) SetFlags(f *flag.FlagSet, trunkDir string) {
 	f.StringVar(&c.Arch, "arch", "", "target architecture (per \"uname -m\")")
 	f.StringVar(&c.OutDir, "outdir", defaultBuildOutDir, "directory storing build artifacts")
+	f.StringVar(&c.SysGopath, "sysgopath", "",
+		"Go workspace containing system package source code (if empty, chosen automatically)")
 	f.StringVar(&c.TestWorkspace, "testdir", filepath.Join(trunkDir, defaultTestDir),
 		"Go workspace containing test source code")
 }

@@ -12,6 +12,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"testing"
+
+	"chromiumos/tast/common/testutil"
 )
 
 func TestBuildTests(t *testing.T) {
@@ -21,21 +23,31 @@ func TestBuildTests(t *testing.T) {
 	}
 	defer os.RemoveAll(tempDir)
 
+	sysGopath := filepath.Join(tempDir, "gopath")
 	cfg := &Config{
 		TestWorkspace: tempDir,
+		SysGopath:     sysGopath,
 		OutDir:        filepath.Join(tempDir, "out"),
 	}
 	if cfg.Arch, err = GetLocalArch(); err != nil {
 		t.Fatal("Failed to get local arch: ", err)
 	}
 
-	srcDir := filepath.Join(tempDir, "src", "foo", "cmd")
-	if err = os.MkdirAll(srcDir, 0755); err != nil {
-		t.Fatal(err)
-	}
-	const exp = "success!"
-	code := fmt.Sprintf("package main\nfunc main() { print(\"%s\") }", exp)
-	if err := ioutil.WriteFile(filepath.Join(srcDir, "main.go"), []byte(code), 0644); err != nil {
+	// In order to test that the supplied system GOPATH is used, build a main
+	// package that prints a constant exported by a system package.
+	const (
+		pkgName   = "testpkg"  // system package's name (without chromiumos/tast prefix)
+		constName = "Msg"      // name of const exported by system package
+		constVal  = "success!" // value of const exported by system package
+	)
+	pkgCode := fmt.Sprintf("package %s\nconst %s = %q", pkgName, constName, constVal)
+	mainCode := fmt.Sprintf("package main\nimport %q\nfunc main() { print(%s.%s) }",
+		pkgName, pkgName, constName)
+
+	if err := testutil.WriteFiles(tempDir, map[string]string{
+		filepath.Join("src", pkgName, "lib.go"): pkgCode,
+		"src/foo/cmd/main.go":                   mainCode,
+	}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -46,7 +58,7 @@ func TestBuildTests(t *testing.T) {
 
 	if out, err := exec.Command(bin).CombinedOutput(); err != nil {
 		t.Errorf("Failed to run %s: %v", bin, err)
-	} else if string(out) != exp {
-		t.Errorf("%s printed %q; want %q", bin, string(out), exp)
+	} else if string(out) != constVal {
+		t.Errorf("%s printed %q; want %q", bin, string(out), constVal)
 	}
 }

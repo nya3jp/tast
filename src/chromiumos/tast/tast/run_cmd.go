@@ -33,8 +33,9 @@ const (
 
 // runCmd implements subcommands.Command to support running tests.
 type runCmd struct {
-	testType string     // type of tests to run (either "local" or "remote")
-	cfg      run.Config // shared config for running tests
+	testType  string     // type of tests to run (either "local" or "remote")
+	checkDeps bool       // true if test package's dependencies should be checked before building
+	cfg       run.Config // shared config for running tests
 }
 
 func (*runCmd) Name() string     { return "run" }
@@ -47,6 +48,7 @@ func (*runCmd) Usage() string {
 
 func (r *runCmd) SetFlags(f *flag.FlagSet) {
 	f.StringVar(&r.testType, "testtype", "local", "type of tests to run (either \"local\" or \"remote\")")
+	f.BoolVar(&r.checkDeps, "checkdeps", true, "checks test package's dependencies before building")
 	r.cfg.SetFlags(f)
 	r.cfg.BuildCfg.SetFlags(f, getTrunkDir())
 }
@@ -111,8 +113,14 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 	lg.Log("Writing results to ", r.cfg.ResDir)
 	switch r.testType {
 	case localType:
+		if r.cfg.Build && r.checkDeps {
+			r.cfg.BuildCfg.PortagePkg = "chromeos-base/tast-local-tests-9999"
+		}
 		return run.Local(ctx, &r.cfg)
 	case remoteType:
+		if r.cfg.Build && r.checkDeps {
+			r.cfg.BuildCfg.PortagePkg = "chromeos-base/tast-remote-tests-9999"
+		}
 		return run.Remote(ctx, &r.cfg)
 	}
 	lg.Logf(fmt.Sprintf("Invalid test type %q\n\n%s", r.testType, r.Usage()))

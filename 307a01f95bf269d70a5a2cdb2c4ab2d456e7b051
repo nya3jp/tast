@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "66780194_12bc566b",
+        "filename": "src/chromiumos/tast/tast/build/build.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-09-14T23:47:22Z",
+      "side": 1,
+      "message": "example output:\n\n  2017/09/14 16:42:32 Command line: /home/derat/go/bin/tast -verbose run -keyfile\u003d/home/derat/.ssh/cros_test -testtype\u003dremote 100.115.91.50\n  2017/09/14 16:42:32 Using SSH key /home/derat/.ssh/cros_test\n  2017/09/14 16:42:32 Writing results to /tmp/tast/results/20170914-164232\n  2017/09/14 16:42:32 Building chromiumos/tast/remote from /home/derat/trunk/src/platform/tast to /tmp/tast/build/x86_64/remote_tests\n  2017/09/14 16:42:32 Failed building tests: chromeos-base/tast-remote-tests-9999 has missing dependencies\n\n  To install missing dependencies, run:\n\n    sudo emerge -j 16 \\\n      \u003dchromeos-base/tast-common-0.0.1-r11",
+      "revId": "307a01f95bf269d70a5a2cdb2c4ab2d456e7b051",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

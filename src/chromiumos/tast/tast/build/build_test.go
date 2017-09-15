@@ -23,30 +23,42 @@ func TestBuildTests(t *testing.T) {
 	}
 	defer os.RemoveAll(tempDir)
 
-	sysGopath := filepath.Join(tempDir, "gopath")
+	const (
+		testDir   = "test"
+		commonDir = "common"
+		sysDir    = "sys"
+	)
+
 	cfg := &Config{
-		TestWorkspace: tempDir,
-		SysGopath:     sysGopath,
-		OutDir:        filepath.Join(tempDir, "out"),
+		TestWorkspace:   filepath.Join(tempDir, testDir),
+		CommonWorkspace: filepath.Join(tempDir, commonDir),
+		SysGopath:       filepath.Join(tempDir, sysDir),
+		OutDir:          filepath.Join(tempDir, "out"),
 	}
 	if cfg.Arch, err = GetLocalArch(); err != nil {
 		t.Fatal("Failed to get local arch: ", err)
 	}
 
-	// In order to test that the supplied system GOPATH is used, build a main
-	// package that prints a constant exported by a system package.
+	// In order to test that the supplied common and system GOPATHs are used, build a main
+	// package that prints constants exported by a common and system package.
 	const (
-		pkgName   = "testpkg"  // system package's name (without chromiumos/tast prefix)
-		constName = "Msg"      // name of const exported by system package
-		constVal  = "success!" // value of const exported by system package
+		commonPkgName   = "commonpkg" // common package's name
+		commonConstName = "Msg"       // name of const exported by common package
+		commonConstVal  = "foo"       // value of const exported by common package
+
+		sysPkgName   = "syspkg" // system package's name
+		sysConstName = "Msg"    // name of const exported by system package
+		sysConstVal  = "bar"    // value of const exported by system package
 	)
-	pkgCode := fmt.Sprintf("package %s\nconst %s = %q", pkgName, constName, constVal)
-	mainCode := fmt.Sprintf("package main\nimport %q\nfunc main() { print(%s.%s) }",
-		pkgName, pkgName, constName)
+	commonPkgCode := fmt.Sprintf("package %s\nconst %s = %q", commonPkgName, commonConstName, commonConstVal)
+	sysPkgCode := fmt.Sprintf("package %s\nconst %s = %q", sysPkgName, sysConstName, sysConstVal)
+	mainCode := fmt.Sprintf("package main\nimport %q\nimport %q\nfunc main() { print(%s.%s+%s.%s) }",
+		commonPkgName, sysPkgName, commonPkgName, commonConstName, sysPkgName, sysConstName)
 
 	if err := testutil.WriteFiles(tempDir, map[string]string{
-		filepath.Join("src", pkgName, "lib.go"): pkgCode,
-		"src/foo/cmd/main.go":                   mainCode,
+		filepath.Join(commonDir, "src", commonPkgName, "lib.go"): commonPkgCode,
+		filepath.Join(sysDir, "src", sysPkgName, "lib.go"):       sysPkgCode,
+		filepath.Join(testDir, "src/foo/cmd/main.go"):            mainCode,
 	}); err != nil {
 		t.Fatal(err)
 	}
@@ -56,9 +68,10 @@ func TestBuildTests(t *testing.T) {
 		t.Fatalf("Failed to build: %v: %s", err, string(out))
 	}
 
+	exp := commonConstVal + sysConstVal
 	if out, err := exec.Command(bin).CombinedOutput(); err != nil {
 		t.Errorf("Failed to run %s: %v", bin, err)
-	} else if string(out) != constVal {
-		t.Errorf("%s printed %q; want %q", bin, string(out), constVal)
+	} else if string(out) != exp {
+		t.Errorf("%s printed %q; want %q", bin, string(out), exp)
 	}
 }

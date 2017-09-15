@@ -68,7 +68,7 @@ func BuildTests(ctx context.Context, cfg *Config, pkg, path string) (out []byte,
 	cmd := exec.Command(comp, "build", "-i", "-ldflags=-s -w", "-pkgdir", pkgDir, "-o", path, pkg)
 	cmd.Env = []string{
 		"PATH=/usr/bin",
-		"GOPATH=" + strings.Join([]string{cfg.TestWorkspace, cfg.SysGopath}, ":"),
+		"GOPATH=" + strings.Join([]string{cfg.TestWorkspace, cfg.CommonWorkspace, cfg.SysGopath}, ":"),
 	}
 	if out, err = cmd.CombinedOutput(); err != nil {
 		return out, err

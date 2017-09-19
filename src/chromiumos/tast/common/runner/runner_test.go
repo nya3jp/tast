@@ -146,7 +146,6 @@ func TestRunTests(t *gotesting.T) {
 		SetupFunc:     func() error { numSetupCalls++; return nil },
 		BaseOutDir:    tmpDir,
 		DataDir:       tmpDir,
-		Arch:          "x86_64",
 	}
 
 	numFailed, err := RunTests(cfg)

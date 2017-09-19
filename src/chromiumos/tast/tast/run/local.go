@@ -41,7 +41,7 @@ func Local(ctx context.Context, cfg *Config) subcommands.ExitStatus {
 	}
 	defer hst.Close(ctx)
 
-	if cfg.BuildCfg.Arch == "" {
+	if cfg.Build && cfg.BuildCfg.Arch == "" {
 		if cfg.BuildCfg.Arch, err = getHostArch(ctx, hst); err != nil {
 			cfg.Logger.Logf("Failed to get arch for %s: %v", cfg.Target, err)
 			return subcommands.ExitFailure
@@ -165,8 +165,7 @@ func getDataFilePaths(ctx context.Context, hst *host.SSH, bin string, cfg *Confi
 		defer st.End()
 	}
 
-	args := []string{"-listdata", "-arch", cfg.BuildCfg.Arch}
-	cmd := getLocalTestCommand(bin, args, cfg.Patterns)
+	cmd := getLocalTestCommand(bin, []string{"-listdata"}, cfg.Patterns)
 
 	handle, err := hst.Start(ctx, cmd, host.CloseStdin, host.StdoutAndStderr)
 	if err != nil {
@@ -214,7 +213,7 @@ func runLocalTestBinary(ctx context.Context, hst *host.SSH, bin string, cfg *Con
 		ps += " " + host.QuoteShellArg(p)
 	}
 	cmd := getLocalTestCommand(bin,
-		[]string{"-report", "-arch=" + cfg.BuildCfg.Arch, "-datadir=" + defaultDataDir}, cfg.Patterns)
+		[]string{"-report", "-datadir=" + defaultDataDir}, cfg.Patterns)
 	cfg.Logger.Logf("Starting %q on remote host", cmd)
 	handle, err := hst.Start(ctx, cmd, host.CloseStdin, host.StdoutAndStderr)
 	if err != nil {

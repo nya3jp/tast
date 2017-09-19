@@ -41,7 +41,6 @@ type Output struct {
 // while a test is running.
 type State struct {
 	ch      chan Output        // channel to which logging messages and errors are written
-	arch    string             // string used for replacing "{arch}" in data paths
 	dataDir string             // directory in which the test's data files will be located
 	outDir  string             // directory to which the test should write output files
 	ctx     context.Context    // context for the test run
@@ -49,10 +48,9 @@ type State struct {
 }
 
 // NewState returns a new State object. The test's output will be streamed to ch.
-func NewState(ctx context.Context, ch chan Output, arch, dataDir, outDir string, timeout time.Duration) *State {
+func NewState(ctx context.Context, ch chan Output, dataDir, outDir string, timeout time.Duration) *State {
 	s := &State{
 		ch:      ch,
-		arch:    arch,
 		dataDir: dataDir,
 		outDir:  outDir,
 	}
@@ -73,7 +71,6 @@ func (s *State) Context() context.Context { return s.ctx }
 // DataPath returns the absolute path to use to access a data file previously
 // registered via Test.Data.
 func (s *State) DataPath(p string) string {
-	p = TestDataPathForArch(p, s.arch)
 	fp := filepath.Clean(filepath.Join(s.dataDir, p))
 	if !strings.HasPrefix(fp, s.dataDir+"/") {
 		s.Fatalf("Invalid data path %q (expected relative path without ..)", p)

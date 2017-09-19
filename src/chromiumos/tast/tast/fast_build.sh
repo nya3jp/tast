@@ -13,8 +13,11 @@ readonly GOHOME="${HOME}/go"
 # Directory where compiled packages are cached.
 readonly PKGDIR="${GOHOME}/pkg"
 
-# Go workspace containing the Tast source.
-readonly SRCDIR="${HOME}/trunk/src/platform/tast"
+# Go workspaces containing the Tast source.
+readonly SRCDIRS=(
+  "${HOME}/trunk/src/platform/tast"
+  "${HOME}/trunk/src/platform/tast-tests"
+)
 
 # Package to build to produce tast executable.
 readonly TAST_PKG="chromiumos/tast/tast"
@@ -25,7 +28,7 @@ readonly TAST_OUT="${GOHOME}/bin/tast"
 # Readonly Go workspaces containing source to build. Note that the packages
 # installed to /usr/lib/gopath (dev-go/crypto, dev-go/subcommand, etc.) need to
 # be emerged beforehand.
-export GOPATH="${SRCDIR}:/usr/lib/gopath"
+export GOPATH="$(IFS=:; echo "${SRCDIRS[*]}"):/usr/lib/gopath"
 
 readonly CMD=$(basename "${0}")
 
@@ -47,14 +50,20 @@ EOF
 
 # Prints all checkable packages.
 get_check_pkgs() {
-  (cd "${SRCDIR}/src"
-   find -name '*.go' | xargs dirname | sort | uniq | cut -b 3-)
+  local dir
+  for dir in "${SRCDIRS[@]}"; do
+    (cd "${dir}/src"
+     find -name '*.go' | xargs dirname | sort | uniq | cut -b 3-)
+  done
 }
 
 # Prints all testable packages.
 get_test_pkgs() {
-  (cd "${SRCDIR}/src"
-   find -name '*_test.go' | xargs dirname | sort | uniq | cut -b 3-)
+  local dir
+  for dir in "${SRCDIRS[@]}"; do
+    (cd "${dir}/src"
+     find -name '*_test.go' | xargs dirname | sort | uniq | cut -b 3-)
+  done
 }
 
 # Builds an executable package to a destination path.

@@ -34,8 +34,7 @@ type Test struct {
 	// Attributes describing the test.
 	Attr []string
 	// Paths of data files needed by the test, relative to a "data" subdirectory within the
-	// directory in which TestFunc is located. Any occurrences of the substring "{arch}"
-	// will be replaced by the DUT's architecture, e.g. "i686", "x86_64", "armv7l", or "aarch64".
+	// directory in which TestFunc is located.
 	Data []string
 
 	// Package in which Func is located.
@@ -84,12 +83,6 @@ func (tst *Test) Run(s *State) {
 
 func (tst *Test) String() string {
 	return tst.Name
-}
-
-// TestDataPathForArch replaces occurrences of "{arch}" with arch in p,
-// a path from Test.Data.
-func TestDataPathForArch(p, arch string) string {
-	return strings.Replace(p, "{arch}", arch, -1)
 }
 
 // populateNameAndPkg fills Name (if empty) and pkg (unconditionally).

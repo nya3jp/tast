@@ -72,7 +72,7 @@ func TestRejectUnexportedTestFunction(t *gotesting.T) {
 
 func TestSuccess(t *gotesting.T) {
 	test := Test{Func: func(*State) {}}
-	s := NewState(context.Background(), make(chan Output, 1), "", "", "", time.Minute)
+	s := NewState(context.Background(), make(chan Output, 1), "", "", time.Minute)
 	go runTestAndCloseChan(&test, s)
 	if errs := getOutputErrors(readOutput(s.ch)); len(errs) != 0 {
 		t.Errorf("Got unexpected error(s) for test: %v", errs)
@@ -81,7 +81,7 @@ func TestSuccess(t *gotesting.T) {
 
 func TestPanic(t *gotesting.T) {
 	test := Test{Func: func(*State) { panic("intentional panic") }}
-	s := NewState(context.Background(), make(chan Output, 1), "", "", "", time.Minute)
+	s := NewState(context.Background(), make(chan Output, 1), "", "", time.Minute)
 	go runTestAndCloseChan(&test, s)
 	if errs := getOutputErrors(readOutput(s.ch)); len(errs) != 1 {
 		t.Errorf("Got %v errors for panicking test; want 1", errs)
@@ -90,7 +90,7 @@ func TestPanic(t *gotesting.T) {
 
 func TestTimeout(t *gotesting.T) {
 	test := Test{Func: func(*State) { time.Sleep(10 * time.Millisecond) }}
-	s := NewState(context.Background(), make(chan Output, 1), "", "", "", time.Millisecond)
+	s := NewState(context.Background(), make(chan Output, 1), "", "", time.Millisecond)
 	go runTestAndCloseChan(&test, s)
 	if errs := getOutputErrors(readOutput(s.ch)); len(errs) != 1 {
 		t.Errorf("Got %v errors for slow test; want 1", errs)
@@ -105,7 +105,7 @@ func TestCleanUpAfterTimeout(t *gotesting.T) {
 		time.Sleep(10 * time.Millisecond)
 		cleanedUp = true
 	}}
-	s := NewState(context.Background(), make(chan Output, 1), "", "", "", time.Millisecond)
+	s := NewState(context.Background(), make(chan Output, 1), "", "", time.Millisecond)
 	go runTestAndCloseChan(&test, s)
 	if errs := getOutputErrors(readOutput(s.ch)); len(errs) != 1 {
 		t.Errorf("Got %v errors for slow test; want 1", errs)

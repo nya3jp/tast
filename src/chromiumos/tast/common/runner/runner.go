@@ -131,8 +131,6 @@ type RunConfig struct {
 	BaseOutDir string
 	// DataDir contains the base directory under which test data files are located.
 	DataDir string
-	// Arch contains the machine architecture.
-	Arch string
 	// TestTimeout describes the maximum time allotted to each test.
 	TestTimeout time.Duration
 }
@@ -157,7 +155,7 @@ func RunTests(cfg RunConfig) (numFailed int, err error) {
 			cfg.SetupFunc()
 		}
 		ch := make(chan testing.Output)
-		s := testing.NewState(cfg.Ctx, ch, cfg.Arch, filepath.Join(cfg.DataDir, test.DataDir()), outDir, cfg.TestTimeout)
+		s := testing.NewState(cfg.Ctx, ch, filepath.Join(cfg.DataDir, test.DataDir()), outDir, cfg.TestTimeout)
 
 		done := make(chan bool, 1)
 		go func() {

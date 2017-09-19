@@ -25,7 +25,7 @@ const (
 
 // Remote runs remote tests as directed by cfg.
 func Remote(ctx context.Context, cfg *Config) subcommands.ExitStatus {
-	if cfg.BuildCfg.Arch == "" {
+	if cfg.Build && cfg.BuildCfg.Arch == "" {
 		var err error
 		if cfg.BuildCfg.Arch, err = build.GetLocalArch(); err != nil {
 			cfg.Logger.Log("Failed to get local arch: ", err)

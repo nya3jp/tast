@@ -12,7 +12,7 @@ import (
 	"strings"
 	"syscall"
 
-	"chromiumos/tast/tast/timing"
+	"chromiumos/tast/cmd/timing"
 )
 
 var equeryDepsRegexp *regexp.Regexp

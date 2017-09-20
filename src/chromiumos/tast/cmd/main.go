@@ -14,7 +14,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"chromiumos/tast/tast/logging"
+	"chromiumos/tast/cmd/logging"
 
 	"github.com/google/subcommands"
 

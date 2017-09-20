@@ -14,8 +14,8 @@ import (
 	"strings"
 	"time"
 
-	"chromiumos/tast/tast/run"
-	"chromiumos/tast/tast/timing"
+	"chromiumos/tast/cmd/run"
+	"chromiumos/tast/cmd/timing"
 
 	"github.com/google/subcommands"
 )

@@ -20,7 +20,7 @@ readonly SRCDIRS=(
 )
 
 # Package to build to produce tast executable.
-readonly TAST_PKG="chromiumos/tast/tast"
+readonly TAST_PKG="chromiumos/tast/cmd"
 
 # Output filename for tast executable.
 readonly TAST_OUT="${GOHOME}/bin/tast"
@@ -75,7 +75,7 @@ run_build() {
 
 # Checks a package.
 run_vet() {
-  go vet -pkgdir "${PKGDIR}" "${1}"
+  go vet "${1}"
 }
 
 # Tests a package.

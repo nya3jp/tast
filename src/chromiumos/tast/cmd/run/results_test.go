@@ -14,10 +14,10 @@ import (
 	gotesting "testing"
 	"time"
 
+	"chromiumos/tast/cmd/logging"
 	"chromiumos/tast/common/control"
 	"chromiumos/tast/common/testing"
 	"chromiumos/tast/common/testutil"
-	"chromiumos/tast/tast/logging"
 )
 
 func TestReadTestOutput(t *gotesting.T) {

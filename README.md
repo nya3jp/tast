@@ -14,12 +14,12 @@ This repository is organized in accordance with the [Go in Chromium OS]
 suggestions.
 
 *   [`src/chromiumos/tast/`](src/chromiumos/tast/)
+    *   [`cmd/`](src/chromiumos/tast/cmd/) - `main` package for the `tast`
+        executable used to build and run tests.
+        *   `...` - Packages used only by the `tast` executable.
     *   [`common/`](src/chromiumos/tast/common/) - Packages shared between some
         combination of `tast/` and `local/` and `remote/` from the [tast-tests]
         repository.
-    *   [`tast/`](src/chromiumos/tast/tast) - `main` package for the `tast`
-        executable used to build and run tests.
-        *   `...` - Packages used only by the `tast` executable.
 
 Tests are located in the [tast-tests] repository.
 

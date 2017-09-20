@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"os"
 
-	"chromiumos/tast/tast/build"
+	"chromiumos/tast/cmd/build"
 
 	"github.com/google/subcommands"
 )

@@ -13,9 +13,9 @@ import (
 	"strings"
 	"time"
 
+	"chromiumos/tast/cmd/build"
+	"chromiumos/tast/cmd/timing"
 	"chromiumos/tast/common/host"
-	"chromiumos/tast/tast/build"
-	"chromiumos/tast/tast/timing"
 
 	"github.com/google/subcommands"
 )

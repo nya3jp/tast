@@ -18,10 +18,10 @@ import (
 	"strings"
 	"time"
 
+	"chromiumos/tast/cmd/logging"
+	"chromiumos/tast/cmd/timing"
 	"chromiumos/tast/common/control"
 	"chromiumos/tast/common/testing"
-	"chromiumos/tast/tast/logging"
-	"chromiumos/tast/tast/timing"
 )
 
 const (

@@ -8,8 +8,8 @@ package run
 import (
 	"flag"
 
-	"chromiumos/tast/tast/build"
-	"chromiumos/tast/tast/logging"
+	"chromiumos/tast/cmd/build"
+	"chromiumos/tast/cmd/logging"
 )
 
 // Config contains shared configuration information for running local and remote tests.

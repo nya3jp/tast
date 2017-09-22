@@ -23,13 +23,13 @@ import (
 const (
 	sshConnectTimeout time.Duration = 10 * time.Second // timeout for establishing SSH connection to DUT
 
-	localTestsPackage    = "chromiumos/tast/local" // executable package containing local tests
-	localTestsFile       = "local_tests"           // filename for local test executable
-	localTestsBuiltinDir = "/usr/bin"              // local tests dir when installed as part of system image
-	localTestsPushDir    = "/usr/local/bin"        // local tests dir when pushed by tast command
+	localTestsPackage = "chromiumos/tast/local" // executable package containing local tests
 
-	localDataBuiltinDir = "/usr/share/tast/data"       // local data dir when installed as part of system image
-	localDataPushDir    = "/usr/local/share/tast/data" // local data dir when pushed by tast command
+	localTestsBuiltinPath = "/usr/local/bin/local_tests"        // test executable when installed as part of system image
+	localTestsPushPath    = "/usr/local/bin/local_tests_pushed" // test executable when pushed by tast command
+
+	localDataBuiltinDir = "/usr/local/share/tast/data"        // local data dir when installed as part of system image
+	localDataPushDir    = "/usr/local/share/tast/data_pushed" // local data dir when pushed by tast command
 )
 
 // Local runs local tests as directed by cfg.
@@ -54,7 +54,7 @@ func Local(ctx context.Context, cfg *Config) subcommands.ExitStatus {
 	if cfg.Build {
 		cfg.Logger.Status("Building tests")
 		start := time.Now()
-		src := cfg.BuildCfg.OutPath(localTestsFile)
+		src := cfg.BuildCfg.OutPath(filepath.Base(localTestsPushPath))
 		cfg.Logger.Debugf("Building %s from %s to %s", localTestsPackage, cfg.BuildCfg.TestWorkspace, src)
 		if out, err := build.BuildTests(ctx, &cfg.BuildCfg, localTestsPackage, src); err != nil {
 			cfg.Logger.Logf("Failed building tests: %v\n\n%s", err, out)
@@ -62,11 +62,11 @@ func Local(ctx context.Context, cfg *Config) subcommands.ExitStatus {
 		}
 		cfg.Logger.Logf("Built tests in %0.1f sec", time.Now().Sub(start).Seconds())
 
-		bin = filepath.Join(localTestsPushDir, localTestsFile)
+		bin = localTestsPushPath
 		cfg.Logger.Status("Pushing tests to target")
 		cfg.Logger.Logf("Pushing tests to %s on target", bin)
 		start = time.Now()
-		if bytes, err := pushTestBinary(ctx, hst, src, localTestsPushDir); err != nil {
+		if bytes, err := pushTestBinary(ctx, hst, src, filepath.Dir(localTestsPushPath)); err != nil {
 			cfg.Logger.Log("Failed pushing tests: ", err)
 			return subcommands.ExitFailure
 		} else {
@@ -95,7 +95,7 @@ func Local(ctx context.Context, cfg *Config) subcommands.ExitStatus {
 				time.Now().Sub(start).Seconds(), formatBytes(bytes))
 		}
 	} else {
-		bin = filepath.Join(localTestsBuiltinDir, localTestsFile)
+		bin = localTestsBuiltinPath
 		dataDir = localDataBuiltinDir
 	}
 

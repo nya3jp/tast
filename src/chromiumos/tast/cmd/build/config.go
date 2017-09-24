@@ -48,7 +48,7 @@ func (c *Config) SetFlags(f *flag.FlagSet, trunkDir string) {
 	f.StringVar(&c.Arch, "arch", "", "target architecture (per \"uname -m\")")
 	f.StringVar(&c.OutDir, "outdir", defaultBuildOutDir, "directory storing build artifacts")
 	f.StringVar(&c.SysGopath, "sysgopath", "/usr/lib/gopath",
-		"Go workspace containing system package source code (if empty, chosen automatically)")
+		"Go workspace containing system package source code")
 	f.StringVar(&c.TestWorkspace, "testdir", filepath.Join(trunkDir, defaultTestDir),
 		"Go workspace containing tast tests")
 	f.StringVar(&c.CommonWorkspace, "commondir", filepath.Join(trunkDir, defaultCommonDir),

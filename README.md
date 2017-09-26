@@ -6,7 +6,8 @@ It supports building, deploying, and running tests. It doesn't implement other
 functionality like managing labs of devices used for testing, scheduling tests,
 or storing test results.
 
-The [overview](docs/overview.md) is a good starting point.
+To try it out, see the [quickstart] document. The [overview] is a good starting
+point for learning more about how the system is structured.
 
 ## Directory structure
 
@@ -27,5 +28,7 @@ Tests are located in the [tast-tests] repository.
 
 For more details, see the [docs](docs/) subdirectory.
 
+[quickstart]: docs/quickstart.md
+[overview]: docs/overview.md
 [Go in Chromium OS]: http://www.chromium.org/chromium-os/developer-guide/go-in-chromium-os
 [tast-tests]: ../tast-tests/

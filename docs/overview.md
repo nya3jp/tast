@@ -1,5 +1,7 @@
 # Tast Overview
 
+[TOC]
+
 ## Terminology
 
 ### Local tests
@@ -28,6 +30,9 @@ The `tast` executable is built for the host system by the
     tests, and
 *   collect, process, and display test results.
 
+The [Running Tests] document contains more information about using the `tast`
+command.
+
 ### Test executables
 
 Test executables (`local_tests` and `remote_tests`) consist of compiled tests,
@@ -40,6 +45,8 @@ compiled (and deployed, in the case of local tests) on-the-fly by `tast`.
 Tests don't (currently) require anything special from the OS -- `tast` just
 needs SSH access to the DUT and (when deploying local tests that aren't built
 into the system image) a writable partition that isn't mounted `noexec`.
+
+See the [Writing Tests] document for more information.
 
 ## Process
 
@@ -57,3 +64,6 @@ written by the tests).
 For remote tests, tast runs `remote_tests` directly and receives results
 provided by it. `remote_tests` establishes SSH connections to the DUT and passes
 them to tests.
+
+[Running Tests]: running_tests.md
+[Writing Tests]: writing_tests.md

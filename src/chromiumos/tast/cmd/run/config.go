@@ -7,9 +7,14 @@ package run
 
 import (
 	"flag"
+	"path/filepath"
 
 	"chromiumos/tast/cmd/build"
 	"chromiumos/tast/cmd/logging"
+)
+
+const (
+	defaultKeyPath = "chromite/ssh_keys/testing_rsa" // default private SSH key within Chrome OS checkout
 )
 
 // Config contains shared configuration information for running local and remote tests.
@@ -24,7 +29,10 @@ type Config struct {
 }
 
 // SetFlags adds common run-related flags to f that store values in Config.
-func (c *Config) SetFlags(f *flag.FlagSet) {
-	f.StringVar(&c.KeyFile, "keyfile", "", "path to private SSH key")
+// trunkDir is the path to the Chrome OS checkout (within the chroot).
+func (c *Config) SetFlags(f *flag.FlagSet, trunkDir string) {
+	f.StringVar(&c.KeyFile, "keyfile", filepath.Join(trunkDir, defaultKeyPath),
+		"path to private SSH key")
+	f.StringVar(&c.ResDir, "resultsdir", "", "directory for test results")
 	f.BoolVar(&c.Build, "build", true, "build and push tests")
 }

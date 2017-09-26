@@ -21,8 +21,8 @@ import (
 )
 
 const (
-	baseResultsDir = "/tmp/tast/results"             // base directory under which test results are written
-	defaultKeyPath = "chromite/ssh_keys/testing_rsa" // default private SSH key within Chrome OS checkout
+	baseResultsDir       = "/tmp/tast/results" // base directory under which test results are written
+	latestResultsSymlink = "latest"            // symlink in baseResultsDir pointing at latest results
 
 	fullLogName   = "full.txt"    // file in runConfig.resDir containing full output
 	timingLogName = "timing.json" // file in runConfig.resDir containing timing information
@@ -49,8 +49,10 @@ func (*runCmd) Usage() string {
 func (r *runCmd) SetFlags(f *flag.FlagSet) {
 	f.StringVar(&r.testType, "testtype", "local", "type of tests to run (either \"local\" or \"remote\")")
 	f.BoolVar(&r.checkDeps, "checkdeps", true, "checks test package's dependencies before building")
-	r.cfg.SetFlags(f)
-	r.cfg.BuildCfg.SetFlags(f, getTrunkDir())
+
+	td := getTrunkDir()
+	r.cfg.SetFlags(f, td)
+	r.cfg.BuildCfg.SetFlags(f, td)
 }
 
 func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
@@ -63,7 +65,15 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 		return subcommands.ExitUsageError
 	}
 
-	r.cfg.ResDir = filepath.Join(baseResultsDir, time.Now().Format("20060102-150405"))
+	if r.cfg.ResDir == "" {
+		r.cfg.ResDir = filepath.Join(baseResultsDir, time.Now().Format("20060102-150405"))
+
+		link := filepath.Join(baseResultsDir, latestResultsSymlink)
+		os.Remove(link)
+		if err := os.Symlink(filepath.Base(r.cfg.ResDir), link); err != nil {
+			lg.Log("Failed to create results symlink: ", err)
+		}
+	}
 	if err := os.MkdirAll(r.cfg.ResDir, 0755); err != nil {
 		lg.Log(err)
 		return subcommands.ExitFailure
@@ -105,11 +115,7 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 	r.cfg.Patterns = f.Args()[1:]
 	r.cfg.Logger = lg
 
-	if r.cfg.KeyFile == "" {
-		r.cfg.KeyFile = filepath.Join(getTrunkDir(), defaultKeyPath)
-	}
 	lg.Debug("Using SSH key ", r.cfg.KeyFile)
-
 	lg.Log("Writing results to ", r.cfg.ResDir)
 	switch r.testType {
 	case localType:

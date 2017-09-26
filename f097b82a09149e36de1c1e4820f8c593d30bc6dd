@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "dc971505_8e5f2fdf",
+        "filename": "docs/running_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-09-26T16:26:24Z",
+      "side": 1,
+      "message": "We should mention that it is invalid to mix test attribute match and wildcard match.",
+      "range": {
+        "startLine": 37,
+        "startChar": 7,
+        "endLine": 37,
+        "endChar": 62
+      },
+      "revId": "f097b82a09149e36de1c1e4820f8c593d30bc6dd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "963d76d4_71077a73",
+        "filename": "docs/running_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-09-26T16:26:24Z",
+      "side": 1,
+      "message": "I think we should explain why you would use this flag at all. (I.e. when a remote test needs this to be specified.)",
+      "range": {
+        "startLine": 46,
+        "startChar": 0,
+        "endLine": 48,
+        "endChar": 41
+      },
+      "revId": "f097b82a09149e36de1c1e4820f8c593d30bc6dd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1e9106e8_1b616c7b",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-09-26T16:26:24Z",
+      "side": 1,
+      "message": "break into two sentences here",
+      "range": {
+        "startLine": 14,
+        "startChar": 27,
+        "endLine": 14,
+        "endChar": 29
+      },
+      "revId": "f097b82a09149e36de1c1e4820f8c593d30bc6dd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e9a5c75f_e0615337",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-09-26T16:26:24Z",
+      "side": 1,
+      "message": "Expand on this a bit? You have the opportunity to sent lots of software engineers down the right path, here.",
+      "range": {
+        "startLine": 25,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 65
+      },
+      "revId": "f097b82a09149e36de1c1e4820f8c593d30bc6dd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "530d0a07_9cca9094",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-09-26T16:26:24Z",
+      "side": 1,
+      "message": "in the DUT\u0027s test images.",
+      "range": {
+        "startLine": 105,
+        "startChar": 58,
+        "endLine": 105,
+        "endChar": 72
+      },
+      "revId": "f097b82a09149e36de1c1e4820f8c593d30bc6dd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

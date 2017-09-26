@@ -287,7 +287,7 @@ func (r *resultsHandler) writeResults() error {
 	}
 
 	r.lg.Log(sep)
-	r.lg.Logf("Results saved to %s", r.resDir)
+	r.lg.Log("Results saved to ", r.resDir)
 	return nil
 }
 

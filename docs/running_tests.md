@@ -45,13 +45,13 @@ Any additional positional arguments describe which tests should be executed:
 
 It's invalid to mix attribute expressions and wildcard patterns.
 
-The `testtype` flag accepts a `local` or `remote` parameter to specify which
+The `type` flag accepts a `local` or `remote` parameter to specify which
 type of test should be run. `local` is the default, and `remote` must be
 specified when running remote tests. A command similar to the following runs a
 remote test:
 
 ```shell
-tast run -testtype=remote <target> power.Reboot
+tast run -type=remote <target> power.Reboot
 ```
 
 ## Controlling whether tests are rebuilt

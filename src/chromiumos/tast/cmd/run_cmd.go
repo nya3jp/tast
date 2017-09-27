@@ -47,7 +47,7 @@ func (*runCmd) Usage() string {
 }
 
 func (r *runCmd) SetFlags(f *flag.FlagSet) {
-	f.StringVar(&r.testType, "testtype", "local", "type of tests to run (either \"local\" or \"remote\")")
+	f.StringVar(&r.testType, "type", "local", "type of tests to run (either \"local\" or \"remote\")")
 	f.BoolVar(&r.checkDeps, "checkdeps", true, "checks test package's dependencies before building")
 
 	td := getTrunkDir()

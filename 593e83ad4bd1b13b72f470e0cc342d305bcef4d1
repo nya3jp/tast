@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "fdf6face_8644869d",
+        "filename": "src/chromiumos/tast/cmd/display/display.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-09-28T23:15:23Z",
+      "side": 1,
+      "message": "i think that this is close to what i was doing at first, but it doesn\u0027t appear to work (at least with reverse video; i was trying to stay away from setting specific colors since it doesn\u0027t behave nicely with users\u0027 settings).\n\nspecifically, in rxvt-unicode, setting reverse video and then clearing the line, either via [K (cursor to end of line) or [2K (entire line), doesn\u0027t leave anything drawn in reverse video (which is what i\u0027d expect, as there\u0027s no text there to be reversed).\n\ni also think it\u0027s unlikely that anyone will want to drag across the status bar to highlight and copy text in this mode; they\u0027d presumably just want to copy the (either persistent or verbose) log lines.",
+      "parentUuid": "05e6e2a7_e53ea5e0",
+      "range": {
+        "startLine": 110,
+        "startChar": 1,
+        "endLine": 113,
+        "endChar": 2
+      },
+      "revId": "593e83ad4bd1b13b72f470e0cc342d305bcef4d1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "4335d2ca_e9be94ce",
         "filename": "src/chromiumos/tast/cmd/display/term.go",
         "patchSetId": 2
@@ -45,6 +69,30 @@
       "revId": "593e83ad4bd1b13b72f470e0cc342d305bcef4d1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "928c4297_523e31cf",
+        "filename": "src/chromiumos/tast/cmd/display/term.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-09-28T23:15:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4335d2ca_e9be94ce",
+      "range": {
+        "startLine": 68,
+        "startChar": 0,
+        "endLine": 68,
+        "endChar": 23
+      },
+      "revId": "593e83ad4bd1b13b72f470e0cc342d305bcef4d1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "7347c24c_35cb4539",
+        "filename": "src/chromiumos/tast/cmd/display/term.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-09-28T23:15:23Z",
+      "side": 1,
+      "message": "that would probably work, if tmux set its TERM to \"tmux\" instead of to \"screen\". you can see someone\u0027s opinion about the current state of affairs at https://chromium-review.googlesource.com/c/chromiumos/chromite/+/690839. :-P",
+      "parentUuid": "9450b789_bd3cd9a2",
+      "range": {
+        "startLine": 71,
+        "startChar": 1,
+        "endLine": 71,
+        "endChar": 29
+      },
+      "revId": "593e83ad4bd1b13b72f470e0cc342d305bcef4d1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "2951e408_765e5da2",
         "filename": "src/chromiumos/tast/cmd/display/term.go",
         "patchSetId": 2
@@ -82,6 +154,30 @@
       "writtenOn": "2017-09-28T21:26:32Z",
       "side": 1,
       "message": "I don\u0027t think this is right. Here\u0027s terminfo for vt100:\n\n    csr\u003d\\E[%i%p1%d;%p2%dr\n\nfor screen:\n\n    csr\u003d\\E[%i%p1%d;%p2%dr\n\nfor tmux:\n\n    csr\u003d\\E[%i%p1%d;%p2%dr\n\nI collected these from a few running systems with:\n\n    infocmp $TERM\n\nThese are defined in the upstream terminfo file which is a decades old effort to collect all of these quirks empirically: http://invisible-island.net/ncurses/terminfo.ti.html .\n\nThese escape codes are defined in: https://linux.die.net/man/5/termcap",
+      "range": {
+        "startLine": 169,
+        "startChar": 0,
+        "endLine": 169,
+        "endChar": 51
+      },
+      "revId": "593e83ad4bd1b13b72f470e0cc342d305bcef4d1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6871e357_e4baebed",
+        "filename": "src/chromiumos/tast/cmd/display/term.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-09-28T23:15:23Z",
+      "side": 1,
+      "message": "i could be misunderstanding this, but isn\u0027t that the same as what i\u0027m sending? i had trouble finding a good source for this, but per the o\u0027reilly \"termcap \u0026 terminfo\" book (https://books.google.com/books?id\u003dGsUMLqtYI1UC\u0026printsec\u003dfrontcover\u0026dq\u003dtermcap\u0026hl\u003den\u0026sa\u003dX\u0026ved\u003d0ahUKEwjE6MKN_8jWAhWIsFQKHeLeC00Q6AEIKTAA#v\u003donepage\u0026q\u003dtermcap\u0026f\u003dfalse):\n\n%i means 1-based values\n%p1 and %p2 push the first and second parameters onto the stack\n%d means decimal number\n\nso doesn\u0027t this boil down to \\033[\u003cstart\u003e;\u003cend\u003er ?",
+      "parentUuid": "2951e408_765e5da2",
       "range": {
         "startLine": 169,
         "startChar": 0,

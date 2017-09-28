@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "05e6e2a7_e53ea5e0",
+        "filename": "src/chromiumos/tast/cmd/display/display.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-09-28T21:26:32Z",
+      "side": 1,
+      "message": "I think you actually want to use a control characters to do this. See this StackOverflow: https://superuser.com/questions/840526/status-line-in-linux-shell . If you keep this, the status line will include these whitespace characters when doing copy-paste.",
+      "range": {
+        "startLine": 110,
+        "startChar": 1,
+        "endLine": 113,
+        "endChar": 2
+      },
+      "revId": "593e83ad4bd1b13b72f470e0cc342d305bcef4d1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4335d2ca_e9be94ce",
+        "filename": "src/chromiumos/tast/cmd/display/term.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-09-28T21:26:32Z",
+      "side": 1,
+      "message": "Please add a TODO to extract all of these escape sequences from the system terminfo database at runtime. Bonus points: this struct being vt100-specific would go away and be dynamically configured from the TERM environment variable.",
+      "range": {
+        "startLine": 68,
+        "startChar": 0,
+        "endLine": 68,
+        "endChar": 23
+      },
+      "revId": "593e83ad4bd1b13b72f470e0cc342d305bcef4d1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9450b789_bd3cd9a2",
+        "filename": "src/chromiumos/tast/cmd/display/term.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-09-28T21:26:32Z",
+      "side": 1,
+      "message": "If you want to leave this check in place, it should match env var \"TERM\" if it starts with \"tmux\". Not sure I agree it\u0027s needed due to my scrolling comment below.",
+      "range": {
+        "startLine": 71,
+        "startChar": 1,
+        "endLine": 71,
+        "endChar": 29
+      },
+      "revId": "593e83ad4bd1b13b72f470e0cc342d305bcef4d1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2951e408_765e5da2",
+        "filename": "src/chromiumos/tast/cmd/display/term.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-09-28T21:26:32Z",
+      "side": 1,
+      "message": "I don\u0027t think this is right. Here\u0027s terminfo for vt100:\n\n    csr\u003d\\E[%i%p1%d;%p2%dr\n\nfor screen:\n\n    csr\u003d\\E[%i%p1%d;%p2%dr\n\nfor tmux:\n\n    csr\u003d\\E[%i%p1%d;%p2%dr\n\nI collected these from a few running systems with:\n\n    infocmp $TERM\n\nThese are defined in the upstream terminfo file which is a decades old effort to collect all of these quirks empirically: http://invisible-island.net/ncurses/terminfo.ti.html .\n\nThese escape codes are defined in: https://linux.die.net/man/5/termcap",
+      "range": {
+        "startLine": 169,
+        "startChar": 0,
+        "endLine": 169,
+        "endChar": 51
+      },
+      "revId": "593e83ad4bd1b13b72f470e0cc342d305bcef4d1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

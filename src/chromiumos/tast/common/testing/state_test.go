@@ -6,9 +6,11 @@ package testing
 
 import (
 	"context"
+	"fmt"
 	"path/filepath"
 	"reflect"
 	"runtime"
+	"strings"
 	gotesting "testing"
 	"time"
 )
@@ -61,8 +63,25 @@ func TestReportError(t *gotesting.T) {
 	if e0.Line+1 != e1.Line {
 		t.Errorf("Got non-sequential line numbers %d and %d", e0.Line, e1.Line)
 	}
-	if len(e0.Stack) == 0 || len(e1.Stack) == 0 {
-		t.Errorf("Got empty stack trace(s) %q and %q", string(e0.Stack), string(e1.Stack))
+
+	// The initial lines of the stack trace should be dropped such that the first frame
+	// is the code that called Error or Errorf. As such, the first line should contain this
+	// test function's name and the second line should contain the filename and line number
+	// of the error call.
+	const fc = "testing.TestReportError("
+	for _, e := range []*Error{e0, e1} {
+		lines := strings.Split(string(e.Stack), "\n")
+		if len(lines) < 2 {
+			t.Errorf("Stack trace %q contains fewer than 2 lines", string(e.Stack))
+			continue
+		}
+		if !strings.Contains(lines[0], fc) {
+			t.Errorf("First line of stack trace %q doesn't contain %q", string(e.Stack), fc)
+		}
+		fl := fmt.Sprintf("%s:%d", e.File, e.Line)
+		if !strings.Contains(lines[1], fl) {
+			t.Errorf("Second line of stack trace %q doesn't contain %q", string(e.Stack), fl)
+		}
 	}
 }
 

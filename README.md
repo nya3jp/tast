@@ -28,7 +28,10 @@ Tests are located in the [tast-tests] repository.
 
 For more details, see the [docs](docs/) subdirectory.
 
+Package documentation is available at [godoc.org].
+
 [quickstart]: docs/quickstart.md
 [overview]: docs/overview.md
 [Go in Chromium OS]: http://www.chromium.org/chromium-os/developer-guide/go-in-chromium-os
 [tast-tests]: ../tast-tests/
+[godoc.org]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast

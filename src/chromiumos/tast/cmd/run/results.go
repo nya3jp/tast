@@ -174,9 +174,10 @@ func (r *resultsHandler) handleTestError(msg *control.TestError) error {
 	} else {
 		r.res.Errors = append(r.res.Errors, te)
 	}
-	r.lg.Logf("[%s] %s:%d: %s\n", msg.Time.Format(testOutputTimeFmt),
-		filepath.Base(te.File), te.Line, te.Reason)
-	// TODO(derat): Log te.Stack to the per-test log while not spamming verbose output.
+
+	ts := msg.Time.Format(testOutputTimeFmt)
+	r.lg.Logf("[%s] Error at %s:%d: %s", ts, filepath.Base(te.File), te.Line, te.Reason)
+	r.lg.Debugf("[%s] Stack trace:\n%s", ts, te.Stack)
 	return nil
 }
 

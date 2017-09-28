@@ -124,12 +124,25 @@ func (s *State) Fatalf(format string, args ...interface{}) {
 // information and expects that the error was initiated by the code that called
 // the function that called newError.
 func (s *State) newError(rsn string) *Error {
-	_, fn, ln, _ := runtime.Caller(2)
+	// Skip unhelpful frames at the top of the stack,
+	// namely newError and Error/Errorf/Fatal/Fatalf.
+	const skipFrames = 2
+
+	// runtime.Caller starts counting stack frames at the point of the code that
+	// invoked Caller.
+	_, fn, ln, _ := runtime.Caller(skipFrames)
+
+	// debug.Stack writes an initial line like "goroutine 22 [running]:" followed
+	// by two lines per frame. It also includes itself.
+	stack := string(debug.Stack())
+	stackLines := strings.Split(stack, "\n")
+	stack = strings.Join(stackLines[(skipFrames+1)*2+1:], "\n")
+
 	return &Error{
 		Reason: rsn,
 		File:   fn,
 		Line:   ln,
-		Stack:  string(debug.Stack()),
+		Stack:  stack,
 	}
 }
 

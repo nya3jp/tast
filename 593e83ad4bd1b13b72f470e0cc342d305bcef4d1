@@ -96,6 +96,30 @@
     },
     {
       "key": {
+        "uuid": "9a52e7c3_e27a9d5d",
+        "filename": "src/chromiumos/tast/cmd/display/term.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-09-28T23:26:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4335d2ca_e9be94ce",
+      "range": {
+        "startLine": 68,
+        "startChar": 0,
+        "endLine": 68,
+        "endChar": 23
+      },
+      "revId": "593e83ad4bd1b13b72f470e0cc342d305bcef4d1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9450b789_bd3cd9a2",
         "filename": "src/chromiumos/tast/cmd/display/term.go",
         "patchSetId": 2
@@ -143,6 +167,30 @@
     },
     {
       "key": {
+        "uuid": "85c2d707_5887cd65",
+        "filename": "src/chromiumos/tast/cmd/display/term.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-09-28T23:26:08Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "9450b789_bd3cd9a2",
+      "range": {
+        "startLine": 71,
+        "startChar": 1,
+        "endLine": 71,
+        "endChar": 29
+      },
+      "revId": "593e83ad4bd1b13b72f470e0cc342d305bcef4d1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2951e408_765e5da2",
         "filename": "src/chromiumos/tast/cmd/display/term.go",
         "patchSetId": 2
@@ -187,6 +235,30 @@
       "revId": "593e83ad4bd1b13b72f470e0cc342d305bcef4d1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "16771cac_80b42d04",
+        "filename": "src/chromiumos/tast/cmd/display/term.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-09-28T23:26:08Z",
+      "side": 1,
+      "message": "Hrm, yea, that\u0027s an interesting book. Honestly, I don\u0027t know. tmux has scrolling regions and they work in lots of apps so I figured this was the cause. Now, I don\u0027t know. I\u0027d assumed that we needed a literal:\n\n  %i    shifted cursor right key\n  %d    shifted options key\n\nfrom the termcap spec. But, maybe not. *shrugs*.",
+      "parentUuid": "6871e357_e4baebed",
+      "range": {
+        "startLine": 169,
+        "startChar": 0,
+        "endLine": 169,
+        "endChar": 51
+      },
+      "revId": "593e83ad4bd1b13b72f470e0cc342d305bcef4d1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

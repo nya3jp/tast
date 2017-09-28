@@ -259,6 +259,30 @@
       "revId": "593e83ad4bd1b13b72f470e0cc342d305bcef4d1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "89d1ccd5_f4ba7d05",
+        "filename": "src/chromiumos/tast/cmd/display/term.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-09-28T23:41:17Z",
+      "side": 1,
+      "message": "i am way out of my depth here, but think those tables from the termcap man page are listing capabilities, not control codes. terminfo uses marginally more-descriptive capability names (e.g. the \"csr\" you quoted instead of termcap\u0027s \"cs\").\n\nlooking more closely, i think that terminfo(5) documents its control code format under \"Parameterized Strings\":\n\n       %[[:]flags][width[.precision]][doxXs]\n            as in printf, flags are [-+#] and space.  Use a “:” to  allow  the\n            next  character to be a “-” flag, avoiding interpreting \"%-\" as an\n            operator.\n\n       %p[1-9]\n            push i\u0027th parameter\n\n       %i   add 1 to first two parameters (for ANSI terminals)\n\nthis looks like it matches the book.",
+      "parentUuid": "16771cac_80b42d04",
+      "range": {
+        "startLine": 169,
+        "startChar": 0,
+        "endLine": 169,
+        "endChar": 51
+      },
+      "revId": "593e83ad4bd1b13b72f470e0cc342d305bcef4d1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -10,7 +10,7 @@ You'll also need a Chrome OS device running a system image built with the `test`
 flag that's reachable from your workstation via SSH. An image running in a
 [virtual machine] will also work.
 
-## Run a test
+## Run a prebuilt test
 
 In your chroot, run the following:
 
@@ -22,11 +22,41 @@ You should see output scroll by on your workstation, and on the Chrome OS
 device, the test should log in and load a webpage. After the test is done, take
 a look at the results in `/tmp/tast/results/latest` in your chroot.
 
+## Build and run a test
+
+The previous step ran a test that was already built into your device's system
+image, but you can also use the `tast` command to quickly rebuild all tests and
+push them to the device.
+
+In your chroot, run the same command as before **but without the `-build=false`
+argument**:
+
+```sh
+tast -verbose run <test-device-ip> ui.ChromeSanity
+```
+
+This time, the command will take a bit longer (but build objects will be
+cached). The test should succeed again.
+
+> The first time you run this, or after you sync your checkout, you may see an
+> error similar to the following:
+```
+To install missing dependencies, run:
+
+ sudo emerge -j 16 \
+   =dev-go/cdp-0.9.1-r1 \
+   =dev-go/dbus-0.0.2-r5
+```
+> This is expected: to speed things up, `tast` is building the tests directly
+> instead of emerging the `tast-local-tests` package, so it needs some help from
+> you to make sure that all required dependencies are installed. If you run the
+> provided `emerge` command, the `tast` command should work when re-run.
+
 See [Running Tests] for more information.
 
 ## Modify a test
 
-In your Chrome OS checkout, go to
+Now, let's modify the test. In your Chrome OS checkout, go to
 `src/platform/tast-tests/src/chromiumos/tast/local/tests/ui` and open
 `chrome_sanity.go`. The `ChromeSanity` function here will run directly on the
 test device.
@@ -39,18 +69,13 @@ if _, err = cr.NewConn(s.Context(), "https://www.google.com/"); err != nil {
 }
 ```
 
-Back in your chroot, run the following:
+Back in your chroot, run `tast` again:
 
 ```sh
 tast -verbose run <test-device-ip> ui.ChromeSanity
 ```
 
-(Note how `-build=false` is omitted; as a result, the `tast` command will
-rebuild tests locally and push them to the device. You may be prompted to
-install some dependencies needed to build tests; if so, run the provided
-`emerge` command and then re-run the `tast` command.)
-
-This time, the updated test should additionally open a Google search page.
+This time, the test should additionally open a Google search page.
 
 Return to the test file and add the following statement at the end of the
 function:

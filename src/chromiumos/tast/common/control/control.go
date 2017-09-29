@@ -19,7 +19,7 @@
 //			TestLog (second test logged another message)
 //		TestEnd (second test ended)
 //	RunEnd (run ended)
-package control // import "chromiumos/tast/common/control"
+package control
 
 import (
 	"encoding/json"

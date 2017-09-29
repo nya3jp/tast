@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Package host implements communication with remote hosts.
-package host // import "chromiumos/tast/common/host"
+package host
 
 import (
 	"context"

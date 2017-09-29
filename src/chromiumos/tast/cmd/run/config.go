@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Package run starts local and remote test executables and interprets their output.
-package run // import "chromiumos/tast/cmd/run"
+package run
 
 import (
 	"flag"

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Package testing provides infrastructure used by tests.
-package testing
+package testing // import "chromiumos/tast/common/testing"
 
 import (
 	"errors"

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Package runner provides functionality shared by test executables.
-package runner
+package runner // import "chromiumos/tast/common/runner"
 
 import (
 	"context"

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Package logging is used by the tast executable to write informational output.
-package logging
+package logging // import "chromiumos/tast/cmd/logging"
 
 import (
 	"fmt"

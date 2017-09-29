@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Package timing is used to collect and write timing information about a process.
-package timing // import "chromiumos/tast/cmd/timing"
+package timing
 
 import (
 	"bufio"

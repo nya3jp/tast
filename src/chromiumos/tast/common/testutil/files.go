@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Package testutil provides support code for unit tests.
-package testutil // import "chromiumos/tast/common/testutil"
+package testutil
 
 import (
 	"io/ioutil"

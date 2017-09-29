@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Package display provides advanced methods of logging to a terminal.
-package display // import "chromiumos/tast/cmd/display"
+package display
 
 import (
 	"strings"

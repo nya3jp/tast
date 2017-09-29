@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Package attr provides support for working with test attributes.
-package attr
+package attr // import "chromiumos/tast/common/testing/attr"
 
 import (
 	"fmt"

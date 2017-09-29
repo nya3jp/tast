@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Package test provides support code for testing the host package.
-package test
+package test // import "chromiumos/tast/common/host/test"
 
 import (
 	"bytes"

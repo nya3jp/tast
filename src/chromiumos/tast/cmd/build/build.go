@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Package build provides support for compiling tests.
-package build
+package build // import "chromiumos/tast/cmd/build"
 
 import (
 	"bytes"

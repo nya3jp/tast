@@ -6,7 +6,9 @@ package testing
 
 import (
 	"context"
+	"encoding/json"
 	"path/filepath"
+	"reflect"
 	gotesting "testing"
 	"time"
 )
@@ -112,5 +114,30 @@ func TestCleanUpAfterTimeout(t *gotesting.T) {
 	}
 	if !cleanedUp {
 		t.Errorf("Test didn't clean up after itself")
+	}
+}
+
+func TestJSON(t *gotesting.T) {
+	orig := Test{
+		Name: "pkg.Name",
+		Func: Func1,
+		Desc: "Description",
+		Attr: []string{"attr1", "attr2"},
+		Data: []string{"foo.txt"},
+	}
+	b, err := json.Marshal(&orig)
+	if err != nil {
+		t.Fatalf("Failed to marshal %v: %v", orig, err)
+	}
+	loaded := Test{}
+	if err = json.Unmarshal(b, &loaded); err != nil {
+		t.Fatalf("Failed to unmarshal %s: %v", string(b), err)
+	}
+
+	// Some fields should be omitted.
+	orig.Func = nil
+	orig.Data = nil
+	if !reflect.DeepEqual(loaded, orig) {
+		t.Fatalf("Unmarshaled to %v; want %v", loaded, orig)
 	}
 }

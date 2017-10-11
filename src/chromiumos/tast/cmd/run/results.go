@@ -36,8 +36,9 @@ const (
 // testResult contains the results from a single test.
 // Fields are exported so they can be marshaled by the json package.
 type testResult struct {
-	// Name is the test's name.
-	Name string `json:"name"`
+	// Test contains basic information about the test. This is not a runnable
+	// testing.Test struct; only fields that can be marshaled to JSON are set.
+	testing.Test
 	// Errors contains errors encountered while running the test.
 	// If it is empty, the test passed.
 	Errors []testing.Error `json:"errors"`
@@ -127,16 +128,24 @@ func (r *resultsHandler) handleRunEnd(msg *control.RunEnd) error {
 
 // handleTestStart handles TestStart control messages from test executables.
 func (r *resultsHandler) handleTestStart(msg *control.TestStart) error {
+	// TODO(derat): Delete this on 20180101 after I'm reasonably sure that
+	// all test executables are setting the Test field.
+	if msg.Test.Name == "" {
+		msg.Test.Name = msg.Name
+	}
+
 	if r.res != nil {
-		return fmt.Errorf("notified about start of %s while %s still running", msg.Name, r.res.Name)
+		return fmt.Errorf("notified about start of %s while %s still running",
+			msg.Test.Name, r.res.Name)
 	}
 	if tl, ok := timing.FromContext(r.ctx); ok {
-		r.stage = tl.Start(msg.Name)
+		r.stage = tl.Start(msg.Test.Name)
 	}
+
 	r.res = &testResult{
-		Name:   msg.Name,
+		Test:   msg.Test,
 		Start:  msg.Time,
-		OutDir: r.getTestOutputDir(msg.Name),
+		OutDir: r.getTestOutputDir(msg.Test.Name),
 	}
 
 	var err error

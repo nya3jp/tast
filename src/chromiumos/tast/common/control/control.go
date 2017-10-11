@@ -72,8 +72,12 @@ type RunEnd struct {
 type TestStart struct {
 	// Time is the device-local time at which the test started.
 	Time time.Time `json:"testStartTime"`
-	// Name is the name of the test.
+	// Name is the test's name.
+	// TODO(derat): Delete this on 20180101 after I'm reasonably sure that
+	// all test executables are setting the Test field.
 	Name string `json:"testStartName"`
+	// Test contains details about the test.
+	Test testing.Test `json:"testStartTest"`
 }
 
 // TestLog contains an informative logging message produced by a test.
@@ -96,7 +100,7 @@ type TestError struct {
 type TestEnd struct {
 	// Time is the device-local time at which the test ended.
 	Time time.Time `json:"testEndTime"`
-	// Name is the name of the test.
+	// Name is the name of the test, matching the earlier TestStart.Test.Name.
 	Name string `json:"testEndName"`
 }
 

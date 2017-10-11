@@ -24,18 +24,21 @@ const (
 type TestFunc func(*State)
 
 // Test contains information about a test and its code itself.
+//
+// While this struct can be marshaled to a JSON object, note that unmarshaling that object
+// will not yield a runnable Test struct; Func will not be present.
 type Test struct {
 	// Test name. If empty, generated from Func's package and function name.
-	Name string
+	Name string `json:"name"`
 	// The test function.
-	Func TestFunc
+	Func TestFunc `json:"-"`
 	// Short one-line description of the test.
-	Desc string
+	Desc string `json:"desc"`
 	// Attributes describing the test.
-	Attr []string
+	Attr []string `json:"attr"`
 	// Paths of data files needed by the test, relative to a "data" subdirectory within the
 	// directory in which TestFunc is located.
-	Data []string
+	Data []string `json:"-"`
 
 	// Package in which Func is located.
 	pkg string

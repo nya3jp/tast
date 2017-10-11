@@ -23,9 +23,11 @@ import (
 func TestReadTestOutput(t *gotesting.T) {
 	const (
 		test1Name    = "foo.FirstTest"
+		test1Desc    = "First description"
 		test1LogText = "Here's a log message"
 
 		test2Name        = "foo.SecondTest"
+		test2Desc        = "Second description"
 		test2ErrorReason = "Everything is broken :-("
 		test2ErrorFile   = "some_test.go"
 		test2ErrorLine   = 123
@@ -58,10 +60,12 @@ func TestReadTestOutput(t *gotesting.T) {
 	b := bytes.Buffer{}
 	mw := control.NewMessageWriter(&b)
 	mw.WriteMessage(&control.RunStart{runStartTime, 2})
-	mw.WriteMessage(&control.TestStart{test1StartTime, test1Name})
+	mw.WriteMessage(&control.TestStart{test1StartTime, test1Name,
+		testing.Test{Name: test1Name, Desc: test1Desc}})
 	mw.WriteMessage(&control.TestLog{test1LogTime, test1LogText})
 	mw.WriteMessage(&control.TestEnd{test1EndTime, test1Name})
-	mw.WriteMessage(&control.TestStart{test2StartTime, test2Name})
+	mw.WriteMessage(&control.TestStart{test2StartTime, test2Name,
+		testing.Test{Name: test2Name, Desc: test2Desc}})
 	mw.WriteMessage(&control.TestError{test2ErrorTime,
 		testing.Error{test2ErrorReason, test2ErrorFile, test2ErrorLine, test2ErrorStack}})
 	mw.WriteMessage(&control.TestEnd{test2EndTime, test2Name})
@@ -81,13 +85,13 @@ func TestReadTestOutput(t *gotesting.T) {
 
 	expRes, err := json.MarshalIndent([]testResult{
 		{
-			Name:   test1Name,
+			Test:   testing.Test{Name: test1Name, Desc: test1Desc},
 			Start:  test1StartTime,
 			End:    test1EndTime,
 			OutDir: filepath.Join(resDir, testLogsDir, test1Name),
 		},
 		{
-			Name: test2Name,
+			Test: testing.Test{Name: test2Name, Desc: test2Desc},
 			Errors: []testing.Error{
 				testing.Error{
 					Reason: test2ErrorReason,

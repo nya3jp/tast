@@ -18,10 +18,14 @@ func TestWriteAndRead(t *gotesting.T) {
 	msgs := []interface{}{
 		&RunStart{time.Unix(1, 0), 5},
 		&RunLog{time.Unix(2, 0), "run message"},
-		&TestStart{time.Unix(3, 0), "my test"},
+		&TestStart{time.Unix(3, 0), "pkg.MyTest", testing.Test{
+			Name: "pkg.MyTest",
+			Desc: "test description",
+			Attr: []string{"attr1", "attr2"},
+		}},
 		&TestLog{time.Unix(4, 0), "here's a log message"},
 		&TestError{time.Unix(5, 0), testing.Error{"whoops", "file.go", 20, "stack"}},
-		&TestStart{time.Unix(6, 0), "my test, again"},
+		&TestEnd{time.Unix(6, 0), "pkg.MyTest"},
 		&RunEnd{time.Unix(7, 0), "/tmp/log", "/tmp/out"},
 		&RunError{time.Unix(8, 0), testing.Error{"whoops again", "file2.go", 30, "stack 2"}},
 	}

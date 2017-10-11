@@ -141,7 +141,7 @@ type RunConfig struct {
 func RunTests(cfg RunConfig) (numFailed int, err error) {
 	for _, test := range cfg.Tests {
 		if cfg.MessageWriter != nil {
-			cfg.MessageWriter.WriteMessage(&control.TestStart{time.Now(), test.Name})
+			cfg.MessageWriter.WriteMessage(&control.TestStart{time.Now(), test.Name, *test})
 		} else {
 			log.Print("Running ", test.Name)
 		}

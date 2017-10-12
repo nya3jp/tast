@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "152bcb94_f49acb9f",
+        "filename": "src/chromiumos/tast/cmd/run/results.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-10-12T00:58:37Z",
+      "side": 1,
+      "message": "since i\u0027m embedding this struct, its fields end up as top-level \u0027name\u0027, \u0027desc\u0027, and \u0027attr\u0027 properties when testResult is marshaled to JSON.",
+      "revId": "f408189e75a02dcad654d3ba44387a3d8d916a1d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

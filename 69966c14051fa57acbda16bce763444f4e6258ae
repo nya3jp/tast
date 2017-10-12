@@ -22,6 +22,30 @@
       "revId": "69966c14051fa57acbda16bce763444f4e6258ae",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1b34f5da_c2a2e8fa",
+        "filename": "src/chromiumos/tast/common/control/control_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-10-12T02:58:54Z",
+      "side": 0,
+      "message": "Ack",
+      "parentUuid": "e8ca06dd_b1e92e9c",
+      "range": {
+        "startLine": 24,
+        "startChar": 3,
+        "endLine": 24,
+        "endChar": 12
+      },
+      "revId": "69966c14051fa57acbda16bce763444f4e6258ae",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

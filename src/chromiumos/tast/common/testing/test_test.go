@@ -65,13 +65,6 @@ func TestDataDir(t *gotesting.T) {
 	}
 }
 
-func TestRejectUnexportedTestFunction(t *gotesting.T) {
-	test := Test{Func: func(*State) {}}
-	if err := test.populateNameAndPkg(); err == nil {
-		t.Errorf("Didn't get error for test with unexported test function")
-	}
-}
-
 func TestSuccess(t *gotesting.T) {
 	test := Test{Func: func(*State) {}}
 	s := NewState(context.Background(), make(chan Output, 1), "", "", time.Minute)

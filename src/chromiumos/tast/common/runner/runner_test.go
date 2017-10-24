@@ -16,17 +16,15 @@ import (
 	"chromiumos/tast/common/testing"
 )
 
-func MyFunc(*testing.State)      {}
-func ErrorFunc(s *testing.State) { s.Errorf("error") }
-
 func TestTestsToRun(t *gotesting.T) {
 	const (
 		name1 = "cat.MyTest1"
 		name2 = "cat.MyTest2"
 	)
 	defer testing.ClearForTesting()
-	testing.AddTest(&testing.Test{Name: name1, Func: MyFunc, Attr: []string{"attr1", "attr2"}})
-	testing.AddTest(&testing.Test{Name: name2, Func: MyFunc, Attr: []string{"attr2"}})
+	testing.GlobalRegistry().DisableValidationForTesting()
+	testing.AddTest(&testing.Test{Name: name1, Func: func(*testing.State) {}, Attr: []string{"attr1", "attr2"}})
+	testing.AddTest(&testing.Test{Name: name2, Func: func(*testing.State) {}, Attr: []string{"attr2"}})
 
 	for _, tc := range []struct {
 		args     []string
@@ -72,7 +70,8 @@ func TestTestsToRun(t *gotesting.T) {
 func TestTestsToRunRegistrationError(t *gotesting.T) {
 	defer testing.ClearForTesting()
 	const name = "cat.MyTest"
-	testing.AddTest(&testing.Test{Name: name, Func: MyFunc})
+	testing.GlobalRegistry().DisableValidationForTesting()
+	testing.AddTest(&testing.Test{Name: name, Func: func(*testing.State) {}})
 
 	// Adding a test without a function should generate an error.
 	testing.AddTest(&testing.Test{})
@@ -129,8 +128,9 @@ func TestRunTests(t *gotesting.T) {
 	)
 
 	defer testing.ClearForTesting()
-	testing.AddTest(&testing.Test{Name: name1, Func: MyFunc})
-	testing.AddTest(&testing.Test{Name: name2, Func: ErrorFunc})
+	testing.GlobalRegistry().DisableValidationForTesting()
+	testing.AddTest(&testing.Test{Name: name1, Func: func(*testing.State) {}})
+	testing.AddTest(&testing.Test{Name: name2, Func: func(s *testing.State) { s.Errorf("error") }})
 
 	tmpDir, err := ioutil.TempDir("", "runner_test.")
 	if err != nil {

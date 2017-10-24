@@ -13,15 +13,25 @@ import (
 	"chromiumos/tast/common/testing/attr"
 )
 
+var testNameRegexp *regexp.Regexp
+
+func init() {
+	// Validates test names, which should consist of a package name, a period,
+	// and the name of the exported test function.
+	testNameRegexp = regexp.MustCompile("^[a-z][a-z0-9]*\\.[A-Z][A-Za-z0-9]*$")
+}
+
 // Registry holds tests.
 type Registry struct {
-	allTests []*Test
+	allTests      []*Test
+	validateNames bool
 }
 
 // NewRegistry returns a new test registry.
 func NewRegistry() *Registry {
 	return &Registry{
-		allTests: make([]*Test, 0),
+		allTests:      make([]*Test, 0),
+		validateNames: true,
 	}
 }
 
@@ -30,10 +40,20 @@ func (r *Registry) AddTest(t *Test) error {
 	if err := t.populateNameAndPkg(); err != nil {
 		return err
 	}
-	if err := validateTestName(t.Name); err != nil {
-		return fmt.Errorf("invalid test name %q: %v", t.Name, err)
+	if r.validateNames {
+		if err := validateTestName(t.Name); err != nil {
+			return fmt.Errorf("invalid test name %q: %v", t.Name, err)
+		}
 	}
 	r.allTests = append(r.allTests, t)
+	return nil
+}
+
+// validateTestName returns an error if n is not a valid test name.
+func validateTestName(n string) error {
+	if !testNameRegexp.MatchString(n) {
+		return fmt.Errorf("invalid test name %q (want pkg.ExportedTestFunc)", n)
+	}
 	return nil
 }
 
@@ -45,7 +65,7 @@ func (r *Registry) AllTests() []*Test {
 // testsForPattern returns registered tests with names matched by p,
 // a pattern that may contain '*' wildcards.
 func (r *Registry) testsForPattern(p string) ([]*Test, error) {
-	if err := validateTestName(strings.Replace(p, "*", "", -1)); err != nil {
+	if err := validateTestPattern(p); err != nil {
 		return nil, fmt.Errorf("bad pattern %q: %v", p, err)
 	}
 	p = strings.Replace(p, ".", "\\.", -1)
@@ -63,6 +83,17 @@ func (r *Registry) testsForPattern(p string) ([]*Test, error) {
 		}
 	}
 	return tests, nil
+}
+
+// validateTestPattern returns an error if n contains one or more characters
+// disallowed in test wildcard patterns.
+func validateTestPattern(p string) error {
+	for _, ch := range p {
+		if !unicode.IsLetter(ch) && !unicode.IsDigit(ch) && ch != '.' && ch != '*' {
+			return fmt.Errorf("invalid character %v", ch)
+		}
+	}
+	return nil
 }
 
 // TestsForPatterns de-duplicates and returns registered tests with names matched by
@@ -111,13 +142,9 @@ func (r *Registry) TestsForAttrExpr(s string) ([]*Test, error) {
 	return tests, nil
 }
 
-// validateTestName returns an error if n contains one or more characters disallowed in test names.
-func validateTestName(n string) error {
-	for _, ch := range n {
-		if !unicode.IsLetter(ch) && !unicode.IsDigit(ch) &&
-			ch != '-' && ch != '_' && ch != '.' {
-			return fmt.Errorf("invalid character %v", ch)
-		}
-	}
-	return nil
+// DisableValidationForTesting disables validation of test names by AddTest.
+// It should only be called from unit tests (e.g. to permit registering tests
+// that use anonymous functions).
+func (r *Registry) DisableValidationForTesting() {
+	r.validateNames = false
 }

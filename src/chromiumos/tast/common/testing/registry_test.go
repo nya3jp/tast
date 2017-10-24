@@ -106,7 +106,10 @@ func TestAddTestFailsForInvalidTests(t *gotesting.T) {
 	if err := reg.AddTest(&Test{Name: "Invalid%@!", Func: Func1}); err == nil {
 		t.Errorf("Didn't get error when adding test with invalid name")
 	}
-	if err := reg.AddTest(&Test{Name: "MissingFunction"}); err == nil {
+	if err := reg.AddTest(&Test{Name: "pkg.MissingFunc"}); err == nil {
 		t.Errorf("Didn't get error when adding test with missing function")
+	}
+	if err := reg.AddTest(&Test{Func: func(*State) {}}); err == nil {
+		t.Errorf("Didn't get error when adding test with unexported function")
 	}
 }

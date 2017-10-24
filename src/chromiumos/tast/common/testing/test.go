@@ -41,6 +41,9 @@ type Test struct {
 	// Data contains paths of data files needed by the test, relative to a "data" subdirectory within the
 	// directory in which TestFunc is located.
 	Data []string `json:"-"`
+	// Timeout contains the maximum duration for which Func may run before the test is aborted.
+	// This should almost always be omitted when defining tests; a reasonable default will be used.
+	Timeout time.Duration `json:"timeout"`
 
 	// Package in which Func is located.
 	pkg string

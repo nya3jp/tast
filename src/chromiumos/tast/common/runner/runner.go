@@ -131,17 +131,24 @@ type RunConfig struct {
 	BaseOutDir string
 	// DataDir contains the base directory under which test data files are located.
 	DataDir string
-	// TestTimeout describes the maximum time allotted to each test.
-	TestTimeout time.Duration
+	// DefaultTestTimeout contains the default maximum time allotted to each test.
+	// This is only used if testing.Test.Timeout is unset.
+	DefaultTestTimeout time.Duration
 }
 
 // RunTests runs tests as dictated by cfg. The number of failing tests is returned.
 // If an error is encountered in the test harness (as opposed to in a test),
 // it is returned immediately.
 func RunTests(cfg RunConfig) (numFailed int, err error) {
-	for _, test := range cfg.Tests {
+	for _, t := range cfg.Tests {
+		// Make a copy of the test with the default timeout if none was specified.
+		test := *t
+		if test.Timeout == 0 {
+			test.Timeout = cfg.DefaultTestTimeout
+		}
+
 		if cfg.MessageWriter != nil {
-			cfg.MessageWriter.WriteMessage(&control.TestStart{time.Now(), test.Name, *test})
+			cfg.MessageWriter.WriteMessage(&control.TestStart{time.Now(), test.Name, test})
 		} else {
 			log.Print("Running ", test.Name)
 		}
@@ -155,7 +162,7 @@ func RunTests(cfg RunConfig) (numFailed int, err error) {
 			cfg.SetupFunc()
 		}
 		ch := make(chan testing.Output)
-		s := testing.NewState(cfg.Ctx, ch, filepath.Join(cfg.DataDir, test.DataDir()), outDir, cfg.TestTimeout)
+		s := testing.NewState(cfg.Ctx, ch, filepath.Join(cfg.DataDir, test.DataDir()), outDir, test.Timeout)
 
 		done := make(chan bool, 1)
 		go func() {

@@ -28,15 +28,17 @@ type TestFunc func(*State)
 // While this struct can be marshaled to a JSON object, note that unmarshaling that object
 // will not yield a runnable Test struct; Func will not be present.
 type Test struct {
-	// Test name. If empty, generated from Func's package and function name.
+	// Name specifies the test's name. If empty, generated from Func's package and function name.
 	Name string `json:"name"`
-	// The test function.
+	// Func is the function to be executed to perform the test.
 	Func TestFunc `json:"-"`
-	// Short one-line description of the test.
+	// Desc is a short one-line description of the test.
 	Desc string `json:"desc"`
-	// Attributes describing the test.
+	// Attr contains freeform text attributes describing the test.
+	// See https://chromium.googlesource.com/chromiumos/platform/tast/+/master/docs/test_attributes.md
+	// for commonly-used attributes.
 	Attr []string `json:"attr"`
-	// Paths of data files needed by the test, relative to a "data" subdirectory within the
+	// Data contains paths of data files needed by the test, relative to a "data" subdirectory within the
 	// directory in which TestFunc is located.
 	Data []string `json:"-"`
 
@@ -117,7 +119,7 @@ func getTestFunctionPackageAndName(f TestFunc) (pkg, name string, err error) {
 	if rf == nil {
 		return "", "", errors.New("failed to get function from PC")
 	}
-	p := strings.Split(rf.Name(), ".")
+	p := strings.SplitN(rf.Name(), ".", 2)
 	if len(p) != 2 {
 		return "", "", fmt.Errorf("didn't find package.function in %q", rf.Name())
 	}

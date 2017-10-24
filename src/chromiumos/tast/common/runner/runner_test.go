@@ -128,10 +128,10 @@ func TestRunTests(t *gotesting.T) {
 		name2 = "foo.Test2"
 	)
 
-	defer testing.ClearForTesting()
-	testing.GlobalRegistry().DisableValidationForTesting()
-	testing.AddTest(&testing.Test{Name: name1, Func: func(*testing.State) {}})
-	testing.AddTest(&testing.Test{Name: name2, Func: func(s *testing.State) { s.Errorf("error") }})
+	reg := testing.NewRegistry()
+	reg.DisableValidationForTesting()
+	reg.AddTest(&testing.Test{Name: name1, Func: func(*testing.State) {}})
+	reg.AddTest(&testing.Test{Name: name2, Func: func(s *testing.State) { s.Errorf("error") }})
 
 	tmpDir := testutil.TempDir(t, "runner_test.")
 	defer os.RemoveAll(tmpDir)
@@ -140,7 +140,7 @@ func TestRunTests(t *gotesting.T) {
 	numSetupCalls := 0
 	cfg := RunConfig{
 		Ctx:           context.Background(),
-		Tests:         testing.GlobalRegistry().AllTests(),
+		Tests:         reg.AllTests(),
 		MessageWriter: control.NewMessageWriter(&b),
 		SetupFunc:     func() error { numSetupCalls++; return nil },
 		BaseOutDir:    tmpDir,
@@ -197,5 +197,61 @@ func TestRunTests(t *gotesting.T) {
 	}
 	if r.More() {
 		t.Errorf("RunTests(%v) wrote extra message(s)", cfg)
+	}
+}
+
+func TestTimeout(t *gotesting.T) {
+	reg := testing.NewRegistry()
+	reg.DisableValidationForTesting()
+
+	// The first test blocks indefinitely on a channel.
+	const name1 = "foo.Test1"
+	ch := make(chan bool, 1)
+	defer func() { ch <- true }()
+	reg.AddTest(&testing.Test{Name: name1, Func: func(*testing.State) { <-ch }})
+
+	// The second test blocks for 50 ms and specifies a custom one-minute timeout.
+	const name2 = "foo.Test2"
+	reg.AddTest(&testing.Test{
+		Name:    name2,
+		Func:    func(*testing.State) { time.Sleep(50 * time.Millisecond) },
+		Timeout: time.Minute,
+	})
+
+	b := bytes.Buffer{}
+	tmpDir := testutil.TempDir(t, "runner_test.")
+	defer os.RemoveAll(tmpDir)
+	cfg := RunConfig{
+		Ctx:                context.Background(),
+		Tests:              reg.AllTests(),
+		MessageWriter:      control.NewMessageWriter(&b),
+		BaseOutDir:         tmpDir,
+		DataDir:            tmpDir,
+		DefaultTestTimeout: 10 * time.Millisecond,
+	}
+
+	// The first test should time out after 10 milliseconds.
+	// The second test should succeed since it finishes before its custom timeout.
+	if numFailed, err := RunTests(cfg); err != nil {
+		t.Fatal("RunTests failed: ", err)
+	} else if numFailed != 1 {
+		t.Errorf("RunTests reported %v failed; want 1", numFailed)
+	}
+
+	var name string             // name of current test
+	errors := make([]string, 0) // name of test from each error
+	r := control.NewMessageReader(&b)
+	for r.More() {
+		if msg, err := r.ReadMessage(); err != nil {
+			t.Error("ReadMessage failed: ", err)
+		} else if ts, ok := msg.(*control.TestStart); ok {
+			name = ts.Test.Name
+		} else if _, ok := msg.(*control.TestError); ok {
+			errors = append(errors, name)
+		}
+	}
+	exp := []string{name1}
+	if !reflect.DeepEqual(errors, exp) {
+		t.Errorf("Got errors %v; wanted %v", errors, exp)
 	}
 }

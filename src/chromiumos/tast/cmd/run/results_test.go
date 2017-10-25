@@ -8,7 +8,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	gotesting "testing"
@@ -45,13 +44,11 @@ func TestReadTestOutput(t *gotesting.T) {
 	test2EndTime := time.Unix(9, 0)
 	runEndTime := time.Unix(10, 0)
 
-	tempDir, err := ioutil.TempDir("", "results_test.")
-	if err != nil {
-		t.Fatal(err)
-	}
+	tempDir := testutil.TempDir(t, "results_test.")
+	defer os.RemoveAll(tempDir)
 
 	outDir := filepath.Join(tempDir, "out")
-	if err = testutil.WriteFiles(outDir, map[string]string{
+	if err := testutil.WriteFiles(outDir, map[string]string{
 		filepath.Join(test2Name, test2OutFile): test2OutData,
 	}); err != nil {
 		t.Fatal(err)
@@ -74,7 +71,7 @@ func TestReadTestOutput(t *gotesting.T) {
 	lb := bytes.Buffer{}
 	resDir := filepath.Join(tempDir, "results")
 	crf := func(src, dst string) error { return os.Rename(src, dst) }
-	if err = readTestOutput(context.Background(), logging.NewSimple(&lb, 0, false),
+	if err := readTestOutput(context.Background(), logging.NewSimple(&lb, 0, false),
 		&b, resDir, crf); err != nil {
 		t.Fatal(err)
 	}

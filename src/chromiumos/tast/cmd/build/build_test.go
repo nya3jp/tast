@@ -7,7 +7,6 @@ package build
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -17,10 +16,7 @@ import (
 )
 
 func TestBuildTests(t *testing.T) {
-	tempDir, err := ioutil.TempDir("", "build_test.")
-	if err != nil {
-		t.Fatal(err)
-	}
+	tempDir := testutil.TempDir(t, "build_test.")
 	defer os.RemoveAll(tempDir)
 
 	const (
@@ -29,6 +25,7 @@ func TestBuildTests(t *testing.T) {
 		sysDir    = "sys"
 	)
 
+	var err error
 	cfg := &Config{
 		TestWorkspace:   filepath.Join(tempDir, testDir),
 		CommonWorkspace: filepath.Join(tempDir, commonDir),

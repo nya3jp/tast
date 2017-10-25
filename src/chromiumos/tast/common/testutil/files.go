@@ -9,7 +9,18 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"testing"
 )
+
+// TempDir creates a temporary directory prefixed by prefix (e.g. "test_name.") and
+// returns its path. If the directory cannot be created, a fatal error is reported to t.
+func TempDir(t *testing.T, prefix string) string {
+	td, err := ioutil.TempDir("", prefix)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return td
+}
 
 // WriteFiles creates and writes files (keys are relative filenames,
 // values are contents) within dir.

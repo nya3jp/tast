@@ -7,13 +7,14 @@ package runner
 import (
 	"bytes"
 	"context"
-	"io/ioutil"
+	"os"
 	"reflect"
 	gotesting "testing"
 	"time"
 
 	"chromiumos/tast/common/control"
 	"chromiumos/tast/common/testing"
+	"chromiumos/tast/common/testutil"
 )
 
 func MyFunc(*testing.State)      {}
@@ -132,10 +133,8 @@ func TestRunTests(t *gotesting.T) {
 	testing.AddTest(&testing.Test{Name: name1, Func: MyFunc})
 	testing.AddTest(&testing.Test{Name: name2, Func: ErrorFunc})
 
-	tmpDir, err := ioutil.TempDir("", "runner_test.")
-	if err != nil {
-		t.Fatal(err)
-	}
+	tmpDir := testutil.TempDir(t, "runner_test.")
+	defer os.RemoveAll(tmpDir)
 
 	b := bytes.Buffer{}
 	numSetupCalls := 0

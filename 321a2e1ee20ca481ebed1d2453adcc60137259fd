@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e051c10c_02ad128d",
+        "filename": "src/chromiumos/tast/cmd/run/results_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-10-25T02:16:45Z",
+      "side": 0,
+      "message": "i was leaking these temp dirs. :-/",
+      "revId": "321a2e1ee20ca481ebed1d2453adcc60137259fd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ce772601_484aff67",
+        "filename": "src/chromiumos/tast/common/runner/runner_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-10-25T02:16:45Z",
+      "side": 0,
+      "message": "and these",
+      "revId": "321a2e1ee20ca481ebed1d2453adcc60137259fd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

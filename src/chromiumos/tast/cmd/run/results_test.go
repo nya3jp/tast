@@ -68,14 +68,15 @@ func TestReadTestOutput(t *gotesting.T) {
 	mw.WriteMessage(&control.TestEnd{test2EndTime, test2Name})
 	mw.WriteMessage(&control.RunEnd{runEndTime, "", outDir})
 
-	lb := bytes.Buffer{}
-	resDir := filepath.Join(tempDir, "results")
+	cfg := Config{
+		Logger: logging.NewSimple(&bytes.Buffer{}, 0, false),
+		ResDir: filepath.Join(tempDir, "results"),
+	}
 	crf := func(src, dst string) error { return os.Rename(src, dst) }
-	if err := readTestOutput(context.Background(), logging.NewSimple(&lb, 0, false),
-		&b, resDir, crf); err != nil {
+	if err := readTestOutput(context.Background(), &cfg, &b, crf); err != nil {
 		t.Fatal(err)
 	}
-	files, err := testutil.ReadFiles(resDir)
+	files, err := testutil.ReadFiles(cfg.ResDir)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -85,7 +86,7 @@ func TestReadTestOutput(t *gotesting.T) {
 			Test:   testing.Test{Name: test1Name, Desc: test1Desc},
 			Start:  test1StartTime,
 			End:    test1EndTime,
-			OutDir: filepath.Join(resDir, testLogsDir, test1Name),
+			OutDir: filepath.Join(cfg.ResDir, testLogsDir, test1Name),
 		},
 		{
 			Test: testing.Test{Name: test2Name, Desc: test2Desc},
@@ -99,7 +100,7 @@ func TestReadTestOutput(t *gotesting.T) {
 			},
 			Start:  test2StartTime,
 			End:    test2EndTime,
-			OutDir: filepath.Join(resDir, testLogsDir, test2Name),
+			OutDir: filepath.Join(cfg.ResDir, testLogsDir, test2Name),
 		},
 	}, "", "  ")
 	if err != nil {

@@ -240,7 +240,7 @@ func runLocalTestBinary(ctx context.Context, hst *host.SSH, bin, dataDir string,
 		}
 		return nil
 	}
-	if err = readTestOutput(ctx, cfg.Logger, handle.Stdout(), cfg.ResDir, crf); err != nil {
+	if err = readTestOutput(ctx, cfg, handle.Stdout(), crf); err != nil {
 		return err
 	}
 

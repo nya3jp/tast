@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"io"
 	"os"
 	"path/filepath"
 	gotesting "testing"
@@ -18,6 +19,9 @@ import (
 	"chromiumos/tast/common/testing"
 	"chromiumos/tast/common/testutil"
 )
+
+// noOpCopyAndRemove can be passed to readTestOutput by tests.
+func noOpCopyAndRemove(src, dst string) error { return nil }
 
 func TestReadTestOutput(t *gotesting.T) {
 	const (
@@ -117,4 +121,90 @@ func TestReadTestOutput(t *gotesting.T) {
 	}
 
 	// TODO(derat): Check more output, including run errors.
+}
+
+func TestReadTestOutputTimeout(t *gotesting.T) {
+	tempDir := testutil.TempDir(t, "results_test.")
+	defer os.RemoveAll(tempDir)
+
+	// Create a pipe, but don't write to it or close it during the test.
+	// readTestOutput should time out and report an error.
+	pr, pw := io.Pipe()
+	defer pw.Close()
+
+	cfg := Config{
+		Logger:     logging.NewSimple(&bytes.Buffer{}, 0, false),
+		ResDir:     tempDir,
+		msgTimeout: time.Millisecond,
+	}
+	if err := readTestOutput(context.Background(), &cfg, pr, noOpCopyAndRemove); err == nil {
+		t.Error("readTestOutput didn't return error for timeout")
+	}
+}
+
+func TestNextMessageTimeout(t *gotesting.T) {
+	now := time.Unix(60, 0)
+
+	for _, tc := range []struct {
+		now         time.Time
+		msgTimeout  time.Duration
+		ctxTimeout  time.Duration
+		testStart   time.Time
+		testTimeout time.Duration
+		exp         time.Duration
+	}{
+		{
+			// Outside a test, and without a custom or context timeout, use the default.
+			exp: defaultMsgTimeout,
+		},
+		{
+			// If a message timeout is supplied, use it instead of default.
+			msgTimeout: 5 * time.Second,
+			exp:        5 * time.Second,
+		},
+		{
+			// Mid-test, use the test's remaining time plus the normal message timeout.
+			msgTimeout:  10 * time.Second,
+			testStart:   now.Add(-1 * time.Second),
+			testTimeout: 5 * time.Second,
+			exp:         14 * time.Second,
+		},
+		{
+			// A context timeout should cap whatever timeout would be used otherwise.
+			msgTimeout: 20 * time.Second,
+			ctxTimeout: 11 * time.Second,
+			exp:        11 * time.Second,
+		},
+	} {
+		ctx := context.Background()
+		var cancel context.CancelFunc
+		if tc.ctxTimeout != 0 {
+			ctx, cancel = context.WithDeadline(ctx, now.Add(tc.ctxTimeout))
+		}
+
+		h := resultsHandler{
+			ctx: ctx,
+			cfg: &Config{msgTimeout: tc.msgTimeout},
+		}
+		if !tc.testStart.IsZero() {
+			h.res = &testResult{
+				Test:             testing.Test{Timeout: tc.testTimeout},
+				testStartMsgTime: tc.testStart,
+			}
+		}
+
+		// Avoid printing ugly negative numbers for unset testStart fields.
+		var testStartUnix int64
+		if !tc.testStart.IsZero() {
+			testStartUnix = tc.testStart.Unix()
+		}
+		if act := h.nextMessageTimeout(now); act != tc.exp {
+			t.Errorf("nextMessageTimeout(%v) (msgTimeout=%v, ctxTimeout=%v testStart=%v, testTimeout=%v) = %v; want %v",
+				now.Unix(), tc.msgTimeout, tc.ctxTimeout, testStartUnix, tc.testTimeout, act, tc.exp)
+		}
+
+		if cancel != nil {
+			cancel()
+		}
+	}
 }

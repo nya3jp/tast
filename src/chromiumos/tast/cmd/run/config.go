@@ -8,6 +8,7 @@ package run
 import (
 	"flag"
 	"path/filepath"
+	"time"
 
 	"chromiumos/tast/cmd/build"
 	"chromiumos/tast/cmd/logging"
@@ -26,6 +27,8 @@ type Config struct {
 	Target   string         // target for testing, in the form "[<user>@]host[:<port>]"
 	Patterns []string       // patterns specifying tests to run
 	ResDir   string         // directory where test results should be written
+
+	msgTimeout time.Duration // timeout for reading control messages; default used if zero
 }
 
 // SetFlags adds common run-related flags to f that store values in Config.

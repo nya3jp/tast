@@ -30,6 +30,8 @@ const (
 	testLogFilename = "log.txt"      // file in test's dir containing its logs
 
 	testOutputTimeFmt = "15:04:05.000" // format for timestamps attached to test output
+
+	defaultMsgTimeout = time.Minute // default timeout for reading next control message
 )
 
 // testResult contains the results from a single test.
@@ -41,14 +43,15 @@ type testResult struct {
 	// Errors contains errors encountered while running the test.
 	// If it is empty, the test passed.
 	Errors []testing.Error `json:"errors"`
-	// Start is the time at which the test started.
+	// Start is the time at which the test started (as reported by the test binary).
 	Start time.Time `json:"start"`
-	// End is the time at which the test completed.
+	// End is the time at which the test completed (as reported by the test binary).
 	End time.Time `json:"end"`
 	// OutDir is the directory into which test output is stored.
 	OutDir string `json:"outDir"`
 
-	logFile *os.File // test's log file
+	testStartMsgTime time.Time // time at which TestStart control message was received
+	logFile          *os.File  // test's log file
 }
 
 // copyAndRemoveFunc copies src on a DUT to dst on the local machine and then
@@ -141,9 +144,10 @@ func (r *resultsHandler) handleTestStart(msg *control.TestStart) error {
 	}
 
 	r.res = &testResult{
-		Test:   msg.Test,
-		Start:  msg.Time,
-		OutDir: r.getTestOutputDir(msg.Test.Name),
+		Test:             msg.Test,
+		Start:            msg.Time,
+		OutDir:           r.getTestOutputDir(msg.Test.Name),
+		testStartMsgTime: time.Now(),
 	}
 
 	var err error
@@ -299,6 +303,36 @@ func (r *resultsHandler) writeResults() error {
 	return nil
 }
 
+// nextMessageTimeout calculates the maximum amount of time to wait for the next
+// control message from the test executable.
+func (r *resultsHandler) nextMessageTimeout(now time.Time) time.Duration {
+	timeout := defaultMsgTimeout
+	if r.cfg.msgTimeout > 0 {
+		timeout = r.cfg.msgTimeout
+	}
+
+	// If we're in the middle of a test, add its timeout.
+	if r.res != nil {
+		elapsed := now.Sub(r.res.testStartMsgTime)
+		if elapsed < r.res.Timeout {
+			timeout += r.res.Timeout - elapsed
+		}
+	}
+
+	// Now cap the timeout to the context's deadline, if any.
+	ctxDeadline, ok := r.ctx.Deadline()
+	if !ok {
+		return timeout
+	}
+	if now.After(ctxDeadline) {
+		return time.Duration(0)
+	}
+	if ctxTimeout := ctxDeadline.Sub(now); ctxTimeout < timeout {
+		return ctxTimeout
+	}
+	return timeout
+}
+
 // handleMessage handles generic control messages from test executables.
 func (r *resultsHandler) handleMessage(msg interface{}) error {
 	switch v := msg.(type) {
@@ -323,6 +357,44 @@ func (r *resultsHandler) handleMessage(msg interface{}) error {
 	}
 }
 
+// processMessages processes control messages and errors supplied by mch and ech.
+func (r *resultsHandler) processMessages(mch chan interface{}, ech chan error) error {
+	for {
+		timeout := r.nextMessageTimeout(time.Now())
+		select {
+		case msg := <-mch:
+			if msg == nil {
+				// If the channel is closed, we'll read the zero value.
+				return nil
+			}
+			if err := r.handleMessage(msg); err != nil {
+				return err
+			}
+		case err := <-ech:
+			return err
+		case <-time.After(timeout):
+			return fmt.Errorf("timed out after waiting %v for next message", timeout)
+		}
+	}
+}
+
+// readMessages reads serialized control messages from r and passes them
+// via mch. If an error is encountered, it is passed via ech and no more
+// reads are performed. Channels are closed before returning.
+func readMessages(r io.Reader, mch chan interface{}, ech chan error) {
+	mr := control.NewMessageReader(r)
+	for mr.More() {
+		msg, err := mr.ReadMessage()
+		if err != nil {
+			ech <- err
+			break
+		}
+		mch <- msg
+	}
+	close(mch)
+	close(ech)
+}
+
 // readTestOutput reads test output from r and writes the test results to cfg.ResDir.
 func readTestOutput(ctx context.Context, cfg *Config, r io.Reader, crf copyAndRemoveFunc) error {
 	rh := resultsHandler{
@@ -333,15 +405,15 @@ func readTestOutput(ctx context.Context, cfg *Config, r io.Reader, crf copyAndRe
 	}
 	defer rh.close()
 
-	mr := control.NewMessageReader(r)
-	for mr.More() {
-		msg, err := mr.ReadMessage()
-		if err != nil {
-			return err
-		}
-		if err = rh.handleMessage(msg); err != nil {
-			return err
-		}
+	mch := make(chan interface{})
+	ech := make(chan error)
+	go readMessages(r, mch, ech)
+
+	if err := rh.processMessages(mch, ech); err != nil {
+		return err
 	}
+
+	// TODO(derat): Check that RunStart and RunEnd messages were received and that the
+	// number of TestStart/TestEnd pairs matched the number specified in RunStart.
 	return nil
 }

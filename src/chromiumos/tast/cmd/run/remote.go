@@ -76,7 +76,7 @@ func runRemoteTestBinary(ctx context.Context, bin string, cfg *Config) error {
 	if err := cmd.Start(); err != nil {
 		return err
 	}
-	if err := readTestOutput(ctx, cfg.Logger, stdout, cfg.ResDir, os.Rename); err != nil {
+	if err := readTestOutput(ctx, cfg, stdout, os.Rename); err != nil {
 		return err
 	}
 	if err := cmd.Wait(); err != nil {

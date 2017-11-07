@@ -123,6 +123,81 @@ func TestReadTestOutput(t *gotesting.T) {
 	// TODO(derat): Check more output, including run errors.
 }
 
+func TestValidateMessages(t *gotesting.T) {
+	tempDir := testutil.TempDir(t, "results_test.")
+	defer os.RemoveAll(tempDir)
+
+	for _, tc := range []struct {
+		desc string
+		msgs []interface{}
+	}{
+		{"no RunStart", []interface{}{
+			&control.RunEnd{time.Unix(1, 0), "", ""},
+		}},
+		{"multiple RunStart", []interface{}{
+			&control.RunStart{time.Unix(1, 0), 0},
+			&control.RunStart{time.Unix(2, 0), 0},
+			&control.RunEnd{time.Unix(3, 0), "", ""},
+		}},
+		{"no RunEnd", []interface{}{
+			&control.RunStart{time.Unix(1, 0), 0},
+		}},
+		{"multiple RunEnd", []interface{}{
+			&control.RunStart{time.Unix(1, 0), 0},
+			&control.RunEnd{time.Unix(2, 0), "", ""},
+			&control.RunEnd{time.Unix(3, 0), "", ""},
+		}},
+		{"num tests mismatch", []interface{}{
+			&control.RunStart{time.Unix(1, 0), 1},
+			&control.RunEnd{time.Unix(2, 0), "", ""},
+		}},
+		{"unfinished test", []interface{}{
+			&control.RunStart{time.Unix(1, 0), 1},
+			&control.TestStart{time.Unix(2, 0), "test1", testing.Test{Name: "test1"}},
+			&control.TestEnd{time.Unix(3, 0), "test1"},
+			&control.TestStart{time.Unix(4, 0), "test2", testing.Test{Name: "test2"}},
+			&control.RunEnd{time.Unix(5, 0), "", ""},
+		}},
+		{"TestStart before RunStart", []interface{}{
+			&control.TestStart{time.Unix(1, 0), "test1", testing.Test{Name: "test1"}},
+			&control.RunStart{time.Unix(2, 0), 1},
+			&control.TestEnd{time.Unix(3, 0), "test1"},
+			&control.RunEnd{time.Unix(4, 0), "", ""},
+		}},
+		{"TestError without TestStart", []interface{}{
+			&control.RunStart{time.Unix(1, 0), 0},
+			&control.TestError{time.Unix(2, 0), testing.Error{}},
+			&control.RunEnd{time.Unix(3, 0), "", ""},
+		}},
+		{"wrong TestEnd", []interface{}{
+			&control.RunStart{time.Unix(1, 0), 0},
+			&control.TestStart{time.Unix(2, 0), "test1", testing.Test{Name: "test1"}},
+			&control.TestEnd{time.Unix(3, 0), "test2"},
+			&control.RunEnd{time.Unix(3, 0), "", ""},
+		}},
+		{"no TestEnd", []interface{}{
+			&control.RunStart{time.Unix(1, 0), 2},
+			&control.TestStart{time.Unix(2, 0), "test1", testing.Test{Name: "test1"}},
+			&control.TestStart{time.Unix(3, 0), "test2", testing.Test{Name: "test2"}},
+			&control.TestEnd{time.Unix(4, 0), "test2"},
+			&control.RunEnd{time.Unix(5, 0), "", ""},
+		}},
+	} {
+		b := bytes.Buffer{}
+		mw := control.NewMessageWriter(&b)
+		for _, msg := range tc.msgs {
+			mw.WriteMessage(msg)
+		}
+		cfg := Config{
+			Logger: logging.NewSimple(&bytes.Buffer{}, 0, false),
+			ResDir: filepath.Join(tempDir, tc.desc),
+		}
+		if err := readTestOutput(context.Background(), &cfg, &b, noOpCopyAndRemove); err == nil {
+			t.Errorf("readTestOutput() didn't fail for %s", tc.desc)
+		}
+	}
+}
+
 func TestReadTestOutputTimeout(t *gotesting.T) {
 	tempDir := testutil.TempDir(t, "results_test.")
 	defer os.RemoveAll(tempDir)

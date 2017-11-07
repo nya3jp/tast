@@ -63,11 +63,12 @@ type resultsHandler struct {
 	ctx context.Context
 	cfg *Config
 
-	numTests int               // total number of tests that are expected to run
-	results  []testResult      // information about completed tests
-	res      *testResult       // information about the currently-running test
-	stage    *timing.Stage     // current test's timing stage
-	crf      copyAndRemoveFunc // function used to copy and remove files from DUT
+	runStart, runEnd time.Time         // test-binary-reported times at which run started and ended
+	numTests         int               // total number of tests that are expected to run
+	results          []testResult      // information about completed tests
+	res              *testResult       // information about the currently-running test
+	stage            *timing.Stage     // current test's timing stage
+	crf              copyAndRemoveFunc // function used to copy and remove files from DUT
 }
 
 func (r *resultsHandler) close() {
@@ -88,6 +89,10 @@ func (r *resultsHandler) setProgress(s string) {
 
 // handleRunStart handles RunStart control messages from test executables.
 func (r *resultsHandler) handleRunStart(msg *control.RunStart) error {
+	if !r.runStart.IsZero() {
+		return errors.New("multiple RunStart messages")
+	}
+	r.runStart = msg.Time
 	r.numTests = msg.NumTests
 	r.setProgress("Starting testing")
 	return nil
@@ -107,6 +112,17 @@ func (r *resultsHandler) handleRunError(msg *control.RunError) error {
 
 // handleRunEnd handles RunEnd control messages from test executables.
 func (r *resultsHandler) handleRunEnd(msg *control.RunEnd) error {
+	if r.runStart.IsZero() {
+		return errors.New("no RunStart message before RunEnd")
+	}
+	if r.res != nil {
+		return fmt.Errorf("got RunEnd message while %s still running", r.res.Name)
+	}
+	if !r.runEnd.IsZero() {
+		return errors.New("multiple RunEnd messages")
+	}
+	r.runEnd = msg.Time
+
 	if len(msg.LogDir) != 0 {
 		r.setProgress("Copying system logs")
 		if err := r.crf(msg.LogDir, filepath.Join(r.cfg.ResDir, systemLogsDir)); err != nil {
@@ -135,8 +151,11 @@ func (r *resultsHandler) handleTestStart(msg *control.TestStart) error {
 		msg.Test.Name = msg.Name
 	}
 
+	if r.runStart.IsZero() {
+		return errors.New("no RunStart message before TestStart")
+	}
 	if r.res != nil {
-		return fmt.Errorf("notified about start of %s while %s still running",
+		return fmt.Errorf("got TestStart message for %s while %s still running",
 			msg.Test.Name, r.res.Name)
 	}
 	if tl, ok := timing.FromContext(r.ctx); ok {
@@ -176,7 +195,7 @@ func (r *resultsHandler) handleTestLog(msg *control.TestLog) error {
 // handleTestError handles TestError control messages from test executables.
 func (r *resultsHandler) handleTestError(msg *control.TestError) error {
 	if r.res == nil {
-		return errors.New("notified about test error while no test was running")
+		return errors.New("got TestError message while no test was running")
 	}
 
 	te := msg.Error
@@ -195,7 +214,7 @@ func (r *resultsHandler) handleTestError(msg *control.TestError) error {
 // handleTestEnd handles TestEnd control messages from test executables.
 func (r *resultsHandler) handleTestEnd(msg *control.TestEnd) error {
 	if r.res == nil || msg.Name != r.res.Name {
-		return fmt.Errorf("notified about completion of not-started test %s", msg.Name)
+		return fmt.Errorf("got TestEnd message for not-started test %s", msg.Name)
 	}
 	if r.stage != nil {
 		r.stage.End()
@@ -413,7 +432,12 @@ func readTestOutput(ctx context.Context, cfg *Config, r io.Reader, crf copyAndRe
 		return err
 	}
 
-	// TODO(derat): Check that RunStart and RunEnd messages were received and that the
-	// number of TestStart/TestEnd pairs matched the number specified in RunStart.
+	if rh.runEnd.IsZero() {
+		return errors.New("no RunEnd message")
+	}
+	if len(rh.results) != rh.numTests {
+		return fmt.Errorf("got results for %v test(s); expected %v", len(rh.results), rh.numTests)
+	}
+
 	return nil
 }

@@ -22,6 +22,30 @@
       "revId": "6f12855f95c1b4cf1bdbeb03e3e2a74e4dc32e42",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "df3080ca_136fa931",
+        "filename": "src/chromiumos/tast/cmd/run/results.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-11-14T18:11:44Z",
+      "side": 1,
+      "message": "these error messages get nested, so the output that the user would see is like this:\n\n  2017/11/14 10:01:08 Failed running tests: multiple RunEnd messages\n\ni don\u0027t expect people to hit these in practice (except maybe the \"no RunEnd message\" one if a test executable somehow manages to exit prematurely with a 0 exit code), and i lean in the direction of wanting to include more detail (which i think is in line with many of the error messages that i see returned by the go standard library).\n\nwould your preference be that these be more like \"got multiple messages about run completion\", or that they be wrapped in an intermediate error like \"bad test executable output\", or something else?",
+      "parentUuid": "1aaf097b_828419c2",
+      "range": {
+        "startLine": 116,
+        "startChar": 24,
+        "endLine": 122,
+        "endChar": 36
+      },
+      "revId": "6f12855f95c1b4cf1bdbeb03e3e2a74e4dc32e42",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

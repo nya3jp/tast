@@ -74,25 +74,27 @@ func Local(ctx context.Context, cfg *Config) subcommands.ExitStatus {
 				time.Now().Sub(start).Seconds(), formatBytes(bytes))
 		}
 
-		cfg.Logger.Status("Getting data file list")
-		cfg.Logger.Log("Getting data file list from ", cfg.Target)
-		dp, err := getDataFilePaths(ctx, hst, bin, cfg)
-		if err != nil {
-			cfg.Logger.Log("Failed to get data file list: ", err)
-			return subcommands.ExitFailure
-		}
-		cfg.Logger.Log("Got data file list")
+		if cfg.PrintMode == DontPrint {
+			cfg.Logger.Status("Getting data file list")
+			cfg.Logger.Log("Getting data file list from ", cfg.Target)
+			dp, err := getDataFilePaths(ctx, hst, bin, cfg)
+			if err != nil {
+				cfg.Logger.Log("Failed to get data file list: ", err)
+				return subcommands.ExitFailure
+			}
+			cfg.Logger.Log("Got data file list")
 
-		dataDir = localDataPushDir
-		cfg.Logger.Status("Pushing data files to target")
-		cfg.Logger.Log("Pushing data files to ", cfg.Target)
-		start = time.Now()
-		if bytes, err := pushDataFiles(ctx, hst, dataDir, dp, &cfg.BuildCfg); err != nil {
-			cfg.Logger.Log("Failed to push data files: ", err)
-			return subcommands.ExitFailure
-		} else {
-			cfg.Logger.Logf("Pushed data files in %0.1f sec (sent %s)",
-				time.Now().Sub(start).Seconds(), formatBytes(bytes))
+			dataDir = localDataPushDir
+			cfg.Logger.Status("Pushing data files to target")
+			cfg.Logger.Log("Pushing data files to ", cfg.Target)
+			start = time.Now()
+			if bytes, err := pushDataFiles(ctx, hst, dataDir, dp, &cfg.BuildCfg); err != nil {
+				cfg.Logger.Log("Failed to push data files: ", err)
+				return subcommands.ExitFailure
+			} else {
+				cfg.Logger.Logf("Pushed data files in %0.1f sec (sent %s)",
+					time.Now().Sub(start).Seconds(), formatBytes(bytes))
+			}
 		}
 	} else {
 		bin = localTestsBuiltinPath
@@ -218,6 +220,16 @@ func runLocalTestBinary(ctx context.Context, hst *host.SSH, bin, dataDir string,
 	for _, p := range cfg.Patterns {
 		ps += " " + host.QuoteShellArg(p)
 	}
+
+	if cfg.PrintMode != DontPrint {
+		cmd := getLocalTestCommand(bin, []string{"-listtests"}, cfg.Patterns)
+		b, err := hst.Run(ctx, cmd)
+		if err != nil {
+			return err
+		}
+		return printTests(cfg.PrintDest, b, cfg.PrintMode)
+	}
+
 	cmd := getLocalTestCommand(bin, []string{"-report", "-datadir=" + dataDir}, cfg.Patterns)
 	cfg.Logger.Logf("Starting %q on remote host", cmd)
 	handle, err := hst.Start(ctx, cmd, host.CloseStdin, host.StdoutAndStderr)

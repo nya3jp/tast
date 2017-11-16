@@ -72,6 +72,7 @@ func doMain() int {
 	subcommands.Register(subcommands.FlagsCommand(), "")
 	subcommands.Register(subcommands.CommandsCommand(), "")
 	subcommands.Register(&buildCmd{}, "")
+	subcommands.Register(newListCmd(), "")
 	subcommands.Register(&runCmd{}, "")
 
 	fancy := flag.Bool("fancy", false, "use fancy logging")

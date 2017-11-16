@@ -7,11 +7,24 @@ package run
 
 import (
 	"flag"
+	"io"
 	"path/filepath"
 	"time"
 
 	"chromiumos/tast/cmd/build"
 	"chromiumos/tast/cmd/logging"
+)
+
+// PrintMode is used to indicate that tests should be printed rather than being run.
+type PrintMode int
+
+const (
+	// DontPrint indicates that tests should be run instead of being printed.
+	DontPrint PrintMode = iota
+	// PrintNames indicates that test names should be printed, one per line.
+	PrintNames
+	// PrintJSON indicates that test details should be printed as JSON.
+	PrintJSON
 )
 
 const (
@@ -20,13 +33,25 @@ const (
 
 // Config contains shared configuration information for running local and remote tests.
 type Config struct {
-	Logger   logging.Logger // used to log progress
-	Build    bool           // rebuild tests and (for local tests) push them to the target device
-	BuildCfg build.Config   // configuration for building tests; only used if build was requested
-	KeyFile  string         // path to private SSH key to use to connect to target device
-	Target   string         // target for testing, in the form "[<user>@]host[:<port>]"
-	Patterns []string       // patterns specifying tests to run
-	ResDir   string         // directory where test results should be written
+	// Logger is used to log progress.
+	Logger logging.Logger
+	// Build controls whether tests should be rebuilt and (in the case of local tests)
+	// pushed to the target device.
+	Build bool
+	// BuildCfg is the configuration for building tests. It is only used if Build is true.
+	BuildCfg build.Config
+	// KeyFile is the path to a private SSH key to use to connect to the target device.
+	KeyFile string
+	// Target is the target device for testing, in the form "[<user>@]host[:<port>]".
+	Target string
+	// Patterns specifies which tests to run.
+	Patterns []string
+	// ResDir is the path to the directory where test results should be written.
+	ResDir string
+	// PrintMode controls whether tests should be printed to PrintDest instead of being executed.
+	PrintMode PrintMode
+	// PrintDest is used as the destination when PrintMode has a value other than DontPrint.
+	PrintDest io.Writer
 
 	msgTimeout time.Duration // timeout for reading control messages; default used if zero
 }
@@ -36,6 +61,10 @@ type Config struct {
 func (c *Config) SetFlags(f *flag.FlagSet, trunkDir string) {
 	f.StringVar(&c.KeyFile, "keyfile", filepath.Join(trunkDir, defaultKeyPath),
 		"path to private SSH key")
-	f.StringVar(&c.ResDir, "resultsdir", "", "directory for test results")
 	f.BoolVar(&c.Build, "build", true, "build and push tests")
+
+	// We only need a results dir if we're running tests rather than printing them.
+	if c.PrintMode == DontPrint {
+		f.StringVar(&c.ResDir, "resultsdir", "", "directory for test results")
+	}
 }

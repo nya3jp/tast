@@ -8,17 +8,20 @@ import (
 	"bytes"
 	"context"
 	"crypto/rsa"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
+	"reflect"
 	"strings"
-	"testing"
+	gotesting "testing"
 	"time"
 
 	"chromiumos/tast/cmd/logging"
 	"chromiumos/tast/common/control"
 	"chromiumos/tast/common/host/test"
+	"chromiumos/tast/common/testing"
 
 	"github.com/google/subcommands"
 )
@@ -77,7 +80,7 @@ func (td *localTestData) close() {
 	}
 }
 
-func TestLocalSuccess(t *testing.T) {
+func TestLocalSuccess(t *gotesting.T) {
 	td, err := newLocalTestData()
 	defer td.close()
 	if err != nil {
@@ -96,7 +99,7 @@ func TestLocalSuccess(t *testing.T) {
 	}
 }
 
-func TestLocalExecFailure(t *testing.T) {
+func TestLocalExecFailure(t *gotesting.T) {
 	td, err := newLocalTestData()
 	defer td.close()
 	if err != nil {
@@ -116,5 +119,49 @@ func TestLocalExecFailure(t *testing.T) {
 	}
 	if !strings.Contains(td.logbuf.String(), stderr) {
 		t.Errorf("Local() logged %q; want substring %q", td.logbuf.String(), stderr)
+	}
+}
+
+func TestLocalPrint(t *gotesting.T) {
+	td, err := newLocalTestData()
+	defer td.close()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	tests := []testing.Test{
+		testing.Test{Name: "pkg.Test", Desc: "This is a test", Attr: []string{"attr1", "attr2"}},
+		testing.Test{Name: "pkg.AnotherTest", Desc: "Another test"},
+	}
+	b, err := json.Marshal(tests)
+	if err != nil {
+		t.Fatal(err)
+	}
+	td.srv.FakeCmd(fmt.Sprintf("%s -listtests", localTestsBuiltinPath), 0, b, []byte{})
+
+	// Verify one-name-per-line output.
+	out := bytes.Buffer{}
+	td.cfg.PrintDest = &out
+	td.cfg.PrintMode = PrintNames
+	if status := Local(context.Background(), &td.cfg); status != subcommands.ExitSuccess {
+		t.Errorf("Local() = %v; want %v (%v)", status, subcommands.ExitSuccess, td.logbuf.String())
+	}
+	if exp := fmt.Sprintf("%s\n%s\n", tests[0].Name, tests[1].Name); out.String() != exp {
+		t.Errorf("Local() printed %q; want %q", out.String(), exp)
+	}
+
+	// Verify JSON output.
+	out.Reset()
+	td.logbuf.Reset()
+	td.cfg.PrintMode = PrintJSON
+	if status := Local(context.Background(), &td.cfg); status != subcommands.ExitSuccess {
+		t.Errorf("Local() = %v; want %v (%v)", status, subcommands.ExitSuccess, td.logbuf.String())
+	}
+	outTests := make([]testing.Test, 0)
+	if err = json.Unmarshal(out.Bytes(), &outTests); err != nil {
+		t.Error("Failed to unmarshal output from Local(): ", err)
+	}
+	if !reflect.DeepEqual(outTests, tests) {
+		t.Errorf("Local() printed tests %v; want %v", outTests, tests)
 	}
 }

@@ -41,7 +41,7 @@ type runCmd struct {
 func (*runCmd) Name() string     { return "run" }
 func (*runCmd) Synopsis() string { return "run tests" }
 func (*runCmd) Usage() string {
-	return `run <flags> <target> <test1> <test2> ...:
+	return `run <flags> <target> <pattern> <pattern> ...:
 	Runs one or more tests on a remote host.
 `
 }

@@ -59,6 +59,16 @@ func runRemoteTestBinary(ctx context.Context, bin string, cfg *Config) error {
 		defer st.End()
 	}
 
+	if cfg.PrintMode != DontPrint {
+		args := []string{"-listtests"}
+		args = append(args, cfg.Patterns...)
+		b, err := exec.Command(bin, args...).Output()
+		if err != nil {
+			return err
+		}
+		return printTests(cfg.PrintDest, b, cfg.PrintMode)
+	}
+
 	args := []string{"-report", "-target=" + cfg.Target, "-keypath=" + cfg.KeyFile}
 	args = append(args, cfg.Patterns...)
 	cmd := exec.Command(bin, args...)

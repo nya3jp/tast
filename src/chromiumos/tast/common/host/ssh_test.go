@@ -6,10 +6,7 @@ package host
 
 import (
 	"context"
-	"crypto/rand"
 	"crypto/rsa"
-	"crypto/x509"
-	"encoding/pem"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -32,40 +29,14 @@ var (
 
 func init() {
 	var err error
-	if userKey, err = rsa.GenerateKey(rand.Reader, keyBits); err != nil {
-		panic(fmt.Sprintf("Failed to generate user RSA key: %v", err))
+	if userKey, hostKey, err = test.GenerateKeys(keyBits); err != nil {
+		panic(err)
 	}
-	if hostKey, err = rsa.GenerateKey(rand.Reader, keyBits); err != nil {
-		panic(fmt.Sprintf("Failed to generate host RSA key: %v", err))
-	}
-}
-
-// writeKey writes key to a temp file and returns its path.
-func writeKey(key *rsa.PrivateKey) (path string, err error) {
-	data := pem.EncodeToMemory(&pem.Block{
-		Type:    "RSA PRIVATE KEY",
-		Headers: nil,
-		Bytes:   x509.MarshalPKCS1PrivateKey(key),
-	})
-
-	f, err := ioutil.TempFile("", "ssh_test.key.")
-	if err != nil {
-		return "", err
-	}
-	defer f.Close()
-
-	if err = f.Chmod(0600); err != nil {
-		return "", err
-	}
-	if _, err = f.Write(data); err != nil {
-		return "", err
-	}
-	return f.Name(), nil
 }
 
 // connectToServer establishes a connection to srv using key.
 func connectToServer(ctx context.Context, srv *test.SSHServer, key *rsa.PrivateKey) (*SSH, error) {
-	keyPath, err := writeKey(key)
+	keyPath, err := test.WriteKey(key)
 	if err != nil {
 		return nil, err
 	}

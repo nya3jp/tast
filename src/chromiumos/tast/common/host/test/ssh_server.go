@@ -38,7 +38,14 @@ type SSHServer struct {
 	cfg         *ssh.ServerConfig
 	listener    net.Listener
 	nextCmd     string
+	fakeCmds    map[string]cmdResult
 	answerPings bool
+}
+
+// cmdResult holds the result that should be returned in response to a command.
+type cmdResult struct {
+	exitStatus     int
+	stdout, stderr []byte
 }
 
 // newServerConfig returns a new configuration for a server using host key hk
@@ -77,7 +84,12 @@ func NewSSHServer(pk *rsa.PublicKey, hk *rsa.PrivateKey) (*SSHServer, error) {
 	if err != nil {
 		return nil, err
 	}
-	s := &SSHServer{cfg, ls, "", true}
+	s := &SSHServer{
+		cfg:         cfg,
+		listener:    ls,
+		fakeCmds:    make(map[string]cmdResult),
+		answerPings: true,
+	}
 
 	go func() {
 		for {
@@ -100,9 +112,15 @@ func (s *SSHServer) Close() error {
 	return s.listener.Close()
 }
 
-// NextCmd registers the next command that will be requested by the client.
+// NextCmd sets the next command expected to be sent in an "exec" request.
+// The supplied command will actually be executed.
 func (s *SSHServer) NextCmd(cmd string) {
 	s.nextCmd = cmd
+}
+
+// FakeCmd configures the result to be sent for an "exec" request exactly matching cmd.
+func (s *SSHServer) FakeCmd(cmd string, exitStatus int, stdout, stderr []byte) {
+	s.fakeCmds[cmd] = cmdResult{exitStatus, stdout, stderr}
 }
 
 // AnswerPings controls whether the server should reply to SSH_MSG_IGNORE ping
@@ -153,24 +171,38 @@ func (s *SSHServer) handleConn(conn net.Conn) error {
 func (s *SSHServer) handleChannel(ch ssh.Channel, reqs <-chan *ssh.Request) {
 	defer ch.Close()
 	for req := range reqs {
-		if req.Type != "exec" {
+		switch req.Type {
+		case "exec":
+			s.handleExec(ch, req)
+		default:
 			req.Reply(false, nil)
-			return
 		}
-		cl, err := readStringPayload(req.Payload)
-		if err != nil || cl != s.nextCmd {
-			req.Reply(false, nil)
-			return
-		}
-		s.nextCmd = ""
+		return
+	}
+}
 
+// handleExec handles "exec" request req received on ch.
+func (s *SSHServer) handleExec(ch ssh.Channel, req *ssh.Request) {
+	cl, err := readStringPayload(req.Payload)
+	if err != nil || cl == "" {
+		req.Reply(false, nil)
+		return
+	}
+
+	status := 0
+	defer s.NextCmd("")
+
+	if res, ok := s.fakeCmds[cl]; ok {
 		req.Reply(true, nil)
-
+		ch.Write(res.stdout)
+		ch.Stderr().Write(res.stderr)
+		status = res.exitStatus
+	} else if cl == s.nextCmd {
+		req.Reply(true, nil)
 		cmd := exec.Command("/bin/sh", "-c", cl)
 		cmd.Stdout = ch
 		cmd.Stderr = ch.Stderr()
 		cmd.Stdin = ch
-		status := 0
 		if err = cmd.Run(); err != nil {
 			if ee, ok := err.(*exec.ExitError); ok {
 				if ws, ok := ee.Sys().(syscall.WaitStatus); ok {
@@ -178,9 +210,12 @@ func (s *SSHServer) handleChannel(ch ssh.Channel, reqs <-chan *ssh.Request) {
 				}
 			}
 		}
-		ch.SendRequest("exit-status", false, makeIntPayload(uint32(status)))
+	} else {
+		req.Reply(false, nil)
 		return
 	}
+
+	ch.SendRequest("exit-status", false, makeIntPayload(uint32(status)))
 }
 
 // readStringPayload reads and returns a length-prefixed string

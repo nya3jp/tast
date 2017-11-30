@@ -22,6 +22,30 @@
       "revId": "c5759da894d4e1332389cbea43006276d76160f0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4e5b8d93_56deacce",
+        "filename": "src/chromiumos/tast/cmd/list_cmd.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-11-30T07:04:11Z",
+      "side": 1,
+      "message": "https://godoc.org/github.com/google/subcommands#Command is the interface that this implements, and this is a variable-length \"args\" argument that i\u0027m not using. https://godoc.org/github.com/google/subcommands#Commander.Execute has some more documentation:\n\n\"... The additional args are provided as-is to the Execute method of the selected Command.\"\n\nif i\u0027m reading the implementation at https://github.com/google/subcommands/blob/master/subcommands.go correctly, these are just the same args that are passed to subcommands.Execute earlier (i.e. no args, in this case).",
+      "parentUuid": "1f4bb0ba_9dd39fbe",
+      "range": {
+        "startLine": 54,
+        "startChar": 65,
+        "endLine": 54,
+        "endChar": 81
+      },
+      "revId": "c5759da894d4e1332389cbea43006276d76160f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

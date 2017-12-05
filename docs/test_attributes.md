@@ -12,6 +12,6 @@ established meanings.
 *   `flaky` - Test is known to be flaky. It will still run, but failures will be
     not cause the suite to fail.
 
-[testing.Test]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/common/testing#Test
+[testing.Test]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Test
 [ARC]: https://developer.android.com/topic/arc/index.html
 [Build Verification Test]: https://en.wikipedia.org/wiki/Smoke_testing_(software)

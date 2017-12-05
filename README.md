@@ -14,13 +14,12 @@ point for learning more about how the system is structured.
 This repository is organized in accordance with the [Go in Chromium OS]
 suggestions.
 
-*   [`src/chromiumos/tast/`](src/chromiumos/tast/)
-    *   [`cmd/`](src/chromiumos/tast/cmd/) - `main` package for the `tast`
+*   [`src/chromiumos/`](src/chromiumos/)
+    *   [`cmd/tast/`](src/chromiumos/cmd/tast/) - `main` package for the `tast`
         executable used to build and run tests.
         *   `...` - Packages used only by the `tast` executable.
-    *   [`common/`](src/chromiumos/tast/common/) - Packages shared between some
-        combination of `tast/` and `local/` and `remote/` from the [tast-tests]
-        repository.
+    *   [`tast/...`](src/chromiumos/tast/) - Common packages shared by multiple
+        executables.
 
 Tests are located in the [tast-tests] repository.
 
@@ -28,10 +27,9 @@ Tests are located in the [tast-tests] repository.
 
 For more details, see the [docs](docs/) subdirectory.
 
-Package documentation is available at [godoc.org].
+[![GoDoc](https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src?status.svg)](https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src)
 
 [quickstart]: docs/quickstart.md
 [overview]: docs/overview.md
 [Go in Chromium OS]: http://www.chromium.org/chromium-os/developer-guide/go-in-chromium-os
 [tast-tests]: ../tast-tests/
-[godoc.org]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast

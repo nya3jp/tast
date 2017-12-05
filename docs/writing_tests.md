@@ -50,7 +50,7 @@ insert underscores between words) with contents similar to the following:
 package example
 
 import (
-	"chromiumos/tast/common/testing"
+	"chromiumos/tast/testing"
 )
 
 func init() {
@@ -135,8 +135,9 @@ See the `example.DataFiles` test for a complete example of using data files.
 ## Adding new test packages
 
 When adding a new test package, you must update the test executable's `main.go`
-file (either [local/main.go] or [remote/main.go]) to underscore-import the new
-package so its `init` functions will run and register tests.
+file (either [cmd/local_tests/main.go] or [cmd/remote_tests/main.go]) to
+underscore-import the new package so its `init` functions will run and register
+tests.
 
 [tast-tests repository]: ../../tast-tests/
 [src/chromiumos/tast/local/tests/]: ../../tast-tests/src/chromiumos/tast/local/tests/
@@ -151,8 +152,8 @@ package so its `init` functions will run and register tests.
 [Best practices for writing Chrome OS unit tests]: https://chromium.googlesource.com/chromiumos/docs/+/master/unit_tests.md
 [Go's naming conventions]: https://golang.org/doc/effective_go.html#names
 [acronyms should be fully capitalized]: https://github.com/golang/go/wiki/CodeReviewComments#initialisms
-[Tast testing package]: ../src/chromiumos/tast/common/testing/
+[Tast testing package]: ../src/chromiumos/tast/testing/
 [context.Context]: https://golang.org/pkg/context/
 [Running tests]: running_tests.md
-[local/main.go]: ../../tast-tests/src/chromiumos/tast/local/main.go
-[remote/main.go]: ../../tast-tests/src/chromiumos/tast/remote/main.go
+[cmd/local_tests/main.go]: ../../tast-tests/src/chromiumos/cmd/local_tests/main.go
+[cmd/remote_tests/main.go]: ../../tast-tests/src/chromiumos/cmd/remote_tests/main.go

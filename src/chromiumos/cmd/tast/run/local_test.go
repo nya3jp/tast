@@ -90,7 +90,7 @@ func TestLocalSuccess(t *gotesting.T) {
 	ob := bytes.Buffer{}
 	mw := control.NewMessageWriter(&ob)
 	mw.WriteMessage(&control.RunStart{time.Unix(1, 0), 0})
-	mw.WriteMessage(&control.RunEnd{time.Unix(2, 0), "", ""})
+	mw.WriteMessage(&control.RunEnd{time.Unix(2, 0), "", "", ""})
 	td.srv.FakeCmd(fmt.Sprintf("%s -report -datadir=%s", localTestsBuiltinPath, localDataBuiltinDir),
 		0, ob.Bytes(), []byte{})
 
@@ -109,7 +109,7 @@ func TestLocalExecFailure(t *gotesting.T) {
 	ob := bytes.Buffer{}
 	mw := control.NewMessageWriter(&ob)
 	mw.WriteMessage(&control.RunStart{time.Unix(1, 0), 0})
-	mw.WriteMessage(&control.RunEnd{time.Unix(2, 0), "", ""})
+	mw.WriteMessage(&control.RunEnd{time.Unix(2, 0), "", "", ""})
 	const stderr = "some failure message\n"
 	td.srv.FakeCmd(fmt.Sprintf("%s -report -datadir=%s", localTestsBuiltinPath, localDataBuiltinDir),
 		1, ob.Bytes(), []byte(stderr))

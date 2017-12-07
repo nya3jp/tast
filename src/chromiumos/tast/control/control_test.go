@@ -26,7 +26,7 @@ func TestWriteAndRead(t *gotesting.T) {
 		&TestLog{time.Unix(4, 0), "here's a log message"},
 		&TestError{time.Unix(5, 0), testing.Error{"whoops", "file.go", 20, "stack"}},
 		&TestEnd{time.Unix(6, 0), "pkg.MyTest"},
-		&RunEnd{time.Unix(7, 0), "/tmp/log", "/tmp/out"},
+		&RunEnd{time.Unix(7, 0), "/tmp/log", "/tmp/crash", "/tmp/out"},
 		&RunError{time.Unix(8, 0), testing.Error{"whoops again", "file2.go", 30, "stack 2"}},
 	}
 

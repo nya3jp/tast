@@ -26,6 +26,7 @@ import (
 const (
 	resultsFilename = "results.json" // file in Config.ResDir containing test results
 	systemLogsDir   = "system_logs"  // dir in Config.ResDir containing DUT's system logs
+	crashesDir      = "crashes"      // dir in Config.ResDir containing DUT's crashes
 	testLogsDir     = "tests"        // dir in Config.ResDir containing tests' dirs
 	testLogFilename = "log.txt"      // file in test's dir containing its logs
 
@@ -127,6 +128,13 @@ func (r *resultsHandler) handleRunEnd(msg *control.RunEnd) error {
 		r.setProgress("Copying system logs")
 		if err := r.crf(msg.LogDir, filepath.Join(r.cfg.ResDir, systemLogsDir)); err != nil {
 			r.cfg.Logger.Log("Failed to copy system logs: ", err)
+		}
+	}
+
+	if len(msg.CrashDir) != 0 {
+		r.setProgress("Copying crashes")
+		if err := r.crf(msg.CrashDir, filepath.Join(r.cfg.ResDir, crashesDir)); err != nil {
+			r.cfg.Logger.Log("Failed to copy crashes: ", err)
 		}
 	}
 

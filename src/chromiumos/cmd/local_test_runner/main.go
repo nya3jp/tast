@@ -20,8 +20,8 @@ import (
 )
 
 const (
-	defaultBundleGlob = "/usr/local/share/tast/bundles/*" // default glob matching test bundles
-	defaultDataDir    = "/usr/local/share/tast/data"      // default dir containing test data
+	defaultBundleGlob = "/usr/local/libexec/tast/bundles/*" // default glob matching test bundles
+	defaultDataDir    = "/usr/local/share/tast/data"        // default dir containing test data
 
 	systemLogDir      = "/var/log" // directory where system logs are located
 	maxCrashesPerExec = 3          // max crashes to collect per executable

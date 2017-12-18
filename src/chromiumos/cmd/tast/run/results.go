@@ -229,8 +229,8 @@ func (r *resultsHandler) handleTestEnd(msg *control.TestEnd) error {
 		r.stage.End()
 	}
 
-	r.cfg.Logger.Logf("Completed test %s in %0.1f sec with %d error(s)",
-		msg.Name, msg.Time.Sub(r.res.Start).Seconds(), len(r.res.Errors))
+	r.cfg.Logger.Logf("Completed test %s in %v with %d error(s)",
+		msg.Name, msg.Time.Sub(r.res.Start).Round(time.Millisecond), len(r.res.Errors))
 	r.res.End = msg.Time
 	r.results = append(r.results, *r.res)
 

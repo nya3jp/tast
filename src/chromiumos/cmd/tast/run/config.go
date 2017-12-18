@@ -35,10 +35,13 @@ const (
 type Config struct {
 	// Logger is used to log progress.
 	Logger logging.Logger
-	// Build controls whether tests should be rebuilt and (in the case of local tests)
-	// pushed to the target device.
+	// Build controls whether a single test bundle should be rebuilt and (in the case of
+	// local tests) pushed to the target device.
 	Build bool
-	// BuildCfg is the configuration for building tests. It is only used if Build is true.
+	// BuildBundle contains the name of the test bundle to rebuild (e.g. "cros").
+	// It is only used if Build is true.
+	BuildBundle string
+	// BuildCfg is the configuration for building test bundles. It is only used if Build is true.
 	BuildCfg build.Config
 	// KeyFile is the path to a private SSH key to use to connect to the target device.
 	KeyFile string
@@ -61,7 +64,8 @@ type Config struct {
 func (c *Config) SetFlags(f *flag.FlagSet, trunkDir string) {
 	f.StringVar(&c.KeyFile, "keyfile", filepath.Join(trunkDir, defaultKeyPath),
 		"path to private SSH key")
-	f.BoolVar(&c.Build, "build", true, "build and push tests")
+	f.BoolVar(&c.Build, "build", true, "build and push test bundle")
+	f.StringVar(&c.BuildBundle, "buildbundle", "cros", "name of test bundle to build")
 
 	// We only need a results dir if we're running tests rather than printing them.
 	if c.PrintMode == DontPrint {

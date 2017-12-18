@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Package build provides support for compiling tests.
+// Package build provides support for compiling tests and related executables.
 package build
 
 import (
@@ -36,10 +36,11 @@ var archToCompiler map[string]string = map[string]string{
 	"aarch64": "armv7a-cros-linux-gnueabi-go",
 }
 
-// BuildTests builds executable package pkg to path as dictated by cfg.
-func BuildTests(ctx context.Context, cfg *Config, pkg, path string) (out []byte, err error) {
+// Build builds executable package pkg to path as dictated by cfg.
+// stageName is used as the name of a new stage reported via the timing package.
+func Build(ctx context.Context, cfg *Config, pkg, path, stageName string) (out []byte, err error) {
 	if tl, ok := timing.FromContext(ctx); ok {
-		st := tl.Start("build_tests")
+		st := tl.Start(stageName)
 		defer st.End()
 	}
 

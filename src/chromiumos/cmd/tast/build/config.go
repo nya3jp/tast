@@ -11,17 +11,17 @@ import (
 
 const (
 	defaultBuildOutDir = "/tmp/tast/build"         // default directory used to store compiled code
-	defaultTestDir     = "src/platform/tast-tests" // relative path in checkout to Go workspace containing test code
+	defaultTestDir     = "src/platform/tast-tests" // relative path in checkout to Go workspace containing test bundles
 	defaultCommonDir   = "src/platform/tast"       // relative path in checkout to Go workspace containing common code
 )
 
 // Config describes a configuration for building a test executable.
 type Config struct {
 	// TestWorkspace is the path to the Go workspace where test source code is stored
-	// (i.e. containing top-level src/chromiumos/tast/{local,remote} directories).
+	// (i.e. containing top-level src/chromiumos/tast/{local,remote}/bundles directories).
 	TestWorkspace string
 	// CommonWorkspace is the path to the Go workspace where common source code is stored
-	// (i.e. containing a top-level src/chromiumos/tast/common directory).
+	// (i.e. containing a top-level src/chromiumos/tast/testing directory).
 	CommonWorkspace string
 	// SysGopath is the path to the Go workspace containing source for test executables'
 	// emerged dependencies. This is typically /usr/lib/gopath.
@@ -50,7 +50,7 @@ func (c *Config) SetFlags(f *flag.FlagSet, trunkDir string) {
 	f.StringVar(&c.SysGopath, "sysgopath", "/usr/lib/gopath",
 		"Go workspace containing system package source code")
 	f.StringVar(&c.TestWorkspace, "testdir", filepath.Join(trunkDir, defaultTestDir),
-		"Go workspace containing tast tests")
+		"Go workspace containing test bundles")
 	f.StringVar(&c.CommonWorkspace, "commondir", filepath.Join(trunkDir, defaultCommonDir),
-		"Go workspace containing common tast code")
+		"Go workspace containing common code")
 }

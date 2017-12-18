@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	defaultBundleGlob = "/usr/share/tast/bundles/*" // default glob matching test bundles
+	defaultBundleGlob = "/usr/libexec/tast/bundles/*" // default glob matching test bundles
 )
 
 func main() {

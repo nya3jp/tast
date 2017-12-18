@@ -47,7 +47,7 @@ func (b *buildCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{
 		}
 	}
 
-	if out, err := build.BuildTests(ctx, &b.cfg, f.Args()[0], f.Args()[1]); err != nil {
+	if out, err := build.Build(ctx, &b.cfg, f.Args()[0], f.Args()[1], ""); err != nil {
 		lg.Logf("Failed building tests: %v\n%s", err, string(out))
 		return subcommands.ExitFailure
 	}

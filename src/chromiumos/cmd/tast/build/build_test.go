@@ -15,7 +15,7 @@ import (
 	"chromiumos/tast/testutil"
 )
 
-func TestBuildTests(t *testing.T) {
+func TestBuild(t *testing.T) {
 	tempDir := testutil.TempDir(t, "build_test.")
 	defer os.RemoveAll(tempDir)
 
@@ -61,7 +61,7 @@ func TestBuildTests(t *testing.T) {
 	}
 
 	bin := filepath.Join(tempDir, "foo")
-	if out, err := BuildTests(context.Background(), cfg, "foo/cmd", bin); err != nil {
+	if out, err := Build(context.Background(), cfg, "foo/cmd", bin, ""); err != nil {
 		t.Fatalf("Failed to build: %v: %s", err, string(out))
 	}
 

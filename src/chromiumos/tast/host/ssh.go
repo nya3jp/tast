@@ -447,6 +447,8 @@ type bytesAndError struct {
 
 // Run runs cmd synchronously on the host and returns its output. stdout and stderr are combined.
 // cmd is interpreted by the user's shell; arguments may be quoted using QuoteShellArg.
+// If the command is interrupted or exits with a nonzero status code, the returned error will
+// be of type *ssh.ExitError.
 func (s *SSH) Run(ctx context.Context, cmd string) ([]byte, error) {
 	if s.announceCmd != nil {
 		s.announceCmd(cmd)

@@ -69,8 +69,9 @@ func TestLocalSuccess(t *gotesting.T) {
 	mw := control.NewMessageWriter(&ob)
 	mw.WriteMessage(&control.RunStart{time.Unix(1, 0), 0})
 	mw.WriteMessage(&control.RunEnd{time.Unix(2, 0), "", "", ""})
-	td.srvData.Srv.FakeCmd(fmt.Sprintf("%s -report -datadir=%s", localTestsBuiltinPath, localDataBuiltinDir),
-		0, ob.Bytes(), []byte{})
+	cmd := fmt.Sprintf("%s -bundles='%s/*' -report -datadir=%s",
+		localRunnerPath, localBundleBuiltinDir, localDataBuiltinDir)
+	td.srvData.Srv.FakeCmd(cmd, 0, ob.Bytes(), []byte{})
 
 	if status := Local(context.Background(), &td.cfg); status != subcommands.ExitSuccess {
 		t.Errorf("Local() = %v; want %v (%v)", status, subcommands.ExitSuccess, td.logbuf.String())
@@ -86,8 +87,9 @@ func TestLocalExecFailure(t *gotesting.T) {
 	mw.WriteMessage(&control.RunStart{time.Unix(1, 0), 0})
 	mw.WriteMessage(&control.RunEnd{time.Unix(2, 0), "", "", ""})
 	const stderr = "some failure message\n"
-	td.srvData.Srv.FakeCmd(fmt.Sprintf("%s -report -datadir=%s", localTestsBuiltinPath, localDataBuiltinDir),
-		1, ob.Bytes(), []byte(stderr))
+	cmd := fmt.Sprintf("%s -bundles='%s/*' -report -datadir=%s",
+		localRunnerPath, localBundleBuiltinDir, localDataBuiltinDir)
+	td.srvData.Srv.FakeCmd(cmd, 1, ob.Bytes(), []byte(stderr))
 
 	if status := Local(context.Background(), &td.cfg); status != subcommands.ExitFailure {
 		t.Errorf("Local() = %v; want %v", status, subcommands.ExitFailure)
@@ -109,7 +111,8 @@ func TestLocalPrint(t *gotesting.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	td.srvData.Srv.FakeCmd(fmt.Sprintf("%s -listtests", localTestsBuiltinPath), 0, b, []byte{})
+	cmd := fmt.Sprintf("%s -bundles='%s/*' -listtests", localRunnerPath, localBundleBuiltinDir)
+	td.srvData.Srv.FakeCmd(cmd, 0, b, []byte{})
 
 	// Verify one-name-per-line output.
 	out := bytes.Buffer{}

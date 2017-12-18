@@ -120,12 +120,14 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 	switch r.testType {
 	case localType:
 		if r.cfg.Build && r.checkDeps {
-			r.cfg.BuildCfg.PortagePkg = "chromeos-base/tast-local-tests-9999"
+			r.cfg.BuildCfg.PortagePkg =
+				fmt.Sprintf("chromeos-base/tast-local-tests-%s-9999", r.cfg.BuildBundle)
 		}
 		return run.Local(ctx, &r.cfg)
 	case remoteType:
 		if r.cfg.Build && r.checkDeps {
-			r.cfg.BuildCfg.PortagePkg = "chromeos-base/tast-remote-tests-9999"
+			r.cfg.BuildCfg.PortagePkg =
+				fmt.Sprintf("chromeos-base/tast-remote-tests-%s-9999", r.cfg.BuildBundle)
 		}
 		return run.Remote(ctx, &r.cfg)
 	}

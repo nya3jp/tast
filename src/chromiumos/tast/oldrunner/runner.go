@@ -2,8 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Package runner provides functionality shared by test executables.
-package runner
+// Package oldrunner provides functionality shared by test executables.
+//
+// TODO(derat): Test executables are in the process of being split into test
+// runners and test bundles, as tracked by https://crbug.com/784944. This
+// package has been renamed so that a new "runner" package can be introduced
+// for use by test runners, and "oldrunner" should be deleted once the
+// transition is complete.
+package oldrunner
 
 import (
 	"context"

@@ -6,8 +6,10 @@
 package testing
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"path/filepath"
 	"reflect"
 	"runtime"
@@ -28,7 +30,8 @@ type TestFunc func(*State)
 // While this struct can be marshaled to a JSON object, note that unmarshaling that object
 // will not yield a runnable Test struct; Func will not be present.
 type Test struct {
-	// Name specifies the test's name. If empty, generated from Func's package and function name.
+	// Name specifies the test's name. If empty (which it typically should be), generated from Func's
+	// package and function name.
 	Name string `json:"name"`
 	// Func is the function to be executed to perform the test.
 	Func TestFunc `json:"-"`
@@ -40,19 +43,19 @@ type Test struct {
 	Attr []string `json:"attr"`
 	// Data contains paths of data files needed by the test, relative to a "data" subdirectory within the
 	// directory in which TestFunc is located.
-	Data []string `json:"-"`
+	Data []string `json:"data"`
 	// Timeout contains the maximum duration for which Func may run before the test is aborted.
 	// This should almost always be omitted when defining tests; a reasonable default will be used.
 	Timeout time.Duration `json:"timeout"`
-
-	// Package in which Func is located.
-	pkg string
+	// Go package in which Func is located. This is filled automatically and should be omitted when
+	// defining tests; it is only public so it can be included when this struct is marshaled.
+	Pkg string `json:"pkg"`
 }
 
 // DataDir returns the path to the directory in which files listed in Data will be located,
 // relative to the top-level directory containing data files.
 func (tst *Test) DataDir() string {
-	return filepath.Join(tst.pkg, testDataSubdir)
+	return filepath.Join(tst.Pkg, testDataSubdir)
 }
 
 // Run runs the test, passing s to it. The output channel is not closed automatically.
@@ -111,7 +114,7 @@ func (tst *Test) populateNameAndPkg() error {
 		tst.Name = fmt.Sprintf("%s.%s", p[len(p)-1], name)
 	}
 
-	tst.pkg = pkg
+	tst.Pkg = pkg
 
 	return nil
 }
@@ -127,4 +130,14 @@ func getTestFunctionPackageAndName(f TestFunc) (pkg, name string, err error) {
 		return "", "", fmt.Errorf("didn't find package.function in %q", rf.Name())
 	}
 	return p[0], p[1], nil
+}
+
+// WriteTestsAsJSON marshals ts to JSON and writes the resulting data to w.
+func WriteTestsAsJSON(w io.Writer, ts []*Test) error {
+	b, err := json.Marshal(ts)
+	if err != nil {
+		return err
+	}
+	_, err = w.Write(b)
+	return err
 }

@@ -117,6 +117,7 @@ func TestJSON(t *gotesting.T) {
 		Desc: "Description",
 		Attr: []string{"attr1", "attr2"},
 		Data: []string{"foo.txt"},
+		Pkg:  "chromiumos/foo/bar",
 	}
 	b, err := json.Marshal(&orig)
 	if err != nil {
@@ -127,9 +128,8 @@ func TestJSON(t *gotesting.T) {
 		t.Fatalf("Failed to unmarshal %s: %v", string(b), err)
 	}
 
-	// Some fields should be omitted.
+	// The function should be omitted.
 	orig.Func = nil
-	orig.Data = nil
 	if !reflect.DeepEqual(loaded, orig) {
 		t.Fatalf("Unmarshaled to %v; want %v", loaded, orig)
 	}

@@ -39,12 +39,12 @@ func TestTestsToRun(t *gotesting.T) {
 		{[]string{"(attr2)"}, []string{name1, name2}},
 		{[]string{"(!attr1)"}, []string{name2}},
 		{[]string{"(attr1 || attr2)"}, []string{name1, name2}},
-		{[]string{""}, nil},
+		{[]string{""}, []string{}},
 		{[]string{"("}, nil},
 		{[]string{"()"}, nil},
 		{[]string{"attr1 || attr2"}, nil},
-		{[]string{"(attr3)"}, nil},
-		{[]string{"foo.BogusTest"}, nil},
+		{[]string{"(attr3)"}, []string{}},
+		{[]string{"foo.BogusTest"}, []string{}},
 	} {
 		tests, err := TestsToRun(tc.args)
 		if tc.expNames == nil {

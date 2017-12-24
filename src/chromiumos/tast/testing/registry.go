@@ -97,7 +97,7 @@ func validateTestPattern(p string) error {
 }
 
 // TestsForPatterns de-duplicates and returns registered tests with names matched by
-// any pattern in ps. An error is returned if any pattern matches zero tests.
+// any pattern in ps.
 func (r *Registry) TestsForPatterns(ps []string) ([]*Test, error) {
 	tests := make([]*Test, 0)
 	seen := make(map[*Test]struct{})
@@ -105,9 +105,6 @@ func (r *Registry) TestsForPatterns(ps []string) ([]*Test, error) {
 		ts, err := r.testsForPattern(p)
 		if err != nil {
 			return nil, err
-		}
-		if len(ts) == 0 {
-			return nil, fmt.Errorf("pattern %q didn't match any tests", p)
 		}
 
 		// De-dupe results while preserving order.
@@ -135,9 +132,6 @@ func (r *Registry) TestsForAttrExpr(s string) ([]*Test, error) {
 		if expr.Matches(t.Attr) {
 			tests = append(tests, t)
 		}
-	}
-	if len(tests) == 0 {
-		return nil, fmt.Errorf("expr %q didn't match any tests", s)
 	}
 	return tests, nil
 }

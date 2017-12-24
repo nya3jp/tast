@@ -13,7 +13,6 @@ package oldrunner
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -195,10 +194,5 @@ func RunTests(cfg RunConfig) (numFailed int, err error) {
 
 // PrintTests marshals ts to JSON and writes the resulting data to w.
 func PrintTests(w io.Writer, ts []*testing.Test) error {
-	b, err := json.Marshal(ts)
-	if err != nil {
-		return err
-	}
-	_, err = w.Write(b)
-	return err
+	return testing.WriteTestsAsJSON(w, ts)
 }

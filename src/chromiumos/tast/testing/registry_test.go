@@ -52,6 +52,7 @@ func TestTestsForPattern(t *gotesting.T) {
 		{[]string{"test.Foo"}, []*Test{allTests[0]}},
 		{[]string{"test.Foo", "test.Foo"}, []*Test{allTests[0]}},
 		{[]string{"test.Foo", "test.Bar"}, []*Test{allTests[0], allTests[1]}},
+		{[]string{"no.Matches"}, []*Test{}},
 	} {
 		if tests, err := reg.TestsForPatterns(tc.pats); err != nil {
 			t.Fatalf("TestsForPatterns(%v) failed: %v", tc.pats, err)
@@ -76,26 +77,19 @@ func TestTestsForAttrExpr(t *gotesting.T) {
 	// More-complicated expressions are tested by the attr package's tests.
 	for _, tc := range []struct {
 		expr     string
-		expected []*Test // nil indicates an error is expected.
+		expected []*Test
 	}{
 		{"foo", []*Test{allTests[0]}},
 		{"bar", []*Test{allTests[1]}},
 		{"test", []*Test{allTests[0], allTests[1]}},
 		{"test && !bar", []*Test{allTests[0]}},
-		{"baz", nil},
-		{"", nil},
+		{"baz", []*Test{}},
 	} {
 		tests, err := reg.TestsForAttrExpr(tc.expr)
-		if tc.expected == nil {
-			if err == nil {
-				t.Errorf("TestsForAttrExpr(%v) = %v; want error", tc.expr, tests)
-			}
-		} else {
-			if err != nil {
-				t.Errorf("TestsForAttrExpr(%v) failed: %v", tc.expr, err)
-			} else if !reflect.DeepEqual(tests, tc.expected) {
-				t.Errorf("TestsForAttrExpr(%v) = %v; want %v", tc.expr, tests, tc.expected)
-			}
+		if err != nil {
+			t.Errorf("TestsForAttrExpr(%v) failed: %v", tc.expr, err)
+		} else if !reflect.DeepEqual(tests, tc.expected) {
+			t.Errorf("TestsForAttrExpr(%v) = %v; want %v", tc.expr, tests, tc.expected)
 		}
 	}
 }

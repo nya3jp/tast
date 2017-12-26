@@ -19,19 +19,10 @@ import (
 	"chromiumos/tast/testutil"
 )
 
-const (
-	keyBits = 1024
-)
-
-var (
-	userKey, hostKey *rsa.PrivateKey
-)
+var userKey, hostKey *rsa.PrivateKey
 
 func init() {
-	var err error
-	if userKey, hostKey, err = test.GenerateKeys(keyBits); err != nil {
-		panic(err)
-	}
+	userKey, hostKey = test.MustGenerateKeys()
 }
 
 // connectToServer establishes a connection to srv using key.

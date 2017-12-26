@@ -356,6 +356,29 @@
       "revId": "1a6f8c1636e764f31e88d4f5168e63b0c2e57158",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cb0ea7bb_fc40b21e",
+        "filename": "src/chromiumos/tast/bundle/remote_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2017-12-26T15:32:06Z",
+      "side": 1,
+      "message": "Do you think it\u0027s worth testing the negative test result case: statusError?",
+      "range": {
+        "startLine": 36,
+        "startChar": 5,
+        "endLine": 36,
+        "endChar": 18
+      },
+      "revId": "1a6f8c1636e764f31e88d4f5168e63b0c2e57158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

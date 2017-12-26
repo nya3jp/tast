@@ -26,72 +26,50 @@ import (
 	"github.com/google/subcommands"
 )
 
-const (
-	keyBits = 1024
-)
-
-var (
-	userKey, hostKey *rsa.PrivateKey
-)
+var userKey, hostKey *rsa.PrivateKey
 
 func init() {
-	var err error
-	if userKey, hostKey, err = test.GenerateKeys(keyBits); err != nil {
-		panic(err)
-	}
+	userKey, hostKey = test.MustGenerateKeys()
 }
 
 // localTestData holds data shared between tests that exercise the Local function.
 type localTestData struct {
-	srv    *test.SSHServer
-	logbuf bytes.Buffer
-	cfg    Config
+	srvData *test.TestData
+	logbuf  bytes.Buffer
+	cfg     Config
 }
 
 // newLocalTestData performs setup for tests that exercise the Local function.
-// The localTestData struct that it returns is always non-nil, and tests should call
-// its close method even if an error is returned.
-func newLocalTestData() (td *localTestData, err error) {
-	td = &localTestData{}
-	if td.srv, err = test.NewSSHServer(&userKey.PublicKey, hostKey); err != nil {
-		return td, err
-	}
-	if td.cfg.KeyFile, err = test.WriteKey(userKey); err != nil {
-		return td, err
-	}
+// Panics on error.
+func newLocalTestData() *localTestData {
+	td := localTestData{srvData: test.NewTestData(userKey, hostKey)}
+	td.cfg.KeyFile = td.srvData.UserKeyPath
+
+	var err error
 	if td.cfg.ResDir, err = ioutil.TempDir("", "local_test."); err != nil {
-		return td, err
+		td.srvData.Close()
+		panic(err)
 	}
 	td.cfg.Logger = logging.NewSimple(&td.logbuf, log.LstdFlags, true)
-	td.cfg.Target = td.srv.Addr().String()
+	td.cfg.Target = td.srvData.Srv.Addr().String()
 
-	return td, nil
+	return &td
 }
 
 func (td *localTestData) close() {
-	if td.srv != nil {
-		td.srv.Close()
-	}
-	if td.cfg.KeyFile != "" {
-		os.Remove(td.cfg.KeyFile)
-	}
-	if td.cfg.ResDir != "" {
-		os.RemoveAll(td.cfg.ResDir)
-	}
+	td.srvData.Close()
+	os.RemoveAll(td.cfg.ResDir)
 }
 
 func TestLocalSuccess(t *gotesting.T) {
-	td, err := newLocalTestData()
+	td := newLocalTestData()
 	defer td.close()
-	if err != nil {
-		t.Fatal(err)
-	}
 
 	ob := bytes.Buffer{}
 	mw := control.NewMessageWriter(&ob)
 	mw.WriteMessage(&control.RunStart{time.Unix(1, 0), 0})
 	mw.WriteMessage(&control.RunEnd{time.Unix(2, 0), "", "", ""})
-	td.srv.FakeCmd(fmt.Sprintf("%s -report -datadir=%s", localTestsBuiltinPath, localDataBuiltinDir),
+	td.srvData.Srv.FakeCmd(fmt.Sprintf("%s -report -datadir=%s", localTestsBuiltinPath, localDataBuiltinDir),
 		0, ob.Bytes(), []byte{})
 
 	if status := Local(context.Background(), &td.cfg); status != subcommands.ExitSuccess {
@@ -100,18 +78,15 @@ func TestLocalSuccess(t *gotesting.T) {
 }
 
 func TestLocalExecFailure(t *gotesting.T) {
-	td, err := newLocalTestData()
+	td := newLocalTestData()
 	defer td.close()
-	if err != nil {
-		t.Fatal(err)
-	}
 
 	ob := bytes.Buffer{}
 	mw := control.NewMessageWriter(&ob)
 	mw.WriteMessage(&control.RunStart{time.Unix(1, 0), 0})
 	mw.WriteMessage(&control.RunEnd{time.Unix(2, 0), "", "", ""})
 	const stderr = "some failure message\n"
-	td.srv.FakeCmd(fmt.Sprintf("%s -report -datadir=%s", localTestsBuiltinPath, localDataBuiltinDir),
+	td.srvData.Srv.FakeCmd(fmt.Sprintf("%s -report -datadir=%s", localTestsBuiltinPath, localDataBuiltinDir),
 		1, ob.Bytes(), []byte(stderr))
 
 	if status := Local(context.Background(), &td.cfg); status != subcommands.ExitFailure {
@@ -123,11 +98,8 @@ func TestLocalExecFailure(t *gotesting.T) {
 }
 
 func TestLocalPrint(t *gotesting.T) {
-	td, err := newLocalTestData()
+	td := newLocalTestData()
 	defer td.close()
-	if err != nil {
-		t.Fatal(err)
-	}
 
 	tests := []testing.Test{
 		testing.Test{Name: "pkg.Test", Desc: "This is a test", Attr: []string{"attr1", "attr2"}},
@@ -137,7 +109,7 @@ func TestLocalPrint(t *gotesting.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	td.srv.FakeCmd(fmt.Sprintf("%s -listtests", localTestsBuiltinPath), 0, b, []byte{})
+	td.srvData.Srv.FakeCmd(fmt.Sprintf("%s -listtests", localTestsBuiltinPath), 0, b, []byte{})
 
 	// Verify one-name-per-line output.
 	out := bytes.Buffer{}

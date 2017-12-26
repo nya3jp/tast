@@ -1,0 +1,361 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3e05e90d_7c6987ea",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-26T11:42:00Z",
+      "side": 1,
+      "message": "this is new",
+      "revId": "1a6f8c1636e764f31e88d4f5168e63b0c2e57158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eb42b367_bd00428a",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-26T11:42:00Z",
+      "side": 1,
+      "message": "this is mostly just main() from local_tests and remote_tests",
+      "revId": "1a6f8c1636e764f31e88d4f5168e63b0c2e57158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e64a5111_bbfcb9de",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-26T11:42:00Z",
+      "side": 1,
+      "message": "this is oldrunner.TestsToRun, except the check for registration errors was moved to parseArgs so a different status can be returned for it",
+      "revId": "1a6f8c1636e764f31e88d4f5168e63b0c2e57158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ec0e9428_ba0995ce",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-26T11:42:00Z",
+      "side": 1,
+      "message": "this is a subset of oldrunner.RunConfig",
+      "revId": "1a6f8c1636e764f31e88d4f5168e63b0c2e57158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "01127e1c_c1e77601",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-26T11:42:00Z",
+      "side": 1,
+      "message": "this is oldrunner.RunTests, except it returns a status code instead of an error",
+      "revId": "1a6f8c1636e764f31e88d4f5168e63b0c2e57158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f3e17606_b92c2af3",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-26T11:42:00Z",
+      "side": 1,
+      "message": "this is oldrunner.indent",
+      "revId": "1a6f8c1636e764f31e88d4f5168e63b0c2e57158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d24a7792_2a497fcd",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-26T11:42:00Z",
+      "side": 1,
+      "message": "this is oldrunner.copyTestOutput",
+      "revId": "1a6f8c1636e764f31e88d4f5168e63b0c2e57158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fde7a0d7_739f6f23",
+        "filename": "src/chromiumos/tast/bundle/bundle_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-26T11:42:00Z",
+      "side": 1,
+      "message": "this is new",
+      "revId": "1a6f8c1636e764f31e88d4f5168e63b0c2e57158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "588befc3_d304afe3",
+        "filename": "src/chromiumos/tast/bundle/bundle_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-26T11:42:00Z",
+      "side": 1,
+      "message": "this is new",
+      "revId": "1a6f8c1636e764f31e88d4f5168e63b0c2e57158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a5c25c80_f1bd5559",
+        "filename": "src/chromiumos/tast/bundle/bundle_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-26T11:42:00Z",
+      "side": 1,
+      "message": "this is new",
+      "revId": "1a6f8c1636e764f31e88d4f5168e63b0c2e57158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "65a5b6e0_82f4e60b",
+        "filename": "src/chromiumos/tast/bundle/bundle_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-26T11:42:00Z",
+      "side": 1,
+      "message": "this is oldrunner.TestTestsToRunRegistrationError",
+      "revId": "1a6f8c1636e764f31e88d4f5168e63b0c2e57158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "45e012f3_035c0d2f",
+        "filename": "src/chromiumos/tast/bundle/bundle_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-26T11:42:00Z",
+      "side": 1,
+      "message": "this is oldrunner.TestTestsToRun",
+      "revId": "1a6f8c1636e764f31e88d4f5168e63b0c2e57158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dc544902_fb1eb7a5",
+        "filename": "src/chromiumos/tast/bundle/bundle_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-26T11:42:00Z",
+      "side": 1,
+      "message": "this is oldrunner.TestCopyTestOutput",
+      "revId": "1a6f8c1636e764f31e88d4f5168e63b0c2e57158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3ce1c5a8_19321596",
+        "filename": "src/chromiumos/tast/bundle/bundle_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-26T11:42:00Z",
+      "side": 1,
+      "message": "this is oldrunner.TestRunTests",
+      "revId": "1a6f8c1636e764f31e88d4f5168e63b0c2e57158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1c45da64_30ddd425",
+        "filename": "src/chromiumos/tast/bundle/bundle_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 260,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-26T11:42:00Z",
+      "side": 1,
+      "message": "this is oldrunner.TestTimeout",
+      "revId": "1a6f8c1636e764f31e88d4f5168e63b0c2e57158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "948b66bb_f4dfa174",
+        "filename": "src/chromiumos/tast/bundle/bundle_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 313,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-26T11:42:00Z",
+      "side": 1,
+      "message": "this is new",
+      "revId": "1a6f8c1636e764f31e88d4f5168e63b0c2e57158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "05d0601e_81b3e9c5",
+        "filename": "src/chromiumos/tast/bundle/doc.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-26T11:42:00Z",
+      "side": 1,
+      "message": "this is new",
+      "revId": "1a6f8c1636e764f31e88d4f5168e63b0c2e57158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "78bda883_36cf530e",
+        "filename": "src/chromiumos/tast/bundle/local.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-26T11:42:00Z",
+      "side": 1,
+      "message": "this is new",
+      "revId": "1a6f8c1636e764f31e88d4f5168e63b0c2e57158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dccf0636_fe42f956",
+        "filename": "src/chromiumos/tast/bundle/local_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-26T11:42:00Z",
+      "side": 1,
+      "message": "this is all new",
+      "revId": "1a6f8c1636e764f31e88d4f5168e63b0c2e57158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c2f380dc_a68b0a52",
+        "filename": "src/chromiumos/tast/bundle/remote.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-26T11:42:00Z",
+      "side": 1,
+      "message": "most of the stuff in this file that\u0027s not in Local just comes from remote_tests",
+      "revId": "1a6f8c1636e764f31e88d4f5168e63b0c2e57158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "474fdaa2_a012463c",
+        "filename": "src/chromiumos/tast/bundle/remote_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-26T11:42:00Z",
+      "side": 1,
+      "message": "this is all new",
+      "revId": "1a6f8c1636e764f31e88d4f5168e63b0c2e57158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

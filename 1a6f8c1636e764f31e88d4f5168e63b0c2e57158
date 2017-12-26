@@ -379,6 +379,30 @@
       "revId": "1a6f8c1636e764f31e88d4f5168e63b0c2e57158",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c30a284d_735d6216",
+        "filename": "src/chromiumos/tast/bundle/remote_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-26T19:24:16Z",
+      "side": 1,
+      "message": "are you talking about the case where we exit with 1 since a test failed and -report wasn\u0027t passed? i think that that\u0027ll be a fairly uncommon case (i\u0027m mostly just supporting it for when someone\u0027s trying to reproduce a flake by running the bundle in a loop on the DUT, which i sometimes do with autotest), and the common code for it is already covered by TestReportErrorForTestFailure in bundle_test.go.\n\ni\u0027ve added a test to make sure that we exit with 1 when the bundle can\u0027t connect to the DUT, though.",
+      "parentUuid": "cb0ea7bb_fc40b21e",
+      "range": {
+        "startLine": 36,
+        "startChar": 5,
+        "endLine": 36,
+        "endChar": 18
+      },
+      "revId": "1a6f8c1636e764f31e88d4f5168e63b0c2e57158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

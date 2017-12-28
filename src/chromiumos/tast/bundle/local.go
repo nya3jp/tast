@@ -17,7 +17,7 @@ const (
 
 // Local implements the main function for local test bundles.
 //
-// args should typically be os.Args. The returned status code should be passed to os.Exit.
+// args should typically be os.Args[1:]. The returned status code should be passed to os.Exit.
 func Local(args []string) int {
 	cfg, status := parseArgs(os.Stdout, args, localTestDataDir, nil)
 	if status != statusSuccess || cfg == nil {

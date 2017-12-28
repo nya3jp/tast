@@ -19,7 +19,7 @@ const (
 
 // Remote implements the main function for remote test bundles.
 //
-// args should typically be os.Args. The returned status code should be passed to os.Exit.
+// args should typically be os.Args[1:]. The returned status code should be passed to os.Exit.
 func Remote(args []string) int {
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
 	target := flags.String("target", "", "DUT connection spec as \"[<user>@]host[:<port>]\"")

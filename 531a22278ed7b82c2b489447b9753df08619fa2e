@@ -200,6 +200,30 @@
     },
     {
       "key": {
+        "uuid": "25334467_5c7cf94d",
+        "filename": "src/chromiumos/tast/runner/runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-29T21:56:59Z",
+      "side": 1,
+      "message": "i want to match regular executable files. i\u0027ve added a comment to that effect and switched this to \u00260111, which probably makes more sense.",
+      "parentUuid": "06bb4d4a_261a1d2b",
+      "range": {
+        "startLine": 69,
+        "startChar": 61,
+        "endLine": 69,
+        "endChar": 66
+      },
+      "revId": "531a22278ed7b82c2b489447b9753df08619fa2e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "36121a3a_804f15e8",
         "filename": "src/chromiumos/tast/runner/runner.go",
         "patchSetId": 1
@@ -211,6 +235,30 @@
       "writtenOn": "2017-12-29T17:13:51Z",
       "side": 1,
       "message": "It also executes them?",
+      "range": {
+        "startLine": 81,
+        "startChar": 3,
+        "endLine": 81,
+        "endChar": 57
+      },
+      "revId": "531a22278ed7b82c2b489447b9753df08619fa2e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "657db097_5bdc6a2e",
+        "filename": "src/chromiumos/tast/runner/runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-29T21:56:59Z",
+      "side": 1,
+      "message": "it executes the bundles (with -list, to get the marshaled test structs from them), but doesn\u0027t ask the bundles to execute the tests. added that to this comment.",
+      "parentUuid": "36121a3a_804f15e8",
       "range": {
         "startLine": 81,
         "startChar": 3,
@@ -269,6 +317,30 @@
       "writtenOn": "2017-12-29T17:13:51Z",
       "side": 1,
       "message": "please assign to a local and then call the func; this is too hard to read",
+      "range": {
+        "startLine": 105,
+        "startChar": 3,
+        "endLine": 105,
+        "endChar": 6
+      },
+      "revId": "531a22278ed7b82c2b489447b9753df08619fa2e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b3163646_3cc02ea6",
+        "filename": "src/chromiumos/tast/runner/runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-29T21:56:59Z",
+      "side": 1,
+      "message": "done (let me know if this is what you were suggesting)",
+      "parentUuid": "92aacde2_88aa3524",
       "range": {
         "startLine": 105,
         "startChar": 3,

@@ -43,59 +43,14 @@ func Local(ctx context.Context, cfg *Config) subcommands.ExitStatus {
 	}
 	defer hst.Close(ctx)
 
-	if cfg.Build && cfg.BuildCfg.Arch == "" {
-		if cfg.BuildCfg.Arch, err = getHostArch(ctx, hst); err != nil {
-			cfg.Logger.Logf("Failed to get arch for %s: %v", cfg.Target, err)
-			return subcommands.ExitFailure
-		}
-	}
-
 	var bin, dataDir string
 	if cfg.Build {
-		cfg.Logger.Status("Building tests")
-		start := time.Now()
-		src := cfg.BuildCfg.OutPath(filepath.Base(localTestsPushPath))
-		cfg.Logger.Debugf("Building %s from %s to %s", localTestsPackage, cfg.BuildCfg.TestWorkspace, src)
-		if out, err := build.BuildTests(ctx, &cfg.BuildCfg, localTestsPackage, src); err != nil {
-			cfg.Logger.Logf("Failed building tests: %v\n\n%s", err, out)
+		if err = buildAndPushTests(ctx, cfg, hst); err != nil {
+			cfg.Logger.Logf("Failed deploying tests: %v", err)
 			return subcommands.ExitFailure
 		}
-		cfg.Logger.Logf("Built tests in %0.1f sec", time.Now().Sub(start).Seconds())
-
 		bin = localTestsPushPath
-		cfg.Logger.Status("Pushing tests to target")
-		cfg.Logger.Logf("Pushing tests to %s on target", bin)
-		start = time.Now()
-		if bytes, err := pushTestBinary(ctx, hst, src, filepath.Dir(localTestsPushPath)); err != nil {
-			cfg.Logger.Log("Failed pushing tests: ", err)
-			return subcommands.ExitFailure
-		} else {
-			cfg.Logger.Logf("Pushed tests in %0.1f sec (sent %s)",
-				time.Now().Sub(start).Seconds(), formatBytes(bytes))
-		}
-
-		if cfg.PrintMode == DontPrint {
-			cfg.Logger.Status("Getting data file list")
-			cfg.Logger.Log("Getting data file list from ", cfg.Target)
-			dp, err := getDataFilePaths(ctx, hst, bin, cfg)
-			if err != nil {
-				cfg.Logger.Log("Failed to get data file list: ", err)
-				return subcommands.ExitFailure
-			}
-			cfg.Logger.Log("Got data file list")
-
-			dataDir = localDataPushDir
-			cfg.Logger.Status("Pushing data files to target")
-			cfg.Logger.Log("Pushing data files to ", cfg.Target)
-			start = time.Now()
-			if bytes, err := pushDataFiles(ctx, hst, dataDir, dp, &cfg.BuildCfg); err != nil {
-				cfg.Logger.Log("Failed to push data files: ", err)
-				return subcommands.ExitFailure
-			} else {
-				cfg.Logger.Logf("Pushed data files in %0.1f sec (sent %s)",
-					time.Now().Sub(start).Seconds(), formatBytes(bytes))
-			}
-		}
+		dataDir = localDataPushDir
 	} else {
 		bin = localTestsBuiltinPath
 		dataDir = localDataBuiltinDir
@@ -130,6 +85,60 @@ func connectToTarget(ctx context.Context, target, keyFile string) (*host.SSH, er
 		return nil, err
 	}
 	return hst, nil
+}
+
+// buildAndPushTests builds local tests and pushes them to hst as dictated by cfg.
+// If tests are going to be executed (rather than printed), data files are also pushed.
+// Progress is logged via cfg.Logger, but if a non-nil error is returned it should be
+// logged by the caller.
+func buildAndPushTests(ctx context.Context, cfg *Config, hst *host.SSH) error {
+	cfg.Logger.Status("Building tests")
+	if cfg.BuildCfg.Arch == "" {
+		var err error
+		if cfg.BuildCfg.Arch, err = getHostArch(ctx, hst); err != nil {
+			return fmt.Errorf("failed to get arch for %s: %v", cfg.Target, err)
+		}
+	}
+
+	start := time.Now()
+	src := cfg.BuildCfg.OutPath(filepath.Base(localTestsPushPath))
+	cfg.Logger.Debugf("Building %s from %s to %s", localTestsPackage, cfg.BuildCfg.TestWorkspace, src)
+	if out, err := build.BuildTests(ctx, &cfg.BuildCfg, localTestsPackage, src); err != nil {
+		return fmt.Errorf("build failed: %v\n\n%s", err, out)
+	}
+	cfg.Logger.Logf("Built tests in %0.1f sec", time.Now().Sub(start).Seconds())
+
+	cfg.Logger.Status("Pushing tests to target")
+	cfg.Logger.Logf("Pushing tests to %s on target", localTestsPushPath)
+	start = time.Now()
+	if bytes, err := pushTestBinary(ctx, hst, src, filepath.Dir(localTestsPushPath)); err != nil {
+		return fmt.Errorf("pushing tests failed: %v", err)
+	} else {
+		cfg.Logger.Logf("Pushed tests in %0.1f sec (sent %s)",
+			time.Now().Sub(start).Seconds(), formatBytes(bytes))
+	}
+
+	if cfg.PrintMode == DontPrint {
+		cfg.Logger.Status("Getting data file list")
+		cfg.Logger.Log("Getting data file list from ", cfg.Target)
+		dp, err := getDataFilePaths(ctx, hst, localTestsPushPath, cfg)
+		if err != nil {
+			return fmt.Errorf("failed to get data file list: %v", err)
+		}
+		cfg.Logger.Log("Got data file list")
+
+		cfg.Logger.Status("Pushing data files to target")
+		cfg.Logger.Log("Pushing data files to ", cfg.Target)
+		start = time.Now()
+		if bytes, err := pushDataFiles(ctx, hst, localDataPushDir, dp, &cfg.BuildCfg); err != nil {
+			return fmt.Errorf("pushing data files failed: %v", err)
+		} else {
+			cfg.Logger.Logf("Pushed data files in %0.1f sec (sent %s)",
+				time.Now().Sub(start).Seconds(), formatBytes(bytes))
+		}
+	}
+
+	return nil
 }
 
 // getHostArch queries hst for its architecture.

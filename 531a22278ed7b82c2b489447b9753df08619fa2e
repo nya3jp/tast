@@ -1,0 +1,174 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "521ca2be_42ad28fe",
+        "filename": "src/chromiumos/tast/runner/data_files.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-29T13:02:14Z",
+      "side": 1,
+      "message": "this file just came from local_tests in the tast-tests repo",
+      "revId": "531a22278ed7b82c2b489447b9753df08619fa2e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2736439a_f107ff27",
+        "filename": "src/chromiumos/tast/runner/data_files_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-29T13:02:14Z",
+      "side": 1,
+      "message": "this file just came from local_tests in the tast-tests repo",
+      "revId": "531a22278ed7b82c2b489447b9753df08619fa2e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a52d11ed_14ca896a",
+        "filename": "src/chromiumos/tast/runner/runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-29T13:02:14Z",
+      "side": 1,
+      "message": "this came from the oldrunner package",
+      "revId": "531a22278ed7b82c2b489447b9753df08619fa2e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "869c61c0_a7880052",
+        "filename": "src/chromiumos/tast/runner/runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-29T13:02:14Z",
+      "side": 1,
+      "message": "this is the Abort function from oldrunner, except i changed it to call log.Print in the mw \u003d\u003d nil case instead of calling log.Fatal. the runner executables just call os.Exit themselves after calling this.",
+      "revId": "531a22278ed7b82c2b489447b9753df08619fa2e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "61454892_f4eaf25e",
+        "filename": "src/chromiumos/tast/runner/runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-29T13:02:14Z",
+      "side": 1,
+      "message": "this is new",
+      "revId": "531a22278ed7b82c2b489447b9753df08619fa2e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e5df3b93_790c94b1",
+        "filename": "src/chromiumos/tast/runner/runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-29T13:02:14Z",
+      "side": 1,
+      "message": "this is new",
+      "revId": "531a22278ed7b82c2b489447b9753df08619fa2e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c2abd464_664cb216",
+        "filename": "src/chromiumos/tast/runner/runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-29T13:02:14Z",
+      "side": 1,
+      "message": "this is new",
+      "revId": "531a22278ed7b82c2b489447b9753df08619fa2e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "144f6d68_01a6a915",
+        "filename": "src/chromiumos/tast/runner/runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-29T13:02:14Z",
+      "side": 1,
+      "message": "this is similar to oldrunner.RunConfig, but i\u0027ve changed the fields a bit",
+      "revId": "531a22278ed7b82c2b489447b9753df08619fa2e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "43eed921_6291f3f1",
+        "filename": "src/chromiumos/tast/runner/runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 216,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-29T13:02:14Z",
+      "side": 1,
+      "message": "this is based heavily on the main functions in local_tests and remote tests. the PreRun and PostRun hooks and the exec calls to run bundles are new, but the out dir, RunStart, and RunEnd stuff is pretty much the same as what\u0027s currently being used.",
+      "revId": "531a22278ed7b82c2b489447b9753df08619fa2e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "622c0a1d_cc33e427",
+        "filename": "src/chromiumos/tast/runner/runner_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-29T13:02:14Z",
+      "side": 1,
+      "message": "all of this is new. i\u0027m not sure whether the self-exec stuff is clever or awful (and a fork-bomb waiting to happen). i couldn\u0027t think of any other good way to compile fake bundles to use to exercise this package, and i really didn\u0027t want to implement bundles via shell scripts in a testdata dir -- i think it\u0027s much better to be using the real bundle package in these tests.",
+      "revId": "531a22278ed7b82c2b489447b9753df08619fa2e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

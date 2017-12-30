@@ -10,11 +10,10 @@
 	test different products based on the Chromium OS project, contain non-public
 	code, etc.).
 
-	Bundles are executed by test runners, which aggregate test results and report them
-	back to the tast command.
-
-	Each test bundle should pass os.Args[1:] to either Local or Remote (depending on the
-	type of tests that the bundle contains) and pass the returned status code to os.Exit.
+	Bundles are executed by test runners, which aggregate test results and
+	report them back to the tast command. Each test bundle should pass
+	os.Args[1:] to either Local or Remote (depending on the type of tests that
+	the bundle contains) and pass the returned status code to os.Exit.
 
 	When a test runner is executed by the tast command, it passes the -report flag to test
 	bundles, which instructs them to write JSON-marshaled control messages to stdout.
@@ -26,5 +25,14 @@
 
 	If a bundle is executed without -report, it logs test output to stdout. If a test
 	fails in this mode, the bundle exits with a nonzero status code.
+
+	The tast command contains a hardcoded assumption that the main function for
+	a local bundle named "foo" will exist at the Go import path
+	chromiumos/tast/local/bundles/foo, while the corresponding remote bundle's
+	code will be located at chromiumos/tast/remote/bundles/foo. Similarly, the
+	bundle must be installed by a package named
+	chromeos-base/tast-local-tests-foo or chromeos-base/tast-remote-tests-foo.
+
+	The bundle's code can be in an arbitrary repository, though.
 */
 package bundle

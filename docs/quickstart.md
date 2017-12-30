@@ -48,17 +48,18 @@ To install missing dependencies, run:
    =dev-go/dbus-0.0.2-r5
 ```
 > This is expected: to speed things up, `tast` is building the tests directly
-> instead of emerging the `tast-local-tests` package, so it needs some help from
-> you to make sure that all required dependencies are installed. If you run the
-> provided `emerge` command, the `tast` command should work when re-run.
+> instead of emerging the `tast-local-tests-cros` package, so it needs some help
+> from you to make sure that all required dependencies are installed. If you run
+> the provided `emerge` command, the `tast` command should work when re-run.
 
 See [Running Tests] for more information.
 
 ## Modify a test
 
 Now, let's modify the test. In your Chrome OS checkout, go to
-`src/platform/tast-tests/src/chromiumos/tast/local/tests/ui` and open
-`chrome_sanity.go`. The `ChromeSanity` function here will run directly on the
+`src/platform/tast-tests/src/chromiumos/tast/local/bundles/cros/ui` and open
+`chrome_sanity.go` (for convenience, there's also a `local_tests` symlink at the
+top of `tast-tests`). The `ChromeSanity` function here will run directly on the
 test device.
 
 At the end of the function, add the following code:

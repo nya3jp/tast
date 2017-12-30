@@ -43,7 +43,8 @@ Any additional positional arguments describe which tests should be executed:
     `ui.`. Multiple patterns can be supplied: passing `example.Pass` and
     `example.Fail` selects those two tests.
 
-It's invalid to mix attribute expressions and wildcard patterns.
+It's invalid to mix attribute expressions and wildcard patterns. See the [Test
+Attributes] document for more information about attributes.
 
 The `type` flag accepts a `local` or `remote` parameter to specify which
 type of test should be run. `local` is the default, and `remote` must be
@@ -56,22 +57,33 @@ tast run -type=remote <target> power.Reboot
 
 ## Controlling whether tests are rebuilt
 
-By default, `tast run` rebuilds the binary containing the tests and (in the case
-of local tests) pushes it to the DUT as `/usr/local/bin/local_tests_pushed`.
-This permits faster compilation and deployment when writing new tests than the
-normal `emerge`/`cros deploy` cycle can provide.
+When the `-build` flag is true (the default), `tast run` rebuilds the `cros`
+test bundle and (in the case of local tests) pushes it to the DUT as
+`/usr/local/share/tast/bundles_pushed/cros`. This permits faster compilation and
+deployment when writing new tests than the normal `emerge`/`cros deploy` cycle
+can provide.
 
-To rebuild test binaries, the `tast` command needs their dependencies' source
-code to be available. This code is automatically checked out to
-`/usr/lib/gopath` when building packages for the host system, as described in
-the [Go in Chromium OS] document. The `tast` command will automatically inform
-you when the tests' dependencies need to be manually emerged.
+The name of the bundle to rebuild, push, and run can be specified via the `run`
+command's `-buildbundle` flag. If the bundle's source code is outside of the
+`tast-tests repository`, you will need to specify the repository's path using
+the `-testdir` flag.
 
-To skip this step and instead run a builtin test binary at
-`/usr/local/bin/local_tests`, pass `-build=false`. Builtin binaries will only be
-present if the `chromeos-base/tast-local-tests` package was emerged to the DUT
-or `chromeos-base/tast-remote-tests` was built for the host. The former happens
-automatically when a test image is built.
+To rebuild a test bundle, the `tast` command needs its dependencies' source code
+to be available. This code is automatically checked out to `/usr/lib/gopath`
+when building packages for the host system, as described in the [Go in Chromium
+OS] document. The `tast` command will automatically inform you when the bundle's
+dependencies need to be manually emerged.
+
+To skip rebuilding a bundle and instead run all builtin bundles within the
+`/usr/local/share/tast/bundles` directory on the DUT (for local tests) or
+`/usr/share/tast/bundles` on the host system (for remote tests), pass
+`-build=false`. The default builtin `cros` local bundle will only be present if
+the `chromeos-base/tast-local-tests-cros` package was emerged to the DUT. This
+happens automatically when a `test` system image is built.
+
+If `-build` is true and `local_test_runner` isn't present on the DUT (presumably
+because it's running a `dev` system image rather than a `test` image), the
+`tast` command will attempt to build and deploy it.
 
 ## Interpreting test results
 
@@ -86,25 +98,30 @@ By default, test results are written to a subdirectory under
 command's `-resultsdir` flag. If the default directory is used, a symlink will
 also be created to it at `/tmp/tast/results/latest`.
 
-Various files are created within the results directory:
+Various files and directories are created within the results directory:
 
+*   `crashes/` - [Breakpad] minidump files with information about crashes that
+    occured during testing (local tests only).
 *   `full.txt` - All output from the run, including messages logged by
     individual tests.
 *   `results.json` - Machine-parseable test results.
-*   `system_logs` - Diff of `/var/log` on the DUT before and after testing
+*   `system_logs/` - Diff of `/var/log` on the DUT before and after testing
     (local tests only).
-*   `tests` - Contains per-test subdirectories, each of which has messages
-    logged by the test and any output files that it created.
+*   `tests/` - Per-test subdirectories, each of which has messages logged by the
+    test and any output files that it created.
 *   `timing.json` - Machine-parsable timing information about the test run.
 
 ## Running local tests manually on the DUT
 
 If you need to run one or more local tests manually on a DUT (e.g. because you
 don't have a Chrome OS chroot containing the `tast` executable), the
-`local_tests` executable can be started directly on the DUT:
+`local_test_runner` executable can be started directly on the DUT:
 
 ```shell
-local_tests ui.ChromeSanity
+local_test_runner ui.ChromeSanity
 ```
 
+[Test Attributes]: test_attributes.md
+[tast-tests repository]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/
 [Go in Chromium OS]: https://www.chromium.org/chromium-os/developer-guide/go-in-chromium-os
+[Breakpad]: https://github.com/google/breakpad/

@@ -15,13 +15,19 @@ This repository is organized in accordance with the [Go in Chromium OS]
 suggestions.
 
 *   [`src/chromiumos/`](src/chromiumos/)
+    *   [`cmd/local_test_runner/`](src/chromiumos/cmd/local_test_runner) -
+        `main` package for the `local_test_runner` executable used to execute
+        local test bundles on-device.
+    *   [`cmd/remote_test_runner/`](src/chromiumos/cmd/remote_test_runner) -
+        `main` package for the `remote_test_runner` executable used to execute
+        remote test bundles on the host system.
     *   [`cmd/tast/`](src/chromiumos/cmd/tast/) - `main` package for the `tast`
         executable used to build and run tests.
         *   `...` - Packages used only by the `tast` executable.
     *   [`tast/...`](src/chromiumos/tast/) - Common packages shared by multiple
         executables.
 
-Tests are located in the [tast-tests] repository.
+Tests are located in the [tast-tests repository].
 
 ## Documentation
 
@@ -32,4 +38,4 @@ For more details, see the [docs](docs/) subdirectory.
 [quickstart]: docs/quickstart.md
 [overview]: docs/overview.md
 [Go in Chromium OS]: http://www.chromium.org/chromium-os/developer-guide/go-in-chromium-os
-[tast-tests]: ../tast-tests/
+[tast-tests repository]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/

@@ -4,15 +4,19 @@
 
 ## Code location
 
-Public tests are checked into the [tast-tests repository] under the
-[src/chromiumos/tast/local/tests/] and [src/chromiumos/tast/remote/tests/]
-directories. Tests are grouped into packages by the functionality that they
+Public tests built into the default `cros` local and remote test bundles are
+checked into the [tast-tests repository] under the
+[src/chromiumos/tast/local/bundles/cros/] and
+[src/chromiumos/tast/remote/bundles/cros/] directories (which may also be
+accessed by the `local_tests` and `remote_tests` symlinks at the top of the
+repository). Tests are grouped into packages by the functionality that they
 exercise; for example, the [ui package] contains local tests that exercise
 Chrome OS's UI.
 
-Support packages used by tests are located in `local/` and `remote/`, alongside
-the `tests/` subdirectories. For example, the [chrome package] can be used by
-local tests to interact with Chrome.
+Support packages used by tests are located in [src/chromiumos/tast/local/] and
+[src/chromiumos/tast/remote/], alongside the `bundles/` directories. For
+example, the [chrome package] can be used by local tests to interact with
+Chrome.
 
 ## Coding style and best practices
 
@@ -26,8 +30,8 @@ Support packages should be exercised by unit tests when possible. Unit tests can
 cover edge cases that may not be typically seen when using the package, and they
 greatly aid in future refactorings (since it can be hard to determine the full
 set of Tast-based tests that must be run to exercise the package). See [Go's
-testing package] for more information about writing tests for Go code. The [Best
-practices for writing Chrome OS unit tests] document contains additional
+testing package] for more information about writing unit tests for Go code. The
+[Best practices for writing Chrome OS unit tests] document contains additional
 suggestions that may be helpful (despite being C++-centric).
 
 ## Naming and defining tests
@@ -38,9 +42,10 @@ function that implements the test. Test function names should follow [Go's
 naming conventions], and [acronyms should be fully capitalized]. Test names are
 automatically derived and usually shouldn't be specified.
 
-A local test named `example.MyTest` would be placed in a file named
-`local/tests/example/my_test.go` (i.e. convert the test name to lowercase and
-insert underscores between words) with contents similar to the following:
+A local test named `ui.MyTest` would be placed in a file named
+`src/chromiumos/tast/local/bundles/cros/ui/my_test.go` (i.e. convert the test
+name to lowercase and insert underscores between words) with contents similar to
+the following:
 
 ```go
 // Copyright 2017 The Chromium OS Authors. All rights reserved.
@@ -80,7 +85,7 @@ messages using `testing.ContextLog` and `testing.ContextLogf`.
 
 ## Writing output files
 
-Tests can write output files that are automatically copied to the host machine
+Tests can write output files that are automatically copied to the host system
 that was used to initiate testing:
 
 ```go
@@ -134,16 +139,18 @@ See the `example.DataFiles` test for a complete example of using data files.
 
 ## Adding new test packages
 
-When adding a new test package, you must update the test executable's `main.go`
-file (either [cmd/local_tests/main.go] or [cmd/remote_tests/main.go]) to
+When adding a new test package, you must update the test bundle's `main.go` file
+(either [local/bundles/cros/main.go] or [local/bundles/cros/main.go]) to
 underscore-import the new package so its `init` functions will run and register
 tests.
 
-[tast-tests repository]: ../../tast-tests/
-[src/chromiumos/tast/local/tests/]: ../../tast-tests/src/chromiumos/tast/local/tests/
-[src/chromiumos/tast/remote/tests/]: ../../tast-tests/src/chromiumos/tast/remote/tests/
-[ui package]: ../../tast-tests/src/chromiumos/tast/local/tests/ui/
-[chrome package]: ../../tast-tests/src/chromiumos/tast/local/chrome/
+[tast-tests repository]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/
+[src/chromiumos/tast/local/bundles/cros/]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/bundles/cros/
+[src/chromiumos/tast/remote/bundles/cros/]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/remote/bundles/cros/
+[src/chromiumos/tast/local/]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/
+[src/chromiumos/tast/remote/]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/remote/
+[ui package]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/bundles/cros/ui/
+[chrome package]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/chrome/
 [gofmt]: https://golang.org/cmd/gofmt/
 [go vet]: https://golang.org/cmd/vet/
 [Effective Go]: https://golang.org/doc/effective_go.html
@@ -152,8 +159,8 @@ tests.
 [Best practices for writing Chrome OS unit tests]: https://chromium.googlesource.com/chromiumos/docs/+/master/unit_tests.md
 [Go's naming conventions]: https://golang.org/doc/effective_go.html#names
 [acronyms should be fully capitalized]: https://github.com/golang/go/wiki/CodeReviewComments#initialisms
-[Tast testing package]: ../src/chromiumos/tast/testing/
+[Tast testing package]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/testing/
 [context.Context]: https://golang.org/pkg/context/
 [Running tests]: running_tests.md
-[cmd/local_tests/main.go]: ../../tast-tests/src/chromiumos/cmd/local_tests/main.go
-[cmd/remote_tests/main.go]: ../../tast-tests/src/chromiumos/cmd/remote_tests/main.go
+[local/bundles/cros/main.go]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/bundles/cros/main.go
+[remote/bundles/cros/main.go]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/remote/bundles/cros/main.go

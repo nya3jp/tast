@@ -108,7 +108,8 @@ func (r *resultsHandler) handleRunLog(msg *control.RunLog) error {
 // handleRunError handles RunError control messages from test executables.
 func (r *resultsHandler) handleRunError(msg *control.RunError) error {
 	// Just return an error to abort the run.
-	return fmt.Errorf("%s:%d: %s", msg.Error.File, msg.Error.Line, msg.Error.Reason)
+	return fmt.Errorf("%s:%d: %s",
+		filepath.Base(msg.Error.File), msg.Error.Line, msg.Error.Reason)
 }
 
 // handleRunEnd handles RunEnd control messages from test executables.

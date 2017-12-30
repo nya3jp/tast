@@ -35,7 +35,7 @@ const (
 // Local runs local tests as directed by cfg.
 func Local(ctx context.Context, cfg *Config) subcommands.ExitStatus {
 	cfg.Logger.Status("Connecting to target")
-	cfg.Logger.Debugf("Connecting to %s", cfg.Target)
+	cfg.Logger.Logf("Connecting to %s", cfg.Target)
 	hst, err := connectToTarget(ctx, cfg.Target, cfg.KeyFile)
 	if err != nil {
 		cfg.Logger.Logf("Failed to connect to %s: %v", cfg.Target, err)
@@ -95,46 +95,34 @@ func buildAndPushTests(ctx context.Context, cfg *Config, hst *host.SSH) error {
 	cfg.Logger.Status("Building tests")
 	if cfg.BuildCfg.Arch == "" {
 		var err error
-		if cfg.BuildCfg.Arch, err = getHostArch(ctx, hst); err != nil {
+		if cfg.BuildCfg.Arch, err = getHostArch(ctx, cfg, hst); err != nil {
 			return fmt.Errorf("failed to get arch for %s: %v", cfg.Target, err)
 		}
 	}
 
 	start := time.Now()
 	src := cfg.BuildCfg.OutPath(filepath.Base(localTestsPushPath))
-	cfg.Logger.Debugf("Building %s from %s to %s", localTestsPackage, cfg.BuildCfg.TestWorkspace, src)
+	cfg.Logger.Logf("Building %s from %s", localTestsPackage, cfg.BuildCfg.TestWorkspace)
 	if out, err := build.BuildTests(ctx, &cfg.BuildCfg, localTestsPackage, src); err != nil {
 		return fmt.Errorf("build failed: %v\n\n%s", err, out)
 	}
 	cfg.Logger.Logf("Built tests in %0.1f sec", time.Now().Sub(start).Seconds())
 
 	cfg.Logger.Status("Pushing tests to target")
-	cfg.Logger.Logf("Pushing tests to %s on target", localTestsPushPath)
-	start = time.Now()
-	if bytes, err := pushTestBinary(ctx, hst, src, filepath.Dir(localTestsPushPath)); err != nil {
+	if err := pushTestBinary(ctx, cfg, hst, src, filepath.Dir(localTestsPushPath)); err != nil {
 		return fmt.Errorf("pushing tests failed: %v", err)
-	} else {
-		cfg.Logger.Logf("Pushed tests in %0.1f sec (sent %s)",
-			time.Now().Sub(start).Seconds(), formatBytes(bytes))
 	}
 
 	if cfg.PrintMode == DontPrint {
 		cfg.Logger.Status("Getting data file list")
-		cfg.Logger.Log("Getting data file list from ", cfg.Target)
-		dp, err := getDataFilePaths(ctx, hst, localTestsPushPath, cfg)
-		if err != nil {
+		var paths []string
+		var err error
+		if paths, err = getDataFilePaths(ctx, cfg, hst, localTestsPushPath); err != nil {
 			return fmt.Errorf("failed to get data file list: %v", err)
 		}
-		cfg.Logger.Log("Got data file list")
-
 		cfg.Logger.Status("Pushing data files to target")
-		cfg.Logger.Log("Pushing data files to ", cfg.Target)
-		start = time.Now()
-		if bytes, err := pushDataFiles(ctx, hst, localDataPushDir, dp, &cfg.BuildCfg); err != nil {
+		if err = pushDataFiles(ctx, cfg, hst, localDataPushDir, paths); err != nil {
 			return fmt.Errorf("pushing data files failed: %v", err)
-		} else {
-			cfg.Logger.Logf("Pushed data files in %0.1f sec (sent %s)",
-				time.Now().Sub(start).Seconds(), formatBytes(bytes))
 		}
 	}
 
@@ -142,11 +130,12 @@ func buildAndPushTests(ctx context.Context, cfg *Config, hst *host.SSH) error {
 }
 
 // getHostArch queries hst for its architecture.
-func getHostArch(ctx context.Context, hst *host.SSH) (string, error) {
+func getHostArch(ctx context.Context, cfg *Config, hst *host.SSH) (string, error) {
 	if tl, ok := timing.FromContext(ctx); ok {
 		st := tl.Start("get_arch")
 		defer st.End()
 	}
+	cfg.Logger.Debug("Getting architecture from target")
 	out, err := hst.Run(ctx, "uname -m")
 	if err != nil {
 		return "", err
@@ -155,16 +144,24 @@ func getHostArch(ctx context.Context, hst *host.SSH) (string, error) {
 }
 
 // pushTestBinary copies the test binary at src on the local machine to dstDir on hst.
-func pushTestBinary(ctx context.Context, hst *host.SSH, src, dstDir string) (bytes int64, err error) {
+func pushTestBinary(ctx context.Context, cfg *Config, hst *host.SSH, src, dstDir string) error {
 	if tl, ok := timing.FromContext(ctx); ok {
 		st := tl.Start("push_tests")
 		defer st.End()
 	}
-	return hst.PutTree(ctx, filepath.Dir(src), dstDir, []string{filepath.Base(src)})
+	cfg.Logger.Logf("Pushing %s to %s on target", src, dstDir)
+	start := time.Now()
+	bytes, err := hst.PutTree(ctx, filepath.Dir(src), dstDir, []string{filepath.Base(src)})
+	if err != nil {
+		return err
+	}
+	cfg.Logger.Logf("Pushed tests in %0.1f sec (sent %s)",
+		time.Now().Sub(start).Seconds(), formatBytes(bytes))
+	return nil
 }
 
 // getLocalTestCommand returns a command for running the test executable bin with
-// flags and wildcard patterns pat.
+// flags and test patterns pat.
 func getLocalTestCommand(bin string, flags, pats []string) string {
 	ps := ""
 	for _, p := range pats {
@@ -174,11 +171,12 @@ func getLocalTestCommand(bin string, flags, pats []string) string {
 }
 
 // getDataFilePaths returns the paths to data files needed for running cfg.Patterns on hst.
-func getDataFilePaths(ctx context.Context, hst *host.SSH, bin string, cfg *Config) ([]string, error) {
+func getDataFilePaths(ctx context.Context, cfg *Config, hst *host.SSH, bin string) ([]string, error) {
 	if tl, ok := timing.FromContext(ctx); ok {
 		st := tl.Start("get_data_paths")
 		defer st.End()
 	}
+	cfg.Logger.Debug("Getting data file list from ", cfg.Target)
 
 	cmd := getLocalTestCommand(bin, []string{"-listdata"}, cfg.Patterns)
 
@@ -196,26 +194,38 @@ func getDataFilePaths(ctx context.Context, hst *host.SSH, bin string, cfg *Confi
 	}
 
 	files := make([]string, 0)
-	err = json.Unmarshal(out, &files)
-	return files, err
+	if err = json.Unmarshal(out, &files); err != nil {
+		return nil, err
+	}
+	cfg.Logger.Debug("Got data file list")
+	return files, nil
 }
 
 // pushDataFiles copies the test data files at paths under bc.TestWorkspace on the local machine
 // to destDir on hst.
-func pushDataFiles(ctx context.Context, hst *host.SSH, destDir string,
-	paths []string, bc *build.Config) (bytes int64, err error) {
+func pushDataFiles(ctx context.Context, cfg *Config, hst *host.SSH, destDir string, paths []string) error {
 	if tl, ok := timing.FromContext(ctx); ok {
 		st := tl.Start("push_data")
 		defer st.End()
 	}
+	cfg.Logger.Log("Pushing data files to target")
 
 	for _, p := range paths {
-		fp := filepath.Join(bc.TestWorkspace, "src", p)
-		if !strings.HasPrefix(filepath.Clean(fp), filepath.Join(bc.TestWorkspace, "src")+"/") {
-			return 0, fmt.Errorf("data file path %q escapes base dir", p)
+		fp := filepath.Join(cfg.BuildCfg.TestWorkspace, "src", p)
+		if !strings.HasPrefix(filepath.Clean(fp),
+			filepath.Join(cfg.BuildCfg.TestWorkspace, "src")+"/") {
+			return fmt.Errorf("data file path %q escapes base dir", p)
 		}
 	}
-	return hst.PutTree(ctx, filepath.Join(bc.TestWorkspace, "src"), destDir, paths)
+
+	start := time.Now()
+	bytes, err := hst.PutTree(ctx, filepath.Join(cfg.BuildCfg.TestWorkspace, "src"), destDir, paths)
+	if err != nil {
+		return err
+	}
+	cfg.Logger.Logf("Pushed data files in %0.1f sec (sent %s)",
+		time.Now().Sub(start).Seconds(), formatBytes(bytes))
+	return nil
 }
 
 // runLocalTestBinary runs the test binary at bin on hst using cfg.
@@ -240,7 +250,7 @@ func runLocalTestBinary(ctx context.Context, hst *host.SSH, bin, dataDir string,
 	}
 
 	cmd := getLocalTestCommand(bin, []string{"-report", "-datadir=" + dataDir}, cfg.Patterns)
-	cfg.Logger.Logf("Starting %q on remote host", cmd)
+	cfg.Logger.Debugf("Starting %q on remote host", cmd)
 	handle, err := hst.Start(ctx, cmd, host.CloseStdin, host.StdoutAndStderr)
 	if err != nil {
 		return err

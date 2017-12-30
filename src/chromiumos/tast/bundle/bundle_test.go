@@ -328,3 +328,11 @@ func TestReportErrorForTestFailure(t *gotesting.T) {
 		t.Fatalf("RunTests(ctx, %v) = %v; want %v", cfg, status, statusTestsFailed)
 	}
 }
+
+func TestRunTestsNoTests(t *gotesting.T) {
+	// runTests should report failure when passed a config without any tests.
+	cfg := runConfig{tests: nil}
+	if status := runTests(context.Background(), &cfg); status != statusNoTests {
+		t.Fatalf("RunTests(ctx, %v) = %v; want %v", cfg, status, statusNoTests)
+	}
+}

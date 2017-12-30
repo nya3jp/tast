@@ -111,8 +111,8 @@ func callParseArgs(t *gotesting.T, w io.Writer, args []string, glob string, flag
 	return cfg, sig
 }
 
-// readAllMessages reads and returns control messages from r.
-// It reports a fatal test error if any problems are encountered.
+// readAllMessages reads and returns a slice of pointers to control messages
+// from r. It reports a fatal test error if any problems are encountered.
 func readAllMessages(t *gotesting.T, r io.Reader) []interface{} {
 	msgs := make([]interface{}, 0)
 	mr := control.NewMessageReader(r)
@@ -124,6 +124,17 @@ func readAllMessages(t *gotesting.T, r io.Reader) []interface{} {
 		msgs = append(msgs, msg)
 	}
 	return msgs
+}
+
+// gotRunError returns true if there is a control.RunError message in msgs,
+// a slice of pointers to control messages.
+func gotRunError(msgs []interface{}) bool {
+	for _, msg := range msgs {
+		if _, ok := msg.(*control.RunError); ok {
+			return true
+		}
+	}
+	return false
 }
 
 func TestParseArgsListTests(t *gotesting.T) {
@@ -208,6 +219,9 @@ func TestRunTests(t *gotesting.T) {
 func TestParseArgsInvalidFlag(t *gotesting.T) {
 	// ParseArgs should fail when an invalid flag is passed.
 	callParseArgs(t, &bytes.Buffer{}, []string{"-bogus"}, "/bogus/*", nil, statusBadArgs, false)
+
+	// This should also happen when -report is passed.
+	callParseArgs(t, &bytes.Buffer{}, []string{"-report", "-bogus"}, "/bogus/*", nil, statusBadArgs, false)
 }
 
 func TestParseArgsCustomFlag(t *gotesting.T) {
@@ -231,6 +245,15 @@ func TestParseArgsNoBundles(t *gotesting.T) {
 	// ParseArgs should fail when a glob is passed that doesn't match any bundles.
 	callParseArgs(t, &bytes.Buffer{}, []string{}, filepath.Join(dir, "bogus*"), nil,
 		statusNoBundles, false)
+
+	// When -report is passed, the command should exit with success but write a
+	// RunError control message.
+	b := bytes.Buffer{}
+	_, sig := callParseArgs(t, &b, []string{"-report"}, filepath.Join(dir, "bogus*"), nil,
+		statusSuccess, false)
+	if !gotRunError(readAllMessages(t, &b)) {
+		t.Fatalf("%s didn't write RunError message", sig)
+	}
 }
 
 func TestRunTestsNoTests(t *gotesting.T) {
@@ -241,7 +264,19 @@ func TestRunTestsNoTests(t *gotesting.T) {
 	cfg, _ := callParseArgs(t, &bytes.Buffer{}, []string{"bogus.SomeTest"}, filepath.Join(dir, "*"), nil,
 		statusSuccess, true)
 	if status := RunTests(cfg); status != statusNoTests {
-		t.Fatalf("RunConfig(%v) = %v; want %v", cfg, status, statusNoTests)
+		t.Fatalf("RunTests(%v) = %v; want %v", cfg, status, statusNoTests)
+	}
+
+	// When -report is passed, the command should exit with success but write a
+	// RunError control message.
+	b := bytes.Buffer{}
+	cfg, _ = callParseArgs(t, &b, []string{"-report", "bogus.SomeTest"}, filepath.Join(dir, "*"), nil,
+		statusSuccess, true)
+	if status := RunTests(cfg); status != statusSuccess {
+		t.Fatalf("RunTests(%v) = %v; want %v", cfg, status, statusSuccess)
+	}
+	if !gotRunError(readAllMessages(t, &b)) {
+		t.Fatalf("RunTests(%v) didn't write RunError message", cfg)
 	}
 }
 

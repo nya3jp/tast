@@ -26,6 +26,7 @@ const (
 	statusBadTests    = 3 // errors in test registration (bad names, missing test functions, etc.)
 	statusBadPatterns = 4 // one or more bad test patterns were passed to the bundle
 	statusTestsFailed = 5 // one or more tests failed while running when -report not passed
+	statusNoTests     = 6 // no tests were matched by the supplied patterns
 
 	// Number of characters in prefixes from the log package, e.g. "2017/08/17 09:29:54 ".
 	logPrefixLen = 20
@@ -149,6 +150,11 @@ type runConfig struct {
 // failure is reported if any tests failed. If cfg.mw is non-nil, success is reported even
 // if tests fail, as the tast command knows how to interpret test results.
 func runTests(ctx context.Context, cfg *runConfig) int {
+	if len(cfg.tests) == 0 {
+		writeError("No tests matched by pattern(s)")
+		return statusNoTests
+	}
+
 	numFailed := 0
 	for _, t := range cfg.tests {
 		// Make a copy of the test with the default timeout if none was specified.

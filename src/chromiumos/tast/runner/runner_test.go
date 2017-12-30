@@ -13,6 +13,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	gotesting "testing"
 
@@ -66,6 +67,12 @@ func createBundleSymlinks(t *gotesting.T, bundleTestResults ...[]bool) (dir stri
 	return dir
 }
 
+// getTestName returns the name to use for the test with the 0-indexed testNum in the
+// bundle with the 0-indexed bundleNum.
+func getTestName(bundleNum, testNum int) string {
+	return fmt.Sprintf("pkg.Bundle%dTest%d", bundleNum, testNum)
+}
+
 // runBundle is invoked when the test binary that's currently running is executed
 // via a symlink previously created by createBundleSymlinks. The symlink name is parsed
 // to get the desired behavior, and then tests are registered and executed via the
@@ -73,7 +80,11 @@ func createBundleSymlinks(t *gotesting.T, bundleTestResults ...[]bool) (dir stri
 func runBundle() int {
 	parts := strings.Split(filepath.Base(os.Args[0]), "-")
 	if len(parts) != 3 {
-		log.Fatalf("Unparsable filename %v", os.Args[0])
+		log.Fatalf("Unparsable filename %q", os.Args[0])
+	}
+	bundleNum, err := strconv.Atoi(parts[1])
+	if err != nil {
+		log.Fatalf("Bad bundle number %q in filename %q", parts[1], os.Args[0])
 	}
 	for i, res := range parts[2] {
 		var f testing.TestFunc
@@ -85,7 +96,7 @@ func runBundle() int {
 			log.Fatalf("Bad rune %v in result string %q", res, parts[2])
 		}
 		testing.AddTest(&testing.Test{
-			Name: fmt.Sprintf("pkg.Bundle%sTest%d", parts[1], i),
+			Name: getTestName(bundleNum, i),
 			Func: f,
 		})
 	}
@@ -289,5 +300,19 @@ func TestRunTestsFailForErrorWhenRunManually(t *gotesting.T) {
 		statusSuccess, true)
 	if status := RunTests(cfg); status != statusBundleFailed {
 		t.Fatalf("RunConfig(%v) = %v; want %v", cfg, status, statusBundleFailed)
+	}
+}
+
+func TestSkipBundlesWithoutMatchedTests(t *gotesting.T) {
+	dir := createBundleSymlinks(t, []bool{true}, []bool{true})
+	defer os.RemoveAll(dir)
+
+	// Test bundles report failure if instructed to run using a pattern that doesn't
+	// match any tests in the bundle. Pass the name of the test in the first bundle and
+	// check that the run succeeds (i.e. the second bundle wasn't executed).
+	cfg, _ := callParseArgs(t, &bytes.Buffer{}, []string{getTestName(0, 0)},
+		filepath.Join(dir, "*"), nil, statusSuccess, true)
+	if status := RunTests(cfg); status != statusSuccess {
+		t.Fatalf("RunConfig(%v) = %v; want %v", cfg, status, statusSuccess)
 	}
 }

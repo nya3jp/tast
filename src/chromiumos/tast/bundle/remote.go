@@ -29,11 +29,6 @@ func Remote(args []string) int {
 		return status
 	}
 
-	// Don't bother connecting to the DUT if we wouldn't run any tests.
-	if len(cfg.tests) == 0 {
-		return statusSuccess
-	}
-
 	// Connect to the DUT and attach the connection to the context so tests can use it.
 	if *target == "" {
 		writeError("-target not supplied")

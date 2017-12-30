@@ -84,13 +84,16 @@ func getBundles(glob string) ([]string, error) {
 }
 
 type testsOrError struct {
-	tests []*testing.Test
-	err   error
+	bundle string
+	tests  []*testing.Test
+	err    error
 }
 
 // getTests returns tests in bundles matched by patterns. It does this by executing
-// each bundle with the -list arg to ask it to marshal and print its tests.
-func getTests(bundles, patterns []string, dataDir string) ([]*testing.Test, error) {
+// each bundle with the -list arg to ask it to marshal and print its tests. A slice
+// of paths to bundles with matched tests is also returned.
+func getTests(bundles, patterns []string, dataDir string) (
+	tests []*testing.Test, bundlesWithTests []string, err error) {
 	args := []string{"-datadir", dataDir, "-list"}
 	args = append(args, patterns...)
 
@@ -105,27 +108,31 @@ func getTests(bundles, patterns []string, dataDir string) ([]*testing.Test, erro
 				if ee, ok := err.(*exec.ExitError); ok {
 					err = fmt.Errorf("bundle %v failed: %v", bundle, string(ee.Stderr))
 				}
-				ch <- testsOrError{nil, err}
+				ch <- testsOrError{bundle, nil, err}
 				return
 			}
-			tests := make([]*testing.Test, 0)
-			if err := json.Unmarshal(out, &tests); err != nil {
-				ch <- testsOrError{nil, fmt.Errorf("bundle %v gave bad output: %v", bundle, err)}
+			ts := make([]*testing.Test, 0)
+			if err := json.Unmarshal(out, &ts); err != nil {
+				ch <- testsOrError{bundle, nil,
+					fmt.Errorf("bundle %v gave bad output: %v", bundle, err)}
 				return
 			}
-			ch <- testsOrError{tests, nil}
+			ch <- testsOrError{bundle, ts, nil}
 		}()
 	}
 
-	tests := make([]*testing.Test, 0)
+	tests = make([]*testing.Test, 0)
 	for i := 0; i < len(bundles); i++ {
 		toe := <-ch
 		if toe.err != nil {
-			return nil, toe.err
+			return nil, nil, toe.err
 		}
-		tests = append(tests, toe.tests...)
+		if len(toe.tests) > 0 {
+			tests = append(tests, toe.tests...)
+			bundlesWithTests = append(bundlesWithTests, toe.bundle)
+		}
 	}
-	return tests, nil
+	return tests, bundlesWithTests, nil
 }
 
 // ParseArgs parses args (typically os.Args[1:]) and returns a RunConfig if tests need to be run.
@@ -172,7 +179,7 @@ func ParseArgs(stdout io.Writer, args []string, defaultBundleGlob, defaultDataDi
 	}
 
 	cfg.patterns = flags.Args()
-	if cfg.tests, err = getTests(cfg.bundles, cfg.patterns, cfg.dataDir); err != nil {
+	if cfg.tests, cfg.bundles, err = getTests(cfg.bundles, cfg.patterns, cfg.dataDir); err != nil {
 		return nil, Error(cfg.mw, fmt.Sprintf("Failed to get tests: %v", err.Error()), statusError)
 	}
 

@@ -15,5 +15,16 @@
 
 	Each test bundle should pass os.Args[1:] to either Local or Remote (depending on the
 	type of tests that the bundle contains) and pass the returned status code to os.Exit.
+
+	When a test runner is executed by the tast command, it passes the -report flag to test
+	bundles, which instructs them to write JSON-marshaled control messages to stdout.
+	These messages are relayed by the test runner back to the tast command. When a test
+	bundle encounters an error, it writes a descriptive message to stderr and exits with a
+	nonzero status code. When executed with -report, the bundle exits with zero if one or
+	more tests fail, as the tast command will learn about the failures via TestError
+	control messages.
+
+	If a bundle is executed without -report, it logs test output to stdout. If a test
+	fails in this mode, the bundle exits with a nonzero status code.
 */
 package bundle

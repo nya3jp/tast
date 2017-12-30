@@ -31,6 +31,9 @@ const (
 	logPrefixLen = 20
 )
 
+// logger is used to write messages to stdout when -report is not passed.
+var logger *log.Logger = log.New(os.Stdout, "", log.LstdFlags)
+
 // writeError writes an error to stderr.
 func writeError(msg string) {
 	if len(msg) > 0 && msg[len(msg)-1] != '\n' {
@@ -54,7 +57,7 @@ func parseArgs(stdout io.Writer, args []string, defaultDataDir string,
 	}
 	flags.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage: %s <flags> <pattern> <pattern> ...\n"+
-			"Runs tests matched by zero or more patterns.\n\n", filepath.Base(args[0]))
+			"Runs tests matched by zero or more patterns.\n\n", filepath.Base(os.Args[0]))
 		flags.PrintDefaults()
 	}
 
@@ -157,7 +160,7 @@ func runTests(ctx context.Context, cfg *runConfig) int {
 		if cfg.mw != nil {
 			cfg.mw.WriteMessage(&control.TestStart{time.Now(), test.Name, test})
 		} else {
-			log.Print("Running ", test.Name)
+			logger.Print("Running ", test.Name)
 		}
 
 		outDir := filepath.Join(cfg.outDir, test.Name)
@@ -189,7 +192,7 @@ func runTests(ctx context.Context, cfg *runConfig) int {
 		if cfg.mw != nil {
 			cfg.mw.WriteMessage(&control.TestEnd{time.Now(), test.Name})
 		} else {
-			log.Printf("Finished %s", test.Name)
+			logger.Printf("Finished %s", test.Name)
 		}
 	}
 
@@ -210,7 +213,7 @@ func indent(s, prefix string) string {
 }
 
 // copyTestOutput reads test output from ch and writes it to mw.
-// If mw is nil, the output is just logged to os.Stdout.
+// If mw is nil, the output is just logged to stdout.
 // true is returned if the test suceeded.
 func copyTestOutput(ch chan testing.Output, mw *control.MessageWriter) (succeeded bool) {
 	succeeded = true
@@ -222,13 +225,13 @@ func copyTestOutput(ch chan testing.Output, mw *control.MessageWriter) (succeede
 				mw.WriteMessage(&control.TestError{o.T, *o.Err})
 			} else {
 				stack := indent(strings.TrimSpace(o.Err.Stack), strings.Repeat(" ", logPrefixLen))
-				log.Printf("Error: [%s:%d] %v\n%s", o.Err.File, o.Err.Line, o.Err.Reason, stack)
+				logger.Printf("Error: [%s:%d] %v\n%s", o.Err.File, o.Err.Line, o.Err.Reason, stack)
 			}
 		} else {
 			if mw != nil {
 				mw.WriteMessage(&control.TestLog{o.T, o.Msg})
 			} else {
-				log.Print(o.Msg)
+				logger.Print(o.Msg)
 			}
 		}
 	}

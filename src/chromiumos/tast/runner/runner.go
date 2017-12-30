@@ -32,28 +32,37 @@ const (
 	statusBundleFailed = 5 // test bundle exited with nonzero status
 )
 
-// Log writes a RunLog control message to mw if non-nil or logs to stderr otherwise.
+// logger is used to write messages to stdout when -report is not passed.
+var logger *log.Logger = log.New(os.Stdout, "", log.LstdFlags)
+
+// Log writes a RunLog control message to mw if non-nil or logs to stdout otherwise.
 func Log(mw *control.MessageWriter, msg string) {
 	if mw != nil {
 		mw.WriteMessage(&control.RunLog{time.Now(), msg})
 	} else {
-		log.Print(msg)
+		logger.Print(msg)
 	}
 }
 
-// Error writes a RunError control message to mw if non-nil or logs to stderr otherwise.
-func Error(mw *control.MessageWriter, msg string) {
-	if mw != nil {
-		_, fn, ln, _ := runtime.Caller(1)
-		mw.WriteMessage(&control.RunError{time.Now(), testing.Error{
-			Reason: msg,
-			File:   fn,
-			Line:   ln,
-			Stack:  string(debug.Stack()),
-		}})
-	} else {
-		log.Print(msg)
+// Error writes a RunError control message to mw if non-nil or writes the message
+// directly to stderr otherwise. After calling this function, the runner should pass
+// the returned status code (which may or may not be equal to the status arg) to os.Exit.
+func Error(mw *control.MessageWriter, msg string, status int) int {
+	if mw == nil {
+		fmt.Fprintln(os.Stderr, msg)
+		return status
 	}
+
+	_, fn, ln, _ := runtime.Caller(1)
+	mw.WriteMessage(&control.RunError{time.Now(), testing.Error{
+		Reason: msg,
+		File:   fn,
+		Line:   ln,
+		Stack:  string(debug.Stack()),
+	}})
+	// Exit with success when reporting progress via control messages.
+	// The tast command will know that the run failed because of the RunError message.
+	return statusSuccess
 }
 
 // getBundles returns the full paths of all test bundles matched by glob.
@@ -136,7 +145,7 @@ func ParseArgs(stdout io.Writer, args []string, defaultBundleGlob, defaultDataDi
 	flags.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage: %s <flags> <pattern> <pattern> ...\n"+
 			"Runs tests matched by zero or more patterns.\n\n", filepath.Base(os.Args[0]))
-		flag.PrintDefaults()
+		flags.PrintDefaults()
 	}
 
 	cfg := RunConfig{stdout: stdout}
@@ -148,7 +157,6 @@ func ParseArgs(stdout io.Writer, args []string, defaultBundleGlob, defaultDataDi
 
 	var err error
 	if err = flags.Parse(args); err != nil {
-		Error(nil, err.Error())
 		return nil, statusBadArgs
 	}
 	if *report {
@@ -156,30 +164,27 @@ func ParseArgs(stdout io.Writer, args []string, defaultBundleGlob, defaultDataDi
 	}
 
 	if cfg.bundles, err = getBundles(*bundleGlob); err != nil {
-		Error(cfg.mw, fmt.Sprintf("Failed to get test bundle(s) %q: %v", *bundleGlob, err))
-		return nil, statusNoBundles
+		return nil, Error(cfg.mw, fmt.Sprintf("Failed to get test bundle(s) %q: %v", *bundleGlob, err),
+			statusNoBundles)
 	} else if len(cfg.bundles) == 0 {
-		Error(cfg.mw, fmt.Sprintf("No test bundles matched by %q", *bundleGlob))
-		return nil, statusNoBundles
+		return nil, Error(cfg.mw, fmt.Sprintf("No test bundles matched by %q", *bundleGlob),
+			statusNoBundles)
 	}
 
 	cfg.patterns = flags.Args()
 	if cfg.tests, err = getTests(cfg.bundles, cfg.patterns, cfg.dataDir); err != nil {
-		Error(cfg.mw, fmt.Sprintf("Failed to get tests: %v", err.Error()))
-		return nil, statusError
+		return nil, Error(cfg.mw, fmt.Sprintf("Failed to get tests: %v", err.Error()), statusError)
 	}
 
 	if *listData {
 		if err = listDataFiles(stdout, cfg.tests); err != nil {
-			Error(cfg.mw, fmt.Sprintf("Failed to list data files: %v", err))
-			return nil, statusError
+			return nil, Error(cfg.mw, fmt.Sprintf("Failed to list data files: %v", err), statusError)
 		}
 		return nil, statusSuccess
 	}
 	if *listTests {
 		if err = testing.WriteTestsAsJSON(stdout, cfg.tests); err != nil {
-			Error(cfg.mw, fmt.Sprintf("Failed to write tests: %v", err))
-			return nil, statusError
+			return nil, Error(cfg.mw, fmt.Sprintf("Failed to write tests: %v", err), statusError)
 		}
 		return nil, statusSuccess
 	}
@@ -218,14 +223,12 @@ type RunConfig struct {
 // The returned status code should be passed to os.Exit.
 func RunTests(cfg *RunConfig) int {
 	if len(cfg.tests) == 0 {
-		Error(cfg.mw, fmt.Sprintf("No tests matched by %v", cfg.patterns))
-		return statusNoTests
+		return Error(cfg.mw, fmt.Sprintf("No tests matched by %v", cfg.patterns), statusNoTests)
 	}
 
 	outDir, err := ioutil.TempDir("", "tast_out.")
 	if err != nil {
-		Error(cfg.mw, fmt.Sprintf("Failed to create out dir: %v", err))
-		return statusError
+		return Error(cfg.mw, fmt.Sprintf("Failed to create out dir: %v", err), statusError)
 	}
 	// If we have a MessageWriter because -report was passed, the tast command should clean up
 	// the output dir after it copies it over. Otherwise, we should clean it up ourselves.
@@ -254,8 +257,8 @@ func RunTests(cfg *RunConfig) int {
 		stderr := bytes.Buffer{}
 		cmd.Stderr = &stderr
 		if err := cmd.Run(); err != nil {
-			Error(cfg.mw, fmt.Sprintf("Bundle %v failed: %v (%v)", bundle, err, stderr.String()))
-			return statusBundleFailed
+			return Error(cfg.mw, fmt.Sprintf("Bundle %v failed: %v (%v)", bundle, err, stderr.String()),
+				statusBundleFailed)
 		}
 	}
 

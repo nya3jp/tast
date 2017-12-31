@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "51717e2f_68216104",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-31T20:00:23Z",
+      "side": 1,
+      "message": "yeah, i was wondering about this too. i\u0027ve updated this function to return the error directly, and buildAndPushLocalRunner to prefix it with details.",
+      "parentUuid": "ff8468b8_31bfaff5",
+      "range": {
+        "startLine": 143,
+        "startChar": 37,
+        "endLine": 143,
+        "endChar": 43
+      },
+      "revId": "8a3f886320abb661006ede18042a102a613ea13b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "51f1cda8_f839e701",
         "filename": "src/chromiumos/cmd/tast/run/local.go",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2017-12-31T18:56:48Z",
       "side": 1,
       "message": "Gross. Just use command args array [\"test\", \"-e\", localRunnerPath]. If return code is 0, it exists.",
+      "range": {
+        "startLine": 262,
+        "startChar": 30,
+        "endLine": 268,
+        "endChar": 36
+      },
+      "revId": "8a3f886320abb661006ede18042a102a613ea13b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2099b5ef_4ee4b341",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 268,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2017-12-31T20:00:23Z",
+      "side": 1,
+      "message": "my problem with that was that i didn\u0027t think i\u0027d be able to distinguish between errors caused by non-zero status codes and ones caused by other problems, but it turns out that (although it\u0027s not directly documented), ssh.Session.CombinedOutput returns an *ssh.ExitError if the command fails or is interrupted. so yeah, it looks like i can just use that to check what happened after using test -e.\n\n(but i can\u0027t pass an array of args because the ssh protocol just uses strings. :-P)",
+      "parentUuid": "51f1cda8_f839e701",
       "range": {
         "startLine": 262,
         "startChar": 30,

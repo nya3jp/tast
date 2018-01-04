@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bd98ccd2_504b686e",
+        "filename": "src/chromiumos/cmd/tast/breakpad/crash_report.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1117055
+      },
+      "writtenOn": "2018-01-04T22:16:57Z",
+      "side": 1,
+      "message": "Is this colon actually present? Your test data doesn\u0027t have one here.",
+      "range": {
+        "startLine": 54,
+        "startChar": 44,
+        "endLine": 54,
+        "endChar": 45
+      },
+      "revId": "dc629964e48d163b80cf6f0738dfa8a543487713",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "65b69e96_ce42dcb0",
+        "filename": "src/chromiumos/cmd/tast/breakpad/crash_report.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1117055
+      },
+      "writtenOn": "2018-01-04T22:16:57Z",
+      "side": 1,
+      "message": "might be useful to include the reader position here to aid in debugging if something goes wrong?",
+      "range": {
+        "startLine": 79,
+        "startChar": 33,
+        "endLine": 79,
+        "endChar": 42
+      },
+      "revId": "dc629964e48d163b80cf6f0738dfa8a543487713",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

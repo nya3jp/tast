@@ -21,9 +21,8 @@ import (
 )
 
 const (
-	// debugSuffix contains the suffix that the Chrome OS build process adds to files
-	// with debugging symbols.
-	debugSuffix = ".debug"
+	debugSuffix   = ".debug" // suffix that Chrome OS build process adds to files with debugging symbols
+	minidumpMagic = "MDMP"   // magic bytes occurring at the beginning of minidump files
 )
 
 // missingRegexp extracts module paths and IDs from messages logged by minidump_stackwalk.
@@ -156,4 +155,13 @@ func WalkMinidump(path, symDir string, w io.Writer) (missing SymbolFileMap, err 
 		}
 	}
 	return missing, nil
+}
+
+// IsMinidump returns true if r (which should be at the beginning of a file) is a minidump file.
+func IsMinidump(r io.Reader) (bool, error) {
+	b := make([]byte, len(minidumpMagic))
+	if _, err := io.ReadFull(r, b); err != nil && err != io.EOF && err != io.ErrUnexpectedEOF {
+		return false, err
+	}
+	return bytes.Equal(b, []byte(minidumpMagic)), nil
 }

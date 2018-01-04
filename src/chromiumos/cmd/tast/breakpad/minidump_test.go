@@ -16,19 +16,6 @@ import (
 	"chromiumos/tast/testutil"
 )
 
-const (
-	// Relative path to checked-in minidump file used for testing.
-	minidumpPath = "testdata/abort.20180103.145440.20827.dmp"
-
-	// Relative path to checked-in executable with debugging symbols.
-	abortDebugPath = "testdata/abort.debug"
-
-	// On-device paths to modules referenced in minidumpPath.
-	ldModulePath    = "/lib64/ld-2.23.so"
-	libcModulePath  = "/lib64/libc-2.23.so"
-	abortModulePath = "/usr/local/bin/abort"
-)
-
 // getModulePaths returns just the sorted paths (i.e. keys) from m.
 func getModulePaths(m SymbolFileMap) []string {
 	ps := make([]string, 0)
@@ -42,6 +29,19 @@ func getModulePaths(m SymbolFileMap) []string {
 func TestWriteSymbolFileAndWalkMinidump(t *testing.T) {
 	td := testutil.TempDir(t, "minidump_test.")
 	defer os.RemoveAll(td)
+
+	const (
+		// Relative path to checked-in minidump file used for testing.
+		minidumpPath = "testdata/abort.20180103.145440.20827.dmp"
+
+		// Relative path to checked-in executable with debugging symbols.
+		abortDebugPath = "testdata/abort.debug"
+
+		// On-device paths to modules referenced in minidumpPath.
+		ldModulePath    = "/lib64/ld-2.23.so"
+		libcModulePath  = "/lib64/libc-2.23.so"
+		abortModulePath = "/usr/local/bin/abort"
+	)
 
 	// When we first walk the minidump file's stack, symbols should be missing.
 	b := bytes.Buffer{}
@@ -90,5 +90,24 @@ func TestWriteSymbolFileAndWalkMinidump(t *testing.T) {
 	if str := "abort!main [abort.c : 4"; !strings.Contains(b.String(), str) {
 		t.Errorf("WalkMinidump(%v, %v, ...)'s output didn't contain %q; full:\n%v",
 			minidumpPath, td, str, b.String())
+	}
+}
+
+func TestIsMinidump(t *testing.T) {
+	for _, tc := range []struct {
+		data  string
+		valid bool
+	}{
+		{"", false},
+		{"DATA", false},
+		{minidumpMagic[:len(minidumpMagic)-1], false},
+		{minidumpMagic, true},
+		{minidumpMagic + "blah", true},
+	} {
+		if valid, err := IsMinidump(bytes.NewBufferString(tc.data)); err != nil {
+			t.Errorf("IsMinidump(%q) failed: %v", tc.data, err)
+		} else if valid != tc.valid {
+			t.Errorf("IsMinidump(%q) = %v; want %v", tc.data, valid, tc.valid)
+		}
 	}
 }

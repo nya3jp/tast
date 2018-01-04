@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "ed87967a_b42fe380",
+        "filename": "src/chromiumos/cmd/tast/breakpad/minidump.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-01-04T00:15:09Z",
+      "side": 1,
+      "message": "it does! always use consistent case throughout. :-)\n\nhttps://github.com/golang/go/wiki/CodeReviewComments#initialisms",
+      "parentUuid": "49ea648b_77dbc186",
+      "range": {
+        "startLine": 43,
+        "startChar": 1,
+        "endLine": 43,
+        "endChar": 3
+      },
+      "revId": "308ebb37f051580a287db0fbc06a2646c05df7ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "5157310e_9958acb6",
         "filename": "src/chromiumos/cmd/tast/breakpad/minidump.go",
         "patchSetId": 2
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "c8811c12_dd73ec8b",
+        "filename": "src/chromiumos/cmd/tast/breakpad/minidump.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-01-04T00:15:09Z",
+      "side": 1,
+      "message": "yep. i\u0027ve updated the comment above missingRegexp to document that these are the same.",
+      "parentUuid": "5157310e_9958acb6",
+      "range": {
+        "startLine": 46,
+        "startChar": 1,
+        "endLine": 47,
+        "endChar": 39
+      },
+      "revId": "308ebb37f051580a287db0fbc06a2646c05df7ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "058d46a9_ff312ab0",
         "filename": "src/chromiumos/cmd/tast/breakpad/minidump_test.go",
         "patchSetId": 2
@@ -59,6 +107,30 @@
       "writtenOn": "2018-01-03T23:51:13Z",
       "side": 1,
       "message": "libc/ld?",
+      "range": {
+        "startLine": 76,
+        "startChar": 34,
+        "endLine": 76,
+        "endChar": 43
+      },
+      "revId": "308ebb37f051580a287db0fbc06a2646c05df7ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6e9d3ff4_39ccc2fc",
+        "filename": "src/chromiumos/cmd/tast/breakpad/minidump_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-01-04T00:15:09Z",
+      "side": 1,
+      "message": "nice catch! (it used to be just libc, but i recompiled the binary using the cros toolchain\u0027s compiler instead of goobuntu\u0027s just before sending this out, and it pulled in a dependency on ld as well)",
+      "parentUuid": "058d46a9_ff312ab0",
       "range": {
         "startLine": 76,
         "startChar": 34,

@@ -31,16 +31,18 @@ import (
 // Commands may block if stdin is never closed.
 type InputMode int
 
-// OutputMode describes how stdout and stderr should be handled when running a remote command.
-// Commands may block if output is not consumed.
-type OutputMode int
-
 const (
 	// OpenStdin indicates that stdin should be copied to the remote command.
 	OpenStdin InputMode = iota
 	// CloseStdin indicates that stdin should be closed.
 	CloseStdin
+)
 
+// OutputMode describes how stdout and stderr should be handled when running a remote command.
+// Commands may block if output is not consumed.
+type OutputMode int
+
+const (
 	// StdoutAndStderr indicates that stdout and stderr should both be returned separately.
 	StdoutAndStderr OutputMode = iota
 	// Stdout indicates that only stdout should be returned (i.e. stderr should be closed).
@@ -49,7 +51,9 @@ const (
 	StderrOnly
 	// NoOutput indicates that both stdout and stderr should be closed.
 	NoOutput
+)
 
+const (
 	defaultSSHUser = "root"
 	defaultSSHPort = 22
 

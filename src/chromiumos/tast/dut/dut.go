@@ -17,7 +17,9 @@ import (
 
 const (
 	dutKey key = iota // key used for attaching a DUT to a context.Context
+)
 
+const (
 	pingTimeout    = time.Second
 	pingRetryDelay = time.Second
 

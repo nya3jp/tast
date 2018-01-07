@@ -54,10 +54,10 @@ type ModuleInfo struct {
 	Name string
 }
 
-// GetDebugBinaryPath returns the location within a Chrome OS chroot where board's
-// debug binary should be located for path (e.g. "/bin/grep").
-func GetDebugBinaryPath(path, board string) string {
-	return filepath.Join("/build", board, "/usr/lib/debug", path+debugSuffix)
+// GetDebugBinaryPath returns the absolute path under buildRoot (e.g. "/build/lumpy")
+// where the debug binary should be located for path (e.g. "/bin/grep").
+func GetDebugBinaryPath(buildRoot, path string) string {
+	return filepath.Join(buildRoot, "/usr/lib/debug", path+debugSuffix)
 }
 
 // parseSymbolFileModuleRecord parses the MODULE record from a Breakpad symbol file.
@@ -70,6 +70,12 @@ func parseSymbolFileModuleRecord(line string) (*ModuleInfo, error) {
 		return nil, errors.New("didn't start with MODULE")
 	}
 	return &ModuleInfo{parts[1], parts[2], parts[3], parts[4]}, nil
+}
+
+// GetSymbolFilePath returns the path within symbol directory dir where the Breakpad
+// symbol file for the binary with basename base and ModuleInfo.ID id should be located.
+func GetSymbolFilePath(dir, base, id string) string {
+	return filepath.Join(dir, base, id, fmt.Sprintf("%s.sym", base))
 }
 
 // WriteSymbolFile writes a Breakpad symbols file for binPath, a binary file with debugging symbols,
@@ -106,7 +112,7 @@ func WriteSymbolFile(binPath, outDir string) (*ModuleInfo, error) {
 	if strings.HasSuffix(name, debugSuffix) {
 		name = name[0 : len(name)-len(debugSuffix)]
 	}
-	p := filepath.Join(outDir, name, mi.ID, fmt.Sprintf("%s.sym", name))
+	p := GetSymbolFilePath(outDir, name, mi.ID)
 	if err = os.MkdirAll(filepath.Dir(p), 0755); err != nil {
 		return mi, err
 	}

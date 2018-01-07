@@ -74,6 +74,7 @@ func doMain() int {
 	subcommands.Register(&buildCmd{}, "")
 	subcommands.Register(newListCmd(), "")
 	subcommands.Register(&runCmd{}, "")
+	subcommands.Register(&symbolizeCmd{}, "")
 
 	fancy := flag.Bool("fancy", false, "use fancy logging")
 	verbose := flag.Bool("verbose", false, "use verbose logging")

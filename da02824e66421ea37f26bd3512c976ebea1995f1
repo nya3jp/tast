@@ -22,6 +22,30 @@
       "revId": "da02824e66421ea37f26bd3512c976ebea1995f1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "44bb7923_9d896862",
+        "filename": "src/chromiumos/cmd/tast/breakpad/minidump.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-01-08T20:34:16Z",
+      "side": 1,
+      "message": "as far as i can tell, it\u0027s always little-endian; see e.g. https://github.com/libyal/libmdmp/blob/master/documentation/Minidump%20(MDMP)%20format.asciidoc#1-overview and the discussion at https://reviews.llvm.org/D23545.\n\n(side question: have any big-endian chromebooks shipped?)",
+      "parentUuid": "0c43716b_2eb9d485",
+      "range": {
+        "startLine": 215,
+        "startChar": 34,
+        "endLine": 215,
+        "endChar": 46
+      },
+      "revId": "da02824e66421ea37f26bd3512c976ebea1995f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

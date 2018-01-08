@@ -10,6 +10,7 @@ package breakpad
 import (
 	"bufio"
 	"bytes"
+	"encoding/binary"
 	"errors"
 	"fmt"
 	"io"
@@ -21,8 +22,11 @@ import (
 )
 
 const (
-	debugSuffix   = ".debug" // suffix that Chrome OS build process adds to files with debugging symbols
-	minidumpMagic = "MDMP"   // magic bytes occurring at the beginning of minidump files
+	debugSuffix            = ".debug"   // suffix that Chrome OS build process adds to files with debugging symbols
+	mdMagic                = "MDMP"     // magic bytes occurring at the beginning of minidump files
+	mdMaxStreams           = 32         // max streams to read from minidump file
+	mdReleaseStreamType    = 0x47670005 // minidump stream type used for /etc/lsb-release data
+	mdReleaseStreamMaxSize = 4096       // max bytes to read from mdReleaseStreamType streams
 )
 
 // missingRegexp extracts module paths and IDs from messages logged by minidump_stackwalk.
@@ -159,9 +163,90 @@ func WalkMinidump(path, symDir string, w io.Writer) (missing SymbolFileMap, err 
 
 // IsMinidump returns true if r (which should be at the beginning of a file) is a minidump file.
 func IsMinidump(r io.Reader) (bool, error) {
-	b := make([]byte, len(minidumpMagic))
+	b := make([]byte, len(mdMagic))
 	if _, err := io.ReadFull(r, b); err != nil && err != io.EOF && err != io.ErrUnexpectedEOF {
 		return false, err
 	}
-	return bytes.Equal(b, []byte(minidumpMagic)), nil
+	return bytes.Equal(b, []byte(mdMagic)), nil
+}
+
+// mdStreamInfo contains information about a stream located in a minidump file.
+type mdStreamInfo struct {
+	streamType uint32 // identifies type of data in stream
+	offset     uint32 // from beginning of file
+	size       uint32
+}
+
+// readMinidumpStreamInfo returns stream information from f, a minidump file.
+//
+// Here are the relevant parts near the start of a minidump file:
+//	...
+//	0x08  stream count (4 bytes)
+//	...
+//	0x20  stream 0 type (4 bytes)
+//	0x24  stream 0 size (4 bytes)
+//	0x28  stream 0 offset (4 bytes)
+//	0x2c  stream 1 type (4 bytes)
+//	etc.
+//
+// See https://chromium.googlesource.com/breakpad/breakpad/+/master/src/google_breakpad/common/minidump_format.h
+// for more details.
+func readMinidumpStreamInfo(f *os.File) ([]mdStreamInfo, error) {
+	// First read the stream count.
+	if _, err := f.Seek(0x8, 0); err != nil {
+		return nil, err
+	}
+	var numStreams uint32
+	if err := binary.Read(f, binary.LittleEndian, &numStreams); err != nil {
+		return nil, err
+	}
+	if numStreams > mdMaxStreams {
+		return nil, fmt.Errorf("too many streams (%v)", numStreams)
+	}
+
+	// Now iterate over all of the stream directory listings to get their
+	// types and bounds.
+	if _, err := f.Seek(0x20, 0); err != nil {
+		return nil, err
+	}
+	infos := make([]mdStreamInfo, numStreams)
+	for i := uint32(0); i < numStreams; i++ {
+		b := make([]uint32, 3)
+		if err := binary.Read(f, binary.LittleEndian, &b); err != nil {
+			return nil, err
+		}
+		infos[i].streamType = b[0]
+		infos[i].size = b[1]
+		infos[i].offset = b[2]
+	}
+	return infos, nil
+}
+
+// GetMinidumpReleaseInfo returns the contents of /etc/lsb-release if it
+// is present in f, a minidump file. The Linux version of Breakpad includes
+// this information in crashes.
+func GetMinidumpReleaseInfo(f *os.File) (string, error) {
+	infos, err := readMinidumpStreamInfo(f)
+	if err != nil {
+		return "", err
+	}
+	var releaseInfo *mdStreamInfo
+	for _, info := range infos {
+		if info.streamType == mdReleaseStreamType {
+			releaseInfo = &info
+			break
+		}
+	}
+	if releaseInfo == nil {
+		return "", errors.New("no lsb-release stream")
+	}
+
+	if _, err = f.Seek(int64(releaseInfo.offset), 0); err != nil {
+		return "", err
+	}
+	b := make([]byte, releaseInfo.size)
+	if _, err = io.ReadFull(f, b); err != nil {
+		return "", err
+	}
+	return string(b), nil
 }

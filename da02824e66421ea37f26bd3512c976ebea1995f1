@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0c43716b_2eb9d485",
+        "filename": "src/chromiumos/cmd/tast/breakpad/minidump.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 1117055
+      },
+      "writtenOn": "2018-01-08T19:01:03Z",
+      "side": 1,
+      "message": "is this explicitly little endian, or is it the platform byte order?",
+      "range": {
+        "startLine": 215,
+        "startChar": 34,
+        "endLine": 215,
+        "endChar": 46
+      },
+      "revId": "da02824e66421ea37f26bd3512c976ebea1995f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

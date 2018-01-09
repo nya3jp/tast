@@ -26,6 +26,7 @@ type Config struct {
 	SymbolDir string
 	// BuildRoot contains build root (e.g. "/build/lumpy") that produced the system image.
 	// If empty, inferred by extracting the board name from the minidump.
+	// The build root is only used if a builder path can't be extracted from the minidump.
 	BuildRoot string
 }
 
@@ -46,29 +47,46 @@ func SymbolizeCrash(path string, w io.Writer, cfg Config) error {
 		defer os.Remove(dumpPath)
 	}
 
+	ri, err := getMinidumpReleaseInfo(dumpPath)
+	if err != nil {
+		return fmt.Errorf("failed to get release info from %v: %v", dumpPath, err)
+	}
+	cfg.Logger.Debugf("Got board %q and builder path %q from minidump", ri.board, ri.builderPath)
 	if cfg.BuildRoot == "" {
-		board, err := getBoardFromMinidump(dumpPath)
-		if err != nil {
-			return fmt.Errorf("failed to get board from %v: %v", dumpPath, err)
-		}
-		cfg.BuildRoot = filepath.Join("/build", board)
-		cfg.Logger.Debugf("Extracted board %q from minidump; using build root %v", board, cfg.BuildRoot)
+		cfg.BuildRoot = filepath.Join("/build", ri.board)
 	}
 
+	cfg.Logger.Debugf("Walking %v with symbol dir %v", dumpPath, cfg.SymbolDir)
 	b := bytes.Buffer{}
 	missing, err := breakpad.WalkMinidump(dumpPath, cfg.SymbolDir, &b)
 	if err != nil {
 		return fmt.Errorf("failed to walk %v: %v", dumpPath, err)
 	}
 
-	// If we don't write any new symbol files (possibly because there were none missing),
+	created := 0
+	if len(missing) > 0 {
+		if ri.builderPath != "" {
+			url := breakpad.GetSymbolsURL(ri.builderPath)
+			cfg.Logger.Debugf("Extracting %v symbol file(s) from %v", len(missing), url)
+			if created, err = breakpad.DownloadSymbols(url, cfg.SymbolDir, missing); err != nil {
+				// Keep going so we can print what we have.
+				cfg.Logger.Logf("Failed to get symbols from %v: %v", url, err)
+			}
+		} else {
+			cfg.Logger.Debugf("Generating %v symbol file(s) from %v", len(missing), cfg.BuildRoot)
+			created = createSymbolFiles(&cfg, missing)
+		}
+	}
+
+	// If we didn't write any new symbol files (possibly because there were none missing),
 	// we're done -- nothing will change if we walk the minidump again.
-	if created := createSymbolFiles(&cfg, missing); created == 0 {
+	if created == 0 {
 		_, err = io.Copy(w, &b)
 		return err
 	}
 
 	// Otherwise, walk the minidump again.
+	cfg.Logger.Debugf("Walking %v again with %v new symbol file(s)", dumpPath, created)
 	if _, err = breakpad.WalkMinidump(dumpPath, cfg.SymbolDir, w); err != nil {
 		return fmt.Errorf("failed to re-walk %v: %v", dumpPath, err)
 	}
@@ -120,18 +138,17 @@ func getMinidumpPath(cfg *Config, path string) (string, error) {
 	return tf.Name(), nil
 }
 
-// getBoardFromMinidump returns the name of the board that generated the minidump
-// file at path. It does this by extracting the dump's copy of the /etc/lsb-release file.
-func getBoardFromMinidump(path string) (string, error) {
+// getMinidumpReleaseInfo returns release information contained in the minidump file at path.
+func getMinidumpReleaseInfo(path string) (*releaseInfo, error) {
 	f, err := os.Open(path)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	defer f.Close()
 
 	data, err := breakpad.GetMinidumpReleaseInfo(f)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return getReleaseInfo(data).board, nil
+	return getReleaseInfo(data), nil
 }

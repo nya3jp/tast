@@ -47,11 +47,13 @@ func TestCreateSymbolFiles(t *testing.T) {
 		}
 	}
 
-	createSymbolFiles(&cfg, symMap)
+	if created := createSymbolFiles(&cfg, symMap); created != len(symMap) {
+		t.Errorf("createSymbolFiles(%v, %v) = %v; want %v", cfg, symMap, created, len(symMap))
+	}
 	for lib, id := range symMap {
 		p := breakpad.GetSymbolFilePath(cfg.SymbolDir, filepath.Base(lib), id)
 		if _, err := os.Stat(p); os.IsNotExist(err) {
-			t.Errorf("createSymbolFiles didn't create %v", p)
+			t.Errorf("createSymbolFiles(%v, %v) didn't create %v", cfg, symMap, p)
 		}
 	}
 }

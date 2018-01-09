@@ -46,6 +46,30 @@
       "revId": "4a6a1ee64b548fa3e4f9a76a37d3794241aebe74",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "35335b44_106aa9c3",
+        "filename": "src/chromiumos/cmd/tast/symbolize/symbol_files.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-01-09T21:34:34Z",
+      "side": 0,
+      "message": "if you don\u0027t mind, i\u0027ll just keep it in this change, since i\u0027m already updating the only caller. i\u0027ve also updated the unit test to check this return value.",
+      "parentUuid": "8be3006c_2efa4134",
+      "range": {
+        "startLine": 38,
+        "startChar": 72,
+        "endLine": 38,
+        "endChar": 77
+      },
+      "revId": "4a6a1ee64b548fa3e4f9a76a37d3794241aebe74",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

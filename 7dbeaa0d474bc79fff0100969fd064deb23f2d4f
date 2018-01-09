@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b712ddee_a4722ce9",
+        "filename": "src/chromiumos/cmd/tast/symbolize/breakpad/download.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-01-09T18:44:05Z",
+      "side": 1,
+      "message": "weird go idiom: struct{} has a size of 0, so it can be used as a map\u0027s value type to simulate a set",
+      "revId": "7dbeaa0d474bc79fff0100969fd064deb23f2d4f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d603cd44_7669ccaf",
+        "filename": "src/chromiumos/cmd/tast/symbolize/breakpad/minidump.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-01-09T00:33:35Z",
+      "side": 1,
+      "message": "updated this to take a build root so i can inject a temp dir in tests",
+      "revId": "5af4b81c350dbc7f4c55ec6f5a61f9b64c96c482",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6b25d738_2adf1e67",
+        "filename": "src/chromiumos/cmd/tast/symbolize/breakpad/minidump.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-01-09T00:33:35Z",
+      "side": 1,
+      "message": "pulled this out into a function so i can call it from a test in symbolize/",
+      "revId": "5af4b81c350dbc7f4c55ec6f5a61f9b64c96c482",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "00126380_9f168492",
+        "filename": "src/chromiumos/cmd/tast/symbolize/testdata/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-01-09T00:33:35Z",
+      "side": 1,
+      "message": "will switch this to \u0027##\u0027 in next patch set for consistency with breakpad/testdata/README.md",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 1
+      },
+      "revId": "5af4b81c350dbc7f4c55ec6f5a61f9b64c96c482",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

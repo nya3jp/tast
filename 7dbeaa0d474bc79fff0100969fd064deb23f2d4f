@@ -16,6 +16,23 @@
       "revId": "7dbeaa0d474bc79fff0100969fd064deb23f2d4f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1cf71ae2_d07eb74a",
+        "filename": "src/chromiumos/cmd/tast/symbolize/symbolize.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1117055
+      },
+      "writtenOn": "2018-01-09T19:54:24Z",
+      "side": 1,
+      "message": "nit: empty line above this?",
+      "revId": "7dbeaa0d474bc79fff0100969fd064deb23f2d4f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

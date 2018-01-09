@@ -35,9 +35,10 @@ func createSymbolFile(fi *symbolFileInfo, symDir, buildRoot string) error {
 // createSymbolFiles attempts to create a symbol file within cfg.SymbolDir for each file listed in sf.
 // Debug binaries should be located within cfg.BuildRoot.
 // The number of symbol files that were successfully created is returned.
-func createSymbolFiles(cfg *Config, sf breakpad.SymbolFileMap) (created int32) {
+func createSymbolFiles(cfg *Config, sf breakpad.SymbolFileMap) (created int) {
 	ch := make(chan *symbolFileInfo) // passes work to goroutines
 	wg := sync.WaitGroup{}           // used to wait for goroutines
+	var nc int32
 
 	// Start a fixed number of worker goroutines so we don't launch a zillion dump_syms processes at once.
 	for i := 0; i < runtime.NumCPU(); i++ {
@@ -49,7 +50,7 @@ func createSymbolFiles(cfg *Config, sf breakpad.SymbolFileMap) (created int32) {
 					cfg.Logger.Debugf("Failed to generate symbol file for %v with ID %v: %v", fi.path, fi.id, err)
 				} else {
 					cfg.Logger.Debugf("Generated symbol file for %v with ID %v", fi.path, fi.id)
-					atomic.AddInt32(&created, 1)
+					atomic.AddInt32(&nc, 1)
 				}
 			}
 			wg.Done()
@@ -62,5 +63,5 @@ func createSymbolFiles(cfg *Config, sf breakpad.SymbolFileMap) (created int32) {
 	}
 	close(ch)
 	wg.Wait()
-	return created
+	return int(nc)
 }

@@ -30,7 +30,7 @@ const (
 var lg logging.Logger
 
 // newLogger creates a logging.Logger based on the supplied command-line flags.
-func newLogger(fancy, verbose bool) (logging.Logger, error) {
+func newLogger(fancy, verbose, logTime bool) (logging.Logger, error) {
 	if fancy {
 		l, err := logging.NewFancy(fancyVerboseLines)
 		if err != nil {
@@ -38,7 +38,12 @@ func newLogger(fancy, verbose bool) (logging.Logger, error) {
 		}
 		return l, err
 	}
-	return logging.NewSimple(os.Stdout, log.LstdFlags, verbose), nil
+
+	var flags int
+	if logTime {
+		flags = log.LstdFlags
+	}
+	return logging.NewSimple(os.Stdout, flags, verbose), nil
 }
 
 // installSignalHandler starts a goroutine that attempts to do some minimal
@@ -78,10 +83,11 @@ func doMain() int {
 
 	fancy := flag.Bool("fancy", false, "use fancy logging")
 	verbose := flag.Bool("verbose", false, "use verbose logging")
+	logTime := flag.Bool("logtime", true, "include date/time headers in logs")
 	flag.Parse()
 
 	var err error
-	if lg, err = newLogger(*fancy, *verbose); err != nil {
+	if lg, err = newLogger(*fancy, *verbose, *logTime); err != nil {
 		log.Fatal("Failed to initialize logging: ", err)
 	}
 	defer lg.Close()

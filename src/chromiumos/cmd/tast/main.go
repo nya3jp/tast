@@ -49,24 +49,28 @@ func newLogger(fancy, verbose, logTime bool) (logging.Logger, error) {
 // installSignalHandler starts a goroutine that attempts to do some minimal
 // cleanup when the process is being terminated by a signal (which prevents
 // deferred functions from running).
-func installSignalHandler() error {
+func installSignalHandler() {
+	var st *terminal.State
 	fd := int(os.Stdin.Fd())
-	st, err := terminal.GetState(fd)
-	if err != nil {
-		return err
+	if terminal.IsTerminal(fd) {
+		var err error
+		if st, err = terminal.GetState(fd); err != nil {
+			lg.Log("Failed to get terminal state: ", err)
+		}
 	}
 
 	sc := make(chan os.Signal, signalChannelSize)
 	go func() {
 		for sig := range sc {
 			lg.Close()
-			terminal.Restore(fd, st)
+			if st != nil {
+				terminal.Restore(fd, st)
+			}
 			fmt.Fprintf(os.Stdout, "\nCaught %v signal; exiting\n", sig)
 			os.Exit(1)
 		}
 	}()
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGKILL)
-	return nil
 }
 
 // doMain implements the main body of the program. It's a separate function so
@@ -92,9 +96,7 @@ func doMain() int {
 	}
 	defer lg.Close()
 
-	if err := installSignalHandler(); err != nil {
-		lg.Log("Failed to install signal handler: ", err)
-	}
+	installSignalHandler()
 
 	return int(subcommands.Execute(context.Background()))
 }

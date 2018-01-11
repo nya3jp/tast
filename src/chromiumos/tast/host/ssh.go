@@ -156,25 +156,36 @@ func getSSHAuthMethods(keyPath, questionPrefix string) ([]ssh.AuthMethod, error)
 	}
 
 	// Fall back to keyboard-interactive.
-	methods = append(methods, ssh.KeyboardInteractive(
-		func(user, inst string, qs []string, es []bool) (as []string, err error) {
-			as = make([]string, len(qs))
-			for i, q := range qs {
-				// Print a prefix before the question to make it less likely the user
-				// automatically types their own password since they're used to being
-				// prompted by sudo whenever they run a command. :-/
-				os.Stdout.WriteString(questionPrefix + q)
-				b, err := terminal.ReadPassword(int(os.Stdin.Fd()))
-				os.Stdout.WriteString("\n")
-				if err != nil {
-					return nil, err
-				}
-				as[i] = string(b)
-			}
-			return as, nil
-		}))
+	stdin := int(os.Stdin.Fd())
+	if terminal.IsTerminal(stdin) {
+		methods = append(methods, ssh.KeyboardInteractive(
+			func(user, inst string, qs []string, es []bool) (as []string, err error) {
+				return presentChallenges(stdin, questionPrefix, user, inst, qs, es)
+			}))
+	}
 
 	return methods, nil
+}
+
+// presentChallenges prints the challenges in qs and returns the user's answers.
+// This (minus its additional two first arguments) is an ssh.KeyboardInteractiveChallenge
+// suitable for passing to ssh.AuthMethod.KeyboardInteractive.
+func presentChallenges(stdin int, prefix, user, inst string, qs []string, es []bool) (
+	as []string, err error) {
+	as = make([]string, len(qs))
+	for i, q := range qs {
+		// Print a prefix before the question to make it less likely the user
+		// automatically types their own password since they're used to being
+		// prompted by sudo whenever they run a command. :-/
+		os.Stdout.WriteString(prefix + q)
+		b, err := terminal.ReadPassword(stdin)
+		os.Stdout.WriteString("\n")
+		if err != nil {
+			return nil, err
+		}
+		as[i] = string(b)
+	}
+	return as, nil
 }
 
 // NewSSH establishes an SSH-based connection to the host described in o.

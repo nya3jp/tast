@@ -69,6 +69,9 @@ type termHandle interface {
 type VT100Term struct{}
 
 func (t *VT100Term) check() error {
+	if !terminal.IsTerminal(int(os.Stdin.Fd())) {
+		return errors.New("stdin isn't a terminal")
+	}
 	if os.Getenv("TMUX") != "" {
 		return errors.New("tmux doesn't support VT100 scrolling sequences")
 	}

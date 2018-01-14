@@ -27,13 +27,13 @@ const (
 	fullLogName   = "full.txt"    // file in runConfig.resDir containing full output
 	timingLogName = "timing.json" // file in runConfig.resDir containing timing information
 
-	localType  = "local"  // -type flag value for local tests
-	remoteType = "remote" // -type flag value for remote tests
+	localType  = "local"  // -buildtype flag value for local tests
+	remoteType = "remote" // -buildtype flag value for remote tests
 )
 
 // runCmd implements subcommands.Command to support running tests.
 type runCmd struct {
-	testType  string     // type of tests to run (either "local" or "remote")
+	buildType string     // type of tests to build and deploy (either "local" or "remote")
 	checkDeps bool       // true if test package's dependencies should be checked before building
 	cfg       run.Config // shared config for running tests
 }
@@ -47,7 +47,7 @@ func (*runCmd) Usage() string {
 }
 
 func (r *runCmd) SetFlags(f *flag.FlagSet) {
-	f.StringVar(&r.testType, "type", "local", "type of tests to run (either \"local\" or \"remote\")")
+	f.StringVar(&r.buildType, "buildtype", "local", "type of tests to build (\"local\" or \"remote\")")
 	f.BoolVar(&r.checkDeps, "checkdeps", true, "checks test package's dependencies before building")
 
 	td := getTrunkDir()
@@ -118,32 +118,53 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 	lg.Debug("Using SSH key ", r.cfg.KeyFile)
 	lg.Log("Writing results to ", r.cfg.ResDir)
 
-	var status subcommands.ExitStatus
-	var results []run.TestResult
-
-	switch r.testType {
-	case localType:
-		if r.cfg.Build && r.checkDeps {
-			r.cfg.BuildCfg.PortagePkg = fmt.Sprintf("chromeos-base/tast-local-tests-%s-9999", r.cfg.BuildBundle)
-		}
-		status, results = run.Local(ctx, &r.cfg)
-	case remoteType:
-		if r.cfg.Build && r.checkDeps {
-			r.cfg.BuildCfg.PortagePkg = fmt.Sprintf("chromeos-base/tast-remote-tests-%s-9999", r.cfg.BuildBundle)
-		}
-		status, results = run.Remote(ctx, &r.cfg)
-	default:
-		lg.Logf(fmt.Sprintf("Invalid test type %q\n\n%s", r.testType, r.Usage()))
-		return subcommands.ExitUsageError
-	}
-
-	if len(results) > 0 {
-		if err = run.WriteResults(&r.cfg, results); err != nil {
-			lg.Log("Failed to write results: ", err)
-			if status == subcommands.ExitSuccess {
-				status = subcommands.ExitFailure
+	status, results := r.runTests(ctx)
+	if len(results) == 0 {
+		if status == subcommands.ExitSuccess {
+			lg.Logf("No tests matched by pattern(s) %v", r.cfg.Patterns)
+			if r.cfg.Build {
+				other := localType
+				if r.buildType == localType {
+					other = remoteType
+				}
+				lg.Logf("Do you need to pass -buildtype=" + other + "?")
 			}
+			status = subcommands.ExitFailure
+		}
+	} else if err = run.WriteResults(&r.cfg, results); err != nil {
+		lg.Log("Failed to write results: ", err)
+		if status == subcommands.ExitSuccess {
+			status = subcommands.ExitFailure
 		}
 	}
 	return status
+}
+
+// runTests executes tests as specified in r.cfg and returns results.
+func (r *runCmd) runTests(ctx context.Context) (status subcommands.ExitStatus, results []run.TestResult) {
+	if !r.cfg.Build {
+		// If we aren't rebuilding a bundle, run both local and remote tests and merge the results.
+		if status, results = run.Local(ctx, &r.cfg); status == subcommands.ExitSuccess {
+			var rres []run.TestResult
+			status, rres = run.Remote(ctx, &r.cfg)
+			results = append(results, rres...)
+		}
+		return status, results
+	}
+
+	switch r.buildType {
+	case localType:
+		if r.checkDeps {
+			r.cfg.BuildCfg.PortagePkg = fmt.Sprintf("chromeos-base/tast-local-tests-%s-9999", r.cfg.BuildBundle)
+		}
+		return run.Local(ctx, &r.cfg)
+	case remoteType:
+		if r.checkDeps {
+			r.cfg.BuildCfg.PortagePkg = fmt.Sprintf("chromeos-base/tast-remote-tests-%s-9999", r.cfg.BuildBundle)
+		}
+		return run.Remote(ctx, &r.cfg)
+	default:
+		lg.Logf(fmt.Sprintf("Invalid -buildtype %q\n\n%s", r.buildType, r.Usage()))
+		return subcommands.ExitUsageError, nil
+	}
 }

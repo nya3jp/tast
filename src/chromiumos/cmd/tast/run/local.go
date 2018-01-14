@@ -43,14 +43,15 @@ const (
 	localBundleBuildSubdir = "local_bundles"
 )
 
-// Local runs local tests as directed by cfg.
-func Local(ctx context.Context, cfg *Config) subcommands.ExitStatus {
+// Local runs local tests as directed by cfg and returns the command's exit status.
+// If non-nil, the returned results may be passed to WriteResults.
+func Local(ctx context.Context, cfg *Config) (subcommands.ExitStatus, []TestResult) {
 	cfg.Logger.Status("Connecting to target")
 	cfg.Logger.Logf("Connecting to %s", cfg.Target)
 	hst, err := connectToTarget(ctx, cfg.Target, cfg.KeyFile)
 	if err != nil {
 		cfg.Logger.Logf("Failed to connect to %s: %v", cfg.Target, err)
-		return subcommands.ExitFailure
+		return subcommands.ExitFailure, nil
 	}
 	defer hst.Close(ctx)
 
@@ -58,7 +59,7 @@ func Local(ctx context.Context, cfg *Config) subcommands.ExitStatus {
 	if cfg.Build {
 		if bundleGlob, err = buildAndPushBundle(ctx, cfg, hst); err != nil {
 			cfg.Logger.Logf("Failed building or pushing tests: %v", err)
-			return subcommands.ExitFailure
+			return subcommands.ExitFailure, nil
 		}
 		dataDir = localDataPushDir
 	} else {
@@ -68,12 +69,13 @@ func Local(ctx context.Context, cfg *Config) subcommands.ExitStatus {
 
 	cfg.Logger.Status("Running tests on target")
 	start := time.Now()
-	if err = runLocalRunner(ctx, cfg, hst, bundleGlob, dataDir); err != nil {
+	results, err := runLocalRunner(ctx, cfg, hst, bundleGlob, dataDir)
+	if err != nil {
 		cfg.Logger.Log("Failed to run tests: ", err)
-		return subcommands.ExitFailure
+		return subcommands.ExitFailure, results
 	}
-	cfg.Logger.Logf("Ran test(s) in %v", time.Now().Sub(start).Round(time.Millisecond))
-	return subcommands.ExitSuccess
+	cfg.Logger.Logf("Ran %v local test(s) in %v", len(results), time.Now().Sub(start).Round(time.Millisecond))
+	return subcommands.ExitSuccess, results
 }
 
 // connectToTarget establishes an SSH connection to target using the private key at keyFile.
@@ -303,7 +305,8 @@ func buildAndPushLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH) er
 }
 
 // runLocalRunner runs the test runner with bundles matched by bundleGlob on hst using cfg.
-func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob, dataDir string) error {
+func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob, dataDir string) (
+	[]TestResult, error) {
 	if tl, ok := timing.FromContext(ctx); ok {
 		st := tl.Start("run_tests")
 		defer st.End()
@@ -318,16 +321,16 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 		cmd := getLocalRunnerCmd(bundleGlob, []string{"-listtests"}, cfg.Patterns)
 		b, err := hst.Run(ctx, cmd)
 		if err != nil {
-			return err
+			return nil, err
 		}
-		return printTests(cfg.PrintDest, b, cfg.PrintMode)
+		return nil, printTests(cfg.PrintDest, b, cfg.PrintMode)
 	}
 
 	cmd := getLocalRunnerCmd(bundleGlob, []string{"-report", "-datadir=" + dataDir}, cfg.Patterns)
 	cfg.Logger.Debugf("Starting %q on remote host", cmd)
 	handle, err := hst.Start(ctx, cmd, host.CloseStdin, host.StdoutAndStderr)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer handle.Close(ctx)
 
@@ -345,15 +348,15 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 		}
 		return nil
 	}
-	rerr := readTestOutput(ctx, cfg, handle.Stdout(), crf)
+	results, rerr := readTestOutput(ctx, cfg, handle.Stdout(), crf)
 
 	// Check that the runner exits successfully first so that we don't give a useless error
 	// about incorrectly-formed output instead of e.g. an error about the runner being missing.
 	if err := handle.Wait(ctx); err != nil {
 		ln, _ := stderrReader.getLine(stderrTimeout)
-		return fmt.Errorf("%v: %v", err, ln)
+		return results, fmt.Errorf("%v: %v", err, ln)
 	}
-	return rerr
+	return results, rerr
 }
 
 // formatBytes formats bytes as a human-friendly string.

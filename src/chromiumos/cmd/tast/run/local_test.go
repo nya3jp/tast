@@ -73,7 +73,7 @@ func TestLocalSuccess(t *gotesting.T) {
 		localRunnerPath, localBundleBuiltinDir, localDataBuiltinDir)
 	td.srvData.Srv.FakeCmd(cmd, 0, ob.Bytes(), []byte{})
 
-	if status := Local(context.Background(), &td.cfg); status != subcommands.ExitSuccess {
+	if status, _ := Local(context.Background(), &td.cfg); status != subcommands.ExitSuccess {
 		t.Errorf("Local() = %v; want %v (%v)", status, subcommands.ExitSuccess, td.logbuf.String())
 	}
 }
@@ -91,7 +91,7 @@ func TestLocalExecFailure(t *gotesting.T) {
 		localRunnerPath, localBundleBuiltinDir, localDataBuiltinDir)
 	td.srvData.Srv.FakeCmd(cmd, 1, ob.Bytes(), []byte(stderr))
 
-	if status := Local(context.Background(), &td.cfg); status != subcommands.ExitFailure {
+	if status, _ := Local(context.Background(), &td.cfg); status != subcommands.ExitFailure {
 		t.Errorf("Local() = %v; want %v", status, subcommands.ExitFailure)
 	}
 	if !strings.Contains(td.logbuf.String(), stderr) {
@@ -118,7 +118,7 @@ func TestLocalPrint(t *gotesting.T) {
 	out := bytes.Buffer{}
 	td.cfg.PrintDest = &out
 	td.cfg.PrintMode = PrintNames
-	if status := Local(context.Background(), &td.cfg); status != subcommands.ExitSuccess {
+	if status, _ := Local(context.Background(), &td.cfg); status != subcommands.ExitSuccess {
 		t.Errorf("Local() = %v; want %v (%v)", status, subcommands.ExitSuccess, td.logbuf.String())
 	}
 	if exp := fmt.Sprintf("%s\n%s\n", tests[0].Name, tests[1].Name); out.String() != exp {
@@ -129,7 +129,7 @@ func TestLocalPrint(t *gotesting.T) {
 	out.Reset()
 	td.logbuf.Reset()
 	td.cfg.PrintMode = PrintJSON
-	if status := Local(context.Background(), &td.cfg); status != subcommands.ExitSuccess {
+	if status, _ := Local(context.Background(), &td.cfg); status != subcommands.ExitSuccess {
 		t.Errorf("Local() = %v; want %v (%v)", status, subcommands.ExitSuccess, td.logbuf.String())
 	}
 	outTests := make([]testing.Test, 0)

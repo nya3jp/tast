@@ -32,14 +32,15 @@ const (
 	remoteBundleBuildSubdir = "remote_bundles"
 )
 
-// Remote runs remote tests as directed by cfg.
-func Remote(ctx context.Context, cfg *Config) subcommands.ExitStatus {
+// Remote runs remote tests as directed by cfg and returns the command's exit status.
+// If non-nil, the returned results may be passed to WriteResults.
+func Remote(ctx context.Context, cfg *Config) (subcommands.ExitStatus, []TestResult) {
 	start := time.Now()
 	if cfg.Build && cfg.BuildCfg.Arch == "" {
 		var err error
 		if cfg.BuildCfg.Arch, err = build.GetLocalArch(); err != nil {
 			cfg.Logger.Log("Failed to get local arch: ", err)
-			return subcommands.ExitFailure
+			return subcommands.ExitFailure, nil
 		}
 	}
 
@@ -52,7 +53,7 @@ func Remote(ctx context.Context, cfg *Config) subcommands.ExitStatus {
 		cfg.Logger.Debugf("Building %s from %s to %s", pkg, cfg.BuildCfg.TestWorkspace, bundleDest)
 		if out, err := build.Build(ctx, &cfg.BuildCfg, pkg, bundleDest, "build_bundle"); err != nil {
 			cfg.Logger.Logf("Failed building test bundle: %v\n\n%s", err, out)
-			return subcommands.ExitFailure
+			return subcommands.ExitFailure, nil
 		}
 		cfg.Logger.Logf("Built test bundle in %v", time.Now().Sub(buildStart).Round(time.Millisecond))
 
@@ -60,17 +61,18 @@ func Remote(ctx context.Context, cfg *Config) subcommands.ExitStatus {
 		bundleGlob = bundleDest
 	}
 
-	if err := runRemoteRunner(ctx, bundleGlob, cfg); err != nil {
+	results, err := runRemoteRunner(ctx, bundleGlob, cfg)
+	if err != nil {
 		cfg.Logger.Log("Failed to run tests: ", err)
-		return subcommands.ExitFailure
+		return subcommands.ExitFailure, results
 	}
-	cfg.Logger.Logf("Ran test(s) in %v", time.Now().Sub(start).Round(time.Millisecond))
-	return subcommands.ExitSuccess
+	cfg.Logger.Logf("Ran %v remote test(s) in %v", len(results), time.Now().Sub(start).Round(time.Millisecond))
+	return subcommands.ExitSuccess, results
 }
 
 // runRemoteRunner runs the remote test runner with bundles matched by bundleGlob
 // and reads its output.
-func runRemoteRunner(ctx context.Context, bundleGlob string, cfg *Config) error {
+func runRemoteRunner(ctx context.Context, bundleGlob string, cfg *Config) ([]TestResult, error) {
 	if tl, ok := timing.FromContext(ctx); ok {
 		st := tl.Start("run_tests")
 		defer st.End()
@@ -83,9 +85,9 @@ func runRemoteRunner(ctx context.Context, bundleGlob string, cfg *Config) error 
 		args = append(args, cfg.Patterns...)
 		b, err := exec.Command(remoteRunner, args...).Output()
 		if err != nil {
-			return err
+			return nil, err
 		}
-		return printTests(cfg.PrintDest, b, cfg.PrintMode)
+		return nil, printTests(cfg.PrintDest, b, cfg.PrintMode)
 	}
 
 	args = append(args, "-report", "-target="+cfg.Target, "-keypath="+cfg.KeyFile)
@@ -95,23 +97,24 @@ func runRemoteRunner(ctx context.Context, bundleGlob string, cfg *Config) error 
 	var err error
 	var stdout, stderr io.Reader
 	if stdout, err = cmd.StdoutPipe(); err != nil {
-		return fmt.Errorf("failed to open stdout: %v", err)
+		return nil, fmt.Errorf("failed to open stdout: %v", err)
 	}
 	if stderr, err = cmd.StderrPipe(); err != nil {
-		return fmt.Errorf("failed to open stderr: %v", err)
+		return nil, fmt.Errorf("failed to open stderr: %v", err)
 	}
 	stderrReader := newFirstLineReader(stderr)
 
 	cfg.Logger.Logf("Starting %q", strings.Join(cmd.Args, " "))
 	if err := cmd.Start(); err != nil {
-		return err
+		return nil, err
 	}
-	if err := readTestOutput(ctx, cfg, stdout, os.Rename); err != nil {
-		return err
+	results, err := readTestOutput(ctx, cfg, stdout, os.Rename)
+	if err != nil {
+		return results, err
 	}
 	if err := cmd.Wait(); err != nil {
 		ln, _ := stderrReader.getLine(stderrTimeout)
-		return fmt.Errorf("%v: %v", err, ln)
+		return results, fmt.Errorf("%v: %v", err, ln)
 	}
-	return nil
+	return results, nil
 }

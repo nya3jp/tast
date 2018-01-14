@@ -217,12 +217,12 @@ type RunConfig struct {
 
 	// ExtraFlags contains extra flags to be passed to test bundles.
 	ExtraFlags []string
-	// PreRun is executed before the RunStart control message is written if non-nil and
-	// if -report was passed.
+	// PreRun is executed before the RunStart control message is written if non-nil, -report was
+	// passed, and one or more tests were matched.
 	PreRun func(mw *control.MessageWriter)
-	// PostRun is executed before the RunEnd control message is written if non-nil and
-	// if -report was passed. Its return value is used as the base for the RunEnd message
-	// that is sent to the tast command.
+	// PostRun is executed before the RunEnd control message is written if non-nil, -report was
+	// passed, and one or more tests were matched. Its return value is used as the base for the
+	// RunEnd message that is sent to the tast command.
 	PostRun func(mw *control.MessageWriter) control.RunEnd
 }
 
@@ -230,7 +230,17 @@ type RunConfig struct {
 // The returned status code should be passed to os.Exit.
 func RunTests(cfg *RunConfig) int {
 	if len(cfg.tests) == 0 {
-		return Error(cfg.mw, fmt.Sprintf("No tests matched by %v", cfg.patterns), statusNoTests)
+		// If the runner was executed manually, report an error if no tests were matched.
+		if cfg.mw == nil {
+			return Error(nil, fmt.Sprintf("No tests matched by %v", cfg.patterns), statusNoTests)
+		}
+
+		// Otherwise, just report an empty run. It's expected to not match any tests if
+		// both local and remote tests are being run but the user specified a pattern that
+		// matched only local or only remote tests rather than tests of both types.
+		cfg.mw.WriteMessage(&control.RunStart{Time: time.Now()})
+		cfg.mw.WriteMessage(&control.RunEnd{Time: time.Now()})
+		return statusSuccess
 	}
 
 	outDir, err := ioutil.TempDir("", "tast_out.")

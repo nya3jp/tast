@@ -271,23 +271,22 @@ func TestRunTestsNoTests(t *gotesting.T) {
 	dir := createBundleSymlinks(t, []bool{true})
 	defer os.RemoveAll(dir)
 
-	// RunTests should fail when a pattern is passed that doesn't match any tests.
+	// RunTests should fail when a pattern is passed that doesn't match any tests and -report isn't passed.
 	cfg, _ := callParseArgs(t, &bytes.Buffer{}, []string{"bogus.SomeTest"}, filepath.Join(dir, "*"), nil,
 		statusSuccess, true)
 	if status := RunTests(cfg); status != statusNoTests {
 		t.Fatalf("RunTests(%v) = %v; want %v", cfg, status, statusNoTests)
 	}
 
-	// When -report is passed, the command should exit with success but write a
-	// RunError control message.
+	// If -report is passed, the command should exit with success.
 	b := bytes.Buffer{}
 	cfg, _ = callParseArgs(t, &b, []string{"-report", "bogus.SomeTest"}, filepath.Join(dir, "*"), nil,
 		statusSuccess, true)
 	if status := RunTests(cfg); status != statusSuccess {
 		t.Fatalf("RunTests(%v) = %v; want %v", cfg, status, statusSuccess)
 	}
-	if !gotRunError(readAllMessages(t, &b)) {
-		t.Fatalf("RunTests(%v) didn't write RunError message", cfg)
+	if gotRunError(readAllMessages(t, &b)) {
+		t.Fatalf("RunTests(%v) wrote RunError message", cfg)
 	}
 }
 

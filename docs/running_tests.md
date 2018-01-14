@@ -46,14 +46,9 @@ Any additional positional arguments describe which tests should be executed:
 It's invalid to mix attribute expressions and wildcard patterns. See the [Test
 Attributes] document for more information about attributes.
 
-The `type` flag accepts a `local` or `remote` parameter to specify which
-type of test should be run. `local` is the default, and `remote` must be
-specified when running remote tests. A command similar to the following runs a
-remote test:
-
-```shell
-tast run -type=remote <target> power.Reboot
-```
+If tests are being rebuilt, the `buildtype` flag determines which type of tests
+to build and run; see the next section for details. Otherwise, both local and
+remote tests are considered.
 
 ## Controlling whether tests are rebuilt
 
@@ -63,10 +58,13 @@ test bundle and (in the case of local tests) pushes it to the DUT as
 deployment when writing new tests than the normal `emerge`/`cros deploy` cycle
 can provide.
 
-The name of the bundle to rebuild, push, and run can be specified via the `run`
-command's `-buildbundle` flag. If the bundle's source code is outside of the
-`tast-tests repository`, you will need to specify the repository's path using
-the `-testdir` flag.
+The `buildtype` flag accepts a `local` or `remote` parameter to specify which
+type of tests to build, push, and run. `local` is the default.
+
+The name of the bundle to build, push, and run can be specified via the
+`-buildbundle` flag. If the bundle's source code is outside of the `tast-tests
+repository`, you will need to specify the repository's path using the `-testdir`
+flag.
 
 To rebuild a test bundle, the `tast` command needs its dependencies' source code
 to be available. This code is automatically checked out to `/usr/lib/gopath`
@@ -75,7 +73,7 @@ OS] document. The `tast` command will automatically inform you when the bundle's
 dependencies need to be manually emerged.
 
 To skip rebuilding a bundle and instead run all builtin bundles within the
-`/usr/local/share/tast/bundles` directory on the DUT (for local tests) or
+`/usr/local/share/tast/bundles` directory on the DUT (for local tests) and
 `/usr/share/tast/bundles` on the host system (for remote tests), pass
 `-build=false`. The default builtin `cros` local bundle will only be present if
 the `chromeos-base/tast-local-tests-cros` package was emerged to the DUT. This

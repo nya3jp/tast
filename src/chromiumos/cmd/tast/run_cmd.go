@@ -117,20 +117,33 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 
 	lg.Debug("Using SSH key ", r.cfg.KeyFile)
 	lg.Log("Writing results to ", r.cfg.ResDir)
+
+	var status subcommands.ExitStatus
+	var results []run.TestResult
+
 	switch r.testType {
 	case localType:
 		if r.cfg.Build && r.checkDeps {
-			r.cfg.BuildCfg.PortagePkg =
-				fmt.Sprintf("chromeos-base/tast-local-tests-%s-9999", r.cfg.BuildBundle)
+			r.cfg.BuildCfg.PortagePkg = fmt.Sprintf("chromeos-base/tast-local-tests-%s-9999", r.cfg.BuildBundle)
 		}
-		return run.Local(ctx, &r.cfg)
+		status, results = run.Local(ctx, &r.cfg)
 	case remoteType:
 		if r.cfg.Build && r.checkDeps {
-			r.cfg.BuildCfg.PortagePkg =
-				fmt.Sprintf("chromeos-base/tast-remote-tests-%s-9999", r.cfg.BuildBundle)
+			r.cfg.BuildCfg.PortagePkg = fmt.Sprintf("chromeos-base/tast-remote-tests-%s-9999", r.cfg.BuildBundle)
 		}
-		return run.Remote(ctx, &r.cfg)
+		status, results = run.Remote(ctx, &r.cfg)
+	default:
+		lg.Logf(fmt.Sprintf("Invalid test type %q\n\n%s", r.testType, r.Usage()))
+		return subcommands.ExitUsageError
 	}
-	lg.Logf(fmt.Sprintf("Invalid test type %q\n\n%s", r.testType, r.Usage()))
-	return subcommands.ExitUsageError
+
+	if len(results) > 0 {
+		if err = run.WriteResults(&r.cfg, results); err != nil {
+			lg.Log("Failed to write results: ", err)
+			if status == subcommands.ExitSuccess {
+				status = subcommands.ExitFailure
+			}
+		}
+	}
+	return status
 }

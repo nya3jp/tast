@@ -77,15 +77,20 @@ func TestReadTestOutput(t *gotesting.T) {
 		ResDir: filepath.Join(tempDir, "results"),
 	}
 	crf := func(src, dst string) error { return os.Rename(src, dst) }
-	if err := readTestOutput(context.Background(), &cfg, &b, crf); err != nil {
-		t.Fatal(err)
+	results, err := readTestOutput(context.Background(), &cfg, &b, crf)
+	if err != nil {
+		t.Fatal("readTestOutput failed: ", err)
 	}
+	if err = WriteResults(&cfg, results); err != nil {
+		t.Fatal("WriteResults failed: ", err)
+	}
+
 	files, err := testutil.ReadFiles(cfg.ResDir)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	expRes, err := json.MarshalIndent([]testResult{
+	expRes, err := json.MarshalIndent([]TestResult{
 		{
 			Test:   testing.Test{Name: test1Name, Desc: test1Desc},
 			Start:  test1StartTime,
@@ -128,54 +133,55 @@ func TestValidateMessages(t *gotesting.T) {
 	defer os.RemoveAll(tempDir)
 
 	for _, tc := range []struct {
-		desc string
-		msgs []interface{}
+		desc       string
+		numResults int
+		msgs       []interface{}
 	}{
-		{"no RunStart", []interface{}{
+		{"no RunStart", 0, []interface{}{
 			&control.RunEnd{time.Unix(1, 0), "", "", ""},
 		}},
-		{"multiple RunStart", []interface{}{
+		{"multiple RunStart", 0, []interface{}{
 			&control.RunStart{time.Unix(1, 0), 0},
 			&control.RunStart{time.Unix(2, 0), 0},
 			&control.RunEnd{time.Unix(3, 0), "", "", ""},
 		}},
-		{"no RunEnd", []interface{}{
+		{"no RunEnd", 0, []interface{}{
 			&control.RunStart{time.Unix(1, 0), 0},
 		}},
-		{"multiple RunEnd", []interface{}{
+		{"multiple RunEnd", 0, []interface{}{
 			&control.RunStart{time.Unix(1, 0), 0},
 			&control.RunEnd{time.Unix(2, 0), "", "", ""},
 			&control.RunEnd{time.Unix(3, 0), "", "", ""},
 		}},
-		{"num tests mismatch", []interface{}{
+		{"num tests mismatch", 0, []interface{}{
 			&control.RunStart{time.Unix(1, 0), 1},
 			&control.RunEnd{time.Unix(2, 0), "", "", ""},
 		}},
-		{"unfinished test", []interface{}{
+		{"unfinished test", 1, []interface{}{
 			&control.RunStart{time.Unix(1, 0), 1},
 			&control.TestStart{time.Unix(2, 0), "test1", testing.Test{Name: "test1"}},
 			&control.TestEnd{time.Unix(3, 0), "test1"},
 			&control.TestStart{time.Unix(4, 0), "test2", testing.Test{Name: "test2"}},
 			&control.RunEnd{time.Unix(5, 0), "", "", ""},
 		}},
-		{"TestStart before RunStart", []interface{}{
+		{"TestStart before RunStart", 0, []interface{}{
 			&control.TestStart{time.Unix(1, 0), "test1", testing.Test{Name: "test1"}},
 			&control.RunStart{time.Unix(2, 0), 1},
 			&control.TestEnd{time.Unix(3, 0), "test1"},
 			&control.RunEnd{time.Unix(4, 0), "", "", ""},
 		}},
-		{"TestError without TestStart", []interface{}{
+		{"TestError without TestStart", 0, []interface{}{
 			&control.RunStart{time.Unix(1, 0), 0},
 			&control.TestError{time.Unix(2, 0), testing.Error{}},
 			&control.RunEnd{time.Unix(3, 0), "", "", ""},
 		}},
-		{"wrong TestEnd", []interface{}{
+		{"wrong TestEnd", 0, []interface{}{
 			&control.RunStart{time.Unix(1, 0), 0},
 			&control.TestStart{time.Unix(2, 0), "test1", testing.Test{Name: "test1"}},
 			&control.TestEnd{time.Unix(3, 0), "test2"},
 			&control.RunEnd{time.Unix(3, 0), "", "", ""},
 		}},
-		{"no TestEnd", []interface{}{
+		{"no TestEnd", 0, []interface{}{
 			&control.RunStart{time.Unix(1, 0), 2},
 			&control.TestStart{time.Unix(2, 0), "test1", testing.Test{Name: "test1"}},
 			&control.TestStart{time.Unix(3, 0), "test2", testing.Test{Name: "test2"}},
@@ -192,8 +198,10 @@ func TestValidateMessages(t *gotesting.T) {
 			Logger: logging.NewSimple(&bytes.Buffer{}, 0, false),
 			ResDir: filepath.Join(tempDir, tc.desc),
 		}
-		if err := readTestOutput(context.Background(), &cfg, &b, noOpCopyAndRemove); err == nil {
-			t.Errorf("readTestOutput() didn't fail for %s", tc.desc)
+		if results, err := readTestOutput(context.Background(), &cfg, &b, noOpCopyAndRemove); err == nil {
+			t.Errorf("readTestOutput didn't fail for %s", tc.desc)
+		} else if len(results) != tc.numResults {
+			t.Errorf("readTestOutput gave %v result(s) for %s; want %v", len(results), tc.desc, tc.numResults)
 		}
 	}
 }
@@ -212,7 +220,7 @@ func TestReadTestOutputTimeout(t *gotesting.T) {
 		ResDir:     tempDir,
 		msgTimeout: time.Millisecond,
 	}
-	if err := readTestOutput(context.Background(), &cfg, pr, noOpCopyAndRemove); err == nil {
+	if _, err := readTestOutput(context.Background(), &cfg, pr, noOpCopyAndRemove); err == nil {
 		t.Error("readTestOutput didn't return error for timeout")
 	}
 }
@@ -262,7 +270,7 @@ func TestNextMessageTimeout(t *gotesting.T) {
 			cfg: &Config{msgTimeout: tc.msgTimeout},
 		}
 		if !tc.testStart.IsZero() {
-			h.res = &testResult{
+			h.res = &TestResult{
 				Test:             testing.Test{Timeout: tc.testTimeout},
 				testStartMsgTime: tc.testStart,
 			}

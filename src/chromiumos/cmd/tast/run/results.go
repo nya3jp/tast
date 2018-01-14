@@ -35,9 +35,9 @@ const (
 	defaultMsgTimeout = time.Minute // default timeout for reading next control message
 )
 
-// testResult contains the results from a single test.
+// TestResult contains the results from a single test.
 // Fields are exported so they can be marshaled by the json package.
-type testResult struct {
+type TestResult struct {
 	// Test contains basic information about the test. This is not a runnable
 	// testing.Test struct; only fields that can be marshaled to JSON are set.
 	testing.Test
@@ -55,6 +55,51 @@ type testResult struct {
 	logFile          *os.File  // test's log file
 }
 
+// WriteResults writes results (including errors) to a JSON file in the results directory.
+// It additionally logs each test's status to cfg.Logger.
+func WriteResults(cfg *Config, results []TestResult) error {
+	f, err := os.Create(filepath.Join(cfg.ResDir, resultsFilename))
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	enc := json.NewEncoder(f)
+	enc.SetIndent("", "  ")
+	if err = enc.Encode(results); err != nil {
+		return err
+	}
+
+	ml := 0
+	for _, res := range results {
+		if len(res.Name) > ml {
+			ml = len(res.Name)
+		}
+	}
+
+	sep := strings.Repeat("-", 80)
+	cfg.Logger.Log(sep)
+
+	for _, res := range results {
+		pn := fmt.Sprintf("%-"+strconv.Itoa(ml)+"s", res.Name)
+		if len(res.Errors) == 0 {
+			cfg.Logger.Logf("%s  [ PASS ]", pn)
+		} else {
+			for i, te := range res.Errors {
+				if i == 0 {
+					cfg.Logger.Logf("%s  [ FAIL ] %s", pn, te.Reason)
+				} else {
+					cfg.Logger.Log(strings.Repeat(" ", ml+11) + te.Reason)
+				}
+			}
+		}
+	}
+
+	cfg.Logger.Log(sep)
+	cfg.Logger.Log("Results saved to ", cfg.ResDir)
+	return nil
+}
+
 // copyAndRemoveFunc copies src on a DUT to dst on the local machine and then
 // removes src from the DUT.
 type copyAndRemoveFunc func(src, dst string) error
@@ -66,8 +111,8 @@ type resultsHandler struct {
 
 	runStart, runEnd time.Time         // test-binary-reported times at which run started and ended
 	numTests         int               // total number of tests that are expected to run
-	results          []testResult      // information about completed tests
-	res              *testResult       // information about the currently-running test
+	results          []TestResult      // information about completed tests
+	res              *TestResult       // information about the currently-running test
 	stage            *timing.Stage     // current test's timing stage
 	crf              copyAndRemoveFunc // function used to copy and remove files from DUT
 }
@@ -131,14 +176,12 @@ func (r *resultsHandler) handleRunEnd(msg *control.RunEnd) error {
 			r.cfg.Logger.Log("Failed to copy system logs: ", err)
 		}
 	}
-
 	if len(msg.CrashDir) != 0 {
 		r.setProgress("Copying crashes")
 		if err := r.crf(msg.CrashDir, filepath.Join(r.cfg.ResDir, crashesDir)); err != nil {
 			r.cfg.Logger.Log("Failed to copy crashes: ", err)
 		}
 	}
-
 	if len(msg.OutDir) != 0 {
 		r.setProgress("Copying output files")
 		localOutDir := filepath.Join(r.cfg.ResDir, "out.tmp")
@@ -148,8 +191,7 @@ func (r *resultsHandler) handleRunEnd(msg *control.RunEnd) error {
 			r.cfg.Logger.Log("Failed to move test output data: ", err)
 		}
 	}
-
-	return r.writeResults()
+	return nil
 }
 
 // handleTestStart handles TestStart control messages from test executables.
@@ -171,7 +213,7 @@ func (r *resultsHandler) handleTestStart(msg *control.TestStart) error {
 		r.stage = tl.Start(msg.Test.Name)
 	}
 
-	r.res = &testResult{
+	r.res = &TestResult{
 		Test:             msg.Test,
 		Start:            msg.Time,
 		OutDir:           r.getTestOutputDir(msg.Test.Name),
@@ -286,51 +328,6 @@ func (r *resultsHandler) moveTestOutputData(srcBase string) error {
 	return nil
 }
 
-// writeResults writes the test results (including errors) to a machine-readable text file
-// in the results directory. It additionally logs the results.
-func (r *resultsHandler) writeResults() error {
-	f, err := os.Create(filepath.Join(r.cfg.ResDir, resultsFilename))
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-
-	enc := json.NewEncoder(f)
-	enc.SetIndent("", "  ")
-	if err = enc.Encode(r.results); err != nil {
-		return err
-	}
-
-	ml := 0
-	for _, res := range r.results {
-		if len(res.Name) > ml {
-			ml = len(res.Name)
-		}
-	}
-
-	sep := strings.Repeat("-", 80)
-	r.cfg.Logger.Log(sep)
-
-	for _, res := range r.results {
-		pn := fmt.Sprintf("%-"+strconv.Itoa(ml)+"s", res.Name)
-		if len(res.Errors) == 0 {
-			r.cfg.Logger.Logf("%s  [ PASS ]", pn)
-		} else {
-			for i, te := range res.Errors {
-				if i == 0 {
-					r.cfg.Logger.Logf("%s  [ FAIL ] %s", pn, te.Reason)
-				} else {
-					r.cfg.Logger.Log(strings.Repeat(" ", ml+11) + te.Reason)
-				}
-			}
-		}
-	}
-
-	r.cfg.Logger.Log(sep)
-	r.cfg.Logger.Log("Results saved to ", r.cfg.ResDir)
-	return nil
-}
-
 // nextMessageTimeout calculates the maximum amount of time to wait for the next
 // control message from the test executable.
 func (r *resultsHandler) nextMessageTimeout(now time.Time) time.Duration {
@@ -423,12 +420,14 @@ func readMessages(r io.Reader, mch chan interface{}, ech chan error) {
 	close(ech)
 }
 
-// readTestOutput reads test output from r and writes the test results to cfg.ResDir.
-func readTestOutput(ctx context.Context, cfg *Config, r io.Reader, crf copyAndRemoveFunc) error {
+// readTestOutput reads test output from r and returns the results, which should
+// be passed to WriteResults.
+func readTestOutput(ctx context.Context, cfg *Config, r io.Reader, crf copyAndRemoveFunc) (
+	[]TestResult, error) {
 	rh := resultsHandler{
 		ctx:     ctx,
 		cfg:     cfg,
-		results: make([]testResult, 0),
+		results: make([]TestResult, 0),
 		crf:     crf,
 	}
 	defer rh.close()
@@ -438,15 +437,15 @@ func readTestOutput(ctx context.Context, cfg *Config, r io.Reader, crf copyAndRe
 	go readMessages(r, mch, ech)
 
 	if err := rh.processMessages(mch, ech); err != nil {
-		return err
+		return rh.results, err
 	}
 
 	if rh.runEnd.IsZero() {
-		return errors.New("no RunEnd message")
+		return rh.results, errors.New("no RunEnd message")
 	}
 	if len(rh.results) != rh.numTests {
-		return fmt.Errorf("got results for %v test(s); expected %v", len(rh.results), rh.numTests)
+		return rh.results, fmt.Errorf("got results for %v test(s); expected %v", len(rh.results), rh.numTests)
 	}
 
-	return nil
+	return rh.results, nil
 }

@@ -67,18 +67,18 @@ func (lc *listCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{
 	b := bytes.Buffer{}
 	lc.cfg.Logger = logging.NewSimple(&b, log.LstdFlags, true)
 
-	var code subcommands.ExitStatus
+	var status subcommands.ExitStatus
 	switch lc.testType {
 	case localType:
-		code = run.Local(ctx, &lc.cfg)
+		status, _ = run.Local(ctx, &lc.cfg)
 	case remoteType:
-		code = run.Remote(ctx, &lc.cfg)
+		status, _ = run.Remote(ctx, &lc.cfg)
 	default:
 		lg.Logf(fmt.Sprintf("Invalid test type %q\n\n%s", lc.testType, lc.Usage()))
 		return subcommands.ExitUsageError
 	}
-	if code != subcommands.ExitSuccess {
+	if status != subcommands.ExitSuccess {
 		os.Stderr.Write(b.Bytes())
 	}
-	return code
+	return status
 }

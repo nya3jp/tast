@@ -17,13 +17,14 @@ import (
 
 const (
 	defaultBundleGlob = "/usr/libexec/tast/bundles/*" // default glob matching test bundles
+	defaultDataDir    = "/usr/share/tast/data"        // default dir containing test data
 )
 
 func main() {
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
 	target := flags.String("target", "", "DUT connection spec as \"[<user>@]host[:<port>]\"")
 	keypath := flags.String("keypath", "", "path to SSH private key to use for connecting to DUT")
-	cfg, status := runner.ParseArgs(os.Stdout, os.Args[1:], defaultBundleGlob, "", flags)
+	cfg, status := runner.ParseArgs(os.Stdout, os.Args[1:], defaultBundleGlob, defaultDataDir, flags)
 	if status != 0 || cfg == nil {
 		os.Exit(status)
 	}

@@ -22,9 +22,7 @@ import (
 )
 
 const (
-	remoteRunner              = "remote_test_runner"             // executable that runs test bundles
 	remoteBundlePkgPathPrefix = "chromiumos/tast/remote/bundles" // Go package path prefix for test bundles
-	remoteBundleDir           = "/usr/libexec/tast/bundles"      // dir where packaged test bundles are installed
 
 	// remoteBundleBuildSubdir is a subdirectory used for compiled remote test bundles.
 	// Bundles are placed here rather than in the top-level build artifacts dir so that
@@ -44,7 +42,7 @@ func Remote(ctx context.Context, cfg *Config) (subcommands.ExitStatus, []TestRes
 		}
 	}
 
-	bundleGlob := filepath.Join(remoteBundleDir, "*")
+	var bundleGlob, dataDir string
 	if cfg.Build {
 		cfg.Logger.Status("Building test bundle")
 		buildStart := time.Now()
@@ -57,11 +55,15 @@ func Remote(ctx context.Context, cfg *Config) (subcommands.ExitStatus, []TestRes
 		}
 		cfg.Logger.Logf("Built test bundle in %v", time.Now().Sub(buildStart).Round(time.Millisecond))
 
-		// Only run tests from the newly-built bundle.
+		// Only run tests from the newly-built bundle, and get test data from the source tree.
 		bundleGlob = bundleDest
+		dataDir = filepath.Join(cfg.BuildCfg.TestWorkspace, "src")
+	} else {
+		bundleGlob = filepath.Join(cfg.remoteBundleDir, "*")
+		dataDir = cfg.remoteDataDir
 	}
 
-	results, err := runRemoteRunner(ctx, bundleGlob, cfg)
+	results, err := runRemoteRunner(ctx, cfg, bundleGlob, dataDir)
 	if err != nil {
 		cfg.Logger.Log("Failed to run tests: ", err)
 		return subcommands.ExitFailure, results
@@ -72,7 +74,7 @@ func Remote(ctx context.Context, cfg *Config) (subcommands.ExitStatus, []TestRes
 
 // runRemoteRunner runs the remote test runner with bundles matched by bundleGlob
 // and reads its output.
-func runRemoteRunner(ctx context.Context, bundleGlob string, cfg *Config) ([]TestResult, error) {
+func runRemoteRunner(ctx context.Context, cfg *Config, bundleGlob, dataDir string) ([]TestResult, error) {
 	if tl, ok := timing.FromContext(ctx); ok {
 		st := tl.Start("run_tests")
 		defer st.End()
@@ -83,16 +85,16 @@ func runRemoteRunner(ctx context.Context, bundleGlob string, cfg *Config) ([]Tes
 	if cfg.PrintMode != DontPrint {
 		args = append(args, "-listtests")
 		args = append(args, cfg.Patterns...)
-		b, err := exec.Command(remoteRunner, args...).Output()
+		b, err := exec.Command(cfg.remoteRunner, args...).Output()
 		if err != nil {
 			return nil, err
 		}
 		return nil, printTests(cfg.PrintDest, b, cfg.PrintMode)
 	}
 
-	args = append(args, "-report", "-target="+cfg.Target, "-keypath="+cfg.KeyFile)
+	args = append(args, "-report", "-target="+cfg.Target, "-keypath="+cfg.KeyFile, "-datadir="+dataDir)
 	args = append(args, cfg.Patterns...)
-	cmd := exec.Command(remoteRunner, args...)
+	cmd := exec.Command(cfg.remoteRunner, args...)
 
 	var err error
 	var stdout, stderr io.Reader
@@ -108,13 +110,13 @@ func runRemoteRunner(ctx context.Context, bundleGlob string, cfg *Config) ([]Tes
 	if err := cmd.Start(); err != nil {
 		return nil, err
 	}
-	results, err := readTestOutput(ctx, cfg, stdout, os.Rename)
-	if err != nil {
-		return results, err
-	}
+	results, rerr := readTestOutput(ctx, cfg, stdout, os.Rename)
+
+	// Check that the runner exits successfully first so that we don't give a useless error
+	// about incorrectly-formed output instead of e.g. an error about the runner being missing.
 	if err := cmd.Wait(); err != nil {
 		ln, _ := stderrReader.getLine(stderrTimeout)
 		return results, fmt.Errorf("%v: %v", err, ln)
 	}
-	return results, nil
+	return results, rerr
 }

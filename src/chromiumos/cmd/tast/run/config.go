@@ -56,6 +56,10 @@ type Config struct {
 	// PrintDest is used as the destination when PrintMode has a value other than DontPrint.
 	PrintDest io.Writer
 
+	remoteRunner    string // path to executable that runs remote test bundles
+	remoteBundleDir string // dir where packaged remote test bundles are installed
+	remoteDataDir   string // dir containing packaged remote test data
+
 	msgTimeout time.Duration // timeout for reading control messages; default used if zero
 }
 
@@ -66,6 +70,9 @@ func (c *Config) SetFlags(f *flag.FlagSet, trunkDir string) {
 		"path to private SSH key")
 	f.BoolVar(&c.Build, "build", true, "build and push test bundle")
 	f.StringVar(&c.BuildBundle, "buildbundle", "cros", "name of test bundle to build")
+	f.StringVar(&c.remoteRunner, "remoterunner", "/usr/bin/remote_test_runner", "executable that runs remote test bundles")
+	f.StringVar(&c.remoteBundleDir, "remotebundledir", "/usr/libexec/tast/bundles", "directory containing builtin remote test bundles")
+	f.StringVar(&c.remoteDataDir, "remotedatadir", "/usr/share/tast/data", "directory containing builtin remote test data")
 
 	// We only need a results dir if we're running tests rather than printing them.
 	if c.PrintMode == DontPrint {

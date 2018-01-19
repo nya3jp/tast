@@ -61,14 +61,11 @@ func TestReadTestOutput(t *gotesting.T) {
 	b := bytes.Buffer{}
 	mw := control.NewMessageWriter(&b)
 	mw.WriteMessage(&control.RunStart{runStartTime, 2})
-	mw.WriteMessage(&control.TestStart{test1StartTime, test1Name,
-		testing.Test{Name: test1Name, Desc: test1Desc}})
+	mw.WriteMessage(&control.TestStart{test1StartTime, testing.Test{Name: test1Name, Desc: test1Desc}})
 	mw.WriteMessage(&control.TestLog{test1LogTime, test1LogText})
 	mw.WriteMessage(&control.TestEnd{test1EndTime, test1Name})
-	mw.WriteMessage(&control.TestStart{test2StartTime, test2Name,
-		testing.Test{Name: test2Name, Desc: test2Desc}})
-	mw.WriteMessage(&control.TestError{test2ErrorTime,
-		testing.Error{test2ErrorReason, test2ErrorFile, test2ErrorLine, test2ErrorStack}})
+	mw.WriteMessage(&control.TestStart{test2StartTime, testing.Test{Name: test2Name, Desc: test2Desc}})
+	mw.WriteMessage(&control.TestError{test2ErrorTime, testing.Error{test2ErrorReason, test2ErrorFile, test2ErrorLine, test2ErrorStack}})
 	mw.WriteMessage(&control.TestEnd{test2EndTime, test2Name})
 	mw.WriteMessage(&control.RunEnd{runEndTime, "", "", outDir})
 
@@ -159,13 +156,13 @@ func TestValidateMessages(t *gotesting.T) {
 		}},
 		{"unfinished test", 1, []interface{}{
 			&control.RunStart{time.Unix(1, 0), 1},
-			&control.TestStart{time.Unix(2, 0), "test1", testing.Test{Name: "test1"}},
+			&control.TestStart{time.Unix(2, 0), testing.Test{Name: "test1"}},
 			&control.TestEnd{time.Unix(3, 0), "test1"},
-			&control.TestStart{time.Unix(4, 0), "test2", testing.Test{Name: "test2"}},
+			&control.TestStart{time.Unix(4, 0), testing.Test{Name: "test2"}},
 			&control.RunEnd{time.Unix(5, 0), "", "", ""},
 		}},
 		{"TestStart before RunStart", 0, []interface{}{
-			&control.TestStart{time.Unix(1, 0), "test1", testing.Test{Name: "test1"}},
+			&control.TestStart{time.Unix(1, 0), testing.Test{Name: "test1"}},
 			&control.RunStart{time.Unix(2, 0), 1},
 			&control.TestEnd{time.Unix(3, 0), "test1"},
 			&control.RunEnd{time.Unix(4, 0), "", "", ""},
@@ -177,14 +174,14 @@ func TestValidateMessages(t *gotesting.T) {
 		}},
 		{"wrong TestEnd", 0, []interface{}{
 			&control.RunStart{time.Unix(1, 0), 0},
-			&control.TestStart{time.Unix(2, 0), "test1", testing.Test{Name: "test1"}},
+			&control.TestStart{time.Unix(2, 0), testing.Test{Name: "test1"}},
 			&control.TestEnd{time.Unix(3, 0), "test2"},
 			&control.RunEnd{time.Unix(3, 0), "", "", ""},
 		}},
 		{"no TestEnd", 0, []interface{}{
 			&control.RunStart{time.Unix(1, 0), 2},
-			&control.TestStart{time.Unix(2, 0), "test1", testing.Test{Name: "test1"}},
-			&control.TestStart{time.Unix(3, 0), "test2", testing.Test{Name: "test2"}},
+			&control.TestStart{time.Unix(2, 0), testing.Test{Name: "test1"}},
+			&control.TestStart{time.Unix(3, 0), testing.Test{Name: "test2"}},
 			&control.TestEnd{time.Unix(4, 0), "test2"},
 			&control.RunEnd{time.Unix(5, 0), "", "", ""},
 		}},

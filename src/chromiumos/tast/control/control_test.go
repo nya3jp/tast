@@ -18,7 +18,7 @@ func TestWriteAndRead(t *gotesting.T) {
 	msgs := []interface{}{
 		&RunStart{time.Unix(1, 0), 5},
 		&RunLog{time.Unix(2, 0), "run message"},
-		&TestStart{time.Unix(3, 0), "pkg.MyTest", testing.Test{
+		&TestStart{time.Unix(3, 0), testing.Test{
 			Name: "pkg.MyTest",
 			Desc: "test description",
 			Attr: []string{"attr1", "attr2"},

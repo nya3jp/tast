@@ -75,11 +75,8 @@ type RunEnd struct {
 type TestStart struct {
 	// Time is the device-local time at which the test started.
 	Time time.Time `json:"testStartTime"`
-	// Name is the test's name.
-	// TODO(derat): Delete this on 20180101 after I'm reasonably sure that
-	// all test executables are setting the Test field.
-	Name string `json:"testStartName"`
 	// Test contains details about the test.
+	// Some fields, e.g. Func (containing the test function), are dropped during marshaling.
 	Test testing.Test `json:"testStartTest"`
 }
 

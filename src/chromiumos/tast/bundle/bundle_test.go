@@ -218,9 +218,9 @@ func TestRunTests(t *gotesting.T) {
 	// Just check some basic details of the control messages.
 	r := control.NewMessageReader(&b)
 	for i, ei := range []interface{}{
-		&control.TestStart{Name: name1, Test: *cfg.tests[0]},
+		&control.TestStart{Test: *cfg.tests[0]},
 		&control.TestEnd{Name: name1},
-		&control.TestStart{Name: name2, Test: *cfg.tests[1]},
+		&control.TestStart{Test: *cfg.tests[1]},
 		&control.TestError{},
 		&control.TestEnd{Name: name2},
 	} {
@@ -231,13 +231,8 @@ func TestRunTests(t *gotesting.T) {
 			case *control.TestStart:
 				if am, ok := ai.(*control.TestStart); !ok {
 					t.Errorf("Got %v at %d; want TestStart", ai, i)
-				} else {
-					if am.Name != em.Name {
-						t.Errorf("Got TestStart for %q at %d; want %q", am.Name, i, em.Name)
-					}
-					if am.Test.Name != em.Test.Name {
-						t.Errorf("Got TestStart with Test %q at %d; want %q", am.Test.Name, i, em.Test.Name)
-					}
+				} else if am.Test.Name != em.Test.Name {
+					t.Errorf("Got TestStart with Test %q at %d; want %q", am.Test.Name, i, em.Test.Name)
 				}
 			case *control.TestEnd:
 				if am, ok := ai.(*control.TestEnd); !ok {

@@ -196,12 +196,6 @@ func (r *resultsHandler) handleRunEnd(msg *control.RunEnd) error {
 
 // handleTestStart handles TestStart control messages from test executables.
 func (r *resultsHandler) handleTestStart(msg *control.TestStart) error {
-	// TODO(derat): Delete this on 20180101 after I'm reasonably sure that
-	// all test executables are setting the Test field.
-	if msg.Test.Name == "" {
-		msg.Test.Name = msg.Name
-	}
-
 	if r.runStart.IsZero() {
 		return errors.New("no RunStart message before TestStart")
 	}

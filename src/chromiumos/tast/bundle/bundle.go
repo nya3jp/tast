@@ -164,7 +164,7 @@ func runTests(ctx context.Context, cfg *runConfig) int {
 		}
 
 		if cfg.mw != nil {
-			cfg.mw.WriteMessage(&control.TestStart{time.Now(), test.Name, test})
+			cfg.mw.WriteMessage(&control.TestStart{time.Now(), test})
 		} else {
 			logger.Print("Running ", test.Name)
 		}

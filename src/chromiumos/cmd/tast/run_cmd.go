@@ -36,6 +36,11 @@ type runCmd struct {
 	buildType string     // type of tests to build and deploy (either "local" or "remote")
 	checkDeps bool       // true if test package's dependencies should be checked before building
 	cfg       run.Config // shared config for running tests
+	wrapper   runWrapper // can be set by tests to stub out calls to run package
+}
+
+func newRunCmd() *runCmd {
+	return &runCmd{wrapper: &realRunWrapper{}}
 }
 
 func (*runCmd) Name() string     { return "run" }
@@ -47,7 +52,8 @@ func (*runCmd) Usage() string {
 }
 
 func (r *runCmd) SetFlags(f *flag.FlagSet) {
-	f.StringVar(&r.buildType, "buildtype", "local", "type of tests to build (\"local\" or \"remote\")")
+	f.StringVar(&r.buildType, "buildtype", localType,
+		"type of tests to build (\""+localType+"\" or \""+remoteType+"\")")
 	f.BoolVar(&r.checkDeps, "checkdeps", true, "checks test package's dependencies before building")
 
 	td := getTrunkDir()
@@ -131,7 +137,7 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 			}
 			status = subcommands.ExitFailure
 		}
-	} else if err = run.WriteResults(&r.cfg, results); err != nil {
+	} else if err = r.wrapper.writeResults(&r.cfg, results); err != nil {
 		lg.Log("Failed to write results: ", err)
 		if status == subcommands.ExitSuccess {
 			status = subcommands.ExitFailure
@@ -144,9 +150,9 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 func (r *runCmd) runTests(ctx context.Context) (status subcommands.ExitStatus, results []run.TestResult) {
 	if !r.cfg.Build {
 		// If we aren't rebuilding a bundle, run both local and remote tests and merge the results.
-		if status, results = run.Local(ctx, &r.cfg); status == subcommands.ExitSuccess {
+		if status, results = r.wrapper.local(ctx, &r.cfg); status == subcommands.ExitSuccess {
 			var rres []run.TestResult
-			status, rres = run.Remote(ctx, &r.cfg)
+			status, rres = r.wrapper.remote(ctx, &r.cfg)
 			results = append(results, rres...)
 		}
 		return status, results
@@ -157,14 +163,39 @@ func (r *runCmd) runTests(ctx context.Context) (status subcommands.ExitStatus, r
 		if r.checkDeps {
 			r.cfg.BuildCfg.PortagePkg = fmt.Sprintf("chromeos-base/tast-local-tests-%s-9999", r.cfg.BuildBundle)
 		}
-		return run.Local(ctx, &r.cfg)
+		return r.wrapper.local(ctx, &r.cfg)
 	case remoteType:
 		if r.checkDeps {
 			r.cfg.BuildCfg.PortagePkg = fmt.Sprintf("chromeos-base/tast-remote-tests-%s-9999", r.cfg.BuildBundle)
 		}
-		return run.Remote(ctx, &r.cfg)
+		return r.wrapper.remote(ctx, &r.cfg)
 	default:
 		lg.Logf(fmt.Sprintf("Invalid -buildtype %q\n\n%s", r.buildType, r.Usage()))
 		return subcommands.ExitUsageError, nil
 	}
+}
+
+// runWrapper is a wrapper that allows functions from the run package to be stubbed out for testing.
+type runWrapper interface {
+	// local calls run.Local.
+	local(ctx context.Context, cfg *run.Config) (subcommands.ExitStatus, []run.TestResult)
+	// remote calls run.Remote.
+	remote(ctx context.Context, cfg *run.Config) (subcommands.ExitStatus, []run.TestResult)
+	// writeResults calls run.WriteResults.
+	writeResults(cfg *run.Config, results []run.TestResult) error
+}
+
+// realRunWrapper is a runWrapper implementation that calls the real functions in the run package.
+type realRunWrapper struct{}
+
+func (w realRunWrapper) local(ctx context.Context, cfg *run.Config) (subcommands.ExitStatus, []run.TestResult) {
+	return run.Local(ctx, cfg)
+}
+
+func (w realRunWrapper) remote(ctx context.Context, cfg *run.Config) (subcommands.ExitStatus, []run.TestResult) {
+	return run.Remote(ctx, cfg)
+}
+
+func (w realRunWrapper) writeResults(cfg *run.Config, results []run.TestResult) error {
+	return run.WriteResults(cfg, results)
 }

@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bedb5ca9_1489d9ba",
+        "filename": "src/chromiumos/cmd/tast/run/remote_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-01-25T02:28:39Z",
+      "side": 1,
+      "message": "sorry, this file is a lot longer than the file it\u0027s testing. :-/",
+      "revId": "d813aee6f7f0dd83d2517fb954d3a56a6ec8bdf5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5bfcde79_6b7ad102",
+        "filename": "src/chromiumos/cmd/tast/run/remote_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-01-25T02:28:39Z",
+      "side": 1,
+      "message": "you may recall this trick from chromiumos/tast/runner. since there\u0027s only only one fake executable here, i\u0027m just writing a config file for it this time instead of encoding information in the link name.",
+      "revId": "d813aee6f7f0dd83d2517fb954d3a56a6ec8bdf5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

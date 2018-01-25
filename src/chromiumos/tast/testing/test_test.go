@@ -54,6 +54,28 @@ func TestPreserveHardcodedName(t *gotesting.T) {
 	}
 }
 
+func TestAutoAttr(t *gotesting.T) {
+	// The bundle name is the second-to-last component in the package's path.
+	test := Test{Name: "category.Name", Pkg: "org/chromium/tast/mybundle/category"}
+	if err := test.addAutoAttributes(); err != nil {
+		t.Fatal("addAutoAttributes failed: ", err)
+	}
+	exp := []string{testNameAttrPrefix + "category.Name", testBundleAttrPrefix + "mybundle"}
+	if !reflect.DeepEqual(test.Attr, exp) {
+		t.Errorf("Attr = %v; want %v", test.Attr, exp)
+	}
+}
+
+func TestReservedAttrPrefixes(t *gotesting.T) {
+	test := Test{Name: "cat.Test"}
+	for _, attr := range []string{testNameAttrPrefix + "foo", testBundleAttrPrefix + "bar"} {
+		test.Attr = []string{attr}
+		if err := test.addAutoAttributes(); err == nil {
+			t.Errorf("addAutoAttributes didn't return error for reserved attribute %q", attr)
+		}
+	}
+}
+
 func TestDataDir(t *gotesting.T) {
 	test := Test{Func: Func1}
 	if err := test.populateNameAndPkg(); err != nil {

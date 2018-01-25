@@ -38,6 +38,8 @@ Any additional positional arguments describe which tests should be executed:
     interpreted as a boolean expression consisting of test attributes. For
     example, the expression `(chrome && !(flaky || disabled))` matches all tests
     with a `chrome` attribute but not a `flaky` or `disabled` attribute.
+    Attributes that don't consist of a letter or underscore followed by letters,
+    digits, and underscores must be double-quoted.
 *   Otherwise, the argument(s) are interpreted as wildcard patterns matching
     test names. For example, `ui.*` matches all tests with names prefixed by
     `ui.`. Multiple patterns can be supplied: passing `example.Pass` and

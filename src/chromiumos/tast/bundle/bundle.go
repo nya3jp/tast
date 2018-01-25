@@ -85,7 +85,7 @@ func parseArgs(stdout io.Writer, args []string, defaultDataDir string,
 	}
 
 	if cfg.tests, err = testsToRun(flags.Args()); err != nil {
-		writeError("Failed getting tests: " + err.Error())
+		writeError(fmt.Sprintf("Failed getting tests for %v: %v", flags.Args(), err.Error()))
 		return nil, statusBadPatterns
 	}
 	if *list {

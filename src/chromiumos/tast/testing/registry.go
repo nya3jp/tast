@@ -45,6 +45,9 @@ func (r *Registry) AddTest(t *Test) error {
 			return fmt.Errorf("invalid test name %q: %v", t.Name, err)
 		}
 	}
+	if err := t.addAutoAttributes(); err != nil {
+		return err
+	}
 	r.allTests = append(r.allTests, t)
 	return nil
 }

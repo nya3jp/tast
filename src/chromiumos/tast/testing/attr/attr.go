@@ -55,6 +55,10 @@ func (ev *exprValidator) Visit(n ast.Node) ast.Visitor {
 		}
 	case *ast.Ident:
 		// TODO(derat): Validate attr format.
+	case *ast.BasicLit:
+		if v.Kind != token.STRING {
+			return ev.setErr("non-string literal %q", v.Value)
+		}
 	default:
 		return ev.setErr("invalid node of type %T", v)
 	}
@@ -105,6 +109,13 @@ func exprTrue(e ast.Expr, attr map[string]struct{}) bool {
 	case *ast.Ident:
 		_, ok := attr[v.Name]
 		return ok
+	case *ast.BasicLit:
+		switch v.Kind {
+		case token.STRING:
+			// Strip doublequotes.
+			_, ok := attr[v.Value[1:len(v.Value)-1]]
+			return ok
+		}
 	}
 	return false
 }

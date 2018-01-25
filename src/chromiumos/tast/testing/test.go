@@ -18,8 +18,12 @@ import (
 )
 
 const (
-	testCleanupTimeout = 3 * time.Second
-	testDataSubdir     = "data"
+	testCleanupTimeout = 3 * time.Second // time for test cleanup after timeout
+
+	testDataSubdir = "data" // subdir relative to test package containing data files
+
+	testNameAttrPrefix   = "name:"   // prefix for auto-added attribute containing test name
+	testBundleAttrPrefix = "bundle:" // prefix for auto-added attribute containing bundle name
 )
 
 // TestFunc is the code associated with a test.
@@ -30,8 +34,8 @@ type TestFunc func(*State)
 // While this struct can be marshaled to a JSON object, note that unmarshaling that object
 // will not yield a runnable Test struct; Func will not be present.
 type Test struct {
-	// Name specifies the test's name. If empty (which it typically should be), generated from Func's
-	// package and function name.
+	// Name specifies the test's name as "category.TestName". If empty (which it typically should be),
+	// generated from Func's package and function name.
 	Name string `json:"name"`
 	// Func is the function to be executed to perform the test.
 	Func TestFunc `json:"-"`
@@ -96,7 +100,7 @@ func (tst *Test) String() string {
 	return tst.Name
 }
 
-// populateNameAndPkg fills Name (if empty) and pkg (unconditionally).
+// populateNameAndPkg fills Name (if empty) and Pkg (unconditionally).
 func (tst *Test) populateNameAndPkg() error {
 	if tst.Func == nil {
 		return errors.New("missing function")
@@ -116,6 +120,29 @@ func (tst *Test) populateNameAndPkg() error {
 
 	tst.Pkg = pkg
 
+	return nil
+}
+
+// addAutoAttributes adds automatically-generated attributes to Attr.
+// populateNameAndPkg must be called first.
+func (tst *Test) addAutoAttributes() error {
+	if tst.Name == "" {
+		return errors.New("test name is empty")
+	}
+	if tst.Pkg == "" {
+		return errors.New("test package is empty")
+	}
+
+	for _, attr := range tst.Attr {
+		if strings.HasPrefix(attr, testNameAttrPrefix) || strings.HasPrefix(attr, testBundleAttrPrefix) {
+			return fmt.Errorf("attribute %q has reserved prefix", attr)
+		}
+	}
+
+	tst.Attr = append(tst.Attr, testNameAttrPrefix+tst.Name)
+	if comps := strings.Split(tst.Pkg, "/"); len(comps) >= 2 {
+		tst.Attr = append(tst.Attr, testBundleAttrPrefix+comps[len(comps)-2])
+	}
 	return nil
 }
 

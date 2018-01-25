@@ -17,6 +17,7 @@ func TestGoodExpr(t *testing.T) {
 		{"a", "a", true},
 		{"a", "", false},
 		{"a", "b", false},
+		{"a_b", "a_b", true},
 		{"a || b || c", "a", true},
 		{"a || b || c", "b", true},
 		{"a || b || c", "c", true},
@@ -24,6 +25,12 @@ func TestGoodExpr(t *testing.T) {
 		{"(a || b) && !c", "a", true},
 		{"(a || b) && !c", "a d", true},
 		{"(a || b) && !c", "a c", false},
+
+		// quoted attributes
+		{"c", "a:b c", true},
+		{"\"c\"", "a:b c", true},
+		{"\"a:b\"", "a:b c", true},
+		{"\"a:b\"", "a", false},
 	} {
 		e, err := NewExpr(tc.expr)
 		if err != nil {
@@ -42,6 +49,7 @@ func TestBadExpr(t *testing.T) {
 		"a + b",
 		"a == b",
 		"(a && b",
+		"a:b",
 	} {
 		if _, err := NewExpr(s); err == nil {
 			t.Errorf("NewExpr(%q) unexpectedly succeeded", s)

@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "00869416_84553517",
+        "filename": "src/chromiumos/cmd/tast/run/remote_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2018-01-25T21:04:01Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "bedb5ca9_1489d9ba",
+      "revId": "d813aee6f7f0dd83d2517fb954d3a56a6ec8bdf5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5bfcde79_6b7ad102",
         "filename": "src/chromiumos/cmd/tast/run/remote_test.go",
         "patchSetId": 1
@@ -33,6 +51,24 @@
       "revId": "d813aee6f7f0dd83d2517fb954d3a56a6ec8bdf5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b4e2f5b6_89d3eea7",
+        "filename": "src/chromiumos/cmd/tast/run/remote_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2018-01-25T21:04:01Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "5bfcde79_6b7ad102",
+      "revId": "d813aee6f7f0dd83d2517fb954d3a56a6ec8bdf5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

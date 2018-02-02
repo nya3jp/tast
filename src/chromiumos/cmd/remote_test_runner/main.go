@@ -23,12 +23,13 @@ const (
 func main() {
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
 	target := flags.String("target", "", "DUT connection spec as \"[<user>@]host[:<port>]\"")
-	keypath := flags.String("keypath", "", "path to SSH private key to use for connecting to DUT")
+	keyfile := flags.String("keyfile", "", "path to SSH private key to use for connecting to DUT")
+	keydir := flags.String("keydir", "", "directory containing SSH private keys (typically $HOME/.ssh)")
 	cfg, status := runner.ParseArgs(os.Stdout, os.Args[1:], defaultBundleGlob, defaultDataDir, flags)
 	if status != 0 || cfg == nil {
 		os.Exit(status)
 	}
 
-	cfg.ExtraFlags = []string{"-target=" + *target, "-keypath=" + *keypath}
+	cfg.ExtraFlags = []string{"-target=" + *target, "-keyfile=" + *keyfile, "-keydir=" + *keydir}
 	os.Exit(runner.RunTests(cfg))
 }

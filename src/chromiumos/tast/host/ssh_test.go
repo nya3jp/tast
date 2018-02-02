@@ -27,14 +27,14 @@ func init() {
 
 // connectToServer establishes a connection to srv using key.
 func connectToServer(ctx context.Context, srv *test.SSHServer, key *rsa.PrivateKey) (*SSH, error) {
-	keyPath, err := test.WriteKey(key)
+	keyFile, err := test.WriteKey(key)
 	if err != nil {
 		return nil, err
 	}
-	defer os.Remove(keyPath)
+	defer os.Remove(keyFile)
 
 	o := &SSHOptions{
-		KeyPath:     keyPath,
+		KeyFile:     keyFile,
 		AnnounceCmd: srv.NextCmd,
 	}
 	if err = ParseSSHTarget(srv.Addr().String(), o); err != nil {
@@ -321,4 +321,34 @@ func TestPutTree(t *testing.T) {
 	if err := checkDir(dstDir, files); err != nil {
 		t.Error(err)
 	}
+}
+
+func TestKeyDir(t *testing.T) {
+	srv, err := test.NewSSHServer(&userKey.PublicKey, hostKey)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer srv.Close()
+
+	keyFile, err := test.WriteKey(userKey)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.Remove(keyFile)
+
+	td := testutil.TempDir(t, "ssh_test.")
+	defer os.RemoveAll(td)
+	if err = os.Symlink(keyFile, filepath.Join(td, "id_rsa")); err != nil {
+		t.Fatal(err)
+	}
+
+	opt := SSHOptions{KeyDir: td}
+	if err = ParseSSHTarget(srv.Addr().String(), &opt); err != nil {
+		t.Fatal(err)
+	}
+	hst, err := NewSSH(context.Background(), &opt)
+	if err != nil {
+		t.Fatal(err)
+	}
+	hst.Close(context.Background())
 }

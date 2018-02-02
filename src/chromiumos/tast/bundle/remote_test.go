@@ -77,7 +77,7 @@ func TestRemoteDUT(t *gotesting.T) {
 
 	outDir := testutil.TempDir(t, "bundle_test.")
 	defer os.RemoveAll(outDir)
-	args := []string{"-keypath=" + td.UserKeyPath,
+	args := []string{"-keyfile=" + td.UserKeyFile,
 		"-target=" + td.Srv.Addr().String(), "-outdir=" + outDir}
 	if act, exp := Remote(args), statusSuccess; act != exp {
 		t.Errorf("Remote(%v) = %v; want %v", args, act, exp)
@@ -115,7 +115,7 @@ func TestRemoteReconnectBetweenTests(t *gotesting.T) {
 
 	outDir := testutil.TempDir(t, "bundle_test.")
 	defer os.RemoveAll(outDir)
-	args := []string{"-keypath=" + td.UserKeyPath,
+	args := []string{"-keyfile=" + td.UserKeyFile,
 		"-target=" + td.Srv.Addr().String(), "-outdir=" + outDir}
 	if act, exp := Remote(args), statusSuccess; act != exp {
 		t.Errorf("Remote(%v) = %v; want %v", args, act, exp)

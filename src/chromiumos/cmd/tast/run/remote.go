@@ -92,7 +92,7 @@ func runRemoteRunner(ctx context.Context, cfg *Config, bundleGlob, dataDir strin
 		return nil, printTests(cfg.PrintDest, b, cfg.PrintMode)
 	}
 
-	args = append(args, "-report", "-target="+cfg.Target, "-keypath="+cfg.KeyFile, "-datadir="+dataDir)
+	args = append(args, "-report", "-target="+cfg.Target, "-keyfile="+cfg.KeyFile, "-keydir="+cfg.KeyDir, "-datadir="+dataDir)
 	args = append(args, cfg.Patterns...)
 	cmd := exec.Command(cfg.remoteRunner, args...)
 

@@ -23,7 +23,8 @@ const (
 func Remote(args []string) int {
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
 	target := flags.String("target", "", "DUT connection spec as \"[<user>@]host[:<port>]\"")
-	keypath := flags.String("keypath", "", "path to SSH private key to use for connecting to DUT")
+	keyfile := flags.String("keyfile", "", "path to SSH private key to use for connecting to DUT")
+	keydir := flags.String("keydir", "", "directory containing SSH private keys (typically $HOME/.ssh)")
 	cfg, status := parseArgs(os.Stdout, args, "", flags)
 	if status != statusSuccess || cfg == nil {
 		return status
@@ -34,7 +35,7 @@ func Remote(args []string) int {
 		writeError("-target not supplied")
 		return statusBadArgs
 	}
-	dt, err := dut.New(*target, *keypath)
+	dt, err := dut.New(*target, *keyfile, *keydir)
 	if err != nil {
 		writeError("Failed to create connection: " + err.Error())
 		return statusBadArgs

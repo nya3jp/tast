@@ -8,6 +8,7 @@ package run
 import (
 	"flag"
 	"io"
+	"os"
 	"path/filepath"
 	"time"
 
@@ -28,7 +29,7 @@ const (
 )
 
 const (
-	defaultKeyPath = "chromite/ssh_keys/testing_rsa" // default private SSH key within Chrome OS checkout
+	defaultKeyFile = "chromite/ssh_keys/testing_rsa" // default private SSH key within Chrome OS checkout
 )
 
 // Config contains shared configuration information for running local and remote tests.
@@ -45,6 +46,8 @@ type Config struct {
 	BuildCfg build.Config
 	// KeyFile is the path to a private SSH key to use to connect to the target device.
 	KeyFile string
+	// KeyDir is a directory containing private SSH keys (typically $HOME/.ssh).
+	KeyDir string
 	// Target is the target device for testing, in the form "[<user>@]host[:<port>]".
 	Target string
 	// Patterns specifies which tests to run.
@@ -66,8 +69,8 @@ type Config struct {
 // SetFlags adds common run-related flags to f that store values in Config.
 // trunkDir is the path to the Chrome OS checkout (within the chroot).
 func (c *Config) SetFlags(f *flag.FlagSet, trunkDir string) {
-	f.StringVar(&c.KeyFile, "keyfile", filepath.Join(trunkDir, defaultKeyPath),
-		"path to private SSH key")
+	f.StringVar(&c.KeyFile, "keyfile", filepath.Join(trunkDir, defaultKeyFile), "path to private SSH key")
+	f.StringVar(&c.KeyDir, "keydir", filepath.Join(os.Getenv("HOME"), ".ssh"), "directory containing SSH keys")
 	f.BoolVar(&c.Build, "build", true, "build and push test bundle")
 	f.StringVar(&c.BuildBundle, "buildbundle", "cros", "name of test bundle to build")
 	f.StringVar(&c.remoteRunner, "remoterunner", "/usr/bin/remote_test_runner", "executable that runs remote test bundles")

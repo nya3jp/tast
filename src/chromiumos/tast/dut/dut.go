@@ -47,15 +47,17 @@ func FromContext(ctx context.Context) (d *DUT, ok bool) {
 }
 
 // New returns a new DUT usable for communication with target
-// (of the form "[<user>@]host[:<port>]") using the SSH key at keyPath.
+// (of the form "[<user>@]host[:<port>]") using the SSH key at keyFile or
+// keys located in keyDir.
 // The DUT does not start out in a connected state; Connect must be called.
-func New(target, keyPath string) (*DUT, error) {
+func New(target, keyFile, keyDir string) (*DUT, error) {
 	d := DUT{}
 	if err := host.ParseSSHTarget(target, &d.sopt); err != nil {
 		return nil, err
 	}
 	d.sopt.ConnectTimeout = connectTimeout
-	d.sopt.KeyPath = keyPath
+	d.sopt.KeyFile = keyFile
+	d.sopt.KeyDir = keyDir
 
 	return &d, nil
 }

@@ -84,8 +84,12 @@ type SSHOptions struct {
 	// Port is the SSH server's TCP port.
 	Port int
 
-	// KeyPath is an optional path to an unencrypted SSH private key.
-	KeyPath string
+	// KeyFile is an optional path to an unencrypted SSH private key.
+	KeyFile string
+	// KeyDir is an optional path to a directory (typically $HOME/.ssh) containing standard
+	// SSH keys (id_dsa, id_ecdsa, id_ed25519, id_rsa) to use if authentication via KeyFile
+	// is not accepted. The keys are only used if unencrypted.
+	KeyDir string
 
 	// ConnectTimeout contains a timeout for establishing the TCP connection.
 	ConnectTimeout time.Duration
@@ -93,6 +97,9 @@ type SSHOptions struct {
 	// AnnounceCmd (if non-nil) is passed to every remote command immediately before it's executed.
 	// This is useful for testing (i.e. to ensure that only expected commands are executed).
 	AnnounceCmd func(string)
+
+	// WarnFunc (if non-nil) is used to log non-fatal errors encountered while connecting to the host.
+	WarnFunc func(string)
 }
 
 // QuoteShellArg returns a single-quoted copy of s that can be inserted into command lines interpreted by sh.
@@ -128,30 +135,44 @@ func ParseSSHTarget(target string, o *SSHOptions) error {
 }
 
 // getSSHAuthMethods returns authentication methods to use when connecting to a remote server.
-// keyPath may contain the path to an unencrypted private key, while questionPrefix is used to
-// prompt for a password when using keyboard-interactive authentication.
-func getSSHAuthMethods(keyPath, questionPrefix string) ([]ssh.AuthMethod, error) {
+// questionPrefix is used to prompt for a password when using keyboard-interactive authentication.
+func getSSHAuthMethods(o *SSHOptions, questionPrefix string) ([]ssh.AuthMethod, error) {
 	methods := make([]ssh.AuthMethod, 0)
 
-	// Load the private key if it was supplied.
-	if keyPath != "" {
-		k, err := ioutil.ReadFile(keyPath)
+	// Start with SSH keys.
+	keySigners := make([]ssh.Signer, 0)
+	if o.KeyFile != "" {
+		s, _, err := readPrivateKey(o.KeyFile)
 		if err != nil {
-			return nil, fmt.Errorf("failed to read private key %s: %v", keyPath, err)
+			return nil, fmt.Errorf("failed to read private key %s: %v", o.KeyFile, err)
 		}
-		s, err := ssh.ParsePrivateKey(k)
-		if err != nil {
-			return nil, fmt.Errorf("failed to parse private key %s: %v", keyPath, err)
+		keySigners = append(keySigners, s)
+	}
+	if o.KeyDir != "" {
+		for _, fn := range []string{"id_dsa", "id_ecdsa", "id_ed25519", "id_rsa"} {
+			p := filepath.Join(o.KeyDir, fn)
+			if p == o.KeyFile {
+				continue
+			} else if _, err := os.Stat(p); os.IsNotExist(err) {
+				continue
+			}
+			if s, rok, err := readPrivateKey(p); err == nil {
+				keySigners = append(keySigners, s)
+			} else if !rok && o.WarnFunc != nil {
+				o.WarnFunc(fmt.Sprintf("Failed to read %v: %v", p, err))
+			}
 		}
-		methods = append(methods, ssh.PublicKeys(s))
+	}
+	if len(keySigners) > 0 {
+		methods = append(methods, ssh.PublicKeys(keySigners...))
 	}
 
 	// Connect to ssh-agent if it's running.
 	if s := os.Getenv("SSH_AUTH_SOCK"); s != "" {
-		// TODO(derat): Sigh, $SSH_AUTH_SOCK appears to frequently be hosed in chroots that are
-		// running under screen or tmux. Consider logging errors somewhere.
 		if a, err := net.Dial("unix", s); err == nil {
 			methods = append(methods, ssh.PublicKeysCallback(agent.NewClient(a).Signers))
+		} else if o.WarnFunc != nil {
+			o.WarnFunc(fmt.Sprintf("Failed to connect to ssh-agent at %v: %v", s, err))
 		}
 	}
 
@@ -165,6 +186,18 @@ func getSSHAuthMethods(keyPath, questionPrefix string) ([]ssh.AuthMethod, error)
 	}
 
 	return methods, nil
+}
+
+// readPrivateKey reads and decodes a passphraseless private SSH key from path.
+// rok is true if the key data was read successfully off disk and false if it wasn't.
+// Note that err may be set while rok is true if the key was malformed or passphrase-protected.
+func readPrivateKey(path string) (s ssh.Signer, rok bool, err error) {
+	k, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil, false, err
+	}
+	s, err = ssh.ParsePrivateKey(k)
+	return s, true, err
 }
 
 // presentChallenges prints the challenges in qs and returns the user's answers.
@@ -190,7 +223,7 @@ func presentChallenges(stdin int, prefix, user, inst string, qs []string, es []b
 
 // NewSSH establishes an SSH-based connection to the host described in o.
 func NewSSH(ctx context.Context, o *SSHOptions) (*SSH, error) {
-	am, err := getSSHAuthMethods(o.KeyPath, "["+o.Hostname+"] ")
+	am, err := getSSHAuthMethods(o, "["+o.Hostname+"] ")
 	if err != nil {
 		return nil, err
 	}

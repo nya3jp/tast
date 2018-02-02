@@ -48,7 +48,7 @@ const (
 func Local(ctx context.Context, cfg *Config) (subcommands.ExitStatus, []TestResult) {
 	cfg.Logger.Status("Connecting to target")
 	cfg.Logger.Logf("Connecting to %s", cfg.Target)
-	hst, err := connectToTarget(ctx, cfg.Target, cfg.KeyFile)
+	hst, err := connectToTarget(ctx, cfg)
 	if err != nil {
 		cfg.Logger.Logf("Failed to connect to %s: %v", cfg.Target, err)
 		return subcommands.ExitFailure, nil
@@ -78,19 +78,22 @@ func Local(ctx context.Context, cfg *Config) (subcommands.ExitStatus, []TestResu
 	return subcommands.ExitSuccess, results
 }
 
-// connectToTarget establishes an SSH connection to target using the private key at keyFile.
-func connectToTarget(ctx context.Context, target, keyFile string) (*host.SSH, error) {
+// connectToTarget establishes an SSH connection to the target specified in cfg.
+func connectToTarget(ctx context.Context, cfg *Config) (*host.SSH, error) {
 	if tl, ok := timing.FromContext(ctx); ok {
 		st := tl.Start("connect")
 		defer st.End()
 	}
 
-	o := host.SSHOptions{}
-	if err := host.ParseSSHTarget(target, &o); err != nil {
+	o := host.SSHOptions{
+		ConnectTimeout: sshConnectTimeout,
+		KeyFile:        cfg.KeyFile,
+		KeyDir:         cfg.KeyDir,
+		WarnFunc:       func(s string) { cfg.Logger.Log(s) },
+	}
+	if err := host.ParseSSHTarget(cfg.Target, &o); err != nil {
 		return nil, err
 	}
-	o.ConnectTimeout = sshConnectTimeout
-	o.KeyPath = keyFile
 
 	hst, err := host.NewSSH(ctx, &o)
 	if err != nil {

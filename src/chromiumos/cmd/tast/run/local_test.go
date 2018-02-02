@@ -43,7 +43,7 @@ type localTestData struct {
 // Panics on error.
 func newLocalTestData() *localTestData {
 	td := localTestData{srvData: test.NewTestData(userKey, hostKey)}
-	td.cfg.KeyFile = td.srvData.UserKeyPath
+	td.cfg.KeyFile = td.srvData.UserKeyFile
 
 	var err error
 	if td.cfg.ResDir, err = ioutil.TempDir("", "local_test."); err != nil {

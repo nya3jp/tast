@@ -84,8 +84,12 @@ type SSHOptions struct {
 	// Port is the SSH server's TCP port.
 	Port int
 
-	// KeyPath is an optional path to an unencrypted SSH private key.
-	KeyPath string
+	// KeyFile is an optional path to an unencrypted SSH private key.
+	KeyFile string
+	// KeyDir is an optional path to a directory (typically $HOME/.ssh) containing standard
+	// SSH keys (id_dsa, id_ecdsa, id_ed25519, id_rsa) to use if KeyFile is unset.
+	// The keys are only used if unencrypted.
+	KeyDir string
 
 	// ConnectTimeout contains a timeout for establishing the TCP connection.
 	ConnectTimeout time.Duration
@@ -128,22 +132,32 @@ func ParseSSHTarget(target string, o *SSHOptions) error {
 }
 
 // getSSHAuthMethods returns authentication methods to use when connecting to a remote server.
-// keyPath may contain the path to an unencrypted private key, while questionPrefix is used to
-// prompt for a password when using keyboard-interactive authentication.
-func getSSHAuthMethods(keyPath, questionPrefix string) ([]ssh.AuthMethod, error) {
+// keyFile may contain the path to an unencrypted private key, while keyDir optionally contains
+// a directory with multiple unencrypted private keys (typically $HOME/.ssh).
+// questionPrefix is used to prompt for a password when using keyboard-interactive authentication.
+func getSSHAuthMethods(keyFile, keyDir, questionPrefix string) ([]ssh.AuthMethod, error) {
 	methods := make([]ssh.AuthMethod, 0)
 
 	// Load the private key if it was supplied.
-	if keyPath != "" {
-		k, err := ioutil.ReadFile(keyPath)
+	if keyFile != "" {
+		s, err := readPrivateKey(keyFile)
 		if err != nil {
-			return nil, fmt.Errorf("failed to read private key %s: %v", keyPath, err)
-		}
-		s, err := ssh.ParsePrivateKey(k)
-		if err != nil {
-			return nil, fmt.Errorf("failed to parse private key %s: %v", keyPath, err)
+			return nil, fmt.Errorf("failed to read private key %s: %v", keyFile, err)
 		}
 		methods = append(methods, ssh.PublicKeys(s))
+	}
+
+	// Check if any of the common keys in the key directory exist are passphraseless.
+	if keyDir != "" {
+		for _, fn := range []string{"id_dsa", "id_ecdsa", "id_ed25519", "id_rsa"} {
+			p := filepath.Join(keyDir, fn)
+			if p == keyFile {
+				continue
+			}
+			if s, err := readPrivateKey(p); err == nil {
+				methods = append(methods, ssh.PublicKeys(s))
+			}
+		}
 	}
 
 	// Connect to ssh-agent if it's running.
@@ -165,6 +179,15 @@ func getSSHAuthMethods(keyPath, questionPrefix string) ([]ssh.AuthMethod, error)
 	}
 
 	return methods, nil
+}
+
+// readPrivateKey reads a passphraseless private SSH key from path.
+func readPrivateKey(path string) (ssh.Signer, error) {
+	k, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	return ssh.ParsePrivateKey(k)
 }
 
 // presentChallenges prints the challenges in qs and returns the user's answers.
@@ -190,7 +213,7 @@ func presentChallenges(stdin int, prefix, user, inst string, qs []string, es []b
 
 // NewSSH establishes an SSH-based connection to the host described in o.
 func NewSSH(ctx context.Context, o *SSHOptions) (*SSH, error) {
-	am, err := getSSHAuthMethods(o.KeyPath, "["+o.Hostname+"] ")
+	am, err := getSSHAuthMethods(o.KeyFile, o.KeyDir, "["+o.Hostname+"] ")
 	if err != nil {
 		return nil, err
 	}

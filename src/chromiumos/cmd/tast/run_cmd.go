@@ -121,7 +121,7 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 	r.cfg.Patterns = f.Args()[1:]
 	r.cfg.Logger = lg
 
-	lg.Debug("Using SSH key ", r.cfg.KeyFile)
+	lg.Debug("Using SSH key ", r.cfg.KeyFile, " and dir ", r.cfg.KeyDir)
 	lg.Log("Writing results to ", r.cfg.ResDir)
 
 	status, results := r.runTests(ctx)

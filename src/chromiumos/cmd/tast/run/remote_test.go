@@ -190,7 +190,7 @@ func TestRemoteRun(t *gotesting.T) {
 	// Check that important args were passed to the runner.
 	for _, arg := range []string{
 		"-report",
-		"-keypath=" + td.cfg.KeyFile,
+		"-keyfile=" + td.cfg.KeyFile,
 		"-bundles=" + filepath.Join(td.cfg.remoteBundleDir, "*"),
 		"-datadir=" + td.cfg.remoteDataDir,
 	} {

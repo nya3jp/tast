@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fd0365bd_9394dfa2",
+        "filename": "src/chromiumos/tast/host/ssh.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-02-03T00:21:53Z",
+      "side": 1,
+      "message": "fun fact: if you add multiple PublicKey AuthMethods instead of adding a single one with multiple signers, only the first method is used",
+      "revId": "46cbc8efd2457cbfa2a24facc99d37bd03d08eef",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

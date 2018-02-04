@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d476214f_75d6ff72",
+        "filename": "src/chromiumos/tast/host/ssh.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2018-02-04T23:56:13Z",
+      "side": 1,
+      "message": "File permissions errors are extremely common ways to fall down here and just swallowing permission error is going to make someone have a very bad day.",
+      "range": {
+        "startLine": 156,
+        "startChar": 35,
+        "endLine": 156,
+        "endChar": 45
+      },
+      "revId": "b1a6b6c236448c806ffb139647f13ba668e69bad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

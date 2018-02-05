@@ -22,6 +22,30 @@
       "revId": "b1a6b6c236448c806ffb139647f13ba668e69bad",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "119896f6_f6ea570d",
+        "filename": "src/chromiumos/tast/host/ssh.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-02-05T01:02:19Z",
+      "side": 1,
+      "message": "the file permission errors you\u0027re talking about are when the openssh client refuses to use a private key (or sshd refuses to honor authorized_keys, i think?) because it\u0027s group- or world-readable, right? i\u0027m not checking anything like that here, so the only permission error i could think of would be one of the keys in ~/.ssh not being user-readable.\n\nbut in any case, logging read errors seems helpful in general, so i\u0027ve updated the code to do that -- thanks for the suggestion. (i\u0027m not logging all errors, because i\u0027m worried about being spammy if the user has passphrase-protected default keys that we can\u0027t get at. most human users are just going to be using the default test key from chromite.)",
+      "parentUuid": "d476214f_75d6ff72",
+      "range": {
+        "startLine": 156,
+        "startChar": 35,
+        "endLine": 156,
+        "endChar": 45
+      },
+      "revId": "b1a6b6c236448c806ffb139647f13ba668e69bad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

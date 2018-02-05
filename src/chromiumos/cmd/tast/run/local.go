@@ -30,12 +30,16 @@ const (
 	localRunnerPkg        = "chromiumos/cmd/local_test_runner"          // Go package for local test runner
 	localRunnerPortagePkg = "chromeos-base/tast-local-test-runner-9999" // Portage package for local test runner
 
-	localBundlePkgPathPrefix = "chromiumos/tast/local/bundles"          // Go package path prefix for test bundles
-	localBundleBuiltinDir    = "/usr/local/libexec/tast/bundles"        // on-device dir with preinstalled test bundles
-	localBundlePushDir       = "/usr/local/libexec/tast/bundles_pushed" // on-device dir with test bundles pushed by tast command
+	localBundlePkgPathPrefix = "chromiumos/tast/local/bundles"                // Go package path prefix for test bundles
+	localBundleBuiltinDir    = "/usr/local/libexec/tast/bundles/local"        // on-device dir with preinstalled test bundles
+	localBundlePushDir       = "/usr/local/libexec/tast/bundles/local_pushed" // on-device dir with test bundles pushed by tast command
 
-	localDataBuiltinDir = "/usr/local/share/tast/data"        // on-device dir with preinstalled test data
-	localDataPushDir    = "/usr/local/share/tast/data_pushed" // on-device dir with test data pushed by tast command
+	localDataBuiltinDir = "/usr/local/share/tast/data/local"        // on-device dir with preinstalled test data
+	localDataPushDir    = "/usr/local/share/tast/data/local_pushed" // on-device dir with test data pushed by tast command
+
+	// TODO(derat): Delete these after 20180524: https://crbug.com/809185
+	localBundleOldBuiltinDir = "/usr/local/libexec/tast/bundles" // old version of localBundleBuiltinDir
+	localDataOldBuiltinDir   = "/usr/local/share/tast/data"      // old version of localDataBuiltinDir
 
 	// localBundleBuildSubdir is a subdirectory used for compiled local test bundles.
 	// Bundles are placed here rather than in the top-level build artifacts dir so that
@@ -63,8 +67,14 @@ func Local(ctx context.Context, cfg *Config) (subcommands.ExitStatus, []TestResu
 		}
 		dataDir = localDataPushDir
 	} else {
-		bundleGlob = filepath.Join(localBundleBuiltinDir, "*")
-		dataDir = localDataBuiltinDir
+		// TODO(derat): Delete this check after 20180524 and always use the new locations: https://crbug.com/809185
+		if _, err := hst.Run(ctx, "test -d "+host.QuoteShellArg(localBundleBuiltinDir)); err == nil {
+			bundleGlob = filepath.Join(localBundleBuiltinDir, "*")
+			dataDir = localDataBuiltinDir
+		} else {
+			bundleGlob = filepath.Join(localBundleOldBuiltinDir, "*")
+			dataDir = localDataOldBuiltinDir
+		}
 	}
 
 	cfg.Logger.Status("Running tests on target")

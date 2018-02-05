@@ -74,8 +74,8 @@ func (c *Config) SetFlags(f *flag.FlagSet, trunkDir string) {
 	f.BoolVar(&c.Build, "build", true, "build and push test bundle")
 	f.StringVar(&c.BuildBundle, "buildbundle", "cros", "name of test bundle to build")
 	f.StringVar(&c.remoteRunner, "remoterunner", "/usr/bin/remote_test_runner", "executable that runs remote test bundles")
-	f.StringVar(&c.remoteBundleDir, "remotebundledir", "/usr/libexec/tast/bundles", "directory containing builtin remote test bundles")
-	f.StringVar(&c.remoteDataDir, "remotedatadir", "/usr/share/tast/data", "directory containing builtin remote test data")
+	f.StringVar(&c.remoteBundleDir, "remotebundledir", "/usr/libexec/tast/bundles/remote", "directory containing builtin remote test bundles")
+	f.StringVar(&c.remoteDataDir, "remotedatadir", "/usr/share/tast/data/remote", "directory containing builtin remote test data")
 
 	// We only need a results dir if we're running tests rather than printing them.
 	if c.PrintMode == DontPrint {

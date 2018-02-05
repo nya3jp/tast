@@ -16,8 +16,8 @@ import (
 )
 
 const (
-	defaultBundleGlob = "/usr/libexec/tast/bundles/*" // default glob matching test bundles
-	defaultDataDir    = "/usr/share/tast/data"        // default dir containing test data
+	defaultBundleGlob = "/usr/libexec/tast/bundles/remote/*" // default glob matching test bundles
+	defaultDataDir    = "/usr/share/tast/data/remote"        // default dir containing test data
 )
 
 func main() {

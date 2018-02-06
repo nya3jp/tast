@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "64209371_6150d51e",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-02-06T14:45:09Z",
+      "side": 1,
+      "message": "this one is actually harmless, as the host package just makes a best-effort attempt to find unencrypted keys in the directory, but i figured i\u0027d also clear it for consistency.",
+      "revId": "76bb6a7573fa45c870b18f9c9a7edd5c233cb95f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

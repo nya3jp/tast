@@ -16,6 +16,24 @@
       "revId": "76bb6a7573fa45c870b18f9c9a7edd5c233cb95f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1cd003bb_bccf018b",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2018-02-06T16:51:04Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "64209371_6150d51e",
+      "revId": "76bb6a7573fa45c870b18f9c9a7edd5c233cb95f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

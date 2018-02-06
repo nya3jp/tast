@@ -69,8 +69,18 @@ type Config struct {
 // SetFlags adds common run-related flags to f that store values in Config.
 // trunkDir is the path to the Chrome OS checkout (within the chroot).
 func (c *Config) SetFlags(f *flag.FlagSet, trunkDir string) {
-	f.StringVar(&c.KeyFile, "keyfile", filepath.Join(trunkDir, defaultKeyFile), "path to private SSH key")
-	f.StringVar(&c.KeyDir, "keydir", filepath.Join(os.Getenv("HOME"), ".ssh"), "directory containing SSH keys")
+	kf := filepath.Join(trunkDir, defaultKeyFile)
+	if _, err := os.Stat(kf); err != nil {
+		kf = ""
+	}
+	f.StringVar(&c.KeyFile, "keyfile", kf, "path to private SSH key")
+
+	kd := filepath.Join(os.Getenv("HOME"), ".ssh")
+	if _, err := os.Stat(kd); err != nil {
+		kd = ""
+	}
+	f.StringVar(&c.KeyDir, "keydir", kd, "directory containing SSH keys")
+
 	f.BoolVar(&c.Build, "build", true, "build and push test bundle")
 	f.StringVar(&c.BuildBundle, "buildbundle", "cros", "name of test bundle to build")
 	f.StringVar(&c.remoteRunner, "remoterunner", "/usr/bin/remote_test_runner", "executable that runs remote test bundles")

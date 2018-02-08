@@ -26,6 +26,8 @@ const (
 	fancyVerboseLines = 30 // verbose log lines to display in "fancy" mode
 )
 
+var Version = "<unknown>" // Version info is filled in during emerge.
+
 // lg should be used throughout the tast executable to log informative messages.
 var lg logging.Logger
 
@@ -85,10 +87,16 @@ func doMain() int {
 	subcommands.Register(newRunCmd(), "")
 	subcommands.Register(&symbolizeCmd{}, "")
 
+	version := flag.Bool("version", false, "print version and exit")
 	fancy := flag.Bool("fancy", false, "use fancy logging")
 	verbose := flag.Bool("verbose", false, "use verbose logging")
 	logTime := flag.Bool("logtime", true, "include date/time headers in logs")
 	flag.Parse()
+
+	if *version {
+		fmt.Printf("tast version %s\n", Version)
+		return 0
+	}
 
 	var err error
 	if lg, err = newLogger(*fancy, *verbose, *logTime); err != nil {

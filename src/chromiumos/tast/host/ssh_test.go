@@ -338,7 +338,7 @@ func TestKeyDir(t *testing.T) {
 
 	td := testutil.TempDir(t, "ssh_test.")
 	defer os.RemoveAll(td)
-	if err = os.Symlink(keyFile, filepath.Join(td, "id_rsa")); err != nil {
+	if err = os.Symlink(keyFile, filepath.Join(td, "testing_rsa")); err != nil {
 		t.Fatal(err)
 	}
 

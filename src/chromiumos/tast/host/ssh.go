@@ -87,8 +87,8 @@ type SSHOptions struct {
 	// KeyFile is an optional path to an unencrypted SSH private key.
 	KeyFile string
 	// KeyDir is an optional path to a directory (typically $HOME/.ssh) containing standard
-	// SSH keys (id_dsa, id_ecdsa, id_ed25519, id_rsa) to use if authentication via KeyFile
-	// is not accepted. The keys are only used if unencrypted.
+	// SSH keys (id_dsa, id_rsa, etc.) to use if authentication via KeyFile is not accepted.
+	// Only unencrypted keys are used.
 	KeyDir string
 
 	// ConnectTimeout contains a timeout for establishing the TCP connection.
@@ -149,7 +149,9 @@ func getSSHAuthMethods(o *SSHOptions, questionPrefix string) ([]ssh.AuthMethod, 
 		keySigners = append(keySigners, s)
 	}
 	if o.KeyDir != "" {
-		for _, fn := range []string{"id_dsa", "id_ecdsa", "id_ed25519", "id_rsa"} {
+		// testing_rsa is used by Autotest's SSH config, so look for the same key here.
+		// See https://www.chromium.org/chromium-os/testing/autotest-developer-faq/ssh-test-keys-setup.
+		for _, fn := range []string{"testing_rsa", "id_dsa", "id_ecdsa", "id_ed25519", "id_rsa"} {
 			p := filepath.Join(o.KeyDir, fn)
 			if p == o.KeyFile {
 				continue

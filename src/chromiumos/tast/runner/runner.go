@@ -161,6 +161,7 @@ func ParseArgs(stdout io.Writer, args []string, defaultBundleGlob, defaultDataDi
 	listData := flags.Bool("listdata", false, "print data files needed for tests and exit")
 	listTests := flags.Bool("listtests", false, "print matching tests and exit")
 	flags.StringVar(&cfg.dataDir, "datadir", defaultDataDir, "directory containing data files")
+	flags.StringVar(&cfg.outDir, "outdir", "", "base directory to write output files to")
 
 	var err error
 	if err = flags.Parse(args); err != nil {
@@ -206,6 +207,7 @@ type RunConfig struct {
 	stdout  io.Writer              // location where bundle output should be copied
 	mw      *control.MessageWriter // used to send control messages; nil if -report not passed
 	dataDir string                 // base directory containing test data files
+	outDir  string                 // base directory to write output files to
 
 	bundles  []string // full paths of bundles to execute
 	patterns []string // patterns matching tests to run
@@ -243,14 +245,16 @@ func RunTests(cfg *RunConfig) int {
 		return statusSuccess
 	}
 
-	outDir, err := ioutil.TempDir("", "tast_out.")
-	if err != nil {
-		return Error(cfg.mw, fmt.Sprintf("Failed to create out dir: %v", err), statusError)
-	}
-	// If we have a MessageWriter because -report was passed, the tast command should clean up
-	// the output dir after it copies it over. Otherwise, we should clean it up ourselves.
-	if cfg.mw == nil {
-		defer os.RemoveAll(outDir)
+	if cfg.outDir == "" {
+		var err error
+		if cfg.outDir, err = ioutil.TempDir("", "tast_out."); err != nil {
+			return Error(cfg.mw, fmt.Sprintf("Failed to create out dir: %v", err), statusError)
+		}
+		// If we have a MessageWriter because -report was passed, the tast command should clean up
+		// the output dir after it copies it over. Otherwise, we should clean it up ourselves.
+		if cfg.mw == nil {
+			defer os.RemoveAll(cfg.outDir)
+		}
 	}
 
 	if cfg.mw != nil {
@@ -260,7 +264,7 @@ func RunTests(cfg *RunConfig) int {
 		cfg.mw.WriteMessage(&control.RunStart{time.Now(), len(cfg.tests)})
 	}
 
-	args := []string{"-datadir", cfg.dataDir, "-outdir", outDir}
+	args := []string{"-datadir", cfg.dataDir, "-outdir", cfg.outDir}
 	if cfg.mw != nil {
 		args = append(args, "-report")
 	}
@@ -285,7 +289,7 @@ func RunTests(cfg *RunConfig) int {
 			msg = cfg.PostRun(cfg.mw)
 		}
 		msg.Time = time.Now()
-		msg.OutDir = outDir
+		msg.OutDir = cfg.outDir
 		cfg.mw.WriteMessage(&msg)
 	}
 

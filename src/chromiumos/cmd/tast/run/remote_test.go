@@ -101,6 +101,9 @@ func newRemoteTestData(t *gotesting.T, stdout, stderr string, status int) *remot
 	}
 	td.cfg.Logger = logging.NewSimple(&td.logbuf, log.LstdFlags, true)
 	td.cfg.ResDir = filepath.Join(td.dir, "results")
+	if err = os.MkdirAll(td.cfg.ResDir, 0755); err != nil {
+		t.Fatal(err)
+	}
 
 	// Create a symlink to ourselves that can be executed as a fake test runner.
 	td.cfg.remoteRunner = filepath.Join(td.dir, fakeRunnerName)

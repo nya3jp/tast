@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
@@ -92,11 +93,17 @@ func runRemoteRunner(ctx context.Context, cfg *Config, bundleGlob, dataDir strin
 		return nil, printTests(cfg.PrintDest, b, cfg.PrintMode)
 	}
 
-	args = append(args, "-report", "-target="+cfg.Target, "-keyfile="+cfg.KeyFile, "-keydir="+cfg.KeyDir, "-datadir="+dataDir)
+	// Create an output directory within the results dir so we can just move
+	// it to its final destination later.
+	outDir, err := ioutil.TempDir(cfg.ResDir, "out.")
+	if err != nil {
+		return nil, fmt.Errorf("failed to create output dir: %v", err)
+	}
+
+	args = append(args, "-report", "-target="+cfg.Target, "-keyfile="+cfg.KeyFile, "-keydir="+cfg.KeyDir, "-datadir="+dataDir, "-outdir="+outDir)
 	args = append(args, cfg.Patterns...)
 	cmd := exec.Command(cfg.remoteRunner, args...)
 
-	var err error
 	var stdout, stderr io.Reader
 	if stdout, err = cmd.StdoutPipe(); err != nil {
 		return nil, fmt.Errorf("failed to open stdout: %v", err)

@@ -73,9 +73,9 @@ run_build() {
   go build -i -pkgdir "${PKGDIR}" -o "${dest}" "${pkg}"
 }
 
-# Checks a package.
+# Checks one or more packages.
 run_vet() {
-  go vet "${1}"
+  go vet "${@}"
 }
 
 # Tests a package.
@@ -141,7 +141,7 @@ elif [ -n "${test_pkg}" ]; then
   fi
 elif [ -n "${check_pkg}" ]; then
   if [ "${check_pkg}" = 'all' ]; then
-    for p in $(get_check_pkgs); do run_vet "${p}" || true; done
+    run_vet $(get_check_pkgs)
   else
     run_vet "${check_pkg}"
   fi

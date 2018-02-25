@@ -260,7 +260,11 @@ func TestTimeout(t *gotesting.T) {
 	const name1 = "foo.Test1"
 	ch := make(chan bool, 1)
 	defer func() { ch <- true }()
-	reg.AddTest(&testing.Test{Name: name1, Func: func(*testing.State) { <-ch }})
+	reg.AddTest(&testing.Test{
+		Name:           name1,
+		Func:           func(*testing.State) { <-ch },
+		CleanupTimeout: time.Millisecond, // avoid blocking after timeout
+	})
 
 	// The second test blocks for 50 ms and specifies a custom one-minute timeout.
 	const name2 = "foo.Test2"

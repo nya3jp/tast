@@ -37,12 +37,12 @@ usage() {
   cat - <<EOF >&2
 Quickly builds the tast executable or its unit tests.
 
-Usage: ${CMD}                     Builds the tast command to ${TAST_OUT}.
-       ${CMD} -b <pkg> -o <path>  Builds <pkg> to <path>.
-       ${CMD} [-v] -T             Tests all packages.
-       ${CMD} [-v] -t <pkg>       Tests <pkg>.
-       ${CMD} -C                  Checks all code using "go vet".
-       ${CMD} -c <pkg>            Checks <pkg>'s code.
+Usage: ${CMD}                             Builds tast to ${TAST_OUT}.
+       ${CMD} -b <pkg> -o <path>          Builds <pkg> to <path>.
+       ${CMD} [-v] -T                     Tests all packages.
+       ${CMD} [-v] [-r <regex>] -t <pkg>  Tests <pkg>.
+       ${CMD} -C                          Checks all code using "go vet".
+       ${CMD} -c <pkg>                    Checks <pkg>'s code.
 
 EOF
   exit 1
@@ -78,9 +78,10 @@ run_vet() {
   go vet "${@}"
 }
 
-# Tests a package.
+# Tests one or more packages.
 run_test() {
-  go test ${verbose_flag} -pkgdir "${PKGDIR}" "${1}"
+  go test ${verbose_flag} -pkgdir "${PKGDIR}" \
+    ${test_regex:+"-run=${test_regex}"} "${@}"
 }
 
 # Executable package to build.
@@ -98,7 +99,10 @@ test_pkg=
 # Verbose flag for testing.
 verbose_flag=
 
-while getopts "CTb:c:ho:t:v-" opt; do
+# Test regex list for unit testing.
+test_regex=
+
+while getopts "CTb:c:ho:r:t:v-" opt; do
   case "${opt}" in
     C)
       check_pkg=all
@@ -114,6 +118,9 @@ while getopts "CTb:c:ho:t:v-" opt; do
       ;;
     o)
       build_out="${OPTARG}"
+      ;;
+    r)
+      test_regex="${OPTARG}"
       ;;
     t)
       test_pkg="${OPTARG}"
@@ -135,7 +142,7 @@ if [ -n "${build_pkg}" ]; then
   run_build "${build_pkg}" "${build_out}"
 elif [ -n "${test_pkg}" ]; then
   if [ "${test_pkg}" = 'all' ]; then
-    for p in $(get_test_pkgs); do run_test "${p}"; done
+    run_test $(get_test_pkgs)
   else
     run_test "${test_pkg}"
   fi

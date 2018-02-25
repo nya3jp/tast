@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	testCleanupTimeout = 3 * time.Second // time for test cleanup after timeout
+	defaultTestCleanupTimeout = 3 * time.Second // time for test cleanup after timeout
 
 	testDataSubdir = "data" // subdir relative to test package containing data files
 
@@ -51,8 +51,12 @@ type Test struct {
 	// Timeout contains the maximum duration for which Func may run before the test is aborted.
 	// This should almost always be omitted when defining tests; a reasonable default will be used.
 	Timeout time.Duration `json:"timeout"`
-	// Go package in which Func is located. This is filled automatically and should be omitted when
-	// defining tests; it is only public so it can be included when this struct is marshaled.
+	// CleanupTimeout contains the maximum duration to wait for the test to clean up after a timeout.
+	// This is exposed for unit tests and should almost always be omitted when defining tests;
+	// a reasonable default will be used.
+	CleanupTimeout time.Duration `json:"-"`
+	// Pkg contains the Go package in which Func is located. This is filled automatically and should be
+	// omitted when defining tests; it is only public so it can be included when this struct is marshaled.
 	Pkg string `json:"pkg"`
 }
 
@@ -84,12 +88,17 @@ func (tst *Test) Run(s *State) {
 		// The goroutine running the test finished.
 	case <-s.ctx.Done():
 		s.Errorf("Test timed out: %v", s.ctx.Err())
+
 		// If the test is using the context correctly, it should also give up soon.
 		// Give it a bit of time to clean up before we move on.
+		cleanupTimeout := tst.CleanupTimeout
+		if cleanupTimeout == 0 {
+			cleanupTimeout = defaultTestCleanupTimeout
+		}
 		select {
 		case <-done:
 			// The test also noticed the timeout and finished cleaning up.
-		case <-time.After(testCleanupTimeout):
+		case <-time.After(cleanupTimeout):
 			s.Logf("Test cleanup deadline exceeded")
 			// TODO(derat): Might need to make sure it's dead somehow...
 		}

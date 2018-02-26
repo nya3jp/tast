@@ -22,6 +22,30 @@
       "revId": "0ccd2ed2d04db312f13a5550bcd455b3678ca2dd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "40ff41ca_e29c86cf",
+        "filename": "docs/infra.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-02-26T20:23:58Z",
+      "side": 1,
+      "message": "could you help me understand the concern? i\u0027m confused about how we decide which configs are stored where. for example:\n\n* cbuildbot stages are in the public chromite repo\n* luci-scheduler.cfg is on the infra/config branch in the public chromite repo\n* staging_lab_task.py is in an internal repo\n* automated_deploy.py is in the public autotest repo\n* cipd.yaml and infra_tools.pp are in an internal repo\n\nare there security-related reasons why some are internal while others are external?",
+      "parentUuid": "01e6c0de_d19ee669",
+      "range": {
+        "startLine": 38,
+        "startChar": 0,
+        "endLine": 38,
+        "endChar": 48
+      },
+      "revId": "0ccd2ed2d04db312f13a5550bcd455b3678ca2dd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

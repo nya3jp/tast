@@ -6,6 +6,7 @@ package run
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -13,11 +14,11 @@ import (
 	"os/exec"
 	"path"
 	"path/filepath"
-	"strings"
 	"time"
 
 	"chromiumos/cmd/tast/build"
 	"chromiumos/cmd/tast/timing"
+	"chromiumos/tast/runner"
 
 	"github.com/google/subcommands"
 )
@@ -81,42 +82,63 @@ func runRemoteRunner(ctx context.Context, cfg *Config, bundleGlob, dataDir strin
 		defer st.End()
 	}
 
-	args := []string{"-bundles=" + bundleGlob}
+	args := runner.Args{
+		BundleGlob: bundleGlob,
+		Patterns:   cfg.Patterns,
+		DataDir:    dataDir,
+		RemoteArgs: runner.RemoteArgs{
+			Target:  cfg.Target,
+			KeyFile: cfg.KeyFile,
+			KeyDir:  cfg.KeyDir,
+		},
+	}
+	if cfg.PrintMode == DontPrint {
+		args.Mode = runner.RunTestsMode
+
+		// Create an output directory within the results dir so we can just move
+		// it to its final destination later.
+		outDir, err := ioutil.TempDir(cfg.ResDir, "out.")
+		if err != nil {
+			return nil, fmt.Errorf("failed to create output dir: %v", err)
+		}
+		args.OutDir = outDir
+	} else {
+		args.Mode = runner.ListTestsMode
+	}
+
+	cmd := exec.Command(cfg.remoteRunner)
+	stdin, err := cmd.StdinPipe()
+	if err != nil {
+		return nil, err
+	}
+	var stdout, stderr io.Reader
+	if stdout, err = cmd.StdoutPipe(); err != nil {
+		return nil, err
+	}
+	if stderr, err = cmd.StderrPipe(); err != nil {
+		return nil, err
+	}
+
+	cfg.Logger.Logf("Starting %v locally", cmd.Path)
+	if err = cmd.Start(); err != nil {
+		return nil, err
+	}
+	if err = json.NewEncoder(stdin).Encode(&args); err != nil {
+		return nil, fmt.Errorf("write to stdin: %v", err)
+	}
+	if err = stdin.Close(); err != nil {
+		return nil, fmt.Errorf("close stdin: %v", err)
+	}
 
 	if cfg.PrintMode != DontPrint {
-		args = append(args, "-listtests")
-		args = append(args, cfg.Patterns...)
-		b, err := exec.Command(cfg.remoteRunner, args...).Output()
+		b, err := ioutil.ReadAll(stdout)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("read stdout: %v", err)
 		}
 		return nil, printTests(cfg.PrintDest, b, cfg.PrintMode)
 	}
 
-	// Create an output directory within the results dir so we can just move
-	// it to its final destination later.
-	outDir, err := ioutil.TempDir(cfg.ResDir, "out.")
-	if err != nil {
-		return nil, fmt.Errorf("failed to create output dir: %v", err)
-	}
-
-	args = append(args, "-report", "-target="+cfg.Target, "-keyfile="+cfg.KeyFile, "-keydir="+cfg.KeyDir, "-datadir="+dataDir, "-outdir="+outDir)
-	args = append(args, cfg.Patterns...)
-	cmd := exec.Command(cfg.remoteRunner, args...)
-
-	var stdout, stderr io.Reader
-	if stdout, err = cmd.StdoutPipe(); err != nil {
-		return nil, fmt.Errorf("failed to open stdout: %v", err)
-	}
-	if stderr, err = cmd.StderrPipe(); err != nil {
-		return nil, fmt.Errorf("failed to open stderr: %v", err)
-	}
 	stderrReader := newFirstLineReader(stderr)
-
-	cfg.Logger.Logf("Starting %q", strings.Join(cmd.Args, " "))
-	if err := cmd.Start(); err != nil {
-		return nil, err
-	}
 	results, rerr := readTestOutput(ctx, cfg, stdout, os.Rename)
 
 	// Check that the runner exits successfully first so that we don't give a useless error

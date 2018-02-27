@@ -10,9 +10,11 @@ import (
 	"crypto/rsa"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 	"reflect"
 	"strings"
 	gotesting "testing"
@@ -21,6 +23,7 @@ import (
 	"chromiumos/cmd/tast/logging"
 	"chromiumos/tast/control"
 	"chromiumos/tast/host/test"
+	"chromiumos/tast/runner"
 	"chromiumos/tast/testing"
 
 	"github.com/google/subcommands"
@@ -61,8 +64,29 @@ func (td *localTestData) close() {
 	os.RemoveAll(td.cfg.ResDir)
 }
 
+// addCheckBundleFakeCmd registers the command that Local uses to check where bundles are installed.
 func addCheckBundleFakeCmd(srv *test.SSHServer, status int) {
-	srv.FakeCmd(fmt.Sprintf("test -d '%s'", localBundleBuiltinDir), status, []byte{}, []byte{})
+	srv.FakeCmd(fmt.Sprintf("test -d '%s'", localBundleBuiltinDir), status, []byte{}, []byte{}, nil)
+}
+
+// addLocalRunnerFakeCmd registers the command that Local uses to run local_test_runner.
+// The returned buffer will contain data written to the command's stdin.
+func addLocalRunnerFakeCmd(srv *test.SSHServer, status int, stdout, stderr []byte) (stdin *bytes.Buffer) {
+	stdin = &bytes.Buffer{}
+	srv.FakeCmd(localRunnerPath, status, stdout, stderr, stdin)
+	return stdin
+}
+
+// checkArgs unmarshals a runner.Args struct from stdin and compares it to exp.
+func checkArgs(t *gotesting.T, stdin io.Reader, exp *runner.Args) {
+	args := runner.Args{}
+	if err := json.NewDecoder(stdin).Decode(&args); err != nil {
+		t.Error(err)
+		return
+	}
+	if !reflect.DeepEqual(args, *exp) {
+		t.Errorf("got args %v; want %v", args, *exp)
+	}
 }
 
 func TestLocalSuccess(t *gotesting.T) {
@@ -75,13 +99,15 @@ func TestLocalSuccess(t *gotesting.T) {
 	mw := control.NewMessageWriter(&ob)
 	mw.WriteMessage(&control.RunStart{time.Unix(1, 0), 0})
 	mw.WriteMessage(&control.RunEnd{time.Unix(2, 0), "", "", ""})
-	cmd := fmt.Sprintf("%s -bundles='%s/*' -report -datadir=%s",
-		localRunnerPath, localBundleBuiltinDir, localDataBuiltinDir)
-	td.srvData.Srv.FakeCmd(cmd, 0, ob.Bytes(), []byte{})
+	stdin := addLocalRunnerFakeCmd(td.srvData.Srv, 0, ob.Bytes(), nil)
 
 	if status, _ := Local(context.Background(), &td.cfg); status != subcommands.ExitSuccess {
 		t.Errorf("Local() = %v; want %v (%v)", status, subcommands.ExitSuccess, td.logbuf.String())
 	}
+	checkArgs(t, stdin, &runner.Args{
+		BundleGlob: filepath.Join(localBundleBuiltinDir, "*"),
+		DataDir:    localDataBuiltinDir,
+	})
 }
 
 // TODO(derat): Delete this after 20180524: https://crbug.com/809185
@@ -97,13 +123,15 @@ func TestLocalSuccessOldPaths(t *gotesting.T) {
 	mw := control.NewMessageWriter(&ob)
 	mw.WriteMessage(&control.RunStart{time.Unix(1, 0), 0})
 	mw.WriteMessage(&control.RunEnd{time.Unix(2, 0), "", "", ""})
-	cmd := fmt.Sprintf("%s -bundles='%s/*' -report -datadir=%s",
-		localRunnerPath, localBundleOldBuiltinDir, localDataOldBuiltinDir)
-	td.srvData.Srv.FakeCmd(cmd, 0, ob.Bytes(), []byte{})
+	stdin := addLocalRunnerFakeCmd(td.srvData.Srv, 0, ob.Bytes(), nil)
 
 	if status, _ := Local(context.Background(), &td.cfg); status != subcommands.ExitSuccess {
 		t.Errorf("Local() = %v; want %v (%v)", status, subcommands.ExitSuccess, td.logbuf.String())
 	}
+	checkArgs(t, stdin, &runner.Args{
+		BundleGlob: filepath.Join(localBundleOldBuiltinDir, "*"),
+		DataDir:    localDataOldBuiltinDir,
+	})
 }
 
 func TestLocalExecFailure(t *gotesting.T) {
@@ -117,9 +145,7 @@ func TestLocalExecFailure(t *gotesting.T) {
 	mw.WriteMessage(&control.RunStart{time.Unix(1, 0), 0})
 	mw.WriteMessage(&control.RunEnd{time.Unix(2, 0), "", "", ""})
 	const stderr = "some failure message\n"
-	cmd := fmt.Sprintf("%s -bundles='%s/*' -report -datadir=%s",
-		localRunnerPath, localBundleBuiltinDir, localDataBuiltinDir)
-	td.srvData.Srv.FakeCmd(cmd, 1, ob.Bytes(), []byte(stderr))
+	addLocalRunnerFakeCmd(td.srvData.Srv, 1, ob.Bytes(), []byte(stderr))
 
 	if status, _ := Local(context.Background(), &td.cfg); status != subcommands.ExitFailure {
 		t.Errorf("Local() = %v; want %v", status, subcommands.ExitFailure)
@@ -143,8 +169,7 @@ func TestLocalPrint(t *gotesting.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	cmd := fmt.Sprintf("%s -bundles='%s/*' -listtests", localRunnerPath, localBundleBuiltinDir)
-	td.srvData.Srv.FakeCmd(cmd, 0, b, []byte{})
+	stdin := addLocalRunnerFakeCmd(td.srvData.Srv, 0, b, nil)
 
 	// Verify one-name-per-line output.
 	out := bytes.Buffer{}
@@ -153,6 +178,11 @@ func TestLocalPrint(t *gotesting.T) {
 	if status, _ := Local(context.Background(), &td.cfg); status != subcommands.ExitSuccess {
 		t.Errorf("Local() = %v; want %v (%v)", status, subcommands.ExitSuccess, td.logbuf.String())
 	}
+	checkArgs(t, stdin, &runner.Args{
+		Mode:       runner.ListTestsMode,
+		BundleGlob: filepath.Join(localBundleBuiltinDir, "*"),
+		DataDir:    localDataBuiltinDir,
+	})
 	if exp := fmt.Sprintf("%s\n%s\n", tests[0].Name, tests[1].Name); out.String() != exp {
 		t.Errorf("Local() printed %q; want %q", out.String(), exp)
 	}

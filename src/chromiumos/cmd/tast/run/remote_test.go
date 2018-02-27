@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -19,6 +20,7 @@ import (
 
 	"chromiumos/cmd/tast/logging"
 	"chromiumos/tast/control"
+	"chromiumos/tast/runner"
 	"chromiumos/tast/testing"
 
 	"github.com/google/subcommands"
@@ -45,8 +47,8 @@ type fakeRunnerConfig struct {
 	Status int    `json:"status"`
 }
 
-// runFakeRunner saves command-line args to the current directory, reads a config,
-// and writes the requested data to stdout and stderr. It returns the status code to exit with.
+// runFakeRunner saves stdin to the current directory, reads a config, and writes the requested
+// data to stdout and stderr. It returns the status code to exit with.
 func runFakeRunner() int {
 	dir := filepath.Dir(os.Args[0])
 
@@ -56,6 +58,9 @@ func runFakeRunner() int {
 		log.Fatal(err)
 	}
 	defer af.Close()
+	if _, err = io.Copy(af, os.Stdin); err != nil {
+		log.Fatal(err)
+	}
 
 	if err = json.NewEncoder(af).Encode(os.Args[1:]); err != nil {
 		log.Fatal(err)
@@ -83,8 +88,7 @@ type remoteTestData struct {
 	dir    string       // temp dir
 	logbuf bytes.Buffer // logging output
 	cfg    Config       // config passed to Remote
-
-	args []string // args that were passed to fake runner
+	args   runner.Args  // args that were passed to fake runner
 }
 
 // newRemoteTestData creates a temporary directory with a symlink back to the unit test binary
@@ -133,7 +137,7 @@ func (td *remoteTestData) close() {
 	os.RemoveAll(td.dir)
 }
 
-// run calls Remote and records the command-line arguments that were passed to the fake runner.
+// run calls Remote and records the Args struct that was passed to the fake runner.
 func (td *remoteTestData) run(t *gotesting.T) (subcommands.ExitStatus, []TestResult) {
 	status, res := Remote(context.Background(), &td.cfg)
 
@@ -143,22 +147,11 @@ func (td *remoteTestData) run(t *gotesting.T) (subcommands.ExitStatus, []TestRes
 	}
 	defer f.Close()
 
-	td.args = make([]string, 0)
 	if err = json.NewDecoder(f).Decode(&td.args); err != nil {
 		t.Fatal(err)
 	}
 
 	return status, res
-}
-
-// passedArg returns true if arg was passed to the fake runner.
-func (td *remoteTestData) passedArg(arg string) bool {
-	for _, a := range td.args {
-		if a == arg {
-			return true
-		}
-	}
-	return false
 }
 
 func TestRemoteRun(t *gotesting.T) {
@@ -190,16 +183,23 @@ func TestRemoteRun(t *gotesting.T) {
 		t.Errorf("Remote(%v) returned result for test %q; want %q", td.cfg, res[0].Name, testName)
 	}
 
-	// Check that important args were passed to the runner.
-	for _, arg := range []string{
-		"-report",
-		"-keyfile=" + td.cfg.KeyFile,
-		"-bundles=" + filepath.Join(td.cfg.remoteBundleDir, "*"),
-		"-datadir=" + td.cfg.remoteDataDir,
-	} {
-		if !td.passedArg(arg) {
-			t.Errorf("Remote(%v) passed args %v; want %v in list", td.cfg, td.args, arg)
-		}
+	// Remote should create a temporary output dir rooted under the results dir: https://crbug.com/813282
+	if !strings.HasPrefix(td.args.OutDir, td.cfg.ResDir+"/") {
+		t.Errorf("Remote(%v) passed out dir %v not rooted under results dir %v",
+			td.cfg, td.args.OutDir, td.cfg.ResDir)
+	}
+	td.args.OutDir = "" // clear randomly-named dir before following comparison
+
+	expArgs := runner.Args{
+		Mode:       runner.RunTestsMode,
+		BundleGlob: filepath.Join(td.cfg.remoteBundleDir, "*"),
+		DataDir:    td.cfg.remoteDataDir,
+		RemoteArgs: runner.RemoteArgs{
+			KeyFile: td.cfg.KeyFile,
+		},
+	}
+	if !reflect.DeepEqual(td.args, expArgs) {
+		t.Errorf("Remote(%v) passed args %v; want %v", td.cfg, td.args, expArgs)
 	}
 }
 
@@ -224,8 +224,8 @@ func TestRemotePrint(t *gotesting.T) {
 	if status, _ := td.run(t); status != subcommands.ExitSuccess {
 		t.Errorf("Remote(%v) returned status %v; want %v", td.cfg, status, subcommands.ExitSuccess)
 	}
-	if arg := "-listtests"; !td.passedArg(arg) {
-		t.Errorf("Remote(%v) passed args %v; want %v in list", td.cfg, td.args, arg)
+	if td.args.Mode != runner.ListTestsMode {
+		t.Errorf("Remote(%v) passed mode %v; want %v", td.cfg, td.args.Mode, runner.ListTestsMode)
 	}
 
 	pt := []testing.Test{}

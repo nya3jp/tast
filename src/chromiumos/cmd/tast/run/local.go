@@ -17,6 +17,7 @@ import (
 	"chromiumos/cmd/tast/build"
 	"chromiumos/cmd/tast/timing"
 	"chromiumos/tast/host"
+	"chromiumos/tast/runner"
 
 	"github.com/google/subcommands"
 
@@ -205,17 +206,6 @@ func pushBundle(ctx context.Context, cfg *Config, hst *host.SSH, src, dstDir str
 	return nil
 }
 
-// getLocalRunnerCmd returns a command for running the test runner with bundles
-// matched by bundleGlob, using additional flags and test patterns.
-func getLocalRunnerCmd(bundleGlob string, flags, pats []string) string {
-	ps := ""
-	for _, p := range pats {
-		ps += " " + host.QuoteShellArg(p)
-	}
-	return fmt.Sprintf("%s -bundles=%s %s%s", localRunnerPath,
-		host.QuoteShellArg(bundleGlob), strings.Join(flags, " "), ps)
-}
-
 // getDataFilePaths returns the paths to data files needed for running cfg.Patterns on hst.
 func getDataFilePaths(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob string) ([]string, error) {
 	if tl, ok := timing.FromContext(ctx); ok {
@@ -224,9 +214,11 @@ func getDataFilePaths(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlo
 	}
 	cfg.Logger.Debug("Getting data file list from target")
 
-	cmd := getLocalRunnerCmd(bundleGlob, []string{"-listdata"}, cfg.Patterns)
-
-	handle, err := hst.Start(ctx, cmd, host.CloseStdin, host.StdoutAndStderr)
+	handle, err := startLocalRunner(ctx, cfg, hst, &runner.Args{
+		Mode:       runner.ListDataMode,
+		BundleGlob: bundleGlob,
+		Patterns:   cfg.Patterns,
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -317,31 +309,47 @@ func buildAndPushLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH) er
 	return nil
 }
 
-// runLocalRunner runs the test runner with bundles matched by bundleGlob on hst using cfg.
-func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob, dataDir string) (
-	[]TestResult, error) {
+// startLocalRunner starts local_test_runner on hst and passes args to it.
+// The caller is responsible for reading the handle's stdout and closing the handle.
+func startLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, args *runner.Args) (*host.SSHCommandHandle, error) {
+	cfg.Logger.Logf("Starting %v on target", localRunnerPath)
+	handle, err := hst.Start(ctx, localRunnerPath, host.OpenStdin, host.StdoutAndStderr)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = json.NewEncoder(handle.Stdin()).Encode(&args); err != nil {
+		handle.Close(ctx)
+		return nil, fmt.Errorf("write args: %v", err)
+	}
+	if err = handle.Stdin().Close(); err != nil {
+		handle.Close(ctx)
+		return nil, fmt.Errorf("close stdin: %v", err)
+	}
+	return handle, nil
+}
+
+// runLocalRunner runs local_test_runner to completion on hst.
+// If cfg.PrintMode is DontPrint, tests are executed and their results are returned.
+// Otherwise, serialized tests are printed to cfg.PrintDest.
+func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob, dataDir string) ([]TestResult, error) {
 	if tl, ok := timing.FromContext(ctx); ok {
 		st := tl.Start("run_tests")
 		defer st.End()
 	}
 
-	ps := ""
-	for _, p := range cfg.Patterns {
-		ps += " " + host.QuoteShellArg(p)
+	args := runner.Args{
+		BundleGlob: bundleGlob,
+		Patterns:   cfg.Patterns,
+		DataDir:    dataDir,
+	}
+	if cfg.PrintMode == DontPrint {
+		args.Mode = runner.RunTestsMode
+	} else {
+		args.Mode = runner.ListTestsMode
 	}
 
-	if cfg.PrintMode != DontPrint {
-		cmd := getLocalRunnerCmd(bundleGlob, []string{"-listtests"}, cfg.Patterns)
-		b, err := hst.Run(ctx, cmd)
-		if err != nil {
-			return nil, err
-		}
-		return nil, printTests(cfg.PrintDest, b, cfg.PrintMode)
-	}
-
-	cmd := getLocalRunnerCmd(bundleGlob, []string{"-report", "-datadir=" + dataDir}, cfg.Patterns)
-	cfg.Logger.Debugf("Starting %q on remote host", cmd)
-	handle, err := hst.Start(ctx, cmd, host.CloseStdin, host.StdoutAndStderr)
+	handle, err := startLocalRunner(ctx, cfg, hst, &args)
 	if err != nil {
 		return nil, err
 	}
@@ -349,6 +357,14 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 
 	// Read stderr in the background so it can be included in error messages.
 	stderrReader := newFirstLineReader(handle.Stderr())
+
+	if cfg.PrintMode != DontPrint {
+		b, err := ioutil.ReadAll(handle.Stdout())
+		if err != nil {
+			return nil, fmt.Errorf("read stdout: %v", err)
+		}
+		return nil, printTests(cfg.PrintDest, b, cfg.PrintMode)
+	}
 
 	crf := func(src, dst string) error {
 		cfg.Logger.Debugf("Copying %s from host to %s", src, dst)

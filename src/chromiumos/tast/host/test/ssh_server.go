@@ -11,6 +11,7 @@ import (
 	"crypto/subtle"
 	"encoding/binary"
 	"fmt"
+	"io"
 	"log"
 	"net"
 	"os/exec"
@@ -46,6 +47,7 @@ type SSHServer struct {
 type cmdResult struct {
 	exitStatus     int
 	stdout, stderr []byte
+	stdinDest      io.Writer
 }
 
 // newServerConfig returns a new configuration for a server using host key hk
@@ -119,8 +121,8 @@ func (s *SSHServer) NextCmd(cmd string) {
 }
 
 // FakeCmd configures the result to be sent for an "exec" request exactly matching cmd.
-func (s *SSHServer) FakeCmd(cmd string, exitStatus int, stdout, stderr []byte) {
-	s.fakeCmds[cmd] = cmdResult{exitStatus, stdout, stderr}
+func (s *SSHServer) FakeCmd(cmd string, exitStatus int, stdout, stderr []byte, stdinDest io.Writer) {
+	s.fakeCmds[cmd] = cmdResult{exitStatus, stdout, stderr, stdinDest}
 }
 
 // AnswerPings controls whether the server should reply to SSH_MSG_IGNORE ping
@@ -194,6 +196,9 @@ func (s *SSHServer) handleExec(ch ssh.Channel, req *ssh.Request) {
 
 	if res, ok := s.fakeCmds[cl]; ok {
 		req.Reply(true, nil)
+		if res.stdinDest != nil {
+			io.Copy(res.stdinDest, ch)
+		}
 		ch.Write(res.stdout)
 		ch.Stderr().Write(res.stderr)
 		status = res.exitStatus

@@ -313,3 +313,24 @@ func TestSkipBundlesWithoutMatchedTests(t *gotesting.T) {
 		t.Fatalf("RunConfig(%v) = %v; want %v", cfg, status, statusSuccess)
 	}
 }
+
+func TestRunTestsUseRequestedOutDir(t *gotesting.T) {
+	bundleDir := createBundleSymlinks(t, []bool{true})
+	defer os.RemoveAll(bundleDir)
+	outDir := testutil.TempDir(t, "runner_test.")
+	defer os.RemoveAll(outDir)
+
+	cfg, b, _ := callParseArgsStdin(t, &Args{BundleGlob: filepath.Join(bundleDir, "*"), OutDir: outDir}, statusSuccess, true)
+	if status := RunTests(cfg); status != statusSuccess {
+		t.Fatalf("RunConfig(%v) = %v; want %v", cfg, status, statusSuccess)
+	}
+	msgs := readAllMessages(t, b)
+	if re, ok := msgs[len(msgs)-1].(*control.RunEnd); !ok {
+		t.Errorf("Last message not RunEnd: %v", msgs[len(msgs)-1])
+	} else {
+		// The RunEnd message should contain the out dir that we originally requested.
+		if re.OutDir != outDir {
+			t.Errorf("RunEnd.OutDir = %q; want %q", re.OutDir, outDir)
+		}
+	}
+}

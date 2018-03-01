@@ -9,7 +9,6 @@
 package main
 
 import (
-	"flag"
 	"os"
 
 	"chromiumos/tast/runner"
@@ -21,15 +20,18 @@ const (
 )
 
 func main() {
-	flags := flag.NewFlagSet("", flag.ContinueOnError)
-	target := flags.String("target", "", "DUT connection spec as \"[<user>@]host[:<port>]\"")
-	keyfile := flags.String("keyfile", "", "path to SSH private key to use for connecting to DUT")
-	keydir := flags.String("keydir", "", "directory containing SSH private keys (typically $HOME/.ssh)")
-	cfg, status := runner.ParseArgs(os.Stdout, os.Args[1:], defaultBundleGlob, defaultDataDir, flags)
+	args := runner.Args{
+		BundleGlob: defaultBundleGlob,
+		DataDir:    defaultDataDir,
+	}
+	cfg, status := runner.ParseArgs(os.Args[1:], os.Stdin, os.Stdout, &args, runner.RemoteRunner)
 	if status != 0 || cfg == nil {
 		os.Exit(status)
 	}
-
-	cfg.ExtraFlags = []string{"-target=" + *target, "-keyfile=" + *keyfile, "-keydir=" + *keydir}
+	cfg.ExtraFlags = []string{
+		"-target=" + args.Target,
+		"-keyfile=" + args.KeyFile,
+		"-keydir=" + args.KeyDir,
+	}
 	os.Exit(runner.RunTests(cfg))
 }

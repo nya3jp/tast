@@ -107,7 +107,11 @@ func copyNewMinidumps(oldDumps []string, mw *control.MessageWriter) (outDir stri
 }
 
 func main() {
-	cfg, status := runner.ParseArgs(os.Stdout, os.Args[1:], defaultBundleGlob, defaultDataDir, nil)
+	args := runner.Args{
+		BundleGlob: defaultBundleGlob,
+		DataDir:    defaultDataDir,
+	}
+	cfg, status := runner.ParseArgs(os.Args[1:], os.Stdin, os.Stdout, &args, runner.LocalRunner)
 	if status != 0 || cfg == nil {
 		os.Exit(status)
 	}

@@ -7,7 +7,6 @@ package runner
 import (
 	"bytes"
 	"encoding/json"
-	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -104,14 +103,34 @@ func runBundle() int {
 	return bundle.Local(os.Args[1:])
 }
 
-// callParseArgs calls ParseArgs with the supplied parameters.
+// callParseArgsStdin calls ParseArgs with the supplied Args struct JSON-marshaled to stdin.
 // It reports a fatal test error if the returned status doesn't match expStatus or
 // the returned RunConfig is nil when wantCfg is true or vice versa.
 // The returned sig string can be used in test errors to describe the ParseArgs call.
-func callParseArgs(t *gotesting.T, w io.Writer, args []string, glob string, flags *flag.FlagSet,
-	expStatus int, wantCfg bool) (cfg *RunConfig, sig string) {
-	cfg, status := ParseArgs(w, args, glob, "", flags)
-	sig = fmt.Sprintf("ParseArgs(w, %v, %q, ...)", args, glob)
+func callParseArgsStdin(t *gotesting.T, args *Args, expStatus int, wantCfg bool) (
+	cfg *RunConfig, stdout *bytes.Buffer, sig string) {
+	stdin := &bytes.Buffer{}
+	json.NewEncoder(stdin).Encode(args)
+	stdout = &bytes.Buffer{}
+	cfg, status := ParseArgs(nil, stdin, stdout, &Args{}, LocalRunner)
+	sig = fmt.Sprintf("ParseArgs(nil, %v, ...)", *args)
+	checkParseArgsResult(t, sig, cfg, status, expStatus, wantCfg)
+	return cfg, stdout, sig
+}
+
+// callParseArgsCL calls ParseArgs with the supplied command-line arguments.
+// Its behavior is otherwise similar to callParseArgsStdin.
+func callParseArgsCL(t *gotesting.T, clArgs []string, expStatus int, wantCfg bool) (
+	cfg *RunConfig, stdout *bytes.Buffer, sig string) {
+	stdout = &bytes.Buffer{}
+	cfg, status := ParseArgs(clArgs, &bytes.Buffer{}, stdout, &Args{}, LocalRunner)
+	sig = fmt.Sprintf("ParseArgs(%v, ...)", clArgs)
+	checkParseArgsResult(t, sig, cfg, status, expStatus, wantCfg)
+	return cfg, stdout, sig
+}
+
+// checkParseArgsResult contains result-checking code shared between callParseArgsStdin and callParseArgsCL.
+func checkParseArgsResult(t *gotesting.T, sig string, cfg *RunConfig, status, expStatus int, wantCfg bool) {
 	if status != expStatus {
 		t.Fatalf("%s returned status %v; want %v", sig, status, expStatus)
 	} else if cfg == nil && wantCfg {
@@ -119,7 +138,6 @@ func callParseArgs(t *gotesting.T, w io.Writer, args []string, glob string, flag
 	} else if cfg != nil && !wantCfg {
 		t.Fatalf("%s returned non-nil RunConfig %v", sig, cfg)
 	}
-	return cfg, sig
 }
 
 // readAllMessages reads and returns a slice of pointers to control messages
@@ -154,8 +172,11 @@ func TestParseArgsListTests(t *gotesting.T) {
 	defer os.RemoveAll(dir)
 
 	// All six tests should be printed.
-	b := bytes.Buffer{}
-	_, sig := callParseArgs(t, &b, []string{"-listtests"}, filepath.Join(dir, "*"), nil, statusSuccess, false)
+	args := Args{
+		Mode:       ListTestsMode,
+		BundleGlob: filepath.Join(dir, "*"),
+	}
+	_, b, sig := callParseArgsStdin(t, &args, statusSuccess, false)
 	var tests []*testing.Test
 	if err := json.Unmarshal(b.Bytes(), &tests); err != nil {
 		t.Fatalf("%s printed unparsable output %q", sig, b.String())
@@ -170,8 +191,7 @@ func TestRunTests(t *gotesting.T) {
 	defer os.RemoveAll(dir)
 
 	// RunTests should execute multiple test bundles and merge their output correctly.
-	b := bytes.Buffer{}
-	cfg, _ := callParseArgs(t, &b, []string{"-report"}, filepath.Join(dir, "*"), nil, statusSuccess, true)
+	cfg, b, _ := callParseArgsStdin(t, &Args{BundleGlob: filepath.Join(dir, "*")}, statusSuccess, true)
 
 	// Check that pre-run and post-run functions are called.
 	preRunCalled := false
@@ -185,7 +205,7 @@ func TestRunTests(t *gotesting.T) {
 		t.Fatalf("RunConfig(%v) = %v; want %v", cfg, status, statusSuccess)
 	}
 
-	msgs := readAllMessages(t, &b)
+	msgs := readAllMessages(t, b)
 	if rs, ok := msgs[0].(*control.RunStart); !ok {
 		t.Errorf("First message not RunStart: %v", msgs[0])
 	} else if rs.NumTests != 3 {
@@ -228,25 +248,7 @@ func TestRunTests(t *gotesting.T) {
 }
 
 func TestParseArgsInvalidFlag(t *gotesting.T) {
-	// ParseArgs should fail when an invalid flag is passed.
-	callParseArgs(t, &bytes.Buffer{}, []string{"-bogus"}, "/bogus/*", nil, statusBadArgs, false)
-
-	// This should also happen when -report is passed.
-	callParseArgs(t, &bytes.Buffer{}, []string{"-report", "-bogus"}, "/bogus/*", nil, statusBadArgs, false)
-}
-
-func TestParseArgsCustomFlag(t *gotesting.T) {
-	dir := createBundleSymlinks(t, []bool{true})
-	defer os.RemoveAll(dir)
-
-	// When a flag.FlagSet is passed to ParseArgs, it should be used.
-	flags := flag.NewFlagSet("", flag.ContinueOnError)
-	custom := flags.Bool("custom", false, "custom flag")
-	_, sig := callParseArgs(t, &bytes.Buffer{}, []string{"-custom", "-report"},
-		filepath.Join(dir, "*"), flags, statusSuccess, true)
-	if !*custom {
-		t.Errorf("%s didn't set -custom flag", sig)
-	}
+	callParseArgsCL(t, []string{"-bogus"}, statusBadArgs, false)
 }
 
 func TestParseArgsNoBundles(t *gotesting.T) {
@@ -254,15 +256,12 @@ func TestParseArgsNoBundles(t *gotesting.T) {
 	defer os.RemoveAll(dir)
 
 	// ParseArgs should fail when a glob is passed that doesn't match any bundles.
-	callParseArgs(t, &bytes.Buffer{}, []string{}, filepath.Join(dir, "bogus*"), nil,
-		statusNoBundles, false)
+	callParseArgsCL(t, []string{"-bundles=" + filepath.Join(dir, "bogus*")}, statusNoBundles, false)
 
-	// When -report is passed, the command should exit with success but write a
+	// When run by the tast executable, the command should exit with success but write a
 	// RunError control message.
-	b := bytes.Buffer{}
-	_, sig := callParseArgs(t, &b, []string{"-report"}, filepath.Join(dir, "bogus*"), nil,
-		statusSuccess, false)
-	if !gotRunError(readAllMessages(t, &b)) {
+	_, b, sig := callParseArgsStdin(t, &Args{BundleGlob: filepath.Join(dir, "bogus*")}, statusSuccess, false)
+	if !gotRunError(readAllMessages(t, b)) {
 		t.Fatalf("%s didn't write RunError message", sig)
 	}
 }
@@ -271,21 +270,20 @@ func TestRunTestsNoTests(t *gotesting.T) {
 	dir := createBundleSymlinks(t, []bool{true})
 	defer os.RemoveAll(dir)
 
-	// RunTests should fail when a pattern is passed that doesn't match any tests and -report isn't passed.
-	cfg, _ := callParseArgs(t, &bytes.Buffer{}, []string{"bogus.SomeTest"}, filepath.Join(dir, "*"), nil,
-		statusSuccess, true)
+	// RunTests should fail when run manually with a pattern is passed that doesn't match any tests.
+	clArgs := []string{"-bundles=" + filepath.Join(dir, "*"), "bogus.SomeTest"}
+	cfg, _, _ := callParseArgsCL(t, clArgs, statusSuccess, true)
 	if status := RunTests(cfg); status != statusNoTests {
 		t.Fatalf("RunTests(%v) = %v; want %v", cfg, status, statusNoTests)
 	}
 
-	// If -report is passed, the command should exit with success.
-	b := bytes.Buffer{}
-	cfg, _ = callParseArgs(t, &b, []string{"-report", "bogus.SomeTest"}, filepath.Join(dir, "*"), nil,
-		statusSuccess, true)
+	// If the command was run by the tast command, it should exit with success.
+	args := &Args{BundleGlob: filepath.Join(dir, "*"), Patterns: []string{"bogus.SomeTest"}}
+	cfg, b, _ := callParseArgsStdin(t, args, statusSuccess, true)
 	if status := RunTests(cfg); status != statusSuccess {
 		t.Fatalf("RunTests(%v) = %v; want %v", cfg, status, statusSuccess)
 	}
-	if gotRunError(readAllMessages(t, &b)) {
+	if gotRunError(readAllMessages(t, b)) {
 		t.Fatalf("RunTests(%v) wrote RunError message", cfg)
 	}
 }
@@ -294,9 +292,9 @@ func TestRunTestsFailForErrorWhenRunManually(t *gotesting.T) {
 	dir := createBundleSymlinks(t, []bool{true, false, true})
 	defer os.RemoveAll(dir)
 
-	// RunTests should fail when a bundle reports failure and -report wasn't passed.
-	cfg, _ := callParseArgs(t, &bytes.Buffer{}, []string{}, filepath.Join(dir, "*"), nil,
-		statusSuccess, true)
+	// RunTests should fail when a bundle reports failure while run manually.
+	clArgs := []string{"-bundles=" + filepath.Join(dir, "*")}
+	cfg, _, _ := callParseArgsCL(t, clArgs, statusSuccess, true)
 	if status := RunTests(cfg); status != statusBundleFailed {
 		t.Fatalf("RunConfig(%v) = %v; want %v", cfg, status, statusBundleFailed)
 	}
@@ -309,8 +307,8 @@ func TestSkipBundlesWithoutMatchedTests(t *gotesting.T) {
 	// Test bundles report failure if instructed to run using a pattern that doesn't
 	// match any tests in the bundle. Pass the name of the test in the first bundle and
 	// check that the run succeeds (i.e. the second bundle wasn't executed).
-	cfg, _ := callParseArgs(t, &bytes.Buffer{}, []string{getTestName(0, 0)},
-		filepath.Join(dir, "*"), nil, statusSuccess, true)
+	clArgs := []string{"-bundles=" + filepath.Join(dir, "*"), getTestName(0, 0)}
+	cfg, _, _ := callParseArgsCL(t, clArgs, statusSuccess, true)
 	if status := RunTests(cfg); status != statusSuccess {
 		t.Fatalf("RunConfig(%v) = %v; want %v", cfg, status, statusSuccess)
 	}

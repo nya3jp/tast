@@ -118,11 +118,13 @@ func runRemoteRunner(ctx context.Context, cfg *Config, bundleGlob, dataDir strin
 	if stderr, err = cmd.StderrPipe(); err != nil {
 		return nil, err
 	}
+	stderrReader := newFirstLineReader(stderr)
 
 	cfg.Logger.Logf("Starting %v locally", cmd.Path)
 	if err = cmd.Start(); err != nil {
 		return nil, err
 	}
+
 	if err = json.NewEncoder(stdin).Encode(&args); err != nil {
 		return nil, fmt.Errorf("write to stdin: %v", err)
 	}
@@ -131,21 +133,18 @@ func runRemoteRunner(ctx context.Context, cfg *Config, bundleGlob, dataDir strin
 	}
 
 	if cfg.PrintMode != DontPrint {
-		b, err := ioutil.ReadAll(stdout)
-		if err != nil {
-			return nil, fmt.Errorf("read stdout: %v", err)
+		if err = printTests(cfg.PrintDest, stdout, cfg.PrintMode); err != nil {
+			return nil, stderrReader.appendToError(err, stderrTimeout)
 		}
-		return nil, printTests(cfg.PrintDest, b, cfg.PrintMode)
+		return nil, nil
 	}
 
-	stderrReader := newFirstLineReader(stderr)
 	results, rerr := readTestOutput(ctx, cfg, stdout, os.Rename)
 
 	// Check that the runner exits successfully first so that we don't give a useless error
 	// about incorrectly-formed output instead of e.g. an error about the runner being missing.
 	if err := cmd.Wait(); err != nil {
-		ln, _ := stderrReader.getLine(stderrTimeout)
-		return results, fmt.Errorf("%v: %v", err, ln)
+		return results, stderrReader.appendToError(err, stderrTimeout)
 	}
 	return results, rerr
 }

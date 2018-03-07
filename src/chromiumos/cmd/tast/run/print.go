@@ -13,11 +13,10 @@ import (
 	"chromiumos/tast/testing"
 )
 
-// printTests writes the names of tests in b, a JSON-marshaled array of
-// testing.Test structs, to w.
-func printTests(w io.Writer, b []byte, mode PrintMode) error {
-	ts := make([]testing.Test, 0)
-	if err := json.Unmarshal(b, &ts); err != nil {
+// printTests reads a JSON-marshaled array of testing.Test structs from r and writes them to w.
+func printTests(w io.Writer, r io.Reader, mode PrintMode) error {
+	var ts []testing.Test
+	if err := json.NewDecoder(r).Decode(&ts); err != nil {
 		return err
 	}
 

@@ -32,7 +32,8 @@ const (
 	statusBundleFailed = 5 // test bundle exited with nonzero status
 )
 
-// logger is used to write messages to stdout when -report is not passed.
+// logger is used to write messages to stdout when the runner is executed manually
+// rather than by the tast command.
 var logger *log.Logger = log.New(os.Stdout, "", log.LstdFlags)
 
 // Log writes a RunLog control message to mw if non-nil or logs to stdout otherwise.
@@ -148,8 +149,9 @@ const (
 // ParseArgs parses runtime arguments and returns a RunConfig if tests need to be run.
 //
 // clArgs contains command-line arguments and is typically os.Args[1:].
-// args contains default values for arguments and is populated both by parsing clArgs and
-// (if -report is passed) by decoding an JSON-marshaled Args struct from stdin.
+// args contains default values for arguments and is further populated by parsing clArgs or
+// (if clArgs is empty, as is the case when a runner is executed by the tast command) by
+// decoding a JSON-marshaled Args struct from stdin.
 //
 // If the returned status is not 0, the caller should pass it to os.Exit.
 // If the RunConfig is nil and the status is 0, the caller should exit with 0.
@@ -163,6 +165,7 @@ func ParseArgs(clArgs []string, stdin io.Reader, stdout io.Writer, args *Args, r
 			return nil, statusBadArgs
 		}
 	} else {
+		// Expose a limited amount of configurability via command-line flags to support running test runners manually.
 		flags := flag.NewFlagSet("", flag.ContinueOnError)
 		flags.Usage = func() {
 			fmt.Fprintf(os.Stderr, "Usage: %s <flags> <pattern> <pattern> ...\n"+
@@ -177,23 +180,11 @@ func ParseArgs(clArgs []string, stdin io.Reader, stdout io.Writer, args *Args, r
 			flags.StringVar(&args.KeyFile, "keyfile", "", "path to SSH private key to use for connecting to DUT")
 			flags.StringVar(&args.KeyDir, "keydir", "", "directory containing SSH private keys (typically $HOME/.ssh)")
 		}
-		// TODO(derat): Remove -report, -listdata, and -listtests once the tast command always writes args to stdin.
-		report := flags.Bool("report", false, "read args from stdin and report progress for tast command")
-		listData := flags.Bool("listdata", false, "print data files needed for tests and exit")
-		listTests := flags.Bool("listtests", false, "print matching tests and exit")
 
 		if err := flags.Parse(clArgs); err != nil {
 			return nil, statusBadArgs
 		}
-
-		if *report {
-			cfg.mw = control.NewMessageWriter(stdout)
-		}
-		if *listData {
-			args.Mode = ListDataMode
-		} else if *listTests {
-			args.Mode = ListTestsMode
-		}
+		args.Mode = RunTestsMode
 		args.Patterns = flags.Args()
 	}
 
@@ -215,12 +206,7 @@ func ParseArgs(clArgs []string, stdin io.Reader, stdout io.Writer, args *Args, r
 		return nil, Error(cfg.mw, fmt.Sprintf("Failed to get tests: %v", err.Error()), statusError)
 	}
 
-	if args.Mode == ListDataMode {
-		if err = listDataFiles(stdout, cfg.tests); err != nil {
-			return nil, Error(cfg.mw, fmt.Sprintf("Failed to list data files: %v", err), statusError)
-		}
-		return nil, statusSuccess
-	} else if args.Mode == ListTestsMode {
+	if args.Mode == ListTestsMode {
 		if err = testing.WriteTestsAsJSON(stdout, cfg.tests); err != nil {
 			return nil, Error(cfg.mw, fmt.Sprintf("Failed to write tests: %v", err), statusError)
 		}
@@ -234,15 +220,10 @@ type RunMode int
 
 const (
 	// RunTestsMode indicates that the runner should run all matched tests.
-	RunTestsMode RunMode = iota
-	// ListDataMode indicates that the runner should write data files used by matched tests to stdout as a
-	// JSON array of strings and exit.
-	// TODO(derat): Deprecate this value and remove the supporting code. ListTestsMode already includes data
-	// files, so tast should just use that instead.
-	ListDataMode
+	RunTestsMode RunMode = 0
 	// ListTestsMode indicates that the runner should write information about matched tests to stdout as a
 	// JSON array of testing.Test structs and exit.
-	ListTestsMode
+	ListTestsMode = 2
 )
 
 // Args provides a backward- and forward-compatible way to pass arguments from tast executable to test runners.

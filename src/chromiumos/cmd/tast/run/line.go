@@ -7,6 +7,7 @@ package run
 import (
 	"bufio"
 	"errors"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"strings"
@@ -51,4 +52,14 @@ func (f *firstLineReader) getLine(timeout time.Duration) (string, error) {
 		err := errors.New("read timed out")
 		return err.Error(), err
 	}
+}
+
+// appendToError waits up to timeout for the first line and returns a new error containing both
+// origErr and the line. If no line is available, origErr is returned unchanged.
+func (f *firstLineReader) appendToError(origErr error, timeout time.Duration) error {
+	s, err := f.getLine(timeout)
+	if err != nil || s == "" {
+		return origErr
+	}
+	return fmt.Errorf("%v: %v", origErr, s)
 }

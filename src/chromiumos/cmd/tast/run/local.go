@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"path"
 	"path/filepath"
 	"strings"
@@ -18,6 +17,7 @@ import (
 	"chromiumos/cmd/tast/timing"
 	"chromiumos/tast/host"
 	"chromiumos/tast/runner"
+	"chromiumos/tast/testing"
 
 	"github.com/google/subcommands"
 
@@ -215,7 +215,7 @@ func getDataFilePaths(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlo
 	cfg.Logger.Debug("Getting data file list from target")
 
 	handle, err := startLocalRunner(ctx, cfg, hst, &runner.Args{
-		Mode:       runner.ListDataMode,
+		Mode:       runner.ListTestsMode,
 		BundleGlob: bundleGlob,
 		Patterns:   cfg.Patterns,
 	})
@@ -224,19 +224,34 @@ func getDataFilePaths(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlo
 	}
 	defer handle.Close(ctx)
 
+	// Handle errors returned by Wait() first, as they'll be more useful than generic JSON decode errors.
 	stderrReader := newFirstLineReader(handle.Stderr())
-	out, _ := ioutil.ReadAll(handle.Stdout()) // Wait() also reports output errors.
+	var ts []testing.Test
+	jerr := json.NewDecoder(handle.Stdout()).Decode(&ts)
 	if err = handle.Wait(ctx); err != nil {
-		ln, _ := stderrReader.getLine(stderrTimeout)
-		return nil, fmt.Errorf("%v: %s", err, ln)
+		return nil, stderrReader.appendToError(err, stderrTimeout)
+	} else if jerr != nil {
+		return nil, jerr
 	}
 
-	files := make([]string, 0)
-	if err = json.Unmarshal(out, &files); err != nil {
-		return nil, err
+	// Get paths relative to the top-level data directory and remove duplicates.
+	paths := make([]string, 0)
+	seen := make(map[string]struct{})
+	for _, t := range ts {
+		if t.Data == nil {
+			continue
+		}
+		for _, p := range t.Data {
+			p = filepath.Join(t.DataDir(), p)
+			if _, ok := seen[p]; !ok {
+				paths = append(paths, p)
+				seen[p] = struct{}{}
+			}
+		}
 	}
-	cfg.Logger.Debugf("Got data file list with %v file(s)", len(files))
-	return files, nil
+
+	cfg.Logger.Debugf("Got data file list with %v file(s)", len(paths))
+	return paths, nil
 }
 
 // pushDataFiles copies the test data files at paths under bc.TestWorkspace on the local machine
@@ -343,6 +358,7 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 		Patterns:   cfg.Patterns,
 		DataDir:    dataDir,
 	}
+
 	if cfg.PrintMode == DontPrint {
 		args.Mode = runner.RunTestsMode
 	} else {
@@ -359,11 +375,10 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 	stderrReader := newFirstLineReader(handle.Stderr())
 
 	if cfg.PrintMode != DontPrint {
-		b, err := ioutil.ReadAll(handle.Stdout())
-		if err != nil {
-			return nil, fmt.Errorf("read stdout: %v", err)
+		if err = printTests(cfg.PrintDest, handle.Stdout(), cfg.PrintMode); err != nil {
+			return nil, stderrReader.appendToError(err, stderrTimeout)
 		}
-		return nil, printTests(cfg.PrintDest, b, cfg.PrintMode)
+		return nil, nil
 	}
 
 	crf := func(src, dst string) error {
@@ -377,13 +392,13 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 		}
 		return nil
 	}
+
 	results, rerr := readTestOutput(ctx, cfg, handle.Stdout(), crf)
 
 	// Check that the runner exits successfully first so that we don't give a useless error
 	// about incorrectly-formed output instead of e.g. an error about the runner being missing.
 	if err := handle.Wait(ctx); err != nil {
-		ln, _ := stderrReader.getLine(stderrTimeout)
-		return results, fmt.Errorf("%v: %v", err, ln)
+		return results, stderrReader.appendToError(err, stderrTimeout)
 	}
 	return results, rerr
 }

@@ -237,6 +237,8 @@ const (
 	RunTestsMode RunMode = iota
 	// ListDataMode indicates that the runner should write data files used by matched tests to stdout as a
 	// JSON array of strings and exit.
+	// TODO(derat): Deprecate this value and remove the supporting code. ListTestsMode already includes data
+	// files, so tast should just use that instead.
 	ListDataMode
 	// ListTestsMode indicates that the runner should write information about matched tests to stdout as a
 	// JSON array of testing.Test structs and exit.

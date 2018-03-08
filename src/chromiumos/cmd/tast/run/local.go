@@ -76,6 +76,8 @@ func Local(ctx context.Context, cfg *Config) (subcommands.ExitStatus, []TestResu
 		}
 	}
 
+	getInitialSysInfo(ctx, cfg)
+
 	cfg.Logger.Status("Running tests on target")
 	start := time.Now()
 	results, err := runLocalRunner(ctx, cfg, hst, bundleGlob, dataDir)
@@ -235,14 +237,9 @@ func getDataFilePaths(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlo
 	}
 	defer handle.Close(ctx)
 
-	// Handle errors returned by Wait() first, as they'll be more useful than generic JSON decode errors.
-	stderrReader := newFirstLineReader(handle.Stderr())
 	var ts []testing.Test
-	jerr := json.NewDecoder(handle.Stdout()).Decode(&ts)
-	if err = handle.Wait(ctx); err != nil {
-		return nil, stderrReader.appendToError(err, stderrTimeout)
-	} else if jerr != nil {
-		return nil, jerr
+	if err = readLocalRunnerOutput(ctx, handle, &ts); err != nil {
+		return nil, err
 	}
 
 	// Get paths relative to the top-level data directory and remove duplicates.
@@ -338,7 +335,6 @@ func buildAndPushLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH) er
 // startLocalRunner starts local_test_runner on hst and passes args to it.
 // The caller is responsible for reading the handle's stdout and closing the handle.
 func startLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, args *runner.Args) (*host.SSHCommandHandle, error) {
-	cfg.Logger.Logf("Starting %v on target", localRunnerPath)
 	handle, err := hst.Start(ctx, localRunnerPath, host.OpenStdin, host.StdoutAndStderr)
 	if err != nil {
 		return nil, err
@@ -372,6 +368,7 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 
 	if cfg.PrintMode == DontPrint {
 		args.Mode = runner.RunTestsMode
+		args.SkipSysInfoForRun = true
 	} else {
 		args.Mode = runner.ListTestsMode
 	}
@@ -392,18 +389,7 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 		return nil, nil
 	}
 
-	crf := func(src, dst string) error {
-		cfg.Logger.Debugf("Copying %s from host to %s", src, dst)
-		if err := hst.GetFile(ctx, src, dst); err != nil {
-			return err
-		}
-		cfg.Logger.Debugf("Cleaning %s on host", src)
-		if out, err := hst.Run(ctx, fmt.Sprintf("rm -rf %s", host.QuoteShellArg(src))); err != nil {
-			cfg.Logger.Logf("Failed cleaning %s: %v\n%s", src, err, out)
-		}
-		return nil
-	}
-
+	crf := func(src, dst string) error { return moveFromHost(ctx, cfg, hst, src, dst) }
 	results, rerr := readTestOutput(ctx, cfg, handle.Stdout(), crf)
 
 	// Check that the runner exits successfully first so that we don't give a useless error
@@ -412,6 +398,30 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 		return results, stderrReader.appendToError(err, stderrTimeout)
 	}
 	return results, rerr
+}
+
+// readLocalRunnerOutput unmarshals a single JSON value from handle.Stdout into out.
+func readLocalRunnerOutput(ctx context.Context, handle *host.SSHCommandHandle, out interface{}) error {
+	// Handle errors returned by Wait() first, as they'll be more useful than generic JSON decode errors.
+	stderrReader := newFirstLineReader(handle.Stderr())
+	jerr := json.NewDecoder(handle.Stdout()).Decode(out)
+	if err := handle.Wait(ctx); err != nil {
+		return stderrReader.appendToError(err, stderrTimeout)
+	}
+	return jerr
+}
+
+// moveFromHost copies the tree rooted at src on hst to dst on the local system.
+func moveFromHost(ctx context.Context, cfg *Config, hst *host.SSH, src, dst string) error {
+	cfg.Logger.Debugf("Copying %s from host to %s", src, dst)
+	if err := hst.GetFile(ctx, src, dst); err != nil {
+		return err
+	}
+	cfg.Logger.Debugf("Cleaning %s on host", src)
+	if out, err := hst.Run(ctx, fmt.Sprintf("rm -rf %s", host.QuoteShellArg(src))); err != nil {
+		cfg.Logger.Logf("Failed cleaning %s: %v\n%s", src, err, out)
+	}
+	return nil
 }
 
 // formatBytes formats bytes as a human-friendly string.

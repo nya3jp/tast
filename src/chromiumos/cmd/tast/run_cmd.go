@@ -55,6 +55,7 @@ func (r *runCmd) SetFlags(f *flag.FlagSet) {
 	f.StringVar(&r.buildType, "buildtype", localType,
 		"type of tests to build (\""+localType+"\" or \""+remoteType+"\")")
 	f.BoolVar(&r.checkDeps, "checkdeps", true, "checks test package's dependencies before building")
+	f.BoolVar(&r.cfg.CollectSysInfo, "sysinfo", true, "collect system information (logs, crashes, etc.)")
 
 	td := getTrunkDir()
 	r.cfg.SetFlags(f, td)
@@ -144,7 +145,10 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 			}
 			status = subcommands.ExitFailure
 		}
-	} else if err = r.wrapper.writeResults(&r.cfg, results); err != nil {
+		return status
+	}
+
+	if err = r.wrapper.writeResults(ctx, &r.cfg, results); err != nil {
 		lg.Log("Failed to write results: ", err)
 		if status == subcommands.ExitSuccess {
 			status = subcommands.ExitFailure
@@ -189,7 +193,7 @@ type runWrapper interface {
 	// remote calls run.Remote.
 	remote(ctx context.Context, cfg *run.Config) (subcommands.ExitStatus, []run.TestResult)
 	// writeResults calls run.WriteResults.
-	writeResults(cfg *run.Config, results []run.TestResult) error
+	writeResults(ctx context.Context, cfg *run.Config, results []run.TestResult) error
 }
 
 // realRunWrapper is a runWrapper implementation that calls the real functions in the run package.
@@ -203,6 +207,6 @@ func (w realRunWrapper) remote(ctx context.Context, cfg *run.Config) (subcommand
 	return run.Remote(ctx, cfg)
 }
 
-func (w realRunWrapper) writeResults(cfg *run.Config, results []run.TestResult) error {
-	return run.WriteResults(cfg, results)
+func (w realRunWrapper) writeResults(ctx context.Context, cfg *run.Config, results []run.TestResult) error {
+	return run.WriteResults(ctx, cfg, results)
 }

@@ -16,6 +16,7 @@ import (
 	"chromiumos/cmd/tast/build"
 	"chromiumos/cmd/tast/logging"
 	"chromiumos/tast/host"
+	"chromiumos/tast/runner"
 )
 
 // PrintMode is used to indicate that tests should be printed rather than being run.
@@ -62,12 +63,15 @@ type Config struct {
 	PrintMode PrintMode
 	// PrintDest is used as the destination when PrintMode has a value other than DontPrint.
 	PrintDest io.Writer
+	// CollectSysInfo controls whether system information (logs, crashes, etc.) generated during testing should be collected.
+	CollectSysInfo bool
 
 	remoteRunner    string // path to executable that runs remote test bundles
 	remoteBundleDir string // dir where packaged remote test bundles are installed
 	remoteDataDir   string // dir containing packaged remote test data
 
-	hst *host.SSH // cached SSH connection; may be nil
+	hst            *host.SSH            // cached SSH connection; may be nil
+	initialSysInfo *runner.SysInfoState // initial state of system info (logs, crashes, etc.) on DUT before testing
 
 	msgTimeout time.Duration // timeout for reading control messages; default used if zero
 }

@@ -65,6 +65,8 @@ func Remote(ctx context.Context, cfg *Config) (subcommands.ExitStatus, []TestRes
 		dataDir = cfg.remoteDataDir
 	}
 
+	getInitialSysInfo(ctx, cfg)
+
 	results, err := runRemoteRunner(ctx, cfg, bundleGlob, dataDir)
 	if err != nil {
 		cfg.Logger.Log("Failed to run tests: ", err)

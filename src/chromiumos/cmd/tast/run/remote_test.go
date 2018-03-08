@@ -251,3 +251,5 @@ func TestRemoteFailure(t *gotesting.T) {
 		t.Errorf("Remote(%v) didn't log runner error %q in %q", td.cfg, errorMsg, td.logbuf.String())
 	}
 }
+
+// TODO(derat): Add a test that verifies that getInitialSysInfo is called before tests are run.

@@ -57,12 +57,18 @@ type TestResult struct {
 
 // WriteResults writes results (including errors) to a JSON file in the results directory.
 // It additionally logs each test's status to cfg.Logger.
-func WriteResults(cfg *Config, results []TestResult) error {
+// If cfg.CollectSysInfo is true, system information generated on the DUT during testing
+// (e.g. logs and crashes) will also be written to the results dir.
+func WriteResults(ctx context.Context, cfg *Config, results []TestResult) error {
 	f, err := os.Create(filepath.Join(cfg.ResDir, resultsFilename))
 	if err != nil {
 		return err
 	}
 	defer f.Close()
+
+	// We don't want to bail out before writing test results if sys info collection fails,
+	// but we'll still return the error later.
+	sysInfoErr := collectSysInfo(ctx, cfg)
 
 	enc := json.NewEncoder(f)
 	enc.SetIndent("", "  ")
@@ -97,7 +103,7 @@ func WriteResults(cfg *Config, results []TestResult) error {
 
 	cfg.Logger.Log(sep)
 	cfg.Logger.Log("Results saved to ", cfg.ResDir)
-	return nil
+	return sysInfoErr
 }
 
 // copyAndRemoveFunc copies src on a DUT to dst on the local machine and then

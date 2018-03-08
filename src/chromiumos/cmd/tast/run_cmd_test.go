@@ -44,7 +44,7 @@ func (w *stubRunWrapper) remote(ctx context.Context, cfg *run.Config) (subcomman
 	return w.rstat, w.rres
 }
 
-func (w *stubRunWrapper) writeResults(cfg *run.Config, results []run.TestResult) error {
+func (w *stubRunWrapper) writeResults(ctx context.Context, cfg *run.Config, results []run.TestResult) error {
 	w.wcfg = cfg
 	w.wres = results
 	return w.werr

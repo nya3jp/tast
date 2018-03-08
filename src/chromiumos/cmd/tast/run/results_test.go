@@ -16,6 +16,7 @@ import (
 
 	"chromiumos/cmd/tast/logging"
 	"chromiumos/tast/control"
+	"chromiumos/tast/runner"
 	"chromiumos/tast/testing"
 	"chromiumos/tast/testutil"
 )
@@ -78,7 +79,7 @@ func TestReadTestOutput(t *gotesting.T) {
 	if err != nil {
 		t.Fatal("readTestOutput failed: ", err)
 	}
-	if err = WriteResults(&cfg, results); err != nil {
+	if err = WriteResults(context.Background(), &cfg, results); err != nil {
 		t.Fatal("WriteResults failed: ", err)
 	}
 
@@ -287,4 +288,26 @@ func TestNextMessageTimeout(t *gotesting.T) {
 			cancel()
 		}
 	}
+}
+
+func TestWriteResultsCollectSysInfo(t *gotesting.T) {
+	// This test uses types and functions from local_test.go.
+	td := newLocalTestData()
+	defer td.close()
+
+	ob := bytes.Buffer{}
+	if err := json.NewEncoder(&ob).Encode(&runner.CollectSysInfoResult{}); err != nil {
+		t.Fatal(err)
+	}
+	stdin := addLocalRunnerFakeCmd(td.srvData.Srv, 0, ob.Bytes(), nil)
+
+	td.cfg.CollectSysInfo = true
+	td.cfg.initialSysInfo = &runner.SysInfoState{}
+	if err := WriteResults(context.Background(), &td.cfg, []TestResult{}); err != nil {
+		t.Fatal("WriteResults failed: ", err)
+	}
+	checkArgs(t, stdin, &runner.Args{
+		Mode:               runner.CollectSysInfoMode,
+		CollectSysInfoArgs: runner.CollectSysInfoArgs{},
+	})
 }

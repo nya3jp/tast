@@ -6,6 +6,7 @@
 package run
 
 import (
+	"context"
 	"flag"
 	"io"
 	"os"
@@ -14,6 +15,7 @@ import (
 
 	"chromiumos/cmd/tast/build"
 	"chromiumos/cmd/tast/logging"
+	"chromiumos/tast/host"
 )
 
 // PrintMode is used to indicate that tests should be printed rather than being run.
@@ -33,6 +35,8 @@ const (
 )
 
 // Config contains shared configuration information for running local and remote tests.
+// Additional state is held in unexported fields, and the same Config struct should be reused
+// across calls to different functions in this package.
 type Config struct {
 	// Logger is used to log progress.
 	Logger logging.Logger
@@ -63,6 +67,8 @@ type Config struct {
 	remoteBundleDir string // dir where packaged remote test bundles are installed
 	remoteDataDir   string // dir containing packaged remote test data
 
+	hst *host.SSH // cached SSH connection; may be nil
+
 	msgTimeout time.Duration // timeout for reading control messages; default used if zero
 }
 
@@ -91,4 +97,15 @@ func (c *Config) SetFlags(f *flag.FlagSet, trunkDir string) {
 	if c.PrintMode == DontPrint {
 		f.StringVar(&c.ResDir, "resultsdir", "", "directory for test results")
 	}
+}
+
+// Close releases the config's resources (e.g. cached SSH connections).
+// It should be called at the completion of testing.
+func (c *Config) Close(ctx context.Context) error {
+	var err error
+	if c.hst != nil {
+		err = c.hst.Close(ctx)
+		c.hst = nil
+	}
+	return err
 }

@@ -26,6 +26,7 @@ import (
 
 const (
 	sshConnectTimeout time.Duration = 10 * time.Second // timeout for establishing SSH connection to DUT
+	sshPingTimeout    time.Duration = 5 * time.Second  // timeout for checking if SSH connection to DUT is open
 
 	localRunnerPath       = "/usr/local/bin/local_test_runner"          // on-device executable that runs test bundles
 	localRunnerPkg        = "chromiumos/cmd/local_test_runner"          // Go package for local test runner
@@ -51,14 +52,11 @@ const (
 // Local runs local tests as directed by cfg and returns the command's exit status.
 // If non-nil, the returned results may be passed to WriteResults.
 func Local(ctx context.Context, cfg *Config) (subcommands.ExitStatus, []TestResult) {
-	cfg.Logger.Status("Connecting to target")
-	cfg.Logger.Logf("Connecting to %s", cfg.Target)
 	hst, err := connectToTarget(ctx, cfg)
 	if err != nil {
 		cfg.Logger.Logf("Failed to connect to %s: %v", cfg.Target, err)
 		return subcommands.ExitFailure, nil
 	}
-	defer hst.Close(ctx)
 
 	var bundleGlob, dataDir string
 	if cfg.Build {
@@ -90,11 +88,24 @@ func Local(ctx context.Context, cfg *Config) (subcommands.ExitStatus, []TestResu
 }
 
 // connectToTarget establishes an SSH connection to the target specified in cfg.
+// The connection will be cached in cfg and should not be closed by the caller.
+// If a connection is already established, it will be returned.
 func connectToTarget(ctx context.Context, cfg *Config) (*host.SSH, error) {
+	// If we already have a connection, reuse it if it's still open.
+	if cfg.hst != nil {
+		if err := cfg.hst.Ping(ctx, sshPingTimeout); err == nil {
+			return cfg.hst, nil
+		} else {
+			cfg.hst = nil
+		}
+	}
+
 	if tl, ok := timing.FromContext(ctx); ok {
 		st := tl.Start("connect")
 		defer st.End()
 	}
+	cfg.Logger.Status("Connecting to target")
+	cfg.Logger.Logf("Connecting to %s", cfg.Target)
 
 	o := host.SSHOptions{
 		ConnectTimeout: sshConnectTimeout,
@@ -106,11 +117,11 @@ func connectToTarget(ctx context.Context, cfg *Config) (*host.SSH, error) {
 		return nil, err
 	}
 
-	hst, err := host.NewSSH(ctx, &o)
-	if err != nil {
+	var err error
+	if cfg.hst, err = host.NewSSH(ctx, &o); err != nil {
 		return nil, err
 	}
-	return hst, nil
+	return cfg.hst, nil
 }
 
 // buildAndPushBundle builds a local test bundle and pushes it to hst as dictated by cfg.

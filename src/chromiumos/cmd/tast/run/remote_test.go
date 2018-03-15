@@ -134,6 +134,7 @@ func newRemoteTestData(t *gotesting.T, stdout, stderr string, status int) *remot
 
 // close removes the temporary directory.
 func (td *remoteTestData) close() {
+	td.cfg.Close(context.Background())
 	os.RemoveAll(td.dir)
 }
 

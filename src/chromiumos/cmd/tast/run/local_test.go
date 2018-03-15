@@ -60,6 +60,7 @@ func newLocalTestData() *localTestData {
 }
 
 func (td *localTestData) close() {
+	td.cfg.Close(context.Background())
 	td.srvData.Close()
 	os.RemoveAll(td.cfg.ResDir)
 }

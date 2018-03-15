@@ -62,6 +62,8 @@ func (r *runCmd) SetFlags(f *flag.FlagSet) {
 }
 
 func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
+	defer r.cfg.Close(ctx)
+
 	tl := timing.Log{}
 	ctx = timing.NewContext(ctx, &tl)
 	st := tl.Start("exec")

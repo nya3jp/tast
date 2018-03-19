@@ -23,6 +23,8 @@ import (
 	"chromiumos/tast/testing"
 )
 
+// TODO(derat): Split this into separate args.go and run.go files.
+
 const (
 	statusSuccess      = 0 // runner was successful
 	statusError        = 1 // unspecified error was encountered
@@ -157,10 +159,10 @@ const (
 // If the RunConfig is nil and the status is 0, the caller should exit with 0.
 // If a non-nil RunConfig is returned, it should be passed to RunTests.
 func ParseArgs(clArgs []string, stdin io.Reader, stdout io.Writer, args *Args, runnerType RunnerType) (*RunConfig, int) {
-	cfg := RunConfig{stdout: stdout}
+	var mw *control.MessageWriter
 
 	if len(clArgs) == 0 {
-		cfg.mw = control.NewMessageWriter(stdout)
+		mw = control.NewMessageWriter(stdout)
 		if err := json.NewDecoder(stdin).Decode(args); err != nil {
 			return nil, statusBadArgs
 		}
@@ -189,12 +191,30 @@ func ParseArgs(clArgs []string, stdin io.Reader, stdout io.Writer, args *Args, r
 	}
 
 	if runnerType != RemoteRunner && args.RemoteArgs != (RemoteArgs{}) {
-		return nil, Error(cfg.mw, fmt.Sprintf("Remote args %v passed to non-remote runner", args.RemoteArgs), statusBadArgs)
+		return nil, Error(nil, fmt.Sprintf("Remote args %v passed to non-remote runner", args.RemoteArgs), statusBadArgs)
 	}
 
-	cfg.dataDir = args.DataDir
-	cfg.outDir = args.OutDir
-	cfg.patterns = args.Patterns
+	// Handle system-info-related commands first; they don't require touching test bundles.
+	switch args.Mode {
+	case GetSysInfoStateMode:
+		if err := handleGetSysInfoState(args, stdout); err != nil {
+			return nil, Error(nil, err.Error(), statusError)
+		}
+		return nil, statusSuccess
+	case CollectSysInfoMode:
+		if err := handleCollectSysInfo(args, stdout); err != nil {
+			return nil, Error(nil, err.Error(), statusError)
+		}
+		return nil, statusSuccess
+	}
+
+	cfg := RunConfig{
+		stdout:   stdout,
+		mw:       mw,
+		dataDir:  args.DataDir,
+		outDir:   args.OutDir,
+		patterns: args.Patterns,
+	}
 
 	var err error
 	if cfg.bundles, err = getBundles(args.BundleGlob); err != nil {
@@ -206,13 +226,17 @@ func ParseArgs(clArgs []string, stdin io.Reader, stdout io.Writer, args *Args, r
 		return nil, Error(cfg.mw, fmt.Sprintf("Failed to get tests: %v", err.Error()), statusError)
 	}
 
-	if args.Mode == ListTestsMode {
+	switch args.Mode {
+	case RunTestsMode:
+		return &cfg, statusSuccess
+	case ListTestsMode:
 		if err = testing.WriteTestsAsJSON(stdout, cfg.tests); err != nil {
 			return nil, Error(cfg.mw, fmt.Sprintf("Failed to write tests: %v", err), statusError)
 		}
 		return nil, statusSuccess
+	default:
+		return nil, Error(cfg.mw, fmt.Sprintf("Invalid mode %v", args.Mode), statusBadArgs)
 	}
-	return &cfg, statusSuccess
 }
 
 // RunMode describes the runner's behavior.
@@ -224,35 +248,91 @@ const (
 	// ListTestsMode indicates that the runner should write information about matched tests to stdout as a
 	// JSON array of testing.Test structs and exit.
 	ListTestsMode = 2
+	// GetSysInfoStateMode indicates that the runner should write a JSON-marshaled GetSysInfoStateResult struct
+	// to stdout and exit. It's used by the tast executable to get the initial state of the system before tests
+	// are executed. This mode is only supported by local_test_runner.
+	GetSysInfoStateMode = 3
+	// CollectSysInfoMode indicates that the runner should collect system information that was written in the
+	// course of testing and write a JSON-marshaled CollectSysInfoResult struct to stdout and exit. It's used by
+	// the tast executable to get system info after testing is completed.
+	// This mode is only supported by local_test_runner.
+	CollectSysInfoMode = 4
 )
 
-// Args provides a backward- and forward-compatible way to pass arguments from tast executable to test runners.
+// Args provides a backward- and forward-compatible way to pass arguments from the tast executable to test runners.
 // The tast executable writes the struct's JSON-serialized representation to the runner's stdin.
 type Args struct {
 	// Mode describes the mode that should be used by the runner.
 	Mode RunMode `json:"mode"`
 	// BundleGlob is a glob-style path matching test bundles to execute.
-	BundleGlob string `json:"bundleGlob"`
+	BundleGlob string `json:"bundleGlob,omitempty"`
 	// Patterns contains patterns (either empty to run all tests, exactly one attribute expression,
 	// or one or more globs) describing which tests to run.
-	Patterns []string `json:"patterns"`
+	Patterns []string `json:"patterns,omitempty"`
 	// DataDir is the path to the directory containing test data files.
-	DataDir string `json:"dataDir"`
+	DataDir string `json:"dataDir,omitempty"`
 	// OutDir is the path to the base directory under which tests should write output files.
-	OutDir string `json:"outDir"`
+	OutDir string `json:"outDir,omitempty"`
+
 	// RemoteArgs contains additional arguments used to run remote tests.
 	RemoteArgs
+	// CollectSysInfoArgs contains additional arguments used by CollectSysInfoMode.
+	CollectSysInfoArgs
+
+	// SystemLogDir contains the directory where information is logged by syslog and other daemons.
+	// It is set by the runner (or by unit tests) and cannot be overridden by the tast executable.
+	SystemLogDir string `json:"-"`
+	// SystemCrashDirs contains directories where crash dumps are written when processes crash.
+	// It is set by the runner (or by unit tests) and cannot be overridden by the tast executable.
+	SystemCrashDirs []string `json:"-"`
+
+	// SkipSysInfoForRun disables the legacy behavior of collecting system info at the beginning of a test run.
+	// It's used by updated tast commands that explicitly initiate the collection of system info.
+	// TODO(derat): Delete this once tast has been updated: https://crbug.com/820292
+	SkipSysInfoForRun bool `json:"skipSysInfoForRun,omitempty"`
 }
 
-// RemoteArgs is nested within Args and holds additional arguments that are only relevant when running
-// remote tests.
+// RemoteArgs is nested within Args and holds additional arguments that are only relevant when running remote tests.
 type RemoteArgs struct {
 	// Target is the DUT connection spec as [<user>@]host[:<port>].
-	Target string `json:"remoteTarget"`
+	Target string `json:"remoteTarget,omitempty"`
 	// KeyFile is the path to the SSH private key to use to connect to the DUT.
-	KeyFile string `json:"remoteKeyFile"`
+	KeyFile string `json:"remoteKeyFile,omitempty"`
 	// KeyDir is the directory containing SSH private keys (typically $HOME/.ssh).
-	KeyDir string `json:"remoteKeyDir"`
+	KeyDir string `json:"remoteKeyDir,omitempty"`
+}
+
+// GetSysInfoStateResult holds the result of a GetSysInfoStateMode command.
+type GetSysInfoStateResult struct {
+	// SysInfoState contains the collected state.
+	State SysInfoState `json:"state"`
+	// Warnings contains descriptions of non-fatal errors encountered while collecting data.
+	Warnings []string `json:"warnings"`
+}
+
+// CollectSysInfoArgs is nested within Args and holds additional arguments that are only relevant for CollectSysInfoMode.
+type CollectSysInfoArgs struct {
+	// InitialState describes the pre-testing state of the DUT. It should be generated by a GetSysInfoStateMode
+	// command executed before tests are run.
+	InitialState SysInfoState `json:"collectSysInfoInitialState,omitempty"`
+}
+
+// CollectSysInfoResult contains the result of a CollectSysInfoMode command.
+type CollectSysInfoResult struct {
+	// LogDir is the directory where log files were copied. The caller should delete it.
+	LogDir string `json:"logDir"`
+	// CrashDir is the directory where minidump crash files were copied. The caller should delete it.
+	CrashDir string `json:"crashDir"`
+	// Warnings contains descriptions of non-fatal errors encountered while collecting data.
+	Warnings []string `json:"warnings"`
+}
+
+// SysInfoState contains the state of the DUT's system information.
+type SysInfoState struct {
+	// LogInodeSizes maps from each log file's inode to its size in bytes.
+	LogInodeSizes map[uint64]int64 `json:"logInodeSizes"`
+	// MinidumpPaths contains absolute paths to minidump crash files.
+	MinidumpPaths []string `json:"minidumpPaths"`
 }
 
 // RunConfig contains a configuration for running tests.
@@ -274,6 +354,8 @@ type RunConfig struct {
 
 	// ExtraFlags contains extra flags to be passed to test bundles.
 	ExtraFlags []string
+
+	// TODO(derat): Delete PreRun and PostRun once local_test_runner is no longer using them: https://crbug.com/820292
 	// PreRun is executed before the RunStart control message is written if it and mw are non-nil
 	// and one or more tests were matched.
 	PreRun func(mw *control.MessageWriter)

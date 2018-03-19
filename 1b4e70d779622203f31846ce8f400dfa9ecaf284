@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7c7620c8_b59e8a76",
+        "filename": "src/chromiumos/tast/runner/sys_info.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-03-19T19:54:06Z",
+      "side": 1,
+      "message": "most of what this file does is just borrowed from local_test_runner\u0027s main.go file (which will become a lot shorter once this code is being used).",
+      "revId": "1b4e70d779622203f31846ce8f400dfa9ecaf284",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -108,27 +108,33 @@ func copyNewMinidumps(oldDumps []string, mw *control.MessageWriter) (outDir stri
 
 func main() {
 	args := runner.Args{
-		BundleGlob: defaultBundleGlob,
-		DataDir:    defaultDataDir,
+		BundleGlob:      defaultBundleGlob,
+		DataDir:         defaultDataDir,
+		SystemLogDir:    systemLogDir,
+		SystemCrashDirs: []string{crash.DefaultCrashDir, crash.ChromeCrashDir},
 	}
 	cfg, status := runner.ParseArgs(os.Args[1:], os.Stdin, os.Stdout, &args, runner.LocalRunner)
 	if status != 0 || cfg == nil {
 		os.Exit(status)
 	}
 
-	var logSizes logs.InodeSizes
-	var oldMinidumps []string
-	cfg.PreRun = func(mw *control.MessageWriter) {
-		logSizes = getInitialLogSizes(mw)
-		var err error
-		if oldMinidumps, err = getMinidumps(); err != nil {
-			runner.Log(mw, fmt.Sprintf("Failed to get existing minidumps: %v", err))
+	// TODO(derat): Delete all of this once the tast command is initiating the
+	// collection of system info: https://crbug.com/820292
+	if !args.SkipSysInfoForRun {
+		var logSizes logs.InodeSizes
+		var oldMinidumps []string
+		cfg.PreRun = func(mw *control.MessageWriter) {
+			logSizes = getInitialLogSizes(mw)
+			var err error
+			if oldMinidumps, err = getMinidumps(); err != nil {
+				runner.Log(mw, fmt.Sprintf("Failed to get existing minidumps: %v", err))
+			}
 		}
-	}
-	cfg.PostRun = func(mw *control.MessageWriter) control.RunEnd {
-		logDir := copyLogUpdates(logSizes, mw)
-		crashDir := copyNewMinidumps(oldMinidumps, mw)
-		return control.RunEnd{LogDir: logDir, CrashDir: crashDir}
+		cfg.PostRun = func(mw *control.MessageWriter) control.RunEnd {
+			logDir := copyLogUpdates(logSizes, mw)
+			crashDir := copyNewMinidumps(oldMinidumps, mw)
+			return control.RunEnd{LogDir: logDir, CrashDir: crashDir}
+		}
 	}
 
 	os.Exit(runner.RunTests(cfg))

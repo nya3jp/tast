@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "90f60947_e8770d29",
+        "filename": "src/chromiumos/tast/runner/runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-03-20T17:57:51Z",
+      "side": 1,
+      "message": "sure, i\u0027ll give some thought as to how to do this. i think that all of the trickiness just stems from me wanting to both:\n\na) share this code across multiple executables (local_test_runner and remote_test_runner), and\nb) make this code unit-testable.",
+      "parentUuid": "2490ecdc_abf13572",
+      "range": {
+        "startLine": 208,
+        "startChar": 0,
+        "endLine": 208,
+        "endChar": 27
+      },
+      "revId": "1b4e70d779622203f31846ce8f400dfa9ecaf284",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7c7620c8_b59e8a76",
         "filename": "src/chromiumos/tast/runner/sys_info.go",
         "patchSetId": 1

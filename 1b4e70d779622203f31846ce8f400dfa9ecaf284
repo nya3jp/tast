@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "2490ecdc_abf13572",
+        "filename": "src/chromiumos/tast/runner/runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2018-03-20T16:38:39Z",
+      "side": 1,
+      "message": "Just an observation: this return paradigm is getting very variadic. Consider splitting this function up.",
+      "range": {
+        "startLine": 208,
+        "startChar": 0,
+        "endLine": 208,
+        "endChar": 27
+      },
+      "revId": "1b4e70d779622203f31846ce8f400dfa9ecaf284",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7c7620c8_b59e8a76",
         "filename": "src/chromiumos/tast/runner/sys_info.go",
         "patchSetId": 1
@@ -16,6 +39,24 @@
       "revId": "1b4e70d779622203f31846ce8f400dfa9ecaf284",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c2a5c7df_f78cbb65",
+        "filename": "src/chromiumos/tast/runner/sys_info.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2018-03-20T16:38:39Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "7c7620c8_b59e8a76",
+      "revId": "1b4e70d779622203f31846ce8f400dfa9ecaf284",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

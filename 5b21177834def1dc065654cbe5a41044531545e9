@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6f150d_5712dcd1",
+        "filename": "src/chromiumos/cmd/tast/run/sys_info.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2018-03-21T04:00:40Z",
+      "side": 1,
+      "message": "I don\u0027t see where this is used. Is it recorded inside timing internal state?",
+      "range": {
+        "startLine": 57,
+        "startChar": 1,
+        "endLine": 60,
+        "endChar": 2
+      },
+      "revId": "5b21177834def1dc065654cbe5a41044531545e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

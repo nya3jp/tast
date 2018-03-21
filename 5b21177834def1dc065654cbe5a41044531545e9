@@ -22,6 +22,30 @@
       "revId": "5b21177834def1dc065654cbe5a41044531545e9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "64327fd1_179f1acf",
+        "filename": "src/chromiumos/cmd/tast/run/sys_info.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-03-21T05:11:29Z",
+      "side": 1,
+      "message": "yep, this pattern is used throughout the tast command to record data that ends up in timing.json files like this one: https://storage.cloud.google.com/chromeos-autotest-results/185097313-chromeos-test/chromeos6-row2-rack23-host1/tast_Runner/results/timing.json\n\nthe timing.Log object is attached to the context and writes to a log when the command finishes. here\u0027s the godoc for the timing package: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/cmd/tast/timing",
+      "parentUuid": "7a6f150d_5712dcd1",
+      "range": {
+        "startLine": 57,
+        "startChar": 1,
+        "endLine": 60,
+        "endChar": 2
+      },
+      "revId": "5b21177834def1dc065654cbe5a41044531545e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

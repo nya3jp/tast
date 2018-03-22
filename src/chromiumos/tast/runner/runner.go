@@ -286,9 +286,8 @@ type Args struct {
 	// It is set by the runner (or by unit tests) and cannot be overridden by the tast executable.
 	SystemCrashDirs []string `json:"-"`
 
-	// SkipSysInfoForRun disables the legacy behavior of collecting system info at the beginning of a test run.
-	// It's used by updated tast commands that explicitly initiate the collection of system info.
-	// TODO(derat): Delete this once tast has been updated: https://crbug.com/820292
+	// TODO(derat): Delete this once local_test_runner no longer defaults to automatically collecting system info
+	// as part of the test run: https://crbug.com/820292
 	SkipSysInfoForRun bool `json:"skipSysInfoForRun,omitempty"`
 }
 
@@ -354,15 +353,6 @@ type RunConfig struct {
 
 	// ExtraFlags contains extra flags to be passed to test bundles.
 	ExtraFlags []string
-
-	// TODO(derat): Delete PreRun and PostRun once local_test_runner is no longer using them: https://crbug.com/820292
-	// PreRun is executed before the RunStart control message is written if it and mw are non-nil
-	// and one or more tests were matched.
-	PreRun func(mw *control.MessageWriter)
-	// PostRun is executed before the RunEnd control message is written if it and mw are non-nil
-	// and one or more tests were matched. Its return value is used as the base for the
-	// RunEnd message that is sent to the tast command.
-	PostRun func(mw *control.MessageWriter) control.RunEnd
 }
 
 // RunTests runs tests across multiple bundles as described by cfg.
@@ -395,9 +385,6 @@ func RunTests(cfg *RunConfig) int {
 	}
 
 	if cfg.mw != nil {
-		if cfg.PreRun != nil {
-			cfg.PreRun(cfg.mw)
-		}
 		cfg.mw.WriteMessage(&control.RunStart{time.Now(), len(cfg.tests)})
 	}
 
@@ -421,13 +408,10 @@ func RunTests(cfg *RunConfig) int {
 	}
 
 	if cfg.mw != nil {
-		var msg control.RunEnd
-		if cfg.PostRun != nil {
-			msg = cfg.PostRun(cfg.mw)
-		}
-		msg.Time = time.Now()
-		msg.OutDir = cfg.outDir
-		cfg.mw.WriteMessage(&msg)
+		cfg.mw.WriteMessage(&control.RunEnd{
+			Time:   time.Now(),
+			OutDir: cfg.outDir,
+		})
 	}
 
 	return statusSuccess

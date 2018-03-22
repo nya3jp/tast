@@ -164,7 +164,7 @@ func TestRemoteRun(t *gotesting.T) {
 	mw.WriteMessage(&control.RunStart{tm, 1})
 	mw.WriteMessage(&control.TestStart{tm, testing.Test{Name: testName}})
 	mw.WriteMessage(&control.TestEnd{tm, testName})
-	mw.WriteMessage(&control.RunEnd{tm, "", "", ""})
+	mw.WriteMessage(&control.RunEnd{tm, ""})
 
 	td := newRemoteTestData(t, b.String(), "", 0)
 	defer td.close()

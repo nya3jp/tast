@@ -99,7 +99,7 @@ func TestLocalSuccess(t *gotesting.T) {
 	ob := bytes.Buffer{}
 	mw := control.NewMessageWriter(&ob)
 	mw.WriteMessage(&control.RunStart{time.Unix(1, 0), 0})
-	mw.WriteMessage(&control.RunEnd{time.Unix(2, 0), "", "", ""})
+	mw.WriteMessage(&control.RunEnd{time.Unix(2, 0), ""})
 	stdin := addLocalRunnerFakeCmd(td.srvData.Srv, 0, ob.Bytes(), nil)
 
 	if status, _ := Local(context.Background(), &td.cfg); status != subcommands.ExitSuccess {
@@ -124,7 +124,7 @@ func TestLocalSuccessOldPaths(t *gotesting.T) {
 	ob := bytes.Buffer{}
 	mw := control.NewMessageWriter(&ob)
 	mw.WriteMessage(&control.RunStart{time.Unix(1, 0), 0})
-	mw.WriteMessage(&control.RunEnd{time.Unix(2, 0), "", "", ""})
+	mw.WriteMessage(&control.RunEnd{time.Unix(2, 0), ""})
 	stdin := addLocalRunnerFakeCmd(td.srvData.Srv, 0, ob.Bytes(), nil)
 
 	if status, _ := Local(context.Background(), &td.cfg); status != subcommands.ExitSuccess {
@@ -146,7 +146,7 @@ func TestLocalExecFailure(t *gotesting.T) {
 	ob := bytes.Buffer{}
 	mw := control.NewMessageWriter(&ob)
 	mw.WriteMessage(&control.RunStart{time.Unix(1, 0), 0})
-	mw.WriteMessage(&control.RunEnd{time.Unix(2, 0), "", "", ""})
+	mw.WriteMessage(&control.RunEnd{time.Unix(2, 0), ""})
 	const stderr = "some failure message\n"
 	addLocalRunnerFakeCmd(td.srvData.Srv, 1, ob.Bytes(), []byte(stderr))
 

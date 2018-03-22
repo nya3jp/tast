@@ -61,14 +61,6 @@ type RunError struct {
 type RunEnd struct {
 	// Time is the device-local time at which the run ended.
 	Time time.Time `json:"runEndTime"`
-	// LogDir is the directory on the DUT to which system logs have been copied.
-	// This field may be empty (e.g. for remote tests).
-	// TODO(derat): Remove this: https://crbug.com/820292
-	LogDir string `json:"runEndLogDir"`
-	// CrashDir is the directory on the DUT to which crash reports have been copied.
-	// This field may be empty (e.g. for remote tests).
-	// TODO(derat): Remove this: https://crbug.com/820292
-	CrashDir string `json:"runEndCrashDir"`
 	// OutDir is the base directory under which tests wrote output files.
 	OutDir string `json:"runEndOutDir"`
 }

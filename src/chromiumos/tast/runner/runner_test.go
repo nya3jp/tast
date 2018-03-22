@@ -262,14 +262,6 @@ func TestRunTests(t *gotesting.T) {
 	// RunTests should execute multiple test bundles and merge their output correctly.
 	cfg, b, _ := callParseArgsStdin(t, nil, &Args{BundleGlob: filepath.Join(dir, "*")}, statusSuccess, true)
 
-	// Check that pre-run and post-run functions are called.
-	preRunCalled := false
-	cfg.PreRun = func(mw *control.MessageWriter) { preRunCalled = true }
-	const crashDir = "/tmp/crashes"
-	cfg.PostRun = func(mw *control.MessageWriter) control.RunEnd {
-		return control.RunEnd{CrashDir: crashDir}
-	}
-
 	if status := RunTests(cfg); status != statusSuccess {
 		t.Fatalf("RunConfig(%v) = %v; want %v", cfg, status, statusSuccess)
 	}
@@ -288,12 +280,6 @@ func TestRunTests(t *gotesting.T) {
 		} else {
 			os.RemoveAll(re.OutDir)
 		}
-		if re.CrashDir != crashDir {
-			t.Errorf("RunEnd contains crash dir %q; want %q", re.CrashDir, crashDir)
-		}
-	}
-	if !preRunCalled {
-		t.Error("Pre-run function not called")
 	}
 
 	// Check that the right number of tests are reported as started and failed.

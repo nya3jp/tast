@@ -176,18 +176,6 @@ func (r *resultsHandler) handleRunEnd(msg *control.RunEnd) error {
 	}
 	r.runEnd = msg.Time
 
-	if len(msg.LogDir) != 0 {
-		r.setProgress("Copying system logs")
-		if err := r.crf(msg.LogDir, filepath.Join(r.cfg.ResDir, systemLogsDir)); err != nil {
-			r.cfg.Logger.Log("Failed to copy system logs: ", err)
-		}
-	}
-	if len(msg.CrashDir) != 0 {
-		r.setProgress("Copying crashes")
-		if err := r.crf(msg.CrashDir, filepath.Join(r.cfg.ResDir, crashesDir)); err != nil {
-			r.cfg.Logger.Log("Failed to copy crashes: ", err)
-		}
-	}
 	if len(msg.OutDir) != 0 {
 		r.setProgress("Copying output files")
 		localOutDir := filepath.Join(r.cfg.ResDir, "out.tmp")

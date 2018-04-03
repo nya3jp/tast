@@ -106,9 +106,8 @@ func TestLocalSuccess(t *gotesting.T) {
 		t.Errorf("Local() = %v; want %v (%v)", status, subcommands.ExitSuccess, td.logbuf.String())
 	}
 	checkArgs(t, stdin, &runner.Args{
-		BundleGlob:        filepath.Join(localBundleBuiltinDir, "*"),
-		DataDir:           localDataBuiltinDir,
-		SkipSysInfoForRun: true,
+		BundleGlob: filepath.Join(localBundleBuiltinDir, "*"),
+		DataDir:    localDataBuiltinDir,
 	})
 }
 
@@ -131,9 +130,8 @@ func TestLocalSuccessOldPaths(t *gotesting.T) {
 		t.Errorf("Local() = %v; want %v (%v)", status, subcommands.ExitSuccess, td.logbuf.String())
 	}
 	checkArgs(t, stdin, &runner.Args{
-		BundleGlob:        filepath.Join(localBundleOldBuiltinDir, "*"),
-		DataDir:           localDataOldBuiltinDir,
-		SkipSysInfoForRun: true,
+		BundleGlob: filepath.Join(localBundleOldBuiltinDir, "*"),
+		DataDir:    localDataOldBuiltinDir,
 	})
 }
 

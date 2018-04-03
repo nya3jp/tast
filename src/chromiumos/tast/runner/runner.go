@@ -285,10 +285,6 @@ type Args struct {
 	// SystemCrashDirs contains directories where crash dumps are written when processes crash.
 	// It is set by the runner (or by unit tests) and cannot be overridden by the tast executable.
 	SystemCrashDirs []string `json:"-"`
-
-	// TODO(derat): Delete this once local_test_runner no longer defaults to automatically collecting system info
-	// as part of the test run: https://crbug.com/820292
-	SkipSysInfoForRun bool `json:"skipSysInfoForRun,omitempty"`
 }
 
 // RemoteArgs is nested within Args and holds additional arguments that are only relevant when running remote tests.

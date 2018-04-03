@@ -368,7 +368,6 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 
 	if cfg.PrintMode == DontPrint {
 		args.Mode = runner.RunTestsMode
-		args.SkipSysInfoForRun = true
 	} else {
 		args.Mode = runner.ListTestsMode
 	}

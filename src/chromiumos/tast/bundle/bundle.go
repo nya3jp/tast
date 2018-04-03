@@ -182,7 +182,8 @@ func runTests(ctx context.Context, cfg *runConfig) int {
 			}
 		}
 		ch := make(chan testing.Output)
-		s := testing.NewState(ctx, ch, filepath.Join(cfg.dataDir, test.DataDir()), outDir, test.Timeout)
+		s := testing.NewState(ctx, ch, filepath.Join(cfg.dataDir, test.DataDir()), outDir,
+			test.Timeout, test.CleanupTimeout)
 
 		done := make(chan bool, 1)
 		go func() {

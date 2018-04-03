@@ -89,7 +89,7 @@ func TestDataDir(t *gotesting.T) {
 
 func TestSuccess(t *gotesting.T) {
 	test := Test{Func: func(*State) {}}
-	s := NewState(context.Background(), make(chan Output, 1), "", "", time.Minute)
+	s := NewState(context.Background(), make(chan Output, 1), "", "", time.Minute, 0)
 	go runTestAndCloseChan(&test, s)
 	if errs := getOutputErrors(readOutput(s.ch)); len(errs) != 0 {
 		t.Errorf("Got unexpected error(s) for test: %v", errs)
@@ -98,7 +98,7 @@ func TestSuccess(t *gotesting.T) {
 
 func TestPanic(t *gotesting.T) {
 	test := Test{Func: func(*State) { panic("intentional panic") }}
-	s := NewState(context.Background(), make(chan Output, 1), "", "", time.Minute)
+	s := NewState(context.Background(), make(chan Output, 1), "", "", time.Minute, 0)
 	go runTestAndCloseChan(&test, s)
 	if errs := getOutputErrors(readOutput(s.ch)); len(errs) != 1 {
 		t.Errorf("Got %v errors for panicking test; want 1", errs)
@@ -106,8 +106,8 @@ func TestPanic(t *gotesting.T) {
 }
 
 func TestTimeout(t *gotesting.T) {
-	test := Test{Func: func(*State) { time.Sleep(10 * time.Millisecond) }}
-	s := NewState(context.Background(), make(chan Output, 1), "", "", time.Millisecond)
+	test := Test{Func: func(*State) { time.Sleep(10 * time.Second) }}
+	s := NewState(context.Background(), make(chan Output, 1), "", "", time.Millisecond, time.Millisecond)
 	go runTestAndCloseChan(&test, s)
 	if errs := getOutputErrors(readOutput(s.ch)); len(errs) != 1 {
 		t.Errorf("Got %v errors for slow test; want 1", errs)
@@ -115,20 +115,16 @@ func TestTimeout(t *gotesting.T) {
 }
 
 func TestCleanUpAfterTimeout(t *gotesting.T) {
-	cleanedUp := false
 	test := Test{Func: func(s *State) {
 		// Wait for the context to report that the deadline has been hit.
 		<-s.Context().Done()
-		time.Sleep(10 * time.Millisecond)
-		cleanedUp = true
+		s.Error("Saw timeout within test")
 	}}
-	s := NewState(context.Background(), make(chan Output, 1), "", "", time.Millisecond)
+	s := NewState(context.Background(), make(chan Output, 1), "", "", time.Millisecond, 10*time.Second)
 	go runTestAndCloseChan(&test, s)
+	// Test.Run shouldn't have added a second error since the test function returned before the cleanup deadline.
 	if errs := getOutputErrors(readOutput(s.ch)); len(errs) != 1 {
-		t.Errorf("Got %v errors for slow test; want 1", errs)
-	}
-	if !cleanedUp {
-		t.Errorf("Test didn't clean up after itself")
+		t.Errorf("Got %v errors for unresponsive test; want 1", len(errs))
 	}
 }
 

@@ -20,6 +20,9 @@ type contextKeyType string
 // Key used for attaching a *State to a context.Context.
 var logKey contextKeyType = "log"
 
+// Extra time granted to tests to handle timeouts.
+const defaultTestCleanupTimeout = 3 * time.Second
+
 // Error describes an error encountered while running a test.
 type Error struct {
 	Reason string `json:"reason"`
@@ -40,15 +43,19 @@ type Output struct {
 // It is intended to be safe when called concurrently by multiple goroutines
 // while a test is running.
 type State struct {
-	ch      chan Output        // channel to which logging messages and errors are written
-	dataDir string             // directory in which the test's data files will be located
-	outDir  string             // directory to which the test should write output files
-	ctx     context.Context    // context for the test run
-	cancel  context.CancelFunc // cancel function associated with ctx
+	ch      chan Output // channel to which logging messages and errors are written
+	dataDir string      // directory in which the test's data files will be located
+	outDir  string      // directory to which the test should write output files
+
+	ctx    context.Context    // context for the overall execution of the test
+	cancel context.CancelFunc // cancel function associated with ctx
+
+	tctx    context.Context    // context used by the test function
+	tcancel context.CancelFunc // cancel function associated with tctx
 }
 
 // NewState returns a new State object. The test's output will be streamed to ch.
-func NewState(ctx context.Context, ch chan Output, dataDir, outDir string, timeout time.Duration) *State {
+func NewState(ctx context.Context, ch chan Output, dataDir, outDir string, testTimeout, cleanupTimeout time.Duration) *State {
 	s := &State{
 		ch:      ch,
 		dataDir: dataDir,
@@ -56,17 +63,29 @@ func NewState(ctx context.Context, ch chan Output, dataDir, outDir string, timeo
 	}
 
 	lctx := context.WithValue(ctx, logKey, s)
-	if timeout > 0 {
-		s.ctx, s.cancel = context.WithTimeout(lctx, timeout)
+	if testTimeout > 0 {
+		// Test.Run uses s.ctx to watch for the test timing out. If a well-behaved test detected a timeout
+		// itself using the same context and reported it as an error, we would end up with two test errors,
+		// one reported by the test and one reported by Test.Run. To avoid this, add a bit more time to the
+		// context used by Test.Run (s.ctx) to give the test a chance to detect the timeout (using s.tctx)
+		// and exit cleanly first.
+		if cleanupTimeout == 0 {
+			cleanupTimeout = defaultTestCleanupTimeout
+		}
+		s.ctx, s.cancel = context.WithTimeout(lctx, testTimeout+cleanupTimeout)
+		s.tctx, s.tcancel = context.WithTimeout(s.ctx, testTimeout)
 	} else {
 		s.ctx, s.cancel = context.WithCancel(lctx)
+		s.tctx, s.tcancel = context.WithCancel(s.ctx)
 	}
 
 	return s
 }
 
 // Context returns the context that should be used by tests.
-func (s *State) Context() context.Context { return s.ctx }
+func (s *State) Context() context.Context {
+	return s.tctx
+}
 
 // DataPath returns the absolute path to use to access a data file previously
 // registered via Test.Data.

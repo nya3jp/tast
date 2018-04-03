@@ -18,8 +18,6 @@ import (
 )
 
 const (
-	defaultTestCleanupTimeout = 3 * time.Second // time for test cleanup after timeout
-
 	testDataSubdir = "data" // subdir relative to test package containing data files
 
 	testNameAttrPrefix   = "name:"   // prefix for auto-added attribute containing test name
@@ -68,7 +66,10 @@ func (tst *Test) DataDir() string {
 
 // Run runs the test, passing s to it. The output channel is not closed automatically.
 func (tst *Test) Run(s *State) {
-	defer s.cancel()
+	defer func() {
+		s.tcancel()
+		s.cancel()
+	}()
 
 	// Tests call runtime.Goexit() to make the current goroutine exit immediately
 	// (after running defer blocks) on failure.
@@ -88,20 +89,7 @@ func (tst *Test) Run(s *State) {
 		// The goroutine running the test finished.
 	case <-s.ctx.Done():
 		s.Errorf("Test timed out: %v", s.ctx.Err())
-
-		// If the test is using the context correctly, it should also give up soon.
-		// Give it a bit of time to clean up before we move on.
-		cleanupTimeout := tst.CleanupTimeout
-		if cleanupTimeout == 0 {
-			cleanupTimeout = defaultTestCleanupTimeout
-		}
-		select {
-		case <-done:
-			// The test also noticed the timeout and finished cleaning up.
-		case <-time.After(cleanupTimeout):
-			s.Logf("Test cleanup deadline exceeded")
-			// TODO(derat): Might need to make sure it's dead somehow...
-		}
+		// TODO(derat): Might need to make sure it's dead somehow...
 	}
 }
 

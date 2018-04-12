@@ -12,6 +12,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 
@@ -88,6 +89,8 @@ func parseArgs(stdout io.Writer, args []string, defaultDataDir string,
 		writeError(fmt.Sprintf("Failed getting tests for %v: %v", flags.Args(), err.Error()))
 		return nil, statusBadPatterns
 	}
+	sort.Slice(cfg.tests, func(i, j int) bool { return cfg.tests[i].Name < cfg.tests[j].Name })
+
 	if *list {
 		if err = testing.WriteTestsAsJSON(stdout, cfg.tests); err != nil {
 			writeError(err.Error())

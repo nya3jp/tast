@@ -282,12 +282,16 @@ func TestRunTests(t *gotesting.T) {
 		}
 	}
 
-	// Check that the right number of tests are reported as started and failed.
+	// Check that the right number of tests are reported as started and failed and that bundles and tests are sorted.
+	// (Bundle names are included in these test names, so we can verify sorting by just comparing names.)
 	tests := make(map[string]struct{})
 	failed := make(map[string]struct{})
 	var name string
 	for _, msg := range msgs {
 		if ts, ok := msg.(*control.TestStart); ok {
+			if ts.Test.Name < name {
+				t.Errorf("Saw unsorted test %q after %q", ts.Test.Name, name)
+			}
 			name = ts.Test.Name
 			tests[name] = struct{}{}
 		} else if _, ok := msg.(*control.TestError); ok {

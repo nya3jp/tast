@@ -55,6 +55,32 @@ func TestParseArgsFlags(t *gotesting.T) {
 	}
 }
 
+func TestParseArgsSortTests(t *gotesting.T) {
+	const (
+		test1 = "pkg.Test1"
+		test2 = "pkg.Test2"
+		test3 = "pkg.Test3"
+	)
+
+	defer testing.ClearForTesting()
+	testing.GlobalRegistry().DisableValidationForTesting()
+	testing.AddTest(&testing.Test{Name: test2, Func: func(*testing.State) {}})
+	testing.AddTest(&testing.Test{Name: test3, Func: func(*testing.State) {}})
+	testing.AddTest(&testing.Test{Name: test1, Func: func(*testing.State) {}})
+
+	cfg, _ := parseArgs(&bytes.Buffer{}, []string{}, "", nil)
+	if cfg == nil {
+		t.Fatalf("parseArgs() returned nil config %v", cfg)
+	}
+	var act []string
+	for _, t := range cfg.tests {
+		act = append(act, t.Name)
+	}
+	if exp := []string{test1, test2, test3}; !reflect.DeepEqual(act, exp) {
+		t.Errorf("parseArgs() return tests %v; want sorted %v", act, exp)
+	}
+}
+
 func TestParseArgsList(t *gotesting.T) {
 	defer testing.ClearForTesting()
 	testing.GlobalRegistry().DisableValidationForTesting()

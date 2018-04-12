@@ -17,6 +17,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"runtime/debug"
+	"sort"
 	"time"
 
 	"chromiumos/tast/control"
@@ -83,6 +84,7 @@ func getBundles(glob string) ([]string, error) {
 			bundles = append(bundles, p)
 		}
 	}
+	sort.Strings(bundles)
 	return bundles, nil
 }
 
@@ -124,16 +126,25 @@ func getTests(bundles, patterns []string, dataDir string) (
 		}()
 	}
 
-	tests = make([]*testing.Test, 0)
+	// Read results into a map from bundle to that bundle's tests.
+	bundleTests := make(map[string][]*testing.Test)
 	for i := 0; i < len(bundles); i++ {
 		toe := <-ch
 		if toe.err != nil {
 			return nil, nil, toe.err
 		}
 		if len(toe.tests) > 0 {
-			tests = append(tests, toe.tests...)
-			bundlesWithTests = append(bundlesWithTests, toe.bundle)
+			bundleTests[toe.bundle] = toe.tests
 		}
+	}
+
+	// Sort both the tests and the bundles by bundle path.
+	for b := range bundleTests {
+		bundlesWithTests = append(bundlesWithTests, b)
+	}
+	sort.Strings(bundlesWithTests)
+	for _, b := range bundlesWithTests {
+		tests = append(tests, bundleTests[b]...)
 	}
 	return tests, bundlesWithTests, nil
 }

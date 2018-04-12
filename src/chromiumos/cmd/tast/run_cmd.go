@@ -34,7 +34,6 @@ const (
 // runCmd implements subcommands.Command to support running tests.
 type runCmd struct {
 	buildType string     // type of tests to build and deploy (either "local" or "remote")
-	checkDeps bool       // true if test package's dependencies should be checked before building
 	cfg       run.Config // shared config for running tests
 	wrapper   runWrapper // can be set by tests to stub out calls to run package
 }
@@ -55,14 +54,12 @@ func (*runCmd) Usage() string {
 }
 
 func (r *runCmd) SetFlags(f *flag.FlagSet) {
+	// TODO(derat): Move this flag (and associated code in runTests) to the run package: https://crbug.com/831849
 	f.StringVar(&r.buildType, "buildtype", localType,
 		"type of tests to build (\""+localType+"\" or \""+remoteType+"\")")
-	f.BoolVar(&r.checkDeps, "checkdeps", true, "checks test package's dependencies before building")
-	f.BoolVar(&r.cfg.CollectSysInfo, "sysinfo", true, "collect system information (logs, crashes, etc.)")
 
 	td := getTrunkDir()
 	r.cfg.SetFlags(f, td)
-	r.cfg.BuildCfg.SetFlags(f, td)
 }
 
 func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
@@ -174,14 +171,8 @@ func (r *runCmd) runTests(ctx context.Context) (status subcommands.ExitStatus, r
 
 	switch r.buildType {
 	case localType:
-		if r.checkDeps {
-			r.cfg.BuildCfg.PortagePkg = fmt.Sprintf("chromeos-base/tast-local-tests-%s-9999", r.cfg.BuildBundle)
-		}
 		return r.wrapper.local(ctx, &r.cfg)
 	case remoteType:
-		if r.checkDeps {
-			r.cfg.BuildCfg.PortagePkg = fmt.Sprintf("chromeos-base/tast-remote-tests-%s-9999", r.cfg.BuildBundle)
-		}
 		return r.wrapper.remote(ctx, &r.cfg)
 	default:
 		lg.Logf(fmt.Sprintf("Invalid -buildtype %q\n\n%s", r.buildType, r.Usage()))

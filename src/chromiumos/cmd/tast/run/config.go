@@ -41,11 +41,6 @@ type Config struct {
 	// Build controls whether a single test bundle should be rebuilt and (in the case of
 	// local tests) pushed to the target device.
 	Build bool
-	// BuildBundle contains the name of the test bundle to rebuild (e.g. "cros").
-	// It is only used if Build is true.
-	BuildBundle string
-	// BuildCfg is the configuration for building test bundles. It is only used if Build is true.
-	BuildCfg build.Config
 	// KeyFile is the path to a private SSH key to use to connect to the target device.
 	KeyFile string
 	// KeyDir is a directory containing private SSH keys (typically $HOME/.ssh).
@@ -60,6 +55,10 @@ type Config struct {
 	Mode Mode
 	// CollectSysInfo controls whether system information (logs, crashes, etc.) generated during testing should be collected.
 	CollectSysInfo bool
+
+	buildCfg         build.Config // configuration for building test bundles; only used if Build is true
+	buildBundle      string       // name of the test bundle to rebuild (e.g. "cros"); only used if Build is true
+	checkPortageDeps bool         // check whether test bundle's dependencies are installed before building
 
 	remoteRunner    string // path to executable that runs remote test bundles
 	remoteBundleDir string // dir where packaged remote test bundles are installed
@@ -87,15 +86,21 @@ func (c *Config) SetFlags(f *flag.FlagSet, trunkDir string) {
 	f.StringVar(&c.KeyDir, "keydir", kd, "directory containing SSH keys")
 
 	f.BoolVar(&c.Build, "build", true, "build and push test bundle")
-	f.StringVar(&c.BuildBundle, "buildbundle", "cros", "name of test bundle to build")
+	f.BoolVar(&c.checkPortageDeps, "checkbuilddeps", true, "check test bundle's dependencies before building")
+	f.StringVar(&c.buildBundle, "buildbundle", "cros", "name of test bundle to build")
+
+	// These are configurable since files may be installed elsewhere when running in the lab.
 	f.StringVar(&c.remoteRunner, "remoterunner", "/usr/bin/remote_test_runner", "executable that runs remote test bundles")
 	f.StringVar(&c.remoteBundleDir, "remotebundledir", "/usr/libexec/tast/bundles/remote", "directory containing builtin remote test bundles")
 	f.StringVar(&c.remoteDataDir, "remotedatadir", "/usr/share/tast/data/remote", "directory containing builtin remote test data")
 
-	// We only need a results dir if we're running tests rather than listing them.
+	// We only need a results dir or system info if we're running tests rather than listing them.
 	if c.Mode == RunTestsMode {
 		f.StringVar(&c.ResDir, "resultsdir", "", "directory for test results")
+		f.BoolVar(&c.CollectSysInfo, "sysinfo", true, "collect system information (logs, crashes, etc.)")
 	}
+
+	c.buildCfg.SetFlags(f, trunkDir)
 }
 
 // Close releases the config's resources (e.g. cached SSH connections).

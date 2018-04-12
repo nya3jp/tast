@@ -48,12 +48,13 @@ func (*listCmd) Usage() string {
 }
 
 func (lc *listCmd) SetFlags(f *flag.FlagSet) {
+	// TODO(derat): Split this into a -buildtype flag (identical to runCmd's) and a -listtype or -listonly
+	// flag with "local", "remote", and "all" (the default) values: https://crbug.com/831849
 	f.StringVar(&lc.testType, "type", "local", "type of tests to list (either \"local\" or \"remote\")")
 	f.BoolVar(&lc.json, "json", false, "print full test details as JSON")
 
 	td := getTrunkDir()
 	lc.cfg.SetFlags(f, td)
-	lc.cfg.BuildCfg.SetFlags(f, td)
 }
 
 func (lc *listCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {

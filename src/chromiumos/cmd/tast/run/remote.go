@@ -36,22 +36,26 @@ const (
 // If non-nil, the returned results may be passed to WriteResults.
 func Remote(ctx context.Context, cfg *Config) (subcommands.ExitStatus, []TestResult) {
 	start := time.Now()
-	if cfg.Build && cfg.BuildCfg.Arch == "" {
-		var err error
-		if cfg.BuildCfg.Arch, err = build.GetLocalArch(); err != nil {
-			cfg.Logger.Log("Failed to get local arch: ", err)
-			return subcommands.ExitFailure, nil
-		}
-	}
 
 	var bundleGlob, dataDir string
 	if cfg.Build {
 		cfg.Logger.Status("Building test bundle")
+		if cfg.buildCfg.Arch == "" {
+			var err error
+			if cfg.buildCfg.Arch, err = build.GetLocalArch(); err != nil {
+				cfg.Logger.Log("Failed to get local arch: ", err)
+				return subcommands.ExitFailure, nil
+			}
+		}
+
 		buildStart := time.Now()
-		bundleDest := cfg.BuildCfg.OutPath(filepath.Join(remoteBundleBuildSubdir, cfg.BuildBundle))
-		pkg := path.Join(remoteBundlePkgPathPrefix, cfg.BuildBundle)
-		cfg.Logger.Debugf("Building %s from %s to %s", pkg, cfg.BuildCfg.TestWorkspace, bundleDest)
-		if out, err := build.Build(ctx, &cfg.BuildCfg, pkg, bundleDest, "build_bundle"); err != nil {
+		if cfg.checkPortageDeps {
+			cfg.buildCfg.PortagePkg = fmt.Sprintf("chromeos-base/tast-remote-tests-%s-9999", cfg.buildBundle)
+		}
+		bundleDest := cfg.buildCfg.OutPath(filepath.Join(remoteBundleBuildSubdir, cfg.buildBundle))
+		pkg := path.Join(remoteBundlePkgPathPrefix, cfg.buildBundle)
+		cfg.Logger.Debugf("Building %s from %s to %s", pkg, cfg.buildCfg.TestWorkspace, bundleDest)
+		if out, err := build.Build(ctx, &cfg.buildCfg, pkg, bundleDest, "build_bundle"); err != nil {
 			cfg.Logger.Logf("Failed building test bundle: %v\n\n%s", err, out)
 			return subcommands.ExitFailure, nil
 		}
@@ -59,7 +63,7 @@ func Remote(ctx context.Context, cfg *Config) (subcommands.ExitStatus, []TestRes
 
 		// Only run tests from the newly-built bundle, and get test data from the source tree.
 		bundleGlob = bundleDest
-		dataDir = filepath.Join(cfg.BuildCfg.TestWorkspace, "src")
+		dataDir = filepath.Join(cfg.buildCfg.TestWorkspace, "src")
 	} else {
 		bundleGlob = filepath.Join(cfg.remoteBundleDir, "*")
 		dataDir = cfg.remoteDataDir

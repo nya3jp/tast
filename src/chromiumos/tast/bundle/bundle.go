@@ -167,7 +167,7 @@ func runTests(ctx context.Context, cfg *runConfig) int {
 		}
 
 		if cfg.mw != nil {
-			cfg.mw.WriteMessage(&control.TestStart{time.Now(), test})
+			cfg.mw.WriteMessage(&control.TestStart{Time: time.Now(), Test: test})
 		} else {
 			logger.Print("Running ", test.Name)
 		}
@@ -200,7 +200,7 @@ func runTests(ctx context.Context, cfg *runConfig) int {
 		<-done
 
 		if cfg.mw != nil {
-			cfg.mw.WriteMessage(&control.TestEnd{time.Now(), test.Name})
+			cfg.mw.WriteMessage(&control.TestEnd{Time: time.Now(), Name: test.Name})
 		} else {
 			logger.Printf("Finished %s", test.Name)
 		}
@@ -232,14 +232,14 @@ func copyTestOutput(ch chan testing.Output, mw *control.MessageWriter) (succeede
 		if o.Err != nil {
 			succeeded = false
 			if mw != nil {
-				mw.WriteMessage(&control.TestError{o.T, *o.Err})
+				mw.WriteMessage(&control.TestError{Time: o.T, Error: *o.Err})
 			} else {
 				stack := indent(strings.TrimSpace(o.Err.Stack), strings.Repeat(" ", logPrefixLen))
 				logger.Printf("Error: [%s:%d] %v\n%s", o.Err.File, o.Err.Line, o.Err.Reason, stack)
 			}
 		} else {
 			if mw != nil {
-				mw.WriteMessage(&control.TestLog{o.T, o.Msg})
+				mw.WriteMessage(&control.TestLog{Time: o.T, Text: o.Msg})
 			} else {
 				logger.Print(o.Msg)
 			}

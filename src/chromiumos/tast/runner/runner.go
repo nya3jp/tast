@@ -42,7 +42,7 @@ var logger *log.Logger = log.New(os.Stdout, "", log.LstdFlags)
 // Log writes a RunLog control message to mw if non-nil or logs to stdout otherwise.
 func Log(mw *control.MessageWriter, msg string) {
 	if mw != nil {
-		mw.WriteMessage(&control.RunLog{time.Now(), msg})
+		mw.WriteMessage(&control.RunLog{Time: time.Now(), Text: msg})
 	} else {
 		logger.Print(msg)
 	}
@@ -58,7 +58,7 @@ func Error(mw *control.MessageWriter, msg string, status int) int {
 	}
 
 	_, fn, ln, _ := runtime.Caller(1)
-	mw.WriteMessage(&control.RunError{time.Now(), testing.Error{
+	mw.WriteMessage(&control.RunError{Time: time.Now(), Error: testing.Error{
 		Reason: msg,
 		File:   fn,
 		Line:   ln,
@@ -392,7 +392,7 @@ func RunTests(cfg *RunConfig) int {
 	}
 
 	if cfg.mw != nil {
-		cfg.mw.WriteMessage(&control.RunStart{time.Now(), len(cfg.tests)})
+		cfg.mw.WriteMessage(&control.RunStart{Time: time.Now(), NumTests: len(cfg.tests)})
 	}
 
 	args := []string{"-datadir", cfg.dataDir, "-outdir", cfg.outDir}

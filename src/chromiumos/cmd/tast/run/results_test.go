@@ -61,14 +61,15 @@ func TestReadTestOutput(t *gotesting.T) {
 
 	b := bytes.Buffer{}
 	mw := control.NewMessageWriter(&b)
-	mw.WriteMessage(&control.RunStart{runStartTime, 2})
-	mw.WriteMessage(&control.TestStart{test1StartTime, testing.Test{Name: test1Name, Desc: test1Desc}})
-	mw.WriteMessage(&control.TestLog{test1LogTime, test1LogText})
-	mw.WriteMessage(&control.TestEnd{test1EndTime, test1Name})
-	mw.WriteMessage(&control.TestStart{test2StartTime, testing.Test{Name: test2Name, Desc: test2Desc}})
-	mw.WriteMessage(&control.TestError{test2ErrorTime, testing.Error{test2ErrorReason, test2ErrorFile, test2ErrorLine, test2ErrorStack}})
-	mw.WriteMessage(&control.TestEnd{test2EndTime, test2Name})
-	mw.WriteMessage(&control.RunEnd{runEndTime, outDir})
+	mw.WriteMessage(&control.RunStart{Time: runStartTime, NumTests: 2})
+	mw.WriteMessage(&control.TestStart{Time: test1StartTime, Test: testing.Test{Name: test1Name, Desc: test1Desc}})
+	mw.WriteMessage(&control.TestLog{Time: test1LogTime, Text: test1LogText})
+	mw.WriteMessage(&control.TestEnd{Time: test1EndTime, Name: test1Name})
+	mw.WriteMessage(&control.TestStart{Time: test2StartTime, Test: testing.Test{Name: test2Name, Desc: test2Desc}})
+	mw.WriteMessage(&control.TestError{Time: test2ErrorTime, Error: testing.Error{
+		Reason: test2ErrorReason, File: test2ErrorFile, Line: test2ErrorLine, Stack: test2ErrorStack}})
+	mw.WriteMessage(&control.TestEnd{Time: test2EndTime, Name: test2Name})
+	mw.WriteMessage(&control.RunEnd{Time: runEndTime, OutDir: outDir})
 
 	cfg := Config{
 		Logger: logging.NewSimple(&bytes.Buffer{}, 0, false),
@@ -136,55 +137,55 @@ func TestValidateMessages(t *gotesting.T) {
 		msgs       []interface{}
 	}{
 		{"no RunStart", 0, []interface{}{
-			&control.RunEnd{time.Unix(1, 0), ""},
+			&control.RunEnd{Time: time.Unix(1, 0), OutDir: ""},
 		}},
 		{"multiple RunStart", 0, []interface{}{
-			&control.RunStart{time.Unix(1, 0), 0},
-			&control.RunStart{time.Unix(2, 0), 0},
-			&control.RunEnd{time.Unix(3, 0), ""},
+			&control.RunStart{Time: time.Unix(1, 0), NumTests: 0},
+			&control.RunStart{Time: time.Unix(2, 0), NumTests: 0},
+			&control.RunEnd{Time: time.Unix(3, 0), OutDir: ""},
 		}},
 		{"no RunEnd", 0, []interface{}{
-			&control.RunStart{time.Unix(1, 0), 0},
+			&control.RunStart{Time: time.Unix(1, 0), NumTests: 0},
 		}},
 		{"multiple RunEnd", 0, []interface{}{
-			&control.RunStart{time.Unix(1, 0), 0},
-			&control.RunEnd{time.Unix(2, 0), ""},
-			&control.RunEnd{time.Unix(3, 0), ""},
+			&control.RunStart{Time: time.Unix(1, 0), NumTests: 0},
+			&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""},
+			&control.RunEnd{Time: time.Unix(3, 0), OutDir: ""},
 		}},
 		{"num tests mismatch", 0, []interface{}{
-			&control.RunStart{time.Unix(1, 0), 1},
-			&control.RunEnd{time.Unix(2, 0), ""},
+			&control.RunStart{Time: time.Unix(1, 0), NumTests: 1},
+			&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""},
 		}},
 		{"unfinished test", 1, []interface{}{
-			&control.RunStart{time.Unix(1, 0), 1},
-			&control.TestStart{time.Unix(2, 0), testing.Test{Name: "test1"}},
-			&control.TestEnd{time.Unix(3, 0), "test1"},
-			&control.TestStart{time.Unix(4, 0), testing.Test{Name: "test2"}},
-			&control.RunEnd{time.Unix(5, 0), ""},
+			&control.RunStart{Time: time.Unix(1, 0), NumTests: 1},
+			&control.TestStart{Time: time.Unix(2, 0), Test: testing.Test{Name: "test1"}},
+			&control.TestEnd{Time: time.Unix(3, 0), Name: "test1"},
+			&control.TestStart{Time: time.Unix(4, 0), Test: testing.Test{Name: "test2"}},
+			&control.RunEnd{Time: time.Unix(5, 0), OutDir: ""},
 		}},
 		{"TestStart before RunStart", 0, []interface{}{
-			&control.TestStart{time.Unix(1, 0), testing.Test{Name: "test1"}},
-			&control.RunStart{time.Unix(2, 0), 1},
-			&control.TestEnd{time.Unix(3, 0), "test1"},
-			&control.RunEnd{time.Unix(4, 0), ""},
+			&control.TestStart{Time: time.Unix(1, 0), Test: testing.Test{Name: "test1"}},
+			&control.RunStart{Time: time.Unix(2, 0), NumTests: 1},
+			&control.TestEnd{Time: time.Unix(3, 0), Name: "test1"},
+			&control.RunEnd{Time: time.Unix(4, 0), OutDir: ""},
 		}},
 		{"TestError without TestStart", 0, []interface{}{
-			&control.RunStart{time.Unix(1, 0), 0},
-			&control.TestError{time.Unix(2, 0), testing.Error{}},
-			&control.RunEnd{time.Unix(3, 0), ""},
+			&control.RunStart{Time: time.Unix(1, 0), NumTests: 0},
+			&control.TestError{Time: time.Unix(2, 0), Error: testing.Error{}},
+			&control.RunEnd{Time: time.Unix(3, 0), OutDir: ""},
 		}},
 		{"wrong TestEnd", 0, []interface{}{
-			&control.RunStart{time.Unix(1, 0), 0},
-			&control.TestStart{time.Unix(2, 0), testing.Test{Name: "test1"}},
-			&control.TestEnd{time.Unix(3, 0), "test2"},
-			&control.RunEnd{time.Unix(3, 0), ""},
+			&control.RunStart{Time: time.Unix(1, 0), NumTests: 0},
+			&control.TestStart{Time: time.Unix(2, 0), Test: testing.Test{Name: "test1"}},
+			&control.TestEnd{Time: time.Unix(3, 0), Name: "test2"},
+			&control.RunEnd{Time: time.Unix(3, 0), OutDir: ""},
 		}},
 		{"no TestEnd", 0, []interface{}{
-			&control.RunStart{time.Unix(1, 0), 2},
-			&control.TestStart{time.Unix(2, 0), testing.Test{Name: "test1"}},
-			&control.TestStart{time.Unix(3, 0), testing.Test{Name: "test2"}},
-			&control.TestEnd{time.Unix(4, 0), "test2"},
-			&control.RunEnd{time.Unix(5, 0), ""},
+			&control.RunStart{Time: time.Unix(1, 0), NumTests: 2},
+			&control.TestStart{Time: time.Unix(2, 0), Test: testing.Test{Name: "test1"}},
+			&control.TestStart{Time: time.Unix(3, 0), Test: testing.Test{Name: "test2"}},
+			&control.TestEnd{Time: time.Unix(4, 0), Name: "test2"},
+			&control.RunEnd{Time: time.Unix(5, 0), OutDir: ""},
 		}},
 	} {
 		b := bytes.Buffer{}

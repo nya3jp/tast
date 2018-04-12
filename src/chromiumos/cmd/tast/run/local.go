@@ -133,18 +133,21 @@ func connectToTarget(ctx context.Context, cfg *Config) (*host.SSH, error) {
 // it should be logged by the caller.
 func buildAndPushBundle(ctx context.Context, cfg *Config, hst *host.SSH) (bundleGlob string, err error) {
 	cfg.Logger.Status("Building test bundle")
-	if cfg.BuildCfg.Arch == "" {
+	if cfg.buildCfg.Arch == "" {
 		var err error
-		if cfg.BuildCfg.Arch, err = getHostArch(ctx, cfg, hst); err != nil {
+		if cfg.buildCfg.Arch, err = getHostArch(ctx, cfg, hst); err != nil {
 			return "", fmt.Errorf("failed to get arch for %s: %v", cfg.Target, err)
 		}
 	}
 
 	start := time.Now()
-	src := cfg.BuildCfg.OutPath(filepath.Join(localBundleBuildSubdir, cfg.BuildBundle))
-	pkg := path.Join(localBundlePkgPathPrefix, cfg.BuildBundle)
-	cfg.Logger.Logf("Building %s from %s", pkg, cfg.BuildCfg.TestWorkspace)
-	if out, err := build.Build(ctx, &cfg.BuildCfg, pkg, src, "build_bundle"); err != nil {
+	if cfg.checkPortageDeps {
+		cfg.buildCfg.PortagePkg = fmt.Sprintf("chromeos-base/tast-local-tests-%s-9999", cfg.buildBundle)
+	}
+	src := cfg.buildCfg.OutPath(filepath.Join(localBundleBuildSubdir, cfg.buildBundle))
+	pkg := path.Join(localBundlePkgPathPrefix, cfg.buildBundle)
+	cfg.Logger.Logf("Building %s from %s", pkg, cfg.buildCfg.TestWorkspace)
+	if out, err := build.Build(ctx, &cfg.buildCfg, pkg, src, "build_bundle"); err != nil {
 		return "", fmt.Errorf("build failed: %v\n\n%s", err, out)
 	}
 	cfg.Logger.Logf("Built test bundle in %v", time.Now().Sub(start).Round(time.Millisecond))
@@ -155,7 +158,7 @@ func buildAndPushBundle(ctx context.Context, cfg *Config, hst *host.SSH) (bundle
 	}
 
 	// Only run tests from the newly-pushed bundle.
-	bundleGlob = filepath.Join(localBundlePushDir, cfg.BuildBundle)
+	bundleGlob = filepath.Join(localBundlePushDir, cfg.buildBundle)
 
 	if cfg.Mode == RunTestsMode {
 		cfg.Logger.Status("Getting data file list")
@@ -272,15 +275,15 @@ func pushDataFiles(ctx context.Context, cfg *Config, hst *host.SSH, destDir stri
 	cfg.Logger.Log("Pushing data files to target")
 
 	for _, p := range paths {
-		fp := filepath.Join(cfg.BuildCfg.TestWorkspace, "src", p)
+		fp := filepath.Join(cfg.buildCfg.TestWorkspace, "src", p)
 		if !strings.HasPrefix(filepath.Clean(fp),
-			filepath.Join(cfg.BuildCfg.TestWorkspace, "src")+"/") {
+			filepath.Join(cfg.buildCfg.TestWorkspace, "src")+"/") {
 			return fmt.Errorf("data file path %q escapes base dir", p)
 		}
 	}
 
 	start := time.Now()
-	bytes, err := hst.PutTree(ctx, filepath.Join(cfg.BuildCfg.TestWorkspace, "src"), destDir, paths)
+	bytes, err := hst.PutTree(ctx, filepath.Join(cfg.buildCfg.TestWorkspace, "src"), destDir, paths)
 	if err != nil {
 		return err
 	}
@@ -309,7 +312,7 @@ func buildAndPushLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH) er
 		defer st.End()
 	}
 
-	bc := cfg.BuildCfg
+	bc := cfg.buildCfg
 	if bc.PortagePkg != "" {
 		bc.PortagePkg = localRunnerPortagePkg
 	}

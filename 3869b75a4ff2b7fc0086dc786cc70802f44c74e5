@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0ab6bc8f_485bacc8",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-04-13T23:32:55Z",
+      "side": 1,
+      "message": "i can justify baking this into the run package to myself since it already knows about \"chromeos-base/tast-local-test-runner-9999\" in order to be able to check local_test_runner\u0027s deps when building/pushing it.",
+      "revId": "3869b75a4ff2b7fc0086dc786cc70802f44c74e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

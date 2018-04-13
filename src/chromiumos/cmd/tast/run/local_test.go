@@ -156,7 +156,7 @@ func TestLocalExecFailure(t *gotesting.T) {
 	}
 }
 
-func TestLocalPrint(t *gotesting.T) {
+func TestLocalList(t *gotesting.T) {
 	td := newLocalTestData()
 	defer td.close()
 
@@ -172,11 +172,10 @@ func TestLocalPrint(t *gotesting.T) {
 	}
 	stdin := addLocalRunnerFakeCmd(td.srvData.Srv, 0, b, nil)
 
-	// Verify one-name-per-line output.
-	out := bytes.Buffer{}
-	td.cfg.PrintDest = &out
-	td.cfg.PrintMode = PrintNames
-	if status, _ := Local(context.Background(), &td.cfg); status != subcommands.ExitSuccess {
+	td.cfg.Mode = ListTestsMode
+	var status subcommands.ExitStatus
+	var results []TestResult
+	if status, results = Local(context.Background(), &td.cfg); status != subcommands.ExitSuccess {
 		t.Errorf("Local() = %v; want %v (%v)", status, subcommands.ExitSuccess, td.logbuf.String())
 	}
 	checkArgs(t, stdin, &runner.Args{
@@ -184,23 +183,13 @@ func TestLocalPrint(t *gotesting.T) {
 		BundleGlob: filepath.Join(localBundleBuiltinDir, "*"),
 		DataDir:    localDataBuiltinDir,
 	})
-	if exp := fmt.Sprintf("%s\n%s\n", tests[0].Name, tests[1].Name); out.String() != exp {
-		t.Errorf("Local() printed %q; want %q", out.String(), exp)
-	}
 
-	// Verify JSON output.
-	out.Reset()
-	td.logbuf.Reset()
-	td.cfg.PrintMode = PrintJSON
-	if status, _ := Local(context.Background(), &td.cfg); status != subcommands.ExitSuccess {
-		t.Errorf("Local() = %v; want %v (%v)", status, subcommands.ExitSuccess, td.logbuf.String())
+	listed := make([]testing.Test, len(results))
+	for i := 0; i < len(results); i++ {
+		listed[i] = results[i].Test
 	}
-	outTests := make([]testing.Test, 0)
-	if err = json.Unmarshal(out.Bytes(), &outTests); err != nil {
-		t.Error("Failed to unmarshal output from Local(): ", err)
-	}
-	if !reflect.DeepEqual(outTests, tests) {
-		t.Errorf("Local() printed tests %v; want %v", outTests, tests)
+	if !reflect.DeepEqual(listed, tests) {
+		t.Errorf("Local() listed tests %+v; want %+v", listed, tests)
 	}
 }
 

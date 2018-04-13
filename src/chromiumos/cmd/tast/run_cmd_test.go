@@ -24,32 +24,6 @@ func init() {
 	lg = logging.NewSimple(os.Stdout, log.LstdFlags, true)
 }
 
-// stubRunWrapper is a stub implementation of runWrapper used for testing.
-type stubRunWrapper struct {
-	lcfg, rcfg, wcfg *run.Config      // config passed to local, remote, and writeResults
-	wres             []run.TestResult // results passed to writeResults
-
-	lstat, rstat subcommands.ExitStatus // status to return from local and remote
-	lres, rres   []run.TestResult       // results to return from local and remote
-	werr         error                  // error to return from writeResults
-}
-
-func (w *stubRunWrapper) local(ctx context.Context, cfg *run.Config) (subcommands.ExitStatus, []run.TestResult) {
-	w.lcfg = cfg
-	return w.lstat, w.lres
-}
-
-func (w *stubRunWrapper) remote(ctx context.Context, cfg *run.Config) (subcommands.ExitStatus, []run.TestResult) {
-	w.rcfg = cfg
-	return w.rstat, w.rres
-}
-
-func (w *stubRunWrapper) writeResults(ctx context.Context, cfg *run.Config, results []run.TestResult) error {
-	w.wcfg = cfg
-	w.wres = results
-	return w.werr
-}
-
 // executeRunCmd creates a runCmd and executes it using the supplied args and wrapper.
 // It expects wrapper.local to be called if wrapper.lres is non-nil, and vice versa (and ditto for remote).
 func executeRunCmd(t *gotesting.T, args []string, wrapper *stubRunWrapper) subcommands.ExitStatus {

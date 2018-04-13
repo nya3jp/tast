@@ -94,7 +94,8 @@ func runRemoteRunner(ctx context.Context, cfg *Config, bundleGlob, dataDir strin
 			KeyDir:  cfg.KeyDir,
 		},
 	}
-	if cfg.PrintMode == DontPrint {
+	switch cfg.Mode {
+	case RunTestsMode:
 		args.Mode = runner.RunTestsMode
 
 		// Create an output directory within the results dir so we can just move
@@ -104,7 +105,7 @@ func runRemoteRunner(ctx context.Context, cfg *Config, bundleGlob, dataDir strin
 			return nil, fmt.Errorf("failed to create output dir: %v", err)
 		}
 		args.OutDir = outDir
-	} else {
+	case ListTestsMode:
 		args.Mode = runner.ListTestsMode
 	}
 
@@ -134,14 +135,14 @@ func runRemoteRunner(ctx context.Context, cfg *Config, bundleGlob, dataDir strin
 		return nil, fmt.Errorf("close stdin: %v", err)
 	}
 
-	if cfg.PrintMode != DontPrint {
-		if err = printTests(cfg.PrintDest, stdout, cfg.PrintMode); err != nil {
-			return nil, stderrReader.appendToError(err, stderrTimeout)
-		}
-		return nil, nil
+	var results []TestResult
+	var rerr error
+	switch cfg.Mode {
+	case ListTestsMode:
+		results, rerr = readTestList(stdout)
+	case RunTestsMode:
+		results, rerr = readTestOutput(ctx, cfg, stdout, os.Rename)
 	}
-
-	results, rerr := readTestOutput(ctx, cfg, stdout, os.Rename)
 
 	// Check that the runner exits successfully first so that we don't give a useless error
 	// about incorrectly-formed output instead of e.g. an error about the runner being missing.

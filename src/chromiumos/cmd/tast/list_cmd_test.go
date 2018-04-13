@@ -36,12 +36,12 @@ func TestListTests(t *gotesting.T) {
 	test1 := testing.Test{Name: "pkg.Test1", Desc: "First description", Attr: []string{"attr1"}}
 	test2 := testing.Test{Name: "pkg.Test2", Desc: "Second description"}
 	wrapper := stubRunWrapper{
-		lres: []run.TestResult{run.TestResult{Test: test1}, run.TestResult{Test: test2}},
+		runRes: []run.TestResult{run.TestResult{Test: test1}, run.TestResult{Test: test2}},
 	}
 
 	// Verify that the default one-test-per-line mode works.
 	stdout := bytes.Buffer{}
-	args := []string{"-type=local", "root@example.net"}
+	args := []string{"root@example.net"}
 	if status := executeListCmd(t, &stdout, args, &wrapper); status != subcommands.ExitSuccess {
 		t.Fatalf("listCmd.Execute(%v) returned status %v; want %v", args, status, subcommands.ExitSuccess)
 	}

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Package run starts local and remote test executables and interprets their output.
 package run
 
 import (
@@ -29,33 +28,32 @@ const (
 )
 
 const (
+	localType  = "local"  // -buildtype flag value for local tests
+	remoteType = "remote" // -buildtype flag value for remote tests
+
 	defaultKeyFile = "chromite/ssh_keys/testing_rsa" // default private SSH key within Chrome OS checkout
 )
 
-// Config contains shared configuration information for running local and remote tests.
-// Additional state is held in unexported fields, and the same Config struct should be reused
-// across calls to different functions in this package.
+// Config contains shared configuration information for running or listing tests.
 type Config struct {
+	// Mode describes the action to perform.
+	Mode Mode
 	// Logger is used to log progress.
 	Logger logging.Logger
-	// Build controls whether a single test bundle should be rebuilt and (in the case of
-	// local tests) pushed to the target device.
-	Build bool
 	// KeyFile is the path to a private SSH key to use to connect to the target device.
 	KeyFile string
 	// KeyDir is a directory containing private SSH keys (typically $HOME/.ssh).
 	KeyDir string
 	// Target is the target device for testing, in the form "[<user>@]host[:<port>]".
 	Target string
-	// Patterns specifies which tests to run.
+	// Patterns specifies which tests to operate against.
 	Patterns []string
 	// ResDir is the path to the directory where test results should be written.
+	// It is only used for RunTestsMode.
 	ResDir string
-	// Mode describes the action to perform.
-	Mode Mode
-	// CollectSysInfo controls whether system information (logs, crashes, etc.) generated during testing should be collected.
-	CollectSysInfo bool
 
+	build            bool         // rebuild (and push, for local tests) a single test bundle
+	buildType        string       // type of tests to build and deploy (either "local" or "remote"); only sued if Build is true
 	buildCfg         build.Config // configuration for building test bundles; only used if Build is true
 	buildBundle      string       // name of the test bundle to rebuild (e.g. "cros"); only used if Build is true
 	checkPortageDeps bool         // check whether test bundle's dependencies are installed before building
@@ -64,7 +62,9 @@ type Config struct {
 	remoteBundleDir string // dir where packaged remote test bundles are installed
 	remoteDataDir   string // dir containing packaged remote test data
 
-	hst            *host.SSH            // cached SSH connection; may be nil
+	hst *host.SSH // cached SSH connection; may be nil
+
+	collectSysInfo bool                 // collect system info (logs, crashes, etc.) generated during testing
 	initialSysInfo *runner.SysInfoState // initial state of system info (logs, crashes, etc.) on DUT before testing
 
 	msgTimeout time.Duration // timeout for reading control messages; default used if zero
@@ -85,9 +85,10 @@ func (c *Config) SetFlags(f *flag.FlagSet, trunkDir string) {
 	}
 	f.StringVar(&c.KeyDir, "keydir", kd, "directory containing SSH keys")
 
-	f.BoolVar(&c.Build, "build", true, "build and push test bundle")
-	f.BoolVar(&c.checkPortageDeps, "checkbuilddeps", true, "check test bundle's dependencies before building")
+	f.BoolVar(&c.build, "build", true, "build and push test bundle")
+	f.StringVar(&c.buildType, "buildtype", localType, "type of tests to build (\""+localType+"\" or \""+remoteType+"\")")
 	f.StringVar(&c.buildBundle, "buildbundle", "cros", "name of test bundle to build")
+	f.BoolVar(&c.checkPortageDeps, "checkbuilddeps", true, "check test bundle's dependencies before building")
 
 	// These are configurable since files may be installed elsewhere when running in the lab.
 	f.StringVar(&c.remoteRunner, "remoterunner", "/usr/bin/remote_test_runner", "executable that runs remote test bundles")
@@ -97,7 +98,7 @@ func (c *Config) SetFlags(f *flag.FlagSet, trunkDir string) {
 	// We only need a results dir or system info if we're running tests rather than listing them.
 	if c.Mode == RunTestsMode {
 		f.StringVar(&c.ResDir, "resultsdir", "", "directory for test results")
-		f.BoolVar(&c.CollectSysInfo, "sysinfo", true, "collect system information (logs, crashes, etc.)")
+		f.BoolVar(&c.collectSysInfo, "sysinfo", true, "collect system information (logs, crashes, etc.)")
 	}
 
 	c.buildCfg.SetFlags(f, trunkDir)

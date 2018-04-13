@@ -35,14 +35,14 @@ func init() {
 	userKey, hostKey = test.MustGenerateKeys()
 }
 
-// localTestData holds data shared between tests that exercise the Local function.
+// localTestData holds data shared between tests that exercise the local function.
 type localTestData struct {
 	srvData *test.TestData
 	logbuf  bytes.Buffer
 	cfg     Config
 }
 
-// newLocalTestData performs setup for tests that exercise the Local function.
+// newLocalTestData performs setup for tests that exercise the local function.
 // Panics on error.
 func newLocalTestData() *localTestData {
 	td := localTestData{srvData: test.NewTestData(userKey, hostKey)}
@@ -65,12 +65,12 @@ func (td *localTestData) close() {
 	os.RemoveAll(td.cfg.ResDir)
 }
 
-// addCheckBundleFakeCmd registers the command that Local uses to check where bundles are installed.
+// addCheckBundleFakeCmd registers the command that local uses to check where bundles are installed.
 func addCheckBundleFakeCmd(srv *test.SSHServer, status int) {
 	srv.FakeCmd(fmt.Sprintf("test -d '%s'", localBundleBuiltinDir), status, []byte{}, []byte{}, nil)
 }
 
-// addLocalRunnerFakeCmd registers the command that Local uses to run local_test_runner.
+// addLocalRunnerFakeCmd registers the command that local uses to run local_test_runner.
 // The returned buffer will contain data written to the command's stdin.
 func addLocalRunnerFakeCmd(srv *test.SSHServer, status int, stdout, stderr []byte) (stdin *bytes.Buffer) {
 	stdin = &bytes.Buffer{}
@@ -102,8 +102,8 @@ func TestLocalSuccess(t *gotesting.T) {
 	mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
 	stdin := addLocalRunnerFakeCmd(td.srvData.Srv, 0, ob.Bytes(), nil)
 
-	if status, _ := Local(context.Background(), &td.cfg); status != subcommands.ExitSuccess {
-		t.Errorf("Local() = %v; want %v (%v)", status, subcommands.ExitSuccess, td.logbuf.String())
+	if status, _ := local(context.Background(), &td.cfg); status != subcommands.ExitSuccess {
+		t.Errorf("local() = %v; want %v (%v)", status, subcommands.ExitSuccess, td.logbuf.String())
 	}
 	checkArgs(t, stdin, &runner.Args{
 		BundleGlob: filepath.Join(localBundleBuiltinDir, "*"),
@@ -116,7 +116,7 @@ func TestLocalSuccessOldPaths(t *gotesting.T) {
 	td := newLocalTestData()
 	defer td.close()
 
-	// If the check reports that the new bundle path doesn't exist, Local should fall
+	// If the check reports that the new bundle path doesn't exist, local should fall
 	// back to the old bundle and data paths.
 	addCheckBundleFakeCmd(td.srvData.Srv, 1)
 
@@ -126,8 +126,8 @@ func TestLocalSuccessOldPaths(t *gotesting.T) {
 	mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
 	stdin := addLocalRunnerFakeCmd(td.srvData.Srv, 0, ob.Bytes(), nil)
 
-	if status, _ := Local(context.Background(), &td.cfg); status != subcommands.ExitSuccess {
-		t.Errorf("Local() = %v; want %v (%v)", status, subcommands.ExitSuccess, td.logbuf.String())
+	if status, _ := local(context.Background(), &td.cfg); status != subcommands.ExitSuccess {
+		t.Errorf("local() = %v; want %v (%v)", status, subcommands.ExitSuccess, td.logbuf.String())
 	}
 	checkArgs(t, stdin, &runner.Args{
 		BundleGlob: filepath.Join(localBundleOldBuiltinDir, "*"),
@@ -148,11 +148,11 @@ func TestLocalExecFailure(t *gotesting.T) {
 	const stderr = "some failure message\n"
 	addLocalRunnerFakeCmd(td.srvData.Srv, 1, ob.Bytes(), []byte(stderr))
 
-	if status, _ := Local(context.Background(), &td.cfg); status != subcommands.ExitFailure {
-		t.Errorf("Local() = %v; want %v", status, subcommands.ExitFailure)
+	if status, _ := local(context.Background(), &td.cfg); status != subcommands.ExitFailure {
+		t.Errorf("local() = %v; want %v", status, subcommands.ExitFailure)
 	}
 	if !strings.Contains(td.logbuf.String(), stderr) {
-		t.Errorf("Local() logged %q; want substring %q", td.logbuf.String(), stderr)
+		t.Errorf("local() logged %q; want substring %q", td.logbuf.String(), stderr)
 	}
 }
 
@@ -175,8 +175,8 @@ func TestLocalList(t *gotesting.T) {
 	td.cfg.Mode = ListTestsMode
 	var status subcommands.ExitStatus
 	var results []TestResult
-	if status, results = Local(context.Background(), &td.cfg); status != subcommands.ExitSuccess {
-		t.Errorf("Local() = %v; want %v (%v)", status, subcommands.ExitSuccess, td.logbuf.String())
+	if status, results = local(context.Background(), &td.cfg); status != subcommands.ExitSuccess {
+		t.Errorf("local() = %v; want %v (%v)", status, subcommands.ExitSuccess, td.logbuf.String())
 	}
 	checkArgs(t, stdin, &runner.Args{
 		Mode:       runner.ListTestsMode,
@@ -189,7 +189,7 @@ func TestLocalList(t *gotesting.T) {
 		listed[i] = results[i].Test
 	}
 	if !reflect.DeepEqual(listed, tests) {
-		t.Errorf("Local() listed tests %+v; want %+v", listed, tests)
+		t.Errorf("local() listed tests %+v; want %+v", listed, tests)
 	}
 }
 

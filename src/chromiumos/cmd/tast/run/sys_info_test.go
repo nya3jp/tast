@@ -34,7 +34,7 @@ func TestGetInitialSysInfo(t *testing.T) {
 	stdin := addLocalRunnerFakeCmd(td.srvData.Srv, 0, ob.Bytes(), nil)
 
 	// Check that the expected command is sent to the DUT and that the returned state is decoded properly.
-	td.cfg.CollectSysInfo = true
+	td.cfg.collectSysInfo = true
 	if err := getInitialSysInfo(context.Background(), &td.cfg); err != nil {
 		t.Fatalf("getInitialSysInfo(..., %+v) failed: %v", td.cfg, err)
 	}
@@ -66,7 +66,7 @@ func TestCollectSysInfo(t *testing.T) {
 	}
 	stdin := addLocalRunnerFakeCmd(td.srvData.Srv, 0, ob.Bytes(), nil)
 
-	td.cfg.CollectSysInfo = true
+	td.cfg.collectSysInfo = true
 	td.cfg.initialSysInfo = &runner.SysInfoState{
 		LogInodeSizes: map[uint64]int64{1: 2, 3: 4},
 		MinidumpPaths: []string{"foo.dmp", "bar.dmp"},

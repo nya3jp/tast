@@ -204,7 +204,7 @@ func TestRemoteRun(t *gotesting.T) {
 	}
 }
 
-func TestRemotePrint(t *gotesting.T) {
+func TestRemoteList(t *gotesting.T) {
 	// Make the runner print serialized tests.
 	tests := []testing.Test{
 		testing.Test{Name: "pkg.Test1", Desc: "First description", Attr: []string{"attr1", "attr2"}, Pkg: "pkg"},
@@ -217,23 +217,23 @@ func TestRemotePrint(t *gotesting.T) {
 	td := newRemoteTestData(t, string(b), "", 0)
 	defer td.close()
 
-	// Print matching tests instead of running them.
-	stdout := bytes.Buffer{}
-	td.cfg.PrintMode = PrintJSON
-	td.cfg.PrintDest = &stdout
-
-	if status, _ := td.run(t); status != subcommands.ExitSuccess {
+	// List matching tests instead of running them.
+	td.cfg.Mode = ListTestsMode
+	var status subcommands.ExitStatus
+	var results []TestResult
+	if status, results = td.run(t); status != subcommands.ExitSuccess {
 		t.Errorf("Remote(%v) returned status %v; want %v", td.cfg, status, subcommands.ExitSuccess)
 	}
 	if td.args.Mode != runner.ListTestsMode {
 		t.Errorf("Remote(%v) passed mode %v; want %v", td.cfg, td.args.Mode, runner.ListTestsMode)
 	}
 
-	pt := []testing.Test{}
-	if err = json.Unmarshal(stdout.Bytes(), &pt); err != nil {
-		t.Error(err)
-	} else if !reflect.DeepEqual(pt, tests) {
-		t.Errorf("Remote(%v) printed %v; want %v", td.cfg, pt, tests)
+	listed := make([]testing.Test, len(results))
+	for i := 0; i < len(results); i++ {
+		listed[i] = results[i].Test
+	}
+	if !reflect.DeepEqual(listed, tests) {
+		t.Errorf("Remote() listed tests %+v; want %+v", listed, tests)
 	}
 }
 

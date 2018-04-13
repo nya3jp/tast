@@ -40,7 +40,10 @@ type runCmd struct {
 }
 
 func newRunCmd() *runCmd {
-	return &runCmd{wrapper: &realRunWrapper{}}
+	return &runCmd{
+		cfg:     run.Config{Mode: run.RunTestsMode},
+		wrapper: &realRunWrapper{},
+	}
 }
 
 func (*runCmd) Name() string     { return "run" }
@@ -184,29 +187,4 @@ func (r *runCmd) runTests(ctx context.Context) (status subcommands.ExitStatus, r
 		lg.Logf(fmt.Sprintf("Invalid -buildtype %q\n\n%s", r.buildType, r.Usage()))
 		return subcommands.ExitUsageError, nil
 	}
-}
-
-// runWrapper is a wrapper that allows functions from the run package to be stubbed out for testing.
-type runWrapper interface {
-	// local calls run.Local.
-	local(ctx context.Context, cfg *run.Config) (subcommands.ExitStatus, []run.TestResult)
-	// remote calls run.Remote.
-	remote(ctx context.Context, cfg *run.Config) (subcommands.ExitStatus, []run.TestResult)
-	// writeResults calls run.WriteResults.
-	writeResults(ctx context.Context, cfg *run.Config, results []run.TestResult) error
-}
-
-// realRunWrapper is a runWrapper implementation that calls the real functions in the run package.
-type realRunWrapper struct{}
-
-func (w realRunWrapper) local(ctx context.Context, cfg *run.Config) (subcommands.ExitStatus, []run.TestResult) {
-	return run.Local(ctx, cfg)
-}
-
-func (w realRunWrapper) remote(ctx context.Context, cfg *run.Config) (subcommands.ExitStatus, []run.TestResult) {
-	return run.Remote(ctx, cfg)
-}
-
-func (w realRunWrapper) writeResults(ctx context.Context, cfg *run.Config, results []run.TestResult) error {
-	return run.WriteResults(ctx, cfg, results)
 }

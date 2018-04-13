@@ -7,13 +7,16 @@ package main
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"os"
 
 	"chromiumos/cmd/tast/logging"
 	"chromiumos/cmd/tast/run"
+	"chromiumos/tast/testing"
 
 	"github.com/google/subcommands"
 )
@@ -23,14 +26,16 @@ type listCmd struct {
 	testType string     // type of tests to list (either "local" or "remote")
 	json     bool       // marshal tests to JSON instead of just printing names
 	cfg      run.Config // shared config for listing tests
+	wrapper  runWrapper // wraps calls to run package
+	w        io.Writer  // where to write tests
 }
 
-func newListCmd() *listCmd {
+// newListCmd returns a new listCmd that will write tests to w.
+func newListCmd(w io.Writer) *listCmd {
 	return &listCmd{
-		cfg: run.Config{
-			PrintMode: run.PrintNames,
-			PrintDest: os.Stdout,
-		},
+		cfg:     run.Config{Mode: run.ListTestsMode},
+		wrapper: &realRunWrapper{},
+		w:       w,
 	}
 }
 
@@ -60,25 +65,48 @@ func (lc *listCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{
 	lc.cfg.Target = f.Args()[0]
 	lc.cfg.Patterns = f.Args()[1:]
 
-	if lc.json {
-		lc.cfg.PrintMode = run.PrintJSON
-	}
-
 	b := bytes.Buffer{}
 	lc.cfg.Logger = logging.NewSimple(&b, log.LstdFlags, true)
 
 	var status subcommands.ExitStatus
+	var results []run.TestResult
 	switch lc.testType {
 	case localType:
-		status, _ = run.Local(ctx, &lc.cfg)
+		status, results = lc.wrapper.local(ctx, &lc.cfg)
 	case remoteType:
-		status, _ = run.Remote(ctx, &lc.cfg)
+		status, results = lc.wrapper.remote(ctx, &lc.cfg)
 	default:
-		lg.Logf(fmt.Sprintf("Invalid test type %q\n\n%s", lc.testType, lc.Usage()))
+		lg.Logf("Invalid test type %q\n\n%s", lc.testType, lc.Usage())
 		return subcommands.ExitUsageError
 	}
 	if status != subcommands.ExitSuccess {
 		os.Stderr.Write(b.Bytes())
+		return status
 	}
-	return status
+	if err := lc.printTests(results); err != nil {
+		lg.Log("Failed to write tests: ", err)
+		return subcommands.ExitFailure
+	}
+	return subcommands.ExitSuccess
+}
+
+// printTests writes the tests within results to lc.w.
+func (lc *listCmd) printTests(results []run.TestResult) error {
+	if lc.json {
+		ts := make([]*testing.Test, len(results))
+		for i := 0; i < len(ts); i++ {
+			ts[i] = &results[i].Test
+		}
+		enc := json.NewEncoder(lc.w)
+		enc.SetIndent("", "  ")
+		return enc.Encode(ts)
+	}
+
+	// Otherwise, just print test names, one per line.
+	for _, res := range results {
+		if _, err := fmt.Fprintf(lc.w, "%s\n", res.Test.Name); err != nil {
+			return err
+		}
+	}
+	return nil
 }

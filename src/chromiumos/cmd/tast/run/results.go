@@ -437,3 +437,17 @@ func readTestOutput(ctx context.Context, cfg *Config, r io.Reader, crf copyAndRe
 
 	return rh.results, nil
 }
+
+// readTestList decodes JSON-serialized testing.Test objects from r and
+// copies them into an array of TestResult objects.
+func readTestList(r io.Reader) ([]TestResult, error) {
+	var ts []testing.Test
+	if err := json.NewDecoder(r).Decode(&ts); err != nil {
+		return nil, err
+	}
+	results := make([]TestResult, len(ts))
+	for i := 0; i < len(ts); i++ {
+		results[i].Test = ts[i]
+	}
+	return results, nil
+}

@@ -8,7 +8,6 @@ package run
 import (
 	"context"
 	"flag"
-	"io"
 	"os"
 	"path/filepath"
 	"time"
@@ -19,16 +18,14 @@ import (
 	"chromiumos/tast/runner"
 )
 
-// PrintMode is used to indicate that tests should be printed rather than being run.
-type PrintMode int
+// Mode describes the action to perform.
+type Mode int
 
 const (
-	// DontPrint indicates that tests should be run instead of being printed.
-	DontPrint PrintMode = iota
-	// PrintNames indicates that test names should be printed, one per line.
-	PrintNames
-	// PrintJSON indicates that test details should be printed as JSON.
-	PrintJSON
+	// RunTestsMode indicates that tests should be run and their results reported.
+	RunTestsMode Mode = iota
+	// ListTestsMode indicates that tests should only be listed.
+	ListTestsMode
 )
 
 const (
@@ -59,10 +56,8 @@ type Config struct {
 	Patterns []string
 	// ResDir is the path to the directory where test results should be written.
 	ResDir string
-	// PrintMode controls whether tests should be printed to PrintDest instead of being executed.
-	PrintMode PrintMode
-	// PrintDest is used as the destination when PrintMode has a value other than DontPrint.
-	PrintDest io.Writer
+	// Mode describes the action to perform.
+	Mode Mode
 	// CollectSysInfo controls whether system information (logs, crashes, etc.) generated during testing should be collected.
 	CollectSysInfo bool
 
@@ -97,8 +92,8 @@ func (c *Config) SetFlags(f *flag.FlagSet, trunkDir string) {
 	f.StringVar(&c.remoteBundleDir, "remotebundledir", "/usr/libexec/tast/bundles/remote", "directory containing builtin remote test bundles")
 	f.StringVar(&c.remoteDataDir, "remotedatadir", "/usr/share/tast/data/remote", "directory containing builtin remote test data")
 
-	// We only need a results dir if we're running tests rather than printing them.
-	if c.PrintMode == DontPrint {
+	// We only need a results dir if we're running tests rather than listing them.
+	if c.Mode == RunTestsMode {
 		f.StringVar(&c.ResDir, "resultsdir", "", "directory for test results")
 	}
 }

@@ -157,7 +157,7 @@ func buildAndPushBundle(ctx context.Context, cfg *Config, hst *host.SSH) (bundle
 	// Only run tests from the newly-pushed bundle.
 	bundleGlob = filepath.Join(localBundlePushDir, cfg.BuildBundle)
 
-	if cfg.PrintMode == DontPrint {
+	if cfg.Mode == RunTestsMode {
 		cfg.Logger.Status("Getting data file list")
 		var paths []string
 		var err error
@@ -352,8 +352,8 @@ func startLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, args *run
 }
 
 // runLocalRunner runs local_test_runner to completion on hst.
-// If cfg.PrintMode is DontPrint, tests are executed and their results are returned.
-// Otherwise, serialized tests are printed to cfg.PrintDest.
+// If cfg.Mode is RunTestsMode, tests are executed and their results are returned.
+// if cfg.Mode is ListTestsMode, serialized test information is returned via TestResult.Test but other fields are left blank.
 func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob, dataDir string) ([]TestResult, error) {
 	if tl, ok := timing.FromContext(ctx); ok {
 		st := tl.Start("run_tests")
@@ -366,9 +366,10 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 		DataDir:    dataDir,
 	}
 
-	if cfg.PrintMode == DontPrint {
+	switch cfg.Mode {
+	case RunTestsMode:
 		args.Mode = runner.RunTestsMode
-	} else {
+	case ListTestsMode:
 		args.Mode = runner.ListTestsMode
 	}
 
@@ -381,15 +382,15 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 	// Read stderr in the background so it can be included in error messages.
 	stderrReader := newFirstLineReader(handle.Stderr())
 
-	if cfg.PrintMode != DontPrint {
-		if err = printTests(cfg.PrintDest, handle.Stdout(), cfg.PrintMode); err != nil {
-			return nil, stderrReader.appendToError(err, stderrTimeout)
-		}
-		return nil, nil
+	var results []TestResult
+	var rerr error
+	switch cfg.Mode {
+	case ListTestsMode:
+		results, rerr = readTestList(handle.Stdout())
+	case RunTestsMode:
+		crf := func(src, dst string) error { return moveFromHost(ctx, cfg, hst, src, dst) }
+		results, rerr = readTestOutput(ctx, cfg, handle.Stdout(), crf)
 	}
-
-	crf := func(src, dst string) error { return moveFromHost(ctx, cfg, hst, src, dst) }
-	results, rerr := readTestOutput(ctx, cfg, handle.Stdout(), crf)
 
 	// Check that the runner exits successfully first so that we don't give a useless error
 	// about incorrectly-formed output instead of e.g. an error about the runner being missing.

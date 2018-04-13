@@ -83,7 +83,7 @@ func doMain() int {
 	subcommands.Register(subcommands.FlagsCommand(), "")
 	subcommands.Register(subcommands.CommandsCommand(), "")
 	subcommands.Register(&buildCmd{}, "")
-	subcommands.Register(newListCmd(), "")
+	subcommands.Register(newListCmd(os.Stdout), "")
 	subcommands.Register(newRunCmd(), "")
 	subcommands.Register(&symbolizeCmd{}, "")
 

@@ -19,6 +19,47 @@
     },
     {
       "key": {
+        "uuid": "a5f676fd_9cca1efb",
+        "filename": "src/chromiumos/cmd/tast/list_cmd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2018-04-13T19:13:07Z",
+      "side": 1,
+      "message": "Any insight in to how much of a performance impact there is? That\u0027s really the only reason I\u0027m worried about it.",
+      "parentUuid": "d156c5b2_22c6ddf5",
+      "revId": "c75934b1ee26e0a0e24159b290a8eff5dce10304",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0af0ee65_ff8b4729",
+        "filename": "src/chromiumos/cmd/tast/run/results.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 443,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2018-04-13T19:13:07Z",
+      "side": 1,
+      "message": "Should this return a pointer to avoid copying the array?",
+      "range": {
+        "startLine": 443,
+        "startChar": 32,
+        "endLine": 443,
+        "endChar": 44
+      },
+      "revId": "c75934b1ee26e0a0e24159b290a8eff5dce10304",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "da29ae79_dec1d251",
         "filename": "src/chromiumos/cmd/tast/run_wrapper.go",
         "patchSetId": 1
@@ -36,6 +77,24 @@
     },
     {
       "key": {
+        "uuid": "c109bef2_040f303a",
+        "filename": "src/chromiumos/cmd/tast/run_wrapper.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2018-04-13T19:13:07Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "da29ae79_dec1d251",
+      "revId": "c75934b1ee26e0a0e24159b290a8eff5dce10304",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a2695aab_f24f8e4b",
         "filename": "src/chromiumos/cmd/tast/run_wrapper_test.go",
         "patchSetId": 1
@@ -50,6 +109,24 @@
       "revId": "c75934b1ee26e0a0e24159b290a8eff5dce10304",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "36c5aac0_78d7b884",
+        "filename": "src/chromiumos/cmd/tast/run_wrapper_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2018-04-13T19:13:07Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "a2695aab_f24f8e4b",
+      "revId": "c75934b1ee26e0a0e24159b290a8eff5dce10304",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

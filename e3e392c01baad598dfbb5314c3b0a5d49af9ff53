@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "25dad01d_3548c6d7",
+        "filename": "src/chromiumos/cmd/tast/run_cmd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 189,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-04-13T06:05:21Z",
+      "side": 0,
+      "message": "moved to run_wrapper.go",
+      "revId": "e3e392c01baad598dfbb5314c3b0a5d49af9ff53",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e443b4a0_e3e5922c",
+        "filename": "src/chromiumos/cmd/tast/run_cmd_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-04-13T06:05:21Z",
+      "side": 0,
+      "message": "moved to run_wrapper_test.go",
+      "revId": "e3e392c01baad598dfbb5314c3b0a5d49af9ff53",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

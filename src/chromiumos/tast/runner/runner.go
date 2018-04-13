@@ -173,9 +173,12 @@ func ParseArgs(clArgs []string, stdin io.Reader, stdout io.Writer, args *Args, r
 	var mw *control.MessageWriter
 
 	if len(clArgs) == 0 {
-		mw = control.NewMessageWriter(stdout)
 		if err := json.NewDecoder(stdin).Decode(args); err != nil {
 			return nil, statusBadArgs
+		}
+		// Control messages are only used when performing a test run. Otherwise, errors should go to stderr.
+		if args.Mode == RunTestsMode {
+			mw = control.NewMessageWriter(stdout)
 		}
 	} else {
 		// Expose a limited amount of configurability via command-line flags to support running test runners manually.

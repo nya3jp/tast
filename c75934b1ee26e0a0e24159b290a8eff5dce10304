@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "d156c5b2_22c6ddf5",
+        "filename": "src/chromiumos/cmd/tast/list_cmd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-04-13T14:00:20Z",
+      "side": 1,
+      "message": "this all feels a bit hokey:\n\n- the test runner marshals []testing.Test to json\n- run.Local/Remote unmarshals that and copies the tests to []run.TestResult\n- this code copies each result\u0027s test back into this []testing.Test\n\ni don\u0027t see an easy fix, though:\n\n- there\u0027s a bunch of shared code between running and listing tests, to the point where i don\u0027t think it makes sense to have a function that returns []run.TestResult for the former and one that returns []testing.Test for the latter\n- i like the present arrangement (after this CL) of run.Local/Remote not having weird out-of-band behavior when listing instead of running.\n\nat the very least, i should probably update this function to use []*testing.Test instead to avoid some copies, though.",
+      "revId": "c75934b1ee26e0a0e24159b290a8eff5dce10304",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "da29ae79_dec1d251",
         "filename": "src/chromiumos/cmd/tast/run_wrapper.go",
         "patchSetId": 1

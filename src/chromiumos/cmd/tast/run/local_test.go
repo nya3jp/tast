@@ -102,7 +102,7 @@ func TestLocalSuccess(t *gotesting.T) {
 	mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
 	stdin := addLocalRunnerFakeCmd(td.srvData.Srv, 0, ob.Bytes(), nil)
 
-	if status, _ := Local(context.Background(), &td.cfg); status != subcommands.ExitSuccess {
+	if status, _ := local(context.Background(), &td.cfg); status != subcommands.ExitSuccess {
 		t.Errorf("Local() = %v; want %v (%v)", status, subcommands.ExitSuccess, td.logbuf.String())
 	}
 	checkArgs(t, stdin, &runner.Args{
@@ -126,7 +126,7 @@ func TestLocalSuccessOldPaths(t *gotesting.T) {
 	mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
 	stdin := addLocalRunnerFakeCmd(td.srvData.Srv, 0, ob.Bytes(), nil)
 
-	if status, _ := Local(context.Background(), &td.cfg); status != subcommands.ExitSuccess {
+	if status, _ := local(context.Background(), &td.cfg); status != subcommands.ExitSuccess {
 		t.Errorf("Local() = %v; want %v (%v)", status, subcommands.ExitSuccess, td.logbuf.String())
 	}
 	checkArgs(t, stdin, &runner.Args{
@@ -148,7 +148,7 @@ func TestLocalExecFailure(t *gotesting.T) {
 	const stderr = "some failure message\n"
 	addLocalRunnerFakeCmd(td.srvData.Srv, 1, ob.Bytes(), []byte(stderr))
 
-	if status, _ := Local(context.Background(), &td.cfg); status != subcommands.ExitFailure {
+	if status, _ := local(context.Background(), &td.cfg); status != subcommands.ExitFailure {
 		t.Errorf("Local() = %v; want %v", status, subcommands.ExitFailure)
 	}
 	if !strings.Contains(td.logbuf.String(), stderr) {
@@ -175,7 +175,7 @@ func TestLocalList(t *gotesting.T) {
 	td.cfg.Mode = ListTestsMode
 	var status subcommands.ExitStatus
 	var results []TestResult
-	if status, results = Local(context.Background(), &td.cfg); status != subcommands.ExitSuccess {
+	if status, results = local(context.Background(), &td.cfg); status != subcommands.ExitSuccess {
 		t.Errorf("Local() = %v; want %v (%v)", status, subcommands.ExitSuccess, td.logbuf.String())
 	}
 	checkArgs(t, stdin, &runner.Args{

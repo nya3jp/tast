@@ -302,7 +302,7 @@ func TestWriteResultsCollectSysInfo(t *gotesting.T) {
 	}
 	stdin := addLocalRunnerFakeCmd(td.srvData.Srv, 0, ob.Bytes(), nil)
 
-	td.cfg.CollectSysInfo = true
+	td.cfg.collectSysInfo = true
 	td.cfg.initialSysInfo = &runner.SysInfoState{}
 	if err := WriteResults(context.Background(), &td.cfg, []TestResult{}); err != nil {
 		t.Fatal("WriteResults failed: ", err)

@@ -7,7 +7,6 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -26,16 +25,12 @@ const (
 
 	fullLogName   = "full.txt"    // file in runConfig.resDir containing full output
 	timingLogName = "timing.json" // file in runConfig.resDir containing timing information
-
-	localType  = "local"  // -buildtype flag value for local tests
-	remoteType = "remote" // -buildtype flag value for remote tests
 )
 
 // runCmd implements subcommands.Command to support running tests.
 type runCmd struct {
-	buildType string     // type of tests to build and deploy (either "local" or "remote")
-	cfg       run.Config // shared config for running tests
-	wrapper   runWrapper // can be set by tests to stub out calls to run package
+	cfg     run.Config // shared config for running tests
+	wrapper runWrapper // can be set by tests to stub out calls to run package
 }
 
 func newRunCmd() *runCmd {
@@ -54,12 +49,7 @@ func (*runCmd) Usage() string {
 }
 
 func (r *runCmd) SetFlags(f *flag.FlagSet) {
-	// TODO(derat): Move this flag (and associated code in runTests) to the run package: https://crbug.com/831849
-	f.StringVar(&r.buildType, "buildtype", localType,
-		"type of tests to build (\""+localType+"\" or \""+remoteType+"\")")
-
-	td := getTrunkDir()
-	r.cfg.SetFlags(f, td)
+	r.cfg.SetFlags(f, getTrunkDir())
 }
 
 func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
@@ -132,17 +122,11 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 	}
 	lg.Log("Writing results to ", r.cfg.ResDir)
 
-	status, results := r.runTests(ctx)
+	status, results := r.wrapper.run(ctx, &r.cfg)
 	if len(results) == 0 {
 		if status == subcommands.ExitSuccess {
 			lg.Logf("No tests matched by pattern(s) %v", r.cfg.Patterns)
-			if r.cfg.Build {
-				other := localType
-				if r.buildType == localType {
-					other = remoteType
-				}
-				lg.Logf("Do you need to pass -buildtype=" + other + "?")
-			}
+			lg.Log("Do you need to pass -buildtype=local or -buildtype=remote?")
 			status = subcommands.ExitFailure
 		}
 		return status
@@ -155,27 +139,4 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 		}
 	}
 	return status
-}
-
-// runTests executes tests as specified in r.cfg and returns results.
-func (r *runCmd) runTests(ctx context.Context) (status subcommands.ExitStatus, results []run.TestResult) {
-	if !r.cfg.Build {
-		// If we aren't rebuilding a bundle, run both local and remote tests and merge the results.
-		if status, results = r.wrapper.local(ctx, &r.cfg); status == subcommands.ExitSuccess {
-			var rres []run.TestResult
-			status, rres = r.wrapper.remote(ctx, &r.cfg)
-			results = append(results, rres...)
-		}
-		return status, results
-	}
-
-	switch r.buildType {
-	case localType:
-		return r.wrapper.local(ctx, &r.cfg)
-	case remoteType:
-		return r.wrapper.remote(ctx, &r.cfg)
-	default:
-		lg.Logf(fmt.Sprintf("Invalid -buildtype %q\n\n%s", r.buildType, r.Usage()))
-		return subcommands.ExitUsageError, nil
-	}
 }

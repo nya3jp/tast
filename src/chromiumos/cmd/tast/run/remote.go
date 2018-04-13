@@ -32,13 +32,13 @@ const (
 	remoteBundleBuildSubdir = "remote_bundles"
 )
 
-// Remote runs remote tests as directed by cfg and returns the command's exit status.
+// remote runs remote tests as directed by cfg and returns the command's exit status.
 // If non-nil, the returned results may be passed to WriteResults.
-func Remote(ctx context.Context, cfg *Config) (subcommands.ExitStatus, []TestResult) {
+func remote(ctx context.Context, cfg *Config) (subcommands.ExitStatus, []TestResult) {
 	start := time.Now()
 
 	var bundleGlob, dataDir string
-	if cfg.Build {
+	if cfg.build {
 		cfg.Logger.Status("Building test bundle")
 		if cfg.buildCfg.Arch == "" {
 			var err error

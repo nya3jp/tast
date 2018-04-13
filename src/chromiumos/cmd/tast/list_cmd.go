@@ -23,11 +23,10 @@ import (
 
 // listCmd implements subcommands.Command to support listing tests.
 type listCmd struct {
-	testType string     // type of tests to list (either "local" or "remote")
-	json     bool       // marshal tests to JSON instead of just printing names
-	cfg      run.Config // shared config for listing tests
-	wrapper  runWrapper // wraps calls to run package
-	w        io.Writer  // where to write tests
+	json    bool       // marshal tests to JSON instead of just printing names
+	cfg     run.Config // shared config for listing tests
+	wrapper runWrapper // wraps calls to run package
+	w       io.Writer  // where to write tests
 }
 
 // newListCmd returns a new listCmd that will write tests to w.
@@ -48,9 +47,7 @@ func (*listCmd) Usage() string {
 }
 
 func (lc *listCmd) SetFlags(f *flag.FlagSet) {
-	// TODO(derat): Split this into a -buildtype flag (identical to runCmd's) and a -listtype or -listonly
-	// flag with "local", "remote", and "all" (the default) values: https://crbug.com/831849
-	f.StringVar(&lc.testType, "type", "local", "type of tests to list (either \"local\" or \"remote\")")
+	// TODO(derat): Add -listtype: https://crbug.com/831849
 	f.BoolVar(&lc.json, "json", false, "print full test details as JSON")
 
 	td := getTrunkDir()
@@ -69,17 +66,7 @@ func (lc *listCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{
 	b := bytes.Buffer{}
 	lc.cfg.Logger = logging.NewSimple(&b, log.LstdFlags, true)
 
-	var status subcommands.ExitStatus
-	var results []run.TestResult
-	switch lc.testType {
-	case localType:
-		status, results = lc.wrapper.local(ctx, &lc.cfg)
-	case remoteType:
-		status, results = lc.wrapper.remote(ctx, &lc.cfg)
-	default:
-		lg.Logf("Invalid test type %q\n\n%s", lc.testType, lc.Usage())
-		return subcommands.ExitUsageError
-	}
+	status, results := lc.wrapper.run(ctx, &lc.cfg)
 	if status != subcommands.ExitSuccess {
 		os.Stderr.Write(b.Bytes())
 		return status

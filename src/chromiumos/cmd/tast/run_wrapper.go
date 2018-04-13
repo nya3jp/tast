@@ -14,10 +14,8 @@ import (
 
 // runWrapper is a wrapper that allows functions from the run package to be stubbed out for testing.
 type runWrapper interface {
-	// local calls run.Local.
-	local(ctx context.Context, cfg *run.Config) (subcommands.ExitStatus, []run.TestResult)
-	// remote calls run.Remote.
-	remote(ctx context.Context, cfg *run.Config) (subcommands.ExitStatus, []run.TestResult)
+	// run calls run.Run.
+	run(ctx context.Context, cfg *run.Config) (subcommands.ExitStatus, []run.TestResult)
 	// writeResults calls run.WriteResults.
 	writeResults(ctx context.Context, cfg *run.Config, results []run.TestResult) error
 }
@@ -25,12 +23,8 @@ type runWrapper interface {
 // realRunWrapper is a runWrapper implementation that calls the real functions in the run package.
 type realRunWrapper struct{}
 
-func (w realRunWrapper) local(ctx context.Context, cfg *run.Config) (subcommands.ExitStatus, []run.TestResult) {
-	return run.Local(ctx, cfg)
-}
-
-func (w realRunWrapper) remote(ctx context.Context, cfg *run.Config) (subcommands.ExitStatus, []run.TestResult) {
-	return run.Remote(ctx, cfg)
+func (w realRunWrapper) run(ctx context.Context, cfg *run.Config) (subcommands.ExitStatus, []run.TestResult) {
+	return run.Run(ctx, cfg)
 }
 
 func (w realRunWrapper) writeResults(ctx context.Context, cfg *run.Config, results []run.TestResult) error {

@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "c42a832a_e8233768",
+        "filename": "src/chromiumos/cmd/tast/list_cmd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-04-13T21:05:59Z",
+      "side": 1,
+      "message": "small enough that it\u0027s probably not worth us talking about. :-)\n\nas a quick benchmark, i added a bit of code to either copy 1000 partially-filled testing.Test structs from a []run.TestResult to a []testing.Test, or to just copy their pointers to a []*testing.Test. on my z840:\n\n  2018/04/13 13:52:26 val took 155.578µs                                                                                                                                                                                                                                          \n  2018/04/13 13:52:26 ptr took 15.07µs\n\nit\u0027s surprising to me, but json-encoding the slice of pointers to a bytes.Buffer is also faster than encoding the slice of values:\n\n  2018/04/13 13:55:38 val encode took 1.802817ms\n  2018/04/13 13:55:38 ptr encode took 1.644739ms\n\ni\u0027ve changed this function to use []*testing.Test internally, since that seems (slightly) unambiguously better than []testing.Test.",
+      "parentUuid": "a5f676fd_9cca1efb",
+      "revId": "c75934b1ee26e0a0e24159b290a8eff5dce10304",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "0af0ee65_ff8b4729",
         "filename": "src/chromiumos/cmd/tast/run/results.go",
         "patchSetId": 1
@@ -48,6 +66,30 @@
       "writtenOn": "2018-04-13T19:13:07Z",
       "side": 1,
       "message": "Should this return a pointer to avoid copying the array?",
+      "range": {
+        "startLine": 443,
+        "startChar": 32,
+        "endLine": 443,
+        "endChar": 44
+      },
+      "revId": "c75934b1ee26e0a0e24159b290a8eff5dce10304",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e18b7091_8b762f5a",
+        "filename": "src/chromiumos/cmd/tast/run/results.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 443,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-04-13T21:05:59Z",
+      "side": 1,
+      "message": "this is a slice rather than an array (since no dimension is specified), and the thing that gets returned here is just a single pointer, a length, and a capacity. https://blog.golang.org/go-slices-usage-and-internals has a bunch of details. http://openmymind.net/The-Minimum-You-Need-To-Know-About-Arrays-And-Slices-In-Go/ is also good.\n\n(i don\u0027t know if there\u0027s similar documentation about maps, unfortunately, but they\u0027re passed by reference -- any insertions or deletions will be reflected in the caller.)",
+      "parentUuid": "0af0ee65_ff8b4729",
       "range": {
         "startLine": 443,
         "startChar": 32,

@@ -190,6 +190,24 @@ func TestParseArgsListTests(t *gotesting.T) {
 	}
 }
 
+func TestParseArgsNonRunErrorReporting(t *gotesting.T) {
+	// Don't create any bundles; this should make the runner fail.
+	dir := createBundleSymlinks(t)
+	defer os.RemoveAll(dir)
+
+	args := Args{
+		Mode:       ListTestsMode,
+		BundleGlob: filepath.Join(dir, "*"),
+	}
+	// The runner should only exit with 0 and report errors via control messages on stdout when it's
+	// performing an actual test run. Since we're only listing tests, it should instead exit with an
+	// error (and write the error to stderr, although that's not checked here).
+	_, b, sig := callParseArgsStdin(t, nil, &args, statusNoBundles, false)
+	if len(b.String()) != 0 {
+		t.Errorf("%s wrote %q to stdout; want %q (error should go to stderr)", sig, "", b.String())
+	}
+}
+
 func TestParseArgsSysInfo(t *gotesting.T) {
 	td := testutil.TempDir(t, "runner_test.")
 	defer os.RemoveAll(td)

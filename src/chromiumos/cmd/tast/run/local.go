@@ -49,9 +49,9 @@ const (
 	localBundleBuildSubdir = "local_bundles"
 )
 
-// Local runs local tests as directed by cfg and returns the command's exit status.
+// local runs local tests as directed by cfg and returns the command's exit status.
 // If non-nil, the returned results may be passed to WriteResults.
-func Local(ctx context.Context, cfg *Config) (subcommands.ExitStatus, []TestResult) {
+func local(ctx context.Context, cfg *Config) (subcommands.ExitStatus, []TestResult) {
 	hst, err := connectToTarget(ctx, cfg)
 	if err != nil {
 		cfg.Logger.Logf("Failed to connect to %s: %v", cfg.Target, err)
@@ -59,7 +59,7 @@ func Local(ctx context.Context, cfg *Config) (subcommands.ExitStatus, []TestResu
 	}
 
 	var bundleGlob, dataDir string
-	if cfg.Build {
+	if cfg.build {
 		if bundleGlob, err = buildAndPushBundle(ctx, cfg, hst); err != nil {
 			cfg.Logger.Logf("Failed building or pushing tests: %v", err)
 			return subcommands.ExitFailure, nil

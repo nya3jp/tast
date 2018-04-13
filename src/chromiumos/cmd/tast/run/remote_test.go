@@ -87,7 +87,7 @@ func runFakeRunner() int {
 type remoteTestData struct {
 	dir    string       // temp dir
 	logbuf bytes.Buffer // logging output
-	cfg    Config       // config passed to Remote
+	cfg    Config       // config passed to remote
 	args   runner.Args  // args that were passed to fake runner
 }
 
@@ -138,9 +138,9 @@ func (td *remoteTestData) close() {
 	os.RemoveAll(td.dir)
 }
 
-// run calls Remote and records the Args struct that was passed to the fake runner.
+// run calls remote and records the Args struct that was passed to the fake runner.
 func (td *remoteTestData) run(t *gotesting.T) (subcommands.ExitStatus, []TestResult) {
-	status, res := Remote(context.Background(), &td.cfg)
+	status, res := remote(context.Background(), &td.cfg)
 
 	f, err := os.Open(filepath.Join(td.dir, fakeRunnerArgsFile))
 	if err != nil {
@@ -176,17 +176,17 @@ func TestRemoteRun(t *gotesting.T) {
 
 	status, res := td.run(t)
 	if status != subcommands.ExitSuccess {
-		t.Errorf("Remote(%v) returned status %v; want %v", td.cfg, status, subcommands.ExitSuccess)
+		t.Errorf("remote(%v) returned status %v; want %v", td.cfg, status, subcommands.ExitSuccess)
 	}
 	if len(res) != 1 {
-		t.Errorf("Remote(%v) returned %v result(s); want 1", td.cfg, len(res))
+		t.Errorf("remote(%v) returned %v result(s); want 1", td.cfg, len(res))
 	} else if res[0].Name != testName {
-		t.Errorf("Remote(%v) returned result for test %q; want %q", td.cfg, res[0].Name, testName)
+		t.Errorf("remote(%v) returned result for test %q; want %q", td.cfg, res[0].Name, testName)
 	}
 
-	// Remote should create a temporary output dir rooted under the results dir: https://crbug.com/813282
+	// remote should create a temporary output dir rooted under the results dir: https://crbug.com/813282
 	if !strings.HasPrefix(td.args.OutDir, td.cfg.ResDir+"/") {
-		t.Errorf("Remote(%v) passed out dir %v not rooted under results dir %v",
+		t.Errorf("remote(%v) passed out dir %v not rooted under results dir %v",
 			td.cfg, td.args.OutDir, td.cfg.ResDir)
 	}
 	td.args.OutDir = "" // clear randomly-named dir before following comparison
@@ -200,7 +200,7 @@ func TestRemoteRun(t *gotesting.T) {
 		},
 	}
 	if !reflect.DeepEqual(td.args, expArgs) {
-		t.Errorf("Remote(%v) passed args %v; want %v", td.cfg, td.args, expArgs)
+		t.Errorf("remote(%v) passed args %v; want %v", td.cfg, td.args, expArgs)
 	}
 }
 
@@ -222,10 +222,10 @@ func TestRemoteList(t *gotesting.T) {
 	var status subcommands.ExitStatus
 	var results []TestResult
 	if status, results = td.run(t); status != subcommands.ExitSuccess {
-		t.Errorf("Remote(%v) returned status %v; want %v", td.cfg, status, subcommands.ExitSuccess)
+		t.Errorf("remote(%v) returned status %v; want %v", td.cfg, status, subcommands.ExitSuccess)
 	}
 	if td.args.Mode != runner.ListTestsMode {
-		t.Errorf("Remote(%v) passed mode %v; want %v", td.cfg, td.args.Mode, runner.ListTestsMode)
+		t.Errorf("remote(%v) passed mode %v; want %v", td.cfg, td.args.Mode, runner.ListTestsMode)
 	}
 
 	listed := make([]testing.Test, len(results))
@@ -233,7 +233,7 @@ func TestRemoteList(t *gotesting.T) {
 		listed[i] = results[i].Test
 	}
 	if !reflect.DeepEqual(listed, tests) {
-		t.Errorf("Remote() listed tests %+v; want %+v", listed, tests)
+		t.Errorf("remote() listed tests %+v; want %+v", listed, tests)
 	}
 }
 
@@ -244,11 +244,11 @@ func TestRemoteFailure(t *gotesting.T) {
 	defer td.close()
 
 	if status, _ := td.run(t); status != subcommands.ExitFailure {
-		t.Errorf("Remote(%v) returned status %v; want %v", td.cfg, status, subcommands.ExitFailure)
+		t.Errorf("remote(%v) returned status %v; want %v", td.cfg, status, subcommands.ExitFailure)
 	}
 	// The runner's error message should've been logged.
 	if !strings.Contains(td.logbuf.String(), errorMsg) {
-		t.Errorf("Remote(%v) didn't log runner error %q in %q", td.cfg, errorMsg, td.logbuf.String())
+		t.Errorf("remote(%v) didn't log runner error %q in %q", td.cfg, errorMsg, td.logbuf.String())
 	}
 }
 

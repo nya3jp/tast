@@ -15,7 +15,7 @@ import (
 // getInitialSysInfo saves the initial state of the DUT's system information to cfg if
 // requested and if it hasn't already been saved. This is called before testing.
 func getInitialSysInfo(ctx context.Context, cfg *Config) error {
-	if !cfg.CollectSysInfo || cfg.initialSysInfo != nil {
+	if !cfg.collectSysInfo || cfg.initialSysInfo != nil {
 		return nil
 	}
 
@@ -50,7 +50,7 @@ func getInitialSysInfo(ctx context.Context, cfg *Config) error {
 // doing so was requested. This is called after testing and relies on the state saved by
 // getInitialSysInfo.
 func collectSysInfo(ctx context.Context, cfg *Config) error {
-	if !cfg.CollectSysInfo || cfg.initialSysInfo == nil {
+	if !cfg.collectSysInfo || cfg.initialSysInfo == nil {
 		return nil
 	}
 

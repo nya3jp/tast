@@ -13,26 +13,21 @@ import (
 
 // stubRunWrapper is a stub implementation of runWrapper used for testing.
 type stubRunWrapper struct {
-	lcfg, rcfg, wcfg *run.Config      // config passed to local, remote, and writeResults
-	wres             []run.TestResult // results passed to writeResults
+	runCfg, writeCfg *run.Config      // config passed to run and writeResults
+	writeRes         []run.TestResult // results passed to writeResults
 
-	lstat, rstat subcommands.ExitStatus // status to return from local and remote
-	lres, rres   []run.TestResult       // results to return from local and remote
-	werr         error                  // error to return from writeResults
+	runStatus subcommands.ExitStatus // status to return from run
+	runRes    []run.TestResult       // results to return from run
+	writeErr  error                  // error to return from writeResults
 }
 
-func (w *stubRunWrapper) local(ctx context.Context, cfg *run.Config) (subcommands.ExitStatus, []run.TestResult) {
-	w.lcfg = cfg
-	return w.lstat, w.lres
-}
-
-func (w *stubRunWrapper) remote(ctx context.Context, cfg *run.Config) (subcommands.ExitStatus, []run.TestResult) {
-	w.rcfg = cfg
-	return w.rstat, w.rres
+func (w *stubRunWrapper) run(ctx context.Context, cfg *run.Config) (subcommands.ExitStatus, []run.TestResult) {
+	w.runCfg = cfg
+	return w.runStatus, w.runRes
 }
 
 func (w *stubRunWrapper) writeResults(ctx context.Context, cfg *run.Config, results []run.TestResult) error {
-	w.wcfg = cfg
-	w.wres = results
-	return w.werr
+	w.writeCfg = cfg
+	w.writeRes = results
+	return w.writeErr
 }

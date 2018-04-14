@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da99a550_d566e60f",
+        "filename": "src/chromiumos/cmd/tast/run_cmd.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-04-14T21:01:42Z",
+      "side": 1,
+      "message": "this message is less specific than before since runCmd doesn\u0027t know about the build type now. even this message feels a bit leaky, since -buildtype lives in the run package. i could add a \"SuggestOtherBuildType\" or similar function to run.Config, but that might be overkill. (i don\u0027t want run.Run to return an error automatically when no tests are matched, since that seems like a valid outcome for the list command.) what do you think?",
+      "revId": "58be796afd2b80ecb8b5bd7c259b7a5289511e28",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

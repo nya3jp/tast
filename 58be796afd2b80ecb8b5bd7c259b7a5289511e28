@@ -16,6 +16,24 @@
       "revId": "58be796afd2b80ecb8b5bd7c259b7a5289511e28",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7b7eed58_4451243a",
+        "filename": "src/chromiumos/cmd/tast/run_cmd.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2018-04-16T17:29:44Z",
+      "side": 1,
+      "message": "Looks good as-is. People can figure it out.",
+      "parentUuid": "da99a550_d566e60f",
+      "revId": "58be796afd2b80ecb8b5bd7c259b7a5289511e28",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

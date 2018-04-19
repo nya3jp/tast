@@ -43,16 +43,26 @@ type TestResult struct {
 	testing.Test
 	// Errors contains errors encountered while running the test.
 	// If it is empty, the test passed.
-	Errors []testing.Error `json:"errors"`
-	// Start is the time at which the test started (as reported by the test binary).
+	Errors []TestError `json:"errors"`
+	// Start is the time at which the test started (as reported by the test bundle).
 	Start time.Time `json:"start"`
-	// End is the time at which the test completed (as reported by the test binary).
+	// End is the time at which the test completed (as reported by the test bundle).
 	End time.Time `json:"end"`
 	// OutDir is the directory into which test output is stored.
 	OutDir string `json:"outDir"`
 
 	testStartMsgTime time.Time // time at which TestStart control message was received
 	logFile          *os.File  // test's log file
+}
+
+// TestError describes an error that occurred while running a test.
+// Most of its fields are defined in the Error struct in chromiumos/tast/testing.
+// This struct just adds an additional "Time" field.
+type TestError struct {
+	// Time contains the time at which the error occurred (as reported by the test bundle).
+	Time time.Time `json:"time"`
+	// Error is an embedded struct describing the error.
+	testing.Error
 }
 
 // WriteResults writes results (including errors) to a JSON file in the results directory.
@@ -237,16 +247,11 @@ func (r *resultsHandler) handleTestError(msg *control.TestError) error {
 		return errors.New("got TestError message while no test was running")
 	}
 
-	te := msg.Error
-	if r.res.Errors == nil {
-		r.res.Errors = []testing.Error{te}
-	} else {
-		r.res.Errors = append(r.res.Errors, te)
-	}
+	r.res.Errors = append(r.res.Errors, TestError{msg.Time, msg.Error})
 
 	ts := msg.Time.Format(testOutputTimeFmt)
-	r.cfg.Logger.Logf("[%s] Error at %s:%d: %s", ts, filepath.Base(te.File), te.Line, te.Reason)
-	r.cfg.Logger.Debugf("[%s] Stack trace:\n%s", ts, te.Stack)
+	r.cfg.Logger.Logf("[%s] Error at %s:%d: %s", ts, filepath.Base(msg.Error.File), msg.Error.Line, msg.Error.Reason)
+	r.cfg.Logger.Debugf("[%s] Stack trace:\n%s", ts, msg.Error.Stack)
 	return nil
 }
 

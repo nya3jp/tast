@@ -98,12 +98,15 @@ func TestReadTestOutput(t *gotesting.T) {
 		},
 		{
 			Test: testing.Test{Name: test2Name, Desc: test2Desc},
-			Errors: []testing.Error{
-				testing.Error{
-					Reason: test2ErrorReason,
-					File:   test2ErrorFile,
-					Line:   test2ErrorLine,
-					Stack:  test2ErrorStack,
+			Errors: []TestError{
+				TestError{
+					Time: test2ErrorTime,
+					Error: testing.Error{
+						Reason: test2ErrorReason,
+						File:   test2ErrorFile,
+						Line:   test2ErrorLine,
+						Stack:  test2ErrorStack,
+					},
 				},
 			},
 			Start:  test2StartTime,

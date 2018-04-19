@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f350c306_10cc914f",
+        "filename": "src/chromiumos/cmd/tast/run/results.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 241,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-04-19T02:13:42Z",
+      "side": 0,
+      "message": "thing that it took me too long to learn: passing a nil slice to append() creates a new array",
+      "revId": "3b445c480ad65e4b872ee8945a783d2081cef930",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -6,8 +6,7 @@ package bundle
 
 import (
 	"context"
-	"flag"
-	"os"
+	"io"
 	"time"
 
 	"chromiumos/tast/dut"
@@ -19,23 +18,20 @@ const (
 
 // Remote implements the main function for remote test bundles.
 //
-// args should typically be os.Args[1:]. The returned status code should be passed to os.Exit.
-func Remote(args []string) int {
-	flags := flag.NewFlagSet("", flag.ContinueOnError)
-	target := flags.String("target", "", "DUT connection spec as \"[<user>@]host[:<port>]\"")
-	keyfile := flags.String("keyfile", "", "path to SSH private key to use for connecting to DUT")
-	keydir := flags.String("keydir", "", "directory containing SSH private keys (typically $HOME/.ssh)")
-	cfg, status := parseArgs(os.Stdout, args, "", flags)
+// The returned status code should be passed to os.Exit.
+func Remote(stdin io.Reader, stdout io.Writer) int {
+	args := Args{}
+	cfg, status := readArgs(stdin, stdout, &args, remoteBundle)
 	if status != statusSuccess || cfg == nil {
 		return status
 	}
 
 	// Connect to the DUT and attach the connection to the context so tests can use it.
-	if *target == "" {
-		writeError("-target not supplied")
+	if args.Target == "" {
+		writeError("Target not supplied")
 		return statusBadArgs
 	}
-	dt, err := dut.New(*target, *keyfile, *keydir)
+	dt, err := dut.New(args.Target, args.KeyFile, args.KeyDir)
 	if err != nil {
 		writeError("Failed to create connection: " + err.Error())
 		return statusBadArgs

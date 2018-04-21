@@ -6,10 +6,9 @@ package bundle
 
 import (
 	"context"
-	"flag"
+	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"path/filepath"
 	"sort"
@@ -26,15 +25,11 @@ const (
 	statusBadArgs     = 2 // bad command-line flags or other args were supplied
 	statusBadTests    = 3 // errors in test registration (bad names, missing test functions, etc.)
 	statusBadPatterns = 4 // one or more bad test patterns were passed to the bundle
-	statusTestsFailed = 5 // one or more tests failed while running when -report not passed
-	statusNoTests     = 6 // no tests were matched by the supplied patterns
+	statusNoTests     = 5 // no tests were matched by the supplied patterns
 
 	// Number of characters in prefixes from the log package, e.g. "2017/08/17 09:29:54 ".
 	logPrefixLen = 20
 )
-
-// logger is used to write messages to stdout when -report is not passed.
-var logger *log.Logger = log.New(os.Stdout, "", log.LstdFlags)
 
 // writeError writes an error to stderr.
 func writeError(msg string) {
@@ -44,38 +39,23 @@ func writeError(msg string) {
 	io.WriteString(os.Stderr, msg)
 }
 
-// parseArgs parses args (typically os.Args[1:]) and returns a runConfig if tests need to be run.
-// defaultDataDir is the default base directory containing test data.
-// flags can be used to pass additional flag definitions; if it is non-nil, it will be modified.
+// readArgs reads a JSON-marshaled Args struct from stdin and returns a runConfig if tests need to be run.
+// args contains default values for arguments and is further populated from stdin.
 // If the returned status is not statusSuccess, the caller should pass it to os.Exit.
 // If the runConfig is nil and the status is statusSuccess, the caller should exit with 0.
 // If a non-nil runConfig is returned, it should be passed to runTests.
-func parseArgs(stdout io.Writer, args []string, defaultDataDir string,
-	flags *flag.FlagSet) (*runConfig, int) {
-	if flags == nil {
-		flags = flag.NewFlagSet("", flag.ContinueOnError)
-	} else {
-		flags.Init("", flag.ContinueOnError)
-	}
-	flags.Usage = func() {
-		fmt.Fprintf(os.Stderr, "Usage: %s <flags> <pattern> <pattern> ...\n"+
-			"Runs tests matched by zero or more patterns.\n\n", filepath.Base(os.Args[0]))
-		flags.PrintDefaults()
-	}
-
-	cfg := runConfig{}
-	list := flags.Bool("list", false, "print matched tests as JSON and exit")
-	report := flags.Bool("report", false, "print output as control messages")
-	flags.StringVar(&cfg.dataDir, "datadir", defaultDataDir,
-		"directory where data files are located")
-	flags.StringVar(&cfg.outDir, "outdir", "/tmp/tast/out",
-		"base directory where tests write output files")
-
-	var err error
-	if err = flags.Parse(args); err != nil {
+// TODO(derat): Move this to args.go.
+// TODO(derat): Refactor this code to not have such tricky multi-modal behavior around either
+// returning a config that should be passed to runTests or listing tests directly.
+func readArgs(stdin io.Reader, stdout io.Writer, args *Args, bt bundleType) (*runConfig, int) {
+	if err := json.NewDecoder(stdin).Decode(args); err != nil {
+		writeError("Failed to decode args from stdin")
 		return nil, statusBadArgs
 	}
-
+	if bt != remoteBundle && args.RemoteArgs != (RemoteArgs{}) {
+		writeError(fmt.Sprintf("Remote-only args %+v passed to non-remote bundle", args.RemoteArgs))
+		return nil, statusBadArgs
+	}
 	if errs := testing.RegistrationErrors(); len(errs) > 0 {
 		es := make([]string, len(errs))
 		for i, err := range errs {
@@ -85,58 +65,57 @@ func parseArgs(stdout io.Writer, args []string, defaultDataDir string,
 		return nil, statusBadTests
 	}
 
-	if cfg.tests, err = testsToRun(flags.Args()); err != nil {
-		writeError(fmt.Sprintf("Failed getting tests for %v: %v", flags.Args(), err.Error()))
+	cfg := runConfig{mw: control.NewMessageWriter(stdout), args: args}
+	var err error
+	if cfg.tests, err = testsToRun(args.Patterns); err != nil {
+		writeError(fmt.Sprintf("Failed getting tests for %v: %v", args.Patterns, err.Error()))
 		return nil, statusBadPatterns
 	}
 	sort.Slice(cfg.tests, func(i, j int) bool { return cfg.tests[i].Name < cfg.tests[j].Name })
 
-	if *list {
+	switch args.Mode {
+	case ListTestsMode:
 		if err = testing.WriteTestsAsJSON(stdout, cfg.tests); err != nil {
 			writeError(err.Error())
 			return nil, statusError
 		}
 		return nil, statusSuccess
+	case RunTestsMode:
+		return &cfg, statusSuccess
+	default:
+		writeError(fmt.Sprintf("Invalid mode %v", args.Mode))
+		return nil, statusBadArgs
 	}
-	if *report {
-		cfg.mw = control.NewMessageWriter(stdout)
-	}
-	return &cfg, statusSuccess
 }
 
-// testsToRun returns tests to run for a command invoked with args.
-// If no arguments are supplied, all registered tests are returned.
-// If a single argument is supplied and it is surrounded by parentheses,
+// testsToRun returns tests to run for a command invoked with test patterns pats.
+// If no patterns are supplied, all registered tests are returned.
+// If a single pattern is supplied and it is surrounded by parentheses,
 // it is treated as a boolean expression specifying test attributes.
-// Otherwise, argument(s) are interpreted as wildcard patterns matching test names.
-func testsToRun(args []string) ([]*testing.Test, error) {
-	if len(args) == 0 {
+// Otherwise, pattern(s) are interpreted as wildcards matching test names.
+func testsToRun(pats []string) ([]*testing.Test, error) {
+	if len(pats) == 0 {
 		return testing.GlobalRegistry().AllTests(), nil
 	}
-	if len(args) == 1 && strings.HasPrefix(args[0], "(") && strings.HasSuffix(args[0], ")") {
-		return testing.GlobalRegistry().TestsForAttrExpr(args[0][1 : len(args[0])-1])
+	if len(pats) == 1 && strings.HasPrefix(pats[0], "(") && strings.HasSuffix(pats[0], ")") {
+		return testing.GlobalRegistry().TestsForAttrExpr(pats[0][1 : len(pats[0])-1])
 	}
 	// Print a helpful error message if it looks like the user wanted an attribute expression.
-	if len(args) == 1 && (strings.Contains(args[0], "&&") || strings.Contains(args[0], "||")) {
-		return nil, fmt.Errorf("attr expr %q must be within parentheses", args[0])
+	if len(pats) == 1 && (strings.Contains(pats[0], "&&") || strings.Contains(pats[0], "||")) {
+		return nil, fmt.Errorf("attr expr %q must be within parentheses", pats[0])
 	}
-	return testing.GlobalRegistry().TestsForPatterns(args)
+	return testing.GlobalRegistry().TestsForPatterns(pats)
 }
 
 // runConfig describes how runTests should run tests.
 type runConfig struct {
+	// args contains arguments passed to the bundle by the runner.
+	args *Args
 	// mw is used to send control messages to the controlling process.
-	// It is initialized by parseArgs and is nil if the -report flag was not passed.
+	// It is initialized by readArgs and is nil if the -report flag was not passed.
 	mw *control.MessageWriter
-	// outDir contains the base directory under which test output will be written.
-	// It is initialized by parseArgs.
-	outDir string
-	// dataDir contains the base directory under which test data files are located.
-	// It is initialized by parseArgs.
-	dataDir string
-	// tests contains tests to run. It is initialized by parseArgs.
+	// tests contains tests to run. It is initialized by readArgs.
 	tests []*testing.Test
-
 	// setupFunc is run before each test if non-nil.
 	setupFunc func() error
 	// defaultTestTimeout contains the default maximum time allotted to each test.
@@ -158,7 +137,6 @@ func runTests(ctx context.Context, cfg *runConfig) int {
 		return statusNoTests
 	}
 
-	numFailed := 0
 	for _, t := range cfg.tests {
 		// Make a copy of the test with the default timeout if none was specified.
 		test := *t
@@ -166,13 +144,9 @@ func runTests(ctx context.Context, cfg *runConfig) int {
 			test.Timeout = cfg.defaultTestTimeout
 		}
 
-		if cfg.mw != nil {
-			cfg.mw.WriteMessage(&control.TestStart{Time: time.Now(), Test: test})
-		} else {
-			logger.Print("Running ", test.Name)
-		}
+		cfg.mw.WriteMessage(&control.TestStart{Time: time.Now(), Test: test})
 
-		outDir := filepath.Join(cfg.outDir, test.Name)
+		outDir := filepath.Join(cfg.args.OutDir, test.Name)
 		if err := os.MkdirAll(outDir, 0755); err != nil {
 			writeError("Failed to create output dir: " + err.Error())
 			return statusError
@@ -185,66 +159,31 @@ func runTests(ctx context.Context, cfg *runConfig) int {
 			}
 		}
 		ch := make(chan testing.Output)
-		s := testing.NewState(ctx, ch, filepath.Join(cfg.dataDir, test.DataDir()), outDir,
+		s := testing.NewState(ctx, ch, filepath.Join(cfg.args.DataDir, test.DataDir()), outDir,
 			test.Timeout, test.CleanupTimeout)
 
 		done := make(chan bool, 1)
 		go func() {
-			if succeeded := copyTestOutput(ch, cfg.mw); !succeeded {
-				numFailed++
-			}
+			copyTestOutput(ch, cfg.mw)
 			done <- true
 		}()
 		test.Run(s)
 		close(ch)
 		<-done
 
-		if cfg.mw != nil {
-			cfg.mw.WriteMessage(&control.TestEnd{Time: time.Now(), Name: test.Name})
-		} else {
-			logger.Printf("Finished %s", test.Name)
-		}
+		cfg.mw.WriteMessage(&control.TestEnd{Time: time.Now(), Name: test.Name})
 	}
 
-	if numFailed > 0 && cfg.mw == nil {
-		writeError(fmt.Sprintf("%d test(s) failed", numFailed))
-		return statusTestsFailed
-	}
 	return statusSuccess
 }
 
-// indent indents each line of s using prefix.
-func indent(s, prefix string) string {
-	lines := strings.Split(s, "\n")
-	for i := range lines {
-		lines[i] = prefix + lines[i]
-	}
-	return strings.Join(lines, "\n")
-}
-
 // copyTestOutput reads test output from ch and writes it to mw.
-// If mw is nil, the output is just logged to stdout.
-// true is returned if the test suceeded.
-func copyTestOutput(ch chan testing.Output, mw *control.MessageWriter) (succeeded bool) {
-	succeeded = true
-
+func copyTestOutput(ch chan testing.Output, mw *control.MessageWriter) {
 	for o := range ch {
 		if o.Err != nil {
-			succeeded = false
-			if mw != nil {
-				mw.WriteMessage(&control.TestError{Time: o.T, Error: *o.Err})
-			} else {
-				stack := indent(strings.TrimSpace(o.Err.Stack), strings.Repeat(" ", logPrefixLen))
-				logger.Printf("Error: [%s:%d] %v\n%s", o.Err.File, o.Err.Line, o.Err.Reason, stack)
-			}
+			mw.WriteMessage(&control.TestError{Time: o.T, Error: *o.Err})
 		} else {
-			if mw != nil {
-				mw.WriteMessage(&control.TestLog{Time: o.T, Text: o.Msg})
-			} else {
-				logger.Print(o.Msg)
-			}
+			mw.WriteMessage(&control.TestLog{Time: o.T, Text: o.Msg})
 		}
 	}
-
-	return succeeded
 }

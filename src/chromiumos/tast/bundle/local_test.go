@@ -5,6 +5,7 @@
 package bundle
 
 import (
+	"bytes"
 	"os"
 	gotesting "testing"
 
@@ -12,10 +13,15 @@ import (
 	"chromiumos/tast/testutil"
 )
 
-func TestLocalBadArgs(t *gotesting.T) {
-	args := []string{"-bogusflag"}
-	if act, exp := Local(args), statusBadArgs; act != exp {
-		t.Errorf("Local(%v) = %v; want %v", args, act, exp)
+func TestLocalRemoteArgs(t *gotesting.T) {
+	// Args intended for remote bundles should generate an error when passed to Local.
+	args := Args{
+		Mode:       RunTestsMode,
+		RemoteArgs: RemoteArgs{Target: "user@example.net"},
+	}
+	stdin := newBufferWithArgs(t, &args)
+	if act, exp := Local(stdin, &bytes.Buffer{}), statusBadArgs; act != exp {
+		t.Errorf("Local(%+v) = %v; want %v", args, act, exp)
 	}
 }
 
@@ -25,9 +31,10 @@ func TestLocalBadTest(t *gotesting.T) {
 	testing.GlobalRegistry().DisableValidationForTesting()
 	testing.AddTest(&testing.Test{})
 
-	args := []string{}
-	if act, exp := Local(args), statusBadTests; act != exp {
-		t.Errorf("Local(%v) = %v; want %v", args, act, exp)
+	args := Args{Mode: RunTestsMode}
+	stdin := newBufferWithArgs(t, &args)
+	if act, exp := Local(stdin, &bytes.Buffer{}), statusBadTests; act != exp {
+		t.Errorf("Local(%+v) = %v; want %v", args, act, exp)
 	}
 }
 
@@ -40,11 +47,12 @@ func TestLocalRunTest(t *gotesting.T) {
 
 	outDir := testutil.TempDir(t, "bundle_test.")
 	defer os.RemoveAll(outDir)
-	args := []string{"-report", "-outdir=" + outDir, name}
-	if act, exp := Local(args), statusSuccess; act != exp {
-		t.Errorf("Local(%v) = %v; want %v", args, act, exp)
+	args := Args{Mode: RunTestsMode, OutDir: outDir}
+	stdin := newBufferWithArgs(t, &args)
+	if act, exp := Local(stdin, &bytes.Buffer{}), statusSuccess; act != exp {
+		t.Errorf("Local(%+v) = %v; want %v", args, act, exp)
 	}
 	if !ran {
-		t.Errorf("Local(%v) didn't run test %q", args, name)
+		t.Errorf("Local(%+v) didn't run test %q", args, name)
 	}
 }

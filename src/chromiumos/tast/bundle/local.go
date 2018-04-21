@@ -6,7 +6,7 @@ package bundle
 
 import (
 	"context"
-	"os"
+	"io"
 	"time"
 )
 
@@ -17,9 +17,9 @@ const (
 
 // Local implements the main function for local test bundles.
 //
-// args should typically be os.Args[1:]. The returned status code should be passed to os.Exit.
-func Local(args []string) int {
-	cfg, status := parseArgs(os.Stdout, args, localTestDataDir, nil)
+// The returned status code should be passed to os.Exit.
+func Local(stdin io.Reader, stdout io.Writer) int {
+	cfg, status := readArgs(stdin, stdout, &Args{DataDir: localTestDataDir}, localBundle)
 	if status != statusSuccess || cfg == nil {
 		return status
 	}

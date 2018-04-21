@@ -7,7 +7,7 @@ package bundle
 import (
 	"bytes"
 	"context"
-	"flag"
+	"encoding/json"
 	"fmt"
 	"os"
 	"reflect"
@@ -19,43 +19,28 @@ import (
 	"chromiumos/tast/testutil"
 )
 
-func TestParseArgsInvalidFlag(t *gotesting.T) {
-	args := []string{"-bogusflag"}
-	if _, status := parseArgs(&bytes.Buffer{}, args, "", nil); status != statusBadArgs {
-		t.Errorf("parseArgs(b, %v, %v, %v) = %v; want %v", args, "", nil, status, statusBadArgs)
+// newBufferWithArgs returns a bytes.Buffer containing the JSON representation of args.
+func newBufferWithArgs(t *gotesting.T, args *Args) *bytes.Buffer {
+	b := bytes.Buffer{}
+	if err := json.NewEncoder(&b).Encode(args); err != nil {
+		t.Fatal(err)
 	}
+	return &b
 }
 
-func TestParseArgsFlags(t *gotesting.T) {
-	const (
-		dataDir = "/tmp/data"
-		outDir  = "/tmp/out"
-		fooVal  = "bar"
-	)
-	args := []string{"-foo=" + fooVal, "-datadir=" + dataDir, "-outdir=" + outDir, "-report"}
-	flags := flag.NewFlagSet("", flag.ContinueOnError)
-	foo := flags.String("foo", "", "test flag")
-
-	cfg, status := parseArgs(&bytes.Buffer{}, args, "", flags)
-	sig := fmt.Sprintf("parseArgs(b, %v, %v, %v)", args, "", flags)
-	if status != statusSuccess {
-		t.Fatalf("%s returned %v; want %v", sig, status, statusSuccess)
-	}
-	if *foo != fooVal {
-		t.Errorf("%s set custom flag to %q; want %q", sig, *foo, fooVal)
-	}
-	if cfg.dataDir != dataDir {
-		t.Errorf("%s set data dir to %q; want %q", sig, cfg.dataDir, dataDir)
-	}
-	if cfg.outDir != outDir {
-		t.Errorf("%s set out dir to %q; want %q", sig, cfg.outDir, outDir)
-	}
-	if cfg.mw == nil {
-		t.Errorf("%s didn't initialize message writer", sig)
-	}
+// callReadArgs calls readArgs with the supplied arguments.
+// It returns readArgs's return values, along with a buffer containing the resulting
+// stdout output and a function signature that can be included in test failure messages.
+func callReadArgs(t *gotesting.T, stdinArgs *Args, defaultArgs *Args, bt bundleType) (
+	cfg *runConfig, status int, stdout *bytes.Buffer, sig string) {
+	stdin := newBufferWithArgs(t, stdinArgs)
+	stdout = &bytes.Buffer{}
+	cfg, status = readArgs(stdin, stdout, defaultArgs, bt)
+	sig = fmt.Sprintf("readArgs(%+v, stdout, %+v, %v)", stdinArgs, defaultArgs, bt)
+	return cfg, status, stdout, sig
 }
 
-func TestParseArgsSortTests(t *gotesting.T) {
+func TestReadArgsSortTests(t *gotesting.T) {
 	const (
 		test1 = "pkg.Test1"
 		test2 = "pkg.Test2"
@@ -68,44 +53,41 @@ func TestParseArgsSortTests(t *gotesting.T) {
 	testing.AddTest(&testing.Test{Name: test3, Func: func(*testing.State) {}})
 	testing.AddTest(&testing.Test{Name: test1, Func: func(*testing.State) {}})
 
-	cfg, _ := parseArgs(&bytes.Buffer{}, []string{}, "", nil)
+	cfg, _, _, sig := callReadArgs(t, &Args{}, &Args{}, localBundle)
 	if cfg == nil {
-		t.Fatalf("parseArgs() returned nil config %v", cfg)
+		t.Fatalf("%v returned nil config", sig)
 	}
 	var act []string
 	for _, t := range cfg.tests {
 		act = append(act, t.Name)
 	}
 	if exp := []string{test1, test2, test3}; !reflect.DeepEqual(act, exp) {
-		t.Errorf("parseArgs() return tests %v; want sorted %v", act, exp)
+		t.Errorf("%v returned tests %v; want sorted %v", sig, act, exp)
 	}
 }
 
-func TestParseArgsList(t *gotesting.T) {
+func TestReadArgsList(t *gotesting.T) {
 	defer testing.ClearForTesting()
 	testing.GlobalRegistry().DisableValidationForTesting()
 	testing.AddTest(&testing.Test{Name: "pkg.Test", Func: func(*testing.State) {}})
 
-	b := bytes.Buffer{}
-	args := []string{"-list"}
-	cfg, status := parseArgs(&b, args, "", nil)
-	sig := fmt.Sprintf("parseArgs(b, %v, ...)", args)
+	cfg, status, stdout, sig := callReadArgs(t, &Args{Mode: ListTestsMode}, &Args{}, localBundle)
 	if status != statusSuccess {
-		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
+		t.Fatalf("%v returned status %v; want %v", sig, status, statusSuccess)
 	}
 	if cfg != nil {
-		t.Errorf("%s returned non-nil config %v", sig, cfg)
+		t.Errorf("%s returned non-nil config %+v", sig, cfg)
 	}
 	var exp bytes.Buffer
 	if err := testing.WriteTestsAsJSON(&exp, testing.GlobalRegistry().AllTests()); err != nil {
 		t.Fatal(err)
 	}
-	if b.String() != exp.String() {
-		t.Errorf("%s wrote %q; want %q", sig, b.String(), exp.String())
+	if stdout.String() != exp.String() {
+		t.Errorf("%s wrote %q; want %q", sig, stdout.String(), exp.String())
 	}
 }
 
-func TestParseArgsRegistrationError(t *gotesting.T) {
+func TestReadArgsRegistrationError(t *gotesting.T) {
 	defer testing.ClearForTesting()
 	const name = "cat.MyTest"
 	testing.GlobalRegistry().DisableValidationForTesting()
@@ -114,8 +96,8 @@ func TestParseArgsRegistrationError(t *gotesting.T) {
 	// Adding a test without a function should generate an error.
 	testing.AddTest(&testing.Test{})
 
-	if _, status := parseArgs(&bytes.Buffer{}, []string{}, "", nil); status != statusBadTests {
-		t.Fatalf("parseArgs(...) = %v; want %v", status, statusBadTests)
+	if _, status, _, sig := callReadArgs(t, &Args{}, &Args{}, localBundle); status != statusBadTests {
+		t.Fatalf("%v returned status %v; want %v", sig, status, statusBadTests)
 	}
 }
 
@@ -189,10 +171,7 @@ func TestCopyTestOutput(t *gotesting.T) {
 	}()
 
 	b := bytes.Buffer{}
-	w := control.NewMessageWriter(&b)
-	if copyTestOutput(ch, w) {
-		t.Error("copyTestOutput() reported success for failed test")
-	}
+	copyTestOutput(ch, control.NewMessageWriter(&b))
 
 	r := control.NewMessageReader(&b)
 	for i, em := range []interface{}{
@@ -227,9 +206,11 @@ func TestRunTests(t *gotesting.T) {
 	b := bytes.Buffer{}
 	numSetupCalls := 0
 	cfg := runConfig{
+		args: &Args{
+			OutDir:  tmpDir,
+			DataDir: tmpDir,
+		},
 		mw:        control.NewMessageWriter(&b),
-		outDir:    tmpDir,
-		dataDir:   tmpDir,
 		tests:     reg.AllTests(),
 		setupFunc: func() error { numSetupCalls++; return nil },
 	}
@@ -304,9 +285,11 @@ func TestTimeout(t *gotesting.T) {
 	tmpDir := testutil.TempDir(t, "runner_test.")
 	defer os.RemoveAll(tmpDir)
 	cfg := runConfig{
+		args: &Args{
+			OutDir:  tmpDir,
+			DataDir: tmpDir,
+		},
 		mw:                 control.NewMessageWriter(&b),
-		outDir:             tmpDir,
-		dataDir:            tmpDir,
 		tests:              reg.AllTests(),
 		defaultTestTimeout: 10 * time.Millisecond,
 	}
@@ -332,25 +315,6 @@ func TestTimeout(t *gotesting.T) {
 	exp := []string{name1}
 	if !reflect.DeepEqual(errors, exp) {
 		t.Errorf("Got errors %v; wanted %v", errors, exp)
-	}
-}
-
-func TestReportErrorForTestFailure(t *gotesting.T) {
-	reg := testing.NewRegistry()
-	reg.DisableValidationForTesting()
-	reg.AddTest(&testing.Test{Name: "pkg.Test", Func: func(s *testing.State) { s.Error("error") }})
-
-	tmpDir := testutil.TempDir(t, "runner_test.")
-	defer os.RemoveAll(tmpDir)
-
-	// When no control.MessageWriter is passed, runTests should report an error if any tests fail.
-	cfg := runConfig{
-		outDir:  tmpDir,
-		dataDir: tmpDir,
-		tests:   reg.AllTests(),
-	}
-	if status := runTests(context.Background(), &cfg); status != statusTestsFailed {
-		t.Fatalf("RunTests(ctx, %v) = %v; want %v", cfg, status, statusTestsFailed)
 	}
 }
 

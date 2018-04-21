@@ -5,6 +5,7 @@
 package bundle
 
 import (
+	"bytes"
 	"crypto/rsa"
 	"os"
 	gotesting "testing"
@@ -27,9 +28,9 @@ func TestRemoteMissingTarget(t *gotesting.T) {
 	testing.AddTest(&testing.Test{Name: "pkg.Test", Func: func(s *testing.State) {}})
 
 	// Remote should fail if -target wasn't passed.
-	args := []string{"-report"}
-	if act, exp := Remote(args), statusBadArgs; act != exp {
-		t.Errorf("Remote(%v) = %v; want %v", args, act, exp)
+	args := Args{Mode: RunTestsMode}
+	if act, exp := Remote(newBufferWithArgs(t, &args), &bytes.Buffer{}), statusBadArgs; act != exp {
+		t.Errorf("Remote(%+v) = %v; want %v", args, act, exp)
 	}
 }
 
@@ -43,9 +44,12 @@ func TestRemoteCantConnect(t *gotesting.T) {
 
 	// Remote should fail if the initial connection to the DUT couldn't be
 	// established since the user key wasn't passed.
-	args := []string{"-target=" + td.Srv.Addr().String()}
-	if act, exp := Remote(args), statusError; act != exp {
-		t.Errorf("Remote(%v) = %v; want %v", args, act, exp)
+	args := Args{
+		Mode:       RunTestsMode,
+		RemoteArgs: RemoteArgs{Target: td.Srv.Addr().String()},
+	}
+	if act, exp := Remote(newBufferWithArgs(t, &args), &bytes.Buffer{}), statusError; act != exp {
+		t.Errorf("Remote(%+v) = %v; want %v", args, act, exp)
 	}
 }
 
@@ -77,10 +81,16 @@ func TestRemoteDUT(t *gotesting.T) {
 
 	outDir := testutil.TempDir(t, "bundle_test.")
 	defer os.RemoveAll(outDir)
-	args := []string{"-keyfile=" + td.UserKeyFile,
-		"-target=" + td.Srv.Addr().String(), "-outdir=" + outDir}
-	if act, exp := Remote(args), statusSuccess; act != exp {
-		t.Errorf("Remote(%v) = %v; want %v", args, act, exp)
+	args := Args{
+		Mode:   RunTestsMode,
+		OutDir: outDir,
+		RemoteArgs: RemoteArgs{
+			Target:  td.Srv.Addr().String(),
+			KeyFile: td.UserKeyFile,
+		},
+	}
+	if act, exp := Remote(newBufferWithArgs(t, &args), &bytes.Buffer{}), statusSuccess; act != exp {
+		t.Errorf("Remote(%+v) = %v; want %v", args, act, exp)
 	}
 	if realOutput != output {
 		t.Errorf("Test got output %q from DUT; want %q", realOutput, output)
@@ -115,15 +125,21 @@ func TestRemoteReconnectBetweenTests(t *gotesting.T) {
 
 	outDir := testutil.TempDir(t, "bundle_test.")
 	defer os.RemoveAll(outDir)
-	args := []string{"-keyfile=" + td.UserKeyFile,
-		"-target=" + td.Srv.Addr().String(), "-outdir=" + outDir}
-	if act, exp := Remote(args), statusSuccess; act != exp {
-		t.Errorf("Remote(%v) = %v; want %v", args, act, exp)
+	args := Args{
+		Mode:   RunTestsMode,
+		OutDir: outDir,
+		RemoteArgs: RemoteArgs{
+			Target:  td.Srv.Addr().String(),
+			KeyFile: td.UserKeyFile,
+		},
+	}
+	if act, exp := Remote(newBufferWithArgs(t, &args), &bytes.Buffer{}), statusSuccess; act != exp {
+		t.Errorf("Remote(%+v) = %v; want %v", args, act, exp)
 	}
 	if conn1 != true {
-		t.Errorf("Remote(%v) didn't pass live connection to first test", args)
+		t.Errorf("Remote(%+v) didn't pass live connection to first test", args)
 	}
 	if conn2 != true {
-		t.Errorf("Remote(%v) didn't pass live connection to second test", args)
+		t.Errorf("Remote(%+v) didn't pass live connection to second test", args)
 	}
 }

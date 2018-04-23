@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "22e28084_dd94a203",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-04-23T22:48:29Z",
+      "side": 1,
+      "message": "i\u0027m keeping this here for now to make the diff more readable",
+      "revId": "a0c65b6528804f8016fd8d9b91c0e7290e3713bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4a269531_9e7ce4f1",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-04-23T22:48:29Z",
+      "side": 1,
+      "message": "this function suffers from the same weirdness that you pointed out in the runner code at https://crrev.com/c/969450/1/src/chromiumos/tast/runner/runner.go#208",
+      "revId": "a0c65b6528804f8016fd8d9b91c0e7290e3713bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

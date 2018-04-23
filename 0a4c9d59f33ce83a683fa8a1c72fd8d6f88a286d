@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "68aee1a2_2fdd0251",
+        "filename": "src/chromiumos/tast/bundle/bundle_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 338,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-04-23T22:48:29Z",
+      "side": 0,
+      "message": "this behavior doesn\u0027t exist in bundles anymore; they always write control messages and exit with 0 unless they were unable to run tests.",
+      "revId": "0a4c9d59f33ce83a683fa8a1c72fd8d6f88a286d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

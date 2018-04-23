@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "192d01c4_5fc39bc4",
+        "filename": "src/chromiumos/tast/runner/runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 455,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-04-23T22:48:37Z",
+      "side": 1,
+      "message": "this and the next function are new code: bundles always write control messages now, so runners are responsible for turning those into human-readable log messages when running manually rather than via the tast command.",
+      "revId": "3bd175c6a877fde345b3458bf8b3227e5c161391",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

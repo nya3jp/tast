@@ -57,6 +57,30 @@
       "revId": "3bd175c6a877fde345b3458bf8b3227e5c161391",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4199e155_d466ade0",
+        "filename": "src/chromiumos/tast/runner/runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 464,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-04-23T23:43:03Z",
+      "side": 1,
+      "message": "hmm, i\u0027m not sure. logBundleOutputForManualRun needs to run in a goroutine to get continuous logging of messages as they\u0027re produced, and using a channel like this is the most-idiomatic way i know of to wait for completion and read a result.\n\ni\u0027ve added some comments -- do they make it clearer?\n\n(also closed the write end of the pipe on error so the goroutine will exit instead of hanging out indefinitely.)",
+      "parentUuid": "79e3376b_95cca963",
+      "range": {
+        "startLine": 458,
+        "startChar": 1,
+        "endLine": 464,
+        "endChar": 12
+      },
+      "revId": "3bd175c6a877fde345b3458bf8b3227e5c161391",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

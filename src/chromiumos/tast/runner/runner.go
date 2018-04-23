@@ -7,6 +7,7 @@ package runner
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -20,6 +21,7 @@ import (
 	"sort"
 	"time"
 
+	"chromiumos/tast/bundle"
 	"chromiumos/tast/control"
 	"chromiumos/tast/testing"
 )
@@ -88,6 +90,35 @@ func getBundles(glob string) ([]string, error) {
 	return bundles, nil
 }
 
+// runBundle runs the bundle at path to completion, passing args.
+// The bundle's stdout is copied to the stdout arg.
+func runBundle(path string, args *bundle.Args, stdout io.Writer) error {
+	cmd := exec.Command(path)
+	cmd.Stdout = stdout
+	stdin, err := cmd.StdinPipe()
+	if err != nil {
+		return err
+	}
+	if err = cmd.Start(); err != nil {
+		return err
+	}
+
+	jerr := json.NewEncoder(stdin).Encode(args)
+	stdin.Close()
+	err = cmd.Wait()
+
+	if jerr != nil {
+		return jerr
+	}
+	if err != nil {
+		// Pass back stderr if the command reported an error.
+		if ee, ok := err.(*exec.ExitError); ok {
+			return errors.New(string(ee.Stderr))
+		}
+	}
+	return err
+}
+
 type testsOrError struct {
 	bundle string
 	tests  []*testing.Test
@@ -95,29 +126,25 @@ type testsOrError struct {
 }
 
 // getTests returns tests in bundles matched by patterns. It does this by executing
-// each bundle with the -list arg to ask it to marshal and print its tests. A slice
-// of paths to bundles with matched tests is also returned.
-func getTests(bundles, patterns []string, dataDir string) (
+// each bundle to ask it to marshal and print its tests. A slice of paths to bundles
+// with matched tests is also returned.
+func getTests(bundles []string, baseArgs *bundle.Args) (
 	tests []*testing.Test, bundlesWithTests []string, err error) {
-	args := []string{"-datadir", dataDir, "-list"}
-	args = append(args, patterns...)
+	args := *baseArgs
+	args.Mode = bundle.ListTestsMode
 
 	// Run all bundles in parallel.
 	ch := make(chan testsOrError, len(bundles))
 	for _, b := range bundles {
 		bundle := b
 		go func() {
-			out, err := exec.Command(bundle, args...).Output()
-			if err != nil {
-				// Pass back stderr if the command reported an error.
-				if ee, ok := err.(*exec.ExitError); ok {
-					err = fmt.Errorf("bundle %v failed: %v", bundle, string(ee.Stderr))
-				}
-				ch <- testsOrError{bundle, nil, err}
+			out := bytes.Buffer{}
+			if err := runBundle(bundle, &args, &out); err != nil {
+				ch <- testsOrError{bundle, nil, fmt.Errorf("bundle %v failed: %v", bundle, err)}
 				return
 			}
 			ts := make([]*testing.Test, 0)
-			if err := json.Unmarshal(out, &ts); err != nil {
+			if err := json.Unmarshal(out.Bytes(), &ts); err != nil {
 				ch <- testsOrError{bundle, nil,
 					fmt.Errorf("bundle %v gave bad output: %v", bundle, err)}
 				return
@@ -169,6 +196,8 @@ const (
 // If the returned status is not 0, the caller should pass it to os.Exit.
 // If the RunConfig is nil and the status is 0, the caller should exit with 0.
 // If a non-nil RunConfig is returned, it should be passed to RunTests.
+// TODO(derat): Refactor this code to not have such tricky multi-modal behavior around either
+// returning a config that should be passed to RunTests or listing tests directly.
 func ParseArgs(clArgs []string, stdin io.Reader, stdout io.Writer, args *Args, runnerType RunnerType) (*RunConfig, int) {
 	var mw *control.MessageWriter
 
@@ -204,10 +233,6 @@ func ParseArgs(clArgs []string, stdin io.Reader, stdout io.Writer, args *Args, r
 		args.Patterns = flags.Args()
 	}
 
-	if runnerType != RemoteRunner && args.RemoteArgs != (RemoteArgs{}) {
-		return nil, Error(nil, fmt.Sprintf("Remote args %v passed to non-remote runner", args.RemoteArgs), statusBadArgs)
-	}
-
 	// Handle system-info-related commands first; they don't require touching test bundles.
 	switch args.Mode {
 	case GetSysInfoStateMode:
@@ -223,11 +248,25 @@ func ParseArgs(clArgs []string, stdin io.Reader, stdout io.Writer, args *Args, r
 	}
 
 	cfg := RunConfig{
-		stdout:   stdout,
-		mw:       mw,
-		dataDir:  args.DataDir,
-		outDir:   args.OutDir,
-		patterns: args.Patterns,
+		stdout: stdout,
+		mw:     mw,
+		bundleArgs: bundle.Args{
+			DataDir:  args.DataDir,
+			OutDir:   args.OutDir,
+			Patterns: args.Patterns,
+		},
+	}
+
+	if args.RemoteArgs != (RemoteArgs{}) {
+		if runnerType == RemoteRunner {
+			cfg.bundleArgs.RemoteArgs = bundle.RemoteArgs{
+				Target:  args.Target,
+				KeyFile: args.KeyFile,
+				KeyDir:  args.KeyDir,
+			}
+		} else {
+			return nil, Error(cfg.mw, fmt.Sprintf("Remote args %v passed to non-remote runner", args.RemoteArgs), statusBadArgs)
+		}
 	}
 
 	var err error
@@ -236,7 +275,7 @@ func ParseArgs(clArgs []string, stdin io.Reader, stdout io.Writer, args *Args, r
 	} else if len(cfg.bundles) == 0 {
 		return nil, Error(cfg.mw, fmt.Sprintf("No test bundles matched by %q", args.BundleGlob), statusNoBundles)
 	}
-	if cfg.tests, cfg.bundles, err = getTests(cfg.bundles, cfg.patterns, cfg.dataDir); err != nil {
+	if cfg.tests, cfg.bundles, err = getTests(cfg.bundles, &cfg.bundleArgs); err != nil {
 		return nil, Error(cfg.mw, fmt.Sprintf("Failed to get tests: %v", err.Error()), statusError)
 	}
 
@@ -345,24 +384,17 @@ type SysInfoState struct {
 }
 
 // RunConfig contains a configuration for running tests.
-// Unexported fields are initialized by ParseArgs, but receivers may set exported fields
-// before passing the configuration to RunTests.
+// It is returned by ParseArgs and passed to RunTests.
 type RunConfig struct {
-	stdout  io.Writer              // location where bundle output should be copied
-	mw      *control.MessageWriter // used to send control messages to tast command; nil for manual run
-	dataDir string                 // base directory containing test data files
-	outDir  string                 // base directory to write output files to
-
-	bundles  []string // full paths of bundles to execute
-	patterns []string // patterns matching tests to run
+	stdout     io.Writer              // location where bundle output should be copied
+	mw         *control.MessageWriter // used to send control messages to tast command; nil for manual run
+	bundles    []string               // full paths of bundles to execute
+	bundleArgs bundle.Args            // args to pass to bundles
 
 	// tests contains details of tests within bundles matched by patterns.
 	// Note that these can't be executed directly, as they're just the unmarshaled structs
 	// that the runner received from the bundles (i.e. their Func fields are nil).
 	tests []*testing.Test
-
-	// ExtraFlags contains extra flags to be passed to test bundles.
-	ExtraFlags []string
 }
 
 // RunTests runs tests across multiple bundles as described by cfg.
@@ -371,7 +403,7 @@ func RunTests(cfg *RunConfig) int {
 	if len(cfg.tests) == 0 {
 		// If the runner was executed manually, report an error if no tests were matched.
 		if cfg.mw == nil {
-			return Error(nil, fmt.Sprintf("No tests matched by %v", cfg.patterns), statusNoTests)
+			return Error(nil, fmt.Sprintf("No tests matched by %v", cfg.bundleArgs.Patterns), statusNoTests)
 		}
 
 		// Otherwise, just report an empty run. It's expected to not match any tests if
@@ -382,15 +414,15 @@ func RunTests(cfg *RunConfig) int {
 		return statusSuccess
 	}
 
-	if cfg.outDir == "" {
+	if cfg.bundleArgs.OutDir == "" {
 		var err error
-		if cfg.outDir, err = ioutil.TempDir("", "tast_out."); err != nil {
+		if cfg.bundleArgs.OutDir, err = ioutil.TempDir("", "tast_out."); err != nil {
 			return Error(cfg.mw, fmt.Sprintf("Failed to create out dir: %v", err), statusError)
 		}
 		// If we were run by the tast command, it should clean up the output dir after it copies it over.
 		// Otherwise, we should clean it up ourselves.
 		if cfg.mw == nil {
-			defer os.RemoveAll(cfg.outDir)
+			defer os.RemoveAll(cfg.bundleArgs.OutDir)
 		}
 	}
 
@@ -398,31 +430,73 @@ func RunTests(cfg *RunConfig) int {
 		cfg.mw.WriteMessage(&control.RunStart{Time: time.Now(), NumTests: len(cfg.tests)})
 	}
 
-	args := []string{"-datadir", cfg.dataDir, "-outdir", cfg.outDir}
-	if cfg.mw != nil {
-		args = append(args, "-report")
-	}
-	args = append(args, cfg.ExtraFlags...)
-	args = append(args, cfg.patterns...)
-
 	// Execute bundles serially to run tests.
+	cfg.bundleArgs.Mode = bundle.RunTestsMode
 	for _, bundle := range cfg.bundles {
-		cmd := exec.Command(bundle, args...)
-		cmd.Stdout = cfg.stdout
-		stderr := bytes.Buffer{}
-		cmd.Stderr = &stderr
-		if err := cmd.Run(); err != nil {
-			return Error(cfg.mw, fmt.Sprintf("Bundle %v failed: %v (%v)", bundle, err, stderr.String()),
-				statusBundleFailed)
+		if err := runBundleTests(bundle, cfg); err != nil {
+			return Error(cfg.mw, fmt.Sprintf("Bundle %v failed: %v", bundle, err), statusBundleFailed)
 		}
 	}
 
 	if cfg.mw != nil {
-		cfg.mw.WriteMessage(&control.RunEnd{
-			Time:   time.Now(),
-			OutDir: cfg.outDir,
-		})
+		cfg.mw.WriteMessage(&control.RunEnd{Time: time.Now(), OutDir: cfg.bundleArgs.OutDir})
 	}
 
 	return statusSuccess
+}
+
+// runBundleTests executes tests in the bundle at path bundle as instructed by cfg.
+func runBundleTests(bundle string, cfg *RunConfig) error {
+	// When we were run by the tast command, just copy stdout over directly.
+	if cfg.mw != nil {
+		return runBundle(bundle, &cfg.bundleArgs, cfg.stdout)
+	}
+
+	// When we were run manually, read control messages from stdout so we can log
+	// them in a human-readable form.
+
+	// First, start a goroutine to log messages as they're produced by the bundle.
+	pr, pw := io.Pipe()
+	ch := make(chan error, 1)
+	go func() { ch <- logBundleOutputForManualRun(pr) }()
+
+	// Run the bundle to completion, copying its output to the goroutine over the pipe.
+	if err := runBundle(bundle, &cfg.bundleArgs, pw); err != nil {
+		pw.Close()
+		return err
+	}
+	pw.Close()
+
+	// Finally, wait for the goroutine to finish and return its result.
+	return <-ch
+}
+
+// logBundleOutputForManualRun reads control messages from src and logs them to stdout.
+// It is used to print human-readable test output when the runner is executed manually rather
+// than via the tast command. An error is returned if any TestError messages are read from src.
+func logBundleOutputForManualRun(src io.Reader) error {
+	failed := false
+	mr := control.NewMessageReader(src)
+	for mr.More() {
+		msg, err := mr.ReadMessage()
+		if err != nil {
+			return err
+		}
+		switch v := msg.(type) {
+		case *control.TestStart:
+			logger.Print("Running ", v.Test.Name)
+		case *control.TestLog:
+			logger.Print(v.Text)
+		case *control.TestError:
+			logger.Printf("Error: [%s:%d] %v", v.Error.File, v.Error.Line, v.Error.Reason)
+			failed = true
+		case *control.TestEnd:
+			logger.Print("Finished ", v.Name)
+		}
+	}
+
+	if failed {
+		return errors.New("Test(s) failed")
+	}
+	return nil
 }

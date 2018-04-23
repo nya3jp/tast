@@ -28,10 +28,5 @@ func main() {
 	if status != 0 || cfg == nil {
 		os.Exit(status)
 	}
-	cfg.ExtraFlags = []string{
-		"-target=" + args.Target,
-		"-keyfile=" + args.KeyFile,
-		"-keydir=" + args.KeyDir,
-	}
 	os.Exit(runner.RunTests(cfg))
 }

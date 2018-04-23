@@ -32,13 +32,13 @@ func init() {
 	// If the binary was executed via a symlink created by createBundleSymlinks,
 	// behave like a test bundle instead of running unit tests.
 	if strings.HasPrefix(filepath.Base(os.Args[0]), bundlePrefix) {
-		os.Exit(runBundle())
+		os.Exit(runFakeBundle())
 	}
 }
 
 // createBundleSymlinks creates a temporary directory and places symlinks within it
 // pointing at the test binary that's currently running. Each symlink is given a name
-// that is later parsed by runBundle to determine the bundle's desired behavior.
+// that is later parsed by runFakeBundle to determine the bundle's desired behavior.
 // The temporary directory's path is returned.
 func createBundleSymlinks(t *gotesting.T, bundleTestResults ...[]bool) (dir string) {
 	exec, err := os.Executable()
@@ -73,11 +73,11 @@ func getTestName(bundleNum, testNum int) string {
 	return fmt.Sprintf("pkg.Bundle%dTest%d", bundleNum, testNum)
 }
 
-// runBundle is invoked when the test binary that's currently running is executed
+// runFakeBundle is invoked when the test binary that's currently running is executed
 // via a symlink previously created by createBundleSymlinks. The symlink name is parsed
 // to get the desired behavior, and then tests are registered and executed via the
 // bundle package's Local function.
-func runBundle() int {
+func runFakeBundle() int {
 	parts := strings.Split(filepath.Base(os.Args[0]), "-")
 	if len(parts) != 3 {
 		log.Fatalf("Unparsable filename %q", os.Args[0])
@@ -101,7 +101,7 @@ func runBundle() int {
 		})
 	}
 
-	return bundle.Local(os.Args[1:])
+	return bundle.Local(os.Stdin, os.Stdout)
 }
 
 // callParseArgsStdin calls ParseArgs with passedArgs JSON-marshaled to stdin.
@@ -373,7 +373,7 @@ func TestRunTestsFailForErrorWhenRunManually(t *gotesting.T) {
 	clArgs := []string{"-bundles=" + filepath.Join(dir, "*")}
 	cfg, _, _ := callParseArgsCL(t, clArgs, statusSuccess, true)
 	if status := RunTests(cfg); status != statusBundleFailed {
-		t.Fatalf("RunConfig(%v) = %v; want %v", cfg, status, statusBundleFailed)
+		t.Fatalf("RunConfig(%+v) = %v; want %v", cfg, status, statusBundleFailed)
 	}
 }
 

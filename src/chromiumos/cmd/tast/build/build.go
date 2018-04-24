@@ -9,8 +9,8 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
 
 	"chromiumos/cmd/tast/timing"
@@ -36,9 +36,10 @@ var archToCompiler map[string]string = map[string]string{
 	"aarch64": "armv7a-cros-linux-gnueabi-go",
 }
 
-// Build builds executable package pkg to path as dictated by cfg.
+// Build builds executable package pkg to outDir as dictated by cfg.
+// The executable file's name is assigned by "go install" (i.e. it's the last component of pkg).
 // stageName is used as the name of a new stage reported via the timing package.
-func Build(ctx context.Context, cfg *Config, pkg, path, stageName string) (out []byte, err error) {
+func Build(ctx context.Context, cfg *Config, pkg, outDir, stageName string) (out []byte, err error) {
 	if tl, ok := timing.FromContext(ctx); ok {
 		st := tl.Start(stageName)
 		defer st.End()
@@ -65,12 +66,18 @@ func Build(ctx context.Context, cfg *Config, pkg, path, stageName string) (out [
 		}
 	}
 
-	pkgDir := filepath.Join(cfg.OutDir, cfg.Arch)
-	cmd := exec.Command(comp, "build", "-i", "-ldflags=-s -w", "-pkgdir", pkgDir, "-o", path, pkg)
+	cmd := exec.Command(comp, "install", "-ldflags=-s -w", pkg)
 	cmd.Env = []string{
+		// Without $HOME set, no-op builds take several seconds instead of a few hundred milliseconds
+		// (likely due to files not being cached in $HOME/.cache).
+		"HOME=" + os.Getenv("HOME"),
 		"PATH=/usr/bin",
 		"GOPATH=" + strings.Join([]string{cfg.TestWorkspace, cfg.CommonWorkspace, cfg.SysGopath}, ":"),
+		"GOBIN=" + outDir,
+		// Preserve $GOCACHE in case the user has configured a custom location.
+		"GOCACHE=" + os.Getenv("GOCACHE"),
 	}
+	cmd.Env = append(cmd.Env, cfg.EnvVars...)
 	if out, err = cmd.CombinedOutput(); err != nil {
 		return out, err
 	}

@@ -6,6 +6,7 @@ package build
 
 import (
 	"flag"
+	"fmt"
 	"path/filepath"
 )
 
@@ -28,29 +29,45 @@ type Config struct {
 	SysGopath string
 	// Arch is the architecture to build for (as a machine name or processor given by "uname -m").
 	Arch string
-	// OutDir is the path to a directory where compiled code is stored (after appending arch).
-	OutDir string
+	// BaseOutDir is the path to the base directory under which compiled executables are stored.
+	BaseOutDir string
 	// PortagePkg is the Portage package that contains the test executable (when tests are
 	// included in a system image rather than being compiled by the tast command).
 	// If non-empty, BuildTests checks that the package's direct dependencies are installed
 	// in the host sysroot before building tests.
 	PortagePkg string
-}
-
-// OutPath returns the path to a file named fn within cfg's architecture-specific output dir.
-func (c *Config) OutPath(fn string) string {
-	return filepath.Join(c.OutDir, c.Arch, fn)
+	// EnvVars contains additional environment variables to set while building, each specified as "NAME=value".
+	EnvVars []string
 }
 
 // SetFlags adds common build-related flags to f that store values in Config.
 // trunkDir is the path to the Chrome OS checkout (within the chroot).
 func (c *Config) SetFlags(f *flag.FlagSet, trunkDir string) {
 	f.StringVar(&c.Arch, "arch", "", "target architecture (per \"uname -m\")")
-	f.StringVar(&c.OutDir, "outdir", defaultBuildOutDir, "directory storing build artifacts")
+	f.StringVar(&c.BaseOutDir, "outdir", defaultBuildOutDir, "directory storing build artifacts")
 	f.StringVar(&c.SysGopath, "sysgopath", "/usr/lib/gopath",
 		"Go workspace containing system package source code")
 	f.StringVar(&c.TestWorkspace, "testdir", filepath.Join(trunkDir, defaultTestDir),
 		"Go workspace containing test bundles")
 	f.StringVar(&c.CommonWorkspace, "commondir", filepath.Join(trunkDir, defaultCommonDir),
 		"Go workspace containing common code")
+	f.Var(&stringSliceFlag{&c.EnvVars}, "buildenv", "extra environment variable to set during build, as \"NAME=value\" (may be repeated)")
+}
+
+// stringSliceFlag implements flag.Value to store multiple string values.
+type stringSliceFlag struct {
+	vals *[]string
+}
+
+func (f *stringSliceFlag) String() string {
+	// Per flag.Value documentation, "the flag package may call the String method with a zero-valued receiver, such as a nil pointer."
+	if f == nil || f.vals == nil {
+		return "[]"
+	}
+	return fmt.Sprint(*f.vals)
+}
+
+func (f *stringSliceFlag) Set(v string) error {
+	*f.vals = append(*f.vals, v)
+	return nil
 }

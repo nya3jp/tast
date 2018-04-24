@@ -23,6 +23,7 @@ func TestBuild(t *testing.T) {
 		testDir   = "test"
 		commonDir = "common"
 		sysDir    = "sys"
+		cacheDir  = "cache"
 	)
 
 	var err error
@@ -30,7 +31,7 @@ func TestBuild(t *testing.T) {
 		TestWorkspace:   filepath.Join(tempDir, testDir),
 		CommonWorkspace: filepath.Join(tempDir, commonDir),
 		SysGopath:       filepath.Join(tempDir, sysDir),
-		OutDir:          filepath.Join(tempDir, "out"),
+		EnvVars:         []string{"GOCACHE=" + filepath.Join(tempDir, cacheDir)},
 	}
 	if cfg.Arch, err = GetLocalArch(); err != nil {
 		t.Fatal("Failed to get local arch: ", err)
@@ -46,6 +47,8 @@ func TestBuild(t *testing.T) {
 		sysPkgName   = "syspkg" // system package's name
 		sysConstName = "Msg"    // name of const exported by system package
 		sysConstVal  = "bar"    // value of const exported by system package
+
+		mainPkgName = "foo" // main() package's name
 	)
 	commonPkgCode := fmt.Sprintf("package %s\nconst %s = %q", commonPkgName, commonConstName, commonConstVal)
 	sysPkgCode := fmt.Sprintf("package %s\nconst %s = %q", sysPkgName, sysConstName, sysConstVal)
@@ -55,20 +58,27 @@ func TestBuild(t *testing.T) {
 	if err := testutil.WriteFiles(tempDir, map[string]string{
 		filepath.Join(commonDir, "src", commonPkgName, "lib.go"): commonPkgCode,
 		filepath.Join(sysDir, "src", sysPkgName, "lib.go"):       sysPkgCode,
-		filepath.Join(testDir, "src/foo/cmd/main.go"):            mainCode,
+		filepath.Join(testDir, "src", mainPkgName, "main.go"):    mainCode,
 	}); err != nil {
 		t.Fatal(err)
 	}
 
-	bin := filepath.Join(tempDir, "foo")
-	if out, err := Build(context.Background(), cfg, "foo/cmd", bin, ""); err != nil {
+	outDir := filepath.Join(tempDir, "out")
+	if out, err := Build(context.Background(), cfg, mainPkgName, outDir, ""); err != nil {
 		t.Fatalf("Failed to build: %v: %s", err, string(out))
 	}
 
 	exp := commonConstVal + sysConstVal
+	bin := filepath.Join(outDir, filepath.Base(mainPkgName))
 	if out, err := exec.Command(bin).CombinedOutput(); err != nil {
 		t.Errorf("Failed to run %s: %v", bin, err)
 	} else if string(out) != exp {
 		t.Errorf("%s printed %q; want %q", bin, string(out), exp)
+	}
+
+	// The compiler should've used the cache directory we passed via GOCACHE.
+	cd := filepath.Join(tempDir, cacheDir)
+	if _, err := os.Stat(cd); os.IsNotExist(err) {
+		t.Errorf("Cache directory %v doesn't exist (env vars not passed?)", cd)
 	}
 }

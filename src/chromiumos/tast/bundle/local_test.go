@@ -20,8 +20,12 @@ func TestLocalRemoteArgs(t *gotesting.T) {
 		RemoteArgs: RemoteArgs{Target: "user@example.net"},
 	}
 	stdin := newBufferWithArgs(t, &args)
-	if act, exp := Local(stdin, &bytes.Buffer{}), statusBadArgs; act != exp {
-		t.Errorf("Local(%+v) = %v; want %v", args, act, exp)
+	stderr := bytes.Buffer{}
+	if status := Local(stdin, &bytes.Buffer{}, &stderr); status != statusBadArgs {
+		t.Errorf("Local(%+v) = %v; want %v", args, status, statusBadArgs)
+	}
+	if len(stderr.String()) == 0 {
+		t.Errorf("Local(%+v) didn't write error to stderr", args)
 	}
 }
 
@@ -33,8 +37,12 @@ func TestLocalBadTest(t *gotesting.T) {
 
 	args := Args{Mode: RunTestsMode}
 	stdin := newBufferWithArgs(t, &args)
-	if act, exp := Local(stdin, &bytes.Buffer{}), statusBadTests; act != exp {
-		t.Errorf("Local(%+v) = %v; want %v", args, act, exp)
+	stderr := bytes.Buffer{}
+	if status := Local(stdin, &bytes.Buffer{}, &stderr); status != statusBadTests {
+		t.Errorf("Local(%+v) = %v; want %v", args, status, statusBadTests)
+	}
+	if len(stderr.String()) == 0 {
+		t.Errorf("Local(%+v) didn't write error to stderr", args)
 	}
 }
 
@@ -49,10 +57,14 @@ func TestLocalRunTest(t *gotesting.T) {
 	defer os.RemoveAll(outDir)
 	args := Args{Mode: RunTestsMode, OutDir: outDir}
 	stdin := newBufferWithArgs(t, &args)
-	if act, exp := Local(stdin, &bytes.Buffer{}), statusSuccess; act != exp {
-		t.Errorf("Local(%+v) = %v; want %v", args, act, exp)
+	stderr := bytes.Buffer{}
+	if status := Local(stdin, &bytes.Buffer{}, &stderr); status != statusSuccess {
+		t.Errorf("Local(%+v) = %v; want %v", args, status, statusSuccess)
 	}
 	if !ran {
 		t.Errorf("Local(%+v) didn't run test %q", args, name)
+	}
+	if len(stderr.String()) != 0 {
+		t.Errorf("Local(%+v) unexpectedly wrote %q to stderr", args, stderr.String())
 	}
 }

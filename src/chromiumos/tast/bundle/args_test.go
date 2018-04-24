@@ -7,7 +7,6 @@ package bundle
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"reflect"
 	gotesting "testing"
 
@@ -23,18 +22,6 @@ func newBufferWithArgs(t *gotesting.T, args *Args) *bytes.Buffer {
 	return &b
 }
 
-// callReadArgs calls readArgs with the supplied arguments.
-// It returns readArgs's return values, along with a buffer containing the resulting
-// stdout output and a function signature that can be included in test failure messages.
-func callReadArgs(t *gotesting.T, stdinArgs *Args, defaultArgs *Args, bt bundleType) (
-	cfg *runConfig, status int, stdout *bytes.Buffer, sig string) {
-	stdin := newBufferWithArgs(t, stdinArgs)
-	stdout = &bytes.Buffer{}
-	cfg, status = readArgs(stdin, stdout, defaultArgs, bt)
-	sig = fmt.Sprintf("readArgs(%+v, stdout, %+v, %v)", stdinArgs, defaultArgs, bt)
-	return cfg, status, stdout, sig
-}
-
 func TestReadArgsSortTests(t *gotesting.T) {
 	const (
 		test1 = "pkg.Test1"
@@ -48,37 +35,16 @@ func TestReadArgsSortTests(t *gotesting.T) {
 	testing.AddTest(&testing.Test{Name: test3, Func: func(*testing.State) {}})
 	testing.AddTest(&testing.Test{Name: test1, Func: func(*testing.State) {}})
 
-	cfg, _, _, sig := callReadArgs(t, &Args{}, &Args{}, localBundle)
-	if cfg == nil {
-		t.Fatalf("%v returned nil config", sig)
+	tests, err := readArgs(newBufferWithArgs(t, &Args{}), &Args{}, localBundle)
+	if err != nil {
+		t.Error("readArgs() failed: ", err)
 	}
 	var act []string
-	for _, t := range cfg.tests {
+	for _, t := range tests {
 		act = append(act, t.Name)
 	}
 	if exp := []string{test1, test2, test3}; !reflect.DeepEqual(act, exp) {
-		t.Errorf("%v returned tests %v; want sorted %v", sig, act, exp)
-	}
-}
-
-func TestReadArgsList(t *gotesting.T) {
-	defer testing.ClearForTesting()
-	testing.GlobalRegistry().DisableValidationForTesting()
-	testing.AddTest(&testing.Test{Name: "pkg.Test", Func: func(*testing.State) {}})
-
-	cfg, status, stdout, sig := callReadArgs(t, &Args{Mode: ListTestsMode}, &Args{}, localBundle)
-	if status != statusSuccess {
-		t.Fatalf("%v returned status %v; want %v", sig, status, statusSuccess)
-	}
-	if cfg != nil {
-		t.Errorf("%s returned non-nil config %+v", sig, cfg)
-	}
-	var exp bytes.Buffer
-	if err := testing.WriteTestsAsJSON(&exp, testing.GlobalRegistry().AllTests()); err != nil {
-		t.Fatal(err)
-	}
-	if stdout.String() != exp.String() {
-		t.Errorf("%s wrote %q; want %q", sig, stdout.String(), exp.String())
+		t.Errorf("readArgs() returned tests %v; want sorted %v", act, exp)
 	}
 }
 
@@ -90,9 +56,8 @@ func TestReadArgsRegistrationError(t *gotesting.T) {
 
 	// Adding a test without a function should generate an error.
 	testing.AddTest(&testing.Test{})
-
-	if _, status, _, sig := callReadArgs(t, &Args{}, &Args{}, localBundle); status != statusBadTests {
-		t.Fatalf("%v returned status %v; want %v", sig, status, statusBadTests)
+	if _, err := readArgs(newBufferWithArgs(t, &Args{}), &Args{}, localBundle); !errorHasStatus(err, statusBadTests) {
+		t.Errorf("readArgs() with bad test returned error %v; want status %v", err, statusBadTests)
 	}
 }
 

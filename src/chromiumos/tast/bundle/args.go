@@ -62,21 +62,18 @@ const (
 	remoteBundle
 )
 
-// readArgs reads a JSON-marshaled Args struct from stdin and returns a runConfig if tests need to be run.
-// args contains default values for arguments and is further populated from stdin.
-// If the returned status is not statusSuccess, the caller should pass it to os.Exit.
-// If the runConfig is nil and the status is statusSuccess, the caller should exit with 0.
-// If a non-nil runConfig is returned, it should be passed to runTests.
-// TODO(derat): Refactor this code to not have such tricky multi-modal behavior around either
-// returning a config that should be passed to runTests or listing tests directly.
-func readArgs(stdin io.Reader, stdout io.Writer, args *Args, bt bundleType) (*runConfig, int) {
+// readArgs reads a JSON-marshaled Args struct from stdin and updates args and cfg.
+// args and cfg contain default values and are further filled from stdin.
+// If an error is encountered, a human-readable message is written to stderr and a non-statusSuccess
+// status code is returned. Otherwise, the caller is responsible for performing the requseted action.
+func readArgs(stdin io.Reader, stdout io.Writer, args *Args, cfg *runConfig, bt bundleType) int {
 	if err := json.NewDecoder(stdin).Decode(args); err != nil {
 		writeError("Failed to decode args from stdin")
-		return nil, statusBadArgs
+		return statusBadArgs
 	}
 	if bt != remoteBundle && args.RemoteArgs != (RemoteArgs{}) {
 		writeError(fmt.Sprintf("Remote-only args %+v passed to non-remote bundle", args.RemoteArgs))
-		return nil, statusBadArgs
+		return statusBadArgs
 	}
 	if errs := testing.RegistrationErrors(); len(errs) > 0 {
 		es := make([]string, len(errs))
@@ -84,30 +81,18 @@ func readArgs(stdin io.Reader, stdout io.Writer, args *Args, bt bundleType) (*ru
 			es[i] = err.Error()
 		}
 		writeError("Error(s) in registered tests: " + strings.Join(es, "\n"))
-		return nil, statusBadTests
+		return statusBadTests
 	}
 
-	cfg := runConfig{mw: control.NewMessageWriter(stdout), args: args}
 	var err error
 	if cfg.tests, err = testsToRun(args.Patterns); err != nil {
 		writeError(fmt.Sprintf("Failed getting tests for %v: %v", args.Patterns, err.Error()))
-		return nil, statusBadPatterns
+		return statusBadPatterns
 	}
 	sort.Slice(cfg.tests, func(i, j int) bool { return cfg.tests[i].Name < cfg.tests[j].Name })
 
-	switch args.Mode {
-	case ListTestsMode:
-		if err = testing.WriteTestsAsJSON(stdout, cfg.tests); err != nil {
-			writeError(err.Error())
-			return nil, statusError
-		}
-		return nil, statusSuccess
-	case RunTestsMode:
-		return &cfg, statusSuccess
-	default:
-		writeError(fmt.Sprintf("Invalid mode %v", args.Mode))
-		return nil, statusBadArgs
-	}
+	cfg.mw = control.NewMessageWriter(stdout)
+	return statusSuccess
 }
 
 // testsToRun returns tests to run for a command invoked with test patterns pats.

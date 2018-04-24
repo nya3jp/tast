@@ -30,7 +30,8 @@ func callReadArgs(t *gotesting.T, stdinArgs *Args, defaultArgs *Args, bt bundleT
 	cfg *runConfig, status int, stdout *bytes.Buffer, sig string) {
 	stdin := newBufferWithArgs(t, stdinArgs)
 	stdout = &bytes.Buffer{}
-	cfg, status = readArgs(stdin, stdout, defaultArgs, bt)
+	cfg = &runConfig{}
+	status = readArgs(stdin, stdout, defaultArgs, cfg, bt)
 	sig = fmt.Sprintf("readArgs(%+v, stdout, %+v, %v)", stdinArgs, defaultArgs, bt)
 	return cfg, status, stdout, sig
 }
@@ -58,27 +59,6 @@ func TestReadArgsSortTests(t *gotesting.T) {
 	}
 	if exp := []string{test1, test2, test3}; !reflect.DeepEqual(act, exp) {
 		t.Errorf("%v returned tests %v; want sorted %v", sig, act, exp)
-	}
-}
-
-func TestReadArgsList(t *gotesting.T) {
-	defer testing.ClearForTesting()
-	testing.GlobalRegistry().DisableValidationForTesting()
-	testing.AddTest(&testing.Test{Name: "pkg.Test", Func: func(*testing.State) {}})
-
-	cfg, status, stdout, sig := callReadArgs(t, &Args{Mode: ListTestsMode}, &Args{}, localBundle)
-	if status != statusSuccess {
-		t.Fatalf("%v returned status %v; want %v", sig, status, statusSuccess)
-	}
-	if cfg != nil {
-		t.Errorf("%s returned non-nil config %+v", sig, cfg)
-	}
-	var exp bytes.Buffer
-	if err := testing.WriteTestsAsJSON(&exp, testing.GlobalRegistry().AllTests()); err != nil {
-		t.Fatal(err)
-	}
-	if stdout.String() != exp.String() {
-		t.Errorf("%s wrote %q; want %q", sig, stdout.String(), exp.String())
 	}
 }
 

@@ -29,7 +29,7 @@ func TestRemoteMissingTarget(t *gotesting.T) {
 
 	// Remote should fail if -target wasn't passed.
 	args := Args{Mode: RunTestsMode}
-	if act, exp := Remote(newBufferWithArgs(t, &args), &bytes.Buffer{}), statusBadArgs; act != exp {
+	if act, exp := Remote(newBufferWithArgs(t, &args), &bytes.Buffer{}), statusError; act != exp {
 		t.Errorf("Remote(%+v) = %v; want %v", args, act, exp)
 	}
 }

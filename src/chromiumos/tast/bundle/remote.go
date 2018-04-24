@@ -6,6 +6,8 @@ package bundle
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"io"
 	"time"
 
@@ -19,38 +21,42 @@ const (
 // Remote implements the main function for remote test bundles.
 //
 // The returned status code should be passed to os.Exit.
-func Remote(stdin io.Reader, stdout io.Writer) int {
+func Remote(stdin io.Reader, stdout, stderr io.Writer) int {
 	args := Args{}
-	cfg, status := readArgs(stdin, stdout, &args, remoteBundle)
-	if status != statusSuccess || cfg == nil {
-		return status
+	cfg := runConfig{
+		runSetupFunc: func(ctx context.Context) (context.Context, error) {
+			// Connect to the DUT and attach the connection to the context so tests can use it.
+			if args.Target == "" {
+				return ctx, errors.New("target not supplied")
+			}
+			dt, err := dut.New(args.Target, args.KeyFile, args.KeyDir)
+			if err != nil {
+				return ctx, fmt.Errorf("failed to create connection: %v", err.Error())
+			}
+			ctx = dut.NewContext(ctx, dt)
+			if err = dt.Connect(ctx); err != nil {
+				return ctx, fmt.Errorf("failed to connect to DUT: %v", err.Error())
+			}
+			return ctx, nil
+		},
+		runCleanupFunc: func(ctx context.Context) error {
+			dt, ok := dut.FromContext(ctx)
+			if !ok {
+				return errors.New("failed to get DUT from context")
+			}
+			return dt.Close(ctx)
+		},
+		testSetupFunc: func(ctx context.Context) error {
+			// Reconnect between tests if needed.
+			if dt, ok := dut.FromContext(ctx); !ok {
+				return errors.New("failed to get DUT from context")
+			} else if !dt.Connected(ctx) {
+				return dt.Connect(ctx)
+			}
+			return nil
+		},
+		defaultTestTimeout: remoteTestTimeout,
 	}
 
-	// Connect to the DUT and attach the connection to the context so tests can use it.
-	if args.Target == "" {
-		writeError("Target not supplied")
-		return statusBadArgs
-	}
-	dt, err := dut.New(args.Target, args.KeyFile, args.KeyDir)
-	if err != nil {
-		writeError("Failed to create connection: " + err.Error())
-		return statusBadArgs
-	}
-	ctx := dut.NewContext(context.Background(), dt)
-	if err = dt.Connect(ctx); err != nil {
-		writeError("Failed to connect to DUT: " + err.Error())
-		return statusError
-	}
-	defer dt.Close(ctx)
-
-	// Reconnect between tests if needed.
-	cfg.setupFunc = func() error {
-		if !dt.Connected(ctx) {
-			return dt.Connect(ctx)
-		}
-		return nil
-	}
-	cfg.defaultTestTimeout = remoteTestTimeout
-
-	return runTests(ctx, cfg)
+	return run(context.Background(), stdin, stdout, stderr, &args, &cfg, remoteBundle)
 }

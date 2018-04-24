@@ -11,7 +11,6 @@ import (
 	"sort"
 	"strings"
 
-	"chromiumos/tast/control"
 	"chromiumos/tast/testing"
 )
 
@@ -62,52 +61,29 @@ const (
 	remoteBundle
 )
 
-// readArgs reads a JSON-marshaled Args struct from stdin and returns a runConfig if tests need to be run.
-// args contains default values for arguments and is further populated from stdin.
-// If the returned status is not statusSuccess, the caller should pass it to os.Exit.
-// If the runConfig is nil and the status is statusSuccess, the caller should exit with 0.
-// If a non-nil runConfig is returned, it should be passed to runTests.
-// TODO(derat): Refactor this code to not have such tricky multi-modal behavior around either
-// returning a config that should be passed to runTests or listing tests directly.
-func readArgs(stdin io.Reader, stdout io.Writer, args *Args, bt bundleType) (*runConfig, int) {
+// readArgs reads a JSON-marshaled Args struct from stdin and updates args (which may contain default values).
+// Matched tests are returned. The caller is responsible for performing the requested action.
+func readArgs(stdin io.Reader, args *Args, bt bundleType) ([]*testing.Test, error) {
 	if err := json.NewDecoder(stdin).Decode(args); err != nil {
-		writeError("Failed to decode args from stdin")
-		return nil, statusBadArgs
+		return nil, newBundleErrorf(statusBadArgs, "failed to decode args from stdin: %v", err)
 	}
 	if bt != remoteBundle && args.RemoteArgs != (RemoteArgs{}) {
-		writeError(fmt.Sprintf("Remote-only args %+v passed to non-remote bundle", args.RemoteArgs))
-		return nil, statusBadArgs
+		return nil, newBundleErrorf(statusBadArgs, "remote-only args %+v passed to non-remote bundle", args.RemoteArgs)
 	}
 	if errs := testing.RegistrationErrors(); len(errs) > 0 {
 		es := make([]string, len(errs))
 		for i, err := range errs {
 			es[i] = err.Error()
 		}
-		writeError("Error(s) in registered tests: " + strings.Join(es, "\n"))
-		return nil, statusBadTests
+		return nil, newBundleErrorf(statusBadTests, "error(s) in registered tests: %v", strings.Join(es, ", "))
 	}
 
-	cfg := runConfig{mw: control.NewMessageWriter(stdout), args: args}
-	var err error
-	if cfg.tests, err = testsToRun(args.Patterns); err != nil {
-		writeError(fmt.Sprintf("Failed getting tests for %v: %v", args.Patterns, err.Error()))
-		return nil, statusBadPatterns
+	tests, err := testsToRun(args.Patterns)
+	if err != nil {
+		return nil, newBundleErrorf(statusBadPatterns, "failed getting tests for %v: %v", args.Patterns, err.Error())
 	}
-	sort.Slice(cfg.tests, func(i, j int) bool { return cfg.tests[i].Name < cfg.tests[j].Name })
-
-	switch args.Mode {
-	case ListTestsMode:
-		if err = testing.WriteTestsAsJSON(stdout, cfg.tests); err != nil {
-			writeError(err.Error())
-			return nil, statusError
-		}
-		return nil, statusSuccess
-	case RunTestsMode:
-		return &cfg, statusSuccess
-	default:
-		writeError(fmt.Sprintf("Invalid mode %v", args.Mode))
-		return nil, statusBadArgs
-	}
+	sort.Slice(tests, func(i, j int) bool { return tests[i].Name < tests[j].Name })
+	return tests, nil
 }
 
 // testsToRun returns tests to run for a command invoked with test patterns pats.

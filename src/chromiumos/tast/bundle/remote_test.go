@@ -29,8 +29,12 @@ func TestRemoteMissingTarget(t *gotesting.T) {
 
 	// Remote should fail if -target wasn't passed.
 	args := Args{Mode: RunTestsMode}
-	if act, exp := Remote(newBufferWithArgs(t, &args), &bytes.Buffer{}), statusBadArgs; act != exp {
-		t.Errorf("Remote(%+v) = %v; want %v", args, act, exp)
+	stderr := bytes.Buffer{}
+	if status := Remote(newBufferWithArgs(t, &args), &bytes.Buffer{}, &stderr); status != statusError {
+		t.Errorf("Remote(%+v) = %v; want %v", args, status, statusError)
+	}
+	if len(stderr.String()) == 0 {
+		t.Errorf("Remote(%+v) didn't write error to stderr", args)
 	}
 }
 
@@ -48,8 +52,12 @@ func TestRemoteCantConnect(t *gotesting.T) {
 		Mode:       RunTestsMode,
 		RemoteArgs: RemoteArgs{Target: td.Srv.Addr().String()},
 	}
-	if act, exp := Remote(newBufferWithArgs(t, &args), &bytes.Buffer{}), statusError; act != exp {
-		t.Errorf("Remote(%+v) = %v; want %v", args, act, exp)
+	stderr := bytes.Buffer{}
+	if status := Remote(newBufferWithArgs(t, &args), &bytes.Buffer{}, &stderr); status != statusError {
+		t.Errorf("Remote(%+v) = %v; want %v", args, status, statusError)
+	}
+	if len(stderr.String()) == 0 {
+		t.Errorf("Remote(%+v) didn't write error to stderr", args)
 	}
 }
 
@@ -89,8 +97,8 @@ func TestRemoteDUT(t *gotesting.T) {
 			KeyFile: td.UserKeyFile,
 		},
 	}
-	if act, exp := Remote(newBufferWithArgs(t, &args), &bytes.Buffer{}), statusSuccess; act != exp {
-		t.Errorf("Remote(%+v) = %v; want %v", args, act, exp)
+	if status := Remote(newBufferWithArgs(t, &args), &bytes.Buffer{}, &bytes.Buffer{}); status != statusSuccess {
+		t.Errorf("Remote(%+v) = %v; want %v", args, status, statusSuccess)
 	}
 	if realOutput != output {
 		t.Errorf("Test got output %q from DUT; want %q", realOutput, output)
@@ -133,8 +141,8 @@ func TestRemoteReconnectBetweenTests(t *gotesting.T) {
 			KeyFile: td.UserKeyFile,
 		},
 	}
-	if act, exp := Remote(newBufferWithArgs(t, &args), &bytes.Buffer{}), statusSuccess; act != exp {
-		t.Errorf("Remote(%+v) = %v; want %v", args, act, exp)
+	if status := Remote(newBufferWithArgs(t, &args), &bytes.Buffer{}, &bytes.Buffer{}); status != statusSuccess {
+		t.Errorf("Remote(%+v) = %v; want %v", args, status, statusSuccess)
 	}
 	if conn1 != true {
 		t.Errorf("Remote(%+v) didn't pass live connection to first test", args)

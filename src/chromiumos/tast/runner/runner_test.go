@@ -111,7 +111,7 @@ func runFakeBundle() int {
 		})
 	}
 
-	return bundle.Local(os.Stdin, os.Stdout)
+	return bundle.Local(os.Stdin, os.Stdout, os.Stderr)
 }
 
 // callParseArgsStdin calls ParseArgs with passedArgs JSON-marshaled to stdin.

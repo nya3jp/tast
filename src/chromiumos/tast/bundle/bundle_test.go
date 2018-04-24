@@ -69,22 +69,30 @@ func TestRunTests(t *gotesting.T) {
 	defer os.RemoveAll(tmpDir)
 
 	b := bytes.Buffer{}
-	numSetupCalls := 0
+	var numRunSetupCalls, numRunCleanupCalls, numTestSetupCalls int
+	args := Args{
+		OutDir:  tmpDir,
+		DataDir: tmpDir,
+	}
 	cfg := runConfig{
-		args: &Args{
-			OutDir:  tmpDir,
-			DataDir: tmpDir,
-		},
-		mw:        control.NewMessageWriter(&b),
-		tests:     reg.AllTests(),
-		setupFunc: func() error { numSetupCalls++; return nil },
+		mw:             control.NewMessageWriter(&b),
+		tests:          reg.AllTests(),
+		runSetupFunc:   func(ctx context.Context) (context.Context, error) { numRunSetupCalls++; return ctx, nil },
+		runCleanupFunc: func(ctx context.Context) error { numRunCleanupCalls++; return nil },
+		testSetupFunc:  func(ctx context.Context) error { numTestSetupCalls++; return nil },
 	}
 
-	if status := runTests(context.Background(), &cfg); status != statusSuccess {
-		t.Fatalf("RunTests(%v) = %v; want %v", cfg, status, statusSuccess)
+	if status := runTests(context.Background(), &args, &cfg); status != statusSuccess {
+		t.Fatalf("runTests(ctx, %+v, %+v) = %v; want %v", args, cfg, status, statusSuccess)
 	}
-	if numSetupCalls != len(cfg.tests) {
-		t.Errorf("RunTests(%v) called setup function %d time(s); want %d", cfg, numSetupCalls, len(cfg.tests))
+	if numRunSetupCalls != 1 {
+		t.Errorf("runTests(ctx, %+v, %+v) called run setup function %d time(s); want 1", cfg, args, numRunSetupCalls)
+	}
+	if numRunCleanupCalls != 1 {
+		t.Errorf("runTests(ctx, %+v, %+v) called run cleanup function %d time(s); want 1", cfg, args, numRunCleanupCalls)
+	}
+	if numTestSetupCalls != len(cfg.tests) {
+		t.Errorf("runTests(ctx, %+v, %+v) called test setup function %d time(s); want %d", cfg, args, numTestSetupCalls, len(cfg.tests))
 	}
 
 	// Just check some basic details of the control messages.
@@ -120,7 +128,7 @@ func TestRunTests(t *gotesting.T) {
 		}
 	}
 	if r.More() {
-		t.Errorf("RunTests(%v) wrote extra message(s)", cfg)
+		t.Errorf("runTests(ctx, %+v, %+v) wrote extra message(s)", args, cfg)
 	}
 }
 
@@ -149,11 +157,11 @@ func TestRunTestsTimeout(t *gotesting.T) {
 	b := bytes.Buffer{}
 	tmpDir := testutil.TempDir(t, "runner_test.")
 	defer os.RemoveAll(tmpDir)
+	args := Args{
+		OutDir:  tmpDir,
+		DataDir: tmpDir,
+	}
 	cfg := runConfig{
-		args: &Args{
-			OutDir:  tmpDir,
-			DataDir: tmpDir,
-		},
 		mw:                 control.NewMessageWriter(&b),
 		tests:              reg.AllTests(),
 		defaultTestTimeout: 10 * time.Millisecond,
@@ -161,8 +169,8 @@ func TestRunTestsTimeout(t *gotesting.T) {
 
 	// The first test should time out after 10 milliseconds.
 	// The second test should succeed since it finishes before its custom timeout.
-	if status := runTests(context.Background(), &cfg); status != statusSuccess {
-		t.Fatalf("RunTests(ctx, %v) = %v; want %v", cfg, status, statusSuccess)
+	if status := runTests(context.Background(), &args, &cfg); status != statusSuccess {
+		t.Fatalf("runTests(ctx, %+v, %+v) = %v; want %v", args, cfg, status, statusSuccess)
 	}
 
 	var name string             // name of current test
@@ -185,8 +193,29 @@ func TestRunTestsTimeout(t *gotesting.T) {
 
 func TestRunTestsNoTests(t *gotesting.T) {
 	// runTests should report failure when passed a config without any tests.
+	args := Args{}
 	cfg := runConfig{tests: nil}
-	if status := runTests(context.Background(), &cfg); status != statusNoTests {
-		t.Fatalf("RunTests(ctx, %v) = %v; want %v", cfg, status, statusNoTests)
+	if status := runTests(context.Background(), &args, &cfg); status != statusNoTests {
+		t.Fatalf("runTests(ctx, %+v, %+v) = %v; want %v", args, cfg, status, statusNoTests)
+	}
+}
+
+func TestRunList(t *gotesting.T) {
+	defer testing.ClearForTesting()
+	testing.GlobalRegistry().DisableValidationForTesting()
+	testing.AddTest(&testing.Test{Name: "pkg.Test", Func: func(*testing.State) {}})
+
+	stdin := newBufferWithArgs(t, &Args{Mode: ListTestsMode})
+	stdout := &bytes.Buffer{}
+	status := run(context.Background(), stdin, stdout, &Args{}, &runConfig{}, localBundle)
+	if status != statusSuccess {
+		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
+	}
+	var exp bytes.Buffer
+	if err := testing.WriteTestsAsJSON(&exp, testing.GlobalRegistry().AllTests()); err != nil {
+		t.Fatal(err)
+	}
+	if stdout.String() != exp.String() {
+		t.Errorf("run() wrote %q; want %q", stdout.String(), exp.String())
 	}
 }

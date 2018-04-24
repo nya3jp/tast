@@ -11,9 +11,10 @@
 	code, etc.).
 
 	Bundles are executed by test runners, which aggregate test results and
-	report them back to the tast command. Each test bundle should pass os.Stdin
-	and os.Stdout to either Local or Remote (depending on the type of tests that
-	the bundle contains) and pass the returned status code to os.Exit.
+	report them back to the tast command. Each test bundle should pass os.Stdin,
+	os.Stdout, and os.Stderr to either Local or Remote (depending on the type of
+	tests that the bundle contains) and pass the returned status code to
+	os.Exit.
 
 	Bundles write JSON-marshaled control messages to stdout. These messages are
 	relayed by the test runner back to the tast command. When a test bundle

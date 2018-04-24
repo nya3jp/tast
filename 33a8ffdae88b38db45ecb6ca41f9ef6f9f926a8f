@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "62bbd5a1_cc4fdd81",
+        "filename": "src/chromiumos/tast/runner/runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-04-24T15:08:22Z",
+      "side": 0,
+      "message": "this wasn\u0027t being called anymore",
+      "revId": "33a8ffdae88b38db45ecb6ca41f9ef6f9f926a8f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d3b15731_695d3342",
+        "filename": "src/chromiumos/tast/runner/runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-04-24T15:08:22Z",
+      "side": 0,
+      "message": "this doesn\u0027t need to be exported anymore",
+      "revId": "33a8ffdae88b38db45ecb6ca41f9ef6f9f926a8f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

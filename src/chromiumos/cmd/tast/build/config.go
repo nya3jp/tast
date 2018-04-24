@@ -28,8 +28,8 @@ type Config struct {
 	SysGopath string
 	// Arch is the architecture to build for (as a machine name or processor given by "uname -m").
 	Arch string
-	// OutDir is the path to a directory where compiled code is stored (after appending arch).
-	OutDir string
+	// BaseOutDir is the path to the base directory under which compiled executables are stored.
+	BaseOutDir string
 	// PortagePkg is the Portage package that contains the test executable (when tests are
 	// included in a system image rather than being compiled by the tast command).
 	// If non-empty, BuildTests checks that the package's direct dependencies are installed
@@ -37,16 +37,11 @@ type Config struct {
 	PortagePkg string
 }
 
-// OutPath returns the path to a file named fn within cfg's architecture-specific output dir.
-func (c *Config) OutPath(fn string) string {
-	return filepath.Join(c.OutDir, c.Arch, fn)
-}
-
 // SetFlags adds common build-related flags to f that store values in Config.
 // trunkDir is the path to the Chrome OS checkout (within the chroot).
 func (c *Config) SetFlags(f *flag.FlagSet, trunkDir string) {
 	f.StringVar(&c.Arch, "arch", "", "target architecture (per \"uname -m\")")
-	f.StringVar(&c.OutDir, "outdir", defaultBuildOutDir, "directory storing build artifacts")
+	f.StringVar(&c.BaseOutDir, "outdir", defaultBuildOutDir, "directory storing build artifacts")
 	f.StringVar(&c.SysGopath, "sysgopath", "/usr/lib/gopath",
 		"Go workspace containing system package source code")
 	f.StringVar(&c.TestWorkspace, "testdir", filepath.Join(trunkDir, defaultTestDir),

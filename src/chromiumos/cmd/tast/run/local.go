@@ -144,16 +144,16 @@ func buildAndPushBundle(ctx context.Context, cfg *Config, hst *host.SSH) (bundle
 	if cfg.checkPortageDeps {
 		cfg.buildCfg.PortagePkg = fmt.Sprintf("chromeos-base/tast-local-tests-%s-9999", cfg.buildBundle)
 	}
-	src := cfg.buildCfg.OutPath(filepath.Join(localBundleBuildSubdir, cfg.buildBundle))
+	buildDir := filepath.Join(cfg.buildCfg.BaseOutDir, cfg.buildCfg.Arch, localBundleBuildSubdir)
 	pkg := path.Join(localBundlePkgPathPrefix, cfg.buildBundle)
 	cfg.Logger.Logf("Building %s from %s", pkg, cfg.buildCfg.TestWorkspace)
-	if out, err := build.Build(ctx, &cfg.buildCfg, pkg, src, "build_bundle"); err != nil {
+	if out, err := build.Build(ctx, &cfg.buildCfg, pkg, buildDir, "build_bundle"); err != nil {
 		return "", fmt.Errorf("build failed: %v\n\n%s", err, out)
 	}
 	cfg.Logger.Logf("Built test bundle in %v", time.Now().Sub(start).Round(time.Millisecond))
 
 	cfg.Logger.Status("Pushing test bundle to target")
-	if err := pushBundle(ctx, cfg, hst, src, localBundlePushDir); err != nil {
+	if err := pushBundle(ctx, cfg, hst, filepath.Join(buildDir, cfg.buildBundle), localBundlePushDir); err != nil {
 		return "", fmt.Errorf("failed to push bundle: %v", err)
 	}
 
@@ -317,16 +317,16 @@ func buildAndPushLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH) er
 		bc.PortagePkg = localRunnerPortagePkg
 	}
 
-	src := bc.OutPath(filepath.Base(localRunnerPath))
+	buildDir := filepath.Join(bc.BaseOutDir, bc.Arch)
 	cfg.Logger.Debugf("Building %s from %s", localRunnerPkg, bc.CommonWorkspace)
-	if out, err := build.Build(ctx, &bc, localRunnerPkg, src, "build_runner"); err != nil {
+	if out, err := build.Build(ctx, &bc, localRunnerPkg, buildDir, "build_runner"); err != nil {
 		return fmt.Errorf("failed to build test runner: %v\n\n%s", err, out)
 	}
 
 	cfg.Logger.Debugf("Pushing test runner to %s on target", localRunnerPath)
 	start := time.Now()
-	bytes, err := hst.PutTree(ctx, filepath.Dir(src), filepath.Dir(localRunnerPath),
-		[]string{filepath.Base(src)})
+	bytes, err := hst.PutTree(ctx, buildDir, filepath.Dir(localRunnerPath),
+		[]string{filepath.Base(localRunnerPath)})
 	if err != nil {
 		return fmt.Errorf("failed to copy test runner: %v", err)
 	}

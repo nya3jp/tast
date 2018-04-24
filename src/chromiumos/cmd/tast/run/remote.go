@@ -52,17 +52,17 @@ func remote(ctx context.Context, cfg *Config) (subcommands.ExitStatus, []TestRes
 		if cfg.checkPortageDeps {
 			cfg.buildCfg.PortagePkg = fmt.Sprintf("chromeos-base/tast-remote-tests-%s-9999", cfg.buildBundle)
 		}
-		bundleDest := cfg.buildCfg.OutPath(filepath.Join(remoteBundleBuildSubdir, cfg.buildBundle))
+		buildDir := filepath.Join(cfg.buildCfg.BaseOutDir, cfg.buildCfg.Arch, remoteBundleBuildSubdir)
 		pkg := path.Join(remoteBundlePkgPathPrefix, cfg.buildBundle)
-		cfg.Logger.Debugf("Building %s from %s to %s", pkg, cfg.buildCfg.TestWorkspace, bundleDest)
-		if out, err := build.Build(ctx, &cfg.buildCfg, pkg, bundleDest, "build_bundle"); err != nil {
+		cfg.Logger.Debugf("Building %s from %s to %s", pkg, cfg.buildCfg.TestWorkspace, buildDir)
+		if out, err := build.Build(ctx, &cfg.buildCfg, pkg, buildDir, "build_bundle"); err != nil {
 			cfg.Logger.Logf("Failed building test bundle: %v\n\n%s", err, out)
 			return subcommands.ExitFailure, nil
 		}
 		cfg.Logger.Logf("Built test bundle in %v", time.Now().Sub(buildStart).Round(time.Millisecond))
 
 		// Only run tests from the newly-built bundle, and get test data from the source tree.
-		bundleGlob = bundleDest
+		bundleGlob = filepath.Join(buildDir, cfg.buildBundle)
 		dataDir = filepath.Join(cfg.buildCfg.TestWorkspace, "src")
 	} else {
 		bundleGlob = filepath.Join(cfg.remoteBundleDir, "*")

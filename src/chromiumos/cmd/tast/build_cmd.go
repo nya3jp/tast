@@ -15,7 +15,7 @@ import (
 	"github.com/google/subcommands"
 )
 
-// buildCmd implements subcommands.Command to support compiling test executables.
+// buildCmd implements subcommands.Command to support compiling executables.
 type buildCmd struct {
 	cfg      build.Config
 	pkg, out string
@@ -24,8 +24,8 @@ type buildCmd struct {
 func (*buildCmd) Name() string     { return "build" }
 func (*buildCmd) Synopsis() string { return "build tests" }
 func (*buildCmd) Usage() string {
-	return `build <flags> <pkg> <out>:
-	Builds an executable package containing tests.
+	return `build <flags> <pkg> <outdir>:
+	Builds an executable package.
 `
 }
 
@@ -48,7 +48,7 @@ func (b *buildCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{
 	}
 
 	if out, err := build.Build(ctx, &b.cfg, f.Args()[0], f.Args()[1], ""); err != nil {
-		lg.Logf("Failed building tests: %v\n%s", err, string(out))
+		lg.Logf("Failed building: %v\n%s", err, string(out))
 		return subcommands.ExitFailure
 	}
 	return subcommands.ExitSuccess

@@ -7,7 +7,6 @@ package runner
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -20,11 +19,10 @@ import (
 	"time"
 
 	"chromiumos/tast/bundle"
+	"chromiumos/tast/command"
 	"chromiumos/tast/control"
 	"chromiumos/tast/testing"
 )
-
-// TODO(derat): Split this into separate args.go and run.go files.
 
 const (
 	statusSuccess      = 0 // runner was successful
@@ -33,35 +31,54 @@ const (
 	statusNoBundles    = 3 // glob passed to runner didn't match any bundles
 	statusNoTests      = 4 // pattern(s) passed to runner didn't match any tests
 	statusBundleFailed = 5 // test bundle exited with nonzero status
+	statusTestFailed   = 6 // one or more tests failed during manual run
 )
 
-// logger is used to write messages to stdout when the runner is executed manually
-// rather than by the tast command.
-var logger *log.Logger = log.New(os.Stdout, "", log.LstdFlags)
-
-// writeError writes a RunError control message to mw if non-nil or writes the message
-// directly to stderr otherwise. After calling this function, the runner should pass
-// the returned status code (which may or may not be equal to the status arg) to os.Exit.
-func writeError(mw *control.MessageWriter, msg string, status int) int {
-	if mw == nil {
-		fmt.Fprintln(os.Stderr, msg)
-		return status
+// Run reads command-line flags from clArgs (in the case of a manual run) or a JSON-marshaled
+// Args struct from stdin (when run by the tast command) and performs the requested action.
+// Default arguments may be passed via args, which is filled with the additional args that are read.
+// The caller should exit with the returned status code.
+func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Args, rt RunnerType) int {
+	if err := readArgs(clArgs, stdin, stderr, args, rt); err != nil {
+		return command.WriteError(stderr, err)
 	}
 
-	_, fn, ln, _ := runtime.Caller(1)
-	mw.WriteMessage(&control.RunError{Time: time.Now(), Error: testing.Error{
-		Reason: msg,
-		File:   fn,
-		Line:   ln,
-		Stack:  string(debug.Stack()),
-	}})
-	// Exit with success when reporting progress via control messages.
-	// The tast command will know that the run failed because of the RunError message.
-	return statusSuccess
+	switch args.Mode {
+	case GetSysInfoStateMode:
+		if err := handleGetSysInfoState(args, stdout); err != nil {
+			return command.WriteError(stderr, err)
+		}
+		return statusSuccess
+	case CollectSysInfoMode:
+		if err := handleCollectSysInfo(args, stdout); err != nil {
+			return command.WriteError(stderr, err)
+		}
+		return statusSuccess
+	case ListTestsMode:
+		_, tests, err := getBundlesAndTests(args)
+		if err != nil {
+			return command.WriteError(stderr, err)
+		}
+		if err := testing.WriteTestsAsJSON(stdout, tests); err != nil {
+			return command.WriteError(stderr, err)
+		}
+		return statusSuccess
+	case RunTestsMode:
+		if args.report {
+			// Success is always reported when running tests on behalf of the tast command.
+			runTestsAndReport(args, stdout)
+		} else if err := runTestsAndLog(args, stdout); err != nil {
+			return command.WriteError(stderr, err)
+		}
+		return statusSuccess
+	default:
+		return command.WriteError(stderr, command.NewStatusErrorf(statusBadArgs, "invalid mode %v", args.Mode))
+	}
 }
 
 // runBundle runs the bundle at path to completion, passing args.
 // The bundle's stdout is copied to the stdout arg.
+// TODO(derat): Move this to bundles.go.
 func runBundle(path string, args *bundle.Args, stdout io.Writer) error {
 	cmd := exec.Command(path)
 	cmd.Stdout = stdout
@@ -74,7 +91,7 @@ func runBundle(path string, args *bundle.Args, stdout io.Writer) error {
 	cmd.Stderr = &stderr
 
 	if err = cmd.Start(); err != nil {
-		return err
+		return command.NewStatusErrorf(statusBundleFailed, "%v", err)
 	}
 
 	jerr := json.NewEncoder(stdin).Encode(args)
@@ -85,115 +102,143 @@ func runBundle(path string, args *bundle.Args, stdout io.Writer) error {
 		return jerr
 	}
 	if err != nil {
-		// Pass back stderr if the bundle wrote anything to it.
+		// Include stderr if the bundle wrote anything to it.
+		var detail string
 		if msg := strings.TrimSpace(stderr.String()); len(msg) > 0 {
-			return fmt.Errorf("%v (%v)", err, msg)
+			detail = fmt.Sprintf(" (%v)", msg)
 		}
-		return err
+		return command.NewStatusErrorf(statusBundleFailed, "%v%s", err, detail)
 	}
 	return nil
 }
 
-// RunTests runs tests across multiple bundles as described by cfg.
-// The returned status code should be passed to os.Exit.
-func RunTests(cfg *RunConfig) int {
-	if len(cfg.tests) == 0 {
-		// If the runner was executed manually, report an error if no tests were matched.
-		if cfg.mw == nil {
-			return writeError(nil, fmt.Sprintf("No tests matched by %v", cfg.bundleArgs.Patterns), statusNoTests)
-		}
-
-		// Otherwise, just report an empty run. It's expected to not match any tests if
-		// both local and remote tests are being run but the user specified a pattern that
-		// matched only local or only remote tests rather than tests of both types.
-		cfg.mw.WriteMessage(&control.RunStart{Time: time.Now()})
-		cfg.mw.WriteMessage(&control.RunEnd{Time: time.Now()})
-		return statusSuccess
+// runTestsAndReport runs bundles serially to perform testing and writes control messages to stdout.
+// Fatal errors are reported via RunError messages, while test errors are reported via TestError messages.
+func runTestsAndReport(args *Args, stdout io.Writer) {
+	mw := control.NewMessageWriter(stdout)
+	bundles, tests, err := getBundlesAndTests(args)
+	if err != nil {
+		mw.WriteMessage(newRunErrorMessagef("Failed enumerating tests: %v", err))
+		return
 	}
 
-	if cfg.bundleArgs.OutDir == "" {
-		var err error
-		if cfg.bundleArgs.OutDir, err = ioutil.TempDir("", "tast_out."); err != nil {
-			return writeError(cfg.mw, fmt.Sprintf("Failed to create out dir: %v", err), statusError)
-		}
-		// If we were run by the tast command, it should clean up the output dir after it copies it over.
-		// Otherwise, we should clean it up ourselves.
-		if cfg.mw == nil {
-			defer os.RemoveAll(cfg.bundleArgs.OutDir)
-		}
-	}
+	mw.WriteMessage(&control.RunStart{Time: time.Now(), NumTests: len(tests)})
 
-	if cfg.mw != nil {
-		cfg.mw.WriteMessage(&control.RunStart{Time: time.Now(), NumTests: len(cfg.tests)})
-	}
+	bundleArgs := args.bundleArgs
+	bundleArgs.Mode = bundle.RunTestsMode
 
-	// Execute bundles serially to run tests.
-	cfg.bundleArgs.Mode = bundle.RunTestsMode
-	for _, bundle := range cfg.bundles {
-		if err := runBundleTests(bundle, cfg); err != nil {
-			return writeError(cfg.mw, fmt.Sprintf("Bundle %v failed: %v", bundle, err), statusBundleFailed)
+	// We expect to not match any tests if both local and remote tests are being run but the
+	// user specified a pattern that matched only local or only remote tests rather than tests
+	// of both types. Don't bother creating an out dir in that case.
+	if len(tests) > 0 {
+		if _, err := createOutDirIfUnset(&bundleArgs); err != nil {
+			mw.WriteMessage(newRunErrorMessagef("Failed to create out dir: %v", err))
+			return
+		}
+
+		for _, bundle := range bundles {
+			// Copy each bundle's output (consisting of control messages) directly to stdout.
+			if err := runBundle(bundle, &bundleArgs, stdout); err != nil {
+				// TODO(derat): The tast command currently aborts the run as soon as it sees a RunError
+				// message, but consider changing that and continuing to run other bundles here.
+				mw.WriteMessage(newRunErrorMessagef("Bundle %v failed: %v", bundle, err))
+				return
+			}
 		}
 	}
 
-	if cfg.mw != nil {
-		cfg.mw.WriteMessage(&control.RunEnd{Time: time.Now(), OutDir: cfg.bundleArgs.OutDir})
-	}
-
-	return statusSuccess
+	mw.WriteMessage(&control.RunEnd{Time: time.Now(), OutDir: bundleArgs.OutDir})
 }
 
-// runBundleTests executes tests in the bundle at path bundle as instructed by cfg.
-func runBundleTests(bundle string, cfg *RunConfig) error {
-	// When we were run by the tast command, just copy stdout over directly.
-	if cfg.mw != nil {
-		return runBundle(bundle, &cfg.bundleArgs, cfg.stdout)
-	}
-
-	// When we were run manually, read control messages from stdout so we can log
-	// them in a human-readable form.
-
-	// First, start a goroutine to log messages as they're produced by the bundle.
-	pr, pw := io.Pipe()
-	ch := make(chan error, 1)
-	go func() { ch <- logBundleOutputForManualRun(pr) }()
-
-	// Run the bundle to completion, copying its output to the goroutine over the pipe.
-	if err := runBundle(bundle, &cfg.bundleArgs, pw); err != nil {
-		pw.Close()
+// runTestsAndReport runs bundles serially to perform testing and logs human-readable results to stdout.
+// Errors are returned both for fatal errors and for errors in individual tests.
+func runTestsAndLog(args *Args, stdout io.Writer) error {
+	lg := log.New(stdout, "", log.LstdFlags)
+	bundles, tests, err := getBundlesAndTests(args)
+	if err != nil {
 		return err
+	} else if len(tests) == 0 {
+		return command.NewStatusErrorf(statusNoTests, "no tests matched")
 	}
-	pw.Close()
 
-	// Finally, wait for the goroutine to finish and return its result.
-	return <-ch
-}
+	bundleArgs := args.bundleArgs
+	bundleArgs.Mode = bundle.RunTestsMode
 
-// logBundleOutputForManualRun reads control messages from src and logs them to stdout.
-// It is used to print human-readable test output when the runner is executed manually rather
-// than via the tast command. An error is returned if any TestError messages are read from src.
-func logBundleOutputForManualRun(src io.Reader) error {
-	failed := false
-	mr := control.NewMessageReader(src)
-	for mr.More() {
-		msg, err := mr.ReadMessage()
+	// If the user didn't specify an out dir, create a temporary one and clean it up later.
+	if created, err := createOutDirIfUnset(&bundleArgs); err != nil {
+		return command.NewStatusErrorf(statusError, "failed creating out dir: %v", err)
+	} else if created {
+		defer os.RemoveAll(bundleArgs.OutDir)
+	}
+
+	var testErr error
+	for _, bundle := range bundles {
+		// First, start a goroutine to log messages as they're produced by the bundle.
+		pr, pw := io.Pipe()
+		ch := make(chan error, 1)
+		go func() { ch <- logBundleOutput(pr, lg) }()
+
+		// Run the bundle to completion, copying its output to the goroutine over the pipe.
+		err := runBundle(bundle, &bundleArgs, pw)
+		pw.Close()
 		if err != nil {
 			return err
 		}
+
+		// Save any test error reported by the bundle.
+		testErr = <-ch
+	}
+	return testErr
+}
+
+// newRunErrorMessagef returns a new RunError control message.
+func newRunErrorMessagef(format string, args ...interface{}) *control.RunError {
+	_, fn, ln, _ := runtime.Caller(1)
+	return &control.RunError{Time: time.Now(), Error: testing.Error{
+		Reason: fmt.Sprintf(format, args...),
+		File:   fn,
+		Line:   ln,
+		Stack:  string(debug.Stack()),
+	}}
+}
+
+// createOutDirIfUnset creates and assigns a temporary directory if args.OutDir is empty.
+func createOutDirIfUnset(args *bundle.Args) (created bool, err error) {
+	if args.OutDir != "" {
+		return false, nil
+	}
+	if args.OutDir, err = ioutil.TempDir("", "tast_out."); err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+// logBundleOutput reads a bundle's control messages from r and logs them to lg
+// It is used to print human-readable test output when the runner is executed manually rather
+// than via the tast command. An error is returned if any TestError messages are read.
+func logBundleOutput(r io.Reader, lg *log.Logger) error {
+	failed := false
+	mr := control.NewMessageReader(r)
+	for mr.More() {
+		msg, err := mr.ReadMessage()
+		if err != nil {
+			return command.NewStatusErrorf(statusBundleFailed, "bundle produced bad output: %v", err)
+		}
 		switch v := msg.(type) {
 		case *control.TestStart:
-			logger.Print("Running ", v.Test.Name)
+			lg.Print("Running ", v.Test.Name)
 		case *control.TestLog:
-			logger.Print(v.Text)
+			lg.Print(v.Text)
 		case *control.TestError:
-			logger.Printf("Error: [%s:%d] %v", v.Error.File, v.Error.Line, v.Error.Reason)
+			lg.Printf("Error: [%s:%d] %v", v.Error.File, v.Error.Line, v.Error.Reason)
 			failed = true
 		case *control.TestEnd:
-			logger.Print("Finished ", v.Name)
+			lg.Print("Finished ", v.Name)
 		}
 	}
 
 	if failed {
-		return errors.New("Test(s) failed")
+		return command.NewStatusErrorf(statusTestFailed, "test(s) failed")
 	}
 	return nil
 }

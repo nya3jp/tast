@@ -24,9 +24,5 @@ func main() {
 		BundleGlob: defaultBundleGlob,
 		DataDir:    defaultDataDir,
 	}
-	cfg, status := runner.ParseArgs(os.Args[1:], os.Stdin, os.Stdout, &args, runner.RemoteRunner)
-	if status != 0 || cfg == nil {
-		os.Exit(status)
-	}
-	os.Exit(runner.RunTests(cfg))
+	os.Exit(runner.Run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, &args, runner.RemoteRunner))
 }

@@ -70,6 +70,24 @@
       "revId": "4493c8196d28d695a1afbbaf49c01f613a854514",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c9bda57e_786da507",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1119004
+      },
+      "writtenOn": "2018-04-25T23:38:05Z",
+      "side": 1,
+      "message": "If you\u0027re invoking x86_64-cros-linux-gnu-go, armv7a-cros-linux-gnueabi-go, or even the host x86_64-pc-linux-gnu-go from /usr/bin, they\u0027re wrappers that override these GO_* variables. i.e. armv7a-cros-linux-gnueabi-go will cross-compile for arm even if the user has GOARCH set to something else.",
+      "parentUuid": "a686c70f_3f711e77",
+      "revId": "4493c8196d28d695a1afbbaf49c01f613a854514",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

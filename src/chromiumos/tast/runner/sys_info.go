@@ -6,11 +6,11 @@ package runner
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
 
+	"chromiumos/tast/command"
 	"chromiumos/tast/crash"
 	"chromiumos/tast/logs"
 )
@@ -23,7 +23,7 @@ const (
 // and crash reports) and writes a JSON-marshaled GetSysInfoStateResult struct to w.
 func handleGetSysInfoState(args *Args, w io.Writer) error {
 	if args.SystemLogDir == "" || len(args.SystemCrashDirs) == 0 {
-		return errors.New("system info collection unsupported")
+		return command.NewStatusErrorf(statusBadArgs, "system info collection unsupported")
 	}
 
 	res := GetSysInfoStateResult{}
@@ -49,7 +49,7 @@ func handleGetSysInfoState(args *Args, w io.Writer) error {
 // was generated into temporary directories and writes a JSON-marshaled CollectSysInfoResult struct to w.
 func handleCollectSysInfo(args *Args, w io.Writer) error {
 	if args.SystemLogDir == "" || len(args.SystemCrashDirs) == 0 {
-		return errors.New("system info collection unsupported")
+		return command.NewStatusErrorf(statusBadArgs, "system info collection unsupported")
 	}
 
 	cmdArgs := &args.CollectSysInfoArgs

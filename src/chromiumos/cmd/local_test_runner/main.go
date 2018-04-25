@@ -28,9 +28,5 @@ func main() {
 		SystemLogDir:    systemLogDir,
 		SystemCrashDirs: []string{crash.DefaultCrashDir, crash.ChromeCrashDir},
 	}
-	cfg, status := runner.ParseArgs(os.Args[1:], os.Stdin, os.Stdout, &args, runner.LocalRunner)
-	if status != 0 || cfg == nil {
-		os.Exit(status)
-	}
-	os.Exit(runner.RunTests(cfg))
+	os.Exit(runner.Run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, &args, runner.LocalRunner))
 }

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8a393c55_6e239560",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1119004
+      },
+      "writtenOn": "2018-04-25T22:28:22Z",
+      "side": 1,
+      "message": "I don\u0027t see why setting $HOME is necessary here. It should be getting passed automatically from the environment, right?\n\nIs this code called during an emerge, because that would explain it. Every ebuild sets $HOME to a directory inside its work area. This would make the go cache useless since there would be a new one for every emerge and it would get wiped after the emerge is done.\n\nMaybe you should set $GOCACHE to explicitly point to a directory to use for the build cache.",
+      "revId": "4493c8196d28d695a1afbbaf49c01f613a854514",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

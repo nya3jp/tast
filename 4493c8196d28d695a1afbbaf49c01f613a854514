@@ -34,6 +34,24 @@
       "revId": "4493c8196d28d695a1afbbaf49c01f613a854514",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3c799b87_5ee393af",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1119004
+      },
+      "writtenOn": "2018-04-25T23:21:12Z",
+      "side": 1,
+      "message": "I see. Looking at the canonical example for exec.Command: https://golang.org/pkg/os/exec/#Command\n\nIt would be cleaner to write:\n\ncmd.Env \u003d append(os.Environ(),\n        \"GOPATH\u003d\" + strings.Join([]string{cfg.TestWorkspace, cfg.CommonWorkspace, cfg.SysGopath}, \":\"),\n        \"GOBIN\u003d\" + outDir,\n)\n\nThose two look like the only two variables you need to override, with everything else coming from the environment.",
+      "parentUuid": "66130302_726c5e01",
+      "revId": "4493c8196d28d695a1afbbaf49c01f613a854514",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "157fb670_c4c9fc0a",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-04-25T04:43:30Z",
+      "side": 0,
+      "message": "this code is in run() now",
+      "revId": "5652bb59477d3aa02fc4505be480ecfe8a476bdc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1907da4c_85d0ad0a",
+        "filename": "src/chromiumos/tast/bundle/args_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-04-25T04:43:30Z",
+      "side": 0,
+      "message": "this is in bundle_test.go now",
+      "revId": "5652bb59477d3aa02fc4505be480ecfe8a476bdc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "31ea3ce2_7309a1f1",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-04-25T04:43:30Z",
+      "side": 0,
+      "message": "earlier refactoring deleted the code that used this",
+      "revId": "5652bb59477d3aa02fc4505be480ecfe8a476bdc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -16,6 +16,24 @@
       "revId": "4493c8196d28d695a1afbbaf49c01f613a854514",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "66130302_726c5e01",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-04-25T22:44:44Z",
+      "side": 1,
+      "message": "this code is executed by the tast command when a developer wants to rebuild and execute tests as described at https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/running_tests.md#Controlling-whether-tests-are-rebuilt.\n\nexec.Cmd starts out with an empty environment, as far as i\u0027m aware -- that\u0027s why i\u0027m copying over HOME from the current environment. i could copy all of os.Environ to it, but it seems safer to only set the vars that i need to use here.\n\ncopying over GOCACHE in case the user has set it to something else makes sense, though -- i\u0027ll do that.",
+      "parentUuid": "8a393c55_6e239560",
+      "revId": "4493c8196d28d695a1afbbaf49c01f613a854514",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

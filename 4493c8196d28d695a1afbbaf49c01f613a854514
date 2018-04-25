@@ -52,6 +52,24 @@
       "revId": "4493c8196d28d695a1afbbaf49c01f613a854514",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a686c70f_3f711e77",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-04-25T23:28:18Z",
+      "side": 1,
+      "message": "there are various other GO___ variables (GOOS, GOARCH, GOROOT, etc.). i think that starting with a clean environment is safer than hoping that the user hasn\u0027t set anything that will mess up what this command is trying to do.",
+      "parentUuid": "3c799b87_5ee393af",
+      "revId": "4493c8196d28d695a1afbbaf49c01f613a854514",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

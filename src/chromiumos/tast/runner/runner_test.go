@@ -26,6 +26,9 @@ import (
 const (
 	// Prefix for bundles created by createBundleSymlinks.
 	bundlePrefix = "fake_bundle"
+
+	// Message written to stderr by runFakeBundle when no tests were registered.
+	noTestsError = "no tests in bundle"
 )
 
 func init() {
@@ -86,6 +89,13 @@ func runFakeBundle() int {
 	if err != nil {
 		log.Fatalf("Bad bundle number %q in filename %q", parts[1], os.Args[0])
 	}
+
+	// Write a hardcoded error message if no tests were specified.
+	if len(parts[2]) == 0 {
+		fmt.Fprintf(os.Stderr, "%s\n", noTestsError)
+		os.Exit(1)
+	}
+
 	for i, res := range parts[2] {
 		var f testing.TestFunc
 		if res == 'p' {
@@ -374,6 +384,33 @@ func TestRunTestsFailForErrorWhenRunManually(t *gotesting.T) {
 	cfg, _, _ := callParseArgsCL(t, clArgs, statusSuccess, true)
 	if status := RunTests(cfg); status != statusBundleFailed {
 		t.Fatalf("RunConfig(%+v) = %v; want %v", cfg, status, statusBundleFailed)
+	}
+}
+
+func TestRunTestsPrintBundleError(t *gotesting.T) {
+	// Without any tests, the bundle should report failure.
+	dir := createBundleSymlinks(t, []bool{})
+	defer os.RemoveAll(dir)
+
+	// parseArgs should report success, but it should write a RunError control message.
+	args := Args{
+		Mode:       RunTestsMode,
+		BundleGlob: filepath.Join(dir, "*"),
+	}
+	_, stdout, _ := callParseArgsStdin(t, nil, &args, statusSuccess, false)
+
+	// The RunError control message should contain the error message that the bundle wrote to stderr.
+	var msg *control.RunError
+	for _, m := range readAllMessages(t, stdout) {
+		if re, ok := m.(*control.RunError); ok {
+			msg = re
+			break
+		}
+	}
+	if msg == nil {
+		t.Fatal("No RunError message for failed bundle")
+	} else if !strings.Contains(msg.Error.Reason, noTestsError) {
+		t.Fatalf("RunError message %q doesn't contain bundle stderr message %q", msg.Error.Reason, noTestsError)
 	}
 }
 

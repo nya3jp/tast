@@ -5,6 +5,7 @@
 package runner
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -15,6 +16,7 @@ import (
 	"os/exec"
 	"runtime"
 	"runtime/debug"
+	"strings"
 	"time"
 
 	"chromiumos/tast/bundle"
@@ -67,6 +69,10 @@ func runBundle(path string, args *bundle.Args, stdout io.Writer) error {
 	if err != nil {
 		return err
 	}
+	// Save stderr so we can return it to aid in debugging.
+	stderr := bytes.Buffer{}
+	cmd.Stderr = &stderr
+
 	if err = cmd.Start(); err != nil {
 		return err
 	}
@@ -79,12 +85,13 @@ func runBundle(path string, args *bundle.Args, stdout io.Writer) error {
 		return jerr
 	}
 	if err != nil {
-		// Pass back stderr if the command reported an error.
-		if ee, ok := err.(*exec.ExitError); ok {
-			return errors.New(string(ee.Stderr))
+		// Pass back stderr if the bundle wrote anything to it.
+		if msg := strings.TrimSpace(stderr.String()); len(msg) > 0 {
+			return fmt.Errorf("%v (%v)", err, msg)
 		}
+		return err
 	}
-	return err
+	return nil
 }
 
 // RunTests runs tests across multiple bundles as described by cfg.

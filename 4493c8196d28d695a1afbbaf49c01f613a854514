@@ -106,6 +106,24 @@
       "revId": "4493c8196d28d695a1afbbaf49c01f613a854514",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cabd2877_65ec2492",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1119004
+      },
+      "writtenOn": "2018-04-26T02:10:43Z",
+      "side": 1,
+      "message": "Argument in favor is that it\u0027s the default/expected unix behavior (exec\u0027ed commands inherit environment from parent).\nAlso in bash, when someone runs:\n$ A\u003d\"some value\" B\u003d\"value2\" foo bar\nThe \"foo\" process gets the specified values for $A/$B, but it also gets all the rest of the environment from the shell. You really have to go out of the way in a shell to clear the environment, e.g. by prepending a command with \"env -i\". It is rarely done in practice.\nGo\u0027s default, if you don\u0027t set cmd.Env, is also to inherit the full environment. It\u0027s only when cmd.Env is non-nil, it clears the environment and only passes the variables in cmd.Env. I think the canonical example in the documentation is written exactly to suggest what the usage should be to get the typical Unix shell behavior.",
+      "parentUuid": "ff489b8a_0eb0e882",
+      "revId": "4493c8196d28d695a1afbbaf49c01f613a854514",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

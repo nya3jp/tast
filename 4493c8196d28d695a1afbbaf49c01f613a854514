@@ -214,6 +214,24 @@
       "revId": "4493c8196d28d695a1afbbaf49c01f613a854514",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f38f53ff_839c1a0c",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1119004
+      },
+      "writtenOn": "2018-04-26T20:59:59Z",
+      "side": 1,
+      "message": "It\u0027s \u0027sudo\u0027 which does that, not portage. e.g.\n$ sudo emerge .../...\nsudo will clear the environment, so if you want to set USE flags,\n\nthis doesn\u0027t work:\n$ USE\u003dgold sudo emerge .../...\n\nbut this does:\n$ sudo USE\u003dgold emerge .../...\n\nNote that our wrappers for the boards (e.g. emerge-chell), specifically invoke sudo with \"sudo -E\" so it preserves the environment. It makes \"USE\u003dgold emerge-chell .../...\" work.",
+      "parentUuid": "65b2c6d6_63121160",
+      "revId": "4493c8196d28d695a1afbbaf49c01f613a854514",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

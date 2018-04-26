@@ -250,6 +250,24 @@
       "revId": "4493c8196d28d695a1afbbaf49c01f613a854514",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a756d820_0a33a372",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1119004
+      },
+      "writtenOn": "2018-04-26T21:42:21Z",
+      "side": 1,
+      "message": "Yes, it has logic to decide which cross-compiler to use etc., but even then, it honors environment variables. i.e. you can run:\n$ sudo CC\u003dnewcc emerge .../...\nand it will use the specified compiler for the build. It\u0027ll even pass it down to make, or any build wrapper scripts you might invoke from src_compile(). \nAn ebuild has to explicitly override CC before invoking emake if it wants to avoid this behavior.\nThe eclasses also have logic to figure out CFLAGS to use, but in most cases, this logic only appends to the CFLAGS coming in from the environment.\n\nAccording to https://devmanual.gentoo.org/ebuild-writing/functions/src_compile/build-environment/index.html : \"Ebuilds must not simply ignore user CFLAGS, CXXFLAGS or LDFLAGS\".\n\nAnd according to https://devmanual.gentoo.org/general-concepts/user-environment/index.html : \"Currently no sanitisation is performed upon the environment\".",
+      "parentUuid": "d84927d0_44541d6f",
+      "revId": "4493c8196d28d695a1afbbaf49c01f613a854514",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

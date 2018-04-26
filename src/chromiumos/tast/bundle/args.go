@@ -11,6 +11,7 @@ import (
 	"sort"
 	"strings"
 
+	"chromiumos/tast/command"
 	"chromiumos/tast/testing"
 )
 
@@ -65,22 +66,22 @@ const (
 // Matched tests are returned. The caller is responsible for performing the requested action.
 func readArgs(stdin io.Reader, args *Args, bt bundleType) ([]*testing.Test, error) {
 	if err := json.NewDecoder(stdin).Decode(args); err != nil {
-		return nil, newBundleErrorf(statusBadArgs, "failed to decode args from stdin: %v", err)
+		return nil, command.NewStatusErrorf(statusBadArgs, "failed to decode args from stdin: %v", err)
 	}
 	if bt != remoteBundle && args.RemoteArgs != (RemoteArgs{}) {
-		return nil, newBundleErrorf(statusBadArgs, "remote-only args %+v passed to non-remote bundle", args.RemoteArgs)
+		return nil, command.NewStatusErrorf(statusBadArgs, "remote-only args %+v passed to non-remote bundle", args.RemoteArgs)
 	}
 	if errs := testing.RegistrationErrors(); len(errs) > 0 {
 		es := make([]string, len(errs))
 		for i, err := range errs {
 			es[i] = err.Error()
 		}
-		return nil, newBundleErrorf(statusBadTests, "error(s) in registered tests: %v", strings.Join(es, ", "))
+		return nil, command.NewStatusErrorf(statusBadTests, "error(s) in registered tests: %v", strings.Join(es, ", "))
 	}
 
 	tests, err := testsToRun(args.Patterns)
 	if err != nil {
-		return nil, newBundleErrorf(statusBadPatterns, "failed getting tests for %v: %v", args.Patterns, err.Error())
+		return nil, command.NewStatusErrorf(statusBadPatterns, "failed getting tests for %v: %v", args.Patterns, err.Error())
 	}
 	sort.Slice(tests, func(i, j int) bool { return tests[i].Name < tests[j].Name })
 	return tests, nil

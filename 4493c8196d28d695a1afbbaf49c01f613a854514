@@ -142,6 +142,24 @@
       "revId": "4493c8196d28d695a1afbbaf49c01f613a854514",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ed0a889c_162f4427",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2018-04-26T16:00:00Z",
+      "side": 1,
+      "message": "You\u0027re both right. I would argue that Go-execing-Go is a special case because Go is not in the GNU ecosystem--they even wrote their own libc replacement. For example, there are environment variables that affect the GNU ld behavior and variables that affect the GNU glibc memory allocator--both of those are examples of variables that would have no meaning in Go-execing-Go world.\n\nI think that it\u0027s reasonable to want to have a hermetic build environment as far as building Go programs is concerned. The only thing that I would worry about would be unforeseen requirements to pass GO* variables to the subprocesses. Having to make code changes to support that when it arises in the future isn\u0027t going to be fun. So, I think we should have a command line argument that allows explicit variables to be set in the environ for Go subprocesses. That way, you get your hermetic build environment with a controlled escape hatch.",
+      "parentUuid": "7dc19c10_969a92f3",
+      "revId": "4493c8196d28d695a1afbbaf49c01f613a854514",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

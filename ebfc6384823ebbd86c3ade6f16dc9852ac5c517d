@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8c4e284e_adaab9f8",
+        "filename": "src/chromiumos/tast/command/error.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-04-26T01:25:03Z",
+      "side": 1,
+      "message": "with the exception of the new Status method, this is just moved from bundle/bundle.go with s/bundleError/StatusError/",
+      "revId": "ebfc6384823ebbd86c3ade6f16dc9852ac5c517d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9671bdb1_f5c573dc",
+        "filename": "src/chromiumos/tast/command/error_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-04-26T01:25:03Z",
+      "side": 1,
+      "message": "this is new",
+      "revId": "ebfc6384823ebbd86c3ade6f16dc9852ac5c517d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -196,6 +196,24 @@
       "revId": "4493c8196d28d695a1afbbaf49c01f613a854514",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "65b2c6d6_63121160",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2018-04-26T20:15:25Z",
+      "side": 1,
+      "message": "\u003e Portage does a pretty hermetic/sandboxed build (it even sets $HOME to a temporary directory in its work area), but even emerge doesn\u0027t go to the length of clearing all environment variables.\n\nI don\u0027t think that this is true: Portage resets pretty much everything that might possibly be related to any kind of build behavior precisely for the reason that Dan is considering in this CL. Every variable that can be set at an \"VAR\u003dvalue emerge\" has to be explicitly support by special handling by various eclasses. We just went through this for adding Meson support to Portage.",
+      "parentUuid": "bb6be1db_1c73c815",
+      "revId": "4493c8196d28d695a1afbbaf49c01f613a854514",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

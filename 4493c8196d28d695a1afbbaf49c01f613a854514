@@ -178,6 +178,24 @@
       "revId": "4493c8196d28d695a1afbbaf49c01f613a854514",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bb6be1db_1c73c815",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1119004
+      },
+      "writtenOn": "2018-04-26T18:39:46Z",
+      "side": 1,
+      "message": "Fwiw, the default fork/execv behavior in a C program is to inherit the environment from parent to the child process.\n\nFor better or worse, the purpose of environment variables in Unix is to pass information from a parent process down the process tree without each intermediate process handling it explicitly and passing it down as arguments. It is like a set of variables that are local to a process tree (with the caveat that changes don\u0027t propagate to existing processes, only new processes in the tree rooted at the modifying process see the change).\n\nThis works only if random processes in the middle of the tree don\u0027t clear the information, and so this clearing is traditionally done very rarely (sudo does it, maybe a handful of other system utilities, but this is not common).\n\nPassing environment variables down via flags (i.e. -buildenv\u003dHOME/$HOME) defeats the whole point of having environment variables in Unix. Imagine how painful it would be if even a small number of random unix utilities started implementing this semantics: clear environment by default, and only pass down variables set in command line flags!!\n\nIf anything, the use case here is similar to build tools, e.g. make, and all of those pass on the environment variables to their child processes when they invoke the compilers, linkers, etc.\n\nPortage does a pretty hermetic/sandboxed build (it even sets $HOME to a temporary directory in its work area), but even emerge doesn\u0027t go to the length of clearing all environment variables.\n\nOver here, any issues that this clearing of the environment is attempting to avoid, the user would encounter those same issues if they invoke \"armv7a-cros-linux-gnueabi-go\" directly. I have not heard even one such case where a user\u0027s environment resulted in \"armv7a-cros-linux-gnueabi-go\" producing incorrect or confusing result.\n\nEven if there were cases where an environment variable interfered with expected \"armv7a-cros-linux-gnueabi-go\" behavior, it would be better solved in the \"armv7a-cros-linux-gnueabi-go\" wrapper so it works for all users, instead of here in \"tast\", where it only fixes \"armv7a-cros-linux-gnueabi-go\" invocations from \"tast\".",
+      "parentUuid": "118734de_d622a2a4",
+      "revId": "4493c8196d28d695a1afbbaf49c01f613a854514",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

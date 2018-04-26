@@ -13,16 +13,17 @@ import (
 	gotesting "testing"
 	"time"
 
+	"chromiumos/tast/command"
 	"chromiumos/tast/control"
 	"chromiumos/tast/testing"
 	"chromiumos/tast/testutil"
 )
 
-// errorHasStatus returns true if err is of type *bundleError and contains the supplied status code.
+// errorHasStatus returns true if err is of type *command.StatusError and contains the supplied status code.
 func errorHasStatus(err error, status int) bool {
-	if be, ok := err.(*bundleError); !ok {
+	if se, ok := err.(*command.StatusError); !ok {
 		return false
-	} else if be.status != status {
+	} else if se.Status() != status {
 		return false
 	}
 	return true

@@ -124,6 +124,24 @@
       "revId": "4493c8196d28d695a1afbbaf49c01f613a854514",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7dc19c10_969a92f3",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-04-26T04:08:21Z",
+      "side": 1,
+      "message": "but this isn\u0027t a shell -- i think that the closest analogy would be fork/exec in a C program.\n\ntast wants to build a test bundle in a particular way for the user. the user doesn\u0027t have any knowledge about which other commands tast is going to run; they just asked it to rebuild some tests before running them. controlling the environment within which the compiler runs seems like the best way to make that work in a repeatable way across different systems.",
+      "parentUuid": "cabd2877_65ec2492",
+      "revId": "4493c8196d28d695a1afbbaf49c01f613a854514",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

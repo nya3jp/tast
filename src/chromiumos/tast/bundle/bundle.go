@@ -6,12 +6,12 @@ package bundle
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"time"
 
+	"chromiumos/tast/command"
 	"chromiumos/tast/control"
 	"chromiumos/tast/testing"
 )
@@ -25,42 +25,6 @@ const (
 	statusNoTests     = 5 // no tests were matched by the supplied patterns
 )
 
-// bundleError implements the error interface and contains an additional status code.
-type bundleError struct {
-	msg    string
-	status int
-}
-
-func (e *bundleError) Error() string {
-	return fmt.Sprintf("%v (status %v)", e.msg, e.status)
-}
-
-// newBundleError creates a bundleError with the passed status code and formatted string.
-func newBundleErrorf(status int, format string, args ...interface{}) *bundleError {
-	return &bundleError{fmt.Sprintf(format, args...), status}
-}
-
-// writeError writes a newline-terminated fatal error to stderr and returns the status code to use when exiting.
-func writeError(stderr io.Writer, err error) int {
-	var msg string
-	var status int
-
-	if be, ok := err.(*bundleError); ok {
-		msg = be.msg
-		status = be.status
-	} else {
-		msg = err.Error()
-		status = statusError
-	}
-
-	if len(msg) > 0 && msg[len(msg)-1] != '\n' {
-		msg += "\n"
-	}
-	io.WriteString(stderr, msg)
-
-	return status
-}
-
 // run reads a JSON-marshaled Args struct from stdin and performs the requested action.
 // Default arguments may be specified via args, which will also be updated from stdin.
 // The caller should exit with the returned status code.
@@ -68,22 +32,22 @@ func run(ctx context.Context, stdin io.Reader, stdout, stderr io.Writer,
 	args *Args, cfg *runConfig, bt bundleType) int {
 	tests, err := readArgs(stdin, args, bt)
 	if err != nil {
-		return writeError(stderr, err)
+		return command.WriteError(stderr, err)
 	}
 
 	switch args.Mode {
 	case ListTestsMode:
 		if err := testing.WriteTestsAsJSON(stdout, tests); err != nil {
-			return writeError(stderr, err)
+			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
 	case RunTestsMode:
 		if err := runTests(ctx, stdout, args, cfg, tests); err != nil {
-			return writeError(stderr, err)
+			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
 	default:
-		return writeError(stderr, newBundleErrorf(statusBadArgs, "invalid mode %v", args.Mode))
+		return command.WriteError(stderr, command.NewStatusErrorf(statusBadArgs, "invalid mode %v", args.Mode))
 	}
 }
 
@@ -110,13 +74,13 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 	mw := control.NewMessageWriter(stdout)
 
 	if len(tests) == 0 {
-		return newBundleErrorf(statusNoTests, "no tests matched by pattern(s)")
+		return command.NewStatusErrorf(statusNoTests, "no tests matched by pattern(s)")
 	}
 
 	if cfg.runSetupFunc != nil {
 		var err error
 		if ctx, err = cfg.runSetupFunc(ctx); err != nil {
-			return newBundleErrorf(statusError, "run setup failed: %v", err)
+			return command.NewStatusErrorf(statusError, "run setup failed: %v", err)
 		}
 	}
 
@@ -131,12 +95,12 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 
 		outDir := filepath.Join(args.OutDir, test.Name)
 		if err := os.MkdirAll(outDir, 0755); err != nil {
-			return newBundleErrorf(statusError, "failed to create output dir: %v", err)
+			return command.NewStatusErrorf(statusError, "failed to create output dir: %v", err)
 		}
 
 		if cfg.testSetupFunc != nil {
 			if err := cfg.testSetupFunc(ctx); err != nil {
-				return newBundleErrorf(statusError, "test setup failed: %v", err)
+				return command.NewStatusErrorf(statusError, "test setup failed: %v", err)
 			}
 		}
 		ch := make(chan testing.Output)
@@ -157,7 +121,7 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 
 	if cfg.runCleanupFunc != nil {
 		if err := cfg.runCleanupFunc(ctx); err != nil {
-			return newBundleErrorf(statusError, "run cleanup failed: %v", err)
+			return command.NewStatusErrorf(statusError, "run cleanup failed: %v", err)
 		}
 	}
 	return nil

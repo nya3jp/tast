@@ -16,6 +16,24 @@
       "revId": "d9a0f42aa9f03225b319e2c4c3364a1323553093",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e0326fcc_a8ec3644",
+        "filename": "src/chromiumos/tast/runner/runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2018-04-27T04:37:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "8ac9d8a8_ff33fe33",
+      "revId": "d9a0f42aa9f03225b319e2c4c3364a1323553093",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

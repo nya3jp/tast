@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8ac9d8a8_ff33fe33",
+        "filename": "src/chromiumos/tast/runner/runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-04-27T02:21:59Z",
+      "side": 1,
+      "message": "there\u0027s a small amount of duplication between this function and runTestsAndLog, but they\u0027re different enough that this seems better to me:\n\n- report writes control messages, log writes human-readable log messages\n- report uses RunError control messages to communicate failure, log exits with nonzero status codes\n- report copies test bundle output directly to stdout, log needs to decode it and write human-readable messages\n- report doesn\u0027t care when tests fail, log needs to exit with a nonzero status code\netc.\n\ni also experimented with adding an interface to handle the differences between the two modes, but the extra layer of abstraction made it a lot harder to follow the code.",
+      "revId": "d9a0f42aa9f03225b319e2c4c3364a1323553093",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

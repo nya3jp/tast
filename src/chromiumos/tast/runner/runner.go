@@ -5,17 +5,13 @@
 package runner
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
 	"os"
-	"os/exec"
 	"runtime"
 	"runtime/debug"
-	"strings"
 	"time"
 
 	"chromiumos/tast/bundle"
@@ -74,42 +70,6 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Args,
 	default:
 		return command.WriteError(stderr, command.NewStatusErrorf(statusBadArgs, "invalid mode %v", args.Mode))
 	}
-}
-
-// runBundle runs the bundle at path to completion, passing args.
-// The bundle's stdout is copied to the stdout arg.
-// TODO(derat): Move this to bundles.go.
-func runBundle(path string, args *bundle.Args, stdout io.Writer) error {
-	cmd := exec.Command(path)
-	cmd.Stdout = stdout
-	stdin, err := cmd.StdinPipe()
-	if err != nil {
-		return err
-	}
-	// Save stderr so we can return it to aid in debugging.
-	stderr := bytes.Buffer{}
-	cmd.Stderr = &stderr
-
-	if err = cmd.Start(); err != nil {
-		return command.NewStatusErrorf(statusBundleFailed, "%v", err)
-	}
-
-	jerr := json.NewEncoder(stdin).Encode(args)
-	stdin.Close()
-	err = cmd.Wait()
-
-	if jerr != nil {
-		return jerr
-	}
-	if err != nil {
-		// Include stderr if the bundle wrote anything to it.
-		var detail string
-		if msg := strings.TrimSpace(stderr.String()); len(msg) > 0 {
-			detail = fmt.Sprintf(" (%v)", msg)
-		}
-		return command.NewStatusErrorf(statusBundleFailed, "%v%s", err, detail)
-	}
-	return nil
 }
 
 // runTestsAndReport runs bundles serially to perform testing and writes control messages to stdout.

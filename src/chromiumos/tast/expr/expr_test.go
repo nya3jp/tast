@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package attr
+package expr
 
 import (
 	"strings"
@@ -32,9 +32,9 @@ func TestGoodExpr(t *testing.T) {
 		{"\"a:b\"", "a:b c", true},
 		{"\"a:b\"", "a", false},
 	} {
-		e, err := NewExpr(tc.expr)
+		e, err := New(tc.expr)
 		if err != nil {
-			t.Errorf("NewExpr(%q) failed: %v", tc.expr, err)
+			t.Errorf("New(%q) failed: %v", tc.expr, err)
 		}
 		if actMatch := e.Matches(strings.Fields(tc.attr)); actMatch != tc.expMatch {
 			t.Errorf("%q Matches(%q) = %v; want %v", tc.expr, tc.attr, actMatch, tc.expMatch)
@@ -51,8 +51,8 @@ func TestBadExpr(t *testing.T) {
 		"(a && b",
 		"a:b",
 	} {
-		if _, err := NewExpr(s); err == nil {
-			t.Errorf("NewExpr(%q) unexpectedly succeeded", s)
+		if _, err := New(s); err == nil {
+			t.Errorf("New(%q) unexpectedly succeeded", s)
 		}
 	}
 }

@@ -10,7 +10,7 @@ import (
 	"strings"
 	"unicode"
 
-	"chromiumos/tast/testing/attr"
+	"chromiumos/tast/expr"
 )
 
 var testNameRegexp *regexp.Regexp
@@ -125,7 +125,7 @@ func (r *Registry) TestsForPatterns(ps []string) ([]*Test, error) {
 // TestsForAttrExpr returns registered tests with attributes matched by s,
 // a boolean expression of attributes, e.g. "(attr1 && !attr2) || attr3".
 func (r *Registry) TestsForAttrExpr(s string) ([]*Test, error) {
-	expr, err := attr.NewExpr(s)
+	expr, err := expr.New(s)
 	if err != nil {
 		return nil, fmt.Errorf("bad expr: %v", err)
 	}

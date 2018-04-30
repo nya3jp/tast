@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Package attr provides support for working with test attributes.
-package attr
+// Package expr provides support for evaluating boolean expressions.
+package expr
 
 import (
 	"fmt"
@@ -12,7 +12,7 @@ import (
 	"go/token"
 )
 
-// Expr holds a parsed boolean expression that matches some combination of test attributes.
+// Expr holds a parsed boolean expression that matches some combination of attributes.
 //
 // The expression syntax is conveniently a subset of Go's syntax, so Go's parser and ast
 // packages are used to convert the initial expression into a binary expression tree.
@@ -21,7 +21,7 @@ type Expr struct {
 }
 
 // exprValidator is used to validate that a parsed Go expression is a
-// valid attribute expression. It implements the ast.Visitor interface.
+// valid boolean expression. It implements the ast.Visitor interface.
 type exprValidator struct {
 	err error
 }
@@ -35,7 +35,7 @@ func (ev *exprValidator) setErr(format string, args ...interface{}) ast.Visitor 
 	return nil
 }
 
-// Visit returns itself if n is a valid node in an attribute expression or sets
+// Visit returns itself if n is a valid node in a boolean expression or sets
 // ev's err field and returns nil if it isn't.
 func (ev *exprValidator) Visit(n ast.Node) ast.Visitor {
 	// ast.Walk calls Visit(nil) after visiting non-nil children.
@@ -54,7 +54,6 @@ func (ev *exprValidator) Visit(n ast.Node) ast.Visitor {
 			return ev.setErr("invalid unary operator %q", v.Op)
 		}
 	case *ast.Ident:
-		// TODO(derat): Validate attr format.
 	case *ast.BasicLit:
 		if v.Kind != token.STRING {
 			return ev.setErr("non-string literal %q", v.Value)
@@ -65,11 +64,13 @@ func (ev *exprValidator) Visit(n ast.Node) ast.Visitor {
 	return ev
 }
 
-// NewExpr parses and validates attribute expression s.
+// New parses and validates boolean expression s, returning an Expr object
+// that can be used to test whether the expression is satisfied by different
+// sets of attributes.
 //
-// s is a boolean expression consisting of attribute names, binary operators
+// s is an expression consisting of attributes/identifiers, binary operators
 // && and ||, unary operator !, and parentheses for grouping.
-func NewExpr(s string) (*Expr, error) {
+func New(s string) (*Expr, error) {
 	root, err := parser.ParseExpr(s)
 	if err != nil {
 		return nil, err
@@ -80,7 +81,7 @@ func NewExpr(s string) (*Expr, error) {
 	return &Expr{root}, v.err
 }
 
-// Matches returns true if the expression matches a test with attributes attr.
+// Matches returns true if the expression is satisfied by attributes attr.
 func (e *Expr) Matches(attr []string) bool {
 	am := make(map[string]struct{})
 	for _, a := range attr {

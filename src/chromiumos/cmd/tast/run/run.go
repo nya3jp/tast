@@ -7,7 +7,6 @@ package run
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/google/subcommands"
 )
@@ -32,7 +31,6 @@ func Run(ctx context.Context, cfg *Config) (status subcommands.ExitStatus, resul
 	case remoteType:
 		return remote(ctx, cfg)
 	default:
-		cfg.Logger.Logf(fmt.Sprintf("Invalid -buildtype %q", cfg.buildType))
 		return subcommands.ExitUsageError, nil
 	}
 }

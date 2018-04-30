@@ -7,12 +7,14 @@ package run
 import (
 	"context"
 	"flag"
+	"fmt"
 	"os"
 	"path/filepath"
 	"time"
 
 	"chromiumos/cmd/tast/build"
 	"chromiumos/cmd/tast/logging"
+	"chromiumos/tast/command"
 	"chromiumos/tast/host"
 	"chromiumos/tast/runner"
 )
@@ -27,10 +29,18 @@ const (
 	ListTestsMode
 )
 
-const (
-	localType  = "local"  // -buildtype flag value for local tests
-	remoteType = "remote" // -buildtype flag value for remote tests
+// testType describes the type of test to run.
+type testType int
 
+const (
+	// localType represents tests that run directly on the DUT.
+	localType testType = iota
+	// remoteType represents tests that run on the same machine as the tast command and interact
+	// with the DUT via a network connection.
+	remoteType
+)
+
+const (
 	defaultKeyFile = "chromite/ssh_keys/testing_rsa" // default private SSH key within Chrome OS checkout
 )
 
@@ -53,9 +63,9 @@ type Config struct {
 	ResDir string
 
 	build            bool         // rebuild (and push, for local tests) a single test bundle
-	buildType        string       // type of tests to build and deploy (either "local" or "remote"); only sued if Build is true
-	buildCfg         build.Config // configuration for building test bundles; only used if Build is true
-	buildBundle      string       // name of the test bundle to rebuild (e.g. "cros"); only used if Build is true
+	buildType        testType     // type of tests to build and deploy; only used if build is true
+	buildCfg         build.Config // configuration for building test bundles; only used if build is true
+	buildBundle      string       // name of the test bundle to rebuild (e.g. "cros"); only used if build is true
 	checkPortageDeps bool         // check whether test bundle's dependencies are installed before building
 
 	remoteRunner    string // path to executable that runs remote test bundles
@@ -86,9 +96,12 @@ func (c *Config) SetFlags(f *flag.FlagSet, trunkDir string) {
 	f.StringVar(&c.KeyDir, "keydir", kd, "directory containing SSH keys")
 
 	f.BoolVar(&c.build, "build", true, "build and push test bundle")
-	f.StringVar(&c.buildType, "buildtype", localType, "type of tests to build (\""+localType+"\" or \""+remoteType+"\")")
 	f.StringVar(&c.buildBundle, "buildbundle", "cros", "name of test bundle to build")
 	f.BoolVar(&c.checkPortageDeps, "checkbuilddeps", true, "check test bundle's dependencies before building")
+
+	bt := command.NewEnumFlag(map[string]int{"local": int(localType), "remote": int(remoteType)},
+		func(v int) { c.buildType = testType(v) }, "local")
+	f.Var(bt, "buildtype", fmt.Sprintf("type of tests to build (in %s; default %q)", bt.QuotedValues(), bt.Default()))
 
 	// These are configurable since files may be installed elsewhere when running in the lab.
 	f.StringVar(&c.remoteRunner, "remoterunner", "/usr/bin/remote_test_runner", "executable that runs remote test bundles")

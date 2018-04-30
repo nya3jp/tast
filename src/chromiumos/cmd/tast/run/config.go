@@ -40,6 +40,22 @@ const (
 	remoteType
 )
 
+// testDepsMode describes when individual tests' dependencies should be checked against software
+// features supported by the DUT.
+type testDepsMode int
+
+const (
+	// checkTestDepsAuto indicates that tests' dependencies should be checked when a boolean
+	// expression is used to select tests but not when individual tests have been specified.
+	// Dependencies are also not checked if the DUT doesn't know its supported features
+	// (e.g. if it's using a non-test system image).
+	checkTestDepsAuto testDepsMode = iota
+	// checkTestDepsAlways indicates that tests' dependencies should always be checked.
+	checkTestDepsAlways
+	// checkTestDepsNever indicates that tests' dependencies should never be checked.
+	checkTestDepsNever
+)
+
 const (
 	defaultKeyFile = "chromite/ssh_keys/testing_rsa" // default private SSH key within Chrome OS checkout
 )
@@ -74,6 +90,10 @@ type Config struct {
 
 	hst *host.SSH // cached SSH connection; may be nil
 
+	checkTestDeps               testDepsMode // when test dependencies should be checked
+	availableSoftwareFeatures   []string     // features supported by the DUT
+	unavailableSoftwareFeatures []string     // features unsupported by the DUT
+
 	collectSysInfo bool                 // collect system info (logs, crashes, etc.) generated during testing
 	initialSysInfo *runner.SysInfoState // initial state of system info (logs, crashes, etc.) on DUT before testing
 
@@ -101,17 +121,27 @@ func (c *Config) SetFlags(f *flag.FlagSet, trunkDir string) {
 
 	bt := command.NewEnumFlag(map[string]int{"local": int(localType), "remote": int(remoteType)},
 		func(v int) { c.buildType = testType(v) }, "local")
-	f.Var(bt, "buildtype", fmt.Sprintf("type of tests to build (in %s; default %q)", bt.QuotedValues(), bt.Default()))
+	f.Var(bt, "buildtype", fmt.Sprintf("type of tests to build (%s; default %q)", bt.QuotedValues(), bt.Default()))
 
 	// These are configurable since files may be installed elsewhere when running in the lab.
 	f.StringVar(&c.remoteRunner, "remoterunner", "/usr/bin/remote_test_runner", "executable that runs remote test bundles")
 	f.StringVar(&c.remoteBundleDir, "remotebundledir", "/usr/libexec/tast/bundles/remote", "directory containing builtin remote test bundles")
 	f.StringVar(&c.remoteDataDir, "remotedatadir", "/usr/share/tast/data/remote", "directory containing builtin remote test data")
 
-	// We only need a results dir or system info if we're running tests rather than listing them.
+	// Some flags are only relevant if we're running tests rather than listing them.
 	if c.Mode == RunTestsMode {
 		f.StringVar(&c.ResDir, "resultsdir", "", "directory for test results")
 		f.BoolVar(&c.collectSysInfo, "sysinfo", true, "collect system information (logs, crashes, etc.)")
+
+		vals := map[string]int{
+			"auto":   int(checkTestDepsAuto),
+			"always": int(checkTestDepsAlways),
+			"never":  int(checkTestDepsNever),
+		}
+		td := command.NewEnumFlag(vals, func(v int) { c.checkTestDeps = testDepsMode(v) }, "auto")
+		desc := fmt.Sprintf("skip tests with software dependencies unsatisfied by DUT (%s; default %q)",
+			td.QuotedValues(), td.Default())
+		f.Var(td, "checktestdeps", desc)
 	}
 
 	c.buildCfg.SetFlags(f, trunkDir)

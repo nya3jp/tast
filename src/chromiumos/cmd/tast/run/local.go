@@ -58,6 +58,13 @@ func local(ctx context.Context, cfg *Config) (subcommands.ExitStatus, []TestResu
 		return subcommands.ExitFailure, nil
 	}
 
+	if cfg.forceBuildLocalRunner {
+		if err = buildAndPushLocalRunner(ctx, cfg, hst); err != nil {
+			cfg.Logger.Logf("Failed building or pushing runner: %v", err)
+			return subcommands.ExitFailure, nil
+		}
+	}
+
 	var bundleGlob, dataDir string
 	if cfg.build {
 		if bundleGlob, err = buildAndPushBundle(ctx, cfg, hst); err != nil {
@@ -137,11 +144,8 @@ func connectToTarget(ctx context.Context, cfg *Config) (*host.SSH, error) {
 // it should be logged by the caller.
 func buildAndPushBundle(ctx context.Context, cfg *Config, hst *host.SSH) (bundleGlob string, err error) {
 	cfg.Logger.Status("Building test bundle")
-	if cfg.buildCfg.Arch == "" {
-		var err error
-		if cfg.buildCfg.Arch, err = getHostArch(ctx, cfg, hst); err != nil {
-			return "", fmt.Errorf("failed to get arch for %s: %v", cfg.Target, err)
-		}
+	if err := getTargetArch(ctx, cfg, hst); err != nil {
+		return "", fmt.Errorf("failed to get arch for %s: %v", cfg.Target, err)
 	}
 
 	start := time.Now()
@@ -195,8 +199,12 @@ func buildAndPushBundle(ctx context.Context, cfg *Config, hst *host.SSH) (bundle
 	return bundleGlob, nil
 }
 
-// getHostArch queries hst for its architecture.
-func getHostArch(ctx context.Context, cfg *Config, hst *host.SSH) (string, error) {
+// getTargetArch queries hst for its architecture if it isn't already known and saves it to cfg.buildCfg.Arch.
+func getTargetArch(ctx context.Context, cfg *Config, hst *host.SSH) error {
+	if cfg.buildCfg.Arch != "" {
+		return nil
+	}
+
 	if tl, ok := timing.FromContext(ctx); ok {
 		st := tl.Start("get_arch")
 		defer st.End()
@@ -204,9 +212,10 @@ func getHostArch(ctx context.Context, cfg *Config, hst *host.SSH) (string, error
 	cfg.Logger.Debug("Getting architecture from target")
 	out, err := hst.Run(ctx, "uname -m")
 	if err != nil {
-		return "", err
+		return err
 	}
-	return strings.TrimSpace(string(out)), nil
+	cfg.buildCfg.Arch = strings.TrimSpace(string(out))
+	return nil
 }
 
 // pushBundle copies the test bundle at src on the local machine to dstDir on hst.
@@ -311,11 +320,16 @@ func localRunnerExists(ctx context.Context, hst *host.SSH) (bool, error) {
 
 // buildAndPushLocalRunner builds the local_test_runner executable and pushes it to hst.
 func buildAndPushLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH) error {
+	if err := getTargetArch(ctx, cfg, hst); err != nil {
+		return fmt.Errorf("failed to get arch for %s: %v", cfg.Target, err)
+	}
+
 	if tl, ok := timing.FromContext(ctx); ok {
 		st := tl.Start("build_and_push_runner")
 		defer st.End()
 	}
 
+	// Make a copy of the build config to avoid overwriting bundle-related values.
 	bc := cfg.buildCfg
 	if bc.PortagePkg != "" {
 		bc.PortagePkg = localRunnerPortagePkg

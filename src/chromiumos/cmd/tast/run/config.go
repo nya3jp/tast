@@ -78,11 +78,12 @@ type Config struct {
 	// It is only used for RunTestsMode.
 	ResDir string
 
-	build            bool         // rebuild (and push, for local tests) a single test bundle
-	buildType        testType     // type of tests to build and deploy; only used if build is true
-	buildCfg         build.Config // configuration for building test bundles; only used if build is true
-	buildBundle      string       // name of the test bundle to rebuild (e.g. "cros"); only used if build is true
-	checkPortageDeps bool         // check whether test bundle's dependencies are installed before building
+	build                 bool         // rebuild (and push, for local tests) a single test bundle
+	buildType             testType     // type of tests to build and deploy; only used if build is true
+	buildCfg              build.Config // configuration for building test bundles; only used if build is true
+	buildBundle           string       // name of the test bundle to rebuild (e.g. "cros"); only used if build is true
+	checkPortageDeps      bool         // check whether test bundle's dependencies are installed before building
+	forceBuildLocalRunner bool         // force local_test_runner to be built and deployed even if it already exists on DUT
 
 	remoteRunner    string // path to executable that runs remote test bundles
 	remoteBundleDir string // dir where packaged remote test bundles are installed
@@ -118,6 +119,7 @@ func (c *Config) SetFlags(f *flag.FlagSet, trunkDir string) {
 	f.BoolVar(&c.build, "build", true, "build and push test bundle")
 	f.StringVar(&c.buildBundle, "buildbundle", "cros", "name of test bundle to build")
 	f.BoolVar(&c.checkPortageDeps, "checkbuilddeps", true, "check test bundle's dependencies before building")
+	f.BoolVar(&c.forceBuildLocalRunner, "buildlocalrunner", false, "force building local_test_runner and pushing to DUT")
 
 	bt := command.NewEnumFlag(map[string]int{"local": int(localType), "remote": int(remoteType)},
 		func(v int) { c.buildType = testType(v) }, "local")

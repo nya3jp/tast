@@ -176,17 +176,17 @@ func TestRemoteRun(t *gotesting.T) {
 
 	status, res := td.run(t)
 	if status != subcommands.ExitSuccess {
-		t.Errorf("remote(%v) returned status %v; want %v", td.cfg, status, subcommands.ExitSuccess)
+		t.Errorf("remote(%+v) returned status %v; want %v", td.cfg, status, subcommands.ExitSuccess)
 	}
 	if len(res) != 1 {
-		t.Errorf("remote(%v) returned %v result(s); want 1", td.cfg, len(res))
+		t.Errorf("remote(%+v) returned %v result(s); want 1", td.cfg, len(res))
 	} else if res[0].Name != testName {
-		t.Errorf("remote(%v) returned result for test %q; want %q", td.cfg, res[0].Name, testName)
+		t.Errorf("remote(%+v) returned result for test %q; want %q", td.cfg, res[0].Name, testName)
 	}
 
 	// remote should create a temporary output dir rooted under the results dir: https://crbug.com/813282
 	if !strings.HasPrefix(td.args.OutDir, td.cfg.ResDir+"/") {
-		t.Errorf("remote(%v) passed out dir %v not rooted under results dir %v",
+		t.Errorf("remote(%+v) passed out dir %v not rooted under results dir %v",
 			td.cfg, td.args.OutDir, td.cfg.ResDir)
 	}
 	td.args.OutDir = "" // clear randomly-named dir before following comparison
@@ -198,9 +198,12 @@ func TestRemoteRun(t *gotesting.T) {
 		RemoteArgs: runner.RemoteArgs{
 			KeyFile: td.cfg.KeyFile,
 		},
+		RunTestsArgs: runner.RunTestsArgs{
+			CheckSoftwareDeps: false,
+		},
 	}
 	if !reflect.DeepEqual(td.args, expArgs) {
-		t.Errorf("remote(%v) passed args %v; want %v", td.cfg, td.args, expArgs)
+		t.Errorf("remote(%+v) passed args %+v; want %+v", td.cfg, td.args, expArgs)
 	}
 }
 

@@ -48,6 +48,10 @@ Any additional positional arguments describe which tests should be executed:
 It's invalid to mix attribute expressions and wildcard patterns. See the [Test
 Attributes] document for more information about attributes.
 
+Tests may be skipped if they list [software dependencies] that aren't provided
+by the DUT. This behavior can be controlled via the `tast` command's
+`-checktestdeps` flag.
+
 If tests are being rebuilt, the `buildtype` flag determines which type of tests
 to build and run; see the next section for details. Otherwise, both local and
 remote tests are considered.
@@ -122,6 +126,7 @@ local_test_runner ui.ChromeSanity
 ```
 
 [Test Attributes]: test_attributes.md
+[software dependencies]: test_dependencies.md
 [tast-tests repository]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/
 [Go in Chromium OS]: https://www.chromium.org/chromium-os/developer-guide/go-in-chromium-os
 [Breakpad]: https://github.com/google/breakpad/

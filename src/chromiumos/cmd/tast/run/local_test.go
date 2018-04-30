@@ -56,6 +56,9 @@ func newLocalTestData() *localTestData {
 	td.cfg.Logger = logging.NewSimple(&td.logbuf, log.LstdFlags, true)
 	td.cfg.Target = td.srvData.Srv.Addr().String()
 
+	// Avoid checking test dependencies, which causes an extra local_test_runner call.
+	td.cfg.checkTestDeps = checkTestDepsNever
+
 	return &td
 }
 

@@ -11,6 +11,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 	gotesting "testing"
 	"time"
 
@@ -38,6 +39,9 @@ func TestReadTestOutput(t *gotesting.T) {
 		test2ErrorStack  = "[stack trace]"
 		test2OutFile     = "data.txt"
 		test2OutData     = "Here's some data created by the test."
+
+		test3Name = "foo.ThirdTest"
+		test3Desc = "This test has missing dependencies"
 	)
 
 	runStartTime := time.Unix(1, 0)
@@ -47,7 +51,11 @@ func TestReadTestOutput(t *gotesting.T) {
 	test2StartTime := time.Unix(5, 0)
 	test2ErrorTime := time.Unix(7, 0)
 	test2EndTime := time.Unix(9, 0)
-	runEndTime := time.Unix(10, 0)
+	test3StartTime := time.Unix(10, 0)
+	test3EndTime := time.Unix(11, 0)
+	runEndTime := time.Unix(12, 0)
+
+	test3Deps := []string{"dep1", "dep2"}
 
 	tempDir := testutil.TempDir(t, "results_test.")
 	defer os.RemoveAll(tempDir)
@@ -61,7 +69,7 @@ func TestReadTestOutput(t *gotesting.T) {
 
 	b := bytes.Buffer{}
 	mw := control.NewMessageWriter(&b)
-	mw.WriteMessage(&control.RunStart{Time: runStartTime, NumTests: 2})
+	mw.WriteMessage(&control.RunStart{Time: runStartTime, NumTests: 3})
 	mw.WriteMessage(&control.TestStart{Time: test1StartTime, Test: testing.Test{Name: test1Name, Desc: test1Desc}})
 	mw.WriteMessage(&control.TestLog{Time: test1LogTime, Text: test1LogText})
 	mw.WriteMessage(&control.TestEnd{Time: test1EndTime, Name: test1Name})
@@ -69,6 +77,8 @@ func TestReadTestOutput(t *gotesting.T) {
 	mw.WriteMessage(&control.TestError{Time: test2ErrorTime, Error: testing.Error{
 		Reason: test2ErrorReason, File: test2ErrorFile, Line: test2ErrorLine, Stack: test2ErrorStack}})
 	mw.WriteMessage(&control.TestEnd{Time: test2EndTime, Name: test2Name})
+	mw.WriteMessage(&control.TestStart{Time: test3StartTime, Test: testing.Test{Name: test3Name, Desc: test3Desc}})
+	mw.WriteMessage(&control.TestEnd{Time: test3EndTime, Name: test3Name, MissingSoftwareDeps: test3Deps})
 	mw.WriteMessage(&control.RunEnd{Time: runEndTime, OutDir: outDir})
 
 	cfg := Config{
@@ -78,10 +88,10 @@ func TestReadTestOutput(t *gotesting.T) {
 	crf := func(src, dst string) error { return os.Rename(src, dst) }
 	results, err := readTestOutput(context.Background(), &cfg, &b, crf)
 	if err != nil {
-		t.Fatal("readTestOutput failed: ", err)
+		t.Fatal("readTestOutput failed:", err)
 	}
 	if err = WriteResults(context.Background(), &cfg, results); err != nil {
-		t.Fatal("WriteResults failed: ", err)
+		t.Fatal("WriteResults failed:", err)
 	}
 
 	files, err := testutil.ReadFiles(cfg.ResDir)
@@ -112,6 +122,13 @@ func TestReadTestOutput(t *gotesting.T) {
 			Start:  test2StartTime,
 			End:    test2EndTime,
 			OutDir: filepath.Join(cfg.ResDir, testLogsDir, test2Name),
+		},
+		{
+			Test:       testing.Test{Name: test3Name, Desc: test3Desc},
+			Start:      test3StartTime,
+			End:        test3EndTime,
+			SkipReason: "missing deps: " + strings.Join(test3Deps, " "),
+			OutDir:     filepath.Join(cfg.ResDir, testLogsDir, test3Name),
 		},
 	}, "", "  ")
 	if err != nil {

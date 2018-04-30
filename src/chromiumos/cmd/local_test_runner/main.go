@@ -6,6 +6,8 @@
 //
 // local_test_runner is executed on-device by the tast command.
 // It runs test bundles and reports the results back to tast.
+// It is also used to query additional information about the DUT
+// such as logs, crashes, and supported software features.
 package main
 
 import (
@@ -15,18 +17,19 @@ import (
 	"chromiumos/tast/runner"
 )
 
-const (
-	defaultBundleGlob = "/usr/local/libexec/tast/bundles/local/*" // default glob matching test bundles
-	defaultDataDir    = "/usr/local/share/tast/data/local"        // default dir containing test data
-	systemLogDir      = "/var/log"                                // directory where system logs are located
-)
-
 func main() {
 	args := runner.Args{
-		BundleGlob:      defaultBundleGlob,
-		DataDir:         defaultDataDir,
-		SystemLogDir:    systemLogDir,
+		BundleGlob:      "/usr/local/libexec/tast/bundles/local/*",
+		DataDir:         "/usr/local/share/tast/data/local",
+		SystemLogDir:    "/var/log",
 		SystemCrashDirs: []string{crash.DefaultCrashDir, crash.ChromeCrashDir},
+		USEFlagsFile:    "/etc/tast_use_flags.txt",
+		SoftwareFeatureDefinitions: map[string]string{
+			// This list is documented at docs/test_dependencies.md.
+			"android":      "arc",
+			"chrome":       "!chromeless_tty",
+			"chrome_login": "!chromeless_tty && !rialto",
+		},
 	}
 	os.Exit(runner.Run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, &args, runner.LocalRunner))
 }

@@ -76,6 +76,10 @@ func local(ctx context.Context, cfg *Config) (subcommands.ExitStatus, []TestResu
 		}
 	}
 
+	if err := getSoftwareFeatures(ctx, cfg); err != nil {
+		cfg.Logger.Logf("Failed to get DUT software features: %v", err)
+		return subcommands.ExitFailure, nil
+	}
 	getInitialSysInfo(ctx, cfg)
 
 	cfg.Logger.Status("Running tests on target")
@@ -372,6 +376,7 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 	switch cfg.Mode {
 	case RunTestsMode:
 		args.Mode = runner.RunTestsMode
+		setRunnerTestDepsArgs(cfg, &args)
 	case ListTestsMode:
 		args.Mode = runner.ListTestsMode
 	}

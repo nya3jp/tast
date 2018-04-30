@@ -69,6 +69,10 @@ func remote(ctx context.Context, cfg *Config) (subcommands.ExitStatus, []TestRes
 		dataDir = cfg.remoteDataDir
 	}
 
+	if err := getSoftwareFeatures(ctx, cfg); err != nil {
+		cfg.Logger.Logf("Failed to get DUT software features: %v", err)
+		return subcommands.ExitFailure, nil
+	}
 	getInitialSysInfo(ctx, cfg)
 
 	results, err := runRemoteRunner(ctx, cfg, bundleGlob, dataDir)
@@ -101,6 +105,7 @@ func runRemoteRunner(ctx context.Context, cfg *Config, bundleGlob, dataDir strin
 	switch cfg.Mode {
 	case RunTestsMode:
 		args.Mode = runner.RunTestsMode
+		setRunnerTestDepsArgs(cfg, &args)
 
 		// Create an output directory within the results dir so we can just move
 		// it to its final destination later.

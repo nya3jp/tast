@@ -50,6 +50,9 @@ type TestResult struct {
 	End time.Time `json:"end"`
 	// OutDir is the directory into which test output is stored.
 	OutDir string `json:"outDir"`
+	// SkipReason contains a human-readable explanation of why the test was skipped.
+	// It is empty if the test actually ran.
+	SkipReason string `json:"skipReason"`
 
 	testStartMsgTime time.Time // time at which TestStart control message was received
 	logFile          *os.File  // test's log file
@@ -99,7 +102,11 @@ func WriteResults(ctx context.Context, cfg *Config, results []TestResult) error 
 	for _, res := range results {
 		pn := fmt.Sprintf("%-"+strconv.Itoa(ml)+"s", res.Name)
 		if len(res.Errors) == 0 {
-			cfg.Logger.Logf("%s  [ PASS ]", pn)
+			if res.SkipReason == "" {
+				cfg.Logger.Logf("%s  [ PASS ]", pn)
+			} else {
+				cfg.Logger.Logf("%s  [ SKIP ] %s", pn, res.SkipReason)
+			}
 		} else {
 			for i, te := range res.Errors {
 				if i == 0 {
@@ -251,7 +258,9 @@ func (r *resultsHandler) handleTestError(msg *control.TestError) error {
 
 	ts := msg.Time.Format(testOutputTimeFmt)
 	r.cfg.Logger.Logf("[%s] Error at %s:%d: %s", ts, filepath.Base(msg.Error.File), msg.Error.Line, msg.Error.Reason)
-	r.cfg.Logger.Debugf("[%s] Stack trace:\n%s", ts, msg.Error.Stack)
+	if msg.Error.Stack != "" {
+		r.cfg.Logger.Debugf("[%s] Stack trace:\n%s", ts, msg.Error.Stack)
+	}
 	return nil
 }
 
@@ -264,8 +273,15 @@ func (r *resultsHandler) handleTestEnd(msg *control.TestEnd) error {
 		r.stage.End()
 	}
 
-	r.cfg.Logger.Logf("Completed test %s in %v with %d error(s)",
-		msg.Name, msg.Time.Sub(r.res.Start).Round(time.Millisecond), len(r.res.Errors))
+	if len(msg.MissingSoftwareDeps) == 0 {
+		r.cfg.Logger.Logf("Completed test %s in %v with %d error(s)",
+			msg.Name, msg.Time.Sub(r.res.Start).Round(time.Millisecond), len(r.res.Errors))
+	} else {
+		r.cfg.Logger.Logf("Skipped test %s due to missing dependencies: %v",
+			msg.Name, msg.MissingSoftwareDeps)
+		r.res.SkipReason = "missing deps: " + strings.Join(msg.MissingSoftwareDeps, " ")
+	}
+
 	r.res.End = msg.Time
 	r.results = append(r.results, *r.res)
 

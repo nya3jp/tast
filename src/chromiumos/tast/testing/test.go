@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"runtime"
+	"sort"
 	"strings"
 	"time"
 )
@@ -46,6 +47,11 @@ type Test struct {
 	// Data contains paths of data files needed by the test, relative to a "data" subdirectory within the
 	// directory in which TestFunc is located.
 	Data []string `json:"data"`
+	// SoftwareDeps lists software features that are required to run the test.
+	// If any dependencies are not satisfied by the DUT, the test will be skipped.
+	// See https://chromium.googlesource.com/chromiumos/platform/tast/+/master/docs/test_dependencies.md
+	// for more information about dependencies.
+	SoftwareDeps []string `json:"softwareDeps,omitempty"`
 	// Timeout contains the maximum duration for which Func may run before the test is aborted.
 	// This should almost always be omitted when defining tests; a reasonable default will be used.
 	Timeout time.Duration `json:"timeout"`
@@ -95,6 +101,23 @@ func (tst *Test) Run(s *State) {
 
 func (tst *Test) String() string {
 	return tst.Name
+}
+
+// MissingSoftwareDeps returns a sorted list of dependencies from SoftwareDeps
+// that aren't present on the DUT (per the passed-in features list).
+func (tst *Test) MissingSoftwareDeps(features []string) []string {
+	var missing []string
+DepLoop:
+	for _, d := range tst.SoftwareDeps {
+		for _, f := range features {
+			if d == f {
+				continue DepLoop
+			}
+		}
+		missing = append(missing, d)
+	}
+	sort.Strings(missing)
+	return missing
 }
 
 // populateNameAndPkg fills Name (if empty) and Pkg (unconditionally).

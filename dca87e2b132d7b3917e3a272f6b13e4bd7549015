@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a348fbcd_0247480a",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-05-02T22:23:04Z",
+      "side": 0,
+      "message": "i didn\u0027t see much continued value in defining constants that are used only once a couple of lines later",
+      "revId": "dca87e2b132d7b3917e3a272f6b13e4bd7549015",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

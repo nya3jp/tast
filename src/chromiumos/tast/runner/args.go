@@ -31,17 +31,29 @@ type Args struct {
 	// OutDir is the path to the base directory under which tests should write output files.
 	OutDir string `json:"outDir,omitempty"`
 
-	// RemoteArgs contains additional arguments used to run remote tests.
+	// RemoteArgs contains additional arguments used to list or run remote tests.
 	RemoteArgs
+	// RunTestsArgs contains additional arguments used by RunTestsMode.
+	RunTestsArgs
 	// CollectSysInfoArgs contains additional arguments used by CollectSysInfoMode.
 	CollectSysInfoArgs
 
+	// The remaining exported fields are set by test runner main functions (or by unit tests) and
+	// cannot be overridden by the tast executable.
+
 	// SystemLogDir contains the directory where information is logged by syslog and other daemons.
-	// It is set by the runner (or by unit tests) and cannot be overridden by the tast executable.
 	SystemLogDir string `json:"-"`
 	// SystemCrashDirs contains directories where crash dumps are written when processes crash.
-	// It is set by the runner (or by unit tests) and cannot be overridden by the tast executable.
 	SystemCrashDirs []string `json:"-"`
+
+	// USEFlagsFile contains the path to a file listing a subset of USE flags that were set when building
+	// the system image. These USE flags are used by expressions in SoftwareFeatureDefinitions to determine
+	// available software features.
+	USEFlagsFile string `json:"-"`
+	// SoftwareFeatureDefinitions maps from software feature names (e.g. "myfeature") to boolean expressions
+	// used to compose them from USE flags (e.g. "a && !(b || c)"). The USE flags used in these expressions
+	// must be listed in USEFlagsFile if they were set when building the system image.
+	SoftwareFeatureDefinitions map[string]string `json:"-"`
 
 	// report is set to true by readArgs if status should be reported via control messages rather
 	// than human-readable log messages. This is true when args were supplied via stdin rather than
@@ -61,6 +73,19 @@ type RemoteArgs struct {
 	KeyFile string `json:"remoteKeyFile,omitempty"`
 	// KeyDir is the directory containing SSH private keys (typically $HOME/.ssh).
 	KeyDir string `json:"remoteKeyDir,omitempty"`
+}
+
+// RunTestsArgs is nested within Args and contains additional arguments used by RunTestsMode.
+type RunTestsArgs struct {
+	// CheckSoftwareDeps is true if each test's SoftwareDeps field should be checked against
+	// AvailableSoftwareFeatures and UnavailableSoftwareFeatures.
+	CheckSoftwareDeps bool `json:"runTestsCheckSoftwareDeps,omitEmpty"`
+	// AvailableSoftwareFeatures contains a list of software features supported by the DUT.
+	// This list should come from an earlier GetSoftwareFeaturesMode call to local_test_runner.
+	AvailableSoftwareFeatures []string `json:"runTestsAvailableSoftwareFeatures,omitempty"`
+	// UnavailableSoftwareFeatures contains a list of software features supported by the DUT.
+	// This list should come from an earlier GetSoftwareFeaturesMode call to local_test_runner.
+	UnavailableSoftwareFeatures []string `json:"runTestsUnavailableSoftwareFeatures,omitempty"`
 }
 
 // GetSysInfoStateResult holds the result of a GetSysInfoStateMode command.
@@ -86,6 +111,14 @@ type CollectSysInfoResult struct {
 	CrashDir string `json:"crashDir"`
 	// Warnings contains descriptions of non-fatal errors encountered while collecting data.
 	Warnings []string `json:"warnings"`
+}
+
+// GetSoftwareFeaturesResult contains the result of a GetSoftwareFeaturesMode command.
+type GetSoftwareFeaturesResult struct {
+	// Available contains a list of software features supported by the DUT.
+	Available []string `json:"available"`
+	// Unavailable contains a list of software features not supported by the DUT.
+	Unavailable []string `json:"missing"`
 }
 
 // SysInfoState contains the state of the DUT's system information.
@@ -147,6 +180,11 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, ru
 		DataDir:  args.DataDir,
 		OutDir:   args.OutDir,
 		Patterns: args.Patterns,
+		RunTestsArgs: bundle.RunTestsArgs{
+			CheckSoftwareDeps:           args.CheckSoftwareDeps,
+			AvailableSoftwareFeatures:   args.AvailableSoftwareFeatures,
+			UnavailableSoftwareFeatures: args.UnavailableSoftwareFeatures,
+		},
 	}
 	if args.RemoteArgs != (RemoteArgs{}) {
 		if runnerType != RemoteRunner {
@@ -179,4 +217,8 @@ const (
 	// the tast executable to get system info after testing is completed.
 	// This mode is only supported by local_test_runner.
 	CollectSysInfoMode = 4
+	// GetSoftwareFeaturesMode indicates that the runner should return information about software features
+	// supported by the DUT via a JSON-marshaled GetSoftwareFeaturesResult struct written to stdout. This mode
+	// is only supported by local_test_runner.
+	GetSoftwareFeaturesMode = 5
 )

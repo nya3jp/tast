@@ -50,6 +50,11 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Args,
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
+	case GetSoftwareFeaturesMode:
+		if err := handleGetSoftwareFeatures(args, stdout); err != nil {
+			return command.WriteError(stderr, err)
+		}
+		return statusSuccess
 	case ListTestsMode:
 		_, tests, err := getBundlesAndTests(args)
 		if err != nil {

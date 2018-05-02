@@ -9,6 +9,9 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"runtime"
+	"sort"
+	"strings"
 	"time"
 
 	"chromiumos/tast/command"
@@ -85,14 +88,53 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 	}
 
 	for _, t := range tests {
-		// Make a copy of the test with the default timeout if none was specified.
-		test := *t
-		if test.Timeout == 0 {
-			test.Timeout = cfg.defaultTestTimeout
+		if err := runTest(ctx, mw, args, cfg, t); err != nil {
+			return err
 		}
+	}
 
-		mw.WriteMessage(&control.TestStart{Time: time.Now(), Test: test})
+	if cfg.runCleanupFunc != nil {
+		if err := cfg.runCleanupFunc(ctx); err != nil {
+			return command.NewStatusErrorf(statusError, "run cleanup failed: %v", err)
+		}
+	}
+	return nil
+}
 
+// runTest runs t per args and cfg, writing the appropriate control.Test* control messages to mw.
+func runTest(ctx context.Context, mw *control.MessageWriter, args *Args, cfg *runConfig, t *testing.Test) error {
+	// Make a copy of the test with the default timeout if none was specified.
+	test := *t
+	if test.Timeout == 0 {
+		test.Timeout = cfg.defaultTestTimeout
+	}
+
+	mw.WriteMessage(&control.TestStart{
+		Time: time.Now(),
+		Test: test,
+	})
+
+	// We skip running the test if it has any dependencies on software features that aren't
+	// provided by the DUT, but we additionally report an error if one or more dependencies
+	// refer to features that we don't know anything about (possibly indicating a typo in the
+	// test's dependencies).
+	var missingDeps []string
+	if args.CheckSoftwareDeps {
+		missingDeps = test.MissingSoftwareDeps(args.AvailableSoftwareFeatures)
+		if unknown := getUnknownDeps(missingDeps, args); len(unknown) > 0 {
+			_, fn, ln, _ := runtime.Caller(0)
+			mw.WriteMessage(&control.TestError{
+				Time: time.Now(),
+				Error: testing.Error{
+					Reason: "Unknown dependencies: " + strings.Join(unknown, " "),
+					File:   fn,
+					Line:   ln,
+				},
+			})
+		}
+	}
+
+	if len(missingDeps) == 0 {
 		outDir := filepath.Join(args.OutDir, test.Name)
 		if err := os.MkdirAll(outDir, 0755); err != nil {
 			return command.NewStatusErrorf(statusError, "failed to create output dir: %v", err)
@@ -115,16 +157,31 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		test.Run(s)
 		close(ch)
 		<-done
-
-		mw.WriteMessage(&control.TestEnd{Time: time.Now(), Name: test.Name})
 	}
 
-	if cfg.runCleanupFunc != nil {
-		if err := cfg.runCleanupFunc(ctx); err != nil {
-			return command.NewStatusErrorf(statusError, "run cleanup failed: %v", err)
-		}
-	}
+	mw.WriteMessage(&control.TestEnd{
+		Time:                time.Now(),
+		Name:                test.Name,
+		MissingSoftwareDeps: missingDeps,
+	})
 	return nil
+}
+
+// getUnknownDeps returns a sorted list of software dependencies from missingDeps that
+// aren't referring to known features.
+func getUnknownDeps(missingDeps []string, args *Args) []string {
+	var unknown []string
+DepsLoop:
+	for _, d := range missingDeps {
+		for _, f := range args.UnavailableSoftwareFeatures {
+			if d == f {
+				continue DepsLoop
+			}
+		}
+		unknown = append(unknown, d)
+	}
+	sort.Strings(unknown)
+	return unknown
 }
 
 // copyTestOutput reads test output from ch and writes it to mw.

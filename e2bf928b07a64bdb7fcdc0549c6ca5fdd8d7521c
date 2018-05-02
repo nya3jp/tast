@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "7c36e040_f18d6766",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2018-05-02T16:03:14Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "5177ba64_161d9b79",
+      "revId": "e2bf928b07a64bdb7fcdc0549c6ca5fdd8d7521c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "449db60e_a465e47c",
         "filename": "src/chromiumos/tast/bundle/bundle.go",
         "patchSetId": 1
@@ -30,6 +48,70 @@
       "writtenOn": "2018-05-02T05:59:55Z",
       "side": 1,
       "message": "i pulled the code from runTests\u0027s loop over |tests| into its own function since it was getting a bit long.",
+      "revId": "e2bf928b07a64bdb7fcdc0549c6ca5fdd8d7521c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b801b712_60e9b4dc",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2018-05-02T16:03:14Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "449db60e_a465e47c",
+      "revId": "e2bf928b07a64bdb7fcdc0549c6ca5fdd8d7521c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b62b2dd0_846da59e",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2018-05-02T16:03:14Z",
+      "side": 1,
+      "message": "clever",
+      "range": {
+        "startLine": 121,
+        "startChar": 3,
+        "endLine": 121,
+        "endChar": 36
+      },
+      "revId": "e2bf928b07a64bdb7fcdc0549c6ca5fdd8d7521c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a36756a9_bc7828b3",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2018-05-02T16:03:14Z",
+      "side": 1,
+      "message": "Is this tested below?",
+      "range": {
+        "startLine": 122,
+        "startChar": 3,
+        "endLine": 129,
+        "endChar": 5
+      },
       "revId": "e2bf928b07a64bdb7fcdc0549c6ca5fdd8d7521c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

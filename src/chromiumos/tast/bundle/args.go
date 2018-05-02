@@ -42,6 +42,8 @@ type Args struct {
 
 	// RemoteArgs contains additional arguments used to run remote tests.
 	RemoteArgs
+	// RunTestsArgs contains additional arguments used by RunTestsMode.
+	RunTestsArgs
 }
 
 // RemoteArgs is nested within Args and holds additional arguments that are only relevant when running remote tests.
@@ -52,6 +54,17 @@ type RemoteArgs struct {
 	KeyFile string `json:"remoteKeyFile,omitempty"`
 	// KeyDir is the directory containing SSH private keys (typically $HOME/.ssh).
 	KeyDir string `json:"remoteKeyDir,omitempty"`
+}
+
+// RunTestsArgs is nested within Args and contains additional arguments used by RunTestsMode.
+type RunTestsArgs struct {
+	// CheckSoftwareDeps is true if each test's SoftwareDeps field should be checked against
+	// AvailableSoftwareFeatures and UnavailableSoftwareFeatures.
+	CheckSoftwareDeps bool `json:"runTestsCheckSoftwareDeps,omitEmpty"`
+	// AvailableSoftwareFeatures contains a list of software features supported by the DUT.
+	AvailableSoftwareFeatures []string `json:"runTestsAvailableSoftwareFeatures,omitempty"`
+	// UnavailableSoftwareFeatures contains a list of software features supported by the DUT.
+	UnavailableSoftwareFeatures []string `json:"runTestsUnavailableSoftwareFeatures,omitempty"`
 }
 
 // bundleType describes the type of tests contained in a test bundle (i.e. local or remote).
@@ -87,21 +100,45 @@ func readArgs(stdin io.Reader, args *Args, bt bundleType) ([]*testing.Test, erro
 	return tests, nil
 }
 
+// TestPatternType describes the manner in which test patterns will be interpreted.
+type TestPatternType int
+
+const (
+	// The patterns will be interpreted as one or more wildcards (possibly literal test names).
+	TestPatternWildcard TestPatternType = iota
+	// The pattern will be interpreted as a boolean expression referring to test attributes.
+	TestPatternAttrExpr
+)
+
+// GetTestPatternType returns the manner in which test patterns pats will be interpreted.
+// This is exported so it can be used by the tast command.
+func GetTestPatternType(pats []string) TestPatternType {
+	switch {
+	case len(pats) == 1 && strings.HasPrefix(pats[0], "(") && strings.HasSuffix(pats[0], ")"):
+		return TestPatternAttrExpr
+	default:
+		return TestPatternWildcard
+	}
+}
+
 // testsToRun returns tests to run for a command invoked with test patterns pats.
 // If no patterns are supplied, all registered tests are returned.
 // If a single pattern is supplied and it is surrounded by parentheses,
 // it is treated as a boolean expression specifying test attributes.
 // Otherwise, pattern(s) are interpreted as wildcards matching test names.
 func testsToRun(pats []string) ([]*testing.Test, error) {
-	if len(pats) == 0 {
-		return testing.GlobalRegistry().AllTests(), nil
-	}
-	if len(pats) == 1 && strings.HasPrefix(pats[0], "(") && strings.HasSuffix(pats[0], ")") {
+	switch GetTestPatternType(pats) {
+	case TestPatternWildcard:
+		if len(pats) == 0 {
+			return testing.GlobalRegistry().AllTests(), nil
+		}
+		// Print a helpful error message if it looks like the user wanted an attribute expression.
+		if len(pats) == 1 && (strings.Contains(pats[0], "&&") || strings.Contains(pats[0], "||")) {
+			return nil, fmt.Errorf("attr expr %q must be within parentheses", pats[0])
+		}
+		return testing.GlobalRegistry().TestsForPatterns(pats)
+	case TestPatternAttrExpr:
 		return testing.GlobalRegistry().TestsForAttrExpr(pats[0][1 : len(pats[0])-1])
 	}
-	// Print a helpful error message if it looks like the user wanted an attribute expression.
-	if len(pats) == 1 && (strings.Contains(pats[0], "&&") || strings.Contains(pats[0], "||")) {
-		return nil, fmt.Errorf("attr expr %q must be within parentheses", pats[0])
-	}
-	return testing.GlobalRegistry().TestsForPatterns(pats)
+	return nil, fmt.Errorf("invalid test pattern(s) %v", pats)
 }

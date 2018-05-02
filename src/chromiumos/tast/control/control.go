@@ -96,6 +96,9 @@ type TestEnd struct {
 	Time time.Time `json:"testEndTime"`
 	// Name is the name of the test, matching the earlier TestStart.Test.Name.
 	Name string `json:"testEndName"`
+	// MissingSoftwareDeps contains software dependencies declared by the test that were
+	// not present on the DUT. If non-empty, the test was skipped.
+	MissingSoftwareDeps []string `json:"testEndMissingSoftwareDeps"`
 }
 
 // messageUnion contains all message types. It aids in marshaling and unmarshaling heterogeneous messages.

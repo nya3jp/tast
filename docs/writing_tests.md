@@ -71,6 +71,9 @@ func MyTest(s *testing.State) {
 }
 ```
 
+Tests may specify [attributes] and [software dependencies] when they are
+declared.
+
 ## Reporting errors
 
 The [Tast testing package] (not to be confused with Go's standard `testing`
@@ -159,6 +162,8 @@ tests.
 [Best practices for writing Chrome OS unit tests]: https://chromium.googlesource.com/chromiumos/docs/+/master/unit_tests.md
 [Go's naming conventions]: https://golang.org/doc/effective_go.html#names
 [acronyms should be fully capitalized]: https://github.com/golang/go/wiki/CodeReviewComments#initialisms
+[attributes]: test_attributes.md
+[software dependencies]: test_dependencies.md
 [Tast testing package]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/testing/
 [context.Context]: https://golang.org/pkg/context/
 [Running tests]: running_tests.md

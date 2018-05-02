@@ -209,6 +209,96 @@ func TestRunTestsNoTests(t *gotesting.T) {
 	}
 }
 
+func TestRunTestsMissingDeps(t *gotesting.T) {
+	defer testing.ClearForTesting()
+	testing.GlobalRegistry().DisableValidationForTesting()
+
+	const (
+		validName   = "foo.Valid"
+		missingName = "foo.Missing"
+		unregName   = "foo.Unregistered"
+
+		validDep   = "valid"
+		missingDep = "missing"
+		unregDep   = "unreg"
+	)
+
+	// Register three tests: one with a satisfied dep, another with a missing dep,
+	// and a third with an unregistered dep.
+	testRan := make(map[string]bool)
+	makeFunc := func(name string) testing.TestFunc { return func(s *testing.State) { testRan[name] = true } }
+	testing.AddTest(&testing.Test{Name: validName, Func: makeFunc(validName), SoftwareDeps: []string{validDep}})
+	testing.AddTest(&testing.Test{Name: missingName, Func: makeFunc(missingName), SoftwareDeps: []string{missingDep}})
+	testing.AddTest(&testing.Test{Name: unregName, Func: makeFunc(unregName), SoftwareDeps: []string{unregDep}})
+
+	tmpDir := testutil.TempDir(t, "runner_test.")
+	defer os.RemoveAll(tmpDir)
+
+	args := Args{
+		Mode:    RunTestsMode,
+		OutDir:  tmpDir,
+		DataDir: tmpDir,
+		RunTestsArgs: RunTestsArgs{
+			CheckSoftwareDeps:           true,
+			AvailableSoftwareFeatures:   []string{validDep},
+			UnavailableSoftwareFeatures: []string{missingDep},
+		},
+	}
+	stdin := newBufferWithArgs(t, &args)
+	stdout := &bytes.Buffer{}
+	if status := run(context.Background(), stdin, stdout, &bytes.Buffer{},
+		&Args{}, &runConfig{}, localBundle); status != statusSuccess {
+		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
+	}
+
+	// Read through the control messages to get test results.
+	var testName string
+	testFailed := make(map[string]bool)
+	testMissingDeps := make(map[string][]string)
+	r := control.NewMessageReader(stdout)
+	for r.More() {
+		msg, err := r.ReadMessage()
+		if err != nil {
+			t.Fatal("Failed to read message:", err)
+		}
+		switch m := msg.(type) {
+		case *control.TestStart:
+			testName = m.Test.Name
+		case *control.TestEnd:
+			testMissingDeps[testName] = m.MissingSoftwareDeps
+		case *control.TestError:
+			testFailed[testName] = true
+		}
+	}
+
+	// Verify that the expected results were reported for each test.
+	for _, tc := range []struct {
+		name        string
+		shouldRun   bool
+		shouldFail  bool
+		missingDeps []string
+	}{
+		{validName, true, false, nil},
+		{missingName, false, false, []string{missingDep}},
+		{unregName, false, true, []string{unregDep}},
+	} {
+		if testRan[tc.name] && !tc.shouldRun {
+			t.Errorf("%v ran unexpectedly", tc.name)
+		} else if !testRan[tc.name] && tc.shouldRun {
+			t.Errorf("%v didn't run", tc.name)
+		}
+		if testFailed[tc.name] && !tc.shouldFail {
+			t.Errorf("%v failed: %v", tc.name, testFailed[tc.name])
+		} else if !testFailed[tc.name] && tc.shouldFail {
+			t.Errorf("%v didn't fail", tc.name)
+		}
+		if !reflect.DeepEqual(testMissingDeps[tc.name], tc.missingDeps) {
+			t.Errorf("%v had missing deps %v; want %v",
+				tc.name, testMissingDeps[tc.name], tc.missingDeps)
+		}
+	}
+}
+
 func TestRunList(t *gotesting.T) {
 	defer testing.ClearForTesting()
 	testing.GlobalRegistry().DisableValidationForTesting()

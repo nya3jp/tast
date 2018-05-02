@@ -115,6 +115,30 @@
       "revId": "e2bf928b07a64bdb7fcdc0549c6ca5fdd8d7521c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "67529c7d_53b581dd",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-05-02T21:18:26Z",
+      "side": 1,
+      "message": "i\u0027m not sure that i understand the question, but i\u0027ve added a comment -- let me know if it makes more sense now. this code is exercised by the TestRunTestsMissingDeps unit test in bundle_test.go.",
+      "parentUuid": "a36756a9_bc7828b3",
+      "range": {
+        "startLine": 122,
+        "startChar": 3,
+        "endLine": 129,
+        "endChar": 5
+      },
+      "revId": "e2bf928b07a64bdb7fcdc0549c6ca5fdd8d7521c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

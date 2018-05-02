@@ -87,6 +87,14 @@ func TestDataDir(t *gotesting.T) {
 	}
 }
 
+func TestSoftwareDeps(t *gotesting.T) {
+	test := Test{Func: Func1, SoftwareDeps: []string{"dep3", "dep1", "dep2"}}
+	missing := test.MissingSoftwareDeps([]string{"dep0", "dep2", "dep4"})
+	if exp := []string{"dep1", "dep3"}; !reflect.DeepEqual(missing, exp) {
+		t.Errorf("MissingSoftwareDeps() = %v; want %v", missing, exp)
+	}
+}
+
 func TestSuccess(t *gotesting.T) {
 	test := Test{Func: func(*State) {}}
 	s := NewState(context.Background(), make(chan Output, 1), "", "", time.Minute, 0)

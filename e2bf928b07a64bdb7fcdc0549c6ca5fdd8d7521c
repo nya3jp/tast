@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5177ba64_161d9b79",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-05-02T05:59:55Z",
+      "side": 1,
+      "message": "this unrelated-seeming refactor of part of testToRun into an exported function is here so it can be called by the tast command later: with -checktestdeps\u003dauto, we avoid checking dependencies if specific tests have been requested, but not if an attribute expression has been supplied.",
+      "revId": "e2bf928b07a64bdb7fcdc0549c6ca5fdd8d7521c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "449db60e_a465e47c",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-05-02T05:59:55Z",
+      "side": 1,
+      "message": "i pulled the code from runTests\u0027s loop over |tests| into its own function since it was getting a bit long.",
+      "revId": "e2bf928b07a64bdb7fcdc0549c6ca5fdd8d7521c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9653316b_5b0f48ca",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2018-05-02T15:54:45Z",
+      "side": 1,
+      "message": "This isn\u0027t very clear; could use a lot more explanation.",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 77
+      },
+      "revId": "e29be5f6403ff8bae1cd4713d7504dc198a8a553",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

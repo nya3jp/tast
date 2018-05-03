@@ -57,6 +57,30 @@
       "revId": "6f731b29ea2b0e2ade3db8a8e15e1faeefb46b51",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "86773c99_b44085a1",
+        "filename": "src/chromiumos/tast/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-05-03T04:56:20Z",
+      "side": 1,
+      "message": "that\u0027s over in https://crrev.com/c/1039006/1/chromeos-base/tast-use-flags/tast-use-flags-0.0.1.ebuild#34. unset flags won\u0027t be listed in the file (see usev at https://devmanual.gentoo.org/ebuild-writing/use-conditional-code/index.html), so they won\u0027t be present when the boolean expressions are being evaluated.",
+      "parentUuid": "5c30f028_356e4c6c",
+      "range": {
+        "startLine": 66,
+        "startChar": 2,
+        "endLine": 66,
+        "endChar": 35
+      },
+      "revId": "6f731b29ea2b0e2ade3db8a8e15e1faeefb46b51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

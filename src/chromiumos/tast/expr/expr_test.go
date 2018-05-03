@@ -5,6 +5,7 @@
 package expr
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 )
@@ -55,4 +56,33 @@ func TestBadExpr(t *testing.T) {
 			t.Errorf("New(%q) unexpectedly succeeded", s)
 		}
 	}
+}
+
+func ExampleMatches() {
+	e, _ := New("a && (b || c) && !d")
+	for _, attr := range [][]string{
+		[]string{"a"},
+		[]string{"a", "b"},
+		[]string{"a", "c"},
+		[]string{"a", "c", "d"},
+	} {
+		if e.Matches(attr) {
+			fmt.Println(attr, "matched")
+		} else {
+			fmt.Println(attr, "not matched")
+		}
+	}
+	// Output:
+	// [a] not matched
+	// [a b] matched
+	// [a c] matched
+	// [a c d] not matched
+}
+
+func ExampleQuoted() {
+	e, _ := New("\"attr-hyphen\" && \"attr space\" && attr_under")
+	if e.Matches([]string{"attr-hyphen", "attr space", "attr_under"}) {
+		fmt.Println("matched")
+	}
+	// Output: matched
 }

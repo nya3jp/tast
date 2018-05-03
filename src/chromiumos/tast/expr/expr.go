@@ -14,8 +14,19 @@ import (
 
 // Expr holds a parsed boolean expression that matches some combination of attributes.
 //
+// Expressions are supplied as strings consisting of the following tokens:
+//
+//	* Attributes, either as bare identifiers (only if compliant with
+//	  https://golang.org/ref/spec#Identifiers) or as double-quoted strings
+//	* Binary operators: && (and), || (or)
+//	* Unary operator: ! (not)
+//	* Grouping: (, )
+//
 // The expression syntax is conveniently a subset of Go's syntax, so Go's parser and ast
 // packages are used to convert the initial expression into a binary expression tree.
+//
+// After an Expr object is created from a string expression, it can be asked if
+// it is satisfied by a supplied set of attributes.
 type Expr struct {
 	root ast.Expr
 }
@@ -67,9 +78,6 @@ func (ev *exprValidator) Visit(n ast.Node) ast.Visitor {
 // New parses and validates boolean expression s, returning an Expr object
 // that can be used to test whether the expression is satisfied by different
 // sets of attributes.
-//
-// s is an expression consisting of attributes/identifiers, binary operators
-// && and ||, unary operator !, and parentheses for grouping.
 func New(s string) (*Expr, error) {
 	root, err := parser.ParseExpr(s)
 	if err != nil {

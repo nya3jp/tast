@@ -16,6 +16,24 @@
       "revId": "dca87e2b132d7b3917e3a272f6b13e4bd7549015",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1065c967_32de2fd4",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2018-05-03T04:48:52Z",
+      "side": 0,
+      "message": "Ack",
+      "parentUuid": "a348fbcd_0247480a",
+      "revId": "dca87e2b132d7b3917e3a272f6b13e4bd7549015",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

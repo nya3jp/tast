@@ -23,7 +23,9 @@ func main() {
 		DataDir:         "/usr/local/share/tast/data/local",
 		SystemLogDir:    "/var/log",
 		SystemCrashDirs: []string{crash.DefaultCrashDir, crash.ChromeCrashDir},
-		USEFlagsFile:    "/etc/tast_use_flags.txt",
+		// The tast-use-flags package attempts to install this file to /etc,
+		// but it gets diverted to /usr/local since it's installed for test images.
+		USEFlagsFile: "/usr/local/etc/tast_use_flags.txt",
 		SoftwareFeatureDefinitions: map[string]string{
 			// This list is documented at docs/test_dependencies.md.
 			"android":      "arc",

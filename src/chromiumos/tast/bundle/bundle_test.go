@@ -68,8 +68,11 @@ func TestCopyTestOutput(t *gotesting.T) {
 
 func TestRunTests(t *gotesting.T) {
 	const (
-		name1 = "foo.Test1"
-		name2 = "foo.Test2"
+		name1         = "foo.Test1"
+		name2         = "foo.Test2"
+		runSetupMsg   = "setting up for run"
+		runCleanupMsg = "cleaning up after run"
+		testSetupMsg  = "setting up for test"
 	)
 
 	reg := testing.NewRegistry()
@@ -88,9 +91,21 @@ func TestRunTests(t *gotesting.T) {
 		DataDir: tmpDir,
 	}
 	cfg := runConfig{
-		runSetupFunc:   func(ctx context.Context) (context.Context, error) { numRunSetupCalls++; return ctx, nil },
-		runCleanupFunc: func(ctx context.Context) error { numRunCleanupCalls++; return nil },
-		testSetupFunc:  func(ctx context.Context) error { numTestSetupCalls++; return nil },
+		runSetupFunc: func(ctx context.Context, lf logFunc) (context.Context, error) {
+			numRunSetupCalls++
+			lf(runSetupMsg)
+			return ctx, nil
+		},
+		runCleanupFunc: func(ctx context.Context, lf logFunc) error {
+			numRunCleanupCalls++
+			lf(runCleanupMsg)
+			return nil
+		},
+		testSetupFunc: func(ctx context.Context, lf logFunc) error {
+			numTestSetupCalls++
+			lf(testSetupMsg)
+			return nil
+		},
 	}
 
 	sig := fmt.Sprintf("runTests(..., %+v, %+v)", args, cfg)
@@ -110,16 +125,26 @@ func TestRunTests(t *gotesting.T) {
 	// Just check some basic details of the control messages.
 	r := control.NewMessageReader(&stdout)
 	for i, ei := range []interface{}{
+		&control.RunLog{Text: runSetupMsg},
 		&control.TestStart{Test: *tests[0]},
+		&control.TestLog{Text: testSetupMsg},
 		&control.TestEnd{Name: name1},
 		&control.TestStart{Test: *tests[1]},
+		&control.TestLog{Text: testSetupMsg},
 		&control.TestError{},
 		&control.TestEnd{Name: name2},
+		&control.RunLog{Text: runCleanupMsg},
 	} {
 		if ai, err := r.ReadMessage(); err != nil {
 			t.Errorf("Failed to read message %d: %v", i, err)
 		} else {
 			switch em := ei.(type) {
+			case *control.RunLog:
+				if am, ok := ai.(*control.RunLog); !ok {
+					t.Errorf("Got %v at %d; want RunLog", ai, i)
+				} else if am.Text != em.Text {
+					t.Errorf("Got RunLog containing %q at %d; want %q", am.Text, i, em.Text)
+				}
 			case *control.TestStart:
 				if am, ok := ai.(*control.TestStart); !ok {
 					t.Errorf("Got %v at %d; want TestStart", ai, i)
@@ -135,6 +160,12 @@ func TestRunTests(t *gotesting.T) {
 			case *control.TestError:
 				if _, ok := ai.(*control.TestError); !ok {
 					t.Errorf("Got %v at %d; want TestError", ai, i)
+				}
+			case *control.TestLog:
+				if am, ok := ai.(*control.TestLog); !ok {
+					t.Errorf("Got %v at %d; want TestLog", ai, i)
+				} else if am.Text != em.Text {
+					t.Errorf("Got TestLog containing %q at %d; want %q", am.Text, i, em.Text)
 				}
 			}
 		}

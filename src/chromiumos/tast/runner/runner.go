@@ -190,6 +190,8 @@ func logBundleOutput(r io.Reader, lg *log.Logger) error {
 			return command.NewStatusErrorf(statusBundleFailed, "bundle produced bad output: %v", err)
 		}
 		switch v := msg.(type) {
+		case *control.RunLog:
+			lg.Print(v.Text)
 		case *control.TestStart:
 			lg.Print("Running ", v.Test.Name)
 		case *control.TestLog:

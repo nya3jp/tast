@@ -24,11 +24,12 @@ const (
 func Remote(stdin io.Reader, stdout, stderr io.Writer) int {
 	args := Args{}
 	cfg := runConfig{
-		runSetupFunc: func(ctx context.Context) (context.Context, error) {
+		runSetupFunc: func(ctx context.Context, lf logFunc) (context.Context, error) {
 			// Connect to the DUT and attach the connection to the context so tests can use it.
 			if args.Target == "" {
 				return ctx, errors.New("target not supplied")
 			}
+			lf("Connecting to DUT")
 			dt, err := dut.New(args.Target, args.KeyFile, args.KeyDir)
 			if err != nil {
 				return ctx, fmt.Errorf("failed to create connection: %v", err.Error())
@@ -39,18 +40,20 @@ func Remote(stdin io.Reader, stdout, stderr io.Writer) int {
 			}
 			return ctx, nil
 		},
-		runCleanupFunc: func(ctx context.Context) error {
+		runCleanupFunc: func(ctx context.Context, lf logFunc) error {
 			dt, ok := dut.FromContext(ctx)
 			if !ok {
 				return errors.New("failed to get DUT from context")
 			}
+			lf("Disconnecting from DUT")
 			return dt.Close(ctx)
 		},
-		testSetupFunc: func(ctx context.Context) error {
+		testSetupFunc: func(ctx context.Context, lf logFunc) error {
 			// Reconnect between tests if needed.
 			if dt, ok := dut.FromContext(ctx); !ok {
 				return errors.New("failed to get DUT from context")
 			} else if !dt.Connected(ctx) {
+				lf("Reconnecting to DUT")
 				return dt.Connect(ctx)
 			}
 			return nil

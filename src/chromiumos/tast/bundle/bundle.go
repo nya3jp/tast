@@ -54,15 +54,18 @@ func run(ctx context.Context, stdin io.Reader, stdout, stderr io.Writer,
 	}
 }
 
+// logFunc can be called by functions registered in runConfig to log a message.
+type logFunc func(msg string)
+
 // runConfig contains additional parameters used by runTests.
 type runConfig struct {
 	// runSetupFunc is run at the beginning of the entire test run if non-nil.
 	// ctx (or a derived context with additional values) should be returned by the function.
-	runSetupFunc func(ctx context.Context) (context.Context, error)
+	runSetupFunc func(ctx context.Context, lf logFunc) (context.Context, error)
 	// runCleanupFunc is run at the end of the entire test run if non-nil.
-	runCleanupFunc func(ctx context.Context) error
+	runCleanupFunc func(ctx context.Context, lf logFunc) error
 	// testSetupFunc is run before each test if non-nil.
-	testSetupFunc func(ctx context.Context) error
+	testSetupFunc func(ctx context.Context, lf logFunc) error
 	// defaultTestTimeout contains the default maximum time allotted to each test.
 	// It is only used if testing.Test.Timeout is unset.
 	defaultTestTimeout time.Duration
@@ -75,6 +78,7 @@ type runConfig struct {
 func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 	tests []*testing.Test) error {
 	mw := control.NewMessageWriter(stdout)
+	lf := func(msg string) { mw.WriteMessage(&control.RunLog{Time: time.Now(), Text: msg}) }
 
 	if len(tests) == 0 {
 		return command.NewStatusErrorf(statusNoTests, "no tests matched by pattern(s)")
@@ -82,7 +86,7 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 
 	if cfg.runSetupFunc != nil {
 		var err error
-		if ctx, err = cfg.runSetupFunc(ctx); err != nil {
+		if ctx, err = cfg.runSetupFunc(ctx, lf); err != nil {
 			return command.NewStatusErrorf(statusError, "run setup failed: %v", err)
 		}
 	}
@@ -94,7 +98,7 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 	}
 
 	if cfg.runCleanupFunc != nil {
-		if err := cfg.runCleanupFunc(ctx); err != nil {
+		if err := cfg.runCleanupFunc(ctx, lf); err != nil {
 			return command.NewStatusErrorf(statusError, "run cleanup failed: %v", err)
 		}
 	}
@@ -141,7 +145,8 @@ func runTest(ctx context.Context, mw *control.MessageWriter, args *Args, cfg *ru
 		}
 
 		if cfg.testSetupFunc != nil {
-			if err := cfg.testSetupFunc(ctx); err != nil {
+			lf := func(msg string) { mw.WriteMessage(&control.TestLog{Time: time.Now(), Text: msg}) }
+			if err := cfg.testSetupFunc(ctx, lf); err != nil {
 				return command.NewStatusErrorf(statusError, "test setup failed: %v", err)
 			}
 		}

@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"path/filepath"
 	"reflect"
+	"sort"
 	gotesting "testing"
 	"time"
 )
@@ -56,11 +57,25 @@ func TestPreserveHardcodedName(t *gotesting.T) {
 
 func TestAutoAttr(t *gotesting.T) {
 	// The bundle name is the second-to-last component in the package's path.
-	test := Test{Name: "category.Name", Pkg: "org/chromium/tast/mybundle/category"}
+	test := Test{
+		Name:         "category.Name",
+		Pkg:          "org/chromium/tast/mybundle/category",
+		Attr:         []string{"attr1", "attr2"},
+		SoftwareDeps: []string{"dep1", "dep2"},
+	}
 	if err := test.addAutoAttributes(); err != nil {
 		t.Fatal("addAutoAttributes failed: ", err)
 	}
-	exp := []string{testNameAttrPrefix + "category.Name", testBundleAttrPrefix + "mybundle"}
+	exp := []string{
+		"attr1",
+		"attr2",
+		testNameAttrPrefix + "category.Name",
+		testBundleAttrPrefix + "mybundle",
+		testDepAttrPrefix + "dep1",
+		testDepAttrPrefix + "dep2",
+	}
+	sort.Strings(test.Attr)
+	sort.Strings(exp)
 	if !reflect.DeepEqual(test.Attr, exp) {
 		t.Errorf("Attr = %v; want %v", test.Attr, exp)
 	}
@@ -68,7 +83,11 @@ func TestAutoAttr(t *gotesting.T) {
 
 func TestReservedAttrPrefixes(t *gotesting.T) {
 	test := Test{Name: "cat.Test"}
-	for _, attr := range []string{testNameAttrPrefix + "foo", testBundleAttrPrefix + "bar"} {
+	for _, attr := range []string{
+		testNameAttrPrefix + "foo",
+		testBundleAttrPrefix + "bar",
+		testDepAttrPrefix + "dep",
+	} {
 		test.Attr = []string{attr}
 		if err := test.addAutoAttributes(); err == nil {
 			t.Errorf("addAutoAttributes didn't return error for reserved attribute %q", attr)

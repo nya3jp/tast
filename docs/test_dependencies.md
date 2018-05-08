@@ -8,7 +8,7 @@ command's `-checktestdeps` flag to control this behavior.
 Tests specify dependencies through the `SoftwareDeps` field in [testing.Test].
 The following software features are defined:
 
-*   `android` - The ability to run Android apps.
+*   `android` - The ability to [run Android apps].
 *   `chrome` - A Chrome process.
 *   `chrome_login` - Implies `chrome` with the further requirement that user
     login (i.e. using `session_manager` and `cryptohome`) is supported.
@@ -23,5 +23,6 @@ Before a new USE flag can be used in an expression, it must be added to `IUSE`
 in the [tast-use-flags] package.
 
 [testing.Test]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Test
+[run Android apps]: https://developer.android.com/topic/arc/
 [local_test_runner]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/cmd/local_test_runner/main.go
 [tast-use-flags]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/tast-use-flags/

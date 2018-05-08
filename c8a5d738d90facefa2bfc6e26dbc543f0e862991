@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "67aaf9bd_ada1aad8",
+        "filename": "docs/running_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-05-08T00:53:49Z",
+      "side": 1,
+      "message": "i sort of wish i had some way to make \"chrome_login\" imply \"chrome\", and \"android\" imply \"chrome_login\", but i\u0027m worried that that would fall too far into the realm of magic. something for later, i guess.",
+      "range": {
+        "startLine": 39,
+        "startChar": 31,
+        "endLine": 39,
+        "endChar": 65
+      },
+      "revId": "c8a5d738d90facefa2bfc6e26dbc543f0e862991",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -36,10 +36,11 @@ Any additional positional arguments describe which tests should be executed:
 *   If no arguments are supplied, all tests are selected.
 *   If a single argument surrounded by parentheses is supplied, it is
     interpreted as a boolean expression consisting of test attributes. For
-    example, the expression `(chrome && !(flaky || disabled))` matches all tests
-    with a `chrome` attribute but not a `flaky` or `disabled` attribute.
-    Attributes that don't consist of a letter or underscore followed by letters,
-    digits, and underscores must be double-quoted.
+    example, the expression `(("dep:chrome" || "dep:chrome_login") && !flaky &&
+    !disabled)` matches all tests with a `dep:chrome` or `dep:chrome_login`
+    attribute but not a `flaky` or `disabled` attribute. Attributes that don't
+    consist of a letter or underscore followed by letters, digits, and
+    underscores must be double-quoted.
 *   Otherwise, the argument(s) are interpreted as wildcard patterns matching
     test names. For example, `ui.*` matches all tests with names prefixed by
     `ui.`. Multiple patterns can be supplied: passing `example.Pass` and

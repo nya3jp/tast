@@ -23,6 +23,7 @@ const (
 
 	testNameAttrPrefix   = "name:"   // prefix for auto-added attribute containing test name
 	testBundleAttrPrefix = "bundle:" // prefix for auto-added attribute containing bundle name
+	testDepAttrPrefix    = "dep:"    // prefix for auto-added attribute containing software dependency
 )
 
 // TestFunc is the code associated with a test.
@@ -154,14 +155,19 @@ func (tst *Test) addAutoAttributes() error {
 	}
 
 	for _, attr := range tst.Attr {
-		if strings.HasPrefix(attr, testNameAttrPrefix) || strings.HasPrefix(attr, testBundleAttrPrefix) {
-			return fmt.Errorf("attribute %q has reserved prefix", attr)
+		for _, pre := range []string{testNameAttrPrefix, testBundleAttrPrefix, testDepAttrPrefix} {
+			if strings.HasPrefix(attr, pre) {
+				return fmt.Errorf("attribute %q has reserved prefix", attr)
+			}
 		}
 	}
 
 	tst.Attr = append(tst.Attr, testNameAttrPrefix+tst.Name)
 	if comps := strings.Split(tst.Pkg, "/"); len(comps) >= 2 {
 		tst.Attr = append(tst.Attr, testBundleAttrPrefix+comps[len(comps)-2])
+	}
+	for _, dep := range tst.SoftwareDeps {
+		tst.Attr = append(tst.Attr, testDepAttrPrefix+dep)
 	}
 	return nil
 }

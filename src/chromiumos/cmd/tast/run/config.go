@@ -142,6 +142,8 @@ func (c *Config) SetFlags(f *flag.FlagSet, trunkDir string) {
 		desc := fmt.Sprintf("skip tests with software dependencies unsatisfied by DUT (%s; default %q)",
 			td.QuotedValues(), td.Default())
 		f.Var(td, "checktestdeps", desc)
+	} else {
+		c.checkTestDeps = checkTestDepsNever
 	}
 
 	c.buildCfg.SetFlags(f, trunkDir)

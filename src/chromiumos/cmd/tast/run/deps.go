@@ -19,7 +19,9 @@ import (
 // If cfg.checkTestDeps is checkTestDepsAuto, it may be updated (e.g. if it's not
 // possible to check dependencies).
 func getSoftwareFeatures(ctx context.Context, cfg *Config) error {
-	if cfg.checkTestDeps == checkTestDepsNever {
+	// Don't collect features if we're not checking deps or if we already have feature lists.
+	if cfg.checkTestDeps == checkTestDepsNever || len(cfg.availableSoftwareFeatures) > 0 ||
+		len(cfg.unavailableSoftwareFeatures) > 0 {
 		return nil
 	}
 
@@ -27,7 +29,7 @@ func getSoftwareFeatures(ctx context.Context, cfg *Config) error {
 	// assume that they really want to run those particular tests and skip checking dependencies.
 	if cfg.checkTestDeps == checkTestDepsAuto &&
 		bundle.GetTestPatternType(cfg.Patterns) == bundle.TestPatternWildcard {
-		cfg.Logger.Debug("Test software dependencies will not be checked for wildcard/literal test patterns")
+		cfg.Logger.Debug("Test software dependencies not checked for wildcard/literal test patterns")
 		cfg.checkTestDeps = checkTestDepsNever
 		return nil
 	}

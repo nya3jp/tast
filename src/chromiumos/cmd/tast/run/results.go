@@ -277,8 +277,8 @@ func (r *resultsHandler) handleTestEnd(msg *control.TestEnd) error {
 		r.cfg.Logger.Logf("Completed test %s in %v with %d error(s)",
 			msg.Name, msg.Time.Sub(r.res.Start).Round(time.Millisecond), len(r.res.Errors))
 	} else {
-		r.cfg.Logger.Logf("Skipped test %s due to missing dependencies: %v",
-			msg.Name, msg.MissingSoftwareDeps)
+		r.cfg.Logger.Logf("Skipped test %s due to missing dependencies: %s",
+			msg.Name, strings.Join(msg.MissingSoftwareDeps, " "))
 		r.res.SkipReason = "missing deps: " + strings.Join(msg.MissingSoftwareDeps, " ")
 	}
 

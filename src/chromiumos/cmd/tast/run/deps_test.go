@@ -57,6 +57,15 @@ func TestGetSoftwareFeaturesAlways(t *testing.T) {
 	}
 	checkArgs(t, stdin, &runner.Args{Mode: runner.GetSoftwareFeaturesMode})
 	checkRunnerTestDepsArgs(t, &td.cfg, true, avail, unavail)
+
+	// Change the features reported by local_test_runner and call getSoftwareFeature again.
+	// Since we already have the features, we shouldn't run local_test_runner again and should
+	// continue using the original features.
+	addGetSoftwareFeaturesResult(t, td, []string{"new1"}, []string{"new2"})
+	if err := getSoftwareFeatures(context.Background(), &td.cfg); err != nil {
+		t.Fatalf("getSoftwareFeatures(%+v) failed on second call: %v", td.cfg, err)
+	}
+	checkRunnerTestDepsArgs(t, &td.cfg, true, avail, unavail)
 }
 
 func TestGetSoftwareFeaturesNever(t *testing.T) {

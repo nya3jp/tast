@@ -24,15 +24,16 @@ import (
 )
 
 const (
-	resultsFilename = "results.json" // file in Config.ResDir containing test results
-	systemLogsDir   = "system_logs"  // dir in Config.ResDir containing DUT's system logs
-	crashesDir      = "crashes"      // dir in Config.ResDir containing DUT's crashes
-	testLogsDir     = "tests"        // dir in Config.ResDir containing tests' dirs
-	testLogFilename = "log.txt"      // file in test's dir containing its logs
+	// These paths are relative to Config.ResDir.
+	resultsFilename         = "results.json"           // file containing JSON array of TestResult objects
+	streamedResultsFilename = "streamed_results.jsonl" // file containing stream of newline-separated JSON TestResult objects
+	systemLogsDir           = "system_logs"            // dir containing DUT's system logs
+	crashesDir              = "crashes"                // dir containing DUT's crashes
+	testLogsDir             = "tests"                  // dir containing dirs with details about individual tests
 
+	testLogFilename   = "log.txt"      // file in testLogsDir/<test> containing test-specific log messages
 	testOutputTimeFmt = "15:04:05.000" // format for timestamps attached to test output
-
-	defaultMsgTimeout = time.Minute // default timeout for reading next control message
+	defaultMsgTimeout = time.Minute    // default timeout for reading next control message
 )
 
 // TestResult contains the results from a single test.
@@ -47,6 +48,8 @@ type TestResult struct {
 	// Start is the time at which the test started (as reported by the test bundle).
 	Start time.Time `json:"start"`
 	// End is the time at which the test completed (as reported by the test bundle).
+	// In a streamed results file, it may hold the zero value (0001-01-01T00:00:00Z)
+	// to indicate that the test did not complete.
 	End time.Time `json:"end"`
 	// OutDir is the directory into which test output is stored.
 	OutDir string `json:"outDir"`
@@ -132,12 +135,33 @@ type resultsHandler struct {
 	ctx context.Context
 	cfg *Config
 
-	runStart, runEnd time.Time         // test-binary-reported times at which run started and ended
-	numTests         int               // total number of tests that are expected to run
-	results          []TestResult      // information about completed tests
-	res              *TestResult       // information about the currently-running test
-	stage            *timing.Stage     // current test's timing stage
-	crf              copyAndRemoveFunc // function used to copy and remove files from DUT
+	runStart, runEnd time.Time              // test-runner-reported times at which run started and ended
+	numTests         int                    // total number of tests that are expected to run
+	results          []TestResult           // information about completed tests
+	res              *TestResult            // information about the currently-running test
+	stage            *timing.Stage          // current test's timing stage
+	crf              copyAndRemoveFunc      // function used to copy and remove files from DUT
+	streamWriter     *streamedResultsWriter // used to write results as control messages are read
+}
+
+func newResultsHandler(ctx context.Context, cfg *Config, crf copyAndRemoveFunc) (*resultsHandler, error) {
+	r := &resultsHandler{
+		ctx:     ctx,
+		cfg:     cfg,
+		results: make([]TestResult, 0),
+		crf:     crf,
+	}
+
+	var err error
+	if err = os.MkdirAll(r.cfg.ResDir, 0755); err != nil {
+		return nil, err
+	}
+	fn := filepath.Join(r.cfg.ResDir, streamedResultsFilename)
+	if r.streamWriter, err = newStreamedResultsWriter(fn); err != nil {
+		return nil, err
+	}
+
+	return r, nil
 }
 
 func (r *resultsHandler) close() {
@@ -145,6 +169,7 @@ func (r *resultsHandler) close() {
 		r.cfg.Logger.RemoveWriter(r.res.logFile)
 		r.res.logFile.Close()
 	}
+	r.streamWriter.close()
 }
 
 // setProgress updates the currently displayed progress to display the number of completed vs.
@@ -225,7 +250,12 @@ func (r *resultsHandler) handleTestStart(msg *control.TestStart) error {
 		testStartMsgTime: time.Now(),
 	}
 
+	// Write a partial TestResult object to record that we started the test.
 	var err error
+	if err = r.streamWriter.write(r.res, false); err != nil {
+		return err
+	}
+
 	if err = os.MkdirAll(r.res.OutDir, 0755); err != nil {
 		return err
 	}
@@ -284,6 +314,11 @@ func (r *resultsHandler) handleTestEnd(msg *control.TestEnd) error {
 
 	r.res.End = msg.Time
 	r.results = append(r.results, *r.res)
+
+	// Replace the earlier partial TestResult object with the now-complete version.
+	if err := r.streamWriter.write(r.res, true); err != nil {
+		return err
+	}
 
 	if err := r.cfg.Logger.RemoveWriter(r.res.logFile); err != nil {
 		r.cfg.Logger.Log(err)
@@ -412,6 +447,57 @@ func (r *resultsHandler) processMessages(mch chan interface{}, ech chan error) e
 	}
 }
 
+// streamedResultsWriter is used by resultsHandler to write a stream of JSON-marshaled TestResults
+// objects to a file.
+type streamedResultsWriter struct {
+	f          *os.File
+	enc        *json.Encoder
+	lastOffset int64 // file offset of the start of the last-written result
+}
+
+// newStreamedResultsWriter creates and returns a new streamedResultsWriter for writing to
+// a file at path p. If the file already exists, new results are appended to it.
+func newStreamedResultsWriter(p string) (*streamedResultsWriter, error) {
+	f, err := os.OpenFile(p, os.O_WRONLY|os.O_CREATE, 0666)
+	if err != nil {
+		return nil, err
+	}
+	eof, err := f.Seek(0, io.SeekEnd)
+	if err != nil {
+		f.Close()
+		return nil, err
+	}
+	return &streamedResultsWriter{f: f, enc: json.NewEncoder(f), lastOffset: eof}, nil
+}
+
+func (w *streamedResultsWriter) close() {
+	w.f.Close()
+}
+
+// write writes the JSON-marshaled representation of res to the file.
+// If update is true, the previous result that was written by this instance is overwritten.
+// Concurrent calls are not supported (note that tests are run serially, and runners send
+// control messages to the tast process serially as well).
+func (w *streamedResultsWriter) write(res *TestResult, update bool) error {
+	var err error
+	if update {
+		// If we're replacing the last record, seek back to the beginning of it and leave the saved offset unmodified.
+		if _, err = w.f.Seek(w.lastOffset, io.SeekStart); err != nil {
+			return err
+		}
+		if err = w.f.Truncate(w.lastOffset); err != nil {
+			return err
+		}
+	} else {
+		// Otherwise, use Seek to record the current offset before we write.
+		if w.lastOffset, err = w.f.Seek(0, io.SeekCurrent); err != nil {
+			return err
+		}
+	}
+
+	return w.enc.Encode(res)
+}
+
 // readMessages reads serialized control messages from r and passes them
 // via mch. If an error is encountered, it is passed via ech and no more
 // reads are performed. Channels are closed before returning.
@@ -433,11 +519,9 @@ func readMessages(r io.Reader, mch chan interface{}, ech chan error) {
 // be passed to WriteResults.
 func readTestOutput(ctx context.Context, cfg *Config, r io.Reader, crf copyAndRemoveFunc) (
 	[]TestResult, error) {
-	rh := resultsHandler{
-		ctx:     ctx,
-		cfg:     cfg,
-		results: make([]TestResult, 0),
-		crf:     crf,
+	rh, err := newResultsHandler(ctx, cfg, crf)
+	if err != nil {
+		return nil, err
 	}
 	defer rh.close()
 

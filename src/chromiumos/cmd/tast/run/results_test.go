@@ -11,6 +11,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	gotesting "testing"
 	"time"
@@ -24,6 +25,20 @@ import (
 
 // noOpCopyAndRemove can be passed to readTestOutput by tests.
 func noOpCopyAndRemove(src, dst string) error { return nil }
+
+// readStreamedResults decodes newline-terminated, JSON-marshaled TestResult structs from r.
+func readStreamedResults(t *gotesting.T, r io.Reader) []TestResult {
+	var results []TestResult
+	dec := json.NewDecoder(r)
+	for dec.More() {
+		res := TestResult{}
+		if err := dec.Decode(&res); err != nil {
+			t.Errorf("Failed to decode result: %v", err)
+		}
+		results = append(results, res)
+	}
+	return results
+}
 
 func TestReadTestOutput(t *gotesting.T) {
 	const (
@@ -85,8 +100,7 @@ func TestReadTestOutput(t *gotesting.T) {
 		Logger: logging.NewSimple(&bytes.Buffer{}, 0, false),
 		ResDir: filepath.Join(tempDir, "results"),
 	}
-	crf := func(src, dst string) error { return os.Rename(src, dst) }
-	results, err := readTestOutput(context.Background(), &cfg, &b, crf)
+	results, err := readTestOutput(context.Background(), &cfg, &b, os.Rename)
 	if err != nil {
 		t.Fatal("readTestOutput failed:", err)
 	}
@@ -99,7 +113,7 @@ func TestReadTestOutput(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	expRes, err := json.MarshalIndent([]TestResult{
+	expRes := []TestResult{
 		{
 			Test:   testing.Test{Name: test1Name, Desc: test1Desc},
 			Start:  test1StartTime,
@@ -130,13 +144,19 @@ func TestReadTestOutput(t *gotesting.T) {
 			SkipReason: "missing deps: " + strings.Join(test3Deps, " "),
 			OutDir:     filepath.Join(cfg.ResDir, testLogsDir, test3Name),
 		},
-	}, "", "  ")
-	if err != nil {
-		t.Fatal(err)
 	}
-	expRes = append(expRes, '\n')
-	if files[resultsFilename] != string(expRes) {
-		t.Errorf("%s contains %q; want %q", resultsFilename, files[resultsFilename], string(expRes))
+	var actRes []TestResult
+	if err := json.Unmarshal([]byte(files[resultsFilename]), &actRes); err != nil {
+		t.Errorf("Failed to decode %v: %v", resultsFilename, err)
+	}
+	if !reflect.DeepEqual(actRes, expRes) {
+		t.Errorf("%v contains %+v; want %+v", resultsFilename, actRes, expRes)
+	}
+
+	// The streamed results file should contain the same set of results.
+	streamRes := readStreamedResults(t, bytes.NewBufferString(files[streamedResultsFilename]))
+	if !reflect.DeepEqual(streamRes, expRes) {
+		t.Errorf("%v contains %+v; want %+v", streamedResultsFilename, streamRes, expRes)
 	}
 
 	outPath := filepath.Join(testLogsDir, test2Name, test2OutFile)
@@ -331,4 +351,87 @@ func TestWriteResultsCollectSysInfo(t *gotesting.T) {
 		Mode:               runner.CollectSysInfoMode,
 		CollectSysInfoArgs: runner.CollectSysInfoArgs{},
 	})
+}
+
+func TestWritePartialResults(t *gotesting.T) {
+	const (
+		test1Name = "pkg.Test1"
+		test2Name = "pkg.Test2"
+		test3Name = "pkg.Test3"
+	)
+	run1Start := time.Unix(1, 0)
+	test1Start := time.Unix(2, 0)
+	test1End := time.Unix(3, 0)
+	test2Start := time.Unix(4, 0)
+	run2Start := time.Unix(5, 0)
+	test3Start := time.Unix(6, 0)
+	test3End := time.Unix(7, 0)
+	run2End := time.Unix(8, 0)
+
+	tempDir := testutil.TempDir(t, "results_test.")
+	defer os.RemoveAll(tempDir)
+
+	// Make the runner output end abruptly without a TestEnd control message for the second test.
+	b := bytes.Buffer{}
+	mw := control.NewMessageWriter(&b)
+	mw.WriteMessage(&control.RunStart{Time: run1Start, NumTests: 2})
+	mw.WriteMessage(&control.TestStart{Time: test1Start, Test: testing.Test{Name: test1Name}})
+	mw.WriteMessage(&control.TestEnd{Time: test1End, Name: test1Name})
+	mw.WriteMessage(&control.TestStart{Time: test2Start, Test: testing.Test{Name: test2Name}})
+
+	cfg := Config{
+		Logger: logging.NewSimple(&bytes.Buffer{}, 0, false),
+		ResDir: tempDir,
+	}
+	if _, err := readTestOutput(context.Background(), &cfg, &b, os.Rename); err == nil {
+		t.Error("readTestOutput unexpectedly succeeded")
+	}
+	files, err := testutil.ReadFiles(cfg.ResDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	streamRes := readStreamedResults(t, bytes.NewBufferString(files[streamedResultsFilename]))
+	expRes := []TestResult{
+		TestResult{
+			Test:   testing.Test{Name: test1Name},
+			Start:  test1Start,
+			End:    test1End,
+			OutDir: filepath.Join(cfg.ResDir, testLogsDir, test1Name),
+		},
+		// No TestEnd message was received for the second test, so its entry in the streamed results
+		// file should have an empty end time.
+		TestResult{
+			Test:   testing.Test{Name: test2Name},
+			Start:  test2Start,
+			OutDir: filepath.Join(cfg.ResDir, testLogsDir, test2Name),
+		},
+	}
+	if !reflect.DeepEqual(streamRes, expRes) {
+		t.Errorf("%v contains %+v; want %+v", streamedResultsFilename, streamRes, expRes)
+	}
+
+	// Write control messages describing another run containing the third test.
+	b.Reset()
+	mw.WriteMessage(&control.RunStart{Time: run2Start, NumTests: 1})
+	mw.WriteMessage(&control.TestStart{Time: test3Start, Test: testing.Test{Name: test3Name}})
+	mw.WriteMessage(&control.TestEnd{Time: test3End, Name: test3Name})
+	mw.WriteMessage(&control.RunEnd{Time: run2End})
+
+	// The results for the third test should be appended to the existing streamed results file.
+	if _, err := readTestOutput(context.Background(), &cfg, &b, os.Rename); err != nil {
+		t.Error("readTestOutput failed: ", err)
+	}
+	if files, err = testutil.ReadFiles(cfg.ResDir); err != nil {
+		t.Fatal(err)
+	}
+	streamRes = readStreamedResults(t, bytes.NewBufferString(files[streamedResultsFilename]))
+	expRes = append(expRes, TestResult{
+		Test:   testing.Test{Name: test3Name},
+		Start:  test3Start,
+		End:    test3End,
+		OutDir: filepath.Join(cfg.ResDir, testLogsDir, test3Name),
+	})
+	if !reflect.DeepEqual(streamRes, expRes) {
+		t.Errorf("%v contains %+v; want %+v", streamedResultsFilename, streamRes, expRes)
+	}
 }

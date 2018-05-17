@@ -69,6 +69,30 @@
       "revId": "46d1cea12fcf6b5bbb94ced29ffbc40545a17d20",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3cc2dee1_5a029604",
+        "filename": "src/chromiumos/cmd/tast/run/results.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 479,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-05-17T04:36:27Z",
+      "side": 1,
+      "message": "tast doesn\u0027t run tests concurrently, and i don\u0027t think it ever should. in general, almost all of our integration tests do things that can\u0027t tolerate other tests doing similar things (e.g. ui tests restart chrome and log in, power tests might suspend and resume the system, etc.). i\u0027ll add a comment to make it clear that concurrent calls aren\u0027t supported.",
+      "parentUuid": "43d92c46_dfd6ce1b",
+      "range": {
+        "startLine": 479,
+        "startChar": 32,
+        "endLine": 479,
+        "endChar": 37
+      },
+      "revId": "46d1cea12fcf6b5bbb94ced29ffbc40545a17d20",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

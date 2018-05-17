@@ -22,6 +22,53 @@
       "revId": "46d1cea12fcf6b5bbb94ced29ffbc40545a17d20",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2d2751cf_8ef9cb10",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2018-05-17T02:57:06Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "8c842389_6157b382",
+      "range": {
+        "startLine": 12,
+        "startChar": 35,
+        "endLine": 12,
+        "endChar": 54
+      },
+      "revId": "46d1cea12fcf6b5bbb94ced29ffbc40545a17d20",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "43d92c46_dfd6ce1b",
+        "filename": "src/chromiumos/cmd/tast/run/results.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 479,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2018-05-17T02:57:06Z",
+      "side": 1,
+      "message": "Does this need locking to ensure serialized output when called concurrently?",
+      "range": {
+        "startLine": 479,
+        "startChar": 32,
+        "endLine": 479,
+        "endChar": 37
+      },
+      "revId": "46d1cea12fcf6b5bbb94ced29ffbc40545a17d20",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

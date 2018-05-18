@@ -15,7 +15,7 @@ flag that's reachable from your workstation via SSH. An image running in a
 In your chroot, run the following:
 
 ```sh
-tast -verbose run -build=false <test-device-ip> ui.ChromeSanity
+tast -verbose run -build=false <test-device-ip> ui.ChromeLogin
 ```
 
 You should see output scroll by on your workstation, and on the Chrome OS
@@ -32,7 +32,7 @@ In your chroot, run the same command as before **but without the `-build=false`
 argument**:
 
 ```sh
-tast -verbose run <test-device-ip> ui.ChromeSanity
+tast -verbose run <test-device-ip> ui.ChromeLogin
 ```
 
 This time, the command will take a bit longer (but build objects will be
@@ -59,7 +59,7 @@ See [Running Tests] for more information.
 Now, let's modify the test. In your Chrome OS checkout, go to
 `src/platform/tast-tests/src/chromiumos/tast/local/bundles/cros/ui` and open
 `chrome_sanity.go` (for convenience, there's also a `local_tests` symlink at the
-top of `tast-tests`). The `ChromeSanity` function here will run directly on the
+top of `tast-tests`). The `ChromeLogin` function here will run directly on the
 test device.
 
 At the end of the function, add the following code:
@@ -73,7 +73,7 @@ if _, err = cr.NewConn(s.Context(), "https://www.google.com/"); err != nil {
 Back in your chroot, run `tast` again:
 
 ```sh
-tast -verbose run <test-device-ip> ui.ChromeSanity
+tast -verbose run <test-device-ip> ui.ChromeLogin
 ```
 
 This time, the test should additionally open a Google search page.

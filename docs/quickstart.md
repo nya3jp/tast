@@ -58,7 +58,7 @@ See [Running Tests] for more information.
 
 Now, let's modify the test. In your Chrome OS checkout, go to
 `src/platform/tast-tests/src/chromiumos/tast/local/bundles/cros/ui` and open
-`chrome_sanity.go` (for convenience, there's also a `local_tests` symlink at the
+`chrome_login.go` (for convenience, there's also a `local_tests` symlink at the
 top of `tast-tests`). The `ChromeLogin` function here will run directly on the
 test device.
 

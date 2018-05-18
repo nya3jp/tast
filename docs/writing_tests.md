@@ -36,7 +36,7 @@ suggestions that may be helpful (despite being C++-centric).
 
 ## Naming and defining tests
 
-Tests are identified by names like `ui.ChromeSanity`. The portion before the
+Tests are identified by names like `ui.ChromeLogin`. The portion before the
 period is the test's package name, while the portion after the period is the
 function that implements the test. Test function names should follow [Go's
 naming conventions], and [acronyms should be fully capitalized]. Test names are

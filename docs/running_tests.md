@@ -123,7 +123,7 @@ don't have a Chrome OS chroot containing the `tast` executable), the
 `local_test_runner` executable can be started directly on the DUT:
 
 ```shell
-local_test_runner ui.ChromeSanity
+local_test_runner ui.ChromeLogin
 ```
 
 [Test Attributes]: test_attributes.md

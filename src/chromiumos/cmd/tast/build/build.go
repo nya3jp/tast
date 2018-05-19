@@ -72,6 +72,15 @@ func Build(ctx context.Context, cfg *Config, pkg, outDir, stageName string) (out
 		"GOBIN="+outDir,
 	)
 	if out, err = cmd.CombinedOutput(); err != nil {
+		// The compiler won't be installed if the user has never run setup_board for a board using
+		// the target arch. Suggest manually setting up toolchains for arbitrary x86_64 and aarch64
+		// boards, which should also install 32-bit toolchains -- see https://crbug.com/844765.
+		if strings.HasSuffix(err.Error(), exec.ErrNotFound.Error()) {
+			msg := "To install toolchains for all architectures, run:\n\n" +
+				"  sudo ~/trunk/chromite/bin/cros_setup_toolchains --targets=boards \\\n" +
+				"    --include-boards=amd64-generic,arm64-generic\n"
+			return []byte(msg), err
+		}
 		return out, err
 	}
 	return out, nil

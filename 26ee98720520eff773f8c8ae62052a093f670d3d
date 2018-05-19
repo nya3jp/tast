@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5789c3d6_017e97da",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-05-19T01:37:39Z",
+      "side": 1,
+      "message": "should i delete this now?",
+      "revId": "26ee98720520eff773f8c8ae62052a093f670d3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3c03f6ee_96c7d64c",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-05-19T01:37:39Z",
+      "side": 1,
+      "message": "i was surprised that this isn\u0027t in $PATH when i run sudo",
+      "range": {
+        "startLine": 80,
+        "startChar": 12,
+        "endLine": 80,
+        "endChar": 54
+      },
+      "revId": "26ee98720520eff773f8c8ae62052a093f670d3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

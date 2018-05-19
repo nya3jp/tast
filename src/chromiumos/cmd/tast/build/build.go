@@ -31,9 +31,9 @@ func GetLocalArch() (string, error) {
 // TODO(derat): What's the right way to get the toolchain name for a given board?
 // "cros_setup_toolchains --show-board-cfg <board>" seems to print it, but it's very slow (700+ ms).
 var archToCompiler map[string]string = map[string]string{
-	"i686":    "i686-pc-linux-gnu-go",
-	"x86_64":  "x86_64-cros-linux-gnu-go",
-	"armv7l":  "armv7a-cros-linux-gnueabi-go",
+	"x86_64": "x86_64-cros-linux-gnu-go",
+	"armv7l": "armv7a-cros-linux-gnueabi-go",
+	// On ARM devices with 64-bit kernels, we still have a 32-bit userspace.
 	"aarch64": "armv7a-cros-linux-gnueabi-go",
 }
 
@@ -96,6 +96,13 @@ func Build(ctx context.Context, cfg *Config, pkg, outDir, stageName string) (out
 	cmd.Env = env
 
 	if out, err = cmd.CombinedOutput(); err != nil {
+		// The compiler won't be installed if the user has never run setup_board for a board using
+		// the target arch. Suggest manually setting up toolchains.
+		if strings.HasSuffix(err.Error(), exec.ErrNotFound.Error()) {
+			msg := "To install toolchains for all architectures, please run:\n\n" +
+				"  sudo ~/trunk/chromite/bin/cros_setup_toolchains -t sdk\n"
+			return []byte(msg), err
+		}
 		return out, err
 	}
 	return out, nil

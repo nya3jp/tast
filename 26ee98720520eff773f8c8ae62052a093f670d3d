@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "15c9f380_d93028af",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-05-19T21:23:09Z",
+      "side": 1,
+      "message": "thanks, i\u0027ve removed i686.\n\nthe arch string here is coming from running \"uname -m\" on the DUT, so i actually get \"aarch64\" for devices like kevin (due to using a 64-bit kernel there, as i understand it) and think i need to specify the armv7a compiler here as a result.\n\nis there a better way for me to determine which compiler to use for a given DUT (i.e. is there a fast way to check its userspace arch instead)? i can see that kevin has a 32-bit userspace by running \"file /bin/dash\", for instance, but that feels pretty hacky.",
+      "parentUuid": "37a19d31_ae732d3f",
+      "revId": "26ee98720520eff773f8c8ae62052a093f670d3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "3c03f6ee_96c7d64c",
         "filename": "src/chromiumos/cmd/tast/build/build.go",
         "patchSetId": 3

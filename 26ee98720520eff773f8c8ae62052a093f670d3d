@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "37a19d31_ae732d3f",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1171009
+      },
+      "writtenOn": "2018-05-19T01:48:58Z",
+      "side": 1,
+      "message": "Yes, please remove i686.\nAlso aarch64 toolchain should be aarch64-cros-linux-gnu-go (But as we don\u0027t have a arm64 user space board, checking for it isn\u0027t that useful)",
+      "parentUuid": "5789c3d6_017e97da",
+      "revId": "26ee98720520eff773f8c8ae62052a093f670d3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "3c03f6ee_96c7d64c",
         "filename": "src/chromiumos/cmd/tast/build/build.go",
         "patchSetId": 3

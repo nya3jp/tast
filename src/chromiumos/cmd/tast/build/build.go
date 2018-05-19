@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 
 	"chromiumos/cmd/tast/timing"
@@ -66,11 +67,34 @@ func Build(ctx context.Context, cfg *Config, pkg, outDir, stageName string) (out
 		}
 	}
 
-	cmd := exec.Command(comp, "install", "-ldflags=-s -w", pkg)
-	cmd.Env = append(os.Environ(),
-		"GOPATH="+strings.Join([]string{cfg.TestWorkspace, cfg.CommonWorkspace, cfg.SysGopath}, ":"),
-		"GOBIN="+outDir,
-	)
+	const ldFlags = "-ldflags=-s -w"
+
+	env := append(os.Environ(), "GOPATH="+strings.Join([]string{cfg.TestWorkspace, cfg.CommonWorkspace, cfg.SysGopath}, ":"))
+
+	// This is frustrating:
+	//
+	// - "go build" always rebuilds the final executable (but not its dependencies).
+	// - "go install" avoids rebuilding the executable when it hasn't changed, so it's faster.
+	// - We need to set $GOBIN when using "go install" to avoid installing alongside the source code.
+	// - But "go install" refuses to cross-compile if $GOBIN is set (by design; see https://golang.org/issue/11778).
+	//
+	// So, use "go install" when compiling for the local arch to get faster builds,
+	// but fall back to using "go build" when cross-compiling.
+	larch, err := GetLocalArch()
+	if err != nil {
+		return out, fmt.Errorf("failed to get local arch: %v", err)
+	}
+
+	var cmd *exec.Cmd
+	if larch == cfg.Arch {
+		cmd = exec.Command(comp, "install", ldFlags, pkg)
+		env = append(env, "GOBIN="+outDir)
+	} else {
+		dest := filepath.Join(outDir, filepath.Base(pkg))
+		cmd = exec.Command(comp, "build", ldFlags, "-o", dest, pkg)
+	}
+	cmd.Env = env
+
 	if out, err = cmd.CombinedOutput(); err != nil {
 		return out, err
 	}

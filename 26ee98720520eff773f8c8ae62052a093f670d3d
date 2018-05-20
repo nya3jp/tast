@@ -73,6 +73,24 @@
     },
     {
       "key": {
+        "uuid": "bcc3538c_1a732b41",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-05-20T00:26:08Z",
+      "side": 1,
+      "message": "hmm. even if i ask them to install the board\u0027s toolchain, i think i\u0027d still need to hardcode the compiler name here (unless i use --show-board-cfg to get the toolchain, which is a bit slower than i\u0027d like). i think i\u0027ll just stick with this approach for now.",
+      "parentUuid": "d774f76a_993b0427",
+      "revId": "26ee98720520eff773f8c8ae62052a093f670d3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "3c03f6ee_96c7d64c",
         "filename": "src/chromiumos/cmd/tast/build/build.go",
         "patchSetId": 3

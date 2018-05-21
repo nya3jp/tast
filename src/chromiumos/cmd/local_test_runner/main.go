@@ -31,6 +31,7 @@ func main() {
 			"android":      "arc",
 			"chrome":       "!chromeless_tty",
 			"chrome_login": "!chromeless_tty && !rialto",
+			"vm_host":      "kvm_host",
 		},
 	}
 	os.Exit(runner.Run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, &args, runner.LocalRunner))

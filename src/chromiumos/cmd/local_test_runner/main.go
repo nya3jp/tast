@@ -28,9 +28,10 @@ func main() {
 		USEFlagsFile: "/usr/local/etc/tast_use_flags.txt",
 		SoftwareFeatureDefinitions: map[string]string{
 			// This list is documented at docs/test_dependencies.md.
-			"android":      "arc",
-			"chrome":       "!chromeless_tty",
-			"chrome_login": "!chromeless_tty && !rialto",
+			"android":          "arc",
+			"chrome":           "!chromeless_tty",
+			"chrome_login":     "!chromeless_tty && !rialto",
+			"virtual_machines": "kvm_host",
 		},
 	}
 	os.Exit(runner.Run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, &args, runner.LocalRunner))

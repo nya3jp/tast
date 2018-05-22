@@ -34,6 +34,24 @@
       "revId": "c6e2fc6f882d5e0d8e9d3b6e87dd70f9f300e452",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "effa52cb_4e40bf14",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-05-22T00:39:42Z",
+      "side": 1,
+      "message": "sounds good to me!",
+      "parentUuid": "fec99b42_2da2c04f",
+      "revId": "c6e2fc6f882d5e0d8e9d3b6e87dd70f9f300e452",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -16,6 +16,24 @@
       "revId": "c6e2fc6f882d5e0d8e9d3b6e87dd70f9f300e452",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fec99b42_2da2c04f",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1003129
+      },
+      "writtenOn": "2018-05-22T00:28:13Z",
+      "side": 1,
+      "message": "I think vm_host is probably the best name we\u0027ll get. Then vm_guest can be the feature for \"running in a VM\"?",
+      "parentUuid": "5cbd1318_95714856",
+      "revId": "c6e2fc6f882d5e0d8e9d3b6e87dd70f9f300e452",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

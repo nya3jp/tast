@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5cbd1318_95714856",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-05-22T00:12:35Z",
+      "side": 1,
+      "message": "i probably obsess too much over naming things, but i\u0027m wondering if people might get confused about whether this means that the DUT can *run* VMs vs. it meaning that the DUT is running *in* a VM. any opinions about naming it something like \"vm_host\" instead? or is that confusingly similar to the kvm_host USE flag?",
+      "revId": "c6e2fc6f882d5e0d8e9d3b6e87dd70f9f300e452",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

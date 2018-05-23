@@ -88,7 +88,7 @@ func remote(ctx context.Context, cfg *Config) (subcommands.ExitStatus, []TestRes
 // and reads its output.
 func runRemoteRunner(ctx context.Context, cfg *Config, bundleGlob, dataDir string) ([]TestResult, error) {
 	if tl, ok := timing.FromContext(ctx); ok {
-		st := tl.Start("run_tests")
+		st := tl.Start("run_remote_tests")
 		defer st.End()
 	}
 

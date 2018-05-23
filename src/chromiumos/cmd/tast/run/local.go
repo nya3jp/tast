@@ -363,7 +363,7 @@ func startLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, args *run
 // if cfg.Mode is ListTestsMode, serialized test information is returned via TestResult.Test but other fields are left blank.
 func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob, dataDir string) ([]TestResult, error) {
 	if tl, ok := timing.FromContext(ctx); ok {
-		st := tl.Start("run_tests")
+		st := tl.Start("run_local_tests")
 		defer st.End()
 	}
 

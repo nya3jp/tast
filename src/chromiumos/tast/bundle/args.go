@@ -60,7 +60,7 @@ type RemoteArgs struct {
 type RunTestsArgs struct {
 	// CheckSoftwareDeps is true if each test's SoftwareDeps field should be checked against
 	// AvailableSoftwareFeatures and UnavailableSoftwareFeatures.
-	CheckSoftwareDeps bool `json:"runTestsCheckSoftwareDeps,omitEmpty"`
+	CheckSoftwareDeps bool `json:"runTestsCheckSoftwareDeps,omitempty"`
 	// AvailableSoftwareFeatures contains a list of software features supported by the DUT.
 	AvailableSoftwareFeatures []string `json:"runTestsAvailableSoftwareFeatures,omitempty"`
 	// UnavailableSoftwareFeatures contains a list of software features supported by the DUT.

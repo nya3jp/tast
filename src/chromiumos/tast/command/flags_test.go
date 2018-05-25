@@ -49,7 +49,7 @@ func TestEnumFlag(t *testing.T) {
 	}
 }
 
-func ExampleFlagSet() {
+func ExampleEnumFlag() {
 	type enum int
 	const (
 		foo enum = 1

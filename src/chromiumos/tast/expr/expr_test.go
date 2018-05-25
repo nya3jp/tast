@@ -58,7 +58,7 @@ func TestBadExpr(t *testing.T) {
 	}
 }
 
-func ExampleMatches() {
+func ExampleExpr() {
 	e, _ := New("a && (b || c) && !d")
 	for _, attr := range [][]string{
 		[]string{"a"},
@@ -79,7 +79,7 @@ func ExampleMatches() {
 	// [a c d] not matched
 }
 
-func ExampleQuoted() {
+func ExampleExpr_quoted() {
 	e, _ := New("\"attr-hyphen\" && \"attr space\" && attr_under")
 	if e.Matches([]string{"attr-hyphen", "attr space", "attr_under"}) {
 		fmt.Println("matched")

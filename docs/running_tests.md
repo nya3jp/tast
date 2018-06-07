@@ -70,8 +70,8 @@ type of tests to build, push, and run. `local` is the default.
 
 The name of the bundle to build, push, and run can be specified via the
 `-buildbundle` flag. If the bundle's source code is outside of the `tast-tests
-repository`, you will need to specify the repository's path using the `-testdir`
-flag.
+repository`, you will need to specify the repository's path using the
+`-buildtestdir` flag.
 
 To rebuild a test bundle, the `tast` command needs its dependencies' source code
 to be available. This code is automatically checked out to `/usr/lib/gopath`

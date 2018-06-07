@@ -40,12 +40,12 @@ type Config struct {
 // SetFlags adds common build-related flags to f that store values in Config.
 // trunkDir is the path to the Chrome OS checkout (within the chroot).
 func (c *Config) SetFlags(f *flag.FlagSet, trunkDir string) {
-	f.StringVar(&c.Arch, "arch", "", "target architecture (per \"uname -m\")")
-	f.StringVar(&c.BaseOutDir, "outdir", defaultBuildOutDir, "directory storing build artifacts")
-	f.StringVar(&c.SysGopath, "sysgopath", "/usr/lib/gopath",
+	f.StringVar(&c.Arch, "buildarch", "", "target architecture (per \"uname -m\")")
+	f.StringVar(&c.BaseOutDir, "buildoutdir", defaultBuildOutDir, "directory storing build artifacts")
+	f.StringVar(&c.SysGopath, "buildsysdir", "/usr/lib/gopath",
 		"Go workspace containing system package source code")
-	f.StringVar(&c.TestWorkspace, "testdir", filepath.Join(trunkDir, defaultTestDir),
+	f.StringVar(&c.TestWorkspace, "buildtestdir", filepath.Join(trunkDir, defaultTestDir),
 		"Go workspace containing test bundles")
-	f.StringVar(&c.CommonWorkspace, "commondir", filepath.Join(trunkDir, defaultCommonDir),
+	f.StringVar(&c.CommonWorkspace, "buildcommondir", filepath.Join(trunkDir, defaultCommonDir),
 		"Go workspace containing common code")
 }

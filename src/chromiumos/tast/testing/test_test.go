@@ -179,3 +179,49 @@ func TestJSON(t *gotesting.T) {
 		t.Fatalf("Unmarshaled to %v; want %v", loaded, orig)
 	}
 }
+
+func TestTestClone(t *gotesting.T) {
+	const (
+		name    = "OldTest"
+		timeout = time.Minute
+	)
+	attr := []string{"a", "b"}
+	f := func(s *State) {}
+
+	// Checks that tst's fields still contain the above values.
+	checkTest := func(msg string, tst *Test) {
+		if tst.Name != name {
+			t.Errorf("%s set Name to %q; want %q", msg, tst.Name, name)
+		}
+		// Go doesn't allow checking functions for equality.
+		if tst.Func == nil {
+			t.Errorf("%s set Func to nil; want %p", msg, f)
+		}
+		if !reflect.DeepEqual(tst.Attr, attr) {
+			t.Errorf("%s set Attr to %v; want %v", msg, tst.Attr, attr)
+		}
+		if tst.SoftwareDeps != nil {
+			t.Errorf("%s set SoftwareDeps to %v; want nil", msg, tst.SoftwareDeps)
+		}
+		if tst.Timeout != timeout {
+			t.Errorf("%s set Timeout to %v; want %v", msg, tst.Timeout, timeout)
+		}
+	}
+
+	// First check that a cloned copy gets the correct values.
+	orig := Test{
+		Name:    name,
+		Func:    f,
+		Attr:    append([]string{}, attr...),
+		Timeout: timeout,
+	}
+	clone := orig.clone()
+	checkTest("clone()", clone)
+
+	// Now update fields in the copy and check that the original is unaffected.
+	clone.Name = "NewTest"
+	clone.Func = nil
+	clone.Attr[0] = "new"
+	clone.Timeout = 2 * timeout
+	checkTest("update after clone()", &orig)
+}

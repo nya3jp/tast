@@ -172,6 +172,42 @@ func (tst *Test) addAutoAttributes() error {
 	return nil
 }
 
+// clone returns a deep copy of t.
+func (t *Test) clone() *Test {
+	copyable := func(tp reflect.Type) bool {
+		// If copyable structs are added, they can be handled in a reflect.Struct case.
+		switch tp.Kind() {
+		case reflect.Bool, reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Uint,
+			reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Float32, reflect.Float64,
+			reflect.Func, reflect.String:
+			return true
+		default:
+			return false
+		}
+	}
+
+	ov := reflect.ValueOf(*t)
+	np := reflect.New(ov.Type()) // *Test
+	nv := reflect.Indirect(np)   // Test
+
+	for i := 0; i < ov.NumField(); i++ {
+		of, nf := ov.Field(i), nv.Field(i)
+		switch {
+		case copyable(of.Type()):
+			nf.Set(of)
+		case of.Kind() == reflect.Slice && copyable(of.Type().Elem()):
+			if !of.IsNil() {
+				nf.Set(reflect.MakeSlice(of.Type(), of.Len(), of.Len()))
+				reflect.Copy(nf, of)
+			}
+		default:
+			panic(fmt.Sprintf("unable to copy Test.%s field of type %s", ov.Type().Field(i).Name, of.Type().Name()))
+		}
+	}
+
+	return np.Interface().(*Test)
+}
+
 // getTestFunctionPackageAndName determines the package and name for f.
 func getTestFunctionPackageAndName(f TestFunc) (pkg, name string, err error) {
 	rf := runtime.FuncForPC(reflect.ValueOf(f).Pointer())

@@ -7,6 +7,7 @@ package testing
 import (
 	"reflect"
 	gotesting "testing"
+	"time"
 )
 
 func TestTestsForPattern(t *gotesting.T) {
@@ -105,5 +106,8 @@ func TestAddTestFailsForInvalidTests(t *gotesting.T) {
 	}
 	if err := reg.AddTest(&Test{Func: func(*State) {}}); err == nil {
 		t.Errorf("Didn't get error when adding test with unexported function")
+	}
+	if err := reg.AddTest(&Test{Func: Func1, Timeout: -1 * time.Second}); err == nil {
+		t.Errorf("Didn't get error when adding test with negative timeout")
 	}
 }

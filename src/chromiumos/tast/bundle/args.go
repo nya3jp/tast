@@ -77,7 +77,7 @@ const (
 
 // readArgs reads a JSON-marshaled Args struct from stdin and updates args (which may contain default values).
 // Matched tests are returned. The caller is responsible for performing the requested action.
-func readArgs(stdin io.Reader, args *Args, bt bundleType) ([]*testing.Test, error) {
+func readArgs(stdin io.Reader, args *Args, cfg *runConfig, bt bundleType) ([]*testing.Test, error) {
 	if err := json.NewDecoder(stdin).Decode(args); err != nil {
 		return nil, command.NewStatusErrorf(statusBadArgs, "failed to decode args from stdin: %v", err)
 	}
@@ -95,6 +95,11 @@ func readArgs(stdin io.Reader, args *Args, bt bundleType) ([]*testing.Test, erro
 	tests, err := testsToRun(args.Patterns)
 	if err != nil {
 		return nil, command.NewStatusErrorf(statusBadPatterns, "failed getting tests for %v: %v", args.Patterns, err.Error())
+	}
+	for _, tp := range tests {
+		if tp.Timeout == 0 {
+			tp.Timeout = cfg.defaultTestTimeout
+		}
 	}
 	sort.Slice(tests, func(i, j int) bool { return tests[i].Name < tests[j].Name })
 	return tests, nil

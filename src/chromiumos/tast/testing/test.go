@@ -55,6 +55,7 @@ type Test struct {
 	SoftwareDeps []string `json:"softwareDeps,omitempty"`
 	// Timeout contains the maximum duration for which Func may run before the test is aborted.
 	// This should almost always be omitted when defining tests; a reasonable default will be used.
+	// This field is serialized as an integer nanosecond count.
 	Timeout time.Duration `json:"timeout"`
 	// CleanupTimeout contains the maximum duration to wait for the test to clean up after a timeout.
 	// This is exposed for unit tests and should almost always be omitted when defining tests;

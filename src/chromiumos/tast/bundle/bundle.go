@@ -108,6 +108,7 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 // runTest runs t per args and cfg, writing the appropriate control.Test* control messages to mw.
 func runTest(ctx context.Context, mw *control.MessageWriter, args *Args, cfg *runConfig, t *testing.Test) error {
 	// Make a copy of the test with the default timeout if none was specified.
+	// TODO(derat): Remove this copy and set the default timeout earlier so it's also returned by the list command.
 	test := *t
 	if test.Timeout == 0 {
 		test.Timeout = cfg.defaultTestTimeout

@@ -5,9 +5,66 @@
 package testing
 
 import (
+	"fmt"
 	"reflect"
 	gotesting "testing"
 )
+
+// testsEqual returns true if a and b contain tests with matching fields.
+// This is useful when comparing slices that contain copies of the same underlying tests.
+func testsEqual(a, b []*Test) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := 0; i < len(a); i++ {
+		ta := *a[i]
+		tb := *b[i]
+
+		// Clear functions, as reflect.DeepEqual always returns false for non-nil Func types.
+		ta.Func = nil
+		tb.Func = nil
+
+		if !reflect.DeepEqual(ta, tb) {
+			return false
+		}
+	}
+	return true
+}
+
+// checkTestPtrsUnique returns an error if the same underlying Test is referenced by pointers in both a and b.
+func checkTestPtrsUnique(a, b []*Test) error {
+	am := make(map[*Test]struct{})
+	for _, t := range a {
+		am[t] = struct{}{}
+	}
+	for _, t := range b {
+		if _, ok := am[t]; ok {
+			return fmt.Errorf("%p (%v) not copied", t, t)
+		}
+	}
+	return nil
+}
+
+func TestAllTests(t *gotesting.T) {
+	reg := NewRegistry()
+	allTests := []*Test{
+		&Test{Name: "test.Foo", Func: Func1},
+		&Test{Name: "test.Bar", Func: Func1},
+	}
+	for _, test := range allTests {
+		if err := reg.AddTest(test); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	tests := reg.AllTests()
+	if !testsEqual(tests, allTests) {
+		t.Errorf("AllTests() = %v; want %v", tests, allTests)
+	}
+	if err := checkTestPtrsUnique(tests, allTests); err != nil {
+		t.Errorf("AllTests() returned non-copied test: %v", err)
+	}
+}
 
 func TestTestsForPattern(t *gotesting.T) {
 	reg := NewRegistry()
@@ -56,8 +113,13 @@ func TestTestsForPattern(t *gotesting.T) {
 	} {
 		if tests, err := reg.TestsForPatterns(tc.pats); err != nil {
 			t.Fatalf("TestsForPatterns(%v) failed: %v", tc.pats, err)
-		} else if !reflect.DeepEqual(tests, tc.expected) {
-			t.Errorf("TestsForPatterns(%v) = %v; want %v", tc.pats, tests, tc.expected)
+		} else {
+			if !testsEqual(tests, tc.expected) {
+				t.Errorf("TestsForPatterns(%v) = %v; want %v", tc.pats, tests, tc.expected)
+			}
+			if err = checkTestPtrsUnique(tests, tc.expected); err != nil {
+				t.Errorf("TestsForPatterns(%v) returned non-copied test: %v", tc.pats, err)
+			}
 		}
 	}
 }
@@ -88,8 +150,13 @@ func TestTestsForAttrExpr(t *gotesting.T) {
 		tests, err := reg.TestsForAttrExpr(tc.expr)
 		if err != nil {
 			t.Errorf("TestsForAttrExpr(%v) failed: %v", tc.expr, err)
-		} else if !reflect.DeepEqual(tests, tc.expected) {
-			t.Errorf("TestsForAttrExpr(%v) = %v; want %v", tc.expr, tests, tc.expected)
+		} else {
+			if !testsEqual(tests, tc.expected) {
+				t.Errorf("TestsForAttrExpr(%v) = %v; want %v", tc.expr, tests, tc.expected)
+			}
+			if err = checkTestPtrsUnique(tests, tc.expected); err != nil {
+				t.Errorf("TestsForAttrExpr(%v) returned non-copied test: %v", tc.expr, err)
+			}
 		}
 	}
 }

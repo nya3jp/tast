@@ -33,7 +33,7 @@ const (
 // The caller should exit with the returned status code.
 func run(ctx context.Context, stdin io.Reader, stdout, stderr io.Writer,
 	args *Args, cfg *runConfig, bt bundleType) int {
-	tests, err := readArgs(stdin, args, bt)
+	tests, err := readArgs(stdin, args, cfg, bt)
 	if err != nil {
 		return command.WriteError(stderr, err)
 	}
@@ -57,7 +57,7 @@ func run(ctx context.Context, stdin io.Reader, stdout, stderr io.Writer,
 // logFunc can be called by functions registered in runConfig to log a message.
 type logFunc func(msg string)
 
-// runConfig contains additional parameters used by runTests.
+// runConfig contains additional parameters used when running tests.
 type runConfig struct {
 	// runSetupFunc is run at the beginning of the entire test run if non-nil.
 	// ctx (or a derived context with additional values) should be returned by the function.
@@ -107,16 +107,9 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 
 // runTest runs t per args and cfg, writing the appropriate control.Test* control messages to mw.
 func runTest(ctx context.Context, mw *control.MessageWriter, args *Args, cfg *runConfig, t *testing.Test) error {
-	// Make a copy of the test with the default timeout if none was specified.
-	// TODO(derat): Remove this copy and set the default timeout earlier so it's also returned by the list command.
-	test := *t
-	if test.Timeout == 0 {
-		test.Timeout = cfg.defaultTestTimeout
-	}
-
 	mw.WriteMessage(&control.TestStart{
 		Time: time.Now(),
-		Test: test,
+		Test: *t,
 	})
 
 	// We skip running the test if it has any dependencies on software features that aren't
@@ -125,7 +118,7 @@ func runTest(ctx context.Context, mw *control.MessageWriter, args *Args, cfg *ru
 	// test's dependencies).
 	var missingDeps []string
 	if args.CheckSoftwareDeps {
-		missingDeps = test.MissingSoftwareDeps(args.AvailableSoftwareFeatures)
+		missingDeps = t.MissingSoftwareDeps(args.AvailableSoftwareFeatures)
 		if unknown := getUnknownDeps(missingDeps, args); len(unknown) > 0 {
 			_, fn, ln, _ := runtime.Caller(0)
 			mw.WriteMessage(&control.TestError{
@@ -140,7 +133,7 @@ func runTest(ctx context.Context, mw *control.MessageWriter, args *Args, cfg *ru
 	}
 
 	if len(missingDeps) == 0 {
-		outDir := filepath.Join(args.OutDir, test.Name)
+		outDir := filepath.Join(args.OutDir, t.Name)
 		if err := os.MkdirAll(outDir, 0755); err != nil {
 			return command.NewStatusErrorf(statusError, "failed to create output dir: %v", err)
 		}
@@ -152,22 +145,21 @@ func runTest(ctx context.Context, mw *control.MessageWriter, args *Args, cfg *ru
 			}
 		}
 		ch := make(chan testing.Output)
-		s := testing.NewState(ctx, ch, filepath.Join(args.DataDir, test.DataDir()), outDir,
-			test.Timeout, test.CleanupTimeout)
+		s := testing.NewState(ctx, ch, filepath.Join(args.DataDir, t.DataDir()), outDir, t.Timeout, t.CleanupTimeout)
 
 		done := make(chan bool, 1)
 		go func() {
 			copyTestOutput(ch, mw)
 			done <- true
 		}()
-		test.Run(s)
+		t.Run(s)
 		close(ch)
 		<-done
 	}
 
 	mw.WriteMessage(&control.TestEnd{
 		Time:                time.Now(),
-		Name:                test.Name,
+		Name:                t.Name,
 		MissingSoftwareDeps: missingDeps,
 	})
 	return nil

@@ -60,9 +60,14 @@ func validateTestName(n string) error {
 	return nil
 }
 
-// AllTests returns all registered tests.
+// AllTests returns copies of all registered tests.
 func (r *Registry) AllTests() []*Test {
-	return append([]*Test{}, r.allTests...)
+	ts := make([]*Test, len(r.allTests))
+	for i, tp := range r.allTests {
+		t := *tp
+		ts[i] = &t
+	}
+	return ts
 }
 
 // testsForPattern returns registered tests with names matched by p,
@@ -99,30 +104,31 @@ func validateTestPattern(p string) error {
 	return nil
 }
 
-// TestsForPatterns de-duplicates and returns registered tests with names matched by
+// TestsForPatterns de-duplicates and returns copies of registered tests with names matched by
 // any pattern in ps.
 func (r *Registry) TestsForPatterns(ps []string) ([]*Test, error) {
 	tests := make([]*Test, 0)
 	seen := make(map[*Test]struct{})
 	for _, p := range ps {
-		ts, err := r.testsForPattern(p)
+		tps, err := r.testsForPattern(p)
 		if err != nil {
 			return nil, err
 		}
 
 		// De-dupe results while preserving order.
-		for _, t := range ts {
-			if _, ok := seen[t]; ok {
+		for _, tp := range tps {
+			if _, ok := seen[tp]; ok {
 				continue
 			}
-			tests = append(tests, t)
-			seen[t] = struct{}{}
+			t := *tp
+			tests = append(tests, &t)
+			seen[tp] = struct{}{}
 		}
 	}
 	return tests, nil
 }
 
-// TestsForAttrExpr returns registered tests with attributes matched by s,
+// TestsForAttrExpr returns copies of registered tests with attributes matched by s,
 // a boolean expression of attributes, e.g. "(attr1 && !attr2) || attr3".
 func (r *Registry) TestsForAttrExpr(s string) ([]*Test, error) {
 	expr, err := expr.New(s)
@@ -131,9 +137,10 @@ func (r *Registry) TestsForAttrExpr(s string) ([]*Test, error) {
 	}
 
 	tests := make([]*Test, 0)
-	for _, t := range r.allTests {
-		if expr.Matches(t.Attr) {
-			tests = append(tests, t)
+	for _, tp := range r.allTests {
+		if expr.Matches(tp.Attr) {
+			t := *tp
+			tests = append(tests, &t)
 		}
 	}
 	return tests, nil

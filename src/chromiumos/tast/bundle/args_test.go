@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"reflect"
 	gotesting "testing"
+	"time"
 
 	"chromiumos/tast/testing"
 )
@@ -35,9 +36,9 @@ func TestReadArgsSortTests(t *gotesting.T) {
 	testing.AddTest(&testing.Test{Name: test3, Func: func(*testing.State) {}})
 	testing.AddTest(&testing.Test{Name: test1, Func: func(*testing.State) {}})
 
-	tests, err := readArgs(newBufferWithArgs(t, &Args{}), &Args{}, localBundle)
+	tests, err := readArgs(newBufferWithArgs(t, &Args{}), &Args{}, &runConfig{}, localBundle)
 	if err != nil {
-		t.Error("readArgs() failed: ", err)
+		t.Fatal("readArgs() failed: ", err)
 	}
 	var act []string
 	for _, t := range tests {
@@ -45,6 +46,35 @@ func TestReadArgsSortTests(t *gotesting.T) {
 	}
 	if exp := []string{test1, test2, test3}; !reflect.DeepEqual(act, exp) {
 		t.Errorf("readArgs() returned tests %v; want sorted %v", act, exp)
+	}
+}
+
+func TestReadArgsTestTimeouts(t *gotesting.T) {
+	const (
+		name1          = "pkg.Test1"
+		name2          = "pkg.Test2"
+		customTimeout  = 45 * time.Second
+		defaultTimeout = 30 * time.Second
+	)
+
+	defer testing.ClearForTesting()
+	testing.GlobalRegistry().DisableValidationForTesting()
+	testing.AddTest(&testing.Test{Name: name1, Func: func(*testing.State) {}, Timeout: customTimeout})
+	testing.AddTest(&testing.Test{Name: name2, Func: func(*testing.State) {}})
+
+	tests, err := readArgs(newBufferWithArgs(t, &Args{}), &Args{},
+		&runConfig{defaultTestTimeout: defaultTimeout}, localBundle)
+	if err != nil {
+		t.Fatal("readArgs() failed: ", err)
+	}
+
+	act := make(map[string]time.Duration)
+	for _, t := range tests {
+		act[t.Name] = t.Timeout
+	}
+	exp := map[string]time.Duration{name1: customTimeout, name2: defaultTimeout}
+	if !reflect.DeepEqual(act, exp) {
+		t.Errorf("Wanted tests/timeouts %v; got %v", act, exp)
 	}
 }
 
@@ -56,7 +86,8 @@ func TestReadArgsRegistrationError(t *gotesting.T) {
 
 	// Adding a test without a function should generate an error.
 	testing.AddTest(&testing.Test{})
-	if _, err := readArgs(newBufferWithArgs(t, &Args{}), &Args{}, localBundle); !errorHasStatus(err, statusBadTests) {
+	if _, err := readArgs(newBufferWithArgs(t, &Args{}), &Args{},
+		&runConfig{}, localBundle); !errorHasStatus(err, statusBadTests) {
 		t.Errorf("readArgs() with bad test returned error %v; want status %v", err, statusBadTests)
 	}
 }

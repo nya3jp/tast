@@ -187,6 +187,7 @@ func TestRunTestsTimeout(t *gotesting.T) {
 		Name:           name1,
 		Func:           func(*testing.State) { <-ch },
 		CleanupTimeout: time.Millisecond, // avoid blocking after timeout
+		Timeout:        10 * time.Millisecond,
 	})
 
 	// The second test blocks for 50 ms and specifies a custom one-minute timeout.
@@ -204,14 +205,11 @@ func TestRunTestsTimeout(t *gotesting.T) {
 		OutDir:  tmpDir,
 		DataDir: tmpDir,
 	}
-	cfg := runConfig{
-		defaultTestTimeout: 10 * time.Millisecond,
-	}
 
 	// The first test should time out after 10 milliseconds.
-	// The second test should succeed since it finishes before its custom timeout.
-	if err := runTests(context.Background(), &stdout, &args, &cfg, reg.AllTests()); err != nil {
-		t.Fatalf("runTests(..., %+v, %+v) failed: %v", args, cfg, err)
+	// The second test should succeed since it finishes before its timeout.
+	if err := runTests(context.Background(), &stdout, &args, &runConfig{}, reg.AllTests()); err != nil {
+		t.Fatalf("runTests(..., %+v, ...) failed: %v", args, err)
 	}
 
 	var name string             // name of current test

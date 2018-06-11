@@ -109,11 +109,13 @@ introduce a new descriptively-named subpackage; see e.g. the [chromecrash]
 package within the `ui` package, used by the [ui.ChromeCrashLoggedIn] and
 [ui.ChromeCrashNotLoggedIn] tests.
 
-### Errors and logging
+## Errors and logging
 
 The [Tast testing package] (not to be confused with Go's standard `testing`
 package) defines a [State] struct that is passed to test functions and used to
 report failures and to log messages.
+
+### How and when
 
 A single test can report multiple errors. Use the `Error` or `Errorf` methods to
 report an error and continue or the `Fatal` or `Fatalf` methods to report an
@@ -122,8 +124,15 @@ error and halt the test.
 Support packages should not record test failures directly. Instead, return
 `error` values and allow tests to decide how to handle them. Support package's
 exported functions should typically take [context.Context] arguments and use
-them to return early when the test's deadline is reached and to log informative
-messages using `testing.ContextLog` and `testing.ContextLogf`.
+them to return an error early when the test's deadline is reached and to log
+informative messages using `testing.ContextLog` and `testing.ContextLogf`.
+
+When you're about to do something that could take a while or even hang, log a
+message first. This both lets developers know what's happening when they run
+your test interactively and helps when looking at logs to investigate timeout
+failures.
+
+### Formatting
 
 Please follow [Go's error string conventions] when producing `error` values
 (i.e. with `error.New` or `fmt.Errorf`):
@@ -136,8 +145,8 @@ When adding detail to an existing error, append the existing error to the new
 string:
 
 ```go
-if err := doSomething(); err != nil {
-	return fmt.Errorf("doing something failed: %v", err)
+if err := doSomething(id); err != nil {
+	return fmt.Errorf("doing something to %q failed: %v", id, err)
 }
 ```
 
@@ -148,7 +157,7 @@ trailing punctuation:
 s.Log("Asking Chrome to log in")
 ...
 if err != nil {
-	s.Errorf("Failed to log in: %v", err)
+	s.Fatal("Failed to log in: ", err)
 }
 s.Logf("Logged in as user %q with ID %v", user, id)
 ```

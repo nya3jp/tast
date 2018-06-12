@@ -22,6 +22,30 @@
       "revId": "972410c03f3ddaa8083159d5c069ce2d57218081",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5d84ebde_cfa538c5",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-06-12T05:48:38Z",
+      "side": 1,
+      "message": "hmm. it\u0027s not completely generic; it only works with structs (because of Field/NumField), for instance. it also won\u0027t work with some common types like map[string]int; i\u0027m mostly comfortable with that for now because i don\u0027t have plans to add any maps to the Test struct. i\u0027m open to making this more generic if we need to in the future, but i\u0027d rather wait until we have another use for it.\n\ni looked at a few third-party deep copy packages, but they all either had implementations that wouldn\u0027t work here (e.g. marshal/unmarshal using json, which will lose funcs) or didn\u0027t seem able to handle unexported fields.",
+      "parentUuid": "673fb405_3bb2109f",
+      "range": {
+        "startLine": 176,
+        "startChar": 0,
+        "endLine": 176,
+        "endChar": 30
+      },
+      "revId": "972410c03f3ddaa8083159d5c069ce2d57218081",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

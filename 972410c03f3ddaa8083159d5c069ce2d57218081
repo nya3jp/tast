@@ -46,6 +46,30 @@
       "revId": "972410c03f3ddaa8083159d5c069ce2d57218081",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e7da6687_f7998177",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-06-12T06:03:52Z",
+      "side": 1,
+      "message": "actually, this code also cannot handle unexported fields -- it looks like there\u0027s no way to set them using the reflect package. :-(\n\ni think it\u0027s okay for now since the Test struct doesn\u0027t have any unexported fields (and if it gets any, it\u0027d be trivial to update this function to copy them manually). it\u0027ll panic if it any get added, so it should be easy to notice. :-)",
+      "parentUuid": "5d84ebde_cfa538c5",
+      "range": {
+        "startLine": 176,
+        "startChar": 0,
+        "endLine": 176,
+        "endChar": 30
+      },
+      "revId": "972410c03f3ddaa8083159d5c069ce2d57218081",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

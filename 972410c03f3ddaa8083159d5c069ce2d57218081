@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "673fb405_3bb2109f",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-06-12T05:19:25Z",
+      "side": 1,
+      "message": "This function is interesting to read :)\n\nBut since this function is written in a generic way, if at all possible, how about defining a generic function like\n\n func Clone(x interface{}) interface{}\n\nand sharing throughout Tast?\n\nOr, maybe we want to use some battle-tested third-party library for deep copy.",
+      "range": {
+        "startLine": 176,
+        "startChar": 0,
+        "endLine": 176,
+        "endChar": 30
+      },
+      "revId": "972410c03f3ddaa8083159d5c069ce2d57218081",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

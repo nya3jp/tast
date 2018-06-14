@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "cf0d6223_9765708e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-06-14T02:51:23Z",
+      "side": 1,
+      "message": "nit: s/e/a/ :)",
+      "range": {
+        "startLine": 9,
+        "startChar": 9,
+        "endLine": 9,
+        "endChar": 10
+      },
+      "revId": "139c5d0f348b724f98d4809b61ef1a4f489782be",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e6dbd330_80812bd3",
+        "filename": "tools/run_tast.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-06-14T02:51:23Z",
+      "side": 1,
+      "message": "If we can assume /bin/bash, [[ (built-in) is better than [ (external command).\n\n [[ $# -lt 2 || \"$1\" \u003d\u003d \u0027-h\u0027 || \"$1\" \u003d\u003d \u0027--help\u0027 ]]",
+      "range": {
+        "startLine": 11,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 65
+      },
+      "revId": "139c5d0f348b724f98d4809b61ef1a4f489782be",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5f93515f_63f042e2",
+        "filename": "tools/run_tast.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-06-14T02:51:23Z",
+      "side": 1,
+      "message": "ditto.",
+      "range": {
+        "startLine": 37,
+        "startChar": 5,
+        "endLine": 37,
+        "endChar": 6
+      },
+      "revId": "139c5d0f348b724f98d4809b61ef1a4f489782be",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -72,11 +72,13 @@ func (tst *Test) DataDir() string {
 	return filepath.Join(tst.Pkg, testDataSubdir)
 }
 
-// Run runs the test, passing s to it. The output channel is not closed automatically.
+// Run runs the test, passing s to it.
+// The output channel associated with s is closed before returning.
 func (tst *Test) Run(s *State) {
 	defer func() {
 		s.tcancel()
 		s.cancel()
+		close(s.ch)
 	}()
 
 	// Tests call runtime.Goexit() to make the current goroutine exit immediately
@@ -85,7 +87,12 @@ func (tst *Test) Run(s *State) {
 	go func() {
 		defer func() {
 			if r := recover(); r != nil {
-				s.Errorf("Panic: %v", r)
+				// The panic that we're recovering from may have been been caused by a runaway test
+				// writing a message after s.ch has been closed. Check that the test hasn't timed out
+				// before potentially causing another panic by reporting an error: https://crbug.com/853406
+				if s.ctx.Err() == nil {
+					s.Errorf("Panic: %v", r)
+				}
 			}
 			done <- true
 		}()

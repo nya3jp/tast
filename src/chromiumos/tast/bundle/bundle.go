@@ -144,16 +144,16 @@ func runTest(ctx context.Context, mw *control.MessageWriter, args *Args, cfg *ru
 				return command.NewStatusErrorf(statusError, "test setup failed: %v", err)
 			}
 		}
-		ch := make(chan testing.Output)
-		s := testing.NewState(ctx, ch, filepath.Join(args.DataDir, t.DataDir()), outDir, t.Timeout, t.CleanupTimeout)
 
+		ch := make(chan testing.Output)
 		done := make(chan bool, 1)
 		go func() {
 			copyTestOutput(ch, mw)
 			done <- true
 		}()
-		t.Run(s)
-		close(ch)
+
+		s := testing.NewState(ctx, ch, filepath.Join(args.DataDir, t.DataDir()), outDir, t.Timeout, t.CleanupTimeout)
+		t.Run(s) // closes ch
 		<-done
 	}
 

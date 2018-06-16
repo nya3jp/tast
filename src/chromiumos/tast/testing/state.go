@@ -55,6 +55,7 @@ type State struct {
 }
 
 // NewState returns a new State object. The test's output will be streamed to ch.
+// If cleanupTimeout is 0, a default will be used.
 func NewState(ctx context.Context, ch chan Output, dataDir, outDir string, testTimeout, cleanupTimeout time.Duration) *State {
 	s := &State{
 		ch:      ch,

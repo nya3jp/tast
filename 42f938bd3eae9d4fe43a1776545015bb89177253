@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0ff1f0cf_8a75ddb7",
+        "filename": "src/chromiumos/tast/testing/test_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-06-16T05:00:37Z",
+      "side": 0,
+      "message": "these goroutines aren\u0027t necessary anymore (hopefully i had a good reason for them initially :-/). Test.Run runs the test function in the background (and blocks until it finishes or its timeout is hit).",
+      "revId": "42f938bd3eae9d4fe43a1776545015bb89177253",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -27,12 +27,6 @@ func getOutputErrors(out []Output) []*Error {
 	return errs
 }
 
-// runTestAndCloseChan runs t using s and then closes s.ch.
-func runTestAndCloseChan(t *Test, s *State) {
-	t.Run(s)
-	close(s.ch)
-}
-
 func TestAssignName(t *gotesting.T) {
 	test := Test{Func: Func1}
 	if err := test.populateNameAndPkg(); err != nil {
@@ -117,7 +111,7 @@ func TestSoftwareDeps(t *gotesting.T) {
 func TestSuccess(t *gotesting.T) {
 	test := Test{Func: func(*State) {}}
 	s := NewState(context.Background(), make(chan Output, 1), "", "", time.Minute, 0)
-	go runTestAndCloseChan(&test, s)
+	test.Run(s)
 	if errs := getOutputErrors(readOutput(s.ch)); len(errs) != 0 {
 		t.Errorf("Got unexpected error(s) for test: %v", errs)
 	}
@@ -126,7 +120,7 @@ func TestSuccess(t *gotesting.T) {
 func TestPanic(t *gotesting.T) {
 	test := Test{Func: func(*State) { panic("intentional panic") }}
 	s := NewState(context.Background(), make(chan Output, 1), "", "", time.Minute, 0)
-	go runTestAndCloseChan(&test, s)
+	test.Run(s)
 	if errs := getOutputErrors(readOutput(s.ch)); len(errs) != 1 {
 		t.Errorf("Got %v errors for panicking test; want 1", errs)
 	}
@@ -135,7 +129,7 @@ func TestPanic(t *gotesting.T) {
 func TestTimeout(t *gotesting.T) {
 	test := Test{Func: func(*State) { time.Sleep(10 * time.Second) }}
 	s := NewState(context.Background(), make(chan Output, 1), "", "", time.Millisecond, time.Millisecond)
-	go runTestAndCloseChan(&test, s)
+	test.Run(s)
 	if errs := getOutputErrors(readOutput(s.ch)); len(errs) != 1 {
 		t.Errorf("Got %v errors for slow test; want 1", errs)
 	}
@@ -148,10 +142,42 @@ func TestCleanUpAfterTimeout(t *gotesting.T) {
 		s.Error("Saw timeout within test")
 	}}
 	s := NewState(context.Background(), make(chan Output, 1), "", "", time.Millisecond, 10*time.Second)
-	go runTestAndCloseChan(&test, s)
+	test.Run(s)
 	// Test.Run shouldn't have added a second error since the test function returned before the cleanup deadline.
 	if errs := getOutputErrors(readOutput(s.ch)); len(errs) != 1 {
 		t.Errorf("Got %v errors for unresponsive test; want 1", len(errs))
+	}
+}
+
+func TestLogAfterTimeout(t *gotesting.T) {
+	cont := make(chan bool)
+	done := make(chan bool)
+	test := Test{Func: func(s *State) {
+		// Report when we're done, either after completing or after panicking before completion.
+		completed := false
+		defer func() { done <- completed }()
+
+		// Ignore the deadline and wait until we're told to continue.
+		<-s.Context().Done()
+		<-cont
+		// The output channel is closed at this point, so reporting a log message causes a panic.
+		s.Log("Done waiting")
+		// We should never get here.
+		completed = true
+	}}
+
+	out := make(chan Output, 10)
+	test.Run(NewState(context.Background(), out, "", "", time.Millisecond, time.Millisecond))
+
+	// Tell the test to continue, which will cause it to panic by writing to the now-closed output channel.
+	// Test.Run shouldn't cause another unhandled panic by trying to write another error to the channel:
+	// https://crbug.com/853406
+	cont <- true
+	if completed := <-done; completed {
+		t.Error("Test completed unexpectedly")
+	}
+	if errs := getOutputErrors(readOutput(out)); len(errs) != 1 {
+		t.Errorf("Got %v errors for runaway test; want 1", len(errs))
 	}
 }
 

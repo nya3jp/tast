@@ -22,6 +22,30 @@
       "revId": "46ea2fc66ffb17fd23402bf5b82feb304abe5960",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e7d9d8d7_28ce9869",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-06-18T05:59:22Z",
+      "side": 1,
+      "message": "yes, i think you\u0027re right -- nice catch!\n\nthe underlying problem is that i\u0027m misusing channels a bit here -- the normal pattern is for the writer to close the channel when it\u0027s done, and for the reader to read the channel using \u0027range\u0027. since i don\u0027t trust the writer to close the channel after the deadline here, i\u0027m instead closing it from the main goroutine.\n\ni think it\u0027s unlikely that we\u0027ll ever see this in practice (a test would need to panic exactly when the outer context that\u0027s includes extra time for cleanup times out), but i\u0027ll think a bit about how to fix it. your suggestion would work, but i don\u0027t love the idea of introducing an EOF control message that\u0027s only used for signalling within the bundle. i\u0027d thought a bit earlier about introducing another layer of channels with a goroutine copying between them, but don\u0027t like the additional complexity that it introduces.",
+      "parentUuid": "aed49009_9ef96abb",
+      "range": {
+        "startLine": 93,
+        "startChar": 4,
+        "endLine": 93,
+        "endChar": 27
+      },
+      "revId": "46ea2fc66ffb17fd23402bf5b82feb304abe5960",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

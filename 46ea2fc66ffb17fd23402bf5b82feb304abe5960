@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "aed49009_9ef96abb",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-06-18T02:12:42Z",
+      "side": 1,
+      "message": "I\u0027m afraid this check may have a race condition. An example scenario:\n\n- tst.Func(s) runs a test, and it crashes for a reason other than timeout\n- recover code path is followed, and we see s.ctx.Err() is nil\n- just before s.Errorf() is called, ctx timeout is hit, and s.ch is closed\n- s.Errorf() writes to the closed ch and panic\n\nI\u0027m new to Go and I\u0027m not sure about idiomatic ways to resolve this, but how about avoiding closing ch and instead write an EOF message that makes copier goroutine to exit?",
+      "range": {
+        "startLine": 93,
+        "startChar": 4,
+        "endLine": 93,
+        "endChar": 27
+      },
+      "revId": "46ea2fc66ffb17fd23402bf5b82feb304abe5960",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

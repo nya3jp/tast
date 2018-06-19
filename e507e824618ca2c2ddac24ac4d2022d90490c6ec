@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a933d48a_50588f11",
+        "filename": "src/chromiumos/tast/release/release.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-06-19T08:43:36Z",
+      "side": 1,
+      "message": "This was added as a utility for local tests. Others are mostly the same (except for name changes).",
+      "range": {
+        "startLine": 42,
+        "startChar": 0,
+        "endLine": 42,
+        "endChar": 28
+      },
+      "revId": "e507e824618ca2c2ddac24ac4d2022d90490c6ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

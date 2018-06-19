@@ -16,6 +16,7 @@ import (
 
 	"chromiumos/cmd/tast/logging"
 	"chromiumos/cmd/tast/symbolize/breakpad"
+	"chromiumos/tast/release"
 )
 
 // Config contains parameters used when symbolizing crash files.
@@ -51,9 +52,9 @@ func SymbolizeCrash(path string, w io.Writer, cfg Config) error {
 	if err != nil {
 		return fmt.Errorf("failed to get release info from %v: %v", dumpPath, err)
 	}
-	cfg.Logger.Debugf("Got board %q and builder path %q from minidump", ri.board, ri.builderPath)
+	cfg.Logger.Debugf("Got board %q and builder path %q from minidump", ri.Board, ri.BuilderPath)
 	if cfg.BuildRoot == "" {
-		cfg.BuildRoot = filepath.Join("/build", ri.board)
+		cfg.BuildRoot = filepath.Join("/build", ri.Board)
 	}
 
 	cfg.Logger.Debugf("Walking %v with symbol dir %v", dumpPath, cfg.SymbolDir)
@@ -65,8 +66,8 @@ func SymbolizeCrash(path string, w io.Writer, cfg Config) error {
 
 	created := 0
 	if len(missing) > 0 {
-		if ri.builderPath != "" {
-			url := breakpad.GetSymbolsURL(ri.builderPath)
+		if ri.BuilderPath != "" {
+			url := breakpad.GetSymbolsURL(ri.BuilderPath)
 			cfg.Logger.Debugf("Extracting %v symbol file(s) from %v", len(missing), url)
 			if created, err = breakpad.DownloadSymbols(url, cfg.SymbolDir, missing); err != nil {
 				// Keep going so we can print what we have.
@@ -139,7 +140,7 @@ func getMinidumpPath(cfg *Config, path string) (string, error) {
 }
 
 // getMinidumpReleaseInfo returns release information contained in the minidump file at path.
-func getMinidumpReleaseInfo(path string) (*releaseInfo, error) {
+func getMinidumpReleaseInfo(path string) (*release.Info, error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -150,5 +151,5 @@ func getMinidumpReleaseInfo(path string) (*releaseInfo, error) {
 	if err != nil {
 		return nil, err
 	}
-	return getReleaseInfo(data), nil
+	return release.Parse(data), nil
 }

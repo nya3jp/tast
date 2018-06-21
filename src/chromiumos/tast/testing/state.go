@@ -116,37 +116,37 @@ func (s *State) Logf(format string, args ...interface{}) {
 // as having failed (using the arguments as a reason for the failure)
 // while letting the test continue execution.
 func (s *State) Error(args ...interface{}) {
-	e := s.newError(fmt.Sprint(args...))
+	e := NewError(fmt.Sprint(args...), 1)
 	s.ch <- Output{T: time.Now(), Err: e}
 }
 
 // Errorf is similar to Error but formats its arguments using fmt.Sprintf.
 func (s *State) Errorf(format string, args ...interface{}) {
-	e := s.newError(fmt.Sprintf(format, args...))
+	e := NewError(fmt.Sprintf(format, args...), 1)
 	s.ch <- Output{T: time.Now(), Err: e}
 }
 
 // Fatal is similar to Error but additionally immediately ends the test.
 func (s *State) Fatal(args ...interface{}) {
-	e := s.newError(fmt.Sprint(args...))
+	e := NewError(fmt.Sprint(args...), 1)
 	s.ch <- Output{T: time.Now(), Err: e}
 	runtime.Goexit()
 }
 
 // Fatalf is similar to Fatal but formats its arguments using fmt.Sprintf.
 func (s *State) Fatalf(format string, args ...interface{}) {
-	e := s.newError(fmt.Sprintf(format, args...))
+	e := NewError(fmt.Sprintf(format, args...), 1)
 	s.ch <- Output{T: time.Now(), Err: e}
 	runtime.Goexit()
 }
 
-// newError returns a new Error object with reason rsn. It attaches additional
-// information and expects that the error was initiated by the code that called
-// the function that called newError.
-func (s *State) newError(rsn string) *Error {
-	// Skip unhelpful frames at the top of the stack,
-	// namely newError and Error/Errorf/Fatal/Fatalf.
-	const skipFrames = 2
+// NewError returns a new Error object containing reason rsn.
+// skipFrames contains the number of frames to skip to get the code that's reporting
+// the error: the caller should pass 0 to report its own frame, 1 to skip just its own frame,
+// 2 to additionally skip the frame that called it, and so on.
+func NewError(rsn string, skipFrames int) *Error {
+	// Also skip the NewError frame.
+	skipFrames += 1
 
 	// runtime.Caller starts counting stack frames at the point of the code that
 	// invoked Caller.

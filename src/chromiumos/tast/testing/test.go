@@ -72,13 +72,17 @@ func (tst *Test) DataDir() string {
 	return filepath.Join(tst.Pkg, testDataSubdir)
 }
 
-// Run runs the test, passing s to it.
-// The output channel associated with s is closed before returning.
-func (tst *Test) Run(s *State) {
+// Run runs the test, passing s to it, and blocks until the test has either finished or the deadline
+// (tst.Timeout plus tst.CleanupTimeout) is reached, whichever comes first.
+//
+// The test function executes in a goroutine and may still be running if it ignores its deadline;
+// the returned value indicates whether the test completed within the allotted time or not.
+// The output channel associated with s is only closed after the test function completes, so
+// if false is returned, the caller is responsible for reporting that the test timed out.
+func (tst *Test) Run(s *State) bool {
 	defer func() {
 		s.tcancel()
 		s.cancel()
-		close(s.ch)
 	}()
 
 	// Tests call runtime.Goexit() to make the current goroutine exit immediately
@@ -87,13 +91,9 @@ func (tst *Test) Run(s *State) {
 	go func() {
 		defer func() {
 			if r := recover(); r != nil {
-				// The panic that we're recovering from may have been been caused by a runaway test
-				// writing a message after s.ch has been closed. Check that the test hasn't timed out
-				// before potentially causing another panic by reporting an error: https://crbug.com/853406
-				if s.ctx.Err() == nil {
-					s.Errorf("Panic: %v", r)
-				}
+				s.Errorf("Panic: %v", r)
 			}
+			close(s.ch)
 			done <- true
 		}()
 		tst.Func(s)
@@ -101,10 +101,10 @@ func (tst *Test) Run(s *State) {
 
 	select {
 	case <-done:
-		// The goroutine running the test finished.
+		return true
 	case <-s.ctx.Done():
-		s.Errorf("Test timed out: %v", s.ctx.Err())
-		// TODO(derat): Might need to make sure it's dead somehow...
+		// TODO(derat): Do more to try to kill the runaway test function.
+		return false
 	}
 }
 

@@ -48,7 +48,7 @@ func TestCopyTestOutput(t *gotesting.T) {
 	}()
 
 	b := bytes.Buffer{}
-	copyTestOutput(ch, control.NewMessageWriter(&b))
+	copyTestOutput(ch, control.NewMessageWriter(&b), make(chan bool))
 
 	r := control.NewMessageReader(&b)
 	for i, em := range []interface{}{
@@ -66,6 +66,24 @@ func TestCopyTestOutput(t *gotesting.T) {
 	}
 }
 
+func TestCopyTestOutputTimeout(t *gotesting.T) {
+	// Simulate a test ignoring its timeout by requesting abort and leaving the output channel open.
+	abort := make(chan bool, 1)
+	abort <- true
+	b := bytes.Buffer{}
+	copyTestOutput(make(chan testing.Output), control.NewMessageWriter(&b), abort)
+
+	r := control.NewMessageReader(&b)
+	if msg, err := r.ReadMessage(); err != nil {
+		t.Errorf("Failed to read message: %v", err)
+	} else if _, ok := msg.(*control.TestError); !ok {
+		t.Errorf("copyTestOutput() wrote %v; want TestError", msg)
+	}
+	if r.More() {
+		t.Error("copyTestOutput() wrote extra message(s)")
+	}
+}
+
 func TestRunTests(t *gotesting.T) {
 	const (
 		name1         = "foo.Test1"
@@ -77,8 +95,8 @@ func TestRunTests(t *gotesting.T) {
 
 	reg := testing.NewRegistry()
 	reg.DisableValidationForTesting()
-	reg.AddTest(&testing.Test{Name: name1, Func: func(*testing.State) {}})
-	reg.AddTest(&testing.Test{Name: name2, Func: func(s *testing.State) { s.Error("error") }})
+	reg.AddTest(&testing.Test{Name: name1, Func: func(*testing.State) {}, Timeout: time.Minute})
+	reg.AddTest(&testing.Test{Name: name2, Func: func(s *testing.State) { s.Error("error") }, Timeout: time.Minute})
 
 	tmpDir := testutil.TempDir(t, "runner_test.")
 	defer os.RemoveAll(tmpDir)

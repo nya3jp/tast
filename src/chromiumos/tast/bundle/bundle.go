@@ -146,15 +146,21 @@ func runTest(ctx context.Context, mw *control.MessageWriter, args *Args, cfg *ru
 		}
 
 		ch := make(chan testing.Output)
-		done := make(chan bool, 1)
+		abortCopier := make(chan bool, 1)
+		copierDone := make(chan bool, 1)
+
+		// Copy test output in the background as soon as it becomes available.
 		go func() {
-			copyTestOutput(ch, mw)
-			done <- true
+			copyTestOutput(ch, mw, abortCopier)
+			copierDone <- true
 		}()
 
 		s := testing.NewState(ctx, ch, filepath.Join(args.DataDir, t.DataDir()), outDir, t.Timeout, t.CleanupTimeout)
-		t.Run(s) // closes ch
-		<-done
+		if !t.Run(s) {
+			// If Run reported that the test didn't finish, tell the copier to abort.
+			abortCopier <- true
+		}
+		<-copierDone
 	}
 
 	mw.WriteMessage(&control.TestEnd{
@@ -182,13 +188,28 @@ DepsLoop:
 	return unknown
 }
 
-// copyTestOutput reads test output from ch and writes it to mw.
-func copyTestOutput(ch chan testing.Output, mw *control.MessageWriter) {
-	for o := range ch {
-		if o.Err != nil {
-			mw.WriteMessage(&control.TestError{Time: o.T, Error: *o.Err})
-		} else {
-			mw.WriteMessage(&control.TestLog{Time: o.T, Text: o.Msg})
+// copyTestOutput reads test output from ch and writes it to mw until ch is closed.
+// If abort becomes readable before ch is closed, a timeout error is written to mw
+// and the function returns immediately.
+func copyTestOutput(ch chan testing.Output, mw *control.MessageWriter, abort chan bool) {
+	for {
+		select {
+		case o, ok := <-ch:
+			if !ok {
+				// Channel was closed, i.e. test finished.
+				return
+			}
+			if o.Err != nil {
+				mw.WriteMessage(&control.TestError{Time: o.T, Error: *o.Err})
+			} else {
+				mw.WriteMessage(&control.TestLog{Time: o.T, Text: o.Msg})
+			}
+		case <-abort:
+			mw.WriteMessage(&control.TestError{
+				Time:  time.Now(),
+				Error: *testing.NewError("Test timed out", 0),
+			})
+			return
 		}
 	}
 }

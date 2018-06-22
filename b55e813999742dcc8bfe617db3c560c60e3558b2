@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "5cdee78a_08920d59",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-06-22T01:47:50Z",
+      "side": 1,
+      "message": "Ah, that\u0027s right. I still think sending EOF-like message to s.ch might be okay, but otherwise this approach would be practical.",
+      "parentUuid": "e2aac85b_7b51e2ae",
+      "range": {
+        "startLine": 159,
+        "startChar": 0,
+        "endLine": 159,
+        "endChar": 16
+      },
+      "revId": "b55e813999742dcc8bfe617db3c560c60e3558b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a803487_33efc326",
         "filename": "src/chromiumos/tast/testing/test.go",
         "patchSetId": 2
@@ -93,6 +117,30 @@
       "revId": "b55e813999742dcc8bfe617db3c560c60e3558b2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7c6e833b_25c13840",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-06-22T01:47:50Z",
+      "side": 1,
+      "message": "Sounds great, thanks for update!",
+      "parentUuid": "8db669fd_80765b4c",
+      "range": {
+        "startLine": 76,
+        "startChar": 0,
+        "endLine": 76,
+        "endChar": 89
+      },
+      "revId": "b55e813999742dcc8bfe617db3c560c60e3558b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

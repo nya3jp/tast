@@ -97,6 +97,30 @@
     },
     {
       "key": {
+        "uuid": "3ffbc78f_e0da85dd",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-06-22T03:52:36Z",
+      "side": 1,
+      "message": "When using EOF message, no one will close the channel. In my understanding close() requires the owner of the channel to be only one, but in our case s.ch is used by possibly many goroutine, so I thought using close() is actually not appropriate.",
+      "parentUuid": "f923981b_8e073e06",
+      "range": {
+        "startLine": 159,
+        "startChar": 0,
+        "endLine": 159,
+        "endChar": 16
+      },
+      "revId": "b55e813999742dcc8bfe617db3c560c60e3558b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a803487_33efc326",
         "filename": "src/chromiumos/tast/testing/test.go",
         "patchSetId": 2

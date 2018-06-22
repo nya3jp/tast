@@ -73,6 +73,30 @@
     },
     {
       "key": {
+        "uuid": "f923981b_8e073e06",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-06-22T03:45:37Z",
+      "side": 1,
+      "message": "i thought about this, but i there may still have a potential race depending on how it\u0027s implemented: if the main goroutine in Test.Run writes the EOF on timeout but the test goroutine closes the channel, then the EOF may race with the channel being closed.\n\ni think that one option would be to leave the channel open and always use the EOF from the main goroutine to signal completion, but writing to the channel from multiple goroutines and not using closure to signal completion in the normal case still feels a bit odd to me.",
+      "parentUuid": "5cdee78a_08920d59",
+      "range": {
+        "startLine": 159,
+        "startChar": 0,
+        "endLine": 159,
+        "endChar": 16
+      },
+      "revId": "b55e813999742dcc8bfe617db3c560c60e3558b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a803487_33efc326",
         "filename": "src/chromiumos/tast/testing/test.go",
         "patchSetId": 2

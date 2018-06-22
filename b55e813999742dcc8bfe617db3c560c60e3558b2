@@ -121,6 +121,30 @@
     },
     {
       "key": {
+        "uuid": "83e5bfb1_ff84d8c5",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-06-22T04:28:17Z",
+      "side": 1,
+      "message": "in the current form, i think that s.ch is used more traditionally -- the test goroutine writes to the channel and closes it, and the copier goroutine reads from the channel until it\u0027s closed or the timeout is hit.",
+      "parentUuid": "3ffbc78f_e0da85dd",
+      "range": {
+        "startLine": 159,
+        "startChar": 0,
+        "endLine": 159,
+        "endChar": 16
+      },
+      "revId": "b55e813999742dcc8bfe617db3c560c60e3558b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a803487_33efc326",
         "filename": "src/chromiumos/tast/testing/test.go",
         "patchSetId": 2

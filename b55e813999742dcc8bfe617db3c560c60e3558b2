@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "e2aac85b_7b51e2ae",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-06-22T01:27:45Z",
+      "side": 1,
+      "message": "i think that that results in another race: if the test exits before t.Run returns, the copier may receive the abort message before it finishes copying all of the output from the test. in this case, we would incorrectly report a timeout.\n\n(i used this approach at first and ended up with nondeterministically-failing unit tests. :-) )",
+      "parentUuid": "a559717e_06b104c8",
+      "range": {
+        "startLine": 159,
+        "startChar": 0,
+        "endLine": 159,
+        "endChar": 16
+      },
+      "revId": "b55e813999742dcc8bfe617db3c560c60e3558b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "5a803487_33efc326",
         "filename": "src/chromiumos/tast/testing/test.go",
         "patchSetId": 2
@@ -36,6 +60,30 @@
       "writtenOn": "2018-06-22T01:14:01Z",
       "side": 1,
       "message": "I want clearer explanation here; that is, \"the test function completes\" does not mean that Run() returns.",
+      "range": {
+        "startLine": 76,
+        "startChar": 0,
+        "endLine": 76,
+        "endChar": 89
+      },
+      "revId": "b55e813999742dcc8bfe617db3c560c60e3558b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8db669fd_80765b4c",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-06-22T01:27:45Z",
+      "side": 1,
+      "message": "i\u0027m not sure that i follow. if the test function completes within s.ctx\u0027s deadline (i.e. within its regular timeout plus the cleanup timeout), Run *does* return.\n\nrather:\n\n- s.ch is only closed after the test function finishes\n- if the test function is buggy, it may not have exited when Run returns\n\ni\u0027ve reworded the comment a bit; please let me know if it seems clearer.",
+      "parentUuid": "5a803487_33efc326",
       "range": {
         "startLine": 76,
         "startChar": 0,

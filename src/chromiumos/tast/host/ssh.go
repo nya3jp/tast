@@ -18,6 +18,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -326,13 +327,28 @@ func (s *SSH) GetFile(ctx context.Context, src, dst string) error {
 // PutTree copies all relative paths in files from srcDir on the local machine
 // to dstDir on the host. For example, the call:
 //
-//	PutTree("/src", "/dst", []string{"a", "dir/b"})
+//	PutTree(ctx, "/src", "/dst", []string{"a", "dir/b"})
 //
 // will result in the local file or directory /src/a being copied to /dst/a on
 // the remote host and /src/dir/b being copied to /dst/dir/b. Existing files or directories
 // within dstDir with names listed in files will be overwritten. bytes is the amount of data
 // sent over the wire (possibly after compression).
 func (s *SSH) PutTree(ctx context.Context, srcDir, dstDir string, files []string) (bytes int64, err error) {
+	m := make(map[string]string)
+	for _, f := range files {
+		m[f] = f
+	}
+	return s.PutTreeRename(ctx, srcDir, dstDir, m)
+}
+
+// PutTreeRename is similar to PutTree but additionally renames the files in the supplied
+// map from their keys to their values as they are copied. For example, the call:
+//
+//	PutTreeRename(ctx, "/src", "/dst", map[string]string{"from": "to"})
+//
+// will copy the local file or directory /src/from to /dst/to on the remote host.
+func (s *SSH) PutTreeRename(ctx context.Context, srcDir, dstDir string,
+	files map[string]string) (bytes int64, err error) {
 	// TODO(derat): When copying a small amount of data, it may be faster to avoid the extra
 	// comparison round trip(s) and instead just copy unconditionally.
 	cf, err := s.findChangedFiles(ctx, srcDir, dstDir, files)
@@ -353,7 +369,14 @@ func (s *SSH) PutTree(ctx context.Context, srcDir, dstDir string, files []string
 	defer handle.Close(ctx)
 
 	args := []string{"-c", "--gzip", "-C", srcDir}
-	args = append(args, cf...)
+	var fileArgs []string
+	for l, r := range cf {
+		fileArgs = append(fileArgs, l)
+		if l != r {
+			args = append(args, tarTransformFlag(l, r))
+		}
+	}
+	args = append(args, fileArgs...)
 	cmd := exec.Command("/bin/tar", args...)
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
@@ -379,23 +402,45 @@ func (s *SSH) PutTree(ctx context.Context, srcDir, dstDir string, files []string
 	return bytes, nil
 }
 
+// tarTransformFlag returns a GNU tar --transform flag for renaming path s to d when
+// creating an archive.
+func tarTransformFlag(s, d string) string {
+	esc := func(s string, bad []string) string {
+		for _, b := range bad {
+			s = strings.Replace(s, b, "\\"+b, -1)
+		}
+		return s
+	}
+	return fmt.Sprintf("--transform=s,^%s$,%s,",
+		esc(regexp.QuoteMeta(s), []string{","}),
+		esc(d, []string{"\\", ",", "&"}))
+}
+
 // findChangedFiles returns paths from files that differ between ldir on the local
 // machine and rdir on s. This function is intended for use when pushing files to h;
 // an error is returned if one or more files are missing locally, but not if they're
 // only missing remotely. Local directories are always listed as having been changed.
-func (s *SSH) findChangedFiles(ctx context.Context, ldir, rdir string, files []string) ([]string, error) {
+func (s *SSH) findChangedFiles(ctx context.Context, ldir, rdir string,
+	files map[string]string) (map[string]string, error) {
 	if len(files) == 0 {
-		return []string{}, nil
+		return nil, nil
 	}
+
+	// Sort local names.
+	sorted := make([]string, 0, len(files))
+	for l, _ := range files {
+		sorted = append(sorted, l)
+	}
+	sort.Strings(sorted)
 
 	// TODO(derat): For large binary files, it may be faster to do an extra round trip first
 	// to get file sizes. If they're different, there's no need to spend the time and
 	// CPU to run sha1sum.
-	lp := make([]string, len(files))
-	rp := make([]string, len(files))
-	for i, f := range files {
-		lp[i] = filepath.Join(ldir, f)
-		rp[i] = filepath.Join(rdir, f)
+	lp := make([]string, len(sorted))
+	rp := make([]string, len(sorted))
+	for i, l := range sorted {
+		lp[i] = filepath.Join(ldir, l)
+		rp[i] = filepath.Join(rdir, files[l])
 	}
 
 	var lh, rh map[string]string
@@ -416,11 +461,13 @@ func (s *SSH) findChangedFiles(ctx context.Context, ldir, rdir string, files []s
 		}
 	}
 
-	cf := make([]string, 0)
-	for i, f := range files {
+	cf := make(map[string]string)
+	for i := range sorted {
 		// TODO(derat): Also check modes, maybe.
 		if lh[lp[i]] != rh[rp[i]] {
-			cf = append(cf, f)
+			l := sorted[i]
+			r := files[l]
+			cf[l] = r
 		}
 	}
 	return cf, nil

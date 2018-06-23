@@ -323,6 +323,115 @@ func TestPutTree(t *testing.T) {
 	}
 }
 
+func TestPutTreeRename(t *testing.T) {
+	td := newTestData(t)
+	defer td.close()
+
+	const (
+		weirdSrcName = "weird[a], *.b" // various regexp chars plus comma delimiter
+		weirdDstName = "\\1\\a,&"      // sed replacement chars plus comma delimiter
+	)
+	files := map[string]string{
+		"file1":             "file1 new",
+		"dir/file2":         "file2 new",
+		"dir2/subdir/file3": "file3 new",
+		"file4":             "file4 new",
+		weirdSrcName:        "file5 new",
+		"file6":             "file6 new",
+	}
+	tmpDir, srcDir := initFileTest(t, files)
+	defer os.RemoveAll(tmpDir)
+
+	dstDir := filepath.Join(tmpDir, "dst")
+	if err := testutil.WriteFiles(dstDir, map[string]string{
+		"file1":             "file1 old",
+		"dir/file2":         "file2 old",
+		"dir2/subdir/file3": "file3 old",
+		"file4":             "file4 old",
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	if n, err := td.hst.PutTreeRename(td.ctx, srcDir, dstDir, map[string]string{
+		"file1":             "newfile1",           // rename to preserve orig file
+		"dir/file2":         "dir/file2",          // overwrite orig file
+		"dir2/subdir/file3": "dir2/subdir2/file3", // rename subdir
+		weirdSrcName:        "file5",              // check that regexp chars are escaped
+		"file6":             weirdDstName,         // check that replacement chars are also escaped
+	}); err != nil {
+		t.Fatal(err)
+	} else if n <= 0 {
+		t.Errorf("Copied non-positive %v bytes", n)
+	}
+
+	if err := checkDir(dstDir, map[string]string{
+		"file1":              "file1 old",
+		"newfile1":           "file1 new",
+		"dir/file2":          "file2 new",
+		"dir2/subdir/file3":  "file3 old",
+		"dir2/subdir2/file3": "file3 new",
+		"file4":              "file4 old",
+		"file5":              "file5 new",
+		weirdDstName:         "file6 new",
+	}); err != nil {
+		t.Error(err)
+	}
+}
+
+func TestPutTreeUnchanged(t *testing.T) {
+	td := newTestData(t)
+	defer td.close()
+
+	files := map[string]string{
+		"file1":     "file1",
+		"dir/file2": "file2",
+	}
+	tmpDir, srcDir := initFileTest(t, files)
+	defer os.RemoveAll(tmpDir)
+
+	dstDir := filepath.Join(tmpDir, "dst")
+	if err := testutil.WriteFiles(dstDir, files); err != nil {
+		t.Fatal(err)
+	}
+
+	// No bytes should be sent since the source and dest dirs are exactly the same.
+	if n, err := td.hst.PutTree(td.ctx, srcDir, dstDir, []string{"file1", "dir/file2"}); err != nil {
+		t.Fatal(err)
+	} else if n != 0 {
+		t.Errorf("PutTree() copied %v bytes; want 0", n)
+	}
+}
+
+func TestPutTreeRenameUnchanged(t *testing.T) {
+	td := newTestData(t)
+	defer td.close()
+
+	files := map[string]string{
+		"src1":     "1",
+		"dir/src2": "2",
+	}
+	tmpDir, srcDir := initFileTest(t, files)
+	defer os.RemoveAll(tmpDir)
+
+	dstDir := filepath.Join(tmpDir, "dst")
+	if err := testutil.WriteFiles(dstDir, map[string]string{
+		"dst1":     "1",
+		"dir/dst2": "2",
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	// No bytes should be sent since the dest dir already contains the renamed source files.
+	if n, err := td.hst.PutTreeRename(td.ctx, srcDir, dstDir, map[string]string{
+		"src1":     "dst1",
+		"dir/src2": "dir/dst2",
+	}); err != nil {
+		t.Fatal(err)
+	} else if n != 0 {
+		t.Errorf("PutTreeRename() copied %v bytes; want 0", n)
+	}
+}
+
 func TestKeyDir(t *testing.T) {
 	srv, err := test.NewSSHServer(&userKey.PublicKey, hostKey)
 	if err != nil {

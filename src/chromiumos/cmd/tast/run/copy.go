@@ -22,6 +22,15 @@ func pushToHost(ctx context.Context, cfg *Config, hst *host.SSH, srcDir, dstDir 
 	return hst.PutTree(ctx, srcDir, filepath.Join(cfg.hstCopyBasePath, dstDir), files)
 }
 
+// pushToHostRename is similar to pushToHost but instead wraps PutTreeRename.
+func pushToHostRename(ctx context.Context, cfg *Config, hst *host.SSH, srcDir, dstDir string,
+	files map[string]string) (bytes int64, err error) {
+	undo := setAnnounceCmdForCopy(cfg, hst)
+	defer undo()
+
+	return hst.PutTreeRename(ctx, srcDir, filepath.Join(cfg.hstCopyBasePath, dstDir), files)
+}
+
 // moveFromHost copies the tree rooted at src on hst to dst on the local system and deletes src from hst.
 // src is appended to cfg.hstCopyBasePath to support unit tests.
 func moveFromHost(ctx context.Context, cfg *Config, hst *host.SSH, src, dst string) error {
@@ -44,7 +53,7 @@ func moveFromHost(ctx context.Context, cfg *Config, hst *host.SSH, src, dst stri
 // file-copy-related commands that are passed to it; it only has an effect in unit tests
 // (where cfg.hstCopyAnnounceCmd may be non-nil). The returned function should be called
 // when the file copy is completed to undo the change. See hstCopyAnnounceCmd for details.
-func setAnnounceCmdForCopy(cfg *Config, hst *host.SSH) func() {
+func setAnnounceCmdForCopy(cfg *Config, hst *host.SSH) (undo func()) {
 	old := hst.AnnounceCmd
 	hst.AnnounceCmd = cfg.hstCopyAnnounceCmd
 	return func() { hst.AnnounceCmd = old }

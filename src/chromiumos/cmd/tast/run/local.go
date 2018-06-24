@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 	"path"
 	"path/filepath"
 	"strings"
@@ -45,6 +46,9 @@ const (
 	// Bundles are placed here rather than in the top-level build artifacts dir so that
 	// local and remote bundles with the same name won't overwrite each other.
 	localBundleBuildSubdir = "local_bundles"
+	// localBundleExternalDataConf is the path to the file containing the external data file map,
+	// given relative to the directory containing the bundle's ebuild file.
+	localBundleExternalDataConf = "files/external_data.conf"
 )
 
 // local runs local tests as directed by cfg and returns the command's exit status.
@@ -135,6 +139,11 @@ func connectToTarget(ctx context.Context, cfg *Config) (*host.SSH, error) {
 	return cfg.hst, nil
 }
 
+// localBundlePackage returns the Portage package name for the bundle with the given name (e.g. "cros").
+func localBundlePackage(name string) string {
+	return fmt.Sprintf("chromeos-base/tast-local-tests-%s", name)
+}
+
 // buildAndPushBundle builds a local test bundle and pushes it to hst as dictated by cfg.
 // If tests are going to be executed (rather than printed), data files are also pushed
 // to localDataPushDir. A glob that should be passed to the runner to select the bundle
@@ -148,7 +157,7 @@ func buildAndPushBundle(ctx context.Context, cfg *Config, hst *host.SSH) (bundle
 
 	start := time.Now()
 	if cfg.checkPortageDeps {
-		cfg.buildCfg.PortagePkg = fmt.Sprintf("chromeos-base/tast-local-tests-%s-9999", cfg.buildBundle)
+		cfg.buildCfg.PortagePkg = localBundlePackage(cfg.buildBundle) + "-9999"
 	}
 	buildDir := filepath.Join(cfg.buildCfg.BaseOutDir, cfg.buildCfg.Arch, localBundleBuildSubdir)
 	pkg := path.Join(localBundlePkgPathPrefix, cfg.buildBundle)
@@ -169,8 +178,9 @@ func buildAndPushBundle(ctx context.Context, cfg *Config, hst *host.SSH) (bundle
 	if cfg.Mode == RunTestsMode {
 		cfg.Logger.Status("Getting data file list")
 		var paths []string
+		var edm *externalDataMap
 		var err error
-		if paths, err = getDataFilePaths(ctx, cfg, hst, bundleGlob); err != nil {
+		if paths, edm, err = getDataFilePaths(ctx, cfg, hst, bundleGlob); err != nil {
 			if exists, existsErr := localRunnerExists(ctx, hst); exists || existsErr != nil {
 				if existsErr != nil {
 					cfg.Logger.Log("Failed to check for existence of runner: ", err)
@@ -182,13 +192,20 @@ func buildAndPushBundle(ctx context.Context, cfg *Config, hst *host.SSH) (bundle
 			if err = buildAndPushLocalRunner(ctx, cfg, hst); err != nil {
 				return "", err
 			}
-			if paths, err = getDataFilePaths(ctx, cfg, hst, bundleGlob); err != nil {
+			if paths, edm, err = getDataFilePaths(ctx, cfg, hst, bundleGlob); err != nil {
 				return "", fmt.Errorf("failed to get data file list: %v", err)
 			}
 		}
 		if len(paths) > 0 {
+			if edm != nil {
+				cfg.Logger.Status("Fetching external data files")
+				if err = fetchExternalDataFiles(ctx, cfg, paths, edm); err != nil {
+					return "", fmt.Errorf("failed to fetch external data files: %v", err)
+				}
+			}
 			cfg.Logger.Status("Pushing data files to target")
-			if err = pushDataFiles(ctx, cfg, hst, localDataPushDir, paths); err != nil {
+			destDir := filepath.Join(localDataPushDir, pkg)
+			if err = pushDataFiles(ctx, cfg, hst, destDir, paths, edm); err != nil {
 				return "", fmt.Errorf("failed to push data files: %v", err)
 			}
 		}
@@ -234,7 +251,10 @@ func pushBundle(ctx context.Context, cfg *Config, hst *host.SSH, src, dstDir str
 }
 
 // getDataFilePaths returns the paths to data files needed for running cfg.Patterns on hst.
-func getDataFilePaths(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob string) ([]string, error) {
+// The returned paths are relative to the test bundle directory, i.e. they take the form "<category>/data/<filename>".
+// edm may be nil if no external data files have been configured.
+func getDataFilePaths(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob string) (
+	paths []string, edm *externalDataMap, err error) {
 	if tl, ok := timing.FromContext(ctx); ok {
 		st := tl.Start("get_data_paths")
 		defer st.End()
@@ -247,59 +267,98 @@ func getDataFilePaths(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlo
 		Patterns:   cfg.Patterns,
 	})
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	defer handle.Close(ctx)
 
 	var ts []testing.Test
 	if err = readLocalRunnerOutput(ctx, handle, &ts); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	// Get paths relative to the top-level data directory and remove duplicates.
-	paths := make([]string, 0)
-	seen := make(map[string]struct{})
+	bundlePath := path.Join(localBundlePkgPathPrefix, cfg.buildBundle)
+	seenPaths := make(map[string]struct{})
 	for _, t := range ts {
 		if t.Data == nil {
 			continue
 		}
+
 		for _, p := range t.Data {
-			p = filepath.Join(t.DataDir(), p)
-			if _, ok := seen[p]; !ok {
-				paths = append(paths, p)
-				seen[p] = struct{}{}
+			// t.DataDir returns the file's path relative to the top data dir, i.e. /usr/share/tast/data/local.
+			full := filepath.Clean(filepath.Join(t.DataDir(), p))
+			if !strings.HasPrefix(full, bundlePath+"/") {
+				return nil, nil, fmt.Errorf("data file path %q escapes base dir", full)
 			}
+			// Get the file's path relative to the bundle dir.
+			rel := full[len(bundlePath)+1:]
+			if _, ok := seenPaths[rel]; ok {
+				continue
+			}
+			paths = append(paths, rel)
+			seenPaths[rel] = struct{}{}
 		}
 	}
 
+	// Load the external_data.conf file specifying URLs for external data files.
+	extConf := filepath.Join(cfg.overlayDir, localBundlePackage(cfg.buildBundle), localBundleExternalDataConf)
+	if _, err := os.Stat(extConf); err == nil {
+		if edm, err = newExternalDataMap(extConf); err != nil {
+			return nil, nil, err
+		}
+	} else if !os.IsNotExist(err) {
+		return nil, nil, err
+	}
+
 	cfg.Logger.Debugf("Got data file list with %v file(s)", len(paths))
-	return paths, nil
+	return paths, edm, nil
 }
 
-// pushDataFiles copies the test data files at paths under bc.TestWorkspace on the local machine
-// to destDir on hst.
-func pushDataFiles(ctx context.Context, cfg *Config, hst *host.SSH, destDir string, paths []string) error {
+// fetchExternalDataFiles fetches all external data files in paths that are registered in edm.
+func fetchExternalDataFiles(ctx context.Context, cfg *Config, paths []string, edm *externalDataMap) error {
+	if tl, ok := timing.FromContext(ctx); ok {
+		st := tl.Start("fetch_external_data")
+		defer st.End()
+	}
+	cfg.Logger.Log("Fetching external data files to ", cfg.externalDataDir)
+	return edm.fetchFiles(paths, cfg.externalDataDir, cfg.Logger)
+}
+
+// pushDataFiles copies the listed test data files to destDir on hst.
+// destDir is the data directory for this bundle, e.g. "/usr/share/tast/data/local/chromiumos/tast/local/bundles/cros".
+// The file paths are relative to the test bundle dir, i.e. paths take the form "<category>/data/<filename>".
+// Files that are registered in edm (if non-nil) will be copied from cfg.externalDataDir.
+// Otherwise, files will be copied from cfg.buildCfg.TestWorkspace.
+func pushDataFiles(ctx context.Context, cfg *Config, hst *host.SSH, destDir string, paths []string, edm *externalDataMap) error {
 	if tl, ok := timing.FromContext(ctx); ok {
 		st := tl.Start("push_data")
 		defer st.End()
 	}
 	cfg.Logger.Log("Pushing data files to target")
 
+	var wsPaths []string                // data files stored under cfg.buildCfg.TestWorkspace, relative to bundle dir
+	extPaths := make(map[string]string) // keys are filenames in cfg.externalDataDir, values are relative to bundle dir
 	for _, p := range paths {
-		fp := filepath.Join(cfg.buildCfg.TestWorkspace, "src", p)
-		if !strings.HasPrefix(filepath.Clean(fp),
-			filepath.Join(cfg.buildCfg.TestWorkspace, "src")+"/") {
-			return fmt.Errorf("data file path %q escapes base dir", p)
+		if edm != nil {
+			if lf := edm.localFile(p); lf != "" {
+				extPaths[lf] = p
+				continue
+			}
 		}
+		wsPaths = append(wsPaths, p)
 	}
 
 	start := time.Now()
-	bytes, err := pushToHost(ctx, cfg, hst, filepath.Join(cfg.buildCfg.TestWorkspace, "src"), destDir, paths)
-	if err != nil {
+	var err error
+	var wsBytes, extBytes int64
+	srcDir := filepath.Join(cfg.buildCfg.TestWorkspace, "src", localBundlePkgPathPrefix, cfg.buildBundle)
+	if wsBytes, err = pushToHost(ctx, cfg, hst, srcDir, destDir, wsPaths); err != nil {
+		return err
+	}
+	if extBytes, err = pushToHostRename(ctx, cfg, hst, cfg.externalDataDir, destDir, extPaths); err != nil {
 		return err
 	}
 	cfg.Logger.Logf("Pushed data files in %v (sent %s)",
-		time.Now().Sub(start).Round(time.Millisecond), formatBytes(bytes))
+		time.Now().Sub(start).Round(time.Millisecond), formatBytes(wsBytes+extBytes))
 	return nil
 }
 

@@ -31,7 +31,8 @@ type Config struct {
 	// BaseOutDir is the path to the base directory under which compiled executables are stored.
 	BaseOutDir string
 	// PortagePkg is the Portage package that contains the test executable (when tests are
-	// included in a system image rather than being compiled by the tast command).
+	// included in a system image rather than being compiled by the tast command), including
+	// a version suffix (typically "-9999").
 	// If non-empty, BuildTests checks that the package's direct dependencies are installed
 	// in the host sysroot before building tests.
 	PortagePkg string

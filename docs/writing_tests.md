@@ -189,17 +189,23 @@ Tests can register ancillary data files that will be copied to the DUT and made
 available while the test is running; consider a short binary audio file that a
 test plays in a loop, for example.
 
-Data files should be checked into a `data/` subdirectory under the test package.
-Prefix their names by the test file's name (e.g.
-`data/audio_playback_sample.wav` for a test file named `audio_playback.go`) to
-make ownership obvious.
+Small non-binary data files should be checked into a `data/` subdirectory under
+the test package as _local data files_. Prefix their names by the test file's
+name (e.g. `data/audio_playback_sample.wav` for a test file named
+`audio_playback.go`) to make ownership obvious.
 
-Keep data files minimal; source control systems are not adept at managing large
-binary files. If your test depends on outside executables, use Portage to build
-and package those executables separately and include them in test Chrome OS
-system images.
+Larger data files like audio, video, or graphics files should be stored in
+Google Cloud Storage and registered as _external data files_ to avoid
+permanently bloating the test repository. A mapping from filenames used during
+testing to URLs is stored in `files/external_data.conf` in the bundle package's
+directory in the overlay; see e.g. the [external_data.conf file for
+tasts-local-tests-cros].
 
-To register data files, in your test's `testing.AddTest` call, set the
+If your test depends on outside executables, use Portage to build and package
+those executables separately and include them in test Chrome OS system images.
+
+To register data files (regardless of whether they're checked into the test
+repository or stored externally), in your test's `testing.AddTest` call, set the
 `testing.Test` struct's `Data` field to contain a slice of data file names
 (omitting the `data/` subdirectory):
 
@@ -218,7 +224,8 @@ Later, within the test function, pass the same filename to `testing.State`'s
 b, err := ioutil.ReadFile(s.DataPath("my_test_data.bin"))
 ```
 
-See the [example.DataFiles] test for a complete example of using data files.
+See the [example.DataFiles] test for a complete example of using both local and
+external data files.
 
 [Go's naming conventions]: https://golang.org/doc/effective_go.html#names
 [acronyms should be fully capitalized]: https://github.com/golang/go/wiki/CodeReviewComments#initialisms
@@ -248,4 +255,5 @@ See the [example.DataFiles] test for a complete example of using data files.
 [context.Context]: https://golang.org/pkg/context/
 [Go's error string conventions]: https://github.com/golang/go/wiki/CodeReviewComments#error-strings
 [Running tests]: running_tests.md
+[external_data.conf file for tasts-local-tests-cros]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/tast-local-tests-cros/files/external_data.conf
 [example.DataFiles]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/bundles/cros/example/data_files.go

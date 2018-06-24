@@ -57,7 +57,8 @@ const (
 )
 
 const (
-	defaultKeyFile = "chromite/ssh_keys/testing_rsa" // default private SSH key within Chrome OS checkout
+	defaultKeyFile     = "chromite/ssh_keys/testing_rsa"      // default private SSH key within Chrome OS checkout
+	defaultOverlayPath = "src/third_party/chromiumos-overlay" // default overlay directory containing bundle ebuild
 )
 
 // Config contains shared configuration information for running or listing tests.
@@ -84,6 +85,8 @@ type Config struct {
 	buildBundle           string       // name of the test bundle to rebuild (e.g. "cros"); only used if build is true
 	checkPortageDeps      bool         // check whether test bundle's dependencies are installed before building
 	forceBuildLocalRunner bool         // force local_test_runner to be built and deployed even if it already exists on DUT
+	overlayDir            string       // path to base overlay directory (e.g. chromiumos-overlay) where bundle's ebuild is stored
+	externalDataDir       string       // path to dir used to cache external data files
 
 	remoteRunner    string // path to executable that runs remote test bundles
 	remoteBundleDir string // dir where packaged remote test bundles are installed
@@ -134,6 +137,10 @@ func (c *Config) SetFlags(f *flag.FlagSet, trunkDir string) {
 	if c.Mode == RunTestsMode {
 		f.StringVar(&c.ResDir, "resultsdir", "", "directory for test results")
 		f.BoolVar(&c.collectSysInfo, "sysinfo", true, "collect system information (logs, crashes, etc.)")
+		f.StringVar(&c.overlayDir, "overlaydir", filepath.Join(trunkDir, defaultOverlayPath),
+			"overlay directory containing test bundle ebuild")
+		f.StringVar(&c.externalDataDir, "externaldatadir", "/tmp/tast/external_data",
+			"directory used to cache external data files")
 
 		vals := map[string]int{
 			"auto":   int(checkTestDepsAuto),

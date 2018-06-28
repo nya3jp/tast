@@ -39,10 +39,6 @@ const (
 	localDataBuiltinDir = "/usr/local/share/tast/data/local"        // on-device dir with preinstalled test data
 	localDataPushDir    = "/usr/local/share/tast/data/local_pushed" // on-device dir with test data pushed by tast command
 
-	// TODO(derat): Delete these after 20180524: https://crbug.com/809185
-	localBundleOldBuiltinDir = "/usr/local/libexec/tast/bundles" // old version of localBundleBuiltinDir
-	localDataOldBuiltinDir   = "/usr/local/share/tast/data"      // old version of localDataBuiltinDir
-
 	// localBundleBuildSubdir is a subdirectory used for compiled local test bundles.
 	// Bundles are placed here rather than in the top-level build artifacts dir so that
 	// local and remote bundles with the same name won't overwrite each other.
@@ -73,14 +69,8 @@ func local(ctx context.Context, cfg *Config) (subcommands.ExitStatus, []TestResu
 		}
 		dataDir = localDataPushDir
 	} else {
-		// TODO(derat): Delete this check after 20180524 and always use the new locations: https://crbug.com/809185
-		if _, err := hst.Run(ctx, "test -d "+host.QuoteShellArg(localBundleBuiltinDir)); err == nil {
-			bundleGlob = filepath.Join(localBundleBuiltinDir, "*")
-			dataDir = localDataBuiltinDir
-		} else {
-			bundleGlob = filepath.Join(localBundleOldBuiltinDir, "*")
-			dataDir = localDataOldBuiltinDir
-		}
+		bundleGlob = filepath.Join(localBundleBuiltinDir, "*")
+		dataDir = localDataBuiltinDir
 	}
 
 	if err := getSoftwareFeatures(ctx, cfg); err != nil {

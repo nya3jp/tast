@@ -114,30 +114,6 @@ func TestLocalSuccess(t *gotesting.T) {
 	})
 }
 
-// TODO(derat): Delete this after 20180524: https://crbug.com/809185
-func TestLocalSuccessOldPaths(t *gotesting.T) {
-	td := newLocalTestData()
-	defer td.close()
-
-	// If the check reports that the new bundle path doesn't exist, local should fall
-	// back to the old bundle and data paths.
-	addCheckBundleFakeCmd(td.srvData.Srv, 1)
-
-	ob := bytes.Buffer{}
-	mw := control.NewMessageWriter(&ob)
-	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
-	mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
-	stdin := addLocalRunnerFakeCmd(td.srvData.Srv, 0, ob.Bytes(), nil)
-
-	if status, _ := local(context.Background(), &td.cfg); status != subcommands.ExitSuccess {
-		t.Errorf("local() = %v; want %v (%v)", status, subcommands.ExitSuccess, td.logbuf.String())
-	}
-	checkArgs(t, stdin, &runner.Args{
-		BundleGlob: filepath.Join(localBundleOldBuiltinDir, "*"),
-		DataDir:    localDataOldBuiltinDir,
-	})
-}
-
 func TestLocalExecFailure(t *gotesting.T) {
 	td := newLocalTestData()
 	defer td.close()

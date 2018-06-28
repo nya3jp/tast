@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6e8bdab9_354610c0",
+        "filename": "src/chromiumos/tast/host/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 407,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-06-28T04:43:01Z",
+      "side": 1,
+      "message": "I did not know --transform arg :)",
+      "range": {
+        "startLine": 407,
+        "startChar": 5,
+        "endLine": 407,
+        "endChar": 21
+      },
+      "revId": "8592184370ff4e6ddd139f8d39dc21a2347913b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "02abc62e_3bf389ea",
+        "filename": "src/chromiumos/tast/host/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 409,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-06-28T04:43:01Z",
+      "side": 1,
+      "message": "nit\u0026optional:\n\n- / is very popular character, so you might want to use other regexp delimiters, e.g. \":\" or \",\"\n- I guess precisely the second argument needs escape for replacement specifiers like \"\u0026\" and \"\\1\". But it should be rare.",
+      "range": {
+        "startLine": 409,
+        "startChar": 76,
+        "endLine": 409,
+        "endChar": 77
+      },
+      "revId": "8592184370ff4e6ddd139f8d39dc21a2347913b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cf92b560_fba375a5",
+        "filename": "src/chromiumos/tast/host/ssh_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 395,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-06-28T04:43:01Z",
+      "side": 1,
+      "message": "nit: PutTree",
+      "range": {
+        "startLine": 395,
+        "startChar": 12,
+        "endLine": 395,
+        "endChar": 25
+      },
+      "revId": "8592184370ff4e6ddd139f8d39dc21a2347913b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -48,6 +48,30 @@
     },
     {
       "key": {
+        "uuid": "97b27115_fcb7ba4a",
+        "filename": "src/chromiumos/tast/host/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 409,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-06-28T05:08:31Z",
+      "side": 1,
+      "message": "re delimiter, sure. these paths shouldn\u0027t be seen be humans, but i agree that it\u0027s better to do less escaping.\n\ngood point re the second arg. i\u0027ve tried to escape the things documented in the sed documentation (which the tar docs point at), and tests pass, but i may still be missing something.",
+      "parentUuid": "02abc62e_3bf389ea",
+      "range": {
+        "startLine": 409,
+        "startChar": 76,
+        "endLine": 409,
+        "endChar": 77
+      },
+      "revId": "8592184370ff4e6ddd139f8d39dc21a2347913b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "cf92b560_fba375a5",
         "filename": "src/chromiumos/tast/host/ssh_test.go",
         "patchSetId": 1
@@ -59,6 +83,30 @@
       "writtenOn": "2018-06-28T04:43:01Z",
       "side": 1,
       "message": "nit: PutTree",
+      "range": {
+        "startLine": 395,
+        "startChar": 12,
+        "endLine": 395,
+        "endChar": 25
+      },
+      "revId": "8592184370ff4e6ddd139f8d39dc21a2347913b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8f99a324_cff686de",
+        "filename": "src/chromiumos/tast/host/ssh_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 395,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-06-28T05:08:31Z",
+      "side": 1,
+      "message": "whoops, nice catch!",
+      "parentUuid": "cf92b560_fba375a5",
       "range": {
         "startLine": 395,
         "startChar": 12,

@@ -22,6 +22,7 @@ import (
 
 	"chromiumos/cmd/tast/logging"
 	"chromiumos/tast/control"
+	"chromiumos/tast/host"
 	"chromiumos/tast/host/test"
 	"chromiumos/tast/runner"
 	"chromiumos/tast/testing"
@@ -68,9 +69,11 @@ func (td *localTestData) close() {
 	os.RemoveAll(td.cfg.ResDir)
 }
 
-// addCheckBundleFakeCmd registers the command that local uses to check where bundles are installed.
-func addCheckBundleFakeCmd(srv *test.SSHServer, status int) {
-	srv.FakeCmd(fmt.Sprintf("test -d '%s'", localBundleBuiltinDir), status, []byte{}, []byte{}, nil)
+// addCheckDataFakeCmd registers the command that local uses to check where test data is installed.
+// TODO(derat): Remove this after 20180901: https://crbug.com/857485
+func addCheckDataFakeCmd(srv *test.SSHServer, status int) {
+	dir := filepath.Join(localDataBuiltinDir, localBundlePkgPathPrefix)
+	srv.FakeCmd(fmt.Sprintf("test -d "+host.QuoteShellArg(dir)), status, []byte{}, []byte{}, nil)
 }
 
 // addLocalRunnerFakeCmd registers the command that local uses to run local_test_runner.
@@ -97,7 +100,7 @@ func TestLocalSuccess(t *gotesting.T) {
 	td := newLocalTestData()
 	defer td.close()
 
-	addCheckBundleFakeCmd(td.srvData.Srv, 0)
+	addCheckDataFakeCmd(td.srvData.Srv, 0)
 
 	ob := bytes.Buffer{}
 	mw := control.NewMessageWriter(&ob)
@@ -118,7 +121,7 @@ func TestLocalExecFailure(t *gotesting.T) {
 	td := newLocalTestData()
 	defer td.close()
 
-	addCheckBundleFakeCmd(td.srvData.Srv, 0)
+	addCheckDataFakeCmd(td.srvData.Srv, 0)
 
 	ob := bytes.Buffer{}
 	mw := control.NewMessageWriter(&ob)
@@ -139,7 +142,7 @@ func TestLocalList(t *gotesting.T) {
 	td := newLocalTestData()
 	defer td.close()
 
-	addCheckBundleFakeCmd(td.srvData.Srv, 0)
+	addCheckDataFakeCmd(td.srvData.Srv, 0)
 
 	tests := []testing.Test{
 		testing.Test{Name: "pkg.Test", Desc: "This is a test", Attr: []string{"attr1", "attr2"}},

@@ -128,7 +128,7 @@ func (c *Config) SetFlags(f *flag.FlagSet, trunkDir string) {
 	// These are configurable since files may be installed elsewhere when running in the lab.
 	f.StringVar(&c.remoteRunner, "remoterunner", "/usr/bin/remote_test_runner", "executable that runs remote test bundles")
 	f.StringVar(&c.remoteBundleDir, "remotebundledir", "/usr/libexec/tast/bundles/remote", "directory containing builtin remote test bundles")
-	f.StringVar(&c.remoteDataDir, "remotedatadir", "/usr/share/tast/data/remote", "directory containing builtin remote test data")
+	f.StringVar(&c.remoteDataDir, "remotedatadir", "/usr/share/tast/data", "directory containing builtin remote test data")
 
 	// Some flags are only relevant if we're running tests rather than listing them.
 	if c.Mode == RunTestsMode {

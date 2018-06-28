@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	localTestTimeout = time.Minute                        // default max runtime for each test
-	localTestDataDir = "/usr/local/share/tast/data/local" // default dir for test data
+	localTestTimeout = time.Minute                  // default max runtime for each test
+	localTestDataDir = "/usr/local/share/tast/data" // default dir for test data
 )
 
 // Local implements the main function for local test bundles.

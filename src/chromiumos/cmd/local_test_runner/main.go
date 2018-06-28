@@ -20,7 +20,7 @@ import (
 func main() {
 	args := runner.Args{
 		BundleGlob:      "/usr/local/libexec/tast/bundles/local/*",
-		DataDir:         "/usr/local/share/tast/data/local",
+		DataDir:         "/usr/local/share/tast/data",
 		SystemLogDir:    "/var/log",
 		SystemCrashDirs: []string{crash.DefaultCrashDir, crash.ChromeCrashDir},
 		// The tast-use-flags package attempts to install this file to /etc,

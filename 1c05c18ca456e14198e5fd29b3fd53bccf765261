@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c097670e_abee0ac8",
+        "filename": "src/chromiumos/cmd/tast/run/local_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-06-29T15:05:10Z",
+      "side": 0,
+      "message": "(i forgot to delete this similar function in https://chromium-review.googlesource.com/1117933)",
+      "revId": "1c05c18ca456e14198e5fd29b3fd53bccf765261",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

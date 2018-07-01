@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "54f6db78_e67a736b",
+        "filename": "src/chromiumos/cmd/tast/run/copy.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-07-01T21:23:25Z",
+      "side": 1,
+      "message": "the lines above this point were added to the original version of this function",
+      "revId": "7cac3c2e099af84176c9ad716433bf6836530df8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

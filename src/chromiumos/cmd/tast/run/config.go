@@ -99,6 +99,15 @@ type Config struct {
 	initialSysInfo *runner.SysInfoState // initial state of system info (logs, crashes, etc.) on DUT before testing
 
 	msgTimeout time.Duration // timeout for reading control messages; default used if zero
+
+	// Base path prepended to paths on hst when performing file copies. Only relevant for unit
+	// tests, which can set this to a temp dir in order to inspect files that are copied to hst and
+	// control the files that are copied from it.
+	hstCopyBasePath string
+	// Assigned to hst.AnnounceCmd while file copies are being performed. Only relevant for unit
+	// tests, which can set this to SSHServer.NextCmd from tast/host/test so that the commands
+	// that perform copies will actually be executed.
+	hstCopyAnnounceCmd func(string)
 }
 
 // SetFlags adds common run-related flags to f that store values in Config.

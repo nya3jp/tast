@@ -33,14 +33,16 @@ func connectToServer(ctx context.Context, srv *test.SSHServer, key *rsa.PrivateK
 	}
 	defer os.Remove(keyFile)
 
-	o := &SSHOptions{
-		KeyFile:     keyFile,
-		AnnounceCmd: srv.NextCmd,
-	}
+	o := &SSHOptions{KeyFile: keyFile}
 	if err = ParseSSHTarget(srv.Addr().String(), o); err != nil {
 		return nil, err
 	}
-	return NewSSH(ctx, o)
+	s, err := NewSSH(ctx, o)
+	if err != nil {
+		return nil, err
+	}
+	s.AnnounceCmd = srv.NextCmd
+	return s, nil
 }
 
 // testData wraps data common to all tests.

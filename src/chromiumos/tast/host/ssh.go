@@ -72,8 +72,11 @@ func init() {
 
 // SSH represents an SSH connection to another computer.
 type SSH struct {
-	cl          *ssh.Client
-	announceCmd func(string) // See SSHOptions.AnnounceCmd.
+	cl *ssh.Client
+
+	// AnnounceCmd (if non-nil) is called with every remote command immediately before it's executed.
+	// This is useful for testing (i.e. to ensure that only expected commands are executed).
+	AnnounceCmd func(string)
 }
 
 // SSHOptions contains options used when connecting to an SSH server.
@@ -94,10 +97,6 @@ type SSHOptions struct {
 
 	// ConnectTimeout contains a timeout for establishing the TCP connection.
 	ConnectTimeout time.Duration
-
-	// AnnounceCmd (if non-nil) is passed to every remote command immediately before it's executed.
-	// This is useful for testing (i.e. to ensure that only expected commands are executed).
-	AnnounceCmd func(string)
 
 	// WarnFunc (if non-nil) is used to log non-fatal errors encountered while connecting to the host.
 	WarnFunc func(string)
@@ -250,7 +249,7 @@ func NewSSH(ctx context.Context, o *SSHOptions) (*SSH, error) {
 
 	select {
 	case cl := <-cch:
-		return &SSH{cl, o.AnnounceCmd}, nil
+		return &SSH{cl, nil}, nil
 	case err = <-ech:
 		return nil, err
 	case <-ctx.Done():
@@ -543,8 +542,8 @@ type bytesAndError struct {
 // If the command is interrupted or exits with a nonzero status code, the returned error will
 // be of type *ssh.ExitError.
 func (s *SSH) Run(ctx context.Context, cmd string) ([]byte, error) {
-	if s.announceCmd != nil {
-		s.announceCmd(cmd)
+	if s.AnnounceCmd != nil {
+		s.AnnounceCmd(cmd)
 	}
 
 	ch := make(chan bytesAndError, 1)
@@ -599,8 +598,8 @@ func (s *SSH) Start(ctx context.Context, cmd string, input InputMode, output Out
 		}
 	}
 
-	if s.announceCmd != nil {
-		s.announceCmd(cmd)
+	if s.AnnounceCmd != nil {
+		s.AnnounceCmd(cmd)
 	}
 	if err = c.session.Start(cmd); err != nil {
 		c.session.Close()

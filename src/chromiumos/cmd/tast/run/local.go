@@ -224,7 +224,7 @@ func pushBundle(ctx context.Context, cfg *Config, hst *host.SSH, src, dstDir str
 	}
 	cfg.Logger.Logf("Pushing test bundle %s to %s on target", src, dstDir)
 	start := time.Now()
-	bytes, err := hst.PutTree(ctx, filepath.Dir(src), dstDir, []string{filepath.Base(src)})
+	bytes, err := pushToHost(ctx, cfg, hst, filepath.Dir(src), dstDir, []string{filepath.Base(src)})
 	if err != nil {
 		return err
 	}
@@ -294,7 +294,7 @@ func pushDataFiles(ctx context.Context, cfg *Config, hst *host.SSH, destDir stri
 	}
 
 	start := time.Now()
-	bytes, err := hst.PutTree(ctx, filepath.Join(cfg.buildCfg.TestWorkspace, "src"), destDir, paths)
+	bytes, err := pushToHost(ctx, cfg, hst, filepath.Join(cfg.buildCfg.TestWorkspace, "src"), destDir, paths)
 	if err != nil {
 		return err
 	}
@@ -341,7 +341,7 @@ func buildAndPushLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH) er
 
 	cfg.Logger.Debugf("Pushing test runner to %s on target", localRunnerPath)
 	start := time.Now()
-	bytes, err := hst.PutTree(ctx, buildDir, filepath.Dir(localRunnerPath),
+	bytes, err := pushToHost(ctx, cfg, hst, buildDir, filepath.Dir(localRunnerPath),
 		[]string{filepath.Base(localRunnerPath)})
 	if err != nil {
 		return fmt.Errorf("failed to copy test runner: %v", err)
@@ -429,19 +429,6 @@ func readLocalRunnerOutput(ctx context.Context, handle *host.SSHCommandHandle, o
 		return stderrReader.appendToError(err, stderrTimeout)
 	}
 	return jerr
-}
-
-// moveFromHost copies the tree rooted at src on hst to dst on the local system.
-func moveFromHost(ctx context.Context, cfg *Config, hst *host.SSH, src, dst string) error {
-	cfg.Logger.Debugf("Copying %s from host to %s", src, dst)
-	if err := hst.GetFile(ctx, src, dst); err != nil {
-		return err
-	}
-	cfg.Logger.Debugf("Cleaning %s on host", src)
-	if out, err := hst.Run(ctx, fmt.Sprintf("rm -rf %s", host.QuoteShellArg(src))); err != nil {
-		cfg.Logger.Logf("Failed cleaning %s: %v\n%s", src, err, out)
-	}
-	return nil
 }
 
 // formatBytes formats bytes as a human-friendly string.

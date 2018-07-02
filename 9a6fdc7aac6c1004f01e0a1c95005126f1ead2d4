@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c503d061_ab002796",
+        "filename": "src/chromiumos/cmd/tast/run/copy.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2018-07-02T01:13:41Z",
+      "side": 1,
+      "message": "AFAICT, you don\u0027t need to use a func object deference here: a normal function call would work just fine.",
+      "range": {
+        "startLine": 19,
+        "startChar": 38,
+        "endLine": 19,
+        "endChar": 40
+      },
+      "revId": "9a6fdc7aac6c1004f01e0a1c95005126f1ead2d4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

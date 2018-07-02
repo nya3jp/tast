@@ -118,6 +118,30 @@
       "revId": "9a6fdc7aac6c1004f01e0a1c95005126f1ead2d4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7d27b0e8_d20284c7",
+        "filename": "src/chromiumos/cmd/tast/run/copy.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-07-02T04:35:03Z",
+      "side": 1,
+      "message": "yeah, agreed that it\u0027s tricky. i\u0027ll break it into two lines. :-)",
+      "parentUuid": "1415121f_7754a6e3",
+      "range": {
+        "startLine": 19,
+        "startChar": 38,
+        "endLine": 19,
+        "endChar": 40
+      },
+      "revId": "9a6fdc7aac6c1004f01e0a1c95005126f1ead2d4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

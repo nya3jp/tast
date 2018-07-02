@@ -94,6 +94,30 @@
       "revId": "9a6fdc7aac6c1004f01e0a1c95005126f1ead2d4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1415121f_7754a6e3",
+        "filename": "src/chromiumos/cmd/tast/run/copy.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1196209
+      },
+      "writtenOn": "2018-07-02T01:52:47Z",
+      "side": 1,
+      "message": "Oh, I see, you\u0027re capturing the context at the time that this line is evaluated. I\u0027m surprised that that works at all: I would have thought that defer applied to the entire expression. :\\",
+      "parentUuid": "f2ff4046_0720e4c7",
+      "range": {
+        "startLine": 19,
+        "startChar": 38,
+        "endLine": 19,
+        "endChar": 40
+      },
+      "revId": "9a6fdc7aac6c1004f01e0a1c95005126f1ead2d4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

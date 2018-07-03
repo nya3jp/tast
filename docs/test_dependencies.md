@@ -9,9 +9,12 @@ Tests specify dependencies through the `SoftwareDeps` field in [testing.Test].
 The following software features are defined:
 
 *   `android` - The ability to [run Android apps].
+*   `audio_play` - The ability to play audio.
+*   `audio_record` - The ability to record audio.
 *   `chrome` - A Chrome process.
 *   `chrome_login` - Implies `chrome` with the further requirement that user
     login (i.e. using `session_manager` and `cryptohome`) is supported.
+*   `tpm` - A [Trusted Platform Module] chip.
 *   `vm_host` - The ability to [run virtual machines].
 
 Software features are composed from USE flags. [local_test_runner] lists boolean
@@ -26,5 +29,6 @@ in the [tast-use-flags] package.
 [testing.Test]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Test
 [run Android apps]: https://developer.android.com/topic/arc/
 [run virtual machines]: https://chromium.googlesource.com/chromiumos/docs/+/master/containers_and_vms.md
+[Trusted Platform Module]: https://en.wikipedia.org/wiki/Trusted_Platform_Module
 [local_test_runner]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/cmd/local_test_runner/main.go
 [tast-use-flags]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/tast-use-flags/

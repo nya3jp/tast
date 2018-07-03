@@ -28,12 +28,13 @@ func main() {
 		USEFlagsFile: "/usr/local/etc/tast_use_flags.txt",
 		SoftwareFeatureDefinitions: map[string]string{
 			// This list is documented at docs/test_dependencies.md.
-			// All use flags mentioned here must be listed in IUSE of tast-use-flags ebuild.
+			// All USE flags referenced here must be listed in IUSE in the tast-use-flags ebuild.
 			"android":      "arc",
-			"audio_play":   "!veyron_rialto",
-			"audio_record": "!veyron_mickey && !veyron_rialto",
+			"audio_play":   "!betty && !veyron_rialto",
+			"audio_record": "!betty && !veyron_mickey && !veyron_rialto",
 			"chrome":       "!chromeless_tty",
 			"chrome_login": "!chromeless_tty && !rialto",
+			"tpm":          "tpm || tpm2",
 			"vm_host":      "kvm_host",
 		},
 	}

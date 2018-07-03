@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "34ffc6e2_dfe03b04",
+        "filename": "src/chromiumos/cmd/tast/run/external_data.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-07-03T14:27:41Z",
+      "side": 1,
+      "message": "sure, i\u0027ve made this be an optional parameter to fetchFiles",
+      "parentUuid": "fb503bac_f4d2f00a",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 22,
+        "endChar": 24
+      },
+      "revId": "45167b4746d6f9b5097284443f2ef833db4a1131",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "5c961e87_8363b85f",
         "filename": "src/chromiumos/cmd/tast/run/external_data.go",
         "patchSetId": 2
@@ -36,6 +60,30 @@
       "writtenOn": "2018-07-03T09:03:45Z",
       "side": 1,
       "message": "FYI: True. It\u0027s not only gsutil startup time, but also network latency is not small --- especialy in far east Asia :)",
+      "range": {
+        "startLine": 91,
+        "startChar": 0,
+        "endLine": 92,
+        "endChar": 77
+      },
+      "revId": "45167b4746d6f9b5097284443f2ef833db4a1131",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "58c8da4a_ee9fe3f1",
+        "filename": "src/chromiumos/cmd/tast/run/external_data.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-07-03T14:27:41Z",
+      "side": 1,
+      "message": "ack -- i\u0027ll be sure to look into this. (i also wonder if there\u0027s some way we can configure our gcs buckets to be mirrored in asia to improve this)",
+      "parentUuid": "5c961e87_8363b85f",
       "range": {
         "startLine": 91,
         "startChar": 0,

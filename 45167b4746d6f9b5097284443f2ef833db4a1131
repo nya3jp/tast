@@ -93,6 +93,30 @@
       "revId": "45167b4746d6f9b5097284443f2ef833db4a1131",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c867825f_83bd1146",
+        "filename": "src/chromiumos/cmd/tast/run/external_data.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-07-04T02:01:35Z",
+      "side": 1,
+      "message": "In many cases latency is the bottleneck, so it\u0027s fine to put files in US as long as files are fetched in parallel with -m.",
+      "parentUuid": "58c8da4a_ee9fe3f1",
+      "range": {
+        "startLine": 91,
+        "startChar": 0,
+        "endLine": 92,
+        "endChar": 77
+      },
+      "revId": "45167b4746d6f9b5097284443f2ef833db4a1131",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

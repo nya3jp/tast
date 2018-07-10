@@ -10,11 +10,13 @@ import (
 	"crypto/rsa"
 	"crypto/subtle"
 	"encoding/binary"
+	"errors"
 	"fmt"
 	"io"
 	"log"
 	"net"
 	"os/exec"
+	"sync"
 	"syscall"
 
 	"golang.org/x/crypto/ssh"
@@ -34,13 +36,16 @@ const (
 // authentication via a RSA keypair, it also refuses to run commands that haven't
 // been registered via out-of-band requests.
 //
-// It is based on the ssh package's NewServerConn example.
+// It is based on the ssh package's NewServerConn example and can be used concurrently
+// from multiple goroutines.
 type SSHServer struct {
-	cfg         *ssh.ServerConfig
-	listener    net.Listener
-	nextCmd     string
-	fakeCmds    map[string]cmdResult
-	answerPings bool
+	cfg      *ssh.ServerConfig
+	listener net.Listener
+
+	mutex       sync.Mutex           // protects following fields
+	nextCmd     string               // next expected "exec" command to actually run
+	fakeCmds    map[string]cmdResult // "exec" command lines to canned results to return
+	answerPings bool                 // if true, ping requests will be answered
 }
 
 // cmdResult holds the result that should be returned in response to a command.
@@ -117,17 +122,22 @@ func (s *SSHServer) Close() error {
 // NextCmd sets the next command expected to be sent in an "exec" request.
 // The supplied command will actually be executed.
 func (s *SSHServer) NextCmd(cmd string) {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
 	s.nextCmd = cmd
 }
 
 // FakeCmd configures the result to be sent for an "exec" request exactly matching cmd.
 func (s *SSHServer) FakeCmd(cmd string, exitStatus int, stdout, stderr []byte, stdinDest io.Writer) {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
 	s.fakeCmds[cmd] = cmdResult{exitStatus, stdout, stderr, stdinDest}
 }
 
-// AnswerPings controls whether the server should reply to SSH_MSG_IGNORE ping
-// requests or ignore them.
+// AnswerPings controls whether the server should reply to SSH_MSG_IGNORE ping requests or ignore them.
 func (s *SSHServer) AnswerPings(v bool) {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
 	s.answerPings = v
 }
 
@@ -161,8 +171,7 @@ func (s *SSHServer) handleConn(conn net.Conn) error {
 		}
 		ch, chReqs, err := newChan.Accept()
 		if err != nil {
-			// TODO(derat): Do something with the error?
-			continue
+			return fmt.Errorf("failed to accept channel: %v", err)
 		}
 		go s.handleChannel(ch, chReqs)
 	}
@@ -172,37 +181,51 @@ func (s *SSHServer) handleConn(conn net.Conn) error {
 // handleChannel services a channel. Only "exec" requests are supported.
 func (s *SSHServer) handleChannel(ch ssh.Channel, reqs <-chan *ssh.Request) {
 	defer ch.Close()
+
 	for req := range reqs {
 		switch req.Type {
 		case "exec":
-			s.handleExec(ch, req)
+			if err := s.handleExec(ch, req); err != nil {
+				log.Print("SSH exec command failed: ", err)
+			} else {
+				// Only one "exec" request can succeed per channel (see RFC 4254 6.5).
+				return
+			}
 		default:
 			req.Reply(false, nil)
 		}
-		return
 	}
 }
 
 // handleExec handles "exec" request req received on ch.
-func (s *SSHServer) handleExec(ch ssh.Channel, req *ssh.Request) {
+// It writes a reply and any additional required data (e.g. exit status).
+func (s *SSHServer) handleExec(ch ssh.Channel, req *ssh.Request) error {
 	cl, err := readStringPayload(req.Payload)
-	if err != nil || cl == "" {
+	if err != nil {
 		req.Reply(false, nil)
-		return
+		return err
+	}
+	if cl == "" {
+		req.Reply(false, nil)
+		return errors.New("empty command")
 	}
 
-	status := 0
-	defer s.NextCmd("")
+	s.mutex.Lock()
+	fakeCmd, haveFakeCmd := s.fakeCmds[cl]
+	nextCmd := s.nextCmd
+	s.nextCmd = ""
+	s.mutex.Unlock()
 
-	if res, ok := s.fakeCmds[cl]; ok {
+	status := 0
+	if haveFakeCmd {
 		req.Reply(true, nil)
-		if res.stdinDest != nil {
-			io.Copy(res.stdinDest, ch)
+		if fakeCmd.stdinDest != nil {
+			io.Copy(fakeCmd.stdinDest, ch)
 		}
-		ch.Write(res.stdout)
-		ch.Stderr().Write(res.stderr)
-		status = res.exitStatus
-	} else if cl == s.nextCmd {
+		ch.Write(fakeCmd.stdout)
+		ch.Stderr().Write(fakeCmd.stderr)
+		status = fakeCmd.exitStatus
+	} else if cl == nextCmd {
 		req.Reply(true, nil)
 		cmd := exec.Command("/bin/sh", "-c", cl)
 		cmd.Stdout = ch
@@ -217,10 +240,11 @@ func (s *SSHServer) handleExec(ch ssh.Channel, req *ssh.Request) {
 		}
 	} else {
 		req.Reply(false, nil)
-		return
+		return fmt.Errorf("unexpected command %q", cl)
 	}
 
 	ch.SendRequest("exit-status", false, makeIntPayload(uint32(status)))
+	return nil
 }
 
 // readStringPayload reads and returns a length-prefixed string

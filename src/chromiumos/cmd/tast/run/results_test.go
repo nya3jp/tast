@@ -104,7 +104,7 @@ func TestReadTestOutput(t *gotesting.T) {
 	if err != nil {
 		t.Fatal("readTestOutput failed:", err)
 	}
-	if err = WriteResults(context.Background(), &cfg, results); err != nil {
+	if err = WriteResults(context.Background(), &cfg, results, true); err != nil {
 		t.Fatal("WriteResults failed:", err)
 	}
 
@@ -254,13 +254,26 @@ func TestReadTestOutputTimeout(t *gotesting.T) {
 	pr, pw := io.Pipe()
 	defer pw.Close()
 
+	// When the message timeout is hit, an error should be reported.
 	cfg := Config{
 		Logger:     logging.NewSimple(&bytes.Buffer{}, 0, false),
 		ResDir:     tempDir,
 		msgTimeout: time.Millisecond,
 	}
 	if _, err := readTestOutput(context.Background(), &cfg, pr, noOpCopyAndRemove); err == nil {
-		t.Error("readTestOutput didn't return error for timeout")
+		t.Error("readTestOutput didn't return error for message timeout")
+	}
+
+	// An error should also be reported for a canceled context.
+	cfg.msgTimeout = time.Minute
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	start := time.Now()
+	if _, err := readTestOutput(ctx, &cfg, pr, noOpCopyAndRemove); err == nil {
+		t.Error("readTestOutput didn't return error for canceled context")
+	}
+	if elapsed := time.Now().Sub(start); elapsed >= cfg.msgTimeout {
+		t.Error("readTestOutput used message timeout instead of noticing context was canceled")
 	}
 }
 
@@ -344,7 +357,7 @@ func TestWriteResultsCollectSysInfo(t *gotesting.T) {
 
 	td.cfg.collectSysInfo = true
 	td.cfg.initialSysInfo = &runner.SysInfoState{}
-	if err := WriteResults(context.Background(), &td.cfg, []TestResult{}); err != nil {
+	if err := WriteResults(context.Background(), &td.cfg, []TestResult{}, true); err != nil {
 		t.Fatal("WriteResults failed: ", err)
 	}
 	checkArgs(t, stdin, &runner.Args{

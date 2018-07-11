@@ -17,7 +17,7 @@ type runWrapper interface {
 	// run calls run.Run.
 	run(ctx context.Context, cfg *run.Config) (subcommands.ExitStatus, []run.TestResult)
 	// writeResults calls run.WriteResults.
-	writeResults(ctx context.Context, cfg *run.Config, results []run.TestResult) error
+	writeResults(ctx context.Context, cfg *run.Config, results []run.TestResult, complete bool) error
 }
 
 // realRunWrapper is a runWrapper implementation that calls the real functions in the run package.
@@ -27,6 +27,6 @@ func (w realRunWrapper) run(ctx context.Context, cfg *run.Config) (subcommands.E
 	return run.Run(ctx, cfg)
 }
 
-func (w realRunWrapper) writeResults(ctx context.Context, cfg *run.Config, results []run.TestResult) error {
-	return run.WriteResults(ctx, cfg, results)
+func (w realRunWrapper) writeResults(ctx context.Context, cfg *run.Config, results []run.TestResult, complete bool) error {
+	return run.WriteResults(ctx, cfg, results, complete)
 }

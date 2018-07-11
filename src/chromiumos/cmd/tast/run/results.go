@@ -73,9 +73,11 @@ type TestError struct {
 
 // WriteResults writes results (including errors) to a JSON file in the results directory.
 // It additionally logs each test's status to cfg.Logger.
+// The complete arg should be true if the run finished successfully (regardless of whether
+// any tests failed) and false if it was aborted.
 // If cfg.CollectSysInfo is true, system information generated on the DUT during testing
 // (e.g. logs and crashes) will also be written to the results dir.
-func WriteResults(ctx context.Context, cfg *Config, results []TestResult) error {
+func WriteResults(ctx context.Context, cfg *Config, results []TestResult, complete bool) error {
 	f, err := os.Create(filepath.Join(cfg.ResDir, resultsFilename))
 	if err != nil {
 		return err
@@ -119,6 +121,12 @@ func WriteResults(ctx context.Context, cfg *Config, results []TestResult) error 
 				}
 			}
 		}
+	}
+
+	// If the run didn't finish, log an additional message after the individual results
+	// to make it clearer that all is not well.
+	if !complete {
+		cfg.Logger.Log("Run did not finish successfully; results are incomplete")
 	}
 
 	cfg.Logger.Log(sep)
@@ -443,6 +451,8 @@ func (r *resultsHandler) processMessages(mch chan interface{}, ech chan error) e
 			return err
 		case <-time.After(timeout):
 			return fmt.Errorf("timed out after waiting %v for next message", timeout)
+		case <-r.ctx.Done():
+			return r.ctx.Err()
 		}
 	}
 }

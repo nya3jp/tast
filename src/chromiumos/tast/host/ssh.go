@@ -307,10 +307,21 @@ func (s *SSH) GetFile(ctx context.Context, src, dst string) error {
 		return fmt.Errorf("running local tar failed: %v", err)
 	}
 
-	// TODO(derat): Watch ctx.Done() while streaming data.
-	if _, err = io.Copy(stdin, handle.Stdout()); err != nil {
+	ch := make(chan error, 1)
+	go func() {
+		_, err := io.Copy(stdin, handle.Stdout())
+		ch <- err
+	}()
+	select {
+	case cerr := <-ch:
+		err = cerr
+	case <-ctx.Done():
+		err = ctx.Err()
+	}
+	if err != nil {
 		return fmt.Errorf("copying from remote to local tar failed: %v", err)
 	}
+
 	if err = stdin.Close(); err != nil {
 		return fmt.Errorf("closing local tar failed: %v", err)
 	}
@@ -385,15 +396,27 @@ func (s *SSH) PutTreeRename(ctx context.Context, srcDir, dstDir string,
 		return 0, fmt.Errorf("running local tar failed: %v", err)
 	}
 
-	if bytes, err = io.Copy(handle.Stdin(), stdout); err != nil {
+	ch := make(chan error, 1)
+	go func() {
+		var err error
+		bytes, err = io.Copy(handle.Stdin(), stdout)
+		if err == nil {
+			err = handle.Stdin().Close()
+		}
+		ch <- err
+	}()
+	select {
+	case cerr := <-ch:
+		err = cerr
+	case <-ctx.Done():
+		err = ctx.Err()
+	}
+	if err != nil {
 		return 0, fmt.Errorf("copying from local to remote tar failed: %v", err)
 	}
 
 	if err = cmd.Wait(); err != nil {
 		return 0, fmt.Errorf("local tar failed: %v", err)
-	}
-	if err = handle.Stdin().Close(); err != nil {
-		return 0, fmt.Errorf("closing remote tar failed: %v", err)
 	}
 	if err = handle.Wait(ctx); err != nil {
 		return 0, fmt.Errorf("remote tar failed: %v", err)
@@ -570,30 +593,41 @@ func (s *SSH) Run(ctx context.Context, cmd string) ([]byte, error) {
 // read output, and wait for completion. cmd is interpreted by the user's shell; arguments may be
 // quoted using QuoteShellArg.
 func (s *SSH) Start(ctx context.Context, cmd string, input InputMode, output OutputMode) (*SSHCommandHandle, error) {
-	// TODO(derat): Watch ctx.Done() when running blocking commands.
 	var err error
 	c := &SSHCommandHandle{}
-	c.session, err = s.cl.NewSession()
+
+	// Creating a session can block if the server is hanging.
+	ch := make(chan error, 1)
+	go func() {
+		var err error
+		c.session, err = s.cl.NewSession()
+		ch <- err
+	}()
+	select {
+	case serr := <-ch:
+		err = serr
+	case <-ctx.Done():
+		err = ctx.Err()
+	}
 	if err != nil {
 		return nil, fmt.Errorf("failed to create session: %v", err)
 	}
 
 	if output == StdoutAndStderr || output == StdoutOnly {
 		if c.stdout, err = c.session.StdoutPipe(); err != nil {
-			c.session.Close()
+			c.Close(ctx)
 			return nil, fmt.Errorf("failed to get stdout: %v", err)
 		}
 	}
 	if output == StdoutAndStderr || output == StderrOnly {
 		if c.stderr, err = c.session.StderrPipe(); err != nil {
-			c.session.Close()
+			c.Close(ctx)
 			return nil, fmt.Errorf("failed to get stderr: %v", err)
 		}
 	}
-
 	if input == OpenStdin {
 		if c.stdin, err = c.session.StdinPipe(); err != nil {
-			c.session.Close()
+			c.Close(ctx)
 			return nil, fmt.Errorf("failed to get stdin: %v", err)
 		}
 	}
@@ -601,8 +635,17 @@ func (s *SSH) Start(ctx context.Context, cmd string, input InputMode, output Out
 	if s.AnnounceCmd != nil {
 		s.AnnounceCmd(cmd)
 	}
-	if err = c.session.Start(cmd); err != nil {
-		c.session.Close()
+
+	// Waiting for the server to report that the command has started can block.
+	go func() { ch <- c.session.Start(cmd) }()
+	select {
+	case serr := <-ch:
+		err = serr
+	case <-ctx.Done():
+		err = ctx.Err()
+	}
+	if err != nil {
+		c.Close(ctx)
 		return nil, fmt.Errorf("failed to start: %v", err)
 	}
 	return c, nil
@@ -636,13 +679,20 @@ type SSHCommandHandle struct {
 }
 
 // Close closes the session in which the command is running.
+// It returns an error if ctx's deadline is reached before the session has been closed.
 func (h *SSHCommandHandle) Close(ctx context.Context) error {
-	// TODO(derat): Watch ctx.Done().
-	err := h.session.Close()
-	if err == io.EOF {
-		err = nil
+	ch := make(chan error, 1)
+	go func() { ch <- h.session.Close() }()
+
+	select {
+	case err := <-ch:
+		if err == io.EOF {
+			return nil
+		}
+		return err
+	case <-ctx.Done():
+		return ctx.Err()
 	}
-	return err
 }
 
 // Stderr returns a pipe connected to the command's stderr or nil if the OutputMode didn't include stderr.
@@ -660,8 +710,15 @@ func (h *SSHCommandHandle) Stdout() io.Reader {
 	return h.stdout
 }
 
-// Wait waits until the command finishes running.
+// Wait waits until the command finishes running or ctx's deadline is reached.
 func (h *SSHCommandHandle) Wait(ctx context.Context) error {
-	// TODO(derat): Watch ctx.Done().
-	return h.session.Wait()
+	ch := make(chan error, 1)
+	go func() { ch <- h.session.Wait() }()
+
+	select {
+	case err := <-ch:
+		return err
+	case <-ctx.Done():
+		return ctx.Err()
+	}
 }

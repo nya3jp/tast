@@ -95,11 +95,27 @@ func local(ctx context.Context, cfg *Config) (subcommands.ExitStatus, []TestResu
 	start := time.Now()
 	results, err := runLocalRunner(ctx, cfg, hst, bundleGlob, dataDir)
 	if err != nil {
+		// TODO(derat): Consider reconnecting to DUT if necessary and trying to run remaining tests: https://crbug.com/778389
 		cfg.Logger.Log("Failed to run tests: ", err)
+		if !deadlineBefore(ctx, time.Now().Add(sshPingTimeout)) {
+			if err = hst.Ping(ctx, sshPingTimeout); err != nil {
+				cfg.Logger.Logf("Lost SSH connection to %v: %v", cfg.Target, err)
+			}
+		}
 		return subcommands.ExitFailure, results
 	}
 	cfg.Logger.Logf("Ran %v local test(s) in %v", len(results), time.Now().Sub(start).Round(time.Millisecond))
 	return subcommands.ExitSuccess, results
+}
+
+// deadlineBefore returns true if ctx has a deadline that expires before t.
+// It returns true if the deadline has already expired and false if no deadline is set.
+func deadlineBefore(ctx context.Context, t time.Time) bool {
+	dl, ok := ctx.Deadline()
+	if !ok {
+		return false
+	}
+	return dl.Before(t)
 }
 
 // connectToTarget establishes an SSH connection to the target specified in cfg.

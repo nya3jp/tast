@@ -12,6 +12,7 @@ import (
 	"os"
 	"reflect"
 	gotesting "testing"
+	"time"
 
 	"chromiumos/cmd/tast/logging"
 	"chromiumos/cmd/tast/run"
@@ -78,6 +79,9 @@ func TestRunResults(t *gotesting.T) {
 	if !reflect.DeepEqual(wrapper.writeRes, wrapper.runRes) {
 		t.Errorf("runCmd.Execute(%v) wrote results %v; want %v", args, wrapper.writeRes, wrapper.runRes)
 	}
+	if !wrapper.writeComplete {
+		t.Errorf("runCmd.Execute(%v) reported incomplete run", args)
+	}
 }
 
 func TestRunExecFailure(t *gotesting.T) {
@@ -94,6 +98,9 @@ func TestRunExecFailure(t *gotesting.T) {
 	if !reflect.DeepEqual(wrapper.writeRes, wrapper.runRes) {
 		t.Errorf("runCmd.Execute(%v) wrote results %v; want %v", args, wrapper.writeRes, wrapper.runRes)
 	}
+	if wrapper.writeComplete {
+		t.Errorf("runCmd.Execute(%v) reported complete run", args)
+	}
 }
 
 func TestRunWriteFailure(t *gotesting.T) {
@@ -105,5 +112,28 @@ func TestRunWriteFailure(t *gotesting.T) {
 	args := []string{"root@example.net"}
 	if status := executeRunCmd(t, args, &wrapper); status != subcommands.ExitFailure {
 		t.Fatalf("runCmd.Execute(%v) returned status %v; want %v", args, status, subcommands.ExitFailure)
+	}
+}
+
+func TestRunReserveTimeToWriteResults(t *gotesting.T) {
+	wrapper := stubRunWrapper{
+		runRes: []run.TestResult{run.TestResult{Test: testing.Test{Name: "pkg.Test"}}},
+	}
+	executeRunCmd(t, []string{"-timeout=3600", "root@example.net"}, &wrapper)
+
+	getDeadline := func(ctx context.Context, name string) time.Time {
+		if ctx == nil {
+			t.Fatalf("%s context not set", name)
+		}
+		dl, ok := ctx.Deadline()
+		if !ok {
+			t.Fatalf("%s context lacks deadline", name)
+		}
+		return dl
+	}
+	rdl := getDeadline(wrapper.runCtx, "run")
+	wdl := getDeadline(wrapper.writeCtx, "write")
+	if !rdl.Before(wdl) {
+		t.Errorf("Run deadline %v doesn't precede results-writing deadline %v", wdl, rdl)
 	}
 }

@@ -166,7 +166,7 @@ if err != nil {
 s.Logf("Logged in as user %q with ID %v", user, id)
 ```
 
-## Writing output files
+## Output files
 
 Tests can write output files that are automatically copied to the host system
 that was used to initiate testing:
@@ -183,26 +183,48 @@ func WriteOutput(s *testing.State) {
 As described in the [Running tests] document, a test's output files are copied
 to a `tests/<test-name>/` subdirectory within the results directory.
 
-## Using data files
+## Data files
 
 Tests can register ancillary data files that will be copied to the DUT and made
 available while the test is running; consider a short binary audio file that a
 test plays in a loop, for example.
 
+### Local data files
+
 Small non-binary data files should be checked into a `data/` subdirectory under
 the test package as _local data files_. Prefix their names by the test file's
-name (e.g. `data/audio_playback_sample.wav` for a test file named
-`audio_playback.go`) to make ownership obvious.
+name (e.g. `data/my_test_some_data.txt` for a test file named `my_test.go`) to
+make ownership obvious.
+
+### External data files
 
 Larger data files like audio, video, or graphics files should be stored in
 Google Cloud Storage and registered as _external data files_ to avoid
 permanently bloating the test repository. A mapping from filenames used during
 testing to URLs is stored in `files/external_data.conf` in the bundle package's
 directory in the overlay; see e.g. the [external_data.conf file for
-tasts-local-tests-cros].
+tasts-local-tests-cros]. External data files are included in test bundle Portage
+packages and also downloaded and pushed to the DUT as needed by `tast run
+-build`.
+
+The process for adding an external data file is:
+
+1.  Add a line to the test bundle's `files/external_data.conf` file containing
+    the filename that will be used by tests when accessing the file and the
+    `gs://` URL where the file is stored.
+2.  Update the corresponding ebuild (e.g. [tast-local-tests-cros-9999.ebuild])
+    to list the URL in its `TAST_BUNDLE_EXTERNAL_DATA_URLS` variable.
+3.  Update the package's `Manifest` file to include the new file's checksums by
+    running e.g. `ebuild path/to/tast-local-tests-cros-9999.ebuild manifest` in
+    your chroot.
+4.  Emerge the package to verify that the new file is downloaded and installed.
+
+### Executables
 
 If your test depends on outside executables, use Portage to build and package
 those executables separately and include them in test Chrome OS system images.
+
+### Using data files in tests
 
 To register data files (regardless of whether they're checked into the test
 repository or stored externally), in your test's `testing.AddTest` call, set the
@@ -256,4 +278,5 @@ external data files.
 [Go's error string conventions]: https://github.com/golang/go/wiki/CodeReviewComments#error-strings
 [Running tests]: running_tests.md
 [external_data.conf file for tasts-local-tests-cros]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/tast-local-tests-cros/files/external_data.conf
+[tast-local-tests-cros-9999.ebuild]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/tast-local-tests-cros/tast-local-tests-cros-9999.ebuild
 [example.DataFiles]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/bundles/cros/example/data_files.go

@@ -211,6 +211,61 @@ func TestStart(t *testing.T) {
 	}
 }
 
+func TestRunTimeout(t *testing.T) {
+	td := newTestData(t)
+	defer td.close()
+
+	td.srv.ExecDelays(0, 30*time.Second)
+	ctx, cancel := context.WithTimeout(td.ctx, 10*time.Millisecond)
+	defer cancel()
+	if _, err := td.hst.Run(ctx, "true"); err == nil {
+		t.Errorf("Run() with expired context didn't return error")
+	}
+}
+
+func TestStartSessionTimeout(t *testing.T) {
+	td := newTestData(t)
+	defer td.close()
+
+	td.srv.SessionDelay(30 * time.Second)
+	ctx, cancel := context.WithTimeout(td.ctx, 10*time.Millisecond)
+	defer cancel()
+	if _, err := td.hst.Start(ctx, "true", CloseStdin, NoOutput); err == nil {
+		t.Errorf("Start() with expired context didn't return error")
+	}
+}
+
+func TestStartExecTimeout(t *testing.T) {
+	td := newTestData(t)
+	defer td.close()
+
+	td.srv.ExecDelays(30*time.Second, 0)
+	ctx, cancel := context.WithTimeout(td.ctx, 10*time.Millisecond)
+	defer cancel()
+	if _, err := td.hst.Start(ctx, "true", CloseStdin, NoOutput); err == nil {
+		t.Errorf("Start() with expired context didn't return error")
+	}
+}
+
+func TestWaitAndCloseTimeout(t *testing.T) {
+	td := newTestData(t)
+	defer td.close()
+
+	h, err := td.hst.Start(td.ctx, "sleep 30", CloseStdin, NoOutput)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ctx, cancel := context.WithTimeout(td.ctx, time.Millisecond)
+	defer cancel()
+	if err = h.Wait(ctx); err == nil {
+		t.Errorf("Wait() with expired context didn't return error")
+	}
+	if err = h.Close(ctx); err == nil {
+		t.Errorf("Close() with expired context didn't return error")
+	}
+}
+
 func TestPing(t *testing.T) {
 	td := newTestData(t)
 	defer td.close()
@@ -279,6 +334,25 @@ func TestGetFileDir(t *testing.T) {
 	// GetFile should overwrite local dirs.
 	if err := td.hst.GetFile(td.ctx, srcDir, dstDir); err != nil {
 		t.Error(err)
+	}
+}
+
+func TestGetFileTimeout(t *testing.T) {
+	td := newTestData(t)
+	defer td.close()
+
+	files := map[string]string{"file": "data"}
+	tmpDir, srcDir := initFileTest(t, files)
+	defer os.RemoveAll(tmpDir)
+
+	td.srv.ExecDelays(0, 30*time.Second)
+
+	srcFile := filepath.Join(srcDir, "file")
+	dstFile := filepath.Join(tmpDir, "file")
+	ctx, cancel := context.WithTimeout(td.ctx, 10*time.Millisecond)
+	defer cancel()
+	if err := td.hst.GetFile(ctx, srcFile, dstFile); err == nil {
+		t.Errorf("GetFile() with expired context didn't return error")
 	}
 }
 
@@ -431,6 +505,24 @@ func TestPutTreeRenameUnchanged(t *testing.T) {
 		t.Fatal(err)
 	} else if n != 0 {
 		t.Errorf("PutTreeRename() copied %v bytes; want 0", n)
+	}
+}
+
+func TestPutTreeTimeout(t *testing.T) {
+	td := newTestData(t)
+	defer td.close()
+
+	files := map[string]string{"file": "data"}
+	tmpDir, srcDir := initFileTest(t, files)
+	defer os.RemoveAll(tmpDir)
+
+	td.srv.ExecDelays(0, 30*time.Second)
+
+	dstDir := filepath.Join(tmpDir, "dst")
+	ctx, cancel := context.WithTimeout(td.ctx, 10*time.Millisecond)
+	defer cancel()
+	if _, err := td.hst.PutTree(ctx, srcDir, dstDir, []string{"file"}); err == nil {
+		t.Errorf("PutTree() with expired context didn't return error")
 	}
 }
 

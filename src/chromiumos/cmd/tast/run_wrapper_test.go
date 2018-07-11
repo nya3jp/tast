@@ -13,8 +13,10 @@ import (
 
 // stubRunWrapper is a stub implementation of runWrapper used for testing.
 type stubRunWrapper struct {
+	runCtx, writeCtx context.Context  // contexts passed to run and writeResults
 	runCfg, writeCfg *run.Config      // config passed to run and writeResults
 	writeRes         []run.TestResult // results passed to writeResults
+	writeComplete    bool             // complete arg passed to writeResults
 
 	runStatus subcommands.ExitStatus // status to return from run
 	runRes    []run.TestResult       // results to return from run
@@ -22,12 +24,11 @@ type stubRunWrapper struct {
 }
 
 func (w *stubRunWrapper) run(ctx context.Context, cfg *run.Config) (subcommands.ExitStatus, []run.TestResult) {
-	w.runCfg = cfg
+	w.runCtx, w.runCfg = ctx, cfg
 	return w.runStatus, w.runRes
 }
 
-func (w *stubRunWrapper) writeResults(ctx context.Context, cfg *run.Config, results []run.TestResult) error {
-	w.writeCfg = cfg
-	w.writeRes = results
+func (w *stubRunWrapper) writeResults(ctx context.Context, cfg *run.Config, results []run.TestResult, complete bool) error {
+	w.writeCtx, w.writeCfg, w.writeRes, w.writeComplete = ctx, cfg, results, complete
 	return w.writeErr
 }

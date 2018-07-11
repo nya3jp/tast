@@ -25,12 +25,15 @@ const (
 
 	fullLogName   = "full.txt"    // file in runConfig.resDir containing full output
 	timingLogName = "timing.json" // file in runConfig.resDir containing timing information
+
+	writeResultsTimeout = 15 * time.Second // time reserved for writing results when timeout is set
 )
 
 // runCmd implements subcommands.Command to support running tests.
 type runCmd struct {
-	cfg     run.Config // shared config for running tests
-	wrapper runWrapper // can be set by tests to stub out calls to run package
+	cfg        run.Config // shared config for running tests
+	wrapper    runWrapper // can be set by tests to stub out calls to run package
+	timeoutSec int        // overall timeout in seconds
 }
 
 func newRunCmd() *runCmd {
@@ -49,10 +52,19 @@ func (*runCmd) Usage() string {
 }
 
 func (r *runCmd) SetFlags(f *flag.FlagSet) {
+	f.IntVar(&r.timeoutSec, "timeout", 0, "run timeout in seconds, or 0 for none")
 	r.cfg.SetFlags(f, getTrunkDir())
 }
 
 func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
+	var cancel func()
+	if r.timeoutSec > 0 {
+		ctx, cancel = context.WithTimeout(ctx, time.Duration(r.timeoutSec)*time.Second)
+	} else {
+		ctx, cancel = context.WithCancel(ctx)
+	}
+	defer cancel()
+
 	defer r.cfg.Close(ctx)
 
 	tl := timing.Log{}
@@ -122,9 +134,20 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 	}
 	lg.Log("Writing results to ", r.cfg.ResDir)
 
-	status, results := r.wrapper.run(ctx, &r.cfg)
+	// If a deadline is set, reserve a bit of time to write results and collect system info.
+	var rctx context.Context
+	var rcancel func()
+	if dl, ok := ctx.Deadline(); ok && dl.After(time.Now().Add(writeResultsTimeout)) {
+		rctx, rcancel = context.WithDeadline(ctx, dl.Add(-writeResultsTimeout))
+	} else {
+		rctx, rcancel = context.WithCancel(ctx)
+	}
+	defer rcancel()
+
+	status, results := r.wrapper.run(rctx, &r.cfg)
+	complete := status == subcommands.ExitSuccess
 	if len(results) == 0 {
-		if status == subcommands.ExitSuccess {
+		if complete {
 			lg.Logf("No tests matched by pattern(s) %v", r.cfg.Patterns)
 			lg.Log("Do you need to pass -buildtype=local or -buildtype=remote?")
 			status = subcommands.ExitFailure
@@ -132,7 +155,7 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 		return status
 	}
 
-	if err = r.wrapper.writeResults(ctx, &r.cfg, results); err != nil {
+	if err = r.wrapper.writeResults(ctx, &r.cfg, results, complete); err != nil {
 		lg.Log("Failed to write results: ", err)
 		if status == subcommands.ExitSuccess {
 			status = subcommands.ExitFailure

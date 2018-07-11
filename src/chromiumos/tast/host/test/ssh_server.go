@@ -18,6 +18,7 @@ import (
 	"os/exec"
 	"sync"
 	"syscall"
+	"time"
 
 	"golang.org/x/crypto/ssh"
 )
@@ -42,10 +43,13 @@ type SSHServer struct {
 	cfg      *ssh.ServerConfig
 	listener net.Listener
 
-	mutex       sync.Mutex           // protects following fields
-	nextCmd     string               // next expected "exec" command to actually run
-	fakeCmds    map[string]cmdResult // "exec" command lines to canned results to return
-	answerPings bool                 // if true, ping requests will be answered
+	mutex          sync.Mutex           // protects following fields
+	nextCmd        string               // next expected "exec" command to actually run
+	fakeCmds       map[string]cmdResult // "exec" command lines to canned results to return
+	answerPings    bool                 // if true, ping requests will be answered
+	sessionDelay   time.Duration        // delay before starting new sessions
+	execStartDelay time.Duration        // delay before reporting process has started
+	execDoneDelay  time.Duration        // delay before reporting process has completed
 }
 
 // cmdResult holds the result that should be returned in response to a command.
@@ -141,6 +145,21 @@ func (s *SSHServer) AnswerPings(v bool) {
 	s.answerPings = v
 }
 
+// SessionDelay configures a delay used by the server before starting a new session.
+func (s *SSHServer) SessionDelay(d time.Duration) {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	s.sessionDelay = d
+}
+
+// ExecDelays configures delays used by the server before reporting that an "exec" command has started
+// and before reporting that it's completed.
+func (s *SSHServer) ExecDelays(start, done time.Duration) {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	s.execStartDelay, s.execDoneDelay = start, done
+}
+
 // Addr returns the address on which the server is listening.
 func (s *SSHServer) Addr() net.Addr {
 	if s.listener == nil {
@@ -169,6 +188,12 @@ func (s *SSHServer) handleConn(conn net.Conn) error {
 			newChan.Reject(ssh.UnknownChannelType, "unknown channel type")
 			continue
 		}
+
+		s.mutex.Lock()
+		delay := s.sessionDelay
+		s.mutex.Unlock()
+		time.Sleep(delay)
+
 		ch, chReqs, err := newChan.Accept()
 		if err != nil {
 			return fmt.Errorf("failed to accept channel: %v", err)
@@ -214,7 +239,10 @@ func (s *SSHServer) handleExec(ch ssh.Channel, req *ssh.Request) error {
 	fakeCmd, haveFakeCmd := s.fakeCmds[cl]
 	nextCmd := s.nextCmd
 	s.nextCmd = ""
+	startDelay, doneDelay := s.execStartDelay, s.execDoneDelay
 	s.mutex.Unlock()
+
+	time.Sleep(startDelay)
 
 	status := 0
 	if haveFakeCmd {
@@ -243,6 +271,7 @@ func (s *SSHServer) handleExec(ch ssh.Channel, req *ssh.Request) error {
 		return fmt.Errorf("unexpected command %q", cl)
 	}
 
+	time.Sleep(doneDelay)
 	ch.SendRequest("exit-status", false, makeIntPayload(uint32(status)))
 	return nil
 }

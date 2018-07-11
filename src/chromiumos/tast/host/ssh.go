@@ -223,6 +223,20 @@ func presentChallenges(stdin int, prefix, user, inst string, qs []string, es []b
 	return as, nil
 }
 
+// doAsync runs f in a goroutine and returns its result.
+// If ctx's deadline is reached before f finishes, an error is returned.
+func doAsync(ctx context.Context, f func() error) error {
+	ch := make(chan error, 1)
+	go func() { ch <- f() }()
+
+	select {
+	case err := <-ch:
+		return err
+	case <-ctx.Done():
+		return ctx.Err()
+	}
+}
+
 // NewSSH establishes an SSH-based connection to the host described in o.
 func NewSSH(ctx context.Context, o *SSHOptions) (*SSH, error) {
 	am, err := getSSHAuthMethods(o, "["+o.Hostname+"] ")
@@ -236,40 +250,22 @@ func NewSSH(ctx context.Context, o *SSHOptions) (*SSH, error) {
 	}
 	cfg.Timeout = o.ConnectTimeout
 
-	cch := make(chan *ssh.Client, 1)
-	ech := make(chan error, 1)
-	go func() {
-		cl, err := ssh.Dial("tcp", fmt.Sprintf("%s:%d", o.Hostname, o.Port), &cfg)
-		if err != nil {
-			ech <- err
-		} else {
-			cch <- cl
-		}
-	}()
-
-	select {
-	case cl := <-cch:
-		return &SSH{cl, nil}, nil
-	case err = <-ech:
+	var cl *ssh.Client
+	err = doAsync(ctx, func() error {
+		var err error
+		cl, err = ssh.Dial("tcp", fmt.Sprintf("%s:%d", o.Hostname, o.Port), &cfg)
+		return err
+	})
+	if err != nil {
+		// TODO(derat): Avoid leaking the client if the deadline is reached first.
 		return nil, err
-	case <-ctx.Done():
-		return nil, ctx.Err()
 	}
+	return &SSH{cl, nil}, nil
 }
 
 // Close closes the underlying connection to the host.
 func (s *SSH) Close(ctx context.Context) error {
-	ch := make(chan error, 1)
-	go func() {
-		ch <- s.cl.Conn.Close()
-	}()
-
-	select {
-	case err := <-ch:
-		return err
-	case <-ctx.Done():
-		return ctx.Err()
-	}
+	return doAsync(ctx, func() error { return s.cl.Conn.Close() })
 }
 
 // GetFile copies a file or directory from the host to the local machine.
@@ -307,10 +303,14 @@ func (s *SSH) GetFile(ctx context.Context, src, dst string) error {
 		return fmt.Errorf("running local tar failed: %v", err)
 	}
 
-	// TODO(derat): Watch ctx.Done() while streaming data.
-	if _, err = io.Copy(stdin, handle.Stdout()); err != nil {
+	err = doAsync(ctx, func() error {
+		_, err := io.Copy(stdin, handle.Stdout())
+		return err
+	})
+	if err != nil {
 		return fmt.Errorf("copying from remote to local tar failed: %v", err)
 	}
+
 	if err = stdin.Close(); err != nil {
 		return fmt.Errorf("closing local tar failed: %v", err)
 	}
@@ -385,15 +385,20 @@ func (s *SSH) PutTreeRename(ctx context.Context, srcDir, dstDir string,
 		return 0, fmt.Errorf("running local tar failed: %v", err)
 	}
 
-	if bytes, err = io.Copy(handle.Stdin(), stdout); err != nil {
+	err = doAsync(ctx, func() error {
+		var err error
+		bytes, err = io.Copy(handle.Stdin(), stdout)
+		if err == nil {
+			err = handle.Stdin().Close()
+		}
+		return err
+	})
+	if err != nil {
 		return 0, fmt.Errorf("copying from local to remote tar failed: %v", err)
 	}
 
 	if err = cmd.Wait(); err != nil {
 		return 0, fmt.Errorf("local tar failed: %v", err)
-	}
-	if err = handle.Stdin().Close(); err != nil {
-		return 0, fmt.Errorf("closing remote tar failed: %v", err)
 	}
 	if err = handle.Wait(ctx); err != nil {
 		return 0, fmt.Errorf("remote tar failed: %v", err)
@@ -531,12 +536,6 @@ func getLocalSHA1s(paths []string) (map[string]string, error) {
 	return sums, nil
 }
 
-// bytesAndError wraps a byte slice and error so they can be passed together over a channel.
-type bytesAndError struct {
-	b   []byte
-	err error
-}
-
 // Run runs cmd synchronously on the host and returns its output. stdout and stderr are combined.
 // cmd is interpreted by the user's shell; arguments may be quoted using QuoteShellArg.
 // If the command is interrupted or exits with a nonzero status code, the returned error will
@@ -546,54 +545,49 @@ func (s *SSH) Run(ctx context.Context, cmd string) ([]byte, error) {
 		s.AnnounceCmd(cmd)
 	}
 
-	ch := make(chan bytesAndError, 1)
-	go func() {
+	var b []byte
+	err := doAsync(ctx, func() error {
 		session, err := s.cl.NewSession()
 		if err != nil {
-			ch <- bytesAndError{nil, fmt.Errorf("failed to create session: %v", err)}
-			return
+			return fmt.Errorf("failed to create session: %v", err)
 		}
 		defer session.Close()
-		b, err := session.CombinedOutput(cmd)
-		ch <- bytesAndError{b, err}
-	}()
-
-	select {
-	case be := <-ch:
-		return be.b, be.err
-	case <-ctx.Done():
-		return nil, ctx.Err()
-	}
+		b, err = session.CombinedOutput(cmd)
+		return err
+	})
+	return b, err
 }
 
 // Start runs cmd asynchronously on the host and returns a handle that can be used to write input,
 // read output, and wait for completion. cmd is interpreted by the user's shell; arguments may be
 // quoted using QuoteShellArg.
 func (s *SSH) Start(ctx context.Context, cmd string, input InputMode, output OutputMode) (*SSHCommandHandle, error) {
-	// TODO(derat): Watch ctx.Done() when running blocking commands.
-	var err error
 	c := &SSHCommandHandle{}
-	c.session, err = s.cl.NewSession()
+
+	err := doAsync(ctx, func() error {
+		var err error
+		c.session, err = s.cl.NewSession()
+		return err
+	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to create session: %v", err)
 	}
 
 	if output == StdoutAndStderr || output == StdoutOnly {
 		if c.stdout, err = c.session.StdoutPipe(); err != nil {
-			c.session.Close()
+			c.Close(ctx)
 			return nil, fmt.Errorf("failed to get stdout: %v", err)
 		}
 	}
 	if output == StdoutAndStderr || output == StderrOnly {
 		if c.stderr, err = c.session.StderrPipe(); err != nil {
-			c.session.Close()
+			c.Close(ctx)
 			return nil, fmt.Errorf("failed to get stderr: %v", err)
 		}
 	}
-
 	if input == OpenStdin {
 		if c.stdin, err = c.session.StdinPipe(); err != nil {
-			c.session.Close()
+			c.Close(ctx)
 			return nil, fmt.Errorf("failed to get stdin: %v", err)
 		}
 	}
@@ -601,8 +595,9 @@ func (s *SSH) Start(ctx context.Context, cmd string, input InputMode, output Out
 	if s.AnnounceCmd != nil {
 		s.AnnounceCmd(cmd)
 	}
-	if err = c.session.Start(cmd); err != nil {
-		c.session.Close()
+
+	if err = doAsync(ctx, func() error { return c.session.Start(cmd) }); err != nil {
+		c.Close(ctx)
 		return nil, fmt.Errorf("failed to start: %v", err)
 	}
 	return c, nil
@@ -636,11 +631,11 @@ type SSHCommandHandle struct {
 }
 
 // Close closes the session in which the command is running.
+// It returns an error if ctx's deadline is reached before the session has been closed.
 func (h *SSHCommandHandle) Close(ctx context.Context) error {
-	// TODO(derat): Watch ctx.Done().
-	err := h.session.Close()
+	err := doAsync(ctx, func() error { return h.session.Close() })
 	if err == io.EOF {
-		err = nil
+		return nil
 	}
 	return err
 }
@@ -660,8 +655,7 @@ func (h *SSHCommandHandle) Stdout() io.Reader {
 	return h.stdout
 }
 
-// Wait waits until the command finishes running.
+// Wait waits until the command finishes running or ctx's deadline is reached.
 func (h *SSHCommandHandle) Wait(ctx context.Context) error {
-	// TODO(derat): Watch ctx.Done().
-	return h.session.Wait()
+	return doAsync(ctx, func() error { return h.session.Wait() })
 }

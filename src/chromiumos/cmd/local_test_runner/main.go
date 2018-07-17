@@ -34,7 +34,7 @@ func main() {
 			"audio_record": "!betty && !veyron_mickey && !veyron_rialto",
 			"chrome":       "!chromeless_tty",
 			"chrome_login": "!chromeless_tty && !rialto",
-			"tpm":          "tpm || tpm2",
+			"tpm":          "!mocktpm",
 			"vm_host":      "kvm_host",
 		},
 	}

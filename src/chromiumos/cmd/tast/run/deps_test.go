@@ -11,6 +11,7 @@ import (
 	"reflect"
 	"testing"
 
+	"chromiumos/tast/bundle"
 	"chromiumos/tast/runner"
 )
 
@@ -33,9 +34,11 @@ func checkRunnerTestDepsArgs(t *testing.T, cfg *Config, checkDeps bool, avail, u
 	setRunnerTestDepsArgs(cfg, &args)
 
 	exp := runner.RunTestsArgs{
-		CheckSoftwareDeps:           checkDeps,
-		AvailableSoftwareFeatures:   avail,
-		UnavailableSoftwareFeatures: unavail,
+		bundle.RunTestsArgs{
+			CheckSoftwareDeps:           checkDeps,
+			AvailableSoftwareFeatures:   avail,
+			UnavailableSoftwareFeatures: unavail,
+		},
 	}
 	if !reflect.DeepEqual(args.RunTestsArgs, exp) {
 		t.Errorf("setRunnerTestDepsArgs(%+v) set %+v; want %+v", cfg, args.RunTestsArgs, exp)

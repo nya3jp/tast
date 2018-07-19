@@ -18,6 +18,7 @@ import (
 
 	"chromiumos/cmd/tast/build"
 	"chromiumos/cmd/tast/timing"
+	"chromiumos/tast/bundle"
 	"chromiumos/tast/runner"
 
 	"github.com/google/subcommands"
@@ -97,9 +98,11 @@ func runRemoteRunner(ctx context.Context, cfg *Config, bundleGlob, dataDir strin
 		Patterns:   cfg.Patterns,
 		DataDir:    dataDir,
 		RemoteArgs: runner.RemoteArgs{
-			Target:  cfg.Target,
-			KeyFile: cfg.KeyFile,
-			KeyDir:  cfg.KeyDir,
+			bundle.RemoteArgs{
+				Target:  cfg.Target,
+				KeyFile: cfg.KeyFile,
+				KeyDir:  cfg.KeyDir,
+			},
 		},
 	}
 	switch cfg.Mode {

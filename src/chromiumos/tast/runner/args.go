@@ -31,7 +31,7 @@ type Args struct {
 	// OutDir is the path to the base directory under which tests should write output files.
 	OutDir string `json:"outDir,omitempty"`
 
-	// RemoteArgs contains additional arguments used to list or run remote tests.
+	// RemoteArgs contains additional arguments used to run remote tests.
 	RemoteArgs
 	// RunTestsArgs contains additional arguments used by RunTestsMode.
 	RunTestsArgs
@@ -67,25 +67,14 @@ type Args struct {
 
 // RemoteArgs is nested within Args and holds additional arguments that are only relevant when running remote tests.
 type RemoteArgs struct {
-	// Target is the DUT connection spec as [<user>@]host[:<port>].
-	Target string `json:"remoteTarget,omitempty"`
-	// KeyFile is the path to the SSH private key to use to connect to the DUT.
-	KeyFile string `json:"remoteKeyFile,omitempty"`
-	// KeyDir is the directory containing SSH private keys (typically $HOME/.ssh).
-	KeyDir string `json:"remoteKeyDir,omitempty"`
+	bundle.RemoteArgs
+	// Runner-specific args can be added here.
 }
 
 // RunTestsArgs is nested within Args and contains additional arguments used by RunTestsMode.
 type RunTestsArgs struct {
-	// CheckSoftwareDeps is true if each test's SoftwareDeps field should be checked against
-	// AvailableSoftwareFeatures and UnavailableSoftwareFeatures.
-	CheckSoftwareDeps bool `json:"runTestsCheckSoftwareDeps,omitempty"`
-	// AvailableSoftwareFeatures contains a list of software features supported by the DUT.
-	// This list should come from an earlier GetSoftwareFeaturesMode call to local_test_runner.
-	AvailableSoftwareFeatures []string `json:"runTestsAvailableSoftwareFeatures,omitempty"`
-	// UnavailableSoftwareFeatures contains a list of software features supported by the DUT.
-	// This list should come from an earlier GetSoftwareFeaturesMode call to local_test_runner.
-	UnavailableSoftwareFeatures []string `json:"runTestsUnavailableSoftwareFeatures,omitempty"`
+	bundle.RunTestsArgs
+	// Runner-specific args can be added here.
 }
 
 // GetSysInfoStateResult holds the result of a GetSysInfoStateMode command.
@@ -177,24 +166,16 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, ru
 
 	// Copy over args that need to be passed to test bundles.
 	args.bundleArgs = bundle.Args{
-		DataDir:  args.DataDir,
-		OutDir:   args.OutDir,
-		Patterns: args.Patterns,
-		RunTestsArgs: bundle.RunTestsArgs{
-			CheckSoftwareDeps:           args.CheckSoftwareDeps,
-			AvailableSoftwareFeatures:   args.AvailableSoftwareFeatures,
-			UnavailableSoftwareFeatures: args.UnavailableSoftwareFeatures,
-		},
+		DataDir:      args.DataDir,
+		OutDir:       args.OutDir,
+		Patterns:     args.Patterns,
+		RunTestsArgs: args.RunTestsArgs.RunTestsArgs,
 	}
 	if args.RemoteArgs != (RemoteArgs{}) {
 		if runnerType != RemoteRunner {
 			return command.NewStatusErrorf(statusBadArgs, "remote args %+v passed to non-remote runner", args.RemoteArgs)
 		}
-		args.bundleArgs.RemoteArgs = bundle.RemoteArgs{
-			Target:  args.Target,
-			KeyFile: args.KeyFile,
-			KeyDir:  args.KeyDir,
-		}
+		args.bundleArgs.RemoteArgs = args.RemoteArgs.RemoteArgs
 	}
 	return nil
 }

@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"chromiumos/cmd/tast/logging"
+	"chromiumos/tast/bundle"
 	"chromiumos/tast/control"
 	"chromiumos/tast/runner"
 	"chromiumos/tast/testing"
@@ -196,10 +197,14 @@ func TestRemoteRun(t *gotesting.T) {
 		BundleGlob: filepath.Join(td.cfg.remoteBundleDir, "*"),
 		DataDir:    td.cfg.remoteDataDir,
 		RemoteArgs: runner.RemoteArgs{
-			KeyFile: td.cfg.KeyFile,
+			bundle.RemoteArgs{
+				KeyFile: td.cfg.KeyFile,
+			},
 		},
 		RunTestsArgs: runner.RunTestsArgs{
-			CheckSoftwareDeps: false,
+			bundle.RunTestsArgs{
+				CheckSoftwareDeps: false,
+			},
 		},
 	}
 	if !reflect.DeepEqual(td.args, expArgs) {

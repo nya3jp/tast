@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6c19aa7c_03f5b1de",
+        "filename": "src/chromiumos/tast/runner/args.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-07-19T04:56:13Z",
+      "side": 1,
+      "message": "this ends up looking a bit weird because of the repeated RunTestsArgs, but i\u0027m not sure whether there\u0027s any way to make it clearer; this is the standard way to refer to anonymous fields in structs.",
+      "range": {
+        "startLine": 172,
+        "startChar": 21,
+        "endLine": 172,
+        "endChar": 46
+      },
+      "revId": "12b4cf21128497b0e28ab9432cd9833120264468",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

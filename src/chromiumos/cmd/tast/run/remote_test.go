@@ -190,13 +190,25 @@ func TestRemoteRun(t *gotesting.T) {
 	}
 	td.args.OutDir = "" // clear randomly-named dir before following comparison
 
+	exe, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
 	expArgs := runner.Args{
 		Mode:       runner.RunTestsMode,
 		BundleGlob: filepath.Join(td.cfg.remoteBundleDir, "*"),
 		DataDir:    td.cfg.remoteDataDir,
 		RemoteArgs: runner.RemoteArgs{
 			RemoteArgs: bundle.RemoteArgs{
-				KeyFile: td.cfg.KeyFile,
+				KeyFile:  td.cfg.KeyFile,
+				TastPath: exe,
+				RunFlags: []string{
+					"-keyfile=" + td.cfg.KeyFile,
+					"-keydir=",
+					"-remoterunner=" + td.cfg.remoteRunner,
+					"-remotebundledir=" + td.cfg.remoteBundleDir,
+					"-remotedatadir=" + td.cfg.remoteDataDir,
+				},
 			},
 		},
 		RunTestsArgs: runner.RunTestsArgs{

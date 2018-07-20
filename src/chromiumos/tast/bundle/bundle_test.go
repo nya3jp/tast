@@ -346,6 +346,61 @@ func TestRunTestsMissingDeps(t *gotesting.T) {
 	}
 }
 
+func TestRunMeta(t *gotesting.T) {
+	defer testing.ClearForTesting()
+	testing.GlobalRegistry().DisableValidationForTesting()
+
+	const (
+		metaTest  = metaCategory + ".Test"
+		otherTest = "other.Test"
+	)
+	// makeFunc returns a test function that tries to get a Meta object from its context
+	// and copies it to dest if successful.
+	makeFunc := func(dest *Meta) testing.TestFunc {
+		return func(s *testing.State) {
+			if m := MetaFromContext(s.Context()); m != nil {
+				*dest = *m
+			}
+		}
+	}
+	var metaMeta, otherMeta Meta
+	testing.AddTest(&testing.Test{Name: metaTest, Func: makeFunc(&metaMeta)})
+	testing.AddTest(&testing.Test{Name: otherTest, Func: makeFunc(&otherMeta)})
+
+	tmpDir := testutil.TempDir(t)
+	defer os.RemoveAll(tmpDir)
+
+	args := Args{
+		Mode:    RunTestsMode,
+		OutDir:  tmpDir,
+		DataDir: tmpDir,
+		RemoteArgs: RemoteArgs{
+			TastPath: "/bogus/tast",
+			Target:   "root@example.net",
+			RunFlags: []string{"-flag1", "-flag2"},
+		},
+	}
+	stdin := newBufferWithArgs(t, &args)
+	if status := run(context.Background(), stdin, &bytes.Buffer{}, &bytes.Buffer{},
+		&Args{}, &runConfig{}, remoteBundle); status != statusSuccess {
+		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
+	}
+
+	// The test in the "meta" category should have access to data from RemoteArgs.
+	expMeta := Meta{
+		TastPath: args.RemoteArgs.TastPath,
+		Target:   args.RemoteArgs.Target,
+		RunFlags: args.RemoteArgs.RunFlags,
+	}
+	if !reflect.DeepEqual(metaMeta, expMeta) {
+		t.Errorf("Test %v got meta %+v; want %+v", metaTest, metaMeta, expMeta)
+	}
+	// The other test shouldn't have access to the data.
+	if !reflect.DeepEqual(otherMeta, Meta{}) {
+		t.Errorf("Test %v got meta %+v; want %+v", otherTest, otherMeta, Meta{})
+	}
+}
+
 func TestRunList(t *gotesting.T) {
 	defer testing.ClearForTesting()
 	testing.GlobalRegistry().DisableValidationForTesting()

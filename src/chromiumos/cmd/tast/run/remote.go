@@ -89,15 +89,28 @@ func runRemoteRunner(ctx context.Context, cfg *Config, bundleGlob, dataDir strin
 		defer st.End()
 	}
 
+	exe, err := os.Executable()
+	if err != nil {
+		return nil, err
+	}
+
 	args := runner.Args{
 		BundleGlob: bundleGlob,
 		Patterns:   cfg.Patterns,
 		DataDir:    dataDir,
 		RemoteArgs: runner.RemoteArgs{
 			RemoteArgs: bundle.RemoteArgs{
-				Target:  cfg.Target,
-				KeyFile: cfg.KeyFile,
-				KeyDir:  cfg.KeyDir,
+				Target:   cfg.Target,
+				KeyFile:  cfg.KeyFile,
+				KeyDir:   cfg.KeyDir,
+				TastPath: exe,
+				RunFlags: []string{
+					"-keyfile=" + cfg.KeyFile,
+					"-keydir=" + cfg.KeyDir,
+					"-remoterunner=" + cfg.remoteRunner,
+					"-remotebundledir=" + cfg.remoteBundleDir,
+					"-remotedatadir=" + cfg.remoteDataDir,
+				},
 			},
 		},
 	}

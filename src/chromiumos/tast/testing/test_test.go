@@ -110,7 +110,7 @@ func TestSoftwareDeps(t *gotesting.T) {
 
 func TestRunSuccess(t *gotesting.T) {
 	test := Test{Func: func(*State) {}, Timeout: time.Minute}
-	s := NewState(context.Background(), &test, make(chan Output, 1), "", "")
+	s := NewState(context.Background(), &test, make(chan Output, 1), "", "", nil)
 	test.Run(s)
 	if errs := getOutputErrors(readOutput(s.ch)); len(errs) != 0 {
 		t.Errorf("Got unexpected error(s) for test: %v", errs)
@@ -119,7 +119,7 @@ func TestRunSuccess(t *gotesting.T) {
 
 func TestRunPanic(t *gotesting.T) {
 	test := Test{Func: func(*State) { panic("intentional panic") }, Timeout: time.Minute}
-	s := NewState(context.Background(), &test, make(chan Output, 1), "", "")
+	s := NewState(context.Background(), &test, make(chan Output, 1), "", "", nil)
 	test.Run(s)
 	if errs := getOutputErrors(readOutput(s.ch)); len(errs) != 1 {
 		t.Errorf("Got %v errors for panicking test; want 1", errs)
@@ -133,7 +133,7 @@ func TestRunDeadline(t *gotesting.T) {
 		s.Error("Saw timeout within test")
 	}
 	test := Test{Func: f, Timeout: time.Millisecond, CleanupTimeout: 10 * time.Second}
-	s := NewState(context.Background(), &test, make(chan Output, 1), "", "")
+	s := NewState(context.Background(), &test, make(chan Output, 1), "", "", nil)
 	test.Run(s)
 	// The error that was reported by the test after its deadline was hit
 	// but within the cleanup delay should be available.
@@ -159,7 +159,7 @@ func TestRunLogAfterTimeout(t *gotesting.T) {
 	test := Test{Func: f, Timeout: time.Millisecond, CleanupTimeout: time.Millisecond}
 
 	out := make(chan Output, 10)
-	test.Run(NewState(context.Background(), &test, out, "", ""))
+	test.Run(NewState(context.Background(), &test, out, "", "", nil))
 
 	// Tell the test to continue even though Run has already returned. The output channel should
 	// still be open so as to avoid a panic when the test writes to it: https://crbug.com/853406

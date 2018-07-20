@@ -346,6 +346,47 @@ func TestRunTestsMissingDeps(t *gotesting.T) {
 	}
 }
 
+func TestRunMeta(t *gotesting.T) {
+	defer testing.ClearForTesting()
+	testing.GlobalRegistry().DisableValidationForTesting()
+
+	var meta testing.Meta
+	testing.AddTest(&testing.Test{Name: "meta.Test", Func: func(s *testing.State) {
+		if m := s.Meta(); m != nil {
+			meta = *m
+		}
+	}})
+
+	tmpDir := testutil.TempDir(t)
+	defer os.RemoveAll(tmpDir)
+
+	args := Args{
+		Mode:    RunTestsMode,
+		OutDir:  tmpDir,
+		DataDir: tmpDir,
+		RemoteArgs: RemoteArgs{
+			TastPath: "/bogus/tast",
+			Target:   "root@example.net",
+			RunFlags: []string{"-flag1", "-flag2"},
+		},
+	}
+	stdin := newBufferWithArgs(t, &args)
+	if status := run(context.Background(), stdin, &bytes.Buffer{}, &bytes.Buffer{},
+		&Args{}, &runConfig{}, remoteBundle); status != statusSuccess {
+		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
+	}
+
+	// The test should have access to data from RemoteArgs.
+	expMeta := testing.Meta{
+		TastPath: args.RemoteArgs.TastPath,
+		Target:   args.RemoteArgs.Target,
+		RunFlags: args.RemoteArgs.RunFlags,
+	}
+	if !reflect.DeepEqual(meta, expMeta) {
+		t.Errorf("Test got meta %+v; want %+v", meta, expMeta)
+	}
+}
+
 func TestRunList(t *gotesting.T) {
 	defer testing.ClearForTesting()
 	testing.GlobalRegistry().DisableValidationForTesting()

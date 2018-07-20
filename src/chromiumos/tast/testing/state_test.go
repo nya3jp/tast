@@ -26,7 +26,7 @@ func readOutput(ch chan Output) []Output {
 
 func TestLog(t *gotesting.T) {
 	ch := make(chan Output, 2)
-	s := NewState(context.Background(), &Test{Timeout: time.Minute}, ch, "", "")
+	s := NewState(context.Background(), &Test{Timeout: time.Minute}, ch, "", "", nil)
 	s.Log("msg ", 1)
 	s.Logf("msg %d", 2)
 	close(ch)
@@ -38,7 +38,7 @@ func TestLog(t *gotesting.T) {
 
 func TestReportError(t *gotesting.T) {
 	ch := make(chan Output, 2)
-	s := NewState(context.Background(), &Test{Timeout: time.Minute}, ch, "", "")
+	s := NewState(context.Background(), &Test{Timeout: time.Minute}, ch, "", "", nil)
 
 	// Keep these lines next to each other (see below comparison).
 	s.Error("error ", 1)
@@ -87,7 +87,7 @@ func TestReportError(t *gotesting.T) {
 
 func TestFatal(t *gotesting.T) {
 	ch := make(chan Output, 2)
-	s := NewState(context.Background(), &Test{Timeout: time.Minute}, ch, "", "")
+	s := NewState(context.Background(), &Test{Timeout: time.Minute}, ch, "", "", nil)
 
 	// Log the fatal message in a goroutine so the main goroutine that's running the test won't exit.
 	done := make(chan bool)
@@ -115,7 +115,7 @@ func TestFatal(t *gotesting.T) {
 
 func TestContextLog(t *gotesting.T) {
 	ch := make(chan Output, 2)
-	s := NewState(context.Background(), &Test{Timeout: time.Minute}, ch, "", "")
+	s := NewState(context.Background(), &Test{Timeout: time.Minute}, ch, "", "", nil)
 	ContextLog(s.Context(), "msg ", 1)
 	ContextLogf(s.Context(), "msg %d", 2)
 	close(ch)
@@ -134,7 +134,7 @@ func TestDataPathValid(t *gotesting.T) {
 		{"foo", filepath.Join(dataDir, "foo")},
 		{"foo/bar", filepath.Join(dataDir, "foo/bar")},
 	} {
-		s := NewState(context.Background(), &Test{Timeout: time.Minute}, make(chan Output), dataDir, "")
+		s := NewState(context.Background(), &Test{Timeout: time.Minute}, make(chan Output), dataDir, "", nil)
 		if act := s.DataPath(tc.in); act != tc.exp {
 			t.Errorf("DataPath(%q) = %q; want %q", tc.in, act, tc.exp)
 		}
@@ -143,7 +143,7 @@ func TestDataPathValid(t *gotesting.T) {
 
 func TestDataPathNoParent(t *gotesting.T) {
 	ch := make(chan Output, 1)
-	s := NewState(context.Background(), &Test{Timeout: time.Minute}, ch, "/data", "")
+	s := NewState(context.Background(), &Test{Timeout: time.Minute}, ch, "/data", "", nil)
 
 	// Request an invalid data path to cause a fatal error. Do this in a goroutine
 	// so the main goroutine that's running the test won't exit.
@@ -160,5 +160,30 @@ func TestDataPathNoParent(t *gotesting.T) {
 	out := readOutput(ch)
 	if len(out) != 1 || out[0].Err == nil {
 		t.Errorf("Got %v when requesting data path containing '..'; wanted 1 error", out)
+	}
+}
+
+func TestMeta(t *gotesting.T) {
+	ctx := context.Background()
+	ch := make(chan Output)
+	meta := Meta{TastPath: "/foo/bar", Target: "example.net", RunFlags: []string{"-foo", "-bar"}}
+
+	// Meta info should be provided to tests in the "meta" package.
+	metaTest := &Test{Name: "meta.Test"}
+	if s := NewState(ctx, metaTest, ch, "", "", &meta); s.Meta() == nil {
+		t.Errorf("%s got nil meta info", metaTest.Name)
+	} else if !reflect.DeepEqual(*s.Meta(), meta) {
+		t.Errorf("%s got meta info %+v; want %+v", metaTest.Name, *s.Meta(), meta)
+	}
+
+	// Tests not in the "meta" package shouldn't have access to meta info.
+	nonMetaTest := &Test{Name: "pkg.Test"}
+	if s := NewState(ctx, nonMetaTest, ch, "", "", &meta); s.Meta() != nil {
+		t.Errorf("%s got meta info %+v; want nil", nonMetaTest.Name, *s.Meta())
+	}
+
+	// Check that NewState doesn't crash or somehow get a non-nil Meta struct when initially passed a nil struct.
+	if s := NewState(ctx, metaTest, ch, "", "", nil); s.Meta() != nil {
+		t.Errorf("%s got meta info %+v; want nil", nonMetaTest.Name, *s.Meta())
 	}
 }

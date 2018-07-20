@@ -11,6 +11,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"reflect"
 
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/command"
@@ -172,7 +173,7 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, ru
 		Patterns:     args.Patterns,
 		RunTestsArgs: args.RunTestsArgs.RunTestsArgs,
 	}
-	if args.RemoteArgs != (RemoteArgs{}) {
+	if !reflect.DeepEqual(args.RemoteArgs, RemoteArgs{}) {
 		if runnerType != RemoteRunner {
 			return command.NewStatusErrorf(statusBadArgs, "remote args %+v passed to non-remote runner", args.RemoteArgs)
 		}

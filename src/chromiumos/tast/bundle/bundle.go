@@ -9,6 +9,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"reflect"
 	"runtime"
 	"sort"
 	"strings"
@@ -91,8 +92,17 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		}
 	}
 
+	var meta *testing.Meta
+	if !reflect.DeepEqual(args.RemoteArgs, RemoteArgs{}) {
+		meta = &testing.Meta{
+			TastPath: args.RemoteArgs.TastPath,
+			Target:   args.RemoteArgs.Target,
+			RunFlags: args.RemoteArgs.RunFlags,
+		}
+	}
+
 	for _, t := range tests {
-		if err := runTest(ctx, mw, args, cfg, t); err != nil {
+		if err := runTest(ctx, mw, args, cfg, t, meta); err != nil {
 			return err
 		}
 	}
@@ -106,7 +116,8 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 }
 
 // runTest runs t per args and cfg, writing the appropriate control.Test* control messages to mw.
-func runTest(ctx context.Context, mw *control.MessageWriter, args *Args, cfg *runConfig, t *testing.Test) error {
+func runTest(ctx context.Context, mw *control.MessageWriter, args *Args, cfg *runConfig,
+	t *testing.Test, meta *testing.Meta) error {
 	mw.WriteMessage(&control.TestStart{
 		Time: time.Now(),
 		Test: *t,
@@ -155,7 +166,8 @@ func runTest(ctx context.Context, mw *control.MessageWriter, args *Args, cfg *ru
 			copierDone <- true
 		}()
 
-		s := testing.NewState(ctx, t, ch, filepath.Join(args.DataDir, t.DataDir()), outDir)
+		dataDir := filepath.Join(args.DataDir, t.DataDir())
+		s := testing.NewState(ctx, t, ch, dataDir, outDir, meta)
 		if !t.Run(s) {
 			// If Run reported that the test didn't finish, tell the copier to abort.
 			abortCopier <- true

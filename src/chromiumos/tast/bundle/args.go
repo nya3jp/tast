@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"reflect"
 	"sort"
 	"strings"
 
@@ -54,6 +55,12 @@ type RemoteArgs struct {
 	KeyFile string `json:"remoteKeyFile,omitempty"`
 	// KeyDir is the directory containing SSH private keys (typically $HOME/.ssh).
 	KeyDir string `json:"remoteKeyDir,omitempty"`
+	// TastPath contains the path to the tast binary that was executed to initiate testing.
+	TastPath string `json:"remoteTastPath,omitempty"`
+	// RunFlags contains a subset of the flags that were passed to the "tast run" command.
+	// The included flags are ones that are necessary for core functionality,
+	// e.g. paths to binaries used by the tast process and credentials for reconnecting to the DUT.
+	RunFlags []string `json:"remoteRunArgs,omitempty"`
 }
 
 // RunTestsArgs is nested within Args and contains additional arguments used by RunTestsMode.
@@ -81,7 +88,7 @@ func readArgs(stdin io.Reader, args *Args, cfg *runConfig, bt bundleType) ([]*te
 	if err := json.NewDecoder(stdin).Decode(args); err != nil {
 		return nil, command.NewStatusErrorf(statusBadArgs, "failed to decode args from stdin: %v", err)
 	}
-	if bt != remoteBundle && args.RemoteArgs != (RemoteArgs{}) {
+	if bt != remoteBundle && !reflect.DeepEqual(args.RemoteArgs, RemoteArgs{}) {
 		return nil, command.NewStatusErrorf(statusBadArgs, "remote-only args %+v passed to non-remote bundle", args.RemoteArgs)
 	}
 	if errs := testing.RegistrationErrors(); len(errs) > 0 {

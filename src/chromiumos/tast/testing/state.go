@@ -21,8 +21,11 @@ type contextKeyType string
 // Key used for attaching a *State to a context.Context.
 var logKey contextKeyType = "log"
 
-// Extra time granted to tests to handle timeouts.
-const defaultTestCleanupTimeout = 3 * time.Second
+const (
+	defaultTestCleanupTimeout = 3 * time.Second // extra time granted to tests to handle timeouts
+
+	metaCategory = "meta" // category for remote tests exercising Tast, as in "meta.TestName"
+)
 
 // Error describes an error encountered while running a test.
 type Error struct {
@@ -39,6 +42,24 @@ type Output struct {
 	Msg string
 }
 
+// Meta contains information about how the "tast" process used to initiate testing was run.
+// It is used by remote tests in the "meta" category that run the tast executable to test Tast's behavior.
+type Meta struct {
+	// TastPath contains the absolute path to the tast executable.
+	TastPath string
+	// Target contains information about the DUT as "[<user>@]host[:<port>]".
+	Target string
+	// Flags contains flags that should be passed to the tast command's "list" and "run" subcommands.
+	RunFlags []string
+}
+
+// clone returns a deep copy of m.
+func (m *Meta) clone() *Meta {
+	mc := *m
+	mc.RunFlags = append([]string{}, m.RunFlags...)
+	return &mc
+}
+
 // State holds state relevant to the execution of a single test.
 // Parts of its interface are patterned after Go's testing.T type.
 // It is intended to be safe when called concurrently by multiple goroutines
@@ -47,6 +68,7 @@ type State struct {
 	ch      chan Output // channel to which logging messages and errors are written
 	dataDir string      // directory in which the test's data files will be located
 	outDir  string      // directory to which the test should write output files
+	meta    *Meta       // only set for remote tests in MetaCategory
 
 	ctx    context.Context    // context for the overall execution of the test
 	cancel context.CancelFunc // cancel function associated with ctx
@@ -60,11 +82,17 @@ type State struct {
 
 // NewState returns a new State object. The test's output will be streamed to ch.
 // If test.CleanupTimeout is 0, a default will be used.
-func NewState(ctx context.Context, test *Test, ch chan Output, dataDir, outDir string) *State {
+func NewState(ctx context.Context, test *Test, ch chan Output, dataDir, outDir string, meta *Meta) *State {
 	s := &State{
 		ch:      ch,
 		dataDir: dataDir,
 		outDir:  outDir,
+	}
+
+	if meta != nil {
+		if parts := strings.SplitN(test.Name, ".", 2); len(parts) == 2 && parts[0] == metaCategory {
+			s.meta = meta.clone()
+		}
 	}
 
 	lctx := context.WithValue(ctx, logKey, s)
@@ -106,6 +134,10 @@ func (s *State) DataPath(p string) string {
 // OutDir returns a directory into which the test may place arbitrary files
 // that should be included with the test results.
 func (s *State) OutDir() string { return s.outDir }
+
+// Meta returns information about how the "tast" process used to initiate testing was run.
+// It is only non-nil for remote tests in the "meta" category.
+func (s *State) Meta() *Meta { return s.meta }
 
 // Log formats its arguments using default formatting and logs them.
 func (s *State) Log(args ...interface{}) {

@@ -33,7 +33,7 @@ func (f *testSymbolFileInfo) write(dir string) error {
 }
 
 func TestDownloadSymbols(t *testing.T) {
-	td := testutil.TempDir(t, "minidump_test.")
+	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
 
 	files := []testSymbolFileInfo{

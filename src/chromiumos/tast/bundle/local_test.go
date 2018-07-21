@@ -53,7 +53,7 @@ func TestLocalRunTest(t *gotesting.T) {
 	testing.GlobalRegistry().DisableValidationForTesting()
 	testing.AddTest(&testing.Test{Name: name, Func: func(*testing.State) { ran = true }})
 
-	outDir := testutil.TempDir(t, "bundle_test.")
+	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
 	args := Args{Mode: RunTestsMode, OutDir: outDir}
 	stdin := newBufferWithArgs(t, &args)

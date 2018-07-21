@@ -16,7 +16,7 @@ import (
 )
 
 func TestBuild(t *testing.T) {
-	tempDir := testutil.TempDir(t, "build_test.")
+	tempDir := testutil.TempDir(t)
 	defer os.RemoveAll(tempDir)
 
 	const (

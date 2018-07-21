@@ -15,7 +15,7 @@ import (
 )
 
 func TestGetSoftwareFeatures(t *testing.T) {
-	td := testutil.TempDir(t, "runner_test.")
+	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
 
 	if err := testutil.WriteFiles(td, map[string]string{

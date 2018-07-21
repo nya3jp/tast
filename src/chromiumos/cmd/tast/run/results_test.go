@@ -72,7 +72,7 @@ func TestReadTestOutput(t *gotesting.T) {
 
 	test3Deps := []string{"dep1", "dep2"}
 
-	tempDir := testutil.TempDir(t, "results_test.")
+	tempDir := testutil.TempDir(t)
 	defer os.RemoveAll(tempDir)
 
 	outDir := filepath.Join(tempDir, "out")
@@ -168,7 +168,7 @@ func TestReadTestOutput(t *gotesting.T) {
 }
 
 func TestValidateMessages(t *gotesting.T) {
-	tempDir := testutil.TempDir(t, "results_test.")
+	tempDir := testutil.TempDir(t)
 	defer os.RemoveAll(tempDir)
 
 	for _, tc := range []struct {
@@ -246,7 +246,7 @@ func TestValidateMessages(t *gotesting.T) {
 }
 
 func TestReadTestOutputTimeout(t *gotesting.T) {
-	tempDir := testutil.TempDir(t, "results_test.")
+	tempDir := testutil.TempDir(t)
 	defer os.RemoveAll(tempDir)
 
 	// Create a pipe, but don't write to it or close it during the test.
@@ -346,7 +346,7 @@ func TestNextMessageTimeout(t *gotesting.T) {
 
 func TestWriteResultsCollectSysInfo(t *gotesting.T) {
 	// This test uses types and functions from local_test.go.
-	td := newLocalTestData()
+	td := newLocalTestData(t)
 	defer td.close()
 
 	ob := bytes.Buffer{}
@@ -381,7 +381,7 @@ func TestWritePartialResults(t *gotesting.T) {
 	test3End := time.Unix(7, 0)
 	run2End := time.Unix(8, 0)
 
-	tempDir := testutil.TempDir(t, "results_test.")
+	tempDir := testutil.TempDir(t)
 	defer os.RemoveAll(tempDir)
 
 	// Make the runner output end abruptly without a TestEnd control message for the second test.

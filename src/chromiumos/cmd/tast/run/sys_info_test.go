@@ -17,7 +17,7 @@ import (
 // This file uses types and functions from local_test.go.
 
 func TestGetInitialSysInfo(t *testing.T) {
-	td := newLocalTestData()
+	td := newLocalTestData(t)
 	defer td.close()
 
 	// Report a few log files and crashes.
@@ -57,7 +57,7 @@ func TestGetInitialSysInfo(t *testing.T) {
 }
 
 func TestCollectSysInfo(t *testing.T) {
-	td := newLocalTestData()
+	td := newLocalTestData(t)
 	defer td.close()
 
 	ob := bytes.Buffer{}

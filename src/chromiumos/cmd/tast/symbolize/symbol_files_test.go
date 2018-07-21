@@ -16,7 +16,7 @@ import (
 )
 
 func TestCreateSymbolFiles(t *testing.T) {
-	td := testutil.TempDir(t, "symbolize_test.")
+	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
 
 	// Libraries in testdata. IDs were obtained by running dump_syms.

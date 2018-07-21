@@ -11,7 +11,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -52,19 +51,17 @@ type localTestData struct {
 
 // newLocalTestData performs setup for tests that exercise the local function.
 // Panics on error.
-func newLocalTestData() *localTestData {
+func newLocalTestData(t *gotesting.T) *localTestData {
 	td := localTestData{srvData: test.NewTestData(userKey, hostKey)}
 	td.cfg.KeyFile = td.srvData.UserKeyFile
 
-	var err error
-	if td.tempDir, err = ioutil.TempDir("", "local_test."); err != nil {
-		td.srvData.Close()
-		panic(err)
-	}
+	toClose := &td
+	defer func() { toClose.close() }()
 
+	td.tempDir = testutil.TempDir(t)
 	td.cfg.ResDir = filepath.Join(td.tempDir, "results")
 	if err := os.Mkdir(td.cfg.ResDir, 0755); err != nil {
-		panic(err)
+		t.Fatal(err)
 	}
 	td.cfg.Logger = logging.NewSimple(&td.logbuf, log.LstdFlags, true)
 	td.cfg.Target = td.srvData.Srv.Addr().String()
@@ -75,19 +72,24 @@ func newLocalTestData() *localTestData {
 	// Run actual commands when performing file copies.
 	td.hostDir = filepath.Join(td.tempDir, "host")
 	if err := os.Mkdir(td.hostDir, 0755); err != nil {
-		// TODO(derat): Pass *gotesting.T to this function and call t.Fail here and above instead of panicking.
-		panic(err)
+		t.Fatal(err)
 	}
 	td.cfg.hstCopyBasePath = td.hostDir
 	td.cfg.hstCopyAnnounceCmd = td.srvData.Srv.NextCmd
 
+	toClose = nil
 	return &td
 }
 
 func (td *localTestData) close() {
+	if td == nil {
+		return
+	}
 	td.cfg.Close(context.Background())
 	td.srvData.Close()
-	os.RemoveAll(td.cfg.ResDir)
+	if td.tempDir != "" {
+		os.RemoveAll(td.tempDir)
+	}
 }
 
 // addCheckDataFakeCmd registers the command that local uses to check where test data is installed.
@@ -118,7 +120,7 @@ func checkArgs(t *gotesting.T, stdin io.Reader, exp *runner.Args) {
 }
 
 func TestLocalSuccess(t *gotesting.T) {
-	td := newLocalTestData()
+	td := newLocalTestData(t)
 	defer td.close()
 
 	addCheckDataFakeCmd(td.srvData.Srv, 0)
@@ -139,7 +141,7 @@ func TestLocalSuccess(t *gotesting.T) {
 }
 
 func TestLocalExecFailure(t *gotesting.T) {
-	td := newLocalTestData()
+	td := newLocalTestData(t)
 	defer td.close()
 
 	addCheckDataFakeCmd(td.srvData.Srv, 0)
@@ -160,7 +162,7 @@ func TestLocalExecFailure(t *gotesting.T) {
 }
 
 func TestLocalList(t *gotesting.T) {
-	td := newLocalTestData()
+	td := newLocalTestData(t)
 	defer td.close()
 
 	addCheckDataFakeCmd(td.srvData.Srv, 0)
@@ -197,7 +199,7 @@ func TestLocalList(t *gotesting.T) {
 }
 
 func TestLocalDataFiles(t *gotesting.T) {
-	td := newLocalTestData()
+	td := newLocalTestData(t)
 	defer td.close()
 
 	const (

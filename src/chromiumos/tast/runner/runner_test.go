@@ -49,7 +49,7 @@ func createBundleSymlinks(t *gotesting.T, bundleTestResults ...[]bool) (dir stri
 		t.Fatal(err)
 	}
 
-	dir = testutil.TempDir(t, "runner_test.")
+	dir = testutil.TempDir(t)
 	for bn, tests := range bundleTestResults {
 		var s string
 		for _, pass := range tests {
@@ -216,7 +216,7 @@ func TestRunListTestsNoBundles(t *gotesting.T) {
 }
 
 func TestRunSysInfo(t *gotesting.T) {
-	td := testutil.TempDir(t, "runner_test.")
+	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
 
 	if err := testutil.WriteFiles(td, map[string]string{
@@ -444,7 +444,7 @@ func TestSkipBundlesWithoutMatchedTests(t *gotesting.T) {
 func TestRunTestsUseRequestedOutDir(t *gotesting.T) {
 	bundleDir := createBundleSymlinks(t, []bool{true})
 	defer os.RemoveAll(bundleDir)
-	outDir := testutil.TempDir(t, "runner_test.")
+	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
 
 	status, stdout, _, sig := callRun(t, nil, &Args{BundleGlob: filepath.Join(bundleDir, "*"), OutDir: outDir}, nil, LocalRunner)

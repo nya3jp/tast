@@ -46,7 +46,7 @@ func checkRunnerTestDepsArgs(t *testing.T, cfg *Config, checkDeps bool, avail, u
 }
 
 func TestGetSoftwareFeaturesAlways(t *testing.T) {
-	td := newLocalTestData()
+	td := newLocalTestData(t)
 	defer td.close()
 
 	// With "always", features returned by the runner should be passed through
@@ -72,7 +72,7 @@ func TestGetSoftwareFeaturesAlways(t *testing.T) {
 }
 
 func TestGetSoftwareFeaturesNever(t *testing.T) {
-	td := newLocalTestData()
+	td := newLocalTestData(t)
 	defer td.close()
 
 	// With "never", the runner shouldn't be called and dependencies shouldn't be checked.
@@ -84,7 +84,7 @@ func TestGetSoftwareFeaturesNever(t *testing.T) {
 }
 
 func TestGetSoftwareFeaturesAutoAttrExpr(t *testing.T) {
-	td := newLocalTestData()
+	td := newLocalTestData(t)
 	defer td.close()
 
 	// When "auto" is used in conjunction with an attribute-expression-based test
@@ -100,7 +100,7 @@ func TestGetSoftwareFeaturesAutoAttrExpr(t *testing.T) {
 }
 
 func TestGetSoftwareFeaturesAutoSpecificTest(t *testing.T) {
-	td := newLocalTestData()
+	td := newLocalTestData(t)
 	defer td.close()
 
 	// With "auto" and a pattern that specifies a particular test
@@ -115,7 +115,7 @@ func TestGetSoftwareFeaturesAutoSpecificTest(t *testing.T) {
 }
 
 func TestGetSoftwareFeaturesAutoNoFeatures(t *testing.T) {
-	td := newLocalTestData()
+	td := newLocalTestData(t)
 	defer td.close()
 
 	// "auto" should be downgraded to "never" if the runner didn't report knowing
@@ -131,7 +131,7 @@ func TestGetSoftwareFeaturesAutoNoFeatures(t *testing.T) {
 }
 
 func TestGetSoftwareFeaturesAlwaysNoFeatures(t *testing.T) {
-	td := newLocalTestData()
+	td := newLocalTestData(t)
 	defer td.close()
 
 	// "always" should fail if the runner doesn't know about any features.

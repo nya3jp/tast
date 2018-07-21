@@ -76,16 +76,14 @@ func (td *testData) close() {
 // initFileTest creates a temporary directory with a subdirectory containing files.
 // The temp dir's and subdir's paths are returned.
 func initFileTest(t *testing.T, files map[string]string) (tmpDir, srcDir string) {
-	tmpDir, err := ioutil.TempDir("", "ssh_test.")
-	if err != nil {
-		t.Fatal(err)
-	}
-
+	tmpDir = testutil.TempDir(t)
 	srcDir = filepath.Join(tmpDir, "src")
-	if err = os.Mkdir(srcDir, 0755); err != nil {
+	if err := os.Mkdir(srcDir, 0755); err != nil {
+		os.RemoveAll(tmpDir)
 		t.Fatal(err)
 	}
-	if err = testutil.WriteFiles(srcDir, files); err != nil {
+	if err := testutil.WriteFiles(srcDir, files); err != nil {
+		os.RemoveAll(tmpDir)
 		t.Fatal(err)
 	}
 	return tmpDir, srcDir
@@ -539,7 +537,7 @@ func TestKeyDir(t *testing.T) {
 	}
 	defer os.Remove(keyFile)
 
-	td := testutil.TempDir(t, "ssh_test.")
+	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
 	if err = os.Symlink(keyFile, filepath.Join(td, "testing_rsa")); err != nil {
 		t.Fatal(err)

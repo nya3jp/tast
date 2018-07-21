@@ -6,6 +6,7 @@ package run
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 	"reflect"
 	"testing"
@@ -23,7 +24,8 @@ func TestLoadExternalDataMap(t *testing.T) {
 		bogusPath = "cat/data/bogus_file.txt"
 	)
 
-	td := testutil.TempDir(t, "external_data_test.")
+	td := testutil.TempDir(t)
+	defer os.RemoveAll(td)
 	if err := testutil.WriteFiles(td, map[string]string{
 		conf: fmt.Sprintf("# Here's a comment.\n\n%s %s\n %s %s \n", path1, url1, path2, url2),
 	}); err != nil {
@@ -64,7 +66,8 @@ func TestFetchExternalData(t *testing.T) {
 		data3 = "Here's still more text."
 	)
 
-	td := testutil.TempDir(t, "external_data_test.")
+	td := testutil.TempDir(t)
+	defer os.RemoveAll(td)
 	if err := testutil.WriteFiles(td, map[string]string{
 		conf: fmt.Sprintf("%s %s\n%s %s\n%s %s\n",
 			file1, filepath.Join(td, url1), file2, filepath.Join(td, url2), file3, filepath.Join(td, url3)),
@@ -97,7 +100,9 @@ func TestFetchExternalData(t *testing.T) {
 
 func TestLoadBadExternalDataMap(t *testing.T) {
 	const conf = "external_data.conf"
-	td := testutil.TempDir(t, "external_data_test.")
+
+	td := testutil.TempDir(t)
+	defer os.RemoveAll(td)
 	for _, data := range []string{
 		"blah",  // single value
 		"a b c", // three values

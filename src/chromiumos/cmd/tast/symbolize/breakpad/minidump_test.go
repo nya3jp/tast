@@ -40,7 +40,7 @@ func getModulePaths(m SymbolFileMap) []string {
 }
 
 func TestWriteSymbolFileAndWalkMinidump(t *testing.T) {
-	td := testutil.TempDir(t, "minidump_test.")
+	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
 
 	// When we first walk the minidump file's stack, symbols should be missing.

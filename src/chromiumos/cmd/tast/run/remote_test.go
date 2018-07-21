@@ -9,7 +9,6 @@ import (
 	"context"
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -23,6 +22,7 @@ import (
 	"chromiumos/tast/control"
 	"chromiumos/tast/runner"
 	"chromiumos/tast/testing"
+	"chromiumos/tast/testutil"
 
 	"github.com/google/subcommands"
 )
@@ -101,9 +101,7 @@ func newRemoteTestData(t *gotesting.T, stdout, stderr string, status int) *remot
 		t.Fatal(err)
 	}
 	td := remoteTestData{}
-	if td.dir, err = ioutil.TempDir("", "remote_test."); err != nil {
-		t.Fatal(err)
-	}
+	td.dir = testutil.TempDir(t)
 	td.cfg.Logger = logging.NewSimple(&td.logbuf, log.LstdFlags, true)
 	td.cfg.ResDir = filepath.Join(td.dir, "results")
 	if err = os.MkdirAll(td.cfg.ResDir, 0755); err != nil {

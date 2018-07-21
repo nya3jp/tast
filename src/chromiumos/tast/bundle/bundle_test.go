@@ -98,7 +98,7 @@ func TestRunTests(t *gotesting.T) {
 	reg.AddTest(&testing.Test{Name: name1, Func: func(*testing.State) {}, Timeout: time.Minute})
 	reg.AddTest(&testing.Test{Name: name2, Func: func(s *testing.State) { s.Error("error") }, Timeout: time.Minute})
 
-	tmpDir := testutil.TempDir(t, "runner_test.")
+	tmpDir := testutil.TempDir(t)
 	defer os.RemoveAll(tmpDir)
 
 	stdout := bytes.Buffer{}
@@ -217,7 +217,7 @@ func TestRunTestsTimeout(t *gotesting.T) {
 	})
 
 	stdout := bytes.Buffer{}
-	tmpDir := testutil.TempDir(t, "runner_test.")
+	tmpDir := testutil.TempDir(t)
 	defer os.RemoveAll(tmpDir)
 	args := Args{
 		OutDir:  tmpDir,
@@ -278,7 +278,7 @@ func TestRunTestsMissingDeps(t *gotesting.T) {
 	testing.AddTest(&testing.Test{Name: missingName, Func: makeFunc(missingName), SoftwareDeps: []string{missingDep}})
 	testing.AddTest(&testing.Test{Name: unregName, Func: makeFunc(unregName), SoftwareDeps: []string{unregDep}})
 
-	tmpDir := testutil.TempDir(t, "runner_test.")
+	tmpDir := testutil.TempDir(t)
 	defer os.RemoveAll(tmpDir)
 
 	args := Args{

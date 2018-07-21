@@ -36,7 +36,7 @@ func WriteKey(key *rsa.PrivateKey) (path string, err error) {
 		Bytes:   x509.MarshalPKCS1PrivateKey(key),
 	})
 
-	f, err := ioutil.TempFile("", "tast_unittest.ssh_key.")
+	f, err := ioutil.TempFile("", "tast_unittest_ssh_key.")
 	if err != nil {
 		return "", err
 	}

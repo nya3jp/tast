@@ -14,25 +14,36 @@ import (
 	"chromiumos/tast/testutil"
 )
 
-const (
-	tempDirPrefix = "logs_test."
-)
-
 // getUpdates passes sizes to CopyLogFileUpdates to get file updates within dir
-// and then returns the updates as a map from relative filename to content.
-func getUpdates(dir string, sizes InodeSizes) (dest string, updates map[string]string, err error) {
-	if dest, err = ioutil.TempDir("", tempDirPrefix); err != nil {
-		return "", nil, err
+// and then returns the copied data as a map from relative filename to content,
+// along with a set containing all copied relative paths (including empty files and broken symlinks).
+func getUpdates(dir string, sizes InodeSizes) (updates map[string]string, paths map[string]struct{}, err error) {
+	var dest string
+	if dest, err = ioutil.TempDir("", "tast_logs."); err != nil {
+		return nil, nil, err
 	}
+	defer os.RemoveAll(dest)
+
 	if _, err = CopyLogFileUpdates(dir, dest, sizes); err != nil {
-		return dest, nil, err
+		return nil, nil, err
 	}
-	updates, err = testutil.ReadFiles(dest)
-	return dest, updates, err
+
+	if updates, err = testutil.ReadFiles(dest); err != nil {
+		return nil, nil, err
+	}
+
+	paths = make(map[string]struct{})
+	err = filepath.Walk(dest, func(path string, info os.FileInfo, err error) error {
+		if err == nil && path != dest {
+			paths[path[len(dest)+1:]] = struct{}{}
+		}
+		return err
+	})
+	return updates, paths, err
 }
 
 func TestCopyUpdates(t *testing.T) {
-	sd := testutil.TempDir(t, tempDirPrefix)
+	sd := testutil.TempDir(t)
 	defer os.RemoveAll(sd)
 
 	orig := map[string]string{
@@ -49,15 +60,12 @@ func TestCopyUpdates(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	dd, updates, err := getUpdates(sd, sizes)
-	if dd != "" {
-		os.RemoveAll(dd)
-	}
+	updates, _, err := getUpdates(sd, sizes)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if len(updates) != 0 {
-		t.Errorf("getUpdates(%v, %v) = %v; want none", sd, sizes, updates)
+		t.Errorf("getUpdates(%q, %v) = %v; want none", sd, sizes, updates)
 	}
 
 	if err = testutil.AppendToFile(filepath.Join(sd, "vegetables"), "eggplant\n"); err != nil {
@@ -92,18 +100,15 @@ func TestCopyUpdates(t *testing.T) {
 		"baked_goods/breads.old": "ciabatta\n",
 		"baked_goods/breads":     "sourdough\n",
 	}
-	dd, updates, err = getUpdates(sd, sizes)
-	if dd != "" {
-		defer os.RemoveAll(dd)
-	}
+	updates, paths, err := getUpdates(sd, sizes)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if !reflect.DeepEqual(updates, exp) {
-		t.Errorf("getUpdates(%v, %v) = %v; want %v", sd, sizes, updates, exp)
+		t.Errorf("getUpdates(%q, %v) = %v; want %v", sd, sizes, updates, exp)
 	}
 	for _, p := range []string{emptyDirName, symlinkName} {
-		if _, err := os.Stat(filepath.Join(dd, p)); !os.IsNotExist(err) {
+		if _, ok := paths[p]; ok {
 			t.Errorf("Unwanted path %q was copied", p)
 		}
 	}

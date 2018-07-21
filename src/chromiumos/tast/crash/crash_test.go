@@ -29,7 +29,7 @@ func writeCrashFile(t *testing.T, dir, rel, data string) crashFile {
 }
 
 func TestGetCrashes(t *testing.T) {
-	td := testutil.TempDir(t, "crash_test.")
+	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
 
 	writeCrashFile(t, td, "foo.txt", "") // skipped because non-core/dmp extension
@@ -54,7 +54,7 @@ func TestGetCrashes(t *testing.T) {
 }
 
 func TestCopyNewFiles(t *testing.T) {
-	td := testutil.TempDir(t, "crash_test.")
+	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
 
 	sd := filepath.Join(td, "src")

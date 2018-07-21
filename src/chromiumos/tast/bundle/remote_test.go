@@ -87,7 +87,7 @@ func TestRemoteDUT(t *gotesting.T) {
 		realOutput = string(out)
 	}})
 
-	outDir := testutil.TempDir(t, "bundle_test.")
+	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
 	args := Args{
 		Mode:   RunTestsMode,
@@ -131,7 +131,7 @@ func TestRemoteReconnectBetweenTests(t *gotesting.T) {
 	testing.AddTest(&testing.Test{Name: "pkg.Test1", Func: makeFunc(&conn1)})
 	testing.AddTest(&testing.Test{Name: "pkg.Test2", Func: makeFunc(&conn2)})
 
-	outDir := testutil.TempDir(t, "bundle_test.")
+	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
 	args := Args{
 		Mode:   RunTestsMode,

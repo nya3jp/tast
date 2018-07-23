@@ -151,7 +151,7 @@ func (td *remoteTestData) run(t *gotesting.T) (subcommands.ExitStatus, []TestRes
 		t.Fatal(err)
 	}
 
-	return status, res
+	return status.ExitCode, res
 }
 
 func TestRemoteRun(t *gotesting.T) {

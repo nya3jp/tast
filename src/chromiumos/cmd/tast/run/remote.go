@@ -35,7 +35,7 @@ const (
 
 // remote runs remote tests as directed by cfg and returns the command's exit status.
 // If non-nil, the returned results may be passed to WriteResults.
-func remote(ctx context.Context, cfg *Config) (subcommands.ExitStatus, []TestResult) {
+func remote(ctx context.Context, cfg *Config) (Status, []TestResult) {
 	start := time.Now()
 
 	var bundleGlob, dataDir string
@@ -44,8 +44,7 @@ func remote(ctx context.Context, cfg *Config) (subcommands.ExitStatus, []TestRes
 		if cfg.buildCfg.Arch == "" {
 			var err error
 			if cfg.buildCfg.Arch, err = build.GetLocalArch(); err != nil {
-				cfg.Logger.Log("Failed to get local arch: ", err)
-				return subcommands.ExitFailure, nil
+				return errorStatusf(cfg, subcommands.ExitFailure, "Failed to get local arch: %v", err), nil
 			}
 		}
 
@@ -57,8 +56,7 @@ func remote(ctx context.Context, cfg *Config) (subcommands.ExitStatus, []TestRes
 		pkg := path.Join(remoteBundlePkgPathPrefix, cfg.buildBundle)
 		cfg.Logger.Debugf("Building %s from %s to %s", pkg, cfg.buildCfg.TestWorkspace, buildDir)
 		if out, err := build.Build(ctx, &cfg.buildCfg, pkg, buildDir, "build_bundle"); err != nil {
-			cfg.Logger.Logf("Failed building test bundle: %v\n\n%s", err, out)
-			return subcommands.ExitFailure, nil
+			return errorStatusf(cfg, subcommands.ExitFailure, "Failed building test bundle: %v\n\n%s", err, out), nil
 		}
 		cfg.Logger.Logf("Built test bundle in %v", time.Now().Sub(buildStart).Round(time.Millisecond))
 
@@ -71,18 +69,16 @@ func remote(ctx context.Context, cfg *Config) (subcommands.ExitStatus, []TestRes
 	}
 
 	if err := getSoftwareFeatures(ctx, cfg); err != nil {
-		cfg.Logger.Logf("Failed to get DUT software features: %v", err)
-		return subcommands.ExitFailure, nil
+		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to get DUT software features: %v", err), nil
 	}
 	getInitialSysInfo(ctx, cfg)
 
 	results, err := runRemoteRunner(ctx, cfg, bundleGlob, dataDir)
 	if err != nil {
-		cfg.Logger.Log("Failed to run tests: ", err)
-		return subcommands.ExitFailure, results
+		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to run tests: %v", err), results
 	}
 	cfg.Logger.Logf("Ran %v remote test(s) in %v", len(results), time.Now().Sub(start).Round(time.Millisecond))
-	return subcommands.ExitSuccess, results
+	return successStatus(), results
 }
 
 // runRemoteRunner runs the remote test runner with bundles matched by bundleGlob

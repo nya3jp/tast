@@ -7,6 +7,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -151,21 +152,32 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 	defer rcancel()
 
 	status, results := r.wrapper.run(rctx, &r.cfg)
-	complete := status == subcommands.ExitSuccess
+	allTestsRun := status.ExitCode == subcommands.ExitSuccess
 	if len(results) == 0 {
-		if complete {
+		if allTestsRun {
 			lg.Logf("No tests matched by pattern(s) %v", r.cfg.Patterns)
 			lg.Log("Do you need to pass -buildtype=local or -buildtype=remote?")
-			status = subcommands.ExitFailure
+			status.ExitCode = subcommands.ExitFailure
 		}
-		return status
+		return status.ExitCode
 	}
 
-	if err = r.wrapper.writeResults(ctx, &r.cfg, results, complete); err != nil {
-		lg.Log("Failed to write results: ", err)
-		if status == subcommands.ExitSuccess {
-			status = subcommands.ExitFailure
+	if err = r.wrapper.writeResults(ctx, &r.cfg, results, allTestsRun); err != nil {
+		msg := fmt.Sprintf("Failed to write results: %v", err)
+		if status.ExitCode == subcommands.ExitSuccess {
+			status = run.Status{ExitCode: subcommands.ExitFailure, ErrorMsg: msg}
+		} else {
+			// Treat the earlier error as the "main" one, but also log the new one.
+			lg.Log(msg)
 		}
 	}
-	return status
+
+	// Log the first line of the error as the last line of output to make it easy to see.
+	if status.ExitCode != subcommands.ExitSuccess {
+		if lines := strings.SplitN(status.ErrorMsg, "\n", 2); len(lines) >= 1 {
+			lg.Log(lines[0])
+		}
+	}
+
+	return status.ExitCode
 }

@@ -8,14 +8,12 @@ import (
 	"context"
 
 	"chromiumos/cmd/tast/run"
-
-	"github.com/google/subcommands"
 )
 
 // runWrapper is a wrapper that allows functions from the run package to be stubbed out for testing.
 type runWrapper interface {
 	// run calls run.Run.
-	run(ctx context.Context, cfg *run.Config) (subcommands.ExitStatus, []run.TestResult)
+	run(ctx context.Context, cfg *run.Config) (run.Status, []run.TestResult)
 	// writeResults calls run.WriteResults.
 	writeResults(ctx context.Context, cfg *run.Config, results []run.TestResult, complete bool) error
 }
@@ -23,7 +21,7 @@ type runWrapper interface {
 // realRunWrapper is a runWrapper implementation that calls the real functions in the run package.
 type realRunWrapper struct{}
 
-func (w realRunWrapper) run(ctx context.Context, cfg *run.Config) (subcommands.ExitStatus, []run.TestResult) {
+func (w realRunWrapper) run(ctx context.Context, cfg *run.Config) (run.Status, []run.TestResult) {
 	return run.Run(ctx, cfg)
 }
 

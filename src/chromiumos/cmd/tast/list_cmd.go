@@ -72,9 +72,9 @@ func (lc *listCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{
 	lc.cfg.Logger = logging.NewSimple(&b, log.LstdFlags, true)
 
 	status, results := lc.wrapper.run(ctx, &lc.cfg)
-	if status != subcommands.ExitSuccess {
+	if status.ExitCode != subcommands.ExitSuccess {
 		os.Stderr.Write(b.Bytes())
-		return status
+		return status.ExitCode
 	}
 	if err := lc.printTests(results); err != nil {
 		lg.Log("Failed to write tests: ", err)

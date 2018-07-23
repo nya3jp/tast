@@ -55,25 +55,22 @@ const (
 
 // local runs local tests as directed by cfg and returns the command's exit status.
 // If non-nil, the returned results may be passed to WriteResults.
-func local(ctx context.Context, cfg *Config) (subcommands.ExitStatus, []TestResult) {
+func local(ctx context.Context, cfg *Config) (Status, []TestResult) {
 	hst, err := connectToTarget(ctx, cfg)
 	if err != nil {
-		cfg.Logger.Logf("Failed to connect to %s: %v", cfg.Target, err)
-		return subcommands.ExitFailure, nil
+		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to %s: %v", cfg.Target, err), nil
 	}
 
 	if cfg.forceBuildLocalRunner {
 		if err = buildAndPushLocalRunner(ctx, cfg, hst); err != nil {
-			cfg.Logger.Logf("Failed building or pushing runner: %v", err)
-			return subcommands.ExitFailure, nil
+			return errorStatusf(cfg, subcommands.ExitFailure, "Failed building or pushing runner: %v", err), nil
 		}
 	}
 
 	var bundleGlob, dataDir string
 	if cfg.build {
 		if bundleGlob, err = buildAndPushBundle(ctx, cfg, hst); err != nil {
-			cfg.Logger.Logf("Failed building or pushing tests: %v", err)
-			return subcommands.ExitFailure, nil
+			return errorStatusf(cfg, subcommands.ExitFailure, "Failed building or pushing tests: %v", err), nil
 		}
 		dataDir = localDataPushDir
 	} else {
@@ -88,8 +85,7 @@ func local(ctx context.Context, cfg *Config) (subcommands.ExitStatus, []TestResu
 	}
 
 	if err := getSoftwareFeatures(ctx, cfg); err != nil {
-		cfg.Logger.Logf("Failed to get DUT software features: %v", err)
-		return subcommands.ExitFailure, nil
+		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to get DUT software features: %v", err), nil
 	}
 	getInitialSysInfo(ctx, cfg)
 
@@ -98,26 +94,10 @@ func local(ctx context.Context, cfg *Config) (subcommands.ExitStatus, []TestResu
 	results, err := runLocalRunner(ctx, cfg, hst, bundleGlob, dataDir)
 	if err != nil {
 		// TODO(derat): Consider reconnecting to DUT if necessary and trying to run remaining tests: https://crbug.com/778389
-		cfg.Logger.Log("Failed to run tests: ", err)
-		if !deadlineBefore(ctx, time.Now().Add(sshPingTimeout)) {
-			if err = hst.Ping(ctx, sshPingTimeout); err != nil {
-				cfg.Logger.Logf("Lost SSH connection to %v: %v", cfg.Target, err)
-			}
-		}
-		return subcommands.ExitFailure, results
+		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to run tests: %v", err), results
 	}
 	cfg.Logger.Logf("Ran %v local test(s) in %v", len(results), time.Now().Sub(start).Round(time.Millisecond))
-	return subcommands.ExitSuccess, results
-}
-
-// deadlineBefore returns true if ctx has a deadline that expires before t.
-// It returns true if the deadline has already expired and false if no deadline is set.
-func deadlineBefore(ctx context.Context, t time.Time) bool {
-	dl, ok := ctx.Deadline()
-	if !ok {
-		return false
-	}
-	return dl.Before(t)
+	return successStatus(), results
 }
 
 // connectToTarget establishes an SSH connection to the target specified in cfg.

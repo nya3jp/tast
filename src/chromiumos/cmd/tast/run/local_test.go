@@ -136,8 +136,8 @@ func TestLocalSuccess(t *gotesting.T) {
 	mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
 	stdin := addLocalRunnerFakeCmd(td.srvData.Srv, 0, ob.Bytes(), nil)
 
-	if status, _ := local(context.Background(), &td.cfg); status != subcommands.ExitSuccess {
-		t.Errorf("local() = %v; want %v (%v)", status, subcommands.ExitSuccess, td.logbuf.String())
+	if status, _ := local(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
+		t.Errorf("local() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
 	}
 	checkArgs(t, stdin, &runner.Args{
 		BundleGlob: builtinBundleGlob,
@@ -158,8 +158,8 @@ func TestLocalExecFailure(t *gotesting.T) {
 	const stderr = "some failure message\n"
 	addLocalRunnerFakeCmd(td.srvData.Srv, 1, ob.Bytes(), []byte(stderr))
 
-	if status, _ := local(context.Background(), &td.cfg); status != subcommands.ExitFailure {
-		t.Errorf("local() = %v; want %v", status, subcommands.ExitFailure)
+	if status, _ := local(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitFailure {
+		t.Errorf("local() = %v; want %v", status.ExitCode, subcommands.ExitFailure)
 	}
 	if !strings.Contains(td.logbuf.String(), stderr) {
 		t.Errorf("local() logged %q; want substring %q", td.logbuf.String(), stderr)
@@ -185,8 +185,8 @@ func TestLocalWaitTimeout(t *gotesting.T) {
 
 	// After setting a short wait timeout, an error should be reported.
 	td.cfg.localRunnerWaitTimeout = time.Millisecond
-	if status, _ := local(context.Background(), &td.cfg); status != subcommands.ExitFailure {
-		t.Errorf("local() = %v; want %v (%v)", status, subcommands.ExitFailure, td.logbuf.String())
+	if status, _ := local(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitFailure {
+		t.Errorf("local() = %v; want %v (%v)", status.ExitCode, subcommands.ExitFailure, td.logbuf.String())
 	}
 }
 
@@ -207,10 +207,10 @@ func TestLocalList(t *gotesting.T) {
 	stdin := addLocalRunnerFakeCmd(td.srvData.Srv, 0, b, nil)
 
 	td.cfg.Mode = ListTestsMode
-	var status subcommands.ExitStatus
+	var status Status
 	var results []TestResult
-	if status, results = local(context.Background(), &td.cfg); status != subcommands.ExitSuccess {
-		t.Errorf("local() = %v; want %v (%v)", status, subcommands.ExitSuccess, td.logbuf.String())
+	if status, results = local(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
+		t.Errorf("local() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
 	}
 	checkArgs(t, stdin, &runner.Args{
 		Mode:       runner.ListTestsMode,

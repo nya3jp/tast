@@ -5,10 +5,13 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"flag"
+	"log"
 	"reflect"
+	"strings"
 	gotesting "testing"
 	"time"
 
@@ -80,14 +83,25 @@ func TestRunResults(t *gotesting.T) {
 
 func TestRunExecFailure(t *gotesting.T) {
 	// If tests fail to be executed, an error should be reported.
+	const msg = "exec failed"
 	wrapper := stubRunWrapper{
 		runRes:    []run.TestResult{run.TestResult{Test: testing.Test{Name: "pkg.LocalTest"}}},
-		runStatus: subcommands.ExitFailure,
+		runStatus: run.Status{subcommands.ExitFailure, msg + "\nmore details"},
 	}
 	args := []string{"root@example.net"}
-	if status := executeRunCmd(t, args, &wrapper, logging.NewDiscard()); status != wrapper.runStatus {
-		t.Fatalf("runCmd.Execute(%v) returned status %v; want %v", args, status, wrapper.runStatus)
+	b := bytes.Buffer{}
+	lg := logging.NewSimple(&b, log.LstdFlags, true)
+	if status := executeRunCmd(t, args, &wrapper, lg); status != wrapper.runStatus.ExitCode {
+		t.Fatalf("runCmd.Execute(%v) returned status %v; want %v", args, status, wrapper.runStatus.ExitCode)
 	}
+
+	// The first line of the failure message should be in the last line of output.
+	if lines := strings.Split(strings.TrimSpace(b.String()), "\n"); len(lines) == 0 {
+		t.Errorf("runCmd.Execute(%v) didn't log any output", args)
+	} else if last := lines[len(lines)-1]; !strings.Contains(last, msg) {
+		t.Errorf("runCmd.Execute(%v) logged last line %q; wanted line containing error %q", args, last, msg)
+	}
+
 	// The partial results should still be written.
 	if !reflect.DeepEqual(wrapper.writeRes, wrapper.runRes) {
 		t.Errorf("runCmd.Execute(%v) wrote results %v; want %v", args, wrapper.writeRes, wrapper.runRes)
@@ -99,13 +113,23 @@ func TestRunExecFailure(t *gotesting.T) {
 
 func TestRunWriteFailure(t *gotesting.T) {
 	// If writing results fails, an error should be reported.
+	const msg = "writing failed"
 	wrapper := stubRunWrapper{
 		runRes:   []run.TestResult{run.TestResult{Test: testing.Test{Name: "pkg.LocalTest"}}},
-		writeErr: errors.New("writing failed"),
+		writeErr: errors.New(msg),
 	}
 	args := []string{"root@example.net"}
-	if status := executeRunCmd(t, args, &wrapper, logging.NewDiscard()); status != subcommands.ExitFailure {
+	b := bytes.Buffer{}
+	lg := logging.NewSimple(&b, log.LstdFlags, true)
+	if status := executeRunCmd(t, args, &wrapper, lg); status != subcommands.ExitFailure {
 		t.Fatalf("runCmd.Execute(%v) returned status %v; want %v", args, status, subcommands.ExitFailure)
+	}
+
+	// The error should be included in the last line of output.
+	if lines := strings.Split(strings.TrimSpace(b.String()), "\n"); len(lines) == 0 {
+		t.Errorf("runCmd.Execute(%v) didn't log any output", args)
+	} else if last := lines[len(lines)-1]; !strings.Contains(last, msg) {
+		t.Errorf("runCmd.Execute(%v) logged last line %q; wanted line containing error %q", args, last, msg)
 	}
 }
 

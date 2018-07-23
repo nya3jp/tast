@@ -5,10 +5,9 @@
 package main
 
 import (
-	"chromiumos/cmd/tast/run"
 	"context"
 
-	"github.com/google/subcommands"
+	"chromiumos/cmd/tast/run"
 )
 
 // stubRunWrapper is a stub implementation of runWrapper used for testing.
@@ -18,12 +17,12 @@ type stubRunWrapper struct {
 	writeRes         []run.TestResult // results passed to writeResults
 	writeComplete    bool             // complete arg passed to writeResults
 
-	runStatus subcommands.ExitStatus // status to return from run
-	runRes    []run.TestResult       // results to return from run
-	writeErr  error                  // error to return from writeResults
+	runStatus run.Status       // status to return from run
+	runRes    []run.TestResult // results to return from run
+	writeErr  error            // error to return from writeResults
 }
 
-func (w *stubRunWrapper) run(ctx context.Context, cfg *run.Config) (subcommands.ExitStatus, []run.TestResult) {
+func (w *stubRunWrapper) run(ctx context.Context, cfg *run.Config) (run.Status, []run.TestResult) {
 	w.runCtx, w.runCfg = ctx, cfg
 	return w.runStatus, w.runRes
 }

@@ -11,6 +11,7 @@ import (
 	"runtime"
 	"runtime/debug"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -52,6 +53,9 @@ type State struct {
 
 	tctx    context.Context    // context used by the test function
 	tcancel context.CancelFunc // cancel function associated with tctx
+
+	hasError bool       // whether the test has already reported errors or not
+	mu       sync.Mutex // mutex to protect hasError
 }
 
 // NewState returns a new State object. The test's output will be streamed to ch.
@@ -116,18 +120,21 @@ func (s *State) Logf(format string, args ...interface{}) {
 // as having failed (using the arguments as a reason for the failure)
 // while letting the test continue execution.
 func (s *State) Error(args ...interface{}) {
+	s.recordError()
 	e := NewError(fmt.Sprint(args...), 1)
 	s.ch <- Output{T: time.Now(), Err: e}
 }
 
 // Errorf is similar to Error but formats its arguments using fmt.Sprintf.
 func (s *State) Errorf(format string, args ...interface{}) {
+	s.recordError()
 	e := NewError(fmt.Sprintf(format, args...), 1)
 	s.ch <- Output{T: time.Now(), Err: e}
 }
 
 // Fatal is similar to Error but additionally immediately ends the test.
 func (s *State) Fatal(args ...interface{}) {
+	s.recordError()
 	e := NewError(fmt.Sprint(args...), 1)
 	s.ch <- Output{T: time.Now(), Err: e}
 	runtime.Goexit()
@@ -135,9 +142,24 @@ func (s *State) Fatal(args ...interface{}) {
 
 // Fatalf is similar to Fatal but formats its arguments using fmt.Sprintf.
 func (s *State) Fatalf(format string, args ...interface{}) {
+	s.recordError()
 	e := NewError(fmt.Sprintf(format, args...), 1)
 	s.ch <- Output{T: time.Now(), Err: e}
 	runtime.Goexit()
+}
+
+// HasError reports whether the test has already reported errors.
+func (s *State) HasError() bool {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.hasError
+}
+
+// recordError records that the test has reported an error.
+func (s *State) recordError() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.hasError = true
 }
 
 // NewError returns a new Error object containing reason rsn.

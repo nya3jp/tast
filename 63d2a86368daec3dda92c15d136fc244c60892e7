@@ -16,6 +16,24 @@
       "revId": "63d2a86368daec3dda92c15d136fc244c60892e7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "811d0e57_24f7a4b8",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-07-27T04:53:14Z",
+      "side": 1,
+      "message": "whoops, but i meant something like \"It is intended to be used by packages providing support for tests that need to write files.\"",
+      "parentUuid": "46144072_3c6a6c34",
+      "revId": "63d2a86368daec3dda92c15d136fc244c60892e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -182,3 +182,8 @@ func ContextLogf(ctx context.Context, format string, args ...interface{}) {
 		s.Logf(format, args...)
 	}
 }
+
+// ContextOutDir is similar to OutDir but takes context instead.
+func ContextOutDir(ctx context.Context) string {
+	return ctx.Value(logKey).(*State).OutDir()
+}

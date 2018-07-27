@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "46144072_3c6a6c34",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-07-27T04:51:25Z",
+      "side": 1,
+      "message": "nit: maybe add text similar to ContextLog\u0027s?\n\n  It is intended to be used for informational logging by packages providing support for tests. Tests should just call State.OutDir.",
+      "revId": "63d2a86368daec3dda92c15d136fc244c60892e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

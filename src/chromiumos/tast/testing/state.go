@@ -182,3 +182,9 @@ func ContextLogf(ctx context.Context, format string, args ...interface{}) {
 		s.Logf(format, args...)
 	}
 }
+
+// ContextOutDir is similar to OutDir but takes context instead. It is intended to be
+// used by packages providing support for tests that need to write files.
+func ContextOutDir(ctx context.Context) string {
+	return ctx.Value(logKey).(*State).OutDir()
+}

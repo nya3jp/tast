@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6fad0cbf_63d2e085",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-07-27T14:51:59Z",
+      "side": 1,
+      "message": "huge nit: \"HasError reports whether the test ...\"",
+      "revId": "40a2adf96b514bb268235dc2b750976c00ca33d4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dfccb3bd_70f22d70",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-07-27T14:51:59Z",
+      "side": 1,
+      "message": "huge nit: \"records that the test\"",
+      "range": {
+        "startLine": 158,
+        "startChar": 15,
+        "endLine": 158,
+        "endChar": 31
+      },
+      "revId": "40a2adf96b514bb268235dc2b750976c00ca33d4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

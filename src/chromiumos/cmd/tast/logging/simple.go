@@ -6,6 +6,7 @@ package logging
 
 import (
 	"io"
+	"io/ioutil"
 	"log"
 	"sync"
 )
@@ -65,3 +66,8 @@ func (s *simpleLogger) Debugf(format string, args ...interface{}) {
 }
 
 func (s *simpleLogger) Status(msg string) {}
+
+// NewDiscard is a convencience function that returns a Logger that discards all messages.
+func NewDiscard() Logger {
+	return NewSimple(ioutil.Discard, log.LstdFlags, false)
+}

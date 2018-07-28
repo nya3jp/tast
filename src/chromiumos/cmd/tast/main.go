@@ -28,9 +28,6 @@ const (
 
 var Version = "<unknown>" // Version info is filled in during emerge.
 
-// lg should be used throughout the tast executable to log informative messages.
-var lg logging.Logger
-
 // newLogger creates a logging.Logger based on the supplied command-line flags.
 func newLogger(fancy, verbose, logTime bool) (logging.Logger, error) {
 	if fancy {
@@ -51,7 +48,7 @@ func newLogger(fancy, verbose, logTime bool) (logging.Logger, error) {
 // installSignalHandler starts a goroutine that attempts to do some minimal
 // cleanup when the process is being terminated by a signal (which prevents
 // deferred functions from running).
-func installSignalHandler() {
+func installSignalHandler(lg logging.Logger) {
 	var st *terminal.State
 	fd := int(os.Stdin.Fd())
 	if terminal.IsTerminal(fd) {
@@ -98,15 +95,16 @@ func doMain() int {
 		return 0
 	}
 
-	var err error
-	if lg, err = newLogger(*fancy, *verbose, *logTime); err != nil {
+	lg, err := newLogger(*fancy, *verbose, *logTime)
+	if err != nil {
 		log.Fatal("Failed to initialize logging: ", err)
 	}
 	defer lg.Close()
+	ctx := logging.NewContext(context.Background(), lg)
 
-	installSignalHandler()
+	installSignalHandler(lg)
 
-	return int(subcommands.Execute(context.Background()))
+	return int(subcommands.Execute(ctx))
 }
 
 func main() {

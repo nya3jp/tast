@@ -14,6 +14,7 @@ import (
 	"reflect"
 	gotesting "testing"
 
+	"chromiumos/cmd/tast/logging"
 	"chromiumos/cmd/tast/run"
 	"chromiumos/tast/testing"
 
@@ -21,7 +22,7 @@ import (
 )
 
 // executeListCmd creates a listCmd and executes it using the supplied args and wrapper.
-func executeListCmd(t *gotesting.T, w io.Writer, args []string, wrapper *stubRunWrapper) subcommands.ExitStatus {
+func executeListCmd(t *gotesting.T, w io.Writer, args []string, wrapper *stubRunWrapper, lg logging.Logger) subcommands.ExitStatus {
 	cmd := newListCmd(w)
 	cmd.wrapper = wrapper
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
@@ -29,7 +30,7 @@ func executeListCmd(t *gotesting.T, w io.Writer, args []string, wrapper *stubRun
 	if err := flags.Parse(args); err != nil {
 		t.Fatal(err)
 	}
-	return cmd.Execute(context.Background(), flags)
+	return cmd.Execute(logging.NewContext(context.Background(), lg), flags)
 }
 
 func TestListTests(t *gotesting.T) {
@@ -42,7 +43,7 @@ func TestListTests(t *gotesting.T) {
 	// Verify that the default one-test-per-line mode works.
 	stdout := bytes.Buffer{}
 	args := []string{"root@example.net"}
-	if status := executeListCmd(t, &stdout, args, &wrapper); status != subcommands.ExitSuccess {
+	if status := executeListCmd(t, &stdout, args, &wrapper, logging.NewDiscard()); status != subcommands.ExitSuccess {
 		t.Fatalf("listCmd.Execute(%v) returned status %v; want %v", args, status, subcommands.ExitSuccess)
 	}
 	if exp := fmt.Sprintf("%s\n%s\n", test1.Name, test2.Name); stdout.String() != exp {
@@ -52,7 +53,7 @@ func TestListTests(t *gotesting.T) {
 	// Verify that full test objects are written as JSON when -json is supplied.
 	stdout.Reset()
 	args = append([]string{"-json"}, args...)
-	if status := executeListCmd(t, &stdout, args, &wrapper); status != subcommands.ExitSuccess {
+	if status := executeListCmd(t, &stdout, args, &wrapper, logging.NewDiscard()); status != subcommands.ExitSuccess {
 		t.Fatalf("listCmd.Execute(%v) returned status %v; want %v", args, status, subcommands.ExitSuccess)
 	}
 	act := make([]testing.Test, 0)

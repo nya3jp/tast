@@ -55,6 +55,8 @@ func (lc *listCmd) SetFlags(f *flag.FlagSet) {
 }
 
 func (lc *listCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
+	lg, _ := logging.FromContext(ctx)
+
 	if len(f.Args()) == 0 {
 		lg.Log("Missing target.\n\n" + lc.Usage())
 		return subcommands.ExitUsageError

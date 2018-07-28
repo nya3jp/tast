@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"os"
 
+	"chromiumos/cmd/tast/logging"
 	"chromiumos/cmd/tast/symbolize"
 
 	"github.com/google/subcommands"
@@ -34,6 +35,8 @@ func (s *symbolizeCmd) SetFlags(f *flag.FlagSet) {
 }
 
 func (s *symbolizeCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
+	lg, _ := logging.FromContext(ctx)
+
 	if len(f.Args()) != 1 {
 		fmt.Fprintf(os.Stderr, s.Usage())
 		return subcommands.ExitUsageError

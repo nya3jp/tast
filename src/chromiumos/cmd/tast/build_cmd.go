@@ -11,6 +11,7 @@ import (
 	"os"
 
 	"chromiumos/cmd/tast/build"
+	"chromiumos/cmd/tast/logging"
 
 	"github.com/google/subcommands"
 )
@@ -34,6 +35,8 @@ func (b *buildCmd) SetFlags(f *flag.FlagSet) {
 }
 
 func (b *buildCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
+	lg, _ := logging.FromContext(ctx)
+
 	if len(f.Args()) != 2 {
 		fmt.Fprintf(os.Stderr, b.Usage())
 		return subcommands.ExitUsageError

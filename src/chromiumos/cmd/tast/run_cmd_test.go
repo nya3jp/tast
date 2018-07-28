@@ -8,8 +8,6 @@ import (
 	"context"
 	"errors"
 	"flag"
-	"log"
-	"os"
 	"reflect"
 	gotesting "testing"
 	"time"
@@ -21,19 +19,15 @@ import (
 	"github.com/google/subcommands"
 )
 
-func init() {
-	lg = logging.NewSimple(os.Stdout, log.LstdFlags, true)
-}
-
-// executeRunCmd creates a runCmd and executes it using the supplied args and wrapper.
-func executeRunCmd(t *gotesting.T, args []string, wrapper *stubRunWrapper) subcommands.ExitStatus {
+// executeRunCmd creates a runCmd and executes it using the supplied args, wrapper, and Logger.
+func executeRunCmd(t *gotesting.T, args []string, wrapper *stubRunWrapper, lg logging.Logger) subcommands.ExitStatus {
 	cmd := runCmd{wrapper: wrapper}
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
 	cmd.SetFlags(flags)
 	if err := flags.Parse(args); err != nil {
 		t.Fatal(err)
 	}
-	status := cmd.Execute(context.Background(), flags)
+	status := cmd.Execute(logging.NewContext(context.Background(), lg), flags)
 
 	if wrapper.runRes != nil && wrapper.runCfg == nil {
 		t.Fatalf("runCmd.Execute(%v) unexpectedly didn't run tests", args)
@@ -51,7 +45,7 @@ func TestRunConfig(t *gotesting.T) {
 	)
 	args := []string{target, test1, test2}
 	wrapper := stubRunWrapper{runRes: []run.TestResult{}}
-	executeRunCmd(t, args, &wrapper)
+	executeRunCmd(t, args, &wrapper, logging.NewDiscard())
 	if wrapper.runCfg.Target != target {
 		t.Errorf("runCmd.Execute(%v) passed target %q; want %q", args, wrapper.runCfg.Target, target)
 	}
@@ -64,7 +58,7 @@ func TestRunNoResults(t *gotesting.T) {
 	// The run should fail if no tests were matched.
 	args := []string{"root@example.net"}
 	wrapper := stubRunWrapper{runRes: []run.TestResult{}}
-	if status := executeRunCmd(t, args, &wrapper); status != subcommands.ExitFailure {
+	if status := executeRunCmd(t, args, &wrapper, logging.NewDiscard()); status != subcommands.ExitFailure {
 		t.Fatalf("runCmd.Execute(%v) returned status %v; want %v", args, status, subcommands.ExitFailure)
 	}
 }
@@ -73,7 +67,7 @@ func TestRunResults(t *gotesting.T) {
 	// As long as results were returned, success should be reported.
 	wrapper := stubRunWrapper{runRes: []run.TestResult{run.TestResult{Test: testing.Test{Name: "pkg.LocalTest"}}}}
 	args := []string{"root@example.net"}
-	if status := executeRunCmd(t, args, &wrapper); status != subcommands.ExitSuccess {
+	if status := executeRunCmd(t, args, &wrapper, logging.NewDiscard()); status != subcommands.ExitSuccess {
 		t.Fatalf("runCmd.Execute(%v) returned status %v; want %v", args, status, subcommands.ExitSuccess)
 	}
 	if !reflect.DeepEqual(wrapper.writeRes, wrapper.runRes) {
@@ -91,7 +85,7 @@ func TestRunExecFailure(t *gotesting.T) {
 		runStatus: subcommands.ExitFailure,
 	}
 	args := []string{"root@example.net"}
-	if status := executeRunCmd(t, args, &wrapper); status != wrapper.runStatus {
+	if status := executeRunCmd(t, args, &wrapper, logging.NewDiscard()); status != wrapper.runStatus {
 		t.Fatalf("runCmd.Execute(%v) returned status %v; want %v", args, status, wrapper.runStatus)
 	}
 	// The partial results should still be written.
@@ -110,7 +104,7 @@ func TestRunWriteFailure(t *gotesting.T) {
 		writeErr: errors.New("writing failed"),
 	}
 	args := []string{"root@example.net"}
-	if status := executeRunCmd(t, args, &wrapper); status != subcommands.ExitFailure {
+	if status := executeRunCmd(t, args, &wrapper, logging.NewDiscard()); status != subcommands.ExitFailure {
 		t.Fatalf("runCmd.Execute(%v) returned status %v; want %v", args, status, subcommands.ExitFailure)
 	}
 }
@@ -119,7 +113,7 @@ func TestRunReserveTimeToWriteResults(t *gotesting.T) {
 	wrapper := stubRunWrapper{
 		runRes: []run.TestResult{run.TestResult{Test: testing.Test{Name: "pkg.Test"}}},
 	}
-	executeRunCmd(t, []string{"-timeout=3600", "root@example.net"}, &wrapper)
+	executeRunCmd(t, []string{"-timeout=3600", "root@example.net"}, &wrapper, logging.NewDiscard())
 
 	getDeadline := func(ctx context.Context, name string) time.Time {
 		if ctx == nil {

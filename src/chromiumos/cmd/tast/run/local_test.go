@@ -166,6 +166,30 @@ func TestLocalExecFailure(t *gotesting.T) {
 	}
 }
 
+func TestLocalWaitTimeout(t *gotesting.T) {
+	td := newLocalTestData(t)
+	defer td.close()
+
+	addCheckDataFakeCmd(td.srvData.Srv, 0)
+
+	// Simulate local_test_runner writing control messages immediately but hanging before exiting.
+	b := bytes.Buffer{}
+	mw := control.NewMessageWriter(&b)
+	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
+	mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0)})
+	td.srvData.Srv.FakeCmd(localRunnerPath, test.CmdResult{
+		Stdout:    b.Bytes(),
+		StdinDest: &bytes.Buffer{},
+		DoneDelay: time.Minute,
+	})
+
+	// After setting a short wait timeout, an error should be reported.
+	td.cfg.localRunnerWaitTimeout = time.Millisecond
+	if status, _ := local(context.Background(), &td.cfg); status != subcommands.ExitFailure {
+		t.Errorf("local() = %v; want %v (%v)", status, subcommands.ExitFailure, td.logbuf.String())
+	}
+}
+
 func TestLocalList(t *gotesting.T) {
 	td := newLocalTestData(t)
 	defer td.close()

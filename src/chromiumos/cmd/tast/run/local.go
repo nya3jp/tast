@@ -30,8 +30,8 @@ const (
 	sshPingTimeout    time.Duration = 5 * time.Second  // timeout for checking if SSH connection to DUT is open
 
 	localRunnerPath       = "/usr/local/bin/local_test_runner"          // on-device executable that runs test bundles
-	localRunnerPkg        = "chromiumos/cmd/local_test_runner"          // Go package for local test runner
-	localRunnerPortagePkg = "chromeos-base/tast-local-test-runner-9999" // Portage package for local test runner
+	localRunnerPkg        = "chromiumos/cmd/local_test_runner"          // Go package for local_test_runner
+	localRunnerPortagePkg = "chromeos-base/tast-local-test-runner-9999" // Portage package for local_test_runner
 
 	localBundlePkgPathPrefix = "chromiumos/tast/local/bundles"                // Go package path prefix for test bundles
 	localBundleBuiltinDir    = "/usr/local/libexec/tast/bundles/local"        // on-device dir with preinstalled test bundles
@@ -49,6 +49,8 @@ const (
 	// localBundleExternalDataConf is the path to the file containing the external data file map,
 	// given relative to the directory containing the bundle's ebuild file.
 	localBundleExternalDataConf = "files/external_data.conf"
+
+	defaultLocalRunnerWaitTimeout time.Duration = 10 * time.Second // default timeout for waiting for local_test_runner to exit
 )
 
 // local runs local tests as directed by cfg and returns the command's exit status.
@@ -489,7 +491,13 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 
 	// Check that the runner exits successfully first so that we don't give a useless error
 	// about incorrectly-formed output instead of e.g. an error about the runner being missing.
-	if err := handle.Wait(ctx); err != nil {
+	timeout := defaultLocalRunnerWaitTimeout
+	if cfg.localRunnerWaitTimeout > 0 {
+		timeout = cfg.localRunnerWaitTimeout
+	}
+	wctx, wcancel := context.WithTimeout(ctx, timeout)
+	defer wcancel()
+	if err := handle.Wait(wctx); err != nil {
 		return results, stderrReader.appendToError(err, stderrTimeout)
 	}
 	return results, rerr

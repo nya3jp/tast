@@ -101,7 +101,8 @@ type Config struct {
 	collectSysInfo bool                 // collect system info (logs, crashes, etc.) generated during testing
 	initialSysInfo *runner.SysInfoState // initial state of system info (logs, crashes, etc.) on DUT before testing
 
-	msgTimeout time.Duration // timeout for reading control messages; default used if zero
+	msgTimeout             time.Duration // timeout for reading control messages; default used if zero
+	localRunnerWaitTimeout time.Duration // timeout for waiting for local_test_runner to exit; default used if zero
 
 	// Base path prepended to paths on hst when performing file copies. Only relevant for unit
 	// tests, which can set this to a temp dir in order to inspect files that are copied to hst and

@@ -45,18 +45,27 @@ type SSHServer struct {
 
 	mutex          sync.Mutex           // protects following fields
 	nextCmd        string               // next expected "exec" command to actually run
-	fakeCmds       map[string]cmdResult // "exec" command lines to canned results to return
+	fakeCmds       map[string]CmdResult // "exec" command lines to canned results to return
 	answerPings    bool                 // if true, ping requests will be answered
 	sessionDelay   time.Duration        // delay before starting new sessions
 	execStartDelay time.Duration        // delay before reporting process has started
 	execDoneDelay  time.Duration        // delay before reporting process has completed
 }
 
-// cmdResult holds the result that should be returned in response to a command.
-type cmdResult struct {
-	exitStatus     int
-	stdout, stderr []byte
-	stdinDest      io.Writer
+// CmdResult specifies the result that should be returned for a command registered via FakeCmd.
+type CmdResult struct {
+	// ExitStatus contains the process's exit code.
+	ExitStatus int
+	// Stdout contains stdout to be returned by the process and may be nil.
+	Stdout []byte
+	// Stdout contains stderr to be returned by the process and may be nil.
+	Stderr []byte
+	// StdinDest is the destination to which input sent to the process will be written and may be nil.
+	StdinDest io.Writer
+	// StartDelay contains an optional amount of time to sleep before reporting that the process has started.
+	StartDelay time.Duration
+	// StartDelay contains an optional amount of time to sleep before reporting that the process has completed.
+	DoneDelay time.Duration
 }
 
 // newServerConfig returns a new configuration for a server using host key hk
@@ -98,7 +107,7 @@ func NewSSHServer(pk *rsa.PublicKey, hk *rsa.PrivateKey) (*SSHServer, error) {
 	s := &SSHServer{
 		cfg:         cfg,
 		listener:    ls,
-		fakeCmds:    make(map[string]cmdResult),
+		fakeCmds:    make(map[string]CmdResult),
 		answerPings: true,
 	}
 
@@ -132,10 +141,10 @@ func (s *SSHServer) NextCmd(cmd string) {
 }
 
 // FakeCmd configures the result to be sent for an "exec" request exactly matching cmd.
-func (s *SSHServer) FakeCmd(cmd string, exitStatus int, stdout, stderr []byte, stdinDest io.Writer) {
+func (s *SSHServer) FakeCmd(cmd string, res CmdResult) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
-	s.fakeCmds[cmd] = cmdResult{exitStatus, stdout, stderr, stdinDest}
+	s.fakeCmds[cmd] = res
 }
 
 // AnswerPings controls whether the server should reply to SSH_MSG_IGNORE ping requests or ignore them.
@@ -153,7 +162,8 @@ func (s *SSHServer) SessionDelay(d time.Duration) {
 }
 
 // ExecDelays configures delays used by the server before reporting that an "exec" command has started
-// and before reporting that it's completed.
+// and before reporting that it's completed. This is used for actually-executed commands but not for
+// fake ones; see CmdResult's StartDelay and DoneDelay fields to configure delays for fake commands.
 func (s *SSHServer) ExecDelays(start, done time.Duration) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
@@ -239,21 +249,23 @@ func (s *SSHServer) handleExec(ch ssh.Channel, req *ssh.Request) error {
 	fakeCmd, haveFakeCmd := s.fakeCmds[cl]
 	nextCmd := s.nextCmd
 	s.nextCmd = ""
-	startDelay, doneDelay := s.execStartDelay, s.execDoneDelay
+	execStartDelay, execDoneDelay := s.execStartDelay, s.execDoneDelay
 	s.mutex.Unlock()
-
-	time.Sleep(startDelay)
 
 	status := 0
 	if haveFakeCmd {
+		time.Sleep(fakeCmd.StartDelay)
 		req.Reply(true, nil)
-		if fakeCmd.stdinDest != nil {
-			io.Copy(fakeCmd.stdinDest, ch)
+		if fakeCmd.StdinDest != nil {
+			io.Copy(fakeCmd.StdinDest, ch)
 		}
-		ch.Write(fakeCmd.stdout)
-		ch.Stderr().Write(fakeCmd.stderr)
-		status = fakeCmd.exitStatus
+		ch.Write(fakeCmd.Stdout)
+		ch.Stderr().Write(fakeCmd.Stderr)
+		ch.CloseWrite()
+		time.Sleep(fakeCmd.DoneDelay)
+		status = fakeCmd.ExitStatus
 	} else if cl == nextCmd {
+		time.Sleep(execStartDelay)
 		req.Reply(true, nil)
 		cmd := exec.Command("/bin/sh", "-c", cl)
 		cmd.Stdout = ch
@@ -266,12 +278,13 @@ func (s *SSHServer) handleExec(ch ssh.Channel, req *ssh.Request) error {
 				}
 			}
 		}
+		ch.CloseWrite()
+		time.Sleep(execDoneDelay)
 	} else {
 		req.Reply(false, nil)
 		return fmt.Errorf("unexpected command %q", cl)
 	}
 
-	time.Sleep(doneDelay)
 	ch.SendRequest("exit-status", false, makeIntPayload(uint32(status)))
 	return nil
 }

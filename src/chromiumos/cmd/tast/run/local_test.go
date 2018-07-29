@@ -96,14 +96,19 @@ func (td *localTestData) close() {
 // TODO(derat): Remove this after 20180901: https://crbug.com/857485
 func addCheckDataFakeCmd(srv *test.SSHServer, status int) {
 	dir := filepath.Join(localDataBuiltinDir, localBundlePkgPathPrefix)
-	srv.FakeCmd(fmt.Sprintf("test -d "+host.QuoteShellArg(dir)), status, []byte{}, []byte{}, nil)
+	srv.FakeCmd(fmt.Sprintf("test -d "+host.QuoteShellArg(dir)), test.CmdResult{ExitStatus: status})
 }
 
 // addLocalRunnerFakeCmd registers the command that local uses to run local_test_runner.
 // The returned buffer will contain data written to the command's stdin.
 func addLocalRunnerFakeCmd(srv *test.SSHServer, status int, stdout, stderr []byte) (stdin *bytes.Buffer) {
 	stdin = &bytes.Buffer{}
-	srv.FakeCmd(localRunnerPath, status, stdout, stderr, stdin)
+	srv.FakeCmd(localRunnerPath, test.CmdResult{
+		ExitStatus: status,
+		Stdout:     stdout,
+		Stderr:     stderr,
+		StdinDest:  stdin,
+	})
 	return stdin
 }
 

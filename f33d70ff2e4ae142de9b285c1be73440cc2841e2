@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2a4da4de_2291fa1b",
+        "filename": "src/chromiumos/tast/host/test/ssh_server.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 264,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-07-29T14:48:27Z",
+      "side": 1,
+      "message": "these CloseWrite calls let the other end of the connection see that stdout and stderr are closed, but still let us simulate a hang before returning the exit code.",
+      "revId": "f33d70ff2e4ae142de9b285c1be73440cc2841e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

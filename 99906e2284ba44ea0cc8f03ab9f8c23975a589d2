@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6160ad76_0a0217d8",
+        "filename": "src/chromiumos/cmd/tast/run/run.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-07-30T02:41:54Z",
+      "side": 1,
+      "message": "nit: I guess hasTimeoutMoreThan(ctx context.Context, d time.Duration) would be more intuitive (I know naming is not good :))",
+      "range": {
+        "startLine": 76,
+        "startChar": 5,
+        "endLine": 76,
+        "endChar": 19
+      },
+      "revId": "99906e2284ba44ea0cc8f03ab9f8c23975a589d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7a80f19d_f5700c56",
+        "filename": "src/chromiumos/cmd/tast/run_cmd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-07-30T02:41:54Z",
+      "side": 1,
+      "message": "nit: complete?",
+      "range": {
+        "startLine": 167,
+        "startChar": 5,
+        "endLine": 167,
+        "endChar": 47
+      },
+      "revId": "99906e2284ba44ea0cc8f03ab9f8c23975a589d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

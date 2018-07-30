@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "047c190c_02f813db",
+        "filename": "src/chromiumos/tast/host/test/ssh_server.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-07-30T02:17:16Z",
+      "side": 1,
+      "message": "Not directly related to this change, but would you mind adding a bit more overview comment, such as:\n- there are two types of configured commands: \"real\" and \"fake\"\n- requests matching fake commands are replied with canned responses and are not actually executed\n- requests matching a real command (only one such command can be configured at a time) is actually executed\n\nAnd I think it would be good to name variables related to actually executed commands as \"real\" so that it\u0027s easier to distinguish from \"fake\" command ones.",
+      "range": {
+        "startLine": 35,
+        "startChar": 0,
+        "endLine": 38,
+        "endChar": 44
+      },
+      "revId": "102d7396009d9a7d6d71bd2695197aa501e6eef0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

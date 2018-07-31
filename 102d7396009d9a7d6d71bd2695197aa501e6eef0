@@ -22,6 +22,30 @@
       "revId": "102d7396009d9a7d6d71bd2695197aa501e6eef0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4df9cfa8_c3583719",
+        "filename": "src/chromiumos/tast/host/test/ssh_server.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-07-31T03:35:48Z",
+      "side": 1,
+      "message": "thanks, that\u0027s a good suggestion! i\u0027ll make a followup change to clean this up.",
+      "parentUuid": "047c190c_02f813db",
+      "range": {
+        "startLine": 35,
+        "startChar": 0,
+        "endLine": 38,
+        "endChar": 44
+      },
+      "revId": "102d7396009d9a7d6d71bd2695197aa501e6eef0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

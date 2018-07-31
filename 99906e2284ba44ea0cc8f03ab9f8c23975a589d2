@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "130e1568_9dd234a5",
+        "filename": "src/chromiumos/cmd/tast/run/run.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-07-31T03:46:36Z",
+      "side": 1,
+      "message": "unfortunately, i don\u0027t think that contexts actually have timeouts; i believe that they\u0027re just faked using deadlines. adding a function that checks a context\u0027s timeout seems risky, as it would need to call time.Now and could return different values in successive calls.",
+      "parentUuid": "6160ad76_0a0217d8",
+      "range": {
+        "startLine": 76,
+        "startChar": 5,
+        "endLine": 76,
+        "endChar": 19
+      },
+      "revId": "99906e2284ba44ea0cc8f03ab9f8c23975a589d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "7a80f19d_f5700c56",
         "filename": "src/chromiumos/cmd/tast/run_cmd.go",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2018-07-30T02:41:54Z",
       "side": 1,
       "message": "nit: complete?",
+      "range": {
+        "startLine": 167,
+        "startChar": 5,
+        "endLine": 167,
+        "endChar": 47
+      },
+      "revId": "99906e2284ba44ea0cc8f03ab9f8c23975a589d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e528d9a8_129b110d",
+        "filename": "src/chromiumos/cmd/tast/run_cmd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-07-31T03:46:36Z",
+      "side": 1,
+      "message": "hmm. i introduced the \"complete\" variable to represent \"all of the expected tests were executed\", which isn\u0027t exactly what i want to check here.\n\nmaybe i\u0027ll rename it to allTestsExecuted to make this clearer.",
+      "parentUuid": "7a80f19d_f5700c56",
       "range": {
         "startLine": 167,
         "startChar": 5,

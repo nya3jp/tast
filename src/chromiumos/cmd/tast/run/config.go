@@ -109,7 +109,7 @@ type Config struct {
 	// control the files that are copied from it.
 	hstCopyBasePath string
 	// Assigned to hst.AnnounceCmd while file copies are being performed. Only relevant for unit
-	// tests, which can set this to SSHServer.NextCmd from tast/host/test so that the commands
+	// tests, which can assign this to SSHServer.NextRealCmd from tast/host/test so that the commands
 	// that perform copies will actually be executed.
 	hstCopyAnnounceCmd func(string)
 }

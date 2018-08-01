@@ -69,7 +69,7 @@ func TestRemoteDUT(t *gotesting.T) {
 		cmd    = "some_command"
 		output = "fake output"
 	)
-	td.Srv.FakeCmd(cmd, test.CmdResult{Stdout: []byte(output)})
+	td.Srv.FakeCmd(cmd, test.FakeCmdResult{Stdout: []byte(output)})
 
 	// Register a test that runs a command on the DUT and saves its output.
 	realOutput := ""

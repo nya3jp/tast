@@ -41,7 +41,7 @@ func connectToServer(ctx context.Context, srv *test.SSHServer, key *rsa.PrivateK
 	if err != nil {
 		return nil, err
 	}
-	s.AnnounceCmd = srv.NextCmd
+	s.AnnounceCmd = srv.NextRealCmd
 	return s, nil
 }
 
@@ -213,7 +213,7 @@ func TestRunTimeout(t *testing.T) {
 	td := newTestData(t)
 	defer td.close()
 
-	td.srv.ExecDelays(0, 30*time.Second)
+	td.srv.RealExecDelays(0, 30*time.Second)
 	ctx, cancel := context.WithTimeout(td.ctx, 10*time.Millisecond)
 	defer cancel()
 	if _, err := td.hst.Run(ctx, "true"); err == nil {
@@ -237,7 +237,7 @@ func TestStartExecTimeout(t *testing.T) {
 	td := newTestData(t)
 	defer td.close()
 
-	td.srv.ExecDelays(30*time.Second, 0)
+	td.srv.RealExecDelays(30*time.Second, 0)
 	ctx, cancel := context.WithTimeout(td.ctx, 10*time.Millisecond)
 	defer cancel()
 	if _, err := td.hst.Start(ctx, "true", CloseStdin, NoOutput); err == nil {
@@ -343,7 +343,7 @@ func TestGetFileTimeout(t *testing.T) {
 	tmpDir, srcDir := initFileTest(t, files)
 	defer os.RemoveAll(tmpDir)
 
-	td.srv.ExecDelays(0, 30*time.Second)
+	td.srv.RealExecDelays(0, 30*time.Second)
 
 	srcFile := filepath.Join(srcDir, "file")
 	dstFile := filepath.Join(tmpDir, "file")
@@ -514,7 +514,7 @@ func TestPutTreeTimeout(t *testing.T) {
 	tmpDir, srcDir := initFileTest(t, files)
 	defer os.RemoveAll(tmpDir)
 
-	td.srv.ExecDelays(0, 30*time.Second)
+	td.srv.RealExecDelays(0, 30*time.Second)
 
 	dstDir := filepath.Join(tmpDir, "dst")
 	ctx, cancel := context.WithTimeout(td.ctx, 10*time.Millisecond)

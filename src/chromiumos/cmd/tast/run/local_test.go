@@ -75,7 +75,7 @@ func newLocalTestData(t *gotesting.T) *localTestData {
 		t.Fatal(err)
 	}
 	td.cfg.hstCopyBasePath = td.hostDir
-	td.cfg.hstCopyAnnounceCmd = td.srvData.Srv.NextCmd
+	td.cfg.hstCopyAnnounceCmd = td.srvData.Srv.NextRealCmd
 
 	toClose = nil
 	return &td
@@ -96,14 +96,14 @@ func (td *localTestData) close() {
 // TODO(derat): Remove this after 20180901: https://crbug.com/857485
 func addCheckDataFakeCmd(srv *test.SSHServer, status int) {
 	dir := filepath.Join(localDataBuiltinDir, localBundlePkgPathPrefix)
-	srv.FakeCmd(fmt.Sprintf("test -d "+host.QuoteShellArg(dir)), test.CmdResult{ExitStatus: status})
+	srv.FakeCmd(fmt.Sprintf("test -d "+host.QuoteShellArg(dir)), test.FakeCmdResult{ExitStatus: status})
 }
 
 // addLocalRunnerFakeCmd registers the command that local uses to run local_test_runner.
 // The returned buffer will contain data written to the command's stdin.
 func addLocalRunnerFakeCmd(srv *test.SSHServer, status int, stdout, stderr []byte) (stdin *bytes.Buffer) {
 	stdin = &bytes.Buffer{}
-	srv.FakeCmd(localRunnerPath, test.CmdResult{
+	srv.FakeCmd(localRunnerPath, test.FakeCmdResult{
 		ExitStatus: status,
 		Stdout:     stdout,
 		Stderr:     stderr,
@@ -177,7 +177,7 @@ func TestLocalWaitTimeout(t *gotesting.T) {
 	mw := control.NewMessageWriter(&b)
 	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
 	mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0)})
-	td.srvData.Srv.FakeCmd(localRunnerPath, test.CmdResult{
+	td.srvData.Srv.FakeCmd(localRunnerPath, test.FakeCmdResult{
 		Stdout:    b.Bytes(),
 		StdinDest: &bytes.Buffer{},
 		DoneDelay: time.Minute,

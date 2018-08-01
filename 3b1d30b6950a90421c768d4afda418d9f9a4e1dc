@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6be01e38_779e47fd",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-08-01T23:20:44Z",
+      "side": 1,
+      "message": "please let me know if this wording is confusing. maybe it should be \"..., which can set SSHServer.NextRealCmd to this so that ...\"?",
+      "revId": "3b1d30b6950a90421c768d4afda418d9f9a4e1dc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

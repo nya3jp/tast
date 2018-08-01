@@ -46,6 +46,30 @@
       "revId": "102d7396009d9a7d6d71bd2695197aa501e6eef0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ec37a427_4ffb5a8a",
+        "filename": "src/chromiumos/tast/host/test/ssh_server.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-08-01T23:20:58Z",
+      "side": 1,
+      "message": "uploaded https://crrev.com/c/1159480",
+      "parentUuid": "4df9cfa8_c3583719",
+      "range": {
+        "startLine": 35,
+        "startChar": 0,
+        "endLine": 38,
+        "endChar": 44
+      },
+      "revId": "102d7396009d9a7d6d71bd2695197aa501e6eef0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

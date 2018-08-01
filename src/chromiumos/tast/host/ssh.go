@@ -320,6 +320,9 @@ func (s *SSH) GetFile(ctx context.Context, src, dst string) error {
 	if err = os.Rename(filepath.Join(td, sb), dst); err != nil {
 		return fmt.Errorf("moving local file failed: %v", err)
 	}
+	if err = handle.Wait(ctx); err != nil {
+		return fmt.Errorf("remote tar failed: %v", err)
+	}
 	return nil
 }
 

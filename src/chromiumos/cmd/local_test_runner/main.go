@@ -29,13 +29,14 @@ func main() {
 		SoftwareFeatureDefinitions: map[string]string{
 			// This list is documented at docs/test_dependencies.md.
 			// All USE flags referenced here must be listed in IUSE in the tast-use-flags ebuild.
-			"android":      "arc",
-			"audio_play":   "!betty && !veyron_rialto",
-			"audio_record": "!betty && !veyron_mickey && !veyron_rialto",
-			"chrome":       "!chromeless_tty",
-			"chrome_login": "!chromeless_tty && !rialto",
-			"tpm":          "!mocktpm",
-			"vm_host":      "kvm_host",
+			"android":           "arc",
+			"audio_play":        "!betty && !veyron_rialto",
+			"audio_record":      "!betty && !veyron_mickey && !veyron_rialto",
+			"chrome":            "!chromeless_tty",
+			"chrome_login":      "!chromeless_tty && !rialto",
+			"display_backlight": "display_backlight",
+			"tpm":               "!mocktpm",
+			"vm_host":           "kvm_host",
 		},
 	}
 	os.Exit(runner.Run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, &args, runner.LocalRunner))

@@ -37,23 +37,29 @@ const (
 // authentication via a RSA keypair, it also refuses to run commands that haven't
 // been registered via out-of-band requests.
 //
-// It is based on the ssh package's NewServerConn example and can be used concurrently
-// from multiple goroutines.
+// Two types of commands may be registered:
+//
+// "Real" commands are actually executed and must be registered via NextRealCmd immediately before the "exec" request.
+// NextRealCmd can be assigned to a host.SSH.AnnounceCmd field to automatically register commands.
+//
+// "Fake" commands return canned results and can be registered via FakeCmd at any point before the "exec" request.
+//
+// SSHServer is based on the ssh package's NewServerConn example and can be used concurrently from multiple goroutines.
 type SSHServer struct {
 	cfg      *ssh.ServerConfig
 	listener net.Listener
 
-	mutex          sync.Mutex           // protects following fields
-	nextCmd        string               // next expected "exec" command to actually run
-	fakeCmds       map[string]CmdResult // "exec" command lines to canned results to return
-	answerPings    bool                 // if true, ping requests will be answered
-	sessionDelay   time.Duration        // delay before starting new sessions
-	execStartDelay time.Duration        // delay before reporting process has started
-	execDoneDelay  time.Duration        // delay before reporting process has completed
+	mutex              sync.Mutex               // protects following fields
+	nextRealCmd        string                   // next expected "exec" command to actually run
+	fakeCmds           map[string]FakeCmdResult // "exec" command lines to canned results to return
+	answerPings        bool                     // if true, ping requests will be answered
+	sessionDelay       time.Duration            // delay before starting new sessions
+	realExecStartDelay time.Duration            // delay before reporting process has started
+	realExecDoneDelay  time.Duration            // delay before reporting process has completed
 }
 
-// CmdResult specifies the result that should be returned for a command registered via FakeCmd.
-type CmdResult struct {
+// FakeCmdResult specifies the result that should be returned for a command registered via FakeCmd.
+type FakeCmdResult struct {
 	// ExitStatus contains the process's exit code.
 	ExitStatus int
 	// Stdout contains stdout to be returned by the process and may be nil.
@@ -107,7 +113,7 @@ func NewSSHServer(pk *rsa.PublicKey, hk *rsa.PrivateKey) (*SSHServer, error) {
 	s := &SSHServer{
 		cfg:         cfg,
 		listener:    ls,
-		fakeCmds:    make(map[string]CmdResult),
+		fakeCmds:    make(map[string]FakeCmdResult),
 		answerPings: true,
 	}
 
@@ -132,16 +138,16 @@ func (s *SSHServer) Close() error {
 	return s.listener.Close()
 }
 
-// NextCmd sets the next command expected to be sent in an "exec" request.
+// NextRealCmd sets the next command expected to be sent in an "exec" request.
 // The supplied command will actually be executed.
-func (s *SSHServer) NextCmd(cmd string) {
+func (s *SSHServer) NextRealCmd(cmd string) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
-	s.nextCmd = cmd
+	s.nextRealCmd = cmd
 }
 
 // FakeCmd configures the result to be sent for an "exec" request exactly matching cmd.
-func (s *SSHServer) FakeCmd(cmd string, res CmdResult) {
+func (s *SSHServer) FakeCmd(cmd string, res FakeCmdResult) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 	s.fakeCmds[cmd] = res
@@ -161,13 +167,13 @@ func (s *SSHServer) SessionDelay(d time.Duration) {
 	s.sessionDelay = d
 }
 
-// ExecDelays configures delays used by the server before reporting that an "exec" command has started
+// RealExecDelays configures delays used by the server before reporting that an "exec" command has started
 // and before reporting that it's completed. This is used for actually-executed commands but not for
-// fake ones; see CmdResult's StartDelay and DoneDelay fields to configure delays for fake commands.
-func (s *SSHServer) ExecDelays(start, done time.Duration) {
+// fake ones; see FakeCmdResult's StartDelay and DoneDelay fields to configure delays for fake commands.
+func (s *SSHServer) RealExecDelays(start, done time.Duration) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
-	s.execStartDelay, s.execDoneDelay = start, done
+	s.realExecStartDelay, s.realExecDoneDelay = start, done
 }
 
 // Addr returns the address on which the server is listening.
@@ -247,9 +253,9 @@ func (s *SSHServer) handleExec(ch ssh.Channel, req *ssh.Request) error {
 
 	s.mutex.Lock()
 	fakeCmd, haveFakeCmd := s.fakeCmds[cl]
-	nextCmd := s.nextCmd
-	s.nextCmd = ""
-	execStartDelay, execDoneDelay := s.execStartDelay, s.execDoneDelay
+	nextRealCmd := s.nextRealCmd
+	s.nextRealCmd = ""
+	realExecStartDelay, realExecDoneDelay := s.realExecStartDelay, s.realExecDoneDelay
 	s.mutex.Unlock()
 
 	status := 0
@@ -264,8 +270,8 @@ func (s *SSHServer) handleExec(ch ssh.Channel, req *ssh.Request) error {
 		ch.CloseWrite()
 		time.Sleep(fakeCmd.DoneDelay)
 		status = fakeCmd.ExitStatus
-	} else if cl == nextCmd {
-		time.Sleep(execStartDelay)
+	} else if cl == nextRealCmd {
+		time.Sleep(realExecStartDelay)
 		req.Reply(true, nil)
 		cmd := exec.Command("/bin/sh", "-c", cl)
 		cmd.Stdout = ch
@@ -279,7 +285,7 @@ func (s *SSHServer) handleExec(ch ssh.Channel, req *ssh.Request) error {
 			}
 		}
 		ch.CloseWrite()
-		time.Sleep(execDoneDelay)
+		time.Sleep(realExecDoneDelay)
 	} else {
 		req.Reply(false, nil)
 		return fmt.Errorf("unexpected command %q", cl)

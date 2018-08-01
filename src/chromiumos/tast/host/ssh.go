@@ -310,6 +310,9 @@ func (s *SSH) GetFile(ctx context.Context, src, dst string) error {
 	if err != nil {
 		return fmt.Errorf("copying from remote to local tar failed: %v", err)
 	}
+	if err = handle.Wait(ctx); err != nil {
+		return fmt.Errorf("remote tar failed: %v", err)
+	}
 
 	if err = stdin.Close(); err != nil {
 		return fmt.Errorf("closing local tar failed: %v", err)

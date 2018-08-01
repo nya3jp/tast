@@ -14,6 +14,7 @@ The following software features are defined:
 *   `chrome` - A Chrome process.
 *   `chrome_login` - Implies `chrome` with the further requirement that user
     login (i.e. using `session_manager` and `cryptohome`) is supported.
+*   `display_backlight` - An internal display backlight.
 *   `tpm` - A [Trusted Platform Module] chip.
 *   `vm_host` - The ability to [run virtual machines].
 

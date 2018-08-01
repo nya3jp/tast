@@ -143,6 +143,9 @@ func (d *DUT) WaitConnect(ctx context.Context) error {
 		case <-time.After(reconnectRetryDelay):
 			break
 		case <-ctx.Done():
+			if err.Error() == ctx.Err().Error() {
+				return err
+			}
 			return fmt.Errorf("%v (%v)", ctx.Err(), err)
 		}
 	}

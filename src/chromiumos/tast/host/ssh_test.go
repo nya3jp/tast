@@ -13,6 +13,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 
@@ -45,19 +46,33 @@ func connectToServer(ctx context.Context, srv *test.SSHServer, key *rsa.PrivateK
 	return s, nil
 }
 
+// timeoutType describes different types of timeouts that can be simulated during SSH "exec" requests.
+type timeoutType int
+
+const (
+	// noTimeout indicates that testData.ctx shouldn't be canceled.
+	noTimeout timeoutType = iota
+	// startTimeout indicates that testData.ctx should be canceled before the command starts.
+	startTimeout
+	// endTimeout indicates that testData.ctx should be canceled after the command runs but before its status is returned.
+	endTimeout
+)
+
 // testData wraps data common to all tests.
 type testData struct {
-	ctx context.Context
 	srv *test.SSHServer
 	hst *SSH
 
-	nextCmd    string        // next command to be executed by client
-	startDelay time.Duration // delay before acknowledging "exec" request
-	endDelay   time.Duration // delay before reporting command completion
+	ctx    context.Context // used for performing operations using hst
+	cancel func()          // cancels ctx to simulate a timeout
+
+	nextCmd     string      // next command to be executed by client
+	execTimeout timeoutType // how "exec" requests should time out
 }
 
 func newTestData(t *testing.T) *testData {
-	td := &testData{ctx: context.Background()}
+	td := &testData{}
+	td.ctx, td.cancel = context.WithCancel(context.Background())
 
 	var err error
 	if td.srv, err = test.NewSSHServer(&userKey.PublicKey, hostKey, td.handleExec); err != nil {
@@ -76,21 +91,37 @@ func newTestData(t *testing.T) *testData {
 func (td *testData) close() {
 	td.srv.Close()
 	td.hst.Close(td.ctx)
+	td.cancel()
 }
 
 // handleExec handles an SSH "exec" request sent to td.srv by executing the requested command.
 // The command must already be present in td.nextCmd.
 func (td *testData) handleExec(req *test.ExecReq) {
-	if req.Cmd == td.nextCmd {
-		time.Sleep(td.startDelay)
-		req.Start(true)
-		status := req.RunRealCmd()
-		time.Sleep(td.endDelay)
-		req.End(status)
-	} else {
+	if req.Cmd != td.nextCmd {
 		log.Printf("Unexpected command %q (want %q)", req.Cmd, td.nextCmd)
 		req.Start(false)
+		return
 	}
+
+	// PutTreeRename sends multiple "exec" requests.
+	// Ignore its initial "sha1sum" so we can hang during the tar command instead.
+	ignoreTimeout := strings.HasPrefix(req.Cmd, "sha1sum ")
+
+	// If a timeout was requested, cancel the context and then sleep for an arbitrary-but-long
+	// amount of time to make sure that the client sees the expired context before the command
+	// actually runs.
+	if td.execTimeout == startTimeout && !ignoreTimeout {
+		td.cancel()
+		time.Sleep(time.Minute)
+	}
+	req.Start(true)
+	status := req.RunRealCmd()
+
+	if td.execTimeout == endTimeout && !ignoreTimeout {
+		td.cancel()
+		time.Sleep(time.Minute)
+	}
+	req.End(status)
 }
 
 // initFileTest creates a temporary directory with a subdirectory containing files.
@@ -130,6 +161,7 @@ func checkDir(dir string, exp map[string]string) error {
 }
 
 func TestRun(t *testing.T) {
+	t.Parallel()
 	td := newTestData(t)
 	defer td.close()
 
@@ -150,15 +182,10 @@ func TestRun(t *testing.T) {
 	} else if string(b) != "foo\n" {
 		t.Errorf("Unexpected output %q for failing command", string(b))
 	}
-
-	ctx, cancel := context.WithTimeout(td.ctx, 10*time.Millisecond)
-	defer cancel()
-	if _, err := td.hst.Run(ctx, "sleep 1; true"); err == nil {
-		t.Errorf("Didn't get error for timeout")
-	}
 }
 
 func TestStart(t *testing.T) {
+	t.Parallel()
 	td := newTestData(t)
 	defer td.close()
 
@@ -230,83 +257,83 @@ func TestStart(t *testing.T) {
 }
 
 func TestRunTimeout(t *testing.T) {
+	t.Parallel()
 	td := newTestData(t)
 	defer td.close()
 
-	td.endDelay = 30 * time.Second
-	ctx, cancel := context.WithTimeout(td.ctx, 10*time.Millisecond)
-	defer cancel()
-	if _, err := td.hst.Run(ctx, "true"); err == nil {
+	td.execTimeout = startTimeout
+	if _, err := td.hst.Run(td.ctx, "true"); err == nil {
 		t.Errorf("Run() with expired context didn't return error")
 	}
 }
 
 func TestStartSessionTimeout(t *testing.T) {
+	t.Parallel()
 	td := newTestData(t)
 	defer td.close()
 
-	td.srv.SessionDelay(30 * time.Second)
-	ctx, cancel := context.WithTimeout(td.ctx, 10*time.Millisecond)
-	defer cancel()
-	if _, err := td.hst.Start(ctx, "true", CloseStdin, NoOutput); err == nil {
+	td.srv.SessionDelay(time.Minute)
+	td.cancel()
+	if _, err := td.hst.Start(td.ctx, "true", CloseStdin, NoOutput); err == nil {
 		t.Errorf("Start() with expired context didn't return error")
 	}
 }
 
 func TestStartExecTimeout(t *testing.T) {
+	t.Parallel()
 	td := newTestData(t)
 	defer td.close()
 
-	td.startDelay = 30 * time.Second
-	ctx, cancel := context.WithTimeout(td.ctx, 10*time.Millisecond)
-	defer cancel()
-	if _, err := td.hst.Start(ctx, "true", CloseStdin, NoOutput); err == nil {
+	td.execTimeout = startTimeout
+	if _, err := td.hst.Start(td.ctx, "true", CloseStdin, NoOutput); err == nil {
 		t.Errorf("Start() with expired context didn't return error")
 	}
 }
 
 func TestWaitAndCloseTimeout(t *testing.T) {
+	t.Parallel()
 	td := newTestData(t)
 	defer td.close()
 
-	h, err := td.hst.Start(td.ctx, "sleep 30", CloseStdin, NoOutput)
+	td.execTimeout = endTimeout
+	h, err := td.hst.Start(td.ctx, "true", CloseStdin, NoOutput)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	ctx, cancel := context.WithTimeout(td.ctx, time.Millisecond)
-	defer cancel()
-	if err = h.Wait(ctx); err == nil {
+	td.cancel()
+	if err = h.Wait(td.ctx); err == nil {
 		t.Errorf("Wait() with expired context didn't return error")
 	}
-	if err = h.Close(ctx); err == nil {
+	if err = h.Close(td.ctx); err == nil {
 		t.Errorf("Close() with expired context didn't return error")
 	}
 }
 
 func TestPing(t *testing.T) {
+	t.Parallel()
 	td := newTestData(t)
 	defer td.close()
 
-	if err := td.hst.Ping(td.ctx, time.Second); err != nil {
+	td.srv.AnswerPings(true)
+	if err := td.hst.Ping(td.ctx, time.Minute); err != nil {
 		t.Errorf("Got error when pinging host: %v", err)
 	}
 
-	// Use a short timeout.
 	td.srv.AnswerPings(false)
-	if err := td.hst.Ping(td.ctx, 10*time.Millisecond); err == nil {
-		t.Errorf("Didn't get expected error when pinging host")
+	if err := td.hst.Ping(td.ctx, time.Millisecond); err == nil {
+		t.Errorf("Didn't get expected error when pinging host with short timeout")
 	}
 
-	// Now set the timeout on the context instead.
-	ctx, cancel := context.WithTimeout(td.ctx, 10*time.Millisecond)
-	defer cancel()
-	if err := td.hst.Ping(ctx, 10*time.Second); err == nil {
-		t.Errorf("Didn't get expected error when pinging host")
+	// Cancel the context to simulate it having expired.
+	td.cancel()
+	if err := td.hst.Ping(td.ctx, time.Minute); err == nil {
+		t.Errorf("Didn't get expected error when pinging host with expired context")
 	}
 }
 
 func TestGetFileRegular(t *testing.T) {
+	t.Parallel()
 	td := newTestData(t)
 	defer td.close()
 
@@ -330,6 +357,7 @@ func TestGetFileRegular(t *testing.T) {
 }
 
 func TestGetFileDir(t *testing.T) {
+	t.Parallel()
 	td := newTestData(t)
 	defer td.close()
 
@@ -356,6 +384,7 @@ func TestGetFileDir(t *testing.T) {
 }
 
 func TestGetFileTimeout(t *testing.T) {
+	t.Parallel()
 	td := newTestData(t)
 	defer td.close()
 
@@ -363,18 +392,16 @@ func TestGetFileTimeout(t *testing.T) {
 	tmpDir, srcDir := initFileTest(t, files)
 	defer os.RemoveAll(tmpDir)
 
-	td.endDelay = 30 * time.Second
-
 	srcFile := filepath.Join(srcDir, "file")
 	dstFile := filepath.Join(tmpDir, "file")
-	ctx, cancel := context.WithTimeout(td.ctx, 10*time.Millisecond)
-	defer cancel()
-	if err := td.hst.GetFile(ctx, srcFile, dstFile); err == nil {
+	td.execTimeout = endTimeout
+	if err := td.hst.GetFile(td.ctx, srcFile, dstFile); err == nil {
 		t.Errorf("GetFile() with expired context didn't return error")
 	}
 }
 
 func TestPutTree(t *testing.T) {
+	t.Parallel()
 	td := newTestData(t)
 	defer td.close()
 
@@ -418,6 +445,7 @@ func TestPutTree(t *testing.T) {
 }
 
 func TestPutTreeRename(t *testing.T) {
+	t.Parallel()
 	td := newTestData(t)
 	defer td.close()
 
@@ -473,6 +501,7 @@ func TestPutTreeRename(t *testing.T) {
 }
 
 func TestPutTreeUnchanged(t *testing.T) {
+	t.Parallel()
 	td := newTestData(t)
 	defer td.close()
 
@@ -497,6 +526,7 @@ func TestPutTreeUnchanged(t *testing.T) {
 }
 
 func TestPutTreeRenameUnchanged(t *testing.T) {
+	t.Parallel()
 	td := newTestData(t)
 	defer td.close()
 
@@ -527,24 +557,22 @@ func TestPutTreeRenameUnchanged(t *testing.T) {
 }
 
 func TestPutTreeTimeout(t *testing.T) {
+	t.Parallel()
 	td := newTestData(t)
 	defer td.close()
 
 	files := map[string]string{"file": "data"}
 	tmpDir, srcDir := initFileTest(t, files)
 	defer os.RemoveAll(tmpDir)
-
-	td.endDelay = 30 * time.Second
-
 	dstDir := filepath.Join(tmpDir, "dst")
-	ctx, cancel := context.WithTimeout(td.ctx, 10*time.Millisecond)
-	defer cancel()
-	if _, err := td.hst.PutTree(ctx, srcDir, dstDir, []string{"file"}); err == nil {
+	td.execTimeout = endTimeout
+	if _, err := td.hst.PutTree(td.ctx, srcDir, dstDir, []string{"file"}); err == nil {
 		t.Errorf("PutTree() with expired context didn't return error")
 	}
 }
 
 func TestKeyDir(t *testing.T) {
+	t.Parallel()
 	srv, err := test.NewSSHServer(&userKey.PublicKey, hostKey, nil)
 	if err != nil {
 		t.Fatal(err)

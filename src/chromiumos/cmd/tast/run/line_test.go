@@ -30,7 +30,7 @@ func TestFirstLineReaderSuccess(t *testing.T) {
 func TestFirstLineReaderEOF(t *testing.T) {
 	pr, pw := io.Pipe()
 	pw.Close()
-	if _, err := newFirstLineReader(pr).getLine(time.Millisecond); err != io.EOF {
+	if _, err := newFirstLineReader(pr).getLine(time.Minute); err != io.EOF {
 		t.Errorf("getLine() returned error %v; want EOF", err)
 	}
 }

@@ -10,13 +10,11 @@ import (
 	"crypto/rsa"
 	"crypto/subtle"
 	"encoding/binary"
-	"errors"
 	"fmt"
 	"io"
 	"log"
 	"net"
 	"os/exec"
-	"sync"
 	"syscall"
 	"time"
 
@@ -32,46 +30,18 @@ const (
 	maxStringLen = 2048
 )
 
-// SSHServer implements a somewhat-functional SSH server that listens on localhost
-// and runs commands in response to "exec" requests. While the server requires
-// authentication via a RSA keypair, it also refuses to run commands that haven't
-// been registered via out-of-band requests.
+// SSHServer implements an SSH server based on the ssh package's NewServerConn
+// example that listens on localhost and performs authentication via an RSA keypair.
 //
-// Two types of commands may be registered:
-//
-// "Real" commands are actually executed and must be registered via NextRealCmd immediately before the "exec" request.
-// NextRealCmd can be assigned to a host.SSH.AnnounceCmd field to automatically register commands.
-//
-// "Fake" commands return canned results and can be registered via FakeCmd at any point before the "exec" request.
-//
-// SSHServer is based on the ssh package's NewServerConn example and can be used concurrently from multiple goroutines.
+// Only "exec" requests and pings (using SSH_MSG_IGNORE) are supported.
+// "exec" requests are handled using a caller-supplied function.
 type SSHServer struct {
 	cfg      *ssh.ServerConfig
 	listener net.Listener
 
-	mutex              sync.Mutex               // protects following fields
-	nextRealCmd        string                   // next expected "exec" command to actually run
-	fakeCmds           map[string]FakeCmdResult // "exec" command lines to canned results to return
-	answerPings        bool                     // if true, ping requests will be answered
-	sessionDelay       time.Duration            // delay before starting new sessions
-	realExecStartDelay time.Duration            // delay before reporting process has started
-	realExecDoneDelay  time.Duration            // delay before reporting process has completed
-}
-
-// FakeCmdResult specifies the result that should be returned for a command registered via FakeCmd.
-type FakeCmdResult struct {
-	// ExitStatus contains the process's exit code.
-	ExitStatus int
-	// Stdout contains stdout to be returned by the process and may be nil.
-	Stdout []byte
-	// Stdout contains stderr to be returned by the process and may be nil.
-	Stderr []byte
-	// StdinDest is the destination to which input sent to the process will be written and may be nil.
-	StdinDest io.Writer
-	// StartDelay contains an optional amount of time to sleep before reporting that the process has started.
-	StartDelay time.Duration
-	// StartDelay contains an optional amount of time to sleep before reporting that the process has completed.
-	DoneDelay time.Duration
+	answerPings  bool          // if true, ping requests will be answered
+	sessionDelay time.Duration // delay before starting new sessions
+	execHandler  ExecHandler   // called to handle "exec" requests
 }
 
 // newServerConfig returns a new configuration for a server using host key hk
@@ -101,7 +71,7 @@ func newServerConfig(pk *rsa.PublicKey, hk *rsa.PrivateKey) (*ssh.ServerConfig, 
 
 // NewSSHServer creates an SSH server using host key hk and accepting public key authentication using pk.
 // A random port bound to the local IPv4 interface is used.
-func NewSSHServer(pk *rsa.PublicKey, hk *rsa.PrivateKey) (*SSHServer, error) {
+func NewSSHServer(pk *rsa.PublicKey, hk *rsa.PrivateKey, handler ExecHandler) (*SSHServer, error) {
 	cfg, err := newServerConfig(pk, hk)
 	if err != nil {
 		return nil, err
@@ -113,8 +83,8 @@ func NewSSHServer(pk *rsa.PublicKey, hk *rsa.PrivateKey) (*SSHServer, error) {
 	s := &SSHServer{
 		cfg:         cfg,
 		listener:    ls,
-		fakeCmds:    make(map[string]FakeCmdResult),
 		answerPings: true,
+		execHandler: handler,
 	}
 
 	go func() {
@@ -138,42 +108,14 @@ func (s *SSHServer) Close() error {
 	return s.listener.Close()
 }
 
-// NextRealCmd sets the next command expected to be sent in an "exec" request.
-// The supplied command will actually be executed.
-func (s *SSHServer) NextRealCmd(cmd string) {
-	s.mutex.Lock()
-	defer s.mutex.Unlock()
-	s.nextRealCmd = cmd
-}
-
-// FakeCmd configures the result to be sent for an "exec" request exactly matching cmd.
-func (s *SSHServer) FakeCmd(cmd string, res FakeCmdResult) {
-	s.mutex.Lock()
-	defer s.mutex.Unlock()
-	s.fakeCmds[cmd] = res
-}
-
 // AnswerPings controls whether the server should reply to SSH_MSG_IGNORE ping requests or ignore them.
 func (s *SSHServer) AnswerPings(v bool) {
-	s.mutex.Lock()
-	defer s.mutex.Unlock()
 	s.answerPings = v
 }
 
 // SessionDelay configures a delay used by the server before starting a new session.
 func (s *SSHServer) SessionDelay(d time.Duration) {
-	s.mutex.Lock()
-	defer s.mutex.Unlock()
 	s.sessionDelay = d
-}
-
-// RealExecDelays configures delays used by the server before reporting that an "exec" command has started
-// and before reporting that it's completed. This is used for actually-executed commands but not for
-// fake ones; see FakeCmdResult's StartDelay and DoneDelay fields to configure delays for fake commands.
-func (s *SSHServer) RealExecDelays(start, done time.Duration) {
-	s.mutex.Lock()
-	defer s.mutex.Unlock()
-	s.realExecStartDelay, s.realExecDoneDelay = start, done
 }
 
 // Addr returns the address on which the server is listening.
@@ -205,10 +147,7 @@ func (s *SSHServer) handleConn(conn net.Conn) error {
 			continue
 		}
 
-		s.mutex.Lock()
-		delay := s.sessionDelay
-		s.mutex.Unlock()
-		time.Sleep(delay)
+		time.Sleep(s.sessionDelay)
 
 		ch, chReqs, err := newChan.Accept()
 		if err != nil {
@@ -226,73 +165,25 @@ func (s *SSHServer) handleChannel(ch ssh.Channel, reqs <-chan *ssh.Request) {
 	for req := range reqs {
 		switch req.Type {
 		case "exec":
-			if err := s.handleExec(ch, req); err != nil {
-				log.Print("SSH exec command failed: ", err)
+			if cmd, err := readStringPayload(req.Payload); err != nil {
+				log.Print("Failed to read command: ", err)
+				req.Reply(false, nil)
+			} else if s.execHandler == nil {
+				log.Print("No exec handler configured")
+				req.Reply(false, nil)
 			} else {
-				// Only one "exec" request can succeed per channel (see RFC 4254 6.5).
-				return
+				er := ExecReq{cmd, ch, req, false}
+				s.execHandler(&er)
+				if er.success {
+					// Only one "exec" request can succeed per channel (see RFC 4254 6.5).
+					return
+				}
 			}
 		default:
+			log.Printf("Unhandled request of type %q", req.Type)
 			req.Reply(false, nil)
 		}
 	}
-}
-
-// handleExec handles "exec" request req received on ch.
-// It writes a reply and any additional required data (e.g. exit status).
-func (s *SSHServer) handleExec(ch ssh.Channel, req *ssh.Request) error {
-	cl, err := readStringPayload(req.Payload)
-	if err != nil {
-		req.Reply(false, nil)
-		return err
-	}
-	if cl == "" {
-		req.Reply(false, nil)
-		return errors.New("empty command")
-	}
-
-	s.mutex.Lock()
-	fakeCmd, haveFakeCmd := s.fakeCmds[cl]
-	nextRealCmd := s.nextRealCmd
-	s.nextRealCmd = ""
-	realExecStartDelay, realExecDoneDelay := s.realExecStartDelay, s.realExecDoneDelay
-	s.mutex.Unlock()
-
-	status := 0
-	if haveFakeCmd {
-		time.Sleep(fakeCmd.StartDelay)
-		req.Reply(true, nil)
-		if fakeCmd.StdinDest != nil {
-			io.Copy(fakeCmd.StdinDest, ch)
-		}
-		ch.Write(fakeCmd.Stdout)
-		ch.Stderr().Write(fakeCmd.Stderr)
-		ch.CloseWrite()
-		time.Sleep(fakeCmd.DoneDelay)
-		status = fakeCmd.ExitStatus
-	} else if cl == nextRealCmd {
-		time.Sleep(realExecStartDelay)
-		req.Reply(true, nil)
-		cmd := exec.Command("/bin/sh", "-c", cl)
-		cmd.Stdout = ch
-		cmd.Stderr = ch.Stderr()
-		cmd.Stdin = ch
-		if err = cmd.Run(); err != nil {
-			if ee, ok := err.(*exec.ExitError); ok {
-				if ws, ok := ee.Sys().(syscall.WaitStatus); ok {
-					status = ws.ExitStatus()
-				}
-			}
-		}
-		ch.CloseWrite()
-		time.Sleep(realExecDoneDelay)
-	} else {
-		req.Reply(false, nil)
-		return fmt.Errorf("unexpected command %q", cl)
-	}
-
-	ch.SendRequest("exit-status", false, makeIntPayload(uint32(status)))
-	return nil
 }
 
 // readStringPayload reads and returns a length-prefixed string
@@ -322,3 +213,71 @@ func makeIntPayload(v uint32) []byte {
 	}
 	return b.Bytes()
 }
+
+// ExecReq is used to service an "exec" request.
+// See RFC 4254 6.5, "Starting a Shell or a Command".
+type ExecReq struct {
+	// Cmd contains the command line to be executed.
+	Cmd string
+
+	ch  ssh.Channel
+	req *ssh.Request
+
+	success bool // reply passed to Start
+}
+
+// Start sends a reply to the request reporting the start of the command.
+// If success is false, no further methods should be called.
+// Otherwise, End should be called after the command finishes.
+func (e *ExecReq) Start(success bool) error {
+	e.success = success
+	return e.req.Reply(success, nil)
+}
+
+// Read reads up to len(data) bytes of input supplied by the SSH client.
+// The data should be passed to the executed command's stdin.
+func (e *ExecReq) Read(data []byte) (int, error) { return e.ch.Read(data) }
+
+// Write writes stdout produced by the executed command.
+// It cannot be called after CloseOutput.
+func (e *ExecReq) Write(data []byte) (int, error) { return e.ch.Write(data) }
+
+// Stderr returns a ReadWriter used to write stderr produced by the executed command.
+// It cannot be called after CloseOutput.
+func (e *ExecReq) Stderr() io.ReadWriter { return e.ch.Stderr() }
+
+// CloseOutput closes stdout and stderr.
+func (e *ExecReq) CloseOutput() error { return e.ch.CloseWrite() }
+
+// End reports the command's status code after execution finishes.
+func (e *ExecReq) End(status int) error {
+	_, err := e.ch.SendRequest("exit-status", false, makeIntPayload(uint32(status)))
+	return err
+}
+
+// RunRealCmd runs e.Cmd synchronously, passing stdout, stderr, and stdin appropriately.
+// It calls CloseOutput on completion and returns the process's status code.
+// Callers should call Start(true) before RunRealCmd and End (with the returned status code) after.
+// Callers must validate commands via an out-of-band mechanism before calling this; see host.SSH.AnnounceCmd.
+func (e *ExecReq) RunRealCmd() int {
+	defer e.CloseOutput()
+
+	cmd := exec.Command("/bin/sh", "-c", e.Cmd)
+	cmd.Stdout = e.ch
+	cmd.Stderr = e.ch.Stderr()
+	cmd.Stdin = e.ch
+	if err := cmd.Run(); err != nil {
+		if ee, ok := err.(*exec.ExitError); ok {
+			if ws, ok := ee.Sys().(syscall.WaitStatus); ok {
+				return ws.ExitStatus()
+			}
+		}
+		// Some problem probably occurred before the command could be started.
+		return 1
+	}
+	return 0
+}
+
+// ExecHandler is a function that will be called repeatedly to handle "exec" requests.
+// It will be called concurrently on multiple goroutines if multiple overlapping requests are received.
+type ExecHandler func(req *ExecReq)

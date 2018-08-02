@@ -353,14 +353,14 @@ func TestWriteResultsCollectSysInfo(t *gotesting.T) {
 	if err := json.NewEncoder(&ob).Encode(&runner.CollectSysInfoResult{}); err != nil {
 		t.Fatal(err)
 	}
-	stdin := addLocalRunnerFakeCmd(td.srvData.Srv, 0, ob.Bytes(), nil)
+	td.runStdout = ob.Bytes()
 
 	td.cfg.collectSysInfo = true
 	td.cfg.initialSysInfo = &runner.SysInfoState{}
 	if err := WriteResults(context.Background(), &td.cfg, []TestResult{}, true); err != nil {
 		t.Fatal("WriteResults failed: ", err)
 	}
-	checkArgs(t, stdin, &runner.Args{
+	td.checkArgs(t, &runner.Args{
 		Mode:               runner.CollectSysInfoMode,
 		CollectSysInfoArgs: runner.CollectSysInfoArgs{},
 	})

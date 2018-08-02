@@ -7,6 +7,7 @@ package bundle
 import (
 	"bytes"
 	"crypto/rsa"
+	"log"
 	"os"
 	gotesting "testing"
 
@@ -39,7 +40,7 @@ func TestRemoteMissingTarget(t *gotesting.T) {
 }
 
 func TestRemoteCantConnect(t *gotesting.T) {
-	td := test.NewTestData(userKey, hostKey)
+	td := test.NewTestData(userKey, hostKey, nil)
 	defer td.Close()
 
 	defer testing.ClearForTesting()
@@ -62,14 +63,21 @@ func TestRemoteCantConnect(t *gotesting.T) {
 }
 
 func TestRemoteDUT(t *gotesting.T) {
-	td := test.NewTestData(userKey, hostKey)
-	defer td.Close()
-
 	const (
 		cmd    = "some_command"
 		output = "fake output"
 	)
-	td.Srv.FakeCmd(cmd, test.FakeCmdResult{Stdout: []byte(output)})
+	td := test.NewTestData(userKey, hostKey, func(req *test.ExecReq) {
+		if req.Cmd != cmd {
+			log.Printf("Unexpected command %q", cmd)
+			req.Start(false)
+		} else {
+			req.Start(true)
+			req.Write([]byte(output))
+			req.End(0)
+		}
+	})
+	defer td.Close()
 
 	// Register a test that runs a command on the DUT and saves its output.
 	realOutput := ""
@@ -106,7 +114,7 @@ func TestRemoteDUT(t *gotesting.T) {
 }
 
 func TestRemoteReconnectBetweenTests(t *gotesting.T) {
-	td := test.NewTestData(userKey, hostKey)
+	td := test.NewTestData(userKey, hostKey, nil)
 	defer td.Close()
 
 	// Returns a test function that sets the passed bool to true if the dut.DUT

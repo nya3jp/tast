@@ -9,6 +9,7 @@ import (
 	"crypto/rsa"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -41,7 +42,6 @@ func connectToServer(ctx context.Context, srv *test.SSHServer, key *rsa.PrivateK
 	if err != nil {
 		return nil, err
 	}
-	s.AnnounceCmd = srv.NextRealCmd
 	return s, nil
 }
 
@@ -50,27 +50,47 @@ type testData struct {
 	ctx context.Context
 	srv *test.SSHServer
 	hst *SSH
+
+	nextCmd    string        // next command to be executed by client
+	startDelay time.Duration // delay before acknowledging "exec" request
+	endDelay   time.Duration // delay before reporting command completion
 }
 
 func newTestData(t *testing.T) *testData {
-	ctx := context.Background()
-	srv, err := test.NewSSHServer(&userKey.PublicKey, hostKey)
-	if err != nil {
+	td := &testData{ctx: context.Background()}
+
+	var err error
+	if td.srv, err = test.NewSSHServer(&userKey.PublicKey, hostKey, td.handleExec); err != nil {
 		t.Fatal(err)
 	}
 
-	hst, err := connectToServer(ctx, srv, userKey)
-	if err != nil {
-		srv.Close()
+	if td.hst, err = connectToServer(td.ctx, td.srv, userKey); err != nil {
+		td.srv.Close()
 		t.Fatal(err)
 	}
+	td.hst.AnnounceCmd = func(cmd string) { td.nextCmd = cmd }
 
-	return &testData{ctx, srv, hst}
+	return td
 }
 
 func (td *testData) close() {
 	td.srv.Close()
 	td.hst.Close(td.ctx)
+}
+
+// handleExec handles an SSH "exec" request sent to td.srv by executing the requested command.
+// The command must already be present in td.nextCmd.
+func (td *testData) handleExec(req *test.ExecReq) {
+	if req.Cmd == td.nextCmd {
+		time.Sleep(td.startDelay)
+		req.Start(true)
+		status := req.RunRealCmd()
+		time.Sleep(td.endDelay)
+		req.End(status)
+	} else {
+		log.Printf("Unexpected command %q (want %q)", req.Cmd, td.nextCmd)
+		req.Start(false)
+	}
 }
 
 // initFileTest creates a temporary directory with a subdirectory containing files.
@@ -213,7 +233,7 @@ func TestRunTimeout(t *testing.T) {
 	td := newTestData(t)
 	defer td.close()
 
-	td.srv.RealExecDelays(0, 30*time.Second)
+	td.endDelay = 30 * time.Second
 	ctx, cancel := context.WithTimeout(td.ctx, 10*time.Millisecond)
 	defer cancel()
 	if _, err := td.hst.Run(ctx, "true"); err == nil {
@@ -237,7 +257,7 @@ func TestStartExecTimeout(t *testing.T) {
 	td := newTestData(t)
 	defer td.close()
 
-	td.srv.RealExecDelays(30*time.Second, 0)
+	td.startDelay = 30 * time.Second
 	ctx, cancel := context.WithTimeout(td.ctx, 10*time.Millisecond)
 	defer cancel()
 	if _, err := td.hst.Start(ctx, "true", CloseStdin, NoOutput); err == nil {
@@ -343,7 +363,7 @@ func TestGetFileTimeout(t *testing.T) {
 	tmpDir, srcDir := initFileTest(t, files)
 	defer os.RemoveAll(tmpDir)
 
-	td.srv.RealExecDelays(0, 30*time.Second)
+	td.endDelay = 30 * time.Second
 
 	srcFile := filepath.Join(srcDir, "file")
 	dstFile := filepath.Join(tmpDir, "file")
@@ -514,7 +534,7 @@ func TestPutTreeTimeout(t *testing.T) {
 	tmpDir, srcDir := initFileTest(t, files)
 	defer os.RemoveAll(tmpDir)
 
-	td.srv.RealExecDelays(0, 30*time.Second)
+	td.endDelay = 30 * time.Second
 
 	dstDir := filepath.Join(tmpDir, "dst")
 	ctx, cancel := context.WithTimeout(td.ctx, 10*time.Millisecond)
@@ -525,7 +545,7 @@ func TestPutTreeTimeout(t *testing.T) {
 }
 
 func TestKeyDir(t *testing.T) {
-	srv, err := test.NewSSHServer(&userKey.PublicKey, hostKey)
+	srv, err := test.NewSSHServer(&userKey.PublicKey, hostKey, nil)
 	if err != nil {
 		t.Fatal(err)
 	}

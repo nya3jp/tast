@@ -9,7 +9,6 @@ import (
 	"context"
 	"crypto/rsa"
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"os"
@@ -46,13 +45,22 @@ type localTestData struct {
 	logbuf  bytes.Buffer
 	cfg     Config
 	tempDir string
-	hostDir string // directory simulating root dir on DUT for file copies
+
+	hostDir     string // directory simulating root dir on DUT for file copies
+	nextCopyCmd string // next "exec" command expected for file copies
+
+	runStatus int           // status code for local_test_runner to return
+	runStdout []byte        // stdout for local_test_runner to return
+	runStderr []byte        // stderr for local_test_runner to return
+	runStdin  bytes.Buffer  // stdin that was written to local_test_runner
+	runDelay  time.Duration // local_test_runner delay before exiting
 }
 
 // newLocalTestData performs setup for tests that exercise the local function.
-// Panics on error.
+// It calls t.Fatal on error.
 func newLocalTestData(t *gotesting.T) *localTestData {
-	td := localTestData{srvData: test.NewTestData(userKey, hostKey)}
+	td := localTestData{}
+	td.srvData = test.NewTestData(userKey, hostKey, td.handleExec)
 	td.cfg.KeyFile = td.srvData.UserKeyFile
 
 	toClose := &td
@@ -75,7 +83,7 @@ func newLocalTestData(t *gotesting.T) *localTestData {
 		t.Fatal(err)
 	}
 	td.cfg.hstCopyBasePath = td.hostDir
-	td.cfg.hstCopyAnnounceCmd = td.srvData.Srv.NextRealCmd
+	td.cfg.hstCopyAnnounceCmd = func(cmd string) { td.nextCopyCmd = cmd }
 
 	toClose = nil
 	return &td
@@ -92,30 +100,37 @@ func (td *localTestData) close() {
 	}
 }
 
-// addCheckDataFakeCmd registers the command that local uses to check where test data is installed.
-// TODO(derat): Remove this after 20180901: https://crbug.com/857485
-func addCheckDataFakeCmd(srv *test.SSHServer, status int) {
-	dir := filepath.Join(localDataBuiltinDir, localBundlePkgPathPrefix)
-	srv.FakeCmd(fmt.Sprintf("test -d "+host.QuoteShellArg(dir)), test.FakeCmdResult{ExitStatus: status})
+// handleExec handles SSH "exec" requests sent to td.srvData.Srv.
+// Canned results are returned for local_test_runner, while file-copying-related commands are actually executed.
+func (td *localTestData) handleExec(req *test.ExecReq) {
+	defer func() { td.nextCopyCmd = "" }()
+
+	switch req.Cmd {
+	// TODO(derat): Remove this after 20180901: https://crbug.com/857485
+	case "test -d " + host.QuoteShellArg(filepath.Join(localDataBuiltinDir, localBundlePkgPathPrefix)):
+		req.Start(true)
+		req.End(0)
+	case localRunnerPath:
+		req.Start(true)
+		io.Copy(&td.runStdin, req)
+		req.Write(td.runStdout)
+		req.Stderr().Write(td.runStderr)
+		req.CloseOutput()
+		time.Sleep(td.runDelay)
+		req.End(td.runStatus)
+	case td.nextCopyCmd:
+		req.Start(true)
+		req.End(req.RunRealCmd())
+	default:
+		log.Printf("Unexpected command %q", req.Cmd)
+		req.Start(false)
+	}
 }
 
-// addLocalRunnerFakeCmd registers the command that local uses to run local_test_runner.
-// The returned buffer will contain data written to the command's stdin.
-func addLocalRunnerFakeCmd(srv *test.SSHServer, status int, stdout, stderr []byte) (stdin *bytes.Buffer) {
-	stdin = &bytes.Buffer{}
-	srv.FakeCmd(localRunnerPath, test.FakeCmdResult{
-		ExitStatus: status,
-		Stdout:     stdout,
-		Stderr:     stderr,
-		StdinDest:  stdin,
-	})
-	return stdin
-}
-
-// checkArgs unmarshals a runner.Args struct from stdin and compares it to exp.
-func checkArgs(t *gotesting.T, stdin io.Reader, exp *runner.Args) {
+// checkArgs unmarshals a runner.Args struct from td.runStdin and compares it to exp.
+func (td *localTestData) checkArgs(t *gotesting.T, exp *runner.Args) {
 	args := runner.Args{}
-	if err := json.NewDecoder(stdin).Decode(&args); err != nil {
+	if err := json.NewDecoder(&td.runStdin).Decode(&args); err != nil {
 		t.Error(err)
 		return
 	}
@@ -128,18 +143,16 @@ func TestLocalSuccess(t *gotesting.T) {
 	td := newLocalTestData(t)
 	defer td.close()
 
-	addCheckDataFakeCmd(td.srvData.Srv, 0)
-
 	ob := bytes.Buffer{}
 	mw := control.NewMessageWriter(&ob)
 	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
 	mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
-	stdin := addLocalRunnerFakeCmd(td.srvData.Srv, 0, ob.Bytes(), nil)
+	td.runStdout = ob.Bytes()
 
 	if status, _ := local(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
 		t.Errorf("local() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
 	}
-	checkArgs(t, stdin, &runner.Args{
+	td.checkArgs(t, &runner.Args{
 		BundleGlob: builtinBundleGlob,
 		DataDir:    localDataBuiltinDir,
 	})
@@ -149,14 +162,14 @@ func TestLocalExecFailure(t *gotesting.T) {
 	td := newLocalTestData(t)
 	defer td.close()
 
-	addCheckDataFakeCmd(td.srvData.Srv, 0)
-
 	ob := bytes.Buffer{}
 	mw := control.NewMessageWriter(&ob)
 	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
 	mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
 	const stderr = "some failure message\n"
-	addLocalRunnerFakeCmd(td.srvData.Srv, 1, ob.Bytes(), []byte(stderr))
+	td.runStatus = 1
+	td.runStdout = ob.Bytes()
+	td.runStderr = []byte(stderr)
 
 	if status, _ := local(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitFailure {
 		t.Errorf("local() = %v; want %v", status.ExitCode, subcommands.ExitFailure)
@@ -170,18 +183,13 @@ func TestLocalWaitTimeout(t *gotesting.T) {
 	td := newLocalTestData(t)
 	defer td.close()
 
-	addCheckDataFakeCmd(td.srvData.Srv, 0)
-
 	// Simulate local_test_runner writing control messages immediately but hanging before exiting.
 	b := bytes.Buffer{}
 	mw := control.NewMessageWriter(&b)
 	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
 	mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0)})
-	td.srvData.Srv.FakeCmd(localRunnerPath, test.FakeCmdResult{
-		Stdout:    b.Bytes(),
-		StdinDest: &bytes.Buffer{},
-		DoneDelay: time.Minute,
-	})
+	td.runStdout = b.Bytes()
+	td.runDelay = time.Minute
 
 	// After setting a short wait timeout, an error should be reported.
 	td.cfg.localRunnerWaitTimeout = time.Millisecond
@@ -194,17 +202,14 @@ func TestLocalList(t *gotesting.T) {
 	td := newLocalTestData(t)
 	defer td.close()
 
-	addCheckDataFakeCmd(td.srvData.Srv, 0)
-
 	tests := []testing.Test{
 		testing.Test{Name: "pkg.Test", Desc: "This is a test", Attr: []string{"attr1", "attr2"}},
 		testing.Test{Name: "pkg.AnotherTest", Desc: "Another test"},
 	}
-	b, err := json.Marshal(tests)
-	if err != nil {
+	var err error
+	if td.runStdout, err = json.Marshal(tests); err != nil {
 		t.Fatal(err)
 	}
-	stdin := addLocalRunnerFakeCmd(td.srvData.Srv, 0, b, nil)
 
 	td.cfg.Mode = ListTestsMode
 	var status Status
@@ -212,7 +217,7 @@ func TestLocalList(t *gotesting.T) {
 	if status, results = local(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
 		t.Errorf("local() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
 	}
-	checkArgs(t, stdin, &runner.Args{
+	td.checkArgs(t, &runner.Args{
 		Mode:       runner.ListTestsMode,
 		BundleGlob: builtinBundleGlob,
 		DataDir:    localDataBuiltinDir,
@@ -251,11 +256,10 @@ func TestLocalDataFiles(t *gotesting.T) {
 		testing.Test{Name: category + ".Test1", Pkg: categoryPkg, Data: []string{file1, file2}},
 		testing.Test{Name: category + ".Test2", Pkg: categoryPkg, Data: []string{file2, file3, extFile}},
 	}
-	b, err := json.Marshal(tests)
-	if err != nil {
+	var err error
+	if td.runStdout, err = json.Marshal(tests); err != nil {
 		t.Fatal(err)
 	}
-	stdin := addLocalRunnerFakeCmd(td.srvData.Srv, 0, b, nil)
 
 	// Create a fake source checkout and write the data files to it. Just use their names as their contents.
 	td.cfg.buildCfg.TestWorkspace = filepath.Join(td.tempDir, "ws")
@@ -287,7 +291,7 @@ func TestLocalDataFiles(t *gotesting.T) {
 	if err != nil {
 		t.Fatal("getDataFilePaths() failed: ", err)
 	}
-	checkArgs(t, stdin, &runner.Args{
+	td.checkArgs(t, &runner.Args{
 		Mode:       runner.ListTestsMode,
 		BundleGlob: builtinBundleGlob,
 		Patterns:   []string{pattern},

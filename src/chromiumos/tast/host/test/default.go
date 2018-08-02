@@ -30,10 +30,10 @@ type TestData struct {
 }
 
 // NewTestData initializes and returns a TestData struct. Panics on error.
-func NewTestData(userKey, hostKey *rsa.PrivateKey) *TestData {
+func NewTestData(userKey, hostKey *rsa.PrivateKey, handler ExecHandler) *TestData {
 	d := TestData{}
 	var err error
-	if d.Srv, err = NewSSHServer(&userKey.PublicKey, hostKey); err != nil {
+	if d.Srv, err = NewSSHServer(&userKey.PublicKey, hostKey, handler); err != nil {
 		panic(err)
 	}
 	if d.UserKeyFile, err = WriteKey(userKey); err != nil {

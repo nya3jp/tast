@@ -31,14 +31,14 @@ func TestGetInitialSysInfo(t *testing.T) {
 	if err := json.NewEncoder(&ob).Encode(&res); err != nil {
 		t.Fatal(err)
 	}
-	stdin := addLocalRunnerFakeCmd(td.srvData.Srv, 0, ob.Bytes(), nil)
+	td.runStdout = ob.Bytes()
 
 	// Check that the expected command is sent to the DUT and that the returned state is decoded properly.
 	td.cfg.collectSysInfo = true
 	if err := getInitialSysInfo(context.Background(), &td.cfg); err != nil {
 		t.Fatalf("getInitialSysInfo(..., %+v) failed: %v", td.cfg, err)
 	}
-	checkArgs(t, stdin, &runner.Args{Mode: runner.GetSysInfoStateMode})
+	td.checkArgs(t, &runner.Args{Mode: runner.GetSysInfoStateMode})
 
 	if td.cfg.initialSysInfo == nil {
 		t.Error("initialSysInfo is nil")
@@ -64,7 +64,7 @@ func TestCollectSysInfo(t *testing.T) {
 	if err := json.NewEncoder(&ob).Encode(&runner.CollectSysInfoResult{}); err != nil {
 		t.Fatal(err)
 	}
-	stdin := addLocalRunnerFakeCmd(td.srvData.Srv, 0, ob.Bytes(), nil)
+	td.runStdout = ob.Bytes()
 
 	td.cfg.collectSysInfo = true
 	td.cfg.initialSysInfo = &runner.SysInfoState{
@@ -74,7 +74,7 @@ func TestCollectSysInfo(t *testing.T) {
 	if err := collectSysInfo(context.Background(), &td.cfg); err != nil {
 		t.Fatalf("collectSysInfo(..., %+v) failed: %v", td.cfg, err)
 	}
-	checkArgs(t, stdin, &runner.Args{
+	td.checkArgs(t, &runner.Args{
 		Mode:               runner.CollectSysInfoMode,
 		CollectSysInfoArgs: runner.CollectSysInfoArgs{InitialState: *td.cfg.initialSysInfo},
 	})

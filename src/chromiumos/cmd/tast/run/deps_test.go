@@ -17,14 +17,13 @@ import (
 
 // addGetSoftwareFeaturesResult registers a command in td.srvData.Srv
 // to call local_test_runner with runner.GetSoftwareFeaturesMode.
-func addGetSoftwareFeaturesResult(t *testing.T, td *localTestData,
-	avail, unavail []string) (stdin *bytes.Buffer) {
+func addGetSoftwareFeaturesResult(t *testing.T, td *localTestData, avail, unavail []string) {
 	ob := bytes.Buffer{}
 	res := runner.GetSoftwareFeaturesResult{Available: avail, Unavailable: unavail}
 	if err := json.NewEncoder(&ob).Encode(&res); err != nil {
 		t.Fatal(err)
 	}
-	return addLocalRunnerFakeCmd(td.srvData.Srv, 0, ob.Bytes(), nil)
+	td.runStdout = ob.Bytes()
 }
 
 // checkRunnerTestDepsArgs calls setRunnerTestDepsArgs using cfg and verifies
@@ -53,12 +52,12 @@ func TestGetSoftwareFeaturesAlways(t *testing.T) {
 	// and dependencies should be checked.
 	avail := []string{"dep1", "dep2"}
 	unavail := []string{"dep3"}
-	stdin := addGetSoftwareFeaturesResult(t, td, avail, unavail)
+	addGetSoftwareFeaturesResult(t, td, avail, unavail)
 	td.cfg.checkTestDeps = checkTestDepsAlways
 	if err := getSoftwareFeatures(context.Background(), &td.cfg); err != nil {
 		t.Fatalf("getSoftwareFeatures(%+v) failed: %v", td.cfg, err)
 	}
-	checkArgs(t, stdin, &runner.Args{Mode: runner.GetSoftwareFeaturesMode})
+	td.checkArgs(t, &runner.Args{Mode: runner.GetSoftwareFeaturesMode})
 	checkRunnerTestDepsArgs(t, &td.cfg, true, avail, unavail)
 
 	// Change the features reported by local_test_runner and call getSoftwareFeature again.
@@ -89,13 +88,13 @@ func TestGetSoftwareFeaturesAutoAttrExpr(t *testing.T) {
 
 	// When "auto" is used in conjunction with an attribute-expression-based test
 	// pattern, dependencies should be checked.
-	stdin := addGetSoftwareFeaturesResult(t, td, []string{"foo"}, []string{})
+	addGetSoftwareFeaturesResult(t, td, []string{"foo"}, []string{})
 	td.cfg.Patterns = []string{"(bvt)"} // attr expr needed to check deps with "auto"
 	td.cfg.checkTestDeps = checkTestDepsAuto
 	if err := getSoftwareFeatures(context.Background(), &td.cfg); err != nil {
 		t.Fatalf("getSoftwareFeatures(%+v) failed: %v", td.cfg, err)
 	}
-	checkArgs(t, stdin, &runner.Args{Mode: runner.GetSoftwareFeaturesMode})
+	td.checkArgs(t, &runner.Args{Mode: runner.GetSoftwareFeaturesMode})
 	checkRunnerTestDepsArgs(t, &td.cfg, true, []string{"foo"}, []string{})
 }
 
@@ -120,13 +119,13 @@ func TestGetSoftwareFeaturesAutoNoFeatures(t *testing.T) {
 
 	// "auto" should be downgraded to "never" if the runner didn't report knowing
 	// about any features at all (probably because it's running on a non-test system image).
-	stdin := addGetSoftwareFeaturesResult(t, td, []string{}, []string{})
+	addGetSoftwareFeaturesResult(t, td, []string{}, []string{})
 	td.cfg.Patterns = []string{"(bvt)"} // attr expr needed to check deps with "auto"
 	td.cfg.checkTestDeps = checkTestDepsAuto
 	if err := getSoftwareFeatures(context.Background(), &td.cfg); err != nil {
 		t.Fatalf("getSoftwareFeatures(%+v) failed: %v", td.cfg, err)
 	}
-	checkArgs(t, stdin, &runner.Args{Mode: runner.GetSoftwareFeaturesMode})
+	td.checkArgs(t, &runner.Args{Mode: runner.GetSoftwareFeaturesMode})
 	checkRunnerTestDepsArgs(t, &td.cfg, false, nil, nil)
 }
 
@@ -135,10 +134,10 @@ func TestGetSoftwareFeaturesAlwaysNoFeatures(t *testing.T) {
 	defer td.close()
 
 	// "always" should fail if the runner doesn't know about any features.
-	stdin := addGetSoftwareFeaturesResult(t, td, []string{}, []string{})
+	addGetSoftwareFeaturesResult(t, td, []string{}, []string{})
 	td.cfg.checkTestDeps = checkTestDepsAlways
 	if err := getSoftwareFeatures(context.Background(), &td.cfg); err == nil {
 		t.Fatalf("getSoftwareFeatures(%+v) succeeded unexpectedly", td.cfg)
 	}
-	checkArgs(t, stdin, &runner.Args{Mode: runner.GetSoftwareFeaturesMode})
+	td.checkArgs(t, &runner.Args{Mode: runner.GetSoftwareFeaturesMode})
 }

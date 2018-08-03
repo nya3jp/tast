@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "2cb523be_ce78d3f9",
+        "filename": "src/chromiumos/cmd/tast/run/local_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-08-03T15:05:27Z",
+      "side": 1,
+      "message": "whoops, there is -- thanks, removed.\n\n(it has always bugged me that gofmt doesn\u0027t remove extra blank lines before closing curly braces)",
+      "parentUuid": "329222ad_444d4c52",
+      "revId": "beea11ce984e47cb58b0a3fdb9c3c5c6d0917508",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "771967be_dfd76d14",
         "filename": "src/chromiumos/tast/host/test/ssh_server.go",
         "patchSetId": 3
@@ -30,6 +48,30 @@
       "writtenOn": "2018-08-03T07:01:11Z",
       "side": 1,
       "message": "This struct contains not only a request but a response (ch, success). Do you have any idea about better naming?",
+      "range": {
+        "startLine": 219,
+        "startChar": 5,
+        "endLine": 219,
+        "endChar": 12
+      },
+      "revId": "beea11ce984e47cb58b0a3fdb9c3c5c6d0917508",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2d48ed8d_ea89cb23",
+        "filename": "src/chromiumos/tast/host/test/ssh_server.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 219,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-08-03T15:05:27Z",
+      "side": 1,
+      "message": "hmm, i\u0027m not sure. the RFC (https://tools.ietf.org/html/rfc4254) uses the word \"message\" frequently, although that would be even less accurate here. i considered ExecCommand or ExecCmd, but i\u0027m worried it might be confusing since i also have a \"Cmd\" field.\n\nin go\u0027s http package (and many other http libraries that i\u0027ve used) take the approach of passing two objects, one representing the request and one for sending the response. if i were to do something similar here, i\u0027d probably just use a string for the request and rename this to something like ExecResponder. i think that that may be a bit harder to use than this, though.\n\ni think i\u0027ll stick with \"Req\" for now since all of the functionality is tied to the original request, but i agree that it\u0027s not perfect and i\u0027ll try some more to think of something that\u0027s more accurate.",
+      "parentUuid": "771967be_dfd76d14",
       "range": {
         "startLine": 219,
         "startChar": 5,

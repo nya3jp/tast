@@ -86,7 +86,7 @@ func TestRunExecFailure(t *gotesting.T) {
 	const msg = "exec failed"
 	wrapper := stubRunWrapper{
 		runRes:    []run.TestResult{run.TestResult{Test: testing.Test{Name: "pkg.LocalTest"}}},
-		runStatus: run.Status{subcommands.ExitFailure, msg + "\nmore details"},
+		runStatus: run.Status{ExitCode: subcommands.ExitFailure, ErrorMsg: msg + "\nmore details"},
 	}
 	args := []string{"root@example.net"}
 	b := bytes.Buffer{}

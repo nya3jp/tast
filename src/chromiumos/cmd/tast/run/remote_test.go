@@ -195,12 +195,12 @@ func TestRemoteRun(t *gotesting.T) {
 		BundleGlob: filepath.Join(td.cfg.remoteBundleDir, "*"),
 		DataDir:    td.cfg.remoteDataDir,
 		RemoteArgs: runner.RemoteArgs{
-			bundle.RemoteArgs{
+			RemoteArgs: bundle.RemoteArgs{
 				KeyFile: td.cfg.KeyFile,
 			},
 		},
 		RunTestsArgs: runner.RunTestsArgs{
-			bundle.RunTestsArgs{
+			RunTestsArgs: bundle.RunTestsArgs{
 				CheckSoftwareDeps: false,
 			},
 		},

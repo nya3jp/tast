@@ -94,7 +94,7 @@ func runRemoteRunner(ctx context.Context, cfg *Config, bundleGlob, dataDir strin
 		Patterns:   cfg.Patterns,
 		DataDir:    dataDir,
 		RemoteArgs: runner.RemoteArgs{
-			bundle.RemoteArgs{
+			RemoteArgs: bundle.RemoteArgs{
 				Target:  cfg.Target,
 				KeyFile: cfg.KeyFile,
 				KeyDir:  cfg.KeyDir,

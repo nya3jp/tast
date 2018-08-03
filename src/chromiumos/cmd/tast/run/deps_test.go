@@ -33,7 +33,7 @@ func checkRunnerTestDepsArgs(t *testing.T, cfg *Config, checkDeps bool, avail, u
 	setRunnerTestDepsArgs(cfg, &args)
 
 	exp := runner.RunTestsArgs{
-		bundle.RunTestsArgs{
+		RunTestsArgs: bundle.RunTestsArgs{
 			CheckSoftwareDeps:           checkDeps,
 			AvailableSoftwareFeatures:   avail,
 			UnavailableSoftwareFeatures: unavail,

@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "329222ad_444d4c52",
+        "filename": "src/chromiumos/cmd/tast/run/local_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-08-03T07:01:11Z",
+      "side": 1,
+      "message": "huge nit: is there a blank line here?",
+      "revId": "beea11ce984e47cb58b0a3fdb9c3c5c6d0917508",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "771967be_dfd76d14",
+        "filename": "src/chromiumos/tast/host/test/ssh_server.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 219,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-08-03T07:01:11Z",
+      "side": 1,
+      "message": "This struct contains not only a request but a response (ch, success). Do you have any idea about better naming?",
+      "range": {
+        "startLine": 219,
+        "startChar": 5,
+        "endLine": 219,
+        "endChar": 12
+      },
+      "revId": "beea11ce984e47cb58b0a3fdb9c3c5c6d0917508",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -64,8 +64,8 @@ func handleCollectSysInfo(args *Args, w io.Writer) error {
 	if warnings, err = logs.CopyLogFileUpdates(args.SystemLogDir, res.LogDir, cmdArgs.InitialState.LogInodeSizes); err != nil {
 		return err
 	}
-	for p, warning := range warnings {
-		res.Warnings = append(res.Warnings, fmt.Sprintf("%s: %v", p, warning))
+	for p, w := range warnings {
+		res.Warnings = append(res.Warnings, fmt.Sprintf("%s: %v", p, w))
 	}
 
 	// Collect crashes.
@@ -79,8 +79,8 @@ func handleCollectSysInfo(args *Args, w io.Writer) error {
 	if warnings, err = crash.CopyNewFiles(res.CrashDir, dumps, cmdArgs.InitialState.MinidumpPaths, maxCrashesPerExec); err != nil {
 		return err
 	}
-	for _, w := range warnings {
-		res.Warnings = append(res.Warnings, w.Error())
+	for p, w := range warnings {
+		res.Warnings = append(res.Warnings, fmt.Sprintf("%s: %v", p, w))
 	}
 	// TODO(derat): Decide if it's worthwhile to call crash.CopySystemInfo here to get /etc/lsb-release.
 	// Doing so makes it harder to exercise this code in unit tests.

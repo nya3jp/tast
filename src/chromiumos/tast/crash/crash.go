@@ -67,7 +67,8 @@ func GetCrashes(dir string) (cores, minidumps []string, err error) {
 
 // CopyNewFiles copies paths that are present in newPaths but not in oldPaths into dstDir.
 // If maxPerExec is positive, it limits the maximum number of files that will be copied
-// for each base executable.
+// for each base executable. The returned warnings map contains non-fatal errors keyed by
+// crash file paths.
 func CopyNewFiles(dstDir string, newPaths, oldPaths []string, maxPerExec int) (
 	warnings map[string]error, err error) {
 	oldMap := make(map[string]struct{})

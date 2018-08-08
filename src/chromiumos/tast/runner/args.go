@@ -82,6 +82,7 @@ type GetSysInfoStateResult struct {
 	// SysInfoState contains the collected state.
 	State SysInfoState `json:"state"`
 	// Warnings contains descriptions of non-fatal errors encountered while collecting data.
+	// Each warning can be logged directly without additional information.
 	Warnings []string `json:"warnings"`
 }
 

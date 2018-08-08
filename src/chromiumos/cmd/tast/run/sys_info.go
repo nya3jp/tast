@@ -80,7 +80,7 @@ func collectSysInfo(ctx context.Context, cfg *Config) error {
 	}
 
 	for _, warn := range res.Warnings {
-		cfg.Logger.Log("Error collecting system info: ", warn)
+		cfg.Logger.Log(warn)
 	}
 
 	if len(res.LogDir) != 0 {

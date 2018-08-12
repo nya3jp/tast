@@ -189,10 +189,10 @@ Tests can register ancillary data files that will be copied to the DUT and made
 available while the test is running; consider a short binary audio file that a
 test plays in a loop, for example.
 
-### Local data files
+### Internal data files
 
 Small non-binary data files should be checked into a `data/` subdirectory under
-the test package as _local data files_. Prefix their names by the test file's
+the test package as _internal data files_. Prefix their names by the test file's
 name (e.g. `data/my_test_some_data.txt` for a test file named `my_test.go`) to
 make ownership obvious.
 
@@ -218,6 +218,11 @@ The process for adding an external data file is:
     running e.g. `ebuild path/to/tast-local-tests-cros-9999.ebuild manifest` in
     your chroot.
 4.  Emerge the package to verify that the new file is downloaded and installed.
+
+> Old versions of external data files should be retained indefinitely in Google
+> Cloud Storage so as to not break tests on older system images. Include the
+> date as a suffix in the filename to make it easy to add a new version when
+> needed, e.g. `my_test_data_20180812.bin`.
 
 ### Executables
 

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bdf53b8f_6d316332",
+        "filename": "src/chromiumos/tast/testing/state_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-08-13T18:12:36Z",
+      "side": 0,
+      "message": "while i don\u0027t think that they\u0027re used in these tests, these one-second delays make me a bit anxious, so i\u0027m increasing them to a minute.",
+      "range": {
+        "startLine": 29,
+        "startChar": 49,
+        "endLine": 29,
+        "endChar": 60
+      },
+      "revId": "a977eb6931b89c52554406e2b4cdb913247293c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

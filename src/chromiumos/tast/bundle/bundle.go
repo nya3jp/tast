@@ -155,7 +155,7 @@ func runTest(ctx context.Context, mw *control.MessageWriter, args *Args, cfg *ru
 			copierDone <- true
 		}()
 
-		s := testing.NewState(ctx, ch, filepath.Join(args.DataDir, t.DataDir()), outDir, t.Timeout, t.CleanupTimeout)
+		s := testing.NewState(ctx, t, ch, filepath.Join(args.DataDir, t.DataDir()), outDir)
 		if !t.Run(s) {
 			// If Run reported that the test didn't finish, tell the copier to abort.
 			abortCopier <- true

@@ -109,8 +109,8 @@ func TestSoftwareDeps(t *gotesting.T) {
 }
 
 func TestRunSuccess(t *gotesting.T) {
-	test := Test{Func: func(*State) {}}
-	s := NewState(context.Background(), make(chan Output, 1), "", "", time.Minute, 0)
+	test := Test{Func: func(*State) {}, Timeout: time.Minute}
+	s := NewState(context.Background(), &test, make(chan Output, 1), "", "")
 	test.Run(s)
 	if errs := getOutputErrors(readOutput(s.ch)); len(errs) != 0 {
 		t.Errorf("Got unexpected error(s) for test: %v", errs)
@@ -118,8 +118,8 @@ func TestRunSuccess(t *gotesting.T) {
 }
 
 func TestRunPanic(t *gotesting.T) {
-	test := Test{Func: func(*State) { panic("intentional panic") }}
-	s := NewState(context.Background(), make(chan Output, 1), "", "", time.Minute, 0)
+	test := Test{Func: func(*State) { panic("intentional panic") }, Timeout: time.Minute}
+	s := NewState(context.Background(), &test, make(chan Output, 1), "", "")
 	test.Run(s)
 	if errs := getOutputErrors(readOutput(s.ch)); len(errs) != 1 {
 		t.Errorf("Got %v errors for panicking test; want 1", errs)
@@ -127,12 +127,13 @@ func TestRunPanic(t *gotesting.T) {
 }
 
 func TestRunDeadline(t *gotesting.T) {
-	test := Test{Func: func(s *State) {
+	f := func(s *State) {
 		// Wait for the context to report that the deadline has been hit.
 		<-s.Context().Done()
 		s.Error("Saw timeout within test")
-	}}
-	s := NewState(context.Background(), make(chan Output, 1), "", "", time.Millisecond, 10*time.Second)
+	}
+	test := Test{Func: f, Timeout: time.Millisecond, CleanupTimeout: 10 * time.Second}
+	s := NewState(context.Background(), &test, make(chan Output, 1), "", "")
 	test.Run(s)
 	// The error that was reported by the test after its deadline was hit
 	// but within the cleanup delay should be available.
@@ -144,7 +145,7 @@ func TestRunDeadline(t *gotesting.T) {
 func TestRunLogAfterTimeout(t *gotesting.T) {
 	cont := make(chan bool)
 	done := make(chan bool)
-	test := Test{Func: func(s *State) {
+	f := func(s *State) {
 		// Report when we're done, either after completing or after panicking before completion.
 		completed := false
 		defer func() { done <- completed }()
@@ -154,10 +155,11 @@ func TestRunLogAfterTimeout(t *gotesting.T) {
 		<-cont
 		s.Log("Done waiting")
 		completed = true
-	}}
+	}
+	test := Test{Func: f, Timeout: time.Millisecond, CleanupTimeout: time.Millisecond}
 
 	out := make(chan Output, 10)
-	test.Run(NewState(context.Background(), out, "", "", time.Millisecond, time.Millisecond))
+	test.Run(NewState(context.Background(), &test, out, "", ""))
 
 	// Tell the test to continue even though Run has already returned. The output channel should
 	// still be open so as to avoid a panic when the test writes to it: https://crbug.com/853406

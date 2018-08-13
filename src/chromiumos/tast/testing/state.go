@@ -59,8 +59,8 @@ type State struct {
 }
 
 // NewState returns a new State object. The test's output will be streamed to ch.
-// If cleanupTimeout is 0, a default will be used.
-func NewState(ctx context.Context, ch chan Output, dataDir, outDir string, testTimeout, cleanupTimeout time.Duration) *State {
+// If test.CleanupTimeout is 0, a default will be used.
+func NewState(ctx context.Context, test *Test, ch chan Output, dataDir, outDir string) *State {
 	s := &State{
 		ch:      ch,
 		dataDir: dataDir,
@@ -68,17 +68,18 @@ func NewState(ctx context.Context, ch chan Output, dataDir, outDir string, testT
 	}
 
 	lctx := context.WithValue(ctx, logKey, s)
-	if testTimeout > 0 {
+	if test.Timeout > 0 {
 		// Test.Run uses s.ctx to watch for the test timing out. If a well-behaved test detected a timeout
 		// itself using the same context and reported it as an error, we would end up with two test errors,
 		// one reported by the test and one reported by Test.Run. To avoid this, add a bit more time to the
 		// context used by Test.Run (s.ctx) to give the test a chance to detect the timeout (using s.tctx)
 		// and exit cleanly first.
-		if cleanupTimeout == 0 {
-			cleanupTimeout = defaultTestCleanupTimeout
+		ct := test.CleanupTimeout
+		if ct == 0 {
+			ct = defaultTestCleanupTimeout
 		}
-		s.ctx, s.cancel = context.WithTimeout(lctx, testTimeout+cleanupTimeout)
-		s.tctx, s.tcancel = context.WithTimeout(s.ctx, testTimeout)
+		s.ctx, s.cancel = context.WithTimeout(lctx, test.Timeout+ct)
+		s.tctx, s.tcancel = context.WithTimeout(s.ctx, test.Timeout)
 	} else {
 		s.ctx, s.cancel = context.WithCancel(lctx)
 		s.tctx, s.tcancel = context.WithCancel(s.ctx)

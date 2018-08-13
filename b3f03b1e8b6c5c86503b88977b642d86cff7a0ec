@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "87448728_85f27ba4",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-08-13T07:09:26Z",
+      "side": 1,
+      "message": "huge nit: no a",
+      "range": {
+        "startLine": 12,
+        "startChar": 11,
+        "endLine": 12,
+        "endChar": 13
+      },
+      "revId": "b3f03b1e8b6c5c86503b88977b642d86cff7a0ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c88cb543_566fe76d",
         "filename": "src/chromiumos/tast/bundle/args.go",
         "patchSetId": 1
@@ -18,6 +41,29 @@
         "startChar": 27,
         "endLine": 91,
         "endChar": 44
+      },
+      "revId": "b3f03b1e8b6c5c86503b88977b642d86cff7a0ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a00d1bbb_91c651d1",
+        "filename": "src/chromiumos/tast/bundle/meta.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-08-13T07:09:26Z",
+      "side": 1,
+      "message": "Why don\u0027t we pass Meta via testing.State instead of Context?",
+      "range": {
+        "startLine": 34,
+        "startChar": 0,
+        "endLine": 34,
+        "endChar": 84
       },
       "revId": "b3f03b1e8b6c5c86503b88977b642d86cff7a0ec",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",

@@ -26,7 +26,7 @@ func readOutput(ch chan Output) []Output {
 
 func TestLog(t *gotesting.T) {
 	ch := make(chan Output, 2)
-	s := NewState(context.Background(), ch, "", "", time.Second, 0)
+	s := NewState(context.Background(), &Test{Timeout: time.Minute}, ch, "", "")
 	s.Log("msg ", 1)
 	s.Logf("msg %d", 2)
 	close(ch)
@@ -38,7 +38,7 @@ func TestLog(t *gotesting.T) {
 
 func TestReportError(t *gotesting.T) {
 	ch := make(chan Output, 2)
-	s := NewState(context.Background(), ch, "", "", time.Second, 0)
+	s := NewState(context.Background(), &Test{Timeout: time.Minute}, ch, "", "")
 
 	// Keep these lines next to each other (see below comparison).
 	s.Error("error ", 1)
@@ -87,7 +87,7 @@ func TestReportError(t *gotesting.T) {
 
 func TestFatal(t *gotesting.T) {
 	ch := make(chan Output, 2)
-	s := NewState(context.Background(), ch, "", "", time.Second, 0)
+	s := NewState(context.Background(), &Test{Timeout: time.Minute}, ch, "", "")
 
 	// Log the fatal message in a goroutine so the main goroutine that's running the test won't exit.
 	done := make(chan bool)
@@ -115,7 +115,7 @@ func TestFatal(t *gotesting.T) {
 
 func TestContextLog(t *gotesting.T) {
 	ch := make(chan Output, 2)
-	s := NewState(context.Background(), ch, "", "", time.Second, 0)
+	s := NewState(context.Background(), &Test{Timeout: time.Minute}, ch, "", "")
 	ContextLog(s.Context(), "msg ", 1)
 	ContextLogf(s.Context(), "msg %d", 2)
 	close(ch)
@@ -134,7 +134,7 @@ func TestDataPathValid(t *gotesting.T) {
 		{"foo", filepath.Join(dataDir, "foo")},
 		{"foo/bar", filepath.Join(dataDir, "foo/bar")},
 	} {
-		s := NewState(context.Background(), make(chan Output), dataDir, "", time.Second, 0)
+		s := NewState(context.Background(), &Test{Timeout: time.Minute}, make(chan Output), dataDir, "")
 		if act := s.DataPath(tc.in); act != tc.exp {
 			t.Errorf("DataPath(%q) = %q; want %q", tc.in, act, tc.exp)
 		}
@@ -143,7 +143,7 @@ func TestDataPathValid(t *gotesting.T) {
 
 func TestDataPathNoParent(t *gotesting.T) {
 	ch := make(chan Output, 1)
-	s := NewState(context.Background(), ch, "/data", "", time.Second, 0)
+	s := NewState(context.Background(), &Test{Timeout: time.Minute}, ch, "/data", "")
 
 	// Request an invalid data path to cause a fatal error. Do this in a goroutine
 	// so the main goroutine that's running the test won't exit.

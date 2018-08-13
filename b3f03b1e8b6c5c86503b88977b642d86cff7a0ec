@@ -68,6 +68,30 @@
       "revId": "b3f03b1e8b6c5c86503b88977b642d86cff7a0ec",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "05fa5d06_c15875dc",
+        "filename": "src/chromiumos/tast/bundle/meta.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-08-13T16:11:21Z",
+      "side": 1,
+      "message": "thanks, that sounds cleaner to me too. testing.NewState already has too many args, so i\u0027ll try to find a way to add this cleanly.",
+      "parentUuid": "a00d1bbb_91c651d1",
+      "range": {
+        "startLine": 34,
+        "startChar": 0,
+        "endLine": 34,
+        "endChar": 84
+      },
+      "revId": "b3f03b1e8b6c5c86503b88977b642d86cff7a0ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

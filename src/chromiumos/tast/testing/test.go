@@ -152,6 +152,16 @@ func (tst *Test) populateNameAndPkg() error {
 	return nil
 }
 
+// validateDataPath validates data paths.
+func (tst *Test) validateDataPath() error {
+	for _, p := range tst.Data {
+		if p != filepath.Clean(p) || strings.HasPrefix(p, ".") || strings.HasPrefix(p, "/") {
+			return fmt.Errorf("data path %q is invalid", p)
+		}
+	}
+	return nil
+}
+
 // addAutoAttributes adds automatically-generated attributes to Attr.
 // populateNameAndPkg must be called first.
 func (tst *Test) addAutoAttributes() error {

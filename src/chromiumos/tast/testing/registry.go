@@ -45,6 +45,9 @@ func (r *Registry) AddTest(t *Test) error {
 			return fmt.Errorf("invalid test name %q: %v", t.Name, err)
 		}
 	}
+	if err := t.validateDataPath(); err != nil {
+		return err
+	}
 	if t.Timeout < 0 {
 		return fmt.Errorf("%q has negative timeout %v", t.Name, t.Timeout)
 	}

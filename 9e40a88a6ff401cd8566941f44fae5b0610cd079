@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "83c048d9_08918522",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-08-15T14:21:07Z",
+      "side": 1,
+      "message": "nit: omit trailing punctuation per https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Formatting; so maybe something like:\n\n  \"Data file %q wasn\u0027t declared in definition passed to testing.AddTest\"",
+      "revId": "9e40a88a6ff401cd8566941f44fae5b0610cd079",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ae7035b9_ebb32e17",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-08-15T14:21:07Z",
+      "side": 1,
+      "message": "huge nit: \"data path %q is invalid\"?\n\n(i think it\u0027s a bit clearer to inline data and only use the \"foo: bar\" style when bar is a wrapped error message)",
+      "revId": "9e40a88a6ff401cd8566941f44fae5b0610cd079",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

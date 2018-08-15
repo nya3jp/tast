@@ -31,7 +31,6 @@ func TestReadArgsSortTests(t *gotesting.T) {
 	)
 
 	defer testing.ClearForTesting()
-	testing.GlobalRegistry().DisableValidationForTesting()
 	testing.AddTest(&testing.Test{Name: test2, Func: func(*testing.State) {}})
 	testing.AddTest(&testing.Test{Name: test3, Func: func(*testing.State) {}})
 	testing.AddTest(&testing.Test{Name: test1, Func: func(*testing.State) {}})
@@ -58,7 +57,6 @@ func TestReadArgsTestTimeouts(t *gotesting.T) {
 	)
 
 	defer testing.ClearForTesting()
-	testing.GlobalRegistry().DisableValidationForTesting()
 	testing.AddTest(&testing.Test{Name: name1, Func: func(*testing.State) {}, Timeout: customTimeout})
 	testing.AddTest(&testing.Test{Name: name2, Func: func(*testing.State) {}})
 
@@ -81,7 +79,6 @@ func TestReadArgsTestTimeouts(t *gotesting.T) {
 func TestReadArgsRegistrationError(t *gotesting.T) {
 	defer testing.ClearForTesting()
 	const name = "cat.MyTest"
-	testing.GlobalRegistry().DisableValidationForTesting()
 	testing.AddTest(&testing.Test{Name: name, Func: func(*testing.State) {}})
 
 	// Adding a test without a function should generate an error.
@@ -98,7 +95,6 @@ func TestTestsToRun(t *gotesting.T) {
 		name2 = "cat.MyTest2"
 	)
 	defer testing.ClearForTesting()
-	testing.GlobalRegistry().DisableValidationForTesting()
 	testing.AddTest(&testing.Test{Name: name1, Func: func(*testing.State) {}, Attr: []string{"attr1", "attr2"}})
 	testing.AddTest(&testing.Test{Name: name2, Func: func(*testing.State) {}, Attr: []string{"attr2"}})
 

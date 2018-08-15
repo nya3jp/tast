@@ -125,27 +125,35 @@ func TestContextLog(t *gotesting.T) {
 	}
 }
 
-func TestDataPathValid(t *gotesting.T) {
+func TestDataPathDeclared(t *gotesting.T) {
 	const (
 		dataDir = "/tmp/data"
 	)
+	test := Test{
+		Timeout: time.Minute,
+		Data:    []string{"foo", "foo/bar", "foo/baz"},
+	}
 
 	for _, tc := range []struct{ in, exp string }{
 		{"foo", filepath.Join(dataDir, "foo")},
 		{"foo/bar", filepath.Join(dataDir, "foo/bar")},
 	} {
-		s := NewState(context.Background(), &Test{Timeout: time.Minute}, make(chan Output), dataDir, "", nil)
+		s := NewState(context.Background(), &test, make(chan Output), dataDir, "", nil)
 		if act := s.DataPath(tc.in); act != tc.exp {
 			t.Errorf("DataPath(%q) = %q; want %q", tc.in, act, tc.exp)
 		}
 	}
 }
 
-func TestDataPathNoParent(t *gotesting.T) {
+func TestDataPathNotDeclared(t *gotesting.T) {
 	ch := make(chan Output, 1)
-	s := NewState(context.Background(), &Test{Timeout: time.Minute}, ch, "/data", "", nil)
+	test := Test{
+		Timeout: time.Minute,
+		Data:    []string{"foo"},
+	}
+	s := NewState(context.Background(), &test, ch, "/data", "", nil)
 
-	// Request an invalid data path to cause a fatal error. Do this in a goroutine
+	// Request an undeclared data path to cause a fatal error. Do this in a goroutine
 	// so the main goroutine that's running the test won't exit.
 	done := make(chan bool)
 	go func() {
@@ -153,13 +161,13 @@ func TestDataPathNoParent(t *gotesting.T) {
 			close(done)
 			close(ch)
 		}()
-		s.DataPath("../foo.bin")
+		s.DataPath("bar")
 	}()
 	<-done
 
 	out := readOutput(ch)
 	if len(out) != 1 || out[0].Err == nil {
-		t.Errorf("Got %v when requesting data path containing '..'; wanted 1 error", out)
+		t.Errorf("Got %v when requesting undeclared data path; wanted 1 error", out)
 	}
 }
 

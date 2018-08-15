@@ -66,6 +66,7 @@ func (m *Meta) clone() *Meta {
 // while a test is running.
 type State struct {
 	ch      chan Output // channel to which logging messages and errors are written
+	test    *Test       // test being run
 	dataDir string      // directory in which the test's data files will be located
 	outDir  string      // directory to which the test should write output files
 	meta    *Meta       // only set for remote tests in MetaCategory
@@ -85,6 +86,7 @@ type State struct {
 func NewState(ctx context.Context, test *Test, ch chan Output, dataDir, outDir string, meta *Meta) *State {
 	s := &State{
 		ch:      ch,
+		test:    test,
 		dataDir: dataDir,
 		outDir:  outDir,
 	}
@@ -124,11 +126,13 @@ func (s *State) Context() context.Context {
 // DataPath returns the absolute path to use to access a data file previously
 // registered via Test.Data.
 func (s *State) DataPath(p string) string {
-	fp := filepath.Clean(filepath.Join(s.dataDir, p))
-	if !strings.HasPrefix(fp, s.dataDir+"/") {
-		s.Fatalf("Invalid data path %q (expected relative path without ..)", p)
+	for _, f := range s.test.Data {
+		if f == p {
+			return filepath.Join(s.dataDir, p)
+		}
 	}
-	return fp
+	s.Fatalf("Test data %q wasn't declared in definition passed to testing.AddTest", p)
+	return ""
 }
 
 // OutDir returns a directory into which the test may place arbitrary files

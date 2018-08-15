@@ -49,6 +49,34 @@ func TestPreserveHardcodedName(t *gotesting.T) {
 	}
 }
 
+func TestValidateDataPath(t *gotesting.T) {
+	test := Test{Data: []string{"foo", "bar/baz"}}
+	if err := test.validateDataPath(); err != nil {
+		t.Errorf("Got an unexpected error: %v", err)
+	}
+}
+
+func TestValidateDataPathUnclean(t *gotesting.T) {
+	test := Test{Data: []string{"foo", "bar/../bar/baz"}}
+	if err := test.validateDataPath(); err == nil {
+		t.Error("Did not get an error with unclean path")
+	}
+}
+
+func TestValidateDataPathAbsolutePath(t *gotesting.T) {
+	test := Test{Data: []string{"foo", "/etc/passwd"}}
+	if err := test.validateDataPath(); err == nil {
+		t.Error("Did not get an error with absolute path")
+	}
+}
+
+func TestValidateDataPathRelativePath(t *gotesting.T) {
+	test := Test{Data: []string{"foo", "../baz"}}
+	if err := test.validateDataPath(); err == nil {
+		t.Error("Did not get an error with relative path")
+	}
+}
+
 func TestAutoAttr(t *gotesting.T) {
 	// The bundle name is the second-to-last component in the package's path.
 	test := Test{

@@ -94,7 +94,6 @@ func TestRunTests(t *gotesting.T) {
 	)
 
 	reg := testing.NewRegistry()
-	reg.DisableValidationForTesting()
 	reg.AddTest(&testing.Test{Name: name1, Func: func(*testing.State) {}, Timeout: time.Minute})
 	reg.AddTest(&testing.Test{Name: name2, Func: func(s *testing.State) { s.Error("error") }, Timeout: time.Minute})
 
@@ -195,7 +194,6 @@ func TestRunTests(t *gotesting.T) {
 
 func TestRunTestsTimeout(t *gotesting.T) {
 	reg := testing.NewRegistry()
-	reg.DisableValidationForTesting()
 
 	// The first test blocks indefinitely on a channel.
 	const name1 = "foo.Test1"
@@ -258,7 +256,6 @@ func TestRunTestsNoTests(t *gotesting.T) {
 
 func TestRunTestsMissingDeps(t *gotesting.T) {
 	defer testing.ClearForTesting()
-	testing.GlobalRegistry().DisableValidationForTesting()
 
 	const (
 		validName   = "foo.Valid"
@@ -348,7 +345,6 @@ func TestRunTestsMissingDeps(t *gotesting.T) {
 
 func TestRunMeta(t *gotesting.T) {
 	defer testing.ClearForTesting()
-	testing.GlobalRegistry().DisableValidationForTesting()
 
 	var meta testing.Meta
 	testing.AddTest(&testing.Test{Name: "meta.Test", Func: func(s *testing.State) {
@@ -389,7 +385,6 @@ func TestRunMeta(t *gotesting.T) {
 
 func TestRunList(t *gotesting.T) {
 	defer testing.ClearForTesting()
-	testing.GlobalRegistry().DisableValidationForTesting()
 	testing.AddTest(&testing.Test{Name: "pkg.Test", Func: func(*testing.State) {}})
 
 	stdin := newBufferWithArgs(t, &Args{Mode: ListTestsMode})

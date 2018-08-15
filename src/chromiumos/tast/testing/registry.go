@@ -23,15 +23,13 @@ func init() {
 
 // Registry holds tests.
 type Registry struct {
-	allTests      []*Test
-	validateNames bool
+	allTests []*Test
 }
 
 // NewRegistry returns a new test registry.
 func NewRegistry() *Registry {
 	return &Registry{
-		allTests:      make([]*Test, 0),
-		validateNames: true,
+		allTests: make([]*Test, 0),
 	}
 }
 
@@ -40,10 +38,8 @@ func (r *Registry) AddTest(t *Test) error {
 	if err := t.populateNameAndPkg(); err != nil {
 		return err
 	}
-	if r.validateNames {
-		if err := validateTestName(t.Name); err != nil {
-			return fmt.Errorf("invalid test name %q: %v", t.Name, err)
-		}
+	if err := validateTestName(t.Name); err != nil {
+		return fmt.Errorf("invalid test name %q: %v", t.Name, err)
 	}
 	if err := t.validateDataPath(); err != nil {
 		return err
@@ -147,11 +143,4 @@ func (r *Registry) TestsForAttrExpr(s string) ([]*Test, error) {
 		}
 	}
 	return tests, nil
-}
-
-// DisableValidationForTesting disables validation of test names by AddTest.
-// It should only be called from unit tests (e.g. to permit registering tests
-// that use anonymous functions).
-func (r *Registry) DisableValidationForTesting() {
-	r.validateNames = false
 }

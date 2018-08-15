@@ -32,7 +32,6 @@ func TestLocalRemoteArgs(t *gotesting.T) {
 func TestLocalBadTest(t *gotesting.T) {
 	// A test without a function should trigger a registration error.
 	defer testing.ClearForTesting()
-	testing.GlobalRegistry().DisableValidationForTesting()
 	testing.AddTest(&testing.Test{})
 
 	args := Args{Mode: RunTestsMode}
@@ -50,7 +49,6 @@ func TestLocalRunTest(t *gotesting.T) {
 	const name = "pkg.Test"
 	ran := false
 	defer testing.ClearForTesting()
-	testing.GlobalRegistry().DisableValidationForTesting()
 	testing.AddTest(&testing.Test{Name: name, Func: func(*testing.State) { ran = true }})
 
 	outDir := testutil.TempDir(t)

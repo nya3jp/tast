@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "f99ba6bc_80c976b3",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-08-16T00:50:21Z",
+      "side": 1,
+      "message": "Thanks for catching! I\u0027m trying to keep this in mind but I often fails to do so... Please continue to point out this kind of style errors :)",
+      "parentUuid": "83c048d9_08918522",
+      "revId": "9e40a88a6ff401cd8566941f44fae5b0610cd079",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ae7035b9_ebb32e17",
         "filename": "src/chromiumos/tast/testing/test.go",
         "patchSetId": 1
@@ -33,6 +51,24 @@
       "revId": "9e40a88a6ff401cd8566941f44fae5b0610cd079",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "13cc8669_89096fe9",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-08-16T00:50:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ae7035b9_ebb32e17",
+      "revId": "9e40a88a6ff401cd8566941f44fae5b0610cd079",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

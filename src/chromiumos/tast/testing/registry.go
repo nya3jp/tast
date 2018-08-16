@@ -13,14 +13,6 @@ import (
 	"chromiumos/tast/expr"
 )
 
-var testNameRegexp *regexp.Regexp
-
-func init() {
-	// Validates test names, which should consist of a package name, a period,
-	// and the name of the exported test function.
-	testNameRegexp = regexp.MustCompile("^[a-z][a-z0-9]*\\.[A-Z][A-Za-z0-9]*$")
-}
-
 // Registry holds tests.
 type Registry struct {
 	allTests []*Test
@@ -35,30 +27,10 @@ func NewRegistry() *Registry {
 
 // AddTest adds t to the registry. Missing fields are filled where possible.
 func (r *Registry) AddTest(t *Test) error {
-	if err := t.populateNameAndPkg(); err != nil {
-		return err
-	}
-	if err := validateTestName(t.Name); err != nil {
-		return fmt.Errorf("invalid test name %q: %v", t.Name, err)
-	}
-	if err := t.validateDataPath(); err != nil {
-		return err
-	}
-	if t.Timeout < 0 {
-		return fmt.Errorf("%q has negative timeout %v", t.Name, t.Timeout)
-	}
-	if err := t.addAutoAttributes(); err != nil {
+	if err := t.finalize(); err != nil {
 		return err
 	}
 	r.allTests = append(r.allTests, t)
-	return nil
-}
-
-// validateTestName returns an error if n is not a valid test name.
-func validateTestName(n string) error {
-	if !testNameRegexp.MatchString(n) {
-		return fmt.Errorf("invalid test name %q (want pkg.ExportedTestFunc)", n)
-	}
 	return nil
 }
 

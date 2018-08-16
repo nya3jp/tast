@@ -29,7 +29,7 @@ func getOutputErrors(out []Output) []*Error {
 
 func TestAssignName(t *gotesting.T) {
 	test := Test{Func: Func1}
-	if err := test.populateNameAndPkg(); err != nil {
+	if err := test.finalize(); err != nil {
 		t.Fatal(err)
 	}
 	const exp = "testing.Func1"
@@ -41,7 +41,7 @@ func TestAssignName(t *gotesting.T) {
 func TestPreserveHardcodedName(t *gotesting.T) {
 	const name = "category.MyName"
 	test := Test{Name: name, Func: Func1}
-	if err := test.populateNameAndPkg(); err != nil {
+	if err := test.finalize(); err != nil {
 		t.Fatal(err)
 	}
 	if test.Name != name {
@@ -49,50 +49,78 @@ func TestPreserveHardcodedName(t *gotesting.T) {
 	}
 }
 
+func TestMissingFunc(t *gotesting.T) {
+	test := Test{Name: "category.MyName"}
+	if err := test.finalize(); err == nil {
+		t.Error("Didn't get error with missing function")
+	}
+}
+
+func TestUnexportedFunc(t *gotesting.T) {
+	test := Test{Func: func(*State) {}}
+	if err := test.finalize(); err == nil {
+		t.Error("Didn't get error with unexported function")
+	}
+}
+
+func TestInvalidTestName(t *gotesting.T) {
+	test := Test{Name: "Invalid%@!", Func: Func1}
+	if err := test.finalize(); err == nil {
+		t.Error("Didn't get error with invalid name")
+	}
+}
+
+func TestNegativeTimeout(t *gotesting.T) {
+	test := Test{Func: Func1, Timeout: -1 * time.Second}
+	if err := test.finalize(); err == nil {
+		t.Error("Didn't get error with negative timeout")
+	}
+}
+
 func TestValidateDataPath(t *gotesting.T) {
-	test := Test{Data: []string{"foo", "bar/baz"}}
-	if err := test.validateDataPath(); err != nil {
+	test := Test{Func: Func1, Data: []string{"foo", "bar/baz"}}
+	if err := test.finalize(); err != nil {
 		t.Errorf("Got an unexpected error: %v", err)
 	}
 }
 
 func TestValidateDataPathUnclean(t *gotesting.T) {
-	test := Test{Data: []string{"foo", "bar/../bar/baz"}}
-	if err := test.validateDataPath(); err == nil {
+	test := Test{Func: Func1, Data: []string{"foo", "bar/../bar/baz"}}
+	if err := test.finalize(); err == nil {
 		t.Error("Did not get an error with unclean path")
 	}
 }
 
 func TestValidateDataPathAbsolutePath(t *gotesting.T) {
-	test := Test{Data: []string{"foo", "/etc/passwd"}}
-	if err := test.validateDataPath(); err == nil {
+	test := Test{Func: Func1, Data: []string{"foo", "/etc/passwd"}}
+	if err := test.finalize(); err == nil {
 		t.Error("Did not get an error with absolute path")
 	}
 }
 
 func TestValidateDataPathRelativePath(t *gotesting.T) {
-	test := Test{Data: []string{"foo", "../baz"}}
-	if err := test.validateDataPath(); err == nil {
+	test := Test{Func: Func1, Data: []string{"foo", "../baz"}}
+	if err := test.finalize(); err == nil {
 		t.Error("Did not get an error with relative path")
 	}
 }
 
 func TestAutoAttr(t *gotesting.T) {
-	// The bundle name is the second-to-last component in the package's path.
 	test := Test{
 		Name:         "category.Name",
-		Pkg:          "org/chromium/tast/mybundle/category",
+		Func:         Func1,
 		Attr:         []string{"attr1", "attr2"},
 		SoftwareDeps: []string{"dep1", "dep2"},
 	}
-	if err := test.addAutoAttributes(); err != nil {
-		t.Fatal("addAutoAttributes failed: ", err)
+	if err := test.finalize(); err != nil {
+		t.Fatal("finalize failed: ", err)
 	}
 	exp := []string{
 		"attr1",
 		"attr2",
 		testNameAttrPrefix + "category.Name",
-		testBundleAttrPrefix + "mybundle",
+		// The bundle name is the second-to-last component in the package's path.
+		testBundleAttrPrefix + "tast",
 		testDepAttrPrefix + "dep1",
 		testDepAttrPrefix + "dep2",
 	}
@@ -104,22 +132,22 @@ func TestAutoAttr(t *gotesting.T) {
 }
 
 func TestReservedAttrPrefixes(t *gotesting.T) {
-	test := Test{Name: "cat.Test"}
+	test := Test{Name: "cat.Test", Func: Func1}
 	for _, attr := range []string{
 		testNameAttrPrefix + "foo",
 		testBundleAttrPrefix + "bar",
 		testDepAttrPrefix + "dep",
 	} {
 		test.Attr = []string{attr}
-		if err := test.addAutoAttributes(); err == nil {
-			t.Errorf("addAutoAttributes didn't return error for reserved attribute %q", attr)
+		if err := test.finalize(); err == nil {
+			t.Errorf("finalize didn't return error for reserved attribute %q", attr)
 		}
 	}
 }
 
 func TestDataDir(t *gotesting.T) {
 	test := Test{Func: Func1}
-	if err := test.populateNameAndPkg(); err != nil {
+	if err := test.finalize(); err != nil {
 		t.Fatal(err)
 	}
 	exp := filepath.Join("chromiumos/tast/testing", testDataSubdir)

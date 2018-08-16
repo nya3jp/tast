@@ -12,6 +12,7 @@ import (
 	"io"
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"runtime"
 	"sort"
 	"strings"
@@ -25,6 +26,14 @@ const (
 	testBundleAttrPrefix = "bundle:" // prefix for auto-added attribute containing bundle name
 	testDepAttrPrefix    = "dep:"    // prefix for auto-added attribute containing software dependency
 )
+
+var testNameRegexp *regexp.Regexp
+
+func init() {
+	// Validates test names, which should consist of a package name, a period,
+	// and the name of the exported test function.
+	testNameRegexp = regexp.MustCompile("^[a-z][a-z0-9]*\\.[A-Z][A-Za-z0-9]*$")
+}
 
 // TestFunc is the code associated with a test.
 type TestFunc func(*State)
@@ -129,6 +138,29 @@ DepLoop:
 	return missing
 }
 
+// finalize fills in defaults and validates the result.
+func (tst *Test) finalize() error {
+	// Fill in defaults.
+	if err := tst.populateNameAndPkg(); err != nil {
+		return err
+	}
+	if err := tst.addAutoAttributes(); err != nil {
+		return err
+	}
+
+	// Validate the result.
+	if err := tst.validateTestName(); err != nil {
+		return err
+	}
+	if err := tst.validateDataPath(); err != nil {
+		return err
+	}
+	if tst.Timeout < 0 {
+		return fmt.Errorf("%q has negative timeout %v", tst.Name, tst.Timeout)
+	}
+	return nil
+}
+
 // populateNameAndPkg fills Name (if empty) and Pkg (unconditionally).
 func (tst *Test) populateNameAndPkg() error {
 	if tst.Func == nil {
@@ -149,6 +181,14 @@ func (tst *Test) populateNameAndPkg() error {
 
 	tst.Pkg = pkg
 
+	return nil
+}
+
+// validateTestName returns an error if test name is invalid.
+func (tst *Test) validateTestName() error {
+	if !testNameRegexp.MatchString(tst.Name) {
+		return fmt.Errorf("invalid test name %q (want pkg.ExportedTestFunc)", tst.Name)
+	}
 	return nil
 }
 

@@ -7,7 +7,6 @@ package testing
 import (
 	"reflect"
 	gotesting "testing"
-	"time"
 )
 
 // testsEqual returns true if a and b contain tests with matching fields.
@@ -159,22 +158,5 @@ func TestTestsForAttrExpr(t *gotesting.T) {
 				t.Errorf("TestsForAttrExpr(%q) returned non-copied test(s): %v", tc.expr, dupes)
 			}
 		}
-	}
-}
-
-func TestAddTestFailsForInvalidTests(t *gotesting.T) {
-	reg := NewRegistry()
-
-	if err := reg.AddTest(&Test{Name: "Invalid%@!", Func: Func1}); err == nil {
-		t.Errorf("Didn't get error when adding test with invalid name")
-	}
-	if err := reg.AddTest(&Test{Name: "pkg.MissingFunc"}); err == nil {
-		t.Errorf("Didn't get error when adding test with missing function")
-	}
-	if err := reg.AddTest(&Test{Func: func(*State) {}}); err == nil {
-		t.Errorf("Didn't get error when adding test with unexported function")
-	}
-	if err := reg.AddTest(&Test{Func: Func1, Timeout: -1 * time.Second}); err == nil {
-		t.Errorf("Didn't get error when adding test with negative timeout")
 	}
 }

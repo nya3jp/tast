@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
 	"path"
 	"path/filepath"
 	"strings"
@@ -140,6 +141,22 @@ func connectToTarget(ctx context.Context, cfg *Config) (*host.SSH, error) {
 // localBundlePackage returns the Portage package name for the bundle with the given name (e.g. "cros").
 func localBundlePackage(name string) string {
 	return fmt.Sprintf("chromeos-base/tast-local-tests-%s", name)
+}
+
+// findPackageOverlay returns an overlay directory containing a specified Portage package pkg.
+func findPackageOverlay(pkg string) (string, error) {
+	b, err := exec.Command("portageq", "portdir_overlay").Output()
+	if err != nil {
+		return "", fmt.Errorf("failed to get overlays: %v", err)
+	}
+	overlays := strings.Fields(string(b))
+	for _, ovl := range overlays {
+		p := filepath.Join(ovl, pkg)
+		if _, err := os.Stat(p); err == nil {
+			return ovl, nil
+		}
+	}
+	return "", fmt.Errorf("package %s not found in any overlays", pkg)
 }
 
 // buildAndPushBundle builds a local test bundle and pushes it to hst as dictated by cfg.
@@ -298,7 +315,14 @@ func getDataFilePaths(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlo
 	}
 
 	// Load the external_data.conf file specifying URLs for external data files.
-	extConf := filepath.Join(cfg.overlayDir, localBundlePackage(cfg.buildBundle), localBundleExternalDataConf)
+	bundlePkg := localBundlePackage(cfg.buildBundle)
+	if cfg.overlayDir == "" {
+		cfg.overlayDir, err = findPackageOverlay(bundlePkg)
+		if err != nil {
+			return nil, nil, err
+		}
+	}
+	extConf := filepath.Join(cfg.overlayDir, bundlePkg, localBundleExternalDataConf)
 	if _, err := os.Stat(extConf); err == nil {
 		if edm, err = newExternalDataMap(extConf); err != nil {
 			return nil, nil, err

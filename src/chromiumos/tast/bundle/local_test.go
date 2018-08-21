@@ -31,7 +31,7 @@ func TestLocalRemoteArgs(t *gotesting.T) {
 
 func TestLocalBadTest(t *gotesting.T) {
 	// A test without a function should trigger a registration error.
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.SkipCheckingTestFuncNames))
 	defer restore()
 	testing.AddTest(&testing.Test{})
 
@@ -49,7 +49,7 @@ func TestLocalBadTest(t *gotesting.T) {
 func TestLocalRunTest(t *gotesting.T) {
 	const name = "pkg.Test"
 	ran := false
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.SkipCheckingTestFuncNames))
 	defer restore()
 	testing.AddTest(&testing.Test{Name: name, Func: func(*testing.State) { ran = true }})
 

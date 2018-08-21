@@ -16,18 +16,36 @@ import (
 // Registry holds tests.
 type Registry struct {
 	allTests []*Test
+
+	checkTestFuncNames bool
+}
+
+type registryOption func(*Registry)
+
+// SkipCheckingTestFuncNames can be passed to NewRegistry to configure the returned registry
+// to skip checking that a test's function name matches the name of the file that registered it.
+// This is used by unit tests that want to add tests with test function names that don't match
+// the test file's name (e.g. a file named "file_test.go" would typically be expected to register
+// a test function with a name like "FileTest").
+var SkipCheckingTestFuncNames = func(r *Registry) {
+	r.checkTestFuncNames = false
 }
 
 // NewRegistry returns a new test registry.
-func NewRegistry() *Registry {
-	return &Registry{
-		allTests: make([]*Test, 0),
+func NewRegistry(opts ...registryOption) *Registry {
+	r := &Registry{
+		allTests:           make([]*Test, 0),
+		checkTestFuncNames: true,
 	}
+	for _, o := range opts {
+		o(r)
+	}
+	return r
 }
 
 // AddTest adds t to the registry. Missing fields are filled where possible.
 func (r *Registry) AddTest(t *Test) error {
-	if err := t.finalize(); err != nil {
+	if err := t.finalize(r.checkTestFuncNames); err != nil {
 		return err
 	}
 	r.allTests = append(r.allTests, t)

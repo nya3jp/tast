@@ -24,7 +24,7 @@ func init() {
 }
 
 func TestRemoteMissingTarget(t *gotesting.T) {
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
 	defer restore()
 	testing.AddTest(&testing.Test{Name: "pkg.Test", Func: func(s *testing.State) {}})
 
@@ -43,7 +43,7 @@ func TestRemoteCantConnect(t *gotesting.T) {
 	td := test.NewTestData(userKey, hostKey, nil)
 	defer td.Close()
 
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
 	defer restore()
 	testing.AddTest(&testing.Test{Name: "pkg.Test", Func: func(s *testing.State) {}})
 
@@ -81,7 +81,7 @@ func TestRemoteDUT(t *gotesting.T) {
 
 	// Register a test that runs a command on the DUT and saves its output.
 	realOutput := ""
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
 	defer restore()
 	testing.AddTest(&testing.Test{Name: "pkg.Test", Func: func(s *testing.State) {
 		dt, ok := dut.FromContext(s.Context())
@@ -134,7 +134,7 @@ func TestRemoteReconnectBetweenTests(t *gotesting.T) {
 	}
 
 	var conn1, conn2 bool
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
 	defer restore()
 	testing.AddTest(&testing.Test{Name: "pkg.Test1", Func: makeFunc(&conn1)})
 	testing.AddTest(&testing.Test{Name: "pkg.Test2", Func: makeFunc(&conn2)})

@@ -31,9 +31,9 @@ func TestLocalRemoteArgs(t *gotesting.T) {
 
 func TestLocalBadTest(t *gotesting.T) {
 	// A test without a function should trigger a registration error.
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
 	defer restore()
-	testing.AddTest(&testing.Test{})
+	testing.AddTest(&testing.Test{Name: "pkg.Test"})
 
 	args := Args{Mode: RunTestsMode}
 	stdin := newBufferWithArgs(t, &args)
@@ -49,7 +49,7 @@ func TestLocalBadTest(t *gotesting.T) {
 func TestLocalRunTest(t *gotesting.T) {
 	const name = "pkg.Test"
 	ran := false
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
 	defer restore()
 	testing.AddTest(&testing.Test{Name: name, Func: func(*testing.State) { ran = true }})
 

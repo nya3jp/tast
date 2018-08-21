@@ -30,7 +30,7 @@ func TestReadArgsSortTests(t *gotesting.T) {
 		test3 = "pkg.Test3"
 	)
 
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
 	defer restore()
 	testing.AddTest(&testing.Test{Name: test2, Func: func(*testing.State) {}})
 	testing.AddTest(&testing.Test{Name: test3, Func: func(*testing.State) {}})
@@ -57,7 +57,7 @@ func TestReadArgsTestTimeouts(t *gotesting.T) {
 		defaultTimeout = 30 * time.Second
 	)
 
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
 	defer restore()
 	testing.AddTest(&testing.Test{Name: name1, Func: func(*testing.State) {}, Timeout: customTimeout})
 	testing.AddTest(&testing.Test{Name: name2, Func: func(*testing.State) {}})
@@ -79,7 +79,7 @@ func TestReadArgsTestTimeouts(t *gotesting.T) {
 }
 
 func TestReadArgsRegistrationError(t *gotesting.T) {
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
 	defer restore()
 	const name = "cat.MyTest"
 	testing.AddTest(&testing.Test{Name: name, Func: func(*testing.State) {}})
@@ -97,7 +97,7 @@ func TestTestsToRun(t *gotesting.T) {
 		name1 = "cat.MyTest1"
 		name2 = "cat.MyTest2"
 	)
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
 	defer restore()
 	testing.AddTest(&testing.Test{Name: name1, Func: func(*testing.State) {}, Attr: []string{"attr1", "attr2"}})
 	testing.AddTest(&testing.Test{Name: name2, Func: func(*testing.State) {}, Attr: []string{"attr2"}})

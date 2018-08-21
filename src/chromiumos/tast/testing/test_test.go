@@ -14,6 +14,7 @@ import (
 	"time"
 )
 
+// Func1 is an arbitrary public test function used by unit tests.
 func Func1(*State) {}
 
 // getOutputErrors returns all errors from out.
@@ -27,81 +28,73 @@ func getOutputErrors(out []Output) []*Error {
 	return errs
 }
 
-func TestAssignName(t *gotesting.T) {
-	test := Test{Func: Func1}
-	if err := test.finalize(); err != nil {
-		t.Fatal(err)
-	}
-	const exp = "testing.Func1"
-	if test.Name != exp {
-		t.Errorf("Name = %q; want %q", test.Name, exp)
-	}
-}
-
-func TestPreserveHardcodedName(t *gotesting.T) {
-	const name = "category.MyName"
-	test := Test{Name: name, Func: Func1}
-	if err := test.finalize(); err != nil {
-		t.Fatal(err)
-	}
-	if test.Name != name {
-		t.Errorf("Name = %q; want %q", test.Name, name)
-	}
-}
-
 func TestMissingFunc(t *gotesting.T) {
 	test := Test{Name: "category.MyName"}
-	if err := test.finalize(); err == nil {
+	if err := test.finalize(false); err == nil {
 		t.Error("Didn't get error with missing function")
-	}
-}
-
-func TestUnexportedFunc(t *gotesting.T) {
-	test := Test{Func: func(*State) {}}
-	if err := test.finalize(); err == nil {
-		t.Error("Didn't get error with unexported function")
 	}
 }
 
 func TestInvalidTestName(t *gotesting.T) {
 	test := Test{Name: "Invalid%@!", Func: Func1}
-	if err := test.finalize(); err == nil {
+	if err := test.finalize(false); err == nil {
 		t.Error("Didn't get error with invalid name")
 	}
 }
 
 func TestNegativeTimeout(t *gotesting.T) {
-	test := Test{Func: Func1, Timeout: -1 * time.Second}
-	if err := test.finalize(); err == nil {
+	test := Test{Name: "cat.Name", Func: Func1, Timeout: -1 * time.Second}
+	if err := test.finalize(false); err == nil {
 		t.Error("Didn't get error with negative timeout")
 	}
 }
 
 func TestValidateDataPath(t *gotesting.T) {
-	test := Test{Func: Func1, Data: []string{"foo", "bar/baz"}}
-	if err := test.finalize(); err != nil {
+	test := Test{Name: "cat.Name", Func: Func1, Data: []string{"foo", "bar/baz"}}
+	if err := test.finalize(false); err != nil {
 		t.Errorf("Got an unexpected error: %v", err)
 	}
 }
 
 func TestValidateDataPathUnclean(t *gotesting.T) {
-	test := Test{Func: Func1, Data: []string{"foo", "bar/../bar/baz"}}
-	if err := test.finalize(); err == nil {
+	test := Test{Name: "cat.Name", Func: Func1, Data: []string{"foo", "bar/../bar/baz"}}
+	if err := test.finalize(false); err == nil {
 		t.Error("Did not get an error with unclean path")
 	}
 }
 
 func TestValidateDataPathAbsolutePath(t *gotesting.T) {
-	test := Test{Func: Func1, Data: []string{"foo", "/etc/passwd"}}
-	if err := test.finalize(); err == nil {
+	test := Test{Name: "cat.Name", Func: Func1, Data: []string{"foo", "/etc/passwd"}}
+	if err := test.finalize(false); err == nil {
 		t.Error("Did not get an error with absolute path")
 	}
 }
 
 func TestValidateDataPathRelativePath(t *gotesting.T) {
-	test := Test{Func: Func1, Data: []string{"foo", "../baz"}}
-	if err := test.finalize(); err == nil {
+	test := Test{Name: "cat.Name", Func: Func1, Data: []string{"foo", "../baz"}}
+	if err := test.finalize(false); err == nil {
 		t.Error("Did not get an error with relative path")
+	}
+}
+
+// TESTTEST is a public test function with a name that's chosen to be appropriate for this file's
+// name (test_test.go). The obvious choice, "TestTest", is unavailable since Go's testing package
+// will interpret it as itself being a unit test, so let's just pretend that "test" is an acronym.
+func TESTTEST(*State) {}
+
+func TestAutoName(t *gotesting.T) {
+	test := Test{Func: TESTTEST}
+	if err := test.finalize(true); err != nil {
+		t.Error("Got error when finalizing test with valid test func name: ", err)
+	} else if exp := "testing.TESTTEST"; test.Name != exp {
+		t.Errorf("Test was given name %q; want %q", test.Name, exp)
+	}
+}
+
+func TestAutoNameInvalid(t *gotesting.T) {
+	test := Test{Func: Func1}
+	if err := test.finalize(true); err == nil {
+		t.Error("Didn't get expected error when finalizing test with invalid test func name")
 	}
 }
 
@@ -112,7 +105,7 @@ func TestAutoAttr(t *gotesting.T) {
 		Attr:         []string{"attr1", "attr2"},
 		SoftwareDeps: []string{"dep1", "dep2"},
 	}
-	if err := test.finalize(); err != nil {
+	if err := test.finalize(false); err != nil {
 		t.Fatal("finalize failed: ", err)
 	}
 	exp := []string{
@@ -139,15 +132,15 @@ func TestReservedAttrPrefixes(t *gotesting.T) {
 		testDepAttrPrefix + "dep",
 	} {
 		test.Attr = []string{attr}
-		if err := test.finalize(); err == nil {
+		if err := test.finalize(false); err == nil {
 			t.Errorf("finalize didn't return error for reserved attribute %q", attr)
 		}
 	}
 }
 
 func TestDataDir(t *gotesting.T) {
-	test := Test{Func: Func1}
-	if err := test.finalize(); err != nil {
+	test := Test{Name: "cat.Name", Func: Func1}
+	if err := test.finalize(false); err != nil {
 		t.Fatal(err)
 	}
 	exp := filepath.Join("chromiumos/tast/testing", testDataSubdir)
@@ -231,7 +224,6 @@ func TestRunLogAfterTimeout(t *gotesting.T) {
 
 func TestJSON(t *gotesting.T) {
 	orig := Test{
-		Name: "pkg.Name",
 		Func: Func1,
 		Desc: "Description",
 		Attr: []string{"attr1", "attr2"},
@@ -298,4 +290,39 @@ func TestTestClone(t *gotesting.T) {
 	clone.Attr[0] = "new"
 	clone.Timeout = 2 * timeout
 	checkTest("update after clone()", &orig)
+}
+
+func TestCheckFuncNameAgainstFilename(t *gotesting.T) {
+	for _, tc := range []struct {
+		name, fn string
+		valid    bool
+	}{
+		{"Test", "test.go", true},                     // single word
+		{"MyTest", "my_test.go", true},                // two words separated with underscores
+		{"LoadURL", "load_url.go", true},              // word and acronym
+		{"PlayMP3", "play_mp3.go", true},              // word contains numbers
+		{"PlayMP3Song", "play_mp3_song.go", true},     // acronym followed by word
+		{"ConnectToDBus", "connect_to_dbus.go", true}, // word with multiple leading caps
+		{"Foo123bar", "foo123bar.go", true},           // word contains digits
+		{"Foo123Bar", "foo123_bar.go", true},          // word with trailing digits
+		{"Foo123bar", "foo_123bar.go", true},          // word with leading digits
+		{"Foo123Bar", "foo_123_bar.go", true},         // word consisting only of digits
+		{"foo", "foo.go", false},                      // lowercase func name
+		{"LoadURL", "loadurl.go", false},              // new word in func name but not in filename
+		{"FirstTest", "first.go", false},              // func name has word not in filename
+		{"Firstblah", "first.go", false},              // func name has word longer than filename
+		{"First", "firstabc.go", false},               // filename has word longer than func name
+		{"First", "first_test.go", false},             // filename has word not in func name
+		{"FooBar", "foo__bar.go", false},              // empty word in filename
+		{"Foo", "bar.go", false},                      // completely different words
+		{"Foo", "Foo.go", false},                      // non-lowercase filename
+		{"Foo", "foo.txt", false},                     // filename without ".go" extension
+	} {
+		err := checkFuncNameAgainstFilename(tc.name, tc.fn)
+		if err != nil && tc.valid {
+			t.Fatalf("checkFuncNameAgainstFilename(%q, %q) failed: %v", tc.name, tc.fn, err)
+		} else if err == nil && !tc.valid {
+			t.Fatalf("checkFuncNameAgainstFilename(%q, %q) didn't return expected error", tc.name, tc.fn)
+		}
+	}
 }

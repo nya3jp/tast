@@ -46,10 +46,10 @@ func getDupeTestPtrs(a, b []*Test) []*Test {
 }
 
 func TestAllTests(t *gotesting.T) {
-	reg := NewRegistry()
+	reg := NewRegistry(NoAutoName)
 	allTests := []*Test{
-		&Test{Name: "test.Foo", Func: Func1},
-		&Test{Name: "test.Bar", Func: Func1},
+		&Test{Name: "test.Foo", Func: func(*State) {}},
+		&Test{Name: "test.Bar", Func: func(*State) {}},
 	}
 	for _, test := range allTests {
 		if err := reg.AddTest(test); err != nil {
@@ -67,11 +67,11 @@ func TestAllTests(t *gotesting.T) {
 }
 
 func TestTestsForPattern(t *gotesting.T) {
-	reg := NewRegistry()
+	reg := NewRegistry(NoAutoName)
 	allTests := []*Test{
-		&Test{Name: "test.Foo", Func: Func1},
-		&Test{Name: "test.Bar", Func: Func1},
-		&Test{Name: "blah.Foo", Func: Func1},
+		&Test{Name: "test.Foo", Func: func(*State) {}},
+		&Test{Name: "test.Bar", Func: func(*State) {}},
+		&Test{Name: "blah.Foo", Func: func(*State) {}},
 	}
 	for _, test := range allTests {
 		if err := reg.AddTest(test); err != nil {
@@ -125,10 +125,10 @@ func TestTestsForPattern(t *gotesting.T) {
 }
 
 func TestTestsForAttrExpr(t *gotesting.T) {
-	reg := NewRegistry()
+	reg := NewRegistry(NoAutoName)
 	allTests := []*Test{
-		&Test{Name: "test.Foo", Func: Func1, Attr: []string{"test", "foo"}},
-		&Test{Name: "test.Bar", Func: Func1, Attr: []string{"test", "bar"}},
+		&Test{Name: "test.Foo", Func: func(*State) {}, Attr: []string{"test", "foo"}},
+		&Test{Name: "test.Bar", Func: func(*State) {}, Attr: []string{"test", "bar"}},
 	}
 	for _, test := range allTests {
 		if err := reg.AddTest(test); err != nil {

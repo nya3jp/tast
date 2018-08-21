@@ -93,7 +93,7 @@ func TestRunTests(t *gotesting.T) {
 		testSetupMsg  = "setting up for test"
 	)
 
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry(testing.NoAutoName)
 	reg.AddTest(&testing.Test{Name: name1, Func: func(*testing.State) {}, Timeout: time.Minute})
 	reg.AddTest(&testing.Test{Name: name2, Func: func(s *testing.State) { s.Error("error") }, Timeout: time.Minute})
 
@@ -193,7 +193,7 @@ func TestRunTests(t *gotesting.T) {
 }
 
 func TestRunTestsTimeout(t *gotesting.T) {
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry(testing.NoAutoName)
 
 	// The first test blocks indefinitely on a channel.
 	const name1 = "foo.Test1"
@@ -255,7 +255,7 @@ func TestRunTestsNoTests(t *gotesting.T) {
 }
 
 func TestRunTestsMissingDeps(t *gotesting.T) {
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
 	defer restore()
 
 	const (
@@ -345,7 +345,7 @@ func TestRunTestsMissingDeps(t *gotesting.T) {
 }
 
 func TestRunMeta(t *gotesting.T) {
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
 	defer restore()
 
 	var meta testing.Meta
@@ -386,7 +386,7 @@ func TestRunMeta(t *gotesting.T) {
 }
 
 func TestRunList(t *gotesting.T) {
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
 	defer restore()
 	testing.AddTest(&testing.Test{Name: "pkg.Test", Func: func(*testing.State) {}})
 

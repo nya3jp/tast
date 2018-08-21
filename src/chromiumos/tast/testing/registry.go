@@ -16,18 +16,35 @@ import (
 // Registry holds tests.
 type Registry struct {
 	allTests []*Test
+	autoName bool // true if test names should be automatically derived from func names
+}
+
+type registryOption func(*Registry)
+
+// NoAutoName can be passed to NewRegistry to configure the returned registry to skip automatically
+// assigning names to tests and checking that each test's function name matches the name of the file
+// that registered it. This is used by unit tests that want to add tests with test function names
+// that don't match the test file's name (e.g. a file named "file_test.go" would typically be expected
+// to register a test function with a name like "FileTest").
+var NoAutoName = func(r *Registry) {
+	r.autoName = false
 }
 
 // NewRegistry returns a new test registry.
-func NewRegistry() *Registry {
-	return &Registry{
+func NewRegistry(opts ...registryOption) *Registry {
+	r := &Registry{
 		allTests: make([]*Test, 0),
+		autoName: true,
 	}
+	for _, o := range opts {
+		o(r)
+	}
+	return r
 }
 
 // AddTest adds t to the registry. Missing fields are filled where possible.
 func (r *Registry) AddTest(t *Test) error {
-	if err := t.finalize(); err != nil {
+	if err := t.finalize(r.autoName); err != nil {
 		return err
 	}
 	r.allTests = append(r.allTests, t)

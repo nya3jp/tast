@@ -17,6 +17,7 @@ import (
 	"sort"
 	"strings"
 	"time"
+	"unicode"
 )
 
 const (
@@ -43,8 +44,10 @@ type TestFunc func(*State)
 // While this struct can be marshaled to a JSON object, note that unmarshaling that object
 // will not yield a runnable Test struct; Func will not be present.
 type Test struct {
-	// Name specifies the test's name as "category.TestName". If empty (which it typically should be),
-	// generated from Func's package and function name.
+	// Name specifies the test's name as "category.TestName".
+	// This is automatically derived from Func's package and function name and
+	// must be left blank when registering a new test.
+	// The category is the final component of the package.
 	Name string `json:"name"`
 	// Func is the function to be executed to perform the test.
 	Func TestFunc `json:"-"`
@@ -55,7 +58,7 @@ type Test struct {
 	// for commonly-used attributes.
 	Attr []string `json:"attr"`
 	// Data contains paths of data files needed by the test, relative to a "data" subdirectory within the
-	// directory in which TestFunc is located.
+	// directory in which Func is located.
 	Data []string `json:"data"`
 	// SoftwareDeps lists software features that are required to run the test.
 	// If any dependencies are not satisfied by the DUT, the test will be skipped.
@@ -70,8 +73,8 @@ type Test struct {
 	// This is exposed for unit tests and should almost always be omitted when defining tests;
 	// a reasonable default will be used.
 	CleanupTimeout time.Duration `json:"-"`
-	// Pkg contains the Go package in which Func is located. This is filled automatically and should be
-	// omitted when defining tests; it is only public so it can be included when this struct is marshaled.
+	// Pkg contains the Go package in which Func is located.
+	// Automatically filled using Func's package name.
 	Pkg string `json:"pkg"`
 }
 
@@ -139,9 +142,11 @@ DepLoop:
 }
 
 // finalize fills in defaults and validates the result.
-func (tst *Test) finalize() error {
+// If autoName is true, tst.Name will be derived from tst.Func's name.
+// Otherwise (just used in unit tests), tst.Name should be filled already.
+func (tst *Test) finalize(autoName bool) error {
 	// Fill in defaults.
-	if err := tst.populateNameAndPkg(); err != nil {
+	if err := tst.populateNameAndPkg(autoName); err != nil {
 		return err
 	}
 	if err := tst.addAutoAttributes(); err != nil {
@@ -161,30 +166,42 @@ func (tst *Test) finalize() error {
 	return nil
 }
 
-// populateNameAndPkg fills Name (if empty) and Pkg (unconditionally).
-func (tst *Test) populateNameAndPkg() error {
+// populateNameAndPkg fills Name and Pkg.
+// If autoName is true, tst.Name will be derived from tst.Func's name.
+// tst.Func's name will also be verified to match the name of the source file that declared it.
+// Otherwise (just used in unit tests), tst.Name should be filled already.
+func (tst *Test) populateNameAndPkg(autoName bool) error {
 	if tst.Func == nil {
 		return errors.New("missing function")
 	}
-	pkg, name, err := getTestFunctionPackageAndName(tst.Func)
+	info, err := getTestFuncInfo(tst.Func)
 	if err != nil {
 		return err
 	}
 
-	if tst.Name == "" {
-		p := strings.Split(pkg, "/")
-		if len(p) < 2 {
-			return fmt.Errorf("failed to split package %q into at least two components", pkg)
+	p := strings.Split(info.pkg, "/")
+	if len(p) < 2 {
+		return fmt.Errorf("failed to split package %q into at least two components", info.pkg)
+	}
+	category := p[len(p)-1]
+
+	if autoName {
+		if tst.Name != "" {
+			return fmt.Errorf("manually-assigned test name %q", tst.Name)
 		}
-		tst.Name = fmt.Sprintf("%s.%s", p[len(p)-1], name)
+		if err = checkFuncNameAgainstFilename(info.name, filepath.Base(info.file)); err != nil {
+			return err
+		}
+		tst.Name = fmt.Sprintf("%s.%s", category, info.name)
+	} else if tst.Name == "" {
+		return fmt.Errorf("missing name for test with func %s", info.name)
 	}
 
-	tst.Pkg = pkg
-
+	tst.Pkg = info.pkg
 	return nil
 }
 
-// validateTestName returns an error if test name is invalid.
+// validateTestName returns an error if the test name is invalid.
 func (tst *Test) validateTestName() error {
 	if !testNameRegexp.MatchString(tst.Name) {
 		return fmt.Errorf("invalid test name %q (want pkg.ExportedTestFunc)", tst.Name)
@@ -266,17 +283,96 @@ func (t *Test) clone() *Test {
 	return np.Interface().(*Test)
 }
 
-// getTestFunctionPackageAndName determines the package and name for f.
-func getTestFunctionPackageAndName(f TestFunc) (pkg, name string, err error) {
-	rf := runtime.FuncForPC(reflect.ValueOf(f).Pointer())
+// testFuncInfo contains information about a TestFunc.
+type testFuncInfo struct {
+	pkg  string // package name, e.g. "chromiumos/tast/local/bundles/cros/ui"
+	name string // function name, e.g. "ChromeLogin"
+	file string // full source path, e.g. "/home/user/chromeos/src/platform/tast-tests/.../ui/chrome_login.go"
+}
+
+// getTestFuncInfo returns info about f.
+func getTestFuncInfo(f TestFunc) (*testFuncInfo, error) {
+	pc := reflect.ValueOf(f).Pointer()
+	rf := runtime.FuncForPC(pc)
 	if rf == nil {
-		return "", "", errors.New("failed to get function from PC")
+		return nil, errors.New("failed to get function from PC")
 	}
 	p := strings.SplitN(rf.Name(), ".", 2)
 	if len(p) != 2 {
-		return "", "", fmt.Errorf("didn't find package.function in %q", rf.Name())
+		return nil, fmt.Errorf("didn't find package.function in %q", rf.Name())
 	}
-	return p[0], p[1], nil
+
+	info := &testFuncInfo{
+		pkg:  p[0],
+		name: p[1],
+	}
+	info.file, _ = rf.FileLine(pc)
+	return info, nil
+}
+
+// checkFuncNameAgainstFilename verifies that a test function name (e.g. "MyTest") matches
+// the name of the file that contains it (e.g. "my_test.go").
+func checkFuncNameAgainstFilename(funcName, filename string) error {
+	if strings.ToLower(filename) != filename {
+		return fmt.Errorf("filename %q isn't lowercase", filename)
+	}
+
+	const goExt = ".go"
+	ext := filepath.Ext(filename)
+	if ext != goExt {
+		return fmt.Errorf("filename %q doesn't have extension %q", filename, goExt)
+	}
+
+	// First, split the name into words based on underscores in the filename.
+	funcIdx := 0
+	fileWords := strings.Split(filename[:len(filename)-len(ext)], "_")
+	for _, fileWord := range fileWords {
+		// Disallow repeated underscores.
+		if len(fileWord) == 0 {
+			return fmt.Errorf("empty word in filename %q", filename)
+		}
+
+		// Extract the characters from the function name corresponding to the word from the filename.
+		if funcIdx+len(fileWord) > len(funcName) {
+			return fmt.Errorf("name %q doesn't include all of filename %q", funcName, filename)
+		}
+		funcWord := funcName[funcIdx : funcIdx+len(fileWord)]
+		if strings.ToLower(funcWord) != strings.ToLower(fileWord) {
+			return fmt.Errorf("word %q at %d in %q doesn't match %q in filename %q", funcWord, funcIdx, funcName, fileWord, filename)
+		}
+
+		// Test names are taken from Go function names, so they should follow Go's naming conventions.
+		// Generally speaking, that means camel case with acronyms fully capitalized (although we can't catch
+		// miscapitalized acronyms here, as we don't know if a given word is an acronym or not).
+		// Every word should begin with either an uppercase letter or a digit.
+		// After we see a lowercase letter in the word, we don't permit any more uppercase letters.
+		// We still allow multiple leading uppercase letters so that e.g. "DBus" can appear as "dbus"
+		// in the filename rather than "d_bus".
+		sawLower := false
+		for i := range funcWord {
+			rn := rune(funcWord[i])
+			if i == 0 {
+				if !unicode.IsUpper(rn) && !unicode.IsDigit(rn) {
+					return fmt.Errorf("word %q in %q must start with uppercase letter or digit", funcWord, funcName)
+				}
+			} else {
+				if unicode.IsUpper(rn) && sawLower {
+					return fmt.Errorf("word %q in %q has uppercase %q after lowercase letter", funcWord, funcName, string(rn))
+				}
+				if unicode.IsLower(rn) {
+					sawLower = true
+				}
+			}
+		}
+
+		funcIdx += len(funcWord)
+	}
+
+	if funcIdx < len(funcName) {
+		return fmt.Errorf("name %q has extra suffix %q not in filename %q", funcName, funcName[funcIdx:], filename)
+	}
+
+	return nil
 }
 
 // WriteTestsAsJSON marshals ts to JSON and writes the resulting data to w.

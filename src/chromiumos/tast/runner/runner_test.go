@@ -96,6 +96,8 @@ func runFakeBundle() int {
 		os.Exit(1)
 	}
 
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
+	defer restore()
 	for i, res := range parts[2] {
 		var f testing.TestFunc
 		if res == 'p' {

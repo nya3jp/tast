@@ -96,7 +96,7 @@ Many resources are available for learning more about Go. Here are a few:
     posts, and recorded talks.
 *   [Community Learn wiki] - Links to external resources.
 
-[virtual machine]: https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/running-chromeos-image-under-virtual-machines
+[virtual machine]: https://chromium.googlesource.com/chromiumos/docs/+/master/cros_vm.md
 [Chrome OS chroot]: http://www.chromium.org/chromium-os/quick-start-guide
 [Running Tests]: running_tests.md
 [Writing Tests]: writing_tests.md

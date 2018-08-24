@@ -10,8 +10,10 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 	"runtime"
 	"runtime/debug"
+	"strings"
 	"time"
 
 	"chromiumos/tast/bundle"
@@ -182,7 +184,11 @@ func createOutDirIfUnset(args *bundle.Args) (created bool, err error) {
 // It is used to print human-readable test output when the runner is executed manually rather
 // than via the tast command. An error is returned if any TestError messages are read.
 func logBundleOutput(r io.Reader, lg *log.Logger) error {
-	failed := false
+	numTests := 0
+	testFailed := false              // true if error seen for current test
+	var failedTests []string         // names of tests with errors
+	var startTime, endTime time.Time // start of first test and end of last test
+
 	mr := control.NewMessageReader(r)
 	for mr.More() {
 		msg, err := mr.ReadMessage()
@@ -194,17 +200,32 @@ func logBundleOutput(r io.Reader, lg *log.Logger) error {
 			lg.Print(v.Text)
 		case *control.TestStart:
 			lg.Print("Running ", v.Test.Name)
+			testFailed = false
+			if numTests == 0 {
+				startTime = v.Time
+			}
 		case *control.TestLog:
 			lg.Print(v.Text)
 		case *control.TestError:
-			lg.Printf("Error: [%s:%d] %v", v.Error.File, v.Error.Line, v.Error.Reason)
-			failed = true
+			lg.Printf("Error: [%s:%d] %v", filepath.Base(v.Error.File), v.Error.Line, v.Error.Reason)
+			testFailed = true
 		case *control.TestEnd:
 			lg.Print("Finished ", v.Name)
+			lg.Print(strings.Repeat("-", 80))
+			if testFailed {
+				failedTests = append(failedTests, v.Name)
+			}
+			numTests++
+			endTime = v.Time
 		}
 	}
 
-	if failed {
+	lg.Printf("Ran %d test(s) in %v", numTests, endTime.Sub(startTime).Round(time.Millisecond))
+	if len(failedTests) > 0 {
+		lg.Printf("%d failed:", len(failedTests))
+		for _, t := range failedTests {
+			lg.Print("  " + t)
+		}
 		return command.NewStatusErrorf(statusTestFailed, "test(s) failed")
 	}
 	return nil

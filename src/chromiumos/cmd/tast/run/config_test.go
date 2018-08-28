@@ -10,9 +10,9 @@ import (
 )
 
 func TestConfigRunDefaults(t *testing.T) {
-	cfg := Config{Mode: RunTestsMode}
+	cfg := NewConfig(RunTestsMode, "", "")
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
-	cfg.SetFlags(flags, "")
+	cfg.SetFlags(flags)
 
 	desc := "SetFlags for RunTestsMode"
 	if !cfg.collectSysInfo {
@@ -25,9 +25,9 @@ func TestConfigRunDefaults(t *testing.T) {
 }
 
 func TestConfigListDefaults(t *testing.T) {
-	cfg := Config{Mode: ListTestsMode}
+	cfg := NewConfig(ListTestsMode, "", "")
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
-	cfg.SetFlags(flags, "")
+	cfg.SetFlags(flags)
 
 	desc := "SetFlags for ListTestsMode"
 	if cfg.collectSysInfo {

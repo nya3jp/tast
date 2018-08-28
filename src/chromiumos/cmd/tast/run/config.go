@@ -12,7 +12,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"chromiumos/cmd/tast/build"
 	"chromiumos/cmd/tast/logging"
 	"chromiumos/tast/command"
 	"chromiumos/tast/host"
@@ -57,14 +56,13 @@ const (
 )
 
 const (
+	sysWorkspace       = "/usr/lib/gopath"                    // Go workspace containing system packages
 	defaultKeyFile     = "chromite/ssh_keys/testing_rsa"      // default private SSH key within Chrome OS checkout
 	defaultOverlayPath = "src/third_party/chromiumos-overlay" // default overlay directory containing bundle ebuild
 )
 
 // Config contains shared configuration information for running or listing tests.
 type Config struct {
-	// Mode describes the action to perform.
-	Mode Mode
 	// Logger is used to log progress.
 	Logger logging.Logger
 	// KeyFile is the path to a private SSH key to use to connect to the target device.
@@ -79,14 +77,21 @@ type Config struct {
 	// It is only used for RunTestsMode.
 	ResDir string
 
-	build                 bool         // rebuild (and push, for local tests) a single test bundle
-	buildType             testType     // type of tests to build and deploy; only used if build is true
-	buildCfg              build.Config // configuration for building test bundles; only used if build is true
-	buildBundle           string       // name of the test bundle to rebuild (e.g. "cros"); only used if build is true
-	checkPortageDeps      bool         // check whether test bundle's dependencies are installed before building
-	forceBuildLocalRunner bool         // force local_test_runner to be built and deployed even if it already exists on DUT
-	overlayDir            string       // base overlay directory (e.g. chromiumos-overlay) containing bundle's ebuild
-	externalDataDir       string       // dir used to cache external data files
+	mode     Mode   // action to perform
+	tastDir  string // base directory under which files are written
+	trunkDir string // path to Chrome OS checkout
+
+	targetArch string // architecture of target (as a machine name or processor given by "uname -m")
+
+	build                 bool     // rebuild (and push, for local tests) a single test bundle
+	buildType             testType // type of tests to build and deploy
+	buildBundle           string   // name of the test bundle to rebuild (e.g. "cros")
+	buildWorkspace        string   // path to workspace containing test bundle source code
+	buildOutDir           string   // path to base directory under which executables are stored
+	checkPortageDeps      bool     // check whether test bundle's dependencies are installed before building
+	forceBuildLocalRunner bool     // force local_test_runner to be built and deployed even if it already exists on DUT
+	overlayDir            string   // base overlay directory (e.g. chromiumos-overlay) containing bundle's ebuild
+	externalDataDir       string   // dir used to cache external data files
 
 	remoteRunner    string // path to executable that runs remote test bundles
 	remoteBundleDir string // dir where packaged remote test bundles are installed
@@ -114,10 +119,21 @@ type Config struct {
 	hstCopyAnnounceCmd func(string)
 }
 
-// SetFlags adds common run-related flags to f that store values in Config.
+// NewConfig returns a new configuration for executing test runners in the supplied mode.
+// It sets fields that are required by SetFlags.
+// tastDir is the base directory under which files are written (e.g. /tmp/tast).
 // trunkDir is the path to the Chrome OS checkout (within the chroot).
-func (c *Config) SetFlags(f *flag.FlagSet, trunkDir string) {
-	kf := filepath.Join(trunkDir, defaultKeyFile)
+func NewConfig(mode Mode, tastDir, trunkDir string) *Config {
+	return &Config{
+		mode:     mode,
+		tastDir:  tastDir,
+		trunkDir: trunkDir,
+	}
+}
+
+// SetFlags adds common run-related flags to f that store values in Config.
+func (c *Config) SetFlags(f *flag.FlagSet) {
+	kf := filepath.Join(c.trunkDir, defaultKeyFile)
 	if _, err := os.Stat(kf); err != nil {
 		kf = ""
 	}
@@ -131,6 +147,8 @@ func (c *Config) SetFlags(f *flag.FlagSet, trunkDir string) {
 
 	f.BoolVar(&c.build, "build", true, "build and push test bundle")
 	f.StringVar(&c.buildBundle, "buildbundle", "cros", "name of test bundle to build")
+	f.StringVar(&c.buildWorkspace, "buildworkspace", c.crosTestWorkspace(), "path to Go workspace containing test bundle source code")
+	f.StringVar(&c.buildOutDir, "buildoutdir", filepath.Join(c.tastDir, "build"), "directory where compiled executables are saved")
 	f.BoolVar(&c.checkPortageDeps, "checkbuilddeps", true, "check test bundle's dependencies before building")
 	f.BoolVar(&c.forceBuildLocalRunner, "buildlocalrunner", false, "force building local_test_runner and pushing to DUT")
 
@@ -144,12 +162,12 @@ func (c *Config) SetFlags(f *flag.FlagSet, trunkDir string) {
 	f.StringVar(&c.remoteDataDir, "remotedatadir", "/usr/share/tast/data", "directory containing builtin remote test data")
 
 	// Some flags are only relevant if we're running tests rather than listing them.
-	if c.Mode == RunTestsMode {
+	if c.mode == RunTestsMode {
 		f.StringVar(&c.ResDir, "resultsdir", "", "directory for test results")
 		f.BoolVar(&c.collectSysInfo, "sysinfo", true, "collect system information (logs, crashes, etc.)")
-		f.StringVar(&c.overlayDir, "overlaydir", filepath.Join(trunkDir, defaultOverlayPath),
+		f.StringVar(&c.overlayDir, "overlaydir", filepath.Join(c.trunkDir, defaultOverlayPath),
 			"base overlay directory containing test bundle ebuild")
-		f.StringVar(&c.externalDataDir, "externaldatadir", "/tmp/tast/external_data",
+		f.StringVar(&c.externalDataDir, "externaldatadir", filepath.Join(c.tastDir, "external_data"),
 			"directory used to cache external data files")
 
 		vals := map[string]int{
@@ -164,8 +182,6 @@ func (c *Config) SetFlags(f *flag.FlagSet, trunkDir string) {
 	} else {
 		c.checkTestDeps = checkTestDepsNever
 	}
-
-	c.buildCfg.SetFlags(f, trunkDir)
 }
 
 // Close releases the config's resources (e.g. cached SSH connections).
@@ -177,4 +193,30 @@ func (c *Config) Close(ctx context.Context) error {
 		c.hst = nil
 	}
 	return err
+}
+
+// commonWorkspaces returns Go workspaces containing source code needed to build all Tast-related executables.
+func (c *Config) commonWorkspaces() []string {
+	return []string{
+		filepath.Join(c.trunkDir, "src/platform/tast"), // shared code
+		"/usr/lib/gopath", // system packages
+	}
+}
+
+// crosTestWorkspace returns the Go workspace containing standard test-related code.
+// This workspace also contains the default "cros" test bundles.
+func (c *Config) crosTestWorkspace() string {
+	return filepath.Join(c.trunkDir, "src/platform/tast-tests")
+}
+
+// bundleWorkspaces returns Go workspaces containing source code needed to build c.buildBundle.
+func (c *Config) bundleWorkspaces() []string {
+	ws := []string{c.crosTestWorkspace()}
+	ws = append(ws, c.commonWorkspaces()...)
+
+	// If a custom test bundle workspace was specified, prepend it.
+	if c.buildWorkspace != ws[0] {
+		ws = append([]string{c.buildWorkspace}, ws...)
+	}
+	return ws
 }

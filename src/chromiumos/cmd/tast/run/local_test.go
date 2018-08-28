@@ -211,7 +211,7 @@ func TestLocalList(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	td.cfg.Mode = ListTestsMode
+	td.cfg.mode = ListTestsMode
 	var status Status
 	var results []TestResult
 	if status, results = local(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
@@ -262,8 +262,8 @@ func TestLocalDataFiles(t *gotesting.T) {
 	}
 
 	// Create a fake source checkout and write the data files to it. Just use their names as their contents.
-	td.cfg.buildCfg.TestWorkspace = filepath.Join(td.tempDir, "ws")
-	if err = testutil.WriteFiles(filepath.Join(td.cfg.buildCfg.TestWorkspace, "src", tests[0].DataDir()),
+	td.cfg.buildWorkspace = filepath.Join(td.tempDir, "ws")
+	if err = testutil.WriteFiles(filepath.Join(td.cfg.buildWorkspace, "src", tests[0].DataDir()),
 		map[string]string{file1: file1, file2: file2, file3: file3, file4: file4}); err != nil {
 		t.Fatal(err)
 	}

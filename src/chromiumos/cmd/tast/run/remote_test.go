@@ -236,7 +236,7 @@ func TestRemoteList(t *gotesting.T) {
 	defer td.close()
 
 	// List matching tests instead of running them.
-	td.cfg.Mode = ListTestsMode
+	td.cfg.mode = ListTestsMode
 	var status subcommands.ExitStatus
 	var results []TestResult
 	if status, results = td.run(t); status != subcommands.ExitSuccess {

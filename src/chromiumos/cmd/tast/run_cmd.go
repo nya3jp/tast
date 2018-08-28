@@ -22,9 +22,6 @@ import (
 )
 
 const (
-	baseResultsDir       = "/tmp/tast/results" // base directory under which test results are written
-	latestResultsSymlink = "latest"            // symlink in baseResultsDir pointing at latest results
-
 	fullLogName   = "full.txt"    // file in runConfig.resDir containing full output
 	timingLogName = "timing.json" // file in runConfig.resDir containing timing information
 
@@ -33,14 +30,14 @@ const (
 
 // runCmd implements subcommands.Command to support running tests.
 type runCmd struct {
-	cfg        run.Config // shared config for running tests
-	wrapper    runWrapper // can be set by tests to stub out calls to run package
-	timeoutSec int        // overall timeout in seconds
+	cfg        *run.Config // shared config for running tests
+	wrapper    runWrapper  // can be set by tests to stub out calls to run package
+	timeoutSec int         // overall timeout in seconds
 }
 
 func newRunCmd() *runCmd {
 	return &runCmd{
-		cfg:     run.Config{Mode: run.RunTestsMode},
+		cfg:     run.NewConfig(run.RunTestsMode, tastDir, trunkDir()),
 		wrapper: &realRunWrapper{},
 	}
 }
@@ -55,7 +52,7 @@ func (*runCmd) Usage() string {
 
 func (r *runCmd) SetFlags(f *flag.FlagSet) {
 	f.IntVar(&r.timeoutSec, "timeout", 0, "run timeout in seconds, or 0 for none")
-	r.cfg.SetFlags(f, getTrunkDir())
+	r.cfg.SetFlags(f)
 }
 
 func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
@@ -84,9 +81,10 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 	}
 
 	if r.cfg.ResDir == "" {
+		baseResultsDir := filepath.Join(tastDir, "results")
 		r.cfg.ResDir = filepath.Join(baseResultsDir, time.Now().Format("20060102-150405"))
 
-		link := filepath.Join(baseResultsDir, latestResultsSymlink)
+		link := filepath.Join(baseResultsDir, "latest")
 		os.Remove(link)
 		if err := os.Symlink(filepath.Base(r.cfg.ResDir), link); err != nil {
 			lg.Log("Failed to create results symlink: ", err)
@@ -151,7 +149,7 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 	}
 	defer rcancel()
 
-	status, results := r.wrapper.run(rctx, &r.cfg)
+	status, results := r.wrapper.run(rctx, r.cfg)
 	allTestsRun := status.ExitCode == subcommands.ExitSuccess
 	if len(results) == 0 {
 		if allTestsRun {
@@ -162,7 +160,7 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 		return status.ExitCode
 	}
 
-	if err = r.wrapper.writeResults(ctx, &r.cfg, results, allTestsRun); err != nil {
+	if err = r.wrapper.writeResults(ctx, r.cfg, results, allTestsRun); err != nil {
 		msg := fmt.Sprintf("Failed to write results: %v", err)
 		if status.ExitCode == subcommands.ExitSuccess {
 			status = run.Status{ExitCode: subcommands.ExitFailure, ErrorMsg: msg}

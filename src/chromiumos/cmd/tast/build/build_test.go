@@ -27,9 +27,11 @@ func TestBuild(t *testing.T) {
 
 	var err error
 	cfg := &Config{
-		TestWorkspace:   filepath.Join(tempDir, testDir),
-		CommonWorkspace: filepath.Join(tempDir, commonDir),
-		SysGopath:       filepath.Join(tempDir, sysDir),
+		Workspaces: []string{
+			filepath.Join(tempDir, testDir),
+			filepath.Join(tempDir, commonDir),
+			filepath.Join(tempDir, sysDir),
+		},
 	}
 	if cfg.Arch, err = GetLocalArch(); err != nil {
 		t.Fatal("Failed to get local arch: ", err)
@@ -72,5 +74,31 @@ func TestBuild(t *testing.T) {
 		t.Errorf("Failed to run %s: %v", bin, err)
 	} else if string(out) != exp {
 		t.Errorf("%s printed %q; want %q", bin, string(out), exp)
+	}
+}
+
+func TestBuildBadWorkspace(t *testing.T) {
+	td := testutil.TempDir(t)
+	defer os.RemoveAll(td)
+
+	var err error
+	cfg := &Config{Workspaces: []string{filepath.Join(td, "ws1")}}
+	if cfg.Arch, err = GetLocalArch(); err != nil {
+		t.Fatal("Failed to get local arch: ", err)
+	}
+	if err := testutil.WriteFiles(td, map[string]string{
+		"ws1/src/good/main.go": "package main\nfunc main() {}\n",
+		"ws2/bad/foo.go":       "package bad\n",
+	}); err != nil {
+		t.Fatal(err)
+	}
+	outDir := filepath.Join(td, "out")
+	if out, err := Build(context.Background(), cfg, "good", outDir, ""); err != nil {
+		t.Fatalf("Failed to build: %v: %s", err, string(out))
+	}
+
+	cfg.Workspaces = append(cfg.Workspaces, filepath.Join(td, "ws2"))
+	if _, err := Build(context.Background(), cfg, "good", outDir, ""); err == nil {
+		t.Fatal("Building with invalid workspace unexpectedly succeeded")
 	}
 }

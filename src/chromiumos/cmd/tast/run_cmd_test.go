@@ -24,7 +24,8 @@ import (
 
 // executeRunCmd creates a runCmd and executes it using the supplied args, wrapper, and Logger.
 func executeRunCmd(t *gotesting.T, args []string, wrapper *stubRunWrapper, lg logging.Logger) subcommands.ExitStatus {
-	cmd := runCmd{wrapper: wrapper}
+	cmd := newRunCmd()
+	cmd.wrapper = wrapper
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
 	cmd.SetFlags(flags)
 	if err := flags.Parse(args); err != nil {

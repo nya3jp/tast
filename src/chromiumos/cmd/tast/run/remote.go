@@ -14,6 +14,7 @@ import (
 	"os/exec"
 	"path"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"chromiumos/cmd/tast/build"
@@ -41,28 +42,27 @@ func remote(ctx context.Context, cfg *Config) (Status, []TestResult) {
 	var bundleGlob, dataDir string
 	if cfg.build {
 		cfg.Logger.Status("Building test bundle")
-		if cfg.buildCfg.Arch == "" {
-			var err error
-			if cfg.buildCfg.Arch, err = build.GetLocalArch(); err != nil {
-				return errorStatusf(cfg, subcommands.ExitFailure, "Failed to get local arch: %v", err), nil
-			}
-		}
-
 		buildStart := time.Now()
-		if cfg.checkPortageDeps {
-			cfg.buildCfg.PortagePkg = fmt.Sprintf("chromeos-base/tast-remote-tests-%s-9999", cfg.buildBundle)
+
+		bc := build.Config{Workspaces: cfg.bundleWorkspaces()}
+		var err error
+		if bc.Arch, err = build.GetLocalArch(); err != nil {
+			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to get local arch: %v", err), nil
 		}
-		buildDir := filepath.Join(cfg.buildCfg.BaseOutDir, cfg.buildCfg.Arch, remoteBundleBuildSubdir)
+		if cfg.checkPortageDeps {
+			bc.PortagePkg = fmt.Sprintf("chromeos-base/tast-remote-tests-%s-9999", cfg.buildBundle)
+		}
+		buildDir := filepath.Join(cfg.buildOutDir, bc.Arch, remoteBundleBuildSubdir)
 		pkg := path.Join(remoteBundlePkgPathPrefix, cfg.buildBundle)
-		cfg.Logger.Debugf("Building %s from %s to %s", pkg, cfg.buildCfg.TestWorkspace, buildDir)
-		if out, err := build.Build(ctx, &cfg.buildCfg, pkg, buildDir, "build_bundle"); err != nil {
+		cfg.Logger.Debugf("Building %s from %s to %s", pkg, strings.Join(bc.Workspaces, ":"), buildDir)
+		if out, err := build.Build(ctx, &bc, pkg, buildDir, "build_bundle"); err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed building test bundle: %v\n\n%s", err, out), nil
 		}
 		cfg.Logger.Logf("Built test bundle in %v", time.Now().Sub(buildStart).Round(time.Millisecond))
 
 		// Only run tests from the newly-built bundle, and get test data from the source tree.
 		bundleGlob = filepath.Join(buildDir, cfg.buildBundle)
-		dataDir = filepath.Join(cfg.buildCfg.TestWorkspace, "src")
+		dataDir = filepath.Join(cfg.buildWorkspace, "src")
 	} else {
 		bundleGlob = filepath.Join(cfg.remoteBundleDir, "*")
 		dataDir = cfg.remoteDataDir
@@ -114,7 +114,7 @@ func runRemoteRunner(ctx context.Context, cfg *Config, bundleGlob, dataDir strin
 			},
 		},
 	}
-	switch cfg.Mode {
+	switch cfg.mode {
 	case RunTestsMode:
 		args.Mode = runner.RunTestsMode
 		setRunnerTestDepsArgs(cfg, &args)
@@ -158,7 +158,7 @@ func runRemoteRunner(ctx context.Context, cfg *Config, bundleGlob, dataDir strin
 
 	var results []TestResult
 	var rerr error
-	switch cfg.Mode {
+	switch cfg.mode {
 	case ListTestsMode:
 		results, rerr = readTestList(stdout)
 	case RunTestsMode:

@@ -46,6 +46,15 @@ func Build(ctx context.Context, cfg *Config, pkg, outDir, stageName string) (out
 		defer st.End()
 	}
 
+	for _, ws := range cfg.Workspaces {
+		src := filepath.Join(ws, "src")
+		if _, err := os.Stat(src); os.IsNotExist(err) {
+			return out, fmt.Errorf("invalid workspace %q (no src subdir)", ws)
+		} else if err != nil {
+			return out, err
+		}
+	}
+
 	comp := archToCompiler[cfg.Arch]
 	if comp == "" {
 		return out, fmt.Errorf("unknown arch %q", cfg.Arch)
@@ -69,7 +78,7 @@ func Build(ctx context.Context, cfg *Config, pkg, outDir, stageName string) (out
 
 	const ldFlags = "-ldflags=-s -w"
 
-	env := append(os.Environ(), "GOPATH="+strings.Join([]string{cfg.TestWorkspace, cfg.CommonWorkspace, cfg.SysGopath}, ":"))
+	env := append(os.Environ(), "GOPATH="+strings.Join(cfg.Workspaces, ":"))
 
 	// This is frustrating:
 	//

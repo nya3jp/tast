@@ -82,7 +82,11 @@ For remote tests, tast executes `remote_test_runner` directly on the host system
 and receives results provided by it. Each remote test bundle establishes an SSH
 connection to the DUT and passes it to tests.
 
+The [Design Principles] document describes the thinking that guided Tast's
+design.
+
 [tast repository]: https://chromium.googlesource.com/chromiumos/platform/tast/
 [Running Tests]: running_tests.md
 [tast-tests repository]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/
 [Writing Tests]: writing_tests.md
+[Design Principles]: design_principles.md

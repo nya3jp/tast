@@ -23,16 +23,16 @@ import (
 
 // listCmd implements subcommands.Command to support listing tests.
 type listCmd struct {
-	json    bool       // marshal tests to JSON instead of just printing names
-	cfg     run.Config // shared config for listing tests
-	wrapper runWrapper // wraps calls to run package
-	w       io.Writer  // where to write tests
+	json    bool        // marshal tests to JSON instead of just printing names
+	cfg     *run.Config // shared config for listing tests
+	wrapper runWrapper  // wraps calls to run package
+	w       io.Writer   // where to write tests
 }
 
 // newListCmd returns a new listCmd that will write tests to w.
 func newListCmd(w io.Writer) *listCmd {
 	return &listCmd{
-		cfg:     run.Config{Mode: run.ListTestsMode},
+		cfg:     run.NewConfig(run.ListTestsMode, tastDir, trunkDir()),
 		wrapper: &realRunWrapper{},
 		w:       w,
 	}
@@ -49,9 +49,7 @@ func (*listCmd) Usage() string {
 func (lc *listCmd) SetFlags(f *flag.FlagSet) {
 	// TODO(derat): Add -listtype: https://crbug.com/831849
 	f.BoolVar(&lc.json, "json", false, "print full test details as JSON")
-
-	td := getTrunkDir()
-	lc.cfg.SetFlags(f, td)
+	lc.cfg.SetFlags(f)
 }
 
 func (lc *listCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
@@ -71,7 +69,7 @@ func (lc *listCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{
 	b := bytes.Buffer{}
 	lc.cfg.Logger = logging.NewSimple(&b, log.LstdFlags, true)
 
-	status, results := lc.wrapper.run(ctx, &lc.cfg)
+	status, results := lc.wrapper.run(ctx, lc.cfg)
 	if status.ExitCode != subcommands.ExitSuccess {
 		os.Stderr.Write(b.Bytes())
 		return status.ExitCode

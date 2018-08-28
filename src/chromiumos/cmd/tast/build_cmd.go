@@ -9,6 +9,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 
 	"chromiumos/cmd/tast/build"
 	"chromiumos/cmd/tast/logging"
@@ -17,9 +18,10 @@ import (
 )
 
 // buildCmd implements subcommands.Command to support compiling executables.
+// TODO(derat): Is this command even useful? Consider deleting it.
 type buildCmd struct {
-	cfg      build.Config
-	pkg, out string
+	cfg        build.Config
+	workspaces string
 }
 
 func (*buildCmd) Name() string     { return "build" }
@@ -31,7 +33,9 @@ func (*buildCmd) Usage() string {
 }
 
 func (b *buildCmd) SetFlags(f *flag.FlagSet) {
-	b.cfg.SetFlags(f, getTrunkDir())
+	f.StringVar(&b.cfg.Arch, "arch", "", "target architecture (per \"uname -m\")")
+	f.StringVar(&b.workspaces, "workspaces", "/usr/lib/gopath",
+		"colon-separated Go workspaces containing source code")
 }
 
 func (b *buildCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
@@ -52,6 +56,7 @@ func (b *buildCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{
 			return subcommands.ExitFailure
 		}
 	}
+	b.cfg.Workspaces = strings.Split(b.workspaces, ":")
 
 	if out, err := build.Build(ctx, &b.cfg, f.Args()[0], f.Args()[1], ""); err != nil {
 		lg.Logf("Failed building: %v\n%s", err, string(out))

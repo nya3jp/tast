@@ -154,13 +154,17 @@ func buildAndPushBundle(ctx context.Context, cfg *Config, hst *host.SSH) (bundle
 	}
 
 	start := time.Now()
-	if cfg.checkPortageDeps {
-		cfg.buildCfg.PortagePkg = localBundlePackage(cfg.buildBundle) + "-9999"
+	bc := build.Config{
+		Arch:       cfg.targetArch,
+		Workspaces: cfg.bundleWorkspaces(),
 	}
-	buildDir := filepath.Join(cfg.buildCfg.BaseOutDir, cfg.buildCfg.Arch, localBundleBuildSubdir)
+	if cfg.checkPortageDeps {
+		bc.PortagePkg = localBundlePackage(cfg.buildBundle) + "-9999"
+	}
+	buildDir := filepath.Join(cfg.buildOutDir, cfg.targetArch, localBundleBuildSubdir)
 	pkg := path.Join(localBundlePkgPathPrefix, cfg.buildBundle)
-	cfg.Logger.Logf("Building %s from %s", pkg, cfg.buildCfg.TestWorkspace)
-	if out, err := build.Build(ctx, &cfg.buildCfg, pkg, buildDir, "build_bundle"); err != nil {
+	cfg.Logger.Logf("Building %s from %s", pkg, strings.Join(bc.Workspaces, ":"))
+	if out, err := build.Build(ctx, &bc, pkg, buildDir, "build_bundle"); err != nil {
 		return "", fmt.Errorf("build failed: %v\n\n%s", err, out)
 	}
 	cfg.Logger.Logf("Built test bundle in %v", time.Now().Sub(start).Round(time.Millisecond))
@@ -173,7 +177,7 @@ func buildAndPushBundle(ctx context.Context, cfg *Config, hst *host.SSH) (bundle
 	// Only run tests from the newly-pushed bundle.
 	bundleGlob = filepath.Join(localBundlePushDir, cfg.buildBundle)
 
-	if cfg.Mode == RunTestsMode {
+	if cfg.mode == RunTestsMode {
 		cfg.Logger.Status("Getting data file list")
 		var paths []string
 		var edm *externalDataMap
@@ -212,9 +216,9 @@ func buildAndPushBundle(ctx context.Context, cfg *Config, hst *host.SSH) (bundle
 	return bundleGlob, nil
 }
 
-// getTargetArch queries hst for its architecture if it isn't already known and saves it to cfg.buildCfg.Arch.
+// getTargetArch queries hst for its architecture if it isn't already known and saves it to cfg.targetArch.
 func getTargetArch(ctx context.Context, cfg *Config, hst *host.SSH) error {
-	if cfg.buildCfg.Arch != "" {
+	if cfg.targetArch != "" {
 		return nil
 	}
 
@@ -227,7 +231,7 @@ func getTargetArch(ctx context.Context, cfg *Config, hst *host.SSH) error {
 	if err != nil {
 		return err
 	}
-	cfg.buildCfg.Arch = strings.TrimSpace(string(out))
+	cfg.targetArch = strings.TrimSpace(string(out))
 	return nil
 }
 
@@ -325,7 +329,7 @@ func fetchExternalDataFiles(ctx context.Context, cfg *Config, paths []string, ed
 // destDir is the data directory for this bundle, e.g. "/usr/share/tast/data/local/chromiumos/tast/local/bundles/cros".
 // The file paths are relative to the test bundle dir, i.e. paths take the form "<category>/data/<filename>".
 // Files that are registered in edm (if non-nil) will be copied from cfg.externalDataDir.
-// Otherwise, files will be copied from cfg.buildCfg.TestWorkspace.
+// Otherwise, files will be copied from cfg.buildWorkspace.
 func pushDataFiles(ctx context.Context, cfg *Config, hst *host.SSH, destDir string, paths []string, edm *externalDataMap) error {
 	if tl, ok := timing.FromContext(ctx); ok {
 		st := tl.Start("push_data")
@@ -333,7 +337,7 @@ func pushDataFiles(ctx context.Context, cfg *Config, hst *host.SSH, destDir stri
 	}
 	cfg.Logger.Log("Pushing data files to target")
 
-	var wsPaths []string                // data files stored under cfg.buildCfg.TestWorkspace, relative to bundle dir
+	var wsPaths []string                // data files stored under cfg.buidlBundleWorkspace, relative to bundle dir
 	extPaths := make(map[string]string) // keys are filenames in cfg.externalDataDir, values are relative to bundle dir
 	for _, p := range paths {
 		if edm != nil {
@@ -348,7 +352,7 @@ func pushDataFiles(ctx context.Context, cfg *Config, hst *host.SSH, destDir stri
 	start := time.Now()
 	var err error
 	var wsBytes, extBytes int64
-	srcDir := filepath.Join(cfg.buildCfg.TestWorkspace, "src", localBundlePkgPathPrefix, cfg.buildBundle)
+	srcDir := filepath.Join(cfg.buildWorkspace, "src", localBundlePkgPathPrefix, cfg.buildBundle)
 	if wsBytes, err = pushToHost(ctx, cfg, hst, srcDir, destDir, wsPaths); err != nil {
 		return err
 	}
@@ -384,14 +388,13 @@ func buildAndPushLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH) er
 		defer st.End()
 	}
 
-	// Make a copy of the build config to avoid overwriting bundle-related values.
-	bc := cfg.buildCfg
-	if bc.PortagePkg != "" {
+	bc := build.Config{Arch: cfg.targetArch, Workspaces: cfg.commonWorkspaces()}
+	if cfg.checkPortageDeps {
 		bc.PortagePkg = localRunnerPortagePkg
 	}
 
-	buildDir := filepath.Join(bc.BaseOutDir, bc.Arch)
-	cfg.Logger.Debugf("Building %s from %s", localRunnerPkg, bc.CommonWorkspace)
+	buildDir := filepath.Join(cfg.buildOutDir, cfg.targetArch)
+	cfg.Logger.Debugf("Building %s from %s", localRunnerPkg, strings.Join(bc.Workspaces, ":"))
 	if out, err := build.Build(ctx, &bc, localRunnerPkg, buildDir, "build_runner"); err != nil {
 		return fmt.Errorf("failed to build test runner: %v\n\n%s", err, out)
 	}
@@ -428,8 +431,8 @@ func startLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, args *run
 }
 
 // runLocalRunner runs local_test_runner to completion on hst.
-// If cfg.Mode is RunTestsMode, tests are executed and their results are returned.
-// if cfg.Mode is ListTestsMode, serialized test information is returned via TestResult.Test but other fields are left blank.
+// If cfg.mode is RunTestsMode, tests are executed and their results are returned.
+// if cfg.mode is ListTestsMode, serialized test information is returned via TestResult.Test but other fields are left blank.
 func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob, dataDir string) ([]TestResult, error) {
 	if tl, ok := timing.FromContext(ctx); ok {
 		st := tl.Start("run_local_tests")
@@ -442,7 +445,7 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 		DataDir:    dataDir,
 	}
 
-	switch cfg.Mode {
+	switch cfg.mode {
 	case RunTestsMode:
 		args.Mode = runner.RunTestsMode
 		setRunnerTestDepsArgs(cfg, &args)
@@ -461,7 +464,7 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 
 	var results []TestResult
 	var rerr error
-	switch cfg.Mode {
+	switch cfg.mode {
 	case ListTestsMode:
 		results, rerr = readTestList(handle.Stdout())
 	case RunTestsMode:

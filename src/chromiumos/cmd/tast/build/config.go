@@ -4,49 +4,14 @@
 
 package build
 
-import (
-	"flag"
-	"path/filepath"
-)
-
-const (
-	defaultBuildOutDir = "/tmp/tast/build"         // default directory used to store compiled code
-	defaultTestDir     = "src/platform/tast-tests" // relative path in checkout to Go workspace containing test bundles
-	defaultCommonDir   = "src/platform/tast"       // relative path in checkout to Go workspace containing common code
-)
-
-// Config describes a configuration for building a test executable.
+// Config describes a configuration for building an executable package.
 type Config struct {
-	// TestWorkspace is the path to the Go workspace where test source code is stored
-	// (i.e. containing top-level src/chromiumos/tast/{local,remote}/bundles directories).
-	TestWorkspace string
-	// CommonWorkspace is the path to the Go workspace where common source code is stored
-	// (i.e. containing a top-level src/chromiumos/tast/testing directory).
-	CommonWorkspace string
-	// SysGopath is the path to the Go workspace containing source for test executables'
-	// emerged dependencies. This is typically /usr/lib/gopath.
-	SysGopath string
 	// Arch is the architecture to build for (as a machine name or processor given by "uname -m").
 	Arch string
-	// BaseOutDir is the path to the base directory under which compiled executables are stored.
-	BaseOutDir string
-	// PortagePkg is the Portage package that contains the test executable (when tests are
-	// included in a system image rather than being compiled by the tast command), including
-	// a version suffix (typically "-9999").
-	// If non-empty, BuildTests checks that the package's direct dependencies are installed
-	// in the host sysroot before building tests.
+	// Workspaces contains paths to Go workspaces (i.e. with "src" subdirectories) containing source code to be compiled.
+	// These are placed into the GOPATH environment variable in the listed order.
+	Workspaces []string
+	// PortagePkg is the Portage package that contains the executable, including a version suffix (typically "-9999").
+	// If non-empty, Build checks that the package's direct dependencies are installed in the host sysroot before building it.
 	PortagePkg string
-}
-
-// SetFlags adds common build-related flags to f that store values in Config.
-// trunkDir is the path to the Chrome OS checkout (within the chroot).
-func (c *Config) SetFlags(f *flag.FlagSet, trunkDir string) {
-	f.StringVar(&c.Arch, "buildarch", "", "target architecture (per \"uname -m\")")
-	f.StringVar(&c.BaseOutDir, "buildoutdir", defaultBuildOutDir, "directory storing build artifacts")
-	f.StringVar(&c.SysGopath, "buildsysdir", "/usr/lib/gopath",
-		"Go workspace containing system package source code")
-	f.StringVar(&c.TestWorkspace, "buildtestdir", filepath.Join(trunkDir, defaultTestDir),
-		"Go workspace containing test bundles")
-	f.StringVar(&c.CommonWorkspace, "buildcommondir", filepath.Join(trunkDir, defaultCommonDir),
-		"Go workspace containing common code")
 }

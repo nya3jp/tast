@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a4e9beef_6b86246e",
+        "filename": "docs/design_principles.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-08-30T12:10:22Z",
+      "side": 1,
+      "message": "Optional: I think our support libraries (e.g. chrome) do not restore the system state when a test is finished (e.g. does not logout from user session). I found it\u0027s good for two reasons: (1) faster iteration and (2) easier inspection on test failures. Do we want to mention this somewhere in this doc?",
+      "range": {
+        "startLine": 45,
+        "startChar": 4,
+        "endLine": 45,
+        "endChar": 12
+      },
+      "revId": "09cbd97962db7485a50fc5303f1e601cbc809f01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

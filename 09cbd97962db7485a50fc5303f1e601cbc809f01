@@ -22,6 +22,30 @@
       "revId": "09cbd97962db7485a50fc5303f1e601cbc809f01",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1de4e40f_ec293d3f",
+        "filename": "docs/design_principles.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-08-30T23:45:11Z",
+      "side": 1,
+      "message": "thanks, that\u0027s a good suggestion! i was thinking about adding the following point at the end of the first list:\n\n\"Tests should avoid performing slow-and-unnecessary de-initialization steps on completion: UI tests should leave Chrome logged in instead of restarting it, for example. Later tests can‘t safely make assumptions about the initial state of the system (see the next section), so they’ll need to e.g. restart Chrome again regardless, which takes even more time. Leaving the system in a logged-in state also makes it easier to manually inspect it after running the test when diagnosing a failure. Note that tests should still undo atypical configuration that leaves the system in a non-functional state, though. For example, if a test needs to temporarily stop a service, it should restart it before exiting.\"\n\nbut after thinking about it some more, i\u0027ll send a followup change that adds this or something similar to writing_tests.md, since i think that people may be more likely to notice it there.",
+      "parentUuid": "a4e9beef_6b86246e",
+      "range": {
+        "startLine": 45,
+        "startChar": 4,
+        "endLine": 45,
+        "endChar": 12
+      },
+      "revId": "09cbd97962db7485a50fc5303f1e601cbc809f01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

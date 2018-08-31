@@ -42,10 +42,6 @@ for the command to complete.
     framework, and tests themselves, should do everything in their power to
     avoid operations that might fail. Avoid runtime dependencies on external
     resources like databases, websites, and other network services.
-*   If a test requires the system to be in a particular state before it runs, it
-    should include code that tries to get the system into that state if it isn't
-    there already. Previous tests may have aborted mid-run; it's not safe to
-    make assumptions that they undid all temporary changes that they made.
 
 ## Adding or modifying a test should be easy.
 

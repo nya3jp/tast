@@ -46,7 +46,7 @@ func init() {
 	testing.AddTest(&testing.Test{
 		Func: MyTest,
 		Desc: "Does X to verify Y",
-		Attr: []string{"experimental"},
+		Attr: []string{"informational"},
 	})
 }
 
@@ -56,7 +56,8 @@ func MyTest(s *testing.State) {
 ```
 
 Tests may specify [attributes] and [software dependencies] when they are
-declared.
+declared. Setting the `informational` attribute on new tests is recommended, as
+they will block the Commit Queue on failure otherwise.
 
 ### Adding new test packages
 
@@ -92,14 +93,15 @@ level:
 As such, all tests within a package like `platform` or `ui` share the same
 namespace. Please avoid adding additional identifiers to that namespace beyond
 the core test function that you pass to `testing.AddTest`. Place constants
-within your test function:
+and helper functions within your test function:
 
 ```go
 func MyTest(s *testing.State) {
 	const (
 		someValue = "foo"
+		otherValue = "bar"
 	)
-	dataMap := map[string]int{"a": 1, "b": 2}
+	doubler := func(x int) int { return 2 * x }
 	...
 }
 ```
@@ -108,6 +110,58 @@ If you need to share functionality between tests in the same package, please
 introduce a new descriptively-named subpackage; see e.g. the [chromecrash]
 package within the `ui` package, used by the [ui.ChromeCrashLoggedIn] and
 [ui.ChromeCrashNotLoggedIn] tests.
+
+### Startup and shutdown
+
+If a test requires the system to be in a particular state before it runs, it
+should include code that tries to get the system into that state if it isn't
+there already. Previous tests may have aborted mid-run; it's not safe to make
+assumptions that they undid all temporary changes that they made.
+
+Tests should also avoid performing unnecessary de-initialization steps on
+completion: UI tests should leave Chrome logged in instead of restarting it, for
+example. Since later tests can't safely make assumptions about the initial state
+of the system, they'll need to e.g. restart Chrome again regardless, which takes
+even more time. In addition to resulting in a faster overall running time for
+the suite, leaving the system in a logged-in state makes it easier for
+developers to manually inspect it after running the test when diagnosing a
+failure.
+
+Note that tests should still undo atypical configuration that leaves the system
+in a non-fully-functional state, though. For example, if a test needs to
+temporarily stop a service, it should restart it before exiting.
+
+### Test consolidation
+
+Much praise has been written for verifying just one thing per test. A quick
+sampling of internal links:
+
+*   [TotT 227]
+*   [TotT 324]
+*   [TotT 339]
+*   [TotT 520]
+*   [Unit Testing Best Practices Do's and Don'ts]
+
+While this is sound advice for fast-running, deterministic unit tests, it isn't
+necessarily always the best approach for integration tests:
+
+*   There are unavoidable sources of non-determinism in Chrome OS integration
+    tests. DUTs can experience hardware or networking issues, and flakiness
+    becomes more likely as more tests are run.
+*   When a lengthy setup process is repeated by many tests in a single suite,
+    lab resources are consumed for a longer period of time and other testing is
+    delayed.
+
+If you need to verify multiple related aspects of a single feature that requires
+a time-consuming setup process like logging in to Chrome, starting Android, or
+launching a container, it's often preferable to write a single test that just
+does the setup once and then verifies all aspects of the feature. As described
+in the next section, multiple errors can be reported by a single test, so
+coverage need not be reduced when tests are consolidated and an early
+expectation fails.
+
+For lightweight testing that doesn't need to interact with Chrome or restart
+services, it's fine to use fine-grained tests.
 
 ## Errors and logging
 
@@ -119,7 +173,8 @@ report failures and to log messages.
 
 A single test can report multiple errors. Use the `Error` or `Errorf` methods to
 report an error and continue or the `Fatal` or `Fatalf` methods to report an
-error and halt the test.
+error and halt the test. Respectively, these are analogous to the results of
+failed `EXPECT_` and `ASSERT_` macros in [Google Test].
 
 Support packages should not record test failures directly. Instead, return
 `error` values and allow tests to decide how to handle them. Support package's
@@ -277,8 +332,14 @@ external data files.
 [chromecrash]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/master/src/chromiumos/tast/local/bundles/cros/ui/chromecrash/
 [ui.ChromeCrashLoggedIn]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/master/src/chromiumos/tast/local/bundles/cros/ui/chrome_crash_logged_in.go
 [ui.ChromeCrashNotLoggedIn]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/master/src/chromiumos/tast/local/bundles/cros/ui/chrome_crash_not_logged_in.go
+[TotT 227]: http://go/tott/227
+[TotT 324]: http://go/tott/324
+[TotT 339]: http://go/tott/339
+[TotT 520]: http://go/tott/520
+[Unit Testing Best Practices Do's and Don'ts]: http://go/unit-test-practices#behavior-testing-dos-and-donts
 [Tast testing package]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/testing/
 [State]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#State
+[Google Test]: https://github.com/google/googletest
 [context.Context]: https://golang.org/pkg/context/
 [Go's error string conventions]: https://github.com/golang/go/wiki/CodeReviewComments#error-strings
 [Running tests]: running_tests.md

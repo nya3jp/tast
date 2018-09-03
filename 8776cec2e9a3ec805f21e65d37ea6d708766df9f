@@ -22,6 +22,30 @@
       "revId": "8776cec2e9a3ec805f21e65d37ea6d708766df9f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9bbc519d_ada06349",
+        "filename": "docs/design_principles.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-03T12:29:16Z",
+      "side": 0,
+      "message": "i moved it to writing_tests.md, since it seems more appropriate to have there -- i want people who are writing tests to see it, and i think they\u0027re more likely to read that doc than this one. :-)",
+      "parentUuid": "64ffc13f_ccbf82c4",
+      "range": {
+        "startLine": 45,
+        "startChar": 0,
+        "endLine": 48,
+        "endChar": 74
+      },
+      "revId": "8776cec2e9a3ec805f21e65d37ea6d708766df9f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

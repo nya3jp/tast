@@ -4,11 +4,15 @@
 
 ## Prerequisites
 
-You'll need a [Chrome OS chroot].
+You'll need a [Chrome OS chroot]. If you've only done Chrome development so far,
+note that this is different from the Chrome checkout described in the [Simple
+Chrome] documentation.
 
 You'll also need a Chrome OS device running a system image built with the `test`
 flag that's reachable from your workstation via SSH. An image running in a
-[virtual machine] will also work.
+[virtual machine] will also work. If you're using a test image that you
+downloaded rather than one built in your chroot, make sure that it's a recent
+version.
 
 ## Run a prebuilt test
 
@@ -87,7 +91,12 @@ s.Error("This is an intentional error")
 
 If you build and run the test again, you should see it fail.
 
-See [Writing Tests] for more information.
+See [Writing Tests] for more information, and explore the [tast-tests
+repository] to see existing tests and related packages.
+
+## Next steps
+
+Additional Tast documentation is available in the [tast repository].
 
 Many resources are available for learning more about Go. Here are a few:
 
@@ -96,10 +105,13 @@ Many resources are available for learning more about Go. Here are a few:
     posts, and recorded talks.
 *   [Community Learn wiki] - Links to external resources.
 
-[virtual machine]: https://chromium.googlesource.com/chromiumos/docs/+/master/cros_vm.md
 [Chrome OS chroot]: http://www.chromium.org/chromium-os/quick-start-guide
+[Simple Chrome]: https://chromium.googlesource.com/chromiumos/docs/+/master/simple_chrome_workflow.md
+[virtual machine]: https://chromium.googlesource.com/chromiumos/docs/+/master/cros_vm.md
 [Running Tests]: running_tests.md
 [Writing Tests]: writing_tests.md
+[tast-tests repository]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/
+[tast repository]: https://chromium.googlesource.com/chromiumos/platform/tast/
 [A Tour of Go]: https://tour.golang.org/
 [Official Go documentation]: https://golang.org/doc/
 [Community Learn wiki]: https://github.com/golang/go/wiki/Learn

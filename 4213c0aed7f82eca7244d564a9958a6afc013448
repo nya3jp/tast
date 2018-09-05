@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6e399c67_b673a455",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 349,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-05T19:42:35Z",
+      "side": 1,
+      "message": "i don\u0027t know whether this makes sense or not -- d-bus seems like a bit of a special case.",
+      "revId": "4213c0aed7f82eca7244d564a9958a6afc013448",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

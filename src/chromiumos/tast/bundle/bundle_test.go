@@ -255,7 +255,8 @@ func TestRunTestsNoTests(t *gotesting.T) {
 }
 
 func TestRunTestsMissingDeps(t *gotesting.T) {
-	defer testing.ClearForTesting()
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
+	defer restore()
 
 	const (
 		validName   = "foo.Valid"
@@ -344,7 +345,8 @@ func TestRunTestsMissingDeps(t *gotesting.T) {
 }
 
 func TestRunMeta(t *gotesting.T) {
-	defer testing.ClearForTesting()
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
+	defer restore()
 
 	var meta testing.Meta
 	testing.AddTest(&testing.Test{Name: "meta.Test", Func: func(s *testing.State) {
@@ -384,7 +386,8 @@ func TestRunMeta(t *gotesting.T) {
 }
 
 func TestRunList(t *gotesting.T) {
-	defer testing.ClearForTesting()
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
+	defer restore()
 	testing.AddTest(&testing.Test{Name: "pkg.Test", Func: func(*testing.State) {}})
 
 	stdin := newBufferWithArgs(t, &Args{Mode: ListTestsMode})

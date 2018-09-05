@@ -37,9 +37,19 @@ func AddTest(t *Test) {
 	}
 }
 
-// ClearForTesting clears all registered tests and registration errors.
-// It should only be called from unit tests.
-func ClearForTesting() {
-	globalRegistry = nil
+// SetGlobalRegistryForTesting temporarily sets reg as the global registry and clears registration errors.
+// The caller must call the returned function later to restore the original registry and errors.
+// This is intended to be used by unit tests that need to register tests in the global registry but don't
+// want to affect subsequent unit tests.
+func SetGlobalRegistryForTesting(reg *Registry) (restore func()) {
+	origReg := globalRegistry
+	origErrs := registrationErrors
+
+	globalRegistry = reg
 	registrationErrors = nil
+
+	return func() {
+		globalRegistry = origReg
+		registrationErrors = origErrs
+	}
 }

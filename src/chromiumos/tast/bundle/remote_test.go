@@ -24,7 +24,8 @@ func init() {
 }
 
 func TestRemoteMissingTarget(t *gotesting.T) {
-	defer testing.ClearForTesting()
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
+	defer restore()
 	testing.AddTest(&testing.Test{Name: "pkg.Test", Func: func(s *testing.State) {}})
 
 	// Remote should fail if -target wasn't passed.
@@ -42,7 +43,8 @@ func TestRemoteCantConnect(t *gotesting.T) {
 	td := test.NewTestData(userKey, hostKey, nil)
 	defer td.Close()
 
-	defer testing.ClearForTesting()
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
+	defer restore()
 	testing.AddTest(&testing.Test{Name: "pkg.Test", Func: func(s *testing.State) {}})
 
 	// Remote should fail if the initial connection to the DUT couldn't be
@@ -79,7 +81,8 @@ func TestRemoteDUT(t *gotesting.T) {
 
 	// Register a test that runs a command on the DUT and saves its output.
 	realOutput := ""
-	defer testing.ClearForTesting()
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
+	defer restore()
 	testing.AddTest(&testing.Test{Name: "pkg.Test", Func: func(s *testing.State) {
 		dt, ok := dut.FromContext(s.Context())
 		if !ok {
@@ -131,7 +134,8 @@ func TestRemoteReconnectBetweenTests(t *gotesting.T) {
 	}
 
 	var conn1, conn2 bool
-	defer testing.ClearForTesting()
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
+	defer restore()
 	testing.AddTest(&testing.Test{Name: "pkg.Test1", Func: makeFunc(&conn1)})
 	testing.AddTest(&testing.Test{Name: "pkg.Test2", Func: makeFunc(&conn2)})
 

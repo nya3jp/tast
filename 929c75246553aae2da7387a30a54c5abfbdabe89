@@ -46,6 +46,30 @@
       "revId": "929c75246553aae2da7387a30a54c5abfbdabe89",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1b244b51_d5a3d79c",
+        "filename": "src/chromiumos/cmd/tast/paths.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-09-06T02:46:45Z",
+      "side": 1,
+      "message": "Hmm. Maybe we can revisit this later. As long as \"tastDir\" is used consistently to refer the base output dir, there should be no much confusion...",
+      "parentUuid": "7960787b_17833e7a",
+      "range": {
+        "startLine": 12,
+        "startChar": 6,
+        "endLine": 12,
+        "endChar": 13
+      },
+      "revId": "929c75246553aae2da7387a30a54c5abfbdabe89",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

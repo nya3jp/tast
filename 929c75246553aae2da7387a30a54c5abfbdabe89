@@ -22,6 +22,30 @@
       "revId": "929c75246553aae2da7387a30a54c5abfbdabe89",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7960787b_17833e7a",
+        "filename": "src/chromiumos/cmd/tast/paths.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-06T02:35:53Z",
+      "side": 1,
+      "message": "hmm. i tried to avoid anything like \"out dir\" since i think that i use that to refer to directories where tests\u0027 output files are saved elsewhere.\n\nwould something like baseTastDir seem better? or maybe \"baseOutputDir\" would be distinct enough to not be confusing...",
+      "parentUuid": "0a87d634_5eb344ae",
+      "range": {
+        "startLine": 12,
+        "startChar": 6,
+        "endLine": 12,
+        "endChar": 13
+      },
+      "revId": "929c75246553aae2da7387a30a54c5abfbdabe89",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

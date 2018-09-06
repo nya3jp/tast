@@ -2,6 +2,52 @@
   "comments": [
     {
       "key": {
+        "uuid": "cc09a40d_277ce65c",
+        "filename": "src/chromiumos/tast/testing/registry.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-09-06T02:10:26Z",
+      "side": 1,
+      "message": "Do we want to keep this var, instead of simple func def?",
+      "range": {
+        "startLine": 30,
+        "startChar": 0,
+        "endLine": 32,
+        "endChar": 1
+      },
+      "revId": "4213c0aed7f82eca7244d564a9958a6afc013448",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b350dd53_28646702",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 198,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-09-06T02:10:26Z",
+      "side": 1,
+      "message": "The logic here can be a bit simplified IMO. How about instead introducing a parameter (eg. autoName) which turns on all name-derivation logic? That is:\n\n- If autoName\u003dfalse, this will just check tst.Name is explicitly specified. This is used by unit tests.\n- If autoName\u003dtrue, this will check tst.Name is empty, derives it from func name and source file path, and ensures the test name matches source file name.",
+      "range": {
+        "startLine": 186,
+        "startChar": 0,
+        "endLine": 198,
+        "endChar": 2
+      },
+      "revId": "4213c0aed7f82eca7244d564a9958a6afc013448",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6e399c67_b673a455",
         "filename": "src/chromiumos/tast/testing/test.go",
         "patchSetId": 1
@@ -16,6 +62,24 @@
       "revId": "4213c0aed7f82eca7244d564a9958a6afc013448",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "afa775e7_35aaf7f6",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 349,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-09-06T02:10:26Z",
+      "side": 1,
+      "message": "I think this is reasonable :)",
+      "parentUuid": "6e399c67_b673a455",
+      "revId": "4213c0aed7f82eca7244d564a9958a6afc013448",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

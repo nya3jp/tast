@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "99d236eb_31a8851f",
+        "filename": "src/chromiumos/tast/testing/registry.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-06T13:39:43Z",
+      "side": 1,
+      "message": "hmm, do you mean vs. adding a checkTestFuncNames arg to NewRegistry? i have a slight preference to continue using a functional option here, as i think it\u0027s a bit cleaner in terms of not cluttering the normal non-unit-test case (and also makes NewRegistry calls from unit tests more descriptive).\n\nor if you\u0027re suggesting adding a SetCheckTestFuncNamesForTesting or similar method to Registry, i think i still prefer a functional option, because it\u0027s one line shorter when injecting a registry from unit tests and feels like it has less risk of being called from non-unit-test scenarios. :-)",
+      "parentUuid": "cc09a40d_277ce65c",
+      "range": {
+        "startLine": 30,
+        "startChar": 0,
+        "endLine": 32,
+        "endChar": 1
+      },
+      "revId": "4213c0aed7f82eca7244d564a9958a6afc013448",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b350dd53_28646702",
         "filename": "src/chromiumos/tast/testing/test.go",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2018-09-06T02:10:26Z",
       "side": 1,
       "message": "The logic here can be a bit simplified IMO. How about instead introducing a parameter (eg. autoName) which turns on all name-derivation logic? That is:\n\n- If autoName\u003dfalse, this will just check tst.Name is explicitly specified. This is used by unit tests.\n- If autoName\u003dtrue, this will check tst.Name is empty, derives it from func name and source file path, and ensures the test name matches source file name.",
+      "range": {
+        "startLine": 186,
+        "startChar": 0,
+        "endLine": 198,
+        "endChar": 2
+      },
+      "revId": "4213c0aed7f82eca7244d564a9958a6afc013448",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5d1a0f6e_c35ee5d1",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 198,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-06T13:39:43Z",
+      "side": 1,
+      "message": "this sounds fine to me, although i may need to update some tests that don\u0027t specify test names and also don\u0027t pass conforming function names.",
+      "parentUuid": "b350dd53_28646702",
       "range": {
         "startLine": 186,
         "startChar": 0,

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0a87d634_5eb344ae",
+        "filename": "src/chromiumos/cmd/tast/paths.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-09-06T02:30:00Z",
+      "side": 1,
+      "message": "nit\u0026optional: \"tastDir\" sounds a bit ambiguous... how about \"outBaseDir\" or something?",
+      "range": {
+        "startLine": 12,
+        "startChar": 6,
+        "endLine": 12,
+        "endChar": 13
+      },
+      "revId": "929c75246553aae2da7387a30a54c5abfbdabe89",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

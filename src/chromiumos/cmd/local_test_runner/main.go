@@ -35,6 +35,7 @@ func main() {
 			"chrome":            "!chromeless_tty",
 			"chrome_login":      "!chromeless_tty && !rialto",
 			"display_backlight": "display_backlight",
+			"selinux":           "selinux",
 			"tpm":               "!mocktpm",
 			"vm_host":           "kvm_host",
 		},

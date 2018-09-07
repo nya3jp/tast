@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "e967ea56_271e4027",
+        "filename": "src/chromiumos/tast/testing/registry.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-09-07T07:04:44Z",
+      "side": 1,
+      "message": "Sorry not being clear. I meant:\n\n func SkipCheckingTestFuncNames(r *Registry) \n     r.checkTestFuncNames \u003d false\n }\n\nMaybe you made it var because it\u0027s not intended to be called by users? Then it\u0027s fine to keep it var...",
+      "parentUuid": "99d236eb_31a8851f",
+      "range": {
+        "startLine": 30,
+        "startChar": 0,
+        "endLine": 32,
+        "endChar": 1
+      },
+      "revId": "4213c0aed7f82eca7244d564a9958a6afc013448",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b350dd53_28646702",
         "filename": "src/chromiumos/tast/testing/test.go",
         "patchSetId": 1
@@ -84,6 +108,30 @@
       "side": 1,
       "message": "this sounds fine to me, although i may need to update some tests that don\u0027t specify test names and also don\u0027t pass conforming function names.",
       "parentUuid": "b350dd53_28646702",
+      "range": {
+        "startLine": 186,
+        "startChar": 0,
+        "endLine": 198,
+        "endChar": 2
+      },
+      "revId": "4213c0aed7f82eca7244d564a9958a6afc013448",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f1544261_0ff563ef",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 198,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-09-07T07:04:44Z",
+      "side": 1,
+      "message": "I believe in the proposed method we should not have to care about name conformance check. But yes, we need to specify test names, and I believe it\u0027s not a lot of work...",
+      "parentUuid": "5d1a0f6e_c35ee5d1",
       "range": {
         "startLine": 186,
         "startChar": 0,

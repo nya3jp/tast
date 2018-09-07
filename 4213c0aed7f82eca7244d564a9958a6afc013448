@@ -73,6 +73,30 @@
     },
     {
       "key": {
+        "uuid": "756f139c_74bd2663",
+        "filename": "src/chromiumos/tast/testing/registry.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-07T20:10:42Z",
+      "side": 1,
+      "message": "thanks for the explanation. yeah, i don\u0027t want users to ever call this, and i\u0027m worried that having a separate function for changing the registry\u0027s state makes it easy for unit tests to disable checking and then forget to undo it later. i\u0027ll keep it as an option to make it harder for them to do that. :-)",
+      "parentUuid": "e967ea56_271e4027",
+      "range": {
+        "startLine": 30,
+        "startChar": 0,
+        "endLine": 32,
+        "endChar": 1
+      },
+      "revId": "4213c0aed7f82eca7244d564a9958a6afc013448",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b350dd53_28646702",
         "filename": "src/chromiumos/tast/testing/test.go",
         "patchSetId": 1
@@ -132,6 +156,30 @@
       "side": 1,
       "message": "I believe in the proposed method we should not have to care about name conformance check. But yes, we need to specify test names, and I believe it\u0027s not a lot of work...",
       "parentUuid": "5d1a0f6e_c35ee5d1",
+      "range": {
+        "startLine": 186,
+        "startChar": 0,
+        "endLine": 198,
+        "endChar": 2
+      },
+      "revId": "4213c0aed7f82eca7244d564a9958a6afc013448",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d2a4dfe8_9b92edfb",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 198,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-07T20:10:42Z",
+      "side": 1,
+      "message": "thanks for this suggestion. the updated code is nicer!",
+      "parentUuid": "f1544261_0ff563ef",
       "range": {
         "startLine": 186,
         "startChar": 0,

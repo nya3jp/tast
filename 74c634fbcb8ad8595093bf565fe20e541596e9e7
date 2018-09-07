@@ -34,6 +34,29 @@
       "revId": "74c634fbcb8ad8595093bf565fe20e541596e9e7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f5d7cee9_53d613a7",
+        "filename": "src/chromiumos/tast/testing/poll.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-09-07T05:20:38Z",
+      "side": 1,
+      "message": "could you clarify what this message is, e.g.\n\n \"%v (last error: %v)\"",
+      "range": {
+        "startLine": 55,
+        "startChar": 25,
+        "endLine": 55,
+        "endChar": 29
+      },
+      "revId": "74c634fbcb8ad8595093bf565fe20e541596e9e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

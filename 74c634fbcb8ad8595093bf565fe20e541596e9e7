@@ -16,6 +16,24 @@
       "revId": "74c634fbcb8ad8595093bf565fe20e541596e9e7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a4b21c9a_8befcac4",
+        "filename": "src/chromiumos/tast/testing/poll.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-09-07T05:14:03Z",
+      "side": 1,
+      "message": "yes, that sounds good.",
+      "parentUuid": "bc8bc78a_0e4d055a",
+      "revId": "74c634fbcb8ad8595093bf565fe20e541596e9e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

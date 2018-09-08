@@ -48,16 +48,25 @@ func Poll(ctx context.Context, f func(context.Context) error, opts *PollOptions)
 		interval = opts.Interval
 	}
 
+	var lastErr error
 	for {
 		var err error
 		if err = f(ctx); err == nil {
 			return nil
 		}
 
+		// If f honors ctx's deadline, it may return a "context deadline exceeded" error
+		// if the deadline is reached while is running. To avoid returning a useless
+		// "context deadline exceeded (last error: context deadline exceeded)" error below,
+		// save the last error that is returned before the deadline is reached.
+		if lastErr == nil || ctx.Err() == nil {
+			lastErr = err
+		}
+
 		select {
 		case <-time.After(interval):
 		case <-ctx.Done():
-			return fmt.Errorf("%v (last error: %v)", ctx.Err(), err)
+			return fmt.Errorf("%v (last error: %v)", ctx.Err(), lastErr)
 		}
 	}
 }

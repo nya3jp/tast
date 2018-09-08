@@ -46,7 +46,7 @@ func TestPollCanceledContext(t *gotesting.T) {
 		t.Error("Poll didn't return expected error for canceled context")
 	}
 	if numCalls != 0 {
-		t.Errorf("Poll called func %d time(s) for canceled context ", numCalls)
+		t.Errorf("Poll called func %d time(s) for canceled context", numCalls)
 	}
 }
 
@@ -81,5 +81,30 @@ func TestPollTimeout(t *gotesting.T) {
 	}
 	if numCalls != 1 {
 		t.Errorf("Poll called func %d times; want 1", numCalls)
+	}
+}
+
+func TestPollUseNonContextError(t *gotesting.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	// Make the function return a canned error the first time and then cancel the context
+	// and return "context canceled" after that. Poll should return the canned error
+	// instead of a useless one about the context.
+	var msg = "foo"
+	numCalls := 0
+	err := Poll(ctx, func(ctx context.Context) error {
+		numCalls++
+		if numCalls == 1 {
+			return errors.New(msg)
+		}
+		cancel()
+		return ctx.Err()
+	}, nil)
+
+	if err == nil {
+		t.Error("Poll didn't return expected error for canceled context")
+	} else if !strings.Contains(err.Error(), msg) {
+		t.Errorf("Poll returned error %q, which doesn't contain func error %q", err.Error(), msg)
 	}
 }

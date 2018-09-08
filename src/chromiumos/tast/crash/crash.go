@@ -19,8 +19,14 @@ const (
 	// ChromeCrashDir contains the directory where Chrome writes minidump files.
 	ChromeCrashDir = "/home/chronos/crash"
 
-	coreSuffix     = ".core" // suffix for core files
-	minidumpSuffix = ".dmp"  // suffix for minidump files
+	// CoreExt is the extension for core files.
+	CoreExt = ".core"
+	// MinidumpExt is the extension for minidump crash files.
+	MinidumpExt = ".dmp"
+	// LogExt is the extension for log files containing additional information that are written by crash_reporter.
+	LogExt = ".log"
+	// MetadataExt is the extension for metadata files written by crash collectors and read by crash_sender.
+	MetadataExt = ".meta"
 
 	lsbReleasePath = "/etc/lsb-release"
 )
@@ -43,26 +49,36 @@ func copyFile(dst, src string) error {
 	return err
 }
 
-// GetCrashes returns the paths of core and minidump files generated in response to crashes.
-func GetCrashes(dir string) (cores, minidumps []string, err error) {
-	cores = make([]string, 0)
-	minidumps = make([]string, 0)
+// DefaultDirs returns all standard directories to which crashes are written.
+func DefaultDirs() []string {
+	return []string{DefaultCrashDir, ChromeCrashDir}
+}
 
-	wf := func(path string, info os.FileInfo, err error) error {
-		if path == dir {
-			return nil
-		} else if info.IsDir() {
-			return filepath.SkipDir
+// GetCrashes returns the paths of all files in dirs generated in response to crashes.
+// Nonexistent directories are skipped.
+func GetCrashes(dirs ...string) ([]string, error) {
+	var crashFiles []string
+	for _, dir := range dirs {
+		df, err := os.Open(dir)
+		if os.IsNotExist(err) {
+			continue
+		} else if err != nil {
+			return nil, err
 		}
-		if strings.HasSuffix(path, coreSuffix) {
-			cores = append(cores, path)
-		} else if strings.HasSuffix(path, minidumpSuffix) {
-			minidumps = append(minidumps, path)
+		files, err := df.Readdirnames(-1)
+		df.Close()
+		if err != nil {
+			return nil, err
 		}
-		return nil
+
+		for _, fn := range files {
+			ext := filepath.Ext(fn)
+			if ext == CoreExt || ext == MinidumpExt || ext == LogExt || ext == MetadataExt {
+				crashFiles = append(crashFiles, filepath.Join(dir, fn))
+			}
+		}
 	}
-	err = filepath.Walk(dir, wf)
-	return cores, minidumps, err
+	return crashFiles, nil
 }
 
 // CopyNewFiles copies paths that are present in newPaths but not in oldPaths into dstDir.

@@ -22,7 +22,7 @@ func main() {
 		BundleGlob:      "/usr/local/libexec/tast/bundles/local/*",
 		DataDir:         "/usr/local/share/tast/data",
 		SystemLogDir:    "/var/log",
-		SystemCrashDirs: []string{crash.DefaultCrashDir, crash.ChromeCrashDir},
+		SystemCrashDirs: crash.DefaultDirs(),
 		// The tast-use-flags package attempts to install this file to /etc,
 		// but it gets diverted to /usr/local since it's installed for test images.
 		USEFlagsFile: "/usr/local/etc/tast_use_flags.txt",

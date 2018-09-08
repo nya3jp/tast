@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"path/filepath"
 
 	"chromiumos/tast/command"
 	"chromiumos/tast/crash"
@@ -90,13 +91,15 @@ func handleCollectSysInfo(args *Args, w io.Writer) error {
 
 // getMinidumps returns the paths of all minidump files within dirs.
 func getMinidumps(dirs []string) ([]string, error) {
-	all := make([]string, 0)
-	for _, dir := range dirs {
-		if _, ds, err := crash.GetCrashes(dir); err != nil {
-			return nil, err
-		} else {
-			all = append(all, ds...)
+	var dumps []string
+	paths, err := crash.GetCrashes(dirs...)
+	if err != nil {
+		return nil, err
+	}
+	for _, path := range paths {
+		if filepath.Ext(path) == crash.MinidumpExt {
+			dumps = append(dumps, path)
 		}
 	}
-	return all, nil
+	return dumps, nil
 }

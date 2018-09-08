@@ -35,21 +35,20 @@ func TestGetCrashes(t *testing.T) {
 	writeCrashFile(t, td, "foo.txt", "") // skipped because non-core/dmp extension
 	fooCore := writeCrashFile(t, td, "foo.core", "")
 	fooDmp := writeCrashFile(t, td, "foo.dmp", "")
+	fooLog := writeCrashFile(t, td, "foo.log", "")
+	fooMeta := writeCrashFile(t, td, "foo.meta", "")
 	barDmp := writeCrashFile(t, td, "bar.dmp", "")
 	writeCrashFile(t, td, "bar", "")            // skipped because no extenison
 	writeCrashFile(t, td, "subdir/baz.dmp", "") // skipped because in subdir
 
-	cs, mds, err := GetCrashes(td)
+	dirs := []string{filepath.Join(td, "missing"), td} // nonexistent dir should be skipped
+	files, err := GetCrashes(dirs...)
 	if err != nil {
-		t.Fatalf("GetCrashes(%v) failed: %v", td, err)
+		t.Fatalf("GetCrashes(%v) failed: %v", dirs, err)
 	}
-	sort.Strings(cs)
-	if exp := []string{fooCore.abs}; !reflect.DeepEqual(cs, exp) {
-		t.Errorf("GetCrashes(%v) = %v; want %v", td, cs, exp)
-	}
-	sort.Strings(mds)
-	if exp := []string{barDmp.abs, fooDmp.abs}; !reflect.DeepEqual(mds, exp) {
-		t.Errorf("GetCrashes(%v) = %v; want %v", td, mds, exp)
+	sort.Strings(files)
+	if exp := []string{barDmp.abs, fooCore.abs, fooDmp.abs, fooLog.abs, fooMeta.abs}; !reflect.DeepEqual(files, exp) {
+		t.Errorf("GetCrashes(%v) = %v; want %v", dirs, files, exp)
 	}
 }
 

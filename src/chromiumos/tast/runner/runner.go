@@ -210,7 +210,11 @@ func logBundleOutput(r io.Reader, lg *log.Logger) error {
 			lg.Printf("Error: [%s:%d] %v", filepath.Base(v.Error.File), v.Error.Line, v.Error.Reason)
 			testFailed = true
 		case *control.TestEnd:
-			lg.Print("Finished ", v.Name)
+			if len(v.MissingSoftwareDeps) > 0 {
+				lg.Printf("Skipped %s for missing deps: %v", v.Name, v.MissingSoftwareDeps)
+			} else {
+				lg.Print("Finished ", v.Name)
+			}
 			lg.Print(strings.Repeat("-", 80))
 			if testFailed {
 				failedTests = append(failedTests, v.Name)

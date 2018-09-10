@@ -7,6 +7,7 @@ package runner
 import (
 	"bufio"
 	"encoding/json"
+	"fmt"
 	"io"
 	"os"
 	"sort"
@@ -34,23 +35,14 @@ func handleGetSoftwareFeatures(args *Args, w io.Writer) error {
 	}
 
 	res := GetSoftwareFeaturesResult{}
-	for ft, es := range args.SoftwareFeatureDefinitions {
-		ex, err := expr.New(es)
-		if err != nil {
-			return command.NewStatusErrorf(statusError, "failed to parse feature expression %q: %v", es, err)
-		}
-		if ex.Matches(flags) {
-			res.Available = append(res.Available, ft)
-		} else {
-			res.Unavailable = append(res.Unavailable, ft)
-		}
+	if res.Available, res.Unavailable, err =
+		determineSoftwareFeatures(args.SoftwareFeatureDefinitions, flags); err != nil {
+		return command.NewStatusErrorf(statusError, "%s", err)
 	}
-	sort.Strings(res.Available)
-	sort.Strings(res.Unavailable)
 	return json.NewEncoder(w).Encode(&res)
 }
 
-// readUSEFlagsFile reads a list of USE flags from fn.
+// readUSEFlagsFile reads a list of USE flags from fn (see Args.USEFlagsFile).
 // Each flag should be specified on its own line, and lines beginning with '#' are ignored.
 func readUSEFlagsFile(fn string) ([]string, error) {
 	f, err := os.Open(fn)
@@ -71,4 +63,26 @@ func readUSEFlagsFile(fn string) ([]string, error) {
 		return nil, command.NewStatusErrorf(statusError, "failed to read %v: %v", fn, err)
 	}
 	return flags, err
+}
+
+// determineSoftwareFeatures computes the DUT's available and unavailable software features.
+// definitions maps feature names to definitions (see Args.SoftwareFeatureDefinitions).
+// useFlags contains a list of relevant USE flags that were set when building the system image (see Args.USEFlagsFile).
+func determineSoftwareFeatures(definitions map[string]string, useFlags []string) (
+	available, unavailable []string, err error) {
+	for ft, es := range definitions {
+		ex, err := expr.New(es)
+		if err != nil {
+			return nil, nil, fmt.Errorf("failed to parse feature expression %q: %v", es, err)
+		}
+		if ex.Matches(useFlags) {
+			available = append(available, ft)
+		} else {
+			unavailable = append(unavailable, ft)
+		}
+	}
+
+	sort.Strings(available)
+	sort.Strings(unavailable)
+	return available, unavailable, nil
 }

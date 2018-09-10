@@ -164,6 +164,25 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, ru
 		}
 		args.Mode = RunTestsMode
 		args.Patterns = flags.Args()
+
+		// When the runner is executed by the "tast run" command, the list of software features (used to skip
+		// unsupported tests) is passed in after having been gathered by an earlier call to local_test_runner
+		// with GetSoftwareFeaturesMode. When the runner is executed directly, gather the list here instead.
+		if bundle.GetTestPatternType(args.Patterns) == bundle.TestPatternAttrExpr && args.USEFlagsFile != "" {
+			if _, err := os.Stat(args.USEFlagsFile); !os.IsNotExist(err) {
+				useFlags, err := readUSEFlagsFile(args.USEFlagsFile)
+				if err != nil {
+					return command.NewStatusErrorf(statusError, "%v", err)
+				}
+				avail, unavail, err := determineSoftwareFeatures(args.SoftwareFeatureDefinitions, useFlags)
+				if err != nil {
+					return command.NewStatusErrorf(statusError, "%v", err)
+				}
+				args.RunTestsArgs.CheckSoftwareDeps = true
+				args.RunTestsArgs.AvailableSoftwareFeatures = avail
+				args.RunTestsArgs.UnavailableSoftwareFeatures = unavail
+			}
+		}
 	}
 
 	// Copy over args that need to be passed to test bundles.

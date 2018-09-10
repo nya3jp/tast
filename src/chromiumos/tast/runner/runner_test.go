@@ -399,6 +399,45 @@ func TestRunFailForTestErrorWhenRunManually(t *gotesting.T) {
 	}
 }
 
+func TestCheckDepsWhenRunManually(t *gotesting.T) {
+	bd := createBundleSymlinks(t, []bool{true})
+	defer os.RemoveAll(bd)
+
+	// Write a file containing a list of USE flags.
+	const useFlagsFile = "use_flags.txt"
+	td := testutil.TempDir(t)
+	defer os.RemoveAll(td)
+	if err := testutil.WriteFiles(td, map[string]string{
+		useFlagsFile: "flag1\nflag2\n",
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	args := Args{
+		BundleGlob:   filepath.Join(bd, "*"),
+		USEFlagsFile: filepath.Join(td, useFlagsFile),
+		SoftwareFeatureDefinitions: map[string]string{
+			"both":    "flag1 && flag2",
+			"neither": "!flag1 && !flag2",
+		},
+	}
+	status, _, stderr, sig := callRun(t, []string{"(!foo)"}, nil, &args, LocalRunner)
+	if status != statusSuccess {
+		println(stderr.String())
+		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
+	}
+
+	if !args.bundleArgs.CheckSoftwareDeps {
+		t.Errorf("%s didn't request checking test deps", sig)
+	}
+	if exp := []string{"both"}; !reflect.DeepEqual(args.bundleArgs.AvailableSoftwareFeatures, exp) {
+		t.Errorf("%s passed available features %v; want %v", sig, args.bundleArgs.AvailableSoftwareFeatures, exp)
+	}
+	if exp := []string{"neither"}; !reflect.DeepEqual(args.bundleArgs.UnavailableSoftwareFeatures, exp) {
+		t.Errorf("%s passed unavailable features %v; want %v", sig, args.bundleArgs.UnavailableSoftwareFeatures, exp)
+	}
+}
+
 func TestRunPrintBundleError(t *gotesting.T) {
 	// Without any tests, the bundle should report failure.
 	dir := createBundleSymlinks(t, []bool{})

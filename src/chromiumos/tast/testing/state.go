@@ -6,7 +6,10 @@ package testing
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"net/http"
+	"os"
 	"path/filepath"
 	"runtime"
 	"runtime/debug"
@@ -135,6 +138,13 @@ func (s *State) DataPath(p string) string {
 	return ""
 }
 
+// DataFileSystem returns an http.FileSystem implementation that serves a test's data files.
+//
+//	srv := httptest.NewServer(http.FileServer(s.DataFileSystem()))
+//	defer srv.Close()
+//	resp, err := http.Get(srv.URL+"/data_file.html")
+func (s *State) DataFileSystem() *dataFS { return (*dataFS)(s) }
+
 // OutDir returns a directory into which the test may place arbitrary files
 // that should be included with the test results.
 func (s *State) OutDir() string { return s.outDir }
@@ -197,6 +207,30 @@ func (s *State) recordError() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.hasError = true
+}
+
+// dataFS implements http.FileSystem.
+type dataFS State
+
+// Open opens the file at name, a path that would be passed to DataPath.
+func (d *dataFS) Open(name string) (http.File, error) {
+	// DataPath doesn't want a leading slash, so strip it off if present.
+	if filepath.IsAbs(name) {
+		var err error
+		if name, err = filepath.Rel("/", name); err != nil {
+			return nil, err
+		}
+	}
+
+	// Chrome requests favicons automatically, but DataPath fails when asked for an unregistered file.
+	// Report an error for nonexistent files to avoid making tests fail (or create favicon files) unnecessarily.
+	// DataPath will still make the test fail if it attempts to use a file that exists but that wasn't
+	// declared as a dependency.
+	if _, err := os.Stat(filepath.Join((*State)(d).dataDir, name)); os.IsNotExist(err) {
+		return nil, errors.New("not found")
+	}
+
+	return os.Open((*State)(d).DataPath(name))
 }
 
 // NewError returns a new Error object containing reason rsn.

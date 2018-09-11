@@ -17,6 +17,9 @@ const (
 	// DefaultCrashDir contains the directory where the kernel writes core and minidump files.
 	DefaultCrashDir = "/var/spool/crash"
 	// ChromeCrashDir contains the directory where Chrome writes minidump files.
+	// Tests configure Chrome to write crashes to this location/ by setting the BREAKPAD_DUMP_LOCATION
+	// environment variable. This overrides the default /home/chronos/user/crash location, which is in
+	// the user's cryptohome and hence is only accessible while they are logged in.
 	ChromeCrashDir = "/home/chronos/crash"
 
 	// CoreExt is the extension for core files.

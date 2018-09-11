@@ -6,13 +6,20 @@ package testing
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"io/ioutil"
+	"net/http"
+	"net/http/httptest"
+	"os"
 	"path/filepath"
 	"reflect"
 	"runtime"
 	"strings"
 	gotesting "testing"
 	"time"
+
+	"chromiumos/tast/testutil"
 )
 
 // readOutput reads and returns Output entries from ch.
@@ -168,6 +175,65 @@ func TestDataPathNotDeclared(t *gotesting.T) {
 	out := readOutput(ch)
 	if len(out) != 1 || out[0].Err == nil {
 		t.Errorf("Got %v when requesting undeclared data path; wanted 1 error", out)
+	}
+}
+
+func TestDataFileServer(t *gotesting.T) {
+	td := testutil.TempDir(t)
+	defer os.RemoveAll(td)
+
+	const (
+		file1   = "dir/file1.txt"
+		file2   = "dir2/file2.txt"
+		missing = "missing.txt"
+		data1   = "first file"
+	)
+	if err := testutil.WriteFiles(td, map[string]string{
+		file1: data1,
+		file2: "second file",
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	test := Test{Data: []string{file1}}
+	ch := make(chan Output, 3)
+	s := NewState(context.Background(), &test, ch, td, td, nil)
+
+	srv := httptest.NewServer(http.FileServer(s.DataFileSystem()))
+	defer srv.Close()
+
+	get := func(p string) (string, error) {
+		resp, err := http.Get(srv.URL + "/" + p)
+		if err != nil {
+			return "", err
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != http.StatusOK {
+			return "", errors.New(resp.Status)
+		}
+		body, err := ioutil.ReadAll(resp.Body)
+		return string(body), err
+	}
+
+	if str, err := get(file1); err != nil {
+		t.Errorf("GET %v failed: %v", file1, err)
+	} else if str != data1 {
+		t.Errorf("GET %v returned %q; want %q", file1, str, data1)
+	}
+
+	if str, err := get(missing); err == nil {
+		t.Errorf("GET %v returned %q; want error", missing, str)
+	}
+	if s.HasError() {
+		t.Error("State contains error after requesting missing file")
+	}
+
+	if str, err := get(file2); err == nil {
+		t.Errorf("GET %v returned %q; want error", file2, str)
+	}
+	if !s.HasError() {
+		t.Error("State doesn't contain error after requesting unregistered file")
 	}
 }
 

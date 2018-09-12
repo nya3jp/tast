@@ -317,59 +317,24 @@ func checkFuncNameAgainstFilename(funcName, filename string) error {
 		return fmt.Errorf("filename %q isn't lowercase", filename)
 	}
 
+	if strings.Index(filename, "__") != -1 {
+		return fmt.Errorf("empty word in filename %q", filename)
+	}
+
 	const goExt = ".go"
 	ext := filepath.Ext(filename)
 	if ext != goExt {
 		return fmt.Errorf("filename %q doesn't have extension %q", filename, goExt)
 	}
 
-	// First, split the name into words based on underscores in the filename.
-	funcIdx := 0
-	fileWords := strings.Split(filename[:len(filename)-len(ext)], "_")
-	for _, fileWord := range fileWords {
-		// Disallow repeated underscores.
-		if len(fileWord) == 0 {
-			return fmt.Errorf("empty word in filename %q", filename)
-		}
-
-		// Extract the characters from the function name corresponding to the word from the filename.
-		if funcIdx+len(fileWord) > len(funcName) {
-			return fmt.Errorf("name %q doesn't include all of filename %q", funcName, filename)
-		}
-		funcWord := funcName[funcIdx : funcIdx+len(fileWord)]
-		if strings.ToLower(funcWord) != strings.ToLower(fileWord) {
-			return fmt.Errorf("word %q at %d in %q doesn't match %q in filename %q", funcWord, funcIdx, funcName, fileWord, filename)
-		}
-
-		// Test names are taken from Go function names, so they should follow Go's naming conventions.
-		// Generally speaking, that means camel case with acronyms fully capitalized (although we can't catch
-		// miscapitalized acronyms here, as we don't know if a given word is an acronym or not).
-		// Every word should begin with either an uppercase letter or a digit.
-		// After we see a lowercase letter in the word, we don't permit any more uppercase letters.
-		// We still allow multiple leading uppercase letters so that e.g. "DBus" can appear as "dbus"
-		// in the filename rather than "d_bus".
-		sawLower := false
-		for i := range funcWord {
-			rn := rune(funcWord[i])
-			if i == 0 {
-				if !unicode.IsUpper(rn) && !unicode.IsDigit(rn) {
-					return fmt.Errorf("word %q in %q must start with uppercase letter or digit", funcWord, funcName)
-				}
-			} else {
-				if unicode.IsUpper(rn) && sawLower {
-					return fmt.Errorf("word %q in %q has uppercase %q after lowercase letter", funcWord, funcName, string(rn))
-				}
-				if unicode.IsLower(rn) {
-					sawLower = true
-				}
-			}
-		}
-
-		funcIdx += len(funcWord)
+	if !unicode.IsUpper(rune(funcName[0])) {
+		return fmt.Errorf("name %q doesn't start with uppercase letter", funcName)
 	}
 
-	if funcIdx < len(funcName) {
-		return fmt.Errorf("name %q has extra suffix %q not in filename %q", funcName, funcName[funcIdx:], filename)
+	concatFilename := strings.Replace(filename[:len(filename)-len(ext)], "_", "", -1)
+
+	if strings.ToLower(funcName) != strings.ToLower(concatFilename) {
+		return fmt.Errorf("name %q doesn't match filename %s", funcName, concatFilename)
 	}
 
 	return nil

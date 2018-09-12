@@ -300,6 +300,7 @@ func TestCheckFuncNameAgainstFilename(t *gotesting.T) {
 		{"Test", "test.go", true},                     // single word
 		{"MyTest", "my_test.go", true},                // two words separated with underscores
 		{"LoadURL", "load_url.go", true},              // word and acronym
+		{"LoadURL", "loadurl.go", true},               // no underscores between words
 		{"PlayMP3", "play_mp3.go", true},              // word contains numbers
 		{"PlayMP3Song", "play_mp3_song.go", true},     // acronym followed by word
 		{"ConnectToDBus", "connect_to_dbus.go", true}, // word with multiple leading caps
@@ -307,8 +308,9 @@ func TestCheckFuncNameAgainstFilename(t *gotesting.T) {
 		{"Foo123Bar", "foo123_bar.go", true},          // word with trailing digits
 		{"Foo123bar", "foo_123bar.go", true},          // word with leading digits
 		{"Foo123Bar", "foo_123_bar.go", true},         // word consisting only of digits
+		{"WebRTC", "webrtc.go", true},                 // acronym has lowercases in the middle
+		{"WebRTCTest", "webrtc_test.go", true},        // acronym followed by word has lowercases
 		{"foo", "foo.go", false},                      // lowercase func name
-		{"LoadURL", "loadurl.go", false},              // new word in func name but not in filename
 		{"FirstTest", "first.go", false},              // func name has word not in filename
 		{"Firstblah", "first.go", false},              // func name has word longer than filename
 		{"First", "firstabc.go", false},               // filename has word longer than func name
@@ -317,6 +319,7 @@ func TestCheckFuncNameAgainstFilename(t *gotesting.T) {
 		{"Foo", "bar.go", false},                      // completely different words
 		{"Foo", "Foo.go", false},                      // non-lowercase filename
 		{"Foo", "foo.txt", false},                     // filename without ".go" extension
+		{"My_Test", "my_test.go", false},              // func name has underscore
 	} {
 		err := checkFuncNameAgainstFilename(tc.name, tc.fn)
 		if err != nil && tc.valid {

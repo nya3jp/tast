@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "985dc700_75399a33",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-09-12T12:49:53Z",
+      "side": 1,
+      "message": "Could you refer chromium:880661?",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 8
+      },
+      "revId": "cac0dea3199f07e5715150e8461d6d0e2f38d363",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1149bc43_22164bfe",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 331,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-09-12T12:49:53Z",
+      "side": 1,
+      "message": "\"doesn\u0027t start\"?",
+      "range": {
+        "startLine": 331,
+        "startChar": 28,
+        "endLine": 331,
+        "endChar": 35
+      },
+      "revId": "cac0dea3199f07e5715150e8461d6d0e2f38d363",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b0181b40_a7d5a94d",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 337,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-09-12T12:49:53Z",
+      "side": 1,
+      "message": "nit: \"name %q doesn\u0027t match filename %q\"",
+      "range": {
+        "startLine": 337,
+        "startChar": 20,
+        "endLine": 337,
+        "endChar": 30
+      },
+      "revId": "cac0dea3199f07e5715150e8461d6d0e2f38d363",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

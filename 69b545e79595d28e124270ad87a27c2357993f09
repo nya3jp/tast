@@ -22,6 +22,30 @@
       "revId": "69b545e79595d28e124270ad87a27c2357993f09",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ee2e8b13_cdbf4e16",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 355,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-13T01:58:04Z",
+      "side": 1,
+      "message": "oh whoops, writing a good error here was a TODO. fixed :-)",
+      "parentUuid": "a2364951_1855b2bb",
+      "range": {
+        "startLine": 355,
+        "startChar": 20,
+        "endLine": 355,
+        "endChar": 24
+      },
+      "revId": "69b545e79595d28e124270ad87a27c2357993f09",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

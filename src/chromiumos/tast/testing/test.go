@@ -17,7 +17,6 @@ import (
 	"sort"
 	"strings"
 	"time"
-	"unicode"
 )
 
 const (
@@ -28,12 +27,16 @@ const (
 	testDepAttrPrefix    = "dep:"    // prefix for auto-added attribute containing software dependency
 )
 
-var testNameRegexp *regexp.Regexp
+var testNameRegexp, testWordRegexp *regexp.Regexp
 
 func init() {
 	// Validates test names, which should consist of a package name, a period,
 	// and the name of the exported test function.
 	testNameRegexp = regexp.MustCompile("^[a-z][a-z0-9]*\\.[A-Z][A-Za-z0-9]*$")
+
+	// Validates an individual word in a test function name.
+	// See checkFuncNameAgainstFilename for details.
+	testWordRegexp = regexp.MustCompile("^[A-Z0-9]+[a-z0-9]*[A-Z0-9]*$")
 }
 
 // TestFunc is the code associated with a test.
@@ -338,31 +341,19 @@ func checkFuncNameAgainstFilename(funcName, filename string) error {
 		}
 		funcWord := funcName[funcIdx : funcIdx+len(fileWord)]
 		if strings.ToLower(funcWord) != strings.ToLower(fileWord) {
-			return fmt.Errorf("word %q at %d in %q doesn't match %q in filename %q", funcWord, funcIdx, funcName, fileWord, filename)
+			return fmt.Errorf("word %q at %q[%d] doesn't match %q in filename %q", funcWord, funcName, funcIdx, fileWord, filename)
 		}
 
 		// Test names are taken from Go function names, so they should follow Go's naming conventions.
 		// Generally speaking, that means camel case with acronyms fully capitalized (although we can't catch
 		// miscapitalized acronyms here, as we don't know if a given word is an acronym or not).
 		// Every word should begin with either an uppercase letter or a digit.
-		// After we see a lowercase letter in the word, we don't permit any more uppercase letters.
-		// We still allow multiple leading uppercase letters so that e.g. "DBus" can appear as "dbus"
-		// in the filename rather than "d_bus".
-		sawLower := false
-		for i := range funcWord {
-			rn := rune(funcWord[i])
-			if i == 0 {
-				if !unicode.IsUpper(rn) && !unicode.IsDigit(rn) {
-					return fmt.Errorf("word %q in %q must start with uppercase letter or digit", funcWord, funcName)
-				}
-			} else {
-				if unicode.IsUpper(rn) && sawLower {
-					return fmt.Errorf("word %q in %q has uppercase %q after lowercase letter", funcWord, funcName, string(rn))
-				}
-				if unicode.IsLower(rn) {
-					sawLower = true
-				}
-			}
+		// Multiple leading or trailing uppercase letters are allowed to permit filename -> func-name pairings like
+		// dbus.go -> "DBus", webrtc.go -> "WebRTC", and crosvm.go -> "CrosVM".
+		// Note that this also permits incorrect filenames like loadurl.go for "LoadURL", but that's not something code can prevent.
+		if !testWordRegexp.MatchString(funcWord) {
+			return fmt.Errorf("word %q at %q[%d] should probably be %q (acronyms also allowed at beginning and end)",
+				funcWord, funcName, funcIdx, strings.Title(strings.ToLower(funcWord)))
 		}
 
 		funcIdx += len(funcWord)

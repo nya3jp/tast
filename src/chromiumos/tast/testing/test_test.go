@@ -303,12 +303,14 @@ func TestCheckFuncNameAgainstFilename(t *gotesting.T) {
 		{"PlayMP3", "play_mp3.go", true},              // word contains numbers
 		{"PlayMP3Song", "play_mp3_song.go", true},     // acronym followed by word
 		{"ConnectToDBus", "connect_to_dbus.go", true}, // word with multiple leading caps
+		{"RestartCrosVM", "restart_crosvm.go", true},  // word with ending acronym
+		{"RestartCrosVM", "restart_cros_vm.go", true}, // word followed by acronym
 		{"Foo123bar", "foo123bar.go", true},           // word contains digits
 		{"Foo123Bar", "foo123_bar.go", true},          // word with trailing digits
 		{"Foo123bar", "foo_123bar.go", true},          // word with leading digits
 		{"Foo123Bar", "foo_123_bar.go", true},         // word consisting only of digits
 		{"foo", "foo.go", false},                      // lowercase func name
-		{"LoadURL", "loadurl.go", false},              // new word in func name but not in filename
+		{"Foobar", "foo_bar.go", false},               // lowercase word
 		{"FirstTest", "first.go", false},              // func name has word not in filename
 		{"Firstblah", "first.go", false},              // func name has word longer than filename
 		{"First", "firstabc.go", false},               // filename has word longer than func name

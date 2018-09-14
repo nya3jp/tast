@@ -2,31 +2,34 @@
 
 [TOC]
 
-## Test names
+## Adding tests
 
-Tests are identified by names like `ui.ChromeLogin`. The portion before the
-period is the test's package name, while the portion after the period is the
-function that implements the test. Test function names should follow [Go's
-naming conventions], and [acronyms should be fully capitalized]. Test names are
-automatically derived and usually shouldn't be specified.
+### Test names
 
-## Code location
+Tests are identified by names like `ui.ChromeLogin` or `platform.ConnectToDBus`.
+The portion before the period, called the _category_, is the final component of
+the test's package name, while the portion after the period is the name of the
+exported Go function that implements the test. Test function names should follow
+[Go's naming conventions], and [acronyms should be fully capitalized]. Test
+names are automatically derived and should not be specified when defining tests.
+
+### Code location
 
 Public tests built into the default `cros` local and remote test bundles are
 checked into the [tast-tests repository] under the
 [src/chromiumos/tast/local/bundles/cros/] and
 [src/chromiumos/tast/remote/bundles/cros/] directories (which may also be
 accessed by the `local_tests` and `remote_tests` symlinks at the top of the
-repository). Tests are grouped into packages by the functionality that they
-exercise; for example, the [ui package] contains local tests that exercise
-Chrome OS's UI.
+repository). Tests are categorized into packages based on the functionality that
+they exercise; for example, the [ui package] contains local tests that exercise
+the Chrome OS UI.
 
-Support packages used by tests are located in [src/chromiumos/tast/local/] and
-[src/chromiumos/tast/remote/], alongside the `bundles/` directories. For
-example, the [chrome package] can be used by local tests to interact with
-Chrome.
+Support packages used by multiple test categories located in
+[src/chromiumos/tast/local/] and [src/chromiumos/tast/remote/], alongside the
+`bundles/` directories. For example, the [chrome package] can be used by local
+tests to interact with Chrome.
 
-A local test named `ui.MyTest` would be placed in a file named
+A local test named `ui.MyTest` should be defined in a file named
 `src/chromiumos/tast/local/bundles/cros/ui/my_test.go` (i.e. convert the test
 name to lowercase and insert underscores between words) with contents similar to
 the following:
@@ -36,7 +39,7 @@ the following:
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package example
+package ui
 
 import (
 	"chromiumos/tast/testing"
@@ -47,6 +50,7 @@ func init() {
 		Func: MyTest,
 		Desc: "Does X to verify Y",
 		Attr: []string{"informational"},
+		Deps: []string{"chrome_login"},
 	})
 }
 
@@ -59,20 +63,26 @@ Tests may specify [attributes] and [software dependencies] when they are
 declared. Setting the `informational` attribute on new tests is recommended, as
 they will block the Commit Queue on failure otherwise.
 
-### Adding new test packages
+If there's a support package that's specific to a single category, it's often
+best to place it underneath the category's directory. See the "Scoping and
+shared code" section.
 
-When adding a new test package, you must update the test bundle's `main.go` file
-(either [local/bundles/cros/main.go] or [remote/bundles/cros/main.go]) to
+### Adding new test categories
+
+When adding a new test category, you must update the test bundle's `main.go`
+file (either [local/bundles/cros/main.go] or [remote/bundles/cros/main.go]) to
 underscore-import the new package so its `init` functions will be executed to
 register tests.
 
 ## Coding style and best practices
 
-Test code should be formatted by [gofmt] and validated by [go vet]. It should
+Test code should be formatted by [gofmt] and checked by [go vet]. It should
 follow Go's established best practices as described by these documents:
 
 *   [Effective Go]
 *   [Go Code Review Comments]
+
+### Unit tests
 
 Support packages should be exercised by unit tests when possible. Unit tests can
 cover edge cases that may not be typically seen when using the package, and they
@@ -81,6 +91,47 @@ set of Tast-based tests that must be run to exercise the package). See [Go's
 testing package] for more information about writing unit tests for Go code. The
 [Best practices for writing Chrome OS unit tests] document contains additional
 suggestions that may be helpful (despite being C++-centric).
+
+## Test structure
+
+As seen in the test declaration above, each test is comprised of a single
+exported function that receives a [testing.State] struct. This is defined in the
+[Tast testing package] (not to be confused with [Go's `testing` package] for
+unit testing) and is used to log progress and report failures.
+
+### Startup and shutdown
+
+If a test requires the system to be in a particular state before it runs, it
+should include code that tries to get the system into that state if it isn't
+there already. Previous tests may have aborted mid-run; it's not safe to make
+assumptions that they undid all temporary changes that they made.
+
+Tests should also avoid performing unnecessary de-initialization steps on
+completion: UI tests should leave Chrome logged in at completion instead of
+restarting it, for example. Since later tests can't safely make assumptions
+about the initial state of the system, they'll need to e.g. restart Chrome again
+regardless, which takes even more time. In addition to resulting in a faster
+overall running time for the suite, leaving the system in a logged-in state
+makes it easier for developers to manually inspect it after running the test
+when diagnosing a failure.
+
+Note that tests should still undo atypical configuration that leaves the system
+in a non-fully-functional state, though. For example, if a test needs to
+temporarily stop a service, it should restart it before exiting.
+
+### Contexts and timeouts
+
+Tast uses [context.Context] to implement timeouts. The [testing.State] struct's
+`Context` function returns a [context.Context] with an associated deadline that
+expires when the test's timeout is reached. The context's `Done` function
+returns a [channel] that can be used within a [select] statement to wait for
+expiration, after which the context's `Err` function returns a non-`nil` error.
+The [testing.Poll] function makes it easier to honor timeouts while polling for
+a condition.
+
+Any function that performs a blocking operation should take a [context.Context]
+(typically as its first argument) and return an error if the context expires
+before the operation finishes.
 
 ### Scoping and shared code
 
@@ -111,25 +162,8 @@ introduce a new descriptively-named subpackage; see e.g. the [chromecrash]
 package within the `ui` package, used by the [ui.ChromeCrashLoggedIn] and
 [ui.ChromeCrashNotLoggedIn] tests.
 
-### Startup and shutdown
-
-If a test requires the system to be in a particular state before it runs, it
-should include code that tries to get the system into that state if it isn't
-there already. Previous tests may have aborted mid-run; it's not safe to make
-assumptions that they undid all temporary changes that they made.
-
-Tests should also avoid performing unnecessary de-initialization steps on
-completion: UI tests should leave Chrome logged in instead of restarting it, for
-example. Since later tests can't safely make assumptions about the initial state
-of the system, they'll need to e.g. restart Chrome again regardless, which takes
-even more time. In addition to resulting in a faster overall running time for
-the suite, leaving the system in a logged-in state makes it easier for
-developers to manually inspect it after running the test when diagnosing a
-failure.
-
-Note that tests should still undo atypical configuration that leaves the system
-in a non-fully-functional state, though. For example, if a test needs to
-temporarily stop a service, it should restart it before exiting.
+This policy is accepted as being non-ideal, and [issue 882022] tracks coming up
+with something better.
 
 ### Test consolidation
 
@@ -161,40 +195,47 @@ coverage need not be reduced when tests are consolidated and an early
 expectation fails.
 
 For lightweight testing that doesn't need to interact with Chrome or restart
-services, it's fine to use fine-grained tests.
+services, it's fine to use fine-grained tests — there's almost no per-test
+overhead in Tast; the overhead comes from repeating the same slow operations
+_within_ multiple tests.
 
 ## Errors and logging
 
-The [Tast testing package] (not to be confused with Go's standard `testing`
-package) defines a [State] struct that is passed to test functions and used to
-report failures and to log messages.
+The [testing.State] struct provides functions that tests may use to report their
+status:
 
-### How and when
+*   `Log` and `Logf` record informational messages about the test's progress.
+*   `Error` and `Errorf` record errors and mark the test as failed but allow it
+    to continue, similar to [Google Test]'s `EXPECT_` set of macros. Multiple
+    errors may be reported by a single test.
+*   `Fatal` and `Fatalf` record errors and stop the test immediately, similar to
+    the `ASSERT_` set of macros.
 
-A single test can report multiple errors. Use the `Error` or `Errorf` methods to
-report an error and continue or the `Fatal` or `Fatalf` methods to report an
-error and halt the test. Respectively, these are analogous to the results of
-failed `EXPECT_` and `ASSERT_` macros in [Google Test].
+### Log/Error/Fatal vs. Logf/Errorf/Fatalf
 
-Support packages should not record test failures directly. Instead, return
-`error` values and allow tests to decide how to handle them. Support package's
-exported functions should typically take [context.Context] arguments and use
-them to return an error early when the test's deadline is reached and to log
-informative messages using `testing.ContextLog` and `testing.ContextLogf`.
+`Log`, `Error`, and `Fatal` should be used in conjunction with a single string
+literal or when passing a string literal followed by a single value:
 
-When you're about to do something that could take a while or even hang, log a
-message using `Log` or `Logf` first. This both lets developers know what's
-happening when they run your test interactively and helps when looking at logs
-to investigate timeout failures.
+```go
+s.Log("Doing something")
+s.Log("Loading ", url)
+s.Error("Encountered an error: ", err)
+s.Fatal("Everything is broken: ", err)
+```
 
-On the other hand, avoid logging unnecessary information that would clutter the
-logs. If you want to log a verbose piece of information to help determine the
-cause of an error, only do it after the error has occurred.
+`Logf`, `Errorf`, and `Fatalf` should only be used in conjunction with `printf`-style
+format strings:
+
+```go
+s.Logf("Read %q from %v", data, path)
+s.Errorf("Failed to load %v: %v", url, err)
+s.Fatalf("Got invalid JSON object %+v", obj)
+```
 
 ### Formatting
 
 Please follow [Go's error string conventions] when producing `error` values
-(i.e. with `error.New` or `fmt.Errorf`):
+(i.e. with [errors.New] or [fmt.Errorf]):
 
 > Error strings should not be capitalized (unless beginning with proper nouns or
 > acronyms) or end with punctuation, since they are usually printed following
@@ -209,8 +250,8 @@ if err := doSomething(id); err != nil {
 }
 ```
 
-Tast log messages and error reasons should be capitalized phrases without any
-trailing punctuation:
+On the other hand, Tast log messages and error reasons should be capitalized
+phrases without any trailing punctuation:
 
 ```go
 s.Log("Asking Chrome to log in")
@@ -220,6 +261,28 @@ if err != nil {
 }
 s.Logf("Logged in as user %q with ID %v", user, id)
 ```
+
+### When to log
+
+When you're about to do something that could take a while or even hang, log a
+message using `Log` or `Logf` first. This both lets developers know what's
+happening when they run your test interactively and helps when looking at logs
+to investigate timeout failures.
+
+On the other hand, avoid logging unnecessary information that would clutter the
+logs. If you want to log a verbose piece of information to help determine the
+cause of an error, only do it after the error has occurred.
+
+See the [fmt package]'s documentation for available "verbs".
+
+### Support packages
+
+Support packages should not record test failures directly. Instead, return
+`error` values (using [errors.New] or [fmt.Errorf]) and allow tests to decide
+how to handle them. Support packages' exported functions should typically take
+[context.Context] arguments and use them to return an error early when the
+test's deadline is reached and to log informative messages using
+`testing.ContextLog` and `testing.ContextLogf`.
 
 ## Output files
 
@@ -241,8 +304,8 @@ to a `tests/<test-name>/` subdirectory within the results directory.
 ## Data files
 
 Tests can register ancillary data files that will be copied to the DUT and made
-available while the test is running; consider a short binary audio file that a
-test plays in a loop, for example.
+available while the test is running; consider a JavaScript file that Chrome
+loads or a short binary audio file that is played in a loop, for example.
 
 ### Internal data files
 
@@ -250,6 +313,10 @@ Small non-binary data files should be checked into a `data/` subdirectory under
 the test package as _internal data files_. Prefix their names by the test file's
 name (e.g. `data/my_test_some_data.txt` for a test file named `my_test.go`) to
 make ownership obvious.
+
+Per the [Chromium guidelines for third-party code], place
+(appropriately-licensed) data that wasn't created by Chromium developers within
+a `third_party` subdirectory under the `data` directory.
 
 ### External data files
 
@@ -279,10 +346,18 @@ The process for adding an external data file is:
 > date as a suffix in the filename to make it easy to add a new version when
 > needed, e.g. `my_test_data_20180812.bin`.
 
+### Internal vs. external
+
+As internal data files are much easier to view and modify than external data
+files, it's usually better to check in textual data. Only store binaries as
+external data.
+
 ### Executables
 
 If your test depends on outside executables, use Portage to build and package
 those executables separately and include them in test Chrome OS system images.
+Tast [intentionally](design_principles.md) does not support compiling or
+deploying other packages that tests depend on.
 
 ### Using data files in tests
 
@@ -299,7 +374,7 @@ testing.AddTest(&testing.Test{
 })
 ```
 
-Later, within the test function, pass the same filename to `testing.State`'s
+Later, within the test function, pass the same filename to [testing.State]'s
 `DataPath` function to receive the path to the data file on the DUT:
 
 ```go
@@ -328,21 +403,29 @@ external data files.
 [Go Code Review Comments]: https://github.com/golang/go/wiki/CodeReviewComments
 [Go's testing package]: https://golang.org/pkg/testing/
 [Best practices for writing Chrome OS unit tests]: https://chromium.googlesource.com/chromiumos/docs/+/master/unit_tests.md
+[testing.State]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#State
+[Tast testing package]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/testing/
+[context.Context]: https://golang.org/pkg/context/
+[channel]: https://tour.golang.org/concurrency/2
+[select]: https://tour.golang.org/concurrency/5
+[testing.Poll]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Poll
 [scoped at the package level]: https://golang.org/ref/spec#Declarations_and_scope
 [chromecrash]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/master/src/chromiumos/tast/local/bundles/cros/ui/chromecrash/
 [ui.ChromeCrashLoggedIn]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/master/src/chromiumos/tast/local/bundles/cros/ui/chrome_crash_logged_in.go
 [ui.ChromeCrashNotLoggedIn]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/master/src/chromiumos/tast/local/bundles/cros/ui/chrome_crash_not_logged_in.go
+[issue 882022]: https://crbug.com/882022
 [TotT 227]: http://go/tott/227
 [TotT 324]: http://go/tott/324
 [TotT 339]: http://go/tott/339
 [TotT 520]: http://go/tott/520
 [Unit Testing Best Practices Do's and Don'ts]: http://go/unit-test-practices#behavior-testing-dos-and-donts
-[Tast testing package]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/testing/
-[State]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#State
 [Google Test]: https://github.com/google/googletest
-[context.Context]: https://golang.org/pkg/context/
 [Go's error string conventions]: https://github.com/golang/go/wiki/CodeReviewComments#error-strings
+[errors.New]: https://golang.org/pkg/errors/#New
+[fmt.Errorf]: https://golang.org/pkg/fmt/#Errorf
+[fmt package]: https://golang.org/pkg/fmt/
 [Running tests]: running_tests.md
+[Chromium guidelines for third-party code]: https://chromium.googlesource.com/chromium/src.git/+/master/docs/adding_to_third_party.md
 [external_data.conf file for tasts-local-tests-cros]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/tast-local-tests-cros/files/external_data.conf
 [tast-local-tests-cros-9999.ebuild]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/tast-local-tests-cros/tast-local-tests-cros-9999.ebuild
 [example.DataFiles]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/bundles/cros/example/data_files.go

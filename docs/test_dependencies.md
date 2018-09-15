@@ -1,4 +1,4 @@
-# Tast Test Dependencies
+# Tast Test Dependencies (go/tast-deps)
 
 A test may specify software features that must be supported by the DUT's system
 image in order for the test to run successfully. If one or more features aren't

@@ -1,4 +1,4 @@
-# Tast
+# Tast (go/tast)
 
 Tast is an integration-testing system for Chrome OS. Its focus is on
 maintainability, speed, and ease of interpreting and reproducing test results.

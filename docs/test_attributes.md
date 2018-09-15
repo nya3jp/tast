@@ -1,4 +1,4 @@
-# Tast Test Attributes
+# Tast Test Attributes (go/tast-attr)
 
 Tests may specify attributes via the `Attr` field in [testing.Test]. Attributes
 are free-form strings, but this document enumerates well-known attributes with

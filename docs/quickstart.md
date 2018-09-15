@@ -1,4 +1,4 @@
-# Tast Quickstart
+# Tast Quickstart (go/tast-quickstart)
 
 [TOC]
 

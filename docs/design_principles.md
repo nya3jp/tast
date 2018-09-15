@@ -1,4 +1,4 @@
-# Tast Design Principles
+# Tast Design Principles (go/tast-design)
 
 This document lists principles that guided [Tast's design] and that should be
 kept in mind when considering future changes.

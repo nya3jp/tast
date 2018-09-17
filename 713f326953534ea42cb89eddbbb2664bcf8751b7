@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "0b4d18b4_db33e853",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-17T16:16:29Z",
+      "side": 1,
+      "message": "in short, they exist to make it possible to have tests that live in private repositories. i\u0027ve added a link to overview.md#Test-bundles, which goes into this in a bit more detail.",
+      "parentUuid": "990d3fc9_aefe984d",
+      "revId": "713f326953534ea42cb89eddbbb2664bcf8751b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "94104caa_37476a1d",
         "filename": "docs/writing_tests.md",
         "patchSetId": 2
@@ -30,6 +48,24 @@
       "writtenOn": "2018-09-17T15:56:03Z",
       "side": 1,
       "message": "Aside: I find the \"local\" vs. \"remote\" naming to be confusing. Naively I would assume \"remote\" runs on the DUT and \"local\" runs on my workstation.",
+      "revId": "713f326953534ea42cb89eddbbb2664bcf8751b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "57dc3137_92d1ac94",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-17T16:16:29Z",
+      "side": 1,
+      "message": "i think we\u0027ve talked about this before. :-) i agree that it\u0027s confusing. i chose it to match autotest\u0027s current terminology (the \"client\" and \"server\" terms that we use for autotest tests, which i think are even more confusing since they reflect the test system\u0027s design, are deprecated, iirc).\n\nthe explanation that i gave last time, which i think you found reasonably satisfying, was that this describes where the test runs relative to the DUT -- local tests run on the DUT, while remote tests run separate from it.",
+      "parentUuid": "94104caa_37476a1d",
       "revId": "713f326953534ea42cb89eddbbb2664bcf8751b7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "0fd2b63c_8eea25ae",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-17T16:16:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f83dd9c1_3aebfa67",
+      "revId": "713f326953534ea42cb89eddbbb2664bcf8751b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ef729b3f_2fcbfd8d",
         "filename": "docs/writing_tests.md",
         "patchSetId": 2
@@ -64,6 +118,24 @@
       "writtenOn": "2018-09-17T15:56:03Z",
       "side": 1,
       "message": "Aside: Should tast\u0027s testing package be renamed given that Go\u0027s testing package is so well known? \"tasting\" :-)",
+      "revId": "713f326953534ea42cb89eddbbb2664bcf8751b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "11aa7af8_a9ae9ec8",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-17T16:16:29Z",
+      "side": 1,
+      "message": "i couldn\u0027t come up with anything better (and i reject efforts to try to call tast tests \"tasts\", as it feels overly cutesy to me). :-P\n\nin practice, i think that the compiler makes it hard to be confused for too long about which one you\u0027re using. so far, the conflict has mostly just come up when i\u0027m writing unit tests for tast itself.",
+      "parentUuid": "ef729b3f_2fcbfd8d",
       "revId": "713f326953534ea42cb89eddbbb2664bcf8751b7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -87,6 +159,24 @@
     },
     {
       "key": {
+        "uuid": "7f683354_61d36168",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-17T16:16:29Z",
+      "side": 1,
+      "message": "i added another paragraph here that mentions \u0027defer\u0027, which can help -- a failing test should still try to fix things before it goes.\n\nin practice, i think my stance here is, \"assume you\u0027re getting a reasonable environment when your test starts, but don\u0027t make assumptions about chrome\u0027s initial state. similarly, try to leave the system in a reasonable state, but don\u0027t worry about what chrome is doing when you go.\" i\u0027ve also stated that explicitly now.",
+      "parentUuid": "48af7bd7_52efa271",
+      "revId": "713f326953534ea42cb89eddbbb2664bcf8751b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "5444b368_972f1fab",
         "filename": "docs/writing_tests.md",
         "patchSetId": 2
@@ -104,6 +194,24 @@
     },
     {
       "key": {
+        "uuid": "5e23777e_6c73f6e9",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 266,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-17T16:16:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5444b368_972f1fab",
+      "revId": "713f326953534ea42cb89eddbbb2664bcf8751b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f1d1312f_bbe18fdb",
         "filename": "docs/writing_tests.md",
         "patchSetId": 2
@@ -115,6 +223,24 @@
       "writtenOn": "2018-09-17T15:56:03Z",
       "side": 1,
       "message": "Consider rolling this into the initial docs on Log and Error above. It\u0027s important and I\u0027m worried it will be missed.",
+      "revId": "713f326953534ea42cb89eddbbb2664bcf8751b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eded81af_ff333066",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 317,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-17T16:16:29Z",
+      "side": 1,
+      "message": "i\u0027ve moved this up so it\u0027s the first sub-section. seem okay?",
+      "parentUuid": "f1d1312f_bbe18fdb",
       "revId": "713f326953534ea42cb89eddbbb2664bcf8751b7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

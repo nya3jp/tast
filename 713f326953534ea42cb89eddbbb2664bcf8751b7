@@ -244,6 +244,24 @@
       "revId": "713f326953534ea42cb89eddbbb2664bcf8751b7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2d48ceb3_eeae1376",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 317,
+      "author": {
+        "id": 1000045
+      },
+      "writtenOn": "2018-09-17T16:40:15Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "eded81af_ff333066",
+      "revId": "713f326953534ea42cb89eddbbb2664bcf8751b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

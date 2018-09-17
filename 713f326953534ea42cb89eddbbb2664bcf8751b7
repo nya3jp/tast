@@ -1,0 +1,123 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "990d3fc9_aefe984d",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1000045
+      },
+      "writtenOn": "2018-09-17T15:56:03Z",
+      "side": 1,
+      "message": "Aside: I don\u0027t really understand why tast has \"bundles\", since there seems to be only one bundle.",
+      "revId": "713f326953534ea42cb89eddbbb2664bcf8751b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "94104caa_37476a1d",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1000045
+      },
+      "writtenOn": "2018-09-17T15:56:03Z",
+      "side": 1,
+      "message": "Aside: I find the \"local\" vs. \"remote\" naming to be confusing. Naively I would assume \"remote\" runs on the DUT and \"local\" runs on my workstation.",
+      "revId": "713f326953534ea42cb89eddbbb2664bcf8751b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f83dd9c1_3aebfa67",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1000045
+      },
+      "writtenOn": "2018-09-17T15:56:03Z",
+      "side": 1,
+      "message": "they -\u003e \"tests without this attribute\"",
+      "revId": "713f326953534ea42cb89eddbbb2664bcf8751b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ef729b3f_2fcbfd8d",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1000045
+      },
+      "writtenOn": "2018-09-17T15:56:03Z",
+      "side": 1,
+      "message": "Aside: Should tast\u0027s testing package be renamed given that Go\u0027s testing package is so well known? \"tasting\" :-)",
+      "revId": "713f326953534ea42cb89eddbbb2664bcf8751b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "48af7bd7_52efa271",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1000045
+      },
+      "writtenOn": "2018-09-17T15:56:03Z",
+      "side": 1,
+      "message": "Q: So if the test that stopped a service failed mid-way, how does the next test ensure that service is up? This seems to conflict with the de-init advice above. I can blindly follow this rule, but I don\u0027t really understand why it\u0027s different.",
+      "revId": "713f326953534ea42cb89eddbbb2664bcf8751b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5444b368_972f1fab",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 266,
+      "author": {
+        "id": 1000045
+      },
+      "writtenOn": "2018-09-17T15:56:03Z",
+      "side": 1,
+      "message": "nit: \"Doing something slow\"",
+      "revId": "713f326953534ea42cb89eddbbb2664bcf8751b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f1d1312f_bbe18fdb",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 317,
+      "author": {
+        "id": 1000045
+      },
+      "writtenOn": "2018-09-17T15:56:03Z",
+      "side": 1,
+      "message": "Consider rolling this into the initial docs on Log and Error above. It\u0027s important and I\u0027m worried it will be missed.",
+      "revId": "713f326953534ea42cb89eddbbb2664bcf8751b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

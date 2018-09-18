@@ -9,8 +9,13 @@ import (
 	"runtime"
 )
 
-var globalRegistry *Registry   // singleton, initialized on first use
-var registrationErrors []error // singleton for errors encountered in AddTest calls
+var globalRegistry *Registry         // singleton, initialized on first use
+var registrationErrors []error       // singleton for errors encountered in AddTest calls
+var globalHookRegistry *hookRegistry // singleton for hooks
+
+func init() {
+	globalHookRegistry = newHookRegistry()
+}
 
 // GlobalRegistry returns a global registry containing tests
 // registered by calls to AddTest.
@@ -52,4 +57,9 @@ func SetGlobalRegistryForTesting(reg *Registry) (restore func()) {
 		globalRegistry = origReg
 		registrationErrors = origErrs
 	}
+}
+
+// AddPostHook registers a hook function to be run after every test to the global hook registry.
+func AddPostHook(h Hook) {
+	globalHookRegistry.addPostHook(h)
 }

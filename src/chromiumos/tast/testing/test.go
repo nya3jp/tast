@@ -111,6 +111,7 @@ func (tst *Test) Run(s *State) bool {
 			close(s.ch)
 			done <- true
 		}()
+		defer globalHookRegistry.runPostHooks(s)
 		tst.Func(s)
 	}()
 

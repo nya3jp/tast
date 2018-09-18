@@ -8,6 +8,9 @@ import (
 	"context"
 	"io"
 	"time"
+
+	"chromiumos/tast/faillog"
+	"chromiumos/tast/testing"
 )
 
 const (
@@ -20,6 +23,12 @@ const (
 // The returned status code should be passed to os.Exit.
 func Local(stdin io.Reader, stdout, stderr io.Writer) int {
 	args := Args{DataDir: localTestDataDir}
-	cfg := runConfig{defaultTestTimeout: localTestTimeout}
+	cfg := runConfig{
+		testCleanupFunc: func(s *testing.State) error {
+			faillog.SaveIfError(s)
+			return nil
+		},
+		defaultTestTimeout: localTestTimeout,
+	}
 	return run(context.Background(), stdin, stdout, stderr, &args, &cfg, localBundle)
 }

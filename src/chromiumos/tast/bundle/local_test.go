@@ -7,6 +7,7 @@ package bundle
 import (
 	"bytes"
 	"os"
+	"path/filepath"
 	gotesting "testing"
 
 	"chromiumos/tast/testing"
@@ -66,5 +67,27 @@ func TestLocalRunTest(t *gotesting.T) {
 	}
 	if len(stderr.String()) != 0 {
 		t.Errorf("Local(%+v) unexpectedly wrote %q to stderr", args, stderr.String())
+	}
+}
+
+func TestLocalFaillog(t *gotesting.T) {
+	const name = "pkg.Test"
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
+	defer restore()
+	testing.AddTest(&testing.Test{Name: name, Func: func(s *testing.State) { s.Error("fail") }})
+
+	outDir := testutil.TempDir(t)
+	defer os.RemoveAll(outDir)
+	args := Args{Mode: RunTestsMode, OutDir: outDir}
+	stdin := newBufferWithArgs(t, &args)
+	stderr := bytes.Buffer{}
+	if status := Local(stdin, &bytes.Buffer{}, &stderr); status != statusSuccess {
+		t.Errorf("Local(%+v) = %v; want %v", args, status, statusSuccess)
+	}
+
+	// ps.txt is saved by faillog.
+	p := filepath.Join(outDir, name, "faillog", "ps.txt")
+	if _, err := os.Stat(p); err != nil {
+		t.Errorf("Local(%+v) didn't save faillog: %v", args, err)
 	}
 }

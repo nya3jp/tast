@@ -66,7 +66,10 @@ type runConfig struct {
 	// runCleanupFunc is run at the end of the entire test run if non-nil.
 	runCleanupFunc func(ctx context.Context, lf logFunc) error
 	// testSetupFunc is run before each test if non-nil.
+	// TODO(nya): Align the signature to testCleanupFunc.
 	testSetupFunc func(ctx context.Context, lf logFunc) error
+	// testCleanFunc is run at the end of each test if non-nil.
+	testCleanupFunc func(s *testing.State) error
 	// defaultTestTimeout contains the default maximum time allotted to each test.
 	// It is only used if testing.Test.Timeout is unset.
 	defaultTestTimeout time.Duration
@@ -168,7 +171,17 @@ func runTest(ctx context.Context, mw *control.MessageWriter, args *Args, cfg *ru
 
 		dataDir := filepath.Join(args.DataDir, t.DataDir())
 		s := testing.NewState(ctx, t, ch, dataDir, outDir, meta)
-		if !t.Run(s) {
+		ok := t.Run(s)
+
+		if cfg.testCleanupFunc != nil {
+			// TODO(nya): Rework testing.State cleanup. For now, s.ch is usually closed at this point,
+			// so calling s.Log inside testCleanupFunc will cause panic.
+			if err := cfg.testCleanupFunc(s); err != nil {
+				return command.NewStatusErrorf(statusError, "test cleanup failed: %v", err)
+			}
+		}
+
+		if !ok {
 			// If Run reported that the test didn't finish, tell the copier to abort.
 			abortCopier <- true
 		}

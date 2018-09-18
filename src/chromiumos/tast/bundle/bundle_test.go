@@ -102,7 +102,7 @@ func TestRunTests(t *gotesting.T) {
 
 	stdout := bytes.Buffer{}
 	tests := reg.AllTests()
-	var numRunSetupCalls, numRunCleanupCalls, numTestSetupCalls int
+	var numRunSetupCalls, numRunCleanupCalls, numTestSetupCalls, numTestCleanupCalls int
 	args := Args{
 		OutDir:  tmpDir,
 		DataDir: tmpDir,
@@ -123,6 +123,10 @@ func TestRunTests(t *gotesting.T) {
 			lf(testSetupMsg)
 			return nil
 		},
+		testCleanupFunc: func(s *testing.State) error {
+			numTestCleanupCalls++
+			return nil
+		},
 	}
 
 	sig := fmt.Sprintf("runTests(..., %+v, %+v)", args, cfg)
@@ -137,6 +141,9 @@ func TestRunTests(t *gotesting.T) {
 	}
 	if numTestSetupCalls != len(tests) {
 		t.Errorf("%v called test setup function %d time(s); want %d", sig, numTestSetupCalls, len(tests))
+	}
+	if numTestCleanupCalls != len(tests) {
+		t.Errorf("%v called test cleanup function %d time(s); want %d", sig, numTestCleanupCalls, len(tests))
 	}
 
 	// Just check some basic details of the control messages.

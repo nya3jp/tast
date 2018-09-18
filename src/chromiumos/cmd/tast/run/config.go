@@ -56,9 +56,8 @@ const (
 )
 
 const (
-	sysWorkspace       = "/usr/lib/gopath"                    // Go workspace containing system packages
-	defaultKeyFile     = "chromite/ssh_keys/testing_rsa"      // default private SSH key within Chrome OS checkout
-	defaultOverlayPath = "src/third_party/chromiumos-overlay" // default overlay directory containing bundle ebuild
+	sysWorkspace   = "/usr/lib/gopath"               // Go workspace containing system packages
+	defaultKeyFile = "chromite/ssh_keys/testing_rsa" // default private SSH key within Chrome OS checkout
 )
 
 // Config contains shared configuration information for running or listing tests.
@@ -165,8 +164,8 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 	if c.mode == RunTestsMode {
 		f.StringVar(&c.ResDir, "resultsdir", "", "directory for test results")
 		f.BoolVar(&c.collectSysInfo, "sysinfo", true, "collect system information (logs, crashes, etc.)")
-		f.StringVar(&c.overlayDir, "overlaydir", filepath.Join(c.trunkDir, defaultOverlayPath),
-			"base overlay directory containing test bundle ebuild")
+		f.StringVar(&c.overlayDir, "overlaydir", "",
+			"override base overlay directory containing test bundle ebuild")
 		f.StringVar(&c.externalDataDir, "externaldatadir", filepath.Join(c.tastDir, "external_data"),
 			"directory used to cache external data files")
 

@@ -51,6 +51,8 @@ const (
 	localBundleExternalDataConf = "files/external_data.conf"
 
 	defaultLocalRunnerWaitTimeout time.Duration = 10 * time.Second // default timeout for waiting for local_test_runner to exit
+
+	publicOverlayPath = "src/third_party/chromiumos-overlay" // public overlay directory containing cros bundle ebuild
 )
 
 // local runs local tests as directed by cfg and returns the command's exit status.
@@ -140,6 +142,16 @@ func connectToTarget(ctx context.Context, cfg *Config) (*host.SSH, error) {
 // localBundlePackage returns the Portage package name for the bundle with the given name (e.g. "cros").
 func localBundlePackage(name string) string {
 	return fmt.Sprintf("chromeos-base/tast-local-tests-%s", name)
+}
+
+// getBundleOverlay returns an overlay directory containing a specified test bundle package.
+func getBundleOverlay(name, trunkDir string) string {
+	switch name {
+	case "cros":
+		return filepath.Join(trunkDir, publicOverlayPath)
+	default:
+		return ""
+	}
 }
 
 // buildAndPushBundle builds a local test bundle and pushes it to hst as dictated by cfg.
@@ -302,6 +314,12 @@ func getDataFilePaths(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlo
 	}
 
 	// Load the external_data.conf file specifying URLs for external data files.
+	if cfg.overlayDir == "" {
+		cfg.overlayDir = getBundleOverlay(cfg.buildBundle, cfg.trunkDir)
+		if cfg.overlayDir == "" {
+			return nil, nil, fmt.Errorf("overlay path is not known for bundle %q; please specify -overlaydir", cfg.buildBundle)
+		}
+	}
 	extConf := filepath.Join(cfg.overlayDir, localBundlePackage(cfg.buildBundle), localBundleExternalDataConf)
 	if _, err := os.Stat(extConf); err == nil {
 		if edm, err = newExternalDataMap(extConf); err != nil {

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5be5e9b8_e2e5e1bf",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-09-18T09:35:57Z",
+      "side": 1,
+      "message": "Clar: in case of panic, should this run before recovering from the panic? Maybe nice to be documented?\n(I understand, in terms of faillog, this is consistent with the current behavior, but just in case).",
+      "revId": "4942ab9c99793ed3c8f68eb8d231a0836e412999",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

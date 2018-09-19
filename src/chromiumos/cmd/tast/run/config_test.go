@@ -38,3 +38,20 @@ func TestConfigListDefaults(t *testing.T) {
 			desc, cfg.checkTestDeps, checkTestDepsNever)
 	}
 }
+
+func TestConfigDeriveDefaults(t *testing.T) {
+	cfg := NewConfig(RunTestsMode, "", "")
+	flags := flag.NewFlagSet("", flag.ContinueOnError)
+	cfg.SetFlags(flags)
+
+	cfg.buildBundle = "cros"
+	if err := cfg.DeriveDefaults(); err != nil {
+		t.Error("DeriveDefaults failed: ", err)
+	}
+	if cfg.buildWorkspace == "" {
+		t.Error("buildWorkspace is not set")
+	}
+	if cfg.overlayDir == "" {
+		t.Error("overlayDir is not set")
+	}
+}

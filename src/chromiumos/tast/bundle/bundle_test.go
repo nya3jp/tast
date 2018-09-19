@@ -86,11 +86,12 @@ func TestCopyTestOutputTimeout(t *gotesting.T) {
 
 func TestRunTests(t *gotesting.T) {
 	const (
-		name1         = "foo.Test1"
-		name2         = "foo.Test2"
-		runSetupMsg   = "setting up for run"
-		runCleanupMsg = "cleaning up after run"
-		testSetupMsg  = "setting up for test"
+		name1          = "foo.Test1"
+		name2          = "foo.Test2"
+		runSetupMsg    = "setting up for run"
+		runCleanupMsg  = "cleaning up after run"
+		testSetupMsg   = "setting up for test"
+		testCleanupMsg = "cleaning up for test"
 	)
 
 	reg := testing.NewRegistry(testing.NoAutoName)
@@ -118,14 +119,13 @@ func TestRunTests(t *gotesting.T) {
 			lf(runCleanupMsg)
 			return nil
 		},
-		testSetupFunc: func(ctx context.Context, lf logFunc) error {
+		testSetupFunc: func(s *testing.State) {
 			numTestSetupCalls++
-			lf(testSetupMsg)
-			return nil
+			s.Log(testSetupMsg)
 		},
-		testCleanupFunc: func(s *testing.State) error {
+		testCleanupFunc: func(s *testing.State) {
 			numTestCleanupCalls++
-			return nil
+			s.Log(testCleanupMsg)
 		},
 	}
 
@@ -152,10 +152,12 @@ func TestRunTests(t *gotesting.T) {
 		&control.RunLog{Text: runSetupMsg},
 		&control.TestStart{Test: *tests[0]},
 		&control.TestLog{Text: testSetupMsg},
+		&control.TestLog{Text: testCleanupMsg},
 		&control.TestEnd{Name: name1},
 		&control.TestStart{Test: *tests[1]},
 		&control.TestLog{Text: testSetupMsg},
 		&control.TestError{},
+		&control.TestLog{Text: testCleanupMsg},
 		&control.TestEnd{Name: name2},
 		&control.RunLog{Text: runCleanupMsg},
 	} {

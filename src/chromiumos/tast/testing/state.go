@@ -63,6 +63,9 @@ func (m *Meta) clone() *Meta {
 	return &mc
 }
 
+// HookFunc is the type of a function to run before/after test.
+type HookFunc func(s *State)
+
 // State holds state relevant to the execution of a single test.
 // Parts of its interface are patterned after Go's testing.T type.
 // It is intended to be safe when called concurrently by multiple goroutines
@@ -73,6 +76,9 @@ type State struct {
 	dataDir string      // directory in which the test's data files will be located
 	outDir  string      // directory to which the test should write output files
 	meta    *Meta       // only set for remote tests in MetaCategory
+
+	setupFunc   HookFunc // function to run before test if non-nil
+	cleanupFunc HookFunc // function to run after test if non-nil
 
 	ctx    context.Context    // context for the overall execution of the test
 	cancel context.CancelFunc // cancel function associated with ctx
@@ -86,12 +92,14 @@ type State struct {
 
 // NewState returns a new State object. The test's output will be streamed to ch.
 // If test.CleanupTimeout is 0, a default will be used.
-func NewState(ctx context.Context, test *Test, ch chan Output, dataDir, outDir string, meta *Meta) *State {
+func NewState(ctx context.Context, test *Test, ch chan Output, dataDir, outDir string, meta *Meta, setupFunc, cleanupFunc HookFunc) *State {
 	s := &State{
-		ch:      ch,
-		test:    test,
-		dataDir: dataDir,
-		outDir:  outDir,
+		ch:          ch,
+		test:        test,
+		dataDir:     dataDir,
+		outDir:      outDir,
+		setupFunc:   setupFunc,
+		cleanupFunc: cleanupFunc,
 	}
 
 	if meta != nil {

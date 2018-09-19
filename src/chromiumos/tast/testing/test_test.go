@@ -28,6 +28,16 @@ func getOutputErrors(out []Output) []*Error {
 	return errs
 }
 
+// findLog checks if out contains the specified log message.
+func findLog(out []Output, msg string) bool {
+	for _, o := range out {
+		if o.Msg == msg {
+			return true
+		}
+	}
+	return false
+}
+
 func TestMissingFunc(t *gotesting.T) {
 	test := Test{Name: "category.MyName"}
 	if err := test.finalize(false); err == nil {
@@ -159,7 +169,7 @@ func TestSoftwareDeps(t *gotesting.T) {
 
 func TestRunSuccess(t *gotesting.T) {
 	test := Test{Func: func(*State) {}, Timeout: time.Minute}
-	s := NewState(context.Background(), &test, make(chan Output, 1), "", "", nil)
+	s := NewState(context.Background(), &test, make(chan Output, 1), "", "", nil, nil, nil)
 	test.Run(s)
 	if errs := getOutputErrors(readOutput(s.ch)); len(errs) != 0 {
 		t.Errorf("Got unexpected error(s) for test: %v", errs)
@@ -168,7 +178,7 @@ func TestRunSuccess(t *gotesting.T) {
 
 func TestRunPanic(t *gotesting.T) {
 	test := Test{Func: func(*State) { panic("intentional panic") }, Timeout: time.Minute}
-	s := NewState(context.Background(), &test, make(chan Output, 1), "", "", nil)
+	s := NewState(context.Background(), &test, make(chan Output, 1), "", "", nil, nil, nil)
 	test.Run(s)
 	if errs := getOutputErrors(readOutput(s.ch)); len(errs) != 1 {
 		t.Errorf("Got %v errors for panicking test; want 1", errs)
@@ -182,7 +192,7 @@ func TestRunDeadline(t *gotesting.T) {
 		s.Error("Saw timeout within test")
 	}
 	test := Test{Func: f, Timeout: time.Millisecond, CleanupTimeout: 10 * time.Second}
-	s := NewState(context.Background(), &test, make(chan Output, 1), "", "", nil)
+	s := NewState(context.Background(), &test, make(chan Output, 1), "", "", nil, nil, nil)
 	test.Run(s)
 	// The error that was reported by the test after its deadline was hit
 	// but within the cleanup delay should be available.
@@ -208,7 +218,7 @@ func TestRunLogAfterTimeout(t *gotesting.T) {
 	test := Test{Func: f, Timeout: time.Millisecond, CleanupTimeout: time.Millisecond}
 
 	out := make(chan Output, 10)
-	test.Run(NewState(context.Background(), &test, out, "", "", nil))
+	test.Run(NewState(context.Background(), &test, out, "", "", nil, nil, nil))
 
 	// Tell the test to continue even though Run has already returned. The output channel should
 	// still be open so as to avoid a panic when the test writes to it: https://crbug.com/853406
@@ -219,6 +229,92 @@ func TestRunLogAfterTimeout(t *gotesting.T) {
 	// No output errors should be written to the channel; reporting timeouts is the caller's job.
 	if errs := getOutputErrors(readOutput(out)); len(errs) != 0 {
 		t.Errorf("Got %v error(s) for runaway test; want 0", len(errs))
+	}
+}
+
+func TestRunHooks(t *gotesting.T) {
+	const (
+		setupMsg   = "setup"
+		cleanupMsg = "cleanup"
+	)
+
+	test := Test{Func: func(*State) {}, Timeout: time.Minute}
+	var numSetupCalls, numCleanupCalls int
+	setup := func(s *State) {
+		numSetupCalls++
+		s.Log(setupMsg)
+	}
+	cleanup := func(s *State) {
+		numCleanupCalls++
+		s.Log(cleanupMsg)
+	}
+
+	s := NewState(context.Background(), &test, make(chan Output, 2), "", "", nil, setup, cleanup)
+	test.Run(s)
+
+	if numSetupCalls != 1 {
+		t.Errorf("Setup hook called %d times; want %d", numSetupCalls, 1)
+	}
+	if numCleanupCalls != 1 {
+		t.Errorf("Cleanup hook called %d times; want %d", numCleanupCalls, 1)
+	}
+
+	out := readOutput(s.ch)
+	if !findLog(out, setupMsg) {
+		t.Errorf("Setup message not found in output: %v", out)
+	}
+	if !findLog(out, cleanupMsg) {
+		t.Errorf("Cleanup message not found in output: %v", out)
+	}
+	if errs := getOutputErrors(out); len(errs) != 0 {
+		t.Errorf("Got %v error(s); want 0", len(errs))
+	}
+}
+
+func TestRunCleanupHookOnTestPanic(t *gotesting.T) {
+	test := Test{Func: func(*State) { panic("bye") }, Timeout: time.Minute}
+	numCleanupCalls := 0
+	cleanup := func(s *State) {
+		numCleanupCalls++
+		if !s.HasError() {
+			t.Errorf("Error is unavailable when cleanup hook is called")
+		}
+	}
+
+	s := NewState(context.Background(), &test, make(chan Output, 1), "", "", nil, nil, cleanup)
+	test.Run(s)
+
+	if numCleanupCalls != 1 {
+		t.Errorf("Cleanup hook called %v times; want 1", numCleanupCalls)
+	}
+	if errs := getOutputErrors(readOutput(s.ch)); len(errs) != 1 {
+		t.Errorf("Got %v error(s); want 1", len(errs))
+	}
+}
+
+func TestRunCleanupHookOnSetupPanic(t *gotesting.T) {
+	test := Test{Func: func(*State) { t.Error("Test function called") }, Timeout: time.Minute}
+	setup := func(*State) { panic("bye") }
+	cleanup := func(*State) { t.Error("Cleanup function called") }
+
+	s := NewState(context.Background(), &test, make(chan Output, 1), "", "", nil, setup, cleanup)
+	test.Run(s)
+
+	if errs := getOutputErrors(readOutput(s.ch)); len(errs) != 1 {
+		t.Errorf("Got %v error(s); want 1", len(errs))
+	}
+}
+
+func TestRunCleanupHookOnSetupError(t *gotesting.T) {
+	test := Test{Func: func(*State) { t.Error("Test function called") }, Timeout: time.Minute}
+	setup := func(s *State) { s.Error("bye") }
+	cleanup := func(*State) { t.Error("Cleanup function called") }
+
+	s := NewState(context.Background(), &test, make(chan Output, 1), "", "", nil, setup, cleanup)
+	test.Run(s)
+
+	if errs := getOutputErrors(readOutput(s.ch)); len(errs) != 1 {
+		t.Errorf("Got %v error(s); want 1", len(errs))
 	}
 }
 

@@ -11,6 +11,7 @@ The following software features are defined:
 *   `android` - The ability to [run Android apps].
 *   `audio_play` - The ability to play audio.
 *   `audio_record` - The ability to record audio.
+*   `autotest-capability:foo` - An [Autotest capability] named `foo`. See below.
 *   `chrome` - A Chrome process.
 *   `chrome_login` - Implies `chrome` with the further requirement that user
     login (i.e. using `session_manager` and `cryptohome`) is supported.
@@ -32,10 +33,18 @@ systems where the `cras` USE flag is set, either `audio_chipset_a` or
 Before a new USE flag can be used in an expression, it must be added to `IUSE`
 in the [tast-use-flags] package.
 
+The exception to the above are `autotest-capability:`-prefixed features, which
+are added by the [autocaps package] as specified by YAML files in
+`/usr/local/etc/autotest-capability`. This exists in order to support porting
+existing Autotest-based video tests to Tast. Do not depend on capabilities from
+outside of video tests.
+
 [testing.Test]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Test
 [run Android apps]: https://developer.android.com/topic/arc/
+[Autotest capability]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/autotest-capability-default/
 [run virtual machines]: https://chromium.googlesource.com/chromiumos/docs/+/master/containers_and_vms.md
 [screenshot command]: https://chromium.googlesource.com/chromiumos/platform2/+/master/screenshot/
 [Trusted Platform Module]: https://en.wikipedia.org/wiki/Trusted_Platform_Module
 [local_test_runner]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/cmd/local_test_runner/main.go
 [tast-use-flags]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/tast-use-flags/
+[autocaps package]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/autocaps/

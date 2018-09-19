@@ -67,6 +67,9 @@ func getSoftwareFeatures(ctx context.Context, cfg *Config) error {
 		return nil
 	}
 
+	for _, warn := range res.Warnings {
+		cfg.Logger.Log(warn)
+	}
 	cfg.Logger.Debug("Software features supported by DUT: ", strings.Join(res.Available, " "))
 	cfg.availableSoftwareFeatures = res.Available
 	cfg.unavailableSoftwareFeatures = res.Unavailable

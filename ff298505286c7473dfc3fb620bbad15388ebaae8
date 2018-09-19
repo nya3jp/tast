@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5274276c_05643917",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-09-19T02:57:02Z",
+      "side": 1,
+      "message": "This is very tricky and I want to address it soon. I think there are several choices:\n\n1. Run cfg.testCleanupFunc (and maybe cfg.testSetupFunc too?) inside t.Run(). Then we can make sure testing.State is still alive. Maybe we can pass two functions via testing.State.\n2. Avoid closing testing.State inside t.Run(). Considering timeout cases, it means we can\u0027t close the channel at all, so we\u0027ll need to add an EOF message as we discussed before.\n\nWDYT?",
+      "range": {
+        "startLine": 177,
+        "startChar": 0,
+        "endLine": 178,
+        "endChar": 63
+      },
+      "revId": "ff298505286c7473dfc3fb620bbad15388ebaae8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

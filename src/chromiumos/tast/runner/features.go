@@ -13,9 +13,12 @@ import (
 	"sort"
 	"strings"
 
+	"chromiumos/tast/autocaps"
 	"chromiumos/tast/command"
 	"chromiumos/tast/expr"
 )
+
+const autotestCapPrefix = "autotest-capability:" // prefix for autotest-capability feature names
 
 // handleGetSoftwareFeatures handles a GetSoftwareFeaturesMode request from args
 // and JSON-marshals a GetSoftwareFeaturesResult struct to w.
@@ -35,8 +38,17 @@ func handleGetSoftwareFeatures(args *Args, w io.Writer) error {
 	}
 
 	res := GetSoftwareFeaturesResult{}
+	var autotestCaps map[string]autocaps.State
+	if args.AutotestCapabilityDir != "" {
+		if ac, err := autocaps.Read(args.AutotestCapabilityDir, nil); err != nil {
+			res.Warnings = append(res.Warnings, fmt.Sprintf("%s: %v", args.AutotestCapabilityDir, err))
+		} else {
+			autotestCaps = ac
+		}
+	}
+
 	if res.Available, res.Unavailable, err =
-		determineSoftwareFeatures(args.SoftwareFeatureDefinitions, flags); err != nil {
+		determineSoftwareFeatures(args.SoftwareFeatureDefinitions, flags, autotestCaps); err != nil {
 		return command.NewStatusErrorf(statusError, "%s", err)
 	}
 	return json.NewEncoder(w).Encode(&res)
@@ -68,17 +80,31 @@ func readUSEFlagsFile(fn string) ([]string, error) {
 // determineSoftwareFeatures computes the DUT's available and unavailable software features.
 // definitions maps feature names to definitions (see Args.SoftwareFeatureDefinitions).
 // useFlags contains a list of relevant USE flags that were set when building the system image (see Args.USEFlagsFile).
-func determineSoftwareFeatures(definitions map[string]string, useFlags []string) (
+// autotestCaps contains a mapping from autotest-capability names to the corresponding states.
+func determineSoftwareFeatures(definitions map[string]string, useFlags []string,
+	autotestCaps map[string]autocaps.State) (
 	available, unavailable []string, err error) {
 	for ft, es := range definitions {
+		if strings.HasPrefix(ft, autotestCapPrefix) {
+			return nil, nil, fmt.Errorf("feature %q has reserved prefix %q", ft, autotestCapPrefix)
+		}
+
 		ex, err := expr.New(es)
 		if err != nil {
-			return nil, nil, fmt.Errorf("failed to parse feature expression %q: %v", es, err)
+			return nil, nil, fmt.Errorf("failed to parse %q feature expression %q: %v", ft, es, err)
 		}
 		if ex.Matches(useFlags) {
 			available = append(available, ft)
 		} else {
 			unavailable = append(unavailable, ft)
+		}
+	}
+
+	for name, state := range autotestCaps {
+		if state == autocaps.Yes {
+			available = append(available, autotestCapPrefix+name)
+		} else {
+			unavailable = append(unavailable, autotestCapPrefix+name)
 		}
 	}
 

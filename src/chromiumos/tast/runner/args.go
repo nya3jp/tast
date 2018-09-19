@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"reflect"
 
+	"chromiumos/tast/autocaps"
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/command"
 )
@@ -55,6 +56,11 @@ type Args struct {
 	// used to compose them from USE flags (e.g. "a && !(b || c)"). The USE flags used in these expressions
 	// must be listed in USEFlagsFile if they were set when building the system image.
 	SoftwareFeatureDefinitions map[string]string `json:"-"`
+	// AutotestCapabilityDir contains the path to a directory containing autotest-capability YAML files used to
+	// define the DUT's capabilities for the purpose of determining which video tests it is able to run.
+	// See https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/autotest-capability-default/
+	// and the autocaps package for more information.
+	AutotestCapabilityDir string `json:"-"`
 
 	// report is set to true by readArgs if status should be reported via control messages rather
 	// than human-readable log messages. This is true when args were supplied via stdin rather than
@@ -110,6 +116,8 @@ type GetSoftwareFeaturesResult struct {
 	Available []string `json:"available"`
 	// Unavailable contains a list of software features not supported by the DUT.
 	Unavailable []string `json:"missing"`
+	// Warnings contains descriptions of non-fatal errors encountered while determining features.
+	Warnings []string `json:"warnings"`
 }
 
 // SysInfoState contains the state of the DUT's system information.
@@ -168,20 +176,8 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, ru
 		// When the runner is executed by the "tast run" command, the list of software features (used to skip
 		// unsupported tests) is passed in after having been gathered by an earlier call to local_test_runner
 		// with GetSoftwareFeaturesMode. When the runner is executed directly, gather the list here instead.
-		if bundle.GetTestPatternType(args.Patterns) == bundle.TestPatternAttrExpr && args.USEFlagsFile != "" {
-			if _, err := os.Stat(args.USEFlagsFile); !os.IsNotExist(err) {
-				useFlags, err := readUSEFlagsFile(args.USEFlagsFile)
-				if err != nil {
-					return command.NewStatusErrorf(statusError, "%v", err)
-				}
-				avail, unavail, err := determineSoftwareFeatures(args.SoftwareFeatureDefinitions, useFlags)
-				if err != nil {
-					return command.NewStatusErrorf(statusError, "%v", err)
-				}
-				args.RunTestsArgs.CheckSoftwareDeps = true
-				args.RunTestsArgs.AvailableSoftwareFeatures = avail
-				args.RunTestsArgs.UnavailableSoftwareFeatures = unavail
-			}
+		if err := setManualDepsArgs(args); err != nil {
+			return err
 		}
 	}
 
@@ -198,6 +194,36 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, ru
 		}
 		args.bundleArgs.RemoteArgs = args.RemoteArgs.RemoteArgs
 	}
+	return nil
+}
+
+// setManualDepsArgs sets dependency/feature-related fields in args.RunTestArgs appropriately for a manual
+// run (i.e. when the runner is executed directly with command-line flags rather than via "tast run").
+func setManualDepsArgs(args *Args) error {
+	if bundle.GetTestPatternType(args.Patterns) != bundle.TestPatternAttrExpr || args.USEFlagsFile == "" {
+		return nil
+	}
+	if _, err := os.Stat(args.USEFlagsFile); os.IsNotExist(err) {
+		return nil
+	}
+
+	useFlags, err := readUSEFlagsFile(args.USEFlagsFile)
+	if err != nil {
+		return command.NewStatusErrorf(statusError, "%v", err)
+	}
+	var autotestCaps map[string]autocaps.State
+	if args.AutotestCapabilityDir != "" {
+		// Ignore errors. autotest-capability is outside of Tast's control, and it's probably better to let
+		// some unsupported video tests fail instead of making the whole run fail.
+		autotestCaps, _ = autocaps.Read(args.AutotestCapabilityDir, nil)
+	}
+	avail, unavail, err := determineSoftwareFeatures(args.SoftwareFeatureDefinitions, useFlags, autotestCaps)
+	if err != nil {
+		return command.NewStatusErrorf(statusError, "%v", err)
+	}
+	args.RunTestsArgs.CheckSoftwareDeps = true
+	args.RunTestsArgs.AvailableSoftwareFeatures = avail
+	args.RunTestsArgs.UnavailableSoftwareFeatures = unavail
 	return nil
 }
 

@@ -80,6 +80,11 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 		return subcommands.ExitUsageError
 	}
 
+	if err := r.cfg.DeriveDefaults(); err != nil {
+		lg.Log("Failed to derive defaults: ", err)
+		return subcommands.ExitUsageError
+	}
+
 	if r.cfg.ResDir == "" {
 		baseResultsDir := filepath.Join(tastDir, "results")
 		r.cfg.ResDir = filepath.Join(baseResultsDir, time.Now().Format("20060102-150405"))

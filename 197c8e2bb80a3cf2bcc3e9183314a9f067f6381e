@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9db87e19_c8be80de",
+        "filename": "src/chromiumos/tast/bundle/remote.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-19T19:50:13Z",
+      "side": 1,
+      "message": "nit: mind wrapping this?\n\n  s.Fatal(\"Failed to reconnect to DUT: \", err)",
+      "revId": "197c8e2bb80a3cf2bcc3e9183314a9f067f6381e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0bdefc43_88d82ee5",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-19T19:50:13Z",
+      "side": 1,
+      "message": "nit: does this work here?\n\n  s.Error(\"Panic: \", r)",
+      "revId": "197c8e2bb80a3cf2bcc3e9183314a9f067f6381e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fbc6de41_0df12854",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-19T19:50:13Z",
+      "side": 1,
+      "message": "it feels a bit strange to me for this to accept a nil func. although it\u0027s more code, do you have thoughts about adding nil tests to the cleanup and setup calls in Run?",
+      "revId": "197c8e2bb80a3cf2bcc3e9183314a9f067f6381e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

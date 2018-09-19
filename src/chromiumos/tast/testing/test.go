@@ -111,6 +111,14 @@ func (tst *Test) Run(s *State) bool {
 			close(s.ch)
 			done <- true
 		}()
+		defer func() {
+			if s.cleanupFunc != nil {
+				s.cleanupFunc(s)
+			}
+		}()
+		if s.setupFunc != nil {
+			s.setupFunc(s)
+		}
 		tst.Func(s)
 	}()
 

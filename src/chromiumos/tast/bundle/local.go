@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"chromiumos/tast/faillog"
-	"chromiumos/tast/testing"
 )
 
 const (
@@ -24,10 +23,7 @@ const (
 func Local(stdin io.Reader, stdout, stderr io.Writer) int {
 	args := Args{DataDir: localTestDataDir}
 	cfg := runConfig{
-		testCleanupFunc: func(s *testing.State) error {
-			faillog.SaveIfError(s)
-			return nil
-		},
+		testCleanupFunc:    faillog.SaveIfError,
 		defaultTestTimeout: localTestTimeout,
 	}
 	return run(context.Background(), stdin, stdout, stderr, &args, &cfg, localBundle)

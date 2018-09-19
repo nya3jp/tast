@@ -66,10 +66,11 @@ type runConfig struct {
 	// runCleanupFunc is run at the end of the entire test run if non-nil.
 	runCleanupFunc func(ctx context.Context, lf logFunc) error
 	// testSetupFunc is run before each test if non-nil.
-	// TODO(nya): Align the signature to testCleanupFunc.
-	testSetupFunc func(ctx context.Context, lf logFunc) error
+	// If this function panicked or reported errors, neither the test body function nor testCleanupFunc will run.
+	testSetupFunc func(s *testing.State)
 	// testCleanFunc is run at the end of each test if non-nil.
-	testCleanupFunc func(s *testing.State) error
+	// If testSetupFunc panicked or reported errors, this will not run.
+	testCleanupFunc func(s *testing.State)
 	// defaultTestTimeout contains the default maximum time allotted to each test.
 	// It is only used if testing.Test.Timeout is unset.
 	defaultTestTimeout time.Duration
@@ -152,13 +153,6 @@ func runTest(ctx context.Context, mw *control.MessageWriter, args *Args, cfg *ru
 			return command.NewStatusErrorf(statusError, "failed to create output dir: %v", err)
 		}
 
-		if cfg.testSetupFunc != nil {
-			lf := func(msg string) { mw.WriteMessage(&control.TestLog{Time: time.Now(), Text: msg}) }
-			if err := cfg.testSetupFunc(ctx, lf); err != nil {
-				return command.NewStatusErrorf(statusError, "test setup failed: %v", err)
-			}
-		}
-
 		ch := make(chan testing.Output)
 		abortCopier := make(chan bool, 1)
 		copierDone := make(chan bool, 1)
@@ -170,18 +164,8 @@ func runTest(ctx context.Context, mw *control.MessageWriter, args *Args, cfg *ru
 		}()
 
 		dataDir := filepath.Join(args.DataDir, t.DataDir())
-		s := testing.NewState(ctx, t, ch, dataDir, outDir, meta)
-		ok := t.Run(s)
-
-		if cfg.testCleanupFunc != nil {
-			// TODO(nya): Rework testing.State cleanup. For now, s.ch is usually closed at this point,
-			// so calling s.Log inside testCleanupFunc will cause panic.
-			if err := cfg.testCleanupFunc(s); err != nil {
-				return command.NewStatusErrorf(statusError, "test cleanup failed: %v", err)
-			}
-		}
-
-		if !ok {
+		s := testing.NewState(ctx, t, ch, dataDir, outDir, meta, cfg.testSetupFunc, cfg.testCleanupFunc)
+		if !t.Run(s) {
 			// If Run reported that the test didn't finish, tell the copier to abort.
 			abortCopier <- true
 		}

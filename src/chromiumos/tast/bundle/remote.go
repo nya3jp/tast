@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"chromiumos/tast/dut"
+	"chromiumos/tast/testing"
 )
 
 const (
@@ -48,15 +49,17 @@ func Remote(stdin io.Reader, stdout, stderr io.Writer) int {
 			lf("Disconnecting from DUT")
 			return dt.Close(ctx)
 		},
-		testSetupFunc: func(ctx context.Context, lf logFunc) error {
+		testSetupFunc: func(s *testing.State) {
+			ctx := s.Context()
 			// Reconnect between tests if needed.
 			if dt, ok := dut.FromContext(ctx); !ok {
-				return errors.New("failed to get DUT from context")
+				s.Fatal("Failed to get DUT from context")
 			} else if !dt.Connected(ctx) {
-				lf("Reconnecting to DUT")
-				return dt.Connect(ctx)
+				s.Log("Reconnecting to DUT")
+				if err := dt.Connect(ctx); err != nil {
+					s.Fatal("Failed to reconnect to DUT: ", err)
+				}
 			}
-			return nil
 		},
 		defaultTestTimeout: remoteTestTimeout,
 	}

@@ -1,0 +1,95 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "86de9cce_b97f2735",
+        "filename": "src/chromiumos/cmd/tast/list_cmd.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-19T15:06:40Z",
+      "side": 1,
+      "message": "nit: mind using:\n\n  lg.Log(\"Failed to derive defaults: \", err)\n\nso this is capitalized like other log messages?",
+      "revId": "c6393b33afa776dc268454138a90dda956900cf7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ad441519_4acbe7cc",
+        "filename": "src/chromiumos/cmd/tast/run/bundle.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-19T15:06:40Z",
+      "side": 1,
+      "message": "nit: maybe \"relative to the\"",
+      "range": {
+        "startLine": 8,
+        "startChar": 32,
+        "endLine": 8,
+        "endChar": 44
+      },
+      "revId": "c6393b33afa776dc268454138a90dda956900cf7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4aa033f9_394a1a65",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-19T15:06:40Z",
+      "side": 1,
+      "message": "nit: maybe add \", inferred if empty\" to the end?",
+      "revId": "c6393b33afa776dc268454138a90dda956900cf7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5a419fcc_9de90b97",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-19T15:06:40Z",
+      "side": 1,
+      "message": "nit: \", inferred if empty\"",
+      "revId": "c6393b33afa776dc268454138a90dda956900cf7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1b38a0a6_123278a4",
+        "filename": "src/chromiumos/cmd/tast/run_cmd.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-19T15:06:40Z",
+      "side": 1,
+      "message": "nit: same comment about wrapping err",
+      "revId": "c6393b33afa776dc268454138a90dda956900cf7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

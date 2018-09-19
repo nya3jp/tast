@@ -16,6 +16,24 @@
       "revId": "4942ab9c99793ed3c8f68eb8d231a0836e412999",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cf646770_6ad9524f",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-09-19T06:37:59Z",
+      "side": 1,
+      "message": "Sorry for late reply. This is actually a good point so I\u0027ll address it in CL:1233139. Thanks!",
+      "parentUuid": "5be5e9b8_e2e5e1bf",
+      "revId": "4942ab9c99793ed3c8f68eb8d231a0836e412999",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

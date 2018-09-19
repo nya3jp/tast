@@ -22,6 +22,70 @@
       "revId": "ff298505286c7473dfc3fb620bbad15388ebaae8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f05c6269_f56f8532",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-19T03:35:27Z",
+      "side": 1,
+      "message": "i\u0027d prefer 1, since it feels a bit cleaner to me to run this in the same goroutine that runs the test.",
+      "parentUuid": "5274276c_05643917",
+      "range": {
+        "startLine": 177,
+        "startChar": 0,
+        "endLine": 178,
+        "endChar": 63
+      },
+      "revId": "ff298505286c7473dfc3fb620bbad15388ebaae8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "189e7c94_ce74c649",
+        "filename": "src/chromiumos/tast/bundle/local_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-19T03:35:27Z",
+      "side": 1,
+      "message": "nit: maybe mention that these names come from the faillog package?",
+      "revId": "ff298505286c7473dfc3fb620bbad15388ebaae8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e7f6ee5e_f8be6c35",
+        "filename": "src/chromiumos/tast/faillog/faillog.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-19T03:35:27Z",
+      "side": 1,
+      "message": "nit: since \"PS\" looks a bit strange here, maybe \"saveProcesses\" or \"saveProcessList\"?",
+      "range": {
+        "startLine": 37,
+        "startChar": 5,
+        "endLine": 37,
+        "endChar": 11
+      },
+      "revId": "ff298505286c7473dfc3fb620bbad15388ebaae8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

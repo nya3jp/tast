@@ -105,13 +105,18 @@ func (tst *Test) Run(s *State) bool {
 	done := make(chan bool, 1)
 	go func() {
 		defer func() {
-			if r := recover(); r != nil {
-				s.Errorf("Panic: %v", r)
-			}
 			close(s.ch)
 			done <- true
 		}()
-		tst.Func(s)
+		if s.setupFunc != nil {
+			runAndRecover(s.setupFunc, s)
+		}
+		defer func() {
+			if s.cleanupFunc != nil {
+				runAndRecover(s.cleanupFunc, s)
+			}
+		}()
+		runAndRecover(tst.Func, s)
 	}()
 
 	select {
@@ -121,6 +126,16 @@ func (tst *Test) Run(s *State) bool {
 		// TODO(derat): Do more to try to kill the runaway test function.
 		return false
 	}
+}
+
+// runAndRecover runs a test function with the given State, and recovers if it panicked.
+func runAndRecover(f func(*State), s *State) {
+	defer func() {
+		if r := recover(); r != nil {
+			s.Error("Panic: ", r)
+		}
+	}()
+	f(s)
 }
 
 func (tst *Test) String() string {

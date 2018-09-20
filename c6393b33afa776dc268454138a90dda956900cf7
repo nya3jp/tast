@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "3fb62a9e_c30327e1",
+        "filename": "src/chromiumos/cmd/tast/list_cmd.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-09-20T03:10:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "86de9cce_b97f2735",
+      "revId": "c6393b33afa776dc268454138a90dda956900cf7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ad441519_4acbe7cc",
         "filename": "src/chromiumos/cmd/tast/run/bundle.go",
         "patchSetId": 4
@@ -42,6 +60,30 @@
     },
     {
       "key": {
+        "uuid": "8217ea8e_5222c689",
+        "filename": "src/chromiumos/cmd/tast/run/bundle.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-09-20T03:10:03Z",
+      "side": 1,
+      "message": "Yea, that\u0027s a typo. Thanks for catching!",
+      "parentUuid": "ad441519_4acbe7cc",
+      "range": {
+        "startLine": 8,
+        "startChar": 32,
+        "endLine": 8,
+        "endChar": 44
+      },
+      "revId": "c6393b33afa776dc268454138a90dda956900cf7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4aa033f9_394a1a65",
         "filename": "src/chromiumos/cmd/tast/run/config.go",
         "patchSetId": 4
@@ -56,6 +98,24 @@
       "revId": "c6393b33afa776dc268454138a90dda956900cf7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "29296bfa_44ea2a47",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-09-20T03:10:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4aa033f9_394a1a65",
+      "revId": "c6393b33afa776dc268454138a90dda956900cf7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -76,6 +136,24 @@
     },
     {
       "key": {
+        "uuid": "249e782c_75609709",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-09-20T03:10:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5a419fcc_9de90b97",
+      "revId": "c6393b33afa776dc268454138a90dda956900cf7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1b38a0a6_123278a4",
         "filename": "src/chromiumos/cmd/tast/run_cmd.go",
         "patchSetId": 4
@@ -90,6 +168,24 @@
       "revId": "c6393b33afa776dc268454138a90dda956900cf7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0dfdc3e0_f649d1c4",
+        "filename": "src/chromiumos/cmd/tast/run_cmd.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-09-20T03:10:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1b38a0a6_123278a4",
+      "revId": "c6393b33afa776dc268454138a90dda956900cf7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

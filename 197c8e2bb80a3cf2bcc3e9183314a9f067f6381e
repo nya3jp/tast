@@ -19,6 +19,23 @@
     },
     {
       "key": {
+        "uuid": "1300b1c6_7ca92a0c",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-09-20T01:02:09Z",
+      "side": 1,
+      "message": "If setUp fails, Func and cleanupFunc shouldn\u0027t run?",
+      "revId": "197c8e2bb80a3cf2bcc3e9183314a9f067f6381e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "0bdefc43_88d82ee5",
         "filename": "src/chromiumos/tast/testing/test.go",
         "patchSetId": 3

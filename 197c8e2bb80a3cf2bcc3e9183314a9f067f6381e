@@ -90,6 +90,24 @@
     },
     {
       "key": {
+        "uuid": "9721901d_b7c3cc04",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-09-20T02:43:29Z",
+      "side": 1,
+      "message": "Hm, your argument about defer makes sense. Let\u0027s run cleanupFunc only when setupFunc succeeds at least for now. We can revisit it later whenever we need to.",
+      "parentUuid": "c2e04595_d106084e",
+      "revId": "197c8e2bb80a3cf2bcc3e9183314a9f067f6381e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0bdefc43_88d82ee5",
         "filename": "src/chromiumos/tast/testing/test.go",
         "patchSetId": 3

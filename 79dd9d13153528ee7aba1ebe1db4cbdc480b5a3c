@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f727d9b1_6ebb2e31",
+        "filename": "src/chromiumos/tast/faillog/faillog.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-09-20T02:43:09Z",
+      "side": 1,
+      "message": "tast/local is obviously unavailable :( I\u0027ve changed to use os/exec instead.",
+      "range": {
+        "startLine": 14,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 33
+      },
+      "revId": "79dd9d13153528ee7aba1ebe1db4cbdc480b5a3c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

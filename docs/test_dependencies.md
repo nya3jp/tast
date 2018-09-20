@@ -15,6 +15,7 @@ The following software features are defined:
 *   `chrome_login` - Implies `chrome` with the further requirement that user
     login (i.e. using `session_manager` and `cryptohome`) is supported.
 *   `display_backlight` - An internal display backlight.
+*   `ml_service` - ML Service daemon.
 *   `selinux` - An SELinux-enabled board. All Android boards are
     SELinux-enabled.
 *   `tpm` - A [Trusted Platform Module] chip.

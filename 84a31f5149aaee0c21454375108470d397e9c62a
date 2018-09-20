@@ -16,6 +16,24 @@
       "revId": "84a31f5149aaee0c21454375108470d397e9c62a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c420dd1f_ba365bc3",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1182889
+      },
+      "writtenOn": "2018-09-20T23:02:45Z",
+      "side": 1,
+      "message": "When it comes to nits, the bigger the better I say",
+      "parentUuid": "5d48fd2f_ad171791",
+      "revId": "84a31f5149aaee0c21454375108470d397e9c62a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

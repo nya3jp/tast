@@ -16,6 +16,24 @@
       "revId": "09151891bf7310fc07810e7531419a4b9d1b90e2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b55fd0ba_5ba2b76e",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-09-20T03:41:50Z",
+      "side": 1,
+      "message": "Ah, that\u0027s a good point.",
+      "parentUuid": "5997f61a_14658f6a",
+      "revId": "09151891bf7310fc07810e7531419a4b9d1b90e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

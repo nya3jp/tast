@@ -31,11 +31,23 @@ Tests are located in the [tast-tests repository].
 
 ## Documentation
 
-For more details, see the [docs](docs/) subdirectory.
+For more information, see the [docs](docs/) subdirectory.
 
 [![GoDoc](https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src?status.svg)](https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src)
+
+## Mailing list
+
+The [tast-users mailing list] is used for discussions about writing and running
+tests.
+
+## Bug reports
+
+Please file bug reports and feature requests in the [Chromium issue tracker]
+using the `Tests>Tast` component.
 
 [quickstart]: docs/quickstart.md
 [overview]: docs/overview.md
 [Go in Chromium OS]: http://www.chromium.org/chromium-os/developer-guide/go-in-chromium-os
 [tast-tests repository]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/
+[tast-users mailing list]: https://groups.google.com/a/chromium.org/forum/#!forum/tast-users
+[Chromium issue tracker]: https://bugs.chromium.org/p/chromium/issues/list

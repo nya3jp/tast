@@ -101,23 +101,48 @@ follow Go's established best practices as described by these documents:
 *   [Effective Go]
 *   [Go Code Review Comments]
 
+The [Go FAQ] may also be helpful. Additional resources are linked from the [Go
+Documentation] page.
+
 [gofmt]: https://golang.org/cmd/gofmt/
 [go vet]: https://golang.org/cmd/vet/
 [Effective Go]: https://golang.org/doc/effective_go.html
 [Go Code Review Comments]: https://github.com/golang/go/wiki/CodeReviewComments
+[Go FAQ]: https://golang.org/doc/faq
+[Go Documentation]: https://golang.org/doc/
+
+### Documentation
+
+Packages and exported identifiers (e.g. types, functions, constants, variables)
+should be documented by [Godoc]-style comments. Godoc comments are optional for
+test functions, since the `Test.Desc` field already contains a brief description
+of the test.
+
+[Godoc]: https://blog.golang.org/godoc-documenting-go-code
 
 ### Unit tests
 
 Support packages should be exercised by unit tests when possible. Unit tests can
 cover edge cases that may not be typically seen when using the package, and they
 greatly aid in future refactorings (since it can be hard to determine the full
-set of Tast-based tests that must be run to exercise the package). See [Go's
-testing package] for more information about writing unit tests for Go code. The
-[Best practices for writing Chrome OS unit tests] document contains additional
-suggestions that may be helpful (despite being C++-centric).
+set of Tast-based tests that must be run to exercise the package). See [How to
+Write Go Code: Testing] and [Go's testing package] for more information about
+writing unit tests for Go code. The [Best practices for writing Chrome OS unit
+tests] document contains additional suggestions that may be helpful (despite
+being C++-centric).
 
+Setting `FEATURES=test` when emerging a test bundle package
+(`tast-local-tests-cros` or `tast-remote-tests-cros`) will run all unit tests
+for the corresponding packages in the `tast-tests` repository (i.e.
+`chromiumos/tast/local/...` or `chromiumos/tast/remote/...`, respectively).
+
+During development, the [fast_build.sh] script can be used to quickly build and
+run tests for a single package or all packages.
+
+[How to Write Go Code: Testing]: https://golang.org/doc/code.html#Testing
 [Go's testing package]: https://golang.org/pkg/testing/
 [Best practices for writing Chrome OS unit tests]: https://chromium.googlesource.com/chromiumos/docs/+/master/unit_tests.md
+[fast_build.sh]: modifying_tast.md#fast_build_sh
 
 ### Import
 
@@ -320,7 +345,14 @@ status:
 *   `Fatal` and `Fatalf` record errors and stop the test immediately, similar to
     the `ASSERT_` set of macros.
 
+Note that higher-level functions for stating expectations and assertions are not
+provided; this was a conscious decision. See ["Where is my favorite helper
+function for testing?"] from the [Go FAQ]. That answer refers to [Go's testing
+package] rather than Tast's, but the same reasoning and suggestions are
+applicable to Tast tests.
+
 [Google Test]: https://github.com/google/googletest
+["Where is my favorite helper function for testing?"]: https://golang.org/doc/faq#testing_framework
 
 ### When to log
 

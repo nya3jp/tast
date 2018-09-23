@@ -103,6 +103,8 @@ Many resources are available for learning more about Go. Here are a few:
 *   [A Tour of Go] - In-browser introduction to Go's core features.
 *   [Official Go documentation] - Package documentation, specifications, blog
     posts, and recorded talks.
+*   [Go at Google: Language Design in the Service of Software Engineering] -
+    High-level overview of Go's features and design philosophy.
 *   [Community Learn wiki] - Links to external resources.
 
 [Chrome OS chroot]: http://www.chromium.org/chromium-os/quick-start-guide
@@ -114,4 +116,5 @@ Many resources are available for learning more about Go. Here are a few:
 [tast repository]: https://chromium.googlesource.com/chromiumos/platform/tast/
 [A Tour of Go]: https://tour.golang.org/
 [Official Go documentation]: https://golang.org/doc/
+[Go at Google: Language Design in the Service of Software Engineering]: https://talks.golang.org/2012/splash.article
 [Community Learn wiki]: https://github.com/golang/go/wiki/Learn

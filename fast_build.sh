@@ -75,7 +75,7 @@ run_build() {
 
 # Checks one or more packages.
 run_vet() {
-  go vet "${@}"
+  go vet -printfuncs=Log,Logf,Error,Errorf,Fatal,Fatalf "${@}"
 }
 
 # Tests one or more packages.

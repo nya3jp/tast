@@ -30,12 +30,13 @@ func main() {
 			// This list is documented at docs/test_dependencies.md.
 			// All USE flags referenced here must be listed in IUSE in the tast-use-flags ebuild.
 			"android":           "arc",
-			"audio_play":        "!betty && !veyron_rialto",
-			"audio_record":      "!betty && !veyron_mickey && !veyron_rialto",
+			"audio_play":        "!betty && !veyron_rialto",                   // VMs don't have audio hardware
+			"audio_record":      "!betty && !veyron_mickey && !veyron_rialto", // VMs don't have audio hardware
 			"chrome":            "!chromeless_tty",
 			"chrome_login":      "!chromeless_tty && !rialto",
 			"display_backlight": "display_backlight",
 			"ml_service":        "ml_service",
+			"screenshot":        "display_backlight && !rk3399", // screenshot command broken on RK3399: https://crbug.com/880597
 			"selinux":           "selinux",
 			"tpm":               "!mocktpm",
 			"vm_host":           "kvm_host",

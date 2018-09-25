@@ -16,6 +16,7 @@ The following software features are defined:
     login (i.e. using `session_manager` and `cryptohome`) is supported.
 *   `display_backlight` - An internal display backlight.
 *   `ml_service` - ML Service daemon.
+*   `screenshot` - The [screenshot command] can save screenshots.
 *   `selinux` - An SELinux-enabled board. All Android boards are
     SELinux-enabled.
 *   `tpm` - A [Trusted Platform Module] chip.
@@ -33,6 +34,7 @@ in the [tast-use-flags] package.
 [testing.Test]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Test
 [run Android apps]: https://developer.android.com/topic/arc/
 [run virtual machines]: https://chromium.googlesource.com/chromiumos/docs/+/master/containers_and_vms.md
+[screenshot command]: https://chromium.googlesource.com/chromiumos/platform2/+/master/screenshot/
 [Trusted Platform Module]: https://en.wikipedia.org/wiki/Trusted_Platform_Module
 [local_test_runner]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/cmd/local_test_runner/main.go
 [tast-use-flags]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/tast-use-flags/

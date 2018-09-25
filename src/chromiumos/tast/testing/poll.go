@@ -6,8 +6,9 @@ package testing
 
 import (
 	"context"
-	"fmt"
 	"time"
+
+	"chromiumos/tast/errors"
 )
 
 const defaultPollInterval = 100 * time.Millisecond
@@ -57,7 +58,7 @@ func Poll(ctx context.Context, f func(context.Context) error, opts *PollOptions)
 
 		// If f honors ctx's deadline, it may return a "context deadline exceeded" error
 		// if the deadline is reached while is running. To avoid returning a useless
-		// "context deadline exceeded (last error: context deadline exceeded)" error below,
+		// "context deadline exceeded; last error follows: context deadline exceeded)" error below,
 		// save the last error that is returned before the deadline is reached.
 		if lastErr == nil || ctx.Err() == nil {
 			lastErr = err
@@ -66,7 +67,7 @@ func Poll(ctx context.Context, f func(context.Context) error, opts *PollOptions)
 		select {
 		case <-time.After(interval):
 		case <-ctx.Done():
-			return fmt.Errorf("%v (last error: %v)", ctx.Err(), lastErr)
+			return errors.Wrapf(lastErr, "%s; last error follows", ctx.Err())
 		}
 	}
 }

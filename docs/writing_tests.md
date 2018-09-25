@@ -325,21 +325,46 @@ s.Errorf("Failed to load %v: %v", url, err)
 s.Fatalf("Got invalid JSON object %+v", obj)
 ```
 
+### Error construction
+
+To construct new errors or wrap other errors, use the [chromiumos/tast/errors]
+package rather than standard libraries (`errors.New`, `fmt.Errorf`) or any other
+third-party libraries. It records stack traces and chained errors, and leaves
+nicely formatted logs when tests fail.
+
+To construct a new error, use [errors.New] or [errors.Errorf].
+
+```go
+errors.New("process not found")
+errors.Errorf("process %d not found", pid)
+```
+
+To construct an error by adding context to an existing error, use [errors.Wrap] or [errors.Wrapf].
+
+```go
+errors.Wrap(err, "failed to connect to Chrome browser process")
+errors.Wrapf(err, "failed to connect to Chrome renderer process %d", pid)
+```
+
+[chromiumos/tast/errors]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/errors
+[errors.New]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/errors#New
+[errors.Errorf]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/errors#Errorf
+[errors.Wrap]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/errors#Wrap
+[errors.Wrapf]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/errors#Wrapf
+
 ### Formatting
 
-Please follow [Go's error string conventions] when producing `error` values
-(i.e. with [errors.New] or [fmt.Errorf]):
+Please follow [Go's error string conventions] when producing `error` values.
 
 > Error strings should not be capitalized (unless beginning with proper nouns or
 > acronyms) or end with punctuation, since they are usually printed following
 > other context.
 
-When adding detail to an existing error, append the existing error to the new
-string:
+For example:
 
 ```go
 if err := doSomething(id); err != nil {
-	return fmt.Errorf("doing something to %q failed: %v", id, err)
+	return errors.Wrapf(err, "doing something to %q failed", id)
 }
 ```
 
@@ -356,13 +381,11 @@ s.Logf("Logged in as user %q with ID %v", user, id)
 ```
 
 [Go's error string conventions]: https://github.com/golang/go/wiki/CodeReviewComments#error-strings
-[errors.New]: https://golang.org/pkg/errors/#New
-[fmt.Errorf]: https://golang.org/pkg/fmt/#Errorf
 
 ### Support packages
 
 Support packages should not record test failures directly. Instead, return
-`error` values (using [errors.New] or [fmt.Errorf]) and allow tests to decide
+`error` values (using the [errors package]) and allow tests to decide
 how to handle them. Support packages' exported functions should typically take
 [context.Context] arguments and use them to return an error early when the
 test's deadline is reached and to log informative messages using
@@ -371,6 +394,7 @@ test's deadline is reached and to log informative messages using
 The [Error handling and Go] and [Errors are values] blog posts offer guidance on
 using the `error` type.
 
+[errors package]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/errors
 [Error handling and Go]: https://blog.golang.org/error-handling-and-go
 [Errors are values]: https://blog.golang.org/errors-are-values
 

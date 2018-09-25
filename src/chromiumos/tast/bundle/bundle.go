@@ -214,9 +214,10 @@ func copyTestOutput(ch chan testing.Output, mw *control.MessageWriter, abort cha
 				mw.WriteMessage(&control.TestLog{Time: o.T, Text: o.Msg})
 			}
 		case <-abort:
+			const msg = "Test timed out"
 			mw.WriteMessage(&control.TestError{
 				Time:  time.Now(),
-				Error: *testing.NewError("Test timed out", 0),
+				Error: *testing.NewError(nil, msg, msg, 0),
 			})
 			return
 		}

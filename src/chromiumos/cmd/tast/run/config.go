@@ -98,6 +98,7 @@ type Config struct {
 	hst *host.SSH // cached SSH connection; may be nil
 
 	checkTestDeps               testDepsMode // when test dependencies should be checked
+	extraUSEFlags               []string     // additional USE flags to inject when determining features
 	availableSoftwareFeatures   []string     // features supported by the DUT
 	unavailableSoftwareFeatures []string     // features unsupported by the DUT
 
@@ -176,6 +177,9 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 		desc := fmt.Sprintf("skip tests with software dependencies unsatisfied by DUT (%s; default %q)",
 			td.QuotedValues(), td.Default())
 		f.Var(td, "checktestdeps", desc)
+
+		f.Var(command.NewListFlag(",", func(v []string) { c.extraUSEFlags = v }, nil), "extrauseflags",
+			"comma-separated list of additional USE flags to inject when checking test dependencies")
 	} else {
 		c.checkTestDeps = checkTestDepsNever
 	}

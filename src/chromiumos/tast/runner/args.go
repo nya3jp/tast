@@ -39,6 +39,8 @@ type Args struct {
 	RunTestsArgs
 	// CollectSysInfoArgs contains additional arguments used by CollectSysInfoMode.
 	CollectSysInfoArgs
+	// GetSoftwareFeaturesArgs contains additional arguments used by GetSoftwareFeaturesMode.
+	GetSoftwareFeaturesArgs
 
 	// The remaining exported fields are set by test runner main functions (or by unit tests) and
 	// cannot be overridden by the tast executable.
@@ -110,6 +112,13 @@ type CollectSysInfoResult struct {
 	Warnings []string `json:"warnings"`
 }
 
+// GetSoftwareFeaturesArgs is nested within Args and contains additional arguments used by GetSoftwareFeaturesMode.
+type GetSoftwareFeaturesArgs struct {
+	// ExtraUSEFlags lists additional USE flags that should be treated as being set an addition to
+	// the ones read from Args.USEFlagsFile when computing the feature sets for GetSoftwareFeaturesResult.
+	ExtraUSEFlags []string `json:"getSoftwareFeaturesExtraUseFlags,omitempty"`
+}
+
 // GetSoftwareFeaturesResult contains the result of a GetSoftwareFeaturesMode command.
 type GetSoftwareFeaturesResult struct {
 	// Available contains a list of software features supported by the DUT.
@@ -161,6 +170,9 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, ru
 		flags.StringVar(&args.BundleGlob, "bundles", args.BundleGlob, "glob matching test bundles")
 		flags.StringVar(&args.DataDir, "datadir", args.DataDir, "directory containing data files")
 		flags.StringVar(&args.OutDir, "outdir", args.OutDir, "base directory to write output files to")
+		flags.Var(command.NewListFlag(",", func(v []string) { args.GetSoftwareFeaturesArgs.ExtraUSEFlags = v }, nil),
+			"extrauseflags", "comma-separated list of additional USE flags to inject when checking test dependencies")
+
 		if runnerType == RemoteRunner {
 			flags.StringVar(&args.Target, "target", "", "DUT connection spec as \"[<user>@]host[:<port>]\"")
 			flags.StringVar(&args.KeyFile, "keyfile", "", "path to SSH private key to use for connecting to DUT")
@@ -211,12 +223,15 @@ func setManualDepsArgs(args *Args) error {
 	if err != nil {
 		return command.NewStatusErrorf(statusError, "%v", err)
 	}
+	useFlags = append(useFlags, args.ExtraUSEFlags...)
+
 	var autotestCaps map[string]autocaps.State
 	if args.AutotestCapabilityDir != "" {
 		// Ignore errors. autotest-capability is outside of Tast's control, and it's probably better to let
 		// some unsupported video tests fail instead of making the whole run fail.
 		autotestCaps, _ = autocaps.Read(args.AutotestCapabilityDir, nil)
 	}
+
 	avail, unavail, err := determineSoftwareFeatures(args.SoftwareFeatureDefinitions, useFlags, autotestCaps)
 	if err != nil {
 		return command.NewStatusErrorf(statusError, "%v", err)

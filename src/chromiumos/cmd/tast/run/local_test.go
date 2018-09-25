@@ -135,7 +135,7 @@ func (td *localTestData) checkArgs(t *gotesting.T, exp *runner.Args) {
 		return
 	}
 	if !reflect.DeepEqual(args, *exp) {
-		t.Errorf("got args %v; want %v", args, *exp)
+		t.Errorf("got args %+v; want %+v", args, *exp)
 	}
 }
 

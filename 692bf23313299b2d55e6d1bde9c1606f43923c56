@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "482a9c9c_43d347f3",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-25T03:43:28Z",
+      "side": 1,
+      "message": "huge nit (don\u0027t take out of CQ for this): \"neither the test body function nor testCleanupFunc will run.\"\n\n(\"nor\" usually needs \"neither\" before it, and they negate the verb clause, so you don\u0027t need \"will not run\" later. alternately, you could just have \"the test body function and testCleanupFunc will not run.\")",
+      "range": {
+        "startLine": 69,
+        "startChar": 50,
+        "endLine": 69,
+        "endChar": 53
+      },
+      "revId": "692bf23313299b2d55e6d1bde9c1606f43923c56",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f8986cc1_e8c35239",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-25T03:43:28Z",
+      "side": 1,
+      "message": "nor is okay here :-)",
+      "revId": "692bf23313299b2d55e6d1bde9c1606f43923c56",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

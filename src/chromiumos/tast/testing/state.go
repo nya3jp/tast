@@ -6,16 +6,17 @@ package testing
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"runtime"
-	"runtime/debug"
 	"strings"
 	"sync"
 	"time"
+
+	"chromiumos/tast/errors"
 )
 
 // Key type for objects attached to context.Context objects.
@@ -168,21 +169,24 @@ func (s *State) Logf(format string, args ...interface{}) {
 // while letting the test continue execution.
 func (s *State) Error(args ...interface{}) {
 	s.recordError()
-	e := NewError(fmt.Sprint(args...), 1)
+	err, fullMsg, lastMsg := format(args...)
+	e := NewError(err, fullMsg, lastMsg, 1)
 	s.ch <- Output{T: time.Now(), Err: e}
 }
 
 // Errorf is similar to Error but formats its arguments using fmt.Sprintf.
 func (s *State) Errorf(format string, args ...interface{}) {
 	s.recordError()
-	e := NewError(fmt.Sprintf(format, args...), 1)
+	err, fullMsg, lastMsg := formatf(format, args...)
+	e := NewError(err, fullMsg, lastMsg, 1)
 	s.ch <- Output{T: time.Now(), Err: e}
 }
 
 // Fatal is similar to Error but additionally immediately ends the test.
 func (s *State) Fatal(args ...interface{}) {
 	s.recordError()
-	e := NewError(fmt.Sprint(args...), 1)
+	err, fullMsg, lastMsg := format(args...)
+	e := NewError(err, fullMsg, lastMsg, 1)
 	s.ch <- Output{T: time.Now(), Err: e}
 	runtime.Goexit()
 }
@@ -190,7 +194,8 @@ func (s *State) Fatal(args ...interface{}) {
 // Fatalf is similar to Fatal but formats its arguments using fmt.Sprintf.
 func (s *State) Fatalf(format string, args ...interface{}) {
 	s.recordError()
-	e := NewError(fmt.Sprintf(format, args...), 1)
+	err, fullMsg, lastMsg := formatf(format, args...)
+	e := NewError(err, fullMsg, lastMsg, 1)
 	s.ch <- Output{T: time.Now(), Err: e}
 	runtime.Goexit()
 }
@@ -200,6 +205,61 @@ func (s *State) HasError() bool {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	return s.hasError
+}
+
+var errorSuffix = regexp.MustCompile(`:\s*$`)
+
+// format formats an error message using fmt.Sprint.
+// If the format is the following well-known one:
+//
+//  format("Failed something: ", err)
+//
+// then this function extracts an error object and returns parsed error messages
+// in the following way:
+//
+//  lastMsg = "Failed something"
+//  fullMsg = "Failed something: foo"
+func format(args ...interface{}) (err error, fullMsg, lastMsg string) {
+	fullMsg = fmt.Sprint(args...)
+	if len(args) >= 2 {
+		if e, ok := args[len(args)-1].(error); ok {
+			if s, ok := args[len(args)-2].(string); ok {
+				if m := errorSuffix.FindStringIndex(s); m != nil {
+					err = e
+					args = append(args[:len(args)-2], s[:m[0]])
+				}
+			}
+		}
+	}
+	lastMsg = fmt.Sprint(args...)
+	return
+}
+
+var errorfSuffix = regexp.MustCompile(`:\s*%v$`)
+
+// formatf formats an error message using fmt.Sprintf.
+// If the format is the following well-known one:
+//
+//  formatf("Failed something: %v", err)
+//
+// then this function extracts an error object and returns parsed error messages
+// in the following way:
+//
+//  lastMsg = "Failed something"
+//  fullMsg = "Failed something: foo"
+func formatf(format string, args ...interface{}) (err error, fullMsg, lastMsg string) {
+	fullMsg = fmt.Sprintf(format, args...)
+	if len(args) >= 1 {
+		if e, ok := args[len(args)-1].(error); ok {
+			if m := errorfSuffix.FindStringIndex(format); m != nil {
+				err = e
+				args = args[:len(args)-1]
+				format = format[:m[0]]
+			}
+		}
+	}
+	lastMsg = fmt.Sprintf(format, args...)
+	return
 }
 
 // recordError records that the test has reported an error.
@@ -237,22 +297,20 @@ func (d *dataFS) Open(name string) (http.File, error) {
 // skipFrames contains the number of frames to skip to get the code that's reporting
 // the error: the caller should pass 0 to report its own frame, 1 to skip just its own frame,
 // 2 to additionally skip the frame that called it, and so on.
-func NewError(rsn string, skipFrames int) *Error {
+func NewError(err error, fullMsg, lastMsg string, skipFrames int) *Error {
 	// Also skip the NewError frame.
 	skipFrames += 1
 
 	// runtime.Caller starts counting stack frames at the point of the code that
 	// invoked Caller.
-	_, fn, ln, _ := runtime.Caller(skipFrames)
-
-	// debug.Stack writes an initial line like "goroutine 22 [running]:" followed
-	// by two lines per frame. It also includes itself.
-	stack := string(debug.Stack())
-	stackLines := strings.Split(stack, "\n")
-	stack = strings.Join(stackLines[(skipFrames+1)*2+1:], "\n")
+	pc, fn, ln, _ := runtime.Caller(skipFrames)
+	stack := fmt.Sprintf("%s\n\tat %s (%s:%d)", lastMsg, runtime.FuncForPC(pc).Name(), filepath.Base(fn), ln)
+	if err != nil {
+		stack += fmt.Sprintf("\n%+v", err)
+	}
 
 	return &Error{
-		Reason: rsn,
+		Reason: fullMsg,
 		File:   fn,
 		Line:   ln,
 		Stack:  stack,

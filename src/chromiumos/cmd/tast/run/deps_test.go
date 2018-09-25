@@ -54,10 +54,16 @@ func TestGetSoftwareFeaturesAlways(t *testing.T) {
 	unavail := []string{"dep3"}
 	addGetSoftwareFeaturesResult(t, td, avail, unavail)
 	td.cfg.checkTestDeps = checkTestDepsAlways
+	td.cfg.extraUSEFlags = []string{"use1", "use2"}
 	if err := getSoftwareFeatures(context.Background(), &td.cfg); err != nil {
 		t.Fatalf("getSoftwareFeatures(%+v) failed: %v", td.cfg, err)
 	}
-	td.checkArgs(t, &runner.Args{Mode: runner.GetSoftwareFeaturesMode})
+	td.checkArgs(t, &runner.Args{
+		Mode: runner.GetSoftwareFeaturesMode,
+		GetSoftwareFeaturesArgs: runner.GetSoftwareFeaturesArgs{
+			ExtraUSEFlags: td.cfg.extraUSEFlags,
+		},
+	})
 	checkRunnerTestDepsArgs(t, &td.cfg, true, avail, unavail)
 
 	// Change the features reported by local_test_runner and call getSoftwareFeature again.

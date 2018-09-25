@@ -53,3 +53,36 @@ func (f *EnumFlag) Set(v string) error {
 	f.assign(ev)
 	return nil
 }
+
+// ListFlag implements flag.Value to split a user-supplied string with a custom delimiter
+// into a slice of strings.
+type ListFlag struct {
+	sep    string             // value separator, e.g. ","
+	assign ListFlagAssignFunc // used to assign slice value to dest
+	def    []string           // default value, e.g. []string{"foo", "bar"}
+}
+
+// ListFlagAssignFunc is called by ListFlag to assign a slice to a target variable.
+type ListFlagAssignFunc func(vals []string)
+
+// NewListFlag returns a ListFlag using the supplied separator and assignment function.
+// def contains a default value to assign when the flag is unspecified.
+func NewListFlag(sep string, assign ListFlagAssignFunc, def []string) *ListFlag {
+	f := ListFlag{sep, assign, def}
+	f.Set(f.Default())
+	return &f
+}
+
+// Default returns the default value used if the flag is unset.
+func (f *ListFlag) Default() string { return strings.Join(f.def, f.sep) }
+
+func (f *ListFlag) String() string { return "" }
+
+func (f *ListFlag) Set(v string) error {
+	vals := strings.Split(v, f.sep)
+	if len(vals) == 1 && vals[0] == "" {
+		vals = nil
+	}
+	f.assign(vals)
+	return nil
+}

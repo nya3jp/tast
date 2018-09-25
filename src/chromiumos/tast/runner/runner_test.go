@@ -420,9 +420,11 @@ func TestCheckDepsWhenRunManually(t *gotesting.T) {
 		SoftwareFeatureDefinitions: map[string]string{
 			"both":    "flag1 && flag2",
 			"neither": "!flag1 && !flag2",
+			"third":   "flag3",
 		},
 	}
-	status, _, stderr, sig := callRun(t, []string{"(!foo)"}, nil, &args, LocalRunner)
+	status, _, stderr, sig := callRun(
+		t, []string{"-extrauseflags=flag3,flag4", "(!foo)"}, nil, &args, LocalRunner)
 	if status != statusSuccess {
 		println(stderr.String())
 		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
@@ -431,7 +433,7 @@ func TestCheckDepsWhenRunManually(t *gotesting.T) {
 	if !args.bundleArgs.CheckSoftwareDeps {
 		t.Errorf("%s didn't request checking test deps", sig)
 	}
-	if exp := []string{"both"}; !reflect.DeepEqual(args.bundleArgs.AvailableSoftwareFeatures, exp) {
+	if exp := []string{"both", "third"}; !reflect.DeepEqual(args.bundleArgs.AvailableSoftwareFeatures, exp) {
 		t.Errorf("%s passed available features %v; want %v", sig, args.bundleArgs.AvailableSoftwareFeatures, exp)
 	}
 	if exp := []string{"neither"}; !reflect.DeepEqual(args.bundleArgs.UnavailableSoftwareFeatures, exp) {

@@ -30,6 +30,10 @@ func TestGetSoftwareFeatures(t *testing.T) {
 		SoftwareFeatureDefinitions: map[string]string{
 			"foobar":  "foo && bar",
 			"not_foo": "!foo",
+			"other":   "baz",
+		},
+		GetSoftwareFeaturesArgs: GetSoftwareFeaturesArgs{
+			ExtraUSEFlags: []string{"baz"},
 		},
 	}
 	status, stdout, _, sig := callRun(t, nil, &Args{Mode: GetSoftwareFeaturesMode}, &defaultArgs, LocalRunner)
@@ -41,7 +45,7 @@ func TestGetSoftwareFeatures(t *testing.T) {
 		t.Fatalf("%v gave bad output: %v", sig, err)
 	}
 	exp := GetSoftwareFeaturesResult{
-		Available:   []string{"foobar"},
+		Available:   []string{"foobar", "other"},
 		Unavailable: []string{"not_foo"},
 	}
 	if !reflect.DeepEqual(res, exp) {

@@ -44,7 +44,12 @@ func getSoftwareFeatures(ctx context.Context, cfg *Config) error {
 	if err != nil {
 		return err
 	}
-	handle, err := startLocalRunner(ctx, cfg, hst, &runner.Args{Mode: runner.GetSoftwareFeaturesMode})
+	handle, err := startLocalRunner(ctx, cfg, hst, &runner.Args{
+		Mode: runner.GetSoftwareFeaturesMode,
+		GetSoftwareFeaturesArgs: runner.GetSoftwareFeaturesArgs{
+			ExtraUSEFlags: cfg.extraUSEFlags,
+		},
+	})
 	if err != nil {
 		return err
 	}

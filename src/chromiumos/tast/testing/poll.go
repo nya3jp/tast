@@ -6,8 +6,9 @@ package testing
 
 import (
 	"context"
-	"fmt"
 	"time"
+
+	"chromiumos/tast/errors"
 )
 
 const defaultPollInterval = 100 * time.Millisecond
@@ -66,7 +67,7 @@ func Poll(ctx context.Context, f func(context.Context) error, opts *PollOptions)
 		select {
 		case <-time.After(interval):
 		case <-ctx.Done():
-			return fmt.Errorf("%v (last error: %v)", ctx.Err(), lastErr)
+			return errors.Wrapf(lastErr, "%s; last error following", ctx.Err())
 		}
 	}
 }

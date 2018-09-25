@@ -5,7 +5,6 @@
 package testing
 
 import (
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -18,6 +17,7 @@ import (
 	gotesting "testing"
 	"time"
 
+	"chromiumos/tast/errors"
 	"chromiumos/tast/testutil"
 )
 
@@ -70,23 +70,77 @@ func TestReportError(t *gotesting.T) {
 		t.Errorf("Got non-sequential line numbers %d and %d", e0.Line, e1.Line)
 	}
 
-	// The initial lines of the stack trace should be dropped such that the first frame
-	// is the code that called Error or Errorf. As such, the first line should contain this
-	// test function's name and the second line should contain the filename and line number
-	// of the error call.
-	const fc = "testing.TestReportError("
 	for _, e := range []*Error{e0, e1} {
 		lines := strings.Split(string(e.Stack), "\n")
 		if len(lines) < 2 {
 			t.Errorf("Stack trace %q contains fewer than 2 lines", string(e.Stack))
 			continue
 		}
-		if !strings.Contains(lines[0], fc) {
-			t.Errorf("First line of stack trace %q doesn't contain %q", string(e.Stack), fc)
+		if exp := "error "; !strings.HasPrefix(lines[0], exp) {
+			t.Errorf("First line of stack trace %q doesn't start with %q", string(e.Stack), exp)
 		}
-		fl := fmt.Sprintf("%s:%d", e.File, e.Line)
-		if !strings.Contains(lines[1], fl) {
-			t.Errorf("Second line of stack trace %q doesn't contain %q", string(e.Stack), fl)
+		if exp := fmt.Sprintf("\tat chromiumos/tast/testing.TestReportError (%s:%d)", filepath.Base(e.File), e.Line); lines[1] != exp {
+			t.Errorf("Second line of stack trace %q doesn't match %q", string(e.Stack), exp)
+		}
+	}
+}
+
+func errorFunc() error {
+	return errors.New("meow")
+}
+
+func TestExtractErrorSimple(t *gotesting.T) {
+	ch := make(chan Output, 1)
+	s := newState(&Test{Timeout: time.Minute}, ch, &TestConfig{})
+
+	err := errorFunc()
+	s.Error(err)
+	close(ch)
+
+	out := readOutput(ch)
+	if len(out) != 1 {
+		t.Fatalf("Got %v output(s); want 1", len(out))
+	}
+
+	e := out[0].Err
+
+	if exp := "meow"; e.Reason != exp {
+		t.Errorf("Error message %q is not %q", e.Reason, exp)
+	}
+	if exp := "meow\n\tat chromiumos/tast/testing.TestExtractErrorSimple"; !strings.HasPrefix(e.Stack, exp) {
+		t.Errorf("Stack trace %q doesn't start with %q", e.Stack, exp)
+	}
+	if exp := "meow\n\tat chromiumos/tast/testing.errorFunc"; !strings.Contains(e.Stack, exp) {
+		t.Errorf("Stack trace %q doesn't contain %q", e.Stack, exp)
+	}
+}
+
+func TestExtractErrorHeuristic(t *gotesting.T) {
+	ch := make(chan Output, 4)
+	s := newState(&Test{Timeout: time.Minute}, ch, &TestConfig{})
+
+	err := errorFunc()
+	s.Error("Failed something  :  ", err)
+	s.Error("Failed something  ", err)
+	s.Errorf("Failed something  :  %v", err)
+	s.Errorf("Failed something  %v", err)
+	close(ch)
+
+	out := readOutput(ch)
+	if len(out) != 4 {
+		t.Fatalf("Got %v output(s); want 4", len(out))
+	}
+
+	for _, o := range out {
+		e := o.Err
+		if exp := "Failed something  "; !strings.HasPrefix(e.Reason, exp) {
+			t.Errorf("Error message %q doesn't start with %q", e.Reason, exp)
+		}
+		if exp := "Failed something\n\tat chromiumos/tast/testing.TestExtractErrorHeuristic"; !strings.HasPrefix(e.Stack, exp) {
+			t.Errorf("Stack trace %q doesn't start with %q", e.Stack, exp)
+		}
+		if exp := "\nmeow\n\tat chromiumos/tast/testing.errorFunc"; !strings.Contains(e.Stack, exp) {
+			t.Errorf("Stack trace %q doesn't contain %q", e.Stack, exp)
 		}
 	}
 }

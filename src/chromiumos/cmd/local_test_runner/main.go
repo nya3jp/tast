@@ -34,6 +34,7 @@ func main() {
 			"audio_record":      "!betty && !veyron_mickey && !veyron_rialto", // VMs don't have audio hardware
 			"chrome":            "!chromeless_tty",
 			"chrome_login":      "!chromeless_tty && !rialto",
+			"cups":              "cups",
 			"display_backlight": "display_backlight",
 			"ml_service":        "ml_service",
 			"screenshot":        "display_backlight && !rk3399", // screenshot command broken on RK3399: https://crbug.com/880597

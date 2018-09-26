@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a67268c6_4b3d8981",
+        "filename": "src/chromiumos/tast/runner/autocaps/caps.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1196199
+      },
+      "writtenOn": "2018-09-26T13:43:04Z",
+      "side": 1,
+      "message": "NOTE:\nIn the original python script, we run a detector if needed.\nI cannot imagine this gets error, since I think every Chrome OS device has \"lscpu\" and \"lspci\" command.\nWe can rethink this to run only if needed, if we get an error in some device later.",
+      "range": {
+        "startLine": 60,
+        "startChar": 17,
+        "endLine": 60,
+        "endChar": 28
+      },
+      "revId": "76d4598e20f365cf8269b6d3d973f7612215da7e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "58f5e955_4b7d322e",
+        "filename": "src/chromiumos/tast/runner/autocaps/caps.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1196199
+      },
+      "writtenOn": "2018-09-26T13:43:04Z",
+      "side": 1,
+      "message": "It is necessary to read yaml files in order of first number in file name.\n15-chipset -\u003e 18-baseboard -\u003e 20-xxx\nAh, this is guaranteed by ioutil.ReadDir..\nCould you comment it?",
+      "revId": "76d4598e20f365cf8269b6d3d973f7612215da7e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3f3e3166_35a11536",
+        "filename": "src/chromiumos/tast/runner/autocaps/caps.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1196199
+      },
+      "writtenOn": "2018-09-26T13:43:04Z",
+      "side": 1,
+      "message": "this is unnecessary because managedFile doesn\u0027t match fileRegExp.",
+      "range": {
+        "startLine": 80,
+        "startChar": 5,
+        "endLine": 80,
+        "endChar": 33
+      },
+      "revId": "76d4598e20f365cf8269b6d3d973f7612215da7e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1313fe77_a4f9ac86",
+        "filename": "src/chromiumos/tast/runner/autocaps/detect.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1196199
+      },
+      "writtenOn": "2018-09-26T13:43:04Z",
+      "side": 1,
+      "message": "nit: this should be const?",
+      "range": {
+        "startLine": 42,
+        "startChar": 49,
+        "endLine": 42,
+        "endChar": 60
+      },
+      "revId": "76d4598e20f365cf8269b6d3d973f7612215da7e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "37166c41_87e59884",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-26T15:18:42Z",
+      "side": 1,
+      "message": "huge nit: \"Printer\", maybe also s/CUPS/cupsd/?",
+      "range": {
+        "startLine": 19,
+        "startChar": 16,
+        "endLine": 19,
+        "endChar": 23
+      },
+      "revId": "b154adca07b319571852af9464f5ac0d3a2a3f6e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5a16c2d0_a0c8599e",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-26T15:18:42Z",
+      "side": 1,
+      "message": "i\u0027m wondering if it\u0027d be clearer to call this \"cups\" or \"cupsd\" or \"printer_daemon\". my concern with \"printer\" is that it may make people think that a physical printer is present, which isn\u0027t actually the case here IIUC.",
+      "range": {
+        "startLine": 39,
+        "startChar": 4,
+        "endLine": 39,
+        "endChar": 11
+      },
+      "revId": "b154adca07b319571852af9464f5ac0d3a2a3f6e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

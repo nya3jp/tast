@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "c8f862b2_83946b08",
+        "filename": "src/chromiumos/tast/runner/autocaps/caps.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1196199
+      },
+      "writtenOn": "2018-09-27T00:27:17Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "c21b978b_ff02b1bd",
+      "range": {
+        "startLine": 60,
+        "startChar": 17,
+        "endLine": 60,
+        "endChar": 28
+      },
+      "revId": "76d4598e20f365cf8269b6d3d973f7612215da7e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "58f5e955_4b7d322e",
         "filename": "src/chromiumos/tast/runner/autocaps/caps.go",
         "patchSetId": 2
@@ -175,6 +199,30 @@
       "revId": "76d4598e20f365cf8269b6d3d973f7612215da7e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e80fafaf_d9065ab5",
+        "filename": "src/chromiumos/tast/runner/autocaps/detect.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1196199
+      },
+      "writtenOn": "2018-09-27T00:27:17Z",
+      "side": 1,
+      "message": "\u003e if you can provide more info about where the ID comes from, or a pointer to some docs explaining more about kepler, i\u0027m happy to add it in a comment here as well. :-)\n\nAs far as I know, there is probably no way to know this ID value without actually doing lscpu.\nBut this ID should be identical on any kepler Chrome OS devices.",
+      "parentUuid": "fede045b_c4ae00f8",
+      "range": {
+        "startLine": 42,
+        "startChar": 49,
+        "endLine": 42,
+        "endChar": 60
+      },
+      "revId": "76d4598e20f365cf8269b6d3d973f7612215da7e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

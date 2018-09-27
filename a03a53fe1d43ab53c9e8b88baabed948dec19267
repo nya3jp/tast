@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "8e78f7de_a7a7668b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-27T15:23:28Z",
+      "side": 1,
+      "message": "ah, i didn\u0027t think this through. we only *use* the yaml code in local_test_runner (which is built by the tast-local-test-runner package), but we also link it into remote_test_runner (built by tast-cmd), and we test tast/... packages in tast-cmd as well.\n\ni\u0027ll add the dependency to tast-cmd, and also tast-local-tests-cros since it sounds like we\u0027ll have a video test that uses the autocaps package to verify YAML files.",
+      "parentUuid": "868e0f23_a6108a95",
+      "range": {
+        "startLine": 9,
+        "startChar": 53,
+        "endLine": 9,
+        "endChar": 57
+      },
+      "revId": "a03a53fe1d43ab53c9e8b88baabed948dec19267",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "5612059a_e44ca3d1",
         "filename": "/COMMIT_MSG",
         "patchSetId": 2
@@ -36,6 +60,30 @@
       "writtenOn": "2018-09-27T06:16:54Z",
       "side": 1,
       "message": "IIUC we can declare tests to run only when certain capabilities are enabled, but can\u0027t when disabled; e.g. it\u0027s impossible to run a test only when the DUT does *not* have HW H264 decoder. Is it sufficient for our purpose, right?",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 12,
+        "endChar": 34
+      },
+      "revId": "a03a53fe1d43ab53c9e8b88baabed948dec19267",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "62ab969c_47424e89",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-27T15:23:28Z",
+      "side": 1,
+      "message": "your understand is correct. i think it would be possible to add negative features for unset capabilities if needed. hiroh@, do you know if tests will need to run when capabilities are unset?",
+      "parentUuid": "5612059a_e44ca3d1",
       "range": {
         "startLine": 12,
         "startChar": 0,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "afc50014_39de9a52",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-27T15:23:28Z",
+      "side": 1,
+      "message": "sure, i don\u0027t have any problems with that (although i hope that new detectors aren\u0027t needed, since runtime dependencies make it harder to schedule tests on the right DUTs). i\u0027ve removed the \"Do not add new capabilities\" part of this.",
+      "parentUuid": "1fcf4fce_01437836",
+      "range": {
+        "startLine": 37,
+        "startChar": 45,
+        "endLine": 38,
+        "endChar": 51
+      },
+      "revId": "a03a53fe1d43ab53c9e8b88baabed948dec19267",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "8ae94613_71ff81a1",
         "filename": "src/chromiumos/tast/runner/features.go",
         "patchSetId": 2
@@ -82,6 +154,30 @@
       "writtenOn": "2018-09-27T11:52:30Z",
       "side": 1,
       "message": "Question; how/where is this specified?",
+      "range": {
+        "startLine": 42,
+        "startChar": 4,
+        "endLine": 42,
+        "endChar": 36
+      },
+      "revId": "a03a53fe1d43ab53c9e8b88baabed948dec19267",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "099d3910_445b513e",
+        "filename": "src/chromiumos/tast/runner/features.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-27T15:23:28Z",
+      "side": 1,
+      "message": "the runner package is shared by the local_test_runner and remote_test_runner executables. (see go/tast-overview for more about those.)\n\nltr\u0027s main.go sets this to /usr/local/etc/autotest-capability so the files will be read. rtr is running on the host system rather than the DUT, so it leaves it blank.",
+      "parentUuid": "8ae94613_71ff81a1",
       "range": {
         "startLine": 42,
         "startChar": 4,

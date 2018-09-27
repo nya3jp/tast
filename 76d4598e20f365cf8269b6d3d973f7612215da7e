@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "c21b978b_ff02b1bd",
+        "filename": "src/chromiumos/tast/runner/autocaps/caps.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-27T00:06:22Z",
+      "side": 1,
+      "message": "thanks for the analysis. yeah, that was my thought too -- if either lscpu or lspci fail, i think we have bigger problems.",
+      "parentUuid": "a67268c6_4b3d8981",
+      "range": {
+        "startLine": 60,
+        "startChar": 17,
+        "endLine": 60,
+        "endChar": 28
+      },
+      "revId": "76d4598e20f365cf8269b6d3d973f7612215da7e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "58f5e955_4b7d322e",
         "filename": "src/chromiumos/tast/runner/autocaps/caps.go",
         "patchSetId": 2
@@ -39,6 +63,24 @@
       "revId": "76d4598e20f365cf8269b6d3d973f7612215da7e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fa268b89_355de2f7",
+        "filename": "src/chromiumos/tast/runner/autocaps/caps.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-27T00:06:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "58f5e955_4b7d322e",
+      "revId": "76d4598e20f365cf8269b6d3d973f7612215da7e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -65,6 +107,30 @@
     },
     {
       "key": {
+        "uuid": "ff012411_3125598f",
+        "filename": "src/chromiumos/tast/runner/autocaps/caps.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-27T00:06:22Z",
+      "side": 1,
+      "message": "sure, makes sense. updated",
+      "parentUuid": "3f3e3166_35a11536",
+      "range": {
+        "startLine": 80,
+        "startChar": 5,
+        "endLine": 80,
+        "endChar": 33
+      },
+      "revId": "76d4598e20f365cf8269b6d3d973f7612215da7e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "1313fe77_a4f9ac86",
         "filename": "src/chromiumos/tast/runner/autocaps/detect.go",
         "patchSetId": 2
@@ -76,6 +142,30 @@
       "writtenOn": "2018-09-26T13:43:04Z",
       "side": 1,
       "message": "nit: this should be const?",
+      "range": {
+        "startLine": 42,
+        "startChar": 49,
+        "endLine": 42,
+        "endChar": 60
+      },
+      "revId": "76d4598e20f365cf8269b6d3d973f7612215da7e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fede045b_c4ae00f8",
+        "filename": "src/chromiumos/tast/runner/autocaps/detect.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-09-27T00:06:22Z",
+      "side": 1,
+      "message": "i think it\u0027s more common in go to not make strings const if they\u0027re only used once. but sure, makes sense since this also appears in a comment in SysInfo.\n\nif you can provide more info about where the ID comes from, or a pointer to some docs explaining more about kepler, i\u0027m happy to add it in a comment here as well. :-)",
+      "parentUuid": "1313fe77_a4f9ac86",
       "range": {
         "startLine": 42,
         "startChar": 49,

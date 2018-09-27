@@ -96,6 +96,30 @@
     },
     {
       "key": {
+        "uuid": "678506ac_604a2164",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1196199
+      },
+      "writtenOn": "2018-09-27T15:40:41Z",
+      "side": 1,
+      "message": "We don\u0027t have the use case so far. I also cannot imagine the situation that such a negative features are necessary at least in video tests.",
+      "parentUuid": "62ab969c_47424e89",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 12,
+        "endChar": 34
+      },
+      "revId": "a03a53fe1d43ab53c9e8b88baabed948dec19267",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "1fcf4fce_01437836",
         "filename": "docs/test_dependencies.md",
         "patchSetId": 2
@@ -143,6 +167,30 @@
     },
     {
       "key": {
+        "uuid": "deebe1ba_bcbc18c9",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1196199
+      },
+      "writtenOn": "2018-09-27T15:40:41Z",
+      "side": 1,
+      "message": "Ack.",
+      "parentUuid": "afc50014_39de9a52",
+      "range": {
+        "startLine": 37,
+        "startChar": 45,
+        "endLine": 38,
+        "endChar": 51
+      },
+      "revId": "a03a53fe1d43ab53c9e8b88baabed948dec19267",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8ae94613_71ff81a1",
         "filename": "src/chromiumos/tast/runner/features.go",
         "patchSetId": 2
@@ -187,6 +235,30 @@
       "revId": "a03a53fe1d43ab53c9e8b88baabed948dec19267",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a4d4347b_a8642958",
+        "filename": "src/chromiumos/tast/runner/features.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1196199
+      },
+      "writtenOn": "2018-09-27T15:40:41Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "099d3910_445b513e",
+      "range": {
+        "startLine": 42,
+        "startChar": 4,
+        "endLine": 42,
+        "endChar": 36
+      },
+      "revId": "a03a53fe1d43ab53c9e8b88baabed948dec19267",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

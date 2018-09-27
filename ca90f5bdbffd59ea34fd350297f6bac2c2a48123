@@ -16,6 +16,24 @@
       "revId": "ca90f5bdbffd59ea34fd350297f6bac2c2a48123",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ef30c922_958b724f",
+        "filename": "src/chromiumos/tast/autocaps/caps.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1196199
+      },
+      "writtenOn": "2018-09-27T03:18:36Z",
+      "side": 1,
+      "message": "Would you do this change, or in another CL?",
+      "parentUuid": "e5aed5f8_5756a201",
+      "revId": "ca90f5bdbffd59ea34fd350297f6bac2c2a48123",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

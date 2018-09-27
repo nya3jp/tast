@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"io"
 	"reflect"
-	"sort"
 	"strings"
 
 	"chromiumos/tast/command"
@@ -108,8 +107,7 @@ func readArgs(stdin io.Reader, args *Args, cfg *runConfig, bt bundleType) ([]*te
 			tp.Timeout = cfg.defaultTestTimeout
 		}
 	}
-	sort.Slice(tests, func(i, j int) bool { return tests[i].Name < tests[j].Name })
-	return tests, nil
+	return testing.SortTests(tests), nil
 }
 
 // TestPatternType describes the manner in which test patterns will be interpreted.

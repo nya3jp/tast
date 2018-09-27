@@ -68,6 +68,8 @@ type Test struct {
 	// See https://chromium.googlesource.com/chromiumos/platform/tast/+/master/docs/test_dependencies.md
 	// for more information about dependencies.
 	SoftwareDeps []string `json:"softwareDeps,omitempty"`
+	// Pre contains a precondition that must be met before the test is run.
+	Pre Precondition `json:"-"`
 	// Timeout contains the maximum duration for which Func may run before the test is aborted.
 	// This should almost always be omitted when defining tests; a reasonable default will be used.
 	// This field is serialized as an integer nanosecond count.
@@ -111,6 +113,14 @@ func (tst *Test) Run(s *State) bool {
 			close(s.ch)
 			done <- true
 		}()
+
+		if tst.Pre != nil {
+			s.Logf("Preparing precondition %q", tst.Pre.String())
+			if err := tst.Pre.Prepare(s.tctx); err != nil {
+				s.Fatalf("Precondition %q failed: %v", tst.Pre.String(), err)
+			}
+		}
+
 		tst.Func(s)
 	}()
 
@@ -257,7 +267,7 @@ func (t *Test) clone() *Test {
 		switch tp.Kind() {
 		case reflect.Bool, reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Uint,
 			reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Float32, reflect.Float64,
-			reflect.Func, reflect.String:
+			reflect.Func, reflect.String, reflect.Interface:
 			return true
 		default:
 			return false
@@ -364,6 +374,40 @@ func checkFuncNameAgainstFilename(funcName, filename string) error {
 	}
 
 	return nil
+}
+
+// SortTests sorts and returns tests, primarily by ascending precondition name
+// (with tests with no preconditions coming first) and secondarily by ascending test name.
+// The input slice is modified.
+func SortTests(tests []*Test) []*Test {
+	// Sort alphabetically first to avoid needing to perform a separate sort for each precondition later.
+	sort.Slice(tests, func(i, j int) bool { return tests[i].Name < tests[j].Name })
+
+	preTests := make(map[Precondition][]*Test)
+	for _, t := range tests {
+		preTests[t.Pre] = append(preTests[t.Pre], t)
+	}
+
+	ps := make([]Precondition, 0, len(preTests))
+	for p := range preTests {
+		ps = append(ps, p)
+	}
+	sort.Slice(ps, func(i, j int) bool {
+		var si, sj string
+		if ps[i] != nil {
+			si = ps[i].String()
+		}
+		if ps[j] != nil {
+			sj = ps[j].String()
+		}
+		return si < sj
+	})
+
+	out := make([]*Test, 0, len(tests))
+	for _, p := range ps {
+		out = append(out, preTests[p]...)
+	}
+	return out
 }
 
 // WriteTestsAsJSON marshals ts to JSON and writes the resulting data to w.

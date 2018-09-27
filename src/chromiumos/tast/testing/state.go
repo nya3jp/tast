@@ -63,6 +63,16 @@ func (m *Meta) clone() *Meta {
 	return &mc
 }
 
+// Precondition is implemented by preconditions that must be satisfied before tests are run.
+type Precondition interface {
+	// Prepare is called before each test that depends on the precondition.
+	Prepare(ctx context.Context) error
+	// String returns a short, underscore-separated name for the precondition.
+	// "chrome_logged_in" and "arc_booted" are examples of good names for preconditions
+	// defined by the "chrome" and "arc" packages, respectively.
+	String() string
+}
+
 // State holds state relevant to the execution of a single test.
 // Parts of its interface are patterned after Go's testing.T type.
 // It is intended to be safe when called concurrently by multiple goroutines
@@ -148,6 +158,10 @@ func (s *State) DataFileSystem() *dataFS { return (*dataFS)(s) }
 // OutDir returns a directory into which the test may place arbitrary files
 // that should be included with the test results.
 func (s *State) OutDir() string { return s.outDir }
+
+// Pre returns the test's precondition, which must have been declared when the test was initially registered.
+// Callers will typically cast the returned interface to the actual pointer type of the precondition.
+func (s *State) Pre() Precondition { return s.test.Pre }
 
 // Meta returns information about how the "tast" process used to initiate testing was run.
 // It is only non-nil for remote tests in the "meta" category.

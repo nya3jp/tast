@@ -52,6 +52,24 @@
       "revId": "ca90f5bdbffd59ea34fd350297f6bac2c2a48123",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e5c7fdd6_0bb79fb1",
+        "filename": "src/chromiumos/tast/autocaps/caps.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1196199
+      },
+      "writtenOn": "2018-09-27T04:23:10Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "7e5cd256_57d0da7b",
+      "revId": "ca90f5bdbffd59ea34fd350297f6bac2c2a48123",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

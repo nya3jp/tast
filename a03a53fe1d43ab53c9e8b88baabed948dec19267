@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "868e0f23_a6108a95",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-09-27T06:16:54Z",
+      "side": 1,
+      "message": "InitSDK stage failures in Pre-CQ looks real. Maybe we need to add a dependency to dev-go/yaml in tast-cmd?",
+      "range": {
+        "startLine": 9,
+        "startChar": 53,
+        "endLine": 9,
+        "endChar": 57
+      },
+      "revId": "a03a53fe1d43ab53c9e8b88baabed948dec19267",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5612059a_e44ca3d1",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-09-27T06:16:54Z",
+      "side": 1,
+      "message": "IIUC we can declare tests to run only when certain capabilities are enabled, but can\u0027t when disabled; e.g. it\u0027s impossible to run a test only when the DUT does *not* have HW H264 decoder. Is it sufficient for our purpose, right?",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 12,
+        "endChar": 34
+      },
+      "revId": "a03a53fe1d43ab53c9e8b88baabed948dec19267",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

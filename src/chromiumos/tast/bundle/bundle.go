@@ -104,8 +104,12 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		}
 	}
 
-	for _, t := range tests {
-		if err := runTest(ctx, mw, args, cfg, t, meta); err != nil {
+	for i, t := range tests {
+		var next *testing.Test
+		if i < len(tests)-1 {
+			next = tests[i+1]
+		}
+		if err := runTest(ctx, mw, args, cfg, t, next, meta); err != nil {
 			return err
 		}
 	}
@@ -120,7 +124,7 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 
 // runTest runs t per args and cfg, writing the appropriate control.Test* control messages to mw.
 func runTest(ctx context.Context, mw *control.MessageWriter, args *Args, cfg *runConfig,
-	t *testing.Test, meta *testing.Meta) error {
+	t, next *testing.Test, meta *testing.Meta) error {
 	mw.WriteMessage(&control.TestStart{
 		Time: time.Now(),
 		Test: *t,
@@ -153,6 +157,7 @@ func runTest(ctx context.Context, mw *control.MessageWriter, args *Args, cfg *ru
 			Meta:        meta,
 			SetupFunc:   cfg.testSetupFunc,
 			CleanupFunc: cfg.testCleanupFunc,
+			NextTest:    next,
 		}
 
 		ch := make(chan testing.Output)

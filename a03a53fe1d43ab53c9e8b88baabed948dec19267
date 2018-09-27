@@ -68,6 +68,29 @@
       "revId": "a03a53fe1d43ab53c9e8b88baabed948dec19267",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8ae94613_71ff81a1",
+        "filename": "src/chromiumos/tast/runner/features.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1196199
+      },
+      "writtenOn": "2018-09-27T11:52:30Z",
+      "side": 1,
+      "message": "Question; how/where is this specified?",
+      "range": {
+        "startLine": 42,
+        "startChar": 4,
+        "endLine": 42,
+        "endChar": 36
+      },
+      "revId": "a03a53fe1d43ab53c9e8b88baabed948dec19267",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

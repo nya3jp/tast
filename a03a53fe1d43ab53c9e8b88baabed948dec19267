@@ -45,6 +45,29 @@
       "revId": "a03a53fe1d43ab53c9e8b88baabed948dec19267",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1fcf4fce_01437836",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1196199
+      },
+      "writtenOn": "2018-09-27T11:50:12Z",
+      "side": 1,
+      "message": "Is it allowed to add a kind of new capability for videos?\nWe have a plan to support one new kind of camera in this package.\nAlso, we might extend decoding/encoding capability in the future (e.g., for 8K and new codecs).",
+      "range": {
+        "startLine": 37,
+        "startChar": 45,
+        "endLine": 38,
+        "endChar": 51
+      },
+      "revId": "a03a53fe1d43ab53c9e8b88baabed948dec19267",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

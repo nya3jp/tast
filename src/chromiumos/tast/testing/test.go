@@ -28,10 +28,9 @@ const (
 	testBundleAttrPrefix = "bundle:" // prefix for auto-added attribute containing bundle name
 	testDepAttrPrefix    = "dep:"    // prefix for auto-added attribute containing software dependency
 
-	// TODO(derat): Rename this to not have "cleanup" in its name.
-	defaultTestCleanupTimeout = 3 * time.Second  // extra time granted to test funcs to exit
-	setupFuncTimeout          = 15 * time.Second // timeout for test setup func
-	cleanupFuncTimeout        = 15 * time.Second // timeout for test cleanup func
+	exitTimeout        = 3 * time.Second  // extra time granted to test funcs to exit
+	setupFuncTimeout   = 15 * time.Second // timeout for test setup func
+	cleanupFuncTimeout = 15 * time.Second // timeout for test cleanup func
 )
 
 var testNameRegexp, testWordRegexp *regexp.Regexp
@@ -48,6 +47,28 @@ func init() {
 
 // TestFunc is the code associated with a test.
 type TestFunc func(context.Context, *State)
+
+// Precondition is implemented by preconditions that must be satisfied before tests are run.
+// TODO(derat): Find a better way to structure this such that these methods are exposed to
+// Test.Run but not to test functions.
+type Precondition interface {
+	// Prepare is called before starting each test that depends on the precondition.
+	// To report an error, the precondition can use either s.Error/Errorf or s.Fatal/Fatalf;
+	// either will result in the test not being run. If Prepare reports an error the test will not run,
+	// but the precondition object must be left in a state where future calls to Prepare (and Close)
+	// can still succeed.
+	Prepare(ctx context.Context, s *State)
+	// Close is called after completing the final test that depends on the precondition.
+	// This method may be called without an earlier call to Prepare in rare cases (e.g. if
+	// TestConfig.SetupFunc fails); preconditions must be able to handle this.
+	Close(ctx context.Context, s *State)
+	// Timeout returns the amount of time dedicated to Prepare and to Close.
+	Timeout() time.Duration
+	// String returns a short, underscore-separated name for the precondition.
+	// "chrome_logged_in" and "arc_booted" are examples of good names for preconditions
+	// defined by the "chrome" and "arc" packages, respectively.
+	String() string
+}
 
 // Test contains information about a test and its code itself.
 //
@@ -75,18 +96,19 @@ type Test struct {
 	// See https://chromium.googlesource.com/chromiumos/platform/tast/+/master/docs/test_dependencies.md
 	// for more information about dependencies.
 	SoftwareDeps []string `json:"softwareDeps,omitempty"`
+	// Pre contains a precondition that must be met before the test is run.
+	Pre Precondition `json:"-"`
 	// Timeout contains the maximum duration for which Func may run before the test is aborted.
 	// This should almost always be omitted when defining tests; a reasonable default will be used.
 	// This field is serialized as an integer nanosecond count.
 	Timeout time.Duration `json:"timeout"`
-	// CleanupTimeout contains the maximum duration to wait for the test to clean up after a timeout.
-	// The context passed to Func has a deadline based on Timeout, but Tast waits for CleanupTimeout to elapse
+	// ExitTimeout contains the maximum duration to wait for Func to exit after a timeout.
+	// The context passed to Func has a deadline based on Timeout, but Tast waits for an additional ExitTimeout to elapse
 	// before reporting that the test has timed out; this gives the test function time to return after it
 	// sees that its context has expired before an additional error is added about the timeout.
 	// This is exposed for unit tests and should almost always be omitted when defining tests;
 	// a reasonable default will be used.
-	// TODO(derat): Rename this to not have "cleanup" in its name.
-	CleanupTimeout time.Duration `json:"-"`
+	ExitTimeout time.Duration `json:"-"`
 	// AdditionalTime contains an upper bound of additional time allocated to the test.
 	// This is automatically computed at runtime and should not be explicitly specified.
 	AdditionalTime time.Duration `json:"additionalTime,omitEmpty"`
@@ -104,8 +126,8 @@ func (tst *Test) DataDir() string {
 // Run runs the test per cfg and blocks until the test has either finished or its deadline is reached,
 // whichever comes first.
 //
-// The time allotted to the test is generally the sum of tst.Timeout and tst.CleanupTimeout, but
-// additional time may be allotted for cfg.SetupFunc and cfg.CleanupFunc if non-nil.
+// The time allotted to the test is generally the sum of tst.Timeout and tst.ExitTimeout, but
+// additional time may be allotted for tst.Precondition, cfg.SetupFunc, and cfg.CleanupFunc if non-nil.
 //
 // The test function executes in a goroutine and may still be running if it ignores its deadline;
 // the returned value indicates whether the test completed within the allotted time or not.
@@ -123,7 +145,9 @@ func (tst *Test) Run(ctx context.Context, ch chan Output, cfg *TestConfig) bool 
 
 	// First, perform setup.
 	addStage(func(ctx context.Context, s *State) {
-		// The test's timeout must be set by the time it is run.
+		// The test bundle is responsible for ensuring tst.Timeout is nonzero before calling Run,
+		// but we call s.Fatal instead of panicking since it's arguably nicer to report individual
+		// test failures instead of aborting the entire run.
 		if tst.Timeout <= 0 {
 			s.Fatal("Invalid timeout ", tst.Timeout)
 		}
@@ -135,25 +159,48 @@ func (tst *Test) Run(ctx context.Context, ch chan Output, cfg *TestConfig) bool 
 		if cfg.SetupFunc != nil {
 			cfg.SetupFunc(ctx, s)
 		}
-	}, setupFuncTimeout, setupFuncTimeout+defaultTestCleanupTimeout)
+	}, setupFuncTimeout, setupFuncTimeout+exitTimeout)
 
-	// Next, run the test function itself if setup succeeded.
-	setupFailed := false
+	// Prepare the test's precondition (if any) if setup was successful.
+	if tst.Pre != nil {
+		addStage(func(ctx context.Context, s *State) {
+			if s.HasError() {
+				return
+			}
+			s.Logf("Preparing precondition %q", tst.Pre.String())
+			tst.Pre.Prepare(ctx, s)
+		}, tst.Pre.Timeout(), tst.Pre.Timeout()+exitTimeout)
+	}
+
+	// Next, run the test function itself if no errors have been reported so far.
+	ranTest := false
 	addStage(func(ctx context.Context, s *State) {
-		// Capture whether errors occurred during setup so later stages can be skipped.
-		setupFailed = s.HasError()
-		if !setupFailed {
-			tst.Func(ctx, s)
+		if s.HasError() {
+			return
 		}
-	}, tst.Timeout, tst.Timeout+timeoutOrDefault(tst.CleanupTimeout, defaultTestCleanupTimeout))
+		s.runningTest = true
+		defer func() {
+			s.runningTest = false
+			ranTest = true
+		}()
+		tst.Func(ctx, s)
+	}, tst.Timeout, tst.Timeout+timeoutOrDefault(tst.ExitTimeout, exitTimeout))
 
-	// Finally, run the cleanup function if setup succeeded.
+	// If this is the final test using this precondition, close it (even if setup failed).
+	if tst.Pre != nil && (cfg.NextTest == nil || cfg.NextTest.Pre != tst.Pre) {
+		addStage(func(ctx context.Context, s *State) {
+			s.Logf("Closing precondition %q", tst.Pre.String())
+			tst.Pre.Close(ctx, s)
+		}, tst.Pre.Timeout(), tst.Pre.Timeout()+exitTimeout)
+	}
+
+	// Finally, run the cleanup function if the test was actually executed.
 	if cfg.CleanupFunc != nil {
 		addStage(func(ctx context.Context, s *State) {
-			if !setupFailed {
+			if ranTest {
 				cfg.CleanupFunc(ctx, s)
 			}
-		}, cleanupFuncTimeout, cleanupFuncTimeout+defaultTestCleanupTimeout)
+		}, cleanupFuncTimeout, cleanupFuncTimeout+exitTimeout)
 	}
 
 	return runStages(ctx, s, stages)
@@ -295,11 +342,17 @@ func (tst *Test) addAutoAttributes() error {
 	return nil
 }
 
-// setAdditionalTime sets AdditionalTime to include time needed for setup and cleanup.
+// setAdditionalTime sets AdditionalTime to include time needed for tst.Pre, setup and cleanup.
 func (tst *Test) setAdditionalTime() {
 	// We don't know whether a setup or cleanup func will be specified until the test is run,
 	// so err on the side of including the time that would be allocated.
 	tst.AdditionalTime = setupFuncTimeout + cleanupFuncTimeout
+
+	// The precondition's timeout applies both when preparing the precondition and when closing it
+	// (which we'll need to do if this is the final test using the precondition).
+	if tst.Pre != nil {
+		tst.AdditionalTime += 2 * tst.Pre.Timeout()
+	}
 }
 
 // clone returns a deep copy of t.
@@ -309,7 +362,7 @@ func (t *Test) clone() *Test {
 		switch tp.Kind() {
 		case reflect.Bool, reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Uint,
 			reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Float32, reflect.Float64,
-			reflect.Func, reflect.String:
+			reflect.Func, reflect.String, reflect.Interface:
 			return true
 		default:
 			return false
@@ -416,6 +469,28 @@ func checkFuncNameAgainstFilename(funcName, filename string) error {
 	}
 
 	return nil
+}
+
+// SortTests sorts tests, primarily by ascending precondition name
+// (with tests with no preconditions coming first) and secondarily by ascending test name.
+func SortTests(tests []*Test) {
+	sort.Slice(tests, func(i, j int) bool {
+		ti := tests[i]
+		tj := tests[j]
+
+		var pi, pj string
+		if ti.Pre != nil {
+			pi = ti.Pre.String()
+		}
+		if tj.Pre != nil {
+			pj = tj.Pre.String()
+		}
+
+		if pi != pj {
+			return pi < pj
+		}
+		return ti.Name < tj.Name
+	})
 }
 
 // WriteTestsAsJSON marshals ts to JSON and writes the resulting data to w.

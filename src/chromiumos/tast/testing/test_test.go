@@ -20,6 +20,29 @@ import (
 // Func1 is an arbitrary public test function used by unit tests.
 func Func1(context.Context, *State) {}
 
+// testPre implements Precondition for unit tests.
+type testPre struct {
+	prepareFunc, closeFunc func(context.Context, *State)
+
+	name string
+}
+
+func (p *testPre) Prepare(ctx context.Context, s *State) {
+	if p.prepareFunc != nil {
+		p.prepareFunc(ctx, s)
+	}
+}
+
+func (p *testPre) Close(ctx context.Context, s *State) {
+	if p.closeFunc != nil {
+		p.closeFunc(ctx, s)
+	}
+}
+
+func (p *testPre) Timeout() time.Duration { return time.Minute }
+
+func (p *testPre) String() string { return p.name }
+
 func TestMissingFunc(t *gotesting.T) {
 	test := Test{Name: "category.MyName"}
 	if err := test.finalize(false); err == nil {
@@ -131,11 +154,12 @@ func TestReservedAttrPrefixes(t *gotesting.T) {
 }
 
 func TestAdditionalTime(t *gotesting.T) {
-	test := Test{Name: "cat.Name", Func: Func1, Timeout: 5 * time.Minute}
+	pre := &testPre{}
+	test := Test{Name: "cat.Name", Func: Func1, Timeout: 5 * time.Minute, Pre: pre}
 	if err := test.finalize(false); err != nil {
 		t.Error("finalize() failed: ", err)
 	}
-	if exp := setupFuncTimeout + cleanupFuncTimeout; test.AdditionalTime != exp {
+	if exp := setupFuncTimeout + cleanupFuncTimeout + 2*pre.Timeout(); test.AdditionalTime != exp {
 		t.Errorf("AdditionalTime = %v; want %v", test.AdditionalTime, exp)
 	}
 }
@@ -188,7 +212,7 @@ func TestRunDeadline(t *gotesting.T) {
 		<-ctx.Done()
 		s.Error("Saw timeout within test")
 	}
-	test := Test{Func: f, Timeout: time.Millisecond, CleanupTimeout: 10 * time.Second}
+	test := Test{Func: f, Timeout: time.Millisecond, ExitTimeout: 10 * time.Second}
 	or := newOutputReader()
 	test.Run(context.Background(), or.ch, &TestConfig{})
 	// The error that was reported by the test after its deadline was hit
@@ -212,7 +236,7 @@ func TestRunLogAfterTimeout(t *gotesting.T) {
 		s.Log("Done waiting")
 		completed = true
 	}
-	test := Test{Func: f, Timeout: time.Millisecond, CleanupTimeout: time.Millisecond}
+	test := Test{Func: f, Timeout: time.Millisecond, ExitTimeout: time.Millisecond}
 
 	or := newOutputReader()
 	test.Run(context.Background(), or.ch, &TestConfig{})
@@ -229,89 +253,103 @@ func TestRunLogAfterTimeout(t *gotesting.T) {
 	}
 }
 
-func TestRunHooks(t *gotesting.T) {
+func TestRunSkipStages(t *gotesting.T) {
+	type action int // actions that can be performed by stages
 	const (
-		setupMsg   = "setup"
-		cleanupMsg = "cleanup"
+		pass    action = iota
+		doError        // call State.Error
+		doFatal        // call State.Fatal
+		doPanic        // call panic()
+		noCall         // stage should be skipped
 	)
 
-	test := Test{Func: func(context.Context, *State) {}, Timeout: time.Minute}
-	var numSetupCalls, numCleanupCalls int
-	setup := func(ctx context.Context, s *State) {
-		numSetupCalls++
-		s.Log(setupMsg)
-	}
-	cleanup := func(ctx context.Context, s *State) {
-		numCleanupCalls++
-		s.Log(cleanupMsg)
+	// Define a sequence of tests to run and specify which stages should be executed for each.
+	var pre, pre2, pre3, pre4 testPre
+	cases := []struct {
+		pre           *testPre
+		setupAction   action // TestConfig.SetupFunc
+		prepareAction action // Precondition.Prepare
+		testAction    action // Test.Func
+		closeAction   action // Precondition.Close
+		cleanupAction action // TestConfig.CleanupFunc
+		desc          string
+	}{
+		{&pre, pass, pass, pass, noCall, pass, "everything passes"},
+		{&pre, doError, noCall, noCall, noCall, noCall, "setup fails"},
+		{&pre, doPanic, noCall, noCall, noCall, noCall, "setup panics"},
+		{&pre, pass, doError, noCall, noCall, noCall, "prepare fails"},
+		{&pre, pass, doPanic, noCall, noCall, noCall, "prepare panics"},
+		{&pre, pass, pass, doError, noCall, pass, "test fails"},
+		{&pre, pass, pass, doPanic, noCall, pass, "test panics"},
+		{&pre, pass, pass, pass, pass, pass, "everything passes, next test has different precondition"},
+		{&pre2, pass, doError, noCall, pass, noCall, "prepare fails, next test has different precondition"},
+		{&pre3, pass, pass, doError, pass, pass, "test fails, next test has no precondition"},
+		{nil, pass, noCall, pass, noCall, pass, "no precondition"},
+		{&pre4, pass, pass, pass, pass, pass, "final test"},
 	}
 
-	or := newOutputReader()
-	test.Run(context.Background(), or.ch, &TestConfig{SetupFunc: setup, CleanupFunc: cleanup})
+	// Create tests first so we can set TestConfig.NextTest later.
+	var tests []*Test
+	for _, c := range cases {
+		test := &Test{Timeout: time.Minute}
+		// We can't just do "test.Pre = c.pre" here. See e.g. https://tour.golang.org/methods/12:
+		// "Note that an interface value that holds a nil concrete value is itself non-nil."
+		if c.pre != nil {
+			test.Pre = c.pre
+		}
+		tests = append(tests, test)
+	}
 
-	if numSetupCalls != 1 {
-		t.Errorf("Setup hook called %d times; want %d", numSetupCalls, 1)
-	}
-	if numCleanupCalls != 1 {
-		t.Errorf("Cleanup hook called %d times; want %d", numCleanupCalls, 1)
-	}
-
-	out := or.read()
-	if !findLog(out, setupMsg) {
-		t.Errorf("Setup message not found in output: %v", out)
-	}
-	if !findLog(out, cleanupMsg) {
-		t.Errorf("Cleanup message not found in output: %v", out)
-	}
-	if errs := getOutputErrors(out); len(errs) != 0 {
-		t.Errorf("Got %v error(s); want 0", len(errs))
-	}
-}
-
-func TestRunCleanupHookOnTestPanic(t *gotesting.T) {
-	test := Test{Func: func(context.Context, *State) { panic("bye") }, Timeout: time.Minute}
-	numCleanupCalls := 0
-	cleanup := func(ctx context.Context, s *State) {
-		numCleanupCalls++
-		if !s.HasError() {
-			t.Errorf("Error is unavailable when cleanup hook is called")
+	// makeFunc returns a function that sets *called to true and performs the action described by a.
+	makeFunc := func(a action, called *bool) func(context.Context, *State) {
+		return func(ctx context.Context, s *State) {
+			*called = true
+			switch a {
+			case doError:
+				s.Error("intentional error")
+			case doFatal:
+				s.Fatal("intentional fatal")
+			case doPanic:
+				panic("intentional panic")
+			}
 		}
 	}
 
-	or := newOutputReader()
-	test.Run(context.Background(), or.ch, &TestConfig{CleanupFunc: cleanup})
+	// Now actually run each test.
+	for i, c := range cases {
+		var setupRan, prepareRan, testRan, closeRan, cleanupRan bool
 
-	if numCleanupCalls != 1 {
-		t.Errorf("Cleanup hook called %v times; want 1", numCleanupCalls)
-	}
-	if errs := getOutputErrors(or.read()); len(errs) != 1 {
-		t.Errorf("Got %v error(s); want 1", len(errs))
-	}
-}
+		test := tests[i]
+		test.Func = makeFunc(c.testAction, &testRan)
+		if c.pre != nil {
+			c.pre.prepareFunc = makeFunc(c.prepareAction, &prepareRan)
+			c.pre.closeFunc = makeFunc(c.closeAction, &closeRan)
+		}
+		cfg := &TestConfig{
+			SetupFunc:   makeFunc(c.setupAction, &setupRan),
+			CleanupFunc: makeFunc(c.cleanupAction, &cleanupRan),
+		}
+		if i < len(tests)-1 {
+			cfg.NextTest = tests[i+1]
+		}
 
-func TestRunCleanupHookOnSetupPanic(t *gotesting.T) {
-	test := Test{Func: func(context.Context, *State) { t.Error("Test function called") }, Timeout: time.Minute}
-	setup := func(context.Context, *State) { panic("bye") }
-	cleanup := func(context.Context, *State) { t.Error("Cleanup function called") }
+		or := newOutputReader()
+		test.Run(context.Background(), or.ch, cfg)
 
-	or := newOutputReader()
-	test.Run(context.Background(), or.ch, &TestConfig{SetupFunc: setup, CleanupFunc: cleanup})
-
-	if errs := getOutputErrors(or.read()); len(errs) != 1 {
-		t.Errorf("Got %v error(s); want 1", len(errs))
-	}
-}
-
-func TestRunCleanupHookOnSetupError(t *gotesting.T) {
-	test := Test{Func: func(context.Context, *State) { t.Error("Test function called") }, Timeout: time.Minute}
-	setup := func(ctx context.Context, s *State) { s.Error("bye") }
-	cleanup := func(context.Context, *State) { t.Error("Cleanup function called") }
-
-	or := newOutputReader()
-	test.Run(context.Background(), or.ch, &TestConfig{SetupFunc: setup, CleanupFunc: cleanup})
-
-	if errs := getOutputErrors(or.read()); len(errs) != 1 {
-		t.Errorf("Got %v error(s); want 1", len(errs))
+		// Verify that stages were executed or skipped as expected.
+		checkRan := func(name string, ran bool, a action) {
+			wantRun := a != noCall
+			if !ran && wantRun {
+				t.Errorf("Test %d (%s) didn't run %s", i, c.desc, name)
+			} else if ran && !wantRun {
+				t.Errorf("Test %d (%s) ran %s unexpectedly", i, c.desc, name)
+			}
+		}
+		checkRan("TestConfig.SetupFunc", setupRan, c.setupAction)
+		checkRan("Precondition.Prepare", prepareRan, c.prepareAction)
+		checkRan("Test.Func", testRan, c.testAction)
+		checkRan("Precondition.Close", closeRan, c.closeAction)
+		checkRan("TestConfig.CleanupFunc", cleanupRan, c.cleanupAction)
 	}
 }
 
@@ -435,5 +473,33 @@ func TestCheckFuncNameAgainstFilename(t *gotesting.T) {
 		} else if err == nil && !tc.valid {
 			t.Fatalf("checkFuncNameAgainstFilename(%q, %q) didn't return expected error", tc.name, tc.fn)
 		}
+	}
+}
+
+func TestSortTests(t *gotesting.T) {
+	pre1 := &testPre{name: "pre1"}
+	pre2 := &testPre{name: "pre2"}
+
+	// Assign names with different leading digits to make sure we don't sort by name primarily.
+	t1 := &Test{Name: "3-test1", Pre: nil}
+	t2 := &Test{Name: "4-test2", Pre: nil}
+	t3 := &Test{Name: "1-test3", Pre: pre1}
+	t4 := &Test{Name: "2-test4", Pre: pre1}
+	t5 := &Test{Name: "0-test5", Pre: pre2}
+	tests := []*Test{t4, t2, t3, t5, t1}
+
+	getNames := func(tests []*Test) (names []string) {
+		for _, test := range tests {
+			names = append(names, test.Name)
+		}
+		return names
+	}
+
+	in := getNames(tests)
+	SortTests(tests)
+	actual := getNames(tests)
+	expected := getNames([]*Test{t1, t2, t3, t4, t5})
+	if !reflect.DeepEqual(actual, expected) {
+		t.Errorf("Sort(%v) = %v; want %v", in, actual, expected)
 	}
 }

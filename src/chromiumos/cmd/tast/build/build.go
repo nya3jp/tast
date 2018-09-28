@@ -32,9 +32,9 @@ func GetLocalArch() (string, error) {
 // "cros_setup_toolchains --show-board-cfg <board>" seems to print it, but it's very slow (700+ ms).
 var archToCompiler map[string]string = map[string]string{
 	"x86_64": "x86_64-cros-linux-gnu-go",
-	"armv7l": "armv7a-cros-linux-gnueabi-go",
+	"armv7l": "armv7a-cros-linux-gnueabihf-go",
 	// On ARM devices with 64-bit kernels, we still have a 32-bit userspace.
-	"aarch64": "armv7a-cros-linux-gnueabi-go",
+	"aarch64": "armv7a-cros-linux-gnueabihf-go",
 }
 
 // Build builds executable package pkg to outDir as dictated by cfg.

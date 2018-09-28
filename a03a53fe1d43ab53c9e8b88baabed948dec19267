@@ -120,6 +120,30 @@
     },
     {
       "key": {
+        "uuid": "4310ed60_7c7b40a5",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-09-28T02:19:14Z",
+      "side": 1,
+      "message": "Sounds good, thank you for clarification!",
+      "parentUuid": "678506ac_604a2164",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 12,
+        "endChar": 34
+      },
+      "revId": "a03a53fe1d43ab53c9e8b88baabed948dec19267",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1fcf4fce_01437836",
         "filename": "docs/test_dependencies.md",
         "patchSetId": 2

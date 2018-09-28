@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "106b3877_ad9b28b4",
+        "filename": "src/chromiumos/tast/errors/errors.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-09-28T07:31:29Z",
+      "side": 1,
+      "message": "This is WIP CL so lacks documentations, sorry. I\u0027ll write it once we reach an agreement.",
+      "range": {
+        "startLine": 5,
+        "startChar": 0,
+        "endLine": 5,
+        "endChar": 41
+      },
+      "revId": "723e4b6c373ee7483ad993fcf23ae532f627d5b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fb88329a_b1d9bc94",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 263,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-09-28T07:31:29Z",
+      "side": 1,
+      "message": "This is an arguable hack to obtain a correct trace from:\n\n s.Error(\"Failed something: %v\", err)\n\nAlternative approach would be to rewrite s.Error() invocations like:\n\n s.Error(errors.Wrap(err, \"Failed something\"))\n\n... then we can simply get an error object. However it makes test code style deviated from Go\u0027s standard testing, so I\u0027m wondering if which approach is better.",
+      "range": {
+        "startLine": 210,
+        "startChar": 0,
+        "endLine": 263,
+        "endChar": 1
+      },
+      "revId": "723e4b6c373ee7483ad993fcf23ae532f627d5b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

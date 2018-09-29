@@ -63,22 +63,14 @@ func (m *Meta) clone() *Meta {
 	return &mc
 }
 
-// HookFunc is the type of a function to run before/after test.
-type HookFunc func(s *State)
-
 // State holds state relevant to the execution of a single test.
 // Parts of its interface are patterned after Go's testing.T type.
 // It is intended to be safe when called concurrently by multiple goroutines
 // while a test is running.
 type State struct {
-	ch      chan Output // channel to which logging messages and errors are written
-	test    *Test       // test being run
-	dataDir string      // directory in which the test's data files will be located
-	outDir  string      // directory to which the test should write output files
-	meta    *Meta       // only set for remote tests in MetaCategory
-
-	setupFunc   HookFunc // function to run before test if non-nil
-	cleanupFunc HookFunc // function to run after test if non-nil
+	test *Test       // test being run
+	ch   chan Output // channel to which logging messages and errors are written
+	cfg  *TestConfig // details about how to run test
 
 	ctx    context.Context    // context for the overall execution of the test
 	cancel context.CancelFunc // cancel function associated with ctx
@@ -90,23 +82,24 @@ type State struct {
 	mu       sync.Mutex // mutex to protect hasError
 }
 
-// NewState returns a new State object. The test's output will be streamed to ch.
-// If test.CleanupTimeout is 0, a default will be used.
-func NewState(ctx context.Context, test *Test, ch chan Output, dataDir, outDir string, meta *Meta, setupFunc, cleanupFunc HookFunc) *State {
-	s := &State{
-		ch:          ch,
-		test:        test,
-		dataDir:     dataDir,
-		outDir:      outDir,
-		setupFunc:   setupFunc,
-		cleanupFunc: cleanupFunc,
-	}
+// TestConfig contains details about how an individual test should be run.
+type TestConfig struct {
+	// DataDir is the directory in which the test's data files are located.
+	DataDir string
+	// OutDir is the directory to which the test will write output files.
+	OutDir string
+	// Meta contains information about how the tast process was run.
+	Meta *Meta
+	// SetupFunc is run before the test if non-nil.
+	SetupFunc func(*State)
+	// CleanupFunc is run after the test if non-nil.
+	CleanupFunc func(*State)
+}
 
-	if meta != nil {
-		if parts := strings.SplitN(test.Name, ".", 2); len(parts) == 2 && parts[0] == metaCategory {
-			s.meta = meta.clone()
-		}
-	}
+// newState returns a new State object.
+// If test.CleanupTimeout is 0, a default will be used.
+func newState(ctx context.Context, test *Test, ch chan Output, cfg *TestConfig) *State {
+	s := &State{test: test, ch: ch, cfg: cfg}
 
 	lctx := context.WithValue(ctx, logKey, s)
 	if test.Timeout > 0 {
@@ -139,7 +132,7 @@ func (s *State) Context() context.Context {
 func (s *State) DataPath(p string) string {
 	for _, f := range s.test.Data {
 		if f == p {
-			return filepath.Join(s.dataDir, p)
+			return filepath.Join(s.cfg.DataDir, p)
 		}
 	}
 	s.Fatalf("Test data %q wasn't declared in definition passed to testing.AddTest", p)
@@ -155,11 +148,22 @@ func (s *State) DataFileSystem() *dataFS { return (*dataFS)(s) }
 
 // OutDir returns a directory into which the test may place arbitrary files
 // that should be included with the test results.
-func (s *State) OutDir() string { return s.outDir }
+func (s *State) OutDir() string { return s.cfg.OutDir }
 
 // Meta returns information about how the "tast" process used to initiate testing was run.
-// It is only non-nil for remote tests in the "meta" category.
-func (s *State) Meta() *Meta { return s.meta }
+// It can only be called by remote tests in the "meta" category.
+func (s *State) Meta() *Meta {
+	if parts := strings.SplitN(s.test.Name, ".", 2); len(parts) != 2 || parts[0] != metaCategory {
+		s.Fatalf("Meta info unavailable since test doesn't have category %q", metaCategory)
+		return nil
+	}
+	if s.cfg.Meta == nil {
+		s.Fatal("Meta info unavailable (is test non-remote?)")
+		return nil
+	}
+	// Return a copy to make sure the test doesn't modify the original struct.
+	return s.cfg.Meta.clone()
+}
 
 // Log formats its arguments using default formatting and logs them.
 func (s *State) Log(args ...interface{}) {
@@ -234,7 +238,7 @@ func (d *dataFS) Open(name string) (http.File, error) {
 	// Report an error for nonexistent files to avoid making tests fail (or create favicon files) unnecessarily.
 	// DataPath will still make the test fail if it attempts to use a file that exists but that wasn't
 	// declared as a dependency.
-	if _, err := os.Stat(filepath.Join((*State)(d).dataDir, name)); os.IsNotExist(err) {
+	if _, err := os.Stat(filepath.Join((*State)(d).cfg.DataDir, name)); os.IsNotExist(err) {
 		return nil, errors.New("not found")
 	}
 

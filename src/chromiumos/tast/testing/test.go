@@ -6,10 +6,12 @@
 package testing
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
+	"os"
 	"path/filepath"
 	"reflect"
 	"regexp"
@@ -87,14 +89,15 @@ func (tst *Test) DataDir() string {
 	return filepath.Join(tst.Pkg, testDataSubdir)
 }
 
-// Run runs the test, passing s to it, and blocks until the test has either finished or the deadline
+// Run runs the test per cfg and blocks until the test has either finished or the deadline
 // (tst.Timeout plus tst.CleanupTimeout) is reached, whichever comes first.
 //
 // The test function executes in a goroutine and may still be running if it ignores its deadline;
 // the returned value indicates whether the test completed within the allotted time or not.
-// The output channel associated with s is only closed after the test function completes, so
-// if false is returned, the caller is responsible for reporting that the test timed out.
-func (tst *Test) Run(s *State) bool {
+// ch is only closed after the test function completes, so if false is returned,
+// the caller is responsible for reporting that the test timed out.
+func (tst *Test) Run(ctx context.Context, ch chan Output, cfg *TestConfig) bool {
+	s := newState(ctx, tst, ch, cfg)
 	defer func() {
 		s.tcancel()
 		s.cancel()
@@ -108,16 +111,23 @@ func (tst *Test) Run(s *State) bool {
 			close(s.ch)
 			done <- true
 		}()
-		if s.setupFunc != nil {
-			runAndRecover(s.setupFunc, s)
+
+		if cfg.OutDir != "" { // often left blank for unit tests
+			if err := os.MkdirAll(cfg.OutDir, 0755); err != nil {
+				s.Fatal("Failed to create output dir: ", err)
+			}
+		}
+
+		if cfg.SetupFunc != nil {
+			runAndRecover(cfg.SetupFunc, s)
 			if s.HasError() {
 				// If the setup panicked or reported errors, do not run the test body nor the cleanup.
 				return
 			}
 		}
 		defer func() {
-			if s.cleanupFunc != nil {
-				runAndRecover(s.cleanupFunc, s)
+			if cfg.CleanupFunc != nil {
+				runAndRecover(cfg.CleanupFunc, s)
 			}
 		}()
 		runAndRecover(tst.Func, s)

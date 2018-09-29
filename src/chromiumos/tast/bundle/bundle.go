@@ -7,7 +7,6 @@ package bundle
 import (
 	"context"
 	"io"
-	"os"
 	"path/filepath"
 	"reflect"
 	"runtime"
@@ -61,16 +60,16 @@ type logFunc func(msg string)
 // runConfig contains additional parameters used when running tests.
 type runConfig struct {
 	// runSetupFunc is run at the beginning of the entire test run if non-nil.
-	// ctx (or a derived context with additional values) should be returned by the function.
-	runSetupFunc func(ctx context.Context, lf logFunc) (context.Context, error)
+	// The provided context (or a derived context with additional values) should be returned by the function.
+	runSetupFunc func(context.Context, logFunc) (context.Context, error)
 	// runCleanupFunc is run at the end of the entire test run if non-nil.
-	runCleanupFunc func(ctx context.Context, lf logFunc) error
+	runCleanupFunc func(context.Context, logFunc) error
 	// testSetupFunc is run before each test if non-nil.
 	// If this function panicked or reported errors, neither the test body function nor testCleanupFunc will run.
-	testSetupFunc func(s *testing.State)
+	testSetupFunc func(*testing.State)
 	// testCleanFunc is run at the end of each test if non-nil.
 	// If testSetupFunc panicked or reported errors, this will not run.
-	testCleanupFunc func(s *testing.State)
+	testCleanupFunc func(*testing.State)
 	// defaultTestTimeout contains the default maximum time allotted to each test.
 	// It is only used if testing.Test.Timeout is unset.
 	defaultTestTimeout time.Duration
@@ -148,9 +147,12 @@ func runTest(ctx context.Context, mw *control.MessageWriter, args *Args, cfg *ru
 	}
 
 	if len(missingDeps) == 0 {
-		outDir := filepath.Join(args.OutDir, t.Name)
-		if err := os.MkdirAll(outDir, 0755); err != nil {
-			return command.NewStatusErrorf(statusError, "failed to create output dir: %v", err)
+		testCfg := testing.TestConfig{
+			DataDir:     filepath.Join(args.DataDir, t.DataDir()),
+			OutDir:      filepath.Join(args.OutDir, t.Name),
+			Meta:        meta,
+			SetupFunc:   cfg.testSetupFunc,
+			CleanupFunc: cfg.testCleanupFunc,
 		}
 
 		ch := make(chan testing.Output)
@@ -163,9 +165,7 @@ func runTest(ctx context.Context, mw *control.MessageWriter, args *Args, cfg *ru
 			copierDone <- true
 		}()
 
-		dataDir := filepath.Join(args.DataDir, t.DataDir())
-		s := testing.NewState(ctx, t, ch, dataDir, outDir, meta, cfg.testSetupFunc, cfg.testCleanupFunc)
-		if !t.Run(s) {
+		if !t.Run(ctx, ch, &testCfg) {
 			// If Run reported that the test didn't finish, tell the copier to abort.
 			abortCopier <- true
 		}

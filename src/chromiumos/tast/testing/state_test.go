@@ -5,7 +5,6 @@
 package testing
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -33,7 +32,7 @@ func readOutput(ch chan Output) []Output {
 
 func TestLog(t *gotesting.T) {
 	ch := make(chan Output, 2)
-	s := newState(context.Background(), &Test{Timeout: time.Minute}, ch, &TestConfig{})
+	s := newState(&Test{Timeout: time.Minute}, ch, &TestConfig{})
 	s.Log("msg ", 1)
 	s.Logf("msg %d", 2)
 	close(ch)
@@ -45,7 +44,7 @@ func TestLog(t *gotesting.T) {
 
 func TestReportError(t *gotesting.T) {
 	ch := make(chan Output, 2)
-	s := newState(context.Background(), &Test{Timeout: time.Minute}, ch, &TestConfig{})
+	s := newState(&Test{Timeout: time.Minute}, ch, &TestConfig{})
 
 	// Keep these lines next to each other (see below comparison).
 	s.Error("error ", 1)
@@ -94,7 +93,7 @@ func TestReportError(t *gotesting.T) {
 
 func TestFatal(t *gotesting.T) {
 	ch := make(chan Output, 2)
-	s := newState(context.Background(), &Test{Timeout: time.Minute}, ch, &TestConfig{})
+	s := newState(&Test{Timeout: time.Minute}, ch, &TestConfig{})
 
 	// Log the fatal message in a goroutine so the main goroutine that's running the test won't exit.
 	done := make(chan bool)
@@ -120,18 +119,6 @@ func TestFatal(t *gotesting.T) {
 	}
 }
 
-func TestContextLog(t *gotesting.T) {
-	ch := make(chan Output, 2)
-	s := newState(context.Background(), &Test{Timeout: time.Minute}, ch, &TestConfig{})
-	ContextLog(s.Context(), "msg ", 1)
-	ContextLogf(s.Context(), "msg %d", 2)
-	close(ch)
-	out := readOutput(ch)
-	if len(out) != 2 || out[0].Msg != "msg 1" || out[1].Msg != "msg 2" {
-		t.Errorf("Bad test output: %v", out)
-	}
-}
-
 func TestDataPathDeclared(t *gotesting.T) {
 	const (
 		dataDir = "/tmp/data"
@@ -145,7 +132,7 @@ func TestDataPathDeclared(t *gotesting.T) {
 		{"foo", filepath.Join(dataDir, "foo")},
 		{"foo/bar", filepath.Join(dataDir, "foo/bar")},
 	} {
-		s := newState(context.Background(), &test, make(chan Output), &TestConfig{DataDir: dataDir})
+		s := newState(&test, make(chan Output), &TestConfig{DataDir: dataDir})
 		if act := s.DataPath(tc.in); act != tc.exp {
 			t.Errorf("DataPath(%q) = %q; want %q", tc.in, act, tc.exp)
 		}
@@ -158,7 +145,7 @@ func TestDataPathNotDeclared(t *gotesting.T) {
 		Timeout: time.Minute,
 		Data:    []string{"foo"},
 	}
-	s := newState(context.Background(), &test, ch, &TestConfig{DataDir: "/data"})
+	s := newState(&test, ch, &TestConfig{DataDir: "/data"})
 
 	// Request an undeclared data path to cause a fatal error. Do this in a goroutine
 	// so the main goroutine that's running the test won't exit.
@@ -197,7 +184,7 @@ func TestDataFileServer(t *gotesting.T) {
 
 	test := Test{Data: []string{file1}}
 	ch := make(chan Output, 3)
-	s := newState(context.Background(), &test, ch, &TestConfig{DataDir: td})
+	s := newState(&test, ch, &TestConfig{DataDir: td})
 
 	srv := httptest.NewServer(http.FileServer(s.DataFileSystem()))
 	defer srv.Close()
@@ -238,11 +225,9 @@ func TestDataFileServer(t *gotesting.T) {
 }
 
 func TestMeta(t *gotesting.T) {
-	ctx := context.Background()
 	meta := Meta{TastPath: "/foo/bar", Target: "example.net", RunFlags: []string{"-foo", "-bar"}}
-
 	getMeta := func(test *Test, cfg *TestConfig) (*State, *Meta) {
-		s := newState(ctx, test, make(chan Output, 1), cfg)
+		s := newState(test, make(chan Output, 1), cfg)
 
 		// Meta can call Fatal, which results in a call to runtime.Goexit(),
 		// so run this in a goroutine to isolate it from the test.

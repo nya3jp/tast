@@ -24,11 +24,7 @@ type contextKeyType string
 // Key used for attaching a *State to a context.Context.
 var logKey contextKeyType = "log"
 
-const (
-	defaultTestCleanupTimeout = 3 * time.Second // extra time granted to tests to handle timeouts
-
-	metaCategory = "meta" // category for remote tests exercising Tast, as in "meta.TestName"
-)
+const metaCategory = "meta" // category for remote tests exercising Tast, as in "meta.TestName"
 
 // Error describes an error encountered while running a test.
 type Error struct {
@@ -72,12 +68,6 @@ type State struct {
 	ch   chan Output // channel to which logging messages and errors are written
 	cfg  *TestConfig // details about how to run test
 
-	ctx    context.Context    // context for the overall execution of the test
-	cancel context.CancelFunc // cancel function associated with ctx
-
-	tctx    context.Context    // context used by the test function
-	tcancel context.CancelFunc // cancel function associated with tctx
-
 	hasError bool       // whether the test has already reported errors or not
 	mu       sync.Mutex // mutex to protect hasError
 }
@@ -91,40 +81,14 @@ type TestConfig struct {
 	// Meta contains information about how the tast process was run.
 	Meta *Meta
 	// SetupFunc is run before the test if non-nil.
-	SetupFunc func(*State)
+	SetupFunc func(context.Context, *State)
 	// CleanupFunc is run after the test if non-nil.
-	CleanupFunc func(*State)
+	CleanupFunc func(context.Context, *State)
 }
 
 // newState returns a new State object.
-// If test.CleanupTimeout is 0, a default will be used.
-func newState(ctx context.Context, test *Test, ch chan Output, cfg *TestConfig) *State {
-	s := &State{test: test, ch: ch, cfg: cfg}
-
-	lctx := context.WithValue(ctx, logKey, s)
-	if test.Timeout > 0 {
-		// Test.Run uses s.ctx to watch for the test timing out. If a well-behaved test detected a timeout
-		// itself using the same context and reported it as an error, we would end up with two test errors,
-		// one reported by the test and one reported by Test.Run. To avoid this, add a bit more time to the
-		// context used by Test.Run (s.ctx) to give the test a chance to detect the timeout (using s.tctx)
-		// and exit cleanly first.
-		ct := test.CleanupTimeout
-		if ct == 0 {
-			ct = defaultTestCleanupTimeout
-		}
-		s.ctx, s.cancel = context.WithTimeout(lctx, test.Timeout+ct)
-		s.tctx, s.tcancel = context.WithTimeout(s.ctx, test.Timeout)
-	} else {
-		s.ctx, s.cancel = context.WithCancel(lctx)
-		s.tctx, s.tcancel = context.WithCancel(s.ctx)
-	}
-
-	return s
-}
-
-// Context returns the context that should be used by tests.
-func (s *State) Context() context.Context {
-	return s.tctx
+func newState(test *Test, ch chan Output, cfg *TestConfig) *State {
+	return &State{test: test, ch: ch, cfg: cfg}
 }
 
 // DataPath returns the absolute path to use to access a data file previously

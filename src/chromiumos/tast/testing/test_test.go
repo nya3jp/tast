@@ -18,7 +18,7 @@ import (
 )
 
 // Func1 is an arbitrary public test function used by unit tests.
-func Func1(*State) {}
+func Func1(context.Context, *State) {}
 
 // getOutputErrors returns all errors from out.
 func getOutputErrors(out []Output) []*Error {
@@ -93,7 +93,7 @@ func TestValidateDataPathRelativePath(t *gotesting.T) {
 // TESTTEST is a public test function with a name that's chosen to be appropriate for this file's
 // name (test_test.go). The obvious choice, "TestTest", is unavailable since Go's testing package
 // will interpret it as itself being a unit test, so let's just pretend that "test" is an acronym.
-func TESTTEST(*State) {}
+func TESTTEST(context.Context, *State) {}
 
 func TestAutoName(t *gotesting.T) {
 	test := Test{Func: TESTTEST}
@@ -171,7 +171,7 @@ func TestSoftwareDeps(t *gotesting.T) {
 }
 
 func TestRunSuccess(t *gotesting.T) {
-	test := Test{Func: func(*State) {}, Timeout: time.Minute}
+	test := Test{Func: func(context.Context, *State) {}, Timeout: time.Minute}
 	ch := make(chan Output, 1)
 	td := testutil.TempDir(t)
 	od := filepath.Join(td, "out")
@@ -185,7 +185,7 @@ func TestRunSuccess(t *gotesting.T) {
 }
 
 func TestRunPanic(t *gotesting.T) {
-	test := Test{Func: func(*State) { panic("intentional panic") }, Timeout: time.Minute}
+	test := Test{Func: func(context.Context, *State) { panic("intentional panic") }, Timeout: time.Minute}
 	ch := make(chan Output, 1)
 	test.Run(context.Background(), ch, &TestConfig{})
 	if errs := getOutputErrors(readOutput(ch)); len(errs) != 1 {
@@ -194,9 +194,9 @@ func TestRunPanic(t *gotesting.T) {
 }
 
 func TestRunDeadline(t *gotesting.T) {
-	f := func(s *State) {
+	f := func(ctx context.Context, s *State) {
 		// Wait for the context to report that the deadline has been hit.
-		<-s.Context().Done()
+		<-ctx.Done()
 		s.Error("Saw timeout within test")
 	}
 	test := Test{Func: f, Timeout: time.Millisecond, CleanupTimeout: 10 * time.Second}
@@ -212,13 +212,13 @@ func TestRunDeadline(t *gotesting.T) {
 func TestRunLogAfterTimeout(t *gotesting.T) {
 	cont := make(chan bool)
 	done := make(chan bool)
-	f := func(s *State) {
+	f := func(ctx context.Context, s *State) {
 		// Report when we're done, either after completing or after panicking before completion.
 		completed := false
 		defer func() { done <- completed }()
 
 		// Ignore the deadline and wait until we're told to continue.
-		<-s.Context().Done()
+		<-ctx.Done()
 		<-cont
 		s.Log("Done waiting")
 		completed = true
@@ -246,13 +246,13 @@ func TestRunHooks(t *gotesting.T) {
 		cleanupMsg = "cleanup"
 	)
 
-	test := Test{Func: func(*State) {}, Timeout: time.Minute}
+	test := Test{Func: func(context.Context, *State) {}, Timeout: time.Minute}
 	var numSetupCalls, numCleanupCalls int
-	setup := func(s *State) {
+	setup := func(ctx context.Context, s *State) {
 		numSetupCalls++
 		s.Log(setupMsg)
 	}
-	cleanup := func(s *State) {
+	cleanup := func(ctx context.Context, s *State) {
 		numCleanupCalls++
 		s.Log(cleanupMsg)
 	}
@@ -280,9 +280,9 @@ func TestRunHooks(t *gotesting.T) {
 }
 
 func TestRunCleanupHookOnTestPanic(t *gotesting.T) {
-	test := Test{Func: func(*State) { panic("bye") }, Timeout: time.Minute}
+	test := Test{Func: func(context.Context, *State) { panic("bye") }, Timeout: time.Minute}
 	numCleanupCalls := 0
-	cleanup := func(s *State) {
+	cleanup := func(ctx context.Context, s *State) {
 		numCleanupCalls++
 		if !s.HasError() {
 			t.Errorf("Error is unavailable when cleanup hook is called")
@@ -301,9 +301,9 @@ func TestRunCleanupHookOnTestPanic(t *gotesting.T) {
 }
 
 func TestRunCleanupHookOnSetupPanic(t *gotesting.T) {
-	test := Test{Func: func(*State) { t.Error("Test function called") }, Timeout: time.Minute}
-	setup := func(*State) { panic("bye") }
-	cleanup := func(*State) { t.Error("Cleanup function called") }
+	test := Test{Func: func(context.Context, *State) { t.Error("Test function called") }, Timeout: time.Minute}
+	setup := func(context.Context, *State) { panic("bye") }
+	cleanup := func(context.Context, *State) { t.Error("Cleanup function called") }
 
 	ch := make(chan Output, 1)
 	test.Run(context.Background(), ch, &TestConfig{SetupFunc: setup, CleanupFunc: cleanup})
@@ -314,15 +314,32 @@ func TestRunCleanupHookOnSetupPanic(t *gotesting.T) {
 }
 
 func TestRunCleanupHookOnSetupError(t *gotesting.T) {
-	test := Test{Func: func(*State) { t.Error("Test function called") }, Timeout: time.Minute}
-	setup := func(s *State) { s.Error("bye") }
-	cleanup := func(*State) { t.Error("Cleanup function called") }
+	test := Test{Func: func(context.Context, *State) { t.Error("Test function called") }, Timeout: time.Minute}
+	setup := func(ctx context.Context, s *State) { s.Error("bye") }
+	cleanup := func(context.Context, *State) { t.Error("Cleanup function called") }
 
 	ch := make(chan Output, 1)
 	test.Run(context.Background(), ch, &TestConfig{SetupFunc: setup, CleanupFunc: cleanup})
 
 	if errs := getOutputErrors(readOutput(ch)); len(errs) != 1 {
 		t.Errorf("Got %v error(s); want 1", len(errs))
+	}
+}
+
+func TestAttachStateToContext(t *gotesting.T) {
+	test := Test{
+		Func: func(ctx context.Context, s *State) {
+			ContextLog(ctx, "msg ", 1)
+			ContextLogf(ctx, "msg %d", 2)
+		},
+		Timeout: time.Minute,
+	}
+
+	ch := make(chan Output, 2)
+	test.Run(context.Background(), ch, &TestConfig{})
+	out := readOutput(ch)
+	if len(out) != 2 || out[0].Msg != "msg 1" || out[1].Msg != "msg 2" {
+		t.Errorf("Bad test output: %v", out)
 	}
 }
 
@@ -356,7 +373,7 @@ func TestTestClone(t *gotesting.T) {
 		timeout = time.Minute
 	)
 	attr := []string{"a", "b"}
-	f := func(s *State) {}
+	f := func(context.Context, *State) {}
 
 	// Checks that tst's fields still contain the above values.
 	checkTest := func(msg string, tst *Test) {

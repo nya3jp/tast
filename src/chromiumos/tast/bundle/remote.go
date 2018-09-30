@@ -49,8 +49,7 @@ func Remote(stdin io.Reader, stdout, stderr io.Writer) int {
 			lf("Disconnecting from DUT")
 			return dt.Close(ctx)
 		},
-		testSetupFunc: func(s *testing.State) {
-			ctx := s.Context()
+		testSetupFunc: func(ctx context.Context, s *testing.State) {
 			// Reconnect between tests if needed.
 			if dt, ok := dut.FromContext(ctx); !ok {
 				s.Fatal("Failed to get DUT from context")

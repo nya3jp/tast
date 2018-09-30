@@ -6,6 +6,7 @@ package bundle
 
 import (
 	"bytes"
+	"context"
 	"os"
 	"path/filepath"
 	gotesting "testing"
@@ -52,7 +53,7 @@ func TestLocalRunTest(t *gotesting.T) {
 	ran := false
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
 	defer restore()
-	testing.AddTest(&testing.Test{Name: name, Func: func(*testing.State) { ran = true }})
+	testing.AddTest(&testing.Test{Name: name, Func: func(context.Context, *testing.State) { ran = true }})
 
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
@@ -74,7 +75,7 @@ func TestLocalFaillog(t *gotesting.T) {
 	const name = "pkg.Test"
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
 	defer restore()
-	testing.AddTest(&testing.Test{Name: name, Func: func(s *testing.State) { s.Error("fail") }})
+	testing.AddTest(&testing.Test{Name: name, Func: func(ctx context.Context, s *testing.State) { s.Error("fail") }})
 
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)

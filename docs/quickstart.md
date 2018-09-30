@@ -69,7 +69,7 @@ test device.
 At the end of the function, add the following code:
 
 ```go
-if _, err = cr.NewConn(s.Context(), "https://www.google.com/"); err != nil {
+if _, err = cr.NewConn(ctx, "https://www.google.com/"); err != nil {
 	s.Error("Failed to open page: ", err)
 }
 ```

@@ -7,6 +7,7 @@
 package faillog
 
 import (
+	"context"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -15,14 +16,14 @@ import (
 )
 
 // SaveIfError saves a faillog only if the test has any errors.
-func SaveIfError(s *testing.State) {
+func SaveIfError(ctx context.Context, s *testing.State) {
 	if s.HasError() {
-		Save(s)
+		Save(ctx, s)
 	}
 }
 
 // Save saves a faillog unconditionally.
-func Save(s *testing.State) {
+func Save(ctx context.Context, s *testing.State) {
 	dir := filepath.Join(s.OutDir(), "faillog")
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return

@@ -6,6 +6,7 @@ package bundle
 
 import (
 	"bytes"
+	"context"
 	"crypto/rsa"
 	"log"
 	"os"
@@ -26,7 +27,7 @@ func init() {
 func TestRemoteMissingTarget(t *gotesting.T) {
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
 	defer restore()
-	testing.AddTest(&testing.Test{Name: "pkg.Test", Func: func(s *testing.State) {}})
+	testing.AddTest(&testing.Test{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
 
 	// Remote should fail if -target wasn't passed.
 	args := Args{Mode: RunTestsMode}
@@ -45,7 +46,7 @@ func TestRemoteCantConnect(t *gotesting.T) {
 
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
 	defer restore()
-	testing.AddTest(&testing.Test{Name: "pkg.Test", Func: func(s *testing.State) {}})
+	testing.AddTest(&testing.Test{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
 
 	// Remote should fail if the initial connection to the DUT couldn't be
 	// established since the user key wasn't passed.
@@ -83,12 +84,12 @@ func TestRemoteDUT(t *gotesting.T) {
 	realOutput := ""
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
 	defer restore()
-	testing.AddTest(&testing.Test{Name: "pkg.Test", Func: func(s *testing.State) {
-		dt, ok := dut.FromContext(s.Context())
+	testing.AddTest(&testing.Test{Name: "pkg.Test", Func: func(ctx context.Context, s *testing.State) {
+		dt, ok := dut.FromContext(ctx)
 		if !ok {
 			s.Fatal("Failed to get DUT from context")
 		}
-		out, err := dt.Run(s.Context(), cmd)
+		out, err := dt.Run(ctx, cmd)
 		if err != nil {
 			s.Fatalf("Got error when running %q: %v", cmd, err)
 		}
@@ -120,14 +121,14 @@ func TestRemoteReconnectBetweenTests(t *gotesting.T) {
 	// Returns a test function that sets the passed bool to true if the dut.DUT
 	// that's passed to the test is connected and then disconnects. This is used
 	// to establish that remote bundles reconnect before each test if needed.
-	makeFunc := func(conn *bool) func(*testing.State) {
-		return func(s *testing.State) {
-			dt, ok := dut.FromContext(s.Context())
+	makeFunc := func(conn *bool) func(context.Context, *testing.State) {
+		return func(ctx context.Context, s *testing.State) {
+			dt, ok := dut.FromContext(ctx)
 			if !ok {
 				s.Fatal("Failed to get DUT from context")
 			}
-			*conn = dt.Connected(s.Context())
-			if err := dt.Disconnect(s.Context()); err != nil {
+			*conn = dt.Connected(ctx)
+			if err := dt.Disconnect(ctx); err != nil {
 				s.Fatal("Failed to disconnect: ", err)
 			}
 		}

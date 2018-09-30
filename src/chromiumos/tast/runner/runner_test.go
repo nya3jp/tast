@@ -6,6 +6,7 @@ package runner
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -101,9 +102,9 @@ func runFakeBundle() int {
 	for i, res := range parts[2] {
 		var f testing.TestFunc
 		if res == 'p' {
-			f = func(s *testing.State) {}
+			f = func(context.Context, *testing.State) {}
 		} else if res == 'f' {
-			f = func(s *testing.State) { s.Fatal("Failed") }
+			f = func(ctx context.Context, s *testing.State) { s.Fatal("Failed") }
 		} else {
 			log.Fatalf("Bad rune %v in result string %q", res, parts[2])
 		}

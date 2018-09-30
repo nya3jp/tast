@@ -27,6 +27,8 @@ const (
 	testNameAttrPrefix   = "name:"   // prefix for auto-added attribute containing test name
 	testBundleAttrPrefix = "bundle:" // prefix for auto-added attribute containing bundle name
 	testDepAttrPrefix    = "dep:"    // prefix for auto-added attribute containing software dependency
+
+	defaultTestCleanupTimeout = 3 * time.Second // extra time granted to tests to handle timeouts
 )
 
 var testNameRegexp, testWordRegexp *regexp.Regexp
@@ -42,7 +44,7 @@ func init() {
 }
 
 // TestFunc is the code associated with a test.
-type TestFunc func(*State)
+type TestFunc func(context.Context, *State)
 
 // Test contains information about a test and its code itself.
 //
@@ -97,11 +99,10 @@ func (tst *Test) DataDir() string {
 // ch is only closed after the test function completes, so if false is returned,
 // the caller is responsible for reporting that the test timed out.
 func (tst *Test) Run(ctx context.Context, ch chan Output, cfg *TestConfig) bool {
-	s := newState(ctx, tst, ch, cfg)
-	defer func() {
-		s.tcancel()
-		s.cancel()
-	}()
+	s := newState(tst, ch, cfg)
+	testCtx, cleanupCtx, testCancel, cleanupCancel := createContexts(ctx, tst, s)
+	defer cleanupCancel()
+	defer testCancel()
 
 	// Tests call runtime.Goexit() to make the current goroutine exit immediately
 	// (after running defer blocks) on failure.
@@ -119,7 +120,7 @@ func (tst *Test) Run(ctx context.Context, ch chan Output, cfg *TestConfig) bool 
 		}
 
 		if cfg.SetupFunc != nil {
-			runAndRecover(cfg.SetupFunc, s)
+			runAndRecover(cfg.SetupFunc, testCtx, s)
 			if s.HasError() {
 				// If the setup panicked or reported errors, do not run the test body nor the cleanup.
 				return
@@ -127,29 +128,54 @@ func (tst *Test) Run(ctx context.Context, ch chan Output, cfg *TestConfig) bool 
 		}
 		defer func() {
 			if cfg.CleanupFunc != nil {
-				runAndRecover(cfg.CleanupFunc, s)
+				runAndRecover(cfg.CleanupFunc, cleanupCtx, s)
 			}
 		}()
-		runAndRecover(tst.Func, s)
+		runAndRecover(tst.Func, testCtx, s)
 	}()
 
 	select {
 	case <-done:
 		return true
-	case <-s.ctx.Done():
+	case <-cleanupCtx.Done():
 		// TODO(derat): Do more to try to kill the runaway test function.
 		return false
 	}
 }
 
-// runAndRecover runs a test function with the given State, and recovers if it panicked.
-func runAndRecover(f func(*State), s *State) {
+// createContexts returns contexts for running t, along with corresponding cancellation functions.
+// testCtx reflects t's timeout and should be passed to the test function.
+// cleanupCancel is slightly longer and should be used for reporting if the test has timed out;
+// this gives the test extra time to report an error and return after testCtx has timed out.
+// s is attached to both contexts. If t.CleanupTimeout is 0, a default will be used.
+func createContexts(ctx context.Context, t *Test, s *State) (
+	testCtx, cleanupCtx context.Context, testCancel, cleanupCancel func()) {
+	// Attach the *State so support packages can log to it.
+	lctx := context.WithValue(ctx, logKey, s)
+
+	if t.Timeout <= 0 {
+		cleanupCtx, cleanupCancel = context.WithCancel(lctx)
+		testCtx, testCancel = context.WithCancel(cleanupCtx)
+		return
+	}
+
+	ct := t.CleanupTimeout
+	if ct <= 0 {
+		ct = defaultTestCleanupTimeout
+	}
+	cleanupCtx, cleanupCancel = context.WithTimeout(lctx, t.Timeout+ct)
+	testCtx, testCancel = context.WithTimeout(cleanupCtx, t.Timeout)
+	return
+}
+
+// runAndRecover runs a test function with the given Context and State, and recovers if it panicked.
+func runAndRecover(f func(context.Context, *State), ctx context.Context, s *State) {
 	defer func() {
 		if r := recover(); r != nil {
 			s.Error("Panic: ", r)
 		}
 	}()
-	f(s)
+	f(ctx, s)
 }
 
 func (tst *Test) String() string {

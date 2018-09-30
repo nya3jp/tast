@@ -95,8 +95,16 @@ func TestRunTests(t *gotesting.T) {
 	)
 
 	reg := testing.NewRegistry(testing.NoAutoName)
-	reg.AddTest(&testing.Test{Name: name1, Func: func(*testing.State) {}, Timeout: time.Minute})
-	reg.AddTest(&testing.Test{Name: name2, Func: func(s *testing.State) { s.Error("error") }, Timeout: time.Minute})
+	reg.AddTest(&testing.Test{
+		Name:    name1,
+		Func:    func(context.Context, *testing.State) {},
+		Timeout: time.Minute},
+	)
+	reg.AddTest(&testing.Test{
+		Name:    name2,
+		Func:    func(ctx context.Context, s *testing.State) { s.Error("error") },
+		Timeout: time.Minute},
+	)
 
 	tmpDir := testutil.TempDir(t)
 	defer os.RemoveAll(tmpDir)
@@ -119,11 +127,11 @@ func TestRunTests(t *gotesting.T) {
 			lf(runCleanupMsg)
 			return nil
 		},
-		testSetupFunc: func(s *testing.State) {
+		testSetupFunc: func(ctx context.Context, s *testing.State) {
 			numTestSetupCalls++
 			s.Log(testSetupMsg)
 		},
-		testCleanupFunc: func(s *testing.State) {
+		testCleanupFunc: func(ctx context.Context, s *testing.State) {
 			numTestCleanupCalls++
 			s.Log(testCleanupMsg)
 		},
@@ -210,7 +218,7 @@ func TestRunTestsTimeout(t *gotesting.T) {
 	defer func() { ch <- true }()
 	reg.AddTest(&testing.Test{
 		Name:           name1,
-		Func:           func(*testing.State) { <-ch },
+		Func:           func(context.Context, *testing.State) { <-ch },
 		CleanupTimeout: time.Millisecond, // avoid blocking after timeout
 		Timeout:        10 * time.Millisecond,
 	})
@@ -219,7 +227,7 @@ func TestRunTestsTimeout(t *gotesting.T) {
 	const name2 = "foo.Test2"
 	reg.AddTest(&testing.Test{
 		Name:    name2,
-		Func:    func(*testing.State) { time.Sleep(50 * time.Millisecond) },
+		Func:    func(context.Context, *testing.State) { time.Sleep(50 * time.Millisecond) },
 		Timeout: time.Minute,
 	})
 
@@ -280,7 +288,9 @@ func TestRunTestsMissingDeps(t *gotesting.T) {
 	// Register three tests: one with a satisfied dep, another with a missing dep,
 	// and a third with an unregistered dep.
 	testRan := make(map[string]bool)
-	makeFunc := func(name string) testing.TestFunc { return func(s *testing.State) { testRan[name] = true } }
+	makeFunc := func(name string) testing.TestFunc {
+		return func(context.Context, *testing.State) { testRan[name] = true }
+	}
 	testing.AddTest(&testing.Test{Name: validName, Func: makeFunc(validName), SoftwareDeps: []string{validDep}})
 	testing.AddTest(&testing.Test{Name: missingName, Func: makeFunc(missingName), SoftwareDeps: []string{missingDep}})
 	testing.AddTest(&testing.Test{Name: unregName, Func: makeFunc(unregName), SoftwareDeps: []string{unregDep}})
@@ -358,11 +368,14 @@ func TestRunMeta(t *gotesting.T) {
 	defer restore()
 
 	var meta testing.Meta
-	testing.AddTest(&testing.Test{Name: "meta.Test", Func: func(s *testing.State) {
-		if m := s.Meta(); m != nil {
-			meta = *m
-		}
-	}})
+	testing.AddTest(&testing.Test{
+		Name: "meta.Test",
+		Func: func(ctx context.Context, s *testing.State) {
+			if m := s.Meta(); m != nil {
+				meta = *m
+			}
+		},
+	})
 
 	tmpDir := testutil.TempDir(t)
 	defer os.RemoveAll(tmpDir)
@@ -397,7 +410,7 @@ func TestRunMeta(t *gotesting.T) {
 func TestRunList(t *gotesting.T) {
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
 	defer restore()
-	testing.AddTest(&testing.Test{Name: "pkg.Test", Func: func(*testing.State) {}})
+	testing.AddTest(&testing.Test{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
 
 	stdin := newBufferWithArgs(t, &Args{Mode: ListTestsMode})
 	stdout := &bytes.Buffer{}

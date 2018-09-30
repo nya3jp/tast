@@ -65,11 +65,11 @@ type runConfig struct {
 	// runCleanupFunc is run at the end of the entire test run if non-nil.
 	runCleanupFunc func(context.Context, logFunc) error
 	// testSetupFunc is run before each test if non-nil.
-	// If this function panicked or reported errors, neither the test body function nor testCleanupFunc will run.
-	testSetupFunc func(*testing.State)
+	// If this function panics or reports errors, neither the test body function nor testCleanupFunc will run.
+	testSetupFunc func(context.Context, *testing.State)
 	// testCleanFunc is run at the end of each test if non-nil.
 	// If testSetupFunc panicked or reported errors, this will not run.
-	testCleanupFunc func(*testing.State)
+	testCleanupFunc func(context.Context, *testing.State)
 	// defaultTestTimeout contains the default maximum time allotted to each test.
 	// It is only used if testing.Test.Timeout is unset.
 	defaultTestTimeout time.Duration

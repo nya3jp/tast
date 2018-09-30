@@ -6,6 +6,7 @@ package bundle
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"reflect"
 	gotesting "testing"
@@ -13,6 +14,8 @@ import (
 
 	"chromiumos/tast/testing"
 )
+
+var testFunc func(context.Context, *testing.State) = func(context.Context, *testing.State) {}
 
 // newBufferWithArgs returns a bytes.Buffer containing the JSON representation of args.
 func newBufferWithArgs(t *gotesting.T, args *Args) *bytes.Buffer {
@@ -32,9 +35,9 @@ func TestReadArgsSortTests(t *gotesting.T) {
 
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
 	defer restore()
-	testing.AddTest(&testing.Test{Name: test2, Func: func(*testing.State) {}})
-	testing.AddTest(&testing.Test{Name: test3, Func: func(*testing.State) {}})
-	testing.AddTest(&testing.Test{Name: test1, Func: func(*testing.State) {}})
+	testing.AddTest(&testing.Test{Name: test2, Func: testFunc})
+	testing.AddTest(&testing.Test{Name: test3, Func: testFunc})
+	testing.AddTest(&testing.Test{Name: test1, Func: testFunc})
 
 	tests, err := readArgs(newBufferWithArgs(t, &Args{}), &Args{}, &runConfig{}, localBundle)
 	if err != nil {
@@ -59,8 +62,8 @@ func TestReadArgsTestTimeouts(t *gotesting.T) {
 
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
 	defer restore()
-	testing.AddTest(&testing.Test{Name: name1, Func: func(*testing.State) {}, Timeout: customTimeout})
-	testing.AddTest(&testing.Test{Name: name2, Func: func(*testing.State) {}})
+	testing.AddTest(&testing.Test{Name: name1, Func: testFunc, Timeout: customTimeout})
+	testing.AddTest(&testing.Test{Name: name2, Func: testFunc})
 
 	tests, err := readArgs(newBufferWithArgs(t, &Args{}), &Args{},
 		&runConfig{defaultTestTimeout: defaultTimeout}, localBundle)
@@ -82,7 +85,7 @@ func TestReadArgsRegistrationError(t *gotesting.T) {
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
 	defer restore()
 	const name = "cat.MyTest"
-	testing.AddTest(&testing.Test{Name: name, Func: func(*testing.State) {}})
+	testing.AddTest(&testing.Test{Name: name, Func: testFunc})
 
 	// Adding a test without a function should generate an error.
 	testing.AddTest(&testing.Test{})
@@ -99,8 +102,8 @@ func TestTestsToRun(t *gotesting.T) {
 	)
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
 	defer restore()
-	testing.AddTest(&testing.Test{Name: name1, Func: func(*testing.State) {}, Attr: []string{"attr1", "attr2"}})
-	testing.AddTest(&testing.Test{Name: name2, Func: func(*testing.State) {}, Attr: []string{"attr2"}})
+	testing.AddTest(&testing.Test{Name: name1, Func: testFunc, Attr: []string{"attr1", "attr2"}})
+	testing.AddTest(&testing.Test{Name: name2, Func: testFunc, Attr: []string{"attr2"}})
 
 	for _, tc := range []struct {
 		args     []string

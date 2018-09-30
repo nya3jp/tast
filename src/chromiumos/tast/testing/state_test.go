@@ -5,7 +5,6 @@
 package testing
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -33,7 +32,7 @@ func readOutput(ch chan Output) []Output {
 
 func TestLog(t *gotesting.T) {
 	ch := make(chan Output, 2)
-	s := newState(context.Background(), &Test{Timeout: time.Minute}, ch, &TestConfig{})
+	s := newState(&Test{Timeout: time.Minute}, ch, &TestConfig{})
 	s.Log("msg ", 1)
 	s.Logf("msg %d", 2)
 	close(ch)
@@ -45,7 +44,7 @@ func TestLog(t *gotesting.T) {
 
 func TestReportError(t *gotesting.T) {
 	ch := make(chan Output, 2)
-	s := newState(context.Background(), &Test{Timeout: time.Minute}, ch, &TestConfig{})
+	s := newState(&Test{Timeout: time.Minute}, ch, &TestConfig{})
 
 	// Keep these lines next to each other (see below comparison).
 	s.Error("error ", 1)
@@ -94,7 +93,7 @@ func TestReportError(t *gotesting.T) {
 
 func TestFatal(t *gotesting.T) {
 	ch := make(chan Output, 2)
-	s := newState(context.Background(), &Test{Timeout: time.Minute}, ch, &TestConfig{})
+	s := newState(&Test{Timeout: time.Minute}, ch, &TestConfig{})
 
 	// Log the fatal message in a goroutine so the main goroutine that's running the test won't exit.
 	done := make(chan bool)
@@ -120,18 +119,6 @@ func TestFatal(t *gotesting.T) {
 	}
 }
 
-func TestContextLog(t *gotesting.T) {
-	ch := make(chan Output, 2)
-	s := newState(context.Background(), &Test{Timeout: time.Minute}, ch, &TestConfig{})
-	ContextLog(s.Context(), "msg ", 1)
-	ContextLogf(s.Context(), "msg %d", 2)
-	close(ch)
-	out := readOutput(ch)
-	if len(out) != 2 || out[0].Msg != "msg 1" || out[1].Msg != "msg 2" {
-		t.Errorf("Bad test output: %v", out)
-	}
-}
-
 func TestDataPathDeclared(t *gotesting.T) {
 	const (
 		dataDir = "/tmp/data"
@@ -145,7 +132,7 @@ func TestDataPathDeclared(t *gotesting.T) {
 		{"foo", filepath.Join(dataDir, "foo")},
 		{"foo/bar", filepath.Join(dataDir, "foo/bar")},
 	} {
-		s := newState(context.Background(), &test, make(chan Output), &TestConfig{DataDir: dataDir})
+		s := newState(&test, make(chan Output), &TestConfig{DataDir: dataDir})
 		if act := s.DataPath(tc.in); act != tc.exp {
 			t.Errorf("DataPath(%q) = %q; want %q", tc.in, act, tc.exp)
 		}
@@ -158,7 +145,7 @@ func TestDataPathNotDeclared(t *gotesting.T) {
 		Timeout: time.Minute,
 		Data:    []string{"foo"},
 	}
-	s := newState(context.Background(), &test, ch, &TestConfig{DataDir: "/data"})
+	s := newState(&test, ch, &TestConfig{DataDir: "/data"})
 
 	// Request an undeclared data path to cause a fatal error. Do this in a goroutine
 	// so the main goroutine that's running the test won't exit.
@@ -197,7 +184,7 @@ func TestDataFileServer(t *gotesting.T) {
 
 	test := Test{Data: []string{file1}}
 	ch := make(chan Output, 3)
-	s := newState(context.Background(), &test, ch, &TestConfig{DataDir: td})
+	s := newState(&test, ch, &TestConfig{DataDir: td})
 
 	srv := httptest.NewServer(http.FileServer(s.DataFileSystem()))
 	defer srv.Close()
@@ -238,13 +225,12 @@ func TestDataFileServer(t *gotesting.T) {
 }
 
 func TestMeta(t *gotesting.T) {
-	ctx := context.Background()
 	ch := make(chan Output)
 	meta := Meta{TastPath: "/foo/bar", Target: "example.net", RunFlags: []string{"-foo", "-bar"}}
 
 	// Meta info should be provided to tests in the "meta" package.
 	metaTest := &Test{Name: "meta.Test"}
-	if s := newState(ctx, metaTest, ch, &TestConfig{Meta: &meta}); s.Meta() == nil {
+	if s := newState(metaTest, ch, &TestConfig{Meta: &meta}); s.Meta() == nil {
 		t.Errorf("%s got nil meta info", metaTest.Name)
 	} else if !reflect.DeepEqual(*s.Meta(), meta) {
 		t.Errorf("%s got meta info %+v; want %+v", metaTest.Name, *s.Meta(), meta)
@@ -252,12 +238,12 @@ func TestMeta(t *gotesting.T) {
 
 	// Tests not in the "meta" package shouldn't have access to meta info.
 	nonMetaTest := &Test{Name: "pkg.Test"}
-	if s := newState(ctx, nonMetaTest, ch, &TestConfig{Meta: &meta}); s.Meta() != nil {
+	if s := newState(nonMetaTest, ch, &TestConfig{Meta: &meta}); s.Meta() != nil {
 		t.Errorf("%s got meta info %+v; want nil", nonMetaTest.Name, *s.Meta())
 	}
 
 	// Check that newState doesn't crash or somehow get a non-nil Meta struct when initially passed a nil struct.
-	if s := newState(ctx, metaTest, ch, &TestConfig{}); s.Meta() != nil {
+	if s := newState(metaTest, ch, &TestConfig{}); s.Meta() != nil {
 		t.Errorf("%s got meta info %+v; want nil", nonMetaTest.Name, *s.Meta())
 	}
 }

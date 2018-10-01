@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "fa9be1ba_4fa2431c",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-01T04:33:11Z",
+      "side": 1,
+      "message": "sure, that sounds reasonable. i\u0027ve moved it and updated a unit test to verify that it\u0027s created.",
+      "parentUuid": "1d514987_c5e00fc3",
+      "range": {
+        "startLine": 158,
+        "startChar": 0,
+        "endLine": 160,
+        "endChar": 3
+      },
+      "revId": "7fe201a67d180c4b2782e6e43af7f9286a6aaa61",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "2f17fd87_14fc2365",
         "filename": "src/chromiumos/tast/testing/state.go",
         "patchSetId": 2
@@ -36,6 +60,30 @@
       "writtenOn": "2018-10-01T02:53:52Z",
       "side": 1,
       "message": "Optional: Mutating cfg inside newState sounds a bit confusing to me. How about checking this condition inside Meta() getter function? As a bonus, we can panic if the getter is called from non-meta tests.",
+      "range": {
+        "startLine": 102,
+        "startChar": 0,
+        "endLine": 109,
+        "endChar": 2
+      },
+      "revId": "7fe201a67d180c4b2782e6e43af7f9286a6aaa61",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ad41041d_b42acf55",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-01T04:33:11Z",
+      "side": 1,
+      "message": "yeah, this never felt right to me either. i was trying to avoid cloning inside of Meta() (and i didn\u0027t want to return the original struct since then tests could mutate it), but i think cloning is cheap and actually fine (since the only code that calls this actually caches the result). thanks for pushing me to change it. :-)",
+      "parentUuid": "2f17fd87_14fc2365",
       "range": {
         "startLine": 102,
         "startChar": 0,

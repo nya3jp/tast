@@ -34,6 +34,24 @@
       "revId": "e6d481c1f40e0d413095b8ac1e729245b0e65317",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dd10622b_1713d273",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-01T05:57:03Z",
+      "side": 1,
+      "message": "The plan sounds good to me. Thank you for taking care of it.",
+      "parentUuid": "05a086a7_ef4cf965",
+      "revId": "e6d481c1f40e0d413095b8ac1e729245b0e65317",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

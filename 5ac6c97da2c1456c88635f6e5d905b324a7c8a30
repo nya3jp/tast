@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6643fae3_34d4a8a7",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-01T03:06:18Z",
+      "side": 1,
+      "message": "nit: Since all return values are named, I believe we can omit return values. That is, just \"return\" should work. Same below.",
+      "range": {
+        "startLine": 151,
+        "startChar": 2,
+        "endLine": 151,
+        "endChar": 55
+      },
+      "revId": "5ac6c97da2c1456c88635f6e5d905b324a7c8a30",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

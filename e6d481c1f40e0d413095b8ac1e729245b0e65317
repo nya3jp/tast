@@ -16,6 +16,24 @@
       "revId": "e6d481c1f40e0d413095b8ac1e729245b0e65317",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "05a086a7_ef4cf965",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-01T05:38:04Z",
+      "side": 1,
+      "message": "yes, i thought about this but didn\u0027t do it because it makes the function signature longer (since the types need to be restated). i agree that it\u0027d probably be cleaner, though.\n\ni\u0027m likely to need to rework this code soon to support preconditions (which may need their own contexts). mind if i change this in a followup since this revision has already entered the pre-cq?",
+      "parentUuid": "731f80ad_6d1c2397",
+      "revId": "e6d481c1f40e0d413095b8ac1e729245b0e65317",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "731f80ad_6d1c2397",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-01T05:33:40Z",
+      "side": 1,
+      "message": "super nit:\nHow about reorder the return values like,\ntestCtx, testCancel, cleanupCtx, cleanupCancel,\nbecause testCtx tied to testCancel, and cleanupCtx tied to cleanupCancel, if there is no restrinction because of go style (I couldn\u0027t find such at the moment...).",
+      "revId": "e6d481c1f40e0d413095b8ac1e729245b0e65317",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

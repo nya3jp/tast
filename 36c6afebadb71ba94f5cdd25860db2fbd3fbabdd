@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "16deda9e_638e7cd9",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-02T05:07:58Z",
+      "side": 1,
+      "message": "sure, -extrauseflags sounds good to me",
+      "parentUuid": "a72aa12c_9ed8900c",
+      "range": {
+        "startLine": 7,
+        "startChar": 11,
+        "endLine": 7,
+        "endChar": 15
+      },
+      "revId": "36c6afebadb71ba94f5cdd25860db2fbd3fbabdd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "d24cd0c0_bf176509",
         "filename": "src/chromiumos/tast/command/flags.go",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2018-10-02T03:50:05Z",
       "side": 1,
       "message": "optional: can this be []string? Logically, \"default value\" sounds like a value to be stored?\nSeveral methods in flag/ package have similar interface (like StringVar, BoolVar etc)",
+      "range": {
+        "startLine": 70,
+        "startChar": 56,
+        "endLine": 70,
+        "endChar": 66
+      },
+      "revId": "36c6afebadb71ba94f5cdd25860db2fbd3fbabdd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6a247d98_7270b97e",
+        "filename": "src/chromiumos/tast/command/flags.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-02T05:07:58Z",
+      "side": 1,
+      "message": "sure, sounds fine",
+      "parentUuid": "d24cd0c0_bf176509",
       "range": {
         "startLine": 70,
         "startChar": 56,

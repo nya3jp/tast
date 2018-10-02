@@ -1,0 +1,354 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4e22511f_d4ce97d7",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 330,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-02T16:44:19Z",
+      "side": 1,
+      "message": "nit: omit comma",
+      "range": {
+        "startLine": 330,
+        "startChar": 82,
+        "endLine": 330,
+        "endChar": 83
+      },
+      "revId": "f98bca01d1b98601655bcd3c1ca973238e6bc2f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3dd783a0_487e0828",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 330,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-02T16:44:19Z",
+      "side": 1,
+      "message": "nit: please wrap this file at 80 columns to match other chromium docs",
+      "revId": "f98bca01d1b98601655bcd3c1ca973238e6bc2f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "81aad7c5_9512fc92",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 330,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-02T16:44:19Z",
+      "side": 1,
+      "message": "nit: \"use the\"",
+      "range": {
+        "startLine": 330,
+        "startChar": 46,
+        "endLine": 330,
+        "endChar": 49
+      },
+      "revId": "f98bca01d1b98601655bcd3c1ca973238e6bc2f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c3e0451b_7baf68c7",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 388,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-02T16:44:19Z",
+      "side": 1,
+      "message": "nit: \"using the\"",
+      "range": {
+        "startLine": 388,
+        "startChar": 16,
+        "endLine": 388,
+        "endChar": 21
+      },
+      "revId": "f98bca01d1b98601655bcd3c1ca973238e6bc2f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7a4d8bff_c51c422d",
+        "filename": "fast_build.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-02T16:44:19Z",
+      "side": 1,
+      "message": "thanks for updating this! tast-bundle.eclass probably needs a similar change now that https://crrev.com/c/1239657 is finally in",
+      "revId": "f98bca01d1b98601655bcd3c1ca973238e6bc2f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "84ca9521_8d256460",
+        "filename": "src/chromiumos/tast/errors/errors.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-02T16:44:19Z",
+      "side": 1,
+      "message": "nit: delete comma",
+      "range": {
+        "startLine": 7,
+        "startChar": 65,
+        "endLine": 7,
+        "endChar": 66
+      },
+      "revId": "f98bca01d1b98601655bcd3c1ca973238e6bc2f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a97711f4_bce3a74c",
+        "filename": "src/chromiumos/tast/errors/errors.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-02T16:44:19Z",
+      "side": 1,
+      "message": "nit: error-reporting",
+      "range": {
+        "startLine": 22,
+        "startChar": 53,
+        "endLine": 22,
+        "endChar": 68
+      },
+      "revId": "f98bca01d1b98601655bcd3c1ca973238e6bc2f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c6a9a2e6_2eaaecca",
+        "filename": "src/chromiumos/tast/errors/errors.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-02T16:44:19Z",
+      "side": 1,
+      "message": "nit: \"A stack trace\"",
+      "range": {
+        "startLine": 22,
+        "startChar": 3,
+        "endLine": 22,
+        "endChar": 8
+      },
+      "revId": "f98bca01d1b98601655bcd3c1ca973238e6bc2f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6df619e7_33a61ecc",
+        "filename": "src/chromiumos/tast/errors/errors.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-02T16:44:19Z",
+      "side": 1,
+      "message": "nit: the fmt package with the \"%+v\" verb",
+      "range": {
+        "startLine": 23,
+        "startChar": 40,
+        "endLine": 23,
+        "endChar": 51
+      },
+      "revId": "f98bca01d1b98601655bcd3c1ca973238e6bc2f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a86c3a7d_8e229216",
+        "filename": "src/chromiumos/tast/errors/errors.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-02T16:44:19Z",
+      "side": 1,
+      "message": "nit: the error interface",
+      "range": {
+        "startLine": 41,
+        "startChar": 20,
+        "endLine": 41,
+        "endChar": 35
+      },
+      "revId": "f98bca01d1b98601655bcd3c1ca973238e6bc2f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "389baaa0_3d3032a1",
+        "filename": "src/chromiumos/tast/errors/errors.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-02T16:44:19Z",
+      "side": 1,
+      "message": "nit: implements the",
+      "range": {
+        "startLine": 64,
+        "startChar": 10,
+        "endLine": 64,
+        "endChar": 20
+      },
+      "revId": "f98bca01d1b98601655bcd3c1ca973238e6bc2f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ddc685d1_4e529cae",
+        "filename": "src/chromiumos/tast/errors/errors.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-02T16:44:19Z",
+      "side": 1,
+      "message": "nit: the standard",
+      "range": {
+        "startLine": 75,
+        "startChar": 22,
+        "endLine": 75,
+        "endChar": 30
+      },
+      "revId": "f98bca01d1b98601655bcd3c1ca973238e6bc2f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bc87d87d_156df360",
+        "filename": "src/chromiumos/tast/errors/errors.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-02T16:44:19Z",
+      "side": 1,
+      "message": "nit: the standard",
+      "range": {
+        "startLine": 83,
+        "startChar": 22,
+        "endLine": 83,
+        "endChar": 30
+      },
+      "revId": "f98bca01d1b98601655bcd3c1ca973238e6bc2f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fd108176_a797ff6b",
+        "filename": "src/chromiumos/tast/errors/stack/stack.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-02T16:44:19Z",
+      "side": 1,
+      "message": "nit: \"a utility\" (since \"utility\" starts with a \u0027y\u0027 sound)",
+      "range": {
+        "startLine": 5,
+        "startChar": 26,
+        "endLine": 5,
+        "endChar": 36
+      },
+      "revId": "f98bca01d1b98601655bcd3c1ca973238e6bc2f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f2e6468e_c6369996",
+        "filename": "src/chromiumos/tast/errors/stack/stack.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-02T16:44:19Z",
+      "side": 1,
+      "message": "nit: use the",
+      "range": {
+        "startLine": 6,
+        "startChar": 59,
+        "endLine": 6,
+        "endChar": 62
+      },
+      "revId": "f98bca01d1b98601655bcd3c1ca973238e6bc2f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1556998c_068aedd0",
+        "filename": "src/chromiumos/tast/testing/poll.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-02T16:44:19Z",
+      "side": 1,
+      "message": "nit: maybe update this comment?",
+      "revId": "f98bca01d1b98601655bcd3c1ca973238e6bc2f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "7b8e5166_58054a53",
+        "filename": "src/chromiumos/tast/testing/poll.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-02T08:33:52Z",
+      "side": 1,
+      "message": "Thanks! Changed to \"last error follows\".",
+      "parentUuid": "85fe4db6_d08b271d",
+      "range": {
+        "startLine": 70,
+        "startChar": 37,
+        "endLine": 70,
+        "endChar": 57
+      },
+      "revId": "dbe5967e6d7ca8f312cc5b73b5916c005cb3768f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d613c47b_6ed4ec2f",
         "filename": "src/chromiumos/tast/testing/state.go",
         "patchSetId": 2
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "360fd216_638d968c",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 231,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-02T08:33:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d613c47b_6ed4ec2f",
+      "range": {
+        "startLine": 231,
+        "startChar": 5,
+        "endLine": 231,
+        "endChar": 11
+      },
+      "revId": "dbe5967e6d7ca8f312cc5b73b5916c005cb3768f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f3f5b8a4_f8fa49e2",
         "filename": "src/chromiumos/tast/testing/state.go",
         "patchSetId": 2
@@ -65,6 +113,24 @@
     },
     {
       "key": {
+        "uuid": "ff77a4af_bdce353d",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-02T08:33:52Z",
+      "side": 1,
+      "message": "Thanks for the pointer! Done.",
+      "parentUuid": "f3f5b8a4_f8fa49e2",
+      "revId": "dbe5967e6d7ca8f312cc5b73b5916c005cb3768f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "acc8d928_28c4a802",
         "filename": "src/chromiumos/tast/testing/state.go",
         "patchSetId": 2
@@ -79,6 +145,24 @@
       "revId": "dbe5967e6d7ca8f312cc5b73b5916c005cb3768f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6f8fbd90_18ca2317",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 247,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-02T08:33:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "acc8d928_28c4a802",
+      "revId": "dbe5967e6d7ca8f312cc5b73b5916c005cb3768f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

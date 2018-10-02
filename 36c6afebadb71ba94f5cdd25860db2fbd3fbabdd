@@ -22,6 +22,29 @@
       "revId": "36c6afebadb71ba94f5cdd25860db2fbd3fbabdd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d24cd0c0_bf176509",
+        "filename": "src/chromiumos/tast/command/flags.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-02T03:50:05Z",
+      "side": 1,
+      "message": "optional: can this be []string? Logically, \"default value\" sounds like a value to be stored?\nSeveral methods in flag/ package have similar interface (like StringVar, BoolVar etc)",
+      "range": {
+        "startLine": 70,
+        "startChar": 56,
+        "endLine": 70,
+        "endChar": 66
+      },
+      "revId": "36c6afebadb71ba94f5cdd25860db2fbd3fbabdd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a72aa12c_9ed8900c",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-02T02:42:26Z",
+      "side": 1,
+      "message": "Hmm, \"fake\" sounds like it\u0027s used only for testing to me. How about \"extra\", \"force\" or something?\n\nYou know I\u0027m not good at choosing words, so it\u0027s entirely your call. :)",
+      "range": {
+        "startLine": 7,
+        "startChar": 11,
+        "endLine": 7,
+        "endChar": 15
+      },
+      "revId": "36c6afebadb71ba94f5cdd25860db2fbd3fbabdd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

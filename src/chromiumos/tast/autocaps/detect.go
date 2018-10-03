@@ -44,10 +44,10 @@ func loadSysInfo() (*SysInfo, error) {
 		}
 	}
 
-	if out, err = exec.Command("lspci", "-n", "-d", keplerID).Output(); err != nil {
-		return nil, fmt.Errorf("lspci failed: %v", err)
+	// The lspci command can fail if the device doesn't have a PCI bus: https://crbug.com/888883
+	if out, err = exec.Command("lspci", "-n", "-d", keplerID).Output(); err == nil {
+		info.HasKepler = strings.TrimSpace(string(out)) != ""
 	}
-	info.HasKepler = strings.TrimSpace(string(out)) != ""
 
 	return &info, nil
 }

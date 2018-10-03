@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4258d794_079852c6",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 350,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-03T23:29:08Z",
+      "side": 1,
+      "message": "nit: maybe\n\n  embed `*errors.E` in your custom error struct\n\n?",
+      "range": {
+        "startLine": 350,
+        "startChar": 31,
+        "endLine": 350,
+        "endChar": 39
+      },
+      "revId": "4534993a8bab1c5ad96605fb1a2ff74b92e8e751",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aafb1535_73f84584",
+        "filename": "src/chromiumos/tast/errors/errors.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-03T23:29:08Z",
+      "side": 1,
+      "message": "nit: mind adding a colon on the end of this line to make it clearer that it\u0027s a header?",
+      "revId": "4534993a8bab1c5ad96605fb1a2ff74b92e8e751",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7a4ac9e4_f11fe198",
+        "filename": "src/chromiumos/tast/errors/errors.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-03T23:29:08Z",
+      "side": 1,
+      "message": "nit: same here",
+      "revId": "4534993a8bab1c5ad96605fb1a2ff74b92e8e751",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -42,6 +42,7 @@ package errors
 import (
 	"fmt"
 	"io"
+	"reflect"
 	"strings"
 
 	"chromiumos/tast/errors/stack"
@@ -72,6 +73,15 @@ type unwrapper interface {
 // unwrap implements the unwrapper interface.
 func (e *E) unwrap() (msg string, stk stack.Stack, cause error) {
 	return e.msg, e.stk, e.cause
+}
+
+// cause returns the cause of err if it is available.
+func cause(err error) error {
+	if e, ok := err.(unwrapper); ok {
+		_, _, cause := e.unwrap()
+		return cause
+	}
+	return nil
 }
 
 // formatChain formats an error chain.
@@ -132,4 +142,32 @@ func Wrapf(cause error, format string, args ...interface{}) *E {
 	s := stack.New(1)
 	msg := fmt.Sprintf(format, args...)
 	return &E{msg, s, cause}
+}
+
+func As(err error, dst interface{}) bool {
+	dv := reflect.ValueOf(dst)
+	if dv.Kind() != reflect.Ptr {
+		panic(fmt.Sprintf("dst must be a pointer; got %v", dv.Type()))
+	}
+	dt := dv.Elem().Type()
+	for ; err != nil; err = cause(err) {
+		ev := reflect.ValueOf(err)
+		if ev.Type().AssignableTo(dt) {
+			dv.Elem().Set(ev)
+			return true
+		}
+	}
+	return false
+}
+
+func Is(err, sentinel error) bool {
+	if cause(sentinel) != nil {
+		panic(fmt.Sprintf("sentinel must be a non-unwrappable error; got %T", sentinel))
+	}
+	for ; err != nil; err = cause(err) {
+		if err == sentinel {
+			return true
+		}
+	}
+	return false
 }

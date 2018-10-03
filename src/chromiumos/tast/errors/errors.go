@@ -42,6 +42,7 @@ package errors
 import (
 	"fmt"
 	"io"
+	"reflect"
 	"strings"
 
 	"chromiumos/tast/errors/stack"
@@ -119,4 +120,39 @@ func Wrapf(cause error, format string, args ...interface{}) *E {
 	s := stack.New(1)
 	msg := fmt.Sprintf(format, args...)
 	return &E{msg, s, cause}
+}
+
+func unwrap(err error) error {
+	if e, ok := err.(*E); ok {
+		return e.cause
+	}
+	return nil
+}
+
+func As(err error, dst interface{}) bool {
+	dv := reflect.ValueOf(dst)
+	if dv.Kind() != reflect.Ptr {
+		panic(fmt.Sprintf("dst must be a pointer; got %v", dv.Type()))
+	}
+	dt := dv.Elem().Type()
+	for ; err != nil; err = unwrap(err) {
+		ev := reflect.ValueOf(err)
+		if ev.Type().AssignableTo(dt) {
+			dv.Elem().Set(ev)
+			return true
+		}
+	}
+	return false
+}
+
+func Is(err, sentinel error) bool {
+	if unwrap(sentinel) != nil {
+		panic(fmt.Sprintf("sentinel must be a non-unwrappable error; got %T", sentinel))
+	}
+	for ; err != nil; err = unwrap(err) {
+		if err == sentinel {
+			return true
+		}
+	}
+	return false
 }

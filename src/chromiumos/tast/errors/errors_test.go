@@ -7,7 +7,9 @@ package errors
 import (
 	"errors"
 	"fmt"
+	"io"
 	"regexp"
+	"strings"
 	"testing"
 )
 
@@ -95,6 +97,15 @@ woof
 
 type customError struct {
 	*E
+	code int
+}
+
+func (e *customError) Code() int {
+	return e.code
+}
+
+type customInterface interface {
+	Code() int
 }
 
 func TestCustomError(t *testing.T) {
@@ -105,4 +116,55 @@ func TestCustomError(t *testing.T) {
 	var err error = &customError{E: New("meow")}
 
 	check(t, err, msg, traceRegexp)
+}
+
+func TestAsCustomError(t *testing.T) {
+	var err error = Wrap(&customError{E: New("woof"), code: 28}, "meow")
+
+	var cerr *customError
+
+	if !As(err, &cerr) {
+		t.Fatal("As failed")
+	}
+	if cerr.code != 28 {
+		t.Errorf("code should be 28; got %d", cerr.code)
+	}
+}
+
+func TestAsCustomInterface(t *testing.T) {
+	var err error = Wrap(&customError{E: New("woof"), code: 28}, "meow")
+
+	var cerr customInterface
+
+	if !As(err, &cerr) {
+		t.Fatal("As failed")
+	}
+	if cerr.Code() != 28 {
+		t.Errorf("code should be 28; got %d", cerr.Code())
+	}
+}
+
+func TestIs(t *testing.T) {
+	var err error = Wrap(Wrap(io.EOF, "roof"), "meow")
+
+	if !Is(err, io.EOF) {
+		t.Error("Is wrongly reported err != io.EOF")
+	}
+	if Is(err, io.ErrUnexpectedEOF) {
+		t.Error("Is wrongly reported err == io.ErrUnexpectedEOF")
+	}
+}
+
+func TestIsSentinelOnly(t *testing.T) {
+	var err error = Wrap(&customError{E: New("woof"), code: 28}, "meow")
+
+	defer func() {
+		if r := recover(); r == nil {
+			t.Error("Is() did not panic")
+		} else if !strings.Contains(r.(string), "sentinel must be a non-unwrappable error") {
+			t.Error("Is() ")
+		}
+	}()
+
+	Is(nil, err)
 }

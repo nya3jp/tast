@@ -56,6 +56,46 @@
       "revId": "4534993a8bab1c5ad96605fb1a2ff74b92e8e751",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7f262465_d9bb58d0",
+        "filename": "src/chromiumos/tast/errors/errors.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-03T23:43:13Z",
+      "side": 1,
+      "message": "style/optional/offtopic: I didn\u0027t find this in the last iteration, but how about swapping the condition to prefer \"if X { A } else { B }\" to \"if not X { B } else { A }\"?",
+      "range": {
+        "startLine": 69,
+        "startChar": 2,
+        "endLine": 69,
+        "endChar": 29
+      },
+      "revId": "4534993a8bab1c5ad96605fb1a2ff74b92e8e751",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a64a3708_e3ec0229",
+        "filename": "src/chromiumos/tast/errors/errors_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-03T23:43:13Z",
+      "side": 1,
+      "message": "How about testing the stack trace works with nested custom errors?",
+      "revId": "4534993a8bab1c5ad96605fb1a2ff74b92e8e751",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

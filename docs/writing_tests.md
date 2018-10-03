@@ -346,6 +346,19 @@ errors.Wrap(err, "failed to connect to Chrome browser process")
 errors.Wrapf(err, "failed to connect to Chrome renderer process %d", pid)
 ```
 
+Sometimes you may want to define custom error types, for example, to inspect and
+react to errors. In that case, embed `*errors.E` to your custom error struct.
+
+```go
+type CustomError struct {
+    *errors.E
+}
+
+if err := doSomething(); err != nil {
+    return &CustomError{E: errors.Wrap(err, "something failed")}
+}
+```
+
 [chromiumos/tast/errors]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/errors
 [errors.New]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/errors#New
 [errors.Errorf]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/errors#Errorf

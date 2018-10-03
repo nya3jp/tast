@@ -9,6 +9,8 @@
 // libraries. This package records stack traces and chained errors, and leaves
 // nicely formatted logs when tests fail.
 //
+// Simple usage
+//
 // To construct a new error, use New or Errorf.
 //
 //  errors.New("process not found")
@@ -22,6 +24,19 @@
 //
 // A stack trace can be printed by passing an error to error-reporting methods
 // in testing.State, or formatting it with the fmt package with the "%+v" verb.
+//
+// Defining custom error types
+//
+// Sometimes you may want to define custom error types, for example, to inspect
+// and react to errors. In that case, embed *E in your custom error struct.
+//
+//  type CustomError struct {
+//      *errors.E
+//  }
+//
+//  if err := doSomething(); err != nil {
+//      return &CustomError{E: errors.Wrap(err, "something failed")}
+//  }
 package errors
 
 import (
@@ -32,31 +47,44 @@ import (
 	"chromiumos/tast/errors/stack"
 )
 
-// impl is the error implementation used by this package.
-type impl struct {
+// E is the error implementation used by this package.
+type E struct {
 	msg   string      // error message to be prepended to cause
 	stk   stack.Stack // stack trace where this error was created
 	cause error       // original error that caused this error if non-nil
 }
 
 // Error implements the error interface.
-func (e *impl) Error() string {
+func (e *E) Error() string {
 	if e.cause == nil {
 		return e.msg
 	}
 	return fmt.Sprintf("%s: %s", e.msg, e.cause.Error())
 }
 
+// unwrapper is a private interface of *E providing access to its fields.
+// We should access *E via this interface to allow embedding *E in
+// user-defined custom error types.
+type unwrapper interface {
+	unwrap() (msg string, stk stack.Stack, cause error)
+}
+
+// unwrap implements the unwrapper interface.
+func (e *E) unwrap() (msg string, stk stack.Stack, cause error) {
+	return e.msg, e.stk, e.cause
+}
+
 // formatChain formats an error chain.
 func formatChain(err error) string {
 	var chain []string
 	for err != nil {
-		if e, ok := err.(*impl); !ok {
+		if e, ok := err.(unwrapper); ok {
+			msg, stk, cause := e.unwrap()
+			chain = append(chain, fmt.Sprintf("%s\n%v", msg, stk))
+			err = cause
+		} else {
 			chain = append(chain, fmt.Sprintf("%s\n\tat ???", err.Error()))
 			err = nil
-		} else {
-			chain = append(chain, fmt.Sprintf("%s\n%v", e.msg, e.stk))
-			err = e.cause
 		}
 	}
 	return strings.Join(chain, "\n")
@@ -64,7 +92,7 @@ func formatChain(err error) string {
 
 // Format implements the fmt.Formatter interface.
 // In particular, it is supported to format an error chain by "%+v" verb.
-func (e *impl) Format(s fmt.State, verb rune) {
+func (e *E) Format(s fmt.State, verb rune) {
 	if verb == 'v' && s.Flag('+') {
 		io.WriteString(s, formatChain(e))
 	} else {
@@ -75,33 +103,33 @@ func (e *impl) Format(s fmt.State, verb rune) {
 // New creates a new error with the given message.
 // This is similar to the standard errors.New, but also records the location
 // where it was called.
-func New(msg string) error {
+func New(msg string) *E {
 	s := stack.New(1)
-	return &impl{msg, s, nil}
+	return &E{msg, s, nil}
 }
 
 // Errorf creates a new error with the given message.
 // This is similar to the standard fmt.Errorf, but also records the location
 // where it was called.
-func Errorf(format string, args ...interface{}) error {
+func Errorf(format string, args ...interface{}) *E {
 	s := stack.New(1)
 	msg := fmt.Sprintf(format, args...)
-	return &impl{msg, s, nil}
+	return &E{msg, s, nil}
 }
 
 // Wrap creates a new error with the given message, wrapping another error.
 // This function also records the location where it was called.
 // If cause is nil, this is the same as New.
-func Wrap(cause error, msg string) error {
+func Wrap(cause error, msg string) *E {
 	s := stack.New(1)
-	return &impl{msg, s, cause}
+	return &E{msg, s, cause}
 }
 
 // Wrapf creates a new error with the given message, wrapping another error.
 // This function also records the location where it was called.
 // If cause is nil, this is the same as Errorf.
-func Wrapf(cause error, format string, args ...interface{}) error {
+func Wrapf(cause error, format string, args ...interface{}) *E {
 	s := stack.New(1)
 	msg := fmt.Sprintf(format, args...)
-	return &impl{msg, s, cause}
+	return &E{msg, s, cause}
 }

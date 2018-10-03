@@ -92,3 +92,20 @@ woof
 
 	check(t, err, msg, traceRegexp)
 }
+
+type customError struct {
+	*E
+}
+
+func TestCustomError(t *testing.T) {
+	const msg = "meow: woof"
+	traceRegexp := regexp.MustCompile(`(?s)^meow
+	at chromiumos/tast/errors\.TestCustomError \(errors_test.go:\d+\)
+.*
+woof
+	at chromiumos/tast/errors\.TestCustomError \(errors_test.go:\d+\)`)
+
+	var err error = Wrap(&customError{E: New("woof")}, "meow")
+
+	check(t, err, msg, traceRegexp)
+}

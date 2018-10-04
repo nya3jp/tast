@@ -28,7 +28,10 @@ const (
 	testBundleAttrPrefix = "bundle:" // prefix for auto-added attribute containing bundle name
 	testDepAttrPrefix    = "dep:"    // prefix for auto-added attribute containing software dependency
 
-	defaultTestCleanupTimeout = 3 * time.Second // extra time granted to tests to handle timeouts
+	// TODO(derat): Rename this to not have "cleanup" in its name.
+	defaultTestCleanupTimeout = 3 * time.Second  // extra time granted to test funcs to exit
+	setupFuncTimeout          = 15 * time.Second // timeout for test setup func
+	cleanupFuncTimeout        = 15 * time.Second // timeout for test cleanup func
 )
 
 var testNameRegexp, testWordRegexp *regexp.Regexp
@@ -82,7 +85,11 @@ type Test struct {
 	// sees that its context has expired before an additional error is added about the timeout.
 	// This is exposed for unit tests and should almost always be omitted when defining tests;
 	// a reasonable default will be used.
+	// TODO(derat): Rename this to not have "cleanup" in its name.
 	CleanupTimeout time.Duration `json:"-"`
+	// AdditionalTime contains an upper bound of additional time allocated to the test.
+	// This is automatically computed at runtime and should not be explicitly specified.
+	AdditionalTime time.Duration `json:"additionalTime,omitEmpty"`
 	// Pkg contains the Go package in which Func is located.
 	// Automatically filled using Func's package name.
 	Pkg string `json:"pkg"`
@@ -94,8 +101,11 @@ func (tst *Test) DataDir() string {
 	return filepath.Join(tst.Pkg, testDataSubdir)
 }
 
-// Run runs the test per cfg and blocks until the test has either finished or the deadline
-// (tst.Timeout plus tst.CleanupTimeout) is reached, whichever comes first.
+// Run runs the test per cfg and blocks until the test has either finished or its deadline is reached,
+// whichever comes first.
+//
+// The time allotted to the test is generally the sum of tst.Timeout and tst.CleanupTimeout, but
+// additional time may be allotted for cfg.SetupFunc and cfg.CleanupFunc if non-nil.
 //
 // The test function executes in a goroutine and may still be running if it ignores its deadline;
 // the returned value indicates whether the test completed within the allotted time or not.
@@ -106,53 +116,51 @@ func (tst *Test) Run(ctx context.Context, ch chan Output, cfg *TestConfig) bool 
 	s := newState(tst, ch, cfg)
 	ctx = context.WithValue(ctx, logKey, s)
 
-	cleanupTimeout := tst.CleanupTimeout
-	if cleanupTimeout <= 0 {
-		cleanupTimeout = defaultTestCleanupTimeout
+	var stages []stage
+	addStage := func(f stageFunc, ctxTimeout, runTimeout time.Duration) {
+		stages = append(stages, stage{f, ctxTimeout, runTimeout})
 	}
-	cleanupCtx, cleanupCancel := timeoutContext(ctx, extendTimeout(tst.Timeout, cleanupTimeout))
-	defer cleanupCancel()
-	testCtx, testCancel := timeoutContext(cleanupCtx, tst.Timeout)
-	defer testCancel()
 
-	// Tests call runtime.Goexit() to make the current goroutine exit immediately
-	// (after running defer blocks) on failure.
-	done := make(chan bool, 1)
-	go func() {
-		defer func() {
-			close(s.ch)
-			done <- true
-		}()
-
+	// First, perform setup.
+	addStage(func(ctx context.Context, s *State) {
 		if cfg.OutDir != "" { // often left blank for unit tests
 			if err := os.MkdirAll(cfg.OutDir, 0755); err != nil {
 				s.Fatal("Failed to create output dir: ", err)
 			}
 		}
-
 		if cfg.SetupFunc != nil {
-			runAndRecover(cfg.SetupFunc, testCtx, s)
-			if s.HasError() {
-				// If the setup panicked or reported errors, do not run the test body nor the cleanup.
-				return
-			}
+			cfg.SetupFunc(ctx, s)
 		}
-		defer func() {
-			if cfg.CleanupFunc != nil {
-				runAndRecover(cfg.CleanupFunc, cleanupCtx, s)
+	}, setupFuncTimeout, setupFuncTimeout+defaultTestCleanupTimeout)
+
+	// Next, run the test function itself if setup succeeded.
+	setupFailed := false
+	addStage(func(ctx context.Context, s *State) {
+		// Capture whether errors occurred during setup so later stages can be skipped.
+		setupFailed = s.HasError()
+		if !setupFailed {
+			tst.Func(ctx, s)
+		}
+	}, tst.Timeout, extendTimeout(tst.Timeout, timeoutOrDefault(tst.CleanupTimeout, defaultTestCleanupTimeout)))
+
+	// Finally, run the cleanup function if setup succeeded.
+	if cfg.CleanupFunc != nil {
+		addStage(func(ctx context.Context, s *State) {
+			if !setupFailed {
+				cfg.CleanupFunc(ctx, s)
 			}
-		}()
-
-		runAndRecover(tst.Func, testCtx, s)
-	}()
-
-	select {
-	case <-done:
-		return true
-	case <-cleanupCtx.Done():
-		// TODO(derat): Do more to try to kill the runaway test function.
-		return false
+		}, cleanupFuncTimeout, cleanupFuncTimeout+defaultTestCleanupTimeout)
 	}
+
+	return runStages(ctx, s, stages)
+}
+
+// timeoutOrDefault returns timeout if positive or def otherwise.
+func timeoutOrDefault(timeout, def time.Duration) time.Duration {
+	if timeout > 0 {
+		return timeout
+	}
+	return def
 }
 
 // extendTimeout adds extra to timeout and returns the resulting duration.
@@ -162,25 +170,6 @@ func extendTimeout(timeout, extra time.Duration) time.Duration {
 		return 0
 	}
 	return timeout + extra
-}
-
-// timeoutContext returns a context and cancelation function derived from ctx with the specified timeout.
-// If timeout is zero or negative (indicating an unset timeout), no timeout will be applied.
-func timeoutContext(ctx context.Context, timeout time.Duration) (tctx context.Context, cancel func()) {
-	if timeout <= 0 {
-		return context.WithCancel(ctx)
-	}
-	return context.WithTimeout(ctx, timeout)
-}
-
-// runAndRecover runs a test function with the given Context and State, and recovers if it panicked.
-func runAndRecover(f func(context.Context, *State), ctx context.Context, s *State) {
-	defer func() {
-		if r := recover(); r != nil {
-			s.Error("Panic: ", r)
-		}
-	}()
-	f(ctx, s)
 }
 
 func (tst *Test) String() string {
@@ -215,6 +204,7 @@ func (tst *Test) finalize(autoName bool) error {
 	if err := tst.addAutoAttributes(); err != nil {
 		return err
 	}
+	tst.setAdditionalTime()
 
 	// Validate the result.
 	if err := tst.validateTestName(); err != nil {
@@ -308,6 +298,13 @@ func (tst *Test) addAutoAttributes() error {
 		tst.Attr = append(tst.Attr, testDepAttrPrefix+dep)
 	}
 	return nil
+}
+
+// setAdditionalTime sets AdditionalTime to include time needed for setup and cleanup.
+func (tst *Test) setAdditionalTime() {
+	// We don't know whether a setup or cleanup func will be specified until the test is run,
+	// so err on the side of including the time that would be allocated.
+	tst.AdditionalTime = setupFuncTimeout + cleanupFuncTimeout
 }
 
 // clone returns a deep copy of t.

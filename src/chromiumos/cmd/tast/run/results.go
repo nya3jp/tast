@@ -391,8 +391,8 @@ func (r *resultsHandler) nextMessageTimeout(now time.Time) time.Duration {
 	// If we're in the middle of a test, add its timeout.
 	if r.res != nil {
 		elapsed := now.Sub(r.res.testStartMsgTime)
-		if elapsed < r.res.Timeout {
-			timeout += r.res.Timeout - elapsed
+		if tm := r.res.Timeout + r.res.AdditionalTime; elapsed < tm {
+			timeout += tm - elapsed
 		}
 	}
 

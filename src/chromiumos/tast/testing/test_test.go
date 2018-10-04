@@ -151,6 +151,16 @@ func TestReservedAttrPrefixes(t *gotesting.T) {
 	}
 }
 
+func TestAdditionalTime(t *gotesting.T) {
+	test := Test{Name: "cat.Name", Func: Func1, Timeout: 5 * time.Minute}
+	if err := test.finalize(false); err != nil {
+		t.Error("finalize() failed: ", err)
+	}
+	if exp := setupFuncTimeout + cleanupFuncTimeout; test.AdditionalTime != exp {
+		t.Errorf("AdditionalTime = %v; want %v", test.AdditionalTime, exp)
+	}
+}
+
 func TestDataDir(t *gotesting.T) {
 	test := Test{Name: "cat.Name", Func: Func1}
 	if err := test.finalize(false); err != nil {

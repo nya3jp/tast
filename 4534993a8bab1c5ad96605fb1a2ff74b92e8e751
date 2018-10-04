@@ -234,6 +234,24 @@
       "revId": "4534993a8bab1c5ad96605fb1a2ff74b92e8e751",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1ec04c9a_04eefac3",
+        "filename": "src/chromiumos/tast/errors/errors_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-04T10:40:56Z",
+      "side": 1,
+      "message": "I meant;\n\nerr :\u003d \u0026customError {E: New(\"foo\")}\nerr \u003d \u0026customError{E: Wrap(err, \"foo2\")}\nerr \u003d \u0026customError{E: Wrap(err, \"foo3\")}\n\nThen making sure stack trace and error messages work as expected (prints foo\u0027s and foo2\u0027s).\nIt\u0027s like a TestWrapf?() tests above, I think.",
+      "parentUuid": "019a1987_0ee2858b",
+      "revId": "4534993a8bab1c5ad96605fb1a2ff74b92e8e751",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

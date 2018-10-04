@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2ea082d7_e13509f6",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-04T10:46:32Z",
+      "side": 1,
+      "message": "nit: Looks slightly conflicting with the code.\nNot only unset, but also when CleanupTimeout is shorter than defaultTestCleanupTimeout?\nI think it is nice to mention there\u0027s lower bound in the doc, too.",
+      "range": {
+        "startLine": 109,
+        "startChar": 77,
+        "endLine": 109,
+        "endChar": 100
+      },
+      "revId": "182115724448f7a231b57216ae26c4998fd04bfa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

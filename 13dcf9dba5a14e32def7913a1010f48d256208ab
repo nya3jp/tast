@@ -34,6 +34,24 @@
       "revId": "13dcf9dba5a14e32def7913a1010f48d256208ab",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "763a49a4_fd75179a",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-04T19:12:46Z",
+      "side": 1,
+      "message": "yes, the betty-release builder (and any other VM builders that we choose to run tast on in the future, including amd64-generic builders) should set tast_vm.\n\nif developers manually run tast against their own betty VMs, then it won\u0027t be set, though. do you expect developer systems to typically/always support running nested VMs?",
+      "parentUuid": "231dcf6b_6f83c584",
+      "revId": "13dcf9dba5a14e32def7913a1010f48d256208ab",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

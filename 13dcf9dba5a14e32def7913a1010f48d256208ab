@@ -16,6 +16,24 @@
       "revId": "13dcf9dba5a14e32def7913a1010f48d256208ab",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "231dcf6b_6f83c584",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1223189
+      },
+      "writtenOn": "2018-10-04T18:50:33Z",
+      "side": 1,
+      "message": "Thanks. That\u0027s a good idea. BTW, I removed \"|| betty\" part. betty should have tast_vm set, right? Any way, let me send this to trybot to see if it works.",
+      "parentUuid": "554e9c16_f046f248",
+      "revId": "13dcf9dba5a14e32def7913a1010f48d256208ab",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

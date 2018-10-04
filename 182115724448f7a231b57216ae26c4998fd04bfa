@@ -22,6 +22,30 @@
       "revId": "182115724448f7a231b57216ae26c4998fd04bfa",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "240fdf48_5e3e93a1",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-04T13:49:07Z",
+      "side": 1,
+      "message": "tests should generally not set CleanupTimeout; it\u0027s just used by unit tests.\n\nhmm, but thanks for pointing this out -- i think that this is incorrect and makes unit tests slower. i meant to only use the default if CleanupTimeout is unset, but i\u0027d forgotten that i set it to lower values in unit tests to make them faster.\n\nthanks. :-)",
+      "parentUuid": "2ea082d7_e13509f6",
+      "range": {
+        "startLine": 109,
+        "startChar": 77,
+        "endLine": 109,
+        "endChar": 100
+      },
+      "revId": "182115724448f7a231b57216ae26c4998fd04bfa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

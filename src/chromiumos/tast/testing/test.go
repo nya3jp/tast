@@ -77,6 +77,9 @@ type Test struct {
 	// This field is serialized as an integer nanosecond count.
 	Timeout time.Duration `json:"timeout"`
 	// CleanupTimeout contains the maximum duration to wait for the test to clean up after a timeout.
+	// The context passed to Func has a deadline based on Timeout, but Tast waits for CleanupTimeout to elapse
+	// before reporting that the test has timed out; this gives the test function time to return after it
+	// sees that its context has expired before an additional error is added about the timeout.
 	// This is exposed for unit tests and should almost always be omitted when defining tests;
 	// a reasonable default will be used.
 	CleanupTimeout time.Duration `json:"-"`
@@ -99,9 +102,17 @@ func (tst *Test) DataDir() string {
 // ch is only closed after the test function completes, so if false is returned,
 // the caller is responsible for reporting that the test timed out.
 func (tst *Test) Run(ctx context.Context, ch chan Output, cfg *TestConfig) bool {
+	// Attach the state to a context so support packages can log to it.
 	s := newState(tst, ch, cfg)
-	testCtx, cleanupCtx, testCancel, cleanupCancel := createContexts(ctx, tst, s)
+	ctx = context.WithValue(ctx, logKey, s)
+
+	cleanupTimeout := tst.CleanupTimeout
+	if cleanupTimeout <= 0 {
+		cleanupTimeout = defaultTestCleanupTimeout
+	}
+	cleanupCtx, cleanupCancel := timeoutContext(ctx, extendTimeout(tst.Timeout, cleanupTimeout))
 	defer cleanupCancel()
+	testCtx, testCancel := timeoutContext(cleanupCtx, tst.Timeout)
 	defer testCancel()
 
 	// Tests call runtime.Goexit() to make the current goroutine exit immediately
@@ -131,6 +142,7 @@ func (tst *Test) Run(ctx context.Context, ch chan Output, cfg *TestConfig) bool 
 				runAndRecover(cfg.CleanupFunc, cleanupCtx, s)
 			}
 		}()
+
 		runAndRecover(tst.Func, testCtx, s)
 	}()
 
@@ -143,29 +155,22 @@ func (tst *Test) Run(ctx context.Context, ch chan Output, cfg *TestConfig) bool 
 	}
 }
 
-// createContexts returns contexts for running t, along with corresponding cancellation functions.
-// testCtx reflects t's timeout and should be passed to the test function.
-// cleanupCancel is slightly longer and should be used for reporting if the test has timed out;
-// this gives the test extra time to report an error and return after testCtx has timed out.
-// s is attached to both contexts. If t.CleanupTimeout is 0, a default will be used.
-func createContexts(ctx context.Context, t *Test, s *State) (
-	testCtx, cleanupCtx context.Context, testCancel, cleanupCancel func()) {
-	// Attach the *State so support packages can log to it.
-	lctx := context.WithValue(ctx, logKey, s)
-
-	if t.Timeout <= 0 {
-		cleanupCtx, cleanupCancel = context.WithCancel(lctx)
-		testCtx, testCancel = context.WithCancel(cleanupCtx)
-		return
+// extendTimeout adds extra to timeout and returns the resulting duration.
+// If timeout is zero or negative (indicating an unset timeout), zero is returned.
+func extendTimeout(timeout, extra time.Duration) time.Duration {
+	if timeout <= 0 {
+		return 0
 	}
+	return timeout + extra
+}
 
-	ct := t.CleanupTimeout
-	if ct <= 0 {
-		ct = defaultTestCleanupTimeout
+// timeoutContext returns a context and cancelation function derived from ctx with the specified timeout.
+// If timeout is zero or negative (indicating an unset timeout), no timeout will be applied.
+func timeoutContext(ctx context.Context, timeout time.Duration) (tctx context.Context, cancel func()) {
+	if timeout <= 0 {
+		return context.WithCancel(ctx)
 	}
-	cleanupCtx, cleanupCancel = context.WithTimeout(lctx, t.Timeout+ct)
-	testCtx, testCancel = context.WithTimeout(cleanupCtx, t.Timeout)
-	return
+	return context.WithTimeout(ctx, timeout)
 }
 
 // runAndRecover runs a test function with the given Context and State, and recovers if it panicked.

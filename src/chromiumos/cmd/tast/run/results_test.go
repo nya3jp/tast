@@ -286,6 +286,7 @@ func TestNextMessageTimeout(t *gotesting.T) {
 		ctxTimeout  time.Duration
 		testStart   time.Time
 		testTimeout time.Duration
+		testAddTime time.Duration
 		exp         time.Duration
 	}{
 		{
@@ -303,6 +304,14 @@ func TestNextMessageTimeout(t *gotesting.T) {
 			testStart:   now.Add(-1 * time.Second),
 			testTimeout: 5 * time.Second,
 			exp:         14 * time.Second,
+		},
+		{
+			// If the test requires additional time, it should be included.
+			msgTimeout:  10 * time.Second,
+			testStart:   now.Add(-1 * time.Second),
+			testTimeout: 5 * time.Second,
+			testAddTime: 3 * time.Second,
+			exp:         17 * time.Second,
 		},
 		{
 			// A context timeout should cap whatever timeout would be used otherwise.
@@ -323,7 +332,10 @@ func TestNextMessageTimeout(t *gotesting.T) {
 		}
 		if !tc.testStart.IsZero() {
 			h.res = &TestResult{
-				Test:             testing.Test{Timeout: tc.testTimeout},
+				Test: testing.Test{
+					Timeout:        tc.testTimeout,
+					AdditionalTime: tc.testAddTime,
+				},
 				testStartMsgTime: tc.testStart,
 			}
 		}

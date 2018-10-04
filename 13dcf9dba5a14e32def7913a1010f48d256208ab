@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "554e9c16_f046f248",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-04T18:42:42Z",
+      "side": 1,
+      "message": "this line is too long. :-) please make this into a multiline comment starting on the previous line\n\nbut also note that i just added a new fake \"tast_vm\" USE flag that should be set when a builder runs tast in a TastVMTest stage: https://crrev.com/c/1258126\n\nif that works here, can you use this instead?\n\n  \"kvm_host \u0026\u0026 !(tast_vm || betty)\"\n\nas an aside, see the comment above -- to use video_cards_virgl, you\u0027d also need to add it to IUSE in tast-use-flags. that\u0027s not the case with tast_vm since it\u0027s injected at runtime, though",
+      "revId": "13dcf9dba5a14e32def7913a1010f48d256208ab",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

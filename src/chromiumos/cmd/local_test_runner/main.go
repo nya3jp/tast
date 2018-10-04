@@ -40,8 +40,8 @@ func main() {
 			"screenshot":        "display_backlight && !rk3399", // screenshot command broken on RK3399: https://crbug.com/880597
 			"selinux":           "selinux",
 			"tpm":               "!mocktpm",
-			"vm_host":           "kvm_host",
-		},
+			"vm_host":           "kvm_host && !video_cards_virgl", // Some VM builds actually can run nested VM with right host configuration. But we haven't enable this feature on builders. For now, just disable vm_host feature for VM builds. We don't have a USE flag to indicate if a build is for VM. Just use video_cards_virgl since it's only for VM.
+
 		// The autotest-capability package tries to install this to /etc but it's diverted to /usr/local.
 		AutotestCapabilityDir: "/usr/local/etc/autotest-capability",
 	}

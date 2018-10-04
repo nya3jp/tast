@@ -252,6 +252,24 @@
       "revId": "4534993a8bab1c5ad96605fb1a2ff74b92e8e751",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cc8efa89_88fcb991",
+        "filename": "src/chromiumos/tast/errors/errors_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-04T13:33:55Z",
+      "side": 1,
+      "message": "I see, maybe that\u0027s worth testing. I\u0027ll create a separate change to add that test. Thanks!",
+      "parentUuid": "1ec04c9a_04eefac3",
+      "revId": "4534993a8bab1c5ad96605fb1a2ff74b92e8e751",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

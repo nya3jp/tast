@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fd1a47b4_2f00be71",
+        "filename": "src/chromiumos/tast/errors/errors.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-04T17:49:53Z",
+      "side": 1,
+      "message": "huge nit: s/to/in/",
+      "range": {
+        "startLine": 66,
+        "startChar": 64,
+        "endLine": 66,
+        "endChar": 66
+      },
+      "revId": "9ccfa3d89e57f28237d679e01fb2bfc905db1e11",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

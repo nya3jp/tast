@@ -84,6 +84,24 @@
     },
     {
       "key": {
+        "uuid": "6a93237d_c35a7f56",
+        "filename": "src/chromiumos/tast/errors/errors.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-04T04:03:39Z",
+      "side": 1,
+      "message": "oh, i didn\u0027t know about this -- thanks! fine to delete the extra line above if you prefer",
+      "parentUuid": "c064bc7c_af33ca7f",
+      "revId": "4534993a8bab1c5ad96605fb1a2ff74b92e8e751",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a4ac9e4_f11fe198",
         "filename": "src/chromiumos/tast/errors/errors.go",
         "patchSetId": 1

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c73ac53c_635bdf7e",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 350,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-04T04:03:39Z",
+      "side": 1,
+      "message": "huge nit: mind putting backticks around this since it\u0027s code?",
+      "range": {
+        "startLine": 350,
+        "startChar": 37,
+        "endLine": 350,
+        "endChar": 46
+      },
+      "revId": "5f1aed51ba93427ebee9a2663794f3e8c0c350e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

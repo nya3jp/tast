@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "94150bcc_dfb77d22",
+        "filename": "src/chromiumos/cmd/tast-lint/check/errors.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-05T06:10:47Z",
+      "side": 1,
+      "message": "I\u0027m not sure which is more readable, but your way would be more popular. Let\u0027s do so.",
+      "parentUuid": "6271a451_06a7182e",
+      "revId": "d66be007b8210c7486628532075f980906f3b687",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4642f70b_3dfc2626",
         "filename": "src/chromiumos/cmd/tast-lint/main.go",
         "patchSetId": 4
@@ -33,6 +51,24 @@
       "revId": "d66be007b8210c7486628532075f980906f3b687",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6cec899d_72cceaad",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-05T06:10:47Z",
+      "side": 1,
+      "message": "Right. isTestFile is to ensure it.",
+      "parentUuid": "4642f70b_3dfc2626",
+      "revId": "d66be007b8210c7486628532075f980906f3b687",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

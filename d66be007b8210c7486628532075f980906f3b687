@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6271a451_06a7182e",
+        "filename": "src/chromiumos/cmd/tast-lint/check/errors.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-05T03:55:47Z",
+      "side": 1,
+      "message": "huge nit: might be a bit more readable as:\n\n  if !ok || ... !\u003d \"Errorf\" {",
+      "revId": "d66be007b8210c7486628532075f980906f3b687",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "16b872cc_1c85d3a2",
+        "filename": "src/chromiumos/tast/testing/stage.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-05T00:51:51Z",
+      "side": 1,
+      "message": "this is just moved from test.go",
+      "revId": "5254d81ca5c7e84cb0583311fe974c821a8af1c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a457ac83_00d1d099",
+        "filename": "src/chromiumos/tast/testing/stage.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-05T00:51:51Z",
+      "side": 1,
+      "message": "i introduced an additional goroutine here on top of what we had before (i.e. before we ran setup, test, and cleanup all in a single goroutine, now runStages creates a single goroutine but this function creates an additional one for each of setup, test, and cleanup).\n\nwe used to call the cleanup func in a defer statement (ensuring it runs even if the test func panics or calls s.Fatal), but that makes it very challenging to enforce a separate timeout on cleanup (or on closing a precondition, in the future) after the test fails.\n\nhopefully it\u0027s encapsulated enough to not complicate the rest of the code. :-)",
+      "revId": "5254d81ca5c7e84cb0583311fe974c821a8af1c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "537948ca_6ffad93b",
+        "filename": "src/chromiumos/tast/testing/stage_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-05T00:51:51Z",
+      "side": 1,
+      "message": "there\u0027s some overlap between these tests and the ones for Test.Run, but i figure it\u0027s probably a good idea to exercise the low-level runStages function directly",
+      "revId": "5254d81ca5c7e84cb0583311fe974c821a8af1c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d9bc442d_82237d1c",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-05T00:51:51Z",
+      "side": 1,
+      "message": "i find this easier to follow than the defers in the old code, but let me know if you disagree :-)",
+      "revId": "5254d81ca5c7e84cb0583311fe974c821a8af1c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

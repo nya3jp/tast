@@ -16,6 +16,23 @@
       "revId": "d66be007b8210c7486628532075f980906f3b687",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4642f70b_3dfc2626",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-05T05:41:17Z",
+      "side": 1,
+      "message": "Clar: files in tast/ repository is out of scope?",
+      "revId": "d66be007b8210c7486628532075f980906f3b687",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

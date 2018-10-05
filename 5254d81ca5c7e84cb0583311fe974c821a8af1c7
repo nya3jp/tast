@@ -36,6 +36,24 @@
     },
     {
       "key": {
+        "uuid": "1c0705f2_c5f591b8",
+        "filename": "src/chromiumos/tast/testing/stage.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-05T03:13:30Z",
+      "side": 1,
+      "message": "Yea, this is necessary to protect from Goexit, and doesn\u0027t look complicated.",
+      "parentUuid": "a457ac83_00d1d099",
+      "revId": "5254d81ca5c7e84cb0583311fe974c821a8af1c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "537948ca_6ffad93b",
         "filename": "src/chromiumos/tast/testing/stage_test.go",
         "patchSetId": 1
@@ -67,6 +85,24 @@
       "revId": "5254d81ca5c7e84cb0583311fe974c821a8af1c7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4e0d8bb6_a818dc3d",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-05T03:13:30Z",
+      "side": 1,
+      "message": "This looks cleaner :)",
+      "parentUuid": "d9bc442d_82237d1c",
+      "revId": "5254d81ca5c7e84cb0583311fe974c821a8af1c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

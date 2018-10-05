@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "ea856482_9f4e3938",
+        "filename": "src/chromiumos/cmd/tast-lint/check/errors_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-05T03:35:28Z",
+      "side": 1,
+      "message": "Thanks for the pointer! Good to know. Done.",
+      "parentUuid": "4e830e2c_b260b577",
+      "revId": "e61abebafdabe30ef33900190f9aa13d35a99b01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7ed02532_dcc95532",
         "filename": "src/chromiumos/cmd/tast-lint/check/errors_test.go",
         "patchSetId": 2
@@ -33,6 +51,24 @@
       "revId": "e61abebafdabe30ef33900190f9aa13d35a99b01",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a9612e1d_6768810c",
+        "filename": "src/chromiumos/cmd/tast-lint/check/errors_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-05T03:35:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7ed02532_dcc95532",
+      "revId": "e61abebafdabe30ef33900190f9aa13d35a99b01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "7da74584_e782fb89",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-05T03:35:28Z",
+      "side": 1,
+      "message": "Sounds a good idea, done.",
+      "parentUuid": "7de6a1b4_7a81e22e",
+      "revId": "e61abebafdabe30ef33900190f9aa13d35a99b01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d6799495_7bb31825",
         "filename": "src/chromiumos/cmd/tast-lint/main.go",
         "patchSetId": 2
@@ -67,6 +121,24 @@
       "revId": "e61abebafdabe30ef33900190f9aa13d35a99b01",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4b08d3ce_a04dcc30",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-05T03:35:28Z",
+      "side": 1,
+      "message": "If we chdir at the beginning, relative paths given to the command are broken.\n\nThis is an involved issue than we initially think... I tried supporting arbitrary pwd, but I saw many challenges that blow up the code size if we handle it properly. Please let me keep this as is for now, but of course you\u0027re welcome to fix it :)",
+      "parentUuid": "d6799495_7bb31825",
+      "revId": "e61abebafdabe30ef33900190f9aa13d35a99b01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

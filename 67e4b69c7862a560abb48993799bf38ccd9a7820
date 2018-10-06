@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4839fa97_d8991df0",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-06T07:05:16Z",
+      "side": 1,
+      "message": "Optional: Using s.Fatal to assert a always-hold precondition sounds a bit weird. How about panic? It will make the program crash if hit in production, but even with this, all tests will fail anyway.",
+      "range": {
+        "startLine": 128,
+        "startChar": 3,
+        "endLine": 128,
+        "endChar": 43
+      },
+      "revId": "67e4b69c7862a560abb48993799bf38ccd9a7820",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

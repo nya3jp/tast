@@ -22,6 +22,30 @@
       "revId": "1832f4e47493672b6ab2b512a9e047d05eca097f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "98cfa61c_89b94e35",
+        "filename": ".gitignore",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-06T15:14:26Z",
+      "side": 1,
+      "message": "whoops, yes. sorry, i misremembered how gitignore treats paths.",
+      "parentUuid": "bddf898a_ad782fca",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 4
+      },
+      "revId": "1832f4e47493672b6ab2b512a9e047d05eca097f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -123,6 +123,10 @@ func (tst *Test) Run(ctx context.Context, ch chan Output, cfg *TestConfig) bool 
 
 	// First, perform setup.
 	addStage(func(ctx context.Context, s *State) {
+		// The test's timeout must be set by the time it is run.
+		if tst.Timeout <= 0 {
+			s.Fatal("Invalid timeout ", tst.Timeout)
+		}
 		if cfg.OutDir != "" { // often left blank for unit tests
 			if err := os.MkdirAll(cfg.OutDir, 0755); err != nil {
 				s.Fatal("Failed to create output dir: ", err)
@@ -141,7 +145,7 @@ func (tst *Test) Run(ctx context.Context, ch chan Output, cfg *TestConfig) bool 
 		if !setupFailed {
 			tst.Func(ctx, s)
 		}
-	}, tst.Timeout, extendTimeout(tst.Timeout, timeoutOrDefault(tst.CleanupTimeout, defaultTestCleanupTimeout)))
+	}, tst.Timeout, tst.Timeout+timeoutOrDefault(tst.CleanupTimeout, defaultTestCleanupTimeout))
 
 	// Finally, run the cleanup function if setup succeeded.
 	if cfg.CleanupFunc != nil {
@@ -161,15 +165,6 @@ func timeoutOrDefault(timeout, def time.Duration) time.Duration {
 		return timeout
 	}
 	return def
-}
-
-// extendTimeout adds extra to timeout and returns the resulting duration.
-// If timeout is zero or negative (indicating an unset timeout), zero is returned.
-func extendTimeout(timeout, extra time.Duration) time.Duration {
-	if timeout <= 0 {
-		return 0
-	}
-	return timeout + extra
 }
 
 func (tst *Test) String() string {

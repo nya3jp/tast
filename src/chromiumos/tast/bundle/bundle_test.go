@@ -310,14 +310,14 @@ func TestRunTestsMissingDeps(t *gotesting.T) {
 	}
 	stdin := newBufferWithArgs(t, &args)
 	stdout := &bytes.Buffer{}
-	if status := run(context.Background(), stdin, stdout, &bytes.Buffer{},
-		&Args{}, &runConfig{}, localBundle); status != statusSuccess {
+	if status := run(context.Background(), stdin, stdout, &bytes.Buffer{}, &Args{},
+		&runConfig{defaultTestTimeout: time.Minute}, localBundle); status != statusSuccess {
 		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
 	}
 
 	// Read through the control messages to get test results.
 	var testName string
-	testFailed := make(map[string]bool)
+	testFailed := make(map[string][]testing.Error)
 	testMissingDeps := make(map[string][]string)
 	r := control.NewMessageReader(stdout)
 	for r.More() {
@@ -331,7 +331,7 @@ func TestRunTestsMissingDeps(t *gotesting.T) {
 		case *control.TestEnd:
 			testMissingDeps[testName] = m.MissingSoftwareDeps
 		case *control.TestError:
-			testFailed[testName] = true
+			testFailed[testName] = append(testFailed[testName], m.Error)
 		}
 	}
 
@@ -351,9 +351,9 @@ func TestRunTestsMissingDeps(t *gotesting.T) {
 		} else if !testRan[tc.name] && tc.shouldRun {
 			t.Errorf("%v didn't run", tc.name)
 		}
-		if testFailed[tc.name] && !tc.shouldFail {
-			t.Errorf("%v failed: %v", tc.name, testFailed[tc.name])
-		} else if !testFailed[tc.name] && tc.shouldFail {
+		if _, failed := testFailed[tc.name]; failed && !tc.shouldFail {
+			t.Errorf("%v failed: %+v", tc.name, testFailed[tc.name])
+		} else if !failed && tc.shouldFail {
 			t.Errorf("%v didn't fail", tc.name)
 		}
 		if !reflect.DeepEqual(testMissingDeps[tc.name], tc.missingDeps) {
@@ -391,8 +391,8 @@ func TestRunMeta(t *gotesting.T) {
 		},
 	}
 	stdin := newBufferWithArgs(t, &args)
-	if status := run(context.Background(), stdin, &bytes.Buffer{}, &bytes.Buffer{},
-		&Args{}, &runConfig{}, remoteBundle); status != statusSuccess {
+	if status := run(context.Background(), stdin, &bytes.Buffer{}, &bytes.Buffer{}, &Args{},
+		&runConfig{defaultTestTimeout: time.Minute}, remoteBundle); status != statusSuccess {
 		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
 	}
 

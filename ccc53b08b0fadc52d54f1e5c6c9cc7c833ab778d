@@ -16,6 +16,24 @@
       "revId": "ccc53b08b0fadc52d54f1e5c6c9cc7c833ab778d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0c8412a3_72fc770e",
+        "filename": "src/chromiumos/tast/testing/state_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-08T19:59:16Z",
+      "side": 1,
+      "message": "sure, makes sense. i\u0027m moving this and related functions into a new output_test.go file.",
+      "parentUuid": "28391cc6_c04d492b",
+      "revId": "ccc53b08b0fadc52d54f1e5c6c9cc7c833ab778d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

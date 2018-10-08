@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "28391cc6_c04d492b",
+        "filename": "src/chromiumos/tast/testing/state_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-08T19:45:12Z",
+      "side": 1,
+      "message": "Optional: since this is shared with other files, I think it\u0027s nice to move a standalone file?",
+      "revId": "ccc53b08b0fadc52d54f1e5c6c9cc7c833ab778d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

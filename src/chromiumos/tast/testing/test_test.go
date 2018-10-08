@@ -20,27 +20,6 @@ import (
 // Func1 is an arbitrary public test function used by unit tests.
 func Func1(context.Context, *State) {}
 
-// getOutputErrors returns all errors from out.
-func getOutputErrors(out []Output) []*Error {
-	errs := make([]*Error, 0)
-	for _, o := range out {
-		if o.Err != nil {
-			errs = append(errs, o.Err)
-		}
-	}
-	return errs
-}
-
-// findLog checks if out contains the specified log message.
-func findLog(out []Output, msg string) bool {
-	for _, o := range out {
-		if o.Msg == msg {
-			return true
-		}
-	}
-	return false
-}
-
 func TestMissingFunc(t *gotesting.T) {
 	test := Test{Name: "category.MyName"}
 	if err := test.finalize(false); err == nil {
@@ -182,11 +161,11 @@ func TestSoftwareDeps(t *gotesting.T) {
 
 func TestRunSuccess(t *gotesting.T) {
 	test := Test{Func: func(context.Context, *State) {}, Timeout: time.Minute}
-	ch := make(chan Output, 1)
+	or := newOutputReader()
 	td := testutil.TempDir(t)
 	od := filepath.Join(td, "out")
-	test.Run(context.Background(), ch, &TestConfig{OutDir: od})
-	if errs := getOutputErrors(readOutput(ch)); len(errs) != 0 {
+	test.Run(context.Background(), or.ch, &TestConfig{OutDir: od})
+	if errs := getOutputErrors(or.read()); len(errs) != 0 {
 		t.Errorf("Got unexpected error(s) for test: %v", errs)
 	}
 	if _, err := os.Stat(od); err != nil {
@@ -196,9 +175,9 @@ func TestRunSuccess(t *gotesting.T) {
 
 func TestRunPanic(t *gotesting.T) {
 	test := Test{Func: func(context.Context, *State) { panic("intentional panic") }, Timeout: time.Minute}
-	ch := make(chan Output, 1)
-	test.Run(context.Background(), ch, &TestConfig{})
-	if errs := getOutputErrors(readOutput(ch)); len(errs) != 1 {
+	or := newOutputReader()
+	test.Run(context.Background(), or.ch, &TestConfig{})
+	if errs := getOutputErrors(or.read()); len(errs) != 1 {
 		t.Errorf("Got %v errors for panicking test; want 1", errs)
 	}
 }
@@ -210,11 +189,11 @@ func TestRunDeadline(t *gotesting.T) {
 		s.Error("Saw timeout within test")
 	}
 	test := Test{Func: f, Timeout: time.Millisecond, CleanupTimeout: 10 * time.Second}
-	ch := make(chan Output, 1)
-	test.Run(context.Background(), ch, &TestConfig{})
+	or := newOutputReader()
+	test.Run(context.Background(), or.ch, &TestConfig{})
 	// The error that was reported by the test after its deadline was hit
 	// but within the cleanup delay should be available.
-	if errs := getOutputErrors(readOutput(ch)); len(errs) != 1 {
+	if errs := getOutputErrors(or.read()); len(errs) != 1 {
 		t.Errorf("Got %v errors for timed-out test; want 1", len(errs))
 	}
 }
@@ -235,8 +214,8 @@ func TestRunLogAfterTimeout(t *gotesting.T) {
 	}
 	test := Test{Func: f, Timeout: time.Millisecond, CleanupTimeout: time.Millisecond}
 
-	out := make(chan Output, 10)
-	test.Run(context.Background(), out, &TestConfig{})
+	or := newOutputReader()
+	test.Run(context.Background(), or.ch, &TestConfig{})
 
 	// Tell the test to continue even though Run has already returned. The output channel should
 	// still be open so as to avoid a panic when the test writes to it: https://crbug.com/853406
@@ -245,7 +224,7 @@ func TestRunLogAfterTimeout(t *gotesting.T) {
 		t.Error("Test function didn't complete")
 	}
 	// No output errors should be written to the channel; reporting timeouts is the caller's job.
-	if errs := getOutputErrors(readOutput(out)); len(errs) != 0 {
+	if errs := getOutputErrors(or.read()); len(errs) != 0 {
 		t.Errorf("Got %v error(s) for runaway test; want 0", len(errs))
 	}
 }
@@ -267,8 +246,8 @@ func TestRunHooks(t *gotesting.T) {
 		s.Log(cleanupMsg)
 	}
 
-	ch := make(chan Output, 2)
-	test.Run(context.Background(), ch, &TestConfig{SetupFunc: setup, CleanupFunc: cleanup})
+	or := newOutputReader()
+	test.Run(context.Background(), or.ch, &TestConfig{SetupFunc: setup, CleanupFunc: cleanup})
 
 	if numSetupCalls != 1 {
 		t.Errorf("Setup hook called %d times; want %d", numSetupCalls, 1)
@@ -277,7 +256,7 @@ func TestRunHooks(t *gotesting.T) {
 		t.Errorf("Cleanup hook called %d times; want %d", numCleanupCalls, 1)
 	}
 
-	out := readOutput(ch)
+	out := or.read()
 	if !findLog(out, setupMsg) {
 		t.Errorf("Setup message not found in output: %v", out)
 	}
@@ -299,13 +278,13 @@ func TestRunCleanupHookOnTestPanic(t *gotesting.T) {
 		}
 	}
 
-	ch := make(chan Output, 1)
-	test.Run(context.Background(), ch, &TestConfig{CleanupFunc: cleanup})
+	or := newOutputReader()
+	test.Run(context.Background(), or.ch, &TestConfig{CleanupFunc: cleanup})
 
 	if numCleanupCalls != 1 {
 		t.Errorf("Cleanup hook called %v times; want 1", numCleanupCalls)
 	}
-	if errs := getOutputErrors(readOutput(ch)); len(errs) != 1 {
+	if errs := getOutputErrors(or.read()); len(errs) != 1 {
 		t.Errorf("Got %v error(s); want 1", len(errs))
 	}
 }
@@ -315,10 +294,10 @@ func TestRunCleanupHookOnSetupPanic(t *gotesting.T) {
 	setup := func(context.Context, *State) { panic("bye") }
 	cleanup := func(context.Context, *State) { t.Error("Cleanup function called") }
 
-	ch := make(chan Output, 1)
-	test.Run(context.Background(), ch, &TestConfig{SetupFunc: setup, CleanupFunc: cleanup})
+	or := newOutputReader()
+	test.Run(context.Background(), or.ch, &TestConfig{SetupFunc: setup, CleanupFunc: cleanup})
 
-	if errs := getOutputErrors(readOutput(ch)); len(errs) != 1 {
+	if errs := getOutputErrors(or.read()); len(errs) != 1 {
 		t.Errorf("Got %v error(s); want 1", len(errs))
 	}
 }
@@ -328,10 +307,10 @@ func TestRunCleanupHookOnSetupError(t *gotesting.T) {
 	setup := func(ctx context.Context, s *State) { s.Error("bye") }
 	cleanup := func(context.Context, *State) { t.Error("Cleanup function called") }
 
-	ch := make(chan Output, 1)
-	test.Run(context.Background(), ch, &TestConfig{SetupFunc: setup, CleanupFunc: cleanup})
+	or := newOutputReader()
+	test.Run(context.Background(), or.ch, &TestConfig{SetupFunc: setup, CleanupFunc: cleanup})
 
-	if errs := getOutputErrors(readOutput(ch)); len(errs) != 1 {
+	if errs := getOutputErrors(or.read()); len(errs) != 1 {
 		t.Errorf("Got %v error(s); want 1", len(errs))
 	}
 }
@@ -345,10 +324,9 @@ func TestAttachStateToContext(t *gotesting.T) {
 		Timeout: time.Minute,
 	}
 
-	ch := make(chan Output, 2)
-	test.Run(context.Background(), ch, &TestConfig{})
-	out := readOutput(ch)
-	if len(out) != 2 || out[0].Msg != "msg 1" || out[1].Msg != "msg 2" {
+	or := newOutputReader()
+	test.Run(context.Background(), or.ch, &TestConfig{})
+	if out := or.read(); len(out) != 2 || out[0].Msg != "msg 1" || out[1].Msg != "msg 2" {
 		t.Errorf("Bad test output: %v", out)
 	}
 }

@@ -11,8 +11,8 @@ import (
 )
 
 func TestRunStagesFatal(t *gotesting.T) {
-	ch := make(chan Output, 1)
-	s := newState(&Test{}, ch, &TestConfig{})
+	or := newOutputReader()
+	s := newState(&Test{}, or.ch, &TestConfig{})
 	ranSecond := false
 	finished := runStages(context.Background(), s, []stage{
 		stage{func(ctx context.Context, s *State) { s.Fatal("failed") }, 0, time.Minute},
@@ -24,14 +24,14 @@ func TestRunStagesFatal(t *gotesting.T) {
 	if !ranSecond {
 		t.Error("runStages didn't run second stage after first failed")
 	}
-	if errors := getOutputErrors(readOutput(ch)); len(errors) != 1 {
+	if errors := getOutputErrors(or.read()); len(errors) != 1 {
 		t.Errorf("runStages wrote %v errors (%+v); want 1", len(errors), errors)
 	}
 }
 
 func TestRunStagesPanic(t *gotesting.T) {
-	ch := make(chan Output, 1)
-	s := newState(&Test{}, ch, &TestConfig{})
+	or := newOutputReader()
+	s := newState(&Test{}, or.ch, &TestConfig{})
 	ranSecond := false
 	finished := runStages(context.Background(), s, []stage{
 		stage{func(ctx context.Context, s *State) { panic("panicked") }, 0, time.Minute},
@@ -43,14 +43,14 @@ func TestRunStagesPanic(t *gotesting.T) {
 	if !ranSecond {
 		t.Error("runStages didn't run second stage after first panicked")
 	}
-	if errors := getOutputErrors(readOutput(ch)); len(errors) != 1 {
+	if errors := getOutputErrors(or.read()); len(errors) != 1 {
 		t.Errorf("runStages wrote %v errors (%+v); want 1", len(errors), errors)
 	}
 }
 
 func TestRunStagesTimeout(t *gotesting.T) {
-	ch := make(chan Output, 1)
-	s := newState(&Test{}, ch, &TestConfig{})
+	or := newOutputReader()
+	s := newState(&Test{}, or.ch, &TestConfig{})
 
 	cont := make(chan struct{}, 2)        // used to signal to first stage to exit
 	defer func() { cont <- struct{}{} }() // wait until unit test is over

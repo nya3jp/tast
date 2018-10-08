@@ -21,37 +21,28 @@ import (
 	"chromiumos/tast/testutil"
 )
 
-// readOutput reads and returns Output entries from ch.
-func readOutput(ch chan Output) []Output {
-	res := make([]Output, 0)
-	for o := range ch {
-		res = append(res, o)
-	}
-	return res
-}
-
 func TestLog(t *gotesting.T) {
-	ch := make(chan Output, 2)
-	s := newState(&Test{Timeout: time.Minute}, ch, &TestConfig{})
+	or := newOutputReader()
+	s := newState(&Test{Timeout: time.Minute}, or.ch, &TestConfig{})
 	s.Log("msg ", 1)
 	s.Logf("msg %d", 2)
-	close(ch)
-	out := readOutput(ch)
+	close(or.ch)
+	out := or.read()
 	if len(out) != 2 || out[0].Msg != "msg 1" || out[1].Msg != "msg 2" {
 		t.Errorf("Bad test output: %v", out)
 	}
 }
 
 func TestReportError(t *gotesting.T) {
-	ch := make(chan Output, 2)
-	s := newState(&Test{Timeout: time.Minute}, ch, &TestConfig{})
+	or := newOutputReader()
+	s := newState(&Test{Timeout: time.Minute}, or.ch, &TestConfig{})
 
 	// Keep these lines next to each other (see below comparison).
 	s.Error("error ", 1)
 	s.Errorf("error %d", 2)
-	close(ch)
+	close(or.ch)
 
-	out := readOutput(ch)
+	out := or.read()
 	if len(out) != 2 {
 		t.Fatalf("Got %v output(s); want 2", len(out))
 	}
@@ -90,14 +81,14 @@ func errorFunc() error {
 }
 
 func TestExtractErrorSimple(t *gotesting.T) {
-	ch := make(chan Output, 1)
-	s := newState(&Test{Timeout: time.Minute}, ch, &TestConfig{})
+	or := newOutputReader()
+	s := newState(&Test{Timeout: time.Minute}, or.ch, &TestConfig{})
 
 	err := errorFunc()
 	s.Error(err)
-	close(ch)
+	close(or.ch)
 
-	out := readOutput(ch)
+	out := or.read()
 	if len(out) != 1 {
 		t.Fatalf("Got %v output(s); want 1", len(out))
 	}
@@ -116,17 +107,17 @@ func TestExtractErrorSimple(t *gotesting.T) {
 }
 
 func TestExtractErrorHeuristic(t *gotesting.T) {
-	ch := make(chan Output, 4)
-	s := newState(&Test{Timeout: time.Minute}, ch, &TestConfig{})
+	or := newOutputReader()
+	s := newState(&Test{Timeout: time.Minute}, or.ch, &TestConfig{})
 
 	err := errorFunc()
 	s.Error("Failed something  :  ", err)
 	s.Error("Failed something  ", err)
 	s.Errorf("Failed something  :  %v", err)
 	s.Errorf("Failed something  %v", err)
-	close(ch)
+	close(or.ch)
 
-	out := readOutput(ch)
+	out := or.read()
 	if len(out) != 4 {
 		t.Fatalf("Got %v output(s); want 4", len(out))
 	}
@@ -146,8 +137,8 @@ func TestExtractErrorHeuristic(t *gotesting.T) {
 }
 
 func TestFatal(t *gotesting.T) {
-	ch := make(chan Output, 2)
-	s := newState(&Test{Timeout: time.Minute}, ch, &TestConfig{})
+	or := newOutputReader()
+	s := newState(&Test{Timeout: time.Minute}, or.ch, &TestConfig{})
 
 	// Log the fatal message in a goroutine so the main goroutine that's running the test won't exit.
 	done := make(chan bool)
@@ -155,7 +146,7 @@ func TestFatal(t *gotesting.T) {
 	go func() {
 		defer func() {
 			close(done)
-			close(ch)
+			close(or.ch)
 		}()
 		s.Fatalf("fatal %s", "msg")
 		died = false
@@ -165,8 +156,7 @@ func TestFatal(t *gotesting.T) {
 	if !died {
 		t.Errorf("Test continued after call to Fatalf")
 	}
-	out := readOutput(ch)
-	if len(out) != 1 {
+	if out := or.read(); len(out) != 1 {
 		t.Errorf("Got %v outputs; want 1", len(out))
 	} else if out[0].Err == nil || out[0].Err.Reason != "fatal msg" {
 		t.Errorf("Got output %v; want reason %q", out[0].Err, "fatal msg")
@@ -186,7 +176,8 @@ func TestDataPathDeclared(t *gotesting.T) {
 		{"foo", filepath.Join(dataDir, "foo")},
 		{"foo/bar", filepath.Join(dataDir, "foo/bar")},
 	} {
-		s := newState(&test, make(chan Output), &TestConfig{DataDir: dataDir})
+		or := newOutputReader()
+		s := newState(&test, or.ch, &TestConfig{DataDir: dataDir})
 		if act := s.DataPath(tc.in); act != tc.exp {
 			t.Errorf("DataPath(%q) = %q; want %q", tc.in, act, tc.exp)
 		}
@@ -194,12 +185,12 @@ func TestDataPathDeclared(t *gotesting.T) {
 }
 
 func TestDataPathNotDeclared(t *gotesting.T) {
-	ch := make(chan Output, 1)
+	or := newOutputReader()
 	test := Test{
 		Timeout: time.Minute,
 		Data:    []string{"foo"},
 	}
-	s := newState(&test, ch, &TestConfig{DataDir: "/data"})
+	s := newState(&test, or.ch, &TestConfig{DataDir: "/data"})
 
 	// Request an undeclared data path to cause a fatal error. Do this in a goroutine
 	// so the main goroutine that's running the test won't exit.
@@ -207,13 +198,13 @@ func TestDataPathNotDeclared(t *gotesting.T) {
 	go func() {
 		defer func() {
 			close(done)
-			close(ch)
+			close(or.ch)
 		}()
 		s.DataPath("bar")
 	}()
 	<-done
 
-	out := readOutput(ch)
+	out := or.read()
 	if len(out) != 1 || out[0].Err == nil {
 		t.Errorf("Got %v when requesting undeclared data path; wanted 1 error", out)
 	}
@@ -237,8 +228,8 @@ func TestDataFileServer(t *gotesting.T) {
 	}
 
 	test := Test{Data: []string{file1}}
-	ch := make(chan Output, 3)
-	s := newState(&test, ch, &TestConfig{DataDir: td})
+	or := newOutputReader()
+	s := newState(&test, or.ch, &TestConfig{DataDir: td})
 
 	srv := httptest.NewServer(http.FileServer(s.DataFileSystem()))
 	defer srv.Close()
@@ -281,7 +272,8 @@ func TestDataFileServer(t *gotesting.T) {
 func TestMeta(t *gotesting.T) {
 	meta := Meta{TastPath: "/foo/bar", Target: "example.net", RunFlags: []string{"-foo", "-bar"}}
 	getMeta := func(test *Test, cfg *TestConfig) (*State, *Meta) {
-		s := newState(test, make(chan Output, 1), cfg)
+		or := newOutputReader()
+		s := newState(test, or.ch, cfg)
 
 		// Meta can call Fatal, which results in a call to runtime.Goexit(),
 		// so run this in a goroutine to isolate it from the test.

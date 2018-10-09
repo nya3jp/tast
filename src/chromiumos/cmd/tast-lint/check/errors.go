@@ -7,11 +7,12 @@ package check
 import (
 	"fmt"
 	"go/ast"
+	"go/token"
 	"strconv"
 )
 
 // ErrorsImports makes sure blacklisted errors packages are not imported.
-func ErrorsImports(f *ast.File) []*Issue {
+func ErrorsImports(fs *token.FileSet, f *ast.File) []*Issue {
 	var issues []*Issue
 
 	for _, im := range f.Imports {
@@ -21,7 +22,7 @@ func ErrorsImports(f *ast.File) []*Issue {
 		}
 		if p == "errors" || p == "github.com/pkg/errors" {
 			issues = append(issues, &Issue{
-				Pos: im.Pos(),
+				Pos: fs.Position(im.Pos()),
 				Msg: fmt.Sprintf("chromiumos/tast/errors package should be used instead of %s package", p),
 			})
 		}
@@ -40,7 +41,7 @@ func (v funcVisitor) Visit(node ast.Node) ast.Visitor {
 }
 
 // FmtErrorf makes sure fmt.Errorf is not used.
-func FmtErrorf(f *ast.File) []*Issue {
+func FmtErrorf(fs *token.FileSet, f *ast.File) []*Issue {
 	var issues []*Issue
 
 	v := funcVisitor(func(node ast.Node) {
@@ -54,7 +55,7 @@ func FmtErrorf(f *ast.File) []*Issue {
 			return
 		}
 		issues = append(issues, &Issue{
-			Pos: x.Pos(),
+			Pos: fs.Position(x.Pos()),
 			Msg: "chromiumos/tast/errors.Errorf should be used instead of fmt.Errorf",
 		})
 	})

@@ -144,6 +144,30 @@
     },
     {
       "key": {
+        "uuid": "5cd70773_ea9f1274",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-09T23:26:16Z",
+      "side": 1,
+      "message": "yes, i think a zero or negative Timeout at this point would indicate a bug in the framework:\n\n- testing.Test.finalize verifies that Timeout isn\u0027t negative\n- tast.bundle.Local and tast.bundle.Remote set bundle.runConfig.defaultTestTimeout to 2m and 5m, respectively\n- bundle.readArgs sets the test\u0027s timeout to bundle.runConfig.defaultTestTimeout if it\u0027s 0\n\ni think i still have a preference for constraining panics when possible, though. i\u0027d rather make the entire run complete but report each test as failing than make the run fail. i think i feel this way since i could imagine cases where some tests end up with 0 timeouts while others don\u0027t, and reporting failure within the test would at least allow us to still run the ones that aren\u0027t broken.",
+      "parentUuid": "b18fc083_60f580eb",
+      "range": {
+        "startLine": 146,
+        "startChar": 0,
+        "endLine": 149,
+        "endChar": 3
+      },
+      "revId": "0b35769fdc3c43073742e354c80af83ac3914ccf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "55e3d4ca_fa140497",
         "filename": "src/chromiumos/tast/testing/test.go",
         "patchSetId": 2

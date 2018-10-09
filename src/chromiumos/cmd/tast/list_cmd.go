@@ -14,11 +14,11 @@ import (
 	"log"
 	"os"
 
+	"github.com/google/subcommands"
+
 	"chromiumos/cmd/tast/logging"
 	"chromiumos/cmd/tast/run"
 	"chromiumos/tast/testing"
-
-	"github.com/google/subcommands"
 )
 
 // listCmd implements subcommands.Command to support listing tests.

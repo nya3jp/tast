@@ -10,10 +10,10 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/google/subcommands"
+
 	"chromiumos/cmd/tast/logging"
 	"chromiumos/cmd/tast/symbolize"
-
-	"github.com/google/subcommands"
 )
 
 // symbolizeCmd implements subcommands.Command to support symbolizing crashes.

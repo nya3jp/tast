@@ -17,14 +17,14 @@ import (
 	gotesting "testing"
 	"time"
 
+	"github.com/google/subcommands"
+
 	"chromiumos/cmd/tast/logging"
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/control"
 	"chromiumos/tast/runner"
 	"chromiumos/tast/testing"
 	"chromiumos/tast/testutil"
-
-	"github.com/google/subcommands"
 )
 
 const (

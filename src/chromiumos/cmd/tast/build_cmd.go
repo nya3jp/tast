@@ -11,10 +11,10 @@ import (
 	"os"
 	"strings"
 
+	"github.com/google/subcommands"
+
 	"chromiumos/cmd/tast/build"
 	"chromiumos/cmd/tast/logging"
-
-	"github.com/google/subcommands"
 )
 
 // buildCmd implements subcommands.Command to support compiling executables.

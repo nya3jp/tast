@@ -1,0 +1,165 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "734b1561_5e2c85fc",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-09T03:24:28Z",
+      "side": 1,
+      "message": "I\u0027m wondering if we can prevent misuse in more effective way. Below let\u0027s consider chrome.LoggedInPre as an example.\n\nIIUC misuse we want to catch with this function is that test functions call chrome.LoggedIn() directly to get a precondition object not delcared in AddTest.\n\nHow about just unexporting chrome.LoggedInPre, i.e. naming it chrome.loggedInPre, and returning it as Precondition? That is:\n\n\n \u003d\u003d\u003d chrome.go\n\n type loggedInPre struct { ... }\n\n var aLoggedInPre *loggedInPre \u003d \u0026loggedInPre{...}\n\n func LoggedInPre() Precondition {\n   return aLoggedInPre\n }\n\n\n \u003d\u003d\u003d chrome_login.go\n\n func init() {\n   testing.AddTest(\u0026testing.Test{\n     ...\n     Pre: chrome.LoggedInPre(),\n   })\n }\n\n func ChromeLogin(ctx context.Context, s *testing.State) {\n   cr :\u003d chrome.UseLoggedInPre(s)\n }\n\n\nPros of this approach might be:\n- Test functions can\u0027t do anything useful by calling chrome.LoggedInPre() directly because it returns just Precondition interface and real struct is unexported. It eliminates the need to RunningTest function too.\n- Test functions can\u0027t construct loggedInPre struct directly.\n- Test functiosn don\u0027t need to (and can\u0027t) do type assertion of s.Pre(), which is more intuitive.\n\nWDYT?",
+      "range": {
+        "startLine": 197,
+        "startChar": 0,
+        "endLine": 203,
+        "endChar": 1
+      },
+      "revId": "0b35769fdc3c43073742e354c80af83ac3914ccf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "18abf100_0f5f4fcc",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-09T03:24:28Z",
+      "side": 1,
+      "message": "nit: IIUC tst.Timeout is already set at the beginning of Run()? Then how about checking it there? We actually access tst.Timeout below, before runStages().",
+      "range": {
+        "startLine": 146,
+        "startChar": 0,
+        "endLine": 149,
+        "endChar": 3
+      },
+      "revId": "0b35769fdc3c43073742e354c80af83ac3914ccf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "55e3d4ca_fa140497",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-09T03:24:28Z",
+      "side": 1,
+      "message": "nit: How about guard style?\n\n if s.HasError() {\n     return\n }\n s.Logf(...)\n tst.Pre.Prepare(ctx, s)",
+      "range": {
+        "startLine": 163,
+        "startChar": 3,
+        "endLine": 163,
+        "endChar": 21
+      },
+      "revId": "0b35769fdc3c43073742e354c80af83ac3914ccf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "751f0d09_aa4d7e86",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-09T03:24:28Z",
+      "side": 1,
+      "message": "nit: Same here (guard style)",
+      "range": {
+        "startLine": 173,
+        "startChar": 0,
+        "endLine": 173,
+        "endChar": 20
+      },
+      "revId": "0b35769fdc3c43073742e354c80af83ac3914ccf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "72f82cfb_5fd0f83a",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 194,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-09T03:24:28Z",
+      "side": 1,
+      "message": "This means: if cfg.SetupFunc succeeded but tst.Pre.Prepare() failed, then CleanupFunc is not called. CleanupFunc is often installed to clean up what SetupFunc has done, so I think we want to run CleanupFunc in this case. WDYT?",
+      "range": {
+        "startLine": 194,
+        "startChar": 3,
+        "endLine": 194,
+        "endChar": 15
+      },
+      "revId": "0b35769fdc3c43073742e354c80af83ac3914ccf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2f8932b2_481e1a27",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 470,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-09T03:24:28Z",
+      "side": 1,
+      "message": "Usual sort functions in Go seems to mutate a given slice (i.e. no return value). How about using the same way in this function?",
+      "range": {
+        "startLine": 470,
+        "startChar": 0,
+        "endLine": 470,
+        "endChar": 39
+      },
+      "revId": "0b35769fdc3c43073742e354c80af83ac3914ccf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "88e5a543_de9de431",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 500,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-09T03:24:28Z",
+      "side": 1,
+      "message": "Can\u0027t we do this more simply by pair comparison?\n\n sort.Slice(tests, func(i, j int) bool {\n   ti :\u003d tests[i]\n   tj :\u003d tests[j]\n   var pi, pj string\n   if ti.Pre !\u003d nil {\n     pi \u003d ti.Pre.String()\n   }\n   if tj.Pre !\u003d nil {\n     pj \u003d tj.Pre.String()\n   }\n   if pi !\u003d pj {\n     return pi \u003c pj\n   }\n   return ti.Name \u003c tj.Name\n })",
+      "range": {
+        "startLine": 471,
+        "startChar": 0,
+        "endLine": 500,
+        "endChar": 11
+      },
+      "revId": "0b35769fdc3c43073742e354c80af83ac3914ccf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -57,8 +57,9 @@ func checkAll(git *git, paths []string) (*token.FileSet, []*check.Issue, error) 
 				return nil, nil, err
 			}
 
-			issues = append(issues, check.ErrorsImports(f)...)
-			issues = append(issues, check.FmtErrorf(f)...)
+			issues = append(issues, check.ErrorsImports(f, fs)...)
+			issues = append(issues, check.FmtErrorf(f, fs)...)
+			issues = append(issues, check.ImportOrder(path, data)...)
 		}
 	}
 
@@ -68,8 +69,8 @@ func checkAll(git *git, paths []string) (*token.FileSet, []*check.Issue, error) 
 // report prints issues to stdout.
 func report(fs *token.FileSet, issues []*check.Issue) {
 	sort.Slice(issues, func(i, j int) bool {
-		pi := fs.Position(issues[i].Pos)
-		pj := fs.Position(issues[j].Pos)
+		pi := issues[i].Pos
+		pj := issues[j].Pos
 		if pi.Filename != pj.Filename {
 			return pi.Filename < pj.Filename
 		}
@@ -77,7 +78,7 @@ func report(fs *token.FileSet, issues []*check.Issue) {
 	})
 
 	for _, i := range issues {
-		fmt.Println(i.String(fs))
+		fmt.Println(i)
 	}
 }
 

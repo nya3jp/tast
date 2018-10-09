@@ -20,14 +20,14 @@ func parse(code string) (*ast.File, *token.FileSet) {
 	return f, fs
 }
 
-func verifyIssues(t *testing.T, fs *token.FileSet, issues []*Issue, expects []string) {
+func verifyIssues(t *testing.T, issues []*Issue, expects []string) {
 	if len(issues) != len(expects) {
 		t.Errorf("Got %d issues; want %d", len(issues), len(expects))
 		return
 	}
 
 	for i, issue := range issues {
-		msg := issue.String(fs)
+		msg := issue.String()
 		expect := expects[i]
 		if msg != expect {
 			t.Errorf("Issue %d is %q; want %q", i, msg, expect)
@@ -53,8 +53,8 @@ import (
 	}
 
 	f, fs := parse(code)
-	issues := ErrorsImports(f)
-	verifyIssues(t, fs, issues, expects)
+	issues := ErrorsImports(fs, f)
+	verifyIssues(t, issues, expects)
 }
 
 func TestFmtPrintf(t *testing.T) {
@@ -77,6 +77,6 @@ func main() {
 	}
 
 	f, fs := parse(code)
-	issues := FmtErrorf(f)
-	verifyIssues(t, fs, issues, expects)
+	issues := FmtErrorf(fs, f)
+	verifyIssues(t, issues, expects)
 }

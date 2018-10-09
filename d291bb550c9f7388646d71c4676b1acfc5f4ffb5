@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "f873d43c_c1e6726b",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-09T05:33:19Z",
+      "side": 1,
+      "message": "All third_party packages are in one group, and sorted in lexicographical order.\nHere is an example:\nhttps://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/1270538/1/src/chromiumos/cmd/tast/main.go",
+      "parentUuid": "46792053_6f0bcb7a",
+      "range": {
+        "startLine": 15,
+        "startChar": 63,
+        "endLine": 15,
+        "endChar": 78
+      },
+      "revId": "d291bb550c9f7388646d71c4676b1acfc5f4ffb5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "3cf2875e_7134a60e",
         "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
         "patchSetId": 1

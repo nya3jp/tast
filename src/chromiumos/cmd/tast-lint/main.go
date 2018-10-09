@@ -41,7 +41,7 @@ func isGoFile(path string) bool {
 }
 
 // checkAll runs all checks against paths.
-func checkAll(git *git, paths []string) (*token.FileSet, []*check.Issue, error) {
+func checkAll(git *git, paths []string) ([]*check.Issue, error) {
 	fs := token.NewFileSet()
 
 	var issues []*check.Issue
@@ -49,27 +49,28 @@ func checkAll(git *git, paths []string) (*token.FileSet, []*check.Issue, error) 
 		if isGoFile(path) && isTestFile(path) {
 			data, err := git.readFile(path)
 			if err != nil {
-				return nil, nil, err
+				return nil, err
 			}
 
 			f, err := parser.ParseFile(fs, path, data, 0)
 			if err != nil {
-				return nil, nil, err
+				return nil, err
 			}
 
-			issues = append(issues, check.ErrorsImports(f)...)
-			issues = append(issues, check.FmtErrorf(f)...)
+			issues = append(issues, check.ErrorsImports(fs, f)...)
+			issues = append(issues, check.FmtErrorf(fs, f)...)
+			issues = append(issues, check.ImportOrder(path, data)...)
 		}
 	}
 
-	return fs, issues, nil
+	return issues, nil
 }
 
 // report prints issues to stdout.
-func report(fs *token.FileSet, issues []*check.Issue) {
+func report(issues []*check.Issue) {
 	sort.Slice(issues, func(i, j int) bool {
-		pi := fs.Position(issues[i].Pos)
-		pj := fs.Position(issues[j].Pos)
+		pi := issues[i].Pos
+		pj := issues[j].Pos
 		if pi.Filename != pj.Filename {
 			return pi.Filename < pj.Filename
 		}
@@ -77,7 +78,7 @@ func report(fs *token.FileSet, issues []*check.Issue) {
 	})
 
 	for _, i := range issues {
-		fmt.Println(i.String(fs))
+		fmt.Println(i)
 	}
 }
 
@@ -102,12 +103,12 @@ func main() {
 		return
 	}
 
-	fs, issues, err := checkAll(git, files)
+	issues, err := checkAll(git, files)
 	if err != nil {
 		panic(err)
 	}
 	if len(issues) > 0 {
-		report(fs, issues)
+		report(issues)
 		os.Exit(1)
 	}
 }

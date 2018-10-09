@@ -16,6 +16,24 @@
       "revId": "744476ca78587cdb9571132f99b0ee2318bb5a4f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8438f392_04bde4dd",
+        "filename": ".gitignore",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-09T05:40:03Z",
+      "side": 1,
+      "message": "Done. (This is just copied so we have this trailing period in tast-test, too...)",
+      "parentUuid": "3e950a80_937ebd68",
+      "revId": "744476ca78587cdb9571132f99b0ee2318bb5a4f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -11,10 +11,10 @@ import (
 
 // Issue holds an issue reported by the linter.
 type Issue struct {
-	Pos token.Pos
+	Pos token.Position
 	Msg string
 }
 
-func (i *Issue) String(fs *token.FileSet) string {
-	return fmt.Sprintf("%s: %s", fs.Position(i.Pos), i.Msg)
+func (i *Issue) String() string {
+	return fmt.Sprintf("%s: %s", i.Pos, i.Msg)
 }

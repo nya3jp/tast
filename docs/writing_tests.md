@@ -119,6 +119,39 @@ suggestions that may be helpful (despite being C++-centric).
 [Go's testing package]: https://golang.org/pkg/testing/
 [Best practices for writing Chrome OS unit tests]: https://chromium.googlesource.com/chromiumos/docs/+/master/unit_tests.md
 
+### Import
+
+Entries in import declaration must be grouped by empty line, and sorted in
+following order.
+
+- Standard library packages
+- Third-party packages
+- chromiumos/ packages
+
+In each group, entries must be sorted in the lexicographical order. For example:
+
+```go
+import (
+	"context"
+	"fmt"
+
+	"github.com/godbus/dbus"
+	"golang.org/x/sys/unix"
+
+	"chromiumos/tast/errors"
+	"chromiumos/tast/local/chrome"
+)
+```
+
+Note that, although github.com and golang.org are different domains, they
+should be in a group.
+
+This is how `goimports --local=chromiumos/` sorts. It may be valuable to run
+the command. Note that, 1) the command preserves existing group. So, it may
+be necessary to remove empty lines in import() in advance, and 2) use the
+command to add/remove import entries based on the following code. The path
+resolution may require setting `GOPATH` properly.
+
 ## Test structure
 
 As seen in the test declaration above, each test is comprised of a single

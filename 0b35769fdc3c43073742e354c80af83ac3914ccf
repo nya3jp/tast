@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "03da5e27_2bb16b7d",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-09T05:22:30Z",
+      "side": 1,
+      "message": "i\u0027m reluctant to use an interface like this, because i feel like it may not scale well to preconditions that offer additional functionality (e.g. my proof-of-concept arc-booted precondition has accessors for both *Chrome and *ARC), and it could get complicated if a package provides multiple preconditions (which i think may be the case in the future). i\u0027d rather group all of the precondition\u0027s functionality (at least from a test\u0027s perspective) into a single type.\n\nif we took this approach, i think we\u0027d need to offer a method like State.Pre that UseLoggedInPre would call to get a Precondition from State that it can convert to a *loggedInPre, right? we may still need to guard against tests calling that method and invoking the precondition\u0027s Prepare and Close methods directly.\n\ni think the main requirements here are:\n- expose a common interface to testing.Test.Run (and ideally nothing to code outside of the testing package) with Prepare, Close, Timeout, and String methods\n- expose a different set of precondition-specific functions to tests that use the precondition\n\ni can think of convoluted ways to accomplish this, but they all seem to sacrifice the property that the object that the test author registers in Test.Pre is directly connected to the type of the object that the test author later uses in their test. i think that that\u0027s a somewhat important property to have for making the code easier for test authors to understand.\n\nso i still don\u0027t have any good solutions here. what i\u0027d really like to do is make Prepare/Close/Timeout/String private, in the sense that they\u0027re only callable by the testing package, but i don\u0027t think that that\u0027s possible to do in go.",
+      "parentUuid": "734b1561_5e2c85fc",
+      "range": {
+        "startLine": 197,
+        "startChar": 0,
+        "endLine": 203,
+        "endChar": 1
+      },
+      "revId": "0b35769fdc3c43073742e354c80af83ac3914ccf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "18abf100_0f5f4fcc",
         "filename": "src/chromiumos/tast/testing/test.go",
         "patchSetId": 2
@@ -36,6 +60,30 @@
       "writtenOn": "2018-10-09T03:24:28Z",
       "side": 1,
       "message": "nit: IIUC tst.Timeout is already set at the beginning of Run()? Then how about checking it there? We actually access tst.Timeout below, before runStages().",
+      "range": {
+        "startLine": 146,
+        "startChar": 0,
+        "endLine": 149,
+        "endChar": 3
+      },
+      "revId": "0b35769fdc3c43073742e354c80af83ac3914ccf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "70c0291f_37f8df72",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-09T05:22:30Z",
+      "side": 1,
+      "message": "it is set, but reporting an error from outside of a stage would possibly be ugly:\n\n- we can\u0027t call either panic or s.Fatal, since those would make the main goroutine panic or exit\n- we could call s.Error, but then we\u0027d need to manually close ch before returning\n\nso treating this as a setup error seemed like the cleanest approach to me, but let me know if you disagree.",
+      "parentUuid": "18abf100_0f5f4fcc",
       "range": {
         "startLine": 146,
         "startChar": 0,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "e8873ba5_60f4e05a",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-09T05:22:30Z",
+      "side": 1,
+      "message": "sure, that sounds fine",
+      "parentUuid": "55e3d4ca_fa140497",
+      "range": {
+        "startLine": 163,
+        "startChar": 3,
+        "endLine": 163,
+        "endChar": 21
+      },
+      "revId": "0b35769fdc3c43073742e354c80af83ac3914ccf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "751f0d09_aa4d7e86",
         "filename": "src/chromiumos/tast/testing/test.go",
         "patchSetId": 2
@@ -94,6 +166,30 @@
     },
     {
       "key": {
+        "uuid": "bf9e654a_f7273710",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-09T05:22:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "751f0d09_aa4d7e86",
+      "range": {
+        "startLine": 173,
+        "startChar": 0,
+        "endLine": 173,
+        "endChar": 20
+      },
+      "revId": "0b35769fdc3c43073742e354c80af83ac3914ccf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "72f82cfb_5fd0f83a",
         "filename": "src/chromiumos/tast/testing/test.go",
         "patchSetId": 2
@@ -105,6 +201,30 @@
       "writtenOn": "2018-10-09T03:24:28Z",
       "side": 1,
       "message": "This means: if cfg.SetupFunc succeeded but tst.Pre.Prepare() failed, then CleanupFunc is not called. CleanupFunc is often installed to clean up what SetupFunc has done, so I think we want to run CleanupFunc in this case. WDYT?",
+      "range": {
+        "startLine": 194,
+        "startChar": 3,
+        "endLine": 194,
+        "endChar": 15
+      },
+      "revId": "0b35769fdc3c43073742e354c80af83ac3914ccf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c617fc11_4fbcf88b",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 194,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-09T05:22:30Z",
+      "side": 1,
+      "message": "actually, the only use of CleanupFunc so far isn\u0027t really cleanup -- it\u0027s to call faillog.SaveIfError in tast/bundle/local.go. maybe we should rename this to PostRunFunc? i don\u0027t have strong feelings about whether it should run before or after the precondition\u0027s Close method in that case.",
+      "parentUuid": "72f82cfb_5fd0f83a",
       "range": {
         "startLine": 194,
         "startChar": 3,
@@ -140,6 +260,30 @@
     },
     {
       "key": {
+        "uuid": "b9081fa0_cd020832",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 470,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-09T05:22:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2f8932b2_481e1a27",
+      "range": {
+        "startLine": 470,
+        "startChar": 0,
+        "endLine": 470,
+        "endChar": 39
+      },
+      "revId": "0b35769fdc3c43073742e354c80af83ac3914ccf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "88e5a543_de9de431",
         "filename": "src/chromiumos/tast/testing/test.go",
         "patchSetId": 2
@@ -151,6 +295,30 @@
       "writtenOn": "2018-10-09T03:24:28Z",
       "side": 1,
       "message": "Can\u0027t we do this more simply by pair comparison?\n\n sort.Slice(tests, func(i, j int) bool {\n   ti :\u003d tests[i]\n   tj :\u003d tests[j]\n   var pi, pj string\n   if ti.Pre !\u003d nil {\n     pi \u003d ti.Pre.String()\n   }\n   if tj.Pre !\u003d nil {\n     pj \u003d tj.Pre.String()\n   }\n   if pi !\u003d pj {\n     return pi \u003c pj\n   }\n   return ti.Name \u003c tj.Name\n })",
+      "range": {
+        "startLine": 471,
+        "startChar": 0,
+        "endLine": 500,
+        "endChar": 11
+      },
+      "revId": "0b35769fdc3c43073742e354c80af83ac3914ccf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "793de904_6bc6914e",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 500,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-09T05:22:30Z",
+      "side": 1,
+      "message": "yes, good point -- that\u0027s much cleaner. thanks!",
+      "parentUuid": "88e5a543_de9de431",
       "range": {
         "startLine": 471,
         "startChar": 0,

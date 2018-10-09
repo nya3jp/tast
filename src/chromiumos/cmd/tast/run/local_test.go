@@ -18,6 +18,8 @@ import (
 	gotesting "testing"
 	"time"
 
+	"github.com/google/subcommands"
+
 	"chromiumos/cmd/tast/logging"
 	"chromiumos/tast/control"
 	"chromiumos/tast/host"
@@ -25,8 +27,6 @@ import (
 	"chromiumos/tast/runner"
 	"chromiumos/tast/testing"
 	"chromiumos/tast/testutil"
-
-	"github.com/google/subcommands"
 )
 
 var userKey, hostKey *rsa.PrivateKey

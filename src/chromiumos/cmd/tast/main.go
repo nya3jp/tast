@@ -14,11 +14,10 @@ import (
 	"os/signal"
 	"syscall"
 
-	"chromiumos/cmd/tast/logging"
-
 	"github.com/google/subcommands"
-
 	"golang.org/x/crypto/ssh/terminal"
+
+	"chromiumos/cmd/tast/logging"
 )
 
 const (

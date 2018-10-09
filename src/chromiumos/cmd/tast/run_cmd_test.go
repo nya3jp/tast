@@ -15,11 +15,11 @@ import (
 	gotesting "testing"
 	"time"
 
+	"github.com/google/subcommands"
+
 	"chromiumos/cmd/tast/logging"
 	"chromiumos/cmd/tast/run"
 	"chromiumos/tast/testing"
-
-	"github.com/google/subcommands"
 )
 
 // executeRunCmd creates a runCmd and executes it using the supplied args, wrapper, and Logger.

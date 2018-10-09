@@ -14,15 +14,14 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/subcommands"
+	"golang.org/x/crypto/ssh"
+
 	"chromiumos/cmd/tast/build"
 	"chromiumos/cmd/tast/timing"
 	"chromiumos/tast/host"
 	"chromiumos/tast/runner"
 	"chromiumos/tast/testing"
-
-	"github.com/google/subcommands"
-
-	"golang.org/x/crypto/ssh"
 )
 
 const (

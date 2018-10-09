@@ -14,11 +14,11 @@ import (
 	"reflect"
 	gotesting "testing"
 
+	"github.com/google/subcommands"
+
 	"chromiumos/cmd/tast/logging"
 	"chromiumos/cmd/tast/run"
 	"chromiumos/tast/testing"
-
-	"github.com/google/subcommands"
 )
 
 // executeListCmd creates a listCmd and executes it using the supplied args and wrapper.

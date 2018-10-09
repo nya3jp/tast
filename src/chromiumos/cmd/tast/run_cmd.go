@@ -14,11 +14,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/subcommands"
+
 	"chromiumos/cmd/tast/logging"
 	"chromiumos/cmd/tast/run"
 	"chromiumos/cmd/tast/timing"
-
-	"github.com/google/subcommands"
 )
 
 const (

@@ -168,6 +168,30 @@
     },
     {
       "key": {
+        "uuid": "c00d38cc_ce62dc4f",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-10T01:02:54Z",
+      "side": 1,
+      "message": "Thanks for detailed explanation, it makes sense.\n\nIf you intend to report this check failure as test errors, you might keep this s.Fatal rather than panic. Please choose whichever you like.",
+      "parentUuid": "5cd70773_ea9f1274",
+      "range": {
+        "startLine": 146,
+        "startChar": 0,
+        "endLine": 149,
+        "endChar": 3
+      },
+      "revId": "0b35769fdc3c43073742e354c80af83ac3914ccf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "55e3d4ca_fa140497",
         "filename": "src/chromiumos/tast/testing/test.go",
         "patchSetId": 2

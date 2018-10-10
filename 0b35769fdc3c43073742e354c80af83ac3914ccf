@@ -429,6 +429,30 @@
     },
     {
       "key": {
+        "uuid": "d5fa429e_438c18b7",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 194,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-10T05:24:18Z",
+      "side": 1,
+      "message": "\u003e mind if i do this renaming in a followup change to keep this one from getting larger (and avoid doing a painful rebase)?\n\nOf course not, let\u0027s discuss this in a separate change.\n\n\n\u003e i\u0027m wondering if PreTestFunc and PostTestFunc would be clearer names. \"run\" is already used elsewhere to describe the overall run consisting of multiple tests\n\nMakes perfect sense. {Pre,Post}TestFunc sounds good to me.\n\n\n\u003e however, maybe it\u0027s confusing if Precondition.Close runs unconditionally while PostTestFunc only runs if Test.Func runs. do you think we should switch to a model similar to the following?\n\nI don\u0027t have strong opinion here. Initially I had some thoughts, but after several discussions, I came to think there\u0027s no definite answer and we can revisit whenever we find any problem. So it\u0027s your call :)",
+      "parentUuid": "c7c41a3e_b7edee40",
+      "range": {
+        "startLine": 194,
+        "startChar": 3,
+        "endLine": 194,
+        "endChar": 15
+      },
+      "revId": "0b35769fdc3c43073742e354c80af83ac3914ccf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "2f8932b2_481e1a27",
         "filename": "src/chromiumos/tast/testing/test.go",
         "patchSetId": 2

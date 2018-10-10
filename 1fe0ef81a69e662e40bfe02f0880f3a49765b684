@@ -71,6 +71,30 @@
     },
     {
       "key": {
+        "uuid": "2768dece_f746d5d3",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-10T02:08:15Z",
+      "side": 1,
+      "message": "An alternative would be to check goimports exists at the beginning of the command, and panic here if it does not work.",
+      "parentUuid": "7d18846b_566dfd84",
+      "range": {
+        "startLine": 34,
+        "startChar": 0,
+        "endLine": 35,
+        "endChar": 20
+      },
+      "revId": "1fe0ef81a69e662e40bfe02f0880f3a49765b684",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ee097089_8086637b",
         "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
         "patchSetId": 3

@@ -73,6 +73,30 @@
     },
     {
       "key": {
+        "uuid": "619bcae3_0b450145",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-10T04:52:23Z",
+      "side": 1,
+      "message": "thanks. i\u0027ve added a TODO to the Precondition interface to figure out a better way of structuring this.",
+      "parentUuid": "8fdf33c1_d0b5ef91",
+      "range": {
+        "startLine": 197,
+        "startChar": 0,
+        "endLine": 203,
+        "endChar": 1
+      },
+      "revId": "0b35769fdc3c43073742e354c80af83ac3914ccf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "18abf100_0f5f4fcc",
         "filename": "src/chromiumos/tast/testing/test.go",
         "patchSetId": 2
@@ -180,6 +204,30 @@
       "side": 1,
       "message": "Thanks for detailed explanation, it makes sense.\n\nIf you intend to report this check failure as test errors, you might keep this s.Fatal rather than panic. Please choose whichever you like.",
       "parentUuid": "5cd70773_ea9f1274",
+      "range": {
+        "startLine": 146,
+        "startChar": 0,
+        "endLine": 149,
+        "endChar": 3
+      },
+      "revId": "0b35769fdc3c43073742e354c80af83ac3914ccf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ce08cfab_eb0446f6",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-10T04:52:23Z",
+      "side": 1,
+      "message": "i\u0027ve changed this back to s.Fatal and added a comment.",
+      "parentUuid": "c00d38cc_ce62dc4f",
       "range": {
         "startLine": 146,
         "startChar": 0,
@@ -345,6 +393,30 @@
       "side": 1,
       "message": "Renaming SetupFunc/CleanupFunc to PreRunFunc/PostRunFunc sounds good to me. Then it\u0027s clear PostRunFunc runs only when the test body function is run.",
       "parentUuid": "c617fc11_4fbcf88b",
+      "range": {
+        "startLine": 194,
+        "startChar": 3,
+        "endLine": 194,
+        "endChar": 15
+      },
+      "revId": "0b35769fdc3c43073742e354c80af83ac3914ccf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c7c41a3e_b7edee40",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 194,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-10T04:52:23Z",
+      "side": 1,
+      "message": "mind if i do this renaming in a followup change to keep this one from getting larger (and avoid doing a painful rebase)?\n\ni\u0027m wondering if PreTestFunc and PostTestFunc would be clearer names. \"run\" is already used elsewhere to describe the overall run consisting of multiple tests; see runConfig in src/chromiumos/tast/bundle/bundle.go:\n\n// runConfig contains additional parameters used when running tests.\ntype runConfig struct {\n    // runSetupFunc is run at the beginning of the entire test run if non-nil.\n    // The provided context (or a derived context with additional values) should be returned by the function.\n    runSetupFunc func(context.Context, logFunc) (context.Context, error)\n    // runCleanupFunc is run at the end of the entire test run if non-nil.\n    runCleanupFunc func(context.Context, logFunc) error\n    // testSetupFunc is run before each test if non-nil.\n    // If this function panics or reports errors, neither the test body function nor testCleanupFunc will run.\n    testSetupFunc func(context.Context, *testing.State)\n    // testCleanFunc is run at the end of each test if non-nil.\n    // If testSetupFunc panicked or reported errors, this will not run.\n    testCleanupFunc func(context.Context, *testing.State)\n    // defaultTestTimeout contains the default maximum time allotted to each test.\n    // It is only used if testing.Test.Timeout is unset.\n    defaultTestTimeout time.Duration\n}\n\nthen i\u0027d probably also want to rename runSetupFunc and runCleanupFunc here to preRunFunc and postRunFunc.\n\nperhaps the overall order within each test should then become this:\n\n- TestConfig.PreTestFunc\n- Precondition.Prepare\n- Test.Func\n- Precondition.Close (if last test using precondition)\n- TestConfig.PostTestFunc\n\ni think we want PreTestFunc to run before Prepare, as it does things like setting up SSH connections for remote tests. similarly, it seems fine for PostTestFunc to run last, as it can capture logs for failures produced when the precondition is closed.\n\nhowever, maybe it\u0027s confusing if Precondition.Close runs unconditionally while PostTestFunc only runs if Test.Func runs. do you think we should switch to a model similar to the following?\n\n- PreTestFunc runs unconditionally (of course)\n- Prepare only runs if PreTestFunc didn\u0027t report errors\n- Func only runs if neither PreTestFunc nor Prepare reported errors\n- Close runs unconditionally for the last test using the precondition\n- PostTestFunc runs unconditionally",
+      "parentUuid": "16eedb26_85ba17e1",
       "range": {
         "startLine": 194,
         "startChar": 3,

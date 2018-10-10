@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "4ac1ae0e_1262e6f4",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-10T23:19:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "02dca644_9b30563d",
+      "range": {
+        "startLine": 128,
+        "startChar": 2,
+        "endLine": 128,
+        "endChar": 13
+      },
+      "revId": "1fe0ef81a69e662e40bfe02f0880f3a49765b684",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a4f430c_8b24775c",
         "filename": "docs/writing_tests.md",
         "patchSetId": 3
@@ -45,6 +69,30 @@
       "revId": "1fe0ef81a69e662e40bfe02f0880f3a49765b684",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ec139672_2b4f9990",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-10T23:19:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3a4f430c_8b24775c",
+      "range": {
+        "startLine": 131,
+        "startChar": 68,
+        "endLine": 131,
+        "endChar": 79
+      },
+      "revId": "1fe0ef81a69e662e40bfe02f0880f3a49765b684",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -94,6 +142,54 @@
     },
     {
       "key": {
+        "uuid": "8146917b_dfc09cb3",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-10T23:19:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "390ad204_ad6f736a",
+      "range": {
+        "startLine": 146,
+        "startChar": 60,
+        "endLine": 146,
+        "endChar": 66
+      },
+      "revId": "1fe0ef81a69e662e40bfe02f0880f3a49765b684",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5446623d_1b2b5955",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-10T23:19:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c2b9a05b_531476b7",
+      "range": {
+        "startLine": 146,
+        "startChar": 68,
+        "endLine": 146,
+        "endChar": 73
+      },
+      "revId": "1fe0ef81a69e662e40bfe02f0880f3a49765b684",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1b36e484_2186dea8",
         "filename": "docs/writing_tests.md",
         "patchSetId": 3
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "c5ec3093_fdc12df0",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-10T23:19:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1b36e484_2186dea8",
+      "range": {
+        "startLine": 149,
+        "startChar": 31,
+        "endLine": 149,
+        "endChar": 41
+      },
+      "revId": "1fe0ef81a69e662e40bfe02f0880f3a49765b684",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5cdc72db_852deeaa",
         "filename": "docs/writing_tests.md",
         "patchSetId": 3
@@ -128,6 +248,30 @@
       "writtenOn": "2018-10-10T03:05:46Z",
       "side": 1,
       "message": "nit: \"use the command to add/remove\"",
+      "range": {
+        "startLine": 151,
+        "startChar": 66,
+        "endLine": 152,
+        "endChar": 16
+      },
+      "revId": "1fe0ef81a69e662e40bfe02f0880f3a49765b684",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b202d1ff_2a306946",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-10T23:19:33Z",
+      "side": 1,
+      "message": "Done, but I think 2) is in parallel to 1), so \"use\" sounds somewhat different...?",
+      "parentUuid": "5cdc72db_852deeaa",
       "range": {
         "startLine": 151,
         "startChar": 66,
@@ -163,6 +307,30 @@
     },
     {
       "key": {
+        "uuid": "4f3be552_93d6dd75",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-10T23:19:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a3aacd64_a9d06a13",
+      "range": {
+        "startLine": 153,
+        "startChar": 23,
+        "endLine": 153,
+        "endChar": 29
+      },
+      "revId": "1fe0ef81a69e662e40bfe02f0880f3a49765b684",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2209edf9_95fba3e3",
         "filename": "src/chromiumos/cmd/tast-lint/check/errors.go",
         "patchSetId": 3
@@ -183,6 +351,30 @@
       "revId": "1fe0ef81a69e662e40bfe02f0880f3a49765b684",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a2ab4f84_efaf7788",
+        "filename": "src/chromiumos/cmd/tast-lint/check/errors.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-10T23:19:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2209edf9_95fba3e3",
+      "range": {
+        "startLine": 15,
+        "startChar": 19,
+        "endLine": 15,
+        "endChar": 49
+      },
+      "revId": "1fe0ef81a69e662e40bfe02f0880f3a49765b684",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -226,6 +418,48 @@
     },
     {
       "key": {
+        "uuid": "b2833f34_c795b074",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-10T23:19:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8522d9f0_6c8093eb",
+      "range": {
+        "startLine": 16,
+        "startChar": 63,
+        "endLine": 16,
+        "endChar": 74
+      },
+      "revId": "1fe0ef81a69e662e40bfe02f0880f3a49765b684",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fbadf637_e90d3f4d",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-10T23:19:33Z",
+      "side": 1,
+      "message": "Hmm... I couldn\u0027t find a good examples/document... Does this what you meant...?",
+      "parentUuid": "9c7431d3_2f07bd5e",
+      "revId": "1fe0ef81a69e662e40bfe02f0880f3a49765b684",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "14aa09fd_18ab7893",
         "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
         "patchSetId": 3
@@ -246,6 +480,30 @@
       "revId": "1fe0ef81a69e662e40bfe02f0880f3a49765b684",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ecc934c5_97d63277",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-10T23:19:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "14aa09fd_18ab7893",
+      "range": {
+        "startLine": 22,
+        "startChar": 57,
+        "endLine": 22,
+        "endChar": 61
+      },
+      "revId": "1fe0ef81a69e662e40bfe02f0880f3a49765b684",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -292,6 +550,54 @@
       "revId": "1fe0ef81a69e662e40bfe02f0880f3a49765b684",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d0041924_a3e70ce0",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-10T23:19:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5eeec9c4_b4339134",
+      "range": {
+        "startLine": 23,
+        "startChar": 21,
+        "endLine": 23,
+        "endChar": 70
+      },
+      "revId": "1fe0ef81a69e662e40bfe02f0880f3a49765b684",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f539a40c_9e366ca6",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-10T23:19:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d5e9f5dc_8ad9068b",
+      "range": {
+        "startLine": 23,
+        "startChar": 15,
+        "endLine": 23,
+        "endChar": 19
+      },
+      "revId": "1fe0ef81a69e662e40bfe02f0880f3a49765b684",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -342,6 +648,30 @@
     },
     {
       "key": {
+        "uuid": "c0d9f19c_428f509b",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-10T23:19:33Z",
+      "side": 1,
+      "message": "Ok, let\u0027s panic, then.",
+      "parentUuid": "2768dece_f746d5d3",
+      "range": {
+        "startLine": 34,
+        "startChar": 0,
+        "endLine": 35,
+        "endChar": 20
+      },
+      "revId": "1fe0ef81a69e662e40bfe02f0880f3a49765b684",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ee097089_8086637b",
         "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
         "patchSetId": 3
@@ -353,6 +683,30 @@
       "writtenOn": "2018-10-10T02:06:49Z",
       "side": 1,
       "message": "I believe you accidentally left this line :)",
+      "range": {
+        "startLine": 42,
+        "startChar": 0,
+        "endLine": 42,
+        "endChar": 23
+      },
+      "revId": "1fe0ef81a69e662e40bfe02f0880f3a49765b684",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2d92552b_5f9532c9",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-10T23:19:33Z",
+      "side": 1,
+      "message": "Oops. Good catch :-).",
+      "parentUuid": "ee097089_8086637b",
       "range": {
         "startLine": 42,
         "startChar": 0,
@@ -388,6 +742,30 @@
     },
     {
       "key": {
+        "uuid": "309a2f46_6f579458",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-10T23:19:33Z",
+      "side": 1,
+      "message": "Done. Note that \"goimports -d\" doesn\u0027t work. Because we remove empty lines in import() section in advance, the report of \"goimports -d\" includes them. Instead, run \"diff -u\" manually.\n\nAs for extra field, could you elaborate what\u0027s the purpose? I just skipped it for now.",
+      "parentUuid": "4ff1f2ab_a7e3a96d",
+      "range": {
+        "startLine": 48,
+        "startChar": 0,
+        "endLine": 48,
+        "endChar": 121
+      },
+      "revId": "1fe0ef81a69e662e40bfe02f0880f3a49765b684",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "920edd85_b1f5ba01",
         "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
         "patchSetId": 3
@@ -411,6 +789,30 @@
     },
     {
       "key": {
+        "uuid": "f77e8eec_e573086f",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-10T23:19:33Z",
+      "side": 1,
+      "message": "I think it\u0027s better to have.\nE.g., import_order_test.go hits the case.\nI know it\u0027s an edge case, but this is small enough and nice to have here.",
+      "parentUuid": "920edd85_b1f5ba01",
+      "range": {
+        "startLine": 73,
+        "startChar": 7,
+        "endLine": 73,
+        "endChar": 20
+      },
+      "revId": "1fe0ef81a69e662e40bfe02f0880f3a49765b684",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "eaa68ab0_14eb1f45",
         "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
         "patchSetId": 3
@@ -422,6 +824,30 @@
       "writtenOn": "2018-10-10T02:06:49Z",
       "side": 1,
       "message": "We can do this without explicitly creating a pipe.\n\n cmd.Stdin \u003d bytes.NewBuffer(in)",
+      "range": {
+        "startLine": 96,
+        "startChar": 0,
+        "endLine": 99,
+        "endChar": 2
+      },
+      "revId": "1fe0ef81a69e662e40bfe02f0880f3a49765b684",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "84a1136c_0446733b",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-10T23:19:33Z",
+      "side": 1,
+      "message": "Good to know. Done.",
+      "parentUuid": "eaa68ab0_14eb1f45",
       "range": {
         "startLine": 96,
         "startChar": 0,

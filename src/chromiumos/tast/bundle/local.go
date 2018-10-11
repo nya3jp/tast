@@ -23,7 +23,7 @@ const (
 func Local(stdin io.Reader, stdout, stderr io.Writer) int {
 	args := Args{DataDir: localTestDataDir}
 	cfg := runConfig{
-		testCleanupFunc:    faillog.SaveIfError,
+		postTestFunc:       faillog.SaveIfError,
 		defaultTestTimeout: localTestTimeout,
 	}
 	return run(context.Background(), stdin, stdout, stderr, &args, &cfg, localBundle)

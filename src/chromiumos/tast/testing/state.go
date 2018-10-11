@@ -84,10 +84,10 @@ type TestConfig struct {
 	OutDir string
 	// Meta contains information about how the tast process was run.
 	Meta *Meta
-	// SetupFunc is run before the test if non-nil.
-	SetupFunc func(context.Context, *State)
-	// CleanupFunc is run after the test if non-nil.
-	CleanupFunc func(context.Context, *State)
+	// PreTestFunc is run before Test.Func (and Test.Pre.Prepare, when applicable)  if non-nil.
+	PreTestFunc func(context.Context, *State)
+	// PostTestFunc is run after Test.Func (and Test.Pre.Cleanup, when applicable) if non-nil.
+	PostTestFunc func(context.Context, *State)
 	// NextTest is the test that will be run after this one.
 	NextTest *Test
 }

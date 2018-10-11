@@ -460,6 +460,24 @@
     },
     {
       "key": {
+        "uuid": "fec054a4_413a1218",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-11T03:08:14Z",
+      "side": 1,
+      "message": "Yes, this is roughly right, though we usually indent like:\n\n - foo foo foo foo\n   foo foo foo foo\n - bar bar bar bar\n   bar bar bar bar\n\nRather than:\n\n - foo foo foo foo\n foo foo foo foo\n - bar bar bar bar\n bar bar bar bar\n\nYou may want to use space rather than tab to make the verbatim text to avoid mixing tabs and spaces.\n\nAn example:\n\nhttps://godoc.org/text/template#hdr-Arguments\nhttps://golang.org/src/text/template/doc.go",
+      "parentUuid": "fbadf637_e90d3f4d",
+      "revId": "1fe0ef81a69e662e40bfe02f0880f3a49765b684",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "14aa09fd_18ab7893",
         "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
         "patchSetId": 3
@@ -810,6 +828,30 @@
       "revId": "1fe0ef81a69e662e40bfe02f0880f3a49765b684",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6614a9d4_5a30ce7a",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-11T03:08:14Z",
+      "side": 1,
+      "message": "I thought there can be multiple import sections, but import_order_test.go itself is a good case to keep this way. Thanks!",
+      "parentUuid": "f77e8eec_e573086f",
+      "range": {
+        "startLine": 73,
+        "startChar": 7,
+        "endLine": 73,
+        "endChar": 20
+      },
+      "revId": "1fe0ef81a69e662e40bfe02f0880f3a49765b684",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {

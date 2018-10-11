@@ -1,0 +1,188 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1721fb3e_ad087cb7",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-11T03:08:14Z",
+      "side": 1,
+      "message": "Hmm, I\u0027m not a fan of mixing runtime error messages in lint issues. How about panicking whenever runtime error is hit? IMO the errors are more readable with panic.",
+      "range": {
+        "startLine": 40,
+        "startChar": 3,
+        "endLine": 40,
+        "endChar": 20
+      },
+      "revId": "e1c24cf8a813eac02e4c9c47282dd6d824638de0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eae8b96d_ef6f43e0",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-11T03:08:14Z",
+      "side": 1,
+      "message": "Maybe we want to use guard style.\n\n if bytes.Equal(in, out) {\n   return nil\n }\n ...",
+      "range": {
+        "startLine": 44,
+        "startChar": 1,
+        "endLine": 44,
+        "endChar": 27
+      },
+      "revId": "e1c24cf8a813eac02e4c9c47282dd6d824638de0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1d1f6b91_ccda906b",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-11T03:08:14Z",
+      "side": 1,
+      "message": "Same here.",
+      "range": {
+        "startLine": 48,
+        "startChar": 3,
+        "endLine": 48,
+        "endChar": 23
+      },
+      "revId": "e1c24cf8a813eac02e4c9c47282dd6d824638de0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dd59eb67_1f7bce4b",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-11T03:08:14Z",
+      "side": 1,
+      "message": "nit: \u0026Issue can be omitted.\n\n []*Issue{{ ... }}",
+      "range": {
+        "startLine": 53,
+        "startChar": 18,
+        "endLine": 53,
+        "endChar": 24
+      },
+      "revId": "e1c24cf8a813eac02e4c9c47282dd6d824638de0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "804cc5ef_e8b676a8",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-11T03:08:14Z",
+      "side": 1,
+      "message": "Mind inserting newline to split this message and diff, and an additional message that the following diff is the way to fix?\n\nAfter applying all nits:\n\n fmt.Sprintf(\"Imports should be grouped into stdlib, third-party lib, chromiumos in this order, separated by empty lines.\\nApply the following patch to fix:\\n%s\", detail)",
+      "range": {
+        "startLine": 55,
+        "startChar": 130,
+        "endLine": 55,
+        "endChar": 134
+      },
+      "revId": "e1c24cf8a813eac02e4c9c47282dd6d824638de0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "133f414f_743499b6",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-11T03:08:14Z",
+      "side": 1,
+      "message": "huge nit: How about runDiff to align with runGoimports?",
+      "range": {
+        "startLine": 136,
+        "startChar": 5,
+        "endLine": 136,
+        "endChar": 13
+      },
+      "revId": "e1c24cf8a813eac02e4c9c47282dd6d824638de0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4d994f78_76e7013e",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-11T03:08:14Z",
+      "side": 1,
+      "message": "name parameter won\u0027t be needed since you strip them below.",
+      "range": {
+        "startLine": 137,
+        "startChar": 30,
+        "endLine": 137,
+        "endChar": 38
+      },
+      "revId": "e1c24cf8a813eac02e4c9c47282dd6d824638de0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "571dea29_3e6dfd65",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-11T03:08:14Z",
+      "side": 1,
+      "message": "Would you mind extracting verifyIssues from errors_test.go to a separate file, e.g. common_test.go?",
+      "range": {
+        "startLine": 30,
+        "startChar": 1,
+        "endLine": 30,
+        "endChar": 13
+      },
+      "revId": "e1c24cf8a813eac02e4c9c47282dd6d824638de0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

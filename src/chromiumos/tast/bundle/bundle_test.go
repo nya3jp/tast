@@ -86,12 +86,12 @@ func TestCopyTestOutputTimeout(t *gotesting.T) {
 
 func TestRunTests(t *gotesting.T) {
 	const (
-		name1          = "foo.Test1"
-		name2          = "foo.Test2"
-		runSetupMsg    = "setting up for run"
-		runCleanupMsg  = "cleaning up after run"
-		testSetupMsg   = "setting up for test"
-		testCleanupMsg = "cleaning up for test"
+		name1       = "foo.Test1"
+		name2       = "foo.Test2"
+		preRunMsg   = "setting up for run"
+		postRunMsg  = "cleaning up after run"
+		preTestMsg  = "setting up for test"
+		postTestMsg = "cleaning up for test"
 	)
 
 	reg := testing.NewRegistry(testing.NoAutoName)
@@ -111,29 +111,29 @@ func TestRunTests(t *gotesting.T) {
 
 	stdout := bytes.Buffer{}
 	tests := reg.AllTests()
-	var numRunSetupCalls, numRunCleanupCalls, numTestSetupCalls, numTestCleanupCalls int
+	var preRunCalls, postRunCalls, preTestCalls, postTestCalls int
 	args := Args{
 		OutDir:  tmpDir,
 		DataDir: tmpDir,
 	}
 	cfg := runConfig{
-		runSetupFunc: func(ctx context.Context, lf logFunc) (context.Context, error) {
-			numRunSetupCalls++
-			lf(runSetupMsg)
+		preRunFunc: func(ctx context.Context, lf logFunc) (context.Context, error) {
+			preRunCalls++
+			lf(preRunMsg)
 			return ctx, nil
 		},
-		runCleanupFunc: func(ctx context.Context, lf logFunc) error {
-			numRunCleanupCalls++
-			lf(runCleanupMsg)
+		postRunFunc: func(ctx context.Context, lf logFunc) error {
+			postRunCalls++
+			lf(postRunMsg)
 			return nil
 		},
-		testSetupFunc: func(ctx context.Context, s *testing.State) {
-			numTestSetupCalls++
-			s.Log(testSetupMsg)
+		preTestFunc: func(ctx context.Context, s *testing.State) {
+			preTestCalls++
+			s.Log(preTestMsg)
 		},
-		testCleanupFunc: func(ctx context.Context, s *testing.State) {
-			numTestCleanupCalls++
-			s.Log(testCleanupMsg)
+		postTestFunc: func(ctx context.Context, s *testing.State) {
+			postTestCalls++
+			s.Log(postTestMsg)
 		},
 	}
 
@@ -141,33 +141,33 @@ func TestRunTests(t *gotesting.T) {
 	if err := runTests(context.Background(), &stdout, &args, &cfg, tests); err != nil {
 		t.Fatalf("%v failed: %v", sig, err)
 	}
-	if numRunSetupCalls != 1 {
-		t.Errorf("%v called run setup function %d time(s); want 1", sig, numRunSetupCalls)
+	if preRunCalls != 1 {
+		t.Errorf("%v called pre-run function %d time(s); want 1", sig, preRunCalls)
 	}
-	if numRunCleanupCalls != 1 {
-		t.Errorf("%v called run cleanup function %d time(s); want 1", sig, numRunCleanupCalls)
+	if postRunCalls != 1 {
+		t.Errorf("%v called run post-run function %d time(s); want 1", sig, postRunCalls)
 	}
-	if numTestSetupCalls != len(tests) {
-		t.Errorf("%v called test setup function %d time(s); want %d", sig, numTestSetupCalls, len(tests))
+	if preTestCalls != len(tests) {
+		t.Errorf("%v called pre-test function %d time(s); want %d", sig, preTestCalls, len(tests))
 	}
-	if numTestCleanupCalls != len(tests) {
-		t.Errorf("%v called test cleanup function %d time(s); want %d", sig, numTestCleanupCalls, len(tests))
+	if postTestCalls != len(tests) {
+		t.Errorf("%v called post-test function %d time(s); want %d", sig, postTestCalls, len(tests))
 	}
 
 	// Just check some basic details of the control messages.
 	r := control.NewMessageReader(&stdout)
 	for i, ei := range []interface{}{
-		&control.RunLog{Text: runSetupMsg},
+		&control.RunLog{Text: preRunMsg},
 		&control.TestStart{Test: *tests[0]},
-		&control.TestLog{Text: testSetupMsg},
-		&control.TestLog{Text: testCleanupMsg},
+		&control.TestLog{Text: preTestMsg},
+		&control.TestLog{Text: postTestMsg},
 		&control.TestEnd{Name: name1},
 		&control.TestStart{Test: *tests[1]},
-		&control.TestLog{Text: testSetupMsg},
+		&control.TestLog{Text: preTestMsg},
 		&control.TestError{},
-		&control.TestLog{Text: testCleanupMsg},
+		&control.TestLog{Text: postTestMsg},
 		&control.TestEnd{Name: name2},
-		&control.RunLog{Text: runCleanupMsg},
+		&control.RunLog{Text: postRunMsg},
 	} {
 		if ai, err := r.ReadMessage(); err != nil {
 			t.Errorf("Failed to read message %d: %v", i, err)

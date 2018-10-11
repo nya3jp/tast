@@ -25,7 +25,7 @@ const (
 func Remote(stdin io.Reader, stdout, stderr io.Writer) int {
 	args := Args{}
 	cfg := runConfig{
-		runSetupFunc: func(ctx context.Context, lf logFunc) (context.Context, error) {
+		preRunFunc: func(ctx context.Context, lf logFunc) (context.Context, error) {
 			// Connect to the DUT and attach the connection to the context so tests can use it.
 			if args.Target == "" {
 				return ctx, errors.New("target not supplied")
@@ -41,7 +41,7 @@ func Remote(stdin io.Reader, stdout, stderr io.Writer) int {
 			}
 			return ctx, nil
 		},
-		runCleanupFunc: func(ctx context.Context, lf logFunc) error {
+		postRunFunc: func(ctx context.Context, lf logFunc) error {
 			dt, ok := dut.FromContext(ctx)
 			if !ok {
 				return errors.New("failed to get DUT from context")
@@ -49,7 +49,7 @@ func Remote(stdin io.Reader, stdout, stderr io.Writer) int {
 			lf("Disconnecting from DUT")
 			return dt.Close(ctx)
 		},
-		testSetupFunc: func(ctx context.Context, s *testing.State) {
+		preTestFunc: func(ctx context.Context, s *testing.State) {
 			// Reconnect between tests if needed.
 			if dt, ok := dut.FromContext(ctx); !ok {
 				s.Fatal("Failed to get DUT from context")

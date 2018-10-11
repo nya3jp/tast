@@ -24,6 +24,14 @@ func SaveIfError(ctx context.Context, s *testing.State) {
 
 // Save saves a faillog unconditionally.
 func Save(ctx context.Context, s *testing.State) {
+	// If test setup failed, then the output dir may not exist.
+	if s.OutDir() == "" {
+		return
+	}
+	if _, err := os.Stat(s.OutDir()); err != nil {
+		return
+	}
+
 	dir := filepath.Join(s.OutDir(), "faillog")
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return

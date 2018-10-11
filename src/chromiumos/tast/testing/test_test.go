@@ -159,7 +159,7 @@ func TestAdditionalTime(t *gotesting.T) {
 	if err := test.finalize(false); err != nil {
 		t.Error("finalize() failed: ", err)
 	}
-	if exp := setupFuncTimeout + cleanupFuncTimeout + 2*pre.Timeout(); test.AdditionalTime != exp {
+	if exp := preTestTimeout + postTestTimeout + 2*pre.Timeout(); test.AdditionalTime != exp {
 		t.Errorf("AdditionalTime = %v; want %v", test.AdditionalTime, exp)
 	}
 }
@@ -216,7 +216,7 @@ func TestRunDeadline(t *gotesting.T) {
 	or := newOutputReader()
 	test.Run(context.Background(), or.ch, &TestConfig{})
 	// The error that was reported by the test after its deadline was hit
-	// but within the cleanup delay should be available.
+	// but within the exit delay should be available.
 	if errs := getOutputErrors(or.read()); len(errs) != 1 {
 		t.Errorf("Got %v errors for timed-out test; want 1", len(errs))
 	}
@@ -266,23 +266,23 @@ func TestRunSkipStages(t *gotesting.T) {
 	// Define a sequence of tests to run and specify which stages should be executed for each.
 	var pre, pre2, pre3, pre4 testPre
 	cases := []struct {
-		pre           *testPre
-		setupAction   action // TestConfig.SetupFunc
-		prepareAction action // Precondition.Prepare
-		testAction    action // Test.Func
-		closeAction   action // Precondition.Close
-		cleanupAction action // TestConfig.CleanupFunc
-		desc          string
+		pre            *testPre
+		preTestAction  action // TestConfig.PreTestFunc
+		prepareAction  action // Precondition.Prepare
+		testAction     action // Test.Func
+		closeAction    action // Precondition.Close
+		postTestAction action // TestConfig.PostTestFunc
+		desc           string
 	}{
 		{&pre, pass, pass, pass, noCall, pass, "everything passes"},
-		{&pre, doError, noCall, noCall, noCall, noCall, "setup fails"},
-		{&pre, doPanic, noCall, noCall, noCall, noCall, "setup panics"},
-		{&pre, pass, doError, noCall, noCall, noCall, "prepare fails"},
-		{&pre, pass, doPanic, noCall, noCall, noCall, "prepare panics"},
+		{&pre, doError, noCall, noCall, noCall, pass, "pre-test fails"},
+		{&pre, doPanic, noCall, noCall, noCall, pass, "pre-test panics"},
+		{&pre, pass, doError, noCall, noCall, pass, "prepare fails"},
+		{&pre, pass, doPanic, noCall, noCall, pass, "prepare panics"},
 		{&pre, pass, pass, doError, noCall, pass, "test fails"},
 		{&pre, pass, pass, doPanic, noCall, pass, "test panics"},
 		{&pre, pass, pass, pass, pass, pass, "everything passes, next test has different precondition"},
-		{&pre2, pass, doError, noCall, pass, noCall, "prepare fails, next test has different precondition"},
+		{&pre2, pass, doError, noCall, pass, pass, "prepare fails, next test has different precondition"},
 		{&pre3, pass, pass, doError, pass, pass, "test fails, next test has no precondition"},
 		{nil, pass, noCall, pass, noCall, pass, "no precondition"},
 		{&pre4, pass, pass, pass, pass, pass, "final test"},
@@ -317,7 +317,7 @@ func TestRunSkipStages(t *gotesting.T) {
 
 	// Now actually run each test.
 	for i, c := range cases {
-		var setupRan, prepareRan, testRan, closeRan, cleanupRan bool
+		var preTestRan, prepareRan, testRan, closeRan, postTestRan bool
 
 		test := tests[i]
 		test.Func = makeFunc(c.testAction, &testRan)
@@ -326,8 +326,8 @@ func TestRunSkipStages(t *gotesting.T) {
 			c.pre.closeFunc = makeFunc(c.closeAction, &closeRan)
 		}
 		cfg := &TestConfig{
-			SetupFunc:   makeFunc(c.setupAction, &setupRan),
-			CleanupFunc: makeFunc(c.cleanupAction, &cleanupRan),
+			PreTestFunc:  makeFunc(c.preTestAction, &preTestRan),
+			PostTestFunc: makeFunc(c.postTestAction, &postTestRan),
 		}
 		if i < len(tests)-1 {
 			cfg.NextTest = tests[i+1]
@@ -345,11 +345,11 @@ func TestRunSkipStages(t *gotesting.T) {
 				t.Errorf("Test %d (%s) ran %s unexpectedly", i, c.desc, name)
 			}
 		}
-		checkRan("TestConfig.SetupFunc", setupRan, c.setupAction)
+		checkRan("TestConfig.PreTestFunc", preTestRan, c.preTestAction)
 		checkRan("Precondition.Prepare", prepareRan, c.prepareAction)
 		checkRan("Test.Func", testRan, c.testAction)
 		checkRan("Precondition.Close", closeRan, c.closeAction)
-		checkRan("TestConfig.CleanupFunc", cleanupRan, c.cleanupAction)
+		checkRan("TestConfig.PostTestFunc", postTestRan, c.postTestAction)
 	}
 }
 

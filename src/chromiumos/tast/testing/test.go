@@ -28,9 +28,9 @@ const (
 	testBundleAttrPrefix = "bundle:" // prefix for auto-added attribute containing bundle name
 	testDepAttrPrefix    = "dep:"    // prefix for auto-added attribute containing software dependency
 
-	exitTimeout        = 3 * time.Second  // extra time granted to test funcs to exit
-	setupFuncTimeout   = 15 * time.Second // timeout for test setup func
-	cleanupFuncTimeout = 15 * time.Second // timeout for test cleanup func
+	exitTimeout     = 3 * time.Second  // extra time granted to test-related funcs to exit
+	preTestTimeout  = 15 * time.Second // timeout for TestConfig.PreTestFunc
+	postTestTimeout = 15 * time.Second // timeout for TestConfig.PostTestFunc
 )
 
 var testNameRegexp, testWordRegexp *regexp.Regexp
@@ -52,15 +52,15 @@ type TestFunc func(context.Context, *State)
 // TODO(derat): Find a better way to structure this such that these methods are exposed to
 // Test.Run but not to test functions.
 type Precondition interface {
-	// Prepare is called before starting each test that depends on the precondition.
+	// Prepare is called immediately before starting each test that depends on the precondition.
 	// To report an error, the precondition can use either s.Error/Errorf or s.Fatal/Fatalf;
 	// either will result in the test not being run. If Prepare reports an error the test will not run,
 	// but the precondition object must be left in a state where future calls to Prepare (and Close)
 	// can still succeed.
 	Prepare(ctx context.Context, s *State)
-	// Close is called after completing the final test that depends on the precondition.
+	// Close is called immediately after completing the final test that depends on the precondition.
 	// This method may be called without an earlier call to Prepare in rare cases (e.g. if
-	// TestConfig.SetupFunc fails); preconditions must be able to handle this.
+	// TestConfig.PreTestFunc fails); preconditions must be able to handle this.
 	Close(ctx context.Context, s *State)
 	// Timeout returns the amount of time dedicated to Prepare and to Close.
 	Timeout() time.Duration
@@ -127,12 +127,19 @@ func (tst *Test) DataDir() string {
 // whichever comes first.
 //
 // The time allotted to the test is generally the sum of tst.Timeout and tst.ExitTimeout, but
-// additional time may be allotted for tst.Precondition, cfg.SetupFunc, and cfg.CleanupFunc if non-nil.
+// additional time may be allotted for tst.Pre.Prepare, tst.Pre.Close, cfg.PreTestFunc, and cfg.PostTestFunc.
 //
 // The test function executes in a goroutine and may still be running if it ignores its deadline;
 // the returned value indicates whether the test completed within the allotted time or not.
 // ch is only closed after the test function completes, so if false is returned,
 // the caller is responsible for reporting that the test timed out.
+//
+// Stages are executed in the following order:
+//	- cfg.PreTestFunc (if non-nil)
+//	- tst.Pre.Prepare (if tst.Pre is non-nil and no errors yet)
+//	- tst.Func (if no errors yet)
+//	- tst.Pre.Close (if tst.Pre is non-nil and cfg.NextTest.Pre is different)
+//	- cfg.PostTestFunc (if non-nil)
 func (tst *Test) Run(ctx context.Context, ch chan Output, cfg *TestConfig) bool {
 	// Attach the state to a context so support packages can log to it.
 	s := newState(tst, ch, cfg)
@@ -143,7 +150,7 @@ func (tst *Test) Run(ctx context.Context, ch chan Output, cfg *TestConfig) bool 
 		stages = append(stages, stage{f, ctxTimeout, runTimeout})
 	}
 
-	// First, perform setup.
+	// First, perform setup and run the pre-test function.
 	addStage(func(ctx context.Context, s *State) {
 		// The test bundle is responsible for ensuring tst.Timeout is nonzero before calling Run,
 		// but we call s.Fatal instead of panicking since it's arguably nicer to report individual
@@ -156,10 +163,10 @@ func (tst *Test) Run(ctx context.Context, ch chan Output, cfg *TestConfig) bool 
 				s.Fatal("Failed to create output dir: ", err)
 			}
 		}
-		if cfg.SetupFunc != nil {
-			cfg.SetupFunc(ctx, s)
+		if cfg.PreTestFunc != nil {
+			cfg.PreTestFunc(ctx, s)
 		}
-	}, setupFuncTimeout, setupFuncTimeout+exitTimeout)
+	}, preTestTimeout, preTestTimeout+exitTimeout)
 
 	// Prepare the test's precondition (if any) if setup was successful.
 	if tst.Pre != nil {
@@ -173,20 +180,17 @@ func (tst *Test) Run(ctx context.Context, ch chan Output, cfg *TestConfig) bool 
 	}
 
 	// Next, run the test function itself if no errors have been reported so far.
-	ranTest := false
 	addStage(func(ctx context.Context, s *State) {
 		if s.HasError() {
 			return
 		}
 		s.runningTest = true
-		defer func() {
-			s.runningTest = false
-			ranTest = true
-		}()
+		defer func() { s.runningTest = false }()
 		tst.Func(ctx, s)
 	}, tst.Timeout, tst.Timeout+timeoutOrDefault(tst.ExitTimeout, exitTimeout))
 
-	// If this is the final test using this precondition, close it (even if setup failed).
+	// If this is the final test using this precondition, close it
+	// (even if setup, tst.Pre.Prepare, or tst.Func failed).
 	if tst.Pre != nil && (cfg.NextTest == nil || cfg.NextTest.Pre != tst.Pre) {
 		addStage(func(ctx context.Context, s *State) {
 			s.Logf("Closing precondition %q", tst.Pre.String())
@@ -194,13 +198,11 @@ func (tst *Test) Run(ctx context.Context, ch chan Output, cfg *TestConfig) bool 
 		}, tst.Pre.Timeout(), tst.Pre.Timeout()+exitTimeout)
 	}
 
-	// Finally, run the cleanup function if the test was actually executed.
-	if cfg.CleanupFunc != nil {
+	// Finally, run the post-test function unconditionally.
+	if cfg.PostTestFunc != nil {
 		addStage(func(ctx context.Context, s *State) {
-			if ranTest {
-				cfg.CleanupFunc(ctx, s)
-			}
-		}, cleanupFuncTimeout, cleanupFuncTimeout+exitTimeout)
+			cfg.PostTestFunc(ctx, s)
+		}, postTestTimeout, postTestTimeout+exitTimeout)
 	}
 
 	return runStages(ctx, s, stages)
@@ -342,11 +344,11 @@ func (tst *Test) addAutoAttributes() error {
 	return nil
 }
 
-// setAdditionalTime sets AdditionalTime to include time needed for tst.Pre, setup and cleanup.
+// setAdditionalTime sets AdditionalTime to include time needed for tst.Pre and pre-test or post-test functions.
 func (tst *Test) setAdditionalTime() {
-	// We don't know whether a setup or cleanup func will be specified until the test is run,
+	// We don't know whether a pre-test or post-test func will be specified until the test is run,
 	// so err on the side of including the time that would be allocated.
-	tst.AdditionalTime = setupFuncTimeout + cleanupFuncTimeout
+	tst.AdditionalTime = preTestTimeout + postTestTimeout
 
 	// The precondition's timeout applies both when preparing the precondition and when closing it
 	// (which we'll need to do if this is the final test using the precondition).

@@ -59,17 +59,17 @@ type logFunc func(msg string)
 
 // runConfig contains additional parameters used when running tests.
 type runConfig struct {
-	// runSetupFunc is run at the beginning of the entire test run if non-nil.
+	// preRunFunc is run at the beginning of the entire series of tests if non-nil.
 	// The provided context (or a derived context with additional values) should be returned by the function.
-	runSetupFunc func(context.Context, logFunc) (context.Context, error)
-	// runCleanupFunc is run at the end of the entire test run if non-nil.
-	runCleanupFunc func(context.Context, logFunc) error
-	// testSetupFunc is run before each test if non-nil.
-	// If this function panics or reports errors, neither the test body function nor testCleanupFunc will run.
-	testSetupFunc func(context.Context, *testing.State)
-	// testCleanFunc is run at the end of each test if non-nil.
-	// If testSetupFunc panicked or reported errors, this will not run.
-	testCleanupFunc func(context.Context, *testing.State)
+	preRunFunc func(context.Context, logFunc) (context.Context, error)
+	// postRunFunc is run at the end of the entire series of tests if non-nil.
+	postRunFunc func(context.Context, logFunc) error
+	// preTestFunc is run before each test if non-nil.
+	// If this function panics or reports errors, the precondition (if any)
+	// will not be prepared and the test function will not run.
+	preTestFunc func(context.Context, *testing.State)
+	// postTestFunc is run unconditionally at the end of each test if non-nil.
+	postTestFunc func(context.Context, *testing.State)
 	// defaultTestTimeout contains the default maximum time allotted to each test.
 	// It is only used if testing.Test.Timeout is unset.
 	defaultTestTimeout time.Duration
@@ -88,10 +88,10 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		return command.NewStatusErrorf(statusNoTests, "no tests matched by pattern(s)")
 	}
 
-	if cfg.runSetupFunc != nil {
+	if cfg.preRunFunc != nil {
 		var err error
-		if ctx, err = cfg.runSetupFunc(ctx, lf); err != nil {
-			return command.NewStatusErrorf(statusError, "run setup failed: %v", err)
+		if ctx, err = cfg.preRunFunc(ctx, lf); err != nil {
+			return command.NewStatusErrorf(statusError, "pre-run failed: %v", err)
 		}
 	}
 
@@ -114,9 +114,9 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		}
 	}
 
-	if cfg.runCleanupFunc != nil {
-		if err := cfg.runCleanupFunc(ctx, lf); err != nil {
-			return command.NewStatusErrorf(statusError, "run cleanup failed: %v", err)
+	if cfg.postRunFunc != nil {
+		if err := cfg.postRunFunc(ctx, lf); err != nil {
+			return command.NewStatusErrorf(statusError, "post-run failed: %v", err)
 		}
 	}
 	return nil
@@ -152,12 +152,12 @@ func runTest(ctx context.Context, mw *control.MessageWriter, args *Args, cfg *ru
 
 	if len(missingDeps) == 0 {
 		testCfg := testing.TestConfig{
-			DataDir:     filepath.Join(args.DataDir, t.DataDir()),
-			OutDir:      filepath.Join(args.OutDir, t.Name),
-			Meta:        meta,
-			SetupFunc:   cfg.testSetupFunc,
-			CleanupFunc: cfg.testCleanupFunc,
-			NextTest:    next,
+			DataDir:      filepath.Join(args.DataDir, t.DataDir()),
+			OutDir:       filepath.Join(args.OutDir, t.Name),
+			Meta:         meta,
+			PreTestFunc:  cfg.preTestFunc,
+			PostTestFunc: cfg.postTestFunc,
+			NextTest:     next,
 		}
 
 		ch := make(chan testing.Output)

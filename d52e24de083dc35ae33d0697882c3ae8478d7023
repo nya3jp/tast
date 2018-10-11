@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "fe85d40a_681b1b81",
+        "filename": "src/chromiumos/tast/faillog/faillog.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-11T05:37:04Z",
+      "side": 1,
+      "message": "Hmm, checking this condition here looks a bit weird, though it\u0027s still above the threshold. I\u0027ll clean up this later. Please don\u0027t mind :)",
+      "range": {
+        "startLine": 27,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 2
+      },
+      "revId": "d52e24de083dc35ae33d0697882c3ae8478d7023",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "442a0aff_a426523c",
         "filename": "src/chromiumos/tast/testing/test.go",
         "patchSetId": 1
@@ -22,6 +45,30 @@
       "revId": "d52e24de083dc35ae33d0697882c3ae8478d7023",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fc66c308_2e31dc12",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-11T05:37:04Z",
+      "side": 1,
+      "message": "This sounds fine to me. I hope it\u0027s fine to everyone :)",
+      "parentUuid": "442a0aff_a426523c",
+      "range": {
+        "startLine": 138,
+        "startChar": 9,
+        "endLine": 138,
+        "endChar": 20
+      },
+      "revId": "d52e24de083dc35ae33d0697882c3ae8478d7023",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

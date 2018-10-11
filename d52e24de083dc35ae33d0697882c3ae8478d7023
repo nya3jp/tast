@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "442a0aff_a426523c",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-11T05:04:19Z",
+      "side": 1,
+      "message": "i\u0027m a bit worried that PreTestFunc may be easy to confuse with preconditions, especially since i created a Test.Pre field. i\u0027m not sure what to name it instead, though. :-/",
+      "range": {
+        "startLine": 138,
+        "startChar": 9,
+        "endLine": 138,
+        "endChar": 20
+      },
+      "revId": "d52e24de083dc35ae33d0697882c3ae8478d7023",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

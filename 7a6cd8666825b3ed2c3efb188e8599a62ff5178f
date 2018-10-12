@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c7d77853_1014adc1",
+        "filename": "src/chromiumos/tast/expr/expr.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-12T02:32:20Z",
+      "side": 1,
+      "message": "FYI: strconv.Unquote is what you want (it handles backtick quotes and escapes)",
+      "range": {
+        "startLine": 127,
+        "startChar": 25,
+        "endLine": 127,
+        "endChar": 50
+      },
+      "revId": "7a6cd8666825b3ed2c3efb188e8599a62ff5178f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

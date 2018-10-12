@@ -28,9 +28,11 @@ func TestGetSoftwareFeatures(t *testing.T) {
 	defaultArgs := Args{
 		USEFlagsFile: filepath.Join(td, "use_flags"),
 		SoftwareFeatureDefinitions: map[string]string{
-			"foobar":  "foo && bar",
-			"not_foo": "!foo",
-			"other":   "baz",
+			"foobar":       "foo && bar",
+			"not_foo":      "!foo",
+			"other":        "baz",
+			"foo_glob":     "\"f*\"",
+			"not_bar_glob": "!\"b*\"",
 		},
 		GetSoftwareFeaturesArgs: GetSoftwareFeaturesArgs{
 			ExtraUSEFlags: []string{"baz"},
@@ -45,8 +47,8 @@ func TestGetSoftwareFeatures(t *testing.T) {
 		t.Fatalf("%v gave bad output: %v", sig, err)
 	}
 	exp := GetSoftwareFeaturesResult{
-		Available:   []string{"foobar", "other"},
-		Unavailable: []string{"not_foo"},
+		Available:   []string{"foo_glob", "foobar", "other"},
+		Unavailable: []string{"not_bar_glob", "not_foo"},
 	}
 	if !reflect.DeepEqual(res, exp) {
 		t.Errorf("%v wrote result %+v; want %+v", sig, res, exp)

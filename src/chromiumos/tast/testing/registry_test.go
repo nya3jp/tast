@@ -144,8 +144,10 @@ func TestTestsForAttrExpr(t *gotesting.T) {
 	}{
 		{"foo", []*Test{allTests[0]}},
 		{"bar", []*Test{allTests[1]}},
-		{"test", []*Test{allTests[0], allTests[1]}},
+		{"test", allTests},
 		{"test && !bar", []*Test{allTests[0]}},
+		{"\"*est\"", allTests},
+		{"\"*est\" && \"f*\"", []*Test{allTests[0]}},
 		{"baz", []*Test{}},
 	} {
 		tests, err := reg.TestsForAttrExpr(tc.expr)

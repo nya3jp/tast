@@ -12,8 +12,8 @@ import (
 
 func TestGoodExpr(t *testing.T) {
 	for _, tc := range []struct {
-		expr, attr string
-		expMatch   bool
+		expr, attrs string
+		expMatch    bool
 	}{
 		{"a", "a", true},
 		{"a", "", false},
@@ -32,13 +32,16 @@ func TestGoodExpr(t *testing.T) {
 		{"\"c\"", "a:b c", true},
 		{"\"a:b\"", "a:b c", true},
 		{"\"a:b\"", "a", false},
+		{"\"a:*b*\"", "a:b", true},
+		{"\"a:*b*\"", "a:cbd", true},
+		{"\"a:*b*\"", "a:", false},
 	} {
 		e, err := New(tc.expr)
 		if err != nil {
 			t.Errorf("New(%q) failed: %v", tc.expr, err)
 		}
-		if actMatch := e.Matches(strings.Fields(tc.attr)); actMatch != tc.expMatch {
-			t.Errorf("%q Matches(%q) = %v; want %v", tc.expr, tc.attr, actMatch, tc.expMatch)
+		if actMatch := e.Matches(strings.Fields(tc.attrs)); actMatch != tc.expMatch {
+			t.Errorf("%q Matches(%q) = %v; want %v", tc.expr, tc.attrs, actMatch, tc.expMatch)
 		}
 	}
 }
@@ -60,16 +63,16 @@ func TestBadExpr(t *testing.T) {
 
 func ExampleExpr() {
 	e, _ := New("a && (b || c) && !d")
-	for _, attr := range [][]string{
+	for _, attrs := range [][]string{
 		[]string{"a"},
 		[]string{"a", "b"},
 		[]string{"a", "c"},
 		[]string{"a", "c", "d"},
 	} {
-		if e.Matches(attr) {
-			fmt.Println(attr, "matched")
+		if e.Matches(attrs) {
+			fmt.Println(attrs, "matched")
 		} else {
-			fmt.Println(attr, "not matched")
+			fmt.Println(attrs, "not matched")
 		}
 	}
 	// Output:
@@ -85,4 +88,25 @@ func ExampleExpr_quoted() {
 		fmt.Println("matched")
 	}
 	// Output: matched
+}
+
+func ExampleExpr_wildcard() {
+	e, _ := New("\"foo:*\" && !\"*bar\"")
+	for _, attrs := range [][]string{
+		[]string{"foo:"},
+		[]string{"foo:a"},
+		[]string{"foo:a", "bar"},
+		[]string{"foo:a", "foo:bar"},
+	} {
+		if e.Matches(attrs) {
+			fmt.Println(attrs, "matched")
+		} else {
+			fmt.Println(attrs, "not matched")
+		}
+	}
+	// Output:
+	// [foo:] matched
+	// [foo:a] matched
+	// [foo:a bar] not matched
+	// [foo:a foo:bar] not matched
 }

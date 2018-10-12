@@ -10,6 +10,9 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"regexp"
+	"strconv"
+	"strings"
 )
 
 // Expr holds a parsed boolean expression that matches some combination of attributes.
@@ -18,6 +21,7 @@ import (
 //
 //	* Attributes, either as bare identifiers (only if compliant with
 //	  https://golang.org/ref/spec#Identifiers) or as double-quoted strings
+//	  (in which '*' characters are interpreted as wildcards)
 //	* Binary operators: && (and), || (or)
 //	* Unary operator: ! (not)
 //	* Grouping: (, )
@@ -89,41 +93,68 @@ func New(s string) (*Expr, error) {
 	return &Expr{root}, v.err
 }
 
-// Matches returns true if the expression is satisfied by attributes attr.
-func (e *Expr) Matches(attr []string) bool {
+// Matches returns true if the expression is satisfied by attributes attrs.
+func (e *Expr) Matches(attrs []string) bool {
 	am := make(map[string]struct{})
-	for _, a := range attr {
+	for _, a := range attrs {
 		am[a] = struct{}{}
 	}
 	return exprTrue(e.root, am)
 }
 
-// exprTrue returns true if e is satisfied by attributes attr.
-func exprTrue(e ast.Expr, attr map[string]struct{}) bool {
+// exprTrue returns true if e is satisfied by attributes attrs.
+func exprTrue(e ast.Expr, attrs map[string]struct{}) bool {
 	switch v := e.(type) {
 	case *ast.BinaryExpr:
 		switch v.Op {
 		case token.LAND:
-			return exprTrue(v.X, attr) && exprTrue(v.Y, attr)
+			return exprTrue(v.X, attrs) && exprTrue(v.Y, attrs)
 		case token.LOR:
-			return exprTrue(v.X, attr) || exprTrue(v.Y, attr)
+			return exprTrue(v.X, attrs) || exprTrue(v.Y, attrs)
 		}
 	case *ast.ParenExpr:
-		return exprTrue(v.X, attr)
+		return exprTrue(v.X, attrs)
 	case *ast.UnaryExpr:
 		switch v.Op {
 		case token.NOT:
-			return !exprTrue(v.X, attr)
+			return !exprTrue(v.X, attrs)
 		}
 	case *ast.Ident:
-		_, ok := attr[v.Name]
-		return ok
+		return hasAttr(attrs, v.Name)
 	case *ast.BasicLit:
 		switch v.Kind {
 		case token.STRING:
 			// Strip doublequotes.
-			_, ok := attr[v.Value[1:len(v.Value)-1]]
-			return ok
+			str, err := strconv.Unquote(v.Value)
+			if err != nil {
+				return false
+			}
+			return hasAttr(attrs, str)
+		}
+	}
+	return false
+}
+
+func hasAttr(attrs map[string]struct{}, want string) bool {
+	if !strings.Contains(want, "*") {
+		_, ok := attrs[want]
+		return ok
+	}
+
+	// The pattern looks like a glob. Temporarily replace asterisks with zero bytes
+	// so we can escape other chars that have special meanings in regular expressions.
+	want = strings.Replace(want, "*", "\000", -1)
+	want = regexp.QuoteMeta(want)
+	want = strings.Replace(want, "\000", ".*", -1)
+	want = "^" + want + "$"
+
+	re, err := regexp.Compile(want)
+	if err != nil {
+		return false
+	}
+	for attr := range attrs {
+		if re.MatchString(attr) {
+			return true
 		}
 	}
 	return false

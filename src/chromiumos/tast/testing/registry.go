@@ -119,6 +119,7 @@ func (r *Registry) TestsForPatterns(ps []string) ([]*Test, error) {
 
 // TestsForAttrExpr returns copies of registered tests with attributes matched by s,
 // a boolean expression of attributes, e.g. "(attr1 && !attr2) || attr3".
+// See chromiumos/tast/expr for details about expression syntax.
 func (r *Registry) TestsForAttrExpr(s string) ([]*Test, error) {
 	expr, err := expr.New(s)
 	if err != nil {

@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "99dd7c13_f870dff5",
+        "filename": "src/chromiumos/cmd/tast-lint/check/common_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-15T15:25:52Z",
+      "side": 1,
+      "message": "commontest.go etc. cf) https://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/1270537/4/src/chromiumos/cmd/tast-lint/check/import_order_test.go#30",
+      "revId": "779cf499f8daf4cade19dfebe10e88adaacbb7c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dbe6d7cd_8560022e",
+        "filename": "src/chromiumos/cmd/tast-lint/check/common_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-15T15:25:52Z",
+      "side": 1,
+      "message": "parseCode ? This does not parse an AST?",
+      "range": {
+        "startLine": 14,
+        "startChar": 10,
+        "endLine": 14,
+        "endChar": 13
+      },
+      "revId": "779cf499f8daf4cade19dfebe10e88adaacbb7c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

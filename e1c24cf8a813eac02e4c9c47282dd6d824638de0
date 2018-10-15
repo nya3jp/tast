@@ -375,6 +375,30 @@
       "revId": "e1c24cf8a813eac02e4c9c47282dd6d824638de0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "495d4832_79f55b5a",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-15T15:59:48Z",
+      "side": 1,
+      "message": "as far as i\u0027m aware, the httptest/iotest/etc. convention is just for packages used for testing. test-specific code that\u0027s stored in a separate file in the main package should still end in _test.go.\n\nin particular, i think that naming this commontest.go will mean that it\u0027s compiled into the package itself rather than just unit test executables. see https://golang.org/cmd/go/#hdr-Test_packages.",
+      "parentUuid": "2569f0fe_98d52f3e",
+      "range": {
+        "startLine": 30,
+        "startChar": 1,
+        "endLine": 30,
+        "endChar": 13
+      },
+      "revId": "e1c24cf8a813eac02e4c9c47282dd6d824638de0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

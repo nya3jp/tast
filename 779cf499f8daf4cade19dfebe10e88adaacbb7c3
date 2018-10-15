@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "5d3eebf5_85696a6e",
+        "filename": "src/chromiumos/cmd/tast-lint/check/common_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-15T16:00:25Z",
+      "side": 1,
+      "message": "(i left a comment there, but i think that this is correct)",
+      "parentUuid": "99dd7c13_f870dff5",
+      "revId": "779cf499f8daf4cade19dfebe10e88adaacbb7c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "dbe6d7cd_8560022e",
         "filename": "src/chromiumos/cmd/tast-lint/check/common_test.go",
         "patchSetId": 2
@@ -30,6 +48,30 @@
       "writtenOn": "2018-10-15T15:25:52Z",
       "side": 1,
       "message": "parseCode ? This does not parse an AST?",
+      "range": {
+        "startLine": 14,
+        "startChar": 10,
+        "endLine": 14,
+        "endChar": 13
+      },
+      "revId": "779cf499f8daf4cade19dfebe10e88adaacbb7c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3a01384c_d60c82f7",
+        "filename": "src/chromiumos/cmd/tast-lint/check/common_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-15T16:00:25Z",
+      "side": 1,
+      "message": "parseCode seems better to me too",
+      "parentUuid": "dbe6d7cd_8560022e",
       "range": {
         "startLine": 14,
         "startChar": 10,

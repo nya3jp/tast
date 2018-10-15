@@ -478,6 +478,24 @@
     },
     {
       "key": {
+        "uuid": "cf838dcb_a2f69d86",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-15T15:23:19Z",
+      "side": 1,
+      "message": "Done. Dan, could you double check if it is acceptable for you to use white space indent here?",
+      "parentUuid": "fec054a4_413a1218",
+      "revId": "1fe0ef81a69e662e40bfe02f0880f3a49765b684",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "14aa09fd_18ab7893",
         "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
         "patchSetId": 3

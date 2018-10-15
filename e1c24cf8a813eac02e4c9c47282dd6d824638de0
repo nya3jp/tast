@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "35a8e3b3_bc9dbf60",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-15T15:23:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1721fb3e_ad087cb7",
+      "range": {
+        "startLine": 40,
+        "startChar": 3,
+        "endLine": 40,
+        "endChar": 20
+      },
+      "revId": "e1c24cf8a813eac02e4c9c47282dd6d824638de0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "eae8b96d_ef6f43e0",
         "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
         "patchSetId": 4
@@ -36,6 +60,30 @@
       "writtenOn": "2018-10-11T03:08:14Z",
       "side": 1,
       "message": "Maybe we want to use guard style.\n\n if bytes.Equal(in, out) {\n   return nil\n }\n ...",
+      "range": {
+        "startLine": 44,
+        "startChar": 1,
+        "endLine": 44,
+        "endChar": 27
+      },
+      "revId": "e1c24cf8a813eac02e4c9c47282dd6d824638de0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dde50505_dc5a0324",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-15T15:23:19Z",
+      "side": 1,
+      "message": "This is actually error guard style, I think.\n\nif ... {\n  // an error is found.\n}",
+      "parentUuid": "eae8b96d_ef6f43e0",
       "range": {
         "startLine": 44,
         "startChar": 1,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "18e43248_c31c0b6e",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-15T15:23:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1d1f6b91_ccda906b",
+      "range": {
+        "startLine": 48,
+        "startChar": 3,
+        "endLine": 48,
+        "endChar": 23
+      },
+      "revId": "e1c24cf8a813eac02e4c9c47282dd6d824638de0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "dd59eb67_1f7bce4b",
         "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
         "patchSetId": 4
@@ -91,6 +163,30 @@
       "revId": "e1c24cf8a813eac02e4c9c47282dd6d824638de0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8210dc94_f6e46ff0",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-15T15:23:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dd59eb67_1f7bce4b",
+      "range": {
+        "startLine": 53,
+        "startChar": 18,
+        "endLine": 53,
+        "endChar": 24
+      },
+      "revId": "e1c24cf8a813eac02e4c9c47282dd6d824638de0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "a6fe4629_c865e8f7",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-15T15:23:19Z",
+      "side": 1,
+      "message": "Rephrased.",
+      "parentUuid": "804cc5ef_e8b676a8",
+      "range": {
+        "startLine": 55,
+        "startChar": 130,
+        "endLine": 55,
+        "endChar": 134
+      },
+      "revId": "e1c24cf8a813eac02e4c9c47282dd6d824638de0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "133f414f_743499b6",
         "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
         "patchSetId": 4
@@ -137,6 +257,30 @@
       "revId": "e1c24cf8a813eac02e4c9c47282dd6d824638de0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fb70226b_b482f40c",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-15T15:23:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "133f414f_743499b6",
+      "range": {
+        "startLine": 136,
+        "startChar": 5,
+        "endLine": 136,
+        "endChar": 13
+      },
+      "revId": "e1c24cf8a813eac02e4c9c47282dd6d824638de0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -163,6 +307,30 @@
     },
     {
       "key": {
+        "uuid": "5d440bc6_daa2f5e3",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-15T15:23:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4d994f78_76e7013e",
+      "range": {
+        "startLine": 137,
+        "startChar": 30,
+        "endLine": 137,
+        "endChar": 38
+      },
+      "revId": "e1c24cf8a813eac02e4c9c47282dd6d824638de0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "571dea29_3e6dfd65",
         "filename": "src/chromiumos/cmd/tast-lint/check/import_order_test.go",
         "patchSetId": 4
@@ -174,6 +342,30 @@
       "writtenOn": "2018-10-11T03:08:14Z",
       "side": 1,
       "message": "Would you mind extracting verifyIssues from errors_test.go to a separate file, e.g. common_test.go?",
+      "range": {
+        "startLine": 30,
+        "startChar": 1,
+        "endLine": 30,
+        "endChar": 13
+      },
+      "revId": "e1c24cf8a813eac02e4c9c47282dd6d824638de0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2569f0fe_98d52f3e",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-15T15:23:19Z",
+      "side": 1,
+      "message": "Done to extract into commontest.go (not common_test.go).\nno \u0027_\u0027 is named after httptest or iotest etc. Actually it is not a test of common.go.\ncf) https://stackoverflow.com/questions/31794141/can-i-create-shared-test-utilities-in-go",
+      "parentUuid": "571dea29_3e6dfd65",
       "range": {
         "startLine": 30,
         "startChar": 1,

@@ -320,10 +320,12 @@ func TestNextMessageTimeout(t *gotesting.T) {
 			exp:        11 * time.Second,
 		},
 	} {
-		ctx := context.Background()
+		var ctx context.Context
 		var cancel context.CancelFunc
 		if tc.ctxTimeout != 0 {
-			ctx, cancel = context.WithDeadline(ctx, now.Add(tc.ctxTimeout))
+			ctx, cancel = context.WithDeadline(context.Background(), now.Add(tc.ctxTimeout))
+		} else {
+			ctx, cancel = context.WithCancel(context.Background())
 		}
 
 		h := resultsHandler{
@@ -350,9 +352,7 @@ func TestNextMessageTimeout(t *gotesting.T) {
 				now.Unix(), tc.msgTimeout, tc.ctxTimeout, testStartUnix, tc.testTimeout, act, tc.exp)
 		}
 
-		if cancel != nil {
-			cancel()
-		}
+		cancel()
 	}
 }
 

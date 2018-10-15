@@ -496,6 +496,24 @@
     },
     {
       "key": {
+        "uuid": "2fa6e49d_67295716",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-15T16:59:42Z",
+      "side": 1,
+      "message": "sure, that\u0027s fine. i usually use a tab, but i think that\u0027s just because i\u0027m often writing literal go code in these unindented blocks and it feels a bit cleaner to me to do so. i don\u0027t mind spaces, though :-)",
+      "parentUuid": "cf838dcb_a2f69d86",
+      "revId": "1fe0ef81a69e662e40bfe02f0880f3a49765b684",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "14aa09fd_18ab7893",
         "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
         "patchSetId": 3

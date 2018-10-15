@@ -7,6 +7,8 @@ package testing
 import (
 	"context"
 	"time"
+
+	"chromiumos/tast/ctxutil"
 )
 
 // stage represents part of the execution of a single test (i.e. a Test.Run call).
@@ -32,7 +34,7 @@ func runStages(ctx context.Context, s *State, stages []stage) bool {
 	go func() {
 		defer close(s.ch)
 		for _, st := range stages {
-			rctx, rcancel := timeoutContext(ctx, st.ctxTimeout)
+			rctx, rcancel := ctxutil.OptionalTimeout(ctx, st.ctxTimeout)
 			defer rcancel()
 			runAndRecover(st.f, rctx, s)
 			stageCh <- struct{}{}
@@ -50,15 +52,6 @@ func runStages(ctx context.Context, s *State, stages []stage) bool {
 		}
 	}
 	return true
-}
-
-// timeoutContext returns a context and cancelation function derived from ctx with the specified timeout.
-// If timeout is zero or negative (indicating an unset timeout), no timeout will be applied.
-func timeoutContext(ctx context.Context, timeout time.Duration) (tctx context.Context, cancel func()) {
-	if timeout <= 0 {
-		return context.WithCancel(ctx)
-	}
-	return context.WithTimeout(ctx, timeout)
 }
 
 // runAndRecover runs f synchronously with the given Context and State, and recovers and reports an error if it panics.

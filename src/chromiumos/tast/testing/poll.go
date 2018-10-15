@@ -8,6 +8,7 @@ import (
 	"context"
 	"time"
 
+	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/errors"
 )
 
@@ -38,10 +39,11 @@ func Poll(ctx context.Context, f func(context.Context) error, opts *PollOptions)
 		return ctx.Err()
 	}
 
-	cancel := func() {}
-	if opts != nil && opts.Timeout > 0 {
-		ctx, cancel = context.WithTimeout(ctx, opts.Timeout)
+	var timeout time.Duration
+	if opts != nil {
+		timeout = opts.Timeout
 	}
+	ctx, cancel := ctxutil.OptionalTimeout(ctx, timeout)
 	defer cancel()
 
 	interval := defaultPollInterval

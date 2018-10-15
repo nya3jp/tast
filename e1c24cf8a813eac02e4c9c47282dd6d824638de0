@@ -399,6 +399,30 @@
       "revId": "e1c24cf8a813eac02e4c9c47282dd6d824638de0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "58961bf5_081f7677",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-15T16:35:36Z",
+      "side": 1,
+      "message": "Hmm, ok. I don\u0027t have strong opinion, but just would like to follow the common manner. So renamed.\n\n\u003e test-specific code that\u0027s stored in a separate file in the main package should still end in _test.go.\n\nI couldn\u0027t find a source of this rule. Could you share?\n\n\u003e in particular, i think that naming this commontest.go will mean that it\u0027s compiled into the package itself rather than just unit test executables.\n\nbut linker should strip? (so, the only diff is, with common_test.go, if main code uses the test utility accidentally, the compiler should warn, while with commontest.go it would be (wrongly) success, IIUC).",
+      "parentUuid": "495d4832_79f55b5a",
+      "range": {
+        "startLine": 30,
+        "startChar": 1,
+        "endLine": 30,
+        "endChar": 13
+      },
+      "revId": "e1c24cf8a813eac02e4c9c47282dd6d824638de0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

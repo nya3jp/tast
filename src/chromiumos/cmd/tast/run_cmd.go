@@ -19,6 +19,7 @@ import (
 	"chromiumos/cmd/tast/logging"
 	"chromiumos/cmd/tast/run"
 	"chromiumos/cmd/tast/timing"
+	"chromiumos/tast/ctxutil"
 )
 
 const (
@@ -30,9 +31,10 @@ const (
 
 // runCmd implements subcommands.Command to support running tests.
 type runCmd struct {
-	cfg        *run.Config // shared config for running tests
-	wrapper    runWrapper  // can be set by tests to stub out calls to run package
-	timeoutSec int         // overall timeout in seconds
+	cfg     *run.Config // shared config for running tests
+	wrapper runWrapper  // can be set by tests to stub out calls to run package
+	// TODO(derat): Introduce a new duration flag type so this can be a time.Duration?
+	timeoutSec int // overall timeout in seconds
 }
 
 func newRunCmd() *runCmd {
@@ -61,12 +63,7 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 		panic("logger not attached to context")
 	}
 
-	var cancel func()
-	if r.timeoutSec > 0 {
-		ctx, cancel = context.WithTimeout(ctx, time.Duration(r.timeoutSec)*time.Second)
-	} else {
-		ctx, cancel = context.WithCancel(ctx)
-	}
+	ctx, cancel := ctxutil.OptionalTimeout(ctx, time.Duration(r.timeoutSec)*time.Second) // negative ignored
 	defer cancel()
 
 	defer r.cfg.Close(ctx)
@@ -145,13 +142,12 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 	lg.Log("Writing results to ", r.cfg.ResDir)
 
 	// If a deadline is set, reserve a bit of time to write results and collect system info.
-	var rctx context.Context
-	var rcancel func()
-	if dl, ok := ctx.Deadline(); ok && dl.After(time.Now().Add(writeResultsTimeout)) {
-		rctx, rcancel = context.WithDeadline(ctx, dl.Add(-writeResultsTimeout))
-	} else {
-		rctx, rcancel = context.WithCancel(ctx)
+	// Skip doing this if a very-short timeout was set, since it's confusing to get an immediate timeout in that case.
+	var wrt time.Duration
+	if time.Duration(r.timeoutSec)*time.Second > 2*writeResultsTimeout {
+		wrt = writeResultsTimeout
 	}
+	rctx, rcancel := ctxutil.Shorten(ctx, wrt)
 	defer rcancel()
 
 	status, results := r.wrapper.run(rctx, r.cfg)

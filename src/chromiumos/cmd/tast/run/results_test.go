@@ -278,10 +278,9 @@ func TestReadTestOutputTimeout(t *gotesting.T) {
 }
 
 func TestNextMessageTimeout(t *gotesting.T) {
-	now := time.Unix(60, 0)
+	now := time.Unix(60, 0) // arbitrary time in 1970
 
 	for _, tc := range []struct {
-		now         time.Time
 		msgTimeout  time.Duration
 		ctxTimeout  time.Duration
 		testStart   time.Time
@@ -320,11 +319,14 @@ func TestNextMessageTimeout(t *gotesting.T) {
 			exp:        11 * time.Second,
 		},
 	} {
-		ctx := context.Background()
+		var ctx context.Context
 		var cancel context.CancelFunc
 		if tc.ctxTimeout != 0 {
-			ctx, cancel = context.WithDeadline(ctx, now.Add(tc.ctxTimeout))
+			ctx, cancel = context.WithDeadline(context.Background(), now.Add(tc.ctxTimeout))
+		} else {
+			ctx, cancel = context.WithCancel(context.Background())
 		}
+		defer cancel()
 
 		h := resultsHandler{
 			ctx: ctx,
@@ -348,10 +350,6 @@ func TestNextMessageTimeout(t *gotesting.T) {
 		if act := h.nextMessageTimeout(now); act != tc.exp {
 			t.Errorf("nextMessageTimeout(%v) (msgTimeout=%v, ctxTimeout=%v testStart=%v, testTimeout=%v) = %v; want %v",
 				now.Unix(), tc.msgTimeout, tc.ctxTimeout, testStartUnix, tc.testTimeout, act, tc.exp)
-		}
-
-		if cancel != nil {
-			cancel()
 		}
 	}
 }

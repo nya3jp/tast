@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bd5d5f88_d3330570",
+        "filename": "src/chromiumos/cmd/tast/run/results_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 326,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-15T19:01:26Z",
+      "side": 1,
+      "message": "this one can\u0027t use the new functions since it has a hardcoded \u0027now\u0027. i\u0027m at least getting rid of the weird nil cancel func, though.",
+      "revId": "170f39c22fa4d81285afdc7078cc0a0631f0a5bb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fc732c80_acf711b6",
+        "filename": "src/chromiumos/cmd/tast/run_cmd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-15T19:01:26Z",
+      "side": 1,
+      "message": "this check is different from what i had before, but i think it\u0027ll work",
+      "revId": "170f39c22fa4d81285afdc7078cc0a0631f0a5bb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

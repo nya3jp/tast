@@ -306,6 +306,30 @@
     },
     {
       "key": {
+        "uuid": "35ca7891_db89e973",
+        "filename": "src/chromiumos/tast/ctxutil/ctxutil.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-16T02:13:30Z",
+      "side": 1,
+      "message": "Oh, I misread this comment. It does not mean \"unsetting timeout of ctx\", but \"timeout is unspecified for OptionalTimeout\"... Thank you for clarification.",
+      "parentUuid": "347938c7_002d3fe0",
+      "range": {
+        "startLine": 13,
+        "startChar": 34,
+        "endLine": 13,
+        "endChar": 63
+      },
+      "revId": "170f39c22fa4d81285afdc7078cc0a0631f0a5bb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f4952a27_8757cfef",
         "filename": "src/chromiumos/tast/ctxutil/ctxutil_test.go",
         "patchSetId": 1

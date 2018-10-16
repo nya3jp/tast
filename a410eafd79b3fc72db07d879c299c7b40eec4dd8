@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "564f0a8c_aa1cee51",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-16T04:48:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8f2a3ca5_8b66e0fe",
+      "range": {
+        "startLine": 42,
+        "startChar": 2,
+        "endLine": 42,
+        "endChar": 8
+      },
+      "revId": "a410eafd79b3fc72db07d879c299c7b40eec4dd8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b4a7cd8c_51ae8700",
         "filename": "src/chromiumos/cmd/tast-lint/main.go",
         "patchSetId": 6
@@ -36,6 +60,30 @@
       "writtenOn": "2018-10-16T02:11:28Z",
       "side": 1,
       "message": "fs is no longer needed, could you remove?",
+      "range": {
+        "startLine": 70,
+        "startChar": 12,
+        "endLine": 70,
+        "endChar": 30
+      },
+      "revId": "a410eafd79b3fc72db07d879c299c7b40eec4dd8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4e0a5ed6_bf8800bb",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-16T04:48:15Z",
+      "side": 1,
+      "message": "Done. Removed all related FileSet.",
+      "parentUuid": "b4a7cd8c_51ae8700",
       "range": {
         "startLine": 70,
         "startChar": 12,

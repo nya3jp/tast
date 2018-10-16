@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8f2a3ca5_8b66e0fe",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-16T02:11:28Z",
+      "side": 1,
+      "message": "nit: We may want to name this \"patch\", \"diff\" or something.",
+      "range": {
+        "startLine": 42,
+        "startChar": 2,
+        "endLine": 42,
+        "endChar": 8
+      },
+      "revId": "a410eafd79b3fc72db07d879c299c7b40eec4dd8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b4a7cd8c_51ae8700",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-16T02:11:28Z",
+      "side": 1,
+      "message": "fs is no longer needed, could you remove?",
+      "range": {
+        "startLine": 70,
+        "startChar": 12,
+        "endLine": 70,
+        "endChar": 30
+      },
+      "revId": "a410eafd79b3fc72db07d879c299c7b40eec4dd8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

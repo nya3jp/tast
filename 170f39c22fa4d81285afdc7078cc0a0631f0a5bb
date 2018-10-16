@@ -326,6 +326,30 @@
       "revId": "170f39c22fa4d81285afdc7078cc0a0631f0a5bb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8c39d2d0_6ab0b167",
+        "filename": "src/chromiumos/tast/ctxutil/ctxutil_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-16T02:06:51Z",
+      "side": 1,
+      "message": "perhaps this is overly tricky, but since timeout is added to time.Now() later (via the call on L32), isn\u0027t lower guaranteed to be less than (or equal to) the resulting context\u0027s deadline? i think that https://golang.org/ref/mem#tmp_2 is saying that the compiler and process can\u0027t reorder these operations.",
+      "parentUuid": "f4952a27_8757cfef",
+      "range": {
+        "startLine": 30,
+        "startChar": 10,
+        "endLine": 30,
+        "endChar": 28
+      },
+      "revId": "170f39c22fa4d81285afdc7078cc0a0631f0a5bb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -32,6 +32,7 @@ func main() {
 			"android":           "arc",
 			"audio_play":        "!betty && !veyron_rialto",                   // VMs don't have audio hardware
 			"audio_record":      "!betty && !veyron_mickey && !veyron_rialto", // VMs don't have audio hardware
+			"camera_720p":       "!daisy && !daisy_skate && !daisy_spring",    // daisy variants' cameras don't support 1280x720
 			"chrome":            "!chromeless_tty",
 			"chrome_login":      "!chromeless_tty && !rialto",
 			"cups":              "cups",

@@ -303,6 +303,29 @@
       "revId": "170f39c22fa4d81285afdc7078cc0a0631f0a5bb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f4952a27_8757cfef",
+        "filename": "src/chromiumos/tast/ctxutil/ctxutil_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-16T02:02:18Z",
+      "side": 1,
+      "message": "This lower bound is sensitive to clock synchronization. How about:\n\n timeout \u003d 10 * time.Minute\n lower :\u003d start.Add(9 * time.Minute)\n upper :\u003d start.Add(11 * time.Minute)",
+      "range": {
+        "startLine": 30,
+        "startChar": 10,
+        "endLine": 30,
+        "endChar": 28
+      },
+      "revId": "170f39c22fa4d81285afdc7078cc0a0631f0a5bb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

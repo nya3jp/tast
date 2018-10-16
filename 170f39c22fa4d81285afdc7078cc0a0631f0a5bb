@@ -350,6 +350,30 @@
       "revId": "170f39c22fa4d81285afdc7078cc0a0631f0a5bb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c8e3dfb6_bd5b702a",
+        "filename": "src/chromiumos/tast/ctxutil/ctxutil_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-16T02:07:59Z",
+      "side": 1,
+      "message": "or do you mean that the clock may go backwards? i was hopeful that the fix that eventually happened at https://golang.org/issue/12914 would prevent this, but i may be wrong.",
+      "parentUuid": "8c39d2d0_6ab0b167",
+      "range": {
+        "startLine": 30,
+        "startChar": 10,
+        "endLine": 30,
+        "endChar": 28
+      },
+      "revId": "170f39c22fa4d81285afdc7078cc0a0631f0a5bb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

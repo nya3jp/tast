@@ -398,6 +398,30 @@
       "revId": "170f39c22fa4d81285afdc7078cc0a0631f0a5bb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "82b00151_7f1a29e1",
+        "filename": "src/chromiumos/tast/ctxutil/ctxutil_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-16T04:46:34Z",
+      "side": 1,
+      "message": "I meant the latter, non-monotonic clock.\n\nIMHO monotonic clock support in time is not great and unreliable because it\u0027s difficult to tell if a time.Time object has a monotonic timestamp after several operations.\n\nBut in this case it\u0027s not very difficult because documentation of context.WithTimeout explicitly mentions it calls context.WithDeadline(time.Now().Add(d)), so maybe it\u0027s okay.",
+      "parentUuid": "c8e3dfb6_bd5b702a",
+      "range": {
+        "startLine": 30,
+        "startChar": 10,
+        "endLine": 30,
+        "endChar": 28
+      },
+      "revId": "170f39c22fa4d81285afdc7078cc0a0631f0a5bb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

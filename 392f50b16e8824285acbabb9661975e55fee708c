@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9757181a_9b720600",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-16T14:23:12Z",
+      "side": 1,
+      "message": "yeah, this isn\u0027t going to work. :-) you need underscores, not dashes.\n\nbut instead of adding new USE flags, you can probably just use snow, skate, and spring. or maybe even just exynos, if that\u0027s appropriate.\n\nwhatever you use, it needs to be listed in IUSE in the tast-use-flags ebuild as described on L31.",
+      "range": {
+        "startLine": 35,
+        "startChar": 36,
+        "endLine": 35,
+        "endChar": 47
+      },
+      "revId": "392f50b16e8824285acbabb9661975e55fee708c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

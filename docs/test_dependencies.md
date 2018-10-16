@@ -11,6 +11,7 @@ The following software features are defined:
 *   `android` - The ability to [run Android apps].
 *   `audio_play` - The ability to play audio.
 *   `audio_record` - The ability to record audio.
+*   `camera_720p` - The ability to capture video with frame size 1280x720.
 *   `autotest-capability:foo` - An [Autotest capability] named `foo`. See below.
 *   `chrome` - A Chrome process.
 *   `chrome_login` - Implies `chrome` with the further requirement that user

@@ -19,6 +19,7 @@ import (
 	"chromiumos/cmd/tast/logging"
 	"chromiumos/cmd/tast/run"
 	"chromiumos/cmd/tast/timing"
+	"chromiumos/tast/command"
 	"chromiumos/tast/ctxutil"
 )
 
@@ -31,10 +32,9 @@ const (
 
 // runCmd implements subcommands.Command to support running tests.
 type runCmd struct {
-	cfg     *run.Config // shared config for running tests
-	wrapper runWrapper  // can be set by tests to stub out calls to run package
-	// TODO(derat): Introduce a new duration flag type so this can be a time.Duration?
-	timeoutSec int // overall timeout in seconds
+	cfg     *run.Config   // shared config for running tests
+	wrapper runWrapper    // can be set by tests to stub out calls to run package
+	timeout time.Duration // overall timeout; 0 if no timeout
 }
 
 func newRunCmd() *runCmd {
@@ -53,7 +53,7 @@ func (*runCmd) Usage() string {
 }
 
 func (r *runCmd) SetFlags(f *flag.FlagSet) {
-	f.IntVar(&r.timeoutSec, "timeout", 0, "run timeout in seconds, or 0 for none")
+	f.Var(command.NewDurationFlag(time.Second, &r.timeout, 0), "timeout", "run timeout in seconds, or 0 for none")
 	r.cfg.SetFlags(f)
 }
 
@@ -63,7 +63,7 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 		panic("logger not attached to context")
 	}
 
-	ctx, cancel := ctxutil.OptionalTimeout(ctx, time.Duration(r.timeoutSec)*time.Second) // negative ignored
+	ctx, cancel := ctxutil.OptionalTimeout(ctx, r.timeout) // zero or negative ignored
 	defer cancel()
 
 	defer r.cfg.Close(ctx)
@@ -144,7 +144,7 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 	// If a deadline is set, reserve a bit of time to write results and collect system info.
 	// Skip doing this if a very-short timeout was set, since it's confusing to get an immediate timeout in that case.
 	var wrt time.Duration
-	if time.Duration(r.timeoutSec)*time.Second > 2*writeResultsTimeout {
+	if r.timeout > 2*writeResultsTimeout {
 		wrt = writeResultsTimeout
 	}
 	rctx, rcancel := ctxutil.Shorten(ctx, wrt)

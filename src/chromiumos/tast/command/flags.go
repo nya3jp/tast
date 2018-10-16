@@ -7,8 +7,34 @@ package command
 import (
 	"fmt"
 	"sort"
+	"strconv"
 	"strings"
+	"time"
 )
+
+// DurationFlag implements flag.Value to save a user-supplied integer time duration
+// with fixed units to a time.Duration.
+type DurationFlag struct {
+	units time.Duration
+	dst   *time.Duration
+}
+
+// NewDurationFlag returns a DurationFlag that will save a duration with the supplied units to dst.
+func NewDurationFlag(units time.Duration, dst *time.Duration, def time.Duration) *DurationFlag {
+	*dst = def
+	return &DurationFlag{units, dst}
+}
+
+func (f *DurationFlag) Set(v string) error {
+	num, err := strconv.ParseInt(v, 10, 64)
+	if err != nil {
+		return err
+	}
+	*f.dst = time.Duration(num) * f.units
+	return nil
+}
+
+func (f *DurationFlag) String() string { return "" }
 
 // EnumFlag implements flag.Value to map a user-supplied string value to an enum value.
 type EnumFlag struct {

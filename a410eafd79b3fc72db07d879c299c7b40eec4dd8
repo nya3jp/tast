@@ -93,6 +93,30 @@
       "revId": "a410eafd79b3fc72db07d879c299c7b40eec4dd8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "be2ef85e_3c03b7e4",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-16T05:25:09Z",
+      "side": 1,
+      "message": "Thanks!",
+      "parentUuid": "4e0a5ed6_bf8800bb",
+      "range": {
+        "startLine": 70,
+        "startChar": 12,
+        "endLine": 70,
+        "endChar": 30
+      },
+      "revId": "a410eafd79b3fc72db07d879c299c7b40eec4dd8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

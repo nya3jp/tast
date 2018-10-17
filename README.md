@@ -1,7 +1,6 @@
 # Tast (go/tast)
 
-<img src="https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/logo_512.png"
-     width="256" alt="Tast logo with Go gopher with green rubber 'PASS' stamp">
+![Tast logo with Go gopher with green rubber 'PASS' stamp](docs/logo_512.png)
 
 Tast is an integration-testing system for Chrome OS. Its focus is on
 maintainability, speed, and ease of interpreting and reproducing test results.

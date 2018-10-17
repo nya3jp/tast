@@ -159,12 +159,55 @@ func TestReadTestOutput(t *gotesting.T) {
 		t.Errorf("%v contains %+v; want %+v", streamedResultsFilename, streamRes, expRes)
 	}
 
-	outPath := filepath.Join(testLogsDir, test2Name, test2OutFile)
-	if files[outPath] != test2OutData {
-		t.Errorf("%s contains %q; want %q", outPath, files[outPath], test2OutData)
+	test1LogPath := filepath.Join(testLogsDir, test1Name, testLogFilename)
+	if !strings.Contains(files[test1LogPath], test1LogText) {
+		t.Errorf("%s contents %q don't contain log message %q", test1LogPath, files[test1LogPath], test1LogText)
+	}
+	test2LogPath := filepath.Join(testLogsDir, test2Name, testLogFilename)
+	if !strings.Contains(files[test2LogPath], test2ErrorReason) {
+		t.Errorf("%s contents %q don't contain error message %q", test2LogPath, files[test2LogPath], test2ErrorReason)
+	}
+	test2OutPath := filepath.Join(testLogsDir, test2Name, test2OutFile)
+	if files[test2OutPath] != test2OutData {
+		t.Errorf("%s contains %q; want %q", test2OutPath, files[test2OutPath], test2OutData)
+	}
+	test3LogPath := filepath.Join(testLogsDir, test3Name, testLogFilename)
+	if !strings.Contains(files[test3LogPath], test3Deps[0]) {
+		t.Errorf("%s contents %q don't contain missing dependency %q", test3LogPath, files[test3LogPath], test3Deps[0])
+	}
+}
+
+func TestPerTestLogContainsRunError(t *gotesting.T) {
+	td := testutil.TempDir(t)
+	defer os.RemoveAll(td)
+
+	// Send a RunError control message in the middle of the test.
+	const (
+		testName = "pkg.Test1"
+		errorMsg = "lost SSH connection to DUT"
+	)
+	b := bytes.Buffer{}
+	mw := control.NewMessageWriter(&b)
+	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 1})
+	mw.WriteMessage(&control.TestStart{Time: time.Unix(2, 0), Test: testing.Test{Name: testName}})
+	mw.WriteMessage(&control.RunError{Time: time.Unix(3, 0), Error: testing.Error{Reason: errorMsg}})
+
+	cfg := Config{Logger: logging.NewSimple(&bytes.Buffer{}, 0, false), ResDir: td}
+	if _, err := readTestOutput(context.Background(), &cfg, &b, os.Rename); err == nil {
+		t.Fatal("readTestOutput didn't report run error")
+	} else if !strings.Contains(err.Error(), errorMsg) {
+		t.Fatalf("readTestOutput error %q doesn't contain %q", err.Error(), errorMsg)
 	}
 
-	// TODO(derat): Check more output, including run errors.
+	// The per-test log file should contain the error message: https://crbug.com/895716
+	files, err := testutil.ReadFiles(td)
+	if err != nil {
+		t.Fatal(err)
+	}
+	logPath := filepath.Join(testLogsDir, testName, testLogFilename)
+	if !strings.Contains(files[logPath], errorMsg) {
+		t.Errorf("%s contents %q don't contain error message %q", logPath, files[logPath], errorMsg)
+	}
 }
 
 func TestValidateMessages(t *gotesting.T) {

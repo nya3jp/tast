@@ -450,7 +450,7 @@ func (r *resultsHandler) processMessages(mch chan interface{}, ech chan error) e
 		case err := <-ech:
 			return err
 		case <-time.After(timeout):
-			return fmt.Errorf("timed out after waiting %v for next message", timeout)
+			return fmt.Errorf("timed out after waiting %v for next message", timeout.Round(time.Millisecond))
 		case <-r.ctx.Done():
 			return r.ctx.Err()
 		}
@@ -540,6 +540,11 @@ func readTestOutput(ctx context.Context, cfg *Config, r io.Reader, crf copyAndRe
 	go readMessages(r, mch, ech)
 
 	if err := rh.processMessages(mch, ech); err != nil {
+		// If there's a global error mid-test (e.g. the SSH connection died or a RunError control message
+		// was seen), log it now so it'll end up in the current test's log file to indicate what went wrong.
+		if rh.res != nil {
+			cfg.Logger.Log("Got global error mid-test: ", err)
+		}
 		return rh.results, err
 	}
 

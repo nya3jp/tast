@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c4570c68_f5dfaa13",
+        "filename": "src/chromiumos/cmd/tast/run/results.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 453,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-17T01:55:52Z",
+      "side": 1,
+      "message": "i\u0027m rounding this before logging, similar to other timestamps, since we get a weirdly-precise string representation otherwise",
+      "revId": "ed0f0eeeecb6e3ad0d2bcf269bec76039db583c8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -1,5 +1,8 @@
 # Tast (go/tast)
 
+<img src="https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/logo_512.png"
+     width="256" alt="Tast logo with Go gopher with green rubber 'PASS' stamp">
+
 Tast is an integration-testing system for Chrome OS. Its focus is on
 maintainability, speed, and ease of interpreting and reproducing test results.
 It supports building, deploying, and running tests. It doesn't implement other
@@ -8,6 +11,9 @@ or storing test results.
 
 To try it out, see the [quickstart] document. The [overview] is a good starting
 point for learning more about how the system is structured.
+
+[quickstart]: docs/quickstart.md
+[overview]: docs/overview.md
 
 ## Directory structure
 
@@ -29,6 +35,9 @@ suggestions.
 
 Tests are located in the [tast-tests repository].
 
+[Go in Chromium OS]: http://www.chromium.org/chromium-os/developer-guide/go-in-chromium-os
+[tast-tests repository]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/
+
 ## Documentation
 
 For more information, see the [docs](docs/) subdirectory.
@@ -40,14 +49,20 @@ For more information, see the [docs](docs/) subdirectory.
 The [tast-users mailing list] is used for discussions about writing and running
 tests.
 
+[tast-users mailing list]: https://groups.google.com/a/chromium.org/forum/#!forum/tast-users
+
 ## Bug reports
 
 Please file bug reports and feature requests in the [Chromium issue tracker]
 using the `Tests>Tast` component.
 
-[quickstart]: docs/quickstart.md
-[overview]: docs/overview.md
-[Go in Chromium OS]: http://www.chromium.org/chromium-os/developer-guide/go-in-chromium-os
-[tast-tests repository]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/
-[tast-users mailing list]: https://groups.google.com/a/chromium.org/forum/#!forum/tast-users
 [Chromium issue tracker]: https://bugs.chromium.org/p/chromium/issues/list
+
+## Other notes
+
+The Go gopher concept and design was originally created by [Renee French] and is
+covered by the [Creative Commons Attribution 3.0 license]. The Tast logo above
+is also covered by the [Creative Commons Attribution 3.0 license].
+
+[Renee French]: https://reneefrench.blogspot.com/
+[Creative Commons Attribution 3.0 license]: https://creativecommons.org/licenses/by/3.0/

@@ -22,6 +22,30 @@
       "revId": "f7ef3d6e20196c615adc723ff83d4565ff203201",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c44ff4bf_88881961",
+        "filename": "docs/logo.svg",
+        "patchSetId": 5
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-17T22:33:42Z",
+      "side": 1,
+      "message": "svg files can have embedded licenses, so i\u0027ve updated it to use https://creativecommons.org/licenses/by/3.0/ . i\u0027ve also updated README.md to mention the image\u0027s license. commiting a copy of a CC license (rather than linking to it) doesn\u0027t seem common from my brief searching.\n\n(we don\u0027t actually ship this image, so i\u0027m not sure how important this is.)",
+      "parentUuid": "3299b1aa_e6a79903",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 54
+      },
+      "revId": "f7ef3d6e20196c615adc723ff83d4565ff203201",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

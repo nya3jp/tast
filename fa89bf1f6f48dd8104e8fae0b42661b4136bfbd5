@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "92106405_7818ec5d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-17T06:02:19Z",
+      "side": 1,
+      "message": "it would be possible to also check in a higher-resolution bitmap (might be useful for slide decks?), but i don\u0027t know if we want larger binaries in the repository. here\u0027s how large it is at various sizes (i didn\u0027t bother with pngcrush):\n\n-rw-r----- 1 derat primarygroup   6339 Oct 16 22:15 tast-export-128.png\n-rw-r----- 1 derat primarygroup  14484 Oct 16 22:15 tast-export-256.png\n-rw-r----- 1 derat primarygroup  31529 Oct 16 22:14 tast-export-512.png\n-rw-r----- 1 derat primarygroup  67355 Oct 16 22:03 tast-export-1024.png\n-rw-r----- 1 derat primarygroup 146067 Oct 16 22:03 tast-export-2048.png\n-rw-r----- 1 derat primarygroup 323340 Oct 16 21:55 tast-export-4096.png",
+      "revId": "fa89bf1f6f48dd8104e8fae0b42661b4136bfbd5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a4375568_1ec851f1",
+        "filename": "README.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-17T06:02:19Z",
+      "side": 1,
+      "message": "using an absolute URL here is unfortunate, but gitiles seems to have strict requirements for \u003cimg\u003e tags: https://github.com/google/gitiles/blob/master/Documentation/markdown.md#images\n\ni\u0027m using \u003cimg\u003e here so i can use a 2x image to avoid bluriness on high-dpi displays.\n\nand i\u0027m still not 100% certain that this will work correctly, since there doesn\u0027t seem to be any way to preview it. :-/",
+      "range": {
+        "startLine": 3,
+        "startChar": 10,
+        "endLine": 3,
+        "endChar": 93
+      },
+      "revId": "fa89bf1f6f48dd8104e8fae0b42661b4136bfbd5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

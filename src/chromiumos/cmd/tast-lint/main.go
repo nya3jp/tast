@@ -41,7 +41,7 @@ func isGoFile(path string) bool {
 }
 
 // checkAll runs all checks against paths.
-func checkAll(git *git, paths []string) ([]*check.Issue, error) {
+func checkAll(git *git, paths []string, debug bool) ([]*check.Issue, error) {
 	fs := token.NewFileSet()
 
 	var issues []*check.Issue
@@ -59,6 +59,7 @@ func checkAll(git *git, paths []string) ([]*check.Issue, error) {
 
 			issues = append(issues, check.ErrorsImports(fs, f)...)
 			issues = append(issues, check.FmtErrorf(fs, f)...)
+			issues = append(issues, check.Golint(path, data, debug)...)
 			issues = append(issues, check.ImportOrder(path, data)...)
 		}
 	}
@@ -84,6 +85,7 @@ func report(issues []*check.Issue) {
 
 func main() {
 	commit := flag.String("commit", "", "if set, checks files in the specified Git commit")
+	debug := flag.Bool("debug", false, "enables debug outputs")
 	flag.Parse()
 
 	// TODO(nya): Allow running lint from arbitrary directories.
@@ -103,7 +105,7 @@ func main() {
 		return
 	}
 
-	issues, err := checkAll(git, files)
+	issues, err := checkAll(git, files, *debug)
 	if err != nil {
 		panic(err)
 	}

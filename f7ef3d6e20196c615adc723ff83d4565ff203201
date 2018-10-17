@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3299b1aa_e6a79903",
+        "filename": "docs/logo.svg",
+        "patchSetId": 5
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-17T19:37:30Z",
+      "side": 1,
+      "message": "What is the license of this image? I think we should use CC since it\u0027s a derived work. It would be good to have a dedicated file about the license (e.g. logo.LICENSE?) since the license is different from any other files (BSD).",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 54
+      },
+      "revId": "f7ef3d6e20196c615adc723ff83d4565ff203201",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -414,8 +414,9 @@ if err := doSomething(id); err != nil {
 }
 ```
 
-On the other hand, Tast log messages and error reasons should be capitalized
-phrases without any trailing punctuation:
+On the other hand, log and error messages printed by tests via `testing.State`,
+`testing.ContextLog`, and `testing.ContextLogf` should be capitalized phrases
+without any trailing punctuation:
 
 ```go
 s.Log("Asking Chrome to log in")
@@ -425,6 +426,8 @@ if err != nil {
 }
 s.Logf("Logged in as user %q with ID %v", user, id)
 ```
+
+In both cases, avoid multiline strings since they make logs difficult to read.
 
 [Go's error string conventions]: https://github.com/golang/go/wiki/CodeReviewComments#error-strings
 

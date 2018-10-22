@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "50224322_7a4f1c21",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 430,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-22T17:27:33Z",
+      "side": 1,
+      "message": "Sometimes we actually want to do this (e.g. external program output), so it might be good to say that:\n\n- do avoid multiline strings in `error`\n- try best to avoid multiline strings in logs, but allowed if absolutely necessary",
+      "range": {
+        "startLine": 430,
+        "startChar": 0,
+        "endLine": 430,
+        "endChar": 78
+      },
+      "revId": "902b3789c2629eb860cac0329264183d2c050dc4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -16,6 +16,24 @@
       "revId": "9d7b39c545725555bea0ddd4dc98d9d6c1179a5a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fcb5efc4_630c3a20",
+        "filename": "src/chromiumos/tast/command/flags.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-22T14:55:52Z",
+      "side": 1,
+      "message": "sorry, just noticed that i failed to respond to this! i considered this, but wasn\u0027t really sure if it\u0027s useful -- most duration flags are seconds, and i think that we usually make them explicitly take integer ms instead if more-precise durations are needed. i was also concerned that parsing floats could make unit tests flaky due to precision issues, although maybe that isn\u0027t really an issue with the numbers that we\u0027re operating on.",
+      "parentUuid": "96445b1d_c18e71fa",
+      "revId": "9d7b39c545725555bea0ddd4dc98d9d6c1179a5a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "51050202_1749b7dd",
+        "filename": "docs/modifying_tast.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-22T17:21:52Z",
+      "side": 1,
+      "message": "Do we also need to run `cros_workon --host start tast-cmd`?",
+      "range": {
+        "startLine": 61,
+        "startChar": 20,
+        "endLine": 61,
+        "endChar": 43
+      },
+      "revId": "fb30ab3cc4012c5b432da84ae31fcab53ff5aa64",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

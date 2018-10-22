@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "099c3112_ad99a994",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 417,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-22T13:16:27Z",
+      "side": 1,
+      "message": "nit: and testing.ContextLog/ContextLogf, too?",
+      "range": {
+        "startLine": 417,
+        "startChar": 64,
+        "endLine": 417,
+        "endChar": 77
+      },
+      "revId": "ad2794268264f543507271938b9257791aea64ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

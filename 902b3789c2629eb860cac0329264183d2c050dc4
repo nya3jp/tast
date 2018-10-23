@@ -22,6 +22,30 @@
       "revId": "902b3789c2629eb860cac0329264183d2c050dc4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2e81a5f7_e3cea471",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 430,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-23T01:16:22Z",
+      "side": 1,
+      "message": "thanks, it\u0027s good to point this out. i\u0027ve uploaded https://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/1295551",
+      "parentUuid": "50224322_7a4f1c21",
+      "range": {
+        "startLine": 430,
+        "startChar": 0,
+        "endLine": 430,
+        "endChar": 78
+      },
+      "revId": "902b3789c2629eb860cac0329264183d2c050dc4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

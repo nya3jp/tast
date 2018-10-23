@@ -25,7 +25,7 @@ import (
 		"testfile.go:9:2: chromiumos/tast/errors package should be used instead of github.com/pkg/errors package",
 	}
 
-	f, fs := parse(code)
+	f, fs := parse(code, "testfile.go")
 	issues := ErrorsImports(fs, f)
 	verifyIssues(t, issues, expects)
 }
@@ -49,7 +49,7 @@ func main() {
 		"testfile.go:11:2: chromiumos/tast/errors.Errorf should be used instead of fmt.Errorf",
 	}
 
-	f, fs := parse(code)
+	f, fs := parse(code, "testfile.go")
 	issues := FmtErrorf(fs, f)
 	verifyIssues(t, issues, expects)
 }

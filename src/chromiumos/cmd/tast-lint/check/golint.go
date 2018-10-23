@@ -6,8 +6,6 @@ package check
 
 import (
 	"fmt"
-	"path/filepath"
-	"regexp"
 	"strings"
 
 	"golang.org/x/lint"
@@ -16,18 +14,6 @@ import (
 // minConfidence is the confidence threshold for problems reported from Golint.
 // Golint's default is 0.8.
 const minConfidence = 0.79
-
-// testMainPathRegexp matches a file name of a Tast test main file.
-var testMainPathRegexp = regexp.MustCompile(`/src/chromiumos/tast/(?:local|remote)/bundles/[^/]+/[^/]+/[^/]+\.go$`)
-
-// isTestMainFile checks if path is a Test test main file.
-func isTestMainFile(path string) bool {
-	path, err := filepath.Abs(path)
-	if err != nil {
-		return false
-	}
-	return testMainPathRegexp.MatchString(path)
-}
 
 // shouldIgnore is called to filter irrelevant issues reported by Golint.
 func shouldIgnore(p lint.Problem) bool {

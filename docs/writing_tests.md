@@ -459,9 +459,13 @@ if err != nil {
 s.Logf("Logged in as user %q with ID %v", user, id)
 ```
 
-In both cases, avoid multiline strings since they make logs difficult to read.
+In both cases, please try to avoid multiline strings since they make logs
+difficult to read. Exceptions can be argued when logging strings that are truly
+multiline, such as output from an external program, but note that it's often
+cleaner to write such data to an [output file] instead.
 
 [Go's error string conventions]: https://github.com/golang/go/wiki/CodeReviewComments#error-strings
+[output file]: #Output-files
 
 ### Support packages
 

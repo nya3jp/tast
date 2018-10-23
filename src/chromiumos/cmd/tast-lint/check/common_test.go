@@ -11,9 +11,9 @@ import (
 	"testing"
 )
 
-func parse(code string) (*ast.File, *token.FileSet) {
+func parse(code, filename string) (*ast.File, *token.FileSet) {
 	fs := token.NewFileSet()
-	f, err := parser.ParseFile(fs, "testfile.go", code, 0)
+	f, err := parser.ParseFile(fs, filename, code, 0)
 	if err != nil {
 		panic(err)
 	}
@@ -21,6 +21,8 @@ func parse(code string) (*ast.File, *token.FileSet) {
 }
 
 func verifyIssues(t *testing.T, issues []*Issue, expects []string) {
+	SortIssues(issues)
+
 	if len(issues) != len(expects) {
 		t.Errorf("Got %d issues; want %d", len(issues), len(expects))
 		return

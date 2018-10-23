@@ -11,7 +11,6 @@ import (
 	"go/token"
 	"os"
 	"path/filepath"
-	"sort"
 	"strings"
 
 	"chromiumos/cmd/tast-lint/check"
@@ -61,6 +60,7 @@ func checkAll(git *git, paths []string, debug bool) ([]*check.Issue, error) {
 			issues = append(issues, check.FmtErrorf(fs, f)...)
 			issues = append(issues, check.Golint(path, data, debug)...)
 			issues = append(issues, check.ImportOrder(path, data)...)
+			issues = append(issues, check.TestMain(fs, f)...)
 		}
 	}
 
@@ -69,14 +69,7 @@ func checkAll(git *git, paths []string, debug bool) ([]*check.Issue, error) {
 
 // report prints issues to stdout.
 func report(issues []*check.Issue) {
-	sort.Slice(issues, func(i, j int) bool {
-		pi := issues[i].Pos
-		pj := issues[j].Pos
-		if pi.Filename != pj.Filename {
-			return pi.Filename < pj.Filename
-		}
-		return pi.Offset < pj.Offset
-	})
+	check.SortIssues(issues)
 
 	for _, i := range issues {
 		fmt.Println(i)

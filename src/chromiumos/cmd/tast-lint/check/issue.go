@@ -7,6 +7,7 @@ package check
 import (
 	"fmt"
 	"go/token"
+	"sort"
 )
 
 // Issue holds an issue reported by the linter.
@@ -17,4 +18,15 @@ type Issue struct {
 
 func (i *Issue) String() string {
 	return fmt.Sprintf("%s: %s", i.Pos, i.Msg)
+}
+
+func SortIssues(issues []*Issue) {
+	sort.Slice(issues, func(i, j int) bool {
+		pi := issues[i].Pos
+		pj := issues[j].Pos
+		if pi.Filename != pj.Filename {
+			return pi.Filename < pj.Filename
+		}
+		return pi.Offset < pj.Offset
+	})
 }

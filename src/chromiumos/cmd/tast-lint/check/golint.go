@@ -61,8 +61,9 @@ func Golint(path string, code []byte, debug bool) []*Issue {
 			msg = p.Text
 		}
 		issues = append(issues, &Issue{
-			Pos: p.Position,
-			Msg: msg,
+			Pos:  p.Position,
+			Msg:  msg,
+			Link: p.Link,
 		})
 	}
 	return issues

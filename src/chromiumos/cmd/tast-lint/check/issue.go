@@ -12,8 +12,9 @@ import (
 
 // Issue holds an issue reported by the linter.
 type Issue struct {
-	Pos token.Position
-	Msg string
+	Pos  token.Position
+	Msg  string
+	Link string
 }
 
 func (i *Issue) String() string {

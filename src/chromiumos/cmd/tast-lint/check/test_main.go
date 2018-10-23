@@ -14,6 +14,8 @@ import (
 
 // TestMain checks no top-level declarations appear in test main files.
 func TestMain(fs *token.FileSet, f *ast.File) []*Issue {
+	const docURL = "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#scoping-and-shared-code"
+
 	filename := fs.Position(f.Package).Filename
 	if !isTestMainFile(filename) {
 		return nil
@@ -56,22 +58,25 @@ func TestMain(fs *token.FileSet, f *ast.File) []*Issue {
 	// A test main file should have exactly one test function.
 	if len(tests) == 0 {
 		issues = append(issues, &Issue{
-			Pos: token.Position{Filename: filename},
-			Msg: "Tast mandates exactly one exported test function to be declared in a test main file",
+			Pos:  token.Position{Filename: filename},
+			Msg:  "Tast mandates exactly one exported test function to be declared in a test main file",
+			Link: docURL,
 		})
 	} else if len(tests) >= 2 {
 		for _, name := range tests {
 			issues = append(issues, &Issue{
-				Pos: fs.Position(name.NamePos),
-				Msg: "Tast mandates exactly one exported test function to be declared in a test main file",
+				Pos:  fs.Position(name.NamePos),
+				Msg:  "Tast mandates exactly one exported test function to be declared in a test main file",
+				Link: docURL,
 			})
 		}
 	}
 
 	for _, bad := range bads {
 		issues = append(issues, &Issue{
-			Pos: fs.Position(bad.name.NamePos),
-			Msg: fmt.Sprintf("Tast forbids %s %s to be declared at top level; move it to the test function or subpackages", bad.token, bad.name.Name),
+			Pos:  fs.Position(bad.name.NamePos),
+			Msg:  fmt.Sprintf("Tast forbids %s %s to be declared at top level; move it to the test function or subpackages", bad.token, bad.name.Name),
+			Link: docURL,
 		})
 	}
 

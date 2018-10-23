@@ -11,6 +11,7 @@ import (
 	"go/token"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"chromiumos/cmd/tast-lint/check"
@@ -73,6 +74,26 @@ func report(issues []*check.Issue) {
 
 	for _, i := range issues {
 		fmt.Println(i)
+	}
+
+	linkSet := make(map[string]struct{})
+	for _, i := range issues {
+		if i.Link != "" {
+			linkSet[i.Link] = struct{}{}
+		}
+	}
+	if len(linkSet) > 0 {
+		var links []string
+		for link := range linkSet {
+			links = append(links, link)
+		}
+		sort.Strings(links)
+
+		fmt.Println()
+		fmt.Println("Refer the following documents for details:")
+		for _, link := range links {
+			fmt.Println(" ", link)
+		}
 	}
 }
 

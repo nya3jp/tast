@@ -11,6 +11,8 @@ import (
 	"strconv"
 )
 
+const errorDocURL = "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Error-construction"
+
 // ErrorsImports makes sure blacklisted errors packages are not imported.
 func ErrorsImports(fs *token.FileSet, f *ast.File) []*Issue {
 	var issues []*Issue
@@ -22,8 +24,9 @@ func ErrorsImports(fs *token.FileSet, f *ast.File) []*Issue {
 		}
 		if p == "errors" || p == "github.com/pkg/errors" {
 			issues = append(issues, &Issue{
-				Pos: fs.Position(im.Pos()),
-				Msg: fmt.Sprintf("chromiumos/tast/errors package should be used instead of %s package", p),
+				Pos:  fs.Position(im.Pos()),
+				Msg:  fmt.Sprintf("chromiumos/tast/errors package should be used instead of %s package", p),
+				Link: errorDocURL,
 			})
 		}
 	}
@@ -55,8 +58,9 @@ func FmtErrorf(fs *token.FileSet, f *ast.File) []*Issue {
 			return
 		}
 		issues = append(issues, &Issue{
-			Pos: fs.Position(x.Pos()),
-			Msg: "chromiumos/tast/errors.Errorf should be used instead of fmt.Errorf",
+			Pos:  fs.Position(x.Pos()),
+			Msg:  "chromiumos/tast/errors.Errorf should be used instead of fmt.Errorf",
+			Link: errorDocURL,
 		})
 	})
 

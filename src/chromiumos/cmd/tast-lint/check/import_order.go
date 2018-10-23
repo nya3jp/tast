@@ -45,8 +45,9 @@ func ImportOrder(path string, in []byte) []*Issue {
 		}
 
 		return []*Issue{{
-			Pos: token.Position{Filename: path},
-			Msg: fmt.Sprintf("Import should be grouped into standard packages, third-party packages and chromiumos packages in this order separated by empty lines.\nApply the following patch to fix:\n%s", diff),
+			Pos:  token.Position{Filename: path},
+			Msg:  fmt.Sprintf("Import should be grouped into standard packages, third-party packages and chromiumos packages in this order separated by empty lines.\nApply the following patch to fix:\n%s", diff),
+			Link: "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#import",
 		}}
 	}
 

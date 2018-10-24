@@ -17,14 +17,29 @@ const (
 	localTestDataDir = "/usr/local/share/tast/data" // default dir for test data
 )
 
+// ReadyFunc can be passed to the Local function to wait for the DUT to be ready for tests to run.
+// Informational messages can be passed to log and should be written at least once per minute to
+// let the tast process (and the user) know the reason for the delay.
+// If an error is returned, none of the bundle's tests will run.
+type ReadyFunc func(ctx context.Context, log func(string)) error
+
 // Local implements the main function for local test bundles.
 //
+// If ready is non-nil, it will be executed before any tests from this bundle are run to ensure
+// that the DUT is ready for testing. This can be used to wait for all important system services
+// to be running on a newly-booted DUT, for instance.
 // The returned status code should be passed to os.Exit.
-func Local(stdin io.Reader, stdout, stderr io.Writer) int {
+func Local(stdin io.Reader, stdout, stderr io.Writer, ready ReadyFunc) int {
 	args := Args{DataDir: localTestDataDir}
 	cfg := runConfig{
 		postTestFunc:       faillog.SaveIfError,
 		defaultTestTimeout: localTestTimeout,
+	}
+	if ready != nil {
+		cfg.preRunFunc = func(ctx context.Context, lf logFunc) (context.Context, error) {
+			lf("Waiting for DUT to be ready for testing")
+			return ctx, ready(ctx, lf)
+		}
 	}
 	return run(context.Background(), stdin, stdout, stderr, &args, &cfg, localBundle)
 }

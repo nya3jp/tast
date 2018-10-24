@@ -58,6 +58,11 @@ func run(ctx context.Context, stdin io.Reader, stdout, stderr io.Writer,
 type logFunc func(msg string)
 
 // runConfig contains additional parameters used when running tests.
+//
+// The supplied functions are used to provide customizations that apply to all local or all remote bundles
+// and should not contain bundle-specific code (e.g. don't perform actions that depend on a UI being present,
+// since some bundles may run on Chrome-OS-derived systems that don't contain Chrome). See ReadyFunc if
+// bundle-specific work needs to be performed.
 type runConfig struct {
 	// preRunFunc is run at the beginning of the entire series of tests if non-nil.
 	// The provided context (or a derived context with additional values) should be returned by the function.

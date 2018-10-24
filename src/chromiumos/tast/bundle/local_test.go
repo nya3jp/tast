@@ -9,8 +9,10 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"strings"
 	gotesting "testing"
 
+	"chromiumos/tast/errors"
 	"chromiumos/tast/testing"
 	"chromiumos/tast/testutil"
 )
@@ -23,7 +25,7 @@ func TestLocalRemoteArgs(t *gotesting.T) {
 	}
 	stdin := newBufferWithArgs(t, &args)
 	stderr := bytes.Buffer{}
-	if status := Local(stdin, &bytes.Buffer{}, &stderr); status != statusBadArgs {
+	if status := Local(stdin, &bytes.Buffer{}, &stderr, nil); status != statusBadArgs {
 		t.Errorf("Local(%+v) = %v; want %v", args, status, statusBadArgs)
 	}
 	if len(stderr.String()) == 0 {
@@ -40,7 +42,7 @@ func TestLocalBadTest(t *gotesting.T) {
 	args := Args{Mode: RunTestsMode}
 	stdin := newBufferWithArgs(t, &args)
 	stderr := bytes.Buffer{}
-	if status := Local(stdin, &bytes.Buffer{}, &stderr); status != statusBadTests {
+	if status := Local(stdin, &bytes.Buffer{}, &stderr, nil); status != statusBadTests {
 		t.Errorf("Local(%+v) = %v; want %v", args, status, statusBadTests)
 	}
 	if len(stderr.String()) == 0 {
@@ -60,7 +62,7 @@ func TestLocalRunTest(t *gotesting.T) {
 	args := Args{Mode: RunTestsMode, OutDir: outDir}
 	stdin := newBufferWithArgs(t, &args)
 	stderr := bytes.Buffer{}
-	if status := Local(stdin, &bytes.Buffer{}, &stderr); status != statusSuccess {
+	if status := Local(stdin, &bytes.Buffer{}, &stderr, nil); status != statusSuccess {
 		t.Errorf("Local(%+v) = %v; want %v", args, status, statusSuccess)
 	}
 	if !ran {
@@ -82,7 +84,7 @@ func TestLocalFaillog(t *gotesting.T) {
 	args := Args{Mode: RunTestsMode, OutDir: outDir}
 	stdin := newBufferWithArgs(t, &args)
 	stderr := bytes.Buffer{}
-	if status := Local(stdin, &bytes.Buffer{}, &stderr); status != statusSuccess {
+	if status := Local(stdin, &bytes.Buffer{}, &stderr, nil); status != statusSuccess {
 		t.Errorf("Local(%+v) = %v; want %v", args, status, statusSuccess)
 	}
 
@@ -90,5 +92,41 @@ func TestLocalFaillog(t *gotesting.T) {
 	p := filepath.Join(outDir, name, "faillog", "ps.txt")
 	if _, err := os.Stat(p); err != nil {
 		t.Errorf("Local(%+v) didn't save faillog: %v", args, err)
+	}
+}
+
+func TestLocalReadyFunc(t *gotesting.T) {
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
+	defer restore()
+	testing.AddTest(&testing.Test{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
+
+	// Ensure that a successful ready function is executed.
+	outDir := testutil.TempDir(t)
+	defer os.RemoveAll(outDir)
+	args := Args{Mode: RunTestsMode, OutDir: outDir}
+	stdin := newBufferWithArgs(t, &args)
+	stderr := bytes.Buffer{}
+	ranReady := false
+	ready := func(context.Context, func(string)) error {
+		ranReady = true
+		return nil
+	}
+	if status := Local(stdin, &bytes.Buffer{}, &stderr, ready); status != statusSuccess {
+		t.Errorf("Local(%+v) = %v; want %v", args, status, statusSuccess)
+	}
+	if !ranReady {
+		t.Errorf("Local(%+v) didn't run ready function", args)
+	}
+
+	// Local should fail if the ready function returns an error.
+	stdin = newBufferWithArgs(t, &args)
+	stderr = bytes.Buffer{}
+	const msg = "intentional failure"
+	ready = func(context.Context, func(string)) error { return errors.New(msg) }
+	if status := Local(stdin, &bytes.Buffer{}, &stderr, ready); status != statusError {
+		t.Errorf("Local(%+v) = %v; want %v", args, status, statusError)
+	}
+	if s := stderr.String(); !strings.Contains(s, msg) {
+		t.Errorf("Local(%+v) didn't write ready error %q to stderr (got %q)", args, msg, s)
 	}
 }

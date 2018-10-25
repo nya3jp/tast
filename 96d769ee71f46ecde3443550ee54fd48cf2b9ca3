@@ -22,6 +22,30 @@
       "revId": "96d769ee71f46ecde3443550ee54fd48cf2b9ca3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "26dca801_8cc28f2e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-25T06:09:05Z",
+      "side": 1,
+      "message": "thanks, i knew i was forgetting something... :-)",
+      "parentUuid": "dcf96682_ccd70b28",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 19
+      },
+      "revId": "96d769ee71f46ecde3443550ee54fd48cf2b9ca3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -1,0 +1,164 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6ba360b3_ed57f19f",
+        "filename": "src/chromiumos/cmd/tast-lint/check/exports.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-25T13:57:16Z",
+      "side": 1,
+      "message": "nit: getDecls",
+      "range": {
+        "startLine": 19,
+        "startChar": 3,
+        "endLine": 19,
+        "endChar": 10
+      },
+      "revId": "7941aae50b4ffba7305eb63999e548b86acb6a11",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0821a2ee_8bebe8c2",
+        "filename": "src/chromiumos/cmd/tast-lint/check/exports.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-25T13:57:16Z",
+      "side": 1,
+      "message": "(If it is not ok to make everything non-exported), how about returning two or three []decl?\nActually, you check FuncDecl here and in the caller (Exports).\nE.g. getDecls(f) (funcDecl, typeDecl, varDecl []decl)",
+      "revId": "7941aae50b4ffba7305eb63999e548b86acb6a11",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b950194d_e0586979",
+        "filename": "src/chromiumos/cmd/tast-lint/check/exports.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-25T13:57:16Z",
+      "side": 1,
+      "message": "nit: \"a test main function\"?\n\nmaybe off topic: Does test main function need to be exported? If that can be non-exported, the check can be simpler.",
+      "range": {
+        "startLine": 42,
+        "startChar": 55,
+        "endLine": 42,
+        "endChar": 88
+      },
+      "revId": "7941aae50b4ffba7305eb63999e548b86acb6a11",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "71d9589c_8682834c",
+        "filename": "src/chromiumos/cmd/tast-lint/check/exports.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-25T13:57:16Z",
+      "side": 1,
+      "message": "IMHO, repeating this can be lengthy. How about consolidate into one issue?\nIssue {\n  Pos: token.Position{Filename: ...},\n  Msg: fmt.Sprintf(\"Tast forbids exporting ...: %v\", (array of unexpected exported decls)),\n  ...\n}",
+      "range": {
+        "startLine": 76,
+        "startChar": 3,
+        "endLine": 80,
+        "endChar": 5
+      },
+      "revId": "7941aae50b4ffba7305eb63999e548b86acb6a11",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fb84a4ae_d7286348",
+        "filename": "src/chromiumos/cmd/tast-lint/check/exports.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-25T13:57:16Z",
+      "side": 1,
+      "message": "(optional) (If it is not ok to make everything non-exported), how about sanity check of exported function name is the one which can derived from file name?",
+      "revId": "7941aae50b4ffba7305eb63999e548b86acb6a11",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7f03e09e_1936c550",
+        "filename": "src/chromiumos/cmd/tast-lint/check/inter_file_refs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-25T13:57:16Z",
+      "side": 1,
+      "message": "Isn\u0027t it necessary to check if the ID is not-exported one?",
+      "revId": "7941aae50b4ffba7305eb63999e548b86acb6a11",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1b251a86_adb54409",
+        "filename": "src/chromiumos/cmd/tast-lint/check/inter_file_refs_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-25T13:57:16Z",
+      "side": 1,
+      "message": "How about adding a test for subpackage in bundles/cros/*/{subpackage}/*.go ?\nE.g.\n\nchromiumos/tast/local/bundles/cros/ui/foo/util.go:\n... define some utility ...\n\nchromiumos/tast/local/bundles/cros/ui/bar.go:\n... test main file using a function in util.go ...\n\n\nwhich should pass.",
+      "revId": "7941aae50b4ffba7305eb63999e548b86acb6a11",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "399e8890_aeff10bc",
+        "filename": "src/chromiumos/cmd/tast-lint/parser.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-25T13:57:16Z",
+      "side": 1,
+      "message": "nit: parseFileAlone.",
+      "range": {
+        "startLine": 81,
+        "startChar": 3,
+        "endLine": 81,
+        "endChar": 12
+      },
+      "revId": "7941aae50b4ffba7305eb63999e548b86acb6a11",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -264,34 +264,19 @@ level:
 > ... declared at top level (outside any function) is the package block.
 
 As such, all tests within a package like `platform` or `ui` share the same
-namespace. Please avoid adding additional identifiers to that namespace beyond
-the core test function that you pass to `testing.AddTest`. Place constants
-and helper functions within your test function:
-
-```go
-func MyTest(s *testing.State) {
-	const (
-		someValue = "foo"
-		otherValue = "bar"
-	)
-	doubler := func(x int) int { return 2 * x }
-	...
-}
-```
+namespace. Please be careful of conflicts. Also, please avoid referencing
+identifiers declared in other files; otherwise `repo upload` will fail with
+lint errors.
 
 If you need to share functionality between tests in the same package, please
 introduce a new descriptively-named subpackage; see e.g. the [chromecrash]
 package within the `ui` package, used by the [ui.ChromeCrashLoggedIn] and
 [ui.ChromeCrashNotLoggedIn] tests.
 
-This policy is acknowledged as being non-ideal, and [issue 882022] tracks coming
-up with something better.
-
 [scoped at the package level]: https://golang.org/ref/spec#Declarations_and_scope
 [chromecrash]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/master/src/chromiumos/tast/local/bundles/cros/ui/chromecrash/
 [ui.ChromeCrashLoggedIn]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/master/src/chromiumos/tast/local/bundles/cros/ui/chrome_crash_logged_in.go
 [ui.ChromeCrashNotLoggedIn]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/master/src/chromiumos/tast/local/bundles/cros/ui/chrome_crash_not_logged_in.go
-[issue 882022]: https://crbug.com/882022
 
 ### Test consolidation
 

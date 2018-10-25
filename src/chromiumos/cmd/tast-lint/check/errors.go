@@ -33,16 +33,6 @@ func ErrorsImports(fs *token.FileSet, f *ast.File) []*Issue {
 	return issues
 }
 
-type funcVisitor func(node ast.Node)
-
-func (v funcVisitor) Visit(node ast.Node) ast.Visitor {
-	if node == nil {
-		return nil
-	}
-	v(node)
-	return v
-}
-
 // FmtErrorf makes sure fmt.Errorf is not used.
 func FmtErrorf(fs *token.FileSet, f *ast.File) []*Issue {
 	var issues []*Issue
@@ -64,8 +54,6 @@ func FmtErrorf(fs *token.FileSet, f *ast.File) []*Issue {
 		})
 	})
 
-	for _, d := range f.Decls {
-		ast.Walk(v, d)
-	}
+	ast.Walk(v, f)
 	return issues
 }

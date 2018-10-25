@@ -12,9 +12,10 @@ import (
 	"strings"
 )
 
-// git is a thin wrapper of git command line tool.
+// git is a thin wrapper of git command line tool allowing to access files in Git history.
 type git struct {
-	commit string // commit to operate on; if empty, operate on the working tree
+	// commit is the hash of a commit to operate on. If empty, it operates on the working tree.
+	commit string
 }
 
 // newGit creates a git object operating on a commit identified by commit.
@@ -36,10 +37,32 @@ func (g *git) modifiedFiles() ([]string, error) {
 	return files, nil
 }
 
-// readFile returns the content of a file in the commit.
+// readFile returns the content of a file at the commit.
 func (g *git) readFile(path string) ([]byte, error) {
 	if g.commit == "" {
 		return ioutil.ReadFile(path)
 	}
 	return exec.Command("git", "show", fmt.Sprintf("%s:%s", g.commit, path)).Output()
+}
+
+// listDir lists files under a directory at the commit.
+func (g *git) listDir(dir string) ([]string, error) {
+	if g.commit == "" {
+		fs, err := ioutil.ReadDir(dir)
+		if err != nil {
+			return nil, err
+		}
+		var names []string
+		for _, f := range fs {
+			names = append(names, f.Name())
+		}
+		return names, nil
+	}
+
+	cmd := exec.Command("git", "ls-tree", "--name-only", fmt.Sprintf("%s:%s", g.commit, dir))
+	out, err := cmd.Output()
+	if err != nil {
+		return nil, err
+	}
+	return strings.Split(strings.TrimRight(string(out), "\n"), "\n"), nil
 }

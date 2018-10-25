@@ -5,8 +5,10 @@
 package check
 
 import (
+	"go/ast"
 	"path/filepath"
 	"regexp"
+	"strings"
 )
 
 // testMainPathRegexp matches a file name of a Tast test main file.
@@ -18,5 +20,16 @@ func isTestMainFile(path string) bool {
 	if err != nil {
 		return false
 	}
-	return testMainPathRegexp.MatchString(path)
+	return testMainPathRegexp.MatchString(path) && !strings.HasSuffix(path, "_test.go")
+}
+
+// funcVisitor is an implementation of ast.Visitor to scan all nodes.
+type funcVisitor func(node ast.Node)
+
+func (v funcVisitor) Visit(node ast.Node) ast.Visitor {
+	if node == nil {
+		return nil
+	}
+	v(node)
+	return v
 }

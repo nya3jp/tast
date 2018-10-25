@@ -7,8 +7,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"go/parser"
-	"go/token"
 	"os"
 	"path/filepath"
 	"sort"
@@ -42,26 +40,28 @@ func isGoFile(path string) bool {
 
 // checkAll runs all checks against paths.
 func checkAll(git *git, paths []string, debug bool) ([]*check.Issue, error) {
-	fs := token.NewFileSet()
+	cp := newCachedParser(git)
+	fs := cp.fs
 
 	var issues []*check.Issue
 	for _, path := range paths {
 		if isGoFile(path) && isTestFile(path) {
-			data, err := git.readFile(path)
+			code, err := git.readFile(path)
 			if err != nil {
 				return nil, err
 			}
 
-			f, err := parser.ParseFile(fs, path, data, 0)
+			f, err := cp.parseFile(path)
 			if err != nil {
 				return nil, err
 			}
 
 			issues = append(issues, check.ErrorsImports(fs, f)...)
+			issues = append(issues, check.Exports(fs, f)...)
 			issues = append(issues, check.FmtErrorf(fs, f)...)
-			issues = append(issues, check.Golint(path, data, debug)...)
-			issues = append(issues, check.ImportOrder(path, data)...)
-			issues = append(issues, check.TestMain(fs, f)...)
+			issues = append(issues, check.Golint(path, code, debug)...)
+			issues = append(issues, check.ImportOrder(path, code)...)
+			issues = append(issues, check.InterFileRefs(fs, f)...)
 		}
 	}
 

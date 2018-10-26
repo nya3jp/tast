@@ -1,0 +1,84 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "188b8369_ddee630d",
+        "filename": "src/chromiumos/tast/testing/registry.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-26T15:21:28Z",
+      "side": 1,
+      "message": "nit: maybe just \u0027validate\u0027?",
+      "range": {
+        "startLine": 21,
+        "startChar": 1,
+        "endLine": 21,
+        "endChar": 11
+      },
+      "revId": "c222b98bc585df8a3ff0fca986d126de8ef40f97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4fc9258d_d70dd8d6",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-26T15:21:28Z",
+      "side": 1,
+      "message": "hmm, i\u0027m not sure how i feel about listing these here. it feels like one more thing to update whenever adding new values.\n\nwith that said, i agree that there\u0027s value in catching typos. and we already want people to document new attrs when adding them, so that part makes sense too.\n\none thought: what about changing these to be map[string]string and use values to store descriptions of each attr/dep? then we could update go/tast-attr and go/tast-deps to link to the code (with descriptions) instead of duplicating the list?\n\nif this sounds like a good idea, i\u0027d also consider moving these into separate attrs.go and deps.go files so the docs can link directly there.",
+      "revId": "c222b98bc585df8a3ff0fca986d126de8ef40f97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9d21ff7c_7f9e001e",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-26T15:21:28Z",
+      "side": 1,
+      "message": "taking the above thought further, i wonder if this should also include the expressions used to compute each dependency (currently in local_test_runner\u0027s main.go file).\n\ni suppose we\u0027d need to export the map in that case (unless we want to move local_test_runner\u0027s code for going from USE flags to deps here, which seems a bit weird -- when code is only going to be executed by one binary, i think it\u0027s much clearer to keep it located there).",
+      "revId": "c222b98bc585df8a3ff0fca986d126de8ef40f97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2bf0bfed_8935ef00",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 273,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-26T15:21:28Z",
+      "side": 1,
+      "message": "nit: do you think it\u0027d be clearer to add enums for these now that we have multiple bool args?",
+      "range": {
+        "startLine": 273,
+        "startChar": 26,
+        "endLine": 273,
+        "endChar": 51
+      },
+      "revId": "c222b98bc585df8a3ff0fca986d126de8ef40f97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

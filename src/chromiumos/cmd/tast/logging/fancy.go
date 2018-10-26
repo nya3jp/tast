@@ -12,9 +12,6 @@ import (
 	"chromiumos/cmd/tast/display"
 )
 
-// fancyLogger is a implementation of the logger interface that renders messages onscreen using ANSI
-// escape codes to create multiple scrolling regions (e.g. a limited number of debug messages remain
-// onscreen).
 type fancyLogger struct {
 	loggerCommon
 	d      *display.Display
@@ -22,6 +19,9 @@ type fancyLogger struct {
 	mutex  sync.Mutex // protects d and closed
 }
 
+// NewFancy returns an implementation of the Logger interface that renders messages onscreen using ANSI
+// escape codes to create multiple scrolling regions (e.g. a limited number of debug messages remain
+// onscreen).
 func NewFancy(lines int) (Logger, error) {
 	disp, err := display.New(&display.VT100Term{}, lines)
 	if err != nil {

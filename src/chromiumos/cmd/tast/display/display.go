@@ -159,7 +159,7 @@ func (d *Display) AddPersistent(s string) error {
 		// Otherwise, we need to shift the status and verbose area down one line.
 		pr = d.statusRow
 		d.scrollRegion(th, d.statusRow, d.screenRows, -1)
-		d.statusRow += 1
+		d.statusRow++
 	}
 
 	th.setCursorPos(pr, 1)
@@ -184,7 +184,7 @@ func (d *Display) AddVerbose(s string) error {
 
 	th := d.tm.newHandle()
 	if d.numVerboseRows < d.maxVerboseRows {
-		d.numVerboseRows += 1
+		d.numVerboseRows++
 		d.scrollForStatusAndVerbose(th)
 	} else {
 		d.scrollRegion(th, d.statusRow+1, d.statusRow+d.numVerboseRows, 1)

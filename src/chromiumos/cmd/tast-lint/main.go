@@ -45,22 +45,27 @@ func checkAll(git *git, paths []string, debug bool) ([]*check.Issue, error) {
 
 	var issues []*check.Issue
 	for _, path := range paths {
-		if isGoFile(path) && isTestFile(path) {
-			code, err := git.readFile(path)
-			if err != nil {
-				return nil, err
-			}
+		if !isGoFile(path) {
+			continue
+		}
 
-			f, err := cp.parseFile(path)
-			if err != nil {
-				return nil, err
-			}
+		data, err := git.readFile(path)
+		if err != nil {
+			return nil, err
+		}
 
+		f, err := cp.parseFile(path)
+		if err != nil {
+			return nil, err
+		}
+
+		issues = append(issues, check.Golint(path, data, debug)...)
+		issues = append(issues, check.ImportOrder(path, data)...)
+
+		if isTestFile(path) {
 			issues = append(issues, check.ErrorsImports(fs, f)...)
 			issues = append(issues, check.Exports(fs, f)...)
 			issues = append(issues, check.FmtErrorf(fs, f)...)
-			issues = append(issues, check.Golint(path, code, debug)...)
-			issues = append(issues, check.ImportOrder(path, code)...)
 			issues = append(issues, check.InterFileRefs(fs, f)...)
 		}
 	}

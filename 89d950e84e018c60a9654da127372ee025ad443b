@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "6f14ec40_365d1699",
+        "filename": "src/chromiumos/tast/host/test/default.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-26T14:59:43Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "aa262400_e7eee320",
+      "range": {
+        "startLine": 27,
+        "startChar": 0,
+        "endLine": 27,
+        "endChar": 32
+      },
+      "revId": "89d950e84e018c60a9654da127372ee025ad443b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4891935b_eec261b1",
         "filename": "src/chromiumos/tast/runner/args.go",
         "patchSetId": 2
@@ -42,6 +66,47 @@
         "endLine": 142,
         "endChar": 29
       },
+      "revId": "89d950e84e018c60a9654da127372ee025ad443b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "56a26ab6_b4910269",
+        "filename": "src/chromiumos/tast/runner/args.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-26T14:59:43Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "4891935b_eec261b1",
+      "range": {
+        "startLine": 142,
+        "startChar": 0,
+        "endLine": 142,
+        "endChar": 29
+      },
+      "revId": "89d950e84e018c60a9654da127372ee025ad443b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "279c8764_6146aab3",
+        "filename": "src/chromiumos/tast/testing/stage.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-26T14:59:43Z",
+      "side": 1,
+      "message": "i\u0027m less convinced about this one. ctx and s are passed as arguments to the provided function, so it feels like it sort of makes sense for them to appear after it.\n\nsince (i think) this function is only called in one place now, how about just passing a bare func() to it on L39?\n\n  runAndRecover(func() { st.f(rctx, s) })",
       "revId": "89d950e84e018c60a9654da127372ee025ad443b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -68,6 +133,30 @@
       "revId": "89d950e84e018c60a9654da127372ee025ad443b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0458eed6_94a7e93a",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 218,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-26T14:59:43Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "5b67356f_cd7eac23",
+      "range": {
+        "startLine": 218,
+        "startChar": 0,
+        "endLine": 218,
+        "endChar": 76
+      },
+      "revId": "89d950e84e018c60a9654da127372ee025ad443b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -114,6 +203,30 @@
       "revId": "89d950e84e018c60a9654da127372ee025ad443b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4ebefe98_518c5dfe",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 361,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-26T14:59:43Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "f1005ede_dfee4f3d",
+      "range": {
+        "startLine": 361,
+        "startChar": 0,
+        "endLine": 361,
+        "endChar": 32
+      },
+      "revId": "89d950e84e018c60a9654da127372ee025ad443b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

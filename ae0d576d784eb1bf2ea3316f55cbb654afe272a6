@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7bd02ec5_4d2be869",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-26T15:00:59Z",
+      "side": 1,
+      "message": "nit: s/tast/framework/",
+      "range": {
+        "startLine": 28,
+        "startChar": 50,
+        "endLine": 28,
+        "endChar": 54
+      },
+      "revId": "ae0d576d784eb1bf2ea3316f55cbb654afe272a6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c40a7f44_6df685ff",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-26T15:00:59Z",
+      "side": 1,
+      "message": "nit: maybe isTastFrameworkFile or just isFrameworkFile?",
+      "revId": "ae0d576d784eb1bf2ea3316f55cbb654afe272a6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

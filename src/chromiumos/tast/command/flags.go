@@ -25,6 +25,7 @@ func NewDurationFlag(units time.Duration, dst *time.Duration, def time.Duration)
 	return &DurationFlag{units, dst}
 }
 
+// Set sets the flag value.
 func (f *DurationFlag) Set(v string) error {
 	num, err := strconv.ParseInt(v, 10, 64)
 	if err != nil {
@@ -71,6 +72,7 @@ func (f *EnumFlag) QuotedValues() string {
 
 func (f *EnumFlag) String() string { return "" }
 
+// Set sets the flag value.
 func (f *EnumFlag) Set(v string) error {
 	ev, ok := f.valid[v]
 	if !ok {
@@ -104,6 +106,7 @@ func (f *ListFlag) Default() string { return strings.Join(f.def, f.sep) }
 
 func (f *ListFlag) String() string { return "" }
 
+// Set sets the flag value.
 func (f *ListFlag) Set(v string) error {
 	vals := strings.Split(v, f.sep)
 	if len(vals) == 1 && vals[0] == "" {

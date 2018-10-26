@@ -215,7 +215,7 @@ var errorSuffix = regexp.MustCompile(`(\s*:\s*|\s+)$`)
 //
 //  lastMsg = "Failed something"
 //  fullMsg = "Failed something: <error message>"
-func formatError(args ...interface{}) (err error, fullMsg, lastMsg string) {
+func formatError(args ...interface{}) (err error, fullMsg, lastMsg string) { // NOLINT
 	fullMsg = fmt.Sprint(args...)
 	if len(args) == 1 {
 		if e, ok := args[0].(error); ok {
@@ -248,7 +248,7 @@ var errorfSuffix = regexp.MustCompile(`\s*:?\s*%v$`)
 //
 //  lastMsg = "Failed something"
 //  fullMsg = "Failed something: <error message>"
-func formatErrorf(format string, args ...interface{}) (err error, fullMsg, lastMsg string) {
+func formatErrorf(format string, args ...interface{}) (err error, fullMsg, lastMsg string) { // NOLINT
 	fullMsg = fmt.Sprintf(format, args...)
 	if len(args) >= 1 {
 		if e, ok := args[len(args)-1].(error); ok {
@@ -300,7 +300,7 @@ func (d *dataFS) Open(name string) (http.File, error) {
 // 2 to additionally skip the frame that called it, and so on.
 func NewError(err error, fullMsg, lastMsg string, skipFrames int) *Error {
 	// Also skip the NewError frame.
-	skipFrames += 1
+	skipFrames++
 
 	// runtime.Caller starts counting stack frames at the point of the code that
 	// invoked Caller.

@@ -33,7 +33,7 @@ type Config struct {
 // SymbolizeCrash attempts to symbolize a crash file.
 // path can contain either raw minidump data or a Chrome crash report.
 // The (possibly-unsuccessfully-)symbolized data is written to w.
-func SymbolizeCrash(path string, w io.Writer, cfg Config) error {
+func SymbolizeCrash(path string, w io.Writer, cfg Config) error { // NOLINT
 	if cfg.SymbolDir == "" {
 		return errors.New("symbol directory not supplied")
 	}

@@ -4,7 +4,9 @@
 
 package check
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestTestMain(t *testing.T) {
 	const filename = "src/chromiumos/tast/local/bundles/cros/example/test.go"

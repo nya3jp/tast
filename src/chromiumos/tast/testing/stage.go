@@ -36,7 +36,7 @@ func runStages(ctx context.Context, s *State, stages []stage) bool {
 		for _, st := range stages {
 			rctx, rcancel := ctxutil.OptionalTimeout(ctx, st.ctxTimeout)
 			defer rcancel()
-			runAndRecover(st.f, rctx, s)
+			runAndRecover(func() { st.f(rctx, s) }, s)
 			stageCh <- struct{}{}
 		}
 	}()
@@ -54,9 +54,10 @@ func runStages(ctx context.Context, s *State, stages []stage) bool {
 	return true
 }
 
-// runAndRecover runs f synchronously with the given Context and State, and recovers and reports an error if it panics.
-// f is run within a goroutine to avoid making the calling goroutine exit if the test calls s.Fatal (which calls runtime.Goexit).
-func runAndRecover(f func(context.Context, *State), ctx context.Context, s *State) {
+// runAndRecover runs f synchronously, and recovers and reports an error if it panics.
+// f is run within a goroutine to avoid making the calling goroutine exit if the test
+// calls s.Fatal (which calls runtime.Goexit).
+func runAndRecover(f func(), s *State) {
 	done := make(chan struct{}, 1)
 	go func() {
 		defer func() {
@@ -65,7 +66,7 @@ func runAndRecover(f func(context.Context, *State), ctx context.Context, s *Stat
 			}
 			done <- struct{}{}
 		}()
-		f(ctx, s)
+		f()
 	}()
 	<-done
 }

@@ -107,9 +107,8 @@ func connectToTarget(ctx context.Context, cfg *Config) (*host.SSH, error) {
 	if cfg.hst != nil {
 		if err := cfg.hst.Ping(ctx, sshPingTimeout); err == nil {
 			return cfg.hst, nil
-		} else {
-			cfg.hst = nil
 		}
+		cfg.hst = nil
 	}
 
 	if tl, ok := timing.FromContext(ctx); ok {

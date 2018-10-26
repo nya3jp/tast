@@ -62,7 +62,7 @@ func DownloadSymbols(url, destDir string, files SymbolFileMap) (created int, err
 			return created, err
 		}
 
-		created += 1
+		created++
 		delete(wanted, p)
 		if len(wanted) == 0 {
 			break

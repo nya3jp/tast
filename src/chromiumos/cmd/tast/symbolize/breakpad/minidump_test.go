@@ -32,7 +32,7 @@ const (
 // getModulePaths returns just the sorted paths (i.e. keys) from m.
 func getModulePaths(m SymbolFileMap) []string {
 	ps := make([]string, 0)
-	for p, _ := range m {
+	for p := range m {
 		ps = append(ps, p)
 	}
 	sort.Strings(ps)

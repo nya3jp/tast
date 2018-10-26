@@ -21,6 +21,7 @@ func (i *Issue) String() string {
 	return fmt.Sprintf("%s: %s", i.Pos, i.Msg)
 }
 
+// SortIssues sorts issues by file path and position.
 func SortIssues(issues []*Issue) {
 	sort.Slice(issues, func(i, j int) bool {
 		pi := issues[i].Pos

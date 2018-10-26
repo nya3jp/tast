@@ -25,7 +25,8 @@ const (
 	fancyVerboseLines = 30 // verbose log lines to display in "fancy" mode
 )
 
-var Version = "<unknown>" // Version info is filled in during emerge.
+// Version is the version info of this command. It is filled in during emerge.
+var Version = "<unknown>"
 
 // newLogger creates a logging.Logger based on the supplied command-line flags.
 func newLogger(fancy, verbose, logTime bool) (logging.Logger, error) {

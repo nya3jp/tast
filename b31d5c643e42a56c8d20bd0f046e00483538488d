@@ -1,0 +1,159 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "edf1a3d3_9f25b069",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 267,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-26T15:55:43Z",
+      "side": 1,
+      "message": "great, this guidance is much simpler than what was there before. :-)",
+      "revId": "b31d5c643e42a56c8d20bd0f046e00483538488d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ad7bb0de_2c72ac1d",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 268,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-26T15:55:43Z",
+      "side": 1,
+      "message": "nit: s/by/with/",
+      "range": {
+        "startLine": 268,
+        "startChar": 34,
+        "endLine": 268,
+        "endChar": 36
+      },
+      "revId": "b31d5c643e42a56c8d20bd0f046e00483538488d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "97eab4e6_70c91c68",
+        "filename": "src/chromiumos/cmd/tast-lint/check/exports.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-26T15:55:43Z",
+      "side": 1,
+      "message": "nit: i usually just call this \"test function\", as i\u0027m worried that \"main function\" is easy to confuse with main()",
+      "range": {
+        "startLine": 42,
+        "startChar": 70,
+        "endLine": 42,
+        "endChar": 88
+      },
+      "revId": "b31d5c643e42a56c8d20bd0f046e00483538488d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0fe91f4e_dbee9e52",
+        "filename": "src/chromiumos/cmd/tast-lint/check/exports.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-26T15:55:43Z",
+      "side": 1,
+      "message": "nit: same here",
+      "range": {
+        "startLine": 61,
+        "startChar": 69,
+        "endLine": 61,
+        "endChar": 73
+      },
+      "revId": "b31d5c643e42a56c8d20bd0f046e00483538488d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "be0ec5e6_8e6afddc",
+        "filename": "src/chromiumos/cmd/tast-lint/check/exports.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-26T15:55:43Z",
+      "side": 1,
+      "message": "huge nit: \"requires\" sounds a bit friendlier than \"mandates\" :-)",
+      "range": {
+        "startLine": 71,
+        "startChar": 15,
+        "endLine": 71,
+        "endChar": 23
+      },
+      "revId": "b31d5c643e42a56c8d20bd0f046e00483538488d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7f0ebac0_cd4a4a2d",
+        "filename": "src/chromiumos/cmd/tast-lint/check/exports.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-26T15:55:43Z",
+      "side": 1,
+      "message": "nit: same here and later in the line",
+      "range": {
+        "startLine": 78,
+        "startChar": 68,
+        "endLine": 78,
+        "endChar": 72
+      },
+      "revId": "b31d5c643e42a56c8d20bd0f046e00483538488d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7afd7638_6b8cc410",
+        "filename": "src/chromiumos/cmd/tast-lint/parser.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-26T15:55:43Z",
+      "side": 1,
+      "message": "huge nit: resolves",
+      "range": {
+        "startLine": 33,
+        "startChar": 70,
+        "endLine": 33,
+        "endChar": 77
+      },
+      "revId": "b31d5c643e42a56c8d20bd0f046e00483538488d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

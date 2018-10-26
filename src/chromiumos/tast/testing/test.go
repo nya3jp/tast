@@ -19,6 +19,8 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	"chromiumos/tast/autocaps"
 )
 
 const (
@@ -34,6 +36,34 @@ const (
 )
 
 var testNameRegexp, testWordRegexp *regexp.Regexp
+
+// knownAttrs is a set of known attributes.
+var knownAttrs = map[string]struct{}{
+	"informational": {},
+	"disabled":      {},
+
+	"group:crosbolt":    {},
+	"crosbolt_nightly":  {},
+	"crosbolt_perbuild": {},
+	"crosbolt_weekly":   {},
+}
+
+// knownSoftwareDeps is a set of known software dependencies.
+var knownSoftwareDeps = map[string]struct{}{
+	"android":           {},
+	"audio_play":        {},
+	"audio_record":      {},
+	"camera_720p":       {},
+	"chrome":            {},
+	"chrome_login":      {},
+	"cups":              {},
+	"display_backlight": {},
+	"ml_service":        {},
+	"screenshot":        {},
+	"selinux":           {},
+	"tpm":               {},
+	"vm_host":           {},
+}
 
 func init() {
 	// Validates test names, which should consist of a package name, a period,
@@ -240,7 +270,7 @@ DepLoop:
 // finalize fills in defaults and validates the result.
 // If autoName is true, tst.Name will be derived from tst.Func's name.
 // Otherwise (just used in unit tests), tst.Name should be filled already.
-func (tst *Test) finalize(autoName bool) error {
+func (tst *Test) finalize(autoName, validation bool) error {
 	// Fill in defaults.
 	if err := tst.populateNameAndPkg(autoName); err != nil {
 		return err
@@ -250,8 +280,18 @@ func (tst *Test) finalize(autoName bool) error {
 	}
 	tst.setAdditionalTime()
 
+	if !validation {
+		return nil
+	}
+
 	// Validate the result.
 	if err := tst.validateTestName(); err != nil {
+		return err
+	}
+	if err := tst.validateAttributes(); err != nil {
+		return err
+	}
+	if err := tst.validateSoftwareDeps(); err != nil {
 		return err
 	}
 	if err := tst.validateDataPath(); err != nil {
@@ -302,6 +342,34 @@ func (tst *Test) populateNameAndPkg(autoName bool) error {
 func (tst *Test) validateTestName() error {
 	if !testNameRegexp.MatchString(tst.Name) {
 		return fmt.Errorf("invalid test name %q (want pkg.ExportedTestFunc)", tst.Name)
+	}
+	return nil
+}
+
+// validateAttributes checks if the test has unknown attributes.
+func (tst *Test) validateAttributes() error {
+	for _, a := range tst.Attr {
+		if strings.HasPrefix(a, testNameAttrPrefix) ||
+			strings.HasPrefix(a, testBundleAttrPrefix) ||
+			strings.HasPrefix(a, testDepAttrPrefix) {
+			continue
+		}
+		if _, ok := knownAttrs[a]; !ok {
+			return fmt.Errorf("unknown attribute %q; please update knownAttrs", a)
+		}
+	}
+	return nil
+}
+
+// validateSoftwareDeps checks if the test has unknown software deps.
+func (tst *Test) validateSoftwareDeps() error {
+	for _, d := range tst.SoftwareDeps {
+		if strings.HasPrefix(d, autocaps.FeaturePrefix) {
+			continue
+		}
+		if _, ok := knownSoftwareDeps[d]; !ok {
+			return fmt.Errorf("unknown software dep %q; please update knownSoftwareDeps", d)
+		}
 	}
 	return nil
 }

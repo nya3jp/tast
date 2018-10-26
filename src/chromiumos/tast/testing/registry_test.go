@@ -126,7 +126,7 @@ func TestTestsForPattern(t *gotesting.T) {
 }
 
 func TestTestsForAttrExpr(t *gotesting.T) {
-	reg := NewRegistry(NoAutoName)
+	reg := NewRegistry(NoAutoName, NoValidation)
 	allTests := []*Test{
 		&Test{Name: "test.Foo", Func: func(context.Context, *State) {}, Attr: []string{"test", "foo"}},
 		&Test{Name: "test.Bar", Func: func(context.Context, *State) {}, Attr: []string{"test", "bar"}},

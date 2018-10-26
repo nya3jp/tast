@@ -83,11 +83,11 @@ func TestDetermineSoftwareFeatures(t *testing.T) {
 	if err != nil {
 		t.Fatalf("determineSoftwareFeatures(%v, %v, %v) failed: %v", defs, flags, autotestCaps, err)
 	}
-	if exp := []string{"a", autotestCapPrefix + "c"}; !reflect.DeepEqual(avail, exp) {
+	if exp := []string{"a", autocaps.FeaturePrefix + "c"}; !reflect.DeepEqual(avail, exp) {
 		t.Errorf("determineSoftwareFeatures(%v, %v, %v) returned available features %v; want %v",
 			defs, flags, autotestCaps, avail, exp)
 	}
-	if exp := []string{autotestCapPrefix + "d", autotestCapPrefix + "e", "b"}; !reflect.DeepEqual(unavail, exp) {
+	if exp := []string{autocaps.FeaturePrefix + "d", autocaps.FeaturePrefix + "e", "b"}; !reflect.DeepEqual(unavail, exp) {
 		t.Errorf("determineSoftwareFeatures(%v, %v, %v) returned unavailable features %v; want %v",
 			defs, flags, autotestCaps, unavail, exp)
 	}

@@ -18,8 +18,6 @@ import (
 	"chromiumos/tast/expr"
 )
 
-const autotestCapPrefix = "autotest-capability:" // prefix for autotest-capability feature names
-
 // handleGetSoftwareFeatures handles a GetSoftwareFeaturesMode request from args
 // and JSON-marshals a GetSoftwareFeaturesResult struct to w.
 func handleGetSoftwareFeatures(args *Args, w io.Writer) error {
@@ -86,8 +84,8 @@ func determineSoftwareFeatures(definitions map[string]string, useFlags []string,
 	autotestCaps map[string]autocaps.State) (
 	available, unavailable []string, err error) {
 	for ft, es := range definitions {
-		if strings.HasPrefix(ft, autotestCapPrefix) {
-			return nil, nil, fmt.Errorf("feature %q has reserved prefix %q", ft, autotestCapPrefix)
+		if strings.HasPrefix(ft, autocaps.FeaturePrefix) {
+			return nil, nil, fmt.Errorf("feature %q has reserved prefix %q", ft, autocaps.FeaturePrefix)
 		}
 
 		ex, err := expr.New(es)
@@ -103,9 +101,9 @@ func determineSoftwareFeatures(definitions map[string]string, useFlags []string,
 
 	for name, state := range autotestCaps {
 		if state == autocaps.Yes {
-			available = append(available, autotestCapPrefix+name)
+			available = append(available, autocaps.FeaturePrefix+name)
 		} else {
-			unavailable = append(unavailable, autotestCapPrefix+name)
+			unavailable = append(unavailable, autocaps.FeaturePrefix+name)
 		}
 	}
 

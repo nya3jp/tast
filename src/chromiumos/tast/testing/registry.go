@@ -16,7 +16,9 @@ import (
 // Registry holds tests.
 type Registry struct {
 	allTests []*Test
-	autoName bool // true if test names should be automatically derived from func names
+
+	autoName   bool // true if test names should be automatically derived from func names
+	validation bool // true if test definitions should be validated
 }
 
 type registryOption func(*Registry)
@@ -30,11 +32,18 @@ var NoAutoName = func(r *Registry) {
 	r.autoName = false
 }
 
+// NoValidation can be passed to NewRegistry to configure the returned registry to skip validating
+// test definitions. This should be used only by unit tests.
+var NoValidation = func(r *Registry) {
+	r.validation = false
+}
+
 // NewRegistry returns a new test registry.
 func NewRegistry(opts ...registryOption) *Registry {
 	r := &Registry{
-		allTests: make([]*Test, 0),
-		autoName: true,
+		allTests:   make([]*Test, 0),
+		autoName:   true,
+		validation: true,
 	}
 	for _, o := range opts {
 		o(r)
@@ -44,7 +53,7 @@ func NewRegistry(opts ...registryOption) *Registry {
 
 // AddTest adds t to the registry. Missing fields are filled where possible.
 func (r *Registry) AddTest(t *Test) error {
-	if err := t.finalize(r.autoName); err != nil {
+	if err := t.finalize(r.autoName, r.validation); err != nil {
 		return err
 	}
 	r.allTests = append(r.allTests, t)

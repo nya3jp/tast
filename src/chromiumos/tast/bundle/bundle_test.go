@@ -272,7 +272,7 @@ func TestRunTestsNoTests(t *gotesting.T) {
 }
 
 func TestRunTestsMissingDeps(t *gotesting.T) {
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName, testing.NoValidation))
 	defer restore()
 
 	const (

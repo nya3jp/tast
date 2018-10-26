@@ -27,6 +27,9 @@ import (
 )
 
 const (
+	// FeaturePrefix is the prefix for autotest-capability feature names.
+	FeaturePrefix = "autotest-capability:"
+
 	managedFile = "managed-capabilities.yaml" // file listing all known capabilities
 )
 

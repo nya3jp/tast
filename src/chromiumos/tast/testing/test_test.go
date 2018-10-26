@@ -45,49 +45,100 @@ func (p *testPre) String() string { return p.name }
 
 func TestMissingFunc(t *gotesting.T) {
 	test := Test{Name: "category.MyName"}
-	if err := test.finalize(false); err == nil {
+	if err := test.finalize(false, true); err == nil {
 		t.Error("Didn't get error with missing function")
 	}
 }
 
 func TestInvalidTestName(t *gotesting.T) {
 	test := Test{Name: "Invalid%@!", Func: Func1}
-	if err := test.finalize(false); err == nil {
+	if err := test.finalize(false, true); err == nil {
 		t.Error("Didn't get error with invalid name")
 	}
 }
 
 func TestNegativeTimeout(t *gotesting.T) {
 	test := Test{Name: "cat.Name", Func: Func1, Timeout: -1 * time.Second}
-	if err := test.finalize(false); err == nil {
+	if err := test.finalize(false, true); err == nil {
 		t.Error("Didn't get error with negative timeout")
 	}
 }
 
 func TestValidateDataPath(t *gotesting.T) {
 	test := Test{Name: "cat.Name", Func: Func1, Data: []string{"foo", "bar/baz"}}
-	if err := test.finalize(false); err != nil {
+	if err := test.finalize(false, true); err != nil {
 		t.Errorf("Got an unexpected error: %v", err)
+	}
+}
+
+func TestValidateAttributes(t *gotesting.T) {
+	for _, tc := range []struct {
+		attr   []string
+		expect bool
+	}{
+		{nil, true},
+		{[]string{"informational"}, true},
+		{[]string{"informational", "disabled"}, true},
+		{[]string{"kitten"}, false},
+		{[]string{"informational", "kitten"}, false},
+		{[]string{"kitten:foo"}, false},
+		{[]string{"informational:foo"}, false},
+	} {
+		test := Test{Name: "cat.Name", Func: Func1, Attr: tc.attr}
+		err := test.finalize(false, true)
+		if ok := err == nil; ok != tc.expect {
+			if tc.expect {
+				t.Errorf("finalize(%q) returned an error %v; expected success", tc.attr, err)
+			} else {
+				t.Errorf("finalize(%q) succeeded; expected failure", tc.attr)
+			}
+		}
+	}
+}
+
+func TestValidateSoftwareDeps(t *gotesting.T) {
+	for _, tc := range []struct {
+		deps   []string
+		expect bool
+	}{
+		{nil, true},
+		{[]string{"chrome"}, true},
+		{[]string{"chrome", "android"}, true},
+		{[]string{"autotest-capability:foo"}, true},
+		{[]string{"kitten"}, false},
+		{[]string{"chrome", "kitten"}, false},
+		{[]string{"kitten:foo"}, false},
+		{[]string{"chrome:foo"}, false},
+	} {
+		test := Test{Name: "cat.Name", Func: Func1, SoftwareDeps: tc.deps}
+		err := test.finalize(false, true)
+		if ok := err == nil; ok != tc.expect {
+			if tc.expect {
+				t.Errorf("finalize(%q) returned an error %v; expected success", tc.deps, err)
+			} else {
+				t.Errorf("finalize(%q) succeeded; expected failure", tc.deps)
+			}
+		}
 	}
 }
 
 func TestValidateDataPathUnclean(t *gotesting.T) {
 	test := Test{Name: "cat.Name", Func: Func1, Data: []string{"foo", "bar/../bar/baz"}}
-	if err := test.finalize(false); err == nil {
+	if err := test.finalize(false, true); err == nil {
 		t.Error("Did not get an error with unclean path")
 	}
 }
 
 func TestValidateDataPathAbsolutePath(t *gotesting.T) {
 	test := Test{Name: "cat.Name", Func: Func1, Data: []string{"foo", "/etc/passwd"}}
-	if err := test.finalize(false); err == nil {
+	if err := test.finalize(false, true); err == nil {
 		t.Error("Did not get an error with absolute path")
 	}
 }
 
 func TestValidateDataPathRelativePath(t *gotesting.T) {
 	test := Test{Name: "cat.Name", Func: Func1, Data: []string{"foo", "../baz"}}
-	if err := test.finalize(false); err == nil {
+	if err := test.finalize(false, true); err == nil {
 		t.Error("Did not get an error with relative path")
 	}
 }
@@ -99,7 +150,7 @@ func TESTTEST(context.Context, *State) {}
 
 func TestAutoName(t *gotesting.T) {
 	test := Test{Func: TESTTEST}
-	if err := test.finalize(true); err != nil {
+	if err := test.finalize(true, true); err != nil {
 		t.Error("Got error when finalizing test with valid test func name: ", err)
 	} else if exp := "testing.TESTTEST"; test.Name != exp {
 		t.Errorf("Test was given name %q; want %q", test.Name, exp)
@@ -108,7 +159,7 @@ func TestAutoName(t *gotesting.T) {
 
 func TestAutoNameInvalid(t *gotesting.T) {
 	test := Test{Func: Func1}
-	if err := test.finalize(true); err == nil {
+	if err := test.finalize(true, true); err == nil {
 		t.Error("Didn't get expected error when finalizing test with invalid test func name")
 	}
 }
@@ -120,7 +171,7 @@ func TestAutoAttr(t *gotesting.T) {
 		Attr:         []string{"attr1", "attr2"},
 		SoftwareDeps: []string{"dep1", "dep2"},
 	}
-	if err := test.finalize(false); err != nil {
+	if err := test.finalize(false, false); err != nil {
 		t.Fatal("finalize failed: ", err)
 	}
 	exp := []string{
@@ -147,7 +198,7 @@ func TestReservedAttrPrefixes(t *gotesting.T) {
 		testDepAttrPrefix + "dep",
 	} {
 		test.Attr = []string{attr}
-		if err := test.finalize(false); err == nil {
+		if err := test.finalize(false, true); err == nil {
 			t.Errorf("finalize didn't return error for reserved attribute %q", attr)
 		}
 	}
@@ -156,7 +207,7 @@ func TestReservedAttrPrefixes(t *gotesting.T) {
 func TestAdditionalTime(t *gotesting.T) {
 	pre := &testPre{}
 	test := Test{Name: "cat.Name", Func: Func1, Timeout: 5 * time.Minute, Pre: pre}
-	if err := test.finalize(false); err != nil {
+	if err := test.finalize(false, true); err != nil {
 		t.Error("finalize() failed: ", err)
 	}
 	if exp := preTestTimeout + postTestTimeout + 2*pre.Timeout(); test.AdditionalTime != exp {
@@ -166,7 +217,7 @@ func TestAdditionalTime(t *gotesting.T) {
 
 func TestDataDir(t *gotesting.T) {
 	test := Test{Name: "cat.Name", Func: Func1}
-	if err := test.finalize(false); err != nil {
+	if err := test.finalize(false, true); err != nil {
 		t.Fatal(err)
 	}
 	exp := filepath.Join("chromiumos/tast/testing", testDataSubdir)

@@ -100,7 +100,7 @@ func TestTestsToRun(t *gotesting.T) {
 		name1 = "cat.MyTest1"
 		name2 = "cat.MyTest2"
 	)
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName, testing.NoValidation))
 	defer restore()
 	testing.AddTest(&testing.Test{Name: name1, Func: testFunc, Attr: []string{"attr1", "attr2"}})
 	testing.AddTest(&testing.Test{Name: name2, Func: testFunc, Attr: []string{"attr2"}})

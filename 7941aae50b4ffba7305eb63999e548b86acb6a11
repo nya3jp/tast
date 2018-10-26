@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "0b3c0356_2ae6b4c8",
+        "filename": "src/chromiumos/cmd/tast-lint/check/exports.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-26T07:12:06Z",
+      "side": 1,
+      "message": "Ouch. Done.",
+      "parentUuid": "6ba360b3_ed57f19f",
+      "range": {
+        "startLine": 19,
+        "startChar": 3,
+        "endLine": 19,
+        "endChar": 10
+      },
+      "revId": "7941aae50b4ffba7305eb63999e548b86acb6a11",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0821a2ee_8bebe8c2",
         "filename": "src/chromiumos/cmd/tast-lint/check/exports.go",
         "patchSetId": 1
@@ -39,6 +63,24 @@
       "revId": "7941aae50b4ffba7305eb63999e548b86acb6a11",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "16e81d16_4a85ab0b",
+        "filename": "src/chromiumos/cmd/tast-lint/check/exports.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-26T07:12:06Z",
+      "side": 1,
+      "message": "I gave it a try according to your suggestion, but I could not make the code clearer. If you\u0027re okay, please allow me to keep this as is.",
+      "parentUuid": "0821a2ee_8bebe8c2",
+      "revId": "7941aae50b4ffba7305eb63999e548b86acb6a11",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -65,6 +107,30 @@
     },
     {
       "key": {
+        "uuid": "1502fe14_b819fe67",
+        "filename": "src/chromiumos/cmd/tast-lint/check/exports.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-26T07:12:06Z",
+      "side": 1,
+      "message": "Done\n\nI guess we have to keep test main functions exported since we use reflection against it to match them with file names, but I\u0027m not 100% sure.",
+      "parentUuid": "b950194d_e0586979",
+      "range": {
+        "startLine": 42,
+        "startChar": 55,
+        "endLine": 42,
+        "endChar": 88
+      },
+      "revId": "7941aae50b4ffba7305eb63999e548b86acb6a11",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "71d9589c_8682834c",
         "filename": "src/chromiumos/cmd/tast-lint/check/exports.go",
         "patchSetId": 1
@@ -88,6 +154,30 @@
     },
     {
       "key": {
+        "uuid": "e0bb7e47_0a7f12b0",
+        "filename": "src/chromiumos/cmd/tast-lint/check/exports.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-26T07:12:06Z",
+      "side": 1,
+      "message": "I think it makes sense to point out all locations of exported identifiers, just simliarly as other lint errors like \"exported method SomeFunc should have comment or be unexported\".",
+      "parentUuid": "71d9589c_8682834c",
+      "range": {
+        "startLine": 76,
+        "startChar": 3,
+        "endLine": 80,
+        "endChar": 5
+      },
+      "revId": "7941aae50b4ffba7305eb63999e548b86acb6a11",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fb84a4ae_d7286348",
         "filename": "src/chromiumos/cmd/tast-lint/check/exports.go",
         "patchSetId": 1
@@ -102,6 +192,24 @@
       "revId": "7941aae50b4ffba7305eb63999e548b86acb6a11",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0e457262_6e71782d",
+        "filename": "src/chromiumos/cmd/tast-lint/check/exports.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-26T07:12:06Z",
+      "side": 1,
+      "message": "Yes, that\u0027s a thing I\u0027d love to have, but since the logic is a bit complicated and it\u0027s tricky to share code between tast code and tast-lint so I omitted. Let me leave a TODO comment for now.",
+      "parentUuid": "fb84a4ae_d7286348",
+      "revId": "7941aae50b4ffba7305eb63999e548b86acb6a11",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -122,6 +230,24 @@
     },
     {
       "key": {
+        "uuid": "b623fc00_f025b7c3",
+        "filename": "src/chromiumos/cmd/tast-lint/check/inter_file_refs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-26T07:12:06Z",
+      "side": 1,
+      "message": "Do you mean allowing to refer exported identifiers? We forbid exporting anything but test main functions, and test main functions must not be referred from other files.",
+      "parentUuid": "7f03e09e_1936c550",
+      "revId": "7941aae50b4ffba7305eb63999e548b86acb6a11",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1b251a86_adb54409",
         "filename": "src/chromiumos/cmd/tast-lint/check/inter_file_refs_test.go",
         "patchSetId": 1
@@ -136,6 +262,24 @@
       "revId": "7941aae50b4ffba7305eb63999e548b86acb6a11",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "277a28a5_e975ebcc",
+        "filename": "src/chromiumos/cmd/tast-lint/check/inter_file_refs_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-26T07:12:06Z",
+      "side": 1,
+      "message": "That\u0027s good, done.",
+      "parentUuid": "1b251a86_adb54409",
+      "revId": "7941aae50b4ffba7305eb63999e548b86acb6a11",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -159,6 +303,30 @@
       "revId": "7941aae50b4ffba7305eb63999e548b86acb6a11",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0a685820_3cc63a19",
+        "filename": "src/chromiumos/cmd/tast-lint/parser.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-26T07:12:06Z",
+      "side": 1,
+      "message": "Good catch.",
+      "parentUuid": "399e8890_aeff10bc",
+      "range": {
+        "startLine": 81,
+        "startChar": 3,
+        "endLine": 81,
+        "endChar": 12
+      },
+      "revId": "7941aae50b4ffba7305eb63999e548b86acb6a11",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

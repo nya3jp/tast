@@ -248,6 +248,24 @@
     },
     {
       "key": {
+        "uuid": "2b83e19b_3a1ba47a",
+        "filename": "src/chromiumos/cmd/tast-lint/check/inter_file_refs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-26T11:13:39Z",
+      "side": 1,
+      "message": "Per offline chat, could you comment why this is safe for the case where other package\u0027s identifier is used?\nMaybe it is better to make it a spec of this function (i.e. document in the func doc), explicitly.",
+      "parentUuid": "b623fc00_f025b7c3",
+      "revId": "7941aae50b4ffba7305eb63999e548b86acb6a11",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "1b251a86_adb54409",
         "filename": "src/chromiumos/cmd/tast-lint/check/inter_file_refs_test.go",
         "patchSetId": 1

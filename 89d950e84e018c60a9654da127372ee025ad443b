@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "aa262400_e7eee320",
+        "filename": "src/chromiumos/tast/host/test/default.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-26T06:40:21Z",
+      "side": 1,
+      "message": "src/chromiumos/tast/host/test/default.go:27:6: type name will be used as test.TestData by other packages, and that stutters; consider calling this Data",
+      "range": {
+        "startLine": 27,
+        "startChar": 0,
+        "endLine": 27,
+        "endChar": 32
+      },
+      "revId": "89d950e84e018c60a9654da127372ee025ad443b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4891935b_eec261b1",
+        "filename": "src/chromiumos/tast/runner/args.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-26T06:40:21Z",
+      "side": 1,
+      "message": "src/chromiumos/tast/runner/args.go:142:6: type name will be used as runner.RunnerType by other packages, and that stutters; consider calling this Type",
+      "range": {
+        "startLine": 142,
+        "startChar": 0,
+        "endLine": 142,
+        "endChar": 29
+      },
+      "revId": "89d950e84e018c60a9654da127372ee025ad443b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5b67356f_cd7eac23",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 218,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-26T06:40:21Z",
+      "side": 1,
+      "message": "error should be the last type when returning multiple items\n\nIn this case err is the primary result so the lint warning makes little sense. But leaving NOLINT is a bit annoying so I just swapped the order.",
+      "range": {
+        "startLine": 218,
+        "startChar": 0,
+        "endLine": 218,
+        "endChar": 76
+      },
+      "revId": "89d950e84e018c60a9654da127372ee025ad443b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f1005ede_dfee4f3d",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 361,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-26T06:40:21Z",
+      "side": 1,
+      "message": "receiver name t should be consistent with previous receiver name tst for Test",
+      "range": {
+        "startLine": 361,
+        "startChar": 0,
+        "endLine": 361,
+        "endChar": 32
+      },
+      "revId": "89d950e84e018c60a9654da127372ee025ad443b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -119,7 +119,7 @@ func CopyNewFiles(dstDir string, newPaths, oldPaths []string, maxPerExec int) (
 		if err := copyFile(filepath.Join(dstDir, filepath.Base(sp)), sp); err != nil {
 			warnings[sp] = err
 		} else {
-			execCount[base] += 1
+			execCount[base]++
 		}
 	}
 	return warnings, nil

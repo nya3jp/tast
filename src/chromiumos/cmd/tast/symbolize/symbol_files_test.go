@@ -36,7 +36,7 @@ func TestCreateSymbolFiles(t *testing.T) {
 	}
 
 	// Create a fake build root and symlink each debug library to the expected location in it.
-	for lib, _ := range symMap {
+	for lib := range symMap {
 		dataPath := filepath.Join(cwd, "testdata", filepath.Base(lib)+".debug")
 		debugPath := breakpad.GetDebugBinaryPath(cfg.BuildRoot, lib)
 		if err := os.MkdirAll(filepath.Dir(debugPath), 0755); err != nil {

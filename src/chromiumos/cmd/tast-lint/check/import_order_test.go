@@ -4,7 +4,9 @@
 
 package check
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestImportOrderGood(t *testing.T) {
 	const code = `package main

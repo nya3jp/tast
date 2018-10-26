@@ -115,9 +115,9 @@ func readArgs(stdin io.Reader, args *Args, cfg *runConfig, bt bundleType) ([]*te
 type TestPatternType int
 
 const (
-	// The patterns will be interpreted as one or more wildcards (possibly literal test names).
+	// TestPatternWildcard means the patterns will be interpreted as one or more wildcards (possibly literal test names).
 	TestPatternWildcard TestPatternType = iota
-	// The pattern will be interpreted as a boolean expression referring to test attributes.
+	// TestPatternAttrExpr means the patterns will be interpreted as a boolean expression referring to test attributes.
 	TestPatternAttrExpr
 )
 

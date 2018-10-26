@@ -156,7 +156,7 @@ func (s *State) Logf(format string, args ...interface{}) {
 // while letting the test continue execution.
 func (s *State) Error(args ...interface{}) {
 	s.recordError()
-	err, fullMsg, lastMsg := formatError(args...)
+	fullMsg, lastMsg, err := formatError(args...)
 	e := NewError(err, fullMsg, lastMsg, 1)
 	s.ch <- Output{T: time.Now(), Err: e}
 }
@@ -164,7 +164,7 @@ func (s *State) Error(args ...interface{}) {
 // Errorf is similar to Error but formats its arguments using fmt.Sprintf.
 func (s *State) Errorf(format string, args ...interface{}) {
 	s.recordError()
-	err, fullMsg, lastMsg := formatErrorf(format, args...)
+	fullMsg, lastMsg, err := formatErrorf(format, args...)
 	e := NewError(err, fullMsg, lastMsg, 1)
 	s.ch <- Output{T: time.Now(), Err: e}
 }
@@ -172,7 +172,7 @@ func (s *State) Errorf(format string, args ...interface{}) {
 // Fatal is similar to Error but additionally immediately ends the test.
 func (s *State) Fatal(args ...interface{}) {
 	s.recordError()
-	err, fullMsg, lastMsg := formatError(args...)
+	fullMsg, lastMsg, err := formatError(args...)
 	e := NewError(err, fullMsg, lastMsg, 1)
 	s.ch <- Output{T: time.Now(), Err: e}
 	runtime.Goexit()
@@ -181,7 +181,7 @@ func (s *State) Fatal(args ...interface{}) {
 // Fatalf is similar to Fatal but formats its arguments using fmt.Sprintf.
 func (s *State) Fatalf(format string, args ...interface{}) {
 	s.recordError()
-	err, fullMsg, lastMsg := formatErrorf(format, args...)
+	fullMsg, lastMsg, err := formatErrorf(format, args...)
 	e := NewError(err, fullMsg, lastMsg, 1)
 	s.ch <- Output{T: time.Now(), Err: e}
 	runtime.Goexit()
@@ -215,7 +215,7 @@ var errorSuffix = regexp.MustCompile(`(\s*:\s*|\s+)$`)
 //
 //  lastMsg = "Failed something"
 //  fullMsg = "Failed something: <error message>"
-func formatError(args ...interface{}) (err error, fullMsg, lastMsg string) {
+func formatError(args ...interface{}) (fullMsg, lastMsg string, err error) {
 	fullMsg = fmt.Sprint(args...)
 	if len(args) == 1 {
 		if e, ok := args[0].(error); ok {
@@ -232,7 +232,7 @@ func formatError(args ...interface{}) (err error, fullMsg, lastMsg string) {
 		}
 	}
 	lastMsg = fmt.Sprint(args...)
-	return err, fullMsg, lastMsg
+	return fullMsg, lastMsg, err
 }
 
 // errorfSuffix matches the well-known error message suffix for formatErrorf.
@@ -248,7 +248,7 @@ var errorfSuffix = regexp.MustCompile(`\s*:?\s*%v$`)
 //
 //  lastMsg = "Failed something"
 //  fullMsg = "Failed something: <error message>"
-func formatErrorf(format string, args ...interface{}) (err error, fullMsg, lastMsg string) {
+func formatErrorf(format string, args ...interface{}) (fullMsg, lastMsg string, err error) {
 	fullMsg = fmt.Sprintf(format, args...)
 	if len(args) >= 1 {
 		if e, ok := args[len(args)-1].(error); ok {
@@ -260,7 +260,7 @@ func formatErrorf(format string, args ...interface{}) (err error, fullMsg, lastM
 		}
 	}
 	lastMsg = fmt.Sprintf(format, args...)
-	return err, fullMsg, lastMsg
+	return fullMsg, lastMsg, err
 }
 
 // recordError records that the test has reported an error.
@@ -300,7 +300,7 @@ func (d *dataFS) Open(name string) (http.File, error) {
 // 2 to additionally skip the frame that called it, and so on.
 func NewError(err error, fullMsg, lastMsg string, skipFrames int) *Error {
 	// Also skip the NewError frame.
-	skipFrames += 1
+	skipFrames++
 
 	// runtime.Caller starts counting stack frames at the point of the code that
 	// invoked Caller.

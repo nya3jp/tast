@@ -16,7 +16,7 @@ import (
 // InodeSizes maps from inode to file size.
 type InodeSizes map[uint64]int64
 
-// GetLogInodeFileSizes recursively walks dir and returns a map from inode
+// GetLogInodeSizes recursively walks dir and returns a map from inode
 // to size in bytes for all regular files. warnings contains non-fatal errors
 // that were accounted, keyed by path.
 func GetLogInodeSizes(dir string) (inodes InodeSizes, warnings map[string]error, err error) {

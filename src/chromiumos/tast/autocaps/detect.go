@@ -54,7 +54,7 @@ func loadSysInfo() (*SysInfo, error) {
 
 // cpuModelMap maps from SysInfo.CPUModel values to the corresponding detector match values.
 // This comes from client/cros/video/detectors/intel_cpu.py in the Autotest repo.
-var cpuModelMap map[string]string = map[string]string{
+var cpuModelMap = map[string]string{
 	"Intel(R) Celeron(R) 2955U @ 1.40GHz":      "intel_celeron_2955U",
 	"Intel(R) Celeron(R) 2957U @ 1.40GHz":      "intel_celeron_2957U",
 	"Intel(R) Celeron(R) CPU 1007U @ 1.50GHz":  "intel_celeron_1007U",

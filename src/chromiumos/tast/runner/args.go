@@ -139,7 +139,7 @@ type SysInfoState struct {
 }
 
 // RunnerType describes the type of test runner that is using this package.
-type RunnerType int
+type RunnerType int // NOLINT
 
 const (
 	// LocalRunner indicates that this package is being used by local_test_runner.

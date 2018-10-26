@@ -46,9 +46,9 @@ type OutputMode int
 const (
 	// StdoutAndStderr indicates that stdout and stderr should both be returned separately.
 	StdoutAndStderr OutputMode = iota
-	// Stdout indicates that only stdout should be returned (i.e. stderr should be closed).
+	// StdoutOnly indicates that only stdout should be returned (i.e. stderr should be closed).
 	StdoutOnly
-	// Stderr indicates that only stderr should be returned (i.e. stdout should be closed).
+	// StderrOnly indicates that only stderr should be returned (i.e. stdout should be closed).
 	StderrOnly
 	// NoOutput indicates that both stdout and stderr should be closed.
 	NoOutput
@@ -435,7 +435,7 @@ func (s *SSH) findChangedFiles(ctx context.Context, ldir, rdir string,
 
 	// Sort local names.
 	sorted := make([]string, 0, len(files))
-	for l, _ := range files {
+	for l := range files {
 		sorted = append(sorted, l)
 	}
 	sort.Strings(sorted)

@@ -357,8 +357,8 @@ func (tst *Test) setAdditionalTime() {
 	}
 }
 
-// clone returns a deep copy of t.
-func (t *Test) clone() *Test {
+// clone returns a deep copy of tst.
+func (tst *Test) clone() *Test {
 	copyable := func(tp reflect.Type) bool {
 		// If copyable structs are added, they can be handled in a reflect.Struct case.
 		switch tp.Kind() {
@@ -371,7 +371,7 @@ func (t *Test) clone() *Test {
 		}
 	}
 
-	ov := reflect.ValueOf(*t)
+	ov := reflect.ValueOf(*tst)
 	np := reflect.New(ov.Type()) // *Test
 	nv := reflect.Indirect(np)   // Test
 

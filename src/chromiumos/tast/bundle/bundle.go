@@ -12,6 +12,7 @@ import (
 	"runtime"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	"chromiumos/tast/command"
@@ -55,6 +56,7 @@ func run(ctx context.Context, stdin io.Reader, stdout, stderr io.Writer,
 }
 
 // logFunc can be called by functions registered in runConfig to log a message.
+// It is safe to call it concurrently from different goroutines.
 type logFunc func(msg string)
 
 // runConfig contains additional parameters used when running tests.
@@ -87,7 +89,13 @@ type runConfig struct {
 func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 	tests []*testing.Test) error {
 	mw := control.NewMessageWriter(stdout)
-	lf := func(msg string) { mw.WriteMessage(&control.RunLog{Time: time.Now(), Text: msg}) }
+
+	lm := sync.Mutex{}
+	lf := func(msg string) {
+		lm.Lock()
+		mw.WriteMessage(&control.RunLog{Time: time.Now(), Text: msg})
+		lm.Unlock()
+	}
 
 	if len(tests) == 0 {
 		return command.NewStatusErrorf(statusNoTests, "no tests matched by pattern(s)")

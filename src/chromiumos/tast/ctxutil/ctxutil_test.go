@@ -65,3 +65,26 @@ func TestShortenNoDeadline(t *testing.T) {
 		t.Errorf("Shorten returned deadline %v for %v duration with no existing deadline; want 0", dl, d)
 	}
 }
+
+func TestDeadlineBefore(t *testing.T) {
+	now := time.Unix(100, 0) // arbitrary
+	for _, tc := range []struct {
+		dl     time.Time
+		before bool
+	}{
+		{time.Time{}, false},
+		{now.Add(-time.Second), true},
+		{now, false},
+		{now.Add(time.Second), false},
+	} {
+		ctx := context.Background()
+		if !tc.dl.IsZero() {
+			var cancel context.CancelFunc
+			ctx, cancel = context.WithDeadline(ctx, tc.dl)
+			defer cancel()
+		}
+		if before := DeadlineBefore(ctx, now); before != tc.before {
+			t.Errorf("DeadlineBefore(%v, %v) = %v; want %v", tc.dl, now, before, tc.before)
+		}
+	}
+}

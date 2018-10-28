@@ -96,7 +96,7 @@ func local(ctx context.Context, cfg *Config) (Status, []TestResult) {
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to run tests: %v", err), results
 	}
 	cfg.Logger.Logf("Ran %v local test(s) in %v", len(results), time.Now().Sub(start).Round(time.Millisecond))
-	return successStatus(), results
+	return successStatus, results
 }
 
 // connectToTarget establishes an SSH connection to the target specified in cfg.

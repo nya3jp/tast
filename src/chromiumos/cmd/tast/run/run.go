@@ -8,10 +8,16 @@ package run
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
+	"path/filepath"
 	"time"
 
 	"github.com/google/subcommands"
+
+	"chromiumos/tast/ctxutil"
 )
+
+const runErrorFilename = "run_error.txt" // text file in Config.ResDir containing error that made whole run fail
 
 // Status describes the result of a Run call.
 type Status struct {
@@ -21,10 +27,8 @@ type Status struct {
 	ErrorMsg string
 }
 
-// successStatus returns a Status describing a successful run.
-func successStatus() Status {
-	return Status{}
-}
+// successStatus describes a successful run.
+var successStatus = Status{}
 
 // errorStatusf returns a Status describing a failing run. format and args are combined to produce the error
 // message, which is both logged to cfg.Logger and included in the returned status.
@@ -60,23 +64,20 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []TestResult)
 		}
 	}
 
-	// Provide a more-descriptive status if the SSH connection was lost.
-	if status.ExitCode == subcommands.ExitFailure && cfg.hst != nil &&
-		!deadlineBefore(ctx, time.Now().Add(sshPingTimeout)) {
-		if err := cfg.hst.Ping(ctx, sshPingTimeout); err != nil {
-			status = errorStatusf(cfg, subcommands.ExitFailure, "Lost SSH connection to %v: %v", cfg.Target, err)
+	if status.ExitCode == subcommands.ExitFailure {
+		// Provide a more-descriptive status if the SSH connection was lost.
+		if cfg.hst != nil && !ctxutil.DeadlineBefore(ctx, time.Now().Add(sshPingTimeout)) {
+			if err := cfg.hst.Ping(ctx, sshPingTimeout); err != nil {
+				status = errorStatusf(cfg, subcommands.ExitFailure, "Lost SSH connection to %v: %v", cfg.Target, err)
+			}
+		}
+
+		// Write the failure message to a file so it can be used to annotate interrupted tests.
+		if err := ioutil.WriteFile(filepath.Join(cfg.ResDir, runErrorFilename),
+			[]byte(status.ErrorMsg), 0644); err != nil {
+			cfg.Logger.Log("Failed to write run error: ", err)
 		}
 	}
 
 	return status, results
-}
-
-// deadlineBefore returns true if ctx has a deadline that expires before t.
-// It returns true if the deadline has already expired and false if no deadline is set.
-func deadlineBefore(ctx context.Context, t time.Time) bool {
-	dl, ok := ctx.Deadline()
-	if !ok {
-		return false
-	}
-	return dl.Before(t)
 }

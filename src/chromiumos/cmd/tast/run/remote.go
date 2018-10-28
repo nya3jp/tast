@@ -78,7 +78,7 @@ func remote(ctx context.Context, cfg *Config) (Status, []TestResult) {
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to run tests: %v", err), results
 	}
 	cfg.Logger.Logf("Ran %v remote test(s) in %v", len(results), time.Now().Sub(start).Round(time.Millisecond))
-	return successStatus(), results
+	return successStatus, results
 }
 
 // runRemoteRunner runs the remote test runner with bundles matched by bundleGlob

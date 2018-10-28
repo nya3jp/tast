@@ -108,12 +108,17 @@ also be created to it at `/tmp/tast/results/latest`.
 Various files and directories are created within the results directory:
 
 *   `crashes/` - [Breakpad] minidump files with information about crashes that
-    occured during testing (local tests only).
+    occured during testing.
 *   `full.txt` - All output from the run, including messages logged by
     individual tests.
 *   `results.json` - Machine-parseable test results.
-*   `system_logs/` - Diff of `/var/log` on the DUT before and after testing
-    (local tests only).
+*   `run_error.txt` - Error message describing the reason why the run was
+    aborted (e.g. SSH connection to DUT was lost). Only written when a global
+    error occurs.
+*   `streamed_results.jsonl` - Streamed machine-parseable test results. Provides
+    partial results if `tast` process is interrupted before `results.json` is
+    written.
+*   `system_logs/` - Diff of `/var/log` on the DUT before and after testing.
 *   `tests/` - Per-test subdirectories, each of which has messages logged by the
     test and any output files that it created.
 *   `timing.json` - Machine-parsable timing information about the test run.

@@ -29,3 +29,13 @@ func Shorten(ctx context.Context, d time.Duration) (context.Context, context.Can
 	}
 	return context.WithDeadline(ctx, dl.Add(-d))
 }
+
+// DeadlineBefore returns true if ctx has a deadline that expires before t.
+// It returns true if the deadline has already expired and false if no deadline is set.
+func DeadlineBefore(ctx context.Context, t time.Time) bool {
+	dl, ok := ctx.Deadline()
+	if !ok {
+		return false
+	}
+	return dl.Before(t)
+}

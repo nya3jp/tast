@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "326104cf_82f31c1d",
+        "filename": "src/chromiumos/tast/ctxutil/ctxutil_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-29T03:31:54Z",
+      "side": 1,
+      "message": "huge nit: can we move this to inside if clause?",
+      "range": {
+        "startLine": 81,
+        "startChar": 2,
+        "endLine": 81,
+        "endChar": 31
+      },
+      "revId": "f1ff00fd6db24cb4efe67a971caba4f87fefad5d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

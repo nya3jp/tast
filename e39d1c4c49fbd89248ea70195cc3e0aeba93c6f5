@@ -22,6 +22,30 @@
       "revId": "e39d1c4c49fbd89248ea70195cc3e0aeba93c6f5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9f5707ed_30d1e806",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-29T03:35:23Z",
+      "side": 1,
+      "message": "i considered this. it requires complicating MessageWriter (which is currently just a json.Encoder, iirc), and it probably doesn\u0027t give much benefit: there\u0027s usually synchronization when writing control messages, since ordering is important. testing.State\u0027s log/error methods pass messages back through a channel, and adding synchronization here feels like the other part of that. if there are races in the bundle/runner code that writes control messages, then that\u0027s probably a bigger problem since the messages may arrive in an unexpected order, and adding synchronization to MessageWriter won\u0027t help with that.\n\nplease let me know if you feel strongly, though. :-)",
+      "parentUuid": "d2838ecf_881b0721",
+      "range": {
+        "startLine": 93,
+        "startChar": 0,
+        "endLine": 98,
+        "endChar": 2
+      },
+      "revId": "e39d1c4c49fbd89248ea70195cc3e0aeba93c6f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

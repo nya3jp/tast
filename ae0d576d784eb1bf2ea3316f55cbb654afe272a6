@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "6cdd7ca8_bf1d2c52",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-29T04:59:23Z",
+      "side": 1,
+      "message": "Hmm, this actually covers non-framework files too.\n\nThat said, now I wonder if we need this restriction since we won\u0027t put non-Tast Go codes under tast/tast-tests repos. So let me just remove this check.",
+      "parentUuid": "7bd02ec5_4d2be869",
+      "range": {
+        "startLine": 28,
+        "startChar": 50,
+        "endLine": 28,
+        "endChar": 54
+      },
+      "revId": "ae0d576d784eb1bf2ea3316f55cbb654afe272a6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c40a7f44_6df685ff",
         "filename": "src/chromiumos/cmd/tast-lint/main.go",
         "patchSetId": 2
@@ -39,6 +63,24 @@
       "revId": "ae0d576d784eb1bf2ea3316f55cbb654afe272a6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5fa9fa30_79a41b0d",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-29T04:59:23Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "c40a7f44_6df685ff",
+      "revId": "ae0d576d784eb1bf2ea3316f55cbb654afe272a6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

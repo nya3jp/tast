@@ -46,6 +46,30 @@
       "revId": "e39d1c4c49fbd89248ea70195cc3e0aeba93c6f5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eb4f1998_7333964b",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-29T03:41:09Z",
+      "side": 1,
+      "message": "Makes perfect sense. Thanks for explanation! :)",
+      "parentUuid": "9f5707ed_30d1e806",
+      "range": {
+        "startLine": 93,
+        "startChar": 0,
+        "endLine": 98,
+        "endChar": 2
+      },
+      "revId": "e39d1c4c49fbd89248ea70195cc3e0aeba93c6f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

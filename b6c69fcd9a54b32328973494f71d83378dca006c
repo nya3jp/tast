@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e9b75751_e67c57d6",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 267,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-29T06:14:25Z",
+      "side": 1,
+      "message": "optional/suggestion: how about mentioning that name conflict can happen easily (rather than just namespace is shared) explicitly? E.g.;\n\"so the names of your \"local\" functions/variables defined in the test file can conflict with ones in other files in the same pacakge.\"\nor something?",
+      "range": {
+        "startLine": 267,
+        "startChar": 9,
+        "endLine": 267,
+        "endChar": 10
+      },
+      "revId": "b6c69fcd9a54b32328973494f71d83378dca006c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "073541e7_e7ad7ce8",
+        "filename": "src/chromiumos/cmd/tast-lint/parser.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-29T06:14:25Z",
+      "side": 1,
+      "message": "Could you comment that this parser resolves identifiers within a same package, while it \"should not\" for inter-packages?\nIt is actually important to make InterFileRefs check work, and intentional rather than \"just skipping\".",
+      "revId": "b6c69fcd9a54b32328973494f71d83378dca006c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

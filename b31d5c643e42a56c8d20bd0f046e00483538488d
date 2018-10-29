@@ -131,6 +131,30 @@
     },
     {
       "key": {
+        "uuid": "223f371e_fed163a8",
+        "filename": "src/chromiumos/cmd/tast-lint/check/exports.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-29T14:20:37Z",
+      "side": 1,
+      "message": "thanks. and i don\u0027t have any better suggestions, unfortunately. i sometimes write \"files containing test functions\", but that\u0027s wordier and probably worse.",
+      "parentUuid": "58c615ac_51c00131",
+      "range": {
+        "startLine": 42,
+        "startChar": 70,
+        "endLine": 42,
+        "endChar": 88
+      },
+      "revId": "b31d5c643e42a56c8d20bd0f046e00483538488d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0fe91f4e_dbee9e52",
         "filename": "src/chromiumos/cmd/tast-lint/check/exports.go",
         "patchSetId": 2

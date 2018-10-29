@@ -113,6 +113,24 @@
     },
     {
       "key": {
+        "uuid": "1791a658_9c2ed0d7",
+        "filename": "src/chromiumos/tast/testing/stage.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-29T04:58:40Z",
+      "side": 1,
+      "message": "You\u0027re right, let\u0027s do so. BTW I still pass *State because we need to call s.Error.",
+      "parentUuid": "279c8764_6146aab3",
+      "revId": "89d950e84e018c60a9654da127372ee025ad443b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5b67356f_cd7eac23",
         "filename": "src/chromiumos/tast/testing/state.go",
         "patchSetId": 2
@@ -180,6 +198,30 @@
       "revId": "89d950e84e018c60a9654da127372ee025ad443b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "61846e44_3d0aa0ab",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 360,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-29T04:58:40Z",
+      "side": 1,
+      "message": "Good catch! Done.",
+      "parentUuid": "4d1f400f_661a06b7",
+      "range": {
+        "startLine": 360,
+        "startChar": 32,
+        "endLine": 360,
+        "endChar": 33
+      },
+      "revId": "89d950e84e018c60a9654da127372ee025ad443b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {

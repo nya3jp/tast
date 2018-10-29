@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8b571ce8_3fc4e8be",
+        "filename": "src/chromiumos/cmd/tast/symbolize/symbolize.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-29T04:58:40Z",
+      "side": 1,
+      "message": "This line gave:\n\n func name will be used as symbolize.SymbolizeCrash by other packages, and that stutters; consider calling this Crash\n\nbut I was not sure if we want to call this symbolize.Crash.",
+      "range": {
+        "startLine": 36,
+        "startChar": 50,
+        "endLine": 36,
+        "endChar": 75
+      },
+      "revId": "af440cde2b1e5f1e20c003b00ebdf3b643314be1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

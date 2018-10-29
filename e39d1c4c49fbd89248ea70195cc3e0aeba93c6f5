@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d2838ecf_881b0721",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-29T01:58:02Z",
+      "side": 1,
+      "message": "LGTM, but how about making MessageWriter goroutine-safe? Actually mw is currently accessed from multiple goroutines today (though accesses are not concurrent) so making MW goroutine-safe will make us feel safer. I\u0027m not very sure about sync cost though.",
+      "range": {
+        "startLine": 93,
+        "startChar": 0,
+        "endLine": 98,
+        "endChar": 2
+      },
+      "revId": "e39d1c4c49fbd89248ea70195cc3e0aeba93c6f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

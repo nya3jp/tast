@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "2006727a_7f8bfd86",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 267,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-29T07:01:05Z",
+      "side": 1,
+      "message": "Sounds good, done.",
+      "parentUuid": "e9b75751_e67c57d6",
+      "range": {
+        "startLine": 267,
+        "startChar": 9,
+        "endLine": 267,
+        "endChar": 10
+      },
+      "revId": "b6c69fcd9a54b32328973494f71d83378dca006c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "073541e7_e7ad7ce8",
         "filename": "src/chromiumos/cmd/tast-lint/parser.go",
         "patchSetId": 4
@@ -39,6 +63,24 @@
       "revId": "b6c69fcd9a54b32328973494f71d83378dca006c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6ad05c18_6b9b765d",
+        "filename": "src/chromiumos/cmd/tast-lint/parser.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-29T07:01:05Z",
+      "side": 1,
+      "message": "I already added comments to parseFile, but I agree it\u0027s good to have them here too. (note that parseFile is actually sort of public method)",
+      "parentUuid": "073541e7_e7ad7ce8",
+      "revId": "b6c69fcd9a54b32328973494f71d83378dca006c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

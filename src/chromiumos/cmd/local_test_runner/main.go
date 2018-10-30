@@ -13,6 +13,7 @@ package main
 import (
 	"os"
 
+	"chromiumos/tast/autocaps"
 	"chromiumos/tast/crash"
 	"chromiumos/tast/runner"
 )
@@ -48,7 +49,7 @@ func main() {
 			"vm_host": "kvm_host && !tast_vm",
 		},
 		// The autotest-capability package tries to install this to /etc but it's diverted to /usr/local.
-		AutotestCapabilityDir: "/usr/local/etc/autotest-capability",
+		AutotestCapabilityDir: autocaps.DefaultCapabilityDir,
 	}
 	os.Exit(runner.Run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, &args, runner.LocalRunner))
 }

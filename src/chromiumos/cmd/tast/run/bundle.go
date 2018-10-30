@@ -21,6 +21,10 @@ func init() {
 			workspace:  "src/platform/tast-tests",
 			overlayDir: "src/third_party/chromiumos-overlay",
 		},
+		"crosint": {
+			workspace:  "src/platform/tast-tests-private",
+			overlayDir: "src/private-overlays/chromeos-partner-overlay",
+		},
 	}
 }
 

@@ -103,3 +103,24 @@ func Foo() {
 	issues := ImportOrder("testfile.go", []byte(code))
 	verifyIssues(t, issues, expects)
 }
+
+func TestImportOrderCommentInImportBlock(t *testing.T) {
+	const code = `package main
+
+import (
+	"fmt"
+
+	// some comment
+	"chromiumos/tast/errors"
+)
+
+func Foo() {
+	fmt.Println(errors.New("foo"))
+}
+`
+
+	// The import order is good, so no issue.
+	var expects []string
+	issues := ImportOrder("testfile.go", []byte(code))
+	verifyIssues(t, issues, expects)
+}

@@ -27,6 +27,9 @@ import (
 )
 
 const (
+	// DefaultCapabilityDir is the directory where yaml files are installed by autotest-capability.
+	DefaultCapabilityDir = "/usr/local/etc/autotest-capability"
+
 	managedFile = "managed-capabilities.yaml" // file listing all known capabilities
 )
 

@@ -12,7 +12,11 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"regexp"
 )
+
+// commentInImportRegexp matches a comment inside an import block.
+var commentInImportRegexp = regexp.MustCompile(`import \([^)]*(//|/\*)`)
 
 // ImportOrder checks if the order of import entries are sorted in the
 // following order.
@@ -23,6 +27,13 @@ import (
 //   - The groups should be separated by an empty line.
 // This order should be same as what "goimports --local chromiumos/" does.
 func ImportOrder(path string, in []byte) []*Issue {
+	// Skip this file if there is any comment inside an import block since
+	// we can't handle it correctly now.
+	// TODO(crbug.com/900131): Handle it correctly and remove this check.
+	if commentInImportRegexp.Match(in) {
+		return nil
+	}
+
 	// goimports preserves import blocks separated by empty lines. To avoid
 	// unexpected sorting, remove all empty lines here in import
 	// declaration.

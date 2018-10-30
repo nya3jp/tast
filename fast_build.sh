@@ -17,6 +17,7 @@ readonly PKGDIR="${GOHOME}/pkg"
 readonly SRCDIRS=(
   "${HOME}/trunk/src/platform/tast"
   "${HOME}/trunk/src/platform/tast-tests"
+  "${HOME}/trunk/src/platform/tast-tests-private"
 )
 
 # Package to build to produce tast executable.
@@ -52,8 +53,10 @@ EOF
 get_check_pkgs() {
   local dir
   for dir in "${SRCDIRS[@]}"; do
-    (cd "${dir}/src"
-     find -name '*.go' | xargs dirname | sort | uniq | cut -b 3-)
+    if [[ -d "${dir}" ]]; then
+      (cd "${dir}/src"
+       find -name '*.go' | xargs dirname | sort | uniq | cut -b 3-)
+    fi
   done
 }
 
@@ -61,8 +64,10 @@ get_check_pkgs() {
 get_test_pkgs() {
   local dir
   for dir in "${SRCDIRS[@]}"; do
-    (cd "${dir}/src"
-     find -name '*_test.go' | xargs dirname | sort | uniq | cut -b 3-)
+    if [[ -d "${dir}" ]]; then
+      (cd "${dir}/src"
+       find -name '*_test.go' | xargs dirname | sort | uniq | cut -b 3-)
+    fi
   done
 }
 

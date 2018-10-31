@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e9e26b5d_98cd8821",
+        "filename": "src/chromiumos/tast/diff/diff.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-31T15:19:41Z",
+      "side": 1,
+      "message": "nit: maybe \"Package diff computes differences between strings.\"",
+      "revId": "e766b80ae4bbfbe381660ccee3bf12fef7813d82",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b561e4b5_4c7fe576",
+        "filename": "src/chromiumos/tast/diff/diff.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-31T15:19:41Z",
+      "side": 1,
+      "message": "nit: mind adding a comment here asking people not to log this directly in tests (to avoid hard-to-read logs)? :-)",
+      "revId": "e766b80ae4bbfbe381660ccee3bf12fef7813d82",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

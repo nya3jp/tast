@@ -187,6 +187,7 @@ func TestRunSuccess(t *gotesting.T) {
 	test := Test{Func: func(context.Context, *State) {}, Timeout: time.Minute}
 	or := newOutputReader()
 	td := testutil.TempDir(t)
+	defer os.RemoveAll(td)
 	od := filepath.Join(td, "out")
 	test.Run(context.Background(), or.ch, &TestConfig{OutDir: od})
 	if errs := getOutputErrors(or.read()); len(errs) != 0 {

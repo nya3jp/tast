@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "ec0a810c_875968cb",
+        "filename": "src/chromiumos/tast/diff/unidiff.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-31T14:46:13Z",
+      "side": 1,
+      "message": "Renamed to diff.go.",
+      "parentUuid": "11b3010e_5c4255e4",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 63
+      },
+      "revId": "1aefeb62541589c0900a52c7fb1ab6ea5882e0f3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "d75460af_58619b78",
         "filename": "src/chromiumos/tast/diff/unidiff.go",
         "patchSetId": 1
@@ -45,6 +69,30 @@
       "revId": "1aefeb62541589c0900a52c7fb1ab6ea5882e0f3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "37df3df1_58ed17f2",
+        "filename": "src/chromiumos/tast/diff/unidiff.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-10-31T14:46:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d75460af_58619b78",
+      "range": {
+        "startLine": 38,
+        "startChar": 10,
+        "endLine": 38,
+        "endChar": 36
+      },
+      "revId": "1aefeb62541589c0900a52c7fb1ab6ea5882e0f3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

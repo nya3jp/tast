@@ -29,11 +29,17 @@ func (g *git) modifiedFiles() ([]string, error) {
 	if g.commit == "" {
 		return nil, errors.New("modifiedFiles needs explicit commit")
 	}
-	out, err := exec.Command("git", "diff-tree", "--no-commit-id", "-r", "--name-only", g.commit).Output()
+	out, err := exec.Command("git", "diff-tree", "--no-commit-id", "-r", "--name-status", g.commit).Output()
 	if err != nil {
 		return nil, err
 	}
-	files := strings.Split(strings.TrimRight(string(out), "\n"), "\n")
+	stats := strings.Split(strings.TrimRight(string(out), "\n"), "\n")
+	files := []string{}
+	for _, s := range stats {
+		if parts := strings.Split(s, "\t"); len(parts) == 2 && parts[0] != "D" {
+			files = append(files, parts[1])
+		}
+	}
 	return files, nil
 }
 

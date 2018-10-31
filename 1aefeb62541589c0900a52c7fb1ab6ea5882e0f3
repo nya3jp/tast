@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "11b3010e_5c4255e4",
+        "filename": "src/chromiumos/tast/diff/unidiff.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-31T11:33:12Z",
+      "side": 1,
+      "message": "Maybe we want to name this file diff.go if you\u0027re not going to add other diff styles.\n\nIf you have a plan to add more, how about naming the file and the function \"unified\"? Then the call will be diff.Unified.",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 63
+      },
+      "revId": "1aefeb62541589c0900a52c7fb1ab6ea5882e0f3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d75460af_58619b78",
+        "filename": "src/chromiumos/tast/diff/unidiff.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-10-31T11:33:12Z",
+      "side": 1,
+      "message": "It\u0027s a bit weird this function takes []byte and return string. Do you think it\u0027s reasonable to change this function to take strings instead?",
+      "range": {
+        "startLine": 38,
+        "startChar": 10,
+        "endLine": 38,
+        "endChar": 36
+      },
+      "revId": "1aefeb62541589c0900a52c7fb1ab6ea5882e0f3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

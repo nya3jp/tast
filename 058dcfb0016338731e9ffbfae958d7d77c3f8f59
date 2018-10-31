@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1c6b2e6c_e30ce505",
+        "filename": "src/chromiumos/cmd/tast-lint/git.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-10-31T15:15:42Z",
+      "side": 1,
+      "message": "nit: mind splitting on tab first?\n\n  if parts :\u003d strings.Split(s, \"\\t\"); len(parts) \u003d\u003d 2 \u0026\u0026 parts[0] !\u003d \"D\" {\n      files \u003d append(files, parts[1])\n  }",
+      "revId": "058dcfb0016338731e9ffbfae958d7d77c3f8f59",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -6,13 +6,12 @@ package check
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"go/token"
-	"io/ioutil"
-	"os"
 	"os/exec"
 	"regexp"
+
+	"chromiumos/tast/diff"
 )
 
 // commentInImportRegexp matches a comment inside an import block.
@@ -49,12 +48,12 @@ func ImportOrder(path string, in []byte) []*Issue {
 		panic(err.Error())
 	}
 
-	if !bytes.Equal(in, out) {
-		diff, err := runDiff(in, out)
-		if err != nil {
-			panic(err.Error())
-		}
+	diff, err := diff.Diff(string(in), string(out))
+	if err != nil {
+		panic(err.Error())
+	}
 
+	if diff != "" {
 		return []*Issue{{
 			Pos:  token.Position{Filename: path},
 			Msg:  fmt.Sprintf("Import should be grouped into standard packages, third-party packages and chromiumos packages in this order separated by empty lines.\nApply the following patch to fix:\n%s", diff),
@@ -116,49 +115,4 @@ func runGoimports(in []byte) ([]byte, error) {
 		return nil, err
 	}
 	return out, nil
-}
-
-// writeTempFile creates a temp file containing the given data by using
-// the given name. Returns the name of the created temp file.
-func writeTempFile(data []byte) (string, error) {
-	f, err := ioutil.TempFile("", "")
-	if err != nil {
-		return "", err
-	}
-	if _, err := f.Write(data); err != nil {
-		f.Close()
-		os.Remove(f.Name())
-		return "", err
-	}
-	if err := f.Close(); err != nil {
-		os.Remove(f.Name())
-		return "", err
-	}
-	return f.Name(), nil
-}
-
-// runDiff takes the diff between orig and expect, and returns the diff in
-// unified diff format.
-func runDiff(orig []byte, expect []byte) (string, error) {
-	f1, err := writeTempFile(orig)
-	if err != nil {
-		return "", err
-	}
-	defer os.Remove(f1)
-
-	f2, err := writeTempFile(expect)
-	if err != nil {
-		return "", err
-	}
-	defer os.Remove(f2)
-
-	// Ignore error. diff command returns error if difference is found.
-	out, _ := exec.Command("diff", "-u", f1, f2).CombinedOutput()
-
-	// Strip leading two lines, which are temp file name.
-	parts := bytes.SplitN(out, []byte("\n"), 3)
-	if len(parts) < 3 {
-		return "", errors.New("Unexpected diff output")
-	}
-	return string(parts[2]), nil
 }

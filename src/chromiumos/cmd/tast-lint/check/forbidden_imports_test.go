@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestErrorsImports(t *testing.T) {
+func TestForbiddenImports(t *testing.T) {
 	const code = `package main
 
 import (
@@ -26,30 +26,6 @@ import (
 	}
 
 	f, fs := parse(code, "testfile.go")
-	issues := ErrorsImports(fs, f)
-	verifyIssues(t, issues, expects)
-}
-
-func TestFmtPrintf(t *testing.T) {
-	const code = `package main
-
-import (
-	"fmt"
-
-	"chromiumos/tast/errors"
-)
-
-func main() {
-	fmt.Printf("foo")
-	fmt.Errorf("foo")
-	errors.Errorf("foo")
-}
-`
-	expects := []string{
-		"testfile.go:11:2: chromiumos/tast/errors.Errorf should be used instead of fmt.Errorf",
-	}
-
-	f, fs := parse(code, "testfile.go")
-	issues := FmtErrorf(fs, f)
+	issues := ForbiddenImports(fs, f)
 	verifyIssues(t, issues, expects)
 }

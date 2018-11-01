@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "79f2c9a1_fcc93495",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-11-01T14:06:29Z",
+      "side": 1,
+      "message": "If gofmt returns an error, should it be asserted by tast-lint, instead...?",
+      "revId": "fcce342690c710578b2f51bd68c3e7656074ca56",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

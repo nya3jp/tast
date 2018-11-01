@@ -222,21 +222,52 @@ Put more succintly:
 
 ### Contexts and timeouts
 
-Tast uses [context.Context] to implement timeouts. The [testing.State] struct's
-`Context` function returns a [context.Context] with an associated deadline that
-expires when the test's timeout is reached. The context's `Done` function
-returns a [channel] that can be used within a [select] statement to wait for
-expiration, after which the context's `Err` function returns a non-`nil` error.
+Tast uses [context.Context] to implement timeouts. A test function takes as its
+first argument a [context.Context] with an associated deadline that expires when
+the test's timeout is reached. The context's `Done` function returns a [channel]
+that can be used within a [select] statement to wait for expiration, after which
+the context's `Err` function returns a non-`nil` error.
+
 The [testing.Poll] function makes it easier to honor timeouts while polling for
-a condition.
+a condition:
+
+```go
+err := testing.Poll(func (ctx context.Context) error {
+	var url string
+	if err := conn.Eval(ctx, "location.href", &url); err != nil {
+		return errors.Wrap(err, "failed to evaluate location.href")
+	}
+	if url != targetURL {
+		return errors.Errorf("current URL is %s", url)
+	}
+	return nil
+}, &testing.PollOptions{Timeout: 10 * time.Second})
+if err != nil {
+	return errors.Wrap(err, "failed to navigate")
+}
+```
+
+Sleeping without polling for a condition is discouraged, since it makes tests
+flakier (when the sleep duration isn't long enough) or slower (when the duration
+is too long). If you really need to do so, use [time.After] to honor the context
+timeout:
+
+```go
+select {
+case <-time.After(time.Second):
+case <-ctx.Done():
+	return ctx.Err()
+}
+```
 
 Any function that performs a blocking operation should take a [context.Context]
-(typically as its first argument) and return an error if the context expires
-before the operation finishes.
+as its first argument and return an error if the context expires before the
+operation finishes.
 
 [context.Context]: https://golang.org/pkg/context/
 [channel]: https://tour.golang.org/concurrency/2
 [select]: https://tour.golang.org/concurrency/5
+[time.After]: https://godoc.org/time#After
 [testing.Poll]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Poll
 
 ### Concurrency

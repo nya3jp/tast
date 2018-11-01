@@ -16,6 +16,24 @@
       "revId": "fcce342690c710578b2f51bd68c3e7656074ca56",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "78c96f07_a08c540e",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-11-01T14:55:13Z",
+      "side": 1,
+      "message": "It can, but repo upload hook will run gofmt anyway, so warnings are duped. And unfortunately there is no way to disable gofmt hook.",
+      "parentUuid": "79f2c9a1_fcc93495",
+      "revId": "fcce342690c710578b2f51bd68c3e7656074ca56",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

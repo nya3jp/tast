@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fce762cb_cedd34c8",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_calls_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-11-01T03:37:06Z",
+      "side": 1,
+      "message": "Added this call.",
+      "range": {
+        "startLine": 25,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 24
+      },
+      "revId": "24a844e9438b5633d3bcc11a42de5795cc6d4c71",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "397cc782_0f321947",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_imports.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-11-01T03:37:06Z",
+      "side": 1,
+      "message": "This is the same as before except for the function name and inlined Link.",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 64
+      },
+      "revId": "24a844e9438b5633d3bcc11a42de5795cc6d4c71",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

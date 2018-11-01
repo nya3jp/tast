@@ -33,6 +33,29 @@
       "revId": "e766b80ae4bbfbe381660ccee3bf12fef7813d82",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "459e5c11_b58d00a1",
+        "filename": "src/chromiumos/tast/diff/diff.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-11-01T02:01:58Z",
+      "side": 1,
+      "message": "huge nit: orig, expect string",
+      "range": {
+        "startLine": 38,
+        "startChar": 10,
+        "endLine": 38,
+        "endChar": 36
+      },
+      "revId": "e766b80ae4bbfbe381660ccee3bf12fef7813d82",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

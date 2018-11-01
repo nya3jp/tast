@@ -56,9 +56,9 @@ func checkAll(git *git, paths []string, debug bool) ([]*check.Issue, error) {
 				return nil, err
 			}
 
-			issues = append(issues, check.ErrorsImports(fs, f)...)
 			issues = append(issues, check.Exports(fs, f)...)
-			issues = append(issues, check.FmtErrorf(fs, f)...)
+			issues = append(issues, check.ForbiddenCalls(fs, f)...)
+			issues = append(issues, check.ForbiddenImports(fs, f)...)
 			issues = append(issues, check.Golint(path, code, debug)...)
 			issues = append(issues, check.ImportOrder(path, code)...)
 			issues = append(issues, check.InterFileRefs(fs, f)...)

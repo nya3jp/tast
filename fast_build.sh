@@ -53,7 +53,7 @@ EOF
 get_check_pkgs() {
   local dir
   for dir in "${SRCDIRS[@]}"; do
-    if [[ -d "${dir}" ]]; then
+    if [[ -d "${dir}/src" ]]; then
       (cd "${dir}/src"
        find -name '*.go' | xargs dirname | sort | uniq | cut -b 3-)
     fi
@@ -64,7 +64,7 @@ get_check_pkgs() {
 get_test_pkgs() {
   local dir
   for dir in "${SRCDIRS[@]}"; do
-    if [[ -d "${dir}" ]]; then
+    if [[ -d "${dir}/src" ]]; then
       (cd "${dir}/src"
        find -name '*_test.go' | xargs dirname | sort | uniq | cut -b 3-)
     fi

@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "63989ebc_12717b52",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-11-01T03:50:04Z",
+      "side": 1,
+      "message": "i guess we should probably also update this to show how to use time.After, and maybe consider adding a ctxutil.Sleep function (while still recommending using testing.Poll instead whenever possible)",
+      "revId": "24a844e9438b5633d3bcc11a42de5795cc6d4c71",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "fce762cb_cedd34c8",
         "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_calls_test.go",
         "patchSetId": 1

@@ -5,9 +5,11 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -38,6 +40,17 @@ func isGoFile(path string) bool {
 	return filepath.Ext(path) == ".go"
 }
 
+// hasFmtError runs gofmt to see if code has any formatting error.
+func hasFmtError(code []byte, path string) bool {
+	cmd := exec.Command("gofmt", "-l")
+	cmd.Stdin = bytes.NewBuffer(code)
+	out, err := cmd.Output()
+	if err != nil {
+		panic(fmt.Sprintf("Failed gofmt %s: %v", path, err))
+	}
+	return len(out) > 0
+}
+
 // checkAll runs all checks against paths.
 func checkAll(git *git, paths []string, debug bool) ([]*check.Issue, error) {
 	cp := newCachedParser(git)
@@ -60,7 +73,12 @@ func checkAll(git *git, paths []string, debug bool) ([]*check.Issue, error) {
 		}
 
 		issues = append(issues, check.Golint(path, data, debug)...)
-		issues = append(issues, check.ImportOrder(path, data)...)
+		if !hasFmtError(data, path) {
+			// goimports applies gofmt, so skip it if the code has any formatting
+			// error to avoid confusing reports. gofmt will be run by the repo
+			// upload hook anyway.
+			issues = append(issues, check.ImportOrder(path, data)...)
+		}
 
 		if isTestFile(path) {
 			issues = append(issues, check.ErrorsImports(fs, f)...)

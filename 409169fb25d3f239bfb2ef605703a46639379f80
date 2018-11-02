@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "463c967f_768b9bfb",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 250,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-11-02T15:05:21Z",
+      "side": 1,
+      "message": "huge nit: maybe \"Sleeping without polling for a condition is discouraged, since it makes tests flakier (when the sleep duration isn\u0027t long enough) or slower (when the duration is too long).\"",
+      "range": {
+        "startLine": 250,
+        "startChar": 0,
+        "endLine": 250,
+        "endChar": 55
+      },
+      "revId": "409169fb25d3f239bfb2ef605703a46639379f80",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

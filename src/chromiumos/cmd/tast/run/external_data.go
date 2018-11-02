@@ -5,7 +5,6 @@
 package run
 
 import (
-	"bufio"
 	"errors"
 	"fmt"
 	"net/url"
@@ -20,42 +19,40 @@ import (
 // externalDataMap holds a mapping from data file paths used by local tests to URLs containing those files' contents.
 type externalDataMap map[string]string // keys are data file paths relative to bundle dir; values are URLs
 
-// newExternalDataMap loads an external_data.conf file at cfgPath.
-func newExternalDataMap(cfgPath string) (*externalDataMap, error) {
-	fileURLs, err := readExternalDataConfig(cfgPath)
+// newExternalDataMap parses an ebuild at ebuildPath.
+func newExternalDataMap(ebuildPath string) (*externalDataMap, error) {
+	fileURLs, err := readExternalDataArray(ebuildPath)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read %v: %v", cfgPath, err)
+		return nil, fmt.Errorf("failed to read %v: %v", ebuildPath, err)
 	}
 	return (*externalDataMap)(&fileURLs), nil
 }
 
-// readExternalDataConfig reads a text file at p containing a mapping from data file paths to URLs.
-// Each line is expected to contain:
+// readExternalDataArray evaluates TAST_BUNDLE_EXTERNAL_FILES array defined in
+// an ebuild file at p.
+// Each item is expected to contain:
 //	- a file path (relative to the bundle dir, i.e. "<category>/data/<file>"),
 //	- whitespace, and
 //	- the corresponding data URL.
-// Comment lines beginning with '#' are ignored.
-func readExternalDataConfig(p string) (map[string]string, error) {
-	f, err := os.Open(p)
+func readExternalDataArray(p string) (map[string]string, error) {
+	cmd := exec.Command("bash", "-c", `source "$0"; IFS=$'\n'; cat <<< "${TAST_BUNDLE_EXTERNAL_FILES[*]}"`, p)
+	out, err := cmd.Output()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("bash evaluation failed: %v", err)
 	}
-	defer f.Close()
 
 	files := make(map[string]string)
-	scanner := bufio.NewScanner(f)
-	for scanner.Scan() {
-		line := strings.TrimSpace(scanner.Text())
-		if len(line) == 0 || line[0] == '#' {
+	for _, line := range strings.Split(strings.TrimRight(string(out), "\n"), "\n") {
+		parts := strings.Fields(line)
+		if len(parts) == 0 {
 			continue
 		}
-		parts := strings.Fields(line)
 		if len(parts) != 2 {
 			return nil, fmt.Errorf("bad line %q", line)
 		}
 		files[parts[0]] = parts[1]
 	}
-	return files, scanner.Err()
+	return files, nil
 }
 
 // localFile returns the basename of the local file storing data for the data file at p

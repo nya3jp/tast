@@ -16,7 +16,7 @@ import (
 
 func TestLoadExternalDataMap(t *testing.T) {
 	const (
-		conf      = "external_data.conf"
+		ebuild    = "bundle.ebuild"
 		path1     = "cat/data/file.txt"
 		url1      = "gs://bogus-bucket/myfile.txt"
 		path2     = "other/data/video.mp4"
@@ -27,12 +27,12 @@ func TestLoadExternalDataMap(t *testing.T) {
 	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
 	if err := testutil.WriteFiles(td, map[string]string{
-		conf: fmt.Sprintf("# Here's a comment.\n\n%s %s\n %s %s \n", path1, url1, path2, url2),
+		ebuild: fmt.Sprintf("# Here's a comment.\n\nTAST_BUNDLE_EXTERNAL_FILES=(\n\"%s %s\"\n\" %s %s \"\n)\n", path1, url1, path2, url2),
 	}); err != nil {
 		t.Fatal(err)
 	}
 
-	cp := filepath.Join(td, conf)
+	cp := filepath.Join(td, ebuild)
 	m, err := newExternalDataMap(cp)
 	if err != nil {
 		t.Fatalf("newExternalDataMap(%q) failed: %v", cp, err)
@@ -51,7 +51,7 @@ func TestLoadExternalDataMap(t *testing.T) {
 
 func TestFetchExternalData(t *testing.T) {
 	const (
-		conf = "external_data.conf"
+		ebuild = "bundle.ebuild"
 
 		file1 = "cat/data/file.txt"
 		url1  = "my/data/foo.txt"
@@ -69,7 +69,7 @@ func TestFetchExternalData(t *testing.T) {
 	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
 	if err := testutil.WriteFiles(td, map[string]string{
-		conf: fmt.Sprintf("%s %s\n%s %s\n%s %s\n",
+		ebuild: fmt.Sprintf("TAST_BUNDLE_EXTERNAL_FILES=(\n\"%s %s\"\n\"%s %s\"\n\"%s %s\"\n)\n",
 			file1, filepath.Join(td, url1), file2, filepath.Join(td, url2), file3, filepath.Join(td, url3)),
 		url1: data1,
 		url2: data2,
@@ -77,7 +77,7 @@ func TestFetchExternalData(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	cp := filepath.Join(td, conf)
+	cp := filepath.Join(td, ebuild)
 	m, err := newExternalDataMap(cp)
 	if err != nil {
 		t.Fatalf("newExternalDataMap(%q) failed: %v", cp, err)
@@ -98,22 +98,40 @@ func TestFetchExternalData(t *testing.T) {
 	}
 }
 
-func TestLoadBadExternalDataMap(t *testing.T) {
-	const conf = "external_data.conf"
+func TestLoadEmptyExternalDataMap(t *testing.T) {
+	const ebuild = "bundle.ebuild"
 
 	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
 	for _, data := range []string{
-		"blah",  // single value
-		"a b c", // three values
+		``,                              // not defined
+		`TAST_BUNDLE_EXTERNAL_FILES=()`, // empty
 	} {
-		if err := testutil.WriteFiles(td, map[string]string{conf: data}); err != nil {
+		if err := testutil.WriteFiles(td, map[string]string{ebuild: data}); err != nil {
 			t.Fatal(err)
 		}
-		_, err := newExternalDataMap(filepath.Join(td, conf))
+		_, err := newExternalDataMap(filepath.Join(td, ebuild))
+		if err != nil {
+			t.Errorf("newExternalDataMap() failed for %q: %v", data, err)
+		}
+	}
+}
+
+func TestLoadBadExternalDataMap(t *testing.T) {
+	const ebuild = "bundle.ebuild"
+
+	td := testutil.TempDir(t)
+	defer os.RemoveAll(td)
+	for _, data := range []string{
+		`TAST_BUNDLE_EXTERNAL_FILES=("blah")`,  // single value
+		`TAST_BUNDLE_EXTERNAL_FILES=("a b c")`, // three values
+	} {
+		if err := testutil.WriteFiles(td, map[string]string{ebuild: data}); err != nil {
+			t.Fatal(err)
+		}
+		_, err := newExternalDataMap(filepath.Join(td, ebuild))
 		if err == nil {
 			t.Fatalf("newExternalDataMap() didn't fail for %q", data)
 		}
 	}
-
 }

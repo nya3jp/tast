@@ -9,6 +9,7 @@ import (
 	"context"
 	"crypto/rsa"
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"os"
@@ -275,9 +276,11 @@ func TestLocalDataFiles(t *gotesting.T) {
 	}
 	td.cfg.buildBundle = bundle
 	td.cfg.overlayDir = filepath.Join(td.tempDir, "overlay")
-	confPath := filepath.Join(localBundlePackage(bundle), localBundleExternalDataConf)
+	ebuildPath := localBundleUnstableEBuild(bundle)
 	if err = testutil.WriteFiles(td.cfg.overlayDir, map[string]string{
-		confPath: filepath.Join(category, dataSubdir, extFile) + " " + filepath.Join(td.cfg.externalDataDir, extFile),
+		ebuildPath: fmt.Sprintf("TAST_BUNDLE_EXTERNAL_FILES=(\"%s %s\")",
+			filepath.Join(category, dataSubdir, extFile),
+			filepath.Join(td.cfg.externalDataDir, extFile)),
 	}); err != nil {
 		t.Fatal(err)
 	}

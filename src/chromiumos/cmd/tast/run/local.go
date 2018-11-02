@@ -45,9 +45,6 @@ const (
 	// Bundles are placed here rather than in the top-level build artifacts dir so that
 	// local and remote bundles with the same name won't overwrite each other.
 	localBundleBuildSubdir = "local_bundles"
-	// localBundleExternalDataConf is the path to the file containing the external data file map,
-	// given relative to the directory containing the bundle's ebuild file.
-	localBundleExternalDataConf = "files/external_data.conf"
 
 	defaultLocalRunnerWaitTimeout time.Duration = 10 * time.Second // default timeout for waiting for local_test_runner to exit
 )
@@ -138,6 +135,13 @@ func connectToTarget(ctx context.Context, cfg *Config) (*host.SSH, error) {
 // localBundlePackage returns the Portage package name for the bundle with the given name (e.g. "cros").
 func localBundlePackage(name string) string {
 	return fmt.Sprintf("chromeos-base/tast-local-tests-%s", name)
+}
+
+// localBundleUnstableEBuild returns the relative path from an overlay directory to the unstable ebuild for
+// the bundle with the given name (e.g. "cros").
+func localBundleUnstableEBuild(name string) string {
+	pkg := localBundlePackage(name)
+	return filepath.Join(pkg, fmt.Sprintf("%s-9999.ebuild", filepath.Base(pkg)))
 }
 
 // buildAndPushBundle builds a local test bundle and pushes it to hst as dictated by cfg.
@@ -299,10 +303,10 @@ func getDataFilePaths(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlo
 		}
 	}
 
-	// Load the external_data.conf file specifying URLs for external data files.
-	extConf := filepath.Join(cfg.overlayDir, localBundlePackage(cfg.buildBundle), localBundleExternalDataConf)
-	if _, err := os.Stat(extConf); err == nil {
-		if edm, err = newExternalDataMap(extConf); err != nil {
+	// Parse the unstable ebuild to get the URLs for external data files.
+	ebuildPath := filepath.Join(cfg.overlayDir, localBundleUnstableEBuild(cfg.buildBundle))
+	if _, err := os.Stat(ebuildPath); err == nil {
+		if edm, err = newExternalDataMap(ebuildPath); err != nil {
 			return nil, nil, err
 		}
 	} else if !os.IsNotExist(err) {

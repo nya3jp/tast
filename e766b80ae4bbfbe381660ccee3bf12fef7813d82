@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "4a15139c_0b3f7dcb",
+        "filename": "src/chromiumos/tast/diff/diff.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-11-02T16:08:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e9e26b5d_98cd8821",
+      "revId": "e766b80ae4bbfbe381660ccee3bf12fef7813d82",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b561e4b5_4c7fe576",
         "filename": "src/chromiumos/tast/diff/diff.go",
         "patchSetId": 2
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "be1cd9fd_44d2f0e0",
+        "filename": "src/chromiumos/tast/diff/diff.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-11-02T16:08:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b561e4b5_4c7fe576",
+      "revId": "e766b80ae4bbfbe381660ccee3bf12fef7813d82",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "459e5c11_b58d00a1",
         "filename": "src/chromiumos/tast/diff/diff.go",
         "patchSetId": 2
@@ -47,6 +83,30 @@
       "writtenOn": "2018-11-01T02:01:58Z",
       "side": 1,
       "message": "huge nit: orig, expect string",
+      "range": {
+        "startLine": 38,
+        "startChar": 10,
+        "endLine": 38,
+        "endChar": 36
+      },
+      "revId": "e766b80ae4bbfbe381660ccee3bf12fef7813d82",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "62f18e3c_4a2717ea",
+        "filename": "src/chromiumos/tast/diff/diff.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-11-02T16:08:27Z",
+      "side": 1,
+      "message": "Good catch. Done.",
+      "parentUuid": "459e5c11_b58d00a1",
       "range": {
         "startLine": 38,
         "startChar": 10,

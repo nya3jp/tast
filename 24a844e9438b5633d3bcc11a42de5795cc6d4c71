@@ -54,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "e1e7a17b_9a7de794",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-11-05T03:59:57Z",
+      "side": 1,
+      "message": "Ah sorry, I overlooked your comment about ctxutil.Sleep actually. I think we can defer introducing a sleep utility function until we have a bunch of use cases since it is actually discouraged. Needing 5 lines just to sleep may push users to avoid it :)",
+      "parentUuid": "ce5ab6a1_f11c4f63",
+      "revId": "24a844e9438b5633d3bcc11a42de5795cc6d4c71",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fce762cb_cedd34c8",
         "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_calls_test.go",
         "patchSetId": 1

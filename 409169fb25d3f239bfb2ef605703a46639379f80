@@ -22,6 +22,30 @@
       "revId": "409169fb25d3f239bfb2ef605703a46639379f80",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dadba4e8_b869004e",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 250,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-11-05T03:57:12Z",
+      "side": 1,
+      "message": "Applied, thanks!",
+      "parentUuid": "463c967f_768b9bfb",
+      "range": {
+        "startLine": 250,
+        "startChar": 0,
+        "endLine": 250,
+        "endChar": 55
+      },
+      "revId": "409169fb25d3f239bfb2ef605703a46639379f80",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

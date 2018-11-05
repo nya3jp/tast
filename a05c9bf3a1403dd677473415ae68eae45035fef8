@@ -16,6 +16,24 @@
       "revId": "a05c9bf3a1403dd677473415ae68eae45035fef8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "90288e30_868460ca",
+        "filename": "src/chromiumos/cmd/tast/run/external_data.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-11-05T03:13:04Z",
+      "side": 1,
+      "message": "PMS requires ebuilds to be statically evaluatable:\n\n\u003e When sourced, the ebuild must define certain variables and functions (see sections 7 and 9 for specific information), and must not call any external programs, write anything to standard output or standard error, or modify the state of the system in any way.\n\nhttps://projects.gentoo.org/pms/7/pms.html#x1-580006\n\nI really (really!) don\u0027t like this way, but it\u0027s the expected way unfortunately. chromite also does this.",
+      "parentUuid": "538b86bc_22ddd963",
+      "revId": "a05c9bf3a1403dd677473415ae68eae45035fef8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

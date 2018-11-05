@@ -34,6 +34,47 @@
       "revId": "a05c9bf3a1403dd677473415ae68eae45035fef8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8f0804a7_b55e8f68",
+        "filename": "src/chromiumos/cmd/tast/run/external_data.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-11-05T05:38:46Z",
+      "side": 1,
+      "message": "ah, thanks -- i hadn\u0027t seen this!",
+      "parentUuid": "90288e30_868460ca",
+      "revId": "a05c9bf3a1403dd677473415ae68eae45035fef8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "354ca4e2_cd5e37ac",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-11-05T05:38:46Z",
+      "side": 1,
+      "message": "nit: maybe \"Ebuild\" instead? i think that portage docs usually refer to it as \"ebuild\" (all lowercase), so we probably want to just capitalize the first letter.",
+      "range": {
+        "startLine": 142,
+        "startChar": 24,
+        "endLine": 142,
+        "endChar": 30
+      },
+      "revId": "a05c9bf3a1403dd677473415ae68eae45035fef8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

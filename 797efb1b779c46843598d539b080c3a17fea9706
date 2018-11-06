@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "254e3ec1_0956bf6a",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-11-06T14:28:46Z",
+      "side": 1,
+      "message": "i don\u0027t think that the \"internal\" USE flag is specific to chrome; it\u0027s also used by other packages.\n\nthere\u0027s also a \"chrome_internal\" USE flag. what\u0027s the relationship between \"internal\" and \"chrome_internal\"?",
+      "revId": "797efb1b779c46843598d539b080c3a17fea9706",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4c2cf88f_cf9a79ed",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-11-06T14:28:46Z",
+      "side": 1,
+      "message": "\"internal\" feels fairly vague to me. would you mind instead naming the dependency \"internal_build\" or even \"google_build\", which seems more descriptive?\n\n(but see also earlier question about whether you should use the internal_chrome USE flag instead)",
+      "revId": "797efb1b779c46843598d539b080c3a17fea9706",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "47b2df8b_175b5c1c",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 260,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-11-06T06:24:03Z",
+      "side": 1,
+      "message": "optional: maybe nice to wrap by errors for stack trace?",
+      "range": {
+        "startLine": 260,
+        "startChar": 22,
+        "endLine": 260,
+        "endChar": 37
+      },
+      "revId": "581bdc8d99a4d39c80eb42693a72ebbb465a2579",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

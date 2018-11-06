@@ -37,6 +37,7 @@ func main() {
 			"audio_record":      "internal_mic && !tast_vm",             // VMs don't have audio hardware
 			"camera_720p":       "!snow && !skate && !spring",           // daisy variants' cameras don't support 1280x720
 			"chrome":            "!chromeless_tty",
+			"chrome_internal":   "chrome_internal",
 			"chrome_login":      "!chromeless_tty && !rialto",
 			"cups":              "cups",
 			"display_backlight": "display_backlight",

@@ -32,6 +32,8 @@ type Args struct {
 	DataDir string `json:"dataDir,omitempty"`
 	// OutDir is the path to the base directory under which tests should write output files.
 	OutDir string `json:"outDir,omitempty"`
+	// TempDir is the path to the directory under which temporary files for tests are written.
+	TempDir string `json:"tempDir,omitempty"`
 
 	// RemoteArgs contains additional arguments used to run remote tests.
 	RemoteArgs
@@ -198,6 +200,7 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, ru
 	args.bundleArgs = bundle.Args{
 		DataDir:      args.DataDir,
 		OutDir:       args.OutDir,
+		TempDir:      args.TempDir,
 		Patterns:     args.Patterns,
 		RunTestsArgs: args.RunTestsArgs.RunTestsArgs,
 	}

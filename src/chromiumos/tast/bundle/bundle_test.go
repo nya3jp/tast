@@ -8,7 +8,9 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io/ioutil"
 	"os"
+	"path/filepath"
 	"reflect"
 	gotesting "testing"
 	"time"
@@ -109,12 +111,21 @@ func TestRunTests(t *gotesting.T) {
 	tmpDir := testutil.TempDir(t)
 	defer os.RemoveAll(tmpDir)
 
+	runTmpDir := filepath.Join(tmpDir, "run_tmp")
+	if err := os.Mkdir(runTmpDir, 0755); err != nil {
+		t.Fatalf("Failed to create %s: %v", runTmpDir, err)
+	}
+	if err := ioutil.WriteFile(filepath.Join(runTmpDir, "foo.txt"), nil, 0644); err != nil {
+		t.Fatalf("Failed to create foo.txt: %v", err)
+	}
+
 	stdout := bytes.Buffer{}
 	tests := reg.AllTests()
 	var preRunCalls, postRunCalls, preTestCalls, postTestCalls int
 	args := Args{
 		OutDir:  tmpDir,
 		DataDir: tmpDir,
+		TempDir: runTmpDir,
 	}
 	cfg := runConfig{
 		preRunFunc: func(ctx context.Context, lf logFunc) (context.Context, error) {
@@ -141,6 +152,7 @@ func TestRunTests(t *gotesting.T) {
 	if err := runTests(context.Background(), &stdout, &args, &cfg, tests); err != nil {
 		t.Fatalf("%v failed: %v", sig, err)
 	}
+
 	if preRunCalls != 1 {
 		t.Errorf("%v called pre-run function %d time(s); want 1", sig, preRunCalls)
 	}
@@ -152,6 +164,12 @@ func TestRunTests(t *gotesting.T) {
 	}
 	if postTestCalls != len(tests) {
 		t.Errorf("%v called post-test function %d time(s); want %d", sig, postTestCalls, len(tests))
+	}
+
+	if fs, err := ioutil.ReadDir(runTmpDir); err != nil {
+		t.Errorf("Failed to read %s: %v", runTmpDir, err)
+	} else if len(fs) > 0 {
+		t.Errorf("%s is not clobbered: %v", runTmpDir, fs)
 	}
 
 	// Just check some basic details of the control messages.

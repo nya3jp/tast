@@ -22,6 +22,7 @@ func main() {
 	args := runner.Args{
 		BundleGlob:      "/usr/local/libexec/tast/bundles/local/*",
 		DataDir:         "/usr/local/share/tast/data",
+		TempDir:         "/usr/local/tmp/tast/run_tmp",
 		SystemLogDir:    "/var/log",
 		SystemCrashDirs: crash.DefaultDirs(),
 		// The tast-use-flags package attempts to install this file to /etc,

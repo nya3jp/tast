@@ -7,6 +7,7 @@ package bundle
 import (
 	"context"
 	"io"
+	"os"
 	"path/filepath"
 	"reflect"
 	"runtime"
@@ -100,6 +101,15 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 	if len(tests) == 0 {
 		return command.NewStatusErrorf(statusNoTests, "no tests matched by pattern(s)")
 	}
+
+	if args.TempDir == "" {
+		args.TempDir = filepath.Join(os.TempDir(), "tast/run_tmp")
+	}
+	restoreTempDir, err := prepareTempDir(args.TempDir)
+	if err != nil {
+		return err
+	}
+	defer restoreTempDir()
 
 	if cfg.preRunFunc != nil {
 		var err error
@@ -240,4 +250,27 @@ func copyTestOutput(ch chan testing.Output, mw *control.MessageWriter, abort cha
 			return
 		}
 	}
+}
+
+// prepareTempDir clobbers tempDir and sets the TMPDIR environment variable so that
+// subsequent ioutil.TempFile/TempDir calls create temporary files under tempDir.
+// Returned function can be called to restore TMPDIR to the original value.
+func prepareTempDir(tempDir string) (restore func(), err error) {
+	if err := os.RemoveAll(tempDir); err != nil {
+		return nil, command.NewStatusErrorf(statusError, "failed to clobber %s: %v", tempDir, err)
+	}
+	if err := os.MkdirAll(tempDir, 0755); err != nil {
+		return nil, command.NewStatusErrorf(statusError, "failed to create %s: %v", tempDir, err)
+	}
+
+	const envTempDir = "TMPDIR"
+	oldTempDir, hasOldTempDir := os.LookupEnv(envTempDir)
+	os.Setenv(envTempDir, tempDir)
+	return func() {
+		if hasOldTempDir {
+			os.Setenv(envTempDir, oldTempDir)
+		} else {
+			os.Unsetenv(envTempDir)
+		}
+	}, nil
 }

@@ -14,6 +14,7 @@ The following software features are defined:
 *   `autotest-capability:foo` - An [Autotest capability] named `foo`. See below.
 *   `camera_720p` - The ability to capture video with frame size 1280x720.
 *   `chrome` - A Chrome process.
+*   `chrome_internal` - Official (internal) Chrome, rather than Chromium.
 *   `chrome_login` - Implies `chrome` with the further requirement that user
     login (i.e. using `session_manager` and `cryptohome`) is supported.
 *   `cups` - CUPS daemon.

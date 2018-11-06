@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "b645dba4_8081f4fc",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2018-11-06T17:38:19Z",
+      "side": 1,
+      "message": "Hmm.\nIt seems that \"chrome_internal\" doesn\u0027t work for our case.\nThough I ran \"emerge-kevin tast-use-flags\" in chroot, but /build/kevin/etc/tast_use_flags.txt don\u0027t contain \"chrome_internal\" flag.\nI tested that H264 tests are skipped on non-internal board, but I should also make sure that they run on internal builds.\n\nBut, I might be misunderstanding. Let me run tryjob for kevin-release builder and check if H264 tests are executed.\nIf no, we might need to use \"internal\" flag instead of \"chrome_internal\".",
+      "parentUuid": "e5c1f48d_ff67be4c",
+      "revId": "797efb1b779c46843598d539b080c3a17fea9706",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "4c2cf88f_cf9a79ed",
         "filename": "src/chromiumos/cmd/local_test_runner/main.go",
         "patchSetId": 1

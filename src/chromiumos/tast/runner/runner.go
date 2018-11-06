@@ -103,6 +103,10 @@ func runTestsAndReport(args *Args, stdout io.Writer) {
 			return
 		}
 
+		if err := resolveExternalLinks(args.DataDir, tests); err != nil {
+			mw.WriteMessage(newRunErrorMessagef("Failed to download external links: %v", err))
+		}
+
 		for _, bundle := range bundles {
 			// Copy each bundle's output (consisting of control messages) directly to stdout.
 			if err := runBundle(bundle, &bundleArgs, stdout); err != nil {
@@ -136,6 +140,10 @@ func runTestsAndLog(args *Args, stdout io.Writer) error {
 		return command.NewStatusErrorf(statusError, "failed creating out dir: %v", err)
 	} else if created {
 		defer os.RemoveAll(bundleArgs.OutDir)
+	}
+
+	if err := resolveExternalLinks(args.DataDir, tests); err != nil {
+		return command.NewStatusErrorf(statusError, "Failed to download external links: %v", err)
 	}
 
 	var testErr error

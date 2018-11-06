@@ -31,11 +31,14 @@ func main() {
 			// This list is documented at docs/test_dependencies.md.
 			// All USE flags referenced here must be listed in IUSE in the tast-use-flags ebuild.
 			// The one exception is tast_vm, which is inserted by VM builders via -extrauseflags.
-			"android":           "arc",
-			"audio_play":        "!betty && !tast_vm && !veyron_rialto", // VMs don't have audio hardware
-			"audio_record":      "internal_mic && !tast_vm",             // VMs don't have audio hardware
-			"camera_720p":       "!snow && !skate && !spring",           // daisy variants' cameras don't support 1280x720
-			"chrome":            "!chromeless_tty",
+			"android":      "arc",
+			"audio_play":   "!betty && !tast_vm && !veyron_rialto", // VMs don't have audio hardware
+			"audio_record": "internal_mic && !tast_vm",             // VMs don't have audio hardware
+			"camera_720p":  "!snow && !skate && !spring",           // daisy variants' cameras don't support 1280x720
+			"chrome":       "!chromeless_tty",
+			// Use official (internal) Chrome, rather than Chromium
+			// e.g. Chromium cannot encode/decode H.264 videos.
+			"chrome_internal":   "chrome_internal",
 			"chrome_login":      "!chromeless_tty && !rialto",
 			"cups":              "cups",
 			"display_backlight": "display_backlight",

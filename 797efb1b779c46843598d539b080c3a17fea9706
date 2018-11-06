@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "e5c1f48d_ff67be4c",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2018-11-06T15:17:42Z",
+      "side": 1,
+      "message": "Oh, I didn\u0027t know \"chrome_internal\" USE flag.\nThough I don\u0027t know the relationship, \"chrome_internal\" would be more suitable for our use case than \"internal\".\nSo, I will use \"chrome_internal\".",
+      "parentUuid": "254e3ec1_0956bf6a",
+      "revId": "797efb1b779c46843598d539b080c3a17fea9706",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "4c2cf88f_cf9a79ed",
         "filename": "src/chromiumos/cmd/local_test_runner/main.go",
         "patchSetId": 1
@@ -33,6 +51,24 @@
       "revId": "797efb1b779c46843598d539b080c3a17fea9706",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ae093ec2_4b701ac6",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2018-11-06T15:17:42Z",
+      "side": 1,
+      "message": "I started to use \"chrome_internal\" instead of \"internal\"/\nI think \"chrome_internal\" is descriptive enough.",
+      "parentUuid": "4c2cf88f_cf9a79ed",
+      "revId": "797efb1b779c46843598d539b080c3a17fea9706",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f4209342_080ccc63",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-11-06T15:46:55Z",
+      "side": 1,
+      "message": "nit: please remove this comment; the flag is already described in the .md file (the comments above are just because the connection between VMs and audio is less obvious)",
+      "revId": "4b2c85183aa5ecc7e0232e09e79d3dbf395bc7ef",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -39,10 +39,13 @@ func main() {
 			"chrome_login":      "!chromeless_tty && !rialto",
 			"cups":              "cups",
 			"display_backlight": "display_backlight",
-			"ml_service":        "ml_service",
-			"screenshot":        "display_backlight && !rk3399", // screenshot command broken on RK3399: https://crbug.com/880597
-			"selinux":           "selinux",
-			"tpm":               "!mocktpm && !tast_vm",
+			// Use official (internal) Chrome, rather than Chromium
+			// e.g. Chromium cannot encode/decode H.264 videos.
+			"internal":   "internal",
+			"ml_service": "ml_service",
+			"screenshot": "display_backlight && !rk3399", // screenshot command broken on RK3399: https://crbug.com/880597
+			"selinux":    "selinux",
+			"tpm":        "!mocktpm && !tast_vm",
 			// Some VM builds actually can run nested VM with right host configuration.
 			// But we haven't enable this feature on builders. For now, just disable
 			// vm_host feature for VM builds.

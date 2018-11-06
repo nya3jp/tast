@@ -18,6 +18,7 @@ The following software features are defined:
     login (i.e. using `session_manager` and `cryptohome`) is supported.
 *   `cups` - CUPS daemon.
 *   `display_backlight` - An internal display backlight.
+*   `internal` - Official (internal) Chrome, rather than Chromium.
 *   `ml_service` - ML Service daemon.
 *   `screenshot` - The [screenshot command] can save screenshots.
 *   `selinux` - An SELinux-enabled board. All Android boards are

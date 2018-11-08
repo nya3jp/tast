@@ -85,7 +85,7 @@ func runTestsAndReport(args *Args, stdout io.Writer) {
 	mw := control.NewMessageWriter(stdout)
 	bundles, tests, err := getBundlesAndTests(args)
 	if err != nil {
-		mw.WriteMessage(newRunErrorMessagef("Failed enumerating tests: %v", err))
+		mw.WriteMessage(newRunErrorMessagef(err.Status(), "Failed enumerating tests: %v", err))
 		return
 	}
 
@@ -97,10 +97,20 @@ func runTestsAndReport(args *Args, stdout io.Writer) {
 	// We expect to not match any tests if both local and remote tests are being run but the
 	// user specified a pattern that matched only local or only remote tests rather than tests
 	// of both types. Don't bother creating an out dir in that case.
-	if len(tests) > 0 {
-		if _, err := createOutDirIfUnset(&bundleArgs); err != nil {
-			mw.WriteMessage(newRunErrorMessagef("Failed to create out dir: %v", err))
+	if len(tests) == 0 {
+		if !args.report {
+			mw.WriteMessage(newRunErrorMessagef(statusNoTests, "No tests matched"))
 			return
+		}
+	} else {
+		created, err := createOutDirIfUnset(&bundleArgs)
+		if err != nil {
+			mw.WriteMessage(newRunErrorMessagef(statusError, "Failed to create out dir: %v", err))
+			return
+		}
+		// If the user didn't specify an out dir, create a temporary one and clean it up later.
+		if !args.report && created {
+			defer os.RemoveAll(bundleArgs.OutDir)
 		}
 
 		for _, bundle := range bundles {
@@ -108,7 +118,7 @@ func runTestsAndReport(args *Args, stdout io.Writer) {
 			if err := runBundle(bundle, &bundleArgs, stdout); err != nil {
 				// TODO(derat): The tast command currently aborts the run as soon as it sees a RunError
 				// message, but consider changing that and continuing to run other bundles here.
-				mw.WriteMessage(newRunErrorMessagef("Bundle %v failed: %v", bundle, err))
+				mw.WriteMessage(newRunErrorMessagef(err.Status(), "Bundle %v failed: %v", bundle, err))
 				return
 			}
 		}
@@ -117,56 +127,33 @@ func runTestsAndReport(args *Args, stdout io.Writer) {
 	mw.WriteMessage(&control.RunEnd{Time: time.Now(), OutDir: bundleArgs.OutDir})
 }
 
-// runTestsAndReport runs bundles serially to perform testing and logs human-readable results to stdout.
+// runTestsAndLog runs bundles serially to perform testing and logs human-readable results to stdout.
 // Errors are returned both for fatal errors and for errors in individual tests.
-func runTestsAndLog(args *Args, stdout io.Writer) error {
+func runTestsAndLog(args *Args, stdout io.Writer) *command.StatusError {
 	lg := log.New(stdout, "", log.LstdFlags)
-	bundles, tests, err := getBundlesAndTests(args)
-	if err != nil {
-		return err
-	} else if len(tests) == 0 {
-		return command.NewStatusErrorf(statusNoTests, "no tests matched")
-	}
 
-	bundleArgs := args.bundleArgs
-	bundleArgs.Mode = bundle.RunTestsMode
+	pr, pw := io.Pipe()
+	ch := make(chan *command.StatusError, 1)
+	go func() { ch <- logMessages(pr, lg) }()
 
-	// If the user didn't specify an out dir, create a temporary one and clean it up later.
-	if created, err := createOutDirIfUnset(&bundleArgs); err != nil {
-		return command.NewStatusErrorf(statusError, "failed creating out dir: %v", err)
-	} else if created {
-		defer os.RemoveAll(bundleArgs.OutDir)
-	}
-
-	var testErr error
-	for _, bundle := range bundles {
-		// First, start a goroutine to log messages as they're produced by the bundle.
-		pr, pw := io.Pipe()
-		ch := make(chan error, 1)
-		go func() { ch <- logBundleOutput(pr, lg) }()
-
-		// Run the bundle to completion, copying its output to the goroutine over the pipe.
-		err := runBundle(bundle, &bundleArgs, pw)
-		pw.Close()
-		if err != nil {
-			return err
-		}
-
-		// Save any test error reported by the bundle.
-		testErr = <-ch
-	}
-	return testErr
+	runTestsAndReport(args, pw)
+	pw.Close()
+	return <-ch
 }
 
 // newRunErrorMessagef returns a new RunError control message.
-func newRunErrorMessagef(format string, args ...interface{}) *control.RunError {
+func newRunErrorMessagef(status int, format string, args ...interface{}) *control.RunError {
 	_, fn, ln, _ := runtime.Caller(1)
-	return &control.RunError{Time: time.Now(), Error: testing.Error{
-		Reason: fmt.Sprintf(format, args...),
-		File:   fn,
-		Line:   ln,
-		Stack:  string(debug.Stack()),
-	}}
+	return &control.RunError{
+		Time: time.Now(),
+		Error: testing.Error{
+			Reason: fmt.Sprintf(format, args...),
+			File:   fn,
+			Line:   ln,
+			Stack:  string(debug.Stack()),
+		},
+		Status: status,
+	}
 }
 
 // createOutDirIfUnset creates and assigns a temporary directory if args.OutDir is empty.
@@ -180,10 +167,10 @@ func createOutDirIfUnset(args *bundle.Args) (created bool, err error) {
 	return true, nil
 }
 
-// logBundleOutput reads a bundle's control messages from r and logs them to lg
+// logMessages reads control messages from r and logs them to lg.
 // It is used to print human-readable test output when the runner is executed manually rather
 // than via the tast command. An error is returned if any TestError messages are read.
-func logBundleOutput(r io.Reader, lg *log.Logger) error {
+func logMessages(r io.Reader, lg *log.Logger) *command.StatusError {
 	numTests := 0
 	testFailed := false              // true if error seen for current test
 	var failedTests []string         // names of tests with errors
@@ -198,6 +185,8 @@ func logBundleOutput(r io.Reader, lg *log.Logger) error {
 		switch v := msg.(type) {
 		case *control.RunLog:
 			lg.Print(v.Text)
+		case *control.RunError:
+			return command.NewStatusErrorf(v.Status, "error: [%s:%d] %v", filepath.Base(v.Error.File), v.Error.Line, v.Error.Reason)
 		case *control.TestStart:
 			lg.Print("Running ", v.Test.Name)
 			testFailed = false

@@ -55,6 +55,8 @@ type RunError struct {
 	Time time.Time `json:"runErrorTime"`
 	// Error describes the error that occurred.
 	Error testing.Error `json:"runErrorError"`
+	// Status is the exit status code of the test runner if it is run directly.
+	Status int `json:"runErrorStatus"`
 }
 
 // RunEnd describes the completion of a run.

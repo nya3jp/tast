@@ -21,7 +21,7 @@ import (
 )
 
 // getBundlesAndTests returns matched tests and paths to the bundles containing them.
-func getBundlesAndTests(args *Args) (bundles []string, tests []*testing.Test, err error) {
+func getBundlesAndTests(args *Args) (bundles []string, tests []*testing.Test, err *command.StatusError) {
 	if bundles, err = getBundles(args.BundleGlob); err != nil {
 		return nil, nil, err
 	}
@@ -30,7 +30,7 @@ func getBundlesAndTests(args *Args) (bundles []string, tests []*testing.Test, er
 }
 
 // getBundles returns the full paths of all test bundles matched by glob.
-func getBundles(glob string) ([]string, error) {
+func getBundles(glob string) ([]string, *command.StatusError) {
 	ps, err := filepath.Glob(glob)
 	if err != nil {
 		return nil, command.NewStatusErrorf(statusNoBundles, "failed to get bundle(s) %q: %v", glob, err)
@@ -54,13 +54,13 @@ func getBundles(glob string) ([]string, error) {
 type testsOrError struct {
 	bundle string
 	tests  []*testing.Test
-	err    error
+	err    *command.StatusError
 }
 
 // getTests returns tests in bundles matched by args.Patterns. It does this by executing
 // each bundle to ask it to marshal and print its tests. A slice of paths to bundles
 // with matched tests is also returned.
-func getTests(bundles []string, args bundle.Args) (tests []*testing.Test, bundlesWithTests []string, err error) {
+func getTests(bundles []string, args bundle.Args) (tests []*testing.Test, bundlesWithTests []string, err *command.StatusError) {
 	args.Mode = bundle.ListTestsMode
 
 	// Run all bundles in parallel.
@@ -108,12 +108,12 @@ func getTests(bundles []string, args bundle.Args) (tests []*testing.Test, bundle
 
 // runBundle runs the bundle at path to completion, passing args.
 // The bundle's stdout is copied to the stdout arg.
-func runBundle(path string, args *bundle.Args, stdout io.Writer) error {
+func runBundle(path string, args *bundle.Args, stdout io.Writer) *command.StatusError {
 	cmd := exec.Command(path)
 	cmd.Stdout = stdout
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
-		return err
+		return command.NewStatusErrorf(statusError, "%v", err)
 	}
 	// Save stderr so we can return it to aid in debugging.
 	stderr := bytes.Buffer{}
@@ -128,7 +128,7 @@ func runBundle(path string, args *bundle.Args, stdout io.Writer) error {
 	err = cmd.Wait()
 
 	if jerr != nil {
-		return jerr
+		return command.NewStatusErrorf(statusError, "%v", err)
 	}
 	if err != nil {
 		// Include stderr if the bundle wrote anything to it.

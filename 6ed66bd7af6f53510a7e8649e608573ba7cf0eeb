@@ -16,6 +16,24 @@
       "revId": "6ed66bd7af6f53510a7e8649e608573ba7cf0eeb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "14f651ed_ecdc67b4",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2018-11-08T07:07:37Z",
+      "side": 1,
+      "message": "Done.\nI have no idea about other reasons for using internal Chrome yet.",
+      "parentUuid": "d672a382_fb25e715",
+      "revId": "6ed66bd7af6f53510a7e8649e608573ba7cf0eeb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

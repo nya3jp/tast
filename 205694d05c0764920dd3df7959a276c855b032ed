@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d048b997_10226cbe",
+        "filename": "src/chromiumos/tast/testing/registration_testutil.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-11-08T14:43:18Z",
+      "side": 1,
+      "message": "hmm, i\u0027m wondering if this should be in a separate package (nested under testing) -- right now, it\u0027ll be included in non-unit-test binaries, which isn\u0027t correct. maybe something like \"checktests\" or \"testcheck\"? then the methods could just be called Timeout and SoftwareDeps",
+      "revId": "205694d05c0764920dd3df7959a276c855b032ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0a350c13_329fd5a3",
+        "filename": "src/chromiumos/tast/testing/registration_testutil.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-11-08T14:43:18Z",
+      "side": 1,
+      "message": "nit: declare (since the subject, \"tests\", is plural)",
+      "range": {
+        "startLine": 32,
+        "startChar": 58,
+        "endLine": 32,
+        "endChar": 66
+      },
+      "revId": "205694d05c0764920dd3df7959a276c855b032ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

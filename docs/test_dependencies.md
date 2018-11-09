@@ -9,6 +9,7 @@ Tests specify dependencies through the `SoftwareDeps` field in [testing.Test].
 The following software features are defined:
 
 *   `android` - The ability to [run Android apps].
+*   `android_pi` - The ability to [run Android apps] that require Android Pi.
 *   `audio_play` - The ability to play audio.
 *   `audio_record` - The ability to record audio.
 *   `autotest-capability:foo` - An [Autotest capability] named `foo`. See below.

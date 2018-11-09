@@ -113,6 +113,7 @@ func runRemoteRunner(ctx context.Context, cfg *Config, bundleGlob, dataDir strin
 				},
 			},
 		},
+		Devservers: cfg.devservers,
 	}
 	switch cfg.mode {
 	case RunTestsMode:

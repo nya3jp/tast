@@ -33,6 +33,7 @@ func main() {
 			// All USE flags referenced here must be listed in IUSE in the tast-use-flags ebuild.
 			// The one exception is tast_vm, which is inserted by VM builders via -extrauseflags.
 			"android":           "arc",
+			"android_p":         `arc && "android-container-pi"`,
 			"audio_play":        "!betty && !tast_vm && !veyron_rialto", // VMs don't have audio hardware
 			"audio_record":      "internal_mic && !tast_vm",             // VMs don't have audio hardware
 			"camera_720p":       "!snow && !skate && !spring",           // daisy variants' cameras don't support 1280x720

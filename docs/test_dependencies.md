@@ -8,7 +8,10 @@ command's `-checktestdeps` flag to control this behavior.
 Tests specify dependencies through the `SoftwareDeps` field in [testing.Test].
 The following software features are defined:
 
-*   `android` - The ability to [run Android apps].
+*   `android` - The ability to [run Android apps]. Any version of Android can be
+     used.
+*   `android_not_nyc` - The ability to [run Android apps] that require a version
+    of Android that is newer than NYC.
 *   `audio_play` - The ability to play audio.
 *   `audio_record` - The ability to record audio.
 *   `autotest-capability:foo` - An [Autotest capability] named `foo`. See below.

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e780962d_8915cdc2",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-11-09T21:48:22Z",
+      "side": 1,
+      "message": "please document whether this implies `android` or not (i.e. should tests that require pi list both of these, or just android_pi)?\n\nlooking at the other file, i think that the answer is that only android_pi needs to be listed. if that\u0027s correct, maybe also add something like \u0027Any version of Android can be used.\u0027 to the end of the android feature\u0027s description",
+      "revId": "8c3fd9792d1bc2752667c28cd3fa9476ce246285",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

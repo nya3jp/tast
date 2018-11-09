@@ -302,7 +302,8 @@ lint errors.
 If you need to share functionality between tests in the same package, please
 introduce a new descriptively-named subpackage; see e.g. the [chromecrash]
 package within the `ui` package, used by the [ui.ChromeCrashLoggedIn] and
-[ui.ChromeCrashNotLoggedIn] tests.
+[ui.ChromeCrashNotLoggedIn] tests. Subpackages are described in more detail
+later in this document.
 
 [scoped at the package level]: https://golang.org/ref/spec#Declarations_and_scope
 [chromecrash]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/master/src/chromiumos/tast/local/bundles/cros/ui/chromecrash/
@@ -492,12 +493,38 @@ how to handle them. Support packages' exported functions should typically take
 test's deadline is reached and to log informative messages using
 `testing.ContextLog` and `testing.ContextLogf`.
 
+Similarly, support packages should avoid calling `panic` when errors are
+encountered. When a test is running, `panic` has the same effect as `State`'s
+`Fatal` and `Fatalf` methods: the test is aborted immediately. Returning an
+`error` gives tests the ability to choose how to respond.
+
 The [Error handling and Go] and [Errors are values] blog posts offer guidance on
 using the `error` type.
 
 [errors package]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/errors
 [Error handling and Go]: https://blog.golang.org/error-handling-and-go
 [Errors are values]: https://blog.golang.org/errors-are-values
+
+### Test subpackages
+
+The above guidelines do not necessarily apply to test subpackages that are
+located in subdirectories below test files. If a subpackage actually contains
+the test implementation (typically because it's shared across several tests),
+it's okay to pass `testing.State` to it so it can report test errors itself.
+
+Subpackages are typically aware of how they will be used, so an argument can be
+made for letting them abort testing using `Fatal` or even `panic` in cases where
+it improves code readability (e.g. for truly exceptional cases like I/O
+failures). Use your best judgement.
+
+Note that it's still best to practice [information hiding] and pass only as much
+data is needed. Avoid passing `testing.State` when it's not actually necessary:
+
+*   If a function just needs the output directory, pass a path.
+*   If a function just needs to log its progress, pass a `context.Context` so it
+    can call `testing.ContextLog`.
+
+[information hiding]: https://en.wikipedia.org/wiki/Information_hiding
 
 ## Output files
 

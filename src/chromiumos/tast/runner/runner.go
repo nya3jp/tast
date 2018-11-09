@@ -5,6 +5,7 @@
 package runner
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -14,11 +15,13 @@ import (
 	"runtime"
 	"runtime/debug"
 	"strings"
+	"sync"
 	"time"
 
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/command"
 	"chromiumos/tast/control"
+	"chromiumos/tast/storage"
 	"chromiumos/tast/testing"
 )
 
@@ -112,6 +115,15 @@ func runTestsAndReport(args *Args, stdout io.Writer) {
 		if !args.report && created {
 			defer os.RemoveAll(bundleArgs.OutDir)
 		}
+
+		var lm sync.Mutex
+		lf := func(msg string) {
+			lm.Lock()
+			mw.WriteMessage(&control.RunLog{Time: time.Now(), Text: msg})
+			lm.Unlock()
+		}
+		cl := newStorageClient(args.Devservers, lf)
+		resolveExternalDataLinks(args.DataDir, tests, cl, lf)
 
 		for _, bundle := range bundles {
 			// Copy each bundle's output (consisting of control messages) directly to stdout.
@@ -222,4 +234,18 @@ func logMessages(r io.Reader, lg *log.Logger) *command.StatusError {
 		return command.NewStatusErrorf(statusTestFailed, "test(s) failed")
 	}
 	return nil
+}
+
+func newStorageClient(devservers []string, lf func(msg string)) storage.Client {
+	if len(devservers) == 0 {
+		lf("Using direct access to GCS")
+		return storage.NewDirectClient(nil)
+	}
+
+	cl := storage.NewDevserverClient(nil)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	_ = cl.SetServers(ctx, devservers) // ignore errors
+	lf(fmt.Sprintf("Using devservers to GCS: %s", cl.Status()))
+	return cl
 }

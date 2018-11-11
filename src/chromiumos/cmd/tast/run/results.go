@@ -435,7 +435,7 @@ func (r *resultsHandler) handleMessage(msg interface{}) error {
 }
 
 // processMessages processes control messages and errors supplied by mch and ech.
-func (r *resultsHandler) processMessages(mch chan interface{}, ech chan error) error {
+func (r *resultsHandler) processMessages(mch <-chan interface{}, ech <-chan error) error {
 	for {
 		timeout := r.nextMessageTimeout(time.Now())
 		select {
@@ -511,7 +511,7 @@ func (w *streamedResultsWriter) write(res *TestResult, update bool) error {
 // readMessages reads serialized control messages from r and passes them
 // via mch. If an error is encountered, it is passed via ech and no more
 // reads are performed. Channels are closed before returning.
-func readMessages(r io.Reader, mch chan interface{}, ech chan error) {
+func readMessages(r io.Reader, mch chan<- interface{}, ech chan<- error) {
 	mr := control.NewMessageReader(r)
 	for mr.More() {
 		msg, err := mr.ReadMessage()

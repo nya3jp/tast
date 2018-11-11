@@ -140,7 +140,7 @@ func (tst *Test) DataDir() string {
 //	- tst.Func (if no errors yet)
 //	- tst.Pre.Close (if tst.Pre is non-nil and cfg.NextTest.Pre is different)
 //	- cfg.PostTestFunc (if non-nil)
-func (tst *Test) Run(ctx context.Context, ch chan Output, cfg *TestConfig) bool {
+func (tst *Test) Run(ctx context.Context, ch chan<- Output, cfg *TestConfig) bool {
 	// Attach the state to a context so support packages can log to it.
 	s := newState(tst, ch, cfg)
 	ctx = context.WithValue(ctx, logKey, s)

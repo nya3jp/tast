@@ -228,7 +228,7 @@ DepsLoop:
 // copyTestOutput reads test output from ch and writes it to mw until ch is closed.
 // If abort becomes readable before ch is closed, a timeout error is written to mw
 // and the function returns immediately.
-func copyTestOutput(ch chan testing.Output, mw *control.MessageWriter, abort chan bool) {
+func copyTestOutput(ch <-chan testing.Output, mw *control.MessageWriter, abort <-chan bool) {
 	for {
 		select {
 		case o, ok := <-ch:

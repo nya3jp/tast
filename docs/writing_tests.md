@@ -264,11 +264,18 @@ Any function that performs a blocking operation should take a [context.Context]
 as its first argument and return an error if the context expires before the
 operation finishes.
 
+Several blog posts discuss these patterns in more detail:
+
+*   [Go Concurrency Patterns: Context]
+*   [Go Concurrency Patterns: Timing out, moving on]
+
 [context.Context]: https://golang.org/pkg/context/
 [channel]: https://tour.golang.org/concurrency/2
 [select]: https://tour.golang.org/concurrency/5
 [time.After]: https://godoc.org/time#After
 [testing.Poll]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Poll
+[Go Concurrency Patterns: Context]: https://blog.golang.org/context
+[Go Concurrency Patterns: Timing out, moving on]: https://blog.golang.org/go-concurrency-patterns-timing-out-and
 
 ### Concurrency
 
@@ -279,11 +286,13 @@ independent Upstart jobs simultaneously.
 
 The preferred way to synchronize concurrent work in Go programs is by passing
 data between [goroutines] using a [channel]. This large topic is introduced in
-the [Share Memory by Communicating] blog post. [The Go Memory Model] provides
-guarantees about the effects of memory reads and writes across goroutines.
+the [Share Memory by Communicating] blog post, and the [Go Concurrency Patterns]
+talk is also a good summary. [The Go Memory Model] provides guarantees about the
+effects of memory reads and writes across goroutines.
 
 [goroutines]: https://tour.golang.org/concurrency/1
 [Share Memory by Communicating]: https://blog.golang.org/share-memory-by-communicating
+[Go Concurrency Patterns]: https://talks.golang.org/2012/concurrency.slide
 [The Go Memory Model]: https://golang.org/ref/mem
 
 ### Scoping and shared code
@@ -465,7 +474,8 @@ if err := doSomething(id); err != nil {
 
 On the other hand, log and error messages printed by tests via `testing.State`,
 `testing.ContextLog`, and `testing.ContextLogf` should be capitalized phrases
-without any trailing punctuation:
+without any trailing punctuation that clearly describe what is about to be done
+or what happened:
 
 ```go
 s.Log("Asking Chrome to log in")
@@ -473,13 +483,40 @@ s.Log("Asking Chrome to log in")
 if err != nil {
 	s.Fatal("Failed to log in: ", err)
 }
-s.Logf("Logged in as user %q with ID %v", user, id)
+s.Logf("Logged in as user %v with ID %v", user, id)
 ```
 
 In both cases, please try to avoid multiline strings since they make logs
-difficult to read. Exceptions can be argued when logging strings that are truly
-multiline, such as output from an external program, but note that it's often
-cleaner to write such data to an [output file] instead.
+difficult to read. To preserve multiline output from an external program, please
+write it to an [output file] instead of logging it.
+
+When including a path, URL, or other easily-printable value in a log message or
+an error, omit leading colons or surrounding quotes:
+
+```go
+s.Logf("Trying to log in up to %d time(s)", numLogins)
+errors.Errorf("%v not found", path)
+```
+
+Use quotes when including arbitrary data that may contain hard-to-print
+characters like spaces:
+
+```go
+s.Logf("Successfully read %q from %v", data, path)
+```
+
+Use a colon followed by a space when appending a separate clause that contains
+additional detail (typically an error):
+
+```go
+s.Error("Failed to log in: ", err)
+```
+
+Semicolons are appropriate for joining independent clauses:
+
+```go
+s.Log(ctx, "Attempt failed; trying again")
+```
 
 [Go's error string conventions]: https://github.com/golang/go/wiki/CodeReviewComments#error-strings
 [output file]: #Output-files

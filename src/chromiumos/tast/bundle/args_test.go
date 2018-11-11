@@ -71,7 +71,7 @@ func TestReadArgsTestTimeouts(t *gotesting.T) {
 		t.Fatal("readArgs() failed: ", err)
 	}
 
-	act := make(map[string]time.Duration)
+	act := make(map[string]time.Duration, len(tests))
 	for _, t := range tests {
 		act[t.Name] = t.Timeout
 	}

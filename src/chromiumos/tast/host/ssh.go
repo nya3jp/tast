@@ -336,7 +336,7 @@ func (s *SSH) GetFile(ctx context.Context, src, dst string) error {
 // within dstDir with names listed in files will be overwritten. bytes is the amount of data
 // sent over the wire (possibly after compression).
 func (s *SSH) PutTree(ctx context.Context, srcDir, dstDir string, files []string) (bytes int64, err error) {
-	m := make(map[string]string)
+	m := make(map[string]string, len(files))
 	for _, f := range files {
 		m[f] = f
 	}
@@ -495,7 +495,7 @@ func (s *SSH) getRemoteSHA1s(ctx context.Context, paths []string) (map[string]st
 		return nil, fmt.Errorf("failed to hash files: %v", err)
 	}
 
-	sums := make(map[string]string)
+	sums := make(map[string]string, len(paths))
 	for _, l := range strings.Split(string(out), "\n") {
 		if l == "" {
 			continue
@@ -512,7 +512,7 @@ func (s *SSH) getRemoteSHA1s(ctx context.Context, paths []string) (map[string]st
 // getLocalSHA1s returns SHA1s for files in paths.
 // An error is returned if any files are missing.
 func getLocalSHA1s(paths []string) (map[string]string, error) {
-	sums := make(map[string]string)
+	sums := make(map[string]string, len(paths))
 
 	for _, p := range paths {
 		if fi, err := os.Stat(p); err != nil {

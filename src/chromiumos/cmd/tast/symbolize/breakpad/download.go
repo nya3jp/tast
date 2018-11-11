@@ -29,7 +29,7 @@ func GetSymbolsURL(builderPath string) string {
 // in files to destDir. The number of files that were created is returned.
 func DownloadSymbols(url, destDir string, files SymbolFileMap) (created int, err error) {
 	// Create a set of relative symbol file paths.
-	wanted := make(map[string]struct{})
+	wanted := make(map[string]struct{}, len(files))
 	for p, id := range files {
 		wanted[GetSymbolFilePath("", filepath.Base(p), id)] = struct{}{}
 	}

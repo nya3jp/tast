@@ -90,7 +90,7 @@ func GetCrashes(dirs ...string) ([]string, error) {
 // crash file paths.
 func CopyNewFiles(dstDir string, newPaths, oldPaths []string, maxPerExec int) (
 	warnings map[string]error, err error) {
-	oldMap := make(map[string]struct{})
+	oldMap := make(map[string]struct{}, len(oldPaths))
 	for _, p := range oldPaths {
 		oldMap[p] = struct{}{}
 	}

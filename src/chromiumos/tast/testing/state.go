@@ -66,9 +66,9 @@ func (m *Meta) clone() *Meta {
 // It is intended to be safe when called concurrently by multiple goroutines
 // while a test is running.
 type State struct {
-	test *Test       // test being run
-	ch   chan Output // channel to which logging messages and errors are written
-	cfg  *TestConfig // details about how to run test
+	test *Test         // test being run
+	ch   chan<- Output // channel to which logging messages and errors are written
+	cfg  *TestConfig   // details about how to run test
 
 	hasError bool       // whether the test has already reported errors or not
 	mu       sync.Mutex // mutex to protect hasError
@@ -93,7 +93,7 @@ type TestConfig struct {
 }
 
 // newState returns a new State object.
-func newState(test *Test, ch chan Output, cfg *TestConfig) *State {
+func newState(test *Test, ch chan<- Output, cfg *TestConfig) *State {
 	return &State{test: test, ch: ch, cfg: cfg}
 }
 

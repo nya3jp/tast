@@ -33,7 +33,7 @@ func testsEqual(a, b []*Test) bool {
 
 // getDupeTestPtrs returns pointers present in both a and b.
 func getDupeTestPtrs(a, b []*Test) []*Test {
-	am := make(map[*Test]struct{})
+	am := make(map[*Test]struct{}, len(a))
 	for _, t := range a {
 		am[t] = struct{}{}
 	}

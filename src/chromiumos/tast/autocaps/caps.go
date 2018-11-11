@@ -73,7 +73,7 @@ func Read(dir string, info *SysInfo) (map[string]State, error) {
 		return nil, err
 	}
 
-	caps := make(map[string]State)
+	caps := make(map[string]State, len(managed))
 	for _, c := range managed {
 		caps[c] = No
 	}

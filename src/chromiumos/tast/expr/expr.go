@@ -95,7 +95,7 @@ func New(s string) (*Expr, error) {
 
 // Matches returns true if the expression is satisfied by attributes attrs.
 func (e *Expr) Matches(attrs []string) bool {
-	am := make(map[string]struct{})
+	am := make(map[string]struct{}, len(attrs))
 	for _, a := range attrs {
 		am[a] = struct{}{}
 	}

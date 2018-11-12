@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "de585333_5a2304b4",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-11-12T19:15:58Z",
+      "side": 1,
+      "message": "optional: you can also use backticks here to avoid the backslashes:\n\n  `arc \u0026\u0026 \"android-container-pi\"`",
+      "range": {
+        "startLine": 36,
+        "startChar": 25,
+        "endLine": 36,
+        "endChar": 57
+      },
+      "revId": "b91ac141b84a5d87f286f718597d71f0c64d0105",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

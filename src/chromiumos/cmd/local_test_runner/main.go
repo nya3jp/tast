@@ -42,6 +42,7 @@ func main() {
 			"display_backlight": "display_backlight",
 			"memd":              "memd",
 			"ml_service":        "ml_service",
+			"no_symlink_mount":  "!lxc",                         // boards using LXC set CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT=n
 			"screenshot":        "display_backlight && !rk3399", // screenshot command broken on RK3399: https://crbug.com/880597
 			"selinux":           "selinux",
 			"tpm":               "!mocktpm && !tast_vm",

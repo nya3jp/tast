@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "696dc03f_22a8c93b",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-11-14T21:13:36Z",
+      "side": 1,
+      "message": "nit: mind linking this text to https://chromium.googlesource.com/chromiumos/platform2/+/master/metrics/memd/ ?",
+      "range": {
+        "startLine": 21,
+        "startChar": 13,
+        "endLine": 21,
+        "endChar": 43
+      },
+      "revId": "3c75a969571efca004268f38c99f347cfd1e208e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

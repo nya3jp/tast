@@ -18,6 +18,7 @@ The following software features are defined:
     login (i.e. using `session_manager` and `cryptohome`) is supported.
 *   `cups` - CUPS daemon.
 *   `display_backlight` - An internal display backlight.
+*   `memd` - [Memory stats collection daemon].
 *   `ml_service` - ML Service daemon.
 *   `screenshot` - The [screenshot command] can save screenshots.
 *   `selinux` - An SELinux-enabled board. All Android boards are
@@ -42,6 +43,7 @@ outside of video tests.
 
 [testing.Test]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Test
 [run Android apps]: https://developer.android.com/topic/arc/
+[Memory stats collection daemon]: https://chromium.googlesource.com/chromiumos/platform2/+/master/metrics/memd/
 [Autotest capability]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/autotest-capability-default/
 [run virtual machines]: https://chromium.googlesource.com/chromiumos/docs/+/master/containers_and_vms.md
 [screenshot command]: https://chromium.googlesource.com/chromiumos/platform2/+/master/screenshot/

@@ -19,6 +19,8 @@ The following software features are defined:
 *   `cups` - CUPS daemon.
 *   `display_backlight` - An internal display backlight.
 *   `ml_service` - ML Service daemon.
+*   `no_symlink_mount` - Symlink mounting is disabled via the
+    `CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT` kernel option.
 *   `screenshot` - The [screenshot command] can save screenshots.
 *   `selinux` - An SELinux-enabled board. All Android boards are
     SELinux-enabled.

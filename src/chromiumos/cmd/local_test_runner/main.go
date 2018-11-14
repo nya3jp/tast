@@ -43,6 +43,7 @@ func main() {
 			"ml_service":        "ml_service",
 			"screenshot":        "display_backlight && !rk3399", // screenshot command broken on RK3399: https://crbug.com/880597
 			"selinux":           "selinux",
+			"no_symlink_mount":  "!lxc", // boards using LXC set CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT=n
 			"tpm":               "!mocktpm && !tast_vm",
 			// Some VM builds actually can run nested VM with right host configuration.
 			// But we haven't enable this feature on builders. For now, just disable

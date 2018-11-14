@@ -40,6 +40,7 @@ func main() {
 			"chrome_login":      "!chromeless_tty && !rialto",
 			"cups":              "cups",
 			"display_backlight": "display_backlight",
+			"memd":              "memd",
 			"ml_service":        "ml_service",
 			"screenshot":        "display_backlight && !rk3399", // screenshot command broken on RK3399: https://crbug.com/880597
 			"selinux":           "selinux",

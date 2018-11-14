@@ -22,6 +22,30 @@
       "revId": "3c75a969571efca004268f38c99f347cfd1e208e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "56361418_06491131",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1000028
+      },
+      "writtenOn": "2018-11-14T22:03:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "696dc03f_22a8c93b",
+      "range": {
+        "startLine": 21,
+        "startChar": 13,
+        "endLine": 21,
+        "endChar": 43
+      },
+      "revId": "3c75a969571efca004268f38c99f347cfd1e208e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

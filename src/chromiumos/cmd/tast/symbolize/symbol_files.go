@@ -8,8 +8,6 @@ import (
 	"fmt"
 	"os"
 	"runtime"
-	"sync"
-	"sync/atomic"
 
 	"chromiumos/cmd/tast/symbolize/breakpad"
 )
@@ -34,34 +32,35 @@ func createSymbolFile(fi *symbolFileInfo, symDir, buildRoot string) error {
 
 // createSymbolFiles attempts to create a symbol file within cfg.SymbolDir for each file listed in sf.
 // Debug binaries should be located within cfg.BuildRoot.
-// The number of symbol files that were successfully created is returned.
-func createSymbolFiles(cfg *Config, sf breakpad.SymbolFileMap) (created int) {
-	ch := make(chan *symbolFileInfo) // passes work to goroutines
-	wg := sync.WaitGroup{}           // used to wait for goroutines
-	var nc int32
+// Files that are still missing are returned.
+func createSymbolFiles(cfg *Config, sf breakpad.SymbolFileMap) (missing breakpad.SymbolFileMap) {
+	ch := make(chan *symbolFileInfo)  // passes work to goroutines
+	rch := make(chan *symbolFileInfo) // passes back missing files or nil for success
 
 	// Start a fixed number of worker goroutines so we don't launch a zillion dump_syms processes at once.
 	for i := 0; i < runtime.NumCPU(); i++ {
-		wg.Add(1)
 		go func() {
 			for fi := range ch {
-				err := createSymbolFile(fi, cfg.SymbolDir, cfg.BuildRoot)
-				if err != nil {
-					cfg.Logger.Debugf("Failed to generate symbol file for %v with ID %v: %v", fi.path, fi.id, err)
+				if err := createSymbolFile(fi, cfg.symbolDir, cfg.buildRoot); err != nil {
+					cfg.lg.Debugf("Failed to generate symbol file for %v with ID %v: %v", fi.path, fi.id, err)
+					rch <- fi
 				} else {
-					cfg.Logger.Debugf("Generated symbol file for %v with ID %v", fi.path, fi.id)
-					atomic.AddInt32(&nc, 1)
+					cfg.lg.Debugf("Generated symbol file for %v with ID %v", fi.path, fi.id)
+					rch <- nil
 				}
 			}
-			wg.Done()
 		}()
 	}
 
-	// Enqueue work and wait for all of the goroutines to complete.
+	// Enqueue work and wait for results.
 	for path, id := range sf {
 		ch <- &symbolFileInfo{path, id}
 	}
-	close(ch)
-	wg.Wait()
-	return int(nc)
+	missing = make(breakpad.SymbolFileMap)
+	for i := 0; i < len(sf); i++ {
+		if fi := <-rch; fi != nil {
+			missing[fi.path] = fi.id
+		}
+	}
+	return missing
 }

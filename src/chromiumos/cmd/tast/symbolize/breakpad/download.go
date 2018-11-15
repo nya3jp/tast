@@ -26,17 +26,18 @@ func GetSymbolsURL(builderPath string) string {
 }
 
 // DownloadSymbols downloads url (see GetSymbolsURL) and extracts the symbol files specified
-// in files to destDir. The number of files that were created is returned.
-func DownloadSymbols(url, destDir string, files SymbolFileMap) (created int, err error) {
-	// Create a set of relative symbol file paths.
-	wanted := make(map[string]struct{}, len(files))
+// in files to destDir. Files that could not be downloaded are returned (even if err is non-nil).
+func DownloadSymbols(url, destDir string, files SymbolFileMap) (missing SymbolFileMap, err error) {
+	missing = make(SymbolFileMap)
+	wanted := make(map[string]string, len(files)) // relative symbol file paths to absolute paths
 	for p, id := range files {
-		wanted[GetSymbolFilePath("", filepath.Base(p), id)] = struct{}{}
+		missing[p] = id
+		wanted[GetSymbolFilePath("", filepath.Base(p), id)] = p
 	}
 
 	as, err := newArchiveStreamer(url)
 	if err != nil {
-		return 0, err
+		return missing, err
 	}
 	defer as.close()
 
@@ -46,30 +47,30 @@ func DownloadSymbols(url, destDir string, files SymbolFileMap) (created int, err
 		if err == io.EOF {
 			break
 		} else if err != nil {
-			return created, err
+			return missing, err
 		}
 
 		// Strip off the weird leading directories used in archive files and check if this
 		// is one of the files we're looking for.
-		p := hdr.Name[len(imageArchiveTarPrefix):]
-		if _, ok := wanted[p]; !ok || hdr.Typeflag != tar.TypeReg {
+		rel := hdr.Name[len(imageArchiveTarPrefix):]
+		if _, ok := wanted[rel]; !ok || hdr.Typeflag != tar.TypeReg {
 			continue
 		}
 
 		// tar.Reader functions as an io.Reader and returns data from the current entry
 		// until Next is called.
-		if err := writeSymbolFile(filepath.Join(destDir, p), tr); err != nil {
-			return created, err
+		if err := writeSymbolFile(filepath.Join(destDir, rel), tr); err != nil {
+			return missing, err
 		}
 
-		created++
-		delete(wanted, p)
+		delete(missing, wanted[rel])
+		delete(wanted, rel)
 		if len(wanted) == 0 {
 			break
 		}
 	}
 
-	return created, nil
+	return missing, nil
 }
 
 // writeSymbolFiles creates a new file (including parent directory) at p

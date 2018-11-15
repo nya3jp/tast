@@ -56,13 +56,21 @@ func TestDownloadSymbols(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// Extract the first two symbol files.
+	// Extract the first two symbol files, and also request a missing file.
+	const (
+		missingName = "missing.so"
+		missingID   = "4567"
+	)
 	od := filepath.Join(td, "out")
-	wanted := SymbolFileMap{files[0].name: files[0].id, files[1].name: files[1].id}
-	if created, err := DownloadSymbols(af, od, wanted); err != nil {
+	wanted := SymbolFileMap{
+		files[0].name: files[0].id,
+		files[1].name: files[1].id,
+		missingName:   missingID,
+	}
+	if missing, err := DownloadSymbols(af, od, wanted); err != nil {
 		t.Fatalf("DownloadSymbols(%q, %q, %v) failed: %v", af, od, wanted, err)
-	} else if created != 2 {
-		t.Errorf("DownloadSymbols(%q, %q, %v) reported %v file(s); want 2", af, od, wanted, created)
+	} else if exp := (SymbolFileMap{missingName: missingID}); !reflect.DeepEqual(missing, exp) {
+		t.Errorf("DownloadSymbols(%q, %q, %v) reported missing file(s) %v; want %v", af, od, wanted, missing, exp)
 	}
 
 	// Verify that the expected files were written.
@@ -76,5 +84,19 @@ func TestDownloadSymbols(t *testing.T) {
 	}
 	if !reflect.DeepEqual(act, exp) {
 		t.Errorf("DownloadSymbols(%q, %q, %v) wrote %v; want %v", af, od, wanted, act, exp)
+	}
+}
+
+func TestDownloadSymbols_Failure(t *testing.T) {
+	td := testutil.TempDir(t)
+	defer os.RemoveAll(td)
+
+	// When the download fails, all of the requested files should still be reported as missing.
+	wanted := SymbolFileMap{"lib.so": "1234"}
+	archive := filepath.Join(td, "bogus")
+	// TODO(derat): DownloadSymbols doesn't report an error in the case of a missing archive,
+	// likely due to its weird streaming from gsutil to xz to tar.Reader.
+	if missing, _ := DownloadSymbols(archive, td, wanted); !reflect.DeepEqual(missing, wanted) {
+		t.Errorf("DownloadSymbols(%q, %q, %v) reported missing file(s) %v; want %v", archive, td, wanted, missing, wanted)
 	}
 }

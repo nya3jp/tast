@@ -19,26 +19,51 @@ import (
 )
 
 // Config contains parameters used when symbolizing crash files.
+// This struct carries state and should be reused when symbolizing multiple crashes from the same build.
 type Config struct {
-	// Logger is used to log progress and errors.
-	Logger logging.Logger
-	// SymbolDir contains a directory used to store symbol files.
-	SymbolDir string
-	// BuildRoot contains build root (e.g. "/build/lumpy") that produced the system image.
-	// If empty, inferred by extracting the board name from the minidump.
-	// The build root is only used if a builder path can't be extracted from the minidump.
-	BuildRoot string
+	symbolDir string // directory storing symbol files
+	buildRoot string // e.g. "/build/lumpy"
+
+	lg logging.Logger
+
+	unavailable breakpad.SymbolFileMap // files known to be unavailable from an earlier run
+
+	// These are wrappers around the correspondingly-named functions in this package and the breakpad package.
+	// Unit tests can set them to fake implementations to return canned data and avoid side effects.
+	getMinidumpPath        func(cfg *Config, path string) (string, error)
+	getMinidumpReleaseInfo func(path string) (*releaseInfo, error)
+	walkMinidump           func(path, symDir string, w io.Writer) (missing breakpad.SymbolFileMap, err error)
+	downloadSymbols        func(url, destDir string, files breakpad.SymbolFileMap) (missing breakpad.SymbolFileMap, err error)
+	createSymbolFiles      func(cfg *Config, sf breakpad.SymbolFileMap) (missing breakpad.SymbolFileMap)
+}
+
+// symbolDir contains a directory used to store symbol files.
+// buildRoot contains build root (e.g. "/build/lumpy") that produced the system image.
+// If empty, inferred by extracting the board name from the minidump.
+// The build root is only used if a builder path can't be extracted from the minidump.
+func NewConfig(symbolDir, buildRoot string, lg logging.Logger) *Config {
+	return &Config{
+		symbolDir:              symbolDir,
+		buildRoot:              buildRoot,
+		lg:                     lg,
+		unavailable:            make(breakpad.SymbolFileMap),
+		getMinidumpPath:        getMinidumpPath,
+		getMinidumpReleaseInfo: getMinidumpReleaseInfo,
+		walkMinidump:           breakpad.WalkMinidump,
+		downloadSymbols:        breakpad.DownloadSymbols,
+		createSymbolFiles:      createSymbolFiles,
+	}
 }
 
 // SymbolizeCrash attempts to symbolize a crash file.
 // path can contain either raw minidump data or a Chrome crash report.
 // The (possibly-unsuccessfully-)symbolized data is written to w.
-func SymbolizeCrash(path string, w io.Writer, cfg Config) error { // NOLINT
-	if cfg.SymbolDir == "" {
+func SymbolizeCrash(path string, w io.Writer, cfg *Config) error { // NOLINT
+	if cfg.symbolDir == "" {
 		return errors.New("symbol directory not supplied")
 	}
 
-	dumpPath, err := getMinidumpPath(&cfg, path)
+	dumpPath, err := cfg.getMinidumpPath(cfg, path)
 	if err != nil {
 		return fmt.Errorf("failed to get minidump: %v", err)
 	}
@@ -47,47 +72,65 @@ func SymbolizeCrash(path string, w io.Writer, cfg Config) error { // NOLINT
 		defer os.Remove(dumpPath)
 	}
 
-	ri, err := getMinidumpReleaseInfo(dumpPath)
+	ri, err := cfg.getMinidumpReleaseInfo(dumpPath)
 	if err != nil {
 		return fmt.Errorf("failed to get release info from %v: %v", dumpPath, err)
 	}
-	cfg.Logger.Debugf("Got board %q and builder path %q from minidump", ri.board, ri.builderPath)
-	if cfg.BuildRoot == "" {
-		cfg.BuildRoot = filepath.Join("/build", ri.board)
+	cfg.lg.Debugf("Got board %q and builder path %q from minidump", ri.board, ri.builderPath)
+	if cfg.buildRoot == "" {
+		cfg.buildRoot = filepath.Join("/build", ri.board)
 	}
 
-	cfg.Logger.Debugf("Walking %v with symbol dir %v", dumpPath, cfg.SymbolDir)
+	cfg.lg.Debugf("Walking %v with symbol dir %v", dumpPath, cfg.symbolDir)
 	b := bytes.Buffer{}
-	missing, err := breakpad.WalkMinidump(dumpPath, cfg.SymbolDir, &b)
+	missing, err := cfg.walkMinidump(dumpPath, cfg.symbolDir, &b)
 	if err != nil {
 		return fmt.Errorf("failed to walk %v: %v", dumpPath, err)
 	}
 
-	created := 0
-	if len(missing) > 0 {
-		if ri.builderPath != "" {
-			url := breakpad.GetSymbolsURL(ri.builderPath)
-			cfg.Logger.Debugf("Extracting %v symbol file(s) from %v", len(missing), url)
-			if created, err = breakpad.DownloadSymbols(url, cfg.SymbolDir, missing); err != nil {
-				// Keep going so we can print what we have.
-				cfg.Logger.Logf("Failed to get symbols from %v: %v", url, err)
-			}
-		} else {
-			cfg.Logger.Debugf("Generating %v symbol file(s) from %v", len(missing), cfg.BuildRoot)
-			created = createSymbolFiles(&cfg, missing)
+	// Don't try to get any symbol files that we already established are unavailable.
+	for p, id := range missing {
+		if cfg.unavailable[p] == id {
+			delete(missing, p)
 		}
+	}
+
+	origMissingCount := len(missing)
+
+	// TODO(derat): Add a config field to control whether we download or not.
+	// We don't want to download when running in VM builders since it's slow/costly and often won't work anyway.
+	if len(missing) > 0 && ri.builderPath != "" {
+		url := breakpad.GetSymbolsURL(ri.builderPath)
+		cfg.lg.Debugf("Looking for %v symbol file(s) in %v", len(missing), url)
+		if missing, err = cfg.downloadSymbols(url, cfg.symbolDir, missing); err != nil {
+			cfg.lg.Logf("Failed to get symbols from %v: %v", url, err)
+		} else if len(missing) == origMissingCount {
+			cfg.lg.Log("Didn't find any needed symbols in ", url)
+		}
+	}
+
+	// Try to generate symbols from /build if we didn't download them all: https://crbug.com/904642
+	if len(missing) > 0 {
+		cfg.lg.Debugf("Trying to generate %v symbol file(s) from %v", len(missing), cfg.buildRoot)
+		missing = cfg.createSymbolFiles(cfg, missing)
+	}
+
+	// Record still-missing symbols so we won't try to get them again for other crashes.
+	for p, id := range missing {
+		cfg.unavailable[p] = id
 	}
 
 	// If we didn't write any new symbol files (possibly because there were none missing),
 	// we're done -- nothing will change if we walk the minidump again.
+	created := len(missing) - origMissingCount
 	if created == 0 {
 		_, err = io.Copy(w, &b)
 		return err
 	}
 
 	// Otherwise, walk the minidump again.
-	cfg.Logger.Debugf("Walking %v again with %v new symbol file(s)", dumpPath, created)
-	if _, err = breakpad.WalkMinidump(dumpPath, cfg.SymbolDir, w); err != nil {
+	cfg.lg.Debugf("Walking %v again with %v new symbol file(s)", dumpPath, created)
+	if _, err = cfg.walkMinidump(dumpPath, cfg.symbolDir, w); err != nil {
 		return fmt.Errorf("failed to re-walk %v: %v", dumpPath, err)
 	}
 	return nil
@@ -107,7 +150,7 @@ func getMinidumpPath(cfg *Config, path string) (string, error) {
 	if isDump, err := breakpad.IsMinidump(f); err != nil {
 		return "", err
 	} else if isDump {
-		cfg.Logger.Debugf("Using minidump file %v", path)
+		cfg.lg.Debugf("Using minidump file %v", path)
 		return path, nil
 	}
 
@@ -130,7 +173,7 @@ func getMinidumpPath(cfg *Config, path string) (string, error) {
 	}
 	defer tf.Close()
 
-	cfg.Logger.Debugf("Writing minidump data from %v to %v", path, tf.Name())
+	cfg.lg.Debugf("Writing minidump data from %v to %v", path, tf.Name())
 	if _, err = io.CopyN(tf, f, int64(dumpLen)); err != nil {
 		os.Remove(tf.Name())
 		return "", err

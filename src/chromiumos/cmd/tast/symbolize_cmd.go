@@ -18,7 +18,7 @@ import (
 
 // symbolizeCmd implements subcommands.Command to support symbolizing crashes.
 type symbolizeCmd struct {
-	cfg symbolize.Config
+	symbolDir, buildRoot string
 }
 
 func (*symbolizeCmd) Name() string     { return "symbolize" }
@@ -30,8 +30,8 @@ func (*symbolizeCmd) Usage() string {
 }
 
 func (s *symbolizeCmd) SetFlags(f *flag.FlagSet) {
-	f.StringVar(&s.cfg.SymbolDir, "symboldir", "/tmp/breakpad_symbols", "directory to write symbol files to")
-	f.StringVar(&s.cfg.BuildRoot, "buildroot", "", "buildroot containing debugging binaries; inferred from dump if empty")
+	f.StringVar(&s.symbolDir, "symboldir", "/tmp/breakpad_symbols", "directory to write symbol files to")
+	f.StringVar(&s.buildRoot, "buildroot", "", "buildroot containing debugging binaries; inferred from dump if empty")
 }
 
 func (s *symbolizeCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
@@ -45,9 +45,9 @@ func (s *symbolizeCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interf
 		return subcommands.ExitUsageError
 	}
 
-	s.cfg.Logger = lg
+	cfg := symbolize.NewConfig(s.symbolDir, s.buildRoot, lg)
 	path := f.Args()[0]
-	if err := symbolize.SymbolizeCrash(path, os.Stdout, s.cfg); err != nil {
+	if err := symbolize.SymbolizeCrash(path, os.Stdout, cfg); err != nil {
 		lg.Logf("Failed to symbolize %v: %v", path, err)
 	}
 	return subcommands.ExitSuccess

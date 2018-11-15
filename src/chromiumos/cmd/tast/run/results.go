@@ -24,11 +24,13 @@ import (
 )
 
 const (
+	// CrashesDir is the path relative to Config.ResDir containing crashes collected from the DUT.
+	CrashesDir = "crashes"
+
 	// These paths are relative to Config.ResDir.
 	resultsFilename         = "results.json"           // file containing JSON array of TestResult objects
 	streamedResultsFilename = "streamed_results.jsonl" // file containing stream of newline-separated JSON TestResult objects
 	systemLogsDir           = "system_logs"            // dir containing DUT's system logs
-	crashesDir              = "crashes"                // dir containing DUT's crashes
 	testLogsDir             = "tests"                  // dir containing dirs with details about individual tests
 
 	testLogFilename   = "log.txt"      // file in testLogsDir/<test> containing test-specific log messages

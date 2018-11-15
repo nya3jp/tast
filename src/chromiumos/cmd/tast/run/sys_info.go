@@ -91,7 +91,7 @@ func collectSysInfo(ctx context.Context, cfg *Config) error {
 	}
 	if len(res.CrashDir) != 0 {
 		cfg.Logger.Status("Copying crashes")
-		if err := moveFromHost(ctx, cfg, hst, res.CrashDir, filepath.Join(cfg.ResDir, crashesDir)); err != nil {
+		if err := moveFromHost(ctx, cfg, hst, res.CrashDir, filepath.Join(cfg.ResDir, CrashesDir)); err != nil {
 			cfg.Logger.Log("Failed to copy crashes: ", err)
 		}
 	}

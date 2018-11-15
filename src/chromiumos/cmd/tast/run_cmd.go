@@ -8,6 +8,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -18,6 +19,7 @@ import (
 
 	"chromiumos/cmd/tast/logging"
 	"chromiumos/cmd/tast/run"
+	"chromiumos/cmd/tast/symbolize"
 	"chromiumos/cmd/tast/timing"
 	"chromiumos/tast/command"
 	"chromiumos/tast/ctxutil"
@@ -32,9 +34,10 @@ const (
 
 // runCmd implements subcommands.Command to support running tests.
 type runCmd struct {
-	cfg     *run.Config   // shared config for running tests
-	wrapper runWrapper    // can be set by tests to stub out calls to run package
-	timeout time.Duration // overall timeout; 0 if no timeout
+	cfg       *run.Config   // shared config for running tests
+	wrapper   runWrapper    // can be set by tests to stub out calls to run package
+	timeout   time.Duration // overall timeout; 0 if no timeout
+	symbolize bool          // should crashes from the DUT be symbolized?
 }
 
 func newRunCmd() *runCmd {
@@ -54,6 +57,7 @@ func (*runCmd) Usage() string {
 
 func (r *runCmd) SetFlags(f *flag.FlagSet) {
 	f.Var(command.NewDurationFlag(time.Second, &r.timeout, 0), "timeout", "run timeout in seconds, or 0 for none")
+	f.BoolVar(&r.symbolize, "symbolize", true, "symbolize crashes collected from the DUT") // FIXME: Set to false after tryjobs.
 	r.cfg.SetFlags(f)
 }
 
@@ -171,6 +175,12 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 		}
 	}
 
+	if r.symbolize {
+		if err := r.symbolizeCrashes(ctx); err != nil {
+			lg.Log("Crash symbolization failed: ", err)
+		}
+	}
+
 	// Log the first line of the error as the last line of output to make it easy to see.
 	if status.ExitCode != subcommands.ExitSuccess {
 		if lines := strings.SplitN(status.ErrorMsg, "\n", 2); len(lines) >= 1 {
@@ -179,4 +189,60 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 	}
 
 	return status.ExitCode
+}
+
+// symbolizeCrashes tries to symbolize all minidumps in run.CrashesDir within r.cfg.ResDir.
+func (r *runCmd) symbolizeCrashes(ctx context.Context) error {
+	dir := filepath.Join(r.cfg.ResDir, run.CrashesDir)
+	crashes, err := filepath.Glob(filepath.Join(dir, "*.dmp"))
+	if err != nil {
+		return err
+	}
+	if len(crashes) == 0 {
+		return nil
+	}
+
+	td, err := ioutil.TempDir("", "tast_symbolize.")
+	if err != nil {
+		return err
+	}
+	defer os.RemoveAll(td)
+
+	// Write a separate log with details about the symbolization process since it can be noisy.
+	lf, err := os.Create(filepath.Join(dir, "symbolization.txt"))
+	if err != nil {
+		return err
+	}
+	defer lf.Close()
+	lg := logging.NewSimple(lf, log.LstdFlags, true /* verbose */)
+
+	r.cfg.Logger.Logf("Symbolizing %d crash(es)", len(crashes))
+	for _, p := range crashes {
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
+		dst := p + ".txt"
+		r.cfg.Logger.Logf("Symbolizing %v to %v", p, dst)
+		if err := r.symbolizeCrash(ctx, p, dst, td, lg); err != nil {
+			r.cfg.Logger.Logf("Failed to symbolize %v: %v", p, err)
+		}
+	}
+	return nil
+}
+
+// symbolizeCrash tries to symbolize the minidump file at srcPath to dstPath.
+// symbolDir is used to store debugging symbols that are needed to do this.
+// Details about the symbolization process are written to lg.
+func (r *runCmd) symbolizeCrash(ctx context.Context, srcPath, dstPath, symbolDir string, lg logging.Logger) error {
+	dst, err := os.Create(dstPath)
+	if err != nil {
+		return err
+	}
+	defer dst.Close()
+
+	// TODO(derat): Watch ctx's deadline.
+	return symbolize.SymbolizeCrash(srcPath, dst, symbolize.Config{
+		Logger:    lg,
+		SymbolDir: symbolDir,
+	})
 }

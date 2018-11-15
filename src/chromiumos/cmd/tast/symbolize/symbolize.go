@@ -69,12 +69,16 @@ func SymbolizeCrash(path string, w io.Writer, cfg Config) error { // NOLINT
 			url := breakpad.GetSymbolsURL(ri.builderPath)
 			cfg.Logger.Debugf("Extracting %v symbol file(s) from %v", len(missing), url)
 			if created, err = breakpad.DownloadSymbols(url, cfg.SymbolDir, missing); err != nil {
-				// Keep going so we can print what we have.
 				cfg.Logger.Logf("Failed to get symbols from %v: %v", url, err)
+			} else if created == 0 {
+				cfg.Logger.Log("Didn't find any symbols in ", url)
 			}
-		} else {
-			cfg.Logger.Debugf("Generating %v symbol file(s) from %v", len(missing), cfg.BuildRoot)
-			created = createSymbolFiles(&cfg, missing)
+		}
+
+		// Try to generate symbols from /build if we didn't download them all: https://crbug.com/904642
+		if remaining := len(missing) - created; remaining > 0 {
+			cfg.Logger.Debugf("Generating %v symbol file(s) from %v", remaining, cfg.BuildRoot)
+			created += createSymbolFiles(&cfg, missing)
 		}
 	}
 

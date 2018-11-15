@@ -26,17 +26,17 @@ func GetSymbolsURL(builderPath string) string {
 }
 
 // DownloadSymbols downloads url (see GetSymbolsURL) and extracts the symbol files specified
-// in files to destDir. The number of files that were created is returned.
-func DownloadSymbols(url, destDir string, files SymbolFileMap) (created int, err error) {
-	// Create a set of relative symbol file paths.
-	wanted := make(map[string]struct{}, len(files))
+// in files to destDir. Files that could not be downloaded are returned.
+func DownloadSymbols(url, destDir string, files SymbolFileMap) (missing SymbolFileMap, err error) {
+	// Create a map from relative symbol file paths to absolute paths.
+	wanted := make(map[string]string, len(files))
 	for p, id := range files {
-		wanted[GetSymbolFilePath("", filepath.Base(p), id)] = struct{}{}
+		wanted[GetSymbolFilePath("", filepath.Base(p), id)] = p
 	}
 
 	as, err := newArchiveStreamer(url)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 	defer as.close()
 
@@ -46,7 +46,7 @@ func DownloadSymbols(url, destDir string, files SymbolFileMap) (created int, err
 		if err == io.EOF {
 			break
 		} else if err != nil {
-			return created, err
+			return nil, err
 		}
 
 		// Strip off the weird leading directories used in archive files and check if this
@@ -59,17 +59,20 @@ func DownloadSymbols(url, destDir string, files SymbolFileMap) (created int, err
 		// tar.Reader functions as an io.Reader and returns data from the current entry
 		// until Next is called.
 		if err := writeSymbolFile(filepath.Join(destDir, p), tr); err != nil {
-			return created, err
+			return nil, err
 		}
 
-		created++
 		delete(wanted, p)
 		if len(wanted) == 0 {
 			break
 		}
 	}
 
-	return created, nil
+	missing = make(SymbolFileMap)
+	for _, abs := range wanted {
+		missing[abs] = files[abs]
+	}
+	return missing, nil
 }
 
 // writeSymbolFiles creates a new file (including parent directory) at p

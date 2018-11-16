@@ -7,10 +7,11 @@ package crash
 
 import (
 	"errors"
-	"io"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"chromiumos/tast/fsutil"
 )
 
 const (
@@ -33,24 +34,6 @@ const (
 
 	lsbReleasePath = "/etc/lsb-release"
 )
-
-// copyFile creates a new file at dst containing the contents of the file at src.
-func copyFile(dst, src string) error {
-	sf, err := os.Open(src)
-	if err != nil {
-		return err
-	}
-	defer sf.Close()
-
-	df, err := os.Create(dst)
-	if err != nil {
-		return err
-	}
-	defer df.Close()
-
-	_, err = io.Copy(df, sf)
-	return err
-}
 
 // DefaultDirs returns all standard directories to which crashes are written.
 func DefaultDirs() []string {
@@ -116,7 +99,7 @@ func CopyNewFiles(dstDir string, newPaths, oldPaths []string, maxPerExec int) (
 			continue
 		}
 
-		if err := copyFile(filepath.Join(dstDir, filepath.Base(sp)), sp); err != nil {
+		if err := fsutil.CopyFile(sp, filepath.Join(dstDir, filepath.Base(sp))); err != nil {
 			warnings[sp] = err
 		} else {
 			execCount[base]++
@@ -127,5 +110,5 @@ func CopyNewFiles(dstDir string, newPaths, oldPaths []string, maxPerExec int) (
 
 // CopySystemInfo copies system information relevant to crash dumps (e.g. lsb-release) into dstDir.
 func CopySystemInfo(dstDir string) error {
-	return copyFile(filepath.Join(dstDir, filepath.Base(lsbReleasePath)), lsbReleasePath)
+	return fsutil.CopyFile(lsbReleasePath, filepath.Join(dstDir, filepath.Base(lsbReleasePath)))
 }

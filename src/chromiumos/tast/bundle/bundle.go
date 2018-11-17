@@ -5,13 +5,18 @@
 package bundle
 
 import (
+	"bytes"
 	"context"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"runtime"
+	"runtime/pprof"
 	"sort"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -183,6 +188,14 @@ func runTest(ctx context.Context, mw *control.MessageWriter, args *Args, cfg *ru
 			NextTest:     next,
 		}
 
+		// Writes a TestLog control message with the current time.
+		testLog := func(msg string) { mw.WriteMessage(&control.TestLog{Time: time.Now(), Text: msg}) }
+
+		origGoroutines, err := getGoroutines()
+		if err != nil {
+			testLog(fmt.Sprintf("Failed to get pre-test goroutines: %v", err))
+		}
+
 		ch := make(chan testing.Output)
 		abortCopier := make(chan bool, 1)
 		copierDone := make(chan bool, 1)
@@ -198,6 +211,18 @@ func runTest(ctx context.Context, mw *control.MessageWriter, args *Args, cfg *ru
 			abortCopier <- true
 		}
 		<-copierDone
+
+		if origGoroutines != nil {
+			if newGoroutines, err := getGoroutines(); err != nil {
+				testLog(fmt.Sprintf("Failed to get post-test goroutines: %v", err))
+			} else {
+				for id, str := range newGoroutines {
+					if _, ok := origGoroutines[id]; !ok {
+						testLog("Possible leak: " + str)
+					}
+				}
+			}
+		}
 	}
 
 	mw.WriteMessage(&control.TestEnd{
@@ -273,4 +298,50 @@ func prepareTempDir(tempDir string) (restore func(), err error) {
 			os.Unsetenv(envTempDir)
 		}
 	}, nil
+}
+
+var goroutineBlockRegexp = regexp.MustCompile(`\n\s*\n`)        // matches separators between goroutines in pprof output
+var goroutineIDRegexp = regexp.MustCompile(`^goroutine (\d+) `) // extracts goroutine IDs from pprof output
+
+// getGoroutines returns a map from IDs of currently-running goroutines to their stacks.
+func getGoroutines() (map[int64]string, error) {
+	const profName = "goroutine"
+	p := pprof.Lookup("goroutine")
+	if p == nil {
+		return nil, fmt.Errorf("failed to get %q profile", profName)
+	}
+
+	// Use debug level 2 to get a stack format similar to panic's:
+	//
+	// goroutine 1 [running]:
+	// runtime/pprof.writeGoroutineStacks(0xb30240, 0xc4203025b0, 0x4, 0xb38560)
+	//         /usr/lib/go/x86_64-cros-linux-gnu/src/runtime/pprof/pprof.go:650 +0xa7
+	// runtime/pprof.writeGoroutine(0xb30240, 0xc4203025b0, 0x2, 0x0, 0xc420578540)
+	//         /usr/lib/go/x86_64-cros-linux-gnu/src/runtime/pprof/pprof.go:639 +0x44
+	// ...
+	// main.main()
+	//         /some/path/main.go:36 +0x6e
+	//
+	// goroutine 66 [IO wait]:
+	// internal/poll.runtime_pollWait(0x7b765fdebf00, 0x72, 0xc42032a9f0)
+	//         /usr/lib/go/x86_64-cros-linux-gnu/src/runtime/netpoll.go:173 +0x57
+	// ...
+	// created by github.com/godbus/dbus.(*Conn).Auth
+	//         /usr/lib/gopath/src/github.com/godbus/dbus/auth.go:118 +0x6c9
+	buf := bytes.Buffer{}
+	p.WriteTo(&buf, 2)
+
+	goroutines := make(map[int64]string)
+	for _, block := range goroutineBlockRegexp.Split(buf.String(), -1) {
+		matches := goroutineIDRegexp.FindStringSubmatch(block)
+		if matches == nil {
+			return nil, fmt.Errorf("didn't find goroutine ID in %q", strings.Split(block, "\n")[0])
+		}
+		id, err := strconv.ParseInt(matches[1], 10, 64)
+		if err != nil {
+			return nil, fmt.Errorf("couldn't parse goroutine ID %q: %v", matches[1], err)
+		}
+		goroutines[id] = block
+	}
+	return goroutines, nil
 }

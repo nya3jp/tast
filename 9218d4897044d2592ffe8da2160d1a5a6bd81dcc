@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c1681528_d9c59a6c",
+        "filename": "src/chromiumos/tast/fsutil/fsutil.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-11-17T05:25:48Z",
+      "side": 1,
+      "message": "another approach would be to get rid of these options and instead:\n\n- make CopyFile apply the original mode but not touch ownership\n- make MoveFile set ownership itself\n\ni think i\u0027m leaning toward that, actually, in the interest of having a simpler api. any opinions?",
+      "revId": "9218d4897044d2592ffe8da2160d1a5a6bd81dcc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

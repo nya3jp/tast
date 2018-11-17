@@ -16,6 +16,24 @@
       "revId": "9218d4897044d2592ffe8da2160d1a5a6bd81dcc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bf363b31_fa98b854",
+        "filename": "src/chromiumos/tast/fsutil/fsutil.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-11-17T15:34:28Z",
+      "side": 1,
+      "message": "yeah, not taking options seems better.",
+      "parentUuid": "c1681528_d9c59a6c",
+      "revId": "9218d4897044d2592ffe8da2160d1a5a6bd81dcc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

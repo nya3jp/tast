@@ -103,12 +103,12 @@ func runTestsAndReport(args *Args, stdout io.Writer) {
 			return
 		}
 	} else {
-		created, err := createOutDirIfUnset(&bundleArgs)
+		created, err := setUpBaseOutDir(&bundleArgs)
 		if err != nil {
-			mw.WriteMessage(newRunErrorMessagef(statusError, "Failed to create out dir: %v", err))
+			mw.WriteMessage(newRunErrorMessagef(statusError, "Failed to set up base out dir: %v", err))
 			return
 		}
-		// If the user didn't specify an out dir, create a temporary one and clean it up later.
+		// If the runner was executed manually and an out dir wasn't specified, clean up the temp dir that was created.
 		if !args.report && created {
 			defer os.RemoveAll(bundleArgs.OutDir)
 		}
@@ -156,15 +156,21 @@ func newRunErrorMessagef(status int, format string, args ...interface{}) *contro
 	}
 }
 
-// createOutDirIfUnset creates and assigns a temporary directory if args.OutDir is empty.
-func createOutDirIfUnset(args *bundle.Args) (created bool, err error) {
-	if args.OutDir != "" {
-		return false, nil
+// setUpBaseOutDir creates and assigns a temporary directory if args.OutDir is empty.
+// It also ensures that the dir is accessible to all users.
+func setUpBaseOutDir(args *bundle.Args) (created bool, err error) {
+	if args.OutDir == "" {
+		if args.OutDir, err = ioutil.TempDir("", "tast_out."); err != nil {
+			return false, err
+		}
+		created = true
 	}
-	if args.OutDir, err = ioutil.TempDir("", "tast_out."); err != nil {
-		return false, err
+	// Make the directory traversable in case a test wants to write a file as another user.
+	// (Note that we can't guarantee that all the parent directories are also accessible, though.)
+	if err = os.Chmod(args.OutDir, 0755); err != nil && created {
+		os.RemoveAll(args.OutDir)
 	}
-	return true, nil
+	return created, err
 }
 
 // logMessages reads control messages from r and logs them to lg.

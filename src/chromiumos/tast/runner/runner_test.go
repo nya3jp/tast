@@ -307,9 +307,12 @@ func TestRunTests(t *gotesting.T) {
 	if re, ok := msgs[len(msgs)-1].(*control.RunEnd); !ok {
 		t.Errorf("Last message not RunEnd: %v", msgs[len(msgs)-1])
 	} else {
-		if _, err := os.Stat(re.OutDir); os.IsNotExist(err) {
+		if fi, err := os.Stat(re.OutDir); os.IsNotExist(err) {
 			t.Errorf("RunEnd out dir %q doesn't exist", re.OutDir)
 		} else {
+			if mode := fi.Mode() & os.ModePerm; mode != 0755 {
+				t.Errorf("Out dir %v has mode 0%o; want 0%o", re.OutDir, mode, 0755)
+			}
 			os.RemoveAll(re.OutDir)
 		}
 	}

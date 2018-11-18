@@ -193,8 +193,10 @@ func TestRunSuccess(t *gotesting.T) {
 	if errs := getOutputErrors(or.read()); len(errs) != 0 {
 		t.Errorf("Got unexpected error(s) for test: %v", errs)
 	}
-	if _, err := os.Stat(od); err != nil {
+	if fi, err := os.Stat(od); err != nil {
 		t.Errorf("Out dir %v not accessible after testing: %v", od, err)
+	} else if mode := fi.Mode()&os.ModePerm | os.ModeSticky; mode != 0777|os.ModeSticky {
+		t.Errorf("Out dir %v has mode 0%o; want 0%o", od, mode, 0777|os.ModeSticky)
 	}
 }
 

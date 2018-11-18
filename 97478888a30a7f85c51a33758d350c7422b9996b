@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "724f446c_2c654213",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1313748
+      },
+      "writtenOn": "2018-11-18T10:35:53Z",
+      "side": 1,
+      "message": "You would really like:\nhttps://lkml.org/lkml/2018/11/12/2251\nwhich would allow us at LXC to not mount via symlinks.\nThe irony here is that using symlinks to mount is the only way\nto safely mount paths atm.",
+      "revId": "97478888a30a7f85c51a33758d350c7422b9996b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

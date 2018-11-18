@@ -162,6 +162,11 @@ func (tst *Test) Run(ctx context.Context, ch chan<- Output, cfg *TestConfig) boo
 			if err := os.MkdirAll(cfg.OutDir, 0755); err != nil {
 				s.Fatal("Failed to create output dir: ", err)
 			}
+			// Set the sticky bit on the directory so that tests can create files as other users.
+			// (The mode passed to os.MkdirAll is modified by umask.)
+			if err := os.Chmod(cfg.OutDir, 0777|os.ModeSticky); err != nil {
+				s.Fatal("Failed to set permissions on output dir: ", err)
+			}
 		}
 		if cfg.PreTestFunc != nil {
 			cfg.PreTestFunc(ctx, s)

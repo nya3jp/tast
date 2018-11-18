@@ -164,6 +164,10 @@ func createOutDirIfUnset(args *bundle.Args) (created bool, err error) {
 	if args.OutDir, err = ioutil.TempDir("", "tast_out."); err != nil {
 		return false, err
 	}
+	// Make the directory traversable in case a test wants to write a file as another user.
+	if err := os.Chmod(args.OutDir, 0755); err != nil {
+		return false, err
+	}
 	return true, nil
 }
 

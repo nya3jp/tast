@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3ceec64f_8951d302",
+        "filename": "src/chromiumos/tast/runner/runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-11-19T06:34:32Z",
+      "side": 1,
+      "message": "IIUC this function is called only when OutDir is not explicitly set. Is it reasonable to assume the directory is world-accessible if OutDir is given?",
+      "range": {
+        "startLine": 160,
+        "startChar": 0,
+        "endLine": 160,
+        "endChar": 71
+      },
+      "revId": "ad8e93a11780dcb8674c2eae694c147242b54fdf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b3aa6dd3_566fdf6f",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-11-19T06:34:32Z",
+      "side": 1,
+      "message": "Hmm, sorry, I don\u0027t understand the comment about the sticky bit here. My understanding is that the bit disallows processes to remove a file under it unless the process is the owner of the file (or the process has privilege); it forbids some operations but does not allow anything. I think it\u0027s good to set the sticky bit for world-writable directory, though.",
+      "range": {
+        "startLine": 165,
+        "startChar": 0,
+        "endLine": 166,
+        "endChar": 60
+      },
+      "revId": "ad8e93a11780dcb8674c2eae694c147242b54fdf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

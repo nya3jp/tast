@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "bae8bf5d_e7ec3b0a",
+        "filename": "src/chromiumos/tast/fsutil/fsutil.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-11-19T15:05:02Z",
+      "side": 1,
+      "message": "whoops, nice catch. i changed the implementation to use a temp file and forgot to update this.",
+      "parentUuid": "67c46964_0df18521",
+      "range": {
+        "startLine": 18,
+        "startChar": 3,
+        "endLine": 18,
+        "endChar": 19
+      },
+      "revId": "5957b66e5eaf0c2b4b7c4949f56f259336163158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5ccaf222_4a7cc187",
         "filename": "src/chromiumos/tast/fsutil/fsutil.go",
         "patchSetId": 3
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "a92791fd_7373c064",
+        "filename": "src/chromiumos/tast/fsutil/fsutil.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-11-19T15:05:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5ccaf222_4a7cc187",
+      "range": {
+        "startLine": 19,
+        "startChar": 3,
+        "endLine": 19,
+        "endChar": 64
+      },
+      "revId": "5957b66e5eaf0c2b4b7c4949f56f259336163158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3d34ca61_6777d3ff",
         "filename": "src/chromiumos/tast/fsutil/fsutil.go",
         "patchSetId": 3
@@ -59,6 +107,24 @@
       "writtenOn": "2018-11-19T13:53:07Z",
       "side": 1,
       "message": "Could you check that err is EXDEV, and if not, return the err?",
+      "revId": "5957b66e5eaf0c2b4b7c4949f56f259336163158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "88bc1084_81b130eb",
+        "filename": "src/chromiumos/tast/fsutil/fsutil.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-11-19T15:05:02Z",
+      "side": 1,
+      "message": "hmm, i\u0027m not sure how to check that without inspecting strings. os.Rename looks like it returns an *os.LinkError. i\u0027ve added a TODO for now -- please let me know if you have any suggestions.",
+      "parentUuid": "3d34ca61_6777d3ff",
       "revId": "5957b66e5eaf0c2b4b7c4949f56f259336163158",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -112,6 +178,30 @@
     },
     {
       "key": {
+        "uuid": "76b6d27f_1b408e2c",
+        "filename": "src/chromiumos/tast/fsutil/fsutil.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-11-19T15:05:02Z",
+      "side": 1,
+      "message": "hmm. i think that the current behavior matches cp and mv\u0027s default behavior, so i\u0027d prefer to keep it this way. if you both still feel like CopyFile should chown as well, i\u0027ll change it, though. :-)",
+      "parentUuid": "2742cc11_3d6f0fea",
+      "range": {
+        "startLine": 82,
+        "startChar": 0,
+        "endLine": 88,
+        "endChar": 2
+      },
+      "revId": "5957b66e5eaf0c2b4b7c4949f56f259336163158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "44b2be49_556107ca",
         "filename": "src/chromiumos/tast/fsutil/fsutil_test.go",
         "patchSetId": 3
@@ -126,6 +216,24 @@
       "revId": "5957b66e5eaf0c2b4b7c4949f56f259336163158",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9d65aae2_e7804f05",
+        "filename": "src/chromiumos/tast/fsutil/fsutil_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-11-19T15:05:02Z",
+      "side": 1,
+      "message": "i wanted to do this too, but i wasn\u0027t sure how to test it reliably. i think that /dev/shm works here, though -- updated.",
+      "parentUuid": "44b2be49_556107ca",
+      "revId": "5957b66e5eaf0c2b4b7c4949f56f259336163158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

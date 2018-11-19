@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "7af293e7_d7bb16bf",
+        "filename": "src/chromiumos/tast/runner/runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-11-19T15:38:25Z",
+      "side": 1,
+      "message": "in practice, the already-set case doesn\u0027t get used currently, as far as i\u0027m aware -- the only way to make it happen is by running local_test_runner manually with --outdir.\n\ni\u0027ve moved the chmod to runTestsAndReport, which should help with the simple case where this is just a dir under /tmp. it may still fail if there are additional unaccessible parent dirs, but i don\u0027t think that that\u0027s a big deal. sound okay?",
+      "parentUuid": "3ceec64f_8951d302",
+      "range": {
+        "startLine": 160,
+        "startChar": 0,
+        "endLine": 160,
+        "endChar": 71
+      },
+      "revId": "ad8e93a11780dcb8674c2eae694c147242b54fdf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b3aa6dd3_566fdf6f",
         "filename": "src/chromiumos/tast/testing/test.go",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2018-11-19T06:34:32Z",
       "side": 1,
       "message": "Hmm, sorry, I don\u0027t understand the comment about the sticky bit here. My understanding is that the bit disallows processes to remove a file under it unless the process is the owner of the file (or the process has privilege); it forbids some operations but does not allow anything. I think it\u0027s good to set the sticky bit for world-writable directory, though.",
+      "range": {
+        "startLine": 165,
+        "startChar": 0,
+        "endLine": 166,
+        "endChar": 60
+      },
+      "revId": "ad8e93a11780dcb8674c2eae694c147242b54fdf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c091512a_71d46244",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-11-19T15:38:25Z",
+      "side": 1,
+      "message": "thanks, that\u0027s my understanding too. :-) i\u0027ve made the comment clearer.",
+      "parentUuid": "b3aa6dd3_566fdf6f",
       "range": {
         "startLine": 165,
         "startChar": 0,

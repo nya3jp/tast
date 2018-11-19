@@ -25,6 +25,46 @@
     },
     {
       "key": {
+        "uuid": "5ccaf222_4a7cc187",
+        "filename": "src/chromiumos/tast/fsutil/fsutil.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-11-19T13:53:07Z",
+      "side": 1,
+      "message": "Actually, this does not match with the implementation (file at dst is not removed if, e.g. tempfile creation failed).\nCould you fix?",
+      "range": {
+        "startLine": 19,
+        "startChar": 3,
+        "endLine": 19,
+        "endChar": 64
+      },
+      "revId": "5957b66e5eaf0c2b4b7c4949f56f259336163158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3d34ca61_6777d3ff",
+        "filename": "src/chromiumos/tast/fsutil/fsutil.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-11-19T13:53:07Z",
+      "side": 1,
+      "message": "Could you check that err is EXDEV, and if not, return the err?",
+      "revId": "5957b66e5eaf0c2b4b7c4949f56f259336163158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c9b2321d_69e81d58",
         "filename": "src/chromiumos/tast/fsutil/fsutil.go",
         "patchSetId": 3
@@ -42,6 +82,47 @@
         "endLine": 88,
         "endChar": 2
       },
+      "revId": "5957b66e5eaf0c2b4b7c4949f56f259336163158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2742cc11_3d6f0fea",
+        "filename": "src/chromiumos/tast/fsutil/fsutil.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-11-19T13:53:07Z",
+      "side": 1,
+      "message": "I would expect Copy/MoveFile functions are consistent in this.\nSo, could you keep consistency? E.g.;\n1) Chown in CopyFile, too.\n2) Extract this part into another function. Or\n3) at least, change the function name/signature to indicate that the behavior is different (more than just Move/Copy diff)?",
+      "parentUuid": "c9b2321d_69e81d58",
+      "range": {
+        "startLine": 82,
+        "startChar": 0,
+        "endLine": 88,
+        "endChar": 2
+      },
+      "revId": "5957b66e5eaf0c2b4b7c4949f56f259336163158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "44b2be49_556107ca",
+        "filename": "src/chromiumos/tast/fsutil/fsutil_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2018-11-19T13:53:07Z",
+      "side": 1,
+      "message": "One of the important feature of MoveFile is cross-filesystem move.\nCould you add a unittest case for that?",
       "revId": "5957b66e5eaf0c2b4b7c4949f56f259336163158",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

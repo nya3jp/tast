@@ -22,6 +22,8 @@ The following software features are defined:
 *   `display_backlight` - An internal display backlight.
 *   `memd` - [Memory stats collection daemon].
 *   `ml_service` - ML Service daemon.
+*   `no_android` - The inability to run Android apps. This is the opposite of
+    the `android` feature; DUTs will have exactly one of these two features.
 *   `no_symlink_mount` - Symlink mounting is disabled via the
     `CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT` kernel option.
 *   `screenshot` - The [screenshot command] can save screenshots.

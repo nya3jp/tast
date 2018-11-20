@@ -158,11 +158,21 @@ func (tst *Test) Run(ctx context.Context, ch chan<- Output, cfg *TestConfig) boo
 		if tst.Timeout <= 0 {
 			s.Fatal("Invalid timeout ", tst.Timeout)
 		}
+
 		if cfg.OutDir != "" { // often left blank for unit tests
 			if err := os.MkdirAll(cfg.OutDir, 0755); err != nil {
 				s.Fatal("Failed to create output dir: ", err)
 			}
 		}
+
+		// Make sure all required data files exist.
+		for _, fn := range tst.Data {
+			fp := s.DataPath(fn)
+			if _, err := os.Stat(fp); err != nil {
+				s.Error("Test data missing (failed to download?): ", fn)
+			}
+		}
+
 		if cfg.PreTestFunc != nil {
 			cfg.PreTestFunc(ctx, s)
 		}

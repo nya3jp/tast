@@ -34,6 +34,8 @@ type Args struct {
 	OutDir string `json:"outDir,omitempty"`
 	// TempDir is the path to the directory under which temporary files for tests are written.
 	TempDir string `json:"tempDir,omitempty"`
+	// Devservers contains URLs of devservers that can be used to download files.
+	Devservers []string `json:"devservers,omitempty"`
 
 	// RemoteArgs contains additional arguments used to run remote tests.
 	RemoteArgs
@@ -173,6 +175,8 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, ru
 		flags.StringVar(&args.BundleGlob, "bundles", args.BundleGlob, "glob matching test bundles")
 		flags.StringVar(&args.DataDir, "datadir", args.DataDir, "directory containing data files")
 		flags.StringVar(&args.OutDir, "outdir", args.OutDir, "base directory to write output files to")
+		flags.Var(command.NewListFlag(",", func(v []string) { args.Devservers = v }, nil),
+			"devservers", "comma-separated list of devserver URLs")
 		flags.Var(command.NewListFlag(",", func(v []string) { args.GetSoftwareFeaturesArgs.ExtraUSEFlags = v }, nil),
 			"extrauseflags", "comma-separated list of additional USE flags to inject when checking test dependencies")
 

@@ -86,7 +86,9 @@ type RemoteArgs struct {
 // RunTestsArgs is nested within Args and contains additional arguments used by RunTestsMode.
 type RunTestsArgs struct {
 	bundle.RunTestsArgs
-	// Runner-specific args can be added here.
+
+	// Devservers contains URLs of devservers that can be used to download files.
+	Devservers []string `json:"devservers,omitempty"`
 }
 
 // GetSysInfoStateResult holds the result of a GetSysInfoStateMode command.
@@ -173,6 +175,8 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, ru
 		flags.StringVar(&args.BundleGlob, "bundles", args.BundleGlob, "glob matching test bundles")
 		flags.StringVar(&args.DataDir, "datadir", args.DataDir, "directory containing data files")
 		flags.StringVar(&args.OutDir, "outdir", args.OutDir, "base directory to write output files to")
+		flags.Var(command.NewListFlag(",", func(v []string) { args.RunTestsArgs.Devservers = v }, nil),
+			"devservers", "comma-separated list of devserver URLs")
 		flags.Var(command.NewListFlag(",", func(v []string) { args.GetSoftwareFeaturesArgs.ExtraUSEFlags = v }, nil),
 			"extrauseflags", "comma-separated list of additional USE flags to inject when checking test dependencies")
 

@@ -97,6 +97,7 @@ type Config struct {
 
 	hst *host.SSH // cached SSH connection; may be nil
 
+	devservers                  []string     // list of devserver URLs
 	checkTestDeps               testDepsMode // when test dependencies should be checked
 	extraUSEFlags               []string     // additional USE flags to inject when determining features
 	availableSoftwareFeatures   []string     // features supported by the DUT
@@ -167,6 +168,7 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 		f.StringVar(&c.overlayDir, "overlaydir", "", "base overlay directory containing test bundle ebuild, inferred if empty")
 		f.StringVar(&c.externalDataDir, "externaldatadir", filepath.Join(c.tastDir, "external_data"),
 			"directory used to cache external data files")
+		f.Var(command.NewListFlag(",", func(v []string) { c.devservers = v }, nil), "devservers", "comma-separated list of devserver URLs")
 
 		vals := map[string]int{
 			"auto":   int(checkTestDepsAuto),

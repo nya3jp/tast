@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6fa0c465_e93cfd17",
+        "filename": "src/chromiumos/tast/runner/runner.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-11-20T06:03:18Z",
+      "side": 1,
+      "message": "nit: and could you check err first?\n\n if err !\u003d nil { ... }\n if !args.report \u0026\u0026 created {\n   defer ...\n }",
+      "range": {
+        "startLine": 107,
+        "startChar": 0,
+        "endLine": 114,
+        "endChar": 3
+      },
+      "revId": "2f8dea5f713db2ff6247d2e6c512e82d6bef55de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

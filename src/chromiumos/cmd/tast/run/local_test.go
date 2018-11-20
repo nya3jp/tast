@@ -10,6 +10,7 @@ import (
 	"crypto/rsa"
 	"encoding/json"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -244,17 +245,19 @@ func TestLocalDataFiles(t *gotesting.T) {
 		categoryPkg = bundlePkg + "/" + category
 		pattern     = "cat.*" // wildcard matching all tests
 
-		file1   = "file1.txt"
-		file2   = "file2.txt"
-		file3   = "file3.txt"
-		file4   = "file4.txt"
-		extFile = "ext_file.txt"
+		file1         = "file1.txt"
+		file2         = "file2.txt"
+		file3         = "file3.txt"
+		file4         = "file4.txt"
+		extFile       = "ext_file.txt"
+		extLinkFile   = "ext_file.txt.external"
+		legacyExtFile = "legacy_ext_file.txt"
 	)
 
 	// Make local_test_runner list two tests containing the first three files (with overlap).
 	tests := []testing.Test{
 		testing.Test{Name: category + ".Test1", Pkg: categoryPkg, Data: []string{file1, file2}},
-		testing.Test{Name: category + ".Test2", Pkg: categoryPkg, Data: []string{file2, file3, extFile}},
+		testing.Test{Name: category + ".Test2", Pkg: categoryPkg, Data: []string{file2, file3, extFile, legacyExtFile}},
 	}
 	var err error
 	if td.runStdout, err = json.Marshal(tests); err != nil {
@@ -264,20 +267,20 @@ func TestLocalDataFiles(t *gotesting.T) {
 	// Create a fake source checkout and write the data files to it. Just use their names as their contents.
 	td.cfg.buildWorkspace = filepath.Join(td.tempDir, "ws")
 	if err = testutil.WriteFiles(filepath.Join(td.cfg.buildWorkspace, "src", tests[0].DataDir()),
-		map[string]string{file1: file1, file2: file2, file3: file3, file4: file4}); err != nil {
+		map[string]string{file1: file1, file2: file2, file3: file3, file4: file4, extLinkFile: extLinkFile}); err != nil {
 		t.Fatal(err)
 	}
 
-	// Write an external data file and a config referencing it.
+	// Write a legacy external data file and a config referencing it.
 	td.cfg.externalDataDir = filepath.Join(td.tempDir, "external")
-	if err = testutil.WriteFiles(td.cfg.externalDataDir, map[string]string{extFile: extFile}); err != nil {
+	if err = testutil.WriteFiles(td.cfg.externalDataDir, map[string]string{legacyExtFile: legacyExtFile}); err != nil {
 		t.Fatal(err)
 	}
 	td.cfg.buildBundle = bundle
 	td.cfg.overlayDir = filepath.Join(td.tempDir, "overlay")
 	confPath := filepath.Join(localBundlePackage(bundle), localBundleExternalDataConf)
 	if err = testutil.WriteFiles(td.cfg.overlayDir, map[string]string{
-		confPath: filepath.Join(category, dataSubdir, extFile) + " " + filepath.Join(td.cfg.externalDataDir, extFile),
+		confPath: filepath.Join(category, dataSubdir, legacyExtFile) + " " + filepath.Join(td.cfg.externalDataDir, legacyExtFile),
 	}); err != nil {
 		t.Fatal(err)
 	}
@@ -301,6 +304,7 @@ func TestLocalDataFiles(t *gotesting.T) {
 		filepath.Join(category, dataSubdir, file2),
 		filepath.Join(category, dataSubdir, file3),
 		filepath.Join(category, dataSubdir, extFile),
+		filepath.Join(category, dataSubdir, legacyExtFile),
 	}
 	if !reflect.DeepEqual(paths, expPaths) {
 		t.Fatalf("getDataFilePaths() = %v; want %v", paths, expPaths)
@@ -316,15 +320,19 @@ func TestLocalDataFiles(t *gotesting.T) {
 		t.Fatal("pushDataFiles() failed: ", err)
 	}
 	expData := map[string]string{
-		filepath.Join(tests[0].DataDir(), file1):   file1,
-		filepath.Join(tests[0].DataDir(), file2):   file2,
-		filepath.Join(tests[1].DataDir(), file3):   file3,
-		filepath.Join(tests[1].DataDir(), extFile): extFile,
+		filepath.Join(tests[0].DataDir(), file1):         file1,
+		filepath.Join(tests[0].DataDir(), file2):         file2,
+		filepath.Join(tests[1].DataDir(), file3):         file3,
+		filepath.Join(tests[1].DataDir(), extLinkFile):   extLinkFile,
+		filepath.Join(tests[1].DataDir(), legacyExtFile): legacyExtFile,
 	}
 	if data, err := testutil.ReadFiles(filepath.Join(td.hostDir, localDataPushDir)); err != nil {
 		t.Error(err)
 	} else if !reflect.DeepEqual(data, expData) {
 		t.Errorf("pushDataFiles() copied %v; want %v", data, expData)
+	}
+	if _, err := ioutil.ReadFile(filepath.Join(td.hostDir, localDataPushDir, tests[1].DataDir(), extFile)); err == nil {
+		t.Errorf("pushDataFiles() unexpectedly copied %s", extFile)
 	}
 }
 

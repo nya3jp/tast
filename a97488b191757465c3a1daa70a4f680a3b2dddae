@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e4ee4de4_779e1307",
+        "filename": "src/chromiumos/tast/runner/runner.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-11-20T02:37:20Z",
+      "side": 1,
+      "message": "Hmm, I guess it\u0027s more usual to try reverting an operation (mkdir) within a function when it returns an error, rather than cleaning up in the caller.\n\nHow about either:\n\n- if os.Chmod fails, remove args.OutDir if it was just created, or\n- call os.Chmod directly in runTestsAndReport.",
+      "range": {
+        "startLine": 168,
+        "startChar": 0,
+        "endLine": 170,
+        "endChar": 34
+      },
+      "revId": "a97488b191757465c3a1daa70a4f680a3b2dddae",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "a5814f27_6a19d11d",
+        "filename": "src/chromiumos/tast/runner/runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-11-20T02:37:20Z",
+      "side": 1,
+      "message": "I see, maybe we can revisit this once we see any problems. In fact this change simplifies some tests. Thanks!",
+      "parentUuid": "7af293e7_d7bb16bf",
+      "range": {
+        "startLine": 160,
+        "startChar": 0,
+        "endLine": 160,
+        "endChar": 71
+      },
+      "revId": "ad8e93a11780dcb8674c2eae694c147242b54fdf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b3aa6dd3_566fdf6f",
         "filename": "src/chromiumos/tast/testing/test.go",
         "patchSetId": 1

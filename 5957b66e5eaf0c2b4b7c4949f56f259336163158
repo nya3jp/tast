@@ -250,6 +250,30 @@
     },
     {
       "key": {
+        "uuid": "193b99f4_9d2201e8",
+        "filename": "src/chromiumos/tast/fsutil/fsutil.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-11-20T06:08:27Z",
+      "side": 1,
+      "message": "thanks for the correction and explanation! that sounds good to me -- i\u0027ve moved the chown call to CopyFile and documented it in both places.",
+      "parentUuid": "3976165d_a1b4c240",
+      "range": {
+        "startLine": 82,
+        "startChar": 0,
+        "endLine": 88,
+        "endChar": 2
+      },
+      "revId": "5957b66e5eaf0c2b4b7c4949f56f259336163158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "44b2be49_556107ca",
         "filename": "src/chromiumos/tast/fsutil/fsutil_test.go",
         "patchSetId": 3

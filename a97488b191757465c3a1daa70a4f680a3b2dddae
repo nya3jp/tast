@@ -22,6 +22,30 @@
       "revId": "a97488b191757465c3a1daa70a4f680a3b2dddae",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2096c4d6_e40cd095",
+        "filename": "src/chromiumos/tast/runner/runner.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-11-20T05:50:29Z",
+      "side": 1,
+      "message": "sure, makes sense! i\u0027ve updated this function to clean up just-created dirs if chmod fails.",
+      "parentUuid": "e4ee4de4_779e1307",
+      "range": {
+        "startLine": 168,
+        "startChar": 0,
+        "endLine": 170,
+        "endChar": 34
+      },
+      "revId": "a97488b191757465c3a1daa70a4f680a3b2dddae",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

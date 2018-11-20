@@ -7,6 +7,7 @@ package testing
 import (
 	"context"
 	"encoding/json"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -353,6 +354,34 @@ func TestRunSkipStages(t *gotesting.T) {
 		checkRan("Test.Func", testRan, c.testAction)
 		checkRan("Precondition.Close", closeRan, c.closeAction)
 		checkRan("TestConfig.PostTestFunc", postTestRan, c.postTestAction)
+	}
+}
+
+func TestRunMissingData(t *gotesting.T) {
+	const (
+		existingFile = "existing.txt"
+		missingFile  = "missing.txt"
+	)
+
+	test := Test{
+		Func:    func(context.Context, *State) {},
+		Data:    []string{existingFile, missingFile},
+		Timeout: time.Minute,
+	}
+
+	td := testutil.TempDir(t)
+	defer os.RemoveAll(td)
+	if err := ioutil.WriteFile(filepath.Join(td, existingFile), nil, 0644); err != nil {
+		t.Fatalf("Failed to write %s: %v", existingFile, err)
+	}
+
+	or := newOutputReader()
+	test.Run(context.Background(), or.ch, &TestConfig{DataDir: td})
+
+	if errs := getOutputErrors(or.read()); len(errs) != 1 {
+		t.Errorf("Got %v errors for missing data test; want 1", errs)
+	} else if exp := "Test data missing (failed to download?): missing.txt"; errs[0].Reason != exp {
+		t.Errorf("Got an error %q; want %q", errs[0].Reason, exp)
 	}
 }
 

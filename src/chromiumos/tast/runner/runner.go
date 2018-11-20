@@ -5,6 +5,7 @@
 package runner
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -14,11 +15,13 @@ import (
 	"runtime"
 	"runtime/debug"
 	"strings"
+	"sync"
 	"time"
 
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/command"
 	"chromiumos/tast/control"
+	"chromiumos/tast/devserver"
 	"chromiumos/tast/testing"
 )
 
@@ -112,6 +115,17 @@ func runTestsAndReport(args *Args, stdout io.Writer) {
 		if !args.report && created {
 			defer os.RemoveAll(bundleArgs.OutDir)
 		}
+
+		var lm sync.Mutex
+		lf := func(msg string) {
+			lm.Lock()
+			mw.WriteMessage(&control.RunLog{Time: time.Now(), Text: msg})
+			lm.Unlock()
+		}
+		// TODO(nya): Consider applying timeout.
+		ctx := context.TODO()
+		cl := newDevserverClient(ctx, args.RunTestsArgs.Devservers, lf)
+		processExternalDataLinks(ctx, args.DataDir, tests, cl, lf)
 
 		for _, bundle := range bundles {
 			// Copy each bundle's output (consisting of control messages) directly to stdout.
@@ -228,4 +242,18 @@ func logMessages(r io.Reader, lg *log.Logger) *command.StatusError {
 		return command.NewStatusErrorf(statusTestFailed, "test(s) failed")
 	}
 	return nil
+}
+
+func newDevserverClient(ctx context.Context, devservers []string, lf func(msg string)) devserver.Client {
+	if len(devservers) == 0 {
+		lf("Devserver status: using pseudo client")
+		return devserver.NewPseudoClient(nil)
+	}
+
+	const timeout = 3 * time.Second
+	ctx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+	cl := devserver.NewRealClient(ctx, devservers, nil)
+	lf(fmt.Sprintf("Devserver status: %s", cl.Status()))
+	return cl
 }

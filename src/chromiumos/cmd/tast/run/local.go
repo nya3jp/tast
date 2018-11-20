@@ -300,6 +300,7 @@ func getDataFilePaths(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlo
 	}
 
 	// Load the external_data.conf file specifying URLs for external data files.
+	// TODO(nya): Remove support of legacy external data files declared in external_data.conf.
 	extConf := filepath.Join(cfg.overlayDir, localBundlePackage(cfg.buildBundle), localBundleExternalDataConf)
 	if _, err := os.Stat(extConf); err == nil {
 		if edm, err = newExternalDataMap(extConf); err != nil {
@@ -335,6 +336,8 @@ func pushDataFiles(ctx context.Context, cfg *Config, hst *host.SSH, destDir stri
 	}
 	cfg.Logger.Log("Pushing data files to target")
 
+	srcDir := filepath.Join(cfg.buildWorkspace, "src", localBundlePkgPathPrefix, cfg.buildBundle)
+
 	var wsPaths []string                // data files stored under cfg.buidlBundleWorkspace, relative to bundle dir
 	extPaths := make(map[string]string) // keys are filenames in cfg.externalDataDir, values are relative to bundle dir
 	for _, p := range paths {
@@ -344,13 +347,16 @@ func pushDataFiles(ctx context.Context, cfg *Config, hst *host.SSH, destDir stri
 				continue
 			}
 		}
+		lp := filepath.Join(srcDir, p+runner.ExternalLinkSuffix)
+		if _, err := os.Stat(lp); err == nil {
+			p += runner.ExternalLinkSuffix
+		}
 		wsPaths = append(wsPaths, p)
 	}
 
 	start := time.Now()
 	var err error
 	var wsBytes, extBytes int64
-	srcDir := filepath.Join(cfg.buildWorkspace, "src", localBundlePkgPathPrefix, cfg.buildBundle)
 	if wsBytes, err = pushToHost(ctx, cfg, hst, srcDir, destDir, wsPaths); err != nil {
 		return err
 	}
@@ -441,6 +447,9 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 		BundleGlob: bundleGlob,
 		Patterns:   cfg.Patterns,
 		DataDir:    dataDir,
+		RunTestsArgs: runner.RunTestsArgs{
+			Devservers: cfg.devservers,
+		},
 	}
 
 	switch cfg.mode {

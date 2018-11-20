@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f7412eee_c0a6fab3",
+        "filename": "src/chromiumos/tast/fsutil/fsutil.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-11-20T03:01:41Z",
+      "side": 1,
+      "message": "FYI, it seems errno can be inspected in this way:\n\nhttps://github.com/golang/dep/blob/master/internal/fs/rename.go#L18\n\nBut I think it\u0027s fine with the current way, though.",
+      "range": {
+        "startLine": 73,
+        "startChar": 0,
+        "endLine": 73,
+        "endChar": 46
+      },
+      "revId": "cdfe0670d1c35e6a34f01e312cc7ccdb0e359352",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ea0a2710_edb06621",
+        "filename": "src/chromiumos/tast/fsutil/fsutil_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-11-20T03:01:41Z",
+      "side": 1,
+      "message": "Nice, I expect we have this mount in most systems :)",
+      "range": {
+        "startLine": 100,
+        "startChar": 1,
+        "endLine": 100,
+        "endChar": 25
+      },
+      "revId": "cdfe0670d1c35e6a34f01e312cc7ccdb0e359352",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

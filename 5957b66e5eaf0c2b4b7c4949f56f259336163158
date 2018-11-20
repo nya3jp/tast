@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "8cce72e9_155dbb32",
+        "filename": "src/chromiumos/tast/fsutil/fsutil.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-11-20T03:01:41Z",
+      "side": 1,
+      "message": "Thanks, the new explanation is clear :)",
+      "parentUuid": "bae8bf5d_e7ec3b0a",
+      "range": {
+        "startLine": 18,
+        "startChar": 3,
+        "endLine": 18,
+        "endChar": 19
+      },
+      "revId": "5957b66e5eaf0c2b4b7c4949f56f259336163158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5ccaf222_4a7cc187",
         "filename": "src/chromiumos/tast/fsutil/fsutil.go",
         "patchSetId": 3
@@ -190,6 +214,30 @@
       "side": 1,
       "message": "hmm. i think that the current behavior matches cp and mv\u0027s default behavior, so i\u0027d prefer to keep it this way. if you both still feel like CopyFile should chown as well, i\u0027ll change it, though. :-)",
       "parentUuid": "2742cc11_3d6f0fea",
+      "range": {
+        "startLine": 82,
+        "startChar": 0,
+        "endLine": 88,
+        "endChar": 2
+      },
+      "revId": "5957b66e5eaf0c2b4b7c4949f56f259336163158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3976165d_a1b4c240",
+        "filename": "src/chromiumos/tast/fsutil/fsutil.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-11-20T03:01:41Z",
+      "side": 1,
+      "message": "Current MoveFile matches the behavior of \"mv\".\n\nCurrent CopyFile matches the behavior of \"cp --preserve\u003dmode\". The default \"cp\" command works just as it creates the destination file with the default way (affected by umask).\n\n [nya@bep cptmp]% ls -l\n total 0\n -rwxrwxrwx 1 root adm 0 Nov 20 11:40 a\n [nya@bep cptmp]% (umask 002; cp a b)\n [nya@bep cptmp]% ls -l\n total 0\n -rwxrwxrwx 1 root adm          0 Nov 20 11:40 a\n -rwxrwxr-x 1 nya  primarygroup 0 Nov 20 11:43 b\n\nBut I\u0027m not sure if the default \"cp\" behavior is what users of this function expect. I think it\u0027s fine to define our own behavior, rather than mimicing cp/mv, as long as it\u0027s explicitly documented. Then I slightly prefer matching the behavior of MoveFile/CopyFile...",
+      "parentUuid": "76b6d27f_1b408e2c",
       "range": {
         "startLine": 82,
         "startChar": 0,

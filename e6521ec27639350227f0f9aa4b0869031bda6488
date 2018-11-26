@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "aeddbe4e_919b9d16",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 8
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-11-26T19:23:08Z",
+      "side": 1,
+      "message": "i think that this will be confusing (does it also include pre-nyc? the name would suggest it does, but the description suggests that it doesn\u0027t).\n\ndo you expect to ever require \"or earlier\" android dependencies, or will these only be \"or later\"? if you\u0027ll only have \"or later\", i\u0027d suggest just naming this something like \"android_p\" and documenting it as meaning \"The ability to run Android apps that require Android P or later.\"",
+      "range": {
+        "startLine": 13,
+        "startChar": 5,
+        "endLine": 13,
+        "endChar": 20
+      },
+      "revId": "e6521ec27639350227f0f9aa4b0869031bda6488",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

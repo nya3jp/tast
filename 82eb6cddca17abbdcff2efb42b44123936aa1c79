@@ -22,6 +22,30 @@
       "revId": "82eb6cddca17abbdcff2efb42b44123936aa1c79",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a885ec04_5aed4a4c",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1212719
+      },
+      "writtenOn": "2018-11-26T23:27:13Z",
+      "side": 1,
+      "message": "The pre-release name was PIC, but the container name was pi which is why I went for pi here. We could just use p?",
+      "parentUuid": "519f094c_517afa34",
+      "range": {
+        "startLine": 36,
+        "startChar": 4,
+        "endLine": 36,
+        "endChar": 14
+      },
+      "revId": "82eb6cddca17abbdcff2efb42b44123936aa1c79",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

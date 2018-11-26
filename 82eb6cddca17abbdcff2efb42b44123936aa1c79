@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "519f094c_517afa34",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-11-26T23:23:23Z",
+      "side": 1,
+      "message": "just to make sure i understand correctly: was p\u0027s pre-release codename \"pi\" (and then its official name \"pie\")? we probably want to use pre-release names since i assume that new versions will need to be added here before the official names have been announced.\n\n(if \"pi\" was the pre-release name, then lgtm) :-)",
+      "range": {
+        "startLine": 36,
+        "startChar": 4,
+        "endLine": 36,
+        "endChar": 14
+      },
+      "revId": "82eb6cddca17abbdcff2efb42b44123936aa1c79",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

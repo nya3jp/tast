@@ -29,6 +29,7 @@ The following software features are defined:
     the `android` feature; DUTs will have exactly one of these two features.
 *   `no_symlink_mount` - Symlink mounting is disabled via the
     `CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT` kernel option.
+*   `reboot` - The ability to reboot reliably during a remote test.
 *   `screenshot` - The [screenshot command] can save screenshots.
 *   `selinux` - An SELinux-enabled board. All Android boards are
     SELinux-enabled.

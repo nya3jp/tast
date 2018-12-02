@@ -1,0 +1,558 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a8d8b57b_98603391",
+        "filename": "src/chromiumos/tast/devserver/devserver.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-02T03:43:24Z",
+      "side": 1,
+      "message": "nit: devservers\n\nit might also be useful to provide a brief summary of what devservers are and link to documentation. http://sites/chromeos/for-team-members/infrastructure/backend/autotest-devserver-doc is the best page that i\u0027ve been able to find so far.",
+      "range": {
+        "startLine": 5,
+        "startChar": 43,
+        "endLine": 5,
+        "endChar": 52
+      },
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "67f407d2_8199affe",
+        "filename": "src/chromiumos/tast/devserver/devserver.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-02T03:43:24Z",
+      "side": 1,
+      "message": "nit: \"have a\"",
+      "range": {
+        "startLine": 16,
+        "startChar": 15,
+        "endLine": 16,
+        "endChar": 18
+      },
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3e36a25b_9d58e094",
+        "filename": "src/chromiumos/tast/devserver/misc.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-02T03:43:24Z",
+      "side": 1,
+      "message": "nit: does this need to be a function, or could it be a var?\n\n  var defaultHTTPClient \u003d \u0026http.Client{\n      Transport: \u0026http.Transport{\n          ...\n      },\n  }",
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "baa09ec0_2d555ffb",
+        "filename": "src/chromiumos/tast/devserver/misc.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-02T03:43:24Z",
+      "side": 1,
+      "message": "nit: mind adding a comment with an example URL and how it\u0027d be split? (path not being slash-prefixed seems non-obvious)",
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a9ec6b3b_fca30b3e",
+        "filename": "src/chromiumos/tast/devserver/pseudo.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-02T03:43:24Z",
+      "side": 1,
+      "message": "note to self: this is a compile-time check that PseudoClient satisfies Client",
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5bb06c88_55237b10",
+        "filename": "src/chromiumos/tast/devserver/real.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-02T03:43:24Z",
+      "side": 1,
+      "message": "does dsURL need to be non-slash-suffixed? might want to document that if so",
+      "range": {
+        "startLine": 26,
+        "startChar": 55,
+        "endLine": 26,
+        "endChar": 60
+      },
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "497339d7_80b28aea",
+        "filename": "src/chromiumos/tast/devserver/real.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-02T03:43:24Z",
+      "side": 1,
+      "message": "nit: is there a message from the server that\u0027d be useful to include too?",
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e1bf3adb_f85e935d",
+        "filename": "src/chromiumos/tast/devserver/real.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-02T03:43:24Z",
+      "side": 1,
+      "message": "nit: \"upURLs\"?\n\nbut is this duplicating information already in |all|? based on the server struct, can you just check whether err is nil or not for the items in all? i have a preference to add an e.g. upURLs() method that iterates over |all| instead, as it reduces the chance of bugs in the future if the code is changed to e.g. update server.err after construction.",
+      "range": {
+        "startLine": 49,
+        "startChar": 1,
+        "endLine": 49,
+        "endChar": 4
+      },
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f0712ef0_e28576dd",
+        "filename": "src/chromiumos/tast/devserver/real.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-02T03:43:24Z",
+      "side": 1,
+      "message": "nit: file",
+      "range": {
+        "startLine": 134,
+        "startChar": 46,
+        "endLine": 134,
+        "endChar": 51
+      },
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ef9cfa87_13b77029",
+        "filename": "src/chromiumos/tast/devserver/real.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-02T03:43:24Z",
+      "side": 1,
+      "message": "is this just being used to provide a key that can be used for stable sorting, or is there more going on? probably worth including a comment.",
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f868c0a4_439044ee",
+        "filename": "src/chromiumos/tast/runner/args.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-02T03:43:24Z",
+      "side": 1,
+      "message": "is this only used for RunTestsMode? if so, maybe it should be part of RunTestsArgs.\n\n(i don\u0027t remember the history of why DataDir, OutDir, and TempDir are also top-level fields instead of part of RunTestArgs. :-( maybe the first two were added before i added RunTestsArgs?)",
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9f982316_c40d0aa2",
+        "filename": "src/chromiumos/tast/runner/external.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-02T03:43:24Z",
+      "side": 1,
+      "message": "nit: maybe \"These are JSON files that can be unmarshaled into the externalLink struct.\"",
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2ac3c251_711c7840",
+        "filename": "src/chromiumos/tast/runner/external.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-02T03:43:24Z",
+      "side": 1,
+      "message": "nit: \"external data file\"",
+      "range": {
+        "startLine": 35,
+        "startChar": 47,
+        "endLine": 35,
+        "endChar": 60
+      },
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d63f5563_e81d10f3",
+        "filename": "src/chromiumos/tast/runner/external.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-02T03:43:24Z",
+      "side": 1,
+      "message": "nit: \"a single download error\"",
+      "range": {
+        "startLine": 52,
+        "startChar": 43,
+        "endLine": 52,
+        "endChar": 64
+      },
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "95b5590b_87def297",
+        "filename": "src/chromiumos/tast/runner/external.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-02T03:43:24Z",
+      "side": 1,
+      "message": "nit: \"data file.\"",
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f43ea9dc_a39665c9",
+        "filename": "src/chromiumos/tast/runner/external.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-02T03:43:24Z",
+      "side": 1,
+      "message": "i\u0027m not sure if it will be a problem, but i\u0027ve sometimes noticed in logs (both from DUTs and from feedback reports from production devices) that the system clock is sometimes inaccurate after boot. hopefully it\u0027s not really a concern here...",
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "88ba8d90_50d4d1b3",
+        "filename": "src/chromiumos/tast/runner/external.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-02T03:43:24Z",
+      "side": 1,
+      "message": "how about separating these, which i think makes this easier to read?\n\n  missing :\u003d os.IsNotExist(err)\n  stale \u003d !missing \u0026\u0026 linkStat.ModTime()...\n  if stale {\n      ...\n\n(i think that \"stale\" would usually be interpreted as meaning \"exists but is old\" rather than also \"does not exist\")",
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d8f7d0f9_48d04275",
+        "filename": "src/chromiumos/tast/runner/external.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-02T03:43:24Z",
+      "side": 1,
+      "message": "nit: \"data file(s)\"",
+      "range": {
+        "startLine": 140,
+        "startChar": 42,
+        "endLine": 140,
+        "endChar": 46
+      },
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aedd025c_cf369f33",
+        "filename": "src/chromiumos/tast/runner/external.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 192,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-02T03:43:24Z",
+      "side": 1,
+      "message": "nit: is there any risk of |secs| being 0 here?",
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0baf997e_1f70c3f4",
+        "filename": "src/chromiumos/tast/runner/external.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-02T03:43:24Z",
+      "side": 1,
+      "message": "nit: consider using %v and res.duration.Round(time.Millisecond), which i think gives nicer output",
+      "range": {
+        "startLine": 193,
+        "startChar": 54,
+        "endLine": 193,
+        "endChar": 59
+      },
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7187b2f2_7d5b320a",
+        "filename": "src/chromiumos/tast/runner/external.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 219,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-02T03:43:24Z",
+      "side": 1,
+      "message": "even if we don\u0027t set a timeout now, would you consider passing a context all the way through to make it easier to add one later? see http://go/gh/golang/go/wiki/CodeReviewComments#contexts, which recommends that passing a context should be the default.\n\nalternately, https://golang.org/pkg/context/#TODO might make sense here.",
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "94bef812_725837fa",
+        "filename": "src/chromiumos/tast/runner/external.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 240,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-02T03:43:24Z",
+      "side": 1,
+      "message": "nit: \"the integrity\"",
+      "range": {
+        "startLine": 240,
+        "startChar": 17,
+        "endLine": 240,
+        "endChar": 26
+      },
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6fa57c31_bb839a80",
+        "filename": "src/chromiumos/tast/runner/external.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-02T03:43:24Z",
+      "side": 1,
+      "message": "nit: stat\n\n(but i think you can return err directly, as iirc it is usually \"stat \u003cpath\u003e: \u003cmsg\u003e\")",
+      "range": {
+        "startLine": 244,
+        "startChar": 31,
+        "endLine": 244,
+        "endChar": 35
+      },
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9a9d8f2c_e36b1b5e",
+        "filename": "src/chromiumos/tast/runner/external.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 251,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-02T03:43:24Z",
+      "side": 1,
+      "message": "i\u0027m not sure, but this err may also already start with \"seek \u003cpath\u003e\"",
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "93be4987_82a05c16",
+        "filename": "src/chromiumos/tast/runner/external_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-02T03:43:24Z",
+      "side": 1,
+      "message": "nit: \"data file\", \"data files\"",
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ae3ffc33_8023d3a2",
+        "filename": "src/chromiumos/tast/runner/external_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-02T03:43:24Z",
+      "side": 1,
+      "message": "nit: inconsistent",
+      "range": {
+        "startLine": 145,
+        "startChar": 41,
+        "endLine": 145,
+        "endChar": 52
+      },
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8a0ed10e_90a41280",
+        "filename": "src/chromiumos/tast/runner/runner.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 248,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-02T03:43:24Z",
+      "side": 1,
+      "message": "nit: context.TODO(), maybe?",
+      "range": {
+        "startLine": 248,
+        "startChar": 36,
+        "endLine": 248,
+        "endChar": 56
+      },
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "53b5d4d6_b47db4f0",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-02T03:43:24Z",
+      "side": 1,
+      "message": "should we abort the test here (maybe after reporting errors for all missing files)? i\u0027m a bit worried that we might get strange errors from tests if data files are missing.",
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e55aeb1c_e6b136ee",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1000768
+      },
+      "writtenOn": "2018-12-04T21:39:18Z",
+      "side": 0,
+      "message": "i think indentation here (and below) are off",
+      "revId": "e758f64dbc3ee76c44bc54615975c7ad2749cbdf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

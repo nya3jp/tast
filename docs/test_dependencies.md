@@ -12,6 +12,7 @@ The following software features are defined:
      used.
 *   `android_p` - The ability to [run Android apps] that require Android P or
      later.
+*   `asan` - Built with address sanitization.
 *   `audio_play` - The ability to play audio.
 *   `audio_record` - The ability to record audio.
 *   `autotest-capability:foo` - An [Autotest capability] named `foo`. See below.

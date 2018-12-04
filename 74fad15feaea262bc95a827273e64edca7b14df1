@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "614bff57_755e9f77",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-04T22:03:12Z",
+      "side": 1,
+      "message": "nit: maybe just \"Address space layout randomization was used when compiling binaries to protect against buffer-overflow attacks.\"?",
+      "revId": "74fad15feaea262bc95a827273e64edca7b14df1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aaa92936_ce66f01c",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-04T22:03:12Z",
+      "side": 1,
+      "message": "nit: mind adding an end-of-line comment like this?\n\n  // ASan instrumentation breaks ASLR",
+      "revId": "74fad15feaea262bc95a827273e64edca7b14df1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

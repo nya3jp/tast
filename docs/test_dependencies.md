@@ -27,6 +27,7 @@ The following software features are defined:
 *   `ml_service` - ML Service daemon.
 *   `no_android` - The inability to run Android apps. This is the opposite of
     the `android` feature; DUTs will have exactly one of these two features.
+*   `no_asan` - Binaries were built without [AddressSanitizer] instrumentation.
 *   `no_symlink_mount` - Symlink mounting is disabled via the
     `CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT` kernel option.
 *   `reboot` - The ability to reboot reliably during a remote test.
@@ -55,6 +56,7 @@ outside of video tests.
 [run Android apps]: https://developer.android.com/topic/arc/
 [Autotest capability]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/autotest-capability-default/
 [Memory stats collection daemon]: https://chromium.googlesource.com/chromiumos/platform2/+/master/metrics/memd/
+[AddressSanitizer]: https://github.com/google/sanitizers/wiki/AddressSanitizer
 [screenshot command]: https://chromium.googlesource.com/chromiumos/platform2/+/master/screenshot/
 [Trusted Platform Module]: https://en.wikipedia.org/wiki/Trusted_Platform_Module
 [run virtual machines]: https://chromium.googlesource.com/chromiumos/docs/+/master/containers_and_vms.md

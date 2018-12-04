@@ -12,6 +12,7 @@ The following software features are defined:
      used.
 *   `android_p` - The ability to [run Android apps] that require Android P or
      later.
+*   `asan` - All binaries were built with [AddressSanitizer] instrumentation.
 *   `audio_play` - The ability to play audio.
 *   `audio_record` - The ability to record audio.
 *   `autotest-capability:foo` - An [Autotest capability] named `foo`. See below.
@@ -53,6 +54,7 @@ outside of video tests.
 
 [testing.Test]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Test
 [run Android apps]: https://developer.android.com/topic/arc/
+[AddressSanitizer]: https://github.com/google/sanitizers/wiki/AddressSanitizer
 [Autotest capability]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/autotest-capability-default/
 [Memory stats collection daemon]: https://chromium.googlesource.com/chromiumos/platform2/+/master/metrics/memd/
 [screenshot command]: https://chromium.googlesource.com/chromiumos/platform2/+/master/screenshot/

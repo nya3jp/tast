@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "f0799573_fbe32781",
+        "filename": "src/chromiumos/tast/devserver/devserver.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-04T02:54:32Z",
+      "side": 1,
+      "message": "Thanks! Created a go link to the page and added a reference here.",
+      "parentUuid": "a8d8b57b_98603391",
+      "range": {
+        "startLine": 5,
+        "startChar": 43,
+        "endLine": 5,
+        "endChar": 52
+      },
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "67f407d2_8199affe",
         "filename": "src/chromiumos/tast/devserver/devserver.go",
         "patchSetId": 7
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "503f9c94_4111797a",
+        "filename": "src/chromiumos/tast/devserver/devserver.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-04T02:54:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "67f407d2_8199affe",
+      "range": {
+        "startLine": 16,
+        "startChar": 15,
+        "endLine": 16,
+        "endChar": 18
+      },
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3e36a25b_9d58e094",
         "filename": "src/chromiumos/tast/devserver/misc.go",
         "patchSetId": 7
@@ -62,6 +110,24 @@
       "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2550cb60_b65af321",
+        "filename": "src/chromiumos/tast/devserver/misc.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-04T02:54:32Z",
+      "side": 1,
+      "message": "True, let\u0027s make this a var.",
+      "parentUuid": "3e36a25b_9d58e094",
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -82,6 +148,24 @@
     },
     {
       "key": {
+        "uuid": "16564003_a70951e0",
+        "filename": "src/chromiumos/tast/devserver/misc.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-04T02:54:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "baa09ec0_2d555ffb",
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a9ec6b3b_fca30b3e",
         "filename": "src/chromiumos/tast/devserver/pseudo.go",
         "patchSetId": 7
@@ -96,6 +180,24 @@
       "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "70be04f1_49d6a3f7",
+        "filename": "src/chromiumos/tast/devserver/pseudo.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-04T02:54:32Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "a9ec6b3b_fca30b3e",
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -122,6 +224,30 @@
     },
     {
       "key": {
+        "uuid": "0adaf0a4_26b91080",
+        "filename": "src/chromiumos/tast/devserver/real.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-04T02:54:32Z",
+      "side": 1,
+      "message": "Sure, I\u0027ve added an explanation to SetServers below since it\u0027s the public API that takes dsURL.",
+      "parentUuid": "5bb06c88_55237b10",
+      "range": {
+        "startLine": 26,
+        "startChar": 55,
+        "endLine": 26,
+        "endChar": 60
+      },
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "497339d7_80b28aea",
         "filename": "src/chromiumos/tast/devserver/real.go",
         "patchSetId": 7
@@ -136,6 +262,24 @@
       "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "741400c2_49ef4a01",
+        "filename": "src/chromiumos/tast/devserver/real.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-04T02:54:32Z",
+      "side": 1,
+      "message": "Good point, let\u0027s use scrapeInternalError here.",
+      "parentUuid": "497339d7_80b28aea",
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -162,6 +306,30 @@
     },
     {
       "key": {
+        "uuid": "da0a3f9c_05d1b52f",
+        "filename": "src/chromiumos/tast/devserver/real.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-04T02:54:32Z",
+      "side": 1,
+      "message": "Introducing a method sounds good! Done.",
+      "parentUuid": "e1bf3adb_f85e935d",
+      "range": {
+        "startLine": 49,
+        "startChar": 1,
+        "endLine": 49,
+        "endChar": 4
+      },
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f0712ef0_e28576dd",
         "filename": "src/chromiumos/tast/devserver/real.go",
         "patchSetId": 7
@@ -185,6 +353,30 @@
     },
     {
       "key": {
+        "uuid": "51ead1b6_52827592",
+        "filename": "src/chromiumos/tast/devserver/real.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-04T02:54:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f0712ef0_e28576dd",
+      "range": {
+        "startLine": 134,
+        "startChar": 46,
+        "endLine": 134,
+        "endChar": 51
+      },
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ef9cfa87_13b77029",
         "filename": "src/chromiumos/tast/devserver/real.go",
         "patchSetId": 7
@@ -199,6 +391,24 @@
       "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "72703520_70c375d5",
+        "filename": "src/chromiumos/tast/devserver/real.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-04T02:54:32Z",
+      "side": 1,
+      "message": "Sure, added some commments.",
+      "parentUuid": "ef9cfa87_13b77029",
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -219,6 +429,24 @@
     },
     {
       "key": {
+        "uuid": "b8bee1d9_e9e10e48",
+        "filename": "src/chromiumos/tast/runner/args.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-04T02:54:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f868c0a4_439044ee",
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9f982316_c40d0aa2",
         "filename": "src/chromiumos/tast/runner/external.go",
         "patchSetId": 7
@@ -233,6 +461,24 @@
       "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "159d64f2_7ba68d8d",
+        "filename": "src/chromiumos/tast/runner/external.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-04T02:54:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9f982316_c40d0aa2",
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -259,6 +505,30 @@
     },
     {
       "key": {
+        "uuid": "bddefe91_dd4301dc",
+        "filename": "src/chromiumos/tast/runner/external.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-04T02:54:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2ac3c251_711c7840",
+      "range": {
+        "startLine": 35,
+        "startChar": 47,
+        "endLine": 35,
+        "endChar": 60
+      },
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d63f5563_e81d10f3",
         "filename": "src/chromiumos/tast/runner/external.go",
         "patchSetId": 7
@@ -282,6 +552,30 @@
     },
     {
       "key": {
+        "uuid": "ebe2cd22_f217498e",
+        "filename": "src/chromiumos/tast/runner/external.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-04T02:54:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d63f5563_e81d10f3",
+      "range": {
+        "startLine": 52,
+        "startChar": 43,
+        "endLine": 52,
+        "endChar": 64
+      },
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "95b5590b_87def297",
         "filename": "src/chromiumos/tast/runner/external.go",
         "patchSetId": 7
@@ -296,6 +590,24 @@
       "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1939a007_0268fd45",
+        "filename": "src/chromiumos/tast/runner/external.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-04T02:54:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "95b5590b_87def297",
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -316,6 +628,24 @@
     },
     {
       "key": {
+        "uuid": "9a413992_b424d9b8",
+        "filename": "src/chromiumos/tast/runner/external.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-04T02:54:32Z",
+      "side": 1,
+      "message": "Hmm, that\u0027s scary. I\u0027ve updated the logic to check the file size and sha256 instead. I hope it\u0027s not too heavy.",
+      "parentUuid": "f43ea9dc_a39665c9",
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "88ba8d90_50d4d1b3",
         "filename": "src/chromiumos/tast/runner/external.go",
         "patchSetId": 7
@@ -330,6 +660,24 @@
       "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "52d089f1_5769dd1c",
+        "filename": "src/chromiumos/tast/runner/external.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-04T02:54:32Z",
+      "side": 1,
+      "message": "I\u0027ve renamed it to \"needed\" after reorganizing logic. If you prefer other names please let me know.",
+      "parentUuid": "88ba8d90_50d4d1b3",
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -356,6 +704,30 @@
     },
     {
       "key": {
+        "uuid": "94a2387f_6b25a04a",
+        "filename": "src/chromiumos/tast/runner/external.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-04T02:54:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d8f7d0f9_48d04275",
+      "range": {
+        "startLine": 140,
+        "startChar": 42,
+        "endLine": 140,
+        "endChar": 46
+      },
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "aedd025c_cf369f33",
         "filename": "src/chromiumos/tast/runner/external.go",
         "patchSetId": 7
@@ -370,6 +742,24 @@
       "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1141f094_bfed7133",
+        "filename": "src/chromiumos/tast/runner/external.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 192,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-04T02:54:32Z",
+      "side": 1,
+      "message": "duration is in nanoseconds so I think it\u0027s fair to assume it is non-zero. In any case, zero division of float64 seems to result in NaN/Inf, which is safer than panic.",
+      "parentUuid": "aedd025c_cf369f33",
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -396,6 +786,30 @@
     },
     {
       "key": {
+        "uuid": "b6b3a96f_1b48ff2b",
+        "filename": "src/chromiumos/tast/runner/external.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-04T02:54:32Z",
+      "side": 1,
+      "message": "Good to know, thanks! Done.",
+      "parentUuid": "0baf997e_1f70c3f4",
+      "range": {
+        "startLine": 193,
+        "startChar": 54,
+        "endLine": 193,
+        "endChar": 59
+      },
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7187b2f2_7d5b320a",
         "filename": "src/chromiumos/tast/runner/external.go",
         "patchSetId": 7
@@ -410,6 +824,24 @@
       "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9247c294_66517cca",
+        "filename": "src/chromiumos/tast/runner/external.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 219,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-04T02:54:32Z",
+      "side": 1,
+      "message": "Sounds fair, let\u0027s pass context.",
+      "parentUuid": "7187b2f2_7d5b320a",
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -436,6 +868,30 @@
     },
     {
       "key": {
+        "uuid": "e08ac57c_720c984a",
+        "filename": "src/chromiumos/tast/runner/external.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 240,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-04T02:54:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "94bef812_725837fa",
+      "range": {
+        "startLine": 240,
+        "startChar": 17,
+        "endLine": 240,
+        "endChar": 26
+      },
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6fa57c31_bb839a80",
         "filename": "src/chromiumos/tast/runner/external.go",
         "patchSetId": 7
@@ -459,6 +915,30 @@
     },
     {
       "key": {
+        "uuid": "3b9da7ba_319f1aec",
+        "filename": "src/chromiumos/tast/runner/external.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-04T02:54:32Z",
+      "side": 1,
+      "message": "That\u0027s good to know, removed fmt.Errorf calls.",
+      "parentUuid": "6fa57c31_bb839a80",
+      "range": {
+        "startLine": 244,
+        "startChar": 31,
+        "endLine": 244,
+        "endChar": 35
+      },
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a9d8f2c_e36b1b5e",
         "filename": "src/chromiumos/tast/runner/external.go",
         "patchSetId": 7
@@ -476,6 +956,24 @@
     },
     {
       "key": {
+        "uuid": "78de35aa_a598583c",
+        "filename": "src/chromiumos/tast/runner/external.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 251,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-04T02:54:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a9d8f2c_e36b1b5e",
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "93be4987_82a05c16",
         "filename": "src/chromiumos/tast/runner/external_test.go",
         "patchSetId": 7
@@ -490,6 +988,24 @@
       "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "68305f69_ce0ca375",
+        "filename": "src/chromiumos/tast/runner/external_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-04T02:54:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "93be4987_82a05c16",
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -516,6 +1032,30 @@
     },
     {
       "key": {
+        "uuid": "8b3575e7_48d94dd5",
+        "filename": "src/chromiumos/tast/runner/external_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-04T02:54:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ae3ffc33_8023d3a2",
+      "range": {
+        "startLine": 145,
+        "startChar": 41,
+        "endLine": 145,
+        "endChar": 52
+      },
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8a0ed10e_90a41280",
         "filename": "src/chromiumos/tast/runner/runner.go",
         "patchSetId": 7
@@ -539,6 +1079,30 @@
     },
     {
       "key": {
+        "uuid": "f33a17a1_382eb78c",
+        "filename": "src/chromiumos/tast/runner/runner.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 248,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-04T02:54:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8a0ed10e_90a41280",
+      "range": {
+        "startLine": 248,
+        "startChar": 36,
+        "endLine": 248,
+        "endChar": 56
+      },
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "53b5d4d6_b47db4f0",
         "filename": "src/chromiumos/tast/testing/test.go",
         "patchSetId": 7
@@ -553,6 +1117,24 @@
       "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "39a1240a_995e9d5e",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-04T02:54:32Z",
+      "side": 1,
+      "message": "Good point, let\u0027s return early on errors.",
+      "parentUuid": "53b5d4d6_b47db4f0",
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

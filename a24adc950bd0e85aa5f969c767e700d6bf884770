@@ -1,0 +1,204 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "28990721_9891ce09",
+        "filename": "src/chromiumos/tast/devserver/client.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-04T15:29:25Z",
+      "side": 1,
+      "message": "huge nit: \"For more information about devservers, \"",
+      "range": {
+        "startLine": 5,
+        "startChar": 55,
+        "endLine": 5,
+        "endChar": 60
+      },
+      "revId": "a24adc950bd0e85aa5f969c767e700d6bf884770",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4911b248_c988f338",
+        "filename": "src/chromiumos/tast/devserver/fake.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-04T15:29:25Z",
+      "side": 1,
+      "message": "nit: \"... simulates a download from Google Cloud Storage.\" ?",
+      "revId": "a24adc950bd0e85aa5f969c767e700d6bf884770",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7c0b92e6_f6be1b0d",
+        "filename": "src/chromiumos/tast/devserver/real.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-04T15:29:25Z",
+      "side": 1,
+      "message": "to guarantee this, would it be better to make this be part of NewRealClient?",
+      "revId": "a24adc950bd0e85aa5f969c767e700d6bf884770",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3af9b8b1_a1afdcdd",
+        "filename": "src/chromiumos/tast/devserver/real.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-04T15:29:25Z",
+      "side": 1,
+      "message": "nit: \"... of operational devservers.\"",
+      "range": {
+        "startLine": 102,
+        "startChar": 32,
+        "endLine": 102,
+        "endChar": 53
+      },
+      "revId": "a24adc950bd0e85aa5f969c767e700d6bf884770",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d3347073_9001b2ad",
+        "filename": "src/chromiumos/tast/devserver/real.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-04T15:29:25Z",
+      "side": 1,
+      "message": "mind saving the up servers in a local var to avoid repeated calls in this method?",
+      "revId": "a24adc950bd0e85aa5f969c767e700d6bf884770",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "80ef6f86_9ff4419b",
+        "filename": "src/chromiumos/tast/devserver/real.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-04T15:29:25Z",
+      "side": 1,
+      "message": "upServerURLs returns a new slice, so you can just do:\n\n  dsURLs :\u003d c.upServerURLs()",
+      "revId": "a24adc950bd0e85aa5f969c767e700d6bf884770",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "076b4e93_f65096f3",
+        "filename": "src/chromiumos/tast/devserver/real_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-04T15:29:25Z",
+      "side": 1,
+      "message": "ah, cool. i was trying to see where this is defined and didn\u0027t realize at first it was coming from the embedded Server field. :-) probably fine in test code, but i\u0027d advise to add an explicit method in non-test code to make it clearer where this is defined -- it\u0027d be very easy to not realize that Close needs to be called otherwise.",
+      "range": {
+        "startLine": 127,
+        "startChar": 9,
+        "endLine": 127,
+        "endChar": 14
+      },
+      "revId": "a24adc950bd0e85aa5f969c767e700d6bf884770",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "075832c9_dc38ab60",
+        "filename": "src/chromiumos/tast/runner/external.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-04T15:29:25Z",
+      "side": 1,
+      "message": "huge nit: delete \u0027a\u0027 here",
+      "range": {
+        "startLine": 103,
+        "startChar": 34,
+        "endLine": 103,
+        "endChar": 35
+      },
+      "revId": "a24adc950bd0e85aa5f969c767e700d6bf884770",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4fcd833e_e75fa3d5",
+        "filename": "src/chromiumos/tast/runner/runner.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-04T15:29:25Z",
+      "side": 1,
+      "message": "nit: context.TODO here as well, maybe?",
+      "range": {
+        "startLine": 127,
+        "startChar": 35,
+        "endLine": 127,
+        "endChar": 45
+      },
+      "revId": "a24adc950bd0e85aa5f969c767e700d6bf884770",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1f89f995_b93eb52c",
+        "filename": "src/chromiumos/tast/runner/runner.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 246,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-04T15:29:25Z",
+      "side": 1,
+      "message": "nit: maybe take a context here so all the TODOs are in a single place?",
+      "revId": "a24adc950bd0e85aa5f969c767e700d6bf884770",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

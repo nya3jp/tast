@@ -646,6 +646,24 @@
     },
     {
       "key": {
+        "uuid": "7cda1599_f48692e9",
+        "filename": "src/chromiumos/tast/runner/external.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-04T15:29:25Z",
+      "side": 1,
+      "message": "thanks, sounds good! i suspect that the size will almost always change.",
+      "parentUuid": "9a413992_b424d9b8",
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "88ba8d90_50d4d1b3",
         "filename": "src/chromiumos/tast/runner/external.go",
         "patchSetId": 7
@@ -675,6 +693,24 @@
       "side": 1,
       "message": "I\u0027ve renamed it to \"needed\" after reorganizing logic. If you prefer other names please let me know.",
       "parentUuid": "88ba8d90_50d4d1b3",
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "315ae1e7_bc6124a6",
+        "filename": "src/chromiumos/tast/runner/external.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-04T15:29:25Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "52d089f1_5769dd1c",
       "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
@@ -757,6 +793,24 @@
       "side": 1,
       "message": "duration is in nanoseconds so I think it\u0027s fair to assume it is non-zero. In any case, zero division of float64 seems to result in NaN/Inf, which is safer than panic.",
       "parentUuid": "aedd025c_cf369f33",
+      "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "66b9bad6_237bb18e",
+        "filename": "src/chromiumos/tast/runner/external.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 192,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-04T15:29:25Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "1141f094_bfed7133",
       "revId": "cc09b5ba8da3cbe0ef9bce64026acef0e2440d5e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false

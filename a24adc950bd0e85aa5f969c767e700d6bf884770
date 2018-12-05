@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "2a75fc15_eece957d",
+        "filename": "src/chromiumos/tast/devserver/client.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-05T00:55:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "28990721_9891ce09",
+      "range": {
+        "startLine": 5,
+        "startChar": 55,
+        "endLine": 5,
+        "endChar": 60
+      },
+      "revId": "a24adc950bd0e85aa5f969c767e700d6bf884770",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4911b248_c988f338",
         "filename": "src/chromiumos/tast/devserver/fake.go",
         "patchSetId": 10
@@ -42,6 +66,24 @@
     },
     {
       "key": {
+        "uuid": "dfaad804_5327a92e",
+        "filename": "src/chromiumos/tast/devserver/fake.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-05T00:55:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4911b248_c988f338",
+      "revId": "a24adc950bd0e85aa5f969c767e700d6bf884770",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7c0b92e6_f6be1b0d",
         "filename": "src/chromiumos/tast/devserver/real.go",
         "patchSetId": 10
@@ -56,6 +98,24 @@
       "revId": "a24adc950bd0e85aa5f969c767e700d6bf884770",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "99623f3d_e8b8b14f",
+        "filename": "src/chromiumos/tast/devserver/real.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-05T00:55:07Z",
+      "side": 1,
+      "message": "Yes, let\u0027s do so. I vaguely remember I did this way for some reason during prototyping, but I think it\u0027s not applicable now.",
+      "parentUuid": "7c0b92e6_f6be1b0d",
+      "revId": "a24adc950bd0e85aa5f969c767e700d6bf884770",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -82,6 +142,30 @@
     },
     {
       "key": {
+        "uuid": "21e0e157_2a1afb1f",
+        "filename": "src/chromiumos/tast/devserver/real.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-05T00:55:07Z",
+      "side": 1,
+      "message": "Sounds good :)",
+      "parentUuid": "3af9b8b1_a1afdcdd",
+      "range": {
+        "startLine": 102,
+        "startChar": 32,
+        "endLine": 102,
+        "endChar": 53
+      },
+      "revId": "a24adc950bd0e85aa5f969c767e700d6bf884770",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d3347073_9001b2ad",
         "filename": "src/chromiumos/tast/devserver/real.go",
         "patchSetId": 10
@@ -99,6 +183,24 @@
     },
     {
       "key": {
+        "uuid": "c922c546_27d86c22",
+        "filename": "src/chromiumos/tast/devserver/real.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-05T00:55:07Z",
+      "side": 1,
+      "message": "Yes, that\u0027s obviously better. Done.",
+      "parentUuid": "d3347073_9001b2ad",
+      "revId": "a24adc950bd0e85aa5f969c767e700d6bf884770",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "80ef6f86_9ff4419b",
         "filename": "src/chromiumos/tast/devserver/real.go",
         "patchSetId": 10
@@ -113,6 +215,24 @@
       "revId": "a24adc950bd0e85aa5f969c767e700d6bf884770",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3d8ae162_3dc590e1",
+        "filename": "src/chromiumos/tast/devserver/real.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-05T00:55:07Z",
+      "side": 1,
+      "message": "Oops, good catch.",
+      "parentUuid": "80ef6f86_9ff4419b",
+      "revId": "a24adc950bd0e85aa5f969c767e700d6bf884770",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -139,6 +259,30 @@
     },
     {
       "key": {
+        "uuid": "25b50a00_653eddd2",
+        "filename": "src/chromiumos/tast/devserver/real_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-05T00:55:07Z",
+      "side": 1,
+      "message": "Makes sense, let\u0027s add close method. Thanks for pointing this out.",
+      "parentUuid": "076b4e93_f65096f3",
+      "range": {
+        "startLine": 127,
+        "startChar": 9,
+        "endLine": 127,
+        "endChar": 14
+      },
+      "revId": "a24adc950bd0e85aa5f969c767e700d6bf884770",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "075832c9_dc38ab60",
         "filename": "src/chromiumos/tast/runner/external.go",
         "patchSetId": 10
@@ -159,6 +303,30 @@
       "revId": "a24adc950bd0e85aa5f969c767e700d6bf884770",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "290b0419_f93e7422",
+        "filename": "src/chromiumos/tast/runner/external.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-05T00:55:07Z",
+      "side": 1,
+      "message": "Done. Articles are difficult... :)",
+      "parentUuid": "075832c9_dc38ab60",
+      "range": {
+        "startLine": 103,
+        "startChar": 34,
+        "endLine": 103,
+        "endChar": 35
+      },
+      "revId": "a24adc950bd0e85aa5f969c767e700d6bf884770",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -185,6 +353,30 @@
     },
     {
       "key": {
+        "uuid": "36a47cf2_918fca47",
+        "filename": "src/chromiumos/tast/runner/runner.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-05T00:55:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4fcd833e_e75fa3d5",
+      "range": {
+        "startLine": 127,
+        "startChar": 35,
+        "endLine": 127,
+        "endChar": 45
+      },
+      "revId": "a24adc950bd0e85aa5f969c767e700d6bf884770",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1f89f995_b93eb52c",
         "filename": "src/chromiumos/tast/runner/runner.go",
         "patchSetId": 10
@@ -199,6 +391,24 @@
       "revId": "a24adc950bd0e85aa5f969c767e700d6bf884770",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7caf5373_f38b516f",
+        "filename": "src/chromiumos/tast/runner/runner.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 246,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-05T00:55:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1f89f995_b93eb52c",
+      "revId": "a24adc950bd0e85aa5f969c767e700d6bf884770",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

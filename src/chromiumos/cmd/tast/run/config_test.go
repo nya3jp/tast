@@ -51,7 +51,4 @@ func TestConfigDeriveDefaults(t *testing.T) {
 	if cfg.buildWorkspace == "" {
 		t.Error("buildWorkspace is not set")
 	}
-	if cfg.overlayDir == "" {
-		t.Error("overlayDir is not set")
-	}
 }

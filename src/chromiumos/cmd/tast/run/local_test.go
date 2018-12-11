@@ -245,19 +245,18 @@ func TestLocalDataFiles(t *gotesting.T) {
 		categoryPkg = bundlePkg + "/" + category
 		pattern     = "cat.*" // wildcard matching all tests
 
-		file1         = "file1.txt"
-		file2         = "file2.txt"
-		file3         = "file3.txt"
-		file4         = "file4.txt"
-		extFile       = "ext_file.txt"
-		extLinkFile   = "ext_file.txt.external"
-		legacyExtFile = "legacy_ext_file.txt"
+		file1       = "file1.txt"
+		file2       = "file2.txt"
+		file3       = "file3.txt"
+		file4       = "file4.txt"
+		extFile     = "ext_file.txt"
+		extLinkFile = "ext_file.txt.external"
 	)
 
 	// Make local_test_runner list two tests containing the first three files (with overlap).
 	tests := []testing.Test{
 		testing.Test{Name: category + ".Test1", Pkg: categoryPkg, Data: []string{file1, file2}},
-		testing.Test{Name: category + ".Test2", Pkg: categoryPkg, Data: []string{file2, file3, extFile, legacyExtFile}},
+		testing.Test{Name: category + ".Test2", Pkg: categoryPkg, Data: []string{file2, file3, extFile}},
 	}
 	var err error
 	if td.runStdout, err = json.Marshal(tests); err != nil {
@@ -271,26 +270,13 @@ func TestLocalDataFiles(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	// Write a legacy external data file and a config referencing it.
-	td.cfg.externalDataDir = filepath.Join(td.tempDir, "external")
-	if err = testutil.WriteFiles(td.cfg.externalDataDir, map[string]string{legacyExtFile: legacyExtFile}); err != nil {
-		t.Fatal(err)
-	}
-	td.cfg.buildBundle = bundle
-	td.cfg.overlayDir = filepath.Join(td.tempDir, "overlay")
-	confPath := filepath.Join(localBundlePackage(bundle), localBundleExternalDataConf)
-	if err = testutil.WriteFiles(td.cfg.overlayDir, map[string]string{
-		confPath: filepath.Join(category, dataSubdir, legacyExtFile) + " " + filepath.Join(td.cfg.externalDataDir, legacyExtFile),
-	}); err != nil {
-		t.Fatal(err)
-	}
-
 	// getDataFilePaths should list the tests and return the files needed by them.
 	if _, err := connectToTarget(context.Background(), &td.cfg); err != nil {
 		t.Fatal(err)
 	}
+	td.cfg.buildBundle = bundle
 	td.cfg.Patterns = []string{pattern}
-	paths, edm, err := getDataFilePaths(context.Background(), &td.cfg, td.cfg.hst, builtinBundleGlob)
+	paths, err := getDataFilePaths(context.Background(), &td.cfg, td.cfg.hst, builtinBundleGlob)
 	if err != nil {
 		t.Fatal("getDataFilePaths() failed: ", err)
 	}
@@ -304,27 +290,21 @@ func TestLocalDataFiles(t *gotesting.T) {
 		filepath.Join(category, dataSubdir, file2),
 		filepath.Join(category, dataSubdir, file3),
 		filepath.Join(category, dataSubdir, extFile),
-		filepath.Join(category, dataSubdir, legacyExtFile),
 	}
 	if !reflect.DeepEqual(paths, expPaths) {
 		t.Fatalf("getDataFilePaths() = %v; want %v", paths, expPaths)
 	}
 
-	if err = fetchExternalDataFiles(context.Background(), &td.cfg, paths, edm); err != nil {
-		t.Fatal("fetchExternalDataFiles)() failed: ", err)
-	}
-
 	// pushDataFiles should copy the required files to the DUT.
 	if err = pushDataFiles(context.Background(), &td.cfg, td.cfg.hst,
-		filepath.Join(localDataPushDir, bundlePkg), paths, edm); err != nil {
+		filepath.Join(localDataPushDir, bundlePkg), paths); err != nil {
 		t.Fatal("pushDataFiles() failed: ", err)
 	}
 	expData := map[string]string{
-		filepath.Join(tests[0].DataDir(), file1):         file1,
-		filepath.Join(tests[0].DataDir(), file2):         file2,
-		filepath.Join(tests[1].DataDir(), file3):         file3,
-		filepath.Join(tests[1].DataDir(), extLinkFile):   extLinkFile,
-		filepath.Join(tests[1].DataDir(), legacyExtFile): legacyExtFile,
+		filepath.Join(tests[0].DataDir(), file1):       file1,
+		filepath.Join(tests[0].DataDir(), file2):       file2,
+		filepath.Join(tests[1].DataDir(), file3):       file3,
+		filepath.Join(tests[1].DataDir(), extLinkFile): extLinkFile,
 	}
 	if data, err := testutil.ReadFiles(filepath.Join(td.hostDir, localDataPushDir)); err != nil {
 		t.Error(err)

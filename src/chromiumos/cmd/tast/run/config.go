@@ -88,8 +88,6 @@ type Config struct {
 	buildOutDir           string   // path to base directory under which executables are stored
 	checkPortageDeps      bool     // check whether test bundle's dependencies are installed before building
 	forceBuildLocalRunner bool     // force local_test_runner to be built and deployed even if it already exists on DUT
-	overlayDir            string   // base overlay directory (e.g. chromiumos-overlay) containing bundle's ebuild
-	externalDataDir       string   // dir used to cache external data files
 
 	remoteRunner    string // path to executable that runs remote test bundles
 	remoteBundleDir string // dir where packaged remote test bundles are installed
@@ -165,9 +163,6 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 	if c.mode == RunTestsMode {
 		f.StringVar(&c.ResDir, "resultsdir", "", "directory for test results")
 		f.BoolVar(&c.collectSysInfo, "sysinfo", true, "collect system information (logs, crashes, etc.)")
-		f.StringVar(&c.overlayDir, "overlaydir", "", "base overlay directory containing test bundle ebuild, inferred if empty")
-		f.StringVar(&c.externalDataDir, "externaldatadir", filepath.Join(c.tastDir, "external_data"),
-			"directory used to cache external data files")
 		f.Var(command.NewListFlag(",", func(v []string) { c.devservers = v }, nil), "devservers", "comma-separated list of devserver URLs")
 
 		vals := map[string]int{
@@ -202,17 +197,14 @@ func (c *Config) Close(ctx context.Context) error {
 func (c *Config) DeriveDefaults() error {
 	b := getKnownBundleInfo(c.buildBundle)
 	if b == nil {
-		if c.buildWorkspace == "" || c.overlayDir == "" {
-			return fmt.Errorf("unknown bundle %q; please set -buildworkspace and -overlaydir explicitly", c.buildBundle)
+		if c.buildWorkspace == "" {
+			return fmt.Errorf("unknown bundle %q; please set -buildworkspace explicitly", c.buildBundle)
 		}
 		return nil
 	}
 
 	if c.buildWorkspace == "" {
 		c.buildWorkspace = filepath.Join(c.trunkDir, b.workspace)
-	}
-	if c.overlayDir == "" {
-		c.overlayDir = filepath.Join(c.trunkDir, b.overlayDir)
 	}
 	return nil
 }

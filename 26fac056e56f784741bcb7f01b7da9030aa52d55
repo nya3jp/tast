@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a23d554f_e80c093a",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 614,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-11T05:14:22Z",
+      "side": 1,
+      "message": "i\u0027d recommend considering providing an example below, e.g.\n\n  For example, a data file belonging to a test named `ui.MyTest` in the\n  default `cros` bundle might have a URL like\n  `.../tast/cros/ui/my_test_some_image_20181210.jpg`.",
+      "range": {
+        "startLine": 614,
+        "startChar": 10,
+        "endLine": 614,
+        "endChar": 98
+      },
+      "revId": "26fac056e56f784741bcb7f01b7da9030aa52d55",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

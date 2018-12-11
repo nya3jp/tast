@@ -590,10 +590,10 @@ loads or a short binary audio file that is played in a loop, for example.
 
 ### Internal data files
 
-Small non-binary data files should be checked into a `data/` subdirectory under
-the test package as _internal data files_. Prefix their names by the test file's
-name (e.g. `data/my_test_some_data.txt` for a test file named `my_test.go`) to
-make ownership obvious.
+Small non-binary data files should be directly checked into a `data/`
+subdirectory under the test package as _internal data files_. Prefix their names
+by the test file's name (e.g. `data/my_test_some_data.txt` for a test file named
+`my_test.go`) to make ownership obvious.
 
 Per the [Chromium guidelines for third-party code], place
 (appropriately-licensed) data that wasn't created by Chromium developers within
@@ -605,32 +605,32 @@ a `third_party` subdirectory under the `data` directory.
 
 Larger data files like audio, video, or graphics files should be stored in
 Google Cloud Storage and registered as _external data files_ to avoid
-permanently bloating the test repository. A mapping from filenames used during
-testing to URLs is stored in `files/external_data.conf` in the bundle package's
-directory in the overlay; see e.g. the [external_data.conf file for
-tasts-local-tests-cros]. External data files are included in test bundle Portage
-packages and also downloaded and pushed to the DUT as needed by `tast run
--build`.
+permanently bloating the test repository. External data files are not installed
+to test images but are downloaded at run time by `local_test_runner` on DUT.
 
-The process for adding an external data file is:
+To add external data files, put _external link files_ named
+`<original-name>.external` in `data/` subdirectory whose content is JSON in the
+[external link format].
 
-1.  Add a line to the test bundle's `files/external_data.conf` file containing
-    the filename that will be used by tests when accessing the file and the
-    `gs://` URL where the file is stored.
-2.  Update the corresponding ebuild (e.g. [tast-local-tests-cros-9999.ebuild])
-    to list the URL in its `TAST_BUNDLE_EXTERNAL_DATA_URLS` variable.
-3.  Update the package's `Manifest` file to include the new file's checksums by
-    running e.g. `ebuild path/to/tast-local-tests-cros-9999.ebuild manifest` in
-    your chroot.
-4.  Emerge the package to verify that the new file is downloaded and installed.
+For example, a data file belonging to a test named `ui.MyTest` in the default
+`cros` bundle might be declared in `my_test_some_image.jpg.external` with the
+following content:
+
+```
+{
+  "url": "gs://chromiumos-test-assets-public/tast/cros/ui/my_test_some_image_20181210.jpg",
+  "size": 12345,
+  "sha256sum": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+}
+```
 
 > Old versions of external data files should be retained indefinitely in Google
 > Cloud Storage so as to not break tests on older system images. Include the
 > date as a suffix in the filename to make it easy to add a new version when
 > needed, e.g. `my_test_data_20180812.bin`.
 
-[external_data.conf file for tasts-local-tests-cros]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/tast-local-tests-cros/files/external_data.conf
-[tast-local-tests-cros-9999.ebuild]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/tast-local-tests-cros/tast-local-tests-cros-9999.ebuild
+[external link format]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/runner/external.go
+[example.DataFiles]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/master/src/chromiumos/tast/local/bundles/cros/example/data_files.go
 
 ### Internal vs. external
 
@@ -650,7 +650,8 @@ deploying other packages that tests depend on.
 To register data files (regardless of whether they're checked into the test
 repository or stored externally), in your test's `testing.AddTest` call, set the
 `testing.Test` struct's `Data` field to contain a slice of data file names
-(omitting the `data/` subdirectory):
+(omitting the `data/` subdirectory, and the `.external` suffix for external data
+files):
 
 ```go
 testing.AddTest(&testing.Test{

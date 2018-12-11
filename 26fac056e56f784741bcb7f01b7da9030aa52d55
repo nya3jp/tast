@@ -22,6 +22,30 @@
       "revId": "26fac056e56f784741bcb7f01b7da9030aa52d55",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5162deed_f0fec8d6",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 614,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-11T05:45:04Z",
+      "side": 1,
+      "message": "Thanks, that sounds good. I\u0027ve updated the text around here to include the example.",
+      "parentUuid": "a23d554f_e80c093a",
+      "range": {
+        "startLine": 614,
+        "startChar": 10,
+        "endLine": 614,
+        "endChar": 98
+      },
+      "revId": "26fac056e56f784741bcb7f01b7da9030aa52d55",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

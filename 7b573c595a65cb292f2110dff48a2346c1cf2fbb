@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ae08760a_fa884f05",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 308,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-11T20:12:53Z",
+      "side": 1,
+      "message": "thanks for fixing this typo :-)",
+      "range": {
+        "startLine": 308,
+        "startChar": 56,
+        "endLine": 308,
+        "endChar": 58
+      },
+      "revId": "7b573c595a65cb292f2110dff48a2346c1cf2fbb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

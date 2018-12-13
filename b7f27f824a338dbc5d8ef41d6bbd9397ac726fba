@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "897db747_a0a76b68",
+        "filename": "src/chromiumos/tast/bundle/local_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-13T01:18:39Z",
+      "side": 1,
+      "message": "Would you mind having a separate test for WaitUntilReady\u003dfalse case?",
+      "range": {
+        "startLine": 123,
+        "startChar": 0,
+        "endLine": 132,
+        "endChar": 2
+      },
+      "revId": "b7f27f824a338dbc5d8ef41d6bbd9397ac726fba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

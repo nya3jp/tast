@@ -571,6 +571,32 @@ func TestPutTreeTimeout(t *testing.T) {
 	}
 }
 
+func TestDeleteTree(t *testing.T) {
+	t.Parallel()
+	td := newTestData(t)
+	defer td.close()
+
+	files := map[string]string{
+		"file1":     "first file",
+		"file2":     "second file",
+		"dir/file3": "third file",
+		"dir/file4": "fourth file",
+	}
+	tmpDir, baseDir := initFileTest(t, files)
+	defer os.RemoveAll(tmpDir)
+
+	if err := td.hst.DeleteTree(td.ctx, baseDir, []string{"file1", "dir", "file9"}); err != nil {
+		t.Fatal(err)
+	}
+
+	expected := map[string]string{
+		"file2": "second file",
+	}
+	if err := checkDir(baseDir, expected); err != nil {
+		t.Error(err)
+	}
+}
+
 func TestKeyDir(t *testing.T) {
 	t.Parallel()
 	srv, err := test.NewSSHServer(&userKey.PublicKey, hostKey, nil)

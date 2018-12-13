@@ -540,6 +540,29 @@ func getLocalSHA1s(paths []string) (map[string]string, error) {
 	return sums, nil
 }
 
+// DeleteTree deletes all relative paths in files from baseDir on the host.
+// If a specified file is a directory, all files under it are recursively deleted.
+// Non-existent files are ignored.
+func (s *SSH) DeleteTree(ctx context.Context, baseDir string, files []string) error {
+	qd := QuoteShellArg(baseDir)
+	var qfs []string
+	for _, f := range files {
+		qfs = append(qfs, QuoteShellArg(f))
+	}
+
+	rc := fmt.Sprintf("cd %s && rm -rf -- %s", qd, strings.Join(qfs, " "))
+	handle, err := s.Start(ctx, rc, CloseStdin, NoOutput)
+	if err != nil {
+		return fmt.Errorf("running remote command %q failed: %v", rc, err)
+	}
+	defer handle.Close(ctx)
+
+	if err := handle.Wait(ctx); err != nil {
+		return fmt.Errorf("remote command %q failed: %v", rc, err)
+	}
+	return nil
+}
+
 // Run runs cmd synchronously on the host and returns its output. stdout and stderr are combined.
 // cmd is interpreted by the user's shell; arguments may be quoted using QuoteShellArg.
 // If the command is interrupted or exits with a nonzero status code, the returned error will

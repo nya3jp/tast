@@ -352,6 +352,18 @@ func (s *SSH) PutTree(ctx context.Context, srcDir, dstDir string, files []string
 // will copy the local file or directory /src/from to /dst/to on the remote host.
 func (s *SSH) PutTreeRename(ctx context.Context, srcDir, dstDir string,
 	files map[string]string) (bytes int64, err error) {
+	for src, dst := range files {
+		src, err := cleanRelativePath(src)
+		if err != nil {
+			return 0, err
+		}
+		dst, err := cleanRelativePath(dst)
+		if err != nil {
+			return 0, err
+		}
+		files[src] = dst
+	}
+
 	// TODO(derat): When copying a small amount of data, it may be faster to avoid the extra
 	// comparison round trip(s) and instead just copy unconditionally.
 	cf, err := s.findChangedFiles(ctx, srcDir, dstDir, files)
@@ -538,6 +550,40 @@ func getLocalSHA1s(paths []string) (map[string]string, error) {
 	}
 
 	return sums, nil
+}
+
+// DeleteTree deletes all relative paths in files from baseDir on the host.
+// If a specified file is a directory, all files under it are recursively deleted.
+// Non-existent files are ignored.
+func (s *SSH) DeleteTree(ctx context.Context, baseDir string, files []string) error {
+	qd := QuoteShellArg(baseDir)
+	var qfs []string
+	for _, f := range files {
+		f, err := cleanRelativePath(f)
+		if err != nil {
+			return err
+		}
+		qfs = append(qfs, QuoteShellArg(f))
+	}
+
+	rc := fmt.Sprintf("cd %s && rm -rf -- %s", qd, strings.Join(qfs, " "))
+	if _, err := s.Run(ctx, rc); err != nil {
+		return fmt.Errorf("running remote command %q failed: %v", rc, err)
+	}
+	return nil
+}
+
+// cleanRelativePath ensures p is a relative path not escaping the base directory and
+// returns a path cleaned by filepath.Clean.
+func cleanRelativePath(p string) (string, error) {
+	cp := filepath.Clean(p)
+	if filepath.IsAbs(cp) {
+		return "", fmt.Errorf("%s is an absolute path", p)
+	}
+	if strings.HasPrefix(cp, "../") {
+		return "", fmt.Errorf("%s escapes the base directory", p)
+	}
+	return cp, nil
 }
 
 // Run runs cmd synchronously on the host and returns its output. stdout and stderr are combined.

@@ -245,18 +245,20 @@ func TestLocalDataFiles(t *gotesting.T) {
 		categoryPkg = bundlePkg + "/" + category
 		pattern     = "cat.*" // wildcard matching all tests
 
-		file1       = "file1.txt"
-		file2       = "file2.txt"
-		file3       = "file3.txt"
-		file4       = "file4.txt"
-		extFile     = "ext_file.txt"
-		extLinkFile = extFile + testing.ExternalLinkSuffix
+		file1        = "file1.txt"
+		file2        = "file2.txt"
+		file3        = "file3.txt"
+		file4        = "file4.txt"
+		extFile1     = "ext_file1.txt"
+		extFile2     = "ext_file2.txt"
+		extLinkFile1 = extFile1 + testing.ExternalLinkSuffix
+		extLinkFile2 = extFile2 + testing.ExternalLinkSuffix
 	)
 
 	// Make local_test_runner list two tests containing the first three files (with overlap).
 	tests := []testing.Test{
 		testing.Test{Name: category + ".Test1", Pkg: categoryPkg, Data: []string{file1, file2}},
-		testing.Test{Name: category + ".Test2", Pkg: categoryPkg, Data: []string{file2, file3, extFile}},
+		testing.Test{Name: category + ".Test2", Pkg: categoryPkg, Data: []string{file2, file3, extFile1, extFile2}},
 	}
 	var err error
 	if td.runStdout, err = json.Marshal(tests); err != nil {
@@ -265,8 +267,24 @@ func TestLocalDataFiles(t *gotesting.T) {
 
 	// Create a fake source checkout and write the data files to it. Just use their names as their contents.
 	td.cfg.buildWorkspace = filepath.Join(td.tempDir, "ws")
-	if err = testutil.WriteFiles(filepath.Join(td.cfg.buildWorkspace, "src", tests[0].DataDir()),
-		map[string]string{file1: file1, file2: file2, file3: file3, file4: file4, extLinkFile: extLinkFile}); err != nil {
+	srcFiles := map[string]string{
+		file1:        file1,
+		file2:        file2,
+		file3:        file3,
+		file4:        file4,
+		extLinkFile1: extLinkFile1,
+		extFile2:     extFile2,
+	}
+	if err = testutil.WriteFiles(filepath.Join(td.cfg.buildWorkspace, "src", tests[0].DataDir()), srcFiles); err != nil {
+		t.Fatal(err)
+	}
+
+	// Prepare a fake destination directory.
+	pushDir := filepath.Join(td.hostDir, localDataPushDir)
+	dstFiles := map[string]string{
+		extLinkFile2: extLinkFile2,
+	}
+	if err = testutil.WriteFiles(filepath.Join(pushDir, tests[0].DataDir()), dstFiles); err != nil {
 		t.Fatal(err)
 	}
 
@@ -289,7 +307,8 @@ func TestLocalDataFiles(t *gotesting.T) {
 		filepath.Join(category, dataSubdir, file1),
 		filepath.Join(category, dataSubdir, file2),
 		filepath.Join(category, dataSubdir, file3),
-		filepath.Join(category, dataSubdir, extFile),
+		filepath.Join(category, dataSubdir, extFile1),
+		filepath.Join(category, dataSubdir, extFile2),
 	}
 	if !reflect.DeepEqual(paths, expPaths) {
 		t.Fatalf("getDataFilePaths() = %v; want %v", paths, expPaths)
@@ -301,18 +320,19 @@ func TestLocalDataFiles(t *gotesting.T) {
 		t.Fatal("pushDataFiles() failed: ", err)
 	}
 	expData := map[string]string{
-		filepath.Join(tests[0].DataDir(), file1):       file1,
-		filepath.Join(tests[0].DataDir(), file2):       file2,
-		filepath.Join(tests[1].DataDir(), file3):       file3,
-		filepath.Join(tests[1].DataDir(), extLinkFile): extLinkFile,
+		filepath.Join(tests[0].DataDir(), file1):        file1,
+		filepath.Join(tests[0].DataDir(), file2):        file2,
+		filepath.Join(tests[1].DataDir(), file3):        file3,
+		filepath.Join(tests[1].DataDir(), extLinkFile1): extLinkFile1,
+		filepath.Join(tests[1].DataDir(), extFile2):     extFile2,
 	}
-	if data, err := testutil.ReadFiles(filepath.Join(td.hostDir, localDataPushDir)); err != nil {
+	if data, err := testutil.ReadFiles(pushDir); err != nil {
 		t.Error(err)
 	} else if !reflect.DeepEqual(data, expData) {
 		t.Errorf("pushDataFiles() copied %v; want %v", data, expData)
 	}
-	if _, err := ioutil.ReadFile(filepath.Join(td.hostDir, localDataPushDir, tests[1].DataDir(), extFile)); err == nil {
-		t.Errorf("pushDataFiles() unexpectedly copied %s", extFile)
+	if _, err := ioutil.ReadFile(filepath.Join(pushDir, tests[1].DataDir(), extFile1)); err == nil {
+		t.Errorf("pushDataFiles() unexpectedly copied %s", extFile1)
 	}
 }
 

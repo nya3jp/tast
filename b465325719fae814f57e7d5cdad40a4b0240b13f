@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8c54a811_fa2c830c",
+        "filename": "src/chromiumos/tast/host/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 550,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-13T19:38:00Z",
+      "side": 1,
+      "message": "do you think it\u0027d be worthwhile to check that none of the files use \u0027..\u0027 to escape baseDir? while i\u0027m not worried about malicious callers, it might be useful to prevent bugs that would otherwise delete data that we didn\u0027t mean to.",
+      "revId": "b465325719fae814f57e7d5cdad40a4b0240b13f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "01e231d6_b7c9ef5f",
+        "filename": "src/chromiumos/tast/host/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 554,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-13T19:38:00Z",
+      "side": 1,
+      "message": "would it be simpler to use s.Run here?",
+      "revId": "b465325719fae814f57e7d5cdad40a4b0240b13f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cc904865_3bffa187",
+        "filename": "src/chromiumos/tast/host/ssh_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 593,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-13T19:38:00Z",
+      "side": 1,
+      "message": "nit: all on one line, maybe? :-)",
+      "revId": "b465325719fae814f57e7d5cdad40a4b0240b13f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

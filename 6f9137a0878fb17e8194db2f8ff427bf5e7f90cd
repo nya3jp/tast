@@ -2,6 +2,40 @@
   "comments": [
     {
       "key": {
+        "uuid": "6084ca95_29187095",
+        "filename": "src/chromiumos/tast/runner/external.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-13T23:23:48Z",
+      "side": 1,
+      "message": "nit: mind also documenting that this writes error files so they can be read and reported by the bundle later?",
+      "revId": "6f9137a0878fb17e8194db2f8ff427bf5e7f90cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "06a08565_1561dd26",
+        "filename": "src/chromiumos/tast/runner/external_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 295,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-13T23:23:48Z",
+      "side": 1,
+      "message": "nit: can these use the string constants from the testing package?",
+      "revId": "6f9137a0878fb17e8194db2f8ff427bf5e7f90cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "107521d2_fa31db38",
         "filename": "src/chromiumos/tast/testing/test.go",
         "patchSetId": 1
@@ -22,6 +56,64 @@
       "revId": "6f9137a0878fb17e8194db2f8ff427bf5e7f90cd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5b8edc8a_97abfa76",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-13T23:23:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "107521d2_fa31db38",
+      "range": {
+        "startLine": 25,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 7
+      },
+      "revId": "6f9137a0878fb17e8194db2f8ff427bf5e7f90cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dde8aab8_e66c0f40",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-13T23:23:48Z",
+      "side": 1,
+      "message": "nit: mind adding something like:\n\n  // This mechanism is used to pass errors from the test runner\n  // (which downloads the files) to the test bundle so the bundle\n  // can include them in the test\u0027s output.\n\n?",
+      "revId": "6f9137a0878fb17e8194db2f8ff427bf5e7f90cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "02edee4a_516bd82a",
+        "filename": "src/chromiumos/tast/testing/test_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 365,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-13T23:23:48Z",
+      "side": 1,
+      "message": "nit: can you use the constant here?",
+      "revId": "6f9137a0878fb17e8194db2f8ff427bf5e7f90cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

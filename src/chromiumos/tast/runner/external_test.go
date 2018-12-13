@@ -27,8 +27,8 @@ func TestPrepareDownloadsSimple(t *gotesting.T) {
 		intFile      = "int_file.txt"
 		extFile1     = "ext_file1.txt"
 		extFile2     = "ext_file2.txt"
-		extLink1     = "ext_file1.txt.external"
-		extLink2     = "ext_file2.txt.external"
+		extLink1     = extFile1 + testing.ExternalLinkSuffix
+		extLink2     = extFile2 + testing.ExternalLinkSuffix
 		extLink1JSON = `{"url": "url1", "size": 111, "sha256sum": "aaaa"}`
 		extLink2JSON = `{"url": "url2", "size": 222, "sha256sum": "bbbb", "executable": true}`
 	)
@@ -73,9 +73,9 @@ func TestPrepareDownloadsDupLinks(t *gotesting.T) {
 		extFile1    = "ext_file1.txt"
 		extFile2    = "ext_file2.txt"
 		extFile3    = "ext_file3.txt"
-		extLink1    = "ext_file1.txt.external"
-		extLink2    = "ext_file2.txt.external"
-		extLink3    = "ext_file3.txt.external"
+		extLink1    = extFile1 + testing.ExternalLinkSuffix
+		extLink2    = extFile2 + testing.ExternalLinkSuffix
+		extLink3    = extFile3 + testing.ExternalLinkSuffix
 		extLinkJSON = `{"url": "url1", "size": 111, "sha256sum": "aaaa"}`
 	)
 
@@ -118,8 +118,8 @@ func TestPrepareDownloadsInconsistentDupLinks(t *gotesting.T) {
 		pkg          = "cat"
 		extFile1     = "ext_file1.txt"
 		extFile2     = "ext_file2.txt"
-		extLink1     = "ext_file1.txt.external"
-		extLink2     = "ext_file2.txt.external"
+		extLink1     = extFile1 + testing.ExternalLinkSuffix
+		extLink2     = extFile2 + testing.ExternalLinkSuffix
 		extLink1JSON = `{"url": "same_url", "size": 111, "sha256sum": "aaaa"}`
 		extLink2JSON = `{"url": "same_url", "size": 222, "sha256sum": "aaaa"}`
 	)
@@ -162,8 +162,8 @@ func TestPrepareDownloadsStale(t *gotesting.T) {
 		extFile2     = "ext_file2.txt"
 		extData1     = "foo"
 		extData2     = "bar"
-		extLink1     = "ext_file1.txt.external"
-		extLink2     = "ext_file2.txt.external"
+		extLink1     = extFile1 + testing.ExternalLinkSuffix
+		extLink2     = extFile2 + testing.ExternalLinkSuffix
 		extLink1JSON = `{"url": "url1", "size": 9, "sha256sum": "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae"}`
 		extLink2JSON = `{"url": "url2", "size": 3, "sha256sum": "bbbb"}`
 	)
@@ -213,8 +213,8 @@ func TestPrepareDownloadsUpToDate(t *gotesting.T) {
 		extFile2     = "ext_file2.txt"
 		extData1     = "foo"
 		extData2     = "bar"
-		extLink1     = "ext_file1.txt.external"
-		extLink2     = "ext_file2.txt.external"
+		extLink1     = extFile1 + testing.ExternalLinkSuffix
+		extLink2     = extFile2 + testing.ExternalLinkSuffix
 		extLink1JSON = `{"url": "url1", "size": 3, "sha256sum": "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae"}`
 		extLink2JSON = `{"url": "url2", "size": 3, "sha256sum": "fcde2b2edba56bf408601fb721fe9b5c338d10ee429ea04fae5511b68fbf8fb9"}`
 	)
@@ -248,8 +248,8 @@ func TestPrepareDownloadsBrokenLink(t *gotesting.T) {
 		pkg          = "cat"
 		extFile1     = "ext_file1.txt"
 		extFile2     = "ext_file2.txt"
-		extLink1     = "ext_file1.txt.external"
-		extLink2     = "ext_file2.txt.external"
+		extLink1     = extFile1 + testing.ExternalLinkSuffix
+		extLink2     = extFile2 + testing.ExternalLinkSuffix
 		extLink1JSON = "Hello, world!"
 		extLink2JSON = `{"url": "url2", "size": 222, "sha256sum": "bbbb"}`
 	)
@@ -280,6 +280,48 @@ func TestPrepareDownloadsBrokenLink(t *gotesting.T) {
 	}
 	if !reflect.DeepEqual(jobs, exp) {
 		t.Errorf("prepareDownloads returned %v; want %v", jobs, exp)
+	}
+}
+
+// Errors are written to files.
+func TestPrepareDownloadsError(t *gotesting.T) {
+	const (
+		pkg          = "cat"
+		extFile1     = "ext_file1.txt"
+		extFile2     = "ext_file2.txt"
+		extLink1     = extFile1 + testing.ExternalLinkSuffix
+		extLink2     = extFile2 + testing.ExternalLinkSuffix
+		extError1    = extFile1 + testing.ExternalErrorSuffix
+		extError2    = extFile2 + testing.ExternalErrorSuffix
+		extLink1JSON = "Hello, world!"
+		extLink2JSON = `{"url": "url2", "size": 222, "sha256sum": "bbbb"}`
+	)
+
+	dataDir := testutil.TempDir(t)
+	defer os.RemoveAll(dataDir)
+	dataSubdir := filepath.Join(dataDir, pkg, "data")
+
+	if err := testutil.WriteFiles(dataSubdir, map[string]string{
+		extLink1:  extLink1JSON,
+		extLink2:  extLink2JSON,
+		extError2: "previous error",
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	tests := []*testing.Test{
+		{Pkg: pkg, Data: []string{extFile1, extFile2}},
+	}
+	prepareDownloads(dataDir, tests, dummyLogFn)
+
+	// extError1 should exist due to JSON parse error.
+	if _, err := os.Stat(filepath.Join(dataSubdir, extError1)); err != nil {
+		t.Errorf("%s not found; expected to exist", extError1)
+	}
+
+	// extError2 should not exist.
+	if _, err := os.Stat(filepath.Join(dataSubdir, extError2)); err == nil {
+		t.Errorf("%s exists; expected to be deleted", extError2)
 	}
 }
 
@@ -404,6 +446,48 @@ func TestRunDownloadsCorrupted(t *gotesting.T) {
 	for _, name := range []string{file1, file2, file3} {
 		if _, err := os.Stat(filepath.Join(tmpDir, name)); err == nil {
 			t.Errorf("%s exists", name)
+		}
+	}
+}
+
+// Errors are written to files.
+func TestRunDownloadsError(t *gotesting.T) {
+	const (
+		file1     = "file1"
+		file2     = "file2"
+		url       = "url"
+		data      = "foo"
+		sha256Sum = "xxxx" // wrong sha256
+	)
+	tmpDir := testutil.TempDir(t)
+	defer os.RemoveAll(tmpDir)
+
+	jobs := []*downloadJob{
+		{
+			link: externalLink{
+				URL:       url,
+				Size:      3,
+				SHA256Sum: sha256Sum,
+			},
+			dests: []string{filepath.Join(tmpDir, file1)},
+		},
+		{
+			link: externalLink{
+				URL:       url,
+				Size:      3,
+				SHA256Sum: sha256Sum,
+			},
+			dests: []string{filepath.Join(tmpDir, file2)},
+		},
+	}
+	cl := devserver.NewFakeClient(map[string][]byte{url: []byte(data)})
+
+	runDownloads(context.Background(), tmpDir, jobs, cl, dummyLogFn)
+
+	for _, f := range []string{file1, file2} {
+		path := filepath.Join(tmpDir, f+testing.ExternalErrorSuffix)
+		if _, err := os.Stat(path); err != nil {
+			t.Errorf("%s does not exist", path)
 		}
 	}
 }

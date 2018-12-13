@@ -11,6 +11,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -19,6 +20,19 @@ import (
 	"sort"
 	"strings"
 	"time"
+)
+
+const (
+	// ExternalLinkSuffix is a file name suffix for external data link files.
+	// These are JSON files that can be unmarshaled into the externalLink struct.
+	ExternalLinkSuffix = ".external"
+
+	// ExternalErrorSuffix is a file name suffix for external data download error files.
+	// An error message is written to the file when we encounter an error downloading
+	// the corresponding external data file. This mechanism is used to pass errors from
+	// the test runner (which downloads the files) to the test bundle so the bundle
+	// can include them in the test's output.
+	ExternalErrorSuffix = ".external-error"
 )
 
 const (
@@ -174,8 +188,14 @@ func (tst *Test) Run(ctx context.Context, ch chan<- Output, cfg *TestConfig) boo
 		// Make sure all required data files exist.
 		for _, fn := range tst.Data {
 			fp := s.DataPath(fn)
-			if _, err := os.Stat(fp); err != nil {
-				s.Error("Test data missing (failed to download?): ", fn)
+			if _, err := os.Stat(fp); err == nil {
+				continue
+			}
+			ep := fp + ExternalErrorSuffix
+			if data, err := ioutil.ReadFile(ep); err == nil {
+				s.Errorf("Required data file %s missing: %s", fn, string(data))
+			} else {
+				s.Errorf("Required data file %s missing", fn)
 			}
 		}
 		if s.HasError() {

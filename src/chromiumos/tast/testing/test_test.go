@@ -359,13 +359,15 @@ func TestRunSkipStages(t *gotesting.T) {
 
 func TestRunMissingData(t *gotesting.T) {
 	const (
-		existingFile = "existing.txt"
-		missingFile  = "missing.txt"
+		existingFile      = "existing.txt"
+		missingFile1      = "missing1.txt"
+		missingFile2      = "missing2.txt"
+		missingErrorFile1 = missingFile1 + ExternalErrorSuffix
 	)
 
 	test := Test{
 		Func:    func(context.Context, *State) {},
-		Data:    []string{existingFile, missingFile},
+		Data:    []string{existingFile, missingFile1, missingFile2},
 		Timeout: time.Minute,
 	}
 
@@ -374,14 +376,21 @@ func TestRunMissingData(t *gotesting.T) {
 	if err := ioutil.WriteFile(filepath.Join(td, existingFile), nil, 0644); err != nil {
 		t.Fatalf("Failed to write %s: %v", existingFile, err)
 	}
+	if err := ioutil.WriteFile(filepath.Join(td, missingErrorFile1), []byte("some reason"), 0644); err != nil {
+		t.Fatalf("Failed to write %s: %v", missingErrorFile1, err)
+	}
 
 	or := newOutputReader()
 	test.Run(context.Background(), or.ch, &TestConfig{DataDir: td})
 
-	if errs := getOutputErrors(or.read()); len(errs) != 1 {
-		t.Errorf("Got %v errors for missing data test; want 1", errs)
-	} else if exp := "Test data missing (failed to download?): missing.txt"; errs[0].Reason != exp {
-		t.Errorf("Got an error %q; want %q", errs[0].Reason, exp)
+	expected := []string{
+		"Required data file missing1.txt missing: some reason",
+		"Required data file missing2.txt missing",
+	}
+	if errs := getOutputErrors(or.read()); len(errs) != 2 {
+		t.Errorf("Got %v errors for missing data test; want 2", errs)
+	} else if actual := []string{errs[0].Reason, errs[1].Reason}; !reflect.DeepEqual(actual, expected) {
+		t.Errorf("Got errors %q; want %q", actual, expected)
 	}
 }
 

@@ -308,9 +308,9 @@ func pushDataFiles(ctx context.Context, cfg *Config, hst *host.SSH, destDir stri
 
 	var wsPaths []string // data files stored under cfg.buildBundleWorkspace, relative to bundle dir
 	for _, p := range paths {
-		lp := filepath.Join(srcDir, p+runner.ExternalLinkSuffix)
+		lp := filepath.Join(srcDir, p+testing.ExternalLinkSuffix)
 		if _, err := os.Stat(lp); err == nil {
-			p += runner.ExternalLinkSuffix
+			p += testing.ExternalLinkSuffix
 		}
 		wsPaths = append(wsPaths, p)
 	}

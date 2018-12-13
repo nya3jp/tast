@@ -19,6 +19,7 @@ import (
 
 	"chromiumos/cmd/tast/build"
 	"chromiumos/cmd/tast/timing"
+	"chromiumos/tast/bundle"
 	"chromiumos/tast/host"
 	"chromiumos/tast/runner"
 	"chromiumos/tast/testing"
@@ -405,7 +406,8 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 		Patterns:   cfg.Patterns,
 		DataDir:    dataDir,
 		RunTestsArgs: runner.RunTestsArgs{
-			Devservers: cfg.devservers,
+			Devservers:   cfg.devservers,
+			RunTestsArgs: bundle.RunTestsArgs{WaitUntilReady: cfg.waitUntilReady},
 		},
 	}
 

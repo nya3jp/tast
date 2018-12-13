@@ -179,6 +179,8 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, ru
 			"devservers", "comma-separated list of devserver URLs")
 		flags.Var(command.NewListFlag(",", func(v []string) { args.GetSoftwareFeaturesArgs.ExtraUSEFlags = v }, nil),
 			"extrauseflags", "comma-separated list of additional USE flags to inject when checking test dependencies")
+		// TODO(derat): Consider making this default to false after updating Chrome CQ to set it: https://crbug.com/914258
+		flags.BoolVar(&args.WaitUntilReady, "waituntilready", true, "wait until DUT is ready before running tests")
 
 		if runnerType == RemoteRunner {
 			flags.StringVar(&args.Target, "target", "", "DUT connection spec as \"[<user>@]host[:<port>]\"")

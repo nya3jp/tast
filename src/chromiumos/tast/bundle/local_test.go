@@ -100,10 +100,15 @@ func TestLocalReadyFunc(t *gotesting.T) {
 	defer restore()
 	testing.AddTest(&testing.Test{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
 
-	// Ensure that a successful ready function is executed.
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
-	args := Args{Mode: RunTestsMode, OutDir: outDir}
+
+	// Ensure that a successful ready function is executed.
+	args := Args{
+		Mode:         RunTestsMode,
+		OutDir:       outDir,
+		RunTestsArgs: RunTestsArgs{WaitUntilReady: true},
+	}
 	stdin := newBufferWithArgs(t, &args)
 	stderr := bytes.Buffer{}
 	ranReady := false
@@ -128,5 +133,34 @@ func TestLocalReadyFunc(t *gotesting.T) {
 	}
 	if s := stderr.String(); !strings.Contains(s, msg) {
 		t.Errorf("Local(%+v) didn't write ready error %q to stderr (got %q)", args, msg, s)
+	}
+}
+
+func TestLocalReadyFuncDisabled(t *gotesting.T) {
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
+	defer restore()
+	testing.AddTest(&testing.Test{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
+
+	outDir := testutil.TempDir(t)
+	defer os.RemoveAll(outDir)
+
+	// The ready function should be skipped if WaitUntilReady is false.
+	args := Args{
+		Mode:         RunTestsMode,
+		OutDir:       outDir,
+		RunTestsArgs: RunTestsArgs{WaitUntilReady: false},
+	}
+	stdin := newBufferWithArgs(t, &args)
+	stderr := bytes.Buffer{}
+	ranReady := false
+	ready := func(context.Context, func(string)) error {
+		ranReady = true
+		return nil
+	}
+	if status := Local(stdin, &bytes.Buffer{}, &stderr, ready); status != statusSuccess {
+		t.Errorf("Local(%+v) = %v; want %v", args, status, statusSuccess)
+	}
+	if ranReady {
+		t.Errorf("Local(%+v) ran ready function despite being told not to", args)
 	}
 }

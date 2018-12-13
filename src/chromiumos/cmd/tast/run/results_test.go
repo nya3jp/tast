@@ -42,9 +42,11 @@ func readStreamedResults(t *gotesting.T, r io.Reader) []TestResult {
 
 func TestReadTestOutput(t *gotesting.T) {
 	const (
+		runLogText = "Here's a run log message"
+
 		test1Name    = "foo.FirstTest"
 		test1Desc    = "First description"
-		test1LogText = "Here's a log message"
+		test1LogText = "Here's a test log message"
 
 		test2Name        = "foo.SecondTest"
 		test2Desc        = "Second description"
@@ -60,10 +62,11 @@ func TestReadTestOutput(t *gotesting.T) {
 	)
 
 	runStartTime := time.Unix(1, 0)
-	test1StartTime := time.Unix(2, 0)
-	test1LogTime := time.Unix(3, 0)
-	test1EndTime := time.Unix(4, 0)
-	test2StartTime := time.Unix(5, 0)
+	runLogTime := time.Unix(2, 0)
+	test1StartTime := time.Unix(3, 0)
+	test1LogTime := time.Unix(4, 0)
+	test1EndTime := time.Unix(5, 0)
+	test2StartTime := time.Unix(6, 0)
 	test2ErrorTime := time.Unix(7, 0)
 	test2EndTime := time.Unix(9, 0)
 	test3StartTime := time.Unix(10, 0)
@@ -85,6 +88,7 @@ func TestReadTestOutput(t *gotesting.T) {
 	b := bytes.Buffer{}
 	mw := control.NewMessageWriter(&b)
 	mw.WriteMessage(&control.RunStart{Time: runStartTime, NumTests: 3})
+	mw.WriteMessage(&control.RunLog{Time: runLogTime, Text: runLogText})
 	mw.WriteMessage(&control.TestStart{Time: test1StartTime, Test: testing.Test{Name: test1Name, Desc: test1Desc}})
 	mw.WriteMessage(&control.TestLog{Time: test1LogTime, Text: test1LogText})
 	mw.WriteMessage(&control.TestEnd{Time: test1EndTime, Name: test1Name})
@@ -96,8 +100,9 @@ func TestReadTestOutput(t *gotesting.T) {
 	mw.WriteMessage(&control.TestEnd{Time: test3EndTime, Name: test3Name, MissingSoftwareDeps: test3Deps})
 	mw.WriteMessage(&control.RunEnd{Time: runEndTime, OutDir: outDir})
 
+	var logBuf bytes.Buffer
 	cfg := Config{
-		Logger: logging.NewSimple(&bytes.Buffer{}, 0, false),
+		Logger: logging.NewSimple(&logBuf, 0, false), // drop debug messages
 		ResDir: filepath.Join(tempDir, "results"),
 	}
 	results, err := readTestOutput(context.Background(), &cfg, &b, os.Rename)
@@ -174,6 +179,27 @@ func TestReadTestOutput(t *gotesting.T) {
 	test3LogPath := filepath.Join(testLogsDir, test3Name, testLogFilename)
 	if !strings.Contains(files[test3LogPath], test3Deps[0]) {
 		t.Errorf("%s contents %q don't contain missing dependency %q", test3LogPath, files[test3LogPath], test3Deps[0])
+	}
+
+	// With non-verbose logging, the global log should include run and test messages and
+	// failure/skip reasons but should skip stack traces.
+	logData := logBuf.String()
+	if !strings.Contains(logData, runLogText) {
+		t.Errorf("Run log message %q not included in log %q", runLogText, logData)
+	}
+	if !strings.Contains(logData, test1LogText) {
+		t.Errorf("Test log message %q not included in log %q", test1LogText, logData)
+	}
+	if !strings.Contains(logData, test2ErrorReason) {
+		t.Errorf("Test error reason %q not included in log %q", test2ErrorReason, logData)
+	}
+	if strings.Contains(logData, test2ErrorStack) {
+		t.Errorf("Test stack %q incorrectly included in log %q", test2ErrorStack, logData)
+	}
+	for _, dep := range test3Deps {
+		if !strings.Contains(logData, dep) {
+			t.Errorf("Test dependency %q not included in log %q", dep, logData)
+		}
 	}
 }
 

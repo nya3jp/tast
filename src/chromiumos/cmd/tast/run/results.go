@@ -202,7 +202,7 @@ func (r *resultsHandler) handleRunStart(msg *control.RunStart) error {
 
 // handleRunLog handles RunLog control messages from test executables.
 func (r *resultsHandler) handleRunLog(msg *control.RunLog) error {
-	r.cfg.Logger.Debugf("[%s] %s", msg.Time.Format(testOutputTimeFmt), msg.Text)
+	r.cfg.Logger.Logf("[%s] %s", msg.Time.Format(testOutputTimeFmt), msg.Text)
 	return nil
 }
 
@@ -282,7 +282,7 @@ func (r *resultsHandler) handleTestStart(msg *control.TestStart) error {
 
 // handleTestLog handles TestLog control messages from test executables.
 func (r *resultsHandler) handleTestLog(msg *control.TestLog) error {
-	r.cfg.Logger.Debugf("[%s] %s", msg.Time.Format(testOutputTimeFmt), msg.Text)
+	r.cfg.Logger.Logf("[%s] %s", msg.Time.Format(testOutputTimeFmt), msg.Text)
 	return nil
 }
 

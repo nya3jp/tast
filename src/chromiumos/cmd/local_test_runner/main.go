@@ -54,7 +54,8 @@ func main() {
 			// Some VM builds actually can run nested VM with right host configuration.
 			// But we haven't enable this feature on builders. For now, just disable
 			// vm_host feature for VM builds.
-			"vm_host": "kvm_host && !tast_vm",
+			"vm_host":  "kvm_host && !tast_vm",
+			"wilco_ec": "wilco_ec",
 		},
 		// The autotest-capability package tries to install this to /etc but it's diverted to /usr/local.
 		AutotestCapabilityDir: autocaps.DefaultCapabilityDir,

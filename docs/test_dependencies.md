@@ -38,6 +38,7 @@ The following software features are defined:
     SELinux-enabled.
 *   `tpm` - A [Trusted Platform Module] chip.
 *   `vm_host` - The ability to [run virtual machines].
+*   `wilco_ec` - Wilco Embedded Controller.
 
 Software features are composed from USE flags. [local_test_runner] lists boolean
 expressions that are used to generate features; for example, an imaginary

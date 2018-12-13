@@ -40,6 +40,15 @@ func moveFromHost(ctx context.Context, cfg *Config, hst *host.SSH, src, dst stri
 	return nil
 }
 
+// deleteFromHost is a wrapper around hst.DeleteTree that should be used instead of calling DeleteTree directly.
+// baseDir is appended to cfg.hstCopyBasePath to support unit tests.
+func deleteFromHost(ctx context.Context, cfg *Config, hst *host.SSH, baseDir string, files []string) error {
+	undo := setAnnounceCmdForCopy(cfg, hst)
+	defer undo()
+
+	return hst.DeleteTree(ctx, filepath.Join(cfg.hstCopyBasePath, baseDir), files)
+}
+
 // setAnnounceCmdForCopy is a helper function that configures hst to temporarily run the
 // file-copy-related commands that are passed to it; it only has an effect in unit tests
 // (where cfg.hstCopyAnnounceCmd may be non-nil). The returned function should be called

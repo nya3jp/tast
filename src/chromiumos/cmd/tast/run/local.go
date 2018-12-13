@@ -306,20 +306,38 @@ func pushDataFiles(ctx context.Context, cfg *Config, hst *host.SSH, destDir stri
 
 	srcDir := filepath.Join(cfg.buildWorkspace, "src", localBundlePkgPathPrefix, cfg.buildBundle)
 
-	var wsPaths []string // data files stored under cfg.buildBundleWorkspace, relative to bundle dir
+	// All paths are relative to the bundle dir.
+	var copyPaths []string
+	var delPaths []string
+	var missingPaths []string
 	for _, p := range paths {
-		lp := filepath.Join(srcDir, p+testing.ExternalLinkSuffix)
-		if _, err := os.Stat(lp); err == nil {
-			p += testing.ExternalLinkSuffix
+		lp := p + testing.ExternalLinkSuffix
+		if _, err := os.Stat(filepath.Join(srcDir, lp)); err == nil {
+			// Push the external link file.
+			copyPaths = append(copyPaths, lp)
+		} else if _, err := os.Stat(filepath.Join(srcDir, p)); err == nil {
+			// Push the internal data file and remove the external link file (if any).
+			copyPaths = append(copyPaths, p)
+			delPaths = append(delPaths, lp)
+		} else {
+			missingPaths = append(missingPaths, p)
 		}
-		wsPaths = append(wsPaths, p)
+	}
+
+	if len(missingPaths) > 0 {
+		return fmt.Errorf("not found: %v", missingPaths)
 	}
 
 	start := time.Now()
 	var err error
 	var wsBytes, extBytes int64
-	if wsBytes, err = pushToHost(ctx, cfg, hst, srcDir, destDir, wsPaths); err != nil {
+	if wsBytes, err = pushToHost(ctx, cfg, hst, srcDir, destDir, copyPaths); err != nil {
 		return err
+	}
+	if len(delPaths) > 0 {
+		if err = deleteFromHost(ctx, cfg, hst, destDir, delPaths); err != nil {
+			return err
+		}
 	}
 	cfg.Logger.Logf("Pushed data files in %v (sent %s)",
 		time.Now().Sub(start).Round(time.Millisecond), formatBytes(wsBytes+extBytes))

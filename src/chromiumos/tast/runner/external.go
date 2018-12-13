@@ -15,15 +15,12 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 	"time"
 
 	"chromiumos/tast/devserver"
 	"chromiumos/tast/testing"
 )
-
-// ExternalLinkSuffix is a file name suffix for external data link files.
-// These are JSON files that can be unmarshaled into the externalLink struct.
-const ExternalLinkSuffix = ".external"
 
 // externalLink holds information of an external data link.
 type externalLink struct {
@@ -42,9 +39,8 @@ type downloadJob struct {
 
 // downloadResult represents a result of a downloadJob.
 type downloadResult struct {
-	url      string
+	job      *downloadJob
 	duration time.Duration
-	size     int64
 	err      error
 }
 
@@ -61,32 +57,40 @@ func processExternalDataLinks(ctx context.Context, dataDir string, tests []*test
 
 // prepareDownloads computes which external data files need to be downloaded.
 // It also removes stale files so they are never used even if we fail to download them later.
+// When it encounters errors, *.external-error files are saved so that they can be read and
+// reported by bundles later.
 func prepareDownloads(dataDir string, tests []*testing.Test, lf func(msg string)) []*downloadJob {
 	urlToJob := make(map[string]*downloadJob)
 	hasErr := false
 
-	reportErr := func(format string, args ...interface{}) {
-		lf(fmt.Sprintf(format, args...))
-		hasErr = true
-	}
-
 	for _, t := range tests {
 		for _, name := range t.Data {
 			destPath := filepath.Join(dataDir, t.DataDir(), name)
-			linkPath := destPath + ExternalLinkSuffix
+			linkPath := destPath + testing.ExternalLinkSuffix
+			errorPath := destPath + testing.ExternalErrorSuffix
+
+			reportErr := func(format string, args ...interface{}) {
+				msg := fmt.Sprintf("failed to prepare downloading %s: %s", name, fmt.Sprintf(format, args...))
+				lf(strings.ToUpper(msg[:1]) + msg[1:])
+				ioutil.WriteFile(errorPath, []byte(msg), 0666)
+				hasErr = true
+			}
+
+			// Clear the error message first.
+			os.Remove(errorPath)
 
 			_, err := os.Stat(linkPath)
 			if os.IsNotExist(err) {
 				// Not an external data file.
 				continue
 			} else if err != nil {
-				reportErr("Failed to stat %s: %v", linkPath, err)
+				reportErr("failed to stat %s: %v", linkPath, err)
 				continue
 			}
 
 			link, err := loadExternalLink(linkPath)
 			if err != nil {
-				reportErr("Failed to load %s: %v", linkPath, err)
+				reportErr("failed to load %s: %v", linkPath, err)
 				continue
 			}
 
@@ -100,14 +104,14 @@ func prepareDownloads(dataDir string, tests []*testing.Test, lf func(msg string)
 				if needed {
 					// Remove the stale file early so that they are never used.
 					if err := os.Remove(destPath); err != nil {
-						reportErr("Failed to remove stale file %s: %v", destPath, err)
+						reportErr("failed to remove stale file %s: %v", destPath, err)
 						continue
 					}
 				}
 			} else if os.IsNotExist(err) {
 				needed = true
 			} else {
-				reportErr("Failed to stat %s: %v", destPath, err)
+				reportErr("failed to stat %s: %v", destPath, err)
 				continue
 			}
 
@@ -117,7 +121,7 @@ func prepareDownloads(dataDir string, tests []*testing.Test, lf func(msg string)
 				job = &downloadJob{link, nil}
 				urlToJob[link.URL] = job
 			} else if job.link != link {
-				reportErr("Conflicting external data link found at %s: got %+v, want %+v", filepath.Join(t.DataDir(), name), link, job.link)
+				reportErr("conflicting external data link found at %s: got %+v, want %+v", filepath.Join(t.DataDir(), name), link, job.link)
 				continue
 			}
 
@@ -184,9 +188,9 @@ func runDownloads(ctx context.Context, dataDir string, jobs []*downloadJob, cl d
 			for job := range jobCh {
 				lf(fmt.Sprintf("Downloading %s", job.link.URL))
 				start := time.Now()
-				size, err := runDownload(ctx, dataDir, job, cl)
+				err := runDownload(ctx, dataDir, job, cl)
 				duration := time.Since(start)
-				resCh <- &downloadResult{job.link.URL, duration, size, err}
+				resCh <- &downloadResult{job, duration, err}
 			}
 		}()
 	}
@@ -195,12 +199,16 @@ func runDownloads(ctx context.Context, dataDir string, jobs []*downloadJob, cl d
 	for range jobs {
 		res := <-resCh
 		if res.err != nil {
-			lf(fmt.Sprintf("Failed to download %s: %v", res.url, res.err))
+			msg := fmt.Sprintf("failed to download %s: %v", res.job.link.URL, res.err)
+			lf(strings.ToUpper(msg[:1]) + msg[1:])
+			for _, dest := range res.job.dests {
+				ioutil.WriteFile(dest+testing.ExternalErrorSuffix, []byte(msg), 0666)
+			}
 			hasErr = true
 		} else {
-			mbs := float64(res.size) / res.duration.Seconds() / 1024 / 1024
+			mbs := float64(res.job.link.Size) / res.duration.Seconds() / 1024 / 1024
 			lf(fmt.Sprintf("Finished downloading %s (%d bytes, %v, %.1fMB/s)",
-				res.url, res.size, res.duration.Round(time.Millisecond), mbs))
+				res.job.link.URL, res.job.link.Size, res.duration.Round(time.Millisecond), mbs))
 		}
 	}
 	if hasErr {
@@ -209,11 +217,11 @@ func runDownloads(ctx context.Context, dataDir string, jobs []*downloadJob, cl d
 }
 
 // runDownload downloads an external data file.
-func runDownload(ctx context.Context, dataDir string, job *downloadJob, cl devserver.Client) (size int64, err error) {
+func runDownload(ctx context.Context, dataDir string, job *downloadJob, cl devserver.Client) error {
 	// Create the temporary file under dataDir to make use of hard links.
 	f, err := ioutil.TempFile(dataDir, ".external-download.")
 	if err != nil {
-		return 0, err
+		return err
 	}
 	defer os.Remove(f.Name())
 	defer f.Close()
@@ -223,27 +231,27 @@ func runDownload(ctx context.Context, dataDir string, job *downloadJob, cl devse
 		mode = 0755
 	}
 	if err := f.Chmod(mode); err != nil {
-		return 0, err
+		return err
 	}
 
-	size, err = cl.DownloadGS(ctx, f, job.link.URL)
+	_, err = cl.DownloadGS(ctx, f, job.link.URL)
 	if err != nil {
-		return 0, err
+		return err
 	}
 
 	if err := verify(f, job.link); err != nil {
-		return 0, err
+		return err
 	}
 
 	for _, dest := range job.dests {
 		if err := os.Remove(dest); err != nil && !os.IsNotExist(err) {
-			return 0, err
+			return err
 		}
 		if err := os.Link(f.Name(), dest); err != nil {
-			return 0, err
+			return err
 		}
 	}
-	return size, nil
+	return nil
 }
 
 // verify checks the integrity of an external data file.

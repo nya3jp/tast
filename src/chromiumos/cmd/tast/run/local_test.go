@@ -250,7 +250,7 @@ func TestLocalDataFiles(t *gotesting.T) {
 		file3       = "file3.txt"
 		file4       = "file4.txt"
 		extFile     = "ext_file.txt"
-		extLinkFile = "ext_file.txt.external"
+		extLinkFile = extFile + testing.ExternalLinkSuffix
 	)
 
 	// Make local_test_runner list two tests containing the first three files (with overlap).

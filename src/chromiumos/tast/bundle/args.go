@@ -73,6 +73,9 @@ type RunTestsArgs struct {
 	AvailableSoftwareFeatures []string `json:"runTestsAvailableSoftwareFeatures,omitempty"`
 	// UnavailableSoftwareFeatures contains a list of software features supported by the DUT.
 	UnavailableSoftwareFeatures []string `json:"runTestsUnavailableSoftwareFeatures,omitempty"`
+	// WaitUntilReady indicates that the test bundle's "ready" function (see ReadyFunc) should
+	// be executed before any tests are executed.
+	WaitUntilReady bool `json:"runTestsWaitUntilReady,omitempty"`
 }
 
 // bundleType describes the type of tests contained in a test bundle (i.e. local or remote).

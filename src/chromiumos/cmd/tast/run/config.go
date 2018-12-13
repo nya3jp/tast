@@ -99,6 +99,7 @@ type Config struct {
 
 	devservers                  []string     // list of devserver URLs
 	checkTestDeps               testDepsMode // when test dependencies should be checked
+	waitUntilReady              bool         // whether to wait for DUT to be ready before running tests
 	extraUSEFlags               []string     // additional USE flags to inject when determining features
 	availableSoftwareFeatures   []string     // features supported by the DUT
 	unavailableSoftwareFeatures []string     // features unsupported by the DUT
@@ -169,6 +170,8 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 		f.StringVar(&c.externalDataDir, "externaldatadir", filepath.Join(c.tastDir, "external_data"),
 			"directory used to cache external data files")
 		f.Var(command.NewListFlag(",", func(v []string) { c.devservers = v }, nil), "devservers", "comma-separated list of devserver URLs")
+		// TODO(derat): Make this default to false after updating Chrome OS builders to set it: https://crbug.com/914258
+		f.BoolVar(&c.waitUntilReady, "waituntilready", true, "wait until DUT is ready before running tests")
 
 		vals := map[string]int{
 			"auto":   int(checkTestDepsAuto),

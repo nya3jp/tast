@@ -37,6 +37,9 @@ func Local(stdin io.Reader, stdout, stderr io.Writer, ready ReadyFunc) int {
 	}
 	if ready != nil {
 		cfg.preRunFunc = func(ctx context.Context, lf logFunc) (context.Context, error) {
+			if !args.WaitUntilReady {
+				return ctx, nil
+			}
 			lf("Waiting for DUT to be ready for testing")
 			return ctx, ready(ctx, lf)
 		}

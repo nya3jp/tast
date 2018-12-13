@@ -100,10 +100,12 @@ func TestLocalReadyFunc(t *gotesting.T) {
 	defer restore()
 	testing.AddTest(&testing.Test{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
 
-	// Ensure that a successful ready function is executed.
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
 	args := Args{Mode: RunTestsMode, OutDir: outDir}
+
+	// Ensure that a successful ready function is executed.
+	args.WaitUntilReady = true
 	stdin := newBufferWithArgs(t, &args)
 	stderr := bytes.Buffer{}
 	ranReady := false
@@ -118,7 +120,19 @@ func TestLocalReadyFunc(t *gotesting.T) {
 		t.Errorf("Local(%+v) didn't run ready function", args)
 	}
 
+	args.WaitUntilReady = false
+	stdin = newBufferWithArgs(t, &args)
+	stderr = bytes.Buffer{}
+	ranReady = false
+	if status := Local(stdin, &bytes.Buffer{}, &stderr, ready); status != statusSuccess {
+		t.Errorf("Local(%+v) = %v; want %v", args, status, statusSuccess)
+	}
+	if ranReady {
+		t.Errorf("Local(%+v) ran ready function despite being told not to", args)
+	}
+
 	// Local should fail if the ready function returns an error.
+	args.WaitUntilReady = true
 	stdin = newBufferWithArgs(t, &args)
 	stderr = bytes.Buffer{}
 	const msg = "intentional failure"

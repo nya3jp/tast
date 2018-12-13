@@ -26,6 +26,7 @@ The following software features are defined:
     login (i.e. using `session_manager` and `cryptohome`) is supported.
 *   `cups` - CUPS daemon.
 *   `display_backlight` - An internal display backlight.
+*   `gpu_sandboxing` - Chrome's GPU process is [sandboxed].
 *   `memd` - [Memory stats collection daemon].
 *   `ml_service` - ML Service daemon.
 *   `no_android` - The inability to run Android apps. This is the opposite of
@@ -58,6 +59,7 @@ outside of video tests.
 [run Android apps]: https://developer.android.com/topic/arc/
 [AddressSanitizer]: https://github.com/google/sanitizers/wiki/AddressSanitizer
 [Autotest capability]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/autotest-capability-default/
+[sandboxed]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/linux_sandboxing.md
 [Memory stats collection daemon]: https://chromium.googlesource.com/chromiumos/platform2/+/master/metrics/memd/
 [screenshot command]: https://chromium.googlesource.com/chromiumos/platform2/+/master/screenshot/
 [Trusted Platform Module]: https://en.wikipedia.org/wiki/Trusted_Platform_Module

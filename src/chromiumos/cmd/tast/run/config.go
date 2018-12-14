@@ -165,8 +165,7 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 		f.StringVar(&c.ResDir, "resultsdir", "", "directory for test results")
 		f.BoolVar(&c.collectSysInfo, "sysinfo", true, "collect system information (logs, crashes, etc.)")
 		f.Var(command.NewListFlag(",", func(v []string) { c.devservers = v }, nil), "devservers", "comma-separated list of devserver URLs")
-		// TODO(derat): Make this default to false after updating Chrome OS builders to set it: https://crbug.com/914258
-		f.BoolVar(&c.waitUntilReady, "waituntilready", true, "wait until DUT is ready before running tests")
+		f.BoolVar(&c.waitUntilReady, "waituntilready", false, "wait until DUT is ready before running tests")
 
 		vals := map[string]int{
 			"auto":   int(checkTestDepsAuto),

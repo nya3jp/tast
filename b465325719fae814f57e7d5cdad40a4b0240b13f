@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "c062fe69_160bdd46",
+        "filename": "src/chromiumos/tast/host/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 550,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-14T02:35:56Z",
+      "side": 1,
+      "message": "That sounds a good idea, I\u0027ve updated DeleteTree and PutTreeRename to check the paths.",
+      "parentUuid": "8c54a811_fa2c830c",
+      "revId": "b465325719fae814f57e7d5cdad40a4b0240b13f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "01e231d6_b7c9ef5f",
         "filename": "src/chromiumos/tast/host/ssh.go",
         "patchSetId": 1
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "a9d34493_9f633ff7",
+        "filename": "src/chromiumos/tast/host/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 554,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-14T02:35:56Z",
+      "side": 1,
+      "message": "Thanks! I overlooked the function :)",
+      "parentUuid": "01e231d6_b7c9ef5f",
+      "revId": "b465325719fae814f57e7d5cdad40a4b0240b13f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "cc904865_3bffa187",
         "filename": "src/chromiumos/tast/host/ssh_test.go",
         "patchSetId": 1
@@ -50,6 +86,24 @@
       "revId": "b465325719fae814f57e7d5cdad40a4b0240b13f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7ec222b4_9efe4cfa",
+        "filename": "src/chromiumos/tast/host/ssh_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 593,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-14T02:35:56Z",
+      "side": 1,
+      "message": "yes!",
+      "parentUuid": "cc904865_3bffa187",
+      "revId": "b465325719fae814f57e7d5cdad40a4b0240b13f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

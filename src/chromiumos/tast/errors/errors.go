@@ -45,6 +45,7 @@ import (
 	"strings"
 
 	"chromiumos/tast/errors/stack"
+	"chromiumos/tast/goerrors"
 )
 
 // E is the error implementation used by this package.
@@ -132,4 +133,19 @@ func Wrapf(cause error, format string, args ...interface{}) *E {
 	s := stack.New(1)
 	msg := fmt.Sprintf(format, args...)
 	return &E{msg, s, cause}
+}
+
+// Cause returns the error at the bottom of the "cause" chain---i.e. the error
+// that doesn't wrap any other error.
+func Cause(err error) error {
+	switch err.(type) {
+	case *E:
+		cause := err.(*E).cause
+		if cause == nil {
+			return err
+		}
+		return Cause(cause)
+	default:
+		return goerrors.Cause(err)
+	}
 }

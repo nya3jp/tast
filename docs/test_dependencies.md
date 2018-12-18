@@ -24,6 +24,8 @@ The following software features are defined:
     rather than Chromium. (e.g. proprietary codec like H.264)
 *   `chrome_login` - Implies `chrome` with the further requirement that user
     login (i.e. using `session_manager` and `cryptohome`) is supported.
+*   `containers` - The ability to run code within containers. This implies the
+    presence of the `run_oci` program.
 *   `cups` - CUPS daemon.
 *   `display_backlight` - An internal display backlight.
 *   `gpu_sandboxing` - Chrome's GPU process is [sandboxed].

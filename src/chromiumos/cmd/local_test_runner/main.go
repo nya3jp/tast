@@ -41,6 +41,7 @@ func main() {
 			"chrome":            "!chromeless_tty",
 			"chrome_internal":   "chrome_internal",
 			"chrome_login":      "!chromeless_tty && !rialto",
+			"containers":        "containers",
 			"cups":              "cups",
 			"display_backlight": "display_backlight",
 			"gpu_sandboxing":    "!betty && !tast_vm", // no GPU sandboxing on VMs: https://crbug.com/914688

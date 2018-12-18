@@ -64,14 +64,14 @@ func Build(ctx context.Context, cfg *Config, pkg, outDir, stageName string) (out
 		if missing, err := checkDeps(ctx, cfg.PortagePkg); err != nil {
 			return out, fmt.Errorf("failed checking deps for %s: %v", cfg.PortagePkg, err)
 		} else if len(missing) > 0 {
-			b := bytes.NewBufferString("To install missing dependencies, run:\n\n  sudo emerge -j 16 \\\n")
+			b := bytes.NewBufferString("")
 			for i, dep := range missing {
-				suffix := ""
 				if i < len(missing)-1 {
-					suffix = " \\"
 				}
-				fmt.Fprintf(b, "    =%s%s\n", dep, suffix)
+				fmt.Fprintf(b, "    %s\n", dep)
 			}
+			fmt.Fprintf(b, "\nTo install the missing dependencies, run:\n\n  ")
+			fmt.Fprintf(b, "sudo emerge --onlydeps %s\n", strings.TrimSuffix(cfg.PortagePkg,"-9999"))
 			return b.Bytes(), fmt.Errorf("%s has missing dependencies", cfg.PortagePkg)
 		}
 	}

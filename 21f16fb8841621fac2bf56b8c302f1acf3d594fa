@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "745e1aec_8d64f9f7",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1155964
+      },
+      "writtenOn": "2018-12-18T18:51:18Z",
+      "side": 1,
+      "message": "Good catch, I\u0027m new to Go, so it\u0027ll take me a few weeks to get up to par with the different functions.",
+      "parentUuid": "1bb64836_0da164f0",
+      "revId": "21f16fb8841621fac2bf56b8c302f1acf3d594fa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "3917a1d2_d25f7aaf",
         "filename": "src/chromiumos/cmd/tast/build/build.go",
         "patchSetId": 1
@@ -30,6 +48,24 @@
       "writtenOn": "2018-12-18T05:20:05Z",
       "side": 1,
       "message": "i think you meant to delete this. \u0027i\u0027 is unused then, too",
+      "revId": "21f16fb8841621fac2bf56b8c302f1acf3d594fa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7d786035_f3c83ba8",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1155964
+      },
+      "writtenOn": "2018-12-18T18:51:18Z",
+      "side": 1,
+      "message": "Yes, leaving this in was not intentional.",
+      "parentUuid": "3917a1d2_d25f7aaf",
       "revId": "21f16fb8841621fac2bf56b8c302f1acf3d594fa",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -59,6 +95,30 @@
     },
     {
       "key": {
+        "uuid": "c1fc95b7_498c03c4",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1155964
+      },
+      "writtenOn": "2018-12-18T18:51:18Z",
+      "side": 1,
+      "message": "Sure thing!",
+      "parentUuid": "640e7200_ef3c1b97",
+      "range": {
+        "startLine": 73,
+        "startChar": 66,
+        "endLine": 73,
+        "endChar": 68
+      },
+      "revId": "21f16fb8841621fac2bf56b8c302f1acf3d594fa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "7a6c34fa_e7aedfb1",
         "filename": "src/chromiumos/cmd/tast/build/build.go",
         "patchSetId": 1
@@ -70,6 +130,30 @@
       "writtenOn": "2018-12-18T05:20:05Z",
       "side": 1,
       "message": "is there any reason not to keep \"-j 16\" here?",
+      "range": {
+        "startLine": 74,
+        "startChar": 23,
+        "endLine": 74,
+        "endChar": 24
+      },
+      "revId": "21f16fb8841621fac2bf56b8c302f1acf3d594fa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "625d677e_02b7dce7",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1155964
+      },
+      "writtenOn": "2018-12-18T18:51:18Z",
+      "side": 1,
+      "message": "No, I think you\u0027re right, I\u0027ve just habitually removed it because I\u0027ve been too used to hitting issues when using more processes over a larger build. I\u0027ll re-add in an update.",
+      "parentUuid": "7a6c34fa_e7aedfb1",
       "range": {
         "startLine": 74,
         "startChar": 23,

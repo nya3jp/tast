@@ -1,0 +1,84 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1bb64836_0da164f0",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-18T05:20:05Z",
+      "side": 1,
+      "message": "nit:\n\n  var b bytes.Buffer",
+      "revId": "21f16fb8841621fac2bf56b8c302f1acf3d594fa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3917a1d2_d25f7aaf",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-18T05:20:05Z",
+      "side": 1,
+      "message": "i think you meant to delete this. \u0027i\u0027 is unused then, too",
+      "revId": "21f16fb8841621fac2bf56b8c302f1acf3d594fa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "640e7200_ef3c1b97",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-18T05:20:05Z",
+      "side": 1,
+      "message": "please move these spaces to the beginning of the string in the next line",
+      "range": {
+        "startLine": 73,
+        "startChar": 66,
+        "endLine": 73,
+        "endChar": 68
+      },
+      "revId": "21f16fb8841621fac2bf56b8c302f1acf3d594fa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7a6c34fa_e7aedfb1",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-18T05:20:05Z",
+      "side": 1,
+      "message": "is there any reason not to keep \"-j 16\" here?",
+      "range": {
+        "startLine": 74,
+        "startChar": 23,
+        "endLine": 74,
+        "endChar": 24
+      },
+      "revId": "21f16fb8841621fac2bf56b8c302f1acf3d594fa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

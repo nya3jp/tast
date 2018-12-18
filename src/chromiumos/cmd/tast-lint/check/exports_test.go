@@ -68,3 +68,13 @@ func SomeFunc2() {}
 	issues := Exports(fs, f)
 	verifyIssues(t, issues, nil)
 }
+
+func TestExports_DocFile(t *testing.T) {
+	const filename = "src/chromiumos/tast/local/example/doc.go"
+	const code = `// Package example demonstrates how to do things.
+package example
+`
+	f, fs := parse(code, filename)
+	issues := Exports(fs, f)
+	verifyIssues(t, issues, nil)
+}

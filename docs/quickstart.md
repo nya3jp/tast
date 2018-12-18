@@ -47,9 +47,7 @@ cached). The test should succeed again.
 ```
 To install missing dependencies, run:
 
- sudo emerge -j 16 \
-   =dev-go/cdp-0.9.1-r1 \
-   =dev-go/dbus-0.0.2-r5
+ sudo emerge -j 16 -uDo chromeos-base/tast-local-tests-cros
 ```
 > This is expected: to speed things up, `tast` is building the tests directly
 > instead of emerging the `tast-local-tests-cros` package, so it needs some help

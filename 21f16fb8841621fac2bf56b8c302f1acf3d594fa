@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "c0e1c80f_8c230988",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1155964
+      },
+      "writtenOn": "2018-12-18T20:17:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "745e1aec_8d64f9f7",
+      "revId": "21f16fb8841621fac2bf56b8c302f1acf3d594fa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3917a1d2_d25f7aaf",
         "filename": "src/chromiumos/cmd/tast/build/build.go",
         "patchSetId": 1
@@ -69,6 +87,24 @@
       "revId": "21f16fb8841621fac2bf56b8c302f1acf3d594fa",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "248bd56c_bd085f83",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1155964
+      },
+      "writtenOn": "2018-12-18T20:17:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7d786035_f3c83ba8",
+      "revId": "21f16fb8841621fac2bf56b8c302f1acf3d594fa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -119,6 +155,30 @@
     },
     {
       "key": {
+        "uuid": "bbe76cc9_fb9698c7",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1155964
+      },
+      "writtenOn": "2018-12-18T20:17:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c1fc95b7_498c03c4",
+      "range": {
+        "startLine": 73,
+        "startChar": 66,
+        "endLine": 73,
+        "endChar": 68
+      },
+      "revId": "21f16fb8841621fac2bf56b8c302f1acf3d594fa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6c34fa_e7aedfb1",
         "filename": "src/chromiumos/cmd/tast/build/build.go",
         "patchSetId": 1
@@ -163,6 +223,30 @@
       "revId": "21f16fb8841621fac2bf56b8c302f1acf3d594fa",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9cf26e4e_9b6017a5",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1155964
+      },
+      "writtenOn": "2018-12-18T20:17:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "625d677e_02b7dce7",
+      "range": {
+        "startLine": 74,
+        "startChar": 23,
+        "endLine": 74,
+        "endChar": 24
+      },
+      "revId": "21f16fb8841621fac2bf56b8c302f1acf3d594fa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

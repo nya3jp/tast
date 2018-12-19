@@ -17,6 +17,7 @@ import (
 var defaultHTTPClient = &http.Client{
 	Transport: &http.Transport{
 		MaxIdleConnsPerHost: 10,
+		Proxy:               http.ProxyFromEnvironment,
 	},
 }
 

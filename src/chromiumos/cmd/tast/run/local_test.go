@@ -55,12 +55,14 @@ type localTestData struct {
 	runStderr []byte        // stderr for local_test_runner to return
 	runStdin  bytes.Buffer  // stdin that was written to local_test_runner
 	runDelay  time.Duration // local_test_runner delay before exiting
+
+	origEnvVars map[string]string // environment variables temporarily cleared during testing
 }
 
 // newLocalTestData performs setup for tests that exercise the local function.
 // It calls t.Fatal on error.
 func newLocalTestData(t *gotesting.T) *localTestData {
-	td := localTestData{}
+	td := localTestData{origEnvVars: make(map[string]string)}
 	td.srvData = test.NewTestData(userKey, hostKey, td.handleExec)
 	td.cfg.KeyFile = td.srvData.UserKeyFile
 
@@ -86,6 +88,17 @@ func newLocalTestData(t *gotesting.T) *localTestData {
 	td.cfg.hstCopyBasePath = td.hostDir
 	td.cfg.hstCopyAnnounceCmd = func(cmd string) { td.nextCopyCmd = cmd }
 
+	// Unset proxy-related environment variables so they don't get prepended to the
+	// local_test_runner command line.
+	for _, k := range proxyEnvVars {
+		if v := os.Getenv(k); v != "" {
+			td.origEnvVars[k] = v
+			if err := os.Unsetenv(k); err != nil {
+				t.Fatal(err)
+			}
+		}
+	}
+
 	toClose = nil
 	return &td
 }
@@ -98,6 +111,9 @@ func (td *localTestData) close() {
 	td.srvData.Close()
 	if td.tempDir != "" {
 		os.RemoveAll(td.tempDir)
+	}
+	for k, v := range td.origEnvVars {
+		os.Setenv(k, v) // ignoring error since it's unlikely and we don't have a way to report it
 	}
 }
 

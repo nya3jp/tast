@@ -11,6 +11,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 
@@ -49,6 +50,9 @@ const (
 
 	defaultLocalRunnerWaitTimeout time.Duration = 10 * time.Second // default timeout for waiting for local_test_runner to exit
 )
+
+// envVarNameRegexp matches a valid environment variable name. See https://stackoverflow.com/questions/2821043.
+var envVarNameRegexp = regexp.MustCompile("^[A-Za-z_][A-Za-z0-9_]*$")
 
 // local runs local tests as directed by cfg and returns the command's exit status.
 // If non-nil, the returned results may be passed to WriteResults.
@@ -251,7 +255,7 @@ func getDataFilePaths(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlo
 	}
 	cfg.Logger.Debug("Getting data file list from target")
 
-	handle, err := startLocalRunner(ctx, cfg, hst, &runner.Args{
+	handle, err := startLocalRunner(ctx, cfg, hst, nil, &runner.Args{
 		Mode:       runner.ListTestsMode,
 		BundleGlob: bundleGlob,
 		Patterns:   cfg.Patterns,
@@ -392,9 +396,24 @@ func buildAndPushLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH) er
 }
 
 // startLocalRunner starts local_test_runner on hst and passes args to it.
-// The caller is responsible for reading the handle's stdout and closing the handle.
-func startLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, args *runner.Args) (*host.SSHCommandHandle, error) {
-	handle, err := hst.Start(ctx, localRunnerPath, host.OpenStdin, host.StdoutAndStderr)
+// envVars can contain "NAME=value" environment variables that will be prepended to
+// the local_test_runner command line. The caller is responsible for reading the handle's
+// stdout and closing the handle.
+func startLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, envVars []string,
+	args *runner.Args) (*host.SSHCommandHandle, error) {
+	envPrefix := ""
+	for _, env := range envVars {
+		parts := strings.SplitN(env, "=", 2)
+		if len(parts) != 2 {
+			return nil, fmt.Errorf("invalid environment variable definition %q", env)
+		}
+		if !envVarNameRegexp.MatchString(parts[0]) {
+			return nil, fmt.Errorf("invalid environment variable name %q", parts[0])
+		}
+		envPrefix += fmt.Sprintf("%s=%s ", parts[0], host.QuoteShellArg(parts[1]))
+	}
+
+	handle, err := hst.Start(ctx, envPrefix+localRunnerPath, host.OpenStdin, host.StdoutAndStderr)
 	if err != nil {
 		return nil, err
 	}
@@ -429,15 +448,32 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 		},
 	}
 
+	var envVars []string
+
 	switch cfg.mode {
 	case RunTestsMode:
 		args.Mode = runner.RunTestsMode
 		setRunnerTestDepsArgs(cfg, &args)
+
+		// Set proxy-related environment variables for local_test_runner so it will use them
+		// when downloading external data files that are needed by the tests.
+		if cfg.proxy == proxyEnv {
+			// Proxy-related variables can be either uppercase or lowercase.
+			// See https://golang.org/pkg/net/http/#ProxyFromEnvironment.
+			for _, name := range []string{
+				"HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY",
+				"http_proxy", "https_proxy", "no_proxy",
+			} {
+				if val := os.Getenv(name); val != "" {
+					envVars = append(envVars, name+"="+val)
+				}
+			}
+		}
 	case ListTestsMode:
 		args.Mode = runner.ListTestsMode
 	}
 
-	handle, err := startLocalRunner(ctx, cfg, hst, &args)
+	handle, err := startLocalRunner(ctx, cfg, hst, envVars, &args)
 	if err != nil {
 		return nil, err
 	}

@@ -14,13 +14,12 @@ func TestConfigRunDefaults(t *testing.T) {
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
 	cfg.SetFlags(flags)
 
-	desc := "SetFlags for RunTestsMode"
+	const desc = "SetFlags for RunTestsMode"
 	if !cfg.collectSysInfo {
 		t.Errorf("%s didn't set collectSysInfo", desc)
 	}
 	if cfg.checkTestDeps != checkTestDepsAuto {
-		t.Errorf("%s set checkTestDeps to %v; want %v",
-			desc, cfg.checkTestDeps, checkTestDepsAuto)
+		t.Errorf("%s set checkTestDeps to %v; want %v", desc, cfg.checkTestDeps, checkTestDepsAuto)
 	}
 }
 

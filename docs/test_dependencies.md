@@ -51,6 +51,13 @@ systems where the `cras` USE flag is set, either `audio_chipset_a` or
 Before a new USE flag can be used in an expression, it must be added to `IUSE`
 in the [tast-use-flags] package.
 
+See the following changes for an example of adding a new `containers` software
+feature based on the `containers` USE flag and making a test depend on it:
+
+*   `chromiumos-overlay` repository: <https://crrev.com/c/1382877>
+*   `tast` repository: <https://crrev.com/c/1382621>
+*   `tast-tests` repository: <https://crrev.com/c/1382878>
+
 The exception to the above are `autotest-capability:`-prefixed features, which
 are added by the [autocaps package] as specified by YAML files in
 `/usr/local/etc/autotest-capability`. This exists in order to support porting

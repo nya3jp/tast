@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"chromiumos/cmd/tast/logging"
@@ -102,6 +103,10 @@ type Config struct {
 	availableSoftwareFeatures   []string     // features supported by the DUT
 	unavailableSoftwareFeatures []string     // features unsupported by the DUT
 
+	httpProxy  string // HTTP_PROXY value for DUT
+	httpsProxy string // HTTPS_PROXY value for DUT
+	noProxy    string // NO_PROXY value for DUT
+
 	collectSysInfo bool                 // collect system info (logs, crashes, etc.) generated during testing
 	initialSysInfo *runner.SysInfoState // initial state of system info (logs, crashes, etc.) on DUT before testing
 
@@ -179,6 +184,18 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 
 		f.Var(command.NewListFlag(",", func(v []string) { c.extraUSEFlags = v }, nil), "extrauseflags",
 			"comma-separated list of additional USE flags to inject when checking test dependencies")
+
+		// Proxy-related variables can be either uppercase or lowercase. See https://golang.org/pkg/net/http/#ProxyFromEnvironment.
+		proxyVarDefault := func(upperName string) string {
+			if val := os.Getenv(upperName); val != "" {
+				return val
+			}
+			return os.Getenv(strings.ToLower(upperName))
+		}
+		f.StringVar(&c.httpProxy, "httpproxy", proxyVarDefault("HTTP_PROXY"), `HTTP proxy for DUT to use (URL or "host[:port]")`)
+		f.StringVar(&c.httpsProxy, "httpsproxy", proxyVarDefault("HTTPS_PROXY"), `HTTPS proxy for DUT to use (URL or "host[:port]")`)
+		f.StringVar(&c.noProxy, "noproxy", proxyVarDefault("NO_PROXY"),
+			"comma-separated list of host/domain names for which DUT shouldn't use proxies")
 	} else {
 		c.checkTestDeps = checkTestDepsNever
 	}

@@ -9,6 +9,7 @@ import (
 	"context"
 	"crypto/rsa"
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -50,6 +51,7 @@ type localTestData struct {
 	hostDir     string // directory simulating root dir on DUT for file copies
 	nextCopyCmd string // next "exec" command expected for file copies
 
+	expRunCmd string        // expected "exec" command for starting local_test_runner
 	runStatus int           // status code for local_test_runner to return
 	runStdout []byte        // stdout for local_test_runner to return
 	runStderr []byte        // stderr for local_test_runner to return
@@ -60,7 +62,9 @@ type localTestData struct {
 // newLocalTestData performs setup for tests that exercise the local function.
 // It calls t.Fatal on error.
 func newLocalTestData(t *gotesting.T) *localTestData {
-	td := localTestData{}
+	td := localTestData{
+		expRunCmd: localRunnerPath,
+	}
 	td.srvData = test.NewTestData(userKey, hostKey, td.handleExec)
 	td.cfg.KeyFile = td.srvData.UserKeyFile
 
@@ -111,7 +115,7 @@ func (td *localTestData) handleExec(req *test.ExecReq) {
 	case "test -d " + host.QuoteShellArg(filepath.Join(localDataBuiltinDir, localBundlePkgPathPrefix)):
 		req.Start(true)
 		req.End(0)
-	case localRunnerPath:
+	case td.expRunCmd:
 		req.Start(true)
 		io.Copy(&td.runStdin, req)
 		req.Write(td.runStdout)
@@ -157,6 +161,33 @@ func TestLocalSuccess(t *gotesting.T) {
 		BundleGlob: builtinBundleGlob,
 		DataDir:    localDataBuiltinDir,
 	})
+}
+
+func TestLocalProxy(t *gotesting.T) {
+	td := newLocalTestData(t)
+	defer td.close()
+
+	ob := bytes.Buffer{}
+	mw := control.NewMessageWriter(&ob)
+	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
+	mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
+	td.runStdout = ob.Bytes()
+
+	// Configure proxy settings for the DUT.
+	td.cfg.httpProxy = "10.0.0.1:8000"
+	td.cfg.httpsProxy = "10.0.0.1:8001"
+	td.cfg.noProxy = "foo.com, localhost, 127.0.0.0"
+
+	// Proxy environment variables should be prepended to the local_test_runner command line.
+	td.expRunCmd = strings.Join([]string{
+		fmt.Sprintf("HTTP_PROXY=" + host.QuoteShellArg(td.cfg.httpProxy)),
+		fmt.Sprintf("HTTPS_PROXY=" + host.QuoteShellArg(td.cfg.httpsProxy)),
+		fmt.Sprintf("NO_PROXY=" + host.QuoteShellArg(td.cfg.noProxy)),
+	}, " ") + " " + td.expRunCmd
+
+	if status, _ := local(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
+		t.Errorf("local() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
+	}
 }
 
 func TestLocalExecFailure(t *gotesting.T) {

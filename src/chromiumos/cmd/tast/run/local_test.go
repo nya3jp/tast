@@ -9,6 +9,7 @@ import (
 	"context"
 	"crypto/rsa"
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -50,6 +51,7 @@ type localTestData struct {
 	hostDir     string // directory simulating root dir on DUT for file copies
 	nextCopyCmd string // next "exec" command expected for file copies
 
+	expRunCmd string        // expected "exec" command for starting local_test_runner
 	runStatus int           // status code for local_test_runner to return
 	runStdout []byte        // stdout for local_test_runner to return
 	runStderr []byte        // stderr for local_test_runner to return
@@ -60,7 +62,7 @@ type localTestData struct {
 // newLocalTestData performs setup for tests that exercise the local function.
 // It calls t.Fatal on error.
 func newLocalTestData(t *gotesting.T) *localTestData {
-	td := localTestData{}
+	td := localTestData{expRunCmd: localRunnerPath}
 	td.srvData = test.NewTestData(userKey, hostKey, td.handleExec)
 	td.cfg.KeyFile = td.srvData.UserKeyFile
 
@@ -77,6 +79,9 @@ func newLocalTestData(t *gotesting.T) *localTestData {
 
 	// Avoid checking test dependencies, which causes an extra local_test_runner call.
 	td.cfg.checkTestDeps = checkTestDepsNever
+
+	// Ensure that already-set environment variables don't affect unit tests.
+	td.cfg.proxy = proxyNone
 
 	// Run actual commands when performing file copies.
 	td.hostDir = filepath.Join(td.tempDir, "host")
@@ -111,7 +116,7 @@ func (td *localTestData) handleExec(req *test.ExecReq) {
 	case "test -d " + host.QuoteShellArg(filepath.Join(localDataBuiltinDir, localBundlePkgPathPrefix)):
 		req.Start(true)
 		req.End(0)
-	case localRunnerPath:
+	case td.expRunCmd:
 		req.Start(true)
 		io.Copy(&td.runStdin, req)
 		req.Write(td.runStdout)
@@ -157,6 +162,50 @@ func TestLocalSuccess(t *gotesting.T) {
 		BundleGlob: builtinBundleGlob,
 		DataDir:    localDataBuiltinDir,
 	})
+}
+
+func TestLocalProxy(t *gotesting.T) {
+	td := newLocalTestData(t)
+	defer td.close()
+
+	ob := bytes.Buffer{}
+	mw := control.NewMessageWriter(&ob)
+	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
+	mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
+	td.runStdout = ob.Bytes()
+
+	// Configure proxy settings to forward to the DUT.
+	const (
+		httpProxy  = "10.0.0.1:8000"
+		httpsProxy = "10.0.0.1:8001"
+		noProxy    = "foo.com, localhost, 127.0.0.0"
+	)
+	for name, val := range map[string]string{
+		"HTTP_PROXY":  httpProxy,
+		"HTTPS_PROXY": httpsProxy,
+		"NO_PROXY":    noProxy,
+	} {
+		old := os.Getenv(name)
+		if err := os.Setenv(name, val); err != nil {
+			t.Fatal(err)
+		}
+		if old != "" {
+			defer os.Setenv(name, old)
+		}
+	}
+	td.cfg.proxy = proxyEnv
+
+	// Proxy environment variables should be prepended to the local_test_runner command line.
+	// (The variables are added in this order in local.go.)
+	td.expRunCmd = strings.Join([]string{
+		fmt.Sprintf("HTTP_PROXY=" + host.QuoteShellArg(httpProxy)),
+		fmt.Sprintf("HTTPS_PROXY=" + host.QuoteShellArg(httpsProxy)),
+		fmt.Sprintf("NO_PROXY=" + host.QuoteShellArg(noProxy)),
+	}, " ") + " " + td.expRunCmd
+
+	if status, _ := local(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
+		t.Errorf("local() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
+	}
 }
 
 func TestLocalExecFailure(t *gotesting.T) {

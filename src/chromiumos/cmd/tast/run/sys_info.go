@@ -29,7 +29,7 @@ func getInitialSysInfo(ctx context.Context, cfg *Config) error {
 	if err != nil {
 		return err
 	}
-	handle, err := startLocalRunner(ctx, cfg, hst, &runner.Args{Mode: runner.GetSysInfoStateMode})
+	handle, err := startLocalRunner(ctx, cfg, hst, nil, &runner.Args{Mode: runner.GetSysInfoStateMode})
 	if err != nil {
 		return err
 	}
@@ -68,7 +68,7 @@ func collectSysInfo(ctx context.Context, cfg *Config) error {
 		Mode:               runner.CollectSysInfoMode,
 		CollectSysInfoArgs: runner.CollectSysInfoArgs{InitialState: *cfg.initialSysInfo},
 	}
-	handle, err := startLocalRunner(ctx, cfg, hst, &args)
+	handle, err := startLocalRunner(ctx, cfg, hst, nil, &args)
 	if err != nil {
 		return err
 	}

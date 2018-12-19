@@ -55,6 +55,17 @@ const (
 	checkTestDepsNever
 )
 
+// proxyMode describes how proxies should be used when running tests.
+type proxyMode int
+
+const (
+	// proxyEnv indicates that the HTTP_PROXY, HTTPS_PROXY, and NO_PROXY environment variables
+	// (and their lowercase counterparts) should be forwarded to the DUT if set on the host.
+	proxyEnv proxyMode = iota
+	// proxyNone indicates that proxies shouldn't be used by the DUT.
+	proxyNone
+)
+
 const (
 	defaultKeyFile = "chromite/ssh_keys/testing_rsa" // default private SSH key within Chrome OS checkout
 )
@@ -101,6 +112,7 @@ type Config struct {
 	extraUSEFlags               []string     // additional USE flags to inject when determining features
 	availableSoftwareFeatures   []string     // features supported by the DUT
 	unavailableSoftwareFeatures []string     // features unsupported by the DUT
+	proxy                       proxyMode    // how proxies should be used
 
 	collectSysInfo bool                 // collect system info (logs, crashes, etc.) generated during testing
 	initialSysInfo *runner.SysInfoState // initial state of system info (logs, crashes, etc.) on DUT before testing
@@ -179,6 +191,14 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 
 		f.Var(command.NewListFlag(",", func(v []string) { c.extraUSEFlags = v }, nil), "extrauseflags",
 			"comma-separated list of additional USE flags to inject when checking test dependencies")
+
+		vals = map[string]int{
+			"env":  int(proxyEnv),
+			"none": int(proxyNone),
+		}
+		td = command.NewEnumFlag(vals, func(v int) { c.proxy = proxyMode(v) }, "env")
+		desc = fmt.Sprintf("proxy settings used by the DUT (%s; default %q)", td.QuotedValues(), td.Default())
+		f.Var(td, "proxy", desc)
 	} else {
 		c.checkTestDeps = checkTestDepsNever
 	}

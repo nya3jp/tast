@@ -15,6 +15,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"strconv"
 	"strings"
 	gotesting "testing"
 	"time"
@@ -50,17 +51,23 @@ type localTestData struct {
 	hostDir     string // directory simulating root dir on DUT for file copies
 	nextCopyCmd string // next "exec" command expected for file copies
 
+	expRunCmd string        // expected "exec" command for starting local_test_runner
 	runStatus int           // status code for local_test_runner to return
 	runStdout []byte        // stdout for local_test_runner to return
 	runStderr []byte        // stderr for local_test_runner to return
 	runStdin  bytes.Buffer  // stdin that was written to local_test_runner
 	runDelay  time.Duration // local_test_runner delay before exiting
+
+	origEnvVars map[string]string // environment variables temporarily cleared during testing
 }
 
 // newLocalTestData performs setup for tests that exercise the local function.
 // It calls t.Fatal on error.
 func newLocalTestData(t *gotesting.T) *localTestData {
-	td := localTestData{}
+	td := localTestData{
+		expRunCmd:   localRunnerPath,
+		origEnvVars: make(map[string]string),
+	}
 	td.srvData = test.NewTestData(userKey, hostKey, td.handleExec)
 	td.cfg.KeyFile = td.srvData.UserKeyFile
 
@@ -86,6 +93,17 @@ func newLocalTestData(t *gotesting.T) *localTestData {
 	td.cfg.hstCopyBasePath = td.hostDir
 	td.cfg.hstCopyAnnounceCmd = func(cmd string) { td.nextCopyCmd = cmd }
 
+	// Unset proxy-related environment variables so they don't get prepended to the
+	// local_test_runner command line.
+	for _, name := range proxyEnvVars {
+		if val := os.Getenv(name); val != "" {
+			td.origEnvVars[name] = val
+			if err := os.Unsetenv(name); err != nil {
+				t.Fatal(err)
+			}
+		}
+	}
+
 	toClose = nil
 	return &td
 }
@@ -99,6 +117,9 @@ func (td *localTestData) close() {
 	if td.tempDir != "" {
 		os.RemoveAll(td.tempDir)
 	}
+	for k, v := range td.origEnvVars {
+		os.Setenv(k, v) // ignoring error since it's unlikely and we don't have a way to report it
+	}
 }
 
 // handleExec handles SSH "exec" requests sent to td.srvData.Srv.
@@ -111,7 +132,7 @@ func (td *localTestData) handleExec(req *test.ExecReq) {
 	case "test -d " + host.QuoteShellArg(filepath.Join(localDataBuiltinDir, localBundlePkgPathPrefix)):
 		req.Start(true)
 		req.End(0)
-	case localRunnerPath:
+	case td.expRunCmd:
 		req.Start(true)
 		io.Copy(&td.runStdin, req)
 		req.Write(td.runStdout)
@@ -157,6 +178,42 @@ func TestLocalSuccess(t *gotesting.T) {
 		BundleGlob: builtinBundleGlob,
 		DataDir:    localDataBuiltinDir,
 	})
+}
+
+func TestLocalProxyEnvVars(t *gotesting.T) {
+	td := newLocalTestData(t)
+	defer td.close()
+
+	ob := bytes.Buffer{}
+	mw := control.NewMessageWriter(&ob)
+	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
+	mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
+	td.runStdout = ob.Bytes()
+
+	// Temporarily set all proxy-related environment variables.
+	var envVars []string
+	for i, name := range proxyEnvVars {
+		val := "10.0.0.1:800" + strconv.Itoa(i)
+		if err := os.Setenv(name, val); err != nil {
+			t.Fatal(err)
+		}
+		defer os.Unsetenv(name)
+		envVars = append(envVars, name+"="+val)
+	}
+
+	// Set another unrelated environment variable.
+	const bogus = "TAST_LOCAL_TEST_BOGUS"
+	if err := os.Setenv(bogus, "123"); err != nil {
+		t.Fatal(err)
+	}
+	defer os.Unsetenv(bogus)
+
+	// The proxy variables should be prepended to the local_test_runner command line.
+	td.expRunCmd = strings.Join(envVars, " ") + " " + td.expRunCmd
+
+	if status, _ := local(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
+		t.Errorf("local() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
+	}
 }
 
 func TestLocalExecFailure(t *gotesting.T) {

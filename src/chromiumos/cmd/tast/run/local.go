@@ -50,6 +50,10 @@ const (
 	defaultLocalRunnerWaitTimeout time.Duration = 10 * time.Second // default timeout for waiting for local_test_runner to exit
 )
 
+// proxyEnvVars lists proxy-related environment variables that are passed to local_test_runner if set.
+// See https://golang.org/pkg/net/http/#ProxyFromEnvironment for details.
+var proxyEnvVars = []string{"HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY", "http_proxy", "https_proxy", "no_proxy"}
+
 // local runs local tests as directed by cfg and returns the command's exit status.
 // If non-nil, the returned results may be passed to WriteResults.
 func local(ctx context.Context, cfg *Config) (Status, []TestResult) {
@@ -251,7 +255,7 @@ func getDataFilePaths(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlo
 	}
 	cfg.Logger.Debug("Getting data file list from target")
 
-	handle, err := startLocalRunner(ctx, cfg, hst, &runner.Args{
+	handle, err := startLocalRunner(ctx, cfg, hst, nil, &runner.Args{
 		Mode:       runner.ListTestsMode,
 		BundleGlob: bundleGlob,
 		Patterns:   cfg.Patterns,
@@ -392,9 +396,17 @@ func buildAndPushLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH) er
 }
 
 // startLocalRunner starts local_test_runner on hst and passes args to it.
-// The caller is responsible for reading the handle's stdout and closing the handle.
-func startLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, args *runner.Args) (*host.SSHCommandHandle, error) {
-	handle, err := hst.Start(ctx, localRunnerPath, host.OpenStdin, host.StdoutAndStderr)
+// envVars can contain "NAME=value" environment variables that will be prepended to
+// the local_test_runner command line. The caller is responsible for reading the handle's
+// stdout and closing the handle.
+func startLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, envVars []string,
+	args *runner.Args) (*host.SSHCommandHandle, error) {
+	envPrefix := ""
+	if len(envVars) != 0 {
+		envPrefix = strings.Join(envVars, " ") + " "
+	}
+
+	handle, err := hst.Start(ctx, envPrefix+localRunnerPath, host.OpenStdin, host.StdoutAndStderr)
 	if err != nil {
 		return nil, err
 	}
@@ -429,15 +441,25 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 		},
 	}
 
+	var envVars []string
+
 	switch cfg.mode {
 	case RunTestsMode:
 		args.Mode = runner.RunTestsMode
 		setRunnerTestDepsArgs(cfg, &args)
+
+		// Pass proxy-related environment variables through to local_test_runner so it will use them
+		// when downloading external data files that are needed by the tests.
+		for _, k := range proxyEnvVars {
+			if v := os.Getenv(k); v != "" {
+				envVars = append(envVars, fmt.Sprintf("%v=%v", k, v))
+			}
+		}
 	case ListTestsMode:
 		args.Mode = runner.ListTestsMode
 	}
 
-	handle, err := startLocalRunner(ctx, cfg, hst, &args)
+	handle, err := startLocalRunner(ctx, cfg, hst, envVars, &args)
 	if err != nil {
 		return nil, err
 	}

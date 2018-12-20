@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "86684376_81f693a9",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 406,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-20T00:44:34Z",
+      "side": 1,
+      "message": "thanks for looking into this!\n\ni\u0027ve added what you suggest, except using host.QuoteShellArg (which isn\u0027t as good as testexec.EscapeString :-/) since testexec is only in tast-tests.",
+      "parentUuid": "34805ca1_47ac374e",
+      "range": {
+        "startLine": 406,
+        "startChar": 2,
+        "endLine": 406,
+        "endChar": 46
+      },
+      "revId": "cfbd5e900696db2ffaebaab76037bd1ed46e274e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "2dc4ce6c_36e41b79",
         "filename": "src/chromiumos/cmd/tast/run/local.go",
         "patchSetId": 2

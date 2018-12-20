@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2dc4ce6c_36e41b79",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 455,
+      "author": {
+        "id": 1155964
+      },
+      "writtenOn": "2018-12-20T00:23:33Z",
+      "side": 1,
+      "message": "I suggest changing \"%v\u003d%v\" to \"%v\u003d\\\"%v\\\"\"\n\nIf there\u0027s proxy env variables with spaces, the test runner will view them as normal bash commands and attempt to run them:\n\n2018/12/19 16:06:31 envPrefix\u003dhttp_proxy\u003dhttp://*********.com:*** https_proxy\u003dhttp://*********.com:*** no_proxy\u003d.foo.com, .bar.com, localhost, 127.0.0.0 \n2018/12/19 16:06:31 Failed to run tests: Process exited with status 127: bash: .bar.com,: command not found",
+      "range": {
+        "startLine": 455,
+        "startChar": 42,
+        "endLine": 455,
+        "endChar": 49
+      },
+      "revId": "cfbd5e900696db2ffaebaab76037bd1ed46e274e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

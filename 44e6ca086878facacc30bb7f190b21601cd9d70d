@@ -22,6 +22,30 @@
       "revId": "44e6ca086878facacc30bb7f190b21601cd9d70d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5f3a3cd1_4c0873c5",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1155964
+      },
+      "writtenOn": "2018-12-20T05:03:42Z",
+      "side": 1,
+      "message": "I have not run it. I\u0027m extremely new to golang, so I apologize for the formatting. I will be using the go fmt tool going forward to check the code to ensure it complies with the formatting rules. I\u0027ll be out of the office for the next two weeks, so I\u0027ll try to use that time to get caught up with most of the nuances for golang.",
+      "parentUuid": "9676ff7a_4fbec8f4",
+      "range": {
+        "startLine": 72,
+        "startChar": 85,
+        "endLine": 72,
+        "endChar": 87
+      },
+      "revId": "44e6ca086878facacc30bb7f190b21601cd9d70d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

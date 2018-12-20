@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "34805ca1_47ac374e",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 406,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-20T00:29:08Z",
+      "side": 1,
+      "message": "We need to escape this for shell. Otherwise it may allow unexpected shell injection, e.g. export HTTP_PROXY\u003d\"foo cat /etc/passwd;\"\n\n var envVarName \u003d regexp.Compile(\"^[A-Za-z_][A-Za-z0-9_]*$\")\n\n for _, env :\u003d range envVars {\n   parts :\u003d strings.SplitN(env, \"\u003d\", 2)\n   if len(parts) !\u003d 2 {\n     return nil, errors.New(\"invalid environment variable definition\")\n   }\n   if !envVarName.MatchString(parts[0]) {\n     return nil, errors.New(\"invalid environment variable name\")\n   }\n   envPrefix +\u003d fmt.Sprintf(\"%s\u003d%s \", parts[0], testexec.EscapeString(parts[1]))\n }\n\nAbout the allowed character set in environment variable names, I found this article is useful: https://stackoverflow.com/a/2821183",
+      "range": {
+        "startLine": 406,
+        "startChar": 2,
+        "endLine": 406,
+        "endChar": 46
+      },
+      "revId": "cfbd5e900696db2ffaebaab76037bd1ed46e274e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "2dc4ce6c_36e41b79",
         "filename": "src/chromiumos/cmd/tast/run/local.go",
         "patchSetId": 2

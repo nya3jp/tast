@@ -52,6 +52,7 @@ func main() {
 			"reboot":            "!betty && !tast_vm",           // weird missing-runner-after-reboot bug: https://crbug.com/909955
 			"screenshot":        "display_backlight && !rk3399", // screenshot command broken on RK3399: https://crbug.com/880597
 			"selinux":           "selinux",
+			"tablet_mode":       "touchview",
 			"tpm":               "!mocktpm && !tast_vm",
 			// Some VM builds actually can run nested VM with right host configuration.
 			// But we haven't enable this feature on builders. For now, just disable

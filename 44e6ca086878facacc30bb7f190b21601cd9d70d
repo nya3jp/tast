@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9676ff7a_4fbec8f4",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-20T01:57:55Z",
+      "side": 1,
+      "message": "nit: I guess this code is not formatted with \"go fmt\"... have you run it?",
+      "range": {
+        "startLine": 72,
+        "startChar": 85,
+        "endLine": 72,
+        "endChar": 87
+      },
+      "revId": "44e6ca086878facacc30bb7f190b21601cd9d70d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -662,6 +662,13 @@ to a `tests/<test-name>/` subdirectory within the results directory.
 
 [Running tests]: running_tests.md
 
+### Performance measurements
+
+The [perf] package is provided to record the results of performance tests.  See
+the [perf] documentation for more details.
+
+[perf]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/perf
+
 ## Data files
 
 Tests can register ancillary data files that will be copied to the DUT and made

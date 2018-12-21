@@ -112,6 +112,8 @@ Various files and directories are created within the results directory:
 *   `full.txt` - All output from the run, including messages logged by
     individual tests.
 *   `results.json` - Machine-parseable test results.
+*   `results-chart.json` - Machine-parseable performance metrics produced by
+    the [`perf`](chromiumos/tast-tests/perf) package.
 *   `run_error.txt` - Error message describing the reason why the run was
     aborted (e.g. SSH connection to DUT was lost). Only written when a global
     error occurs.
@@ -139,3 +141,4 @@ local_test_runner ui.ChromeLogin
 [tast-tests repository]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/
 [Go in Chromium OS]: https://www.chromium.org/chromium-os/developer-guide/go-in-chromium-os
 [Breakpad]: https://github.com/google/breakpad/
+[chromiumos/tast-tests/perf]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/perf

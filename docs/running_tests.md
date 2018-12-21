@@ -119,9 +119,15 @@ Various files and directories are created within the results directory:
     partial results if `tast` process is interrupted before `results.json` is
     written.
 *   `system_logs/` - Diff of `/var/log` on the DUT before and after testing.
-*   `tests/` - Per-test subdirectories, each of which has messages logged by the
-    test and any output files that it created.
+*   `tests/<test-name>/` - Per-test subdirectories, containing test logs and
+    other output files.
+      *   `log.txt` - Log messages and errors reported by the test.
+      *   (optional) `results-chart.json` - Machine-parseable performance
+          metrics produced by the [`perf`](chromiumos/tast-tests/local/perf) package.
+      *   `...` - Other [output files] from the test.
 *   `timing.json` - Machine-parsable timing information about the test run.
+
+[output files]: writing_tests.md#Output-files
 
 ## Running local tests manually on the DUT
 
@@ -139,3 +145,4 @@ local_test_runner ui.ChromeLogin
 [tast-tests repository]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/
 [Go in Chromium OS]: https://www.chromium.org/chromium-os/developer-guide/go-in-chromium-os
 [Breakpad]: https://github.com/google/breakpad/
+[chromiumos/tast-tests/local/perf]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast-tests/local/perf

@@ -672,3 +672,26 @@ See the [example.DataFiles] test for a complete example of using both local and
 external data files.
 
 [example.DataFiles]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/bundles/cros/example/data_files.go
+
+### Performance measurements
+
+The [`perf`](src/chromiumos/tast/local/perf/) package is provided to record the
+results of performance tests.  JSON files produced by this package are stored
+in `results-chart.json`, usually in a subdirectory of the `results` directory.
+They are optionally uploaded by the Autotest TKO parser.  Example:
+
+```go
+perfValues := &perf.Values{}
+myMeasurement := perf.Metric{
+	Name:	    "mytest_important_quantity"
+        Unit:	    "gizmos"
+        Direction:  perf.BiggerIsBetter
+}
+quantity := 42
+perfValues.Set(myMeasurement, float64(quantity))
+if err = perfValues.Save(s.OutDir()); err != nil {
+	s.Error("Failed saving perf data: ", err)
+}
+```
+
+See the [`perf`](src/chromiumos/tast/local/perf/) sources for more details.

@@ -6,6 +6,8 @@ package bundle
 
 import (
 	"context"
+	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"log/syslog"
@@ -33,11 +35,68 @@ const (
 	statusNoTests     = 5 // no tests were matched by the supplied patterns
 )
 
+// FIXME: document
+func execSubprocIfNeeded(args []string, stderr io.Writer) error {
+	flags := flag.NewFlagSet("", flag.ContinueOnError)
+	name := flags.String("subproc", "", "name of subprocess function to exec")
+	jsonArgs := flags.String("subprocargs", "", "JSON array of args to pass to subprocess")
+	if err := flags.Parse(args); err != nil {
+		return command.NewStatusErrorf(statusBadArgs, "%v", err)
+	}
+	if *name == "" {
+		return nil
+	}
+
+	parts := strings.Split(*name, "_")
+	if len(parts) != 2 {
+		return command.NewStatusErrorf(statusBadArgs,
+			`bad subproc name %q; want e.g. "TestName_SubprocName"`, *name)
+	}
+	var test *testing.Test
+	for _, t := range testing.GlobalRegistry().AllTests() {
+		if t.Name == parts[0] {
+			test = t
+			break
+		}
+	}
+	if test == nil {
+		return command.NewStatusErrorf(statusBadArgs, "no test %q for subproc %q", parts[0], *name)
+	}
+	var subproc testing.SubprocFunc
+	for _, s := range test.Subprocs {
+		if n, err := s.Name(); err != nil {
+		} else if n == *name {
+			subproc = s
+			break
+		}
+	}
+	if subproc == nil {
+		return command.NewStatusErrorf(statusBadArgs, "subproc %q not found", *name)
+	}
+
+	var hargs []string
+	if len(*jsonArgs) > 0 {
+		if err := json.Unmarshal([]byte(*jsonArgs), &hargs); err != nil {
+			return command.NewStatusErrorf(statusBadArgs, "%v", err)
+		}
+	}
+	// FIXME: Rewrite os.Args?
+
+	subproc(hargs)
+	os.Exit(0) // may be unreached if the function exits or crashes
+	return nil // unreached
+}
+
 // run reads a JSON-marshaled Args struct from stdin and performs the requested action.
 // Default arguments may be specified via args, which will also be updated from stdin.
-// The caller should exit with the returned status code.
+// clArgs should contain os.Args[1:]. The caller should exit with the returned status code.
 func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr io.Writer,
 	args *Args, cfg *runConfig, bt bundleType) int {
+	// Exec a subprocess function instead of performing normal operations if requested.
+	if err := execSubprocIfNeeded(clArgs, stderr); err != nil {
+		return command.WriteError(stderr, err)
+	}
+
 	tests, err := readArgs(clArgs, stdin, stderr, args, cfg, bt)
 	if err != nil {
 		return command.WriteError(stderr, err)

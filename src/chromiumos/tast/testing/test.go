@@ -62,6 +62,26 @@ func init() {
 // TestFunc is the code associated with a test.
 type TestFunc func(context.Context, *State)
 
+// SubprocFunc is the main function for a subprocess defined and executed by a test.
+type SubprocFunc func(args []string)
+
+// Name returns the function's unqualified name (e.g. "TestName_SubprocName").
+func (sf SubprocFunc) Name() (string, error) {
+	info, err := getFuncInfo(reflect.ValueOf(sf).Pointer())
+	if err != nil {
+		return "", err
+	}
+
+	// FIXME: remove duplication
+	p := strings.Split(info.pkg, "/")
+	if len(p) < 2 {
+		return "", fmt.Errorf("failed to split package %q into at least two components", info.pkg)
+	}
+	category := p[len(p)-1]
+
+	return category + "." + info.name, nil
+}
+
 // Test contains information about a test and its code itself.
 //
 // While this struct can be marshaled to a JSON object, note that unmarshaling that object
@@ -94,6 +114,8 @@ type Test struct {
 	SoftwareDeps []string `json:"softwareDeps,omitempty"`
 	// Pre contains a precondition that must be met before the test is run.
 	Pre Precondition `json:"-"`
+	// Subprocs contains main functions of subprocesses that are defined and executed by this test.
+	Subprocs []SubprocFunc `json:"-"`
 	// Timeout contains the maximum duration for which Func may run before the test is aborted.
 	// This should almost always be omitted when defining tests; a reasonable default will be used.
 	// This field is serialized as an integer nanosecond count.
@@ -294,7 +316,8 @@ func (tst *Test) populateNameAndPkg(autoName bool) error {
 	if tst.Func == nil {
 		return errors.New("missing function")
 	}
-	info, err := getTestFuncInfo(tst.Func)
+
+	info, err := getFuncInfo(reflect.ValueOf(tst.Func).Pointer())
 	if err != nil {
 		return err
 	}
@@ -325,6 +348,20 @@ func (tst *Test) populateNameAndPkg(autoName bool) error {
 func (tst *Test) validateTestName() error {
 	if !testNameRegexp.MatchString(tst.Name) {
 		return fmt.Errorf("invalid test name %q (want pkg.ExportedTestFunc)", tst.Name)
+	}
+	return nil
+}
+
+// validateSubprocs validates functions in the Subprocs field.
+func (tst *Test) validateSubprocs() error {
+	for _, s := range tst.Subprocs {
+		info, err := getFuncInfo(reflect.ValueOf(s).Pointer())
+		if err != nil {
+			return err
+		}
+		if pre := tst.Name + "_"; !strings.HasPrefix(info.name, pre) {
+			return fmt.Errorf("subproc %q needs prefix %q", info.name, pre)
+		}
 	}
 	return nil
 }
@@ -416,16 +453,14 @@ func (tst *Test) clone() *Test {
 	return np.Interface().(*Test)
 }
 
-// testFuncInfo contains information about a TestFunc.
-type testFuncInfo struct {
+// funcInfo contains information about a function.
+type funcInfo struct {
 	pkg  string // package name, e.g. "chromiumos/tast/local/bundles/cros/ui"
 	name string // function name, e.g. "ChromeLogin"
 	file string // full source path, e.g. "/home/user/chromeos/src/platform/tast-tests/.../ui/chrome_login.go"
 }
 
-// getTestFuncInfo returns info about f.
-func getTestFuncInfo(f TestFunc) (*testFuncInfo, error) {
-	pc := reflect.ValueOf(f).Pointer()
+func getFuncInfo(pc uintptr) (*funcInfo, error) {
 	rf := runtime.FuncForPC(pc)
 	if rf == nil {
 		return nil, errors.New("failed to get function from PC")
@@ -435,7 +470,7 @@ func getTestFuncInfo(f TestFunc) (*testFuncInfo, error) {
 		return nil, fmt.Errorf("didn't find package.function in %q", rf.Name())
 	}
 
-	info := &testFuncInfo{
+	info := &funcInfo{
 		pkg:  p[0],
 		name: p[1],
 	}
@@ -494,6 +529,24 @@ func checkFuncNameAgainstFilename(funcName, filename string) error {
 	}
 
 	return nil
+}
+
+// SubprocCommand returns a command line for executing the supplied subprocess function with the
+// supplied command-line arguments.
+func SubprocCommand(f SubprocFunc, args ...string) []string {
+	exe, err := os.Executable()
+	if err != nil {
+		panic(fmt.Sprintf("Failed to get executable path: %v", err))
+	}
+	name, err := f.Name()
+	if err != nil {
+		panic(fmt.Sprintf("Failed to get subproc name: %v", err))
+	}
+	jargs, err := json.Marshal(args)
+	if err != nil {
+		panic(fmt.Sprintf("Failed to marshal subproc args: %v", err))
+	}
+	return []string{exe, "-subproc=" + name, "-subprocargs=" + string(jargs)}
 }
 
 // SortTests sorts tests, primarily by ascending precondition name

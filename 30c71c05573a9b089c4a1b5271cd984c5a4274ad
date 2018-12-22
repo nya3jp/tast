@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "966c74a3_c2b97c3a",
+        "filename": "docs/running_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-22T06:19:06Z",
+      "side": 1,
+      "message": "i think that this link is broken. please specify an out-of-band absolute URL to the godoc page -- see [chromiumos/tast/expr] for an example (but note that this needs to go to tast-tests.git instead of tast.git).\n\nhttps://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/perf",
+      "revId": "30c71c05573a9b089c4a1b5271cd984c5a4274ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8015ef4a_894a410c",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 678,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-22T06:19:06Z",
+      "side": 1,
+      "message": "same here re this link being broken.\n\nwould you mind adding most of this text to the package-level comment for the perf package itself instead, and just linking to the godoc page here?",
+      "revId": "30c71c05573a9b089c4a1b5271cd984c5a4274ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2daf6cf6_dac23217",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 687,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-22T06:19:06Z",
+      "side": 1,
+      "message": "nit: please don\u0027t mix tabs and spaces (and always use tabs for go code)",
+      "revId": "30c71c05573a9b089c4a1b5271cd984c5a4274ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -55,7 +55,7 @@ func init() {
 		Func: MyTest,
 		Desc: "Does X to verify Y",
 		Attr: []string{"informational"},
-		Deps: []string{"chrome_login"},
+		SoftwareDeps: []string{"chrome_login"},
 	})
 }
 

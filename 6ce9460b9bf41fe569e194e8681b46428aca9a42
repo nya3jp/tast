@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fbd27724_2283f9e5",
+        "filename": "src/chromiumos/cmd/tast-lint/check/exports_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-25T17:01:59Z",
+      "side": 1,
+      "message": "i think that this would properly be named Test, right? but SomeFunc works here because we do the filename/test-name check at a different level. :-)",
+      "range": {
+        "startLine": 89,
+        "startChar": 5,
+        "endLine": 89,
+        "endChar": 13
+      },
+      "revId": "6ce9460b9bf41fe569e194e8681b46428aca9a42",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -70,9 +70,23 @@ func SomeFunc2() {}
 }
 
 func TestExports_DocFile(t *testing.T) {
-	const filename = "src/chromiumos/tast/local/example/doc.go"
+	const filename = "src/chromiumos/tast/local/bundles/cros/example/doc.go"
 	const code = `// Package example demonstrates how to do things.
 package example
+`
+	f, fs := parse(code, filename)
+	issues := Exports(fs, f)
+	verifyIssues(t, issues, nil)
+}
+
+func TestExports_Methods(t *testing.T) {
+	const filename = "src/chromiumos/tast/local/bundles/cros/example/test.go"
+	const code = `package example
+
+type someType int
+func (x someType) Close() {}
+
+func Test() {}
 `
 	f, fs := parse(code, filename)
 	issues := Exports(fs, f)

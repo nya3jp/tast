@@ -14,6 +14,7 @@ import (
 type decl struct {
 	token token.Token
 	name  *ast.Ident
+	decl  ast.Decl
 }
 
 // getDecls returns a list of declarations in a file.
@@ -22,15 +23,15 @@ func getDecls(f *ast.File) []decl {
 	for _, d := range f.Decls {
 		switch d := d.(type) {
 		case *ast.FuncDecl:
-			decls = append(decls, decl{token.FUNC, d.Name})
+			decls = append(decls, decl{token.FUNC, d.Name, d})
 		case *ast.GenDecl:
 			for _, s := range d.Specs {
 				switch s := s.(type) {
 				case *ast.TypeSpec:
-					decls = append(decls, decl{d.Tok, s.Name})
+					decls = append(decls, decl{d.Tok, s.Name, d})
 				case *ast.ValueSpec:
 					for _, name := range s.Names {
-						decls = append(decls, decl{d.Tok, name})
+						decls = append(decls, decl{d.Tok, name, d})
 					}
 				}
 			}
@@ -54,7 +55,9 @@ func Exports(fs *token.FileSet, f *ast.File) []*Issue {
 	for _, d := range getDecls(f) {
 		if d.name.IsExported() {
 			if d.token == token.FUNC {
-				expFuncs = append(expFuncs, d)
+				if d.decl.(*ast.FuncDecl).Recv == nil {
+					expFuncs = append(expFuncs, d)
+				}
 			} else {
 				issues = append(issues, &Issue{
 					Pos:  fs.Position(d.name.NamePos),

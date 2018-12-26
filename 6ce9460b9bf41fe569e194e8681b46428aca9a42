@@ -22,6 +22,30 @@
       "revId": "6ce9460b9bf41fe569e194e8681b46428aca9a42",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fd4d97a2_195f000c",
+        "filename": "src/chromiumos/cmd/tast-lint/check/exports_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-26T01:18:58Z",
+      "side": 1,
+      "message": "Good point, let\u0027s name this \"Test\".",
+      "parentUuid": "fbd27724_2283f9e5",
+      "range": {
+        "startLine": 89,
+        "startChar": 5,
+        "endLine": 89,
+        "endChar": 13
+      },
+      "revId": "6ce9460b9bf41fe569e194e8681b46428aca9a42",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

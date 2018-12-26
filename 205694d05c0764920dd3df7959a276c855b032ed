@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "c4ee5f10_f851fffc",
+        "filename": "src/chromiumos/tast/testing/registration_testutil.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-26T08:27:46Z",
+      "side": 1,
+      "message": "Thanks for suggestions, renamed to testcheck.",
+      "parentUuid": "d048b997_10226cbe",
+      "revId": "205694d05c0764920dd3df7959a276c855b032ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0a350c13_329fd5a3",
         "filename": "src/chromiumos/tast/testing/registration_testutil.go",
         "patchSetId": 2
@@ -39,6 +57,30 @@
       "revId": "205694d05c0764920dd3df7959a276c855b032ed",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ca2dfee6_dfc7b658",
+        "filename": "src/chromiumos/tast/testing/registration_testutil.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2018-12-26T08:27:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0a350c13_329fd5a3",
+      "range": {
+        "startLine": 32,
+        "startChar": 58,
+        "endLine": 32,
+        "endChar": 66
+      },
+      "revId": "205694d05c0764920dd3df7959a276c855b032ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

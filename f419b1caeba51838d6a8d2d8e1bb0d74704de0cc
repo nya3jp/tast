@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "f9505104_6e2da12e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1311094
+      },
+      "writtenOn": "2018-12-28T15:49:22Z",
+      "side": 1,
+      "message": "OK. I\u0027m going to keep a link to that CL though, so people can see why we\u0027re bothering to add this rule",
+      "parentUuid": "f40afc03_a9a67b2b",
+      "revId": "f419b1caeba51838d6a8d2d8e1bb0d74704de0cc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2d3aebd9_1df8c092",
         "filename": "docs/test_dependencies.md",
         "patchSetId": 3
@@ -33,6 +51,24 @@
       "revId": "f419b1caeba51838d6a8d2d8e1bb0d74704de0cc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "156e22a8_0d75fa0d",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1311094
+      },
+      "writtenOn": "2018-12-28T15:49:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2d3aebd9_1df8c092",
+      "revId": "f419b1caeba51838d6a8d2d8e1bb0d74704de0cc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

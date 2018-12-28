@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f40afc03_a9a67b2b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-28T00:58:46Z",
+      "side": 1,
+      "message": "nit: you don\u0027t need 1372575 here; it\u0027s fine for this to go in before the test that uses it",
+      "revId": "f419b1caeba51838d6a8d2d8e1bb0d74704de0cc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2d3aebd9_1df8c092",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2018-12-28T00:58:46Z",
+      "side": 1,
+      "message": "nit: please add a trailing period to match other lines (and consider rewording to just \"Wilco Embedded Controller.\")",
+      "revId": "f419b1caeba51838d6a8d2d8e1bb0d74704de0cc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

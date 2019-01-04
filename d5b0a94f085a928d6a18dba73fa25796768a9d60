@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "fda9a3b8_a54dce1e",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1002686
+      },
+      "writtenOn": "2019-01-04T08:55:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e6ba2cf9_b6a3a7d9",
+      "revId": "d5b0a94f085a928d6a18dba73fa25796768a9d60",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "22adb18c_5492e48e",
         "filename": "src/chromiumos/cmd/local_test_runner/main.go",
         "patchSetId": 1
@@ -39,6 +57,30 @@
       "revId": "d5b0a94f085a928d6a18dba73fa25796768a9d60",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5fb0bf7d_cec05fe7",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1002686
+      },
+      "writtenOn": "2019-01-04T08:55:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "22adb18c_5492e48e",
+      "range": {
+        "startLine": 41,
+        "startChar": 64,
+        "endLine": 41,
+        "endChar": 113
+      },
+      "revId": "d5b0a94f085a928d6a18dba73fa25796768a9d60",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

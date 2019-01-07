@@ -7,9 +7,10 @@ package control
 import (
 	"bytes"
 	"encoding/json"
-	"reflect"
 	gotesting "testing"
 	"time"
+
+	"github.com/google/go-cmp/cmp"
 
 	"chromiumos/tast/testing"
 )
@@ -47,7 +48,7 @@ func TestWriteAndRead(t *gotesting.T) {
 			act = append(act, msg)
 		}
 	}
-	if !reflect.DeepEqual(act, msgs) {
+	if !cmp.Equal(act, msgs) {
 		aj, _ := json.Marshal(act)
 		ej, _ := json.Marshal(msgs)
 		t.Errorf("Read messages %v; want %v", string(aj), string(ej))

@@ -50,7 +50,7 @@ func TestCopyTestOutput(t *gotesting.T) {
 	}()
 
 	b := bytes.Buffer{}
-	copyTestOutput(ch, control.NewMessageWriter(&b), make(chan bool))
+	copyTestOutput(ch, newEventWriter(&b), make(chan bool))
 
 	r := control.NewMessageReader(&b)
 	for i, em := range []interface{}{
@@ -73,7 +73,7 @@ func TestCopyTestOutputTimeout(t *gotesting.T) {
 	abort := make(chan bool, 1)
 	abort <- true
 	b := bytes.Buffer{}
-	copyTestOutput(make(chan testing.Output), control.NewMessageWriter(&b), abort)
+	copyTestOutput(make(chan testing.Output), newEventWriter(&b), abort)
 
 	r := control.NewMessageReader(&b)
 	if msg, err := r.ReadMessage(); err != nil {

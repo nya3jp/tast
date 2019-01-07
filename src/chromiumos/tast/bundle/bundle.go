@@ -6,7 +6,9 @@ package bundle
 
 import (
 	"context"
+	"fmt"
 	"io"
+	"log/syslog"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -83,18 +85,79 @@ type runConfig struct {
 	defaultTestTimeout time.Duration
 }
 
+// eventWriter is used to report test events.
+//
+// eventWriter is not goroutine-safe; method calls should be synchronized.
+//
+// Events are basically written through to MessageWriter, but they are also sent to syslog for
+// easier debugging.
+type eventWriter struct {
+	mw *control.MessageWriter
+	lg *syslog.Writer
+
+	testName string // name of the current test
+}
+
+func newEventWriter(w io.Writer) *eventWriter {
+	mw := control.NewMessageWriter(w)
+	// Continue even if we fail to connect to syslog.
+	lg, _ := syslog.New(syslog.LOG_INFO, "tast")
+	return &eventWriter{mw: mw, lg: lg}
+}
+
+func (ew *eventWriter) RunLog(msg string) error {
+	if ew.lg != nil {
+		ew.lg.Info(msg)
+	}
+	return ew.mw.WriteMessage(&control.RunLog{Time: time.Now(), Text: msg})
+}
+
+func (ew *eventWriter) TestStart(t *testing.Test) error {
+	ew.testName = t.Name
+	if ew.lg != nil {
+		ew.lg.Info(fmt.Sprintf("%s: ======== start", t.Name))
+	}
+	return ew.mw.WriteMessage(&control.TestStart{Time: time.Now(), Test: *t})
+}
+
+func (ew *eventWriter) TestLog(ts time.Time, msg string) error {
+	if ew.lg != nil {
+		ew.lg.Info(fmt.Sprintf("%s: %s", ew.testName, msg))
+	}
+	return ew.mw.WriteMessage(&control.TestLog{Time: ts, Text: msg})
+}
+
+func (ew *eventWriter) TestError(ts time.Time, e *testing.Error) error {
+	if ew.lg != nil {
+		ew.lg.Info(fmt.Sprintf("%s: Error at %s:%d: %s", ew.testName, filepath.Base(e.File), e.Line, e.Reason))
+	}
+	return ew.mw.WriteMessage(&control.TestError{Time: ts, Error: *e})
+}
+
+func (ew *eventWriter) TestEnd(t *testing.Test, missingDeps []string) error {
+	ew.testName = ""
+	if ew.lg != nil {
+		ew.lg.Info(fmt.Sprintf("%s: ======== end", t.Name))
+	}
+	return ew.mw.WriteMessage(&control.TestEnd{
+		Time:                time.Now(),
+		Name:                t.Name,
+		MissingSoftwareDeps: missingDeps,
+	})
+}
+
 // runTests runs tests per args and cfg and writes control messages to stdout.
 //
 // If an error is encountered in the test harness (as opposed to in a test), an error is returned.
 // Otherwise, nil is returned (test errors will be reported via TestError control messages).
 func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 	tests []*testing.Test) error {
-	mw := control.NewMessageWriter(stdout)
+	ew := newEventWriter(stdout)
 
 	lm := sync.Mutex{}
 	lf := func(msg string) {
 		lm.Lock()
-		mw.WriteMessage(&control.RunLog{Time: time.Now(), Text: msg})
+		ew.RunLog(msg)
 		lm.Unlock()
 	}
 
@@ -132,7 +195,7 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		if i < len(tests)-1 {
 			next = tests[i+1]
 		}
-		if err := runTest(ctx, mw, args, cfg, t, next, meta); err != nil {
+		if err := runTest(ctx, ew, args, cfg, t, next, meta); err != nil {
 			return err
 		}
 	}
@@ -146,12 +209,9 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 }
 
 // runTest runs t per args and cfg, writing the appropriate control.Test* control messages to mw.
-func runTest(ctx context.Context, mw *control.MessageWriter, args *Args, cfg *runConfig,
+func runTest(ctx context.Context, ew *eventWriter, args *Args, cfg *runConfig,
 	t, next *testing.Test, meta *testing.Meta) error {
-	mw.WriteMessage(&control.TestStart{
-		Time: time.Now(),
-		Test: *t,
-	})
+	ew.TestStart(t)
 
 	// We skip running the test if it has any dependencies on software features that aren't
 	// provided by the DUT, but we additionally report an error if one or more dependencies
@@ -162,13 +222,10 @@ func runTest(ctx context.Context, mw *control.MessageWriter, args *Args, cfg *ru
 		missingDeps = t.MissingSoftwareDeps(args.AvailableSoftwareFeatures)
 		if unknown := getUnknownDeps(missingDeps, args); len(unknown) > 0 {
 			_, fn, ln, _ := runtime.Caller(0)
-			mw.WriteMessage(&control.TestError{
-				Time: time.Now(),
-				Error: testing.Error{
-					Reason: "Unknown dependencies: " + strings.Join(unknown, " "),
-					File:   fn,
-					Line:   ln,
-				},
+			ew.TestError(time.Now(), &testing.Error{
+				Reason: "Unknown dependencies: " + strings.Join(unknown, " "),
+				File:   fn,
+				Line:   ln,
 			})
 		}
 	}
@@ -189,7 +246,7 @@ func runTest(ctx context.Context, mw *control.MessageWriter, args *Args, cfg *ru
 
 		// Copy test output in the background as soon as it becomes available.
 		go func() {
-			copyTestOutput(ch, mw, abortCopier)
+			copyTestOutput(ch, ew, abortCopier)
 			copierDone <- true
 		}()
 
@@ -200,11 +257,7 @@ func runTest(ctx context.Context, mw *control.MessageWriter, args *Args, cfg *ru
 		<-copierDone
 	}
 
-	mw.WriteMessage(&control.TestEnd{
-		Time:                time.Now(),
-		Name:                t.Name,
-		MissingSoftwareDeps: missingDeps,
-	})
+	ew.TestEnd(t, missingDeps)
 	return nil
 }
 
@@ -228,7 +281,7 @@ DepsLoop:
 // copyTestOutput reads test output from ch and writes it to mw until ch is closed.
 // If abort becomes readable before ch is closed, a timeout error is written to mw
 // and the function returns immediately.
-func copyTestOutput(ch <-chan testing.Output, mw *control.MessageWriter, abort <-chan bool) {
+func copyTestOutput(ch <-chan testing.Output, ew *eventWriter, abort <-chan bool) {
 	for {
 		select {
 		case o, ok := <-ch:
@@ -237,16 +290,13 @@ func copyTestOutput(ch <-chan testing.Output, mw *control.MessageWriter, abort <
 				return
 			}
 			if o.Err != nil {
-				mw.WriteMessage(&control.TestError{Time: o.T, Error: *o.Err})
+				ew.TestError(o.T, o.Err)
 			} else {
-				mw.WriteMessage(&control.TestLog{Time: o.T, Text: o.Msg})
+				ew.TestLog(o.T, o.Msg)
 			}
 		case <-abort:
 			const msg = "Test timed out"
-			mw.WriteMessage(&control.TestError{
-				Time:  time.Now(),
-				Error: *testing.NewError(nil, msg, msg, 0),
-			})
+			ew.TestError(time.Now(), testing.NewError(nil, msg, msg, 0))
 			return
 		}
 	}

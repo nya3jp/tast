@@ -15,6 +15,8 @@ import (
 	gotesting "testing"
 	"time"
 
+	"github.com/google/go-cmp/cmp"
+
 	"chromiumos/tast/command"
 	"chromiumos/tast/control"
 	"chromiumos/tast/testing"
@@ -59,7 +61,7 @@ func TestCopyTestOutput(t *gotesting.T) {
 	} {
 		if am, err := r.ReadMessage(); err != nil {
 			t.Errorf("Failed to read message %v: %v", i, err)
-		} else if !reflect.DeepEqual(am, em) {
+		} else if !cmp.Equal(am, em) {
 			t.Errorf("Message %v is %v; want %v", i, am, em)
 		}
 	}

@@ -219,12 +219,25 @@ func getTargetArch(ctx context.Context, cfg *Config, hst *host.SSH) error {
 		st := tl.Start("get_arch")
 		defer st.End()
 	}
+
 	cfg.Logger.Debug("Getting architecture from target")
-	out, err := hst.Run(ctx, "uname -m")
+
+	// Get the userland architecture by inspecting an arbitrary binary on the target.
+	out, err := hst.Run(ctx, "file -b -L /sbin/init")
 	if err != nil {
 		return err
 	}
-	cfg.targetArch = strings.TrimSpace(string(out))
+	s := string(out)
+
+	if strings.Contains(s, "x86-64") {
+		cfg.targetArch = "x86_64"
+	} else {
+		if strings.HasPrefix(s, "ELF 64-bit") {
+			cfg.targetArch = "aarch64"
+		} else {
+			cfg.targetArch = "armv7l"
+		}
+	}
 	return nil
 }
 

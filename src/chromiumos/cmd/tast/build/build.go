@@ -31,10 +31,9 @@ func GetLocalArch() (string, error) {
 // TODO(derat): What's the right way to get the toolchain name for a given board?
 // "cros_setup_toolchains --show-board-cfg <board>" seems to print it, but it's very slow (700+ ms).
 var archToCompiler = map[string]string{
-	"x86_64": "x86_64-cros-linux-gnu-go",
-	"armv7l": "armv7a-cros-linux-gnueabihf-go",
-	// On ARM devices with 64-bit kernels, we still have a 32-bit userspace.
-	"aarch64": "armv7a-cros-linux-gnueabihf-go",
+	"x86_64":  "x86_64-cros-linux-gnu-go",
+	"armv7l":  "armv7a-cros-linux-gnueabihf-go",
+	"aarch64": "aarch64-cros-linux-gnu-go",
 }
 
 // Build builds executable package pkg to outDir as dictated by cfg.

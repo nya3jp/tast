@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "b8023e52_54db1cca",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-01-08T09:05:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "05ec9d36_83f05e9d",
+      "range": {
+        "startLine": 9,
+        "startChar": 34,
+        "endLine": 11,
+        "endChar": 11
+      },
+      "revId": "bc6534930823dc9bceb192d99eea84d2d3e20b00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a50aac2b_a2ae8d15",
         "filename": "src/chromiumos/cmd/tast/build/build.go",
         "patchSetId": 1
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "231bc9bd_8f683e0e",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-01-08T09:05:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a50aac2b_a2ae8d15",
+      "range": {
+        "startLine": 29,
+        "startChar": 62,
+        "endLine": 29,
+        "endChar": 72
+      },
+      "revId": "bc6534930823dc9bceb192d99eea84d2d3e20b00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fff44bb7_80066353",
         "filename": "src/chromiumos/cmd/tast/run/local.go",
         "patchSetId": 1
@@ -68,6 +116,30 @@
       "revId": "bc6534930823dc9bceb192d99eea84d2d3e20b00",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6802d496_a87ad811",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 212,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-01-08T09:05:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fff44bb7_80066353",
+      "range": {
+        "startLine": 212,
+        "startChar": 33,
+        "endLine": 212,
+        "endChar": 49
+      },
+      "revId": "bc6534930823dc9bceb192d99eea84d2d3e20b00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

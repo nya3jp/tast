@@ -26,15 +26,16 @@ func GetLocalArch() (string, error) {
 	return strings.TrimRight(string(b), "\n"), nil
 }
 
-// archToCompiler maps from a machine name (or processor, see "uname -m") to the corresponding
-// Go command that should be used for building.
+// archToCompiler maps from a userland architecture name to the corresponding Go command that
+// should be used for building. An architecture name is usually given by "uname -m", but it can
+// be different if the kernel and the userland use different architectures (e.g. aarch64 kernel with
+// armv7l userland).
 // TODO(derat): What's the right way to get the toolchain name for a given board?
 // "cros_setup_toolchains --show-board-cfg <board>" seems to print it, but it's very slow (700+ ms).
 var archToCompiler = map[string]string{
-	"x86_64": "x86_64-cros-linux-gnu-go",
-	"armv7l": "armv7a-cros-linux-gnueabihf-go",
-	// On ARM devices with 64-bit kernels, we still have a 32-bit userspace.
-	"aarch64": "armv7a-cros-linux-gnueabihf-go",
+	"x86_64":  "x86_64-cros-linux-gnu-go",
+	"armv7l":  "armv7a-cros-linux-gnueabihf-go",
+	"aarch64": "aarch64-cros-linux-gnu-go",
 }
 
 // Build builds executable package pkg to outDir as dictated by cfg.

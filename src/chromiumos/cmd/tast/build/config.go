@@ -6,7 +6,8 @@ package build
 
 // Config describes a configuration for building an executable package.
 type Config struct {
-	// Arch is the architecture to build for (as a machine name or processor given by "uname -m").
+	// Arch is the userland architecture to build for. It is usually given by "uname -m", but it can be different
+	// if the kernel and the userland use different architectures (e.g. aarch64 kernel with armv7l userland).
 	Arch string
 	// Workspaces contains paths to Go workspaces (i.e. with "src" subdirectories) containing source code to be compiled.
 	// These are placed into the GOPATH environment variable in the listed order.

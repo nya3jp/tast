@@ -90,7 +90,7 @@ type Config struct {
 	tastDir  string // base directory under which files are written
 	trunkDir string // path to Chrome OS checkout
 
-	targetArch string // architecture of target (as a machine name or processor given by "uname -m")
+	targetArch string // architecture of target userland (usually given by "uname -m", but may be different)
 
 	build                 bool     // rebuild (and push, for local tests) a single test bundle
 	buildType             testType // type of tests to build and deploy

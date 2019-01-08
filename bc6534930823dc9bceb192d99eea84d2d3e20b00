@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "05ec9d36_83f05e9d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-01-08T08:39:39Z",
+      "side": 1,
+      "message": "Could you add a brief background of this switching?",
+      "range": {
+        "startLine": 9,
+        "startChar": 34,
+        "endLine": 11,
+        "endChar": 11
+      },
+      "revId": "bc6534930823dc9bceb192d99eea84d2d3e20b00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a50aac2b_a2ae8d15",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-01-08T08:39:39Z",
+      "side": 1,
+      "message": "In order to avoid confusion, could you add brief comment that the arch which should be specified may be different from the one which can be obtained by \"uname -m\"?",
+      "range": {
+        "startLine": 29,
+        "startChar": 62,
+        "endLine": 29,
+        "endChar": 72
+      },
+      "revId": "bc6534930823dc9bceb192d99eea84d2d3e20b00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fff44bb7_80066353",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 212,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-01-08T08:39:39Z",
+      "side": 1,
+      "message": "Could you explicitly mention that this returns userland arch (although I know it is written in the line comment in the body, I still think better to mention it here, too).",
+      "range": {
+        "startLine": 212,
+        "startChar": 33,
+        "endLine": 212,
+        "endChar": 49
+      },
+      "revId": "bc6534930823dc9bceb192d99eea84d2d3e20b00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

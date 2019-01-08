@@ -9,9 +9,15 @@
 Tests are identified by names like `ui.ChromeLogin` or `platform.ConnectToDBus`.
 The portion before the period, called the _category_, is the final component of
 the test's package name, while the portion after the period is the name of the
-exported Go function that implements the test. Test function names should follow
-[Go's naming conventions], and [acronyms should be fully capitalized]. Test
-names are automatically derived and should not be specified when defining tests.
+exported Go function that implements the test.
+
+Test function names should follow [Go's naming conventions], and [acronyms
+should be fully capitalized]. Test names should not end with `Test`, both
+because it's redundant and because the `_test.go` filename suffix is reserved in
+Go for unit tests.
+
+Test names are automatically derived from tests' package and function names and
+should not be explicitly specified when defining tests.
 
 [Go's naming conventions]: https://golang.org/doc/effective_go.html#names
 [acronyms should be fully capitalized]: https://github.com/golang/go/wiki/CodeReviewComments#initialisms
@@ -32,10 +38,10 @@ Support packages used by multiple test categories located in
 `bundles/` directories. For example, the [chrome package] can be used by local
 tests to interact with Chrome.
 
-A local test named `ui.MyTest` should be defined in a file named
-`src/chromiumos/tast/local/bundles/cros/ui/my_test.go` (i.e. convert the test
-name to lowercase and insert underscores between words) with contents similar to
-the following:
+A local test named `ui.DoSomething` should be defined in a file named
+`src/chromiumos/tast/local/bundles/cros/ui/do_something.go` (i.e. convert the
+test name to lowercase and insert underscores between words) with contents
+similar to the following:
 
 ```go
 // Copyright 2018 The Chromium OS Authors. All rights reserved.
@@ -52,14 +58,14 @@ import (
 
 func init() {
 	testing.AddTest(&testing.Test{
-		Func: MyTest,
+		Func: DoSomething,
 		Desc: "Does X to verify Y",
 		Attr: []string{"informational"},
 		SoftwareDeps: []string{"chrome_login"},
 	})
 }
 
-func MyTest(ctx context.Context, s *testing.State) {
+func DoSomething(ctx context.Context, s *testing.State) {
 	// The actual test goes here.
 }
 ```
@@ -592,8 +598,8 @@ loads or a short binary audio file that is played in a loop, for example.
 
 Small non-binary data files should be directly checked into a `data/`
 subdirectory under the test package as _internal data files_. Prefix their names
-by the test file's name (e.g. `data/my_test_some_data.txt` for a test file named
-`my_test.go`) to make ownership obvious.
+by the test file's name (e.g. `data/user_login_some_data.txt` for a test file
+named `user_login.go`) to make ownership obvious.
 
 Per the [Chromium guidelines for third-party code], place
 (appropriately-licensed) data that wasn't created by Chromium developers within
@@ -612,13 +618,13 @@ To add external data files, put _external link files_ named
 `<original-name>.external` in `data/` subdirectory whose content is JSON in the
 [external link format].
 
-For example, a data file belonging to a test named `ui.MyTest` in the default
-`cros` bundle might be declared in `my_test_some_image.jpg.external` with the
+For example, a data file belonging to a test named `ui.UserLogin` in the default
+`cros` bundle might be declared in `user_login_some_image.jpg.external` with the
 following content:
 
 ```
 {
-  "url": "gs://chromiumos-test-assets-public/tast/cros/ui/my_test_some_image_20181210.jpg",
+  "url": "gs://chromiumos-test-assets-public/tast/cros/ui/user_login_some_image_20181210.jpg",
   "size": 12345,
   "sha256sum": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
 }
@@ -627,7 +633,7 @@ following content:
 > Old versions of external data files should be retained indefinitely in Google
 > Cloud Storage so as to not break tests on older system images. Include the
 > date as a suffix in the filename to make it easy to add a new version when
-> needed, e.g. `my_test_data_20180812.bin`.
+> needed, e.g. `user_login_data_20180812.bin`.
 
 [external link format]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/runner/external.go
 [example.DataFiles]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/master/src/chromiumos/tast/local/bundles/cros/example/data_files.go
@@ -656,7 +662,7 @@ files):
 ```go
 testing.AddTest(&testing.Test{
 	...
-	Data: []string{"my_test_data.bin"},
+	Data: []string{"user_login_data.bin"},
 	...
 })
 ```
@@ -665,7 +671,7 @@ Later, within the test function, pass the same filename to [testing.State]'s
 `DataPath` function to receive the path to the data file on the DUT:
 
 ```go
-b, err := ioutil.ReadFile(s.DataPath("my_test_data.bin"))
+b, err := ioutil.ReadFile(s.DataPath("user_login_data.bin"))
 ```
 
 See the [example.DataFiles] test for a complete example of using both local and

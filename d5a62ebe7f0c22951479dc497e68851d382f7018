@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "140f90c8_425b5f66",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-01-09T02:16:45Z",
+      "side": 1,
+      "message": "nit: i think this can just be Fprint (since you\u0027re just printing a string)",
+      "range": {
+        "startLine": 71,
+        "startChar": 7,
+        "endLine": 71,
+        "endChar": 14
+      },
+      "revId": "d5a62ebe7f0c22951479dc497e68851d382f7018",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "848ed512_fcb62706",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-01-09T02:16:45Z",
+      "side": 1,
+      "message": "just to double-check, will this always emerge -9999 (even if the user doesn\u0027t have the package cros_workon-ed)?",
+      "range": {
+        "startLine": 72,
+        "startChar": 87,
+        "endLine": 72,
+        "endChar": 94
+      },
+      "revId": "d5a62ebe7f0c22951479dc497e68851d382f7018",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

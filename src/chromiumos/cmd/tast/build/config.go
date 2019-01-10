@@ -15,4 +15,8 @@ type Config struct {
 	// PortagePkg is the Portage package that contains the executable, including a version suffix (typically "-9999").
 	// If non-empty, Build checks that the package's direct dependencies are installed in the host sysroot before building it.
 	PortagePkg string
+	// CheckDepsCachePath is the path to a JSON file storing a map from package names (see PortagePkg) to time.Time
+	// values. Each timestamp is the latest last-modified time across Portage's overlays and database file, written
+	// when the package's dependencies were last verified as being up-to-date.
+	CheckDepsCachePath string
 }

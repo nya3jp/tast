@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"chromiumos/cmd/tast/build"
 	"chromiumos/cmd/tast/logging"
 	"chromiumos/tast/command"
 	"chromiumos/tast/host"
@@ -67,7 +68,8 @@ const (
 )
 
 const (
-	defaultKeyFile = "chromite/ssh_keys/testing_rsa" // default private SSH key within Chrome OS checkout
+	defaultKeyFile     = "chromite/ssh_keys/testing_rsa" // default private SSH key within Chrome OS checkout
+	checkDepsCacheFile = "check_deps_cache.json"         // file in buildOutDir where dependency-checking results are cached
 )
 
 // Config contains shared configuration information for running or listing tests.
@@ -229,6 +231,13 @@ func (c *Config) DeriveDefaults() error {
 		c.buildWorkspace = filepath.Join(c.trunkDir, b.workspace)
 	}
 	return nil
+}
+
+// baseBuildConfig returns a build.Config with common fields initialized.
+func (c *Config) baseBuildCfg() build.Config {
+	return build.Config{
+		CheckDepsCachePath: filepath.Join(c.buildOutDir, checkDepsCacheFile),
+	}
 }
 
 // commonWorkspaces returns Go workspaces containing source code needed to build all Tast-related executables.

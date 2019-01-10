@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f3a5834a_ed4578d0",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-01-10T21:52:08Z",
+      "side": 1,
+      "message": "nit: current\n\nmind also adding a sentence like \"This implies `selinux`.\"?",
+      "range": {
+        "startLine": 42,
+        "startChar": 13,
+        "endLine": 42,
+        "endChar": 19
+      },
+      "revId": "8e7f2273acb5c1ad5e2783142ac58fdeae3c2a81",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "55850094_cd3b8f54",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-01-10T21:52:08Z",
+      "side": 1,
+      "message": "nit: SELinux to match the previous line",
+      "range": {
+        "startLine": 43,
+        "startChar": 45,
+        "endLine": 43,
+        "endChar": 52
+      },
+      "revId": "8e7f2273acb5c1ad5e2783142ac58fdeae3c2a81",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "05ef8bf5_b28e7d8a",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-01-10T21:52:08Z",
+      "side": 1,
+      "message": "nit: add backticks around SELINUX\u003dpermissive and /etc/selinux/config",
+      "revId": "8e7f2273acb5c1ad5e2783142ac58fdeae3c2a81",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

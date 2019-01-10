@@ -39,6 +39,11 @@ The following software features are defined:
 *   `screenshot` - The [screenshot command] can save screenshots.
 *   `selinux` - An SELinux-enabled board. All Android boards are
     SELinux-enabled.
+*   `selinux_current` - All SELinux-enabled boards except experimental boards.
+    This implies `selinux`.
+*   `selinux_experimental` - An experimental SELinux board. An experimental
+    board has `SELINUX=permissive` in `/etc/selinux/config`, thus no policy
+    will be enforced. This implies `selinux`.
 *   `tablet_mode` - The ability to enter tablet mode. The device is either
     a convertible device or a tablet device.
 *   `tpm` - A [Trusted Platform Module] chip.

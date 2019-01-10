@@ -62,7 +62,7 @@ func Build(ctx context.Context, cfg *Config, pkg, outDir, stageName string) (out
 	}
 
 	if cfg.PortagePkg != "" {
-		if missing, err := checkDeps(ctx, cfg.PortagePkg); err != nil {
+		if missing, err := checkDeps(ctx, cfg); err != nil {
 			return out, fmt.Errorf("failed checking deps for %s: %v", cfg.PortagePkg, err)
 		} else if len(missing) > 0 {
 			b := bytes.NewBufferString("To install missing dependencies, run:\n\n  sudo emerge -j 16 \\\n")

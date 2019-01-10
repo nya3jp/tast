@@ -44,7 +44,8 @@ func remote(ctx context.Context, cfg *Config) (Status, []TestResult) {
 		cfg.Logger.Status("Building test bundle")
 		buildStart := time.Now()
 
-		bc := build.Config{Workspaces: cfg.bundleWorkspaces()}
+		bc := cfg.baseBuildCfg()
+		bc.Workspaces = cfg.bundleWorkspaces()
 		var err error
 		if bc.Arch, err = build.GetLocalArch(); err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to get local arch: %v", err), nil

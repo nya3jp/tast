@@ -146,10 +146,9 @@ func buildAndPushBundle(ctx context.Context, cfg *Config, hst *host.SSH) (bundle
 	}
 
 	start := time.Now()
-	bc := build.Config{
-		Arch:       cfg.targetArch,
-		Workspaces: cfg.bundleWorkspaces(),
-	}
+	bc := cfg.baseBuildCfg()
+	bc.Arch = cfg.targetArch
+	bc.Workspaces = cfg.bundleWorkspaces()
 	if cfg.checkPortageDeps {
 		bc.PortagePkg = localBundlePackage(cfg.buildBundle) + "-9999"
 	}
@@ -379,7 +378,9 @@ func buildAndPushLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH) er
 		defer st.End()
 	}
 
-	bc := build.Config{Arch: cfg.targetArch, Workspaces: cfg.commonWorkspaces()}
+	bc := cfg.baseBuildCfg()
+	bc.Arch = cfg.targetArch
+	bc.Workspaces = cfg.commonWorkspaces()
 	if cfg.checkPortageDeps {
 		bc.PortagePkg = localRunnerPortagePkg
 	}

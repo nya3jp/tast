@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "91eedf67_4d9821b1",
+        "filename": "src/chromiumos/cmd/tast/build/portage.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-01-11T01:22:31Z",
+      "side": 1,
+      "message": "is there a better (but still fast) way to get the list of overlay dirs?",
+      "revId": "5cd08369af20b27a9be7fad933d1d81cb243793f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

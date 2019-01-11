@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "a190371c_3d1b4eae",
+        "filename": "src/chromiumos/cmd/tast/build/portage.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-01-11T04:23:40Z",
+      "side": 1,
+      "message": "nit: this is redundant.",
+      "range": {
+        "startLine": 61,
+        "startChar": 2,
+        "endLine": 61,
+        "endChar": 15
+      },
+      "revId": "5cd08369af20b27a9be7fad933d1d81cb243793f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "91eedf67_4d9821b1",
         "filename": "src/chromiumos/cmd/tast/build/portage.go",
         "patchSetId": 2
@@ -13,6 +36,104 @@
       "writtenOn": "2019-01-11T01:22:31Z",
       "side": 1,
       "message": "is there a better (but still fast) way to get the list of overlay dirs?",
+      "revId": "5cd08369af20b27a9be7fad933d1d81cb243793f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1d7b416b_b175a773",
+        "filename": "src/chromiumos/cmd/tast/build/portage.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-01-11T04:23:40Z",
+      "side": 1,
+      "message": "How about evaluating /etc/make.conf?\n\n $ time bash -e -c \u0027cd /etc; source make.conf; echo $PORTDIR_OVERLAY\u0027\n /usr/local/portage/crossdev /usr/local/portage/chromiumos /usr/local/portage/eclass-overlay /mnt/host/source/src/private-overlays/chromeos-partner-overlay /mnt/host/source/src/private-overlays/chromeos-overlay\n \n real    0m0.008s\n user    0m0.004s\n sys     0m0.004s",
+      "parentUuid": "91eedf67_4d9821b1",
+      "revId": "5cd08369af20b27a9be7fad933d1d81cb243793f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "61bd7b7f_ed42c6e5",
+        "filename": "src/chromiumos/cmd/tast/build/portage.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-01-11T04:23:40Z",
+      "side": 1,
+      "message": "huge nit: extra blank line",
+      "revId": "5cd08369af20b27a9be7fad933d1d81cb243793f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a01c63df_a7d35ec5",
+        "filename": "src/chromiumos/cmd/tast/build/portage.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 220,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-01-11T04:23:40Z",
+      "side": 1,
+      "message": "nit\u0026optional: how about \"for range c.checkPaths\" ?",
+      "range": {
+        "startLine": 220,
+        "startChar": 0,
+        "endLine": 220,
+        "endChar": 41
+      },
+      "revId": "5cd08369af20b27a9be7fad933d1d81cb243793f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2a28c1ef_9bd795ed",
+        "filename": "src/chromiumos/cmd/tast/build/portage.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 224,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-01-11T04:23:40Z",
+      "side": 1,
+      "message": "huge nit: extra blank line",
+      "revId": "5cd08369af20b27a9be7fad933d1d81cb243793f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "73e0feda_ed48c9f7",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-01-11T04:23:40Z",
+      "side": 1,
+      "message": "Do we want to hide it? How about just check_deps_cache.json?",
+      "range": {
+        "startLine": 72,
+        "startChar": 23,
+        "endLine": 72,
+        "endChar": 40
+      },
       "revId": "5cd08369af20b27a9be7fad933d1d81cb243793f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

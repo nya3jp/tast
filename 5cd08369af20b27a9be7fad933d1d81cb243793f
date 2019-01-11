@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "3e4a4434_8711d430",
+        "filename": "src/chromiumos/cmd/tast/build/portage.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-01-11T08:24:48Z",
+      "side": 1,
+      "message": "whoops, left over from an earlier version without the checkPaths initialization",
+      "parentUuid": "a190371c_3d1b4eae",
+      "range": {
+        "startLine": 61,
+        "startChar": 2,
+        "endLine": 61,
+        "endChar": 15
+      },
+      "revId": "5cd08369af20b27a9be7fad933d1d81cb243793f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "91eedf67_4d9821b1",
         "filename": "src/chromiumos/cmd/tast/build/portage.go",
         "patchSetId": 2
@@ -60,6 +84,24 @@
     },
     {
       "key": {
+        "uuid": "24df251e_18381a6e",
+        "filename": "src/chromiumos/cmd/tast/build/portage.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-01-11T08:24:48Z",
+      "side": 1,
+      "message": "nice! thanks, i was looking for a file like this but couldn\u0027t find it in /etc/portage, and i didn\u0027t see it when i grepped in /etc either since i was looking for \"chromiumos-overlay\" :-(",
+      "parentUuid": "1d7b416b_b175a773",
+      "revId": "5cd08369af20b27a9be7fad933d1d81cb243793f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "61bd7b7f_ed42c6e5",
         "filename": "src/chromiumos/cmd/tast/build/portage.go",
         "patchSetId": 2
@@ -77,6 +119,24 @@
     },
     {
       "key": {
+        "uuid": "1fdddc10_6858e1d3",
+        "filename": "src/chromiumos/cmd/tast/build/portage.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-01-11T08:24:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "61bd7b7f_ed42c6e5",
+      "revId": "5cd08369af20b27a9be7fad933d1d81cb243793f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a01c63df_a7d35ec5",
         "filename": "src/chromiumos/cmd/tast/build/portage.go",
         "patchSetId": 2
@@ -88,6 +148,30 @@
       "writtenOn": "2019-01-11T04:23:40Z",
       "side": 1,
       "message": "nit\u0026optional: how about \"for range c.checkPaths\" ?",
+      "range": {
+        "startLine": 220,
+        "startChar": 0,
+        "endLine": 220,
+        "endChar": 41
+      },
+      "revId": "5cd08369af20b27a9be7fad933d1d81cb243793f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c10371fa_d2e82809",
+        "filename": "src/chromiumos/cmd/tast/build/portage.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 220,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-01-11T08:24:48Z",
+      "side": 1,
+      "message": "thanks, i keep forgetting this syntax",
+      "parentUuid": "a01c63df_a7d35ec5",
       "range": {
         "startLine": 220,
         "startChar": 0,
@@ -117,6 +201,24 @@
     },
     {
       "key": {
+        "uuid": "660d76b4_15711ab5",
+        "filename": "src/chromiumos/cmd/tast/build/portage.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 224,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-01-11T08:24:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2a28c1ef_9bd795ed",
+      "revId": "5cd08369af20b27a9be7fad933d1d81cb243793f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "73e0feda_ed48c9f7",
         "filename": "src/chromiumos/cmd/tast/run/config.go",
         "patchSetId": 2
@@ -128,6 +230,30 @@
       "writtenOn": "2019-01-11T04:23:40Z",
       "side": 1,
       "message": "Do we want to hide it? How about just check_deps_cache.json?",
+      "range": {
+        "startLine": 72,
+        "startChar": 23,
+        "endLine": 72,
+        "endChar": 40
+      },
+      "revId": "5cd08369af20b27a9be7fad933d1d81cb243793f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "27b5d167_64594f97",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-01-11T08:24:48Z",
+      "side": 1,
+      "message": "sure, renamed",
+      "parentUuid": "73e0feda_ed48c9f7",
       "range": {
         "startLine": 72,
         "startChar": 23,

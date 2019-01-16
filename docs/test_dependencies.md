@@ -47,6 +47,7 @@ The following software features are defined:
 *   `tablet_mode` - The ability to enter tablet mode. The device is either
     a convertible device or a tablet device.
 *   `tpm` - A [Trusted Platform Module] chip.
+*   `transparent_hugepage` - [Transparent Hugepage] support in the Linux kernel.
 *   `vm_host` - The ability to [run virtual machines].
 
 Software features are composed from USE flags. [local_test_runner] lists boolean
@@ -83,3 +84,4 @@ outside of video tests.
 [local_test_runner]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/cmd/local_test_runner/main.go
 [tast-use-flags]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/tast-use-flags/
 [autocaps package]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/autocaps/
+[Transparent Hugepage]: https://www.kernel.org/doc/Documentation/vm/transhuge.txt

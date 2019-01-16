@@ -24,13 +24,17 @@ func verifyIssues(t *testing.T, issues []*Issue, expects []string) {
 	SortIssues(issues)
 
 	if len(issues) != len(expects) {
-		t.Errorf("Got %d issues; want %d", len(issues), len(expects))
-		return
+		t.Errorf("Got %d issue(s); want %d", len(issues), len(expects))
 	}
 
-	for i, issue := range issues {
-		msg := issue.String()
-		expect := expects[i]
+	for i := 0; i < len(issues) || i < len(expects); i++ {
+		var msg, expect string
+		if i < len(issues) {
+			msg = issues[i].String()
+		}
+		if i < len(expects) {
+			expect = expects[i]
+		}
 		if msg != expect {
 			t.Errorf("Issue %d is %q; want %q", i, msg, expect)
 		}

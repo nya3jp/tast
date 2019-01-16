@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e386bce8_6357db4b",
+        "filename": "src/chromiumos/cmd/tast-lint/check/declarations.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-01-16T05:39:59Z",
+      "side": 1,
+      "message": "i\u0027m assuming that we generally want to ignore errors in these lint tests (since the compiler should catch these issues for us)",
+      "revId": "cf86332b077bd7094013c8cfff3afbd17e945188",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9b63db15_f56bbd09",
+        "filename": "src/chromiumos/cmd/tast-lint/check/declarations.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-01-16T05:39:59Z",
+      "side": 1,
+      "message": "now i\u0027m wondering if test name / filename agreement should also be checked here instead of when tests are registered. on the other hand, i\u0027m more worried about people ignoring lint errors about that check... :-P",
+      "revId": "cf86332b077bd7094013c8cfff3afbd17e945188",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c722d67c_9507a3a2",
+        "filename": "src/chromiumos/cmd/tast-lint/check/declarations.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-01-16T05:39:59Z",
+      "side": 1,
+      "message": "we don\u0027t have a more-specific link for this, i don\u0027t think, but the example declaration in this section demonstrates the desired format",
+      "revId": "cf86332b077bd7094013c8cfff3afbd17e945188",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

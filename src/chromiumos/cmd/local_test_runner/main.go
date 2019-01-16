@@ -59,6 +59,7 @@ func main() {
 			"selinux_experimental": "selinux && selinux_experimental",
 			"tablet_mode":          "touchview",
 			"tpm":                  "!mocktpm && !tast_vm",
+			"transparent_hugepage": "transparent_hugepage",
 			// Some VM builds actually can run nested VM with right host configuration.
 			// But we haven't enable this feature on builders. For now, just disable
 			// vm_host feature for VM builds.

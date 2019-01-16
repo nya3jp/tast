@@ -47,6 +47,8 @@ The following software features are defined:
 *   `tablet_mode` - The ability to enter tablet mode. The device is either
     a convertible device or a tablet device.
 *   `tpm` - A [Trusted Platform Module] chip.
+*   `transparent_hugepage` - Set if transparent hugepages are enabled on the
+    current platform.
 *   `vm_host` - The ability to [run virtual machines].
 
 Software features are composed from USE flags. [local_test_runner] lists boolean

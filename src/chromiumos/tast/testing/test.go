@@ -62,28 +62,6 @@ func init() {
 // TestFunc is the code associated with a test.
 type TestFunc func(context.Context, *State)
 
-// Precondition is implemented by preconditions that must be satisfied before tests are run.
-// TODO(derat): Find a better way to structure this such that these methods are exposed to
-// Test.Run but not to test functions.
-type Precondition interface {
-	// Prepare is called immediately before starting each test that depends on the precondition.
-	// To report an error, the precondition can use either s.Error/Errorf or s.Fatal/Fatalf;
-	// either will result in the test not being run. If Prepare reports an error the test will not run,
-	// but the precondition object must be left in a state where future calls to Prepare (and Close)
-	// can still succeed.
-	Prepare(ctx context.Context, s *State)
-	// Close is called immediately after completing the final test that depends on the precondition.
-	// This method may be called without an earlier call to Prepare in rare cases (e.g. if
-	// TestConfig.PreTestFunc fails); preconditions must be able to handle this.
-	Close(ctx context.Context, s *State)
-	// Timeout returns the amount of time dedicated to Prepare and to Close.
-	Timeout() time.Duration
-	// String returns a short, underscore-separated name for the precondition.
-	// "chrome_logged_in" and "arc_booted" are examples of good names for preconditions
-	// defined by the "chrome" and "arc" packages, respectively.
-	String() string
-}
-
 // Test contains information about a test and its code itself.
 //
 // While this struct can be marshaled to a JSON object, note that unmarshaling that object
@@ -213,19 +191,16 @@ func (tst *Test) Run(ctx context.Context, ch chan<- Output, cfg *TestConfig) boo
 			if s.HasError() {
 				return
 			}
-			s.Logf("Preparing precondition %q", tst.Pre.String())
-			tst.Pre.Prepare(ctx, s)
+			s.Logf("Preparing precondition %q", tst.Pre)
+			s.preValue = tst.Pre.(preconditionImpl).Prepare(ctx, s)
 		}, tst.Pre.Timeout(), tst.Pre.Timeout()+exitTimeout)
 	}
 
 	// Next, run the test function itself if no errors have been reported so far.
 	addStage(func(ctx context.Context, s *State) {
-		if s.HasError() {
-			return
+		if !s.HasError() {
+			tst.Func(ctx, s)
 		}
-		s.runningTest = true
-		defer func() { s.runningTest = false }()
-		tst.Func(ctx, s)
 	}, tst.Timeout, tst.Timeout+timeoutOrDefault(tst.ExitTimeout, exitTimeout))
 
 	// If this is the final test using this precondition, close it
@@ -233,7 +208,7 @@ func (tst *Test) Run(ctx context.Context, ch chan<- Output, cfg *TestConfig) boo
 	if tst.Pre != nil && (cfg.NextTest == nil || cfg.NextTest.Pre != tst.Pre) {
 		addStage(func(ctx context.Context, s *State) {
 			s.Logf("Closing precondition %q", tst.Pre.String())
-			tst.Pre.Close(ctx, s)
+			tst.Pre.(preconditionImpl).Close(ctx, s)
 		}, tst.Pre.Timeout(), tst.Pre.Timeout()+exitTimeout)
 	}
 
@@ -298,6 +273,11 @@ func (tst *Test) finalize(autoName bool) error {
 	}
 	if tst.Timeout < 0 {
 		return fmt.Errorf("%q has negative timeout %v", tst.Name, tst.Timeout)
+	}
+	if tst.Pre != nil {
+		if _, ok := tst.Pre.(preconditionImpl); !ok {
+			return fmt.Errorf("precondition %s does not implement preconditionImpl", tst.Pre)
+		}
 	}
 	return nil
 }
@@ -417,9 +397,9 @@ func (tst *Test) clone() *Test {
 	for i := 0; i < ov.NumField(); i++ {
 		of, nf := ov.Field(i), nv.Field(i)
 		switch {
-		case copyable(of.Type()):
+		case copyable(of.Type()) && nf.CanSet():
 			nf.Set(of)
-		case of.Kind() == reflect.Slice && copyable(of.Type().Elem()):
+		case of.Kind() == reflect.Slice && copyable(of.Type().Elem()) && nf.CanSet():
 			if !of.IsNil() {
 				nf.Set(reflect.MakeSlice(of.Type(), of.Len(), of.Len()))
 				reflect.Copy(nf, of)

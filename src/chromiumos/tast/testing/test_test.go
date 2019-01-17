@@ -21,17 +21,18 @@ import (
 // Func1 is an arbitrary public test function used by unit tests.
 func Func1(context.Context, *State) {}
 
-// testPre implements Precondition for unit tests.
+// testPre implements both Precondition and preconditionImpl for unit tests.
 type testPre struct {
-	prepareFunc, closeFunc func(context.Context, *State)
-
-	name string
+	prepareFunc func(context.Context, *State) interface{}
+	closeFunc   func(context.Context, *State)
+	name        string // name to return from String
 }
 
-func (p *testPre) Prepare(ctx context.Context, s *State) {
+func (p *testPre) Prepare(ctx context.Context, s *State) interface{} {
 	if p.prepareFunc != nil {
-		p.prepareFunc(ctx, s)
+		return p.prepareFunc(ctx, s)
 	}
+	return nil
 }
 
 func (p *testPre) Close(ctx context.Context, s *State) {
@@ -326,7 +327,11 @@ func TestRunSkipStages(t *gotesting.T) {
 		test := tests[i]
 		test.Func = makeFunc(c.testAction, &testRan)
 		if c.pre != nil {
-			c.pre.prepareFunc = makeFunc(c.prepareAction, &prepareRan)
+			prepare := makeFunc(c.prepareAction, &prepareRan)
+			c.pre.prepareFunc = func(ctx context.Context, s *State) interface{} {
+				prepare(ctx, s)
+				return nil
+			}
 			c.pre.closeFunc = makeFunc(c.closeAction, &closeRan)
 		}
 		cfg := &TestConfig{
@@ -391,6 +396,35 @@ func TestRunMissingData(t *gotesting.T) {
 		t.Errorf("Got %v errors for missing data test; want 2", errs)
 	} else if actual := []string{errs[0].Reason, errs[1].Reason}; !reflect.DeepEqual(actual, expected) {
 		t.Errorf("Got errors %q; want %q", actual, expected)
+	}
+}
+
+func TestRunPrecondition(t *gotesting.T) {
+	type data struct{}
+	preData := &data{}
+
+	// The test should be able to access the data via State.PreValue.
+	test := &Test{
+		// Use a precondition that returns the struct that we declared earlier from its Prepare method.
+		Pre: &testPre{
+			prepareFunc: func(context.Context, *State) interface{} { return preData },
+		},
+		Func: func(ctx context.Context, s *State) {
+			if s.PreValue() == nil {
+				s.Fatal("Precondition value not supplied")
+			} else if d, ok := s.PreValue().(*data); !ok {
+				s.Fatal("Precondition value didn't have expected type")
+			} else if d != preData {
+				s.Fatalf("Got precondition value %v; want %v", d, preData)
+			}
+		},
+		Timeout: time.Minute,
+	}
+
+	or := newOutputReader()
+	test.Run(context.Background(), or.ch, &TestConfig{})
+	for _, err := range getOutputErrors(or.read()) {
+		t.Error("Got error: ", err.Reason)
 	}
 }
 

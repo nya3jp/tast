@@ -70,10 +70,10 @@ type State struct {
 	ch   chan<- Output // channel to which logging messages and errors are written
 	cfg  *TestConfig   // details about how to run test
 
+	preValue interface{} // value returned by test.Pre.Prepare; may be nil
+
 	hasError bool       // whether the test has already reported errors or not
 	mu       sync.Mutex // mutex to protect hasError
-
-	runningTest bool // whether test.Func is currently being executed
 }
 
 // TestConfig contains details about how an individual test should be run.
@@ -120,11 +120,11 @@ func (s *State) DataFileSystem() *dataFS { return (*dataFS)(s) }
 // that should be included with the test results.
 func (s *State) OutDir() string { return s.cfg.OutDir }
 
-// Pre returns the test's precondition, which must have been declared when the test was initially registered.
-// Callers will typically cast the returned interface to the actual pointer type of the precondition.
-//
-//	pre := s.Pre().(*chrome.LoggedInPre)
-func (s *State) Pre() Precondition { return s.test.Pre }
+// PreValue returns a value supplied by the test's precondition, which must have been declared via Test.Pre
+// when the test was registered. Callers should cast the returned empty interface to the correct pointer
+// type; see the relevant precondition's documentation for specifics.
+// nil will be returned if the test did not declare a precondition.
+func (s *State) PreValue() interface{} { return s.preValue }
 
 // Meta returns information about how the "tast" process used to initiate testing was run.
 // It can only be called by remote tests in the "meta" category.
@@ -192,14 +192,6 @@ func (s *State) HasError() bool {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	return s.hasError
-}
-
-// RunningTest reports whether Test.Func is currently being executed.
-// Precondition implementations can use this to verify that they're not misused by tests
-// (e.g. this should always be false when Prepare or Close is called, since test functions
-// should not call these methods directly).
-func (s *State) RunningTest() bool {
-	return s.runningTest
 }
 
 // errorSuffix matches the well-known error message suffixes for formatError.

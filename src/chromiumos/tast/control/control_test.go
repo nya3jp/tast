@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"chromiumos/tast/testing"
 )
@@ -48,7 +49,7 @@ func TestWriteAndRead(t *gotesting.T) {
 			act = append(act, msg)
 		}
 	}
-	if !cmp.Equal(act, msgs) {
+	if !cmp.Equal(act, msgs, cmpopts.IgnoreUnexported(testing.Test{})) {
 		aj, _ := json.Marshal(act)
 		ej, _ := json.Marshal(msgs)
 		t.Errorf("Read messages %v; want %v", string(aj), string(ej))

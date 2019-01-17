@@ -21,28 +21,35 @@ import (
 // Func1 is an arbitrary public test function used by unit tests.
 func Func1(context.Context, *State) {}
 
-// testPre implements Precondition for unit tests.
+// testPreImpl implements Precondition for unit tests.
 type testPre struct {
+	impl *testPreImpl
+}
+
+func (p *testPre) Register(t *Test) { t.RegisterPre(p.impl) }
+
+// testPreImpl implements PreconditionImpl for unit tests.
+type testPreImpl struct {
 	prepareFunc, closeFunc func(context.Context, *State)
 
 	name string
 }
 
-func (p *testPre) Prepare(ctx context.Context, s *State) {
+func (p *testPreImpl) Prepare(ctx context.Context, s *State) {
 	if p.prepareFunc != nil {
 		p.prepareFunc(ctx, s)
 	}
 }
 
-func (p *testPre) Close(ctx context.Context, s *State) {
+func (p *testPreImpl) Close(ctx context.Context, s *State) {
 	if p.closeFunc != nil {
 		p.closeFunc(ctx, s)
 	}
 }
 
-func (p *testPre) Timeout() time.Duration { return time.Minute }
+func (p *testPreImpl) Timeout() time.Duration { return time.Minute }
 
-func (p *testPre) String() string { return p.name }
+func (p *testPreImpl) String() string { return p.name }
 
 func TestMissingFunc(t *gotesting.T) {
 	test := Test{Name: "category.MyName"}
@@ -155,12 +162,13 @@ func TestReservedAttrPrefixes(t *gotesting.T) {
 }
 
 func TestAdditionalTime(t *gotesting.T) {
-	pre := &testPre{}
+	preImpl := &testPreImpl{}
+	pre := &testPre{preImpl}
 	test := Test{Name: "cat.Name", Func: Func1, Timeout: 5 * time.Minute, Pre: pre}
 	if err := test.finalize(false); err != nil {
 		t.Error("finalize() failed: ", err)
 	}
-	if exp := preTestTimeout + postTestTimeout + 2*pre.Timeout(); test.AdditionalTime != exp {
+	if exp := preTestTimeout + postTestTimeout + 2*preImpl.Timeout(); test.AdditionalTime != exp {
 		t.Errorf("AdditionalTime = %v; want %v", test.AdditionalTime, exp)
 	}
 }
@@ -268,7 +276,11 @@ func TestRunSkipStages(t *gotesting.T) {
 	)
 
 	// Define a sequence of tests to run and specify which stages should be executed for each.
-	var pre, pre2, pre3, pre4 testPre
+	var preImpl, preImpl2, preImpl3, preImpl4 testPreImpl
+	pre := testPre{&preImpl}
+	pre2 := testPre{&preImpl2}
+	pre3 := testPre{&preImpl3}
+	pre4 := testPre{&preImpl4}
 	cases := []struct {
 		pre            *testPre
 		preTestAction  action // TestConfig.PreTestFunc
@@ -300,6 +312,7 @@ func TestRunSkipStages(t *gotesting.T) {
 		// "Note that an interface value that holds a nil concrete value is itself non-nil."
 		if c.pre != nil {
 			test.Pre = c.pre
+			test.preImpl = c.pre.impl
 		}
 		tests = append(tests, test)
 	}
@@ -326,8 +339,8 @@ func TestRunSkipStages(t *gotesting.T) {
 		test := tests[i]
 		test.Func = makeFunc(c.testAction, &testRan)
 		if c.pre != nil {
-			c.pre.prepareFunc = makeFunc(c.prepareAction, &prepareRan)
-			c.pre.closeFunc = makeFunc(c.closeAction, &closeRan)
+			c.pre.impl.prepareFunc = makeFunc(c.prepareAction, &prepareRan)
+			c.pre.impl.closeFunc = makeFunc(c.closeAction, &closeRan)
 		}
 		cfg := &TestConfig{
 			PreTestFunc:  makeFunc(c.preTestAction, &preTestRan),
@@ -518,15 +531,17 @@ func TestCheckFuncNameAgainstFilename(t *gotesting.T) {
 }
 
 func TestSortTests(t *gotesting.T) {
-	pre1 := &testPre{name: "pre1"}
-	pre2 := &testPre{name: "pre2"}
+	preImpl1 := &testPreImpl{name: "pre1"}
+	preImpl2 := &testPreImpl{name: "pre2"}
+	pre1 := &testPre{preImpl1}
+	pre2 := &testPre{preImpl2}
 
 	// Assign names with different leading digits to make sure we don't sort by name primarily.
 	t1 := &Test{Name: "3-test1", Pre: nil}
 	t2 := &Test{Name: "4-test2", Pre: nil}
-	t3 := &Test{Name: "1-test3", Pre: pre1}
-	t4 := &Test{Name: "2-test4", Pre: pre1}
-	t5 := &Test{Name: "0-test5", Pre: pre2}
+	t3 := &Test{Name: "1-test3", Pre: pre1, preImpl: preImpl1}
+	t4 := &Test{Name: "2-test4", Pre: pre1, preImpl: preImpl1}
+	t5 := &Test{Name: "0-test5", Pre: pre2, preImpl: preImpl2}
 	tests := []*Test{t4, t2, t3, t5, t1}
 
 	getNames := func(tests []*Test) (names []string) {

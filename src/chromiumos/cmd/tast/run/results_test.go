@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"chromiumos/cmd/tast/logging"
 	"chromiumos/tast/control"
@@ -155,13 +156,13 @@ func TestReadTestOutput(t *gotesting.T) {
 	if err := json.Unmarshal([]byte(files[resultsFilename]), &actRes); err != nil {
 		t.Errorf("Failed to decode %v: %v", resultsFilename, err)
 	}
-	if !cmp.Equal(actRes, expRes, cmp.AllowUnexported(TestResult{})) {
+	if !cmp.Equal(actRes, expRes, cmp.AllowUnexported(TestResult{}), cmpopts.IgnoreUnexported(testing.Test{})) {
 		t.Errorf("%v contains %+v; want %+v", resultsFilename, actRes, expRes)
 	}
 
 	// The streamed results file should contain the same set of results.
 	streamRes := readStreamedResults(t, bytes.NewBufferString(files[streamedResultsFilename]))
-	if !cmp.Equal(streamRes, expRes, cmp.AllowUnexported(TestResult{})) {
+	if !cmp.Equal(streamRes, expRes, cmp.AllowUnexported(TestResult{}), cmpopts.IgnoreUnexported(testing.Test{})) {
 		t.Errorf("%v contains %+v; want %+v", streamedResultsFilename, streamRes, expRes)
 	}
 
@@ -499,7 +500,7 @@ func TestWritePartialResults(t *gotesting.T) {
 			OutDir: filepath.Join(cfg.ResDir, testLogsDir, test2Name),
 		},
 	}
-	if !cmp.Equal(streamRes, expRes, cmp.AllowUnexported(TestResult{})) {
+	if !cmp.Equal(streamRes, expRes, cmp.AllowUnexported(TestResult{}), cmpopts.IgnoreUnexported(testing.Test{})) {
 		t.Errorf("%v contains %+v; want %+v", streamedResultsFilename, streamRes, expRes)
 	}
 
@@ -524,7 +525,7 @@ func TestWritePartialResults(t *gotesting.T) {
 		End:    test3End,
 		OutDir: filepath.Join(cfg.ResDir, testLogsDir, test3Name),
 	})
-	if !cmp.Equal(streamRes, expRes, cmp.AllowUnexported(TestResult{})) {
+	if !cmp.Equal(streamRes, expRes, cmp.AllowUnexported(TestResult{}), cmpopts.IgnoreUnexported(testing.Test{})) {
 		t.Errorf("%v contains %+v; want %+v", streamedResultsFilename, streamRes, expRes)
 	}
 }

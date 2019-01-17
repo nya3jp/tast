@@ -72,8 +72,6 @@ type State struct {
 
 	hasError bool       // whether the test has already reported errors or not
 	mu       sync.Mutex // mutex to protect hasError
-
-	runningTest bool // whether test.Func is currently being executed
 }
 
 // TestConfig contains details about how an individual test should be run.
@@ -84,9 +82,9 @@ type TestConfig struct {
 	OutDir string
 	// Meta contains information about how the tast process was run.
 	Meta *Meta
-	// PreTestFunc is run before Test.Func (and Test.Pre.Prepare, when applicable)  if non-nil.
+	// PreTestFunc is run before Test.Func (and Test.preImpl.Prepare, when applicable)  if non-nil.
 	PreTestFunc func(context.Context, *State)
-	// PostTestFunc is run after Test.Func (and Test.Pre.Cleanup, when applicable) if non-nil.
+	// PostTestFunc is run after Test.Func (and Test.preImpl..Cleanup, when applicable) if non-nil.
 	PostTestFunc func(context.Context, *State)
 	// NextTest is the test that will be run after this one.
 	NextTest *Test
@@ -119,12 +117,6 @@ func (s *State) DataFileSystem() *dataFS { return (*dataFS)(s) }
 // OutDir returns a directory into which the test may place arbitrary files
 // that should be included with the test results.
 func (s *State) OutDir() string { return s.cfg.OutDir }
-
-// Pre returns the test's precondition, which must have been declared when the test was initially registered.
-// Callers will typically cast the returned interface to the actual pointer type of the precondition.
-//
-//	pre := s.Pre().(*chrome.LoggedInPre)
-func (s *State) Pre() Precondition { return s.test.Pre }
 
 // Meta returns information about how the "tast" process used to initiate testing was run.
 // It can only be called by remote tests in the "meta" category.
@@ -192,14 +184,6 @@ func (s *State) HasError() bool {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	return s.hasError
-}
-
-// RunningTest reports whether Test.Func is currently being executed.
-// Precondition implementations can use this to verify that they're not misused by tests
-// (e.g. this should always be false when Prepare or Close is called, since test functions
-// should not call these methods directly).
-func (s *State) RunningTest() bool {
-	return s.runningTest
 }
 
 // errorSuffix matches the well-known error message suffixes for formatError.

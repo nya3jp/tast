@@ -62,28 +62,6 @@ func init() {
 // TestFunc is the code associated with a test.
 type TestFunc func(context.Context, *State)
 
-// Precondition is implemented by preconditions that must be satisfied before tests are run.
-// TODO(derat): Find a better way to structure this such that these methods are exposed to
-// Test.Run but not to test functions.
-type Precondition interface {
-	// Prepare is called immediately before starting each test that depends on the precondition.
-	// To report an error, the precondition can use either s.Error/Errorf or s.Fatal/Fatalf;
-	// either will result in the test not being run. If Prepare reports an error the test will not run,
-	// but the precondition object must be left in a state where future calls to Prepare (and Close)
-	// can still succeed.
-	Prepare(ctx context.Context, s *State)
-	// Close is called immediately after completing the final test that depends on the precondition.
-	// This method may be called without an earlier call to Prepare in rare cases (e.g. if
-	// TestConfig.PreTestFunc fails); preconditions must be able to handle this.
-	Close(ctx context.Context, s *State)
-	// Timeout returns the amount of time dedicated to Prepare and to Close.
-	Timeout() time.Duration
-	// String returns a short, underscore-separated name for the precondition.
-	// "chrome_logged_in" and "arc_booted" are examples of good names for preconditions
-	// defined by the "chrome" and "arc" packages, respectively.
-	String() string
-}
-
 // Test contains information about a test and its code itself.
 //
 // While this struct can be marshaled to a JSON object, note that unmarshaling that object
@@ -129,6 +107,8 @@ type Test struct {
 	// Pkg contains the Go package in which Func is located.
 	// Automatically filled using Func's package name.
 	Pkg string `json:"pkg"`
+
+	preImpl PreconditionImpl // implementation for Pre (hidden from Func)
 }
 
 // DataDir returns the path to the directory in which files listed in Data will be located,
@@ -141,7 +121,7 @@ func (tst *Test) DataDir() string {
 // whichever comes first.
 //
 // The time allotted to the test is generally the sum of tst.Timeout and tst.ExitTimeout, but
-// additional time may be allotted for tst.Pre.Prepare, tst.Pre.Close, cfg.PreTestFunc, and cfg.PostTestFunc.
+// additional time may be allotted for tst.preImpl.Prepare, tst.preImpl.Close, cfg.PreTestFunc, and cfg.PostTestFunc.
 //
 // The test function executes in a goroutine and may still be running if it ignores its deadline;
 // the returned value indicates whether the test completed within the allotted time or not.
@@ -150,9 +130,9 @@ func (tst *Test) DataDir() string {
 //
 // Stages are executed in the following order:
 //	- cfg.PreTestFunc (if non-nil)
-//	- tst.Pre.Prepare (if tst.Pre is non-nil and no errors yet)
+//	- tst.preImpl.Prepare (if tst.preImpl is non-nil and no errors yet)
 //	- tst.Func (if no errors yet)
-//	- tst.Pre.Close (if tst.Pre is non-nil and cfg.NextTest.Pre is different)
+//	- tst.preImpl.Close (if tst.preImpl is non-nil and cfg.NextTest.preImpl is different)
 //	- cfg.PostTestFunc (if non-nil)
 func (tst *Test) Run(ctx context.Context, ch chan<- Output, cfg *TestConfig) bool {
 	// Attach the state to a context so support packages can log to it.
@@ -208,33 +188,30 @@ func (tst *Test) Run(ctx context.Context, ch chan<- Output, cfg *TestConfig) boo
 	}, preTestTimeout, preTestTimeout+exitTimeout)
 
 	// Prepare the test's precondition (if any) if setup was successful.
-	if tst.Pre != nil {
+	if tst.preImpl != nil {
 		addStage(func(ctx context.Context, s *State) {
 			if s.HasError() {
 				return
 			}
-			s.Logf("Preparing precondition %q", tst.Pre.String())
-			tst.Pre.Prepare(ctx, s)
-		}, tst.Pre.Timeout(), tst.Pre.Timeout()+exitTimeout)
+			s.Logf("Preparing precondition %q", tst.preImpl.String())
+			tst.preImpl.Prepare(ctx, s)
+		}, tst.preImpl.Timeout(), tst.preImpl.Timeout()+exitTimeout)
 	}
 
 	// Next, run the test function itself if no errors have been reported so far.
 	addStage(func(ctx context.Context, s *State) {
-		if s.HasError() {
-			return
+		if !s.HasError() {
+			tst.Func(ctx, s)
 		}
-		s.runningTest = true
-		defer func() { s.runningTest = false }()
-		tst.Func(ctx, s)
 	}, tst.Timeout, tst.Timeout+timeoutOrDefault(tst.ExitTimeout, exitTimeout))
 
 	// If this is the final test using this precondition, close it
-	// (even if setup, tst.Pre.Prepare, or tst.Func failed).
-	if tst.Pre != nil && (cfg.NextTest == nil || cfg.NextTest.Pre != tst.Pre) {
+	// (even if setup, tst.preImpl.Prepare, or tst.Func failed).
+	if tst.preImpl != nil && (cfg.NextTest == nil || cfg.NextTest.preImpl != tst.preImpl) {
 		addStage(func(ctx context.Context, s *State) {
-			s.Logf("Closing precondition %q", tst.Pre.String())
-			tst.Pre.Close(ctx, s)
-		}, tst.Pre.Timeout(), tst.Pre.Timeout()+exitTimeout)
+			s.Logf("Closing precondition %q", tst.preImpl.String())
+			tst.preImpl.Close(ctx, s)
+		}, tst.preImpl.Timeout(), tst.preImpl.Timeout()+exitTimeout)
 	}
 
 	// Finally, run the post-test function unconditionally.
@@ -276,10 +253,19 @@ DepLoop:
 	return missing
 }
 
+// RegisterPre registers the supplied precondition implementation for use by tst.
+// This is called by pre.Register and should not be called by test authors.
+func (tst *Test) RegisterPre(impl PreconditionImpl) { tst.preImpl = impl }
+
 // finalize fills in defaults and validates the result.
 // If autoName is true, tst.Name will be derived from tst.Func's name.
 // Otherwise (just used in unit tests), tst.Name should be filled already.
 func (tst *Test) finalize(autoName bool) error {
+	// Register the precondition implementation so it can be accessed later.
+	if tst.Pre != nil {
+		tst.Pre.Register(tst)
+	}
+
 	// Fill in defaults.
 	if err := tst.populateNameAndPkg(autoName); err != nil {
 		return err
@@ -383,7 +369,7 @@ func (tst *Test) addAutoAttributes() error {
 	return nil
 }
 
-// setAdditionalTime sets AdditionalTime to include time needed for tst.Pre and pre-test or post-test functions.
+// setAdditionalTime sets AdditionalTime to include time needed for tst.preImpl and pre-test or post-test functions.
 func (tst *Test) setAdditionalTime() {
 	// We don't know whether a pre-test or post-test func will be specified until the test is run,
 	// so err on the side of including the time that would be allocated.
@@ -391,8 +377,8 @@ func (tst *Test) setAdditionalTime() {
 
 	// The precondition's timeout applies both when preparing the precondition and when closing it
 	// (which we'll need to do if this is the final test using the precondition).
-	if tst.Pre != nil {
-		tst.AdditionalTime += 2 * tst.Pre.Timeout()
+	if tst.preImpl != nil {
+		tst.AdditionalTime += 2 * tst.preImpl.Timeout()
 	}
 }
 
@@ -416,20 +402,26 @@ func (tst *Test) clone() *Test {
 
 	for i := 0; i < ov.NumField(); i++ {
 		of, nf := ov.Field(i), nv.Field(i)
+		sf := ov.Type().Field(i)
 		switch {
-		case copyable(of.Type()):
+		case copyable(of.Type()) && nf.CanSet():
 			nf.Set(of)
-		case of.Kind() == reflect.Slice && copyable(of.Type().Elem()):
+		case of.Kind() == reflect.Slice && copyable(of.Type().Elem()) && nf.CanSet():
 			if !of.IsNil() {
 				nf.Set(reflect.MakeSlice(of.Type(), of.Len(), of.Len()))
 				reflect.Copy(nf, of)
 			}
+		case sf.Name == "preImpl":
+			// Unexported fields need to be manually copied later; ignore them here.
 		default:
 			panic(fmt.Sprintf("unable to copy Test.%s field of type %s", ov.Type().Field(i).Name, of.Type().Name()))
 		}
 	}
 
-	return np.Interface().(*Test)
+	nt := np.Interface().(*Test)
+	nt.preImpl = tst.preImpl
+
+	return nt
 }
 
 // testFuncInfo contains information about a TestFunc.
@@ -520,11 +512,11 @@ func SortTests(tests []*Test) {
 		tj := tests[j]
 
 		var pi, pj string
-		if ti.Pre != nil {
-			pi = ti.Pre.String()
+		if ti.preImpl != nil {
+			pi = ti.preImpl.String()
 		}
-		if tj.Pre != nil {
-			pj = tj.Pre.String()
+		if tj.preImpl != nil {
+			pj = tj.preImpl.String()
 		}
 
 		if pi != pj {

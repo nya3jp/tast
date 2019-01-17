@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2cc82cbe_fa443007",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-01-17T00:46:07Z",
+      "side": 1,
+      "message": "minor rewording suggestion: \"[Transparent Hugepage] support in the Linux kernel.\"\n\n(and then make that link to https://www.kernel.org/doc/Documentation/vm/transhuge.txt at the bottom)",
+      "revId": "88d2cde47ce7836f7fc5324fc7b491e1561c598d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7500db3d_d1bcf2a0",
+        "filename": "src/chromiumos/cmd/tast/build/portage.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1000768
+      },
+      "writtenOn": "2019-01-18T16:00:09Z",
+      "side": 1,
+      "message": "there\u0027s no reason to run cros_workon as root",
+      "revId": "7e35f71a731c58e73b5c8625f87b14a863d934f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

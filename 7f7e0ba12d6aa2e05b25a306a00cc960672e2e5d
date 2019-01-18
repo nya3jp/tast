@@ -16,6 +16,24 @@
       "revId": "7f7e0ba12d6aa2e05b25a306a00cc960672e2e5d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fe5ae428_1797f46c",
+        "filename": "docs/test_validation.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-01-18T08:45:22Z",
+      "side": 1,
+      "message": "Right... check_informational.py was written before tast-lint was introduced, I want to replace it with other means. Maybe it\u0027s good to mention Python validation is not recommended.",
+      "parentUuid": "122d44d6_081fbf09",
+      "revId": "7f7e0ba12d6aa2e05b25a306a00cc960672e2e5d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

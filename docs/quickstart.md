@@ -45,11 +45,13 @@ cached). The test should succeed again.
 > The first time you run this, or after you sync your checkout, you may see an
 > error similar to the following:
 ```
-To install missing dependencies, run:
+The following dependencies are not installed:
+  dev-go/cdp-0.9.1-r1
+  dev-go/dbus-0.0.2-r5
 
- sudo emerge -j 16 \
-   =dev-go/cdp-0.9.1-r1 \
-   =dev-go/dbus-0.0.2-r5
+To install them, please run the following in your chroot:
+  cros_workon --host start 'chromeos-base/tast-local-tests-cros-9999'
+  sudo emerge --jobs=16 --onlydeps --onlydeps-with-rdeps=n =chromeos-base/tast-local-tests-cros-9999
 ```
 > This is expected: to speed things up, `tast` is building the tests directly
 > instead of emerging the `tast-local-tests-cros` package, so it needs some help

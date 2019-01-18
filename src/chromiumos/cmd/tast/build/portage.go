@@ -5,6 +5,7 @@
 package build
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -13,9 +14,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"regexp"
 	"strings"
-	"syscall"
 	"time"
 
 	"chromiumos/cmd/tast/timing"
@@ -26,30 +25,11 @@ const (
 	portagePackagesFile = "/var/lib/portage/pkgs/Packages" // Portage packages DB file
 )
 
-// Matches lines containing first-level dependencies printed by an
-// "equery -q -C g --depth=1 <pkg>" command, which produces output
-// similar to the following (preceded by a blank line):
-//
-//	chromeos-base/tast-local-tests-9999:
-//	 [  0]  chromeos-base/tast-local-tests-9999
-//	 [  1]  chromeos-base/tast-common-9999
-//	 [  1]  dev-go/cdp-0.9.1
-//	 [  1]  dev-go/dbus-0.0.2-r5
-//	 [  1]  dev-lang/go-1.8.3-r1
-//	 [  1]  dev-vcs/git-2.12.2
-var equeryDepsRegexp = regexp.MustCompile("^\\s*\\[\\s*1\\]\\s+([\\S]+)")
-
-// depInfo contains information about one of a package's dependencies.
-type depInfo struct {
-	pkg       string // dependency's package name
-	installed bool   // true if dependency is installed
-	err       error  // non-nil if error encountered while getting status
-}
-
-// checkDeps checks if all of portagePkg's direct dependencies are installed.
-// Missing packages are returned in the format "<category>/<package>-<version>".
-// err is set if a more-serious error is encountered while trying to check dependencies.
-func checkDeps(ctx context.Context, portagePkg, cachePath string) (missing []string, err error) {
+// checkDeps checks if all of portagePkg's dependencies are installed.
+// portagePkg should be a versioned package of the form "chromeos-base/tast-local-tests-cros-9999".
+// Missing packages (using the same format) and a list of commands that the user should execute to install
+// the dependencies are returned.
+func checkDeps(ctx context.Context, portagePkg, cachePath string) (missing, cmds []string, err error) {
 	if tl, ok := timing.FromContext(ctx); ok {
 		st := tl.Start("check_deps")
 		defer st.End()
@@ -61,98 +41,113 @@ func checkDeps(ctx context.Context, portagePkg, cachePath string) (missing []str
 	if cachePath != "" {
 		checkPaths, err := getOverlays(ctx, portageConfigFile)
 		if err != nil {
-			return nil, fmt.Errorf("failed to get overlays from %v: %v", portageConfigFile, err)
+			return nil, nil, fmt.Errorf("failed to get overlays from %v: %v", portageConfigFile, err)
 		}
 		checkPaths = append(checkPaths, portagePackagesFile)
 		if cache, err = newCheckDepsCache(cachePath, checkPaths); err != nil {
-			return nil, fmt.Errorf("failed to load check-deps cache from %v: %v", cachePath, err)
+			return nil, nil, fmt.Errorf("failed to load check-deps cache from %v: %v", cachePath, err)
 		}
 		var checkNeeded bool
 		if checkNeeded, lastMod = cache.isCheckNeeded(ctx, portagePkg); !checkNeeded {
-			return nil, nil
+			return nil, nil, nil
 		}
 	}
 
-	// Fall back to the slow equery path.
+	// Fall back to the slow emerge path.
 	if tl, ok := timing.FromContext(ctx); ok {
-		st := tl.Start("equery")
+		st := tl.Start("emerge")
 		defer st.End()
 	}
 
-	cmd := exec.Command("equery", "-q", "-C", "g", "--depth=1", portagePkg)
-	out, err := cmd.Output()
-	if err != nil {
-		return nil, fmt.Errorf("%q failed: %v", strings.Join(cmd.Args, " "), err)
-	}
-
-	deps := parseEqueryDeps(out)
-	if len(deps) == 0 {
-		return nil, fmt.Errorf("no deps found in output from %q", strings.Join(cmd.Args, " "))
-	}
-
-	// "equery l" doesn't appear to accept multiple package names, so run queries in parallel.
-	ch := make(chan *depInfo, len(deps))
-	for _, dep := range deps {
-		go func(pkg string) {
-			info := &depInfo{pkg: pkg}
-			info.installed, info.err = portagePkgInstalled(pkg)
-			ch <- info
-		}(dep)
-	}
-
-	missing = make([]string, 0)
-	for range deps {
-		info := <-ch
-		if info.err != nil {
-			return missing, fmt.Errorf("failed getting status of %s: %v", info.pkg, info.err)
-		} else if !info.installed {
-			missing = append(missing, info.pkg)
-		}
+	cl := emergeCmdLine(portagePkg, emergeList)
+	cmd := exec.CommandContext(ctx, cl[0], cl[1:]...)
+	var stderr bytes.Buffer
+	cmd.Stderr = &stderr
+	stdout, err := cmd.Output()
+	// emerge exits with 1 if the package is masked, so parse the output first to determine
+	// whether the error is expected or not.
+	missing, masked := parseEmergeOutput(stdout, stderr.Bytes(), portagePkg)
+	if err != nil && !masked {
+		return nil, nil, fmt.Errorf("%q failed: %v", strings.Join(cl, " "), err)
 	}
 
 	if len(missing) == 0 && cache != nil {
 		// Record that dependencies are up-to-date so we can skip these checks next time.
 		if err := cache.update(portagePkg, lastMod); err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 	}
 
-	return missing, nil
+	if len(missing) > 0 {
+		if masked {
+			cmds = append(cmds, fmt.Sprintf("cros_workon --host start '%s'", portagePkg))
+		}
+		// TODO(derat): Escape args when that's easy to do.
+		cmds = append(cmds, strings.Join(emergeCmdLine(portagePkg, emergeInstall), " "))
+	}
+
+	return missing, cmds, nil
 }
 
-// parseEqueryDeps parses the output of checkDeps's "equery g" command and returns
-// the names (as "<category>/<package>-<version>") of first-level dependencies.
-func parseEqueryDeps(out []byte) []string {
-	deps := make([]string, 0)
-	for _, ln := range strings.Split(string(out), "\n") {
-		if matches := equeryDepsRegexp.FindStringSubmatch(ln); matches != nil {
-			deps = append(deps, matches[1])
-		}
+// emergeMode describes a mode to use when running emerge.
+type emergeMode int
+
+const (
+	emergeList    emergeMode = iota // list missing dependencies
+	emergeInstall                   // install missing dependencies
+)
+
+// emergeCmdLine returns an emerge command that lists or installs missing build dependencies for pkg.
+// pkg should be a versioned package of the form "chromeos-base/tast-local-tests-cros-9999".
+func emergeCmdLine(pkg string, mode emergeMode) []string {
+	var args []string
+	add := func(as ...string) { args = append(args, as...) }
+
+	if mode == emergeInstall {
+		add("sudo")
 	}
-	return deps
+	add("emerge", "--jobs=16", "--onlydeps", "--onlydeps-with-rdeps=n")
+	if mode == emergeList {
+		add("--pretend", "--columns", "--quiet", "y", "--color", "n")
+	}
+	add("=" + pkg)
+	return args
 }
 
-// portagePkgInstalled runs "equery l" to check if pkg is installed.
-func portagePkgInstalled(pkg string) (bool, error) {
-	cmd := exec.Command("equery", "-q", "-C", "l", pkg)
-	out, err := cmd.Output()
-	if err != nil {
-		// equery (in "quiet mode") exits with 3 if the package isn't installed.
-		if exitErr, ok := err.(*exec.ExitError); ok {
-			if status, ok := exitErr.Sys().(syscall.WaitStatus); ok {
-				if status.ExitStatus() == 3 {
-					return false, nil
-				}
-			}
+// parseEmergeOutput parses stdout and stderr from a command returned by emergeCmdLine and
+// returns missing dependencies (as e.g. "dev-go/mdns-0.0.1") and whether a cros_workon command is
+// needed to unmask the test bundle before the dependencies can be installed.
+//
+// emerge prints each missing dependency to stdout on a line similar to the following:
+//
+//   N     dev-go/cmp 0.2.0-r1
+//
+// If there are any missing dependencies and the bundle package is masked, then a message
+// similar to the following is printed to stderr:
+//
+//  The following keyword changes are necessary to proceed:
+//  (see "package.accept_keywords" in the portage(5) man page for more details)
+//  # required by =chromeos-base/tast-local-tests-cros-9999 (argument)
+//  =chromeos-base/tast-local-tests-cros-9999 **
+//
+// Unmasking the package appears to be required even when only emerging its dependencies.
+func parseEmergeOutput(stdout, stderr []byte, pkg string) (missingDeps []string, masked bool) {
+	for _, ln := range strings.Split(strings.TrimSpace(string(stdout)), "\n") {
+		fields := strings.Fields(ln)
+		if len(fields) < 3 || strings.Index(fields[1], "/") == -1 {
+			continue
 		}
-		return false, fmt.Errorf("%q failed: %v", strings.Join(cmd.Args, " "), err)
+		missingDeps = append(missingDeps, fields[1]+"-"+fields[2])
 	}
 
-	// equery should print the package name.
-	if str := strings.TrimSpace(string(out)); str != pkg {
-		return false, fmt.Errorf("%q returned %q", strings.Join(cmd.Args, " "), str)
+	maskLine := fmt.Sprintf("=%s **", pkg)
+	for _, ln := range strings.Split(string(stderr), "\n") {
+		if strings.TrimSpace(ln) == maskLine {
+			masked = true
+		}
 	}
-	return true, nil
+
+	return missingDeps, masked
 }
 
 // getOverlays evaluates the Portage config script at confPath (typically "/etc/make.conf") and returns all of

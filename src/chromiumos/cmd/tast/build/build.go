@@ -62,17 +62,20 @@ func Build(ctx context.Context, cfg *Config, pkg, outDir, stageName string) (out
 	}
 
 	if cfg.PortagePkg != "" {
-		if missing, err := checkDeps(ctx, cfg.PortagePkg, cfg.CheckDepsCachePath); err != nil {
+		if missing, cmds, err := checkDeps(ctx, cfg.PortagePkg, cfg.CheckDepsCachePath); err != nil {
 			return out, fmt.Errorf("failed checking deps for %s: %v", cfg.PortagePkg, err)
 		} else if len(missing) > 0 {
-			b := bytes.NewBufferString("To install missing dependencies, run:\n\n  sudo emerge -j 16 \\\n")
-			for i, dep := range missing {
-				suffix := ""
-				if i < len(missing)-1 {
-					suffix = " \\"
-				}
-				fmt.Fprintf(b, "    =%s%s\n", dep, suffix)
+			// TODO(derat): Consider running these commands automatically instead of printing them
+			// if we can confirm that sudo won't prompt for a password.
+			b := bytes.NewBufferString("The following dependencies are not installed:\n")
+			for _, dep := range missing {
+				fmt.Fprintf(b, "  %s\n", dep)
 			}
+			b.WriteString("\nTo install them, please run the following in your chroot:\n")
+			for _, cmd := range cmds {
+				fmt.Fprintf(b, "  %s\n", cmd)
+			}
+			b.WriteString("\n")
 			return b.Bytes(), fmt.Errorf("%s has missing dependencies", cfg.PortagePkg)
 		}
 	}

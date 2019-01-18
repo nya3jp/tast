@@ -88,6 +88,7 @@ func checkAll(git *git, paths []string, debug bool) ([]*check.Issue, error) {
 			issues = append(issues, check.ForbiddenCalls(fs, f)...)
 			issues = append(issues, check.ForbiddenImports(fs, f)...)
 			issues = append(issues, check.InterFileRefs(fs, f)...)
+			issues = append(issues, check.Messages(fs, f)...)
 		}
 
 		// Only collect issues that weren't ignored by NOLINT comments.

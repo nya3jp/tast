@@ -401,6 +401,8 @@ See the [fmt package]'s documentation for available "verbs".
 
 [fmt package]: https://golang.org/pkg/fmt/
 
+<a name="log-vs-logf"></a>
+
 ### Log/Error/Fatal vs. Logf/Errorf/Fatalf
 
 `Log`, `Error`, and `Fatal` should be used in conjunction with a single string
@@ -421,6 +423,14 @@ s.Logf("Read %q from %v", data, path)
 s.Errorf("Failed to load %v: %v", url, err)
 s.Fatalf("Got invalid JSON object %+v", obj)
 ```
+
+When concatenating a string and a value using default formatting, use
+`s.Log("Some value: ", val)` rather than the more-verbose
+`s.Logf("Some value: %v", val)`.
+
+The same considerations apply to `testing.ContextLog` vs. `testing.ContextLogf`.
+
+<a name="error-pkg"></a>
 
 ### Error construction
 
@@ -464,6 +474,8 @@ if err := doSomething(); err != nil {
 
 ### Formatting
 
+<a name="error-fmt"></a>
+
 Please follow [Go's error string conventions] when producing `error` values.
 
 > Error strings should not be capitalized (unless beginning with proper nouns or
@@ -478,10 +490,12 @@ if err := doSomething(id); err != nil {
 }
 ```
 
-On the other hand, log and error messages printed by tests via `testing.State`,
-`testing.ContextLog`, and `testing.ContextLogf` should be capitalized phrases
-without any trailing punctuation that clearly describe what is about to be done
-or what happened:
+<a name="log-fmt"></a>
+
+Log and error messages printed by tests via `testing.State`'s `Log`, `Logf`,
+`Error`, `Errorf`, `Fatal`, or `Fatalf` methods, or via `testing.ContextLog` or
+`testing.ContextLogf`, should be capitalized phrases without any trailing
+punctuation that clearly describe what is about to be done or what happened:
 
 ```go
 s.Log("Asking Chrome to log in")
@@ -492,9 +506,11 @@ if err != nil {
 s.Logf("Logged in as user %v with ID %v", user, id)
 ```
 
-In both cases, please try to avoid multiline strings since they make logs
-difficult to read. To preserve multiline output from an external program, please
-write it to an [output file] instead of logging it.
+<a name="common-fmt"></a>
+
+In all cases, please avoid multiline strings since they make logs difficult to
+read. To preserve multiline output from an external program, please write it to
+an [output file] instead of logging it.
 
 When including a path, URL, or other easily-printable value in a log message or
 an error, omit leading colons or surrounding quotes:
@@ -521,7 +537,7 @@ s.Error("Failed to log in: ", err)
 Semicolons are appropriate for joining independent clauses:
 
 ```go
-s.Log(ctx, "Attempt failed; trying again")
+s.Log("Attempt failed; trying again")
 ```
 
 [Go's error string conventions]: https://github.com/golang/go/wiki/CodeReviewComments#error-strings

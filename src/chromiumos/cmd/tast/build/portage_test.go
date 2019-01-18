@@ -19,28 +19,34 @@ import (
 	"chromiumos/tast/testutil"
 )
 
-func TestParseEqueryDeps(t *testing.T) {
-	// Copy-and-pasted output (including trailing whitespace) from
-	// "equery -q -C g --depth=1 chromeos-base/tast-local-tests-9999".
-	out := `
-chromeos-base/tast-local-tests-9999:
- [  0]  chromeos-base/tast-local-tests-9999   
- [  1]  chromeos-base/tast-common-9999   
- [  1]  dev-go/cdp-0.9.1   
- [  1]  dev-go/dbus-0.0.2-r5   
- [  1]  dev-lang/go-1.8.3-r1   
- [  1]  dev-vcs/git-2.12.2   
-`
+func TestParseEmergeOutput(t *testing.T) {
+	const (
+		pkg  = "chromeos-base/tast-local-tests-cros-9999"
+		dep1 = "chromeos-base/my_pkg-0.0.1-r3"
+		dep2 = "dev-go/some-lib-0.0.1-r21"
+	)
 
-	exp := []string{
-		"chromeos-base/tast-common-9999",
-		"dev-go/cdp-0.9.1",
-		"dev-go/dbus-0.0.2-r5",
-		"dev-lang/go-1.8.3-r1",
-		"dev-vcs/git-2.12.2",
-	}
-	if act := parseEqueryDeps([]byte(out)); !reflect.DeepEqual(act, exp) {
-		t.Errorf("parseEqueryDeps(%q) = %v; want %v", out, act, exp)
+	maskMsg := fmt.Sprintf(`The following keyword changes are necessary to proceed:
+(see "package.accept_keywords" in the portage(5) man page for more details)
+# required by =%s (argument)
+=%s **
+`, pkg, pkg)
+
+	for _, tc := range []struct {
+		stdout, stderr string
+		missing        []string
+		masked         bool
+	}{
+		{"", "", nil, false},
+		{fmt.Sprintf("[ebuild  N    ] %s \n[ebuild  N    ] %s\n", dep1, dep2), "", []string{dep1, dep2}, false},
+		{fmt.Sprintf("[ebuild  N    ] %s  USE=\"cros_host -asan -coverage\"\n", dep1), "", []string{dep1}, false},
+		{fmt.Sprintf("[ebuild  N    ] %s\n", dep1), maskMsg, []string{dep1}, true},
+	} {
+		missing, masked := parseEmergeOutput([]byte(tc.stdout), []byte(tc.stderr), pkg)
+		if !reflect.DeepEqual(missing, tc.missing) || masked != tc.masked {
+			t.Errorf("parseEmergeOutput(%q, %q, %q) = (%v, %v); want (%v, %v)",
+				tc.stdout, tc.stderr, pkg, missing, masked, tc.missing, tc.masked)
+		}
 	}
 }
 

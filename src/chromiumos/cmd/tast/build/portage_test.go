@@ -19,28 +19,40 @@ import (
 	"chromiumos/tast/testutil"
 )
 
-func TestParseEqueryDeps(t *testing.T) {
-	// Copy-and-pasted output (including trailing whitespace) from
-	// "equery -q -C g --depth=1 chromeos-base/tast-local-tests-9999".
-	out := `
-chromeos-base/tast-local-tests-9999:
- [  0]  chromeos-base/tast-local-tests-9999   
- [  1]  chromeos-base/tast-common-9999   
- [  1]  dev-go/cdp-0.9.1   
- [  1]  dev-go/dbus-0.0.2-r5   
- [  1]  dev-lang/go-1.8.3-r1   
- [  1]  dev-vcs/git-2.12.2   
-`
+func TestParseEmergeOutput(t *testing.T) {
+	const (
+		pkg = "chromeos-base/tast-local-tests-cros-9999"
 
-	exp := []string{
-		"chromeos-base/tast-common-9999",
-		"dev-go/cdp-0.9.1",
-		"dev-go/dbus-0.0.2-r5",
-		"dev-lang/go-1.8.3-r1",
-		"dev-vcs/git-2.12.2",
-	}
-	if act := parseEqueryDeps([]byte(out)); !reflect.DeepEqual(act, exp) {
-		t.Errorf("parseEqueryDeps(%q) = %v; want %v", out, act, exp)
+		name1 = "chromeos-base/my_pkg"
+		ver1  = "0.0.1-r3"
+		dep1  = name1 + "-" + ver1
+
+		name2 = "dev-go/some-lib"
+		ver2  = "0.0.1-r21"
+		dep2  = name2 + "-" + ver2
+	)
+
+	maskMsg := fmt.Sprintf(`The following keyword changes are necessary to proceed:
+(see "package.accept_keywords" in the portage(5) man page for more details)
+# required by =%s (argument)
+=%s **
+`, pkg, pkg)
+
+	for _, tc := range []struct {
+		stdout, stderr string
+		missing        []string
+		masked         bool
+	}{
+		{"", "", nil, false},
+		{fmt.Sprintf(" N     %s %s\n", name1, ver1), "", []string{dep1}, false},
+		{fmt.Sprintf(" N     %s %s\n U     %s %s\n", name1, ver1, name2, ver2), "", []string{dep1, dep2}, false},
+		{fmt.Sprintf(" N     %s %s\n", name1, ver1), maskMsg, []string{dep1}, true},
+	} {
+		missing, masked := parseEmergeOutput([]byte(tc.stdout), []byte(tc.stderr), pkg)
+		if !reflect.DeepEqual(missing, tc.missing) || masked != tc.masked {
+			t.Errorf("parseEmergeOutput(%q, %q, %q) = (%v, %v); want (%v, %v)",
+				tc.stdout, tc.stderr, pkg, missing, masked, tc.missing, tc.masked)
+		}
 	}
 }
 

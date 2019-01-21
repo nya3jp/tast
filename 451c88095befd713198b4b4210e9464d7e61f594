@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "03aafecb_5444114a",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 342,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-01-21T17:16:21Z",
+      "side": 1,
+      "message": "To follow go\u0027s common practice, could you return (string, error) or (string, bool) instead?\nWe have only two callers, so updating them wouldn\u0027t be so difficult, I think.",
+      "revId": "451c88095befd713198b4b4210e9464d7e61f594",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

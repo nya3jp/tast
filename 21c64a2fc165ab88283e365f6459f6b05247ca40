@@ -70,6 +70,30 @@
       "revId": "21c64a2fc165ab88283e365f6459f6b05247ca40",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d00e7034_0b7c4256",
+        "filename": "src/chromiumos/cmd/tast/build/portage.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-01-21T03:27:39Z",
+      "side": 1,
+      "message": "Oh I see, sorry for false alarm :(",
+      "parentUuid": "9fc5b375_41da788f",
+      "range": {
+        "startLine": 137,
+        "startChar": 58,
+        "endLine": 137,
+        "endChar": 65
+      },
+      "revId": "21c64a2fc165ab88283e365f6459f6b05247ca40",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

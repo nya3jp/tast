@@ -338,6 +338,10 @@ func ContextLogf(ctx context.Context, format string, args ...interface{}) {
 
 // ContextOutDir is similar to OutDir but takes context instead. It is intended to be
 // used by packages providing support for tests that need to write files.
+// An empty string is returned if no state is associated with ctx (e.g. in unit tests).
 func ContextOutDir(ctx context.Context) string {
-	return ctx.Value(logKey).(*State).OutDir()
+	if s, ok := ctx.Value(logKey).(*State); ok {
+		return s.OutDir()
+	}
+	return ""
 }

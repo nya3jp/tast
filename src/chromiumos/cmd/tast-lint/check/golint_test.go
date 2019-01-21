@@ -21,15 +21,6 @@ func Kitten() {}
 	verifyIssues(t, issues, expects)
 }
 
-func TestGolint_NoLint(t *testing.T) {
-	const code = `package main
-
-func Kitten() {} // NOLINT
-`
-	issues := Golint("testfile.go", []byte(code), false)
-	verifyIssues(t, issues, nil)
-}
-
 func TestGolint_UnexportedTypeInAPI(t *testing.T) {
 	const code = `package main
 

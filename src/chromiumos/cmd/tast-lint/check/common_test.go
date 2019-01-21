@@ -13,7 +13,7 @@ import (
 
 func parse(code, filename string) (*ast.File, *token.FileSet) {
 	fs := token.NewFileSet()
-	f, err := parser.ParseFile(fs, filename, code, 0)
+	f, err := parser.ParseFile(fs, filename, code, parser.ParseComments)
 	if err != nil {
 		panic(err)
 	}

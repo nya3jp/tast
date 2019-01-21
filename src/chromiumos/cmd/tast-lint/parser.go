@@ -92,7 +92,7 @@ func (p *cachedParser) parseFileAlone(path string) (*ast.File, error) {
 		return nil, fmt.Errorf("failed to read %s: %v", path, err)
 	}
 
-	f, err := parser.ParseFile(p.fs, path, code, 0)
+	f, err := parser.ParseFile(p.fs, path, code, parser.ParseComments)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse %s: %v", path, err)
 	}

@@ -56,7 +56,7 @@ func checkAll(git *git, paths []string, debug bool) ([]*check.Issue, error) {
 	cp := newCachedParser(git)
 	fs := cp.fs
 
-	var issues []*check.Issue
+	var allIssues []*check.Issue
 	for _, path := range paths {
 		if !isGoFile(path) {
 			continue
@@ -71,6 +71,8 @@ func checkAll(git *git, paths []string, debug bool) ([]*check.Issue, error) {
 		if err != nil {
 			return nil, err
 		}
+
+		var issues []*check.Issue // issues in this file
 
 		issues = append(issues, check.Golint(path, data, debug)...)
 		if !hasFmtError(data, path) {
@@ -87,9 +89,12 @@ func checkAll(git *git, paths []string, debug bool) ([]*check.Issue, error) {
 			issues = append(issues, check.ForbiddenImports(fs, f)...)
 			issues = append(issues, check.InterFileRefs(fs, f)...)
 		}
+
+		// Only collect issues that weren't ignored by NOLINT comments.
+		allIssues = append(allIssues, check.DropIgnoredIssues(issues, fs, f)...)
 	}
 
-	return issues, nil
+	return allIssues, nil
 }
 
 // report prints issues to stdout.

@@ -21,11 +21,6 @@ func shouldIgnore(p lint.Problem) bool {
 		return true
 	}
 
-	// Allow ignoring an issue locally by a magic comment.
-	if strings.Contains(p.LineText, "NOLINT") {
-		return true
-	}
-
 	// Ignore unexported-type-in-api.
 	if p.Category == "unexported-type-in-api" {
 		return true

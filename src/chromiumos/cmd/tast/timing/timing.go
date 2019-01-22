@@ -9,6 +9,7 @@ import (
 	"bufio"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"strings"
@@ -25,7 +26,7 @@ type timeFunc func() time.Time
 
 // Log contains nested timing information.
 type Log struct {
-	stages  []*Stage
+	Stages  []*Stage `json:"stages"`
 	fakeNow timeFunc // if unset, time.Now is called
 }
 
@@ -40,11 +41,18 @@ func FromContext(ctx context.Context) (*Log, bool) {
 	return l, ok
 }
 
+// Empty returns true if l doesn't contain any stages.
+func (l *Log) Empty() bool {
+	return len(l.Stages) == 0
+}
+
 // Write writes timing information to w as JSON, consisting of an array
 // of stages, each represented by an array consisting of the stage's duration, name,
 // and an optional array of child stages.
 //
-// The JSON is formatted in an attempt to increase human readability, e.g.
+// Note that this format is lossy and differs from that used by json.Marshaler.
+//
+// Output is intended to improve human readability:
 //
 // 	[[4.000, "stage0", [
 // 	         [3.000, "stage1", [
@@ -57,20 +65,30 @@ func (l *Log) Write(w io.Writer) error {
 	bw := bufio.NewWriter(w)
 
 	io.WriteString(bw, "[")
-	for i, s := range l.stages {
+	for i, s := range l.Stages {
 		// The first top-level stage is on the same line as the opening '['.
 		// Indent its children and all subsequent stages by a single space so they line up.
 		var indent string
 		if i > 0 {
 			indent = " "
 		}
-		if err := s.write(bw, indent, " ", i == len(l.stages)-1); err != nil {
+		if err := s.write(bw, indent, " ", i == len(l.Stages)-1); err != nil {
 			return err
 		}
 	}
 
 	io.WriteString(bw, "]\n")
 	return bw.Flush() // returns first error encountered during earlier writes
+}
+
+// Import the stages from o into l, with o's top-level stages inserted as children of the currently-active stage in l.
+// An error is returned if l does not contain an active stage.
+func (l *Log) Import(o *Log) error {
+	if l.Stages == nil || !l.Stages[len(l.Stages)-1].active() {
+		return errors.New("no currently-active stage")
+	}
+	l.add(o.Stages...)
+	return nil
 }
 
 // Start creates and returns a new named timing stage as a child of the currently-active stage.
@@ -84,52 +102,70 @@ func (l *Log) Start(name string) *Stage {
 	}
 
 	s := &Stage{
-		name:  name,
-		start: now(),
-		now:   now,
+		Name:      name,
+		StartTime: now(),
+		now:       now,
 	}
-
-	if l.stages == nil {
-		l.stages = []*Stage{s}
-	} else {
-		last := l.stages[len(l.stages)-1]
-		if !last.end.IsZero() {
-			l.stages = append(l.stages, s)
-		} else {
-			p := last
-			for p.children != nil && p.children[len(p.children)-1].end.IsZero() {
-				p = p.children[len(p.children)-1]
-			}
-			if p.children == nil {
-				p.children = make([]*Stage, 0)
-			}
-			p.children = append(p.children, s)
-		}
-	}
-
+	l.add(s)
 	return s
+}
+
+// add adds stages as children of the currently-active stage, if any.
+// If no stage is currently active, the stages are added as top-level stages.
+func (l *Log) add(stages ...*Stage) {
+	if len(stages) == 0 {
+		return
+	}
+
+	// If there are no stages or the last one isn't active, append the new stages.
+	if l.Stages == nil || !l.Stages[len(l.Stages)-1].active() {
+		l.Stages = append(l.Stages, stages...)
+		return
+	}
+
+	// Otherwise, find the currently-active stage and append the new stages as children.
+	p := l.Stages[len(l.Stages)-1]
+	for p.Children != nil && p.Children[len(p.Children)-1].active() {
+		p = p.Children[len(p.Children)-1]
+	}
+	if p.Children == nil {
+		p.Children = make([]*Stage, 0)
+	}
+	p.Children = append(p.Children, stages...)
 }
 
 // Stage represents a discrete unit of work that is being timed.
 type Stage struct {
-	name       string
-	start, end time.Time
-	children   []*Stage
-	now        timeFunc
+	Name      string    `json:"name"`
+	StartTime time.Time `json:"startTime"`
+	EndTime   time.Time `json:"endTime"`
+	Children  []*Stage  `json:"children"`
+	now       timeFunc
 }
 
 // Elapsed returns the amount of time that passed between the start and end of the stage.
 // If the stage hasn't been completed, it returns the time since the start of the stage.
 func (s *Stage) Elapsed() time.Duration {
-	if s.end.IsZero() {
-		return s.now().Sub(s.start)
+	if s.active() {
+		return s.now().Sub(s.StartTime)
 	}
-	return s.end.Sub(s.start)
+	return s.EndTime.Sub(s.StartTime)
 }
 
-// End ends the stage.
+// End ends the stage. Child stages are recursively examined and also ended
+// (although we expect them to have already been ended).
 func (s *Stage) End() {
-	s.end = s.now()
+	for _, c := range s.Children {
+		c.End()
+	}
+	if s.active() {
+		s.EndTime = s.now()
+	}
+}
+
+// active returns true if s is still active (i.e. not ended). Child stages are not checked.
+func (s *Stage) active() bool {
+	return s.EndTime.IsZero()
 }
 
 // write writes information about the stage and its children to w as a JSON array.
@@ -139,18 +175,18 @@ func (s *Stage) End() {
 // The caller is responsible for checking w for errors encountered while writing.
 func (s *Stage) write(w *bufio.Writer, initialIndent, followIndent string, last bool) error {
 	// Start the stage's array.
-	mn, err := json.Marshal(&s.name)
+	mn, err := json.Marshal(&s.Name)
 	if err != nil {
 		return err
 	}
 	fmt.Fprintf(w, "%s[%0.3f, %s", initialIndent, s.Elapsed().Seconds(), mn)
 
 	// Print children in a nested array.
-	if len(s.children) > 0 {
+	if len(s.Children) > 0 {
 		io.WriteString(w, ", [\n")
 		ci := followIndent + strings.Repeat(" ", 8)
-		for i, c := range s.children {
-			if err := c.write(w, ci, ci, i == len(s.children)-1); err != nil {
+		for i, c := range s.Children {
+			if err := c.write(w, ci, ci, i == len(s.Children)-1); err != nil {
 				return err
 			}
 		}

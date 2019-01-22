@@ -18,9 +18,9 @@ import (
 	"strings"
 	"time"
 
-	"chromiumos/cmd/tast/timing"
 	"chromiumos/tast/control"
 	"chromiumos/tast/testing"
+	"chromiumos/tast/timing"
 )
 
 const (
@@ -307,7 +307,14 @@ func (r *resultsHandler) handleTestEnd(msg *control.TestEnd) error {
 	if r.res == nil || msg.Name != r.res.Name {
 		return fmt.Errorf("got TestEnd message for not-started test %s", msg.Name)
 	}
+
 	if r.stage != nil {
+		// If the test reported timing stages, import them under the current stage.
+		if tl, ok := timing.FromContext(r.ctx); ok && msg.TimingLog != nil && !msg.TimingLog.Empty() {
+			if err := tl.Import(msg.TimingLog); err != nil {
+				r.cfg.Logger.Logf("Failed importing timing log for %v: %v", msg.Name, err)
+			}
+		}
 		r.stage.End()
 	}
 

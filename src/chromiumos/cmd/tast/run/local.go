@@ -19,11 +19,11 @@ import (
 	"golang.org/x/crypto/ssh"
 
 	"chromiumos/cmd/tast/build"
-	"chromiumos/cmd/tast/timing"
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/host"
 	"chromiumos/tast/runner"
 	"chromiumos/tast/testing"
+	"chromiumos/tast/timing"
 )
 
 const (

@@ -11,8 +11,10 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"chromiumos/tast/testing"
+	"chromiumos/tast/timing"
 )
 
 func TestWriteAndRead(t *gotesting.T) {
@@ -26,7 +28,7 @@ func TestWriteAndRead(t *gotesting.T) {
 		}},
 		&TestLog{time.Unix(4, 0), "here's a log message"},
 		&TestError{time.Unix(5, 0), testing.Error{Reason: "whoops", File: "file.go", Line: 20, Stack: "stack"}},
-		&TestEnd{time.Unix(6, 0), "pkg.MyTest", []string{"dep"}},
+		&TestEnd{time.Unix(6, 0), "pkg.MyTest", []string{"dep"}, &timing.Log{}},
 		&RunEnd{time.Unix(7, 0), "/tmp/out"},
 		&RunError{time.Unix(8, 0), testing.Error{Reason: "whoops again", File: "file2.go", Line: 30, Stack: "stack 2"}, 1},
 	}
@@ -48,7 +50,7 @@ func TestWriteAndRead(t *gotesting.T) {
 			act = append(act, msg)
 		}
 	}
-	if !cmp.Equal(act, msgs) {
+	if !cmp.Equal(act, msgs, cmpopts.IgnoreUnexported(timing.Log{})) {
 		aj, _ := json.Marshal(act)
 		ej, _ := json.Marshal(msgs)
 		t.Errorf("Read messages %v; want %v", string(aj), string(ej))

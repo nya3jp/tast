@@ -22,6 +22,7 @@ import (
 	"chromiumos/tast/runner"
 	"chromiumos/tast/testing"
 	"chromiumos/tast/testutil"
+	"chromiumos/tast/timing"
 )
 
 // noOpCopyAndRemove can be passed to readTestOutput by tests.
@@ -201,6 +202,50 @@ func TestReadTestOutput(t *gotesting.T) {
 		if !strings.Contains(logData, dep) {
 			t.Errorf("Test dependency %q not included in log %q", dep, logData)
 		}
+	}
+}
+
+func TestReadTestOutputTimingLog(t *gotesting.T) {
+	const (
+		testName  = "pkg.Test"
+		stageName = "timing_stage"
+	)
+
+	// Attach a global timing log for readTestOutput to write to.
+	globalLog := timing.Log{}
+	ctx := timing.NewContext(context.Background(), &globalLog)
+
+	// Create a log containing a stage reported by the test itself.
+	testLog := timing.Log{}
+	testLog.Start(stageName).End()
+
+	b := bytes.Buffer{}
+	mw := control.NewMessageWriter(&b)
+	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 1})
+	mw.WriteMessage(&control.TestStart{Time: time.Unix(2, 0), Test: testing.Test{Name: testName}})
+	mw.WriteMessage(&control.TestEnd{Time: time.Unix(3, 0), Name: testName, TimingLog: &testLog})
+	mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0)})
+
+	td := testutil.TempDir(t)
+	defer os.RemoveAll(td)
+
+	cfg := Config{
+		Logger: logging.NewSimple(&bytes.Buffer{}, 0, false),
+		ResDir: td,
+	}
+	if _, err := readTestOutput(ctx, &cfg, &b, os.Rename); err != nil {
+		t.Fatal("readTestOutput failed: ", err)
+	}
+
+	// Check that there's a stage representing the test with the single test-reported stage under it.
+	if len(globalLog.Stages) != 1 {
+		t.Errorf("Got %d top-level stages; want 1", len(globalLog.Stages))
+	} else if topStage := globalLog.Stages[0]; topStage.Name != testName {
+		t.Errorf("Top-level stage has name %q; want %q", topStage.Name, testName)
+	} else if len(topStage.Children) != 1 {
+		t.Errorf("Got %d stages under test; want 1", len(topStage.Children))
+	} else if subStage := topStage.Children[0]; subStage.Name != stageName {
+		t.Errorf("Sub-stage has name %q; want %q", subStage.Name, stageName)
 	}
 }
 

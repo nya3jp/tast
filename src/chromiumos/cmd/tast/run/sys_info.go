@@ -8,8 +8,8 @@ import (
 	"context"
 	"path/filepath"
 
-	"chromiumos/cmd/tast/timing"
 	"chromiumos/tast/runner"
+	"chromiumos/tast/timing"
 )
 
 // getInitialSysInfo saves the initial state of the DUT's system information to cfg if

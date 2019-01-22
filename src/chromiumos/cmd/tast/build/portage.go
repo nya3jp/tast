@@ -17,7 +17,7 @@ import (
 	"strings"
 	"time"
 
-	"chromiumos/cmd/tast/timing"
+	"chromiumos/tast/timing"
 )
 
 const (

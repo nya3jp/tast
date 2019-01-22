@@ -210,6 +210,8 @@ func TestRunTests(t *gotesting.T) {
 					t.Errorf("Got %v at %d; want TestEnd", ai, i)
 				} else if am.Name != em.Name {
 					t.Errorf("Got TestEnd for %q at %d; want %q", am.Name, i, em.Name)
+				} else if am.TimingLog == nil {
+					t.Error("Got TestEnd with missing timing log at ", i)
 				}
 			case *control.TestError:
 				if _, ok := ai.(*control.TestError); !ok {

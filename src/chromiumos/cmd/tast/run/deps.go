@@ -9,9 +9,9 @@ import (
 	"errors"
 	"strings"
 
-	"chromiumos/cmd/tast/timing"
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/runner"
+	"chromiumos/tast/timing"
 )
 
 // getSoftwareFeatures executes local_test_runner on the DUT to get a list of

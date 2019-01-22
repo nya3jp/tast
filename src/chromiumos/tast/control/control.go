@@ -29,6 +29,7 @@ import (
 	"time"
 
 	"chromiumos/tast/testing"
+	"chromiumos/tast/timing"
 )
 
 // RunStart describes the start of a run (consisting of one or more tests).
@@ -101,6 +102,8 @@ type TestEnd struct {
 	// MissingSoftwareDeps contains software dependencies declared by the test that were
 	// not present on the DUT. If non-empty, the test was skipped.
 	MissingSoftwareDeps []string `json:"testEndMissingSoftwareDeps"`
+	// TimingLog contains test-reported timing information to be incorporated into the main timing.json file.
+	TimingLog *timing.Log `json:"timingLog"`
 }
 
 // messageUnion contains all message types. It aids in marshaling and unmarshaling heterogeneous messages.

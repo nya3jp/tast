@@ -20,9 +20,9 @@ import (
 	"github.com/google/subcommands"
 
 	"chromiumos/cmd/tast/build"
-	"chromiumos/cmd/tast/timing"
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/runner"
+	"chromiumos/tast/timing"
 )
 
 const (

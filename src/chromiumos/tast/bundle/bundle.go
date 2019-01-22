@@ -21,6 +21,7 @@ import (
 	"chromiumos/tast/command"
 	"chromiumos/tast/control"
 	"chromiumos/tast/testing"
+	"chromiumos/tast/timing"
 )
 
 const (
@@ -134,15 +135,17 @@ func (ew *eventWriter) TestError(ts time.Time, e *testing.Error) error {
 	return ew.mw.WriteMessage(&control.TestError{Time: ts, Error: *e})
 }
 
-func (ew *eventWriter) TestEnd(t *testing.Test, missingDeps []string) error {
+func (ew *eventWriter) TestEnd(t *testing.Test, missingDeps []string, timingLog *timing.Log) error {
 	ew.testName = ""
 	if ew.lg != nil {
 		ew.lg.Info(fmt.Sprintf("%s: ======== end", t.Name))
 	}
+
 	return ew.mw.WriteMessage(&control.TestEnd{
 		Time:                time.Now(),
 		Name:                t.Name,
 		MissingSoftwareDeps: missingDeps,
+		TimingLog:           timingLog,
 	})
 }
 
@@ -213,6 +216,10 @@ func runTest(ctx context.Context, ew *eventWriter, args *Args, cfg *runConfig,
 	t, next *testing.Test, meta *testing.Meta) error {
 	ew.TestStart(t)
 
+	// Attach a log that the test can use to report timing events.
+	timingLog := &timing.Log{}
+	ctx = timing.NewContext(ctx, timingLog)
+
 	// We skip running the test if it has any dependencies on software features that aren't
 	// provided by the DUT, but we additionally report an error if one or more dependencies
 	// refer to features that we don't know anything about (possibly indicating a typo in the
@@ -257,7 +264,7 @@ func runTest(ctx context.Context, ew *eventWriter, args *Args, cfg *runConfig,
 		<-copierDone
 	}
 
-	ew.TestEnd(t, missingDeps)
+	ew.TestEnd(t, missingDeps, timingLog)
 	return nil
 }
 

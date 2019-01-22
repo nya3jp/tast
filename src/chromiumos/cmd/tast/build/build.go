@@ -14,7 +14,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"chromiumos/cmd/tast/timing"
+	"chromiumos/tast/timing"
 )
 
 // GetLocalArch returns the local system's architecture as described by "uname -m".

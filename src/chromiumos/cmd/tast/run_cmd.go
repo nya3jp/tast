@@ -18,9 +18,9 @@ import (
 
 	"chromiumos/cmd/tast/logging"
 	"chromiumos/cmd/tast/run"
-	"chromiumos/cmd/tast/timing"
 	"chromiumos/tast/command"
 	"chromiumos/tast/ctxutil"
+	"chromiumos/tast/timing"
 )
 
 const (

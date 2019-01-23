@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "10e44ed4_2d94e314",
+        "filename": "src/chromiumos/tast/testing/pre.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-01-23T10:00:17Z",
+      "side": 1,
+      "message": "IIUC runtime.FuncForPC is unreliable due to mid-stack inlining:\n\nhttps://github.com/golang/go/issues/19426\nhttps://talks.godoc.org/github.com/davecheney/go-1.9-release-party/presentation.slide#20\n\nPlease use runtime.CallersFrames instead. See src/chromiumos/tast/errors/stack/stack.go",
+      "range": {
+        "startLine": 63,
+        "startChar": 15,
+        "endLine": 63,
+        "endChar": 36
+      },
+      "revId": "bb171f7898b045b9f030c7919c2486da6703ac64",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e27e8a6b_cc7ab35f",
+        "filename": "src/chromiumos/tast/testing/pre.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-01-23T10:00:17Z",
+      "side": 1,
+      "message": "I think it\u0027s possible CheckPreconditionAccess is called before any test in the package is registered? For example, a package containing only a single test which uses precondition.",
+      "range": {
+        "startLine": 76,
+        "startChar": 2,
+        "endLine": 76,
+        "endChar": 53
+      },
+      "revId": "bb171f7898b045b9f030c7919c2486da6703ac64",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e16b090d_c4940591",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-01-23T10:00:17Z",
+      "side": 1,
+      "message": "super huge nit: \"  \" -\u003e \" \"",
+      "range": {
+        "startLine": 85,
+        "startChar": 83,
+        "endLine": 85,
+        "endChar": 85
+      },
+      "revId": "bb171f7898b045b9f030c7919c2486da6703ac64",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ac106348_39cf680c",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-01-23T10:00:17Z",
+      "side": 1,
+      "message": "super huge nit: .. -\u003e .",
+      "range": {
+        "startLine": 87,
+        "startChar": 57,
+        "endLine": 87,
+        "endChar": 59
+      },
+      "revId": "bb171f7898b045b9f030c7919c2486da6703ac64",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bc78ef90_fe29a725",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 265,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-01-23T10:00:17Z",
+      "side": 1,
+      "message": "How about verifying tst.Pre does *not* implement PreconditionImpl, since it\u0027s the whole point we split Precondition and PreconditionImpl.",
+      "range": {
+        "startLine": 265,
+        "startChar": 0,
+        "endLine": 265,
+        "endChar": 20
+      },
+      "revId": "bb171f7898b045b9f030c7919c2486da6703ac64",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f3b19913_61fe13ba",
+        "filename": "src/chromiumos/tast/testing/pre.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-01-24T04:51:19Z",
+      "side": 1,
+      "message": "this method could probably go in preconditionImpl as well, but then it would be possible to pass a Stringer as a Precondition, i think. i could probably rename String to something like PreconditionID instead, if that seems clearer.",
+      "revId": "fbc3da7efd999a463d5b1414caf60e20d6a89447",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -16,6 +16,24 @@
       "revId": "1960f3a7554a295dbcaf27ad0155368d89d2b457",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4c5b7451_54e16632",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-01-24T10:31:45Z",
+      "side": 1,
+      "message": "hmm, yes. that\u0027s probably an unfortunate relic of the pre-unibuild days where we didn\u0027t have any way to distinguish between different devices that shared the same system image. and even today, we have a bunch of devices that aren\u0027t using unibuild and never will. and tast doesn\u0027t have support for inspecting unibuild configs yet, either. :-/\n\njust to check, do you still need to add this software feature, or is it unnecessary if arc.PhysicalKeyboard is working now that the virtual keyboard device change is in?",
+      "parentUuid": "32bd6d82_224de0f1",
+      "revId": "1960f3a7554a295dbcaf27ad0155368d89d2b457",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

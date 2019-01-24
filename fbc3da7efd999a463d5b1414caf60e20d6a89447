@@ -16,6 +16,47 @@
       "revId": "fbc3da7efd999a463d5b1414caf60e20d6a89447",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6af3d2ca_afef57a1",
+        "filename": "src/chromiumos/tast/testing/pre.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-01-24T06:31:49Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "f3b19913_61fe13ba",
+      "revId": "fbc3da7efd999a463d5b1414caf60e20d6a89447",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7dc11005_e74b9640",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-01-24T06:31:49Z",
+      "side": 1,
+      "message": "It would be good to name \"an object supplied by the test\u0027s precondition\" since it\u0027s an important concept.\n\nFor example, how about \"a prepared object\", and naming this method as \"Prepared\"? (but I don\u0027t believe in my English vocabulary :))",
+      "range": {
+        "startLine": 123,
+        "startChar": 3,
+        "endLine": 123,
+        "endChar": 25
+      },
+      "revId": "fbc3da7efd999a463d5b1414caf60e20d6a89447",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

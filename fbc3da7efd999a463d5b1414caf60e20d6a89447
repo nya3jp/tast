@@ -57,6 +57,30 @@
       "revId": "fbc3da7efd999a463d5b1414caf60e20d6a89447",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e7ace4a1_abb06d7c",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-01-24T12:34:00Z",
+      "side": 1,
+      "message": "after considering various options (and looking at online thesauruses, which weren\u0027t helpful), i decided on \"PreValue\". \"value\" is an accurate name for an interface{}, and i don\u0027t think it\u0027s similar to any other names that we\u0027re already using. sound okay to you?",
+      "parentUuid": "7dc11005_e74b9640",
+      "range": {
+        "startLine": 123,
+        "startChar": 3,
+        "endLine": 123,
+        "endChar": 25
+      },
+      "revId": "fbc3da7efd999a463d5b1414caf60e20d6a89447",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -97,8 +97,9 @@ const (
 	emergeInstall                   // install missing dependencies
 )
 
-// emergeCmdLine returns an emerge command that lists or installs missing build dependencies for pkg.
-// pkg should be a versioned package of the form "chromeos-base/tast-local-tests-cros-9999".
+// emergeCmdLine returns an emerge command that lists or installs missing or outdated
+// build dependencies for pkg. pkg should be a versioned package of the form
+// "chromeos-base/tast-local-tests-cros-9999".
 func emergeCmdLine(pkg string, mode emergeMode) []string {
 	var args []string
 	add := func(as ...string) { args = append(args, as...) }
@@ -106,7 +107,7 @@ func emergeCmdLine(pkg string, mode emergeMode) []string {
 	if mode == emergeInstall {
 		add("sudo")
 	}
-	add("emerge", "--jobs=16", "--onlydeps", "--onlydeps-with-rdeps=n")
+	add("emerge", "--jobs=16", "--onlydeps", "--onlydeps-with-rdeps=n", "--update", "--deep", "1")
 	if mode == emergeList {
 		add("--pretend", "--columns", "--quiet", "y", "--color", "n")
 	}

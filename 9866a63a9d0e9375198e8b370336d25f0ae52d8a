@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c020e07c_20174c8c",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-01-25T02:40:58Z",
+      "side": 1,
+      "message": "i\u0027ve generally been trying to avoid \"no_\"-prefixed features except in cases where it\u0027s necessary: \"no_android\" is the opposite of \"android\" to support having pairs of tests for both configs, and \"no_symlink_mount\" is actually the name of the kernel feature forbidding symlink mounts.\n\nas such, would you mind renaming this to something like \"stable_egl\"?\n\nalternately, if the egl driver is unstable on these devices, do we want to run *any* ui-based tests there? or does mash do something that triggers the bug but non-mash chrome doesn\u0027t?\n\ni\u0027ve added some graphics people to the bug since i haven\u0027t seen much analysis there of the root cause.",
+      "range": {
+        "startLine": 55,
+        "startChar": 4,
+        "endLine": 55,
+        "endChar": 12
+      },
+      "revId": "9866a63a9d0e9375198e8b370336d25f0ae52d8a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

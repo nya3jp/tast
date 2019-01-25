@@ -81,6 +81,30 @@
       "revId": "fbc3da7efd999a463d5b1414caf60e20d6a89447",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c86fb0f3_7feb44ea",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-01-25T09:02:42Z",
+      "side": 1,
+      "message": "Yes, SGTM.",
+      "parentUuid": "e7ace4a1_abb06d7c",
+      "range": {
+        "startLine": 123,
+        "startChar": 3,
+        "endLine": 123,
+        "endChar": 25
+      },
+      "revId": "fbc3da7efd999a463d5b1414caf60e20d6a89447",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

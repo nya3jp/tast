@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "13748a6f_0d838a05",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-01-26T00:37:22Z",
+      "side": 1,
+      "message": "nit: mind also linking to the bug here for more context? (i see you already have a link in the code, so that\u0027s good) :-)",
+      "revId": "92a080e3a7fdf30fec297bd78064ee0353f01280",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

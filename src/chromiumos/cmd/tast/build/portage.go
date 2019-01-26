@@ -21,8 +21,8 @@ import (
 )
 
 const (
-	portageConfigFile   = "/etc/make.conf"                 // shell script containing Portage overlays in $PORTDIR_OVERLAY
-	portagePackagesFile = "/var/lib/portage/pkgs/Packages" // Portage packages DB file
+	portageConfigFile  = "/etc/make.conf" // shell script containing Portage overlays in $PORTDIR_OVERLAY
+	portagePackagesDir = "/var/db/pkg"    // Portage packages DB dir
 )
 
 // checkDeps checks if all of portagePkg's dependencies are installed.
@@ -43,7 +43,7 @@ func checkDeps(ctx context.Context, portagePkg, cachePath string) (missing, cmds
 		if err != nil {
 			return nil, nil, fmt.Errorf("failed to get overlays from %v: %v", portageConfigFile, err)
 		}
-		checkPaths = append(checkPaths, portagePackagesFile)
+		checkPaths = append(checkPaths, portagePackagesDir)
 		if cache, err = newCheckDepsCache(cachePath, checkPaths); err != nil {
 			return nil, nil, fmt.Errorf("failed to load check-deps cache from %v: %v", cachePath, err)
 		}

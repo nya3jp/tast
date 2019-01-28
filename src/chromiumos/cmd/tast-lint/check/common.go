@@ -21,8 +21,13 @@ func isTestMainFile(path string) bool {
 		return false
 	}
 	return testMainPathRegexp.MatchString(path) &&
-		!strings.HasSuffix(path, "_test.go") && // exclude unit tests
+		!isUnitTestFile(path) &&
 		filepath.Base(path) != "doc.go" // exclude package documentation
+}
+
+// isUnitTestFile returns true if the supplied path corresponds to a unit test file.
+func isUnitTestFile(path string) bool {
+	return strings.HasSuffix(path, "_test.go")
 }
 
 // funcVisitor is an implementation of ast.Visitor to scan all nodes.

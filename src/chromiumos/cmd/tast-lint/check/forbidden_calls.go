@@ -12,6 +12,7 @@ import (
 
 // ForbiddenCalls checks if any forbidden functions are called.
 func ForbiddenCalls(fs *token.FileSet, f *ast.File) []*Issue {
+	isUnitTest := isUnitTestFile(fs.Position(f.Package).Filename)
 	var issues []*Issue
 
 	v := funcVisitor(func(node ast.Node) {
@@ -27,6 +28,14 @@ func ForbiddenCalls(fs *token.FileSet, f *ast.File) []*Issue {
 
 		call := fmt.Sprintf("%s.%s", x.Name, sel.Sel.Name)
 		switch call {
+		case "context.Background", "context.TODO":
+			if !isUnitTest {
+				issues = append(issues, &Issue{
+					Pos:  fs.Position(x.Pos()),
+					Msg:  call + " ignores test timeout; use test function's ctx arg instead",
+					Link: "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Contexts-and-timeouts",
+				})
+			}
 		case "fmt.Errorf":
 			issues = append(issues, &Issue{
 				Pos:  fs.Position(x.Pos()),

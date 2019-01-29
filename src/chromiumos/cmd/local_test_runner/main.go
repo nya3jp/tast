@@ -32,8 +32,10 @@ func main() {
 			// This list is documented at docs/test_dependencies.md.
 			// All USE flags referenced here must be listed in IUSE in the tast-use-flags ebuild.
 			// The one exception is tast_vm, which is inserted by VM builders via -extrauseflags.
-			"android":      "arc",
-			"android_p":    `arc && "android-container-pi"`,
+			// TODO(b/123675239): The arcvm flag is used here to disable all Android tests because
+			// they currently make many container-specific assumptions and therefore fail.
+			"android":      "arc && !arcvm",
+			"android_p":    `arc && "android-container-pi" && !arcvm`,
 			"aslr":         "!asan",                                // ASan instrumentation breaks ASLR
 			"audio_play":   "!betty && !tast_vm && !veyron_rialto", // VMs don't have audio hardware
 			"audio_record": "internal_mic && !tast_vm",             // VMs don't have audio hardware

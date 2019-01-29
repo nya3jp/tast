@@ -21,16 +21,24 @@ func init() {
 	// We wouldn't normally permit multiple AddTest calls like this, but including
 	// them here makes this unit test shorter.
 	testing.AddTest(&testing.Test{
-		Func: DoStuff,
-		Desc: "This description is fine",
+		Func:     DoStuff,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
 	})
 	testing.AddTest(&testing.Test{
-		Func: DoStuff,
-		Desc: "not capitalized",
+		Func:     DoStuff,
+		Desc:     "not capitalized",
+		Contacts: []string{"me@chromium.org"},
 	})
 	testing.AddTest(&testing.Test{
-		Func: DoStuff,
-		Desc: "Ends with a period.",
+		Func:     DoStuff,
+		Desc:     "Ends with a period.",
+		Contacts: []string{"me@chromium.org"},
+	})
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "This description is fine",
+		// Contacts is missing
 	})
 }
 
@@ -43,8 +51,9 @@ func DoStuff(ctx context.Context, s *testing.State) {}
 
 	issues := Declarations(fs, f)
 	expects := []string{
-		path + ":18:9: " + badDescMsg,
-		path + ":22:9: " + badDescMsg,
+		path + ":19:13: " + badDescMsg,
+		path + ":24:13: " + badDescMsg,
+		path + ":27:19: " + noContactMsg,
 	}
 	verifyIssues(t, issues, expects)
 }

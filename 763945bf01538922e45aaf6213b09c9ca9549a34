@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "062432f3_e8fc9ca0",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-01-29T08:41:05Z",
+      "side": 1,
+      "message": "Could you add comment about arcvm condition, also add TODO to remove it when ready with a tracking bug?",
+      "revId": "763945bf01538922e45aaf6213b09c9ca9549a34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

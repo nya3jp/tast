@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "86ac2e43_5ccb4073",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-01-29T13:04:30Z",
+      "side": 1,
+      "message": "nit: i think it\u0027s probably best to serialize this as \"contacts\" so that the list will be included in the output from the \"list\" command. it\u0027ll also be passed back to the \"tast\" process in this case, so we could think about including it in the log when a test fails or something similar, even.",
+      "range": {
+        "startLine": 82,
+        "startChar": 26,
+        "endLine": 82,
+        "endChar": 27
+      },
+      "revId": "c9569668c11d1242b429406354075270c80aff3b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

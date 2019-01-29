@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f10768af_246d8725",
+        "filename": "src/chromiumos/cmd/tast-lint/check/declarations.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-01-29T13:06:35Z",
+      "side": 1,
+      "message": "nit: maybe \"Test should list owners\u0027 email addresses in Contacts field\"",
+      "revId": "b6cb7bda21b54136e478fa20a19c9af31c387cbb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

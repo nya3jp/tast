@@ -58,9 +58,10 @@ import (
 
 func init() {
 	testing.AddTest(&testing.Test{
-		Func: DoSomething,
-		Desc: "Does X to verify Y",
-		Attr: []string{"informational"},
+		Func:         DoSomething,
+		Desc:         "Does X to verify Y",
+		Contacts:     []string{"me@chromium.org"},
+		Attr:         []string{"informational"},
 		SoftwareDeps: []string{"chrome_login"},
 	})
 }

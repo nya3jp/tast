@@ -11,6 +11,12 @@ import (
 	"unicode"
 )
 
+// Exposed here for unit tests.
+const (
+	noContactMsg = `Test should list owners' email addresses in Contacts field`
+	badDescMsg   = `Test descriptions should be capitalized phrases without trailing punctuation, e.g. "Checks that foo is bar"`
+)
+
 // Declarations checks declarations of testing.Test structs.
 func Declarations(fs *token.FileSet, f *ast.File) []*Issue {
 	filename := fs.Position(f.Package).Filename
@@ -33,6 +39,7 @@ func Declarations(fs *token.FileSet, f *ast.File) []*Issue {
 			return
 		}
 
+		hasContacts := false
 		for _, el := range comp.Elts {
 			kv, ok := el.(*ast.KeyValueExpr)
 			if !ok {
@@ -54,16 +61,23 @@ func Declarations(fs *token.FileSet, f *ast.File) []*Issue {
 						}
 					}
 				}
+			case "Contacts":
+				hasContacts = true
 			}
+		}
+
+		if !hasContacts {
+			issues = append(issues, &Issue{
+				Pos:  fs.Position(node.Pos()),
+				Msg:  noContactMsg,
+				Link: "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Code-location",
+			})
 		}
 	})
 
 	ast.Walk(v, f)
 	return issues
 }
-
-// Exposed here for unit tests.
-const badDescMsg = `Test descriptions should be capitalized phrases without trailing punctuation, e.g. "Checks that foo is bar"`
 
 // checkTestDesc inspects a testing.Test.Desc string.
 // If problems are found, a non-nil value is returned.

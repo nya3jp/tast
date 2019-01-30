@@ -71,6 +71,10 @@ func DoSomething(ctx context.Context, s *testing.State) {
 }
 ```
 
+Tests have to specify email addresses of persons and groups who are familiar
+with those tests in [Contacts]. At least one personal email address of an active
+committer should be specified so that we can file bugs or ask for code reviews.
+
 Tests may specify [attributes] and [software dependencies] when they are
 declared. Setting the `informational` attribute on new tests is recommended, as
 tests without this attribute will block the Commit Queue on failure otherwise.
@@ -87,6 +91,7 @@ shared code" section.
 [src/chromiumos/tast/local/]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/
 [src/chromiumos/tast/remote/]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/remote/
 [chrome package]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/chrome/
+[Contacts]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Test
 [attributes]: test_attributes.md
 [software dependencies]: test_dependencies.md
 

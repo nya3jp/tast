@@ -76,9 +76,9 @@ type Test struct {
 	Func TestFunc `json:"-"`
 	// Desc is a short one-line description of the test.
 	Desc string `json:"desc"`
-	// Contacts is a list of mail addresses to contact about the test.
-	// The list can contain group addresses, but it is strongly recommended to include at least one
-	// personal address so that it is easier to assign code reviews or bugs.
+	// Contacts is a list of email addresses of persons and groups who are familiar with the test.
+	// At least one personal email address of an active committer should be specified so that we can
+	// file bugs or ask for code reviews.
 	Contacts []string `json:"contacts"`
 	// Attr contains freeform text attributes describing the test.
 	// See https://chromium.googlesource.com/chromiumos/platform/tast/+/master/docs/test_attributes.md

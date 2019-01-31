@@ -27,6 +27,8 @@ const (
 	RunTestsMode Mode = iota
 	// ListTestsMode indicates that tests should only be listed.
 	ListTestsMode
+	// DownloadBundlesMode indicates the private test bundles should be downloaded.
+	DownloadBundlesMode
 )
 
 // testType describes the type of test to run.
@@ -101,6 +103,7 @@ type Config struct {
 	buildOutDir           string   // path to base directory under which executables are stored
 	checkPortageDeps      bool     // check whether test bundle's dependencies are installed before building
 	forceBuildLocalRunner bool     // force local_test_runner to be built and deployed even if it already exists on DUT
+	devservers            []string // list of devserver URLs
 	useEphemeralDevserver bool     // start an ephemeral devserver if no devserver is specified
 
 	remoteRunner    string // path to executable that runs remote test bundles
@@ -109,7 +112,6 @@ type Config struct {
 
 	hst *host.SSH // cached SSH connection; may be nil
 
-	devservers                  []string     // list of devserver URLs
 	checkTestDeps               testDepsMode // when test dependencies should be checked
 	waitUntilReady              bool         // whether to wait for DUT to be ready before running tests
 	extraUSEFlags               []string     // additional USE flags to inject when determining features
@@ -165,6 +167,7 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 	f.StringVar(&c.buildOutDir, "buildoutdir", filepath.Join(c.tastDir, "build"), "directory where compiled executables are saved")
 	f.BoolVar(&c.checkPortageDeps, "checkbuilddeps", true, "check test bundle's dependencies before building")
 	f.BoolVar(&c.forceBuildLocalRunner, "buildlocalrunner", false, "force building local_test_runner and pushing to DUT")
+	f.Var(command.NewListFlag(",", func(v []string) { c.devservers = v }, nil), "devservers", "comma-separated list of devserver URLs")
 	f.BoolVar(&c.useEphemeralDevserver, "ephemeraldevserver", true, "start an ephemeral devserver if no devserver is specified")
 
 	bt := command.NewEnumFlag(map[string]int{"local": int(localType), "remote": int(remoteType)},
@@ -180,7 +183,6 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 	if c.mode == RunTestsMode {
 		f.StringVar(&c.ResDir, "resultsdir", "", "directory for test results")
 		f.BoolVar(&c.collectSysInfo, "sysinfo", true, "collect system information (logs, crashes, etc.)")
-		f.Var(command.NewListFlag(",", func(v []string) { c.devservers = v }, nil), "devservers", "comma-separated list of devserver URLs")
 		f.BoolVar(&c.waitUntilReady, "waituntilready", false, "wait until DUT is ready before running tests")
 
 		vals := map[string]int{

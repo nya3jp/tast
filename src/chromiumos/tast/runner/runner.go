@@ -77,6 +77,11 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Args,
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
+	case DownloadPrivateBundlesMode:
+		if err := handleDownloadPrivateBundles(args, stdout); err != nil {
+			return command.WriteError(stderr, err)
+		}
+		return statusSuccess
 	default:
 		return command.WriteError(stderr, command.NewStatusErrorf(statusBadArgs, "invalid mode %v", args.Mode))
 	}
@@ -124,7 +129,7 @@ func runTestsAndReport(args *Args, stdout io.Writer) {
 		}
 		// TODO(nya): Consider applying timeout.
 		ctx := context.TODO()
-		cl := newDevserverClient(ctx, args.RunTestsArgs.Devservers, lf)
+		cl := newDevserverClient(ctx, args.Devservers, lf)
 		processExternalDataLinks(ctx, args.DataDir, tests, cl, lf)
 
 		for _, bundle := range bundles {

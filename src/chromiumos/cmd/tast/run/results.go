@@ -18,8 +18,10 @@ import (
 	"strings"
 	"time"
 
+	"chromiumos/cmd/tast/logging"
 	"chromiumos/cmd/tast/timing"
 	"chromiumos/tast/control"
+	"chromiumos/tast/runner"
 	"chromiumos/tast/testing"
 )
 
@@ -570,4 +572,17 @@ func readTestList(r io.Reader) ([]TestResult, error) {
 		results[i].Test = ts[i]
 	}
 	return results, nil
+}
+
+// processDownloadResult decodes JSON-serialized DownloadPrivateBundlesResult from
+// r and processes it.
+func processDownloadResult(r io.Reader, logger logging.Logger) error {
+	var res runner.DownloadPrivateBundlesResult
+	if err := json.NewDecoder(r).Decode(&res); err != nil {
+		return err
+	}
+	for _, l := range res.Logs {
+		logger.Log(l)
+	}
+	return nil
 }

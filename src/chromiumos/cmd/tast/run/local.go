@@ -460,8 +460,8 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 		BundleGlob: bundleGlob,
 		Patterns:   cfg.Patterns,
 		DataDir:    dataDir,
+		Devservers: cfg.devservers,
 		RunTestsArgs: runner.RunTestsArgs{
-			Devservers:   cfg.devservers,
 			RunTestsArgs: bundle.RunTestsArgs{WaitUntilReady: cfg.waitUntilReady},
 		},
 	}
@@ -489,6 +489,8 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 		}
 	case ListTestsMode:
 		args.Mode = runner.ListTestsMode
+	case DownloadBundlesMode:
+		args.Mode = runner.DownloadPrivateBundlesMode
 	}
 
 	handle, err := startLocalRunner(ctx, cfg, hst, envVars, &args)
@@ -508,6 +510,8 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 	case RunTestsMode:
 		crf := func(src, dst string) error { return moveFromHost(ctx, cfg, hst, src, dst) }
 		results, rerr = readTestOutput(ctx, cfg, handle.Stdout(), crf)
+	case DownloadBundlesMode:
+		rerr = processDownloadResult(handle.Stdout(), cfg.Logger)
 	}
 
 	// Check that the runner exits successfully first so that we don't give a useless error

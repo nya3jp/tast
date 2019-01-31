@@ -43,24 +43,29 @@ func errorStatusf(cfg *Config, code subcommands.ExitStatus, format string, args 
 // If an error is encountered, status.ErrorMsg will be logged to cfg.Logger before returning,
 // but the caller may wish to log it again later to increase its prominence if additional messages are logged.
 func Run(ctx context.Context, cfg *Config) (status Status, results []TestResult) {
-	if cfg.build {
-		switch cfg.buildType {
-		case localType:
-			status, results = local(ctx, cfg)
-		case remoteType:
-			status, results = remote(ctx, cfg)
-		default:
-			// This shouldn't be reached; Config.SetFlags validates buildType.
-			return Status{subcommands.ExitUsageError, ""}, nil
-		}
+	if cfg.mode == DownloadBundlesMode {
+		cfg.build = false
+		status, results = local(ctx, cfg)
 	} else {
-		// If we aren't rebuilding a bundle, run both local and remote tests and merge the results.
-		// TODO(derat): While test runners are always supposed to report success even if tests fail,
-		// it'd probably be better to run both types here even if one fails.
-		if status, results = local(ctx, cfg); status.ExitCode == subcommands.ExitSuccess {
-			var rres []TestResult
-			status, rres = remote(ctx, cfg)
-			results = append(results, rres...)
+		if cfg.build {
+			switch cfg.buildType {
+			case localType:
+				status, results = local(ctx, cfg)
+			case remoteType:
+				status, results = remote(ctx, cfg)
+			default:
+				// This shouldn't be reached; Config.SetFlags validates buildType.
+				return Status{subcommands.ExitUsageError, ""}, nil
+			}
+		} else {
+			// If we aren't rebuilding a bundle, run both local and remote tests and merge the results.
+			// TODO(derat): While test runners are always supposed to report success even if tests fail,
+			// it'd probably be better to run both types here even if one fails.
+			if status, results = local(ctx, cfg); status.ExitCode == subcommands.ExitSuccess {
+				var rres []TestResult
+				status, rres = remote(ctx, cfg)
+				results = append(results, rres...)
+			}
 		}
 	}
 

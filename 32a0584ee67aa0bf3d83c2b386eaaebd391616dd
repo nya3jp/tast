@@ -22,6 +22,30 @@
       "revId": "32a0584ee67aa0bf3d83c2b386eaaebd391616dd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "af91f8fd_089ffd49",
+        "filename": "src/chromiumos/cmd/tast/timing/timing_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-01-31T19:53:45Z",
+      "side": 1,
+      "message": "no (or gofmt would\u0027ve added one) :-)\n\nsee e.g. https://play.golang.org/p/R5y7rTB0MSC",
+      "parentUuid": "00aea6e6_4b3b3181",
+      "range": {
+        "startLine": 12,
+        "startChar": 21,
+        "endLine": 12,
+        "endChar": 22
+      },
+      "revId": "32a0584ee67aa0bf3d83c2b386eaaebd391616dd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

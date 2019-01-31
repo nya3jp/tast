@@ -26,6 +26,11 @@ const (
 	// See RFC 4253 11.2, "Ignored Data Message".
 	sshMsgIgnore = "SSH_MSG_IGNORE"
 
+	// sshMsgTCPIPForward is the SSH global message sent to request TCP/IP
+	// reverse forwarding.
+	// See RFC 4254 7.1, "Requesting Port Forwarding".
+	sshMsgTCPIPForward = "tcpip-forward"
+
 	// maxStringLen contains the maximum length for a string payload.
 	maxStringLen = 2048
 )
@@ -135,7 +140,20 @@ func (s *SSHServer) handleConn(conn net.Conn) error {
 
 	go func() {
 		for req := range reqs {
-			if req.WantReply && (req.Type != sshMsgIgnore || s.answerPings) {
+			if !req.WantReply {
+				continue
+			}
+			switch req.Type {
+			case sshMsgIgnore:
+				if s.answerPings {
+					req.Reply(false, nil)
+				}
+			case sshMsgTCPIPForward:
+				// Always respond with a fixed, arbitrary selected port number.
+				// golang.org/x/crypto/ssh ignores it anyway when requesting
+				// port forwarding with an explicit port number.
+				req.Reply(true, makeIntPayload(12345))
+			default:
 				req.Reply(false, nil)
 			}
 		}

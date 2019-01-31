@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "175d0dfa_1cc58539",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1284904
+      },
+      "writtenOn": "2019-01-31T08:18:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "59e43ae8_4bf7a378",
+      "revId": "763945bf01538922e45aaf6213b09c9ca9549a34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "062432f3_e8fc9ca0",
         "filename": "src/chromiumos/cmd/local_test_runner/main.go",
         "patchSetId": 1
@@ -33,6 +51,24 @@
       "revId": "763945bf01538922e45aaf6213b09c9ca9549a34",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b3d9b395_15090527",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1284904
+      },
+      "writtenOn": "2019-01-31T08:18:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "062432f3_e8fc9ca0",
+      "revId": "763945bf01538922e45aaf6213b09c9ca9549a34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -35,6 +35,9 @@ type Args struct {
 	// TempDir is the path to the directory under which temporary files for tests are written.
 	TempDir string `json:"tempDir,omitempty"`
 
+	// Devservers contains URLs of devservers that can be used to download files.
+	Devservers []string `json:"devservers,omitempty"`
+
 	// RemoteArgs contains additional arguments used to run remote tests.
 	RemoteArgs
 	// RunTestsArgs contains additional arguments used by RunTestsMode.
@@ -43,6 +46,8 @@ type Args struct {
 	CollectSysInfoArgs
 	// GetSoftwareFeaturesArgs contains additional arguments used by GetSoftwareFeaturesMode.
 	GetSoftwareFeaturesArgs
+	// DownloadPrivateBundlesArgs contains additional arguments used by DownloadPrivateBundlesMode.
+	DownloadPrivateBundlesArgs
 
 	// The remaining exported fields are set by test runner main functions (or by unit tests) and
 	// cannot be overridden by the tast executable.
@@ -86,9 +91,7 @@ type RemoteArgs struct {
 // RunTestsArgs is nested within Args and contains additional arguments used by RunTestsMode.
 type RunTestsArgs struct {
 	bundle.RunTestsArgs
-
-	// Devservers contains URLs of devservers that can be used to download files.
-	Devservers []string `json:"devservers,omitempty"`
+	// Runner-specific args can be added here.
 }
 
 // GetSysInfoStateResult holds the result of a GetSysInfoStateMode command.
@@ -142,6 +145,19 @@ type SysInfoState struct {
 	MinidumpPaths []string `json:"minidumpPaths"`
 }
 
+// DownloadPrivateBundlesArgs is nested within Args and contains additional arguments used by DownloadPrivateBundlesMode.
+type DownloadPrivateBundlesArgs struct {
+	// BuilderPath is the name of the image (for example: "nocturne-release/R73-11435.0.0").
+	// If not set, a default value is read from CHROMEOS_RELEASE_BUILDER_PATH in /etc/lsb-release.
+	BuilderPath string `json:"builderPath"`
+}
+
+// DownloadPrivateBundlesResult contains the result of a DownloadPrivateBundlesMode command.
+type DownloadPrivateBundlesResult struct {
+	// Logs contains log messages emitted while downloading test bundles.
+	Logs []string `json:"logs"`
+}
+
 // RunnerType describes the type of test runner that is using this package.
 type RunnerType int // NOLINT
 
@@ -175,7 +191,7 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, ru
 		flags.StringVar(&args.BundleGlob, "bundles", args.BundleGlob, "glob matching test bundles")
 		flags.StringVar(&args.DataDir, "datadir", args.DataDir, "directory containing data files")
 		flags.StringVar(&args.OutDir, "outdir", args.OutDir, "base directory to write output files to")
-		flags.Var(command.NewListFlag(",", func(v []string) { args.RunTestsArgs.Devservers = v }, nil),
+		flags.Var(command.NewListFlag(",", func(v []string) { args.Devservers = v }, nil),
 			"devservers", "comma-separated list of devserver URLs")
 		flags.Var(command.NewListFlag(",", func(v []string) { args.GetSoftwareFeaturesArgs.ExtraUSEFlags = v }, nil),
 			"extrauseflags", "comma-separated list of additional USE flags to inject when checking test dependencies")
@@ -274,4 +290,8 @@ const (
 	// supported by the DUT via a JSON-marshaled GetSoftwareFeaturesResult struct written to stdout. This mode
 	// is only supported by local_test_runner.
 	GetSoftwareFeaturesMode = 5
+	// DownloadPrivateBundlesMode indicates that the runner should download private bundles from devservers,
+	// install them to the DUT, write a JSON-marshaled DownloadPrivateBundlesResult struct to stdout and exit.
+	// This mode is only supported by local_test_runner.
+	DownloadPrivateBundlesMode = 6
 )

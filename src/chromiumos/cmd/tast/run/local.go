@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net"
 	"os"
 	"path"
 	"path/filepath"
@@ -81,6 +82,15 @@ func local(ctx context.Context, cfg *Config) (Status, []TestResult) {
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to get DUT software features: %v", err), nil
 	}
 	getInitialSysInfo(ctx, cfg)
+
+	if len(cfg.devservers) == 0 && cfg.useEphemeralDevserver {
+		es, url, err := startEphemeralDevserver(hst, cfg)
+		if err != nil {
+			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start ephemeral devserver: %v", err), nil
+		}
+		defer es.Close(ctx)
+		cfg.devservers = []string{url}
+	}
 
 	cfg.Logger.Status("Running tests on target")
 	start := time.Now()
@@ -538,4 +548,18 @@ func formatBytes(bytes int64) string {
 		return fmt.Sprintf("%.1f KB", float32(bytes)/float32(kb))
 	}
 	return fmt.Sprintf("%d B", bytes)
+}
+
+// startEphemeralDevserver starts the ephemeral devserver which serves on hst.
+func startEphemeralDevserver(hst *host.SSH, cfg *Config) (es *ephemeralDevserver, url string, err error) {
+	lis, err := hst.ListenTCP(&net.TCPAddr{IP: net.IPv4(127, 0, 0, 1), Port: ephemeralDevserverPort})
+	if err != nil {
+		return nil, "", fmt.Errorf("failed to reverse-forward a port: %v", err)
+	}
+
+	url = fmt.Sprintf("http://%s", lis.Addr())
+
+	cacheDir := filepath.Join(cfg.tastDir, "devserver", "static")
+	es, err = newEphemeralDevserver(lis, cacheDir)
+	return es, url, err
 }

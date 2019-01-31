@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "00aea6e6_4b3b3181",
+        "filename": "src/chromiumos/cmd/tast/timing/timing_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1117055
+      },
+      "writtenOn": "2019-01-31T19:29:04Z",
+      "side": 1,
+      "message": "should there be a space before here?",
+      "range": {
+        "startLine": 12,
+        "startChar": 21,
+        "endLine": 12,
+        "endChar": 22
+      },
+      "revId": "32a0584ee67aa0bf3d83c2b386eaaebd391616dd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

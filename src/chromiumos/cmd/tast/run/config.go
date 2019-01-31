@@ -101,6 +101,7 @@ type Config struct {
 	buildOutDir           string   // path to base directory under which executables are stored
 	checkPortageDeps      bool     // check whether test bundle's dependencies are installed before building
 	forceBuildLocalRunner bool     // force local_test_runner to be built and deployed even if it already exists on DUT
+	useEphemeralDevserver bool     // start an ephemeral devserver if no devserver is specified
 
 	remoteRunner    string // path to executable that runs remote test bundles
 	remoteBundleDir string // dir where packaged remote test bundles are installed
@@ -164,6 +165,7 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 	f.StringVar(&c.buildOutDir, "buildoutdir", filepath.Join(c.tastDir, "build"), "directory where compiled executables are saved")
 	f.BoolVar(&c.checkPortageDeps, "checkbuilddeps", true, "check test bundle's dependencies before building")
 	f.BoolVar(&c.forceBuildLocalRunner, "buildlocalrunner", false, "force building local_test_runner and pushing to DUT")
+	f.BoolVar(&c.useEphemeralDevserver, "ephemeraldevserver", true, "start an ephemeral devserver if no devserver is specified")
 
 	bt := command.NewEnumFlag(map[string]int{"local": int(localType), "remote": int(remoteType)},
 		func(v int) { c.buildType = testType(v) }, "local")

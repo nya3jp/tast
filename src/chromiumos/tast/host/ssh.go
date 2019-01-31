@@ -673,6 +673,11 @@ func (s *SSH) Ping(ctx context.Context, timeout time.Duration) error {
 	}
 }
 
+// ListenTCP opens a remote TCP port for listening.
+func (s *SSH) ListenTCP(addr *net.TCPAddr) (net.Listener, error) {
+	return s.cl.ListenTCP(addr)
+}
+
 // SSHCommandHandle represents an in-progress remote command.
 type SSHCommandHandle struct {
 	session        *ssh.Session

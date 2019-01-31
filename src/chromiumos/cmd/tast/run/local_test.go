@@ -385,4 +385,26 @@ func TestLocalDataFiles(t *gotesting.T) {
 	}
 }
 
+func TestLocalEphemeralDevserver(t *gotesting.T) {
+	td := newLocalTestData(t)
+	defer td.close()
+
+	ob := bytes.Buffer{}
+	mw := control.NewMessageWriter(&ob)
+	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
+	mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
+	td.runStdout = ob.Bytes()
+
+	td.cfg.useEphemeralDevserver = true
+
+	if status, _ := local(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
+		t.Errorf("local() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
+	}
+
+	exp := []string{fmt.Sprintf("http://127.0.0.1:%d", ephemeralDevserverPort)}
+	if !reflect.DeepEqual(td.cfg.devservers, exp) {
+		t.Errorf("local() set devserver=%v; want %v", td.cfg.devservers, exp)
+	}
+}
+
 // TODO(derat): Add a test that verifies that getInitialSysInfo is called before tests are run.

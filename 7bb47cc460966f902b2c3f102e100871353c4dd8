@@ -1,0 +1,78 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "084c2b6d_7d888067",
+        "filename": "src/chromiumos/cmd/tast/run/devserver.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-01T04:39:02Z",
+      "side": 1,
+      "message": "nit: maybe reword this? \"%q is not a gs:// URL\"",
+      "revId": "7bb47cc460966f902b2c3f102e100871353c4dd8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f0431847_7e1aa475",
+        "filename": "src/chromiumos/cmd/tast/run/devserver.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 161,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-01T04:39:02Z",
+      "side": 1,
+      "message": "nit: \"%q doesn\u0027t use a whitelisted bucket\"",
+      "revId": "7bb47cc460966f902b2c3f102e100871353c4dd8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "45b95d62_dea2278e",
+        "filename": "src/chromiumos/cmd/tast/run/devserver.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-01T04:39:02Z",
+      "side": 1,
+      "message": "nit: \"%q isn\u0027t a clean URL\"",
+      "revId": "7bb47cc460966f902b2c3f102e100871353c4dd8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c6b18125_4f586b91",
+        "filename": "src/chromiumos/cmd/tast/run/devserver_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-01T04:39:02Z",
+      "side": 1,
+      "message": "if you agree with my other comments, this may need to become a suffix :-)",
+      "range": {
+        "startLine": 157,
+        "startChar": 2,
+        "endLine": 157,
+        "endChar": 11
+      },
+      "revId": "7bb47cc460966f902b2c3f102e100871353c4dd8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

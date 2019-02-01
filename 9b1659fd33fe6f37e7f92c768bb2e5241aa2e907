@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "473bb05a_25bc36be",
+        "filename": "src/chromiumos/cmd/tast/run/devserver.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-01T04:39:02Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "fb46b02d_fdaca6ee",
+      "revId": "9b1659fd33fe6f37e7f92c768bb2e5241aa2e907",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "196bb28a_c9d1beca",
         "filename": "src/chromiumos/cmd/tast/run/devserver.go",
         "patchSetId": 1
@@ -101,6 +119,24 @@
       "side": 1,
       "message": "Changed to 0755. If cacheDir exists, I think it does not change anything.",
       "parentUuid": "ca2cfd32_95a7f0ea",
+      "revId": "9b1659fd33fe6f37e7f92c768bb2e5241aa2e907",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7e5ae06c_39ee4592",
+        "filename": "src/chromiumos/cmd/tast/run/devserver.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-01T04:39:02Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "79319946_be570357",
       "revId": "9b1659fd33fe6f37e7f92c768bb2e5241aa2e907",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
@@ -482,6 +518,30 @@
       "side": 1,
       "message": "Updated comments to clarify it. Since it turned out the port number in the response is ignored when requesting port forwarding with an explicit port number, I\u0027m not defining it as a constant. Also updated the number to 12345 so that is looks more arbitrary. :)",
       "parentUuid": "0991475c_baaf9159",
+      "range": {
+        "startLine": 152,
+        "startChar": 32,
+        "endLine": 152,
+        "endChar": 37
+      },
+      "revId": "9b1659fd33fe6f37e7f92c768bb2e5241aa2e907",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "27168eb3_c20e889b",
+        "filename": "src/chromiumos/tast/host/test/ssh_server.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-01T04:39:02Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "a364295b_2ba8cbbe",
       "range": {
         "startLine": 152,
         "startChar": 32,

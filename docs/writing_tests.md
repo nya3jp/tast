@@ -371,6 +371,58 @@ _within_ multiple tests.
 [TotT 520]: http://go/tott/520
 [Unit Testing Best Practices Do's and Don'ts]: http://go/unit-test-practices#behavior-testing-dos-and-donts
 
+### Device dependencies
+
+A Tast test either passes (by reporting zero errors) or fails (by reporting one
+or more errors, timing out, or panicking). If a test requires functionality that
+isn't provided by the DUT, the test is skipped entirely.
+
+Avoid writing tests that probe the DUT's capabilities at runtime, e.g.
+
+```go
+// WRONG: Avoid testing for software or hardware features at runtime.
+func CheckCamera(ctx context.Context, s *testing.State) {
+    if !supports720PCamera() {
+        s.Log("Skipping test; device unsupported")
+        return
+    }
+    // ...
+}
+```
+
+This approach results in the test incorrectly passing even though it actually
+didn't verify anything. (Tast doesn't let tests report an "N/A" state at runtime
+since it would be slower than skipping the test altogether and since it will
+prevent making intelligent scheduling decisions in the future about where tests
+should be executed.)
+
+Instead, specify [software dependencies] when declaring tests:
+
+```go
+// OK: Specify dependencies when declaring the test.
+func init() {
+    testing.AddTest(&testing.Test{
+        Func: CheckCamera,
+        SoftwareDeps: []string{"camera_720p", "chrome_login"},
+        // ...
+    })
+}
+```
+
+The above document describes how to define new dependencies.
+
+If a test depends on the DUT being in a specific configurable state (e.g. tablet
+mode), it should put it into that state. For example, [chrome.ExtraArgs] can be
+passed to [chrome.New] to pass additional command-line flags (e.g.
+`--force-tablet-mode=tablet`) when starting Chrome.
+
+The [tast-users mailing list] is a good place to ask questions about test
+dependencies.
+
+[chrome.ExtraArgs]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#ExtraArgs
+[chrome.New]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#New
+[tast-users mailing list]: https://groups.google.com/a/chromium.org/forum/#!forum/tast-users
+
 ## Errors and logging
 
 The [testing.State] struct provides functions that tests may use to report their

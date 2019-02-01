@@ -28,6 +28,7 @@ The following software features are defined:
     presence of the `run_oci` program.
 *   `cups` - CUPS daemon.
 *   `display_backlight` - An internal display backlight.
+*   `dlc` - Support of [Downloadable Content] (DLC).
 *   `gpu_sandboxing` - Chrome's GPU process is [sandboxed].
 *   `memd` - [Memory stats collection daemon].
 *   `ml_service` - ML Service daemon.
@@ -82,12 +83,13 @@ outside of video tests.
 [run Android apps]: https://developer.android.com/topic/arc/
 [AddressSanitizer]: https://github.com/google/sanitizers/wiki/AddressSanitizer
 [Autotest capability]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/autotest-capability-default/
+[Downloadable Content]: https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/dlcservice
 [sandboxed]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/linux_sandboxing.md
 [Memory stats collection daemon]: https://chromium.googlesource.com/chromiumos/platform2/+/master/metrics/memd/
 [screenshot command]: https://chromium.googlesource.com/chromiumos/platform2/+/master/screenshot/
 [Trusted Platform Module]: https://en.wikipedia.org/wiki/Trusted_Platform_Module
+[Transparent Hugepage]: https://www.kernel.org/doc/Documentation/vm/transhuge.txt
 [run virtual machines]: https://chromium.googlesource.com/chromiumos/docs/+/master/containers_and_vms.md
 [local_test_runner]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/cmd/local_test_runner/main.go
 [tast-use-flags]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/tast-use-flags/
 [autocaps package]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/autocaps/
-[Transparent Hugepage]: https://www.kernel.org/doc/Documentation/vm/transhuge.txt

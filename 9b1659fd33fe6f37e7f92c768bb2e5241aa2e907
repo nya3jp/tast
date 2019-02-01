@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "fb46b02d_fdaca6ee",
+        "filename": "src/chromiumos/cmd/tast/run/devserver.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-01T03:59:42Z",
+      "side": 1,
+      "message": "Sure, done. Note that it can exist (os.MkdirAll succeeds if the directory already exists)",
+      "parentUuid": "7e970be7_ccd68e6c",
+      "revId": "9b1659fd33fe6f37e7f92c768bb2e5241aa2e907",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "196bb28a_c9d1beca",
         "filename": "src/chromiumos/cmd/tast/run/devserver.go",
         "patchSetId": 1
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "60cb3862_34a95e56",
+        "filename": "src/chromiumos/cmd/tast/run/devserver.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-01T03:59:42Z",
+      "side": 1,
+      "message": "Yes, that matches with my understanding.",
+      "parentUuid": "196bb28a_c9d1beca",
+      "revId": "9b1659fd33fe6f37e7f92c768bb2e5241aa2e907",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ca2cfd32_95a7f0ea",
         "filename": "src/chromiumos/cmd/tast/run/devserver.go",
         "patchSetId": 1
@@ -50,6 +86,24 @@
       "revId": "9b1659fd33fe6f37e7f92c768bb2e5241aa2e907",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "79319946_be570357",
+        "filename": "src/chromiumos/cmd/tast/run/devserver.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-01T03:59:42Z",
+      "side": 1,
+      "message": "Changed to 0755. If cacheDir exists, I think it does not change anything.",
+      "parentUuid": "ca2cfd32_95a7f0ea",
+      "revId": "9b1659fd33fe6f37e7f92c768bb2e5241aa2e907",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -76,6 +130,30 @@
     },
     {
       "key": {
+        "uuid": "04ee1ba4_ac7a63c4",
+        "filename": "src/chromiumos/cmd/tast/run/devserver.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-01T03:59:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d1741af8_167fda76",
+      "range": {
+        "startLine": 97,
+        "startChar": 48,
+        "endLine": 97,
+        "endChar": 52
+      },
+      "revId": "9b1659fd33fe6f37e7f92c768bb2e5241aa2e907",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "389080e7_b80fad17",
         "filename": "src/chromiumos/cmd/tast/run/devserver.go",
         "patchSetId": 1
@@ -90,6 +168,24 @@
       "revId": "9b1659fd33fe6f37e7f92c768bb2e5241aa2e907",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9dd55ae9_f729e488",
+        "filename": "src/chromiumos/cmd/tast/run/devserver.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-01T03:59:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "389080e7_b80fad17",
+      "revId": "9b1659fd33fe6f37e7f92c768bb2e5241aa2e907",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -116,6 +212,30 @@
     },
     {
       "key": {
+        "uuid": "761e9601_d0180790",
+        "filename": "src/chromiumos/cmd/tast/run/devserver.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-01T03:59:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5f6e74cd_658a3ece",
+      "range": {
+        "startLine": 151,
+        "startChar": 42,
+        "endLine": 151,
+        "endChar": 44
+      },
+      "revId": "9b1659fd33fe6f37e7f92c768bb2e5241aa2e907",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7fb9fc1b_d0a93962",
         "filename": "src/chromiumos/cmd/tast/run/devserver.go",
         "patchSetId": 1
@@ -136,6 +256,30 @@
       "revId": "9b1659fd33fe6f37e7f92c768bb2e5241aa2e907",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "36c65e21_dd179edc",
+        "filename": "src/chromiumos/cmd/tast/run/devserver.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-01T03:59:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7fb9fc1b_d0a93962",
+      "range": {
+        "startLine": 154,
+        "startChar": 51,
+        "endLine": 154,
+        "endChar": 53
+      },
+      "revId": "9b1659fd33fe6f37e7f92c768bb2e5241aa2e907",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -162,6 +306,30 @@
     },
     {
       "key": {
+        "uuid": "c85df7ab_09759246",
+        "filename": "src/chromiumos/cmd/tast/run/devserver.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-01T03:59:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ad47dcf4_4e481385",
+      "range": {
+        "startLine": 157,
+        "startChar": 42,
+        "endLine": 157,
+        "endChar": 44
+      },
+      "revId": "9b1659fd33fe6f37e7f92c768bb2e5241aa2e907",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6a76da96_9c51011e",
         "filename": "src/chromiumos/cmd/tast/run/devserver_test.go",
         "patchSetId": 1
@@ -185,6 +353,30 @@
     },
     {
       "key": {
+        "uuid": "746041c4_a0494f97",
+        "filename": "src/chromiumos/cmd/tast/run/devserver_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-01T03:59:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6a76da96_9c51011e",
+      "range": {
+        "startLine": 59,
+        "startChar": 28,
+        "endLine": 59,
+        "endChar": 29
+      },
+      "revId": "9b1659fd33fe6f37e7f92c768bb2e5241aa2e907",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3e371fb7_bcd3a419",
         "filename": "src/chromiumos/cmd/tast/run/devserver_test.go",
         "patchSetId": 1
@@ -202,6 +394,24 @@
     },
     {
       "key": {
+        "uuid": "427cab22_c38d3e4d",
+        "filename": "src/chromiumos/cmd/tast/run/devserver_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-01T03:59:42Z",
+      "side": 1,
+      "message": "Thanks for catching, we should have a test for the function.",
+      "parentUuid": "3e371fb7_bcd3a419",
+      "revId": "9b1659fd33fe6f37e7f92c768bb2e5241aa2e907",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4e418770_ccdcf53c",
         "filename": "src/chromiumos/cmd/tast/run/local.go",
         "patchSetId": 1
@@ -216,6 +426,24 @@
       "revId": "9b1659fd33fe6f37e7f92c768bb2e5241aa2e907",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e9a77c93_67a131a8",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 553,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-01T03:59:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4e418770_ccdcf53c",
+      "revId": "9b1659fd33fe6f37e7f92c768bb2e5241aa2e907",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -239,6 +467,30 @@
       "revId": "9b1659fd33fe6f37e7f92c768bb2e5241aa2e907",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a364295b_2ba8cbbe",
+        "filename": "src/chromiumos/tast/host/test/ssh_server.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-01T03:59:42Z",
+      "side": 1,
+      "message": "Updated comments to clarify it. Since it turned out the port number in the response is ignored when requesting port forwarding with an explicit port number, I\u0027m not defining it as a constant. Also updated the number to 12345 so that is looks more arbitrary. :)",
+      "parentUuid": "0991475c_baaf9159",
+      "range": {
+        "startLine": 152,
+        "startChar": 32,
+        "endLine": 152,
+        "endChar": 37
+      },
+      "revId": "9b1659fd33fe6f37e7f92c768bb2e5241aa2e907",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

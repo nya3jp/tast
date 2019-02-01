@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "32d87fdb_fa8363db",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 376,
+      "author": {
+        "id": 1202079
+      },
+      "writtenOn": "2019-02-01T21:50:10Z",
+      "side": 1,
+      "message": "couldn\u0027t find the correct words to express the opposite... something like \"Tests should only run on supported devices\".\n\nsomeone with better English than mine should review this.",
+      "range": {
+        "startLine": 373,
+        "startChar": 0,
+        "endLine": 376,
+        "endChar": 10
+      },
+      "revId": "77f5e7f304f4796a8361f8d2b36ff609a1a501f4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "05cda235_8a96e6b9",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 413,
+      "author": {
+        "id": 1202079
+      },
+      "writtenOn": "2019-02-01T21:50:10Z",
+      "side": 1,
+      "message": "link points to private-overlays... if this info is public, probably I should add the non-private overlay folder. On the other hand, for me at least, all the useful USE definitions are in the private-overlay",
+      "range": {
+        "startLine": 413,
+        "startChar": 37,
+        "endLine": 413,
+        "endChar": 86
+      },
+      "revId": "77f5e7f304f4796a8361f8d2b36ff609a1a501f4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

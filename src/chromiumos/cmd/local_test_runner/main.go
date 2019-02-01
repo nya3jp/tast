@@ -49,6 +49,7 @@ func main() {
 			"containers":           "containers",
 			"cups":                 "cups",
 			"display_backlight":    "display_backlight",
+			"dlc":                  "dlc",
 			"gpu_sandboxing":       "!betty && !tast_vm", // no GPU sandboxing on VMs: https://crbug.com/914688
 			"memd":                 "memd",
 			"ml_service":           "ml_service",

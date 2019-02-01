@@ -28,6 +28,7 @@ The following software features are defined:
     presence of the `run_oci` program.
 *   `cups` - CUPS daemon.
 *   `display_backlight` - An internal display backlight.
+*   `dlc` - Support of Downloadable Content (DLC).
 *   `gpu_sandboxing` - Chrome's GPU process is [sandboxed].
 *   `memd` - [Memory stats collection daemon].
 *   `ml_service` - ML Service daemon.

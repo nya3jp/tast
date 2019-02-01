@@ -28,6 +28,7 @@ The following software features are defined:
     presence of the `run_oci` program.
 *   `cups` - CUPS daemon.
 *   `display_backlight` - An internal display backlight.
+*   `dlc` - Support of [Downloadable Content] (DLC).
 *   `gpu_sandboxing` - Chrome's GPU process is [sandboxed].
 *   `memd` - [Memory stats collection daemon].
 *   `ml_service` - ML Service daemon.
@@ -91,3 +92,4 @@ outside of video tests.
 [tast-use-flags]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/tast-use-flags/
 [autocaps package]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/autocaps/
 [Transparent Hugepage]: https://www.kernel.org/doc/Documentation/vm/transhuge.txt
+[Downloadable Content]: https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/dlcservice

@@ -371,6 +371,91 @@ _within_ multiple tests.
 [TotT 520]: http://go/tott/520
 [Unit Testing Best Practices Do's and Don'ts]: http://go/unit-test-practices#behavior-testing-dos-and-donts
 
+### How to fail a test in unsupported devices.
+
+You don't.
+
+In Tast, tests either pass the test or fail to pass it. There are no other
+option, like *skipping test, unsupported device*. This means that tests must
+always run on supported devices and you must avoid code like the following:
+
+```go
+// WRONG: Avoid testing for software/hardware features at test-runtime.
+func MyTest(ctx context.Context, s *testing.State) {
+    if ! doesDeviceSupport(HAS_720P_CAMERA) {
+        s.Log("Skipping test, device not supported")
+        return
+    }
+    // ...
+}
+```
+
+Instead, what you should do is to add dependencies in your test, like this:
+
+```go
+// OK: Declare all the needed software/hardware dependencies for your test.
+func init() {
+    testing.AddTest(&testing.Test{
+        Func: MyTest,
+        SoftwareDeps: []string{"camera_720p"},
+        // ...
+    })
+}
+```
+
+`camera_720p` is one of the many
+[already defined software/hardware dependencies](http://go/tast-deps).
+
+#### Missing dependencies
+
+If the dependency that you are looking for is not already defined, you should
+create a new one with the `USE` properties. These are per-board properties that
+are defined in the [boards overlays](http://cs/chromeos_internal/src/private-overlays/).
+See http://go/tast-deps for more info.
+
+#### Runtime features
+
+If your test depends on a runtime feature like *device must be in tablet mode*,
+then you cannot use the `USE` properties since certain devices are
+convertibles and they could change between clamshell to tablet mode in
+runtime.
+
+For those cases you should force the desired mode in runtime. For example, if
+your device must be in tablet mode, then, you can pass the
+`--force-tablet-mode=tablet` to Chrome, like this:
+
+```go
+func MyTest(ctx context.Context, s *testing.State) {
+    cr, err := chrome.New(ctx, chrome.ExtraArgs([]string{"--force-tablet-mode=tablet"}))
+    if err != nil {
+        s.Fatal("Failed to connect to Chrome: ", err)
+    }
+    defer cr.Close(ctx)
+    // ...
+```
+
+To force clamshell mode, instead, you should use
+`--force-tablet-mode=clamshell`.
+
+The `ExtraArgs` are the command line arguments that Chrome receives, and all the
+ChromeOS-specific command line arguments are defined here:
+
+*   [chromeos_switches.h](https://cs.chromium.org/chromium/src/chromeos/constants/chromeos_switches.h)
+
+Chrome command line arguments is one way to do it. You are not forced to use it
+if it doesn't meat your needs. For example, if your test need to verify that
+switching from clamshell mode to tablet works as expected, using
+`--force-tablet-mode=clamshell` won't work for you since you won't be able to
+switch to tablet mode. `--force-tablet-mode` forces a mode and won't let you
+switch to another one.
+
+As an example, what you should do instead, is to switch to tablet mode by
+injecting the `SW_TABLET_MODE`
+[input event](http://cs/chromeos_public/src/platform2/power_manager/tools/inject_powerd_input_event.cc?l=51).
+Alternatively, you can use the
+[dbus PowerManager](http://cs/chromeos_public/src/platform/tast-tests/src/chromiumos/tast/local/power/power_manager.go)
+interface.
+
 ## Errors and logging
 
 The [testing.State] struct provides functions that tests may use to report their

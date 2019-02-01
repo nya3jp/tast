@@ -1,0 +1,244 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7e970be7_ccd68e6c",
+        "filename": "src/chromiumos/cmd/tast/run/devserver.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-01T00:00:25Z",
+      "side": 1,
+      "message": "nit: please document that cacheDir doesn\u0027t need to exist (and probably shouldn\u0027t already exist)",
+      "revId": "9b1659fd33fe6f37e7f92c768bb2e5241aa2e907",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "196bb28a_c9d1beca",
+        "filename": "src/chromiumos/cmd/tast/run/devserver.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-01T00:00:25Z",
+      "side": 1,
+      "message": "mostly note to self: nil interfaces are tricky in go, but i think that this is safe because you\u0027re assigning nil directly on L59 rather than assigning a nil pointer to a type that implements the net.Listener interface... right?",
+      "revId": "9b1659fd33fe6f37e7f92c768bb2e5241aa2e907",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ca2cfd32_95a7f0ea",
+        "filename": "src/chromiumos/cmd/tast/run/devserver.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-01T00:00:25Z",
+      "side": 1,
+      "message": "does MkdirAll update perms if the dir already exists? if not, do you want to do it manually?\n\nalso, is 0777 necessary or would 0755 be safer?",
+      "revId": "9b1659fd33fe6f37e7f92c768bb2e5241aa2e907",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d1741af8_167fda76",
+        "filename": "src/chromiumos/cmd/tast/run/devserver.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-01T00:00:25Z",
+      "side": 1,
+      "message": "nit: 0777 or 0755?",
+      "range": {
+        "startLine": 97,
+        "startChar": 48,
+        "endLine": 97,
+        "endChar": 52
+      },
+      "revId": "9b1659fd33fe6f37e7f92c768bb2e5241aa2e907",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "389080e7_b80fad17",
+        "filename": "src/chromiumos/cmd/tast/run/devserver.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-01T00:00:25Z",
+      "side": 1,
+      "message": "nit: maybe also include the path to make it easier to diagnose errors?",
+      "revId": "9b1659fd33fe6f37e7f92c768bb2e5241aa2e907",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5f6e74cd_658a3ece",
+        "filename": "src/chromiumos/cmd/tast/run/devserver.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-01T00:00:25Z",
+      "side": 1,
+      "message": "nit: %q",
+      "range": {
+        "startLine": 151,
+        "startChar": 42,
+        "endLine": 151,
+        "endChar": 44
+      },
+      "revId": "9b1659fd33fe6f37e7f92c768bb2e5241aa2e907",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7fb9fc1b_d0a93962",
+        "filename": "src/chromiumos/cmd/tast/run/devserver.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-01T00:00:25Z",
+      "side": 1,
+      "message": "nit: %q",
+      "range": {
+        "startLine": 154,
+        "startChar": 51,
+        "endLine": 154,
+        "endChar": 53
+      },
+      "revId": "9b1659fd33fe6f37e7f92c768bb2e5241aa2e907",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ad47dcf4_4e481385",
+        "filename": "src/chromiumos/cmd/tast/run/devserver.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-01T00:00:25Z",
+      "side": 1,
+      "message": "nit: %q",
+      "range": {
+        "startLine": 157,
+        "startChar": 42,
+        "endLine": 157,
+        "endChar": 44
+      },
+      "revId": "9b1659fd33fe6f37e7f92c768bb2e5241aa2e907",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6a76da96_9c51011e",
+        "filename": "src/chromiumos/cmd/tast/run/devserver_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-01T00:00:25Z",
+      "side": 1,
+      "message": "nit: \"on a\"",
+      "range": {
+        "startLine": 59,
+        "startChar": 28,
+        "endLine": 59,
+        "endChar": 29
+      },
+      "revId": "9b1659fd33fe6f37e7f92c768bb2e5241aa2e907",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3e371fb7_bcd3a419",
+        "filename": "src/chromiumos/cmd/tast/run/devserver_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-01T00:00:25Z",
+      "side": 1,
+      "message": "mind adding some simple parseGSURL tests to make sure that bad/malicious URLs are rejected?",
+      "revId": "9b1659fd33fe6f37e7f92c768bb2e5241aa2e907",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4e418770_ccdcf53c",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 553,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-01T00:00:25Z",
+      "side": 1,
+      "message": "nit: please name return values or document what the string is",
+      "revId": "9b1659fd33fe6f37e7f92c768bb2e5241aa2e907",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0991475c_baaf9159",
+        "filename": "src/chromiumos/tast/host/test/ssh_server.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-01T00:00:25Z",
+      "side": 1,
+      "message": "how was port 11299 chosen? if it\u0027s arbitrary, can you move it to an exported const so that callers can use it directly instead of hardcoding the number?",
+      "range": {
+        "startLine": 152,
+        "startChar": 32,
+        "endLine": 152,
+        "endChar": 37
+      },
+      "revId": "9b1659fd33fe6f37e7f92c768bb2e5241aa2e907",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

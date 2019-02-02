@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "18dc3734_2df1d534",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-02T00:18:43Z",
+      "side": 1,
+      "message": "sorry, one more nit: please keep these in the same order as they appear in the doc, if possible. some of the more recent additions don\u0027t follow this, but could you move this one up between [Autotest capability] and [sandboxed] in the list? thanks!",
+      "revId": "c8ae8b70ea9336d8c8d8efe5658c58cf48180675",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

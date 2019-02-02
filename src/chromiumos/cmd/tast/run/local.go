@@ -115,10 +115,7 @@ func connectToTarget(ctx context.Context, cfg *Config) (*host.SSH, error) {
 		cfg.hst = nil
 	}
 
-	if tl, ok := timing.FromContext(ctx); ok {
-		st := tl.Start("connect")
-		defer st.End()
-	}
+	defer timing.Start(ctx, "connect").End()
 	cfg.Logger.Status("Connecting to target")
 	cfg.Logger.Logf("Connecting to %s", cfg.Target)
 
@@ -218,11 +215,7 @@ func getTargetArch(ctx context.Context, cfg *Config, hst *host.SSH) error {
 		return nil
 	}
 
-	if tl, ok := timing.FromContext(ctx); ok {
-		st := tl.Start("get_arch")
-		defer st.End()
-	}
-
+	defer timing.Start(ctx, "get_arch").End()
 	cfg.Logger.Debug("Getting architecture from target")
 
 	// Get the userland architecture by inspecting an arbitrary binary on the target.
@@ -246,10 +239,7 @@ func getTargetArch(ctx context.Context, cfg *Config, hst *host.SSH) error {
 
 // pushBundle copies the test bundle at src on the local machine to dstDir on hst.
 func pushBundle(ctx context.Context, cfg *Config, hst *host.SSH, src, dstDir string) error {
-	if tl, ok := timing.FromContext(ctx); ok {
-		st := tl.Start("push_bundle")
-		defer st.End()
-	}
+	defer timing.Start(ctx, "push_bundle").End()
 	cfg.Logger.Logf("Pushing test bundle %s to %s on target", src, dstDir)
 	start := time.Now()
 	bytes, err := pushToHost(ctx, cfg, hst, filepath.Dir(src), dstDir, []string{filepath.Base(src)})
@@ -265,10 +255,7 @@ func pushBundle(ctx context.Context, cfg *Config, hst *host.SSH, src, dstDir str
 // The returned paths are relative to the test bundle directory, i.e. they take the form "<category>/data/<filename>".
 func getDataFilePaths(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob string) (
 	paths []string, err error) {
-	if tl, ok := timing.FromContext(ctx); ok {
-		st := tl.Start("get_data_paths")
-		defer st.End()
-	}
+	defer timing.Start(ctx, "get_data_paths").End()
 	cfg.Logger.Debug("Getting data file list from target")
 
 	handle, err := startLocalRunner(ctx, cfg, hst, nil, &runner.Args{
@@ -318,10 +305,7 @@ func getDataFilePaths(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlo
 // The file paths are relative to the test bundle dir, i.e. paths take the form "<category>/data/<filename>".
 // Otherwise, files will be copied from cfg.buildWorkspace.
 func pushDataFiles(ctx context.Context, cfg *Config, hst *host.SSH, destDir string, paths []string) error {
-	if tl, ok := timing.FromContext(ctx); ok {
-		st := tl.Start("push_data")
-		defer st.End()
-	}
+	defer timing.Start(ctx, "push_data").End()
 	cfg.Logger.Log("Pushing data files to target")
 
 	srcDir := filepath.Join(cfg.buildWorkspace, "src", localBundlePkgPathPrefix, cfg.buildBundle)
@@ -383,10 +367,7 @@ func buildAndPushLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH) er
 		return fmt.Errorf("failed to get arch for %s: %v", cfg.Target, err)
 	}
 
-	if tl, ok := timing.FromContext(ctx); ok {
-		st := tl.Start("build_and_push_runner")
-		defer st.End()
-	}
+	defer timing.Start(ctx, "build_and_push_runner").End()
 
 	bc := cfg.baseBuildCfg()
 	bc.Arch = cfg.targetArch
@@ -451,10 +432,7 @@ func startLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, envVars [
 // If cfg.mode is RunTestsMode, tests are executed and their results are returned.
 // if cfg.mode is ListTestsMode, serialized test information is returned via TestResult.Test but other fields are left blank.
 func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob, dataDir string) ([]TestResult, error) {
-	if tl, ok := timing.FromContext(ctx); ok {
-		st := tl.Start("run_local_tests")
-		defer st.End()
-	}
+	defer timing.Start(ctx, "run_local_tests").End()
 
 	args := runner.Args{
 		BundleGlob: bundleGlob,

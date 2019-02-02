@@ -42,10 +42,7 @@ var archToCompiler = map[string]string{
 // The executable file's name is assigned by "go install" (i.e. it's the last component of pkg).
 // stageName is used as the name of a new stage reported via the timing package.
 func Build(ctx context.Context, cfg *Config, pkg, outDir, stageName string) (out []byte, err error) {
-	if tl, ok := timing.FromContext(ctx); ok {
-		st := tl.Start(stageName)
-		defer st.End()
-	}
+	defer timing.Start(ctx, stageName).End()
 
 	for _, ws := range cfg.Workspaces {
 		src := filepath.Join(ws, "src")
@@ -108,10 +105,7 @@ func Build(ctx context.Context, cfg *Config, pkg, outDir, stageName string) (out
 	}
 	cmd.Env = env
 
-	if tl, ok := timing.FromContext(ctx); ok {
-		st := tl.Start("compile")
-		defer st.End()
-	}
+	defer timing.Start(ctx, "compile").End()
 	if out, err = cmd.CombinedOutput(); err != nil {
 		// The compiler won't be installed if the user has never run setup_board for a board using
 		// the target arch. Suggest manually setting up toolchains.

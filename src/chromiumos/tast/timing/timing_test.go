@@ -30,6 +30,23 @@ func TestContext(t *testing.T) {
 	}
 }
 
+func TestStart(t *testing.T) {
+	const name = "mystage"
+
+	// Start should be okay with receiving a context without a Log attached to it,
+	// and Stage.End should be okay with a nil receiver.
+	Start(context.Background(), name).End()
+
+	l := &Log{}
+	ctx := NewContext(context.Background(), l)
+	Start(ctx, name).End()
+	if len(l.Stages) != 1 {
+		t.Errorf("Got %d stages; want 1", len(l.Stages))
+	} else if l.Stages[0].Name != name {
+		t.Errorf("Got stage %q; want %q", l.Stages[0].Name, name)
+	}
+}
+
 // writeLog returns a buffer containing JSON data written by lg.Write.
 func writeLog(t *testing.T, lg *Log) *bytes.Buffer {
 	b := &bytes.Buffer{}

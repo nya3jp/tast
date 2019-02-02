@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "7948fddc_ff7f5cc7",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 374,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-02T02:15:40Z",
+      "side": 1,
+      "message": "how about just \"DUT dependencies\"?",
+      "revId": "77f5e7f304f4796a8361f8d2b36ff609a1a501f4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "32d87fdb_fa8363db",
         "filename": "docs/writing_tests.md",
         "patchSetId": 3
@@ -25,6 +42,104 @@
     },
     {
       "key": {
+        "uuid": "b2468862_1121dbd6",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 376,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-02T02:15:40Z",
+      "side": 1,
+      "message": "how about this?\n\nIn Tast, tests either pass (by reporting zero errors) or fail (by reporting one or more errors). If a test requires functionality that isn\u0027t provided by the DUT, the test is skipped automatically rather than being executed.\n\nAvoid writing tests that probe the DUT\u0027s capabilities at runtime, e.g.\n\n```go\n// WRONG: ...\nfunc MyTest(...) {\n    if !supports720PCamera() {\n        s.Log(...)\n        return\n    }\n    // ...\n```",
+      "parentUuid": "32d87fdb_fa8363db",
+      "range": {
+        "startLine": 373,
+        "startChar": 0,
+        "endLine": 376,
+        "endChar": 10
+      },
+      "revId": "77f5e7f304f4796a8361f8d2b36ff609a1a501f4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a3ba9ccf_e3fdf6dc",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 385,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-02T02:15:40Z",
+      "side": 1,
+      "message": "nit: remove space :-)",
+      "range": {
+        "startLine": 385,
+        "startChar": 8,
+        "endLine": 385,
+        "endChar": 9
+      },
+      "revId": "77f5e7f304f4796a8361f8d2b36ff609a1a501f4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7e6191ed_44b985ae",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 393,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-02T02:15:40Z",
+      "side": 1,
+      "message": "Instead, specify [software dependencies] when declaring your test:",
+      "revId": "77f5e7f304f4796a8361f8d2b36ff609a1a501f4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b623cb3e_d4408a8d",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 407,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-02T02:15:40Z",
+      "side": 1,
+      "message": "(i think that this is unnecessary with the link above, since camera_720p is documented in the deps page)",
+      "revId": "77f5e7f304f4796a8361f8d2b36ff609a1a501f4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a858090d_b1e0d715",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 411,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-02T02:15:40Z",
+      "side": 1,
+      "message": "nit: instead of having this section, mind just adding a sentence at the end of the previous paragraph like \"That document describes how to define new dependencies.\"?\n\ni\u0027d prefer for all of the dependency documentation to remain in that one document so it remains consistent and up-to-date.",
+      "revId": "77f5e7f304f4796a8361f8d2b36ff609a1a501f4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "05cda235_8a96e6b9",
         "filename": "docs/writing_tests.md",
         "patchSetId": 3
@@ -41,6 +156,116 @@
         "startChar": 37,
         "endLine": 413,
         "endChar": 86
+      },
+      "revId": "77f5e7f304f4796a8361f8d2b36ff609a1a501f4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2ea7bc03_70077743",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 413,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-02T02:15:40Z",
+      "side": 1,
+      "message": "per above, if we need to document what USE flags are (i\u0027m not sure we do), then please make the deps document link to a page with more info",
+      "parentUuid": "05cda235_8a96e6b9",
+      "range": {
+        "startLine": 413,
+        "startChar": 37,
+        "endLine": 413,
+        "endChar": 86
+      },
+      "revId": "77f5e7f304f4796a8361f8d2b36ff609a1a501f4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "98ab002e_671f6756",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 418,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-02T02:15:40Z",
+      "side": 1,
+      "message": "per below, i\u0027d recommend just having something like the following:\n\nIf a test depends on the system being in a certain state (e.g. tablet mode or laptop mode), it should put the system into that mode.",
+      "revId": "77f5e7f304f4796a8361f8d2b36ff609a1a501f4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6814f403_ceb3b240",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 420,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-02T02:15:40Z",
+      "side": 1,
+      "message": "nit: s/in/at/",
+      "range": {
+        "startLine": 420,
+        "startChar": 68,
+        "endLine": 420,
+        "endChar": 70
+      },
+      "revId": "77f5e7f304f4796a8361f8d2b36ff609a1a501f4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d422cd46_ea987b16",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 423,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-02T02:15:40Z",
+      "side": 1,
+      "message": "nit: s/in/at/",
+      "range": {
+        "startLine": 423,
+        "startChar": 50,
+        "endLine": 423,
+        "endChar": 52
+      },
+      "revId": "77f5e7f304f4796a8361f8d2b36ff609a1a501f4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "54b2f417_66bbf222",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 425,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-02T02:15:40Z",
+      "side": 1,
+      "message": "nit: add \"flag\"\n\nbut i feel this, and especially the \"\u003dclamshell\" documentation afterwards, is veering a bit too far into the realm of documenting how chrome works. this document is supposed to be about tast. ;-)",
+      "range": {
+        "startLine": 425,
+        "startChar": 28,
+        "endLine": 425,
+        "endChar": 29
       },
       "revId": "77f5e7f304f4796a8361f8d2b36ff609a1a501f4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",

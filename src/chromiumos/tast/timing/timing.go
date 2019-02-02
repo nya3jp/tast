@@ -41,6 +41,21 @@ func FromContext(ctx context.Context) (*Log, bool) {
 	return l, ok
 }
 
+// Start starts and returns a new Stage named name within the Log attached
+// to ctx. If no Log is attached to ctx, nil is returned. It is safe to call Close
+// on a nil stage.
+//
+// Example usage to report the time used until the end of the current function:
+//
+//	defer timing.Start(ctx, "my_stage").End()
+func Start(ctx context.Context, name string) *Stage {
+	l, ok := FromContext(ctx)
+	if !ok {
+		return nil
+	}
+	return l.Start(name)
+}
+
 // Empty returns true if l doesn't contain any stages.
 func (l *Log) Empty() bool {
 	return len(l.Stages) == 0
@@ -155,6 +170,11 @@ func (s *Stage) Elapsed() time.Duration {
 // End ends the stage. Child stages are recursively examined and also ended
 // (although we expect them to have already been ended).
 func (s *Stage) End() {
+	// Handle nil receivers returned by the package-level Start function.
+	if s == nil {
+		return
+	}
+
 	for _, c := range s.Children {
 		c.End()
 	}

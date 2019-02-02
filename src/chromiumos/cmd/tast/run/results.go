@@ -247,9 +247,7 @@ func (r *resultsHandler) handleTestStart(msg *control.TestStart) error {
 		return fmt.Errorf("got TestStart message for %s while %s still running",
 			msg.Test.Name, r.res.Name)
 	}
-	if tl, ok := timing.FromContext(r.ctx); ok {
-		r.stage = tl.Start(msg.Test.Name)
-	}
+	r.stage = timing.Start(r.ctx, msg.Test.Name)
 
 	r.res = &TestResult{
 		Test:             msg.Test,

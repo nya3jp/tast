@@ -30,10 +30,7 @@ const (
 // Missing packages (using the same format) and a list of commands that the user should execute to install
 // the dependencies are returned.
 func checkDeps(ctx context.Context, portagePkg, cachePath string) (missing, cmds []string, err error) {
-	if tl, ok := timing.FromContext(ctx); ok {
-		st := tl.Start("check_deps")
-		defer st.End()
-	}
+	defer timing.Start(ctx, "check_deps").End()
 
 	// To avoid slow Portage commands, check if we've already verified that dependencies are up-to-date.
 	var cache *checkDepsCache
@@ -54,10 +51,7 @@ func checkDeps(ctx context.Context, portagePkg, cachePath string) (missing, cmds
 	}
 
 	// Fall back to the slow emerge path.
-	if tl, ok := timing.FromContext(ctx); ok {
-		st := tl.Start("emerge")
-		defer st.End()
-	}
+	defer timing.Start(ctx, "emerge").End()
 
 	cl := emergeCmdLine(portagePkg, emergeList)
 	cmd := exec.CommandContext(ctx, cl[0], cl[1:]...)
@@ -154,10 +148,7 @@ func parseEmergeOutput(stdout, stderr []byte, pkg string) (missingDeps []string,
 // getOverlays evaluates the Portage config script at confPath (typically "/etc/make.conf") and returns all of
 // the overlays listed in $PORTDIR_OVERLAY. Symlinks are resolved.
 func getOverlays(ctx context.Context, confPath string) ([]string, error) {
-	if tl, ok := timing.FromContext(ctx); ok {
-		st := tl.Start("get_overlays")
-		defer st.End()
-	}
+	defer timing.Start(ctx, "get_overlays").End()
 
 	// TODO(derat): Escape the args when we have a good way to do so (testexec is only available to tests).
 	if strings.Index(confPath, "'") != -1 {
@@ -214,10 +205,7 @@ func newCheckDepsCache(cachePath string, checkPaths []string) (*checkDepsCache, 
 // being up-to-date for pkg. checkNeeded is true if the two timestamps do not exactly match. The filesystem's latest
 // last-modified timestamps is returned and should be passed to update if the dependencies are up-to-date.
 func (c *checkDepsCache) isCheckNeeded(ctx context.Context, pkg string) (checkNeeded bool, lastMod time.Time) {
-	if tl, ok := timing.FromContext(ctx); ok {
-		st := tl.Start("check_cache")
-		defer st.End()
-	}
+	defer timing.Start(ctx, "check_cache").End()
 
 	ch := make(chan time.Time, len(c.checkPaths))
 	for _, p := range c.checkPaths {

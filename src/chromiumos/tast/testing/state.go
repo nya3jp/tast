@@ -62,7 +62,15 @@ func (m *Meta) clone() *Meta {
 }
 
 // State holds state relevant to the execution of a single test.
+//
 // Parts of its interface are patterned after Go's testing.T type.
+//
+// State contains many pieces of data, and it's unclear which are actually being
+// used when it's passed to a function. You should minimize the number of
+// functions taking State as an argument. Instead you can pass State's derived
+// values (e.g. s.DataPath("file.txt")) or ctx (to use with ContextLog or
+// ContextOutDir etc.).
+//
 // It is intended to be safe when called concurrently by multiple goroutines
 // while a test is running.
 type State struct {
@@ -311,10 +319,10 @@ func NewError(err error, fullMsg, lastMsg string, skipFrames int) *Error {
 	}
 }
 
-// ContextLog formats its arguments using default formatting and logs them
-// via ctx, previously provided by State.Context. It is intended to be used for
-// informational logging by packages providing support for tests. Tests should
-// just call State.Log or State.Logf instead.
+// ContextLog formats its arguments using default formatting and logs them via
+// ctx. It is intended to be used for informational logging by packages
+// providing support for tests. If testing.State is available, just call
+// State.Log or State.Logf instead.
 func ContextLog(ctx context.Context, args ...interface{}) {
 	if s, ok := ctx.Value(logKey).(*State); ok {
 		s.Log(args...)

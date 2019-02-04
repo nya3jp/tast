@@ -129,8 +129,13 @@ func Messages(fs *token.FileSet, f *ast.File) []*Issue {
 		}
 
 		// Used errors.Errorf("something failed: %v", err) instead of errors.Wrap(err, "something failed").
-		if callName == "errors.Errorf" && len(args) == 2 && args[0].typ == stringArg && args[1].typ == errorArg {
-			addIssue(`Use errors.Wrap(err, "<msg>") instead of errors.Errorf("<msg>: %v", err)`, errPkgURL)
+		if callName == "errors.Errorf" && len(args) >= 2 && args[0].typ == stringArg &&
+			args[len(args)-1].typ == errorArg && strings.HasSuffix(args[0].val, "%v") {
+			if len(args) == 2 {
+				addIssue(`Use errors.Wrap(err, "<msg>") instead of errors.Errorf("<msg>: %v", err)`, errPkgURL)
+			} else {
+				addIssue(`Use errors.Wrapf(err, "<msg>", ...) instead of errors.Errorf("<msg>: %v", ..., err)`, errPkgURL)
+			}
 		}
 
 		// Used Log(err) instead of Log("Some error: ", err).

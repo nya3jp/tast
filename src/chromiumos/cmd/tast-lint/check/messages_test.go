@@ -49,6 +49,7 @@ func Test(ctx context.Context, s *testing.State) {
 	errors.New("shouldn't contain\na newline")
 	errors.Errorf("should use New for single string arg")
 	errors.Errorf("should use Wrap: %v", err)
+	errors.Errorf("should use Wrapf %s: %v", "here", err)
 
 	// Good errors:
 	errors.New("normal message")
@@ -77,6 +78,7 @@ func Test(ctx context.Context, s *testing.State) {
 		`test.go:38:2: errors.New string arg should not contain embedded newlines`,
 		`test.go:39:2: Use errors.New("<msg>") instead of errors.Errorf("<msg>")`,
 		`test.go:40:2: Use errors.Wrap(err, "<msg>") instead of errors.Errorf("<msg>: %v", err)`,
+		`test.go:41:2: Use errors.Wrapf(err, "<msg>", ...) instead of errors.Errorf("<msg>: %v", ..., err)`,
 	}
 	verifyIssues(t, issues, expects)
 }

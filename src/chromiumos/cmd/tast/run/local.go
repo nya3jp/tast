@@ -121,6 +121,7 @@ func connectToTarget(ctx context.Context, cfg *Config) (*host.SSH, error) {
 
 	o := host.SSHOptions{
 		ConnectTimeout: sshConnectTimeout,
+		ConnectRetries: cfg.sshRetries,
 		KeyFile:        cfg.KeyFile,
 		KeyDir:         cfg.KeyDir,
 		WarnFunc:       func(s string) { cfg.Logger.Log(s) },

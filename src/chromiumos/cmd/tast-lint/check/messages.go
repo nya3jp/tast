@@ -157,8 +157,13 @@ func Messages(fs *token.FileSet, f *ast.File) []*Issue {
 				addIssue(fmt.Sprintf("%v string arg should not contain trailing punctuation", callName), u)
 			}
 			// Used Log("Some message\nMore text") instead of Log("Some message") and Log("More text").
-			if strings.Index(str, "\n") != -1 {
+			if strings.Contains(str, "\n") {
 				addIssue(fmt.Sprintf("%v string arg should not contain embedded newlines", callName), commonFmtURL)
+			}
+			// Used Logf("'%s'", ...) instead of Logf("%q", ...).
+			if isFmt && (strings.Contains(str, `"%s"`) || strings.Contains(str, `'%s'`) ||
+				strings.Contains(str, `"%v"`) || strings.Contains(str, `'%v'`)) {
+				addIssue("Use %q to quote values instead of manually quoting them", commonFmtURL)
 			}
 			// We'd ideally also check that log messages are capitalized, but that causes too many false positives
 			// due to messages beginning with daemon names, command lines, etc.

@@ -97,6 +97,9 @@ type SSHOptions struct {
 
 	// ConnectTimeout contains a timeout for establishing the TCP connection.
 	ConnectTimeout time.Duration
+	// ConnectRetries contains the number of times to retry after a connection failure.
+	// Each attempt waits up to ConnectTimeout.
+	ConnectRetries int
 
 	// WarnFunc (if non-nil) is used to log non-fatal errors encountered while connecting to the host.
 	WarnFunc func(string)
@@ -226,6 +229,8 @@ func presentChallenges(stdin int, prefix, user, inst string, qs []string, es []b
 
 // doAsync runs f in a goroutine and returns its result.
 // If ctx's deadline is reached before f finishes, an error is returned.
+// The functions in crypto/ssh don't accept contexts, so we wrap calls
+// so they won't block indefinitely if the host or network is flaky.
 func doAsync(ctx context.Context, f func() error) error {
 	ch := make(chan error, 1)
 	go func() { ch <- f() }()
@@ -238,30 +243,55 @@ func doAsync(ctx context.Context, f func() error) error {
 	}
 }
 
-// NewSSH establishes an SSH-based connection to the host described in o.
+// NewSSH establishes an SSH connection to the host described in o.
 func NewSSH(ctx context.Context, o *SSHOptions) (*SSH, error) {
+	hostPort := fmt.Sprintf("%s:%d", o.Hostname, o.Port)
 	am, err := getSSHAuthMethods(o, "["+o.Hostname+"] ")
 	if err != nil {
 		return nil, err
 	}
-	cfg := ssh.ClientConfig{
+	cfg := &ssh.ClientConfig{
 		User:            o.User,
 		Auth:            am,
+		Timeout:         o.ConnectTimeout,
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	}
-	cfg.Timeout = o.ConnectTimeout
 
-	var cl *ssh.Client
-	err = doAsync(ctx, func() error {
-		var err error
-		cl, err = ssh.Dial("tcp", fmt.Sprintf("%s:%d", o.Hostname, o.Port), &cfg)
+	for i := 0; i < o.ConnectRetries+1; i++ {
+		var cl *ssh.Client
+		if cl, err = connectSSH(ctx, hostPort, cfg); err == nil {
+			return &SSH{cl, nil}, nil
+		}
+		if ctx.Err() != nil {
+			return nil, ctx.Err()
+		}
+		if o.WarnFunc != nil && i < o.ConnectRetries {
+			o.WarnFunc(fmt.Sprintf("Retrying SSH connection: %v", err))
+		}
+	}
+	return nil, err
+}
+
+// connectSSH attempts to synchronously connect to hostPort as directed by cfg.
+func connectSSH(ctx context.Context, hostPort string, cfg *ssh.ClientConfig) (*ssh.Client, error) {
+	ch := make(chan *ssh.Client, 1)
+	err := doAsync(ctx, func() error {
+		cl, err := ssh.Dial("tcp", hostPort, cfg)
+		ch <- cl
 		return err
 	})
-	if err != nil {
-		// TODO(derat): Avoid leaking the client if the deadline is reached first.
-		return nil, err
+	if err == nil {
+		return <-ch, nil
 	}
-	return &SSH{cl, nil}, nil
+
+	// We don't have any way to abort the connection attempt, so just start a goroutine
+	// that will close the connection if or when it's finally established.
+	go func() {
+		if cl := <-ch; cl != nil {
+			cl.Conn.Close()
+		}
+	}()
+	return nil, err
 }
 
 // Close closes the underlying connection to the host.

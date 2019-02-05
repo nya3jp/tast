@@ -28,18 +28,20 @@ func init() {
 }
 
 // connectToServer establishes a connection to srv using key.
-func connectToServer(ctx context.Context, srv *test.SSHServer, key *rsa.PrivateKey) (*SSH, error) {
+// base is used as a base set of options.
+func connectToServer(ctx context.Context, srv *test.SSHServer, key *rsa.PrivateKey, base *SSHOptions) (*SSH, error) {
 	keyFile, err := test.WriteKey(key)
 	if err != nil {
 		return nil, err
 	}
 	defer os.Remove(keyFile)
 
-	o := &SSHOptions{KeyFile: keyFile}
-	if err = ParseSSHTarget(srv.Addr().String(), o); err != nil {
+	o := *base
+	o.KeyFile = keyFile
+	if err = ParseSSHTarget(srv.Addr().String(), &o); err != nil {
 		return nil, err
 	}
-	s, err := NewSSH(ctx, o)
+	s, err := NewSSH(ctx, &o)
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +81,7 @@ func newTestData(t *testing.T) *testData {
 		t.Fatal(err)
 	}
 
-	if td.hst, err = connectToServer(td.ctx, td.srv, userKey); err != nil {
+	if td.hst, err = connectToServer(td.ctx, td.srv, userKey, &SSHOptions{}); err != nil {
 		td.srv.Close()
 		t.Fatal(err)
 	}
@@ -158,6 +160,31 @@ func checkDir(dir string, exp map[string]string) error {
 		return fmt.Errorf("files not copied correctly: src %v, dst %v", exp, act)
 	}
 	return nil
+}
+
+func TestRetry(t *testing.T) {
+	t.Parallel()
+	srv, err := test.NewSSHServer(&userKey.PublicKey, hostKey, func(*test.ExecReq) {})
+	if err != nil {
+		t.Fatal("Failed starting server: ", err)
+	}
+	defer srv.Close()
+
+	// Configure the server to reject the next two connections and let the client only retry once.
+	srv.RejectConns(2)
+	ctx := context.Background()
+	if hst, err := connectToServer(ctx, srv, userKey, &SSHOptions{ConnectRetries: 1}); err == nil {
+		t.Error("Unexpectedly able to connect to server with inadequate retries")
+		hst.Close(ctx)
+	}
+
+	// With two retries (i.e. three attempts), the connection should be successfully established.
+	srv.RejectConns(2)
+	if hst, err := connectToServer(ctx, srv, userKey, &SSHOptions{ConnectRetries: 2}); err != nil {
+		t.Error("Failed connecting to server despite adequate retries: ", err)
+	} else {
+		hst.Close(ctx)
+	}
 }
 
 func TestRun(t *testing.T) {

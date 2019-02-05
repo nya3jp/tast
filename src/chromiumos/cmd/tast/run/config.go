@@ -107,7 +107,8 @@ type Config struct {
 	remoteBundleDir string // dir where packaged remote test bundles are installed
 	remoteDataDir   string // dir containing packaged remote test data
 
-	hst *host.SSH // cached SSH connection; may be nil
+	hst        *host.SSH // cached SSH connection; may be nil
+	sshRetries int       // number of SSH connect retries
 
 	devservers                  []string     // list of devserver URLs
 	checkTestDeps               testDepsMode // when test dependencies should be checked
@@ -166,6 +167,7 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 	f.BoolVar(&c.checkPortageDeps, "checkbuilddeps", true, "check test bundle's dependencies before building")
 	f.BoolVar(&c.forceBuildLocalRunner, "buildlocalrunner", false, "force building local_test_runner and pushing to DUT")
 	f.BoolVar(&c.useEphemeralDevserver, "ephemeraldevserver", true, "start an ephemeral devserver if no devserver is specified")
+	f.IntVar(&c.sshRetries, "sshretries", 0, "number of SSH connect retries")
 
 	bt := command.NewEnumFlag(map[string]int{"local": int(localType), "remote": int(remoteType)},
 		func(v int) { c.buildType = testType(v) }, "local")

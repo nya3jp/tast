@@ -10,11 +10,13 @@ import (
 	"crypto/rsa"
 	"crypto/subtle"
 	"encoding/binary"
+	"errors"
 	"fmt"
 	"io"
 	"log"
 	"net"
 	"os/exec"
+	"sync/atomic"
 	"syscall"
 	"time"
 
@@ -45,6 +47,7 @@ type SSHServer struct {
 	listener net.Listener
 
 	answerPings  bool          // if true, ping requests will be answered
+	rejectConns  int64         // number of connections to reject (used as counter)
 	sessionDelay time.Duration // delay before starting new sessions
 	execHandler  ExecHandler   // called to handle "exec" requests
 }
@@ -118,6 +121,11 @@ func (s *SSHServer) AnswerPings(v bool) {
 	s.answerPings = v
 }
 
+// RejectConns instructs the server to reject the next n connections.
+func (s *SSHServer) RejectConns(n int) {
+	atomic.StoreInt64(&s.rejectConns, int64(n))
+}
+
 // SessionDelay configures a delay used by the server before starting a new session.
 func (s *SSHServer) SessionDelay(d time.Duration) {
 	s.sessionDelay = d
@@ -133,6 +141,10 @@ func (s *SSHServer) Addr() net.Addr {
 
 // handleConn services a new incoming connection on conn.
 func (s *SSHServer) handleConn(conn net.Conn) error {
+	if atomic.AddInt64(&s.rejectConns, -1) >= 0 {
+		return errors.New("intentionally rejecting")
+	}
+
 	_, chans, reqs, err := ssh.NewServerConn(conn, s.cfg)
 	if err != nil {
 		return fmt.Errorf("failed to handshake: %v", err)

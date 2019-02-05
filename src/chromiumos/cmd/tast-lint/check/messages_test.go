@@ -56,6 +56,14 @@ func Test(ctx context.Context, s *testing.State) {
 	errors.Errorf("need Errorf for multiple values: %v", true)
 	errors.Errorf("also okay for custom formatting: %d", 1)
 	errors.Wrapf(err, "this is okay: %v", 3)
+
+	// Bad quoting:
+	s.Logf("Read value '%s'", "blah")
+	s.Errorf("Read value \"%v\"", "blah")
+
+	// Good quoting:
+	s.Logf("Read value %q", "blah")
+	s.Errorf("Read value '%d'", 123)
 }`
 
 	f, fs := parse(code, "test.go")
@@ -79,6 +87,8 @@ func Test(ctx context.Context, s *testing.State) {
 		`test.go:39:2: Use errors.New("<msg>") instead of errors.Errorf("<msg>")`,
 		`test.go:40:2: Use errors.Wrap(err, "<msg>") instead of errors.Errorf("<msg>: %v", err)`,
 		`test.go:41:2: Use errors.Wrapf(err, "<msg>", ...) instead of errors.Errorf("<msg>: %v", ..., err)`,
+		`test.go:50:2: Use %q to quote values instead of manually quoting them`,
+		`test.go:51:2: Use %q to quote values instead of manually quoting them`,
 	}
 	verifyIssues(t, issues, expects)
 }

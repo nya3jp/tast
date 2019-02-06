@@ -39,7 +39,7 @@ Tests are located in the [tast-tests repository].
 
 ## Documentation
 
-For more information, see the [docs](docs/) subdirectory.
+For more information, see the [list of documentation](docs/README.md).
 
 [![GoDoc](https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src?status.svg)](https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src)
 

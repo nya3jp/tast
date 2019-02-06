@@ -70,6 +70,24 @@
       "revId": "1960f3a7554a295dbcaf27ad0155368d89d2b457",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2421af40_f39b5858",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1195459
+      },
+      "writtenOn": "2019-02-06T07:33:12Z",
+      "side": 1,
+      "message": "(sorry I missed that reply) Yes, we can use \"--enable-virtual-keyboard\" Chrome flag. OK, I\u0027ll try to rewrite arc.ChromeVirtualKeyboard with that.",
+      "parentUuid": "1906db91_efb267cd",
+      "revId": "1960f3a7554a295dbcaf27ad0155368d89d2b457",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "a969a5f5_e472829d",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-06T10:05:24Z",
+      "side": 1,
+      "message": "Just deleted.",
+      "parentUuid": "09bd4b73_79eb55ba",
+      "range": {
+        "startLine": 70,
+        "startChar": 41,
+        "endLine": 70,
+        "endChar": 66
+      },
+      "revId": "d935085d7594ef9ab97847912d89c74ac1da3e0f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c929d484_dc9eb0da",
         "filename": "src/chromiumos/tast/testing/state.go",
         "patchSetId": 2
@@ -39,6 +63,24 @@
       "revId": "d935085d7594ef9ab97847912d89c74ac1da3e0f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "74aa7823_0c8bb2f6",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-06T10:05:24Z",
+      "side": 1,
+      "message": "Done, thanks!",
+      "parentUuid": "c929d484_dc9eb0da",
+      "revId": "d935085d7594ef9ab97847912d89c74ac1da3e0f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

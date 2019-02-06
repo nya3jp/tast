@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "09bd4b73_79eb55ba",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-06T07:52:09Z",
+      "side": 1,
+      "message": "nit: maybe \"when possible\" instead, or can even just delete this",
+      "range": {
+        "startLine": 70,
+        "startChar": 41,
+        "endLine": 70,
+        "endChar": 66
+      },
+      "revId": "d935085d7594ef9ab97847912d89c74ac1da3e0f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c929d484_dc9eb0da",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-06T07:52:09Z",
+      "side": 1,
+      "message": "huge nit: i\u0027d just delete \"to other functions\" here, as \"pass to \u003crecipient\u003e \u003csomething\u003e\" is a bit uncommon. \"pass \u003csomething\u003e to \u003crecipient\u003e\" is more common, but it may be hard to parse here since \u003csomething\u003e is a pretty long phrase.",
+      "revId": "d935085d7594ef9ab97847912d89c74ac1da3e0f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "15fdf243_62b7ae54",
+        "filename": "docs/running_tests.md",
+        "patchSetId": 7
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-06T22:28:59Z",
+      "side": 1,
+      "message": "nit: indenting is a bit off here, i think: https://github.com/google/styleguide/blob/gh-pages/docguide/style.md#nested-list-spacing\n\nusing underscores instead of spaces:\n\n*___some item\n____*___nested item\n____*___another nested item,\n        wrapped to a second line\n\n(nested items look like they\u0027re indented two extra spaces)",
+      "revId": "8cb180300bf57a47adb5f1d1da3ad609d8f6e7d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0ac3490b_71d8531e",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 7
+      },
+      "lineNbr": 610,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-06T22:28:59Z",
+      "side": 1,
+      "message": "nit: we usually wrap markdown text blocks at 80 columns\n\ni\u0027d suggest just using \"[perf]\" here; it\u0027s easier to read in the source and matches what we use elsewhere in tast docs when linking to packages",
+      "revId": "8cb180300bf57a47adb5f1d1da3ad609d8f6e7d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

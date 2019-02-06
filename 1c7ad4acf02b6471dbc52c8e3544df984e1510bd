@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "62952836_122cc677",
+        "filename": "docs/index.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2019-02-06T18:10:15Z",
+      "side": 1,
+      "message": "make sense. It seems that index.md doesn\u0027t work for this purpose.\nhttps://chromium.googlesource.com/chromiumos/platform/tast/+/refs/changes/03/1454703/1/docs/\nSo, I renamed it to README.md.\n\nAnd, I also agree that go/tast-docs should be a link to the subdir",
+      "parentUuid": "b8a477eb_aa631232",
+      "revId": "1c7ad4acf02b6471dbc52c8e3544df984e1510bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ca0d2094_3ab25b47",
         "filename": "docs/index.md",
         "patchSetId": 1
@@ -39,6 +57,30 @@
       "revId": "1c7ad4acf02b6471dbc52c8e3544df984e1510bd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3e91a002_556418be",
+        "filename": "docs/index.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2019-02-06T18:10:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ca0d2094_3ab25b47",
+      "range": {
+        "startLine": 1,
+        "startChar": 21,
+        "endLine": 1,
+        "endChar": 26
+      },
+      "revId": "1c7ad4acf02b6471dbc52c8e3544df984e1510bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -65,6 +107,30 @@
     },
     {
       "key": {
+        "uuid": "0692c9aa_12369d8c",
+        "filename": "docs/index.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2019-02-06T18:10:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5dd2b316_4abc8788",
+      "range": {
+        "startLine": 4,
+        "startChar": 29,
+        "endLine": 4,
+        "endChar": 31
+      },
+      "revId": "1c7ad4acf02b6471dbc52c8e3544df984e1510bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "150bd4f3_14968e2e",
         "filename": "docs/index.md",
         "patchSetId": 1
@@ -79,6 +145,24 @@
       "revId": "1c7ad4acf02b6471dbc52c8e3544df984e1510bd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "baa71e3d_9896e054",
+        "filename": "docs/index.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2019-02-06T18:10:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "150bd4f3_14968e2e",
+      "revId": "1c7ad4acf02b6471dbc52c8e3544df984e1510bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -99,6 +183,24 @@
     },
     {
       "key": {
+        "uuid": "6b9eee84_91df61b2",
+        "filename": "docs/index.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2019-02-06T18:10:15Z",
+      "side": 1,
+      "message": "Hmm, though I don\u0027t know why this document was originally written, I think this document is useful for test authors, because this document introduces tools to detect problems in Tast tests they wrote.\nIn addition, this document starts with \"Reviewing test code can be time-consuming, ...\".\nSo, I thought the author of this document wanted test authors to use these tools before uploading CLs. (e.g. fast_build.sh for go vet)\n\nAnyway, I want to listen nya@ and/or hidehiko@\u0027s opinion.\n\nBTW, in patch set 2, I moved this under Test Dependencies because this is not necessary to make tests work at least.",
+      "parentUuid": "90cf2fbd_b722b242",
+      "revId": "1c7ad4acf02b6471dbc52c8e3544df984e1510bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ef5c49a4_d16330e3",
         "filename": "docs/index.md",
         "patchSetId": 1
@@ -113,6 +215,24 @@
       "revId": "1c7ad4acf02b6471dbc52c8e3544df984e1510bd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9c889a02_0dabd5ec",
+        "filename": "docs/index.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2019-02-06T18:10:15Z",
+      "side": 1,
+      "message": "good idea!\nDone",
+      "parentUuid": "ef5c49a4_d16330e3",
+      "revId": "1c7ad4acf02b6471dbc52c8e3544df984e1510bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "8887adf1_d4f8b66b",
+        "filename": "docs/running_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-06T02:22:22Z",
+      "side": 1,
+      "message": "sure, something like this?\n\n*   `tests/\u003ctest-name\u003e/` - Subdirectories containing per-test results.\n    *   `log.txt` - Log messages and errors reported by the test.\n    *   `results-chart.json` - Machine-parseable ... (but please mention that this is only present if the test reports it)\n    *   `...` - Any other [output files] written by the test.\n\n(and then [output files] can link to the corresponding section of writing_tests.md)",
+      "parentUuid": "83427396_5180f50a",
+      "revId": "06bb1cf0e878080851716b5628ad2f56b2f87261",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "a199994c_15277d1c",
         "filename": "docs/running_tests.md",
         "patchSetId": 2
@@ -72,6 +90,24 @@
     },
     {
       "key": {
+        "uuid": "0b078123_7bd53844",
+        "filename": "docs/running_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-06T02:22:22Z",
+      "side": 1,
+      "message": "upload, then click the gitiles link in gerrit and make sure the links work :-P\n\nsee also https://chromium.googlesource.com/chromiumos/docs/+/master/README.md. i use md_browser often, but the output doesn\u0027t match the canonical gitiles rendering. i haven\u0027t tried preview_docs but think it uses gitiles iirc.",
+      "parentUuid": "2dafe26f_74ce5828",
+      "revId": "06bb1cf0e878080851716b5628ad2f56b2f87261",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "15ace02b_e63e910e",
         "filename": "docs/writing_tests.md",
         "patchSetId": 2
@@ -101,6 +137,24 @@
       "side": 1,
       "message": "So there\u0027s no way to use the backticks?  They do create problems, at least with the rendering engines I tried.",
       "parentUuid": "15ace02b_e63e910e",
+      "revId": "06bb1cf0e878080851716b5628ad2f56b2f87261",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "60afdd16_6969a95d",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 610,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-06T02:22:22Z",
+      "side": 1,
+      "message": "you can use them, just not within or around brackets\n\nor in headings, because i think they break gitiles\u0027s table-of-contents rendering\n\n(i wish that markdown were better-specified and that the things that render it were consistent)",
+      "parentUuid": "b56c2be9_62df2a40",
       "revId": "06bb1cf0e878080851716b5628ad2f56b2f87261",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

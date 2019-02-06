@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "ad130df5_11e7ae4d",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-06T03:53:39Z",
+      "side": 1,
+      "message": "Thanks, changed to the suggested text.",
+      "parentUuid": "afcf3454_1ac28a6b",
+      "revId": "2f00119ec5c8311dad3f2e2d700d5d244fecca02",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e2efc416_9ebb807b",
         "filename": "src/chromiumos/tast/testing/state.go",
         "patchSetId": 1
@@ -30,6 +48,30 @@
       "writtenOn": "2019-02-05T04:07:12Z",
       "side": 1,
       "message": "nit: \"main test functions only\"? i\u0027m not sure whether we want to recommend using it only in main test functions, or if it\u0027s also okay to pass it to helper functions that are in test files. do you have opinions about this?\n\nin general, i think it\u0027s usually best to pass just the data you need for the same reasons that i think you\u0027re stating here: it makes dependencies clearer and implicitly documents what the function will do (i.e. if you don\u0027t pass it a State, it\u0027s probably not going to abort the test or report test errors since it can\u0027t call Fatal or Error).\n\nbut at the same time, we often permit passing State objects to subpackages that implement shared test code.",
+      "range": {
+        "startLine": 69,
+        "startChar": 20,
+        "endLine": 69,
+        "endChar": 68
+      },
+      "revId": "2f00119ec5c8311dad3f2e2d700d5d244fecca02",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fd07549a_8e33456d",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-06T03:53:39Z",
+      "side": 1,
+      "message": "Yes, I think it\u0027s totally fine to pass State for parameterized tests and some other useful cases. Maybe it was too strict to say \"only in main test functions only\".\n\nI\u0027ve updated the doc to be more permissive, wdyt?",
+      "parentUuid": "e2efc416_9ebb807b",
       "range": {
         "startLine": 69,
         "startChar": 20,

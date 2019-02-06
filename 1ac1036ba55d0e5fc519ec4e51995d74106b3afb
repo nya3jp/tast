@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9b4cad85_57d5fd1e",
+        "filename": "docs/README.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-06T22:18:22Z",
+      "side": 1,
+      "message": "nit: sorry for not mentioning it earlier, but would you mind adding a newline after headings? https://github.com/google/styleguide/blob/gh-pages/docguide/style.md#add-spacing-to-headings\n\n(here, L15, L20)",
+      "revId": "1ac1036ba55d0e5fc519ec4e51995d74106b3afb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d9ff3c19_2c3ded44",
+        "filename": "docs/README.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-06T22:18:22Z",
+      "side": 1,
+      "message": "nit: another suggestion i should\u0027ve made earlier: since most of these link URLs are very short and since the structure of the document is simple and it doesn\u0027t include any freeform text, it might be easier to maintain this if you specified the links inline:\n\n  *   [Quickstart](quickstart.md)\n  *   [Running Tests](running_tests.md)\n  etc.",
+      "revId": "1ac1036ba55d0e5fc519ec4e51995d74106b3afb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1a647562_61992a0f",
+        "filename": "docs/README.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-06T22:18:22Z",
+      "side": 1,
+      "message": "nit throughout: mind using 4-space indent for this list? https://github.com/google/styleguide/blob/gh-pages/docguide/style.md#nested-list-spacing\n\neven though this list doesn\u0027t have nesting, this can help if there are long items that wrap in the future",
+      "revId": "1ac1036ba55d0e5fc519ec4e51995d74106b3afb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

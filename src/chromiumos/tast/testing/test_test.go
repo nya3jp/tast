@@ -258,6 +258,31 @@ func TestRunLogAfterTimeout(t *gotesting.T) {
 	}
 }
 
+func TestRunLateWriteFromGoroutine(t *gotesting.T) {
+	// Run a test that calls s.Error from a goroutine after the test has finished.
+	start := make(chan struct{}) // tells goroutine to start
+	end := make(chan struct{})   // announces goroutine is done
+	test := Test{Func: func(ctx context.Context, s *State) {
+		go func() {
+			<-start
+			s.Error("This message should be discarded since the test is done")
+			close(end)
+		}()
+	}, Timeout: time.Minute}
+	or := newOutputReader()
+	test.Run(context.Background(), or.ch, &TestConfig{})
+
+	// Tell the goroutine to start and wait for it to finish.
+	close(start)
+	<-end
+
+	// No errors should be reported, and we also shouldn't panic due to
+	// the s.Error call trying to write to a closed channel.
+	for _, err := range getOutputErrors(or.read()) {
+		t.Error("Got error: ", err.Reason)
+	}
+}
+
 func TestRunSkipStages(t *gotesting.T) {
 	type action int // actions that can be performed by stages
 	const (

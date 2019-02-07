@@ -80,8 +80,9 @@ type State struct {
 
 	preValue interface{} // value returned by test.Pre.Prepare; may be nil
 
+	closed   bool       // true after close is called and ch is closed
 	hasError bool       // whether the test has already reported errors or not
-	mu       sync.Mutex // mutex to protect hasError
+	mu       sync.Mutex // protects closed and hasError
 }
 
 // TestConfig contains details about how an individual test should be run.
@@ -103,6 +104,17 @@ type TestConfig struct {
 // newState returns a new State object.
 func newState(test *Test, ch chan<- Output, cfg *TestConfig) *State {
 	return &State{test: test, ch: ch, cfg: cfg}
+}
+
+// close is called after the test has completed to close s.ch.
+func (s *State) close() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if !s.closed {
+		close(s.ch)
+		s.closed = true
+	}
 }
 
 // DataPath returns the absolute path to use to access a data file previously
@@ -151,12 +163,12 @@ func (s *State) Meta() *Meta {
 
 // Log formats its arguments using default formatting and logs them.
 func (s *State) Log(args ...interface{}) {
-	s.ch <- Output{T: time.Now(), Msg: fmt.Sprint(args...)}
+	s.writeOutput(Output{T: time.Now(), Msg: fmt.Sprint(args...)})
 }
 
 // Logf is similar to Log but formats its arguments using fmt.Sprintf.
 func (s *State) Logf(format string, args ...interface{}) {
-	s.ch <- Output{T: time.Now(), Msg: fmt.Sprintf(format, args...)}
+	s.writeOutput(Output{T: time.Now(), Msg: fmt.Sprintf(format, args...)})
 }
 
 // Error formats its arguments using default formatting and marks the test
@@ -166,7 +178,7 @@ func (s *State) Error(args ...interface{}) {
 	s.recordError()
 	fullMsg, lastMsg, err := formatError(args...)
 	e := NewError(err, fullMsg, lastMsg, 1)
-	s.ch <- Output{T: time.Now(), Err: e}
+	s.writeOutput(Output{T: time.Now(), Err: e})
 }
 
 // Errorf is similar to Error but formats its arguments using fmt.Sprintf.
@@ -174,7 +186,7 @@ func (s *State) Errorf(format string, args ...interface{}) {
 	s.recordError()
 	fullMsg, lastMsg, err := formatErrorf(format, args...)
 	e := NewError(err, fullMsg, lastMsg, 1)
-	s.ch <- Output{T: time.Now(), Err: e}
+	s.writeOutput(Output{T: time.Now(), Err: e})
 }
 
 // Fatal is similar to Error but additionally immediately ends the test.
@@ -182,7 +194,7 @@ func (s *State) Fatal(args ...interface{}) {
 	s.recordError()
 	fullMsg, lastMsg, err := formatError(args...)
 	e := NewError(err, fullMsg, lastMsg, 1)
-	s.ch <- Output{T: time.Now(), Err: e}
+	s.writeOutput(Output{T: time.Now(), Err: e})
 	runtime.Goexit()
 }
 
@@ -191,8 +203,19 @@ func (s *State) Fatalf(format string, args ...interface{}) {
 	s.recordError()
 	fullMsg, lastMsg, err := formatErrorf(format, args...)
 	e := NewError(err, fullMsg, lastMsg, 1)
-	s.ch <- Output{T: time.Now(), Err: e}
+	s.writeOutput(Output{T: time.Now(), Err: e})
 	runtime.Goexit()
+}
+
+// writeOutput writes o to s.ch.
+// o is discarded if close has already been called since a write to a closed channel would panic.
+func (s *State) writeOutput(o Output) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if !s.closed {
+		s.ch <- o
+	}
 }
 
 // HasError reports whether the test has already reported errors.

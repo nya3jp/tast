@@ -34,6 +34,7 @@ func main() {
 			// The one exception is tast_vm, which is inserted by VM builders via -extrauseflags.
 			// TODO(b/123675239): The arcvm flag is used here to disable all Android tests because
 			// they currently make many container-specific assumptions and therefore fail.
+			"amd64":        "amd64",
 			"android":      "arc && !arcvm",
 			"android_p":    `arc && "android-container-pi" && !arcvm`,
 			"aslr":         "!asan",                                // ASan instrumentation breaks ASLR

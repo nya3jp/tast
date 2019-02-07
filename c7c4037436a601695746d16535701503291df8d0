@@ -16,6 +16,23 @@
       "revId": "c7c4037436a601695746d16535701503291df8d0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b267a41c_608db414",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 375,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-07T21:19:44Z",
+      "side": 1,
+      "message": "whoops, there\u0027s still a race here -- runStages() closes the channel immediately after all stages have finished. this is tricky. :-/",
+      "revId": "c7c4037436a601695746d16535701503291df8d0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

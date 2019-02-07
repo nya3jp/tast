@@ -139,7 +139,7 @@ func (tst *Test) DataDir() string {
 func (tst *Test) Run(ctx context.Context, ch chan<- Output, cfg *TestConfig) bool {
 	// Attach the state to a context so support packages can log to it.
 	s := newState(tst, ch, cfg)
-	ctx = context.WithValue(ctx, logKey, s)
+	ctx = context.WithValue(ctx, stateKey, s)
 
 	var stages []stage
 	addStage := func(f stageFunc, ctxTimeout, runTimeout time.Duration) {

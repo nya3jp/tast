@@ -66,6 +66,7 @@ func main() {
 			"tpm":                  "!mocktpm && !tast_vm",
 			"transparent_hugepage": "transparent_hugepage",
 			"usbguard":             "usbguard",
+			"virtual_usb_printer":  "usbip",
 			// Some VM builds actually can run nested VM with right host configuration.
 			// But we haven't enable this feature on builders. For now, just disable
 			// vm_host feature for VM builds.

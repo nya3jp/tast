@@ -8,6 +8,7 @@ command's `-checktestdeps` flag to control this behavior.
 Tests specify dependencies through the `SoftwareDeps` field in [testing.Test].
 The following software features are defined:
 
+*   `amd64` - Features that are available on amd64 boards.
 *   `android` - The ability to [run Android apps]. Any version of Android can be
     used.
 *   `android_p` - The ability to [run Android apps] that require Android P or

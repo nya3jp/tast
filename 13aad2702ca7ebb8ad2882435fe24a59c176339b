@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6bffe11c_7a3fda01",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-07T00:33:48Z",
+      "side": 1,
+      "message": "nit: to match the style of other descriptions, how about something like the following?\n\n  *   `amd64` - The [amd64] processor architecture.\n\nand then after testing.Test in the list at the bottom:\n\n  [amd64]: https://en.wikipedia.org/wiki/X86-64",
+      "range": {
+        "startLine": 11,
+        "startChar": 14,
+        "endLine": 11,
+        "endChar": 57
+      },
+      "revId": "13aad2702ca7ebb8ad2882435fe24a59c176339b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

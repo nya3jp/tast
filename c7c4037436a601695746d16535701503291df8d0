@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c9590bd1_0f292e70",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 363,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-07T19:27:26Z",
+      "side": 1,
+      "message": "one downside of this interface is that binding variables becomes ugly, i think. instead of this:\n\n    wg :\u003d sync.WaitGroup{}\n    for i :\u003d 0; i \u003c 10; i++ {\n        wg.Add(1)\n        go func(i int) {\n            s.Log(i)\n            wg.Done()\n        }(i)\n    }   \n    wg.Wait()\n\nyou may need to write this:\n\n    wg :\u003d sync.WaitGroup{}\n    for i :\u003d 0; i \u003c 10; i++ {\n        wg.Add(1)\n        testing.Go(ctx, func(i int) func() {\n            return func() {\n                s.Log(i)\n                wg.Done()\n            }\n        }(i))\n    }\n    wg.Wait()",
+      "revId": "c7c4037436a601695746d16535701503291df8d0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -24,7 +24,7 @@ import (
 type contextKeyType string
 
 // Key used for attaching a *State to a context.Context.
-var logKey contextKeyType = "log"
+var stateKey contextKeyType = "state"
 
 const metaCategory = "meta" // category for remote tests exercising Tast, as in "meta.TestName"
 
@@ -324,14 +324,14 @@ func NewError(err error, fullMsg, lastMsg string, skipFrames int) *Error {
 // providing support for tests. If testing.State is available, just call
 // State.Log or State.Logf instead.
 func ContextLog(ctx context.Context, args ...interface{}) {
-	if s, ok := ctx.Value(logKey).(*State); ok {
+	if s, ok := ctx.Value(stateKey).(*State); ok {
 		s.Log(args...)
 	}
 }
 
 // ContextLogf is similar to ContextLog but formats its arguments using fmt.Sprintf.
 func ContextLogf(ctx context.Context, format string, args ...interface{}) {
-	if s, ok := ctx.Value(logKey).(*State); ok {
+	if s, ok := ctx.Value(stateKey).(*State); ok {
 		s.Logf(format, args...)
 	}
 }
@@ -339,8 +339,44 @@ func ContextLogf(ctx context.Context, format string, args ...interface{}) {
 // ContextOutDir is similar to OutDir but takes context instead. It is intended to be
 // used by packages providing support for tests that need to write files.
 func ContextOutDir(ctx context.Context) (dir string, ok bool) {
-	if s, ok := ctx.Value(logKey).(*State); ok {
+	if s, ok := ctx.Value(stateKey).(*State); ok {
 		return s.OutDir(), true
 	}
 	return "", false
+}
+
+// Go launches a goroutine that runs f.
+// If f panics, this function recovers and reports a test error.
+//
+// Tests should call this with the test context (or a context derived from it)
+// instead of using the 'go' keyword:
+//
+//  // GOOD: Panic in goroutine is caught and reported as an error.
+//	testing.Go(ctx, func() {
+//		// Do background work.
+//	})
+//
+//  // BAD: Panic in goroutine is not caught: https://crbug.com/929575
+//	go func() {
+//		// Do background work.
+//	}()
+func Go(ctx context.Context, f func()) {
+	s, ok := ctx.Value(stateKey).(*State)
+	if !ok {
+		panic("Context passed to Go() must be derived from test context")
+	}
+
+	go func() {
+		defer func() {
+			// We need s.ch to be open in order to report an error; writing to a closed channel will
+			// cause another panic. If f is buggy and doesn't honor the test's context, this code
+			// may execute after the test has finished and s.ch has been closed. However, there is a
+			// short delay between ctx expiring and s.ch being closed (see stage.ctxTimeout vs.
+			// stage.runTimeout), so we just check if ctx is still valid before reporting the error.
+			if r := recover(); r != nil && ctx.Err() == nil {
+				s.Error("Panic in goroutine: ", r)
+			}
+		}()
+		f()
+	}()
 }

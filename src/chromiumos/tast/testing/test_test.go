@@ -211,6 +211,25 @@ func TestRunPanic(t *gotesting.T) {
 	}
 }
 
+func TestRunGoroutinePanic(t *gotesting.T) {
+	test := Test{Func: func(ctx context.Context, s *State) {
+		// Rather than panicking directly in the test function, panic in a goroutine started by the test.
+		// The Go() function should recover from the panic and report an error.
+		ch := make(chan struct{})
+		Go(ctx, func() {
+			defer func() { close(ch) }()
+			panic("intentional panic")
+		})
+		<-ch
+	}, Timeout: time.Minute}
+
+	or := newOutputReader()
+	test.Run(context.Background(), or.ch, &TestConfig{})
+	if errs := getOutputErrors(or.read()); len(errs) != 1 {
+		t.Errorf("Got %v errors for panicking test goroutine; want 1", errs)
+	}
+}
+
 func TestRunDeadline(t *gotesting.T) {
 	f := func(ctx context.Context, s *State) {
 		// Wait for the context to report that the deadline has been hit.

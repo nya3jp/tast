@@ -8,6 +8,7 @@ command's `-checktestdeps` flag to control this behavior.
 Tests specify dependencies through the `SoftwareDeps` field in [testing.Test].
 The following software features are defined:
 
+*   `amd64` - The [amd64] processor architecture.
 *   `android` - The ability to [run Android apps]. Any version of Android can be
     used.
 *   `android_p` - The ability to [run Android apps] that require Android P or
@@ -93,3 +94,5 @@ outside of video tests.
 [local_test_runner]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/cmd/local_test_runner/main.go
 [tast-use-flags]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/tast-use-flags/
 [autocaps package]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/autocaps/
+[Transparent Hugepage]: https://www.kernel.org/doc/Documentation/vm/transhuge.txt
+[amd64]: https://en.wikipedia.org/wiki/X86-64

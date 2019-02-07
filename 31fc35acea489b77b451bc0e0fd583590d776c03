@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b2bb18bf_2ce9f673",
+        "filename": "src/chromiumos/tast/host/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 277,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-07T20:11:53Z",
+      "side": 1,
+      "message": "please double-check my logic in this function. this feels pretty tricky but nothing simpler jumped out at me.",
+      "revId": "31fc35acea489b77b451bc0e0fd583590d776c03",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

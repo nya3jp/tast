@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "55e63347_c621ed65",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-07T22:17:12Z",
+      "side": 1,
+      "message": "this follows the usual advice: only close channels from the same place as where you write to them",
+      "revId": "eab922de3f7ac741ecc5f9058365d298be2ad6c8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

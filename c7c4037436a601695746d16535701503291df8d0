@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "4d686fb8_2e8da629",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 362,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-08T02:07:31Z",
+      "side": 1,
+      "message": "interesting suggestion. i think i\u0027d be supportive, except i\u0027m not sure how difficult it would be to catch missing calls via tast-lint (it would be quite difficult for me to catch them during review, i think).",
+      "parentUuid": "040bb5e1_0e2ade95",
+      "range": {
+        "startLine": 354,
+        "startChar": 0,
+        "endLine": 362,
+        "endChar": 6
+      },
+      "revId": "c7c4037436a601695746d16535701503291df8d0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c9590bd1_0f292e70",
         "filename": "src/chromiumos/tast/testing/state.go",
         "patchSetId": 2

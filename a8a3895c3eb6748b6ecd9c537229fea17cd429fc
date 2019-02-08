@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1c0bb052_dc94f744",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-08T00:17:53Z",
+      "side": 1,
+      "message": "mind renaming this to something like `virtual_usb_printer`? i\u0027m generally trying to keep these dependencies as precise as possible, so i\u0027d expect something called `usbip` to only imply that USB/IP is supported.\n\nit\u0027s fine making `virtual_usb_printer` just depend on the \"usbip\" USE flag, if that USE flag also implies that the virtual-usb-printer program will be present. i just want to keep that extra context out of here and make these dependencies more explicit. :-)",
+      "range": {
+        "startLine": 54,
+        "startChar": 5,
+        "endLine": 54,
+        "endChar": 10
+      },
+      "revId": "a8a3895c3eb6748b6ecd9c537229fea17cd429fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

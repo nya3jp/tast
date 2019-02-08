@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "96c7532c_9e12d8aa",
+        "filename": "src/chromiumos/tast/host/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 248,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-02-08T08:38:10Z",
+      "side": 1,
+      "message": "nit: maybe move this to L260 to narrow down the scope?",
+      "revId": "31fc35acea489b77b451bc0e0fd583590d776c03",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b2bb18bf_2ce9f673",
         "filename": "src/chromiumos/tast/host/ssh.go",
         "patchSetId": 1
@@ -31,6 +48,24 @@
       "side": 1,
       "message": "Looks correct to me, and I don\u0027t have very better alternative. :)",
       "parentUuid": "b2bb18bf_2ce9f673",
+      "revId": "31fc35acea489b77b451bc0e0fd583590d776c03",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ea6127f0_68612d41",
+        "filename": "src/chromiumos/tast/host/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 277,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-02-08T08:38:10Z",
+      "side": 1,
+      "message": "+1.",
+      "parentUuid": "6a91b7b7_222e5a83",
       "revId": "31fc35acea489b77b451bc0e0fd583590d776c03",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false

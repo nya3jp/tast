@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "51d0c490_649db35d",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 362,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-08T03:15:48Z",
+      "side": 1,
+      "message": "After thinking for a while, I\u0027m still not sure if we want to enforce everyone to use testing.Go or even testing.ProtectFromPanic in every goroutine creation. It has several downsides:\n\n- It\u0027s too different from standard Go.\n- For short and trivial goroutines these helpers might be tedious.\n- We can\u0027t use protectors in third-party library goroutines anyway.\n\nI think this kind of protector is good to prepare for emergency (that is, used temporarily to mitigate and debug crashes happening on production without disabling tests), but for other cases I prefer another solution without the downsides mentioned above (that is, forking before running tests).",
+      "parentUuid": "4d686fb8_2e8da629",
+      "range": {
+        "startLine": 354,
+        "startChar": 0,
+        "endLine": 362,
+        "endChar": 6
+      },
+      "revId": "c7c4037436a601695746d16535701503291df8d0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c9590bd1_0f292e70",
         "filename": "src/chromiumos/tast/testing/state.go",
         "patchSetId": 2

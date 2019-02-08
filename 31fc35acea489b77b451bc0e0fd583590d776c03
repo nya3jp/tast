@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "0a33ab5e_64170434",
+        "filename": "src/chromiumos/tast/host/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 248,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-02-08T15:58:09Z",
+      "side": 1,
+      "message": "Oh, maybe miscommunication.\nI meant, just before the for stmt.\n\nhostPort :\u003d fmt.Sprintf(...)\nfor i :\u003d ...; {\n  ...\n}\n\nhostPort is used only in the for block, specifically unused getSSHAuthMethods invocation and its error handling.\nIndeed it\u0027s totally small stuff, but often I prefer to declare the var at latest.\n\n\u003e  but i still have a slight preference for not doing the same string formatting (or any other initialization) repeatedly within a loop if i can help it. that\u0027s why i\u0027m initializing cfg here rather than in the loop (or in connectSSH), too.\n\nAgreed :-)",
+      "parentUuid": "1479ab09_c915957e",
+      "revId": "31fc35acea489b77b451bc0e0fd583590d776c03",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b2bb18bf_2ce9f673",
         "filename": "src/chromiumos/tast/host/ssh.go",
         "patchSetId": 1

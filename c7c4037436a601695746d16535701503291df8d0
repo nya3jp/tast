@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "040bb5e1_0e2ade95",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 362,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-08T01:49:31Z",
+      "side": 1,
+      "message": "Introducing our own \"go\" alternative sounds a bit tricky as you said in another ocmment.\n\nHow about providing testing.ProtectFromPanic instead (naming is TBD), which is supposed to be used in the following way:\n\n go func() {\n   defer testing.ProtectFromPanic(ctx)\n }()",
+      "range": {
+        "startLine": 354,
+        "startChar": 0,
+        "endLine": 362,
+        "endChar": 6
+      },
+      "revId": "c7c4037436a601695746d16535701503291df8d0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c9590bd1_0f292e70",
         "filename": "src/chromiumos/tast/testing/state.go",
         "patchSetId": 2

@@ -357,6 +357,16 @@ func (s *SSH) GetFile(ctx context.Context, src, dst string) error {
 	return nil
 }
 
+// SymlinkPolicy describes how symbolic links should be handled by PutTree and PutTreeRename.
+type SymlinkPolicy int
+
+const (
+	// PreserveSymlinks indicates that symlinks should be preserved during the copy.
+	PreserveSymlinks SymlinkPolicy = iota
+	// DereferenceSymlinks indicates that symlinks should be dereferenced and turned into normal files.
+	DereferenceSymlinks
+)
+
 // PutTree copies all relative paths in files from srcDir on the local machine
 // to dstDir on the host. For example, the call:
 //
@@ -366,12 +376,13 @@ func (s *SSH) GetFile(ctx context.Context, src, dst string) error {
 // the remote host and /src/dir/b being copied to /dst/dir/b. Existing files or directories
 // within dstDir with names listed in files will be overwritten. bytes is the amount of data
 // sent over the wire (possibly after compression).
-func (s *SSH) PutTree(ctx context.Context, srcDir, dstDir string, files []string) (bytes int64, err error) {
+func (s *SSH) PutTree(ctx context.Context, srcDir, dstDir string, files []string,
+	symlinkPolicy SymlinkPolicy) (bytes int64, err error) {
 	m := make(map[string]string, len(files))
 	for _, f := range files {
 		m[f] = f
 	}
-	return s.PutTreeRename(ctx, srcDir, dstDir, m)
+	return s.PutTreeRename(ctx, srcDir, dstDir, m, symlinkPolicy)
 }
 
 // PutTreeRename is similar to PutTree but additionally renames the files in the supplied
@@ -381,7 +392,7 @@ func (s *SSH) PutTree(ctx context.Context, srcDir, dstDir string, files []string
 //
 // will copy the local file or directory /src/from to /dst/to on the remote host.
 func (s *SSH) PutTreeRename(ctx context.Context, srcDir, dstDir string,
-	files map[string]string) (bytes int64, err error) {
+	files map[string]string, symlinkPolicy SymlinkPolicy) (bytes int64, err error) {
 	for src, dst := range files {
 		src, err := cleanRelativePath(src)
 		if err != nil {
@@ -414,6 +425,9 @@ func (s *SSH) PutTreeRename(ctx context.Context, srcDir, dstDir string,
 	defer handle.Close(ctx)
 
 	args := []string{"-c", "--gzip", "-C", srcDir}
+	if symlinkPolicy == DereferenceSymlinks {
+		args = append(args, "--dereference")
+	}
 	var fileArgs []string
 	for l, r := range cf {
 		fileArgs = append(fileArgs, l)

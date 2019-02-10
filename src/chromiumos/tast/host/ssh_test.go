@@ -457,7 +457,7 @@ func TestPutTree(t *testing.T) {
 
 	// Request that three of the four files be copied.
 	if n, err := td.hst.PutTree(td.ctx, srcDir, dstDir,
-		[]string{"file1", "dir2/subdir/file3", "file4"}); err != nil {
+		[]string{"file1", "dir2/subdir/file3", "file4"}, PreserveSymlinks); err != nil {
 		t.Fatal(err)
 	} else if n <= 0 {
 		t.Errorf("Copied non-positive %v bytes", n)
@@ -507,7 +507,7 @@ func TestPutTreeRename(t *testing.T) {
 		"dir2/subdir/file3": "dir2/subdir2/file3", // rename subdir
 		weirdSrcName:        "file5",              // check that regexp chars are escaped
 		"file6":             weirdDstName,         // check that replacement chars are also escaped
-	}); err != nil {
+	}, PreserveSymlinks); err != nil {
 		t.Fatal(err)
 	} else if n <= 0 {
 		t.Errorf("Copied non-positive %v bytes", n)
@@ -545,7 +545,8 @@ func TestPutTreeUnchanged(t *testing.T) {
 	}
 
 	// No bytes should be sent since the source and dest dirs are exactly the same.
-	if n, err := td.hst.PutTree(td.ctx, srcDir, dstDir, []string{"file1", "dir/file2"}); err != nil {
+	if n, err := td.hst.PutTree(td.ctx, srcDir, dstDir,
+		[]string{"file1", "dir/file2"}, PreserveSymlinks); err != nil {
 		t.Fatal(err)
 	} else if n != 0 {
 		t.Errorf("PutTree() copied %v bytes; want 0", n)
@@ -576,7 +577,7 @@ func TestPutTreeRenameUnchanged(t *testing.T) {
 	if n, err := td.hst.PutTreeRename(td.ctx, srcDir, dstDir, map[string]string{
 		"src1":     "dst1",
 		"dir/src2": "dir/dst2",
-	}); err != nil {
+	}, PreserveSymlinks); err != nil {
 		t.Fatal(err)
 	} else if n != 0 {
 		t.Errorf("PutTreeRename() copied %v bytes; want 0", n)
@@ -593,7 +594,7 @@ func TestPutTreeTimeout(t *testing.T) {
 	defer os.RemoveAll(tmpDir)
 	dstDir := filepath.Join(tmpDir, "dst")
 	td.execTimeout = endTimeout
-	if _, err := td.hst.PutTree(td.ctx, srcDir, dstDir, []string{"file"}); err == nil {
+	if _, err := td.hst.PutTree(td.ctx, srcDir, dstDir, []string{"file"}, PreserveSymlinks); err == nil {
 		t.Errorf("PutTree() with expired context didn't return error")
 	}
 }
@@ -611,12 +612,74 @@ func TestPutTreeRenameOutside(t *testing.T) {
 
 	dstDir := filepath.Join(tmpDir, "dst")
 
-	if _, err := td.hst.PutTreeRename(td.ctx, srcDir, dstDir, map[string]string{"file1": "dir/../../outside"}); err == nil {
+	if _, err := td.hst.PutTreeRename(td.ctx, srcDir, dstDir,
+		map[string]string{"file1": "dir/../../outside"}, PreserveSymlinks); err == nil {
 		t.Error("PutTreeRename with dst outside succeeded; should fail")
 	}
 
-	if _, err := td.hst.PutTreeRename(td.ctx, srcDir, dstDir, map[string]string{"/etc/passwd": "file"}); err == nil {
+	if _, err := td.hst.PutTreeRename(td.ctx, srcDir, dstDir,
+		map[string]string{"/etc/passwd": "file"}, PreserveSymlinks); err == nil {
 		t.Error("PutTreeRename with src outside succeeded; should fail")
+	}
+}
+
+func TestPutTreeSymlinks(t *testing.T) {
+	t.Parallel()
+	td := newTestData(t)
+	defer td.close()
+
+	tmpDir, srcDir := initFileTest(t, nil)
+	defer os.RemoveAll(tmpDir)
+
+	// Create a symlink pointing to an executable file outside of the source dir.
+	const (
+		data = "executable file"
+		link = "symlink"
+		mode = 0755
+	)
+	targetPath := filepath.Join(tmpDir, "exe")
+	if err := ioutil.WriteFile(targetPath, []byte(data), mode); err != nil {
+		t.Fatalf("Failed to write %v: %v", targetPath, err)
+	}
+	if err := os.Symlink(targetPath, filepath.Join(srcDir, link)); err != nil {
+		t.Fatalf("Failed to create symlink to %v: %v", targetPath, err)
+	}
+
+	// PreserveSymlinks should copy symlinks directly.
+	dstDir := filepath.Join(tmpDir, "dst_preserve")
+	if _, err := td.hst.PutTree(td.ctx, srcDir, dstDir, []string{link}, PreserveSymlinks); err != nil {
+		t.Error("PutTree failed with PreserveSymlinks: ", err)
+	} else {
+		dstFile := filepath.Join(dstDir, link)
+		if fi, err := os.Lstat(dstFile); err != nil {
+			t.Errorf("Failed to lstat %v: %v", dstFile, err)
+		} else if fi.Mode()&os.ModeSymlink == 0 {
+			t.Errorf("%v is not a symlink; got mode %v", dstFile, fi.Mode())
+		} else if target, err := os.Readlink(dstFile); err != nil {
+			t.Errorf("Failed to read %v: %v", dstFile, err)
+		} else if target != targetPath {
+			t.Errorf("%v has target %v; want %v", dstFile, target, targetPath)
+		}
+	}
+
+	// DereferenceSymlinks should copy symlinks' targets while preserving the original mode.
+	dstDir = filepath.Join(tmpDir, "dst_deref")
+	if _, err := td.hst.PutTree(td.ctx, srcDir, dstDir, []string{link}, DereferenceSymlinks); err != nil {
+		t.Error("PutTree failed with DereferenceSymlinks: ", err)
+	} else {
+		dstFile := filepath.Join(dstDir, link)
+		if fi, err := os.Lstat(dstFile); err != nil {
+			t.Errorf("Failed to lstat %v: %v", dstFile, err)
+		} else if fi.Mode()&os.ModeType != 0 {
+			t.Errorf("%v is not a regular file; got mode %v", dstFile, fi.Mode())
+		} else if perm := fi.Mode() & os.ModePerm; perm != mode {
+			t.Errorf("%v has perms %#o; want %#o", dstFile, perm, mode)
+		}
+		if b, err := ioutil.ReadFile(dstFile); err != nil {
+			t.Errorf("Failed to read %v: %v", dstFile, err)
+		} else if string(b) != data {
+			t.Errorf("%v contains %q; want %q", dstFile, b, data)
+		}
 	}
 }
 

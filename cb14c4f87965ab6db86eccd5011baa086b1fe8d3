@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "860548bb_473379f5",
+        "filename": "src/chromiumos/tast/host/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 380,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-10T21:25:51Z",
+      "side": 1,
+      "message": "this feels okay to me as as an arg (instead of a more-flexible bitfield, functional option, etc.) for now since there are so few callers.\n\nactually, i think that there\u0027s only one caller outside of unit tests. hardcoding the dereferencing behavior felt gross to me, though.",
+      "revId": "cb14c4f87965ab6db86eccd5011baa086b1fe8d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

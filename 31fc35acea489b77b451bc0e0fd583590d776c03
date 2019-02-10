@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "0ceacb37_12cdd947",
+        "filename": "src/chromiumos/tast/host/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 248,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-10T18:43:33Z",
+      "side": 1,
+      "message": "thanks for the explanation! my feeling was that hostPort and cfg are both used within the loop, so the order in which they\u0027re initialized doesn\u0027t matter (and i think i chose to initialize hostPort first because it\u0027s an earlier argument in the connectSSH call below).",
+      "parentUuid": "0a33ab5e_64170434",
+      "revId": "31fc35acea489b77b451bc0e0fd583590d776c03",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b2bb18bf_2ce9f673",
         "filename": "src/chromiumos/tast/host/ssh.go",
         "patchSetId": 1

@@ -52,6 +52,7 @@ The following software features are defined:
     a convertible device or a tablet device.
 *   `tpm` - A [Trusted Platform Module] chip.
 *   `transparent_hugepage` - [Transparent Hugepage] support in the Linux kernel.
+*   `usbguard` - The ability to allow or block USB devices based on policy.
 *   `vm_host` - The ability to [run virtual machines].
 
 Software features are composed from USE flags. [local_test_runner] lists boolean

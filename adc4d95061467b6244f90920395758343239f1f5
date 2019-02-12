@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "057940bb_b9a2bdc7",
+        "filename": "docs/test_attributes.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-12T16:45:37Z",
+      "side": 1,
+      "message": "nit: please wrap long list items (and indent to 4 spaces)",
+      "revId": "adc4d95061467b6244f90920395758343239f1f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "33423828_99fe4cf5",
+        "filename": "docs/test_attributes.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-12T16:45:37Z",
+      "side": 1,
+      "message": "nit: instead of a nested list, which renders somewhat strangely in gitiles with extra vertical spacing, mind just making these sentences be part of the main group:crosbolt item?\n\n*    `group:crosbolt` - ... When you add ... Then, the measured ...",
+      "revId": "adc4d95061467b6244f90920395758343239f1f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6b6ddd6a_ecc03ce1",
+        "filename": "docs/test_attributes.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-12T16:45:37Z",
+      "side": 1,
+      "message": "nit: can you make the \u0027crosbolt\u0027 text in this sentence link to the place where the performance data can be viewed?",
+      "revId": "adc4d95061467b6244f90920395758343239f1f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a4abb11b_1e37e9f3",
+        "filename": "docs/test_attributes.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-12T16:45:37Z",
+      "side": 1,
+      "message": "nit: wrap long line",
+      "revId": "adc4d95061467b6244f90920395758343239f1f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -11,8 +11,12 @@ results are interpreted:
 
 *   `disabled` - Test is not run automatically in the lab.
 *   `informational` - Test failures are ignored.
+*   `group:crosbolt` - Test is run on crosbolt.
+    *   This attribute is mainly used for performance tests.
+    *   When you add `group:crosbolt`, you also need to add one of `crosbolt_perbuild`, `crosbolt_nightly` or `crosbolt_weekly`.
+        Then, the measured performance data will be uploaded to crosbolt.
 
-Failures in tests without `disabled` or `informational` attributes justify
+Failures in tests without `disabled`, `informational` or `group:crosbolt` attributes justify
 rejecting or reverting the responsible change.
 
 ## Automatically-added attributes

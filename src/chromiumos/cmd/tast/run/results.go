@@ -455,7 +455,8 @@ func (r *resultsHandler) processMessages(mch <-chan interface{}, ech <-chan erro
 		case err := <-ech:
 			return err
 		case <-time.After(timeout):
-			return fmt.Errorf("timed out after waiting %v for next message", timeout.Round(time.Millisecond))
+			return fmt.Errorf("timed out after waiting %v for next message (probably lost SSH connection to DUT)",
+				timeout.Round(time.Millisecond))
 		case <-r.ctx.Done():
 			return r.ctx.Err()
 		}

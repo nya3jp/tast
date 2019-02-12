@@ -11,9 +11,12 @@ results are interpreted:
 
 *   `disabled` - Test is not run automatically in the lab.
 *   `informational` - Test failures are ignored.
+*   `group:crosbolt` - Test failures are ignored and the test's performance data
+    are uploaded to [crosbolt]. When you add this attribute, you also need to
+    add one of `crosbolt_perbuild`, `crosbolt_nightly` or `crosbolt_weekly`.
 
-Failures in tests without `disabled` or `informational` attributes justify
-rejecting or reverting the responsible change.
+Failures in tests without `disabled`, `informational` or `group:crosbolt`
+attributes justify rejecting or reverting the responsible change.
 
 ## Automatically-added attributes
 
@@ -29,6 +32,7 @@ See the [Running Tests] document for information about using attributes to
 select which tests to run.
 
 [testing.Test]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Test
+[crosbolt]: https://crosbolt.teams.x20web.corp.google.com/prod/crosbolt/index.html
 [bundle]: overview.md#Test-bundles
 [software dependency]: test_dependencies.md
 [name]: writing_tests.md#Test-names

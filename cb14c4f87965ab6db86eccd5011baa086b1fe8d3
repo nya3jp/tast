@@ -16,6 +16,24 @@
       "revId": "cb14c4f87965ab6db86eccd5011baa086b1fe8d3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "07be33e0_4c522633",
+        "filename": "src/chromiumos/tast/host/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 380,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-02-12T04:19:53Z",
+      "side": 1,
+      "message": "I would hardcode if we have only one caller because maintaining the unused code continuously sounds like unnecessary cost to me. Though, I don\u0027t have strong opinion for this specific case.",
+      "parentUuid": "860548bb_473379f5",
+      "revId": "cb14c4f87965ab6db86eccd5011baa086b1fe8d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

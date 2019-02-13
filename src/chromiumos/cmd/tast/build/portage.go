@@ -8,7 +8,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -17,6 +16,7 @@ import (
 	"strings"
 	"time"
 
+	"chromiumos/tast/shutil"
 	"chromiumos/tast/timing"
 )
 
@@ -74,10 +74,9 @@ func checkDeps(ctx context.Context, portagePkg, cachePath string) (missing, cmds
 
 	if len(missing) > 0 {
 		if masked {
-			cmds = append(cmds, fmt.Sprintf("cros_workon --host start '%s'", portagePkg))
+			cmds = append(cmds, "cros_workon --host start "+shutil.Escape(portagePkg))
 		}
-		// TODO(derat): Escape args when that's easy to do.
-		cmds = append(cmds, strings.Join(emergeCmdLine(portagePkg, emergeInstall), " "))
+		cmds = append(cmds, shutil.EscapeArray(emergeCmdLine(portagePkg, emergeInstall)))
 	}
 
 	return missing, cmds, nil
@@ -150,11 +149,8 @@ func parseEmergeOutput(stdout, stderr []byte, pkg string) (missingDeps []string,
 func getOverlays(ctx context.Context, confPath string) ([]string, error) {
 	defer timing.Start(ctx, "get_overlays").End()
 
-	// TODO(derat): Escape the args when we have a good way to do so (testexec is only available to tests).
-	if strings.Index(confPath, "'") != -1 {
-		return nil, errors.New("single quotes unsupported")
-	}
-	shCmd := fmt.Sprintf("cd '%s' && source '%s' && echo $PORTDIR_OVERLAY", filepath.Dir(confPath), filepath.Base(confPath))
+	shCmd := fmt.Sprintf("cd %s && source %s && echo $PORTDIR_OVERLAY",
+		shutil.Escape(filepath.Dir(confPath)), shutil.Escape(filepath.Base(confPath)))
 	out, err := exec.CommandContext(ctx, "bash", "-e", "-c", shCmd).Output()
 	if err != nil {
 		return nil, err

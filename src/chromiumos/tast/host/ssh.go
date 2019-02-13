@@ -26,6 +26,8 @@ import (
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/agent"
 	"golang.org/x/crypto/ssh/terminal"
+
+	"chromiumos/tast/shutil"
 )
 
 // InputMode describes how stdin should be handled when running a remote command.
@@ -103,12 +105,6 @@ type SSHOptions struct {
 
 	// WarnFunc (if non-nil) is used to log non-fatal errors encountered while connecting to the host.
 	WarnFunc func(string)
-}
-
-// QuoteShellArg returns a single-quoted copy of s that can be inserted into command lines interpreted by sh.
-func QuoteShellArg(s string) string {
-	s = strings.Replace(s, "'", "'\"'\"'", -1)
-	return "'" + s + "'"
 }
 
 // ParseSSHTarget parses target (of the form "[<user>@]host[:<port>]") and fills
@@ -318,7 +314,7 @@ func (s *SSH) GetFile(ctx context.Context, src, dst string) error {
 	defer os.RemoveAll(td)
 
 	sb := filepath.Base(src)
-	rc := fmt.Sprintf("tar -c --gzip -C %s %s", QuoteShellArg(filepath.Dir(src)), QuoteShellArg(sb))
+	rc := fmt.Sprintf("tar -c --gzip -C %s %s", shutil.Escape(filepath.Dir(src)), shutil.Escape(sb))
 	handle, err := s.Start(ctx, rc, CloseStdin, StdoutOnly)
 	if err != nil {
 		return fmt.Errorf("running remote tar failed: %v", err)
@@ -415,7 +411,7 @@ func (s *SSH) PutTreeRename(ctx context.Context, srcDir, dstDir string,
 		return 0, nil
 	}
 
-	qd := QuoteShellArg(dstDir)
+	qd := shutil.Escape(dstDir)
 	rc := fmt.Sprintf("mkdir -p %s && "+
 		"tar -x --gzip --no-same-owner --recursive-unlink -C %s 2>&1", qd, qd)
 	handle, err := s.Start(ctx, rc, OpenStdin, StdoutOnly)
@@ -542,7 +538,7 @@ func (s *SSH) findChangedFiles(ctx context.Context, ldir, rdir string,
 func (s *SSH) getRemoteSHA1s(ctx context.Context, paths []string) (map[string]string, error) {
 	cmd := "sha1sum"
 	for _, p := range paths {
-		cmd += " " + QuoteShellArg(p)
+		cmd += " " + shutil.Escape(p)
 	}
 	// TODO(derat): Find a classier way to ignore missing files.
 	cmd += " 2>/dev/null || true"
@@ -600,14 +596,14 @@ func getLocalSHA1s(paths []string) (map[string]string, error) {
 // If a specified file is a directory, all files under it are recursively deleted.
 // Non-existent files are ignored.
 func (s *SSH) DeleteTree(ctx context.Context, baseDir string, files []string) error {
-	qd := QuoteShellArg(baseDir)
+	qd := shutil.Escape(baseDir)
 	var qfs []string
 	for _, f := range files {
 		f, err := cleanRelativePath(f)
 		if err != nil {
 			return err
 		}
-		qfs = append(qfs, QuoteShellArg(f))
+		qfs = append(qfs, shutil.Escape(f))
 	}
 
 	rc := fmt.Sprintf("cd %s && rm -rf -- %s", qd, strings.Join(qfs, " "))
@@ -631,7 +627,7 @@ func cleanRelativePath(p string) (string, error) {
 }
 
 // Run runs cmd synchronously on the host and returns its output. stdout and stderr are combined.
-// cmd is interpreted by the user's shell; arguments may be quoted using QuoteShellArg.
+// cmd is interpreted by the user's shell; arguments may be quoted using shutil.Escape.
 // If the command is interrupted or exits with a nonzero status code, the returned error will
 // be of type *ssh.ExitError.
 func (s *SSH) Run(ctx context.Context, cmd string) ([]byte, error) {
@@ -654,7 +650,7 @@ func (s *SSH) Run(ctx context.Context, cmd string) ([]byte, error) {
 
 // Start runs cmd asynchronously on the host and returns a handle that can be used to write input,
 // read output, and wait for completion. cmd is interpreted by the user's shell; arguments may be
-// quoted using QuoteShellArg.
+// quoted using shutil.Escape.
 func (s *SSH) Start(ctx context.Context, cmd string, input InputMode, output OutputMode) (*SSHCommandHandle, error) {
 	c := &SSHCommandHandle{}
 

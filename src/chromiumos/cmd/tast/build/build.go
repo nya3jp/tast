@@ -14,6 +14,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"chromiumos/tast/shutil"
 	"chromiumos/tast/timing"
 )
 
@@ -70,7 +71,7 @@ func Build(ctx context.Context, cfg *Config, pkg, outDir, stageName string) (out
 			}
 			b.WriteString("\nTo install them, please run the following in your chroot:\n")
 			for _, cmd := range cmds {
-				fmt.Fprintf(b, "  %s\n", cmd)
+				fmt.Fprintf(b, "  %s\n", shutil.EscapeSlice(cmd))
 			}
 			b.WriteString("\n")
 			return b.Bytes(), fmt.Errorf("%s has missing dependencies", cfg.PortagePkg)

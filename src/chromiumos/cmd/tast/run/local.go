@@ -23,6 +23,7 @@ import (
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/host"
 	"chromiumos/tast/runner"
+	"chromiumos/tast/shutil"
 	"chromiumos/tast/testing"
 	"chromiumos/tast/timing"
 )
@@ -352,7 +353,7 @@ func pushDataFiles(ctx context.Context, cfg *Config, hst *host.SSH, destDir stri
 // localRunnerExists checks whether the local_test_runner executable is present on hst.
 // It returns true if it is, false if it isn't, or an error if one was encountered while checking.
 func localRunnerExists(ctx context.Context, hst *host.SSH) (bool, error) {
-	cmd := fmt.Sprintf("test -e %s", host.QuoteShellArg(localRunnerPath))
+	cmd := fmt.Sprintf("test -e %s", shutil.Escape(localRunnerPath))
 	if _, err := hst.Run(ctx, cmd); err == nil {
 		return true, nil
 	} else if ee, ok := err.(*ssh.ExitError); ok && ee.Waitmsg.ExitStatus() == 1 {
@@ -410,7 +411,7 @@ func startLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, envVars [
 		if !envVarNameRegexp.MatchString(parts[0]) {
 			return nil, fmt.Errorf("invalid environment variable name %q", parts[0])
 		}
-		envPrefix += fmt.Sprintf("%s=%s ", parts[0], host.QuoteShellArg(parts[1]))
+		envPrefix += fmt.Sprintf("%s=%s ", parts[0], shutil.Escape(parts[1]))
 	}
 
 	handle, err := hst.Start(ctx, envPrefix+localRunnerPath, host.OpenStdin, host.StdoutAndStderr)

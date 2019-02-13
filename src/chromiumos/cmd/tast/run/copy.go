@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 
 	"chromiumos/tast/host"
+	"chromiumos/tast/shutil"
 )
 
 // pushToHost is a wrapper around hst.PutTree that should be used instead of calling PutTree directly.
@@ -35,7 +36,7 @@ func moveFromHost(ctx context.Context, cfg *Config, hst *host.SSH, src, dst stri
 		return err
 	}
 	cfg.Logger.Debugf("Cleaning %s on host", src)
-	if out, err := hst.Run(ctx, fmt.Sprintf("rm -rf %s", host.QuoteShellArg(src))); err != nil {
+	if out, err := hst.Run(ctx, fmt.Sprintf("rm -rf -- %s", shutil.Escape(src))); err != nil {
 		cfg.Logger.Logf("Failed cleaning %s: %v\n%s", src, err, out)
 	}
 	return nil

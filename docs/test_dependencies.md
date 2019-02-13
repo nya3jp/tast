@@ -2,10 +2,15 @@
 
 A test may specify software features that must be supported by the DUT's system
 image in order for the test to run successfully. If one or more features aren't
-supported by the DUT, the test will (usually) be skipped. See the `tast`
-command's `-checktestdeps` flag to control this behavior.
+supported by the DUT, the test will usually be skipped. See the `tast` command's
+`-checktestdeps` flag to control this behavior.
 
 Tests specify dependencies through the `SoftwareDeps` field in [testing.Test].
+
+[testing.Test]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Test
+
+## Existing features
+
 The following software features are defined:
 
 *   `amd64` - The [amd64] processor architecture.
@@ -55,16 +60,39 @@ The following software features are defined:
 *   `usbguard` - The ability to allow or block USB devices based on policy.
 *   `vm_host` - The ability to [run virtual machines].
 
-Software features are composed from USE flags. [local_test_runner] lists boolean
-expressions that are used to generate features; for example, an imaginary
-feature named `hd_audio` with expression `cras && (audio_chipset_a ||
-audio_chipset_b) && !broken_headphone_jack` will be reported as available on
-systems where the `cras` USE flag is set, either `audio_chipset_a` or
-`audio_chipset_b` is set, and `broken_headphone_jack` is explicitly *not* set.
-Before a new USE flag can be used in an expression, it must be added to `IUSE`
-in the [tast-use-flags] package.
+## New features
 
-## Example changes
+Features should be descriptive and precise. Consider a hypothetical test that
+exercises authentication using a biometrics daemon that isn't present in system
+images built to run on virtual machines. Instead of adding a `real_hardware` or
+`non_vm` feature that is overly broad and will likely be interpreted as carrying
+additional meaning beyond the original intent, add a `biometrics_daemon` feature
+that precisely communicates the test's actual requirement.
+
+Features are composed from USE flags, which are statically defined when the
+system image is built. [local_test_runner] lists boolean expressions that are
+used to generate features; for example, an imaginary feature named `hd_audio`
+with the expression
+
+```go
+cras && (audio_chipset_a || audio_chipset_b) && !broken_headphone_jack
+```
+
+will be reported as available on systems where the `cras` USE flag is set,
+either `audio_chipset_a` or `audio_chipset_b` is set, and
+`broken_headphone_jack` is explicitly *not* set. Before a new USE flag can be
+used in an expression, it must be added to `IUSE` in the [tast-use-flags]
+package, and before a feature can be listed by a test, it must be registered in
+`local_test_runner`. Please use [CQ-DEPEND] in your commit messages to ensure
+that changes land in the correct order.
+
+If you're having trouble finding a way to specify your test's dependencies,
+please ask for help on the [tast-users mailing list].
+
+[CQ-DEPEND]: https://chromium.googlesource.com/chromiumos/docs/+/master/contributing.md#cq-depend
+[tast-users mailing list]: https://groups.google.com/a/chromium.org/forum/#!forum/tast-users
+
+### Example changes
 
 See the following changes for an example of adding a new `containers` software
 feature based on the `containers` USE flag and making a test depend on it:
@@ -75,13 +103,12 @@ feature based on the `containers` USE flag and making a test depend on it:
 
 ## autotest-capability
 
-Exceptions to the above are `autotest-capability:`-prefixed features, which are
-added by the [autocaps package] as specified by YAML files in
+There are also `autotest-capability:`-prefixed features, which are added by the
+[autocaps package] as specified by YAML files in
 `/usr/local/etc/autotest-capability`. This exists in order to support porting
 existing Autotest-based video tests to Tast. Do not depend on capabilities from
 outside of video tests.
 
-[testing.Test]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Test
 [run Android apps]: https://developer.android.com/topic/arc/
 [AddressSanitizer]: https://github.com/google/sanitizers/wiki/AddressSanitizer
 [Autotest capability]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/autotest-capability-default/

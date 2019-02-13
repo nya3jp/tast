@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "fe7c3ff1_3ec08da9",
+        "filename": "src/chromiumos/cmd/tast/build/portage.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-13T17:07:14Z",
+      "side": 1,
+      "message": "i was planning to do this soon anyway (while adding a flag to automatically run these commands), so sure, changed this now instead :-)",
+      "parentUuid": "050a4b08_dae7003e",
+      "revId": "b0f9c587840be1554a8815710ad101aa24b97da2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "be784ce1_67ff8d61",
         "filename": "src/chromiumos/tast/shutil/shutil.go",
         "patchSetId": 1
@@ -54,6 +72,30 @@
       "side": 1,
       "message": "Ah that\u0027s right. Feel free to rename it if you like, it\u0027s a good timing to do so :)",
       "parentUuid": "be784ce1_67ff8d61",
+      "range": {
+        "startLine": 26,
+        "startChar": 9,
+        "endLine": 26,
+        "endChar": 14
+      },
+      "revId": "b0f9c587840be1554a8815710ad101aa24b97da2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b051fe2d_a1de62e1",
+        "filename": "src/chromiumos/tast/shutil/shutil.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-13T17:07:14Z",
+      "side": 1,
+      "message": "sure, also updated the comment",
+      "parentUuid": "669fb78e_9fea3085",
       "range": {
         "startLine": 26,
         "startChar": 9,

@@ -22,6 +22,30 @@
       "revId": "b0f9c587840be1554a8815710ad101aa24b97da2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "669fb78e_9fea3085",
+        "filename": "src/chromiumos/tast/shutil/shutil.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-13T08:51:28Z",
+      "side": 1,
+      "message": "Ah that\u0027s right. Feel free to rename it if you like, it\u0027s a good timing to do so :)",
+      "parentUuid": "be784ce1_67ff8d61",
+      "range": {
+        "startLine": 26,
+        "startChar": 9,
+        "endLine": 26,
+        "endChar": 14
+      },
+      "revId": "b0f9c587840be1554a8815710ad101aa24b97da2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

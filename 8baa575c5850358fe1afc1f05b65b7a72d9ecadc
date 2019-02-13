@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4051f680_e2abc865",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-13T05:38:46Z",
+      "side": 0,
+      "message": "i\u0027d like to eventually move all links up to the section where they\u0027re first used, which is the pattern i\u0027ve been converging on elsewhere, but i was worried about merge conflicts since people are frequently adding new entries to this list",
+      "revId": "8baa575c5850358fe1afc1f05b65b7a72d9ecadc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

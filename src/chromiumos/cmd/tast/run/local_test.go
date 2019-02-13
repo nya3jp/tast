@@ -24,9 +24,9 @@ import (
 
 	"chromiumos/cmd/tast/logging"
 	"chromiumos/tast/control"
-	"chromiumos/tast/host"
 	"chromiumos/tast/host/test"
 	"chromiumos/tast/runner"
+	"chromiumos/tast/shutil"
 	"chromiumos/tast/testing"
 	"chromiumos/tast/testutil"
 )
@@ -113,7 +113,7 @@ func (td *localTestData) handleExec(req *test.ExecReq) {
 
 	switch req.Cmd {
 	// TODO(derat): Remove this after 20180901: https://crbug.com/857485
-	case "test -d " + host.QuoteShellArg(filepath.Join(localDataBuiltinDir, localBundlePkgPathPrefix)):
+	case "test -d " + shutil.Escape(filepath.Join(localDataBuiltinDir, localBundlePkgPathPrefix)):
 		req.Start(true)
 		req.End(0)
 	case td.expRunCmd:
@@ -198,9 +198,9 @@ func TestLocalProxy(t *gotesting.T) {
 	// Proxy environment variables should be prepended to the local_test_runner command line.
 	// (The variables are added in this order in local.go.)
 	td.expRunCmd = strings.Join([]string{
-		fmt.Sprintf("HTTP_PROXY=" + host.QuoteShellArg(httpProxy)),
-		fmt.Sprintf("HTTPS_PROXY=" + host.QuoteShellArg(httpsProxy)),
-		fmt.Sprintf("NO_PROXY=" + host.QuoteShellArg(noProxy)),
+		fmt.Sprintf("HTTP_PROXY=" + shutil.Escape(httpProxy)),
+		fmt.Sprintf("HTTPS_PROXY=" + shutil.Escape(httpsProxy)),
+		fmt.Sprintf("NO_PROXY=" + shutil.Escape(noProxy)),
 	}, " ") + " " + td.expRunCmd
 
 	if status, _ := local(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {

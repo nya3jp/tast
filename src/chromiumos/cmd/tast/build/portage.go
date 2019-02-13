@@ -8,7 +8,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -17,6 +16,7 @@ import (
 	"strings"
 	"time"
 
+	"chromiumos/tast/shutil"
 	"chromiumos/tast/timing"
 )
 
@@ -27,9 +27,10 @@ const (
 
 // checkDeps checks if all of portagePkg's dependencies are installed.
 // portagePkg should be a versioned package of the form "chromeos-base/tast-local-tests-cros-9999".
-// Missing packages (using the same format) and a list of commands that the user should execute to install
+// Missing packages (using the same format) and a list of commands that can be executed to install
 // the dependencies are returned.
-func checkDeps(ctx context.Context, portagePkg, cachePath string) (missing, cmds []string, err error) {
+func checkDeps(ctx context.Context, portagePkg, cachePath string) (
+	missing []string, cmds [][]string, err error) {
 	defer timing.Start(ctx, "check_deps").End()
 
 	// To avoid slow Portage commands, check if we've already verified that dependencies are up-to-date.
@@ -74,10 +75,9 @@ func checkDeps(ctx context.Context, portagePkg, cachePath string) (missing, cmds
 
 	if len(missing) > 0 {
 		if masked {
-			cmds = append(cmds, fmt.Sprintf("cros_workon --host start '%s'", portagePkg))
+			cmds = append(cmds, []string{"cros_workon", "--host", "start", portagePkg})
 		}
-		// TODO(derat): Escape args when that's easy to do.
-		cmds = append(cmds, strings.Join(emergeCmdLine(portagePkg, emergeInstall), " "))
+		cmds = append(cmds, emergeCmdLine(portagePkg, emergeInstall))
 	}
 
 	return missing, cmds, nil
@@ -150,11 +150,8 @@ func parseEmergeOutput(stdout, stderr []byte, pkg string) (missingDeps []string,
 func getOverlays(ctx context.Context, confPath string) ([]string, error) {
 	defer timing.Start(ctx, "get_overlays").End()
 
-	// TODO(derat): Escape the args when we have a good way to do so (testexec is only available to tests).
-	if strings.Index(confPath, "'") != -1 {
-		return nil, errors.New("single quotes unsupported")
-	}
-	shCmd := fmt.Sprintf("cd '%s' && source '%s' && echo $PORTDIR_OVERLAY", filepath.Dir(confPath), filepath.Base(confPath))
+	shCmd := fmt.Sprintf("cd %s && source %s && echo $PORTDIR_OVERLAY",
+		shutil.Escape(filepath.Dir(confPath)), shutil.Escape(filepath.Base(confPath)))
 	out, err := exec.CommandContext(ctx, "bash", "-e", "-c", shCmd).Output()
 	if err != nil {
 		return nil, err

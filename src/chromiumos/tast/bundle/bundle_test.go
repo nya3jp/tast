@@ -125,9 +125,11 @@ func TestRunTests(t *gotesting.T) {
 	tests := reg.AllTests()
 	var preRunCalls, postRunCalls, preTestCalls, postTestCalls int
 	args := Args{
-		OutDir:  tmpDir,
-		DataDir: tmpDir,
-		TempDir: runTmpDir,
+		RunTests: &RunTestsArgs{
+			OutDir:  tmpDir,
+			DataDir: tmpDir,
+			TempDir: runTmpDir,
+		},
 	}
 	cfg := runConfig{
 		preRunFunc: func(ctx context.Context, lf logFunc) (context.Context, error) {
@@ -151,7 +153,7 @@ func TestRunTests(t *gotesting.T) {
 	}
 
 	sig := fmt.Sprintf("runTests(..., %+v, %+v)", args, cfg)
-	if err := runTests(context.Background(), &stdout, &args, &cfg, tests); err != nil {
+	if err := runTests(context.Background(), &stdout, &args, &cfg, localBundle, tests); err != nil {
 		t.Fatalf("%v failed: %v", sig, err)
 	}
 
@@ -257,13 +259,15 @@ func TestRunTestsTimeout(t *gotesting.T) {
 	tmpDir := testutil.TempDir(t)
 	defer os.RemoveAll(tmpDir)
 	args := Args{
-		OutDir:  tmpDir,
-		DataDir: tmpDir,
+		RunTests: &RunTestsArgs{
+			OutDir:  tmpDir,
+			DataDir: tmpDir,
+		},
 	}
 
 	// The first test should time out after 10 milliseconds.
 	// The second test should succeed since it finishes before its timeout.
-	if err := runTests(context.Background(), &stdout, &args, &runConfig{}, reg.AllTests()); err != nil {
+	if err := runTests(context.Background(), &stdout, &args, &runConfig{}, localBundle, reg.AllTests()); err != nil {
 		t.Fatalf("runTests(..., %+v, ...) failed: %v", args, err)
 	}
 
@@ -288,7 +292,7 @@ func TestRunTestsTimeout(t *gotesting.T) {
 func TestRunTestsNoTests(t *gotesting.T) {
 	// runTests should report failure when passed an empty slice of tests.
 	if err := runTests(context.Background(), &bytes.Buffer{}, &Args{},
-		&runConfig{}, []*testing.Test{}); !errorHasStatus(err, statusNoTests) {
+		&runConfig{}, localBundle, []*testing.Test{}); !errorHasStatus(err, statusNoTests) {
 		t.Fatalf("runTests() = %v; want status %v", err, statusNoTests)
 	}
 }
@@ -321,10 +325,10 @@ func TestRunTestsMissingDeps(t *gotesting.T) {
 	defer os.RemoveAll(tmpDir)
 
 	args := Args{
-		Mode:    RunTestsMode,
-		OutDir:  tmpDir,
-		DataDir: tmpDir,
-		RunTestsArgs: RunTestsArgs{
+		Mode: RunTestsMode,
+		RunTests: &RunTestsArgs{
+			OutDir:                      tmpDir,
+			DataDir:                     tmpDir,
 			CheckSoftwareDeps:           true,
 			AvailableSoftwareFeatures:   []string{validDep},
 			UnavailableSoftwareFeatures: []string{missingDep},
@@ -403,10 +407,10 @@ func TestRunMeta(t *gotesting.T) {
 	defer os.RemoveAll(tmpDir)
 
 	args := Args{
-		Mode:    RunTestsMode,
-		OutDir:  tmpDir,
-		DataDir: tmpDir,
-		RemoteArgs: RemoteArgs{
+		Mode: RunTestsMode,
+		RunTests: &RunTestsArgs{
+			OutDir:   tmpDir,
+			DataDir:  tmpDir,
 			TastPath: "/bogus/tast",
 			Target:   "root@example.net",
 			RunFlags: []string{"-flag1", "-flag2"},
@@ -418,11 +422,11 @@ func TestRunMeta(t *gotesting.T) {
 		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
 	}
 
-	// The test should have access to data from RemoteArgs.
+	// The test should have access to meta-related information data.
 	expMeta := testing.Meta{
-		TastPath: args.RemoteArgs.TastPath,
-		Target:   args.RemoteArgs.Target,
-		RunFlags: args.RemoteArgs.RunFlags,
+		TastPath: args.RunTests.TastPath,
+		Target:   args.RunTests.Target,
+		RunFlags: args.RunTests.RunFlags,
 	}
 	if !reflect.DeepEqual(meta, expMeta) {
 		t.Errorf("Test got meta %+v; want %+v", meta, expMeta)

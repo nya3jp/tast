@@ -11,13 +11,18 @@ package main
 import (
 	"os"
 
+	"chromiumos/tast/bundle"
 	"chromiumos/tast/runner"
 )
 
 func main() {
 	args := runner.Args{
-		BundleGlob: "/usr/libexec/tast/bundles/remote/*", // default glob matching test bundles
-		DataDir:    "/usr/share/tast/data",               // default dir containing test data
+		RunTests: &runner.RunTestsArgs{
+			BundleGlob: "/usr/libexec/tast/bundles/remote/*", // default glob matching test bundles
+			BundleArgs: bundle.RunTestsArgs{
+				DataDir: "/usr/share/tast/data", // default dir containing test data
+			},
+		},
 	}
 	cfg := runner.Config{
 		Type: runner.RemoteRunner,

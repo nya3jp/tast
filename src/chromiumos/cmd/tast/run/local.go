@@ -260,11 +260,13 @@ func getDataFilePaths(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlo
 	defer timing.Start(ctx, "get_data_paths").End()
 	cfg.Logger.Debug("Getting data file list from target")
 
-	handle, err := startLocalRunner(ctx, cfg, hst, nil, &runner.Args{
+	args := runner.Args{
 		Mode:       runner.ListTestsMode,
 		BundleGlob: bundleGlob,
 		Patterns:   cfg.Patterns,
-	})
+	}
+	args.FillDeprecated()
+	handle, err := startLocalRunner(ctx, cfg, hst, nil, &args)
 	if err != nil {
 		return nil, err
 	}
@@ -439,11 +441,6 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 	args := runner.Args{
 		BundleGlob: bundleGlob,
 		Patterns:   cfg.Patterns,
-		DataDir:    dataDir,
-		RunTestsArgs: runner.RunTestsArgs{
-			Devservers:   cfg.devservers,
-			RunTestsArgs: bundle.RunTestsArgs{WaitUntilReady: cfg.waitUntilReady},
-		},
 	}
 
 	var envVars []string
@@ -451,6 +448,13 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 	switch cfg.mode {
 	case RunTestsMode:
 		args.Mode = runner.RunTestsMode
+		args.RunTests = runner.RunTestsArgs{
+			Devservers: cfg.devservers,
+			RunTestsArgs: bundle.RunTestsArgs{
+				DataDir:        dataDir,
+				WaitUntilReady: cfg.waitUntilReady,
+			},
+		}
 		setRunnerTestDepsArgs(cfg, &args)
 
 		// Set proxy-related environment variables for local_test_runner so it will use them
@@ -470,6 +474,9 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 	case ListTestsMode:
 		args.Mode = runner.ListTestsMode
 	}
+
+	// Backfill deprecated fields in case we're executing an old test runner.
+	args.FillDeprecated()
 
 	handle, err := startLocalRunner(ctx, cfg, hst, envVars, &args)
 	if err != nil {

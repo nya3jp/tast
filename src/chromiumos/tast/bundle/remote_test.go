@@ -51,8 +51,8 @@ func TestRemoteCantConnect(t *gotesting.T) {
 	// Remote should fail if the initial connection to the DUT couldn't be
 	// established since the user key wasn't passed.
 	args := Args{
-		Mode:       RunTestsMode,
-		RemoteArgs: RemoteArgs{Target: td.Srv.Addr().String()},
+		Mode:   RunTestsMode,
+		Remote: RemoteArgs{Target: td.Srv.Addr().String()},
 	}
 	stderr := bytes.Buffer{}
 	if status := Remote(newBufferWithArgs(t, &args), &bytes.Buffer{}, &stderr); status != statusError {
@@ -99,9 +99,11 @@ func TestRemoteDUT(t *gotesting.T) {
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
 	args := Args{
-		Mode:   RunTestsMode,
-		OutDir: outDir,
-		RemoteArgs: RemoteArgs{
+		Mode: RunTestsMode,
+		RunTests: RunTestsArgs{
+			OutDir: outDir,
+		},
+		Remote: RemoteArgs{
 			Target:  td.Srv.Addr().String(),
 			KeyFile: td.UserKeyFile,
 		},
@@ -143,9 +145,11 @@ func TestRemoteReconnectBetweenTests(t *gotesting.T) {
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
 	args := Args{
-		Mode:   RunTestsMode,
-		OutDir: outDir,
-		RemoteArgs: RemoteArgs{
+		Mode: RunTestsMode,
+		RunTests: RunTestsArgs{
+			OutDir: outDir,
+		},
+		Remote: RemoteArgs{
 			Target:  td.Srv.Addr().String(),
 			KeyFile: td.UserKeyFile,
 		},

@@ -23,6 +23,7 @@ import (
 	"github.com/google/subcommands"
 
 	"chromiumos/cmd/tast/logging"
+	"chromiumos/tast/bundle"
 	"chromiumos/tast/control"
 	"chromiumos/tast/host/test"
 	"chromiumos/tast/runner"
@@ -160,7 +161,10 @@ func TestLocalSuccess(t *gotesting.T) {
 	}
 	td.checkArgs(t, &runner.Args{
 		BundleGlob: builtinBundleGlob,
-		DataDir:    localDataBuiltinDir,
+		RunTests: runner.RunTestsArgs{
+			RunTestsArgs: bundle.RunTestsArgs{DataDir: localDataBuiltinDir},
+		},
+		DataDirDeprecated: localDataBuiltinDir,
 	})
 }
 
@@ -270,7 +274,6 @@ func TestLocalList(t *gotesting.T) {
 	td.checkArgs(t, &runner.Args{
 		Mode:       runner.ListTestsMode,
 		BundleGlob: builtinBundleGlob,
-		DataDir:    localDataBuiltinDir,
 	})
 
 	listed := make([]testing.Test, len(results))

@@ -32,9 +32,88 @@ const (
 type Args struct {
 	// Mode describes the mode that should be used by the bundle.
 	Mode RunMode `json:"mode"`
-	// Patterns contains patterns (either empty to run all tests, exactly one attribute expression,
-	// or one or more globs) describing which tests to run.
+	// Patterns contains patterns (either empty to run/list all tests, exactly one attribute expression,
+	// or one or more globs) describing which tests to run/list.
 	Patterns []string `json:"patterns,omitempty"`
+
+	// Remote contains additional arguments used to run remote tests.
+	Remote RemoteArgs `json:"remote,omitempty"`
+	// RunTests contains additional arguments used by RunTestsMode.
+	RunTests RunTestsArgs `json:"runTests,omitempty"`
+
+	// TODO(derat): Delete these fields after 20190501: https://crbug.com/932307
+	// TargetDeprecated has been replaced by Remote.Target.
+	TargetDeprecated string `json:"remoteTarget,omitempty"`
+	// KeyFileDeprecated has been replaced by Remote.KeyFile.
+	KeyFileDeprecated string `json:"remoteKeyFile,omitempty"`
+	// KeyDirDeprecated has been replaced by Remote.KeyDir.
+	KeyDirDeprecated string `json:"remoteKeyDir,omitempty"`
+	// TastPathDeprecated has been replaced by Remote.TastPath.
+	TastPathDeprecated string `json:"remoteTastPath,omitempty"`
+	// RunFlagsDeprecated has been replaced by Remote.RunFlags.
+	RunFlagsDeprecated []string `json:"remoteRunArgs,omitempty"`
+	// DataDirDeprecated has been replaced by RunTests.DataDir.
+	DataDirDeprecated string `json:"dataDir,omitempty"`
+	// OutDirDeprecated has been replaced by RunTests.OutDir.
+	OutDirDeprecated string `json:"outDir,omitempty"`
+	// TempDirDeprecated has been replaced by RunTests.TempDir.
+	TempDirDeprecated string `json:"tempDir,omitempty"`
+	// CheckSoftwareDepsDeprecated has been replaced by RunTests.CheckSoftwareDeps.
+	CheckSoftwareDepsDeprecated bool `json:"runTestsCheckSoftwareDeps,omitempty"`
+	// AvailableSoftwareFeaturesDeprecated has been replaced by RunTests.AvailableSoftwareFeatures.
+	AvailableSoftwareFeaturesDeprecated []string `json:"runTestsAvailableSoftwareFeatures,omitempty"`
+	// UnavailableSoftwareFeaturesDeprecated has been replaced by RunTests.UnavailableSoftwareFeatures.
+	UnavailableSoftwareFeaturesDeprecated []string `json:"runTestsUnavailableSoftwareFeatures,omitempty"`
+	// WaitUntilReadyDeprecated has been replaced by RunTests.WaitUntilReady.
+	WaitUntilReadyDeprecated bool `json:"runTestsWaitUntilReady,omitempty"`
+}
+
+// deprecatedFields returns a mapping from pointers to deprecated fields in Args to
+// pointers to the corresponding non-deprecated fields.
+func (a *Args) deprecatedFields() map[interface{}]interface{} {
+	return map[interface{}]interface{}{
+		&a.TargetDeprecated:                      &a.Remote.Target,
+		&a.KeyFileDeprecated:                     &a.Remote.KeyFile,
+		&a.KeyDirDeprecated:                      &a.Remote.KeyDir,
+		&a.TastPathDeprecated:                    &a.Remote.TastPath,
+		&a.RunFlagsDeprecated:                    &a.Remote.RunFlags,
+		&a.DataDirDeprecated:                     &a.RunTests.DataDir,
+		&a.OutDirDeprecated:                      &a.RunTests.OutDir,
+		&a.TempDirDeprecated:                     &a.RunTests.TempDir,
+		&a.CheckSoftwareDepsDeprecated:           &a.RunTests.CheckSoftwareDeps,
+		&a.AvailableSoftwareFeaturesDeprecated:   &a.RunTests.AvailableSoftwareFeatures,
+		&a.UnavailableSoftwareFeaturesDeprecated: &a.RunTests.UnavailableSoftwareFeatures,
+		&a.WaitUntilReadyDeprecated:              &a.RunTests.WaitUntilReady,
+	}
+}
+
+// FillDeprecated backfills deprecated fields from the corresponding non-deprecated fields.
+// This method is called by test runners to ensure that args will be interpreted
+// correctly by older test bundles.
+func (a *Args) FillDeprecated() {
+	for old, cur := range a.deprecatedFields() {
+		command.CopyFieldIfNonZero(cur, old)
+	}
+}
+
+// RemoteArgs is nested within Args and holds additional arguments that are only relevant when running remote tests.
+type RemoteArgs struct {
+	// Target is the DUT connection spec as [<user>@]host[:<port>].
+	Target string `json:"target,omitempty"`
+	// KeyFile is the path to the SSH private key to use to connect to the DUT.
+	KeyFile string `json:"keyFile,omitempty"`
+	// KeyDir is the directory containing SSH private keys (typically $HOME/.ssh).
+	KeyDir string `json:"keyDir,omitempty"`
+	// TastPath contains the path to the tast binary that was executed to initiate testing.
+	TastPath string `json:"tastPath,omitempty"`
+	// RunFlags contains a subset of the flags that were passed to the "tast run" command.
+	// The included flags are ones that are necessary for core functionality,
+	// e.g. paths to binaries used by the tast process and credentials for reconnecting to the DUT.
+	RunFlags []string `json:"runFlags,omitempty"`
+}
+
+// RunTestsArgs is nested within Args and contains additional arguments used by RunTestsMode.
+type RunTestsArgs struct {
 	// DataDir is the path to the directory containing test data files.
 	DataDir string `json:"dataDir,omitempty"`
 	// OutDir is the path to the base directory under which tests should write output files.
@@ -42,40 +121,17 @@ type Args struct {
 	// TempDir is the path to the directory under which temporary files for tests are written.
 	TempDir string `json:"tempDir,omitempty"`
 
-	// RemoteArgs contains additional arguments used to run remote tests.
-	RemoteArgs
-	// RunTestsArgs contains additional arguments used by RunTestsMode.
-	RunTestsArgs
-}
-
-// RemoteArgs is nested within Args and holds additional arguments that are only relevant when running remote tests.
-type RemoteArgs struct {
-	// Target is the DUT connection spec as [<user>@]host[:<port>].
-	Target string `json:"remoteTarget,omitempty"`
-	// KeyFile is the path to the SSH private key to use to connect to the DUT.
-	KeyFile string `json:"remoteKeyFile,omitempty"`
-	// KeyDir is the directory containing SSH private keys (typically $HOME/.ssh).
-	KeyDir string `json:"remoteKeyDir,omitempty"`
-	// TastPath contains the path to the tast binary that was executed to initiate testing.
-	TastPath string `json:"remoteTastPath,omitempty"`
-	// RunFlags contains a subset of the flags that were passed to the "tast run" command.
-	// The included flags are ones that are necessary for core functionality,
-	// e.g. paths to binaries used by the tast process and credentials for reconnecting to the DUT.
-	RunFlags []string `json:"remoteRunArgs,omitempty"`
-}
-
-// RunTestsArgs is nested within Args and contains additional arguments used by RunTestsMode.
-type RunTestsArgs struct {
 	// CheckSoftwareDeps is true if each test's SoftwareDeps field should be checked against
 	// AvailableSoftwareFeatures and UnavailableSoftwareFeatures.
-	CheckSoftwareDeps bool `json:"runTestsCheckSoftwareDeps,omitempty"`
+	CheckSoftwareDeps bool `json:"checkSoftwareDeps,omitempty"`
 	// AvailableSoftwareFeatures contains a list of software features supported by the DUT.
-	AvailableSoftwareFeatures []string `json:"runTestsAvailableSoftwareFeatures,omitempty"`
+	AvailableSoftwareFeatures []string `json:"availableSoftwareFeatures,omitempty"`
 	// UnavailableSoftwareFeatures contains a list of software features supported by the DUT.
-	UnavailableSoftwareFeatures []string `json:"runTestsUnavailableSoftwareFeatures,omitempty"`
+	UnavailableSoftwareFeatures []string `json:"unavailableSoftwareFeatures,omitempty"`
+
 	// WaitUntilReady indicates that the test bundle's "ready" function (see ReadyFunc) should
 	// be executed before any tests are executed.
-	WaitUntilReady bool `json:"runTestsWaitUntilReady,omitempty"`
+	WaitUntilReady bool `json:"waitUntilReady,omitempty"`
 }
 
 // bundleType describes the type of tests contained in a test bundle (i.e. local or remote).
@@ -92,9 +148,15 @@ func readArgs(stdin io.Reader, args *Args, cfg *runConfig, bt bundleType) ([]*te
 	if err := json.NewDecoder(stdin).Decode(args); err != nil {
 		return nil, command.NewStatusErrorf(statusBadArgs, "failed to decode args from stdin: %v", err)
 	}
-	if bt != remoteBundle && !reflect.DeepEqual(args.RemoteArgs, RemoteArgs{}) {
-		return nil, command.NewStatusErrorf(statusBadArgs, "remote-only args %+v passed to non-remote bundle", args.RemoteArgs)
+	if bt != remoteBundle && !reflect.DeepEqual(args.Remote, RemoteArgs{}) {
+		return nil, command.NewStatusErrorf(statusBadArgs, "remote-only args %+v passed to non-remote bundle", args.Remote)
 	}
+
+	// Use non-zero-valued deprecated fields if they were supplied by an old test runner.
+	for old, cur := range args.deprecatedFields() {
+		command.CopyFieldIfNonZero(old, cur)
+	}
+
 	if errs := testing.RegistrationErrors(); len(errs) > 0 {
 		es := make([]string, len(errs))
 		for i, err := range errs {

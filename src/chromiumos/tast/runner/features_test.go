@@ -34,7 +34,7 @@ func TestGetSoftwareFeatures(t *testing.T) {
 			"foo_glob":     "\"f*\"",
 			"not_bar_glob": "!\"b*\"",
 		},
-		GetSoftwareFeaturesArgs: GetSoftwareFeaturesArgs{
+		GetSoftwareFeatures: GetSoftwareFeaturesArgs{
 			ExtraUSEFlags: []string{"baz"},
 		},
 	}

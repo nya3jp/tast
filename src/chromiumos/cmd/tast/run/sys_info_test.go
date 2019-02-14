@@ -75,8 +75,9 @@ func TestCollectSysInfo(t *testing.T) {
 		t.Fatalf("collectSysInfo(..., %+v) failed: %v", td.cfg, err)
 	}
 	td.checkArgs(t, &runner.Args{
-		Mode:               runner.CollectSysInfoMode,
-		CollectSysInfoArgs: runner.CollectSysInfoArgs{InitialState: *td.cfg.initialSysInfo},
+		Mode:                   runner.CollectSysInfoMode,
+		CollectSysInfo:         runner.CollectSysInfoArgs{InitialState: *td.cfg.initialSysInfo},
+		InitialStateDeprecated: *td.cfg.initialSysInfo,
 	})
 
 	// TODO(derat): The test SSH server doesn't support file copies. If/when that changes, set the

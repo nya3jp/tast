@@ -39,8 +39,8 @@ func checkRunnerTestDepsArgs(t *testing.T, cfg *Config, checkDeps bool, avail, u
 			UnavailableSoftwareFeatures: unavail,
 		},
 	}
-	if !reflect.DeepEqual(args.RunTestsArgs, exp) {
-		t.Errorf("setRunnerTestDepsArgs(%+v) set %+v; want %+v", cfg, args.RunTestsArgs, exp)
+	if !reflect.DeepEqual(args.RunTests, exp) {
+		t.Errorf("setRunnerTestDepsArgs(%+v) set %+v; want %+v", cfg, args.RunTests, exp)
 	}
 }
 
@@ -60,9 +60,10 @@ func TestGetSoftwareFeaturesAlways(t *testing.T) {
 	}
 	td.checkArgs(t, &runner.Args{
 		Mode: runner.GetSoftwareFeaturesMode,
-		GetSoftwareFeaturesArgs: runner.GetSoftwareFeaturesArgs{
+		GetSoftwareFeatures: runner.GetSoftwareFeaturesArgs{
 			ExtraUSEFlags: td.cfg.extraUSEFlags,
 		},
+		ExtraUSEFlagsDeprecated: td.cfg.extraUSEFlags,
 	})
 	checkRunnerTestDepsArgs(t, &td.cfg, true, avail, unavail)
 

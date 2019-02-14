@@ -255,8 +255,8 @@ func TestRunSysInfo(t *gotesting.T) {
 
 	// Now collect system info.
 	args := Args{
-		Mode:               CollectSysInfoMode,
-		CollectSysInfoArgs: CollectSysInfoArgs{InitialState: getRes.State},
+		Mode:           CollectSysInfoMode,
+		CollectSysInfo: CollectSysInfoArgs{InitialState: getRes.State},
 	}
 	if status, stdout, _, sig = callRun(t, nil, &args, &defaultArgs, LocalRunner); status != statusSuccess {
 		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
@@ -433,14 +433,14 @@ func TestCheckDepsWhenRunManually(t *gotesting.T) {
 		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
 	}
 
-	if !args.bundleArgs.CheckSoftwareDeps {
+	if !args.bundleArgs.RunTests.CheckSoftwareDeps {
 		t.Errorf("%s didn't request checking test deps", sig)
 	}
-	if exp := []string{"both", "third"}; !reflect.DeepEqual(args.bundleArgs.AvailableSoftwareFeatures, exp) {
-		t.Errorf("%s passed available features %v; want %v", sig, args.bundleArgs.AvailableSoftwareFeatures, exp)
+	if exp := []string{"both", "third"}; !reflect.DeepEqual(args.bundleArgs.RunTests.AvailableSoftwareFeatures, exp) {
+		t.Errorf("%s passed available features %v; want %v", sig, args.bundleArgs.RunTests.AvailableSoftwareFeatures, exp)
 	}
-	if exp := []string{"neither"}; !reflect.DeepEqual(args.bundleArgs.UnavailableSoftwareFeatures, exp) {
-		t.Errorf("%s passed unavailable features %v; want %v", sig, args.bundleArgs.UnavailableSoftwareFeatures, exp)
+	if exp := []string{"neither"}; !reflect.DeepEqual(args.bundleArgs.RunTests.UnavailableSoftwareFeatures, exp) {
+		t.Errorf("%s passed unavailable features %v; want %v", sig, args.bundleArgs.RunTests.UnavailableSoftwareFeatures, exp)
 	}
 }
 
@@ -494,7 +494,12 @@ func TestRunTestsUseRequestedOutDir(t *gotesting.T) {
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
 
-	status, stdout, _, sig := callRun(t, nil, &Args{BundleGlob: filepath.Join(bundleDir, "*"), OutDir: outDir}, nil, LocalRunner)
+	status, stdout, _, sig := callRun(t, nil, &Args{
+		BundleGlob: filepath.Join(bundleDir, "*"),
+		RunTests: RunTestsArgs{
+			RunTestsArgs: bundle.RunTestsArgs{OutDir: outDir},
+		},
+	}, nil, LocalRunner)
 	if status != statusSuccess {
 		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
 	}

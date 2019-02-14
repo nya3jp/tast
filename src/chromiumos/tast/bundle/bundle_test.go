@@ -125,9 +125,11 @@ func TestRunTests(t *gotesting.T) {
 	tests := reg.AllTests()
 	var preRunCalls, postRunCalls, preTestCalls, postTestCalls int
 	args := Args{
-		OutDir:  tmpDir,
-		DataDir: tmpDir,
-		TempDir: runTmpDir,
+		RunTests: RunTestsArgs{
+			OutDir:  tmpDir,
+			DataDir: tmpDir,
+			TempDir: runTmpDir,
+		},
 	}
 	cfg := runConfig{
 		preRunFunc: func(ctx context.Context, lf logFunc) (context.Context, error) {
@@ -257,8 +259,10 @@ func TestRunTestsTimeout(t *gotesting.T) {
 	tmpDir := testutil.TempDir(t)
 	defer os.RemoveAll(tmpDir)
 	args := Args{
-		OutDir:  tmpDir,
-		DataDir: tmpDir,
+		RunTests: RunTestsArgs{
+			OutDir:  tmpDir,
+			DataDir: tmpDir,
+		},
 	}
 
 	// The first test should time out after 10 milliseconds.
@@ -321,10 +325,10 @@ func TestRunTestsMissingDeps(t *gotesting.T) {
 	defer os.RemoveAll(tmpDir)
 
 	args := Args{
-		Mode:    RunTestsMode,
-		OutDir:  tmpDir,
-		DataDir: tmpDir,
-		RunTestsArgs: RunTestsArgs{
+		Mode: RunTestsMode,
+		RunTests: RunTestsArgs{
+			OutDir:                      tmpDir,
+			DataDir:                     tmpDir,
 			CheckSoftwareDeps:           true,
 			AvailableSoftwareFeatures:   []string{validDep},
 			UnavailableSoftwareFeatures: []string{missingDep},
@@ -403,10 +407,12 @@ func TestRunMeta(t *gotesting.T) {
 	defer os.RemoveAll(tmpDir)
 
 	args := Args{
-		Mode:    RunTestsMode,
-		OutDir:  tmpDir,
-		DataDir: tmpDir,
-		RemoteArgs: RemoteArgs{
+		Mode: RunTestsMode,
+		RunTests: RunTestsArgs{
+			OutDir:  tmpDir,
+			DataDir: tmpDir,
+		},
+		Remote: RemoteArgs{
 			TastPath: "/bogus/tast",
 			Target:   "root@example.net",
 			RunFlags: []string{"-flag1", "-flag2"},
@@ -420,9 +426,9 @@ func TestRunMeta(t *gotesting.T) {
 
 	// The test should have access to data from RemoteArgs.
 	expMeta := testing.Meta{
-		TastPath: args.RemoteArgs.TastPath,
-		Target:   args.RemoteArgs.Target,
-		RunFlags: args.RemoteArgs.RunFlags,
+		TastPath: args.Remote.TastPath,
+		Target:   args.Remote.Target,
+		RunFlags: args.Remote.RunFlags,
 	}
 	if !reflect.DeepEqual(meta, expMeta) {
 		t.Errorf("Test got meta %+v; want %+v", meta, expMeta)

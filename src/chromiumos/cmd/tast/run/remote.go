@@ -95,8 +95,7 @@ func runRemoteRunner(ctx context.Context, cfg *Config, bundleGlob, dataDir strin
 	args := runner.Args{
 		BundleGlob: bundleGlob,
 		Patterns:   cfg.Patterns,
-		DataDir:    dataDir,
-		RemoteArgs: runner.RemoteArgs{
+		Remote: runner.RemoteArgs{
 			RemoteArgs: bundle.RemoteArgs{
 				Target:   cfg.Target,
 				KeyFile:  cfg.KeyFile,
@@ -115,6 +114,7 @@ func runRemoteRunner(ctx context.Context, cfg *Config, bundleGlob, dataDir strin
 	switch cfg.mode {
 	case RunTestsMode:
 		args.Mode = runner.RunTestsMode
+		args.RunTests.DataDir = dataDir
 		setRunnerTestDepsArgs(cfg, &args)
 
 		// Create an output directory within the results dir so we can just move
@@ -123,10 +123,13 @@ func runRemoteRunner(ctx context.Context, cfg *Config, bundleGlob, dataDir strin
 		if err != nil {
 			return nil, fmt.Errorf("failed to create output dir: %v", err)
 		}
-		args.OutDir = outDir
+		args.RunTests.OutDir = outDir
 	case ListTestsMode:
 		args.Mode = runner.ListTestsMode
 	}
+
+	// Backfill deprecated fields in case we're executing an old test runner.
+	args.FillDeprecated()
 
 	cmd := exec.Command(cfg.remoteRunner)
 	stdin, err := cmd.StdinPipe()

@@ -46,14 +46,14 @@ func handleGetSysInfoState(args *Args, w io.Writer) error {
 	return json.NewEncoder(w).Encode(res)
 }
 
-// handleCollectSysInfo copies system information that was written after args.CollectSysInfoArgs.InitialState
+// handleCollectSysInfo copies system information that was written after args.CollectSysInfo.InitialState
 // was generated into temporary directories and writes a JSON-marshaled CollectSysInfoResult struct to w.
 func handleCollectSysInfo(args *Args, w io.Writer) error {
 	if args.SystemLogDir == "" || len(args.SystemCrashDirs) == 0 {
 		return command.NewStatusErrorf(statusBadArgs, "system info collection unsupported")
 	}
 
-	cmdArgs := &args.CollectSysInfoArgs
+	cmdArgs := &args.CollectSysInfo
 	res := CollectSysInfoResult{}
 
 	// Collect logs.

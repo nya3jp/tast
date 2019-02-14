@@ -113,7 +113,7 @@ func runTestsAndReport(args *Args, stdout io.Writer) {
 		}
 		// If the runner was executed manually and an out dir wasn't specified, clean up the temp dir that was created.
 		if !args.report && created {
-			defer os.RemoveAll(bundleArgs.OutDir)
+			defer os.RemoveAll(bundleArgs.RunTests.OutDir)
 		}
 
 		var lm sync.Mutex
@@ -124,8 +124,8 @@ func runTestsAndReport(args *Args, stdout io.Writer) {
 		}
 		// TODO(nya): Consider applying timeout.
 		ctx := context.TODO()
-		cl := newDevserverClient(ctx, args.RunTestsArgs.Devservers, lf)
-		processExternalDataLinks(ctx, args.DataDir, tests, cl, lf)
+		cl := newDevserverClient(ctx, args.RunTests.Devservers, lf)
+		processExternalDataLinks(ctx, args.RunTests.DataDir, tests, cl, lf)
 
 		for _, bundle := range bundles {
 			// Copy each bundle's output (consisting of control messages) directly to stdout.
@@ -138,7 +138,7 @@ func runTestsAndReport(args *Args, stdout io.Writer) {
 		}
 	}
 
-	mw.WriteMessage(&control.RunEnd{Time: time.Now(), OutDir: bundleArgs.OutDir})
+	mw.WriteMessage(&control.RunEnd{Time: time.Now(), OutDir: bundleArgs.RunTests.OutDir})
 }
 
 // runTestsAndLog runs bundles serially to perform testing and logs human-readable results to stdout.
@@ -170,19 +170,19 @@ func newRunErrorMessagef(status int, format string, args ...interface{}) *contro
 	}
 }
 
-// setUpBaseOutDir creates and assigns a temporary directory if args.OutDir is empty.
+// setUpBaseOutDir creates and assigns a temporary directory if args.RunTests.OutDir is empty.
 // It also ensures that the dir is accessible to all users.
 func setUpBaseOutDir(args *bundle.Args) (created bool, err error) {
-	if args.OutDir == "" {
-		if args.OutDir, err = ioutil.TempDir("", "tast_out."); err != nil {
+	if args.RunTests.OutDir == "" {
+		if args.RunTests.OutDir, err = ioutil.TempDir("", "tast_out."); err != nil {
 			return false, err
 		}
 		created = true
 	}
 	// Make the directory traversable in case a test wants to write a file as another user.
 	// (Note that we can't guarantee that all the parent directories are also accessible, though.)
-	if err = os.Chmod(args.OutDir, 0755); err != nil && created {
-		os.RemoveAll(args.OutDir)
+	if err = os.Chmod(args.RunTests.OutDir, 0755); err != nil && created {
+		os.RemoveAll(args.RunTests.OutDir)
 	}
 	return created, err
 }

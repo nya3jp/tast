@@ -494,8 +494,8 @@ func TestWriteResultsCollectSysInfo(t *gotesting.T) {
 		t.Fatal("WriteResults failed: ", err)
 	}
 	td.checkArgs(t, &runner.Args{
-		Mode:               runner.CollectSysInfoMode,
-		CollectSysInfoArgs: runner.CollectSysInfoArgs{},
+		Mode:           runner.CollectSysInfoMode,
+		CollectSysInfo: runner.CollectSysInfoArgs{},
 	})
 }
 

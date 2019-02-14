@@ -184,38 +184,45 @@ func TestRemoteRun(t *gotesting.T) {
 	}
 
 	// remote should create a temporary output dir rooted under the results dir: https://crbug.com/813282
-	if !strings.HasPrefix(td.args.OutDir, td.cfg.ResDir+"/") {
+	if !strings.HasPrefix(td.args.RunTests.OutDir, td.cfg.ResDir+"/") {
 		t.Errorf("remote(%+v) passed out dir %v not rooted under results dir %v",
-			td.cfg, td.args.OutDir, td.cfg.ResDir)
+			td.cfg, td.args.RunTests.OutDir, td.cfg.ResDir)
 	}
-	td.args.OutDir = "" // clear randomly-named dir before following comparison
+	td.args.RunTests.OutDir = ""  // clear randomly-named dir
+	td.args.OutDirDeprecated = "" // clear randomly-named dir
 
 	exe, err := os.Executable()
 	if err != nil {
 		t.Fatal(err)
 	}
+	runFlags := []string{
+		"-keyfile=" + td.cfg.KeyFile,
+		"-keydir=",
+		"-remoterunner=" + td.cfg.remoteRunner,
+		"-remotebundledir=" + td.cfg.remoteBundleDir,
+		"-remotedatadir=" + td.cfg.remoteDataDir,
+	}
 	expArgs := runner.Args{
 		Mode:       runner.RunTestsMode,
 		BundleGlob: filepath.Join(td.cfg.remoteBundleDir, "*"),
-		DataDir:    td.cfg.remoteDataDir,
-		RemoteArgs: runner.RemoteArgs{
+		Remote: runner.RemoteArgs{
 			RemoteArgs: bundle.RemoteArgs{
 				KeyFile:  td.cfg.KeyFile,
 				TastPath: exe,
-				RunFlags: []string{
-					"-keyfile=" + td.cfg.KeyFile,
-					"-keydir=",
-					"-remoterunner=" + td.cfg.remoteRunner,
-					"-remotebundledir=" + td.cfg.remoteBundleDir,
-					"-remotedatadir=" + td.cfg.remoteDataDir,
-				},
+				RunFlags: runFlags,
 			},
 		},
-		RunTestsArgs: runner.RunTestsArgs{
+		RunTests: runner.RunTestsArgs{
 			RunTestsArgs: bundle.RunTestsArgs{
+				DataDir:           td.cfg.remoteDataDir,
 				CheckSoftwareDeps: false,
 			},
 		},
+		// Deprecated fields should be backfilled to support old runners.
+		KeyFileDeprecated:  td.cfg.KeyFile,
+		TastPathDeprecated: exe,
+		RunFlagsDeprecated: runFlags,
+		DataDirDeprecated:  td.cfg.remoteDataDir,
 	}
 	if !reflect.DeepEqual(td.args, expArgs) {
 		t.Errorf("remote(%+v) passed args %+v; want %+v", td.cfg, td.args, expArgs)

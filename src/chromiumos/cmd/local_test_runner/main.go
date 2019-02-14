@@ -14,15 +14,20 @@ import (
 	"os"
 
 	"chromiumos/tast/autocaps"
+	"chromiumos/tast/bundle"
 	"chromiumos/tast/crash"
 	"chromiumos/tast/runner"
 )
 
 func main() {
 	args := runner.Args{
-		BundleGlob:      "/usr/local/libexec/tast/bundles/local/*",
-		DataDir:         "/usr/local/share/tast/data",
-		TempDir:         "/usr/local/tmp/tast/run_tmp",
+		BundleGlob: "/usr/local/libexec/tast/bundles/local/*",
+		RunTestsArgs: runner.RunTestsArgs{
+			RunTestsArgs: bundle.RunTestsArgs{
+				DataDir: "/usr/local/share/tast/data",
+				TempDir: "/usr/local/tmp/tast/run_tmp",
+			},
+		},
 		SystemLogDir:    "/var/log",
 		SystemCrashDirs: crash.DefaultDirs(),
 		// The tast-use-flags package attempts to install this file to /etc,

@@ -28,24 +28,19 @@ type Args struct {
 	// Patterns contains patterns (either empty to run all tests, exactly one attribute expression,
 	// or one or more globs) describing which tests to run.
 	Patterns []string `json:"patterns,omitempty"`
-	// DataDir is the path to the directory containing test data files.
-	DataDir string `json:"dataDir,omitempty"`
-	// OutDir is the path to the base directory under which tests should write output files.
-	OutDir string `json:"outDir,omitempty"`
-	// TempDir is the path to the directory under which temporary files for tests are written.
-	TempDir string `json:"tempDir,omitempty"`
 
-	// RemoteArgs contains additional arguments used to run remote tests.
-	RemoteArgs
-	// RunTestsArgs contains additional arguments used by RunTestsMode.
-	RunTestsArgs
-	// CollectSysInfoArgs contains additional arguments used by CollectSysInfoMode.
-	CollectSysInfoArgs
-	// GetSoftwareFeaturesArgs contains additional arguments used by GetSoftwareFeaturesMode.
-	GetSoftwareFeaturesArgs
+	// Remote contains additional arguments used to run remote tests.
+	Remote RemoteArgs `json:"remote,omitempty"`
+	// RunTests contains additional arguments used by RunTestsMode.
+	RunTests RunTestsArgs `json:"runTests,omitempty"`
+	// CollectSysInfo contains additional arguments used by CollectSysInfoMode.
+	CollectSysInfo CollectSysInfoArgs `json:"collectSysInfo,omitempty"`
+	// GetSoftwareFeatures contains additional arguments used by GetSoftwareFeaturesMode.
+	GetSoftwareFeatures GetSoftwareFeaturesArgs `json:"getSoftwareFeatures,omitempty"`
 
 	// The remaining exported fields are set by test runner main functions (or by unit tests) and
 	// cannot be overridden by the tast executable.
+	// TODO(derat): Nest these within the appropriate sub-structs instead of including them here.
 
 	// SystemLogDir contains the directory where information is logged by syslog and other daemons.
 	SystemLogDir string `json:"-"`
@@ -75,6 +70,70 @@ type Args struct {
 
 	// bundleArgs is filled by readArgs with arguments that should be passed to test bundles.
 	bundleArgs bundle.Args
+
+	// TODO(derat): Delete these fields after 20190501: https://crbug.com/932307
+	// TargetDeprecated has been replaced by Remote.Target.
+	TargetDeprecated string `json:"remoteTarget,omitempty"`
+	// KeyFileDeprecated has been replaced by Remote.KeyFile.
+	KeyFileDeprecated string `json:"remoteKeyFile,omitempty"`
+	// KeyDirDeprecated has been replaced by Remote.KeyDir.
+	KeyDirDeprecated string `json:"remoteKeyDir,omitempty"`
+	// TastPathDeprecated has been replaced by Remote.TastPath.
+	TastPathDeprecated string `json:"remoteTastPath,omitempty"`
+	// RunFlagsDeprecated has been replaced by Remote.RunFlags.
+	RunFlagsDeprecated []string `json:"remoteRunArgs,omitempty"`
+	// DataDirDeprecated has been replaced by RunTests.DataDir.
+	DataDirDeprecated string `json:"dataDir,omitempty"`
+	// OutDirDeprecated has been replaced by RunTests.OutDir.
+	OutDirDeprecated string `json:"outDir,omitempty"`
+	// TempDirDeprecated has been replaced by RunTests.TempDir.
+	TempDirDeprecated string `json:"tempDir,omitempty"`
+	// CheckSoftwareDepsDeprecated has been replaced by RunTests.CheckSoftwareDeps.
+	CheckSoftwareDepsDeprecated bool `json:"runTestsCheckSoftwareDeps,omitempty"`
+	// AvailableSoftwareFeaturesDeprecated has been replaced by RunTests.AvailableSoftwareFeatures.
+	AvailableSoftwareFeaturesDeprecated []string `json:"runTestsAvailableSoftwareFeatures,omitempty"`
+	// UnavailableSoftwareFeaturesDeprecated has been replaced by RunTests.UnavailableSoftwareFeatures.
+	UnavailableSoftwareFeaturesDeprecated []string `json:"runTestsUnavailableSoftwareFeatures,omitempty"`
+	// WaitUntilReadyDeprecated has been replaced by RunTests.WaitUntilReady.
+	WaitUntilReadyDeprecated bool `json:"runTestsWaitUntilReady,omitempty"`
+	// DevserversDeprecated has been replaced by RunTests.Devservers.
+	DevserversDeprecated []string `json:"devservers,omitempty"`
+	// InitialStateDeprecated has been replaced by CollectSysInfo.InitialState.
+	InitialStateDeprecated SysInfoState `json:"collectSysInfoInitialState,omitempty"`
+	// ExtraUSEFlagsDeprecated has been replaced by GetSoftwareFeatures.ExtraUSEFlags.
+	ExtraUSEFlagsDeprecated []string `json:"getSoftwareFeaturesExtraUseFlags,omitempty"`
+}
+
+// deprecatedFields returns a mapping from pointers to deprecated fields in Args to
+// pointers to the corresponding non-deprecated fields.
+// InitialStateDeprecated is not included.
+func (a *Args) deprecatedFields() map[interface{}]interface{} {
+	return map[interface{}]interface{}{
+		&a.TargetDeprecated:                      &a.Remote.Target,
+		&a.KeyFileDeprecated:                     &a.Remote.KeyFile,
+		&a.KeyDirDeprecated:                      &a.Remote.KeyDir,
+		&a.TastPathDeprecated:                    &a.Remote.TastPath,
+		&a.RunFlagsDeprecated:                    &a.Remote.RunFlags,
+		&a.DataDirDeprecated:                     &a.RunTests.DataDir,
+		&a.OutDirDeprecated:                      &a.RunTests.OutDir,
+		&a.TempDirDeprecated:                     &a.RunTests.TempDir,
+		&a.CheckSoftwareDepsDeprecated:           &a.RunTests.CheckSoftwareDeps,
+		&a.AvailableSoftwareFeaturesDeprecated:   &a.RunTests.AvailableSoftwareFeatures,
+		&a.UnavailableSoftwareFeaturesDeprecated: &a.RunTests.UnavailableSoftwareFeatures,
+		&a.WaitUntilReadyDeprecated:              &a.RunTests.WaitUntilReady,
+		&a.DevserversDeprecated:                  &a.RunTests.Devservers,
+		&a.ExtraUSEFlagsDeprecated:               &a.GetSoftwareFeatures.ExtraUSEFlags,
+	}
+}
+
+// FillDeprecated backfills deprecated fields from the corresponding non-deprecated fields.
+// This method is called by the tast process to ensure that args will be interpreted
+// correctly by older test runners.
+func (a *Args) FillDeprecated() {
+	for old, cur := range a.deprecatedFields() {
+		command.CopyFieldIfNonZero(cur, old)
+	}
+	a.InitialStateDeprecated = a.CollectSysInfo.InitialState // copy struct manually
 }
 
 // RemoteArgs is nested within Args and holds additional arguments that are only relevant when running remote tests.
@@ -86,7 +145,6 @@ type RemoteArgs struct {
 // RunTestsArgs is nested within Args and contains additional arguments used by RunTestsMode.
 type RunTestsArgs struct {
 	bundle.RunTestsArgs
-
 	// Devservers contains URLs of devservers that can be used to download files.
 	Devservers []string `json:"devservers,omitempty"`
 }
@@ -104,7 +162,7 @@ type GetSysInfoStateResult struct {
 type CollectSysInfoArgs struct {
 	// InitialState describes the pre-testing state of the DUT. It should be generated by a GetSysInfoStateMode
 	// command executed before tests are run.
-	InitialState SysInfoState `json:"collectSysInfoInitialState,omitempty"`
+	InitialState SysInfoState `json:"initialState,omitempty"`
 }
 
 // CollectSysInfoResult contains the result of a CollectSysInfoMode command.
@@ -121,7 +179,7 @@ type CollectSysInfoResult struct {
 type GetSoftwareFeaturesArgs struct {
 	// ExtraUSEFlags lists additional USE flags that should be treated as being set an addition to
 	// the ones read from Args.USEFlagsFile when computing the feature sets for GetSoftwareFeaturesResult.
-	ExtraUSEFlags []string `json:"getSoftwareFeaturesExtraUseFlags,omitempty"`
+	ExtraUSEFlags []string `json:"extraUseFlags,omitempty"`
 }
 
 // GetSoftwareFeaturesResult contains the result of a GetSoftwareFeaturesMode command.
@@ -173,18 +231,18 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, ru
 			flags.PrintDefaults()
 		}
 		flags.StringVar(&args.BundleGlob, "bundles", args.BundleGlob, "glob matching test bundles")
-		flags.StringVar(&args.DataDir, "datadir", args.DataDir, "directory containing data files")
-		flags.StringVar(&args.OutDir, "outdir", args.OutDir, "base directory to write output files to")
-		flags.Var(command.NewListFlag(",", func(v []string) { args.RunTestsArgs.Devservers = v }, nil),
+		flags.StringVar(&args.RunTests.DataDir, "datadir", args.RunTests.DataDir, "directory containing data files")
+		flags.StringVar(&args.RunTests.OutDir, "outdir", args.RunTests.OutDir, "base directory to write output files to")
+		flags.Var(command.NewListFlag(",", func(v []string) { args.RunTests.Devservers = v }, nil),
 			"devservers", "comma-separated list of devserver URLs")
-		flags.Var(command.NewListFlag(",", func(v []string) { args.GetSoftwareFeaturesArgs.ExtraUSEFlags = v }, nil),
+		flags.Var(command.NewListFlag(",", func(v []string) { args.GetSoftwareFeatures.ExtraUSEFlags = v }, nil),
 			"extrauseflags", "comma-separated list of additional USE flags to inject when checking test dependencies")
-		flags.BoolVar(&args.WaitUntilReady, "waituntilready", false, "wait until DUT is ready before running tests")
+		flags.BoolVar(&args.RunTests.WaitUntilReady, "waituntilready", false, "wait until DUT is ready before running tests")
 
 		if runnerType == RemoteRunner {
-			flags.StringVar(&args.Target, "target", "", "DUT connection spec as \"[<user>@]host[:<port>]\"")
-			flags.StringVar(&args.KeyFile, "keyfile", "", "path to SSH private key to use for connecting to DUT")
-			flags.StringVar(&args.KeyDir, "keydir", "", "directory containing SSH private keys (typically $HOME/.ssh)")
+			flags.StringVar(&args.Remote.Target, "target", "", "DUT connection spec as \"[<user>@]host[:<port>]\"")
+			flags.StringVar(&args.Remote.KeyFile, "keyfile", "", "path to SSH private key to use for connecting to DUT")
+			flags.StringVar(&args.Remote.KeyDir, "keydir", "", "directory containing SSH private keys (typically $HOME/.ssh)")
 		}
 
 		if err := flags.Parse(clArgs); err != nil {
@@ -201,24 +259,32 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, ru
 		}
 	}
 
+	// Use deprecated fields if they were supplied by an old tast binary.
+	for old, cur := range args.deprecatedFields() {
+		command.CopyFieldIfNonZero(old, cur)
+	}
+	if !reflect.DeepEqual(args.InitialStateDeprecated, SysInfoState{}) {
+		args.CollectSysInfo.InitialState = args.InitialStateDeprecated
+	}
+
 	// Copy over args that need to be passed to test bundles.
 	args.bundleArgs = bundle.Args{
-		DataDir:      args.DataDir,
-		OutDir:       args.OutDir,
-		TempDir:      args.TempDir,
-		Patterns:     args.Patterns,
-		RunTestsArgs: args.RunTestsArgs.RunTestsArgs,
+		Patterns: args.Patterns,
+		RunTests: args.RunTests.RunTestsArgs,
 	}
-	if !reflect.DeepEqual(args.RemoteArgs, RemoteArgs{}) {
+	if !reflect.DeepEqual(args.Remote, RemoteArgs{}) {
 		if runnerType != RemoteRunner {
-			return command.NewStatusErrorf(statusBadArgs, "remote args %+v passed to non-remote runner", args.RemoteArgs)
+			return command.NewStatusErrorf(statusBadArgs, "remote args %+v passed to non-remote runner", args.Remote)
 		}
-		args.bundleArgs.RemoteArgs = args.RemoteArgs.RemoteArgs
+		args.bundleArgs.Remote = args.Remote.RemoteArgs
 	}
+	// Backfill deprecated fields in case we're executing an old test bundle.
+	args.bundleArgs.FillDeprecated()
+
 	return nil
 }
 
-// setManualDepsArgs sets dependency/feature-related fields in args.RunTestArgs appropriately for a manual
+// setManualDepsArgs sets dependency/feature-related fields in args.RunTests appropriately for a manual
 // run (i.e. when the runner is executed directly with command-line flags rather than via "tast run").
 func setManualDepsArgs(args *Args) error {
 	if bundle.GetTestPatternType(args.Patterns) != bundle.TestPatternAttrExpr || args.USEFlagsFile == "" {
@@ -232,7 +298,7 @@ func setManualDepsArgs(args *Args) error {
 	if err != nil {
 		return command.NewStatusErrorf(statusError, "%v", err)
 	}
-	useFlags = append(useFlags, args.ExtraUSEFlags...)
+	useFlags = append(useFlags, args.GetSoftwareFeatures.ExtraUSEFlags...)
 
 	var autotestCaps map[string]autocaps.State
 	if args.AutotestCapabilityDir != "" {
@@ -245,9 +311,9 @@ func setManualDepsArgs(args *Args) error {
 	if err != nil {
 		return command.NewStatusErrorf(statusError, "%v", err)
 	}
-	args.RunTestsArgs.CheckSoftwareDeps = true
-	args.RunTestsArgs.AvailableSoftwareFeatures = avail
-	args.RunTestsArgs.UnavailableSoftwareFeatures = unavail
+	args.RunTests.CheckSoftwareDeps = true
+	args.RunTests.AvailableSoftwareFeatures = avail
+	args.RunTests.UnavailableSoftwareFeatures = unavail
 	return nil
 }
 

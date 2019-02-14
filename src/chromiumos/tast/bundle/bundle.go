@@ -168,10 +168,10 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		return command.NewStatusErrorf(statusNoTests, "no tests matched by pattern(s)")
 	}
 
-	if args.TempDir == "" {
-		args.TempDir = filepath.Join(os.TempDir(), "tast/run_tmp")
+	if args.RunTests.TempDir == "" {
+		args.RunTests.TempDir = filepath.Join(os.TempDir(), "tast/run_tmp")
 	}
-	restoreTempDir, err := prepareTempDir(args.TempDir)
+	restoreTempDir, err := prepareTempDir(args.RunTests.TempDir)
 	if err != nil {
 		return err
 	}
@@ -185,11 +185,11 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 	}
 
 	var meta *testing.Meta
-	if !reflect.DeepEqual(args.RemoteArgs, RemoteArgs{}) {
+	if !reflect.DeepEqual(args.Remote, RemoteArgs{}) {
 		meta = &testing.Meta{
-			TastPath: args.RemoteArgs.TastPath,
-			Target:   args.RemoteArgs.Target,
-			RunFlags: args.RemoteArgs.RunFlags,
+			TastPath: args.Remote.TastPath,
+			Target:   args.Remote.Target,
+			RunFlags: args.Remote.RunFlags,
 		}
 	}
 
@@ -225,8 +225,8 @@ func runTest(ctx context.Context, ew *eventWriter, args *Args, cfg *runConfig,
 	// refer to features that we don't know anything about (possibly indicating a typo in the
 	// test's dependencies).
 	var missingDeps []string
-	if args.CheckSoftwareDeps {
-		missingDeps = t.MissingSoftwareDeps(args.AvailableSoftwareFeatures)
+	if args.RunTests.CheckSoftwareDeps {
+		missingDeps = t.MissingSoftwareDeps(args.RunTests.AvailableSoftwareFeatures)
 		if unknown := getUnknownDeps(missingDeps, args); len(unknown) > 0 {
 			_, fn, ln, _ := runtime.Caller(0)
 			ew.TestError(time.Now(), &testing.Error{
@@ -239,8 +239,8 @@ func runTest(ctx context.Context, ew *eventWriter, args *Args, cfg *runConfig,
 
 	if len(missingDeps) == 0 {
 		testCfg := testing.TestConfig{
-			DataDir:      filepath.Join(args.DataDir, t.DataDir()),
-			OutDir:       filepath.Join(args.OutDir, t.Name),
+			DataDir:      filepath.Join(args.RunTests.DataDir, t.DataDir()),
+			OutDir:       filepath.Join(args.RunTests.OutDir, t.Name),
 			Meta:         meta,
 			PreTestFunc:  cfg.preTestFunc,
 			PostTestFunc: cfg.postTestFunc,
@@ -274,7 +274,7 @@ func getUnknownDeps(missingDeps []string, args *Args) []string {
 	var unknown []string
 DepsLoop:
 	for _, d := range missingDeps {
-		for _, f := range args.UnavailableSoftwareFeatures {
+		for _, f := range args.RunTests.UnavailableSoftwareFeatures {
 			if d == f {
 				continue DepsLoop
 			}

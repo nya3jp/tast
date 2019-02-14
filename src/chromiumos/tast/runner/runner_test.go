@@ -494,7 +494,12 @@ func TestRunTestsUseRequestedOutDir(t *gotesting.T) {
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
 
-	status, stdout, _, sig := callRun(t, nil, &Args{BundleGlob: filepath.Join(bundleDir, "*"), OutDir: outDir}, nil, LocalRunner)
+	status, stdout, _, sig := callRun(t, nil, &Args{
+		BundleGlob: filepath.Join(bundleDir, "*"),
+		RunTestsArgs: RunTestsArgs{
+			RunTestsArgs: bundle.RunTestsArgs{OutDir: outDir},
+		},
+	}, nil, LocalRunner)
 	if status != statusSuccess {
 		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
 	}

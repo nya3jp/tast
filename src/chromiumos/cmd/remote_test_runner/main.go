@@ -11,6 +11,7 @@ package main
 import (
 	"os"
 
+	"chromiumos/tast/bundle"
 	"chromiumos/tast/runner"
 )
 
@@ -22,7 +23,11 @@ const (
 func main() {
 	args := runner.Args{
 		BundleGlob: defaultBundleGlob,
-		DataDir:    defaultDataDir,
+		RunTestsArgs: runner.RunTestsArgs{
+			RunTestsArgs: bundle.RunTestsArgs{
+				DataDir: defaultDataDir,
+			},
+		},
 	}
 	os.Exit(runner.Run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, &args, runner.RemoteRunner))
 }

@@ -168,10 +168,10 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		return command.NewStatusErrorf(statusNoTests, "no tests matched by pattern(s)")
 	}
 
-	if args.TempDir == "" {
-		args.TempDir = filepath.Join(os.TempDir(), "tast/run_tmp")
+	if args.RunTestsArgs.TempDir == "" {
+		args.RunTestsArgs.TempDir = filepath.Join(os.TempDir(), "tast/run_tmp")
 	}
-	restoreTempDir, err := prepareTempDir(args.TempDir)
+	restoreTempDir, err := prepareTempDir(args.RunTestsArgs.TempDir)
 	if err != nil {
 		return err
 	}
@@ -239,8 +239,8 @@ func runTest(ctx context.Context, ew *eventWriter, args *Args, cfg *runConfig,
 
 	if len(missingDeps) == 0 {
 		testCfg := testing.TestConfig{
-			DataDir:      filepath.Join(args.DataDir, t.DataDir()),
-			OutDir:       filepath.Join(args.OutDir, t.Name),
+			DataDir:      filepath.Join(args.RunTestsArgs.DataDir, t.DataDir()),
+			OutDir:       filepath.Join(args.RunTestsArgs.OutDir, t.Name),
 			Meta:         meta,
 			PreTestFunc:  cfg.preTestFunc,
 			PostTestFunc: cfg.postTestFunc,

@@ -125,9 +125,11 @@ func TestRunTests(t *gotesting.T) {
 	tests := reg.AllTests()
 	var preRunCalls, postRunCalls, preTestCalls, postTestCalls int
 	args := Args{
-		OutDir:  tmpDir,
-		DataDir: tmpDir,
-		TempDir: runTmpDir,
+		RunTestsArgs: RunTestsArgs{
+			OutDir:  tmpDir,
+			DataDir: tmpDir,
+			TempDir: runTmpDir,
+		},
 	}
 	cfg := runConfig{
 		preRunFunc: func(ctx context.Context, lf logFunc) (context.Context, error) {
@@ -257,8 +259,10 @@ func TestRunTestsTimeout(t *gotesting.T) {
 	tmpDir := testutil.TempDir(t)
 	defer os.RemoveAll(tmpDir)
 	args := Args{
-		OutDir:  tmpDir,
-		DataDir: tmpDir,
+		RunTestsArgs: RunTestsArgs{
+			OutDir:  tmpDir,
+			DataDir: tmpDir,
+		},
 	}
 
 	// The first test should time out after 10 milliseconds.
@@ -321,10 +325,10 @@ func TestRunTestsMissingDeps(t *gotesting.T) {
 	defer os.RemoveAll(tmpDir)
 
 	args := Args{
-		Mode:    RunTestsMode,
-		OutDir:  tmpDir,
-		DataDir: tmpDir,
+		Mode: RunTestsMode,
 		RunTestsArgs: RunTestsArgs{
+			OutDir:                      tmpDir,
+			DataDir:                     tmpDir,
 			CheckSoftwareDeps:           true,
 			AvailableSoftwareFeatures:   []string{validDep},
 			UnavailableSoftwareFeatures: []string{missingDep},
@@ -403,9 +407,11 @@ func TestRunMeta(t *gotesting.T) {
 	defer os.RemoveAll(tmpDir)
 
 	args := Args{
-		Mode:    RunTestsMode,
-		OutDir:  tmpDir,
-		DataDir: tmpDir,
+		Mode: RunTestsMode,
+		RunTestsArgs: RunTestsArgs{
+			OutDir:  tmpDir,
+			DataDir: tmpDir,
+		},
 		RemoteArgs: RemoteArgs{
 			TastPath: "/bogus/tast",
 			Target:   "root@example.net",

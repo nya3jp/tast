@@ -99,8 +99,10 @@ func TestRemoteDUT(t *gotesting.T) {
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
 	args := Args{
-		Mode:   RunTestsMode,
-		OutDir: outDir,
+		Mode: RunTestsMode,
+		RunTestsArgs: RunTestsArgs{
+			OutDir: outDir,
+		},
 		RemoteArgs: RemoteArgs{
 			Target:  td.Srv.Addr().String(),
 			KeyFile: td.UserKeyFile,
@@ -143,8 +145,10 @@ func TestRemoteReconnectBetweenTests(t *gotesting.T) {
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
 	args := Args{
-		Mode:   RunTestsMode,
-		OutDir: outDir,
+		Mode: RunTestsMode,
+		RunTestsArgs: RunTestsArgs{
+			OutDir: outDir,
+		},
 		RemoteArgs: RemoteArgs{
 			Target:  td.Srv.Addr().String(),
 			KeyFile: td.UserKeyFile,

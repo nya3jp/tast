@@ -35,12 +35,14 @@ type Args struct {
 	// Patterns contains patterns (either empty to run all tests, exactly one attribute expression,
 	// or one or more globs) describing which tests to run.
 	Patterns []string `json:"patterns,omitempty"`
-	// DataDir is the path to the directory containing test data files.
-	DataDir string `json:"dataDir,omitempty"`
-	// OutDir is the path to the base directory under which tests should write output files.
-	OutDir string `json:"outDir,omitempty"`
-	// TempDir is the path to the directory under which temporary files for tests are written.
-	TempDir string `json:"tempDir,omitempty"`
+
+	// TODO(derat): Delete these fields after 20190501: https://crbug.com/932307
+	// DataDirDeprecated has been replaced by RunTestsArgs.DataDir.
+	DataDirDeprecated string `json:"dataDir,omitempty"`
+	// OutDirDeprecated has been replaced by RunTestsArgs.OutDir.
+	OutDirDeprecated string `json:"outDir,omitempty"`
+	// TempDirDeprecated has been replaced by RunTestsArgs.TempDir.
+	TempDirDeprecated string `json:"tempDir,omitempty"`
 
 	// RemoteArgs contains additional arguments used to run remote tests.
 	RemoteArgs
@@ -66,6 +68,13 @@ type RemoteArgs struct {
 
 // RunTestsArgs is nested within Args and contains additional arguments used by RunTestsMode.
 type RunTestsArgs struct {
+	// DataDir is the path to the directory containing test data files.
+	DataDir string `json:"runTestsDataDir,omitempty"`
+	// OutDir is the path to the base directory under which tests should write output files.
+	OutDir string `json:"runTestsOutDir,omitempty"`
+	// TempDir is the path to the directory under which temporary files for tests are written.
+	TempDir string `json:"runTestsTempDir,omitempty"`
+
 	// CheckSoftwareDeps is true if each test's SoftwareDeps field should be checked against
 	// AvailableSoftwareFeatures and UnavailableSoftwareFeatures.
 	CheckSoftwareDeps bool `json:"runTestsCheckSoftwareDeps,omitempty"`
@@ -73,6 +82,7 @@ type RunTestsArgs struct {
 	AvailableSoftwareFeatures []string `json:"runTestsAvailableSoftwareFeatures,omitempty"`
 	// UnavailableSoftwareFeatures contains a list of software features supported by the DUT.
 	UnavailableSoftwareFeatures []string `json:"runTestsUnavailableSoftwareFeatures,omitempty"`
+
 	// WaitUntilReady indicates that the test bundle's "ready" function (see ReadyFunc) should
 	// be executed before any tests are executed.
 	WaitUntilReady bool `json:"runTestsWaitUntilReady,omitempty"`
@@ -95,6 +105,18 @@ func readArgs(stdin io.Reader, args *Args, cfg *runConfig, bt bundleType) ([]*te
 	if bt != remoteBundle && !reflect.DeepEqual(args.RemoteArgs, RemoteArgs{}) {
 		return nil, command.NewStatusErrorf(statusBadArgs, "remote-only args %+v passed to non-remote bundle", args.RemoteArgs)
 	}
+
+	// Use deprecated fields if they were supplied by an old test runner.
+	if args.DataDirDeprecated != "" {
+		args.RunTestsArgs.DataDir = args.DataDirDeprecated
+	}
+	if args.OutDirDeprecated != "" {
+		args.RunTestsArgs.OutDir = args.OutDirDeprecated
+	}
+	if args.TempDirDeprecated != "" {
+		args.RunTestsArgs.TempDir = args.TempDirDeprecated
+	}
+
 	if errs := testing.RegistrationErrors(); len(errs) > 0 {
 		es := make([]string, len(errs))
 		for i, err := range errs {

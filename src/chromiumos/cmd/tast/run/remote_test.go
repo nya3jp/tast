@@ -184,20 +184,21 @@ func TestRemoteRun(t *gotesting.T) {
 	}
 
 	// remote should create a temporary output dir rooted under the results dir: https://crbug.com/813282
-	if !strings.HasPrefix(td.args.OutDir, td.cfg.ResDir+"/") {
+	if !strings.HasPrefix(td.args.RunTestsArgs.OutDir, td.cfg.ResDir+"/") {
 		t.Errorf("remote(%+v) passed out dir %v not rooted under results dir %v",
-			td.cfg, td.args.OutDir, td.cfg.ResDir)
+			td.cfg, td.args.RunTestsArgs.OutDir, td.cfg.ResDir)
 	}
-	td.args.OutDir = "" // clear randomly-named dir before following comparison
+	td.args.RunTestsArgs.OutDir = "" // clear randomly-named dir
+	td.args.OutDirDeprecated = ""    // clear randomly-named dir
 
 	exe, err := os.Executable()
 	if err != nil {
 		t.Fatal(err)
 	}
 	expArgs := runner.Args{
-		Mode:       runner.RunTestsMode,
-		BundleGlob: filepath.Join(td.cfg.remoteBundleDir, "*"),
-		DataDir:    td.cfg.remoteDataDir,
+		Mode:              runner.RunTestsMode,
+		BundleGlob:        filepath.Join(td.cfg.remoteBundleDir, "*"),
+		DataDirDeprecated: td.cfg.remoteDataDir,
 		RemoteArgs: runner.RemoteArgs{
 			RemoteArgs: bundle.RemoteArgs{
 				KeyFile:  td.cfg.KeyFile,
@@ -213,6 +214,7 @@ func TestRemoteRun(t *gotesting.T) {
 		},
 		RunTestsArgs: runner.RunTestsArgs{
 			RunTestsArgs: bundle.RunTestsArgs{
+				DataDir:           td.cfg.remoteDataDir,
 				CheckSoftwareDeps: false,
 			},
 		},

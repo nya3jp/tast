@@ -28,12 +28,14 @@ type Args struct {
 	// Patterns contains patterns (either empty to run all tests, exactly one attribute expression,
 	// or one or more globs) describing which tests to run.
 	Patterns []string `json:"patterns,omitempty"`
-	// DataDir is the path to the directory containing test data files.
-	DataDir string `json:"dataDir,omitempty"`
-	// OutDir is the path to the base directory under which tests should write output files.
-	OutDir string `json:"outDir,omitempty"`
-	// TempDir is the path to the directory under which temporary files for tests are written.
-	TempDir string `json:"tempDir,omitempty"`
+
+	// TODO(derat): Delete these fields after 20190501: https://crbug.com/932307
+	// DataDirDeprecated has been replaced by RunTestsArgs.DataDir.
+	DataDirDeprecated string `json:"dataDir,omitempty"`
+	// OutDirDeprecated has been replaced by RunTestsArgs.OutDir.
+	OutDirDeprecated string `json:"outDir,omitempty"`
+	// TempDirDeprecated has been replaced by RunTestsArgs.TempDir.
+	TempDirDeprecated string `json:"tempDir,omitempty"`
 
 	// RemoteArgs contains additional arguments used to run remote tests.
 	RemoteArgs
@@ -173,8 +175,8 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, ru
 			flags.PrintDefaults()
 		}
 		flags.StringVar(&args.BundleGlob, "bundles", args.BundleGlob, "glob matching test bundles")
-		flags.StringVar(&args.DataDir, "datadir", args.DataDir, "directory containing data files")
-		flags.StringVar(&args.OutDir, "outdir", args.OutDir, "base directory to write output files to")
+		flags.StringVar(&args.RunTestsArgs.DataDir, "datadir", args.RunTestsArgs.DataDir, "directory containing data files")
+		flags.StringVar(&args.RunTestsArgs.OutDir, "outdir", args.RunTestsArgs.OutDir, "base directory to write output files to")
 		flags.Var(command.NewListFlag(",", func(v []string) { args.RunTestsArgs.Devservers = v }, nil),
 			"devservers", "comma-separated list of devserver URLs")
 		flags.Var(command.NewListFlag(",", func(v []string) { args.GetSoftwareFeaturesArgs.ExtraUSEFlags = v }, nil),
@@ -201,13 +203,24 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, ru
 		}
 	}
 
+	// Use deprecated fields if they were supplied by an old tast binary.
+	if args.DataDirDeprecated != "" {
+		args.RunTestsArgs.DataDir = args.DataDirDeprecated
+	}
+	if args.OutDirDeprecated != "" {
+		args.RunTestsArgs.OutDir = args.OutDirDeprecated
+	}
+	if args.TempDirDeprecated != "" {
+		args.RunTestsArgs.TempDir = args.TempDirDeprecated
+	}
+
 	// Copy over args that need to be passed to test bundles.
 	args.bundleArgs = bundle.Args{
-		DataDir:      args.DataDir,
-		OutDir:       args.OutDir,
-		TempDir:      args.TempDir,
-		Patterns:     args.Patterns,
-		RunTestsArgs: args.RunTestsArgs.RunTestsArgs,
+		Patterns:          args.Patterns,
+		RunTestsArgs:      args.RunTestsArgs.RunTestsArgs,
+		DataDirDeprecated: args.RunTestsArgs.DataDir, // support old bundles
+		OutDirDeprecated:  args.RunTestsArgs.OutDir,  // support old bundles
+		TempDirDeprecated: args.RunTestsArgs.TempDir, // support old bundles
 	}
 	if !reflect.DeepEqual(args.RemoteArgs, RemoteArgs{}) {
 		if runnerType != RemoteRunner {
@@ -218,7 +231,7 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, ru
 	return nil
 }
 
-// setManualDepsArgs sets dependency/feature-related fields in args.RunTestArgs appropriately for a manual
+// setManualDepsArgs sets dependency/feature-related fields in args.RunTestsArgs appropriately for a manual
 // run (i.e. when the runner is executed directly with command-line flags rather than via "tast run").
 func setManualDepsArgs(args *Args) error {
 	if bundle.GetTestPatternType(args.Patterns) != bundle.TestPatternAttrExpr || args.USEFlagsFile == "" {

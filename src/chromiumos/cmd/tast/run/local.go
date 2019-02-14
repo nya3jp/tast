@@ -439,11 +439,6 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 	args := runner.Args{
 		BundleGlob: bundleGlob,
 		Patterns:   cfg.Patterns,
-		DataDir:    dataDir,
-		RunTestsArgs: runner.RunTestsArgs{
-			Devservers:   cfg.devservers,
-			RunTestsArgs: bundle.RunTestsArgs{WaitUntilReady: cfg.waitUntilReady},
-		},
 	}
 
 	var envVars []string
@@ -451,6 +446,14 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 	switch cfg.mode {
 	case RunTestsMode:
 		args.Mode = runner.RunTestsMode
+		args.RunTestsArgs = runner.RunTestsArgs{
+			Devservers: cfg.devservers,
+			RunTestsArgs: bundle.RunTestsArgs{
+				DataDir:        dataDir,
+				WaitUntilReady: cfg.waitUntilReady,
+			},
+		}
+		args.DataDirDeprecated = dataDir // support old runners
 		setRunnerTestDepsArgs(cfg, &args)
 
 		// Set proxy-related environment variables for local_test_runner so it will use them

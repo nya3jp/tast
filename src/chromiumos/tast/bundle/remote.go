@@ -28,11 +28,11 @@ func Remote(clArgs []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	cfg := runConfig{
 		preRunFunc: func(ctx context.Context, lf logFunc) (context.Context, error) {
 			// Connect to the DUT and attach the connection to the context so tests can use it.
-			if args.Target == "" {
+			if args.RunTests.Target == "" {
 				return ctx, errors.New("target not supplied")
 			}
 			lf("Connecting to DUT")
-			dt, err := dut.New(args.Target, args.KeyFile, args.KeyDir)
+			dt, err := dut.New(args.RunTests.Target, args.RunTests.KeyFile, args.RunTests.KeyDir)
 			if err != nil {
 				return ctx, fmt.Errorf("failed to create connection: %v", err.Error())
 			}

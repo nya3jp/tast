@@ -269,9 +269,11 @@ func getDataFilePaths(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlo
 	cfg.Logger.Debug("Getting data file list from target")
 
 	handle, err := startLocalRunner(ctx, cfg, hst, &runner.Args{
-		Mode:       runner.ListTestsMode,
-		BundleGlob: bundleGlob,
-		Patterns:   cfg.Patterns,
+		Mode: runner.ListTestsMode,
+		ListTests: &runner.ListTestsArgs{
+			BundleArgs: bundle.ListTestsArgs{Patterns: cfg.Patterns},
+			BundleGlob: bundleGlob,
+		},
 	})
 	if err != nil {
 		return nil, err
@@ -363,14 +365,12 @@ func pushDataFiles(ctx context.Context, cfg *Config, hst *host.SSH, destDir stri
 func downloadPrivateBundles(ctx context.Context, cfg *Config, hst *host.SSH) error {
 	defer timing.Start(ctx, "download_private_bundles").End()
 
-	args := runner.Args{
+	handle, err := startLocalRunner(ctx, cfg, hst, &runner.Args{
 		Mode: runner.DownloadPrivateBundlesMode,
-		DownloadPrivateBundlesArgs: runner.DownloadPrivateBundlesArgs{
+		DownloadPrivateBundles: &runner.DownloadPrivateBundlesArgs{
 			Devservers: cfg.devservers,
 		},
-	}
-
-	handle, err := startLocalRunner(ctx, cfg, hst, &args)
+	})
 	if err != nil {
 		return err
 	}
@@ -433,6 +433,7 @@ func buildAndPushLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH) er
 }
 
 // startLocalRunner starts local_test_runner on hst and passes args to it.
+// args.FillDeprecated() is called first to backfill any deprecated fields for old runners.
 // The caller is responsible for reading the handle's stdout and closing the handle.
 func startLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, args *runner.Args) (*host.SSHCommandHandle, error) {
 	// Set proxy-related environment variables for local_test_runner so it will use them
@@ -450,6 +451,8 @@ func startLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, args *run
 			}
 		}
 	}
+
+	args.FillDeprecated()
 
 	handle, err := hst.Start(ctx, envPrefix+localRunnerPath, host.OpenStdin, host.StdoutAndStderr)
 	if err != nil {
@@ -473,23 +476,31 @@ func startLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, args *run
 func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob, dataDir string) ([]TestResult, error) {
 	defer timing.Start(ctx, "run_local_tests").End()
 
-	args := runner.Args{
-		BundleGlob: bundleGlob,
-		Patterns:   cfg.Patterns,
-		DataDir:    dataDir,
-		RunTestsArgs: runner.RunTestsArgs{
-			Devservers:   cfg.devservers,
-			RunTestsArgs: bundle.RunTestsArgs{WaitUntilReady: cfg.waitUntilReady},
-		},
-	}
+	var args runner.Args
 
 	switch cfg.mode {
 	case RunTestsMode:
-		args.Mode = runner.RunTestsMode
+		args = runner.Args{
+			Mode: runner.RunTestsMode,
+			RunTests: &runner.RunTestsArgs{
+				BundleArgs: bundle.RunTestsArgs{
+					Patterns:       cfg.Patterns,
+					DataDir:        dataDir,
+					WaitUntilReady: cfg.waitUntilReady,
+				},
+				BundleGlob: bundleGlob,
+				Devservers: cfg.devservers,
+			},
+		}
 		setRunnerTestDepsArgs(cfg, &args)
-
 	case ListTestsMode:
-		args.Mode = runner.ListTestsMode
+		args = runner.Args{
+			Mode: runner.ListTestsMode,
+			ListTests: &runner.ListTestsArgs{
+				BundleArgs: bundle.ListTestsArgs{Patterns: cfg.Patterns},
+				BundleGlob: bundleGlob,
+			},
+		}
 	}
 
 	handle, err := startLocalRunner(ctx, cfg, hst, &args)

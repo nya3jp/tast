@@ -20,6 +20,7 @@ import (
 	"strings"
 
 	"chromiumos/tast/autocaps"
+	"chromiumos/tast/bundle"
 	"chromiumos/tast/crash"
 	"chromiumos/tast/lsbrelease"
 	"chromiumos/tast/runner"
@@ -28,9 +29,13 @@ import (
 
 func main() {
 	args := runner.Args{
-		BundleGlob: "/usr/local/libexec/tast/bundles/local/*",
-		DataDir:    "/usr/local/share/tast/data",
-		TempDir:    "/usr/local/tmp/tast/run_tmp",
+		RunTests: &runner.RunTestsArgs{
+			BundleGlob: "/usr/local/libexec/tast/bundles/local/*",
+			BundleArgs: bundle.RunTestsArgs{
+				DataDir: "/usr/local/share/tast/data",
+				TempDir: "/usr/local/tmp/tast/run_tmp",
+			},
+		},
 	}
 	cfg := runner.Config{
 		Type:              runner.LocalRunner,

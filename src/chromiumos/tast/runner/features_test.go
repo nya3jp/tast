@@ -37,7 +37,7 @@ func TestGetSoftwareFeatures(t *testing.T) {
 		},
 	}
 	defaultArgs := Args{
-		GetSoftwareFeaturesArgs: GetSoftwareFeaturesArgs{
+		GetSoftwareFeatures: &GetSoftwareFeaturesArgs{
 			ExtraUSEFlags: []string{"baz"},
 		},
 	}

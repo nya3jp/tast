@@ -187,38 +187,44 @@ func TestRemoteRun(t *gotesting.T) {
 	}
 
 	// remote should create a temporary output dir rooted under the results dir: https://crbug.com/813282
-	if !strings.HasPrefix(td.args.OutDir, td.cfg.ResDir+"/") {
+	if !strings.HasPrefix(td.args.RunTests.BundleArgs.OutDir, td.cfg.ResDir+"/") {
 		t.Errorf("remote(%+v) passed out dir %v not rooted under results dir %v",
-			td.cfg, td.args.OutDir, td.cfg.ResDir)
+			td.cfg, td.args.RunTests.BundleArgs.OutDir, td.cfg.ResDir)
 	}
-	td.args.OutDir = "" // clear randomly-named dir before following comparison
+	td.args.RunTests.BundleArgs.OutDir = "" // clear randomly-named dir
+	td.args.OutDirDeprecated = ""           // clear randomly-named dir
 
+	glob := filepath.Join(td.cfg.remoteBundleDir, "*")
 	exe, err := os.Executable()
 	if err != nil {
 		t.Fatal(err)
 	}
+	runFlags := []string{
+		"-keyfile=" + td.cfg.KeyFile,
+		"-keydir=",
+		"-remoterunner=" + td.cfg.remoteRunner,
+		"-remotebundledir=" + td.cfg.remoteBundleDir,
+		"-remotedatadir=" + td.cfg.remoteDataDir,
+	}
 	expArgs := runner.Args{
-		Mode:       runner.RunTestsMode,
-		BundleGlob: filepath.Join(td.cfg.remoteBundleDir, "*"),
-		DataDir:    td.cfg.remoteDataDir,
-		RemoteArgs: runner.RemoteArgs{
-			RemoteArgs: bundle.RemoteArgs{
-				KeyFile:  td.cfg.KeyFile,
-				TastPath: exe,
-				RunFlags: []string{
-					"-keyfile=" + td.cfg.KeyFile,
-					"-keydir=",
-					"-remoterunner=" + td.cfg.remoteRunner,
-					"-remotebundledir=" + td.cfg.remoteBundleDir,
-					"-remotedatadir=" + td.cfg.remoteDataDir,
-				},
-			},
-		},
-		RunTestsArgs: runner.RunTestsArgs{
-			RunTestsArgs: bundle.RunTestsArgs{
+		Mode: runner.RunTestsMode,
+		RunTests: &runner.RunTestsArgs{
+			BundleGlob: glob,
+			BundleArgs: bundle.RunTestsArgs{
+				DataDir:           td.cfg.remoteDataDir,
+				KeyFile:           td.cfg.KeyFile,
+				TastPath:          exe,
+				RunFlags:          runFlags,
 				CheckSoftwareDeps: false,
 			},
 		},
+		// Deprecated fields should be backfilled to support old runners.
+		BundleGlobDeprecated:        glob,
+		DataDirDeprecated:           td.cfg.remoteDataDir,
+		KeyFileDeprecated:           td.cfg.KeyFile,
+		TastPathDeprecated:          exe,
+		RunFlagsDeprecated:          runFlags,
+		CheckSoftwareDepsDeprecated: false,
 	}
 	if !reflect.DeepEqual(td.args, expArgs) {
 		t.Errorf("remote(%+v) passed args %+v; want %+v", td.cfg, td.args, expArgs)
@@ -240,13 +246,27 @@ func TestRemoteList(t *gotesting.T) {
 
 	// List matching tests instead of running them.
 	td.cfg.mode = ListTestsMode
+	td.cfg.remoteDataDir = "/tmp/data"
+	td.cfg.Patterns = []string{"*Test*"}
+
 	var status subcommands.ExitStatus
 	var results []TestResult
 	if status, results = td.run(t); status != subcommands.ExitSuccess {
 		t.Errorf("remote(%v) returned status %v; want %v", td.cfg, status, subcommands.ExitSuccess)
 	}
-	if td.args.Mode != runner.ListTestsMode {
-		t.Errorf("remote(%v) passed mode %v; want %v", td.cfg, td.args.Mode, runner.ListTestsMode)
+	glob := filepath.Join(td.cfg.remoteBundleDir, "*")
+	expArgs := runner.Args{
+		Mode: runner.ListTestsMode,
+		ListTests: &runner.ListTestsArgs{
+			BundleArgs: bundle.ListTestsArgs{Patterns: td.cfg.Patterns},
+			BundleGlob: glob,
+		},
+		// Deprecated fields should be backfilled to support old runners.
+		BundleGlobDeprecated: glob,
+		PatternsDeprecated:   td.cfg.Patterns,
+	}
+	if !reflect.DeepEqual(td.args, expArgs) {
+		t.Errorf("remote(%+v) passed args %+v; want %+v", td.cfg, td.args, expArgs)
 	}
 
 	listed := make([]testing.Test, len(results))

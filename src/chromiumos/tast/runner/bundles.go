@@ -32,10 +32,20 @@ import (
 
 // getBundlesAndTests returns matched tests and paths to the bundles containing them.
 func getBundlesAndTests(args *Args) (bundles []string, tests []*testing.Test, err *command.StatusError) {
-	if bundles, err = getBundles(args.BundleGlob); err != nil {
+	var glob string
+	switch args.Mode {
+	case RunTestsMode:
+		glob = args.RunTests.BundleGlob
+	case ListTestsMode:
+		glob = args.ListTests.BundleGlob
+	default:
+		return nil, nil, command.NewStatusErrorf(statusBadArgs, "bundles unneeded for mode %v", args.Mode)
+	}
+
+	if bundles, err = getBundles(glob); err != nil {
 		return nil, nil, err
 	}
-	tests, bundles, err = getTests(bundles, args.bundleArgs)
+	tests, bundles, err = getTests(args, bundles)
 	return bundles, tests, err
 }
 
@@ -70,8 +80,12 @@ type testsOrError struct {
 // getTests returns tests in bundles matched by args.Patterns. It does this by executing
 // each bundle to ask it to marshal and print its tests. A slice of paths to bundles
 // with matched tests is also returned.
-func getTests(bundles []string, args bundle.Args) (tests []*testing.Test, bundlesWithTests []string, err *command.StatusError) {
-	args.Mode = bundle.ListTestsMode
+func getTests(args *Args, bundles []string) (tests []*testing.Test,
+	bundlesWithTests []string, statusErr *command.StatusError) {
+	bundleArgs, err := args.bundleArgs(bundle.ListTestsMode)
+	if err != nil {
+		return nil, nil, command.NewStatusErrorf(statusBadArgs, "%v", err)
+	}
 
 	// Run all bundles in parallel.
 	ch := make(chan testsOrError, len(bundles))
@@ -79,7 +93,7 @@ func getTests(bundles []string, args bundle.Args) (tests []*testing.Test, bundle
 		bundle := b
 		go func() {
 			out := bytes.Buffer{}
-			if err := runBundle(bundle, &args, &out); err != nil {
+			if err := runBundle(bundle, bundleArgs, &out); err != nil {
 				ch <- testsOrError{bundle, nil, err}
 				return
 			}
@@ -119,9 +133,9 @@ func getTests(bundles []string, args bundle.Args) (tests []*testing.Test, bundle
 // startBundleCmd creates and returns a new command running the test bundle at path using args.
 // cmd's Start method has already been called, and the caller is responsible for calling Wait.
 // A new session is created for the bundle process.
-func startBundleCmd(path string, args *bundle.Args, stdout, stderr io.Writer) (*exec.Cmd, error) {
+func startBundleCmd(path string, bundleArgs *bundle.Args, stdout, stderr io.Writer) (*exec.Cmd, error) {
 	var stdin bytes.Buffer
-	if err := json.NewEncoder(&stdin).Encode(args); err != nil {
+	if err := json.NewEncoder(&stdin).Encode(bundleArgs); err != nil {
 		return nil, err
 	}
 
@@ -144,9 +158,9 @@ func startBundleCmd(path string, args *bundle.Args, stdout, stderr io.Writer) (*
 	return cmd, nil
 }
 
-// runBundle runs the bundle at path to completion, passing args.
+// runBundle runs the bundle at path to completion, passing bundleArgs.
 // The bundle's stdout is copied to the stdout arg.
-func runBundle(path string, args *bundle.Args, stdout io.Writer) *command.StatusError {
+func runBundle(path string, bundleArgs *bundle.Args, stdout io.Writer) *command.StatusError {
 	// Watch for stdout being closed so we can abort the bundle and clean up: https://crbug.com/945626
 	// Otherwise, the runner, bundle, and processes started by tests may run indefinitely.
 	// When stdout is closed, it's important that we clean up before writing anything to it, as Go will
@@ -165,7 +179,7 @@ func runBundle(path string, args *bundle.Args, stdout io.Writer) *command.Status
 	defer signal.Stop(sigCh)
 
 	stderr := bytes.Buffer{}
-	cmd, err := startBundleCmd(path, args, stdout, &stderr)
+	cmd, err := startBundleCmd(path, bundleArgs, stdout, &stderr)
 	if err != nil {
 		return command.NewStatusErrorf(statusBundleFailed, "%v", err)
 	}
@@ -253,7 +267,7 @@ func handleDownloadPrivateBundles(ctx context.Context, args *Args, cfg *Config, 
 
 	// Download the archive via devserver.
 	lf(fmt.Sprintf("Downloading private bundles from %s", cfg.PrivateBundleArchiveURL))
-	cl := newDevserverClient(ctx, args.DownloadPrivateBundlesArgs.Devservers, lf)
+	cl := newDevserverClient(ctx, args.DownloadPrivateBundles.Devservers, lf)
 
 	tf, err := ioutil.TempFile("", "tast_bundles.")
 	if err != nil {

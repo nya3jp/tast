@@ -17,22 +17,6 @@ import (
 	"chromiumos/tast/testutil"
 )
 
-func TestLocalRemoteArgs(t *gotesting.T) {
-	// Args intended for remote bundles should generate an error when passed to Local.
-	args := Args{
-		Mode:       RunTestsMode,
-		RemoteArgs: RemoteArgs{Target: "user@example.net"},
-	}
-	stdin := newBufferWithArgs(t, &args)
-	stderr := bytes.Buffer{}
-	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, nil); status != statusBadArgs {
-		t.Errorf("Local(%+v) = %v; want %v", args, status, statusBadArgs)
-	}
-	if len(stderr.String()) == 0 {
-		t.Errorf("Local(%+v) didn't write error to stderr", args)
-	}
-}
-
 func TestLocalBadTest(t *gotesting.T) {
 	// A test without a function should trigger a registration error.
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
@@ -59,7 +43,7 @@ func TestLocalRunTest(t *gotesting.T) {
 
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
-	args := Args{Mode: RunTestsMode, OutDir: outDir}
+	args := Args{Mode: RunTestsMode, RunTests: &RunTestsArgs{OutDir: outDir}}
 	stdin := newBufferWithArgs(t, &args)
 	stderr := bytes.Buffer{}
 	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, nil); status != statusSuccess {
@@ -81,7 +65,7 @@ func TestLocalFaillog(t *gotesting.T) {
 
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
-	args := Args{Mode: RunTestsMode, OutDir: outDir}
+	args := Args{Mode: RunTestsMode, RunTests: &RunTestsArgs{OutDir: outDir}}
 	stdin := newBufferWithArgs(t, &args)
 	stderr := bytes.Buffer{}
 	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, nil); status != statusSuccess {
@@ -105,9 +89,11 @@ func TestLocalReadyFunc(t *gotesting.T) {
 
 	// Ensure that a successful ready function is executed.
 	args := Args{
-		Mode:         RunTestsMode,
-		OutDir:       outDir,
-		RunTestsArgs: RunTestsArgs{WaitUntilReady: true},
+		Mode: RunTestsMode,
+		RunTests: &RunTestsArgs{
+			OutDir:         outDir,
+			WaitUntilReady: true,
+		},
 	}
 	stdin := newBufferWithArgs(t, &args)
 	stderr := bytes.Buffer{}
@@ -146,9 +132,11 @@ func TestLocalReadyFuncDisabled(t *gotesting.T) {
 
 	// The ready function should be skipped if WaitUntilReady is false.
 	args := Args{
-		Mode:         RunTestsMode,
-		OutDir:       outDir,
-		RunTestsArgs: RunTestsArgs{WaitUntilReady: false},
+		Mode: RunTestsMode,
+		RunTests: &RunTestsArgs{
+			OutDir:         outDir,
+			WaitUntilReady: false,
+		},
 	}
 	stdin := newBufferWithArgs(t, &args)
 	stderr := bytes.Buffer{}

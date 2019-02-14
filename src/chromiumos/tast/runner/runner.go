@@ -95,16 +95,19 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Args,
 // Fatal errors are reported via RunError messages, while test errors are reported via TestError messages.
 func runTestsAndReport(ctx context.Context, args *Args, cfg *Config, stdout io.Writer) {
 	mw := control.NewMessageWriter(stdout)
-	bundles, tests, err := getBundlesAndTests(args)
+	bundles, tests, statusErr := getBundlesAndTests(args)
+	if statusErr != nil {
+		mw.WriteMessage(newRunErrorMessagef(statusErr.Status(), "Failed enumerating tests: %v", statusErr))
+		return
+	}
+
+	bundleArgs, err := args.bundleArgs(bundle.RunTestsMode)
 	if err != nil {
-		mw.WriteMessage(newRunErrorMessagef(err.Status(), "Failed enumerating tests: %v", err))
+		mw.WriteMessage(newRunErrorMessagef(statusBadArgs, "Failed constructing bundle args: %v", err))
 		return
 	}
 
 	mw.WriteMessage(&control.RunStart{Time: time.Now(), NumTests: len(tests)})
-
-	bundleArgs := args.bundleArgs
-	bundleArgs.Mode = bundle.RunTestsMode
 
 	// We expect to not match any tests if both local and remote tests are being run but the
 	// user specified a pattern that matched only local or only remote tests rather than tests
@@ -115,14 +118,14 @@ func runTestsAndReport(ctx context.Context, args *Args, cfg *Config, stdout io.W
 			return
 		}
 	} else {
-		created, err := setUpBaseOutDir(&bundleArgs)
+		created, err := setUpBaseOutDir(bundleArgs)
 		if err != nil {
 			mw.WriteMessage(newRunErrorMessagef(statusError, "Failed to set up base out dir: %v", err))
 			return
 		}
 		// If the runner was executed manually and an out dir wasn't specified, clean up the temp dir that was created.
 		if !args.report && created {
-			defer os.RemoveAll(bundleArgs.OutDir)
+			defer os.RemoveAll(bundleArgs.RunTests.OutDir)
 		}
 
 		var lm sync.Mutex
@@ -131,12 +134,12 @@ func runTestsAndReport(ctx context.Context, args *Args, cfg *Config, stdout io.W
 			mw.WriteMessage(&control.RunLog{Time: time.Now(), Text: msg})
 			lm.Unlock()
 		}
-		cl := newDevserverClient(ctx, args.RunTestsArgs.Devservers, lf)
-		processExternalDataLinks(ctx, args.DataDir, cfg.BuildArtifactsURL, tests, cl, lf)
+		cl := newDevserverClient(ctx, args.RunTests.Devservers, lf)
+		processExternalDataLinks(ctx, args.RunTests.BundleArgs.DataDir, cfg.BuildArtifactsURL, tests, cl, lf)
 
 		for _, bundle := range bundles {
 			// Copy each bundle's output (consisting of control messages) directly to stdout.
-			if err := runBundle(bundle, &bundleArgs, stdout); err != nil {
+			if err := runBundle(bundle, bundleArgs, stdout); err != nil {
 				// TODO(derat): The tast command currently aborts the run as soon as it sees a RunError
 				// message, but consider changing that and continuing to run other bundles here.
 				// If we execute additional bundles, be sure to return immediately for statusInterrupted.
@@ -146,7 +149,7 @@ func runTestsAndReport(ctx context.Context, args *Args, cfg *Config, stdout io.W
 		}
 	}
 
-	mw.WriteMessage(&control.RunEnd{Time: time.Now(), OutDir: bundleArgs.OutDir})
+	mw.WriteMessage(&control.RunEnd{Time: time.Now(), OutDir: bundleArgs.RunTests.OutDir})
 }
 
 // runTestsAndLog runs bundles serially to perform testing and logs human-readable results to stdout.
@@ -178,19 +181,19 @@ func newRunErrorMessagef(status int, format string, args ...interface{}) *contro
 	}
 }
 
-// setUpBaseOutDir creates and assigns a temporary directory if args.OutDir is empty.
+// setUpBaseOutDir creates and assigns a temporary directory if args.RunTests.OutDir is empty.
 // It also ensures that the dir is accessible to all users.
 func setUpBaseOutDir(args *bundle.Args) (created bool, err error) {
-	if args.OutDir == "" {
-		if args.OutDir, err = ioutil.TempDir("", "tast_out."); err != nil {
+	if args.RunTests.OutDir == "" {
+		if args.RunTests.OutDir, err = ioutil.TempDir("", "tast_out."); err != nil {
 			return false, err
 		}
 		created = true
 	}
 	// Make the directory traversable in case a test wants to write a file as another user.
 	// (Note that we can't guarantee that all the parent directories are also accessible, though.)
-	if err = os.Chmod(args.OutDir, 0755); err != nil && created {
-		os.RemoveAll(args.OutDir)
+	if err = os.Chmod(args.RunTests.OutDir, 0755); err != nil && created {
+		os.RemoveAll(args.RunTests.OutDir)
 	}
 	return created, err
 }

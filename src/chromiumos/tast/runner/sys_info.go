@@ -57,14 +57,17 @@ func handleGetSysInfoState(ctx context.Context, cfg *Config, w io.Writer) error 
 	return json.NewEncoder(w).Encode(res)
 }
 
-// handleCollectSysInfo copies system information that was written after args.CollectSysInfoArgs.InitialState
+// handleCollectSysInfo copies system information that was written after args.CollectSysInfo.InitialState
 // was generated into temporary directories and writes a JSON-marshaled CollectSysInfoResult struct to w.
 func handleCollectSysInfo(ctx context.Context, args *Args, cfg *Config, w io.Writer) error {
 	if cfg.SystemLogDir == "" || len(cfg.SystemCrashDirs) == 0 {
 		return command.NewStatusErrorf(statusBadArgs, "system info collection unsupported")
 	}
 
-	cmdArgs := &args.CollectSysInfoArgs
+	cmdArgs := args.CollectSysInfo
+	if cmdArgs == nil {
+		return command.NewStatusErrorf(statusBadArgs, "missing system info args")
+	}
 	res := CollectSysInfoResult{}
 
 	// Collect syslog logs.

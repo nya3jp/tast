@@ -23,6 +23,7 @@ import (
 	"github.com/google/subcommands"
 
 	"chromiumos/cmd/tast/logging"
+	"chromiumos/tast/bundle"
 	"chromiumos/tast/command"
 	"chromiumos/tast/control"
 	"chromiumos/tast/host/test"
@@ -150,8 +151,12 @@ func TestLocalSuccess(t *gotesting.T) {
 
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		checkArgs(t, args, &runner.Args{
-			BundleGlob: builtinBundleGlob,
-			DataDir:    localDataBuiltinDir,
+			RunTests: &runner.RunTestsArgs{
+				BundleArgs: bundle.RunTestsArgs{DataDir: localDataBuiltinDir},
+				BundleGlob: builtinBundleGlob,
+			},
+			BundleGlobDeprecated: builtinBundleGlob,
+			DataDirDeprecated:    localDataBuiltinDir,
 		})
 
 		mw := control.NewMessageWriter(stdout)
@@ -272,9 +277,9 @@ func TestLocalList(t *gotesting.T) {
 
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		checkArgs(t, args, &runner.Args{
-			Mode:       runner.ListTestsMode,
-			BundleGlob: builtinBundleGlob,
-			DataDir:    localDataBuiltinDir,
+			Mode:                 runner.ListTestsMode,
+			ListTests:            &runner.ListTestsArgs{BundleGlob: builtinBundleGlob},
+			BundleGlobDeprecated: builtinBundleGlob,
 		})
 
 		json.NewEncoder(stdout).Encode(tests)
@@ -303,8 +308,8 @@ func TestLocalDataFiles(t *gotesting.T) {
 
 	const (
 		dataSubdir  = "data" // subdir storing test data per the tast/testing package
-		bundle      = "bnd"  // test bundle
-		bundlePkg   = "chromiumos/tast/local/bundles/" + bundle
+		bundleName  = "bnd"  // test bundle
+		bundlePkg   = "chromiumos/tast/local/bundles/" + bundleName
 		category    = "cat" // test category
 		categoryPkg = bundlePkg + "/" + category
 		pattern     = "cat.*" // wildcard matching all tests
@@ -327,9 +332,13 @@ func TestLocalDataFiles(t *gotesting.T) {
 
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		checkArgs(t, args, &runner.Args{
-			Mode:       runner.ListTestsMode,
-			BundleGlob: builtinBundleGlob,
-			Patterns:   []string{pattern},
+			Mode: runner.ListTestsMode,
+			ListTests: &runner.ListTestsArgs{
+				BundleArgs: bundle.ListTestsArgs{Patterns: []string{pattern}},
+				BundleGlob: builtinBundleGlob,
+			},
+			PatternsDeprecated:   []string{pattern},
+			BundleGlobDeprecated: builtinBundleGlob,
 		})
 
 		json.NewEncoder(stdout).Encode(tests)
@@ -363,7 +372,7 @@ func TestLocalDataFiles(t *gotesting.T) {
 	if _, err := connectToTarget(context.Background(), &td.cfg); err != nil {
 		t.Fatal(err)
 	}
-	td.cfg.buildBundle = bundle
+	td.cfg.buildBundle = bundleName
 	td.cfg.Patterns = []string{pattern}
 	paths, err := getDataFilePaths(context.Background(), &td.cfg, td.cfg.hst, builtinBundleGlob)
 	if err != nil {
@@ -522,8 +531,8 @@ func TestLocalDownloadPrivateBundles(t *gotesting.T) {
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
 		case runner.DownloadPrivateBundlesMode:
 			exp := runner.DownloadPrivateBundlesArgs{Devservers: td.cfg.devservers}
-			if !reflect.DeepEqual(args.DownloadPrivateBundlesArgs, exp) {
-				t.Errorf("got args %+v; want %+v", args.DownloadPrivateBundlesArgs, exp)
+			if !reflect.DeepEqual(*args.DownloadPrivateBundles, exp) {
+				t.Errorf("got args %+v; want %+v", *args.DownloadPrivateBundles, exp)
 			}
 			called = true
 			json.NewEncoder(stdout).Encode(&runner.DownloadPrivateBundlesResult{})

@@ -36,7 +36,7 @@ func handleGetSoftwareFeatures(args *Args, cfg *Config, w io.Writer) error {
 	if err != nil {
 		return err
 	}
-	flags = append(flags, args.ExtraUSEFlags...)
+	flags = append(flags, args.GetSoftwareFeatures.ExtraUSEFlags...)
 
 	res := GetSoftwareFeaturesResult{}
 	var autotestCaps map[string]autocaps.State

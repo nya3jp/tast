@@ -58,11 +58,10 @@ func collectSysInfo(ctx context.Context, cfg *Config) error {
 	if err != nil {
 		return err
 	}
-	args := runner.Args{
-		Mode:               runner.CollectSysInfoMode,
-		CollectSysInfoArgs: runner.CollectSysInfoArgs{InitialState: *cfg.initialSysInfo},
-	}
-	handle, err := startLocalRunner(ctx, cfg, hst, &args)
+	handle, err := startLocalRunner(ctx, cfg, hst, &runner.Args{
+		Mode:           runner.CollectSysInfoMode,
+		CollectSysInfo: &runner.CollectSysInfoArgs{InitialState: *cfg.initialSysInfo},
+	})
 	if err != nil {
 		return err
 	}

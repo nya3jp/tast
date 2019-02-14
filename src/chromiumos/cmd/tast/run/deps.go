@@ -43,7 +43,7 @@ func getSoftwareFeatures(ctx context.Context, cfg *Config) error {
 	}
 	handle, err := startLocalRunner(ctx, cfg, hst, &runner.Args{
 		Mode: runner.GetSoftwareFeaturesMode,
-		GetSoftwareFeaturesArgs: runner.GetSoftwareFeaturesArgs{
+		GetSoftwareFeatures: &runner.GetSoftwareFeaturesArgs{
 			ExtraUSEFlags: cfg.extraUSEFlags,
 		},
 	})
@@ -81,10 +81,10 @@ func getSoftwareFeatures(ctx context.Context, cfg *Config) error {
 func setRunnerTestDepsArgs(cfg *Config, args *runner.Args) {
 	switch cfg.checkTestDeps {
 	case checkTestDepsAlways, checkTestDepsAuto:
-		args.RunTestsArgs.CheckSoftwareDeps = true
+		args.RunTests.BundleArgs.CheckSoftwareDeps = true
 	case checkTestDepsNever:
-		args.RunTestsArgs.CheckSoftwareDeps = false
+		args.RunTests.BundleArgs.CheckSoftwareDeps = false
 	}
-	args.RunTestsArgs.AvailableSoftwareFeatures = cfg.availableSoftwareFeatures
-	args.RunTestsArgs.UnavailableSoftwareFeatures = cfg.unavailableSoftwareFeatures
+	args.RunTests.BundleArgs.AvailableSoftwareFeatures = cfg.availableSoftwareFeatures
+	args.RunTests.BundleArgs.UnavailableSoftwareFeatures = cfg.unavailableSoftwareFeatures
 }

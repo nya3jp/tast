@@ -27,10 +27,20 @@ import (
 
 // getBundlesAndTests returns matched tests and paths to the bundles containing them.
 func getBundlesAndTests(args *Args) (bundles []string, tests []*testing.Test, err *command.StatusError) {
-	if bundles, err = getBundles(args.BundleGlob); err != nil {
+	var glob string
+	switch args.Mode {
+	case RunTestsMode:
+		glob = args.RunTests.BundleGlob
+	case ListTestsMode:
+		glob = args.ListTests.BundleGlob
+	default:
+		return nil, nil, command.NewStatusErrorf(statusBadArgs, "bundles unneeded for mode %v", args.Mode)
+	}
+
+	if bundles, err = getBundles(glob); err != nil {
 		return nil, nil, err
 	}
-	tests, bundles, err = getTests(bundles, args.bundleArgs)
+	tests, bundles, err = getTests(args, bundles)
 	return bundles, tests, err
 }
 
@@ -65,8 +75,8 @@ type testsOrError struct {
 // getTests returns tests in bundles matched by args.Patterns. It does this by executing
 // each bundle to ask it to marshal and print its tests. A slice of paths to bundles
 // with matched tests is also returned.
-func getTests(bundles []string, args bundle.Args) (tests []*testing.Test, bundlesWithTests []string, err *command.StatusError) {
-	args.Mode = bundle.ListTestsMode
+func getTests(args *Args, bundles []string) (tests []*testing.Test, bundlesWithTests []string, err *command.StatusError) {
+	bundleArgs := args.bundleArgs(bundle.ListTestsMode)
 
 	// Run all bundles in parallel.
 	ch := make(chan testsOrError, len(bundles))
@@ -74,7 +84,7 @@ func getTests(bundles []string, args bundle.Args) (tests []*testing.Test, bundle
 		bundle := b
 		go func() {
 			out := bytes.Buffer{}
-			if err := runBundle(bundle, &args, &out); err != nil {
+			if err := runBundle(bundle, bundleArgs, &out); err != nil {
 				ch <- testsOrError{bundle, nil, err}
 				return
 			}
@@ -111,9 +121,9 @@ func getTests(bundles []string, args bundle.Args) (tests []*testing.Test, bundle
 	return tests, bundlesWithTests, nil
 }
 
-// runBundle runs the bundle at path to completion, passing args.
+// runBundle runs the bundle at path to completion, passing bundleArgs.
 // The bundle's stdout is copied to the stdout arg.
-func runBundle(path string, args *bundle.Args, stdout io.Writer) *command.StatusError {
+func runBundle(path string, bundleArgs *bundle.Args, stdout io.Writer) *command.StatusError {
 	cmd := exec.Command(path)
 	cmd.Stdout = stdout
 	stdin, err := cmd.StdinPipe()
@@ -128,7 +138,7 @@ func runBundle(path string, args *bundle.Args, stdout io.Writer) *command.Status
 		return command.NewStatusErrorf(statusBundleFailed, "%v", err)
 	}
 
-	jerr := json.NewEncoder(stdin).Encode(args)
+	jerr := json.NewEncoder(stdin).Encode(bundleArgs)
 	stdin.Close()
 	err = cmd.Wait()
 
@@ -173,7 +183,7 @@ func handleDownloadPrivateBundles(ctx context.Context, args *Args, cfg *Config, 
 
 	// Download the archive via devserver.
 	lf(fmt.Sprintf("Downloading private bundles from %s", cfg.PrivateBundleArchiveURL))
-	cl := newDevserverClient(ctx, args.DownloadPrivateBundlesArgs.Devservers, lf)
+	cl := newDevserverClient(ctx, args.DownloadPrivateBundles.Devservers, lf)
 
 	tf, err := ioutil.TempFile("", "tast_bundles.")
 	if err != nil {

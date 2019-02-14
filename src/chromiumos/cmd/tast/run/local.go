@@ -268,11 +268,15 @@ func getDataFilePaths(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlo
 	defer timing.Start(ctx, "get_data_paths").End()
 	cfg.Logger.Debug("Getting data file list from target")
 
-	handle, err := startLocalRunner(ctx, cfg, hst, &runner.Args{
-		Mode:       runner.ListTestsMode,
-		BundleGlob: bundleGlob,
-		Patterns:   cfg.Patterns,
-	})
+	args := runner.Args{
+		Mode: runner.ListTestsMode,
+		ListTests: &runner.ListTestsArgs{
+			BundleArgs: bundle.ListTestsArgs{Patterns: cfg.Patterns},
+			BundleGlob: bundleGlob,
+		},
+	}
+	args.FillDeprecated()
+	handle, err := startLocalRunner(ctx, cfg, hst, &args)
 	if err != nil {
 		return nil, err
 	}
@@ -365,7 +369,7 @@ func downloadPrivateBundles(ctx context.Context, cfg *Config, hst *host.SSH) err
 
 	args := runner.Args{
 		Mode: runner.DownloadPrivateBundlesMode,
-		DownloadPrivateBundlesArgs: runner.DownloadPrivateBundlesArgs{
+		DownloadPrivateBundles: &runner.DownloadPrivateBundlesArgs{
 			Devservers: cfg.devservers,
 		},
 	}
@@ -473,24 +477,35 @@ func startLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, args *run
 func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob, dataDir string) ([]TestResult, error) {
 	defer timing.Start(ctx, "run_local_tests").End()
 
-	args := runner.Args{
-		BundleGlob: bundleGlob,
-		Patterns:   cfg.Patterns,
-		DataDir:    dataDir,
-		RunTestsArgs: runner.RunTestsArgs{
-			Devservers:   cfg.devservers,
-			RunTestsArgs: bundle.RunTestsArgs{WaitUntilReady: cfg.waitUntilReady},
-		},
-	}
+	var args runner.Args
 
 	switch cfg.mode {
 	case RunTestsMode:
-		args.Mode = runner.RunTestsMode
+		args = runner.Args{
+			Mode: runner.RunTestsMode,
+			RunTests: &runner.RunTestsArgs{
+				BundleArgs: bundle.RunTestsArgs{
+					Patterns:       cfg.Patterns,
+					DataDir:        dataDir,
+					WaitUntilReady: cfg.waitUntilReady,
+				},
+				BundleGlob: bundleGlob,
+				Devservers: cfg.devservers,
+			},
+		}
 		setRunnerTestDepsArgs(cfg, &args)
-
 	case ListTestsMode:
-		args.Mode = runner.ListTestsMode
+		args = runner.Args{
+			Mode: runner.ListTestsMode,
+			ListTests: &runner.ListTestsArgs{
+				BundleArgs: bundle.ListTestsArgs{Patterns: cfg.Patterns},
+				BundleGlob: bundleGlob,
+			},
+		}
 	}
+
+	// Backfill deprecated fields in case we're executing an old test runner.
+	args.FillDeprecated()
 
 	handle, err := startLocalRunner(ctx, cfg, hst, &args)
 	if err != nil {

@@ -59,9 +59,10 @@ func collectSysInfo(ctx context.Context, cfg *Config) error {
 		return err
 	}
 	args := runner.Args{
-		Mode:               runner.CollectSysInfoMode,
-		CollectSysInfoArgs: runner.CollectSysInfoArgs{InitialState: *cfg.initialSysInfo},
+		Mode:           runner.CollectSysInfoMode,
+		CollectSysInfo: &runner.CollectSysInfoArgs{InitialState: *cfg.initialSysInfo},
 	}
+	args.FillDeprecated()
 	handle, err := startLocalRunner(ctx, cfg, hst, &args)
 	if err != nil {
 		return err

@@ -24,18 +24,21 @@ func writeGetSoftwareFeaturesResult(w io.Writer, avail, unavail []string) error 
 // checkRunnerTestDepsArgs calls setRunnerTestDepsArgs using cfg and verifies
 // that it sets runner args as specified per checkDeps, avail, and unavail.
 func checkRunnerTestDepsArgs(t *testing.T, cfg *Config, checkDeps bool, avail, unavail []string) {
-	var args runner.Args
+	args := runner.Args{
+		Mode:     runner.RunTestsMode,
+		RunTests: &runner.RunTestsArgs{},
+	}
 	setRunnerTestDepsArgs(cfg, &args)
 
 	exp := runner.RunTestsArgs{
-		RunTestsArgs: bundle.RunTestsArgs{
+		BundleArgs: bundle.RunTestsArgs{
 			CheckSoftwareDeps:           checkDeps,
 			AvailableSoftwareFeatures:   avail,
 			UnavailableSoftwareFeatures: unavail,
 		},
 	}
-	if !reflect.DeepEqual(args.RunTestsArgs, exp) {
-		t.Errorf("setRunnerTestDepsArgs(%+v) set %+v; want %+v", cfg, args.RunTestsArgs, exp)
+	if !reflect.DeepEqual(*args.RunTests, exp) {
+		t.Errorf("setRunnerTestDepsArgs(%+v) set %+v; want %+v", cfg, *args.RunTests, exp)
 	}
 }
 
@@ -50,9 +53,10 @@ func TestGetSoftwareFeaturesAlways(t *testing.T) {
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		checkArgs(t, args, &runner.Args{
 			Mode: runner.GetSoftwareFeaturesMode,
-			GetSoftwareFeaturesArgs: runner.GetSoftwareFeaturesArgs{
+			GetSoftwareFeatures: &runner.GetSoftwareFeaturesArgs{
 				ExtraUSEFlags: td.cfg.extraUSEFlags,
 			},
+			ExtraUSEFlagsDeprecated: td.cfg.extraUSEFlags,
 		})
 
 		writeGetSoftwareFeaturesResult(stdout, avail, unavail)
@@ -97,8 +101,10 @@ func TestGetSoftwareFeaturesAutoAttrExpr(t *testing.T) {
 	// When "auto" is used in conjunction with an attribute-expression-based test
 	// pattern, dependencies should be checked.
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		checkArgs(t, args, &runner.Args{Mode: runner.GetSoftwareFeaturesMode})
-
+		checkArgs(t, args, &runner.Args{
+			Mode:                runner.GetSoftwareFeaturesMode,
+			GetSoftwareFeatures: &runner.GetSoftwareFeaturesArgs{},
+		})
 		writeGetSoftwareFeaturesResult(stdout, []string{"foo"}, []string{})
 		return 0
 	}
@@ -107,7 +113,7 @@ func TestGetSoftwareFeaturesAutoAttrExpr(t *testing.T) {
 	if err := getSoftwareFeatures(context.Background(), &td.cfg); err != nil {
 		t.Fatalf("getSoftwareFeatures(%+v) failed: %v", td.cfg, err)
 	}
-	checkRunnerTestDepsArgs(t, &td.cfg, true, []string{"foo"}, []string{})
+	checkRunnerTestDepsArgs(t, &td.cfg, true, []string{"foo"}, nil)
 }
 
 func TestGetSoftwareFeaturesAutoSpecificTest(t *testing.T) {
@@ -132,8 +138,10 @@ func TestGetSoftwareFeaturesAutoNoFeatures(t *testing.T) {
 	// "auto" should be downgraded to "never" if the runner didn't report knowing
 	// about any features at all (probably because it's running on a non-test system image).
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		checkArgs(t, args, &runner.Args{Mode: runner.GetSoftwareFeaturesMode})
-
+		checkArgs(t, args, &runner.Args{
+			Mode:                runner.GetSoftwareFeaturesMode,
+			GetSoftwareFeatures: &runner.GetSoftwareFeaturesArgs{},
+		})
 		writeGetSoftwareFeaturesResult(stdout, []string{}, []string{})
 		return 0
 	}
@@ -151,8 +159,10 @@ func TestGetSoftwareFeaturesAlwaysNoFeatures(t *testing.T) {
 
 	// "always" should fail if the runner doesn't know about any features.
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		checkArgs(t, args, &runner.Args{Mode: runner.GetSoftwareFeaturesMode})
-
+		checkArgs(t, args, &runner.Args{
+			Mode:                runner.GetSoftwareFeaturesMode,
+			GetSoftwareFeatures: &runner.GetSoftwareFeaturesArgs{},
+		})
 		writeGetSoftwareFeaturesResult(stdout, []string{}, []string{})
 		return 0
 	}

@@ -93,29 +93,30 @@ func runRemoteRunner(ctx context.Context, cfg *Config, bundleGlob, dataDir strin
 		return nil, err
 	}
 
-	args := runner.Args{
-		BundleGlob: bundleGlob,
-		Patterns:   cfg.Patterns,
-		DataDir:    dataDir,
-		RemoteArgs: runner.RemoteArgs{
-			RemoteArgs: bundle.RemoteArgs{
-				Target:   cfg.Target,
-				KeyFile:  cfg.KeyFile,
-				KeyDir:   cfg.KeyDir,
-				TastPath: exe,
-				RunFlags: []string{
-					"-keyfile=" + cfg.KeyFile,
-					"-keydir=" + cfg.KeyDir,
-					"-remoterunner=" + cfg.remoteRunner,
-					"-remotebundledir=" + cfg.remoteBundleDir,
-					"-remotedatadir=" + cfg.remoteDataDir,
-				},
-			},
-		},
-	}
+	var args runner.Args
 	switch cfg.mode {
 	case RunTestsMode:
-		args.Mode = runner.RunTestsMode
+		args = runner.Args{
+			Mode: runner.RunTestsMode,
+			RunTests: &runner.RunTestsArgs{
+				BundleArgs: bundle.RunTestsArgs{
+					Patterns: cfg.Patterns,
+					DataDir:  dataDir,
+					Target:   cfg.Target,
+					KeyFile:  cfg.KeyFile,
+					KeyDir:   cfg.KeyDir,
+					TastPath: exe,
+					RunFlags: []string{
+						"-keyfile=" + cfg.KeyFile,
+						"-keydir=" + cfg.KeyDir,
+						"-remoterunner=" + cfg.remoteRunner,
+						"-remotebundledir=" + cfg.remoteBundleDir,
+						"-remotedatadir=" + cfg.remoteDataDir,
+					},
+				},
+				BundleGlob: bundleGlob,
+			},
+		}
 		setRunnerTestDepsArgs(cfg, &args)
 
 		// Create an output directory within the results dir so we can just move
@@ -124,10 +125,19 @@ func runRemoteRunner(ctx context.Context, cfg *Config, bundleGlob, dataDir strin
 		if err != nil {
 			return nil, fmt.Errorf("failed to create output dir: %v", err)
 		}
-		args.OutDir = outDir
+		args.RunTests.BundleArgs.OutDir = outDir
 	case ListTestsMode:
-		args.Mode = runner.ListTestsMode
+		args = runner.Args{
+			Mode: runner.ListTestsMode,
+			ListTests: &runner.ListTestsArgs{
+				BundleArgs: bundle.ListTestsArgs{Patterns: cfg.Patterns},
+				BundleGlob: bundleGlob,
+			},
+		}
 	}
+
+	// Backfill deprecated fields in case we're executing an old test runner.
+	args.FillDeprecated()
 
 	cmd := exec.Command(cfg.remoteRunner)
 	stdin, err := cmd.StdinPipe()

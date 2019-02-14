@@ -492,8 +492,8 @@ func TestWriteResultsCollectSysInfo(t *gotesting.T) {
 
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		checkArgs(t, args, &runner.Args{
-			Mode:               runner.CollectSysInfoMode,
-			CollectSysInfoArgs: runner.CollectSysInfoArgs{},
+			Mode:           runner.CollectSysInfoMode,
+			CollectSysInfo: &runner.CollectSysInfoArgs{},
 		})
 
 		json.NewEncoder(stdout).Encode(&runner.CollectSysInfoResult{})

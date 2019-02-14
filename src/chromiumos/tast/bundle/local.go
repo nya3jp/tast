@@ -31,14 +31,14 @@ type ReadyFunc func(ctx context.Context, log func(string)) error
 // to be running on a newly-booted DUT, for instance.
 // The returned status code should be passed to os.Exit.
 func Local(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, ready ReadyFunc) int {
-	args := Args{DataDir: localTestDataDir}
+	args := Args{RunTests: &RunTestsArgs{DataDir: localTestDataDir}}
 	cfg := runConfig{
 		postTestFunc:       faillog.SaveIfError,
 		defaultTestTimeout: localTestTimeout,
 	}
 	if ready != nil {
 		cfg.preRunFunc = func(ctx context.Context, lf logFunc) (context.Context, error) {
-			if !args.WaitUntilReady {
+			if !args.RunTests.WaitUntilReady {
 				return ctx, nil
 			}
 			lf("Waiting for DUT to be ready for testing")

@@ -1,4 +1,4 @@
-# Tast documentation
+# Tast documentation (go/tast-docs)
 
 This is a list of Tast documentation.
 For more general information about Tast, see [README](../README.md).
@@ -21,5 +21,6 @@ For more general information about Tast, see [README](../README.md).
 
 ## Integration with Chrome OS infrastructure (for Googlers)
 
+*   [Adding new tests to Chrome OS infra](http://go/tast-add-test)
 *   [Tast Infra Integration](http://go/tast-infra)
 *   [Investigating Tast Test Failures](http://go/tast-failures)

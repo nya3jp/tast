@@ -55,7 +55,7 @@ func Diff(orig, expect string) (string, error) {
 	defer os.Remove(f2)
 
 	// Ignore error. diff command returns error if difference is found.
-	out, _ := exec.Command("diff", "-u", f1, f2).CombinedOutput()
+	out, _ := exec.Command("diff", "-ua", f1, f2).CombinedOutput()
 
 	// Strip leading two lines, which are temp file name.
 	parts := bytes.SplitN(out, []byte("\n"), 3)

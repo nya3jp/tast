@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c6e5a059_e081c7d9",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-15T07:23:57Z",
+      "side": 1,
+      "message": "Hmm, have you considering using the same JSON field names? Then we don\u0027t need to introduce *Deprecated fields.\n\nI guess you did this way to rename the fields to runTests*, but I\u0027m not very sure it\u0027s very worth introducing protocol incompatibility... Also I\u0027m not sure if we want to keep these three fields in RunTestsArgs forever; some day we may realize we want some of these fields in another RunMode, and then we need to rename the fields again (especially when they are prefixed with \"runTests\").",
+      "range": {
+        "startLine": 71,
+        "startChar": 1,
+        "endLine": 76,
+        "endChar": 50
+      },
+      "revId": "599263538d32a380eb525c740d4792bd87849a4c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

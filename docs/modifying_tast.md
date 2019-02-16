@@ -83,6 +83,11 @@ Run `fast_build.sh -h` to see all available options.
 The different components of the framework are extensively covered by unit tests.
 Please ensure that any changes that you make are also covered by tests.
 
+The [testutil package] provides utility functions intended to reduce repetitive
+code within unit tests.
+
+[testutil package]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testutil
+
 ### Meta tests
 
 There are several [meta tests]. These are remote Tast tests that run a nested

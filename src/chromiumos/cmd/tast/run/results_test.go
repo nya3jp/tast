@@ -49,6 +49,8 @@ func TestReadTestOutput(t *gotesting.T) {
 		test1Name    = "foo.FirstTest"
 		test1Desc    = "First description"
 		test1LogText = "Here's a test log message"
+		test1OutFile = testLogFilename // conflicts with test log
+		test1OutData = "Data created by first test"
 
 		test2Name        = "foo.SecondTest"
 		test2Desc        = "Second description"
@@ -82,6 +84,7 @@ func TestReadTestOutput(t *gotesting.T) {
 
 	outDir := filepath.Join(tempDir, "out")
 	if err := testutil.WriteFiles(outDir, map[string]string{
+		filepath.Join(test1Name, test1OutFile): test1OutData,
 		filepath.Join(test2Name, test2OutFile): test2OutData,
 	}); err != nil {
 		t.Fatal(err)
@@ -169,6 +172,11 @@ func TestReadTestOutput(t *gotesting.T) {
 	test1LogPath := filepath.Join(testLogsDir, test1Name, testLogFilename)
 	if !strings.Contains(files[test1LogPath], test1LogText) {
 		t.Errorf("%s contents %q don't contain log message %q", test1LogPath, files[test1LogPath], test1LogText)
+	}
+	// The first test's output file should be renamed since it conflicts with log.txt.
+	test1OutPath := filepath.Join(testLogsDir, test1Name, test1OutFile+testOutputFileRenameExt)
+	if files[test1OutPath] != test1OutData {
+		t.Errorf("%s contains %q; want %q", test1OutPath, files[test1OutPath], test1OutData)
 	}
 	test2LogPath := filepath.Join(testLogsDir, test2Name, testLogFilename)
 	if !strings.Contains(files[test2LogPath], test2ErrorReason) {

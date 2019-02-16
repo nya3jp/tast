@@ -163,3 +163,14 @@ func TestTestsForAttrExpr(t *gotesting.T) {
 		}
 	}
 }
+
+func TestAddTestDuplicateName(t *gotesting.T) {
+	const name = "test.Foo"
+	reg := NewRegistry(NoAutoName)
+	if err := reg.AddTest(&Test{Name: name, Func: func(context.Context, *State) {}}); err != nil {
+		t.Fatal("Failed to add initial test: ", err)
+	}
+	if err := reg.AddTest(&Test{Name: name, Func: func(context.Context, *State) {}}); err == nil {
+		t.Fatal("Duplicate test name unexpectedly not rejected")
+	}
+}

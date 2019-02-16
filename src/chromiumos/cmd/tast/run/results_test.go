@@ -342,6 +342,14 @@ func TestValidateMessages(t *gotesting.T) {
 			&control.TestEnd{Time: time.Unix(4, 0), Name: "test2"},
 			&control.RunEnd{Time: time.Unix(5, 0), OutDir: ""},
 		}},
+		{"TestStart with already-seen name", 1, []interface{}{
+			&control.RunStart{Time: time.Unix(1, 0), NumTests: 2},
+			&control.TestStart{Time: time.Unix(2, 0), Test: testing.Test{Name: "test1"}},
+			&control.TestEnd{Time: time.Unix(3, 0), Name: "test1"},
+			&control.TestStart{Time: time.Unix(4, 0), Test: testing.Test{Name: "test1"}},
+			&control.TestEnd{Time: time.Unix(5, 0), Name: "test1"},
+			&control.RunEnd{Time: time.Unix(6, 0), OutDir: ""},
+		}},
 	} {
 		b := bytes.Buffer{}
 		mw := control.NewMessageWriter(&b)

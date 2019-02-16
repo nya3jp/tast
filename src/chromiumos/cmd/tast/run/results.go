@@ -147,6 +147,7 @@ type resultsHandler struct {
 	numTests         int                    // total number of tests that are expected to run
 	results          []TestResult           // information about completed tests
 	res              *TestResult            // information about the currently-running test
+	testNames        map[string]struct{}    // names of tests seen so far
 	stage            *timing.Stage          // current test's timing stage
 	crf              copyAndRemoveFunc      // function used to copy and remove files from DUT
 	streamWriter     *streamedResultsWriter // used to write results as control messages are read
@@ -154,10 +155,11 @@ type resultsHandler struct {
 
 func newResultsHandler(ctx context.Context, cfg *Config, crf copyAndRemoveFunc) (*resultsHandler, error) {
 	r := &resultsHandler{
-		ctx:     ctx,
-		cfg:     cfg,
-		results: make([]TestResult, 0),
-		crf:     crf,
+		ctx:       ctx,
+		cfg:       cfg,
+		results:   make([]TestResult, 0),
+		testNames: make(map[string]struct{}),
+		crf:       crf,
 	}
 
 	var err error
@@ -247,6 +249,10 @@ func (r *resultsHandler) handleTestStart(msg *control.TestStart) error {
 		return fmt.Errorf("got TestStart message for %s while %s still running",
 			msg.Test.Name, r.res.Name)
 	}
+	if _, ok := r.testNames[msg.Test.Name]; ok {
+		return fmt.Errorf("got TestStart message for already-seen test %s -- two tests with same name?",
+			msg.Test.Name)
+	}
 	r.stage = timing.Start(r.ctx, msg.Test.Name)
 
 	r.res = &TestResult{
@@ -255,6 +261,7 @@ func (r *resultsHandler) handleTestStart(msg *control.TestStart) error {
 		OutDir:           r.getTestOutputDir(msg.Test.Name),
 		testStartMsgTime: time.Now(),
 	}
+	r.testNames[msg.Test.Name] = struct{}{}
 
 	// Write a partial TestResult object to record that we started the test.
 	var err error

@@ -15,8 +15,9 @@ import (
 
 // Registry holds tests.
 type Registry struct {
-	allTests []*Test
-	autoName bool // true if test names should be automatically derived from func names
+	allTests  []*Test
+	testNames map[string]struct{} // names of registered tests
+	autoName  bool                // automatically derive test names from func names
 }
 
 type registryOption func(*Registry)
@@ -33,8 +34,9 @@ var NoAutoName = func(r *Registry) {
 // NewRegistry returns a new test registry.
 func NewRegistry(opts ...registryOption) *Registry {
 	r := &Registry{
-		allTests: make([]*Test, 0),
-		autoName: true,
+		allTests:  make([]*Test, 0),
+		testNames: make(map[string]struct{}),
+		autoName:  true,
 	}
 	for _, o := range opts {
 		o(r)
@@ -47,7 +49,11 @@ func (r *Registry) AddTest(t *Test) error {
 	if err := t.finalize(r.autoName); err != nil {
 		return err
 	}
+	if _, ok := r.testNames[t.Name]; ok {
+		return fmt.Errorf("test %q already registered", t.Name)
+	}
 	r.allTests = append(r.allTests, t)
+	r.testNames[t.Name] = struct{}{}
 	return nil
 }
 

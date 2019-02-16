@@ -22,6 +22,30 @@
       "revId": "599263538d32a380eb525c740d4792bd87849a4c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "516b2dfe_32757a9b",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-16T00:35:17Z",
+      "side": 1,
+      "message": "thanks for the comment! i pasted it at https://crbug.com/932307 and added some additional thoughts there.",
+      "parentUuid": "c6e5a059_e081c7d9",
+      "range": {
+        "startLine": 71,
+        "startChar": 1,
+        "endLine": 76,
+        "endChar": 50
+      },
+      "revId": "599263538d32a380eb525c740d4792bd87849a4c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

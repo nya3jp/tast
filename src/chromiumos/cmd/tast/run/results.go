@@ -31,9 +31,10 @@ const (
 	crashesDir              = "crashes"                // dir containing DUT's crashes
 	testLogsDir             = "tests"                  // dir containing dirs with details about individual tests
 
-	testLogFilename   = "log.txt"      // file in testLogsDir/<test> containing test-specific log messages
-	testOutputTimeFmt = "15:04:05.000" // format for timestamps attached to test output
-	defaultMsgTimeout = time.Minute    // default timeout for reading next control message
+	testLogFilename         = "log.txt"      // file in testLogsDir/<test> containing test-specific log messages
+	testOutputTimeFmt       = "15:04:05.000" // format for timestamps attached to test output
+	testOutputFileRenameExt = ".from_test"   // extension appended to test output files conflicting with existing files
+	defaultMsgTimeout       = time.Minute    // default timeout for reading next control message
 )
 
 // TestResult contains the results from a single test.
@@ -363,24 +364,39 @@ func (r *resultsHandler) moveTestOutputData(srcBase string) error {
 		return nil
 	}
 
-	dirs, err := ioutil.ReadDir(srcBase)
+	// Iterate over per-test directories created by tests.
+	srcDirs, err := ioutil.ReadDir(srcBase)
 	if err != nil {
 		return err
 	}
-	for _, fi := range dirs {
-		dst := r.getTestOutputDir(fi.Name())
-		if _, err = os.Stat(dst); os.IsNotExist(err) {
+	for _, fi := range srcDirs {
+		// We created a dest dir for each test when we saw its TestStart message.
+		// If we see a src dir without a matching dest dir, something strange happened.
+		dstDir := r.getTestOutputDir(fi.Name())
+		if _, err = os.Stat(dstDir); os.IsNotExist(err) {
 			r.cfg.Logger.Log("Skipping unexpected output dir ", fi.Name())
 			continue
 		}
 
-		src := filepath.Join(srcBase, fi.Name())
-		files, err := ioutil.ReadDir(src)
+		// Iterate over the files in each directory.
+		srcDir := filepath.Join(srcBase, fi.Name())
+		files, err := ioutil.ReadDir(srcDir)
 		if err != nil {
 			return err
 		}
 		for _, fi2 := range files {
-			if err = os.Rename(filepath.Join(src, fi2.Name()), filepath.Join(dst, fi2.Name())); err != nil {
+			src := filepath.Join(srcDir, fi2.Name())
+			dst := filepath.Join(dstDir, fi2.Name())
+
+			// Check that the destination file doesn't already exist.
+			// This could happen if a test creates an output file named log.txt.
+			if _, err := os.Stat(dst); err == nil {
+				dst += testOutputFileRenameExt
+				r.cfg.Logger.Log("File %v already exists; renaming test output to %v",
+					filepath.Base(fi2.Name()), filepath.Base(dst))
+			}
+
+			if err = os.Rename(src, dst); err != nil {
 				return err
 			}
 		}

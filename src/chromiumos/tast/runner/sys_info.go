@@ -31,8 +31,8 @@ func handleGetSysInfoState(args *Args, w io.Writer) error {
 
 	var err error
 	var warnings map[string]error
-	res.State.LogInodeSizes, warnings, err = logs.GetLogInodeSizes(args.SystemLogDir)
-	if err != nil {
+	if res.State.LogInodeSizes, warnings, err = logs.GetLogInodeSizes(
+		args.SystemLogDir, args.SystemLogExcludes); err != nil {
 		return err
 	}
 	for p, warning := range warnings {
@@ -62,7 +62,8 @@ func handleCollectSysInfo(args *Args, w io.Writer) error {
 		return err
 	}
 	var warnings map[string]error
-	if warnings, err = logs.CopyLogFileUpdates(args.SystemLogDir, res.LogDir, cmdArgs.InitialState.LogInodeSizes); err != nil {
+	if warnings, err = logs.CopyLogFileUpdates(args.SystemLogDir, res.LogDir, args.SystemLogExcludes,
+		cmdArgs.InitialState.LogInodeSizes); err != nil {
 		return err
 	}
 	for p, w := range warnings {

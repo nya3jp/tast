@@ -27,6 +27,7 @@ type ephemeralDevserverTestData struct {
 
 func (td *ephemeralDevserverTestData) Close() error {
 	os.Setenv("PATH", td.origPath)
+	os.RemoveAll(td.cacheDir)
 	return td.s.Close(context.Background())
 }
 

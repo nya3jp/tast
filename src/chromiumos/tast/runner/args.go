@@ -49,6 +49,8 @@ type Args struct {
 
 	// SystemLogDir contains the directory where information is logged by syslog and other daemons.
 	SystemLogDir string `json:"-"`
+	// SystemLogExcludes contains relative paths of directories and files in SystemLogDir to exclude.
+	SystemLogExcludes []string `json:"-"`
 	// SystemCrashDirs contains directories where crash dumps are written when processes crash.
 	SystemCrashDirs []string `json:"-"`
 

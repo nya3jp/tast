@@ -20,11 +20,12 @@ import (
 
 func main() {
 	args := runner.Args{
-		BundleGlob:      "/usr/local/libexec/tast/bundles/local/*",
-		DataDir:         "/usr/local/share/tast/data",
-		TempDir:         "/usr/local/tmp/tast/run_tmp",
-		SystemLogDir:    "/var/log",
-		SystemCrashDirs: crash.DefaultDirs(),
+		BundleGlob:        "/usr/local/libexec/tast/bundles/local/*",
+		DataDir:           "/usr/local/share/tast/data",
+		TempDir:           "/usr/local/tmp/tast/run_tmp",
+		SystemLogDir:      "/var/log",
+		SystemLogExcludes: []string{"journal"}, // journald binary logs: https://crbug.com/931951
+		SystemCrashDirs:   crash.DefaultDirs(),
 		// The tast-use-flags package attempts to install this file to /etc,
 		// but it gets diverted to /usr/local since it's installed for test images.
 		USEFlagsFile: "/usr/local/etc/tast_use_flags.txt",

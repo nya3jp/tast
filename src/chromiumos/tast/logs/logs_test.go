@@ -17,14 +17,15 @@ import (
 // getUpdates passes sizes to CopyLogFileUpdates to get file updates within dir
 // and then returns the copied data as a map from relative filename to content,
 // along with a set containing all copied relative paths (including empty files and broken symlinks).
-func getUpdates(dir string, sizes InodeSizes) (updates map[string]string, paths map[string]struct{}, err error) {
+func getUpdates(dir string, exclude []string, sizes InodeSizes) (
+	updates map[string]string, paths map[string]struct{}, err error) {
 	var dest string
 	if dest, err = ioutil.TempDir("", "tast_logs."); err != nil {
 		return nil, nil, err
 	}
 	defer os.RemoveAll(dest)
 
-	if _, err = CopyLogFileUpdates(dir, dest, sizes); err != nil {
+	if _, err = CopyLogFileUpdates(dir, dest, exclude, sizes); err != nil {
 		return nil, nil, err
 	}
 
@@ -47,20 +48,27 @@ func TestCopyUpdates(t *testing.T) {
 	defer os.RemoveAll(sd)
 
 	orig := map[string]string{
-		"vegetables":           "kale\ncauliflower\n",
-		"baked_goods/desserts": "cake\n",
-		"baked_goods/breads":   "",
+		"vegetables":               "kale\ncauliflower\n",
+		"baked_goods/desserts":     "cake\n",
+		"baked_goods/breads":       "",
+		"baked_goods/stale_crumbs": "two days old\n",
+		"toppings/sauces":          "tomato\n",
 	}
 	if err := testutil.WriteFiles(sd, orig); err != nil {
 		t.Fatal(err)
 	}
 
-	sizes, _, err := GetLogInodeSizes(sd)
+	exclude := []string{
+		"baked_goods/stale_crumbs",
+		"baked_goods/fresh_crumbs",
+		"toppings",
+	}
+	sizes, _, err := GetLogInodeSizes(sd, exclude)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	updates, _, err := getUpdates(sd, sizes)
+	updates, _, err := getUpdates(sd, exclude, sizes)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -95,12 +103,26 @@ func TestCopyUpdates(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	// Append to existing files that should be skipped, and create new files that should also be skipped.
+	if err = testutil.AppendToFile(filepath.Join(sd, "baked_goods/stale_crumbs"), "one day old\n"); err != nil {
+		t.Fatal(err)
+	}
+	if err = testutil.AppendToFile(filepath.Join(sd, "toppings/sauces"), "alfredo\n"); err != nil {
+		t.Fatal(err)
+	}
+	if err = testutil.WriteFiles(sd, map[string]string{
+		"baked_goods/fresh_crumbs": "just out of the oven\n",
+		"toppings/crumbles":        "blue cheese\n",
+	}); err != nil {
+		t.Fatal(err)
+	}
+
 	exp := map[string]string{
 		"vegetables":             "eggplant\n",
 		"baked_goods/breads.old": "ciabatta\n",
 		"baked_goods/breads":     "sourdough\n",
 	}
-	updates, paths, err := getUpdates(sd, sizes)
+	updates, paths, err := getUpdates(sd, exclude, sizes)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -135,9 +135,12 @@ exit 1
 	if err != nil {
 		t.Fatalf("GET %s failed: %v", url, err)
 	}
+	out, _ := ioutil.ReadAll(res.Body)
 	res.Body.Close()
 	if res.StatusCode != http.StatusInternalServerError {
 		t.Fatalf("GET %s returned %d; want %d", url, res.StatusCode, http.StatusInternalServerError)
+	} else if msg := "file not found"; !strings.Contains(string(out), msg) {
+		t.Fatalf("GET %s returned %q; should contain %q", url, out, msg)
 	}
 
 	url = td.url + "/static/path/to/file.bin"

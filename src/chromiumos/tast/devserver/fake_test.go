@@ -7,6 +7,7 @@ package devserver
 import (
 	"bytes"
 	"context"
+	"os"
 	"testing"
 )
 
@@ -32,5 +33,7 @@ func TestFakeClient(t *testing.T) {
 
 	if _, err := cl.DownloadGS(context.Background(), &buf, "wrong_url"); err == nil {
 		t.Error("DownloadGS unexpectedly succeeded")
+	} else if !os.IsNotExist(err) {
+		t.Errorf("DownloadGS returned %q; want %q", err, os.ErrNotExist)
 	}
 }

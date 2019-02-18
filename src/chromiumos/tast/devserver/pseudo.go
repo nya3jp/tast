@@ -10,6 +10,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 )
 
 const gsDownloadURL = "https://storage.googleapis.com"
@@ -51,8 +52,12 @@ func (c *PseudoClient) DownloadGS(ctx context.Context, w io.Writer, gsURL string
 	}
 	defer res.Body.Close()
 
-	if res.StatusCode != http.StatusOK {
+	switch res.StatusCode {
+	case http.StatusOK:
+		return io.Copy(w, res.Body)
+	case http.StatusNotFound:
+		return 0, os.ErrNotExist
+	default:
 		return 0, fmt.Errorf("got status %d", res.StatusCode)
 	}
-	return io.Copy(w, res.Body)
 }

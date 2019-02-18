@@ -7,8 +7,7 @@ package devserver
 import (
 	"context"
 	"io"
-
-	"chromiumos/tast/errors"
+	"os"
 )
 
 // FakeClient is a fake implementation of devserver.Client suitable for unit tests.
@@ -27,7 +26,7 @@ func NewFakeClient(files map[string][]byte) *FakeClient {
 func (c *FakeClient) DownloadGS(ctx context.Context, w io.Writer, gsURL string) (size int64, err error) {
 	data, ok := c.files[gsURL]
 	if !ok {
-		return 0, errors.New("not found")
+		return 0, os.ErrNotExist
 	}
 	n, err := w.Write(data)
 	return int64(n), err

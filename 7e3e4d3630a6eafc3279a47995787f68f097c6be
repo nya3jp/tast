@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c021ab58_971c5d46",
+        "filename": "src/chromiumos/cmd/tast/run/results.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 385,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-18T04:58:48Z",
+      "side": 1,
+      "message": "Wow, nice catch.",
+      "range": {
+        "startLine": 384,
+        "startChar": 0,
+        "endLine": 385,
+        "endChar": 71
+      },
+      "revId": "7e3e4d3630a6eafc3279a47995787f68f097c6be",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

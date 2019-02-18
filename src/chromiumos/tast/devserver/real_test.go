@@ -8,17 +8,25 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
+	"html"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"os"
 	"reflect"
 	"sort"
 	"strings"
 	"testing"
 )
 
-const fakeFileURL = "gs://bucket/path/to/some%20file%2521"
-const fakeFileData = "some_data"
+const (
+	fakeFileURL  = "gs://bucket/path/to/some%20file%2521"
+	fakeFileData = "some_data"
+
+	notFoundURL = "gs://bucket/path/to/not_found"
+)
 
 // fakeServerFiles defines fake files served from fakeServer.
 var fakeServerFiles = map[string][]byte{
@@ -53,7 +61,7 @@ func (s *fakeServer) close() {
 
 func (s *fakeServer) handleCheckHealth(w http.ResponseWriter, r *http.Request) {
 	if !s.up {
-		http.Error(w, "down", http.StatusInternalServerError)
+		respondError(w, errors.New("down"))
 	}
 }
 
@@ -61,7 +69,7 @@ func (s *fakeServer) handleStage(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 	gsURL := q.Get("archive_url") + "/" + url.PathEscape(q.Get("files"))
 	if err := s.stage(gsURL); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		respondError(w, err)
 		return
 	}
 }
@@ -70,7 +78,7 @@ func (s *fakeServer) handleStatic(w http.ResponseWriter, r *http.Request) {
 	// Python devserver distinguishes "/" and "%2F". We follow the way here.
 	path, err := pathUnescape(r.URL.EscapedPath())
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		respondError(w, err)
 		return
 	}
 	stagePath := strings.TrimPrefix(path, "/static/")
@@ -88,7 +96,7 @@ func (s *fakeServer) handleStatic(w http.ResponseWriter, r *http.Request) {
 func (s *fakeServer) stage(gsURL string) error {
 	data, ok := fakeServerFiles[gsURL]
 	if !ok {
-		return errors.New("not found")
+		return errors.New("file not found")
 	}
 	_, stagePath, err := parseGSURL(gsURL)
 	if err != nil {
@@ -105,6 +113,11 @@ func (s *fakeServer) unstage(gsURL string) error {
 	}
 	delete(s.staged, stagePath)
 	return nil
+}
+
+func respondError(w http.ResponseWriter, err error) {
+	w.WriteHeader(http.StatusInternalServerError)
+	fmt.Fprintf(w, "<pre>\n%s\n</pre>", html.EscapeString(err.Error()))
 }
 
 // pathUnescape unescapes the path part of a URL. It fails if the path contains %2F.
@@ -145,6 +158,21 @@ func TestRealClientSimple(t *testing.T) {
 
 	if _, err := cl.DownloadGS(context.Background(), &buf, "gs://bucket/path/to/wrong_file"); err == nil {
 		t.Error("DownloadGS unexpectedly succeeded")
+	}
+}
+
+// TestRealClientNotFound tests when the file to be staged is not found.
+func TestRealClientNotFound(t *testing.T) {
+	s := newFakeServer(true)
+	defer s.close()
+
+	cl := NewRealClient(context.Background(), []string{s.URL}, nil)
+
+	_, err := cl.DownloadGS(context.Background(), ioutil.Discard, notFoundURL)
+	if err == nil {
+		t.Error("DownloadGS unexpectedly succeeded")
+	} else if !os.IsNotExist(err) {
+		t.Errorf("DownloadGS returned %q; want %q", err, os.ErrNotExist)
 	}
 }
 

@@ -14,9 +14,11 @@ import (
 	"math/rand"
 	"net/http"
 	"net/url"
+	"os"
 	"path"
 	"regexp"
 	"sort"
+	"strings"
 	"time"
 )
 
@@ -137,6 +139,9 @@ func (c *RealClient) DownloadGS(ctx context.Context, w io.Writer, gsURL string) 
 	// Choose a devserver and download the file via it.
 	dsURL := c.chooseServer(gsURL)
 	if err := c.stage(ctx, dsURL, bucket, path); err != nil {
+		if os.IsNotExist(err) {
+			return 0, err
+		}
 		return 0, fmt.Errorf("failed to stage on %s: %v", dsURL, err)
 	}
 	size, err = c.downloadFrom(ctx, w, dsURL, bucket, path)
@@ -257,6 +262,9 @@ func (c *RealClient) stage(ctx context.Context, dsURL, bucket, gsPath string) er
 	case http.StatusInternalServerError:
 		out, _ := ioutil.ReadAll(res.Body)
 		s := scrapeInternalError(out)
+		if strings.Contains(s, "Could not find") || strings.Contains(s, "file not found") {
+			return os.ErrNotExist
+		}
 		return fmt.Errorf("got status %d: %s", res.StatusCode, s)
 	default:
 		return fmt.Errorf("got status %d", res.StatusCode)

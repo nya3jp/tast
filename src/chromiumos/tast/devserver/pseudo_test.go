@@ -8,8 +8,10 @@ import (
 	"bytes"
 	"context"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 )
 
@@ -37,7 +39,9 @@ func TestPseudoClient(t *testing.T) {
 		t.Errorf("DownloadGS returned %d; want %d", n, len(expected))
 	}
 
-	if _, err := cl.DownloadGS(context.Background(), &buf, "gs://bucket/path/to/wrong_file"); err == nil {
+	if _, err := cl.DownloadGS(context.Background(), ioutil.Discard, "gs://bucket/path/to/wrong_file"); err == nil {
 		t.Error("DownloadGS unexpectedly succeeded")
+	} else if !os.IsNotExist(err) {
+		t.Errorf("DownloadGS returned %q; want %q", err, os.ErrNotExist)
 	}
 }

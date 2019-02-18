@@ -196,21 +196,29 @@ func runDownloads(ctx context.Context, dataDir string, jobs []*downloadJob, cl d
 	}
 
 	hasErr := false
-	for range jobs {
-		res := <-resCh
-		if res.err != nil {
-			msg := fmt.Sprintf("failed to download %s: %v", res.job.link.URL, res.err)
-			lf(strings.ToUpper(msg[:1]) + msg[1:])
-			for _, dest := range res.job.dests {
-				ioutil.WriteFile(dest+testing.ExternalErrorSuffix, []byte(msg), 0666)
+	finished := 0
+	for finished < len(jobs) {
+		select {
+		case res := <-resCh:
+			if res.err != nil {
+				msg := fmt.Sprintf("failed to download %s: %v", res.job.link.URL, res.err)
+				lf(strings.ToUpper(msg[:1]) + msg[1:])
+				for _, dest := range res.job.dests {
+					ioutil.WriteFile(dest+testing.ExternalErrorSuffix, []byte(msg), 0666)
+				}
+				hasErr = true
+			} else {
+				mbs := float64(res.job.link.Size) / res.duration.Seconds() / 1024 / 1024
+				lf(fmt.Sprintf("Finished downloading %s (%d bytes, %v, %.1fMB/s)",
+					res.job.link.URL, res.job.link.Size, res.duration.Round(time.Millisecond), mbs))
 			}
-			hasErr = true
-		} else {
-			mbs := float64(res.job.link.Size) / res.duration.Seconds() / 1024 / 1024
-			lf(fmt.Sprintf("Finished downloading %s (%d bytes, %v, %.1fMB/s)",
-				res.job.link.URL, res.job.link.Size, res.duration.Round(time.Millisecond), mbs))
+			finished++
+		case <-time.After(30 * time.Second):
+			// Without this keep-alive message, the tast command may think that the SSH connection was lost.
+			lf("Still downloading...")
 		}
 	}
+
 	if hasErr {
 		lf("Failed to download some external data files, but continuing anyway; corresponding tests will fail")
 	}

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "edc2f32c_91353905",
+        "filename": "src/chromiumos/tast/runner/external.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 217,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-18T15:19:31Z",
+      "side": 1,
+      "message": "nit: \"was lost\"?",
+      "range": {
+        "startLine": 217,
+        "startChar": 90,
+        "endLine": 217,
+        "endChar": 100
+      },
+      "revId": "4c27c34a792b3bd3e19ce91dcdfdfa1401b1b99b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

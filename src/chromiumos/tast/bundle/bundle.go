@@ -319,11 +319,15 @@ func prepareTempDir(tempDir string) (restore func(), err error) {
 	if err := os.MkdirAll(tempDir, 0755); err != nil {
 		return nil, command.NewStatusErrorf(statusError, "failed to create %s: %v", tempDir, err)
 	}
+	if err := os.Chmod(tempDir, 0777|os.ModeSticky); err != nil {
+		return nil, command.NewStatusErrorf(statusError, "failed to chmod %s: %v", tempDir, err)
+	}
 
 	const envTempDir = "TMPDIR"
 	oldTempDir, hasOldTempDir := os.LookupEnv(envTempDir)
 	os.Setenv(envTempDir, tempDir)
 	return func() {
+		os.RemoveAll(tempDir)
 		if hasOldTempDir {
 			os.Setenv(envTempDir, oldTempDir)
 		} else {

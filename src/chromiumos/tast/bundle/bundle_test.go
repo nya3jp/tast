@@ -168,10 +168,10 @@ func TestRunTests(t *gotesting.T) {
 		t.Errorf("%v called post-test function %d time(s); want %d", sig, postTestCalls, len(tests))
 	}
 
-	if fs, err := ioutil.ReadDir(runTmpDir); err != nil {
-		t.Errorf("Failed to read %s: %v", runTmpDir, err)
-	} else if len(fs) > 0 {
-		t.Errorf("%s is not clobbered: %v", runTmpDir, fs)
+	if _, err := os.Stat(runTmpDir); err == nil {
+		t.Errorf("Temporary directory %s still exists", runTmpDir)
+	} else if !os.IsNotExist(err) {
+		t.Errorf("Failed to stat %s: %v", runTmpDir, err)
 	}
 
 	// Just check some basic details of the control messages.
@@ -446,5 +446,52 @@ func TestRunList(t *gotesting.T) {
 	}
 	if stdout.String() != exp.String() {
 		t.Errorf("run() wrote %q; want %q", stdout.String(), exp.String())
+	}
+}
+
+func TestPrepareTempDir(t *gotesting.T) {
+	tmpDir := testutil.TempDir(t)
+	defer os.RemoveAll(tmpDir)
+
+	origTmpDir := os.Getenv("TMPDIR")
+
+	restore, err := prepareTempDir(tmpDir)
+	if err != nil {
+		t.Fatal("prepareTempDir failed: ", err)
+	}
+	defer func() {
+		if restore != nil {
+			restore()
+		}
+	}()
+
+	if env := os.Getenv("TMPDIR"); env != tmpDir {
+		t.Errorf("$TMPDIR = %q; want %q", env, tmpDir)
+	}
+
+	fi, err := os.Stat(tmpDir)
+	if err != nil {
+		t.Fatal("Stat failed: ", err)
+	}
+
+	const exp = 0777
+	if perm := fi.Mode().Perm(); perm != exp {
+		t.Errorf("Incorrect $TMPDIR permission: got %o, want %o", perm, exp)
+	}
+	if fi.Mode()&os.ModeSticky == 0 {
+		t.Error("Incorrect $TMPDIR permission: sticky bit not set")
+	}
+
+	restore()
+	restore = nil
+
+	if env := os.Getenv("TMPDIR"); env != origTmpDir {
+		t.Errorf("restore did not restore $TMPDIR; got %q, want %q", env, origTmpDir)
+	}
+
+	if _, err := os.Stat(tmpDir); err == nil {
+		t.Error("restore did not delete the temporary directory")
+	} else if !os.IsNotExist(err) {
+		t.Error("Stat failed: ", err)
 	}
 }

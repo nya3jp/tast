@@ -113,7 +113,11 @@ func (s *ephemeralDevserver) handleStage(w http.ResponseWriter, r *http.Request)
 
 		// Use gsutil command to download a file to use the locally installed credentials.
 		cmd := exec.Command("gsutil", "-m", "cp", gsURL, tf.Name())
-		if err := cmd.Run(); err != nil {
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			if strings.Contains(string(out), "No URLs matched") {
+				return fmt.Errorf("file not found: %s", gsURL)
+			}
 			return fmt.Errorf("%s failed: %v", strings.Join(cmd.Args, " "), err)
 		}
 

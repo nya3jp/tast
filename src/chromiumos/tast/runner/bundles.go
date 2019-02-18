@@ -5,15 +5,19 @@
 package runner
 
 import (
+	"bufio"
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"sort"
 	"strings"
+	"sync"
 
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/command"
@@ -139,4 +143,95 @@ func runBundle(path string, args *bundle.Args, stdout io.Writer) *command.Status
 		return command.NewStatusErrorf(statusBundleFailed, "%v%s", err, detail)
 	}
 	return nil
+}
+
+// handleDownloadPrivateBundles handles a DownloadPrivateBundlesMode request from args
+// and JSON-marshals a DownloadPrivateBundlesResult struct to w.
+func handleDownloadPrivateBundles(args *Args, stdout io.Writer) error {
+	const (
+		archiveName = "tast_bundles.tar.bz2"
+		stampPath   = "/usr/local/share/tast/.private-bundle-downloaded"
+	)
+
+	// If the stamp file exists, private bundles have been already downloaded.
+	if _, err := os.Stat(stampPath); err == nil {
+		res := &DownloadPrivateBundlesResult{Logs: []string{"Private bundles up-to-date"}}
+		return json.NewEncoder(stdout).Encode(res)
+	}
+
+	// Build the private bundle archive URL.
+	if args.BuilderPath == "" {
+		var err error
+		args.BuilderPath, err = readBuilderPath()
+		if err != nil {
+			return fmt.Errorf("failed to determine builder path: %v", err)
+		}
+	}
+	gsURL := fmt.Sprintf("gs://chromeos-image-archive/%s/%s", args.BuilderPath, archiveName)
+
+	// Download the archive via devserver.
+	var logs []string
+	var mu sync.Mutex
+	lf := func(msg string) {
+		mu.Lock()
+		logs = append(logs, msg)
+		mu.Unlock()
+	}
+
+	// TODO(nya): Consider applying timeout.
+	ctx := context.TODO()
+	cl := newDevserverClient(ctx, args.DownloadPrivateBundlesArgs.Devservers, lf)
+
+	tf, err := ioutil.TempFile("", archiveName+".")
+	if err != nil {
+		return err
+	}
+	defer os.Remove(tf.Name())
+
+	_, err = cl.DownloadGS(ctx, tf, gsURL)
+	tf.Close()
+	if err == nil {
+		// Extract the archive, and touch the stamp file.
+		cmd := exec.Command("tar", "xf", tf.Name())
+		cmd.Dir = "/usr/local"
+		if err := cmd.Run(); err != nil {
+			return fmt.Errorf("failed to extract %s: %v", strings.Join(cmd.Args, " "), err)
+		}
+	} else if !os.IsNotExist(err) {
+		return fmt.Errorf("failed to download %s: %v", archiveName, err)
+	}
+
+	if err := ioutil.WriteFile(stampPath, nil, 0644); err != nil {
+		return err
+	}
+
+	res := &DownloadPrivateBundlesResult{Logs: logs}
+	return json.NewEncoder(stdout).Encode(res)
+}
+
+// readBuilderPath reads the canonical name of the image (e.g. "nocturne-release/R73-11435.0.0")
+// from /etc/lsb-release.
+func readBuilderPath() (string, error) {
+	const (
+		path = "/etc/lsb-release"
+		key  = "CHROMEOS_RELEASE_BUILDER_PATH"
+	)
+
+	f, err := os.Open(path)
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+
+	sc := bufio.NewScanner(f)
+	for sc.Scan() {
+		v := strings.SplitN(sc.Text(), "=", 2)
+		if len(v) == 2 && v[0] == key {
+			return v[1], nil
+		}
+	}
+	if err := sc.Err(); err != nil {
+		return "", err
+	}
+	return "", fmt.Errorf("%s not found in %s", key, path)
 }

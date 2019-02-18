@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "06d7fc51_ca04850c",
+        "filename": "src/chromiumos/tast/devserver/fake_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-02-18T12:40:10Z",
+      "side": 1,
+      "message": "if !os.IsNotExist(err) {\n  ...\n}\n\nis more common pattern?\ncf) https://golang.org/pkg/os/#IsNotExist",
+      "revId": "4a6df21e130cdfcc1526799ca83100f776f922dc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5758f444_66c938ad",
+        "filename": "src/chromiumos/tast/devserver/pseudo_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-02-18T12:40:10Z",
+      "side": 1,
+      "message": "Ditto.",
+      "revId": "4a6df21e130cdfcc1526799ca83100f776f922dc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2b4b7f9a_ae1c2d1c",
+        "filename": "src/chromiumos/tast/devserver/real.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-02-18T12:40:10Z",
+      "side": 1,
+      "message": "ditto",
+      "revId": "4a6df21e130cdfcc1526799ca83100f776f922dc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ae14d3b2_9bbcf875",
+        "filename": "src/chromiumos/tast/devserver/real_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-02-18T12:40:10Z",
+      "side": 1,
+      "message": "Ditto.",
+      "revId": "4a6df21e130cdfcc1526799ca83100f776f922dc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

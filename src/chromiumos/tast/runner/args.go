@@ -43,6 +43,8 @@ type Args struct {
 	CollectSysInfoArgs
 	// GetSoftwareFeaturesArgs contains additional arguments used by GetSoftwareFeaturesMode.
 	GetSoftwareFeaturesArgs
+	// DownloadPrivateBundlesArgs contains additional arguments used by DownloadPrivateBundlesMode.
+	DownloadPrivateBundlesArgs
 
 	// The remaining exported fields are set by test runner main functions (or by unit tests) and
 	// cannot be overridden by the tast executable.
@@ -140,6 +142,25 @@ type SysInfoState struct {
 	LogInodeSizes map[uint64]int64 `json:"logInodeSizes"`
 	// MinidumpPaths contains absolute paths to minidump crash files.
 	MinidumpPaths []string `json:"minidumpPaths"`
+}
+
+// DownloadPrivateBundlesArgs is nested within Args and contains additional arguments used by DownloadPrivateBundlesMode.
+type DownloadPrivateBundlesArgs struct {
+	// Devservers contains URLs of devservers that can be used to download files.
+	// TODO(crbug.com/932307): Rename this to Devservers.
+	Devservers []string `json:"downloadPrivateBundlesDevservers,omitempty"`
+
+	// The remaining exported fields are set by unit tests and cannot be overridden by the tast executable.
+
+	// BuilderPath is the canonical name of the image (for example: "nocturne-release/R73-11435.0.0").
+	// If not set, a default value is read from CHROMEOS_RELEASE_BUILDER_PATH in /etc/lsb-release.
+	BuilderPath string `json:"-"`
+}
+
+// DownloadPrivateBundlesResult contains the result of a DownloadPrivateBundlesMode command.
+type DownloadPrivateBundlesResult struct {
+	// Logs contains log messages emitted while downloading test bundles.
+	Logs []string `json:"logs"`
 }
 
 // RunnerType describes the type of test runner that is using this package.
@@ -273,4 +294,8 @@ const (
 	// supported by the DUT via a JSON-marshaled GetSoftwareFeaturesResult struct written to stdout. This mode
 	// is only supported by local_test_runner.
 	GetSoftwareFeaturesMode = 5
+	// DownloadPrivateBundlesMode indicates that the runner should download private bundles from devservers,
+	// install them to the DUT, write a JSON-marshaled DownloadPrivateBundlesResult struct to stdout and exit.
+	// This mode is only supported by local_test_runner.
+	DownloadPrivateBundlesMode = 6
 )

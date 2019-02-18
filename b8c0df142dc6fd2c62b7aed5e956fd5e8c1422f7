@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "729b8c77_2435adcf",
+        "filename": "src/chromiumos/tast/bundle/bundle_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-18T15:16:01Z",
+      "side": 1,
+      "message": "nit: consider just using os.Stat",
+      "revId": "b8c0df142dc6fd2c62b7aed5e956fd5e8c1422f7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -25,11 +25,12 @@ type ReadyFunc func(ctx context.Context, log func(string)) error
 
 // Local implements the main function for local test bundles.
 //
+// clArgs should typically be os.Args[1:].
 // If ready is non-nil, it will be executed before any tests from this bundle are run to ensure
 // that the DUT is ready for testing. This can be used to wait for all important system services
 // to be running on a newly-booted DUT, for instance.
 // The returned status code should be passed to os.Exit.
-func Local(stdin io.Reader, stdout, stderr io.Writer, ready ReadyFunc) int {
+func Local(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, ready ReadyFunc) int {
 	args := Args{DataDir: localTestDataDir}
 	cfg := runConfig{
 		postTestFunc:       faillog.SaveIfError,
@@ -44,5 +45,5 @@ func Local(stdin io.Reader, stdout, stderr io.Writer, ready ReadyFunc) int {
 			return ctx, ready(ctx, lf)
 		}
 	}
-	return run(context.Background(), stdin, stdout, stderr, &args, &cfg, localBundle)
+	return run(context.Background(), clArgs, stdin, stdout, stderr, &args, &cfg, localBundle)
 }

@@ -24,6 +24,23 @@ type PollOptions struct {
 	Interval time.Duration
 }
 
+// pollBreak is a wrapper of error to terminate the Poll immediately.
+type pollBreak struct {
+	err error
+}
+
+// The error implementation of pollBreak. However, it is not expected that this
+// is used practically.
+func (b *pollBreak) Error() string {
+	return b.err.Error()
+}
+
+// PollBreak returns a wrapper of the given err to terminate the Poll
+// immediately.
+func PollBreak(err error) error {
+	return &pollBreak{err}
+}
+
 // Poll runs f repeatedly until f returns nil and then itself returns nil.
 // If ctx returns an error before then or opts.Timeout is reached, the last error returned by f is returned.
 // f should use the context passed to it, as it may have an adjusted deadline if opts.Timeout is set.
@@ -34,6 +51,8 @@ type PollOptions struct {
 // happens and when the next polling cycle notices it). It should only be used as a last resort when there's no
 // other way to watch for an event. The preferred approach is to watch for events in select{} statements.
 // Goroutines can be used to provide notifications over channels.
+// If an error wrapped by PollBreak is returned from the f, then it
+// immediately terminates the polling, and returns an unwrapped error.
 func Poll(ctx context.Context, f func(context.Context) error, opts *PollOptions) error {
 	if ctx.Err() != nil {
 		return ctx.Err()
@@ -56,6 +75,10 @@ func Poll(ctx context.Context, f func(context.Context) error, opts *PollOptions)
 		var err error
 		if err = f(ctx); err == nil {
 			return nil
+		}
+
+		if e, ok := err.(*pollBreak); ok {
+			return e.err
 		}
 
 		// If f honors ctx's deadline, it may return a "context deadline exceeded" error

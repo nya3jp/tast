@@ -32,6 +32,34 @@ func TestPoll(t *gotesting.T) {
 	}
 }
 
+func TestPollBreak(t *gotesting.T) {
+	const (
+		maxCalls = 5
+		expCalls = 3
+	)
+	numCalls := 0
+	err := Poll(context.Background(), func(ctx context.Context) error {
+		numCalls++
+		if numCalls == expCalls {
+			return PollBreak(errors.New("break the poll"))
+		}
+		if numCalls < maxCalls {
+			return fmt.Errorf("intentional error #%d", numCalls)
+		}
+		return nil
+	}, &PollOptions{Interval: time.Millisecond})
+
+	if err == nil {
+		t.Error("Poll succeeded unintentionally")
+	}
+	if numCalls != expCalls {
+		t.Errorf("Poll called func %d times(s); want %d", numCalls, expCalls)
+	}
+	if !strings.Contains(err.Error(), "break the poll") {
+		t.Errorf("Failed with unexpected error: ", err)
+	}
+}
+
 func TestPollCanceledContext(t *gotesting.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()

@@ -1,0 +1,124 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c5c3daaa_972d109a",
+        "filename": "src/chromiumos/tast/testing/poll.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-19T18:00:18Z",
+      "side": 1,
+      "message": "nit: maybe s/practically/directly, since pollBreak is not returned to callers./",
+      "range": {
+        "startLine": 33,
+        "startChar": 11,
+        "endLine": 33,
+        "endChar": 22
+      },
+      "revId": "cf5d744226212791a066c460d1d64c56d6ae29d9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "11488ddb_36f874f8",
+        "filename": "src/chromiumos/tast/testing/poll.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-19T18:00:18Z",
+      "side": 1,
+      "message": "nit: maybe something like this (e.g. also including example usage)?\n\n// PollBreak creates an error wrapping err that may be returned\n// from a function passed to Poll to terminate polling immediately.\n//\n//  err :\u003d testing.Poll(ctx, func(ctx context.Context) error {\n//      if err :\u003d mustSucceed(ctx); err !\u003d nil {\n//          return testing.PollBreak(err)\n//      }\n//     ...\n//  }",
+      "revId": "cf5d744226212791a066c460d1d64c56d6ae29d9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "346ec774_4a16d1e2",
+        "filename": "src/chromiumos/tast/testing/poll.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-19T18:00:18Z",
+      "side": 1,
+      "message": "nit: delete \u0027f\u0027",
+      "range": {
+        "startLine": 54,
+        "startChar": 53,
+        "endLine": 54,
+        "endChar": 56
+      },
+      "revId": "cf5d744226212791a066c460d1d64c56d6ae29d9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9da715f3_5b3a55e1",
+        "filename": "src/chromiumos/tast/testing/poll.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-19T18:00:18Z",
+      "side": 1,
+      "message": "nit: s/an/the/",
+      "revId": "cf5d744226212791a066c460d1d64c56d6ae29d9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b6fce4ec_c1a2d785",
+        "filename": "src/chromiumos/tast/testing/poll_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-19T18:00:18Z",
+      "side": 1,
+      "message": "nit: maybe move to a const?",
+      "range": {
+        "startLine": 44,
+        "startChar": 31,
+        "endLine": 44,
+        "endChar": 47
+      },
+      "revId": "cf5d744226212791a066c460d1d64c56d6ae29d9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f4348858_3e5afacf",
+        "filename": "src/chromiumos/tast/testing/poll_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-19T18:00:18Z",
+      "side": 1,
+      "message": "nit: can you use \u0027\u003d\u003d\u0027? this should match exactly, right?",
+      "revId": "cf5d744226212791a066c460d1d64c56d6ae29d9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

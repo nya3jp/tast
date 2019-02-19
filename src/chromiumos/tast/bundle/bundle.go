@@ -36,9 +36,9 @@ const (
 // run reads a JSON-marshaled Args struct from stdin and performs the requested action.
 // Default arguments may be specified via args, which will also be updated from stdin.
 // The caller should exit with the returned status code.
-func run(ctx context.Context, stdin io.Reader, stdout, stderr io.Writer,
+func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr io.Writer,
 	args *Args, cfg *runConfig, bt bundleType) int {
-	tests, err := readArgs(stdin, args, cfg, bt)
+	tests, err := readArgs(clArgs, stdin, stderr, args, cfg, bt)
 	if err != nil {
 		return command.WriteError(stderr, err)
 	}

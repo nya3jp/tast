@@ -38,6 +38,7 @@ const (
 // Run reads command-line flags from clArgs (in the case of a manual run) or a JSON-marshaled
 // Args struct from stdin (when run by the tast command) and performs the requested action.
 // Default arguments may be passed via args, which is filled with the additional args that are read.
+// clArgs should typically be os.Args[1:].
 // The caller should exit with the returned status code.
 func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Args, rt RunnerType) int {
 	if err := readArgs(clArgs, stdin, stderr, args, rt); err != nil {

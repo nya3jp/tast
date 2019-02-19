@@ -21,8 +21,9 @@ const (
 
 // Remote implements the main function for remote test bundles.
 //
+// clArgs should typically be os.Args[1:].
 // The returned status code should be passed to os.Exit.
-func Remote(stdin io.Reader, stdout, stderr io.Writer) int {
+func Remote(clArgs []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	args := Args{}
 	cfg := runConfig{
 		preRunFunc: func(ctx context.Context, lf logFunc) (context.Context, error) {
@@ -63,5 +64,5 @@ func Remote(stdin io.Reader, stdout, stderr io.Writer) int {
 		defaultTestTimeout: remoteTestTimeout,
 	}
 
-	return run(context.Background(), stdin, stdout, stderr, &args, &cfg, remoteBundle)
+	return run(context.Background(), clArgs, stdin, stdout, stderr, &args, &cfg, remoteBundle)
 }

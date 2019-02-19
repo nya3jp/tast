@@ -114,7 +114,7 @@ func runFakeBundle() int {
 		})
 	}
 
-	return bundle.Local(os.Stdin, os.Stdout, os.Stderr, nil)
+	return bundle.Local(nil, os.Stdin, os.Stdout, os.Stderr, nil)
 }
 
 // newBufferWithArgs returns a buffer containing the JSON representation of args.

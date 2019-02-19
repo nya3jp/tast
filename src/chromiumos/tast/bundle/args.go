@@ -6,8 +6,11 @@ package bundle
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
+	"os"
+	"path/filepath"
 	"reflect"
 	"strings"
 
@@ -86,9 +89,37 @@ const (
 	remoteBundle
 )
 
-// readArgs reads a JSON-marshaled Args struct from stdin and updates args (which may contain default values).
+// readArgs parses runtime arguments.
+// clArgs contains command-line arguments and is typically os.Args[1:].
+// args contains default values for arguments and is further updated by decoding a JSON-marshaled Args struct from stdin.
 // Matched tests are returned. The caller is responsible for performing the requested action.
-func readArgs(stdin io.Reader, args *Args, cfg *runConfig, bt bundleType) ([]*testing.Test, error) {
+func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer,
+	args *Args, cfg *runConfig, bt bundleType) ([]*testing.Test, error) {
+	if len(clArgs) != 0 {
+		flags := flag.NewFlagSet("", flag.ContinueOnError)
+		flags.SetOutput(stderr)
+		flags.Usage = func() {
+			runner := "local_test_runner"
+			if bt == remoteBundle {
+				runner = "remote_test_runner"
+			}
+			fmt.Fprintf(stderr, "Usage: %s <flags>\n"+
+				"This is a Tast test bundle containing integration tests.\n"+
+				"It is typically executed by %s rather than being run manually.\n\n",
+				filepath.Base(os.Args[0]), runner)
+			flags.PrintDefaults()
+		}
+
+		dump := flags.Bool("dumptests", false, "dump all tests as a JSON-marshaled array of testing.Test structs")
+		if err := flags.Parse(clArgs); err != nil {
+			return nil, command.NewStatusErrorf(statusBadArgs, "%v", err)
+		}
+		if *dump {
+			args.Mode = ListTestsMode
+			return testing.GlobalRegistry().AllTests(), nil
+		}
+	}
+
 	if err := json.NewDecoder(stdin).Decode(args); err != nil {
 		return nil, command.NewStatusErrorf(statusBadArgs, "failed to decode args from stdin: %v", err)
 	}

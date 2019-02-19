@@ -332,7 +332,7 @@ func TestRunTestsMissingDeps(t *gotesting.T) {
 	}
 	stdin := newBufferWithArgs(t, &args)
 	stdout := &bytes.Buffer{}
-	if status := run(context.Background(), stdin, stdout, &bytes.Buffer{}, &Args{},
+	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{}, &Args{},
 		&runConfig{defaultTestTimeout: time.Minute}, localBundle); status != statusSuccess {
 		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
 	}
@@ -413,7 +413,7 @@ func TestRunMeta(t *gotesting.T) {
 		},
 	}
 	stdin := newBufferWithArgs(t, &args)
-	if status := run(context.Background(), stdin, &bytes.Buffer{}, &bytes.Buffer{}, &Args{},
+	if status := run(context.Background(), nil, stdin, &bytes.Buffer{}, &bytes.Buffer{}, &Args{},
 		&runConfig{defaultTestTimeout: time.Minute}, remoteBundle); status != statusSuccess {
 		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
 	}
@@ -432,20 +432,35 @@ func TestRunMeta(t *gotesting.T) {
 func TestRunList(t *gotesting.T) {
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
 	defer restore()
-	testing.AddTest(&testing.Test{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
+	f := func(context.Context, *testing.State) {}
+	testing.AddTest(&testing.Test{Name: "pkg.Test", Func: f})
+	testing.AddTest(&testing.Test{Name: "pkg.Test2", Func: f})
 
-	stdin := newBufferWithArgs(t, &Args{Mode: ListTestsMode})
-	stdout := &bytes.Buffer{}
-	if status := run(context.Background(), stdin, stdout, &bytes.Buffer{},
-		&Args{}, &runConfig{}, localBundle); status != statusSuccess {
-		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
-	}
 	var exp bytes.Buffer
 	if err := testing.WriteTestsAsJSON(&exp, testing.GlobalRegistry().AllTests()); err != nil {
 		t.Fatal(err)
 	}
+
+	// ListTestsMode should result in tests being JSON-marshaled to stdout.
+	stdin := newBufferWithArgs(t, &Args{Mode: ListTestsMode})
+	stdout := &bytes.Buffer{}
+	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{},
+		&Args{}, &runConfig{}, localBundle); status != statusSuccess {
+		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
+	}
 	if stdout.String() != exp.String() {
 		t.Errorf("run() wrote %q; want %q", stdout.String(), exp.String())
+	}
+
+	// The -dumptests command-line flag should do the same thing.
+	clArgs := []string{"-dumptests"}
+	stdout.Reset()
+	if status := run(context.Background(), clArgs, &bytes.Buffer{}, stdout, &bytes.Buffer{},
+		&Args{}, &runConfig{}, localBundle); status != statusSuccess {
+		t.Fatalf("run(%v) returned status %v; want %v", clArgs, status, statusSuccess)
+	}
+	if stdout.String() != exp.String() {
+		t.Errorf("run(%v) wrote %q; want %q", clArgs, stdout.String(), exp.String())
 	}
 }
 

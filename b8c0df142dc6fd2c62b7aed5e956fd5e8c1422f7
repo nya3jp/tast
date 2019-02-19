@@ -16,6 +16,24 @@
       "revId": "b8c0df142dc6fd2c62b7aed5e956fd5e8c1422f7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f7a253f1_c8969f2c",
+        "filename": "src/chromiumos/tast/bundle/bundle_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-19T03:29:09Z",
+      "side": 1,
+      "message": "Good catch :)",
+      "parentUuid": "729b8c77_2435adcf",
+      "revId": "b8c0df142dc6fd2c62b7aed5e956fd5e8c1422f7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

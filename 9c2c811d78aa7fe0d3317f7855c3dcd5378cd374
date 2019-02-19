@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "09d57ab2_f9005907",
+        "filename": "src/chromiumos/tast/logs/logs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-02-19T19:10:19Z",
+      "side": 1,
+      "message": "To be safe: it should be made sure that path starts with \"root/\".",
+      "range": {
+        "startLine": 128,
+        "startChar": 0,
+        "endLine": 132,
+        "endChar": 26
+      },
+      "revId": "9c2c811d78aa7fe0d3317f7855c3dcd5378cd374",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -25,7 +25,7 @@ func TestLocalRemoteArgs(t *gotesting.T) {
 	}
 	stdin := newBufferWithArgs(t, &args)
 	stderr := bytes.Buffer{}
-	if status := Local(stdin, &bytes.Buffer{}, &stderr, nil); status != statusBadArgs {
+	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, nil); status != statusBadArgs {
 		t.Errorf("Local(%+v) = %v; want %v", args, status, statusBadArgs)
 	}
 	if len(stderr.String()) == 0 {
@@ -42,7 +42,7 @@ func TestLocalBadTest(t *gotesting.T) {
 	args := Args{Mode: RunTestsMode}
 	stdin := newBufferWithArgs(t, &args)
 	stderr := bytes.Buffer{}
-	if status := Local(stdin, &bytes.Buffer{}, &stderr, nil); status != statusBadTests {
+	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, nil); status != statusBadTests {
 		t.Errorf("Local(%+v) = %v; want %v", args, status, statusBadTests)
 	}
 	if len(stderr.String()) == 0 {
@@ -62,7 +62,7 @@ func TestLocalRunTest(t *gotesting.T) {
 	args := Args{Mode: RunTestsMode, OutDir: outDir}
 	stdin := newBufferWithArgs(t, &args)
 	stderr := bytes.Buffer{}
-	if status := Local(stdin, &bytes.Buffer{}, &stderr, nil); status != statusSuccess {
+	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, nil); status != statusSuccess {
 		t.Errorf("Local(%+v) = %v; want %v", args, status, statusSuccess)
 	}
 	if !ran {
@@ -84,7 +84,7 @@ func TestLocalFaillog(t *gotesting.T) {
 	args := Args{Mode: RunTestsMode, OutDir: outDir}
 	stdin := newBufferWithArgs(t, &args)
 	stderr := bytes.Buffer{}
-	if status := Local(stdin, &bytes.Buffer{}, &stderr, nil); status != statusSuccess {
+	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, nil); status != statusSuccess {
 		t.Errorf("Local(%+v) = %v; want %v", args, status, statusSuccess)
 	}
 
@@ -116,7 +116,7 @@ func TestLocalReadyFunc(t *gotesting.T) {
 		ranReady = true
 		return nil
 	}
-	if status := Local(stdin, &bytes.Buffer{}, &stderr, ready); status != statusSuccess {
+	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, ready); status != statusSuccess {
 		t.Errorf("Local(%+v) = %v; want %v", args, status, statusSuccess)
 	}
 	if !ranReady {
@@ -128,7 +128,7 @@ func TestLocalReadyFunc(t *gotesting.T) {
 	stderr = bytes.Buffer{}
 	const msg = "intentional failure"
 	ready = func(context.Context, func(string)) error { return errors.New(msg) }
-	if status := Local(stdin, &bytes.Buffer{}, &stderr, ready); status != statusError {
+	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, ready); status != statusError {
 		t.Errorf("Local(%+v) = %v; want %v", args, status, statusError)
 	}
 	if s := stderr.String(); !strings.Contains(s, msg) {
@@ -157,7 +157,7 @@ func TestLocalReadyFuncDisabled(t *gotesting.T) {
 		ranReady = true
 		return nil
 	}
-	if status := Local(stdin, &bytes.Buffer{}, &stderr, ready); status != statusSuccess {
+	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, ready); status != statusSuccess {
 		t.Errorf("Local(%+v) = %v; want %v", args, status, statusSuccess)
 	}
 	if ranReady {

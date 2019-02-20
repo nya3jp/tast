@@ -38,6 +38,8 @@ The following software features are defined:
 *   `cups` - CUPS daemon.
 *   `display_backlight` - An internal display backlight.
 *   `dlc` - Support of [Downloadable Content] (DLC).
+*   `drm_atomic` - The ability to synchronize video buffer overlays atomically.
+    This is guarantees that [video hardware overlays] are supported.
 *   `gpu_sandboxing` - Chrome's GPU process is [sandboxed].
 *   `memd` - [Memory stats collection daemon].
 *   `ml_service` - ML Service daemon.
@@ -118,6 +120,7 @@ outside of video tests.
 [AddressSanitizer]: https://github.com/google/sanitizers/wiki/AddressSanitizer
 [Autotest capability]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/autotest-capability-default/
 [Downloadable Content]: https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/dlcservice
+[video hardware overlays]: https://en.wikipedia.org/wiki/Hardware_overlay
 [sandboxed]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/linux_sandboxing.md
 [Memory stats collection daemon]: https://chromium.googlesource.com/chromiumos/platform2/+/master/metrics/memd/
 [screenshot command]: https://chromium.googlesource.com/chromiumos/platform2/+/master/screenshot/

@@ -1,0 +1,123 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2529b6de_8d87ec95",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-20T04:31:58Z",
+      "side": 1,
+      "message": "bundles only support two modes (i don\u0027t anticipate that changing soon), and this is needed for both of them. we could move it into RunTestsArgs if we don\u0027t want any top-level fields besides the mode and per-mode structs, but then we\u0027d need a new ListTestsArgs struct.",
+      "revId": "1245c3b24434afd237fa6cc46dc27db71575fdf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f2817d25_1d9a1fcf",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-20T04:31:58Z",
+      "side": 1,
+      "message": "since the diff is unfortunate: i dropped the \"remote\" prefix from the json names",
+      "revId": "1245c3b24434afd237fa6cc46dc27db71575fdf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ce87fb3c_4e3eca94",
+        "filename": "src/chromiumos/tast/runner/args.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-20T04:31:58Z",
+      "side": 1,
+      "message": "i think that this arg and Patterns are only relevant to RunTestsMode and ListTestsMode",
+      "revId": "1245c3b24434afd237fa6cc46dc27db71575fdf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ecfcdbb9_65c7c1b2",
+        "filename": "src/chromiumos/tast/runner/args.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-20T04:31:58Z",
+      "side": 1,
+      "message": "this arg and SystemCrashDirs are relevant to both GetSysInfoStateMode and CollectSysInfoMode. note that these aren\u0027t marshaled and instead are passed in from the test runner executables\u0027 main functions.",
+      "revId": "1245c3b24434afd237fa6cc46dc27db71575fdf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eed6edd0_10418a40",
+        "filename": "src/chromiumos/tast/runner/args.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-20T04:31:58Z",
+      "side": 1,
+      "message": "this arg and the next two are only relevant to GetSoftwareFeaturesMode",
+      "revId": "1245c3b24434afd237fa6cc46dc27db71575fdf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7b5541b4_d8eea2bd",
+        "filename": "src/chromiumos/tast/runner/args.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-20T04:31:58Z",
+      "side": 1,
+      "message": "handling this separately feels a bit gross",
+      "revId": "1245c3b24434afd237fa6cc46dc27db71575fdf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4b0bb0bb_5e8af570",
+        "filename": "src/chromiumos/tast/runner/args.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-20T04:31:58Z",
+      "side": 1,
+      "message": "i\u0027m not sure if the embedding here and on L147 is good to preserve. the other options i can think of would be naming these fields or duplicating bundle.RemoteArgs\u0027 fields instead (although that requires a lot of repetitive copying).",
+      "revId": "1245c3b24434afd237fa6cc46dc27db71575fdf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

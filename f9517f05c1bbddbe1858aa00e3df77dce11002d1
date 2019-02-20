@@ -34,6 +34,24 @@
       "revId": "f9517f05c1bbddbe1858aa00e3df77dce11002d1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1f6a44d7_8e4b0e39",
+        "filename": "src/chromiumos/tast/logs/logs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-02-20T06:53:25Z",
+      "side": 1,
+      "message": "Thank you for the fix.\n\nYes, this condition should meet now, I believe. But, because this is split into a named function, I still think it\u0027s better to be bug free (since the fix is small :-).",
+      "parentUuid": "6bb553ec_75daa2df",
+      "revId": "f9517f05c1bbddbe1858aa00e3df77dce11002d1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

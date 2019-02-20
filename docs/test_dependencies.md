@@ -36,6 +36,7 @@ The following software features are defined:
 *   `display_backlight` - An internal display backlight.
 *   `dlc` - Support of [Downloadable Content] (DLC).
 *   `gpu_sandboxing` - Chrome's GPU process is [sandboxed].
+*   `hw_overlay` - The ability to use hardware overlay.
 *   `memd` - [Memory stats collection daemon].
 *   `ml_service` - ML Service daemon.
 *   `no_android` - The inability to run Android apps. This is the opposite of

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bf88b5ef_f4f1e170",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1202079
+      },
+      "writtenOn": "2019-02-20T20:58:45Z",
+      "side": 1,
+      "message": "using `hw_overlay_test` instead of `hw_overlay` because there is no `USE\u003dhw_overlay`, and I\u0027ve just added one for the tests. Adding one without the `_test` could be confusing, since this doesn\u0027t not enable/disable hw overlay... only it enables the hw_overlay tests.\n\nfor reference, the CL that adds hw_overlay_test is here:\nhttps://crrev.com/i/875461",
+      "range": {
+        "startLine": 55,
+        "startChar": 28,
+        "endLine": 55,
+        "endChar": 44
+      },
+      "revId": "94ef0d0072b1fe446a850d868948cf0f2793c5f6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

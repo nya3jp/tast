@@ -36,6 +36,8 @@ The following software features are defined:
 *   `display_backlight` - An internal display backlight.
 *   `dlc` - Support of [Downloadable Content] (DLC).
 *   `gpu_sandboxing` - Chrome's GPU process is [sandboxed].
+*   `drm_atomic` - The ability to synchronize video buffer overlays atomically.
+    This is guarantees that [video hardware overlays] are supported.
 *   `memd` - [Memory stats collection daemon].
 *   `ml_service` - ML Service daemon.
 *   `no_android` - The inability to run Android apps. This is the opposite of
@@ -126,3 +128,4 @@ outside of video tests.
 [autocaps package]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/autocaps/
 [Transparent Hugepage]: https://www.kernel.org/doc/Documentation/vm/transhuge.txt
 [amd64]: https://en.wikipedia.org/wiki/X86-64
+[video hardware overlays]: https://en.wikipedia.org/wiki/Hardware_overlay

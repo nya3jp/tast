@@ -16,6 +16,24 @@
       "revId": "f9517f05c1bbddbe1858aa00e3df77dce11002d1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6bb553ec_75daa2df",
+        "filename": "src/chromiumos/tast/logs/logs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-20T05:22:08Z",
+      "side": 1,
+      "message": "whoops, yes.\n\nbut for what it\u0027s worth, i don\u0027t think that filepath.Walk is ever going to give us a path that isn\u0027t within the expected root, as that would violate the contract described at https://golang.org/pkg/path/filepath/#WalkFunc.",
+      "parentUuid": "6d777a8f_db3d7b3e",
+      "revId": "f9517f05c1bbddbe1858aa00e3df77dce11002d1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

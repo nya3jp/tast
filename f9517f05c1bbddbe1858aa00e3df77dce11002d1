@@ -52,6 +52,24 @@
       "revId": "f9517f05c1bbddbe1858aa00e3df77dce11002d1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3353069d_14a7911a",
+        "filename": "src/chromiumos/tast/logs/logs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-20T15:20:03Z",
+      "side": 1,
+      "message": "no disagreements here. :-) thanks for the review!",
+      "parentUuid": "1f6a44d7_8e4b0e39",
+      "revId": "f9517f05c1bbddbe1858aa00e3df77dce11002d1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

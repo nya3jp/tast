@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6d777a8f_db3d7b3e",
+        "filename": "src/chromiumos/tast/logs/logs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-02-20T04:55:09Z",
+      "side": 1,
+      "message": "This check looks not enough.\nE.g.: path \u003d \"a/b/cde\", root \u003d \"a/b/c\". \nChecking traling \u0027/\u0027 is necessary?",
+      "revId": "f9517f05c1bbddbe1858aa00e3df77dce11002d1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

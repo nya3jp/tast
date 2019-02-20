@@ -52,6 +52,7 @@ func main() {
 			"display_backlight":    "display_backlight",
 			"dlc":                  "dlc",
 			"gpu_sandboxing":       "!betty && !tast_vm", // no GPU sandboxing on VMs: https://crbug.com/914688
+			"drm_atomic":           "drm_atomic",
 			"memd":                 "memd",
 			"ml_service":           "ml_service",
 			"no_android":           "!arc",

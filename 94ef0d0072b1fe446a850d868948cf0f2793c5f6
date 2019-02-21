@@ -93,6 +93,30 @@
       "revId": "94ef0d0072b1fe446a850d868948cf0f2793c5f6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c23b8550_01aceebe",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-21T18:26:57Z",
+      "side": 1,
+      "message": "thanks. it sounds like we\u0027re pretty far from this being a software feature now. :-/\n\nbased on your description, we\u0027d ideally be able to use something like this:\n\n  \"hw_overlays\": `(\"kernel-4_14\" || \u003cother versions\u003e) \u0026\u0026 i915`\n\nbut i don\u0027t think there\u0027s an i915 USE flag, and i don\u0027t know if there are any other proxies for it.\n\nthe easy and unfortunate way to have the feature only apply to those three boards would be to use \"eve || kevin || nocturne\" and then make sure those three USE flags appear in IUSE in the tast-use-flags ebuild. i say \"unfortunate\" since this approach won\u0027t work for unibuild devices and since it also leads to cases where we may not actually run a test -- what if your test is promoted to the CQ, but the CQ happens to not include any of eve, kevin, or nocturne?\n\ni\u0027m going to start conversations with people on the infra team to get their thoughts on the best way to handle this.",
+      "parentUuid": "07fe42dd_cb8d0a37",
+      "range": {
+        "startLine": 55,
+        "startChar": 28,
+        "endLine": 55,
+        "endChar": 44
+      },
+      "revId": "94ef0d0072b1fe446a850d868948cf0f2793c5f6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

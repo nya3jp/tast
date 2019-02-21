@@ -117,6 +117,30 @@
       "revId": "94ef0d0072b1fe446a850d868948cf0f2793c5f6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0c694aa2_167bfdb8",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1202079
+      },
+      "writtenOn": "2019-02-21T18:31:14Z",
+      "side": 1,
+      "message": "I guess I can do something like:\n{\n    \"hw_overlay:  \"eve \u0026\u0026 nocture \u0026 kevin\"  // adding reference to a bug number here.\n}\n\nwould that be acceptable?\n\n\n\nand I confirm that Grunt, which has kernel 4.14, doesn\u0027t support hw overlays\n(technically it supports mouse hw overlay, but not the one needed for ARC / webgl.... could be because the video card doesn\u0027t support it, or something else... I don\u0027t know the details.)",
+      "parentUuid": "07fe42dd_cb8d0a37",
+      "range": {
+        "startLine": 55,
+        "startChar": 28,
+        "endLine": 55,
+        "endChar": 44
+      },
+      "revId": "94ef0d0072b1fe446a850d868948cf0f2793c5f6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

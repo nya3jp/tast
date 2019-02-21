@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "ff11a634_625be805",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1202079
+      },
+      "writtenOn": "2019-02-21T21:03:21Z",
+      "side": 1,
+      "message": "I guess the best reference is this internal doc: go/cros-current-status-hw-overlays \nshould I use the internal doc instead of an external one?",
+      "parentUuid": "48db5f92_3d1bd99a",
+      "range": {
+        "startLine": 39,
+        "startChar": 5,
+        "endLine": 39,
+        "endChar": 15
+      },
+      "revId": "94ef0d0072b1fe446a850d868948cf0f2793c5f6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "bf88b5ef_f4f1e170",
         "filename": "src/chromiumos/cmd/local_test_runner/main.go",
         "patchSetId": 6
@@ -165,6 +189,30 @@
       "revId": "94ef0d0072b1fe446a850d868948cf0f2793c5f6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "601858d9_88f26171",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1202079
+      },
+      "writtenOn": "2019-02-21T21:03:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1e21f039_3c2ba807",
+      "range": {
+        "startLine": 55,
+        "startChar": 28,
+        "endLine": 55,
+        "endChar": 44
+      },
+      "revId": "94ef0d0072b1fe446a850d868948cf0f2793c5f6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

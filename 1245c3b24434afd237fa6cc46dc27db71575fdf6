@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "5969e659_240891cf",
+        "filename": "src/chromiumos/cmd/tast/run/sys_info.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-21T05:53:04Z",
+      "side": 1,
+      "message": "Are we supposed to call args.FillDeprecated here in theory, though it doesn\u0027t do anything at this moment?\n\nGenerally, the places to call args.FillDeprecated are scattered, so I\u0027m afraid we may forget to call it as we add/modify codes. How about calling it within startLocalRunner?\n\nOr, another approach would be to introduce serialization/deserialization function of Args, wrapping json.Encoder/Decoder, and call FillDeprecated there. I think we want to fill deprecated fields at the place very close to serialization/deserialization.",
+      "range": {
+        "startLine": 29,
+        "startChar": 53,
+        "endLine": 29,
+        "endChar": 100
+      },
+      "revId": "1245c3b24434afd237fa6cc46dc27db71575fdf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "2529b6de_8d87ec95",
         "filename": "src/chromiumos/tast/bundle/args.go",
         "patchSetId": 2
@@ -13,6 +36,24 @@
       "writtenOn": "2019-02-20T04:31:58Z",
       "side": 1,
       "message": "bundles only support two modes (i don\u0027t anticipate that changing soon), and this is needed for both of them. we could move it into RunTestsArgs if we don\u0027t want any top-level fields besides the mode and per-mode structs, but then we\u0027d need a new ListTestsArgs struct.",
+      "revId": "1245c3b24434afd237fa6cc46dc27db71575fdf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "152f1d0a_3d381d7d",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-21T05:53:04Z",
+      "side": 1,
+      "message": "This sounds a good change to do, when do you plan to do it?",
+      "parentUuid": "2529b6de_8d87ec95",
       "revId": "1245c3b24434afd237fa6cc46dc27db71575fdf6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -36,6 +77,47 @@
     },
     {
       "key": {
+        "uuid": "4134caf0_876caeda",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-21T05:53:04Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "f2817d25_1d9a1fcf",
+      "revId": "1245c3b24434afd237fa6cc46dc27db71575fdf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "13e3d300_1b370827",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-21T05:53:04Z",
+      "side": 1,
+      "message": "Good chance to rename :)",
+      "range": {
+        "startLine": 112,
+        "startChar": 26,
+        "endLine": 112,
+        "endChar": 34
+      },
+      "revId": "1245c3b24434afd237fa6cc46dc27db71575fdf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ce87fb3c_4e3eca94",
         "filename": "src/chromiumos/tast/runner/args.go",
         "patchSetId": 2
@@ -47,6 +129,24 @@
       "writtenOn": "2019-02-20T04:31:58Z",
       "side": 1,
       "message": "i think that this arg and Patterns are only relevant to RunTestsMode and ListTestsMode",
+      "revId": "1245c3b24434afd237fa6cc46dc27db71575fdf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "577371c8_3924176d",
+        "filename": "src/chromiumos/tast/runner/args.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-21T05:53:04Z",
+      "side": 1,
+      "message": "Just to make sure: you meant we want to move them to RunTests later but we\u0027re focusing on three fields (DataDir/OutDir/TempDir) for now? If that\u0027s true, when do we want to move these fields?\n\nI think it would be good to make this happen soon so that compatibility code can be removed at once; removing only a part of compatibility code sounds a bit tricky.",
+      "parentUuid": "ce87fb3c_4e3eca94",
       "revId": "1245c3b24434afd237fa6cc46dc27db71575fdf6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -70,6 +170,24 @@
     },
     {
       "key": {
+        "uuid": "59aa1805_2a055d33",
+        "filename": "src/chromiumos/tast/runner/args.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-21T05:53:04Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "ecfcdbb9_65c7c1b2",
+      "revId": "1245c3b24434afd237fa6cc46dc27db71575fdf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "eed6edd0_10418a40",
         "filename": "src/chromiumos/tast/runner/args.go",
         "patchSetId": 2
@@ -81,6 +199,70 @@
       "writtenOn": "2019-02-20T04:31:58Z",
       "side": 1,
       "message": "this arg and the next two are only relevant to GetSoftwareFeaturesMode",
+      "revId": "1245c3b24434afd237fa6cc46dc27db71575fdf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1bf53aea_261bcb26",
+        "filename": "src/chromiumos/tast/runner/args.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-21T05:53:04Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "eed6edd0_10418a40",
+      "revId": "1245c3b24434afd237fa6cc46dc27db71575fdf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b20f5f53_c4ae2659",
+        "filename": "src/chromiumos/tast/runner/args.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-21T05:53:04Z",
+      "side": 1,
+      "message": "... because it\u0027s a struct?",
+      "range": {
+        "startLine": 109,
+        "startChar": 38,
+        "endLine": 109,
+        "endChar": 42
+      },
+      "revId": "1245c3b24434afd237fa6cc46dc27db71575fdf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5adb709f_f00a29ab",
+        "filename": "src/chromiumos/tast/runner/args.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-21T05:53:04Z",
+      "side": 1,
+      "message": "nit\u0026optional: Maybe it\u0027s easier to notice if \"// InitialStateDeprecated is not included.\" comment is here.",
+      "range": {
+        "startLine": 125,
+        "startChar": 0,
+        "endLine": 125,
+        "endChar": 81
+      },
       "revId": "1245c3b24434afd237fa6cc46dc27db71575fdf6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -118,6 +300,24 @@
       "revId": "1245c3b24434afd237fa6cc46dc27db71575fdf6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0cd89531_fc860c8d",
+        "filename": "src/chromiumos/tast/runner/args.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-21T05:53:04Z",
+      "side": 1,
+      "message": "I agree it might be too repetitive... let\u0027s revisit this later.",
+      "parentUuid": "4b0bb0bb_5e8af570",
+      "revId": "1245c3b24434afd237fa6cc46dc27db71575fdf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

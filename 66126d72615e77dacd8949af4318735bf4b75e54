@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "48d30b8e_006952f7",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 8
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1202079
+      },
+      "writtenOn": "2019-02-21T21:17:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "38687ebc_105ef565",
+      "revId": "66126d72615e77dacd8949af4318735bf4b75e54",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "53b61152_7847bb42",
         "filename": "docs/test_dependencies.md",
         "patchSetId": 8
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "7367649f_510ac051",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 8
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1202079
+      },
+      "writtenOn": "2019-02-21T21:17:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "53b61152_7847bb42",
+      "revId": "66126d72615e77dacd8949af4318735bf4b75e54",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d5d0393c_9c99c281",
         "filename": "src/chromiumos/cmd/local_test_runner/main.go",
         "patchSetId": 8
@@ -50,6 +86,24 @@
       "revId": "66126d72615e77dacd8949af4318735bf4b75e54",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "29386d73_63786b2e",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1202079
+      },
+      "writtenOn": "2019-02-21T21:17:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d5d0393c_9c99c281",
+      "revId": "66126d72615e77dacd8949af4318735bf4b75e54",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

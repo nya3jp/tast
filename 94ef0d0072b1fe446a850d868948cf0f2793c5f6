@@ -69,6 +69,30 @@
       "revId": "94ef0d0072b1fe446a850d868948cf0f2793c5f6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "07fe42dd_cb8d0a37",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1202079
+      },
+      "writtenOn": "2019-02-21T18:11:18Z",
+      "side": 1,
+      "message": "Sure.\n\nNot all our devices support HW overlays. It is a mix of kernel version + Video card.\nIt might be possible that all our video cards support overlays (not 100% sure though), but chromebooks in kernel 3.18 don\u0027t support it.  kernel \u003e\u003d v4 is required. So Caroline, although it has an i915 video card (like Eve and Nocturne), Chromebooks cannot use the overlay feature because it uses kernel 3.18.\n\n\nRe \"hw_overlay_test\", perhaps adding the \"hw_overlay_test\" USE property is overkill. I just wanted to flag boards that were able to run the overlay tests. There is already a USE that does something similar: \"dlc_test\".\n\nBut seems overkill. But perhaps it is better to add that filter in main.go.\nSo, is there a way in main.go to say: \n\n{\n     \"hw_overlay:  \"exclude everything except eve + nocture + kevin\" ?\n}\n\nI would like to stay safe and only include the ones that i\u0027m 100% sure that support overlays.\n\nThanks!",
+      "parentUuid": "58c05469_2de1ad85",
+      "range": {
+        "startLine": 55,
+        "startChar": 28,
+        "endLine": 55,
+        "endChar": 44
+      },
+      "revId": "94ef0d0072b1fe446a850d868948cf0f2793c5f6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

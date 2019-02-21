@@ -45,6 +45,30 @@
       "revId": "94ef0d0072b1fe446a850d868948cf0f2793c5f6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "58c05469_2de1ad85",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-21T05:26:00Z",
+      "side": 1,
+      "message": "sorry if i missed the discussion, but can you elaborate on why this test can\u0027t run everywhere, and on what this USE flag represents? i don\u0027t want us to get into a state where USE flags are being added just to control where tests will run (rather than to describe build-time configuration).\n\nhttps://crbug.com/933110 may be related.",
+      "parentUuid": "bf88b5ef_f4f1e170",
+      "range": {
+        "startLine": 55,
+        "startChar": 28,
+        "endLine": 55,
+        "endChar": 44
+      },
+      "revId": "94ef0d0072b1fe446a850d868948cf0f2793c5f6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

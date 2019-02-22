@@ -152,15 +152,15 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 
 	status, results := r.wrapper.run(rctx, r.cfg)
 	allTestsRun := status.ExitCode == subcommands.ExitSuccess
-	if len(results) == 0 {
-		if allTestsRun {
-			lg.Logf("No tests matched by pattern(s) %v", r.cfg.Patterns)
-			lg.Log("Do you need to pass -buildtype=local or -buildtype=remote?")
-			status.ExitCode = subcommands.ExitFailure
-		}
-		return status.ExitCode
+	if len(results) == 0 && allTestsRun {
+		lg.Logf("No tests matched by pattern(s) %v", r.cfg.Patterns)
+		lg.Log("Do you need to pass -buildtype=local or -buildtype=remote?")
+		return subcommands.ExitFailure
 	}
 
+	// Write results even if no tests were executed. This step collects system information
+	// (e.g. logs and crashes), so we still want it to run if testing was interrupted, or
+	// even if testing never started due to the DUT not becoming ready: https://crbug.com/928445
 	if err = r.wrapper.writeResults(ctx, r.cfg, results, allTestsRun); err != nil {
 		msg := fmt.Sprintf("Failed to write results: %v", err)
 		if status.ExitCode == subcommands.ExitSuccess {

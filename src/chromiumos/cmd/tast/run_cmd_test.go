@@ -134,6 +134,23 @@ func TestRunWriteFailure(t *gotesting.T) {
 	}
 }
 
+func TestRunWriteResultsWithZeroTests(t *gotesting.T) {
+	// If the runner reports failure without returning any test results, writeResults
+	// should still be called to ensure that system information is collected from the
+	// DUT: https://crbug.com/928445
+	wrapper := stubRunWrapper{
+		runRes:    []run.TestResult{}, // no tests were executed
+		runStatus: run.Status{ExitCode: subcommands.ExitFailure, ErrorMsg: "testing failed"},
+	}
+	args := []string{"root@example.net"}
+	if status := executeRunCmd(t, args, &wrapper, logging.NewDiscard()); status != subcommands.ExitFailure {
+		t.Fatalf("runCmd.Execute(%v) returned status %v; want %v", args, status, subcommands.ExitFailure)
+	}
+	if wrapper.writeRes == nil {
+		t.Errorf("runCmd.Execute(%v) didn't call writeResults after getting empty test results", args)
+	}
+}
+
 func TestRunReserveTimeToWriteResults(t *gotesting.T) {
 	wrapper := stubRunWrapper{
 		runRes: []run.TestResult{run.TestResult{Test: testing.Test{Name: "pkg.Test"}}},

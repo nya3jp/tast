@@ -392,7 +392,7 @@ func (r *resultsHandler) moveTestOutputData(srcBase string) error {
 			// This could happen if a test creates an output file named log.txt.
 			if _, err := os.Stat(dst); err == nil {
 				dst += testOutputFileRenameExt
-				r.cfg.Logger.Log("File %v already exists; renaming test output to %v",
+				r.cfg.Logger.Logf("File %v already exists; renaming test output to %v",
 					filepath.Base(fi2.Name()), filepath.Base(dst))
 			}
 

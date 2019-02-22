@@ -52,6 +52,24 @@
       "revId": "90bac33244e111fcc6a263948c872724320edf08",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "763f17e6_180f66a8",
+        "filename": "docs/test_validation.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1202079
+      },
+      "writtenOn": "2019-02-22T18:07:55Z",
+      "side": 1,
+      "message": "yes, sounds very useful.. things that I\u0027d like to see covered (only because I made these mistakes):\n\n- what is context.Context and why you pass it all the time and don\u0027t store it on instances\n- handle all errors (similar to returning errors from functions)\n- test must only run on supported hardware. \"unsupported hardware\" error is not an option.\n  (links to how to add Chrome switches)\n- Show that is possible to extended functionality by calling JS API / JS Private Autotest (and how to extend it).\n- how to detect errors before CQ (./fast_build -C ./fast_build -T)\n- Reliability first: prefer implementing a protocol/interface in Go than shelling out to binaries.\n\n\nTo give you some context:\nARC developers (at least ARC framework developers), we are not that familiar with Chrome internals. So perhaps Chrome switches / Chrome JS Autotest API might be a bit out of scope for a Tast document, but useful to write complete tests.\nComing from Python Autotest, where it was kind of wild-west with no almost no restrictions regarding how to abort a test, what to call, etc... if we are not allowed to do XXX, then it is good to show how to do it in Tast, showing all the steps: from extending Chrome to writing the Go code.\nIt doesn\u0027t have to a Chrome internals course, but saying something like: \"... and in case you have to add new Chrome switch, look at this CL\" is good enough.\n\nthanks!",
+      "parentUuid": "9c04f257_751a36c9",
+      "revId": "90bac33244e111fcc6a263948c872724320edf08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

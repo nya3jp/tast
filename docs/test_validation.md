@@ -128,6 +128,7 @@ the `android` and `chrome_login` [software features] and have a
 sufficiently-long timeout. These sorts of checks can be performed by a unit test
 that inspects test metadata after tests are registered. For the above ARC
 example, see [registration_test.go] and the [testcheck] package.
+To run all the unit tests, do `fast_build.sh -T`.
 
 [ARC]: https://developer.android.com/topic/arc/
 [software features]: test_dependencies.md

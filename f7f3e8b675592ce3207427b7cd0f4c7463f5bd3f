@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "f59c9288_6ff4df9a",
+        "filename": "src/chromiumos/tast/testing/poll.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-02-22T14:37:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2cf0f700_c6852d00",
+      "revId": "f7f3e8b675592ce3207427b7cd0f4c7463f5bd3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "577beb0a_2921ab6b",
         "filename": "src/chromiumos/tast/testing/poll_test.go",
         "patchSetId": 2
@@ -30,6 +48,30 @@
       "writtenOn": "2019-02-22T08:03:00Z",
       "side": 1,
       "message": "Could you check err is exactly the same object as one returned from polling function? It\u0027s an important contract.",
+      "range": {
+        "startLine": 59,
+        "startChar": 4,
+        "endLine": 59,
+        "endChar": 27
+      },
+      "revId": "f7f3e8b675592ce3207427b7cd0f4c7463f5bd3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5d119f24_79a36b83",
+        "filename": "src/chromiumos/tast/testing/poll_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-02-22T14:37:27Z",
+      "side": 1,
+      "message": "Oh, good point. Done.",
+      "parentUuid": "577beb0a_2921ab6b",
       "range": {
         "startLine": 59,
         "startChar": 4,

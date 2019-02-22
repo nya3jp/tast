@@ -139,6 +139,8 @@ type GetSoftwareFeaturesResult struct {
 type SysInfoState struct {
 	// LogInodeSizes maps from each log file's inode to its size in bytes.
 	LogInodeSizes map[uint64]int64 `json:"logInodeSizes"`
+	// JournaldCursor contains an opaque cursor pointing at the current tip of journald logs.
+	JournaldCursor string `json:"journaldCursor"`
 	// MinidumpPaths contains absolute paths to minidump crash files.
 	MinidumpPaths []string `json:"minidumpPaths"`
 }
@@ -163,6 +165,9 @@ type Config struct {
 	SystemLogDir string
 	// SystemLogExcludes contains relative paths of directories and files in SystemLogDir to exclude.
 	SystemLogExcludes []string
+	// JournaldSubdir contains the subdirectory within CollectSysInfoResult.LogDir where journald logs will be written.
+	// No journald logs will be be collected if this is empty.
+	JournaldSubdir string `json:"-"`
 	// SystemCrashDirs contains directories where crash dumps are written when processes crash.
 	SystemCrashDirs []string
 

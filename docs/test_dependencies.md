@@ -18,6 +18,7 @@ The following software features are defined:
     used.
 *   `android_p` - The ability to [run Android apps] that require Android P or
     later.
+*   `arc_camera3` - The [Camera HAL3] interface in Android.
 *   `aslr` - Address space layout randomization, which mitigates buffer-overflow
     attacks, is functional (this is not true for builds with [AddressSanitizer]
     instrumentation built in).
@@ -126,3 +127,4 @@ outside of video tests.
 [autocaps package]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/autocaps/
 [Transparent Hugepage]: https://www.kernel.org/doc/Documentation/vm/transhuge.txt
 [amd64]: https://en.wikipedia.org/wiki/X86-64
+[Camera HAL3]: https://source.android.com/devices/camera/camera3

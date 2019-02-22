@@ -38,6 +38,7 @@ func main() {
 			"amd64":        "amd64",
 			"android":      "arc && !arcvm",
 			"android_p":    `arc && "android-container-pi" && !arcvm`,
+			"arc_camera3":  `"arc-camera3"`,
 			"aslr":         "!asan",                                // ASan instrumentation breaks ASLR
 			"audio_play":   "!betty && !tast_vm && !veyron_rialto", // VMs don't have audio hardware
 			"audio_record": "internal_mic && !tast_vm",             // VMs don't have audio hardware

@@ -16,6 +16,24 @@
       "revId": "90bac33244e111fcc6a263948c872724320edf08",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fc7731b3_3879150b",
+        "filename": "docs/test_validation.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1202079
+      },
+      "writtenOn": "2019-02-22T01:48:10Z",
+      "side": 1,
+      "message": "Done. Thanks.\n\nTast documentation is complete, and well written.\nMy only concern is that we have to read it (no excuse, we have to read it)... but I think what\u0027s missing is a \"TL;DR\" section.\nSomething like:\n\nSubmitting a new CL ?\n\nTL;DR:\n./build_tast.sh -C\n./build_tast.sh -T\n\nLong:\n\n... read here and there...\n\"\"\"\n\n\nOr better yet a \"Coming from Autotest?\" section with quick tips like:\n\n- Go is different tahn Python: don\u0027t blindly port Python go. Learn Go best practices from here ...\n- Don\u0027t ignore errors.\n- In tast, we don\u0027t shell out to binaries, instead we do:....\n- Tast has more static checks. Before submitting your CL run:\n    ./build_tast....\n     More info here.\n- etc...\n\n\nWhat do you think? I can create a draft for that if you think is worth it.",
+      "parentUuid": "82d8aab4_74dabc1e",
+      "revId": "90bac33244e111fcc6a263948c872724320edf08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

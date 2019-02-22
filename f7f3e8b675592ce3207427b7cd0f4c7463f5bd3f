@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2cf0f700_c6852d00",
+        "filename": "src/chromiumos/tast/testing/poll.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-22T08:03:00Z",
+      "side": 1,
+      "message": "style: please start the sentence with \"Error\"",
+      "revId": "f7f3e8b675592ce3207427b7cd0f4c7463f5bd3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "577beb0a_2921ab6b",
+        "filename": "src/chromiumos/tast/testing/poll_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-22T08:03:00Z",
+      "side": 1,
+      "message": "Could you check err is exactly the same object as one returned from polling function? It\u0027s an important contract.",
+      "range": {
+        "startLine": 59,
+        "startChar": 4,
+        "endLine": 59,
+        "endChar": 27
+      },
+      "revId": "f7f3e8b675592ce3207427b7cd0f4c7463f5bd3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

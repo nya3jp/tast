@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "82d8aab4_74dabc1e",
+        "filename": "docs/test_validation.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-22T01:26:57Z",
+      "side": 1,
+      "message": "nit: just to keep documentation centralized so it\u0027s less likely to get out of date, mind using something like this instead (maybe in its own paragraph)?\n\n  You can use `fast_build.sh` to run unit tests in the `tast` and\n  `tast-tests` repositories. The script\u0027s usage is described in the\n  [Modifying Tast] document.\n\n...\n[Modifying Tast]: modifying_tast.md",
+      "revId": "90bac33244e111fcc6a263948c872724320edf08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

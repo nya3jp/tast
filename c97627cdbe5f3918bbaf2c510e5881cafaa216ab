@@ -70,6 +70,30 @@
       "revId": "c97627cdbe5f3918bbaf2c510e5881cafaa216ab",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b1e5ac51_e0a8942b",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1158184
+      },
+      "writtenOn": "2019-02-22T18:38:08Z",
+      "side": 1,
+      "message": "I mean that dlc_test can\u0027t be enabled if dlc is disabled, correct? So in that case \"dlc \u0026\u0026 dlc_test\" \u003d\u003d \"dlc_test\". And since we\u0027re precisely in the context of \"should we run a DLC test?\", it makes sense to rely on a USE flag that is called dlc_test, at least for now. Does that make sense?",
+      "parentUuid": "7a9d34fe_ec9d5b70",
+      "range": {
+        "startLine": 54,
+        "startChar": 28,
+        "endLine": 54,
+        "endChar": 43
+      },
+      "revId": "c97627cdbe5f3918bbaf2c510e5881cafaa216ab",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

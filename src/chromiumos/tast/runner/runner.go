@@ -40,18 +40,19 @@ const (
 // Default arguments may be passed via args, which is filled with the additional args that are read.
 // The caller should exit with the returned status code.
 func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Args, rt RunnerType) int {
+	ctx := context.TODO()
 	if err := readArgs(clArgs, stdin, stderr, args, rt); err != nil {
 		return command.WriteError(stderr, err)
 	}
 
 	switch args.Mode {
 	case GetSysInfoStateMode:
-		if err := handleGetSysInfoState(args, stdout); err != nil {
+		if err := handleGetSysInfoState(ctx, args, stdout); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
 	case CollectSysInfoMode:
-		if err := handleCollectSysInfo(args, stdout); err != nil {
+		if err := handleCollectSysInfo(ctx, args, stdout); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
@@ -72,8 +73,8 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Args,
 	case RunTestsMode:
 		if args.report {
 			// Success is always reported when running tests on behalf of the tast command.
-			runTestsAndReport(args, stdout)
-		} else if err := runTestsAndLog(args, stdout); err != nil {
+			runTestsAndReport(ctx, args, stdout)
+		} else if err := runTestsAndLog(ctx, args, stdout); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
@@ -84,7 +85,7 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Args,
 
 // runTestsAndReport runs bundles serially to perform testing and writes control messages to stdout.
 // Fatal errors are reported via RunError messages, while test errors are reported via TestError messages.
-func runTestsAndReport(args *Args, stdout io.Writer) {
+func runTestsAndReport(ctx context.Context, args *Args, stdout io.Writer) {
 	mw := control.NewMessageWriter(stdout)
 	bundles, tests, err := getBundlesAndTests(args)
 	if err != nil {
@@ -123,7 +124,6 @@ func runTestsAndReport(args *Args, stdout io.Writer) {
 			lm.Unlock()
 		}
 		// TODO(nya): Consider applying timeout.
-		ctx := context.TODO()
 		cl := newDevserverClient(ctx, args.RunTestsArgs.Devservers, lf)
 		processExternalDataLinks(ctx, args.DataDir, tests, cl, lf)
 
@@ -143,14 +143,14 @@ func runTestsAndReport(args *Args, stdout io.Writer) {
 
 // runTestsAndLog runs bundles serially to perform testing and logs human-readable results to stdout.
 // Errors are returned both for fatal errors and for errors in individual tests.
-func runTestsAndLog(args *Args, stdout io.Writer) *command.StatusError {
+func runTestsAndLog(ctx context.Context, args *Args, stdout io.Writer) *command.StatusError {
 	lg := log.New(stdout, "", log.LstdFlags)
 
 	pr, pw := io.Pipe()
 	ch := make(chan *command.StatusError, 1)
 	go func() { ch <- logMessages(pr, lg) }()
 
-	runTestsAndReport(args, pw)
+	runTestsAndReport(ctx, args, pw)
 	pw.Close()
 	return <-ch
 }

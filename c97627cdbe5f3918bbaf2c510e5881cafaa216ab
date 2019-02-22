@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7cd7a4a4_d7efda68",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1158184
+      },
+      "writtenOn": "2019-02-22T18:15:51Z",
+      "side": 1,
+      "message": "Would it make sense to gate on \"dlc_test\" only? Does \"dlc \u0026\u0026 dlc_test\" add something compared to just \"dlc_test\"?",
+      "range": {
+        "startLine": 54,
+        "startChar": 28,
+        "endLine": 54,
+        "endChar": 43
+      },
+      "revId": "c97627cdbe5f3918bbaf2c510e5881cafaa216ab",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

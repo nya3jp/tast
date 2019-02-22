@@ -238,6 +238,30 @@
       "revId": "c97627cdbe5f3918bbaf2c510e5881cafaa216ab",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2331ab87_89f419e7",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1178302
+      },
+      "writtenOn": "2019-02-22T19:30:35Z",
+      "side": 1,
+      "message": "Chatted offline with norvez@ ahassani@. It looks like REQUIRED_USE\u003d\"dlc\" suits fine to the purpose - fail to build. However, we move the REQUIRED_USE\u003d\"dlc\" to test-dlc.ebuild and dummy-dlc.ebuild to avoid pollute this global ebuild.",
+      "parentUuid": "9f238ac8_834adbb1",
+      "range": {
+        "startLine": 54,
+        "startChar": 28,
+        "endLine": 54,
+        "endChar": 43
+      },
+      "revId": "c97627cdbe5f3918bbaf2c510e5881cafaa216ab",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

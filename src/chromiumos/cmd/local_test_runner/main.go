@@ -28,6 +28,7 @@ func main() {
 		Type:              runner.LocalRunner,
 		SystemLogDir:      "/var/log",
 		SystemLogExcludes: []string{"journal"}, // journald binary logs: https://crbug.com/931951
+		JournaldSubdir:    "journal",           // destination for exported journald logs
 		SystemCrashDirs:   crash.DefaultDirs(),
 		// The tast-use-flags package attempts to install this file to /etc,
 		// but it gets diverted to /usr/local since it's installed for test images.

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f82111f3_46067411",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-22T15:36:50Z",
+      "side": 1,
+      "message": "i\u0027ve tried to keep the order here synchronized with order of appearance in the text above, but it always diverges, so feel free to leave it like this :-P",
+      "revId": "2311d9d2ac98ad5f4c3310587a1ef69190ef0a5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

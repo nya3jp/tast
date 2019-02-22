@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b9c8ee32_fb55cb2b",
+        "filename": "docs/test_validation.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-22T05:02:46Z",
+      "side": 1,
+      "message": "nit: mind adding a blank line before this one so it\u0027s in a separate paragraph?",
+      "revId": "548dd79c2c2fbe718c5a4820fe4e673f5de804ac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

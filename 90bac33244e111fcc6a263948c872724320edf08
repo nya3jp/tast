@@ -34,6 +34,24 @@
       "revId": "90bac33244e111fcc6a263948c872724320edf08",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9c04f257_751a36c9",
+        "filename": "docs/test_validation.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-22T05:02:46Z",
+      "side": 1,
+      "message": "in this particular case, i\u0027d rather that test authors typically not need to run unit tests, since i think it\u0027s unintuitive to need to run them when you\u0027ve only modified a test file. it might make sense to think about making these test-timeout checks happen when the tests are executed instead (since developers are more likely to see that). i\u0027m curious to hear nya@\u0027s and hidehiko@\u0027s thoughts about this, though.\n\nbetter onboarding documentation is definitely something that i\u0027ve been thinking about. i feel like go/tast-writing isn\u0027t really cutting it (i spend a lot of time adding links to different parts of it in code reviews), maybe because it\u0027s too much for someone to take in at once.\n\nthe approach that i was thinking about taking was more like a codelab (or several codelabs) that walk people through writing a realistic test. ideally it\u0027d demonstrate best practices like:\n\n- declaring structs for data\n- returning errors from functions\n- not passing testing.State excessively\n- naming things properly\n- creating a subpackage\n- etc.\n\ndoes that seem useful? the hard part seems to be coming up with an idea for a test that\u0027s realistic, but not so useful that it should be an actual checked-in test rather than just a demo. :-)",
+      "parentUuid": "fc7731b3_3879150b",
+      "revId": "90bac33244e111fcc6a263948c872724320edf08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

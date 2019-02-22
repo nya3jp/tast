@@ -22,6 +22,30 @@
       "revId": "c97627cdbe5f3918bbaf2c510e5881cafaa216ab",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2f42f807_b53f4097",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1178302
+      },
+      "writtenOn": "2019-02-22T18:25:03Z",
+      "side": 1,
+      "message": "dlc: dlcservice + DLC support in update_engine\ndlc_test: test-dlc, dummy-dlc.\n\ni guess we can depend only on dlc_test after we enable dlc on all boards.",
+      "parentUuid": "7cd7a4a4_d7efda68",
+      "range": {
+        "startLine": 54,
+        "startChar": 28,
+        "endLine": 54,
+        "endChar": 43
+      },
+      "revId": "c97627cdbe5f3918bbaf2c510e5881cafaa216ab",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

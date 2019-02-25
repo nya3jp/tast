@@ -11,10 +11,12 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"chromiumos/tast/autocaps"
 	"chromiumos/tast/crash"
+	"chromiumos/tast/lsbrelease"
 	"chromiumos/tast/runner"
 )
 
@@ -85,6 +87,10 @@ func main() {
 		},
 		// The autotest-capability package tries to install this to /etc but it's diverted to /usr/local.
 		AutotestCapabilityDir: autocaps.DefaultCapabilityDir,
+	}
+	if kvs, err := lsbrelease.Load(); err == nil {
+		cfg.PrivateBundleArchiveURL = fmt.Sprintf("gs://chromeos-image-archive/%s/tast_bundles.tar.bz2", kvs[lsbrelease.BuilderPath])
+		cfg.PrivateBundlesStampPath = "/usr/local/share/tast/.private-bundles-downloaded"
 	}
 	os.Exit(runner.Run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, &args, &cfg))
 }

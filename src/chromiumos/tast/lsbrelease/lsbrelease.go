@@ -44,6 +44,7 @@ var allowedPkgs = []string{
 	"chromiumos/cmd/tast/symbolize",
 	"chromiumos/tast/local/bundles/cros/platform/updateserver",
 	"chromiumos/tast/lsbrelease",
+	"main", // for local_test_runner
 }
 
 // Load loads /etc/lsb-release and returns a parsed key-value map.

@@ -6,17 +6,22 @@ package runner
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"sort"
 	"strings"
+	"sync"
+	"time"
 
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/command"
+	"chromiumos/tast/lsbrelease"
 	"chromiumos/tast/testing"
 )
 
@@ -139,4 +144,70 @@ func runBundle(path string, args *bundle.Args, stdout io.Writer) *command.Status
 		return command.NewStatusErrorf(statusBundleFailed, "%v%s", err, detail)
 	}
 	return nil
+}
+
+// handleDownloadPrivateBundles handles a DownloadPrivateBundlesMode request from args
+// and JSON-marshals a DownloadPrivateBundlesResult struct to w.
+func handleDownloadPrivateBundles(args *Args, stdout io.Writer) error {
+	const (
+		archiveName = "tast_bundles.tar.bz2"
+		stampPath   = "/usr/local/share/tast/.private-bundles-downloaded"
+	)
+
+	var logs []string
+	var mu sync.Mutex
+	lf := func(msg string) {
+		mu.Lock()
+		logs = append(logs, fmt.Sprintf("[%s] %s", time.Now().Format("15:04:05.000"), msg))
+		mu.Unlock()
+	}
+
+	defer func() {
+		res := &DownloadPrivateBundlesResult{Messages: logs}
+		json.NewEncoder(stdout).Encode(res)
+	}()
+
+	// If the stamp file exists, private bundles have been already downloaded.
+	if _, err := os.Stat(stampPath); err == nil {
+		return nil
+	}
+
+	// Build the private bundle archive URL.
+	kvs, err := lsbrelease.Load()
+	if err != nil {
+		return fmt.Errorf("failed to determine builder path: %v", err)
+	}
+	gsURL := fmt.Sprintf("gs://chromeos-image-archive/%s/%s", kvs[lsbrelease.BuilderPath], archiveName)
+	lf(fmt.Sprintf("Downloading private bundles from %s", gsURL))
+
+	// Download the archive via devserver.
+	// TODO(nya): Consider applying timeout.
+	ctx := context.TODO()
+	cl := newDevserverClient(ctx, args.DownloadPrivateBundlesArgs.Devservers, lf)
+
+	tf, err := ioutil.TempFile("", archiveName+".")
+	if err != nil {
+		return err
+	}
+	defer os.Remove(tf.Name())
+
+	_, err = cl.DownloadGS(ctx, tf, gsURL)
+	if cerr := tf.Close(); err == nil {
+		err = cerr
+	}
+	if err == nil {
+		// Extract the archive, and touch the stamp file.
+		cmd := exec.Command("tar", "xf", tf.Name())
+		cmd.Dir = "/usr/local"
+		if err := cmd.Run(); err != nil {
+			return fmt.Errorf("failed to extract %s: %v", strings.Join(cmd.Args, " "), err)
+		}
+		lf("Download finished successfully")
+	} else if os.IsNotExist(err) {
+		lf("Private bundles not found")
+	} else {
+		return fmt.Errorf("failed to download %s: %v", archiveName, err)
+	}
+
+	return ioutil.WriteFile(stampPath, nil, 0644)
 }

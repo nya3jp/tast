@@ -95,14 +95,16 @@ type Config struct {
 
 	targetArch string // architecture of target userland (usually given by "uname -m", but may be different)
 
-	build                 bool     // rebuild (and push, for local tests) a single test bundle
-	buildType             testType // type of tests to build and deploy
-	buildBundle           string   // name of the test bundle to rebuild (e.g. "cros")
-	buildWorkspace        string   // path to workspace containing test bundle source code
-	buildOutDir           string   // path to base directory under which executables are stored
-	checkPortageDeps      bool     // check whether test bundle's dependencies are installed before building
-	forceBuildLocalRunner bool     // force local_test_runner to be built and deployed even if it already exists on DUT
-	useEphemeralDevserver bool     // start an ephemeral devserver if no devserver is specified
+	build                  bool     // rebuild (and push, for local tests) a single test bundle
+	buildType              testType // type of tests to build and deploy
+	buildBundle            string   // name of the test bundle to rebuild (e.g. "cros")
+	buildWorkspace         string   // path to workspace containing test bundle source code
+	buildOutDir            string   // path to base directory under which executables are stored
+	checkPortageDeps       bool     // check whether test bundle's dependencies are installed before building
+	forceBuildLocalRunner  bool     // force local_test_runner to be built and deployed even if it already exists on DUT
+	devservers             []string // list of devserver URLs
+	useEphemeralDevserver  bool     // start an ephemeral devserver if no devserver is specified
+	downloadPrivateBundles bool     // whether to download private bundles if missing
 
 	remoteRunner    string // path to executable that runs remote test bundles
 	remoteBundleDir string // dir where packaged remote test bundles are installed
@@ -111,7 +113,6 @@ type Config struct {
 	hst        *host.SSH // cached SSH connection; may be nil
 	sshRetries int       // number of SSH connect retries
 
-	devservers                  []string     // list of devserver URLs
 	checkTestDeps               testDepsMode // when test dependencies should be checked
 	waitUntilReady              bool         // whether to wait for DUT to be ready before running tests
 	extraUSEFlags               []string     // additional USE flags to inject when determining features
@@ -167,7 +168,9 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 	f.StringVar(&c.buildOutDir, "buildoutdir", filepath.Join(c.tastDir, "build"), "directory where compiled executables are saved")
 	f.BoolVar(&c.checkPortageDeps, "checkbuilddeps", true, "check test bundle's dependencies before building")
 	f.BoolVar(&c.forceBuildLocalRunner, "buildlocalrunner", false, "force building local_test_runner and pushing to DUT")
+	f.Var(command.NewListFlag(",", func(v []string) { c.devservers = v }, nil), "devservers", "comma-separated list of devserver URLs")
 	f.BoolVar(&c.useEphemeralDevserver, "ephemeraldevserver", true, "start an ephemeral devserver if no devserver is specified")
+	f.BoolVar(&c.downloadPrivateBundles, "downloadprivatebundles", false, "download private bundles if missing")
 	f.IntVar(&c.sshRetries, "sshretries", 0, "number of SSH connect retries")
 
 	bt := command.NewEnumFlag(map[string]int{"local": int(localType), "remote": int(remoteType)},
@@ -183,7 +186,6 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 	if c.mode == RunTestsMode {
 		f.StringVar(&c.ResDir, "resultsdir", "", "directory for test results")
 		f.BoolVar(&c.collectSysInfo, "sysinfo", true, "collect system information (logs, crashes, etc.)")
-		f.Var(command.NewListFlag(",", func(v []string) { c.devservers = v }, nil), "devservers", "comma-separated list of devserver URLs")
 		f.BoolVar(&c.waitUntilReady, "waituntilready", false, "wait until DUT is ready before running tests")
 
 		vals := map[string]int{

@@ -40,6 +40,10 @@ const (
 	// supported by the DUT via a JSON-marshaled GetSoftwareFeaturesResult struct written to stdout. This mode
 	// is only supported by local_test_runner.
 	GetSoftwareFeaturesMode = 5
+	// DownloadPrivateBundlesMode indicates that the runner should download private bundles from devservers,
+	// install them to the DUT, write a JSON-marshaled DownloadPrivateBundlesResult struct to stdout and exit.
+	// This mode is only supported by local_test_runner.
+	DownloadPrivateBundlesMode = 6
 )
 
 // Args provides a backward- and forward-compatible way to pass arguments from the tast executable to test runners.
@@ -67,6 +71,8 @@ type Args struct {
 	CollectSysInfoArgs
 	// GetSoftwareFeaturesArgs contains additional arguments used by GetSoftwareFeaturesMode.
 	GetSoftwareFeaturesArgs
+	// DownloadPrivateBundlesArgs contains additional arguments used by DownloadPrivateBundlesMode.
+	DownloadPrivateBundlesArgs
 
 	// report is set to true by readArgs if status should be reported via control messages rather
 	// than human-readable log messages. This is true when args were supplied via stdin rather than
@@ -145,6 +151,19 @@ type SysInfoState struct {
 	MinidumpPaths []string `json:"minidumpPaths"`
 }
 
+// DownloadPrivateBundlesArgs is nested within Args and contains additional arguments used by DownloadPrivateBundlesMode.
+type DownloadPrivateBundlesArgs struct {
+	// Devservers contains URLs of devservers that can be used to download files.
+	// TODO(crbug.com/932307): Rename this to Devservers.
+	Devservers []string `json:"downloadPrivateBundlesDevservers,omitempty"`
+}
+
+// DownloadPrivateBundlesResult contains the result of a DownloadPrivateBundlesMode command.
+type DownloadPrivateBundlesResult struct {
+	// Messages contains log messages emitted while downloading test bundles.
+	Messages []string `json:"logs"`
+}
+
 // RunnerType describes the type of test runner that is using this package.
 type RunnerType int // NOLINT
 
@@ -185,6 +204,13 @@ type Config struct {
 	// See https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/autotest-capability-default/
 	// and the autocaps package for more information.
 	AutotestCapabilityDir string
+	// PrivateBundleArchiveURL contains the URL of the private test bundles archive corresponding to the current
+	// Chrome OS image.
+	PrivateBundleArchiveURL string
+	// PrivateBundlesStampPath contains the path to a stamp file indicating private test bundles have been
+	// successfully downloaded and installed before. This prevents downloading private test bundles for
+	// every runner invocation.
+	PrivateBundlesStampPath string
 }
 
 // readArgs parses runtime arguments.

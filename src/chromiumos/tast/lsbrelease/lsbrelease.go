@@ -38,6 +38,7 @@ const (
 var allowedPkgs = []string{
 	"chromiumos/cmd/tast/symbolize",
 	"chromiumos/tast/lsbrelease",
+	"chromiumos/tast/runner",
 }
 
 // Load loads /etc/lsb-release and returns a parsed key-value map.

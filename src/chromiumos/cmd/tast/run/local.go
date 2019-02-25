@@ -12,7 +12,6 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"time"
 
@@ -51,9 +50,6 @@ const (
 	defaultLocalRunnerWaitTimeout time.Duration = 10 * time.Second // default timeout for waiting for local_test_runner to exit
 )
 
-// envVarNameRegexp matches a valid environment variable name. See https://stackoverflow.com/questions/2821043.
-var envVarNameRegexp = regexp.MustCompile("^[A-Za-z_][A-Za-z0-9_]*$")
-
 // local runs local tests as directed by cfg and returns the command's exit status.
 // If non-nil, the returned results may be passed to WriteResults.
 func local(ctx context.Context, cfg *Config) (Status, []TestResult) {
@@ -79,11 +75,6 @@ func local(ctx context.Context, cfg *Config) (Status, []TestResult) {
 		dataDir = localDataBuiltinDir
 	}
 
-	if err := getSoftwareFeatures(ctx, cfg); err != nil {
-		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to get DUT software features: %v", err), nil
-	}
-	getInitialSysInfo(ctx, cfg)
-
 	if len(cfg.devservers) == 0 && cfg.useEphemeralDevserver {
 		es, url, err := startEphemeralDevserver(hst, cfg)
 		if err != nil {
@@ -92,6 +83,20 @@ func local(ctx context.Context, cfg *Config) (Status, []TestResult) {
 		defer es.Close(ctx)
 		cfg.devservers = []string{url}
 	}
+
+	if cfg.downloadPrivateBundles {
+		if cfg.build {
+			return errorStatusf(cfg, subcommands.ExitFailure, "-downloadprivatebundles requires -build=false"), nil
+		}
+		if err := downloadPrivateBundles(ctx, cfg, hst); err != nil {
+			return errorStatusf(cfg, subcommands.ExitFailure, "Failed downloading private bundles: %v", err), nil
+		}
+	}
+
+	if err := getSoftwareFeatures(ctx, cfg); err != nil {
+		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to get DUT software features: %v", err), nil
+	}
+	getInitialSysInfo(ctx, cfg)
 
 	cfg.Logger.Status("Running tests on target")
 	cfg.startedRun = true
@@ -261,7 +266,7 @@ func getDataFilePaths(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlo
 	defer timing.Start(ctx, "get_data_paths").End()
 	cfg.Logger.Debug("Getting data file list from target")
 
-	handle, err := startLocalRunner(ctx, cfg, hst, nil, &runner.Args{
+	handle, err := startLocalRunner(ctx, cfg, hst, &runner.Args{
 		Mode:       runner.ListTestsMode,
 		BundleGlob: bundleGlob,
 		Patterns:   cfg.Patterns,
@@ -351,6 +356,34 @@ func pushDataFiles(ctx context.Context, cfg *Config, hst *host.SSH, destDir stri
 	return nil
 }
 
+// downloadPrivateBundles executes local_test_runner on hst to download private
+// test bundles if they are not available yet.
+func downloadPrivateBundles(ctx context.Context, cfg *Config, hst *host.SSH) error {
+	defer timing.Start(ctx, "download_private_bundles").End()
+
+	args := runner.Args{
+		Mode: runner.DownloadPrivateBundlesMode,
+		DownloadPrivateBundlesArgs: runner.DownloadPrivateBundlesArgs{
+			Devservers: cfg.devservers,
+		},
+	}
+
+	handle, err := startLocalRunner(ctx, cfg, hst, &args)
+	if err != nil {
+		return err
+	}
+	defer handle.Close(ctx)
+
+	var res runner.DownloadPrivateBundlesResult
+	if err := readLocalRunnerOutput(ctx, handle, &res); err != nil {
+		return err
+	}
+	for _, msg := range res.Messages {
+		cfg.Logger.Log(msg)
+	}
+	return nil
+}
+
 // localRunnerExists checks whether the local_test_runner executable is present on hst.
 // It returns true if it is, false if it isn't, or an error if one was encountered while checking.
 func localRunnerExists(ctx context.Context, hst *host.SSH) (bool, error) {
@@ -398,21 +431,22 @@ func buildAndPushLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH) er
 }
 
 // startLocalRunner starts local_test_runner on hst and passes args to it.
-// envVars can contain "NAME=value" environment variables that will be prepended to
-// the local_test_runner command line. The caller is responsible for reading the handle's
-// stdout and closing the handle.
-func startLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, envVars []string,
-	args *runner.Args) (*host.SSHCommandHandle, error) {
+// The caller is responsible for reading the handle's stdout and closing the handle.
+func startLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, args *runner.Args) (*host.SSHCommandHandle, error) {
+	// Set proxy-related environment variables for local_test_runner so it will use them
+	// when accessing network.
 	envPrefix := ""
-	for _, env := range envVars {
-		parts := strings.SplitN(env, "=", 2)
-		if len(parts) != 2 {
-			return nil, fmt.Errorf("invalid environment variable definition %q", env)
+	if cfg.proxy == proxyEnv {
+		// Proxy-related variables can be either uppercase or lowercase.
+		// See https://golang.org/pkg/net/http/#ProxyFromEnvironment.
+		for _, name := range []string{
+			"HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY",
+			"http_proxy", "https_proxy", "no_proxy",
+		} {
+			if val := os.Getenv(name); val != "" {
+				envPrefix += fmt.Sprintf("%s=%s ", name, shutil.Escape(val))
+			}
 		}
-		if !envVarNameRegexp.MatchString(parts[0]) {
-			return nil, fmt.Errorf("invalid environment variable name %q", parts[0])
-		}
-		envPrefix += fmt.Sprintf("%s=%s ", parts[0], shutil.Escape(parts[1]))
 	}
 
 	handle, err := hst.Start(ctx, envPrefix+localRunnerPath, host.OpenStdin, host.StdoutAndStderr)
@@ -447,32 +481,16 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 		},
 	}
 
-	var envVars []string
-
 	switch cfg.mode {
 	case RunTestsMode:
 		args.Mode = runner.RunTestsMode
 		setRunnerTestDepsArgs(cfg, &args)
 
-		// Set proxy-related environment variables for local_test_runner so it will use them
-		// when downloading external data files that are needed by the tests.
-		if cfg.proxy == proxyEnv {
-			// Proxy-related variables can be either uppercase or lowercase.
-			// See https://golang.org/pkg/net/http/#ProxyFromEnvironment.
-			for _, name := range []string{
-				"HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY",
-				"http_proxy", "https_proxy", "no_proxy",
-			} {
-				if val := os.Getenv(name); val != "" {
-					envVars = append(envVars, name+"="+val)
-				}
-			}
-		}
 	case ListTestsMode:
 		args.Mode = runner.ListTestsMode
 	}
 
-	handle, err := startLocalRunner(ctx, cfg, hst, envVars, &args)
+	handle, err := startLocalRunner(ctx, cfg, hst, &args)
 	if err != nil {
 		return nil, err
 	}

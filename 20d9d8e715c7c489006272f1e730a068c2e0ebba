@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "038e1647_d428c8a2",
+        "filename": "src/chromiumos/tast/logs/journald.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-02-26T15:29:38Z",
+      "side": 1,
+      "message": "nit: cmd.DumpLog(ctx) on error?",
+      "revId": "20d9d8e715c7c489006272f1e730a068c2e0ebba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cd647a7d_3104b711",
+        "filename": "src/chromiumos/tast/runner/runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-02-26T15:29:38Z",
+      "side": 1,
+      "message": "Could you move this TODO comment to above, too?",
+      "revId": "20d9d8e715c7c489006272f1e730a068c2e0ebba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

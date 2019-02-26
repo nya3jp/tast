@@ -5,9 +5,9 @@
 package run
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
+	"io"
 	"reflect"
 	"testing"
 
@@ -21,24 +21,24 @@ func TestGetInitialSysInfo(t *testing.T) {
 	defer td.close()
 
 	// Report a few log files and crashes.
-	ob := bytes.Buffer{}
 	res := runner.GetSysInfoStateResult{
 		State: runner.SysInfoState{
 			LogInodeSizes: map[uint64]int64{1: 2, 3: 4},
 			MinidumpPaths: []string{"foo.dmp", "bar.dmp"},
 		},
 	}
-	if err := json.NewEncoder(&ob).Encode(&res); err != nil {
-		t.Fatal(err)
+	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		checkArgs(t, args, &runner.Args{Mode: runner.GetSysInfoStateMode})
+
+		json.NewEncoder(stdout).Encode(res)
+		return 0
 	}
-	td.runStdout = ob.Bytes()
 
 	// Check that the expected command is sent to the DUT and that the returned state is decoded properly.
 	td.cfg.collectSysInfo = true
 	if err := getInitialSysInfo(context.Background(), &td.cfg); err != nil {
 		t.Fatalf("getInitialSysInfo(..., %+v) failed: %v", td.cfg, err)
 	}
-	td.checkArgs(t, &runner.Args{Mode: runner.GetSysInfoStateMode})
 
 	if td.cfg.initialSysInfo == nil {
 		t.Error("initialSysInfo is nil")
@@ -60,11 +60,15 @@ func TestCollectSysInfo(t *testing.T) {
 	td := newLocalTestData(t)
 	defer td.close()
 
-	ob := bytes.Buffer{}
-	if err := json.NewEncoder(&ob).Encode(&runner.CollectSysInfoResult{}); err != nil {
-		t.Fatal(err)
+	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		checkArgs(t, args, &runner.Args{
+			Mode:               runner.CollectSysInfoMode,
+			CollectSysInfoArgs: runner.CollectSysInfoArgs{InitialState: *td.cfg.initialSysInfo},
+		})
+
+		json.NewEncoder(stdout).Encode(&runner.CollectSysInfoResult{})
+		return 0
 	}
-	td.runStdout = ob.Bytes()
 
 	td.cfg.collectSysInfo = true
 	td.cfg.initialSysInfo = &runner.SysInfoState{
@@ -74,10 +78,6 @@ func TestCollectSysInfo(t *testing.T) {
 	if err := collectSysInfo(context.Background(), &td.cfg); err != nil {
 		t.Fatalf("collectSysInfo(..., %+v) failed: %v", td.cfg, err)
 	}
-	td.checkArgs(t, &runner.Args{
-		Mode:               runner.CollectSysInfoMode,
-		CollectSysInfoArgs: runner.CollectSysInfoArgs{InitialState: *td.cfg.initialSysInfo},
-	})
 
 	// TODO(derat): The test SSH server doesn't support file copies. If/when that changes, set the
 	// LogDir and CrashDir in the result that returned above and verify that collectSysInfo copies

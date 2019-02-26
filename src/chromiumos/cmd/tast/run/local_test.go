@@ -23,6 +23,7 @@ import (
 	"github.com/google/subcommands"
 
 	"chromiumos/cmd/tast/logging"
+	"chromiumos/tast/command"
 	"chromiumos/tast/control"
 	"chromiumos/tast/host/test"
 	"chromiumos/tast/runner"
@@ -41,6 +42,8 @@ const (
 	builtinBundleGlob = localBundleBuiltinDir + "/*"
 )
 
+type runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int)
+
 // localTestData holds data shared between tests that exercise the local function.
 type localTestData struct {
 	srvData *test.TestData
@@ -52,10 +55,7 @@ type localTestData struct {
 	nextCopyCmd string // next "exec" command expected for file copies
 
 	expRunCmd string        // expected "exec" command for starting local_test_runner
-	runStatus int           // status code for local_test_runner to return
-	runStdout []byte        // stdout for local_test_runner to return
-	runStderr []byte        // stderr for local_test_runner to return
-	runStdin  bytes.Buffer  // stdin that was written to local_test_runner
+	runFunc   runFunc       // called for expRunCmd executions
 	runDelay  time.Duration // local_test_runner delay before exiting
 }
 
@@ -118,12 +118,16 @@ func (td *localTestData) handleExec(req *test.ExecReq) {
 		req.End(0)
 	case td.expRunCmd:
 		req.Start(true)
-		io.Copy(&td.runStdin, req)
-		req.Write(td.runStdout)
-		req.Stderr().Write(td.runStderr)
+		var args runner.Args
+		var status int
+		if err := json.NewDecoder(req).Decode(&args); err != nil {
+			status = command.WriteError(req.Stderr(), err)
+		} else {
+			status = td.runFunc(&args, req, req.Stderr())
+		}
 		req.CloseOutput()
 		time.Sleep(td.runDelay)
-		req.End(td.runStatus)
+		req.End(status)
 	case td.nextCopyCmd:
 		req.Start(true)
 		req.End(req.RunRealCmd())
@@ -133,15 +137,10 @@ func (td *localTestData) handleExec(req *test.ExecReq) {
 	}
 }
 
-// checkArgs unmarshals a runner.Args struct from td.runStdin and compares it to exp.
-func (td *localTestData) checkArgs(t *gotesting.T, exp *runner.Args) {
-	args := runner.Args{}
-	if err := json.NewDecoder(&td.runStdin).Decode(&args); err != nil {
-		t.Error(err)
-		return
-	}
-	if !reflect.DeepEqual(args, *exp) {
-		t.Errorf("got args %+v; want %+v", args, *exp)
+// checkArgs compares two runner.Args.
+func checkArgs(t *gotesting.T, args, exp *runner.Args) {
+	if !reflect.DeepEqual(args, exp) {
+		t.Errorf("got args %+v; want %+v", *args, *exp)
 	}
 }
 
@@ -149,30 +148,33 @@ func TestLocalSuccess(t *gotesting.T) {
 	td := newLocalTestData(t)
 	defer td.close()
 
-	ob := bytes.Buffer{}
-	mw := control.NewMessageWriter(&ob)
-	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
-	mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
-	td.runStdout = ob.Bytes()
+	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		checkArgs(t, args, &runner.Args{
+			BundleGlob: builtinBundleGlob,
+			DataDir:    localDataBuiltinDir,
+		})
+
+		mw := control.NewMessageWriter(stdout)
+		mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
+		mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
+		return 0
+	}
 
 	if status, _ := local(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
 		t.Errorf("local() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
 	}
-	td.checkArgs(t, &runner.Args{
-		BundleGlob: builtinBundleGlob,
-		DataDir:    localDataBuiltinDir,
-	})
 }
 
 func TestLocalProxy(t *gotesting.T) {
 	td := newLocalTestData(t)
 	defer td.close()
 
-	ob := bytes.Buffer{}
-	mw := control.NewMessageWriter(&ob)
-	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
-	mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
-	td.runStdout = ob.Bytes()
+	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		mw := control.NewMessageWriter(stdout)
+		mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
+		mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
+		return 0
+	}
 
 	// Configure proxy settings to forward to the DUT.
 	const (
@@ -212,20 +214,21 @@ func TestLocalExecFailure(t *gotesting.T) {
 	td := newLocalTestData(t)
 	defer td.close()
 
-	ob := bytes.Buffer{}
-	mw := control.NewMessageWriter(&ob)
-	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
-	mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
-	const stderr = "some failure message\n"
-	td.runStatus = 1
-	td.runStdout = ob.Bytes()
-	td.runStderr = []byte(stderr)
+	const msg = "some failure message\n"
+
+	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		mw := control.NewMessageWriter(stdout)
+		mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
+		mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
+		io.WriteString(stderr, msg)
+		return 1
+	}
 
 	if status, _ := local(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitFailure {
 		t.Errorf("local() = %v; want %v", status.ExitCode, subcommands.ExitFailure)
 	}
-	if !strings.Contains(td.logbuf.String(), stderr) {
-		t.Errorf("local() logged %q; want substring %q", td.logbuf.String(), stderr)
+	if !strings.Contains(td.logbuf.String(), msg) {
+		t.Errorf("local() logged %q; want substring %q", td.logbuf.String(), msg)
 	}
 }
 
@@ -234,12 +237,13 @@ func TestLocalWaitTimeout(t *gotesting.T) {
 	defer td.close()
 
 	// Simulate local_test_runner writing control messages immediately but hanging before exiting.
-	b := bytes.Buffer{}
-	mw := control.NewMessageWriter(&b)
-	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
-	mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0)})
-	td.runStdout = b.Bytes()
 	td.runDelay = time.Minute
+	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		mw := control.NewMessageWriter(stdout)
+		mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
+		mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0)})
+		return 0
+	}
 
 	// After setting a short wait timeout, an error should be reported.
 	td.cfg.localRunnerWaitTimeout = time.Millisecond
@@ -253,12 +257,19 @@ func TestLocalList(t *gotesting.T) {
 	defer td.close()
 
 	tests := []testing.Test{
-		testing.Test{Name: "pkg.Test", Desc: "This is a test", Attr: []string{"attr1", "attr2"}},
-		testing.Test{Name: "pkg.AnotherTest", Desc: "Another test"},
+		{Name: "pkg.Test", Desc: "This is a test", Attr: []string{"attr1", "attr2"}},
+		{Name: "pkg.AnotherTest", Desc: "Another test"},
 	}
-	var err error
-	if td.runStdout, err = json.Marshal(tests); err != nil {
-		t.Fatal(err)
+
+	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		checkArgs(t, args, &runner.Args{
+			Mode:       runner.ListTestsMode,
+			BundleGlob: builtinBundleGlob,
+			DataDir:    localDataBuiltinDir,
+		})
+
+		json.NewEncoder(stdout).Encode(tests)
+		return 0
 	}
 
 	td.cfg.mode = ListTestsMode
@@ -267,11 +278,6 @@ func TestLocalList(t *gotesting.T) {
 	if status, results = local(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
 		t.Errorf("local() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
 	}
-	td.checkArgs(t, &runner.Args{
-		Mode:       runner.ListTestsMode,
-		BundleGlob: builtinBundleGlob,
-		DataDir:    localDataBuiltinDir,
-	})
 
 	listed := make([]testing.Test, len(results))
 	for i := 0; i < len(results); i++ {
@@ -306,12 +312,19 @@ func TestLocalDataFiles(t *gotesting.T) {
 
 	// Make local_test_runner list two tests containing the first three files (with overlap).
 	tests := []testing.Test{
-		testing.Test{Name: category + ".Test1", Pkg: categoryPkg, Data: []string{file1, file2}},
-		testing.Test{Name: category + ".Test2", Pkg: categoryPkg, Data: []string{file2, file3, extFile1, extFile2}},
+		{Name: category + ".Test1", Pkg: categoryPkg, Data: []string{file1, file2}},
+		{Name: category + ".Test2", Pkg: categoryPkg, Data: []string{file2, file3, extFile1, extFile2}},
 	}
-	var err error
-	if td.runStdout, err = json.Marshal(tests); err != nil {
-		t.Fatal(err)
+
+	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		checkArgs(t, args, &runner.Args{
+			Mode:       runner.ListTestsMode,
+			BundleGlob: builtinBundleGlob,
+			Patterns:   []string{pattern},
+		})
+
+		json.NewEncoder(stdout).Encode(tests)
+		return 0
 	}
 
 	// Create a fake source checkout and write the data files to it. Just use their names as their contents.
@@ -324,7 +337,7 @@ func TestLocalDataFiles(t *gotesting.T) {
 		extLinkFile1: extLinkFile1,
 		extFile2:     extFile2,
 	}
-	if err = testutil.WriteFiles(filepath.Join(td.cfg.buildWorkspace, "src", tests[0].DataDir()), srcFiles); err != nil {
+	if err := testutil.WriteFiles(filepath.Join(td.cfg.buildWorkspace, "src", tests[0].DataDir()), srcFiles); err != nil {
 		t.Fatal(err)
 	}
 
@@ -333,7 +346,7 @@ func TestLocalDataFiles(t *gotesting.T) {
 	dstFiles := map[string]string{
 		extLinkFile2: extLinkFile2,
 	}
-	if err = testutil.WriteFiles(filepath.Join(pushDir, tests[0].DataDir()), dstFiles); err != nil {
+	if err := testutil.WriteFiles(filepath.Join(pushDir, tests[0].DataDir()), dstFiles); err != nil {
 		t.Fatal(err)
 	}
 
@@ -347,11 +360,6 @@ func TestLocalDataFiles(t *gotesting.T) {
 	if err != nil {
 		t.Fatal("getDataFilePaths() failed: ", err)
 	}
-	td.checkArgs(t, &runner.Args{
-		Mode:       runner.ListTestsMode,
-		BundleGlob: builtinBundleGlob,
-		Patterns:   []string{pattern},
-	})
 	expPaths := []string{
 		filepath.Join(category, dataSubdir, file1),
 		filepath.Join(category, dataSubdir, file2),
@@ -389,11 +397,12 @@ func TestLocalEphemeralDevserver(t *gotesting.T) {
 	td := newLocalTestData(t)
 	defer td.close()
 
-	ob := bytes.Buffer{}
-	mw := control.NewMessageWriter(&ob)
-	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
-	mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
-	td.runStdout = ob.Bytes()
+	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		mw := control.NewMessageWriter(stdout)
+		mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
+		mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
+		return 0
+	}
 
 	td.cfg.useEphemeralDevserver = true
 
@@ -407,4 +416,70 @@ func TestLocalEphemeralDevserver(t *gotesting.T) {
 	}
 }
 
-// TODO(derat): Add a test that verifies that getInitialSysInfo is called before tests are run.
+func TestLocalGetSoftwareFeatures(t *gotesting.T) {
+	td := newLocalTestData(t)
+	defer td.close()
+
+	called := false
+
+	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		switch args.Mode {
+		case runner.RunTestsMode:
+			mw := control.NewMessageWriter(stdout)
+			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
+			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
+		case runner.GetSoftwareFeaturesMode:
+			// Just check that getSoftwareFeatures is called; details of args are
+			// tested in deps_test.go.
+			called = true
+			json.NewEncoder(stdout).Encode(&runner.GetSoftwareFeaturesResult{
+				Available: []string{"foo"}, // must report non-empty features
+			})
+		default:
+			t.Errorf("Unexpected args.Mode = %v", args.Mode)
+		}
+		return 0
+	}
+
+	td.cfg.checkTestDeps = checkTestDepsAlways
+
+	if status, _ := local(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
+		t.Errorf("local() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
+	}
+	if !called {
+		t.Errorf("local did not call getSoftwareFeatures")
+	}
+}
+
+func TestLocalGetInitialSysInfo(t *gotesting.T) {
+	td := newLocalTestData(t)
+	defer td.close()
+
+	called := false
+
+	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		switch args.Mode {
+		case runner.RunTestsMode:
+			mw := control.NewMessageWriter(stdout)
+			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
+			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
+		case runner.GetSysInfoStateMode:
+			// Just check that getInitialSysInfo is called; details of args are
+			// tested in sys_info_test.go.
+			called = true
+			json.NewEncoder(stdout).Encode(&runner.GetSysInfoStateResult{})
+		default:
+			t.Errorf("Unexpected args.Mode = %v", args.Mode)
+		}
+		return 0
+	}
+
+	td.cfg.collectSysInfo = true
+
+	if status, _ := local(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
+		t.Errorf("local() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
+	}
+	if !called {
+		t.Errorf("local did not call getInitialSysInfo")
+	}
+}

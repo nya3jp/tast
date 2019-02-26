@@ -1,0 +1,107 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d7ab0a7c_6576341f",
+        "filename": "src/chromiumos/cmd/tast/run/deps_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-26T16:48:14Z",
+      "side": 1,
+      "message": "nit: stdout, stderr io.Writer\n\n(also in other places in this file)",
+      "range": {
+        "startLine": 50,
+        "startChar": 38,
+        "endLine": 50,
+        "endChar": 72
+      },
+      "revId": "221a4964840962cdc837c7b371df13c13d1fb873",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1beab7b1_e43fa1e9",
+        "filename": "src/chromiumos/cmd/tast/run/local_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-26T16:48:14Z",
+      "side": 1,
+      "message": "should the error be checked here, or is it unnecessary because later verification of args will fail?",
+      "revId": "221a4964840962cdc837c7b371df13c13d1fb873",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2ce0cc51_09626f56",
+        "filename": "src/chromiumos/cmd/tast/run/local_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-26T16:48:14Z",
+      "side": 1,
+      "message": "nit: this pattern is repeated often enough that i wonder if it\u0027d be worth it to have a helper function to save 3 lines each time:\n\n  func checkArgs(t *testing.T, actual, expected *runner.Args) ...\n\nand then:\n\n  checkArgs(t, args, \u0026runner.Args{\n      ...\n  })\n\nbut maybe it\u0027s better to preserve correct line numbers on t.Errorf calls. this still saves 2 lines, though:\n\n  if !reflect.DeepEqual(args, \u0026runner.Args{\n      ...\n  }) {\n      t.Errorf(...)\n  }",
+      "revId": "221a4964840962cdc837c7b371df13c13d1fb873",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "07a6b2bf_ddc4e801",
+        "filename": "src/chromiumos/cmd/tast/run/results_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 494,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-26T16:48:14Z",
+      "side": 1,
+      "message": "nit: stdout, stderr io.Writer\n\n(also in other places in this file)",
+      "range": {
+        "startLine": 494,
+        "startChar": 38,
+        "endLine": 494,
+        "endChar": 72
+      },
+      "revId": "221a4964840962cdc837c7b371df13c13d1fb873",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6c1fa905_0f9201cd",
+        "filename": "src/chromiumos/cmd/tast/run/sys_info_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-26T16:48:14Z",
+      "side": 1,
+      "message": "nit: stdout, stderr io.Writer\n\n(also in other places in this file)",
+      "range": {
+        "startLine": 30,
+        "startChar": 38,
+        "endLine": 30,
+        "endChar": 72
+      },
+      "revId": "221a4964840962cdc837c7b371df13c13d1fb873",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

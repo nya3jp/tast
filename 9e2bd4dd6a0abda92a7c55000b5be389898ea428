@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f4dbcee8_fca984bc",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1197444
+      },
+      "writtenOn": "2019-02-26T04:41:18Z",
+      "side": 1,
+      "message": "super nit: maybe \"Functionality\" as well to mirror chrome_internal?",
+      "range": {
+        "startLine": 35,
+        "startChar": 22,
+        "endLine": 35,
+        "endChar": 30
+      },
+      "revId": "9e2bd4dd6a0abda92a7c55000b5be389898ea428",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

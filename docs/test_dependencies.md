@@ -27,12 +27,14 @@ The following software features are defined:
 *   `autotest-capability:foo` - An [Autotest capability] named `foo`. See below.
 *   `camera_720p` - The ability to capture video with frame size 1280x720.
 *   `chrome` - A Chrome process.
-*   `chrome_internal` - Features that are only available in official Chrome,
-    rather than Chromium. (e.g. proprietary codec like H.264)
+*   `chrome_internal` - Functionality that is only available in internal builds
+    of Chrome (e.g. official branding and proprietary codecs like H.264).
 *   `chrome_login` - Implies `chrome` with the further requirement that user
     login (i.e. using `session_manager` and `cryptohome`) is supported.
 *   `containers` - The ability to run code within containers. This implies the
     presence of the `run_oci` program.
+*   `cros_internal` - Functionality that is only available in internal builds of
+    Chrome OS (i.e. ones built using `chromeos-overlay`).
 *   `cups` - CUPS daemon.
 *   `display_backlight` - An internal display backlight.
 *   `dlc` - Support of [Downloadable Content] (DLC).

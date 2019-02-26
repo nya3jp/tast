@@ -49,6 +49,7 @@ func main() {
 			"chrome_internal":      "chrome_internal",
 			"chrome_login":         "!chromeless_tty && !rialto",
 			"containers":           "containers",
+			"cros_internal":        "internal",
 			"cups":                 "cups",
 			"display_backlight":    "display_backlight",
 			"dlc":                  "dlc",

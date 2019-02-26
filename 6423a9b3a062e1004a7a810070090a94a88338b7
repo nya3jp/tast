@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a276ca12_a38fe6f5",
+        "filename": "src/chromiumos/tast/runner/sys_info.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1228980
+      },
+      "writtenOn": "2019-02-26T21:30:42Z",
+      "side": 1,
+      "message": "Autotest calls the human readable file \"journal\", and the gzipped export formatted file \"journal.gz\". I don\u0027t thing that\u0027s ideal, so let\u0027s get this right here and change autotest to be consistent with it.\n\nHow about \"journal.log\" and \"journal.export.gz\"? That way, .log is human readable, as expected, and the .export suffix describes the file format. Notice that there\u0027s no \"d\" at the end of the file names since these are *journal* files (that happen to come from the journald daemon).",
+      "revId": "6423a9b3a062e1004a7a810070090a94a88338b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -25,7 +25,8 @@ func TestGetSoftwareFeatures(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	defaultArgs := Args{
+	cfg := Config{
+		Type:         LocalRunner,
 		USEFlagsFile: filepath.Join(td, "use_flags"),
 		SoftwareFeatureDefinitions: map[string]string{
 			"foobar":       "foo && bar",
@@ -34,11 +35,13 @@ func TestGetSoftwareFeatures(t *testing.T) {
 			"foo_glob":     "\"f*\"",
 			"not_bar_glob": "!\"b*\"",
 		},
+	}
+	defaultArgs := Args{
 		GetSoftwareFeaturesArgs: GetSoftwareFeaturesArgs{
 			ExtraUSEFlags: []string{"baz"},
 		},
 	}
-	status, stdout, _, sig := callRun(t, nil, &Args{Mode: GetSoftwareFeaturesMode}, &defaultArgs, LocalRunner)
+	status, stdout, _, sig := callRun(t, nil, &Args{Mode: GetSoftwareFeaturesMode}, &defaultArgs, &cfg)
 	if status != statusSuccess {
 		t.Fatalf("%v = %v; want %v", sig, status, statusSuccess)
 	}
@@ -57,11 +60,12 @@ func TestGetSoftwareFeatures(t *testing.T) {
 
 func TestGetSoftwareFeaturesNoFile(t *testing.T) {
 	// If the file listing USE flags was missing, an empty result should be returned.
-	defaultArgs := Args{
+	cfg := Config{
+		Type:                       LocalRunner,
 		USEFlagsFile:               "/tmp/nonexistent_use_flags_file.txt",
 		SoftwareFeatureDefinitions: map[string]string{"foo": "bar"},
 	}
-	status, stdout, _, sig := callRun(t, nil, &Args{Mode: GetSoftwareFeaturesMode}, &defaultArgs, LocalRunner)
+	status, stdout, _, sig := callRun(t, nil, &Args{Mode: GetSoftwareFeaturesMode}, nil, &cfg)
 	if status != statusSuccess {
 		t.Fatalf("%v = %v; want %v", sig, status, statusSuccess)
 	}

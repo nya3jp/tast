@@ -20,9 +20,12 @@ import (
 
 func main() {
 	args := runner.Args{
-		BundleGlob:        "/usr/local/libexec/tast/bundles/local/*",
-		DataDir:           "/usr/local/share/tast/data",
-		TempDir:           "/usr/local/tmp/tast/run_tmp",
+		BundleGlob: "/usr/local/libexec/tast/bundles/local/*",
+		DataDir:    "/usr/local/share/tast/data",
+		TempDir:    "/usr/local/tmp/tast/run_tmp",
+	}
+	cfg := runner.Config{
+		Type:              runner.LocalRunner,
 		SystemLogDir:      "/var/log",
 		SystemLogExcludes: []string{"journal"}, // journald binary logs: https://crbug.com/931951
 		SystemCrashDirs:   crash.DefaultDirs(),
@@ -77,5 +80,5 @@ func main() {
 		// The autotest-capability package tries to install this to /etc but it's diverted to /usr/local.
 		AutotestCapabilityDir: autocaps.DefaultCapabilityDir,
 	}
-	os.Exit(runner.Run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, &args, runner.LocalRunner))
+	os.Exit(runner.Run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, &args, &cfg))
 }

@@ -130,7 +130,7 @@ func newBufferWithArgs(t *gotesting.T, args *Args) *bytes.Buffer {
 
 // callRun calls Run using the supplied arguments and returns its output, status, and a signature that can
 // be used in error messages.
-func callRun(t *gotesting.T, clArgs []string, stdinArgs, defaultArgs *Args, rt RunnerType) (
+func callRun(t *gotesting.T, clArgs []string, stdinArgs, defaultArgs *Args, cfg *Config) (
 	status int, stdout, stderr *bytes.Buffer, sig string) {
 	if defaultArgs == nil {
 		defaultArgs = &Args{}
@@ -138,7 +138,7 @@ func callRun(t *gotesting.T, clArgs []string, stdinArgs, defaultArgs *Args, rt R
 	sig = fmt.Sprintf("Run(%v, %+v)", clArgs, stdinArgs)
 	stdout = &bytes.Buffer{}
 	stderr = &bytes.Buffer{}
-	return Run(clArgs, newBufferWithArgs(t, stdinArgs), stdout, stderr, defaultArgs, rt), stdout, stderr, sig
+	return Run(clArgs, newBufferWithArgs(t, stdinArgs), stdout, stderr, defaultArgs, cfg), stdout, stderr, sig
 }
 
 // readAllMessages reads and returns a slice of pointers to control messages
@@ -177,7 +177,7 @@ func TestRunListTests(t *gotesting.T) {
 		Mode:       ListTestsMode,
 		BundleGlob: filepath.Join(dir, "*"),
 	}
-	status, stdout, stderr, sig := callRun(t, nil, &args, nil, LocalRunner)
+	status, stdout, stderr, sig := callRun(t, nil, &args, nil, &Config{Type: LocalRunner})
 	if status != statusSuccess {
 		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
 	}
@@ -206,7 +206,7 @@ func TestRunListTestsNoBundles(t *gotesting.T) {
 	// The runner should only exit with 0 and report errors via control messages on stdout when it's
 	// performing an actual test run. Since we're only listing tests, it should instead exit with an
 	// error (and write the error to stderr, although that's not checked here).
-	status, stdout, stderr, sig := callRun(t, nil, &args, nil, LocalRunner)
+	status, stdout, stderr, sig := callRun(t, nil, &args, nil, &Config{Type: LocalRunner})
 	if status != statusNoBundles {
 		t.Errorf("%s = %v; want %v", sig, status, statusNoBundles)
 	}
@@ -230,11 +230,12 @@ func TestRunSysInfo(t *gotesting.T) {
 	}
 
 	// Get the initial state.
-	defaultArgs := Args{
+	cfg := Config{
+		Type:            LocalRunner,
 		SystemLogDir:    filepath.Join(td, "logs"),
 		SystemCrashDirs: []string{filepath.Join(td, "crashes")},
 	}
-	status, stdout, _, sig := callRun(t, nil, &Args{Mode: GetSysInfoStateMode}, &defaultArgs, LocalRunner)
+	status, stdout, _, sig := callRun(t, nil, &Args{Mode: GetSysInfoStateMode}, nil, &cfg)
 	if status != statusSuccess {
 		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
 	}
@@ -258,7 +259,7 @@ func TestRunSysInfo(t *gotesting.T) {
 		Mode:               CollectSysInfoMode,
 		CollectSysInfoArgs: CollectSysInfoArgs{InitialState: getRes.State},
 	}
-	if status, stdout, _, sig = callRun(t, nil, &args, &defaultArgs, LocalRunner); status != statusSuccess {
+	if status, stdout, _, sig = callRun(t, nil, &args, nil, &cfg); status != statusSuccess {
 		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
 	}
 	var collectRes CollectSysInfoResult
@@ -293,7 +294,8 @@ func TestRunTests(t *gotesting.T) {
 	defer os.RemoveAll(dir)
 
 	// Run should execute multiple test bundles and merge their output correctly.
-	status, stdout, stderr, sig := callRun(t, nil, &Args{BundleGlob: filepath.Join(dir, "*")}, nil, LocalRunner)
+	status, stdout, stderr, sig := callRun(t, nil, &Args{BundleGlob: filepath.Join(dir, "*")},
+		nil, &Config{Type: LocalRunner})
 	if status != statusSuccess {
 		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
 	}
@@ -346,7 +348,7 @@ func TestRunTests(t *gotesting.T) {
 }
 
 func TestInvalidFlag(t *gotesting.T) {
-	status, stdout, stderr, sig := callRun(t, []string{"-bogus"}, nil, nil, LocalRunner)
+	status, stdout, stderr, sig := callRun(t, []string{"-bogus"}, nil, nil, &Config{Type: LocalRunner})
 	if status != statusBadArgs {
 		t.Errorf("%s = %v; want %v", sig, status, statusBadArgs)
 	}
@@ -364,7 +366,7 @@ func TestRunNoTests(t *gotesting.T) {
 
 	// RunTests should fail when run manually with a pattern is passed that doesn't match any tests.
 	clArgs := []string{"-bundles=" + filepath.Join(dir, "*"), "bogus.SomeTest"}
-	status, stdout, stderr, sig := callRun(t, clArgs, nil, nil, LocalRunner)
+	status, stdout, stderr, sig := callRun(t, clArgs, nil, nil, &Config{Type: LocalRunner})
 	if status != statusNoTests {
 		t.Errorf("%s = %v; want %v", sig, status, statusNoTests)
 	}
@@ -377,7 +379,8 @@ func TestRunNoTests(t *gotesting.T) {
 
 	// If the command was run by the tast command, it should exit with success.
 	args := &Args{BundleGlob: filepath.Join(dir, "*"), Patterns: []string{"bogus.SomeTest"}}
-	if status, stdout, stderr, sig = callRun(t, nil, args, nil, LocalRunner); status != statusSuccess {
+	cfg := &Config{Type: LocalRunner}
+	if status, stdout, stderr, sig = callRun(t, nil, args, nil, cfg); status != statusSuccess {
 		t.Errorf("%s = %v; want %v", sig, status, statusSuccess)
 	}
 	if gotRunError(readAllMessages(t, stdout)) {
@@ -394,7 +397,7 @@ func TestRunFailForTestErrorWhenRunManually(t *gotesting.T) {
 
 	// RunTests should fail when a bundle reports failure while run manually.
 	clArgs := []string{"-bundles=" + filepath.Join(dir, "*")}
-	status, _, stderr, sig := callRun(t, clArgs, nil, nil, LocalRunner)
+	status, _, stderr, sig := callRun(t, clArgs, nil, nil, &Config{Type: LocalRunner})
 	if status != statusTestFailed {
 		t.Errorf("%s = %v; want %v", sig, status, statusTestFailed)
 	}
@@ -417,8 +420,9 @@ func TestCheckDepsWhenRunManually(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	args := Args{
-		BundleGlob:   filepath.Join(bd, "*"),
+	args := Args{BundleGlob: filepath.Join(bd, "*")}
+	cfg := Config{
+		Type:         LocalRunner,
 		USEFlagsFile: filepath.Join(td, useFlagsFile),
 		SoftwareFeatureDefinitions: map[string]string{
 			"both":    "flag1 && flag2",
@@ -426,8 +430,7 @@ func TestCheckDepsWhenRunManually(t *gotesting.T) {
 			"third":   "flag3",
 		},
 	}
-	status, _, stderr, sig := callRun(
-		t, []string{"-extrauseflags=flag3,flag4", "(!foo)"}, nil, &args, LocalRunner)
+	status, _, stderr, sig := callRun(t, []string{"-extrauseflags=flag3,flag4", "(!foo)"}, nil, &args, &cfg)
 	if status != statusSuccess {
 		println(stderr.String())
 		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
@@ -454,7 +457,7 @@ func TestRunPrintBundleError(t *gotesting.T) {
 		Mode:       RunTestsMode,
 		BundleGlob: filepath.Join(dir, "*"),
 	}
-	status, stdout, _, sig := callRun(t, nil, &args, nil, LocalRunner)
+	status, stdout, _, sig := callRun(t, nil, &args, nil, &Config{Type: LocalRunner})
 	if status != statusSuccess {
 		t.Errorf("%s = %v; want %v", sig, status, statusSuccess)
 	}
@@ -482,7 +485,7 @@ func TestSkipBundlesWithoutMatchedTests(t *gotesting.T) {
 	// match any tests in the bundle. Pass the name of the test in the first bundle and
 	// check that the run succeeds (i.e. the second bundle wasn't executed).
 	clArgs := []string{"-bundles=" + filepath.Join(dir, "*"), getTestName(0, 0)}
-	status, _, _, sig := callRun(t, clArgs, nil, nil, LocalRunner)
+	status, _, _, sig := callRun(t, clArgs, nil, nil, &Config{Type: LocalRunner})
 	if status != statusSuccess {
 		t.Errorf("%s = %v; want %v", sig, status, statusSuccess)
 	}
@@ -494,7 +497,8 @@ func TestRunTestsUseRequestedOutDir(t *gotesting.T) {
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
 
-	status, stdout, _, sig := callRun(t, nil, &Args{BundleGlob: filepath.Join(bundleDir, "*"), OutDir: outDir}, nil, LocalRunner)
+	status, stdout, _, sig := callRun(t, nil, &Args{BundleGlob: filepath.Join(bundleDir, "*"), OutDir: outDir},
+		nil, &Config{Type: LocalRunner})
 	if status != statusSuccess {
 		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
 	}

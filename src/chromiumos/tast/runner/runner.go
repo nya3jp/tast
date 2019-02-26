@@ -40,24 +40,24 @@ const (
 // Default arguments may be passed via args, which is filled with the additional args that are read.
 // clArgs should typically be os.Args[1:].
 // The caller should exit with the returned status code.
-func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Args, rt RunnerType) int {
-	if err := readArgs(clArgs, stdin, stderr, args, rt); err != nil {
+func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Args, cfg *Config) int {
+	if err := readArgs(clArgs, stdin, stderr, args, cfg); err != nil {
 		return command.WriteError(stderr, err)
 	}
 
 	switch args.Mode {
 	case GetSysInfoStateMode:
-		if err := handleGetSysInfoState(args, stdout); err != nil {
+		if err := handleGetSysInfoState(cfg, stdout); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
 	case CollectSysInfoMode:
-		if err := handleCollectSysInfo(args, stdout); err != nil {
+		if err := handleCollectSysInfo(args, cfg, stdout); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
 	case GetSoftwareFeaturesMode:
-		if err := handleGetSoftwareFeatures(args, stdout); err != nil {
+		if err := handleGetSoftwareFeatures(args, cfg, stdout); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess

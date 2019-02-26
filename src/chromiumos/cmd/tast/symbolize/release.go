@@ -4,7 +4,11 @@
 
 package symbolize
 
-import "strings"
+import (
+	"bytes"
+
+	"chromiumos/tast/lsbrelease"
+)
 
 // releaseInfo contains information parsed from /etc/lsb-release.
 type releaseInfo struct {
@@ -18,18 +22,11 @@ type releaseInfo struct {
 // getReleaseInfo parses data (typically the contents of /etc/lsb-release)
 // and returns information about the system image.
 func getReleaseInfo(data string) *releaseInfo {
-	info := releaseInfo{}
-	for _, line := range strings.Split(data, "\n") {
-		parts := strings.SplitN(line, "=", 2)
-		if len(parts) != 2 {
-			continue
-		}
-		switch parts[0] {
-		case "CHROMEOS_RELEASE_BOARD":
-			info.board = parts[1]
-		case "CHROMEOS_RELEASE_BUILDER_PATH":
-			info.builderPath = parts[1]
-		}
+	var info releaseInfo
+	kvs, err := lsbrelease.Parse(bytes.NewBufferString(data))
+	if err == nil {
+		info.board = kvs[lsbrelease.Board]
+		info.builderPath = kvs[lsbrelease.BuilderPath]
 	}
 	return &info
 }

@@ -4,7 +4,7 @@
 
 // Package control writes and reads control messages describing the state of a test run.
 //
-// Control messages are JSON-encoded and used for communication from test
+// Control messages are JSON-marshaled and used for communication from test
 // executables to the main tast binary. A typical sequence is as follows:
 //
 //	RunStart (run started)
@@ -19,6 +19,11 @@
 //			TestLog (second test logged another message)
 //		TestEnd (second test ended)
 //	RunEnd (run ended)
+//
+// Control messages of different types are unmarshaled into a single messageUnion
+// struct. To be able to infer a message's type, each message struct must contain
+// a Time field with a message-type-prefixed JSON name (e.g. "runStartTime" for
+// RunStart.Time), and all other fields must be similarly namespaced.
 package control
 
 import (
@@ -103,7 +108,10 @@ type TestEnd struct {
 	// not present on the DUT. If non-empty, the test was skipped.
 	MissingSoftwareDeps []string `json:"testEndMissingSoftwareDeps"`
 	// TimingLog contains test-reported timing information to be incorporated into the main timing.json file.
-	TimingLog *timing.Log `json:"timingLog"`
+	TimingLog *timing.Log `json:"testEndTimingLog"`
+	// TimingLogDeprecated has been replaced by TimingLog.
+	// TODO(derat): Remove after 20190601.
+	TimingLogDeprecated *timing.Log `json:"timingLog"`
 }
 
 // messageUnion contains all message types. It aids in marshaling and unmarshaling heterogeneous messages.
@@ -145,6 +153,9 @@ func (mw *MessageWriter) WriteMessage(msg interface{}) error {
 	case *TestError:
 		return enc.Encode(&messageUnion{TestError: v})
 	case *TestEnd:
+		if v.TimingLogDeprecated == nil {
+			v.TimingLogDeprecated = v.TimingLog
+		}
 		return enc.Encode(&messageUnion{TestEnd: v})
 	default:
 		return errors.New("unable to encode message of unknown type")
@@ -187,6 +198,9 @@ func (mr *MessageReader) ReadMessage() (interface{}, error) {
 	case mu.TestError != nil:
 		return mu.TestError, nil
 	case mu.TestEnd != nil:
+		if mu.TestEnd.TimingLog == nil {
+			mu.TestEnd.TimingLog = mu.TestEnd.TimingLogDeprecated
+		}
 		return mu.TestEnd, nil
 	default:
 		return nil, errors.New("unable to decode message of unknown type")

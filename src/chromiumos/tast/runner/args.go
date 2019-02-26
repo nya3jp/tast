@@ -18,6 +18,30 @@ import (
 	"chromiumos/tast/command"
 )
 
+// RunMode describes the runner's behavior.
+type RunMode int
+
+const (
+	// RunTestsMode indicates that the runner should run all matched tests.
+	RunTestsMode RunMode = 0
+	// ListTestsMode indicates that the runner should write information about matched tests to stdout as a
+	// JSON array of testing.Test structs and exit.
+	ListTestsMode = 2
+	// GetSysInfoStateMode indicates that the runner should write a JSON-marshaled GetSysInfoStateResult struct
+	// to stdout and exit. It's used by the tast executable to get the initial state of the system before tests
+	// are executed. This mode is only supported by local_test_runner.
+	GetSysInfoStateMode = 3
+	// CollectSysInfoMode indicates that the runner should collect system information that was written in the
+	// course of testing and write a JSON-marshaled CollectSysInfoResult struct to stdout and exit. It's used by
+	// the tast executable to get system info after testing is completed.
+	// This mode is only supported by local_test_runner.
+	CollectSysInfoMode = 4
+	// GetSoftwareFeaturesMode indicates that the runner should return information about software features
+	// supported by the DUT via a JSON-marshaled GetSoftwareFeaturesResult struct written to stdout. This mode
+	// is only supported by local_test_runner.
+	GetSoftwareFeaturesMode = 5
+)
+
 // Args provides a backward- and forward-compatible way to pass arguments from the tast executable to test runners.
 // The tast executable writes the struct's JSON-serialized representation to the runner's stdin.
 type Args struct {
@@ -43,31 +67,6 @@ type Args struct {
 	CollectSysInfoArgs
 	// GetSoftwareFeaturesArgs contains additional arguments used by GetSoftwareFeaturesMode.
 	GetSoftwareFeaturesArgs
-
-	// The remaining exported fields are set by test runner main functions (or by unit tests) and
-	// cannot be overridden by the tast executable.
-
-	// SystemLogDir contains the directory where information is logged by syslog and other daemons.
-	SystemLogDir string `json:"-"`
-	// SystemLogExcludes contains relative paths of directories and files in SystemLogDir to exclude.
-	SystemLogExcludes []string `json:"-"`
-	// SystemCrashDirs contains directories where crash dumps are written when processes crash.
-	SystemCrashDirs []string `json:"-"`
-
-	// USEFlagsFile contains the path to a file listing a subset of USE flags that were set when building
-	// the system image. These USE flags are used by expressions in SoftwareFeatureDefinitions to determine
-	// available software features.
-	USEFlagsFile string `json:"-"`
-	// SoftwareFeatureDefinitions maps from software feature names (e.g. "myfeature") to boolean expressions
-	// used to compose them from USE flags (e.g. "a && !(b || c)"). The USE flags used in these expressions
-	// must be listed in USEFlagsFile if they were set when building the system image.
-	// See chromiumos/tast/expr for details about expression syntax.
-	SoftwareFeatureDefinitions map[string]string `json:"-"`
-	// AutotestCapabilityDir contains the path to a directory containing autotest-capability YAML files used to
-	// define the DUT's capabilities for the purpose of determining which video tests it is able to run.
-	// See https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/autotest-capability-default/
-	// and the autocaps package for more information.
-	AutotestCapabilityDir string `json:"-"`
 
 	// report is set to true by readArgs if status should be reported via control messages rather
 	// than human-readable log messages. This is true when args were supplied via stdin rather than
@@ -122,7 +121,7 @@ type CollectSysInfoResult struct {
 // GetSoftwareFeaturesArgs is nested within Args and contains additional arguments used by GetSoftwareFeaturesMode.
 type GetSoftwareFeaturesArgs struct {
 	// ExtraUSEFlags lists additional USE flags that should be treated as being set an addition to
-	// the ones read from Args.USEFlagsFile when computing the feature sets for GetSoftwareFeaturesResult.
+	// the ones read from Config.USEFlagsFile when computing the feature sets for GetSoftwareFeaturesResult.
 	ExtraUSEFlags []string `json:"getSoftwareFeaturesExtraUseFlags,omitempty"`
 }
 
@@ -154,12 +153,41 @@ const (
 	RemoteRunner
 )
 
+// Config contains fixed parameters for the runner that are passed in from local_test_runner
+// or remote_test_runner.
+type Config struct {
+	// Type describes the type of runner being executed.
+	Type RunnerType
+
+	// SystemLogDir contains the directory where information is logged by syslog and other daemons.
+	SystemLogDir string
+	// SystemLogExcludes contains relative paths of directories and files in SystemLogDir to exclude.
+	SystemLogExcludes []string
+	// SystemCrashDirs contains directories where crash dumps are written when processes crash.
+	SystemCrashDirs []string
+
+	// USEFlagsFile contains the path to a file listing a subset of USE flags that were set when building
+	// the system image. These USE flags are used by expressions in SoftwareFeatureDefinitions to determine
+	// available software features.
+	USEFlagsFile string
+	// SoftwareFeatureDefinitions maps from software feature names (e.g. "myfeature") to boolean expressions
+	// used to compose them from USE flags (e.g. "a && !(b || c)"). The USE flags used in these expressions
+	// must be listed in USEFlagsFile if they were set when building the system image.
+	// See chromiumos/tast/expr for details about expression syntax.
+	SoftwareFeatureDefinitions map[string]string
+	// AutotestCapabilityDir contains the path to a directory containing autotest-capability YAML files used to
+	// define the DUT's capabilities for the purpose of determining which video tests it is able to run.
+	// See https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/autotest-capability-default/
+	// and the autocaps package for more information.
+	AutotestCapabilityDir string
+}
+
 // readArgs parses runtime arguments.
 // clArgs contains command-line arguments and is typically os.Args[1:].
 // args contains default values for arguments and is further populated by parsing clArgs or
 // (if clArgs is empty, as is the case when a runner is executed by the tast command) by
 // decoding a JSON-marshaled Args struct from stdin.
-func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, runnerType RunnerType) error {
+func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, cfg *Config) error {
 	if len(clArgs) == 0 {
 		if err := json.NewDecoder(stdin).Decode(args); err != nil {
 			return command.NewStatusErrorf(statusBadArgs, "failed to decode args from stdin: %v", err)
@@ -183,7 +211,7 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, ru
 			"extrauseflags", "comma-separated list of additional USE flags to inject when checking test dependencies")
 		flags.BoolVar(&args.WaitUntilReady, "waituntilready", false, "wait until DUT is ready before running tests")
 
-		if runnerType == RemoteRunner {
+		if cfg.Type == RemoteRunner {
 			flags.StringVar(&args.Target, "target", "", "DUT connection spec as \"[<user>@]host[:<port>]\"")
 			flags.StringVar(&args.KeyFile, "keyfile", "", "path to SSH private key to use for connecting to DUT")
 			flags.StringVar(&args.KeyDir, "keydir", "", "directory containing SSH private keys (typically $HOME/.ssh)")
@@ -198,7 +226,7 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, ru
 		// When the runner is executed by the "tast run" command, the list of software features (used to skip
 		// unsupported tests) is passed in after having been gathered by an earlier call to local_test_runner
 		// with GetSoftwareFeaturesMode. When the runner is executed directly, gather the list here instead.
-		if err := setManualDepsArgs(args); err != nil {
+		if err := setManualDepsArgs(args, cfg); err != nil {
 			return err
 		}
 	}
@@ -212,7 +240,7 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, ru
 		RunTestsArgs: args.RunTestsArgs.RunTestsArgs,
 	}
 	if !reflect.DeepEqual(args.RemoteArgs, RemoteArgs{}) {
-		if runnerType != RemoteRunner {
+		if cfg.Type != RemoteRunner {
 			return command.NewStatusErrorf(statusBadArgs, "remote args %+v passed to non-remote runner", args.RemoteArgs)
 		}
 		args.bundleArgs.RemoteArgs = args.RemoteArgs.RemoteArgs
@@ -222,28 +250,28 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, ru
 
 // setManualDepsArgs sets dependency/feature-related fields in args.RunTestArgs appropriately for a manual
 // run (i.e. when the runner is executed directly with command-line flags rather than via "tast run").
-func setManualDepsArgs(args *Args) error {
-	if bundle.GetTestPatternType(args.Patterns) != bundle.TestPatternAttrExpr || args.USEFlagsFile == "" {
+func setManualDepsArgs(args *Args, cfg *Config) error {
+	if bundle.GetTestPatternType(args.Patterns) != bundle.TestPatternAttrExpr || cfg.USEFlagsFile == "" {
 		return nil
 	}
-	if _, err := os.Stat(args.USEFlagsFile); os.IsNotExist(err) {
+	if _, err := os.Stat(cfg.USEFlagsFile); os.IsNotExist(err) {
 		return nil
 	}
 
-	useFlags, err := readUSEFlagsFile(args.USEFlagsFile)
+	useFlags, err := readUSEFlagsFile(cfg.USEFlagsFile)
 	if err != nil {
 		return command.NewStatusErrorf(statusError, "%v", err)
 	}
 	useFlags = append(useFlags, args.ExtraUSEFlags...)
 
 	var autotestCaps map[string]autocaps.State
-	if args.AutotestCapabilityDir != "" {
+	if cfg.AutotestCapabilityDir != "" {
 		// Ignore errors. autotest-capability is outside of Tast's control, and it's probably better to let
 		// some unsupported video tests fail instead of making the whole run fail.
-		autotestCaps, _ = autocaps.Read(args.AutotestCapabilityDir, nil)
+		autotestCaps, _ = autocaps.Read(cfg.AutotestCapabilityDir, nil)
 	}
 
-	avail, unavail, err := determineSoftwareFeatures(args.SoftwareFeatureDefinitions, useFlags, autotestCaps)
+	avail, unavail, err := determineSoftwareFeatures(cfg.SoftwareFeatureDefinitions, useFlags, autotestCaps)
 	if err != nil {
 		return command.NewStatusErrorf(statusError, "%v", err)
 	}
@@ -252,27 +280,3 @@ func setManualDepsArgs(args *Args) error {
 	args.RunTestsArgs.UnavailableSoftwareFeatures = unavail
 	return nil
 }
-
-// RunMode describes the runner's behavior.
-type RunMode int
-
-const (
-	// RunTestsMode indicates that the runner should run all matched tests.
-	RunTestsMode RunMode = 0
-	// ListTestsMode indicates that the runner should write information about matched tests to stdout as a
-	// JSON array of testing.Test structs and exit.
-	ListTestsMode = 2
-	// GetSysInfoStateMode indicates that the runner should write a JSON-marshaled GetSysInfoStateResult struct
-	// to stdout and exit. It's used by the tast executable to get the initial state of the system before tests
-	// are executed. This mode is only supported by local_test_runner.
-	GetSysInfoStateMode = 3
-	// CollectSysInfoMode indicates that the runner should collect system information that was written in the
-	// course of testing and write a JSON-marshaled CollectSysInfoResult struct to stdout and exit. It's used by
-	// the tast executable to get system info after testing is completed.
-	// This mode is only supported by local_test_runner.
-	CollectSysInfoMode = 4
-	// GetSoftwareFeaturesMode indicates that the runner should return information about software features
-	// supported by the DUT via a JSON-marshaled GetSoftwareFeaturesResult struct written to stdout. This mode
-	// is only supported by local_test_runner.
-	GetSoftwareFeaturesMode = 5
-)

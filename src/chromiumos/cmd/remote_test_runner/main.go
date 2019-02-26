@@ -14,15 +14,13 @@ import (
 	"chromiumos/tast/runner"
 )
 
-const (
-	defaultBundleGlob = "/usr/libexec/tast/bundles/remote/*" // default glob matching test bundles
-	defaultDataDir    = "/usr/share/tast/data"               // default dir containing test data
-)
-
 func main() {
 	args := runner.Args{
-		BundleGlob: defaultBundleGlob,
-		DataDir:    defaultDataDir,
+		BundleGlob: "/usr/libexec/tast/bundles/remote/*", // default glob matching test bundles
+		DataDir:    "/usr/share/tast/data",               // default dir containing test data
 	}
-	os.Exit(runner.Run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, &args, runner.RemoteRunner))
+	cfg := runner.Config{
+		Type: runner.RemoteRunner,
+	}
+	os.Exit(runner.Run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, &args, &cfg))
 }

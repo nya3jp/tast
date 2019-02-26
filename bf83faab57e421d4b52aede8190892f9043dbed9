@@ -22,6 +22,30 @@
       "revId": "bf83faab57e421d4b52aede8190892f9043dbed9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "61d71972_f8df2b00",
+        "filename": "src/chromiumos/tast/bundle/args_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-26T04:07:15Z",
+      "side": 1,
+      "message": "thanks, nice simplification!",
+      "parentUuid": "0dc90650_a0c993ce",
+      "range": {
+        "startLine": 42,
+        "startChar": 60,
+        "endLine": 42,
+        "endChar": 75
+      },
+      "revId": "bf83faab57e421d4b52aede8190892f9043dbed9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

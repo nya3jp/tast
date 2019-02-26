@@ -22,17 +22,17 @@ const autotestCapPrefix = "autotest-capability:" // prefix for autotest-capabili
 
 // handleGetSoftwareFeatures handles a GetSoftwareFeaturesMode request from args
 // and JSON-marshals a GetSoftwareFeaturesResult struct to w.
-func handleGetSoftwareFeatures(args *Args, w io.Writer) error {
-	if args.USEFlagsFile == "" {
+func handleGetSoftwareFeatures(args *Args, cfg *Config, w io.Writer) error {
+	if cfg.USEFlagsFile == "" {
 		return command.NewStatusErrorf(statusBadArgs, "feature enumeration unsupported")
 	}
 
 	// If the file listing USE flags doesn't exist, we're probably running on a non-test
 	// image. Return an empty response to signal that to the caller.
-	if _, err := os.Stat(args.USEFlagsFile); os.IsNotExist(err) {
+	if _, err := os.Stat(cfg.USEFlagsFile); os.IsNotExist(err) {
 		return json.NewEncoder(w).Encode(&GetSoftwareFeaturesResult{})
 	}
-	flags, err := readUSEFlagsFile(args.USEFlagsFile)
+	flags, err := readUSEFlagsFile(cfg.USEFlagsFile)
 	if err != nil {
 		return err
 	}
@@ -40,22 +40,22 @@ func handleGetSoftwareFeatures(args *Args, w io.Writer) error {
 
 	res := GetSoftwareFeaturesResult{}
 	var autotestCaps map[string]autocaps.State
-	if args.AutotestCapabilityDir != "" {
-		if ac, err := autocaps.Read(args.AutotestCapabilityDir, nil); err != nil {
-			res.Warnings = append(res.Warnings, fmt.Sprintf("%s: %v", args.AutotestCapabilityDir, err))
+	if cfg.AutotestCapabilityDir != "" {
+		if ac, err := autocaps.Read(cfg.AutotestCapabilityDir, nil); err != nil {
+			res.Warnings = append(res.Warnings, fmt.Sprintf("%s: %v", cfg.AutotestCapabilityDir, err))
 		} else {
 			autotestCaps = ac
 		}
 	}
 
 	if res.Available, res.Unavailable, err =
-		determineSoftwareFeatures(args.SoftwareFeatureDefinitions, flags, autotestCaps); err != nil {
+		determineSoftwareFeatures(cfg.SoftwareFeatureDefinitions, flags, autotestCaps); err != nil {
 		return command.NewStatusErrorf(statusError, "%s", err)
 	}
 	return json.NewEncoder(w).Encode(&res)
 }
 
-// readUSEFlagsFile reads a list of USE flags from fn (see Args.USEFlagsFile).
+// readUSEFlagsFile reads a list of USE flags from fn (see Config.USEFlagsFile).
 // Each flag should be specified on its own line, and lines beginning with '#' are ignored.
 func readUSEFlagsFile(fn string) ([]string, error) {
 	f, err := os.Open(fn)
@@ -79,8 +79,8 @@ func readUSEFlagsFile(fn string) ([]string, error) {
 }
 
 // determineSoftwareFeatures computes the DUT's available and unavailable software features.
-// definitions maps feature names to definitions (see Args.SoftwareFeatureDefinitions).
-// useFlags contains a list of relevant USE flags that were set when building the system image (see Args.USEFlagsFile).
+// definitions maps feature names to definitions (see Config.SoftwareFeatureDefinitions).
+// useFlags contains a list of relevant USE flags that were set when building the system image (see Config.USEFlagsFile).
 // autotestCaps contains a mapping from autotest-capability names to the corresponding states.
 func determineSoftwareFeatures(definitions map[string]string, useFlags []string,
 	autotestCaps map[string]autocaps.State) (

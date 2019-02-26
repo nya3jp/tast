@@ -22,8 +22,8 @@ const (
 
 // handleGetSysInfoState gets information about the system's current state (e.g. log files
 // and crash reports) and writes a JSON-marshaled GetSysInfoStateResult struct to w.
-func handleGetSysInfoState(args *Args, w io.Writer) error {
-	if args.SystemLogDir == "" || len(args.SystemCrashDirs) == 0 {
+func handleGetSysInfoState(cfg *Config, w io.Writer) error {
+	if cfg.SystemLogDir == "" || len(cfg.SystemCrashDirs) == 0 {
 		return command.NewStatusErrorf(statusBadArgs, "system info collection unsupported")
 	}
 
@@ -32,14 +32,14 @@ func handleGetSysInfoState(args *Args, w io.Writer) error {
 	var err error
 	var warnings map[string]error
 	if res.State.LogInodeSizes, warnings, err = logs.GetLogInodeSizes(
-		args.SystemLogDir, args.SystemLogExcludes); err != nil {
+		cfg.SystemLogDir, cfg.SystemLogExcludes); err != nil {
 		return err
 	}
 	for p, warning := range warnings {
 		res.Warnings = append(res.Warnings, fmt.Sprintf("%s: %v", p, warning))
 	}
 
-	if res.State.MinidumpPaths, err = getMinidumps(args.SystemCrashDirs); err != nil {
+	if res.State.MinidumpPaths, err = getMinidumps(cfg.SystemCrashDirs); err != nil {
 		return err
 	}
 
@@ -48,8 +48,8 @@ func handleGetSysInfoState(args *Args, w io.Writer) error {
 
 // handleCollectSysInfo copies system information that was written after args.CollectSysInfoArgs.InitialState
 // was generated into temporary directories and writes a JSON-marshaled CollectSysInfoResult struct to w.
-func handleCollectSysInfo(args *Args, w io.Writer) error {
-	if args.SystemLogDir == "" || len(args.SystemCrashDirs) == 0 {
+func handleCollectSysInfo(args *Args, cfg *Config, w io.Writer) error {
+	if cfg.SystemLogDir == "" || len(cfg.SystemCrashDirs) == 0 {
 		return command.NewStatusErrorf(statusBadArgs, "system info collection unsupported")
 	}
 
@@ -62,7 +62,7 @@ func handleCollectSysInfo(args *Args, w io.Writer) error {
 		return err
 	}
 	var warnings map[string]error
-	if warnings, err = logs.CopyLogFileUpdates(args.SystemLogDir, res.LogDir, args.SystemLogExcludes,
+	if warnings, err = logs.CopyLogFileUpdates(cfg.SystemLogDir, res.LogDir, cfg.SystemLogExcludes,
 		cmdArgs.InitialState.LogInodeSizes); err != nil {
 		return err
 	}
@@ -71,7 +71,7 @@ func handleCollectSysInfo(args *Args, w io.Writer) error {
 	}
 
 	// Collect crashes.
-	dumps, err := getMinidumps(args.SystemCrashDirs)
+	dumps, err := getMinidumps(cfg.SystemCrashDirs)
 	if err != nil {
 		return err
 	}

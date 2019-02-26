@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "c66a55a8_59cf1620",
+        "filename": "src/chromiumos/tast/logs/journald.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-02-26T15:54:17Z",
+      "side": 1,
+      "message": "Oops, you\u0027re right. Sorry for mis-recommendation.",
+      "parentUuid": "5c5f936b_15cd5d87",
+      "revId": "20d9d8e715c7c489006272f1e730a068c2e0ebba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "cd647a7d_3104b711",
         "filename": "src/chromiumos/tast/runner/runner.go",
         "patchSetId": 1

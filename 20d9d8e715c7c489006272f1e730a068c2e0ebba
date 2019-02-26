@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "5c5f936b_15cd5d87",
+        "filename": "src/chromiumos/tast/logs/journald.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-26T15:39:24Z",
+      "side": 1,
+      "message": "nope, that will only work while running within a test. this code uses exec rather than testexec (which isn\u0027t available outside of the tast-tests repository).\n\nif we wanted to be able to pass more-detailed output back to the tast process, we\u0027d likely need to add a new field for it.",
+      "parentUuid": "038e1647_d428c8a2",
+      "revId": "20d9d8e715c7c489006272f1e730a068c2e0ebba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "cd647a7d_3104b711",
         "filename": "src/chromiumos/tast/runner/runner.go",
         "patchSetId": 1
@@ -33,6 +51,24 @@
       "revId": "20d9d8e715c7c489006272f1e730a068c2e0ebba",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "40b908ae_9875cc01",
+        "filename": "src/chromiumos/tast/runner/runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-26T15:39:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cd647a7d_3104b711",
+      "revId": "20d9d8e715c7c489006272f1e730a068c2e0ebba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

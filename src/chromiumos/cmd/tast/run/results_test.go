@@ -11,6 +11,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	gotesting "testing"
 	"time"
@@ -490,21 +491,23 @@ func TestWriteResultsCollectSysInfo(t *gotesting.T) {
 	td := newLocalTestData(t)
 	defer td.close()
 
-	ob := bytes.Buffer{}
-	if err := json.NewEncoder(&ob).Encode(&runner.CollectSysInfoResult{}); err != nil {
-		t.Fatal(err)
-	}
-	td.runStdout = ob.Bytes()
+	td.runFunc = func(args *runner.Args, stdout io.Writer, stderr io.Writer) (status int) {
+		exp := &runner.Args{
+			Mode:               runner.CollectSysInfoMode,
+			CollectSysInfoArgs: runner.CollectSysInfoArgs{},
+		}
+		if !reflect.DeepEqual(args, exp) {
+			t.Errorf("got args %+v; want %+v", *args, *exp)
+		}
 
+		json.NewEncoder(stdout).Encode(&runner.CollectSysInfoResult{})
+		return 0
+	}
 	td.cfg.collectSysInfo = true
 	td.cfg.initialSysInfo = &runner.SysInfoState{}
 	if err := WriteResults(context.Background(), &td.cfg, []TestResult{}, true); err != nil {
 		t.Fatal("WriteResults failed: ", err)
 	}
-	td.checkArgs(t, &runner.Args{
-		Mode:               runner.CollectSysInfoMode,
-		CollectSysInfoArgs: runner.CollectSysInfoArgs{},
-	})
 }
 
 func TestWritePartialResults(t *gotesting.T) {

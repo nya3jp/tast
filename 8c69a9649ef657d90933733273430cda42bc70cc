@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9cabcaa7_db6e8534",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-26T22:56:51Z",
+      "side": 1,
+      "message": "nit: maybe just \"requires\" here?",
+      "range": {
+        "startLine": 89,
+        "startChar": 78,
+        "endLine": 89,
+        "endChar": 92
+      },
+      "revId": "8c69a9649ef657d90933733273430cda42bc70cc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c2260776_d7f6346c",
+        "filename": "src/chromiumos/tast/runner/args.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-26T22:56:51Z",
+      "side": 1,
+      "message": "nit: maybe Messages would be clearer?",
+      "range": {
+        "startLine": 165,
+        "startChar": 1,
+        "endLine": 165,
+        "endChar": 5
+      },
+      "revId": "8c69a9649ef657d90933733273430cda42bc70cc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -60,6 +60,24 @@
     },
     {
       "key": {
+        "uuid": "352df9c4_8a1a60f9",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-26T04:50:51Z",
+      "side": 1,
+      "message": "i\u0027m fine with pulling it into this change if you\u0027ll review it... :-)",
+      "parentUuid": "152f1d0a_3d381d7d",
+      "revId": "1245c3b24434afd237fa6cc46dc27db71575fdf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f2817d25_1d9a1fcf",
         "filename": "src/chromiumos/tast/bundle/args.go",
         "patchSetId": 2
@@ -147,6 +165,23 @@
       "side": 1,
       "message": "Just to make sure: you meant we want to move them to RunTests later but we\u0027re focusing on three fields (DataDir/OutDir/TempDir) for now? If that\u0027s true, when do we want to move these fields?\n\nI think it would be good to make this happen soon so that compatibility code can be removed at once; removing only a part of compatibility code sounds a bit tricky.",
       "parentUuid": "ce87fb3c_4e3eca94",
+      "revId": "1245c3b24434afd237fa6cc46dc27db71575fdf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5d1dbaf1_6b3b0ac4",
+        "filename": "src/chromiumos/tast/runner/args.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-02-26T04:50:51Z",
+      "side": 1,
+      "message": "i\u0027ve actually uploaded https://crrev.com/c/1487559 to move these into a separate Config struct, as i think that it\u0027s cleaner to separate read-only settings from passed-in args (and since i wanted a low-risk change before i work on this scary change some more). :-P",
       "revId": "1245c3b24434afd237fa6cc46dc27db71575fdf6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

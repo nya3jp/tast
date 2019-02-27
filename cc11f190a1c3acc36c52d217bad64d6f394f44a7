@@ -39,6 +39,24 @@
       "revId": "cc11f190a1c3acc36c52d217bad64d6f394f44a7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "998e9981_31ed3630",
+        "filename": "src/chromiumos/tast/lsbrelease/lsbrelease.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1178302
+      },
+      "writtenOn": "2019-02-27T17:42:38Z",
+      "side": 1,
+      "message": "sgtm! thanks.",
+      "parentUuid": "44215e68_f8c06342",
+      "revId": "cc11f190a1c3acc36c52d217bad64d6f394f44a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

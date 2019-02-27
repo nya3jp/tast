@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "bf092aea_88463dd3",
+        "filename": "src/chromiumos/tast/caller/caller.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-27T09:16:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7c8376b4_a3a6ce21",
+      "range": {
+        "startLine": 43,
+        "startChar": 43,
+        "endLine": 43,
+        "endChar": 52
+      },
+      "revId": "23b4fb9cae1652ade227020ba896dcd3aaffe57b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0c409807_9fcfb737",
         "filename": "src/chromiumos/tast/lsbrelease/lsbrelease.go",
         "patchSetId": 1
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "2696ef7b_4a5952fd",
+        "filename": "src/chromiumos/tast/lsbrelease/lsbrelease.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-27T09:16:00Z",
+      "side": 1,
+      "message": "Thanks for letting me know this, I was not aware of it. I\u0027ve updated the wording.",
+      "parentUuid": "0c409807_9fcfb737",
+      "range": {
+        "startLine": 9,
+        "startChar": 8,
+        "endLine": 9,
+        "endChar": 17
+      },
+      "revId": "23b4fb9cae1652ade227020ba896dcd3aaffe57b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9d176bd0_a18ad83f",
         "filename": "src/chromiumos/tast/lsbrelease/lsbrelease.go",
         "patchSetId": 1
@@ -65,6 +113,24 @@
     },
     {
       "key": {
+        "uuid": "9f8b6144_547b5745",
+        "filename": "src/chromiumos/tast/lsbrelease/lsbrelease.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-27T09:16:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9d176bd0_a18ad83f",
+      "revId": "23b4fb9cae1652ade227020ba896dcd3aaffe57b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d8ba28c1_26ef78f8",
         "filename": "src/chromiumos/tast/lsbrelease/lsbrelease.go",
         "patchSetId": 1
@@ -79,6 +145,24 @@
       "revId": "23b4fb9cae1652ade227020ba896dcd3aaffe57b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "56086de2_957d7b93",
+        "filename": "src/chromiumos/tast/lsbrelease/lsbrelease.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-27T09:16:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d8ba28c1_26ef78f8",
+      "revId": "23b4fb9cae1652ade227020ba896dcd3aaffe57b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

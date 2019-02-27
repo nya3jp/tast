@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "af7c6df3_b6d959a1",
+        "filename": "src/chromiumos/tast/lsbrelease/lsbrelease.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-27T09:16:00Z",
+      "side": 1,
+      "message": "Added for CL:1487321.",
+      "range": {
+        "startLine": 38,
+        "startChar": 0,
+        "endLine": 39,
+        "endChar": 40
+      },
+      "revId": "cc11f190a1c3acc36c52d217bad64d6f394f44a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "44215e68_f8c06342",
+        "filename": "src/chromiumos/tast/lsbrelease/lsbrelease.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-27T09:16:00Z",
+      "side": 1,
+      "message": "Added for CL:1487321.",
+      "revId": "cc11f190a1c3acc36c52d217bad64d6f394f44a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

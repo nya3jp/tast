@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "faf10f30_0f8efc80",
+        "filename": "src/chromiumos/cmd/tast/run/deps_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-27T09:17:41Z",
+      "side": 1,
+      "message": "Good catch, fixed everywhere.",
+      "parentUuid": "d7ab0a7c_6576341f",
+      "range": {
+        "startLine": 50,
+        "startChar": 38,
+        "endLine": 50,
+        "endChar": 72
+      },
+      "revId": "221a4964840962cdc837c7b371df13c13d1fb873",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1beab7b1_e43fa1e9",
         "filename": "src/chromiumos/cmd/tast/run/local_test.go",
         "patchSetId": 1
@@ -42,6 +66,24 @@
     },
     {
       "key": {
+        "uuid": "beb3426b_95378a01",
+        "filename": "src/chromiumos/cmd/tast/run/local_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-27T09:17:41Z",
+      "side": 1,
+      "message": "Thanks, after second thought, I think it\u0027s good to use command.WriteError to simulate what test runners do.",
+      "parentUuid": "1beab7b1_e43fa1e9",
+      "revId": "221a4964840962cdc837c7b371df13c13d1fb873",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2ce0cc51_09626f56",
         "filename": "src/chromiumos/cmd/tast/run/local_test.go",
         "patchSetId": 1
@@ -56,6 +98,24 @@
       "revId": "221a4964840962cdc837c7b371df13c13d1fb873",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d4d01be3_2c5419bd",
+        "filename": "src/chromiumos/cmd/tast/run/local_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-27T09:17:41Z",
+      "side": 1,
+      "message": "Sure, let me re-introduce checkArgs. I hope line number is not very a big problem as long as test case names are printed.",
+      "parentUuid": "2ce0cc51_09626f56",
+      "revId": "221a4964840962cdc837c7b371df13c13d1fb873",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -82,6 +142,30 @@
     },
     {
       "key": {
+        "uuid": "e20358eb_b9efa51f",
+        "filename": "src/chromiumos/cmd/tast/run/results_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 494,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-27T09:17:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "07a6b2bf_ddc4e801",
+      "range": {
+        "startLine": 494,
+        "startChar": 38,
+        "endLine": 494,
+        "endChar": 72
+      },
+      "revId": "221a4964840962cdc837c7b371df13c13d1fb873",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6c1fa905_0f9201cd",
         "filename": "src/chromiumos/cmd/tast/run/sys_info_test.go",
         "patchSetId": 1
@@ -102,6 +186,30 @@
       "revId": "221a4964840962cdc837c7b371df13c13d1fb873",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2a2ead4f_b8c894f2",
+        "filename": "src/chromiumos/cmd/tast/run/sys_info_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-02-27T09:17:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6c1fa905_0f9201cd",
+      "range": {
+        "startLine": 30,
+        "startChar": 38,
+        "endLine": 30,
+        "endChar": 72
+      },
+      "revId": "221a4964840962cdc837c7b371df13c13d1fb873",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

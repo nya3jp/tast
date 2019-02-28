@@ -14,8 +14,9 @@ Tests specify dependencies through the `SoftwareDeps` field in [testing.Test].
 The following software features are defined:
 
 *   `amd64` - The [amd64] processor architecture.
-*   `android` - The ability to [run Android apps]. Any version of Android can be
-    used.
+*   `android` - The ability to [run Android apps]. Any production version of
+    Android (i.e. ones except `master-arc-dev`) can be used.
+*   `android_all` - in addition to `android`, runs on `master-arc-dev`, too.
 *   `android_p` - The ability to [run Android apps] that require Android P or
     later.
 *   `arc_camera3` - The [Camera HAL3] interface in Android.

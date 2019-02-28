@@ -177,6 +177,9 @@ func TestRemoteRun(t *gotesting.T) {
 	if status != subcommands.ExitSuccess {
 		t.Errorf("remote(%+v) returned status %v; want %v", td.cfg, status, subcommands.ExitSuccess)
 	}
+	if !td.cfg.startedRun {
+		t.Error("remote() incorrectly reported that run wasn't started")
+	}
 	if len(res) != 1 {
 		t.Errorf("remote(%+v) returned %v result(s); want 1", td.cfg, len(res))
 	} else if res[0].Name != testName {
@@ -268,6 +271,10 @@ func TestRemoteFailure(t *gotesting.T) {
 	if !strings.Contains(td.logbuf.String(), errorMsg) {
 		t.Errorf("remote(%v) didn't log runner error %q in %q", td.cfg, errorMsg, td.logbuf.String())
 	}
+	if !td.cfg.startedRun {
+		t.Error("remote() incorrectly reported that run wasn't started")
+	}
 }
 
 // TODO(derat): Add a test that verifies that getInitialSysInfo is called before tests are run.
+// Also verify that cfg.startedRun is false if we see an early failure during getInitialSysInfo.

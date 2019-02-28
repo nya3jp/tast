@@ -163,6 +163,9 @@ func TestLocalSuccess(t *gotesting.T) {
 	if status, _ := local(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
 		t.Errorf("local() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
 	}
+	if !td.cfg.startedRun {
+		t.Error("local() incorrectly reported that run wasn't started")
+	}
 }
 
 func TestLocalProxy(t *gotesting.T) {
@@ -230,6 +233,9 @@ func TestLocalExecFailure(t *gotesting.T) {
 	if !strings.Contains(td.logbuf.String(), msg) {
 		t.Errorf("local() logged %q; want substring %q", td.logbuf.String(), msg)
 	}
+	if !td.cfg.startedRun {
+		t.Error("local() incorrectly reported that run wasn't started")
+	}
 }
 
 func TestLocalWaitTimeout(t *gotesting.T) {
@@ -249,6 +255,9 @@ func TestLocalWaitTimeout(t *gotesting.T) {
 	td.cfg.localRunnerWaitTimeout = time.Millisecond
 	if status, _ := local(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitFailure {
 		t.Errorf("local() = %v; want %v (%v)", status.ExitCode, subcommands.ExitFailure, td.logbuf.String())
+	}
+	if !td.cfg.startedRun {
+		t.Error("local() incorrectly reported that run wasn't started")
 	}
 }
 
@@ -413,6 +422,21 @@ func TestLocalEphemeralDevserver(t *gotesting.T) {
 	exp := []string{fmt.Sprintf("http://127.0.0.1:%d", ephemeralDevserverPort)}
 	if !reflect.DeepEqual(td.cfg.devservers, exp) {
 		t.Errorf("local() set devserver=%v; want %v", td.cfg.devservers, exp)
+	}
+}
+
+func TestLocalFailureBeforeRun(t *gotesting.T) {
+	td := newLocalTestData(t)
+	defer td.close()
+
+	// Make the runner always fail, and ask to check test deps so we'll get a failure before trying
+	// to run tests. local() shouldn't set startedRun to true since we failed before then.
+	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) { return 1 }
+	td.cfg.checkTestDeps = checkTestDepsAlways
+	if status, _ := local(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitFailure {
+		t.Errorf("local() = %v; want %v", status.ExitCode, subcommands.ExitFailure)
+	} else if td.cfg.startedRun {
+		t.Error("local() incorrectly reported that run was started after early failure")
 	}
 }
 

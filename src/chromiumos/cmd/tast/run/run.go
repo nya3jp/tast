@@ -25,6 +25,9 @@ type Status struct {
 	ExitCode subcommands.ExitStatus
 	// ErrorMsg describes the reason why the run failed.
 	ErrorMsg string
+	// FailedBeforeRun is true if a failure occurred before trying to run tests,
+	// e.g. while compiling tests. If so, the caller shouldn't write a results dir.
+	FailedBeforeRun bool
 }
 
 // successStatus describes a successful run.
@@ -35,7 +38,7 @@ var successStatus = Status{}
 func errorStatusf(cfg *Config, code subcommands.ExitStatus, format string, args ...interface{}) Status {
 	msg := fmt.Sprintf(format, args...)
 	cfg.Logger.Log(msg)
-	return Status{code, msg}
+	return Status{ExitCode: code, ErrorMsg: msg}
 }
 
 // Run executes or lists tests per cfg and returns the results.
@@ -51,7 +54,7 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []TestResult)
 			status, results = remote(ctx, cfg)
 		default:
 			// This shouldn't be reached; Config.SetFlags validates buildType.
-			return Status{subcommands.ExitUsageError, ""}, nil
+			panic(fmt.Sprintf("Invalid build type %d", int(cfg.buildType)))
 		}
 	} else {
 		// If we aren't rebuilding a bundle, run both local and remote tests and merge the results.
@@ -65,6 +68,12 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []TestResult)
 	}
 
 	if status.ExitCode == subcommands.ExitFailure {
+		// If we didn't get to the point where we started trying to run tests,
+		// report that to the caller so they can avoid writing a useless results dir.
+		if !cfg.startedRun {
+			status.FailedBeforeRun = true
+		}
+
 		// Provide a more-descriptive status if the SSH connection was lost.
 		if cfg.hst != nil && !ctxutil.DeadlineBefore(ctx, time.Now().Add(sshPingTimeout)) {
 			if err := cfg.hst.Ping(ctx, sshPingTimeout); err != nil {

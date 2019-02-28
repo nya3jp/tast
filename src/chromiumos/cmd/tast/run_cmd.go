@@ -158,16 +158,19 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 		return subcommands.ExitFailure
 	}
 
-	// Write results even if no tests were executed. This step collects system information
-	// (e.g. logs and crashes), so we still want it to run if testing was interrupted, or
-	// even if testing never started due to the DUT not becoming ready: https://crbug.com/928445
-	if err = r.wrapper.writeResults(ctx, r.cfg, results, allTestsRun); err != nil {
-		msg := fmt.Sprintf("Failed to write results: %v", err)
-		if status.ExitCode == subcommands.ExitSuccess {
-			status = run.Status{ExitCode: subcommands.ExitFailure, ErrorMsg: msg}
-		} else {
-			// Treat the earlier error as the "main" one, but also log the new one.
-			lg.Log(msg)
+	// Write results as long as we at least tried to start executing tests.
+	// This step collects system information (e.g. logs and crashes), so we still want it to run
+	// if testing was interrupted, or even if no tests started due to the DUT not becoming ready:
+	// https://crbug.com/928445
+	if !status.FailedBeforeRun {
+		if err = r.wrapper.writeResults(ctx, r.cfg, results, allTestsRun); err != nil {
+			msg := fmt.Sprintf("Failed to write results: %v", err)
+			if status.ExitCode == subcommands.ExitSuccess {
+				status = run.Status{ExitCode: subcommands.ExitFailure, ErrorMsg: msg}
+			} else {
+				// Treat the earlier error as the "main" one, but also log the new one.
+				lg.Log(msg)
+			}
 		}
 	}
 

@@ -151,6 +151,26 @@ func TestRunWriteResultsWithZeroTests(t *gotesting.T) {
 	}
 }
 
+func TestRunDontWriteResultsForEarlyFailure(t *gotesting.T) {
+	// If we fail before trying to run tests (e.g. during compilation),
+	// writeResults shouldn't be called.
+	wrapper := stubRunWrapper{
+		runRes: []run.TestResult{}, // no tests were executed
+		runStatus: run.Status{
+			ExitCode:        subcommands.ExitFailure,
+			ErrorMsg:        "compilation failed",
+			FailedBeforeRun: true,
+		},
+	}
+	args := []string{"root@example.net"}
+	if status := executeRunCmd(t, args, &wrapper, logging.NewDiscard()); status != subcommands.ExitFailure {
+		t.Fatalf("runCmd.Execute(%v) returned status %v; want %v", args, status, subcommands.ExitFailure)
+	}
+	if wrapper.writeRes != nil {
+		t.Errorf("runCmd.Execute(%v) incorrectly called writeResults after compilation error", args)
+	}
+}
+
 func TestRunReserveTimeToWriteResults(t *gotesting.T) {
 	wrapper := stubRunWrapper{
 		runRes: []run.TestResult{run.TestResult{Test: testing.Test{Name: "pkg.Test"}}},

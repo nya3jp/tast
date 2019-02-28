@@ -88,9 +88,10 @@ type Config struct {
 	// It is only used for RunTestsMode.
 	ResDir string
 
-	mode     Mode   // action to perform
-	tastDir  string // base directory under which files are written
-	trunkDir string // path to Chrome OS checkout
+	mode       Mode   // action to perform
+	tastDir    string // base directory under which files are written
+	trunkDir   string // path to Chrome OS checkout
+	startedRun bool   // true if we got to the point where we started trying to execute tests
 
 	targetArch string // architecture of target userland (usually given by "uname -m", but may be different)
 

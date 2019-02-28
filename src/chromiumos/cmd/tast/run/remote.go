@@ -74,6 +74,7 @@ func remote(ctx context.Context, cfg *Config) (Status, []TestResult) {
 	}
 	getInitialSysInfo(ctx, cfg)
 
+	cfg.startedRun = true
 	results, err := runRemoteRunner(ctx, cfg, bundleGlob, dataDir)
 	if err != nil {
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to run tests: %v", err), results

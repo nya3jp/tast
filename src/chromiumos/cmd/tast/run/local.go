@@ -94,6 +94,7 @@ func local(ctx context.Context, cfg *Config) (Status, []TestResult) {
 	}
 
 	cfg.Logger.Status("Running tests on target")
+	cfg.startedRun = true
 	start := time.Now()
 	results, err := runLocalRunner(ctx, cfg, hst, bundleGlob, dataDir)
 	if err != nil {

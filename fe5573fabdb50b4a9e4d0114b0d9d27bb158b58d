@@ -22,6 +22,30 @@
       "revId": "fe5573fabdb50b4a9e4d0114b0d9d27bb158b58d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fa3dc22a_b471a583",
+        "filename": "src/chromiumos/cmd/tast/run/run.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-01T17:15:13Z",
+      "side": 1,
+      "message": "good point -- thanks!\n\ni actually switched this to a panic since this code path should never be reached.",
+      "parentUuid": "ec2751bb_a72495ac",
+      "range": {
+        "startLine": 57,
+        "startChar": 54,
+        "endLine": 57,
+        "endChar": 68
+      },
+      "revId": "fe5573fabdb50b4a9e4d0114b0d9d27bb158b58d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

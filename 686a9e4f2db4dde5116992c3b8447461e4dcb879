@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "5add1272_865ad9f3",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-03-04T04:25:49Z",
+      "side": 1,
+      "message": "Good catch. Done.",
+      "parentUuid": "a0738acc_dac2d947",
+      "revId": "686a9e4f2db4dde5116992c3b8447461e4dcb879",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6d296eea_1e0d8f77",
         "filename": "src/chromiumos/cmd/local_test_runner/main.go",
         "patchSetId": 2
@@ -65,6 +83,24 @@
       "side": 1,
       "message": "nit: \"full\" sounds like a bit strange, how about simply \"android_all\" meaning all Android versions including unstable one?\n\nObviously I\u0027m not a good reviewer for choosing English word, so I\u0027ll defer to derat@.",
       "parentUuid": "50df2f82_6c50bb94",
+      "revId": "686a9e4f2db4dde5116992c3b8447461e4dcb879",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d6558a82_e433b580",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-03-04T04:25:49Z",
+      "side": 1,
+      "message": "I don\u0027t have strong opinion, but I thought I often see the word \u0027full\u0027 more in this kind of context... (I guess it comes from full coverage or something...)?\nAnyway, +1 to hear derat@\u0027s opinion.",
+      "parentUuid": "1d5af69a_9f06fc93",
       "revId": "686a9e4f2db4dde5116992c3b8447461e4dcb879",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

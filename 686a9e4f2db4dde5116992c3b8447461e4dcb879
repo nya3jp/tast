@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "a0738acc_dac2d947",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-03-04T04:16:04Z",
+      "side": 1,
+      "message": "Please update the doc.",
+      "revId": "686a9e4f2db4dde5116992c3b8447461e4dcb879",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6d296eea_1e0d8f77",
         "filename": "src/chromiumos/cmd/local_test_runner/main.go",
         "patchSetId": 2
@@ -30,6 +47,24 @@
       "writtenOn": "2019-03-04T03:45:23Z",
       "side": 1,
       "message": "Note: this will be used by arc.Boot now to run it for master-arc-dev images, too.",
+      "revId": "686a9e4f2db4dde5116992c3b8447461e4dcb879",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1d5af69a_9f06fc93",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-03-04T04:16:04Z",
+      "side": 1,
+      "message": "nit: \"full\" sounds like a bit strange, how about simply \"android_all\" meaning all Android versions including unstable one?\n\nObviously I\u0027m not a good reviewer for choosing English word, so I\u0027ll defer to derat@.",
+      "parentUuid": "50df2f82_6c50bb94",
       "revId": "686a9e4f2db4dde5116992c3b8447461e4dcb879",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

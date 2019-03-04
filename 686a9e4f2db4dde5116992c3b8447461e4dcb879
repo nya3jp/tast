@@ -158,6 +158,24 @@
       "revId": "686a9e4f2db4dde5116992c3b8447461e4dcb879",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4630914b_ad32a7ad",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-03-04T07:10:13Z",
+      "side": 1,
+      "message": "If we want to clean up everything, I would introduce something like:\n\n- android_n\n- android_p\n- android_released (\u003d N + P)\n- android_all (\u003d N + P + master)\n\nand remove \"android\" (because it\u0027s not very clear what it means). But it might be too much for the current purpose.",
+      "parentUuid": "1060de3f_da4696e5",
+      "revId": "686a9e4f2db4dde5116992c3b8447461e4dcb879",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

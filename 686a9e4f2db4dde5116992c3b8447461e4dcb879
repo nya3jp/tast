@@ -104,6 +104,24 @@
       "revId": "686a9e4f2db4dde5116992c3b8447461e4dcb879",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b391ffdb_58b4dd2f",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-03-04T04:34:14Z",
+      "side": 1,
+      "message": "Sorry, I\u0027m not aware of any other use of \"full\" in this context...\n\nWhile I\u0027ll defer to derat@, you may want to compose a sentense describing the attribute using the word \"full\". If I were to write one, I would: \"full set of Android systems, including unstable ones\". So I think \"android_full_set\" is OK (since \"full\" describes \"set\" here), while \"android_full\" is not since \"full\" looks to describe \"Android\" (makes me wonder \"what is full Android?\").",
+      "parentUuid": "d6558a82_e433b580",
+      "revId": "686a9e4f2db4dde5116992c3b8447461e4dcb879",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

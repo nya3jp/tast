@@ -54,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "0fceb63b_c82465fc",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-04T06:59:48Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "6d296eea_1e0d8f77",
+      "revId": "686a9e4f2db4dde5116992c3b8447461e4dcb879",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "50df2f82_6c50bb94",
         "filename": "src/chromiumos/cmd/local_test_runner/main.go",
         "patchSetId": 2
@@ -119,6 +137,24 @@
       "side": 1,
       "message": "Sorry, I\u0027m not aware of any other use of \"full\" in this context...\n\nWhile I\u0027ll defer to derat@, you may want to compose a sentense describing the attribute using the word \"full\". If I were to write one, I would: \"full set of Android systems, including unstable ones\". So I think \"android_full_set\" is OK (since \"full\" describes \"set\" here), while \"android_full\" is not since \"full\" looks to describe \"Android\" (makes me wonder \"what is full Android?\").",
       "parentUuid": "d6558a82_e433b580",
+      "revId": "686a9e4f2db4dde5116992c3b8447461e4dcb879",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1060de3f_da4696e5",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-04T06:59:48Z",
+      "side": 1,
+      "message": "i agree re \"full\" feeling a bit ambiguous on its own. i\u0027m having a hard time coming up with a short name that will be descriptive enough here -- i think that in any case, people are going to need to look at the docs to figure out that \"android\" doesn\u0027t include master-arc-dev but that this one does. i think that \"android_all\" feels a bit clearer than the alternatives, though. in the test, i\u0027d probably recommend including a comment like this:\n\nSoftwareDeps: []string{\n    \"android_all\", // run on master-arc-dev as well\n},\n\npart of me wonders if it would\u0027ve been better to support boolean expressions in test dependencies, since then arc.Boot could use \"android || android_master\".",
+      "parentUuid": "b391ffdb_58b4dd2f",
       "revId": "686a9e4f2db4dde5116992c3b8447461e4dcb879",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6d296eea_1e0d8f77",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-03-04T03:45:23Z",
+      "side": 1,
+      "message": "Note: Alternatively, introducing \"no_android_master\" dep, and mark all ARC tests with it can be another option, I thought.\nThough, ATM, I thought this approach looks simpler, and reduces the chance of misconfiguration.",
+      "revId": "686a9e4f2db4dde5116992c3b8447461e4dcb879",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "50df2f82_6c50bb94",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-03-04T03:45:23Z",
+      "side": 1,
+      "message": "Note: this will be used by arc.Boot now to run it for master-arc-dev images, too.",
+      "revId": "686a9e4f2db4dde5116992c3b8447461e4dcb879",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

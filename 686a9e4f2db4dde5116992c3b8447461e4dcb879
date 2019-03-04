@@ -176,6 +176,24 @@
       "revId": "686a9e4f2db4dde5116992c3b8447461e4dcb879",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "55d51875_e724a3e6",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-03-04T07:17:03Z",
+      "side": 1,
+      "message": "Thank you for clarification. So, done \u003e android_all.\n\n\u003e part of me wonders if it would\u0027ve been better to support boolean expressions in test dependencies, since then arc.Boot could use \"android || android_master\".\n\nThat is what I am often tempted, but as its side effect,\nI guess probably the inlined condition will become more complicated.\nLet\u0027s revisit, when we have more examples. AFAIK, at the moment, only ARC and Camera have \nsuch requirement.\n\n\u003e android_{n,p,release,all}.\n\nAgreed, it looks too much. Also, when new version (e.g., Q) comes, the combination will be more complicated, and probably we\u0027d like to change somehow again.\nLet\u0027s revisit here, when actual use case is turned out.",
+      "parentUuid": "4630914b_ad32a7ad",
+      "revId": "686a9e4f2db4dde5116992c3b8447461e4dcb879",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -506,6 +506,26 @@ func TestWriteResultsCollectSysInfo(t *gotesting.T) {
 	}
 }
 
+func TestWriteResultsCollectSysInfoFailure(t *gotesting.T) {
+	// This test uses types and functions from local_test.go.
+	td := newLocalTestData(t)
+	defer td.close()
+
+	// Report an error when collecting system info.
+	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) { return 1 }
+	td.cfg.collectSysInfo = true
+	td.cfg.initialSysInfo = &runner.SysInfoState{}
+	err := WriteResults(context.Background(), &td.cfg, []TestResult{}, true)
+	if err == nil {
+		t.Fatal("WriteResults didn't report expected error")
+	}
+
+	// The error should've been logged by WriteResults: https://crbug.com/937913
+	if !strings.Contains(td.logbuf.String(), err.Error()) {
+		t.Errorf("WriteResults didn't log error %q in %q", err.Error(), td.logbuf.String())
+	}
+}
+
 func TestWritePartialResults(t *gotesting.T) {
 	const (
 		test1Name = "pkg.Test1"

@@ -88,6 +88,9 @@ func WriteResults(ctx context.Context, cfg *Config, results []TestResult, comple
 	// We don't want to bail out before writing test results if sys info collection fails,
 	// but we'll still return the error later.
 	sysInfoErr := collectSysInfo(ctx, cfg)
+	if sysInfoErr != nil {
+		cfg.Logger.Log("Failed collecting system info: ", sysInfoErr)
+	}
 
 	enc := json.NewEncoder(f)
 	enc.SetIndent("", "  ")

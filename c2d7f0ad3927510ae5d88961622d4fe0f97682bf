@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "f70888c1_4f54d851",
+        "filename": "src/chromiumos/tast/runner/bundles.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-03-05T09:52:38Z",
+      "side": 1,
+      "message": "Done (see also my reply below)",
+      "parentUuid": "e0d59fe5_eed617b7",
+      "revId": "c2d7f0ad3927510ae5d88961622d4fe0f97682bf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ccf796b5_eb015b93",
         "filename": "src/chromiumos/tast/runner/bundles.go",
         "patchSetId": 12
@@ -30,6 +48,24 @@
       "writtenOn": "2019-03-05T00:56:19Z",
       "side": 1,
       "message": "i don\u0027t have strong opinions here, but i wonder if this should also be passed in (either from local_test_runner or maybe even from the tast command)",
+      "revId": "c2d7f0ad3927510ae5d88961622d4fe0f97682bf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e212d415_9cbac02e",
+        "filename": "src/chromiumos/tast/runner/bundles.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-03-05T09:52:38Z",
+      "side": 1,
+      "message": "Thanks for good suggestion! Yes, I think it\u0027s good to keep runner/ from hard-coding some paths.\n\nAfter thinking for a while, I chose to build the URL in local_test_runner\u0027s main. I also considered:\n\n- building and sending URL from tast: it\u0027s a bit tedious and seems unnecessary since there should be only one archive URL corresponding to a particular image under testing,\n- providing prefix only in local_test_runner: this still embeds the URL pattern (i.e. \"${prefix}/${builder_path}/tast_bundles.bz2\") in runner/.\n\nWDYT?",
+      "parentUuid": "ccf796b5_eb015b93",
       "revId": "c2d7f0ad3927510ae5d88961622d4fe0f97682bf",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -50,6 +86,24 @@
       "revId": "c2d7f0ad3927510ae5d88961622d4fe0f97682bf",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "20047f10_8cf88eb4",
+        "filename": "src/chromiumos/tast/runner/bundles.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-03-05T09:52:38Z",
+      "side": 1,
+      "message": "Sure, thanks for catching!",
+      "parentUuid": "a5af834a_65beb709",
+      "revId": "c2d7f0ad3927510ae5d88961622d4fe0f97682bf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

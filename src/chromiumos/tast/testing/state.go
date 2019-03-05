@@ -146,6 +146,11 @@ func (s *State) OutDir() string { return s.cfg.OutDir }
 // nil will be returned if the test did not declare a precondition.
 func (s *State) PreValue() interface{} { return s.preValue }
 
+// SoftwareDeps returns software dependencies declared in the currently running test.
+func (s *State) SoftwareDeps() []string {
+	return append([]string(nil), s.test.SoftwareDeps...)
+}
+
 // Meta returns information about how the "tast" process used to initiate testing was run.
 // It can only be called by remote tests in the "meta" category.
 func (s *State) Meta() *Meta {
@@ -366,4 +371,14 @@ func ContextOutDir(ctx context.Context) (dir string, ok bool) {
 		return s.OutDir(), true
 	}
 	return "", false
+}
+
+// ContextSoftwareDeps is similar to SoftwareDeps but takes context instead.
+// It is intended to be used by packages providing support for tests that want to
+// make sure tests declare proper dependencies.
+func ContextSoftwareDeps(ctx context.Context) ([]string, bool) {
+	if s, ok := ctx.Value(logKey).(*State); ok {
+		return s.SoftwareDeps(), true
+	}
+	return nil, false
 }

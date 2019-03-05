@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e0d59fe5_eed617b7",
+        "filename": "src/chromiumos/tast/runner/bundles.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-05T00:56:19Z",
+      "side": 1,
+      "message": "should this be passed in from local_test_runner\u0027s main()? that\u0027s where most other paths come from, iirc",
+      "revId": "c2d7f0ad3927510ae5d88961622d4fe0f97682bf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ccf796b5_eb015b93",
+        "filename": "src/chromiumos/tast/runner/bundles.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-05T00:56:19Z",
+      "side": 1,
+      "message": "i don\u0027t have strong opinions here, but i wonder if this should also be passed in (either from local_test_runner or maybe even from the tast command)",
+      "revId": "c2d7f0ad3927510ae5d88961622d4fe0f97682bf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a5af834a_65beb709",
+        "filename": "src/chromiumos/tast/runner/bundles.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-05T00:56:19Z",
+      "side": 1,
+      "message": "can you pass a context into this function instead? we have one in ctx.Run now.",
+      "revId": "c2d7f0ad3927510ae5d88961622d4fe0f97682bf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

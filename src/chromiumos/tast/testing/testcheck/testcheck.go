@@ -6,6 +6,7 @@
 package testcheck
 
 import (
+	"strings"
 	gotesting "testing"
 	"time"
 
@@ -33,6 +34,9 @@ func Timeout(t *gotesting.T, pattern string, minTimeout time.Duration) {
 }
 
 // SoftwareDeps checks that tests matched by pattern declare requiredDeps as software dependencies.
+// requiredDeps is a list of items which the test's SoftwareDeps needs to
+// satisfy. Each item is one or '|'-connected multiple software feature names,
+// and SoftwareDeps must contain one of them.
 func SoftwareDeps(t *gotesting.T, pattern string, requiredDeps []string) {
 	for _, tst := range getTests(t, pattern) {
 		deps := make(map[string]struct{})
@@ -40,7 +44,14 @@ func SoftwareDeps(t *gotesting.T, pattern string, requiredDeps []string) {
 			deps[d] = struct{}{}
 		}
 		for _, d := range requiredDeps {
-			if _, ok := deps[d]; !ok {
+			found := false
+			for _, item := range strings.Split(d, "|") {
+				if _, ok := deps[item]; ok {
+					found = true
+					break
+				}
+			}
+			if !found {
 				t.Errorf("%s: missing software dependency %q", tst.Name, d)
 			}
 		}

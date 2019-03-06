@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2424c335_1517bf9b",
+        "filename": "src/chromiumos/tast/testing/testcheck/testcheck.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-06T23:46:00Z",
+      "side": 1,
+      "message": "huge nit: \"at least one\" may be clearer",
+      "range": {
+        "startLine": 39,
+        "startChar": 33,
+        "endLine": 39,
+        "endChar": 36
+      },
+      "revId": "5fb7dcadc134bbeb5dd346a4572964b17f2376ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "58bd6753_bad6bf03",
+        "filename": "src/chromiumos/tast/testing/testcheck/testcheck.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-06T23:46:00Z",
+      "side": 1,
+      "message": "nit: i\u0027m not sure how i feel about labels, but you could probably remove \u0027found\u0027 if you used them. see e.g. https://golang.org/doc/effective_go.html#switch",
+      "revId": "5fb7dcadc134bbeb5dd346a4572964b17f2376ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

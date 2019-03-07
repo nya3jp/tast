@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "6773d464_07d09c25",
+        "filename": "src/chromiumos/tast/testing/testcheck/testcheck.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-03-07T00:34:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2424c335_1517bf9b",
+      "range": {
+        "startLine": 39,
+        "startChar": 33,
+        "endLine": 39,
+        "endChar": 36
+      },
+      "revId": "5fb7dcadc134bbeb5dd346a4572964b17f2376ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "58bd6753_bad6bf03",
         "filename": "src/chromiumos/tast/testing/testcheck/testcheck.go",
         "patchSetId": 1
@@ -39,6 +63,24 @@
       "revId": "5fb7dcadc134bbeb5dd346a4572964b17f2376ea",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4544531d_90dbc619",
+        "filename": "src/chromiumos/tast/testing/testcheck/testcheck.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-03-07T00:34:48Z",
+      "side": 1,
+      "message": "Done. I just avoided it, because I didn\u0027t find it in tast much, but I don\u0027t have strong opinion about it.",
+      "parentUuid": "58bd6753_bad6bf03",
+      "revId": "5fb7dcadc134bbeb5dd346a4572964b17f2376ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -30,6 +30,7 @@ import (
 const (
 	sshConnectTimeout time.Duration = 10 * time.Second // timeout for establishing SSH connection to DUT
 	sshPingTimeout    time.Duration = 5 * time.Second  // timeout for checking if SSH connection to DUT is open
+	sshRetryInterval  time.Duration = 5 * time.Second  // minimum time to wait between SSH connection attempts
 
 	localRunnerPath       = "/usr/local/bin/local_test_runner"          // on-device executable that runs test bundles
 	localRunnerPkg        = "chromiumos/cmd/local_test_runner"          // Go package for local_test_runner
@@ -127,11 +128,12 @@ func connectToTarget(ctx context.Context, cfg *Config) (*host.SSH, error) {
 	cfg.Logger.Logf("Connecting to %s", cfg.Target)
 
 	o := host.SSHOptions{
-		ConnectTimeout: sshConnectTimeout,
-		ConnectRetries: cfg.sshRetries,
-		KeyFile:        cfg.KeyFile,
-		KeyDir:         cfg.KeyDir,
-		WarnFunc:       func(s string) { cfg.Logger.Log(s) },
+		ConnectTimeout:       sshConnectTimeout,
+		ConnectRetries:       cfg.sshRetries,
+		ConnectRetryInterval: sshRetryInterval,
+		KeyFile:              cfg.KeyFile,
+		KeyDir:               cfg.KeyDir,
+		WarnFunc:             func(s string) { cfg.Logger.Log(s) },
 	}
 	if err := host.ParseSSHTarget(cfg.Target, &o); err != nil {
 		return nil, err

@@ -102,6 +102,11 @@ type SSHOptions struct {
 	// ConnectRetries contains the number of times to retry after a connection failure.
 	// Each attempt waits up to ConnectTimeout.
 	ConnectRetries int
+	// ConnectRetryInterval contains the minimum amount of time between connection attempts.
+	// This can be set to avoid quickly burning through all retries if errors are returned
+	// immediately (e.g. connection refused while the SSH daemon is restarting).
+	// The time spent trying to connect counts against this interval.
+	ConnectRetryInterval time.Duration
 
 	// WarnFunc (if non-nil) is used to log non-fatal errors encountered while connecting to the host.
 	WarnFunc func(string)
@@ -254,6 +259,7 @@ func NewSSH(ctx context.Context, o *SSHOptions) (*SSH, error) {
 	}
 
 	for i := 0; i < o.ConnectRetries+1; i++ {
+		start := time.Now()
 		var cl *ssh.Client
 		if cl, err = connectSSH(ctx, hostPort, cfg); err == nil {
 			return &SSH{cl, nil}, nil
@@ -261,8 +267,21 @@ func NewSSH(ctx context.Context, o *SSHOptions) (*SSH, error) {
 		if ctx.Err() != nil {
 			return nil, ctx.Err()
 		}
-		if o.WarnFunc != nil && i < o.ConnectRetries {
-			o.WarnFunc(fmt.Sprintf("Retrying SSH connection: %v", err))
+
+		if i < o.ConnectRetries {
+			elapsed := time.Now().Sub(start)
+			if remaining := o.ConnectRetryInterval - elapsed; remaining > 0 {
+				if o.WarnFunc != nil {
+					o.WarnFunc(fmt.Sprintf("Retrying SSH connection in %v: %v", remaining.Round(time.Millisecond), err))
+				}
+				select {
+				case <-time.After(remaining):
+				case <-ctx.Done():
+					return nil, ctx.Err()
+				}
+			} else if o.WarnFunc != nil {
+				o.WarnFunc(fmt.Sprintf("Retrying SSH connection: %v", err))
+			}
 		}
 	}
 	return nil, err

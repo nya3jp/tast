@@ -29,7 +29,10 @@ checked into the [tast-tests repository] under the
 [src/chromiumos/tast/local/bundles/cros/] and
 [src/chromiumos/tast/remote/bundles/cros/] directories (which may also be
 accessed by the `local_tests` and `remote_tests` symlinks at the top of the
-repository). Tests are categorized into packages based on the functionality that
+repository). Private tests are checked into private repositories such as the
+[tast-tests-private repository], and built into non-`cros` test bundles.
+
+Tests are categorized into packages based on the functionality that
 they exercise; for example, the [ui package] contains local tests that exercise
 the Chrome OS UI.
 
@@ -84,7 +87,8 @@ best to place it underneath the category's directory. See the "Scoping and
 shared code" section.
 
 [test bundles]: overview.md#Test-bundles
-[tast-tests repository]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/
+[tast-tests repository]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD
+[tast-tests-private repository]: https://chrome-internal.googlesource.com/chromeos/platform/tast-tests-private/+/HEAD
 [src/chromiumos/tast/local/bundles/cros/]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/bundles/cros/
 [src/chromiumos/tast/remote/bundles/cros/]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/remote/bundles/cros/
 [ui package]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/bundles/cros/ui/

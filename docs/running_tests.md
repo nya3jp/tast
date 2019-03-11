@@ -11,6 +11,9 @@ Tests can be executed within a Chrome OS chroot using the `tast` executable's
 tast run <target> <test-pattern> <test-pattern> ...
 ```
 
+To run private tests (e.g. `crosint` test bundle), use
+`-buildbundle=<bundle-name>`.
+
 ## Specifying where to run tests
 
 The first positional argument supplied to the `run` subcommand specifies the

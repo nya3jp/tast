@@ -11,8 +11,9 @@ import (
 )
 
 // safeRE matches an argument that can be literally included in a shell
-// command line without requiring escaping.
-var safeRE = regexp.MustCompile(`^[A-Za-z0-9@%_+=:,./-]+$`)
+// command line without requiring escaping. Leading equals sign is unsafe in zsh, see
+// http://zsh.sourceforge.net/Doc/Release/Expansion.html#g_t_0060_003d_0027-expansion.
+var safeRE = regexp.MustCompile(`^[A-Za-z0-9@%_+:,./-][A-Za-z0-9@%_+=:,./-]*$`)
 
 // Escape escapes a string so it can be safely included as an argument in a shell command line.
 // The string is not modified if it can already be safely included.

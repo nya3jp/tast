@@ -16,6 +16,24 @@
       "revId": "59f7d2f68c28205fc18e04c7d36f5294e5893b38",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2e9f2c65_3dba4e04",
+        "filename": "src/chromiumos/tast/shutil/shutil.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-14T20:15:19Z",
+      "side": 1,
+      "message": "that\u0027s okay by me; i think that something like this is equivalent: `^[\\w@%+:,./-][\\w@%+\u003d:,./-]*$`\n\ni had to look at https://github.com/google/re2/wiki/Syntax to remind myself of exactly what \\w matches ([0-9A-Za-z_]), so you may want to document that in the comment here too. :-)\n\nor something like this may be clearer:\n\n const (\n     // Leading equals sign is unsafe ...\n     leadingSafeChars \u003d `-\\w@%+:,./`\n     trailingSafeChars \u003d leadingSafeChars + \"\u003d\"\n )\n \n // safeRE matches ...\n var safeRE \u003d regexp.MustCompile(fmt.Sprintf(\"^[%s][%s]*$\", leadingSafeChars, trailingSafeChars))",
+      "parentUuid": "1575cea1_d100a744",
+      "revId": "59f7d2f68c28205fc18e04c7d36f5294e5893b38",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

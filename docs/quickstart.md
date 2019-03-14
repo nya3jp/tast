@@ -51,7 +51,7 @@ The following dependencies are not installed:
 
 To install them, please run the following in your chroot:
   cros_workon --host start 'chromeos-base/tast-local-tests-cros-9999'
-  sudo emerge --jobs=16 --onlydeps --onlydeps-with-rdeps=n =chromeos-base/tast-local-tests-cros-9999
+  sudo emerge --jobs=16 --onlydeps --onlydeps-with-rdeps=n '=chromeos-base/tast-local-tests-cros-9999'
 ```
 > This is expected: to speed things up, `tast` is building the tests directly
 > instead of emerging the `tast-local-tests-cros` package, so it needs some help

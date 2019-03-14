@@ -16,6 +16,24 @@
       "revId": "ffe1893c100144de1f1228b59e51d16fcea5bf30",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "66f2f8eb_46896e59",
+        "filename": "src/chromiumos/tast/shutil/shutil.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1001886
+      },
+      "writtenOn": "2019-03-14T16:14:10Z",
+      "side": 1,
+      "message": "I made an unscientific test by printf \"%s\" Xfoo for the X in the special characters list, and looks like only \u003d is problematic in my environment, so I changed it to only escape leading equals sign.",
+      "parentUuid": "1f97b435_9e27240f",
+      "revId": "ffe1893c100144de1f1228b59e51d16fcea5bf30",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

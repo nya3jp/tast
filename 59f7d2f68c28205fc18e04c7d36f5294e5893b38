@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1575cea1_d100a744",
+        "filename": "src/chromiumos/tast/shutil/shutil.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1001886
+      },
+      "writtenOn": "2019-03-14T16:14:10Z",
+      "side": 1,
+      "message": "Should we somehow simplify it by changing A-za-z0-9_ inside the character class as \\w?",
+      "revId": "59f7d2f68c28205fc18e04c7d36f5294e5893b38",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

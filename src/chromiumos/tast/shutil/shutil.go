@@ -6,13 +6,21 @@
 package shutil
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 )
 
+const (
+	// The character class \w is equivalent to [0-9A-Za-z_]. Leading equals sign is unsafe in zsh,
+	// see http://zsh.sourceforge.net/Doc/Release/Expansion.html#g_t_0060_003d_0027-expansion.
+	leadingSafeChars  = `-\w@%+:,./`
+	trailingSafeChars = leadingSafeChars + "="
+)
+
 // safeRE matches an argument that can be literally included in a shell
 // command line without requiring escaping.
-var safeRE = regexp.MustCompile(`^[A-Za-z0-9@%_+=:,./-]+$`)
+var safeRE = regexp.MustCompile(fmt.Sprintf("^[%s][%s]*$", leadingSafeChars, trailingSafeChars))
 
 // Escape escapes a string so it can be safely included as an argument in a shell command line.
 // The string is not modified if it can already be safely included.

@@ -63,7 +63,7 @@ func checkDeps(ctx context.Context, portagePkg, cachePath string) (
 	// whether the error is expected or not.
 	missing, masked := parseEmergeOutput(stdout, stderr.Bytes(), portagePkg)
 	if err != nil && !masked {
-		return nil, nil, fmt.Errorf("%q failed: %v", strings.Join(cl, " "), err)
+		return nil, nil, fmt.Errorf("%q failed: %v", shutil.EscapeSlice(cl), err)
 	}
 
 	if len(missing) == 0 && cache != nil {

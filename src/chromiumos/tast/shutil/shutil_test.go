@@ -24,6 +24,7 @@ func TestEscape(t *testing.T) {
 		{`a!b`, `'a!b'`},
 		{`'`, `''"'"''`},
 		{`"`, `'"'`},
+		{`=foo`, `'=foo'`},
 		{`Tast's`, `'Tast'"'"'s'`},
 	} {
 		if s := Escape(c.in); s != c.exp {

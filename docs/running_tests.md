@@ -119,6 +119,8 @@ Various files and directories are created within the results directory:
     partial results if `tast` process is interrupted before `results.json` is
     written.
 *   `system_logs/` - Diff of `/var/log` on the DUT before and after testing.
+    *   `journal.log` - Log messages collected from journald, including kernel
+        messages.
 *   `tests/<test-name>/` - Per-test subdirectories, containing test logs and
     other output files.
     *   `log.txt` - Log of messages and errors reported by the test.

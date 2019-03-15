@@ -34,6 +34,24 @@
       "revId": "59f7d2f68c28205fc18e04c7d36f5294e5893b38",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1b002620_6b706744",
+        "filename": "src/chromiumos/tast/shutil/shutil.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1001886
+      },
+      "writtenOn": "2019-03-15T06:02:10Z",
+      "side": 1,
+      "message": "Updated to the clearer alternative :D",
+      "parentUuid": "2e9f2c65_3dba4e04",
+      "revId": "59f7d2f68c28205fc18e04c7d36f5294e5893b38",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

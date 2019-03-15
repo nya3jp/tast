@@ -732,6 +732,11 @@ func (s *SSH) Ping(ctx context.Context, timeout time.Duration) error {
 	}
 }
 
+// DialTCP creates a TCP connection to addr that will be tunneled over the SSH connection.
+func (s *SSH) DialTCP(addr *net.TCPAddr) (net.Conn, error) {
+	return s.cl.DialTCP("tcp", nil, addr)
+}
+
 // ListenTCP opens a remote TCP port for listening.
 func (s *SSH) ListenTCP(addr *net.TCPAddr) (net.Listener, error) {
 	return s.cl.ListenTCP(addr)

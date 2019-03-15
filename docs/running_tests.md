@@ -122,6 +122,10 @@ Various files and directories are created within the results directory:
     partial results if `tast` process is interrupted before `results.json` is
     written.
 *   `system_logs/` - Diff of `/var/log` on the DUT before and after testing.
+    *   `journal/` - Log files collected from [journald].
+        *   `journal.log` - Human-readable journald log messages.
+        *   `journal.export.gz` - gzip-compressed logs with full metadata from
+            journalctl's `-o export` mode.
 *   `tests/<test-name>/` - Per-test subdirectories, containing test logs and
     other output files.
     *   `log.txt` - Log of messages and errors reported by the test.
@@ -130,6 +134,7 @@ Various files and directories are created within the results directory:
     *   `...` - Other [output files] from the test.
 *   `timing.json` - Machine-parsable timing information about the test run.
 
+[journald]: https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html
 [output files]: writing_tests.md#Output-files
 [perf]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/perf
 

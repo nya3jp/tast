@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "633144d4_b5b51aa7",
+        "filename": "docs/running_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-15T16:29:36Z",
+      "side": 1,
+      "message": "nit: i think this should be journal/journal.log\n\nmind also documenting journal.export.gz?\n\n*   `journal/` - Log files collected from [journald].\n    *   `journal.log` - Human-readable journald log messages.\n    *   `journal.export.gz` - gzip-compressed logs with full metadata from journalctl\u0027s `-o export` mode.",
+      "range": {
+        "startLine": 122,
+        "startChar": 9,
+        "endLine": 122,
+        "endChar": 20
+      },
+      "revId": "87dc0ebfc36faf263b80dc221a779fd94d5254bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -5,6 +5,7 @@
 package runner
 
 import (
+	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -187,6 +188,9 @@ type Config struct {
 	// JournaldSubdir contains the subdirectory within CollectSysInfoResult.LogDir where journald logs will be written.
 	// No journald logs will be be collected if this is empty.
 	JournaldSubdir string `json:"-"`
+	// SystemInfoFunc contains a function that will be executed to gather additional system info.
+	// The information should be written to dir.
+	SystemInfoFunc func(ctx context.Context, dir string) error
 	// SystemCrashDirs contains directories where crash dumps are written when processes crash.
 	SystemCrashDirs []string
 

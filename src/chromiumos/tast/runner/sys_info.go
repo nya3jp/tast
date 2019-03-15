@@ -93,6 +93,13 @@ func handleCollectSysInfo(ctx context.Context, args *Args, cfg *Config, w io.Wri
 		}
 	}
 
+	// Collect additional information.
+	if cfg.SystemInfoFunc != nil {
+		if err := cfg.SystemInfoFunc(ctx, res.LogDir); err != nil {
+			res.Warnings = append(res.Warnings, fmt.Sprintf("Failed to collect additional system info: %v", err))
+		}
+	}
+
 	// Collect crashes.
 	dumps, err := getMinidumps(cfg.SystemCrashDirs)
 	if err != nil {

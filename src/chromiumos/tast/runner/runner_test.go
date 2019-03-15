@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -222,18 +223,41 @@ func TestRunSysInfo(t *gotesting.T) {
 	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
 
+	const (
+		logsDir    = "logs"
+		crashesDir = "crashes"
+
+		// Written before GetSysInfoState.
+		oldLogFile   = "1.txt"
+		oldLogData   = "first log"
+		oldCrashFile = "1.dmp"
+		oldCrashData = "first crash"
+
+		// Written after GetSysInfoState.
+		newLogFile   = "2.txt"
+		newLogData   = "second log"
+		newCrashFile = "2.dmp"
+		newCrashData = "second crash"
+
+		// Written by SystemInfoFunc.
+		customLogFile = "custom.txt"
+		customLogData = "custom data"
+	)
 	if err := testutil.WriteFiles(td, map[string]string{
-		"logs/1.txt":    "first file",
-		"crashes/1.dmp": "first crash",
+		filepath.Join(logsDir, oldLogFile):      oldLogData,
+		filepath.Join(crashesDir, oldCrashFile): oldCrashData,
 	}); err != nil {
 		t.Fatal(err)
 	}
 
 	// Get the initial state.
 	cfg := Config{
-		Type:            LocalRunner,
-		SystemLogDir:    filepath.Join(td, "logs"),
-		SystemCrashDirs: []string{filepath.Join(td, "crashes")},
+		Type:         LocalRunner,
+		SystemLogDir: filepath.Join(td, logsDir),
+		SystemInfoFunc: func(ctx context.Context, dir string) error {
+			return ioutil.WriteFile(filepath.Join(dir, customLogFile), []byte(customLogData), 0644)
+		},
+		SystemCrashDirs: []string{filepath.Join(td, crashesDir)},
 	}
 	status, stdout, _, sig := callRun(t, nil, &Args{Mode: GetSysInfoStateMode}, nil, &cfg)
 	if status != statusSuccess {
@@ -248,8 +272,8 @@ func TestRunSysInfo(t *gotesting.T) {
 	}
 
 	if err := testutil.WriteFiles(td, map[string]string{
-		"logs/2.txt":    "second file",
-		"crashes/2.dmp": "second crash",
+		filepath.Join(logsDir, newLogFile):      newLogData,
+		filepath.Join(crashesDir, newCrashFile): newCrashData,
 	}); err != nil {
 		t.Fatal(err)
 	}
@@ -276,14 +300,17 @@ func TestRunSysInfo(t *gotesting.T) {
 	if act, err := testutil.ReadFiles(collectRes.LogDir); err != nil {
 		t.Error(err)
 	} else {
-		if exp := map[string]string{"2.txt": "second file"}; !reflect.DeepEqual(act, exp) {
+		if exp := map[string]string{
+			newLogFile:    newLogData,
+			customLogFile: customLogData,
+		}; !reflect.DeepEqual(act, exp) {
 			t.Errorf("%v collected logs %v; want %v", sig, act, exp)
 		}
 	}
 	if act, err := testutil.ReadFiles(collectRes.CrashDir); err != nil {
 		t.Error(err)
 	} else {
-		if exp := map[string]string{"2.dmp": "second crash"}; !reflect.DeepEqual(act, exp) {
+		if exp := map[string]string{newCrashFile: newCrashData}; !reflect.DeepEqual(act, exp) {
 			t.Errorf("%v collected crashes %v; want %v", sig, act, exp)
 		}
 	}

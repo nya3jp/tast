@@ -11,13 +11,19 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"os"
+	"os/exec"
+	"path/filepath"
+	"strings"
 
 	"chromiumos/tast/autocaps"
 	"chromiumos/tast/crash"
 	"chromiumos/tast/lsbrelease"
 	"chromiumos/tast/runner"
+	"chromiumos/tast/shutil"
 )
 
 func main() {
@@ -31,6 +37,7 @@ func main() {
 		SystemLogDir:      "/var/log",
 		SystemLogExcludes: []string{"journal"}, // journald binary logs: https://crbug.com/931951
 		JournaldSubdir:    "journal",           // destination for exported journald logs
+		SystemInfoFunc:    writeSystemInfo,     // save additional system info at end of run
 		SystemCrashDirs:   crash.DefaultDirs(),
 		// The tast-use-flags package attempts to install this file to /etc,
 		// but it gets diverted to /usr/local since it's installed for test images.
@@ -93,4 +100,37 @@ func main() {
 		cfg.PrivateBundlesStampPath = "/usr/local/share/tast/.private-bundles-downloaded"
 	}
 	os.Exit(runner.Run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, &args, &cfg))
+}
+
+// writeSystemInfo writes additional system information from the DUT to files within dir.
+func writeSystemInfo(ctx context.Context, dir string) error {
+	runCmd := func(cmd *exec.Cmd, fn string) error {
+		f, err := os.Create(filepath.Join(dir, fn))
+		if err != nil {
+			return err
+		}
+		defer f.Close()
+
+		if _, err := fmt.Fprintf(f, "%q at end of testing:\n\n", shutil.EscapeSlice(cmd.Args)); err != nil {
+			return err
+		}
+		cmd.Stdout = f
+		cmd.Stderr = f
+		return cmd.Run()
+	}
+
+	var errs []string
+	for fn, cmd := range map[string]*exec.Cmd{
+		"upstart_jobs.txt": exec.CommandContext(ctx, "initctl", "list"),
+		"ps.txt":           exec.CommandContext(ctx, "ps", "wwaux"),
+	} {
+		if err := runCmd(cmd, fn); err != nil {
+			errs = append(errs, fmt.Sprintf("failed running %q: %v", shutil.EscapeSlice(cmd.Args), err))
+		}
+	}
+
+	if len(errs) > 0 {
+		return errors.New(strings.Join(errs, ", "))
+	}
+	return nil
 }

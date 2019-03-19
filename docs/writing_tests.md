@@ -427,6 +427,29 @@ dependencies.
 [chrome.New]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#New
 [tast-users mailing list]: https://groups.google.com/a/chromium.org/forum/#!forum/tast-users
 
+### Preconditions
+
+Sometimes a lengthy setup process (e.g. restarting Chrome and logging in, which
+takes at least 6-7 seconds) is needed by multiple tests. Rather than calling
+[chrome.New] at the beginning of each test, tests can declare that they require
+a logged-in Chrome instance by setting [testing.Test.Pre] to
+[chrome.LoggedIn]. This enables Tast to just perform login once and then share
+the same Chrome instance with all tests that specify the precondition. See the
+[chrome.LoggedIn] documentation for more details.
+
+If you want a new Chrome precondition with custom options, call
+[chrome.NewPrecondition] from a single place in your test package and save the
+precondition as a global variable so that all of your tests can use it when
+registering themselves. It's best to initialize and store the precondition in a
+subpackage so it can be shared by multiple test files.
+For example, see [video tests' pre subpackage].
+
+[chrome.New]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#New
+[testing.Test.Pre]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Test.Pre
+[chrome.LoggedIn]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#LoggedIn
+[chrome.NewPrecondition]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#NewPrecondition
+[video tests' pre subpackage]: https://chromium.git.corp.google.com/chromiumos/platform/tast-tests/+/refs/heads/master/src/chromiumos/tast/local/bundles/cros/video/lib/pre/
+
 ## Errors and logging
 
 The [testing.State] struct provides functions that tests may use to report their

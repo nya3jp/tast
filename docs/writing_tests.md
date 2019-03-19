@@ -427,6 +427,39 @@ dependencies.
 [chrome.New]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#New
 [tast-users mailing list]: https://groups.google.com/a/chromium.org/forum/#!forum/tast-users
 
+### Precondition
+
+When running multiple tests which have the `chrome_login` dependency, login and
+logout  will happen between all tests, which are time-consuming. You can skip
+them by giving a value in `Pre` field in `testing.Test`.
+For example, if you set a value in `Pre` field like the following, this test can
+share the same Chrome instance with other tests having the same precondition.
+See the [godoc for chrome.LoggedIn] for the detailed usage.
+
+```go
+func init() {
+    testing.AddTest(&testing.Test{
+        Func:  ScreenshotChrome,
+        // ...
+        Pre:   chrome.LoggedIn(),
+    })
+}
+```
+
+[godoc for chrome.LoggedIn]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#LoggedIn
+
+#### Create a new precondition
+
+If you want a new precondition, you can call
+[chrome.CreateLoggedInPrecondition] from a single place in your test package and
+save the precondition as a global variable so that all of your tests can use
+when registering themselves.
+It would be a good idea to have a subpackage where you can store precondition.
+For example, video test package has [a subpackage for preconditions].
+
+[chrome.CreateLoggedInPrecondition]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#CreateLoggedInPrecondition
+[a subpackage for precondition]: https://chromium.git.corp.google.com/chromiumos/platform/tast-tests/+/refs/heads/master/src/chromiumos/tast/local/bundles/cros/video/lib/pre/pre.go
+
 ## Errors and logging
 
 The [testing.State] struct provides functions that tests may use to report their

@@ -22,6 +22,30 @@
       "revId": "ed2de50c21e1f2655472ace86f3a9a83739df26b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d00379ac_7f2f03b9",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-19T03:20:27Z",
+      "side": 1,
+      "message": "thanks! uploaded https://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/1530031 to make this match the command in faillog",
+      "parentUuid": "468cd67a_8f2a18f0",
+      "range": {
+        "startLine": 125,
+        "startChar": 54,
+        "endLine": 125,
+        "endChar": 59
+      },
+      "revId": "ed2de50c21e1f2655472ace86f3a9a83739df26b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

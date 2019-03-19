@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e870d03d_15f19d24",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 433,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-03-19T15:34:51Z",
+      "side": 1,
+      "message": "extremely huge nit: s/  / /",
+      "range": {
+        "startLine": 433,
+        "startChar": 6,
+        "endLine": 433,
+        "endChar": 8
+      },
+      "revId": "011ef33143060ed4c933cfe31ed110b1483f980e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

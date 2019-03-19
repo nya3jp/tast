@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "468cd67a_8f2a18f0",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-03-19T02:35:07Z",
+      "side": 1,
+      "message": "Sorry I didn\u0027t catch this, but I recommend \"f\" flag to make the process hierarchy clearer. It\u0027s also used in faillog:\nhttps://cs.corp.google.com/chromeos_public/src/platform/tast/src/chromiumos/tast/faillog/faillog.go?q\u003dpackage:chromeos+auxwwf\u0026g\u003d0\u0026l\u003d53",
+      "range": {
+        "startLine": 125,
+        "startChar": 54,
+        "endLine": 125,
+        "endChar": 59
+      },
+      "revId": "ed2de50c21e1f2655472ace86f3a9a83739df26b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

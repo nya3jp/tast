@@ -427,6 +427,30 @@ dependencies.
 [chrome.New]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#New
 [tast-users mailing list]: https://groups.google.com/a/chromium.org/forum/#!forum/tast-users
 
+### Precondition
+
+When running multiple tests which have the `chrome_login` dependency, login and
+logout  will happen between all tests, which are time-consuming. You can skip
+them by giving a value in `Pre` field in `testing.Test`.
+For example, if you set a value in `Pre` field like the following, this test can
+share the same Chrome instance with other tests having the same precondition.
+See the [godoc for chrome.LoggedIn] for the detailed usage.
+
+```go
+func init() {
+    testing.AddTest(&testing.Test{
+        Func:  ScreenshotChrome,
+        // ...
+        Pre:   chrome.LoggedIn(),
+    })
+}
+```
+
+Existing preconditions are listed in the [Preconditions] document.
+
+[godoc for chrome.LoggedIn]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#LoggedIn
+[Preconditions]: precondition.md
+
 ## Errors and logging
 
 The [testing.State] struct provides functions that tests may use to report their

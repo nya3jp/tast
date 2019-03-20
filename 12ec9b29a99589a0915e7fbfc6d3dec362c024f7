@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a0325771_d9573a40",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 723,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-20T21:10:52Z",
+      "side": 1,
+      "message": "thinking about this some more, i guess that this wouldn\u0027t help with updater tests, since they\u0027re generally going to be remote tests rather than local ones... right?",
+      "revId": "12ec9b29a99589a0915e7fbfc6d3dec362c024f7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "53c29dc0_e1372016",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-20T21:10:52Z",
+      "side": 1,
+      "message": "should we also check that the path is defined so we don\u0027t end up with bogus URLs? i think that it will be missing in developer-produced images, right?",
+      "revId": "12ec9b29a99589a0915e7fbfc6d3dec362c024f7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5da49241_be013673",
+        "filename": "src/chromiumos/tast/runner/external.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 268,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-20T21:10:52Z",
+      "side": 1,
+      "message": "nit: maybe just lf(\"Downloading \" + job.link.computedURL)?",
+      "revId": "12ec9b29a99589a0915e7fbfc6d3dec362c024f7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

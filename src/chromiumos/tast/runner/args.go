@@ -208,6 +208,9 @@ type Config struct {
 	// See https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/autotest-capability-default/
 	// and the autocaps package for more information.
 	AutotestCapabilityDir string
+	// BuildArtifactsURL is the URL of Google Cloud Storage directory, ending with a slash, containing build
+	// artifacts for the current Chrome OS image.
+	BuildArtifactsURL string
 	// PrivateBundleArchiveURL contains the URL of the private test bundles archive corresponding to the current
 	// Chrome OS image.
 	PrivateBundleArchiveURL string

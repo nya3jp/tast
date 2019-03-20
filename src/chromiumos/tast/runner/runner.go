@@ -75,8 +75,8 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Args,
 	case RunTestsMode:
 		if args.report {
 			// Success is always reported when running tests on behalf of the tast command.
-			runTestsAndReport(ctx, args, stdout)
-		} else if err := runTestsAndLog(ctx, args, stdout); err != nil {
+			runTestsAndReport(ctx, args, cfg, stdout)
+		} else if err := runTestsAndLog(ctx, args, cfg, stdout); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
@@ -92,7 +92,7 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Args,
 
 // runTestsAndReport runs bundles serially to perform testing and writes control messages to stdout.
 // Fatal errors are reported via RunError messages, while test errors are reported via TestError messages.
-func runTestsAndReport(ctx context.Context, args *Args, stdout io.Writer) {
+func runTestsAndReport(ctx context.Context, args *Args, cfg *Config, stdout io.Writer) {
 	mw := control.NewMessageWriter(stdout)
 	bundles, tests, err := getBundlesAndTests(args)
 	if err != nil {
@@ -131,7 +131,7 @@ func runTestsAndReport(ctx context.Context, args *Args, stdout io.Writer) {
 			lm.Unlock()
 		}
 		cl := newDevserverClient(ctx, args.RunTestsArgs.Devservers, lf)
-		processExternalDataLinks(ctx, args.DataDir, tests, cl, lf)
+		processExternalDataLinks(ctx, args.DataDir, cfg.BuildArtifactsURL, tests, cl, lf)
 
 		for _, bundle := range bundles {
 			// Copy each bundle's output (consisting of control messages) directly to stdout.
@@ -149,14 +149,14 @@ func runTestsAndReport(ctx context.Context, args *Args, stdout io.Writer) {
 
 // runTestsAndLog runs bundles serially to perform testing and logs human-readable results to stdout.
 // Errors are returned both for fatal errors and for errors in individual tests.
-func runTestsAndLog(ctx context.Context, args *Args, stdout io.Writer) *command.StatusError {
+func runTestsAndLog(ctx context.Context, args *Args, cfg *Config, stdout io.Writer) *command.StatusError {
 	lg := log.New(stdout, "", log.LstdFlags)
 
 	pr, pw := io.Pipe()
 	ch := make(chan *command.StatusError, 1)
 	go func() { ch <- logMessages(pr, lg) }()
 
-	runTestsAndReport(ctx, args, pw)
+	runTestsAndReport(ctx, args, cfg, pw)
 	pw.Close()
 	return <-ch
 }

@@ -96,8 +96,11 @@ func main() {
 		AutotestCapabilityDir: autocaps.DefaultCapabilityDir,
 	}
 	if kvs, err := lsbrelease.Load(); err == nil {
-		cfg.PrivateBundleArchiveURL = fmt.Sprintf("gs://chromeos-image-archive/%s/tast_bundles.tar.bz2", kvs[lsbrelease.BuilderPath])
-		cfg.PrivateBundlesStampPath = "/usr/local/share/tast/.private-bundles-downloaded"
+		if bp := kvs[lsbrelease.BuilderPath]; bp != "" {
+			cfg.BuildArtifactsURL = "gs://chromeos-image-archive/" + bp + "/"
+			cfg.PrivateBundleArchiveURL = cfg.BuildArtifactsURL + "tast_bundles.tar.bz2"
+			cfg.PrivateBundlesStampPath = "/usr/local/share/tast/.private-bundles-downloaded"
+		}
 	}
 	os.Exit(runner.Run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, &args, &cfg))
 }

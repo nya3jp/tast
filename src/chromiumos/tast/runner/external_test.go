@@ -20,8 +20,10 @@ import (
 
 func dummyLogFn(msg string) {}
 
-// Simple scenario of one internal data file and two external data files.
-func TestPrepareDownloadsSimple(t *gotesting.T) {
+const fakeArtifactURL = "gs://somebucket/path/to/artifacts/"
+
+// Simple scenario of one internal data file and two static external data files.
+func TestPrepareDownloadsStatic(t *gotesting.T) {
 	const (
 		pkg          = "cat"
 		intFile      = "int_file.txt"
@@ -49,15 +51,61 @@ func TestPrepareDownloadsSimple(t *gotesting.T) {
 		{Pkg: pkg, Data: []string{extFile1}},
 		{Pkg: pkg, Data: []string{intFile, extFile2}},
 	}
-	jobs := prepareDownloads(dataDir, tests, dummyLogFn)
+	jobs := prepareDownloads(dataDir, fakeArtifactURL, tests, dummyLogFn)
 
 	exp := []*downloadJob{
 		{
-			link:  externalLink{URL: "url1", Size: 111, SHA256Sum: "aaaa", Executable: false},
+			link:  externalLink{StaticURL: "url1", Size: 111, SHA256Sum: "aaaa", Executable: false, computedURL: "url1"},
 			dests: []string{filepath.Join(dataSubdir, extFile1)},
 		},
 		{
-			link:  externalLink{URL: "url2", Size: 222, SHA256Sum: "bbbb", Executable: true},
+			link:  externalLink{StaticURL: "url2", Size: 222, SHA256Sum: "bbbb", Executable: true, computedURL: "url2"},
+			dests: []string{filepath.Join(dataSubdir, extFile2)},
+		},
+	}
+	if !reflect.DeepEqual(jobs, exp) {
+		t.Errorf("prepareDownloads returned %v; want %v", jobs, exp)
+	}
+}
+
+// Simple scenario of one internal data file and two artifact external data files.
+func TestPrepareDownloadsArtifact(t *gotesting.T) {
+	const (
+		pkg          = "cat"
+		intFile      = "int_file.txt"
+		extFile1     = "ext_file1.txt"
+		extFile2     = "ext_file2.txt"
+		extLink1     = extFile1 + testing.ExternalLinkSuffix
+		extLink2     = extFile2 + testing.ExternalLinkSuffix
+		extLink1JSON = `{"type": "artifact", "name": "some_artifact1"}`
+		extLink2JSON = `{"type": "artifact", "name": "some_artifact2", "executable": true}`
+	)
+
+	dataDir := testutil.TempDir(t)
+	defer os.RemoveAll(dataDir)
+	dataSubdir := filepath.Join(dataDir, pkg, "data")
+
+	if err := testutil.WriteFiles(dataSubdir, map[string]string{
+		intFile:  intFile,
+		extLink1: extLink1JSON,
+		extLink2: extLink2JSON,
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	tests := []*testing.Test{
+		{Pkg: pkg, Data: []string{extFile1}},
+		{Pkg: pkg, Data: []string{intFile, extFile2}},
+	}
+	jobs := prepareDownloads(dataDir, fakeArtifactURL, tests, dummyLogFn)
+
+	exp := []*downloadJob{
+		{
+			link:  externalLink{Type: typeArtifact, Name: "some_artifact1", computedURL: fakeArtifactURL + "some_artifact1"},
+			dests: []string{filepath.Join(dataSubdir, extFile1)},
+		},
+		{
+			link:  externalLink{Type: typeArtifact, Name: "some_artifact2", Executable: true, computedURL: fakeArtifactURL + "some_artifact2"},
 			dests: []string{filepath.Join(dataSubdir, extFile2)},
 		},
 	}
@@ -95,11 +143,11 @@ func TestPrepareDownloadsDupLinks(t *gotesting.T) {
 		{Pkg: pkg, Data: []string{extFile1, extFile2}},
 		{Pkg: pkg, Data: []string{extFile2, extFile3}},
 	}
-	jobs := prepareDownloads(dataDir, tests, dummyLogFn)
+	jobs := prepareDownloads(dataDir, fakeArtifactURL, tests, dummyLogFn)
 
 	exp := []*downloadJob{
 		{
-			link: externalLink{URL: "url1", Size: 111, SHA256Sum: "aaaa", Executable: false},
+			link: externalLink{StaticURL: "url1", Size: 111, SHA256Sum: "aaaa", Executable: false, computedURL: "url1"},
 			dests: []string{
 				filepath.Join(dataSubdir, extFile1),
 				filepath.Join(dataSubdir, extFile2),
@@ -138,11 +186,11 @@ func TestPrepareDownloadsInconsistentDupLinks(t *gotesting.T) {
 	tests := []*testing.Test{
 		{Pkg: pkg, Data: []string{extFile1, extFile2}},
 	}
-	jobs := prepareDownloads(dataDir, tests, dummyLogFn)
+	jobs := prepareDownloads(dataDir, fakeArtifactURL, tests, dummyLogFn)
 
 	exp := []*downloadJob{
 		{
-			link: externalLink{URL: "same_url", Size: 111, SHA256Sum: "aaaa", Executable: false},
+			link: externalLink{StaticURL: "same_url", Size: 111, SHA256Sum: "aaaa", Executable: false, computedURL: "same_url"},
 			dests: []string{
 				filepath.Join(dataSubdir, extFile1),
 				// extFile2 is not downloaded due to inconsistent link data.
@@ -184,17 +232,17 @@ func TestPrepareDownloadsStale(t *gotesting.T) {
 	tests := []*testing.Test{
 		{Pkg: pkg, Data: []string{extFile1, extFile2}},
 	}
-	jobs := prepareDownloads(dataDir, tests, dummyLogFn)
+	jobs := prepareDownloads(dataDir, fakeArtifactURL, tests, dummyLogFn)
 
 	exp := []*downloadJob{
 		{
-			link: externalLink{URL: "url1", Size: 9, SHA256Sum: "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae"},
+			link: externalLink{StaticURL: "url1", Size: 9, SHA256Sum: "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae", computedURL: "url1"},
 			dests: []string{
 				filepath.Join(dataSubdir, extFile1),
 			},
 		},
 		{
-			link: externalLink{URL: "url2", Size: 3, SHA256Sum: "bbbb"},
+			link: externalLink{StaticURL: "url2", Size: 3, SHA256Sum: "bbbb", computedURL: "url2"},
 			dests: []string{
 				filepath.Join(dataSubdir, extFile2),
 			},
@@ -235,7 +283,7 @@ func TestPrepareDownloadsUpToDate(t *gotesting.T) {
 	tests := []*testing.Test{
 		{Pkg: pkg, Data: []string{extFile1, extFile2}},
 	}
-	jobs := prepareDownloads(dataDir, tests, dummyLogFn)
+	jobs := prepareDownloads(dataDir, fakeArtifactURL, tests, dummyLogFn)
 
 	if len(jobs) > 0 {
 		t.Errorf("prepareDownloads returned %v; want []", jobs)
@@ -248,10 +296,13 @@ func TestPrepareDownloadsBrokenLink(t *gotesting.T) {
 		pkg          = "cat"
 		extFile1     = "ext_file1.txt"
 		extFile2     = "ext_file2.txt"
+		extFile3     = "ext_file3.txt"
 		extLink1     = extFile1 + testing.ExternalLinkSuffix
 		extLink2     = extFile2 + testing.ExternalLinkSuffix
-		extLink1JSON = "Hello, world!"
-		extLink2JSON = `{"url": "url2", "size": 222, "sha256sum": "bbbb"}`
+		extLink3     = extFile3 + testing.ExternalLinkSuffix
+		extLink1JSON = "Hello, world!"                                     // not JSON
+		extLink2JSON = `{"url": "url2", "size": 222, "sha256sum": "bbbb"}` // OK
+		extLink3JSON = `{"type": "artifact", "name": "foo", "size": 123}`  // size must be omitted
 	)
 
 	dataDir := testutil.TempDir(t)
@@ -261,6 +312,7 @@ func TestPrepareDownloadsBrokenLink(t *gotesting.T) {
 	if err := testutil.WriteFiles(dataSubdir, map[string]string{
 		extLink1: extLink1JSON,
 		extLink2: extLink2JSON,
+		extLink3: extLink3JSON,
 	}); err != nil {
 		t.Fatal(err)
 	}
@@ -268,11 +320,11 @@ func TestPrepareDownloadsBrokenLink(t *gotesting.T) {
 	tests := []*testing.Test{
 		{Pkg: pkg, Data: []string{extFile1, extFile2}},
 	}
-	jobs := prepareDownloads(dataDir, tests, dummyLogFn)
+	jobs := prepareDownloads(dataDir, fakeArtifactURL, tests, dummyLogFn)
 
 	exp := []*downloadJob{
 		{
-			link: externalLink{URL: "url2", Size: 222, SHA256Sum: "bbbb", Executable: false},
+			link: externalLink{StaticURL: "url2", Size: 222, SHA256Sum: "bbbb", Executable: false, computedURL: "url2"},
 			dests: []string{
 				filepath.Join(dataSubdir, extFile2),
 			},
@@ -280,6 +332,35 @@ func TestPrepareDownloadsBrokenLink(t *gotesting.T) {
 	}
 	if !reflect.DeepEqual(jobs, exp) {
 		t.Errorf("prepareDownloads returned %v; want %v", jobs, exp)
+	}
+}
+
+// Artifact links can not be resolved if artifactURL is unavailable.
+func TestPrepareDownloadsArtifactUnavailable(t *gotesting.T) {
+	const (
+		pkg          = "cat"
+		extFile1     = "ext_file1.txt"
+		extLink1     = extFile1 + testing.ExternalLinkSuffix
+		extLink1JSON = `{"type": "artifact", "name": "foo"}`
+	)
+
+	dataDir := testutil.TempDir(t)
+	defer os.RemoveAll(dataDir)
+	dataSubdir := filepath.Join(dataDir, pkg, "data")
+
+	if err := testutil.WriteFiles(dataSubdir, map[string]string{
+		extLink1: extLink1JSON,
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	tests := []*testing.Test{
+		{Pkg: pkg, Data: []string{extFile1}},
+	}
+	jobs := prepareDownloads(dataDir, "", tests, dummyLogFn)
+
+	if len(jobs) > 0 {
+		t.Errorf("prepareDownloads returned %v; want []", jobs)
 	}
 }
 
@@ -312,7 +393,7 @@ func TestPrepareDownloadsError(t *gotesting.T) {
 	tests := []*testing.Test{
 		{Pkg: pkg, Data: []string{extFile1, extFile2}},
 	}
-	prepareDownloads(dataDir, tests, dummyLogFn)
+	prepareDownloads(dataDir, fakeArtifactURL, tests, dummyLogFn)
 
 	// extError1 should exist due to JSON parse error.
 	if _, err := os.Stat(filepath.Join(dataSubdir, extError1)); err != nil {
@@ -325,8 +406,8 @@ func TestPrepareDownloadsError(t *gotesting.T) {
 	}
 }
 
-// All files are successfully downloaded.
-func TestRunDownloadsSimple(t *gotesting.T) {
+// Static external data files are successfully downloaded.
+func TestRunDownloadsStatic(t *gotesting.T) {
 	const (
 		file1      = "file1"
 		file2      = "file2"
@@ -343,18 +424,86 @@ func TestRunDownloadsSimple(t *gotesting.T) {
 	jobs := []*downloadJob{
 		{
 			link: externalLink{
-				URL:       url1,
-				Size:      3,
-				SHA256Sum: sha256Sum1,
+				StaticURL:   url1,
+				Size:        3,
+				SHA256Sum:   sha256Sum1,
+				computedURL: url1,
 			},
 			dests: []string{filepath.Join(tmpDir, file1)},
 		},
 		{
 			link: externalLink{
-				URL:        url2,
-				Size:       3,
-				SHA256Sum:  sha256Sum2,
-				Executable: true,
+				StaticURL:   url2,
+				Size:        3,
+				SHA256Sum:   sha256Sum2,
+				Executable:  true,
+				computedURL: url2,
+			},
+			dests: []string{filepath.Join(tmpDir, file2)},
+		},
+	}
+	cl := devserver.NewFakeClient(map[string][]byte{
+		url1: []byte(data1),
+		url2: []byte(data2),
+	})
+
+	runDownloads(context.Background(), tmpDir, jobs, cl, dummyLogFn)
+
+	path1 := filepath.Join(tmpDir, file1)
+	if out, err := ioutil.ReadFile(path1); err != nil {
+		t.Error(err)
+	} else if !bytes.Equal(out, []byte(data1)) {
+		t.Errorf("Corrupted data for %s: got %q, want %q", file1, string(out), data1)
+	}
+	if fi, err := os.Stat(path1); err != nil {
+		t.Error(err)
+	} else if fi.Mode() != 0644 {
+		t.Errorf("Unexpected mode for %s: got %o, want %o", file1, fi.Mode(), 0644)
+	}
+
+	path2 := filepath.Join(tmpDir, file2)
+	if out, err := ioutil.ReadFile(path2); err != nil {
+		t.Error(err)
+	} else if !bytes.Equal(out, []byte(data2)) {
+		t.Errorf("Corrupted data for %s: got %q, want %q", file2, string(out), data2)
+	}
+	if fi, err := os.Stat(path2); err != nil {
+		t.Error(err)
+	} else if fi.Mode() != 0755 {
+		t.Errorf("Unexpected mode for %s: got %o, want %o", file2, fi.Mode(), 0755)
+	}
+}
+
+// Artifact external data files are successfully downloaded.
+func TestRunDownloadsArtifact(t *gotesting.T) {
+	const (
+		name1 = "name1"
+		name2 = "name2"
+		file1 = "file1"
+		file2 = "file2"
+		url1  = fakeArtifactURL + name1
+		url2  = fakeArtifactURL + name2
+		data1 = "foo"
+		data2 = "bar"
+	)
+	tmpDir := testutil.TempDir(t)
+	defer os.RemoveAll(tmpDir)
+
+	jobs := []*downloadJob{
+		{
+			link: externalLink{
+				Type:        typeArtifact,
+				Name:        name1,
+				computedURL: url1,
+			},
+			dests: []string{filepath.Join(tmpDir, file1)},
+		},
+		{
+			link: externalLink{
+				Type:        typeArtifact,
+				Name:        name2,
+				Executable:  true,
+				computedURL: url2,
 			},
 			dests: []string{filepath.Join(tmpDir, file2)},
 		},
@@ -412,25 +561,28 @@ func TestRunDownloadsCorrupted(t *gotesting.T) {
 	jobs := []*downloadJob{
 		{
 			link: externalLink{
-				URL:       url1,
-				Size:      12345, // wrong size
-				SHA256Sum: sha256Sum1,
+				StaticURL:   url1,
+				Size:        12345, // wrong size
+				SHA256Sum:   sha256Sum1,
+				computedURL: url1,
 			},
 			dests: []string{filepath.Join(tmpDir, file1)},
 		},
 		{
 			link: externalLink{
-				URL:       url2,
-				Size:      3,
-				SHA256Sum: sha256Sum2,
+				StaticURL:   url2,
+				Size:        3,
+				SHA256Sum:   sha256Sum2,
+				computedURL: url2,
 			},
 			dests: []string{filepath.Join(tmpDir, file2)},
 		},
 		{
 			link: externalLink{
-				URL:       url3,
-				Size:      3,
-				SHA256Sum: sha256Sum3,
+				StaticURL:   url3,
+				Size:        3,
+				SHA256Sum:   sha256Sum3,
+				computedURL: url3,
 			},
 			dests: []string{filepath.Join(tmpDir, file3)},
 		},
@@ -465,17 +617,19 @@ func TestRunDownloadsError(t *gotesting.T) {
 	jobs := []*downloadJob{
 		{
 			link: externalLink{
-				URL:       url,
-				Size:      3,
-				SHA256Sum: sha256Sum,
+				StaticURL:   url,
+				Size:        3,
+				SHA256Sum:   sha256Sum,
+				computedURL: url,
 			},
 			dests: []string{filepath.Join(tmpDir, file1)},
 		},
 		{
 			link: externalLink{
-				URL:       url,
-				Size:      3,
-				SHA256Sum: sha256Sum,
+				StaticURL:   url,
+				Size:        3,
+				SHA256Sum:   sha256Sum,
+				computedURL: url,
 			},
 			dests: []string{filepath.Join(tmpDir, file2)},
 		},

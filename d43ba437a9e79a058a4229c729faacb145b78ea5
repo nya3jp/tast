@@ -22,6 +22,47 @@
       "revId": "d43ba437a9e79a058a4229c729faacb145b78ea5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bc6b2e1c_046ea467",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1108834
+      },
+      "writtenOn": "2019-03-20T07:37:03Z",
+      "side": 1,
+      "message": "For the guest images case, the file is an uncompressed .tar which contains multiple compressed tarballs within it.",
+      "parentUuid": "318a5954_28ad9a80",
+      "range": {
+        "startLine": 14,
+        "startChar": 2,
+        "endLine": 14,
+        "endChar": 32
+      },
+      "revId": "d43ba437a9e79a058a4229c729faacb145b78ea5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bd9381e3_dddb337d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1108834
+      },
+      "writtenOn": "2019-03-20T07:37:03Z",
+      "side": 1,
+      "message": "This won\u0027t work on developer builds which lack this KV.",
+      "revId": "d43ba437a9e79a058a4229c729faacb145b78ea5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

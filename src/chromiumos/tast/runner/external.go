@@ -9,6 +9,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -22,12 +23,83 @@ import (
 	"chromiumos/tast/testing"
 )
 
+// externalLinkType represents a type of an external data link.
+type externalLinkType string
+
+const (
+	// typeStatic is for a link to a file on web with fixed URL and content.
+	typeStatic externalLinkType = ""
+
+	// typeArtifact is for a link to a file in Chrome OS build artifacts
+	// corresponding to the DUT image version.
+	typeArtifact = "artifact"
+)
+
 // externalLink holds information of an external data link.
 type externalLink struct {
-	URL        string `json:"url"`
-	Size       int64  `json:"size"`
-	SHA256Sum  string `json:"sha256sum"`
-	Executable bool   `json:"executable"`
+	// Type declares the type of the external data link.
+	Type externalLinkType `json:"type"`
+
+	// StaticURL is the URL of the static external data file on Google Cloud Storage.
+	// This field is valid for static external data links only.
+	StaticURL string `json:"url"`
+
+	// Size is the size of the external data file in bytes.
+	// This field is valid for static external data links only.
+	Size int64 `json:"size"`
+
+	// Size is SHA256 hash of the external data file.
+	// This field is valid for static external data links only.
+	SHA256Sum string `json:"sha256sum"`
+
+	// Name is the file name of a build artifact.
+	// This field is valid for build artifact external data links only.
+	Name string `json:"name"`
+
+	// Executable specifies whether the external data file is executable.
+	// If this is true, executable permission is given to the downloaded file.
+	Executable bool `json:"executable"`
+
+	// computedURL is the URL of the external data file on Google Cloud Storage.
+	// This field is filled by Finalize.
+	computedURL string
+}
+
+// Finalize checks if the link definition is correct, and fills extra fields.
+func (l *externalLink) Finalize(artifactsURL string) error {
+	switch l.Type {
+	case typeStatic:
+		if l.StaticURL == "" {
+			return errors.New("url field must not be empty for static external data file")
+		}
+		if l.Name != "" {
+			return errors.New("name field must be empty for static external data file")
+		}
+		if l.SHA256Sum == "" {
+			return errors.New("sha256sum field must not be empty for static external data file")
+		}
+		l.computedURL = l.StaticURL
+	case typeArtifact:
+		if l.StaticURL != "" {
+			return errors.New("url field must be empty for artifact external data file")
+		}
+		if l.Name == "" {
+			return errors.New("name field must not be empty for artifact external data file")
+		}
+		if l.SHA256Sum != "" {
+			return errors.New("sha256sum field must be empty for artifact external data file")
+		}
+		if l.Size != 0 {
+			return errors.New("size field must be empty for artifact external data file")
+		}
+		if artifactsURL == "" {
+			return errors.New("build artifact URL is unknown (running a developer build?)")
+		}
+		l.computedURL = artifactsURL + l.Name
+	default:
+		return fmt.Errorf("unknown external data link type %q", l.Type)
+	}
+	return nil
 }
 
 // downloadJob represents a job to download an external data file and make hard links
@@ -41,14 +113,18 @@ type downloadJob struct {
 type downloadResult struct {
 	job      *downloadJob
 	duration time.Duration
+	size     int64
 	err      error
 }
 
 // processExternalDataLinks downloads missing or stale external data files associated with tests.
+// dataDir is the path to the base directory containing external data link files (typically
+// "/usr/local/share/tast/data" on DUT). artifactURL is the URL of Google Cloud Storage directory,
+// ending with a slash, containing build artifacts for the current Chrome OS image.
 // This function does not return errors; instead it tries to download files as far as possible and
 // logs encountered errors with lf so that a single download error does not cause all tests to fail.
-func processExternalDataLinks(ctx context.Context, dataDir string, tests []*testing.Test, cl devserver.Client, lf func(msg string)) {
-	jobs := prepareDownloads(dataDir, tests, lf)
+func processExternalDataLinks(ctx context.Context, dataDir, artifactsURL string, tests []*testing.Test, cl devserver.Client, lf func(msg string)) {
+	jobs := prepareDownloads(dataDir, artifactsURL, tests, lf)
 	if len(jobs) == 0 {
 		return
 	}
@@ -59,7 +135,7 @@ func processExternalDataLinks(ctx context.Context, dataDir string, tests []*test
 // It also removes stale files so they are never used even if we fail to download them later.
 // When it encounters errors, *.external-error files are saved so that they can be read and
 // reported by bundles later.
-func prepareDownloads(dataDir string, tests []*testing.Test, lf func(msg string)) []*downloadJob {
+func prepareDownloads(dataDir, artifactsURL string, tests []*testing.Test, lf func(msg string)) []*downloadJob {
 	urlToJob := make(map[string]*downloadJob)
 	hasErr := false
 
@@ -88,7 +164,7 @@ func prepareDownloads(dataDir string, tests []*testing.Test, lf func(msg string)
 				continue
 			}
 
-			link, err := loadExternalLink(linkPath)
+			link, err := loadExternalLink(linkPath, artifactsURL)
 			if err != nil {
 				reportErr("failed to load %s: %v", linkPath, err)
 				continue
@@ -116,10 +192,10 @@ func prepareDownloads(dataDir string, tests []*testing.Test, lf func(msg string)
 			}
 
 			// To check consistency, create an entry in urlToJob even if we are not updating the destination file.
-			job := urlToJob[link.URL]
+			job := urlToJob[link.computedURL]
 			if job == nil {
 				job = &downloadJob{link, nil}
-				urlToJob[link.URL] = job
+				urlToJob[link.computedURL] = job
 			} else if job.link != link {
 				reportErr("conflicting external data link found at %s: got %+v, want %+v", filepath.Join(t.DataDir(), name), link, job.link)
 				continue
@@ -148,7 +224,7 @@ func prepareDownloads(dataDir string, tests []*testing.Test, lf func(msg string)
 		}
 	}
 	sort.Slice(jobs, func(i, j int) bool {
-		return jobs[i].link.URL < jobs[j].link.URL
+		return jobs[i].link.computedURL < jobs[j].link.computedURL
 	})
 
 	lf(fmt.Sprintf("Found %d external linked data file(s), need to download %d", len(urlToJob), len(jobs)))
@@ -159,7 +235,7 @@ func prepareDownloads(dataDir string, tests []*testing.Test, lf func(msg string)
 }
 
 // loadExternalLink loads a JSON file of externalLink.
-func loadExternalLink(path string) (externalLink, error) {
+func loadExternalLink(path, artifactsURL string) (externalLink, error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return externalLink{}, err
@@ -168,6 +244,10 @@ func loadExternalLink(path string) (externalLink, error) {
 
 	var link externalLink
 	if err := json.NewDecoder(f).Decode(&link); err != nil {
+		return externalLink{}, err
+	}
+
+	if err := link.Finalize(artifactsURL); err != nil {
 		return externalLink{}, err
 	}
 	return link, nil
@@ -186,11 +266,11 @@ func runDownloads(ctx context.Context, dataDir string, jobs []*downloadJob, cl d
 	for i := 0; i < parallelism; i++ {
 		go func() {
 			for job := range jobCh {
-				lf(fmt.Sprintf("Downloading %s", job.link.URL))
+				lf("Downloading " + job.link.computedURL)
 				start := time.Now()
-				err := runDownload(ctx, dataDir, job, cl)
+				size, err := runDownload(ctx, dataDir, job, cl)
 				duration := time.Since(start)
-				resCh <- &downloadResult{job, duration, err}
+				resCh <- &downloadResult{job, duration, size, err}
 			}
 		}()
 	}
@@ -201,16 +281,16 @@ func runDownloads(ctx context.Context, dataDir string, jobs []*downloadJob, cl d
 		select {
 		case res := <-resCh:
 			if res.err != nil {
-				msg := fmt.Sprintf("failed to download %s: %v", res.job.link.URL, res.err)
+				msg := fmt.Sprintf("failed to download %s: %v", res.job.link.computedURL, res.err)
 				lf(strings.ToUpper(msg[:1]) + msg[1:])
 				for _, dest := range res.job.dests {
 					ioutil.WriteFile(dest+testing.ExternalErrorSuffix, []byte(msg), 0666)
 				}
 				hasErr = true
 			} else {
-				mbs := float64(res.job.link.Size) / res.duration.Seconds() / 1024 / 1024
+				mbs := float64(res.size) / res.duration.Seconds() / 1024 / 1024
 				lf(fmt.Sprintf("Finished downloading %s (%d bytes, %v, %.1fMB/s)",
-					res.job.link.URL, res.job.link.Size, res.duration.Round(time.Millisecond), mbs))
+					res.job.link.computedURL, res.size, res.duration.Round(time.Millisecond), mbs))
 			}
 			finished++
 		case <-time.After(30 * time.Second):
@@ -225,11 +305,11 @@ func runDownloads(ctx context.Context, dataDir string, jobs []*downloadJob, cl d
 }
 
 // runDownload downloads an external data file.
-func runDownload(ctx context.Context, dataDir string, job *downloadJob, cl devserver.Client) error {
+func runDownload(ctx context.Context, dataDir string, job *downloadJob, cl devserver.Client) (size int64, err error) {
 	// Create the temporary file under dataDir to make use of hard links.
 	f, err := ioutil.TempFile(dataDir, ".external-download.")
 	if err != nil {
-		return err
+		return 0, err
 	}
 	defer os.Remove(f.Name())
 	defer f.Close()
@@ -239,31 +319,36 @@ func runDownload(ctx context.Context, dataDir string, job *downloadJob, cl devse
 		mode = 0755
 	}
 	if err := f.Chmod(mode); err != nil {
-		return err
+		return 0, err
 	}
 
-	_, err = cl.DownloadGS(ctx, f, job.link.URL)
+	size, err = cl.DownloadGS(ctx, f, job.link.computedURL)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	if err := verify(f, job.link); err != nil {
-		return err
+		return 0, err
 	}
 
 	for _, dest := range job.dests {
 		if err := os.Remove(dest); err != nil && !os.IsNotExist(err) {
-			return err
+			return 0, err
 		}
 		if err := os.Link(f.Name(), dest); err != nil {
-			return err
+			return 0, err
 		}
 	}
-	return nil
+	return size, nil
 }
 
 // verify checks the integrity of an external data file.
 func verify(f *os.File, link externalLink) error {
+	if link.Type == typeArtifact {
+		// For artifacts, we do not verify files.
+		return nil
+	}
+
 	fi, err := f.Stat()
 	if err != nil {
 		return err

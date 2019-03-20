@@ -720,6 +720,16 @@ following content:
 > date as a suffix in the filename to make it easy to add a new version when
 > needed, e.g. `user_login_data_20180812.bin`.
 
+If data files are produced as build artifacts of Chrome OS, they can be also
+used as external data files in the following format:
+
+```
+{
+  "type": "artifact",
+  "name": "license_credits.html"
+}
+```
+
 [external link format]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/runner/external.go
 [example.DataFiles]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/master/src/chromiumos/tast/local/bundles/cros/example/data_files.go
 

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "318a5954_28ad9a80",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-03-20T07:27:46Z",
+      "side": 1,
+      "message": "I wonder if I should add better support of archive files. In many cases, build artifacts are archive files such as .tar.bz2 and .zip. If tests want to use files in those archives, they need to extract files by themselves. That would be a bit boring boilerplate, and also inefficient (especially for .tar.bz2 because tar can\u0027t be random-accessed).",
+      "range": {
+        "startLine": 14,
+        "startChar": 2,
+        "endLine": 14,
+        "endChar": 32
+      },
+      "revId": "d43ba437a9e79a058a4229c729faacb145b78ea5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"os/exec"
 	"strings"
 )
@@ -48,7 +49,19 @@ func (g *git) readFile(path string) ([]byte, error) {
 	if g.commit == "" {
 		return ioutil.ReadFile(path)
 	}
-	return exec.Command("git", "show", fmt.Sprintf("%s:%s", g.commit, path)).Output()
+
+	obj := fmt.Sprintf("%s:%s", g.commit, path)
+	// For symlinks, we cannot use "git show" since it returns the path of the linked file, and not the content.
+	if sym, err := isSymlink(path); err != nil {
+		return nil, err
+	} else if sym {
+		// "--batch=" == use an empty format. Skip object information, just return the content.
+		cmd := exec.Command("git", "cat-file", "--batch=", "--follow-symlinks")
+		cmd.Stdin = strings.NewReader(obj)
+		return cmd.Output()
+	}
+
+	return exec.Command("git", "show", obj).Output()
 }
 
 // listDir lists files under a directory at the commit.
@@ -71,4 +84,14 @@ func (g *git) listDir(dir string) ([]string, error) {
 		return nil, err
 	}
 	return strings.Split(strings.TrimRight(string(out), "\n"), "\n"), nil
+}
+
+// isSymlink returns whether path is a symlink.
+func isSymlink(path string) (bool, error) {
+	fi, err := os.Lstat(path)
+	if err != nil {
+		return false, err
+	}
+	mode := fi.Mode()
+	return (mode&os.ModeSymlink != 0), nil
 }

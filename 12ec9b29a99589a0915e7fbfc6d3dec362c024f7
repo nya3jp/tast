@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "e7bca3d9_c5b5f871",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 723,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-03-22T02:17:02Z",
+      "side": 1,
+      "message": "Yes you\u0027re right. Generally, we lack support of external files in remote tests, and that\u0027s a bigger problem we should address as we add more remote tests.",
+      "parentUuid": "a0325771_d9573a40",
+      "revId": "12ec9b29a99589a0915e7fbfc6d3dec362c024f7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "53c29dc0_e1372016",
         "filename": "src/chromiumos/cmd/local_test_runner/main.go",
         "patchSetId": 2
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "1183483d_8b51d00e",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-03-22T02:17:02Z",
+      "side": 1,
+      "message": "Good point! Added a check to make sure BUILDER_PATH is not empty.",
+      "parentUuid": "53c29dc0_e1372016",
+      "revId": "12ec9b29a99589a0915e7fbfc6d3dec362c024f7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5da49241_be013673",
         "filename": "src/chromiumos/tast/runner/external.go",
         "patchSetId": 2
@@ -50,6 +86,24 @@
       "revId": "12ec9b29a99589a0915e7fbfc6d3dec362c024f7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e9bf5779_e89d683b",
+        "filename": "src/chromiumos/tast/runner/external.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 268,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-03-22T02:17:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5da49241_be013673",
+      "revId": "12ec9b29a99589a0915e7fbfc6d3dec362c024f7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

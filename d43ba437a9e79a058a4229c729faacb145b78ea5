@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "89451394_3d601b63",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-03-22T02:17:02Z",
+      "side": 1,
+      "message": "After thinking for a while, I think we can omit archive support from this initial patch and watch for real use cases to decide if it\u0027s good or not.",
+      "parentUuid": "bc6b2e1c_046ea467",
+      "range": {
+        "startLine": 14,
+        "startChar": 2,
+        "endLine": 14,
+        "endChar": 32
+      },
+      "revId": "d43ba437a9e79a058a4229c729faacb145b78ea5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "bd9381e3_dddb337d",
         "filename": "/COMMIT_MSG",
         "patchSetId": 1
@@ -63,6 +87,24 @@
       "revId": "d43ba437a9e79a058a4229c729faacb145b78ea5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0fc78181_a872d816",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-03-22T02:17:02Z",
+      "side": 1,
+      "message": "Yes, that\u0027s true... but I don\u0027t have good idea to deal with the case, so let me exclude the case from the scope of this initial implementation. I\u0027ll just make sure proper error is reported.",
+      "parentUuid": "bd9381e3_dddb337d",
+      "revId": "d43ba437a9e79a058a4229c729faacb145b78ea5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

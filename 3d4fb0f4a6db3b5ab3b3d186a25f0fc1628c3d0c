@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "57339dcc_b1fe2dfd",
+        "filename": "src/chromiumos/tast/runner/external.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 291,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-03-22T02:17:02Z",
+      "side": 1,
+      "message": "Fixed an issue that artifact external data files are considered 0 byte (because the size is not declared in link files).",
+      "revId": "3d4fb0f4a6db3b5ab3b3d186a25f0fc1628c3d0c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

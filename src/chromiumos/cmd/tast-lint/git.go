@@ -48,7 +48,11 @@ func (g *git) readFile(path string) ([]byte, error) {
 	if g.commit == "" {
 		return ioutil.ReadFile(path)
 	}
-	return exec.Command("git", "show", fmt.Sprintf("%s:%s", g.commit, path)).Output()
+
+	// "--batch=" == use an empty format. Skip object information, just return the content.
+	cmd := exec.Command("git", "cat-file", "--batch=", "--follow-symlinks")
+	cmd.Stdin = strings.NewReader(fmt.Sprintf("%s:%s", g.commit, path))
+	return cmd.Output()
 }
 
 // listDir lists files under a directory at the commit.

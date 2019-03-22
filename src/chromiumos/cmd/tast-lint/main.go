@@ -31,6 +31,13 @@ func isTestFile(path string) bool {
 	if err != nil {
 		return false
 	}
+	// Scripts and packages used for code generation are ignored since they're executed by "go run"
+	// and can't easily include normal Tast packages.
+	d := filepath.Dir(path)
+	if strings.HasSuffix(d, "/gen") || strings.HasSuffix(d, "/genutil") {
+		return false
+	}
+
 	return strings.Contains(path, "src/chromiumos/tast/local/") ||
 		strings.Contains(path, "src/chromiumos/tast/remote/")
 }

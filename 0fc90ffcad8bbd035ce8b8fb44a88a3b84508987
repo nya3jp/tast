@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fbb3227b_378a1913",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-22T23:08:00Z",
+      "side": 1,
+      "message": "nit: maybe just this?\n\nif sym, err :\u003d isSymlink(path); err !\u003d nil {\n    return nil, err\n} else if sym {\n    continue\n}\n\nand mind adding a brief comment explaining why symlinks are skipped?",
+      "revId": "0fc90ffcad8bbd035ce8b8fb44a88a3b84508987",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6590deb7_6c1d85ec",
+        "filename": "src/chromiumos/cmd/tast-lint/parser.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-22T23:08:00Z",
+      "side": 1,
+      "message": "same re maybe making this shorter and adding a comment",
+      "revId": "0fc90ffcad8bbd035ce8b8fb44a88a3b84508987",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

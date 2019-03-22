@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "2888380a_fd1b907a",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 732,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-03-22T09:14:28Z",
+      "side": 1,
+      "message": "Could you explicitly mention that this is supported only for release images?\nAlso, nice to have a reference where \"artifact\"s come from.",
+      "range": {
+        "startLine": 722,
+        "startChar": 0,
+        "endLine": 732,
+        "endChar": 0
+      },
+      "revId": "3d4fb0f4a6db3b5ab3b3d186a25f0fc1628c3d0c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "57339dcc_b1fe2dfd",
         "filename": "src/chromiumos/tast/runner/external.go",
         "patchSetId": 4

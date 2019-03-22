@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"os/exec"
 	"strings"
 )
@@ -45,9 +46,14 @@ func (g *git) modifiedFiles() ([]string, error) {
 
 // readFile returns the content of a file at the commit.
 func (g *git) readFile(path string) ([]byte, error) {
-	if g.commit == "" {
+	// On symlink files return the entire file content. This is because 'git show' of a symlink returns
+	// the path the linked file, and not the content.
+	if sym, err := isSymlink(path); err != nil {
+		return nil, err
+	} else if sym || g.commit == "" {
 		return ioutil.ReadFile(path)
 	}
+
 	return exec.Command("git", "show", fmt.Sprintf("%s:%s", g.commit, path)).Output()
 }
 
@@ -71,4 +77,14 @@ func (g *git) listDir(dir string) ([]string, error) {
 		return nil, err
 	}
 	return strings.Split(strings.TrimRight(string(out), "\n"), "\n"), nil
+}
+
+// isSymlink returns whether path is a symlink.
+func isSymlink(path string) (bool, error) {
+	fi, err := os.Lstat(path)
+	if err != nil {
+		return false, err
+	}
+	mode := fi.Mode()
+	return (mode&os.ModeSymlink != 0), nil
 }

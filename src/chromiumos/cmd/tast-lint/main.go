@@ -31,6 +31,12 @@ func isTestFile(path string) bool {
 	if err != nil {
 		return false
 	}
+	// Utils, even if they are inside test directories, are not considered tests.
+	d := filepath.Dir(path)
+	if strings.HasSuffix(d, "/gen") || strings.HasSuffix(d, "/genutil") {
+		return false
+	}
+
 	return strings.Contains(path, "src/chromiumos/tast/local/") ||
 		strings.Contains(path, "src/chromiumos/tast/remote/")
 }

@@ -31,6 +31,12 @@ func isTestFile(path string) bool {
 	if err != nil {
 		return false
 	}
+	// Utils, even if they are inside test directories, are not considered tests.
+	d := filepath.Dir(path)
+	if strings.HasSuffix(d, "/gen") || strings.HasSuffix(d, "/genutil") {
+		return false
+	}
+
 	return strings.Contains(path, "src/chromiumos/tast/local/") ||
 		strings.Contains(path, "src/chromiumos/tast/remote/")
 }
@@ -38,6 +44,16 @@ func isTestFile(path string) bool {
 // isGoFile checks is a file is a Go code.
 func isGoFile(path string) bool {
 	return filepath.Ext(path) == ".go"
+}
+
+// isSymlink returns whether path is a symlink.
+func isSymlink(path string) (bool, error) {
+	fi, err := os.Lstat(path)
+	if err != nil {
+		return false, err
+	}
+	mode := fi.Mode()
+	return mode&os.ModeSymlink != 0, nil
 }
 
 // hasFmtError runs gofmt to see if code has any formatting error.
@@ -59,6 +75,14 @@ func checkAll(git *git, paths []string, debug bool) ([]*check.Issue, error) {
 	var allIssues []*check.Issue
 	for _, path := range paths {
 		if !isGoFile(path) {
+			continue
+		}
+
+		isSym, err := isSymlink(path)
+		if err != nil {
+			return nil, err
+		}
+		if isSym {
 			continue
 		}
 

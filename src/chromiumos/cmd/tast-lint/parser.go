@@ -69,6 +69,15 @@ func (p *cachedParser) parsePackage(dir string) (*ast.Package, error) {
 		}
 
 		path := filepath.Join(dir, fn)
+
+		isSym, err := isSymlink(path)
+		if err != nil {
+			return nil, err
+		}
+		if isSym {
+			continue
+		}
+
 		f, err := p.parseFileAlone(path)
 		if err != nil {
 			return nil, err

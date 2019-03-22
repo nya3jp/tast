@@ -50,10 +50,14 @@ func TestWrap(t *testing.T) {
 .*
 woof
 	at chromiumos/tast/errors\.TestWrap \(errors_test.go:\d+\)`)
+	causeTraceRegexp := regexp.MustCompile(`(?s)woof
+	at chromiumos/tast/errors\.TestWrap \(errors_test.go:\d+\)`)
 
 	err := Wrap(New("woof"), "meow")
+	cause := Cause(err)
 
 	check(t, err, msg, traceRegexp)
+	check(t, cause, "woof", causeTraceRegexp)
 }
 
 func TestWrapForeignError(t *testing.T) {
@@ -63,11 +67,14 @@ func TestWrapForeignError(t *testing.T) {
 .*
 woof
 	at \?\?\?$`)
+	causeTraceRegexp := regexp.MustCompile(`woof$`)
 
 	// Use standard errors package to create an error without trace.
 	err := Wrap(errors.New("woof"), "meow")
+	cause := Cause(err)
 
 	check(t, err, msg, traceRegexp)
+	check(t, cause, "woof", causeTraceRegexp)
 }
 
 func TestWrapNil(t *testing.T) {
@@ -76,8 +83,13 @@ func TestWrapNil(t *testing.T) {
 	at chromiumos/tast/errors\.TestWrapNil \(errors_test.go:\d+\)`)
 
 	err := Wrap(nil, "meow")
+	cause := Cause(err)
 
 	check(t, err, msg, traceRegexp)
+
+	if cause != nil {
+		t.Errorf("cause is not nil: %v", cause)
+	}
 }
 
 func TestWrapf(t *testing.T) {
@@ -87,10 +99,14 @@ func TestWrapf(t *testing.T) {
 .*
 woof
 	at chromiumos/tast/errors\.TestWrapf \(errors_test.go:\d+\)`)
+	causeTraceRegexp := regexp.MustCompile(`(?s)^woof
+	at chromiumos/tast/errors\.TestWrapf \(errors_test.go:\d+\)`)
 
 	err := Wrapf(New("woof"), "%sow", "me")
+	cause := Cause(err)
 
 	check(t, err, msg, traceRegexp)
+	check(t, cause, "woof", causeTraceRegexp)
 }
 
 type customError struct {

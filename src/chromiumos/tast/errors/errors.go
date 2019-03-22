@@ -133,3 +133,13 @@ func Wrapf(cause error, format string, args ...interface{}) *E {
 	msg := fmt.Sprintf(format, args...)
 	return &E{msg, s, cause}
 }
+
+// Cause returns the originating cause wrapped by Wrap or Wrapf.
+func Cause(err error) error {
+	switch e := err.(type) {
+	case *E:
+		return e.cause
+	default:
+		return nil
+	}
+}

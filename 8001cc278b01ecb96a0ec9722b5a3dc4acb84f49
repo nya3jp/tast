@@ -22,6 +22,30 @@
       "revId": "8001cc278b01ecb96a0ec9722b5a3dc4acb84f49",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7c661e6e_a33fbfb8",
+        "filename": "src/chromiumos/cmd/tast-lint/git.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1202079
+      },
+      "writtenOn": "2019-03-23T00:49:36Z",
+      "side": 1,
+      "message": "fixed.\n\nand swapped \"on symlink files  \u003c---\u003e return the entire file content\".",
+      "parentUuid": "fb4352a9_cb323d33",
+      "range": {
+        "startLine": 50,
+        "startChar": 8,
+        "endLine": 50,
+        "endChar": 12
+      },
+      "revId": "8001cc278b01ecb96a0ec9722b5a3dc4acb84f49",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

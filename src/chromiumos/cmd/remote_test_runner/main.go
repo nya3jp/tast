@@ -25,7 +25,8 @@ func main() {
 		},
 	}
 	cfg := runner.Config{
-		Type: runner.RemoteRunner,
+		Type:             runner.RemoteRunner,
+		KillStaleRunners: true,
 	}
 	os.Exit(runner.Run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, &args, &cfg))
 }

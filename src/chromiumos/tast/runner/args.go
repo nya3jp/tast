@@ -337,6 +337,11 @@ type Config struct {
 	// Type describes the type of runner being executed.
 	Type RunnerType
 
+	// KillStaleRunners dictates whether SIGTERM should be sent to any existing test runner processes
+	// when using RunTestsMode. This can help prevent confusing failures if multiple test jobs are
+	// incorrectly scheduled on the same DUT: https://crbug.com/941829
+	KillStaleRunners bool
+
 	// SystemLogDir contains the directory where information is logged by syslog and other daemons.
 	SystemLogDir string
 	// SystemLogExcludes contains relative paths of directories and files in SystemLogDir to exclude.

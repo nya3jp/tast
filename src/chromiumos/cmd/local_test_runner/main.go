@@ -39,6 +39,7 @@ func main() {
 	}
 	cfg := runner.Config{
 		Type:              runner.LocalRunner,
+		KillStaleRunners:  true,
 		SystemLogDir:      "/var/log",
 		SystemLogExcludes: []string{"journal"}, // journald binary logs: https://crbug.com/931951
 		JournaldSubdir:    "journal",           // destination for exported journald logs

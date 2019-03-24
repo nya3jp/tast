@@ -173,9 +173,9 @@ func runBundle(path string, bundleArgs *bundle.Args, stdout io.Writer) *command.
 	defer stdoutWatcher.close()
 
 	// Also catch SIGINT so we can clean up if the runner was executed manually and
-	// later interrupted with Ctrl-C.
+	// later interrupted with Ctrl-C, and SIGTERM in case we're killed by another runner process.
 	sigCh := make(chan os.Signal, 1)
-	signal.Notify(sigCh, syscall.SIGINT)
+	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
 	defer signal.Stop(sigCh)
 
 	stderr := bytes.Buffer{}
@@ -207,9 +207,17 @@ func runBundle(path string, bundleArgs *bundle.Args, stdout io.Writer) *command.
 	case <-stdoutWatcher.readClosed:
 		// The read end of stdout was closed (i.e. the shell or SSH connection used to run us died).
 		return command.NewStatusErrorf(statusInterrupted, "stdout closed")
-	case <-sigCh:
-		// SIGINT was received (i.e. we were run manually and the user hit Ctrl-C).
-		return command.NewStatusErrorf(statusInterrupted, "SIGINT")
+	case sig := <-sigCh:
+		// We caught SIGINT (i.e. we were run manually and the user hit Ctrl-C) or
+		// SIGTERM (we were likely killed by another test runner process).
+		status := statusError
+		switch sig {
+		case syscall.SIGINT:
+			status = statusInterrupted
+		case syscall.SIGTERM:
+			status = statusTerminated
+		}
+		return command.NewStatusErrorf(status, "caught signal %d (%s)", sig, sig)
 	}
 }
 

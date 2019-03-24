@@ -16,7 +16,10 @@ import (
 	"runtime/debug"
 	"strings"
 	"sync"
+	"syscall"
 	"time"
+
+	"github.com/shirou/gopsutil/process"
 
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/command"
@@ -34,6 +37,7 @@ const (
 	statusBundleFailed = 5 // test bundle exited with nonzero status
 	statusTestFailed   = 6 // one or more tests failed during manual run
 	statusInterrupted  = 7 // read end of stdout was closed or SIGINT was received
+	statusTerminated   = 8 // SIGTERM was received
 )
 
 // Run reads command-line flags from clArgs (in the case of a manual run) or a JSON-marshaled
@@ -109,6 +113,17 @@ func runTestsAndReport(ctx context.Context, args *Args, cfg *Config, stdout io.W
 
 	mw.WriteMessage(&control.RunStart{Time: time.Now(), NumTests: len(tests)})
 
+	var lm sync.Mutex
+	lf := func(msg string) {
+		lm.Lock()
+		mw.WriteMessage(&control.RunLog{Time: time.Now(), Text: msg})
+		lm.Unlock()
+	}
+
+	if cfg.KillStaleRunners {
+		killStaleRunners(syscall.SIGTERM, lf)
+	}
+
 	// We expect to not match any tests if both local and remote tests are being run but the
 	// user specified a pattern that matched only local or only remote tests rather than tests
 	// of both types. Don't bother creating an out dir in that case.
@@ -128,12 +143,6 @@ func runTestsAndReport(ctx context.Context, args *Args, cfg *Config, stdout io.W
 			defer os.RemoveAll(bundleArgs.RunTests.OutDir)
 		}
 
-		var lm sync.Mutex
-		lf := func(msg string) {
-			lm.Lock()
-			mw.WriteMessage(&control.RunLog{Time: time.Now(), Text: msg})
-			lm.Unlock()
-		}
 		cl := newDevserverClient(ctx, args.RunTests.Devservers, lf)
 		processExternalDataLinks(ctx, args.RunTests.BundleArgs.DataDir, cfg.BuildArtifactsURL, tests, cl, lf)
 
@@ -253,6 +262,35 @@ func logMessages(r io.Reader, lg *log.Logger) *command.StatusError {
 		return command.NewStatusErrorf(statusTestFailed, "test(s) failed")
 	}
 	return nil
+}
+
+// killStaleRunners sends sig to the process groups of any other processes sharing
+// the current process's executable. Status messages and errors are logged using lf.
+func killStaleRunners(sig syscall.Signal, lf func(msg string)) {
+	ourPID := os.Getpid()
+	ourExe, err := os.Executable()
+	if err != nil {
+		lf("Failed to look up current executable: " + err.Error())
+		return
+	}
+
+	procs, err := process.Processes()
+	if err != nil {
+		lf("Failed to list processes while looking for stale runners: " + err.Error())
+		return
+	}
+	for _, proc := range procs {
+		if int(proc.Pid) == ourPID {
+			continue
+		}
+		if exe, err := proc.Exe(); err != nil || exe != ourExe {
+			continue
+		}
+		lf(fmt.Sprintf("Sending signal %d to stale %v process group %d", sig, ourExe, proc.Pid))
+		if err := syscall.Kill(int(-proc.Pid), sig); err != nil {
+			lf(fmt.Sprintf("Failed killing process group %d: %v", proc.Pid, err))
+		}
+	}
 }
 
 func newDevserverClient(ctx context.Context, devservers []string, lf func(msg string)) devserver.Client {

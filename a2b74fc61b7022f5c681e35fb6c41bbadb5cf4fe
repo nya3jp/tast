@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7e3d9f36_44ab1dd2",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-24T00:40:19Z",
+      "side": 1,
+      "message": "let me know if this field naming scheme (\"Foo\" for a FooArgs struct) seems reasonable. this could also be called RunTestsArgs, but i\u0027m worried that that\u0027s more confusing (especially since that would be the name used to access the field if it were anonymous).",
+      "revId": "a2b74fc61b7022f5c681e35fb6c41bbadb5cf4fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "89aa7052_02dad45b",
+        "filename": "src/chromiumos/tast/runner/args.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 239,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-24T00:40:19Z",
+      "side": 1,
+      "message": "i used BundleArgs for this field and the one on L249. please let me know if that seems like a good name or not.",
+      "revId": "a2b74fc61b7022f5c681e35fb6c41bbadb5cf4fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -281,6 +281,30 @@
     },
     {
       "key": {
+        "uuid": "472541bd_4cc9c463",
+        "filename": "src/chromiumos/tast/runner/args.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-24T00:38:08Z",
+      "side": 1,
+      "message": "i\u0027ve removed the deprecatedFields method",
+      "parentUuid": "b20f5f53_c4ae2659",
+      "range": {
+        "startLine": 109,
+        "startChar": 38,
+        "endLine": 109,
+        "endChar": 42
+      },
+      "revId": "1245c3b24434afd237fa6cc46dc27db71575fdf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5adb709f_f00a29ab",
         "filename": "src/chromiumos/tast/runner/args.go",
         "patchSetId": 2
@@ -301,6 +325,30 @@
       "revId": "1245c3b24434afd237fa6cc46dc27db71575fdf6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ecbe35fa_50ad0dfc",
+        "filename": "src/chromiumos/tast/runner/args.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-24T00:38:08Z",
+      "side": 1,
+      "message": "i think that this is no longer relevant",
+      "parentUuid": "5adb709f_f00a29ab",
+      "range": {
+        "startLine": 125,
+        "startChar": 0,
+        "endLine": 125,
+        "endChar": 81
+      },
+      "revId": "1245c3b24434afd237fa6cc46dc27db71575fdf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -350,6 +398,24 @@
       "side": 1,
       "message": "I agree it might be too repetitive... let\u0027s revisit this later.",
       "parentUuid": "4b0bb0bb_5e8af570",
+      "revId": "1245c3b24434afd237fa6cc46dc27db71575fdf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "84c1c86f_8a9ac059",
+        "filename": "src/chromiumos/tast/runner/args.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-24T00:38:08Z",
+      "side": 1,
+      "message": "i\u0027ve named these fields, which i think makes the code clearer.",
+      "parentUuid": "0cd89531_fc860c8d",
       "revId": "1245c3b24434afd237fa6cc46dc27db71575fdf6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false

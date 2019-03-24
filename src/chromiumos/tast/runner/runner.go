@@ -16,7 +16,10 @@ import (
 	"runtime/debug"
 	"strings"
 	"sync"
+	"syscall"
 	"time"
+
+	"github.com/shirou/gopsutil/process"
 
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/command"
@@ -34,6 +37,7 @@ const (
 	statusBundleFailed = 5 // test bundle exited with nonzero status
 	statusTestFailed   = 6 // one or more tests failed during manual run
 	statusInterrupted  = 7 // read end of stdout was closed or SIGINT was received
+	statusTerminated   = 8 // SIGTERM was received
 )
 
 // Run reads command-line flags from clArgs (in the case of a manual run) or a JSON-marshaled
@@ -76,8 +80,8 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Args,
 	case RunTestsMode:
 		if args.report {
 			// Success is always reported when running tests on behalf of the tast command.
-			runTestsAndReport(ctx, args, stdout)
-		} else if err := runTestsAndLog(ctx, args, stdout); err != nil {
+			runTestsAndReport(ctx, args, cfg, stdout)
+		} else if err := runTestsAndLog(ctx, args, cfg, stdout); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
@@ -93,7 +97,7 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Args,
 
 // runTestsAndReport runs bundles serially to perform testing and writes control messages to stdout.
 // Fatal errors are reported via RunError messages, while test errors are reported via TestError messages.
-func runTestsAndReport(ctx context.Context, args *Args, stdout io.Writer) {
+func runTestsAndReport(ctx context.Context, args *Args, cfg *Config, stdout io.Writer) {
 	mw := control.NewMessageWriter(stdout)
 	bundles, tests, err := getBundlesAndTests(args)
 	if err != nil {
@@ -102,6 +106,17 @@ func runTestsAndReport(ctx context.Context, args *Args, stdout io.Writer) {
 	}
 
 	mw.WriteMessage(&control.RunStart{Time: time.Now(), NumTests: len(tests)})
+
+	var lm sync.Mutex
+	lf := func(msg string) {
+		lm.Lock()
+		mw.WriteMessage(&control.RunLog{Time: time.Now(), Text: msg})
+		lm.Unlock()
+	}
+
+	if cfg.KillStaleRunners {
+		killStaleRunners(syscall.SIGTERM, lf)
+	}
 
 	bundleArgs := args.bundleArgs
 	bundleArgs.Mode = bundle.RunTestsMode
@@ -125,12 +140,6 @@ func runTestsAndReport(ctx context.Context, args *Args, stdout io.Writer) {
 			defer os.RemoveAll(bundleArgs.OutDir)
 		}
 
-		var lm sync.Mutex
-		lf := func(msg string) {
-			lm.Lock()
-			mw.WriteMessage(&control.RunLog{Time: time.Now(), Text: msg})
-			lm.Unlock()
-		}
 		cl := newDevserverClient(ctx, args.RunTestsArgs.Devservers, lf)
 		processExternalDataLinks(ctx, args.DataDir, tests, cl, lf)
 
@@ -151,14 +160,14 @@ func runTestsAndReport(ctx context.Context, args *Args, stdout io.Writer) {
 
 // runTestsAndLog runs bundles serially to perform testing and logs human-readable results to stdout.
 // Errors are returned both for fatal errors and for errors in individual tests.
-func runTestsAndLog(ctx context.Context, args *Args, stdout io.Writer) *command.StatusError {
+func runTestsAndLog(ctx context.Context, args *Args, cfg *Config, stdout io.Writer) *command.StatusError {
 	lg := log.New(stdout, "", log.LstdFlags)
 
 	pr, pw := io.Pipe()
 	ch := make(chan *command.StatusError, 1)
 	go func() { ch <- logMessages(pr, lg) }()
 
-	runTestsAndReport(ctx, args, pw)
+	runTestsAndReport(ctx, args, cfg, pw)
 	pw.Close()
 	return <-ch
 }
@@ -250,6 +259,35 @@ func logMessages(r io.Reader, lg *log.Logger) *command.StatusError {
 		return command.NewStatusErrorf(statusTestFailed, "test(s) failed")
 	}
 	return nil
+}
+
+// killStaleRunners sends sig to the process groups of any other processes sharing
+// the current process's executable. Status messages and errors are logged using lf.
+func killStaleRunners(sig syscall.Signal, lf func(msg string)) {
+	ourPID := os.Getpid()
+	ourExe, err := os.Executable()
+	if err != nil {
+		lf("Failed to look up current executable: " + err.Error())
+		return
+	}
+
+	procs, err := process.Processes()
+	if err != nil {
+		lf("Failed to list processes while looking for stale runners: " + err.Error())
+		return
+	}
+	for _, proc := range procs {
+		if int(proc.Pid) == ourPID {
+			continue
+		}
+		if exe, err := proc.Exe(); err != nil || exe != ourExe {
+			continue
+		}
+		lf(fmt.Sprintf("Sending signal %d to stale %v process group %d", sig, ourExe, proc.Pid))
+		if err := syscall.Kill(int(-proc.Pid), sig); err != nil {
+			lf(fmt.Sprintf("Failed killing process group %d: %v", proc.Pid, err))
+		}
+	}
 }
 
 func newDevserverClient(ctx context.Context, devservers []string, lf func(msg string)) devserver.Client {

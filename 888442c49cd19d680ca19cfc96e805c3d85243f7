@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "218d68ef_c96e3344",
+        "filename": "src/chromiumos/cmd/tast-lint/git.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-25T19:44:28Z",
+      "side": 1,
+      "message": "does this also work for non-symlinks? if so, and if it isn\u0027t noticeably slower or worse than \u0027git show\u0027, would it be possible to remove the isSymlink check and do this unconditionally?",
+      "revId": "888442c49cd19d680ca19cfc96e805c3d85243f7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

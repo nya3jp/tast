@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "7b230dff_d292e822",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1202079
+      },
+      "writtenOn": "2019-03-25T19:29:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b3123c9e_38012e51",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 45
+      },
+      "revId": "a498ccf6204a9ef106ff1884749fa8dd1cdd028c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "49626d77_646bee9b",
         "filename": "src/chromiumos/cmd/tast-lint/git.go",
         "patchSetId": 4
@@ -45,6 +69,30 @@
       "revId": "a498ccf6204a9ef106ff1884749fa8dd1cdd028c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a682c92c_1f1f8557",
+        "filename": "src/chromiumos/cmd/tast-lint/git.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1202079
+      },
+      "writtenOn": "2019-03-25T19:29:12Z",
+      "side": 1,
+      "message": "thanks. using `git cat-file`",
+      "parentUuid": "49626d77_646bee9b",
+      "range": {
+        "startLine": 49,
+        "startChar": 0,
+        "endLine": 55,
+        "endChar": 2
+      },
+      "revId": "a498ccf6204a9ef106ff1884749fa8dd1cdd028c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3fb7da1a_456cfd9b",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-25T20:04:19Z",
+      "side": 1,
+      "message": "huge nit: maybe add a bit more detail here, like:\n\n  // Scripts and packages used for code generation are ignored\n  // since they\u0027re executed by \"go run\" and can\u0027t easily include\n  // normal Tast packages.",
+      "revId": "af97593f5aafb09a2dfc72d51ad51c2de8122d3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

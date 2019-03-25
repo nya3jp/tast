@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "49626d77_646bee9b",
+        "filename": "src/chromiumos/cmd/tast-lint/git.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-03-25T05:55:49Z",
+      "side": 1,
+      "message": "readFile should operate on the Git commit specified by g.commit. So if g.commit \u003d\u003d \"\", this can just do ioutil.ReadFile(path), but in other cases we need to consider Git history.\n\nAFAIK easiest way to resolve symlinks is to use \"git cat-file --batch\u003d... --follow-symlinks\".\n\nhttps://git-scm.com/docs/git-cat-file",
+      "range": {
+        "startLine": 49,
+        "startChar": 0,
+        "endLine": 55,
+        "endChar": 2
+      },
+      "revId": "a498ccf6204a9ef106ff1884749fa8dd1cdd028c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

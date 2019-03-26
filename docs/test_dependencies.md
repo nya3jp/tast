@@ -67,6 +67,7 @@ The following software features are defined:
 *   `virtual_usb_printer` - Emulates a USB printer. This implies the presence of
     the `usbip` program.
 *   `vm_host` - The ability to [run virtual machines].
+*   `vulkan` - Whether [Vulkan] is enabled.
 
 ## New features
 
@@ -134,3 +135,4 @@ outside of video tests.
 [Transparent Hugepage]: https://www.kernel.org/doc/Documentation/vm/transhuge.txt
 [amd64]: https://en.wikipedia.org/wiki/X86-64
 [Camera HAL3]: https://source.android.com/devices/camera/camera3
+[Vulkan]: https://www.khronos.org/vulkan/

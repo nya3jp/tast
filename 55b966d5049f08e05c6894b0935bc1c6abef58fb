@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ce82ece6_54eba3ee",
+        "filename": "src/chromiumos/cmd/tast-lint/git.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-03-26T08:55:14Z",
+      "side": 1,
+      "message": "Strictly speaking, the output contains a leading LF, so please drop it.",
+      "range": {
+        "startLine": 55,
+        "startChar": 8,
+        "endLine": 55,
+        "endChar": 20
+      },
+      "revId": "55b966d5049f08e05c6894b0935bc1c6abef58fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

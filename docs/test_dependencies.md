@@ -67,6 +67,7 @@ The following software features are defined:
 *   `virtual_usb_printer` - Emulates a USB printer. This implies the presence of
     the `usbip` program.
 *   `vm_host` - The ability to [run virtual machines].
+*   `vulkan` - Whether vulkan is enabled.
 
 ## New features
 

@@ -16,6 +16,24 @@
       "revId": "b01261e7cd2cd9028913114058f63dc60e716bb7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "71cb2131_51b58bf2",
+        "filename": "src/chromiumos/cmd/tast-lint/git.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1202079
+      },
+      "writtenOn": "2019-03-26T22:40:47Z",
+      "side": 1,
+      "message": "thanks. tested, works as intended.",
+      "parentUuid": "db0e3c3d_db7cae48",
+      "revId": "b01261e7cd2cd9028913114058f63dc60e716bb7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

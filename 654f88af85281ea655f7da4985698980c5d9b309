@@ -1,0 +1,147 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2055218f_33742cd8",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 7
+      },
+      "lineNbr": 430,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-26T18:43:04Z",
+      "side": 1,
+      "message": "nit: Preconditions",
+      "range": {
+        "startLine": 430,
+        "startChar": 4,
+        "endLine": 430,
+        "endChar": 16
+      },
+      "revId": "654f88af85281ea655f7da4985698980c5d9b309",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cac36369_b7bdd1ee",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 7
+      },
+      "lineNbr": 433,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-26T18:43:04Z",
+      "side": 1,
+      "message": "maybe \"the time-consuming login process will happen at the beginning of each test\"? (since we don\u0027t actually log out)\n\nbut i\u0027m also worried that this makes it sound like the chrome_login dependency is what makes login happen, which isn\u0027t the case.\n\nhow about something like the following?\n\nSometimes a lengthy setup process (e.g. restarting Chrome and logging in, which takes at least 6-7 seconds) is needed by multiple tests. Rather than calling [chrome.New] at the beginning of each test, tests can declare that they require a logged-in Chrome instance by setting [testing.Test.Pre] to [chrome.LoggedIn]. This enables Tast to just perform login once and then share the same Chrome instance with all tests that specify the precondition. See the [chrome.LoggedIn] documentation for more details.",
+      "range": {
+        "startLine": 432,
+        "startChar": 70,
+        "endLine": 433,
+        "endChar": 63
+      },
+      "revId": "654f88af85281ea655f7da4985698980c5d9b309",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "983737a2_fc0773b8",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 7
+      },
+      "lineNbr": 451,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-26T18:43:04Z",
+      "side": 1,
+      "message": "nit: Creating (to match e.g. \"Scoping and sharing code\" above)",
+      "range": {
+        "startLine": 451,
+        "startChar": 5,
+        "endLine": 451,
+        "endChar": 11
+      },
+      "revId": "654f88af85281ea655f7da4985698980c5d9b309",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b111f973_4943fa09",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 7
+      },
+      "lineNbr": 453,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-26T18:43:04Z",
+      "side": 1,
+      "message": "nit: maybe \"a new Chrome precondition with custom options\"",
+      "range": {
+        "startLine": 453,
+        "startChar": 12,
+        "endLine": 453,
+        "endChar": 30
+      },
+      "revId": "654f88af85281ea655f7da4985698980c5d9b309",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "978e5440_ffb89cc9",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 7
+      },
+      "lineNbr": 455,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-26T18:43:04Z",
+      "side": 1,
+      "message": "nit: \"can use it\"",
+      "revId": "654f88af85281ea655f7da4985698980c5d9b309",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f49a9ad3_33185959",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 7
+      },
+      "lineNbr": 457,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-26T18:43:04Z",
+      "side": 1,
+      "message": "nit: maybe \"It\u0027s best to initialize and store the precondition in a subpackage so it can be shared by multiple test files.\"",
+      "revId": "654f88af85281ea655f7da4985698980c5d9b309",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ff08a50d_9ff1761c",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 7
+      },
+      "lineNbr": 458,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-26T18:43:04Z",
+      "side": 1,
+      "message": "nit: maybe just \"For example, see [video tests\u0027 pre subpackage].\"?",
+      "revId": "654f88af85281ea655f7da4985698980c5d9b309",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

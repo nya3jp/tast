@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a236c663_e6f72265",
+        "filename": "src/chromiumos/tast/runner/bundles.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-03-28T09:28:10Z",
+      "side": 1,
+      "message": "huge nit: Wait",
+      "range": {
+        "startLine": 119,
+        "startChar": 89,
+        "endLine": 119,
+        "endChar": 93
+      },
+      "revId": "7240efb5fc74d23c6c52c1528cc85e64dc3d2ede",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5bb64d00_f0f60591",
+        "filename": "src/chromiumos/tast/runner/bundles.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-03-28T09:28:10Z",
+      "side": 1,
+      "message": "JFYI: I remembered one side effect of setting session (or process group) of test bundles is that we can no longer stop the bundles with Ctrl+C when we run local_test_runner directly on DUT in an interactive session. But I guess it\u0027s rarely the case...",
+      "range": {
+        "startLine": 137,
+        "startChar": 17,
+        "endLine": 137,
+        "endChar": 23
+      },
+      "revId": "7240efb5fc74d23c6c52c1528cc85e64dc3d2ede",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c62cc674_5f301ded",
+        "filename": "src/chromiumos/tast/runner/bundles.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-03-28T09:28:10Z",
+      "side": 1,
+      "message": "optional: It might be easier to set cmd.Stdin \u003d bytes.NewBuffer(marshaledArgs) rather than dealing with StdinPipe; handling process I/O is tricky, but you can forget about stdin if you go with this way.",
+      "range": {
+        "startLine": 173,
+        "startChar": 1,
+        "endLine": 173,
+        "endChar": 60
+      },
+      "revId": "7240efb5fc74d23c6c52c1528cc85e64dc3d2ede",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9454e0ea_4d0b203b",
+        "filename": "src/chromiumos/tast/runner/bundles.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-03-28T09:28:10Z",
+      "side": 1,
+      "message": "Need to close stdin in this case.",
+      "range": {
+        "startLine": 174,
+        "startChar": 2,
+        "endLine": 174,
+        "endChar": 63
+      },
+      "revId": "7240efb5fc74d23c6c52c1528cc85e64dc3d2ede",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "87f80778_fcb37761",
+        "filename": "src/chromiumos/tast/runner/pipe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-03-28T09:28:10Z",
+      "side": 1,
+      "message": "typo: initialization",
+      "range": {
+        "startLine": 25,
+        "startChar": 27,
+        "endLine": 25,
+        "endChar": 40
+      },
+      "revId": "7240efb5fc74d23c6c52c1528cc85e64dc3d2ede",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fbd5313b_e7f696d9",
+        "filename": "src/chromiumos/tast/runner/pipe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-03-28T09:28:10Z",
+      "side": 1,
+      "message": "This is a race condition; pw.epollFD can be already closed by the other goroutine.\n\nsyscall.Close(pw.epollFD) should be called by the epoll goroutine. I\u0027m not sure what is the typical way to fix this, but I guess one way is to create a new pipe pair and register the read end to epoll set, whereas the write end is closed to indicate the cleanup by the other goroutine.",
+      "range": {
+        "startLine": 42,
+        "startChar": 15,
+        "endLine": 42,
+        "endChar": 43
+      },
+      "revId": "7240efb5fc74d23c6c52c1528cc85e64dc3d2ede",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -37,6 +37,7 @@ The following software features are defined:
 *   `cros_internal` - Functionality that is only available in internal builds of
     Chrome OS (i.e. ones built using `chromeos-overlay`).
 *   `cups` - CUPS daemon.
+*   `diagnostics` - [Diagnostic utilities].
 *   `display_backlight` - An internal display backlight.
 *   `dlc` - Support of [Downloadable Content] (DLC).
 *   `drm_atomic` - The ability to synchronize video buffer overlays atomically.
@@ -135,4 +136,8 @@ outside of video tests.
 [Transparent Hugepage]: https://www.kernel.org/doc/Documentation/vm/transhuge.txt
 [amd64]: https://en.wikipedia.org/wiki/X86-64
 [Camera HAL3]: https://source.android.com/devices/camera/camera3
+<<<<<<< HEAD
 [Vulkan]: https://www.khronos.org/vulkan/
+=======
+[Diagnostic utilities]: https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/diagnostics/README.md
+>>>>>>> Add diagnostics test dependency

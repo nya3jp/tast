@@ -48,6 +48,23 @@
     },
     {
       "key": {
+        "uuid": "aff640ee_2d93e23c",
+        "filename": "src/chromiumos/tast/runner/bundles.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-03-28T15:55:44Z",
+      "side": 1,
+      "message": "newbee clar: no need to close stdin in this case...? (I couldn\u0027t figure out from the reference.)",
+      "revId": "7240efb5fc74d23c6c52c1528cc85e64dc3d2ede",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c62cc674_5f301ded",
         "filename": "src/chromiumos/tast/runner/bundles.go",
         "patchSetId": 1

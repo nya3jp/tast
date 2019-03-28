@@ -68,6 +68,7 @@ func main() {
 			"containers":           "containers",
 			"cros_internal":        "internal",
 			"cups":                 "cups",
+			"diagnostics":          "diagnostics",
 			"display_backlight":    "display_backlight",
 			"dlc":                  "dlc_test",
 			"drm_atomic":           "drm_atomic",

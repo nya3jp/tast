@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "f773afe2_eed0eb3d",
+        "filename": "src/chromiumos/tast/runner/bundles.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-29T00:29:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a236c663_e6f72265",
+      "range": {
+        "startLine": 119,
+        "startChar": 89,
+        "endLine": 119,
+        "endChar": 93
+      },
+      "revId": "7240efb5fc74d23c6c52c1528cc85e64dc3d2ede",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5bb64d00_f0f60591",
         "filename": "src/chromiumos/tast/runner/bundles.go",
         "patchSetId": 1
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "6853cae2_c35de4ea",
+        "filename": "src/chromiumos/tast/runner/bundles.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-29T00:29:25Z",
+      "side": 1,
+      "message": "thanks for mentioning this. i\u0027ll prepare a followup change that makes us register a handler for SIGINT so we can perform similar cleanup when the runner is executed directly.",
+      "parentUuid": "5bb64d00_f0f60591",
+      "range": {
+        "startLine": 137,
+        "startChar": 17,
+        "endLine": 137,
+        "endChar": 23
+      },
+      "revId": "7240efb5fc74d23c6c52c1528cc85e64dc3d2ede",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "aff640ee_2d93e23c",
         "filename": "src/chromiumos/tast/runner/bundles.go",
         "patchSetId": 1
@@ -62,6 +110,24 @@
       "revId": "7240efb5fc74d23c6c52c1528cc85e64dc3d2ede",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aa82d7c6_230a646c",
+        "filename": "src/chromiumos/tast/runner/bundles.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-29T00:29:25Z",
+      "side": 1,
+      "message": "great question. digging through the code, i think that we explicitly shouldn\u0027t close it here -- i\u0027ll add a comment.\n\nStdinPipe adds pw to closeAfterWait: https://golang.org/src/os/exec/exec.go?s\u003d15650:15699#L534\n\nand then Start appears to close everything in closeAfterWait if it encounters an error: https://golang.org/src/os/exec/exec.go?s\u003d10716:10743#L341\n\n(actually, this is no longer relevant now that args are marshaled beforehand)",
+      "parentUuid": "aff640ee_2d93e23c",
+      "revId": "7240efb5fc74d23c6c52c1528cc85e64dc3d2ede",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -88,6 +154,30 @@
     },
     {
       "key": {
+        "uuid": "1a923af7_0ab6d9d1",
+        "filename": "src/chromiumos/tast/runner/bundles.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-29T00:29:25Z",
+      "side": 1,
+      "message": "thanks for suggesting this. i\u0027d thought about it earlier, but believed that i needed to wait to close stdin until after i got the process\u0027s session id. but that was before i realized that the session id always matches the PID, and and i now realize that (i think) it\u0027s also the case that the process entry remains present until wait() is called.\n\nso i\u0027ve simplified this as you suggest. simpler error handling is usually better. :-)",
+      "parentUuid": "c62cc674_5f301ded",
+      "range": {
+        "startLine": 173,
+        "startChar": 1,
+        "endLine": 173,
+        "endChar": 60
+      },
+      "revId": "7240efb5fc74d23c6c52c1528cc85e64dc3d2ede",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9454e0ea_4d0b203b",
         "filename": "src/chromiumos/tast/runner/bundles.go",
         "patchSetId": 1
@@ -108,6 +198,30 @@
       "revId": "7240efb5fc74d23c6c52c1528cc85e64dc3d2ede",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b7b5a6fc_a738f62c",
+        "filename": "src/chromiumos/tast/runner/bundles.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-29T00:29:25Z",
+      "side": 1,
+      "message": "nice catch. this is no longer relevant (now that the args are marshaled before starting the process)",
+      "parentUuid": "9454e0ea_4d0b203b",
+      "range": {
+        "startLine": 174,
+        "startChar": 2,
+        "endLine": 174,
+        "endChar": 63
+      },
+      "revId": "7240efb5fc74d23c6c52c1528cc85e64dc3d2ede",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -134,6 +248,30 @@
     },
     {
       "key": {
+        "uuid": "7f3b587f_1d6a6de6",
+        "filename": "src/chromiumos/tast/runner/pipe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-29T00:29:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "87f80778_fcb37761",
+      "range": {
+        "startLine": 25,
+        "startChar": 27,
+        "endLine": 25,
+        "endChar": 40
+      },
+      "revId": "7240efb5fc74d23c6c52c1528cc85e64dc3d2ede",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fbd5313b_e7f696d9",
         "filename": "src/chromiumos/tast/runner/pipe.go",
         "patchSetId": 1
@@ -154,6 +292,30 @@
       "revId": "7240efb5fc74d23c6c52c1528cc85e64dc3d2ede",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "175f3f4f_baaf77b1",
+        "filename": "src/chromiumos/tast/runner/pipe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-29T00:29:25Z",
+      "side": 1,
+      "message": "thanks for catching this, and yuck, it\u0027s hard to use goroutines safely with synchronous APIs. :-(\n\ni think i have this working properly now (with another pipe, but with the write end watched by epoll and the read end closed by close() -- not sure if this is what you meant, but it seems nice since it mirrors what we\u0027re doing with writeFD)",
+      "parentUuid": "fbd5313b_e7f696d9",
+      "range": {
+        "startLine": 42,
+        "startChar": 15,
+        "endLine": 42,
+        "endChar": 43
+      },
+      "revId": "7240efb5fc74d23c6c52c1528cc85e64dc3d2ede",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

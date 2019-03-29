@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "007cf09c_8db818f9",
+        "filename": "src/chromiumos/tast/runner/pipe.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-03-29T10:46:25Z",
+      "side": 1,
+      "message": "nit\u0026optional: In this case I usually introduce a closure to avoid repeated \"pw.errCh \u003c- ...; return\":\n\n pw.errCh \u003c- func() error {\n   ...\n   if err !\u003d nil {\n     return err\n   }\n   ...\n }()",
+      "revId": "73aa64431bf500fc23fe38cc8843753d9e5346b8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

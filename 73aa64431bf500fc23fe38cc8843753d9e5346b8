@@ -16,6 +16,24 @@
       "revId": "73aa64431bf500fc23fe38cc8843753d9e5346b8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "49267237_07566317",
+        "filename": "src/chromiumos/tast/runner/pipe.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-03-29T14:16:16Z",
+      "side": 1,
+      "message": "nice, this is much safer!",
+      "parentUuid": "007cf09c_8db818f9",
+      "revId": "73aa64431bf500fc23fe38cc8843753d9e5346b8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

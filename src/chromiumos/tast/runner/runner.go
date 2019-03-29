@@ -33,6 +33,7 @@ const (
 	statusNoTests      = 4 // pattern(s) passed to runner didn't match any tests
 	statusBundleFailed = 5 // test bundle exited with nonzero status
 	statusTestFailed   = 6 // one or more tests failed during manual run
+	statusInterrupted  = 7 // read end of stdout was closed or SIGINT was received
 )
 
 // Run reads command-line flags from clArgs (in the case of a manual run) or a JSON-marshaled
@@ -138,6 +139,7 @@ func runTestsAndReport(ctx context.Context, args *Args, cfg *Config, stdout io.W
 			if err := runBundle(bundle, &bundleArgs, stdout); err != nil {
 				// TODO(derat): The tast command currently aborts the run as soon as it sees a RunError
 				// message, but consider changing that and continuing to run other bundles here.
+				// If we execute additional bundles, be sure to return immediately for statusInterrupted.
 				mw.WriteMessage(newRunErrorMessagef(err.Status(), "Bundle %v failed: %v", bundle, err))
 				return
 			}

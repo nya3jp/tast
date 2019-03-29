@@ -14,6 +14,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"os/signal"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -157,6 +158,12 @@ func runBundle(path string, args *bundle.Args, stdout io.Writer) *command.Status
 	}
 	defer stdoutWatcher.close()
 
+	// Also catch SIGINT so we can clean up if the runner was executed manually and
+	// later interrupted with Ctrl-C.
+	sigCh := make(chan os.Signal, 1)
+	signal.Notify(sigCh, syscall.SIGINT)
+	defer signal.Stop(sigCh)
+
 	stderr := bytes.Buffer{}
 	cmd, err := startBundleCmd(path, args, stdout, &stderr)
 	if err != nil {
@@ -172,12 +179,9 @@ func runBundle(path string, args *bundle.Args, stdout io.Writer) *command.Status
 		waitCh <- cmd.Wait()
 	}()
 
-	// Wait for the bundle to finish or for the read end of stdout to be closed
-	// (indicating that the process or SSH connection that was used to run us died).
-	// TODO(derat): Also catch SIGINT so we can clean up processes when run manually
-	// and interrupted with Ctrl-C.
 	select {
 	case err := <-waitCh:
+		// The bundle process exited on its own.
 		if err == nil {
 			return nil
 		}
@@ -187,7 +191,11 @@ func runBundle(path string, args *bundle.Args, stdout io.Writer) *command.Status
 		}
 		return command.NewStatusErrorf(statusBundleFailed, "%v%s", err, detail)
 	case <-stdoutWatcher.readClosed:
-		return command.NewStatusErrorf(statusError, "stdout closed")
+		// The read end of stdout was closed (i.e. the shell or SSH connection used to run us died).
+		return command.NewStatusErrorf(statusInterrupted, "stdout closed")
+	case <-sigCh:
+		// SIGINT was received (i.e. we were run manually and the user hit Ctrl-C).
+		return command.NewStatusErrorf(statusInterrupted, "SIGINT")
 	}
 }
 

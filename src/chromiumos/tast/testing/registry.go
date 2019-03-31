@@ -46,6 +46,8 @@ func NewRegistry(opts ...registryOption) *Registry {
 
 // AddTest adds t to the registry. Missing fields are filled where possible.
 func (r *Registry) AddTest(t *Test) error {
+	// Copy the test to ensure that later changes made by the caller don't affect us.
+	t = t.clone()
 	if err := t.finalize(r.autoName); err != nil {
 		return err
 	}

@@ -16,15 +16,10 @@ func testsEqual(a, b []*Test) bool {
 	if len(a) != len(b) {
 		return false
 	}
-	for i := 0; i < len(a); i++ {
-		ta := *a[i]
-		tb := *b[i]
-
-		// Clear functions, as reflect.DeepEqual always returns false for non-nil Func types.
-		ta.Func = nil
-		tb.Func = nil
-
-		if !reflect.DeepEqual(ta, tb) {
+	for i := range a {
+		// Just do a basic comparison, since we clone tests and set additional attributes
+		// when adding them to the registry.
+		if a[i].Name != b[i].Name {
 			return false
 		}
 	}
@@ -97,7 +92,7 @@ func TestTestsForPattern(t *gotesting.T) {
 	} {
 		if tests, err := reg.testsForPattern(tc.pat); err != nil {
 			t.Fatalf("testsForPattern(%q) failed: %v", tc.pat, err)
-		} else if !reflect.DeepEqual(tests, tc.expected) {
+		} else if !testsEqual(tests, tc.expected) {
 			t.Errorf("testsForPattern(%q) = %v; want %v", tc.pat, tests, tc.expected)
 		}
 	}
@@ -172,5 +167,35 @@ func TestAddTestDuplicateName(t *gotesting.T) {
 	}
 	if err := reg.AddTest(&Test{Name: name, Func: func(context.Context, *State) {}}); err == nil {
 		t.Fatal("Duplicate test name unexpectedly not rejected")
+	}
+}
+
+func TestAddTestModifyOriginal(t *gotesting.T) {
+	reg := NewRegistry(NoAutoName)
+	const origName = "test.OldName"
+	const origDep = "olddep"
+	test := &Test{
+		Name:         origName,
+		Func:         func(context.Context, *State) {},
+		SoftwareDeps: []string{origDep},
+	}
+	if err := reg.AddTest(test); err != nil {
+		t.Fatal("AddTest failed: ", err)
+	}
+
+	// Change the original Test struct's name and modify the dependency slice's data.
+	test.Name = "test.NewName"
+	test.SoftwareDeps[0] = "newdep"
+
+	// The test returned by the registry should still contain the original information.
+	tests := reg.AllTests()
+	if len(tests) != 1 {
+		t.Fatalf("AllTests returned %v; wanted 1 test: ", tests)
+	}
+	if tests[0].Name != origName {
+		t.Errorf("Test.Name is %q; want %q", tests[0].Name, origName)
+	}
+	if want := []string{origDep}; !reflect.DeepEqual(tests[0].SoftwareDeps, want) {
+		t.Errorf("Test.Deps is %v; want %v", tests[0].SoftwareDeps, want)
 	}
 }

@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "2373016e_2ca3564a",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-01T05:01:19Z",
+      "side": 1,
+      "message": "this is counter-intuitive, and i should\u0027ve written a comment -- sorry! here\u0027s what i\u0027ve added now:\n\n\"If both an old and new field are set, the old field takes precedence. This is counter-intuitive but necessary: a default value for the new field may have been passed to run by Local or Remote. If the corresponding old field is non-zero, it was passed by an old runner (or by a new runner that called FillDeprecated), so we use the old field to make sure that it overrides the default.\"\n\nlet me know if that seems correct or if i\u0027m missing something.",
+      "parentUuid": "a728bb0f_1ec7b85c",
+      "range": {
+        "startLine": 109,
+        "startChar": 10,
+        "endLine": 109,
+        "endChar": 28
+      },
+      "revId": "1e979f86a4992260e61077b36388601374da3a61",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ce04eb0e_500d54b2",
         "filename": "src/chromiumos/tast/runner/args.go",
         "patchSetId": 7
@@ -39,6 +63,24 @@
       "revId": "1e979f86a4992260e61077b36388601374da3a61",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b8cdd501_a8899a1d",
+        "filename": "src/chromiumos/tast/runner/args.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-01T05:01:19Z",
+      "side": 1,
+      "message": "sure, makes sense.",
+      "parentUuid": "ce04eb0e_500d54b2",
+      "revId": "1e979f86a4992260e61077b36388601374da3a61",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

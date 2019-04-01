@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "942dc1f6_f2db1f0b",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-04-01T05:51:44Z",
+      "side": 1,
+      "message": "Thanks for explanation, makes sense!",
+      "parentUuid": "2373016e_2ca3564a",
+      "range": {
+        "startLine": 109,
+        "startChar": 10,
+        "endLine": 109,
+        "endChar": 28
+      },
+      "revId": "1e979f86a4992260e61077b36388601374da3a61",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ce04eb0e_500d54b2",
         "filename": "src/chromiumos/tast/runner/args.go",
         "patchSetId": 7

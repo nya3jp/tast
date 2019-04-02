@@ -72,7 +72,9 @@ func remote(ctx context.Context, cfg *Config) (Status, []TestResult) {
 	if err := getSoftwareFeatures(ctx, cfg); err != nil {
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to get DUT software features: %v", err), nil
 	}
-	getInitialSysInfo(ctx, cfg)
+	if err := getInitialSysInfo(ctx, cfg); err != nil {
+		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to get initial sysinfo: %v", err), nil
+	}
 
 	cfg.startedRun = true
 	results, err := runRemoteRunner(ctx, cfg, bundleGlob, dataDir)

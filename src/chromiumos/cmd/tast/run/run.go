@@ -10,11 +10,14 @@ import (
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/google/subcommands"
 
 	"chromiumos/tast/ctxutil"
+	"chromiumos/tast/host"
 )
 
 const runErrorFilename = "run_error.txt" // text file in Config.ResDir containing error that made whole run fail
@@ -46,6 +49,8 @@ func errorStatusf(cfg *Config, code subcommands.ExitStatus, format string, args 
 // If an error is encountered, status.ErrorMsg will be logged to cfg.Logger before returning,
 // but the caller may wish to log it again later to increase its prominence if additional messages are logged.
 func Run(ctx context.Context, cfg *Config) (status Status, results []TestResult) {
+	start := time.Now()
+
 	if cfg.build {
 		switch cfg.buildType {
 		case localType:
@@ -77,7 +82,18 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []TestResult)
 		// Provide a more-descriptive status if the SSH connection was lost.
 		if cfg.hst != nil && !ctxutil.DeadlineBefore(ctx, time.Now().Add(sshPingTimeout)) {
 			if err := cfg.hst.Ping(ctx, sshPingTimeout); err != nil {
-				status = errorStatusf(cfg, subcommands.ExitFailure, "Lost SSH connection to %v: %v", cfg.Target, err)
+				msg := fmt.Sprintf("Lost SSH connection: %v", err)
+				// Check for kernel panics.
+				if hst, err := connectToTarget(ctx, cfg); err == nil {
+					if up, err := uptime(ctx, hst); err == nil && up < time.Since(start) {
+						// For remote tests the DUT may reboot, but oops should not exist
+						// in any successful cases.
+						if exist, err := oops(ctx, hst); err == nil && exist {
+							msg = "DUT crashed by kernel panic"
+						}
+					}
+				}
+				status = errorStatusf(cfg, subcommands.ExitFailure, "%s", msg)
 			}
 		}
 
@@ -89,4 +105,26 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []TestResult)
 	}
 
 	return status, results
+}
+
+// uptime retrieves the uptime of hst.
+func uptime(ctx context.Context, hst *host.SSH) (time.Duration, error) {
+	out, err := hst.Run(ctx, "cat /proc/uptime")
+	if err != nil {
+		return 0, err
+	}
+	t, err := strconv.ParseFloat(strings.Split(string(out), " ")[0], 64)
+	if err != nil {
+		return 0, err
+	}
+	return time.Duration(t * float64(time.Second)), nil
+}
+
+// oops checks existence of console-ramoops in hst.
+func oops(ctx context.Context, hst *host.SSH) (bool, error) {
+	out, err := hst.Run(ctx, "ls /sys/fs/pstore")
+	if err != nil {
+		return false, err
+	}
+	return len(out) > 0, nil
 }

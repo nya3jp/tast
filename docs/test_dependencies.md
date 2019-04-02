@@ -42,6 +42,7 @@ The following software features are defined:
 *   `dlc` - Support of [Downloadable Content] (DLC).
 *   `drm_atomic` - The ability to synchronize video buffer overlays atomically.
     This is guarantees that [video hardware overlays] are supported.
+*   `firewall` - Standard Chrome OS network firewall rules.
 *   `gpu_sandboxing` - Chrome's GPU process is [sandboxed].
 *   `memd` - [Memory stats collection daemon].
 *   `ml_service` - ML Service daemon.

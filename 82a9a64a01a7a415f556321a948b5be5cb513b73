@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "433d04e5_92122dd8",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-02T13:50:46Z",
+      "side": 1,
+      "message": "nice catch!",
+      "revId": "82a9a64a01a7a415f556321a948b5be5cb513b73",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "162262ff_6f9d40c8",
+        "filename": "src/chromiumos/cmd/tast/run/local_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-02T13:50:46Z",
+      "side": 1,
+      "message": "hmm, do we actually need to run this in unit tests? it seems like it could make them slower, and we don\u0027t expect it to have any side effects, right?",
+      "range": {
+        "startLine": 137,
+        "startChar": 10,
+        "endLine": 137,
+        "endChar": 27
+      },
+      "revId": "82a9a64a01a7a415f556321a948b5be5cb513b73",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

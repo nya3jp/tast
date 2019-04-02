@@ -94,10 +94,20 @@ func local(ctx context.Context, cfg *Config) (Status, []TestResult) {
 		}
 	}
 
+	// After pushing files to the DUT, run sync to make sure the written files are persisted
+	// even if the DUT crashes later. This is important especially when we push local_test_runner
+	// because it can appear as zero-byte binary after a crash and subsequent sysinfo phase will fail.
+	if _, err := hst.Run(ctx, "sync"); err != nil {
+		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to sync disk writes: %v", err), nil
+	}
+
 	if err := getSoftwareFeatures(ctx, cfg); err != nil {
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to get DUT software features: %v", err), nil
 	}
-	getInitialSysInfo(ctx, cfg)
+
+	if err := getInitialSysInfo(ctx, cfg); err != nil {
+		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to get initial sysinfo: %v", err), nil
+	}
 
 	cfg.Logger.Status("Running tests on target")
 	cfg.startedRun = true

@@ -1,0 +1,95 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "05c22298_1610f3e0",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-02T13:46:36Z",
+      "side": 1,
+      "message": "mind also listing chromium:930239? i hadn\u0027t started the detect-reboot part of it, but i think that this change fixes it.",
+      "revId": "bc4577bc0de7c7c0c756fc89ff82a5941796543d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "92846e1a_cea90f5f",
+        "filename": "src/chromiumos/cmd/tast/run/run.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-02T13:46:36Z",
+      "side": 1,
+      "message": "i\u0027m not sure if either is better, but in https://crbug.com/930239, doug also suggested using /proc/sys/kernel/random/boot_id to check for reboots. i think that one advantage of using the uptime is that we only need to check it once, after failure, though.",
+      "revId": "bc4577bc0de7c7c0c756fc89ff82a5941796543d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d1228c37_83991999",
+        "filename": "src/chromiumos/cmd/tast/run/run.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-02T13:46:36Z",
+      "side": 1,
+      "message": "do you think it\u0027s also worth reporting non-panic reboots if we see them without having run any remote tests? we could probably add an e.g. ranRemote bool var and then check it here.",
+      "revId": "bc4577bc0de7c7c0c756fc89ff82a5941796543d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0a0e72e7_1ba25c94",
+        "filename": "src/chromiumos/cmd/tast/run/run.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-02T13:46:36Z",
+      "side": 1,
+      "message": "nit: maybe s/by/due to/",
+      "range": {
+        "startLine": 92,
+        "startChar": 26,
+        "endLine": 92,
+        "endChar": 28
+      },
+      "revId": "bc4577bc0de7c7c0c756fc89ff82a5941796543d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "efabce02_95b505ba",
+        "filename": "src/chromiumos/cmd/tast/run/run.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-02T13:46:36Z",
+      "side": 1,
+      "message": "i just saw this function recently, but can you instead use this?\n\n  t, err :\u003d time.ParseDuration(strings.Split(string(out), \" \")[0] + \"s\")\n\nsee https://golang.org/pkg/time/#ParseDuration",
+      "revId": "bc4577bc0de7c7c0c756fc89ff82a5941796543d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

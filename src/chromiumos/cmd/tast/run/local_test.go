@@ -132,6 +132,9 @@ func (td *localTestData) handleExec(req *test.ExecReq) {
 	case td.nextCopyCmd:
 		req.Start(true)
 		req.End(req.RunRealCmd())
+	case "sync":
+		req.Start(true)
+		req.End(0)
 	default:
 		log.Printf("Unexpected command %q", req.Cmd)
 		req.Start(false)

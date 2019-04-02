@@ -90,6 +90,47 @@
       "revId": "bc4577bc0de7c7c0c756fc89ff82a5941796543d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ad01f4a9_5a4aca5f",
+        "filename": "src/chromiumos/cmd/tast/run/run.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-04-02T17:22:45Z",
+      "side": 1,
+      "message": "huge nit: return time.ParseDuration(...)",
+      "parentUuid": "efabce02_95b505ba",
+      "revId": "bc4577bc0de7c7c0c756fc89ff82a5941796543d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e4d8740e_2aea2c15",
+        "filename": "src/chromiumos/cmd/tast/run/run.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-04-02T17:22:45Z",
+      "side": 1,
+      "message": "Any chance this can be created before starting the test?",
+      "range": {
+        "startLine": 125,
+        "startChar": 27,
+        "endLine": 125,
+        "endChar": 44
+      },
+      "revId": "bc4577bc0de7c7c0c756fc89ff82a5941796543d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

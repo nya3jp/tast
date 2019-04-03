@@ -13,6 +13,7 @@ Tests specify dependencies through the `SoftwareDeps` field in [testing.Test].
 
 The following software features are defined:
 
+*   `alt_syscall` - Whether the platform supports the alt syscall framework.
 *   `amd64` - The [amd64] processor architecture.
 *   `android` - The ability to [run Android apps]. Any production version of
     Android (i.e. ones except `master-arc-dev`) can be used.

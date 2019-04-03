@@ -52,7 +52,8 @@ func main() {
 			// This list is documented at docs/test_dependencies.md.
 			// All USE flags referenced here must be listed in IUSE in the tast-use-flags ebuild.
 			// The one exception is tast_vm, which is inserted by VM builders via -extrauseflags.
-			"amd64": "amd64",
+			"alt_syscall": `!"kernel-3_8" && !"kernel-3_10"`,
+			"amd64":       "amd64",
 			// TODO(b/123675239): The arcvm flag is used here to disable all Android tests because
 			// they currently make many container-specific assumptions and therefore fail.
 			// master-arc-dev is under development and not stable to run Tast tests.

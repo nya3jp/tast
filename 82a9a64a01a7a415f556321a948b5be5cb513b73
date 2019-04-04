@@ -39,6 +39,30 @@
       "revId": "82a9a64a01a7a415f556321a948b5be5cb513b73",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "91848132_15b25c2d",
+        "filename": "src/chromiumos/cmd/tast/run/local_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-04-04T05:21:59Z",
+      "side": 1,
+      "message": "My bad, I blindly copied td.nextCopyCmd. Thanks for catching.",
+      "parentUuid": "162262ff_6f9d40c8",
+      "range": {
+        "startLine": 137,
+        "startChar": 10,
+        "endLine": 137,
+        "endChar": 27
+      },
+      "revId": "82a9a64a01a7a415f556321a948b5be5cb513b73",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

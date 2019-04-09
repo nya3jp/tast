@@ -192,12 +192,23 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		}
 	}
 
-	for i, t := range tests {
-		var next *testing.Test
-		if i < len(tests)-1 {
-			next = tests[i+1]
+	// Make a backward pass through the tests, checking if each will be run.
+	// As we go, build up a slice of the next test that will actually be run after each test.
+	// We pass this information to runTest later to ensure that we don't incorrectly fail
+	// to close a precondition if the final test using the precondition is skipped: https://crbug.com/950499
+	var rt *testing.Test // last-seen test that will be run
+	nextTests := make([]*testing.Test, len(tests))
+	for i := len(tests) - 1; i >= 0; i-- {
+		nextTests[i] = rt
+		willSkip := args.RunTests.CheckSoftwareDeps &&
+			len(tests[i].MissingSoftwareDeps(args.RunTests.AvailableSoftwareFeatures)) > 0
+		if !willSkip {
+			rt = tests[i]
 		}
-		if err := runTest(ctx, ew, args, cfg, t, next, meta); err != nil {
+	}
+
+	for i, t := range tests {
+		if err := runTest(ctx, ew, args, cfg, t, nextTests[i], meta); err != nil {
 			return err
 		}
 	}

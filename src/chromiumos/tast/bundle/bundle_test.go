@@ -23,6 +23,31 @@ import (
 	"chromiumos/tast/testutil"
 )
 
+// testPre implements both Precondition and preconditionImpl for unit tests.
+// TODO(derat): This is duplicated from tast/testing/test_test.go. Find a common location.
+type testPre struct {
+	prepareFunc func(context.Context, *testing.State) interface{}
+	closeFunc   func(context.Context, *testing.State)
+	name        string // name to return from String
+}
+
+func (p *testPre) Prepare(ctx context.Context, s *testing.State) interface{} {
+	if p.prepareFunc != nil {
+		return p.prepareFunc(ctx, s)
+	}
+	return nil
+}
+
+func (p *testPre) Close(ctx context.Context, s *testing.State) {
+	if p.closeFunc != nil {
+		p.closeFunc(ctx, s)
+	}
+}
+
+func (p *testPre) Timeout() time.Duration { return time.Minute }
+
+func (p *testPre) String() string { return p.name }
+
 // errorHasStatus returns true if err is of type *command.StatusError and contains the supplied status code.
 func errorHasStatus(err error, status int) bool {
 	if se, ok := err.(*command.StatusError); !ok {
@@ -386,6 +411,59 @@ func TestRunTestsMissingDeps(t *gotesting.T) {
 			t.Errorf("%v had missing deps %v; want %v",
 				tc.name, testMissingDeps[tc.name], tc.missingDeps)
 		}
+	}
+}
+
+func TestRunTestsSkipTestWithPrecondition(t *gotesting.T) {
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
+	defer restore()
+
+	var actions []string
+	makePre := func(name string) *testPre {
+		return &testPre{
+			prepareFunc: func(context.Context, *testing.State) interface{} {
+				actions = append(actions, "prepare_"+name)
+				return nil
+			},
+			closeFunc: func(context.Context, *testing.State) { actions = append(actions, "close_"+name) },
+			name:      name,
+		}
+	}
+	pre1 := makePre("pre1")
+	pre2 := makePre("pre2")
+
+	// Make the last test using each precondition get skipped due to unsatisfied dependencies.
+	f := func(context.Context, *testing.State) {}
+	testing.AddTest(&testing.Test{Name: "pkg.Test1", Func: f, Pre: pre1})
+	testing.AddTest(&testing.Test{Name: "pkg.Test2", Func: f, Pre: pre1})
+	testing.AddTest(&testing.Test{Name: "pkg.Test3", Func: f, Pre: pre1, SoftwareDeps: []string{"dep"}})
+	testing.AddTest(&testing.Test{Name: "pkg.Test4", Func: f, Pre: pre2})
+	testing.AddTest(&testing.Test{Name: "pkg.Test5", Func: f, Pre: pre2})
+	testing.AddTest(&testing.Test{Name: "pkg.Test6", Func: f, Pre: pre2, SoftwareDeps: []string{"dep"}})
+
+	tmpDir := testutil.TempDir(t)
+	defer os.RemoveAll(tmpDir)
+
+	args := Args{
+		Mode: RunTestsMode,
+		RunTests: &RunTestsArgs{
+			OutDir:                      tmpDir,
+			DataDir:                     tmpDir,
+			CheckSoftwareDeps:           true,
+			UnavailableSoftwareFeatures: []string{"dep"},
+		},
+	}
+	stdin := newBufferWithArgs(t, &args)
+	stdout := &bytes.Buffer{}
+	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{}, &Args{},
+		&runConfig{defaultTestTimeout: time.Minute}, localBundle); status != statusSuccess {
+		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
+	}
+
+	// We should've still closed each precondition after running the last test that needs it: https://crbug.com/950499
+	exp := []string{"prepare_pre1", "prepare_pre1", "close_pre1", "prepare_pre2", "prepare_pre2", "close_pre2"}
+	if !reflect.DeepEqual(actions, exp) {
+		t.Errorf("run() performed actions %v; want %v", actions, exp)
 	}
 }
 

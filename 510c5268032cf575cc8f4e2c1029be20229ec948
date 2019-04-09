@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1c1a7928_e928cf06",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 195,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-04-09T13:36:31Z",
+      "side": 1,
+      "message": "I\u0027m a bit worried about duplicating the check here and in runTest.\n\nHow about filtering skip-tests here and letting runTest() just runs the passed test?",
+      "revId": "510c5268032cf575cc8f4e2c1029be20229ec948",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

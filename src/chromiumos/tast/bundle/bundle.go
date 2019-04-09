@@ -192,13 +192,28 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		}
 	}
 
-	for i, t := range tests {
-		var next *testing.Test
-		if i < len(tests)-1 {
-			next = tests[i+1]
+	// Make a backward pass through the tests, checking if each will be run (i.e. dependencies are satisfied).
+	// As we go, build up a slice of the next test that will actually be run after each test.
+	// We pass this information to runTest later to ensure that we don't incorrectly fail
+	// to close a precondition if the final test using the precondition is skipped: https://crbug.com/950499
+	var rt *testing.Test                           // last-seen test that will be run
+	missingDeps := make([][]string, len(tests))    // per-test missing deps, in same order as tests
+	nextTests := make([]*testing.Test, len(tests)) // test to run after each test, in same order as tests
+	for i := len(tests) - 1; i >= 0; i-- {
+		nextTests[i] = rt
+		if args.RunTests.CheckSoftwareDeps {
+			missingDeps[i] = tests[i].MissingSoftwareDeps(args.RunTests.AvailableSoftwareFeatures)
 		}
-		if err := runTest(ctx, ew, args, cfg, t, next, meta); err != nil {
-			return err
+		if len(missingDeps[i]) == 0 {
+			rt = tests[i]
+		}
+	}
+
+	for i, t := range tests {
+		if md := missingDeps[i]; len(md) == 0 {
+			runTest(ctx, ew, args, cfg, t, nextTests[i], meta)
+		} else {
+			reportSkippedTest(ctx, ew, args, t, md)
 		}
 	}
 
@@ -212,59 +227,59 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 
 // runTest runs t per args and cfg, writing the appropriate control.Test* control messages to mw.
 func runTest(ctx context.Context, ew *eventWriter, args *Args, cfg *runConfig,
-	t, next *testing.Test, meta *testing.Meta) error {
+	t, next *testing.Test, meta *testing.Meta) {
 	ew.TestStart(t)
 
 	// Attach a log that the test can use to report timing events.
 	timingLog := &timing.Log{}
 	ctx = timing.NewContext(ctx, timingLog)
 
-	// We skip running the test if it has any dependencies on software features that aren't
-	// provided by the DUT, but we additionally report an error if one or more dependencies
-	// refer to features that we don't know anything about (possibly indicating a typo in the
-	// test's dependencies).
-	var missingDeps []string
-	if args.RunTests.CheckSoftwareDeps {
-		missingDeps = t.MissingSoftwareDeps(args.RunTests.AvailableSoftwareFeatures)
-		if unknown := getUnknownDeps(missingDeps, args); len(unknown) > 0 {
-			_, fn, ln, _ := runtime.Caller(0)
-			ew.TestError(time.Now(), &testing.Error{
-				Reason: "Unknown dependencies: " + strings.Join(unknown, " "),
-				File:   fn,
-				Line:   ln,
-			})
-		}
+	testCfg := testing.TestConfig{
+		DataDir:      filepath.Join(args.RunTests.DataDir, t.DataDir()),
+		OutDir:       filepath.Join(args.RunTests.OutDir, t.Name),
+		Meta:         meta,
+		PreTestFunc:  cfg.preTestFunc,
+		PostTestFunc: cfg.postTestFunc,
+		NextTest:     next,
 	}
 
-	if len(missingDeps) == 0 {
-		testCfg := testing.TestConfig{
-			DataDir:      filepath.Join(args.RunTests.DataDir, t.DataDir()),
-			OutDir:       filepath.Join(args.RunTests.OutDir, t.Name),
-			Meta:         meta,
-			PreTestFunc:  cfg.preTestFunc,
-			PostTestFunc: cfg.postTestFunc,
-			NextTest:     next,
-		}
+	ch := make(chan testing.Output)
+	abortCopier := make(chan bool, 1)
+	copierDone := make(chan bool, 1)
 
-		ch := make(chan testing.Output)
-		abortCopier := make(chan bool, 1)
-		copierDone := make(chan bool, 1)
+	// Copy test output in the background as soon as it becomes available.
+	go func() {
+		copyTestOutput(ch, ew, abortCopier)
+		copierDone <- true
+	}()
 
-		// Copy test output in the background as soon as it becomes available.
-		go func() {
-			copyTestOutput(ch, ew, abortCopier)
-			copierDone <- true
-		}()
+	if !t.Run(ctx, ch, &testCfg) {
+		// If Run reported that the test didn't finish, tell the copier to abort.
+		abortCopier <- true
+	}
+	<-copierDone
 
-		if !t.Run(ctx, ch, &testCfg) {
-			// If Run reported that the test didn't finish, tell the copier to abort.
-			abortCopier <- true
-		}
-		<-copierDone
+	ew.TestEnd(t, nil, timingLog)
+}
+
+// reportSkippedTest is called instead of runTest for a test that is skipped due to
+// having unsatisfied dependencies.
+func reportSkippedTest(ctx context.Context, ew *eventWriter, args *Args,
+	t *testing.Test, missingDeps []string) {
+	ew.TestStart(t)
+
+	// Additionally report an error if one or more dependencies refer to features that
+	// we don't know anything about (possibly indicating a typo in the test's dependencies).
+	if unknown := getUnknownDeps(missingDeps, args); len(unknown) > 0 {
+		_, fn, ln, _ := runtime.Caller(0)
+		ew.TestError(time.Now(), &testing.Error{
+			Reason: "Unknown dependencies: " + strings.Join(unknown, " "),
+			File:   fn,
+			Line:   ln,
+		})
 	}
 
-	ew.TestEnd(t, missingDeps, timingLog)
-	return nil
+	ew.TestEnd(t, missingDeps, nil)
 }
 
 // getUnknownDeps returns a sorted list of software dependencies from missingDeps that

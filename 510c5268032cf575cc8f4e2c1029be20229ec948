@@ -16,6 +16,24 @@
       "revId": "510c5268032cf575cc8f4e2c1029be20229ec948",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0be057ea_8cabab0f",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 195,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-09T17:52:12Z",
+      "side": 1,
+      "message": "done (we should still report skipped tests, so i\u0027m preserving that behavior)",
+      "parentUuid": "1c1a7928_e928cf06",
+      "revId": "510c5268032cf575cc8f4e2c1029be20229ec948",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

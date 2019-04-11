@@ -68,18 +68,18 @@ func (r *Registry) AllTests() []*Test {
 	return ts
 }
 
-// testsForPattern returns registered tests with names matched by p,
-// a pattern that may contain '*' wildcards.
-func (r *Registry) testsForPattern(p string) ([]*Test, error) {
-	if err := validateTestPattern(p); err != nil {
-		return nil, fmt.Errorf("bad pattern %q: %v", p, err)
+// testsForGlob returns registered tests with names matched by w,
+// which may contain '*' to match zero or more arbitrary characters.
+func (r *Registry) testsForGlob(g string) ([]*Test, error) {
+	if err := validateTestGlob(g); err != nil {
+		return nil, fmt.Errorf("bad glob %q: %v", g, err)
 	}
-	p = strings.Replace(p, ".", "\\.", -1)
-	p = strings.Replace(p, "*", ".*", -1)
-	p = "^" + p + "$"
-	re, err := regexp.Compile(p)
+	g = strings.Replace(g, ".", "\\.", -1)
+	g = strings.Replace(g, "*", ".*", -1)
+	g = "^" + g + "$"
+	re, err := regexp.Compile(g)
 	if err != nil {
-		return nil, fmt.Errorf("failed to compile %q: %v", p, err)
+		return nil, fmt.Errorf("failed to compile %q: %v", g, err)
 	}
 
 	tests := make([]*Test, 0)
@@ -91,10 +91,10 @@ func (r *Registry) testsForPattern(p string) ([]*Test, error) {
 	return tests, nil
 }
 
-// validateTestPattern returns an error if n contains one or more characters
-// disallowed in test wildcard patterns.
-func validateTestPattern(p string) error {
-	for _, ch := range p {
+// validateTestGlob returns an error if g contains one or more characters
+// disallowed in test glob patterns.
+func validateTestGlob(g string) error {
+	for _, ch := range g {
 		if !unicode.IsLetter(ch) && !unicode.IsDigit(ch) && ch != '.' && ch != '*' {
 			return fmt.Errorf("invalid character %v", ch)
 		}
@@ -102,13 +102,13 @@ func validateTestPattern(p string) error {
 	return nil
 }
 
-// TestsForPatterns de-duplicates and returns copies of registered tests with names matched by
-// any pattern in ps.
-func (r *Registry) TestsForPatterns(ps []string) ([]*Test, error) {
+// TestsForGlobs de-duplicates and returns copies of registered tests with names matched by
+// any glob in gs.
+func (r *Registry) TestsForGlobs(gs []string) ([]*Test, error) {
 	tests := make([]*Test, 0)
 	seen := make(map[*Test]struct{})
-	for _, p := range ps {
-		ts, err := r.testsForPattern(p)
+	for _, g := range gs {
+		ts, err := r.testsForGlob(g)
 		if err != nil {
 			return nil, err
 		}

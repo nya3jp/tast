@@ -62,7 +62,7 @@ func TestAllTests(t *gotesting.T) {
 	}
 }
 
-func TestTestsForPattern(t *gotesting.T) {
+func TestTestsForGlob(t *gotesting.T) {
 	reg := NewRegistry(NoAutoName)
 	allTests := []*Test{
 		&Test{Name: "test.Foo", Func: func(context.Context, *State) {}},
@@ -76,7 +76,7 @@ func TestTestsForPattern(t *gotesting.T) {
 	}
 
 	for _, tc := range []struct {
-		pat      string
+		glob     string
 		expected []*Test
 	}{
 		{"test.Foo", []*Test{allTests[0]}},
@@ -90,16 +90,16 @@ func TestTestsForPattern(t *gotesting.T) {
 		// Test that periods are escaped.
 		{"test.Fo.", []*Test{}},
 	} {
-		if tests, err := reg.testsForPattern(tc.pat); err != nil {
-			t.Fatalf("testsForPattern(%q) failed: %v", tc.pat, err)
+		if tests, err := reg.testsForGlob(tc.glob); err != nil {
+			t.Fatalf("testsForGlob(%q) failed: %v", tc.glob, err)
 		} else if !testsEqual(tests, tc.expected) {
-			t.Errorf("testsForPattern(%q) = %v; want %v", tc.pat, tests, tc.expected)
+			t.Errorf("testsForGlob(%q) = %v; want %v", tc.glob, tests, tc.expected)
 		}
 	}
 
-	// Now test multiple patterns.
+	// Now test multiple globs.
 	for _, tc := range []struct {
-		pats     []string
+		globs    []string
 		expected []*Test
 	}{
 		{[]string{"test.Foo"}, []*Test{allTests[0]}},
@@ -107,14 +107,14 @@ func TestTestsForPattern(t *gotesting.T) {
 		{[]string{"test.Foo", "test.Bar"}, []*Test{allTests[0], allTests[1]}},
 		{[]string{"no.Matches"}, []*Test{}},
 	} {
-		if tests, err := reg.TestsForPatterns(tc.pats); err != nil {
-			t.Fatalf("TestsForPatterns(%v) failed: %v", tc.pats, err)
+		if tests, err := reg.TestsForGlobs(tc.globs); err != nil {
+			t.Fatalf("TestsForGlobs(%v) failed: %v", tc.globs, err)
 		} else {
 			if !testsEqual(tests, tc.expected) {
-				t.Errorf("TestsForPatterns(%v) = %v; want %v", tc.pats, tests, tc.expected)
+				t.Errorf("TestsForGlobs(%v) = %v; want %v", tc.globs, tests, tc.expected)
 			}
 			if dupes := getDupeTestPtrs(tests, tc.expected); len(dupes) != 0 {
-				t.Errorf("TestsForPatterns(%v) returned non-copied test(s): %v", tc.pats, dupes)
+				t.Errorf("TestsForGlobs(%v) returned non-copied test(s): %v", tc.globs, dupes)
 			}
 		}
 	}

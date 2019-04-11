@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a23401b4_dd2ce031",
+        "filename": "src/chromiumos/tast/testing/util.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-04-11T14:52:25Z",
+      "side": 1,
+      "message": "Maybe nice to wrap this error by errors.Wrap() once for stack trace?\nIn the CL for caller update, some code directly returns err returned from here.",
+      "revId": "b85564fcbb425a37fc6871368f01690a6f40a592",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9aff1a61_7c96fc9e",
+        "filename": "src/chromiumos/tast/testing/util_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-04-11T14:52:25Z",
+      "side": 1,
+      "message": "huge nit: \"min\" may be enough...?",
+      "range": {
+        "startLine": 14,
+        "startChar": 63,
+        "endLine": 14,
+        "endChar": 67
+      },
+      "revId": "b85564fcbb425a37fc6871368f01690a6f40a592",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

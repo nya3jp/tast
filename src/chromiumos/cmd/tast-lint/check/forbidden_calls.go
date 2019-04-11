@@ -45,7 +45,7 @@ func ForbiddenCalls(fs *token.FileSet, f *ast.File) []*Issue {
 		case "time.Sleep":
 			issues = append(issues, &Issue{
 				Pos:  fs.Position(x.Pos()),
-				Msg:  "time.Sleep ignores context deadline; use time.After instead",
+				Msg:  "time.Sleep ignores context deadline; use testing.Poll or testing.Sleep instead",
 				Link: "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Contexts-and-timeouts",
 			})
 		}

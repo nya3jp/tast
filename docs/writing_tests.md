@@ -265,16 +265,8 @@ if err != nil {
 
 Sleeping without polling for a condition is discouraged, since it makes tests
 flakier (when the sleep duration isn't long enough) or slower (when the duration
-is too long). If you really need to do so, use [time.After] to honor the context
-timeout:
-
-```go
-select {
-case <-time.After(time.Second):
-case <-ctx.Done():
-	return ctx.Err()
-}
-```
+is too long). If you really need to do so, use [testing.Sleep] to honor the context
+timeout.
 
 Any function that performs a blocking operation should take a [context.Context]
 as its first argument and return an error if the context expires before the
@@ -288,8 +280,8 @@ Several blog posts discuss these patterns in more detail:
 [context.Context]: https://golang.org/pkg/context/
 [channel]: https://tour.golang.org/concurrency/2
 [select]: https://tour.golang.org/concurrency/5
-[time.After]: https://godoc.org/time#After
 [testing.Poll]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Poll
+[testing.Sleep]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Sleep
 [Go Concurrency Patterns: Context]: https://blog.golang.org/context
 [Go Concurrency Patterns: Timing out, moving on]: https://blog.golang.org/go-concurrency-patterns-timing-out-and
 

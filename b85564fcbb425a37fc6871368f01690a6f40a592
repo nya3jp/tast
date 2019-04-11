@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "f5050f60_8d0a457a",
+        "filename": "src/chromiumos/tast/testing/util.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-04-11T23:32:35Z",
+      "side": 1,
+      "message": "Sure, sounds a good idea.",
+      "parentUuid": "a23401b4_dd2ce031",
+      "revId": "b85564fcbb425a37fc6871368f01690a6f40a592",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9aff1a61_7c96fc9e",
         "filename": "src/chromiumos/tast/testing/util_test.go",
         "patchSetId": 3
@@ -39,6 +57,30 @@
       "revId": "b85564fcbb425a37fc6871368f01690a6f40a592",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "72594bae_b9c2a1a8",
+        "filename": "src/chromiumos/tast/testing/util_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-04-11T23:32:35Z",
+      "side": 1,
+      "message": "I don\u0027t think time.Hour and time.Minute makes a lot of difference, but I guess your concern is that time.Hour is too long if these tests get broken. I\u0027ve updated the timeout to 5 seconds and added checks to make sure testing.Sleep returns in 5 seconds.",
+      "parentUuid": "9aff1a61_7c96fc9e",
+      "range": {
+        "startLine": 14,
+        "startChar": 63,
+        "endLine": 14,
+        "endChar": 67
+      },
+      "revId": "b85564fcbb425a37fc6871368f01690a6f40a592",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -296,7 +296,7 @@ func testsToRun(pats []string) ([]*testing.Test, error) {
 		if len(pats) == 1 && (strings.Contains(pats[0], "&&") || strings.Contains(pats[0], "||")) {
 			return nil, fmt.Errorf("attr expr %q must be within parentheses", pats[0])
 		}
-		return testing.GlobalRegistry().TestsForPatterns(pats)
+		return testing.GlobalRegistry().TestsForWildcards(pats)
 	case TestPatternAttrExpr:
 		return testing.GlobalRegistry().TestsForAttrExpr(pats[0][1 : len(pats[0])-1])
 	}

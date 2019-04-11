@@ -62,7 +62,7 @@ func TestAllTests(t *gotesting.T) {
 	}
 }
 
-func TestTestsForPattern(t *gotesting.T) {
+func TestTestsForWildcard(t *gotesting.T) {
 	reg := NewRegistry(NoAutoName)
 	allTests := []*Test{
 		&Test{Name: "test.Foo", Func: func(context.Context, *State) {}},
@@ -76,7 +76,7 @@ func TestTestsForPattern(t *gotesting.T) {
 	}
 
 	for _, tc := range []struct {
-		pat      string
+		wildcard string
 		expected []*Test
 	}{
 		{"test.Foo", []*Test{allTests[0]}},
@@ -90,31 +90,31 @@ func TestTestsForPattern(t *gotesting.T) {
 		// Test that periods are escaped.
 		{"test.Fo.", []*Test{}},
 	} {
-		if tests, err := reg.testsForPattern(tc.pat); err != nil {
-			t.Fatalf("testsForPattern(%q) failed: %v", tc.pat, err)
+		if tests, err := reg.testsForWildcard(tc.wildcard); err != nil {
+			t.Fatalf("testsForWildcard(%q) failed: %v", tc.wildcard, err)
 		} else if !testsEqual(tests, tc.expected) {
-			t.Errorf("testsForPattern(%q) = %v; want %v", tc.pat, tests, tc.expected)
+			t.Errorf("testsForWildcard(%q) = %v; want %v", tc.wildcard, tests, tc.expected)
 		}
 	}
 
-	// Now test multiple patterns.
+	// Now test multiple wildcards.
 	for _, tc := range []struct {
-		pats     []string
-		expected []*Test
+		wildcards []string
+		expected  []*Test
 	}{
 		{[]string{"test.Foo"}, []*Test{allTests[0]}},
 		{[]string{"test.Foo", "test.Foo"}, []*Test{allTests[0]}},
 		{[]string{"test.Foo", "test.Bar"}, []*Test{allTests[0], allTests[1]}},
 		{[]string{"no.Matches"}, []*Test{}},
 	} {
-		if tests, err := reg.TestsForPatterns(tc.pats); err != nil {
-			t.Fatalf("TestsForPatterns(%v) failed: %v", tc.pats, err)
+		if tests, err := reg.TestsForWildcards(tc.wildcards); err != nil {
+			t.Fatalf("TestsForWildcards(%v) failed: %v", tc.wildcards, err)
 		} else {
 			if !testsEqual(tests, tc.expected) {
-				t.Errorf("TestsForPatterns(%v) = %v; want %v", tc.pats, tests, tc.expected)
+				t.Errorf("TestsForWildcards(%v) = %v; want %v", tc.wildcards, tests, tc.expected)
 			}
 			if dupes := getDupeTestPtrs(tests, tc.expected); len(dupes) != 0 {
-				t.Errorf("TestsForPatterns(%v) returned non-copied test(s): %v", tc.pats, dupes)
+				t.Errorf("TestsForWildcards(%v) returned non-copied test(s): %v", tc.wildcards, dupes)
 			}
 		}
 	}

@@ -13,32 +13,32 @@ import (
 	"chromiumos/tast/testing"
 )
 
-func getTests(t *gotesting.T, pattern string) []*testing.Test {
-	tests, err := testing.GlobalRegistry().TestsForPatterns([]string{pattern})
+func getTests(t *gotesting.T, wildcard string) []*testing.Test {
+	tests, err := testing.GlobalRegistry().TestsForWildcards([]string{wildcard})
 	if err != nil {
-		t.Fatalf("Failed to get tests for %s: %v", pattern, err)
+		t.Fatalf("Failed to get tests for %s: %v", wildcard, err)
 	}
 	if len(tests) == 0 {
-		t.Fatalf("No tests matched for %s", pattern)
+		t.Fatalf("No tests matched for %s", wildcard)
 	}
 	return tests
 }
 
-// Timeout checks that tests matched by pattern have timeout no less than minTimeout.
-func Timeout(t *gotesting.T, pattern string, minTimeout time.Duration) {
-	for _, tst := range getTests(t, pattern) {
+// Timeout checks that tests matched by wildcard have timeout no less than minTimeout.
+func Timeout(t *gotesting.T, wildcard string, minTimeout time.Duration) {
+	for _, tst := range getTests(t, wildcard) {
 		if tst.Timeout < minTimeout {
 			t.Errorf("%s: timeout is too short (%v < %v)", tst.Name, tst.Timeout, minTimeout)
 		}
 	}
 }
 
-// SoftwareDeps checks that tests matched by pattern declare requiredDeps as software dependencies.
+// SoftwareDeps checks that tests matched by wildcard declare requiredDeps as software dependencies.
 // requiredDeps is a list of items which the test's SoftwareDeps needs to
 // satisfy. Each item is one or '|'-connected multiple software feature names,
 // and SoftwareDeps must contain at least one of them.
-func SoftwareDeps(t *gotesting.T, pattern string, requiredDeps []string) {
-	for _, tst := range getTests(t, pattern) {
+func SoftwareDeps(t *gotesting.T, wildcard string, requiredDeps []string) {
+	for _, tst := range getTests(t, wildcard) {
 		deps := make(map[string]struct{})
 		for _, d := range tst.SoftwareDeps {
 			deps[d] = struct{}{}

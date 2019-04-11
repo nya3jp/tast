@@ -68,18 +68,18 @@ func (r *Registry) AllTests() []*Test {
 	return ts
 }
 
-// testsForPattern returns registered tests with names matched by p,
-// a pattern that may contain '*' wildcards.
-func (r *Registry) testsForPattern(p string) ([]*Test, error) {
-	if err := validateTestPattern(p); err != nil {
-		return nil, fmt.Errorf("bad pattern %q: %v", p, err)
+// testsForWildcard returns registered tests with names matched by w,
+// which may contain '*' to match zero or more arbitrary characters.
+func (r *Registry) testsForWildcard(w string) ([]*Test, error) {
+	if err := validateTestWildcard(w); err != nil {
+		return nil, fmt.Errorf("bad wildcard %q: %v", w, err)
 	}
-	p = strings.Replace(p, ".", "\\.", -1)
-	p = strings.Replace(p, "*", ".*", -1)
-	p = "^" + p + "$"
-	re, err := regexp.Compile(p)
+	w = strings.Replace(w, ".", "\\.", -1)
+	w = strings.Replace(w, "*", ".*", -1)
+	w = "^" + w + "$"
+	re, err := regexp.Compile(w)
 	if err != nil {
-		return nil, fmt.Errorf("failed to compile %q: %v", p, err)
+		return nil, fmt.Errorf("failed to compile %q: %v", w, err)
 	}
 
 	tests := make([]*Test, 0)
@@ -91,10 +91,10 @@ func (r *Registry) testsForPattern(p string) ([]*Test, error) {
 	return tests, nil
 }
 
-// validateTestPattern returns an error if n contains one or more characters
+// validateTestWildcard returns an error if w contains one or more characters
 // disallowed in test wildcard patterns.
-func validateTestPattern(p string) error {
-	for _, ch := range p {
+func validateTestWildcard(w string) error {
+	for _, ch := range w {
 		if !unicode.IsLetter(ch) && !unicode.IsDigit(ch) && ch != '.' && ch != '*' {
 			return fmt.Errorf("invalid character %v", ch)
 		}
@@ -102,13 +102,13 @@ func validateTestPattern(p string) error {
 	return nil
 }
 
-// TestsForPatterns de-duplicates and returns copies of registered tests with names matched by
-// any pattern in ps.
-func (r *Registry) TestsForPatterns(ps []string) ([]*Test, error) {
+// TestsForWildcards de-duplicates and returns copies of registered tests with names matched by
+// any wildcard in ws.
+func (r *Registry) TestsForWildcards(ws []string) ([]*Test, error) {
 	tests := make([]*Test, 0)
 	seen := make(map[*Test]struct{})
-	for _, p := range ps {
-		ts, err := r.testsForPattern(p)
+	for _, w := range ws {
+		ts, err := r.testsForWildcard(w)
 		if err != nil {
 			return nil, err
 		}

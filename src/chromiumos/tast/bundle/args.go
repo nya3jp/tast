@@ -264,8 +264,8 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer,
 type TestPatternType int
 
 const (
-	// TestPatternWildcard means the patterns will be interpreted as one or more wildcards (possibly literal test names).
-	TestPatternWildcard TestPatternType = iota
+	// TestPatternGlobs means the patterns will be interpreted as one or more globs (possibly literal test names).
+	TestPatternGlobs TestPatternType = iota
 	// TestPatternAttrExpr means the patterns will be interpreted as a boolean expression referring to test attributes.
 	TestPatternAttrExpr
 )
@@ -277,7 +277,7 @@ func GetTestPatternType(pats []string) TestPatternType {
 	case len(pats) == 1 && strings.HasPrefix(pats[0], "(") && strings.HasSuffix(pats[0], ")"):
 		return TestPatternAttrExpr
 	default:
-		return TestPatternWildcard
+		return TestPatternGlobs
 	}
 }
 
@@ -285,10 +285,10 @@ func GetTestPatternType(pats []string) TestPatternType {
 // If no patterns are supplied, all registered tests are returned.
 // If a single pattern is supplied and it is surrounded by parentheses,
 // it is treated as a boolean expression specifying test attributes.
-// Otherwise, pattern(s) are interpreted as wildcards matching test names.
+// Otherwise, pattern(s) are interpreted as globs matching test names.
 func testsToRun(pats []string) ([]*testing.Test, error) {
 	switch GetTestPatternType(pats) {
-	case TestPatternWildcard:
+	case TestPatternGlobs:
 		if len(pats) == 0 {
 			return testing.GlobalRegistry().AllTests(), nil
 		}
@@ -296,7 +296,7 @@ func testsToRun(pats []string) ([]*testing.Test, error) {
 		if len(pats) == 1 && (strings.Contains(pats[0], "&&") || strings.Contains(pats[0], "||")) {
 			return nil, fmt.Errorf("attr expr %q must be within parentheses", pats[0])
 		}
-		return testing.GlobalRegistry().TestsForPatterns(pats)
+		return testing.GlobalRegistry().TestsForGlobs(pats)
 	case TestPatternAttrExpr:
 		return testing.GlobalRegistry().TestsForAttrExpr(pats[0][1 : len(pats[0])-1])
 	}

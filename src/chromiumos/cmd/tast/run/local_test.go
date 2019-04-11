@@ -315,7 +315,7 @@ func TestLocalDataFiles(t *gotesting.T) {
 		bundlePkg   = "chromiumos/tast/local/bundles/" + bundleName
 		category    = "cat" // test category
 		categoryPkg = bundlePkg + "/" + category
-		pattern     = "cat.*" // wildcard matching all tests
+		pattern     = "cat.*" // glob matching all tests
 
 		file1        = "file1.txt"
 		file2        = "file2.txt"

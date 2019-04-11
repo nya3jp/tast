@@ -25,11 +25,11 @@ func getSoftwareFeatures(ctx context.Context, cfg *Config) error {
 		return nil
 	}
 
-	// If the user-supplied test patterns are wildcards (or more likely, literal test names),
+	// If the user-supplied test patterns are globs (or more likely, literal test names),
 	// assume that they really want to run those particular tests and skip checking dependencies.
 	if cfg.checkTestDeps == checkTestDepsAuto &&
-		bundle.GetTestPatternType(cfg.Patterns) == bundle.TestPatternWildcard {
-		cfg.Logger.Debug("Test software dependencies not checked for wildcard/literal test patterns")
+		bundle.GetTestPatternType(cfg.Patterns) == bundle.TestPatternGlobs {
+		cfg.Logger.Debug("Test software dependencies not checked for glob/literal test patterns")
 		cfg.checkTestDeps = checkTestDepsNever
 		return nil
 	}

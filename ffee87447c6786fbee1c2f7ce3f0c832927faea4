@@ -16,6 +16,24 @@
       "revId": "ffee87447c6786fbee1c2f7ce3f0c832927faea4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "26a204e9_bcf866d1",
+        "filename": "src/chromiumos/tast/testing/util_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-04-12T00:49:19Z",
+      "side": 1,
+      "message": "Hmm I see, but let me make this to 20 seconds instead. When a unit test never finishes, \"go test\" waits for minutes by default, and I feel it\u0027s too long. I believe 20 seconds is long enough, the test code should be tens of instructions except for sleep(1ms).",
+      "parentUuid": "fda2a43b_da26a43a",
+      "revId": "ffee87447c6786fbee1c2f7ce3f0c832927faea4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -5,6 +5,7 @@
 package build
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"os"
@@ -12,6 +13,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"chromiumos/cmd/tast/logging"
 	"chromiumos/tast/testutil"
 )
 
@@ -27,6 +29,7 @@ func TestBuild(t *testing.T) {
 
 	var err error
 	cfg := &Config{
+		Logger: logging.NewSimple(&bytes.Buffer{}, 0, false),
 		Workspaces: []string{
 			filepath.Join(tempDir, testDir),
 			filepath.Join(tempDir, commonDir),
@@ -82,7 +85,10 @@ func TestBuildBadWorkspace(t *testing.T) {
 	defer os.RemoveAll(td)
 
 	var err error
-	cfg := &Config{Workspaces: []string{filepath.Join(td, "ws1")}}
+	cfg := &Config{
+		Logger:     logging.NewSimple(&bytes.Buffer{}, 0, false),
+		Workspaces: []string{filepath.Join(td, "ws1")},
+	}
 	if cfg.Arch, err = GetLocalArch(); err != nil {
 		t.Fatal("Failed to get local arch: ", err)
 	}

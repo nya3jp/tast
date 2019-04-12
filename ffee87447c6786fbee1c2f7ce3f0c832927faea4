@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fda2a43b_da26a43a",
+        "filename": "src/chromiumos/tast/testing/util_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-12T00:35:03Z",
+      "side": 1,
+      "message": "i\u0027d recommend time.Minute, just because i\u0027ve seen builders be very, very slow during unit tests in the past.",
+      "revId": "ffee87447c6786fbee1c2f7ce3f0c832927faea4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

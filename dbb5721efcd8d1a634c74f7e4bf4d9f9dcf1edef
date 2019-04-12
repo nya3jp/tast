@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a2371612_708ff8fb",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-12T07:33:15Z",
+      "side": 1,
+      "message": "Status() is used by tast\u0027s somewhat-secret -fancy flag (which i don\u0027t use since it depends on escape sequences that tmux doesn\u0027t support). i don\u0027t know that it\u0027s important to maintain it, but it has a special place in my heart because it\u0027s cute.",
+      "revId": "dbb5721efcd8d1a634c74f7e4bf4d9f9dcf1edef",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

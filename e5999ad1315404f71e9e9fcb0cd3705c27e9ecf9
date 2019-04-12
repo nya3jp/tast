@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bef176b6_69e79190",
+        "filename": "src/chromiumos/cmd/tast/build/portage.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-12T01:58:42Z",
+      "side": 1,
+      "message": "this is an old function that had previously been deleted by 934853fb755b1304feb98ab1d22c98e6a7a96af8",
+      "revId": "e5999ad1315404f71e9e9fcb0cd3705c27e9ecf9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cf52fbbe_289a27a0",
+        "filename": "src/chromiumos/cmd/tast/run_cmd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-12T01:58:42Z",
+      "side": 1,
+      "message": "i\u0027m making this not run when we encountered an early (i.e. build) failure, since otherwise we get weird repeated output like this:\n\n...\n2019/04/11 17:59:32 Getting architecture from target\n2019/04/11 17:59:32 Building chromiumos/tast/local/bundles/cros from /home/derat/trunk/src/platform/tast-tests:/home/derat/trunk/src/platform/tast:/usr/lib/gopath\n2019/04/11 17:59:33 Failed building or pushing tests: build failed: failed checking deps for chromeos-base/tast-local-tests-cros-9999: target package installed in host sysroot; please run \"sudo emerge -C chromeos-base/tast-local-tests-cros-9999\"\n\n2019/04/11 17:59:33 Failed building or pushing tests: build failed: failed checking deps for chromeos-base/tast-local-tests-cros-9999: target package installed in host sysroot; please run \"sudo emerge -C chromeos-base/tast-local-tests-cros-9999\"",
+      "revId": "e5999ad1315404f71e9e9fcb0cd3705c27e9ecf9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -172,12 +172,12 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 				lg.Log(msg)
 			}
 		}
-	}
 
-	// Log the first line of the error as the last line of output to make it easy to see.
-	if status.ExitCode != subcommands.ExitSuccess {
-		if lines := strings.SplitN(status.ErrorMsg, "\n", 2); len(lines) >= 1 {
-			lg.Log(lines[0])
+		// Log the first line of the error as the last line of output to make it easy to see.
+		if status.ExitCode != subcommands.ExitSuccess {
+			if lines := strings.SplitN(status.ErrorMsg, "\n", 2); len(lines) >= 1 {
+				lg.Log(lines[0])
+			}
 		}
 	}
 

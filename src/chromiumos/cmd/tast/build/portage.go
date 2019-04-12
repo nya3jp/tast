@@ -14,6 +14,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"syscall"
 	"time"
 
 	"chromiumos/tast/shutil"
@@ -51,9 +52,16 @@ func checkDeps(ctx context.Context, portagePkg, cachePath string) (
 		}
 	}
 
-	// Fall back to the slow emerge path.
-	defer timing.Start(ctx, "emerge").End()
+	// Work around Portage bug https://bugs.gentoo.org/682472, where --onlydeps-with-rdeps=n is ignored
+	// (resulting in runtime dependencies being incorrectly checked) if the test bundle package was emerged earlier.
+	if installed, err := portagePkgInstalled(ctx, portagePkg); err != nil {
+		return nil, nil, fmt.Errorf("failed checking for target package in host sysroot: %v", err)
+	} else if installed {
+		return nil, nil, fmt.Errorf(`target package installed in host sysroot; please run "sudo emerge -C %s"`, portagePkg)
+	}
 
+	// Fall back to the slow (multiple seconds) emerge path.
+	defer timing.Start(ctx, "emerge").End()
 	cl := emergeCmdLine(portagePkg, emergeList)
 	cmd := exec.CommandContext(ctx, cl[0], cl[1:]...)
 	var stderr bytes.Buffer
@@ -81,6 +89,33 @@ func checkDeps(ctx context.Context, portagePkg, cachePath string) (
 	}
 
 	return missing, cmds, nil
+}
+
+// portagePkgInstalled runs "equery l" to check if pkg is installed.
+// pkg should be a versioned package of the form "chromeos-base/tast-local-tests-cros-9999".
+// This typically takes hundreds of milliseconds to complete.
+func portagePkgInstalled(ctx context.Context, pkg string) (bool, error) {
+	defer timing.Start(ctx, "equery_list").End()
+
+	cmd := exec.CommandContext(ctx, "equery", "-q", "-C", "l", pkg)
+	out, err := cmd.Output()
+	if err != nil {
+		// equery (in "quiet mode") exits with 3 if the package isn't installed.
+		if exitErr, ok := err.(*exec.ExitError); ok {
+			if status, ok := exitErr.Sys().(syscall.WaitStatus); ok {
+				if status.ExitStatus() == 3 {
+					return false, nil
+				}
+			}
+		}
+		return false, fmt.Errorf("%q failed: %v", strings.Join(cmd.Args, " "), err)
+	}
+
+	// equery should print the package name.
+	if str := strings.TrimSpace(string(out)); str != pkg {
+		return false, fmt.Errorf("%q returned %q", strings.Join(cmd.Args, " "), str)
+	}
+	return true, nil
 }
 
 // emergeMode describes a mode to use when running emerge.

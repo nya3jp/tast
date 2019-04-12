@@ -42,6 +42,8 @@ var archToCompiler = map[string]string{
 // Build builds executable package pkg to outDir as dictated by cfg.
 // The executable file's name is assigned by "go install" (i.e. it's the last component of pkg).
 // stageName is used as the name of a new stage reported via the timing package.
+// The returned out variable contains output from executed build commands and should typically
+// be logged iff err is non-nil.
 func Build(ctx context.Context, cfg *Config, pkg, outDir, stageName string) (out []byte, err error) {
 	defer timing.Start(ctx, stageName).End()
 
@@ -60,21 +62,17 @@ func Build(ctx context.Context, cfg *Config, pkg, outDir, stageName string) (out
 	}
 
 	if cfg.PortagePkg != "" {
+		cfg.Logger.Status("Checking dependencies for " + cfg.PortagePkg)
 		if missing, cmds, err := checkDeps(ctx, cfg.PortagePkg, cfg.CheckDepsCachePath); err != nil {
 			return out, fmt.Errorf("failed checking deps for %s: %v", cfg.PortagePkg, err)
 		} else if len(missing) > 0 {
-			// TODO(derat): Consider running these commands automatically instead of printing them
-			// if we can confirm that sudo won't prompt for a password.
-			b := bytes.NewBufferString("The following dependencies are not installed:\n")
-			for _, dep := range missing {
-				fmt.Fprintf(b, "  %s\n", dep)
+			if !cfg.InstallPortageDeps {
+				return makeMissingDepsMessage(missing, cmds),
+					fmt.Errorf("%s has missing dependencies", cfg.PortagePkg)
 			}
-			b.WriteString("\nTo install them, please run the following in your chroot:\n")
-			for _, cmd := range cmds {
-				fmt.Fprintf(b, "  %s\n", shutil.EscapeSlice(cmd))
+			if out, err := installMissingDeps(ctx, cfg, missing, cmds); err != nil {
+				return out, err
 			}
-			b.WriteString("\n")
-			return b.Bytes(), fmt.Errorf("%s has missing dependencies", cfg.PortagePkg)
 		}
 	}
 
@@ -106,6 +104,7 @@ func Build(ctx context.Context, cfg *Config, pkg, outDir, stageName string) (out
 	}
 	cmd.Env = env
 
+	cfg.Logger.Status("Compiling " + pkg)
 	defer timing.Start(ctx, "compile").End()
 	if out, err = cmd.CombinedOutput(); err != nil {
 		// The compiler won't be installed if the user has never run setup_board for a board using
@@ -118,4 +117,38 @@ func Build(ctx context.Context, cfg *Config, pkg, outDir, stageName string) (out
 		return out, err
 	}
 	return out, nil
+}
+
+// makeMissingDepsMessage returns a multiline message describing how to run cmds to install the listed missing packages.
+// missing and cmds should be produced by checkDeps.
+func makeMissingDepsMessage(missing []string, cmds [][]string) []byte {
+	b := bytes.NewBufferString("The following dependencies are not installed:\n")
+	for _, dep := range missing {
+		fmt.Fprintf(b, "  %s\n", dep)
+	}
+	b.WriteString("\nTo install them, please run the following in your chroot:\n")
+	for _, cmd := range cmds {
+		fmt.Fprintf(b, "  %s\n", shutil.EscapeSlice(cmd))
+	}
+	b.WriteString("\n")
+	return b.Bytes()
+}
+
+// installMissingDeps attempts to install the supplied missing packages by running cmds in sequence.
+// Progress is logged using cfg.Logger. missing and cmds should be produced by checkDeps.
+// If an error is returned, then out will contain stdout and stderr from the failed command.
+func installMissingDeps(ctx context.Context, cfg *Config, missing []string, cmds [][]string) (out []byte, err error) {
+	defer timing.Start(ctx, "install_deps").End()
+	cfg.Logger.Logf("Installing missing dependencies for %v:", cfg.PortagePkg)
+	for _, dep := range missing {
+		cfg.Logger.Log("  ", dep)
+	}
+	for _, cmd := range cmds {
+		cfg.Logger.Status(fmt.Sprintf("Running %q", shutil.EscapeSlice(cmd)))
+		cfg.Logger.Logf("Running %q", shutil.EscapeSlice(cmd))
+		if out, err := exec.CommandContext(ctx, cmd[0], cmd[1:]...).CombinedOutput(); err != nil {
+			return out, fmt.Errorf("failed running %q: %v", shutil.EscapeSlice(cmd), err)
+		}
+	}
+	return nil, nil
 }

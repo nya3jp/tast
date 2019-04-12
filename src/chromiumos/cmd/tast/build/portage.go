@@ -61,7 +61,7 @@ func checkDeps(ctx context.Context, portagePkg, cachePath string) (
 	}
 
 	// Fall back to the slow (multiple seconds) emerge path.
-	defer timing.Start(ctx, "emerge").End()
+	defer timing.Start(ctx, "emerge_list_deps").End()
 	cl := emergeCmdLine(portagePkg, emergeList)
 	cmd := exec.CommandContext(ctx, cl[0], cl[1:]...)
 	var stderr bytes.Buffer

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a6f8009f_3354fa78",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-13T01:44:13Z",
+      "side": 1,
+      "message": "this syntax is about to be replaced by e.g. \"Cq-Depend: chromium:1566247\", but the new syntax doesn\u0027t appear to be supported yet. i\u0027m not sure if the old one will continue to work for some period of time...",
+      "revId": "c340150039e67f345ba1fb957a828b5ea7ddc405",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

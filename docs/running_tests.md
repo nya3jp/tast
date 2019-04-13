@@ -62,6 +62,10 @@ If tests are being rebuilt, the `buildtype` flag determines which type of tests
 to build and run; see the next section for details. Otherwise, both local and
 remote tests are considered.
 
+[chromiumos/tast/expr]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/expr
+[Test Attributes]: test_attributes.md
+[software dependencies]: test_dependencies.md
+
 ## Controlling whether tests are rebuilt
 
 When the `-build` flag is true (the default), `tast run` rebuilds the `cros`
@@ -74,8 +78,8 @@ The `buildtype` flag accepts a `local` or `remote` parameter to specify which
 type of tests to build, push, and run. `local` is the default.
 
 The name of the bundle to build, push, and run can be specified via the
-`-buildbundle` flag. If the bundle's source code is outside of the `tast-tests
-repository`, you will need to specify the repository's path using the
+`-buildbundle` flag. If the bundle's source code is outside of the [tast-tests
+repository], you will need to specify the repository's path using the
 `-buildtestdir` flag.
 
 To rebuild a test bundle, the `tast` command needs its dependencies' source code
@@ -94,6 +98,9 @@ happens automatically when a `test` system image is built.
 If `-build` is true and `local_test_runner` isn't present on the DUT (presumably
 because it's running a `dev` system image rather than a `test` image), the
 `tast` command will attempt to build and deploy it.
+
+[tast-tests repository]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/
+[Go in Chromium OS]: https://www.chromium.org/chromium-os/developer-guide/go-in-chromium-os
 
 ## Interpreting test results
 
@@ -114,13 +121,14 @@ Various files and directories are created within the results directory:
     occured during testing.
 *   `full.txt` - All output from the run, including messages logged by
     individual tests.
-*   `results.json` - Machine-parseable test results.
+*   `results.json` - Machine-parseable test results, supplied as a
+    JSON-marshaled array of [run.TestResult] structs.
 *   `run_error.txt` - Error message describing the reason why the run was
     aborted (e.g. SSH connection to DUT was lost). Only written when a global
     error occurs.
-*   `streamed_results.jsonl` - Streamed machine-parseable test results. Provides
-    partial results if `tast` process is interrupted before `results.json` is
-    written.
+*   `streamed_results.jsonl` - Streamed machine-parseable test results, supplied
+    as a [JSONL] array of [run.TestResult] structs. Provides partial results if
+    the `tast` process is interrupted before `results.json` is written.
 *   `system_logs/` - Diff of `/var/log` on the DUT before and after testing.
     *   `journal/` - Log files collected from [journald].
         *   `journal.log` - Human-readable journald log messages.
@@ -132,11 +140,16 @@ Various files and directories are created within the results directory:
     *   (optional) `results-chart.json` - Machine-parseable performance
         metrics produced by the [perf] package.
     *   `...` - Other [output files] from the test.
-*   `timing.json` - Machine-parsable timing information about the test run.
+*   `timing.json` - Machine-parsable JSON-marshaled timing information about the
+    test run produced by the [timing] package.
 
+[Breakpad]: https://github.com/google/breakpad/
+[run.TestResult]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/cmd/tast/run#TestResult
+[JSONL]: http://jsonlines.org/
 [journald]: https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html
 [output files]: writing_tests.md#Output-files
 [perf]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/perf
+[timing]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/timing
 
 ## Running local tests manually on the DUT
 
@@ -147,10 +160,3 @@ don't have a Chrome OS chroot containing the `tast` executable), the
 ```shell
 local_test_runner ui.ChromeLogin
 ```
-
-[chromiumos/tast/expr]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/expr
-[Test Attributes]: test_attributes.md
-[software dependencies]: test_dependencies.md
-[tast-tests repository]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/
-[Go in Chromium OS]: https://www.chromium.org/chromium-os/developer-guide/go-in-chromium-os
-[Breakpad]: https://github.com/google/breakpad/

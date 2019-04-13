@@ -72,7 +72,6 @@ func main() {
 			"chrome":               "!chromeless_tty",
 			"chrome_internal":      "chrome_internal",
 			"chrome_login":         "!chromeless_tty && !rialto",
-			"containers":           "containers",
 			"cros_internal":        "internal",
 			"cups":                 "cups",
 			"diagnostics":          "diagnostics",
@@ -85,6 +84,7 @@ func main() {
 			"ml_service":           "ml_service",
 			"no_android":           "!arc",
 			"no_symlink_mount":     "!lxc",                         // boards using LXC set CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT=n
+			"oci":                  "containers && !moblab",        // run_oci doesn't work on Moblab: https://crbug.com/951691
 			"reboot":               "!betty && !tast_vm",           // weird missing-runner-after-reboot bug: https://crbug.com/909955
 			"screenshot":           "display_backlight && !rk3399", // screenshot command broken on RK3399: https://crbug.com/880597
 			"selinux":              "selinux",

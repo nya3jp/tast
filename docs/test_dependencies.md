@@ -33,8 +33,6 @@ The following software features are defined:
     of Chrome (e.g. official branding and proprietary codecs like H.264).
 *   `chrome_login` - Implies `chrome` with the further requirement that user
     login (i.e. using `session_manager` and `cryptohome`) is supported.
-*   `containers` - The ability to run code within containers. This implies the
-    presence of the `run_oci` program.
 *   `cros_internal` - Functionality that is only available in internal builds of
     Chrome OS (i.e. ones built using `chromeos-overlay`).
 *   `cups` - CUPS daemon.
@@ -51,6 +49,8 @@ The following software features are defined:
     the `android` feature; DUTs will have exactly one of these two features.
 *   `no_symlink_mount` - Symlink mounting is disabled via the
     `CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT` kernel option.
+*   `oci` - The ability to use the `run_oci` program to execute code within
+    [OCI] containers.
 *   `reboot` - The ability to reboot reliably during a remote test.
 *   `screenshot` - The [screenshot command] can save screenshots.
 *   `selinux` - An SELinux-enabled board. All Android boards are
@@ -71,6 +71,23 @@ The following software features are defined:
     the `usbip` program.
 *   `vm_host` - The ability to [run virtual machines].
 *   `vulkan` - Whether [Vulkan] is enabled.
+
+[amd64]: https://en.wikipedia.org/wiki/X86-64
+[run Android apps]: https://developer.android.com/topic/arc/
+[Camera HAL3]: https://source.android.com/devices/camera/camera3
+[AddressSanitizer]: https://github.com/google/sanitizers/wiki/AddressSanitizer
+[Autotest capability]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/autotest-capability-default/
+[Diagnostic utilities]: https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/diagnostics/README.md
+[Downloadable Content]: https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/dlcservice
+[video hardware overlays]: https://en.wikipedia.org/wiki/Hardware_overlay
+[sandboxed]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/linux_sandboxing.md
+[Memory stats collection daemon]: https://chromium.googlesource.com/chromiumos/platform2/+/master/metrics/memd/
+[OCI]: https://www.opencontainers.org/
+[screenshot command]: https://chromium.googlesource.com/chromiumos/platform2/+/master/screenshot/
+[Trusted Platform Module]: https://en.wikipedia.org/wiki/Trusted_Platform_Module
+[Transparent Hugepage]: https://www.kernel.org/doc/Documentation/vm/transhuge.txt
+[run virtual machines]: https://chromium.googlesource.com/chromiumos/docs/+/master/containers_and_vms.md
+[Vulkan]: https://www.khronos.org/vulkan/
 
 ## New features
 
@@ -101,6 +118,8 @@ that changes land in the correct order.
 If you're having trouble finding a way to specify your test's dependencies,
 please ask for help on the [tast-users mailing list].
 
+[local_test_runner]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/cmd/local_test_runner/main.go
+[tast-use-flags]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/tast-use-flags/
 [CQ-DEPEND]: https://chromium.googlesource.com/chromiumos/docs/+/master/contributing.md#cq-depend
 [tast-users mailing list]: https://groups.google.com/a/chromium.org/forum/#!forum/tast-users
 
@@ -113,6 +132,8 @@ feature based on the `containers` USE flag and making a test depend on it:
 *   `tast` repository: <https://crrev.com/c/1382621>
 *   `tast-tests` repository: <https://crrev.com/c/1382878>
 
+(Note that the `containers` feature has since been renamed to `oci`.)
+
 ## autotest-capability
 
 There are also `autotest-capability:`-prefixed features, which are added by the
@@ -121,22 +142,4 @@ There are also `autotest-capability:`-prefixed features, which are added by the
 existing Autotest-based video tests to Tast. Do not depend on capabilities from
 outside of video tests.
 
-[run Android apps]: https://developer.android.com/topic/arc/
-[AddressSanitizer]: https://github.com/google/sanitizers/wiki/AddressSanitizer
-[Autotest capability]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/autotest-capability-default/
-[Downloadable Content]: https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/dlcservice
-[video hardware overlays]: https://en.wikipedia.org/wiki/Hardware_overlay
-[sandboxed]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/linux_sandboxing.md
-[Memory stats collection daemon]: https://chromium.googlesource.com/chromiumos/platform2/+/master/metrics/memd/
-[screenshot command]: https://chromium.googlesource.com/chromiumos/platform2/+/master/screenshot/
-[Trusted Platform Module]: https://en.wikipedia.org/wiki/Trusted_Platform_Module
-[Transparent Hugepage]: https://www.kernel.org/doc/Documentation/vm/transhuge.txt
-[run virtual machines]: https://chromium.googlesource.com/chromiumos/docs/+/master/containers_and_vms.md
-[local_test_runner]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/cmd/local_test_runner/main.go
-[tast-use-flags]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/tast-use-flags/
-[autocaps package]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/autocaps/
-[Transparent Hugepage]: https://www.kernel.org/doc/Documentation/vm/transhuge.txt
-[amd64]: https://en.wikipedia.org/wiki/X86-64
-[Camera HAL3]: https://source.android.com/devices/camera/camera3
-[Vulkan]: https://www.khronos.org/vulkan/
-[Diagnostic utilities]: https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/diagnostics/README.md
+[autocap package]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/autocaps/

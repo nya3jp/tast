@@ -24,8 +24,10 @@ type symbolizeCmd struct {
 func (*symbolizeCmd) Name() string     { return "symbolize" }
 func (*symbolizeCmd) Synopsis() string { return "symbolize crashes" }
 func (*symbolizeCmd) Usage() string {
-	return `symbolize <flags> <file>:
-	Symbolizes a crash dump.
+	return `Usage: symbolize [flag]... <file>
+
+Symbolize a minidump crash file to stdout.
+
 `
 }
 

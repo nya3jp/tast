@@ -403,8 +403,9 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, cf
 		flags := flag.NewFlagSet("", flag.ContinueOnError)
 		flags.SetOutput(stderr)
 		flags.Usage = func() {
-			fmt.Fprintf(stderr, "Usage: %s <flags> <pattern> <pattern> ...\n"+
-				"Runs tests matched by zero or more patterns.\n\n", filepath.Base(os.Args[0]))
+			fmt.Fprintf(stderr, "Usage: %s [flag]... [pattern]...\n\n"+
+				"Runs Tast tests matched by zero or more patterns.\n\n"+
+				"This is executed by the \"tast\" command to execute test bundles.\n\n", filepath.Base(os.Args[0]))
 			flags.PrintDefaults()
 		}
 		flags.StringVar(&args.RunTests.BundleGlob, "bundles",

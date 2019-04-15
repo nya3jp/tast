@@ -102,10 +102,9 @@ func TestTestsToRun(t *gotesting.T) {
 		name1 = "cat.MyTest1"
 		name2 = "cat.MyTest2"
 	)
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
-	defer restore()
-	testing.AddTest(&testing.Test{Name: name1, Func: testFunc, Attr: []string{"attr1", "attr2"}})
-	testing.AddTest(&testing.Test{Name: name2, Func: testFunc, Attr: []string{"attr2"}})
+	reg := testing.NewRegistry(testing.NoAutoName)
+	reg.AddTest(&testing.Test{Name: name1, Func: testFunc, Attr: []string{"attr1", "attr2"}})
+	reg.AddTest(&testing.Test{Name: name2, Func: testFunc, Attr: []string{"attr2"}})
 
 	for _, tc := range []struct {
 		args     []string
@@ -126,23 +125,23 @@ func TestTestsToRun(t *gotesting.T) {
 		{[]string{"(attr3)"}, []string{}},
 		{[]string{"foo.BogusTest"}, []string{}},
 	} {
-		tests, err := testsToRun(tc.args)
+		tests, err := TestsToRun(reg, tc.args)
 		if tc.expNames == nil {
 			if err == nil {
-				t.Errorf("testsToRun(%v) succeeded unexpectedly", tc.args)
+				t.Errorf("TestsToRun(..., %v) succeeded unexpectedly", tc.args)
 			}
 			continue
 		}
 
 		if err != nil {
-			t.Errorf("testsToRun(%v) failed: %v", tc.args, err)
+			t.Errorf("TestsToRun(..., %v) failed: %v", tc.args, err)
 		} else {
 			actNames := make([]string, len(tests))
 			for i := range tests {
 				actNames[i] = tests[i].Name
 			}
 			if !reflect.DeepEqual(actNames, tc.expNames) {
-				t.Errorf("testsToRun(%v) = %v; want %v", tc.args, actNames, tc.expNames)
+				t.Errorf("TestsToRun(..., %v) = %v; want %v", tc.args, actNames, tc.expNames)
 			}
 		}
 	}

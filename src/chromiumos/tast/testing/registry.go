@@ -17,6 +17,7 @@ import (
 type Registry struct {
 	allTests  []*Test
 	testNames map[string]struct{} // names of registered tests
+	finalize  bool                // call Test.finalize to validate and automatically set fields
 	autoName  bool                // automatically derive test names from func names
 }
 
@@ -27,15 +28,19 @@ type registryOption func(*Registry)
 // that registered it. This is used by unit tests that want to add tests with test function names
 // that don't match the test file's name (e.g. a file named "file_test.go" would typically be expected
 // to register a test function with a name like "FileTest").
-var NoAutoName = func(r *Registry) {
-	r.autoName = false
-}
+var NoAutoName = func(r *Registry) { r.autoName = false }
+
+// NoFinalize can be passed to NewRegistry to configure the returned registry to not perform any
+// validation or automatic field-filling when tests are added via Addtest. This option implies NoAutoName.
+// This should only be used when importing serialized tests that will not actually be run later.
+var NoFinalize = func(r *Registry) { r.finalize = false }
 
 // NewRegistry returns a new test registry.
 func NewRegistry(opts ...registryOption) *Registry {
 	r := &Registry{
 		allTests:  make([]*Test, 0),
 		testNames: make(map[string]struct{}),
+		finalize:  true,
 		autoName:  true,
 	}
 	for _, o := range opts {
@@ -48,8 +53,10 @@ func NewRegistry(opts ...registryOption) *Registry {
 func (r *Registry) AddTest(t *Test) error {
 	// Copy the test to ensure that later changes made by the caller don't affect us.
 	t = t.clone()
-	if err := t.finalize(r.autoName); err != nil {
-		return err
+	if r.finalize {
+		if err := t.finalize(r.autoName); err != nil {
+			return err
+		}
 	}
 	if _, ok := r.testNames[t.Name]; ok {
 		return fmt.Errorf("test %q already registered", t.Name)

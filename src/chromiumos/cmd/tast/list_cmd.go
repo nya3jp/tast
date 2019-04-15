@@ -18,23 +18,26 @@ import (
 
 	"chromiumos/cmd/tast/logging"
 	"chromiumos/cmd/tast/run"
+	"chromiumos/tast/bundle"
+	"chromiumos/tast/command"
 	"chromiumos/tast/testing"
 )
 
 // listCmd implements subcommands.Command to support listing tests.
 type listCmd struct {
-	json    bool        // marshal tests to JSON instead of just printing names
-	cfg     *run.Config // shared config for listing tests
-	wrapper runWrapper  // wraps calls to run package
-	w       io.Writer   // where to write tests
+	json       bool        // marshal tests to JSON instead of just printing names
+	inputFiles []string    // files containing JSON arrays of testing.Test structs to use instead of querying DUT
+	cfg        *run.Config // shared config for listing tests
+	wrapper    runWrapper  // wraps calls to run package
+	stdout     io.Writer   // where to write tests
 }
 
-// newListCmd returns a new listCmd that will write tests to w.
-func newListCmd(w io.Writer) *listCmd {
+// newListCmd returns a new listCmd that will write tests to stdout.
+func newListCmd(stdout io.Writer) *listCmd {
 	return &listCmd{
 		cfg:     run.NewConfig(run.ListTestsMode, tastDir, trunkDir()),
 		wrapper: &realRunWrapper{},
-		w:       w,
+		stdout:  stdout,
 	}
 }
 
@@ -46,6 +49,8 @@ func (*listCmd) Usage() string {
 List tests matched by zero or more patterns.
 
 The target is an SSH connection spec of the form "[user@]host[:port]".
+It is omitted if -readfile is passed.
+
 Patterns are either globs matching test names or a single test attribute
 boolean expression in parentheses (e.g. "(informational && !disabled)").
 
@@ -55,6 +60,14 @@ boolean expression in parentheses (e.g. "(informational && !disabled)").
 func (lc *listCmd) SetFlags(f *flag.FlagSet) {
 	// TODO(derat): Add -listtype: https://crbug.com/831849
 	f.BoolVar(&lc.json, "json", false, "print full test details as JSON")
+
+	rf := command.RepeatedFlag(func(v string) error {
+		lc.inputFiles = append(lc.inputFiles, v)
+		return nil
+	})
+	f.Var(&rf, "readfile", "read JSON array of testing.Test structs from file "+
+		"instead of querying DUT (may be repeated)")
+
 	lc.cfg.SetFlags(f)
 }
 
@@ -64,50 +77,87 @@ func (lc *listCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{
 		panic("logger not attached to context")
 	}
 
-	if len(f.Args()) == 0 {
-		lg.Log("Missing target.\n\n" + lc.Usage())
-		return subcommands.ExitUsageError
+	var tests []*testing.Test
+
+	if len(lc.inputFiles) > 0 {
+		reg := testing.NewRegistry(testing.NoFinalize)
+		for _, p := range lc.inputFiles {
+			if err := importTests(p, reg); err != nil {
+				lg.Logf("Failed to import tests from %v: %v", p, err)
+				return subcommands.ExitFailure
+			}
+		}
+		var err error
+		if tests, err = bundle.TestsToRun(reg, f.Args()); err != nil {
+			lg.Log("Failed to select tests: ", err)
+			return subcommands.ExitUsageError
+		}
+	} else {
+		if len(f.Args()) == 0 {
+			lg.Log("Missing target.\n\n" + lc.Usage())
+			return subcommands.ExitUsageError
+		}
+		if err := lc.cfg.DeriveDefaults(); err != nil {
+			lg.Log("Failed to derive defaults: ", err)
+			return subcommands.ExitUsageError
+		}
+		lc.cfg.Target = f.Args()[0]
+		lc.cfg.Patterns = f.Args()[1:]
+
+		b := bytes.Buffer{}
+		lc.cfg.Logger = logging.NewSimple(&b, log.LstdFlags, true)
+
+		status, results := lc.wrapper.run(ctx, lc.cfg)
+		if status.ExitCode != subcommands.ExitSuccess {
+			os.Stderr.Write(b.Bytes())
+			return status.ExitCode
+		}
+		tests = make([]*testing.Test, len(results))
+		for i := range results {
+			tests[i] = &results[i].Test
+		}
 	}
 
-	if err := lc.cfg.DeriveDefaults(); err != nil {
-		lg.Log("Failed to derive defaults: ", err)
-		return subcommands.ExitUsageError
-	}
-
-	lc.cfg.Target = f.Args()[0]
-	lc.cfg.Patterns = f.Args()[1:]
-
-	b := bytes.Buffer{}
-	lc.cfg.Logger = logging.NewSimple(&b, log.LstdFlags, true)
-
-	status, results := lc.wrapper.run(ctx, lc.cfg)
-	if status.ExitCode != subcommands.ExitSuccess {
-		os.Stderr.Write(b.Bytes())
-		return status.ExitCode
-	}
-	if err := lc.printTests(results); err != nil {
+	if err := lc.printTests(tests); err != nil {
 		lg.Log("Failed to write tests: ", err)
 		return subcommands.ExitFailure
 	}
 	return subcommands.ExitSuccess
 }
 
-// printTests writes the tests within results to lc.w.
-func (lc *listCmd) printTests(results []run.TestResult) error {
+// printTests writes the supplied tests to lc.stdout.
+func (lc *listCmd) printTests(tests []*testing.Test) error {
 	if lc.json {
-		ts := make([]*testing.Test, len(results))
-		for i := 0; i < len(ts); i++ {
-			ts[i] = &results[i].Test
-		}
-		enc := json.NewEncoder(lc.w)
+		enc := json.NewEncoder(lc.stdout)
 		enc.SetIndent("", "  ")
-		return enc.Encode(ts)
+		return enc.Encode(tests)
 	}
 
-	// Otherwise, just print test names, one per line.
-	for _, res := range results {
-		if _, err := fmt.Fprintf(lc.w, "%s\n", res.Test.Name); err != nil {
+	// If -json wasn't passed, just print test names, one per line.
+	for _, t := range tests {
+		if _, err := fmt.Fprintln(lc.stdout, t.Name); err != nil {
 			return err
+		}
+	}
+	return nil
+}
+
+// importTests unmarshals a JSON array of testing.Test structs from the file at p and imports them into reg.
+// The returned tests will not be runnable, as test functions are not preserved during marshaling.
+func importTests(p string, reg *testing.Registry) error {
+	f, err := os.Open(p)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	var ts []*testing.Test
+	if err := json.NewDecoder(f).Decode(&ts); err != nil {
+		return err
+	}
+	for _, t := range ts {
+		if err := reg.AddTest(t); err != nil {
+			return fmt.Errorf("failed to add test %v: %v", t.Name, err)
 		}
 	}
 	return nil

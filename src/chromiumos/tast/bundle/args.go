@@ -247,7 +247,7 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer,
 		return nil, command.NewStatusErrorf(statusBadArgs, "invalid mode %d", args.Mode)
 	}
 
-	tests, err := testsToRun(patterns)
+	tests, err := TestsToRun(testing.GlobalRegistry(), patterns)
 	if err != nil {
 		return nil, command.NewStatusErrorf(statusBadPatterns, "failed getting tests for %v: %v", patterns, err.Error())
 	}
@@ -281,24 +281,27 @@ func GetTestPatternType(pats []string) TestPatternType {
 	}
 }
 
-// testsToRun returns tests to run for a command invoked with test patterns pats.
+// TestsToRun returns tests from reg to run for a command invoked with test patterns pats.
+//
 // If no patterns are supplied, all registered tests are returned.
+//
 // If a single pattern is supplied and it is surrounded by parentheses,
 // it is treated as a boolean expression specifying test attributes.
+//
 // Otherwise, pattern(s) are interpreted as globs matching test names.
-func testsToRun(pats []string) ([]*testing.Test, error) {
+func TestsToRun(reg *testing.Registry, pats []string) ([]*testing.Test, error) {
 	switch GetTestPatternType(pats) {
 	case TestPatternGlobs:
 		if len(pats) == 0 {
-			return testing.GlobalRegistry().AllTests(), nil
+			return reg.AllTests(), nil
 		}
 		// Print a helpful error message if it looks like the user wanted an attribute expression.
 		if len(pats) == 1 && (strings.Contains(pats[0], "&&") || strings.Contains(pats[0], "||")) {
 			return nil, fmt.Errorf("attr expr %q must be within parentheses", pats[0])
 		}
-		return testing.GlobalRegistry().TestsForGlobs(pats)
+		return reg.TestsForGlobs(pats)
 	case TestPatternAttrExpr:
-		return testing.GlobalRegistry().TestsForAttrExpr(pats[0][1 : len(pats[0])-1])
+		return reg.TestsForAttrExpr(pats[0][1 : len(pats[0])-1])
 	}
 	return nil, fmt.Errorf("invalid test pattern(s) %v", pats)
 }

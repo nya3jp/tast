@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"reflect"
+	"strconv"
 	"testing"
 	"time"
 )
@@ -167,4 +168,30 @@ func ExampleListFlag() {
 	// Output:
 	// no flag: [a b]
 	// flag: [c d e]
+}
+
+func ExampleRepeatedFlag() {
+	var dest []int
+	rf := RepeatedFlag(func(v string) error {
+		i, err := strconv.Atoi(v)
+		if err != nil {
+			return err
+		}
+		dest = append(dest, i)
+		return nil
+	})
+	flags := flag.NewFlagSet("", flag.ContinueOnError)
+	flags.Var(&rf, "flag", "usage")
+
+	// When the flag isn't supplied, the slice is unchanged.
+	flags.Parse([]string{})
+	fmt.Println("no flag:", dest)
+
+	// The function is called each time the flag is provided.
+	flags.Parse([]string{"-flag=1", "-flag=2"})
+	fmt.Println("flag:", dest)
+
+	// Output:
+	// no flag: []
+	// flag: [1 2]
 }

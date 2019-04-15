@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "3477c694_470784d8",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-15T05:06:49Z",
+      "side": 1,
+      "message": "iirc, they usually duplicate messages that are also logged using Log/Logf. the general pattern is:\n\n  Status(\"Doing foo\")\n  Log(\"Doing foo with details ...\")\n  Debug(\"Verbose logging about part of foo\")\n  Debug(\"More verbose logging\")\n  Log(\"Completed foo in 12s\")\n  Status(\"Doing bar\")\n  ...\n\nthe status message stays onscreen until it\u0027s replaced by a new status message, so i was generally keeping them short to provide a brief description of the in-progress operation/phase. maybe i could change that and duplicate status messages to the main historical log, but i was worried that people would forget to call Status then, i think.",
+      "parentUuid": "ec4ddc75_27a69626",
+      "revId": "dbb5721efcd8d1a634c74f7e4bf4d9f9dcf1edef",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f46c9f2e_dd422e93",
         "filename": "src/chromiumos/cmd/tast/build/build.go",
         "patchSetId": 2
@@ -57,6 +75,30 @@
       "revId": "dbb5721efcd8d1a634c74f7e4bf4d9f9dcf1edef",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c1fbf78e_c9a9568f",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-15T05:06:49Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f46c9f2e_dd422e93",
+      "range": {
+        "startLine": 137,
+        "startChar": 46,
+        "endLine": 137,
+        "endChar": 53
+      },
+      "revId": "dbb5721efcd8d1a634c74f7e4bf4d9f9dcf1edef",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

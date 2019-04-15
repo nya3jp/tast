@@ -16,6 +16,47 @@
       "revId": "dbb5721efcd8d1a634c74f7e4bf4d9f9dcf1edef",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ec4ddc75_27a69626",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-04-15T04:35:24Z",
+      "side": 1,
+      "message": "[No action required]\n\nYes, I was wondering why Status messages are not printed, and I did not know -fancy flag :)\n\nWhy don\u0027t we just print them out without any escape sequences in simpleLogger? Maybe they\u0027re too verbose?",
+      "parentUuid": "a2371612_708ff8fb",
+      "revId": "dbb5721efcd8d1a634c74f7e4bf4d9f9dcf1edef",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f46c9f2e_dd422e93",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-04-15T04:35:24Z",
+      "side": 1,
+      "message": "huge nit: listed?",
+      "range": {
+        "startLine": 137,
+        "startChar": 46,
+        "endLine": 137,
+        "endChar": 53
+      },
+      "revId": "dbb5721efcd8d1a634c74f7e4bf4d9f9dcf1edef",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

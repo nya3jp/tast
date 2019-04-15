@@ -47,8 +47,18 @@ func newRunCmd() *runCmd {
 func (*runCmd) Name() string     { return "run" }
 func (*runCmd) Synopsis() string { return "run tests" }
 func (*runCmd) Usage() string {
-	return `run <flags> <target> <pattern> <pattern> ...:
-	Runs one or more tests on a remote host.
+	return `Usage: run [flag]... <target> [pattern]...
+
+Run one or more tests on a target device.
+
+The target is an SSH connection spec of the form "[user@]host[:port]".
+Patterns are either globs matching test names or a single test attribute
+boolean expression in parentheses (e.g. "(informational && !disabled)").
+
+Exits with 0 if all expected tests were executed, even if some of them failed.
+Non-zero exit codes indicate high-level issues, e.g. the SSH connection to the
+target was lost.
+
 `
 }
 

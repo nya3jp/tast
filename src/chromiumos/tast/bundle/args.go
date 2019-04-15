@@ -205,9 +205,9 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer,
 			if bt == remoteBundle {
 				runner = "remote_test_runner"
 			}
-			fmt.Fprintf(stderr, "Usage: %s <flags>\n"+
-				"This is a Tast test bundle containing integration tests.\n"+
-				"It is typically executed by %s rather than being run manually.\n\n",
+			fmt.Fprintf(stderr, "Usage: %s [flag]...\n\n"+
+				"Tast test bundle containing integration tests.\n\n"+
+				"This is typically executed by %s.\n\n",
 				filepath.Base(os.Args[0]), runner)
 			flags.PrintDefaults()
 		}

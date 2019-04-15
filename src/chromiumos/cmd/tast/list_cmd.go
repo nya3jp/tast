@@ -41,8 +41,14 @@ func newListCmd(w io.Writer) *listCmd {
 func (*listCmd) Name() string     { return "list" }
 func (*listCmd) Synopsis() string { return "list tests" }
 func (*listCmd) Usage() string {
-	return `list <flags> <target> <pattern> <pattern> ...:
-	Lists tests matched by one or more patterns.
+	return `Usage: list [flag]... <target> [pattern]...
+
+List tests matched by zero or more patterns.
+
+The target is an SSH connection spec of the form "[user@]host[:port]".
+Patterns are either globs matching test names or a single test attribute
+boolean expression in parentheses (e.g. "(informational && !disabled)").
+
 `
 }
 

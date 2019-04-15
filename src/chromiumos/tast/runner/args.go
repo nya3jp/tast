@@ -402,9 +402,19 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, cf
 
 		flags := flag.NewFlagSet("", flag.ContinueOnError)
 		flags.SetOutput(stderr)
+		const usage = `Usage: %s [flag]... [pattern]...
+
+Run Tast tests matched by zero or more patterns.
+
+This executes test bundles to run Tast tests and is typically executed by the
+"tast" command. It can be executed manually to e.g. perform stress testing.
+
+Exits with 0 if all tests passed and with a non-zero exit code for all other
+errors, including the failure of an individual test.
+
+`
 		flags.Usage = func() {
-			fmt.Fprintf(stderr, "Usage: %s <flags> <pattern> <pattern> ...\n"+
-				"Runs tests matched by zero or more patterns.\n\n", filepath.Base(os.Args[0]))
+			fmt.Fprintf(stderr, usage, filepath.Base(os.Args[0]))
 			flags.PrintDefaults()
 		}
 		flags.StringVar(&args.RunTests.BundleGlob, "bundles",

@@ -115,3 +115,15 @@ func (f *ListFlag) Set(v string) error {
 	f.assign(vals)
 	return nil
 }
+
+// RepeatedFlag implements flag.Value around an assignment function that is executed each
+// time the flag is supplied.
+type RepeatedFlag func(v string) error
+
+// Default returns the default value used if the flag is unset.
+func (f *RepeatedFlag) Default() string { return "" }
+
+func (f *RepeatedFlag) String() string { return "" }
+
+// Set sets the flag value.
+func (f *RepeatedFlag) Set(v string) error { return (*f)(v) }

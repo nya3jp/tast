@@ -15,8 +15,10 @@ results are interpreted:
     are uploaded to [crosbolt]. When you add this attribute, you also need to
     add one of `crosbolt_perbuild`, `crosbolt_nightly` or `crosbolt_weekly`.
 
-Failures in tests without `disabled`, `informational` or `group:crosbolt`
-attributes justify rejecting or reverting the responsible change.
+Tests without `disabled` or any `group:`-prefixed attributes are called
+*mainline* tests. Mainline tests without the `informational` attribute are
+called *critical* tests. Failures in critical tests justify rejecting or
+reverting the responsible change.
 
 ## Automatically-added attributes
 

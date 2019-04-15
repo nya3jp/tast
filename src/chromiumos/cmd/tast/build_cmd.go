@@ -27,8 +27,10 @@ type buildCmd struct {
 func (*buildCmd) Name() string     { return "build" }
 func (*buildCmd) Synopsis() string { return "build tests" }
 func (*buildCmd) Usage() string {
-	return `build <flags> <pkg> <outdir>:
-	Builds an executable package.
+	return `Usage: build [flag]... <pkg> <outdir>
+
+Build executable Go package pkg to outdir.
+
 `
 }
 

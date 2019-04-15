@@ -22,8 +22,9 @@ import (
 )
 
 // executeListCmd creates a listCmd and executes it using the supplied args and wrapper.
-func executeListCmd(t *gotesting.T, w io.Writer, args []string, wrapper *stubRunWrapper, lg logging.Logger) subcommands.ExitStatus {
-	cmd := newListCmd(w)
+func executeListCmd(t *gotesting.T, stdout io.Writer, stdin io.Reader, args []string,
+	wrapper *stubRunWrapper, lg logging.Logger) subcommands.ExitStatus {
+	cmd := newListCmd(stdout, stdin)
 	cmd.wrapper = wrapper
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
 	cmd.SetFlags(flags)
@@ -43,7 +44,7 @@ func TestListTests(t *gotesting.T) {
 	// Verify that the default one-test-per-line mode works.
 	stdout := bytes.Buffer{}
 	args := []string{"root@example.net"}
-	if status := executeListCmd(t, &stdout, args, &wrapper, logging.NewDiscard()); status != subcommands.ExitSuccess {
+	if status := executeListCmd(t, &stdout, nil, args, &wrapper, logging.NewDiscard()); status != subcommands.ExitSuccess {
 		t.Fatalf("listCmd.Execute(%v) returned status %v; want %v", args, status, subcommands.ExitSuccess)
 	}
 	if exp := fmt.Sprintf("%s\n%s\n", test1.Name, test2.Name); stdout.String() != exp {
@@ -53,7 +54,7 @@ func TestListTests(t *gotesting.T) {
 	// Verify that full test objects are written as JSON when -json is supplied.
 	stdout.Reset()
 	args = append([]string{"-json"}, args...)
-	if status := executeListCmd(t, &stdout, args, &wrapper, logging.NewDiscard()); status != subcommands.ExitSuccess {
+	if status := executeListCmd(t, &stdout, nil, args, &wrapper, logging.NewDiscard()); status != subcommands.ExitSuccess {
 		t.Fatalf("listCmd.Execute(%v) returned status %v; want %v", args, status, subcommands.ExitSuccess)
 	}
 	act := make([]testing.Test, 0)
@@ -61,6 +62,34 @@ func TestListTests(t *gotesting.T) {
 		t.Errorf("Failed to unmarshal output from listCmd.Execute(%v): %v", args, err)
 	}
 	if exp := []testing.Test{test1, test2}; !reflect.DeepEqual(exp, act) {
+		t.Errorf("listCmd.Execute(%v) printed %+v; want %+v", args, act, exp)
+	}
+}
+
+func TestListTestsStdin(t *gotesting.T) {
+	test1 := testing.Test{Name: "pkg.Test1", Attr: []string{"a"}}
+	test2 := testing.Test{Name: "pkg.Test2", Attr: []string{"b"}}
+	test3 := testing.Test{Name: "pkg.Test3", Attr: []string{"b"}}
+	test4 := testing.Test{Name: "pkg.Test4", Attr: []string{"a"}}
+
+	var stdin, stdout bytes.Buffer
+	enc := json.NewEncoder(&stdin)
+	if err := enc.Encode([]*testing.Test{&test1, &test2}); err != nil {
+		t.Fatal("Failed to marshal tests: ", err)
+	}
+	if err := enc.Encode([]*testing.Test{&test3, &test4}); err != nil {
+		t.Fatal("Failed to marshal tests: ", err)
+	}
+	args := []string{"-stdin", "-json", `(b)`}
+	if status := executeListCmd(t, &stdout, &stdin, args, nil, logging.NewDiscard()); status != subcommands.ExitSuccess {
+		t.Fatalf("listCmd.Execute(%v) returned status %v; want %v", args, status, subcommands.ExitSuccess)
+	}
+
+	var act []testing.Test
+	if err := json.Unmarshal(stdout.Bytes(), &act); err != nil {
+		t.Errorf("Failed to unmarshal output from listCmd.Execute(%v): %v", args, err)
+	}
+	if exp := []testing.Test{test2, test3}; !reflect.DeepEqual(exp, act) {
 		t.Errorf("listCmd.Execute(%v) printed %+v; want %+v", args, act, exp)
 	}
 }

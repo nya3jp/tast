@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "af451408_da6b7486",
+        "filename": "src/chromiumos/cmd/tast/build_cmd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-15T08:46:14Z",
+      "side": 1,
+      "message": "there\u0027s technically a \"tast [main_flags]...\" before this, but i wasn\u0027t sure if it made since to include it since the main flags won\u0027t be included in this usage string.",
+      "range": {
+        "startLine": 30,
+        "startChar": 16,
+        "endLine": 30,
+        "endChar": 21
+      },
+      "revId": "8df45cb45bf33d9ae60425af5d1ade3ebac7700c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

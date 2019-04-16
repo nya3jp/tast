@@ -22,6 +22,52 @@
       "revId": "8df45cb45bf33d9ae60425af5d1ade3ebac7700c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0047d1cc_889aba10",
+        "filename": "src/chromiumos/cmd/tast/list_cmd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-04-16T02:25:06Z",
+      "side": 1,
+      "message": "strictly speaking, we can omit the pattern, so it\u0027s not \"one or more\"... Maybe it\u0027s good to mention the behavior of zero pattern?",
+      "range": {
+        "startLine": 46,
+        "startChar": 22,
+        "endLine": 46,
+        "endChar": 43
+      },
+      "revId": "8df45cb45bf33d9ae60425af5d1ade3ebac7700c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "227ec08b_5e0b45d9",
+        "filename": "src/chromiumos/cmd/tast/run_cmd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-04-16T02:25:06Z",
+      "side": 1,
+      "message": "Optional: Not required in this CL, but it might be good to describe the return code of the command here (IIRC tast run returns 0 even if there are failures, and it\u0027s good to note).",
+      "range": {
+        "startLine": 56,
+        "startChar": 0,
+        "endLine": 56,
+        "endChar": 72
+      },
+      "revId": "8df45cb45bf33d9ae60425af5d1ade3ebac7700c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

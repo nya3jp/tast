@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "bf933222_89d717cf",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-04-16T03:19:13Z",
+      "side": 1,
+      "message": "I see, thanks for clarification! I\u0027d like to see it enabled by default somehow since it\u0027s fancy :)",
+      "parentUuid": "3477c694_470784d8",
+      "revId": "dbb5721efcd8d1a634c74f7e4bf4d9f9dcf1edef",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f46c9f2e_dd422e93",
         "filename": "src/chromiumos/cmd/tast/build/build.go",
         "patchSetId": 2

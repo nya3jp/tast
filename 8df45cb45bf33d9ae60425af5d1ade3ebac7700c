@@ -48,6 +48,30 @@
     },
     {
       "key": {
+        "uuid": "b576b6e9_c3189df2",
+        "filename": "src/chromiumos/cmd/tast/list_cmd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-16T03:07:15Z",
+      "side": 1,
+      "message": "nice catch. the runner package already got this correct; i\u0027ve updated this to match.",
+      "parentUuid": "0047d1cc_889aba10",
+      "range": {
+        "startLine": 46,
+        "startChar": 22,
+        "endLine": 46,
+        "endChar": 43
+      },
+      "revId": "8df45cb45bf33d9ae60425af5d1ade3ebac7700c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "227ec08b_5e0b45d9",
         "filename": "src/chromiumos/cmd/tast/run_cmd.go",
         "patchSetId": 1
@@ -68,6 +92,30 @@
       "revId": "8df45cb45bf33d9ae60425af5d1ade3ebac7700c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "31aa178a_c755309c",
+        "filename": "src/chromiumos/cmd/tast/run_cmd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-16T03:07:15Z",
+      "side": 1,
+      "message": "thanks, great suggestion! also updated tast/runner/args.go",
+      "parentUuid": "227ec08b_5e0b45d9",
+      "range": {
+        "startLine": 56,
+        "startChar": 0,
+        "endLine": 56,
+        "endChar": 72
+      },
+      "revId": "8df45cb45bf33d9ae60425af5d1ade3ebac7700c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

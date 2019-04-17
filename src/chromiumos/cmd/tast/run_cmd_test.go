@@ -68,8 +68,13 @@ func TestRunNoResults(t *gotesting.T) {
 }
 
 func TestRunResults(t *gotesting.T) {
-	// As long as results were returned, success should be reported.
-	wrapper := stubRunWrapper{runRes: []run.TestResult{run.TestResult{Test: testing.Test{Name: "pkg.LocalTest"}}}}
+	// As long as results were returned and no run-level errors occurred, success should be reported.
+	wrapper := stubRunWrapper{runRes: []run.TestResult{
+		run.TestResult{
+			Test:   testing.Test{Name: "pkg.LocalTest"},
+			Errors: []run.TestError{run.TestError{}},
+		},
+	}}
 	args := []string{"root@example.net"}
 	if status := executeRunCmd(t, args, &wrapper, logging.NewDiscard()); status != subcommands.ExitSuccess {
 		t.Fatalf("runCmd.Execute(%v) returned status %v; want %v", args, status, subcommands.ExitSuccess)
@@ -79,6 +84,18 @@ func TestRunResults(t *gotesting.T) {
 	}
 	if !wrapper.writeComplete {
 		t.Errorf("runCmd.Execute(%v) reported incomplete run", args)
+	}
+
+	// If -failfortests is passed, then a test failure should result in 1 being returned.
+	args = append([]string{"-failfortests"}, args...)
+	if status := executeRunCmd(t, args, &wrapper, logging.NewDiscard()); status != subcommands.ExitFailure {
+		t.Fatalf("runCmd.Execute(%v) returned status %v for failing test; want %v", args, status, subcommands.ExitFailure)
+	}
+
+	// If the test passed, we should return 0 with -failfortests.
+	wrapper.runRes[0].Errors = nil
+	if status := executeRunCmd(t, args, &wrapper, logging.NewDiscard()); status != subcommands.ExitSuccess {
+		t.Fatalf("runCmd.Execute(%v) returned status %v for successful test; want %v", args, status, subcommands.ExitSuccess)
 	}
 }
 

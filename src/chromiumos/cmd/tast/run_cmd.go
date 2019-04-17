@@ -32,9 +32,10 @@ const (
 
 // runCmd implements subcommands.Command to support running tests.
 type runCmd struct {
-	cfg     *run.Config   // shared config for running tests
-	wrapper runWrapper    // can be set by tests to stub out calls to run package
-	timeout time.Duration // overall timeout; 0 if no timeout
+	cfg          *run.Config   // shared config for running tests
+	wrapper      runWrapper    // can be set by tests to stub out calls to run package
+	failForTests bool          // exit with 1 if any individual tests fail
+	timeout      time.Duration // overall timeout; 0 if no timeout
 }
 
 func newRunCmd() *runCmd {
@@ -57,12 +58,14 @@ boolean expression in parentheses (e.g. "(informational && !disabled)").
 
 Exits with 0 if all expected tests were executed, even if some of them failed.
 Non-zero exit codes indicate high-level issues, e.g. the SSH connection to the
-target was lost.
+target was lost. Callers should examine results.json or streamed_results.jsonl
+for failing tests. -failfortests can be supplied to override this behavior.
 
 `
 }
 
 func (r *runCmd) SetFlags(f *flag.FlagSet) {
+	f.BoolVar(&r.failForTests, "failfortests", false, "exit with 1 if any tests fail")
 	f.Var(command.NewDurationFlag(time.Second, &r.timeout, 0), "timeout", "run timeout in seconds, or 0 for none")
 	r.cfg.SetFlags(f)
 }
@@ -187,6 +190,18 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 		if status.ExitCode != subcommands.ExitSuccess {
 			if lines := strings.SplitN(status.ErrorMsg, "\n", 2); len(lines) >= 1 {
 				lg.Log(lines[0])
+			}
+		}
+	}
+
+	// If we would otherwise report success (indicating that we executed all tests) but
+	// -failfortests was passed (indicating that 1 should be returned for individual test failures),
+	// then we need to examine test results.
+	if status.ExitCode == subcommands.ExitSuccess && r.failForTests {
+		for _, res := range results {
+			if len(res.Errors) > 0 {
+				status.ExitCode = subcommands.ExitFailure
+				break
 			}
 		}
 	}

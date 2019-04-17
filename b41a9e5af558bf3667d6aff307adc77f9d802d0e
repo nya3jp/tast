@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9206e196_551516ba",
+        "filename": "src/chromiumos/cmd/tast/list_cmd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-04-17T21:09:56Z",
+      "side": 1,
+      "message": "How about specifying a file name, instead of fixing the input to stdin? stdin is an exclusive resource so we might be in trouble in the future, e.g. when adding another flag loading some files. We can read from stdin by specifying /dev/stdin anyway. Also we may want to support multiple file names (see my another comment below).",
+      "range": {
+        "startLine": 64,
+        "startChar": 31,
+        "endLine": 64,
+        "endChar": 36
+      },
+      "revId": "b41a9e5af558bf3667d6aff307adc77f9d802d0e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9404560d_8b0afaac",
+        "filename": "src/chromiumos/cmd/tast/list_cmd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-04-17T21:09:56Z",
+      "side": 1,
+      "message": "huge nit: how about: for i, r :\u003d range results",
+      "range": {
+        "startLine": 107,
+        "startChar": 2,
+        "endLine": 107,
+        "endChar": 24
+      },
+      "revId": "b41a9e5af558bf3667d6aff307adc77f9d802d0e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "092f1593_e4f5886c",
+        "filename": "src/chromiumos/cmd/tast/list_cmd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-04-17T21:09:56Z",
+      "side": 1,
+      "message": "huge nit: Fprintln can be used here.",
+      "range": {
+        "startLine": 129,
+        "startChar": 19,
+        "endLine": 129,
+        "endChar": 26
+      },
+      "revId": "b41a9e5af558bf3667d6aff307adc77f9d802d0e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b5c6a674_fa4ba509",
+        "filename": "src/chromiumos/cmd/tast/list_cmd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-04-17T21:09:56Z",
+      "side": 1,
+      "message": "Oh, do we support concatenated JSON arrays, i.e. \"[1, 2, 3][4, 5, 6]\"? It looks a bit unusual.\n\nHow about allowing multiple file names to be specified in the command line?",
+      "range": {
+        "startLine": 144,
+        "startChar": 2,
+        "endLine": 144,
+        "endChar": 27
+      },
+      "revId": "b41a9e5af558bf3667d6aff307adc77f9d802d0e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f2031635_9faa9d27",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 292,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-04-17T21:09:56Z",
+      "side": 1,
+      "message": "Optional: We might want to consider making this a method of testing.Registry since it is not strictly tried to bundles.",
+      "range": {
+        "startLine": 292,
+        "startChar": 5,
+        "endLine": 292,
+        "endChar": 15
+      },
+      "revId": "b41a9e5af558bf3667d6aff307adc77f9d802d0e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -120,6 +120,30 @@
     },
     {
       "key": {
+        "uuid": "c12d1b23_0daca1b6",
+        "filename": "src/chromiumos/cmd/tast/list_cmd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-04-18T20:40:33Z",
+      "side": 1,
+      "message": "Oh I see... I\u0027m often bitten by loop variables. Thanks for clarification.",
+      "parentUuid": "167a8e5c_3bf50050",
+      "range": {
+        "startLine": 107,
+        "startChar": 2,
+        "endLine": 107,
+        "endChar": 24
+      },
+      "revId": "b41a9e5af558bf3667d6aff307adc77f9d802d0e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "092f1593_e4f5886c",
         "filename": "src/chromiumos/cmd/tast/list_cmd.go",
         "patchSetId": 1
@@ -258,6 +282,30 @@
       "revId": "b41a9e5af558bf3667d6aff307adc77f9d802d0e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "81f6b529_d0b8ea62",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 292,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-04-18T20:40:33Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "d572cfe2_70994ce0",
+      "range": {
+        "startLine": 292,
+        "startChar": 5,
+        "endLine": 292,
+        "endChar": 15
+      },
+      "revId": "b41a9e5af558bf3667d6aff307adc77f9d802d0e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

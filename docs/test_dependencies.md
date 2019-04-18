@@ -42,9 +42,12 @@ The following software features are defined:
 *   `drm_atomic` - The ability to synchronize video buffer overlays atomically.
     This is guarantees that [video hardware overlays] are supported.
 *   `firewall` - Standard Chrome OS network firewall rules.
+*   `google_virtual_keyboard` - The proprietary Google onscreen virtual keyboard
+    (as opposed to the builtin open-source virtual keyboard).
 *   `gpu_sandboxing` - Chrome's GPU process is [sandboxed].
 *   `memd` - [Memory stats collection daemon].
 *   `ml_service` - ML Service daemon.
+*   `mosys` - Ability to run mosys command.
 *   `no_android` - The inability to run Android apps. This is the opposite of
     the `android` feature; DUTs will have exactly one of these two features.
 *   `no_symlink_mount` - Symlink mounting is disabled via the

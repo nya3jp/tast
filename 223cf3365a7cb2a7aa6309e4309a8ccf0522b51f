@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "cf24719f_3667cb7b",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-18T22:46:17Z",
+      "side": 1,
+      "message": "are you running gofmt or goimports? the indenting looks incorrect here, i think (and i thought we have a preupload check for this).",
+      "revId": "223cf3365a7cb2a7aa6309e4309a8ccf0522b51f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "14143c6e_4dfd5600",
+        "filename": "src/chromiumos/cmd/tast/list_cmd.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-18T23:14:55Z",
+      "side": 1,
+      "message": "argh, thanks. i noticed this before sending the change but guess i forgot to fix it :-(",
+      "parentUuid": "839d4852_30c3773f",
+      "range": {
+        "startLine": 68,
+        "startChar": 74,
+        "endLine": 68,
+        "endChar": 76
+      },
+      "revId": "9191b4d682509518a9c7f226c701d8fe4a1a7aba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "433c959a_2f5949a0",
         "filename": "src/chromiumos/tast/command/flags.go",
         "patchSetId": 2

@@ -83,6 +83,7 @@ func main() {
 			"gpu_sandboxing":          "!betty && !tast_vm", // no GPU sandboxing on VMs: https://crbug.com/914688
 			"memd":                    "memd",
 			"ml_service":              "ml_service",
+			"mosys":                   "!betty && !tast_vm",
 			"no_android":              "!arc",
 			"no_symlink_mount":        "!lxc",                         // boards using LXC set CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT=n
 			"oci":                     "containers && !moblab",        // run_oci doesn't work on Moblab: https://crbug.com/951691
@@ -94,9 +95,9 @@ func main() {
 			"stable_egl":              "!tegra", // Crashes in nVidia Tegra EGL driver: https://crbug.com/717275
 			"tablet_mode":             "touchview",
 			"tpm":                     "!mocktpm && !tast_vm",
-			"transparent_hugepage":    "transparent_hugepage",
-			"usbguard":                "usbguard",
-			"virtual_usb_printer":     "usbip",
+			"transparent_hugepage": "transparent_hugepage",
+			"usbguard":             "usbguard",
+			"virtual_usb_printer":  "usbip",
 			// Some VM builds actually can run nested VM with right host configuration.
 			// But we haven't enable this feature on builders. For now, just disable
 			// vm_host feature for VM builds.

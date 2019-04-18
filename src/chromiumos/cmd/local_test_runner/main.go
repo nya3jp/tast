@@ -84,6 +84,7 @@ func main() {
 			"gpu_sandboxing":          "!betty && !tast_vm",                     // no GPU sandboxing on VMs: https://crbug.com/914688
 			"memd":                    "memd",
 			"ml_service":              "ml_service",
+			"mosys":                   "!betty && !tast_vm",
 			"no_android":              "!arc",
 			"no_symlink_mount":        "!lxc",                         // boards using LXC set CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT=n
 			"oci":                     "containers && !moblab",        // run_oci doesn't work on Moblab: https://crbug.com/951691

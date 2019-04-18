@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "433c959a_2f5949a0",
+        "filename": "src/chromiumos/tast/command/flags.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-18T13:33:49Z",
+      "side": 1,
+      "message": "this comment and the one on L128 seem pretty useless, but our pre-upload hooks require them (but oddly not one on String)",
+      "revId": "9191b4d682509518a9c7f226c701d8fe4a1a7aba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

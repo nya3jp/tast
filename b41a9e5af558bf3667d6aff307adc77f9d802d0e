@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "8b484fd1_431456e2",
+        "filename": "src/chromiumos/cmd/tast/list_cmd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-18T13:33:49Z",
+      "side": 1,
+      "message": "i\u0027ve switched this to -readfile",
+      "parentUuid": "2297d52e_e98a0337",
+      "range": {
+        "startLine": 64,
+        "startChar": 31,
+        "endLine": 64,
+        "endChar": 36
+      },
+      "revId": "b41a9e5af558bf3667d6aff307adc77f9d802d0e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9404560d_8b0afaac",
         "filename": "src/chromiumos/cmd/tast/list_cmd.go",
         "patchSetId": 1
@@ -69,6 +93,30 @@
       "revId": "b41a9e5af558bf3667d6aff307adc77f9d802d0e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "167a8e5c_3bf50050",
+        "filename": "src/chromiumos/cmd/tast/list_cmd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-18T13:33:49Z",
+      "side": 1,
+      "message": "this is actually a rough spot in go, in my opinion. in the \"for i, r :\u003d range\" form, a single object is used for \u0027r\u0027 in all iterations, as i understand it, so taking the address of \u0027r\u0027, or even a field within \u0027r\u0027, doesn\u0027t work as expected -- the same address is returned in each iteration.",
+      "parentUuid": "9404560d_8b0afaac",
+      "range": {
+        "startLine": 107,
+        "startChar": 2,
+        "endLine": 107,
+        "endChar": 24
+      },
+      "revId": "b41a9e5af558bf3667d6aff307adc77f9d802d0e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -95,6 +143,30 @@
     },
     {
       "key": {
+        "uuid": "cba12e53_fd59a50b",
+        "filename": "src/chromiumos/cmd/tast/list_cmd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-18T13:33:49Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "092f1593_e4f5886c",
+      "range": {
+        "startLine": 129,
+        "startChar": 19,
+        "endLine": 129,
+        "endChar": 26
+      },
+      "revId": "b41a9e5af558bf3667d6aff307adc77f9d802d0e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b5c6a674_fa4ba509",
         "filename": "src/chromiumos/cmd/tast/list_cmd.go",
         "patchSetId": 1
@@ -118,6 +190,30 @@
     },
     {
       "key": {
+        "uuid": "7972d741_50641a9e",
+        "filename": "src/chromiumos/cmd/tast/list_cmd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-18T13:33:49Z",
+      "side": 1,
+      "message": "i supported concatenated arrays since it worked well when reading from stdin, but it\u0027s not necessary when reading from files",
+      "parentUuid": "b5c6a674_fa4ba509",
+      "range": {
+        "startLine": 144,
+        "startChar": 2,
+        "endLine": 144,
+        "endChar": 27
+      },
+      "revId": "b41a9e5af558bf3667d6aff307adc77f9d802d0e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f2031635_9faa9d27",
         "filename": "src/chromiumos/tast/bundle/args.go",
         "patchSetId": 1
@@ -129,6 +225,30 @@
       "writtenOn": "2019-04-17T21:09:56Z",
       "side": 1,
       "message": "Optional: We might want to consider making this a method of testing.Registry since it is not strictly tried to bundles.",
+      "range": {
+        "startLine": 292,
+        "startChar": 5,
+        "endLine": 292,
+        "endChar": 15
+      },
+      "revId": "b41a9e5af558bf3667d6aff307adc77f9d802d0e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d572cfe2_70994ce0",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 292,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-18T13:33:49Z",
+      "side": 1,
+      "message": "i thought about this, but ultimately decided it felt a bit cleaner to keep this in the bundle package since it\u0027s more of a user-facing decision about how to interpret command-line args. that doesn\u0027t feel to me like it belongs in the testing package.\n\nthe most obvious place for it would be cmd/tast, but at the very least, the runner also needs to know how to interpret test pattern args.",
+      "parentUuid": "f2031635_9faa9d27",
       "range": {
         "startLine": 292,
         "startChar": 5,

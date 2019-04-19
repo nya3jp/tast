@@ -34,6 +34,24 @@
       "revId": "223cf3365a7cb2a7aa6309e4309a8ccf0522b51f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fcb4099b_ebfac9e6",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-19T07:19:15Z",
+      "side": 1,
+      "message": "where is the gofmt that you\u0027re using from? when i run the same command that you supplied (or use goimports in my editor), the values on these three lines are indented further as i\u0027d expect to align with the earlier lines.\n\nif you make other arbitrary indentation changes to this file and run gofmt against it, is the indenting fixed as expected?",
+      "parentUuid": "ce0c2d44_63fe64eb",
+      "revId": "223cf3365a7cb2a7aa6309e4309a8ccf0522b51f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

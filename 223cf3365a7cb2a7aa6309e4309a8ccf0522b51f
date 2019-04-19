@@ -16,6 +16,24 @@
       "revId": "223cf3365a7cb2a7aa6309e4309a8ccf0522b51f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ce0c2d44_63fe64eb",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1336055
+      },
+      "writtenOn": "2019-04-19T02:17:54Z",
+      "side": 1,
+      "message": "I ran gofmt -w /path/to/file.go, still the same indentation.\n\nCould you suggest me if any other way to do this?",
+      "parentUuid": "cf24719f_3667cb7b",
+      "revId": "223cf3365a7cb2a7aa6309e4309a8ccf0522b51f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

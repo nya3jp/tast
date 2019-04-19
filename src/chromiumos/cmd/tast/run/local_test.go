@@ -41,6 +41,8 @@ func init() {
 
 const (
 	builtinBundleGlob = localBundleBuiltinDir + "/*"
+
+	defaultBootID = "01234567-89ab-cdef-0123-456789abcdef"
 )
 
 type runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int)
@@ -55,6 +57,10 @@ type localTestData struct {
 	hostDir     string // directory simulating root dir on DUT for file copies
 	nextCopyCmd string // next "exec" command expected for file copies
 
+	bootID  string // simulated content of boot_id file
+	journal string // simulated content of systemd journal for the initial boot (defaultBootID)
+	ramOops string // simulated content of console-ramoops file
+
 	expRunCmd string        // expected "exec" command for starting local_test_runner
 	runFunc   runFunc       // called for expRunCmd executions
 	runDelay  time.Duration // local_test_runner delay before exiting
@@ -63,7 +69,7 @@ type localTestData struct {
 // newLocalTestData performs setup for tests that exercise the local function.
 // It calls t.Fatal on error.
 func newLocalTestData(t *gotesting.T) *localTestData {
-	td := localTestData{expRunCmd: localRunnerPath}
+	td := localTestData{expRunCmd: localRunnerPath, bootID: defaultBootID}
 	td.srvData = test.NewTestData(userKey, hostKey, td.handleExec)
 	td.cfg.KeyFile = td.srvData.UserKeyFile
 
@@ -117,6 +123,10 @@ func (td *localTestData) handleExec(req *test.ExecReq) {
 	case "test -d " + shutil.Escape(filepath.Join(localDataBuiltinDir, localBundlePkgPathPrefix)):
 		req.Start(true)
 		req.End(0)
+	case "cat /proc/sys/kernel/random/boot_id":
+		req.Start(true)
+		fmt.Fprintln(req, td.bootID)
+		req.End(0)
 	case td.expRunCmd:
 		req.Start(true)
 		var args runner.Args
@@ -134,6 +144,14 @@ func (td *localTestData) handleExec(req *test.ExecReq) {
 		req.End(req.RunRealCmd())
 	case "sync":
 		req.Start(true)
+		req.End(0)
+	case "journalctl -q -b " + strings.Replace(defaultBootID, "-", "", -1) + " -n 1000":
+		req.Start(true)
+		io.WriteString(req, td.journal)
+		req.End(0)
+	case "cat /sys/fs/pstore/console-ramoops-0":
+		req.Start(true)
+		io.WriteString(req, td.ramOops)
 		req.End(0)
 	default:
 		log.Printf("Unexpected command %q", req.Cmd)

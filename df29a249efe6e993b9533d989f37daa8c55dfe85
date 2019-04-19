@@ -1,0 +1,135 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7c5113cd_b53923e1",
+        "filename": "src/chromiumos/cmd/tast/run/diagnose.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-19T07:40:44Z",
+      "side": 1,
+      "message": "when i added this log message, i didn\u0027t expect that it\u0027d be used like this. :-) do you mind adding a comment to the upstart job mentioning that it can\u0027t be changed?",
+      "revId": "df29a249efe6e993b9533d989f37daa8c55dfe85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "14b39a5b_0cf7dda7",
+        "filename": "src/chromiumos/cmd/tast/run/diagnose.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-19T07:40:44Z",
+      "side": 1,
+      "message": "nit: since this is short and only called once, do you think it\u0027d be clearer to inline it in diagnoseReboot?",
+      "revId": "df29a249efe6e993b9533d989f37daa8c55dfe85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c098895f_2e642f93",
+        "filename": "src/chromiumos/cmd/tast/run/diagnose_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-19T07:40:44Z",
+      "side": 1,
+      "message": "huge nit: probably don\u0027t need to rename this import, right? feel free to disregard if you think it\u0027s clearer, though",
+      "revId": "df29a249efe6e993b9533d989f37daa8c55dfe85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "012a7848_7768f002",
+        "filename": "src/chromiumos/cmd/tast/run/diagnose_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-19T07:40:44Z",
+      "side": 1,
+      "message": "nit: %q for both",
+      "range": {
+        "startLine": 30,
+        "startChar": 32,
+        "endLine": 30,
+        "endChar": 43
+      },
+      "revId": "df29a249efe6e993b9533d989f37daa8c55dfe85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "df4cd90d_9afce89e",
+        "filename": "src/chromiumos/cmd/tast/run/diagnose_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-19T07:40:44Z",
+      "side": 1,
+      "message": "surfacing this is awesome!",
+      "revId": "df29a249efe6e993b9533d989f37daa8c55dfe85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e740f002_231c9d0b",
+        "filename": "src/chromiumos/cmd/tast/run/local_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-19T07:40:44Z",
+      "side": 1,
+      "message": "should this be td.bootID instead?",
+      "range": {
+        "startLine": 148,
+        "startChar": 44,
+        "endLine": 148,
+        "endChar": 57
+      },
+      "revId": "df29a249efe6e993b9533d989f37daa8c55dfe85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dc03fd15_415968e2",
+        "filename": "src/chromiumos/cmd/tast/run/run.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-19T07:40:44Z",
+      "side": 1,
+      "message": "nit: is it worthwhile to include the hostname here as before? maybe not",
+      "revId": "df29a249efe6e993b9533d989f37daa8c55dfe85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "51290fca_a5990588",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-04-19T15:58:58Z",
+      "side": 1,
+      "message": "I think we want to get softwaredeps by ctx in 95% cases, but I still want it here for consistency as you described.",
+      "parentUuid": "5ed76e66_df757c3a",
+      "revId": "32f1f206e6f04e22b936a3e94839f23291351739",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b325b007_a1d8f3d7",
         "filename": "src/chromiumos/tast/testing/state.go",
         "patchSetId": 1
@@ -39,6 +57,30 @@
       "revId": "32f1f206e6f04e22b936a3e94839f23291351739",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "95924aad_916d1712",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-04-19T15:58:58Z",
+      "side": 1,
+      "message": "I learned this at https://github.com/golang/go/wiki/SliceTricks#copy .\n\n\"Perfect\" way described there is \"b \u003d append(a[:0:0], a...)\", but it looks too much for me...",
+      "parentUuid": "b325b007_a1d8f3d7",
+      "range": {
+        "startLine": 151,
+        "startChar": 15,
+        "endLine": 151,
+        "endChar": 28
+      },
+      "revId": "32f1f206e6f04e22b936a3e94839f23291351739",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

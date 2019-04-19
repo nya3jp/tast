@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "48316737_0d40dc8b",
+        "filename": "src/chromiumos/cmd/tast/run/diagnose.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-04-19T16:58:36Z",
+      "side": 1,
+      "message": "Oh, you added this message, thanks you :)\n\nSure, I\u0027ll send another change to add a comment: https://chromium-review.googlesource.com/c/chromiumos/platform2/+/1575327",
+      "parentUuid": "7c5113cd_b53923e1",
+      "revId": "df29a249efe6e993b9533d989f37daa8c55dfe85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "14b39a5b_0cf7dda7",
         "filename": "src/chromiumos/cmd/tast/run/diagnose.go",
         "patchSetId": 1
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "594cb832_ab604bbf",
+        "filename": "src/chromiumos/cmd/tast/run/diagnose.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-04-19T16:58:36Z",
+      "side": 1,
+      "message": "Sure. I originally intended to unit-test this function only, but I ended up testing diagnoseSSHDrop.",
+      "parentUuid": "14b39a5b_0cf7dda7",
+      "revId": "df29a249efe6e993b9533d989f37daa8c55dfe85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c098895f_2e642f93",
         "filename": "src/chromiumos/cmd/tast/run/diagnose_test.go",
         "patchSetId": 1
@@ -50,6 +86,24 @@
       "revId": "df29a249efe6e993b9533d989f37daa8c55dfe85",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c902aa64_2e9b5810",
+        "filename": "src/chromiumos/cmd/tast/run/diagnose_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-04-19T16:58:36Z",
+      "side": 1,
+      "message": "You\u0027re right, removed alias.",
+      "parentUuid": "c098895f_2e642f93",
+      "revId": "df29a249efe6e993b9533d989f37daa8c55dfe85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -73,6 +127,30 @@
       "revId": "df29a249efe6e993b9533d989f37daa8c55dfe85",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "931cd5a9_490db5ae",
+        "filename": "src/chromiumos/cmd/tast/run/diagnose_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-04-19T16:58:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "012a7848_7768f002",
+      "range": {
+        "startLine": 30,
+        "startChar": 32,
+        "endLine": 30,
+        "endChar": 43
+      },
+      "revId": "df29a249efe6e993b9533d989f37daa8c55dfe85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -116,6 +194,30 @@
     },
     {
       "key": {
+        "uuid": "a3163556_985d9f0f",
+        "filename": "src/chromiumos/cmd/tast/run/local_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-04-19T16:58:36Z",
+      "side": 1,
+      "message": "Actually we can\u0027t use td.bootID here because diagnoseSSHDrop queries systemd journal of the previous boot, not the current boot. I\u0027ve updated the comment of testdata.journal hoping to clarify this.",
+      "parentUuid": "e740f002_231c9d0b",
+      "range": {
+        "startLine": 148,
+        "startChar": 44,
+        "endLine": 148,
+        "endChar": 57
+      },
+      "revId": "df29a249efe6e993b9533d989f37daa8c55dfe85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "dc03fd15_415968e2",
         "filename": "src/chromiumos/cmd/tast/run/run.go",
         "patchSetId": 1
@@ -130,6 +232,24 @@
       "revId": "df29a249efe6e993b9533d989f37daa8c55dfe85",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5dc29eb7_b74dc520",
+        "filename": "src/chromiumos/cmd/tast/run/run.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-04-19T16:58:36Z",
+      "side": 1,
+      "message": "Actually I intentionally dropped it since it looked not very useful in most cases; anyway, Stainless and Tastboard can show the hostname of failures, so we can detect host-specific flakiness from it.",
+      "parentUuid": "dc03fd15_415968e2",
+      "revId": "df29a249efe6e993b9533d989f37daa8c55dfe85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

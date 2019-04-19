@@ -52,6 +52,24 @@
       "revId": "223cf3365a7cb2a7aa6309e4309a8ccf0522b51f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5b473968_d067633e",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1336055
+      },
+      "writtenOn": "2019-04-19T10:58:54Z",
+      "side": 1,
+      "message": "I am using an editor(which is using goimports for formatting the code). Even with the fresh repo, without any changes if I save it, it is reformatting the code :(",
+      "parentUuid": "fcb4099b_ebfac9e6",
+      "revId": "223cf3365a7cb2a7aa6309e4309a8ccf0522b51f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

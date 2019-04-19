@@ -112,6 +112,7 @@ type Config struct {
 	remoteDataDir   string // dir containing packaged remote test data
 
 	hst        *host.SSH // cached SSH connection; may be nil
+	initBootID string    // boot_id at the initial SSH connection
 	sshRetries int       // number of SSH connect retries
 
 	checkTestDeps               testDepsMode // when test dependencies should be checked

@@ -153,6 +153,13 @@ func connectToTarget(ctx context.Context, cfg *Config) (*host.SSH, error) {
 	if cfg.hst, err = host.NewSSH(ctx, &o); err != nil {
 		return nil, err
 	}
+
+	if cfg.initBootID == "" {
+		if cfg.initBootID, err = readBootID(ctx, cfg.hst); err != nil {
+			return nil, err
+		}
+	}
+
 	return cfg.hst, nil
 }
 

@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5ed76e66_df757c3a",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-19T06:42:25Z",
+      "side": 1,
+      "message": "just to check, do you think we\u0027ll need the method on State? i can\u0027t think of obvious uses for it, since tests generally already know which dependencies they\u0027ve declared. but maybe it\u0027s good to provide it for consistency...",
+      "revId": "32f1f206e6f04e22b936a3e94839f23291351739",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b325b007_a1d8f3d7",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-19T06:42:25Z",
+      "side": 1,
+      "message": "interesting, i hadn\u0027t seen this before. i guess that append() returns nil if there are no appended args in this case?",
+      "range": {
+        "startLine": 151,
+        "startChar": 15,
+        "endLine": 151,
+        "endChar": 28
+      },
+      "revId": "32f1f206e6f04e22b936a3e94839f23291351739",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

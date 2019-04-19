@@ -70,6 +70,24 @@
       "revId": "223cf3365a7cb2a7aa6309e4309a8ccf0522b51f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "76960408_300cea86",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-19T11:44:17Z",
+      "side": 1,
+      "message": "hmm. in the interest in moving forward on this, can you manually indent the values on L98 to L100 by three more spaces to match with what i think is the usual spacing for gofmt, and so they line up with L97 and above?",
+      "parentUuid": "5b473968_d067633e",
+      "revId": "223cf3365a7cb2a7aa6309e4309a8ccf0522b51f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

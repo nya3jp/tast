@@ -173,7 +173,10 @@ func TestLocalSuccess(t *gotesting.T) {
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		checkArgs(t, args, &runner.Args{
 			RunTests: &runner.RunTestsArgs{
-				BundleArgs: bundle.RunTestsArgs{DataDir: localDataBuiltinDir},
+				BundleArgs: bundle.RunTestsArgs{
+					DataDir:           localDataBuiltinDir,
+					HeartbeatInterval: heartbeatInterval,
+				},
 				BundleGlob: builtinBundleGlob,
 			},
 			BundleGlobDeprecated: builtinBundleGlob,

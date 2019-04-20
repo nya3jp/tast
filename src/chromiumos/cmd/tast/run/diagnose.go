@@ -79,7 +79,13 @@ func diagnoseReboot(ctx context.Context, cfg *Config) string {
 	journal := string(out)
 
 	// Read console-ramoops. It might not exist for normal reboots.
-	out, _ = cfg.hst.Run(ctx, "cat /sys/fs/pstore/console-ramoops-0")
+	out, err = cfg.hst.Run(ctx, "cat /sys/fs/pstore/console-ramoops-0")
+	if err != nil {
+		out, err = cfg.hst.Run(ctx, "cat /sys/fs/pstore/console-ramoops")
+		if err != nil {
+			cfg.Logger.Log("console-ramoops not found")
+		}
+	}
 	ramOops := string(out)
 
 	if m := shutdownReasonRe.FindStringSubmatch(journal); m != nil {

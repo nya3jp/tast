@@ -149,7 +149,7 @@ func (td *localTestData) handleExec(req *test.ExecReq) {
 		req.Start(true)
 		io.WriteString(req, td.journal)
 		req.End(0)
-	case "cat /sys/fs/pstore/console-ramoops-0":
+	case "cat /sys/fs/pstore/console-ramoops", "cat /sys/fs/pstore/console-ramoops-0":
 		req.Start(true)
 		io.WriteString(req, td.ramOops)
 		req.End(0)

@@ -48,7 +48,8 @@ const (
 	// local and remote bundles with the same name won't overwrite each other.
 	localBundleBuildSubdir = "local_bundles"
 
-	defaultLocalRunnerWaitTimeout time.Duration = 10 * time.Second // default timeout for waiting for local_test_runner to exit
+	defaultLocalRunnerWaitTimeout = 10 * time.Second // default timeout for waiting for local_test_runner to exit
+	heartbeatInterval             = time.Second      // interval for heartbeat messages
 )
 
 // local runs local tests as directed by cfg and returns the command's exit status.
@@ -501,9 +502,10 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 			Mode: runner.RunTestsMode,
 			RunTests: &runner.RunTestsArgs{
 				BundleArgs: bundle.RunTestsArgs{
-					Patterns:       cfg.Patterns,
-					DataDir:        dataDir,
-					WaitUntilReady: cfg.waitUntilReady,
+					Patterns:          cfg.Patterns,
+					DataDir:           dataDir,
+					WaitUntilReady:    cfg.waitUntilReady,
+					HeartbeatInterval: heartbeatInterval,
 				},
 				BundleGlob: bundleGlob,
 				Devservers: cfg.devservers,

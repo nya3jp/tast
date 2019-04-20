@@ -135,7 +135,7 @@ func TestReadTestOutput(t *gotesting.T) {
 		{
 			Test: testing.Test{Name: test2Name, Desc: test2Desc},
 			Errors: []TestError{
-				TestError{
+				{
 					Time: test2ErrorTime,
 					Error: testing.Error{
 						Reason: test2ErrorReason,
@@ -414,16 +414,21 @@ func TestNextMessageTimeout(t *gotesting.T) {
 	now := time.Unix(60, 0) // arbitrary time in 1970
 
 	for _, tc := range []struct {
-		msgTimeout  time.Duration
-		ctxTimeout  time.Duration
-		testStart   time.Time
-		testTimeout time.Duration
-		testAddTime time.Duration
-		exp         time.Duration
+		seenHeartbeat bool
+		msgTimeout    time.Duration
+		testStart     time.Time
+		testTimeout   time.Duration
+		testAddTime   time.Duration
+		exp           time.Duration
 	}{
 		{
 			// Outside a test, and without a custom or context timeout, use the default.
 			exp: defaultMsgTimeout,
+		},
+		{
+			// Use the same timeout if heartbeat is available.
+			seenHeartbeat: true,
+			exp:           defaultMsgTimeout,
 		},
 		{
 			// If a message timeout is supplied, use it instead of default.
@@ -431,11 +436,25 @@ func TestNextMessageTimeout(t *gotesting.T) {
 			exp:        5 * time.Second,
 		},
 		{
+			// If a message timeout is supplied, use it instead of default.
+			seenHeartbeat: true,
+			msgTimeout:    5 * time.Second,
+			exp:           5 * time.Second,
+		},
+		{
 			// Mid-test, use the test's remaining time plus the normal message timeout.
 			msgTimeout:  10 * time.Second,
 			testStart:   now.Add(-1 * time.Second),
 			testTimeout: 5 * time.Second,
 			exp:         14 * time.Second,
+		},
+		{
+			// If heartbeat is available, use the fixed timeout even in mid-test.
+			seenHeartbeat: true,
+			msgTimeout:    10 * time.Second,
+			testStart:     now.Add(-1 * time.Second),
+			testTimeout:   5 * time.Second,
+			exp:           10 * time.Second,
 		},
 		{
 			// If the test requires additional time, it should be included.
@@ -446,24 +465,18 @@ func TestNextMessageTimeout(t *gotesting.T) {
 			exp:         17 * time.Second,
 		},
 		{
-			// A context timeout should cap whatever timeout would be used otherwise.
-			msgTimeout: 20 * time.Second,
-			ctxTimeout: 11 * time.Second,
-			exp:        11 * time.Second,
+			// If heartbeat is available, use the fixed timeout even in mid-test.
+			seenHeartbeat: true,
+			msgTimeout:    10 * time.Second,
+			testStart:     now.Add(-1 * time.Second),
+			testTimeout:   5 * time.Second,
+			testAddTime:   3 * time.Second,
+			exp:           10 * time.Second,
 		},
 	} {
-		var ctx context.Context
-		var cancel context.CancelFunc
-		if tc.ctxTimeout != 0 {
-			ctx, cancel = context.WithDeadline(context.Background(), now.Add(tc.ctxTimeout))
-		} else {
-			ctx, cancel = context.WithCancel(context.Background())
-		}
-		defer cancel()
-
 		h := resultsHandler{
-			ctx: ctx,
-			cfg: &Config{msgTimeout: tc.msgTimeout},
+			cfg:           &Config{msgTimeout: tc.msgTimeout},
+			seenHeartbeat: tc.seenHeartbeat,
 		}
 		if !tc.testStart.IsZero() {
 			h.res = &TestResult{
@@ -481,9 +494,32 @@ func TestNextMessageTimeout(t *gotesting.T) {
 			testStartUnix = tc.testStart.Unix()
 		}
 		if act := h.nextMessageTimeout(now); act != tc.exp {
-			t.Errorf("nextMessageTimeout(%v) (msgTimeout=%v, ctxTimeout=%v testStart=%v, testTimeout=%v) = %v; want %v",
-				now.Unix(), tc.msgTimeout, tc.ctxTimeout, testStartUnix, tc.testTimeout, act, tc.exp)
+			t.Errorf("nextMessageTimeout(%v) (seenHeartbeat=%v, msgTimeout=%v, testStart=%v, testTimeout=%v) = %v; want %v",
+				now.Unix(), tc.seenHeartbeat, tc.msgTimeout, testStartUnix, tc.testTimeout, act, tc.exp)
 		}
+	}
+}
+
+func TestResultsHandlerSeenHeartbeat(t *gotesting.T) {
+	td := testutil.TempDir(t)
+	defer os.RemoveAll(td)
+
+	h, err := newResultsHandler(context.Background(), &Config{ResDir: td}, nil)
+	if err != nil {
+		t.Fatal("newResultsHandler failed: ", err)
+	}
+	defer h.close()
+
+	mch := make(chan interface{}, 1)
+	mch <- &control.Heartbeat{}
+	close(mch)
+
+	if err := h.processMessages(mch, nil); err != nil {
+		t.Fatal("processMessage failed: ", err)
+	}
+
+	if !h.seenHeartbeat {
+		t.Error("seenHeartbeat not set after seeing Heartbeat message")
 	}
 }
 

@@ -154,6 +154,7 @@ func WriteResults(ctx context.Context, cfg *Config, results []TestResult, comple
 type copyAndRemoveFunc func(src, dst string) error
 
 // resultsHandler processes the output from a test binary.
+// TODO(nya): Delete seenHeartbeat after 20190701.
 type resultsHandler struct {
 	ctx context.Context
 	cfg *Config
@@ -166,6 +167,7 @@ type resultsHandler struct {
 	stage            *timing.Stage          // current test's timing stage
 	crf              copyAndRemoveFunc      // function used to copy and remove files from DUT
 	streamWriter     *streamedResultsWriter // used to write results as control messages are read
+	seenHeartbeat    bool                   // whether heartbeat messages were ever seen
 }
 
 func newResultsHandler(ctx context.Context, cfg *Config, crf copyAndRemoveFunc) (*resultsHandler, error) {
@@ -366,6 +368,12 @@ func (r *resultsHandler) handleTestEnd(msg *control.TestEnd) error {
 	return nil
 }
 
+// handleHeartbeat handles Heartbeat control messages from test executables.
+func (r *resultsHandler) handleHeartbeat(msg *control.Heartbeat) error {
+	r.seenHeartbeat = true
+	return nil
+}
+
 // getTestOutputDir returns the directory into which data should be stored for a test named testName.
 func (r *resultsHandler) getTestOutputDir(testName string) string {
 	return filepath.Join(r.cfg.ResDir, testLogsDir, testName)
@@ -430,24 +438,18 @@ func (r *resultsHandler) nextMessageTimeout(now time.Time) time.Duration {
 		timeout = r.cfg.msgTimeout
 	}
 
-	// If we're in the middle of a test, add its timeout.
+	// If the bundle supports heartbeat messages, we don't need to consider
+	// test timeouts.
+	if r.seenHeartbeat {
+		return timeout
+	}
+
+	// Otherwise, if we're in the middle of a test, add its timeout.
 	if r.res != nil {
 		elapsed := now.Sub(r.res.testStartMsgTime)
 		if tm := r.res.Timeout + r.res.AdditionalTime; elapsed < tm {
 			timeout += tm - elapsed
 		}
-	}
-
-	// Now cap the timeout to the context's deadline, if any.
-	ctxDeadline, ok := r.ctx.Deadline()
-	if !ok {
-		return timeout
-	}
-	if now.After(ctxDeadline) {
-		return time.Duration(0)
-	}
-	if ctxTimeout := ctxDeadline.Sub(now); ctxTimeout < timeout {
-		return ctxTimeout
 	}
 	return timeout
 }
@@ -471,6 +473,8 @@ func (r *resultsHandler) handleMessage(msg interface{}) error {
 		return r.handleTestError(v)
 	case *control.TestEnd:
 		return r.handleTestEnd(v)
+	case *control.Heartbeat:
+		return r.handleHeartbeat(v)
 	default:
 		return errors.New("unknown message type")
 	}

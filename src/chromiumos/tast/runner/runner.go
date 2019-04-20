@@ -15,7 +15,6 @@ import (
 	"runtime"
 	"runtime/debug"
 	"strings"
-	"sync"
 	"syscall"
 	"time"
 
@@ -99,6 +98,10 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Args,
 // Fatal errors are reported via RunError messages, while test errors are reported via TestError messages.
 func runTestsAndReport(ctx context.Context, args *Args, cfg *Config, stdout io.Writer) {
 	mw := control.NewMessageWriter(stdout)
+
+	hbw := control.NewHeartbeatWriter(mw, args.RunTests.BundleArgs.HeartbeatInterval)
+	defer hbw.Stop()
+
 	bundles, tests, statusErr := getBundlesAndTests(args)
 	if statusErr != nil {
 		mw.WriteMessage(newRunErrorMessagef(statusErr.Status(), "Failed enumerating tests: %v", statusErr))
@@ -113,11 +116,8 @@ func runTestsAndReport(ctx context.Context, args *Args, cfg *Config, stdout io.W
 
 	mw.WriteMessage(&control.RunStart{Time: time.Now(), NumTests: len(tests)})
 
-	var lm sync.Mutex
 	lf := func(msg string) {
-		lm.Lock()
 		mw.WriteMessage(&control.RunLog{Time: time.Now(), Text: msg})
-		lm.Unlock()
 	}
 
 	if cfg.KillStaleRunners {
@@ -145,6 +145,9 @@ func runTestsAndReport(ctx context.Context, args *Args, cfg *Config, stdout io.W
 
 		cl := newDevserverClient(ctx, args.RunTests.Devservers, lf)
 		processExternalDataLinks(ctx, args.RunTests.BundleArgs.DataDir, cfg.BuildArtifactsURL, tests, cl, lf)
+
+		// Hereafter, heartbeat messages are sent by bundles.
+		hbw.Stop()
 
 		for _, bundle := range bundles {
 			// Copy each bundle's output (consisting of control messages) directly to stdout.

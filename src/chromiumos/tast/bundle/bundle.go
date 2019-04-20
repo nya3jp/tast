@@ -14,7 +14,6 @@ import (
 	"runtime"
 	"sort"
 	"strings"
-	"sync"
 	"time"
 
 	"chromiumos/tast/command"
@@ -87,7 +86,8 @@ type runConfig struct {
 
 // eventWriter is used to report test events.
 //
-// eventWriter is not goroutine-safe; method calls should be synchronized.
+// eventWriter is goroutine-safe; it is safe to call its methods concurrently from multiple
+// goroutines.
 //
 // Events are basically written through to MessageWriter, but they are also sent to syslog for
 // easier debugging.
@@ -98,8 +98,7 @@ type eventWriter struct {
 	testName string // name of the current test
 }
 
-func newEventWriter(w io.Writer) *eventWriter {
-	mw := control.NewMessageWriter(w)
+func newEventWriter(mw *control.MessageWriter) *eventWriter {
 	// Continue even if we fail to connect to syslog.
 	lg, _ := syslog.New(syslog.LOG_INFO, "tast")
 	return &eventWriter{mw: mw, lg: lg}
@@ -154,13 +153,15 @@ func (ew *eventWriter) TestEnd(t *testing.Test, missingDeps []string, timingLog 
 // Otherwise, nil is returned (test errors will be reported via TestError control messages).
 func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 	bt bundleType, tests []*testing.Test) error {
-	ew := newEventWriter(stdout)
+	mw := control.NewMessageWriter(stdout)
 
-	lm := sync.Mutex{}
+	hbw := control.NewHeartbeatWriter(mw, args.RunTests.HeartbeatInterval)
+	defer hbw.Stop()
+
+	ew := newEventWriter(mw)
+
 	lf := func(msg string) {
-		lm.Lock()
 		ew.RunLog(msg)
-		lm.Unlock()
 	}
 
 	if len(tests) == 0 {
@@ -299,8 +300,8 @@ DepsLoop:
 	return unknown
 }
 
-// copyTestOutput reads test output from ch and writes it to mw until ch is closed.
-// If abort becomes readable before ch is closed, a timeout error is written to mw
+// copyTestOutput reads test output from ch and writes it to ew until ch is closed.
+// If abort becomes readable before ch is closed, a timeout error is written to ew
 // and the function returns immediately.
 func copyTestOutput(ch <-chan testing.Output, ew *eventWriter, abort <-chan bool) {
 	for {

@@ -77,7 +77,8 @@ func TestCopyTestOutput(t *gotesting.T) {
 	}()
 
 	b := bytes.Buffer{}
-	copyTestOutput(ch, newEventWriter(&b), make(chan bool))
+	mw := control.NewMessageWriter(&b)
+	copyTestOutput(ch, newEventWriter(mw), make(chan bool))
 
 	r := control.NewMessageReader(&b)
 	for i, em := range []interface{}{
@@ -100,7 +101,8 @@ func TestCopyTestOutputTimeout(t *gotesting.T) {
 	abort := make(chan bool, 1)
 	abort <- true
 	b := bytes.Buffer{}
-	copyTestOutput(make(chan testing.Output), newEventWriter(&b), abort)
+	mw := control.NewMessageWriter(&b)
+	copyTestOutput(make(chan testing.Output), newEventWriter(mw), abort)
 
 	r := control.NewMessageReader(&b)
 	if msg, err := r.ReadMessage(); err != nil {
@@ -316,7 +318,7 @@ func TestRunTestsTimeout(t *gotesting.T) {
 
 func TestRunTestsNoTests(t *gotesting.T) {
 	// runTests should report failure when passed an empty slice of tests.
-	if err := runTests(context.Background(), &bytes.Buffer{}, &Args{},
+	if err := runTests(context.Background(), &bytes.Buffer{}, &Args{RunTests: &RunTestsArgs{}},
 		&runConfig{}, localBundle, []*testing.Test{}); !errorHasStatus(err, statusNoTests) {
 		t.Fatalf("runTests() = %v; want status %v", err, statusNoTests)
 	}

@@ -295,6 +295,7 @@ func runDownloads(ctx context.Context, dataDir string, jobs []*downloadJob, cl d
 			finished++
 		case <-time.After(30 * time.Second):
 			// Without this keep-alive message, the tast command may think that the SSH connection was lost.
+			// TODO(nya): Remove this keep-alive logic after 20190701.
 			lf("Still downloading...")
 		}
 	}

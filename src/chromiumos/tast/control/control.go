@@ -31,6 +31,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"sync"
 	"time"
 
 	"chromiumos/tast/testing"
@@ -114,6 +115,12 @@ type TestEnd struct {
 	TimingLogDeprecated *timing.Log `json:"timingLog"`
 }
 
+// Heartbeat is sent periodically to assert that the bundle is alive.
+type Heartbeat struct {
+	// Time is the device-local time at which this message was generated.
+	Time time.Time `json:"heartbeatTime"`
+}
+
 // messageUnion contains all message types. It aids in marshaling and unmarshaling heterogeneous messages.
 type messageUnion struct {
 	*RunStart
@@ -124,39 +131,48 @@ type messageUnion struct {
 	*TestLog
 	*TestError
 	*TestEnd
+	*Heartbeat
 }
 
 // MessageWriter is used by executables containing tests to write messages describing the state of testing.
-type MessageWriter json.Encoder
+// It is safe to call its methods concurrently from multiple goroutines.
+type MessageWriter struct {
+	mu  sync.Mutex
+	enc *json.Encoder
+}
 
 // NewMessageWriter returns a new MessageWriter for writing to w.
 func NewMessageWriter(w io.Writer) *MessageWriter {
-	return (*MessageWriter)((json.NewEncoder(w)))
+	return &MessageWriter{enc: json.NewEncoder(w)}
 }
 
 // WriteMessage writes msg.
 func (mw *MessageWriter) WriteMessage(msg interface{}) error {
-	enc := (*json.Encoder)(mw)
+	mw.mu.Lock()
+	defer mw.mu.Unlock()
+
 	switch v := msg.(type) {
 	case *RunStart:
-		return enc.Encode(&messageUnion{RunStart: v})
+		return mw.enc.Encode(&messageUnion{RunStart: v})
 	case *RunLog:
-		return enc.Encode(&messageUnion{RunLog: v})
+		return mw.enc.Encode(&messageUnion{RunLog: v})
 	case *RunError:
-		return enc.Encode(&messageUnion{RunError: v})
+		return mw.enc.Encode(&messageUnion{RunError: v})
 	case *RunEnd:
-		return enc.Encode(&messageUnion{RunEnd: v})
+		return mw.enc.Encode(&messageUnion{RunEnd: v})
 	case *TestStart:
-		return enc.Encode(&messageUnion{TestStart: v})
+		return mw.enc.Encode(&messageUnion{TestStart: v})
 	case *TestLog:
-		return enc.Encode(&messageUnion{TestLog: v})
+		return mw.enc.Encode(&messageUnion{TestLog: v})
 	case *TestError:
-		return enc.Encode(&messageUnion{TestError: v})
+		return mw.enc.Encode(&messageUnion{TestError: v})
 	case *TestEnd:
 		if v.TimingLogDeprecated == nil {
 			v.TimingLogDeprecated = v.TimingLog
 		}
-		return enc.Encode(&messageUnion{TestEnd: v})
+		return mw.enc.Encode(&messageUnion{TestEnd: v})
+	case *Heartbeat:
+		return mw.enc.Encode(&messageUnion{Heartbeat: v})
 	default:
 		return errors.New("unable to encode message of unknown type")
 	}
@@ -167,7 +183,7 @@ type MessageReader json.Decoder
 
 // NewMessageReader returns a new MessageReader for reading from r.
 func NewMessageReader(r io.Reader) *MessageReader {
-	return (*MessageReader)((json.NewDecoder(r)))
+	return (*MessageReader)(json.NewDecoder(r))
 }
 
 // More returns true if more messages are available.
@@ -202,6 +218,8 @@ func (mr *MessageReader) ReadMessage() (interface{}, error) {
 			mu.TestEnd.TimingLog = mu.TestEnd.TimingLogDeprecated
 		}
 		return mu.TestEnd, nil
+	case mu.Heartbeat != nil:
+		return mu.Heartbeat, nil
 	default:
 		return nil, errors.New("unable to decode message of unknown type")
 	}

@@ -174,6 +174,10 @@ type RunTestsArgs struct {
 	// WaitUntilReady indicates that the test bundle's "ready" function (see ReadyFunc) should
 	// be executed before any tests are executed.
 	WaitUntilReady bool `json:"waitUntilReady,omitempty"`
+	// HeartbeatInterval is the interval in seconds at which heartbeat messages are sent back
+	// periodically from runners and bundles. If this value is not positive, heartbeat messages
+	// are not sent.
+	HeartbeatInterval float64 `json:"heartbeatInterval,omitempty"`
 }
 
 // ListTestsArgs is nested within Args and contains arguments used by ListTestsMode.

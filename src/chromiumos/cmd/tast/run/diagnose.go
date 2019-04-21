@@ -61,6 +61,12 @@ var (
 	// the type of shutdown (reboot/halt), and the second submatch is the reason.
 	shutdownReasonRe = regexp.MustCompile(`pre-shutdown.*Shutting down for (.*): (.*)`)
 
+	// hungRe matches kernel hung log messages. The first submatch is the name of the hung
+	// kernel thread, and the second submatch contains its backtrace.
+	hungRe = regexp.MustCompile(`(?s)INFO: task ([^\n]+) blocked for more than \d+ seconds\.
+.*?Call Trace:
+((?:\[[^]]*\]  [^\n]*\n)+).*Kernel panic - not syncing: hung_task: blocked tasks`)
+
 	// crashSymbolRe matches kernel crash log messages. The first submatch is a symbolized
 	// function name of the instruction pointer, e.g. "sysrq_handle_crash".
 	crashSymbolRe = regexp.MustCompile(`(?:RIP:|PC is at).* (\S+)`)
@@ -91,6 +97,23 @@ func diagnoseReboot(ctx context.Context, cfg *Config) string {
 
 	if m := shutdownReasonRe.FindStringSubmatch(journal); m != nil {
 		return fmt.Sprintf("target normally shut down for %s (%s)", m[1], m[2])
+	}
+
+	if m := hungRe.FindStringSubmatch(ramOops); m != nil {
+		proc := m[1]
+		for _, line := range strings.Split(m[2], "\n") {
+			fs := strings.Fields(line)
+			if len(fs) == 0 {
+				continue
+			}
+			f := fs[len(fs)-1]
+			// Skip schedule functions.
+			if strings.Contains(f, "schedule") {
+				continue
+			}
+			return fmt.Sprintf("kernel crashed: %s hung in %s", proc, f)
+		}
+		return fmt.Sprintf("kernel crashed: %s hung", proc)
 	}
 
 	if ms := crashSymbolRe.FindAllStringSubmatch(ramOops, -1); ms != nil {

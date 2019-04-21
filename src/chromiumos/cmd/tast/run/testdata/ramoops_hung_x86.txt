@@ -1,0 +1,1610 @@
+gs://chromeos-autotest-results/302856079-chromeos-test/chromeos6-row8-rack4-host8/sysinfo/pstore/sys/fs/pstore/console-ramoops-0
+
+571.485306] [28618]     0 28618     4220      293      11       3       80         -1000 adb
+[ 6571.485309] [28619] 657360 28619   376700     1999     118       6     1955          -100 main
+[ 6571.485313] [28632] 665410 28632   264831     2073     138       5     4919           580 hub.uiautomator
+[ 6571.485316] [28674] 665385 28674   274036     2269     155       5     5136           774 t_app_installer
+[ 6571.485319] [28750]     0 28750     2183      400       9       3       52         -1000 minijail0
+[ 6571.485322] [28758]     0 28758     2183      389       9       3       47         -1000 minijail0
+[ 6571.485326] [28759]     0 28759     2183        0       8       3       52         -1000 minijail-init
+[ 6571.485340] [28761]     0 28761     2183        0       8       3       47         -1000 minijail-init
+[ 6571.500359] [28763] 20110 28763     5557      827      15       3      117         -1000 crosdns
+[ 6571.500366] [28765]     0 28765     1659      169       9       3       46         -1000 minijail0
+[ 6571.500370] [28768]   202 28768   118284     1073      30       4      290         -1000 vmlog_forwarder
+[ 6571.500373] [28771] 20114 28771     6771      941      16       3      214         -1000 seneschal
+[ 6571.500376] [28789]   299 28789   138096     1155      33       4      425         -1000 vm_concierge
+[ 6571.500379] [28817]     0 28817     2183      408       9       3       53         -1000 minijail0
+[ 6571.500382] [28818]     0 28818     2183        0       7       3       53         -1000 minijail-init
+[ 6571.500385] [28819] 20112 28819   192375      829      37       4      390         -1000 vm_cicerone
+[ 6571.500388] [28828]  1000 28828    19701      138      11       3       55         -1000 9s
+[ 6571.500391] [28833]   299 28833   777800      582    1297       6      152         -1000 crosvm
+[ 6571.500394] [28834]   299 28834     1079      174       7       3       21         -1000 logger
+[ 6571.500397] [28836]   299 28836   760901      298      72       4      139         -1000 crosvm
+[ 6571.500400] [28838]   299 28838   760901      265    1127       6      161         -1000 crosvm
+[ 6571.500403] [28839]   299 28839   760901      319      18       4      139         -1000 crosvm
+[ 6571.500405] [28840]   299 28840   760901      296      16       4      141         -1000 crosvm
+[ 6571.500408] [28841]   299 28841   760901      296      23       4      202         -1000 crosvm
+[ 6571.500411] [28843]   299 28843   760901      263      17       4      139         -1000 crosvm
+[ 6571.500414] [28846]   299 28846   760901       22      26       4      138         -1000 crosvm
+[ 6571.500417] [28847]   299 28847   760901      333      16       4      138         -1000 crosvm
+[ 6571.500420] [28849]   299 28849   760901      167      17       4      139         -1000 crosvm
+[ 6571.500423] [28879] 695359 28879   185649      932      54       2      366          -100 main
+[ 6571.500426] [28888]     0 28888     1659        0       8       3       50             0 minijail-init
+[ 6571.500429] [28889]     0 28889     6236      459      16       3      126         -1000 vsh
+[ 6571.500432] [28892]  1000 28892   144343    19843     168      42     4886           300 chrome
+[ 6571.500435] [28894]     0 28894     3425      520      10       3      134             0 memd
+[ 6571.500438] [28908]  1000 28908   150411    21239     190      45     7193           463 chrome
+[ 6571.500441] [28917]  1000 28917   169321    22664     389     223    17091           440 chrome
+[ 6571.500444] [28943]  1000 28943   159750    23366     286     129     9847           300 chrome
+[ 6571.500447] [28964]  1000 28964   143190    18856     158      36     4544           300 chrome
+[ 6571.500450] [29000]  1000 29000   204341    22824     362     209    16504           347 chrome
+[ 6571.500453] [29009]  1000 29009   165848    22859     367     212    13559           323 chrome
+[ 6571.500456] [29019]  1000 29019   163273    23694     317     156    13338           300 chrome
+[ 6571.500459] [29049]  1000 29049   171026    23518     405     247    19071           300 chrome
+[ 6571.500463] [29060]     0 29060     1086      187       7       3       24         -1000 iostat
+[ 6571.500466] [29061]     0 29061     1096        0       8       3       36         -1000 recover_duts
+[ 6571.500469] [29062]     0 29062     3131      292      10       3       51         -1000 date
+[ 6571.500472] [29063]     0 29063     3131      285      10       3       52         -1000 cut
+[ 6571.500475] [29065]     0 29065     1096        0       7       3       33          -100 periodic_schedu
+[ 6571.500477] [29066]     0 29066     3131      265      11       3       51          -100 stat
+[ 6571.500481] [29068]     0 29068     1096        0       7       3       33         -1000 periodic_schedu
+[ 6571.500483] [29069]     0 29069     1096        0       7       3       32         -1000 periodic_schedu
+[ 6571.500486] [29070]     0 29070     3131      265      10       3       53         -1000 stat
+[ 6571.500489] [29071]     0 29071     3131      294      11       3       54         -1000 stat
+[ 6571.500492] [29074]     0 29074     1096        0       6       3       32         -1000 periodic_schedu
+[ 6571.500495] [29075]     0 29075     1096        0       6       3       30         -1000 periodic_schedu
+[ 6571.500498] [29076]     0 29076     3131      295      10       3       53         -1000 stat
+[ 6571.500501] [29077]     0 29077     3131      294      11       3       51         -1000 stat
+[ 6571.500504] [29084]     0 29084   217947     1031      50       5     3741         -1000 cros
+[ 6571.500514] Out of memory: Kill process 27910 (gedprovisioning) score 939 or sacrifice child
+[ 6571.500545] Killed process 27910 (gedprovisioning) total-vm:1045540kB, anon-rss:0kB, file-rss:5648kB
+[ 6576.488092] Out of memory: Kill process 27921 (Binder:920_1) score 939 or sacrifice child
+[ 6576.488103] Killed process 27921 (Binder:920_1) total-vm:1045540kB, anon-rss:0kB, file-rss:7444kB
+[ 6576.675140] Task Binder:920_1:27921 refused to die (killer grpc_global_tim:28823:28819, nvcsw=756, nivcsw=3860)
+[ 6576.776068] Task Binder:920_1:27921 refused to die (killer chrome:28908:28908, nvcsw=5903, nivcsw=28770)
+[ 6576.876595] Task Binder:920_1:27921 refused to die (killer grpc_global_tim:28823:28819, nvcsw=881, nivcsw=3870)
+[ 6576.978663] Task Binder:920_1:27921 refused to die (killer chrome:28908:28908, nvcsw=5928, nivcsw=28789)
+[ 6577.141734] Task Binder:920_1:27921 refused to die (killer arc-networkd:1544:1544, nvcsw=5198, nivcsw=6980)
+[ 6577.344827] Task Binder:920_1:27921 refused to die (killer chrome:28917:28917, nvcsw=1719, nivcsw=16512)
+[ 6577.649288] Task Binder:920_1:27921 refused to die (killer anomaly_detecto:2019:2019, nvcsw=9667, nivcsw=15776)
+[ 6577.934641] Task Binder:920_1:27921 refused to die (killer grpc_global_tim:28823:28819, nvcsw=931, nivcsw=4040)
+[ 6578.055766] Task Binder:920_1:27921 refused to die (killer grpc_global_tim:28823:28819, nvcsw=931, nivcsw=4041)
+[ 6578.286878] Task Binder:920_1:27921 refused to die (killer dmesg:1569:1569, nvcsw=988, nivcsw=1680)
+[ 6579.337676] Task Binder:920_1:27921 refused to die (killer ThreadPoolForeg:26415:26387, nvcsw=20, nivcsw=871)
+[ 6579.438590] Task Binder:920_1:27921 refused to die (killer sshd:25520:25520, nvcsw=324, nivcsw=1018)
+[ 6579.567026] Task Binder:920_1:27921 refused to die (killer crosvm:28833:28833, nvcsw=76, nivcsw=641)
+[ 6579.674348] Task Binder:920_1:27921 refused to die (killer grpcpp_sync_ser:28807:28789, nvcsw=144, nivcsw=475)
+[ 6579.774651] Task Binder:920_1:27921 refused to die (killer esif_ufd:1416:1342, nvcsw=11779, nivcsw=6358)
+[ 6579.975803] Task Binder:920_1:27921 refused to die (killer virtio_balloon:28864:28840, nvcsw=39, nivcsw=298)
+[ 6580.776176] Task Binder:920_1:27921 refused to die (killer esif_ufd:1342:1342, nvcsw=27465, nivcsw=8988)
+[ 6580.877400] Task Binder:920_1:27921 refused to die (killer ThreadPoolForeg:29037:28964, nvcsw=689, nivcsw=12299)
+[ 6580.980169] Task Binder:920_1:27921 refused to die (killer ThreadPoolForeg:26415:26387, nvcsw=112, nivcsw=1192)
+[ 6581.093776] Task Binder:920_1:27921 refused to die (killer Watchdog:25874:25864, nvcsw=670, nivcsw=5362)
+[ 6581.211038] Task Binder:920_1:27921 refused to die (killer grpcpp_sync_ser:28873:28789, nvcsw=259, nivcsw=918)
+[ 6581.317828] Task Binder:920_1:27921 refused to die (killer crosvm:28833:28833, nvcsw=117, nivcsw=768)
+[ 6581.812748] Task Binder:920_1:27921 refused to die (killer esif_ufd:1416:1342, nvcsw=11787, nivcsw=7177)
+[ 6581.931516] Task Binder:920_1:27921 refused to die (killer chrome:28964:28964, nvcsw=1581, nivcsw=12825)
+[ 6582.033215] Task Binder:920_1:27921 refused to die (killer ThreadPoolForeg:26415:26387, nvcsw=280, nivcsw=1629)
+[ 6582.326747] Task Binder:920_1:27921 refused to die (killer grpcpp_sync_ser:28807:28789, nvcsw=210, nivcsw=695)
+[ 6583.357360] Task Binder:920_1:27921 refused to die (killer esif_ufd:1415:1342, nvcsw=14231, nivcsw=21954)
+[ 6583.468026] Task Binder:920_1:27921 refused to die (killer virtio_balloon:28864:28840, nvcsw=76, nivcsw=576)
+[ 6583.590469] Task Binder:920_1:27921 refused to die (killer crosvm_vcpu1:28856:28833, nvcsw=51845, nivcsw=144821)
+[ 6583.766260] Task Binder:920_1:27921 refused to die (killer grpcpp_sync_ser:28807:28789, nvcsw=227, nivcsw=810)
+[ 6584.130918] Task Binder:920_1:27921 refused to die (killer permission_brok:1402:1402, nvcsw=2873, nivcsw=82653)
+[ 6584.232294] Task Binder:920_1:27921 refused to die (killer systemd-journal:492:492, nvcsw=29554, nivcsw=12616)
+[ 6584.397162] Task Binder:920_1:27921 refused to die (killer Watchdog:25874:25864, nvcsw=740, nivcsw=5586)
+[ 6584.497822] Task Binder:920_1:27921 refused to die (killer esif_ufd:1342:1342, nvcsw=28111, nivcsw=10524)
+[ 6584.609601] Task Binder:920_1:27921 refused to die (killer ThreadPoolServi:25833:25797, nvcsw=1048, nivcsw=2626)
+[ 6584.728908] Task Binder:920_1:27921 refused to die (killer grpc_global_tim:28890:28768, nvcsw=1680, nivcsw=5619)
+[ 6584.851289] Task Binder:920_1:27921 refused to die (killer crosvm_vcpu0:28855:28833, nvcsw=60079, nivcsw=187080)
+[ 6584.959510] Task Binder:920_1:27921 refused to die (killer grpcpp_sync_ser:28873:28789, nvcsw=351, nivcsw=1190)
+[ 6585.060576] Task Binder:920_1:27921 refused to die (killer crosvm:28833:28833, nvcsw=222, nivcsw=1137)
+[ 6585.160795] Task Binder:920_1:27921 refused to die (killer anomaly_detecto:2019:2019, nvcsw=11212, nivcsw=17973)
+[ 6585.303965] Task Binder:920_1:27921 refused to die (killer crosvm_vcpu0:28855:28833, nvcsw=60107, nivcsw=187131)
+[ 6585.409724] Task Binder:920_1:27921 refused to die (killer Chrome_SyncThre:26242:25797, nvcsw=180, nivcsw=1308)
+[ 6585.510671] Task Binder:920_1:27921 refused to die (killer grpcpp_sync_ser:28824:28819, nvcsw=1803, nivcsw=3733)
+[ 6585.625050] Task Binder:920_1:27921 refused to die (killer ThreadPoolForeg:29081:25866, nvcsw=65, nivcsw=469)
+[ 6585.745234] Task Binder:920_1:27921 refused to die (killer memory_kills_mo:26209:25797, nvcsw=135, nivcsw=517)
+[ 6585.852773] Task Binder:920_1:27921 refused to die (killer crosvm_vcpu0:28855:28833, nvcsw=60138, nivcsw=187203)
+[ 6585.953785] Task Binder:920_1:27921 refused to die (killer grpc_global_tim:28823:28819, nvcsw=2625, nivcsw=6559)
+[ 6586.068596] Task Binder:920_1:27921 refused to die (killer virtio_balloon:28864:28840, nvcsw=174, nivcsw=700)
+[ 6586.190436] Task Binder:920_1:27921 refused to die (killer crosvm:28833:28833, nvcsw=299, nivcsw=1268)
+[ 6591.721957] Task HeapTaskDaemon:27920 refused to die (killer ThreadPoolForeg:29037:28964, nvcsw=713, nivcsw=12375)
+[ 6591.892027] Task HeapTaskDaemon:27920 refused to die (killer ThreadPoolForeg:28939:28917, nvcsw=845, nivcsw=2071)
+[ 6592.018804] Task HeapTaskDaemon:27920 refused to die (killer crosvm:28833:28833, nvcsw=765, nivcsw=1941)
+[ 6592.140613] Task HeapTaskDaemon:27920 refused to die (killer crosvm:28833:28833, nvcsw=769, nivcsw=1956)
+[ 6592.257691] Task HeapTaskDaemon:27920 refused to die (killer chrome:28917:28917, nvcsw=2249, nivcsw=18295)
+[ 6592.378799] Task HeapTaskDaemon:27920 refused to die (killer grpc_global_tim:28806:28789, nvcsw=848, nivcsw=4054)
+[ 6592.504182] Task HeapTaskDaemon:27920 refused to die (killer crosvm_vcpu1:28856:28833, nvcsw=52455, nivcsw=145848)
+[ 6592.605632] Task HeapTaskDaemon:27920 refused to die (killer ThreadPoolForeg:26415:26387, nvcsw=2926, nivcsw=5300)
+[ 6592.753587] Task HeapTaskDaemon:27920 refused to die (killer ThreadPoolForeg:29081:25866, nvcsw=368, nivcsw=1127)
+[ 6592.962236] Task FinalizerWatchd:27919 refused to die (killer crosvm_vcpu0:28855:28833, nvcsw=60660, nivcsw=188043)
+[ 6593.288648] Task FinalizerWatchd:27919 refused to die (killer crosvm_vcpu1:28856:28833, nvcsw=52490, nivcsw=145922)
+[ 6593.905623] Task FinalizerWatchd:27919 refused to die (killer esif_ufd:1342:1342, nvcsw=34081, nivcsw=15378)
+[ 6594.146559] Task FinalizerWatchd:27919 refused to die (killer esif_ufd:1342:1342, nvcsw=34081, nivcsw=15730)
+[ 6596.055018] Task FinalizerWatchd:27919 refused to die (killer dmesg:1569:1569, nvcsw=8074, nivcsw=8878)
+[ 6596.292602] Task FinalizerWatchd:27919 refused to die (killer dmesg:1569:1569, nvcsw=8074, nivcsw=9000)
+[ 6596.975541] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:28939:28917, nvcsw=918, nivcsw=2290)
+[ 6597.096306] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolServi:25833:25797, nvcsw=1313, nivcsw=2848)
+[ 6597.214449] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:26628:26610, nvcsw=421, nivcsw=1414)
+[ 6598.276260] Task FinalizerWatchd:27919 refused to die (killer chrome:25864:25864, nvcsw=12338, nivcsw=23138)
+[ 6598.378464] Task FinalizerWatchd:27919 refused to die (killer arc-networkd:1544:1544, nvcsw=10896, nivcsw=11666)
+[ 6598.543885] Task FinalizerWatchd:27919 refused to die (killer crosvm_vcpu0:28855:28833, nvcsw=60673, nivcsw=188247)
+[ 6598.666851] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolServi:25833:25797, nvcsw=1319, nivcsw=2924)
+[ 6598.800161] Task FinalizerWatchd:27919 refused to die (killer memory_kills_mo:26209:25797, nvcsw=382, nivcsw=853)
+[ 6598.925982] Task FinalizerWatchd:27919 refused to die (killer Watchdog:25874:25864, nvcsw=1032, nivcsw=5922)
+[ 6599.042723] Task FinalizerWatchd:27919 refused to die (killer Watchdog:25874:25864, nvcsw=1034, nivcsw=5931)
+[ 6599.154075] Task FinalizerWatchd:27919 refused to die (killer chrome:28908:28908, nvcsw=6039, nivcsw=29184)
+[ 6599.309809] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:26628:26610, nvcsw=454, nivcsw=1518)
+[ 6599.412757] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:26628:26610, nvcsw=455, nivcsw=1524)
+[ 6599.563785] Task FinalizerWatchd:27919 refused to die (killer chrome:28917:28917, nvcsw=2362, nivcsw=18585)
+[ 6599.717007] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolServi:25833:25797, nvcsw=1362, nivcsw=2983)
+[ 6599.868155] Task FinalizerWatchd:27919 refused to die (killer chrome:28908:28908, nvcsw=6062, nivcsw=29268)
+[ 6599.998775] Task FinalizerWatchd:27919 refused to die (killer memory_kills_mo:26209:25797, nvcsw=436, nivcsw=917)
+[ 6600.214927] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:29037:28964, nvcsw=742, nivcsw=12665)
+[ 6600.328778] Task FinalizerWatchd:27919 refused to die (killer memory_kills_mo:26209:25797, nvcsw=444, nivcsw=937)
+[ 6600.435359] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:26612:26601, nvcsw=284, nivcsw=363)
+[ 6600.566096] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:26612:26601, nvcsw=287, nivcsw=376)
+[ 6600.723765] Task FinalizerWatchd:27919 refused to die (killer session_manager:25769:25769, nvcsw=873, nivcsw=2296)
+[ 6600.860805] Task FinalizerWatchd:27919 refused to die (killer Watchdog:25874:25864, nvcsw=1104, nivcsw=6014)
+[ 6600.991331] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:26612:26601, nvcsw=305, nivcsw=441)
+[ 6601.098975] Task FinalizerWatchd:27919 refused to die (killer virtio_balloon:28864:28840, nvcsw=566, nivcsw=1311)
+[ 6601.221736] Task FinalizerWatchd:27919 refused to die (killer session_manager:25769:25769, nvcsw=892, nivcsw=2324)
+[ 6601.550323] Task FinalizerWatchd:27919 refused to die (killer roidJUnitRunner:28647:28632, nvcsw=1539, nivcsw=3743)
+[ 6601.689912] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:25877:25864, nvcsw=156, nivcsw=295)
+[ 6601.798538] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:29037:28964, nvcsw=753, nivcsw=12690)
+[ 6601.921006] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:29081:25866, nvcsw=446, nivcsw=1472)
+[ 6602.023767] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolServi:25833:25797, nvcsw=1463, nivcsw=3114)
+[ 6602.162914] Task FinalizerWatchd:27919 refused to die (killer CacheThread_Blo:25862:25797, nvcsw=654, nivcsw=1496)
+[ 6602.263333] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28880:28768, nvcsw=7562, nivcsw=3265)
+[ 6602.416245] Task FinalizerWatchd:27919 refused to die (killer CacheThread_Blo:25862:25797, nvcsw=660, nivcsw=1518)
+[ 6602.565241] Task FinalizerWatchd:27919 refused to die (killer Chrome_SyncThre:26242:25797, nvcsw=584, nivcsw=2404)
+[ 6602.675841] Task FinalizerWatchd:27919 refused to die (killer crosvm:28833:28833, nvcsw=1026, nivcsw=2804)
+[ 6602.843967] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:29081:25866, nvcsw=477, nivcsw=1531)
+[ 6602.979951] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:28910:28908, nvcsw=1296, nivcsw=8718)
+[ 6603.099731] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:26628:26610, nvcsw=607, nivcsw=1737)
+[ 6603.214322] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:26628:26610, nvcsw=609, nivcsw=1743)
+[ 6603.359084] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:29081:25866, nvcsw=496, nivcsw=1571)
+[ 6603.460324] Task FinalizerWatchd:27919 refused to die (killer sshd:25520:25520, nvcsw=10161, nivcsw=12240)
+[ 6603.580724] Task FinalizerWatchd:27919 refused to die (killer chrome:25864:25864, nvcsw=12617, nivcsw=23231)
+[ 6603.699306] Task FinalizerWatchd:27919 refused to die (killer virtio_balloon:28864:28840, nvcsw=757, nivcsw=1641)
+[ 6603.800322] Task FinalizerWatchd:27919 refused to die (killer sshd:25520:25520, nvcsw=10380, nivcsw=12408)
+[ 6603.917103] Task FinalizerWatchd:27919 refused to die (killer grpc_global_tim:28806:28789, nvcsw=1353, nivcsw=5017)
+[ 6604.123736] Task FinalizerWatchd:27919 refused to die (killer roidJUnitRunner:28647:28632, nvcsw=1560, nivcsw=3768)
+[ 6604.446945] Task FinalizerWatchd:27919 refused to die (killer grpc_global_tim:28806:28789, nvcsw=1389, nivcsw=5082)
+[ 6604.600636] Task FinalizerWatchd:27919 refused to die (killer memory_kills_mo:26209:25797, nvcsw=615, nivcsw=1191)
+[ 6604.713739] Task FinalizerWatchd:27919 refused to die (killer session_manager:25769:25769, nvcsw=1026, nivcsw=2523)
+[ 6604.814125] Task FinalizerWatchd:27919 refused to die (killer sshd:25520:25520, nvcsw=11010, nivcsw=12924)
+[ 6604.916397] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:26415:26387, nvcsw=5493, nivcsw=9441)
+[ 6605.042749] Task FinalizerWatchd:27919 refused to die (killer CacheThread_Blo:25862:25797, nvcsw=762, nivcsw=1665)
+[ 6605.161603] Task FinalizerWatchd:27919 refused to die (killer virtio_balloon:28864:28840, nvcsw=864, nivcsw=1824)
+[ 6605.263218] Task FinalizerWatchd:27919 refused to die (killer CacheThread_Blo:25862:25797, nvcsw=767, nivcsw=1686)
+[ 6606.276162] Task FinalizerWatchd:27919 refused to die (killer anomaly_detecto:2019:2019, nvcsw=19477, nivcsw=20257)
+[ 6606.447145] Task FinalizerWatchd:27919 refused to die (killer anomaly_detecto:2019:2019, nvcsw=19477, nivcsw=20263)
+[ 6606.881596] Task FinalizerWatchd:27919 refused to die (killer anomaly_detecto:2019:2019, nvcsw=19489, nivcsw=20416)
+[ 6607.038271] Task FinalizerWatchd:27919 refused to die (killer anomaly_detecto:2019:2019, nvcsw=19489, nivcsw=20422)
+[ 6607.407978] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:26628:26610, nvcsw=684, nivcsw=1890)
+[ 6607.851994] Task FinalizerWatchd:27919 refused to die (killer wpa_supplicant:664:664, nvcsw=11674, nivcsw=7709)
+[ 6607.955034] Task FinalizerWatchd:27919 refused to die (killer permission_brok:1402:1402, nvcsw=11125, nivcsw=85825)
+[ 6608.079126] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:25877:25864, nvcsw=311, nivcsw=390)
+[ 6608.207001] Task FinalizerWatchd:27919 refused to die (killer crosvm_vcpu1:28856:28833, nvcsw=52839, nivcsw=146325)
+[ 6608.307170] Task FinalizerWatchd:27919 refused to die (killer esif_ufd:1416:1342, nvcsw=23129, nivcsw=18731)
+[ 6608.429301] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28807:28789, nvcsw=1063, nivcsw=2175)
+[ 6608.558872] Task FinalizerWatchd:27919 refused to die (killer crosvm:28833:28833, nvcsw=1265, nivcsw=3268)
+[ 6608.716005] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolServi:25833:25797, nvcsw=1634, nivcsw=3368)
+[ 6608.841707] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28873:28789, nvcsw=1154, nivcsw=2489)
+[ 6608.973691] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28807:28789, nvcsw=1092, nivcsw=2238)
+[ 6609.075763] Task FinalizerWatchd:27919 refused to die (killer in:imklog:603:596, nvcsw=10225, nivcsw=6298)
+[ 6609.219806] Task FinalizerWatchd:27919 refused to die (killer crosvm_vcpu1:28856:28833, nvcsw=52892, nivcsw=146436)
+[ 6609.344439] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolServi:25833:25797, nvcsw=1661, nivcsw=3372)
+[ 6609.479537] Task FinalizerWatchd:27919 refused to die (killer crosvm_vcpu0:28855:28833, nvcsw=61087, nivcsw=188576)
+[ 6609.598829] Task FinalizerWatchd:27919 refused to die (killer crosvm:28833:28833, nvcsw=1322, nivcsw=3352)
+[ 6609.719977] Task FinalizerWatchd:27919 refused to die (killer crosvm_vcpu1:28856:28833, nvcsw=52916, nivcsw=146474)
+[ 6609.825035] Task FinalizerWatchd:27919 refused to die (killer crosvm_vcpu1:28856:28833, nvcsw=52919, nivcsw=146482)
+[ 6609.946691] Task FinalizerWatchd:27919 refused to die (killer grpc_global_tim:28806:28789, nvcsw=1544, nivcsw=5498)
+[ 6610.223299] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:28945:28943, nvcsw=202, nivcsw=547)
+[ 6610.324359] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:29054:29049, nvcsw=1621, nivcsw=3148)
+[ 6610.643553] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:28945:28943, nvcsw=202, nivcsw=560)
+[ 6610.778941] Task FinalizerWatchd:27919 refused to die (killer grpc_global_tim:28806:28789, nvcsw=1586, nivcsw=5569)
+[ 6610.893081] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:25855:25797, nvcsw=1044, nivcsw=1259)
+[ 6611.000366] Task FinalizerWatchd:27919 refused to die (killer virtio_balloon:28864:28840, nvcsw=1051, nivcsw=2240)
+[ 6611.106323] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:29054:29049, nvcsw=1770, nivcsw=3404)
+[ 6611.212379] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:25855:25797, nvcsw=1065, nivcsw=1282)
+[ 6611.327728] Task FinalizerWatchd:27919 refused to die (killer crosvm_vcpu1:28856:28833, nvcsw=52987, nivcsw=146607)
+[ 6611.452382] Task FinalizerWatchd:27919 refused to die (killer esif_ufd:1342:1342, nvcsw=40262, nivcsw=18121)
+[ 6611.590104] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28873:28789, nvcsw=1291, nivcsw=2733)
+[ 6611.710599] Task FinalizerWatchd:27919 refused to die (killer crosvm_vcpu1:28856:28833, nvcsw=53000, nivcsw=146638)
+[ 6611.861010] Task FinalizerWatchd:27919 refused to die (killer crosvm_vcpu0:28855:28833, nvcsw=61209, nivcsw=188797)
+[ 6611.973247] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:25877:25864, nvcsw=378, nivcsw=508)
+[ 6612.114336] Task FinalizerWatchd:27919 refused to die (killer grpc_global_tim:28806:28789, nvcsw=1644, nivcsw=5689)
+[ 6612.651077] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:28945:28943, nvcsw=210, nivcsw=594)
+[ 6612.825401] Task FinalizerWatchd:27919 refused to die (killer Chrome_ChildIOT:25869:25866, nvcsw=7202, nivcsw=24558)
+[ 6612.928530] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:26415:26387, nvcsw=6605, nivcsw=11511)
+[ 6613.081423] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:25877:25864, nvcsw=399, nivcsw=542)
+[ 6613.260111] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:29081:25866, nvcsw=673, nivcsw=1942)
+[ 6613.361670] Task FinalizerWatchd:27919 refused to die (killer chrome:25864:25864, nvcsw=13129, nivcsw=23644)
+[ 6613.533175] Task FinalizerWatchd:27919 refused to die (killer Chrome_ChildIOT:25869:25866, nvcsw=7216, nivcsw=24579)
+[ 6613.635764] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28807:28789, nvcsw=1326, nivcsw=2647)
+[ 6613.776146] Task FinalizerWatchd:27919 refused to die (killer Chrome_SyncThre:26242:25797, nvcsw=954, nivcsw=2631)
+[ 6613.893175] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28807:28789, nvcsw=1337, nivcsw=2675)
+[ 6614.071065] Task FinalizerWatchd:27919 refused to die (killer Chrome_ChildIOT:25869:25866, nvcsw=7226, nivcsw=24597)
+[ 6614.197871] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:25877:25864, nvcsw=422, nivcsw=584)
+[ 6614.403074] Task FinalizerWatchd:27919 refused to die (killer Chrome_ChildIOT:25869:25866, nvcsw=7230, nivcsw=24611)
+[ 6614.505237] Task FinalizerWatchd:27919 refused to die (killer crosvm_vcpu1:28856:28833, nvcsw=53145, nivcsw=146899)
+[ 6614.627122] Task FinalizerWatchd:27919 refused to die (killer crosvm_vcpu1:28856:28833, nvcsw=53148, nivcsw=146914)
+[ 6614.761178] Task FinalizerWatchd:27919 refused to die (killer grpc_global_tim:28806:28789, nvcsw=1781, nivcsw=5915)
+[ 6614.868737] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28807:28789, nvcsw=1386, nivcsw=2764)
+[ 6614.984733] Task FinalizerWatchd:27919 refused to die (killer crosvm_vcpu0:28855:28833, nvcsw=61369, nivcsw=189070)
+[ 6615.085425] Task FinalizerWatchd:27919 refused to die (killer systemd-journal:492:492, nvcsw=41220, nivcsw=18817)
+[ 6615.293037] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28873:28789, nvcsw=1477, nivcsw=3076)
+[ 6616.401186] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28881:28819, nvcsw=12571, nivcsw=11302)
+[ 6616.636044] Task FinalizerWatchd:27919 refused to die (killer Chrome_SyncThre:26242:25797, nvcsw=1011, nivcsw=2644)
+[ 6616.814955] Task FinalizerWatchd:27919 refused to die (killer Watchdog:25874:25864, nvcsw=1612, nivcsw=6361)
+[ 6616.915652] Task FinalizerWatchd:27919 refused to die (killer esif_ufd:1415:1342, nvcsw=29851, nivcsw=30864)
+[ 6617.100445] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:29082:28964, nvcsw=790, nivcsw=4525)
+[ 6617.222067] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28873:28789, nvcsw=1511, nivcsw=3200)
+[ 6617.361675] Task FinalizerWatchd:27919 refused to die (killer grpc_global_tim:28806:28789, nvcsw=1847, nivcsw=6076)
+[ 6617.464548] Task FinalizerWatchd:27919 refused to die (killer permission_brok:1402:1402, nvcsw=16603, nivcsw=86823)
+[ 6617.601722] Task FinalizerWatchd:27919 refused to die (killer crosvm:28833:28833, nvcsw=1716, nivcsw=4005)
+[ 6618.315436] Task FinalizerWatchd:27919 refused to die (killer main:28619:28619, nvcsw=692, nivcsw=3349)
+[ 6618.508843] Task FinalizerWatchd:27919 refused to die (killer virtio_balloon:28864:28840, nvcsw=1411, nivcsw=2863)
+[ 6618.769954] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:29083:28964, nvcsw=385, nivcsw=2452)
+[ 6618.882897] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28873:28789, nvcsw=1619, nivcsw=3401)
+[ 6619.094004] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:29081:25866, nvcsw=800, nivcsw=2075)
+[ 6619.200762] Task FinalizerWatchd:27919 refused to die (killer chrome:25864:25864, nvcsw=13536, nivcsw=24339)
+[ 6619.321116] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28807:28789, nvcsw=1576, nivcsw=3187)
+[ 6620.622831] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:28904:26600, nvcsw=154, nivcsw=558)
+[ 6620.796495] Task FinalizerWatchd:27919 refused to die (killer in:imklog:603:596, nvcsw=15037, nivcsw=9333)
+[ 6620.902044] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:26415:26387, nvcsw=8191, nivcsw=13980)
+[ 6621.002685] Task FinalizerWatchd:27919 refused to die (killer wpa_supplicant:664:664, nvcsw=14464, nivcsw=8711)
+[ 6621.244270] Task FinalizerWatchd:27919 refused to die (killer CacheThread_Blo:25862:25797, nvcsw=1232, nivcsw=1829)
+[ 6622.564882] Task FinalizerWatchd:27919 refused to die (killer chrome:28917:28917, nvcsw=2420, nivcsw=18758)
+[ 6622.709141] Task FinalizerWatchd:27919 refused to die (killer CacheThread_Blo:25862:25797, nvcsw=1270, nivcsw=1839)
+[ 6622.816176] Task FinalizerWatchd:27919 refused to die (killer chrome:25864:25864, nvcsw=13957, nivcsw=24807)
+[ 6623.020714] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:25855:25797, nvcsw=1316, nivcsw=1803)
+[ 6624.290121] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:29022:29019, nvcsw=332, nivcsw=3241)
+[ 6624.417257] Task FinalizerWatchd:27919 refused to die (killer CacheThread_Blo:25862:25797, nvcsw=1313, nivcsw=1846)
+[ 6624.551258] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:26628:26610, nvcsw=1245, nivcsw=2064)
+[ 6624.651962] Task FinalizerWatchd:27919 refused to die (killer wpa_supplicant:664:664, nvcsw=16446, nivcsw=10254)
+[ 6624.779714] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28807:28789, nvcsw=1907, nivcsw=3805)
+[ 6624.912453] Task FinalizerWatchd:27919 refused to die (killer virtio_balloon:28864:28840, nvcsw=1848, nivcsw=3543)
+[ 6625.047029] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:25855:25797, nvcsw=1355, nivcsw=1910)
+[ 6625.167046] Task FinalizerWatchd:27919 refused to die (killer crosvm:28833:28833, nvcsw=2238, nivcsw=4773)
+[ 6625.357796] Task FinalizerWatchd:27919 refused to die (killer arc-networkd:1544:1544, nvcsw=23949, nivcsw=14477)
+[ 6625.462138] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:25877:25864, nvcsw=681, nivcsw=674)
+[ 6625.589456] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28807:28789, nvcsw=1948, nivcsw=3921)
+[ 6625.730683] Task FinalizerWatchd:27919 refused to die (killer Watchdog:25874:25864, nvcsw=1846, nivcsw=6428)
+[ 6625.835746] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28880:28768, nvcsw=16821, nivcsw=11328)
+[ 6625.936709] Task FinalizerWatchd:27919 refused to die (killer grpc_global_tim:28890:28768, nvcsw=19719, nivcsw=10303)
+[ 6626.076342] Task FinalizerWatchd:27919 refused to die (killer esif_ufd:1415:1342, nvcsw=35071, nivcsw=34827)
+[ 6626.178422] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:26415:26387, nvcsw=9512, nivcsw=16009)
+[ 6626.282793] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:25845:25797, nvcsw=1485, nivcsw=2514)
+[ 6626.396827] Task FinalizerWatchd:27919 refused to die (killer GlobalScheduler:27590:27164, nvcsw=86, nivcsw=120)
+[ 6626.532335] Task FinalizerWatchd:27919 refused to die (killer GlobalScheduler:27590:27164, nvcsw=86, nivcsw=125)
+[ 6626.700684] Task FinalizerWatchd:27919 refused to die (killer memory_kills_mo:26209:25797, nvcsw=1287, nivcsw=1480)
+[ 6626.859116] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:25877:25864, nvcsw=732, nivcsw=771)
+[ 6626.959848] Task FinalizerWatchd:27919 refused to die (killer in:imklog:603:596, nvcsw=18199, nivcsw=9832)
+[ 6627.171189] Task FinalizerWatchd:27919 refused to die (killer GlobalScheduler:27590:27164, nvcsw=95, nivcsw=136)
+[ 6627.330437] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:29081:25866, nvcsw=1050, nivcsw=2231)
+[ 6627.431353] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolServi:25833:25797, nvcsw=2243, nivcsw=3602)
+[ 6627.557284] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:29081:25866, nvcsw=1055, nivcsw=2247)
+[ 6628.600433] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:29022:29019, nvcsw=340, nivcsw=3282)
+[ 6628.720533] Task FinalizerWatchd:27919 refused to die (killer crosvm_vcpu1:28856:28833, nvcsw=54001, nivcsw=148471)
+[ 6628.898927] Task FinalizerWatchd:27919 refused to die (killer memory_kills_mo:26209:25797, nvcsw=1372, nivcsw=1609)
+[ 6629.034907] Task FinalizerWatchd:27919 refused to die (killer crosvm_vcpu0:28855:28833, nvcsw=62226, nivcsw=190599)
+[ 6629.135747] Task FinalizerWatchd:27919 refused to die (killer esif_ufd:1416:1342, nvcsw=33139, nivcsw=26089)
+[ 6630.065960] Task FinalizerWatchd:27919 refused to die (killer GlobalScheduler:27590:27164, nvcsw=110, nivcsw=155)
+[ 6630.180391] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:26628:26610, nvcsw=1446, nivcsw=2331)
+[ 6630.295764] Task FinalizerWatchd:27919 refused to die (killer Chrome_ChildIOT:25869:25866, nvcsw=7699, nivcsw=24966)
+[ 6630.412957] Task FinalizerWatchd:27919 refused to die (killer crosvm_vcpu0:28855:28833, nvcsw=62330, nivcsw=190774)
+[ 6630.788871] Task FinalizerWatchd:27919 refused to die (killer roidJUnitRunner:28647:28632, nvcsw=1619, nivcsw=4019)
+[ 6630.912571] Task FinalizerWatchd:27919 refused to die (killer grpc_global_tim:28890:28768, nvcsw=22061, nivcsw=10600)
+[ 6631.013460] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:26415:26387, nvcsw=11067, nivcsw=18115)
+[ 6631.113940] Task FinalizerWatchd:27919 refused to die (killer device poll:27540:27539, nvcsw=23727, nivcsw=21556)
+[ 6631.221959] Task FinalizerWatchd:27919 refused to die (killer memory_kills_mo:26209:25797, nvcsw=1454, nivcsw=1729)
+[ 6631.359976] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:29081:25866, nvcsw=1194, nivcsw=2465)
+[ 6631.466985] Task FinalizerWatchd:27919 refused to die (killer grpc_global_tim:28806:28789, nvcsw=2830, nivcsw=7709)
+[ 6631.570641] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28873:28789, nvcsw=2520, nivcsw=4930)
+[ 6631.731825] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:25877:25864, nvcsw=913, nivcsw=1018)
+[ 6631.860002] Task FinalizerWatchd:27919 refused to die (killer session_manager:25769:25769, nvcsw=1862, nivcsw=3101)
+[ 6631.975176] Task FinalizerWatchd:27919 refused to die (killer grpc_global_tim:28806:28789, nvcsw=2865, nivcsw=7788)
+[ 6632.088571] Task FinalizerWatchd:27919 refused to die (killer grpc_global_tim:28806:28789, nvcsw=2871, nivcsw=7802)
+[ 6632.917541] Task FinalizerWatchd:27919 refused to die (killer chrome:29009:29009, nvcsw=1898, nivcsw=15509)
+[ 6633.041459] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:25877:25864, nvcsw=957, nivcsw=1094)
+[ 6633.157342] Task FinalizerWatchd:27919 refused to die (killer virtio_balloon:28864:28840, nvcsw=2525, nivcsw=4549)
+[ 6633.295035] Task FinalizerWatchd:27919 refused to die (killer crosvm:28833:28833, nvcsw=2911, nivcsw=5894)
+[ 6633.408029] Task FinalizerWatchd:27919 refused to die (killer crosvm_vcpu0:28855:28833, nvcsw=62556, nivcsw=191153)
+[ 6633.533583] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolServi:25833:25797, nvcsw=2420, nivcsw=3707)
+[ 6633.633941] Task FinalizerWatchd:27919 refused to die (killer esif_ufd:1416:1342, nvcsw=35379, nivcsw=26398)
+[ 6633.736073] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28873:28789, nvcsw=2681, nivcsw=5179)
+[ 6633.858250] Task FinalizerWatchd:27919 refused to die (killer CacheThread_Blo:25862:25797, nvcsw=1652, nivcsw=2346)
+[ 6633.970490] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28873:28789, nvcsw=2695, nivcsw=5209)
+[ 6634.093256] Task FinalizerWatchd:27919 refused to die (killer crosvm_vcpu1:28856:28833, nvcsw=54412, nivcsw=149131)
+[ 6634.221277] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:25877:25864, nvcsw=993, nivcsw=1159)
+[ 6634.321985] Task FinalizerWatchd:27919 refused to die (killer dmesg:1569:1569, nvcsw=29702, nivcsw=20427)
+[ 6634.428117] Task FinalizerWatchd:27919 refused to die (killer crosvm:28833:28833, nvcsw=2999, nivcsw=6023)
+[ 6634.545000] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:25855:25797, nvcsw=1700, nivcsw=2448)
+[ 6634.685090] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:26628:26610, nvcsw=1604, nivcsw=2577)
+[ 6634.841070] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:25877:25864, nvcsw=1011, nivcsw=1190)
+[ 6635.419443] Task FinalizerWatchd:27919 refused to die (killer roidJUnitRunner:28647:28632, nvcsw=1649, nivcsw=4069)
+[ 6635.519970] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:29054:29049, nvcsw=7870, nivcsw=12401)
+[ 6635.675217] Task FinalizerWatchd:27919 refused to die (killer Chrome_ChildIOT:25869:25866, nvcsw=7892, nivcsw=25254)
+[ 6635.859213] Task FinalizerWatchd:27919 refused to die (killer CacheThread_Blo:25862:25797, nvcsw=1718, nivcsw=2442)
+[ 6635.999847] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:25855:25797, nvcsw=1746, nivcsw=2533)
+[ 6636.113614] Task FinalizerWatchd:27919 refused to die (killer Chrome_ChildIOT:25869:25866, nvcsw=7904, nivcsw=25271)
+[ 6636.241381] Task FinalizerWatchd:27919 refused to die (killer crosvm:28833:28833, nvcsw=3134, nivcsw=6228)
+[ 6636.362794] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28807:28789, nvcsw=2795, nivcsw=5220)
+[ 6636.487178] Task FinalizerWatchd:27919 refused to die (killer crosvm_vcpu1:28856:28833, nvcsw=54583, nivcsw=149397)
+[ 6636.587845] Task FinalizerWatchd:27919 refused to die (killer wpa_supplicant:664:664, nvcsw=24108, nivcsw=16242)
+[ 6636.693540] Task FinalizerWatchd:27919 refused to die (killer crosvm_vcpu1:28856:28833, nvcsw=54596, nivcsw=149416)
+[ 6636.854923] Task FinalizerWatchd:27919 refused to die (killer CacheThread_Blo:25862:25797, nvcsw=1749, nivcsw=2500)
+[ 6636.974429] Task FinalizerWatchd:27919 refused to die (killer memory_kills_mo:26209:25797, nvcsw=1648, nivcsw=2024)
+[ 6637.074981] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28881:28819, nvcsw=22916, nivcsw=13029)
+[ 6637.186030] Task FinalizerWatchd:27919 refused to die (killer grpc_global_tim:28806:28789, nvcsw=3230, nivcsw=8403)
+[ 6637.320593] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:25855:25797, nvcsw=1788, nivcsw=2602)
+[ 6637.431998] Task FinalizerWatchd:27919 refused to die (killer crosvm_vcpu1:28856:28833, nvcsw=54647, nivcsw=149513)
+[ 6638.845144] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:29005:29000, nvcsw=541, nivcsw=2143)
+[ 6638.967298] Task FinalizerWatchd:27919 refused to die (killer virtio_balloon:28864:28840, nvcsw=2964, nivcsw=5264)
+[ 6639.091295] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28807:28789, nvcsw=2985, nivcsw=5540)
+[ 6639.210132] Task FinalizerWatchd:27919 refused to die (killer crosvm_vcpu0:28855:28833, nvcsw=62958, nivcsw=191842)
+[ 6639.352234] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:25877:25864, nvcsw=1151, nivcsw=1460)
+[ 6639.466353] Task FinalizerWatchd:27919 refused to die (killer crosvm:28833:28833, nvcsw=3389, nivcsw=6582)
+[ 6639.596019] Task FinalizerWatchd:27919 refused to die (killer crosvm_vcpu0:28855:28833, nvcsw=62978, nivcsw=191904)
+[ 6639.890604] Task FinalizerWatchd:27919 refused to die (killer Chrome_ChildIOT:25869:25866, nvcsw=8023, nivcsw=25449)
+[ 6641.497677] Task FinalizerWatchd:27919 refused to die (killer chrome:29009:29009, nvcsw=1913, nivcsw=15569)
+[ 6642.940267] Task FinalizerWatchd:27919 refused to die (killer chrome:28917:28917, nvcsw=2462, nivcsw=18910)
+[ 6643.804161] Task FinalizerWatchd:27919 refused to die (killer crosvm_vcpu1:28856:28833, nvcsw=55100, nivcsw=150212)
+[ 6643.983327] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:25855:25797, nvcsw=1989, nivcsw=2943)
+[ 6644.083900] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28826:28819, nvcsw=22700, nivcsw=18138)
+[ 6644.185253] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28880:28768, nvcsw=25360, nivcsw=12377)
+[ 6644.286041] Task FinalizerWatchd:27919 refused to die (killer cros:29084:29084, nvcsw=12620, nivcsw=33375)
+[ 6644.944395] Task FinalizerWatchd:27919 refused to die (killer roidJUnitRunner:28647:28632, nvcsw=1712, nivcsw=4151)
+[ 6645.045485] Task FinalizerWatchd:27919 refused to die (killer chrome:25864:25864, nvcsw=16290, nivcsw=26966)
+[ 6646.498106] Task FinalizerWatchd:27919 refused to die (killer main:28619:28619, nvcsw=766, nivcsw=3450)
+[ 6646.609100] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28807:28789, nvcsw=3497, nivcsw=6423)
+[ 6646.766622] Task FinalizerWatchd:27919 refused to die (killer CacheThread_Blo:25862:25797, nvcsw=2041, nivcsw=3000)
+[ 6646.892862] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:25855:25797, nvcsw=2069, nivcsw=3091)
+[ 6647.065807] Task FinalizerWatchd:27919 refused to die (killer session_manager:25769:25769, nvcsw=2342, nivcsw=3835)
+[ 6647.166011] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28826:28819, nvcsw=24290, nivcsw=19507)
+[ 6647.266956] Task FinalizerWatchd:27919 refused to die (killer wpa_supplicant:664:664, nvcsw=30247, nivcsw=21037)
+[ 6647.393599] Task FinalizerWatchd:27919 refused to die (killer crosvm_vcpu1:28856:28833, nvcsw=55349, nivcsw=150669)
+[ 6647.539859] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:25845:25797, nvcsw=2021, nivcsw=2687)
+[ 6648.071361] Task FinalizerWatchd:27919 refused to die (killer roidJUnitRunner:28647:28632, nvcsw=1729, nivcsw=4179)
+[ 6648.182658] Task FinalizerWatchd:27919 refused to die (killer memory_kills_mo:26209:25797, nvcsw=1982, nivcsw=2594)
+[ 6648.330831] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolServi:25833:25797, nvcsw=2748, nivcsw=3787)
+[ 6648.448268] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:25855:25797, nvcsw=2115, nivcsw=3174)
+[ 6648.571851] Task FinalizerWatchd:27919 refused to die (killer crosvm_vcpu0:28855:28833, nvcsw=63596, nivcsw=192961)
+[ 6648.679987] Task FinalizerWatchd:27919 refused to die (killer chrome:25864:25864, nvcsw=16926, nivcsw=27876)
+[ 6648.815996] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:26628:26610, nvcsw=2040, nivcsw=3307)
+[ 6648.930092] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:26628:26610, nvcsw=2040, nivcsw=3314)
+[ 6649.033348] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:29081:25866, nvcsw=1743, nivcsw=3337)
+[ 6649.914497] Task FinalizerWatchd:27919 refused to die (killer ReferenceQueueD:28675:26184, nvcsw=46, nivcsw=437)
+[ 6650.088229] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:25877:25864, nvcsw=1465, nivcsw=2019)
+[ 6650.212400] Task FinalizerWatchd:27919 refused to die (killer crosvm_vcpu0:28855:28833, nvcsw=63707, nivcsw=193153)
+[ 6650.339876] Task FinalizerWatchd:27919 refused to die (killer crosvm_vcpu1:28856:28833, nvcsw=55549, nivcsw=151010)
+[ 6650.476502] Task FinalizerWatchd:27919 refused to die (killer session_manager:25769:25769, nvcsw=2452, nivcsw=4015)
+[ 6651.178841] Task FinalizerWatchd:27919 refused to die (killer GlobalScheduler:27590:27164, nvcsw=169, nivcsw=233)
+[ 6651.282209] Task FinalizerWatchd:27919 refused to die (killer memory_kills_mo:26209:25797, nvcsw=2082, nivcsw=2780)
+[ 6651.397119] Task FinalizerWatchd:27919 refused to die (killer crosvm_vcpu1:28856:28833, nvcsw=55623, nivcsw=151127)
+[ 6651.508766] Task FinalizerWatchd:27919 refused to die (killer session_manager:25769:25769, nvcsw=2482, nivcsw=4084)
+[ 6651.678732] Task FinalizerWatchd:27919 refused to die (killer Watchdog:25874:25864, nvcsw=2693, nivcsw=7823)
+[ 6651.789590] Task FinalizerWatchd:27919 refused to die (killer crosvm_vcpu1:28856:28833, nvcsw=55648, nivcsw=151172)
+[ 6651.934233] Task FinalizerWatchd:27919 refused to die (killer Watchdog:25874:25864, nvcsw=2698, nivcsw=7839)
+[ 6652.063383] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28873:28789, nvcsw=3943, nivcsw=7390)
+[ 6652.173742] Task FinalizerWatchd:27919 refused to die (killer chrome:25864:25864, nvcsw=17595, nivcsw=28869)
+[ 6652.322763] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:29081:25866, nvcsw=1852, nivcsw=3503)
+[ 6652.455743] Task FinalizerWatchd:27919 refused to die (killer crosvm_vcpu0:28855:28833, nvcsw=63850, nivcsw=193424)
+[ 6652.640092] Task FinalizerWatchd:27919 refused to die (killer Chrome_ChildIOT:25869:25866, nvcsw=8408, nivcsw=26111)
+[ 6652.770449] Task FinalizerWatchd:27919 refused to die (killer Chrome_SyncThre:26242:25797, nvcsw=2115, nivcsw=4610)
+[ 6661.620610] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:28910:28908, nvcsw=1385, nivcsw=9023)
+[ 6661.721439] Task FinalizerWatchd:27919 refused to die (killer cros:25566:25565, nvcsw=121725, nivcsw=14785)
+[ 6661.842912] Task FinalizerWatchd:27919 refused to die (killer CacheThread_Blo:25862:25797, nvcsw=2541, nivcsw=3846)
+[ 6662.026025] Task FinalizerWatchd:27919 refused to die (killer Watchdog:25874:25864, nvcsw=3029, nivcsw=8412)
+[ 6667.924820] Task FinalizerWatchd:27919 refused to die (killer chrome:28964:28964, nvcsw=1698, nivcsw=13165)
+[ 6668.326917] Task FinalizerWatchd:27919 refused to die (killer sshd:25520:25520, nvcsw=43726, nivcsw=34533)
+[ 6668.535269] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:29081:25866, nvcsw=2377, nivcsw=4433)
+[ 6668.695554] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:29081:25866, nvcsw=2379, nivcsw=4436)
+[ 6668.826239] Task FinalizerWatchd:27919 refused to die (killer memory_kills_mo:26209:25797, nvcsw=2653, nivcsw=3766)
+[ 6668.965129] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:26628:26610, nvcsw=2692, nivcsw=4438)
+[ 6677.425154] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:29022:29019, nvcsw=381, nivcsw=3405)
+[ 6679.064248] Task FinalizerWatchd:27919 refused to die (killer systemd-journal:492:492, nvcsw=76973, nivcsw=35290)
+[ 6679.223958] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:25855:25797, nvcsw=3101, nivcsw=4893)
+[ 6679.327566] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:25855:25797, nvcsw=3101, nivcsw=4899)
+[ 6679.469364] Task FinalizerWatchd:27919 refused to die (killer session_manager:25769:25769, nvcsw=3371, nivcsw=5622)
+[ 6679.666033] Task FinalizerWatchd:27919 refused to die (killer memory_kills_mo:26209:25797, nvcsw=2983, nivcsw=4386)
+[ 6679.767004] Task FinalizerWatchd:27919 refused to die (killer rsyslogd:596:596, nvcsw=34069, nivcsw=16695)
+[ 6679.899467] Task FinalizerWatchd:27919 refused to die (killer Watchdog:25874:25864, nvcsw=3576, nivcsw=9360)
+[ 6680.005523] Task FinalizerWatchd:27919 refused to die (killer Chrome_ChildIOT:25869:25866, nvcsw=9284, nivcsw=27544)
+[ 6680.120817] Task FinalizerWatchd:27919 refused to die (killer virtio_balloon:28864:28840, nvcsw=5723, nivcsw=5760)
+[ 6680.232184] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28807:28789, nvcsw=5798, nivcsw=10305)
+[ 6680.370530] Task FinalizerWatchd:27919 refused to die (killer crosvm_vcpu1:28856:28833, nvcsw=57582, nivcsw=154535)
+[ 6680.470782] Task FinalizerWatchd:27919 refused to die (killer esif_ufd:1415:1342, nvcsw=63024, nivcsw=38221)
+[ 6680.597170] Task FinalizerWatchd:27919 refused to die (killer grpc_global_tim:28806:28789, nvcsw=5940, nivcsw=12906)
+[ 6680.758164] Task FinalizerWatchd:27919 refused to die (killer virtio_balloon:28864:28840, nvcsw=5760, nivcsw=5766)
+[ 6680.933798] Task FinalizerWatchd:27919 refused to die (killer memory_kills_mo:26209:25797, nvcsw=3017, nivcsw=4448)
+[ 6681.035236] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:29081:25866, nvcsw=2758, nivcsw=5099)
+[ 6681.155641] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:29081:25866, nvcsw=2758, nivcsw=5105)
+[ 6681.278056] Task FinalizerWatchd:27919 refused to die (killer chrome:25864:25864, nvcsw=23116, nivcsw=36818)
+[ 6681.386169] Task FinalizerWatchd:27919 refused to die (killer session_manager:25769:25769, nvcsw=3427, nivcsw=5730)
+[ 6681.487023] Task FinalizerWatchd:27919 refused to die (killer in:imklog:603:596, nvcsw=47713, nivcsw=28716)
+[ 6681.616347] Task FinalizerWatchd:27919 refused to die (killer crosvm_vcpu1:28856:28833, nvcsw=57657, nivcsw=154694)
+[ 6681.720231] Task FinalizerWatchd:27919 refused to die (killer crosvm:28833:28833, nvcsw=6523, nivcsw=11474)
+[ 6681.833260] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:25877:25864, nvcsw=2461, nivcsw=3788)
+[ 6683.133056] Task FinalizerWatchd:27919 refused to die (killer Binder:76_4:27288:26973, nvcsw=1954, nivcsw=2223)
+[ 6683.276164] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28807:28789, nvcsw=5985, nivcsw=10635)
+[ 6683.385818] Task FinalizerWatchd:27919 refused to die (killer Chrome_SyncThre:26242:25797, nvcsw=3094, nivcsw=6205)
+[ 6683.506900] Task FinalizerWatchd:27919 refused to die (killer memory_kills_mo:26209:25797, nvcsw=3095, nivcsw=4590)
+[ 6683.645680] Task FinalizerWatchd:27919 refused to die (killer memory_kills_mo:26209:25797, nvcsw=3096, nivcsw=4597)
+[ 6683.798840] Task FinalizerWatchd:27919 refused to die (killer Chrome_ChildIOT:25869:25866, nvcsw=9388, nivcsw=27749)
+[ 6683.935243] Task FinalizerWatchd:27919 refused to die (killer session_manager:25769:25769, nvcsw=3504, nivcsw=5866)
+[ 6684.083056] Task FinalizerWatchd:27919 refused to die (killer grpc_global_tim:28806:28789, nvcsw=6152, nivcsw=13306)
+[ 6693.617778] Task FinalizerWatchd:27919 refused to die (killer chrome:29009:29009, nvcsw=1931, nivcsw=15632)
+[ 6694.809628] Task FinalizerWatchd:27919 refused to die (killer memd:28894:28894, nvcsw=54495, nivcsw=18049)
+[ 6694.923895] Task FinalizerWatchd:27919 refused to die (killer session_manager:25769:25769, nvcsw=3791, nivcsw=6421)
+[ 6695.085813] Task FinalizerWatchd:27919 refused to die (killer Watchdog:25874:25864, nvcsw=3807, nivcsw=10199)
+[ 6695.235508] Task FinalizerWatchd:27919 refused to die (killer memory_kills_mo:26209:25797, nvcsw=3210, nivcsw=5292)
+[ 6695.385206] Task FinalizerWatchd:27919 refused to die (killer dhcpcd:7905:7905, nvcsw=59944, nivcsw=31091)
+[ 6695.504461] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28826:28819, nvcsw=40952, nivcsw=34859)
+[ 6695.615385] Task FinalizerWatchd:27919 refused to die (killer grpc_global_tim:28806:28789, nvcsw=6806, nivcsw=14592)
+[ 6695.721659] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28873:28789, nvcsw=6761, nivcsw=12411)
+[ 6695.828520] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28807:28789, nvcsw=6709, nivcsw=12017)
+[ 6695.932393] Task FinalizerWatchd:27919 refused to die (killer crosvm_vcpu0:28855:28833, nvcsw=66648, nivcsw=198351)
+[ 6696.079572] Task FinalizerWatchd:27919 refused to die (killer session_manager:25769:25769, nvcsw=3821, nivcsw=6522)
+[ 6696.198548] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:29054:29049, nvcsw=11456, nivcsw=16008)
+[ 6696.342162] Task FinalizerWatchd:27919 refused to die (killer CacheThread_Blo:25862:25797, nvcsw=3557, nivcsw=5646)
+[ 6696.451264] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28807:28789, nvcsw=6746, nivcsw=12092)
+[ 6696.592967] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolServi:25833:25797, nvcsw=3992, nivcsw=4281)
+[ 6696.746130] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:25855:25797, nvcsw=3589, nivcsw=5811)
+[ 6696.898619] Task FinalizerWatchd:27919 refused to die (killer Watchdog:25874:25864, nvcsw=3855, nivcsw=10346)
+[ 6697.029217] Task FinalizerWatchd:27919 refused to die (killer crosvm_vcpu1:28856:28833, nvcsw=58568, nivcsw=156360)
+[ 6697.187810] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:25877:25864, nvcsw=2882, nivcsw=4607)
+[ 6697.302870] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:25855:25797, nvcsw=3603, nivcsw=5838)
+[ 6697.437579] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28873:28789, nvcsw=6865, nivcsw=12616)
+[ 6697.605136] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:25855:25797, nvcsw=3609, nivcsw=5852)
+[ 6697.717306] Task FinalizerWatchd:27919 refused to die (killer Chrome_ChildIOT:25869:25866, nvcsw=9773, nivcsw=28508)
+[ 6697.837309] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:25877:25864, nvcsw=2894, nivcsw=4645)
+[ 6697.987454] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:25855:25797, nvcsw=3618, nivcsw=5871)
+[ 6699.458933] Task FinalizerWatchd:27919 refused to die (killer chrome:26601:26601, nvcsw=425, nivcsw=1479)
+[ 6699.567967] Task FinalizerWatchd:27919 refused to die (killer grpc_global_tim:28806:28789, nvcsw=7056, nivcsw=15000)
+[ 6699.733783] Task FinalizerWatchd:27919 refused to die (killer Chrome_ChildIOT:25869:25866, nvcsw=9827, nivcsw=28611)
+[ 6699.876714] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28807:28789, nvcsw=6949, nivcsw=12467)
+[ 6699.977355] Task FinalizerWatchd:27919 refused to die (killer grpc_global_tim:28823:28819, nvcsw=55030, nivcsw=16149)
+[ 6700.154523] Task FinalizerWatchd:27919 refused to die (killer Watchdog:25874:25864, nvcsw=3944, nivcsw=10481)
+[ 6700.265286] Task FinalizerWatchd:27919 refused to die (killer grpc_global_tim:28823:28819, nvcsw=55163, nivcsw=16165)
+[ 6700.374876] Task FinalizerWatchd:27919 refused to die (killer crosvm:28833:28833, nvcsw=7681, nivcsw=13545)
+[ 6700.502475] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28873:28789, nvcsw=7048, nivcsw=12936)
+[ 6700.603358] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28881:28819, nvcsw=53533, nivcsw=22758)
+[ 6700.751837] Task FinalizerWatchd:27919 refused to die (killer session_manager:25769:25769, nvcsw=3954, nivcsw=6769)
+[ 6700.889679] Task FinalizerWatchd:27919 refused to die (killer grpcpp_sync_ser:28807:28789, nvcsw=7005, nivcsw=12547)
+[ 6701.054964] Task FinalizerWatchd:27919 refused to die (killer drivefs:26303:26303, nvcsw=52620, nivcsw=42248)
+[ 6701.208854] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:26628:26610, nvcsw=3573, nivcsw=6195)
+[ 6701.411143] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:29081:25866, nvcsw=3302, nivcsw=6173)
+[ 6701.572368] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:26628:26610, nvcsw=3579, nivcsw=6212)
+[ 6701.678303] Task FinalizerWatchd:27919 refused to die (killer Watchdog:25874:25864, nvcsw=3977, nivcsw=10586)
+[ 6708.429940] Task FinalizerWatchd:27919 refused to die (killer ThreadPoolForeg:28904:26600, nvcsw=224, nivcsw=790)
+[ 6710.094356] Task FinalizerWatchd:27919 refused to die (killer anomaly_detecto:2019:2019, nvcsw=71580, nivcsw=41132)
+[ 6710.554879] Task FinalizerWatchd:27919 refused to die (killer roidJUnitRunner:28647:28632, nvcsw=2094, nivcsw=4656)
+[ 6710.929981] Task FinalizerWatchd:27919 refused to die (killer grpc_global_tim:28823:28819, nvcsw=59836, nivcsw=17217)
+[ 6711.039982] Task FinalizerWatchd:27919 refused to die (killer crosvm:28833:28833, nvcsw=8335, nivcsw=14655)
+[ 6711.143892] Task FinalizerWatchd:27919 refused to die (killer grpc_global_tim:28823:28819, nvcsw=59918, nivcsw=17230)
+[ 6711.245279] Task FinalizerWatchd:27919 refused to die (killer chrome:25864:25864, nvcsw=27889, nivcsw=44086)
+[ 6718.241446] INFO: task kswapd0:32 blocked for more than 120 seconds.
+[ 6718.241452]       Not tainted 4.4.178-16473-g2e7bd078f16a #1
+[ 6718.241455] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+[ 6718.241457] kswapd0         D 9c661abcf5c83990     0    32      2 0x00000000
+[ 6718.241464]  ffff8801659b52c0 ffff88017ed15900 ffff8800766cbb00 ffff88017983e740
+[ 6718.241470]  0000000000000000 ffff88017904b9d8 ffffffffa0ea988d 0000000000000000
+[ 6718.241476]  0000000000000286 9c661abcf5c83990 ffff88017983e740 ffff88017a11c0c0
+[ 6718.241482] Call Trace:
+[ 6718.241490]  [<ffffffffa0ea988d>] ? __schedule+0x3c4/0x868
+[ 6718.241494]  [<ffffffffa0ea9490>] schedule+0x40/0x79
+[ 6718.241499]  [<ffffffffa08c2fd1>] jbd2_log_wait_commit+0xb9/0x13c
+[ 6718.241503]  [<ffffffffa079d551>] ? prepare_to_wait_event+0xd4/0xd4
+[ 6718.241507]  [<ffffffffa08c36f8>] jbd2_complete_transaction+0x8a/0x9f
+[ 6718.241510]  [<ffffffffa0879f89>] ext4_evict_inode+0x1f5/0x51b
+[ 6718.241514]  [<ffffffffa081bfb6>] dispose_list+0xdf/0x1f3
+[ 6718.241517]  [<ffffffffa081c272>] prune_icache_sb+0x56/0x76
+[ 6718.241522]  [<ffffffffa080cee8>] super_cache_scan+0x139/0x184
+[ 6718.241525]  [<ffffffffa07ef52f>] shrink_slab+0x3c2/0x4e8
+[ 6718.241529]  [<ffffffffa07f0d64>] shrink_zone+0x6a6/0x786
+[ 6718.241532]  [<ffffffffa0eae800>] ? return_from_execve+0xb/0x23
+[ 6718.241536]  [<ffffffffa07b9d31>] kswapd+0x71c/0x934
+[ 6718.241543]  [<ffffffffa06e8318>] kthread+0xf7/0xff
+[ 6718.241545]  [<ffffffffa0eae8a4>] ? __switch_to_asm+0x34/0x70
+[ 6718.241549]  [<ffffffffa07b9615>] ? kswapd_run+0x9b/0x9b
+[ 6718.241552]  [<ffffffffa06e8221>] ? flush_kthread_worker+0x91/0x91
+[ 6718.241554]  [<ffffffffa0eae92e>] ret_from_fork+0x4e/0x80
+[ 6718.241558]  [<ffffffffa06e8221>] ? flush_kthread_worker+0x91/0x91
+[ 6718.241562]   task                        PC stack   pid father
+[ 6718.241566] kswapd0         D 9c661abcf5c83990     0    32      2 0x00000000
+[ 6718.241576]  ffff8801659b52c0 ffff88017ed15900 ffff8800766cbb00 ffff88017983e740
+[ 6718.241583]  0000000000000000 ffff88017904b9d8 ffffffffa0ea988d 0000000000000000
+[ 6718.241589]  0000000000000286 9c661abcf5c83990 ffff88017983e740 ffff88017a11c0c0
+[ 6718.241595] Call Trace:
+[ 6718.241599]  [<ffffffffa0ea988d>] ? __schedule+0x3c4/0x868
+[ 6718.241602]  [<ffffffffa0ea9490>] schedule+0x40/0x79
+[ 6718.241606]  [<ffffffffa08c2fd1>] jbd2_log_wait_commit+0xb9/0x13c
+[ 6718.241609]  [<ffffffffa079d551>] ? prepare_to_wait_event+0xd4/0xd4
+[ 6718.241613]  [<ffffffffa08c36f8>] jbd2_complete_transaction+0x8a/0x9f
+[ 6718.241616]  [<ffffffffa0879f89>] ext4_evict_inode+0x1f5/0x51b
+[ 6718.241619]  [<ffffffffa081bfb6>] dispose_list+0xdf/0x1f3
+[ 6718.241622]  [<ffffffffa081c272>] prune_icache_sb+0x56/0x76
+[ 6718.241625]  [<ffffffffa080cee8>] super_cache_scan+0x139/0x184
+[ 6718.241629]  [<ffffffffa07ef52f>] shrink_slab+0x3c2/0x4e8
+[ 6718.241632]  [<ffffffffa07f0d64>] shrink_zone+0x6a6/0x786
+[ 6718.241635]  [<ffffffffa0eae800>] ? return_from_execve+0xb/0x23
+[ 6718.241638]  [<ffffffffa07b9d31>] kswapd+0x71c/0x934
+[ 6718.241642]  [<ffffffffa06e8318>] kthread+0xf7/0xff
+[ 6718.241644]  [<ffffffffa0eae8a4>] ? __switch_to_asm+0x34/0x70
+[ 6718.241647]  [<ffffffffa07b9615>] ? kswapd_run+0x9b/0x9b
+[ 6718.241650]  [<ffffffffa06e8221>] ? flush_kthread_worker+0x91/0x91
+[ 6718.241653]  [<ffffffffa0eae92e>] ret_from_fork+0x4e/0x80
+[ 6718.241656]  [<ffffffffa06e8221>] ? flush_kthread_worker+0x91/0x91
+[ 6718.241666] jbd2/sda1-8     D 2cece59398a4f6bd     0   172      2 0x00000000
+[ 6718.241676]  ffff8801659b5e00 ffff88017ec15900 ffff880178543b00 ffff8801784d8ec0
+[ 6718.241682]  0000000000000000 ffff880178573a08 ffffffffa0ea988d ffff880100000000
+[ 6718.241689]  2cec009398a4f6bd 2cece59398a4f6bd ffff8801784d8ec0 ffff8801784d8ec0
+[ 6718.241694] Call Trace:
+[ 6718.241698]  [<ffffffffa0ea988d>] ? __schedule+0x3c4/0x868
+[ 6718.241701]  [<ffffffffa0ea9490>] schedule+0x40/0x79
+[ 6718.241705]  [<ffffffffa0eac337>] schedule_timeout+0x37/0x685
+[ 6718.241708]  [<ffffffffa06c7856>] ? native_sched_clock+0xe6/0xe6
+[ 6718.241711]  [<ffffffffa0eaa38f>] io_schedule_timeout+0x8c/0xd8
+[ 6718.241715]  [<ffffffffa0eaa9f1>] bit_wait_io+0x1b/0x4a
+[ 6718.241718]  [<ffffffffa0eaa42d>] __wait_on_bit+0x52/0x8d
+[ 6718.241721]  [<ffffffffa0eaa9d6>] ? bit_wait+0x40/0x40
+[ 6718.241724]  [<ffffffffa07ad603>] wait_on_page_bit+0xa8/0xc2
+[ 6718.241728]  [<ffffffffa070342a>] ? woken_wake_function+0x13/0x13
+[ 6718.241731]  [<ffffffffa07acf26>] __filemap_fdatawait_range+0xd7/0x164
+[ 6718.241734]  [<ffffffffa07ad090>] filemap_fdatawait+0x25/0x3f
+[ 6718.241738]  [<ffffffffa090cb56>] jbd2_journal_commit_transaction+0xdbf/0x194b
+[ 6718.241742]  [<ffffffffa08c5466>] kjournald2+0x1fa/0x260
+[ 6718.241746]  [<ffffffffa079d551>] ? prepare_to_wait_event+0xd4/0xd4
+[ 6718.241748]  [<ffffffffa06e8318>] kthread+0xf7/0xff
+[ 6718.241751]  [<ffffffffa0eae8a4>] ? __switch_to_asm+0x34/0x70
+[ 6718.241755]  [<ffffffffa08c526c>] ? jbd2_superblock_csum+0x91/0x91
+[ 6718.241758]  [<ffffffffa06e8221>] ? flush_kthread_worker+0x91/0x91
+[ 6718.241761]  [<ffffffffa0eae92e>] ret_from_fork+0x4e/0x80
+[ 6718.241764]  [<ffffffffa06e8221>] ? flush_kthread_worker+0x91/0x91
+[ 6718.241767] loop0           D 6aac89297b7e8e9a     0   240      2 0x00000000
+[ 6718.241775]  ffff880179125680 ffff88017ed15900 ffff8801021a3b00 ffff880074dc0000
+[ 6718.241781]  0000000000000000 ffff880074dcbc28 ffffffffa0ea988d 0000000000000000
+[ 6718.241787]  0000000000000286 6aac89297b7e8e9a ffff880074dc0000 ffff8800767bb8c0
+[ 6718.241792] Call Trace:
+[ 6718.241796]  [<ffffffffa0ea988d>] ? __schedule+0x3c4/0x868
+[ 6718.241799]  [<ffffffffa0ea9490>] schedule+0x40/0x79
+[ 6718.241802]  [<ffffffffa08c2fd1>] jbd2_log_wait_commit+0xb9/0x13c
+[ 6718.241805]  [<ffffffffa079d551>] ? prepare_to_wait_event+0xd4/0xd4
+[ 6718.241809]  [<ffffffffa08c36f8>] jbd2_complete_transaction+0x8a/0x9f
+[ 6718.241812]  [<ffffffffa08f6ade>] ext4_sync_file+0x1ad/0x27f
+[ 6718.241814]  [<ffffffffa0eae8b0>] ? __switch_to_asm+0x40/0x70
+[ 6718.241817]  [<ffffffffa0eae8a4>] ? __switch_to_asm+0x34/0x70
+[ 6718.241819]  [<ffffffffa0eae8b0>] ? __switch_to_asm+0x40/0x70
+[ 6718.241822]  [<ffffffffa083098b>] vfs_fsync_range+0x8f/0xa4
+[ 6718.241825]  [<ffffffffa08309bc>] vfs_fsync+0x1c/0x1e
+[ 6718.241828]  [<ffffffffa0b69719>] loop_queue_work+0x31c/0x5dd
+[ 6718.241831]  [<ffffffffa06c70d7>] ? __switch_to+0x2c0/0x486
+[ 6718.241834]  [<ffffffffa0eae8b0>] ? __switch_to_asm+0x40/0x70
+[ 6718.241836]  [<ffffffffa0eae8a4>] ? __switch_to_asm+0x34/0x70
+[ 6718.241838]  [<ffffffffa0eae8b0>] ? __switch_to_asm+0x40/0x70
+[ 6718.241842]  [<ffffffffa0eade6e>] ? _raw_spin_unlock_irq+0x1f/0x53
+[ 6718.241845]  [<ffffffffa0ea9983>] ? __schedule+0x4ba/0x868
+[ 6718.241849]  [<ffffffffa078c562>] kthread_worker_fn+0x100/0x17d
+[ 6718.241851]  [<ffffffffa06e8318>] kthread+0xf7/0xff
+[ 6718.241854]  [<ffffffffa0eae8a4>] ? __switch_to_asm+0x34/0x70
+[ 6718.241857]  [<ffffffffa078c462>] ? kthread_data+0x16/0x16
+[ 6718.241859]  [<ffffffffa06e8221>] ? flush_kthread_worker+0x91/0x91
+[ 6718.241862]  [<ffffffffa0eae92e>] ret_from_fork+0x4e/0x80
+[ 6718.241865]  [<ffffffffa06e8221>] ? flush_kthread_worker+0x91/0x91
+[ 6718.241868] jbd2/dm-1-8     D a5be81034143c8bb     0   265      2 0x00000000
+[ 6718.241877]  ffff880179125680 ffff88017ec15900 ffff8801021a3b00 ffff88007673c9c0
+[ 6718.241883]  0000000000000000 ffff8801775efae8 ffffffffa0ea988d 0000000000000000
+[ 6718.241888]  ffff8801775efb70 a5be81034143c8bb ffff88007673c9c0 ffff88007673c9c0
+[ 6718.241894] Call Trace:
+[ 6718.241897]  [<ffffffffa0ea988d>] ? __schedule+0x3c4/0x868
+[ 6718.241900]  [<ffffffffa0ea9490>] schedule+0x40/0x79
+[ 6718.241904]  [<ffffffffa0eac337>] schedule_timeout+0x37/0x685
+[ 6718.241907]  [<ffffffffa06c7856>] ? native_sched_clock+0xe6/0xe6
+[ 6718.241911]  [<ffffffffa0eaa38f>] io_schedule_timeout+0x8c/0xd8
+[ 6718.241914]  [<ffffffffa0eaa9f1>] bit_wait_io+0x1b/0x4a
+[ 6718.241917]  [<ffffffffa0eaa42d>] __wait_on_bit+0x52/0x8d
+[ 6718.241920]  [<ffffffffa0eaa9d6>] ? bit_wait+0x40/0x40
+[ 6718.241923]  [<ffffffffa0eaa551>] out_of_line_wait_on_bit+0xe9/0x103
+[ 6718.241927]  [<ffffffffa070342a>] ? woken_wake_function+0x13/0x13
+[ 6718.241930]  [<ffffffffa08324b3>] __wait_on_buffer+0x3e/0x41
+[ 6718.241934]  [<ffffffffa090ce75>] jbd2_journal_commit_transaction+0x10de/0x194b
+[ 6718.241938]  [<ffffffffa08c5466>] kjournald2+0x1fa/0x260
+[ 6718.241941]  [<ffffffffa079d551>] ? prepare_to_wait_event+0xd4/0xd4
+[ 6718.241947]  [<ffffffffa06e8318>] kthread+0xf7/0xff
+[ 6718.241949]  [<ffffffffa0eae8a4>] ? __switch_to_asm+0x34/0x70
+[ 6718.241953]  [<ffffffffa08c526c>] ? jbd2_superblock_csum+0x91/0x91
+[ 6718.241956]  [<ffffffffa06e8221>] ? flush_kthread_worker+0x91/0x91
+[ 6718.241958]  [<ffffffffa0eae92e>] ret_from_fork+0x4e/0x80
+[ 6718.241961]  [<ffffffffa06e8221>] ? flush_kthread_worker+0x91/0x91
+[ 6718.241966] journal-offline D 94d6dc76731cf90e     0 29072      1 0x00000000
+[ 6718.241974]  ffff880074d403c0 ffff88017ed15900 ffff88016f102c40 ffff8801027d6740
+[ 6718.241980]  0000000000000000 ffff88004a587c90 ffffffffa0ea988d ffff880100000000
+[ 6718.241986]  0000000075b8d600 94d6dc76731cf90e ffff8801027d6740 ffff88004a587df8
+[ 6718.241992] Call Trace:
+[ 6718.241995]  [<ffffffffa0ea988d>] ? __schedule+0x3c4/0x868
+[ 6718.241998]  [<ffffffffa0ea9490>] schedule+0x40/0x79
+[ 6718.242002]  [<ffffffffa0eac337>] schedule_timeout+0x37/0x685
+[ 6718.242005]  [<ffffffffa07e7211>] ? find_get_pages_tag+0xfe/0x195
+[ 6718.242008]  [<ffffffffa080ec00>] ? __get_task_comm+0x20/0x4e
+[ 6718.242011]  [<ffffffffa0eaaeb0>] do_wait_for_common+0xb6/0x122
+[ 6718.242015]  [<ffffffffa0eac300>] ? console_conditional_schedule+0x2d/0x2d
+[ 6718.242018]  [<ffffffffa078e676>] ? scheduler_tick+0x100/0x100
+[ 6718.242021]  [<ffffffffa0eaab38>] wait_for_completion+0x4c/0x59
+[ 6718.242025]  [<ffffffffa0961784>] submit_bio_wait+0x67/0x8a
+[ 6718.242030]  [<ffffffffa096b5b0>] blkdev_issue_flush+0x63/0x87
+[ 6718.242033]  [<ffffffffa08f6afc>] ext4_sync_file+0x1cb/0x27f
+[ 6718.242036]  [<ffffffffa083098b>] vfs_fsync_range+0x8f/0xa4
+[ 6718.242038]  [<ffffffffa0830b7b>] do_fsync+0x39/0x5c
+[ 6718.242041]  [<ffffffffa08309ce>] SyS_fsync+0x10/0x14
+[ 6718.242044]  [<ffffffffa0eae4e3>] entry_SYSCALL_64_fastpath+0x31/0xab
+[ 6718.242047] rs:main Q:Reg   D abc03232aa0268d7     0   604      1 0x00000000
+[ 6718.242056]  ffff880074d421c0 ffff88017ec15900 ffff88005caf0000 ffff880179053b00
+[ 6718.242062]  0000000000000000 ffff8800732bb9b0 ffffffffa0ea988d ffff880100000000
+[ 6718.242067]  ffff8801527cec98 abc03232aa0268d7 ffff880179053b00 ffff880179053b00
+[ 6718.242073] Call Trace:
+[ 6718.242076]  [<ffffffffa0ea988d>] ? __schedule+0x3c4/0x868
+[ 6718.242079]  [<ffffffffa0ea9490>] schedule+0x40/0x79
+[ 6718.242083]  [<ffffffffa0eac337>] schedule_timeout+0x37/0x685
+[ 6718.242086]  [<ffffffffa06c7856>] ? native_sched_clock+0xe6/0xe6
+[ 6718.242090]  [<ffffffffa0eaa38f>] io_schedule_timeout+0x8c/0xd8
+[ 6718.242093]  [<ffffffffa0eaa9f1>] bit_wait_io+0x1b/0x4a
+[ 6718.242096]  [<ffffffffa0eaa6d4>] __wait_on_bit_lock+0x62/0xc6
+[ 6718.242099]  [<ffffffffa0eaa9d6>] ? bit_wait+0x40/0x40
+[ 6718.242101]  [<ffffffffa0eae8b0>] ? __switch_to_asm+0x40/0x70
+[ 6718.242104]  [<ffffffffa07ad8c7>] __lock_page+0x97/0xb1
+[ 6718.242108]  [<ffffffffa070342a>] ? woken_wake_function+0x13/0x13
+[ 6718.242112]  [<ffffffffa07e8339>] grab_cache_page_write_begin+0x302/0x370
+[ 6718.242115]  [<ffffffffa08fe651>] ext4_da_write_begin+0x1b4/0xe09
+[ 6718.242118]  [<ffffffffa08fc31f>] ? ext4_dirty_inode+0x73e/0xc86
+[ 6718.242122]  [<ffffffffa08ed63c>] ? __mark_inode_dirty+0x1ef/0x45f
+[ 6718.242125]  [<ffffffffa07e8511>] __generic_file_write_iter+0x16a/0x399
+[ 6718.242128]  [<ffffffffa078f00f>] ? __might_sleep+0x41/0x7d
+[ 6718.242131]  [<ffffffffa08f645e>] ext4_file_write_iter+0xc0/0x328
+[ 6718.242134]  [<ffffffffa078f00f>] ? __might_sleep+0x41/0x7d
+[ 6718.242138]  [<ffffffffa08e0ef4>] SyS_write+0x219/0x3c6
+[ 6718.242141]  [<ffffffffa0eae4e3>] entry_SYSCALL_64_fastpath+0x31/0xab
+[ 6718.242143] wpa_supplicant  D c40075e7bb9fee8c     0   664      1 0x00000000
+[ 6718.242151]  ffff8801774712c0 ffff88017ec15900 ffff88017983bb00 ffff880074dc5880
+[ 6718.242157]  0000000000000000 ffff880071037b10 ffffffffa0ea988d 0000000000000000
+[ 6718.242163]  c40075e7bb9fee8c c40075e7bb9fee8c ffff880074dc5880 000000010061f675
+[ 6718.242169] Call Trace:
+[ 6718.242172]  [<ffffffffa0ea988d>] ? __schedule+0x3c4/0x868
+[ 6718.242175]  [<ffffffffa0ea9490>] schedule+0x40/0x79
+[ 6718.242178]  [<ffffffffa0eac584>] schedule_timeout+0x284/0x685
+[ 6718.242181]  [<ffffffffa071e769>] ? SyS_alarm+0x12/0x12
+[ 6718.242185]  [<ffffffffa0eaca07>] schedule_timeout_uninterruptible+0x2a/0x2c
+[ 6718.242189]  [<ffffffffa07b2f7c>] __alloc_pages_may_oom+0x96/0x155
+[ 6718.242192]  [<ffffffffa07ea083>] __alloc_pages_nodemask+0x723/0x926
+[ 6718.242196]  [<ffffffffa0801c06>] __read_swap_cache_async+0x8b/0x1c5
+[ 6718.242199]  [<ffffffffa07d698d>] swapin_readahead+0x169/0x1a1
+[ 6718.242203]  [<ffffffffa07fa2f2>] handle_mm_fault+0xb0e/0x1bdd
+[ 6718.242206]  [<ffffffffa0eae800>] ? return_from_execve+0xb/0x23
+[ 6718.242209]  [<ffffffffa06c7161>] ? __switch_to+0x34a/0x486
+[ 6718.242212]  [<ffffffffa0eae8b0>] ? __switch_to_asm+0x40/0x70
+[ 6718.242214]  [<ffffffffa0eae8a4>] ? __switch_to_asm+0x34/0x70
+[ 6718.242217]  [<ffffffffa06c8378>] __do_page_fault+0x16a/0x40b
+[ 6718.242221]  [<ffffffffa06c820c>] do_page_fault+0xc/0xe
+[ 6718.242224]  [<ffffffffa0eb0442>] page_fault+0x22/0x30
+[ 6718.242230] chaps_dbus_clie D 4a68d2ad9da66d08     0  1690      1 0x00000000
+[ 6718.242238]  ffff880071105e00 ffff88017ec15900 ffff88006675e740 ffff88006659c9c0
+[ 6718.242244]  0000000000000000 ffff880061ac3b10 ffffffffa0ea988d 0000000000000000
+[ 6718.242250]  4a68d2ad9da66d08 4a68d2ad9da66d08 ffff88006659c9c0 000000010061f675
+[ 6718.242256] Call Trace:
+[ 6718.242257] <Same stack as pid 664>
+[ 6718.242261] esif_ufd        D f0a5aed77f32f330     0  1342      1 0x00000000
+[ 6718.242270]  ffff8800667ca940 ffff88017ec15900 ffff8800644dd880 ffff88006659bb00
+[ 6718.242276]  0000000000000000 ffff8800665e7b10 ffffffffa0ea988d 0000000000000000
+[ 6718.242281]  f0a5aed77f32f330 f0a5aed77f32f330 ffff88006659bb00 000000010061f675
+[ 6718.242287] Call Trace:
+[ 6718.242289] <Same stack as pid 664>
+[ 6718.242292] permission_brok D 1941ff05c54316c4     0  1402      1 0x00000000
+[ 6718.242301]  ffff880073000f00 ffff88017ec15900 ffff880171e26740 ffff88006675e740
+[ 6718.242306]  0000000000000000 ffff8800666dfb10 ffffffffa0ea988d 0000000000000000
+[ 6718.242312]  1941ff05c54316c4 1941ff05c54316c4 ffff88006675e740 000000010061f675
+[ 6718.242317] Call Trace:
+[ 6718.242319] <Same stack as pid 664>
+[ 6718.242331] timberslide     D 0e85723d189bd6fc     0  2101      1 0x00000000
+[ 6718.242342]  ffff8800625492c0 ffff88017ed15900 ffff88016f102c40 ffff8801520d6740
+[ 6718.242348]  0000000000000000 ffff88015e38f9b8 ffffffffa0ea988d 00ffffff00000000
+[ 6718.242353]  0e85723d189bd6fc 0e85723d189bd6fc ffff8801520d6740 ffff8801520d6740
+[ 6718.242359] Call Trace:
+[ 6718.242362]  [<ffffffffa0ea988d>] ? __schedule+0x3c4/0x868
+[ 6718.242366]  [<ffffffffa0ea9490>] schedule+0x40/0x79
+[ 6718.242369]  [<ffffffffa0eac337>] schedule_timeout+0x37/0x685
+[ 6718.242373]  [<ffffffffa06c7856>] ? native_sched_clock+0xe6/0xe6
+[ 6718.242376]  [<ffffffffa0eaa38f>] io_schedule_timeout+0x8c/0xd8
+[ 6718.242379]  [<ffffffffa0eaa9f1>] bit_wait_io+0x1b/0x4a
+[ 6718.242382]  [<ffffffffa0eaa42d>] __wait_on_bit+0x52/0x8d
+[ 6718.242385]  [<ffffffffa0eaa9d6>] ? bit_wait+0x40/0x40
+[ 6718.242388]  [<ffffffffa0eaa551>] out_of_line_wait_on_bit+0xe9/0x103
+[ 6718.242392]  [<ffffffffa070342a>] ? woken_wake_function+0x13/0x13
+[ 6718.242395]  [<ffffffffa08324b3>] __wait_on_buffer+0x3e/0x41
+[ 6718.242398]  [<ffffffffa0901002>] ext4_find_entry+0x4d1/0x7d5
+[ 6718.242402]  [<ffffffffa078f00f>] ? __might_sleep+0x41/0x7d
+[ 6718.242405]  [<ffffffffa0901b67>] ext4_lookup+0x98/0x26f
+[ 6718.242408]  [<ffffffffa081563f>] lookup_real+0x24/0x52
+[ 6718.242412]  [<ffffffffa08e46fc>] path_openat+0x6dc/0x1017
+[ 6718.242416]  [<ffffffffa0eaddbd>] ? _raw_spin_unlock+0x1f/0x52
+[ 6718.242420]  [<ffffffffa08e3f69>] do_filp_open+0x83/0x13a
+[ 6718.242423]  [<ffffffffa0802ee7>] ? kmem_cache_alloc+0x4f/0x1ba
+[ 6718.242426]  [<ffffffffa0eaddbd>] ? _raw_spin_unlock+0x1f/0x52
+[ 6718.242436]  [<ffffffffa08dfde1>] do_sys_open+0x102/0x313
+[ 6718.242439]  [<ffffffffa06c8397>] ? __do_page_fault+0x189/0x40b
+[ 6718.242442]  [<ffffffffa08e0009>] SyS_openat+0x17/0x19
+[ 6718.242445]  [<ffffffffa0eae4e3>] entry_SYSCALL_64_fastpath+0x31/0xab
+[ 6718.242449] metrics_daemon  D 5cb8fd4726c99252     0  2480      1 0x00000000
+[ 6718.242460]  ffff880062549e00 ffff88017ec15900 ffff8801021a2c40 ffff88005cb86740
+[ 6718.242466]  0000000000000000 ffff880152273858 ffffffffa0ea988d ffff880100000000
+[ 6718.242471]  ffffffffa09718a1 5cb8fd4726c99252 ffff88005cb86740 ffff88005cb86740
+[ 6718.242477] Call Trace:
+[ 6718.242480]  [<ffffffffa0ea988d>] ? __schedule+0x3c4/0x868
+[ 6718.242483]  [<ffffffffa09718a1>] ? blk_sq_make_request+0x22b/0x31f
+[ 6718.242487]  [<ffffffffa0ea9490>] schedule+0x40/0x79
+[ 6718.242490]  [<ffffffffa0eac337>] schedule_timeout+0x37/0x685
+[ 6718.242493]  [<ffffffffa0985134>] ? generic_make_request+0xbb3/0xbbb
+[ 6718.242497]  [<ffffffffa06c7856>] ? native_sched_clock+0xe6/0xe6
+[ 6718.242500]  [<ffffffffa0eaa38f>] io_schedule_timeout+0x8c/0xd8
+[ 6718.242503]  [<ffffffffa0902840>] ? ext4_find_extent+0x1fe/0x350
+[ 6718.242506]  [<ffffffffa0eaa9f1>] bit_wait_io+0x1b/0x4a
+[ 6718.242509]  [<ffffffffa0eaa42d>] __wait_on_bit+0x52/0x8d
+[ 6718.242512]  [<ffffffffa0eaa9d6>] ? bit_wait+0x40/0x40
+[ 6718.242515]  [<ffffffffa0902840>] ? ext4_find_extent+0x1fe/0x350
+[ 6718.242519]  [<ffffffffa0eaa551>] out_of_line_wait_on_bit+0xe9/0x103
+[ 6718.242522]  [<ffffffffa070342a>] ? woken_wake_function+0x13/0x13
+[ 6718.242525]  [<ffffffffa08324b3>] __wait_on_buffer+0x3e/0x41
+[ 6718.242528]  [<ffffffffa083617a>] bh_submit_read+0x51/0x79
+[ 6718.242531]  [<ffffffffa089fcb8>] __read_extent_tree_block+0xf7/0x221
+[ 6718.242535]  [<ffffffffa0902840>] ext4_find_extent+0x1fe/0x350
+[ 6718.242538]  [<ffffffffa0903ebb>] ext4_ext_map_blocks+0x10a/0xf15
+[ 6718.242541]  [<ffffffffa0802f56>] ? kmem_cache_alloc+0xbe/0x1ba
+[ 6718.242544]  [<ffffffffa08edf40>] ? alloc_buffer_head+0x38/0x151
+[ 6718.242547]  [<ffffffffa078f00f>] ? __might_sleep+0x41/0x7d
+[ 6718.242550]  [<ffffffffa08fe86d>] ext4_da_write_begin+0x3d0/0xe09
+[ 6718.242554]  [<ffffffffa08ff4e6>] ? ext4_da_write_end+0x240/0x301
+[ 6718.242558]  [<ffffffffa09b2402>] ? iov_iter_copy_from_user_atomic+0xf9/0x242
+[ 6718.242562]  [<ffffffffa07e8511>] __generic_file_write_iter+0x16a/0x399
+[ 6718.242565]  [<ffffffffa08f645e>] ext4_file_write_iter+0xc0/0x328
+[ 6718.242568]  [<ffffffffa078f00f>] ? __might_sleep+0x41/0x7d
+[ 6718.242572]  [<ffffffffa08e0ef4>] SyS_write+0x219/0x3c6
+[ 6718.242575]  [<ffffffffa0eae4e3>] entry_SYSCALL_64_fastpath+0x31/0xab
+[ 6718.242578] kworker/u4:1    D 6eb4edc7bb2f7ffa     0  1665      2 0x00000000
+[ 6718.242587] Workqueue: writeback wb_workfn (flush-8:0)
+[ 6718.242598]  ffff880114f98000 ffff88017ed15900 ffff880066696740 ffff8801790f2c40
+[ 6718.242604]  0000000000000000 ffff880075a27730 ffffffffa0ea988d ffffffff00000000
+[ 6718.242609]  6eb4edc7bb2f7ffa 6eb4edc7bb2f7ffa ffff8801790f2c40 000000010062096b
+[ 6718.242615] Call Trace:
+[ 6718.242618]  [<ffffffffa0ea988d>] ? __schedule+0x3c4/0x868
+[ 6718.242621]  [<ffffffffa0ea9490>] schedule+0x40/0x79
+[ 6718.242625]  [<ffffffffa0eac584>] schedule_timeout+0x284/0x685
+[ 6718.242628]  [<ffffffffa071e769>] ? SyS_alarm+0x12/0x12
+[ 6718.242632]  [<ffffffffa0eaa38f>] io_schedule_timeout+0x8c/0xd8
+[ 6718.242635]  [<ffffffffa07e88cc>] mempool_alloc+0x144/0x19f
+[ 6718.242638]  [<ffffffffa079d551>] ? prepare_to_wait_event+0xd4/0xd4
+[ 6718.242642]  [<ffffffffa09093ea>] ext4_encrypt+0xcd/0x1df
+[ 6718.242645]  [<ffffffffa08ffebc>] ext4_bio_write_page+0x25c/0x3d9
+[ 6718.242648]  [<ffffffffa08fd98f>] ext4_writepages+0xeb6/0x18c9
+[ 6718.242653]  [<ffffffffa07b4f17>] do_writepages+0x24/0x31
+[ 6718.242657]  [<ffffffffa082caac>] __writeback_single_inode+0xba/0x42d
+[ 6718.242660]  [<ffffffffa082c3ef>] writeback_sb_inodes+0x235/0x4b0
+[ 6718.242664]  [<ffffffffa082c6ce>] __writeback_inodes_wb+0x64/0xc9
+[ 6718.242668]  [<ffffffffa082bef8>] wb_writeback+0x1b7/0x33b
+[ 6718.242671]  [<ffffffffa082a6ad>] wb_workfn+0x19c/0x50d
+[ 6718.242674]  [<ffffffffa0eae8b0>] ? __switch_to_asm+0x40/0x70
+[ 6718.242678]  [<ffffffffa0eade6e>] ? _raw_spin_unlock_irq+0x1f/0x53
+[ 6718.242681]  [<ffffffffa078b96b>] worker_thread+0x35a/0x960
+[ 6718.242684]  [<ffffffffa06e8318>] kthread+0xf7/0xff
+[ 6718.242686]  [<ffffffffa0eae8a4>] ? __switch_to_asm+0x34/0x70
+[ 6718.242689]  [<ffffffffa078b611>] ? __queue_work+0x4db/0x4db
+[ 6718.242692]  [<ffffffffa06e8221>] ? flush_kthread_worker+0x91/0x91
+[ 6718.242694]  [<ffffffffa0eae92e>] ret_from_fork+0x4e/0x80
+[ 6718.242697]  [<ffffffffa06e8221>] ? flush_kthread_worker+0x91/0x91
+[ 6718.242700] kworker/0:1     D 691c5aa8b6cfe75b     0 15058      2 0x00000000
+[ 6718.242709] Workqueue: events btusb_work [btusb]
+[ 6718.242721]  ffff8801791252c0 ffff88017ec15900 ffff88010172c9c0 ffff880178546740
+[ 6718.242727]  0000000000000000 ffff8800666b3510 ffffffffa0ea988d 0000000000000000
+[ 6718.242733]  691c5aa8b6cfe75b 691c5aa8b6cfe75b ffff880178546740 000000010061f676
+[ 6718.242738] Call Trace:
+[ 6718.242742]  [<ffffffffa0ea988d>] ? __schedule+0x3c4/0x868
+[ 6718.242745]  [<ffffffffa0ea9490>] schedule+0x40/0x79
+[ 6718.242748]  [<ffffffffa0eac584>] schedule_timeout+0x284/0x685
+[ 6718.242752]  [<ffffffffa07f0127>] ? shrink_page_list+0x8ea/0xa35
+[ 6718.242754]  [<ffffffffa071e769>] ? SyS_alarm+0x12/0x12
+[ 6718.242758]  [<ffffffffa0eaca07>] schedule_timeout_uninterruptible+0x2a/0x2c
+[ 6718.242762]  [<ffffffffa07c076f>] wait_iff_congested+0x92/0x195
+[ 6718.242765]  [<ffffffffa079d551>] ? prepare_to_wait_event+0xd4/0xd4
+[ 6718.242768]  [<ffffffffa07f16c7>] shrink_inactive_list+0x448/0x5f0
+[ 6718.242772]  [<ffffffffa07f0af1>] shrink_zone+0x433/0x786
+[ 6718.242776]  [<ffffffffa06c7856>] ? native_sched_clock+0xe6/0xe6
+[ 6718.242779]  [<ffffffffa07a5d77>] ? ktime_get+0x42/0xb2
+[ 6718.242782]  [<ffffffffa07b90bd>] try_to_free_pages+0x371/0x7d6
+[ 6718.242786]  [<ffffffffa07b2c96>] __alloc_pages_direct_reclaim+0x86/0x12e
+[ 6718.242789]  [<ffffffffa07e9fef>] __alloc_pages_nodemask+0x68f/0x926
+[ 6718.242793]  [<ffffffffa06613ab>] dma_generic_alloc_coherent+0xcc/0x108
+[ 6718.242797]  [<ffffffffa0697375>] x86_swiotlb_alloc_coherent+0x28/0x46
+[ 6718.242800]  [<ffffffffa07da1cf>] dma_pool_alloc+0x127/0x220
+[ 6718.242804]  [<ffffffffa0c04e46>] xhci_segment_alloc+0x72/0xe4
+[ 6718.242808]  [<ffffffffa0c014d1>] xhci_alloc_segments_for_ring+0x35/0xe7
+[ 6718.242812]  [<ffffffffa0c01c8b>] xhci_ring_alloc+0x86/0xf0
+[ 6718.242815]  [<ffffffffa0c02ba7>] xhci_endpoint_init+0xd5/0x3bf
+[ 6718.242818]  [<ffffffffa0bfcdcc>] xhci_add_endpoint+0x17d/0x1b2
+[ 6718.242822]  [<ffffffffa0bd433f>] usb_hcd_alloc_bandwidth+0x2a5/0x317
+[ 6718.242825]  [<ffffffffa078f00f>] ? __might_sleep+0x41/0x7d
+[ 6718.242828]  [<ffffffffa0bd7c26>] usb_set_interface+0x12f/0x2af
+[ 6718.242832]  [<ffffffffc063b346>] __set_isoc_interface+0x42/0x162 [btusb]
+[ 6718.242836]  [<ffffffffc063928f>] btusb_work+0x128/0x18d [btusb]
+[ 6718.242838]  [<ffffffffa078b96b>] worker_thread+0x35a/0x960
+[ 6718.242841]  [<ffffffffa06e8318>] kthread+0xf7/0xff
+[ 6718.242844]  [<ffffffffa0eae8a4>] ? __switch_to_asm+0x34/0x70
+[ 6718.242847]  [<ffffffffa078b611>] ? __queue_work+0x4db/0x4db
+[ 6718.242850]  [<ffffffffa06e8221>] ? flush_kthread_worker+0x91/0x91
+[ 6718.242853]  [<ffffffffa0eae92e>] ret_from_fork+0x4e/0x80
+[ 6718.242855]  [<ffffffffa06e8221>] ? flush_kthread_worker+0x91/0x91
+[ 6718.242861] cros            D 960c06d141d19acc     0 25566  25549 0x00000000
+[ 6718.242869]  ffff880114f98000 ffff88017ec15900 ffff88006659bb00 ffff8800644dd880
+[ 6718.242875]  0000000000000000 ffff880071393b10 ffffffffa0ea988d 0000000000000000
+[ 6718.242881]  960c06d141d19acc 960c06d141d19acc ffff8800644dd880 000000010061f676
+[ 6718.242886] Call Trace:
+[ 6718.242888] <Same stack as pid 664>
+[ 6718.242891] cros            D 24962d791964b852     0 27868  25549 0x00000000
+[ 6718.242898]  ffff880114f98000 ffff88017ec15900 ffff88016f150ec0 ffff88000bfcd880
+[ 6718.242904]  0000000000000000 ffff88016cea3d60 ffffffffa0ea988d 0000000000000000
+[ 6718.242910]  0000000000000000 24962d791964b852 ffff88000bfcd880 ffff88016cea3ed8
+[ 6718.242915] Call Trace:
+[ 6718.242919]  [<ffffffffa0ea988d>] ? __schedule+0x3c4/0x868
+[ 6718.242922]  [<ffffffffa0ea9490>] schedule+0x40/0x79
+[ 6718.242925]  [<ffffffffa0eac337>] schedule_timeout+0x37/0x685
+[ 6718.242929]  [<ffffffffa098ad99>] ? cpumask_next_and+0x21/0x3b
+[ 6718.242932]  [<ffffffffa07974e5>] ? select_task_rq_fair+0x515/0x89f
+[ 6718.242935]  [<ffffffffa0eaaeb0>] do_wait_for_common+0xb6/0x122
+[ 6718.242939]  [<ffffffffa0eac300>] ? console_conditional_schedule+0x2d/0x2d
+[ 6718.242944]  [<ffffffffa078e676>] ? scheduler_tick+0x100/0x100
+[ 6718.242947]  [<ffffffffa0eaad77>] wait_for_completion_killable+0x4c/0x70
+[ 6718.242951]  [<ffffffffa06ca69e>] _do_fork+0x1b0/0x32b
+[ 6718.242954]  [<ffffffffa06ca89e>] SyS_clone+0x19/0x1b
+[ 6718.242957]  [<ffffffffa0eae4e3>] entry_SYSCALL_64_fastpath+0x31/0xab
+[ 6718.242959] kworker/0:3     D 517ce491c5fdb579     0 25603      2 0x00000000
+[ 6718.242967] Workqueue: pm pm_runtime_work
+[ 6718.242975]  ffff8801024aad00 ffff88017ec15900 ffff88016cff9d80 ffff8801520d2c40
+[ 6718.242981]  0000000000000000 ffff8801626239d0 ffffffffa0ea988d 517ce49100000000
+[ 6718.242987]  0000000000000282 517ce491c5fdb579 ffff8801520d2c40 ffff880162623b58
+[ 6718.242993] Call Trace:
+[ 6718.242996]  [<ffffffffa0ea988d>] ? __schedule+0x3c4/0x868
+[ 6718.242999]  [<ffffffffa0ea9490>] schedule+0x40/0x79
+[ 6718.243002]  [<ffffffffa0eac337>] schedule_timeout+0x37/0x685
+[ 6718.243006]  [<ffffffffa0755fc6>] ? delayacct_end+0x56/0x5f
+[ 6718.243009]  [<ffffffffa0eaaeb0>] do_wait_for_common+0xb6/0x122
+[ 6718.243013]  [<ffffffffa0eac300>] ? console_conditional_schedule+0x2d/0x2d
+[ 6718.243016]  [<ffffffffa078e676>] ? scheduler_tick+0x100/0x100
+[ 6718.243019]  [<ffffffffa0eaab38>] wait_for_completion+0x4c/0x59
+[ 6718.243022]  [<ffffffffa06e1201>] flush_work+0x1bf/0x219
+[ 6718.243025]  [<ffffffffa06e3897>] ? put_pwq+0xb2/0xb2
+[ 6718.243029]  [<ffffffffa06e136a>] __cancel_work_timer+0xfd/0x1c5
+[ 6718.243032]  [<ffffffffa0967dec>] ? blk_put_request+0x52/0x59
+[ 6718.243035]  [<ffffffffa06e126b>] cancel_work_sync+0x10/0x12
+[ 6718.243038]  [<ffffffffc0638e89>] btusb_suspend+0x87/0x110 [btusb]
+[ 6718.243042]  [<ffffffffa0bd9c6e>] usb_suspend_both+0xcb/0x25c
+[ 6718.243046]  [<ffffffffa0bda1fd>] ? usb_autopm_get_interface_no_resume+0x2c/0x2c
+[ 6718.243050]  [<ffffffffa0bda22f>] usb_runtime_suspend+0x32/0x62
+[ 6718.243053]  [<ffffffffa0bda1fd>] ? usb_autopm_get_interface_no_resume+0x2c/0x2c
+[ 6718.243057]  [<ffffffffa0b573b7>] __rpm_callback+0x14d/0x224
+[ 6718.243059]  [<ffffffffa0eae8b0>] ? __switch_to_asm+0x40/0x70
+[ 6718.243062]  [<ffffffffa0eae8a4>] ? __switch_to_asm+0x34/0x70
+[ 6718.243064]  [<ffffffffa0eae8b0>] ? __switch_to_asm+0x40/0x70
+[ 6718.243066]  [<ffffffffa0eae8a4>] ? __switch_to_asm+0x34/0x70
+[ 6718.243070]  [<ffffffffa0bda1fd>] ? usb_autopm_get_interface_no_resume+0x2c/0x2c
+[ 6718.243073]  [<ffffffffa0b57154>] rpm_callback+0x27/0x82
+[ 6718.243077]  [<ffffffffa0d26d2e>] rpm_suspend+0x3cb/0x620
+[ 6718.243080]  [<ffffffffa0ea9983>] ? __schedule+0x4ba/0x868
+[ 6718.243083]  [<ffffffffa0b56cfc>] pm_runtime_work+0x99/0xa6
+[ 6718.243086]  [<ffffffffa078b96b>] worker_thread+0x35a/0x960
+[ 6718.243089]  [<ffffffffa06e8318>] kthread+0xf7/0xff
+[ 6718.243091]  [<ffffffffa0eae8a4>] ? __switch_to_asm+0x34/0x70
+[ 6718.243094]  [<ffffffffa078b611>] ? __queue_work+0x4db/0x4db
+[ 6718.243097]  [<ffffffffa06e8221>] ? flush_kthread_worker+0x91/0x91
+[ 6718.243099]  [<ffffffffa0eae92e>] ret_from_fork+0x4e/0x80
+[ 6718.243102]  [<ffffffffa06e8221>] ? flush_kthread_worker+0x91/0x91
+[ 6718.243105] chrome          D d3bf72b3bf0f5074     0 25797  25769 0x00000000
+[ 6718.243114]  ffff8801659b52c0 ffff88017ec15900 ffff88003cf70000 ffff8800766cbb00
+[ 6718.243120]  0000000000000000 ffff88016cf5fa28 ffffffffa0ea988d 0000000000000000
+[ 6718.243126]  0000000000000282 d3bf72b3bf0f5074 ffff8800766cbb00 ffff880075ba6800
+[ 6718.243131] Call Trace:
+[ 6718.243135]  [<ffffffffa0ea988d>] ? __schedule+0x3c4/0x868
+[ 6718.243138]  [<ffffffffa0ea9490>] schedule+0x40/0x79
+[ 6718.243141]  [<ffffffffa081da87>] __wait_on_freeing_inode+0xa5/0xdb
+[ 6718.243145]  [<ffffffffa070342a>] ? woken_wake_function+0x13/0x13
+[ 6718.243148]  [<ffffffffa081cb23>] find_inode_fast+0x52/0x9e
+[ 6718.243151]  [<ffffffffa081c953>] iget_locked+0x6e/0x1ec
+[ 6718.243154]  [<ffffffffa087bfd1>] ext4_iget+0x3c/0xb59
+[ 6718.243157]  [<ffffffffa078f00f>] ? __might_sleep+0x41/0x7d
+[ 6718.243160]  [<ffffffffa08e9c11>] ? d_alloc+0x32/0x2a3
+[ 6718.243162]  [<ffffffffa0802ee7>] ? kmem_cache_alloc+0x4f/0x1ba
+[ 6718.243165]  [<ffffffffa087cb1d>] ext4_iget_normal+0x2f/0x31
+[ 6718.243168]  [<ffffffffa0901bcb>] ext4_lookup+0xfc/0x26f
+[ 6718.243172]  [<ffffffffa0812063>] __lookup_hash+0x5a/0xdc
+[ 6718.243175]  [<ffffffffa08e5fbd>] walk_component+0x452/0x6f8
+[ 6718.243179]  [<ffffffffa08e5666>] ? link_path_walk+0x2c2/0x723
+[ 6718.243182]  [<ffffffffa08e33cf>] ? path_get+0x27/0x2a
+[ 6718.243186]  [<ffffffffa08e3764>] filename_lookup+0x371/0x8e7
+[ 6718.243190]  [<ffffffffa08e3edf>] user_path_at_empty+0x36/0x3d
+[ 6718.243193]  [<ffffffffa08e1ed5>] SyS_newstat+0x4d/0x353
+[ 6718.243197]  [<ffffffffa06c8397>] ? __do_page_fault+0x189/0x40b
+[ 6718.243200]  [<ffffffffa0eae4e3>] entry_SYSCALL_64_fastpath+0x31/0xab
+[ 6718.243204] ThreadPoolForeg D c394634f2c865d9c     0 25856  25769 0x00000000
+[ 6718.243213]  ffff8801659b52c0 ffff88017ed15900 ffff88016f102c40 ffff880176998ec0
+[ 6718.243219]  0000000000000000 ffff880173797a50 ffffffffa0ea988d ffff880100000000
+[ 6718.243225]  0000000075b8d600 c394634f2c865d9c ffff880176998ec0 ffff880176998ec0
+[ 6718.243230] Call Trace:
+[ 6718.243234]  [<ffffffffa0ea988d>] ? __schedule+0x3c4/0x868
+[ 6718.243237]  [<ffffffffa0ea9490>] schedule+0x40/0x79
+[ 6718.243240]  [<ffffffffa0eac337>] schedule_timeout+0x37/0x685
+[ 6718.243243]  [<ffffffffa06c7856>] ? native_sched_clock+0xe6/0xe6
+[ 6718.243247]  [<ffffffffa0eaa38f>] io_schedule_timeout+0x8c/0xd8
+[ 6718.243250]  [<ffffffffa0eaa9f1>] bit_wait_io+0x1b/0x4a
+[ 6718.243253]  [<ffffffffa0eaa42d>] __wait_on_bit+0x52/0x8d
+[ 6718.243256]  [<ffffffffa0eaa9d6>] ? bit_wait+0x40/0x40
+[ 6718.243259]  [<ffffffffa0eaa551>] out_of_line_wait_on_bit+0xe9/0x103
+[ 6718.243263]  [<ffffffffa070342a>] ? woken_wake_function+0x13/0x13
+[ 6718.243266]  [<ffffffffa08324b3>] __wait_on_buffer+0x3e/0x41
+[ 6718.243269]  [<ffffffffa087aa9a>] wait_on_buffer+0x28/0x2b
+[ 6718.243272]  [<ffffffffa087aa3d>] ext4_bread+0x57/0x8c
+[ 6718.243276]  [<ffffffffa0882a49>] __ext4_read_dirblock+0x33/0x23c
+[ 6718.243279]  [<ffffffffa09003bb>] htree_dirblock_to_tree+0x5d/0x28e
+[ 6718.243283]  [<ffffffffa08822a2>] ext4_htree_fill_tree+0xe5/0x28e
+[ 6718.243286]  [<ffffffffa0803112>] ? kmem_cache_alloc_trace+0xc0/0x1c2
+[ 6718.243290]  [<ffffffffa09b0ecb>] ? lockref_get_not_zero+0x29/0x36
+[ 6718.243293]  [<ffffffffa08f5d1c>] ext4_readdir+0x2ea/0x855
+[ 6718.243297]  [<ffffffffa0945cf0>] ? selinux_file_permission+0x15a/0x1da
+[ 6718.243300]  [<ffffffffa08e711c>] iterate_dir+0x83/0x129
+[ 6718.243304]  [<ffffffffa0817ff9>] SyS_getdents+0xa5/0x158
+[ 6718.243308]  [<ffffffffa08e71c2>] ? iterate_dir+0x129/0x129
+[ 6718.243310]  [<ffffffffa0eae4e3>] entry_SYSCALL_64_fastpath+0x31/0xab
+[ 6718.243315] Chrome_HistoryT D a7d4f12776f911f0     0 26216  25769 0x00000000
+[ 6718.243322]  ffff8801659b52c0 ffff88017ed15900 ffff8801021a3b00 ffff880178513b00
+[ 6718.243328]  0000000000000000 ffff88006b1bfdb8 ffffffffa0ea988d 0000000000000000
+[ 6718.243334]  0000000000000282 a7d4f12776f911f0 ffff880178513b00 ffff8800767bb8c0
+[ 6718.243339] Call Trace:
+[ 6718.243343]  [<ffffffffa0ea988d>] ? __schedule+0x3c4/0x868
+[ 6718.243346]  [<ffffffffa0ea9490>] schedule+0x40/0x79
+[ 6718.243349]  [<ffffffffa08c2fd1>] jbd2_log_wait_commit+0xb9/0x13c
+[ 6718.243352]  [<ffffffffa079d551>] ? prepare_to_wait_event+0xd4/0xd4
+[ 6718.243356]  [<ffffffffa08c36f8>] jbd2_complete_transaction+0x8a/0x9f
+[ 6718.243359]  [<ffffffffa08f6ade>] ext4_sync_file+0x1ad/0x27f
+[ 6718.243362]  [<ffffffffa083098b>] vfs_fsync_range+0x8f/0xa4
+[ 6718.243365]  [<ffffffffa0830b7b>] do_fsync+0x39/0x5c
+[ 6718.243367]  [<ffffffffa08309e5>] SyS_fdatasync+0x13/0x17
+[ 6718.243370]  [<ffffffffa0eae4e3>] entry_SYSCALL_64_fastpath+0x31/0xab
+[ 6718.243372] ThreadPoolForeg D 7a569c28ea3a575c     0 29045  25769 0x00000000
+[ 6718.243379]  ffff8801659b52c0 ffff88017ec15900 ffff880101e6d880 ffff880003bb2c40
+[ 6718.243385]  0000000000000000 ffff880110f07db8 ffffffffa0ea988d 0000000000000000
+[ 6718.243391]  0000000000000282 7a569c28ea3a575c ffff880003bb2c40 ffff8800767bb8c0
+[ 6718.243396] Call Trace:
+[ 6718.243398] <Same stack as pid 26216>
+[ 6718.243400] ThreadPoolForeg D c059a1fec4173a9d     0 29047  25769 0x00000000
+[ 6718.243408]  ffff8801659b52c0 ffff88017ec15900 ffff8800644a8000 ffff8800713c3b00
+[ 6718.243414]  0000000000000000 ffff88006d34bc30 ffffffffa0ea988d ffff880000000000
+[ 6718.243420]  c059a1fec4173a9d c059a1fec4173a9d ffff8800713c3b00 ffff8800713c3b00
+[ 6718.243425] Call Trace:
+[ 6718.243445]  [<ffffffffa0ea988d>] ? __schedule+0x3c4/0x868
+[ 6718.243449]  [<ffffffffa0ea9490>] schedule+0x40/0x79
+[ 6718.243452]  [<ffffffffa0eac337>] schedule_timeout+0x37/0x685
+[ 6718.243456]  [<ffffffffa0986491>] ? blk_finish_plug+0x23/0x31
+[ 6718.243459]  [<ffffffffa06c7856>] ? native_sched_clock+0xe6/0xe6
+[ 6718.243462]  [<ffffffffa0eaa38f>] io_schedule_timeout+0x8c/0xd8
+[ 6718.243465]  [<ffffffffa0eaa9f1>] bit_wait_io+0x1b/0x4a
+[ 6718.243468]  [<ffffffffa0eaa42d>] __wait_on_bit+0x52/0x8d
+[ 6718.243471]  [<ffffffffa0eaa9d6>] ? bit_wait+0x40/0x40
+[ 6718.243474]  [<ffffffffa07ad6c5>] wait_on_page_bit_killable+0xa8/0xc6
+[ 6718.243478]  [<ffffffffa070342a>] ? woken_wake_function+0x13/0x13
+[ 6718.243481]  [<ffffffffa07e73d4>] generic_file_read_iter+0x12c/0x6aa
+[ 6718.243485]  [<ffffffffa08e0b0e>] SyS_read+0x1a8/0x375
+[ 6718.243488]  [<ffffffffa0eae4e3>] entry_SYSCALL_64_fastpath+0x31/0xab
+[ 6718.243493] ThreadPoolForeg D a08f003d5fd15e50     0 25870  25861 0x00000000
+[ 6718.243502]  ffff880114f9b0c0 ffff88017ec15900 ffff880165838ec0 ffff8801659e2c40
+[ 6718.243508]  0000000000000000 ffff880114fe3ac0 ffffffffa0ea988d 0000000000000000
+[ 6718.243513]  a08f003d5fd15e50 a08f003d5fd15e50 ffff8801659e2c40 000000010061f683
+[ 6718.243519] Call Trace:
+[ 6718.243522]  [<ffffffffa0ea988d>] ? __schedule+0x3c4/0x868
+[ 6718.243525]  [<ffffffffa0ea9490>] schedule+0x40/0x79
+[ 6718.243529]  [<ffffffffa0eac584>] schedule_timeout+0x284/0x685
+[ 6718.243532]  [<ffffffffa071e769>] ? SyS_alarm+0x12/0x12
+[ 6718.243535]  [<ffffffffa0eaa38f>] io_schedule_timeout+0x8c/0xd8
+[ 6718.243539]  [<ffffffffa07b45c7>] balance_dirty_pages+0x705/0xb64
+[ 6718.243542]  [<ffffffffa08ed6db>] ? __mark_inode_dirty+0x28e/0x45f
+[ 6718.243546]  [<ffffffffa07eb152>] balance_dirty_pages_ratelimited+0x121/0x151
+[ 6718.243549]  [<ffffffffa07e85b2>] __generic_file_write_iter+0x20b/0x399
+[ 6718.243552]  [<ffffffffa08f645e>] ext4_file_write_iter+0xc0/0x328
+[ 6718.243555]  [<ffffffffa078f00f>] ? __might_sleep+0x41/0x7d
+[ 6718.243559]  [<ffffffffa08e1366>] SyS_pwrite64+0x21c/0x3b7
+[ 6718.243562]  [<ffffffffa0eae4e3>] entry_SYSCALL_64_fastpath+0x31/0xab
+[ 6718.243564] ThreadPoolForeg D 79d767eb49091b31     0 25871  25861 0x00000000
+[ 6718.243573]  ffff880114f9b0c0 ffff88017ec15900 ffff8801659e2c40 ffff8801659e5880
+[ 6718.243578]  0000000000000000 ffff88017841fac0 ffffffffa0ea988d 0000000000000000
+[ 6718.243584]  79d767eb49091b31 79d767eb49091b31 ffff8801659e5880 000000010061f683
+[ 6718.243590] Call Trace:
+[ 6718.243598] <Same stack as pid 25870>
+[ 6718.243600] ThreadPoolForeg D b95eb38ac3cfa925     0 25891  25861 0x00000000
+[ 6718.243607]  ffff880114f9b0c0 ffff88017ec15900 ffff88006cda9d80 ffff88006b3a9d80
+[ 6718.243613]  0000000000000000 ffff880177497db8 ffffffffa0ea988d 0000000000000000
+[ 6718.243619]  0000000000000282 b95eb38ac3cfa925 ffff88006b3a9d80 ffff8800767bb8c0
+[ 6718.243624] Call Trace:
+[ 6718.243626] <Same stack as pid 26216>
+[ 6718.243637] main            D 460d599a516d835d     0 26184  26081 0x00000000
+[ 6718.243647]  ffff8800667c9a40 ffff88017ec15900 ffff880066759d80 ffff88013be56740
+[ 6718.243652]  0000000000000000 ffff880176ab39a8 ffffffffa0ea988d 0000000000000000
+[ 6718.243658]  460d599a516d835d 460d599a516d835d ffff88013be56740 0000000000000000
+[ 6718.243664] Call Trace:
+[ 6718.243668]  [<ffffffffa0ea988d>] ? __schedule+0x3c4/0x868
+[ 6718.243671]  [<ffffffffa0ea9d7a>] schedule_preempt_disabled+0x49/0x8b
+[ 6718.243674]  [<ffffffffa0eab5b9>] __mutex_lock_common+0x217/0x3fa
+[ 6718.243678]  [<ffffffffa0eaaf7e>] __mutex_lock_slowpath+0x20/0x26
+[ 6718.243681]  [<ffffffffa0eaaf5c>] mutex_lock+0x40/0x42
+[ 6718.243685]  [<ffffffffa08c934a>] squashfs_decompress+0x3e/0x9d
+[ 6718.243689]  [<ffffffffa08c56e8>] squashfs_read_data+0x1e6/0x511
+[ 6718.243692]  [<ffffffffa08c8d15>] squashfs_readpage_block+0x1d5/0x452
+[ 6718.243696]  [<ffffffffa08c6feb>] squashfs_readpage+0x590/0x688
+[ 6718.243699]  [<ffffffffa07ed868>] ? lru_cache_add+0xe/0x10
+[ 6718.243703]  [<ffffffffa07ec614>] __do_page_cache_readahead+0x1d7/0x250
+[ 6718.243706]  [<ffffffffa07e7ae7>] filemap_fault+0x195/0x357
+[ 6718.243710]  [<ffffffffa07cbbf0>] __do_fault+0x7a/0xee
+[ 6718.243714]  [<ffffffffa07fa0c0>] handle_mm_fault+0x8dc/0x1bdd
+[ 6718.243717]  [<ffffffffa06c8378>] __do_page_fault+0x16a/0x40b
+[ 6718.243721]  [<ffffffffa06c820c>] do_page_fault+0xc/0xe
+[ 6718.243724]  [<ffffffffa0eb0442>] page_fault+0x22/0x30
+[ 6718.243759] system_server   D 020ef316bf30bb58     0 26973  26184 0x00000000
+[ 6718.243768]  ffff880114fb6d00 ffff88017ed15900 ffff880003c4ac40 ffff88005cbd5880
+[ 6718.243774]  0000000000000000 ffff88002c0f3a80 ffffffffa0ea988d 0000000000000000
+[ 6718.243779]  0000000000000286 020ef316bf30bb58 ffff88005cbd5880 ffff880074ed1340
+[ 6718.243785] Call Trace:
+[ 6718.243788]  [<ffffffffa0ea988d>] ? __schedule+0x3c4/0x868
+[ 6718.243791]  [<ffffffffa0ea9490>] schedule+0x40/0x79
+[ 6718.243795]  [<ffffffffa08c5abe>] squashfs_cache_get+0xab/0x32c
+[ 6718.243798]  [<ffffffffa079d551>] ? prepare_to_wait_event+0xd4/0xd4
+[ 6718.243802]  [<ffffffffa08c6258>] squashfs_get_datablock+0x1e/0x20
+[ 6718.243805]  [<ffffffffa08c8cb4>] squashfs_readpage_block+0x174/0x452
+[ 6718.243809]  [<ffffffffa08c6feb>] squashfs_readpage+0x590/0x688
+[ 6718.243812]  [<ffffffffa07ed868>] ? lru_cache_add+0xe/0x10
+[ 6718.243815]  [<ffffffffa07ec614>] __do_page_cache_readahead+0x1d7/0x250
+[ 6718.243819]  [<ffffffffa07e7ae7>] filemap_fault+0x195/0x357
+[ 6718.243822]  [<ffffffffa07cbbf0>] __do_fault+0x7a/0xee
+[ 6718.243826]  [<ffffffffa07fa0c0>] handle_mm_fault+0x8dc/0x1bdd
+[ 6718.243829]  [<ffffffffa06c8378>] __do_page_fault+0x16a/0x40b
+[ 6718.243833]  [<ffffffffa06c820c>] do_page_fault+0xc/0xe
+[ 6718.243835]  [<ffffffffa0eb0442>] page_fault+0x22/0x30
+[ 6718.243839] android.bg      D e9d6764af5526d0f     0 27064  26184 0x00000000
+[ 6718.243851]  ffff880114fb6d00 ffff88017ec15900 ffff88013be51d80 ffff88002c068000
+[ 6718.243856]  0000000000000000 ffff88002c073638 ffffffffa0ea988d 0000000000000000
+[ 6718.243862]  e9d6764af5526d0f e9d6764af5526d0f ffff88002c068000 0000000000000000
+[ 6718.243867] Call Trace:
+[ 6718.243871]  [<ffffffffa0ea988d>] ? __schedule+0x3c4/0x868
+[ 6718.243874]  [<ffffffffa0ea9d7a>] schedule_preempt_disabled+0x49/0x8b
+[ 6718.243877]  [<ffffffffa0eab5b9>] __mutex_lock_common+0x217/0x3fa
+[ 6718.243881]  [<ffffffffa0eaaf7e>] __mutex_lock_slowpath+0x20/0x26
+[ 6718.243884]  [<ffffffffa0eaaf5c>] mutex_lock+0x40/0x42
+[ 6718.243888]  [<ffffffffa08c934a>] squashfs_decompress+0x3e/0x9d
+[ 6718.243891]  [<ffffffffa08c56e8>] squashfs_read_data+0x1e6/0x511
+[ 6718.243895]  [<ffffffffa08c8d15>] squashfs_readpage_block+0x1d5/0x452
+[ 6718.243898]  [<ffffffffa08c6feb>] squashfs_readpage+0x590/0x688
+[ 6718.243904]  [<ffffffffa07ed868>] ? lru_cache_add+0xe/0x10
+[ 6718.243907]  [<ffffffffa07ec614>] __do_page_cache_readahead+0x1d7/0x250
+[ 6718.243910]  [<ffffffffa07e7ae7>] filemap_fault+0x195/0x357
+[ 6718.243913]  [<ffffffffa07cbbf0>] __do_fault+0x7a/0xee
+[ 6718.243917]  [<ffffffffa07fa0c0>] handle_mm_fault+0x8dc/0x1bdd
+[ 6718.243920]  [<ffffffffa07c8636>] faultin_page+0x64/0xee
+[ 6718.243924]  [<ffffffffa07f6071>] __get_user_pages+0x1a6/0x257
+[ 6718.243927]  [<ffffffffa07c8ceb>] get_user_pages+0x26/0x2c
+[ 6718.243930]  [<ffffffffa085f2a3>] seq_print_vma_name+0xae/0x18c
+[ 6718.243933]  [<ffffffffa085f1e4>] show_map_vma+0x1ef/0x200
+[ 6718.243935]  [<ffffffffa085f425>] show_smap+0x80/0x26b
+[ 6718.243938]  [<ffffffffa085f610>] ? show_smap+0x26b/0x26b
+[ 6718.243943]  [<ffffffffa085f3a1>] show_pid_smap+0xe/0x12
+[ 6718.243946]  [<ffffffffa08ecceb>] seq_read+0x13c/0x446
+[ 6718.243950]  [<ffffffffa08e0c2a>] SyS_read+0x2c4/0x375
+[ 6718.243954]  [<ffffffffa0788f35>] ? fire_user_return_notifiers+0x4e/0x92
+[ 6718.243957]  [<ffffffffa0eae4e3>] entry_SYSCALL_64_fastpath+0x31/0xab
+[ 6718.243964] ActivityManager D 0d9f9e98f8b79333     0 27065  26184 0x00000000
+[ 6718.243973]  ffff880114fb6d00 ffff88017ed15900 ffff88010b192c40 ffff88002c068ec0
+[ 6718.243978]  0000000000000000 ffff88002c013a80 ffffffffa0ea988d 0000000000000000
+[ 6718.243984]  0000000000000286 0d9f9e98f8b79333 ffff88002c068ec0 ffff880074ed1340
+[ 6718.243990] Call Trace:
+[ 6718.243991] <Same stack as pid 26973>
+[ 6718.243999] watchdog        D 1a47ef970f637967     0 27264  26184 0x00000000
+[ 6718.244009]  ffff880114fb6d00 ffff88017ec15900 ffff88011e7a0000 ffff880101021d80
+[ 6718.244014]  0000000000000000 ffff8800043af9a8 ffffffffa0ea988d 0000000000000000
+[ 6718.244020]  1a47ef970f637967 1a47ef970f637967 ffff880101021d80 0000000000000000
+[ 6718.244026] Call Trace:
+[ 6718.244027] <Same stack as pid 26184>
+[ 6718.244030] Binder:76_7     D 796ae3bca2cb8ef8     0 27465  26184 0x00000000
+[ 6718.244040]  ffff880114fb6d00 ffff88017ec15900 ffff8801021a3b00 ffff88010b39d880
+[ 6718.244045]  0000000000000000 ffff88010b397a80 ffffffffa0ea988d 0000000000000000
+[ 6718.244051]  0000000000000286 796ae3bca2cb8ef8 ffff88010b39d880 ffff880074ed1340
+[ 6718.244056] Call Trace:
+[ 6718.244058] <Same stack as pid 26973>
+[ 6718.244061] Binder:76_B     D d6f88c77e3e22550     0 28053  26184 0x00000000
+[ 6718.244070]  ffff880114fb6d00 ffff88017ec15900 ffff8801021a3b00 ffff880100bb2c40
+[ 6718.244076]  0000000000000000 ffff88010188fa80 ffffffffa0ea988d 0000000000000000
+[ 6718.244082]  0000000000000286 d6f88c77e3e22550 ffff880100bb2c40 ffff880074ed1340
+[ 6718.244087] Call Trace:
+[ 6718.244089] <Same stack as pid 26973>
+[ 6718.244096] GoogleLocationS D 94da7e7a6a7144a2     0 27878  26184 0x00000000
+[ 6718.244106]  ffff88011277fc00 ffff88017ec15900 ffff880104bd0000 ffff8801018d1d80
+[ 6718.244113]  0000000000000000 ffff8801015479a8 ffffffffa0ea988d 0000000000000000
+[ 6718.244119]  94da7e7a6a7144a2 94da7e7a6a7144a2 ffff8801018d1d80 0000000000000000
+[ 6718.244128] Call Trace:
+[ 6718.244129] <Same stack as pid 26184>
+[ 6718.244156] gle.android.gms D 9d186c4cf3fedc76     0 27560  26184 0x00000000
+[ 6718.244166]  ffff88011277de00 ffff88017ed15900 ffff8801018d1d80 ffff880004085880
+[ 6718.244171]  0000000000000000 ffff880003c2fa80 ffffffffa0ea988d 0000000000000000
+[ 6718.244177]  0000000000000286 9d186c4cf3fedc76 ffff880004085880 ffff880074ed1340
+[ 6718.244183] Call Trace:
+[ 6718.244185] <Same stack as pid 26973>
+[ 6718.244193] HeapTaskDaemon  D 3e4eb6cde9a1ac4f     0 27813  26184 0x00000000
+[ 6718.244203]  ffff880071106d00 ffff88017ec15900 ffff88011e7a0000 ffff88011b30d880
+[ 6718.244209]  0000000000000000 ffff880101b079a8 ffffffffa0ea988d 0000000000000000
+[ 6718.244215]  3e4eb6cde9a1ac4f 3e4eb6cde9a1ac4f ffff88011b30d880 0000000000000000
+[ 6718.244220] Call Trace:
+[ 6718.244222] <Same stack as pid 26184>
+[ 6718.244230] android.vending D d3b530036ae0f6c6     0 27926  26184 0x00000000
+[ 6718.244238]  ffff880071104b40 ffff88017ed15900 ffff88017a32d880 ffff88003cf6e740
+[ 6718.244244]  0000000000000000 ffff88006cee7e00 ffffffffa0ea988d 8000000000000000
+[ 6718.244249]  ffff88006cd659a0 d3b530036ae0f6c6 ffff88003cf6e740 ffff88006cee7f58
+[ 6718.244255] Call Trace:
+[ 6718.244259]  [<ffffffffa0ea988d>] ? __schedule+0x3c4/0x868
+[ 6718.244262]  [<ffffffffa0ea9490>] schedule+0x40/0x79
+[ 6718.244265]  [<ffffffffa0eabff3>] rwsem_down_read_failed+0xb5/0x114
+[ 6718.244270]  [<ffffffffa09992c4>] call_rwsem_down_read_failed+0x14/0x30
+[ 6718.244273]  [<ffffffffa0eab97e>] ? down_read+0x2e/0x31
+[ 6718.244276]  [<ffffffffa06c8583>] __do_page_fault+0x375/0x40b
+[ 6718.244281]  [<ffffffffa06c820c>] do_page_fault+0xc/0xe
+[ 6718.244284]  [<ffffffffa0eb0442>] page_fault+0x22/0x30
+[ 6718.244291] Monitor Thread  D e8527cfe32afc875     0 27948  26184 0x00000000
+[ 6718.244300]  ffff880071104b40 ffff88017ec15900 ffff88013be51d80 ffff880100448ec0
+[ 6718.244306]  0000000000000000 ffff88003cf7f9a8 ffffffffa0ea988d 0000000000000000
+[ 6718.244312]  e8527cfe32afc875 e8527cfe32afc875 ffff880100448ec0 0000000000000000
+[ 6718.244318] Call Trace:
+[ 6718.244319] <Same stack as pid 26184>
+[ 6718.244321] BlockingExecuto D 6c6f67085b3a1903     0 27958  26184 0x00000000
+[ 6718.244328]  ffff880071104b40 ffff88017ec15900 ffff88006cda9d80 ffff8801007049c0
+[ 6718.244334]  0000000000000000 ffff88003ceefe00 ffffffffa0ea988d 0000000000000000
+[ 6718.244340]  0000000000000000 6c6f67085b3a1903 ffff8801007049c0 ffff88003ceeff58
+[ 6718.244345] Call Trace:
+[ 6718.244347] <Same stack as pid 27926>
+[ 6718.244349] BlockingExecuto D 89ef6e70ba4d2724     0 27959  26184 0x00000000
+[ 6718.244356]  ffff880071104b40 ffff88017ed15900 ffff88007587bb00 ffff880100705880
+[ 6718.244361]  0000000000000000 ffff88003cef3dd0 ffffffffa0ea988d ffff880000000000
+[ 6718.244367]  000000000008a50c 89ef6e70ba4d2724 ffff880100705880 ffff880071104bc0
+[ 6718.244373] Call Trace:
+[ 6718.244376]  [<ffffffffa0ea988d>] ? __schedule+0x3c4/0x868
+[ 6718.244379]  [<ffffffffa0ea9490>] schedule+0x40/0x79
+[ 6718.244383]  [<ffffffffa0eac239>] rwsem_down_write_failed+0x1e7/0x281
+[ 6718.244387]  [<ffffffffa09992f3>] call_rwsem_down_write_failed+0x13/0x20
+[ 6718.244390]  [<ffffffffa0eab9bc>] ? down_write+0x3b/0x4b
+[ 6718.244394]  [<ffffffffa07fe315>] vm_munmap+0x3c/0x6a1
+[ 6718.244398]  [<ffffffffa07ce98f>] ? remove_vma_list+0x13e/0x13e
+[ 6718.244401]  [<ffffffffa07ce9b1>] SyS_munmap+0x22/0x29
+[ 6718.244404]  [<ffffffffa0eae4e3>] entry_SYSCALL_64_fastpath+0x31/0xab
+[ 6718.244406] bgExecutor #0   D a8558a08b3298092     0 27971  26184 0x00000000
+[ 6718.244412]  ffff880071104b40 ffff88017ed15900 ffff88000a798000 ffff88007587ac40
+[ 6718.244418]  0000000000000000 ffff88002c017e00 ffffffffa0ea988d a8558a0800000000
+[ 6718.244424]  80000001433e8067 a8558a08b3298092 ffff88007587ac40 ffff88002c017f58
+[ 6718.244438] Call Trace:
+[ 6718.244439] <Same stack as pid 27926>
+[ 6718.244442] Db-scheduler    D ded784a7cabdc327     0 27976  26184 0x00000000
+[ 6718.244449]  ffff880071104b40 ffff88017ed15900 ffff88000bf3d880 ffff88000a798000
+[ 6718.244454]  0000000000000000 ffff88000a7f7e00 ffffffffa0ea988d 8000000000000000
+[ 6718.244460]  ffff880101663b00 ded784a7cabdc327 ffff88000a798000 ffff88000a7f7f58
+[ 6718.244466] Call Trace:
+[ 6718.244467] <Same stack as pid 27926>
+[ 6718.244470] libraries-threa D c29a2e20a35680d2     0 27977  26184 0x00000000
+[ 6718.244476]  ffff880071104b40 ffff88017ed15900 ffff88007587ac40 ffff88017a32d880
+[ 6718.244482]  0000000000000000 ffff88000a41fe00 ffffffffa0ea988d 8000000000000000
+[ 6718.244488]  ffff88000bde7f20 c29a2e20a35680d2 ffff88017a32d880 ffff88000a41ff58
+[ 6718.244494] Call Trace:
+[ 6718.244495] <Same stack as pid 27926>
+[ 6718.244497] AsyncTask #1    D 643b77360d2331e3     0 27981  26184 0x00000000
+[ 6718.244504]  ffff880071104b40 ffff88017ed15900 ffff88003cf6e740 ffff88007587bb00
+[ 6718.244510]  0000000000000000 ffff88002c047e00 ffffffffa0ea988d 643b773600000000
+[ 6718.244515]  800000005e408067 643b77360d2331e3 ffff88007587bb00 ffff88002c047f58
+[ 6718.244521] Call Trace:
+[ 6718.244522] <Same stack as pid 27926>
+[ 6718.244525] bgExecutor #3   D f349f381af941583     0 27995  26184 0x00000000
+[ 6718.244535]  ffff880071104b40 ffff88017ec15900 ffff880171ff2c40 ffff88000a610000
+[ 6718.244540]  0000000000000000 ffff88000398b9f8 ffffffffa0ea988d 0000000000000000
+[ 6718.244546]  f349f381af941583 f349f381af941583 ffff88000a610000 0000000000000000
+[ 6718.244552] Call Trace:
+[ 6718.244555]  [<ffffffffa0ea988d>] ? __schedule+0x3c4/0x868
+[ 6718.244559]  [<ffffffffa0ea9d7a>] schedule_preempt_disabled+0x49/0x8b
+[ 6718.244562]  [<ffffffffa0eab5b9>] __mutex_lock_common+0x217/0x3fa
+[ 6718.244565]  [<ffffffffa0eaaf7e>] __mutex_lock_slowpath+0x20/0x26
+[ 6718.244568]  [<ffffffffa0eaaf5c>] mutex_lock+0x40/0x42
+[ 6718.244572]  [<ffffffffa08c934a>] squashfs_decompress+0x3e/0x9d
+[ 6718.244576]  [<ffffffffa08c56e8>] squashfs_read_data+0x1e6/0x511
+[ 6718.244579]  [<ffffffffa08c8d15>] squashfs_readpage_block+0x1d5/0x452
+[ 6718.244583]  [<ffffffffa08c6feb>] squashfs_readpage+0x590/0x688
+[ 6718.244586]  [<ffffffffa07ed868>] ? lru_cache_add+0xe/0x10
+[ 6718.244591]  [<ffffffffa07ec614>] __do_page_cache_readahead+0x1d7/0x250
+[ 6718.244595]  [<ffffffffa07b570c>] ondemand_readahead+0x196/0x22c
+[ 6718.244598]  [<ffffffffa07e6c46>] ? pagecache_get_page+0x5e/0x291
+[ 6718.244602]  [<ffffffffa07b5564>] page_cache_sync_readahead+0x27/0x39
+[ 6718.244605]  [<ffffffffa07e76c6>] generic_file_read_iter+0x41e/0x6aa
+[ 6718.244609]  [<ffffffffa08e0b0e>] SyS_read+0x1a8/0x375
+[ 6718.244612]  [<ffffffffa0eae4e3>] entry_SYSCALL_64_fastpath+0x31/0xab
+[ 6718.244618] Db-frosting.db  D 09c0c73debab6e46     0 28101  26184 0x00000000
+[ 6718.244624]  ffff880071104b40 ffff88017ed15900 ffff88000a47ac40 ffff88000bf3d880
+[ 6718.244630]  0000000000000000 ffff88006ceebe00 ffffffffa0ea988d 8000000000000000
+[ 6718.244636]  ffff88006cdca4d0 09c0c73debab6e46 ffff88000bf3d880 ffff88006ceebf58
+[ 6718.244641] Call Trace:
+[ 6718.244643] <Same stack as pid 27926>
+[ 6718.244646] Okio Watchdog   D d5b068dc74a70cf5     0 28530  26184 0x00000000
+[ 6718.244653]  ffff880071104b40 ffff88017ec15900 ffff88011b30d880 ffff88006cf20000
+[ 6718.244659]  0000000000000000 ffff880100963e00 ffffffffa0ea988d 0000000000000000
+[ 6718.244664]  0000000000000000 d5b068dc74a70cf5 ffff88006cf20000 ffff880100963f58
+[ 6718.244670] Call Trace:
+[ 6718.244672] <Same stack as pid 27926>
+[ 6718.244674] InstallQueueDat D a1aec6e91837e31d     0 28650  26184 0x00000000
+[ 6718.244680]  ffff880071104b40 ffff88017ed15900 ffff88006ccf5880 ffff88000a47ac40
+[ 6718.244686]  0000000000000000 ffff880101f57e00 ffffffffa0ea988d 8000000000000000
+[ 6718.244692]  ffff880101f2a160 a1aec6e91837e31d ffff88000a47ac40 ffff880101f57f58
+[ 6718.244698] Call Trace:
+[ 6718.244699] <Same stack as pid 27926>
+[ 6718.244702] .lowPriority #0 D 94b96b09a2ffa5c2     0 28667  26184 0x00000000
+[ 6718.244709]  ffff880071104b40 ffff88017ec15900 ffff8801018b8ec0 ffff880003eb5880
+[ 6718.244714]  0000000000000000 ffff880102633e00 ffffffffa0ea988d 0000000000000000
+[ 6718.244720]  0000000000000000 94b96b09a2ffa5c2 ffff880003eb5880 ffff880102633f58
+[ 6718.244726] Call Trace:
+[ 6718.244727] <Same stack as pid 27926>
+[ 6718.244744] Jit thread pool D a64de17ea869e58e     0 28637  26184 0x00000000
+[ 6718.244754]  ffff880179127480 ffff88017ec15900 ffff880004eeac40 ffff88006ccf0ec0
+[ 6718.244760]  0000000000000000 ffff8800046c79a8 ffffffffa0ea988d 0000000000000000
+[ 6718.244765]  a64de17ea869e58e a64de17ea869e58e ffff88006ccf0ec0 0000000000000000
+[ 6718.244776] Call Trace:
+[ 6718.244778] <Same stack as pid 26184>
+[ 6718.244782] bg-1            D b2bcbce067151ca3     0 28690  26184 0x00000000
+[ 6718.244789]  ffff88000a542580 ffff88017ec15900 ffff88006cda9d80 ffff88005ca33b00
+[ 6718.244795]  0000000000000000 ffff880062583e00 ffffffffa0ea988d 8000000000000000
+[ 6718.244801]  ffff880152042630 b2bcbce067151ca3 ffff88005ca33b00 ffff880062583f58
+[ 6718.244806] Call Trace:
+[ 6718.244808] <Same stack as pid 27926>
+[ 6718.244810] RxSchedulerPurg D d2b9a060831feec4     0 28693  26184 0x00000000
+[ 6718.244816]  ffff88000a542580 ffff88017ec15900 ffff88006cda9d80 ffff880101bd0000
+[ 6718.244822]  0000000000000000 ffff88006183fe00 ffffffffa0ea988d 0000000000000000
+[ 6718.244828]  0000000000000000 d2b9a060831feec4 ffff880101bd0000 ffff88006183ff58
+[ 6718.244833] Call Trace:
+[ 6718.244835] <Same stack as pid 27926>
+[ 6718.244837] RxCachedWorkerP D bf96ff33e3a9ca23     0 28694  26184 0x00000000
+[ 6718.244846]  ffff88000a542580 ffff88017ed15900 ffff880004692c40 ffff88000bf3ac40
+[ 6718.244852]  0000000000000000 ffff88006671fa80 ffffffffa0ea988d 0000000000000000
+[ 6718.244857]  0000000000000286 bf96ff33e3a9ca23 ffff88000bf3ac40 ffff880074ed1340
+[ 6718.244863] Call Trace:
+[ 6718.244865] <Same stack as pid 26973>
+[ 6718.244867] bg-2            D e9e6f711659d4dbf     0 28695  26184 0x00000000
+[ 6718.244873]  ffff88000a542580 ffff88017ec15900 ffff88016f102c40 ffff88003cf01d80
+[ 6718.244879]  0000000000000000 ffff88005cbabe00 ffffffffa0ea988d 8000000000000000
+[ 6718.244885]  ffff880003f14b00 e9e6f711659d4dbf ffff88003cf01d80 ffff88005cbabf58
+[ 6718.244891] Call Trace:
+[ 6718.244892] <Same stack as pid 27926>
+[ 6718.244894] bg-3            D 91f4ff9aeda09967     0 28696  26184 0x00000000
+[ 6718.244901]  ffff88000a542580 ffff88017ed15900 ffff8800644dd880 ffff8800713c1d80
+[ 6718.244907]  0000000000000000 ffff88006b1dfe00 ffffffffa0ea988d 0000000000000000
+[ 6718.244913]  0000000000000000 91f4ff9aeda09967 ffff8800713c1d80 ffff88006b1dff58
+[ 6718.244918] Call Trace:
+[ 6718.244920] <Same stack as pid 27926>
+[ 6718.244921] bg-4            D 84b0f10301d9f420     0 28697  26184 0x00000000
+[ 6718.244933]  ffff88000a542580 ffff88017ed15900 ffff880171ff5880 ffff880003d549c0
+[ 6718.244939]  0000000000000000 ffff880052c9fe00 ffffffffa0ea988d 0000000000000000
+[ 6718.244947]  0000000000000000 84b0f10301d9f420 ffff880003d549c0 ffff880052c9ff58
+[ 6718.244954] Call Trace:
+[ 6718.244956] <Same stack as pid 27926>
+[ 6718.244958] bg-5            D 17a65a22424e8639     0 28712  26184 0x00000000
+[ 6718.244965]  ffff88000a542580 ffff88017ed15900 ffff8801784d9d80 ffff8801626b2c40
+[ 6718.244972]  0000000000000000 ffff88000bf6fe00 ffffffffa0ea988d 0000000000000000
+[ 6718.244977]  0000000000000000 17a65a22424e8639 ffff8801626b2c40 ffff88000bf6ff58
+[ 6718.244983] Call Trace:
+[ 6718.244985] <Same stack as pid 27926>
+[ 6718.244987] fg-1            D adb7098c116508a2     0 28713  26184 0x00000000
+[ 6718.244994]  ffff88000a542580 ffff88017ed15900 ffff88005ca33b00 ffff880004692c40
+[ 6718.245000]  0000000000000000 ffff88015e007dd0 ffffffffa0ea988d ffff880000000000
+[ 6718.245005]  000000000002896c adb7098c116508a2 ffff880004692c40 ffff88000a542600
+[ 6718.245011] Call Trace:
+[ 6718.245013] <Same stack as pid 27959>
+[ 6718.245018] grpcpp_sync_ser D a02032008b1d98af     0 28787  28761 0x00000000
+[ 6718.245027]  ffff8801791252c0 ffff88017ec15900 ffff880074dc5880 ffff88010172c9c0
+[ 6718.245033]  0000000000000000 ffff88006e6dbb10 ffffffffa0ea988d 0000000000000000
+[ 6718.245039]  a02032008b1d98af a02032008b1d98af ffff88010172c9c0 000000010061f678
+[ 6718.245044] Call Trace:
+[ 6718.245046] <Same stack as pid 664>
+[ 6718.245050] grpcpp_sync_ser D c0b9f86e2bbeebdb     0 28824  28818 0x00000120
+[ 6718.245060]  ffff880179125e00 ffff88017ec15900 ffff8800645eac40 ffff88011b1ee740
+[ 6718.245066]  0000000000000000 ffff88000a90bb10 ffffffffa0ea988d 0000000000000000
+[ 6718.245072]  c0b9f86e2bbeebdb c0b9f86e2bbeebdb ffff88011b1ee740 000000010061f678
+[ 6718.245083] Call Trace:
+[ 6718.245084] <Same stack as pid 664>
+[ 6718.245086] grpcpp_sync_ser D d2c1fa2a5aba59b9     0 28826  28818 0x00000120
+[ 6718.245095]  ffff880179125e00 ffff88017ec15900 ffff88006659c9c0 ffff88016583d880
+[ 6718.245100]  0000000000000000 ffff88006d76bb10 ffffffffa0ea988d 0000000000000000
+[ 6718.245106]  d2c1fa2a5aba59b9 d2c1fa2a5aba59b9 ffff88016583d880 000000010061f678
+[ 6718.245112] Call Trace:
+[ 6718.245114] <Same stack as pid 664>
+[ 6718.245118] virtio_blk      D 095952d77eef3087     0 28868  28833 0x00000120
+[ 6718.245128]  ffff8801024ab840 ffff88017ed15900 ffff880100b6bb00 ffff88016f102c40
+[ 6718.245134]  0000000000000000 ffff8801015dfac0 ffffffffa0ea988d 0000000000000000
+[ 6718.245139]  095952d77eef3087 095952d77eef3087 ffff88016f102c40 000000010061f716
+[ 6718.245145] Call Trace:
+[ 6718.245149]  [<ffffffffa0ea988d>] ? __schedule+0x3c4/0x868
+[ 6718.245152]  [<ffffffffa0ea9490>] schedule+0x40/0x79
+[ 6718.245155]  [<ffffffffa0eac584>] schedule_timeout+0x284/0x685
+[ 6718.245158]  [<ffffffffa071e769>] ? SyS_alarm+0x12/0x12
+[ 6718.245162]  [<ffffffffa0eaa38f>] io_schedule_timeout+0x8c/0xd8
+[ 6718.245165]  [<ffffffffa07b45c7>] balance_dirty_pages+0x705/0xb64
+[ 6718.245169]  [<ffffffffa07eb152>] balance_dirty_pages_ratelimited+0x121/0x151
+[ 6718.245172]  [<ffffffffa07e85b2>] __generic_file_write_iter+0x20b/0x399
+[ 6718.245176]  [<ffffffffa08f645e>] ext4_file_write_iter+0xc0/0x328
+[ 6718.245179]  [<ffffffffa078f00f>] ? __might_sleep+0x41/0x7d
+[ 6718.245183]  [<ffffffffa08e0ef4>] SyS_write+0x219/0x3c6
+[ 6718.245185]  [<ffffffffa0eae4e3>] entry_SYSCALL_64_fastpath+0x31/0xab
+[ 6718.245191] main            D 7751e9450a6a235a     0 28879  26965 0x20020000
+[ 6718.245199]  ffff880179125a40 ffff88017ed15900 ffff88006cda9d80 ffff8801021a0ec0
+[ 6718.245205]  0000000000000000 ffff880102ed3a80 ffffffffa0ea988d 0000000000000000
+[ 6718.245211]  0000000000000286 7751e9450a6a235a ffff8801021a0ec0 ffff880074ed1340
+[ 6718.245216] Call Trace:
+[ 6718.245218] <Same stack as pid 26973>
+[ 6718.245222] memd            D 10cdff034014a88a     0 28894  28888 0x00000120
+[ 6718.245237]  ffff8801024a8000 ffff88017ec15900 ffff88017983bb00 ffff880004eeac40
+[ 6718.245242]  0000000000000000 ffff880003853970 ffffffffa0ea988d 0000000000000000
+[ 6718.245248]  10cdff034014a88a 10cdff034014a88a ffff880004eeac40 000000010061f678
+[ 6718.245254] Call Trace:
+[ 6718.245257]  [<ffffffffa0ea988d>] ? __schedule+0x3c4/0x868
+[ 6718.245260]  [<ffffffffa0ea9490>] schedule+0x40/0x79
+[ 6718.245263]  [<ffffffffa0eac584>] schedule_timeout+0x284/0x685
+[ 6718.245266]  [<ffffffffa071e769>] ? SyS_alarm+0x12/0x12
+[ 6718.245270]  [<ffffffffa0eaca07>] schedule_timeout_uninterruptible+0x2a/0x2c
+[ 6718.245273]  [<ffffffffa07b2f7c>] __alloc_pages_may_oom+0x96/0x155
+[ 6718.245277]  [<ffffffffa07ea083>] __alloc_pages_nodemask+0x723/0x926
+[ 6718.245280]  [<ffffffffa0801c06>] __read_swap_cache_async+0x8b/0x1c5
+[ 6718.245283]  [<ffffffffa07d698d>] swapin_readahead+0x169/0x1a1
+[ 6718.245287]  [<ffffffffa07fa2f2>] handle_mm_fault+0xb0e/0x1bdd
+[ 6718.245291]  [<ffffffffa06c8378>] __do_page_fault+0x16a/0x40b
+[ 6718.245294]  [<ffffffffa06c820c>] do_page_fault+0xc/0xe
+[ 6718.245297]  [<ffffffffa0eb0442>] page_fault+0x22/0x30
+[ 6718.245301]  [<ffffffffa09b477f>] ? strncpy_from_user+0x4a/0xd6
+[ 6718.245305]  [<ffffffffa08e2fa0>] ? getname_flags+0x7b/0x1f0
+[ 6718.245308]  [<ffffffffa08117a7>] getname+0x12/0x14
+[ 6718.245311]  [<ffffffffa08dfdb0>] do_sys_open+0xd1/0x313
+[ 6718.245315]  [<ffffffffa08e0009>] SyS_openat+0x17/0x19
+[ 6718.245317]  [<ffffffffa0eae4e3>] entry_SYSCALL_64_fastpath+0x31/0xab
+[ 6718.245328] kworker/u4:4    D cb9c9e89d5b5dd03     0 29035      2 0x00000000
+[ 6718.245336] Workqueue: writeback wb_workfn (flush-253:1)
+[ 6718.245349]  ffff880071106580 ffff88017ed15900 ffff88011e7a0000 ffff88005c93e740
+[ 6718.245355]  0000000000000000 ffff8801045fb500 ffffffffa0ea988d ffff880100000000
+[ 6718.245361]  0000000000000001 cb9c9e89d5b5dd03 ffff88005c93e740 ffff88005c93e740
+[ 6718.245367] Call Trace:
+[ 6718.245370]  [<ffffffffa0ea988d>] ? __schedule+0x3c4/0x868
+[ 6718.245373]  [<ffffffffa0ea9490>] schedule+0x40/0x79
+[ 6718.245376]  [<ffffffffa0eac337>] schedule_timeout+0x37/0x685
+[ 6718.245380]  [<ffffffffa09861ea>] ? blk_flush_plug_list+0x92/0x316
+[ 6718.245383]  [<ffffffffa06c7856>] ? native_sched_clock+0xe6/0xe6
+[ 6718.245386]  [<ffffffffa0eaa38f>] io_schedule_timeout+0x8c/0xd8
+[ 6718.245392]  [<ffffffffa0eaa9f1>] bit_wait_io+0x1b/0x4a
+[ 6718.245395]  [<ffffffffa0eaa42d>] __wait_on_bit+0x52/0x8d
+[ 6718.245398]  [<ffffffffa0eaa9d6>] ? bit_wait+0x40/0x40
+[ 6718.245401]  [<ffffffffa0eaa551>] out_of_line_wait_on_bit+0xe9/0x103
+[ 6718.245405]  [<ffffffffa070342a>] ? woken_wake_function+0x13/0x13
+[ 6718.245408]  [<ffffffffa08324b3>] __wait_on_buffer+0x3e/0x41
+[ 6718.245411]  [<ffffffffa087568b>] ext4_wait_block_bitmap+0x96/0x138
+[ 6718.245414]  [<ffffffffa087575f>] ext4_read_block_bitmap+0x32/0x47
+[ 6718.245417]  [<ffffffffa08a945c>] ext4_mb_mark_diskspace_used+0x58/0x444
+[ 6718.245420]  [<ffffffffa08a8e8c>] ? ext4_mb_use_preallocated+0x252/0x25c
+[ 6718.245423]  [<ffffffffa0802f56>] ? kmem_cache_alloc+0xbe/0x1ba
+[ 6718.245426]  [<ffffffffa08a8b18>] ? ext4_mb_initialize_context+0x7f/0x1a1
+[ 6718.245433]  [<ffffffffa09057b4>] ext4_mb_new_blocks+0x298/0x813
+[ 6718.245436]  [<ffffffffa089fc26>] ? __read_extent_tree_block+0x65/0x221
+[ 6718.245440]  [<ffffffffa09047ff>] ext4_ext_map_blocks+0xa4e/0xf15
+[ 6718.245443]  [<ffffffffa078f00f>] ? __might_sleep+0x41/0x7d
+[ 6718.245446]  [<ffffffffa08fd62e>] ext4_writepages+0xb55/0x18c9
+[ 6718.245450]  [<ffffffffa0eae8a4>] ? __switch_to_asm+0x34/0x70
+[ 6718.245454]  [<ffffffffa07b4f17>] do_writepages+0x24/0x31
+[ 6718.245458]  [<ffffffffa082caac>] __writeback_single_inode+0xba/0x42d
+[ 6718.245461]  [<ffffffffa082c3ef>] writeback_sb_inodes+0x235/0x4b0
+[ 6718.245465]  [<ffffffffa082c6ce>] __writeback_inodes_wb+0x64/0xc9
+[ 6718.245469]  [<ffffffffa082bef8>] wb_writeback+0x1b7/0x33b
+[ 6718.245472]  [<ffffffffa082a6ad>] wb_workfn+0x19c/0x50d
+[ 6718.245475]  [<ffffffffa0eae8b0>] ? __switch_to_asm+0x40/0x70
+[ 6718.245479]  [<ffffffffa0eade6e>] ? _raw_spin_unlock_irq+0x1f/0x53
+[ 6718.245482]  [<ffffffffa0ea9983>] ? __schedule+0x4ba/0x868
+[ 6718.245484]  [<ffffffffa078b96b>] worker_thread+0x35a/0x960
+[ 6718.245488]  [<ffffffffa06e8318>] kthread+0xf7/0xff
+[ 6718.245491]  [<ffffffffa0eae8a4>] ? __switch_to_asm+0x34/0x70
+[ 6718.245493]  [<ffffffffa078b611>] ? __queue_work+0x4db/0x4db
+[ 6718.245496]  [<ffffffffa06e8221>] ? flush_kthread_worker+0x91/0x91
+[ 6718.245499]  [<ffffffffa0eae92e>] ret_from_fork+0x4e/0x80
+[ 6718.245502]  [<ffffffffa06e8221>] ? flush_kthread_worker+0x91/0x91
+[ 6718.245509] iostat          D 48ce2026ca73a327     0 29060  25926 0x00000000
+[ 6718.245517]  ffff880176a51680 ffff88017ec15900 ffff880152005880 ffff8801027d2c40
+[ 6718.245523]  0000000000000000 ffff88012e603c28 ffffffffa0ea988d 0000000000000000
+[ 6718.245529]  ffff88012e603c18 48ce2026ca73a327 ffff8801027d2c40 0000000000000000
+[ 6718.245535] Call Trace:
+[ 6718.245538]  [<ffffffffa0ea988d>] ? __schedule+0x3c4/0x868
+[ 6718.245541]  [<ffffffffa0ea9d7a>] schedule_preempt_disabled+0x49/0x8b
+[ 6718.245545]  [<ffffffffa0eab5b9>] __mutex_lock_common+0x217/0x3fa
+[ 6718.245548]  [<ffffffffa0eaaf7e>] __mutex_lock_slowpath+0x20/0x26
+[ 6718.245551]  [<ffffffffa0eaaf5c>] mutex_lock+0x40/0x42
+[ 6718.245555]  [<ffffffffa08e4316>] path_openat+0x2f6/0x1017
+[ 6718.245559]  [<ffffffffa08e3f69>] do_filp_open+0x83/0x13a
+[ 6718.245563]  [<ffffffffa0eaddbd>] ? _raw_spin_unlock+0x1f/0x52
+[ 6718.245566]  [<ffffffffa08dfde1>] do_sys_open+0x102/0x313
+[ 6718.245569]  [<ffffffffa06c8397>] ? __do_page_fault+0x189/0x40b
+[ 6718.245573]  [<ffffffffa08e0009>] SyS_openat+0x17/0x19
+[ 6718.245575]  [<ffffffffa0eae4e3>] entry_SYSCALL_64_fastpath+0x31/0xab
+[ 6718.245579] date            D 481cd4da3f9dbe60     0 29062  29061 0x00000000
+[ 6718.245586]  ffff880114f983c0 ffff88017ed15900 ffff88006e470000 ffff880004ac0000
+[ 6718.245592]  0000000000000000 ffff880071517c28 ffffffffa0ea988d 0000000000000000
+[ 6718.245597]  ffff880071517c18 481cd4da3f9dbe60 ffff880004ac0000 0000000000000000
+[ 6718.245603] Call Trace:
+[ 6718.245605] <Same stack as pid 29060>
+[ 6718.245607] stat            D d65e1ac35c1b30b9     0 29066  29065 0x00000000
+[ 6718.245618]  ffff8801791270c0 ffff88017ec15900 ffff880171ff5880 ffff8801027d0000
+[ 6718.245624]  0000000000000000 ffff88004ab57848 ffffffffa0ea988d 00ffffff00000000
+[ 6718.245630]  d65e1ac35c1b30b9 d65e1ac35c1b30b9 ffff8801027d0000 ffff8801027d0000
+[ 6718.245636] Call Trace:
+[ 6718.245639]  [<ffffffffa0ea988d>] ? __schedule+0x3c4/0x868
+[ 6718.245642]  [<ffffffffa0ea9490>] schedule+0x40/0x79
+[ 6718.245645]  [<ffffffffa0eac337>] schedule_timeout+0x37/0x685
+[ 6718.245648]  [<ffffffffa06c7856>] ? native_sched_clock+0xe6/0xe6
+[ 6718.245652]  [<ffffffffa0eaa38f>] io_schedule_timeout+0x8c/0xd8
+[ 6718.245655]  [<ffffffffa0eaa9f1>] bit_wait_io+0x1b/0x4a
+[ 6718.245660]  [<ffffffffa0eaa42d>] __wait_on_bit+0x52/0x8d
+[ 6718.245663]  [<ffffffffa0eaa9d6>] ? bit_wait+0x40/0x40
+[ 6718.245666]  [<ffffffffa0eaa551>] out_of_line_wait_on_bit+0xe9/0x103
+[ 6718.245669]  [<ffffffffa070342a>] ? woken_wake_function+0x13/0x13
+[ 6718.245672]  [<ffffffffa08324b3>] __wait_on_buffer+0x3e/0x41
+[ 6718.245676]  [<ffffffffa0901002>] ext4_find_entry+0x4d1/0x7d5
+[ 6718.245679]  [<ffffffffa078f00f>] ? __might_sleep+0x41/0x7d
+[ 6718.245682]  [<ffffffffa08e9c11>] ? d_alloc+0x32/0x2a3
+[ 6718.245684]  [<ffffffffa0802ee7>] ? kmem_cache_alloc+0x4f/0x1ba
+[ 6718.245687]  [<ffffffffa08ea576>] ? __d_lookup+0x11d/0x168
+[ 6718.245690]  [<ffffffffa0901b67>] ext4_lookup+0x98/0x26f
+[ 6718.245693]  [<ffffffffa0812063>] __lookup_hash+0x5a/0xdc
+[ 6718.245697]  [<ffffffffa08e5fbd>] walk_component+0x452/0x6f8
+[ 6718.245701]  [<ffffffffa08e55e6>] link_path_walk+0x242/0x723
+[ 6718.245704]  [<ffffffffa08e3722>] filename_lookup+0x32f/0x8e7
+[ 6718.245708]  [<ffffffffa08e2f76>] ? getname_flags+0x51/0x1f0
+[ 6718.245710]  [<ffffffffa0802ee7>] ? kmem_cache_alloc+0x4f/0x1ba
+[ 6718.245714]  [<ffffffffa08e3edf>] user_path_at_empty+0x36/0x3d
+[ 6718.245717]  [<ffffffffa08e1de0>] vfs_fstatat+0x5b/0x103
+[ 6718.245721]  [<ffffffffa0eaddbd>] ? _raw_spin_unlock+0x1f/0x52
+[ 6718.245724]  [<ffffffffa080db41>] SyS_newlstat+0x40/0x1e5
+[ 6718.245727]  [<ffffffffa06c8397>] ? __do_page_fault+0x189/0x40b
+[ 6718.245730]  [<ffffffffa0eae4e3>] entry_SYSCALL_64_fastpath+0x31/0xab
+[ 6718.245736] stat            D 07114f09ff7d2737     0 29070  29068 0x00000000
+[ 6718.245745]  ffff8800644c3c00 ffff88017ec15900 ffff8801021a3b00 ffff88000a612c40
+[ 6718.245751]  0000000000000000 ffff88001f99fad8 ffffffffa0ea988d 0000000000000000
+[ 6718.245757]  ffff88001f99fb20 07114f09ff7d2737 ffff88000a612c40 0000000000000000
+[ 6718.245763] Call Trace:
+[ 6718.245766]  [<ffffffffa0ea988d>] ? __schedule+0x3c4/0x868
+[ 6718.245769]  [<ffffffffa0ea9d7a>] schedule_preempt_disabled+0x49/0x8b
+[ 6718.245773]  [<ffffffffa0eab5b9>] __mutex_lock_common+0x217/0x3fa
+[ 6718.245776]  [<ffffffffa0eaaf7e>] __mutex_lock_slowpath+0x20/0x26
+[ 6718.245779]  [<ffffffffa0eaaf5c>] mutex_lock+0x40/0x42
+[ 6718.245783]  [<ffffffffa08e5fae>] walk_component+0x443/0x6f8
+[ 6718.245786]  [<ffffffffa08e55e6>] link_path_walk+0x242/0x723
+[ 6718.245790]  [<ffffffffa08e3722>] filename_lookup+0x32f/0x8e7
+[ 6718.245794]  [<ffffffffa08e2f76>] ? getname_flags+0x51/0x1f0
+[ 6718.245796]  [<ffffffffa0802ee7>] ? kmem_cache_alloc+0x4f/0x1ba
+[ 6718.245800]  [<ffffffffa08e3edf>] user_path_at_empty+0x36/0x3d
+[ 6718.245803]  [<ffffffffa08e1de0>] vfs_fstatat+0x5b/0x103
+[ 6718.245807]  [<ffffffffa0eaddbd>] ? _raw_spin_unlock+0x1f/0x52
+[ 6718.245809]  [<ffffffffa080db41>] SyS_newlstat+0x40/0x1e5
+[ 6718.245813]  [<ffffffffa06c8397>] ? __do_page_fault+0x189/0x40b
+[ 6718.245816]  [<ffffffffa0eae4e3>] entry_SYSCALL_64_fastpath+0x31/0xab
+[ 6718.245818] stat            D 01f5b6b932bce592     0 29071  29069 0x00000000
+[ 6718.245827]  ffff880179127c00 ffff88017ec15900 ffff8801021a2c40 ffff88016cffac40
+[ 6718.245832]  0000000000000000 ffff88004c5cfad8 ffffffffa0ea988d 0000000000000000
+[ 6718.245838]  ffff88004c5cfb20 01f5b6b932bce592 ffff88016cffac40 0000000000000000
+[ 6718.245843] Call Trace:
+[ 6718.245845] <Same stack as pid 29070>
+[ 6718.245847] stat            D c7a2a8d324c67f76     0 29076  29075 0x00000000
+[ 6718.245857]  ffff8800644c03c0 ffff88017ed15900 ffff88000bf1c9c0 ffff8800644d8ec0
+[ 6718.245862]  0000000000000000 ffff88001c6d7ad8 ffffffffa0ea988d 0000000000000000
+[ 6718.245868]  c7a2a8d324c67f76 c7a2a8d324c67f76 ffff8800644d8ec0 0000000000000000
+[ 6718.245874] Call Trace:
+[ 6718.245875] <Same stack as pid 29070>
+[ 6718.245877] stat            D 5ab1f5b92f39ebf0     0 29077  29074 0x00000000
+[ 6718.245892]  ffff8800644c2d00 ffff88017ed15900 ffff88000bf1c9c0 ffff88016f105880
+[ 6718.245898]  0000000000000000 ffff88001c5b7ad8 ffffffffa0ea988d 0000000000000000
+[ 6718.245904]  ffff88001c5b7b20 5ab1f5b92f39ebf0 ffff88016f105880 0000000000000000
+[ 6718.245909] Call Trace:
+[ 6718.245911] <Same stack as pid 29070>
+[ 6718.245914] Sending NMI to all CPUs:
+[ 6718.246968] NMI backtrace for cpu 0
+[ 6718.246971] CPU: 0 PID: 1544 Comm: arc-networkd Not tainted 4.4.178-16473-g2e7bd078f16a #1
+[ 6718.246973] Hardware name: Google Fizz/Fizz, BIOS Google_Fizz.10139.153.0 10/05/2018
+[ 6718.246975] task: ffff8800645eac40 task.stack: ffff880165aa4000
+[ 6718.246977] RIP: 0010:[<ffffffffa07f13e6>]  [<ffffffffa07f13e6>] shrink_inactive_list+0x167/0x5f0
+[ 6718.246979] RSP: 0000:ffff880165aa7760  EFLAGS: 00000093
+[ 6718.246980] RAX: ffffea00009090e0 RBX: 0000000000000000 RCX: ffffea00013efce0
+[ 6718.246982] RDX: 0000000000005655 RSI: 0000000000000001 RDI: ffffea00013efcc0
+[ 6718.246984] RBP: ffff880165aa7820 R08: ffff8800645eac40 R09: 0000000000000003
+[ 6718.246986] R10: 0000000000000000 R11: 0000000000000020 R12: ffffffffa14edab8
+[ 6718.246988] R13: ffffea00013efce0 R14: 0000000000000001 R15: 000000000000000a
+[ 6718.246990] FS:  00007975881db740(0000) GS:ffff88017ec00000(0000) knlGS:0000000000000000
+[ 6718.246992] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[ 6718.246994] CR2: 00007d79e87cda3c CR3: 0000000165a8e000 CR4: 0000000000362670
+[ 6718.246995] Stack:
+[ 6718.246997]  ffff8800645eac40 ffffffffa14eda98 ffff880165aa79b0 ffffffffa14ed680
+[ 6718.246999]  ffffffffa14eda80 ffffffffa14edac0 024200ca00000002 0000000000000001
+[ 6718.247001]  000000000000000f 0000000300000000 0000000000000000 0000000000000000
+[ 6718.247002] Call Trace:
+[ 6718.247004]  [<ffffffffa07f0af1>] shrink_zone+0x433/0x786
+[ 6718.247006]  [<ffffffffa0eae801>] ? return_from_execve+0xc/0x23
+[ 6718.247008]  [<ffffffffa07a5d77>] ? ktime_get+0x42/0xb2
+[ 6718.247010]  [<ffffffffa07b90bd>] try_to_free_pages+0x371/0x7d6
+[ 6718.247011]  [<ffffffffa07b2c96>] __alloc_pages_direct_reclaim+0x86/0x12e
+[ 6718.247013]  [<ffffffffa07e9fef>] __alloc_pages_nodemask+0x68f/0x926
+[ 6718.247015]  [<ffffffffa0801c06>] __read_swap_cache_async+0x8b/0x1c5
+[ 6718.247017]  [<ffffffffa07d698d>] swapin_readahead+0x169/0x1a1
+[ 6718.247019]  [<ffffffffa0eae8a4>] ? __switch_to_asm+0x34/0x70
+[ 6718.247021]  [<ffffffffa07fa2f2>] handle_mm_fault+0xb0e/0x1bdd
+[ 6718.247023]  [<ffffffffa0eae8b0>] ? __switch_to_asm+0x40/0x70
+[ 6718.247025]  [<ffffffffa06c70d7>] ? __switch_to+0x2c0/0x486
+[ 6718.247026]  [<ffffffffa0eae8a4>] ? __switch_to_asm+0x34/0x70
+[ 6718.247028]  [<ffffffffa06c8378>] __do_page_fault+0x16a/0x40b
+[ 6718.247030]  [<ffffffffa06c820c>] do_page_fault+0xc/0xe
+[ 6718.247032]  [<ffffffffa0eb0442>] page_fault+0x22/0x30
+[ 6718.247034]  [<ffffffffa08f095a>] ? SYSC_epoll_wait+0x23b/0x78f
+[ 6718.247035]  [<ffffffffa078e676>] ? scheduler_tick+0x100/0x100
+[ 6718.247037]  [<ffffffffa08f071d>] SyS_epoll_wait+0xe/0x10
+[ 6718.247039]  [<ffffffffa0eae4e3>] entry_SYSCALL_64_fastpath+0x31/0xab
+[ 6718.247041] Code: 89 85 68 ff ff ff 45 31 ed 45 31 ff 4d 39 24 24 0f 84 bb 00 00 00 4c 89 eb 48 8b 85 68 ff ff ff 4c 8b 28 49 8d 7d e0 49 8b 45 08 <4c> 39 e0 74 04 0f 0d 48 e0 44 89 f6 e8 7b ee ff ff 85 c0 75 5a 
+[ 6718.247043] NMI backtrace for cpu 1
+[ 6718.247046] CPU: 1 PID: 20 Comm: khungtaskd Not tainted 4.4.178-16473-g2e7bd078f16a #1
+[ 6718.247048] Hardware name: Google Fizz/Fizz, BIOS Google_Fizz.10139.153.0 10/05/2018
+[ 6718.247049] task: ffff88017a3aac40 task.stack: ffff880179820000
+[ 6718.247051] RIP: 0010:[<ffffffffa09981e1>]  [<ffffffffa09981e1>] __const_udelay+0x0/0x31
+[ 6718.247053] RSP: 0018:ffff880179823dd0  EFLAGS: 00000206
+[ 6718.247055] RAX: c24d26c4bb0dd8e7 RBX: 0000000000000000 RCX: c24d26c4bb0dd8e7
+[ 6718.247057] RDX: 0000000000000007 RSI: 0000000000000002 RDI: 0000000000418958
+[ 6718.247059] RBP: ffff880179823e18 R08: 0000000000000028 R09: 0000000000000000
+[ 6718.247061] R10: 00ffff00066c0a00 R11: ffffffffa06c80d4 R12: 0000000000000000
+[ 6718.247063] R13: 0000000100000000 R14: ffffffffa069138d R15: 0000000000000001
+[ 6718.247065] FS:  0000000000000000(0000) GS:ffff88017ed00000(0000) knlGS:0000000000000000
+[ 6718.247067] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[ 6718.247069] CR2: 00007cca2e3b9afc CR3: 00000000666fc000 CR4: 0000000000362670
+[ 6718.247070] Stack:
+[ 6718.247072]  ffffffffa098f117 0000000000010908 ffff00ffa14fc930 c24d26c4bb0dd8e7
+[ 6718.247074]  000000010061f674 000000010061f674 00000000003fffe6 ffff88017983e740
+[ 6718.247076]  ffff88017983ec88 ffff880179823e28 ffffffffa069138b ffff880179823e38
+[ 6718.247078] Call Trace:
+[ 6718.247080]  [<ffffffffa098f117>] ? nmi_trigger_all_cpu_backtrace+0x17d/0x2de
+[ 6718.247081]  [<ffffffffa069138b>] arch_trigger_all_cpu_backtrace+0x15/0x17
+[ 6718.247084]  [<ffffffffa0752cd9>] trigger_all_cpu_backtrace+0xe/0x10
+[ 6718.247085]  [<ffffffffa0752ca8>] watchdog+0x33b/0x349
+[ 6718.247087]  [<ffffffffa06e8318>] kthread+0xf7/0xff
+[ 6718.247089]  [<ffffffffa0eae8a4>] ? __switch_to_asm+0x34/0x70
+[ 6718.247091]  [<ffffffffa075296d>] ? reset_hung_task_detector+0x16/0x16
+[ 6718.247093]  [<ffffffffa06e8221>] ? flush_kthread_worker+0x91/0x91
+[ 6718.247095]  [<ffffffffa0eae92e>] ret_from_fork+0x4e/0x80
+[ 6718.247097]  [<ffffffffa06e8221>] ? flush_kthread_worker+0x91/0x91
+[ 6718.247099] Code: 00 55 48 89 e5 b8 ff ff ff ff 48 c7 c1 7d 82 99 a0 48 39 0c 25 e8 34 49 a1 75 0e 0f 31 48 c1 e2 20 48 09 c2 48 89 17 31 c0 5d c3 <55> 48 89 e5 48 8d 04 bd 00 00 00 00 65 48 8b 0c 25 f0 d0 00 00 
+[ 6718.247108] Kernel panic - not syncing: hung_task: blocked tasks
+[ 6718.247111] CPU: 1 PID: 20 Comm: khungtaskd Not tainted 4.4.178-16473-g2e7bd078f16a #1
+[ 6718.247113] Hardware name: Google Fizz/Fizz, BIOS Google_Fizz.10139.153.0 10/05/2018
+[ 6718.247115]  ffff88017983e740 c24d26c4bb0dd8e7 ffff880179823db0 ffffffffa098aefc
+[ 6718.247122]  0000000000000000 0000003000000010 0000000000000086 c24d26c4bb0dd8e7
+[ 6718.247127]  ffffffffa11c5ceb ffff880179823e38 ffffffffa06cb5f2 0000000000000008
+[ 6718.247133] Call Trace:
+[ 6718.247138]  [<ffffffffa098aefc>] dump_stack+0x7e/0xc3
+[ 6718.247141]  [<ffffffffa06cb5f2>] panic+0xce/0x22c
+[ 6718.247144]  [<ffffffffa0752cb6>] watchdog+0x349/0x349
+[ 6718.247147]  [<ffffffffa06e8318>] kthread+0xf7/0xff
+[ 6718.247150]  [<ffffffffa0eae8a4>] ? __switch_to_asm+0x34/0x70
+[ 6718.247154]  [<ffffffffa075296d>] ? reset_hung_task_detector+0x16/0x16
+[ 6718.247156]  [<ffffffffa06e8221>] ? flush_kthread_worker+0x91/0x91
+[ 6718.247159]  [<ffffffffa0eae92e>] ret_from_fork+0x4e/0x80
+[ 6718.247162]  [<ffffffffa06e8221>] ? flush_kthread_worker+0x91/0x91
+[ 6718.247171] Kernel Offset: 0x1f600000 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+[ 6718.249124] gsmi: Log Shutdown Reason 0x02
+[ 6718.263772] ACPI MEMORY or I/O RESET_REG.

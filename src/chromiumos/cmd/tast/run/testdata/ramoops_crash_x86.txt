@@ -1,0 +1,828 @@
+gs://chromeos-autotest-results/302815147-chromeos-test/chromeos6-row2-rack14-host4/sysinfo/pstore/sys/fs/pstore/console-ramoops
+
+[    0.000000] Initializing cgroup subsys cpuset
+[    0.000000] Initializing cgroup subsys cpu
+[    0.000000] Initializing cgroup subsys cpuacct
+[    0.000000] Linux version 3.18.0-19285-g9f6cff6be6b8 (chrome-bot@swarm-cros-759) (gcc version 4.9.x 20150123 (prerelease) (4.9.2_cos_gg_4.9.2-r204-ac6128e0a17a52f011797f33ac3e7d6273a9368d_4.9.2-r204) ) #1 SMP PREEMPT Sat Apr 20 09:31:38 PDT 2019
+[    0.000000] Command line: cros_secure console= loglevel=7 init=/sbin/init cros_secure root=/dev/dm-0 rootwait ro dm_verity.error_behavior=3 dm_verity.max_bios=-1 dm_verity.dev_wait=1 dm="1 vroot none ro 1,0 3686400 verity payload=PARTUUID=85a235bb-91f6-c646-98b0-e707498c8cd9/PARTNROFF=1 hashtree=PARTUUID=85a235bb-91f6-c646-98b0-e707498c8cd9/PARTNROFF=1 hashstart=3686400 alg=sha1 root_hexdigest=8a8c77d28aaae9779e1261e5980886420dc8dbfc salt=92d411d2e089d2a743bad32f663bc1f66a8f514bff2bfa3d96b047962db27b8a" noinitrd cros_debug vt.global_cursor_default=0 kern_guid=85a235bb-91f6-c646-98b0-e707498c8cd9 add_efi_memmap boot=local noresume noswap i915.modeset=1 tpm_tis.force=1 tpm_tis.interrupts=0 nmi_watchdog=panic,lapic intel_idle.max_cstate=7 
+[    0.000000] e820: BIOS-provided physical RAM map:
+[    0.000000] BIOS-e820: [mem 0x0000000000000000-0x0000000000000fff] type 16
+[    0.000000] BIOS-e820: [mem 0x0000000000001000-0x000000000009ffff] usable
+[    0.000000] BIOS-e820: [mem 0x00000000000a0000-0x00000000000fffff] reserved
+[    0.000000] BIOS-e820: [mem 0x0000000000100000-0x000000007aa4afff] usable
+[    0.000000] BIOS-e820: [mem 0x000000007aa4b000-0x000000007aefffff] type 16
+[    0.000000] BIOS-e820: [mem 0x000000007af00000-0x000000007fffffff] reserved
+[    0.000000] BIOS-e820: [mem 0x00000000e0000000-0x00000000efffffff] reserved
+[    0.000000] BIOS-e820: [mem 0x00000000fd000000-0x00000000ffffffff] reserved
+[    0.000000] BIOS-e820: [mem 0x0000000100000000-0x000000027effffff] usable
+[    0.000000] NX (Execute Disable) protection: active
+[    0.000000] SMBIOS 2.7 present.
+[    0.000000] AGP: No AGP bridge found
+[    0.000000] e820: last_pfn = 0x27f000 max_arch_pfn = 0x400000000
+[    0.000000] PAT configuration [0-7]: WB  WC  UC- UC  WB  WC  UC- UC  
+[    0.000000] e820: last_pfn = 0x7aa4b max_arch_pfn = 0x400000000
+[    0.000000] Scanning 1 areas for low memory corruption
+[    0.000000] Using GB pages for direct mapping
+[    0.000000] init_memory_mapping: [mem 0x00000000-0x000fffff]
+[    0.000000] init_memory_mapping: [mem 0x27ee00000-0x27effffff]
+[    0.000000] init_memory_mapping: [mem 0x27c000000-0x27edfffff]
+[    0.000000] init_memory_mapping: [mem 0x200000000-0x27bffffff]
+[    0.000000] init_memory_mapping: [mem 0x00100000-0x7aa4afff]
+[    0.000000] init_memory_mapping: [mem 0x100000000-0x1ffffffff]
+[    0.000000] ACPI: Early table checksum verification disabled
+[    0.000000] ACPI: RSDP 0x00000000000F0000 000024 (v02 CORE  )
+[    0.000000] ACPI: XSDT 0x000000007AB5C0E0 00005C (v01 CORE   COREBOOT 00000000 CORE 00000000)
+[    0.000000] ACPI: FACP 0x000000007AB60C30 0000F4 (v05 CORE   COREBOOT 00000000 CORE 00000001)
+[    0.000000] ACPI: DSDT 0x000000007AB5C250 0049D9 (v05 COREv4 COREBOOT 20110725 INTL 20130117)
+[    0.000000] ACPI: FACS 0x000000007AB5C210 000040
+[    0.000000] ACPI: SSDT 0x000000007AB60D30 000B45 (v02 CORE   COREBOOT 0000002A CORE 0000002A)
+[    0.000000] ACPI: MCFG 0x000000007AB61880 00003C (v01 CORE   COREBOOT 00000000 CORE 00000000)
+[    0.000000] ACPI: TCPA 0x000000007AB618C0 000032 (v02 CORE   COREBOOT 00000000 CORE 00000000)
+[    0.000000] ACPI: APIC 0x000000007AB61900 00006C (v01 CORE   COREBOOT 00000000 CORE 00000000)
+[    0.000000] ACPI: NHLT 0x000000007AB61970 003187 (v05 CORE   COREBOOT 00000000 CORE 00000000)
+[    0.000000] ACPI: HPET 0x000000007AB66B00 000038 (v01 CORE   COREBOOT 00000000 CORE 00000000)
+[    0.000000] Zone ranges:
+[    0.000000]   DMA      [mem 0x00001000-0x00ffffff]
+[    0.000000]   DMA32    [mem 0x01000000-0xffffffff]
+[    0.000000]   Normal   [mem 0x100000000-0x27effffff]
+[    0.000000] Movable zone start for each node
+[    0.000000] Early memory node ranges
+[    0.000000]   node   0: [mem 0x00001000-0x0009ffff]
+[    0.000000]   node   0: [mem 0x00100000-0x7aa4afff]
+[    0.000000]   node   0: [mem 0x100000000-0x27effffff]
+[    0.000000] Initmem setup node 0 [mem 0x00001000-0x27effffff]
+[    0.000000] Reserving Intel graphics stolen memory at 0x7c000000-0x7fffffff
+[    0.000000] IOAPIC[0]: apic_id 2, version 32, address 0xfec00000, GSI 0-119
+[    0.000000] ACPI: INT_SRC_OVR (bus 0 bus_irq 0 global_irq 2 dfl dfl)
+[    0.000000] ACPI: INT_SRC_OVR (bus 0 bus_irq 9 global_irq 9 high level)
+[    0.000000] Using ACPI (MADT) for SMP configuration information
+[    0.000000] ACPI: HPET id: 0x8086a701 base: 0xfed00000
+[    0.000000] smpboot: Allowing 4 CPUs, 0 hotplug CPUs
+[    0.000000] e820: [mem 0x80000000-0xdfffffff] available for PCI devices
+[    0.000000] setup_percpu: NR_CPUS:4 nr_cpumask_bits:4 nr_cpu_ids:4 nr_node_ids:1
+[    0.000000] PERCPU: Embedded 30 pages/cpu @ffff88027ec00000 s83904 r8192 d30784 u524288
+[    0.000000] Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 2038633
+[    0.000000] Kernel command line: cros_secure console= loglevel=7 init=/sbin/init cros_secure root=/dev/dm-0 rootwait ro dm_verity.error_behavior=3 dm_verity.max_bios=-1 dm_verity.dev_wait=1 dm="1 vroot none ro 1,0 3686400 verity payload=PARTUUID=85a235bb-91f6-c646-98b0-e707498c8cd9/PARTNROFF=1 hashtree=PARTUUID=85a235bb-91f6-c646-98b0-e707498c8cd9/PARTNROFF=1 hashstart=3686400 alg=sha1 root_hexdigest=8a8c77d28aaae9779e1261e5980886420dc8dbfc salt=92d411d2e089d2a743bad32f663bc1f66a8f514bff2bfa3d96b047962db27b8a" noinitrd cros_debug vt.global_cursor_default=0 kern_guid=85a235bb-91f6-c646-98b0-e707498c8cd9 add_efi_memmap boot=local noresume noswap i915.modeset=1 tpm_tis.force=1 tpm_tis.interrupts=0 nmi_watchdog=panic,lapic intel_idle.max_cstate=7 
+[    0.000000] device-mapper: init: will configure 1 devices
+[    0.000000] PID hash table entries: 4096 (order: 3, 32768 bytes)
+[    0.000000] Dentry cache hash table entries: 1048576 (order: 11, 8388608 bytes)
+[    0.000000] Inode-cache hash table entries: 524288 (order: 10, 4194304 bytes)
+[    0.000000] xsave: enabled xstate_bv 0x1f, cntxt size 0x440 using standard form
+[    0.000000] AGP: Checking aperture...
+[    0.000000] AGP: No AGP bridge found
+[    0.000000] Memory: 8058136K/8284072K available (7716K kernel code, 1060K rwdata, 2800K rodata, 1228K init, 1032K bss, 225936K reserved)
+[    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=4, Nodes=1
+[    0.000000] Kernel/User page tables isolation: enabled
+[    0.000000] Preemptible hierarchical RCU implementation.
+[    0.000000] 	CONFIG_RCU_FANOUT set to non-default value of 32
+[    0.000000] NR_IRQS:4352 nr_irqs:1024 0
+[    0.000000] Initial TSC value: 2635964870
+[    0.000000] Initial usec timer 1098318
+[    0.000000] tsc: Detected 2400.000 MHz processor
+[    0.000001] Calibrating delay loop (skipped), value calculated using timer frequency.. 4800.00 BogoMIPS (lpj=2400000)
+[    0.000004] pid_max: default: 32768 minimum: 301
+[    0.000009] ACPI: Core revision 20140926
+[    0.001714] ACPI: All ACPI Tables successfully acquired
+[    0.001722] acpi_enable!
+[    0.005090] ACPI mode enable smi_command = 0xb2 val = 0xe1
+[    0.005106] Security Framework initialized
+[    0.005108] SELinux:  Initializing.
+[    0.005115] Yama: becoming mindful.
+[    0.005119] Chromium OS LSM: enabled
+[    0.005139] Mount-cache hash table entries: 16384 (order: 5, 131072 bytes)
+[    0.005141] Mountpoint-cache hash table entries: 16384 (order: 5, 131072 bytes)
+[    0.005299] Initializing cgroup subsys devices
+[    0.005301] Initializing cgroup subsys freezer
+[    0.005320] CPU: Physical Processor ID: 0
+[    0.005321] CPU: Processor Core ID: 0
+[    0.006420] mce: CPU supports 8 MCE banks
+[    0.006432] CPU0: Thermal monitoring enabled (TM1)
+[    0.006439] process: using mwait in idle threads
+[    0.006442] Last level iTLB entries: 4KB 64, 2MB 8, 4MB 8
+[    0.006442] Last level dTLB entries: 4KB 64, 2MB 0, 4MB 0, 1GB 4
+[    0.006447] Spectre V2 mitigation: Mitigation: Full generic retpoline
+[    0.006448] Spectre V2 mitigation: Filling RSB on context switch
+[    0.006788] Freeing SMP alternatives memory: 20K (ffffffffbaa3e000 - ffffffffbaa43000)
+[    0.006790] ftrace: allocating 28723 entries in 113 pages
+[    0.037908] ..TIMER: vector=0x30 apic1=0 pin1=2 apic2=-1 pin2=-1
+[    0.047911] smpboot: CPU0: Intel(R) Core(TM) i5-6300U CPU @ 2.40GHz (fam: 06, model: 4e, stepping: 03)
+[    0.047943] Performance Events: PEBS fmt3+, 32-deep LBR, Skylake events, full-width counters, Intel PMU driver.
+[    0.047968] ... version:                4
+[    0.047969] ... bit width:              48
+[    0.047970] ... generic registers:      4
+[    0.047971] ... value mask:             0000ffffffffffff
+[    0.047972] ... max period:             0000ffffffffffff
+[    0.047973] ... fixed-purpose events:   3
+[    0.047974] ... event mask:             000000070000000f
+[    0.066157] x86: Booting SMP configuration:
+[    0.066159] .... node  #0, CPUs:      #1
+[    0.080979] NMI watchdog: enabled on all CPUs, permanently consumes one hw-PMU counter.
+[    0.087017]  #2 #3
+[    0.122729] x86: Booted up 1 node, 4 CPUs
+[    0.122734] smpboot: Total of 4 processors activated (19200.00 BogoMIPS)
+[    0.125838] devtmpfs: initialized
+[    0.127277] pinctrl core: initialized pinctrl subsystem
+[    0.127396] RTC time: 19:16:53, date: 04/20/19
+[    0.127510] NET: Registered protocol family 16
+[    0.133632] cpuidle: using governor ladder
+[    0.139669] cpuidle: using governor menu
+[    0.139961] Switched to clocksource hpet
+[    0.139964] ACPI: bus type PCI registered
+[    0.140027] PCI: MMCONFIG for domain 0000 [bus 00-ff] at [mem 0xe0000000-0xefffffff] (base 0xe0000000)
+[    0.140029] PCI: MMCONFIG at [mem 0xe0000000-0xefffffff] reserved in E820
+[    0.140161] PCI: Using configuration type 1 for base access
+[    0.146955] ACPI: Added _OSI(Module Device)
+[    0.146957] ACPI: Added _OSI(Processor Device)
+[    0.146958] ACPI: Added _OSI(3.0 _SCP Extensions)
+[    0.147040] ACPI: Added _OSI(Processor Aggregator Device)
+[    0.155468] ACPI: Interpreter enabled
+[    0.155480] ACPI: (supports S0 S1 S2 S3 S5)
+[    0.155482] ACPI: Using IOAPIC for interrupt routing
+[    0.155495] PCI: Using host bridge windows from ACPI; if necessary, use "pci=nocrs" and report a bug
+[    0.193261] ACPI: PCI Root Bridge [PCI0] (domain 0000 [bus 00-ff])
+[    0.193267] acpi PNP0A08:00: _OSC: OS supports [ExtendedConfig ASPM ClockPM Segments MSI]
+[    0.193293] acpi PNP0A08:00: _OSC: OS now controls [PCIeHotplug PME AER PCIeCapability]
+[    0.193426] PCI host bridge to bus 0000:00
+[    0.193428] pci_bus 0000:00: root bus resource [bus 00-ff]
+[    0.193430] pci_bus 0000:00: root bus resource [io  0x0000-0x0cf7]
+[    0.193432] pci_bus 0000:00: root bus resource [io  0x0d00-0xffff]
+[    0.193434] pci_bus 0000:00: root bus resource [mem 0x000a0000-0x000bffff]
+[    0.193435] pci_bus 0000:00: root bus resource [mem 0x000c0000-0x000c3fff]
+[    0.193437] pci_bus 0000:00: root bus resource [mem 0x000c4000-0x000c7fff]
+[    0.193438] pci_bus 0000:00: root bus resource [mem 0x000c8000-0x000cbfff]
+[    0.193440] pci_bus 0000:00: root bus resource [mem 0x000cc000-0x000cffff]
+[    0.193441] pci_bus 0000:00: root bus resource [mem 0x000d0000-0x000d3fff]
+[    0.193442] pci_bus 0000:00: root bus resource [mem 0x000d4000-0x000d7fff]
+[    0.193444] pci_bus 0000:00: root bus resource [mem 0x000d8000-0x000dbfff]
+[    0.193445] pci_bus 0000:00: root bus resource [mem 0x000dc000-0x000dffff]
+[    0.193447] pci_bus 0000:00: root bus resource [mem 0x000e0000-0x000e3fff]
+[    0.193448] pci_bus 0000:00: root bus resource [mem 0x000e4000-0x000e7fff]
+[    0.193450] pci_bus 0000:00: root bus resource [mem 0x000e8000-0x000ebfff]
+[    0.193451] pci_bus 0000:00: root bus resource [mem 0x000ec000-0x000effff]
+[    0.193453] pci_bus 0000:00: root bus resource [mem 0x000f0000-0x000fffff]
+[    0.193455] pci_bus 0000:00: root bus resource [mem 0x80000001-0xdfffffff]
+[    0.193456] pci_bus 0000:00: root bus resource [mem 0x800000000-0xbffffffff]
+[    0.193458] pci_bus 0000:00: root bus resource [mem 0xfd000000-0xfe7fffff]
+[    0.193459] pci_bus 0000:00: root bus resource [mem 0xfed40000-0xfed44fff]
+[    0.194031] pci 0000:00:14.0: System wakeup disabled by ACPI
+[    0.197712] pci 0000:01:00.0: System wakeup disabled by ACPI
+[    0.199214] pci 0000:00:1c.0: PCI bridge to [bus 01]
+[    0.210327] ACPI: PCI Interrupt Link [LNKA] (IRQs 3 4 5 6 10 12 14 15) *0
+[    0.210375] ACPI: PCI Interrupt Link [LNKB] (IRQs 3 4 5 6 10 12 14 15) *0
+[    0.210424] ACPI: PCI Interrupt Link [LNKC] (IRQs 3 4 5 6 10 12 14 15) *0
+[    0.210472] ACPI: PCI Interrupt Link [LNKD] (IRQs 3 4 5 6 10 12 14 15) *0
+[    0.210520] ACPI: PCI Interrupt Link [LNKE] (IRQs 3 4 5 6 10 12 14 15) *0
+[    0.210568] ACPI: PCI Interrupt Link [LNKF] (IRQs 3 4 5 6 10 12 14 15) *0
+[    0.210615] ACPI: PCI Interrupt Link [LNKG] (IRQs 3 4 5 6 10 12 14 15) *0
+[    0.210663] ACPI: PCI Interrupt Link [LNKH] (IRQs 3 4 5 6 10 12 14 15) *0
+[    0.229141] ACPI : EC: GPE = 0x50, I/O: command/status = 0x66, data = 0x62
+[    0.229244] SCSI subsystem initialized
+[    0.229364] ACPI: bus type USB registered
+[    0.229380] usbcore: registered new interface driver usbfs
+[    0.229388] usbcore: registered new interface driver hub
+[    0.229430] usbcore: registered new device driver usb
+[    0.229496] Linux video capture interface: v2.00
+[    0.229605] chromeos_acpi: registering CHSW 0
+[    0.229692] chromeos_acpi: registering VBNV 0
+[    0.229693] chromeos_acpi: registering VBNV 1
+[    0.229864] chromeos_acpi: truncating buffer from 3072 to 1336
+[    0.230025] chromeos_acpi: installed
+[    0.230025] chromeos_acpi: chromeos_acpi: enabling S3 USB wake
+[    0.236062] Advanced Linux Sound Architecture Driver Initialized.
+[    0.236065] PCI: Using ACPI for IRQ routing
+[    0.266394] hpet0: at MMIO 0xfed00000, IRQs 2, 8, 0, 0, 0, 0, 0, 0
+[    0.266399] hpet0: 8 comparators, 64-bit 24.000000 MHz counter
+[    0.268469] amd_nb: Cannot enumerate AMD northbridges
+[    0.275916] pnp: PnP ACPI init
+[    0.276065] system 00:00: [mem 0xfed10000-0xfed17fff] has been reserved
+[    0.276067] system 00:00: [mem 0xfed18000-0xfed18fff] has been reserved
+[    0.276069] system 00:00: [mem 0xfed19000-0xfed19fff] has been reserved
+[    0.276071] system 00:00: [mem 0xe0000000-0xefffffff] has been reserved
+[    0.276072] system 00:00: [mem 0xfed20000-0xfed3ffff] has been reserved
+[    0.276074] system 00:00: [mem 0xfed90000-0xfed93fff] has been reserved
+[    0.276076] system 00:00: [mem 0xfed45000-0xfed8ffff] has been reserved
+[    0.276077] system 00:00: [mem 0xff000000-0xffffffff] has been reserved
+[    0.276079] system 00:00: [mem 0xfee00000-0xfeefffff] has been reserved
+[    0.276081] system 00:00: [mem 0xfed00000-0xfed003ff] has been reserved
+[    0.276219] system 00:01: [io  0x1800-0x18fe] could not be reserved
+[    0.276492] system 00:03: [io  0x0900-0x09fe] has been reserved
+[    0.276523] system 00:04: [io  0x0200] has been reserved
+[    0.276525] system 00:04: [io  0x0204] has been reserved
+[    0.276527] system 00:04: [io  0x0800-0x087f] has been reserved
+[    0.276528] system 00:04: [io  0x0880-0x08ff] has been reserved
+[    0.293038] pnp: PnP ACPI: found 7 devices
+[    0.293833] pci 0000:00:1c.0: PCI bridge to [bus 01]
+[    0.293846] pci 0000:00:1c.0:   bridge window [mem 0xd1000000-0xd10fffff]
+[    0.293908] NET: Registered protocol family 2
+[    0.294055] TCP established hash table entries: 65536 (order: 7, 524288 bytes)
+[    0.294147] TCP bind hash table entries: 65536 (order: 9, 2097152 bytes)
+[    0.294474] TCP: Hash tables configured (established 65536 bind 65536)
+[    0.294489] TCP: reno registered
+[    0.294493] UDP hash table entries: 4096 (order: 6, 393216 bytes)
+[    0.294553] UDP-Lite hash table entries: 4096 (order: 6, 393216 bytes)
+[    0.294651] NET: Registered protocol family 1
+[    0.295135] PCI-DMA: Using software bounce buffering for IO (SWIOTLB)
+[    0.295137] software IO TLB [mem 0x76a4b000-0x7aa4b000] (64MB) mapped at [ffff880076a4b000-ffff88007aa4afff]
+[    0.295411] RAPL PMU detected, API unit is 2^-32 Joules, 5 fixed counters 655360 ms ovfl timer
+[    0.295412] hw unit of domain pp0-core 2^-14 Joules
+[    0.295413] hw unit of domain package 2^-14 Joules
+[    0.295414] hw unit of domain dram 2^-14 Joules
+[    0.295415] hw unit of domain pp1-gpu 2^-14 Joules
+[    0.295416] hw unit of domain psys 2^-14 Joules
+[    0.295480] microcode: CPU0 sig=0x406e3, pf=0x80, revision=0xba
+[    0.295494] microcode: CPU1 sig=0x406e3, pf=0x80, revision=0xba
+[    0.295497] microcode: CPU2 sig=0x406e3, pf=0x80, revision=0xba
+[    0.295506] microcode: CPU3 sig=0x406e3, pf=0x80, revision=0xba
+[    0.295572] microcode: Microcode Update Driver: v2.00 <tigran@aivazian.fsnet.co.uk>, Peter Oruba
+[    0.295879] Scanning for low memory corruption every 60 seconds
+[    0.296068] AVX2 version of gcm_enc/dec engaged.
+[    0.296070] AES CTR mode by8 optimization enabled
+[    0.297467] futex hash table entries: 1024 (order: 4, 65536 bytes)
+[    0.297493] audit: initializing netlink subsys (disabled)
+[    0.297506] audit: type=2000 audit(1555787813.281:1): initialized
+[    0.299359] VFS: Disk quotas dquot_6.5.2
+[    0.299385] Dquot-cache hash table entries: 512 (order 0, 4096 bytes)
+[    0.299628] squashfs: version 4.0 (2009/01/31) Phillip Lougher
+[    0.299742] Registering esdfs 0.2
+[    0.299772] msgmni has been set to 15738
+[    0.299865] device_jail: allocated device range 263192576 -> 263192832
+[    0.299956] alt_syscall: table 'read_write_test' available.
+[    0.300067] alt_syscall: table 'android' available.
+[    0.300075] alt_syscall: table 'android_permissive' available.
+[    0.300081] alt_syscall: table 'third_party' available.
+[    0.300086] alt_syscall: table 'third_party_permissive' available.
+[    0.300092] alt_syscall: table 'complete' available.
+[    0.300098] alt_syscall: table 'complete_permissive' available.
+[    0.301616] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 250)
+[    0.301619] io scheduler noop registered
+[    0.301620] io scheduler deadline registered
+[    0.301670] io scheduler cfq registered (default)
+[    0.301903] pcieport 0000:00:1c.0: Signaling PME through PCIe PME interrupt
+[    0.301905] pci 0000:01:00.0: Signaling PME through PCIe PME interrupt
+[    0.301926] pci_hotplug: PCI Hot Plug PCI Core version: 0.5
+[    0.301938] pciehp: PCI Express Hot Plug Controller Driver version: 0.4
+[    0.302059] intel_idle: max_cstate 7 reached
+[    0.302309] input: Lid Switch as /devices/LNXSYSTM:00/LNXSYBUS:00/PNP0C0D:00/input/input0
+[    0.302539] ACPI: Lid Switch [LID0]
+[    0.302572] input: Power Button as /devices/LNXSYSTM:00/LNXSYBUS:00/PNP0C0C:00/input/input1
+[    0.302574] ACPI: Power Button [PWRB]
+[    0.302605] input: Power Button as /devices/LNXSYSTM:00/LNXPWRBN:00/input/input2
+[    0.302606] ACPI: Power Button [PWRF]
+[    0.303211] Non-volatile memory driver v1.3
+[    0.303241] Linux agpgart interface v0.103
+[    0.303302] ------------[ cut here ]------------
+[    0.303309] WARNING: CPU: 2 PID: 1 at ../../../../../tmp/portage/sys-kernel/chromeos-kernel-3_18-3.18-r2304/work/chromeos-kernel-3_18-3.18/lib/iomap.c:43 bad_io_access+0x36/0x38()
+[    0.303310] Bad IO access at port 0x84 (return inl(port))
+[    0.303311] Modules linked in:
+[    0.303314] CPU: 2 PID: 1 Comm: swapper/0 Not tainted 3.18.0-19285-g9f6cff6be6b8 #1
+[    0.303315] Hardware name: Google sentry/sentry, BIOS Google_Sentry.7820.314.0 06/08/2017
+[    0.303316]  0000000000000000 00000000edbde0c3 ffff880275a4bce8 ffffffffba37e877
+[    0.303319]  0000000000000000 ffff880275a4bd40 ffff880275a4bd28 ffffffffb9d77e3c
+[    0.303321]  00000000000fed44 ffff88027497f1e8 ffff8802753f4000 ffff88027451c410
+[    0.303323] Call Trace:
+[    0.303327]  [<ffffffffba37e877>] dump_stack+0x4e/0x71
+[    0.303330]  [<ffffffffb9d77e3c>] warn_slowpath_common+0x84/0x9f
+[    0.303332]  [<ffffffffb9d77f50>] warn_slowpath_fmt+0x55/0x6b
+[    0.303334]  [<ffffffffb9f6f9e9>] bad_io_access+0x36/0x38
+[    0.303337]  [<ffffffffb9f6fbee>] ioread32+0x2a/0x2f
+[    0.303339]  [<ffffffffba010154>] tpm_tis_init+0xb3/0x131
+[    0.303342]  [<ffffffffba957c57>] init_tis+0x96/0xd3
+[    0.303344]  [<ffffffffba957bc1>] ? tpm_init+0x80/0x80
+[    0.303346]  [<ffffffffb9d16555>] do_one_initcall+0x18f/0x1a4
+[    0.303349]  [<ffffffffba9210cf>] kernel_init_freeable+0x198/0x238
+[    0.303352]  [<ffffffffba37c010>] ? rest_init+0x84/0x84
+[    0.303355]  [<ffffffffba37c01e>] kernel_init+0xe/0xda
+[    0.303357]  [<ffffffffba38352e>] ret_from_fork+0x6e/0xa0
+[    0.303359]  [<ffffffffba37c010>] ? rest_init+0x84/0x84
+[    0.303363] ---[ end trace 8170f5f93c3bf381 ]---
+[    0.321202] DID VID 0
+[    0.321209] DID VID 1b15d1
+[    0.321214] tpm_tis tpm_tis: 1.2 TPM (device-id 0x1B, rev-id 16) [gentle shutdown]
+[    0.323276] ACPI: Battery Slot [BAT0] (battery present)
+[    0.417574] [drm] Initialized drm 1.1.0 20060810
+[    0.419014] [drm] Memory usable by graphics device = 4096M
+[    0.472721] [drm] Supports vblank timestamp caching Rev 2 (21.10.2013).
+[    0.472723] [drm] Driver supports precise vblank timestamp query.
+[    0.596628] [drm] Initialized i915 1.6.0 20150717 for 0000:00:02.0 on minor 0
+[    0.596948] [drm] Initialized vgem 1.0.0 20120112 on minor 1
+[    0.597022] usbcore: registered new interface driver udl
+[    0.598495] loop: module loaded
+[    0.598697] lkdtm: No crash points registered, enable through debugfs
+[    0.605454] cros_ec_lpcs GOOG0004:00: Chrome EC device registered
+[    0.605456] cros_ec_lpcs GOOG0004:00: Initialized, GPE = 0x70
+[    0.645288] cros-ec-dev cros-ec-dev.1: device does not support reading the console log
+[    0.650840] idma64 idma64.0: Found Intel integrated DMA 64-bit
+[    0.651347] idma64 idma64.1: Found Intel integrated DMA 64-bit
+[    0.674646] idma64 idma64.4: Found Intel integrated DMA 64-bit
+[    0.685479] PPP generic driver version 2.4.2
+[    0.685600] PPP MPPE Compression module registered
+[    0.685604] NET: Registered protocol family 24
+[    0.685708] ehci_hcd: USB 2.0 'Enhanced' Host Controller (EHCI) Driver
+[    0.685710] ehci-pci: EHCI PCI platform driver
+[    0.685722] ohci_hcd: USB 1.1 'Open' Host Controller (OHCI) Driver
+[    0.685726] ohci-pci: OHCI PCI platform driver
+[    0.685735] uhci_hcd: USB Universal Host Controller Interface driver
+[    0.685871] xhci_hcd 0000:00:14.0: xHCI Host Controller
+[    0.685998] xhci_hcd 0000:00:14.0: new USB bus registered, assigned bus number 1
+[    0.687192] usb usb1: New USB device found, idVendor=1d6b, idProduct=0002, bcdDevice= 3.18
+[    0.687194] usb usb1: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[    0.687196] usb usb1: Product: xHCI Host Controller
+[    0.687197] usb usb1: Manufacturer: Linux 3.18.0-19285-g9f6cff6be6b8 xhci-hcd
+[    0.687199] usb usb1: SerialNumber: 0000:00:14.0
+[    0.687359] hub 1-0:1.0: USB hub found
+[    0.687378] hub 1-0:1.0: 12 ports detected
+[    0.687755] xhci_hcd 0000:00:14.0: xHCI Host Controller
+[    0.687845] xhci_hcd 0000:00:14.0: new USB bus registered, assigned bus number 2
+[    0.687882] usb usb2: New USB device found, idVendor=1d6b, idProduct=0003, bcdDevice= 3.18
+[    0.687884] usb usb2: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[    0.687886] usb usb2: Product: xHCI Host Controller
+[    0.687887] usb usb2: Manufacturer: Linux 3.18.0-19285-g9f6cff6be6b8 xhci-hcd
+[    0.687888] usb usb2: SerialNumber: 0000:00:14.0
+[    0.688071] hub 2-0:1.0: USB hub found
+[    0.688088] hub 2-0:1.0: 6 ports detected
+[    0.688311] usbcore: registered new interface driver cdc_acm
+[    0.688312] cdc_acm: USB Abstract Control Model driver for USB modems and ISDN adapters
+[    0.688326] usbcore: registered new interface driver usb-storage
+[    0.688334] usbcore: registered new interface driver ums-realtek
+[    0.688352] usbcore: registered new interface driver usbserial
+[    0.688357] usbcore: registered new interface driver usbserial_generic
+[    0.688362] usbserial: USB Serial support registered for generic
+[    0.688387] i8042: PNP: PS/2 Controller [PNP0303:PS2K] at 0x60,0x64 irq 1
+[    0.688389] i8042: PNP: PS/2 appears to have AUX port disabled, if this is incorrect please boot with i8042.nopnp
+[    0.688911] i8042: Warning: Keylock active
+[    0.689153] serio: i8042 KBD port at 0x60,0x64 irq 1
+[    0.695273] input: AT Translated Set 2 keyboard as /devices/platform/i8042/serio0/input/input3
+[    0.792157] input: Raydium Touchscreen as /devices/pci0000:00/0000:00:15.0/i2c_designware.0/i2c-7/i2c-RAYD0001:00/input/input4
+[    0.792766] rtc_cmos 00:02: RTC can wake from S4
+[    0.793332] rtc_cmos 00:02: rtc core: registered rtc_cmos as rtc0
+[    0.793449] rtc_cmos 00:02: alarms up to one month, 242 bytes nvram, hpet irqs
+[    0.793460] i2c /dev entries driver
+[    0.800425] input: Elan Touchpad as /devices/pci0000:00/0000:00:15.1/i2c_designware.1/i2c-8/i2c-ELAN0000:00/input/input5
+[    0.801610] elan_i2c i2c-ELAN0000:00: invalid report id data (ff)
+[    0.809275] iTCO_wdt: Intel TCO WatchDog Timer Driver v1.11
+[    0.809286] iTCO_vendor_support: vendor-support=0
+[    0.809597] device-mapper: ioctl: 4.28.0-ioctl (2014-09-17) initialised: dm-devel@redhat.com
+[    0.809718] device-mapper: verity-chromeos: dm-verity-chromeos registered
+[    0.809737] Intel P-state driver initializing.
+[    0.809742] intel_pstate: HWP enabled
+[    0.810555] sdhci: Secure Digital Host Controller Interface driver
+[    0.810556] sdhci: Copyright(c) Pierre Ossman
+[    0.810570] sdhci-pci 0000:00:1e.4: SDHCI controller found [8086:9d2b] (rev 21)
+[    0.810702] sdhci-pci 0000:00:1e.4: No vmmc regulator found
+[    0.810703] sdhci-pci 0000:00:1e.4: No vqmmc regulator found
+[    0.813216] mmc0: SDHCI controller on PCI [0000:00:1e.4] using ADMA 64-bit
+[    0.813218] sdhci_pci_probe_slot: Enabling QoS on Baytrail eMMC slot
+[    0.813313] sdhci-pci 0000:00:1e.6: SDHCI controller found [8086:9d2d] (rev 21)
+[    0.813521] sdhci-pci 0000:00:1e.6: No vmmc regulator found
+[    0.813522] sdhci-pci 0000:00:1e.6: No vqmmc regulator found
+[    0.815449] mmc1: SDHCI controller on PCI [0000:00:1e.6] using ADMA 64-bit
+[    0.815455] sdhci_pci_probe_slot: Enabling QoS on Baytrail eMMC slot
+[    0.874661] gsmi version 1.0 loaded
+[    0.874930] hidraw: raw HID events driver (C) Jiri Kosina
+[    0.875248] usbcore: registered new interface driver usbhid
+[    0.875252] usbhid: USB HID core driver
+[    0.876067] ashmem: initialized
+[    0.876262] chromeos ramoops using acpi device.
+[    0.905817] console [pstore-1] enabled
+[    0.905824] pstore: Registered ramoops as persistent store backend
+[    0.905835] ramoops: attached 0x100000@0x7aa5c000, ecc: 0/0
+[    0.905983] intel_rapl: Found RAPL domain package
+[    0.905992] intel_rapl: Found RAPL domain core
+[    0.906000] intel_rapl: Found RAPL domain uncore
+[    0.906008] intel_rapl: Found RAPL domain dram
+[    0.906509] GACT probability NOT on
+[    0.906527] Netfilter messages via NETLINK v0.30.
+[    0.906570] nf_conntrack version 0.5.0 (16384 buckets, 65536 max)
+[    0.906707] ctnetlink v0.93: registering with nfnetlink.
+[    0.907201] ip_tables: (C) 2000-2006 Netfilter Core Team
+[    0.907289] TCP: cubic registered
+[    0.907300] Initializing XFRM netlink socket
+[    0.907505] mmc0: BKOPS_EN bit is not set
+[    0.907510] NET: Registered protocol family 10
+[    0.907928] ip6_tables: (C) 2000-2006 Netfilter Core Team
+[    0.908033] NET: Registered protocol family 17
+[    0.908050] NET: Registered protocol family 15
+[    0.910875] Key type encrypted registered
+[    0.914248] mmc0: new HS400 MMC card at address 0001
+[    0.914404] mmcblk0: mmc0:0001 BGND3R 29.1 GiB 
+[    0.914497] mmcblk0boot0: mmc0:0001 BGND3R partition 1 4.00 MiB
+[    0.914587] mmcblk0boot1: mmc0:0001 BGND3R partition 2 4.00 MiB
+[    0.914678] mmcblk0rpmb: mmc0:0001 BGND3R partition 3 4.00 MiB
+[    0.916588]  mmcblk0: p1 p2 p3 p4 p5 p6 p7 p8 p9 p10 p11 p12
+[    0.953638]   Magic number: 15:226:294
+[    0.953666] i2c_designware i2c_designware.1: hash matches
+[    0.953685] misc hpet: hash matches
+[    0.953926] ALSA device list:
+[    0.953930]   No soundcards found.
+[    0.953951] Warning: unable to open an initial console.
+[    0.953993] device-mapper: init: attempting early device configuration.
+[    0.954253] device-mapper: init: adding target '0 3686400 verity payload=PARTUUID=85a235bb-91f6-c646-98b0-e707498c8cd9/PARTNROFF=1 hashtree=PARTUUID=85a235bb-91f6-c646-98b0-e707498c8cd9/PARTNROFF=1 hashstart=3686400 alg=sha1 root_hexdigest=8a8c77d28aaae9779e1261e5980886420dc8dbfc salt=92d411d2e089d2a743bad32f663bc1f66a8f514bff2bfa3d96b047962db27b8a'
+[    0.954278] device-mapper: verity: Argument 0: 'payload=PARTUUID=85a235bb-91f6-c646-98b0-e707498c8cd9/PARTNROFF=1'
+[    0.954287] device-mapper: verity: Argument 1: 'hashtree=PARTUUID=85a235bb-91f6-c646-98b0-e707498c8cd9/PARTNROFF=1'
+[    0.954296] device-mapper: verity: Argument 2: 'hashstart=3686400'
+[    0.954303] device-mapper: verity: Argument 3: 'alg=sha1'
+[    0.954308] device-mapper: verity: Argument 4: 'root_hexdigest=8a8c77d28aaae9779e1261e5980886420dc8dbfc'
+[    0.954316] device-mapper: verity: Argument 5: 'salt=92d411d2e089d2a743bad32f663bc1f66a8f514bff2bfa3d96b047962db27b8a'
+[    0.956260] device-mapper: init: dm-0 is ready
+[    0.958076] EXT4-fs (dm-0): couldn't mount as ext3 due to feature incompatibilities
+[    0.958313] EXT4-fs (dm-0): mounting ext2 file system using the ext4 subsystem
+[    0.959375] EXT4-fs (dm-0): mounted filesystem without journal. Opts: (null)
+[    0.959392] VFS: Mounted root (ext2 filesystem) readonly on device 253:0.
+[    0.962926] devtmpfs: mounted
+[    0.963344] Freeing unused kernel memory: 1228K (ffffffffba90b000 - ffffffffbaa3e000)
+[    0.963353] Write protecting the kernel read-only data: 12288k
+[    0.963767] Freeing unused kernel memory: 464K (ffff88003a38c000 - ffff88003a400000)
+[    0.964193] Freeing unused kernel memory: 1296K (ffff88003a6bc000 - ffff88003a800000)
+[    0.978305] random: nonblocking pool is initialized
+[    0.978331] Chromium OS LSM: dev(253,0): read-only
+[    0.978337] Chromium OS LSM: module locking engaged.
+[    0.978346] Chromium OS LSM: request_firmware locked obj="/lib/firmware/i915/skl_dmc_ver1_23.bin" pid=39 cmdline=(null)
+[    0.978993] [drm] Finished loading i915/skl_dmc_ver1.bin (v1.23)
+[    1.030279] audit: type=1404 audit(1555787814.014:2): enforcing=1 old_enforcing=0 auid=4294967295 ses=4294967295
+[    1.041039] usb 1-3: new full-speed USB device number 2 using xhci_hcd
+[    1.067387] audit: type=1403 audit(1555787814.051:3): policy loaded auid=4294967295 ses=4294967295
+[    1.206102] usb 1-3: New USB device found, idVendor=8087, idProduct=0a2a, bcdDevice= 0.03
+[    1.206116] usb 1-3: New USB device strings: Mfr=0, Product=0, SerialNumber=0
+[    1.222312] Unsafe core_pattern used with suid_dumpable=2. Pipe handler or fully qualified core dump path required.
+[    1.269194] udevd[164]: starting version 225
+[    1.287261] EXT4-fs (mmcblk0p1): mounted filesystem with ordered data mode. Opts: commit=600
+[    1.290825] EXT4-fs (mmcblk0p8): mounted filesystem with ordered data mode. Opts: (null)
+[    1.297078] tsc: Refined TSC clocksource calibration: 2399.996 MHz
+[    1.360480] usb 1-7: new high-speed USB device number 3 using xhci_hcd
+[    1.499234] frecon[273]: Failed to set atomic cap.
+[    1.500398] EXT4-fs (dm-1): mounted filesystem with ordered data mode. Opts: discard,commit=600
+[    1.502811] frecon[273]: Frecon using drm driver i915, version 1.6, date(20150717), desc(Intel Graphics)
+[    1.535449] usb 1-7: New USB device found, idVendor=1bcf, idProduct=2c82, bcdDevice= 0.06
+[    1.535461] usb 1-7: New USB device strings: Mfr=1, Product=2, SerialNumber=3
+[    1.535470] usb 1-7: Product: Integrated Camera
+[    1.535476] usb 1-7: Manufacturer: SunplusIT Inc
+[    1.535494] usb 1-7: SerialNumber: 8SSC20F26991L1GZ66M05TM
+[    1.690079] usb 1-9: new high-speed USB device number 4 using xhci_hcd
+[    1.715280] [drm] RC6 on
+[    1.851314] EXT4-fs (mmcblk0p1): re-mounted. Opts: resgid=20119,commit=600,data=ordered
+[    1.854254] usb 1-9: New USB device found, idVendor=04b4, idProduct=6502, bcdDevice=50.10
+[    1.854264] usb 1-9: New USB device strings: Mfr=0, Product=0, SerialNumber=0
+[    1.854713] hub 1-9:1.0: USB hub found
+[    1.854747] hub 1-9:1.0: 4 ports detected
+[    1.914188] traps: usb_bouncer[396] general protection ip:7bd48d0bff28 sp:7ffc5388d040 error:0 in libc-2.27.so[7bd48d088000+1b0000]
+[    1.917134] traps: usb_bouncer[398] general protection ip:7f1ca3c62f28 sp:7ffe9d6d0b30 error:0 in libc-2.27.so[7f1ca3c2b000+1b0000]
+[    1.923630] udevd[307]: Process '/usr/sbin/usb_bouncer udev add '/devices/pci0000:00/0000:00:14.0/usb1/1-7'' failed with exit code 139.
+[    1.926689] udevd[373]: Process '/usr/sbin/usb_bouncer udev add '/devices/pci0000:00/0000:00:14.0/usb1/1-9'' failed with exit code 139.
+[    1.934346] uvcvideo: Found UVC 1.00 device Integrated Camera (1bcf:2c82)
+[    1.941937] usbcore: registered new interface driver uvcvideo
+[    1.941944] USB Video Class driver (1.1.1)
+[    2.042070] frecon[273]: Cannot get DBUS connection
+[    2.100406] frecon[273]: DBUS connected after 0.1 seconds
+[    2.117073] usb 1-9.1: new high-speed USB device number 5 using xhci_hcd
+[    2.191393] usb 1-9.1: New USB device found, idVendor=0bda, idProduct=8153, bcdDevice=31.00
+[    2.191403] usb 1-9.1: New USB device strings: Mfr=1, Product=2, SerialNumber=6
+[    2.191410] usb 1-9.1: Product: USB 10/100/1000 LAN
+[    2.191414] usb 1-9.1: Manufacturer: Realtek
+[    2.191418] usb 1-9.1: SerialNumber: 000000000000
+[    2.249518] audit: type=1400 audit(1555787815.233:4): avc:  granted  { write } for  pid=496 comm="minijail0" name="/" dev="tmpfs" ino=8243 scontext=u:r:minijail:s0 tcontext=u:object_r:tmpfs:s0 tclass=dir
+[    2.250384] cfg80211: Calling CRDA to update world regulatory domain
+[    2.254465] usb 1-9.4: new full-speed USB device number 6 using xhci_hcd
+[    2.258917] cfg80211: World regulatory domain updated:
+[    2.258922] cfg80211:  DFS Master region: unset
+[    2.258926] cfg80211:   (start_freq - end_freq @ bandwidth), (max_antenna_gain, max_eirp), (dfs_cac_time)
+[    2.258934] cfg80211:   (2402000 KHz - 2472000 KHz @ 40000 KHz), (N/A, 2000 mBm), (N/A)
+[    2.258940] cfg80211:   (2457000 KHz - 2482000 KHz @ 20000 KHz), (N/A, 2000 mBm), (N/A)
+[    2.258945] cfg80211:   (2474000 KHz - 2494000 KHz @ 20000 KHz), (N/A, 2000 mBm), (N/A)
+[    2.258951] cfg80211:   (5170000 KHz - 5250000 KHz @ 80000 KHz), (N/A, 2000 mBm), (N/A)
+[    2.258957] cfg80211:   (5250000 KHz - 5330000 KHz @ 80000 KHz), (N/A, 2000 mBm), (0 s)
+[    2.259026] cfg80211:   (5490000 KHz - 5730000 KHz @ 160000 KHz), (N/A, 2000 mBm), (0 s)
+[    2.259035] cfg80211:   (5735000 KHz - 5835000 KHz @ 80000 KHz), (N/A, 2000 mBm), (N/A)
+[    2.259041] cfg80211:   (57240000 KHz - 63720000 KHz @ 2160000 KHz), (N/A, 0 mBm), (N/A)
+[    2.260087] audit: type=1400 audit(1555787815.244:5): avc:  granted  { write } for  pid=496 comm="minijail0" name="/" dev="tmpfs" ino=8243 scontext=u:r:minijail:s0 tcontext=u:object_r:tmpfs:s0 tclass=dir
+[    2.260145] traps: usb_bouncer[578] general protection ip:7fcc5dc75f28 sp:7ffe9b6b6c50 error:0 in libc-2.27.so[7fcc5dc3e000+1b0000]
+[    2.271838] udevd[576]: Process '/usr/sbin/usb_bouncer udev add '/devices/pci0000:00/0000:00:14.0/usb1/1-9/1-9.1'' failed with exit code 139.
+[    2.274945] audit: type=1400 audit(1555787815.258:6): avc:  denied  { getattr } for  pid=496 comm="systemd-journal" path="/usr/local" dev="dm-0" ino=23042 scontext=u:r:cros_journald:s0 tcontext=u:object_r:unlabeled:s0 tclass=dir permissive=0
+[    2.275427] usbcore: registered new interface driver r8152
+[    2.275503] systemd-journald[496]: Running without systemd.
+[    2.276251] usbcore: registered new interface driver cdc_ether
+[    2.298157] Switched to clocksource tsc
+[    2.300025] systemd-journald[496]: Received request to flush runtime journal from PID 586
+[    2.307844] Intel(R) Wireless WiFi driver for Linux
+[    2.307850] Copyright(c) 2003- 2015 Intel Corporation
+[    2.309454] iwlwifi 0000:01:00.0: Direct firmware load for iwl-dbg-cfg.ini failed with error -2
+[    2.330184] usb 1-9.4: New USB device found, idVendor=03eb, idProduct=2042, bcdDevice= 0.01
+[    2.330194] usb 1-9.4: New USB device strings: Mfr=1, Product=2, SerialNumber=0
+[    2.330201] usb 1-9.4: Product: LUFA Keyboard Emulator
+[    2.330206] usb 1-9.4: Manufacturer: Google Servo
+[    2.330323] usb 1-9.4: ep 0x81 - rounding interval to 32 microframes, ep desc says 40 microframes
+[    2.330334] usb 1-9.4: ep 0x2 - rounding interval to 32 microframes, ep desc says 40 microframes
+[    2.331793] input: Google Servo LUFA Keyboard Emulator as /devices/pci0000:00/0000:00:14.0/usb1/1-9/1-9.4/1-9.4:1.0/0003:03EB:2042.0001/input/input6
+[    2.331949] hid-generic 0003:03EB:2042.0001: input,hidraw0: USB HID v1.11 Keyboard [Google Servo LUFA Keyboard Emulator] on usb-0000:00:14.0-9.4/input0
+[    2.390196] usb 1-9.1: reset high-speed USB device number 5 using xhci_hcd
+[    2.499867] r8152 1-9.1:1.0 eth0: v1.09.9
+[    2.508589] iwlwifi 0000:01:00.0: loaded firmware version 29.b82af6fb.0 op_mode iwlmvm
+[    2.527649] iwlwifi 0000:01:00.0: Detected Intel(R) Dual Band Wireless AC 7265, REV=0x210
+[    2.549360] frecon[273]: drmModeDirtyFB failed: Permission denied
+[    2.550389] iwlwifi 0000:01:00.0: base HW address: 4c:80:93:d1:10:64
+[    2.570829] frecon[273]: drmModeDirtyFB failed: Permission denied
+[    2.584062] frecon[273]: drmModeDirtyFB failed: Permission denied
+[    2.615602] ieee80211 phy0: LAR device registered
+[    2.615683] thermal thermal_zone6: failed to read out thermal zone (-61)
+[    3.706636] cfg80211: Calling CRDA for country: US
+[    3.708662] cfg80211: Regulatory domain changed to country: US
+[    3.708670] cfg80211:  DFS Master region: unset
+[    3.708674] cfg80211:   (start_freq - end_freq @ bandwidth), (max_antenna_gain, max_eirp), (dfs_cac_time)
+[    3.708683] cfg80211:   (2402000 KHz - 2472000 KHz @ 40000 KHz), (N/A, 3000 mBm), (N/A)
+[    3.708690] cfg80211:   (5170000 KHz - 5250000 KHz @ 80000 KHz), (N/A, 1700 mBm), (N/A)
+[    3.708697] cfg80211:   (5250000 KHz - 5330000 KHz @ 80000 KHz), (N/A, 2300 mBm), (0 s)
+[    3.708703] cfg80211:   (5490000 KHz - 5730000 KHz @ 160000 KHz), (N/A, 2300 mBm), (0 s)
+[    3.708708] cfg80211:   (5735000 KHz - 5835000 KHz @ 80000 KHz), (N/A, 3000 mBm), (N/A)
+[    3.708714] cfg80211:   (57240000 KHz - 63720000 KHz @ 2160000 KHz), (N/A, 4000 mBm), (N/A)
+[    3.930988] IPv6: ADDRCONF(NETDEV_UP): eth0: link is not ready
+[    4.076409] IPv6: ADDRCONF(NETDEV_UP): wlan0: link is not ready
+[    5.433232] r8152 1-9.1:1.0 eth0: carrier on
+[    5.433337] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+[    7.097359] audit: type=1401 audit(1555787820.080:7): op=security_bounded_transition seresult=denied oldcontext=u:r:cros_session_manager:s0 newcontext=u:r:chromeos:s0
+[    7.098423] audit: type=1401 audit(1555787820.081:8): op=security_bounded_transition seresult=denied oldcontext=u:r:cros_session_manager:s0 newcontext=u:r:chromeos:s0
+[    7.178118] init: failsafe-delay main process (640) killed by TERM signal
+[    7.366626] low_mem: threshold[0] 409 MB
+[    7.406759] fuse init (API version 7.23)
+[    7.434168] zram: Added device: zram0
+[    7.441371] zram0: detected capacity change from 0 to 12091719680
+[    7.459465] udevd[1864]: error opening ATTR{/sys/devices/pci0000:00/0000:00:1e.4/power/wakeup} for writing: Permission denied
+[    7.468512] udevd[1874]: error opening ATTR{/sys/devices/pci0000:00/0000:00:1e.6/power/wakeup} for writing: Permission denied
+[    7.534182] audit: type=1400 audit(1555787820.517:9): avc:  granted  { write } for  pid=1859 comm="arc-oemcrypto" name="/" dev="tmpfs" ino=8243 scontext=u:r:minijail:s0 tcontext=u:object_r:tmpfs:s0 tclass=dir
+[    7.537684] nau8825 i2c-10508825:00: No 'mclk' clock found, assume MCLK is managed externally
+[    7.543009] audit: type=1400 audit(1555787820.526:10): avc:  granted  { write } for  pid=1859 comm="arc-oemcrypto" name="/" dev="tmpfs" ino=8243 scontext=u:r:minijail:s0 tcontext=u:object_r:tmpfs:s0 tclass=dir
+[    7.634278] audit: type=1401 audit(1555787820.617:11): op=security_bounded_transition seresult=denied oldcontext=u:r:chromeos:s0 newcontext=u:r:modprobe:s0
+[    7.712401] Adding 11808316k swap on /dev/zram0.  Priority:-1 extents:1 across:11808316k SS
+[    7.759164] audit: type=1400 audit(1555787820.742:12): avc:  granted  { write } for  pid=1965 comm="minijail0" name="/" dev="tmpfs" ino=8243 scontext=u:r:minijail:s0 tcontext=u:object_r:tmpfs:s0 tclass=dir
+[    7.765987] audit: type=1400 audit(1555787820.749:13): avc:  granted  { write } for  pid=1965 comm="minijail0" name="/" dev="tmpfs" ino=8243 scontext=u:r:minijail:s0 tcontext=u:object_r:tmpfs:s0 tclass=dir
+[    7.771367] audit: type=1401 audit(1555787820.754:14): op=security_bounded_transition seresult=denied oldcontext=u:r:chromeos:s0 newcontext=u:r:modprobe:s0
+[    7.810704] snd_soc_skl 0000:00:1f.3: bound 0000:00:02.0 (ops 0xffffffffba47b310)
+[    7.873652] bridge: automatic filtering via arp/ip/ip6tables has been deprecated. Update your scripts to load br_netfilter if you need this.
+[    8.156966] HDMI HDA Codec ehdaudio0D2: Max dais supported: 3
+[    8.215259] snd_soc_skl 0000:00:1f.3: Direct firmware load for 9d70-CORE-COREBOOT-0-tplg.bin failed with error -2
+[    8.215271] snd_soc_skl 0000:00:1f.3: tplg fw 9d70-CORE-COREBOOT-0-tplg.bin load failed with -2, falling back to dfw_sst.bin
+[    8.224000] snd_soc_skl 0000:00:1f.3: ASoC: Firmware manifest not supported
+[    8.224108] snd_soc_skl 0000:00:1f.3: ASoC: Parent card not yet available,Do not add new widgets now
+[    8.230324] skl_nau88l25_max98357a_i2s skl_nau88l25_max98357a_i2s: snd-soc-dummy-dai <-> System Pin mapping ok
+[    8.230370] skl_nau88l25_max98357a_i2s skl_nau88l25_max98357a_i2s: snd-soc-dummy-dai <-> System Pin mapping ok
+[    8.230414] skl_nau88l25_max98357a_i2s skl_nau88l25_max98357a_i2s: snd-soc-dummy-dai <-> Reference Pin mapping ok
+[    8.230526] skl_nau88l25_max98357a_i2s skl_nau88l25_max98357a_i2s: snd-soc-dummy-dai <-> DMIC Pin mapping ok
+[    8.231130] skl_nau88l25_max98357a_i2s skl_nau88l25_max98357a_i2s: snd-soc-dummy-dai <-> HDMI1 Pin mapping ok
+[    8.231201] skl_nau88l25_max98357a_i2s skl_nau88l25_max98357a_i2s: snd-soc-dummy-dai <-> HDMI2 Pin mapping ok
+[    8.231245] skl_nau88l25_max98357a_i2s skl_nau88l25_max98357a_i2s: snd-soc-dummy-dai <-> HDMI3 Pin mapping ok
+[    8.231270] skl_nau88l25_max98357a_i2s skl_nau88l25_max98357a_i2s: HiFi <-> SSP0 Pin mapping ok
+[    8.231725] skl_nau88l25_max98357a_i2s skl_nau88l25_max98357a_i2s: nau8825-hifi <-> SSP1 Pin mapping ok
+[    8.231747] skl_nau88l25_max98357a_i2s skl_nau88l25_max98357a_i2s: dmic-hifi <-> DMIC01 Pin mapping ok
+[    8.231777] skl_nau88l25_max98357a_i2s skl_nau88l25_max98357a_i2s: intel-hdmi-hifi1 <-> iDisp1 Pin mapping ok
+[    8.231802] skl_nau88l25_max98357a_i2s skl_nau88l25_max98357a_i2s: intel-hdmi-hifi2 <-> iDisp2 Pin mapping ok
+[    8.231827] skl_nau88l25_max98357a_i2s skl_nau88l25_max98357a_i2s: intel-hdmi-hifi3 <-> iDisp3 Pin mapping ok
+[    8.233463] input: sklnau8825max Headset Jack as /devices/platform/skl_nau88l25_max98357a_i2s/sound/card0/input7
+[    8.235173] input: sklnau8825max HDMI/DP, pcm=4 Jack as /devices/platform/skl_nau88l25_max98357a_i2s/sound/card0/input8
+[    8.235423] input: sklnau8825max HDMI/DP, pcm=5 Jack as /devices/platform/skl_nau88l25_max98357a_i2s/sound/card0/input9
+[    8.235645] input: sklnau8825max HDMI/DP, pcm=6 Jack as /devices/platform/skl_nau88l25_max98357a_i2s/sound/card0/input10
+[    9.116783] audit: type=1400 audit(1555787822.099:15): avc:  granted  { use } for  pid=2044 comm="init" path="pipe:[16689]" dev="pipefs" ino=16689 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fd
+[    9.116811] audit: type=1400 audit(1555787822.099:16): avc:  denied  { write } for  pid=2044 comm="init" path="pipe:[16689]" dev="pipefs" ino=16689 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fifo_file permissive=0
+[    9.547152] Bluetooth: af_bluetooth.c:bt_init() Core ver 2.22
+[    9.547200] NET: Registered protocol family 31
+[    9.547205] Bluetooth: af_bluetooth.c:bt_init() HCI device and connection manager initialized
+[    9.547217] Bluetooth: hci_sock.c:hci_sock_init() HCI socket layer initialized
+[    9.547225] Bluetooth: l2cap_sock.c:l2cap_init_sockets() L2CAP socket layer initialized
+[    9.547241] Bluetooth: sco.c:sco_init() SCO socket layer initialized
+[    9.628436] usbcore: registered new interface driver btusb
+[    9.664474] Bluetooth: btusb.c:btusb_setup_intel() hci0: read Intel version: 370810225019140f3b
+[    9.664490] Bluetooth: btusb.c:btusb_setup_intel() hci0: Intel device is already patched. patch num: 3b
+[   10.326911] Bluetooth: sock.c:rfcomm_init_sockets() RFCOMM socket layer initialized
+[   10.326933] Bluetooth: core.c:rfcomm_init() RFCOMM ver 1.11
+[   11.110524] capability: warning: `main' uses 32-bit capabilities (legacy support in use)
+[  238.137214] init: arc-kmsg-logger main process (2031) killed by TERM signal
+[  238.206301] audit_printk_skb: 21 callbacks suppressed
+[  238.206312] audit: type=1401 audit(1555788051.302:24): op=security_bounded_transition seresult=denied oldcontext=u:r:cros_session_manager:s0 newcontext=u:r:cros_arc_setup:s0
+[  238.241611] audit: type=1401 audit(1555788051.338:25): op=security_bounded_transition seresult=denied oldcontext=u:r:cros_session_manager:s0 newcontext=u:r:cros_arc_setup:s0
+[  242.061025] audit: type=1401 audit(1555788055.159:26): op=security_bounded_transition seresult=denied oldcontext=u:r:cros_session_manager:s0 newcontext=u:r:chromeos:s0
+[  242.063538] audit: type=1401 audit(1555788055.161:27): op=security_bounded_transition seresult=denied oldcontext=u:r:cros_session_manager:s0 newcontext=u:r:chromeos:s0
+[  242.151670] audit: type=1400 audit(1555788055.250:28): avc:  granted  { write } for  pid=4225 comm="arc-oemcrypto" name="/" dev="tmpfs" ino=8243 scontext=u:r:minijail:s0 tcontext=u:object_r:tmpfs:s0 tclass=dir
+[  242.156570] audit: type=1400 audit(1555788055.255:29): avc:  granted  { write } for  pid=4225 comm="arc-oemcrypto" name="/" dev="tmpfs" ino=8243 scontext=u:r:minijail:s0 tcontext=u:object_r:tmpfs:s0 tclass=dir
+[  243.442424] audit: type=1400 audit(1555788056.541:30): avc:  granted  { use } for  pid=4262 comm="init" path="pipe:[27285]" dev="pipefs" ino=27285 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fd
+[  243.442447] audit: type=1400 audit(1555788056.541:31): avc:  denied  { write } for  pid=4262 comm="init" path="pipe:[27285]" dev="pipefs" ino=27285 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fifo_file permissive=0
+[  243.442466] audit: type=1400 audit(1555788056.541:32): avc:  granted  { use } for  pid=4262 comm="init" path="pipe:[27286]" dev="pipefs" ino=27286 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fd
+[  243.442481] audit: type=1400 audit(1555788056.541:33): avc:  denied  { write } for  pid=4262 comm="init" path="pipe:[27286]" dev="pipefs" ino=27286 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fifo_file permissive=0
+[  243.442570] audit: type=1400 audit(1555788056.541:34): avc:  denied  { module_request } for  pid=4262 comm="init" kmod="personality-8" scontext=u:r:init:s0 tcontext=u:r:kernel:s0 tclass=system permissive=0
+[  243.442605] audit: type=1400 audit(1555788056.541:35): avc:  granted  { use } for  pid=4262 comm="init" path="/init" dev="loop1" ino=19 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fd
+[  243.501917] binder: 4289:4289 transaction failed 29189/-22, size 0-0 line 3001
+[  307.340743] audit: type=1400 audit(1555788120.471:36): avc:  granted  { execute } for  pid=1742 comm="sh" name="periodic_scheduler" dev="dm-0" ino=25675 scontext=u:r:cros_init_scripts:s0 tcontext=u:object_r:cros_periodic_scheduler_exec:s0 tclass=file
+[  341.793186] init: arc-kmsg-logger main process (4248) killed by TERM signal
+[  341.826607] audit: type=1401 audit(1555788154.975:37): op=security_bounded_transition seresult=denied oldcontext=u:r:cros_session_manager:s0 newcontext=u:r:cros_arc_setup:s0
+[  341.867052] audit: type=1401 audit(1555788155.015:38): op=security_bounded_transition seresult=denied oldcontext=u:r:cros_session_manager:s0 newcontext=u:r:cros_arc_setup:s0
+[  345.387009] audit: type=1401 audit(1555788158.537:39): op=security_bounded_transition seresult=denied oldcontext=u:r:cros_session_manager:s0 newcontext=u:r:chromeos:s0
+[  345.392904] audit: type=1401 audit(1555788158.543:40): op=security_bounded_transition seresult=denied oldcontext=u:r:cros_session_manager:s0 newcontext=u:r:chromeos:s0
+[  345.486360] audit: type=1400 audit(1555788158.636:41): avc:  granted  { write } for  pid=5319 comm="arc-oemcrypto" name="/" dev="tmpfs" ino=8243 scontext=u:r:minijail:s0 tcontext=u:object_r:tmpfs:s0 tclass=dir
+[  345.495740] audit: type=1400 audit(1555788158.646:42): avc:  granted  { write } for  pid=5319 comm="arc-oemcrypto" name="/" dev="tmpfs" ino=8243 scontext=u:r:minijail:s0 tcontext=u:object_r:tmpfs:s0 tclass=dir
+[  346.409999] audit: type=1400 audit(1555788159.560:43): avc:  granted  { use } for  pid=5351 comm="init" path="pipe:[39058]" dev="pipefs" ino=39058 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fd
+[  346.410046] audit: type=1400 audit(1555788159.560:44): avc:  denied  { write } for  pid=5351 comm="init" path="pipe:[39058]" dev="pipefs" ino=39058 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fifo_file permissive=0
+[  346.410087] audit: type=1400 audit(1555788159.560:45): avc:  granted  { use } for  pid=5351 comm="init" path="pipe:[39059]" dev="pipefs" ino=39059 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fd
+[  346.488869] binder: 5372:5372 transaction failed 29189/-22, size 0-0 line 3001
+[  402.179997] init: arc-kmsg-logger main process (5332) killed by TERM signal
+[  402.191637] audit_printk_skb: 9 callbacks suppressed
+[  402.191646] audit: type=1401 audit(1555788215.370:49): op=security_bounded_transition seresult=denied oldcontext=u:r:cros_session_manager:s0 newcontext=u:r:cros_arc_setup:s0
+[  402.224869] audit: type=1401 audit(1555788215.403:50): op=security_bounded_transition seresult=denied oldcontext=u:r:cros_session_manager:s0 newcontext=u:r:cros_arc_setup:s0
+[  405.735277] audit: type=1401 audit(1555788218.915:51): op=security_bounded_transition seresult=denied oldcontext=u:r:cros_session_manager:s0 newcontext=u:r:chromeos:s0
+[  405.736469] audit: type=1401 audit(1555788218.917:52): op=security_bounded_transition seresult=denied oldcontext=u:r:cros_session_manager:s0 newcontext=u:r:chromeos:s0
+[  405.817901] audit: type=1400 audit(1555788218.998:53): avc:  granted  { write } for  pid=6168 comm="arc-oemcrypto" name="/" dev="tmpfs" ino=8243 scontext=u:r:minijail:s0 tcontext=u:object_r:tmpfs:s0 tclass=dir
+[  405.826484] audit: type=1400 audit(1555788219.007:54): avc:  granted  { write } for  pid=6168 comm="arc-oemcrypto" name="/" dev="tmpfs" ino=8243 scontext=u:r:minijail:s0 tcontext=u:object_r:tmpfs:s0 tclass=dir
+[  406.590309] init: arc-kmsg-logger main process (6190) killed by TERM signal
+[  406.842158] audit: type=1400 audit(1555788220.023:55): avc:  granted  { use } for  pid=6224 comm="init" path="pipe:[46431]" dev="pipefs" ino=46431 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fd
+[  406.842236] audit: type=1400 audit(1555788220.023:56): avc:  denied  { write } for  pid=6224 comm="init" path="pipe:[46431]" dev="pipefs" ino=46431 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fifo_file permissive=0
+[  406.842297] audit: type=1400 audit(1555788220.023:57): avc:  granted  { use } for  pid=6224 comm="init" path="pipe:[46432]" dev="pipefs" ino=46432 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fd
+[  406.842346] audit: type=1400 audit(1555788220.023:58): avc:  denied  { write } for  pid=6224 comm="init" path="pipe:[46432]" dev="pipefs" ino=46432 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fifo_file permissive=0
+[  410.364892] audit_printk_skb: 12 callbacks suppressed
+[  410.364901] audit: type=1401 audit(1555788223.547:63): op=security_bounded_transition seresult=denied oldcontext=u:r:cros_session_manager:s0 newcontext=u:r:chromeos:s0
+[  410.366316] audit: type=1401 audit(1555788223.549:64): op=security_bounded_transition seresult=denied oldcontext=u:r:cros_session_manager:s0 newcontext=u:r:chromeos:s0
+[  410.457604] audit: type=1400 audit(1555788223.640:65): avc:  granted  { write } for  pid=6638 comm="arc-oemcrypto" name="/" dev="tmpfs" ino=8243 scontext=u:r:minijail:s0 tcontext=u:object_r:tmpfs:s0 tclass=dir
+[  410.469146] audit: type=1400 audit(1555788223.652:66): avc:  granted  { write } for  pid=6638 comm="arc-oemcrypto" name="/" dev="tmpfs" ino=8243 scontext=u:r:minijail:s0 tcontext=u:object_r:tmpfs:s0 tclass=dir
+[  411.356152] audit: type=1400 audit(1555788224.539:67): avc:  granted  { use } for  pid=6703 comm="init" path="pipe:[50184]" dev="pipefs" ino=50184 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fd
+[  411.356175] audit: type=1400 audit(1555788224.539:68): avc:  denied  { write } for  pid=6703 comm="init" path="pipe:[50184]" dev="pipefs" ino=50184 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fifo_file permissive=0
+[  411.356194] audit: type=1400 audit(1555788224.539:69): avc:  granted  { use } for  pid=6703 comm="init" path="pipe:[50185]" dev="pipefs" ino=50185 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fd
+[  411.356209] audit: type=1400 audit(1555788224.539:70): avc:  denied  { write } for  pid=6703 comm="init" path="pipe:[50185]" dev="pipefs" ino=50185 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fifo_file permissive=0
+[  411.356315] audit: type=1400 audit(1555788224.539:71): avc:  denied  { module_request } for  pid=6703 comm="init" kmod="personality-8" scontext=u:r:init:s0 tcontext=u:r:kernel:s0 tclass=system permissive=0
+[  411.356350] audit: type=1400 audit(1555788224.539:72): avc:  granted  { use } for  pid=6703 comm="init" path="/init" dev="loop1" ino=19 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fd
+[  411.439188] binder: 6803:6803 transaction failed 29189/-22, size 0-0 line 3001
+[  413.508905] init: arc-kmsg-logger main process (6679) killed by TERM signal
+[  416.282835] audit_printk_skb: 6 callbacks suppressed
+[  416.282844] audit: type=1401 audit(1555788229.468:75): op=security_bounded_transition seresult=denied oldcontext=u:r:cros_session_manager:s0 newcontext=u:r:chromeos:s0
+[  416.287859] audit: type=1401 audit(1555788229.473:76): op=security_bounded_transition seresult=denied oldcontext=u:r:cros_session_manager:s0 newcontext=u:r:chromeos:s0
+[  416.373992] audit: type=1400 audit(1555788229.559:77): avc:  granted  { write } for  pid=7718 comm="arc-oemcrypto" name="/" dev="tmpfs" ino=8243 scontext=u:r:minijail:s0 tcontext=u:object_r:tmpfs:s0 tclass=dir
+[  416.384177] audit: type=1400 audit(1555788229.570:78): avc:  granted  { write } for  pid=7718 comm="arc-oemcrypto" name="/" dev="tmpfs" ino=8243 scontext=u:r:minijail:s0 tcontext=u:object_r:tmpfs:s0 tclass=dir
+[  418.253677] audit: type=1400 audit(1555788231.440:79): avc:  granted  { use } for  pid=7770 comm="init" path="pipe:[55564]" dev="pipefs" ino=55564 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fd
+[  418.253700] audit: type=1400 audit(1555788231.440:80): avc:  denied  { write } for  pid=7770 comm="init" path="pipe:[55564]" dev="pipefs" ino=55564 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fifo_file permissive=0
+[  418.253720] audit: type=1400 audit(1555788231.440:81): avc:  granted  { use } for  pid=7770 comm="init" path="pipe:[55565]" dev="pipefs" ino=55565 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fd
+[  418.253736] audit: type=1400 audit(1555788231.440:82): avc:  denied  { write } for  pid=7770 comm="init" path="pipe:[55565]" dev="pipefs" ino=55565 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fifo_file permissive=0
+[  418.253831] audit: type=1400 audit(1555788231.440:83): avc:  denied  { module_request } for  pid=7770 comm="init" kmod="personality-8" scontext=u:r:init:s0 tcontext=u:r:kernel:s0 tclass=system permissive=0
+[  418.253870] audit: type=1400 audit(1555788231.440:84): avc:  granted  { use } for  pid=7770 comm="init" path="/init" dev="loop1" ino=19 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fd
+[  418.327034] binder: 7791:7791 transaction failed 29189/-22, size 0-0 line 3001
+[  453.417592] init: arc-kmsg-logger main process (7756) killed by TERM signal
+[  453.432201] audit: type=1401 audit(1555788266.636:85): op=security_bounded_transition seresult=denied oldcontext=u:r:cros_session_manager:s0 newcontext=u:r:cros_arc_setup:s0
+[  453.465557] audit: type=1401 audit(1555788266.670:86): op=security_bounded_transition seresult=denied oldcontext=u:r:cros_session_manager:s0 newcontext=u:r:cros_arc_setup:s0
+[  455.745492] audit: type=1401 audit(1555788268.951:87): op=security_bounded_transition seresult=denied oldcontext=u:r:cros_session_manager:s0 newcontext=u:r:chromeos:s0
+[  455.749405] audit: type=1401 audit(1555788268.955:88): op=security_bounded_transition seresult=denied oldcontext=u:r:cros_session_manager:s0 newcontext=u:r:chromeos:s0
+[  455.841519] audit: type=1400 audit(1555788269.046:89): avc:  granted  { write } for  pid=8348 comm="arc-oemcrypto" name="/" dev="tmpfs" ino=8243 scontext=u:r:minijail:s0 tcontext=u:object_r:tmpfs:s0 tclass=dir
+[  455.848371] audit: type=1400 audit(1555788269.054:90): avc:  granted  { write } for  pid=8348 comm="arc-oemcrypto" name="/" dev="tmpfs" ino=8243 scontext=u:r:minijail:s0 tcontext=u:object_r:tmpfs:s0 tclass=dir
+[  457.210841] audit: type=1400 audit(1555788270.417:91): avc:  granted  { use } for  pid=8398 comm="init" path="pipe:[58912]" dev="pipefs" ino=58912 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fd
+[  457.210920] audit: type=1400 audit(1555788270.417:92): avc:  denied  { write } for  pid=8398 comm="init" path="pipe:[58912]" dev="pipefs" ino=58912 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fifo_file permissive=0
+[  457.210989] audit: type=1400 audit(1555788270.417:93): avc:  granted  { use } for  pid=8398 comm="init" path="pipe:[58913]" dev="pipefs" ino=58913 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fd
+[  457.211045] audit: type=1400 audit(1555788270.417:94): avc:  denied  { write } for  pid=8398 comm="init" path="pipe:[58913]" dev="pipefs" ino=58913 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fifo_file permissive=0
+[  457.369586] binder: 8422:8422 transaction failed 29189/-22, size 0-0 line 3001
+[  590.685338] init: arc-kmsg-logger main process (8369) killed by TERM signal
+[  590.707601] audit_printk_skb: 6 callbacks suppressed
+[  590.707610] audit: type=1401 audit(1555788403.980:97): op=security_bounded_transition seresult=denied oldcontext=u:r:cros_session_manager:s0 newcontext=u:r:cros_arc_setup:s0
+[  590.738373] audit: type=1401 audit(1555788404.011:98): op=security_bounded_transition seresult=denied oldcontext=u:r:cros_session_manager:s0 newcontext=u:r:cros_arc_setup:s0
+[  592.990815] audit: type=1401 audit(1555788406.265:99): op=security_bounded_transition seresult=denied oldcontext=u:r:cros_session_manager:s0 newcontext=u:r:chromeos:s0
+[  592.994125] audit: type=1401 audit(1555788406.268:100): op=security_bounded_transition seresult=denied oldcontext=u:r:cros_session_manager:s0 newcontext=u:r:chromeos:s0
+[  593.076509] audit: type=1400 audit(1555788406.351:101): avc:  granted  { write } for  pid=11870 comm="arc-oemcrypto" name="/" dev="tmpfs" ino=8243 scontext=u:r:minijail:s0 tcontext=u:object_r:tmpfs:s0 tclass=dir
+[  593.089529] audit: type=1400 audit(1555788406.364:102): avc:  granted  { write } for  pid=11870 comm="arc-oemcrypto" name="/" dev="tmpfs" ino=8243 scontext=u:r:minijail:s0 tcontext=u:object_r:tmpfs:s0 tclass=dir
+[  594.425420] audit: type=1400 audit(1555788407.700:103): avc:  granted  { use } for  pid=11921 comm="init" path="pipe:[70266]" dev="pipefs" ino=70266 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fd
+[  594.425498] audit: type=1400 audit(1555788407.700:104): avc:  denied  { write } for  pid=11921 comm="init" path="pipe:[70266]" dev="pipefs" ino=70266 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fifo_file permissive=0
+[  594.425567] audit: type=1400 audit(1555788407.700:105): avc:  granted  { use } for  pid=11921 comm="init" path="pipe:[70267]" dev="pipefs" ino=70267 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fd
+[  594.425624] audit: type=1400 audit(1555788407.700:106): avc:  denied  { write } for  pid=11921 comm="init" path="pipe:[70267]" dev="pipefs" ino=70267 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fifo_file permissive=0
+[  594.542551] binder: 11942:11942 transaction failed 29189/-22, size 0-0 line 3001
+[  655.605411] input: Emulated Keyboard as /devices/virtual/input/input11
+[  655.962635] init: arc-kmsg-logger main process (11892) killed by TERM signal
+[  655.975961] audit_printk_skb: 6 callbacks suppressed
+[  655.975970] audit: type=1401 audit(1555788469.282:109): op=security_bounded_transition seresult=denied oldcontext=u:r:cros_session_manager:s0 newcontext=u:r:cros_arc_setup:s0
+[  656.005263] audit: type=1401 audit(1555788469.311:110): op=security_bounded_transition seresult=denied oldcontext=u:r:cros_session_manager:s0 newcontext=u:r:cros_arc_setup:s0
+[  695.206614] audit: type=1401 audit(1555788508.532:111): op=security_bounded_transition seresult=denied oldcontext=u:r:cros_session_manager:s0 newcontext=u:r:chromeos:s0
+[  695.220428] audit: type=1401 audit(1555788508.546:112): op=security_bounded_transition seresult=denied oldcontext=u:r:cros_session_manager:s0 newcontext=u:r:chromeos:s0
+[  695.310613] audit: type=1400 audit(1555788508.636:113): avc:  granted  { write } for  pid=12924 comm="arc-oemcrypto" name="/" dev="tmpfs" ino=8243 scontext=u:r:minijail:s0 tcontext=u:object_r:tmpfs:s0 tclass=dir
+[  695.327267] audit: type=1400 audit(1555788508.653:114): avc:  granted  { write } for  pid=12924 comm="arc-oemcrypto" name="/" dev="tmpfs" ino=8243 scontext=u:r:minijail:s0 tcontext=u:object_r:tmpfs:s0 tclass=dir
+[  696.357058] audit: type=1400 audit(1555788509.683:115): avc:  granted  { use } for  pid=12958 comm="init" path="pipe:[79874]" dev="pipefs" ino=79874 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fd
+[  696.357081] audit: type=1400 audit(1555788509.683:116): avc:  denied  { write } for  pid=12958 comm="init" path="pipe:[79874]" dev="pipefs" ino=79874 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fifo_file permissive=0
+[  696.357100] audit: type=1400 audit(1555788509.683:117): avc:  granted  { use } for  pid=12958 comm="init" path="pipe:[79875]" dev="pipefs" ino=79875 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fd
+[  696.357115] audit: type=1400 audit(1555788509.683:118): avc:  denied  { write } for  pid=12958 comm="init" path="pipe:[79875]" dev="pipefs" ino=79875 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fifo_file permissive=0
+[  696.357205] audit: type=1400 audit(1555788509.683:119): avc:  denied  { module_request } for  pid=12958 comm="init" kmod="personality-8" scontext=u:r:init:s0 tcontext=u:r:kernel:s0 tclass=system permissive=0
+[  696.357241] audit: type=1400 audit(1555788509.683:120): avc:  granted  { use } for  pid=12958 comm="init" path="/init" dev="loop1" ino=19 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fd
+[  696.502217] binder: 12991:12991 transaction failed 29189/-22, size 0-0 line 3001
+[  730.123210] init: arc-kmsg-logger main process (12944) killed by TERM signal
+[  730.151338] audit: type=1401 audit(1555788543.494:121): op=security_bounded_transition seresult=denied oldcontext=u:r:cros_session_manager:s0 newcontext=u:r:cros_arc_setup:s0
+[  730.171462] audit: type=1401 audit(1555788543.514:122): op=security_bounded_transition seresult=denied oldcontext=u:r:cros_session_manager:s0 newcontext=u:r:cros_arc_setup:s0
+[  732.469917] audit: type=1401 audit(1555788545.814:123): op=security_bounded_transition seresult=denied oldcontext=u:r:cros_session_manager:s0 newcontext=u:r:chromeos:s0
+[  732.479668] audit: type=1401 audit(1555788545.824:124): op=security_bounded_transition seresult=denied oldcontext=u:r:cros_session_manager:s0 newcontext=u:r:chromeos:s0
+[  732.551693] audit: type=1400 audit(1555788545.896:125): avc:  granted  { write } for  pid=13541 comm="arc-oemcrypto" name="/" dev="tmpfs" ino=8243 scontext=u:r:minijail:s0 tcontext=u:object_r:tmpfs:s0 tclass=dir
+[  732.564571] audit: type=1400 audit(1555788545.909:126): avc:  granted  { write } for  pid=13541 comm="arc-oemcrypto" name="/" dev="tmpfs" ino=8243 scontext=u:r:minijail:s0 tcontext=u:object_r:tmpfs:s0 tclass=dir
+[  733.638850] audit: type=1400 audit(1555788546.983:127): avc:  granted  { use } for  pid=13593 comm="init" path="pipe:[83186]" dev="pipefs" ino=83186 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fd
+[  733.638874] audit: type=1400 audit(1555788546.983:128): avc:  denied  { write } for  pid=13593 comm="init" path="pipe:[83186]" dev="pipefs" ino=83186 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fifo_file permissive=0
+[  733.638894] audit: type=1400 audit(1555788546.983:129): avc:  granted  { use } for  pid=13593 comm="init" path="pipe:[83187]" dev="pipefs" ino=83187 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fd
+[  733.638910] audit: type=1400 audit(1555788546.983:130): avc:  denied  { write } for  pid=13593 comm="init" path="pipe:[83187]" dev="pipefs" ino=83187 scontext=u:r:init:s0 tcontext=u:r:cros_arc_setup:s0 tclass=fifo_file permissive=0
+[  733.722435] binder: 13621:13621 transaction failed 29189/-22, size 0-0 line 3001
+[  890.346714] init: cras main process (1818) terminated with status 143
+[  919.303601] init: arc-kmsg-logger main process (13572) killed by TERM signal
+[  919.322351] audit_printk_skb: 6 callbacks suppressed
+[  919.322360] audit: type=1401 audit(1555788732.760:133): op=security_bounded_transition seresult=denied oldcontext=u:r:cros_session_manager:s0 newcontext=u:r:cros_arc_setup:s0
+[  919.345346] audit: type=1401 audit(1555788732.783:134): op=security_bounded_transition seresult=denied oldcontext=u:r:cros_session_manager:s0 newcontext=u:r:cros_arc_setup:s0
+[  948.490366] ------------[ cut here ]------------
+[  948.490379] WARNING: CPU: 0 PID: 14679 at ../../../../../tmp/portage/sys-kernel/chromeos-kernel-3_18-3.18-r2304/work/chromeos-kernel-3_18-3.18/drivers/gpu/drm/i915/i915_gem.c:4959 i915_gem_free_object+0x1d0/0x2b5()
+[  948.490391] WARN_ON(obj->pages_pin_count)
+[  948.490394] Modules linked in: configs cmac rfcomm uinput btusb btrtl btbcm btintel bluetooth snd_skl_nau88l25_max98357a snd_soc_hdac_hdmi snd_soc_dmic bridge snd_soc_skl stp llc nf_nat_tftp nf_conntrack_tftp nf_nat_ftp nf_conntrack_ftp esp6 ah6 xfrm6_mode_tunnel xfrm6_mode_transport xfrm4_mode_tunnel xfrm4_mode_transport ip6t_REJECT nf_reject_ipv6 ip6t_ipv6header snd_soc_skl_ipc snd_soc_sst_acpi snd_soc_sst_ipc snd_soc_sst_dsp acpi_als snd_hda_ext_core industrialio_triggered_buffer kfifo_buf snd_hda_core snd_seq_dummy snd_soc_ssm4567 memconsole_x86_legacy memconsole industrialio snd_soc_max98357a snd_soc_nau8825 ipt_MASQUERADE nf_nat_masquerade_ipv4 xt_mark zram fuse ip6table_filter snd_seq_midi snd_seq_midi_event snd_rawmidi snd_seq snd_seq_device iwlmvm iwlwifi cdc_ether usbnet r8152 mii iwl7000_mac80211 cfg80211 uvcvideo videobuf2_vmalloc videobuf2_memops videobuf2_core joydev
+[  948.490504] CPU: 0 PID: 14679 Comm: vgem_test Tainted: G        W      3.18.0-19285-g9f6cff6be6b8 #1
+[  948.490511] Hardware name: Google sentry/sentry, BIOS Google_Sentry.7820.314.0 06/08/2017
+[  948.490517]  0000000000000000 00000000e42a214f ffff880068223c98 ffffffffba37e877
+[  948.490525]  0000000000000000 ffff880068223cf0 ffff880068223cd8 ffffffffb9d77e3c
+[  948.490533]  00000000000168e0 ffff880272d7ef40 ffff8802744f0000 ffff880272d7ef58
+[  948.490542] Call Trace:
+[  948.490548]  [<ffffffffba37e877>] dump_stack+0x4e/0x71
+[  948.490555]  [<ffffffffb9d77e3c>] warn_slowpath_common+0x84/0x9f
+[  948.490560]  [<ffffffffb9d77f50>] warn_slowpath_fmt+0x55/0x6b
+[  948.490566]  [<ffffffffb9cc4c57>] i915_gem_free_object+0x1d0/0x2b5
+[  948.490573]  [<ffffffffba10698c>] ? dma_fence_put+0x17/0x17
+[  948.490579]  [<ffffffffba10698c>] ? dma_fence_put+0x17/0x17
+[  948.490586]  [<ffffffffba021bec>] drm_gem_object_free+0x2b/0x2d
+[  948.490593]  [<ffffffffba036bb8>] kref_put_mutex.constprop.8+0x46/0x50
+[  948.490599]  [<ffffffffba036f44>] drm_gem_dmabuf_release+0x27/0x37
+[  948.490605]  [<ffffffffba036f1d>] ? drm_gem_map_dma_buf+0x145/0x145
+[  948.490610]  [<ffffffffba1069df>] dma_buf_release+0x53/0x10e
+[  948.490616]  [<ffffffffba10698c>] ? dma_fence_put+0x17/0x17
+[  948.490622]  [<ffffffffb9c5b6e9>] __fput+0x10b/0x1cc
+[  948.490627]  [<ffffffffb9c5b7b8>] ____fput+0xe/0x10
+[  948.490633]  [<ffffffffb9c09c4e>] task_work_run+0x82/0xaf
+[  948.490639]  [<ffffffffb9d79d5a>] do_exit+0x43c/0x96d
+[  948.490644]  [<ffffffffb9d7a393>] do_group_exit+0x43/0xb1
+[  948.490649]  [<ffffffffb9d7a401>] ? do_group_exit+0xb1/0xb1
+[  948.490655]  [<ffffffffb9d7a415>] SyS_exit_group+0x14/0x14
+[  948.490661]  [<ffffffffba383604>] system_call_fastpath+0x21/0x26
+[  948.490666] ---[ end trace 8170f5f93c3bf383 ]---
+[  959.972629] ------------[ cut here ]------------
+[  959.972665] WARNING: CPU: 1 PID: 15458 at ../../../../../tmp/portage/sys-kernel/chromeos-kernel-3_18-3.18-r2304/work/chromeos-kernel-3_18-3.18/drivers/gpu/drm/i915/i915_gem.c:5698 i915_gem_object_get_dirty_page+0x34/0x114()
+[  959.972703] WARN_ON(obj->ops != &i915_gem_object_ops)
+[  959.972716] Modules linked in: configs cmac rfcomm uinput btusb btrtl btbcm btintel bluetooth snd_skl_nau88l25_max98357a snd_soc_hdac_hdmi snd_soc_dmic bridge snd_soc_skl stp llc nf_nat_tftp nf_conntrack_tftp nf_nat_ftp nf_conntrack_ftp esp6 ah6 xfrm6_mode_tunnel xfrm6_mode_transport xfrm4_mode_tunnel xfrm4_mode_transport ip6t_REJECT nf_reject_ipv6 ip6t_ipv6header snd_soc_skl_ipc snd_soc_sst_acpi snd_soc_sst_ipc snd_soc_sst_dsp acpi_als snd_hda_ext_core industrialio_triggered_buffer kfifo_buf snd_hda_core snd_seq_dummy snd_soc_ssm4567 memconsole_x86_legacy memconsole industrialio snd_soc_max98357a snd_soc_nau8825 ipt_MASQUERADE nf_nat_masquerade_ipv4 xt_mark zram fuse ip6table_filter snd_seq_midi snd_seq_midi_event snd_rawmidi snd_seq snd_seq_device iwlmvm iwlwifi cdc_ether usbnet r8152 mii iwl7000_mac80211 cfg80211 uvcvideo videobuf2_vmalloc videobuf2_memops videobuf2_core joydev
+[  959.973039] CPU: 1 PID: 15458 Comm: vk_glow Tainted: G        W      3.18.0-19285-g9f6cff6be6b8 #1
+[  959.973059] Hardware name: Google sentry/sentry, BIOS Google_Sentry.7820.314.0 06/08/2017
+[  959.973078]  0000000000000000 00000000615dcca4 ffff88027196b888 ffffffffba37e877
+[  959.973104]  0000000000000000 ffff88027196b8e0 ffff88027196b8c8 ffffffffb9d77e3c
+[  959.973129]  0000000000020000 0000000000000000 ffff880272d7cb40 00000000000000a0
+[  959.973154] Call Trace:
+[  959.973172]  [<ffffffffba37e877>] dump_stack+0x4e/0x71
+[  959.973192]  [<ffffffffb9d77e3c>] warn_slowpath_common+0x84/0x9f
+[  959.973210]  [<ffffffffb9d77f50>] warn_slowpath_fmt+0x55/0x6b
+[  959.973229]  [<ffffffffb9c54b8f>] ? kfree+0x83/0x4ad
+[  959.973247]  [<ffffffffb9cc8a51>] i915_gem_object_get_dirty_page+0x34/0x114
+[  959.973268]  [<ffffffffb9cba14b>] i915_gem_execbuffer_relocate_vma+0x3f6/0x757
+[  959.973292]  [<ffffffffba05e717>] ? gen8_ppgtt_insert_pte_entries.isra.19+0x19c/0x1ab
+[  959.973313]  [<ffffffffba05e7e5>] ? gen8_ppgtt_insert_entries+0xbf/0x10a
+[  959.973334]  [<ffffffffb9cbd6e3>] ? gen8_ppgtt_clear_range+0x433/0x433
+[  959.973356]  [<ffffffffba05dabe>] ? i915_gem_execbuffer+0x2f3/0x2f3
+[  959.973375]  [<ffffffffba05dafa>] ? ppgtt_bind_vma+0x3c/0x40
+[  959.973393]  [<ffffffffb9cbf46e>] ? i915_vma_bind+0x98/0x1ac
+[  959.973412]  [<ffffffffb9cc5785>] ? i915_gem_object_pin+0xa49/0xb20
+[  959.973452]  [<ffffffffb9cbb5bd>] i915_gem_do_execbuffer.isra.13+0x1111/0x263a
+[  959.973494]  [<ffffffffb9c92331>] ? avc_has_perm_noaudit+0xae/0xd4
+[  959.973535]  [<ffffffffb9cbce3a>] ? i915_gem_execbuffer2+0x90/0x260
+[  959.973576]  [<ffffffffb9cbcf25>] i915_gem_execbuffer2+0x17b/0x260
+[  959.973601]  [<ffffffffb9cb4391>] drm_ioctl+0x40a/0x49e
+[  959.973620]  [<ffffffffb9cbcdaa>] ? i915_gem_execbuffer_retire_commands+0x28/0x28
+[  959.973642]  [<ffffffffb9c3860b>] ? put_page+0x4d/0x172
+[  959.973660]  [<ffffffffb9c656b0>] SyS_ioctl+0x493/0x4d8
+[  959.973679]  [<ffffffffba383604>] system_call_fastpath+0x21/0x26
+[  959.973695] ---[ end trace 8170f5f93c3bf384 ]---
+[  959.973721] general protection fault: 0000 [#1] PREEMPT SMP 
+[  959.976062] gsmi: Log Shutdown Reason 0x03
+[  959.976079] Modules linked in: configs cmac rfcomm uinput btusb btrtl btbcm btintel bluetooth snd_skl_nau88l25_max98357a snd_soc_hdac_hdmi snd_soc_dmic bridge snd_soc_skl stp llc nf_nat_tftp nf_conntrack_tftp nf_nat_ftp nf_conntrack_ftp esp6 ah6 xfrm6_mode_tunnel xfrm6_mode_transport xfrm4_mode_tunnel xfrm4_mode_transport ip6t_REJECT nf_reject_ipv6 ip6t_ipv6header snd_soc_skl_ipc snd_soc_sst_acpi snd_soc_sst_ipc snd_soc_sst_dsp acpi_als snd_hda_ext_core industrialio_triggered_buffer kfifo_buf snd_hda_core snd_seq_dummy snd_soc_ssm4567 memconsole_x86_legacy memconsole industrialio snd_soc_max98357a snd_soc_nau8825 ipt_MASQUERADE nf_nat_masquerade_ipv4 xt_mark zram fuse ip6table_filter snd_seq_midi snd_seq_midi_event snd_rawmidi snd_seq snd_seq_device iwlmvm iwlwifi cdc_ether usbnet r8152 mii iwl7000_mac80211 cfg80211 uvcvideo videobuf2_vmalloc videobuf2_memops videobuf2_core joydev
+[  959.976420] CPU: 1 PID: 15458 Comm: vk_glow Tainted: G        W      3.18.0-19285-g9f6cff6be6b8 #1
+[  959.976439] Hardware name: Google sentry/sentry, BIOS Google_Sentry.7820.314.0 06/08/2017
+[  959.976458] task: ffff88025dde9240 ti: ffff880271968000 task.ti: ffff880271968000
+[  959.976475] RIP: 0010:[<ffffffffb9cba179>]  [<ffffffffb9cba179>] i915_gem_execbuffer_relocate_vma+0x424/0x757
+[  959.976505] RSP: 0018:ffff88027196b968  EFLAGS: 00010207
+[  959.976519] RAX: 0000000000000000 RBX: ffff88027196b9c0 RCX: 0000000000000007
+[  959.976536] RDX: ffff8802570cad80 RSI: 00000000ffffffff RDI: 0005080000000000
+[  959.976552] RBP: ffff88027196bbf8 R08: 000000000001ffe8 R09: ffff880000000000
+[  959.976568] R10: 0000160000000000 R11: 00000000000000a0 R12: ffff880272d7cb40
+[  959.976585] R13: 00000000000000a0 R14: 00000000ff1d0000 R15: ffff8802744a3000
+[  959.976603] FS:  00007f7244ce6740(0000) GS:ffff88027ec80000(0000) knlGS:0000000000000000
+[  959.976622] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  959.976637] CR2: 00007f7243cf5000 CR3: 0000000249c14000 CR4: 0000000000360770
+[  959.976654] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  959.976670] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  959.976686] Stack:
+[  959.976693]  ffffea00018e8e00 0000000000000000 0000000000000000 ffffffffffffffff
+[  959.976722]  ffff880272dfdc00 00000000615dcca4 ffff8802570cad80 000063eed94ae160
+[  959.976747]  0000000000000002 00000000ff1d0000 ffff880075f7b920 0000000000000001
+[  959.976774] Call Trace:
+[  959.976789]  [<ffffffffba05e717>] ? gen8_ppgtt_insert_pte_entries.isra.19+0x19c/0x1ab
+[  959.976811]  [<ffffffffba05e7e5>] ? gen8_ppgtt_insert_entries+0xbf/0x10a
+[  959.976835]  [<ffffffffb9cbd6e3>] ? gen8_ppgtt_clear_range+0x433/0x433
+[  959.976854]  [<ffffffffba05dabe>] ? i915_gem_execbuffer+0x2f3/0x2f3
+[  959.976872]  [<ffffffffba05dafa>] ? ppgtt_bind_vma+0x3c/0x40
+[  959.976894]  [<ffffffffb9cbf46e>] ? i915_vma_bind+0x98/0x1ac
+[  959.976915]  [<ffffffffb9cc5785>] ? i915_gem_object_pin+0xa49/0xb20
+[  959.976939]  [<ffffffffb9cbb5bd>] i915_gem_do_execbuffer.isra.13+0x1111/0x263a
+[  959.976961]  [<ffffffffb9c92331>] ? avc_has_perm_noaudit+0xae/0xd4
+[  959.976981]  [<ffffffffb9cbce3a>] ? i915_gem_execbuffer2+0x90/0x260
+[  959.977001]  [<ffffffffb9cbcf25>] i915_gem_execbuffer2+0x17b/0x260
+[  959.977021]  [<ffffffffb9cb4391>] drm_ioctl+0x40a/0x49e
+[  959.977038]  [<ffffffffb9cbcdaa>] ? i915_gem_execbuffer_retire_commands+0x28/0x28
+[  959.977059]  [<ffffffffb9c3860b>] ? put_page+0x4d/0x172
+[  959.977078]  [<ffffffffb9c656b0>] SyS_ioctl+0x493/0x4d8
+[  959.977097]  [<ffffffffba383604>] system_call_fastpath+0x21/0x26
+[  959.977111] Code: 25 d0 d4 00 00 49 ba 00 00 00 00 00 16 00 00 49 b9 00 00 00 00 00 88 ff ff 45 89 eb 4a 8d 3c 10 48 c1 ff 06 48 c1 e7 0c 4c 01 cf <46> 89 34 1f 49 8b 4f 28 80 79 2a 07 76 60 41 83 c5 04 41 81 e5 
+[  959.977315] RIP  [<ffffffffb9cba179>] i915_gem_execbuffer_relocate_vma+0x424/0x757
+[  959.977339]  RSP <ffff88027196b968>
+[  959.977365] ---[ end trace 8170f5f93c3bf385 ]---
+[  959.979836] Kernel panic - not syncing: Fatal exception
+[  959.979868] Kernel Offset: 0x38c00000 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+[  959.980058] gsmi: Log Shutdown Reason 0x02
+[  959.982303] ACPI MEMORY or I/O RESET_REG.

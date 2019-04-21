@@ -78,9 +78,9 @@ func main() {
 			"display_backlight":       "display_backlight",
 			"dlc":                     "dlc_test",
 			"drm_atomic":              "drm_atomic",
-			"firewall":                "!moblab", // Moblab has relaxed iptables rules
-			"google_virtual_keyboard": "chrome_internal && internal",
-			"gpu_sandboxing":          "!betty && !tast_vm", // no GPU sandboxing on VMs: https://crbug.com/914688
+			"firewall":                "!moblab",                                // Moblab has relaxed iptables rules
+			"google_virtual_keyboard": "chrome_internal && internal && !moblab", // doesn't work on Moblab: https://crbug.com/949912
+			"gpu_sandboxing":          "!betty && !tast_vm",                     // no GPU sandboxing on VMs: https://crbug.com/914688
 			"memd":                    "memd",
 			"ml_service":              "ml_service",
 			"no_android":              "!arc",

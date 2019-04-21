@@ -16,6 +16,24 @@
       "revId": "855a2f719f6e78dbc7f2f590c7e18116faf10126",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0d18f16c_5e60d7a0",
+        "filename": "src/chromiumos/cmd/tast/run/diagnose.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-04-21T19:02:15Z",
+      "side": 1,
+      "message": "Sure, done.",
+      "parentUuid": "f37232b1_8de47c38",
+      "revId": "855a2f719f6e78dbc7f2f590c7e18116faf10126",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

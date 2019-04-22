@@ -14,6 +14,10 @@ flag that's reachable from your workstation via SSH. An image running in a
 downloaded rather than one built in your chroot, make sure that it's a recent
 version.
 
+[Chrome OS chroot]: http://www.chromium.org/chromium-os/quick-start-guide
+[Simple Chrome]: https://chromium.googlesource.com/chromiumos/docs/+/master/simple_chrome_workflow.md
+[virtual machine]: https://chromium.googlesource.com/chromiumos/docs/+/master/cros_vm.md
+
 ## Run a prebuilt test
 
 In your chroot, run the following:
@@ -60,6 +64,8 @@ To install them, please run the following in your chroot:
 
 See [Running Tests] for more information.
 
+[Running Tests]: running_tests.md
+
 ## Modify a test
 
 Now, let's modify the test. In your Chrome OS checkout, go to
@@ -93,10 +99,11 @@ s.Error("This is an intentional error")
 
 If you build and run the test again, you should see it fail.
 
-See [Writing Tests] for more information, and explore the [tast-tests
-repository] to see existing tests and related packages.
-
 ## Next steps
+
+See [Writing Tests] for more information, and explore the [tast-tests
+repository] to see existing tests and related packages. [Codelab #1] walks
+through the creation of a simple test.
 
 Additional Tast documentation is available in the [tast repository].
 
@@ -109,12 +116,9 @@ Many resources are available for learning more about Go. Here are a few:
     High-level overview of Go's features and design philosophy.
 *   [Community Learn wiki] - Links to external resources.
 
-[Chrome OS chroot]: http://www.chromium.org/chromium-os/quick-start-guide
-[Simple Chrome]: https://chromium.googlesource.com/chromiumos/docs/+/master/simple_chrome_workflow.md
-[virtual machine]: https://chromium.googlesource.com/chromiumos/docs/+/master/cros_vm.md
-[Running Tests]: running_tests.md
 [Writing Tests]: writing_tests.md
 [tast-tests repository]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/
+[Codelab #1]: codelab_1.md
 [tast repository]: https://chromium.googlesource.com/chromiumos/platform/tast/
 [A Tour of Go]: https://tour.golang.org/
 [Official Go documentation]: https://golang.org/doc/

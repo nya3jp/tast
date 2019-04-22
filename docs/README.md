@@ -8,6 +8,7 @@ For more general information about Tast, see [README](../README.md).
 *   [Quickstart](quickstart.md)
 *   [Running Tests](running_tests.md)
 *   [Writing Tests](writing_tests.md)
+*   [Codelab #1](codelab_1.md)
 *   [Test Attributes](test_attributes.md)
 *   [Test Dependencies](test_dependencies.md)
 *   [Test Validation](test_validation.md)

@@ -222,7 +222,11 @@ been reported by the time that the test function returns, then the test passes.
 The test can be run using a command like `tast -verbose run <DUT>
 platform.DateFormat`. See the [Running Tests] document for more information.
 
+If you want to see how a more-complicated test is written, check out
+[Codelab #2].
+
 [Running Tests]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/running_tests.md
+[Codelab #2]: codelab_2.md
 
 ## Full code
 

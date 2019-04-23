@@ -14,6 +14,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -107,7 +108,7 @@ func WriteResults(ctx context.Context, cfg *Config, results []TestResult, comple
 
 	sep := strings.Repeat("-", 80)
 	cfg.Logger.Log(sep)
-
+	executedTests := []string{}
 	for _, res := range results {
 		pn := fmt.Sprintf("%-"+strconv.Itoa(ml)+"s", res.Name)
 		if len(res.Errors) == 0 {
@@ -125,8 +126,31 @@ func WriteResults(ctx context.Context, cfg *Config, results []TestResult, comple
 				}
 			}
 		}
+		executedTests = append(executedTests, res.Name)
 	}
-
+	// Repeating finding ml for non-exists patterns
+	for _, pattern := range cfg.Patterns {
+		if len(pattern) > ml {
+			ml = len(pattern)
+		}
+	}
+	contains := func(patterns []string, pattern string) bool {
+		for _, test := range patterns {
+			if pattern == test {
+				return true
+			}
+		}
+		return false
+	}
+	for _, pattern := range cfg.Patterns {
+		// Handling this case when pattern name is not an expression
+		if regexp.MustCompile("[a-zA-Z0-9]+$").MatchString(pattern) {
+			pn := fmt.Sprintf("%-"+strconv.Itoa(ml)+"s", pattern)
+			if !contains(executedTests, pattern) {
+				cfg.Logger.Logf("%s  [ PATTERN NOT FOUND ]", pn)
+			}
+		}
+	}
 	// If the run didn't finish, log an additional message after the individual results
 	// to make it clearer that all is not well.
 	if !complete {

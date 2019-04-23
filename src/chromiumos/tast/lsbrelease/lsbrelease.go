@@ -37,11 +37,16 @@ const (
 
 	// ReleaseAppID is a key for the release Omaha app ID.
 	ReleaseAppID = "CHROMEOS_RELEASE_APPID"
+
+	// ARCSDKVersion is a key for the Android SDK Version of the current
+	// ARC image installed on the DUT.
+	ARCSDKVersion = "CHROMEOS_ARC_ANDROID_SDK_VERSION"
 )
 
 // allowedPkgs is the list of Go packages that can use this package.
 var allowedPkgs = []string{
 	"chromiumos/cmd/tast/symbolize",
+	"chromiumos/tast/local/arc", // For SDKVersion.
 	"chromiumos/tast/local/bundles/cros/platform/updateserver",
 	"chromiumos/tast/lsbrelease",
 	"main", // for local_test_runner

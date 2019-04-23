@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "8697a844_23f91830",
+        "filename": "src/chromiumos/cmd/tast/run/results.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-04-23T19:38:00Z",
+      "side": 1,
+      "message": "That\u0027s true. I thought one minute is a bit long, so I shortened it to the minimal possible duration I\u0027m comfortable with. :)\n\nI\u0027m happy to make it longer, what do you think is a good value considering trade-off?",
+      "parentUuid": "a4966970_7ddb3620",
+      "revId": "b63d161c96fd3413768f0a7b5faa98cfcefac60a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6247340b_f9cbd72d",
         "filename": "src/chromiumos/tast/bundle/args.go",
         "patchSetId": 1
@@ -33,6 +51,24 @@
       "revId": "b63d161c96fd3413768f0a7b5faa98cfcefac60a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "91fa7c25_7f2d6512",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-04-23T19:38:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6247340b_f9cbd72d",
+      "revId": "b63d161c96fd3413768f0a7b5faa98cfcefac60a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -59,6 +95,30 @@
     },
     {
       "key": {
+        "uuid": "b9617d12_43821099",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-04-23T19:38:00Z",
+      "side": 1,
+      "message": "Oh I did not know we can use time.Duration for JSON. It\u0027s far better, thanks!",
+      "parentUuid": "eeef054f_5ae58f2f",
+      "range": {
+        "startLine": 180,
+        "startChar": 1,
+        "endLine": 180,
+        "endChar": 18
+      },
+      "revId": "b63d161c96fd3413768f0a7b5faa98cfcefac60a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6b5fd234_a636e663",
         "filename": "src/chromiumos/tast/bundle/bundle.go",
         "patchSetId": 1
@@ -79,6 +139,30 @@
       "revId": "b63d161c96fd3413768f0a7b5faa98cfcefac60a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c69253ad_1cec5c90",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-04-23T19:38:00Z",
+      "side": 1,
+      "message": "Your guess is right. :) Thanks for catching!",
+      "parentUuid": "6b5fd234_a636e663",
+      "range": {
+        "startLine": 158,
+        "startChar": 1,
+        "endLine": 158,
+        "endChar": 4
+      },
+      "revId": "b63d161c96fd3413768f0a7b5faa98cfcefac60a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -122,6 +206,24 @@
     },
     {
       "key": {
+        "uuid": "dc596320_6a7c0d48",
+        "filename": "src/chromiumos/tast/control/heartbeat.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-04-23T19:38:00Z",
+      "side": 1,
+      "message": "Yes, mutex sounds better than recovering from panics. I\u0027ve modified to use mutex.",
+      "parentUuid": "f0ed131d_b2b6beb3",
+      "revId": "b63d161c96fd3413768f0a7b5faa98cfcefac60a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4dfad34a_c49e45fe",
         "filename": "src/chromiumos/tast/control/heartbeat_test.go",
         "patchSetId": 1
@@ -142,6 +244,30 @@
       "revId": "b63d161c96fd3413768f0a7b5faa98cfcefac60a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7a166851_3817e1fe",
+        "filename": "src/chromiumos/tast/control/heartbeat_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-04-23T19:38:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4dfad34a_c49e45fe",
+      "range": {
+        "startLine": 33,
+        "startChar": 2,
+        "endLine": 33,
+        "endChar": 5
+      },
+      "revId": "b63d161c96fd3413768f0a7b5faa98cfcefac60a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -191,6 +317,30 @@
     },
     {
       "key": {
+        "uuid": "159705f9_18a27966",
+        "filename": "src/chromiumos/tast/control/heartbeat_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-04-23T19:38:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d84c7e8a_b7288c16",
+      "range": {
+        "startLine": 82,
+        "startChar": 1,
+        "endLine": 82,
+        "endChar": 4
+      },
+      "revId": "b63d161c96fd3413768f0a7b5faa98cfcefac60a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a8a819b9_e1a5cc03",
         "filename": "src/chromiumos/tast/control/heartbeat_test.go",
         "patchSetId": 1
@@ -214,6 +364,30 @@
     },
     {
       "key": {
+        "uuid": "d2d739c9_d42f9a79",
+        "filename": "src/chromiumos/tast/control/heartbeat_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-04-23T19:38:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a8a819b9_e1a5cc03",
+      "range": {
+        "startLine": 103,
+        "startChar": 1,
+        "endLine": 103,
+        "endChar": 4
+      },
+      "revId": "b63d161c96fd3413768f0a7b5faa98cfcefac60a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e0ed8898_1141f546",
         "filename": "src/chromiumos/tast/runner/runner.go",
         "patchSetId": 1
@@ -234,6 +408,30 @@
       "revId": "b63d161c96fd3413768f0a7b5faa98cfcefac60a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f072fc75_40d42d05",
+        "filename": "src/chromiumos/tast/runner/runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-04-23T19:38:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e0ed8898_1141f546",
+      "range": {
+        "startLine": 102,
+        "startChar": 1,
+        "endLine": 102,
+        "endChar": 4
+      },
+      "revId": "b63d161c96fd3413768f0a7b5faa98cfcefac60a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

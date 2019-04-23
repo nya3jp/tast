@@ -16,6 +16,24 @@
       "revId": "1b7ef5f7d21c5bb4989ea7473a61025d8c6e2582",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b8e7f956_bf64bff2",
+        "filename": "src/chromiumos/cmd/tast/run/results.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 430,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-04-23T19:38:00Z",
+      "side": 0,
+      "message": "Oh sorry, I should have added a comment here. Actually ctx.Done is checked in the caller of nextMessageTimeout so we no longer need to care ctx.\n\nhttps://cs.corp.google.com/chromeos_public/src/platform/tast/src/chromiumos/cmd/tast/run/results.go?q\u003dnextMessageTimeout\u0026g\u003d0\u0026l\u003d471",
+      "parentUuid": "134768a1_43538636",
+      "revId": "1b7ef5f7d21c5bb4989ea7473a61025d8c6e2582",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

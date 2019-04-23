@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f013faa3_9d9edc5a",
+        "filename": "src/chromiumos/cmd/tast/run/results.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-23T19:35:41Z",
+      "side": 1,
+      "message": "this isn\u0027t correct; patterns are either globs or attribute expressions. please see https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/running_tests.md#Specifying-which-tests-to-run.",
+      "revId": "9b4cf6868b4fc94fe0a41904ad68ef414495c513",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

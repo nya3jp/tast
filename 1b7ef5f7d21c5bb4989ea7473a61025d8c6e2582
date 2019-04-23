@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "134768a1_43538636",
+        "filename": "src/chromiumos/cmd/tast/run/results.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 430,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-04-23T02:49:40Z",
+      "side": 0,
+      "message": "let me know if i\u0027m confused, but i think this may still be necessary to handle \"tast run -timeout\".",
+      "revId": "1b7ef5f7d21c5bb4989ea7473a61025d8c6e2582",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

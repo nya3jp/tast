@@ -11,6 +11,8 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"reflect"
+	"regexp"
 	"strings"
 	gotesting "testing"
 	"time"
@@ -606,5 +608,58 @@ func TestWritePartialResults(t *gotesting.T) {
 	})
 	if !cmp.Equal(streamRes, expRes, cmp.AllowUnexported(TestResult{})) {
 		t.Errorf("%v contains %+v; want %+v", streamedResultsFilename, streamRes, expRes)
+	}
+}
+
+func TestWriteResultsUnmatchedGlobs(t *gotesting.T) {
+	td := testutil.TempDir(t)
+	defer os.RemoveAll(td)
+
+	baseCfg := NewConfig(RunTestsMode, td, td)
+	baseCfg.ResDir = td
+
+	// Report that two tests were executed.
+	results := []TestResult{
+		TestResult{Test: testing.Test{Name: "pkg.Test1"}},
+		TestResult{Test: testing.Test{Name: "pkg.Test2"}},
+	}
+
+	// This matches the message logged by WriteResults followed by patterns that
+	// are each indented by two spaces.
+	re := regexp.MustCompile(
+		`One or more test patterns did not match any tests:\n((?:  [^\n]+\n)+)`)
+
+	for _, tc := range []struct {
+		patterns  []string // requested test patterns
+		complete  bool     // whether run was complete
+		unmatched []string // expected unmatched patterns; nil if none expected
+	}{
+		{[]string{"pkg.Test1", "pkg.Test2"}, true, nil},                 // multiple exacts match
+		{[]string{"pkg.*1", "pkg.*2"}, true, nil},                       // multiple globs match
+		{[]string{"pkg.Test*"}, true, nil},                              // single glob matches
+		{[]string{"pkg.Missing"}, true, []string{"pkg.Missing"}},        // single exact fails
+		{[]string{"foo", "bar"}, true, []string{"foo", "bar"}},          // multiple exacts fail
+		{[]string{"pkg.Test1", "pkg.Foo*"}, true, []string{"pkg.Foo*"}}, // exact matches, glob fails
+		{[]string{"pkg.*", "foo.Bar"}, false, nil},                      // missing glob, but run incomplete
+	} {
+		cfg := *baseCfg
+		out := &bytes.Buffer{}
+		cfg.Logger = logging.NewSimple(out, 0, false)
+		cfg.Patterns = tc.patterns
+		if err := WriteResults(context.Background(), &cfg, results, tc.complete); err != nil {
+			t.Errorf("WriteResults() failed for %v: %v", cfg.Patterns, err)
+			continue
+		}
+
+		var unmatched []string
+		if ms := re.FindStringSubmatch(out.String()); ms != nil {
+			for _, ln := range strings.Split(strings.TrimRight(ms[1], "\n"), "\n") {
+				unmatched = append(unmatched, ln[2:])
+			}
+		}
+		if !reflect.DeepEqual(unmatched, tc.unmatched) {
+			t.Errorf("WriteResults() with patterns %v and complete=%v logged unmatched patterns %v; want %v",
+				tc.patterns, tc.complete, unmatched, tc.unmatched)
+		}
 	}
 }

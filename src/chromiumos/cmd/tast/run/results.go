@@ -18,6 +18,7 @@ import (
 	"strings"
 	"time"
 
+	"chromiumos/tast/bundle"
 	"chromiumos/tast/control"
 	"chromiumos/tast/testing"
 	"chromiumos/tast/timing"
@@ -127,9 +128,19 @@ func WriteResults(ctx context.Context, cfg *Config, results []TestResult, comple
 		}
 	}
 
-	// If the run didn't finish, log an additional message after the individual results
-	// to make it clearer that all is not well.
-	if !complete {
+	if complete {
+		// Let the user know if one or more of the globs that they supplied didn't match any tests.
+		if pats := unmatchedTestPatterns(cfg.Patterns, results); len(pats) > 0 {
+			cfg.Logger.Log("")
+			cfg.Logger.Log("One or more test patterns did not match any tests:")
+			for _, p := range pats {
+				cfg.Logger.Log("  " + p)
+			}
+		}
+	} else {
+		// If the run didn't finish, log an additional message after the individual results
+		// to make it clearer that all is not well.
+		cfg.Logger.Log("")
 		cfg.Logger.Log("Run did not finish successfully; results are incomplete")
 	}
 
@@ -602,4 +613,34 @@ func readTestList(r io.Reader) ([]TestResult, error) {
 		results[i].Test = ts[i]
 	}
 	return results, nil
+}
+
+// unmatchedTestPatterns returns any glob test patterns in the supplied slice
+// that failed to match any tests in results.
+func unmatchedTestPatterns(patterns []string, results []TestResult) []string {
+	// TODO(derat): Consider also checking attribute expressions.
+	if bundle.GetTestPatternType(patterns) != bundle.TestPatternGlobs {
+		return nil
+	}
+
+	var unmatched []string
+	for _, p := range patterns {
+		re, err := testing.NewTestGlobRegexp(p)
+		if err != nil {
+			// Ignore bad globs -- these should've been caught earlier by the test bundles.
+			continue
+		}
+
+		matched := false
+		for _, res := range results {
+			if re.MatchString(res.Test.Name) {
+				matched = true
+				break
+			}
+		}
+		if !matched {
+			unmatched = append(unmatched, p)
+		}
+	}
+	return unmatched
 }

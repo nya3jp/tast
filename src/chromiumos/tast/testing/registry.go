@@ -78,15 +78,9 @@ func (r *Registry) AllTests() []*Test {
 // testsForGlob returns registered tests with names matched by w,
 // which may contain '*' to match zero or more arbitrary characters.
 func (r *Registry) testsForGlob(g string) ([]*Test, error) {
-	if err := validateTestGlob(g); err != nil {
-		return nil, fmt.Errorf("bad glob %q: %v", g, err)
-	}
-	g = strings.Replace(g, ".", "\\.", -1)
-	g = strings.Replace(g, "*", ".*", -1)
-	g = "^" + g + "$"
-	re, err := regexp.Compile(g)
+	re, err := NewTestGlobRegexp(g)
 	if err != nil {
-		return nil, fmt.Errorf("failed to compile %q: %v", g, err)
+		return nil, fmt.Errorf("bad glob %q: %v", g, err)
 	}
 
 	tests := make([]*Test, 0)
@@ -98,19 +92,8 @@ func (r *Registry) testsForGlob(g string) ([]*Test, error) {
 	return tests, nil
 }
 
-// validateTestGlob returns an error if g contains one or more characters
-// disallowed in test glob patterns.
-func validateTestGlob(g string) error {
-	for _, ch := range g {
-		if !unicode.IsLetter(ch) && !unicode.IsDigit(ch) && ch != '.' && ch != '*' {
-			return fmt.Errorf("invalid character %v", ch)
-		}
-	}
-	return nil
-}
-
 // TestsForGlobs de-duplicates and returns copies of registered tests with names matched by
-// any glob in gs.
+// any glob in gs. See NewTestGlobRegexp for details about the glob format.
 func (r *Registry) TestsForGlobs(gs []string) ([]*Test, error) {
 	tests := make([]*Test, 0)
 	seen := make(map[*Test]struct{})
@@ -148,4 +131,22 @@ func (r *Registry) TestsForAttrExpr(s string) ([]*Test, error) {
 		}
 	}
 	return tests, nil
+}
+
+// NewTestGlobRegexp returns a compiled regular expression corresponding to g,
+// a glob for matching test names. g may consist of letters, digits, periods,
+// and '*' to match zero or more arbitrary characters.
+//
+// This matches the logic used by TestsForGlobs and is exported to make it possible
+// for code outside this package to verify that a user-supplied glob matched at least one test.
+func NewTestGlobRegexp(g string) (*regexp.Regexp, error) {
+	for _, ch := range g {
+		if !unicode.IsLetter(ch) && !unicode.IsDigit(ch) && ch != '.' && ch != '*' {
+			return nil, fmt.Errorf("invalid character %v", ch)
+		}
+	}
+	g = strings.Replace(g, ".", "\\.", -1)
+	g = strings.Replace(g, "*", ".*", -1)
+	g = "^" + g + "$"
+	return regexp.Compile(g)
 }

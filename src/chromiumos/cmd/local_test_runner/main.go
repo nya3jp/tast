@@ -91,7 +91,6 @@ func main() {
 			"selinux":                 "selinux",
 			"selinux_current":         "selinux && !selinux_experimental",
 			"selinux_experimental":    "selinux && selinux_experimental",
-			"stable_egl":              "!tegra", // Crashes in nVidia Tegra EGL driver: https://crbug.com/717275
 			"tablet_mode":             "touchview",
 			"tpm":                     "!mocktpm && !tast_vm",
 			"transparent_hugepage":    "transparent_hugepage",

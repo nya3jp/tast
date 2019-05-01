@@ -34,6 +34,47 @@
       "revId": "bca450fdeed46ced977b3bb936b3d8b92151ff86",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "373c7907_c109867c",
+        "filename": "docs/codelab_2.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 281,
+      "author": {
+        "id": 1117055
+      },
+      "writtenOn": "2019-05-01T21:28:25Z",
+      "side": 1,
+      "message": "Mostly I want to avoid the break-to-label. I like this a little better because the control flow is a little less confusing in my opinion:\n\nfunc writeToChan(ctx context.Context, ch chan string, sc bufio.Scanner) error {\n  for {\n    if ctx.Err() !\u003d nil {\n      return ctx.Err()\n    }\n\n    select {\n    case ch \u003c- sc.Text():\n      return nil\n    default:\n      testing.Sleep(ctx, 10*time.Millisecond)\n    }\n  }\n}\n\n...\n\nfor sc.Scan() {\n  if err :\u003d writeToChan(ctx, ch, sc); err !\u003d nil {\n    return\n  }\n}\n\nbut YMMV.",
+      "parentUuid": "5c8f6a8b_30ea1ae2",
+      "revId": "bca450fdeed46ced977b3bb936b3d8b92151ff86",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2f0aa744_2703b541",
+        "filename": "docs/codelab_2.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 408,
+      "author": {
+        "id": 1117055
+      },
+      "writtenOn": "2019-05-01T21:28:25Z",
+      "side": 1,
+      "message": "is it the style to put a space between the arrow and channel or not? you put a space above, but not here or on line 413",
+      "range": {
+        "startLine": 408,
+        "startChar": 14,
+        "endLine": 408,
+        "endChar": 23
+      },
+      "revId": "bca450fdeed46ced977b3bb936b3d8b92151ff86",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

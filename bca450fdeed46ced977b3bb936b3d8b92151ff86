@@ -16,6 +16,24 @@
       "revId": "bca450fdeed46ced977b3bb936b3d8b92151ff86",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5c8f6a8b_30ea1ae2",
+        "filename": "docs/codelab_2.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 281,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-01T20:55:03Z",
+      "side": 1,
+      "message": "showcasing it wasn\u0027t my goal. :-P\n\ni always feel a bit weird about putting one-off blocks of code like this for loop into a function. on one level, i think i prefer nesting all of a goroutine\u0027s code like this since it makes it easier to see where it\u0027ll be run.\n\ndo you think that nesting a writeChan() or similar function within the goroutine would be better?",
+      "parentUuid": "e510ff41_edc2990f",
+      "revId": "bca450fdeed46ced977b3bb936b3d8b92151ff86",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

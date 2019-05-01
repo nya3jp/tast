@@ -179,8 +179,6 @@ func TestLocalSuccess(t *gotesting.T) {
 				},
 				BundleGlob: builtinBundleGlob,
 			},
-			BundleGlobDeprecated: builtinBundleGlob,
-			DataDirDeprecated:    localDataBuiltinDir,
 		})
 
 		mw := control.NewMessageWriter(stdout)
@@ -301,9 +299,8 @@ func TestLocalList(t *gotesting.T) {
 
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		checkArgs(t, args, &runner.Args{
-			Mode:                 runner.ListTestsMode,
-			ListTests:            &runner.ListTestsArgs{BundleGlob: builtinBundleGlob},
-			BundleGlobDeprecated: builtinBundleGlob,
+			Mode:      runner.ListTestsMode,
+			ListTests: &runner.ListTestsArgs{BundleGlob: builtinBundleGlob},
 		})
 
 		json.NewEncoder(stdout).Encode(tests)
@@ -361,8 +358,6 @@ func TestLocalDataFiles(t *gotesting.T) {
 				BundleArgs: bundle.ListTestsArgs{Patterns: []string{pattern}},
 				BundleGlob: builtinBundleGlob,
 			},
-			PatternsDeprecated:   []string{pattern},
-			BundleGlobDeprecated: builtinBundleGlob,
 		})
 
 		json.NewEncoder(stdout).Encode(tests)

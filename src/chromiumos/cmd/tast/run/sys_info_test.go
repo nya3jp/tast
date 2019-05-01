@@ -62,9 +62,8 @@ func TestCollectSysInfo(t *testing.T) {
 
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		checkArgs(t, args, &runner.Args{
-			Mode:                   runner.CollectSysInfoMode,
-			CollectSysInfo:         &runner.CollectSysInfoArgs{InitialState: *td.cfg.initialSysInfo},
-			InitialStateDeprecated: *td.cfg.initialSysInfo,
+			Mode:           runner.CollectSysInfoMode,
+			CollectSysInfo: &runner.CollectSysInfoArgs{InitialState: *td.cfg.initialSysInfo},
 		})
 
 		json.NewEncoder(stdout).Encode(&runner.CollectSysInfoResult{})

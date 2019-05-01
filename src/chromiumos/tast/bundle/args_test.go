@@ -40,8 +40,8 @@ func TestReadArgsSortTests(t *gotesting.T) {
 	testing.AddTest(&testing.Test{Name: test3, Func: testFunc})
 	testing.AddTest(&testing.Test{Name: test1, Func: testFunc})
 
-	tests, err := readArgs(nil, newBufferWithArgs(t, &Args{}), ioutil.Discard,
-		&Args{}, &runConfig{}, localBundle)
+	stdin := newBufferWithArgs(t, &Args{Mode: RunTestsMode, RunTests: &RunTestsArgs{}})
+	tests, err := readArgs(nil, stdin, ioutil.Discard, &Args{}, &runConfig{}, localBundle)
 	if err != nil {
 		t.Fatal("readArgs() failed: ", err)
 	}
@@ -67,7 +67,8 @@ func TestReadArgsTestTimeouts(t *gotesting.T) {
 	testing.AddTest(&testing.Test{Name: name1, Func: testFunc, Timeout: customTimeout})
 	testing.AddTest(&testing.Test{Name: name2, Func: testFunc})
 
-	tests, err := readArgs(nil, newBufferWithArgs(t, &Args{}), ioutil.Discard, &Args{},
+	stdin := newBufferWithArgs(t, &Args{Mode: RunTestsMode, RunTests: &RunTestsArgs{}})
+	tests, err := readArgs(nil, stdin, ioutil.Discard, &Args{},
 		&runConfig{defaultTestTimeout: defaultTimeout}, localBundle)
 	if err != nil {
 		t.Fatal("readArgs() failed: ", err)
@@ -91,7 +92,8 @@ func TestReadArgsRegistrationError(t *gotesting.T) {
 
 	// Adding a test without a function should generate an error.
 	testing.AddTest(&testing.Test{})
-	if _, err := readArgs(nil, newBufferWithArgs(t, &Args{}), ioutil.Discard, &Args{},
+	stdin := newBufferWithArgs(t, &Args{Mode: RunTestsMode, RunTests: &RunTestsArgs{}})
+	if _, err := readArgs(nil, stdin, ioutil.Discard, &Args{},
 		&runConfig{}, localBundle); !errorHasStatus(err, statusBadTests) {
 		t.Errorf("readArgs() with bad test returned error %v; want status %v", err, statusBadTests)
 	}

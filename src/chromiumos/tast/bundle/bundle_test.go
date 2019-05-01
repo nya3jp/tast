@@ -526,7 +526,7 @@ func TestRunList(t *gotesting.T) {
 	}
 
 	// ListTestsMode should result in tests being JSON-marshaled to stdout.
-	stdin := newBufferWithArgs(t, &Args{Mode: ListTestsMode})
+	stdin := newBufferWithArgs(t, &Args{Mode: ListTestsMode, ListTests: &ListTestsArgs{}})
 	stdout := &bytes.Buffer{}
 	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{},
 		&Args{}, &runConfig{}, localBundle); status != statusSuccess {

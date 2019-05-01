@@ -65,7 +65,11 @@ func TestGetSoftwareFeaturesNoFile(t *testing.T) {
 		USEFlagsFile:               "/tmp/nonexistent_use_flags_file.txt",
 		SoftwareFeatureDefinitions: map[string]string{"foo": "bar"},
 	}
-	status, stdout, _, sig := callRun(t, nil, &Args{Mode: GetSoftwareFeaturesMode}, nil, &cfg)
+	args := &Args{
+		Mode:                GetSoftwareFeaturesMode,
+		GetSoftwareFeatures: &GetSoftwareFeaturesArgs{},
+	}
+	status, stdout, _, sig := callRun(t, nil, args, nil, &cfg)
 	if status != statusSuccess {
 		t.Fatalf("%v = %v; want %v", sig, status, statusSuccess)
 	}

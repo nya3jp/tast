@@ -56,7 +56,6 @@ func TestGetSoftwareFeaturesAlways(t *testing.T) {
 			GetSoftwareFeatures: &runner.GetSoftwareFeaturesArgs{
 				ExtraUSEFlags: td.cfg.extraUSEFlags,
 			},
-			ExtraUSEFlagsDeprecated: td.cfg.extraUSEFlags,
 		})
 
 		writeGetSoftwareFeaturesResult(stdout, avail, unavail)

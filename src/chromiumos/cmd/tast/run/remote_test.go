@@ -192,7 +192,6 @@ func TestRemoteRun(t *gotesting.T) {
 			td.cfg, td.args.RunTests.BundleArgs.OutDir, td.cfg.ResDir)
 	}
 	td.args.RunTests.BundleArgs.OutDir = "" // clear randomly-named dir
-	td.args.OutDirDeprecated = ""           // clear randomly-named dir
 
 	glob := filepath.Join(td.cfg.remoteBundleDir, "*")
 	exe, err := os.Executable()
@@ -218,13 +217,6 @@ func TestRemoteRun(t *gotesting.T) {
 				CheckSoftwareDeps: false,
 			},
 		},
-		// Deprecated fields should be backfilled to support old runners.
-		BundleGlobDeprecated:        glob,
-		DataDirDeprecated:           td.cfg.remoteDataDir,
-		KeyFileDeprecated:           td.cfg.KeyFile,
-		TastPathDeprecated:          exe,
-		RunFlagsDeprecated:          runFlags,
-		CheckSoftwareDepsDeprecated: false,
 	}
 	if !reflect.DeepEqual(td.args, expArgs) {
 		t.Errorf("remote(%+v) passed args %+v; want %+v", td.cfg, td.args, expArgs)
@@ -261,9 +253,6 @@ func TestRemoteList(t *gotesting.T) {
 			BundleArgs: bundle.ListTestsArgs{Patterns: td.cfg.Patterns},
 			BundleGlob: glob,
 		},
-		// Deprecated fields should be backfilled to support old runners.
-		BundleGlobDeprecated: glob,
-		PatternsDeprecated:   td.cfg.Patterns,
 	}
 	if !reflect.DeepEqual(td.args, expArgs) {
 		t.Errorf("remote(%+v) passed args %+v; want %+v", td.cfg, td.args, expArgs)

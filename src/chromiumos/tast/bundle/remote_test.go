@@ -30,13 +30,13 @@ func TestRemoteMissingTarget(t *gotesting.T) {
 	testing.AddTest(&testing.Test{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
 
 	// Remote should fail if -target wasn't passed.
-	args := Args{Mode: RunTestsMode}
+	stdin := newBufferWithArgs(t, &Args{Mode: RunTestsMode, RunTests: &RunTestsArgs{}})
 	stderr := bytes.Buffer{}
-	if status := Remote(nil, newBufferWithArgs(t, &args), &bytes.Buffer{}, &stderr); status != statusError {
-		t.Errorf("Remote(%+v) = %v; want %v", args, status, statusError)
+	if status := Remote(nil, stdin, &bytes.Buffer{}, &stderr); status != statusError {
+		t.Errorf("Remote() = %v; want %v", status, statusError)
 	}
 	if len(stderr.String()) == 0 {
-		t.Errorf("Remote(%+v) didn't write error to stderr", args)
+		t.Error("Remote() didn't write error to stderr")
 	}
 }
 

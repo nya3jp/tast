@@ -40,62 +40,15 @@ type Args struct {
 	RunTests *RunTestsArgs `json:"runTests,omitempty"`
 	// ListTests contains arguments used by ListTestsMode.
 	ListTests *ListTestsArgs `json:"listTests,omitempty"`
-
-	// TODO(derat): Delete these fields after 20190601: https://crbug.com/932307
-	// PatternsDeprecated has been replaced by RunTests.Patterns and ListTests.Patterns.
-	PatternsDeprecated []string `json:"patterns,omitempty"`
-	// DataDirDeprecated has been replaced by RunTests.DataDir.
-	DataDirDeprecated string `json:"dataDir,omitempty"`
-	// OutDirDeprecated has been replaced by RunTests.OutDir.
-	OutDirDeprecated string `json:"outDir,omitempty"`
-	// TempDirDeprecated has been replaced by RunTests.TempDir.
-	TempDirDeprecated string `json:"tempDir,omitempty"`
-	// TargetDeprecated has been replaced by RunTests.Target.
-	TargetDeprecated string `json:"remoteTarget,omitempty"`
-	// KeyFileDeprecated has been replaced by RunTests.KeyFile.
-	KeyFileDeprecated string `json:"remoteKeyFile,omitempty"`
-	// KeyDirDeprecated has been replaced by RunTests.KeyDir.
-	KeyDirDeprecated string `json:"remoteKeyDir,omitempty"`
-	// TastPathDeprecated has been replaced by RunTests.TastPath.
-	TastPathDeprecated string `json:"remoteTastPath,omitempty"`
-	// RunFlagsDeprecated has been replaced by RunTests.RunFlags.
-	RunFlagsDeprecated []string `json:"remoteRunArgs,omitempty"`
-	// CheckSoftwareDepsDeprecated has been replaced by RunTests.CheckSoftwareDeps.
-	CheckSoftwareDepsDeprecated bool `json:"runTestsCheckSoftwareDeps,omitempty"`
-	// AvailableSoftwareFeaturesDeprecated has been replaced by RunTests.AvailableSoftwareFeatures.
-	AvailableSoftwareFeaturesDeprecated []string `json:"runTestsAvailableSoftwareFeatures,omitempty"`
-	// UnavailableSoftwareFeaturesDeprecated has been replaced by RunTests.UnavailableSoftwareFeatures.
-	UnavailableSoftwareFeaturesDeprecated []string `json:"runTestsUnavailableSoftwareFeatures,omitempty"`
-	// WaitUntilReadyDeprecated has been replaced by RunTests.WaitUntilReady.
-	WaitUntilReadyDeprecated bool `json:"runTestsWaitUntilReady,omitempty"`
 }
 
 // FillDeprecated backfills deprecated fields from the corresponding non-deprecated fields.
 // This method is called by test runners to ensure that args will be interpreted
 // correctly by older test bundles.
 func (a *Args) FillDeprecated() {
-	switch a.Mode {
-	case RunTestsMode:
-		if a.RunTests != nil {
-			command.CopyFieldIfNonZero(&a.RunTests.Patterns, &a.PatternsDeprecated)
-			command.CopyFieldIfNonZero(&a.RunTests.DataDir, &a.DataDirDeprecated)
-			command.CopyFieldIfNonZero(&a.RunTests.OutDir, &a.OutDirDeprecated)
-			command.CopyFieldIfNonZero(&a.RunTests.TempDir, &a.TempDirDeprecated)
-			command.CopyFieldIfNonZero(&a.RunTests.Target, &a.TargetDeprecated)
-			command.CopyFieldIfNonZero(&a.RunTests.KeyFile, &a.KeyFileDeprecated)
-			command.CopyFieldIfNonZero(&a.RunTests.KeyDir, &a.KeyDirDeprecated)
-			command.CopyFieldIfNonZero(&a.RunTests.TastPath, &a.TastPathDeprecated)
-			command.CopyFieldIfNonZero(&a.RunTests.RunFlags, &a.RunFlagsDeprecated)
-			command.CopyFieldIfNonZero(&a.RunTests.CheckSoftwareDeps, &a.CheckSoftwareDepsDeprecated)
-			command.CopyFieldIfNonZero(&a.RunTests.AvailableSoftwareFeatures, &a.AvailableSoftwareFeaturesDeprecated)
-			command.CopyFieldIfNonZero(&a.RunTests.UnavailableSoftwareFeatures, &a.UnavailableSoftwareFeaturesDeprecated)
-			command.CopyFieldIfNonZero(&a.RunTests.WaitUntilReady, &a.WaitUntilReadyDeprecated)
-		}
-	case ListTestsMode:
-		if a.ListTests != nil {
-			command.CopyFieldIfNonZero(&a.ListTests.Patterns, &a.PatternsDeprecated)
-		}
-	}
+	// If there were any deprecated fields, we would fill them from the corresponding
+	// non-deprecated fields here using command.CopyFieldIfNonZero for basic types or
+	// manual copies for structs.
 }
 
 // PromoteDeprecated copies all non-zero-valued deprecated fields to the corresponding non-deprecated fields.
@@ -107,30 +60,7 @@ func (a *Args) FillDeprecated() {
 // corresponding old field is non-zero, it was passed by an old runner (or by a new runner that called
 // FillDeprecated), so we use the old field to make sure that it overrides the default.
 func (a *Args) PromoteDeprecated() {
-	switch a.Mode {
-	case RunTestsMode:
-		if a.RunTests == nil {
-			a.RunTests = &RunTestsArgs{}
-		}
-		command.CopyFieldIfNonZero(&a.PatternsDeprecated, &a.RunTests.Patterns)
-		command.CopyFieldIfNonZero(&a.DataDirDeprecated, &a.RunTests.DataDir)
-		command.CopyFieldIfNonZero(&a.OutDirDeprecated, &a.RunTests.OutDir)
-		command.CopyFieldIfNonZero(&a.TempDirDeprecated, &a.RunTests.TempDir)
-		command.CopyFieldIfNonZero(&a.TargetDeprecated, &a.RunTests.Target)
-		command.CopyFieldIfNonZero(&a.KeyFileDeprecated, &a.RunTests.KeyFile)
-		command.CopyFieldIfNonZero(&a.KeyDirDeprecated, &a.RunTests.KeyDir)
-		command.CopyFieldIfNonZero(&a.TastPathDeprecated, &a.RunTests.TastPath)
-		command.CopyFieldIfNonZero(&a.RunFlagsDeprecated, &a.RunTests.RunFlags)
-		command.CopyFieldIfNonZero(&a.CheckSoftwareDepsDeprecated, &a.RunTests.CheckSoftwareDeps)
-		command.CopyFieldIfNonZero(&a.AvailableSoftwareFeaturesDeprecated, &a.RunTests.AvailableSoftwareFeatures)
-		command.CopyFieldIfNonZero(&a.UnavailableSoftwareFeaturesDeprecated, &a.RunTests.UnavailableSoftwareFeatures)
-		command.CopyFieldIfNonZero(&a.WaitUntilReadyDeprecated, &a.RunTests.WaitUntilReady)
-	case ListTestsMode:
-		if a.ListTests == nil {
-			a.ListTests = &ListTestsArgs{}
-		}
-		command.CopyFieldIfNonZero(&a.PatternsDeprecated, &a.ListTests.Patterns)
-	}
+	// We don't have any deprecated fields right now.
 }
 
 // RunTestsArgs is nested within Args and contains arguments used by RunTestsMode.
@@ -229,6 +159,11 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer,
 
 	if err := json.NewDecoder(stdin).Decode(args); err != nil {
 		return nil, command.NewStatusErrorf(statusBadArgs, "failed to decode args from stdin: %v", err)
+	}
+
+	if (args.Mode == RunTestsMode && args.RunTests == nil) ||
+		(args.Mode == ListTestsMode && args.ListTests == nil) {
+		return nil, command.NewStatusErrorf(statusBadArgs, "args not set for mode %v", args.Mode)
 	}
 
 	// Use non-zero-valued deprecated fields if they were supplied by an old test runner.

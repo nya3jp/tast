@@ -12,7 +12,6 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"reflect"
 
 	"chromiumos/tast/autocaps"
 	"chromiumos/tast/bundle"
@@ -69,44 +68,6 @@ type Args struct {
 	// command-line flags, indicating that the runner was executed by the tast command. It's only relevant
 	// for RunTestsMode.
 	report bool
-
-	// TODO(derat): Delete these fields after 20190601: https://crbug.com/932307
-	// BundleGlob has been replaced by RunTests.BundleGlob and ListTests.BundleGlob.
-	BundleGlobDeprecated string `json:"bundleGlob,omitempty"`
-	// PatternsDeprecated has been replaced by RunTests.BundleArgs.Patterns and ListTests.BundleArgs.Patterns.
-	PatternsDeprecated []string `json:"patterns,omitempty"`
-	// TargetDeprecated has been replaced by RunTests.BundleArgs.Target.
-	TargetDeprecated string `json:"remoteTarget,omitempty"`
-	// KeyFileDeprecated has been replaced by RunTests.BundleArgs.KeyFile.
-	KeyFileDeprecated string `json:"remoteKeyFile,omitempty"`
-	// KeyDirDeprecated has been replaced by RunTests.BundleArgs.KeyDir.
-	KeyDirDeprecated string `json:"remoteKeyDir,omitempty"`
-	// TastPathDeprecated has been replaced by RunTests.BundleArgs.TastPath.
-	TastPathDeprecated string `json:"remoteTastPath,omitempty"`
-	// RunFlagsDeprecated has been replaced by RunTests.BundleArgs.RunFlags.
-	RunFlagsDeprecated []string `json:"remoteRunArgs,omitempty"`
-	// DataDirDeprecated has been replaced by RunTests.BundleArgs.DataDir.
-	DataDirDeprecated string `json:"dataDir,omitempty"`
-	// OutDirDeprecated has been replaced by RunTests.BundleArgs.OutDir.
-	OutDirDeprecated string `json:"outDir,omitempty"`
-	// TempDirDeprecated has been replaced by RunTests.BundleArgs.TempDir.
-	TempDirDeprecated string `json:"tempDir,omitempty"`
-	// CheckSoftwareDepsDeprecated has been replaced by RunTests.BundleArgs.CheckSoftwareDeps.
-	CheckSoftwareDepsDeprecated bool `json:"runTestsCheckSoftwareDeps,omitempty"`
-	// AvailableSoftwareFeaturesDeprecated has been replaced by RunTests.BundleArgs.AvailableSoftwareFeatures.
-	AvailableSoftwareFeaturesDeprecated []string `json:"runTestsAvailableSoftwareFeatures,omitempty"`
-	// UnavailableSoftwareFeaturesDeprecated has been replaced by RunTests.BundleArgs.UnavailableSoftwareFeatures.
-	UnavailableSoftwareFeaturesDeprecated []string `json:"runTestsUnavailableSoftwareFeatures,omitempty"`
-	// WaitUntilReadyDeprecated has been replaced by RunTests.BundleArgs.WaitUntilReady.
-	WaitUntilReadyDeprecated bool `json:"runTestsWaitUntilReady,omitempty"`
-	// DevserversDeprecated has been replaced by RunTests.Devservers.
-	DevserversDeprecated []string `json:"devservers,omitempty"`
-	// InitialStateDeprecated has been replaced by CollectSysInfo.InitialState.
-	InitialStateDeprecated SysInfoState `json:"collectSysInfoInitialState,omitempty"`
-	// ExtraUSEFlagsDeprecated has been replaced by GetSoftwareFeatures.ExtraUSEFlags.
-	ExtraUSEFlagsDeprecated []string `json:"getSoftwareFeaturesExtraUseFlags,omitempty"`
-	// DownloadPrivateBundelsDevserversDeprecated has been replaced by DownloadPrivateBundles.Devservers.
-	DownloadPrivateBundlesDevserversDeprecated []string `json:"downloadPrivateBundlesDevservers,omitempty"`
 }
 
 // bundleArgs creates a bundle.Args appropriate for running bundles in the supplied mode.
@@ -144,43 +105,9 @@ func (a *Args) bundleArgs(mode bundle.RunMode) (*bundle.Args, error) {
 // This method is called by the tast process to ensure that args will be interpreted
 // correctly by older test runners.
 func (a *Args) FillDeprecated() {
-	switch a.Mode {
-	case RunTestsMode:
-		if a.RunTests != nil {
-			command.CopyFieldIfNonZero(&a.RunTests.BundleArgs.Patterns, &a.PatternsDeprecated)
-			command.CopyFieldIfNonZero(&a.RunTests.BundleArgs.Target, &a.TargetDeprecated)
-			command.CopyFieldIfNonZero(&a.RunTests.BundleArgs.KeyFile, &a.KeyFileDeprecated)
-			command.CopyFieldIfNonZero(&a.RunTests.BundleArgs.KeyDir, &a.KeyDirDeprecated)
-			command.CopyFieldIfNonZero(&a.RunTests.BundleArgs.TastPath, &a.TastPathDeprecated)
-			command.CopyFieldIfNonZero(&a.RunTests.BundleArgs.RunFlags, &a.RunFlagsDeprecated)
-			command.CopyFieldIfNonZero(&a.RunTests.BundleArgs.DataDir, &a.DataDirDeprecated)
-			command.CopyFieldIfNonZero(&a.RunTests.BundleArgs.OutDir, &a.OutDirDeprecated)
-			command.CopyFieldIfNonZero(&a.RunTests.BundleArgs.TempDir, &a.TempDirDeprecated)
-			command.CopyFieldIfNonZero(&a.RunTests.BundleArgs.CheckSoftwareDeps, &a.CheckSoftwareDepsDeprecated)
-			command.CopyFieldIfNonZero(&a.RunTests.BundleArgs.AvailableSoftwareFeatures, &a.AvailableSoftwareFeaturesDeprecated)
-			command.CopyFieldIfNonZero(&a.RunTests.BundleArgs.UnavailableSoftwareFeatures, &a.UnavailableSoftwareFeaturesDeprecated)
-			command.CopyFieldIfNonZero(&a.RunTests.BundleArgs.WaitUntilReady, &a.WaitUntilReadyDeprecated)
-			command.CopyFieldIfNonZero(&a.RunTests.BundleGlob, &a.BundleGlobDeprecated)
-			command.CopyFieldIfNonZero(&a.RunTests.Devservers, &a.DevserversDeprecated)
-		}
-	case ListTestsMode:
-		if a.ListTests != nil {
-			command.CopyFieldIfNonZero(&a.ListTests.BundleArgs.Patterns, &a.PatternsDeprecated)
-			command.CopyFieldIfNonZero(&a.ListTests.BundleGlob, &a.BundleGlobDeprecated)
-		}
-	case CollectSysInfoMode:
-		if a.CollectSysInfo != nil {
-			a.InitialStateDeprecated = a.CollectSysInfo.InitialState // copy struct manually
-		}
-	case GetSoftwareFeaturesMode:
-		if a.GetSoftwareFeatures != nil {
-			command.CopyFieldIfNonZero(&a.GetSoftwareFeatures.ExtraUSEFlags, &a.ExtraUSEFlagsDeprecated)
-		}
-	case DownloadPrivateBundlesMode:
-		if a.DownloadPrivateBundles != nil {
-			command.CopyFieldIfNonZero(&a.DownloadPrivateBundles.Devservers, &a.DownloadPrivateBundlesDevserversDeprecated)
-		}
-	}
+	// If there were any deprecated fields, we would fill them from the corresponding
+	// non-deprecated fields here using command.CopyFieldIfNonZero for basic types or
+	// manual copies for structs.
 }
 
 // PromoteDeprecated copies all non-zero-valued deprecated fields to the corresponding non-deprecated fields.
@@ -192,50 +119,7 @@ func (a *Args) FillDeprecated() {
 // is non-zero, it was passed by an old tast executable (or by a new executable that called FillDeprecated),
 // so we use the old field to make sure that it overrides the default.
 func (a *Args) PromoteDeprecated() {
-	switch a.Mode {
-	case RunTestsMode:
-		if a.RunTests == nil {
-			a.RunTests = &RunTestsArgs{}
-		}
-		command.CopyFieldIfNonZero(&a.PatternsDeprecated, &a.RunTests.BundleArgs.Patterns)
-		command.CopyFieldIfNonZero(&a.TargetDeprecated, &a.RunTests.BundleArgs.Target)
-		command.CopyFieldIfNonZero(&a.KeyFileDeprecated, &a.RunTests.BundleArgs.KeyFile)
-		command.CopyFieldIfNonZero(&a.KeyDirDeprecated, &a.RunTests.BundleArgs.KeyDir)
-		command.CopyFieldIfNonZero(&a.TastPathDeprecated, &a.RunTests.BundleArgs.TastPath)
-		command.CopyFieldIfNonZero(&a.RunFlagsDeprecated, &a.RunTests.BundleArgs.RunFlags)
-		command.CopyFieldIfNonZero(&a.DataDirDeprecated, &a.RunTests.BundleArgs.DataDir)
-		command.CopyFieldIfNonZero(&a.OutDirDeprecated, &a.RunTests.BundleArgs.OutDir)
-		command.CopyFieldIfNonZero(&a.TempDirDeprecated, &a.RunTests.BundleArgs.TempDir)
-		command.CopyFieldIfNonZero(&a.CheckSoftwareDepsDeprecated, &a.RunTests.BundleArgs.CheckSoftwareDeps)
-		command.CopyFieldIfNonZero(&a.AvailableSoftwareFeaturesDeprecated, &a.RunTests.BundleArgs.AvailableSoftwareFeatures)
-		command.CopyFieldIfNonZero(&a.UnavailableSoftwareFeaturesDeprecated, &a.RunTests.BundleArgs.UnavailableSoftwareFeatures)
-		command.CopyFieldIfNonZero(&a.WaitUntilReadyDeprecated, &a.RunTests.BundleArgs.WaitUntilReady)
-		command.CopyFieldIfNonZero(&a.BundleGlobDeprecated, &a.RunTests.BundleGlob)
-		command.CopyFieldIfNonZero(&a.DevserversDeprecated, &a.RunTests.Devservers)
-	case ListTestsMode:
-		if a.ListTests == nil {
-			a.ListTests = &ListTestsArgs{}
-		}
-		command.CopyFieldIfNonZero(&a.PatternsDeprecated, &a.ListTests.BundleArgs.Patterns)
-		command.CopyFieldIfNonZero(&a.BundleGlobDeprecated, &a.ListTests.BundleGlob)
-	case CollectSysInfoMode:
-		if a.CollectSysInfo == nil {
-			a.CollectSysInfo = &CollectSysInfoArgs{}
-		}
-		if !reflect.DeepEqual(a.InitialStateDeprecated, SysInfoState{}) {
-			a.CollectSysInfo.InitialState = a.InitialStateDeprecated
-		}
-	case GetSoftwareFeaturesMode:
-		if a.GetSoftwareFeatures == nil {
-			a.GetSoftwareFeatures = &GetSoftwareFeaturesArgs{}
-		}
-		command.CopyFieldIfNonZero(&a.ExtraUSEFlagsDeprecated, &a.GetSoftwareFeatures.ExtraUSEFlags)
-	case DownloadPrivateBundlesMode:
-		if a.DownloadPrivateBundles == nil {
-			a.DownloadPrivateBundles = &DownloadPrivateBundlesArgs{}
-		}
-		command.CopyFieldIfNonZero(&a.DownloadPrivateBundlesDevserversDeprecated, &a.DownloadPrivateBundles.Devservers)
-	}
+	// We don't have any deprecated fields right now.
 }
 
 // RunTestsArgs is nested within Args and contains arguments used by RunTestsMode.
@@ -450,6 +334,14 @@ errors, including the failure of an individual test.
 		if err := setManualDepsArgs(args, cfg, extraUSEFlags); err != nil {
 			return err
 		}
+	}
+
+	if (args.Mode == RunTestsMode && args.RunTests == nil) ||
+		(args.Mode == ListTestsMode && args.ListTests == nil) ||
+		(args.Mode == CollectSysInfoMode && args.CollectSysInfo == nil) ||
+		(args.Mode == GetSoftwareFeaturesMode && args.GetSoftwareFeatures == nil) ||
+		(args.Mode == DownloadPrivateBundlesMode && args.DownloadPrivateBundles == nil) {
+		return command.NewStatusErrorf(statusBadArgs, "args not set for mode %v", args.Mode)
 	}
 
 	// Use deprecated fields if they were supplied by an old tast binary.

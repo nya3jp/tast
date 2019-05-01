@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e510ff41_edc2990f",
+        "filename": "docs/codelab_2.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 281,
+      "author": {
+        "id": 1117055
+      },
+      "writtenOn": "2019-05-01T20:49:49Z",
+      "side": 1,
+      "message": "did you add this specifically to showcase break-to-label? for the sake of not having super indented code I probably would have factored this bit (L282-293) out into a function or something",
+      "revId": "bca450fdeed46ced977b3bb936b3d8b92151ff86",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

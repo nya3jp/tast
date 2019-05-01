@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "fd33af9e_bff18cb4",
+        "filename": "docs/codelab_2.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 281,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-01T21:40:41Z",
+      "side": 1,
+      "message": "thanks, looks better to me too",
+      "parentUuid": "373c7907_c109867c",
+      "revId": "bca450fdeed46ced977b3bb936b3d8b92151ff86",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2f0aa744_2703b541",
         "filename": "docs/codelab_2.md",
         "patchSetId": 1

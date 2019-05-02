@@ -117,6 +117,30 @@
       "revId": "bca450fdeed46ced977b3bb936b3d8b92151ff86",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5ad88355_c9e79f33",
+        "filename": "docs/codelab_2.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 408,
+      "author": {
+        "id": 1117055
+      },
+      "writtenOn": "2019-05-02T16:58:22Z",
+      "side": 1,
+      "message": "OK, if this is gofmt\u0027s decision then that\u0027s fine.",
+      "parentUuid": "3c96619f_087baad2",
+      "range": {
+        "startLine": 408,
+        "startChar": 14,
+        "endLine": 408,
+        "endChar": 23
+      },
+      "revId": "bca450fdeed46ced977b3bb936b3d8b92151ff86",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

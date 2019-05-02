@@ -93,6 +93,30 @@
       "revId": "bca450fdeed46ced977b3bb936b3d8b92151ff86",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3c96619f_087baad2",
+        "filename": "docs/codelab_2.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 408,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-02T05:28:10Z",
+      "side": 1,
+      "message": "good question, but this is what gofmt enforces. i believe it uses \"a \u003c- ch\" for normal assignment and \"a :\u003d \u003c-ch\" for declaration-assignment.",
+      "parentUuid": "2f0aa744_2703b541",
+      "range": {
+        "startLine": 408,
+        "startChar": 14,
+        "endLine": 408,
+        "endChar": 23
+      },
+      "revId": "bca450fdeed46ced977b3bb936b3d8b92151ff86",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

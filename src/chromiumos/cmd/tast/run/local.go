@@ -12,6 +12,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"time"
 
@@ -79,7 +80,7 @@ func local(ctx context.Context, cfg *Config) (Status, []TestResult) {
 	}
 
 	if len(cfg.devservers) == 0 && cfg.useEphemeralDevserver {
-		if err := startEphemeralDevserver(hst, cfg); err != nil {
+		if err := startEphemeralDevserver(ctx, hst, cfg); err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start ephemeral devserver: %v", err), nil
 		}
 		defer closeEphemeralDevserver(ctx, cfg)
@@ -101,24 +102,28 @@ func local(ctx context.Context, cfg *Config) (Status, []TestResult) {
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to sync disk writes: %v", err), nil
 	}
 
-	if err := getSoftwareFeatures(ctx, cfg); err != nil {
-		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to get DUT software features: %v", err), nil
+	switch cfg.mode {
+	case ListTestsMode:
+		results, _, err := runLocalRunner(ctx, cfg, hst, cfg.Patterns, bundleGlob, dataDir)
+		if err != nil {
+			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to list tests: %v", err), results
+		}
+		return successStatus, results
+	case RunTestsMode:
+		if err := getSoftwareFeatures(ctx, cfg); err != nil {
+			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to get DUT software features: %v", err), nil
+		}
+		if err := getInitialSysInfo(ctx, cfg); err != nil {
+			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to get initial sysinfo: %v", err), nil
+		}
+		results, err := runLocalTests(ctx, cfg, hst, bundleGlob, dataDir)
+		if err != nil {
+			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to run tests: %v", err), results
+		}
+		return successStatus, results
+	default:
+		return errorStatusf(cfg, subcommands.ExitFailure, "Unhandled mode %d", cfg.mode), nil
 	}
-
-	if err := getInitialSysInfo(ctx, cfg); err != nil {
-		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to get initial sysinfo: %v", err), nil
-	}
-
-	cfg.Logger.Status("Running tests on target")
-	cfg.startedRun = true
-	start := time.Now()
-	results, err := runLocalRunner(ctx, cfg, hst, bundleGlob, dataDir)
-	if err != nil {
-		// TODO(derat): Consider reconnecting to DUT if necessary and trying to run remaining tests: https://crbug.com/778389
-		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to run tests: %v", err), results
-	}
-	cfg.Logger.Logf("Ran %v local test(s) in %v", len(results), time.Now().Sub(start).Round(time.Millisecond))
-	return successStatus, results
 }
 
 // connectToTarget establishes an SSH connection to the target specified in cfg.
@@ -449,7 +454,75 @@ func buildAndPushLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH) er
 	return nil
 }
 
-// startLocalRunner starts local_test_runner on hst and passes args to it.
+// runLocalTests executes tests as described by cfg on hst and returns the results.
+// It is only used for RunTestsMode.
+func runLocalTests(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob, dataDir string) ([]TestResult, error) {
+	cfg.Logger.Status("Running local tests on target")
+	defer timing.Start(ctx, "run_local_tests").End()
+	cfg.startedRun = true
+	start := time.Now()
+
+	// We may temporarily override this later when restarting testing after a failure.
+	origCheckTestDeps := cfg.checkTestDeps
+	defer func() { cfg.checkTestDeps = origCheckTestDeps }()
+
+	// Run local_test_runner in a loop so we can try to run the remaining tests on failure.
+	var allResults []TestResult
+	patterns := cfg.Patterns
+	for {
+		results, unstarted, err := runLocalRunner(ctx, cfg, hst, patterns, bundleGlob, dataDir)
+		allResults = append(allResults, results...)
+		if err == nil {
+			break
+		}
+
+		cfg.Logger.Logf("Test runner failed with %v result(s): %v", len(results), err)
+
+		// If local_test_runner didn't provide a list of remaining tests, give up.
+		if unstarted == nil {
+			return allResults, err
+		}
+		// If we know that there are no more tests left to execute, report the overall run as having succeeded.
+		// The test that was in progress when the run failed will be reported as having failed.
+		if len(unstarted) == 0 {
+			break
+		}
+		// If we don't want to try again, or we'd just be doing the same thing that we did last time, give up.
+		if !cfg.continueAfterFailure || reflect.DeepEqual(patterns, unstarted) {
+			return allResults, err
+		}
+
+		cfg.Logger.Logf("Trying to run %v remaining test(s)", len(unstarted))
+		oldHst := hst
+		var connErr error
+		if hst, connErr = connectToTarget(ctx, cfg); connErr != nil {
+			cfg.Logger.Log("Failed reconnecting to target: ", connErr)
+			return allResults, err
+		}
+		// The ephemeral devserver uses the SSH connection to the DUT, so a new devserver needs
+		// to be created if a new SSH connection was established.
+		if cfg.ephemeralDevserver != nil && hst != oldHst {
+			if devErr := startEphemeralDevserver(ctx, hst, cfg); devErr != nil {
+				cfg.Logger.Log("Failed restarting ephemeral devserver: ", connErr)
+				return allResults, err
+			}
+		}
+
+		// Explicitly request running the remaining tests.
+		// "Auto" dependency checking has different behavior when using attribute expressions vs.
+		// globs, so make sure that deps will still be checked if they would've been checked initially.
+		patterns = unstarted
+		if cfg.checkTestDeps == checkTestDepsAuto {
+			cfg.checkTestDeps = checkTestDepsAlways
+		}
+	}
+
+	elapsed := time.Now().Sub(start)
+	cfg.Logger.Logf("Ran %v local test(s) in %v", len(allResults), elapsed.Round(time.Millisecond))
+	return allResults, nil
+}
+
+// startLocalRunner asynchronously starts local_test_runner on hst and passes args to it.
 // args.FillDeprecated() is called first to backfill any deprecated fields for old runners.
 // The caller is responsible for reading the handle's stdout and closing the handle.
 func startLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, args *runner.Args) (*host.SSHCommandHandle, error) {
@@ -487,11 +560,18 @@ func startLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, args *run
 	return handle, nil
 }
 
-// runLocalRunner runs local_test_runner to completion on hst.
-// If cfg.mode is RunTestsMode, tests are executed and their results are returned.
-// if cfg.mode is ListTestsMode, serialized test information is returned via TestResult.Test but other fields are left blank.
-func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob, dataDir string) ([]TestResult, error) {
-	defer timing.Start(ctx, "run_local_tests").End()
+// runLocalRunner synchronously runs local_test_runner to completion on hst.
+// The supplied patterns (rather than cfg.Patterns) are passed to the runner.
+//
+// If cfg.mode is RunTestsMode, tests are executed and the results from started tests
+// and the names of tests that should have been started but weren't (in the order in which
+// they should've been run) are returned.
+//
+// If cfg.mode is ListTestsMode, serialized test information is returned via TestResult.Test
+// but other fields are left blank and unstarted is empty.
+func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, patterns []string, bundleGlob, dataDir string) (
+	results []TestResult, unstarted []string, err error) {
+	defer timing.Start(ctx, "run_local_test_runner").End()
 
 	var args runner.Args
 
@@ -501,7 +581,7 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 			Mode: runner.RunTestsMode,
 			RunTests: &runner.RunTestsArgs{
 				BundleArgs: bundle.RunTestsArgs{
-					Patterns:          cfg.Patterns,
+					Patterns:          patterns,
 					DataDir:           dataDir,
 					TestVars:          cfg.testVars,
 					WaitUntilReady:    cfg.waitUntilReady,
@@ -516,7 +596,7 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 		args = runner.Args{
 			Mode: runner.ListTestsMode,
 			ListTests: &runner.ListTestsArgs{
-				BundleArgs: bundle.ListTestsArgs{Patterns: cfg.Patterns},
+				BundleArgs: bundle.ListTestsArgs{Patterns: patterns},
 				BundleGlob: bundleGlob,
 			},
 		}
@@ -524,14 +604,13 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 
 	handle, err := startLocalRunner(ctx, cfg, hst, &args)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	defer handle.Close(ctx)
 
 	// Read stderr in the background so it can be included in error messages.
 	stderrReader := newFirstLineReader(handle.Stderr())
 
-	var results []TestResult
 	var rerr error
 	switch cfg.mode {
 	case ListTestsMode:
@@ -539,7 +618,7 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 	case RunTestsMode:
 		crf := func(src, dst string) error { return moveFromHost(ctx, cfg, hst, src, dst) }
 		df := func(ctx context.Context) string { return diagnoseLocalRunError(ctx, cfg) }
-		results, rerr = readTestOutput(ctx, cfg, handle.Stdout(), crf, df)
+		results, unstarted, rerr = readTestOutput(ctx, cfg, handle.Stdout(), crf, df)
 	}
 
 	// Check that the runner exits successfully first so that we don't give a useless error
@@ -551,9 +630,9 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 	wctx, wcancel := context.WithTimeout(ctx, timeout)
 	defer wcancel()
 	if err := handle.Wait(wctx); err != nil {
-		return results, stderrReader.appendToError(err, stderrTimeout)
+		return results, unstarted, stderrReader.appendToError(err, stderrTimeout)
 	}
-	return results, rerr
+	return results, unstarted, rerr
 }
 
 // readLocalRunnerOutput unmarshals a single JSON value from handle.Stdout into out.
@@ -584,7 +663,10 @@ func formatBytes(bytes int64) string {
 
 // startEphemeralDevserver starts an ephemeral devserver serving on hst.
 // cfg's ephemeralDevserver and devservers fields are updated.
-func startEphemeralDevserver(hst *host.SSH, cfg *Config) error {
+// If ephemeralDevserver is non-nil, it is closed first.
+func startEphemeralDevserver(ctx context.Context, hst *host.SSH, cfg *Config) error {
+	closeEphemeralDevserver(ctx, cfg) // ignore errors; this may rely on a now-dead SSH connection
+
 	lis, err := hst.ListenTCP(&net.TCPAddr{IP: net.IPv4(127, 0, 0, 1), Port: ephemeralDevserverPort})
 	if err != nil {
 		return fmt.Errorf("failed to reverse-forward a port: %v", err)

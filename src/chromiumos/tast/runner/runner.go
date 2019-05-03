@@ -114,7 +114,11 @@ func runTestsAndReport(ctx context.Context, args *Args, cfg *Config, stdout io.W
 		return
 	}
 
-	mw.WriteMessage(&control.RunStart{Time: time.Now(), NumTests: len(tests)})
+	testNames := make([]string, len(tests))
+	for i, t := range tests {
+		testNames[i] = t.Name
+	}
+	mw.WriteMessage(&control.RunStart{Time: time.Now(), TestNames: testNames, NumTests: len(tests)})
 
 	lf := func(msg string) {
 		mw.WriteMessage(&control.RunLog{Time: time.Now(), Text: msg})

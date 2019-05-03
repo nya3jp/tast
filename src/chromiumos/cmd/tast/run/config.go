@@ -47,8 +47,8 @@ const (
 type testDepsMode int
 
 const (
-	// checkTestDepsAuto indicates that tests' dependencies should be checked when a boolean
-	// expression is used to select tests but not when individual tests have been specified.
+	// checkTestDepsAuto indicates that tests' dependencies should be checked when an attribute
+	// expression is used to select tests but not when test globs (or specific tests) have been supplied.
 	// Dependencies are also not checked if the DUT doesn't know its supported features
 	// (e.g. if it's using a non-test system image).
 	checkTestDepsAuto testDepsMode = iota
@@ -111,13 +111,14 @@ type Config struct {
 	remoteBundleDir string // dir where packaged remote test bundles are installed
 	remoteDataDir   string // dir containing packaged remote test data
 
-	sshRetries     int               // number of SSH connect retries
-	checkTestDeps  testDepsMode      // when test dependencies should be checked
-	waitUntilReady bool              // whether to wait for DUT to be ready before running tests
-	extraUSEFlags  []string          // additional USE flags to inject when determining features
-	proxy          proxyMode         // how proxies should be used
-	collectSysInfo bool              // collect system info (logs, crashes, etc.) generated during testing
-	testVars       map[string]string // names and values of variables used to pass out-of-band data to tests
+	sshRetries           int               // number of SSH connect retries
+	continueAfterFailure bool              // try to run remaining local tests after bundle/DUT crash or lost SSH connection
+	checkTestDeps        testDepsMode      // when test dependencies should be checked
+	waitUntilReady       bool              // whether to wait for DUT to be ready before running tests
+	extraUSEFlags        []string          // additional USE flags to inject when determining features
+	proxy                proxyMode         // how proxies should be used
+	collectSysInfo       bool              // collect system info (logs, crashes, etc.) generated during testing
+	testVars             map[string]string // names and values of variables used to pass out-of-band data to tests
 
 	msgTimeout             time.Duration // timeout for reading control messages; default used if zero
 	localRunnerWaitTimeout time.Duration // timeout for waiting for local_test_runner to exit; default used if zero
@@ -181,6 +182,7 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 	f.Var(command.NewListFlag(",", func(v []string) { c.devservers = v }, nil), "devservers", "comma-separated list of devserver URLs")
 	f.BoolVar(&c.useEphemeralDevserver, "ephemeraldevserver", true, "start an ephemeral devserver if no devserver is specified")
 	f.BoolVar(&c.downloadPrivateBundles, "downloadprivatebundles", false, "download private bundles if missing")
+	f.BoolVar(&c.continueAfterFailure, "continueafterfailure", false, "try to run remaining tests after bundle/DUT crash or lost SSH connection")
 	f.IntVar(&c.sshRetries, "sshretries", 0, "number of SSH connect retries")
 
 	bt := command.NewEnumFlag(map[string]int{"local": int(localType), "remote": int(remoteType)},

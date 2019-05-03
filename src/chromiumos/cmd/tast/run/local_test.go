@@ -166,6 +166,17 @@ func checkArgs(t *gotesting.T, args, exp *runner.Args) {
 	}
 }
 
+// errorCounts returns a map from test names in rs to the number of errors reported by each.
+// This is useful for tests that just want to quickly check the results of a test run.
+// Detailed tests for result generation are in results_test.go.
+func errorCounts(rs []TestResult) map[string]int {
+	testErrs := make(map[string]int)
+	for _, r := range rs {
+		testErrs[r.Test.Name] = len(r.Errors)
+	}
+	return testErrs
+}
+
 func TestLocalSuccess(t *gotesting.T) {
 	td := newLocalTestData(t)
 	defer td.close()
@@ -465,6 +476,87 @@ func TestLocalFailureBeforeRun(t *gotesting.T) {
 		t.Errorf("local() = %v; want %v", status.ExitCode, subcommands.ExitFailure)
 	} else if td.cfg.startedRun {
 		t.Error("local() incorrectly reported that run was started after early failure")
+	}
+}
+
+func TestLocalContinueAfterFailure(t *gotesting.T) {
+	td := newLocalTestData(t)
+	defer td.close()
+
+	const (
+		test1 = "pkg.Test1"
+		test2 = "pkg.Test2"
+		test3 = "pkg.Test3"
+		glob  = "pkg.*"
+	)
+
+	numCalls := 0 // number of RunTests calls
+	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		if args.Mode != runner.RunTestsMode {
+			t.Errorf("Unexpected non-RunTests args %+v", args)
+			return 1
+		}
+
+		numCalls++
+		switch numCalls {
+		case 1:
+			// The first time, report that all three tests will be run but abort after starting #1.
+			if exp := []string{glob}; !reflect.DeepEqual(args.RunTests.BundleArgs.Patterns, exp) {
+				t.Errorf("Call %d had patterns %v; want %v", numCalls, args.RunTests.BundleArgs.Patterns, exp)
+			}
+			mw := control.NewMessageWriter(stdout)
+			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), TestNames: []string{test1, test2, test3}})
+			mw.WriteMessage(&control.TestStart{Time: time.Unix(2, 0), Test: testing.Test{Name: test1}})
+			return 1
+		case 2:
+			// The second time, list the remaining two tests, run test #2 successfully, and abort after #3.
+			if exp := []string{test2, test3}; !reflect.DeepEqual(args.RunTests.BundleArgs.Patterns, exp) {
+				t.Errorf("Call %d had patterns %v; want %v", numCalls, args.RunTests.BundleArgs.Patterns, exp)
+			}
+			mw := control.NewMessageWriter(stdout)
+			mw.WriteMessage(&control.RunStart{Time: time.Unix(3, 0), TestNames: []string{test2, test3}})
+			mw.WriteMessage(&control.TestStart{Time: time.Unix(4, 0), Test: testing.Test{Name: test2}})
+			mw.WriteMessage(&control.TestEnd{Time: time.Unix(5, 0), Name: test2})
+			mw.WriteMessage(&control.TestStart{Time: time.Unix(6, 0), Test: testing.Test{Name: test3}})
+			return 1
+		default:
+			// There aren't any more tests to run.
+			t.Errorf("Unexpected RunTests call: %+v", args)
+			return 1
+		}
+	}
+
+	td.cfg.Patterns = []string{glob}
+	td.cfg.continueAfterFailure = true
+	status, results := local(context.Background(), &td.cfg)
+	// Success should be reported since the bundle tried to execute all tests.
+	if status.ExitCode != subcommands.ExitSuccess {
+		t.Errorf("local() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
+	}
+	if numCalls != 2 {
+		t.Errorf("Got %d RunTests call(s); want 2", numCalls)
+	}
+	testErrs := errorCounts(results)
+	if exp := map[string]int{test1: 1, test2: 0, test3: 1}; !reflect.DeepEqual(testErrs, exp) {
+		t.Errorf("Got error counts %v; want %v", testErrs, exp)
+	}
+}
+
+func TestLocalContinueAfterFailureNoTests(t *gotesting.T) {
+	td := newLocalTestData(t)
+	defer td.close()
+
+	// Make the runner fail without writing any control messages.
+	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) { return 1 }
+
+	// The run should be reported as having failed.
+	td.cfg.continueAfterFailure = true
+	status, results := local(context.Background(), &td.cfg)
+	if status.ExitCode != subcommands.ExitFailure {
+		t.Errorf("local() = %v; want %v (%v)", status.ExitCode, subcommands.ExitFailure, td.logbuf.String())
+	}
+	if len(results) != 0 {
+		t.Errorf("Got result(s) %+v; want none", results)
 	}
 }
 

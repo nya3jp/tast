@@ -174,7 +174,7 @@ func runRemoteRunner(ctx context.Context, cfg *Config, bundleGlob, dataDir strin
 	case ListTestsMode:
 		results, rerr = readTestList(stdout)
 	case RunTestsMode:
-		results, rerr = readTestOutput(ctx, cfg, stdout, os.Rename, nil)
+		results, _, rerr = readTestOutput(ctx, cfg, stdout, os.Rename, nil)
 	}
 
 	// Check that the runner exits successfully first so that we don't give a useless error

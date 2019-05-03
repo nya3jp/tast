@@ -7,9 +7,7 @@ package run
 import (
 	"context"
 	"io"
-	"io/ioutil"
 	"path/filepath"
-	"strings"
 	gotesting "testing"
 	"time"
 
@@ -59,13 +57,5 @@ func TestRunError(t *gotesting.T) {
 	} else if !status.FailedBeforeRun {
 		// local()'s initial connection attempt will fail, so we won't try to run tests.
 		t.Error("Run() incorrectly reported that failure did not occur before trying to run tests")
-	}
-
-	const exp = "Failed to connect to" // error message returned by local()
-	p := filepath.Join(td.cfg.ResDir, runErrorFilename)
-	if b, err := ioutil.ReadFile(p); err != nil {
-		t.Errorf("Failed to read %v: %v", p, err)
-	} else if !strings.Contains(string(b), exp) {
-		t.Errorf("%v contains %q; want substring %q", p, string(b), exp)
 	}
 }

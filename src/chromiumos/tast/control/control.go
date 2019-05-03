@@ -42,7 +42,11 @@ import (
 type RunStart struct {
 	// Time is the device-local time at which the run started.
 	Time time.Time `json:"runStartTime"`
+	// TestNames contains the names of tests to run, in the order in which they'll be executed.
+	// Note that some of these tests may later be skipped (see TestEnd.MissingSoftwareDeps).
+	TestNames []string `json:"runStartTestNames"`
 	// NumTests is the number of tests that will be run.
+	// TODO(derat): Delete this after 20190715; the tast command now uses TestNames instead: https://crbug.com/889119
 	NumTests int `json:"runStartNumTests"`
 }
 

@@ -330,8 +330,15 @@ func TestRunTests(t *gotesting.T) {
 	msgs := readAllMessages(t, stdout)
 	if rs, ok := msgs[0].(*control.RunStart); !ok {
 		t.Errorf("First message not RunStart: %v", msgs[0])
-	} else if rs.NumTests != 3 {
-		t.Errorf("RunStart reported %v test(s); want 3", rs.NumTests)
+	} else {
+		// Construct names for both tests in bundle 0 and the single test in bundle 1.
+		expNames := []string{getTestName(0, 0), getTestName(0, 1), getTestName(1, 0)}
+		if !reflect.DeepEqual(rs.TestNames, expNames) {
+			t.Errorf("RunStart included test names %v; want %v", rs.TestNames, expNames)
+		}
+		if rs.NumTests != 3 {
+			t.Errorf("RunStart reported %v test(s); want 3", rs.NumTests)
+		}
 	}
 	if re, ok := msgs[len(msgs)-1].(*control.RunEnd); !ok {
 		t.Errorf("Last message not RunEnd: %v", msgs[len(msgs)-1])

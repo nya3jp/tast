@@ -113,6 +113,7 @@ type Config struct {
 
 	hst        *host.SSH // cached SSH connection; may be nil
 	initBootID string    // boot_id at the initial SSH connection
+	resume     bool      // try to run remaining local tests after bundle/DUT crash or lost SSH connection
 	sshRetries int       // number of SSH connect retries
 
 	checkTestDeps               testDepsMode // when test dependencies should be checked
@@ -174,6 +175,7 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 	f.Var(command.NewListFlag(",", func(v []string) { c.devservers = v }, nil), "devservers", "comma-separated list of devserver URLs")
 	f.BoolVar(&c.useEphemeralDevserver, "ephemeraldevserver", true, "start an ephemeral devserver if no devserver is specified")
 	f.BoolVar(&c.downloadPrivateBundles, "downloadprivatebundles", false, "download private bundles if missing")
+	f.BoolVar(&c.resume, "resume", false, "try to run remaining tests after bundle/DUT crash or lost SSH connection")
 	f.IntVar(&c.sshRetries, "sshretries", 0, "number of SSH connect retries")
 
 	bt := command.NewEnumFlag(map[string]int{"local": int(localType), "remote": int(remoteType)},

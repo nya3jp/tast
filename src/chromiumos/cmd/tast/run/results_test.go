@@ -18,6 +18,7 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"chromiumos/cmd/tast/logging"
 	"chromiumos/tast/control"
@@ -282,13 +283,13 @@ func TestPerTestLogContainsRunError(t *gotesting.T) {
 	}
 
 	// The per-test log file should contain the error message: https://crbug.com/895716
-	files, err := testutil.ReadFiles(td)
-	if err != nil {
-		t.Fatal(err)
-	}
-	logPath := filepath.Join(testLogsDir, testName, testLogFilename)
-	if !strings.Contains(files[logPath], errorMsg) {
-		t.Errorf("%s contents %q don't contain error message %q", logPath, files[logPath], errorMsg)
+	if files, err := testutil.ReadFiles(td); err != nil {
+		t.Error("Failed to read result files: ", err)
+	} else {
+		logPath := filepath.Join(testLogsDir, testName, testLogFilename)
+		if !strings.Contains(files[logPath], errorMsg) {
+			t.Errorf("%s contents %q don't contain error message %q", logPath, files[logPath], errorMsg)
+		}
 	}
 }
 
@@ -297,62 +298,62 @@ func TestValidateMessages(t *gotesting.T) {
 	defer os.RemoveAll(tempDir)
 
 	for _, tc := range []struct {
-		desc       string
-		numResults int
-		msgs       []interface{}
+		desc        string
+		resultNames []string
+		msgs        []interface{}
 	}{
-		{"no RunStart", 0, []interface{}{
+		{"no RunStart", nil, []interface{}{
 			&control.RunEnd{Time: time.Unix(1, 0), OutDir: ""},
 		}},
-		{"multiple RunStart", 0, []interface{}{
+		{"multiple RunStart", nil, []interface{}{
 			&control.RunStart{Time: time.Unix(1, 0), NumTests: 0},
 			&control.RunStart{Time: time.Unix(2, 0), NumTests: 0},
 			&control.RunEnd{Time: time.Unix(3, 0), OutDir: ""},
 		}},
-		{"no RunEnd", 0, []interface{}{
+		{"no RunEnd", nil, []interface{}{
 			&control.RunStart{Time: time.Unix(1, 0), NumTests: 0},
 		}},
-		{"multiple RunEnd", 0, []interface{}{
+		{"multiple RunEnd", nil, []interface{}{
 			&control.RunStart{Time: time.Unix(1, 0), NumTests: 0},
 			&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""},
 			&control.RunEnd{Time: time.Unix(3, 0), OutDir: ""},
 		}},
-		{"num tests mismatch", 0, []interface{}{
+		{"num tests mismatch", nil, []interface{}{
 			&control.RunStart{Time: time.Unix(1, 0), NumTests: 1},
 			&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""},
 		}},
-		{"unfinished test", 1, []interface{}{
+		{"unfinished test", []string{"test1", "test2"}, []interface{}{
 			&control.RunStart{Time: time.Unix(1, 0), NumTests: 1},
 			&control.TestStart{Time: time.Unix(2, 0), Test: testing.Test{Name: "test1"}},
 			&control.TestEnd{Time: time.Unix(3, 0), Name: "test1"},
 			&control.TestStart{Time: time.Unix(4, 0), Test: testing.Test{Name: "test2"}},
 			&control.RunEnd{Time: time.Unix(5, 0), OutDir: ""},
 		}},
-		{"TestStart before RunStart", 0, []interface{}{
+		{"TestStart before RunStart", nil, []interface{}{
 			&control.TestStart{Time: time.Unix(1, 0), Test: testing.Test{Name: "test1"}},
 			&control.RunStart{Time: time.Unix(2, 0), NumTests: 1},
 			&control.TestEnd{Time: time.Unix(3, 0), Name: "test1"},
 			&control.RunEnd{Time: time.Unix(4, 0), OutDir: ""},
 		}},
-		{"TestError without TestStart", 0, []interface{}{
+		{"TestError without TestStart", nil, []interface{}{
 			&control.RunStart{Time: time.Unix(1, 0), NumTests: 0},
 			&control.TestError{Time: time.Unix(2, 0), Error: testing.Error{}},
 			&control.RunEnd{Time: time.Unix(3, 0), OutDir: ""},
 		}},
-		{"wrong TestEnd", 0, []interface{}{
+		{"wrong TestEnd", []string{"test1"}, []interface{}{
 			&control.RunStart{Time: time.Unix(1, 0), NumTests: 0},
 			&control.TestStart{Time: time.Unix(2, 0), Test: testing.Test{Name: "test1"}},
 			&control.TestEnd{Time: time.Unix(3, 0), Name: "test2"},
 			&control.RunEnd{Time: time.Unix(3, 0), OutDir: ""},
 		}},
-		{"no TestEnd", 0, []interface{}{
+		{"no TestEnd", []string{"test1"}, []interface{}{
 			&control.RunStart{Time: time.Unix(1, 0), NumTests: 2},
 			&control.TestStart{Time: time.Unix(2, 0), Test: testing.Test{Name: "test1"}},
 			&control.TestStart{Time: time.Unix(3, 0), Test: testing.Test{Name: "test2"}},
 			&control.TestEnd{Time: time.Unix(4, 0), Name: "test2"},
 			&control.RunEnd{Time: time.Unix(5, 0), OutDir: ""},
 		}},
-		{"TestStart with already-seen name", 1, []interface{}{
+		{"TestStart with already-seen name", []string{"test1"}, []interface{}{
 			&control.RunStart{Time: time.Unix(1, 0), NumTests: 2},
 			&control.TestStart{Time: time.Unix(2, 0), Test: testing.Test{Name: "test1"}},
 			&control.TestEnd{Time: time.Unix(3, 0), Name: "test1"},
@@ -372,8 +373,14 @@ func TestValidateMessages(t *gotesting.T) {
 		}
 		if results, err := readTestOutput(context.Background(), &cfg, &b, noOpCopyAndRemove); err == nil {
 			t.Errorf("readTestOutput didn't fail for %s", tc.desc)
-		} else if len(results) != tc.numResults {
-			t.Errorf("readTestOutput gave %v result(s) for %s; want %v", len(results), tc.desc, tc.numResults)
+		} else {
+			var resultNames []string
+			for _, res := range results {
+				resultNames = append(resultNames, res.Test.Name)
+			}
+			if !reflect.DeepEqual(resultNames, tc.resultNames) {
+				t.Errorf("readTestOutput for %v returned results %v; want %v", tc.desc, resultNames, tc.resultNames)
+			}
 		}
 	}
 }
@@ -530,14 +537,16 @@ func TestWriteResultsCollectSysInfoFailure(t *gotesting.T) {
 
 func TestWritePartialResults(t *gotesting.T) {
 	const (
-		test1Name = "pkg.Test1"
-		test2Name = "pkg.Test2"
-		test3Name = "pkg.Test3"
+		test1Name   = "pkg.Test1"
+		test2Name   = "pkg.Test2"
+		test3Name   = "pkg.Test3"
+		test2Reason = "reason for error"
 	)
 	run1Start := time.Unix(1, 0)
 	test1Start := time.Unix(2, 0)
 	test1End := time.Unix(3, 0)
 	test2Start := time.Unix(4, 0)
+	test2Error := time.Unix(4, 100)
 	run2Start := time.Unix(5, 0)
 	test3Start := time.Unix(6, 0)
 	test3End := time.Unix(7, 0)
@@ -553,13 +562,15 @@ func TestWritePartialResults(t *gotesting.T) {
 	mw.WriteMessage(&control.TestStart{Time: test1Start, Test: testing.Test{Name: test1Name}})
 	mw.WriteMessage(&control.TestEnd{Time: test1End, Name: test1Name})
 	mw.WriteMessage(&control.TestStart{Time: test2Start, Test: testing.Test{Name: test2Name}})
+	mw.WriteMessage(&control.TestError{Time: test2Error, Error: testing.Error{Reason: test2Reason}})
 
 	cfg := Config{
 		Logger: logging.NewSimple(&bytes.Buffer{}, 0, false),
 		ResDir: tempDir,
 	}
-	if _, err := readTestOutput(context.Background(), &cfg, &b, os.Rename); err == nil {
-		t.Error("readTestOutput unexpectedly succeeded")
+	results, err := readTestOutput(context.Background(), &cfg, &b, os.Rename)
+	if err == nil {
+		t.Fatal("readTestOutput unexpectedly succeeded")
 	}
 	files, err := testutil.ReadFiles(cfg.ResDir)
 	if err != nil {
@@ -574,15 +585,21 @@ func TestWritePartialResults(t *gotesting.T) {
 			OutDir: filepath.Join(cfg.ResDir, testLogsDir, test1Name),
 		},
 		// No TestEnd message was received for the second test, so its entry in the streamed results
-		// file should have an empty end time.
+		// file should have an empty end time. The error should be included, though.
 		TestResult{
 			Test:   testing.Test{Name: test2Name},
 			Start:  test2Start,
+			Errors: []TestError{TestError{test2Error, testing.Error{Reason: test2Reason}}},
 			OutDir: filepath.Join(cfg.ResDir, testLogsDir, test2Name),
 		},
 	}
-	if !cmp.Equal(streamRes, expRes, cmp.AllowUnexported(TestResult{})) {
+	if !cmp.Equal(streamRes, expRes, cmpopts.IgnoreUnexported(TestResult{})) {
 		t.Errorf("%v contains %+v; want %+v", streamedResultsFilename, streamRes, expRes)
+	}
+
+	// The returned results should contain the same data.
+	if !cmp.Equal(results, expRes, cmpopts.IgnoreUnexported(TestResult{})) {
+		t.Errorf("Returned results contain contain %+v; want %+v", results, expRes)
 	}
 
 	// Write control messages describing another run containing the third test.
@@ -606,7 +623,7 @@ func TestWritePartialResults(t *gotesting.T) {
 		End:    test3End,
 		OutDir: filepath.Join(cfg.ResDir, testLogsDir, test3Name),
 	})
-	if !cmp.Equal(streamRes, expRes, cmp.AllowUnexported(TestResult{})) {
+	if !cmp.Equal(streamRes, expRes, cmpopts.IgnoreUnexported(TestResult{})) {
 		t.Errorf("%v contains %+v; want %+v", streamedResultsFilename, streamRes, expRes)
 	}
 }

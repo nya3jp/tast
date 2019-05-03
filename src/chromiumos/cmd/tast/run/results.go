@@ -45,13 +45,13 @@ type TestResult struct {
 	// testing.Test struct; only fields that can be marshaled to JSON are set.
 	testing.Test
 	// Errors contains errors encountered while running the test.
-	// If it is empty, the test passed.
+	// If it is empty and End is non-zero (indicating that the test completed), the test passed.
 	Errors []TestError `json:"errors"`
 	// Start is the time at which the test started (as reported by the test bundle).
 	Start time.Time `json:"start"`
 	// End is the time at which the test completed (as reported by the test bundle).
-	// In a streamed results file, it may hold the zero value (0001-01-01T00:00:00Z)
-	// to indicate that the test did not complete.
+	// It may hold the zero value (0001-01-01T00:00:00Z) to indicate that the test did not complete
+	// (typically indicating that the test bundle, test runner, or DUT crashed mid-test).
 	End time.Time `json:"end"`
 	// OutDir is the directory into which test output is stored.
 	OutDir string `json:"outDir"`
@@ -111,19 +111,29 @@ func WriteResults(ctx context.Context, cfg *Config, results []TestResult, comple
 
 	for _, res := range results {
 		pn := fmt.Sprintf("%-"+strconv.Itoa(ml)+"s", res.Name)
-		if len(res.Errors) == 0 {
+		testFinished := !res.End.IsZero()
+		if len(res.Errors) == 0 && testFinished {
 			if res.SkipReason == "" {
-				cfg.Logger.Logf("%s  [ PASS ]", pn)
+				cfg.Logger.Log(pn + "  [ PASS ]")
 			} else {
-				cfg.Logger.Logf("%s  [ SKIP ] %s", pn, res.SkipReason)
+				cfg.Logger.Log(pn + "  [ SKIP ] " + res.SkipReason)
 			}
-		} else {
-			for i, te := range res.Errors {
-				if i == 0 {
-					cfg.Logger.Logf("%s  [ FAIL ] %s", pn, te.Reason)
-				} else {
-					cfg.Logger.Log(strings.Repeat(" ", ml+11) + te.Reason)
-				}
+			continue
+		}
+
+		var reasons []string
+		for _, te := range res.Errors {
+			reasons = append(reasons, te.Reason)
+		}
+		if !testFinished {
+			reasons = append(reasons, "Test did not finish")
+		}
+		const failStr = "  [ FAIL ] "
+		for i, reason := range reasons {
+			if i == 0 {
+				cfg.Logger.Log(pn + failStr + reason)
+			} else {
+				cfg.Logger.Log(strings.Repeat(" ", ml+len(failStr)) + reason)
 			}
 		}
 	}
@@ -161,7 +171,7 @@ type resultsHandler struct {
 	runStart, runEnd time.Time              // test-runner-reported times at which run started and ended
 	numTests         int                    // total number of tests that are expected to run
 	results          []TestResult           // information about completed tests
-	res              *TestResult            // information about the currently-running test
+	res              *TestResult            // currently-running test, if any (i.e. last element of results)
 	testNames        map[string]struct{}    // names of tests seen so far
 	stage            *timing.Stage          // current test's timing stage
 	crf              copyAndRemoveFunc      // function used to copy and remove files from DUT
@@ -270,12 +280,13 @@ func (r *resultsHandler) handleTestStart(msg *control.TestStart) error {
 	}
 	r.stage = timing.Start(r.ctx, msg.Test.Name)
 
-	r.res = &TestResult{
+	r.results = append(r.results, TestResult{
 		Test:             msg.Test,
 		Start:            msg.Time,
 		OutDir:           r.getTestOutputDir(msg.Test.Name),
 		testStartMsgTime: time.Now(),
-	}
+	})
+	r.res = &r.results[len(r.results)-1]
 	r.testNames[msg.Test.Name] = struct{}{}
 
 	// Write a partial TestResult object to record that we started the test.
@@ -348,7 +359,6 @@ func (r *resultsHandler) handleTestEnd(msg *control.TestEnd) error {
 	}
 
 	r.res.End = msg.Time
-	r.results = append(r.results, *r.res)
 
 	// Replace the earlier partial TestResult object with the now-complete version.
 	if err := r.streamWriter.write(r.res, true); err != nil {
@@ -478,6 +488,14 @@ func (r *resultsHandler) handleMessage(msg interface{}) error {
 
 // processMessages processes control messages and errors supplied by mch and ech.
 func (r *resultsHandler) processMessages(mch <-chan interface{}, ech <-chan error) error {
+	defer func() {
+		// If a test was interrupted, rewrite its entry at the end of the streamed results file
+		// to make sure that all of its errors are recorded.
+		if r.res != nil {
+			r.streamWriter.write(r.res, true)
+		}
+	}()
+
 	for {
 		timeout := r.nextMessageTimeout(time.Now())
 		select {

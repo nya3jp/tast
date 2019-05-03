@@ -35,7 +35,9 @@ const (
 	testLogFilename         = "log.txt"      // file in testLogsDir/<test> containing test-specific log messages
 	testOutputTimeFmt       = "15:04:05.000" // format for timestamps attached to test output
 	testOutputFileRenameExt = ".from_test"   // extension appended to test output files conflicting with existing files
-	defaultMsgTimeout       = time.Minute    // default timeout for reading next control message
+
+	defaultMsgTimeout = time.Minute           // default timeout for reading next control message
+	incompleteTestMsg = "Test did not finish" // error message for incomplete tests
 )
 
 // TestResult contains the results from a single test.
@@ -50,8 +52,9 @@ type TestResult struct {
 	// Start is the time at which the test started (as reported by the test bundle).
 	Start time.Time `json:"start"`
 	// End is the time at which the test completed (as reported by the test bundle).
-	// In a streamed results file, it may hold the zero value (0001-01-01T00:00:00Z)
-	// to indicate that the test did not complete.
+	// It may hold the zero value (0001-01-01T00:00:00Z) to indicate that the test did not complete
+	// (typically indicating that the test bundle, test runner, or DUT crashed mid-test).
+	// In this case, at least one error will also be present indicating that the test was incomplete.
 	End time.Time `json:"end"`
 	// OutDir is the directory into which test output is stored.
 	OutDir string `json:"outDir"`
@@ -113,16 +116,17 @@ func WriteResults(ctx context.Context, cfg *Config, results []TestResult, comple
 		pn := fmt.Sprintf("%-"+strconv.Itoa(ml)+"s", res.Name)
 		if len(res.Errors) == 0 {
 			if res.SkipReason == "" {
-				cfg.Logger.Logf("%s  [ PASS ]", pn)
+				cfg.Logger.Log(pn + "  [ PASS ]")
 			} else {
-				cfg.Logger.Logf("%s  [ SKIP ] %s", pn, res.SkipReason)
+				cfg.Logger.Log(pn + "  [ SKIP ] " + res.SkipReason)
 			}
 		} else {
+			const failStr = "  [ FAIL ] "
 			for i, te := range res.Errors {
 				if i == 0 {
-					cfg.Logger.Logf("%s  [ FAIL ] %s", pn, te.Reason)
+					cfg.Logger.Log(pn + failStr + te.Reason)
 				} else {
-					cfg.Logger.Log(strings.Repeat(" ", ml+11) + te.Reason)
+					cfg.Logger.Log(strings.Repeat(" ", ml+len(failStr)) + te.Reason)
 				}
 			}
 		}
@@ -153,30 +157,35 @@ func WriteResults(ctx context.Context, cfg *Config, results []TestResult, comple
 // removes src from the DUT.
 type copyAndRemoveFunc func(src, dst string) error
 
+// diagnoseRunErrorFunc is called after a run error is encountered while reading test results to get additional
+// information about the cause of the error. An empty string should be returned if additional information
+// is unavailable.
+type diagnoseRunErrorFunc func(ctx context.Context) string
+
 // resultsHandler processes the output from a test binary.
 // TODO(nya): Delete seenHeartbeat after 20190701.
 type resultsHandler struct {
-	ctx context.Context
 	cfg *Config
 
 	runStart, runEnd time.Time              // test-runner-reported times at which run started and ended
 	numTests         int                    // total number of tests that are expected to run
 	results          []TestResult           // information about completed tests
-	res              *TestResult            // information about the currently-running test
+	res              *TestResult            // currently-running test, if any (i.e. last element of results)
 	testNames        map[string]struct{}    // names of tests seen so far
 	stage            *timing.Stage          // current test's timing stage
 	crf              copyAndRemoveFunc      // function used to copy and remove files from DUT
+	diagFunc         diagnoseRunErrorFunc   // called to diagnose run errors; may be nil
 	streamWriter     *streamedResultsWriter // used to write results as control messages are read
 	seenHeartbeat    bool                   // whether heartbeat messages were ever seen
 }
 
-func newResultsHandler(ctx context.Context, cfg *Config, crf copyAndRemoveFunc) (*resultsHandler, error) {
+func newResultsHandler(cfg *Config, crf copyAndRemoveFunc, df diagnoseRunErrorFunc) (*resultsHandler, error) {
 	r := &resultsHandler{
-		ctx:       ctx,
 		cfg:       cfg,
 		results:   make([]TestResult, 0),
 		testNames: make(map[string]struct{}),
 		crf:       crf,
+		diagFunc:  df,
 	}
 
 	var err error
@@ -209,7 +218,7 @@ func (r *resultsHandler) setProgress(s string) {
 }
 
 // handleRunStart handles RunStart control messages from test executables.
-func (r *resultsHandler) handleRunStart(msg *control.RunStart) error {
+func (r *resultsHandler) handleRunStart(ctx context.Context, msg *control.RunStart) error {
 	if !r.runStart.IsZero() {
 		return errors.New("multiple RunStart messages")
 	}
@@ -220,20 +229,20 @@ func (r *resultsHandler) handleRunStart(msg *control.RunStart) error {
 }
 
 // handleRunLog handles RunLog control messages from test executables.
-func (r *resultsHandler) handleRunLog(msg *control.RunLog) error {
+func (r *resultsHandler) handleRunLog(ctx context.Context, msg *control.RunLog) error {
 	r.cfg.Logger.Logf("[%s] %s", msg.Time.Format(testOutputTimeFmt), msg.Text)
 	return nil
 }
 
 // handleRunError handles RunError control messages from test executables.
-func (r *resultsHandler) handleRunError(msg *control.RunError) error {
+func (r *resultsHandler) handleRunError(ctx context.Context, msg *control.RunError) error {
 	// Just return an error to abort the run.
 	return fmt.Errorf("%s:%d: %s",
 		filepath.Base(msg.Error.File), msg.Error.Line, msg.Error.Reason)
 }
 
 // handleRunEnd handles RunEnd control messages from test executables.
-func (r *resultsHandler) handleRunEnd(msg *control.RunEnd) error {
+func (r *resultsHandler) handleRunEnd(ctx context.Context, msg *control.RunEnd) error {
 	if r.runStart.IsZero() {
 		return errors.New("no RunStart message before RunEnd")
 	}
@@ -258,7 +267,7 @@ func (r *resultsHandler) handleRunEnd(msg *control.RunEnd) error {
 }
 
 // handleTestStart handles TestStart control messages from test executables.
-func (r *resultsHandler) handleTestStart(msg *control.TestStart) error {
+func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.TestStart) error {
 	if r.runStart.IsZero() {
 		return errors.New("no RunStart message before TestStart")
 	}
@@ -270,14 +279,15 @@ func (r *resultsHandler) handleTestStart(msg *control.TestStart) error {
 		return fmt.Errorf("got TestStart message for already-seen test %s -- two tests with same name?",
 			msg.Test.Name)
 	}
-	r.stage = timing.Start(r.ctx, msg.Test.Name)
+	r.stage = timing.Start(ctx, msg.Test.Name)
 
-	r.res = &TestResult{
+	r.results = append(r.results, TestResult{
 		Test:             msg.Test,
 		Start:            msg.Time,
 		OutDir:           r.getTestOutputDir(msg.Test.Name),
 		testStartMsgTime: time.Now(),
-	}
+	})
+	r.res = &r.results[len(r.results)-1]
 	r.testNames[msg.Test.Name] = struct{}{}
 
 	// Write a partial TestResult object to record that we started the test.
@@ -303,13 +313,13 @@ func (r *resultsHandler) handleTestStart(msg *control.TestStart) error {
 }
 
 // handleTestLog handles TestLog control messages from test executables.
-func (r *resultsHandler) handleTestLog(msg *control.TestLog) error {
+func (r *resultsHandler) handleTestLog(ctx context.Context, msg *control.TestLog) error {
 	r.cfg.Logger.Logf("[%s] %s", msg.Time.Format(testOutputTimeFmt), msg.Text)
 	return nil
 }
 
 // handleTestError handles TestError control messages from test executables.
-func (r *resultsHandler) handleTestError(msg *control.TestError) error {
+func (r *resultsHandler) handleTestError(ctx context.Context, msg *control.TestError) error {
 	if r.res == nil {
 		return errors.New("got TestError message while no test was running")
 	}
@@ -325,14 +335,14 @@ func (r *resultsHandler) handleTestError(msg *control.TestError) error {
 }
 
 // handleTestEnd handles TestEnd control messages from test executables.
-func (r *resultsHandler) handleTestEnd(msg *control.TestEnd) error {
+func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.TestEnd) error {
 	if r.res == nil || msg.Name != r.res.Name {
 		return fmt.Errorf("got TestEnd message for not-started test %s", msg.Name)
 	}
 
 	if r.stage != nil {
 		// If the test reported timing stages, import them under the current stage.
-		if tl, ok := timing.FromContext(r.ctx); ok && msg.TimingLog != nil && !msg.TimingLog.Empty() {
+		if tl, ok := timing.FromContext(ctx); ok && msg.TimingLog != nil && !msg.TimingLog.Empty() {
 			if err := tl.Import(msg.TimingLog); err != nil {
 				r.cfg.Logger.Logf("Failed importing timing log for %v: %v", msg.Name, err)
 			}
@@ -350,7 +360,6 @@ func (r *resultsHandler) handleTestEnd(msg *control.TestEnd) error {
 	}
 
 	r.res.End = msg.Time
-	r.results = append(r.results, *r.res)
 
 	// Replace the earlier partial TestResult object with the now-complete version.
 	if err := r.streamWriter.write(r.res, true); err != nil {
@@ -369,7 +378,7 @@ func (r *resultsHandler) handleTestEnd(msg *control.TestEnd) error {
 }
 
 // handleHeartbeat handles Heartbeat control messages from test executables.
-func (r *resultsHandler) handleHeartbeat(msg *control.Heartbeat) error {
+func (r *resultsHandler) handleHeartbeat(ctx context.Context, msg *control.Heartbeat) error {
 	r.seenHeartbeat = true
 	return nil
 }
@@ -455,53 +464,89 @@ func (r *resultsHandler) nextMessageTimeout(now time.Time) time.Duration {
 }
 
 // handleMessage handles generic control messages from test executables.
-func (r *resultsHandler) handleMessage(msg interface{}) error {
+func (r *resultsHandler) handleMessage(ctx context.Context, msg interface{}) error {
 	switch v := msg.(type) {
 	case *control.RunStart:
-		return r.handleRunStart(v)
+		return r.handleRunStart(ctx, v)
 	case *control.RunLog:
-		return r.handleRunLog(v)
+		return r.handleRunLog(ctx, v)
 	case *control.RunError:
-		return r.handleRunError(v)
+		return r.handleRunError(ctx, v)
 	case *control.RunEnd:
-		return r.handleRunEnd(v)
+		return r.handleRunEnd(ctx, v)
 	case *control.TestStart:
-		return r.handleTestStart(v)
+		return r.handleTestStart(ctx, v)
 	case *control.TestLog:
-		return r.handleTestLog(v)
+		return r.handleTestLog(ctx, v)
 	case *control.TestError:
-		return r.handleTestError(v)
+		return r.handleTestError(ctx, v)
 	case *control.TestEnd:
-		return r.handleTestEnd(v)
+		return r.handleTestEnd(ctx, v)
 	case *control.Heartbeat:
-		return r.handleHeartbeat(v)
+		return r.handleHeartbeat(ctx, v)
 	default:
 		return errors.New("unknown message type")
 	}
 }
 
 // processMessages processes control messages and errors supplied by mch and ech.
-func (r *resultsHandler) processMessages(mch <-chan interface{}, ech <-chan error) error {
-	for {
-		timeout := r.nextMessageTimeout(time.Now())
-		select {
-		case msg := <-mch:
-			if msg == nil {
-				// If the channel is closed, we'll read the zero value.
-				return nil
-			}
-			if err := r.handleMessage(msg); err != nil {
-				return err
-			}
-		case err := <-ech:
-			return err
-		case <-time.After(timeout):
-			return fmt.Errorf("timed out after waiting %v for next message (probably lost SSH connection to DUT)",
-				timeout.Round(time.Millisecond))
-		case <-r.ctx.Done():
-			return r.ctx.Err()
+func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interface{}, ech <-chan error) ([]TestResult, error) {
+	// If a test is incomplete when we finish reading messages, rewrite its entry at the
+	// end of the streamed results file to make sure that all of its errors are recorded.
+	defer func() {
+		if r.res != nil {
+			r.res.Errors = append(r.res.Errors, TestError{time.Now(), testing.Error{Reason: incompleteTestMsg}})
+			r.streamWriter.write(r.res, true)
 		}
+	}()
+
+	if runErr := func() error {
+		for {
+			timeout := r.nextMessageTimeout(time.Now())
+			select {
+			case msg := <-mch:
+				if msg == nil {
+					// If the channel is closed, we'll read the zero value.
+					return nil
+				}
+				if err := r.handleMessage(ctx, msg); err != nil {
+					return err
+				}
+			case err := <-ech:
+				return err
+			case <-time.After(timeout):
+				return fmt.Errorf("timed out after waiting %v for next message (probably lost SSH connection to DUT)",
+					timeout.Round(time.Millisecond))
+			case <-ctx.Done():
+				return ctx.Err()
+			}
+		}
+	}(); runErr != nil {
+		// Try to get a more-specific diagnosis of what went wrong.
+		msg := fmt.Sprintf("Got global error: %v", runErr)
+		if r.diagFunc != nil {
+			if dm := r.diagFunc(ctx); dm != "" {
+				msg = dm
+			}
+		}
+
+		// Log the message. If the error interrupted a test, the message will be written to the test's
+		// log, and we also save it as an error within the test's result.
+		r.cfg.Logger.Log(msg)
+		if r.res != nil {
+			r.res.Errors = append(r.res.Errors, TestError{time.Now(), testing.Error{Reason: msg}})
+		}
+		return r.results, runErr
 	}
+
+	if r.runEnd.IsZero() {
+		return r.results, errors.New("no RunEnd message")
+	}
+	if len(r.results) != r.numTests {
+		return r.results, fmt.Errorf("got results for %v test(s); expected %v", len(r.results), r.numTests)
+	}
+
+	return r.results, nil
 }
 
 // streamedResultsWriter is used by resultsHandler to write a stream of JSON-marshaled TestResults
@@ -572,11 +617,11 @@ func readMessages(r io.Reader, mch chan<- interface{}, ech chan<- error) {
 	close(ech)
 }
 
-// readTestOutput reads test output from r and returns the results, which should
-// be passed to WriteResults.
-func readTestOutput(ctx context.Context, cfg *Config, r io.Reader, crf copyAndRemoveFunc) (
+// readTestOutput reads test output from r and returns the results, which should be passed to WriteResults.
+// df may be nil if diagnosis is unavailable.
+func readTestOutput(ctx context.Context, cfg *Config, r io.Reader, crf copyAndRemoveFunc, df diagnoseRunErrorFunc) (
 	[]TestResult, error) {
-	rh, err := newResultsHandler(ctx, cfg, crf)
+	rh, err := newResultsHandler(cfg, crf, df)
 	if err != nil {
 		return nil, err
 	}
@@ -586,23 +631,7 @@ func readTestOutput(ctx context.Context, cfg *Config, r io.Reader, crf copyAndRe
 	ech := make(chan error)
 	go readMessages(r, mch, ech)
 
-	if err := rh.processMessages(mch, ech); err != nil {
-		// If there's a global error mid-test (e.g. the SSH connection died or a RunError control message
-		// was seen), log it now so it'll end up in the current test's log file to indicate what went wrong.
-		if rh.res != nil {
-			cfg.Logger.Log("Got global error mid-test: ", err)
-		}
-		return rh.results, err
-	}
-
-	if rh.runEnd.IsZero() {
-		return rh.results, errors.New("no RunEnd message")
-	}
-	if len(rh.results) != rh.numTests {
-		return rh.results, fmt.Errorf("got results for %v test(s); expected %v", len(rh.results), rh.numTests)
-	}
-
-	return rh.results, nil
+	return rh.processMessages(ctx, mch, ech)
 }
 
 // readTestList decodes JSON-serialized testing.Test objects from r and

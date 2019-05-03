@@ -20,6 +20,7 @@ import (
 
 	"chromiumos/cmd/tast/build"
 	"chromiumos/tast/bundle"
+	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/host"
 	"chromiumos/tast/runner"
 	"chromiumos/tast/shutil"
@@ -538,7 +539,8 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 		results, rerr = readTestList(handle.Stdout())
 	case RunTestsMode:
 		crf := func(src, dst string) error { return moveFromHost(ctx, cfg, hst, src, dst) }
-		results, rerr = readTestOutput(ctx, cfg, handle.Stdout(), crf)
+		df := func(ctx context.Context) string { return diagnoseLocalRunError(ctx, cfg) }
+		results, rerr = readTestOutput(ctx, cfg, handle.Stdout(), crf, df)
 	}
 
 	// Check that the runner exits successfully first so that we don't give a useless error
@@ -593,4 +595,16 @@ func startEphemeralDevserver(hst *host.SSH, cfg *Config) (es *ephemeralDevserver
 	cacheDir := filepath.Join(cfg.tastDir, "devserver", "static")
 	es, err = newEphemeralDevserver(lis, cacheDir)
 	return es, url, err
+}
+
+// diagnoseLocalRunError is used to attempt to diagnose the cause of an error encountered
+// while running local tests. It returns a string that can be returned by a diagnoseRunErrorFunc.
+func diagnoseLocalRunError(ctx context.Context, cfg *Config) string {
+	if cfg.hst == nil || ctxutil.DeadlineBefore(ctx, time.Now().Add(sshPingTimeout)) {
+		return ""
+	}
+	if err := cfg.hst.Ping(ctx, sshPingTimeout); err == nil {
+		return ""
+	}
+	return "Lost SSH connection: " + diagnoseSSHDrop(ctx, cfg)
 }

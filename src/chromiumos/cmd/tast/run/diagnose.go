@@ -31,9 +31,7 @@ func diagnoseSSHDrop(ctx context.Context, cfg *Config) string {
 		return "failed to diagnose: initial boot_id is not available"
 	}
 
-	// Try to reconnect to the target.
-	cfg.Logger.Log("Lost SSH connection, trying to reconnect for diagnosis")
-
+	cfg.Logger.Log("Reconnecting to diagnose lost SSH connection")
 	const reconnectTimeout = time.Minute
 	if err := testing.Poll(ctx, func(ctx context.Context) error {
 		_, err := connectToTarget(ctx, cfg)

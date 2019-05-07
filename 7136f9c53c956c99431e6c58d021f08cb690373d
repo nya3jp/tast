@@ -22,6 +22,30 @@
       "revId": "7136f9c53c956c99431e6c58d021f08cb690373d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b6492835_9e863c8f",
+        "filename": "src/chromiumos/cmd/tast/run/results.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-07T06:15:54Z",
+      "side": 1,
+      "message": "whoops, great catch! i fixed this and added a test case that would\u0027ve caught it.",
+      "parentUuid": "11de2e64_3c133baf",
+      "range": {
+        "startLine": 139,
+        "startChar": 48,
+        "endLine": 139,
+        "endChar": 55
+      },
+      "revId": "7136f9c53c956c99431e6c58d021f08cb690373d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

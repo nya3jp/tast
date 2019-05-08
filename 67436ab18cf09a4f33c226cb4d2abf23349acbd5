@@ -46,6 +46,30 @@
       "revId": "67436ab18cf09a4f33c226cb4d2abf23349acbd5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "348d377a_4ea130b7",
+        "filename": "src/chromiumos/cmd/tast/run/results.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-08T15:32:17Z",
+      "side": 1,
+      "message": "hmm, so looking at this more closely: the challenge here is that we currently diagnose the error and write run_error.txt (which tast.py uses for incomplete tests) later, and in run.go. i think that we\u0027ll probably need to move diagnosis earlier in any case if we reconnect to run more tests, but i\u0027m not sure how this should work in the meantime. i\u0027ll give this some more thought...",
+      "parentUuid": "34caa44e_d0c2c6ef",
+      "range": {
+        "startLine": 129,
+        "startChar": 30,
+        "endLine": 129,
+        "endChar": 51
+      },
+      "revId": "67436ab18cf09a4f33c226cb4d2abf23349acbd5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

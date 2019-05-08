@@ -22,6 +22,30 @@
       "revId": "67436ab18cf09a4f33c226cb4d2abf23349acbd5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "34caa44e_d0c2c6ef",
+        "filename": "src/chromiumos/cmd/tast/run/results.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-08T02:33:54Z",
+      "side": 1,
+      "message": "thanks, i reached the same conclusion in a followup change and was in the progress of updating this change to do that. :-) i\u0027ll upload a new version soon.",
+      "parentUuid": "c7a423ca_f3073c9f",
+      "range": {
+        "startLine": 129,
+        "startChar": 30,
+        "endLine": 129,
+        "endChar": 51
+      },
+      "revId": "67436ab18cf09a4f33c226cb4d2abf23349acbd5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

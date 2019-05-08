@@ -33,6 +33,7 @@ The following software features are defined:
     of Chrome (e.g. official branding and proprietary codecs like H.264).
 *   `chrome_login` - Implies `chrome` with the further requirement that user
     login (i.e. using `session_manager` and `cryptohome`) is supported.
+*   `cros_config` - `cros_config` utility is available.
 *   `cros_internal` - Functionality that is only available in internal builds of
     Chrome OS (i.e. ones built using `chromeos-overlay`).
 *   `cups` - CUPS daemon.

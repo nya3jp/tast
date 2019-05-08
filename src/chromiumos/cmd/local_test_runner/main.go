@@ -72,6 +72,7 @@ func main() {
 			"chrome":                  "!chromeless_tty",
 			"chrome_internal":         "chrome_internal",
 			"chrome_login":            "!chromeless_tty && !rialto",
+			"cros_config":             "unibuild",
 			"cros_internal":           "internal",
 			"cups":                    "cups",
 			"diagnostics":             "diagnostics",

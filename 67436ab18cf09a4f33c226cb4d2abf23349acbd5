@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c7a423ca_f3073c9f",
+        "filename": "src/chromiumos/cmd/tast/run/results.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-05-08T01:55:29Z",
+      "side": 1,
+      "message": "Hmm, it\u0027s a bit confusing that the same message is generated independently here and in tast.py...\n\nHow about inserting this message to res.Errors before WriteResults in case of timeouts? Then we can guarantee the same message is used in all consumers of results.json, and also consumers don\u0027t need to bother to check res.End in addition to res.Errors to see if a test passed or failed.",
+      "range": {
+        "startLine": 129,
+        "startChar": 30,
+        "endLine": 129,
+        "endChar": 51
+      },
+      "revId": "67436ab18cf09a4f33c226cb4d2abf23349acbd5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

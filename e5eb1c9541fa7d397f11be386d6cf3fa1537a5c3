@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "0a74492c_23b40844",
+        "filename": "src/chromiumos/tast/crosconfig/crosconfig.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1325305
+      },
+      "writtenOn": "2019-05-10T22:13:06Z",
+      "side": 1,
+      "message": "I changed things slightly and I think it make more sense what is going on. This way I am still testing the public method and it allows for a fake cros_config command to be written alongside the test. I still have to change a package private (lowercase) variable but that seems to be acceptable in go tests, please correct me if I am wrong I am very new to go.",
+      "parentUuid": "af6db317_bc106309",
+      "revId": "e5eb1c9541fa7d397f11be386d6cf3fa1537a5c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "a922d2dc_c0074049",
         "filename": "src/chromiumos/tast/crosconfig/crosconfig.go",
         "patchSetId": 1
@@ -30,6 +48,24 @@
       "writtenOn": "2019-05-10T20:12:23Z",
       "side": 1,
       "message": "https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/chromeos-config lists a large number of attributes. i\u0027m not sure that all of these should be duplicated in this package.\n\nwhat about just using strings and having callers provide full property paths?",
+      "revId": "e5eb1c9541fa7d397f11be386d6cf3fa1537a5c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6b075fa2_866d386d",
+        "filename": "src/chromiumos/tast/crosconfig/crosconfig.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1325305
+      },
+      "writtenOn": "2019-05-10T22:13:06Z",
+      "side": 1,
+      "message": "I agree I could definitely make this more generic, but my thought here was that by making these explicit we can better control for reading properties that should not be allowed in tests",
+      "parentUuid": "a922d2dc_c0074049",
       "revId": "e5eb1c9541fa7d397f11be386d6cf3fa1537a5c3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "f9b2cae1_b6c21d83",
+        "filename": "src/chromiumos/tast/crosconfig/crosconfig.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1325305
+      },
+      "writtenOn": "2019-05-10T22:13:06Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "c529d7ba_99c2f8c1",
+      "revId": "e5eb1c9541fa7d397f11be386d6cf3fa1537a5c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a8775095_1e2b7ecd",
         "filename": "src/chromiumos/tast/crosconfig/crosconfig.go",
         "patchSetId": 1
@@ -70,6 +124,24 @@
     },
     {
       "key": {
+        "uuid": "b5ce36cf_ed67aa9a",
+        "filename": "src/chromiumos/tast/crosconfig/crosconfig.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1325305
+      },
+      "writtenOn": "2019-05-10T22:13:06Z",
+      "side": 1,
+      "message": "done, I saw this in another package and thought it may be important",
+      "parentUuid": "a8775095_1e2b7ecd",
+      "revId": "e5eb1c9541fa7d397f11be386d6cf3fa1537a5c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d766dc75_09b3fff0",
         "filename": "src/chromiumos/tast/crosconfig/crosconfig.go",
         "patchSetId": 1
@@ -81,6 +153,30 @@
       "writtenOn": "2019-05-10T20:12:23Z",
       "side": 1,
       "message": "how about just something like this?\n\n  func GetBool(ctx context.Context, string prop) (bool, error)\n\n(or a separate path and prop string args, if that\u0027s what cros_config expects)",
+      "range": {
+        "startLine": 47,
+        "startChar": 5,
+        "endLine": 47,
+        "endChar": 26
+      },
+      "revId": "e5eb1c9541fa7d397f11be386d6cf3fa1537a5c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3e7bcafa_48cb0652",
+        "filename": "src/chromiumos/tast/crosconfig/crosconfig.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1325305
+      },
+      "writtenOn": "2019-05-10T22:13:06Z",
+      "side": 1,
+      "message": "Along with the HardwareProperty type, how generic or specific do we want to get with this package. This way makes it very hard to call things incorrectly but adds overhead if we are going to need a lot of different attributes from cros_config.",
+      "parentUuid": "d766dc75_09b3fff0",
       "range": {
         "startLine": 47,
         "startChar": 5,
@@ -110,6 +206,24 @@
     },
     {
       "key": {
+        "uuid": "dfc8ee38_3d5c6ec0",
+        "filename": "src/chromiumos/tast/crosconfig/crosconfig.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1325305
+      },
+      "writtenOn": "2019-05-10T22:13:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "aeaa0401_6949765a",
+      "revId": "e5eb1c9541fa7d397f11be386d6cf3fa1537a5c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7fec5f9f_053c8dca",
         "filename": "src/chromiumos/tast/crosconfig/crosconfig_test.go",
         "patchSetId": 1
@@ -127,6 +241,24 @@
     },
     {
       "key": {
+        "uuid": "ae570e2e_5b6907fb",
+        "filename": "src/chromiumos/tast/crosconfig/crosconfig_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1325305
+      },
+      "writtenOn": "2019-05-10T22:13:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7fec5f9f_053c8dca",
+      "revId": "e5eb1c9541fa7d397f11be386d6cf3fa1537a5c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "22f9cdac_02df9612",
         "filename": "src/chromiumos/tast/crosconfig/crosconfig_test.go",
         "patchSetId": 1
@@ -141,6 +273,24 @@
       "revId": "e5eb1c9541fa7d397f11be386d6cf3fa1537a5c3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b0cb9a58_7d9564e4",
+        "filename": "src/chromiumos/tast/crosconfig/crosconfig_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1325305
+      },
+      "writtenOn": "2019-05-10T22:13:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "22f9cdac_02df9612",
+      "revId": "e5eb1c9541fa7d397f11be386d6cf3fa1537a5c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

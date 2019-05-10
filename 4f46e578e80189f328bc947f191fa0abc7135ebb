@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "dceba3d9_e30c3abe",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-10T21:53:16Z",
+      "side": 1,
+      "message": "yep, i was planning to do that in a followup change. i think that with this change, tast.py will just add an extra \"Test did not finish\" error, which seems harmless. it also already tolerates run_error.txt not existing. does that seem correct to you?",
+      "parentUuid": "a748344e_d92ac625",
+      "revId": "4f46e578e80189f328bc947f191fa0abc7135ebb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "2d92e20d_cc32cba1",
         "filename": "src/chromiumos/cmd/tast/run/local.go",
         "patchSetId": 2
@@ -30,6 +48,30 @@
       "writtenOn": "2019-05-10T10:24:41Z",
       "side": 1,
       "message": "Thanks for fixing semicolon here :)",
+      "range": {
+        "startLine": 609,
+        "startChar": 28,
+        "endLine": 609,
+        "endChar": 29
+      },
+      "revId": "4f46e578e80189f328bc947f191fa0abc7135ebb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "20a3f544_88ebe43f",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 609,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-10T21:53:16Z",
+      "side": 1,
+      "message": "i wasn\u0027t sure what was correct here, to be honest :-)",
+      "parentUuid": "2d92e20d_cc32cba1",
       "range": {
         "startLine": 609,
         "startChar": 28,
@@ -65,6 +107,30 @@
     },
     {
       "key": {
+        "uuid": "dec4f56e_43758f3b",
+        "filename": "src/chromiumos/cmd/tast/run/results.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-10T21:53:16Z",
+      "side": 1,
+      "message": "whoops, thanks! i iterated on the name a bit here :-P",
+      "parentUuid": "363a307f_20021870",
+      "range": {
+        "startLine": 160,
+        "startChar": 3,
+        "endLine": 160,
+        "endChar": 15
+      },
+      "revId": "4f46e578e80189f328bc947f191fa0abc7135ebb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2140d450_830db178",
         "filename": "src/chromiumos/cmd/tast/run/results.go",
         "patchSetId": 2
@@ -85,6 +151,30 @@
       "revId": "4f46e578e80189f328bc947f191fa0abc7135ebb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4385658e_9c3ce99e",
+        "filename": "src/chromiumos/cmd/tast/run/results.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 530,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-10T21:53:16Z",
+      "side": 1,
+      "message": "thanks, done. i also updated resultsHandler to avoid storing a context internally. i think i hadn\u0027t internalized that rule when i wrote this code. :-)",
+      "parentUuid": "2140d450_830db178",
+      "range": {
+        "startLine": 530,
+        "startChar": 12,
+        "endLine": 530,
+        "endChar": 24
+      },
+      "revId": "4f46e578e80189f328bc947f191fa0abc7135ebb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -143,6 +233,30 @@
       "revId": "4f46e578e80189f328bc947f191fa0abc7135ebb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "01bcce2f_8e1834fb",
+        "filename": "src/chromiumos/cmd/tast/run/results_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 642,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-10T21:53:16Z",
+      "side": 1,
+      "message": "thanks, i always miss these simplifications. the TestResult on L630 and L638 is also unnecessary, for that matter. :-)",
+      "parentUuid": "e93949e3_5df6d11c",
+      "range": {
+        "startLine": 642,
+        "startChar": 4,
+        "endLine": 642,
+        "endChar": 13
+      },
+      "revId": "4f46e578e80189f328bc947f191fa0abc7135ebb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

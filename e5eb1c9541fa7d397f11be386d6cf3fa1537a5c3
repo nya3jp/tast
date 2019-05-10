@@ -1,0 +1,146 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "af6db317_bc106309",
+        "filename": "src/chromiumos/tast/crosconfig/crosconfig.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-10T20:12:23Z",
+      "side": 1,
+      "message": "i\u0027d recommend against adding a global that\u0027s overridden by tests. instead, how about just moving the real logic that you want to test (e.g. parsing the output from cros_config) into its own unexported function, and exercising that in your unit tests?",
+      "revId": "e5eb1c9541fa7d397f11be386d6cf3fa1537a5c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a922d2dc_c0074049",
+        "filename": "src/chromiumos/tast/crosconfig/crosconfig.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-10T20:12:23Z",
+      "side": 1,
+      "message": "https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/chromeos-config lists a large number of attributes. i\u0027m not sure that all of these should be duplicated in this package.\n\nwhat about just using strings and having callers provide full property paths?",
+      "revId": "e5eb1c9541fa7d397f11be386d6cf3fa1537a5c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c529d7ba_99c2f8c1",
+        "filename": "src/chromiumos/tast/crosconfig/crosconfig.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-10T20:12:23Z",
+      "side": 1,
+      "message": "thank you for adding this!",
+      "revId": "e5eb1c9541fa7d397f11be386d6cf3fa1537a5c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a8775095_1e2b7ecd",
+        "filename": "src/chromiumos/tast/crosconfig/crosconfig.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-10T20:12:23Z",
+      "side": 1,
+      "message": "do you actually need to permit local_test_runner here? it\u0027s not obvious to me why it would need to use this now (although it may need to in the future).",
+      "revId": "e5eb1c9541fa7d397f11be386d6cf3fa1537a5c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d766dc75_09b3fff0",
+        "filename": "src/chromiumos/tast/crosconfig/crosconfig.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-10T20:12:23Z",
+      "side": 1,
+      "message": "how about just something like this?\n\n  func GetBool(ctx context.Context, string prop) (bool, error)\n\n(or a separate path and prop string args, if that\u0027s what cros_config expects)",
+      "range": {
+        "startLine": 47,
+        "startChar": 5,
+        "endLine": 47,
+        "endChar": 26
+      },
+      "revId": "e5eb1c9541fa7d397f11be386d6cf3fa1537a5c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aeaa0401_6949765a",
+        "filename": "src/chromiumos/tast/crosconfig/crosconfig.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-10T20:12:23Z",
+      "side": 1,
+      "message": "nit: return strings.TrimSpace(...) \u003d\u003d \"true\", nil",
+      "revId": "e5eb1c9541fa7d397f11be386d6cf3fa1537a5c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7fec5f9f_053c8dca",
+        "filename": "src/chromiumos/tast/crosconfig/crosconfig_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-10T20:12:23Z",
+      "side": 1,
+      "message": "nit: delete blank line",
+      "revId": "e5eb1c9541fa7d397f11be386d6cf3fa1537a5c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "22f9cdac_02df9612",
+        "filename": "src/chromiumos/tast/crosconfig/crosconfig_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-10T20:12:23Z",
+      "side": 1,
+      "message": "i\u0027d recommend using the anon struct pattern instead. for an arbitrary example, see https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/src/chromiumos/tast/testing/registry_test.go#78",
+      "revId": "e5eb1c9541fa7d397f11be386d6cf3fa1537a5c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -2,6 +2,92 @@
   "comments": [
     {
       "key": {
+        "uuid": "a748344e_d92ac625",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-05-10T10:24:41Z",
+      "side": 1,
+      "message": "I believe we also have to update tast.py not to handle unfinished tests.",
+      "revId": "4f46e578e80189f328bc947f191fa0abc7135ebb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2d92e20d_cc32cba1",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 609,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-05-10T10:24:41Z",
+      "side": 1,
+      "message": "Thanks for fixing semicolon here :)",
+      "range": {
+        "startLine": 609,
+        "startChar": 28,
+        "endLine": 609,
+        "endChar": 29
+      },
+      "revId": "4f46e578e80189f328bc947f191fa0abc7135ebb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "363a307f_20021870",
+        "filename": "src/chromiumos/cmd/tast/run/results.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-05-10T10:24:41Z",
+      "side": 1,
+      "message": "nit: diagnoseRunErrorFunc",
+      "range": {
+        "startLine": 160,
+        "startChar": 3,
+        "endLine": 160,
+        "endChar": 15
+      },
+      "revId": "4f46e578e80189f328bc947f191fa0abc7135ebb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2140d450_830db178",
+        "filename": "src/chromiumos/cmd/tast/run/results.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 530,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-05-10T10:24:41Z",
+      "side": 1,
+      "message": "This looks a bit odd since ctx is passed implicitly. How about updating diagnoseRunErrorFunc to take ctx and passing r.ctx here?",
+      "range": {
+        "startLine": 530,
+        "startChar": 12,
+        "endLine": 530,
+        "endChar": 24
+      },
+      "revId": "4f46e578e80189f328bc947f191fa0abc7135ebb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ab92ea7a_d124dd07",
         "filename": "src/chromiumos/cmd/tast/run/results.go",
         "patchSetId": 2
@@ -13,6 +99,47 @@
       "writtenOn": "2019-05-10T03:36:31Z",
       "side": 1,
       "message": "i moved this logic here from readTestOutput, since it felt odd for that function to be accessing resultsHandler\u0027s fields directly.",
+      "revId": "4f46e578e80189f328bc947f191fa0abc7135ebb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ecc1b3db_d0c1a377",
+        "filename": "src/chromiumos/cmd/tast/run/results.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 544,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-05-10T10:24:41Z",
+      "side": 1,
+      "message": "Ack, sounds reasonable.",
+      "parentUuid": "ab92ea7a_d124dd07",
+      "revId": "4f46e578e80189f328bc947f191fa0abc7135ebb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e93949e3_5df6d11c",
+        "filename": "src/chromiumos/cmd/tast/run/results_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 642,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-05-10T10:24:41Z",
+      "side": 1,
+      "message": "nit: TestError is not required here.",
+      "range": {
+        "startLine": 642,
+        "startChar": 4,
+        "endLine": 642,
+        "endChar": 13
+      },
       "revId": "4f46e578e80189f328bc947f191fa0abc7135ebb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

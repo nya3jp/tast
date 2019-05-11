@@ -173,7 +173,7 @@ func (s *SSHServer) handleConn(conn net.Conn) error {
 
 	for newChan := range chans {
 		if newChan.ChannelType() != "session" {
-			newChan.Reject(ssh.UnknownChannelType, "unknown channel type")
+			newChan.Reject(ssh.UnknownChannelType, fmt.Sprintf("%q unsupported", newChan.ChannelType()))
 			continue
 		}
 

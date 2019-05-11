@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6d7ac88e_85d7617e",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-11T00:41:55Z",
+      "side": 1,
+      "message": "the call chain here is getting pretty deep now. :-( i think we have:\n\n- Run\n- local\n- runLocalTests\n- runLocalRunner\n- startLocalRunner\n- ...\n\ni\u0027m not sure that it\u0027s easy to simplify, but i wonder if there are other names that would be clearer...",
+      "revId": "2f0d8b56bb699cc6e6306a52e4ae9ae880b22cab",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3bac1b9a_95108021",
+        "filename": "src/chromiumos/cmd/tast/run/results.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 568,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-11T00:41:55Z",
+      "side": 1,
+      "message": "instead of just checking this, we should probably check that each result we get back matches what we expect per r.testsToRun.",
+      "revId": "2f0d8b56bb699cc6e6306a52e4ae9ae880b22cab",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a8ead967_59c39151",
+        "filename": "src/chromiumos/cmd/tast/run/results.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 647,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-11T00:41:55Z",
+      "side": 1,
+      "message": "this is a pretty disgusting hack. it\u0027s mostly necessary to support old local_test_runner binaries: if readTestOutput returns a nonempty results and an empty unstarted, the caller otherwise has no way of knowing whether we started all tests, or just started some tests but don\u0027t know whether any more are needed (in which case we should just fail as before).\n\nbut even without stale runners, i wonder if it\u0027s still useful to be able to tell whether we got a RunStart message with a test list, or we died before we got the RunStart...",
+      "revId": "2f0d8b56bb699cc6e6306a52e4ae9ae880b22cab",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

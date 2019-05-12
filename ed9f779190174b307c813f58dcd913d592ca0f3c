@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "63964fc9_fe1c2aa1",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-12T18:35:54Z",
+      "side": 0,
+      "message": "i\u0027m deleting these a bit ahead of the date that i wrote here... but the date was arbitrary, so i don\u0027t think that that\u0027s really a problem. :-P",
+      "revId": "ed9f779190174b307c813f58dcd913d592ca0f3c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

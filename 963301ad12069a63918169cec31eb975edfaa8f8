@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "09611540_d6f272cb",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-12T18:35:54Z",
+      "side": 1,
+      "message": "i think it\u0027s reasonable to always require callers to supply nested arg structs. these were formerly initialized if missing in PromoteDeprecated (to support old tast commands that didn\u0027t know about the nested structs).\n\ni\u0027ve verified that we always set these in \"tast run\" (with the exception of runner.GetSysInfoStateMode, which doesn\u0027t take any args).",
+      "revId": "963301ad12069a63918169cec31eb975edfaa8f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

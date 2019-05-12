@@ -6,10 +6,12 @@ package run
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"chromiumos/cmd/tast/build"
@@ -125,6 +127,8 @@ type Config struct {
 	collectSysInfo bool                 // collect system info (logs, crashes, etc.) generated during testing
 	initialSysInfo *runner.SysInfoState // initial state of system info (logs, crashes, etc.) on DUT before testing
 
+	testVars map[string]string // names and values of variables used to pass out-of-band data to tests
+
 	msgTimeout             time.Duration // timeout for reading control messages; default used if zero
 	localRunnerWaitTimeout time.Duration // timeout for waiting for local_test_runner to exit; default used if zero
 
@@ -147,6 +151,7 @@ func NewConfig(mode Mode, tastDir, trunkDir string) *Config {
 		mode:     mode,
 		tastDir:  tastDir,
 		trunkDir: trunkDir,
+		testVars: make(map[string]string),
 	}
 }
 
@@ -203,6 +208,16 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 
 		f.Var(command.NewListFlag(",", func(v []string) { c.extraUSEFlags = v }, nil), "extrauseflags",
 			"comma-separated list of additional USE flags to inject when checking test dependencies")
+
+		vf := command.RepeatedFlag(func(v string) error {
+			parts := strings.SplitN(v, "=", 2)
+			if len(parts) != 2 {
+				return errors.New(`want "name=value"`)
+			}
+			c.testVars[parts[0]] = parts[1]
+			return nil
+		})
+		f.Var(&vf, "var", `runtime variable to pass to tests, as "name=value" (can be repeated)`)
 
 		vals = map[string]int{
 			"env":  int(proxyEnv),

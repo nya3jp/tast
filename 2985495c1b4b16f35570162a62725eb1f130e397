@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "53ad42eb_fb21f124",
+        "filename": "src/chromiumos/tast/host/test/ssh_server.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-12T01:49:11Z",
+      "side": 1,
+      "message": "i changed this since i initially tried to use this class to test Forwarder, and the error message that i got wasn\u0027t very clear",
+      "revId": "2985495c1b4b16f35570162a62725eb1f130e397",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

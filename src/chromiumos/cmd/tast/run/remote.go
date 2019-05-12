@@ -104,6 +104,7 @@ func runRemoteRunner(ctx context.Context, cfg *Config, bundleGlob, dataDir strin
 				BundleArgs: bundle.RunTestsArgs{
 					Patterns: cfg.Patterns,
 					DataDir:  dataDir,
+					TestVars: cfg.testVars,
 					Target:   cfg.Target,
 					KeyFile:  cfg.KeyFile,
 					KeyDir:   cfg.KeyDir,

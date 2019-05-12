@@ -505,6 +505,7 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob,
 				BundleArgs: bundle.RunTestsArgs{
 					Patterns:          cfg.Patterns,
 					DataDir:           dataDir,
+					TestVars:          cfg.testVars,
 					WaitUntilReady:    cfg.waitUntilReady,
 					HeartbeatInterval: heartbeatInterval,
 				},

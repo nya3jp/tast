@@ -238,6 +238,7 @@ func runTest(ctx context.Context, ew *eventWriter, args *Args, cfg *runConfig,
 	testCfg := testing.TestConfig{
 		DataDir:      filepath.Join(args.RunTests.DataDir, t.DataDir()),
 		OutDir:       filepath.Join(args.RunTests.OutDir, t.Name),
+		Vars:         args.RunTests.TestVars,
 		Meta:         meta,
 		PreTestFunc:  cfg.preTestFunc,
 		PostTestFunc: cfg.postTestFunc,

@@ -69,6 +69,10 @@ type RunTestsArgs struct {
 	// or one or more globs) describing which tests to run.
 	Patterns []string `json:"patterns,omitempty"`
 
+	// TestVars contains names and values of runtime variables used to pass out-of-band data to tests.
+	// Names correspond to testing.Test.Vars and values are accessed using testing.State.Var.
+	TestVars map[string]string `json:"testVars,omitempty"`
+
 	// DataDir is the path to the directory containing test data files.
 	DataDir string `json:"dataDir,omitempty"`
 	// OutDir is the path to the base directory under which tests should write output files.

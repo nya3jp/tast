@@ -87,6 +87,9 @@ type Test struct {
 	// Data contains paths of data files needed by the test, relative to a "data" subdirectory within the
 	// directory in which Func is located.
 	Data []string `json:"data"`
+	// Vars contains the names of runtime variables used to pass out-of-band data to tests.
+	// Values are supplied using "tast run -var=name=value", and tests can access values via State.Var.
+	Vars []string `json:"vars,omitempty"`
 	// SoftwareDeps lists software features that are required to run the test.
 	// If any dependencies are not satisfied by the DUT, the test will be skipped.
 	// See https://chromium.googlesource.com/chromiumos/platform/tast/+/master/docs/test_dependencies.md

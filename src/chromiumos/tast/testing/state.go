@@ -91,9 +91,12 @@ type TestConfig struct {
 	DataDir string
 	// OutDir is the directory to which the test will write output files.
 	OutDir string
+	// Vars contains names and values of out-of-band variables passed to tests at runtime.
+	// Names must be registered in Test.Vars and values may be accessed using State.Var.
+	Vars map[string]string
 	// Meta contains information about how the tast process was run.
 	Meta *Meta
-	// PreTestFunc is run before Test.Func (and Test.Pre.Prepare, when applicable)  if non-nil.
+	// PreTestFunc is run before Test.Func (and Test.Pre.Prepare, when applicable) if non-nil.
 	PreTestFunc func(context.Context, *State)
 	// PostTestFunc is run after Test.Func (and Test.Pre.Cleanup, when applicable) if non-nil.
 	PostTestFunc func(context.Context, *State)
@@ -139,6 +142,33 @@ func (s *State) DataFileSystem() *dataFS { return (*dataFS)(s) }
 // OutDir returns a directory into which the test may place arbitrary files
 // that should be included with the test results.
 func (s *State) OutDir() string { return s.cfg.OutDir }
+
+// Var returns the value for the named variable, which must have been registered via Test.Vars.
+// If a value was not supplied at runtime via the -var flag to "tast run", ok will be false.
+func (s *State) Var(name string) (val string, ok bool) {
+	seen := false
+	for _, n := range s.test.Vars {
+		if n == name {
+			seen = true
+			break
+		}
+	}
+	if !seen {
+		s.Fatalf("Variable %q was not registered in testing.Test.Vars", name)
+	}
+
+	val, ok = s.cfg.Vars[name]
+	return val, ok
+}
+
+// RequiredVar is similar to Var but aborts the test if the named variable was not supplied.
+func (s *State) RequiredVar(name string) string {
+	val, ok := s.Var(name)
+	if !ok {
+		s.Fatalf("Required variable %q not supplied via -var", name)
+	}
+	return val
+}
 
 // PreValue returns a value supplied by the test's precondition, which must have been declared via Test.Pre
 // when the test was registered. Callers should cast the returned empty interface to the correct pointer

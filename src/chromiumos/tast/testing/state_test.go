@@ -269,6 +269,70 @@ func TestDataFileServer(t *gotesting.T) {
 	}
 }
 
+func TestVars(t *gotesting.T) {
+	const (
+		validName = "valid" // registered by test and provided
+		unsetName = "unset" // registered by test but not provided at runtime
+		unregName = "unreg" // not registered by test but provided at runtime
+
+		validValue = "valid value"
+		unregValue = "unreg value"
+	)
+
+	test := &Test{Vars: []string{validName, unsetName}}
+	cfg := &TestConfig{Vars: map[string]string{validName: validValue, unregName: unregValue}}
+	or := newOutputReader()
+	s := newState(test, or.ch, cfg)
+	defer close(or.ch)
+
+	for _, tc := range []struct {
+		req   bool   // if true, call RequiredVar instead of Var
+		name  string // name to pass to Var/RequiredVar
+		value string // expected variable value to be returned
+		ok    bool   // expected 'ok' return value (only used if req is false)
+		fatal bool   // if true, test should be aborted
+	}{
+		{false, validName, validValue, true, false},
+		{false, unsetName, "", false, false},
+		{false, unregName, "", false, true},
+		{true, validName, validValue, false, false},
+		{true, unsetName, "", false, true},
+		{true, unregName, "", false, true},
+	} {
+		funcCall := fmt.Sprintf("Var(%q)", tc.name)
+		if tc.req {
+			funcCall = fmt.Sprintf("RequiredVar(%q)", tc.name)
+		}
+
+		// Call the function in a goroutine since it may call runtime.Goexit() via Fatal.
+		finished := false
+		done := make(chan struct{})
+		go func() {
+			defer func() {
+				recover()
+				close(done)
+			}()
+			if tc.req {
+				if value := s.RequiredVar(tc.name); value != tc.value {
+					t.Errorf("%s = %q; want %q", funcCall, value, tc.value)
+				}
+			} else {
+				if value, ok := s.Var(tc.name); value != tc.value || ok != tc.ok {
+					t.Errorf("%s = (%q, %v); want (%q, %v)", funcCall, value, ok, tc.value, tc.ok)
+				}
+			}
+			finished = true
+		}()
+		<-done
+
+		if !finished && !tc.fatal {
+			t.Error(funcCall, " aborted unexpectedly")
+		} else if finished && tc.fatal {
+			t.Error(funcCall, " succeeded unexpectedly")
+		}
+	}
+}
+
 func TestMeta(t *gotesting.T) {
 	meta := Meta{TastPath: "/foo/bar", Target: "example.net", RunFlags: []string{"-foo", "-bar"}}
 	getMeta := func(test *Test, cfg *TestConfig) (*State, *Meta) {

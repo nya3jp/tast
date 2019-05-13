@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "6fd1658c_076d1668",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-05-13T07:22:26Z",
+      "side": 1,
+      "message": "-resume sounds a bit ambiguous. I guess users rarely set this flag explicitly, so how about naming it longer, like -resumeafterreboot?",
+      "range": {
+        "startLine": 7,
+        "startChar": 10,
+        "endLine": 7,
+        "endChar": 18
+      },
+      "revId": "2f0d8b56bb699cc6e6306a52e4ae9ae880b22cab",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6d7ac88e_85d7617e",
         "filename": "src/chromiumos/cmd/tast/run/local.go",
         "patchSetId": 1
@@ -13,6 +36,52 @@
       "writtenOn": "2019-05-11T00:41:55Z",
       "side": 1,
       "message": "the call chain here is getting pretty deep now. :-( i think we have:\n\n- Run\n- local\n- runLocalTests\n- runLocalRunner\n- startLocalRunner\n- ...\n\ni\u0027m not sure that it\u0027s easy to simplify, but i wonder if there are other names that would be clearer...",
+      "revId": "2f0d8b56bb699cc6e6306a52e4ae9ae880b22cab",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4e740f47_6943cd3c",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 499,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-05-13T07:22:26Z",
+      "side": 1,
+      "message": "Good point, it\u0027s likely ephemeral devserver\u0027s reverse port forward can be broken at this point. While we can ad-hocly instruct the runners/bundles not to use devservers on retries, but generally I believe we should run retries in the same environment as the initial run, so we should restart devservers.",
+      "range": {
+        "startLine": 499,
+        "startChar": 12,
+        "endLine": 499,
+        "endChar": 71
+      },
+      "revId": "2f0d8b56bb699cc6e6306a52e4ae9ae880b22cab",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dfd61b3f_49e27747",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 501,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-05-13T07:22:26Z",
+      "side": 1,
+      "message": "IIUC initial patterns can contain expressions and globs, but after restart patterns contain test names only, am I right? If so, it sounds a bit risky since we have slightly different logics for these types (e.g. whether to skip tests honoring software deps). It would be good to consider resolving patterns first.",
+      "range": {
+        "startLine": 501,
+        "startChar": 2,
+        "endLine": 501,
+        "endChar": 22
+      },
       "revId": "2f0d8b56bb699cc6e6306a52e4ae9ae880b22cab",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

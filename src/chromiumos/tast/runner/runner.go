@@ -305,7 +305,9 @@ func newDevserverClient(ctx context.Context, devservers []string, lf func(msg st
 	const timeout = 3 * time.Second
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
-	cl := devserver.NewRealClient(ctx, devservers, nil)
+
+	o := &devserver.RealClientOptions{LogFunc: lf}
+	cl := devserver.NewRealClient(ctx, devservers, o)
 	lf(fmt.Sprintf("Devserver status: %s", cl.Status()))
 	return cl
 }

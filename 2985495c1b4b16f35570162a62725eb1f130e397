@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "c88da370_7895315e",
+        "filename": "src/chromiumos/tast/host/forwarder.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-14T00:22:19Z",
+      "side": 1,
+      "message": "hmm. if i\u0027m understanding the RFC correctly, direct-tcpip actually accepts either a hostname or an IP address: https://tools.ietf.org/html/rfc4254#section-7.2\n\nit\u0027s not obvious to me why ssh.Client.DialTCP takes a net.TCPAddr (which i think can only hold an IP address): https://godoc.org/golang.org/x/crypto/ssh#Client.DialTCP\n\nthere\u0027s also ssh.Client.Dial, which looks like it passes the remote hostname directly, but always uses net.IPv4zero.String() and port 0 locally. we could switch to that, but i don\u0027t know if there are security concerns around listening on 0.0.0.0 instead of localhost.",
+      "parentUuid": "7d8d6cce_fdff8245",
+      "range": {
+        "startLine": 34,
+        "startChar": 57,
+        "endLine": 35,
+        "endChar": 57
+      },
+      "revId": "2985495c1b4b16f35570162a62725eb1f130e397",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c096150b_a447877e",
         "filename": "src/chromiumos/tast/host/forwarder.go",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2019-05-13T07:58:20Z",
       "side": 1,
       "message": "This will panic if f.errFunc is nil. How about setting the default value in the construction above?",
+      "range": {
+        "startLine": 63,
+        "startChar": 5,
+        "endLine": 63,
+        "endChar": 19
+      },
+      "revId": "2985495c1b4b16f35570162a62725eb1f130e397",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e9261816_41ae2a3a",
+        "filename": "src/chromiumos/tast/host/forwarder.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-14T00:22:19Z",
+      "side": 1,
+      "message": "oh, whoops -- i completely forgot to add a nil check here, i think. :-/",
+      "parentUuid": "c096150b_a447877e",
       "range": {
         "startLine": 63,
         "startChar": 5,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "12f4e03b_22fffd57",
+        "filename": "src/chromiumos/tast/host/forwarder.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-14T00:22:19Z",
+      "side": 1,
+      "message": "hmm, yeah, it should probably be passed to the c\u0027tor -- i think that most callers should be supplying something here. i didn\u0027t have any use case beyond wanting to give tests a way to learn about connection errors.",
+      "parentUuid": "d937a972_a65c9da1",
+      "range": {
+        "startLine": 87,
+        "startChar": 20,
+        "endLine": 87,
+        "endChar": 32
+      },
+      "revId": "2985495c1b4b16f35570162a62725eb1f130e397",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "40d67ead_df0a3f2a",
         "filename": "src/chromiumos/tast/host/forwarder_test.go",
         "patchSetId": 1
@@ -91,6 +163,30 @@
       "revId": "2985495c1b4b16f35570162a62725eb1f130e397",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bf9bc22d_e49efe6d",
+        "filename": "src/chromiumos/tast/host/forwarder_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-14T00:22:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "40d67ead_df0a3f2a",
+      "range": {
+        "startLine": 17,
+        "startChar": 14,
+        "endLine": 17,
+        "endChar": 25
+      },
+      "revId": "2985495c1b4b16f35570162a62725eb1f130e397",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {

@@ -22,6 +22,30 @@
       "revId": "5cb9e74f13215f5742513943feb9afad65a37dac",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9af0908a_1a491a24",
+        "filename": "src/chromiumos/tast/host/forwarder.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-14T04:56:18Z",
+      "side": 1,
+      "message": "hmm. i think it\u0027s not the listening goroutine that i\u0027m worried about, but rather the ones that it launches on L64 that handle incoming connections and do copying. those could potentially outlive the Forwarder object, and i\u0027m worried about errFunc being called later. i don\u0027t know that there\u0027s any way to reliably make those stop from Close.\n\nmaybe i could try to pass a context to NewForwarder? interrupting the copies in handleConn still seems tricky, though. if there were some way i could close local and remote when the context expires, maybe that would work...",
+      "parentUuid": "b1125cde_ab845dda",
+      "range": {
+        "startLine": 81,
+        "startChar": 1,
+        "endLine": 83,
+        "endChar": 17
+      },
+      "revId": "5cb9e74f13215f5742513943feb9afad65a37dac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

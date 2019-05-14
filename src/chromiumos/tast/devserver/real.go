@@ -61,19 +61,50 @@ func (s server) String() string {
 type RealClient struct {
 	servers []server
 	cl      *http.Client
+
+	stageRetries []time.Duration
+	lf           func(string)
 }
 
 var _ Client = &RealClient{}
+
+// Options contains options used when connecting to devserver.
+type Options struct {
+	// HTTPClient is HTTP client to use. If nil, defaultHTTPClient is used.
+	HTTPClient *http.Client
+
+	// StageRetries instructs retry strategy for stage.
+	// Its length is the number of retries and the i-th value is the interval before i-th retry.
+	StageRetries []time.Duration
+
+	// LogFunc (if non-nil) is used to log non-fatal errors.
+	LogFunc func(msg string)
+}
+
+var defaultOptions = &Options{
+	HTTPClient:   defaultHTTPClient,
+	StageRetries: []time.Duration{time.Duration(3 * time.Second)},
+	LogFunc:      func(string) {},
+}
 
 // NewRealClient creates a RealClient.
 // This function checks if devservers at dsURLs are up, and selects a subset of devservers to use.
 // A devserver URL is usually in the form of "http://<hostname>:<port>", without trailing slashes.
 // If we can not verify a devserver is up within ctx's timeout, it is considered down. Be sure to
 // set ctx's timeout carefully since this function can block until it expires if any devserver is down.
-// If cl is nil, a default HTTP client is used.
-func NewRealClient(ctx context.Context, dsURLs []string, cl *http.Client) *RealClient {
-	if cl == nil {
-		cl = defaultHTTPClient
+// If o is nil, default options are used. If o is partially nil, those are updated with actually-used defaults.
+func NewRealClient(ctx context.Context, dsURLs []string, o *Options) *RealClient {
+	cl := defaultOptions.HTTPClient
+	if o != nil && o.HTTPClient != nil {
+		cl = o.HTTPClient
+	}
+	stageRetries := defaultOptions.StageRetries
+	if o != nil && o.StageRetries != nil {
+		stageRetries = o.StageRetries
+	}
+	lf := defaultOptions.LogFunc
+	if o != nil && o.LogFunc != nil {
+		lf = o.LogFunc
 	}
 
 	ch := make(chan server, len(dsURLs))
@@ -92,7 +123,8 @@ func NewRealClient(ctx context.Context, dsURLs []string, cl *http.Client) *RealC
 	sort.Slice(servers, func(i, j int) bool {
 		return servers[i].url < servers[j].url
 	})
-	return &RealClient{servers, cl}
+
+	return &RealClient{servers, cl, stageRetries, lf}
 }
 
 // upServerURLs returns URLs of operational devservers.
@@ -250,24 +282,43 @@ func (c *RealClient) stage(ctx context.Context, dsURL, bucket, gsPath string) er
 	}
 	req = req.WithContext(ctx)
 
-	res, err := c.cl.Do(req)
-	if err != nil {
-		return err
-	}
-	defer res.Body.Close()
-
-	switch res.StatusCode {
-	case http.StatusOK:
-		return nil
-	case http.StatusInternalServerError:
-		out, _ := ioutil.ReadAll(res.Body)
-		s := scrapeInternalError(out)
-		if strings.Contains(s, "Could not find") || strings.Contains(s, "file not found") {
-			return os.ErrNotExist
+	for i := 0; ; i++ {
+		start := time.Now()
+		res, err := c.cl.Do(req)
+		if err != nil {
+			return err
 		}
-		return fmt.Errorf("got status %d: %s", res.StatusCode, s)
-	default:
-		return fmt.Errorf("got status %d", res.StatusCode)
+		defer res.Body.Close()
+
+		switch res.StatusCode {
+		case http.StatusOK:
+			return nil
+		case http.StatusInternalServerError:
+			out, _ := ioutil.ReadAll(res.Body)
+			s := scrapeInternalError(out)
+			if strings.Contains(s, "Could not find") || strings.Contains(s, "file not found") {
+				return os.ErrNotExist
+			}
+			err = fmt.Errorf("got status %d: %s", res.StatusCode, s)
+		default:
+			return fmt.Errorf("got status %d", res.StatusCode)
+		}
+
+		if i < len(c.stageRetries) {
+			elapsed := time.Now().Sub(start)
+			if remaining := c.stageRetries[i] - elapsed; remaining > 0 {
+				c.lf(fmt.Sprintf("Retry stage in %v: %v", remaining.Round(time.Millisecond), err))
+				select {
+				case <-time.After(remaining):
+				case <-ctx.Done():
+					return ctx.Err()
+				}
+			} else {
+				c.lf(fmt.Sprintf("Retrying stage: %v", err))
+			}
+		} else {
+			return err
+		}
 	}
 }
 

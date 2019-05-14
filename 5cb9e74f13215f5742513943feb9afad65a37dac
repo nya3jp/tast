@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b1125cde_ab845dda",
+        "filename": "src/chromiumos/tast/host/forwarder.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-05-14T03:28:56Z",
+      "side": 1,
+      "message": "Now that errFunc is not mutated, can we use channels rather than using mutex to make sure the listening goroutine has finished?",
+      "range": {
+        "startLine": 81,
+        "startChar": 1,
+        "endLine": 83,
+        "endChar": 17
+      },
+      "revId": "5cb9e74f13215f5742513943feb9afad65a37dac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

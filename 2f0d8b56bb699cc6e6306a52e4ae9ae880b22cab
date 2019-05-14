@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "ab2a9709_c891db1a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-05-14T03:18:29Z",
+      "side": 1,
+      "message": "I see. I like -continueonfailure/-continueafterfailure if those flags are rarely set by users, but I don\u0027t have very strong opinion.",
+      "parentUuid": "0812f89c_e7b7eb1c",
+      "range": {
+        "startLine": 7,
+        "startChar": 10,
+        "endLine": 7,
+        "endChar": 18
+      },
+      "revId": "2f0d8b56bb699cc6e6306a52e4ae9ae880b22cab",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6d7ac88e_85d7617e",
         "filename": "src/chromiumos/cmd/tast/run/local.go",
         "patchSetId": 1
@@ -124,6 +148,30 @@
       "side": 1,
       "message": "thank you for pointing out the software deps difference; i\u0027d forgotten about that! one workaround there would be to switch -checktestdeps\u003dauto to -checktestdeps\u003dalways if we resume.\n\ni\u0027m not aware of any other differences, but i agree that it might be easy for others to sneak in. i\u0027d rather not perform an extra list operation to match tests before running them, though (and \"list\" doesn\u0027t check deps at all -- i have an old in-progress-but-broken change to add -checktestdeps to \"tast list\", but i didn\u0027t finish it because i wasn\u0027t sure if it was useful)",
       "parentUuid": "dfd61b3f_49e27747",
+      "range": {
+        "startLine": 501,
+        "startChar": 2,
+        "endLine": 501,
+        "endChar": 22
+      },
+      "revId": "2f0d8b56bb699cc6e6306a52e4ae9ae880b22cab",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8f288683_8216c4f2",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 501,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-05-14T03:18:29Z",
+      "side": 1,
+      "message": "Another aspect is that it\u0027s rather surprising to users that expressions and globs are treated differently. We might want to get rid of -checktestdeps\u003dauto and instead ask users to set -checktestdeps\u003dnever when they want to run skipped tests.\n\nThis is not a blocker but might be worth revisiting later. For now, workarounds like overriding -checktestdeps on resume sounds acceptable.",
+      "parentUuid": "10933e73_f1c35367",
       "range": {
         "startLine": 501,
         "startChar": 2,

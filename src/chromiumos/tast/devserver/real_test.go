@@ -19,6 +19,7 @@ import (
 	"sort"
 	"strings"
 	"testing"
+	"time"
 )
 
 const (
@@ -36,9 +37,11 @@ var fakeServerFiles = map[string][]byte{
 type fakeServer struct {
 	*httptest.Server
 
-	up        bool
-	staged    map[string][]byte
-	dlCounter map[string]int
+	up     bool
+	staged map[string][]byte
+	// stageFailCount makes stage request fail for this time.
+	stageFailCount int
+	dlCounter      map[string]int
 }
 
 func newFakeServer(up bool) *fakeServer {
@@ -101,6 +104,10 @@ func (s *fakeServer) stage(gsURL string) error {
 	_, stagePath, err := parseGSURL(gsURL)
 	if err != nil {
 		return err
+	}
+	if s.stageFailCount > 0 {
+		s.stageFailCount--
+		return errors.New("failed to stage")
 	}
 	s.staged[stagePath] = data
 	return nil
@@ -201,6 +208,34 @@ func TestRealClientPreferStagedServer(t *testing.T) {
 		if c1 != i || c2 != 0 {
 			t.Fatalf("After %d request(s), dlCounter = (%d, %d); want (%d, %d)", i, c1, c2, i, 0)
 		}
+	}
+}
+
+// TestRealClientRetryStage tests that failed stage request is retried.
+func TestRealClientRetryStage(t *testing.T) {
+	s := newFakeServer(true)
+	defer s.close()
+	s.stageFailCount = 1
+
+	o := &RealClientOptions{StageRetryWaits: []time.Duration{time.Duration(1 * time.Millisecond)}}
+	cl := NewRealClient(context.Background(), []string{s.URL}, o)
+
+	if _, err := cl.DownloadGS(context.Background(), &bytes.Buffer{}, fakeFileURL); err != nil {
+		t.Error("DownloadGS failed despite retries: ", err)
+	}
+}
+
+// TestRealClientRetryStageFail tests too many failures causes the download to fail.
+func TestRealClientRetryStageFail(t *testing.T) {
+	s := newFakeServer(true)
+	defer s.close()
+	s.stageFailCount = 2
+
+	o := &RealClientOptions{StageRetryWaits: []time.Duration{time.Duration(1 * time.Millisecond)}}
+	cl := NewRealClient(context.Background(), []string{s.URL}, o)
+
+	if _, err := cl.DownloadGS(context.Background(), &bytes.Buffer{}, fakeFileURL); err == nil {
+		t.Error("DownloadGS succeeded despite too many failures")
 	}
 }
 

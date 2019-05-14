@@ -59,21 +59,55 @@ func (s server) String() string {
 
 // RealClient is an implementation of Client to communicate with real devservers.
 type RealClient struct {
-	servers []server
-	cl      *http.Client
+	servers         []server
+	cl              *http.Client
+	stageRetryWaits []time.Duration
+	logFunc         func(string)
 }
 
 var _ Client = &RealClient{}
+
+// RealClientOptions contains options used when connecting to devserver.
+type RealClientOptions struct {
+	// HTTPClient is HTTP client to use. If nil, defaultHTTPClient is used.
+	HTTPClient *http.Client
+
+	// StageRetryWaits instructs retry strategy for stage.
+	// Its length is the number of retries and the i-th value is the interval before i-th retry.
+	// If nil, default strategy is used. If zero-length slice, no retry is attempted.
+	StageRetryWaits []time.Duration
+
+	// LogFunc (if non-nil) is used to log non-fatal errors.
+	LogFunc func(msg string)
+}
+
+var defaultOptions = &RealClientOptions{
+	HTTPClient:      defaultHTTPClient,
+	StageRetryWaits: []time.Duration{time.Duration(3 * time.Second)},
+	LogFunc:         func(string) {},
+}
 
 // NewRealClient creates a RealClient.
 // This function checks if devservers at dsURLs are up, and selects a subset of devservers to use.
 // A devserver URL is usually in the form of "http://<hostname>:<port>", without trailing slashes.
 // If we can not verify a devserver is up within ctx's timeout, it is considered down. Be sure to
 // set ctx's timeout carefully since this function can block until it expires if any devserver is down.
-// If cl is nil, a default HTTP client is used.
-func NewRealClient(ctx context.Context, dsURLs []string, cl *http.Client) *RealClient {
+// If o is nil, default options are used. If o is partially nil, defaults are used for them.
+func NewRealClient(ctx context.Context, dsURLs []string, o *RealClientOptions) *RealClient {
+	if o == nil {
+		o = &RealClientOptions{}
+	}
+	cl := o.HTTPClient
 	if cl == nil {
-		cl = defaultHTTPClient
+		cl = defaultOptions.HTTPClient
+	}
+	stageRetryWaits := o.StageRetryWaits
+	if stageRetryWaits == nil {
+		stageRetryWaits = defaultOptions.StageRetryWaits
+	}
+	logFunc := o.LogFunc
+	if logFunc == nil {
+		logFunc = defaultOptions.LogFunc
 	}
 
 	ch := make(chan server, len(dsURLs))
@@ -92,7 +126,8 @@ func NewRealClient(ctx context.Context, dsURLs []string, cl *http.Client) *RealC
 	sort.Slice(servers, func(i, j int) bool {
 		return servers[i].url < servers[j].url
 	})
-	return &RealClient{servers, cl}
+
+	return &RealClient{servers, cl, stageRetryWaits, logFunc}
 }
 
 // upServerURLs returns URLs of operational devservers.
@@ -250,24 +285,49 @@ func (c *RealClient) stage(ctx context.Context, dsURL, bucket, gsPath string) er
 	}
 	req = req.WithContext(ctx)
 
+	for i := 0; ; i++ {
+		start := time.Now()
+
+		retryable, err := c.sendStageRequest(ctx, req)
+		if err == nil || !retryable || i >= len(c.stageRetryWaits) {
+			return err
+		}
+
+		elapsed := time.Now().Sub(start)
+		if remaining := c.stageRetryWaits[i] - elapsed; remaining > 0 {
+			c.logFunc(fmt.Sprintf("Retry stage in %v: %v", remaining.Round(time.Millisecond), err))
+			select {
+			case <-time.After(remaining):
+			case <-ctx.Done():
+				return ctx.Err()
+			}
+		} else {
+			c.logFunc(fmt.Sprintf("Retrying stage: %v", err))
+		}
+	}
+}
+
+// sendStageRequest sends the stage request to devserver.
+// It analyzes error (if any) and determines if it is retryable.
+func (c *RealClient) sendStageRequest(ctx context.Context, req *http.Request) (retryable bool, err error) {
 	res, err := c.cl.Do(req)
 	if err != nil {
-		return err
+		return true, err
 	}
 	defer res.Body.Close()
 
 	switch res.StatusCode {
 	case http.StatusOK:
-		return nil
+		return false, nil
 	case http.StatusInternalServerError:
 		out, _ := ioutil.ReadAll(res.Body)
 		s := scrapeInternalError(out)
 		if strings.Contains(s, "Could not find") || strings.Contains(s, "file not found") {
-			return os.ErrNotExist
+			return false, os.ErrNotExist
 		}
-		return fmt.Errorf("got status %d: %s", res.StatusCode, s)
+		return true, fmt.Errorf("got status %d: %s", res.StatusCode, s)
 	default:
-		return fmt.Errorf("got status %d", res.StatusCode)
+		return true, fmt.Errorf("got status %d", res.StatusCode)
 	}
 }
 

@@ -69,10 +69,10 @@ func main() {
 			// we should remove grunt after hardware encoding supported.
 			// daisy variants' cameras don't support 1280x720.
 			"camera_720p":             "!snow && !skate && !spring && !grunt",
-			"chrome":                  "!chromeless_tty",
+			"chrome":                  "!chromeless_tty && !rialto",
 			"chrome_internal":         "chrome_internal",
-			"chrome_login":            "!chromeless_tty && !rialto",
 			"cros_config":             "unibuild",
+			"chrome_login":            "!chromeless_tty && !rialto", // TODO(derat): Delete this: https://crbug.com/963618
 			"cros_internal":           "internal",
 			"cups":                    "cups",
 			"diagnostics":             "diagnostics",

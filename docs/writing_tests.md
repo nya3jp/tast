@@ -65,7 +65,7 @@ func init() {
 		Desc:         "Does X to verify Y",
 		Contacts:     []string{"me@chromium.org"},
 		Attr:         []string{"informational"},
-		SoftwareDeps: []string{"chrome_login"},
+		SoftwareDeps: []string{"chrome"},
 	})
 }
 
@@ -399,7 +399,7 @@ Instead, specify [software dependencies] when declaring tests:
 func init() {
     testing.AddTest(&testing.Test{
         Func: CheckCamera,
-        SoftwareDeps: []string{"camera_720p", "chrome_login"},
+        SoftwareDeps: []string{"camera_720p", "chrome"},
         // ...
     })
 }

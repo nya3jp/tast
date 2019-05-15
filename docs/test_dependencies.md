@@ -28,11 +28,11 @@ The following software features are defined:
 *   `audio_record` - The ability to record audio.
 *   `autotest-capability:foo` - An [Autotest capability] named `foo`. See below.
 *   `camera_720p` - The ability to capture video with frame size 1280x720.
-*   `chrome` - A Chrome process.
+*   `chrome` - Support for performing user login via Chrome (i.e. using
+    `session_manager` and `cryptohome`). This also implies the presence of a
+    `ui` Upstart job.
 *   `chrome_internal` - Functionality that is only available in internal builds
     of Chrome (e.g. official branding and proprietary codecs like H.264).
-*   `chrome_login` - Implies `chrome` with the further requirement that user
-    login (i.e. using `session_manager` and `cryptohome`) is supported.
 *   `cros_internal` - Functionality that is only available in internal builds of
     Chrome OS (i.e. ones built using `chromeos-overlay`).
 *   `cups` - CUPS daemon.

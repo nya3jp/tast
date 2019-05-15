@@ -28,11 +28,12 @@ The following software features are defined:
 *   `audio_record` - The ability to record audio.
 *   `autotest-capability:foo` - An [Autotest capability] named `foo`. See below.
 *   `camera_720p` - The ability to capture video with frame size 1280x720.
-*   `chrome` - A Chrome process.
+*   `chrome` - Support for performing user login via Chrome (i.e. using
+    `session_manager` and `cryptohome`). This also implies that the
+    [chromeos-chrome] Portage package is installed (which also installs Chrome
+    binary tests), and that the `ui` Upstart job is present.
 *   `chrome_internal` - Functionality that is only available in internal builds
     of Chrome (e.g. official branding and proprietary codecs like H.264).
-*   `chrome_login` - Implies `chrome` with the further requirement that user
-    login (i.e. using `session_manager` and `cryptohome`) is supported.
 *   `cros_config` - `cros_config` utility is available.
 *   `cros_internal` - Functionality that is only available in internal builds of
     Chrome OS (i.e. ones built using `chromeos-overlay`).
@@ -78,6 +79,7 @@ The following software features are defined:
 [Camera HAL3]: https://source.android.com/devices/camera/camera3
 [AddressSanitizer]: https://github.com/google/sanitizers/wiki/AddressSanitizer
 [Autotest capability]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/autotest-capability-default/
+[chromeos-chrome]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/chromeos-chrome/chromeos-chrome-9999.ebuild
 [Diagnostic utilities]: https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/diagnostics/README.md
 [Downloadable Content]: https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/dlcservice
 [video hardware overlays]: https://en.wikipedia.org/wiki/Hardware_overlay

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f4ba02ab_2021ccf8",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2019-05-16T14:00:43Z",
+      "side": 1,
+      "message": "\"chrome\" is also used for chrome\u0027s binary tests, which perform neither user login nor tests for UI. (e.g. video.DecodeAccel*)\nWe\u0027re using it to run them in PFQ because these tests exercises Chrome features.\nI wonder if we can mention it here.\n(This use case doesn\u0027t look \"dependency\" , though)",
+      "revId": "5ee6018677ff683a8b2cf612a0b45fab5c3fc081",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

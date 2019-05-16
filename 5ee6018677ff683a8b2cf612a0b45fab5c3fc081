@@ -34,6 +34,24 @@
       "revId": "5ee6018677ff683a8b2cf612a0b45fab5c3fc081",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "78ae96ac_ce4c6a76",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2019-05-16T14:09:37Z",
+      "side": 1,
+      "message": "\u003e the dependency is needed there since the binary tests aren\u0027t built and installed if chromeos-chrome isn\u0027t installed\n\nYes. These binary tests will be installed by chromeos-chrome.\nhttps://cs.corp.google.com/chromeos_public/src/third_party/chromiumos-overlay/chromeos-base/chromeos-chrome/chromeos-chrome-9999.ebuild?l\u003d791\n\nThis way of explanation would be better than mentioning PFQ. Thanks!",
+      "parentUuid": "134e3588_e407a152",
+      "revId": "5ee6018677ff683a8b2cf612a0b45fab5c3fc081",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

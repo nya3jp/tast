@@ -22,6 +22,30 @@
       "revId": "dc4cfb71fabf1a437ca8a7e1602dbfc213acde2b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "47bae291_4b2c4967",
+        "filename": "src/chromiumos/tast/host/forwarder.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-16T00:28:44Z",
+      "side": 1,
+      "message": "just to make sure i understand, there are two NewForwarder functions now: this c\u0027tor, and the method on SSH. the signature that you quoted above is used for the method on SSH, but it can\u0027t be used here -- we\u0027d need to also take a *SSH arg.\n\nwhat about just renaming this function to newForwarder, so that the only exported way to create a Forwarder is via SSH.NewForwarder? the (over-)generalization still seems nice from a unit-testing perspective, and part of me thought that supporting non-SSH media could be useful in the future. i think we\u0027ve talked about adb implementations in the past, and i\u0027ve also thought about having a local impl of SSH\u0027s interface to make it possible to use the same code in either local or remote tests. still not sure if that\u0027s a good idea :-P",
+      "parentUuid": "01c61902_577310a8",
+      "range": {
+        "startLine": 35,
+        "startChar": 36,
+        "endLine": 35,
+        "endChar": 44
+      },
+      "revId": "dc4cfb71fabf1a437ca8a7e1602dbfc213acde2b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

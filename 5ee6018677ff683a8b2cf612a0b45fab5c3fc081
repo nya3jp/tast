@@ -16,6 +16,24 @@
       "revId": "5ee6018677ff683a8b2cf612a0b45fab5c3fc081",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "134e3588_e407a152",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-16T14:04:34Z",
+      "side": 1,
+      "message": "thanks! if i understand correctly, the dependency is needed there since the binary tests aren\u0027t built and installed if chromeos-chrome isn\u0027t installed. is that right? if so, i\u0027ll reword this to try to include that.",
+      "parentUuid": "f4ba02ab_2021ccf8",
+      "revId": "5ee6018677ff683a8b2cf612a0b45fab5c3fc081",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -111,8 +111,12 @@ register tests.
 
 ## Coding style and best practices
 
-Test code should be formatted by [gofmt] and checked by [go vet]. It should
-follow Go's established best practices as described by these documents:
+Test code should be formatted by [gofmt] and checked by [go vet], [golint] and
+[tast-lint]. These tools are configured to run as pre-upload hooks, so don't
+skip them.
+
+Tast code should also follow Go's established best practices as described by
+these documents:
 
 *   [Effective Go]
 *   [Go Code Review Comments]
@@ -122,6 +126,8 @@ Documentation] page.
 
 [gofmt]: https://golang.org/cmd/gofmt/
 [go vet]: https://golang.org/cmd/vet/
+[golint]: https://github.com/golang/lint
+[tast-lint]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/src/chromiumos/cmd/tast-lint/
 [Effective Go]: https://golang.org/doc/effective_go.html
 [Go Code Review Comments]: https://github.com/golang/go/wiki/CodeReviewComments
 [Go FAQ]: https://golang.org/doc/faq

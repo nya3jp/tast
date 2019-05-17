@@ -19,6 +19,178 @@
     },
     {
       "key": {
+        "uuid": "4d72d917_52cd33cf",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-17T16:30:59Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "2564f8a6_d18babeb",
+      "revId": "af777b7a3bd170c24ab3c3b4ee7a50f102133f5c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e284acbb_795a24d4",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-17T16:30:59Z",
+      "side": 1,
+      "message": "nit: i usually try to put \"Tast\" somewhere in the title for these docs so it\u0027s clear to people what the doc is without needing to look at the URL. i know that \"tast\" is in the go url, but how about something like \"Getting Code Reviews for Tast Tests\"?",
+      "revId": "af777b7a3bd170c24ab3c3b4ee7a50f102133f5c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d2ea5297_93f58363",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-17T16:30:59Z",
+      "side": 1,
+      "message": "nit: \"added a BUG\u003d...\"; maybe also s/changes/change/ since \"code review\" is singular above",
+      "revId": "af777b7a3bd170c24ab3c3b4ee7a50f102133f5c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3a1c5564_fb41f533",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-17T16:30:59Z",
+      "side": 1,
+      "message": "nit: maybe \"if your change is large, split it into separate, smaller changes?\"",
+      "revId": "af777b7a3bd170c24ab3c3b4ee7a50f102133f5c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6f731415_32f850e3",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-17T16:30:59Z",
+      "side": 1,
+      "message": "nit: s/in/on the/ or /in the/",
+      "range": {
+        "startLine": 19,
+        "startChar": 14,
+        "endLine": 19,
+        "endChar": 16
+      },
+      "revId": "af777b7a3bd170c24ab3c3b4ee7a50f102133f5c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "abeac261_71b50bf2",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-17T16:30:59Z",
+      "side": 1,
+      "message": "nit: maybe delete \"any\"",
+      "range": {
+        "startLine": 24,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 3
+      },
+      "revId": "af777b7a3bd170c24ab3c3b4ee7a50f102133f5c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5cba36f7_3366ca91",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-17T16:30:59Z",
+      "side": 1,
+      "message": "nit: s/to/with/",
+      "range": {
+        "startLine": 51,
+        "startChar": 43,
+        "endLine": 51,
+        "endChar": 45
+      },
+      "revId": "af777b7a3bd170c24ab3c3b4ee7a50f102133f5c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ef03bbe3_a47ca93f",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-17T16:30:59Z",
+      "side": 1,
+      "message": "nit: \"the [Chromium bug tracker]\"",
+      "revId": "af777b7a3bd170c24ab3c3b4ee7a50f102133f5c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4803e9a5_aa71b602",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-17T16:30:59Z",
+      "side": 1,
+      "message": "i\u0027d maybe make an exception here:\n\n\"If your change is only large because of test data (e.g. baseline information about expected processes or files), it\u0027s fine to keep it all together.\"",
+      "revId": "af777b7a3bd170c24ab3c3b4ee7a50f102133f5c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "a0adb7d6_4263a42f",
         "filename": "docs/code_reviews.md",
         "patchSetId": 1
@@ -39,6 +211,30 @@
       "revId": "af777b7a3bd170c24ab3c3b4ee7a50f102133f5c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ec0027f5_f46fcbf6",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-17T16:30:59Z",
+      "side": 1,
+      "message": "yes, this is great to document!",
+      "parentUuid": "a0adb7d6_4263a42f",
+      "range": {
+        "startLine": 75,
+        "startChar": 0,
+        "endLine": 77,
+        "endChar": 20
+      },
+      "revId": "af777b7a3bd170c24ab3c3b4ee7a50f102133f5c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

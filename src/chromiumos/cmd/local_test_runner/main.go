@@ -143,6 +143,12 @@ func writeSystemInfo(ctx context.Context, dir string) error {
 		}
 	}
 
+	// Also copy crash-related system info (e.g. /etc/lsb-release) to aid in debugging.
+	// Having an easy way to see info about the system image (e.g. board name and version) is particularly useful.
+	if err := crash.CopySystemInfo(dir); err != nil {
+		errs = append(errs, err.Error())
+	}
+
 	if len(errs) > 0 {
 		return errors.New(strings.Join(errs, ", "))
 	}

@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "d3ed37f0_e1c787ee",
+        "filename": "src/chromiumos/tast/devserver/real.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-05-17T04:19:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0649f027_3b2a2f52",
+      "range": {
+        "startLine": 64,
+        "startChar": 1,
+        "endLine": 64,
+        "endChar": 13
+      },
+      "revId": "2f7eb664374e399756d2dcd0ea9f3840bf6f929a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b7cf1180_8bf010c4",
         "filename": "src/chromiumos/tast/devserver/real.go",
         "patchSetId": 6
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "9a540301_70832f1e",
+        "filename": "src/chromiumos/tast/devserver/real.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-05-17T04:19:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b7cf1180_8bf010c4",
+      "range": {
+        "startLine": 65,
+        "startChar": 1,
+        "endLine": 65,
+        "endChar": 3
+      },
+      "revId": "2f7eb664374e399756d2dcd0ea9f3840bf6f929a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "71d1c1c1_5d916223",
         "filename": "src/chromiumos/tast/devserver/real.go",
         "patchSetId": 6
@@ -68,6 +116,30 @@
       "revId": "2f7eb664374e399756d2dcd0ea9f3840bf6f929a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4de10312_2741e0f7",
+        "filename": "src/chromiumos/tast/devserver/real.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 292,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-05-17T04:19:50Z",
+      "side": 1,
+      "message": "Done. If err \u003d\u003d nil, we should return. So `if err \u003d\u003d nil || ...` is the correct logic I think.",
+      "parentUuid": "71d1c1c1_5d916223",
+      "range": {
+        "startLine": 292,
+        "startChar": 2,
+        "endLine": 292,
+        "endChar": 45
+      },
+      "revId": "2f7eb664374e399756d2dcd0ea9f3840bf6f929a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

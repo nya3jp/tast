@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2564f8a6_d18babeb",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-05-17T09:29:09Z",
+      "side": 1,
+      "message": "Actually this is mostly cut-and-paste from various sources :). Thanks to:\n\n- go/gws-reviews\n- go/tast-writing\n- g/tast-users",
+      "revId": "af777b7a3bd170c24ab3c3b4ee7a50f102133f5c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a0adb7d6_4263a42f",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-05-17T09:29:09Z",
+      "side": 1,
+      "message": "This is actually not mentioned anywhere before, but I think it\u0027s good practice. What do you think?",
+      "range": {
+        "startLine": 75,
+        "startChar": 0,
+        "endLine": 77,
+        "endChar": 20
+      },
+      "revId": "af777b7a3bd170c24ab3c3b4ee7a50f102133f5c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "eb8de4b1_4c4548e5",
+        "filename": "src/chromiumos/cmd/tast-lint/git/git.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-05-20T02:49:27Z",
+      "side": 1,
+      "message": "Unfortunately Git does not recognizes this file to be moved, so I\u0027m making comments to describe the diff...",
+      "revId": "c55931db0306b5550bee4497db74dfb861b9cddb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "285feaea_a9e34661",
+        "filename": "src/chromiumos/cmd/tast-lint/git/git.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-05-20T02:49:27Z",
+      "side": 1,
+      "message": "Dir has been added for ease of unit testing.",
+      "range": {
+        "startLine": 19,
+        "startChar": 0,
+        "endLine": 20,
+        "endChar": 11
+      },
+      "revId": "c55931db0306b5550bee4497db74dfb861b9cddb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ac0b2ecd_6813e743",
+        "filename": "src/chromiumos/cmd/tast-lint/git/git.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-05-20T02:49:27Z",
+      "side": 1,
+      "message": "I found this does not work for initial commits, but I don\u0027t fix it now since linting initial commits is very rare.",
+      "range": {
+        "startLine": 40,
+        "startChar": 1,
+        "endLine": 40,
+        "endChar": 66
+      },
+      "revId": "c55931db0306b5550bee4497db74dfb861b9cddb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8371a20c_b2c264a3",
+        "filename": "src/chromiumos/cmd/tast-lint/git/git.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-05-20T02:49:27Z",
+      "side": 1,
+      "message": "In case of missing commits/file names, the output will be:\n\n \u003ccommit\u003e:\u003cfilename\u003e missing \u003cLF\u003e",
+      "range": {
+        "startLine": 73,
+        "startChar": 0,
+        "endLine": 76,
+        "endChar": 2
+      },
+      "revId": "c55931db0306b5550bee4497db74dfb861b9cddb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c84a34aa_751ac331",
+        "filename": "src/chromiumos/cmd/tast-lint/git/git.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-05-20T02:49:27Z",
+      "side": 1,
+      "message": "TrimSuffix is the fix for extra trailing LF.",
+      "range": {
+        "startLine": 78,
+        "startChar": 14,
+        "endLine": 78,
+        "endChar": 24
+      },
+      "revId": "c55931db0306b5550bee4497db74dfb861b9cddb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

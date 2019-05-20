@@ -11,6 +11,8 @@ import (
 	"go/token"
 	"path/filepath"
 	"strings"
+
+	"chromiumos/cmd/tast-lint/git"
 )
 
 // cachedParser is a Go parser with cache.
@@ -20,12 +22,12 @@ import (
 // when tast-lint is run, full GOPATH is usually not available.
 type cachedParser struct {
 	fs   *token.FileSet
-	git  *git
+	git  *git.Git
 	pkgs map[string]*ast.Package
 }
 
 // newCachedParser creates a cachedParser.
-func newCachedParser(g *git) *cachedParser {
+func newCachedParser(g *git.Git) *cachedParser {
 	return &cachedParser{
 		fs:   token.NewFileSet(),
 		git:  g,
@@ -57,7 +59,7 @@ func (p *cachedParser) parsePackage(dir string) (*ast.Package, error) {
 		return pkg, nil
 	}
 
-	fns, err := p.git.listDir(dir)
+	fns, err := p.git.ListDir(dir)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list files at %s: %v", dir, err)
 	}
@@ -87,7 +89,7 @@ func (p *cachedParser) parsePackage(dir string) (*ast.Package, error) {
 // parseFileAlone parses a Go code and returns its AST.
 // External references are not resolved.
 func (p *cachedParser) parseFileAlone(path string) (*ast.File, error) {
-	code, err := p.git.readFile(path)
+	code, err := p.git.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read %s: %v", path, err)
 	}

@@ -140,6 +140,30 @@
       "revId": "2f7eb664374e399756d2dcd0ea9f3840bf6f929a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ee86820a_4fbb072e",
+        "filename": "src/chromiumos/tast/devserver/real.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 292,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-05-20T00:46:01Z",
+      "side": 1,
+      "message": "Yes, you\u0027re right!",
+      "parentUuid": "4de10312_2741e0f7",
+      "range": {
+        "startLine": 292,
+        "startChar": 2,
+        "endLine": 292,
+        "endChar": 45
+      },
+      "revId": "2f7eb664374e399756d2dcd0ea9f3840bf6f929a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

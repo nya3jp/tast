@@ -15,12 +15,13 @@ import (
 	"strings"
 
 	"chromiumos/cmd/tast-lint/check"
+	"chromiumos/cmd/tast-lint/git"
 )
 
 // getTargetFiles returns the list of files to run lint according to flags.
-func getTargetFiles(git *git) ([]string, error) {
-	if len(flag.Args()) == 0 && git.commit != "" {
-		return git.modifiedFiles()
+func getTargetFiles(g *git.Git) ([]string, error) {
+	if len(flag.Args()) == 0 && g.Commit != "" {
+		return g.ModifiedFiles()
 	}
 	return flag.Args(), nil
 }
@@ -59,8 +60,8 @@ func hasFmtError(code []byte, path string) bool {
 }
 
 // checkAll runs all checks against paths.
-func checkAll(git *git, paths []string, debug bool) ([]*check.Issue, error) {
-	cp := newCachedParser(git)
+func checkAll(g *git.Git, paths []string, debug bool) ([]*check.Issue, error) {
+	cp := newCachedParser(g)
 	fs := cp.fs
 
 	var allIssues []*check.Issue
@@ -69,7 +70,7 @@ func checkAll(git *git, paths []string, debug bool) ([]*check.Issue, error) {
 			continue
 		}
 
-		data, err := git.readFile(path)
+		data, err := g.ReadFile(path)
 		if err != nil {
 			return nil, err
 		}
@@ -145,9 +146,9 @@ func main() {
 		panic("This tool can be run at a Git root directory only")
 	}
 
-	git := newGit(*commit)
+	g := git.New(".", *commit)
 
-	files, err := getTargetFiles(git)
+	files, err := getTargetFiles(g)
 	if err != nil {
 		panic(err)
 	}
@@ -156,7 +157,7 @@ func main() {
 		return
 	}
 
-	issues, err := checkAll(git, files, *debug)
+	issues, err := checkAll(g, files, *debug)
 	if err != nil {
 		panic(err)
 	}

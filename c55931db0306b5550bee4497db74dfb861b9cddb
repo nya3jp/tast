@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "c2858864_e110a2a9",
+        "filename": "src/chromiumos/cmd/tast-lint/git/git.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-20T05:28:32Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "eb8de4b1_4c4548e5",
+      "revId": "c55931db0306b5550bee4497db74dfb861b9cddb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "285feaea_a9e34661",
         "filename": "src/chromiumos/cmd/tast-lint/git/git.go",
         "patchSetId": 1
@@ -30,6 +48,30 @@
       "writtenOn": "2019-05-20T02:49:27Z",
       "side": 1,
       "message": "Dir has been added for ease of unit testing.",
+      "range": {
+        "startLine": 19,
+        "startChar": 0,
+        "endLine": 20,
+        "endChar": 11
+      },
+      "revId": "c55931db0306b5550bee4497db74dfb861b9cddb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "14cde024_5f6114e8",
+        "filename": "src/chromiumos/cmd/tast-lint/git/git.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-20T05:28:32Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "285feaea_a9e34661",
       "range": {
         "startLine": 19,
         "startChar": 0,
@@ -65,6 +107,30 @@
     },
     {
       "key": {
+        "uuid": "a99793a5_02c0074d",
+        "filename": "src/chromiumos/cmd/tast-lint/git/git.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-20T05:28:32Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "ac0b2ecd_6813e743",
+      "range": {
+        "startLine": 40,
+        "startChar": 1,
+        "endLine": 40,
+        "endChar": 66
+      },
+      "revId": "c55931db0306b5550bee4497db74dfb861b9cddb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8371a20c_b2c264a3",
         "filename": "src/chromiumos/cmd/tast-lint/git/git.go",
         "patchSetId": 1
@@ -88,6 +154,30 @@
     },
     {
       "key": {
+        "uuid": "628f7607_66aa9571",
+        "filename": "src/chromiumos/cmd/tast-lint/git/git.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-20T05:28:32Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "8371a20c_b2c264a3",
+      "range": {
+        "startLine": 73,
+        "startChar": 0,
+        "endLine": 76,
+        "endChar": 2
+      },
+      "revId": "c55931db0306b5550bee4497db74dfb861b9cddb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c84a34aa_751ac331",
         "filename": "src/chromiumos/cmd/tast-lint/git/git.go",
         "patchSetId": 1
@@ -105,6 +195,64 @@
         "endLine": 78,
         "endChar": 24
       },
+      "revId": "c55931db0306b5550bee4497db74dfb861b9cddb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "056174c5_56bb28bc",
+        "filename": "src/chromiumos/cmd/tast-lint/git/git.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-20T05:28:32Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "c84a34aa_751ac331",
+      "range": {
+        "startLine": 78,
+        "startChar": 14,
+        "endLine": 78,
+        "endChar": 24
+      },
+      "revId": "c55931db0306b5550bee4497db74dfb861b9cddb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8d8da0a4_47b43ae1",
+        "filename": "src/chromiumos/cmd/tast-lint/git/git_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-20T05:28:32Z",
+      "side": 1,
+      "message": "interesting, i haven\u0027t used this before. i don\u0027t completely understand the docs: \"When printing file and line information, that function will be skipped.\" can you explain what this does in more detail? maybe we should be using it in a bunch of other places :-)",
+      "revId": "c55931db0306b5550bee4497db74dfb861b9cddb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9a7e65d1_5a3fbb7f",
+        "filename": "src/chromiumos/cmd/tast-lint/git/git_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-20T05:28:32Z",
+      "side": 1,
+      "message": "iirc there\u0027s a TempDir func in tast\u0027s testutil package that you may be able to use here. it handles failing on error and also names the dir after the calling test",
       "revId": "c55931db0306b5550bee4497db74dfb861b9cddb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

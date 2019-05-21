@@ -260,6 +260,24 @@
     },
     {
       "key": {
+        "uuid": "8d5751aa_f0c63f2a",
+        "filename": "src/chromiumos/cmd/tast-lint/git/git_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-21T00:06:16Z",
+      "side": 1,
+      "message": "ah, neat! so it sounds like it\u0027s essentially an easy way to do something like googletest\u0027s SCOPED_TRACE. yes, it sounds like there are many places where this could be used. i filed https://crbug.com/965308 to track this.",
+      "parentUuid": "eb9f5db4_7f5c84dc",
+      "revId": "c55931db0306b5550bee4497db74dfb861b9cddb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a7e65d1_5a3fbb7f",
         "filename": "src/chromiumos/cmd/tast-lint/git/git_test.go",
         "patchSetId": 1

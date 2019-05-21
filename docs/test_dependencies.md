@@ -1,5 +1,6 @@
 # Tast Test Dependencies (go/tast-deps)
 
+
 A test may specify software features that must be supported by the DUT's system
 image in order for the test to run successfully. If one or more features aren't
 supported by the DUT, the test will usually be skipped. See the `tast` command's
@@ -137,10 +138,11 @@ feature based on the `containers` USE flag and making a test depend on it:
 
 ## autotest-capability
 
+
 There are also `autotest-capability:`-prefixed features, which are added by the
 [autocaps package] as specified by YAML files in
 `/usr/local/etc/autotest-capability`. This exists in order to support porting
 existing Autotest-based video tests to Tast. Do not depend on capabilities from
 outside of video tests.
 
-[autocap package]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/autocaps/
+[autocaps package]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/autocaps/

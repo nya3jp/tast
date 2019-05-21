@@ -17,15 +17,16 @@ Have you...
 ### Stabilize existing tests before adding new tests
 
 As [announced on the tast-users list], we have a policy that teams cannot add
-additional regression tests until their existing informational tests have been
-stabilized and promoted to the CQ. Any new test being added must have a clear
-plan for being promoted to the CQ.
+additional [mainline] tests until their existing informational tests have been
+stabilized and promoted to the CQ. Any new [mainline] test being added must have
+a clear plan for being promoted to the CQ.
 
 New test authors are recommended to start out by trying to stabilize an
 existing informational test. Doing so will expose you to Tast coding
 conventions and make it easier to write new code in the future.
 
 [announced on the tast-users list]: https://groups.google.com/a/chromium.org/d/topic/tast-users/dmS2OWp2bYU/discussion
+[mainline]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/test_attributes.md#manually_added-attributes
 
 ### Follow Go/Tast style
 

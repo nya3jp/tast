@@ -1,3 +1,8 @@
+# Please send code reviews to tast-owners@google.com, an alias of the owners.
+#
+# Also consult the following guide before sending code review requests:
+# https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/code_reviews.md
+
 set noparent
 derat@chromium.org
 hidehiko@chromium.org

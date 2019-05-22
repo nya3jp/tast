@@ -137,6 +137,7 @@ func writeSystemInfo(ctx context.Context, dir string) error {
 	for fn, cmd := range map[string]*exec.Cmd{
 		"upstart_jobs.txt": exec.CommandContext(ctx, "initctl", "list"),
 		"ps.txt":           exec.CommandContext(ctx, "ps", "auxwwf"),
+		"du_stateful.txt":  exec.CommandContext(ctx, "du", "-m", "/mnt/stateful_partition"),
 	} {
 		if err := runCmd(cmd, fn); err != nil {
 			errs = append(errs, fmt.Sprintf("failed running %q: %v", shutil.EscapeSlice(cmd.Args), err))

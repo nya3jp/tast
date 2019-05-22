@@ -150,3 +150,13 @@ func (d *DUT) WaitConnect(ctx context.Context) error {
 		}
 	}
 }
+
+// KeyFile returns the path to the SSH private key used to connect to the DUT.
+// This is provided for tests that may need to establish SSH connections to additional hosts
+// (e.g. a host running a servod instance).
+func (d *DUT) KeyFile() string { return d.sopt.KeyFile }
+
+// KeyDir returns the path to the directory containing SSH private keys used to connect to the DUT.
+// This is provided for tests that may need to establish SSH connections to additional hosts
+// (e.g. a host running a servod instance).
+func (d *DUT) KeyDir() string { return d.sopt.KeyDir }

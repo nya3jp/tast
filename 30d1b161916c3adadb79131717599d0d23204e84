@@ -1,0 +1,78 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5ca9d90a_318d265c",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 212,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-23T16:56:37Z",
+      "side": 1,
+      "message": "i waffled a bit on whether \u0027:\u0027 or \u0027\u003d\u0027 should be the separator here.\n\n-var\u003dservo:localhost:9999 feels a bit weird since the value itself also contains a colon.\n\non the other hand, -var\u003dservo\u003dlocalhost:9999 also looks weird due to the repeated equal sign.",
+      "revId": "30d1b161916c3adadb79131717599d0d23204e84",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5e24943a_15e4d002",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-23T16:56:37Z",
+      "side": 1,
+      "message": "whoops, typo. i\u0027ll fix this locally but not upload since i\u0027ve already left comments",
+      "range": {
+        "startLine": 164,
+        "startChar": 66,
+        "endLine": 164,
+        "endChar": 75
+      },
+      "revId": "30d1b161916c3adadb79131717599d0d23204e84",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0ca2d1e4_cff5fea9",
+        "filename": "src/chromiumos/tast/testing/state_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 288,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-23T16:56:37Z",
+      "side": 1,
+      "message": "please let me know if you can think of a better way to write this test. i iterated on it for a while to try to reduce the amount of code duplication needed to test both Var and RequiredVar, which unfortunately have different signatures.",
+      "revId": "30d1b161916c3adadb79131717599d0d23204e84",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5535a231_6517a95a",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-23T16:56:37Z",
+      "side": 1,
+      "message": "i\u0027m a bit worried about not having any documentation of the meaning and expected format of each var. one option would be to make this a map, with values containing human-readable descriptions. for example:\n\nVars: map[string]string{\n    \"servo\": \"Servod connection spec as \u0027host:port\u0027\",\n    ...\n},\n\nthat leaves the door open for providing a way in the future to e.g. make the \"tast\" command provide a way to list all available vars for the selected tests.\n\non the other hand, this also emphasizes the potential issue that we\u0027re sharing the same variables across multiple tests. we probably wouldn\u0027t want each to provide its own identical description of the \"servo\" var.\n\nsince i don\u0027t anticipate having many vars in the short term (servo is still the primary use case), perhaps we can get away with just having a doc that describes all well-known vars.\n\ndoes that sound okay?",
+      "revId": "30d1b161916c3adadb79131717599d0d23204e84",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

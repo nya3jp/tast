@@ -22,6 +22,30 @@
       "revId": "5d3d9c6b6fa3e227dd040141b89674ba472f29b8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "00794d5a_e18cba35",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 216,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-23T16:56:37Z",
+      "side": 1,
+      "message": "whoops, guess i\u0027m in the habit of using our \u0027errors\u0027 package :-)",
+      "parentUuid": "3bd53a76_55deb76d",
+      "range": {
+        "startLine": 216,
+        "startChar": 11,
+        "endLine": 216,
+        "endChar": 24
+      },
+      "revId": "5d3d9c6b6fa3e227dd040141b89674ba472f29b8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

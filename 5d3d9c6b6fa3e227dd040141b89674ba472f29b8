@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3bd53a76_55deb76d",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 216,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-05-23T07:22:27Z",
+      "side": 1,
+      "message": "I guess we want to use fmt.Errof instead?",
+      "range": {
+        "startLine": 216,
+        "startChar": 11,
+        "endLine": 216,
+        "endChar": 24
+      },
+      "revId": "5d3d9c6b6fa3e227dd040141b89674ba472f29b8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

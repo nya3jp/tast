@@ -72,7 +72,6 @@ func main() {
 			"chrome":                  "!chromeless_tty && !rialto",
 			"chrome_internal":         "chrome_internal",
 			"cros_config":             "unibuild",
-			"chrome_login":            "!chromeless_tty && !rialto", // TODO(derat): Delete this: https://crbug.com/963618
 			"cros_internal":           "internal",
 			"cups":                    "cups",
 			"diagnostics":             "diagnostics",

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a63df4be_c7e1bbd6",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 214,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-24T00:51:08Z",
+      "side": 1,
+      "message": "i removed the quoted value, as it looks like it\u0027s already included:\n\ninvalid value \"meta:This is a variable that is passed at runtime.\" for flag -var: bad variable \"meta:This is a variable that is passed at runtime.\" (want \"name\u003dvalue\")",
+      "range": {
+        "startLine": 214,
+        "startChar": 23,
+        "endLine": 214,
+        "endChar": 38
+      },
+      "revId": "f383b4e66394a6ff421d3bb35813b3d0f20e4160",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

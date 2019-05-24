@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "dff126b8_111a6546",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 212,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-24T00:51:08Z",
+      "side": 1,
+      "message": "thanks, \u0027\u003d\u0027 sounds fine to me after more reflection on your comment. :-) updated.",
+      "parentUuid": "5143bd7c_5ebab238",
+      "revId": "30d1b161916c3adadb79131717599d0d23204e84",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5e24943a_15e4d002",
         "filename": "src/chromiumos/tast/testing/state.go",
         "patchSetId": 3
@@ -57,6 +75,30 @@
       "revId": "30d1b161916c3adadb79131717599d0d23204e84",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bc5c63da_3c9454f5",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-24T00:51:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5e24943a_15e4d002",
+      "range": {
+        "startLine": 164,
+        "startChar": 66,
+        "endLine": 164,
+        "endChar": 75
+      },
+      "revId": "30d1b161916c3adadb79131717599d0d23204e84",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -95,6 +137,24 @@
     },
     {
       "key": {
+        "uuid": "66adb858_8afd1254",
+        "filename": "src/chromiumos/tast/testing/state_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 288,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-24T00:51:08Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "bccb9210_f4532707",
+      "revId": "30d1b161916c3adadb79131717599d0d23204e84",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5535a231_6517a95a",
         "filename": "src/chromiumos/tast/testing/test.go",
         "patchSetId": 3
@@ -127,6 +187,24 @@
       "revId": "30d1b161916c3adadb79131717599d0d23204e84",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2c11898f_0d0a1d66",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-24T00:51:08Z",
+      "side": 1,
+      "message": "yes, conventions along those lines seem reasonable to me",
+      "parentUuid": "75f90406_3d54ca42",
+      "revId": "30d1b161916c3adadb79131717599d0d23204e84",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

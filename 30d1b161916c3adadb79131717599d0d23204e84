@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "5143bd7c_5ebab238",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 212,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-05-24T00:18:53Z",
+      "side": 1,
+      "message": "Hmm, I slightly prefer \u003d to : actually because it\u0027s a standard separator for key-value pairs IMO. I guess it\u0027s especially applicable for \"variables\" like this.\n\n-var\u003dservo\u003dlocalhost:9999 does not look very weird to me, and we can write it as -var servo\u003dlocalhost:9999 if we want to avoid repetition of equal signs, of course.\n\nWDYT?",
+      "parentUuid": "5ca9d90a_318d265c",
+      "revId": "30d1b161916c3adadb79131717599d0d23204e84",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "5e24943a_15e4d002",
         "filename": "src/chromiumos/tast/testing/state.go",
         "patchSetId": 3
@@ -59,6 +77,24 @@
     },
     {
       "key": {
+        "uuid": "bccb9210_f4532707",
+        "filename": "src/chromiumos/tast/testing/state_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 288,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-05-24T00:18:53Z",
+      "side": 1,
+      "message": "I think this way is good enough. :)",
+      "parentUuid": "0ca2d1e4_cff5fea9",
+      "revId": "30d1b161916c3adadb79131717599d0d23204e84",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5535a231_6517a95a",
         "filename": "src/chromiumos/tast/testing/test.go",
         "patchSetId": 3
@@ -70,6 +106,24 @@
       "writtenOn": "2019-05-23T16:56:37Z",
       "side": 1,
       "message": "i\u0027m a bit worried about not having any documentation of the meaning and expected format of each var. one option would be to make this a map, with values containing human-readable descriptions. for example:\n\nVars: map[string]string{\n    \"servo\": \"Servod connection spec as \u0027host:port\u0027\",\n    ...\n},\n\nthat leaves the door open for providing a way in the future to e.g. make the \"tast\" command provide a way to list all available vars for the selected tests.\n\non the other hand, this also emphasizes the potential issue that we\u0027re sharing the same variables across multiple tests. we probably wouldn\u0027t want each to provide its own identical description of the \"servo\" var.\n\nsince i don\u0027t anticipate having many vars in the short term (servo is still the primary use case), perhaps we can get away with just having a doc that describes all well-known vars.\n\ndoes that sound okay?",
+      "revId": "30d1b161916c3adadb79131717599d0d23204e84",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "75f90406_3d54ca42",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-05-24T00:18:53Z",
+      "side": 1,
+      "message": "I\u0027m afraid of doc duplications if we put var docs in each test too, so +1 to having a markdown doc summarizing available vars.\n\nBTW this might not be needed very soon, but I think we want some naming convention of variable names to avoid unexpected conflicts. For example, if we were to provide GAIA credentials with variables, we might name variables like \"gaia.email\" and \"gaia.pass\"; if we were to provide args to a specific test, maybe \"example.Vars.foo\"?",
+      "parentUuid": "5535a231_6517a95a",
       "revId": "30d1b161916c3adadb79131717599d0d23204e84",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

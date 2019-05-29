@@ -78,6 +78,7 @@ type TestError struct {
 
 // WriteResults writes results (including errors) to a JSON file in the results directory.
 // It additionally logs each test's status to cfg.Logger.
+// The cfg arg should be the same one that was passed to Run earlier.
 // The complete arg should be true if the run finished successfully (regardless of whether
 // any tests failed) and false if it was aborted.
 // If cfg.CollectSysInfo is true, system information generated on the DUT during testing

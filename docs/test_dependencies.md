@@ -40,7 +40,8 @@ The following software features are defined:
 *   `cros_internal` - Functionality that is only available in internal builds of
     Chrome OS (i.e. ones built using `chromeos-overlay`).
 *   `cups` - CUPS daemon.
-*   `diagnostics` - [Diagnostic utilities].
+*   `diagnostics` - Boards that contain generic cross-platform
+    [Diagnostic utilities].
 *   `display_backlight` - An internal display backlight.
 *   `dlc` - Support of [Downloadable Content] (DLC).
 *   `drm_atomic` - The ability to synchronize video buffer overlays atomically.
@@ -75,6 +76,9 @@ The following software features are defined:
     the `usbip` program.
 *   `vm_host` - The ability to [run virtual machines].
 *   `vulkan` - Whether [Vulkan] is enabled.
+*   `wilco` - If this DUT is a [wilco] device. These features include
+    the DTC (Diagnostic and Telemetry Controller) VM, a special EC interface,
+    and a dock firmware updater.
 
 [amd64]: https://en.wikipedia.org/wiki/X86-64
 [run Android apps]: https://developer.android.com/topic/arc/
@@ -93,6 +97,7 @@ The following software features are defined:
 [Transparent Hugepage]: https://www.kernel.org/doc/Documentation/vm/transhuge.txt
 [run virtual machines]: https://chromium.googlesource.com/chromiumos/docs/+/master/containers_and_vms.md
 [Vulkan]: https://www.khronos.org/vulkan/
+[wilco]: https://sites.google.com/corp/google.com/wilco/home
 
 ## New features
 

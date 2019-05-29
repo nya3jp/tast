@@ -101,6 +101,7 @@ func main() {
 			// vm_host feature for VM builds.
 			"vm_host": "kvm_host && !tast_vm",
 			"vulkan":  "vulkan",
+			"wilco":   "wilco",
 		},
 		// The autotest-capability package tries to install this to /etc but it's diverted to /usr/local.
 		AutotestCapabilityDir: autocaps.DefaultCapabilityDir,

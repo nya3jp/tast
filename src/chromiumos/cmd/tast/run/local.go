@@ -79,12 +79,9 @@ func local(ctx context.Context, cfg *Config) (Status, []TestResult) {
 	}
 
 	if len(cfg.devservers) == 0 && cfg.useEphemeralDevserver {
-		es, url, err := startEphemeralDevserver(hst, cfg)
-		if err != nil {
+		if err := startEphemeralDevserver(hst, cfg); err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start ephemeral devserver: %v", err), nil
 		}
-		defer es.Close(ctx)
-		cfg.devservers = []string{url}
 	}
 
 	if cfg.downloadPrivateBundles {
@@ -584,18 +581,23 @@ func formatBytes(bytes int64) string {
 	return fmt.Sprintf("%d B", bytes)
 }
 
-// startEphemeralDevserver starts the ephemeral devserver which serves on hst.
-func startEphemeralDevserver(hst *host.SSH, cfg *Config) (es *ephemeralDevserver, url string, err error) {
+// startEphemeralDevserver starts an ephemeral devserver serving on hst.
+// cfg's ephemeralDevserver and devservers fields are updated.
+func startEphemeralDevserver(hst *host.SSH, cfg *Config) error {
 	lis, err := hst.ListenTCP(&net.TCPAddr{IP: net.IPv4(127, 0, 0, 1), Port: ephemeralDevserverPort})
 	if err != nil {
-		return nil, "", fmt.Errorf("failed to reverse-forward a port: %v", err)
+		return fmt.Errorf("failed to reverse-forward a port: %v", err)
 	}
 
-	url = fmt.Sprintf("http://%s", lis.Addr())
-
 	cacheDir := filepath.Join(cfg.tastDir, "devserver", "static")
-	es, err = newEphemeralDevserver(lis, cacheDir)
-	return es, url, err
+	es, err := newEphemeralDevserver(lis, cacheDir)
+	if err != nil {
+		return err
+	}
+
+	cfg.ephemeralDevserver = es
+	cfg.devservers = []string{fmt.Sprintf("http://%s", lis.Addr())}
+	return nil
 }
 
 // diagnoseLocalRunError is used to attempt to diagnose the cause of an error encountered

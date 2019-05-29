@@ -20,7 +20,7 @@ import (
 )
 
 // ephemeralDevserverPort is the TCP port number the ephemeral devserver listens on.
-// Usual devservers listen on port 8082, so we use a similar but different port
+// Real devservers listen on port 8082, so we use a similar but different port
 // to avoid conflict.
 const ephemeralDevserverPort = 28082
 

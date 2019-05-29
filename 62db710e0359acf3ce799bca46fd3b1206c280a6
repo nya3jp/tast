@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b45f1012_970e515d",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1304442
+      },
+      "writtenOn": "2019-05-29T23:25:37Z",
+      "side": 0,
+      "message": "I got a weird lint error about the indentation of the the lines (96 - 98). It was citing the import statements should be grouped.",
+      "revId": "62db710e0359acf3ce799bca46fd3b1206c280a6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

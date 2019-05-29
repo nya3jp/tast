@@ -97,17 +97,19 @@ type Config struct {
 
 	targetArch string // architecture of target userland (usually given by "uname -m", but may be different)
 
-	build                  bool     // rebuild (and push, for local tests) a single test bundle
-	buildType              testType // type of tests to build and deploy
-	buildBundle            string   // name of the test bundle to rebuild (e.g. "cros")
-	buildWorkspace         string   // path to workspace containing test bundle source code
-	buildOutDir            string   // path to base directory under which executables are stored
-	checkPortageDeps       bool     // check whether test bundle's dependencies are installed before building
-	installPortageDeps     bool     // install old or missing test bundle dependencies; no-op if checkPortageDeps is false
-	forceBuildLocalRunner  bool     // force local_test_runner to be built and deployed even if it already exists on DUT
-	devservers             []string // list of devserver URLs
-	useEphemeralDevserver  bool     // start an ephemeral devserver if no devserver is specified
-	downloadPrivateBundles bool     // whether to download private bundles if missing
+	build                 bool     // rebuild (and push, for local tests) a single test bundle
+	buildType             testType // type of tests to build and deploy
+	buildBundle           string   // name of the test bundle to rebuild (e.g. "cros")
+	buildWorkspace        string   // path to workspace containing test bundle source code
+	buildOutDir           string   // path to base directory under which executables are stored
+	checkPortageDeps      bool     // check whether test bundle's dependencies are installed before building
+	installPortageDeps    bool     // install old or missing test bundle dependencies; no-op if checkPortageDeps is false
+	forceBuildLocalRunner bool     // force local_test_runner to be built and deployed even if it already exists on DUT
+
+	useEphemeralDevserver  bool                // start an ephemeral devserver if no devserver is specified
+	devservers             []string            // list of devserver URLs
+	downloadPrivateBundles bool                // whether to download private bundles if missing
+	ephemeralDevserver     *ephemeralDevserver // cached server; not owned by this struct
 
 	remoteRunner    string // path to executable that runs remote test bundles
 	remoteBundleDir string // dir where packaged remote test bundles are installed

@@ -90,44 +90,34 @@ type Config struct {
 	// It is only used for RunTestsMode.
 	ResDir string
 
-	mode       Mode   // action to perform
-	tastDir    string // base directory under which files are written
-	trunkDir   string // path to Chrome OS checkout
-	startedRun bool   // true if we got to the point where we started trying to execute tests
+	mode     Mode   // action to perform
+	tastDir  string // base directory under which files are written
+	trunkDir string // path to Chrome OS checkout
 
-	targetArch string // architecture of target userland (usually given by "uname -m", but may be different)
+	build                 bool     // rebuild (and push, for local tests) a single test bundle
+	buildType             testType // type of tests to build and deploy
+	buildBundle           string   // name of the test bundle to rebuild (e.g. "cros")
+	buildWorkspace        string   // path to workspace containing test bundle source code
+	buildOutDir           string   // path to base directory under which executables are stored
+	checkPortageDeps      bool     // check whether test bundle's dependencies are installed before building
+	installPortageDeps    bool     // install old or missing test bundle dependencies; no-op if checkPortageDeps is false
+	forceBuildLocalRunner bool     // force local_test_runner to be built and deployed even if it already exists on DUT
 
-	build                  bool     // rebuild (and push, for local tests) a single test bundle
-	buildType              testType // type of tests to build and deploy
-	buildBundle            string   // name of the test bundle to rebuild (e.g. "cros")
-	buildWorkspace         string   // path to workspace containing test bundle source code
-	buildOutDir            string   // path to base directory under which executables are stored
-	checkPortageDeps       bool     // check whether test bundle's dependencies are installed before building
-	installPortageDeps     bool     // install old or missing test bundle dependencies; no-op if checkPortageDeps is false
-	forceBuildLocalRunner  bool     // force local_test_runner to be built and deployed even if it already exists on DUT
-	devservers             []string // list of devserver URLs
 	useEphemeralDevserver  bool     // start an ephemeral devserver if no devserver is specified
+	devservers             []string // list of devserver URLs; set by -devservers but may be dynamically modified
 	downloadPrivateBundles bool     // whether to download private bundles if missing
 
 	remoteRunner    string // path to executable that runs remote test bundles
 	remoteBundleDir string // dir where packaged remote test bundles are installed
 	remoteDataDir   string // dir containing packaged remote test data
 
-	hst        *host.SSH // cached SSH connection; may be nil
-	initBootID string    // boot_id at the initial SSH connection
-	sshRetries int       // number of SSH connect retries
-
-	checkTestDeps               testDepsMode // when test dependencies should be checked
-	waitUntilReady              bool         // whether to wait for DUT to be ready before running tests
-	extraUSEFlags               []string     // additional USE flags to inject when determining features
-	availableSoftwareFeatures   []string     // features supported by the DUT
-	unavailableSoftwareFeatures []string     // features unsupported by the DUT
-	proxy                       proxyMode    // how proxies should be used
-
-	collectSysInfo bool                 // collect system info (logs, crashes, etc.) generated during testing
-	initialSysInfo *runner.SysInfoState // initial state of system info (logs, crashes, etc.) on DUT before testing
-
-	testVars map[string]string // names and values of variables used to pass out-of-band data to tests
+	sshRetries     int               // number of SSH connect retries
+	checkTestDeps  testDepsMode      // when test dependencies should be checked
+	waitUntilReady bool              // whether to wait for DUT to be ready before running tests
+	extraUSEFlags  []string          // additional USE flags to inject when determining features
+	proxy          proxyMode         // how proxies should be used
+	collectSysInfo bool              // collect system info (logs, crashes, etc.) generated during testing
+	testVars       map[string]string // names and values of variables used to pass out-of-band data to tests
 
 	msgTimeout             time.Duration // timeout for reading control messages; default used if zero
 	localRunnerWaitTimeout time.Duration // timeout for waiting for local_test_runner to exit; default used if zero
@@ -140,6 +130,18 @@ type Config struct {
 	// tests, which can assign this to SSHServer.NextRealCmd from tast/host/test so that the commands
 	// that perform copies will actually be executed.
 	hstCopyAnnounceCmd func(string)
+
+	// The following fields hold state that is accumulated over the course of the run.
+	// TODO(crbug.com/971517): Consider moving these fields into a separate struct,
+	// as they aren't really configuration.
+	targetArch                  string               // architecture of target userland (usually given by "uname -m", but may be different)
+	startedRun                  bool                 // true if we got to the point where we started trying to execute tests
+	initBootID                  string               // boot_id at the initial SSH connection
+	hst                         *host.SSH            // cached SSH connection to DUT; may be nil
+	ephemeralDevserver          *ephemeralDevserver  // cached devserver; may be nil
+	initialSysInfo              *runner.SysInfoState // initial state of system info (logs, crashes, etc.) on DUT before testing
+	availableSoftwareFeatures   []string             // features supported by the DUT
+	unavailableSoftwareFeatures []string             // features unsupported by the DUT
 }
 
 // NewConfig returns a new configuration for executing test runners in the supplied mode.
@@ -234,6 +236,7 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 // Close releases the config's resources (e.g. cached SSH connections).
 // It should be called at the completion of testing.
 func (c *Config) Close(ctx context.Context) error {
+	closeEphemeralDevserver(ctx, c) // ignore error; not meaningful if c.hst is dead
 	var err error
 	if c.hst != nil {
 		err = c.hst.Close(ctx)

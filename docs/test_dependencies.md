@@ -73,6 +73,9 @@ The following software features are defined:
     the `usbip` program.
 *   `vm_host` - The ability to [run virtual machines].
 *   `vulkan` - Whether [Vulkan] is enabled.
+*   `wilco` - If this system is a [wilco] device. These features include running
+    the DTC (Diagnostic and Telemetry Controller) VM, a special EC interface,
+    and a dock firmware updater.
 
 [amd64]: https://en.wikipedia.org/wiki/X86-64
 [run Android apps]: https://developer.android.com/topic/arc/
@@ -91,6 +94,7 @@ The following software features are defined:
 [Transparent Hugepage]: https://www.kernel.org/doc/Documentation/vm/transhuge.txt
 [run virtual machines]: https://chromium.googlesource.com/chromiumos/docs/+/master/containers_and_vms.md
 [Vulkan]: https://www.khronos.org/vulkan/
+[wilco]: https://sites.google.com/corp/google.com/wilco/home
 
 ## New features
 

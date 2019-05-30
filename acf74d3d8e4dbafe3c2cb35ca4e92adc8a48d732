@@ -22,6 +22,30 @@
       "revId": "acf74d3d8e4dbafe3c2cb35ca4e92adc8a48d732",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "80163911_aa943724",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1304442
+      },
+      "writtenOn": "2019-05-30T19:18:29Z",
+      "side": 1,
+      "message": "Good catch, it probably should not depend on itself :)",
+      "parentUuid": "2b0f367f_6742ab94",
+      "range": {
+        "startLine": 14,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 27
+      },
+      "revId": "acf74d3d8e4dbafe3c2cb35ca4e92adc8a48d732",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

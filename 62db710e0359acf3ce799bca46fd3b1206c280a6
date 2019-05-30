@@ -34,6 +34,24 @@
       "revId": "62db710e0359acf3ce799bca46fd3b1206c280a6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "48167f7d_5e2d4cf7",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1304442
+      },
+      "writtenOn": "2019-05-30T15:29:23Z",
+      "side": 0,
+      "message": "Errors:\n            * Hook script \"tools/run_lint.sh -commit\u003d${PRESUBMIT_COMMIT}\" failed with code 1:\n              src/chromiumos/cmd/local_test_runner/main.go: Import should be grouped into standard packages, third-party packages and chromiumos packages in this order separated by empty lines.\n              Apply the following patch to fix:\n              @@ -93,9 +93,9 @@\n                                \"selinux_experimental\":    \"selinux \u0026\u0026 selinux_experimental\",\n                                \"tablet_mode\":             \"touchview\",\n                                \"tpm\":                     \"!mocktpm \u0026\u0026 !tast_vm\",\n              -                 \"transparent_hugepage\":    \"transparent_hugepage\",\n              -                 \"usbguard\":                \"usbguard\",\n              -                 \"virtual_usb_printer\":     \"usbip\",\n              +                 \"transparent_hugepage\": \"transparent_hugepage\",\n              +                 \"usbguard\":             \"usbguard\",\n              +                 \"virtual_usb_printer\":  \"usbip\",\n                                // Some VM builds actually can run nested VM with right host configuration.\n                                // But we haven\u0027t enable this feature on builders. For now, just disable\n                                // vm_host feature for VM builds.\n\n\n              Refer the following documents for details:\n                https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#import",
+      "parentUuid": "b27155c5_c3725bdf",
+      "revId": "62db710e0359acf3ce799bca46fd3b1206c280a6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

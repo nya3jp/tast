@@ -513,6 +513,44 @@ When concatenating a string and a value using default formatting, use
 
 The same considerations apply to `testing.ContextLog` vs. `testing.ContextLogf`.
 
+### Report timing
+
+The [timing package] can be used to measure and report the time taken by
+different "stages" of a test. It helps you identify which stage takes
+unexpected long time to complete.
+
+An example to time a test with two stages:
+
+```go
+func TestFoo(ctx context.Context) {
+    defer timing.Start(ctx, "test_foo").End()
+    stageA(ctx)
+    stageB(ctx)
+}
+func stageA(ctx context.Context) {
+    defer timing.Start(ctx, "stage_a").End()
+    ...
+}
+func stageB(ctx context.Context) {
+    defer timing.Start(ctx, "stage_b").End()
+    ...
+}
+```
+
+By default, the result will be written to `timing.json` (refer
+[timing#Log.Write] for detail) in the Tast [results dir].
+The above example will generate:
+
+```json
+[[4.000, "test_foo", [
+    [1.000, "stage_a"],
+    [3.000, "stage_b"]]]],
+```
+
+[timing package]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/timing
+[timing#Log.Write]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/timing#Log.Write
+[results dir]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/running_tests.md#Interpreting-test-results
+
 <a name="error-pkg"></a>
 
 ### Error construction

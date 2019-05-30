@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ada56b8e_5b825637",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-30T17:03:54Z",
+      "side": 1,
+      "message": "nit: how about \"The DUT is a [Wilco] device.\" to be closer to the wording of the other features?",
+      "range": {
+        "startLine": 76,
+        "startChar": 14,
+        "endLine": 76,
+        "endChar": 28
+      },
+      "revId": "29a721c783f40e4b66b33ccb3e7ced0fdd248051",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6c6e88f7_ee994835",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-30T17:03:54Z",
+      "side": 1,
+      "message": "nit: how about adding something like, \"Use the `diagnostics` feature for cross-platform diagnostics support (including Wilco\u0027s support).\"?",
+      "revId": "29a721c783f40e4b66b33ccb3e7ced0fdd248051",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

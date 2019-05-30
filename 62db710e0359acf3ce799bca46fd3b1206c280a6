@@ -52,6 +52,24 @@
       "revId": "62db710e0359acf3ce799bca46fd3b1206c280a6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "11fd734e_e296d1fd",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-30T15:50:38Z",
+      "side": 0,
+      "message": "thanks. yeah, that lint error seems wrong. nya@, any ideas about what\u0027s happening here?",
+      "parentUuid": "48167f7d_5e2d4cf7",
+      "revId": "62db710e0359acf3ce799bca46fd3b1206c280a6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

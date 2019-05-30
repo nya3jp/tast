@@ -72,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "7b7066b2_d8e350ea",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1304442
+      },
+      "writtenOn": "2019-05-30T18:02:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ada56b8e_5b825637",
+      "range": {
+        "startLine": 76,
+        "startChar": 14,
+        "endLine": 76,
+        "endChar": 28
+      },
+      "revId": "29a721c783f40e4b66b33ccb3e7ced0fdd248051",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6c6e88f7_ee994835",
         "filename": "docs/test_dependencies.md",
         "patchSetId": 3
@@ -86,6 +110,24 @@
       "revId": "29a721c783f40e4b66b33ccb3e7ced0fdd248051",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "93352cca_87b9f3e8",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1304442
+      },
+      "writtenOn": "2019-05-30T18:02:36Z",
+      "side": 1,
+      "message": "I added a better description to the diagnostics feature so that should help differentiate them.",
+      "parentUuid": "6c6e88f7_ee994835",
+      "revId": "29a721c783f40e4b66b33ccb3e7ced0fdd248051",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

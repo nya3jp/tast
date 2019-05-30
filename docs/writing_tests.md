@@ -484,6 +484,40 @@ See the [fmt package]'s documentation for available "verbs".
 
 [fmt package]: https://golang.org/pkg/fmt/
 
+### How to log elapsed time for each test stage
+
+When you want to obtain each test stage's elapsed time, [chromiumos/tast/timing]
+package is your friend.
+It helps you identify which stage takes unexpected long time to complete.
+
+An example to time a test with two stages:
+```go
+func TestFoo(ctx context.Context) {
+    defer timing.Start(ctx, "test_foo").End()
+    StageA(ctx)
+    StageB(ctx)
+}
+func StageA(ctx context.Context) {
+    defer timing.Start(ctx, "stage_a").End()
+    ...
+}
+func StageB(ctx context.Context) {
+    defer timing.Start(ctx, "stage_b").End()
+    ...
+}
+```
+By default, the result will be written to `timing.json`
+(refer [timing#Log.Write] for detail) in tast result folder.
+The above example will generate:
+```json
+[[4.000, "test_foo", [
+    [1.000, "stage_a"],
+    [3.000, "stage_b"]]]],
+```
+
+[chromiumos/tast/timing]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/timing
+[timing#Log.Write]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/timing#Log.Write
+
 <a name="log-vs-logf"></a>
 
 ### Log/Error/Fatal vs. Logf/Errorf/Fatalf

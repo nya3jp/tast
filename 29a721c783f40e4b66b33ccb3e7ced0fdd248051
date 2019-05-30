@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "69c6f6c5_23545981",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1165921
+      },
+      "writtenOn": "2019-05-30T17:35:46Z",
+      "side": 1,
+      "message": "feature",
+      "range": {
+        "startLine": 9,
+        "startChar": 10,
+        "endLine": 9,
+        "endChar": 16
+      },
+      "revId": "29a721c783f40e4b66b33ccb3e7ced0fdd248051",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ada56b8e_5b825637",
         "filename": "docs/test_dependencies.md",
         "patchSetId": 3

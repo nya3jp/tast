@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "b8ea39d4_804d7e2f",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1304442
+      },
+      "writtenOn": "2019-05-30T17:49:47Z",
+      "side": 1,
+      "message": "Thanks :) Done.",
+      "parentUuid": "69c6f6c5_23545981",
+      "range": {
+        "startLine": 9,
+        "startChar": 10,
+        "endLine": 9,
+        "endChar": 16
+      },
+      "revId": "29a721c783f40e4b66b33ccb3e7ced0fdd248051",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ada56b8e_5b825637",
         "filename": "docs/test_dependencies.md",
         "patchSetId": 3

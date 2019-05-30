@@ -668,6 +668,43 @@ data is needed. Avoid passing `testing.State` when it's not actually necessary:
 
 [information hiding]: https://en.wikipedia.org/wiki/Information_hiding
 
+### Report timing
+
+The [timing package] can be used to measure and report the time taken by
+different "stages" of a test. It helps you identify which stage takes an
+unexpectedly long time to complete.
+
+An example to time a test with two stages:
+
+```go
+func TestFoo(ctx context.Context, s *testing.State) {
+    // Tast framework already adds a stage for the test function.
+    stageA(ctx)
+    stageB(ctx)
+}
+func stageA(ctx context.Context) {
+    defer timing.Start(ctx, "stage_a").End()
+    ...
+}
+func stageB(ctx context.Context) {
+    defer timing.Start(ctx, "stage_b").End()
+    ...
+}
+```
+
+By default, the result will be written to `timing.json` (see [timing#Log.Write]
+for details) in the Tast [results dir]. The above example will generate:
+
+```json
+[[4.000, "example.TestFoo", [
+    [1.000, "stage_a"],
+    [3.000, "stage_b"]]]],
+```
+
+[timing package]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/timing
+[timing#Log.Write]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/timing#Log.Write
+[results dir]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/running_tests.md#Interpreting-test-results
+
 ## Output files
 
 Tests can write output files that are automatically copied to the host system

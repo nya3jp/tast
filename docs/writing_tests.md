@@ -478,11 +478,14 @@ to investigate timeout failures.
 
 On the other hand, avoid logging unnecessary information that would clutter the
 logs. If you want to log a verbose piece of information to help determine the
-cause of an error, only do it after the error has occurred.
+cause of an error, only do it after the error has occurred. Also, if you are
+interested in which part of a test is time-consuming, please see the
+"[reporting timing]" section for details.
 
 See the [fmt package]'s documentation for available "verbs".
 
 [fmt package]: https://golang.org/pkg/fmt/
+[reporting timing]: writing_tests.md#Reporting-timing
 
 <a name="log-vs-logf"></a>
 
@@ -667,6 +670,45 @@ data is needed. Avoid passing `testing.State` when it's not actually necessary:
     can call `testing.ContextLog`.
 
 [information hiding]: https://en.wikipedia.org/wiki/Information_hiding
+
+### Reporting timing
+
+The [timing package] can be used to measure and report the time taken by
+different "stages" of a test. It helps you identify which stage takes an
+unexpectedly long time to complete.
+
+An example to time a test with two stages:
+
+```go
+func TestFoo(ctx context.Context, s *testing.State) {
+    // Tast framework already adds a stage for the test function.
+    stageA(ctx)
+    stageB(ctx)
+}
+
+func stageA(ctx context.Context) {
+    defer timing.Start(ctx, "stage_a").End()
+    ...
+}
+
+func stageB(ctx context.Context) {
+    defer timing.Start(ctx, "stage_b").End()
+    ...
+}
+```
+
+By default, the result will be written to `timing.json` (see [timing#Log.Write]
+for details) in the Tast [results dir]. The above example will generate:
+
+```json
+[4.000, "example.TestFoo", [
+    [1.000, "stage_a"],
+    [3.000, "stage_b"]]]
+```
+
+[timing package]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/timing
+[timing#Log.Write]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/timing#Log.Write
+[results dir]: running_tests.md#Interpreting-test-results
 
 ## Output files
 

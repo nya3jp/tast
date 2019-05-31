@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "07027f21_1436316c",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 488,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2019-05-31T19:09:58Z",
+      "side": 1,
+      "message": "writing_tests, not writing_test\n(That was my typo. Sorry!)\n\nJust FYI: you can see generated HTML page for the CL to check if links work well.\ne.g. https://chromium.googlesource.com/chromiumos/platform/tast/+/refs/changes/34/1638234/6/docs/writing_tests.md",
+      "range": {
+        "startLine": 488,
+        "startChar": 18,
+        "endLine": 488,
+        "endChar": 30
+      },
+      "revId": "88520b465475a371c07d73dcf5da111b05f466bb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

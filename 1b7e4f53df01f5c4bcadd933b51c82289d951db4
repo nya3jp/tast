@@ -1,0 +1,153 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9be6f7ff_3d4ebe4a",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 516,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-31T15:04:52Z",
+      "side": 1,
+      "message": "mind moving this new section down just after \"Test subpackages\"?",
+      "revId": "1b7e4f53df01f5c4bcadd933b51c82289d951db4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ca7ee7f6_72ce51dc",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 520,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-31T15:04:52Z",
+      "side": 1,
+      "message": "nit: \"an unexpectedly long time to complete.\"",
+      "range": {
+        "startLine": 520,
+        "startChar": 0,
+        "endLine": 520,
+        "endChar": 10
+      },
+      "revId": "1b7e4f53df01f5c4bcadd933b51c82289d951db4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "474dcea6_d2d7a654",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 525,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-31T15:04:52Z",
+      "side": 1,
+      "message": "if this is supposed to represent a normal test function, please also make it take an \"s *testing.State\" arg",
+      "range": {
+        "startLine": 525,
+        "startChar": 13,
+        "endLine": 525,
+        "endChar": 32
+      },
+      "revId": "1b7e4f53df01f5c4bcadd933b51c82289d951db4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ff695e1f_74629610",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 526,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-31T15:04:52Z",
+      "side": 1,
+      "message": "sorry for not missing it before, but i think that you actually don\u0027t need this one. iirc the framework already adds a stage for the test function",
+      "revId": "1b7e4f53df01f5c4bcadd933b51c82289d951db4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "83e320bd_bd69d1cd",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 540,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-31T15:04:52Z",
+      "side": 1,
+      "message": "nit: s/refer/see/ or \"refer to\" also works\n\n(\"refer\" by itself means something different, more like \"recommended\", e.g. \"i referred her for the job\". \"refer to\" is used when directing someone toward information)",
+      "range": {
+        "startLine": 540,
+        "startChar": 57,
+        "endLine": 540,
+        "endChar": 62
+      },
+      "revId": "1b7e4f53df01f5c4bcadd933b51c82289d951db4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "384c71a0_60495ba8",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 541,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-31T15:04:52Z",
+      "side": 1,
+      "message": "nit: details",
+      "range": {
+        "startLine": 541,
+        "startChar": 23,
+        "endLine": 541,
+        "endChar": 29
+      },
+      "revId": "1b7e4f53df01f5c4bcadd933b51c82289d951db4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d603f84c_911b01a0",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 545,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-31T15:04:52Z",
+      "side": 1,
+      "message": "you could change this to \"example.TestFoo\" to match the format used by the framework, assuming that the test is in the \u0027example\u0027 package",
+      "range": {
+        "startLine": 545,
+        "startChar": 10,
+        "endLine": 545,
+        "endChar": 18
+      },
+      "revId": "1b7e4f53df01f5c4bcadd933b51c82289d951db4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

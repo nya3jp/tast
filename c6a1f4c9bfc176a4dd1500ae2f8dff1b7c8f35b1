@@ -1,0 +1,141 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d17234b0_1f53109c",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 486,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-31T14:31:34Z",
+      "side": 1,
+      "message": "nit: mind moving this to the end of the \"Errors and logging\" section instead of putting it in the middle? the existing text is about error values and Log/Error/Fatal methods, so i think it\u0027d be better to not insert it in the middle (since it\u0027s unrelated).",
+      "revId": "c6a1f4c9bfc176a4dd1500ae2f8dff1b7c8f35b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a8e29314_7e233b74",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 487,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-31T14:31:34Z",
+      "side": 1,
+      "message": "nit: how about something shorter like \"Reporting timing\"?",
+      "range": {
+        "startLine": 487,
+        "startChar": 4,
+        "endLine": 487,
+        "endChar": 47
+      },
+      "revId": "c6a1f4c9bfc176a4dd1500ae2f8dff1b7c8f35b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "06c4f761_0a82d59a",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 489,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-31T14:31:34Z",
+      "side": 1,
+      "message": "nit: \"The [timing package] can be used to measure and report the time taken by different \"stages\" of a test.\"",
+      "revId": "c6a1f4c9bfc176a4dd1500ae2f8dff1b7c8f35b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ee89e56b_ca0b8869",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 493,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-31T14:31:34Z",
+      "side": 1,
+      "message": "nit: please add a blank line after this one to match other code snippets in this doc",
+      "revId": "c6a1f4c9bfc176a4dd1500ae2f8dff1b7c8f35b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0b41a929_672d8c1c",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 497,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-31T14:31:34Z",
+      "side": 1,
+      "message": "nit: maybe stageA and stageB?",
+      "range": {
+        "startLine": 497,
+        "startChar": 4,
+        "endLine": 497,
+        "endChar": 10
+      },
+      "revId": "c6a1f4c9bfc176a4dd1500ae2f8dff1b7c8f35b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dc1ec6a0_00244a2a",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 510,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-31T14:31:34Z",
+      "side": 1,
+      "message": "nit: \"... in the Tast results dir.\"\n\n(and maybe make [results dir] link to https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/running_tests.md#Interpreting-test-results -- not sure if we already have links pointing there from this doc)",
+      "range": {
+        "startLine": 510,
+        "startChar": 38,
+        "endLine": 510,
+        "endChar": 59
+      },
+      "revId": "c6a1f4c9bfc176a4dd1500ae2f8dff1b7c8f35b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9c17404f_f445b2be",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 511,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-05-31T14:31:34Z",
+      "side": 1,
+      "message": "nit: add a blank line after this one",
+      "revId": "c6a1f4c9bfc176a4dd1500ae2f8dff1b7c8f35b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

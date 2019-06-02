@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a5c37f87_8fb185f3",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 9
+      },
+      "lineNbr": 482,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-06-02T01:45:48Z",
+      "side": 1,
+      "message": "nit: \"... please see the\" (i.e. add \u0027the\u0027)",
+      "revId": "3968de8e0c999feeff27e7f080d9026617372999",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

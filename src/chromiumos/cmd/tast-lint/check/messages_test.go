@@ -64,6 +64,27 @@ func Test(ctx context.Context, s *testing.State) {
 	// Good quoting:
 	s.Logf("Read value %q", "blah")
 	s.Errorf("Read value '%d'", 123)
+
+	// Bad formatting. (Using Errorf/Fatalf/Logf instead of
+	// Error/Fatal/Log mistakenly).
+	s.Errorf("Some error: ", err)
+	s.Fatalf("Some error: ", err)
+	s.Logf("Some log: ", text)
+
+	// Verb counts.
+	s.Errorf("Got %d; want %d", actual, expect)
+	s.Errorf("Got %d %%; want 100 %%", actual)
+	s.Errorf("%%%%%d", actual)  // Test for an edge case about %%.
+
+	// Bad error construction with empty string.
+	errors.New("")
+	errors.Wrap(err, "")
+	s.Error("")
+	s.Fatal("")
+
+	// Good messages. (Allowed for line breaking)
+	s.Log("")
+	testing.ContextLog(ctx, "")
 }`
 
 	f, fs := parse(code, "test.go")
@@ -89,6 +110,13 @@ func Test(ctx context.Context, s *testing.State) {
 		`test.go:41:2: Use errors.Wrapf(err, "<msg>", ...) instead of errors.Errorf("<msg>: %v", ..., err)`,
 		`test.go:50:2: Use %q to quote values instead of manually quoting them`,
 		`test.go:51:2: Use %q to quote values instead of manually quoting them`,
+		`test.go:59:2: The number of verbs in format literal mismatches with the number of arguments`,
+		`test.go:60:2: The number of verbs in format literal mismatches with the number of arguments`,
+		`test.go:61:2: The number of verbs in format literal mismatches with the number of arguments`,
+		`test.go:69:2: Error message should have some surrounding context, so must not empty`,
+		`test.go:70:2: Error message should have some surrounding context, so must not empty`,
+		`test.go:71:2: Error message should have some surrounding context, so must not empty`,
+		`test.go:72:2: Error message should have some surrounding context, so must not empty`,
 	}
 	verifyIssues(t, issues, expects)
 }

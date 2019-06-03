@@ -12,6 +12,12 @@ import (
 	"strings"
 )
 
+// countVerbs returns the number of format verbs.
+func countVerbs(s string) int {
+	// "verb" starts with '%', but exclude '%%'s.
+	return strings.Count(s, "%") - strings.Count(s, "%%")*2
+}
+
 // Messages checks calls to logging- and error-related functions.
 func Messages(fs *token.FileSet, f *ast.File) []*Issue {
 	var issues []*Issue
@@ -68,6 +74,7 @@ func Messages(fs *token.FileSet, f *ast.File) []*Issue {
 		_, isFmt := fmtMap[callName]
 
 		isErr := recvName == "errors"
+		isLog := strings.HasPrefix(callName, "s.Log") || strings.HasPrefix(callName, "testing.ContextLog")
 
 		type argType int
 		const (
@@ -108,6 +115,7 @@ func Messages(fs *token.FileSet, f *ast.File) []*Issue {
 			errFmtURL    = baseURL + "#error-fmt"
 			logFmtURL    = baseURL + "#log-fmt"
 			commonFmtURL = baseURL + "#common-fmt"
+			fmtURL       = "https://golang.org/pkg/fmt/#hdr-Printing"
 		)
 
 		// Used Logf("Some message") instead of Log("Some message").
@@ -169,6 +177,16 @@ func Messages(fs *token.FileSet, f *ast.File) []*Issue {
 			// due to messages beginning with daemon names, command lines, etc.
 			// Similarly, it'd be nice to check that error values aren't capitalized, but that causes false
 			// positives due to proper nouns like "Android" or e.g. D-Bus method call names.
+		}
+
+		// The number of verbs and the number of arguments must match.
+		if isFmt && len(args) >= 1 && args[0].typ == stringArg && countVerbs(args[0].val) != len(args)-1 {
+			addIssue("The number of verbs in format literal mismatches with the number of arguments", fmtURL)
+		}
+
+		// Error messages should contain some surrounding context.
+		if !isLog && len(args) >= 1 && args[0].typ == stringArg && args[0].val == "" {
+			addIssue("Error message should have some surrounding context, so must not empty", errFmtURL)
 		}
 	})
 

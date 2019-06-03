@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package rpc;
+
+service Logging {
+  rpc ReadLogs(ReadLogsRequest) returns (stream ReadLogsReply) {}
+}
+
+message ReadLogsRequest {
+}
+
+message ReadLogsReply {
+  string msg = 1;
+}

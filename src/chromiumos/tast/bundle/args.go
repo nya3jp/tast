@@ -28,6 +28,8 @@ const (
 	// ListTestsMode indicates that the bundle should write information about matched tests to stdout as a
 	// JSON array of testing.Test structs and exit.
 	ListTestsMode = 1
+
+	RPCMode = 2
 )
 
 // Args is used to pass arguments from test runners to test bundles.
@@ -134,8 +136,7 @@ const (
 // clArgs contains command-line arguments and is typically os.Args[1:].
 // args contains default values for arguments and is further updated by decoding a JSON-marshaled Args struct from stdin.
 // Matched tests are returned. The caller is responsible for performing the requested action.
-func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer,
-	args *Args, cfg *runConfig, bt bundleType) ([]*testing.Test, error) {
+func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, bt bundleType) error {
 	if len(clArgs) != 0 {
 		flags := flag.NewFlagSet("", flag.ContinueOnError)
 		flags.SetOutput(stderr)
@@ -152,56 +153,33 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer,
 		}
 
 		dump := flags.Bool("dumptests", false, "dump all tests as a JSON-marshaled array of testing.Test structs")
+		rpc := flags.Bool("rpc", false, "run gRPC server")
 		if err := flags.Parse(clArgs); err != nil {
-			return nil, command.NewStatusErrorf(statusBadArgs, "%v", err)
+			return command.NewStatusErrorf(statusBadArgs, "%v", err)
 		}
 		if *dump {
 			args.Mode = ListTestsMode
-			return testing.GlobalRegistry().AllTests(), nil
+			return nil
+		}
+		if *rpc {
+			args.Mode = RPCMode
+			return nil
 		}
 	}
 
 	if err := json.NewDecoder(stdin).Decode(args); err != nil {
-		return nil, command.NewStatusErrorf(statusBadArgs, "failed to decode args from stdin: %v", err)
+		return command.NewStatusErrorf(statusBadArgs, "failed to decode args from stdin: %v", err)
 	}
 
 	if (args.Mode == RunTestsMode && args.RunTests == nil) ||
 		(args.Mode == ListTestsMode && args.ListTests == nil) {
-		return nil, command.NewStatusErrorf(statusBadArgs, "args not set for mode %v", args.Mode)
+		return command.NewStatusErrorf(statusBadArgs, "args not set for mode %v", args.Mode)
 	}
 
 	// Use non-zero-valued deprecated fields if they were supplied by an old test runner.
 	args.PromoteDeprecated()
 
-	if errs := testing.RegistrationErrors(); len(errs) > 0 {
-		es := make([]string, len(errs))
-		for i, err := range errs {
-			es[i] = err.Error()
-		}
-		return nil, command.NewStatusErrorf(statusBadTests, "error(s) in registered tests: %v", strings.Join(es, ", "))
-	}
-
-	var patterns []string
-	switch args.Mode {
-	case RunTestsMode:
-		patterns = args.RunTests.Patterns
-	case ListTestsMode:
-		patterns = args.ListTests.Patterns
-	default:
-		return nil, command.NewStatusErrorf(statusBadArgs, "invalid mode %d", args.Mode)
-	}
-
-	tests, err := TestsToRun(testing.GlobalRegistry(), patterns)
-	if err != nil {
-		return nil, command.NewStatusErrorf(statusBadPatterns, "failed getting tests for %v: %v", patterns, err.Error())
-	}
-	for _, tp := range tests {
-		if tp.Timeout == 0 {
-			tp.Timeout = cfg.defaultTestTimeout
-		}
-	}
-	testing.SortTests(tests)
-	return tests, nil
+	return nil
 }
 
 // TestPatternType describes the manner in which test patterns will be interpreted.
@@ -225,7 +203,7 @@ func GetTestPatternType(pats []string) TestPatternType {
 	}
 }
 
-// TestsToRun returns tests from reg to run for a command invoked with test patterns pats.
+// SelectTests returns tests from reg selected by test patterns pats.
 //
 // If no patterns are supplied, all registered tests are returned.
 //
@@ -233,7 +211,7 @@ func GetTestPatternType(pats []string) TestPatternType {
 // it is treated as a boolean expression specifying test attributes.
 //
 // Otherwise, pattern(s) are interpreted as globs matching test names.
-func TestsToRun(reg *testing.Registry, pats []string) ([]*testing.Test, error) {
+func SelectTests(reg *testing.Registry, pats []string) ([]*testing.Test, error) {
 	switch GetTestPatternType(pats) {
 	case TestPatternGlobs:
 		if len(pats) == 0 {

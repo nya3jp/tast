@@ -88,7 +88,7 @@ func (lc *listCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{
 			}
 		}
 		var err error
-		if tests, err = bundle.TestsToRun(reg, f.Args()); err != nil {
+		if tests, err = bundle.SelectTests(reg, f.Args()); err != nil {
 			lg.Log("Failed to select tests: ", err)
 			return subcommands.ExitUsageError
 		}

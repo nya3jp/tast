@@ -10,7 +10,7 @@ import (
 )
 
 var globalRegistry *Registry   // singleton, initialized on first use
-var registrationErrors []error // singleton for errors encountered in AddTest calls
+var registrationErrors []error // singleton for errors encountered in Add* calls
 
 // GlobalRegistry returns a global registry containing tests
 // registered by calls to AddTest.
@@ -29,6 +29,16 @@ func RegistrationErrors() []error {
 // AddTest adds test T to the global registry.
 func AddTest(t *Test) {
 	if err := GlobalRegistry().AddTest(t); err != nil {
+		_, file, line, _ := runtime.Caller(1)
+		if registrationErrors == nil {
+			registrationErrors = make([]error, 0)
+		}
+		registrationErrors = append(registrationErrors, fmt.Errorf("%s:%d: %v", file, line, err))
+	}
+}
+
+func AddService(s *Service) {
+	if err := GlobalRegistry().AddService(s); err != nil {
 		_, file, line, _ := runtime.Caller(1)
 		if registrationErrors == nil {
 			registrationErrors = make([]error, 0)

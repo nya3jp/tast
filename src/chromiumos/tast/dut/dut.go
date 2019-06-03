@@ -106,6 +106,13 @@ func (d *DUT) Run(ctx context.Context, cmd string) ([]byte, error) {
 	return d.hst.Run(ctx, cmd)
 }
 
+func (d *DUT) Start(ctx context.Context, cmd string, input host.InputMode, output host.OutputMode) (*host.SSHCommandHandle, error) {
+	if d.hst == nil {
+		return nil, errors.New("not connected")
+	}
+	return d.hst.Start(ctx, cmd, input, output)
+}
+
 // WaitUnreachable waits for the DUT to become unreachable.
 // It requires that a connection is already established to the DUT.
 func (d *DUT) WaitUnreachable(ctx context.Context) error {

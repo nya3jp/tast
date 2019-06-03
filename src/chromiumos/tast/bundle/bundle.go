@@ -36,25 +36,60 @@ const (
 // The caller should exit with the returned status code.
 func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr io.Writer,
 	args *Args, cfg *runConfig, bt bundleType) int {
-	tests, err := readArgs(clArgs, stdin, stderr, args, cfg, bt)
-	if err != nil {
+	if err := readArgs(clArgs, stdin, stderr, args, bt); err != nil {
+		return command.WriteError(stderr, err)
+	}
+
+	if errs := testing.RegistrationErrors(); len(errs) > 0 {
+		es := make([]string, len(errs))
+		for i, err := range errs {
+			es[i] = err.Error()
+		}
+		err := command.NewStatusErrorf(statusBadTests, "error(s) in registered tests: %v", strings.Join(es, ", "))
 		return command.WriteError(stderr, err)
 	}
 
 	switch args.Mode {
 	case ListTestsMode:
+		tests, err := testsToRun(cfg, args.ListTests.Patterns)
+		if err != nil {
+			return command.WriteError(stderr, err)
+		}
 		if err := testing.WriteTestsAsJSON(stdout, tests); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
 	case RunTestsMode:
+		tests, err := testsToRun(cfg, args.RunTests.Patterns)
+		if err != nil {
+			return command.WriteError(stderr, err)
+		}
 		if err := runTests(ctx, stdout, args, cfg, bt, tests); err != nil {
+			return command.WriteError(stderr, err)
+		}
+		return statusSuccess
+	case RPCMode:
+		if err := runRPCServer(ctx, stdin, stdout); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
 	default:
 		return command.WriteError(stderr, command.NewStatusErrorf(statusBadArgs, "invalid mode %v", args.Mode))
 	}
+}
+
+func testsToRun(cfg *runConfig, patterns []string) ([]*testing.Test, error) {
+	tests, err := SelectTests(testing.GlobalRegistry(), patterns)
+	if err != nil {
+		return nil, command.NewStatusErrorf(statusBadPatterns, "failed getting tests for %v: %v", patterns, err.Error())
+	}
+	for _, tp := range tests {
+		if tp.Timeout == 0 {
+			tp.Timeout = cfg.defaultTestTimeout
+		}
+	}
+	testing.SortTests(tests)
+	return tests, nil
 }
 
 // logFunc can be called by functions registered in runConfig to log a message.

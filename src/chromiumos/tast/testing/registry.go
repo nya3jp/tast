@@ -17,8 +17,9 @@ import (
 type Registry struct {
 	allTests  []*Test
 	testNames map[string]struct{} // names of registered tests
-	finalize  bool                // call Test.finalize to validate and automatically set fields
-	autoName  bool                // automatically derive test names from func names
+	services  []*Service
+	finalize  bool // call Test.finalize to validate and automatically set fields
+	autoName  bool // automatically derive test names from func names
 }
 
 type registryOption func(*Registry)
@@ -38,7 +39,6 @@ var NoFinalize = func(r *Registry) { r.finalize = false }
 // NewRegistry returns a new test registry.
 func NewRegistry(opts ...registryOption) *Registry {
 	r := &Registry{
-		allTests:  make([]*Test, 0),
 		testNames: make(map[string]struct{}),
 		finalize:  true,
 		autoName:  true,
@@ -149,4 +149,13 @@ func NewTestGlobRegexp(g string) (*regexp.Regexp, error) {
 	g = strings.Replace(g, "*", ".*", -1)
 	g = "^" + g + "$"
 	return regexp.Compile(g)
+}
+
+func (r *Registry) AddService(s *Service) error {
+	r.services = append(r.services, s)
+	return nil
+}
+
+func (r *Registry) AllServices() []*Service {
+	return append(([]*Service)(nil), r.services...)
 }

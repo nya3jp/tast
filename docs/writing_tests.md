@@ -11,10 +11,10 @@ The portion before the period, called the _category_, is the final component of
 the test's package name, while the portion after the period is the name of the
 exported Go function that implements the test.
 
-Test function names should follow [Go's naming conventions], and [acronyms
-should be fully capitalized]. Test names should not end with `Test`, both
-because it's redundant and because the `_test.go` filename suffix is reserved in
-Go for unit tests.
+Test function names should follow [Go's naming conventions], and
+[acronyms should be fully capitalized]. Test names should not end with `Test`,
+both because it's redundant and because the `_test.go` filename suffix is
+reserved in Go for unit tests.
 
 Test names are automatically derived from tests' package and function names and
 should not be explicitly specified when defining tests.
@@ -32,9 +32,9 @@ accessed by the `local_tests` and `remote_tests` symlinks at the top of the
 repository). Private tests are checked into private repositories such as the
 [tast-tests-private repository], and built into non-`cros` test bundles.
 
-Tests are categorized into packages based on the functionality that
-they exercise; for example, the [ui package] contains local tests that exercise
-the Chrome OS UI.
+Tests are categorized into packages based on the functionality that they
+exercise; for example, the [ui package] contains local tests that exercise the
+Chrome OS UI.
 
 Support packages used by multiple test categories located in
 [src/chromiumos/tast/local/] and [src/chromiumos/tast/remote/], alongside the
@@ -54,23 +54,23 @@ similar to the following:
 package ui
 
 import (
-	"context"
+    "context"
 
-	"chromiumos/tast/testing"
+    "chromiumos/tast/testing"
 )
 
 func init() {
-	testing.AddTest(&testing.Test{
-		Func:         DoSomething,
-		Desc:         "Does X to verify Y",
-		Contacts:     []string{"me@chromium.org"},
-		Attr:         []string{"informational"},
-		SoftwareDeps: []string{"chrome"},
-	})
+    testing.AddTest(&testing.Test{
+        Func:         DoSomething,
+        Desc:         "Does X to verify Y",
+        Contacts:     []string{"me@chromium.org"},
+        Attr:         []string{"informational"},
+        SoftwareDeps: []string{"chrome"},
+    })
 }
 
 func DoSomething(ctx context.Context, s *testing.State) {
-	// The actual test goes here.
+    // The actual test goes here.
 }
 ```
 
@@ -121,8 +121,8 @@ these documents:
 *   [Effective Go]
 *   [Go Code Review Comments]
 
-The [Go FAQ] may also be helpful. Additional resources are linked from the [Go
-Documentation] page.
+The [Go FAQ] may also be helpful. Additional resources are linked from the
+[Go Documentation] page.
 
 [gofmt]: https://golang.org/cmd/gofmt/
 [go vet]: https://golang.org/cmd/vet/
@@ -147,11 +147,11 @@ of the test.
 Support packages should be exercised by unit tests when possible. Unit tests can
 cover edge cases that may not be typically seen when using the package, and they
 greatly aid in future refactorings (since it can be hard to determine the full
-set of Tast-based tests that must be run to exercise the package). See [How to
-Write Go Code: Testing] and [Go's testing package] for more information about
-writing unit tests for Go code. The [Best practices for writing Chrome OS unit
-tests] document contains additional suggestions that may be helpful (despite
-being C++-centric).
+set of Tast-based tests that must be run to exercise the package). See
+[How to Write Go Code: Testing] and [Go's testing package] for more information
+about writing unit tests for Go code. The
+[Best practices for writing Chrome OS unit tests] document contains additional
+suggestions that may be helpful (despite being C++-centric).
 
 Setting `FEATURES=test` when emerging a test bundle package
 (`tast-local-tests-cros` or `tast-remote-tests-cros`) will run all unit tests
@@ -171,40 +171,40 @@ run tests for a single package or all packages.
 Entries in import declaration must be grouped by empty line, and sorted in
 following order.
 
-- Standard library packages
-- Third-party packages
-- chromiumos/ packages
+-   Standard library packages
+-   Third-party packages
+-   chromiumos/ packages
 
 In each group, entries must be sorted in the lexicographical order. For example:
 
 ```go
 import (
-	"context"
-	"fmt"
+    "context"
+    "fmt"
 
-	"github.com/godbus/dbus"
-	"golang.org/x/sys/unix"
+    "github.com/godbus/dbus"
+    "golang.org/x/sys/unix"
 
-	"chromiumos/tast/errors"
-	"chromiumos/tast/local/chrome"
+    "chromiumos/tast/errors"
+    "chromiumos/tast/local/chrome"
 )
 ```
 
-Note that, although github.com and golang.org are different domains, they
-should be in a group.
+Note that, although github.com and golang.org are different domains, they should
+be in a group.
 
-This is how `goimports --local=chromiumos/` sorts. It may be valuable to run
-the command. Note that, 1) the command preserves existing group. So, it may
-be necessary to remove empty lines in import() in advance, and 2) use the
-command to add/remove import entries based on the following code. The path
-resolution may require setting `GOPATH` properly.
+This is how `goimports --local=chromiumos/` sorts. It may be valuable to run the
+command. Note that, 1) the command preserves existing group. So, it may be
+necessary to remove empty lines in import() in advance, and 2) use the command
+to add/remove import entries based on the following code. The path resolution
+may require setting `GOPATH` properly.
 
 ## Test structure
 
 As seen in the test declaration above, each test is comprised of a single
 exported function that receives a [testing.State] struct. This is defined in the
-[Tast testing package] (not to be confused with [Go's `testing` package] for
-unit testing) and is used to log progress and report failures.
+[Tast testing package](not to be confused with [Go's `testing` package] for unit testing)
+and is used to log progress and report failures.
 
 [testing.State]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#State
 [Tast testing package]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/testing/
@@ -254,25 +254,24 @@ The [testing.Poll] function makes it easier to honor timeouts while polling for
 a condition:
 
 ```go
-err := testing.Poll(ctx, func (ctx context.Context) error {
-	var url string
-	if err := conn.Eval(ctx, "location.href", &url); err != nil {
-		return errors.Wrap(err, "failed to evaluate location.href")
-	}
-	if url != targetURL {
-		return errors.Errorf("current URL is %s", url)
-	}
-	return nil
-}, &testing.PollOptions{Timeout: 10 * time.Second})
-if err != nil {
-	return errors.Wrap(err, "failed to navigate")
+if err := testing.Poll(ctx, func (ctx context.Context) error {
+    var url string
+    if err := conn.Eval(ctx, "location.href", &url); err != nil {
+        return errors.Wrap(err, "failed to evaluate location.href")
+    }
+    if url != targetURL {
+        return errors.Errorf("current URL is %s", url)
+    }
+    return nil
+}, &testing.PollOptions{Timeout: 10 * time.Second}); err != nil {
+    return errors.Wrap(err, "failed to navigate")
 }
 ```
 
 Sleeping without polling for a condition is discouraged, since it makes tests
 flakier (when the sleep duration isn't long enough) or slower (when the duration
-is too long). If you really need to do so, use [testing.Sleep] to honor the context
-timeout.
+is too long). If you really need to do so, use [testing.Sleep] to honor the
+context timeout.
 
 Any function that performs a blocking operation should take a [context.Context]
 as its first argument and return an error if the context expires before the
@@ -319,8 +318,8 @@ level:
 
 As such, all tests within a package like `platform` or `ui` share the same
 namespace. Please be careful of conflicts. Also, please avoid referencing
-identifiers declared in other files; otherwise `repo upload` will fail with
-lint errors.
+identifiers declared in other files; otherwise `repo upload` will fail with lint
+errors.
 
 If you need to share functionality between tests in the same package, please
 introduce a new descriptively-named subpackage; see e.g. the [chromecrash]
@@ -430,17 +429,17 @@ dependencies.
 Sometimes a lengthy setup process (e.g. restarting Chrome and logging in, which
 takes at least 6-7 seconds) is needed by multiple tests. Rather than calling
 [chrome.New] at the beginning of each test, tests can declare that they require
-a logged-in Chrome instance by setting [testing.Test.Pre] to
-[chrome.LoggedIn]. This enables Tast to just perform login once and then share
-the same Chrome instance with all tests that specify the precondition. See the
-[chrome.LoggedIn] documentation for more details.
+a logged-in Chrome instance by setting [testing.Test.Pre] to [chrome.LoggedIn].
+This enables Tast to just perform login once and then share the same Chrome
+instance with all tests that specify the precondition. See the [chrome.LoggedIn]
+documentation for more details.
 
 If you want a new Chrome precondition with custom options, call
 [chrome.NewPrecondition] from a single place in your test package and save the
 precondition as a global variable so that all of your tests can use it when
 registering themselves. It's best to initialize and store the precondition in a
-subpackage so it can be shared by multiple test files.
-For example, see [video tests' pre subpackage].
+subpackage so it can be shared by multiple test files. For example, see
+[video tests' pre subpackage].
 
 [chrome.New]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#New
 [testing.Test.Pre]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Test.Pre
@@ -461,10 +460,10 @@ status:
     the `ASSERT_` set of macros.
 
 Note that higher-level functions for stating expectations and assertions are not
-provided; this was a conscious decision. See ["Where is my favorite helper
-function for testing?"] from the [Go FAQ]. That answer refers to [Go's testing
-package] rather than Tast's, but the same reasoning and suggestions are
-applicable to Tast tests.
+provided; this was a conscious decision. See
+["Where is my favorite helper function for testing?"] from the [Go FAQ]. That
+answer refers to [Go's testing package] rather than Tast's, but the same
+reasoning and suggestions are applicable to Tast tests.
 
 [Google Test]: https://github.com/google/googletest
 ["Where is my favorite helper function for testing?"]: https://golang.org/doc/faq#testing_framework
@@ -501,8 +500,8 @@ s.Error("Encountered an error: ", err)
 s.Fatal("Everything is broken: ", err)
 ```
 
-`Logf`, `Errorf`, and `Fatalf` should only be used in conjunction with `printf`-style
-format strings:
+`Logf`, `Errorf`, and `Fatalf` should only be used in conjunction with
+`printf`-style format strings:
 
 ```go
 s.Logf("Read %q from %v", data, path)
@@ -511,8 +510,8 @@ s.Fatalf("Got invalid JSON object %+v", obj)
 ```
 
 When concatenating a string and a value using default formatting, use
-`s.Log("Some value: ", val)` rather than the more-verbose
-`s.Logf("Some value: %v", val)`.
+`s.Log("Some value: ", val)` rather than the more-verbose `s.Logf("Some value:
+%v", val)`.
 
 The same considerations apply to `testing.ContextLog` vs. `testing.ContextLogf`.
 
@@ -532,7 +531,8 @@ errors.New("process not found")
 errors.Errorf("process %d not found", pid)
 ```
 
-To construct an error by adding context to an existing error, use [errors.Wrap] or [errors.Wrapf].
+To construct an error by adding context to an existing error, use [errors.Wrap]
+or [errors.Wrapf].
 
 ```go
 errors.Wrap(err, "failed to connect to Chrome browser process")
@@ -572,7 +572,7 @@ For example:
 
 ```go
 if err := doSomething(id); err != nil {
-	return errors.Wrapf(err, "doing something to %q failed", id)
+    return errors.Wrapf(err, "doing something to %q failed", id)
 }
 ```
 
@@ -587,7 +587,7 @@ punctuation that clearly describe what is about to be done or what happened:
 s.Log("Asking Chrome to log in")
 ...
 if err != nil {
-	s.Fatal("Failed to log in: ", err)
+    s.Fatal("Failed to log in: ", err)
 }
 s.Logf("Logged in as user %v with ID %v", user, id)
 ```
@@ -632,8 +632,8 @@ s.Log("Attempt failed; trying again")
 ### Support packages
 
 Support packages should not record test failures directly. Instead, return
-`error` values (using the [errors package]) and allow tests to decide
-how to handle them. Support packages' exported functions should typically take
+`error` values (using the [errors package]) and allow tests to decide how to
+handle them. Support packages' exported functions should typically take
 [context.Context] arguments and use them to return an error early when the
 test's deadline is reached and to log informative messages using
 `testing.ContextLog` and `testing.ContextLogf`.
@@ -717,10 +717,10 @@ that was used to initiate testing:
 
 ```go
 func WriteOutput(s *testing.State) {
-	if err := ioutil.WriteFile(filepath.Join(s.OutDir(), "my_output.txt"),
-		[]byte("Here's my output!"), 0644); err != nil {
-		s.Error(err)
-	}
+    if err := ioutil.WriteFile(filepath.Join(s.OutDir(), "my_output.txt"),
+        []byte("Here's my output!"), 0644); err != nil {
+        s.Error(err)
+    }
 }
 ```
 
@@ -731,7 +731,7 @@ to a `tests/<test-name>/` subdirectory within the results directory.
 
 ### Performance measurements
 
-The [perf] package is provided to record the results of performance tests.  See
+The [perf] package is provided to record the results of performance tests. See
 the [perf] documentation for more details.
 
 [perf]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/perf
@@ -840,9 +840,9 @@ files):
 
 ```go
 testing.AddTest(&testing.Test{
-	...
-	Data: []string{"user_login_data.bin"},
-	...
+    ...
+    Data: []string{"user_login_data.bin"},
+    ...
 })
 ```
 

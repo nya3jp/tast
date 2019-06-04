@@ -254,7 +254,7 @@ The [testing.Poll] function makes it easier to honor timeouts while polling for
 a condition:
 
 ```go
-err := testing.Poll(ctx, func (ctx context.Context) error {
+if err := testing.Poll(ctx, func (ctx context.Context) error {
 	var url string
 	if err := conn.Eval(ctx, "location.href", &url); err != nil {
 		return errors.Wrap(err, "failed to evaluate location.href")
@@ -263,8 +263,7 @@ err := testing.Poll(ctx, func (ctx context.Context) error {
 		return errors.Errorf("current URL is %s", url)
 	}
 	return nil
-}, &testing.PollOptions{Timeout: 10 * time.Second})
-if err != nil {
+}, &testing.PollOptions{Timeout: 10 * time.Second}); err != nil {
 	return errors.Wrap(err, "failed to navigate")
 }
 ```

@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "a9eab2a4_b4ae70fc",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-06-04T02:38:34Z",
+      "side": 1,
+      "message": "Oops. Done.",
+      "parentUuid": "94fc4948_74f7d5ee",
+      "range": {
+        "startLine": 15,
+        "startChar": 3,
+        "endLine": 15,
+        "endChar": 14
+      },
+      "revId": "9945423759ef05af453a7a5837c127a9bcf51fa4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d8405948_c77a998e",
         "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
         "patchSetId": 1
@@ -36,6 +60,24 @@
       "writtenOn": "2019-06-03T20:55:40Z",
       "side": 1,
       "message": "note to self: strings.Count(\"%%%%\", \"%%\") returns 2, not 3, so i think that this works",
+      "revId": "9945423759ef05af453a7a5837c127a9bcf51fa4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3e84ffe9_6e7340da",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-06-04T02:38:34Z",
+      "side": 1,
+      "message": "Yes, it should.\nAdded a few more test cases.",
+      "parentUuid": "d8405948_c77a998e",
       "revId": "9945423759ef05af453a7a5837c127a9bcf51fa4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false

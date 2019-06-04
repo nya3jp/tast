@@ -50,7 +50,7 @@ func saveProcessList(dir string) {
 	}
 	defer f.Close()
 
-	cmd := exec.Command("ps", "auxwwf")
+	cmd := exec.Command("ps", "auxwwfZ")
 	cmd.Stdout = f
 	cmd.Run()
 }

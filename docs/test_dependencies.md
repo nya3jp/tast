@@ -27,6 +27,8 @@ The following software features are defined:
 *   `audio_play` - The ability to play audio.
 *   `audio_record` - The ability to record audio.
 *   `autotest-capability:foo` - An [Autotest capability] named `foo`. See below.
+*   `biometrics_daemon` - The ability to process fingerprint authentication.
+    This implies the presence of the `biod` package.
 *   `camera_720p` - The ability to capture video with frame size 1280x720.
 *   `chrome` - Support for performing user login via Chrome (i.e. using
     `session_manager` and `cryptohome`). This also implies that the

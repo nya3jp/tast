@@ -9,7 +9,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"reflect"
 
 	"golang.org/x/crypto/ssh"
 
@@ -24,10 +23,6 @@ import (
 // Command does not accept context.Context, but Cmd's methods do. This is to
 // support existing use cases where we want to use different deadlines for
 // different operations on the same command execution.
-//
-// It is safe to call Wait multiple times concurrently. os/exec does not allow
-// this, but
-//
 type Cmd struct {
 	// Args hold command line arguments, including the command as Args[0].
 	Args []string
@@ -334,6 +329,7 @@ func (c *Cmd) startSession(ctx context.Context) error {
 		return errors.New("SSH connection is not available")
 	}
 
+	// Set the state early to reject startSession to be called twice.
 	c.state = stateStarted
 
 	var sess *ssh.Session
@@ -486,10 +482,10 @@ func (c *Cmd) startSession(ctx context.Context) error {
 // after successfully creating a new session to make sure deadlines are honored.
 func (c *Cmd) handleAbort(ctx context.Context) {
 	select {
-	case <-ctx.Done():
-	case <-c.abort:
 	case <-c.done:
 		return
+	case <-ctx.Done():
+	case <-c.abort:
 	}
 
 	// Close pipes first since Signal may block.
@@ -524,15 +520,14 @@ func (c *Cmd) doWaitAndClose(ctx context.Context, f func() error) error {
 	return retErr
 }
 
-// closePipes closes the pipes created by StdinPipe, StdoutPipe and StderrPipe.
+// closePipes closes the pipes created by StdoutPipe and StderrPipe.
 // It is safe to call this method multiple times concurrently.
 func (c *Cmd) closePipes(err error) {
-	for _, p := range []interface {
-		CloseWithError(error) error
-	}{c.stdoutPipe, c.stderrPipe} {
-		if !reflect.ValueOf(p).IsNil() { // p != nil does not work here
-			p.CloseWithError(err)
-		}
+	if c.stdoutPipe != nil {
+		c.stdoutPipe.CloseWithError(err)
+	}
+	if c.stderrPipe != nil {
+		c.stderrPipe.CloseWithError(err)
 	}
 }
 

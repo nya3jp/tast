@@ -73,6 +73,30 @@
     },
     {
       "key": {
+        "uuid": "a0a39408_4ed4fa80",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-06-06T03:59:26Z",
+      "side": 1,
+      "message": "okay, i\u0027ve changed this to continueafterfailure. i suspect it may make sense to switch it to default to true eventually, so i don\u0027t anticipate many people passing it manually.",
+      "parentUuid": "ab2a9709_c891db1a",
+      "range": {
+        "startLine": 7,
+        "startChar": 10,
+        "endLine": 7,
+        "endChar": 18
+      },
+      "revId": "2f0d8b56bb699cc6e6306a52e4ae9ae880b22cab",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6d7ac88e_85d7617e",
         "filename": "src/chromiumos/cmd/tast/run/local.go",
         "patchSetId": 1
@@ -110,6 +134,30 @@
       "revId": "2f0d8b56bb699cc6e6306a52e4ae9ae880b22cab",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9a742bd6_a3feacf8",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 499,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-06-06T03:59:26Z",
+      "side": 1,
+      "message": "okay, i think i\u0027ve reworked this such that we should reconnect.",
+      "parentUuid": "4e740f47_6943cd3c",
+      "range": {
+        "startLine": 499,
+        "startChar": 12,
+        "endLine": 499,
+        "endChar": 71
+      },
+      "revId": "2f0d8b56bb699cc6e6306a52e4ae9ae880b22cab",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -172,6 +220,30 @@
       "side": 1,
       "message": "Another aspect is that it\u0027s rather surprising to users that expressions and globs are treated differently. We might want to get rid of -checktestdeps\u003dauto and instead ask users to set -checktestdeps\u003dnever when they want to run skipped tests.\n\nThis is not a blocker but might be worth revisiting later. For now, workarounds like overriding -checktestdeps on resume sounds acceptable.",
       "parentUuid": "10933e73_f1c35367",
+      "range": {
+        "startLine": 501,
+        "startChar": 2,
+        "endLine": 501,
+        "endChar": 22
+      },
+      "revId": "2f0d8b56bb699cc6e6306a52e4ae9ae880b22cab",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "902d20e5_34a6451f",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 501,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-06-06T03:59:26Z",
+      "side": 1,
+      "message": "makes sense, and per https://crbug.com/971486, i think i agree that -checktestdeps\u003dauto was a mistake. :-) i\u0027ve gone with the approach discussed here for now, though.",
+      "parentUuid": "8f288683_8216c4f2",
       "range": {
         "startLine": 501,
         "startChar": 2,

@@ -22,6 +22,30 @@
       "revId": "0e50cae7eab0ed4a0d0ef8173d7b72b78f3e13c3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c22a62d0_f80c8f34",
+        "filename": "src/chromiumos/tast/control/control.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1000042
+      },
+      "writtenOn": "2019-06-06T23:33:56Z",
+      "side": 1,
+      "message": "nice catch :-)",
+      "parentUuid": "d7662160_68e0fd5a",
+      "range": {
+        "startLine": 49,
+        "startChar": 35,
+        "endLine": 49,
+        "endChar": 43
+      },
+      "revId": "0e50cae7eab0ed4a0d0ef8173d7b72b78f3e13c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

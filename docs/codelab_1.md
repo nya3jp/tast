@@ -1,4 +1,4 @@
-# Tast Codelab #1: platform.DateFormat
+# Tast Codelab #1: platform.DateFormat (go/tast-codelab-1)
 
 This codelab walks through the creation of a short Tast test that checks that
 the `date` command prints the expected output when executed with various

@@ -1,4 +1,4 @@
-# Tast Codelab #2: kernel.LogMount
+# Tast Codelab #2: kernel.LogMount (go/tast-codelab-2)
 
 > This document assumes that you've already gone through [Codelab #1].
 

@@ -69,7 +69,7 @@ type localTestData struct {
 // newLocalTestData performs setup for tests that exercise the local function.
 // It calls t.Fatal on error.
 func newLocalTestData(t *gotesting.T) *localTestData {
-	td := localTestData{expRunCmd: localRunnerPath, bootID: defaultBootID}
+	td := localTestData{expRunCmd: "exec /bin/sh -c " + localRunnerPath, bootID: defaultBootID}
 	td.srvData = test.NewTestData(userKey, hostKey, td.handleExec)
 	td.cfg.KeyFile = td.srvData.UserKeyFile
 
@@ -119,11 +119,7 @@ func (td *localTestData) handleExec(req *test.ExecReq) {
 	defer func() { td.nextCopyCmd = "" }()
 
 	switch req.Cmd {
-	// TODO(derat): Remove this after 20180901: https://crbug.com/857485
-	case "test -d " + shutil.Escape(filepath.Join(localDataBuiltinDir, localBundlePkgPathPrefix)):
-		req.Start(true)
-		req.End(0)
-	case "cat /proc/sys/kernel/random/boot_id":
+	case "exec /bin/sh -c " + shutil.Escape("cat /proc/sys/kernel/random/boot_id"):
 		req.Start(true)
 		fmt.Fprintln(req, td.bootID)
 		req.End(0)
@@ -142,14 +138,14 @@ func (td *localTestData) handleExec(req *test.ExecReq) {
 	case td.nextCopyCmd:
 		req.Start(true)
 		req.End(req.RunRealCmd())
-	case "sync":
+	case "exec /bin/sh -c sync":
 		req.Start(true)
 		req.End(0)
-	case "journalctl -q -b " + strings.Replace(defaultBootID, "-", "", -1) + " -n 1000":
+	case "exec /bin/sh -c " + shutil.Escape("journalctl -q -b "+strings.Replace(defaultBootID, "-", "", -1)+" -n 1000"):
 		req.Start(true)
 		io.WriteString(req, td.journal)
 		req.End(0)
-	case "cat /sys/fs/pstore/console-ramoops", "cat /sys/fs/pstore/console-ramoops-0":
+	case "exec /bin/sh -c " + shutil.Escape("cat /sys/fs/pstore/console-ramoops"), "exec /bin/sh -c " + shutil.Escape("cat /sys/fs/pstore/console-ramoops-0"):
 		req.Start(true)
 		io.WriteString(req, td.ramOops)
 		req.End(0)
@@ -229,11 +225,12 @@ func TestLocalProxy(t *gotesting.T) {
 
 	// Proxy environment variables should be prepended to the local_test_runner command line.
 	// (The variables are added in this order in local.go.)
-	td.expRunCmd = strings.Join([]string{
+	td.expRunCmd = "exec /bin/sh -c " + shutil.Escape(strings.Join([]string{
 		fmt.Sprintf("HTTP_PROXY=" + shutil.Escape(httpProxy)),
 		fmt.Sprintf("HTTPS_PROXY=" + shutil.Escape(httpsProxy)),
 		fmt.Sprintf("NO_PROXY=" + shutil.Escape(noProxy)),
-	}, " ") + " " + td.expRunCmd
+		localRunnerPath,
+	}, " "))
 
 	if status, _ := local(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
 		t.Errorf("local() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())

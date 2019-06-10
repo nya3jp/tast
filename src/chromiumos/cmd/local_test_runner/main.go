@@ -54,13 +54,19 @@ func main() {
 			// The one exception is tast_vm, which is inserted by VM builders via -extrauseflags.
 			"alt_syscall": `!"kernel-3_8" && !"kernel-3_10"`,
 			"amd64":       "amd64",
-			// TODO(b/123675239): The arcvm flag is used here to disable all Android tests because
-			// they currently make many container-specific assumptions and therefore fail.
+			// There are three types of android dependency to differentiate between
+			// ARC and ARCVM guest.
 			// master-arc-dev and qt are under development and not stable to run Tast tests.
-			"android": `arc && !arcvm && !"android-container-master-arc-dev" && !"android-container-qt"`,
+			"android":      `arc && !arcvm && !"android-container-master-arc-dev" && !"android-container-qt"`,
+			"android_vm":   `arc && arcvm && !"android-container-master-arc-dev" && !"android-container-qt"`,
+			"android_both": `arc && !"android-container-master-arc-dev" && !"android-container-qt"`,
 			// Run all ARC versions, including master-arc-dev and qt.
 			"android_all":       `arc && !arcvm`,
-			"android_p":         `arc && "android-container-pi" && !arcvm`,
+			"android_all_vm":    `arc && arcvm`,
+			"android_all_both":  `arc`,
+			"android_p":         `arc && !arcvm && "android-container-pi"`,
+			"android_p_vm":      `arc && arcvm && "android-container-pi"`,
+			"android_p_both":    `arc && "android-container-pi"`,
 			"arc_camera3":       `"arc-camera3"`,
 			"aslr":              "!asan",                                                     // ASan instrumentation breaks ASLR
 			"audio_play":        "!betty && !tast_vm && !veyron_rialto && !(fizz && moblab)", // VMs and some boards don't have a speaker

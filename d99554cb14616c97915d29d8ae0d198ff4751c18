@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "93085423_ecfaabfb",
+        "filename": "src/chromiumos/cmd/tast/run/devserver.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-06-10T07:43:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ab512394_dced865a",
+      "range": {
+        "startLine": 62,
+        "startChar": 18,
+        "endLine": 62,
+        "endChar": 27
+      },
+      "revId": "d99554cb14616c97915d29d8ae0d198ff4751c18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e6cb4aba_97f9dd21",
         "filename": "src/chromiumos/cmd/tast/run/devserver.go",
         "patchSetId": 1
@@ -71,6 +95,30 @@
     },
     {
       "key": {
+        "uuid": "8e607a6a_a1623b74",
+        "filename": "src/chromiumos/cmd/tast/run/devserver.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-06-10T07:43:38Z",
+      "side": 1,
+      "message": "Thanks for pointing this out, I was a bit lazy about URL manipulation :(\n\nUnfortunately path package is not suitable for absolute URLs: https://play.golang.org/p/uuzt--ZBHe6\n\nnet/url.URL.Parse would be a better choice here. I\u0027ve updated the code.",
+      "parentUuid": "aa4878b3_06f2800a",
+      "range": {
+        "startLine": 138,
+        "startChar": 58,
+        "endLine": 138,
+        "endChar": 59
+      },
+      "revId": "d99554cb14616c97915d29d8ae0d198ff4751c18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ae87ba5b_406f4b00",
         "filename": "src/chromiumos/tast/devserver/real.go",
         "patchSetId": 1
@@ -91,6 +139,30 @@
       "revId": "d99554cb14616c97915d29d8ae0d198ff4751c18",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "243d1ac7_c930acda",
+        "filename": "src/chromiumos/tast/devserver/real.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-06-10T07:43:38Z",
+      "side": 1,
+      "message": "Yes, added a comment. This is just a sanity check and I\u0027m not sure about the exact situation where this failed.",
+      "parentUuid": "ae87ba5b_406f4b00",
+      "range": {
+        "startLine": 182,
+        "startChar": 13,
+        "endLine": 182,
+        "endChar": 24
+      },
+      "revId": "d99554cb14616c97915d29d8ae0d198ff4751c18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -117,6 +189,30 @@
     },
     {
       "key": {
+        "uuid": "42979e08_b0f7fc73",
+        "filename": "src/chromiumos/tast/devserver/real.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 250,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-06-10T07:43:38Z",
+      "side": 1,
+      "message": "Yes, maybe. Done.",
+      "parentUuid": "b2f12429_88eccef8",
+      "range": {
+        "startLine": 250,
+        "startChar": 9,
+        "endLine": 250,
+        "endChar": 18
+      },
+      "revId": "d99554cb14616c97915d29d8ae0d198ff4751c18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d5914e5f_65eb4c41",
         "filename": "src/chromiumos/tast/devserver/real.go",
         "patchSetId": 1
@@ -137,6 +233,30 @@
       "revId": "d99554cb14616c97915d29d8ae0d198ff4751c18",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5479467a_6af18b99",
+        "filename": "src/chromiumos/tast/devserver/real.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 256,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-06-10T07:43:38Z",
+      "side": 1,
+      "message": "Yep, that sounds a good practice! Filed crbug.com/972501.",
+      "parentUuid": "d5914e5f_65eb4c41",
+      "range": {
+        "startLine": 256,
+        "startChar": 11,
+        "endLine": 256,
+        "endChar": 14
+      },
+      "revId": "d99554cb14616c97915d29d8ae0d198ff4751c18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -163,6 +283,30 @@
     },
     {
       "key": {
+        "uuid": "840ca0e1_13035208",
+        "filename": "src/chromiumos/tast/devserver/real_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-06-10T07:43:38Z",
+      "side": 1,
+      "message": "Introduced parseArchiveURL here too.",
+      "parentUuid": "f33667e8_e791e5cf",
+      "range": {
+        "startLine": 84,
+        "startChar": 33,
+        "endLine": 84,
+        "endChar": 34
+      },
+      "revId": "d99554cb14616c97915d29d8ae0d198ff4751c18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0dfc8534_140c8a16",
         "filename": "src/chromiumos/tast/devserver/real_test.go",
         "patchSetId": 1
@@ -183,6 +327,30 @@
       "revId": "d99554cb14616c97915d29d8ae0d198ff4751c18",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "43054b42_981d8bfe",
+        "filename": "src/chromiumos/tast/devserver/real_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-06-10T07:43:38Z",
+      "side": 1,
+      "message": "Indeed, done.",
+      "parentUuid": "0dfc8534_140c8a16",
+      "range": {
+        "startLine": 91,
+        "startChar": 4,
+        "endLine": 91,
+        "endChar": 6
+      },
+      "revId": "d99554cb14616c97915d29d8ae0d198ff4751c18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

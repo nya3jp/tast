@@ -179,6 +179,12 @@ func (c *RealClient) DownloadGS(ctx context.Context, w io.Writer, gsURL string) 
 		}
 		return 0, fmt.Errorf("failed to stage on %s: %v", dsURL, err)
 	}
+
+	// Do a sanity check that the file has been staged successfully.
+	if err := c.checkStaged(ctx, dsURL, bucket, path); err != nil {
+		return 0, fmt.Errorf("failed to stage on %s: %v", dsURL, err)
+	}
+
 	size, err = c.downloadFrom(ctx, w, dsURL, bucket, path)
 	if err != nil {
 		return 0, fmt.Errorf("failed to download from %s: %v", dsURL, err)
@@ -217,14 +223,19 @@ func (c *RealClient) findStaged(ctx context.Context, bucket, path string) (dsURL
 }
 
 // checkStaged checks if a file is staged on the devserver at dsURL.
-// It returned errNotStaged if a file is not yet staged.
-func (c *RealClient) checkStaged(ctx context.Context, dsURL, bucket, path string) error {
-	staticURL, err := url.Parse(dsURL)
-	if err != nil {
-		return err
+// It returns errNotStaged if a file is not yet staged.
+func (c *RealClient) checkStaged(ctx context.Context, dsURL, bucket, gsPath string) error {
+	gsDirURL := url.URL{
+		Scheme: "gs",
+		Host:   bucket,
+		Path:   path.Dir(gsPath),
 	}
-	staticURL.Path += "/static/" + path
-	req, err := http.NewRequest("HEAD", staticURL.String(), nil)
+	values := url.Values{
+		"archive_url": {gsDirURL.String()},
+		"files":       {path.Base(gsPath)},
+	}
+	checkURL := fmt.Sprintf("%s/is_staged?%s", dsURL, values.Encode())
+	req, err := http.NewRequest("GET", checkURL, nil)
 	if err != nil {
 		return err
 	}
@@ -238,9 +249,21 @@ func (c *RealClient) checkStaged(ctx context.Context, dsURL, bucket, path string
 
 	switch res.StatusCode {
 	case http.StatusOK:
-		return nil
-	case http.StatusNotFound:
-		return errNotStaged
+		b, err := ioutil.ReadAll(res.Body)
+		if err != nil {
+			return fmt.Errorf("failed to read response body: %v", err)
+		}
+		switch val := strings.TrimSpace(string(b)); val {
+		case "True":
+			return nil
+		case "False":
+			return errNotStaged
+		case "This is an ephemeral devserver provided by Tast.":
+			// TODO(nya): Remove this check after 20190710.
+			return fmt.Errorf("tast command is old; please run ./update_chroot")
+		default:
+			return fmt.Errorf("got response %q", val)
+		}
 	case http.StatusInternalServerError:
 		out, _ := ioutil.ReadAll(res.Body)
 		err := scrapeInternalError(out)

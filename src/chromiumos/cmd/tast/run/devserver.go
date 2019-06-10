@@ -58,6 +58,7 @@ func newEphemeralDevserver(lis net.Listener, cacheDir string) (*ephemeralDevserv
 
 	mux.HandleFunc("/", s.handleIndex)
 	mux.HandleFunc("/check_health", s.handleCheckHealth)
+	mux.HandleFunc("/is_staged", s.handleIsStaged)
 	mux.HandleFunc("/stage", s.handleStage)
 	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(cacheDir))))
 
@@ -83,10 +84,38 @@ func (s *ephemeralDevserver) handleCheckHealth(w http.ResponseWriter, r *http.Re
 	io.WriteString(w, "{}")
 }
 
+// handleIsStaged serves requests to check if a file is staged.
+func (s *ephemeralDevserver) handleIsStaged(w http.ResponseWriter, r *http.Request) {
+	if err := func() error {
+		q := r.URL.Query()
+		// We only allow single file specified in &files=.
+		gsURL := strings.TrimRight(q.Get("archive_url"), "/") + "/" + q.Get("files")
+
+		relPath, err := parseGSURL(gsURL)
+		if err != nil {
+			return err
+		}
+		savePath := filepath.Join(s.cacheDir, relPath)
+
+		if _, err := os.Stat(savePath); err == nil {
+			io.WriteString(w, "True")
+		} else if os.IsNotExist(err) {
+			io.WriteString(w, "False")
+		} else {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		writeError(w, err)
+		return
+	}
+}
+
 // handleStage serves requests to stage (i.e. download and cache) a file.
 func (s *ephemeralDevserver) handleStage(w http.ResponseWriter, r *http.Request) {
 	if err := func() error {
 		q := r.URL.Query()
+		// We only allow single file specified in &files=.
 		gsURL := strings.TrimRight(q.Get("archive_url"), "/") + "/" + q.Get("files")
 
 		relPath, err := parseGSURL(gsURL)

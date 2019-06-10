@@ -10,6 +10,7 @@ import (
 	"errors"
 	"fmt"
 	"html"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -54,6 +55,7 @@ func newFakeServer(up bool) *fakeServer {
 	}
 	mux.Handle("/check_health", http.HandlerFunc(s.handleCheckHealth))
 	mux.Handle("/stage", http.HandlerFunc(s.handleStage))
+	mux.Handle("/is_staged", http.HandlerFunc(s.handleIsStaged))
 	mux.Handle("/static/", http.HandlerFunc(s.handleStatic))
 	return s
 }
@@ -69,11 +71,38 @@ func (s *fakeServer) handleCheckHealth(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *fakeServer) handleStage(w http.ResponseWriter, r *http.Request) {
-	q := r.URL.Query()
-	gsURL := q.Get("archive_url") + "/" + url.PathEscape(q.Get("files"))
-	if err := s.stage(gsURL); err != nil {
+	if err := func() error {
+		q := r.URL.Query()
+		gsURL, err := parseArchiveURL(q.Get("archive_url"), q.Get("files"))
+		fmt.Fprintf(os.Stderr, "archive_url=%s\tfiles=%s\tgsURL=%s\n", q.Get("archive_url"), q.Get("files"), gsURL)
+		if err != nil {
+			return err
+		}
+		return s.stage(gsURL)
+	}(); err != nil {
 		respondError(w, err)
-		return
+	}
+}
+
+func (s *fakeServer) handleIsStaged(w http.ResponseWriter, r *http.Request) {
+	if err := func() error {
+		q := r.URL.Query()
+		gsURL, err := parseArchiveURL(q.Get("archive_url"), q.Get("files"))
+		if err != nil {
+			return err
+		}
+		_, stagePath, err := parseGSURL(gsURL)
+		if err != nil {
+			return err
+		}
+		if _, ok := s.staged[stagePath]; ok {
+			io.WriteString(w, "True")
+		} else {
+			io.WriteString(w, "False")
+		}
+		return nil
+	}(); err != nil {
+		respondError(w, err)
 	}
 }
 
@@ -125,6 +154,21 @@ func (s *fakeServer) unstage(gsURL string) error {
 func respondError(w http.ResponseWriter, err error) {
 	w.WriteHeader(http.StatusInternalServerError)
 	fmt.Fprintf(w, "<pre>\n%s\n</pre>", html.EscapeString(err.Error()))
+}
+
+func parseArchiveURL(dir, name string) (string, error) {
+	d, err := url.Parse(dir)
+	if err != nil {
+		return "", err
+	}
+	if !strings.HasSuffix(d.Path, "/") {
+		d.Path += "/"
+	}
+	f, err := d.Parse(url.PathEscape(name))
+	if err != nil {
+		return "", err
+	}
+	return f.String(), nil
 }
 
 // pathUnescape unescapes the path part of a URL. It fails if the path contains %2F.

@@ -2,6 +2,126 @@
   "comments": [
     {
       "key": {
+        "uuid": "f82bb8a0_8040f22c",
+        "filename": "src/chromiumos/cmd/tast/run/devserver.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-06-10T14:29:08Z",
+      "side": 1,
+      "message": "IIUC, \"files\" can have multiple files.\nI\u0027m ok to move forward with this CL, because it is not a regression for \"handleStage\", but could you at least add TODO, and fix it in another CL?\n\nOr, if it is intentional, could you explicitly document it somewhere?",
+      "revId": "81dc76187cdf55354f885d009ff0866d841f33b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5992198d_cd997896",
+        "filename": "src/chromiumos/cmd/tast/run/devserver.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-06-10T14:29:08Z",
+      "side": 1,
+      "message": "Could you add a brief comment what this does?",
+      "revId": "81dc76187cdf55354f885d009ff0866d841f33b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ed38a644_76ce6ac1",
+        "filename": "src/chromiumos/cmd/tast/run/devserver_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-06-10T14:29:08Z",
+      "side": 1,
+      "message": "nit: Fatal, because if this failed, checking the staged status does not seem to make sense?",
+      "range": {
+        "startLine": 123,
+        "startChar": 4,
+        "endLine": 123,
+        "endChar": 9
+      },
+      "revId": "81dc76187cdf55354f885d009ff0866d841f33b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "de04a330_86299a0d",
+        "filename": "src/chromiumos/tast/devserver/real.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 252,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-06-10T14:29:08Z",
+      "side": 1,
+      "message": "Could you handle error properly?",
+      "range": {
+        "startLine": 252,
+        "startChar": 5,
+        "endLine": 252,
+        "endChar": 6
+      },
+      "revId": "81dc76187cdf55354f885d009ff0866d841f33b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "191a678e_21eeda5a",
+        "filename": "src/chromiumos/tast/devserver/real.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 254,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-06-10T14:29:08Z",
+      "side": 1,
+      "message": "nit/style:\n\nswitch val :\u003d strings.TrimSpace(...) {\n  ...\n}",
+      "range": {
+        "startLine": 253,
+        "startChar": 2,
+        "endLine": 254,
+        "endChar": 14
+      },
+      "revId": "81dc76187cdf55354f885d009ff0866d841f33b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1280c33f_811bdb90",
+        "filename": "src/chromiumos/tast/devserver/real_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-06-10T14:29:08Z",
+      "side": 1,
+      "message": "Is this printf debugging log? If so, could you remove?",
+      "revId": "81dc76187cdf55354f885d009ff0866d841f33b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "3296ac4f_ccd0f422",
         "filename": "src/chromiumos/tast/devserver/real_test.go",
         "patchSetId": 2
@@ -42,6 +162,23 @@
         "endLine": 159,
         "endChar": 20
       },
+      "revId": "81dc76187cdf55354f885d009ff0866d841f33b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8378aef5_9173b546",
+        "filename": "src/chromiumos/tast/devserver/real_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-06-10T14:29:08Z",
+      "side": 1,
+      "message": "Looks copy of the one in devserver.go.\nCould you refactor to share the code?",
       "revId": "81dc76187cdf55354f885d009ff0866d841f33b1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

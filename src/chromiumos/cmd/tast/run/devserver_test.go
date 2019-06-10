@@ -31,6 +31,24 @@ func (td *ephemeralDevserverTestData) Close() error {
 	return td.s.Close(context.Background())
 }
 
+func (td *ephemeralDevserverTestData) Get(path string) (string, error) {
+	res, err := http.Get(td.url + path)
+	if err != nil {
+		return "", fmt.Errorf("GET %s failed: %v", path, err)
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("GET %s returned %d; want %d", path, res.StatusCode, http.StatusOK)
+	}
+
+	b, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return "", fmt.Errorf("GET %s returned malformed response: %v", path, err)
+	}
+	return string(b), nil
+}
+
 func newEphemeralDevserverTestData(t *testing.T, gsutil string) *ephemeralDevserverTestData {
 	success := false
 
@@ -76,14 +94,8 @@ func TestEphemeralDevserverCheckHealth(t *testing.T) {
 	td := newEphemeralDevserverTestData(t, "#!/bin/true")
 	defer td.Close()
 
-	url := td.url + "/check_health"
-	res, err := http.Get(url)
-	if err != nil {
-		t.Fatalf("GET %s failed: %v", url, err)
-	}
-	res.Body.Close()
-	if res.StatusCode != http.StatusOK {
-		t.Fatalf("GET %s returned %d; want %d", url, res.StatusCode, http.StatusOK)
+	if _, err := td.Get("/check_health"); err != nil {
+		t.Error("Checking devserver health failed: ", err)
 	}
 }
 
@@ -94,29 +106,35 @@ echo -n "$*" > ${!#}
 `)
 	defer td.Close()
 
-	url := td.url + "/stage?archive_url=gs://chromiumos-test-assets-public/path/to&files=file.bin"
-	res, err := http.Get(url)
-	if err != nil {
-		t.Fatalf("GET %s failed: %v", url, err)
-	}
-	res.Body.Close()
-	if res.StatusCode != http.StatusOK {
-		t.Fatalf("GET %s returned %d; want %d", url, res.StatusCode, http.StatusOK)
+	const (
+		params     = "archive_url=gs://chromiumos-test-assets-public/path/to&files=file.bin"
+		checkPath  = "/is_staged?" + params
+		stagePath  = "/stage?" + params
+		staticPath = "/static/path/to/file.bin"
+	)
+
+	if status, err := td.Get(checkPath); err != nil {
+		t.Error("Checking staged status failed: ", err)
+	} else if exp := "False"; status != exp {
+		t.Errorf("Checking staged status failed: got %q, want %q", status, exp)
 	}
 
-	url = td.url + "/static/path/to/file.bin"
-	res, err = http.Get(url)
-	if err != nil {
-		t.Fatalf("GET %s failed: %v", url, err)
+	if _, err := td.Get(stagePath); err != nil {
+		t.Fatal("Staging request failed: ", err)
 	}
-	out, _ := ioutil.ReadAll(res.Body)
-	res.Body.Close()
-	if res.StatusCode != http.StatusOK {
-		t.Fatalf("GET %s returned %d; want %d", url, res.StatusCode, http.StatusOK)
+
+	if status, err := td.Get(checkPath); err != nil {
+		t.Error("Checking staged status failed: ", err)
+	} else if exp := "True"; status != exp {
+		t.Errorf("Checking staged status failed: got %q, want %q", status, exp)
+	}
+
+	args, err := td.Get(staticPath)
+	if err != nil {
+		t.Fatal("Static file request failed: ", err)
 	}
 
 	const exp = "-m cp gs://chromiumos-test-assets-public/path/to/file.bin "
-	args := string(out)
 	if !strings.HasPrefix(args, exp) {
 		t.Fatalf("Unexpected gsutil parameters: got %q, want prefix %q", args, exp)
 	}

@@ -10,6 +10,7 @@ import (
 	"errors"
 	"fmt"
 	"html"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -53,6 +54,7 @@ func newFakeServer(up bool) *fakeServer {
 		dlCounter: make(map[string]int),
 	}
 	mux.Handle("/check_health", http.HandlerFunc(s.handleCheckHealth))
+	mux.Handle("/is_staged", http.HandlerFunc(s.handleIsStaged))
 	mux.Handle("/stage", http.HandlerFunc(s.handleStage))
 	mux.Handle("/static/", http.HandlerFunc(s.handleStatic))
 	return s
@@ -68,12 +70,32 @@ func (s *fakeServer) handleCheckHealth(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *fakeServer) handleStage(w http.ResponseWriter, r *http.Request) {
-	q := r.URL.Query()
-	gsURL := q.Get("archive_url") + "/" + url.PathEscape(q.Get("files"))
-	if err := s.stage(gsURL); err != nil {
+func (s *fakeServer) handleIsStaged(w http.ResponseWriter, r *http.Request) {
+	if err := func() error {
+		q := r.URL.Query()
+		gsURL := q.Get("archive_url") + "/" + url.PathEscape(q.Get("files"))
+		_, stagePath, err := parseGSURL(gsURL)
+		if err != nil {
+			return err
+		}
+		if _, ok := s.staged[stagePath]; ok {
+			io.WriteString(w, "True")
+		} else {
+			io.WriteString(w, "False")
+		}
+		return nil
+	}(); err != nil {
 		respondError(w, err)
-		return
+	}
+}
+
+func (s *fakeServer) handleStage(w http.ResponseWriter, r *http.Request) {
+	if err := func() error {
+		q := r.URL.Query()
+		gsURL := q.Get("archive_url") + "/" + url.PathEscape(q.Get("files"))
+		return s.stage(gsURL)
+	}(); err != nil {
+		respondError(w, err)
 	}
 }
 

@@ -59,6 +59,7 @@ func newEphemeralDevserver(lis net.Listener, cacheDir string) (*ephemeralDevserv
 	mux.HandleFunc("/", s.handleIndex)
 	mux.HandleFunc("/check_health", s.handleCheckHealth)
 	mux.HandleFunc("/stage", s.handleStage)
+	mux.HandleFunc("/is_staged", s.handleIsStaged)
 	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(cacheDir))))
 
 	go s.server.Serve(lis)
@@ -128,6 +129,32 @@ func (s *ephemeralDevserver) handleStage(w http.ResponseWriter, r *http.Request)
 	}
 
 	io.WriteString(w, "Success")
+}
+
+// handleIsStaged serves requests to check if a file is staged.
+func (s *ephemeralDevserver) handleIsStaged(w http.ResponseWriter, r *http.Request) {
+	if err := func() error {
+		q := r.URL.Query()
+		gsURL := strings.TrimRight(q.Get("archive_url"), "/") + "/" + q.Get("files")
+
+		relPath, err := parseGSURL(gsURL)
+		if err != nil {
+			return err
+		}
+		savePath := filepath.Join(s.cacheDir, relPath)
+
+		if _, err := os.Stat(savePath); err == nil {
+			io.WriteString(w, "True")
+		} else if os.IsNotExist(err) {
+			io.WriteString(w, "False")
+		} else {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		writeError(w, err)
+		return
+	}
 }
 
 // writeError responds to an HTTP request by 500 Internal Server Error and

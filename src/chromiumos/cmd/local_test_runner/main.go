@@ -54,17 +54,20 @@ func main() {
 			// The one exception is tast_vm, which is inserted by VM builders via -extrauseflags.
 			"alt_syscall": `!"kernel-3_8" && !"kernel-3_10"`,
 			"amd64":       "amd64",
-			// TODO(b/123675239): The arcvm flag is used here to disable all Android tests because
-			// they currently make many container-specific assumptions and therefore fail.
+			// There are two types of android dependency to differentiate between
+			// ARC and ARCVM guest.
 			// master-arc-dev is under development and not stable to run Tast tests.
-			"android": `arc && !arcvm && !"android-container-master-arc-dev"`,
+			"android":    `arc && !arcvm && !"android-container-master-arc-dev"`,
+			"android_vm": `arcvm && !"android-container-master-arc-dev"`,
 			// Run all ARC versions, including master-arc-dev.
-			"android_all":  `arc && !arcvm`,
-			"android_p":    `arc && "android-container-pi" && !arcvm`,
-			"arc_camera3":  `"arc-camera3"`,
-			"aslr":         "!asan",                                                     // ASan instrumentation breaks ASLR
-			"audio_play":   "!betty && !tast_vm && !veyron_rialto && !(fizz && moblab)", // VMs and some boards don't have a speaker
-			"audio_record": "internal_mic && !tast_vm",                                  // VMs don't have a mic
+			"android_all":    `arc && !arcvm`,
+			"android_all_vm": `arcvm`,
+			"android_p":      `arc && "android-container-pi" && !arcvm`,
+			"android_p_vm":   `arcvm && "android-container-pi"`,
+			"arc_camera3":    `"arc-camera3"`,
+			"aslr":           "!asan",                                                     // ASan instrumentation breaks ASLR
+			"audio_play":     "!betty && !tast_vm && !veyron_rialto && !(fizz && moblab)", // VMs and some boards don't have a speaker
+			"audio_record":   "internal_mic && !tast_vm",                                  // VMs don't have a mic
 			// TODO(b/73436929) Grunt cannot run 720p due to performance issue,
 			// we should remove grunt after hardware encoding supported.
 			// daisy variants' cameras don't support 1280x720.

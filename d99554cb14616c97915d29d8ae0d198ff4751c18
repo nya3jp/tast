@@ -1,0 +1,165 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ab512394_dced865a",
+        "filename": "src/chromiumos/cmd/tast/run/devserver.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-06-10T06:11:19Z",
+      "side": 1,
+      "message": "nit: sort?",
+      "range": {
+        "startLine": 62,
+        "startChar": 18,
+        "endLine": 62,
+        "endChar": 27
+      },
+      "revId": "d99554cb14616c97915d29d8ae0d198ff4751c18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e6cb4aba_97f9dd21",
+        "filename": "src/chromiumos/cmd/tast/run/devserver.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-06-10T06:11:19Z",
+      "side": 1,
+      "message": "neat trick!",
+      "range": {
+        "startLine": 136,
+        "startChar": 11,
+        "endLine": 136,
+        "endChar": 15
+      },
+      "revId": "d99554cb14616c97915d29d8ae0d198ff4751c18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "aa4878b3_06f2800a",
+        "filename": "src/chromiumos/cmd/tast/run/devserver.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-06-10T06:11:19Z",
+      "side": 1,
+      "message": "How about using path.Join? https://golang.org/pkg/path/\nI think then TrimRight is not necessary.",
+      "range": {
+        "startLine": 138,
+        "startChar": 58,
+        "endLine": 138,
+        "endChar": 59
+      },
+      "revId": "d99554cb14616c97915d29d8ae0d198ff4751c18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ae87ba5b_406f4b00",
+        "filename": "src/chromiumos/tast/devserver/real.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-06-10T06:11:19Z",
+      "side": 1,
+      "message": "Could you elaborate in what circumstance, stage returns no error but checkStaged returns error?",
+      "range": {
+        "startLine": 182,
+        "startChar": 13,
+        "endLine": 182,
+        "endChar": 24
+      },
+      "revId": "d99554cb14616c97915d29d8ae0d198ff4751c18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b2f12429_88eccef8",
+        "filename": "src/chromiumos/tast/devserver/real.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 250,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-06-10T06:11:19Z",
+      "side": 1,
+      "message": "strings.TrimSpace(string(b)) is more robust?",
+      "range": {
+        "startLine": 250,
+        "startChar": 9,
+        "endLine": 250,
+        "endChar": 18
+      },
+      "revId": "d99554cb14616c97915d29d8ae0d198ff4751c18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d5914e5f_65eb4c41",
+        "filename": "src/chromiumos/tast/devserver/real.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 256,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-06-10T06:11:19Z",
+      "side": 1,
+      "message": "nit: could you file a crbug setting NextAction to this date?",
+      "range": {
+        "startLine": 256,
+        "startChar": 11,
+        "endLine": 256,
+        "endChar": 14
+      },
+      "revId": "d99554cb14616c97915d29d8ae0d198ff4751c18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f33667e8_e791e5cf",
+        "filename": "src/chromiumos/tast/devserver/real_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-06-10T06:11:19Z",
+      "side": 1,
+      "message": "use path.Join ?",
+      "range": {
+        "startLine": 84,
+        "startChar": 33,
+        "endLine": 84,
+        "endChar": 34
+      },
+      "revId": "d99554cb14616c97915d29d8ae0d198ff4751c18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

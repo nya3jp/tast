@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3296ac4f_ccd0f422",
+        "filename": "src/chromiumos/tast/devserver/real_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-06-10T08:39:58Z",
+      "side": 1,
+      "message": "nit: move it above handleStage for consistency with devserver.go",
+      "range": {
+        "startLine": 87,
+        "startChar": 21,
+        "endLine": 87,
+        "endChar": 35
+      },
+      "revId": "81dc76187cdf55354f885d009ff0866d841f33b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "059f96ce_e2de1543",
+        "filename": "src/chromiumos/tast/devserver/real_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-06-10T08:39:58Z",
+      "side": 1,
+      "message": "ditto.",
+      "range": {
+        "startLine": 159,
+        "startChar": 5,
+        "endLine": 159,
+        "endChar": 20
+      },
+      "revId": "81dc76187cdf55354f885d009ff0866d841f33b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

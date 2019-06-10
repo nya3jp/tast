@@ -119,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "7f124fe3_827c32de",
+        "filename": "src/chromiumos/cmd/tast/run/devserver.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-06-10T08:39:58Z",
+      "side": 1,
+      "message": "Ugg. That\u0027s sad... Sorry I didn\u0027t notice it.\nHonestly I feel original one was easier to understand than this...\nThe name parseArchiveURL looks a specific function, but the arguments dir, name look generic.\nIf it\u0027s a generic function, I think it should be placed to a common directory as a library.\nWhat do you think about reverting the change, and add TODO and a bug to have a common function to concat url? (or place a common function in this CL)",
+      "parentUuid": "8e607a6a_a1623b74",
+      "range": {
+        "startLine": 138,
+        "startChar": 58,
+        "endLine": 138,
+        "endChar": 59
+      },
+      "revId": "d99554cb14616c97915d29d8ae0d198ff4751c18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ae87ba5b_406f4b00",
         "filename": "src/chromiumos/tast/devserver/real.go",
         "patchSetId": 1

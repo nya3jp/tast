@@ -66,6 +66,7 @@ The following software features are defined:
 *   `mosys` - Ability to run mosys command.
 *   `no_android` - The inability to run Android apps. This is the opposite of
     the `android` feature; DUTs will have exactly one of these two features.
+*   `no_asan` - Build was not built with Address Sanitizer. Similar to `aslr`.
 *   `no_symlink_mount` - Symlink mounting is disabled via the
     `CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT` kernel option.
 *   `oci` - The ability to use the `run_oci` program to execute code within

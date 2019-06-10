@@ -160,6 +160,29 @@
       "revId": "d99554cb14616c97915d29d8ae0d198ff4751c18",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0dfc8534_140c8a16",
+        "filename": "src/chromiumos/tast/devserver/real_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-06-10T06:20:13Z",
+      "side": 1,
+      "message": "nit: you can write\nif _, ok :\u003d s.staged[stagePath]; ok {",
+      "range": {
+        "startLine": 91,
+        "startChar": 4,
+        "endLine": 91,
+        "endChar": 6
+      },
+      "revId": "d99554cb14616c97915d29d8ae0d198ff4751c18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

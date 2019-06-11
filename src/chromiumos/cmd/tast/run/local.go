@@ -198,7 +198,7 @@ func pushBinaries(ctx context.Context, cfg *Config, hst *host.SSH) error {
 		dst := strings.TrimLeft(filepath.Join(cfg.localBundleDir, cfg.buildBundle), "/")
 		files[src] = dst
 	}
-	if cfg.forceBuildLocalRunner {
+	{
 		src := filepath.Join(path.Base(localRunnerPkg))
 		dst := strings.TrimLeft(cfg.localRunner, "/")
 		files[src] = dst

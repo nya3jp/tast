@@ -175,7 +175,7 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 		func(v int) { c.buildType = testType(v) }, "local")
 	f.Var(bt, "buildtype", fmt.Sprintf("type of tests to build (%s; default %q)", bt.QuotedValues(), bt.Default()))
 
-	f.StringVar(&c.localRunner, "localrunner", "/usr/local/bin/local_test_runner", "executable that runs local test bundles")
+	f.StringVar(&c.localRunner, "localrunner", "", "executable that runs local test bundles")
 	f.StringVar(&c.localBundleDir, "localbundledir", "", "directory containing builtin local test bundles")
 	f.StringVar(&c.localDataDir, "localdatadir", "", "directory containing builtin local test data")
 
@@ -253,6 +253,7 @@ func (c *Config) DeriveDefaults() error {
 	if c.build {
 		// If -build=true, use different paths than -build=false to avoid overwriting
 		// Portage-managed files.
+		setIfEmpty(&c.localRunner, "/usr/local/libexec/tast/bin_pushed/local_test_runner")
 		setIfEmpty(&c.localBundleDir, "/usr/local/libexec/tast/bundles/local_pushed")
 		setIfEmpty(&c.localDataDir, "/usr/local/share/tast/data_pushed")
 		setIfEmpty(&c.remoteBundleDir, filepath.Join(c.buildOutDir, larch, remoteBundleBuildSubdir))
@@ -260,6 +261,7 @@ func (c *Config) DeriveDefaults() error {
 		setIfEmpty(&c.remoteDataDir, filepath.Join(c.buildWorkspace, "src"))
 	} else {
 		// If -build=false, default values are paths to files installed by Portage.
+		setIfEmpty(&c.localRunner, "/usr/local/bin/local_test_runner")
 		setIfEmpty(&c.localBundleDir, "/usr/local/libexec/tast/bundles/local")
 		setIfEmpty(&c.localDataDir, "/usr/local/share/tast/data")
 		setIfEmpty(&c.remoteBundleDir, "/usr/libexec/tast/bundles/remote")

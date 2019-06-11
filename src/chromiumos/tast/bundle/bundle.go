@@ -232,7 +232,7 @@ func runTest(ctx context.Context, ew *eventWriter, args *Args, cfg *runConfig,
 	ew.TestStart(t)
 
 	// Attach a log that the test can use to report timing events.
-	timingLog := &timing.Log{}
+	timingLog := timing.NewLog()
 	ctx = timing.NewContext(ctx, timingLog)
 
 	testCfg := testing.TestConfig{

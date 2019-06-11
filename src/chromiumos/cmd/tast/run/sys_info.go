@@ -19,7 +19,8 @@ func getInitialSysInfo(ctx context.Context, cfg *Config) error {
 		return nil
 	}
 
-	defer timing.Start(ctx, "initial_sys_info").End()
+	ctx, st := timing.Start(ctx, "initial_sys_info")
+	defer st.End()
 	cfg.Logger.Debug("Getting initial system state")
 
 	hst, err := connectToTarget(ctx, cfg)
@@ -51,7 +52,8 @@ func collectSysInfo(ctx context.Context, cfg *Config) error {
 		return nil
 	}
 
-	defer timing.Start(ctx, "collect_sys_info").End()
+	ctx, st := timing.Start(ctx, "collect_sys_info")
+	defer st.End()
 	cfg.Logger.Debug("Collecting system information")
 
 	hst, err := connectToTarget(ctx, cfg)

@@ -686,12 +686,14 @@ func TestFoo(ctx context.Context, s *testing.State) {
 }
 
 func stageA(ctx context.Context) {
-    defer timing.Start(ctx, "stage_a").End()
+    ctx, st := timing.Start(ctx, "stage_a")
+    defer st.End()
     ...
 }
 
 func stageB(ctx context.Context) {
-    defer timing.Start(ctx, "stage_b").End()
+    ctx, st := timing.Start(ctx, "stage_b")
+    defer st.End()
     ...
 }
 ```

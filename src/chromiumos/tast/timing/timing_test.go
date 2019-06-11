@@ -19,31 +19,62 @@ func (c *fakeClock) now() time.Time {
 }
 
 func TestContext(t *testing.T) {
-	if cl, ok := FromContext(context.Background()); ok || cl != nil {
-		t.Errorf("FromContext(%v) = (%v, %v); want (%v, %v)", context.Background(), ok, cl, false, nil)
+	if cl, cs, ok := FromContext(context.Background()); ok || cl != nil || cs != nil {
+		t.Errorf("FromContext(%v) = (%v, %v, %v); want (%v, %v, %v)", context.Background(), cl, cs, ok, nil, nil, false)
 	}
 
-	l := &Log{}
+	l := NewLog()
 	ctx := NewContext(context.Background(), l)
-	if cl, ok := FromContext(ctx); !ok || cl != l {
-		t.Errorf("FromContext(%v) = (%v, %v); want (%v, %v)", ctx, ok, cl, true, l)
+	if cl, cs, ok := FromContext(ctx); !ok || cl != l || cs != l.Root {
+		t.Errorf("FromContext(%v) = (%v, %v, %v); want (%v, %v, %v)", ctx, cl, cs, ok, l, &l.Root, true)
 	}
 }
 
-func TestStart(t *testing.T) {
-	const name = "mystage"
-
+func TestStartNil(t *testing.T) {
 	// Start should be okay with receiving a context without a Log attached to it,
 	// and Stage.End should be okay with a nil receiver.
-	Start(context.Background(), name).End()
+	_, st := Start(context.Background(), "mystage")
+	st.End()
+}
 
-	l := &Log{}
+func TestStartSeq(t *testing.T) {
+	l := NewLog()
 	ctx := NewContext(context.Background(), l)
-	Start(ctx, name).End()
-	if len(l.Stages) != 1 {
-		t.Errorf("Got %d stages; want 1", len(l.Stages))
-	} else if l.Stages[0].Name != name {
-		t.Errorf("Got stage %q; want %q", l.Stages[0].Name, name)
+	ctx1, st1 := Start(ctx, "stage1")
+	_, st2 := Start(ctx1, "stage2")
+	st2.End()
+	st1.End()
+
+	if len(l.Root.Children) != 1 {
+		t.Errorf("Got %d stages; want 1", len(l.Root.Children))
+	} else if l.Root.Children[0].Name != "stage1" {
+		t.Errorf("Got stage %q; want %q", l.Root.Children[0].Name, "stage1")
+	}
+
+	if len(l.Root.Children[0].Children) != 1 {
+		t.Errorf("Got %d stages; want 1", len(l.Root.Children[0].Children))
+	} else if l.Root.Children[0].Children[0].Name != "stage2" {
+		t.Errorf("Got stage %q; want %q", l.Root.Children[0].Children[0].Name, "stage2")
+	}
+}
+
+func TestStartPar(t *testing.T) {
+	l := NewLog()
+	ctx := NewContext(context.Background(), l)
+	_, st1 := Start(ctx, "stage1")
+	_, st2 := Start(ctx, "stage2")
+	st2.End()
+	st1.End()
+
+	if len(l.Root.Children) != 2 {
+		t.Errorf("Got %d stages; want 2", len(l.Root.Children))
+	} else {
+		if l.Root.Children[0].Name != "stage1" {
+			t.Errorf("Got stage %q; want %q", l.Root.Children[0].Name, "stage1")
+		}
+		if l.Root.Children[1].Name != "stage2" {
+			t.Errorf("Got stage %q; want %q", l.Root.Children[1].Name, "stage2")
+		}
 	}
 }
 
@@ -56,13 +87,13 @@ func writeLog(t *testing.T, lg *Log) *bytes.Buffer {
 	return b
 }
 
-func Empty(t *testing.T) {
-	l := &Log{}
+func TestEmpty(t *testing.T) {
+	l := NewLog()
 	if !l.Empty() {
 		t.Error("Empty() initially returned true")
 	}
 
-	s := l.Start("stage")
+	s := l.StartTop("stage")
 	if l.Empty() {
 		t.Error("Empty() returned true with open stage")
 	}
@@ -76,16 +107,16 @@ func Empty(t *testing.T) {
 func TestStage_End(t *testing.T) {
 	// Create a log with a stage and a second nested stage, but only end the first stage.
 	clock := fakeClock{}
-	lg := &Log{fakeNow: clock.now}
-	s0 := lg.Start("0")
-	lg.Start("1")
+	lg := &Log{Root: &Stage{now: clock.now}}
+	s0 := lg.StartTop("0")
+	s0.StartChild("1")
 	s0.End()
 
-	// The effoct should be the same as if we actually closed the nested stage.
+	// The effect should be the same as if we actually closed the nested stage.
 	expClock := fakeClock{}
-	expLog := &Log{fakeNow: expClock.now}
-	s0 = expLog.Start("0")
-	expLog.Start("1").End()
+	expLog := &Log{Root: &Stage{now: expClock.now}}
+	s0 = expLog.StartTop("0")
+	s0.StartChild("1").End()
 	s0.End()
 
 	actBuf := writeLog(t, lg)
@@ -105,15 +136,15 @@ func TestWrite(t *testing.T) {
 	)
 
 	clock := fakeClock{}
-	l := &Log{fakeNow: clock.now}
+	l := &Log{Root: &Stage{now: clock.now}}
 
-	s0 := l.Start(name0)
-	s1 := l.Start(name1)
-	l.Start(name2).End()
+	s0 := l.StartTop(name0)
+	s1 := s0.StartChild(name1)
+	s1.StartChild(name2).End()
 	s1.End()
-	l.Start(name3).End()
+	s0.StartChild(name3).End()
 	s0.End()
-	l.Start(name4).End()
+	l.StartTop(name4).End()
 
 	// Check the expected indenting as well.
 	act := writeLog(t, l).String()
@@ -130,32 +161,32 @@ func TestWrite(t *testing.T) {
 }
 
 // addInnerStages adds two timing stages to lg, with an extra stage embedded in the first one.
-func addInnerStages(lg *Log) {
-	st := lg.Start("0")
-	lg.Start("1").End()
-	st.End()
-	lg.Start("2").End()
+func addInnerStages(s *Stage) {
+	c := s.StartChild("0")
+	c.StartChild("1").End()
+	c.End()
+	s.StartChild("2").End()
 }
 
 func TestImport(t *testing.T) {
 	// Create an outer log with a single still-open stage.
 	clock := fakeClock{}
-	outerLog := &Log{fakeNow: clock.now}
-	st := outerLog.Start("out")
+	outerLog := &Log{Root: &Stage{now: clock.now}}
+	st := outerLog.StartTop("out")
 
 	// Create an inner log, import it, and close the outer stage.
-	innerLog := &Log{fakeNow: clock.now}
-	addInnerStages(innerLog)
-	if err := outerLog.Import(innerLog); err != nil {
+	innerLog := &Log{Root: &Stage{now: clock.now}}
+	addInnerStages(innerLog.Root)
+	if err := st.Import(innerLog); err != nil {
 		t.Fatal("Import() reported error: ", err)
 	}
 	st.End()
 
 	// We expect to see the imported stages within the original stage.
 	clock = fakeClock{}
-	expLog := &Log{fakeNow: clock.now}
-	st = expLog.Start("out")
-	addInnerStages(expLog)
+	expLog := &Log{Root: &Stage{now: clock.now}}
+	st = expLog.StartTop("out")
+	addInnerStages(st)
 	st.End()
 
 	actBuf := writeLog(t, outerLog)
@@ -168,13 +199,14 @@ func TestImport(t *testing.T) {
 func TestImportOuterClosed(t *testing.T) {
 	// Create an outer log with a single closed stage.
 	clock := fakeClock{}
-	outerLog := &Log{fakeNow: clock.now}
-	outerLog.Start("out").End()
+	outerLog := &Log{Root: &Stage{now: clock.now}}
+	st := outerLog.StartTop("out")
+	st.End()
 
-	// Create an inner log. Importing it should fail since the outer log doesn't have an open stage.
-	innerLog := &Log{fakeNow: clock.now}
-	addInnerStages(innerLog)
-	if err := outerLog.Import(innerLog); err == nil {
+	// Create an inner log. Importing it should fail since st has ended.
+	innerLog := &Log{Root: &Stage{now: clock.now}}
+	addInnerStages(innerLog.Root)
+	if err := st.Import(innerLog); err == nil {
 		t.Error("Import() unexpectedly succeeded without an open stage")
 	}
 }

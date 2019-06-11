@@ -30,20 +30,14 @@ import (
 )
 
 const (
-	sshConnectTimeout time.Duration = 10 * time.Second // timeout for establishing SSH connection to DUT
-	sshPingTimeout    time.Duration = 5 * time.Second  // timeout for checking if SSH connection to DUT is open
-	sshRetryInterval  time.Duration = 5 * time.Second  // minimum time to wait between SSH connection attempts
+	sshConnectTimeout = 10 * time.Second // timeout for establishing SSH connection to DUT
+	sshPingTimeout    = 5 * time.Second  // timeout for checking if SSH connection to DUT is open
+	sshRetryInterval  = 5 * time.Second  // minimum time to wait between SSH connection attempts
 
-	localRunnerPath       = "/usr/local/bin/local_test_runner"          // on-device executable that runs test bundles
 	localRunnerPkg        = "chromiumos/cmd/local_test_runner"          // Go package for local_test_runner
 	localRunnerPortagePkg = "chromeos-base/tast-local-test-runner-9999" // Portage package for local_test_runner
 
-	localBundlePkgPathPrefix = "chromiumos/tast/local/bundles"                // Go package path prefix for test bundles
-	localBundleBuiltinDir    = "/usr/local/libexec/tast/bundles/local"        // on-device dir with preinstalled test bundles
-	localBundlePushDir       = "/usr/local/libexec/tast/bundles/local_pushed" // on-device dir with test bundles pushed by tast command
-
-	localDataBuiltinDir = "/usr/local/share/tast/data"        // on-device dir with preinstalled test data
-	localDataPushDir    = "/usr/local/share/tast/data_pushed" // on-device dir with test data pushed by tast command
+	localBundlePkgPathPrefix = "chromiumos/tast/local/bundles" // Go package path prefix for test bundles
 
 	// localBundleBuildSubdir is a subdirectory used for compiled local test bundles.
 	// Bundles are placed here rather than in the top-level build artifacts dir so that
@@ -68,15 +62,10 @@ func local(ctx context.Context, cfg *Config) (Status, []TestResult) {
 		}
 	}
 
-	var bundleGlob, dataDir string
 	if cfg.build {
-		if bundleGlob, err = buildAndPushBundle(ctx, cfg, hst); err != nil {
+		if err := buildAndPushBundle(ctx, cfg, hst); err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed building or pushing tests: %v", err), nil
 		}
-		dataDir = localDataPushDir
-	} else {
-		bundleGlob = filepath.Join(localBundleBuiltinDir, "*")
-		dataDir = localDataBuiltinDir
 	}
 
 	if len(cfg.devservers) == 0 && cfg.useEphemeralDevserver {
@@ -104,7 +93,7 @@ func local(ctx context.Context, cfg *Config) (Status, []TestResult) {
 
 	switch cfg.mode {
 	case ListTestsMode:
-		results, _, err := runLocalRunner(ctx, cfg, hst, cfg.Patterns, bundleGlob, dataDir)
+		results, _, err := runLocalRunner(ctx, cfg, hst, cfg.Patterns)
 		if err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to list tests: %v", err), results
 		}
@@ -116,7 +105,7 @@ func local(ctx context.Context, cfg *Config) (Status, []TestResult) {
 		if err := getInitialSysInfo(ctx, cfg); err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to get initial sysinfo: %v", err), nil
 		}
-		results, err := runLocalTests(ctx, cfg, hst, bundleGlob, dataDir)
+		results, err := runLocalTests(ctx, cfg, hst)
 		if err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to run tests: %v", err), results
 		}
@@ -175,14 +164,13 @@ func localBundlePackage(name string) string {
 }
 
 // buildAndPushBundle builds a local test bundle and pushes it to hst as dictated by cfg.
-// If tests are going to be executed (rather than printed), data files are also pushed
-// to localDataPushDir. A glob that should be passed to the runner to select the bundle
-// is returned. Progress is logged via cfg.Logger, but if a non-nil error is returned
-// it should be logged by the caller.
-func buildAndPushBundle(ctx context.Context, cfg *Config, hst *host.SSH) (bundleGlob string, err error) {
+// If tests are going to be executed (rather than printed), data files are also pushed.
+// Progress is logged via cfg.Logger, but if a non-nil error is returned it should be
+// logged by the caller.
+func buildAndPushBundle(ctx context.Context, cfg *Config, hst *host.SSH) error {
 	cfg.Logger.Status("Building test bundle")
 	if err := getTargetArch(ctx, cfg, hst); err != nil {
-		return "", fmt.Errorf("failed to get arch for %s: %v", cfg.Target, err)
+		return fmt.Errorf("failed to get arch for %s: %v", cfg.Target, err)
 	}
 
 	start := time.Now()
@@ -196,48 +184,48 @@ func buildAndPushBundle(ctx context.Context, cfg *Config, hst *host.SSH) (bundle
 	pkg := path.Join(localBundlePkgPathPrefix, cfg.buildBundle)
 	cfg.Logger.Logf("Building %s from %s", pkg, strings.Join(bc.Workspaces, ":"))
 	if out, err := build.Build(ctx, &bc, pkg, buildDir, "build_bundle"); err != nil {
-		return "", fmt.Errorf("build failed: %v\n\n%s", err, out)
+		return fmt.Errorf("build failed: %v\n\n%s", err, out)
 	}
 	cfg.Logger.Logf("Built test bundle in %v", time.Now().Sub(start).Round(time.Millisecond))
 
 	cfg.Logger.Status("Pushing test bundle to target")
-	if err := pushBundle(ctx, cfg, hst, filepath.Join(buildDir, cfg.buildBundle), localBundlePushDir); err != nil {
-		return "", fmt.Errorf("failed to push bundle: %v", err)
+	if err := pushBundle(ctx, cfg, hst, filepath.Join(buildDir, cfg.buildBundle), cfg.localBundleDir); err != nil {
+		return fmt.Errorf("failed to push bundle: %v", err)
 	}
 
 	// Only run tests from the newly-pushed bundle.
-	bundleGlob = filepath.Join(localBundlePushDir, cfg.buildBundle)
+	bundleGlob := filepath.Join(cfg.localBundleDir, cfg.buildBundle)
 
 	if cfg.mode == RunTestsMode {
 		cfg.Logger.Status("Getting data file list")
 		var paths []string
 		var err error
 		if paths, err = getDataFilePaths(ctx, cfg, hst, bundleGlob); err != nil {
-			if exists, existsErr := localRunnerExists(ctx, hst); exists || existsErr != nil {
+			if exists, existsErr := localRunnerExists(ctx, cfg, hst); exists || existsErr != nil {
 				if existsErr != nil {
 					cfg.Logger.Log("Failed to check for existence of runner: ", err)
 				}
-				return "", fmt.Errorf("failed to get data file list: %v", err)
+				return fmt.Errorf("failed to get data file list: %v", err)
 			}
 
 			// The runner was missing (maybe this is a non-test device), so build and push it and try again.
 			if err = buildAndPushLocalRunner(ctx, cfg, hst); err != nil {
-				return "", err
+				return err
 			}
 			if paths, err = getDataFilePaths(ctx, cfg, hst, bundleGlob); err != nil {
-				return "", fmt.Errorf("failed to get data file list: %v", err)
+				return fmt.Errorf("failed to get data file list: %v", err)
 			}
 		}
 		if len(paths) > 0 {
 			cfg.Logger.Status("Pushing data files to target")
-			destDir := filepath.Join(localDataPushDir, pkg)
+			destDir := filepath.Join(cfg.localDataDir, pkg)
 			if err = pushDataFiles(ctx, cfg, hst, destDir, paths); err != nil {
-				return "", fmt.Errorf("failed to push data files: %v", err)
+				return fmt.Errorf("failed to push data files: %v", err)
 			}
 		}
 	}
 
-	return bundleGlob, nil
+	return nil
 }
 
 // getTargetArch queries hst for its userland architecture if it isn't already known and
@@ -419,8 +407,8 @@ func downloadPrivateBundles(ctx context.Context, cfg *Config, hst *host.SSH) err
 
 // localRunnerExists checks whether the local_test_runner executable is present on hst.
 // It returns true if it is, false if it isn't, or an error if one was encountered while checking.
-func localRunnerExists(ctx context.Context, hst *host.SSH) (bool, error) {
-	cmd := fmt.Sprintf("test -e %s", shutil.Escape(localRunnerPath))
+func localRunnerExists(ctx context.Context, cfg *Config, hst *host.SSH) (bool, error) {
+	cmd := fmt.Sprintf("test -e %s", shutil.Escape(cfg.localRunner))
 	if _, err := hst.Run(ctx, cmd); err == nil {
 		return true, nil
 	} else if ee, ok := err.(*ssh.ExitError); ok && ee.Waitmsg.ExitStatus() == 1 {
@@ -452,10 +440,18 @@ func buildAndPushLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH) er
 		return fmt.Errorf("failed to build test runner: %v\n\n%s", err, out)
 	}
 
-	cfg.Logger.Debugf("Pushing test runner to %s on target", localRunnerPath)
+	buildName := path.Base(localRunnerPkg)
+	pushName := filepath.Base(cfg.localRunner)
+	if buildName != pushName {
+		if err := os.Rename(filepath.Join(buildDir, buildName), filepath.Join(buildDir, pushName)); err != nil {
+			return fmt.Errorf("failed to rename test runner: %v", err)
+		}
+	}
+
+	cfg.Logger.Debugf("Pushing test runner to %s on target", cfg.localRunner)
 	start := time.Now()
-	bytes, err := pushToHost(ctx, cfg, hst, buildDir, filepath.Dir(localRunnerPath),
-		[]string{filepath.Base(localRunnerPath)})
+	bytes, err := pushToHost(ctx, cfg, hst, buildDir, filepath.Dir(cfg.localRunner),
+		[]string{filepath.Base(cfg.localRunner)})
 	if err != nil {
 		return fmt.Errorf("failed to copy test runner: %v", err)
 	}
@@ -466,7 +462,7 @@ func buildAndPushLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH) er
 
 // runLocalTests executes tests as described by cfg on hst and returns the results.
 // It is only used for RunTestsMode.
-func runLocalTests(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob, dataDir string) ([]TestResult, error) {
+func runLocalTests(ctx context.Context, cfg *Config, hst *host.SSH) ([]TestResult, error) {
 	cfg.Logger.Status("Running local tests on target")
 	ctx, st := timing.Start(ctx, "run_local_tests")
 	defer st.End()
@@ -482,7 +478,7 @@ func runLocalTests(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob, 
 	var allResults []TestResult
 	patterns := cfg.Patterns
 	for {
-		results, unstarted, err := runLocalRunner(ctx, cfg, hst, patterns, bundleGlob, dataDir)
+		results, unstarted, err := runLocalRunner(ctx, cfg, hst, patterns)
 		allResults = append(allResults, results...)
 		if err == nil {
 			break
@@ -556,7 +552,7 @@ func startLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, args *run
 
 	args.FillDeprecated()
 
-	handle, err := hst.Start(ctx, envPrefix+localRunnerPath, host.OpenStdin, host.StdoutAndStderr)
+	handle, err := hst.Start(ctx, envPrefix+cfg.localRunner, host.OpenStdin, host.StdoutAndStderr)
 	if err != nil {
 		return nil, err
 	}
@@ -581,10 +577,17 @@ func startLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, args *run
 //
 // If cfg.mode is ListTestsMode, serialized test information is returned via TestResult.Test
 // but other fields are left blank and unstarted is empty.
-func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, patterns []string, bundleGlob, dataDir string) (
+func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, patterns []string) (
 	results []TestResult, unstarted []string, err error) {
 	ctx, st := timing.Start(ctx, "run_local_tests")
 	defer st.End()
+
+	var bundleGlob string
+	if cfg.build {
+		bundleGlob = filepath.Join(cfg.localBundleDir, cfg.buildBundle)
+	} else {
+		bundleGlob = filepath.Join(cfg.localBundleDir, "*")
+	}
 
 	var args runner.Args
 
@@ -595,7 +598,7 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, patterns []
 			RunTests: &runner.RunTestsArgs{
 				BundleArgs: bundle.RunTestsArgs{
 					Patterns:          patterns,
-					DataDir:           dataDir,
+					DataDir:           cfg.localDataDir,
 					TestVars:          cfg.testVars,
 					WaitUntilReady:    cfg.waitUntilReady,
 					HeartbeatInterval: heartbeatInterval,

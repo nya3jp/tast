@@ -88,7 +88,8 @@ func remote(ctx context.Context, cfg *Config) (Status, []TestResult) {
 // runRemoteRunner runs the remote test runner with bundles matched by bundleGlob
 // and reads its output.
 func runRemoteRunner(ctx context.Context, cfg *Config, bundleGlob, dataDir string) ([]TestResult, error) {
-	defer timing.Start(ctx, "run_remote_tests").End()
+	ctx, st := timing.Start(ctx, "run_remote_tests")
+	defer st.End()
 
 	exe, err := os.Executable()
 	if err != nil {

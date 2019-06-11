@@ -45,7 +45,8 @@ var archToCompiler = map[string]string{
 // The returned out variable contains output from executed build commands and should typically
 // be logged iff err is non-nil.
 func Build(ctx context.Context, cfg *Config, pkg, outDir, stageName string) (out []byte, err error) {
-	defer timing.Start(ctx, stageName).End()
+	ctx, st1 := timing.Start(ctx, stageName)
+	defer st1.End()
 
 	for _, ws := range cfg.Workspaces {
 		src := filepath.Join(ws, "src")
@@ -105,7 +106,9 @@ func Build(ctx context.Context, cfg *Config, pkg, outDir, stageName string) (out
 	cmd.Env = env
 
 	cfg.Logger.Status("Compiling " + pkg)
-	defer timing.Start(ctx, "compile").End()
+	ctx, st2 := timing.Start(ctx, "compile")
+	defer st2.End()
+
 	if out, err = cmd.CombinedOutput(); err != nil {
 		// The compiler won't be installed if the user has never run setup_board for a board using
 		// the target arch. Suggest manually setting up toolchains.
@@ -138,7 +141,9 @@ func makeMissingDepsMessage(missing []string, cmds [][]string) []byte {
 // Progress is logged using cfg.Logger. missing and cmds should be produced by checkDeps.
 // If an error is returned, then out will contain stdout and stderr from the failed command.
 func installMissingDeps(ctx context.Context, cfg *Config, missing []string, cmds [][]string) (out []byte, err error) {
-	defer timing.Start(ctx, "install_deps").End()
+	ctx, st := timing.Start(ctx, "install_deps")
+	defer st.End()
+
 	cfg.Logger.Logf("Installing missing dependencies for %v:", cfg.PortagePkg)
 	for _, dep := range missing {
 		cfg.Logger.Log("  ", dep)

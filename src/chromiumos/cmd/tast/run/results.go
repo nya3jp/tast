@@ -287,7 +287,7 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.TestS
 		return fmt.Errorf("got TestStart message for already-seen test %s -- two tests with same name?",
 			msg.Test.Name)
 	}
-	r.stage = timing.Start(ctx, msg.Test.Name)
+	ctx, r.stage = timing.Start(ctx, msg.Test.Name)
 
 	r.results = append(r.results, TestResult{
 		Test:             msg.Test,
@@ -348,12 +348,10 @@ func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.TestEnd
 		return fmt.Errorf("got TestEnd message for not-started test %s", msg.Name)
 	}
 
-	if r.stage != nil {
-		// If the test reported timing stages, import them under the current stage.
-		if tl, ok := timing.FromContext(ctx); ok && msg.TimingLog != nil && !msg.TimingLog.Empty() {
-			if err := tl.Import(msg.TimingLog); err != nil {
-				r.cfg.Logger.Logf("Failed importing timing log for %v: %v", msg.Name, err)
-			}
+	// If the test reported timing stages, import them under the current stage.
+	if r.stage != nil && msg.TimingLog != nil && !msg.TimingLog.Empty() {
+		if err := r.stage.Import(msg.TimingLog); err != nil {
+			r.cfg.Logger.Logf("Failed importing timing log for %v: %v", msg.Name, err)
 		}
 		r.stage.End()
 	}

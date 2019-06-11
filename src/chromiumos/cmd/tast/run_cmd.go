@@ -81,9 +81,9 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 
 	defer r.cfg.Close(ctx)
 
-	tl := timing.Log{}
-	ctx = timing.NewContext(ctx, &tl)
-	st := tl.Start("exec")
+	tl := timing.NewLog()
+	ctx = timing.NewContext(ctx, tl)
+	ctx, st := timing.Start(ctx, "exec")
 
 	if len(f.Args()) == 0 {
 		lg.Log("Missing target.\n\n" + r.Usage())

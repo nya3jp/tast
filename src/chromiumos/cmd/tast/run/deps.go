@@ -34,7 +34,8 @@ func getSoftwareFeatures(ctx context.Context, cfg *Config) error {
 		return nil
 	}
 
-	defer timing.Start(ctx, "get_software_features").End()
+	ctx, st := timing.Start(ctx, "get_software_features")
+	defer st.End()
 	cfg.Logger.Debug("Getting software features supported by DUT")
 
 	hst, err := connectToTarget(ctx, cfg)

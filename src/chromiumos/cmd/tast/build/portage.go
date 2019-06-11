@@ -32,7 +32,8 @@ const (
 // the dependencies are returned.
 func checkDeps(ctx context.Context, portagePkg, cachePath string) (
 	missing []string, cmds [][]string, err error) {
-	defer timing.Start(ctx, "check_deps").End()
+	ctx, st1 := timing.Start(ctx, "check_deps")
+	defer st1.End()
 
 	// To avoid slow Portage commands, check if we've already verified that dependencies are up-to-date.
 	var cache *checkDepsCache
@@ -61,7 +62,9 @@ func checkDeps(ctx context.Context, portagePkg, cachePath string) (
 	}
 
 	// Fall back to the slow (multiple seconds) emerge path.
-	defer timing.Start(ctx, "emerge_list_deps").End()
+	ctx, st2 := timing.Start(ctx, "emerge_list_deps")
+	defer st2.End()
+
 	cl := emergeCmdLine(portagePkg, emergeList)
 	cmd := exec.CommandContext(ctx, cl[0], cl[1:]...)
 	var stderr bytes.Buffer
@@ -95,7 +98,8 @@ func checkDeps(ctx context.Context, portagePkg, cachePath string) (
 // pkg should be a versioned package of the form "chromeos-base/tast-local-tests-cros-9999".
 // This typically takes hundreds of milliseconds to complete.
 func portagePkgInstalled(ctx context.Context, pkg string) (bool, error) {
-	defer timing.Start(ctx, "equery_list").End()
+	ctx, st := timing.Start(ctx, "equery_list")
+	defer st.End()
 
 	cmd := exec.CommandContext(ctx, "equery", "-q", "-C", "l", pkg)
 	out, err := cmd.Output()
@@ -183,7 +187,8 @@ func parseEmergeOutput(stdout, stderr []byte, pkg string) (missingDeps []string,
 // getOverlays evaluates the Portage config script at confPath (typically "/etc/make.conf") and returns all of
 // the overlays listed in $PORTDIR_OVERLAY. Symlinks are resolved.
 func getOverlays(ctx context.Context, confPath string) ([]string, error) {
-	defer timing.Start(ctx, "get_overlays").End()
+	ctx, st := timing.Start(ctx, "get_overlays")
+	defer st.End()
 
 	shCmd := fmt.Sprintf("cd %s && source %s && echo $PORTDIR_OVERLAY",
 		shutil.Escape(filepath.Dir(confPath)), shutil.Escape(filepath.Base(confPath)))
@@ -237,7 +242,8 @@ func newCheckDepsCache(cachePath string, checkPaths []string) (*checkDepsCache, 
 // being up-to-date for pkg. checkNeeded is true if the two timestamps do not exactly match. The filesystem's latest
 // last-modified timestamps is returned and should be passed to update if the dependencies are up-to-date.
 func (c *checkDepsCache) isCheckNeeded(ctx context.Context, pkg string) (checkNeeded bool, lastMod time.Time) {
-	defer timing.Start(ctx, "check_cache").End()
+	ctx, st := timing.Start(ctx, "check_cache")
+	defer st.End()
 
 	ch := make(chan time.Time, len(c.checkPaths))
 	for _, p := range c.checkPaths {

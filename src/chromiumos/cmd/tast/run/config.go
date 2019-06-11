@@ -107,6 +107,10 @@ type Config struct {
 	devservers             []string // list of devserver URLs; set by -devservers but may be dynamically modified
 	downloadPrivateBundles bool     // whether to download private bundles if missing
 
+	localRunner    string // path to executable that runs local test bundles
+	localBundleDir string // dir where packaged local test bundles are installed
+	localDataDir   string // dir containing packaged local test data
+
 	remoteRunner    string // path to executable that runs remote test bundles
 	remoteBundleDir string // dir where packaged remote test bundles are installed
 	remoteDataDir   string // dir containing packaged remote test data
@@ -189,6 +193,10 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 		func(v int) { c.buildType = testType(v) }, "local")
 	f.Var(bt, "buildtype", fmt.Sprintf("type of tests to build (%s; default %q)", bt.QuotedValues(), bt.Default()))
 
+	f.StringVar(&c.localRunner, "localrunner", "/usr/local/bin/local_test_runner", "executable that runs local test bundles")
+	f.StringVar(&c.localBundleDir, "localbundledir", "", "directory containing builtin local test bundles")
+	f.StringVar(&c.localDataDir, "localdatadir", "", "directory containing builtin local test data")
+
 	// These are configurable since files may be installed elsewhere when running in the lab.
 	f.StringVar(&c.remoteRunner, "remoterunner", "/usr/bin/remote_test_runner", "executable that runs remote test bundles")
 	f.StringVar(&c.remoteBundleDir, "remotebundledir", "/usr/libexec/tast/bundles/remote", "directory containing builtin remote test bundles")
@@ -257,8 +265,19 @@ func (c *Config) DeriveDefaults() error {
 		return nil
 	}
 
-	if c.buildWorkspace == "" {
-		c.buildWorkspace = filepath.Join(c.trunkDir, b.workspace)
+	setIfEmpty := func(p *string, s string) {
+		if *p == "" {
+			*p = s
+		}
+	}
+
+	setIfEmpty(&c.buildWorkspace, filepath.Join(c.trunkDir, b.workspace))
+	if c.build {
+		setIfEmpty(&c.localBundleDir, "/usr/local/libexec/tast/bundles/local_pushed")
+		setIfEmpty(&c.localDataDir, "/usr/local/share/tast/data_pushed")
+	} else {
+		setIfEmpty(&c.localBundleDir, "/usr/local/libexec/tast/bundles/local")
+		setIfEmpty(&c.localDataDir, "/usr/local/share/tast/data")
 	}
 	return nil
 }

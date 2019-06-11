@@ -40,7 +40,11 @@ func init() {
 }
 
 const (
-	builtinBundleGlob = localBundleBuiltinDir + "/*"
+	mockLocalRunner    = "/mock/local_test_runner"
+	mockLocalBundleDir = "/mock/local_bundles"
+	mockLocalDataDir   = "/mock/local_data"
+
+	mockLocalBundleGlob = mockLocalBundleDir + "/*"
 
 	defaultBootID = "01234567-89ab-cdef-0123-456789abcdef"
 )
@@ -69,7 +73,7 @@ type localTestData struct {
 // newLocalTestData performs setup for tests that exercise the local function.
 // It calls t.Fatal on error.
 func newLocalTestData(t *gotesting.T) *localTestData {
-	td := localTestData{expRunCmd: localRunnerPath, bootID: defaultBootID}
+	td := localTestData{expRunCmd: mockLocalRunner, bootID: defaultBootID}
 	td.srvData = test.NewTestData(userKey, hostKey, td.handleExec)
 	td.cfg.KeyFile = td.srvData.UserKeyFile
 
@@ -83,6 +87,9 @@ func newLocalTestData(t *gotesting.T) *localTestData {
 	}
 	td.cfg.Logger = logging.NewSimple(&td.logbuf, log.LstdFlags, true)
 	td.cfg.Target = td.srvData.Srv.Addr().String()
+	td.cfg.localRunner = mockLocalRunner
+	td.cfg.localBundleDir = mockLocalBundleDir
+	td.cfg.localDataDir = mockLocalDataDir
 
 	// Avoid checking test dependencies, which causes an extra local_test_runner call.
 	td.cfg.checkTestDeps = checkTestDepsNever
@@ -119,10 +126,6 @@ func (td *localTestData) handleExec(req *test.ExecReq) {
 	defer func() { td.nextCopyCmd = "" }()
 
 	switch req.Cmd {
-	// TODO(derat): Remove this after 20180901: https://crbug.com/857485
-	case "test -d " + shutil.Escape(filepath.Join(localDataBuiltinDir, localBundlePkgPathPrefix)):
-		req.Start(true)
-		req.End(0)
 	case "cat /proc/sys/kernel/random/boot_id":
 		req.Start(true)
 		fmt.Fprintln(req, td.bootID)
@@ -185,10 +188,10 @@ func TestLocalSuccess(t *gotesting.T) {
 		checkArgs(t, args, &runner.Args{
 			RunTests: &runner.RunTestsArgs{
 				BundleArgs: bundle.RunTestsArgs{
-					DataDir:           localDataBuiltinDir,
+					DataDir:           mockLocalDataDir,
 					HeartbeatInterval: heartbeatInterval,
 				},
-				BundleGlob: builtinBundleGlob,
+				BundleGlob: mockLocalBundleGlob,
 			},
 		})
 
@@ -311,7 +314,7 @@ func TestLocalList(t *gotesting.T) {
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		checkArgs(t, args, &runner.Args{
 			Mode:      runner.ListTestsMode,
-			ListTests: &runner.ListTestsArgs{BundleGlob: builtinBundleGlob},
+			ListTests: &runner.ListTestsArgs{BundleGlob: mockLocalBundleGlob},
 		})
 
 		json.NewEncoder(stdout).Encode(tests)
@@ -367,7 +370,7 @@ func TestLocalDataFiles(t *gotesting.T) {
 			Mode: runner.ListTestsMode,
 			ListTests: &runner.ListTestsArgs{
 				BundleArgs: bundle.ListTestsArgs{Patterns: []string{pattern}},
-				BundleGlob: builtinBundleGlob,
+				BundleGlob: mockLocalBundleGlob,
 			},
 		})
 
@@ -390,7 +393,7 @@ func TestLocalDataFiles(t *gotesting.T) {
 	}
 
 	// Prepare a fake destination directory.
-	pushDir := filepath.Join(td.hostDir, localDataPushDir)
+	pushDir := filepath.Join(td.hostDir, mockLocalDataDir)
 	dstFiles := map[string]string{
 		extLinkFile2: extLinkFile2,
 	}
@@ -404,7 +407,7 @@ func TestLocalDataFiles(t *gotesting.T) {
 	}
 	td.cfg.buildBundle = bundleName
 	td.cfg.Patterns = []string{pattern}
-	paths, err := getDataFilePaths(context.Background(), &td.cfg, td.cfg.hst, builtinBundleGlob)
+	paths, err := getDataFilePaths(context.Background(), &td.cfg, td.cfg.hst, mockLocalBundleGlob)
 	if err != nil {
 		t.Fatal("getDataFilePaths() failed: ", err)
 	}
@@ -421,7 +424,7 @@ func TestLocalDataFiles(t *gotesting.T) {
 
 	// pushDataFiles should copy the required files to the DUT.
 	if err = pushDataFiles(context.Background(), &td.cfg, td.cfg.hst,
-		filepath.Join(localDataPushDir, bundlePkg), paths); err != nil {
+		filepath.Join(mockLocalDataDir, bundlePkg), paths); err != nil {
 		t.Fatal("pushDataFiles() failed: ", err)
 	}
 	expData := map[string]string{

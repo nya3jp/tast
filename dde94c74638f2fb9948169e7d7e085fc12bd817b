@@ -71,6 +71,30 @@
     },
     {
       "key": {
+        "uuid": "023283b4_ca564985",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 245,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-06-11T16:46:22Z",
+      "side": 1,
+      "message": "Raw goroutine may simpler?\n\nt :\u003d make(chan bool, 1)\nretc :\u003d make(chan error, 1)\n\ngo func() {\n  retc \u003c- c.sess.Start(...)\n  if ok :\u003d \u003c- t; !ok {\n    c.sess.Close()\n  }\n}\n\nvar err error\nselect {\ncase e :\u003d \u003c- retc:\n  err \u003d e\ncase \u003c- ctx.Done():\n  err \u003d ctx.Err()\n}\n\nt \u003c- err !\u003d nil\nif err !\u003d nil {\n  ... error handling ...\n}\nreturn err\n\nThis pattern seems to be shared with the following one?",
+      "parentUuid": "aa74265d_6d7ccb57",
+      "range": {
+        "startLine": 240,
+        "startChar": 1,
+        "endLine": 245,
+        "endChar": 4
+      },
+      "revId": "dde94c74638f2fb9948169e7d7e085fc12bd817b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c441c99d_f3757926",
         "filename": "src/chromiumos/tast/host/exec.go",
         "patchSetId": 1
@@ -116,6 +140,24 @@
       "writtenOn": "2019-06-11T15:45:11Z",
       "side": 1,
       "message": "The logic (specifically error handling logic) looks too complicated.\nHow about introducing a dedicated goroutine to handle session operations, and exchange messages between it and the main thread, and getting rid of doAsync() instead?",
+      "revId": "dde94c74638f2fb9948169e7d7e085fc12bd817b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "77e410ce_5c3414fa",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 299,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-06-11T16:46:22Z",
+      "side": 1,
+      "message": "E.g.:\n\nt :\u003d make(chan bool, 1)\n\ntimedout :\u003d func() bool {\n  select {\n  case _, ok \u003c- t: return True\n  default: return False\n  }\n}\n\nretc ;\u003d make(chan error, 1)\n\nvar sess *ssh.Session\ngo func() {\n  s, err :\u003d ...NewSession()\n  if err !\u003d nil {\n    retc \u003c- err\n    return\n  }\n  if timedout() {\n    s.Close()\n    return\n  }\n  ... setup pipes ...\n  sess \u003d s\n  retc \u003c- nil\n  // Make sure that main thread returns success.\n  if ok :\u003d \u003c-t; !ok {\n    s.Close()\n    return\n  }\n}()\n\nselect {\ncase err :\u003d \u003c-retc:\n  if err !\u003d nil {\n    return err\n  }\ncase \u003c-ctx.Done():\n  t \u003c- True\n  return ctx.Err()\n}\nc.sess \u003d sess\nt \u003c- False\nreturn nil\n\nWDYT?",
+      "parentUuid": "3d22702a_52d7d9cf",
       "revId": "dde94c74638f2fb9948169e7d7e085fc12bd817b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

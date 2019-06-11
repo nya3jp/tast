@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "792a81ca_266a8328",
+        "filename": "src/chromiumos/tast/devserver/real.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 254,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-06-11T01:40:44Z",
+      "side": 1,
+      "message": "optional/clar: can your errors package be usable here?",
+      "range": {
+        "startLine": 254,
+        "startChar": 10,
+        "endLine": 254,
+        "endChar": 21
+      },
+      "revId": "d0e5c8660bfb80ca3a87270f96b413ecdfbbce9a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -78,14 +78,13 @@ type Config struct {
 	tastDir  string // base directory under which files are written
 	trunkDir string // path to Chrome OS checkout
 
-	build                 bool     // rebuild (and push, for local tests) a single test bundle
-	buildType             testType // type of tests to build and deploy
-	buildBundle           string   // name of the test bundle to rebuild (e.g. "cros")
-	buildWorkspace        string   // path to workspace containing test bundle source code
-	buildOutDir           string   // path to base directory under which executables are stored
-	checkPortageDeps      bool     // check whether test bundle's dependencies are installed before building
-	installPortageDeps    bool     // install old or missing test bundle dependencies; no-op if checkPortageDeps is false
-	forceBuildLocalRunner bool     // force local_test_runner to be built and deployed even if it already exists on DUT
+	build              bool     // rebuild (and push, for local tests) a single test bundle
+	buildType          testType // type of tests to build and deploy
+	buildBundle        string   // name of the test bundle to rebuild (e.g. "cros")
+	buildWorkspace     string   // path to workspace containing test bundle source code
+	buildOutDir        string   // path to base directory under which executables are stored
+	checkPortageDeps   bool     // check whether test bundle's dependencies are installed before building
+	installPortageDeps bool     // install old or missing test bundle dependencies; no-op if checkPortageDeps is false
 
 	useEphemeralDevserver  bool     // start an ephemeral devserver if no devserver is specified
 	devservers             []string // list of devserver URLs; set by -devservers but may be dynamically modified
@@ -166,7 +165,6 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 	f.StringVar(&c.buildOutDir, "buildoutdir", filepath.Join(c.tastDir, "build"), "directory where compiled executables are saved")
 	f.BoolVar(&c.checkPortageDeps, "checkbuilddeps", true, "check test bundle's dependencies before building")
 	f.BoolVar(&c.installPortageDeps, "installbuilddeps", true, "automatically install/upgrade test bundle dependencies (requires -checkbuilddeps)")
-	f.BoolVar(&c.forceBuildLocalRunner, "buildlocalrunner", false, "force building local_test_runner and pushing to DUT")
 	f.Var(command.NewListFlag(",", func(v []string) { c.devservers = v }, nil), "devservers", "comma-separated list of devserver URLs")
 	f.BoolVar(&c.useEphemeralDevserver, "ephemeraldevserver", true, "start an ephemeral devserver if no devserver is specified")
 	f.BoolVar(&c.downloadPrivateBundles, "downloadprivatebundles", false, "download private bundles if missing")

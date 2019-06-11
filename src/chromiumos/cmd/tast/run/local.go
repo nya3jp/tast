@@ -200,11 +200,9 @@ func pushExecutables(ctx context.Context, cfg *Config, hst *host.SSH) error {
 	src := filepath.Join(localBundleBuildSubdir, cfg.buildBundle)
 	dst := strings.TrimLeft(filepath.Join(cfg.localBundleDir, cfg.buildBundle), "/")
 	files[src] = dst
-	if cfg.forceBuildLocalRunner {
-		src := path.Base(localRunnerPkg)
-		dst := strings.TrimLeft(cfg.localRunner, "/")
-		files[src] = dst
-	}
+	src = path.Base(localRunnerPkg)
+	dst = strings.TrimLeft(cfg.localRunner, "/")
+	files[src] = dst
 
 	ctx, st := timing.Start(ctx, "push_executables")
 	defer st.End()

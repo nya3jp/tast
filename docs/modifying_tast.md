@@ -79,7 +79,7 @@ More combinations are possible when running in a developer's chroot:
     emerging `tast-cmd`.
 *   The `local_test_runner` binary on the DUT can either be installed by the
     `tast-local-test-runner` package or updated by running `tast run
-    -buildlocalrunner`.
+    -build=true`.
 *   The default test bundle on the DUT can be installed by the
     `tast-local-tests-cros` package or updated by running `tast run
     -build=true`.

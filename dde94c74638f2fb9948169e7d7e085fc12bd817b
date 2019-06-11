@@ -1,0 +1,267 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "72720055_823b067d",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-06-11T15:45:11Z",
+      "side": 1,
+      "message": "Could you elaborate the case a bit more? (e.g. could you share an example case?).\nI think Cmd should be created for each invocation, at the moment.",
+      "range": {
+        "startLine": 24,
+        "startChar": 3,
+        "endLine": 26,
+        "endChar": 54
+      },
+      "revId": "dde94c74638f2fb9948169e7d7e085fc12bd817b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "71bbc46c_231e5d84",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-06-11T15:45:11Z",
+      "side": 1,
+      "message": "but... what? :)\n\nBTW, is this behavior logically correct? It sounds a bit weird to me, TBH...?\nSpecifically, supporting this seems to make the implementation complicated...\nMy recommendation is, if necessary, handle it in another layer. E.g., sync with channel.\nWDYT?",
+      "range": {
+        "startLine": 28,
+        "startChar": 3,
+        "endLine": 29,
+        "endChar": 12
+      },
+      "revId": "dde94c74638f2fb9948169e7d7e085fc12bd817b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aa74265d_6d7ccb57",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 245,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-06-11T15:45:11Z",
+      "side": 1,
+      "message": "Looks race condition. doAsync internally creates a goroutine. So, the order of c.sess.Start() and c.sess.Close() is arbitrary.",
+      "range": {
+        "startLine": 240,
+        "startChar": 1,
+        "endLine": 245,
+        "endChar": 4
+      },
+      "revId": "dde94c74638f2fb9948169e7d7e085fc12bd817b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c441c99d_f3757926",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 266,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-06-11T15:45:11Z",
+      "side": 1,
+      "message": "This is conflicting the comment you described above.\nCalling Wait() twice would be captured by this check (since, c.state is overwritten in doWaitAndClose in the first call).",
+      "revId": "dde94c74638f2fb9948169e7d7e085fc12bd817b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b2d1b55c_7feb0573",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 294,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-06-11T15:45:11Z",
+      "side": 1,
+      "message": "In precise, the session is not yet started. How about setting this just before return at the end?",
+      "revId": "dde94c74638f2fb9948169e7d7e085fc12bd817b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3d22702a_52d7d9cf",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 299,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-06-11T15:45:11Z",
+      "side": 1,
+      "message": "The logic (specifically error handling logic) looks too complicated.\nHow about introducing a dedicated goroutine to handle session operations, and exchange messages between it and the main thread, and getting rid of doAsync() instead?",
+      "revId": "dde94c74638f2fb9948169e7d7e085fc12bd817b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5528f151_67558b61",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 321,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-06-11T15:45:11Z",
+      "side": 1,
+      "message": "Clar: could you explain this more details? Why it is necessary to handle this with special care...?",
+      "range": {
+        "startLine": 321,
+        "startChar": 3,
+        "endLine": 321,
+        "endChar": 68
+      },
+      "revId": "dde94c74638f2fb9948169e7d7e085fc12bd817b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aa404497_46764ed8",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 325,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-06-11T15:45:11Z",
+      "side": 1,
+      "message": "p needs to be closed eventually.",
+      "revId": "dde94c74638f2fb9948169e7d7e085fc12bd817b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2bcbfa48_ef45812d",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 338,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-06-11T15:45:11Z",
+      "side": 1,
+      "message": "ditto.",
+      "revId": "dde94c74638f2fb9948169e7d7e085fc12bd817b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "50d78b8b_91074f5d",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 375,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-06-11T15:45:11Z",
+      "side": 1,
+      "message": "optional/style/nit: how about shuffling the order of case?\n\nselect {\n  case \u003c- c.done:\n    return\n  case \u003c-ctx.Done():\n  case \u003c-c.abort:\n}\n\nmay be a bit more readable?",
+      "revId": "dde94c74638f2fb9948169e7d7e085fc12bd817b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2b9cc3b3_11064516",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 413,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-06-11T15:45:11Z",
+      "side": 1,
+      "message": "Looks conflicting with the implementation.",
+      "range": {
+        "startLine": 413,
+        "startChar": 42,
+        "endLine": 413,
+        "endChar": 78
+      },
+      "revId": "dde94c74638f2fb9948169e7d7e085fc12bd817b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b1909a81_f9b6acfc",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 420,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-06-11T15:45:11Z",
+      "side": 1,
+      "message": "Do you want to log on error?",
+      "range": {
+        "startLine": 420,
+        "startChar": 3,
+        "endLine": 420,
+        "endChar": 24
+      },
+      "revId": "dde94c74638f2fb9948169e7d7e085fc12bd817b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ffb17c77_d240f610",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 422,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-06-11T15:45:11Z",
+      "side": 1,
+      "message": "optional: how about simply list if stmt?\n\nif c.stdinPipe !\u003d nil {\n  c.stdinPipe.CloseWithError(err)\n}\nif c.stdoutPipe !\u003d nil {\n  c.stdoutPipe.CloseWithError(err)\n}\n...\n\nBecause the number of pipes are just three, which looks small enough, and I don\u0027t expect that the number will increase.",
+      "range": {
+        "startLine": 416,
+        "startChar": 1,
+        "endLine": 422,
+        "endChar": 2
+      },
+      "revId": "dde94c74638f2fb9948169e7d7e085fc12bd817b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

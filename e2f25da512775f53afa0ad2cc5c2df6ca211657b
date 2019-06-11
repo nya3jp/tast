@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9d6bebab_e17c3ce5",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-06-11T00:22:37Z",
+      "side": 1,
+      "message": "Could you also update docs/test_dependencies.md?\n\nExample: https://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/1646833",
+      "range": {
+        "startLine": 88,
+        "startChar": 0,
+        "endLine": 88,
+        "endChar": 38
+      },
+      "revId": "e2f25da512775f53afa0ad2cc5c2df6ca211657b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

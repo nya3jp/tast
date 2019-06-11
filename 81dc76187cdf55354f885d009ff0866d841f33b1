@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "69cbd14a_78f5b7f5",
+        "filename": "src/chromiumos/cmd/tast/run/devserver.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-06-11T01:25:25Z",
+      "side": 1,
+      "message": "The real devserver accepts multiple files, but Tast\u0027s ephemeral devserver does not because local_test_runner does not make use of multiple files. I have no plan to support multiple files.\n\nAdded a brief comment clarifying it.",
+      "parentUuid": "f82bb8a0_8040f22c",
+      "revId": "81dc76187cdf55354f885d009ff0866d841f33b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5992198d_cd997896",
         "filename": "src/chromiumos/cmd/tast/run/devserver.go",
         "patchSetId": 2
@@ -33,6 +51,24 @@
       "revId": "81dc76187cdf55354f885d009ff0866d841f33b1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "10b1b72b_a538e817",
+        "filename": "src/chromiumos/cmd/tast/run/devserver.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-06-11T01:25:25Z",
+      "side": 1,
+      "message": "Removed this function as per discussion with oka@.",
+      "parentUuid": "5992198d_cd997896",
+      "revId": "81dc76187cdf55354f885d009ff0866d841f33b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -59,6 +95,30 @@
     },
     {
       "key": {
+        "uuid": "a4d1ad22_ab791e39",
+        "filename": "src/chromiumos/cmd/tast/run/devserver_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-06-11T01:25:25Z",
+      "side": 1,
+      "message": "Either sounds fine to me.",
+      "parentUuid": "ed38a644_76ce6ac1",
+      "range": {
+        "startLine": 123,
+        "startChar": 4,
+        "endLine": 123,
+        "endChar": 9
+      },
+      "revId": "81dc76187cdf55354f885d009ff0866d841f33b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "de04a330_86299a0d",
         "filename": "src/chromiumos/tast/devserver/real.go",
         "patchSetId": 2
@@ -79,6 +139,30 @@
       "revId": "81dc76187cdf55354f885d009ff0866d841f33b1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5b9e2491_a4f898ca",
+        "filename": "src/chromiumos/tast/devserver/real.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 252,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-06-11T01:25:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "de04a330_86299a0d",
+      "range": {
+        "startLine": 252,
+        "startChar": 5,
+        "endLine": 252,
+        "endChar": 6
+      },
+      "revId": "81dc76187cdf55354f885d009ff0866d841f33b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -105,6 +189,30 @@
     },
     {
       "key": {
+        "uuid": "9f068d49_e94c6c12",
+        "filename": "src/chromiumos/tast/devserver/real.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 254,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-06-11T01:25:25Z",
+      "side": 1,
+      "message": "Nice, I\u0027ve forgotten about that :)",
+      "parentUuid": "191a678e_21eeda5a",
+      "range": {
+        "startLine": 253,
+        "startChar": 2,
+        "endLine": 254,
+        "endChar": 14
+      },
+      "revId": "81dc76187cdf55354f885d009ff0866d841f33b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1280c33f_811bdb90",
         "filename": "src/chromiumos/tast/devserver/real_test.go",
         "patchSetId": 2
@@ -119,6 +227,24 @@
       "revId": "81dc76187cdf55354f885d009ff0866d841f33b1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0d899522_10fcc2ee",
+        "filename": "src/chromiumos/tast/devserver/real_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-06-11T01:25:25Z",
+      "side": 1,
+      "message": "Ouch... good catch!",
+      "parentUuid": "1280c33f_811bdb90",
+      "revId": "81dc76187cdf55354f885d009ff0866d841f33b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -142,6 +268,30 @@
       "revId": "81dc76187cdf55354f885d009ff0866d841f33b1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f00e0835_e2553ed0",
+        "filename": "src/chromiumos/tast/devserver/real_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-06-11T01:25:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3296ac4f_ccd0f422",
+      "range": {
+        "startLine": 87,
+        "startChar": 21,
+        "endLine": 87,
+        "endChar": 35
+      },
+      "revId": "81dc76187cdf55354f885d009ff0866d841f33b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -182,6 +332,48 @@
       "revId": "81dc76187cdf55354f885d009ff0866d841f33b1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3285daf0_d7fa844b",
+        "filename": "src/chromiumos/tast/devserver/real_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-06-11T01:25:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "059f96ce_e2de1543",
+      "range": {
+        "startLine": 159,
+        "startChar": 5,
+        "endLine": 159,
+        "endChar": 20
+      },
+      "revId": "81dc76187cdf55354f885d009ff0866d841f33b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba5cc8a0_3cb03835",
+        "filename": "src/chromiumos/tast/devserver/real_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-06-11T01:25:25Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "8378aef5_9173b546",
+      "revId": "81dc76187cdf55354f885d009ff0866d841f33b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

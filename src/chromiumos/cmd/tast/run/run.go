@@ -171,11 +171,17 @@ func buildAll(ctx context.Context, cfg *Config, hst *host.SSH) error {
 	var tgts []*build.Target
 	switch cfg.buildType {
 	case localType:
+		// TODO(nya): We might want to build local_test_runner for remote tests.
 		tgts = append(tgts, &build.Target{
 			Pkg:        path.Join(localBundlePkgPathPrefix, cfg.buildBundle),
 			Arch:       cfg.targetArch,
 			Workspaces: cfg.bundleWorkspaces(),
 			OutDir:     filepath.Join(cfg.buildOutDir, cfg.targetArch, localBundleBuildSubdir),
+		}, &build.Target{
+			Pkg:        localRunnerPkg,
+			Arch:       cfg.targetArch,
+			Workspaces: cfg.commonWorkspaces(),
+			OutDir:     filepath.Join(cfg.buildOutDir, cfg.targetArch),
 		})
 	case remoteType:
 		tgts = append(tgts, &build.Target{
@@ -183,14 +189,6 @@ func buildAll(ctx context.Context, cfg *Config, hst *host.SSH) error {
 			Arch:       larch,
 			Workspaces: cfg.bundleWorkspaces(),
 			OutDir:     filepath.Join(cfg.buildOutDir, larch, remoteBundleBuildSubdir),
-		})
-	}
-	if cfg.forceBuildLocalRunner {
-		tgts = append(tgts, &build.Target{
-			Pkg:        localRunnerPkg,
-			Arch:       cfg.targetArch,
-			Workspaces: cfg.commonWorkspaces(),
-			OutDir:     filepath.Join(cfg.buildOutDir, cfg.targetArch),
 		})
 	}
 

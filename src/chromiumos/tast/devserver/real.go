@@ -365,6 +365,10 @@ func (c *RealClient) downloadFrom(ctx context.Context, w io.Writer, dsURL, bucke
 	if err != nil {
 		return 0, err
 	}
+	// Negotiate header disables automatic content negotiation. See:
+	// https://crbug.com/967305
+	// https://tools.ietf.org/html/rfc2295#section-8.4
+	req.Header.Set("Negotiate", "vlist")
 	req = req.WithContext(ctx)
 
 	res, err := c.cl.Do(req)

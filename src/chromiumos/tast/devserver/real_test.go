@@ -100,6 +100,11 @@ func (s *fakeServer) handleStage(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *fakeServer) handleStatic(w http.ResponseWriter, r *http.Request) {
+	if r.Header.Get("Negotiate") != "vlist" {
+		http.Error(w, "Negotiate: vlist is required", http.StatusBadRequest)
+		return
+	}
+
 	// Python devserver distinguishes "/" and "%2F". We follow the way here.
 	path, err := pathUnescape(r.URL.EscapedPath())
 	if err != nil {

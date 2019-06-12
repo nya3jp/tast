@@ -22,6 +22,30 @@
       "revId": "031322454442091e071724c0323c0e9fca928f8b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "80213cb6_0e951e9c",
+        "filename": "src/chromiumos/cmd/tast/run/results.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 290,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-06-12T02:30:15Z",
+      "side": 1,
+      "message": "I think you\u0027re right. Let me assign to ctx.",
+      "parentUuid": "2dac5c08_9bf17232",
+      "range": {
+        "startLine": 290,
+        "startChar": 1,
+        "endLine": 290,
+        "endChar": 2
+      },
+      "revId": "031322454442091e071724c0323c0e9fca928f8b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

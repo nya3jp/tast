@@ -189,9 +189,6 @@ func buildAndPushBundle(ctx context.Context, cfg *Config, hst *host.SSH) (bundle
 	bc := cfg.baseBuildCfg()
 	bc.Arch = cfg.targetArch
 	bc.Workspaces = cfg.bundleWorkspaces()
-	if cfg.checkPortageDeps {
-		bc.PortagePkg = localBundlePackage(cfg.buildBundle) + "-9999"
-	}
 	buildDir := filepath.Join(cfg.buildOutDir, cfg.targetArch, localBundleBuildSubdir)
 	pkg := path.Join(localBundlePkgPathPrefix, cfg.buildBundle)
 	cfg.Logger.Logf("Building %s from %s", pkg, strings.Join(bc.Workspaces, ":"))
@@ -442,9 +439,6 @@ func buildAndPushLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH) er
 	bc := cfg.baseBuildCfg()
 	bc.Arch = cfg.targetArch
 	bc.Workspaces = cfg.commonWorkspaces()
-	if cfg.checkPortageDeps {
-		bc.PortagePkg = localRunnerPortagePkg
-	}
 
 	buildDir := filepath.Join(cfg.buildOutDir, cfg.targetArch)
 	cfg.Logger.Debugf("Building %s from %s", localRunnerPkg, strings.Join(bc.Workspaces, ":"))

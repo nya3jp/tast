@@ -267,6 +267,7 @@ func (c *Config) DeriveDefaults() error {
 func (c *Config) baseBuildCfg() build.Config {
 	return build.Config{
 		Logger:             c.Logger,
+		CheckBuildDeps:     c.checkPortageDeps,
 		CheckDepsCachePath: filepath.Join(c.buildOutDir, checkDepsCacheFile),
 		InstallPortageDeps: c.installPortageDeps,
 	}

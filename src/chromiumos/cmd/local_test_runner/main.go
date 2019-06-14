@@ -56,9 +56,9 @@ func main() {
 			"amd64":       "amd64",
 			// TODO(b/123675239): The arcvm flag is used here to disable all Android tests because
 			// they currently make many container-specific assumptions and therefore fail.
-			// master-arc-dev is under development and not stable to run Tast tests.
-			"android": `arc && !arcvm && !"android-container-master-arc-dev"`,
-			// Run all ARC versions, including master-arc-dev.
+			// master-arc-dev and qt are under development and not stable to run Tast tests.
+			"android": `arc && !arcvm && !"android-container-master-arc-dev" && !"android-container-qt"`,
+			// Run all ARC versions, including master-arc-dev and qt.
 			"android_all":       `arc && !arcvm`,
 			"android_p":         `arc && "android-container-pi" && !arcvm`,
 			"arc_camera3":       `"arc-camera3"`,

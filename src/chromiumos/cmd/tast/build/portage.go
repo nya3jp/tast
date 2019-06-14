@@ -5,7 +5,6 @@
 package build
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -13,8 +12,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"reflect"
 	"strings"
-	"syscall"
 	"time"
 
 	"chromiumos/tast/shutil"
@@ -24,102 +23,53 @@ import (
 const (
 	portageConfigFile  = "/etc/make.conf" // shell script containing Portage overlays in $PORTDIR_OVERLAY
 	portagePackagesDir = "/var/db/pkg"    // Portage packages DB dir
+
+	buildDepsPkg = "chromeos-base/tast-build-deps" // Portage package depending on all build dependencies
 )
 
-// checkDeps checks if all of portagePkg's dependencies are installed.
-// portagePkg should be a versioned package of the form "chromeos-base/tast-local-tests-cros-9999".
-// Missing packages (using the same format) and a list of commands that can be executed to install
-// the dependencies are returned.
-func checkDeps(ctx context.Context, portagePkg, cachePath string) (
+// checkDeps checks if all of build dependencies are installed.
+// Missing packages and a list of commands that can be executed to install the dependencies are returned.
+func checkDeps(ctx context.Context, cachePath string) (
 	missing []string, cmds [][]string, err error) {
 	ctx, st1 := timing.Start(ctx, "check_deps")
 	defer st1.End()
 
 	// To avoid slow Portage commands, check if we've already verified that dependencies are up-to-date.
-	var cache *checkDepsCache
-	var lastMod time.Time
-	if cachePath != "" {
-		checkPaths, err := getOverlays(ctx, portageConfigFile)
-		if err != nil {
-			return nil, nil, fmt.Errorf("failed to get overlays from %v: %v", portageConfigFile, err)
-		}
-		checkPaths = append(checkPaths, portagePackagesDir)
-		if cache, err = newCheckDepsCache(cachePath, checkPaths); err != nil {
-			return nil, nil, fmt.Errorf("failed to load check-deps cache from %v: %v", cachePath, err)
-		}
-		var checkNeeded bool
-		if checkNeeded, lastMod = cache.isCheckNeeded(ctx, portagePkg); !checkNeeded {
-			return nil, nil, nil
-		}
+	checkPaths, err := getOverlays(ctx, portageConfigFile)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to get overlays from %v: %v", portageConfigFile, err)
 	}
-
-	// Work around Portage bug https://bugs.gentoo.org/682472, where --onlydeps-with-rdeps=n is ignored
-	// (resulting in runtime dependencies being incorrectly checked) if the test bundle package was emerged earlier.
-	if installed, err := portagePkgInstalled(ctx, portagePkg); err != nil {
-		return nil, nil, fmt.Errorf("failed checking for target package in host sysroot: %v", err)
-	} else if installed {
-		return nil, nil, fmt.Errorf(`target package installed in host sysroot; please run "sudo emerge -C %s"`, portagePkg)
+	checkPaths = append(checkPaths, portagePackagesDir)
+	cache, err := newCheckDepsCache(cachePath, checkPaths)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to load check-deps cache from %v: %v", cachePath, err)
+	}
+	checkNeeded, lastMod := cache.isCheckNeeded(ctx)
+	if !checkNeeded {
+		return nil, nil, nil
 	}
 
 	// Fall back to the slow (multiple seconds) emerge path.
 	ctx, st2 := timing.Start(ctx, "emerge_list_deps")
 	defer st2.End()
 
-	cl := emergeCmdLine(portagePkg, emergeList)
-	cmd := exec.CommandContext(ctx, cl[0], cl[1:]...)
-	var stderr bytes.Buffer
-	cmd.Stderr = &stderr
-	stdout, err := cmd.Output()
-	// emerge exits with 1 if the package is masked, so parse the output first to determine
-	// whether the error is expected or not.
-	missing, masked := parseEmergeOutput(stdout, stderr.Bytes(), portagePkg)
-	if err != nil && !masked {
+	cl := emergeCmdLine(emergeList)
+	stdout, err := exec.CommandContext(ctx, cl[0], cl[1:]...).Output()
+	if err != nil {
 		return nil, nil, fmt.Errorf("%q failed: %v", shutil.EscapeSlice(cl), err)
 	}
 
-	if len(missing) == 0 && cache != nil {
+	missing = parseMissingDeps(stdout)
+	if len(missing) == 0 {
 		// Record that dependencies are up-to-date so we can skip these checks next time.
-		if err := cache.update(portagePkg, lastMod); err != nil {
+		if err := cache.update(cachePath, lastMod); err != nil {
 			return nil, nil, err
 		}
-	}
-
-	if len(missing) > 0 {
-		if masked {
-			cmds = append(cmds, []string{"cros_workon", "--host", "start", portagePkg})
-		}
-		cmds = append(cmds, emergeCmdLine(portagePkg, emergeInstall))
+	} else {
+		cmds = append(cmds, emergeCmdLine(emergeInstall))
 	}
 
 	return missing, cmds, nil
-}
-
-// portagePkgInstalled runs "equery l" to check if pkg is installed.
-// pkg should be a versioned package of the form "chromeos-base/tast-local-tests-cros-9999".
-// This typically takes hundreds of milliseconds to complete.
-func portagePkgInstalled(ctx context.Context, pkg string) (bool, error) {
-	ctx, st := timing.Start(ctx, "equery_list")
-	defer st.End()
-
-	cmd := exec.CommandContext(ctx, "equery", "-q", "-C", "l", pkg)
-	out, err := cmd.Output()
-	if err != nil {
-		// equery (in "quiet mode") exits with 3 if the package isn't installed.
-		if exitErr, ok := err.(*exec.ExitError); ok {
-			if status, ok := exitErr.Sys().(syscall.WaitStatus); ok {
-				if status.ExitStatus() == 3 {
-					return false, nil
-				}
-			}
-		}
-		return false, fmt.Errorf("%q failed: %v", strings.Join(cmd.Args, " "), err)
-	}
-
-	// equery should print the package name.
-	if str := strings.TrimSpace(string(out)); str != pkg {
-		return false, fmt.Errorf("%q returned %q", strings.Join(cmd.Args, " "), str)
-	}
-	return true, nil
 }
 
 // emergeMode describes a mode to use when running emerge.
@@ -131,57 +81,38 @@ const (
 )
 
 // emergeCmdLine returns an emerge command that lists or installs missing or outdated
-// build dependencies for pkg. pkg should be a versioned package of the form
-// "chromeos-base/tast-local-tests-cros-9999".
-func emergeCmdLine(pkg string, mode emergeMode) []string {
+// build dependencies for buildDepsPkg.
+func emergeCmdLine(mode emergeMode) []string {
 	var args []string
 	add := func(as ...string) { args = append(args, as...) }
 
 	if mode == emergeInstall {
 		add("sudo")
 	}
-	add("emerge", "--jobs=16", "--onlydeps", "--onlydeps-with-rdeps=n", "--update", "--deep", "1")
+	add("emerge", "--jobs=16", "--onlydeps", "--update", "--deep", "1")
 	if mode == emergeList {
 		add("--pretend", "--columns", "--quiet", "y", "--color", "n")
 	}
-	add("=" + pkg)
+	add(buildDepsPkg)
 	return args
 }
 
-// parseEmergeOutput parses stdout and stderr from a command returned by emergeCmdLine and
-// returns missing dependencies (as e.g. "dev-go/mdns-0.0.1") and whether a cros_workon command is
-// needed to unmask the test bundle before the dependencies can be installed.
+// parseMissingDeps parses stdout and stderr from a command returned by emergeCmdLine and
+// returns missing dependencies (as e.g. "dev-go/mdns-0.0.1").
 //
 // emerge prints each missing dependency to stdout on a line similar to the following:
 //
 //   N     dev-go/cmp 0.2.0-r1
-//
-// If there are any missing dependencies and the bundle package is masked, then a message
-// similar to the following is printed to stderr:
-//
-//  The following keyword changes are necessary to proceed:
-//  (see "package.accept_keywords" in the portage(5) man page for more details)
-//  # required by =chromeos-base/tast-local-tests-cros-9999 (argument)
-//  =chromeos-base/tast-local-tests-cros-9999 **
-//
-// Unmasking the package appears to be required even when only emerging its dependencies.
-func parseEmergeOutput(stdout, stderr []byte, pkg string) (missingDeps []string, masked bool) {
+func parseMissingDeps(stdout []byte) []string {
+	var missing []string
 	for _, ln := range strings.Split(strings.TrimSpace(string(stdout)), "\n") {
 		fields := strings.Fields(ln)
 		if len(fields) < 3 || strings.Index(fields[1], "/") == -1 {
 			continue
 		}
-		missingDeps = append(missingDeps, fields[1]+"-"+fields[2])
+		missing = append(missing, fields[1]+"-"+fields[2])
 	}
-
-	maskLine := fmt.Sprintf("=%s **", pkg)
-	for _, ln := range strings.Split(string(stderr), "\n") {
-		if strings.TrimSpace(ln) == maskLine {
-			masked = true
-		}
-	}
-
-	return missingDeps, masked
+	return missing
 }
 
 // getOverlays evaluates the Portage config script at confPath (typically "/etc/make.conf") and returns all of
@@ -212,41 +143,41 @@ func getOverlays(ctx context.Context, confPath string) ([]string, error) {
 // checkDepsCache is used to track and check successful calls to checkDeps to make it possible to skip
 // executing slow Portage commands when nothing has changed.
 type checkDepsCache struct {
-	cachePath  string               // path to JSON file with map from package name to last-modified timestamp
-	pkgLastMod map[string]time.Time // contents of cachePath
-	checkPaths []string             // Portage overlay dirs and package file that should be checked for modifications
+	CheckPaths []string  `json:"checkPaths"` // paths to check timestamps in
+	LastMod    time.Time `json:"lastMod"`    // latest timestamp of the all files in CheckPaths
 }
 
 // newCheckDepsCache reads and unmarshals cachePath and returns a new checkDepsCache.
 // No error is returned if cachePath doesn't already exist.
 func newCheckDepsCache(cachePath string, checkPaths []string) (*checkDepsCache, error) {
-	c := &checkDepsCache{
-		cachePath:  cachePath,
-		pkgLastMod: make(map[string]time.Time),
-		checkPaths: checkPaths,
-	}
-
 	f, err := os.Open(cachePath)
-	if err != nil && !os.IsNotExist(err) {
+	if os.IsNotExist(err) {
+		return &checkDepsCache{CheckPaths: checkPaths}, nil
+	} else if err != nil {
 		return nil, err
-	} else if err == nil {
-		defer f.Close()
-		if err := json.NewDecoder(f).Decode(&c.pkgLastMod); err != nil {
-			return nil, err
-		}
 	}
-	return c, nil
+	defer f.Close()
+
+	var cache checkDepsCache
+	if err := json.NewDecoder(f).Decode(&cache); err != nil {
+		return nil, err
+	}
+	// Invalidate the cache if CheckPaths has changed.
+	if !reflect.DeepEqual(cache.CheckPaths, checkPaths) {
+		return &checkDepsCache{CheckPaths: checkPaths}, nil
+	}
+	return &cache, nil
 }
 
 // isCheckNeeded compares the current state of the filesystem against the last time that dependencies were verified as
 // being up-to-date for pkg. checkNeeded is true if the two timestamps do not exactly match. The filesystem's latest
 // last-modified timestamps is returned and should be passed to update if the dependencies are up-to-date.
-func (c *checkDepsCache) isCheckNeeded(ctx context.Context, pkg string) (checkNeeded bool, lastMod time.Time) {
+func (c *checkDepsCache) isCheckNeeded(ctx context.Context) (checkNeeded bool, lastMod time.Time) {
 	ctx, st := timing.Start(ctx, "check_cache")
 	defer st.End()
 
-	ch := make(chan time.Time, len(c.checkPaths))
-	for _, p := range c.checkPaths {
+	ch := make(chan time.Time, len(c.CheckPaths))
+	for _, p := range c.CheckPaths {
 		go func(p string) {
 			var latest time.Time
 			filepath.Walk(p, func(_ string, fi os.FileInfo, err error) error {
@@ -258,34 +189,33 @@ func (c *checkDepsCache) isCheckNeeded(ctx context.Context, pkg string) (checkNe
 			ch <- latest
 		}(p)
 	}
-	for range c.checkPaths {
+	for range c.CheckPaths {
 		if t := <-ch; t.After(lastMod) {
 			lastMod = t
 		}
 	}
 
-	cachedLastMod := c.pkgLastMod[pkg]
-	return cachedLastMod.IsZero() || !cachedLastMod.Equal(lastMod), lastMod
+	return c.LastMod.IsZero() || !c.LastMod.Equal(lastMod), lastMod
 }
 
-// update sets pkg's last-modified timestamp and atomically overwrites the on-disk copy of the cache.
-func (c *checkDepsCache) update(pkg string, lastMod time.Time) error {
-	c.pkgLastMod[pkg] = lastMod
+// update atomically overwrites the on-disk copy of the cache.
+func (c *checkDepsCache) update(cachePath string, lastMod time.Time) error {
+	c.LastMod = lastMod
 
-	if err := os.MkdirAll(filepath.Dir(c.cachePath), 0755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(cachePath), 0755); err != nil {
 		return err
 	}
-	f, err := ioutil.TempFile(filepath.Dir(c.cachePath), filepath.Base(c.cachePath)+".")
+	f, err := ioutil.TempFile(filepath.Dir(cachePath), filepath.Base(cachePath)+".")
 	if err != nil {
 		return err
 	}
-	if err := json.NewEncoder(f).Encode(&c.pkgLastMod); err != nil {
+	defer os.Remove(f.Name())
+	if err := json.NewEncoder(f).Encode(c); err != nil {
 		f.Close()
 		return err
 	}
 	if err := f.Close(); err != nil {
 		return err
 	}
-	return os.Rename(f.Name(), c.cachePath)
-
+	return os.Rename(f.Name(), cachePath)
 }

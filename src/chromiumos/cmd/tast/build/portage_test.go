@@ -21,8 +21,6 @@ import (
 
 func TestParseEmergeOutput(t *testing.T) {
 	const (
-		pkg = "chromeos-base/tast-local-tests-cros-9999"
-
 		name1 = "chromeos-base/my_pkg"
 		ver1  = "0.0.1-r3"
 		dep1  = name1 + "-" + ver1
@@ -32,26 +30,17 @@ func TestParseEmergeOutput(t *testing.T) {
 		dep2  = name2 + "-" + ver2
 	)
 
-	maskMsg := fmt.Sprintf(`The following keyword changes are necessary to proceed:
-(see "package.accept_keywords" in the portage(5) man page for more details)
-# required by =%s (argument)
-=%s **
-`, pkg, pkg)
-
 	for _, tc := range []struct {
-		stdout, stderr string
-		missing        []string
-		masked         bool
+		stdout  string
+		missing []string
 	}{
-		{"", "", nil, false},
-		{fmt.Sprintf(" N     %s %s\n", name1, ver1), "", []string{dep1}, false},
-		{fmt.Sprintf(" N     %s %s\n U     %s %s\n", name1, ver1, name2, ver2), "", []string{dep1, dep2}, false},
-		{fmt.Sprintf(" N     %s %s\n", name1, ver1), maskMsg, []string{dep1}, true},
+		{"", nil},
+		{fmt.Sprintf(" N     %s %s\n", name1, ver1), []string{dep1}},
+		{fmt.Sprintf(" N     %s %s\n U     %s %s\n", name1, ver1, name2, ver2), []string{dep1, dep2}},
+		{fmt.Sprintf(" N     %s %s\n", name1, ver1), []string{dep1}},
 	} {
-		missing, masked := parseEmergeOutput([]byte(tc.stdout), []byte(tc.stderr), pkg)
-		if !reflect.DeepEqual(missing, tc.missing) || masked != tc.masked {
-			t.Errorf("parseEmergeOutput(%q, %q, %q) = (%v, %v); want (%v, %v)",
-				tc.stdout, tc.stderr, pkg, missing, masked, tc.missing, tc.masked)
+		if missing := parseMissingDeps([]byte(tc.stdout)); !reflect.DeepEqual(missing, tc.missing) {
+			t.Errorf("parseMissingDeps(%q) = %v; want %v", tc.stdout, missing, tc.missing)
 		}
 	}
 }
@@ -112,8 +101,6 @@ func TestCheckDepsCache(t *testing.T) {
 		file1    = "foo.txt"  // in overlay1
 		file2    = "bar.txt"  // in overlay2
 		dbFile   = "packages" // in td
-
-		pkg = "chromeos-base/mypkg-9999"
 	)
 
 	if err := testutil.WriteFiles(td, map[string]string{
@@ -159,48 +146,48 @@ func TestCheckDepsCache(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Failed to open %v: %v", cachePath, err)
 		}
-		checkNeeded, lastMod = cache.isCheckNeeded(context.Background(), pkg)
+		checkNeeded, lastMod = cache.isCheckNeeded(context.Background())
 		return cache, checkNeeded, lastMod
 	}
 
 	// The cache should initially report that dependencies need to be checked.
 	cache, checkNeeded, lastMod := createCache()
 	if !checkNeeded {
-		t.Errorf("isCheckNeeded(%q) is false initially", pkg)
+		t.Error("isCheckNeeded is false initially")
 	} else if !lastMod.Equal(t0) {
-		t.Errorf("isCheckNeeded(%q) returned last mod %v initially; want %v", pkg, lastMod, t0)
+		t.Errorf("isCheckNeeded returned last mod %v initially; want %v", lastMod, t0)
 	}
 
 	// After writing the updated timestamp to the cache, no check is needed.
-	if err := cache.update(pkg, lastMod); err != nil {
-		t.Fatalf("update(%q, %v) failed: ", pkg, lastMod)
+	if err := cache.update(cachePath, lastMod); err != nil {
+		t.Fatalf("update(%v) failed: ", lastMod)
 	}
 	if cache, checkNeeded, lastMod = createCache(); checkNeeded {
-		t.Errorf("isCheckNeeded(%q) is true after update", pkg)
+		t.Errorf("isCheckNeeded is true after update")
 	}
 
 	// After files in overlays are updated, checking is needed again.
 	setTimes(filepath.Join(overlay1Path, file1), t2)
 	setTimes(filepath.Join(overlay2Path, file2), t1)
 	if cache, checkNeeded, lastMod = createCache(); !checkNeeded {
-		t.Errorf("isCheckNeeded(%q) is false after overlay update", pkg)
+		t.Error("isCheckNeeded is false after overlay update")
 	} else if !lastMod.Equal(t2) {
-		t.Errorf("isCheckNeeded(%q) returned last mod %v after overlay update; want %v", pkg, lastMod, t2)
+		t.Errorf("isCheckNeeded returned last mod %v after overlay update; want %v", lastMod, t2)
 	}
 
 	// Updating the cache should make checking unnecessary again.
-	if err := cache.update(pkg, lastMod); err != nil {
-		t.Fatalf("update(%q, %v) failed: ", pkg, lastMod)
+	if err := cache.update(cachePath, lastMod); err != nil {
+		t.Fatalf("update(%v) failed: ", lastMod)
 	}
 	if cache, checkNeeded, lastMod = createCache(); checkNeeded {
-		t.Errorf("isCheckNeeded(%q) is true after second update", pkg)
+		t.Error("isCheckNeeded is true after second update")
 	}
 
 	// Updating the DB file should also result in a check being needed.
 	setTimes(dbPath, t3)
 	if cache, checkNeeded, lastMod = createCache(); !checkNeeded {
-		t.Errorf("isCheckNeeded(%q) is false after DB update", pkg)
+		t.Error("isCheckNeeded is false after DB update")
 	} else if !lastMod.Equal(t3) {
-		t.Errorf("isCheckNeeded(%q) returned last mod %v after DB update; want %v", pkg, lastMod, t3)
+		t.Errorf("isCheckNeeded returned last mod %v after DB update; want %v", lastMod, t3)
 	}
 }

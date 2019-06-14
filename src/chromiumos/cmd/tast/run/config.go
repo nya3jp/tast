@@ -55,7 +55,7 @@ const (
 
 const (
 	defaultKeyFile     = "chromite/ssh_keys/testing_rsa" // default private SSH key within Chrome OS checkout
-	checkDepsCacheFile = "check_deps_cache.json"         // file in buildOutDir where dependency-checking results are cached
+	checkDepsCacheFile = "check_deps_cache.v2.json"      // file in buildOutDir where dependency-checking results are cached
 )
 
 // Config contains shared configuration information for running or listing tests.
@@ -261,6 +261,7 @@ func (c *Config) DeriveDefaults() error {
 func (c *Config) baseBuildCfg() build.Config {
 	return build.Config{
 		Logger:             c.Logger,
+		CheckBuildDeps:     c.checkPortageDeps,
 		CheckDepsCachePath: filepath.Join(c.buildOutDir, checkDepsCacheFile),
 		InstallPortageDeps: c.installPortageDeps,
 	}

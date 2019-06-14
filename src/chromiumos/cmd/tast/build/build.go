@@ -8,6 +8,7 @@ package build
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -62,14 +63,14 @@ func Build(ctx context.Context, cfg *Config, pkg, outDir, stageName string) (out
 		return out, fmt.Errorf("unknown arch %q", cfg.Arch)
 	}
 
-	if cfg.PortagePkg != "" {
-		cfg.Logger.Status("Checking dependencies for " + cfg.PortagePkg)
-		if missing, cmds, err := checkDeps(ctx, cfg.PortagePkg, cfg.CheckDepsCachePath); err != nil {
-			return out, fmt.Errorf("failed checking deps for %s: %v", cfg.PortagePkg, err)
+	if cfg.CheckBuildDeps {
+		cfg.Logger.Status("Checking build dependencies")
+		if missing, cmds, err := checkDeps(ctx, cfg.CheckDepsCachePath); err != nil {
+			return out, fmt.Errorf("failed checking build deps: %v", err)
 		} else if len(missing) > 0 {
 			if !cfg.InstallPortageDeps {
 				return makeMissingDepsMessage(missing, cmds),
-					fmt.Errorf("%s has missing dependencies", cfg.PortagePkg)
+					errors.New("missing build dependencies")
 			}
 			if out, err := installMissingDeps(ctx, cfg, missing, cmds); err != nil {
 				return out, err
@@ -150,7 +151,7 @@ func installMissingDeps(ctx context.Context, cfg *Config, missing []string, cmds
 	ctx, st := timing.Start(ctx, "install_deps")
 	defer st.End()
 
-	cfg.Logger.Logf("Installing missing dependencies for %v:", cfg.PortagePkg)
+	cfg.Logger.Log("Installing missing dependencies:")
 	for _, dep := range missing {
 		cfg.Logger.Log("  ", dep)
 	}

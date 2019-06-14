@@ -50,9 +50,6 @@ func remote(ctx context.Context, cfg *Config) (Status, []TestResult) {
 		if bc.Arch, err = build.GetLocalArch(); err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to get local arch: %v", err), nil
 		}
-		if cfg.checkPortageDeps {
-			bc.PortagePkg = fmt.Sprintf("chromeos-base/tast-remote-tests-%s-9999", cfg.buildBundle)
-		}
 		buildDir := filepath.Join(cfg.buildOutDir, bc.Arch, remoteBundleBuildSubdir)
 		pkg := path.Join(remoteBundlePkgPathPrefix, cfg.buildBundle)
 		cfg.Logger.Debugf("Building %s from %s to %s", pkg, strings.Join(bc.Workspaces, ":"), buildDir)

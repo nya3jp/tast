@@ -18,14 +18,13 @@ type Config struct {
 	// Workspaces contains paths to Go workspaces (i.e. with "src" subdirectories) containing source code to be compiled.
 	// These are placed into the GOPATH environment variable in the listed order.
 	Workspaces []string
-	// PortagePkg is the Portage package that contains the executable, including a version suffix (typically "-9999").
-	// If non-empty, Build checks that the package's direct dependencies are installed and up-to-date in the host sysroot before building it.
-	PortagePkg string
+	// CheckBuildDeps indicates whether to check that build dependencies are installed and up-to-date in
+	// the host sysroot.
+	CheckBuildDeps bool
 	// InstallPortageDeps controls whether outdated or missing Portage deps are automatically installed.
 	// If false, a message is generated with the commands(s) that should be manually run and an error is returned.
 	InstallPortageDeps bool
-	// CheckDepsCachePath is the path to a JSON file storing a map from package names (see PortagePkg) to time.Time
-	// values. Each timestamp is the latest last-modified time across Portage's overlays and database file, written
-	// when the package's dependencies were last verified as being up-to-date.
+	// CheckDepsCachePath is the path to a JSON file storing cached information to avoid running emerge
+	// to check build dependencies when possible. See checkDepsCache for the format.
 	CheckDepsCachePath string
 }

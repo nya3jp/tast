@@ -74,6 +74,7 @@ func main() {
 			"chrome_internal":         "chrome_internal",
 			"cros_config":             "unibuild",
 			"cros_internal":           "internal",
+			"crossystem":              "!betty && !tast_vm",                     // VMs don't support for few crossystem sub-commands: https://crbug.com/974615
 			"cups":                    "cups",
 			"diagnostics":             "diagnostics",
 			"display_backlight":       "display_backlight",

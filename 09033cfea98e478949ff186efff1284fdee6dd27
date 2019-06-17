@@ -33,6 +33,24 @@
       "revId": "09033cfea98e478949ff186efff1284fdee6dd27",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f2e594cb_2e325777",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1336055
+      },
+      "writtenOn": "2019-06-17T07:03:40Z",
+      "side": 1,
+      "message": "Do you have reference to what are missing?\nAns: arch, cros_debug, dev_default_boot, alt_os_enabled, inside_vm, mainfw_type are the only one supported\nAlso, any plans to support them on VM, too? Could you comment?\nAns: Sorry, I am not the correct person to tell about the support in VM. I have ported the test from autotest as we are using this test in our local execution. Thanks\nCould you update docs/test_dependencies.md, too?\nAns: Sure, I will update the test_dependencies.",
+      "parentUuid": "9a3c98e0_53e991d7",
+      "revId": "09033cfea98e478949ff186efff1284fdee6dd27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a3c98e0_53e991d7",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-06-17T06:39:47Z",
+      "side": 1,
+      "message": "Do you have reference to what are missing?\nAlso, any plans to support them on VM, too? Could you comment?\n\nCould you update docs/test_dependencies.md, too?",
+      "revId": "09033cfea98e478949ff186efff1284fdee6dd27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

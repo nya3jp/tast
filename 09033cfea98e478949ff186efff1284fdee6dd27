@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "5582eb02_a8cf22f7",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-06-17T07:01:19Z",
+      "side": 1,
+      "message": "Could you link to the bug? chromium:974615.",
+      "revId": "09033cfea98e478949ff186efff1284fdee6dd27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "9a3c98e0_53e991d7",
         "filename": "src/chromiumos/cmd/local_test_runner/main.go",
         "patchSetId": 2

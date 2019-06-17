@@ -84,19 +84,24 @@ func main() {
 			"gpu_sandboxing":          "!betty && !tast_vm",                     // no GPU sandboxing on VMs: https://crbug.com/914688
 			"memd":                    "memd",
 			"ml_service":              "ml_service",
-			"no_android":              "!arc",
-			"no_symlink_mount":        "!lxc",                         // boards using LXC set CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT=n
-			"oci":                     "containers && !moblab",        // run_oci doesn't work on Moblab: https://crbug.com/951691
-			"reboot":                  "!betty && !tast_vm",           // weird missing-runner-after-reboot bug: https://crbug.com/909955
-			"screenshot":              "display_backlight && !rk3399", // screenshot command broken on RK3399: https://crbug.com/880597
-			"selinux":                 "selinux",
-			"selinux_current":         "selinux && !selinux_experimental",
-			"selinux_experimental":    "selinux && selinux_experimental",
-			"tablet_mode":             "touchview",
-			"tpm":                     "!mocktpm && !tast_vm",
-			"transparent_hugepage":    "transparent_hugepage",
-			"usbguard":                "usbguard",
-			"virtual_usb_printer":     "usbip",
+			// mosys command has a list of supported platforms. Specifically,
+			// betty is not a supported platform.
+			// TODO(crbug.com/933110): There seems no clear way to retrieve the board
+			// configuration. Probably nice to migrate into the scheduler system.
+			"mosys":                "!betty",
+			"no_android":           "!arc",
+			"no_symlink_mount":     "!lxc",                         // boards using LXC set CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT=n
+			"oci":                  "containers && !moblab",        // run_oci doesn't work on Moblab: https://crbug.com/951691
+			"reboot":               "!betty && !tast_vm",           // weird missing-runner-after-reboot bug: https://crbug.com/909955
+			"screenshot":           "display_backlight && !rk3399", // screenshot command broken on RK3399: https://crbug.com/880597
+			"selinux":              "selinux",
+			"selinux_current":      "selinux && !selinux_experimental",
+			"selinux_experimental": "selinux && selinux_experimental",
+			"tablet_mode":          "touchview",
+			"tpm":                  "!mocktpm && !tast_vm",
+			"transparent_hugepage": "transparent_hugepage",
+			"usbguard":             "usbguard",
+			"virtual_usb_printer":  "usbip",
 			// Some VM builds actually can run nested VM with right host configuration.
 			// But we haven't enable this feature on builders. For now, just disable
 			// vm_host feature for VM builds.

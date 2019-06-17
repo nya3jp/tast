@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "31089c27_861c0ef5",
+        "filename": "src/chromiumos/cmd/tast/build/portage.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-06-17T16:28:05Z",
+      "side": 1,
+      "message": "nit\n\n} else if len(missing) \u003e 0 {\n  ...",
+      "range": {
+        "startLine": 68,
+        "startChar": 0,
+        "endLine": 70,
+        "endChar": 22
+      },
+      "revId": "88d99b8744ca9bc292f9bdc33c115cd43892de16",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "347ab567_4f10e2c1",
+        "filename": "src/chromiumos/cmd/tast/build/portage.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-06-17T16:28:05Z",
+      "side": 1,
+      "message": "The file format looks changed.\nSo, IIUC, decoding the old cached file would report UnmarshalTypeError?",
+      "revId": "88d99b8744ca9bc292f9bdc33c115cd43892de16",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

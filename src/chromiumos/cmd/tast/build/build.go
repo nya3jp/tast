@@ -79,7 +79,13 @@ func Build(ctx context.Context, cfg *Config, pkg, outDir, stageName string) (out
 
 	const ldFlags = "-ldflags=-s -w"
 
-	env := append(os.Environ(), "GOPATH="+strings.Join(cfg.Workspaces, ":"))
+	env := append(os.Environ(),
+		"GOPATH="+strings.Join(cfg.Workspaces, ":"),
+		// Disable cgo and PIE on building Tast binaries. See:
+		// https://crbug.com/976196
+		// https://github.com/golang/go/issues/30986#issuecomment-475626018
+		"CGO_ENABLED=0",
+		"GOPIE=0")
 
 	// This is frustrating:
 	//

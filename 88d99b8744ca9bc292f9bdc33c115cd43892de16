@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "21240a49_cea71446",
+        "filename": "src/chromiumos/cmd/tast/build/portage.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-06-18T02:22:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "31089c27_861c0ef5",
+      "range": {
+        "startLine": 68,
+        "startChar": 0,
+        "endLine": 70,
+        "endChar": 22
+      },
+      "revId": "88d99b8744ca9bc292f9bdc33c115cd43892de16",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "347ab567_4f10e2c1",
         "filename": "src/chromiumos/cmd/tast/build/portage.go",
         "patchSetId": 2
@@ -39,6 +63,24 @@
       "revId": "88d99b8744ca9bc292f9bdc33c115cd43892de16",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e724d12d_9a61546a",
+        "filename": "src/chromiumos/cmd/tast/build/portage.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-06-18T02:22:09Z",
+      "side": 1,
+      "message": "It should be safe because unrecognized fields are just discarded. However I realized that the opposite will be a problem (decoding the new format with the old tast binary gives an error since we used to decode the JSON as map[string]time.Time). Though it\u0027s not very likely, it can be a problem if we happen to revert this change later.\n\nTo be safer I\u0027ve just renamed the config file.",
+      "parentUuid": "347ab567_4f10e2c1",
+      "revId": "88d99b8744ca9bc292f9bdc33c115cd43892de16",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -31,6 +31,12 @@ readonly TAST_OUT="${GOHOME}/bin/tast"
 # be emerged beforehand.
 export GOPATH="$(IFS=:; echo "${SRCDIRS[*]}"):/usr/lib/gopath"
 
+# Disable cgo and PIE on building Tast binaries. See:
+# https://crbug.com/976196
+# https://github.com/golang/go/issues/30986#issuecomment-475626018
+export CGO_ENABLED=0
+export GOPIE=0
+
 readonly CMD=$(basename "${0}")
 
 # Prints usage information and exits.

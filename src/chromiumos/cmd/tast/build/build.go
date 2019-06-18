@@ -79,7 +79,10 @@ func Build(ctx context.Context, cfg *Config, pkg, outDir, stageName string) (out
 
 	const ldFlags = "-ldflags=-s -w"
 
-	env := append(os.Environ(), "GOPATH="+strings.Join(cfg.Workspaces, ":"))
+	env := append(os.Environ(),
+		"GOPATH="+strings.Join(cfg.Workspaces, ":"),
+		// Disable Cgo on building Tast binaries (crbug.com/976196).
+		"CGO_ENABLED=0")
 
 	// This is frustrating:
 	//

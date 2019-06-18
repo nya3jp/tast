@@ -31,6 +31,9 @@ readonly TAST_OUT="${GOHOME}/bin/tast"
 # be emerged beforehand.
 export GOPATH="$(IFS=:; echo "${SRCDIRS[*]}"):/usr/lib/gopath"
 
+# Disable Cgo on building Tast binaries (crbug.com/976196).
+export CGO_ENABLED=0
+
 readonly CMD=$(basename "${0}")
 
 # Prints usage information and exits.

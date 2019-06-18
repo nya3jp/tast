@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "403ddab6_51ad027e",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-06-18T04:02:19Z",
+      "side": 1,
+      "message": "One example is when we want to use different timeouts for the whole process execution and Wait call. Particular usage is:\n\nhttps://cs.corp.google.com/chromeos_public/src/platform/tast/src/chromiumos/cmd/tast/run/local.go?type\u003dcs\u0026q\u003dfile:platform/tast/+wait\u0026g\u003d0\u0026l\u003d645\n\nAfter reading all local_test_runner, handle.Wait is called with short (5 seconds) timeout.",
+      "parentUuid": "72720055_823b067d",
+      "range": {
+        "startLine": 24,
+        "startChar": 3,
+        "endLine": 26,
+        "endChar": 54
+      },
+      "revId": "dde94c74638f2fb9948169e7d7e085fc12bd817b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "71bbc46c_231e5d84",
         "filename": "src/chromiumos/tast/host/exec.go",
         "patchSetId": 1
@@ -45,6 +69,30 @@
       "revId": "dde94c74638f2fb9948169e7d7e085fc12bd817b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0650971c_273fd63a",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-06-18T04:02:19Z",
+      "side": 1,
+      "message": "Ugh, good catch. Actually this is no longer correct. Removed.",
+      "parentUuid": "71bbc46c_231e5d84",
+      "range": {
+        "startLine": 28,
+        "startChar": 3,
+        "endLine": 29,
+        "endChar": 12
+      },
+      "revId": "dde94c74638f2fb9948169e7d7e085fc12bd817b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -95,6 +143,30 @@
     },
     {
       "key": {
+        "uuid": "980177ca_cedf203f",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 245,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-06-18T04:02:19Z",
+      "side": 1,
+      "message": "Oops, yes, this is a race.\n\nWhile your suggestion sounds nice, I want to block Cmd.Start method until c.sess.Close finishes (unless ctx\u0027s deadline is reached), and it\u0027s a bit difficult to implement with the suggested approach. So this time I\u0027m sticking with doAsync. But please let me know if you have a good idea.",
+      "parentUuid": "023283b4_ca564985",
+      "range": {
+        "startLine": 240,
+        "startChar": 1,
+        "endLine": 245,
+        "endChar": 4
+      },
+      "revId": "dde94c74638f2fb9948169e7d7e085fc12bd817b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c441c99d_f3757926",
         "filename": "src/chromiumos/tast/host/exec.go",
         "patchSetId": 1
@@ -112,6 +184,24 @@
     },
     {
       "key": {
+        "uuid": "31072527_6c2358b7",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 266,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-06-18T04:02:19Z",
+      "side": 1,
+      "message": "The comment at the top was wrong :)",
+      "parentUuid": "c441c99d_f3757926",
+      "revId": "dde94c74638f2fb9948169e7d7e085fc12bd817b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b2d1b55c_7feb0573",
         "filename": "src/chromiumos/tast/host/exec.go",
         "patchSetId": 1
@@ -126,6 +216,24 @@
       "revId": "dde94c74638f2fb9948169e7d7e085fc12bd817b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4c5f1530_a27a5e44",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 294,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-06-18T04:02:19Z",
+      "side": 1,
+      "message": "You\u0027re right, but I\u0027d like to set the state early so that secondary startSession calls fail (we can\u0027t catch racy cases of course, it\u0027s best effort). Added a comment to clarify the intention.",
+      "parentUuid": "b2d1b55c_7feb0573",
+      "revId": "dde94c74638f2fb9948169e7d7e085fc12bd817b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -187,6 +295,30 @@
     },
     {
       "key": {
+        "uuid": "1fd92778_377989ed",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 321,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-06-18T04:02:19Z",
+      "side": 1,
+      "message": "Sure, tried to improve comments.",
+      "parentUuid": "5528f151_67558b61",
+      "range": {
+        "startLine": 321,
+        "startChar": 3,
+        "endLine": 321,
+        "endChar": 68
+      },
+      "revId": "dde94c74638f2fb9948169e7d7e085fc12bd817b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "aa404497_46764ed8",
         "filename": "src/chromiumos/tast/host/exec.go",
         "patchSetId": 1
@@ -201,6 +333,24 @@
       "revId": "dde94c74638f2fb9948169e7d7e085fc12bd817b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "56dbc078_fca459b6",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 325,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-06-18T04:02:19Z",
+      "side": 1,
+      "message": "No, actually p is io.Reader and does not provide Close.",
+      "parentUuid": "aa404497_46764ed8",
+      "revId": "dde94c74638f2fb9948169e7d7e085fc12bd817b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -221,6 +371,24 @@
     },
     {
       "key": {
+        "uuid": "6a987dbe_85fb98a1",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 338,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-06-18T04:02:19Z",
+      "side": 1,
+      "message": "ditto.",
+      "parentUuid": "2bcbfa48_ef45812d",
+      "revId": "dde94c74638f2fb9948169e7d7e085fc12bd817b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "50d78b8b_91074f5d",
         "filename": "src/chromiumos/tast/host/exec.go",
         "patchSetId": 1
@@ -235,6 +403,24 @@
       "revId": "dde94c74638f2fb9948169e7d7e085fc12bd817b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "36aa08fb_ffa212a3",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 375,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-06-18T04:02:19Z",
+      "side": 1,
+      "message": "Sounds like a good idea.",
+      "parentUuid": "50d78b8b_91074f5d",
+      "revId": "dde94c74638f2fb9948169e7d7e085fc12bd817b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -261,6 +447,30 @@
     },
     {
       "key": {
+        "uuid": "41f24018_b68b51ff",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 413,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-06-18T04:02:19Z",
+      "side": 1,
+      "message": "Good catch!",
+      "parentUuid": "2b9cc3b3_11064516",
+      "range": {
+        "startLine": 413,
+        "startChar": 42,
+        "endLine": 413,
+        "endChar": 78
+      },
+      "revId": "dde94c74638f2fb9948169e7d7e085fc12bd817b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b1909a81_f9b6acfc",
         "filename": "src/chromiumos/tast/host/exec.go",
         "patchSetId": 1
@@ -284,6 +494,30 @@
     },
     {
       "key": {
+        "uuid": "99e967f5_69759c5e",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 420,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-06-18T04:02:19Z",
+      "side": 1,
+      "message": "We might want to, but there\u0027s no way to log.",
+      "parentUuid": "b1909a81_f9b6acfc",
+      "range": {
+        "startLine": 420,
+        "startChar": 3,
+        "endLine": 420,
+        "endChar": 24
+      },
+      "revId": "dde94c74638f2fb9948169e7d7e085fc12bd817b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ffb17c77_d240f610",
         "filename": "src/chromiumos/tast/host/exec.go",
         "patchSetId": 1
@@ -304,6 +538,30 @@
       "revId": "dde94c74638f2fb9948169e7d7e085fc12bd817b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eb9faa53_e2cc6050",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 422,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-06-18T04:02:19Z",
+      "side": 1,
+      "message": "Sounds very fair!",
+      "parentUuid": "ffb17c77_d240f610",
+      "range": {
+        "startLine": 416,
+        "startChar": 1,
+        "endLine": 422,
+        "endChar": 2
+      },
+      "revId": "dde94c74638f2fb9948169e7d7e085fc12bd817b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

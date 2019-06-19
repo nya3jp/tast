@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "658a20ad_55dd1fb7",
+        "filename": "src/chromiumos/tast/runner/args.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 358,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-06-19T07:49:07Z",
+      "side": 0,
+      "message": "This path is hit when local_test_runner is executed directly. This condition essentially simulated \"tast run -checktestdeps\u003dauto\". After removing this check it\u0027s essentially the same as \"-checktestdeps\u003dtrue\".",
+      "range": {
+        "startLine": 356,
+        "startChar": 0,
+        "endLine": 358,
+        "endChar": 2
+      },
+      "revId": "1ee05bb6359ef64fac808b89913d769d48701966",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

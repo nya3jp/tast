@@ -85,7 +85,7 @@ func newLocalTestData(t *gotesting.T) *localTestData {
 	td.cfg.Target = td.srvData.Srv.Addr().String()
 
 	// Avoid checking test dependencies, which causes an extra local_test_runner call.
-	td.cfg.checkTestDeps = checkTestDepsNever
+	td.cfg.checkTestDeps = false
 
 	// Ensure that already-set environment variables don't affect unit tests.
 	td.cfg.proxy = proxyNone
@@ -471,7 +471,7 @@ func TestLocalFailureBeforeRun(t *gotesting.T) {
 	// Make the runner always fail, and ask to check test deps so we'll get a failure before trying
 	// to run tests. local() shouldn't set startedRun to true since we failed before then.
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) { return 1 }
-	td.cfg.checkTestDeps = checkTestDepsAlways
+	td.cfg.checkTestDeps = true
 	if status, _ := local(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitFailure {
 		t.Errorf("local() = %v; want %v", status.ExitCode, subcommands.ExitFailure)
 	} else if td.cfg.startedRun {
@@ -585,7 +585,7 @@ func TestLocalGetSoftwareFeatures(t *gotesting.T) {
 		return 0
 	}
 
-	td.cfg.checkTestDeps = checkTestDepsAlways
+	td.cfg.checkTestDeps = true
 
 	if status, _ := local(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
 		t.Errorf("local() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())

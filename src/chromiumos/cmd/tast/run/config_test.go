@@ -18,8 +18,8 @@ func TestConfigRunDefaults(t *testing.T) {
 	if !cfg.collectSysInfo {
 		t.Errorf("%s didn't set collectSysInfo", desc)
 	}
-	if cfg.checkTestDeps != checkTestDepsAuto {
-		t.Errorf("%s set checkTestDeps to %v; want %v", desc, cfg.checkTestDeps, checkTestDepsAuto)
+	if !cfg.checkTestDeps {
+		t.Errorf("%s set checkTestDeps to %v; want true", desc, cfg.checkTestDeps)
 	}
 }
 
@@ -32,9 +32,8 @@ func TestConfigListDefaults(t *testing.T) {
 	if cfg.collectSysInfo {
 		t.Errorf("%s set collectSysInfo", desc)
 	}
-	if cfg.checkTestDeps != checkTestDepsNever {
-		t.Errorf("%s set checkTestDeps to %v; want %v",
-			desc, cfg.checkTestDeps, checkTestDepsNever)
+	if cfg.checkTestDeps {
+		t.Errorf("%s set checkTestDeps to %v; want false", desc, cfg.checkTestDeps)
 	}
 }
 

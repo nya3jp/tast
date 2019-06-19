@@ -42,22 +42,6 @@ const (
 	remoteType
 )
 
-// testDepsMode describes when individual tests' dependencies should be checked against software
-// features supported by the DUT.
-type testDepsMode int
-
-const (
-	// checkTestDepsAuto indicates that tests' dependencies should be checked when an attribute
-	// expression is used to select tests but not when test globs (or specific tests) have been supplied.
-	// Dependencies are also not checked if the DUT doesn't know its supported features
-	// (e.g. if it's using a non-test system image).
-	checkTestDepsAuto testDepsMode = iota
-	// checkTestDepsAlways indicates that tests' dependencies should always be checked.
-	checkTestDepsAlways
-	// checkTestDepsNever indicates that tests' dependencies should never be checked.
-	checkTestDepsNever
-)
-
 // proxyMode describes how proxies should be used when running tests.
 type proxyMode int
 
@@ -117,7 +101,7 @@ type Config struct {
 
 	sshRetries           int               // number of SSH connect retries
 	continueAfterFailure bool              // try to run remaining local tests after bundle/DUT crash or lost SSH connection
-	checkTestDeps        testDepsMode      // when test dependencies should be checked
+	checkTestDeps        bool              // whether test dependencies should be checked
 	waitUntilReady       bool              // whether to wait for DUT to be ready before running tests
 	extraUSEFlags        []string          // additional USE flags to inject when determining features
 	proxy                proxyMode         // how proxies should be used
@@ -207,16 +191,7 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 		f.StringVar(&c.ResDir, "resultsdir", "", "directory for test results")
 		f.BoolVar(&c.collectSysInfo, "sysinfo", true, "collect system information (logs, crashes, etc.)")
 		f.BoolVar(&c.waitUntilReady, "waituntilready", false, "wait until DUT is ready before running tests")
-
-		vals := map[string]int{
-			"auto":   int(checkTestDepsAuto),
-			"always": int(checkTestDepsAlways),
-			"never":  int(checkTestDepsNever),
-		}
-		td := command.NewEnumFlag(vals, func(v int) { c.checkTestDeps = testDepsMode(v) }, "auto")
-		desc := fmt.Sprintf("skip tests with software dependencies unsatisfied by DUT (%s; default %q)",
-			td.QuotedValues(), td.Default())
-		f.Var(td, "checktestdeps", desc)
+		f.BoolVar(&c.checkTestDeps, "checktestdeps", true, "skip tests with software dependencies unsatisfied by DUT")
 
 		f.Var(command.NewListFlag(",", func(v []string) { c.extraUSEFlags = v }, nil), "extrauseflags",
 			"comma-separated list of additional USE flags to inject when checking test dependencies")
@@ -231,15 +206,15 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 		})
 		f.Var(&vf, "var", `runtime variable to pass to tests, as "name=value" (can be repeated)`)
 
-		vals = map[string]int{
+		vals := map[string]int{
 			"env":  int(proxyEnv),
 			"none": int(proxyNone),
 		}
-		td = command.NewEnumFlag(vals, func(v int) { c.proxy = proxyMode(v) }, "env")
-		desc = fmt.Sprintf("proxy settings used by the DUT (%s; default %q)", td.QuotedValues(), td.Default())
+		td := command.NewEnumFlag(vals, func(v int) { c.proxy = proxyMode(v) }, "env")
+		desc := fmt.Sprintf("proxy settings used by the DUT (%s; default %q)", td.QuotedValues(), td.Default())
 		f.Var(td, "proxy", desc)
 	} else {
-		c.checkTestDeps = checkTestDepsNever
+		c.checkTestDeps = false
 	}
 }
 

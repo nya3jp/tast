@@ -42,7 +42,7 @@ func checkRunnerTestDepsArgs(t *testing.T, cfg *Config, checkDeps bool, avail, u
 	}
 }
 
-func TestGetSoftwareFeaturesAlways(t *testing.T) {
+func TestGetSoftwareFeatures(t *testing.T) {
 	td := newLocalTestData(t)
 	defer td.close()
 
@@ -61,7 +61,7 @@ func TestGetSoftwareFeaturesAlways(t *testing.T) {
 		writeGetSoftwareFeaturesResult(stdout, avail, unavail)
 		return 0
 	}
-	td.cfg.checkTestDeps = checkTestDepsAlways
+	td.cfg.checkTestDeps = true
 	td.cfg.extraUSEFlags = []string{"use1", "use2"}
 	if err := getSoftwareFeatures(context.Background(), &td.cfg); err != nil {
 		t.Fatalf("getSoftwareFeatures(%+v) failed: %v", td.cfg, err)
@@ -81,78 +81,19 @@ func TestGetSoftwareFeaturesAlways(t *testing.T) {
 	checkRunnerTestDepsArgs(t, &td.cfg, true, avail, unavail)
 }
 
-func TestGetSoftwareFeaturesNever(t *testing.T) {
+func TestGetSoftwareFeaturesNoCheckTestDeps(t *testing.T) {
 	td := newLocalTestData(t)
 	defer td.close()
 
 	// With "never", the runner shouldn't be called and dependencies shouldn't be checked.
-	td.cfg.checkTestDeps = checkTestDepsNever
+	td.cfg.checkTestDeps = false
 	if err := getSoftwareFeatures(context.Background(), &td.cfg); err != nil {
 		t.Fatalf("getSoftwareFeatures(%+v) failed: %v", td.cfg, err)
 	}
 	checkRunnerTestDepsArgs(t, &td.cfg, false, nil, nil)
 }
 
-func TestGetSoftwareFeaturesAutoAttrExpr(t *testing.T) {
-	td := newLocalTestData(t)
-	defer td.close()
-
-	// When "auto" is used in conjunction with an attribute-expression-based test
-	// pattern, dependencies should be checked.
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		checkArgs(t, args, &runner.Args{
-			Mode:                runner.GetSoftwareFeaturesMode,
-			GetSoftwareFeatures: &runner.GetSoftwareFeaturesArgs{},
-		})
-		writeGetSoftwareFeaturesResult(stdout, []string{"foo"}, []string{})
-		return 0
-	}
-	td.cfg.Patterns = []string{"(bvt)"} // attr expr needed to check deps with "auto"
-	td.cfg.checkTestDeps = checkTestDepsAuto
-	if err := getSoftwareFeatures(context.Background(), &td.cfg); err != nil {
-		t.Fatalf("getSoftwareFeatures(%+v) failed: %v", td.cfg, err)
-	}
-	checkRunnerTestDepsArgs(t, &td.cfg, true, []string{"foo"}, nil)
-}
-
-func TestGetSoftwareFeaturesAutoSpecificTest(t *testing.T) {
-	td := newLocalTestData(t)
-	defer td.close()
-
-	// With "auto" and a pattern that specifies a particular test
-	// (rather than a attribute expression), the runner shouldn't be called and
-	// dependencies shouldn't be checked.
-	td.cfg.checkTestDeps = checkTestDepsAuto
-	td.cfg.Patterns = []string{"pkg.Test"}
-	if err := getSoftwareFeatures(context.Background(), &td.cfg); err != nil {
-		t.Fatalf("getSoftwareFeatures(%+v) failed: %v", td.cfg, err)
-	}
-	checkRunnerTestDepsArgs(t, &td.cfg, false, nil, nil)
-}
-
-func TestGetSoftwareFeaturesAutoNoFeatures(t *testing.T) {
-	td := newLocalTestData(t)
-	defer td.close()
-
-	// "auto" should be downgraded to "never" if the runner didn't report knowing
-	// about any features at all (probably because it's running on a non-test system image).
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		checkArgs(t, args, &runner.Args{
-			Mode:                runner.GetSoftwareFeaturesMode,
-			GetSoftwareFeatures: &runner.GetSoftwareFeaturesArgs{},
-		})
-		writeGetSoftwareFeaturesResult(stdout, []string{}, []string{})
-		return 0
-	}
-	td.cfg.Patterns = []string{"(bvt)"} // attr expr needed to check deps with "auto"
-	td.cfg.checkTestDeps = checkTestDepsAuto
-	if err := getSoftwareFeatures(context.Background(), &td.cfg); err != nil {
-		t.Fatalf("getSoftwareFeatures(%+v) failed: %v", td.cfg, err)
-	}
-	checkRunnerTestDepsArgs(t, &td.cfg, false, nil, nil)
-}
-
-func TestGetSoftwareFeaturesAlwaysNoFeatures(t *testing.T) {
+func TestGetSoftwareFeaturesNoFeatures(t *testing.T) {
 	td := newLocalTestData(t)
 	defer td.close()
 
@@ -165,7 +106,7 @@ func TestGetSoftwareFeaturesAlwaysNoFeatures(t *testing.T) {
 		writeGetSoftwareFeaturesResult(stdout, []string{}, []string{})
 		return 0
 	}
-	td.cfg.checkTestDeps = checkTestDepsAlways
+	td.cfg.checkTestDeps = true
 	if err := getSoftwareFeatures(context.Background(), &td.cfg); err == nil {
 		t.Fatalf("getSoftwareFeatures(%+v) succeeded unexpectedly", td.cfg)
 	}

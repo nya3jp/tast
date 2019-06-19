@@ -470,10 +470,6 @@ func runLocalTests(ctx context.Context, cfg *Config, hst *host.SSH) ([]TestResul
 	cfg.startedRun = true
 	start := time.Now()
 
-	// We may temporarily override this later when restarting testing after a failure.
-	origCheckTestDeps := cfg.checkTestDeps
-	defer func() { cfg.checkTestDeps = origCheckTestDeps }()
-
 	// Run local_test_runner in a loop so we can try to run the remaining tests on failure.
 	var allResults []TestResult
 	patterns := cfg.Patterns
@@ -520,9 +516,6 @@ func runLocalTests(ctx context.Context, cfg *Config, hst *host.SSH) ([]TestResul
 		// "Auto" dependency checking has different behavior when using attribute expressions vs.
 		// globs, so make sure that deps will still be checked if they would've been checked initially.
 		patterns = unstarted
-		if cfg.checkTestDeps == checkTestDepsAuto {
-			cfg.checkTestDeps = checkTestDepsAlways
-		}
 	}
 
 	elapsed := time.Now().Sub(start)

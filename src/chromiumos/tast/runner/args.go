@@ -353,9 +353,6 @@ errors, including the failure of an individual test.
 // setManualDepsArgs sets dependency/feature-related fields in args.RunTests appropriately for a manual
 // run (i.e. when the runner is executed directly with command-line flags rather than via "tast run").
 func setManualDepsArgs(args *Args, cfg *Config, extraUSEFlags []string) error {
-	if bundle.GetTestPatternType(args.RunTests.BundleArgs.Patterns) != bundle.TestPatternAttrExpr {
-		return nil
-	}
 	if cfg.USEFlagsFile == "" {
 		return nil
 	}

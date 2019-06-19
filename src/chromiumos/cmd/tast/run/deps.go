@@ -9,7 +9,6 @@ import (
 	"errors"
 	"strings"
 
-	"chromiumos/tast/bundle"
 	"chromiumos/tast/runner"
 	"chromiumos/tast/timing"
 )
@@ -20,17 +19,8 @@ import (
 // possible to check dependencies).
 func getSoftwareFeatures(ctx context.Context, cfg *Config) error {
 	// Don't collect features if we're not checking deps or if we already have feature lists.
-	if cfg.checkTestDeps == checkTestDepsNever || len(cfg.availableSoftwareFeatures) > 0 ||
+	if !cfg.checkTestDeps || len(cfg.availableSoftwareFeatures) > 0 ||
 		len(cfg.unavailableSoftwareFeatures) > 0 {
-		return nil
-	}
-
-	// If the user-supplied test patterns are globs (or more likely, literal test names),
-	// assume that they really want to run those particular tests and skip checking dependencies.
-	if cfg.checkTestDeps == checkTestDepsAuto &&
-		bundle.GetTestPatternType(cfg.Patterns) == bundle.TestPatternGlobs {
-		cfg.Logger.Debug("Test software dependencies not checked for glob/literal test patterns")
-		cfg.checkTestDeps = checkTestDepsNever
 		return nil
 	}
 
@@ -62,11 +52,11 @@ func getSoftwareFeatures(ctx context.Context, cfg *Config) error {
 	// a listing of relevant USE flags).
 	if len(res.Available) == 0 && len(res.Unavailable) == 0 {
 		cfg.Logger.Debug("No software features reported by DUT -- non-test image?")
-		if cfg.checkTestDeps == checkTestDepsAlways {
+		if cfg.checkTestDeps {
 			return errors.New("can't check test deps; no software features reported by DUT")
 		}
 		cfg.Logger.Debug("Test software dependencies will not be checked")
-		cfg.checkTestDeps = checkTestDepsNever
+		cfg.checkTestDeps = false
 		return nil
 	}
 
@@ -80,12 +70,7 @@ func getSoftwareFeatures(ctx context.Context, cfg *Config) error {
 }
 
 func setRunnerTestDepsArgs(cfg *Config, args *runner.Args) {
-	switch cfg.checkTestDeps {
-	case checkTestDepsAlways, checkTestDepsAuto:
-		args.RunTests.BundleArgs.CheckSoftwareDeps = true
-	case checkTestDepsNever:
-		args.RunTests.BundleArgs.CheckSoftwareDeps = false
-	}
+	args.RunTests.BundleArgs.CheckSoftwareDeps = cfg.checkTestDeps
 	args.RunTests.BundleArgs.AvailableSoftwareFeatures = cfg.availableSoftwareFeatures
 	args.RunTests.BundleArgs.UnavailableSoftwareFeatures = cfg.unavailableSoftwareFeatures
 }

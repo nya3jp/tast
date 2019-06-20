@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3ec40cac_c381e10d",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1000221
+      },
+      "writtenOn": "2019-06-20T23:53:23Z",
+      "side": 1,
+      "message": "Sorry, do you mind using an underscore here for consistency? \"crosvm_gpu\"",
+      "range": {
+        "startLine": 77,
+        "startChar": 37,
+        "endLine": 77,
+        "endChar": 38
+      },
+      "revId": "29aada5bc8d656ddab749b45ed72719b482cbc37",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

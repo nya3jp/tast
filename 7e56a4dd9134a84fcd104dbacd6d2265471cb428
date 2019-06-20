@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e84e62b8_86ed6634",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 256,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-06-20T04:44:17Z",
+      "side": 1,
+      "message": "Maybe introducing a thin wrapper of this?\n\nfunc runAsync(ctx context.Context, f func(ctx context, resultCh \u003c-chan error, acceptCh chan\u003c- bool) error {\n  resultCh :\u003d make(chan error, 1)\n  acceptCh :\u003d make(chan bool, 1)\n  comleteCh :\u003d make(chan struct{})\n  go func() {\n    f(ctx, resultCh, acceptCh)\n    close(completeCh)\n  }\n\n  var err error\n  select {\n    case err \u003d \u003c-resultCh:\n    case \u003c-ctx.Done():\n      err \u003d ctx.Err()\n  }\n  acceptCh \u003c- err !\u003d nil\n  if err !\u003d nil {\n    select {\n      case \u003c-completeCh:\n      case \u003c-ctx.Done()\n    }\n  }\n  return err\n}\n\n\nThen\n\nif err :\u003d runAsync(ctx, func(...) {\n  resultCh \u003c- c.sess.Start(cmd)\n  if ok :\u003d acceptCh; !ok {\n    c.sess.Close()\n  }\n}); err !\u003d nil {\n  c.state \u003d stateDone\n  ...\n  return err\n}\n\nreturn nil\n\nI think runAsync can be used for startSession, too. WDYT?\n\nNote: In precise, I\u0027m ok for this particular function in either way, because it\u0027s small so I can track the flow still.\nOn the other hand, I prefer \"chan\" approach for startSession, because it is bigger and has more complicated flow to track, specifically in case of failure, for me, TBH.\nLooking at the code, the chan mechanism could be extracted, which also simplifies the core startSession logic, I think. And, if it\u0027s done, it can be reused here, so I\u0027m proposing.",
+      "revId": "7e56a4dd9134a84fcd104dbacd6d2265471cb428",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -41,6 +41,7 @@ The following software features are defined:
 *   `cros_config` - `cros_config` utility is available.
 *   `cros_internal` - Functionality that is only available in internal builds of
     Chrome OS (i.e. ones built using `chromeos-overlay`).
+*   `crosvm_gpu` - The ability to use hardware GPU acceleration in the guest VM environment.
 *   `cups` - CUPS daemon.
 *   `diagnostics` - Boards that contain generic cross-platform
     [Diagnostic utilities].

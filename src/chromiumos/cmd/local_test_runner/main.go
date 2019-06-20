@@ -74,6 +74,7 @@ func main() {
 			"chrome_internal":         "chrome_internal",
 			"cros_config":             "unibuild",
 			"cros_internal":           "internal",
+			"crosvm_gpu":              `"crosvm-gpu"`,
 			"cups":                    "cups",
 			"diagnostics":             "diagnostics",
 			"display_backlight":       "display_backlight",

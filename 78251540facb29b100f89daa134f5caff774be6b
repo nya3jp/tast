@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "913e993c_d6ff31c1",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1000221
+      },
+      "writtenOn": "2019-06-20T22:09:41Z",
+      "side": 1,
+      "message": "The ability to use hardware GPU acceleration in the guest VM environment.",
+      "range": {
+        "startLine": 44,
+        "startChar": 19,
+        "endLine": 44,
+        "endChar": 75
+      },
+      "revId": "78251540facb29b100f89daa134f5caff774be6b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

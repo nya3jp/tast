@@ -70,6 +70,30 @@
       "revId": "29aada5bc8d656ddab749b45ed72719b482cbc37",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "654670af_9ba102ba",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-06-21T01:38:43Z",
+      "side": 1,
+      "message": "+1 to the current definition, \"crosvm_gpu\": \"crosvm-gpu\".\n\nI\u0027d prefer consistency within software dependency names (i.e. all keys of this map have consistent use of hyphens and underscores) to consistency between a software dependency name and its corresponding USE flag. I think it rather clarifies the difference between software deps and USE flags; what we list in SoftwareDeps field in tests are not USE flags.",
+      "parentUuid": "25a336fa_4f9f62a5",
+      "range": {
+        "startLine": 77,
+        "startChar": 37,
+        "endLine": 77,
+        "endChar": 38
+      },
+      "revId": "29aada5bc8d656ddab749b45ed72719b482cbc37",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

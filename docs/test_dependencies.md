@@ -77,6 +77,9 @@ The following software features are defined:
 *   `virtual_usb_printer` - Emulates a USB printer. This implies the presence of
     the `usbip` program.
 *   `vm_host` - The ability to [run virtual machines].
+*   `vp9_sanity` - The ability to handle VP9 profile 0, 1, 2, 3 video, even if it
+    is unsupported, without kernel crash. (For unsupported profile, driver should
+    retrun error instead of crashing kernel.)
 *   `vulkan` - Whether [Vulkan] is enabled.
 *   `wilco` - If this DUT is a [wilco] device. These features include
     the DTC (Diagnostic and Telemetry Controller) VM, a special EC interface,

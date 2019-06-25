@@ -16,6 +16,24 @@
       "revId": "5567d2ba027dc6bebb55c71bd0b3b88ff4c73c9b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3e5141cb_f307e8b6",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1304442
+      },
+      "writtenOn": "2019-06-25T22:46:33Z",
+      "side": 1,
+      "message": "I think eventually, but right now there is nothing external we can point to.",
+      "parentUuid": "c7e78ac0_8fa53809",
+      "revId": "5567d2ba027dc6bebb55c71bd0b3b88ff4c73c9b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

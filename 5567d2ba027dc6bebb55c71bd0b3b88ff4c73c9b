@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c7e78ac0_8fa53809",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1327553
+      },
+      "writtenOn": "2019-06-25T20:10:13Z",
+      "side": 1,
+      "message": "Does this link need to be accessible outside of Google?",
+      "revId": "5567d2ba027dc6bebb55c71bd0b3b88ff4c73c9b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

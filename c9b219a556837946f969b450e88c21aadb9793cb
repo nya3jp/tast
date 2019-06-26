@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b0410b49_a22361ae",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2019-06-26T08:56:38Z",
+      "side": 1,
+      "message": "\"android\" and \"android_vm\" look asymmetric. How about renaming \"android\" to \"android_container\"?\nIn this case, you need to change all the existing tests, though. Same for \"android_all\" and \"android_p\".\n\nI\u0027d like to hear Tast owners\u0027 thought.",
+      "revId": "c9b219a556837946f969b450e88c21aadb9793cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5a7bd9fc_1b258d4d",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2019-06-26T08:56:38Z",
+      "side": 1,
+      "message": "Question: Is \u0027arc\u0027 USE flag enabled when \u0027arcvm\u0027 is enabled?\n(If so, please just ignore this comment)",
+      "revId": "c9b219a556837946f969b450e88c21aadb9793cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

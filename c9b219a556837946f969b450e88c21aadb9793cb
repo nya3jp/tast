@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "b75faed9_c15a1737",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1346383
+      },
+      "writtenOn": "2019-06-26T09:00:47Z",
+      "side": 1,
+      "message": "I talked to hidehiko@ today and reached a conclusion that since ARCVM is still new, migrating \"android*\" to \"android*_container\" will not be ideal.\n\nMaybe in the future this can be done.",
+      "parentUuid": "b0410b49_a22361ae",
+      "revId": "c9b219a556837946f969b450e88c21aadb9793cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a7bd9fc_1b258d4d",
         "filename": "src/chromiumos/cmd/local_test_runner/main.go",
         "patchSetId": 4
@@ -33,6 +51,24 @@
       "revId": "c9b219a556837946f969b450e88c21aadb9793cb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ccad59b8_db9043a8",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1346383
+      },
+      "writtenOn": "2019-06-26T09:00:47Z",
+      "side": 1,
+      "message": "Yes, this is a sample eve-arcvm USE flags.\n\n# This file is just for libchromeos\u0027s ChromiumCommandBuilder class.\n# Don\u0027t use it for anything else. Your code will break.\narc\narc_oobe_optin\narc_oobe_optin_no_skip\narcvm\nbackground_blur\ncheets\ncompupdates\ndrm_atomic\neve\nkvm_host\nml_service\nnative_assistant\nnative_gpu_memory_buffers\nopengles\nozone\npointer_events\nstylus\ntouchview",
+      "parentUuid": "5a7bd9fc_1b258d4d",
+      "revId": "c9b219a556837946f969b450e88c21aadb9793cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

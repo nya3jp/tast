@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c85c4dea_bfb7c1b9",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-06-27T04:10:58Z",
+      "side": 1,
+      "message": "Could you add success cases, too, to avoid accidental lint, for each?\n\ns.Error(\"Failed to ...\")  should pass the lint successfully.",
+      "revId": "7c0ef005352d21a393db75f3427f9ccc4f1fc575",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

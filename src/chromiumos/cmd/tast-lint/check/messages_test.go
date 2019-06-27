@@ -85,6 +85,24 @@ func Test(ctx context.Context, s *testing.State) {
 	// Good messages. (Allowed for line breaking)
 	s.Log("")
 	testing.ContextLog(ctx, "")
+
+	// Messages should start with correct case.
+	s.Error("Failed to start ARC: ", err)
+	s.Error("failed to start ARC: ", err)
+	s.Fatalf("Unexpected string %q received", "blah")
+	s.Fatalf("unexpected string %q received", "blah")
+	s.Log("Got messages")
+	s.Log("got messages")
+	testing.ContextLogf(ctx, "Found a file %q", "blah")
+	testing.ContextLogf(ctx, "found a file %q", "blah")
+	errors.New("could not start ARC")
+	errors.New("Could not start ARC")
+	errors.Wrapf(err, "too many (%d) files open", 28)
+	errors.Wrapf(err, "Too many (%d) files open", 28)
+
+	// Proper nouns are not subject to case rules.
+	s.Error("testSomething failed: ", err)
+	errors.New("ARC failed to start")
 }`
 
 	f, fs := parse(code, "test.go")
@@ -117,6 +135,12 @@ func Test(ctx context.Context, s *testing.State) {
 		`test.go:70:2: Error message should have some surrounding context, so must not empty`,
 		`test.go:71:2: Error message should have some surrounding context, so must not empty`,
 		`test.go:72:2: Error message should have some surrounding context, so must not empty`,
+		`test.go:80:2: Test failure messages should be capitalized`,
+		`test.go:82:2: Test failure messages should be capitalized`,
+		`test.go:84:2: Log messages should be capitalized`,
+		`test.go:86:2: Log messages should be capitalized`,
+		`test.go:88:2: Messages of the error type should not be capitalized`,
+		`test.go:90:2: Messages of the error type should not be capitalized`,
 	}
 	verifyIssues(t, issues, expects)
 }

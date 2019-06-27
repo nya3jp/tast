@@ -109,13 +109,14 @@ func Messages(fs *token.FileSet, f *ast.File) []*Issue {
 		}
 
 		const (
-			baseURL      = "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md"
-			printfURL    = baseURL + "#log-vs-logf"
-			errPkgURL    = baseURL + "#error-pkg"
-			errFmtURL    = baseURL + "#error-fmt"
-			logFmtURL    = baseURL + "#log-fmt"
-			commonFmtURL = baseURL + "#common-fmt"
-			fmtURL       = "https://golang.org/pkg/fmt/#hdr-Printing"
+			baseURL       = "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md"
+			printfURL     = baseURL + "#log-vs-logf"
+			errPkgURL     = baseURL + "#error-pkg"
+			errFmtURL     = baseURL + "#error-fmt"
+			logFmtURL     = baseURL + "#log-fmt"
+			commonFmtURL  = baseURL + "#common-fmt"
+			formattingURL = baseURL + "#Formatting"
+			fmtURL        = "https://golang.org/pkg/fmt/#hdr-Printing"
 		)
 
 		// Used Logf("Some message") instead of Log("Some message").
@@ -173,10 +174,46 @@ func Messages(fs *token.FileSet, f *ast.File) []*Issue {
 				strings.Contains(str, `"%v"`) || strings.Contains(str, `'%v'`)) {
 				addIssue("Use %q to quote values instead of manually quoting them", commonFmtURL)
 			}
-			// We'd ideally also check that log messages are capitalized, but that causes too many false positives
-			// due to messages beginning with daemon names, command lines, etc.
-			// Similarly, it'd be nice to check that error values aren't capitalized, but that causes false
-			// positives due to proper nouns like "Android" or e.g. D-Bus method call names.
+
+			// Logs should start with upper letters while errors should start with lower letters.
+			// This rule does not apply if messages start with a proper noun, so we check a few
+			// hard-coded words only.
+			var words = []string{
+				"bad",
+				"can",
+				"can't",
+				"cannot",
+				"could",
+				"couldn't",
+				"expected",
+				"failed",
+				"found",
+				"got",
+				"invalid",
+				"no",
+				"too",
+				"unexpected",
+				"unknown",
+			}
+			for _, word := range words {
+				if !strings.HasPrefix(strings.ToLower(str), word+" ") {
+					continue
+				}
+				exp := word
+				if !isErr {
+					exp = strings.ToUpper(word[:1]) + word[1:]
+				}
+				if strings.HasPrefix(str, exp) {
+					continue
+				}
+				if isErr {
+					addIssue("Messages of the error type should not be capitalized", formattingURL)
+				} else if isLog {
+					addIssue("Log messages should be capitalized", formattingURL)
+				} else {
+					addIssue("Test failure messages should be capitalized", formattingURL)
+				}
+			}
 		}
 
 		// The number of verbs and the number of arguments must match.

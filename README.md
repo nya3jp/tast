@@ -1,3 +1,5 @@
+hello, world!
+
 # Tast (go/tast)
 
 ![Tast logo with Go gopher with green rubber 'PASS' stamp](docs/logo_512.png)

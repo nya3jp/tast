@@ -1,4 +1,4 @@
-# Tast: Writing Tests (go/tast-writing)
+ Tast: Writing Tests (go/tast-writing)
 
 [TOC]
 
@@ -327,6 +327,11 @@ package within the `ui` package, used by the [ui.ChromeCrashLoggedIn] and
 [ui.ChromeCrashNotLoggedIn] tests. Subpackages are described in more detail
 later in this document.
 
+<a name="import-bundle-subpackage"></a>
+
+Importing a subpackage is allowed only in the category package containing it;
+otherwise `repo upload` will fail with lint errors.
+
 [scoped at the package level]: https://golang.org/ref/spec#Declarations_and_scope
 [chromecrash]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/master/src/chromiumos/tast/local/bundles/cros/ui/chromecrash/
 [ui.ChromeCrashLoggedIn]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/master/src/chromiumos/tast/local/bundles/cros/ui/chrome_crash_logged_in.go
@@ -479,7 +484,7 @@ On the other hand, avoid logging unnecessary information that would clutter the
 logs. If you want to log a verbose piece of information to help determine the
 cause of an error, only do it after the error has occurred. Also, if you are
 interested in which part of a test is time-consuming, please see the
-"[reporting timing]" section for details.
+[reporting timing] section for details.
 
 See the [fmt package]'s documentation for available "verbs".
 
@@ -669,6 +674,12 @@ data is needed. Avoid passing `testing.State` when it's not actually necessary:
     can call `testing.ContextLog`.
 
 [information hiding]: https://en.wikipedia.org/wiki/Information_hiding
+
+### Utility methods
+
+Packages can have subpackges to define utility functions.
+- bundles/
+It is recommended to 
 
 ### Reporting timing
 

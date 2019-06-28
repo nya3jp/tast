@@ -34,6 +34,24 @@
       "revId": "7e56a4dd9134a84fcd104dbacd6d2265471cb428",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "13f7b40c_67fc82f3",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 256,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-06-28T15:52:05Z",
+      "side": 1,
+      "message": "The direction SGTM.\n\nNote:\n1) we may want to have \"finally\"?\nWe can use defer in |f|, but then it would make a small diff from try-catch-finally in other languages, that is, finally is called before catch().\n\n2) The use of doAsync() is a subset of your doAsyncCatch, and its use is very limited, so I think you may extend it.\n\n3) Although it is a part of this change, it could be conceptually independent. Would you mind to make another change for it? Nice to have a unittest for it, too. IMO.\n\n4) The function you\u0027re introducing can be used in more generic purpose.\nI\u0027m totally fine (or I\u0027d say, it\u0027s preferred TBH) to start from package local, but in future, we may want to reuse it in more places.",
+      "parentUuid": "4fd0f9cd_2b7a19c6",
+      "revId": "7e56a4dd9134a84fcd104dbacd6d2265471cb428",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

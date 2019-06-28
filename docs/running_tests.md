@@ -57,10 +57,6 @@ Tests may be skipped if they list [software dependencies] that aren't provided
 by the DUT. This behavior can be controlled via the `tast` command's
 `-checktestdeps` flag.
 
-If tests are being rebuilt, the `buildtype` flag determines which type of tests
-to build and run; see the next section for details. Otherwise, both local and
-remote tests are considered.
-
 [chromiumos/tast/expr]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/expr
 [Test Attributes]: test_attributes.md
 [software dependencies]: test_dependencies.md
@@ -68,13 +64,10 @@ remote tests are considered.
 ## Controlling whether tests are rebuilt
 
 When the `-build` flag is true (the default), `tast run` rebuilds the `cros`
-test bundle and (in the case of local tests) pushes it to the DUT as
+test bundle and pushes it to the DUT as
 `/usr/local/share/tast/bundles_pushed/cros`. This permits faster compilation and
 deployment when writing new tests than the normal `emerge`/`cros deploy` cycle
 can provide.
-
-The `buildtype` flag accepts a `local` or `remote` parameter to specify which
-type of tests to build, push, and run. `local` is the default.
 
 The name of the bundle to build, push, and run can be specified via the
 `-buildbundle` flag. If the bundle's source code is outside of the [tast-tests

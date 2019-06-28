@@ -31,17 +31,6 @@ const (
 	ListTestsMode
 )
 
-// testType describes the type of test to run.
-type testType int
-
-const (
-	// localType represents tests that run directly on the DUT.
-	localType testType = iota
-	// remoteType represents tests that run on the same machine as the tast command and interact
-	// with the DUT via a network connection.
-	remoteType
-)
-
 // proxyMode describes how proxies should be used when running tests.
 type proxyMode int
 
@@ -78,13 +67,12 @@ type Config struct {
 	tastDir  string // base directory under which files are written
 	trunkDir string // path to Chrome OS checkout
 
-	build              bool     // rebuild (and push, for local tests) a single test bundle
-	buildType          testType // type of tests to build and deploy
-	buildBundle        string   // name of the test bundle to rebuild (e.g. "cros")
-	buildWorkspace     string   // path to workspace containing test bundle source code
-	buildOutDir        string   // path to base directory under which executables are stored
-	checkPortageDeps   bool     // check whether test bundle's dependencies are installed before building
-	installPortageDeps bool     // install old or missing test bundle dependencies; no-op if checkPortageDeps is false
+	build              bool   // rebuild (and push, for local tests) a single test bundle
+	buildBundle        string // name of the test bundle to rebuild (e.g. "cros")
+	buildWorkspace     string // path to workspace containing test bundle source code
+	buildOutDir        string // path to base directory under which executables are stored
+	checkPortageDeps   bool   // check whether test bundle's dependencies are installed before building
+	installPortageDeps bool   // install old or missing test bundle dependencies; no-op if checkPortageDeps is false
 
 	useEphemeralDevserver  bool     // start an ephemeral devserver if no devserver is specified
 	devservers             []string // list of devserver URLs; set by -devservers but may be dynamically modified
@@ -170,10 +158,6 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 	f.BoolVar(&c.downloadPrivateBundles, "downloadprivatebundles", false, "download private bundles if missing")
 	f.BoolVar(&c.continueAfterFailure, "continueafterfailure", false, "try to run remaining tests after bundle/DUT crash or lost SSH connection")
 	f.IntVar(&c.sshRetries, "sshretries", 0, "number of SSH connect retries")
-
-	bt := command.NewEnumFlag(map[string]int{"local": int(localType), "remote": int(remoteType)},
-		func(v int) { c.buildType = testType(v) }, "local")
-	f.Var(bt, "buildtype", fmt.Sprintf("type of tests to build (%s; default %q)", bt.QuotedValues(), bt.Default()))
 
 	f.StringVar(&c.localRunner, "localrunner", "", "executable that runs local test bundles")
 	f.StringVar(&c.localBundleDir, "localbundledir", "", "directory containing builtin local test bundles")

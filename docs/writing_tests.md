@@ -327,6 +327,11 @@ package within the `ui` package, used by the [ui.ChromeCrashLoggedIn] and
 [ui.ChromeCrashNotLoggedIn] tests. Subpackages are described in more detail
 later in this document.
 
+<a name="import-bundle-subpackage"></a>
+
+Importing a subpackage is allowed only in the category package containing it;
+otherwise `repo upload` will fail with lint errors.
+
 [scoped at the package level]: https://golang.org/ref/spec#Declarations_and_scope
 [chromecrash]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/master/src/chromiumos/tast/local/bundles/cros/ui/chromecrash/
 [ui.ChromeCrashLoggedIn]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/master/src/chromiumos/tast/local/bundles/cros/ui/chrome_crash_logged_in.go

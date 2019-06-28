@@ -17,7 +17,6 @@ import (
 	"time"
 
 	"github.com/google/subcommands"
-	"golang.org/x/crypto/ssh"
 
 	"chromiumos/cmd/tast/build"
 	"chromiumos/tast/bundle"
@@ -195,23 +194,9 @@ func buildAndPushBundle(ctx context.Context, cfg *Config, hst *host.SSH) error {
 
 	if cfg.mode == RunTestsMode {
 		cfg.Logger.Status("Getting data file list")
-		var paths []string
-		var err error
-		if paths, err = getDataFilePaths(ctx, cfg, hst, bundleGlob); err != nil {
-			if exists, existsErr := localRunnerExists(ctx, cfg, hst); exists || existsErr != nil {
-				if existsErr != nil {
-					cfg.Logger.Log("Failed to check for existence of runner: ", err)
-				}
-				return fmt.Errorf("failed to get data file list: %v", err)
-			}
-
-			// The runner was missing (maybe this is a non-test device), so build and push it and try again.
-			if err = buildAndPushLocalRunner(ctx, cfg, hst); err != nil {
-				return err
-			}
-			if paths, err = getDataFilePaths(ctx, cfg, hst, bundleGlob); err != nil {
-				return fmt.Errorf("failed to get data file list: %v", err)
-			}
+		paths, err := getDataFilePaths(ctx, cfg, hst, bundleGlob)
+		if err != nil {
+			return fmt.Errorf("failed to get data file list: %v", err)
 		}
 		if len(paths) > 0 {
 			cfg.Logger.Status("Pushing data files to target")
@@ -400,19 +385,6 @@ func downloadPrivateBundles(ctx context.Context, cfg *Config, hst *host.SSH) err
 		cfg.Logger.Log(msg)
 	}
 	return nil
-}
-
-// localRunnerExists checks whether the local_test_runner executable is present on hst.
-// It returns true if it is, false if it isn't, or an error if one was encountered while checking.
-func localRunnerExists(ctx context.Context, cfg *Config, hst *host.SSH) (bool, error) {
-	cmd := fmt.Sprintf("test -e %s", shutil.Escape(cfg.localRunner))
-	if _, err := hst.Run(ctx, cmd); err == nil {
-		return true, nil
-	} else if ee, ok := err.(*ssh.ExitError); ok && ee.Waitmsg.ExitStatus() == 1 {
-		return false, nil
-	} else {
-		return false, err
-	}
 }
 
 // buildAndPushLocalRunner builds the local_test_runner executable and pushes it to hst.

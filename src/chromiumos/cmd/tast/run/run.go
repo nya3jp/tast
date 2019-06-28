@@ -39,11 +39,46 @@ func errorStatusf(cfg *Config, code subcommands.ExitStatus, format string, args 
 // If an error is encountered, status.ErrorMsg will be logged to cfg.Logger before returning,
 // but the caller may wish to log it again later to increase its prominence if additional messages are logged.
 func Run(ctx context.Context, cfg *Config) (status Status, results []TestResult) {
+	defer func() {
+		// If we didn't get to the point where we started trying to run tests,
+		// report that to the caller so they can avoid writing a useless results dir.
+		if status.ExitCode == subcommands.ExitFailure && !cfg.startedRun {
+			status.FailedBeforeRun = true
+		}
+	}()
+
+	hst, err := connectToTarget(ctx, cfg)
+	if err != nil {
+		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to %s: %v", cfg.Target, err), nil
+	}
+
+	if len(cfg.devservers) == 0 && cfg.useEphemeralDevserver {
+		if err := startEphemeralDevserver(ctx, hst, cfg); err != nil {
+			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start ephemeral devserver: %v", err), nil
+		}
+		defer closeEphemeralDevserver(ctx, cfg)
+	}
+
+	if cfg.downloadPrivateBundles {
+		if cfg.build {
+			return errorStatusf(cfg, subcommands.ExitFailure, "-downloadprivatebundles requires -build=false"), nil
+		}
+		if err := downloadPrivateBundles(ctx, cfg, hst); err != nil {
+			return errorStatusf(cfg, subcommands.ExitFailure, "Failed downloading private bundles: %v", err), nil
+		}
+	}
+
 	if cfg.build {
 		switch cfg.buildType {
 		case localType:
 			status, results = local(ctx, cfg)
 		case remoteType:
+			// Turn down the ephemeral devserver before running remote tests. Some remote tests
+			// in the meta category run the tast command which starts yet another ephemeral devserver
+			// and reverse forwarding port can conflict.
+			// TODO(nya): Avoid duplicating closeEphemeralDevserver calls in this function. This will be
+			// resolved on removing -buildtype flag.
+			closeEphemeralDevserver(ctx, cfg)
 			status, results = remote(ctx, cfg)
 		default:
 			// This shouldn't be reached; Config.SetFlags validates buildType.
@@ -54,16 +89,16 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []TestResult)
 		// TODO(derat): While test runners are always supposed to report success even if tests fail,
 		// it'd probably be better to run both types here even if one fails.
 		if status, results = local(ctx, cfg); status.ExitCode == subcommands.ExitSuccess {
+			// Turn down the ephemeral devserver before running remote tests. Some remote tests
+			// in the meta category run the tast command which starts yet another ephemeral devserver
+			// and reverse forwarding port can conflict.
+			// TODO(nya): Avoid duplicating closeEphemeralDevserver calls in this function. This will be
+			// resolved on removing -buildtype flag.
+			closeEphemeralDevserver(ctx, cfg)
 			var rres []TestResult
 			status, rres = remote(ctx, cfg)
 			results = append(results, rres...)
 		}
-	}
-
-	// If we didn't get to the point where we started trying to run tests,
-	// report that to the caller so they can avoid writing a useless results dir.
-	if status.ExitCode == subcommands.ExitFailure && !cfg.startedRun {
-		status.FailedBeforeRun = true
 	}
 
 	return status, results

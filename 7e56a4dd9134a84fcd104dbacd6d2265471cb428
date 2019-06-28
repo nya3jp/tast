@@ -16,6 +16,24 @@
       "revId": "7e56a4dd9134a84fcd104dbacd6d2265471cb428",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4fd0f9cd_2b7a19c6",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 256,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-06-28T03:30:42Z",
+      "side": 1,
+      "message": "Thanks for detailed comments! I agree it\u0027s good to extract a common function rather than using cascaded doAsync in both places.\n\nAbout the utility function, I prefer to avoid exposing channels as its API to reduce misuses. How about the following signature:\n\n // doAsyncCatch runs f in a goroutine and returns its result.\n //\n // catch is called after f in the same goroutine as f if f returns a non-nil\n // error or ctx\u0027s deadline is reached before f finishes. This can be used to \n // clean up the effect of f in the case of timeout.\n //\n // The return value of doAsyncCatch is that of f if f finishes before ctx\u0027s\n // deadline is reached. Otherwise, ctx.Err() is returned.\n func doAsyncCatch(ctx context.Context, f func() error, catch func()) error",
+      "parentUuid": "e84e62b8_86ed6634",
+      "revId": "7e56a4dd9134a84fcd104dbacd6d2265471cb428",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -6,7 +6,6 @@
 package build
 
 import (
-	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -15,6 +14,9 @@ import (
 	"path/filepath"
 	"strings"
 
+	"golang.org/x/sync/errgroup"
+
+	"chromiumos/cmd/tast/logging"
 	"chromiumos/tast/shutil"
 	"chromiumos/tast/timing"
 )
@@ -40,48 +42,61 @@ var archToCompiler = map[string]string{
 	"aarch64": "aarch64-cros-linux-gnu-go",
 }
 
-// Build builds executable package pkg to outDir as dictated by cfg.
-// The executable file's name is assigned by "go install" (i.e. it's the last component of pkg).
-// stageName is used as the name of a new stage reported via the timing package.
-// The returned out variable contains output from executed build commands and should typically
-// be logged iff err is non-nil.
-func Build(ctx context.Context, cfg *Config, pkg, outDir, stageName string) (out []byte, err error) {
-	ctx, st1 := timing.Start(ctx, stageName)
-	defer st1.End()
-
-	for _, ws := range cfg.Workspaces {
-		src := filepath.Join(ws, "src")
-		if _, err := os.Stat(src); os.IsNotExist(err) {
-			return out, fmt.Errorf("invalid workspace %q (no src subdir)", ws)
-		} else if err != nil {
-			return out, err
-		}
-	}
-
-	comp := archToCompiler[cfg.Arch]
-	if comp == "" {
-		return out, fmt.Errorf("unknown arch %q", cfg.Arch)
-	}
-
+// Build builds executables as dictated by cfg.
+// tgts is a list of build targets to build in parallel.
+func Build(ctx context.Context, cfg *Config, tgts []*Target) error {
 	if cfg.CheckBuildDeps {
 		cfg.Logger.Status("Checking build dependencies")
 		if missing, cmds, err := checkDeps(ctx, cfg.CheckDepsCachePath); err != nil {
-			return out, fmt.Errorf("failed checking build deps: %v", err)
+			return fmt.Errorf("failed checking build deps: %v", err)
 		} else if len(missing) > 0 {
 			if !cfg.InstallPortageDeps {
-				return makeMissingDepsMessage(missing, cmds),
-					errors.New("missing build dependencies")
+				logMissingDeps(cfg.Logger, missing, cmds)
+				return errors.New("missing build dependencies")
 			}
-			if out, err := installMissingDeps(ctx, cfg, missing, cmds); err != nil {
-				return out, err
+			if err := installMissingDeps(ctx, cfg, missing, cmds); err != nil {
+				return err
 			}
 		}
+	}
+
+	// Compile targets in parallel.
+	g, ctx := errgroup.WithContext(ctx)
+	for _, tgt := range tgts {
+		tgt := tgt
+		g.Go(func() error {
+			if err := buildOne(ctx, cfg, tgt); err != nil {
+				return fmt.Errorf("failed to build %s: %v", tgt.Pkg, err)
+			}
+			return nil
+		})
+	}
+	return g.Wait()
+}
+
+// buildOne builds one executable.
+func buildOne(ctx context.Context, cfg *Config, tgt *Target) error {
+	ctx, st := timing.Start(ctx, filepath.Base(tgt.Pkg))
+	defer st.End()
+
+	for _, ws := range tgt.Workspaces {
+		src := filepath.Join(ws, "src")
+		if _, err := os.Stat(src); os.IsNotExist(err) {
+			return fmt.Errorf("invalid workspace %q (no src subdir)", ws)
+		} else if err != nil {
+			return err
+		}
+	}
+
+	comp := archToCompiler[tgt.Arch]
+	if comp == "" {
+		return fmt.Errorf("unknown arch %q", tgt.Arch)
 	}
 
 	const ldFlags = "-ldflags=-s -w"
 
 	env := append(os.Environ(),
-		"GOPATH="+strings.Join(cfg.Workspaces, ":"),
+		"GOPATH="+strings.Join(tgt.Workspaces, ":"),
 		// Disable cgo and PIE on building Tast binaries. See:
 		// https://crbug.com/976196
 		// https://github.com/golang/go/issues/30986#issuecomment-475626018
@@ -99,55 +114,56 @@ func Build(ctx context.Context, cfg *Config, pkg, outDir, stageName string) (out
 	// but fall back to using "go build" when cross-compiling.
 	larch, err := GetLocalArch()
 	if err != nil {
-		return out, fmt.Errorf("failed to get local arch: %v", err)
+		return fmt.Errorf("failed to get local arch: %v", err)
 	}
 
 	var cmd *exec.Cmd
-	if larch == cfg.Arch {
-		cmd = exec.Command(comp, "install", ldFlags, pkg)
-		env = append(env, "GOBIN="+outDir)
+	if larch == tgt.Arch {
+		cmd = exec.Command(comp, "install", ldFlags, tgt.Pkg)
+		env = append(env, "GOBIN="+tgt.OutDir)
 	} else {
-		dest := filepath.Join(outDir, filepath.Base(pkg))
-		cmd = exec.Command(comp, "build", ldFlags, "-o", dest, pkg)
+		dest := filepath.Join(tgt.OutDir, filepath.Base(tgt.Pkg))
+		cmd = exec.Command(comp, "build", ldFlags, "-o", dest, tgt.Pkg)
 	}
 	cmd.Env = env
 
-	cfg.Logger.Status("Compiling " + pkg)
-	ctx, st2 := timing.Start(ctx, "compile")
-	defer st2.End()
+	cfg.Logger.Status("Compiling " + tgt.Pkg)
 
-	if out, err = cmd.CombinedOutput(); err != nil {
+	if out, err := cmd.CombinedOutput(); err != nil {
 		// The compiler won't be installed if the user has never run setup_board for a board using
 		// the target arch. Suggest manually setting up toolchains.
 		if strings.HasSuffix(err.Error(), exec.ErrNotFound.Error()) {
-			msg := "To install toolchains for all architectures, please run:\n\n" +
-				"  sudo ~/trunk/chromite/bin/cros_setup_toolchains -t sdk\n"
-			return []byte(msg), err
+			cfg.Logger.Log("To install toolchains for all architectures, please run:")
+			cfg.Logger.Log()
+			cfg.Logger.Log("  sudo ~/trunk/chromite/bin/cros_setup_toolchains -t sdk")
+			return err
 		}
-		return out, err
+		for _, line := range strings.Split(string(out), "\n") {
+			cfg.Logger.Log(line)
+		}
+		return err
 	}
-	return out, nil
+	return nil
 }
 
-// makeMissingDepsMessage returns a multiline message describing how to run cmds to install the listed missing packages.
+// logMissingDeps prints logs describing how to run cmds to install the listed missing packages.
 // missing and cmds should be produced by checkDeps.
-func makeMissingDepsMessage(missing []string, cmds [][]string) []byte {
-	b := bytes.NewBufferString("The following dependencies are not installed:\n")
+func logMissingDeps(log logging.Logger, missing []string, cmds [][]string) {
+	log.Log("The following dependencies are not installed:")
 	for _, dep := range missing {
-		fmt.Fprintf(b, "  %s\n", dep)
+		log.Logf("  %s", dep)
 	}
-	b.WriteString("\nTo install them, please run the following in your chroot:\n")
+	log.Log()
+	log.Log("To install them, please run the following in your chroot:")
 	for _, cmd := range cmds {
-		fmt.Fprintf(b, "  %s\n", shutil.EscapeSlice(cmd))
+		log.Logf("  %s", shutil.EscapeSlice(cmd))
 	}
-	b.WriteString("\n")
-	return b.Bytes()
+	log.Log()
 }
 
 // installMissingDeps attempts to install the supplied missing packages by running cmds in sequence.
 // Progress is logged using cfg.Logger. missing and cmds should be produced by checkDeps.
-// If an error is returned, then out will contain stdout and stderr from the failed command.
-func installMissingDeps(ctx context.Context, cfg *Config, missing []string, cmds [][]string) (out []byte, err error) {
+func installMissingDeps(ctx context.Context, cfg *Config, missing []string, cmds [][]string) error {
 	ctx, st := timing.Start(ctx, "install_deps")
 	defer st.End()
 
@@ -159,8 +175,12 @@ func installMissingDeps(ctx context.Context, cfg *Config, missing []string, cmds
 		cfg.Logger.Status(fmt.Sprintf("Running %q", shutil.EscapeSlice(cmd)))
 		cfg.Logger.Logf("Running %q", shutil.EscapeSlice(cmd))
 		if out, err := exec.CommandContext(ctx, cmd[0], cmd[1:]...).CombinedOutput(); err != nil {
-			return out, fmt.Errorf("failed running %q: %v", shutil.EscapeSlice(cmd), err)
+			cfg.Logger.Logf("Failed running %s", shutil.EscapeSlice(cmd))
+			for _, line := range strings.Split(string(out), "\n") {
+				cfg.Logger.Log(line)
+			}
+			return fmt.Errorf("failed running %q: %v", shutil.EscapeSlice(cmd), err)
 		}
 	}
-	return nil, nil
+	return nil
 }

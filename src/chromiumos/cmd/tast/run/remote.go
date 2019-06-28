@@ -39,7 +39,6 @@ const (
 func remote(ctx context.Context, cfg *Config) (Status, []TestResult) {
 	start := time.Now()
 
-	var bundleGlob, dataDir string
 	if cfg.build {
 		cfg.Logger.Status("Building test bundle")
 		buildStart := time.Now()
@@ -50,20 +49,12 @@ func remote(ctx context.Context, cfg *Config) (Status, []TestResult) {
 		if bc.Arch, err = build.GetLocalArch(); err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to get local arch: %v", err), nil
 		}
-		buildDir := filepath.Join(cfg.buildOutDir, bc.Arch, remoteBundleBuildSubdir)
 		pkg := path.Join(remoteBundlePkgPathPrefix, cfg.buildBundle)
-		cfg.Logger.Debugf("Building %s from %s to %s", pkg, strings.Join(bc.Workspaces, ":"), buildDir)
-		if out, err := build.Build(ctx, &bc, pkg, buildDir, "build_bundle"); err != nil {
+		cfg.Logger.Debugf("Building %s from %s to %s", pkg, strings.Join(bc.Workspaces, ":"), cfg.remoteBundleDir)
+		if out, err := build.Build(ctx, &bc, pkg, cfg.remoteBundleDir, "build_bundle"); err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed building test bundle: %v\n\n%s", err, out), nil
 		}
 		cfg.Logger.Logf("Built test bundle in %v", time.Now().Sub(buildStart).Round(time.Millisecond))
-
-		// Only run tests from the newly-built bundle, and get test data from the source tree.
-		bundleGlob = filepath.Join(buildDir, cfg.buildBundle)
-		dataDir = filepath.Join(cfg.buildWorkspace, "src")
-	} else {
-		bundleGlob = filepath.Join(cfg.remoteBundleDir, "*")
-		dataDir = cfg.remoteDataDir
 	}
 
 	if err := getSoftwareFeatures(ctx, cfg); err != nil {
@@ -74,7 +65,7 @@ func remote(ctx context.Context, cfg *Config) (Status, []TestResult) {
 	}
 
 	cfg.startedRun = true
-	results, err := runRemoteRunner(ctx, cfg, bundleGlob, dataDir)
+	results, err := runRemoteRunner(ctx, cfg)
 	if err != nil {
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to run tests: %v", err), results
 	}
@@ -82,15 +73,21 @@ func remote(ctx context.Context, cfg *Config) (Status, []TestResult) {
 	return successStatus, results
 }
 
-// runRemoteRunner runs the remote test runner with bundles matched by bundleGlob
-// and reads its output.
-func runRemoteRunner(ctx context.Context, cfg *Config, bundleGlob, dataDir string) ([]TestResult, error) {
+// runRemoteRunner runs the remote test runner and reads its output.
+func runRemoteRunner(ctx context.Context, cfg *Config) ([]TestResult, error) {
 	ctx, st := timing.Start(ctx, "run_remote_tests")
 	defer st.End()
 
 	exe, err := os.Executable()
 	if err != nil {
 		return nil, err
+	}
+
+	var bundleGlob string
+	if cfg.build {
+		bundleGlob = filepath.Join(cfg.remoteBundleDir, cfg.buildBundle)
+	} else {
+		bundleGlob = filepath.Join(cfg.remoteBundleDir, "*")
 	}
 
 	var args runner.Args
@@ -101,7 +98,7 @@ func runRemoteRunner(ctx context.Context, cfg *Config, bundleGlob, dataDir strin
 			RunTests: &runner.RunTestsArgs{
 				BundleArgs: bundle.RunTestsArgs{
 					Patterns: cfg.Patterns,
-					DataDir:  dataDir,
+					DataDir:  cfg.remoteDataDir,
 					TestVars: cfg.testVars,
 					Target:   cfg.Target,
 					KeyFile:  cfg.KeyFile,

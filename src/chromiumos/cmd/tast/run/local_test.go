@@ -444,29 +444,6 @@ func TestLocalDataFiles(t *gotesting.T) {
 	}
 }
 
-func TestLocalEphemeralDevserver(t *gotesting.T) {
-	td := newLocalTestData(t)
-	defer td.close()
-
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		mw := control.NewMessageWriter(stdout)
-		mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
-		mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
-		return 0
-	}
-
-	td.cfg.useEphemeralDevserver = true
-
-	if status, _ := local(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
-		t.Errorf("local() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
-	}
-
-	exp := []string{fmt.Sprintf("http://127.0.0.1:%d", ephemeralDevserverPort)}
-	if !reflect.DeepEqual(td.cfg.devservers, exp) {
-		t.Errorf("local() set devserver=%v; want %v", td.cfg.devservers, exp)
-	}
-}
-
 func TestLocalFailureBeforeRun(t *gotesting.T) {
 	td := newLocalTestData(t)
 	defer td.close()
@@ -628,41 +605,5 @@ func TestLocalGetInitialSysInfo(t *gotesting.T) {
 	}
 	if !called {
 		t.Errorf("local did not call getInitialSysInfo")
-	}
-}
-
-func TestLocalDownloadPrivateBundles(t *gotesting.T) {
-	td := newLocalTestData(t)
-	defer td.close()
-
-	called := false
-
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		switch args.Mode {
-		case runner.RunTestsMode:
-			mw := control.NewMessageWriter(stdout)
-			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
-			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
-		case runner.DownloadPrivateBundlesMode:
-			exp := runner.DownloadPrivateBundlesArgs{Devservers: td.cfg.devservers}
-			if !reflect.DeepEqual(*args.DownloadPrivateBundles, exp) {
-				t.Errorf("got args %+v; want %+v", *args.DownloadPrivateBundles, exp)
-			}
-			called = true
-			json.NewEncoder(stdout).Encode(&runner.DownloadPrivateBundlesResult{})
-		default:
-			t.Errorf("Unexpected args.Mode = %v", args.Mode)
-		}
-		return 0
-	}
-
-	td.cfg.devservers = []string{"http://example.com:8080"}
-	td.cfg.downloadPrivateBundles = true
-
-	if status, _ := local(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
-		t.Errorf("local() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
-	}
-	if !called {
-		t.Errorf("local did not call downloadPrivateBundles")
 	}
 }

@@ -6,8 +6,11 @@ package run
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"io"
 	"path/filepath"
+	"reflect"
 	gotesting "testing"
 	"time"
 
@@ -59,3 +62,67 @@ func TestRunError(t *gotesting.T) {
 		t.Error("Run() incorrectly reported that failure did not occur before trying to run tests")
 	}
 }
+
+func TestRunEphemeralDevserver(t *gotesting.T) {
+	td := newLocalTestData(t)
+	defer td.close()
+
+	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		mw := control.NewMessageWriter(stdout)
+		mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
+		mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
+		return 0
+	}
+	td.cfg.remoteRunner = filepath.Join(td.tempDir, "missing_remote_test_runner")
+
+	td.cfg.useEphemeralDevserver = true
+
+	if status, _ := Run(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitFailure {
+		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitFailure, td.logbuf.String())
+	}
+
+	exp := []string{fmt.Sprintf("http://127.0.0.1:%d", ephemeralDevserverPort)}
+	if !reflect.DeepEqual(td.cfg.devservers, exp) {
+		t.Errorf("Run() set devserver=%v; want %v", td.cfg.devservers, exp)
+	}
+}
+
+func TestRunDownloadPrivateBundles(t *gotesting.T) {
+	td := newLocalTestData(t)
+	defer td.close()
+
+	called := false
+
+	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		switch args.Mode {
+		case runner.RunTestsMode:
+			mw := control.NewMessageWriter(stdout)
+			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
+			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
+		case runner.DownloadPrivateBundlesMode:
+			exp := runner.DownloadPrivateBundlesArgs{Devservers: td.cfg.devservers}
+			if !reflect.DeepEqual(*args.DownloadPrivateBundles, exp) {
+				t.Errorf("got args %+v; want %+v", *args.DownloadPrivateBundles, exp)
+			}
+			called = true
+			json.NewEncoder(stdout).Encode(&runner.DownloadPrivateBundlesResult{})
+		default:
+			t.Errorf("Unexpected args.Mode = %v", args.Mode)
+		}
+		return 0
+	}
+	td.cfg.remoteRunner = filepath.Join(td.tempDir, "missing_remote_test_runner")
+
+	td.cfg.devservers = []string{"http://example.com:8080"}
+	td.cfg.downloadPrivateBundles = true
+
+	if status, _ := Run(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitFailure {
+		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitFailure, td.logbuf.String())
+	}
+	if !called {
+		t.Errorf("Run did not call downloadPrivateBundles")
+	}
+}
+
+// TODO(crbug.com/982171): Add a test that runs remote tests successfully.
+// This may require merging LocalTestData and RemoteTestData into one.

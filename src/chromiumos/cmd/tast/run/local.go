@@ -67,22 +67,6 @@ func local(ctx context.Context, cfg *Config) (Status, []TestResult) {
 		}
 	}
 
-	if len(cfg.devservers) == 0 && cfg.useEphemeralDevserver {
-		if err := startEphemeralDevserver(ctx, hst, cfg); err != nil {
-			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start ephemeral devserver: %v", err), nil
-		}
-		defer closeEphemeralDevserver(ctx, cfg)
-	}
-
-	if cfg.downloadPrivateBundles {
-		if cfg.build {
-			return errorStatusf(cfg, subcommands.ExitFailure, "-downloadprivatebundles requires -build=false"), nil
-		}
-		if err := downloadPrivateBundles(ctx, cfg, hst); err != nil {
-			return errorStatusf(cfg, subcommands.ExitFailure, "Failed downloading private bundles: %v", err), nil
-		}
-	}
-
 	// After pushing files to the DUT, run sync to make sure the written files are persisted
 	// even if the DUT crashes later. This is important especially when we push local_test_runner
 	// because it can appear as zero-byte binary after a crash and subsequent sysinfo phase will fail.

@@ -100,8 +100,9 @@ func main() {
 			"virtual_usb_printer":     "usbip",
 			// Some VM builds actually can run nested VM with right host configuration.
 			// But we haven't enable this feature on builders. For now, just disable
-			// vm_host feature for VM builds.
-			"vm_host": "kvm_host && !tast_vm",
+			// vm_host feature for VM builds. The kvm_transition flag indicates the
+			// board may not work with VMs without a cold reboot b/134764918.
+			"vm_host": "kvm_host && !tast_vm && !kvm_transition",
 			"vulkan":  "vulkan",
 			"wilco":   "wilco",
 		},

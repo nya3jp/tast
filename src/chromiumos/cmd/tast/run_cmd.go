@@ -167,7 +167,6 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 	allTestsRun := status.ExitCode == subcommands.ExitSuccess
 	if len(results) == 0 && allTestsRun {
 		lg.Logf("No tests matched by pattern(s) %v", r.cfg.Patterns)
-		lg.Log("Do you need to pass -buildtype=local or -buildtype=remote?")
 		return subcommands.ExitFailure
 	}
 

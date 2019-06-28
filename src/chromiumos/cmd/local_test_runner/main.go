@@ -108,11 +108,12 @@ func main() {
 			"virtual_usb_printer":     "usbip",
 			// Some VM builds actually can run nested VM with right host configuration.
 			// But we haven't enable this feature on builders. For now, just disable
-			// vm_host feature for VM builds.
-			"vm_host":    "kvm_host && !tast_vm",
+			// vm_host feature for VM builds. The kvm_transition flag indicates the
+			// board may not work with VMs without a cold reboot b/134764918.
+			"vm_host": "kvm_host && !tast_vm && !kvm_transition",
 			"vp9_sanity": "!rk3399", // RK3399 crashes on playing unsupported VP9 profile: https://crbug.com/971032
-			"vulkan":     "vulkan",
-			"wilco":      "wilco",
+			"vulkan":  "vulkan",
+			"wilco":   "wilco",
 		},
 		// The autotest-capability package tries to install this to /etc but it's diverted to /usr/local.
 		AutotestCapabilityDir: autocaps.DefaultCapabilityDir,

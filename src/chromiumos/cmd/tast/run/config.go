@@ -183,8 +183,8 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 
 	// These are configurable since files may be installed elsewhere when running in the lab.
 	f.StringVar(&c.remoteRunner, "remoterunner", "/usr/bin/remote_test_runner", "executable that runs remote test bundles")
-	f.StringVar(&c.remoteBundleDir, "remotebundledir", "/usr/libexec/tast/bundles/remote", "directory containing builtin remote test bundles")
-	f.StringVar(&c.remoteDataDir, "remotedatadir", "/usr/share/tast/data", "directory containing builtin remote test data")
+	f.StringVar(&c.remoteBundleDir, "remotebundledir", "", "directory containing builtin remote test bundles")
+	f.StringVar(&c.remoteDataDir, "remotedatadir", "", "directory containing builtin remote test data")
 
 	// Some flags are only relevant if we're running tests rather than listing them.
 	if c.mode == RunTestsMode {
@@ -240,6 +240,11 @@ func (c *Config) DeriveDefaults() error {
 		return nil
 	}
 
+	larch, err := build.GetLocalArch()
+	if err != nil {
+		return fmt.Errorf("failed to get local arch: %v", err)
+	}
+
 	setIfEmpty := func(p *string, s string) {
 		if *p == "" {
 			*p = s
@@ -250,9 +255,13 @@ func (c *Config) DeriveDefaults() error {
 	if c.build {
 		setIfEmpty(&c.localBundleDir, "/usr/local/libexec/tast/bundles/local_pushed")
 		setIfEmpty(&c.localDataDir, "/usr/local/share/tast/data_pushed")
+		setIfEmpty(&c.remoteBundleDir, filepath.Join(c.buildOutDir, larch, remoteBundleBuildSubdir))
+		setIfEmpty(&c.remoteDataDir, filepath.Join(c.buildWorkspace, "src"))
 	} else {
 		setIfEmpty(&c.localBundleDir, "/usr/local/libexec/tast/bundles/local")
 		setIfEmpty(&c.localDataDir, "/usr/local/share/tast/data")
+		setIfEmpty(&c.remoteBundleDir, "/usr/libexec/tast/bundles/remote")
+		setIfEmpty(&c.remoteDataDir, "/usr/share/tast/data")
 	}
 	return nil
 }

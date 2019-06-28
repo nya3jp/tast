@@ -77,37 +77,21 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []TestResult)
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to build and push: %v", err), nil
 	}
 
-	if cfg.build {
-		switch cfg.buildType {
-		case localType:
-			status, results = local(ctx, cfg)
-		case remoteType:
-			// Turn down the ephemeral devserver before running remote tests. Some remote tests
-			// in the meta category run the tast command which starts yet another ephemeral devserver
-			// and reverse forwarding port can conflict.
-			// TODO(nya): Avoid duplicating closeEphemeralDevserver calls in this function. This will be
-			// resolved on removing -buildtype flag.
-			closeEphemeralDevserver(ctx, cfg)
-			status, results = remote(ctx, cfg)
-		default:
-			// This shouldn't be reached; Config.SetFlags validates buildType.
-			panic(fmt.Sprintf("Invalid build type %d", int(cfg.buildType)))
-		}
-	} else {
-		// If we aren't rebuilding a bundle, run both local and remote tests and merge the results.
-		// TODO(derat): While test runners are always supposed to report success even if tests fail,
-		// it'd probably be better to run both types here even if one fails.
-		if status, results = local(ctx, cfg); status.ExitCode == subcommands.ExitSuccess {
-			// Turn down the ephemeral devserver before running remote tests. Some remote tests
-			// in the meta category run the tast command which starts yet another ephemeral devserver
-			// and reverse forwarding port can conflict.
-			// TODO(nya): Avoid duplicating closeEphemeralDevserver calls in this function. This will be
-			// resolved on removing -buildtype flag.
-			closeEphemeralDevserver(ctx, cfg)
-			var rres []TestResult
-			status, rres = remote(ctx, cfg)
-			results = append(results, rres...)
-		}
+	// Run local tests.
+	status, results = local(ctx, cfg)
+
+	// Turn down the ephemeral devserver before running remote tests. Some remote tests
+	// in the meta category run the tast command which starts yet another ephemeral devserver
+	// and reverse forwarding port can conflict.
+	closeEphemeralDevserver(ctx, cfg)
+
+	// Run remote tests and merge the results.
+	// TODO(derat): While test runners are always supposed to report success even if tests fail,
+	// it'd probably be better to run both types here even if one fails.
+	if status.ExitCode == subcommands.ExitSuccess {
+		var rres []TestResult
+		status, rres = remote(ctx, cfg)
+		results = append(results, rres...)
 	}
 
 	return status, results
@@ -129,12 +113,10 @@ func prepare(ctx context.Context, cfg *Config, hst *host.SSH) error {
 		if err := buildAll(ctx, cfg, hst); err != nil {
 			return err
 		}
-		if cfg.buildType == localType {
-			if err := pushAll(ctx, cfg, hst); err != nil {
-				return err
-			}
-			written = true
+		if err := pushAll(ctx, cfg, hst); err != nil {
+			return err
 		}
+		written = true
 	}
 
 	if cfg.downloadPrivateBundles {
@@ -168,28 +150,25 @@ func buildAll(ctx context.Context, cfg *Config, hst *host.SSH) error {
 		return fmt.Errorf("failed to get local arch: %v", err)
 	}
 
-	var tgts []*build.Target
-	switch cfg.buildType {
-	case localType:
-		// TODO(nya): We might want to build local_test_runner for remote tests.
-		tgts = append(tgts, &build.Target{
+	tgts := []*build.Target{
+		{
 			Pkg:        path.Join(localBundlePkgPathPrefix, cfg.buildBundle),
 			Arch:       cfg.targetArch,
 			Workspaces: cfg.bundleWorkspaces(),
 			OutDir:     filepath.Join(cfg.buildOutDir, cfg.targetArch, localBundleBuildSubdir),
-		}, &build.Target{
-			Pkg:        localRunnerPkg,
-			Arch:       cfg.targetArch,
-			Workspaces: cfg.commonWorkspaces(),
-			OutDir:     filepath.Join(cfg.buildOutDir, cfg.targetArch),
-		})
-	case remoteType:
-		tgts = append(tgts, &build.Target{
+		},
+		{
 			Pkg:        path.Join(remoteBundlePkgPathPrefix, cfg.buildBundle),
 			Arch:       larch,
 			Workspaces: cfg.bundleWorkspaces(),
 			OutDir:     filepath.Join(cfg.buildOutDir, larch, remoteBundleBuildSubdir),
-		})
+		},
+		{
+			Pkg:        localRunnerPkg,
+			Arch:       cfg.targetArch,
+			Workspaces: cfg.commonWorkspaces(),
+			OutDir:     filepath.Join(cfg.buildOutDir, cfg.targetArch),
+		},
 	}
 
 	var names []string

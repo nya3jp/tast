@@ -7,9 +7,17 @@ package run
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"path"
+	"path/filepath"
+	"strings"
+	"time"
 
 	"github.com/google/subcommands"
+
+	"chromiumos/cmd/tast/build"
+	"chromiumos/tast/host"
 )
 
 // Status describes the result of a Run call.
@@ -39,11 +47,41 @@ func errorStatusf(cfg *Config, code subcommands.ExitStatus, format string, args 
 // If an error is encountered, status.ErrorMsg will be logged to cfg.Logger before returning,
 // but the caller may wish to log it again later to increase its prominence if additional messages are logged.
 func Run(ctx context.Context, cfg *Config) (status Status, results []TestResult) {
+	defer func() {
+		// If we didn't get to the point where we started trying to run tests,
+		// report that to the caller so they can avoid writing a useless results dir.
+		if status.ExitCode == subcommands.ExitFailure && !cfg.startedRun {
+			status.FailedBeforeRun = true
+		}
+	}()
+
+	hst, err := connectToTarget(ctx, cfg)
+	if err != nil {
+		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to %s: %v", cfg.Target, err), nil
+	}
+
+	if len(cfg.devservers) == 0 && cfg.useEphemeralDevserver {
+		if err := startEphemeralDevserver(ctx, hst, cfg); err != nil {
+			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start ephemeral devserver: %v", err), nil
+		}
+		defer closeEphemeralDevserver(ctx, cfg)
+	}
+
+	if err := prepare(ctx, cfg, hst); err != nil {
+		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to build and push: %v", err), nil
+	}
+
 	if cfg.build {
 		switch cfg.buildType {
 		case localType:
 			status, results = local(ctx, cfg)
 		case remoteType:
+			// Turn down the ephemeral devserver before running remote tests. Some remote tests
+			// in the meta category run the tast command which starts yet another ephemeral devserver
+			// and reverse forwarding port can conflict.
+			// TODO(nya): Avoid duplicating closeEphemeralDevserver calls in this function. This will be
+			// resolved on removing -buildtype flag.
+			closeEphemeralDevserver(ctx, cfg)
 			status, results = remote(ctx, cfg)
 		default:
 			// This shouldn't be reached; Config.SetFlags validates buildType.
@@ -54,17 +92,105 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []TestResult)
 		// TODO(derat): While test runners are always supposed to report success even if tests fail,
 		// it'd probably be better to run both types here even if one fails.
 		if status, results = local(ctx, cfg); status.ExitCode == subcommands.ExitSuccess {
+			// Turn down the ephemeral devserver before running remote tests. Some remote tests
+			// in the meta category run the tast command which starts yet another ephemeral devserver
+			// and reverse forwarding port can conflict.
+			// TODO(nya): Avoid duplicating closeEphemeralDevserver calls in this function. This will be
+			// resolved on removing -buildtype flag.
+			closeEphemeralDevserver(ctx, cfg)
 			var rres []TestResult
 			status, rres = remote(ctx, cfg)
 			results = append(results, rres...)
 		}
 	}
+	return status, results
+}
 
-	// If we didn't get to the point where we started trying to run tests,
-	// report that to the caller so they can avoid writing a useless results dir.
-	if status.ExitCode == subcommands.ExitFailure && !cfg.startedRun {
-		status.FailedBeforeRun = true
+// prepare prepares the DUT for running tests. When instructed in cfg, it builds
+// and pushes the local test runner and test bundles, and downloads private test
+// bundles.
+func prepare(ctx context.Context, cfg *Config, hst *host.SSH) error {
+	written := false
+
+	if cfg.build {
+		if err := buildAll(ctx, cfg, hst); err != nil {
+			return err
+		}
+		if cfg.buildType == localType {
+			if err := pushAll(ctx, cfg, hst); err != nil {
+				return err
+			}
+		}
+		written = true
 	}
 
-	return status, results
+	if cfg.downloadPrivateBundles {
+		if cfg.build {
+			return errors.New("-downloadprivatebundles requires -build=false")
+		}
+		if err := downloadPrivateBundles(ctx, cfg, hst); err != nil {
+			return fmt.Errorf("failed downloading private bundles: %v", err)
+		}
+		written = true
+	}
+
+	// After writing files to the DUT, run sync to make sure the written files are persisted
+	// even if the DUT crashes later. This is important especially when we push local_test_runner
+	// because it can appear as zero-byte binary after a crash and subsequent sysinfo phase fails.
+	if written {
+		if _, err := hst.Run(ctx, "sync"); err != nil {
+			return fmt.Errorf("failed to sync disk writes: %v", err)
+		}
+	}
+	return nil
+}
+
+// buildAll builds Go binaries as instructed in cfg.
+func buildAll(ctx context.Context, cfg *Config, hst *host.SSH) error {
+	if err := getTargetArch(ctx, cfg, hst); err != nil {
+		return fmt.Errorf("failed to get arch for %s: %v", cfg.Target, err)
+	}
+
+	larch, err := build.GetLocalArch()
+	if err != nil {
+		return fmt.Errorf("failed to get local arch: %v", err)
+	}
+
+	var tgts []*build.Target
+	switch cfg.buildType {
+	case localType:
+		tgts = append(tgts, &build.Target{
+			Pkg:        path.Join(localBundlePkgPathPrefix, cfg.buildBundle),
+			Arch:       cfg.targetArch,
+			Workspaces: cfg.bundleWorkspaces(),
+			OutDir:     filepath.Join(cfg.buildOutDir, cfg.targetArch, localBundleBuildSubdir),
+		})
+	case remoteType:
+		tgts = append(tgts, &build.Target{
+			Pkg:        path.Join(remoteBundlePkgPathPrefix, cfg.buildBundle),
+			Arch:       larch,
+			Workspaces: cfg.bundleWorkspaces(),
+			OutDir:     filepath.Join(cfg.buildOutDir, larch, remoteBundleBuildSubdir),
+		})
+	}
+	if cfg.forceBuildLocalRunner {
+		tgts = append(tgts, &build.Target{
+			Pkg:        localRunnerPkg,
+			Arch:       cfg.targetArch,
+			Workspaces: cfg.commonWorkspaces(),
+			OutDir:     filepath.Join(cfg.buildOutDir, cfg.targetArch),
+		})
+	}
+
+	var names []string
+	for _, tgt := range tgts {
+		names = append(names, path.Base(tgt.Pkg))
+	}
+	cfg.Logger.Logf("Building %s", strings.Join(names, ", "))
+	start := time.Now()
+	if err := build.Build(ctx, cfg.buildCfg(), tgts); err != nil {
+		return fmt.Errorf("build failed: %v", err)
+	}
+	cfg.Logger.Logf("Built in %v", time.Now().Sub(start).Round(time.Millisecond))
+	return nil
 }

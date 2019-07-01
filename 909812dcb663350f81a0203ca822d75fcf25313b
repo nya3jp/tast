@@ -1,0 +1,188 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1b9bf632_ce24603b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-01T01:17:16Z",
+      "side": 1,
+      "message": "Could you run\n\n tast-tests$ ./tools/run_lint.sh **/*.go\n\nto make sure the new lint is working fine in the existing code?",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 21
+      },
+      "revId": "909812dcb663350f81a0203ca822d75fcf25313b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d4ecefdb_4c17ef79",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 324,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-01T01:17:16Z",
+      "side": 1,
+      "message": "How about just using an anchor to Scoping-and-shared-code? The section is small enough.",
+      "range": {
+        "startLine": 324,
+        "startChar": 0,
+        "endLine": 324,
+        "endChar": 32
+      },
+      "revId": "909812dcb663350f81a0203ca822d75fcf25313b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5859503f_953eda91",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_bundle_imports.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-01T01:17:16Z",
+      "side": 1,
+      "message": "nit: 2019",
+      "range": {
+        "startLine": 1,
+        "startChar": 13,
+        "endLine": 1,
+        "endChar": 17
+      },
+      "revId": "909812dcb663350f81a0203ca822d75fcf25313b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9f93912a_ba4ed01f",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_bundle_imports.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-01T01:17:16Z",
+      "side": 1,
+      "message": "How about moving out bundlePrefix and analyze out of this function? They seems not really needed to be put within this function.",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 0
+      },
+      "revId": "909812dcb663350f81a0203ca822d75fcf25313b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b9e78e6d_d1f3ff79",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_bundle_imports.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-01T01:17:16Z",
+      "side": 1,
+      "message": "Let us also return (ok bool) and avoid in-band errors:\n\nhttps://github.com/golang/go/wiki/CodeReviewComments#in-band-errors",
+      "range": {
+        "startLine": 26,
+        "startChar": 33,
+        "endLine": 26,
+        "endChar": 77
+      },
+      "revId": "909812dcb663350f81a0203ca822d75fcf25313b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a63e53a2_b75a497d",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_bundle_imports.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-01T01:17:16Z",
+      "side": 1,
+      "message": "Does it make sense to return path.Join(pref, t[0]) here? It seems individual values are not used in the caller.",
+      "range": {
+        "startLine": 36,
+        "startChar": 10,
+        "endLine": 36,
+        "endChar": 26
+      },
+      "revId": "909812dcb663350f81a0203ca822d75fcf25313b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b1fcfdb5_56828e59",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_bundle_imports.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-01T01:17:16Z",
+      "side": 1,
+      "message": "Please use path.Join instead of filepath.Join since package names are always delimited by slashes.",
+      "range": {
+        "startLine": 53,
+        "startChar": 12,
+        "endLine": 53,
+        "endChar": 25
+      },
+      "revId": "909812dcb663350f81a0203ca822d75fcf25313b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1958927c_e7840713",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_bundle_imports.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-01T01:17:16Z",
+      "side": 1,
+      "message": "It is valid to import chromiumos/tast/local/bundles/cros/video/lib/videotype from \"chromiumos/tast/local/bundles/cros/video/encode/yuv.go. So this should be a prefix match.",
+      "range": {
+        "startLine": 54,
+        "startChar": 2,
+        "endLine": 54,
+        "endChar": 22
+      },
+      "revId": "909812dcb663350f81a0203ca822d75fcf25313b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

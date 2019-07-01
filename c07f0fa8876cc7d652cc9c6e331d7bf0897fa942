@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fcbfcf95_c6a15c0d",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 258,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-01T13:35:14Z",
+      "side": 1,
+      "message": "I\u0027m a bit confused why larch is needed here, though arch doesn\u0027t matter in the path of c.build\u003dfalse. Do we cross compile remote bundles?\nAfterthought, I guess it\u0027s because we share this binary between boards having the same arch in local development.",
+      "range": {
+        "startLine": 258,
+        "startChar": 62,
+        "endLine": 258,
+        "endChar": 67
+      },
+      "revId": "c07f0fa8876cc7d652cc9c6e331d7bf0897fa942",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "11b2addc_50670ab7",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 263,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-01T13:35:14Z",
+      "side": 1,
+      "message": "Can you add comment here? e.g.\n// Default paths where Tast files are installed by Portage packages.",
+      "range": {
+        "startLine": 263,
+        "startChar": 1,
+        "endLine": 263,
+        "endChar": 2
+      },
+      "revId": "c07f0fa8876cc7d652cc9c6e331d7bf0897fa942",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b8e30d17_8e485f92",
+        "filename": "src/chromiumos/cmd/tast/run/remote.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-01T13:35:14Z",
+      "side": 1,
+      "message": "buildBundle have no meaning if build\u003dfalse? I think it should be documented in Config struct.\nMaybe same applies for other fields such as buildType? You can do it in another CL.",
+      "range": {
+        "startLine": 90,
+        "startChar": 53,
+        "endLine": 90,
+        "endChar": 54
+      },
+      "revId": "c07f0fa8876cc7d652cc9c6e331d7bf0897fa942",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

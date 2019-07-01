@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3625b1e7_2ea3c959",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-01T14:13:15Z",
+      "side": 1,
+      "message": "It\u0027d be nice if you can split this CL into two. One for introducing Target and one for this refactoring.",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 4
+      },
+      "revId": "61a55aa28d71496b92f624d164efc91d4b3698fd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8098ca64_5a3782d9",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-01T14:13:15Z",
+      "side": 1,
+      "message": "Could you test tast build command too, as you are updating build_cmd.go ?",
+      "range": {
+        "startLine": 19,
+        "startChar": 19,
+        "endLine": 19,
+        "endChar": 22
+      },
+      "revId": "61a55aa28d71496b92f624d164efc91d4b3698fd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

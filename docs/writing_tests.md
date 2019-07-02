@@ -83,8 +83,8 @@ declared. Setting the `informational` attribute on new tests is recommended, as
 tests without this attribute will block the Commit Queue on failure otherwise.
 
 If there's a support package that's specific to a single category, it's often
-best to place it underneath the category's directory. See the "Scoping and
-shared code" section.
+best to place it underneath the category's directory. See the [Scoping and
+shared code] section.
 
 [test bundles]: overview.md#Test-bundles
 [tast-tests repository]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD
@@ -98,6 +98,7 @@ shared code" section.
 [Contacts]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Test
 [attributes]: test_attributes.md
 [software dependencies]: test_dependencies.md
+[Scoping and shared code]: #Scoping-and-shared-code
 
 ### Adding new test categories
 
@@ -479,12 +480,12 @@ On the other hand, avoid logging unnecessary information that would clutter the
 logs. If you want to log a verbose piece of information to help determine the
 cause of an error, only do it after the error has occurred. Also, if you are
 interested in which part of a test is time-consuming, please see the
-"[reporting timing]" section for details.
+[Reporting timing] section for details.
 
 See the [fmt package]'s documentation for available "verbs".
 
 [fmt package]: https://golang.org/pkg/fmt/
-[reporting timing]: writing_tests.md#Reporting-timing
+[Reporting timing]: #Reporting-timing
 
 <a name="log-vs-logf"></a>
 

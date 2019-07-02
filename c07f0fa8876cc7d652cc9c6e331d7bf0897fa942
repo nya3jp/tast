@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "ab21c89a_ea411154",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 258,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-02T03:55:34Z",
+      "side": 1,
+      "message": "I see. Thanks for clarification.",
+      "parentUuid": "e1c912fc_0f6dc5eb",
+      "range": {
+        "startLine": 258,
+        "startChar": 62,
+        "endLine": 258,
+        "endChar": 67
+      },
+      "revId": "c07f0fa8876cc7d652cc9c6e331d7bf0897fa942",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "11b2addc_50670ab7",
         "filename": "src/chromiumos/cmd/tast/run/config.go",
         "patchSetId": 1

@@ -67,8 +67,8 @@ func TestBuild(t *testing.T) {
 	}
 
 	outDir := filepath.Join(tempDir, "out")
-	if out, err := Build(context.Background(), cfg, mainPkgName, outDir, ""); err != nil {
-		t.Fatalf("Failed to build: %v: %s", err, string(out))
+	if err := Build(context.Background(), cfg, mainPkgName, outDir, ""); err != nil {
+		t.Fatal("Failed to build: ", err)
 	}
 
 	exp := commonConstVal + sysConstVal
@@ -99,12 +99,12 @@ func TestBuildBadWorkspace(t *testing.T) {
 		t.Fatal(err)
 	}
 	outDir := filepath.Join(td, "out")
-	if out, err := Build(context.Background(), cfg, "good", outDir, ""); err != nil {
-		t.Fatalf("Failed to build: %v: %s", err, string(out))
+	if err := Build(context.Background(), cfg, "good", outDir, ""); err != nil {
+		t.Fatal("Failed to build: ", err)
 	}
 
 	cfg.Workspaces = append(cfg.Workspaces, filepath.Join(td, "ws2"))
-	if _, err := Build(context.Background(), cfg, "good", outDir, ""); err == nil {
+	if err := Build(context.Background(), cfg, "good", outDir, ""); err == nil {
 		t.Fatal("Building with invalid workspace unexpectedly succeeded")
 	}
 }

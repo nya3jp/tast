@@ -6,7 +6,6 @@
 package build
 
 import (
-	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -15,6 +14,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"chromiumos/cmd/tast/logging"
 	"chromiumos/tast/shutil"
 	"chromiumos/tast/timing"
 )
@@ -43,37 +43,35 @@ var archToCompiler = map[string]string{
 // Build builds executable package pkg to outDir as dictated by cfg.
 // The executable file's name is assigned by "go install" (i.e. it's the last component of pkg).
 // stageName is used as the name of a new stage reported via the timing package.
-// The returned out variable contains output from executed build commands and should typically
-// be logged iff err is non-nil.
-func Build(ctx context.Context, cfg *Config, pkg, outDir, stageName string) (out []byte, err error) {
+func Build(ctx context.Context, cfg *Config, pkg, outDir, stageName string) error {
 	ctx, st1 := timing.Start(ctx, stageName)
 	defer st1.End()
 
 	for _, ws := range cfg.Workspaces {
 		src := filepath.Join(ws, "src")
 		if _, err := os.Stat(src); os.IsNotExist(err) {
-			return out, fmt.Errorf("invalid workspace %q (no src subdir)", ws)
+			return fmt.Errorf("invalid workspace %q (no src subdir)", ws)
 		} else if err != nil {
-			return out, err
+			return err
 		}
 	}
 
 	comp := archToCompiler[cfg.Arch]
 	if comp == "" {
-		return out, fmt.Errorf("unknown arch %q", cfg.Arch)
+		return fmt.Errorf("unknown arch %q", cfg.Arch)
 	}
 
 	if cfg.CheckBuildDeps {
 		cfg.Logger.Status("Checking build dependencies")
 		if missing, cmds, err := checkDeps(ctx, cfg.CheckDepsCachePath); err != nil {
-			return out, fmt.Errorf("failed checking build deps: %v", err)
+			return fmt.Errorf("failed checking build deps: %v", err)
 		} else if len(missing) > 0 {
 			if !cfg.InstallPortageDeps {
-				return makeMissingDepsMessage(missing, cmds),
-					errors.New("missing build dependencies")
+				logMissingDeps(cfg.Logger, missing, cmds)
+				return errors.New("missing build dependencies")
 			}
-			if out, err := installMissingDeps(ctx, cfg, missing, cmds); err != nil {
-				return out, err
+			if err := installMissingDeps(ctx, cfg.Logger, missing, cmds); err != nil {
+				return err
 			}
 		}
 	}
@@ -99,7 +97,7 @@ func Build(ctx context.Context, cfg *Config, pkg, outDir, stageName string) (out
 	// but fall back to using "go build" when cross-compiling.
 	larch, err := GetLocalArch()
 	if err != nil {
-		return out, fmt.Errorf("failed to get local arch: %v", err)
+		return fmt.Errorf("failed to get local arch: %v", err)
 	}
 
 	var cmd *exec.Cmd
@@ -116,51 +114,64 @@ func Build(ctx context.Context, cfg *Config, pkg, outDir, stageName string) (out
 	ctx, st2 := timing.Start(ctx, "compile")
 	defer st2.End()
 
-	if out, err = cmd.CombinedOutput(); err != nil {
+	if out, err := cmd.CombinedOutput(); err != nil {
 		// The compiler won't be installed if the user has never run setup_board for a board using
 		// the target arch. Suggest manually setting up toolchains.
 		if strings.HasSuffix(err.Error(), exec.ErrNotFound.Error()) {
-			msg := "To install toolchains for all architectures, please run:\n\n" +
-				"  sudo ~/trunk/chromite/bin/cros_setup_toolchains -t sdk\n"
-			return []byte(msg), err
+			cfg.Logger.Log("To install toolchains for all architectures, please run:")
+			cfg.Logger.Log()
+			cfg.Logger.Log("  sudo ~/trunk/chromite/bin/cros_setup_toolchains -t sdk")
+			return err
 		}
-		return out, err
+		writeMultiline(cfg.Logger, string(out))
+		return err
 	}
-	return out, nil
+	return nil
 }
 
-// makeMissingDepsMessage returns a multiline message describing how to run cmds to install the listed missing packages.
+// logMissingDeps prints logs describing how to run cmds to install the listed missing packages.
 // missing and cmds should be produced by checkDeps.
-func makeMissingDepsMessage(missing []string, cmds [][]string) []byte {
-	b := bytes.NewBufferString("The following dependencies are not installed:\n")
+func logMissingDeps(log logging.Logger, missing []string, cmds [][]string) {
+	log.Log("The following dependencies are not installed:")
 	for _, dep := range missing {
-		fmt.Fprintf(b, "  %s\n", dep)
+		log.Log("  ", dep)
 	}
-	b.WriteString("\nTo install them, please run the following in your chroot:\n")
+	log.Log()
+	log.Log("To install them, please run the following in your chroot:")
 	for _, cmd := range cmds {
-		fmt.Fprintf(b, "  %s\n", shutil.EscapeSlice(cmd))
+		log.Log("  ", shutil.EscapeSlice(cmd))
 	}
-	b.WriteString("\n")
-	return b.Bytes()
+	log.Log()
 }
 
 // installMissingDeps attempts to install the supplied missing packages by running cmds in sequence.
-// Progress is logged using cfg.Logger. missing and cmds should be produced by checkDeps.
-// If an error is returned, then out will contain stdout and stderr from the failed command.
-func installMissingDeps(ctx context.Context, cfg *Config, missing []string, cmds [][]string) (out []byte, err error) {
+// Progress is logged using log. missing and cmds should be produced by checkDeps.
+func installMissingDeps(ctx context.Context, log logging.Logger, missing []string, cmds [][]string) error {
 	ctx, st := timing.Start(ctx, "install_deps")
 	defer st.End()
 
-	cfg.Logger.Log("Installing missing dependencies:")
+	log.Log("Installing missing dependencies:")
 	for _, dep := range missing {
-		cfg.Logger.Log("  ", dep)
+		log.Log("  ", dep)
 	}
 	for _, cmd := range cmds {
-		cfg.Logger.Status(fmt.Sprintf("Running %q", shutil.EscapeSlice(cmd)))
-		cfg.Logger.Logf("Running %q", shutil.EscapeSlice(cmd))
+		log.Status(fmt.Sprintf("Running %s", shutil.EscapeSlice(cmd)))
+		log.Logf("Running %s", shutil.EscapeSlice(cmd))
 		if out, err := exec.CommandContext(ctx, cmd[0], cmd[1:]...).CombinedOutput(); err != nil {
-			return out, fmt.Errorf("failed running %q: %v", shutil.EscapeSlice(cmd), err)
+			log.Logf("Failed running %s", shutil.EscapeSlice(cmd))
+			writeMultiline(log, string(out))
+			return fmt.Errorf("failed running %s: %v", shutil.EscapeSlice(cmd), err)
 		}
 	}
-	return nil, nil
+	return nil
+}
+
+// writeMultiline writes multiline text s to log.
+func writeMultiline(log logging.Logger, s string) {
+	if s == "" {
+		return
+	}
+	for _, line := range strings.Split(strings.TrimSuffix(s, "\n"), "\n") {
+		log.Log(line)
+	}
 }

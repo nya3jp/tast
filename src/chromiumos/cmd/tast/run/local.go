@@ -179,8 +179,8 @@ func buildAndPushBundle(ctx context.Context, cfg *Config, hst *host.SSH) error {
 	buildDir := filepath.Join(cfg.buildOutDir, cfg.targetArch, localBundleBuildSubdir)
 	pkg := path.Join(localBundlePkgPathPrefix, cfg.buildBundle)
 	cfg.Logger.Logf("Building %s from %s", pkg, strings.Join(bc.Workspaces, ":"))
-	if out, err := build.Build(ctx, &bc, pkg, buildDir, "build_bundle"); err != nil {
-		return fmt.Errorf("build failed: %v\n\n%s", err, out)
+	if err := build.Build(ctx, &bc, pkg, buildDir, "build_bundle"); err != nil {
+		return fmt.Errorf("build failed: %v", err)
 	}
 	cfg.Logger.Logf("Built test bundle in %v", time.Now().Sub(start).Round(time.Millisecond))
 
@@ -402,8 +402,8 @@ func buildAndPushLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH) er
 
 	buildDir := filepath.Join(cfg.buildOutDir, cfg.targetArch)
 	cfg.Logger.Debugf("Building %s from %s", localRunnerPkg, strings.Join(bc.Workspaces, ":"))
-	if out, err := build.Build(ctx, &bc, localRunnerPkg, buildDir, "build_runner"); err != nil {
-		return fmt.Errorf("failed to build test runner: %v\n\n%s", err, out)
+	if err := build.Build(ctx, &bc, localRunnerPkg, buildDir, "build_runner"); err != nil {
+		return fmt.Errorf("failed to build test runner: %v", err)
 	}
 
 	buildName := path.Base(localRunnerPkg)

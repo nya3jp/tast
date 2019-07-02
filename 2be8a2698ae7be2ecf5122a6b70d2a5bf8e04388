@@ -16,6 +16,24 @@
       "revId": "2be8a2698ae7be2ecf5122a6b70d2a5bf8e04388",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "73f8bf40_f698bbaf",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-02T01:44:19Z",
+      "side": 0,
+      "message": "Good point, I thought about this again and it makes sense to keep stageName for now. Let me revert this change.",
+      "parentUuid": "e8330322_3f51fa99",
+      "revId": "2be8a2698ae7be2ecf5122a6b70d2a5bf8e04388",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

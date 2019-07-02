@@ -48,6 +48,30 @@
     },
     {
       "key": {
+        "uuid": "a661d6d8_c76e28a0",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_bundle_imports.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-02T19:39:45Z",
+      "side": 1,
+      "message": "Would you mind to add a few examples (incl both a simple case and a subpacakge case), which will help readers to understand.",
+      "parentUuid": "ae0f4208_cb4afd11",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 67
+      },
+      "revId": "29701012d3ba17f2a17669a33f8508d790e1606e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "0f150ead_2a22c267",
         "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_bundle_imports.go",
         "patchSetId": 12

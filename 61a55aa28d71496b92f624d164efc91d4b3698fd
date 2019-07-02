@@ -131,6 +131,24 @@
     },
     {
       "key": {
+        "uuid": "df7368d5_5fe78047",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-02T17:27:35Z",
+      "side": 1,
+      "message": "thanks, and yes it works for me.",
+      "parentUuid": "3ef5f3a1_b214c107",
+      "revId": "61a55aa28d71496b92f624d164efc91d4b3698fd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "488a8e94_fc732cd0",
         "filename": "src/chromiumos/cmd/tast/build/build.go",
         "patchSetId": 1
@@ -207,6 +225,24 @@
       "side": 1,
       "message": "ctx, st :\u003d timing.Start(ctx, filepath.Base(tgt.Pkg))\n\nis added above instead. Since operations above are fairly instance measurement is almost the same, and it rather makes more sense to include all time needed to process a single target.",
       "parentUuid": "8d313d1a_d4352f2f",
+      "revId": "61a55aa28d71496b92f624d164efc91d4b3698fd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "97d39d01_c4cd82a5",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-02T17:27:35Z",
+      "side": 1,
+      "message": "ah, i was thinking pkg measurement is the replacement of whole build time. anyways, the updated PS LG.",
+      "parentUuid": "84fbfe98_e668a8ed",
       "revId": "61a55aa28d71496b92f624d164efc91d4b3698fd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false

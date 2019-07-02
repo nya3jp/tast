@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f355d7fc_a3c77723",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-02T17:27:35Z",
+      "side": 1,
+      "message": "note: I assume trailing empty line issue will be fixed in the prev CL.",
+      "revId": "11de44fa598b7a172aaf0e8c4db75558d56c13b0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f03ed622_53b38d64",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-02T17:27:35Z",
+      "side": 1,
+      "message": "huge nit: could you fix this in the prev CL?",
+      "revId": "11de44fa598b7a172aaf0e8c4db75558d56c13b0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

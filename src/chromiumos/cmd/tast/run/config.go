@@ -67,7 +67,9 @@ type Config struct {
 	tastDir  string // base directory under which files are written
 	trunkDir string // path to Chrome OS checkout
 
-	build              bool   // rebuild (and push, for local tests) a single test bundle
+	build bool // rebuild (and push, for local tests) a single test bundle
+
+	// Variables in this section take effect when build=true.
 	buildBundle        string // name of the test bundle to rebuild (e.g. "cros")
 	buildWorkspace     string // path to workspace containing test bundle source code
 	buildOutDir        string // path to base directory under which executables are stored

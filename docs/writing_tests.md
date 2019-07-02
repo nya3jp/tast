@@ -479,7 +479,7 @@ On the other hand, avoid logging unnecessary information that would clutter the
 logs. If you want to log a verbose piece of information to help determine the
 cause of an error, only do it after the error has occurred. Also, if you are
 interested in which part of a test is time-consuming, please see the
-"[reporting timing]" section for details.
+[reporting timing] section for details.
 
 See the [fmt package]'s documentation for available "verbs".
 

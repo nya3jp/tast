@@ -270,9 +270,9 @@ func (c *Config) DeriveDefaults() error {
 	return nil
 }
 
-// baseBuildConfig returns a build.Config with common fields initialized.
-func (c *Config) baseBuildCfg() build.Config {
-	return build.Config{
+// buildCfg returns a build.Config.
+func (c *Config) buildCfg() *build.Config {
+	return &build.Config{
 		Logger:             c.Logger,
 		CheckBuildDeps:     c.checkPortageDeps,
 		CheckDepsCachePath: filepath.Join(c.buildOutDir, checkDepsCacheFile),

@@ -157,11 +157,6 @@ func connectToTarget(ctx context.Context, cfg *Config) (*host.SSH, error) {
 	return cfg.hst, nil
 }
 
-// localBundlePackage returns the Portage package name for the bundle with the given name (e.g. "cros").
-func localBundlePackage(name string) string {
-	return fmt.Sprintf("chromeos-base/tast-local-tests-%s", name)
-}
-
 // buildAndPushBundle builds a local test bundle and pushes it to hst as dictated by cfg.
 // If tests are going to be executed (rather than printed), data files are also pushed.
 // Progress is logged via cfg.Logger, but if a non-nil error is returned it should be
@@ -172,14 +167,17 @@ func buildAndPushBundle(ctx context.Context, cfg *Config, hst *host.SSH) error {
 		return fmt.Errorf("failed to get arch for %s: %v", cfg.Target, err)
 	}
 
-	start := time.Now()
-	bc := cfg.baseBuildCfg()
-	bc.Arch = cfg.targetArch
-	bc.Workspaces = cfg.bundleWorkspaces()
-	buildDir := filepath.Join(cfg.buildOutDir, cfg.targetArch, localBundleBuildSubdir)
 	pkg := path.Join(localBundlePkgPathPrefix, cfg.buildBundle)
-	cfg.Logger.Logf("Building %s from %s", pkg, strings.Join(bc.Workspaces, ":"))
-	if err := build.Build(ctx, &bc, pkg, buildDir, "build_bundle"); err != nil {
+	buildDir := filepath.Join(cfg.buildOutDir, cfg.targetArch, localBundleBuildSubdir)
+	tgt := build.Target{
+		Pkg:        pkg,
+		Arch:       cfg.targetArch,
+		Workspaces: cfg.bundleWorkspaces(),
+		OutDir:     buildDir,
+	}
+	cfg.Logger.Logf("Building %s from %s", pkg, strings.Join(tgt.Workspaces, ":"))
+	start := time.Now()
+	if err := build.Build(ctx, cfg.buildCfg(), []*build.Target{&tgt}, "build_bundle"); err != nil {
 		return fmt.Errorf("build failed: %v", err)
 	}
 	cfg.Logger.Logf("Built test bundle in %v", time.Now().Sub(start).Round(time.Millisecond))
@@ -396,13 +394,15 @@ func buildAndPushLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH) er
 	ctx, st := timing.Start(ctx, "build_and_push_runner")
 	defer st.End()
 
-	bc := cfg.baseBuildCfg()
-	bc.Arch = cfg.targetArch
-	bc.Workspaces = cfg.commonWorkspaces()
-
 	buildDir := filepath.Join(cfg.buildOutDir, cfg.targetArch)
-	cfg.Logger.Debugf("Building %s from %s", localRunnerPkg, strings.Join(bc.Workspaces, ":"))
-	if err := build.Build(ctx, &bc, localRunnerPkg, buildDir, "build_runner"); err != nil {
+	tgt := build.Target{
+		Pkg:        localRunnerPkg,
+		Arch:       cfg.targetArch,
+		Workspaces: cfg.commonWorkspaces(),
+		OutDir:     buildDir,
+	}
+	cfg.Logger.Debugf("Building %s from %s", localRunnerPkg, strings.Join(tgt.Workspaces, ":"))
+	if err := build.Build(ctx, cfg.buildCfg(), []*build.Target{&tgt}, "build_runner"); err != nil {
 		return fmt.Errorf("failed to build test runner: %v", err)
 	}
 

@@ -18,31 +18,16 @@ import (
 )
 
 func TestBuild(t *testing.T) {
-	tempDir := testutil.TempDir(t)
-	defer os.RemoveAll(tempDir)
-
-	const (
-		testDir   = "test"
-		commonDir = "common"
-		sysDir    = "sys"
-	)
-
-	var err error
-	cfg := &Config{
-		Logger: logging.NewSimple(&bytes.Buffer{}, 0, false),
-		Workspaces: []string{
-			filepath.Join(tempDir, testDir),
-			filepath.Join(tempDir, commonDir),
-			filepath.Join(tempDir, sysDir),
-		},
-	}
-	if cfg.Arch, err = GetLocalArch(); err != nil {
-		t.Fatal("Failed to get local arch: ", err)
-	}
+	td := testutil.TempDir(t)
+	defer os.RemoveAll(td)
 
 	// In order to test that the supplied common and system GOPATHs are used, build a main
 	// package that prints constants exported by a common and system package.
 	const (
+		testDir   = "test"
+		commonDir = "common"
+		sysDir    = "sys"
+
 		commonPkgName   = "commonpkg" // common package's name
 		commonConstName = "Msg"       // name of const exported by common package
 		commonConstVal  = "foo"       // value of const exported by common package
@@ -58,7 +43,7 @@ func TestBuild(t *testing.T) {
 	mainCode := fmt.Sprintf("package main\nimport %q\nimport %q\nfunc main() { print(%s.%s+%s.%s) }",
 		commonPkgName, sysPkgName, commonPkgName, commonConstName, sysPkgName, sysConstName)
 
-	if err := testutil.WriteFiles(tempDir, map[string]string{
+	if err := testutil.WriteFiles(td, map[string]string{
 		filepath.Join(commonDir, "src", commonPkgName, "lib.go"): commonPkgCode,
 		filepath.Join(sysDir, "src", sysPkgName, "lib.go"):       sysPkgCode,
 		filepath.Join(testDir, "src", mainPkgName, "main.go"):    mainCode,
@@ -66,8 +51,27 @@ func TestBuild(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	outDir := filepath.Join(tempDir, "out")
-	if err := Build(context.Background(), cfg, mainPkgName, outDir, ""); err != nil {
+	arch, err := GetLocalArch()
+	if err != nil {
+		t.Fatal("Failed to get local arch: ", err)
+	}
+	outDir := filepath.Join(td, "out")
+
+	cfg := &Config{
+		Logger: logging.NewSimple(&bytes.Buffer{}, 0, false),
+	}
+	tgt := &Target{
+		Pkg:  mainPkgName,
+		Arch: arch,
+		Workspaces: []string{
+			filepath.Join(td, testDir),
+			filepath.Join(td, commonDir),
+			filepath.Join(td, sysDir),
+		},
+		OutDir: outDir,
+	}
+
+	if err := Build(context.Background(), cfg, []*Target{tgt}, ""); err != nil {
 		t.Fatal("Failed to build: ", err)
 	}
 
@@ -80,31 +84,96 @@ func TestBuild(t *testing.T) {
 	}
 }
 
+func TestBuildMulti(t *testing.T) {
+	td := testutil.TempDir(t)
+	defer os.RemoveAll(td)
+
+	const (
+		code = `package main
+
+func main() {
+}`
+
+		wsDir = "ws"
+		pkg1  = "pkg1"
+		pkg2  = "pkg2"
+	)
+
+	if err := testutil.WriteFiles(td, map[string]string{
+		filepath.Join(wsDir, "src", pkg1, "main.go"): code,
+		filepath.Join(wsDir, "src", pkg2, "main.go"): code,
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	arch, err := GetLocalArch()
+	if err != nil {
+		t.Fatal("Failed to get local arch: ", err)
+	}
+	outDir := filepath.Join(td, "out")
+
+	cfg := &Config{
+		Logger: logging.NewSimple(&bytes.Buffer{}, 0, false),
+	}
+	tgts := []*Target{
+		{
+			Pkg:        pkg1,
+			Arch:       arch,
+			Workspaces: []string{filepath.Join(td, wsDir)},
+			OutDir:     outDir,
+		},
+		{
+			Pkg:        pkg2,
+			Arch:       arch,
+			Workspaces: []string{filepath.Join(td, wsDir)},
+			OutDir:     outDir,
+		},
+	}
+
+	if err := Build(context.Background(), cfg, tgts, ""); err != nil {
+		t.Fatal("Failed to build: ", err)
+	}
+
+	for _, pkg := range []string{pkg1, pkg2} {
+		if err := exec.Command(filepath.Join(outDir, pkg)).Run(); err != nil {
+			t.Errorf("Failed to run %s: %v", pkg, err)
+		}
+	}
+}
+
 func TestBuildBadWorkspace(t *testing.T) {
 	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
 
-	var err error
-	cfg := &Config{
-		Logger:     logging.NewSimple(&bytes.Buffer{}, 0, false),
-		Workspaces: []string{filepath.Join(td, "ws1")},
-	}
-	if cfg.Arch, err = GetLocalArch(); err != nil {
+	arch, err := GetLocalArch()
+	if err != nil {
 		t.Fatal("Failed to get local arch: ", err)
 	}
+
 	if err := testutil.WriteFiles(td, map[string]string{
 		"ws1/src/good/main.go": "package main\nfunc main() {}\n",
 		"ws2/bad/foo.go":       "package bad\n",
 	}); err != nil {
 		t.Fatal(err)
 	}
-	outDir := filepath.Join(td, "out")
-	if err := Build(context.Background(), cfg, "good", outDir, ""); err != nil {
+
+	cfg := &Config{
+		Logger: logging.NewSimple(&bytes.Buffer{}, 0, false),
+	}
+	tgt := &Target{
+		Pkg:        "good",
+		Arch:       arch,
+		Workspaces: []string{filepath.Join(td, "ws1")},
+		OutDir:     filepath.Join(td, "out"),
+	}
+
+	if err := Build(context.Background(), cfg, []*Target{tgt}, ""); err != nil {
 		t.Fatal("Failed to build: ", err)
 	}
 
-	cfg.Workspaces = append(cfg.Workspaces, filepath.Join(td, "ws2"))
-	if err := Build(context.Background(), cfg, "good", outDir, ""); err == nil {
+	tgt.Workspaces = append(tgt.Workspaces, filepath.Join(td, "ws2"))
+
+	if err := Build(context.Background(), cfg, []*Target{tgt}, ""); err == nil {
 		t.Fatal("Building with invalid workspace unexpectedly succeeded")
 	}
 }

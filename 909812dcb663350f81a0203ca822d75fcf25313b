@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "bf9d77a4_e9f55914",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-02T05:54:23Z",
+      "side": 1,
+      "message": "I ran it and found there are some instances violating this lint.\nhttps://bugs.chromium.org/p/chromium/issues/detail?id\u003d979088#c3\n\nCan I add NOLINT for each instance and go forward to submit it?",
+      "parentUuid": "1b9bf632_ce24603b",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 21
+      },
+      "revId": "909812dcb663350f81a0203ca822d75fcf25313b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "d4ecefdb_4c17ef79",
         "filename": "docs/writing_tests.md",
         "patchSetId": 6
@@ -45,6 +69,30 @@
       "revId": "909812dcb663350f81a0203ca822d75fcf25313b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9fa158b2_b2052679",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 324,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-02T05:54:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d4ecefdb_4c17ef79",
+      "range": {
+        "startLine": 324,
+        "startChar": 0,
+        "endLine": 324,
+        "endChar": 32
+      },
+      "revId": "909812dcb663350f81a0203ca822d75fcf25313b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "9fc5cfc1_465892dc",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_bundle_imports.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-02T05:54:23Z",
+      "side": 1,
+      "message": "Done\nOops. It\u0027d be nice to have a lint about it. Filed http://crbug.com/980061",
+      "parentUuid": "5859503f_953eda91",
+      "range": {
+        "startLine": 1,
+        "startChar": 13,
+        "endLine": 1,
+        "endChar": 17
+      },
+      "revId": "909812dcb663350f81a0203ca822d75fcf25313b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9f93912a_ba4ed01f",
         "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_bundle_imports.go",
         "patchSetId": 6
@@ -91,6 +163,30 @@
       "revId": "909812dcb663350f81a0203ca822d75fcf25313b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "61893225_7fb160f0",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_bundle_imports.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-02T05:54:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9f93912a_ba4ed01f",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 0
+      },
+      "revId": "909812dcb663350f81a0203ca822d75fcf25313b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "8a08388b_26f944c1",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_bundle_imports.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-02T05:54:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b9e78e6d_d1f3ff79",
+      "range": {
+        "startLine": 26,
+        "startChar": 33,
+        "endLine": 26,
+        "endChar": 77
+      },
+      "revId": "909812dcb663350f81a0203ca822d75fcf25313b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a63e53a2_b75a497d",
         "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_bundle_imports.go",
         "patchSetId": 6
@@ -137,6 +257,30 @@
       "revId": "909812dcb663350f81a0203ca822d75fcf25313b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "17a8b1a1_26d86f14",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_bundle_imports.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-02T05:54:23Z",
+      "side": 1,
+      "message": "I realized main.go can import bundle package. Returned prefix is used for that check.",
+      "parentUuid": "a63e53a2_b75a497d",
+      "range": {
+        "startLine": 36,
+        "startChar": 10,
+        "endLine": 36,
+        "endChar": 26
+      },
+      "revId": "909812dcb663350f81a0203ca822d75fcf25313b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -163,6 +307,30 @@
     },
     {
       "key": {
+        "uuid": "077b5071_f44126f2",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_bundle_imports.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-02T05:54:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b1fcfdb5_56828e59",
+      "range": {
+        "startLine": 53,
+        "startChar": 12,
+        "endLine": 53,
+        "endChar": 25
+      },
+      "revId": "909812dcb663350f81a0203ca822d75fcf25313b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1958927c_e7840713",
         "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_bundle_imports.go",
         "patchSetId": 6
@@ -183,6 +351,30 @@
       "revId": "909812dcb663350f81a0203ca822d75fcf25313b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2a7f2351_2d031f70",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_bundle_imports.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-02T05:54:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1958927c_e7840713",
+      "range": {
+        "startLine": 54,
+        "startChar": 2,
+        "endLine": 54,
+        "endChar": 22
+      },
+      "revId": "909812dcb663350f81a0203ca822d75fcf25313b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

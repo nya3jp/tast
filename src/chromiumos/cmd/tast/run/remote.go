@@ -43,15 +43,19 @@ func remote(ctx context.Context, cfg *Config) (Status, []TestResult) {
 		cfg.Logger.Status("Building test bundle")
 		buildStart := time.Now()
 
-		bc := cfg.baseBuildCfg()
-		bc.Workspaces = cfg.bundleWorkspaces()
-		var err error
-		if bc.Arch, err = build.GetLocalArch(); err != nil {
+		larch, err := build.GetLocalArch()
+		if err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to get local arch: %v", err), nil
 		}
 		pkg := path.Join(remoteBundlePkgPathPrefix, cfg.buildBundle)
-		cfg.Logger.Debugf("Building %s from %s to %s", pkg, strings.Join(bc.Workspaces, ":"), cfg.remoteBundleDir)
-		if err := build.Build(ctx, &bc, pkg, cfg.remoteBundleDir, "build_bundle"); err != nil {
+		tgt := build.Target{
+			Pkg:        pkg,
+			Arch:       larch,
+			Workspaces: cfg.bundleWorkspaces(),
+			OutDir:     cfg.remoteBundleDir,
+		}
+		cfg.Logger.Debugf("Building %s from %s to %s", pkg, strings.Join(tgt.Workspaces, ":"), cfg.remoteBundleDir)
+		if err := build.Build(ctx, cfg.buildCfg(), []*build.Target{&tgt}, "build_bundle"); err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed building test bundle: %v", err), nil
 		}
 		cfg.Logger.Logf("Built test bundle in %v", time.Now().Sub(buildStart).Round(time.Millisecond))

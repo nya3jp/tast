@@ -14,6 +14,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"golang.org/x/sync/errgroup"
+
 	"chromiumos/cmd/tast/logging"
 	"chromiumos/tast/shutil"
 	"chromiumos/tast/timing"
@@ -40,26 +42,12 @@ var archToCompiler = map[string]string{
 	"aarch64": "aarch64-cros-linux-gnu-go",
 }
 
-// Build builds executable package pkg to outDir as dictated by cfg.
-// The executable file's name is assigned by "go install" (i.e. it's the last component of pkg).
+// Build builds executables as dictated by cfg.
+// tgts is a list of build targets to build in parallel.
 // stageName is used as the name of a new stage reported via the timing package.
-func Build(ctx context.Context, cfg *Config, pkg, outDir, stageName string) error {
-	ctx, st1 := timing.Start(ctx, stageName)
-	defer st1.End()
-
-	for _, ws := range cfg.Workspaces {
-		src := filepath.Join(ws, "src")
-		if _, err := os.Stat(src); os.IsNotExist(err) {
-			return fmt.Errorf("invalid workspace %q (no src subdir)", ws)
-		} else if err != nil {
-			return err
-		}
-	}
-
-	comp := archToCompiler[cfg.Arch]
-	if comp == "" {
-		return fmt.Errorf("unknown arch %q", cfg.Arch)
-	}
+func Build(ctx context.Context, cfg *Config, tgts []*Target, stageName string) error {
+	ctx, st := timing.Start(ctx, stageName)
+	defer st.End()
 
 	if cfg.CheckBuildDeps {
 		cfg.Logger.Status("Checking build dependencies")
@@ -76,10 +64,43 @@ func Build(ctx context.Context, cfg *Config, pkg, outDir, stageName string) erro
 		}
 	}
 
+	// Compile targets in parallel.
+	g, ctx := errgroup.WithContext(ctx)
+	for _, tgt := range tgts {
+		tgt := tgt // bind to iteration-scoped variable
+		g.Go(func() error {
+			if err := buildOne(ctx, cfg.Logger, tgt); err != nil {
+				return fmt.Errorf("failed to build %s: %v", tgt.Pkg, err)
+			}
+			return nil
+		})
+	}
+	return g.Wait()
+}
+
+// buildOne builds one executable.
+func buildOne(ctx context.Context, log logging.Logger, tgt *Target) error {
+	ctx, st := timing.Start(ctx, filepath.Base(tgt.Pkg))
+	defer st.End()
+
+	for _, ws := range tgt.Workspaces {
+		src := filepath.Join(ws, "src")
+		if _, err := os.Stat(src); os.IsNotExist(err) {
+			return fmt.Errorf("invalid workspace %q (no src subdir)", ws)
+		} else if err != nil {
+			return err
+		}
+	}
+
+	comp := archToCompiler[tgt.Arch]
+	if comp == "" {
+		return fmt.Errorf("unknown arch %q", tgt.Arch)
+	}
+
 	const ldFlags = "-ldflags=-s -w"
 
 	env := append(os.Environ(),
-		"GOPATH="+strings.Join(cfg.Workspaces, ":"),
+		"GOPATH="+strings.Join(tgt.Workspaces, ":"),
 		// Disable cgo and PIE on building Tast binaries. See:
 		// https://crbug.com/976196
 		// https://github.com/golang/go/issues/30986#issuecomment-475626018
@@ -101,29 +122,27 @@ func Build(ctx context.Context, cfg *Config, pkg, outDir, stageName string) erro
 	}
 
 	var cmd *exec.Cmd
-	if larch == cfg.Arch {
-		cmd = exec.Command(comp, "install", ldFlags, pkg)
-		env = append(env, "GOBIN="+outDir)
+	if larch == tgt.Arch {
+		cmd = exec.Command(comp, "install", ldFlags, tgt.Pkg)
+		env = append(env, "GOBIN="+tgt.OutDir)
 	} else {
-		dest := filepath.Join(outDir, filepath.Base(pkg))
-		cmd = exec.Command(comp, "build", ldFlags, "-o", dest, pkg)
+		dest := filepath.Join(tgt.OutDir, filepath.Base(tgt.Pkg))
+		cmd = exec.Command(comp, "build", ldFlags, "-o", dest, tgt.Pkg)
 	}
 	cmd.Env = env
 
-	cfg.Logger.Status("Compiling " + pkg)
-	ctx, st2 := timing.Start(ctx, "compile")
-	defer st2.End()
+	log.Status("Compiling " + tgt.Pkg)
 
 	if out, err := cmd.CombinedOutput(); err != nil {
 		// The compiler won't be installed if the user has never run setup_board for a board using
 		// the target arch. Suggest manually setting up toolchains.
 		if strings.HasSuffix(err.Error(), exec.ErrNotFound.Error()) {
-			cfg.Logger.Log("To install toolchains for all architectures, please run:")
-			cfg.Logger.Log()
-			cfg.Logger.Log("  sudo ~/trunk/chromite/bin/cros_setup_toolchains -t sdk")
+			log.Log("To install toolchains for all architectures, please run:")
+			log.Log()
+			log.Log("  sudo ~/trunk/chromite/bin/cros_setup_toolchains -t sdk")
 			return err
 		}
-		writeMultiline(cfg.Logger, string(out))
+		writeMultiline(log, string(out))
 		return err
 	}
 	return nil

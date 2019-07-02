@@ -1,0 +1,147 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "58d7f5dc_8ee17639",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-02T17:16:20Z",
+      "side": 1,
+      "message": "E.g., \"ab\\n\" will output \"ab\" and \"\" lines.\nCould you drop the last empty line to make this less noisy?",
+      "range": {
+        "startLine": 126,
+        "startChar": 2,
+        "endLine": 128,
+        "endChar": 3
+      },
+      "revId": "1f8f77be19fd8d4192119ab5729327166a29f8a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e8dfbda6_28ad1b74",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-02T17:16:20Z",
+      "side": 1,
+      "message": "nit: log.Log(\"  \", dep)",
+      "range": {
+        "startLine": 139,
+        "startChar": 2,
+        "endLine": 139,
+        "endChar": 23
+      },
+      "revId": "1f8f77be19fd8d4192119ab5729327166a29f8a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "896d5e66_43335361",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-02T17:16:20Z",
+      "side": 1,
+      "message": "ditto.",
+      "revId": "1f8f77be19fd8d4192119ab5729327166a29f8a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "72e08584_f4e978dc",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-02T17:16:20Z",
+      "side": 1,
+      "message": "nit: %q for consistency?",
+      "range": {
+        "startLine": 163,
+        "startChar": 28,
+        "endLine": 163,
+        "endChar": 30
+      },
+      "revId": "1f8f77be19fd8d4192119ab5729327166a29f8a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1634464a_c5315d2a",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-02T17:16:20Z",
+      "side": 1,
+      "message": "same for last empty line.",
+      "range": {
+        "startLine": 164,
+        "startChar": 3,
+        "endLine": 166,
+        "endChar": 4
+      },
+      "revId": "1f8f77be19fd8d4192119ab5729327166a29f8a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8af75930_6d842939",
+        "filename": "src/chromiumos/cmd/tast/build/build_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-02T17:16:20Z",
+      "side": 1,
+      "message": "nit: t.Fatal(\"Failed to build: \", err)",
+      "revId": "1f8f77be19fd8d4192119ab5729327166a29f8a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e1f96390_dc012444",
+        "filename": "src/chromiumos/cmd/tast/build/build_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-02T17:16:20Z",
+      "side": 1,
+      "message": "ditto.",
+      "revId": "1f8f77be19fd8d4192119ab5729327166a29f8a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

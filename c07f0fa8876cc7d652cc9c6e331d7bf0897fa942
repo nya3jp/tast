@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "e1c912fc_0f6dc5eb",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 258,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-02T01:43:19Z",
+      "side": 1,
+      "message": "I believe technically we don\u0027t need \"larch\" directory because host arch does not change, but my guess is that Dan just wanted to put every binary under arch-named directories.",
+      "parentUuid": "fcbfcf95_c6a15c0d",
+      "range": {
+        "startLine": 258,
+        "startChar": 62,
+        "endLine": 258,
+        "endChar": 67
+      },
+      "revId": "c07f0fa8876cc7d652cc9c6e331d7bf0897fa942",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "11b2addc_50670ab7",
         "filename": "src/chromiumos/cmd/tast/run/config.go",
         "patchSetId": 1
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "2c9975d2_fb829623",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 263,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-02T01:43:19Z",
+      "side": 1,
+      "message": "Sounds good, done.",
+      "parentUuid": "11b2addc_50670ab7",
+      "range": {
+        "startLine": 263,
+        "startChar": 1,
+        "endLine": 263,
+        "endChar": 2
+      },
+      "revId": "c07f0fa8876cc7d652cc9c6e331d7bf0897fa942",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b8e30d17_8e485f92",
         "filename": "src/chromiumos/cmd/tast/run/remote.go",
         "patchSetId": 1
@@ -59,6 +107,30 @@
       "writtenOn": "2019-07-01T13:35:14Z",
       "side": 1,
       "message": "buildBundle have no meaning if build\u003dfalse? I think it should be documented in Config struct.\nMaybe same applies for other fields such as buildType? You can do it in another CL.",
+      "range": {
+        "startLine": 90,
+        "startChar": 53,
+        "endLine": 90,
+        "endChar": 54
+      },
+      "revId": "c07f0fa8876cc7d652cc9c6e331d7bf0897fa942",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0a9d65a0_697bc768",
+        "filename": "src/chromiumos/cmd/tast/run/remote.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-02T01:43:19Z",
+      "side": 1,
+      "message": "Hmm, I\u0027m not sure what confused you. Config struct has following documentation, which makes sense to myself:\n\n\tbuild                 bool     // rebuild (and push, for local tests) a single test bundle\n\tbuildType             testType // type of tests to build and deploy\n\tbuildBundle           string   // name of the test bundle to rebuild (e.g. \"cros\")\n\nCould you suggest what to modify those comments?",
+      "parentUuid": "b8e30d17_8e485f92",
       "range": {
         "startLine": 90,
         "startChar": 53,

@@ -378,7 +378,7 @@ func (s *SSH) GetFile(ctx context.Context, src, dst string) error {
 	return nil
 }
 
-// SymlinkPolicy describes how symbolic links should be handled by PutTreeRename.
+// SymlinkPolicy describes how symbolic links should be handled by PutFiles.
 type SymlinkPolicy int
 
 const (
@@ -388,31 +388,35 @@ const (
 	DereferenceSymlinks
 )
 
-// PutTreeRename copies files on the local machine to the host. files describes
+// PutFiles copies files on the local machine to the host. files describes
 // a mapping from a local file path to a remote file path. For example, the call:
 //
-//	PutTreeRename(ctx, "/src", "/dst", map[string]string{"from": "to"})
+//	PutFiles(ctx, map[string]string{"/src/from": "/dst/to"})
 //
 // will copy the local file or directory /src/from to /dst/to on the remote host.
+// Local file paths can be absolute or relative. Remote file paths must be absolute.
 // SHA1 hashes of remote files are checked in advance to send updated files only.
 // bytes is the amount of data sent over the wire (possibly after compression).
-func (s *SSH) PutTreeRename(ctx context.Context, srcDir, dstDir string,
-	files map[string]string, symlinkPolicy SymlinkPolicy) (bytes int64, err error) {
+func (s *SSH) PutFiles(ctx context.Context, files map[string]string,
+	symlinkPolicy SymlinkPolicy) (bytes int64, err error) {
+	af := make(map[string]string)
 	for src, dst := range files {
-		src, err := cleanRelativePath(src)
-		if err != nil {
-			return 0, err
+		if !filepath.IsAbs(src) {
+			p, err := filepath.Abs(src)
+			if err != nil {
+				return 0, fmt.Errorf("source path %q could not be resolved", src)
+			}
+			src = p
 		}
-		dst, err := cleanRelativePath(dst)
-		if err != nil {
-			return 0, err
+		if !filepath.IsAbs(dst) {
+			return 0, fmt.Errorf("destination path %q should be absolute", dst)
 		}
-		files[src] = dst
+		af[src] = dst
 	}
 
 	// TODO(derat): When copying a small amount of data, it may be faster to avoid the extra
 	// comparison round trip(s) and instead just copy unconditionally.
-	cf, err := s.findChangedFiles(ctx, srcDir, dstDir, files)
+	cf, err := s.findChangedFiles(ctx, af)
 	if err != nil {
 		return 0, err
 	}
@@ -420,27 +424,23 @@ func (s *SSH) PutTreeRename(ctx context.Context, srcDir, dstDir string,
 		return 0, nil
 	}
 
-	qd := shutil.Escape(dstDir)
-	rc := fmt.Sprintf("mkdir -p %s && "+
-		"tar -x --gzip --no-same-owner --recursive-unlink -C %s 2>&1", qd, qd)
+	const rc = "tar -x --gzip --no-same-owner --recursive-unlink -C / 2>&1"
 	handle, err := s.Start(ctx, rc, OpenStdin, StdoutOnly)
 	if err != nil {
 		return 0, fmt.Errorf("running remote command %q failed: %v", rc, err)
 	}
 	defer handle.Close(ctx)
 
-	args := []string{"-c", "--gzip", "-C", srcDir}
+	args := []string{"-c", "--gzip", "-C", "/"}
 	if symlinkPolicy == DereferenceSymlinks {
 		args = append(args, "--dereference")
 	}
-	var fileArgs []string
 	for l, r := range cf {
-		fileArgs = append(fileArgs, l)
-		if l != r {
-			args = append(args, tarTransformFlag(l, r))
-		}
+		args = append(args, tarTransformFlag(strings.TrimPrefix(l, "/"), strings.TrimPrefix(r, "/")))
 	}
-	args = append(args, fileArgs...)
+	for l := range cf {
+		args = append(args, strings.TrimPrefix(l, "/"))
+	}
 	cmd := exec.Command("/bin/tar", args...)
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
@@ -485,31 +485,28 @@ func tarTransformFlag(s, d string) string {
 		esc(d, []string{"\\", ",", "&"}))
 }
 
-// findChangedFiles returns paths from files that differ between ldir on the local
-// machine and rdir on s. This function is intended for use when pushing files to h;
+// findChangedFiles returns a subset of files that differ between the local machine
+// and the remote machine. This function is intended for use when pushing files to s;
 // an error is returned if one or more files are missing locally, but not if they're
 // only missing remotely. Local directories are always listed as having been changed.
-func (s *SSH) findChangedFiles(ctx context.Context, ldir, rdir string,
-	files map[string]string) (map[string]string, error) {
+func (s *SSH) findChangedFiles(ctx context.Context, files map[string]string) (map[string]string, error) {
 	if len(files) == 0 {
 		return nil, nil
 	}
 
 	// Sort local names.
-	sorted := make([]string, 0, len(files))
+	lp := make([]string, 0, len(files))
 	for l := range files {
-		sorted = append(sorted, l)
+		lp = append(lp, l)
 	}
-	sort.Strings(sorted)
+	sort.Strings(lp)
 
 	// TODO(derat): For large binary files, it may be faster to do an extra round trip first
 	// to get file sizes. If they're different, there's no need to spend the time and
 	// CPU to run sha1sum.
-	lp := make([]string, len(sorted))
-	rp := make([]string, len(sorted))
-	for i, l := range sorted {
-		lp[i] = filepath.Join(ldir, l)
-		rp[i] = filepath.Join(rdir, files[l])
+	rp := make([]string, len(lp))
+	for i, l := range lp {
+		rp[i] = files[l]
 	}
 
 	var lh, rh map[string]string
@@ -531,11 +528,10 @@ func (s *SSH) findChangedFiles(ctx context.Context, ldir, rdir string,
 	}
 
 	cf := make(map[string]string)
-	for i := range sorted {
+	for i, l := range lp {
+		r := rp[i]
 		// TODO(derat): Also check modes, maybe.
-		if lh[lp[i]] != rh[rp[i]] {
-			l := sorted[i]
-			r := files[l]
+		if lh[l] != rh[r] {
 			cf[l] = r
 		}
 	}

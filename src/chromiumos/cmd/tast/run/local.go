@@ -194,22 +194,17 @@ func pushAll(ctx context.Context, cfg *Config, hst *host.SSH) error {
 // executable to the DUT if necessary.
 func pushExecutables(ctx context.Context, cfg *Config, hst *host.SSH) error {
 	srcDir := filepath.Join(cfg.buildOutDir, cfg.targetArch)
-	dstDir := "/"
-
-	files := make(map[string]string)
-	src := filepath.Join(localBundleBuildSubdir, cfg.buildBundle)
-	dst := strings.TrimLeft(filepath.Join(cfg.localBundleDir, cfg.buildBundle), "/")
-	files[src] = dst
-	src = path.Base(localRunnerPkg)
-	dst = strings.TrimLeft(cfg.localRunner, "/")
-	files[src] = dst
+	files := map[string]string{
+		filepath.Join(srcDir, localBundleBuildSubdir, cfg.buildBundle): filepath.Join(cfg.localBundleDir, cfg.buildBundle),
+		filepath.Join(srcDir, path.Base(localRunnerPkg)):               cfg.localRunner,
+	}
 
 	ctx, st := timing.Start(ctx, "push_executables")
 	defer st.End()
 
 	cfg.Logger.Log("Pushing executables to target")
 	start := time.Now()
-	bytes, err := pushToHost(ctx, cfg, hst, srcDir, dstDir, files)
+	bytes, err := pushToHost(ctx, cfg, hst, files)
 	if err != nil {
 		return err
 	}
@@ -284,17 +279,15 @@ func pushDataFiles(ctx context.Context, cfg *Config, hst *host.SSH, destDir stri
 	srcDir := filepath.Join(cfg.buildWorkspace, "src", localBundlePkgPathPrefix, cfg.buildBundle)
 
 	// All paths are relative to the bundle dir.
-	copyPaths := make(map[string]string)
-	var delPaths []string
-	var missingPaths []string
+	var copyPaths, delPaths, missingPaths []string
 	for _, p := range paths {
 		lp := p + testing.ExternalLinkSuffix
 		if _, err := os.Stat(filepath.Join(srcDir, lp)); err == nil {
 			// Push the external link file.
-			copyPaths[lp] = lp
+			copyPaths = append(copyPaths, lp)
 		} else if _, err := os.Stat(filepath.Join(srcDir, p)); err == nil {
 			// Push the internal data file and remove the external link file (if any).
-			copyPaths[p] = p
+			copyPaths = append(copyPaths, p)
 			delPaths = append(delPaths, lp)
 		} else {
 			missingPaths = append(missingPaths, p)
@@ -305,10 +298,14 @@ func pushDataFiles(ctx context.Context, cfg *Config, hst *host.SSH, destDir stri
 		return fmt.Errorf("not found: %v", missingPaths)
 	}
 
+	files := make(map[string]string)
+	for _, p := range copyPaths {
+		files[filepath.Join(srcDir, p)] = filepath.Join(destDir, p)
+	}
+
 	start := time.Now()
-	var err error
-	var wsBytes, extBytes int64
-	if wsBytes, err = pushToHost(ctx, cfg, hst, srcDir, destDir, copyPaths); err != nil {
+	wsBytes, err := pushToHost(ctx, cfg, hst, files)
+	if err != nil {
 		return err
 	}
 	if len(delPaths) > 0 {
@@ -317,7 +314,7 @@ func pushDataFiles(ctx context.Context, cfg *Config, hst *host.SSH, destDir stri
 		}
 	}
 	cfg.Logger.Logf("Pushed data files in %v (sent %s)",
-		time.Now().Sub(start).Round(time.Millisecond), formatBytes(wsBytes+extBytes))
+		time.Now().Sub(start).Round(time.Millisecond), formatBytes(wsBytes))
 	return nil
 }
 

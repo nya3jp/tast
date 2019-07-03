@@ -105,7 +105,7 @@ func (td *testData) handleExec(req *test.ExecReq) {
 		return
 	}
 
-	// PutTreeRename sends multiple "exec" requests.
+	// PutFiles sends multiple "exec" requests.
 	// Ignore its initial "sha1sum" so we can hang during the tar command instead.
 	ignoreTimeout := strings.HasPrefix(req.Cmd, "sha1sum ")
 
@@ -427,7 +427,7 @@ func TestGetFileTimeout(t *testing.T) {
 	}
 }
 
-func TestPutTreeRename(t *testing.T) {
+func TestPutFiles(t *testing.T) {
 	t.Parallel()
 	td := newTestData(t)
 	defer td.close()
@@ -457,12 +457,12 @@ func TestPutTreeRename(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if n, err := td.hst.PutTreeRename(td.ctx, srcDir, dstDir, map[string]string{
-		"file1":             "newfile1",           // rename to preserve orig file
-		"dir/file2":         "dir/file2",          // overwrite orig file
-		"dir2/subdir/file3": "dir2/subdir2/file3", // rename subdir
-		weirdSrcName:        "file5",              // check that regexp chars are escaped
-		"file6":             weirdDstName,         // check that replacement chars are also escaped
+	if n, err := td.hst.PutFiles(td.ctx, map[string]string{
+		filepath.Join(srcDir, "file1"):             filepath.Join(dstDir, "newfile1"),           // rename to preserve orig file
+		filepath.Join(srcDir, "dir/file2"):         filepath.Join(dstDir, "dir/file2"),          // overwrite orig file
+		filepath.Join(srcDir, "dir2/subdir/file3"): filepath.Join(dstDir, "dir2/subdir2/file3"), // rename subdir
+		filepath.Join(srcDir, weirdSrcName):        filepath.Join(dstDir, "file5"),              // check that regexp chars are escaped
+		filepath.Join(srcDir, "file6"):             filepath.Join(dstDir, weirdDstName),         // check that replacement chars are also escaped
 	}, PreserveSymlinks); err != nil {
 		t.Fatal(err)
 	} else if n <= 0 {
@@ -483,7 +483,7 @@ func TestPutTreeRename(t *testing.T) {
 	}
 }
 
-func TestPutTreeRenameUnchanged(t *testing.T) {
+func TestPutFilesUnchanged(t *testing.T) {
 	t.Parallel()
 	td := newTestData(t)
 	defer td.close()
@@ -504,17 +504,17 @@ func TestPutTreeRenameUnchanged(t *testing.T) {
 	}
 
 	// No bytes should be sent since the dest dir already contains the renamed source files.
-	if n, err := td.hst.PutTreeRename(td.ctx, srcDir, dstDir, map[string]string{
-		"src1":     "dst1",
-		"dir/src2": "dir/dst2",
+	if n, err := td.hst.PutFiles(td.ctx, map[string]string{
+		filepath.Join(srcDir, "src1"):     filepath.Join(dstDir, "dst1"),
+		filepath.Join(srcDir, "dir/src2"): filepath.Join(dstDir, "dir/dst2"),
 	}, PreserveSymlinks); err != nil {
 		t.Fatal(err)
 	} else if n != 0 {
-		t.Errorf("PutTreeRename() copied %v bytes; want 0", n)
+		t.Errorf("PutFiles() copied %v bytes; want 0", n)
 	}
 }
 
-func TestPutTreeRenameTimeout(t *testing.T) {
+func TestPutFilesTimeout(t *testing.T) {
 	t.Parallel()
 	td := newTestData(t)
 	defer td.close()
@@ -524,36 +524,14 @@ func TestPutTreeRenameTimeout(t *testing.T) {
 	defer os.RemoveAll(tmpDir)
 	dstDir := filepath.Join(tmpDir, "dst")
 	td.execTimeout = endTimeout
-	if _, err := td.hst.PutTreeRename(td.ctx, srcDir, dstDir, map[string]string{"file": "file"}, PreserveSymlinks); err == nil {
-		t.Errorf("PutTreeRename() with expired context didn't return error")
+	if _, err := td.hst.PutFiles(td.ctx, map[string]string{
+		filepath.Join(srcDir, "file"): filepath.Join(dstDir, "file"),
+	}, PreserveSymlinks); err == nil {
+		t.Errorf("PutFiles() with expired context didn't return error")
 	}
 }
 
-func TestPutTreeRenameOutside(t *testing.T) {
-	t.Parallel()
-	td := newTestData(t)
-	defer td.close()
-
-	files := map[string]string{
-		"file1": "first file",
-	}
-	tmpDir, srcDir := initFileTest(t, files)
-	defer os.RemoveAll(tmpDir)
-
-	dstDir := filepath.Join(tmpDir, "dst")
-
-	if _, err := td.hst.PutTreeRename(td.ctx, srcDir, dstDir,
-		map[string]string{"file1": "dir/../../outside"}, PreserveSymlinks); err == nil {
-		t.Error("PutTreeRename with dst outside succeeded; should fail")
-	}
-
-	if _, err := td.hst.PutTreeRename(td.ctx, srcDir, dstDir,
-		map[string]string{"/etc/passwd": "file"}, PreserveSymlinks); err == nil {
-		t.Error("PutTreeRename with src outside succeeded; should fail")
-	}
-}
-
-func TestPutTreeRenameSymlinks(t *testing.T) {
+func TestPutFilesSymlinks(t *testing.T) {
 	t.Parallel()
 	td := newTestData(t)
 	defer td.close()
@@ -577,8 +555,10 @@ func TestPutTreeRenameSymlinks(t *testing.T) {
 
 	// PreserveSymlinks should copy symlinks directly.
 	dstDir := filepath.Join(tmpDir, "dst_preserve")
-	if _, err := td.hst.PutTreeRename(td.ctx, srcDir, dstDir, map[string]string{link: link}, PreserveSymlinks); err != nil {
-		t.Error("PutTreeRename failed with PreserveSymlinks: ", err)
+	if _, err := td.hst.PutFiles(td.ctx, map[string]string{
+		filepath.Join(srcDir, link): filepath.Join(dstDir, link),
+	}, PreserveSymlinks); err != nil {
+		t.Error("PutFiles failed with PreserveSymlinks: ", err)
 	} else {
 		dstFile := filepath.Join(dstDir, link)
 		if fi, err := os.Lstat(dstFile); err != nil {
@@ -594,8 +574,10 @@ func TestPutTreeRenameSymlinks(t *testing.T) {
 
 	// DereferenceSymlinks should copy symlinks' targets while preserving the original mode.
 	dstDir = filepath.Join(tmpDir, "dst_deref")
-	if _, err := td.hst.PutTreeRename(td.ctx, srcDir, dstDir, map[string]string{link: link}, DereferenceSymlinks); err != nil {
-		t.Error("PutTreeRename failed with DereferenceSymlinks: ", err)
+	if _, err := td.hst.PutFiles(td.ctx, map[string]string{
+		filepath.Join(srcDir, link): filepath.Join(dstDir, link),
+	}, DereferenceSymlinks); err != nil {
+		t.Error("PutFiles failed with DereferenceSymlinks: ", err)
 	} else {
 		dstFile := filepath.Join(dstDir, link)
 		if fi, err := os.Lstat(dstFile); err != nil {

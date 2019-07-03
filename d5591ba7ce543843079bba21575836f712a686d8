@@ -16,6 +16,24 @@
       "revId": "d5591ba7ce543843079bba21575836f712a686d8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "225ee986_a11b3742",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-03T09:41:08Z",
+      "side": 0,
+      "message": "Sounds good, let me do this.\n\nBut let me do PutTreeRename refactoring in a later CL with leaving TODO comments since they are not trivial while they\u0027re not blockers of the main goal.",
+      "parentUuid": "28468758_fbf92ec8",
+      "revId": "d5591ba7ce543843079bba21575836f712a686d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

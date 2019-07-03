@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "fb117288_8f070139",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-03T09:41:08Z",
+      "side": 1,
+      "message": "I\u0027ve tried it, but it is not trivial because cfg.targetArch is used in pushBinaries to construct the build artifact paths. I think we can\u0027t remove cfg.targetArch, though we might be able to move the call of getTargetArch out of buildAll so that it is always filled regardless of the value of -build. WDYT?",
+      "parentUuid": "339b5a31_30b786c1",
+      "revId": "443086ea887045284fee52a7d41f12bbcdd7a208",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "d24d00ec_858edf6d",
         "filename": "src/chromiumos/cmd/tast/run/local.go",
         "patchSetId": 3
@@ -33,6 +51,24 @@
       "revId": "443086ea887045284fee52a7d41f12bbcdd7a208",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "650eaf14_b4b35807",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-03T09:41:08Z",
+      "side": 1,
+      "message": "No, because getDataFilePaths involves running the pushed test bundle binary.",
+      "parentUuid": "d24d00ec_858edf6d",
+      "revId": "443086ea887045284fee52a7d41f12bbcdd7a208",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

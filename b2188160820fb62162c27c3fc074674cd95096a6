@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "417eb7e2_5f8733dc",
+        "filename": "src/chromiumos/cmd/tast/run/run.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-03T08:49:03Z",
+      "side": 1,
+      "message": "Clar: Some remote test may need local_test_runner...?\nIf it\u0027s TBD and we shouldn\u0027t build now, could you add TODO?",
+      "revId": "b2188160820fb62162c27c3fc074674cd95096a6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

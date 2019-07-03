@@ -378,7 +378,7 @@ func (s *SSH) GetFile(ctx context.Context, src, dst string) error {
 	return nil
 }
 
-// SymlinkPolicy describes how symbolic links should be handled by PutTree and PutTreeRename.
+// SymlinkPolicy describes how symbolic links should be handled by PutTreeRename.
 type SymlinkPolicy int
 
 const (
@@ -388,31 +388,14 @@ const (
 	DereferenceSymlinks
 )
 
-// PutTree copies all relative paths in files from srcDir on the local machine
-// to dstDir on the host. For example, the call:
-//
-//	PutTree(ctx, "/src", "/dst", []string{"a", "dir/b"})
-//
-// will result in the local file or directory /src/a being copied to /dst/a on
-// the remote host and /src/dir/b being copied to /dst/dir/b. Existing files or directories
-// within dstDir with names listed in files will be overwritten. bytes is the amount of data
-// sent over the wire (possibly after compression).
-// TODO(nya): Delete this method.
-func (s *SSH) PutTree(ctx context.Context, srcDir, dstDir string, files []string,
-	symlinkPolicy SymlinkPolicy) (bytes int64, err error) {
-	m := make(map[string]string, len(files))
-	for _, f := range files {
-		m[f] = f
-	}
-	return s.PutTreeRename(ctx, srcDir, dstDir, m, symlinkPolicy)
-}
-
-// PutTreeRename is similar to PutTree but additionally renames the files in the supplied
-// map from their keys to their values as they are copied. For example, the call:
+// PutTreeRename copies files on the local machine to the host. files describes
+// a mapping from a local file path to a remote file path. For example, the call:
 //
 //	PutTreeRename(ctx, "/src", "/dst", map[string]string{"from": "to"})
 //
 // will copy the local file or directory /src/from to /dst/to on the remote host.
+// SHA1 hashes of remote files are checked in advance to send updated files only.
+// bytes is the amount of data sent over the wire (possibly after compression).
 func (s *SSH) PutTreeRename(ctx context.Context, srcDir, dstDir string,
 	files map[string]string, symlinkPolicy SymlinkPolicy) (bytes int64, err error) {
 	for src, dst := range files {

@@ -31,7 +31,7 @@ func TestWriteAndRead(t *gotesting.T) {
 		}},
 		&TestLog{time.Unix(4, 0), "here's a log message"},
 		&TestError{time.Unix(5, 0), testing.Error{Reason: "whoops", File: "file.go", Line: 20, Stack: "stack"}},
-		&TestEnd{time.Unix(6, 0), "pkg.MyTest", []string{"dep"}, timing.NewLog(), nil},
+		&TestEnd{time.Unix(6, 0), "pkg.MyTest", []string{"dep"}, timing.NewLog()},
 		&RunEnd{time.Unix(7, 0), "/tmp/out"},
 		&RunError{time.Unix(8, 0), testing.Error{Reason: "whoops again", File: "file2.go", Line: 30, Stack: "stack 2"}, 1},
 		&Heartbeat{Time: time.Unix(9, 0)},

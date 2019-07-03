@@ -18,7 +18,6 @@ import (
 
 	"github.com/google/subcommands"
 
-	"chromiumos/cmd/tast/build"
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/host"
@@ -53,25 +52,6 @@ func local(ctx context.Context, cfg *Config) (Status, []TestResult) {
 	hst, err := connectToTarget(ctx, cfg)
 	if err != nil {
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to %s: %v", cfg.Target, err), nil
-	}
-
-	if cfg.forceBuildLocalRunner {
-		if err = buildAndPushLocalRunner(ctx, cfg, hst); err != nil {
-			return errorStatusf(cfg, subcommands.ExitFailure, "Failed building or pushing runner: %v", err), nil
-		}
-	}
-
-	if cfg.build {
-		if err := buildAndPushBundle(ctx, cfg, hst); err != nil {
-			return errorStatusf(cfg, subcommands.ExitFailure, "Failed building or pushing tests: %v", err), nil
-		}
-	}
-
-	// After pushing files to the DUT, run sync to make sure the written files are persisted
-	// even if the DUT crashes later. This is important especially when we push local_test_runner
-	// because it can appear as zero-byte binary after a crash and subsequent sysinfo phase will fail.
-	if _, err := hst.Run(ctx, "sync"); err != nil {
-		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to sync disk writes: %v", err), nil
 	}
 
 	switch cfg.mode {
@@ -141,60 +121,10 @@ func connectToTarget(ctx context.Context, cfg *Config) (*host.SSH, error) {
 	return cfg.hst, nil
 }
 
-// buildAndPushBundle builds a local test bundle and pushes it to hst as dictated by cfg.
-// If tests are going to be executed (rather than printed), data files are also pushed.
-// Progress is logged via cfg.Logger, but if a non-nil error is returned it should be
-// logged by the caller.
-func buildAndPushBundle(ctx context.Context, cfg *Config, hst *host.SSH) error {
-	cfg.Logger.Status("Building test bundle")
-	if err := getTargetArch(ctx, cfg, hst); err != nil {
-		return fmt.Errorf("failed to get arch for %s: %v", cfg.Target, err)
-	}
-
-	pkg := path.Join(localBundlePkgPathPrefix, cfg.buildBundle)
-	buildDir := filepath.Join(cfg.buildOutDir, cfg.targetArch, localBundleBuildSubdir)
-	tgt := build.Target{
-		Pkg:        pkg,
-		Arch:       cfg.targetArch,
-		Workspaces: cfg.bundleWorkspaces(),
-		OutDir:     buildDir,
-	}
-	cfg.Logger.Logf("Building %s from %s", pkg, strings.Join(tgt.Workspaces, ":"))
-	start := time.Now()
-	if err := build.Build(ctx, cfg.buildCfg(), []*build.Target{&tgt}, "build_bundle"); err != nil {
-		return fmt.Errorf("build failed: %v", err)
-	}
-	cfg.Logger.Logf("Built test bundle in %v", time.Now().Sub(start).Round(time.Millisecond))
-
-	cfg.Logger.Status("Pushing test bundle to target")
-	if err := pushBundle(ctx, cfg, hst, filepath.Join(buildDir, cfg.buildBundle), cfg.localBundleDir); err != nil {
-		return fmt.Errorf("failed to push bundle: %v", err)
-	}
-
-	// Only run tests from the newly-pushed bundle.
-	bundleGlob := filepath.Join(cfg.localBundleDir, cfg.buildBundle)
-
-	if cfg.mode == RunTestsMode {
-		cfg.Logger.Status("Getting data file list")
-		paths, err := getDataFilePaths(ctx, cfg, hst, bundleGlob)
-		if err != nil {
-			return fmt.Errorf("failed to get data file list: %v", err)
-		}
-		if len(paths) > 0 {
-			cfg.Logger.Status("Pushing data files to target")
-			destDir := filepath.Join(cfg.localDataDir, pkg)
-			if err = pushDataFiles(ctx, cfg, hst, destDir, paths); err != nil {
-				return fmt.Errorf("failed to push data files: %v", err)
-			}
-		}
-	}
-
-	return nil
-}
-
 // getTargetArch queries hst for its userland architecture if it isn't already known and
 // saves it to cfg.targetArch. Note that this can be different from the kernel architecture
 // returned by "uname -m" on some boards (e.g. aarch64 kernel with armv7l userland).
+// TODO(crbug.com/982184): Get rid of this function.
 func getTargetArch(ctx context.Context, cfg *Config, hst *host.SSH) error {
 	if cfg.targetArch != "" {
 		return nil
@@ -223,18 +153,69 @@ func getTargetArch(ctx context.Context, cfg *Config, hst *host.SSH) error {
 	return nil
 }
 
-// pushBundle copies the test bundle at src on the local machine to dstDir on hst.
-func pushBundle(ctx context.Context, cfg *Config, hst *host.SSH, src, dstDir string) error {
-	ctx, st := timing.Start(ctx, "push_bundle")
+// pushAll pushes the freshly built local test runner, local test bundle executable
+// and local test data files to the DUT if necessary. If cfg.mode is
+// ListTestsMode data files are not pushed since they are not needed to build
+// a list of tests.
+func pushAll(ctx context.Context, cfg *Config, hst *host.SSH) error {
+	ctx, st := timing.Start(ctx, "push")
 	defer st.End()
 
-	cfg.Logger.Logf("Pushing test bundle %s to %s on target", src, dstDir)
+	// Push executables first. New test bundle is needed later to get the list of
+	// data files to push.
+	if err := pushExecutables(ctx, cfg, hst); err != nil {
+		return fmt.Errorf("failed to push local executables: %v", err)
+	}
+
+	if cfg.mode == ListTestsMode {
+		return nil
+	}
+
+	// Only consider tests from the newly-pushed bundle.
+	bundleGlob := filepath.Join(cfg.localBundleDir, cfg.buildBundle)
+
+	cfg.Logger.Status("Getting data file list")
+	paths, err := getDataFilePaths(ctx, cfg, hst, bundleGlob)
+	if err != nil {
+		return fmt.Errorf("failed to get data file list: %v", err)
+	}
+	if len(paths) > 0 {
+		cfg.Logger.Status("Pushing data files to target")
+		pkg := path.Join(localBundlePkgPathPrefix, cfg.buildBundle)
+		destDir := filepath.Join(cfg.localDataDir, pkg)
+		if err := pushDataFiles(ctx, cfg, hst, destDir, paths); err != nil {
+			return fmt.Errorf("failed to push data files: %v", err)
+		}
+	}
+	return nil
+}
+
+// pushExecutables pushes the freshly built local test runner, local test bundle
+// executable to the DUT if necessary.
+func pushExecutables(ctx context.Context, cfg *Config, hst *host.SSH) error {
+	srcDir := filepath.Join(cfg.buildOutDir, cfg.targetArch)
+	dstDir := "/"
+
+	files := make(map[string]string)
+	src := filepath.Join(localBundleBuildSubdir, cfg.buildBundle)
+	dst := strings.TrimLeft(filepath.Join(cfg.localBundleDir, cfg.buildBundle), "/")
+	files[src] = dst
+	if cfg.forceBuildLocalRunner {
+		src := path.Base(localRunnerPkg)
+		dst := strings.TrimLeft(cfg.localRunner, "/")
+		files[src] = dst
+	}
+
+	ctx, st := timing.Start(ctx, "push_executables")
+	defer st.End()
+
+	cfg.Logger.Log("Pushing executables to target")
 	start := time.Now()
-	bytes, err := pushToHost(ctx, cfg, hst, filepath.Dir(src), dstDir, []string{filepath.Base(src)})
+	bytes, err := pushToHost(ctx, cfg, hst, srcDir, dstDir, files)
 	if err != nil {
 		return err
 	}
-	cfg.Logger.Logf("Pushed test bundle in %v (sent %s)",
+	cfg.Logger.Logf("Pushed executables in %v (sent %s)",
 		time.Now().Sub(start).Round(time.Millisecond), formatBytes(bytes))
 	return nil
 }
@@ -305,17 +286,17 @@ func pushDataFiles(ctx context.Context, cfg *Config, hst *host.SSH, destDir stri
 	srcDir := filepath.Join(cfg.buildWorkspace, "src", localBundlePkgPathPrefix, cfg.buildBundle)
 
 	// All paths are relative to the bundle dir.
-	var copyPaths []string
+	copyPaths := make(map[string]string)
 	var delPaths []string
 	var missingPaths []string
 	for _, p := range paths {
 		lp := p + testing.ExternalLinkSuffix
 		if _, err := os.Stat(filepath.Join(srcDir, lp)); err == nil {
 			// Push the external link file.
-			copyPaths = append(copyPaths, lp)
+			copyPaths[lp] = lp
 		} else if _, err := os.Stat(filepath.Join(srcDir, p)); err == nil {
 			// Push the internal data file and remove the external link file (if any).
-			copyPaths = append(copyPaths, p)
+			copyPaths[p] = p
 			delPaths = append(delPaths, lp)
 		} else {
 			missingPaths = append(missingPaths, p)
@@ -342,8 +323,12 @@ func pushDataFiles(ctx context.Context, cfg *Config, hst *host.SSH, destDir stri
 	return nil
 }
 
-// downloadPrivateBundles executes local_test_runner on hst to download private
-// test bundles if they are not available yet.
+// downloadPrivateBundles executes local_test_runner on hst to download and unpack
+// a private test bundles archive corresponding to the Chrome OS version of hst
+// if it has not been done yet.
+// An archive contains Go executables of local test bundles and their associated
+// internal data files and external data link files. Note that remote test
+// bundles are not included in archives.
 func downloadPrivateBundles(ctx context.Context, cfg *Config, hst *host.SSH) error {
 	ctx, st := timing.Start(ctx, "download_private_bundles")
 	defer st.End()
@@ -366,47 +351,6 @@ func downloadPrivateBundles(ctx context.Context, cfg *Config, hst *host.SSH) err
 	for _, msg := range res.Messages {
 		cfg.Logger.Log(msg)
 	}
-	return nil
-}
-
-// buildAndPushLocalRunner builds the local_test_runner executable and pushes it to hst.
-func buildAndPushLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH) error {
-	if err := getTargetArch(ctx, cfg, hst); err != nil {
-		return fmt.Errorf("failed to get arch for %s: %v", cfg.Target, err)
-	}
-
-	ctx, st := timing.Start(ctx, "build_and_push_runner")
-	defer st.End()
-
-	buildDir := filepath.Join(cfg.buildOutDir, cfg.targetArch)
-	tgt := build.Target{
-		Pkg:        localRunnerPkg,
-		Arch:       cfg.targetArch,
-		Workspaces: cfg.commonWorkspaces(),
-		OutDir:     buildDir,
-	}
-	cfg.Logger.Debugf("Building %s from %s", localRunnerPkg, strings.Join(tgt.Workspaces, ":"))
-	if err := build.Build(ctx, cfg.buildCfg(), []*build.Target{&tgt}, "build_runner"); err != nil {
-		return fmt.Errorf("failed to build test runner: %v", err)
-	}
-
-	buildName := path.Base(localRunnerPkg)
-	pushName := filepath.Base(cfg.localRunner)
-	if buildName != pushName {
-		if err := os.Rename(filepath.Join(buildDir, buildName), filepath.Join(buildDir, pushName)); err != nil {
-			return fmt.Errorf("failed to rename test runner: %v", err)
-		}
-	}
-
-	cfg.Logger.Debugf("Pushing test runner to %s on target", cfg.localRunner)
-	start := time.Now()
-	bytes, err := pushToHost(ctx, cfg, hst, buildDir, filepath.Dir(cfg.localRunner),
-		[]string{filepath.Base(cfg.localRunner)})
-	if err != nil {
-		return fmt.Errorf("failed to copy test runner: %v", err)
-	}
-	cfg.Logger.Logf("Pushed test runner in %v (sent %s)",
-		time.Now().Sub(start).Round(time.Millisecond), formatBytes(bytes))
 	return nil
 }
 

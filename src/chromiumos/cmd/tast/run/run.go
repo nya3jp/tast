@@ -7,9 +7,17 @@ package run
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"path"
+	"path/filepath"
+	"strings"
+	"time"
 
 	"github.com/google/subcommands"
+
+	"chromiumos/cmd/tast/build"
+	"chromiumos/tast/host"
 )
 
 // Status describes the result of a Run call.
@@ -52,6 +60,12 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []TestResult)
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to %s: %v", cfg.Target, err), nil
 	}
 
+	// Start an ephemeral devserver if necessary. Devservers are required in
+	// prepare (to download private bundles if -downloadprivatebundles if set)
+	// and in local (to download external data files).
+	// TODO(crbug.com/982181): Once we move the logic to download external data
+	// files to the prepare, try restricting the lifetime of the ephemeral
+	// devserver.
 	if len(cfg.devservers) == 0 && cfg.useEphemeralDevserver {
 		if err := startEphemeralDevserver(ctx, hst, cfg); err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start ephemeral devserver: %v", err), nil
@@ -59,13 +73,8 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []TestResult)
 		defer closeEphemeralDevserver(ctx, cfg)
 	}
 
-	if cfg.downloadPrivateBundles {
-		if cfg.build {
-			return errorStatusf(cfg, subcommands.ExitFailure, "-downloadprivatebundles requires -build=false"), nil
-		}
-		if err := downloadPrivateBundles(ctx, cfg, hst); err != nil {
-			return errorStatusf(cfg, subcommands.ExitFailure, "Failed downloading private bundles: %v", err), nil
-		}
+	if err := prepare(ctx, cfg, hst); err != nil {
+		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to build and push: %v", err), nil
 	}
 
 	if cfg.build {
@@ -102,4 +111,98 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []TestResult)
 	}
 
 	return status, results
+}
+
+// prepare prepares the DUT for running tests. When instructed in cfg, it builds
+// and pushes the local test runner and test bundles, and downloads private test
+// bundles.
+func prepare(ctx context.Context, cfg *Config, hst *host.SSH) error {
+	if cfg.build && cfg.downloadPrivateBundles {
+		// Usually it makes no sense to download prebuilt private bundles when
+		// building and pushing a fresh test bundle.
+		return errors.New("-downloadprivatebundles requires -build=false")
+	}
+
+	written := false
+
+	if cfg.build {
+		if err := buildAll(ctx, cfg, hst); err != nil {
+			return err
+		}
+		if cfg.buildType == localType {
+			if err := pushAll(ctx, cfg, hst); err != nil {
+				return err
+			}
+			written = true
+		}
+	}
+
+	if cfg.downloadPrivateBundles {
+		if err := downloadPrivateBundles(ctx, cfg, hst); err != nil {
+			return fmt.Errorf("failed downloading private bundles: %v", err)
+		}
+		written = true
+	}
+
+	// TODO(crbug.com/982181): Consider downloading external data files here.
+
+	// After writing files to the DUT, run sync to make sure the written files are persisted
+	// even if the DUT crashes later. This is important especially when we push local_test_runner
+	// because it can appear as zero-byte binary after a crash and subsequent sysinfo phase fails.
+	if written {
+		if _, err := hst.Run(ctx, "sync"); err != nil {
+			return fmt.Errorf("failed to sync disk writes: %v", err)
+		}
+	}
+	return nil
+}
+
+// buildAll builds Go binaries as instructed in cfg.
+func buildAll(ctx context.Context, cfg *Config, hst *host.SSH) error {
+	if err := getTargetArch(ctx, cfg, hst); err != nil {
+		return fmt.Errorf("failed to get arch for %s: %v", cfg.Target, err)
+	}
+
+	larch, err := build.GetLocalArch()
+	if err != nil {
+		return fmt.Errorf("failed to get local arch: %v", err)
+	}
+
+	var tgts []*build.Target
+	switch cfg.buildType {
+	case localType:
+		tgts = append(tgts, &build.Target{
+			Pkg:        path.Join(localBundlePkgPathPrefix, cfg.buildBundle),
+			Arch:       cfg.targetArch,
+			Workspaces: cfg.bundleWorkspaces(),
+			OutDir:     filepath.Join(cfg.buildOutDir, cfg.targetArch, localBundleBuildSubdir),
+		})
+	case remoteType:
+		tgts = append(tgts, &build.Target{
+			Pkg:        path.Join(remoteBundlePkgPathPrefix, cfg.buildBundle),
+			Arch:       larch,
+			Workspaces: cfg.bundleWorkspaces(),
+			OutDir:     filepath.Join(cfg.buildOutDir, larch, remoteBundleBuildSubdir),
+		})
+	}
+	if cfg.forceBuildLocalRunner {
+		tgts = append(tgts, &build.Target{
+			Pkg:        localRunnerPkg,
+			Arch:       cfg.targetArch,
+			Workspaces: cfg.commonWorkspaces(),
+			OutDir:     filepath.Join(cfg.buildOutDir, cfg.targetArch),
+		})
+	}
+
+	var names []string
+	for _, tgt := range tgts {
+		names = append(names, path.Base(tgt.Pkg))
+	}
+	cfg.Logger.Logf("Building %s", strings.Join(names, ", "))
+	start := time.Now()
+	if err := build.Build(ctx, cfg.buildCfg(), tgts); err != nil {
+		return fmt.Errorf("build failed: %v", err)
+	}
+	cfg.Logger.Logf("Built in %v", time.Now().Sub(start).Round(time.Millisecond))
+	return nil
 }

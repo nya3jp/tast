@@ -103,6 +103,14 @@ func Test(ctx context.Context, s *testing.State) {
 	// Proper nouns are not subject to case rules.
 	s.Error("testSomething failed: ", err)
 	errors.New("ARC failed to start")
+
+	// Bad combinations substitutable with *f family.
+	s.Error(fmt.Sprintf("Foo (%d)", 42))
+	errors.New(fmt.Sprintf("foo (%d)", 42))
+	errors.Wrap(err, fmt.Sprintf("foo (%d)", 42))
+
+	// Allowed combinations for Sprintf
+	s.Error(fmt.Sprintf("Foo (%d)", 42), "bar")
 }`
 
 	f, fs := parse(code, "test.go")
@@ -141,6 +149,9 @@ func Test(ctx context.Context, s *testing.State) {
 		`test.go:86:2: Log messages should be capitalized`,
 		`test.go:88:2: Messages of the error type should not be capitalized`,
 		`test.go:90:2: Messages of the error type should not be capitalized`,
+		`test.go:97:2: Use s.Errorf(...) instead of s.Error(fmt.Sprintf(...))`,
+		`test.go:98:2: Use errors.Errorf(...) instead of errors.New(fmt.Sprintf(...))`,
+		`test.go:99:2: Use errors.Wrapf(err, ...) instead of errors.Wrap(err, fmt.Sprintf(...))`,
 	}
 	verifyIssues(t, issues, expects)
 }

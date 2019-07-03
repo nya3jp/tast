@@ -427,50 +427,6 @@ func TestGetFileTimeout(t *testing.T) {
 	}
 }
 
-func TestPutTree(t *testing.T) {
-	t.Parallel()
-	td := newTestData(t)
-	defer td.close()
-
-	files := map[string]string{
-		"file1":             "first file",
-		"dir/file2":         "second file",
-		"dir2/subdir/file3": "third file",
-		"file4":             "new content",
-	}
-	tmpDir, srcDir := initFileTest(t, files)
-	defer os.RemoveAll(tmpDir)
-
-	// Create a directory and some files within the destination dir that should be overwritten.
-	dstDir := filepath.Join(tmpDir, "dst")
-	// TODO(derat): Create a file named "dir2" to check that files can be overwritten by
-	// by directories. tar --recursive-unlink seems to be confused by this and fail with
-	// a "Cannot unlink: Not a directory" error after trying to unlink a nonexistent
-	// dir2/subdir/file3 file in the destination dir.
-	if err := testutil.WriteFiles(dstDir, map[string]string{
-		"file1/foo": "this file's dir should be overwritten by a file",
-		"file4":     "old content",
-		"existing":  "this file should be preserved",
-	}); err != nil {
-		t.Fatal(err)
-	}
-
-	// Request that three of the four files be copied.
-	if n, err := td.hst.PutTree(td.ctx, srcDir, dstDir,
-		[]string{"file1", "dir2/subdir/file3", "file4"}, PreserveSymlinks); err != nil {
-		t.Fatal(err)
-	} else if n <= 0 {
-		t.Errorf("Copied non-positive %v bytes", n)
-	}
-
-	// The skipped file shouldn't be present, but the existing file should still be there.
-	delete(files, "dir/file2")
-	files["existing"] = "this file should be preserved"
-	if err := checkDir(dstDir, files); err != nil {
-		t.Error(err)
-	}
-}
-
 func TestPutTreeRename(t *testing.T) {
 	t.Parallel()
 	td := newTestData(t)
@@ -527,32 +483,6 @@ func TestPutTreeRename(t *testing.T) {
 	}
 }
 
-func TestPutTreeUnchanged(t *testing.T) {
-	t.Parallel()
-	td := newTestData(t)
-	defer td.close()
-
-	files := map[string]string{
-		"file1":     "file1",
-		"dir/file2": "file2",
-	}
-	tmpDir, srcDir := initFileTest(t, files)
-	defer os.RemoveAll(tmpDir)
-
-	dstDir := filepath.Join(tmpDir, "dst")
-	if err := testutil.WriteFiles(dstDir, files); err != nil {
-		t.Fatal(err)
-	}
-
-	// No bytes should be sent since the source and dest dirs are exactly the same.
-	if n, err := td.hst.PutTree(td.ctx, srcDir, dstDir,
-		[]string{"file1", "dir/file2"}, PreserveSymlinks); err != nil {
-		t.Fatal(err)
-	} else if n != 0 {
-		t.Errorf("PutTree() copied %v bytes; want 0", n)
-	}
-}
-
 func TestPutTreeRenameUnchanged(t *testing.T) {
 	t.Parallel()
 	td := newTestData(t)
@@ -584,7 +514,7 @@ func TestPutTreeRenameUnchanged(t *testing.T) {
 	}
 }
 
-func TestPutTreeTimeout(t *testing.T) {
+func TestPutTreeRenameTimeout(t *testing.T) {
 	t.Parallel()
 	td := newTestData(t)
 	defer td.close()
@@ -594,8 +524,8 @@ func TestPutTreeTimeout(t *testing.T) {
 	defer os.RemoveAll(tmpDir)
 	dstDir := filepath.Join(tmpDir, "dst")
 	td.execTimeout = endTimeout
-	if _, err := td.hst.PutTree(td.ctx, srcDir, dstDir, []string{"file"}, PreserveSymlinks); err == nil {
-		t.Errorf("PutTree() with expired context didn't return error")
+	if _, err := td.hst.PutTreeRename(td.ctx, srcDir, dstDir, map[string]string{"file": "file"}, PreserveSymlinks); err == nil {
+		t.Errorf("PutTreeRename() with expired context didn't return error")
 	}
 }
 
@@ -623,7 +553,7 @@ func TestPutTreeRenameOutside(t *testing.T) {
 	}
 }
 
-func TestPutTreeSymlinks(t *testing.T) {
+func TestPutTreeRenameSymlinks(t *testing.T) {
 	t.Parallel()
 	td := newTestData(t)
 	defer td.close()
@@ -647,8 +577,8 @@ func TestPutTreeSymlinks(t *testing.T) {
 
 	// PreserveSymlinks should copy symlinks directly.
 	dstDir := filepath.Join(tmpDir, "dst_preserve")
-	if _, err := td.hst.PutTree(td.ctx, srcDir, dstDir, []string{link}, PreserveSymlinks); err != nil {
-		t.Error("PutTree failed with PreserveSymlinks: ", err)
+	if _, err := td.hst.PutTreeRename(td.ctx, srcDir, dstDir, map[string]string{link: link}, PreserveSymlinks); err != nil {
+		t.Error("PutTreeRename failed with PreserveSymlinks: ", err)
 	} else {
 		dstFile := filepath.Join(dstDir, link)
 		if fi, err := os.Lstat(dstFile); err != nil {
@@ -664,8 +594,8 @@ func TestPutTreeSymlinks(t *testing.T) {
 
 	// DereferenceSymlinks should copy symlinks' targets while preserving the original mode.
 	dstDir = filepath.Join(tmpDir, "dst_deref")
-	if _, err := td.hst.PutTree(td.ctx, srcDir, dstDir, []string{link}, DereferenceSymlinks); err != nil {
-		t.Error("PutTree failed with DereferenceSymlinks: ", err)
+	if _, err := td.hst.PutTreeRename(td.ctx, srcDir, dstDir, map[string]string{link: link}, DereferenceSymlinks); err != nil {
+		t.Error("PutTreeRename failed with DereferenceSymlinks: ", err)
 	} else {
 		dstFile := filepath.Join(dstDir, link)
 		if fi, err := os.Lstat(dstFile); err != nil {

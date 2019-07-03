@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f918e124_4114b21f",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-03T08:30:44Z",
+      "side": 1,
+      "message": "To avoid edge case;\n\nif out !\u003d \"\" {\n  for _, line :\u003d range ... {\n    ...\n  }\n}\n\nNote: strings.Split(\"\", \"\\n\") returns [\"\"]",
+      "revId": "1cc92a603d30efd58c6a34b2559303d7199dcb47",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2762af32_ce3760ed",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-03T08:30:44Z",
+      "side": 1,
+      "message": "Ditto.",
+      "revId": "1cc92a603d30efd58c6a34b2559303d7199dcb47",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

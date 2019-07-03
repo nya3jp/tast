@@ -242,6 +242,24 @@
     },
     {
       "key": {
+        "uuid": "3e5b3545_f8cc612e",
+        "filename": "src/chromiumos/cmd/tast/build/build_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-03T08:30:44Z",
+      "side": 1,
+      "message": "ping?",
+      "parentUuid": "8af75930_6d842939",
+      "revId": "1f8f77be19fd8d4192119ab5729327166a29f8a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e1f96390_dc012444",
         "filename": "src/chromiumos/cmd/tast/build/build_test.go",
         "patchSetId": 1

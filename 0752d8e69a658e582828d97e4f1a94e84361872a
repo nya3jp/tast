@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a26acf3e_ebb31437",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2019-07-03T07:53:37Z",
+      "side": 1,
+      "message": "nit: VP9 videos for any profile?",
+      "range": {
+        "startLine": 80,
+        "startChar": 53,
+        "endLine": 80,
+        "endChar": 69
+      },
+      "revId": "0752d8e69a658e582828d97e4f1a94e84361872a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2d18aa12_3dd23fb6",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2019-07-03T07:53:37Z",
+      "side": 1,
+      "message": "This sounds strange because if it\u0027s not supported video cannot be played;)\nI guess this should be \"even if  it is not supported by the hardware decoder.\"",
+      "range": {
+        "startLine": 80,
+        "startChar": 70,
+        "endLine": 80,
+        "endChar": 98
+      },
+      "revId": "0752d8e69a658e582828d97e4f1a94e84361872a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

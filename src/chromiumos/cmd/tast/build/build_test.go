@@ -71,7 +71,7 @@ func TestBuild(t *testing.T) {
 		OutDir: outDir,
 	}
 
-	if err := Build(context.Background(), cfg, []*Target{tgt}, ""); err != nil {
+	if err := Build(context.Background(), cfg, []*Target{tgt}); err != nil {
 		t.Fatal("Failed to build: ", err)
 	}
 
@@ -130,7 +130,7 @@ func main() {
 		},
 	}
 
-	if err := Build(context.Background(), cfg, tgts, ""); err != nil {
+	if err := Build(context.Background(), cfg, tgts); err != nil {
 		t.Fatal("Failed to build: ", err)
 	}
 
@@ -167,13 +167,13 @@ func TestBuildBadWorkspace(t *testing.T) {
 		OutDir:     filepath.Join(td, "out"),
 	}
 
-	if err := Build(context.Background(), cfg, []*Target{tgt}, ""); err != nil {
+	if err := Build(context.Background(), cfg, []*Target{tgt}); err != nil {
 		t.Fatal("Failed to build: ", err)
 	}
 
 	tgt.Workspaces = append(tgt.Workspaces, filepath.Join(td, "ws2"))
 
-	if err := Build(context.Background(), cfg, []*Target{tgt}, ""); err == nil {
+	if err := Build(context.Background(), cfg, []*Target{tgt}); err == nil {
 		t.Fatal("Building with invalid workspace unexpectedly succeeded")
 	}
 }

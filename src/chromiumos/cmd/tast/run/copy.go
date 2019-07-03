@@ -13,15 +13,16 @@ import (
 	"chromiumos/tast/shutil"
 )
 
-// pushToHost is a wrapper around hst.PutTree that should be used instead of calling PutTree directly.
+// pushToHost is a wrapper around hst.PutTreeRename that should be used instead of calling PutTreeRename directly.
 // dstDir is appended to cfg.hstCopyBasePath to support unit tests.
 // Symbolic links are dereferenced to support symlinked data files: https://crbug.com/927424
+// TODO(nya): Get rid of srcDir/dstDir and pass absolute paths instead.
 func pushToHost(ctx context.Context, cfg *Config, hst *host.SSH, srcDir, dstDir string,
-	files []string) (bytes int64, err error) {
+	files map[string]string) (bytes int64, err error) {
 	undo := setAnnounceCmdForCopy(cfg, hst)
 	defer undo()
 
-	return hst.PutTree(ctx, srcDir, filepath.Join(cfg.hstCopyBasePath, dstDir), files, host.DereferenceSymlinks)
+	return hst.PutTreeRename(ctx, srcDir, filepath.Join(cfg.hstCopyBasePath, dstDir), files, host.DereferenceSymlinks)
 }
 
 // moveFromHost copies the tree rooted at src on hst to dst on the local system and deletes src from hst.

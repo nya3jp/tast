@@ -44,9 +44,8 @@ var archToCompiler = map[string]string{
 
 // Build builds executables as dictated by cfg.
 // tgts is a list of build targets to build in parallel.
-// stageName is used as the name of a new stage reported via the timing package.
-func Build(ctx context.Context, cfg *Config, tgts []*Target, stageName string) error {
-	ctx, st := timing.Start(ctx, stageName)
+func Build(ctx context.Context, cfg *Config, tgts []*Target) error {
+	ctx, st := timing.Start(ctx, "build")
 	defer st.End()
 
 	if cfg.CheckBuildDeps {

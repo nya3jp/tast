@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "a996aaba_05280d24",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-03T03:15:58Z",
+      "side": 1,
+      "message": "Good catch, done.",
+      "parentUuid": "58d7f5dc_8ee17639",
+      "range": {
+        "startLine": 126,
+        "startChar": 2,
+        "endLine": 128,
+        "endChar": 3
+      },
+      "revId": "1f8f77be19fd8d4192119ab5729327166a29f8a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e8dfbda6_28ad1b74",
         "filename": "src/chromiumos/cmd/tast/build/build.go",
         "patchSetId": 1
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "d3b06d0c_6d3aaf04",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-03T03:15:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e8dfbda6_28ad1b74",
+      "range": {
+        "startLine": 139,
+        "startChar": 2,
+        "endLine": 139,
+        "endChar": 23
+      },
+      "revId": "1f8f77be19fd8d4192119ab5729327166a29f8a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "896d5e66_43335361",
         "filename": "src/chromiumos/cmd/tast/build/build.go",
         "patchSetId": 1
@@ -62,6 +110,24 @@
       "revId": "1f8f77be19fd8d4192119ab5729327166a29f8a5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "df84e2ec_ad862e56",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-03T03:15:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "896d5e66_43335361",
+      "revId": "1f8f77be19fd8d4192119ab5729327166a29f8a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -88,6 +154,30 @@
     },
     {
       "key": {
+        "uuid": "b39626a4_dbaba95c",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-03T03:15:58Z",
+      "side": 1,
+      "message": "Oh, actually I did this unconsciously. That said, I believe it\u0027s better to print the result of shutil.EscapeSlice with %s rather than %q because it is already escaped and it\u0027s rather easier for cut-and-paste. So let me change other logging here instead.",
+      "parentUuid": "72e08584_f4e978dc",
+      "range": {
+        "startLine": 163,
+        "startChar": 28,
+        "endLine": 163,
+        "endChar": 30
+      },
+      "revId": "1f8f77be19fd8d4192119ab5729327166a29f8a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1634464a_c5315d2a",
         "filename": "src/chromiumos/cmd/tast/build/build.go",
         "patchSetId": 1
@@ -108,6 +198,30 @@
       "revId": "1f8f77be19fd8d4192119ab5729327166a29f8a5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "36113bca_45ae94d3",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-03T03:15:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1634464a_c5315d2a",
+      "range": {
+        "startLine": 164,
+        "startChar": 3,
+        "endLine": 166,
+        "endChar": 4
+      },
+      "revId": "1f8f77be19fd8d4192119ab5729327166a29f8a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {

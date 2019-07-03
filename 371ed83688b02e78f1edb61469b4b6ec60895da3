@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "2c97bb2f_6f3c8d4e",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-03T13:00:32Z",
+      "side": 1,
+      "message": "SGTM. Or isFMTSprintf to be more specific?",
+      "parentUuid": "6bac16b9_72bab13f",
+      "revId": "371ed83688b02e78f1edb61469b4b6ec60895da3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e62fd0b5_c8269bab",
         "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
         "patchSetId": 3

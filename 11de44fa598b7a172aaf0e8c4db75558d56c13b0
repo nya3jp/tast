@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "060b6366_0ccbaf02",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-03T03:16:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f355d7fc_a3c77723",
+      "revId": "11de44fa598b7a172aaf0e8c4db75558d56c13b0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f03ed622_53b38d64",
         "filename": "src/chromiumos/cmd/tast/build/build.go",
         "patchSetId": 2
@@ -33,6 +51,24 @@
       "revId": "11de44fa598b7a172aaf0e8c4db75558d56c13b0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6edca548_6c0ba73d",
+        "filename": "src/chromiumos/cmd/tast/build/build.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-03T03:16:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f03ed622_53b38d64",
+      "revId": "11de44fa598b7a172aaf0e8c4db75558d56c13b0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

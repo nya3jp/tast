@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "8565c1d8_18bec9f7",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_bundle_imports.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-03T00:32:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "350c07cd_fad9b4bd",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 20,
+        "endChar": 1
+      },
+      "revId": "29701012d3ba17f2a17669a33f8508d790e1606e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ae0f4208_cb4afd11",
         "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_bundle_imports.go",
         "patchSetId": 12
@@ -72,6 +96,30 @@
     },
     {
       "key": {
+        "uuid": "cd43a490_d3b9b39a",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_bundle_imports.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-03T00:32:43Z",
+      "side": 1,
+      "message": "Done\nAdded examples and corresponding tests.",
+      "parentUuid": "a661d6d8_c76e28a0",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 67
+      },
+      "revId": "29701012d3ba17f2a17669a33f8508d790e1606e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0f150ead_2a22c267",
         "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_bundle_imports.go",
         "patchSetId": 12
@@ -95,6 +143,30 @@
     },
     {
       "key": {
+        "uuid": "048de54d_2b44afd2",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_bundle_imports.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-03T00:32:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0f150ead_2a22c267",
+      "range": {
+        "startLine": 56,
+        "startChar": 2,
+        "endLine": 56,
+        "endChar": 11
+      },
+      "revId": "29701012d3ba17f2a17669a33f8508d790e1606e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b1476361_25a7d314",
         "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_bundle_imports.go",
         "patchSetId": 12
@@ -115,6 +187,30 @@
       "revId": "29701012d3ba17f2a17669a33f8508d790e1606e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d856a710_c45a90a0",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_bundle_imports.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-03T00:32:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b1476361_25a7d314",
+      "range": {
+        "startLine": 63,
+        "startChar": 76,
+        "endLine": 63,
+        "endChar": 90
+      },
+      "revId": "29701012d3ba17f2a17669a33f8508d790e1606e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8a373865_37f3d43a",
+        "filename": "src/chromiumos/cmd/tast/run/run.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-03T13:53:10Z",
+      "side": 1,
+      "message": "Could you move startEphemeralDevserver, closeEphemeralDevserver, and downloadPrivateBundles to here? Now these are no longer a part of local.",
+      "range": {
+        "startLine": 56,
+        "startChar": 12,
+        "endLine": 56,
+        "endChar": 35
+      },
+      "revId": "726517eae24e26a250b56f0ef445ff47d3e4059c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -5,8 +5,10 @@
 package check
 
 import (
+	"bytes"
 	"fmt"
 	"go/ast"
+	"go/format"
 	"go/token"
 	"strconv"
 	"strings"
@@ -16,6 +18,17 @@ import (
 func countVerbs(s string) int {
 	// "verb" starts with '%', but exclude '%%'s.
 	return strings.Count(s, "%") - strings.Count(s, "%%")*2
+}
+
+// nodeToString stringify an ast node.
+// Returns empty string if invalid ast node is given.
+func nodeToString(node interface{}) string {
+	var buf bytes.Buffer
+	if err := format.Node(&buf, token.NewFileSet(), node); err != nil {
+		// Invalid ast node.
+		return ""
+	}
+	return buf.String()
 }
 
 // Messages checks calls to logging- and error-related functions.
@@ -71,14 +84,19 @@ func Messages(fs *token.FileSet, f *ast.File) []*Issue {
 			"errors.Errorf":       "errors.New",
 			"errors.Wrapf":        "errors.Wrap",
 		}
-		_, isFmt := fmtMap[callName]
+		fmtMapRev := make(map[string]string)
+		for k, v := range fmtMap {
+			fmtMapRev[v] = k
+		}
 
+		_, isFmt := fmtMap[callName]
 		isErr := recvName == "errors"
 		isLog := strings.HasPrefix(callName, "s.Log") || strings.HasPrefix(callName, "testing.ContextLog")
 
 		type argType int
 		const (
 			stringArg argType = iota
+			sprintfArg
 			errorArg
 			otherArg
 		)
@@ -99,6 +117,8 @@ func Messages(fs *token.FileSet, f *ast.File) []*Issue {
 				// but getting the actual type here seems hard/impossible.
 				// This means that we'll miss error values with other names.
 				args = append(args, argInfo{errorArg, ""})
+			} else if ident, ok := a.(*ast.CallExpr); ok && nodeToString(ident.Fun) == "fmt.Sprintf" {
+				args = append(args, argInfo{sprintfArg, ""})
 			} else {
 				args = append(args, argInfo{otherArg, ""})
 			}
@@ -123,6 +143,12 @@ func Messages(fs *token.FileSet, f *ast.File) []*Issue {
 		if isFmt && len(args) == 1 {
 			addIssue(fmt.Sprintf(`Use %v(%v"<msg>") instead of %v(%v"<msg>")`,
 				fmtMap[callName], argPrefix, callName, argPrefix), printfURL)
+		}
+
+		// Used Log(fmt.Sprintf(...)) instead of Logf(...)
+		if !isFmt && len(args) == 1 && args[0].typ == sprintfArg {
+			addIssue(fmt.Sprintf(`Use %v(%v...) instead of %v(%vfmt.Sprintf(...))`,
+				fmtMapRev[callName], argPrefix, callName, argPrefix), printfURL)
 		}
 
 		// Used Logf("Got %v", i) instead of Log("Got ", i).

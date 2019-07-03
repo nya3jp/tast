@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1d84b19c_57b82cfa",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 256,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-03T09:06:37Z",
+      "side": 1,
+      "message": "Needs to be updated: https://chromium.git.corp.google.com/chromiumos/platform/tast-tests/+/22f3489cbc0be4b6abb661106471423c67e2144c/src/chromiumos/tast/local/bundles/cros/security/sandboxed_services.go#220\n\n?\n\noptional; Maybe put it in some different directory may be safer, IMHO.",
+      "revId": "2fc5652679750f98de7ea5ec0dcec38084e1f53a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

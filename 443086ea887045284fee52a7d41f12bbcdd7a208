@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "339b5a31_30b786c1",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-03T08:46:52Z",
+      "side": 1,
+      "message": "Could you get rid of assigning to targetArch, instead, could you return it with removing the field from Config?\nIt wouldn\u0027t be called multiple times, IIUC with this change.\n\nCould you move this to run.go, since it\u0027s the only caller?",
+      "revId": "443086ea887045284fee52a7d41f12bbcdd7a208",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d24d00ec_858edf6d",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-03T08:46:52Z",
+      "side": 1,
+      "message": "With refactoring oka@-san proposed, pushToHost invocation can be once.",
+      "revId": "443086ea887045284fee52a7d41f12bbcdd7a208",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

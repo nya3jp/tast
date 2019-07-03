@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "28468758_fbf92ec8",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-03T08:46:52Z",
+      "side": 0,
+      "message": "This CL is being bigger, how about splitting into smaller pieces?\n- PutTreeRename refactoring.\n- Private bundle support (i.e. EphemeralDevserver \u0026\u0026 downloadPrivateBundles change)\n- Then build/push change,\n\nIn the order?",
+      "revId": "d5591ba7ce543843079bba21575836f712a686d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

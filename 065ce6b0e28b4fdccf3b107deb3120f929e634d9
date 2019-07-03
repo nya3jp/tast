@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "4e9bf0cc_66ab0239",
+        "filename": "src/chromiumos/cmd/tast/run/copy.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-03T08:46:52Z",
+      "side": 1,
+      "message": "Note: because addressing all comments would make this CL huge, it\u0027s nice to be addressed in another CL before this CL.",
+      "parentUuid": "12af5bc0_c87ba602",
+      "range": {
+        "startLine": 19,
+        "startChar": 5,
+        "endLine": 19,
+        "endChar": 15
+      },
+      "revId": "065ce6b0e28b4fdccf3b107deb3120f929e634d9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c58f0c00_c7234639",
         "filename": "src/chromiumos/cmd/tast/run/copy.go",
         "patchSetId": 1

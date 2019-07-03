@@ -1,0 +1,129 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8746041b_b8f34415",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-03T15:05:23Z",
+      "side": 1,
+      "message": "Could you move this and below used only from run to run.go?",
+      "revId": "d4911d4f6923f7bedaff47b6ede6d2cc390387e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4a941d86_7d150e9a",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-03T15:05:23Z",
+      "side": 1,
+      "message": "offtopic: getTargetArch takes cfg, but it is;\n- Logger.\n- output param via targetArch.\n- targetArch cache\n\nAs for logger, Logger interface can be passed instead.\nAs for output, return value can be used\nAs for cache, IIUC, we no longer needed, because it is assigned in buildAll.\n\nSo, could you change the signature to;\n\nfunc getTargetArch(ctx context.Context, logger Logger, hst *host.SSH) (string, error)\n\nto keep the dependency smaller? cfg.targetArch can be assigned in the caller.\nI\u0027m fine to leave this via TODO, if you agreed.",
+      "revId": "d4911d4f6923f7bedaff47b6ede6d2cc390387e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ffa39d1e_a37b491c",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-03T15:05:23Z",
+      "side": 1,
+      "message": "This needs to be done before getDataFilePaths(). Could you comment the implicit dependency?",
+      "revId": "d4911d4f6923f7bedaff47b6ede6d2cc390387e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "07fa8b0b_41370ab2",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 192,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-03T15:05:23Z",
+      "side": 1,
+      "message": "optional: how about \"pushExecutables\" which may be slightly clearer meaning, IMHO. WDYT?",
+      "range": {
+        "startLine": 192,
+        "startChar": 9,
+        "endLine": 192,
+        "endChar": 17
+      },
+      "revId": "d4911d4f6923f7bedaff47b6ede6d2cc390387e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2908c5ab_b60e329f",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-03T15:05:23Z",
+      "side": 1,
+      "message": "Is make needed?\n\nvar files map[string]string should work...?",
+      "revId": "d4911d4f6923f7bedaff47b6ede6d2cc390387e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "91a670b7_3928c0d7",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-03T15:05:23Z",
+      "side": 1,
+      "message": "Practically we rarely use blocks in Tast. Any reasons to avoid src/dst reuse in this specific case?",
+      "revId": "d4911d4f6923f7bedaff47b6ede6d2cc390387e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f5dd8b77_2ef45aa6",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 288,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-03T15:05:23Z",
+      "side": 1,
+      "message": "ditto.",
+      "revId": "d4911d4f6923f7bedaff47b6ede6d2cc390387e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

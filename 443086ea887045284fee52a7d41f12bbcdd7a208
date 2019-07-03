@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "d7095caa_53560d40",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-03T15:05:23Z",
+      "side": 1,
+      "message": "My understanding is;\n\nbuildAll can return what are built, which are what pushBinaries should push to DUT, IIUC.\nThen, paths can be contained in the returned value, so pushBinaries does not need to know the arch itself...?",
+      "parentUuid": "fb117288_8f070139",
+      "revId": "443086ea887045284fee52a7d41f12bbcdd7a208",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "d24d00ec_858edf6d",
         "filename": "src/chromiumos/cmd/tast/run/local.go",
         "patchSetId": 3
@@ -66,6 +84,24 @@
       "side": 1,
       "message": "No, because getDataFilePaths involves running the pushed test bundle binary.",
       "parentUuid": "d24d00ec_858edf6d",
+      "revId": "443086ea887045284fee52a7d41f12bbcdd7a208",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2201c597_7e1bd805",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-03T15:05:23Z",
+      "side": 1,
+      "message": "Oh, I see.",
+      "parentUuid": "650eaf14_b4b35807",
       "revId": "443086ea887045284fee52a7d41f12bbcdd7a208",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false

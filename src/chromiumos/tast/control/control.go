@@ -114,9 +114,6 @@ type TestEnd struct {
 	MissingSoftwareDeps []string `json:"testEndMissingSoftwareDeps"`
 	// TimingLog contains test-reported timing information to be incorporated into the main timing.json file.
 	TimingLog *timing.Log `json:"testEndTimingLog"`
-	// TimingLogDeprecated has been replaced by TimingLog.
-	// TODO(derat): Remove after 20190601.
-	TimingLogDeprecated *timing.Log `json:"timingLog"`
 }
 
 // Heartbeat is sent periodically to assert that the bundle is alive.
@@ -171,9 +168,6 @@ func (mw *MessageWriter) WriteMessage(msg interface{}) error {
 	case *TestError:
 		return mw.enc.Encode(&messageUnion{TestError: v})
 	case *TestEnd:
-		if v.TimingLogDeprecated == nil {
-			v.TimingLogDeprecated = v.TimingLog
-		}
 		return mw.enc.Encode(&messageUnion{TestEnd: v})
 	case *Heartbeat:
 		return mw.enc.Encode(&messageUnion{Heartbeat: v})
@@ -218,9 +212,6 @@ func (mr *MessageReader) ReadMessage() (interface{}, error) {
 	case mu.TestError != nil:
 		return mu.TestError, nil
 	case mu.TestEnd != nil:
-		if mu.TestEnd.TimingLog == nil {
-			mu.TestEnd.TimingLog = mu.TestEnd.TimingLogDeprecated
-		}
 		return mu.TestEnd, nil
 	case mu.Heartbeat != nil:
 		return mu.Heartbeat, nil

@@ -397,6 +397,7 @@ const (
 // the remote host and /src/dir/b being copied to /dst/dir/b. Existing files or directories
 // within dstDir with names listed in files will be overwritten. bytes is the amount of data
 // sent over the wire (possibly after compression).
+// TODO(nya): Delete this method.
 func (s *SSH) PutTree(ctx context.Context, srcDir, dstDir string, files []string,
 	symlinkPolicy SymlinkPolicy) (bytes int64, err error) {
 	m := make(map[string]string, len(files))

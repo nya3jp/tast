@@ -73,6 +73,24 @@
     },
     {
       "key": {
+        "uuid": "ed2529de_edca6ecb",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-04T00:43:19Z",
+      "side": 1,
+      "message": "Afterthought, I changed it to isFMTSprintf.",
+      "parentUuid": "56f81b9b_3ffed135",
+      "revId": "371ed83688b02e78f1edb61469b4b6ec60895da3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e62fd0b5_c8269bab",
         "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
         "patchSetId": 3

@@ -70,6 +70,30 @@
       "revId": "726517eae24e26a250b56f0ef445ff47d3e4059c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bb878d56_38d9ead4",
+        "filename": "src/chromiumos/cmd/tast/run/run.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-04T09:50:25Z",
+      "side": 1,
+      "message": "No, private bundle archive will not contain remote test bundles. Private local test bundles are uploaded as an archive just because we can\u0027t install them to test images which are considered semi-public. Instead, private remote test bundles will be installed to hosts just in the same way as the \"tast\" command.\n\nAlso please note that startEphemeralDevserver is called also from runLocalTests in local.go when the ephemeral devserver is restarted to recover from DUT crashes.\n\nI guess which file to place these functions is kind of controversial. Let me spawn a new CL to avoid blocking this CL. https://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/1687735/",
+      "parentUuid": "c70db004_7599a2f6",
+      "range": {
+        "startLine": 56,
+        "startChar": 12,
+        "endLine": 56,
+        "endChar": 35
+      },
+      "revId": "726517eae24e26a250b56f0ef445ff47d3e4059c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

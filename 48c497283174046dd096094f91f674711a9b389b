@@ -22,6 +22,30 @@
       "revId": "48c497283174046dd096094f91f674711a9b389b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "87196516_cd6f14dc",
+        "filename": "src/chromiumos/cmd/tast/run/run_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-04T09:50:25Z",
+      "side": 1,
+      "message": "I considered it but it is a bit difficult needing hundreds of lines of changes. Let me leave a TODO.",
+      "parentUuid": "93e9c261_79f953b9",
+      "range": {
+        "startLine": 76,
+        "startChar": 50,
+        "endLine": 76,
+        "endChar": 76
+      },
+      "revId": "48c497283174046dd096094f91f674711a9b389b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

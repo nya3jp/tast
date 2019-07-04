@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ec25c853_06944192",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2019-07-04T06:23:16Z",
+      "side": 1,
+      "message": "Sorry for my previous unclear comment in PS1 but what I meant is that simply \"unsupported\" looks that \"we cannot play a video\".\nBut, this is not true. We can play it with SW decoder. While this is obvious for us, this document is for everyone. So, I suggested to make it clear \"by whom\" a codec is not supported. It should be \"by driver\" or \"by hardware\".\n\nSo, how about this?\n\"The ability to stay alive playing a VP9 video with hardware acceleration even for a profile which the driver doesn\u0027t support.\"",
+      "revId": "81733ec27ba358bb3e73fb272b185496d0787669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

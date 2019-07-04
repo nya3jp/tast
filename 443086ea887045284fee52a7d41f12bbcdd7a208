@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "679a57de_3ffcf025",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-04T03:15:39Z",
+      "side": 1,
+      "message": "Yes that\u0027s the way if we do, but I never want to do at once in this CL. Let\u0027s continue this discussion at the newer PS.",
+      "parentUuid": "d7095caa_53560d40",
+      "revId": "443086ea887045284fee52a7d41f12bbcdd7a208",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d24d00ec_858edf6d",
         "filename": "src/chromiumos/cmd/tast/run/local.go",
         "patchSetId": 3

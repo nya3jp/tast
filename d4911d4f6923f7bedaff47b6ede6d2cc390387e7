@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "fee0668f_fa7804ff",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-04T03:15:39Z",
+      "side": 1,
+      "message": "Please see my comment to the previous CL.",
+      "parentUuid": "8746041b_b8f34415",
+      "revId": "d4911d4f6923f7bedaff47b6ede6d2cc390387e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "4a941d86_7d150e9a",
         "filename": "src/chromiumos/cmd/tast/run/local.go",
         "patchSetId": 4
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "a3c927f0_5e5d70bd",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-04T03:15:39Z",
+      "side": 1,
+      "message": "Agreed. Let me leave a TODO.",
+      "parentUuid": "4a941d86_7d150e9a",
+      "revId": "d4911d4f6923f7bedaff47b6ede6d2cc390387e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ffa39d1e_a37b491c",
         "filename": "src/chromiumos/cmd/tast/run/local.go",
         "patchSetId": 4
@@ -50,6 +86,24 @@
       "revId": "d4911d4f6923f7bedaff47b6ede6d2cc390387e7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f35ce6bc_969d7452",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-04T03:15:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ffa39d1e_a37b491c",
+      "revId": "d4911d4f6923f7bedaff47b6ede6d2cc390387e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -76,6 +130,30 @@
     },
     {
       "key": {
+        "uuid": "f8fd3685_be41e9c1",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 192,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-04T03:15:39Z",
+      "side": 1,
+      "message": "That sounds nice, done.",
+      "parentUuid": "07fa8b0b_41370ab2",
+      "range": {
+        "startLine": 192,
+        "startChar": 9,
+        "endLine": 192,
+        "endChar": 17
+      },
+      "revId": "d4911d4f6923f7bedaff47b6ede6d2cc390387e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2908c5ab_b60e329f",
         "filename": "src/chromiumos/cmd/tast/run/local.go",
         "patchSetId": 4
@@ -90,6 +168,24 @@
       "revId": "d4911d4f6923f7bedaff47b6ede6d2cc390387e7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4dac1148_6edbcd63",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-04T03:15:39Z",
+      "side": 1,
+      "message": "Yes it is. nil map is read-only (writing to it will cause panic).",
+      "parentUuid": "2908c5ab_b60e329f",
+      "revId": "d4911d4f6923f7bedaff47b6ede6d2cc390387e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -110,6 +206,24 @@
     },
     {
       "key": {
+        "uuid": "e84da20e_19977a66",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-04T03:15:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "91a670b7_3928c0d7",
+      "revId": "d4911d4f6923f7bedaff47b6ede6d2cc390387e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f5dd8b77_2ef45aa6",
         "filename": "src/chromiumos/cmd/tast/run/local.go",
         "patchSetId": 4
@@ -124,6 +238,24 @@
       "revId": "d4911d4f6923f7bedaff47b6ede6d2cc390387e7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "abf0326a_a96ce3d2",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 288,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-04T03:15:39Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "f5dd8b77_2ef45aa6",
+      "revId": "d4911d4f6923f7bedaff47b6ede6d2cc390387e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

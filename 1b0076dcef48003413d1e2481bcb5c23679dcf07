@@ -140,6 +140,30 @@
       "revId": "1b0076dcef48003413d1e2481bcb5c23679dcf07",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d2d67f3a_e0ea8985",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_bundle_imports_test.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-04T02:15:02Z",
+      "side": 1,
+      "message": "Oh that\u0027s interesting, thanks!",
+      "parentUuid": "fdc07318_fbaced9f",
+      "range": {
+        "startLine": 35,
+        "startChar": 18,
+        "endLine": 35,
+        "endChar": 19
+      },
+      "revId": "1b0076dcef48003413d1e2481bcb5c23679dcf07",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

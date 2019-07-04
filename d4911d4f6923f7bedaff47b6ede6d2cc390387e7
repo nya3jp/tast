@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "ab0b4418_23d347e2",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-04T09:51:04Z",
+      "side": 1,
+      "message": "Spawned a new CL: https://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/1687735/",
+      "parentUuid": "fee0668f_fa7804ff",
+      "revId": "d4911d4f6923f7bedaff47b6ede6d2cc390387e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4a941d86_7d150e9a",
         "filename": "src/chromiumos/cmd/tast/run/local.go",
         "patchSetId": 4

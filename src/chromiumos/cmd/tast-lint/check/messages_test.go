@@ -111,6 +111,10 @@ func Test(ctx context.Context, s *testing.State) {
 
 	// Allowed combinations for Sprintf
 	s.Error(fmt.Sprintf("Foo (%d)", 42), "bar")
+
+	// Bad usage of verbs in non-format logging
+	s.Error("Foo (%d)", 42)
+	errors.Wrap(err, "foo (%d)", 42)
 }`
 
 	f, fs := parse(code, "test.go")
@@ -152,6 +156,8 @@ func Test(ctx context.Context, s *testing.State) {
 		`test.go:97:2: Use s.Errorf(...) instead of s.Error(fmt.Sprintf(...))`,
 		`test.go:98:2: Use errors.Errorf(...) instead of errors.New(fmt.Sprintf(...))`,
 		`test.go:99:2: Use errors.Wrapf(err, ...) instead of errors.Wrap(err, fmt.Sprintf(...))`,
+		`test.go:105:2: s.Error has verbs in format literal. Do you mean s.Errorf?`,
+		`test.go:106:2: errors.Wrap has verbs in format literal. Do you mean errors.Wrapf?`,
 	}
 	verifyIssues(t, issues, expects)
 }

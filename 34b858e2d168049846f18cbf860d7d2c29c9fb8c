@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "171562b3_f464e339",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-04T15:04:27Z",
+      "side": 1,
+      "message": "nit: In general I like TODOs to be associated with a bug, if you are not working on them immediately.\nSomeone learning tast might be interested in fixing it.\nWDYT?",
+      "range": {
+        "startLine": 127,
+        "startChar": 8,
+        "endLine": 127,
+        "endChar": 11
+      },
+      "revId": "34b858e2d168049846f18cbf860d7d2c29c9fb8c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "36920b71_680d66e1",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-04T15:04:27Z",
+      "side": 1,
+      "message": "nit: I think you can omit executable here. Since local test runner is also executable, it\u0027s a little confusing. At first glance, it looks like test bundle is the only executable.",
+      "range": {
+        "startLine": 156,
+        "startChar": 73,
+        "endLine": 156,
+        "endChar": 83
+      },
+      "revId": "34b858e2d168049846f18cbf860d7d2c29c9fb8c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3cde9db8_23fccd4e",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 194,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-04T15:04:27Z",
+      "side": 1,
+      "message": "Ditto.",
+      "range": {
+        "startLine": 194,
+        "startChar": 3,
+        "endLine": 194,
+        "endChar": 13
+      },
+      "revId": "34b858e2d168049846f18cbf860d7d2c29c9fb8c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

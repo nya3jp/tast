@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"go/ast"
 	"go/token"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -16,6 +17,22 @@ import (
 func countVerbs(s string) int {
 	// "verb" starts with '%', but exclude '%%'s.
 	return strings.Count(s, "%") - strings.Count(s, "%%")*2
+}
+
+// printFormatRE is the regexp we match and report as a possible format string.
+// It's copied from https://github.com/golangci/govet/blob/master/print.go#L718 .
+var printFormatRE = regexp.MustCompile(`%` + flagsRE + numOptRE + `\.?` + numOptRE + indexOptRE + verbRE)
+
+const (
+	flagsRE    = `[+\-#]*`
+	indexOptRE = `(\[[0-9]+\])?`
+	numOptRE   = `([0-9]+|` + indexOptRE + `\*)?`
+	verbRE     = `[bcdefgopqstvxEFGTUX]`
+)
+
+// hasVerbs returns if s contains format verbs.
+func hasVerbs(s string) bool {
+	return printFormatRE.FindStringSubmatch(s) != nil
 }
 
 func isFMTSprintf(call *ast.CallExpr) bool {
@@ -243,6 +260,10 @@ func Messages(fs *token.FileSet, f *ast.File) []*Issue {
 		// The number of verbs and the number of arguments must match.
 		if isFmt && len(args) >= 1 && args[0].typ == stringArg && countVerbs(args[0].val) != len(args)-1 {
 			addIssue("The number of verbs in format literal mismatches with the number of arguments", fmtURL)
+		}
+		// Used verbs in non *f families.
+		if !isFmt && len(args) >= 1 && args[0].typ == stringArg && hasVerbs(args[0].val) {
+			addIssue(fmt.Sprintf("%s has verbs in string literal. Do you mean %s?", callName, fmtMapRev[callName]), formattingURL)
 		}
 
 		// Error messages should contain some surrounding context.

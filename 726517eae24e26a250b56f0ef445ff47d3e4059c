@@ -94,6 +94,30 @@
       "revId": "726517eae24e26a250b56f0ef445ff47d3e4059c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3c2d53_0eda02ed",
+        "filename": "src/chromiumos/cmd/tast/run/run.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-04T13:19:33Z",
+      "side": 1,
+      "message": "+1 to discuss it in other place. This should not be a blocker to the overall goal you are trying to achieve. Thank you for spawning a CL.",
+      "parentUuid": "bb878d56_38d9ead4",
+      "range": {
+        "startLine": 56,
+        "startChar": 12,
+        "endLine": 56,
+        "endChar": 35
+      },
+      "revId": "726517eae24e26a250b56f0ef445ff47d3e4059c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

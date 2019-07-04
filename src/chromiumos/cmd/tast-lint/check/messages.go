@@ -244,6 +244,10 @@ func Messages(fs *token.FileSet, f *ast.File) []*Issue {
 		if isFmt && len(args) >= 1 && args[0].typ == stringArg && countVerbs(args[0].val) != len(args)-1 {
 			addIssue("The number of verbs in format literal mismatches with the number of arguments", fmtURL)
 		}
+		// Used verbs in non *f families.
+		if !isFmt && len(args) >= 1 && args[0].typ == stringArg && countVerbs(args[0].val) > 0 {
+			addIssue(fmt.Sprintf("%s has verbs in format literal. Do you mean %s?", callName, fmtMapRev[callName]), formattingURL)
+		}
 
 		// Error messages should contain some surrounding context.
 		if !isLog && len(args) >= 1 && args[0].typ == stringArg && args[0].val == "" {

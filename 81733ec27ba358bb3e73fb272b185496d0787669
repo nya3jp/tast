@@ -16,6 +16,24 @@
       "revId": "81733ec27ba358bb3e73fb272b185496d0787669",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6a740ecf_4e14ec74",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2019-07-04T12:17:50Z",
+      "side": 1,
+      "message": "Thank you for the suggestion. Updated.",
+      "parentUuid": "ec25c853_06944192",
+      "revId": "81733ec27ba358bb3e73fb272b185496d0787669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

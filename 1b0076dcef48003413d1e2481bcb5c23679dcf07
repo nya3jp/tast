@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1cee0df1_3d384a96",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_bundle_imports.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-04T00:53:32Z",
+      "side": 1,
+      "message": "huge nit: How about bundlePkg to match with the declaration in parseBundlePackage?",
+      "range": {
+        "startLine": 47,
+        "startChar": 2,
+        "endLine": 47,
+        "endChar": 8
+      },
+      "revId": "1b0076dcef48003413d1e2481bcb5c23679dcf07",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bf9a1460_752b0af0",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_bundle_imports_test.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-04T00:53:32Z",
+      "side": 1,
+      "message": "It might be useful to add some more edge cases, e.g.\n\n \"\"\n \"chromiumos/tast/local/bundles/cros\"",
+      "range": {
+        "startLine": 20,
+        "startChar": 3,
+        "endLine": 21,
+        "endChar": 3
+      },
+      "revId": "1b0076dcef48003413d1e2481bcb5c23679dcf07",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "722fdcc9_638f10a5",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_bundle_imports_test.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-04T00:53:32Z",
+      "side": 1,
+      "message": "nit: do we need a paren here?",
+      "range": {
+        "startLine": 35,
+        "startChar": 18,
+        "endLine": 35,
+        "endChar": 19
+      },
+      "revId": "1b0076dcef48003413d1e2481bcb5c23679dcf07",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

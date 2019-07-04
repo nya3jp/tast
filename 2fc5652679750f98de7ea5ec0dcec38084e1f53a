@@ -16,6 +16,24 @@
       "revId": "2fc5652679750f98de7ea5ec0dcec38084e1f53a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f60d6932_d85b34d0",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 256,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-04T03:16:00Z",
+      "side": 1,
+      "message": "Great catch! Let me change the path.",
+      "parentUuid": "1d84b19c_57b82cfa",
+      "revId": "2fc5652679750f98de7ea5ec0dcec38084e1f53a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

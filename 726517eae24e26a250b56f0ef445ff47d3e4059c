@@ -118,6 +118,30 @@
       "revId": "726517eae24e26a250b56f0ef445ff47d3e4059c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "af95506f_eb7f76b5",
+        "filename": "src/chromiumos/cmd/tast/run/run.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-04T15:54:17Z",
+      "side": 1,
+      "message": "I\u0027m confused.\n\nIf the downloading private bundle is only for local tests, then why it is necessary to move here?\nRunning in local() sounds what it should do conceptually?\nOr, if it needs also for remote, the method should be a part of run (or at least out of local\u0027s scope).\n\nI\u0027m ok to discuss the files for the functions in other CL. However, whether download private bundle should be done here or other place sounds essential to this CL, so reopening this.\n\n- If this CL changes the concept of \"downloading\" from local-only to both-local-and-remote,\n then it makes sense to me to move it here. Though, if so, the functions should be moved out from local, too. (Note: I was thinking it is a part of this CL, but I\u0027m also ok to do it in another CL).\n- If \"downloading\" is only for local, moving that part to here (which is common place shared by both local and remote) seems confusing.\n\nWhat point I\u0027m missing...?",
+      "parentUuid": "9a3c2d53_0eda02ed",
+      "range": {
+        "startLine": 56,
+        "startChar": 12,
+        "endLine": 56,
+        "endChar": 35
+      },
+      "revId": "726517eae24e26a250b56f0ef445ff47d3e4059c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

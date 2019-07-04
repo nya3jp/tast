@@ -22,6 +22,30 @@
       "revId": "726517eae24e26a250b56f0ef445ff47d3e4059c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "94e7a656_336e09f0",
+        "filename": "src/chromiumos/cmd/tast/run/run.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-04T02:36:17Z",
+      "side": 1,
+      "message": "It depends on the definition of \"part of local\". IMO we can put those functions in local.go because they\u0027re about local tests and not relevant to remote tests (note that remote tests can\u0027t use devservers and private bundle archive only contains local tests). WDYT?",
+      "parentUuid": "8a373865_37f3d43a",
+      "range": {
+        "startLine": 56,
+        "startChar": 12,
+        "endLine": 56,
+        "endChar": 35
+      },
+      "revId": "726517eae24e26a250b56f0ef445ff47d3e4059c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

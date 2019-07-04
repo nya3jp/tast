@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "93e9c261_79f953b9",
+        "filename": "src/chromiumos/cmd/tast/run/run_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-04T07:56:30Z",
+      "side": 1,
+      "message": "I guess ideally we want to use newRemoteTestData instead of making remote test fail for missing file here. WDYT? If combining them is difficult now, could you leave TODO to do it?",
+      "range": {
+        "startLine": 76,
+        "startChar": 50,
+        "endLine": 76,
+        "endChar": 76
+      },
+      "revId": "48c497283174046dd096094f91f674711a9b389b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

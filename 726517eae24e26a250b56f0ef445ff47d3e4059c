@@ -46,6 +46,30 @@
       "revId": "726517eae24e26a250b56f0ef445ff47d3e4059c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c70db004_7599a2f6",
+        "filename": "src/chromiumos/cmd/tast/run/run.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-04T07:56:30Z",
+      "side": 1,
+      "message": "I don\u0027t think ephemeral devserver essentially pertains to local. We can imagine the scenario to download private remote test bundles through devserver in the future. So moving the function sgtm.\nI thought about moving them to devserver.go, but you may want to keep devserver.go agnostic about Config or host.SSH. I leave it up to you.",
+      "parentUuid": "94e7a656_336e09f0",
+      "range": {
+        "startLine": 56,
+        "startChar": 12,
+        "endLine": 56,
+        "endChar": 35
+      },
+      "revId": "726517eae24e26a250b56f0ef445ff47d3e4059c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

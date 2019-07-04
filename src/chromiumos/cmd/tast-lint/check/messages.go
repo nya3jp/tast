@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"go/ast"
 	"go/token"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -16,6 +17,14 @@ import (
 func countVerbs(s string) int {
 	// "verb" starts with '%', but exclude '%%'s.
 	return strings.Count(s, "%") - strings.Count(s, "%%")*2
+}
+
+// printFormatRE matches format verbs.
+var printFormatRE = regexp.MustCompile(`%[#+]?\d*\.?\d*[dfqsvx]`)
+
+// hasVerbs returns if s contains format verbs.
+func hasVerbs(s string) bool {
+	return printFormatRE.MatchString(s)
 }
 
 func isFMTSprintf(call *ast.CallExpr) bool {
@@ -243,6 +252,10 @@ func Messages(fs *token.FileSet, f *ast.File) []*Issue {
 		// The number of verbs and the number of arguments must match.
 		if isFmt && len(args) >= 1 && args[0].typ == stringArg && countVerbs(args[0].val) != len(args)-1 {
 			addIssue("The number of verbs in format literal mismatches with the number of arguments", fmtURL)
+		}
+		// Used verbs in non *f families.
+		if !isFmt && len(args) >= 1 && args[0].typ == stringArg && hasVerbs(args[0].val) {
+			addIssue(fmt.Sprintf("%s has verbs in the first string (do you mean %s?)", callName, fmtMapRev[callName]), formattingURL)
 		}
 
 		// Error messages should contain some surrounding context.

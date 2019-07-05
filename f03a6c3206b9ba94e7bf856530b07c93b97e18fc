@@ -16,6 +16,24 @@
       "revId": "f03a6c3206b9ba94e7bf856530b07c93b97e18fc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "349ebc76_ed655237",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2019-07-05T02:43:51Z",
+      "side": 1,
+      "message": "My bad. Fixed.",
+      "parentUuid": "203809eb_536f46c9",
+      "revId": "f03a6c3206b9ba94e7bf856530b07c93b97e18fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

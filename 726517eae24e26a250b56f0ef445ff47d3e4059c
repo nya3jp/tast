@@ -142,6 +142,30 @@
       "revId": "726517eae24e26a250b56f0ef445ff47d3e4059c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cd18bfc8_9034a0ba",
+        "filename": "src/chromiumos/cmd/tast/run/run.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-05T00:57:49Z",
+      "side": 1,
+      "message": "tl;dr I\u0027m moving the logic for private bundles download here NOT because it is required for remote tests; it is because I want to prepare for test execution before running both local and remote tests. It allows doing independent preparation (e.g. building several Go executables) in parallel, which is critical for performance after merging -build, -buildlocalrunner, -buildtype.\n\n\n\u003e If the downloading private bundle is only for local tests, then why it is necessary to move here?\n\u003e\n\u003e Running in local() sounds what it should do conceptually?\n\nCurrently (i.e. ToT), local() does two different things: (1) preparing DUT by building and pushing fresh bundles and downloading private bundles, and (2) running actual tests. remote() also does (1) building fresh bundles and (2) running tests. The main purpose of this and next CL is to decouple (1) from both local() and remote(), as described in the subject: \"tast: Build and push files at one place.\"\n\nThis allows our immediate goal of parallel compilation of test bundles, but I also believe this decoupling of preparation and execution is a good idea. I don\u0027t think of any reason we want to leave the logic of private bundles download in local() after decoupling build \u0026 push from it.\n\nIn this regard, I don\u0027t think this CL makes a lot of sense by its own without the next CL. That is why I initially made these changes in single CL, and I guess that is why you\u0027re confused. I split the CL just hoping it will make your review easier, but I\u0027m totally happy to merge the two CLs again if it helps your understanding.\n\n\n\u003e Or, if it needs also for remote, the method should be a part of run (or at least out of local\u0027s scope).\n\nNo, it is not needed for remote.\n\n\n\u003e I\u0027m ok to discuss the files for the functions in other CL. However, whether download private bundle should be done here or other place sounds essential to this CL, so reopening this.\n\u003e \n\u003e - If this CL changes the concept of \"downloading\" from local-only to both-local-and-remote,\n\u003e  then it makes sense to me to move it here. Though, if so, the functions should be moved out from local, too. (Note: I was thinking it is a part of this CL, but I\u0027m also ok to do it in another CL).\n\nNo, I\u0027m pretty sure we will never download remote private bundles.\n\n\n\u003e - If \"downloading\" is only for local, moving that part to here (which is common place shared by both local and remote) seems confusing.\n\nDownloading is only for local, and that is why I don\u0027t move the *definition* of startEphemeralDevserver to this file. But why do you think it should not be *called* here?",
+      "parentUuid": "af95506f_eb7f76b5",
+      "range": {
+        "startLine": 56,
+        "startChar": 12,
+        "endLine": 56,
+        "endChar": 35
+      },
+      "revId": "726517eae24e26a250b56f0ef445ff47d3e4059c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

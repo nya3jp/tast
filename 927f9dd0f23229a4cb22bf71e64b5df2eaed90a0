@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5ca49310_45e89f27",
+        "filename": "src/chromiumos/tast/timing/timing_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-08T09:01:29Z",
+      "side": 1,
+      "message": "How about mentioning install call cannot nest?\n\nAlso how about checking now is time.Now here?\n\tif reflect.ValueOf(now).Pointer() !\u003d reflect.ValueOf(time.Now).Pointer() {\n\t\tpanic(\"install cannot nest\")\n\t}\n\nYou may want to have similar check in uninstall.",
+      "range": {
+        "startLine": 22,
+        "startChar": 20,
+        "endLine": 22,
+        "endChar": 27
+      },
+      "revId": "927f9dd0f23229a4cb22bf71e64b5df2eaed90a0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

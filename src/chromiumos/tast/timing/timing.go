@@ -17,14 +17,15 @@ import (
 	"time"
 )
 
+// now is the function to return the current time. This is altered in unit tests.
+var now = time.Now
+
 type key int // unexported context.Context key type to avoid collisions with other packages
 
 const (
 	logKey          key = iota // key used for attaching a Log to a context.Context
 	currentStageKey            // key used for attaching a current Stage to a context.Context
 )
-
-type timeFunc func() time.Time
 
 // Log contains nested timing information.
 type Log struct {
@@ -35,11 +36,7 @@ type Log struct {
 
 // NewLog returns a new Log.
 func NewLog() *Log {
-	return &Log{
-		Root: &Stage{
-			now: time.Now,
-		},
-	}
+	return &Log{Root: &Stage{}}
 }
 
 // NewContext returns a new context that carries l and its root stage as
@@ -161,8 +158,7 @@ type Stage struct {
 	EndTime   time.Time `json:"endTime"`
 	Children  []*Stage  `json:"children"`
 
-	mu  sync.Mutex // protects EndTime and Children
-	now timeFunc
+	mu sync.Mutex // protects EndTime and Children
 }
 
 // Import imports the stages from o into s, with o's top-level stages inserted as children of s.
@@ -191,8 +187,7 @@ func (s *Stage) StartChild(name string) *Stage {
 
 	c := &Stage{
 		Name:      name,
-		StartTime: s.now(),
-		now:       s.now,
+		StartTime: now(),
 	}
 	s.Children = append(s.Children, c)
 	return c
@@ -216,7 +211,7 @@ func (s *Stage) End() {
 	for _, c := range s.Children {
 		c.End()
 	}
-	s.EndTime = s.now()
+	s.EndTime = now()
 }
 
 // write writes information about the stage and its children to w as a JSON array.
@@ -236,7 +231,7 @@ func (s *Stage) write(w *bufio.Writer, initialIndent, followIndent string, last 
 
 	var elapsed time.Duration
 	if s.EndTime.IsZero() {
-		elapsed = s.now().Sub(s.StartTime)
+		elapsed = now().Sub(s.StartTime)
 	} else {
 		elapsed = s.EndTime.Sub(s.StartTime)
 	}

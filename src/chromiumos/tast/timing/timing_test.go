@@ -1,8 +1,14 @@
+// Copyright 2019 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package timing
 
 import (
 	"bytes"
 	"context"
+	"encoding/json"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -10,6 +16,22 @@ import (
 
 // fakeClock can be used to simulate the package of time in tests.
 type fakeClock struct{ sec int64 }
+
+// install installs the fake clock as the function used to get the current time
+// in this package.
+func (c *fakeClock) install() {
+	now = c.now
+}
+
+// uninstall uninstalls the fake clock.
+func (c *fakeClock) uninstall() {
+	now = time.Now
+}
+
+// reset resets the fake timer to the initial state.
+func (c *fakeClock) reset() {
+	c.sec = 0
+}
 
 // now returns a time based on c.sec and increments it to simulate a second passing.
 func (c *fakeClock) now() time.Time {
@@ -105,16 +127,19 @@ func TestEmpty(t *testing.T) {
 }
 
 func TestStage_End(t *testing.T) {
+	var fc fakeClock
+	fc.install()
+	defer fc.uninstall()
+
 	// Create a log with a stage and a second nested stage, but only end the first stage.
-	clock := fakeClock{}
-	lg := &Log{Root: &Stage{now: clock.now}}
+	lg := NewLog()
 	s0 := lg.StartTop("0")
 	s0.StartChild("1")
 	s0.End()
 
 	// The effect should be the same as if we actually closed the nested stage.
-	expClock := fakeClock{}
-	expLog := &Log{Root: &Stage{now: expClock.now}}
+	fc.reset()
+	expLog := NewLog()
 	s0 = expLog.StartTop("0")
 	s0.StartChild("1").End()
 	s0.End()
@@ -122,7 +147,7 @@ func TestStage_End(t *testing.T) {
 	actBuf := writeLog(t, lg)
 	expBuf := writeLog(t, expLog)
 	if actBuf.String() != expBuf.String() {
-		t.Errorf("Got %q; want %v", actBuf.String(), expBuf.String())
+		t.Errorf("Got %v; want %v", actBuf.String(), expBuf.String())
 	}
 }
 
@@ -135,9 +160,11 @@ func TestWrite(t *testing.T) {
 		name4 = "stage4"
 	)
 
-	clock := fakeClock{}
-	l := &Log{Root: &Stage{now: clock.now}}
+	var fc fakeClock
+	fc.install()
+	defer fc.uninstall()
 
+	l := NewLog()
 	s0 := l.StartTop(name0)
 	s1 := s0.StartChild(name1)
 	s1.StartChild(name2).End()
@@ -160,6 +187,34 @@ func TestWrite(t *testing.T) {
 	}
 }
 
+func TestMarshalUnmarshal(t *testing.T) {
+	var fc fakeClock
+	fc.install()
+	defer fc.uninstall()
+
+	// Create a log.
+	log := NewLog()
+	st := log.StartTop("0")
+	st.StartChild("1").End()
+	st.StartChild("2").End()
+	st.End()
+
+	// Marshal and unmarshal the log.
+	b, err := json.Marshal(log)
+	if err != nil {
+		t.Fatal("Marshal failed: ", err)
+	}
+	var newLog Log
+	if err := json.Unmarshal(b, &newLog); err != nil {
+		t.Fatal("Unmarshal failed: ", err)
+	}
+
+	// log and newLog must be idential.
+	if !reflect.DeepEqual(log, &newLog) {
+		t.Fatalf("Log changed after marshal and unmarshal: got %+v, want +%v", &newLog, log)
+	}
+}
+
 // addInnerStages adds two timing stages to lg, with an extra stage embedded in the first one.
 func addInnerStages(s *Stage) {
 	c := s.StartChild("0")
@@ -169,13 +224,16 @@ func addInnerStages(s *Stage) {
 }
 
 func TestImport(t *testing.T) {
+	var fc fakeClock
+	fc.install()
+	defer fc.uninstall()
+
 	// Create an outer log with a single still-open stage.
-	clock := fakeClock{}
-	outerLog := &Log{Root: &Stage{now: clock.now}}
+	outerLog := NewLog()
 	st := outerLog.StartTop("out")
 
 	// Create an inner log, import it, and close the outer stage.
-	innerLog := &Log{Root: &Stage{now: clock.now}}
+	innerLog := NewLog()
 	addInnerStages(innerLog.Root)
 	if err := st.Import(innerLog); err != nil {
 		t.Fatal("Import() reported error: ", err)
@@ -183,8 +241,8 @@ func TestImport(t *testing.T) {
 	st.End()
 
 	// We expect to see the imported stages within the original stage.
-	clock = fakeClock{}
-	expLog := &Log{Root: &Stage{now: clock.now}}
+	fc.reset()
+	expLog := NewLog()
 	st = expLog.StartTop("out")
 	addInnerStages(st)
 	st.End()
@@ -192,21 +250,55 @@ func TestImport(t *testing.T) {
 	actBuf := writeLog(t, outerLog)
 	expBuf := writeLog(t, expLog)
 	if actBuf.String() != expBuf.String() {
-		t.Errorf("Got %q; want %v", actBuf.String(), expBuf.String())
+		t.Errorf("Got %v; want %v", actBuf.String(), expBuf.String())
 	}
 }
 
 func TestImportOuterClosed(t *testing.T) {
+	var fc fakeClock
+	fc.install()
+	defer fc.uninstall()
+
 	// Create an outer log with a single closed stage.
-	clock := fakeClock{}
-	outerLog := &Log{Root: &Stage{now: clock.now}}
+	outerLog := NewLog()
 	st := outerLog.StartTop("out")
 	st.End()
 
 	// Create an inner log. Importing it should fail since st has ended.
-	innerLog := &Log{Root: &Stage{now: clock.now}}
+	innerLog := NewLog()
 	addInnerStages(innerLog.Root)
 	if err := st.Import(innerLog); err == nil {
 		t.Error("Import() unexpectedly succeeded without an open stage")
 	}
+}
+
+func TestImportMarshaledLog(t *testing.T) {
+	var fc fakeClock
+	fc.install()
+	defer fc.uninstall()
+
+	// Create an inner log with a single still-open stage.
+	innerLog := NewLog()
+	innerLog.StartTop("in")
+
+	// Marshal and unmarshal the inner log.
+	b, err := json.Marshal(innerLog)
+	if err != nil {
+		t.Fatal("Marshal failed: ", err)
+	}
+	var newLog Log
+	if err := json.Unmarshal(b, &newLog); err != nil {
+		t.Fatal("Unmarshal failed: ", err)
+	}
+
+	// Create an outer log and import the unmarshaled log.
+	outerLog := NewLog()
+	st := outerLog.StartTop("out")
+	if err := st.Import(&newLog); err != nil {
+		t.Fatal("Import() reported error: ", err)
+	}
+
+	// Finish the stage in the outer log. This will close the incomplete
+	// stage in the inner log. This used to cause panic (crbug.com/981708).
+	st.End()
 }

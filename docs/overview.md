@@ -36,9 +36,11 @@ command.
 
 ### Test bundles
 
-Test bundles are executables consisting of compiled tests, along with code for
-running them and reporting results back to a test runner. Bundles exist so that
-test code can be checked into other (probably non-public) repositories.
+Test bundles consist of executables and their associated data files (internal
+data files + external data link files). Test bundle executables are composed of
+compiled tests along with code for running them and reporting results back to
+a test runner. Bundles exist so that test code can be checked into other
+(probably non-public) repositories.
 
 The default local and remote bundles, consisting of Chrome OS tests, are named
 `cros` and are checked into the [tast-tests repository].

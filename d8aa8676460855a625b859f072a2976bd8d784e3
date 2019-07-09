@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f8730824_c8853100",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 199,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-09T08:23:49Z",
+      "side": 1,
+      "message": "optional: can be simplify to be just a var\n\nfiles :\u003d map[string]string {\n  filepath.Join(...): ...,\n  ...\n}\n\nnow?",
+      "revId": "d8aa8676460855a625b859f072a2976bd8d784e3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1b7cb2a4_221a740d",
+        "filename": "src/chromiumos/cmd/tast/run/run.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-09T08:23:49Z",
+      "side": 1,
+      "message": "I guess, at some point, likely we need this.\nCould you file a tracking issue, so that when needed we can easily refer.",
+      "range": {
+        "startLine": 174,
+        "startChar": 10,
+        "endLine": 174,
+        "endChar": 13
+      },
+      "revId": "d8aa8676460855a625b859f072a2976bd8d784e3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

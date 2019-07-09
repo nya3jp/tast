@@ -68,6 +68,69 @@
       "revId": "34b858e2d168049846f18cbf860d7d2c29c9fb8c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8a250f16_cc667efb",
+        "filename": "src/chromiumos/cmd/tast/run/run.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-09T01:39:34Z",
+      "side": 1,
+      "message": "Per offline chat, IIUC, this is only for prepare now.\nCould you move this into prepare() in this CL?",
+      "range": {
+        "startLine": 63,
+        "startChar": 0,
+        "endLine": 69,
+        "endChar": 0
+      },
+      "revId": "34b858e2d168049846f18cbf860d7d2c29c9fb8c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c985ba91_fc0c5ee4",
+        "filename": "src/chromiumos/cmd/tast/run/run.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-09T01:39:34Z",
+      "side": 1,
+      "message": "Per offline discussion, \"bundle\" used in Tast is slightly ambiguous.\nI think it is out of scope to clean up whole the usage,\nbut could you add comment that \"bundle\" here contains both bundle executable and data files,\nwhich will be built and pushed if -build flag is specified in buildAll() and pushAll()?\nAlso, it is nice to mention this is only for local tests, and locally built executable/files should be used for remote tests.\n\nThose were the source of my confusion.",
+      "revId": "34b858e2d168049846f18cbf860d7d2c29c9fb8c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a7b4c420_fab48ca4",
+        "filename": "src/chromiumos/cmd/tast/run/run.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-09T01:39:34Z",
+      "side": 1,
+      "message": "In general earlier error check is better.\nNow, cfg.build and cfg.downloadPrivateBundles are exclusive so could you move this at the beginning of this function, so that the error is reported before building/pushing?\n\nprepare() {\n  if cfg.build \u0026\u0026 cfg.downloadPrivateBundles {\n    return errors.New(...)\n  }\n\n  if cfg.build {\n    ...\n  }\n  if cfg.downloadPrivateBundles {\n    ...\n  }\n  ...\n}\n\nAlso, could you add comment why those are exclusive?",
+      "range": {
+        "startLine": 129,
+        "startChar": 2,
+        "endLine": 131,
+        "endChar": 3
+      },
+      "revId": "34b858e2d168049846f18cbf860d7d2c29c9fb8c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

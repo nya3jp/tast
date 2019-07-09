@@ -22,6 +22,30 @@
       "revId": "70abf46280e2aa06deafbfbf585a16b3115f20b0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ab1d4bc1_6ed3c134",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 258,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-09T09:12:37Z",
+      "side": 1,
+      "message": "Real data file paths will be something like\n\n /usr/local/share/tast/data/chromiumos/tast/local_pushed/bundles/cros/video/data/shaka_720.webm.external\n\nSo overwrite won\u0027t happen.",
+      "parentUuid": "8af5627d_2a4c4fc4",
+      "range": {
+        "startLine": 258,
+        "startChar": 16,
+        "endLine": 258,
+        "endChar": 30
+      },
+      "revId": "70abf46280e2aa06deafbfbf585a16b3115f20b0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

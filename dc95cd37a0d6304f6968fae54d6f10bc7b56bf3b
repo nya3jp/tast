@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ce98d94e_bc1c9cbd",
+        "filename": "docs/overview.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-09T09:04:30Z",
+      "side": 1,
+      "message": "Could you clarify that, for the external data, only the json metadata is included?",
+      "range": {
+        "startLine": 39,
+        "startChar": 46,
+        "endLine": 39,
+        "endChar": 67
+      },
+      "revId": "dc95cd37a0d6304f6968fae54d6f10bc7b56bf3b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

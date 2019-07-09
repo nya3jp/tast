@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a48f130_7f519889",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 261,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-09T08:20:26Z",
+      "side": 1,
+      "message": "optional: After the work, how about changing the whole default path for push, like\n\n/usr/local/libexec/tast/pushed/{bin,bundles,data}/... ?",
+      "range": {
+        "startLine": 258,
+        "startChar": 2,
+        "endLine": 261,
+        "endChar": 94
+      },
+      "revId": "aff3bacb2cf4cba9a9be2cff3cc2bbb41d81a342",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -16,6 +16,24 @@
       "revId": "b1026aae86d1a8bc50193dba34daf83a0124a012",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b6daa169_c38e4b9e",
+        "filename": "src/chromiumos/tast/host/ssh.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 397,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-09T09:14:59Z",
+      "side": 1,
+      "message": "It happens :) https://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/1687731/4",
+      "parentUuid": "6b8589be_160e23ba",
+      "revId": "b1026aae86d1a8bc50193dba34daf83a0124a012",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -22,6 +22,30 @@
       "revId": "927f9dd0f23229a4cb22bf71e64b5df2eaed90a0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f7f2c22e_6d77b8fb",
+        "filename": "src/chromiumos/tast/timing/timing_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-09T00:13:59Z",
+      "side": 1,
+      "message": "Thanks. Since the use of fakeClock is limited to unit tests in this file, I think we can keep it simple rather than handling all possible misuse cases. Let me keep it as is now, but if you feel strong about this please let me know.",
+      "parentUuid": "5ca49310_45e89f27",
+      "range": {
+        "startLine": 22,
+        "startChar": 20,
+        "endLine": 22,
+        "endChar": 27
+      },
+      "revId": "927f9dd0f23229a4cb22bf71e64b5df2eaed90a0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

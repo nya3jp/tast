@@ -94,6 +94,30 @@
     },
     {
       "key": {
+        "uuid": "e7870f14_8875268f",
+        "filename": "src/chromiumos/cmd/tast/run/run.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-09T05:12:48Z",
+      "side": 1,
+      "message": "Hmm. Don\u0027t we need ephemeral devsever for local() ?",
+      "parentUuid": "8a250f16_cc667efb",
+      "range": {
+        "startLine": 63,
+        "startChar": 0,
+        "endLine": 69,
+        "endChar": 0
+      },
+      "revId": "34b858e2d168049846f18cbf860d7d2c29c9fb8c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c985ba91_fc0c5ee4",
         "filename": "src/chromiumos/cmd/tast/run/run.go",
         "patchSetId": 6

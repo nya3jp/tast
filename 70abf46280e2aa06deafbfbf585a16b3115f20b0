@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8af5627d_2a4c4fc4",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 258,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-09T09:06:51Z",
+      "side": 1,
+      "message": "It\u0027s unrelated to the CL, but it made me wonder if it makes sense to add c.buildBundle somewhere in the path, so that private bundle doesn\u0027t override public bundle for example.",
+      "range": {
+        "startLine": 258,
+        "startChar": 16,
+        "endLine": 258,
+        "endChar": 30
+      },
+      "revId": "70abf46280e2aa06deafbfbf585a16b3115f20b0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

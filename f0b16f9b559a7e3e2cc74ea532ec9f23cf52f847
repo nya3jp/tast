@@ -22,6 +22,30 @@
       "revId": "f0b16f9b559a7e3e2cc74ea532ec9f23cf52f847",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "21f040d9_e349015e",
+        "filename": "src/chromiumos/cmd/tast/run/run.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-09T08:52:47Z",
+      "side": 1,
+      "message": "To run *prebuilt* private tests downloaded as an archive, we run: tast run -build\u003dfalse -downloadprivatebundles ...\n\nTo run *fresh* private tests built from source, we run: tast run -buildbundle\u003dcrosint ...\n\nNote that -downloadprivatebundles is a flag to download an archive of *prebuilt* private bundles.\n\nDoes this explanation clarify it?",
+      "parentUuid": "ad71b6f0_3514c2c0",
+      "range": {
+        "startLine": 121,
+        "startChar": 52,
+        "endLine": 121,
+        "endChar": 67
+      },
+      "revId": "f0b16f9b559a7e3e2cc74ea532ec9f23cf52f847",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

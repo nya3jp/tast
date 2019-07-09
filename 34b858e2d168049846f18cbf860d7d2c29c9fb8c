@@ -120,6 +120,30 @@
     },
     {
       "key": {
+        "uuid": "5fe39043_db1fbae1",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-09T08:52:47Z",
+      "side": 1,
+      "message": "Yes, let me do that in a separate CL.",
+      "parentUuid": "6a38d993_722ade8b",
+      "range": {
+        "startLine": 156,
+        "startChar": 73,
+        "endLine": 156,
+        "endChar": 83
+      },
+      "revId": "34b858e2d168049846f18cbf860d7d2c29c9fb8c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3cde9db8_23fccd4e",
         "filename": "src/chromiumos/cmd/tast/run/local.go",
         "patchSetId": 6

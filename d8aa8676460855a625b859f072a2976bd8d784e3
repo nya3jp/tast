@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "b513be5e_438431bb",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 199,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-09T09:07:29Z",
+      "side": 1,
+      "message": "Yes, but let me do this in https://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/1687731/4/src/chromiumos/cmd/tast/run/local.go",
+      "parentUuid": "f8730824_c8853100",
+      "revId": "d8aa8676460855a625b859f072a2976bd8d784e3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1b7cb2a4_221a740d",
         "filename": "src/chromiumos/cmd/tast/run/run.go",
         "patchSetId": 7
@@ -39,6 +57,30 @@
       "revId": "d8aa8676460855a625b859f072a2976bd8d784e3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d1cfe0ed_bfba563f",
+        "filename": "src/chromiumos/cmd/tast/run/run.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-09T09:07:29Z",
+      "side": 1,
+      "message": "This is addressed in the next CL: https://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/1683702/7/src/chromiumos/cmd/tast/run/run.go",
+      "parentUuid": "1b7cb2a4_221a740d",
+      "range": {
+        "startLine": 174,
+        "startChar": 10,
+        "endLine": 174,
+        "endChar": 13
+      },
+      "revId": "d8aa8676460855a625b859f072a2976bd8d784e3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

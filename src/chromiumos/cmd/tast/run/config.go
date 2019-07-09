@@ -216,12 +216,19 @@ func (c *Config) Close(ctx context.Context) error {
 
 // DeriveDefaults sets some empty config values by deriving from the bundle name.
 func (c *Config) DeriveDefaults() error {
+	setIfEmpty := func(p *string, s string) {
+		if *p == "" {
+			*p = s
+		}
+	}
+
 	b := getKnownBundleInfo(c.buildBundle)
 	if b == nil {
 		if c.buildWorkspace == "" {
 			return fmt.Errorf("unknown bundle %q; please set -buildworkspace explicitly", c.buildBundle)
 		}
-		return nil
+	} else {
+		setIfEmpty(&c.buildWorkspace, filepath.Join(c.trunkDir, b.workspace))
 	}
 
 	larch, err := build.GetLocalArch()
@@ -229,13 +236,6 @@ func (c *Config) DeriveDefaults() error {
 		return fmt.Errorf("failed to get local arch: %v", err)
 	}
 
-	setIfEmpty := func(p *string, s string) {
-		if *p == "" {
-			*p = s
-		}
-	}
-
-	setIfEmpty(&c.buildWorkspace, filepath.Join(c.trunkDir, b.workspace))
 	if c.build {
 		// If -build=true, use different paths than -build=false to avoid overwriting
 		// Portage-managed files.

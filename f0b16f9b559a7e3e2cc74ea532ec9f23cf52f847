@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ad71b6f0_3514c2c0",
+        "filename": "src/chromiumos/cmd/tast/run/run.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-09T08:43:08Z",
+      "side": 1,
+      "message": "Sorry but I\u0027m confused.\nWhen using cfg.build, do we always build private bundles too? I thought which bundle to build is determined by -buildbundle flag.\n\nDoes it mean -downloadprivatebundles is only appricable when buildbundle is crosint ?",
+      "range": {
+        "startLine": 121,
+        "startChar": 52,
+        "endLine": 121,
+        "endChar": 67
+      },
+      "revId": "f0b16f9b559a7e3e2cc74ea532ec9f23cf52f847",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

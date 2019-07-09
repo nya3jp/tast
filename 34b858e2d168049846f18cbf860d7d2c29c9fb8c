@@ -96,6 +96,30 @@
     },
     {
       "key": {
+        "uuid": "6a38d993_722ade8b",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-09T08:43:08Z",
+      "side": 1,
+      "message": "Ahh. I see.\nYou may want to update https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/overview.md#test-bundles .\nIt says \"Test bundles are executables consisting of compiled tests ...\"",
+      "parentUuid": "a3e2a109_32b11725",
+      "range": {
+        "startLine": 156,
+        "startChar": 73,
+        "endLine": 156,
+        "endChar": 83
+      },
+      "revId": "34b858e2d168049846f18cbf860d7d2c29c9fb8c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3cde9db8_23fccd4e",
         "filename": "src/chromiumos/cmd/tast/run/local.go",
         "patchSetId": 6

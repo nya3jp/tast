@@ -49,4 +49,26 @@ func TestConfigDeriveDefaults(t *testing.T) {
 	if cfg.buildWorkspace == "" {
 		t.Error("buildWorkspace is not set")
 	}
+	if cfg.localBundleDir == "" {
+		t.Error("localBundleDir is not set")
+	}
+}
+
+func TestConfigDeriveDefaultsNonStandardBundle(t *testing.T) {
+	cfg := NewConfig(RunTestsMode, "", "")
+	flags := flag.NewFlagSet("", flag.ContinueOnError)
+	cfg.SetFlags(flags)
+
+	cfg.buildBundle = "nonstandardbundle"
+	if err := cfg.DeriveDefaults(); err == nil {
+		t.Error("DeriveDefaults succeeded; want failure")
+	}
+
+	cfg.buildWorkspace = "/path/to/workspace"
+	if err := cfg.DeriveDefaults(); err != nil {
+		t.Error("DeriveDefaults failed: ", err)
+	}
+	if cfg.localBundleDir == "" {
+		t.Error("localBundleDir is not set")
+	}
 }

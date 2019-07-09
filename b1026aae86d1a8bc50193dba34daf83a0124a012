@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6b8589be_160e23ba",
+        "filename": "src/chromiumos/tast/host/ssh.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 397,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-09T08:34:08Z",
+      "side": 1,
+      "message": "Now, PutTree is removed, \"Rename\" suffix does not make sense. Could you rename back to PutTree? (I\u0027m ok to make it happen in another CL, if you prefer so).",
+      "revId": "b1026aae86d1a8bc50193dba34daf83a0124a012",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

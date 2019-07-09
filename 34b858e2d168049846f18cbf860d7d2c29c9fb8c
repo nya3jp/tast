@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "54fcc23e_f5ebfe3c",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-09T06:55:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "171562b3_f464e339",
+      "range": {
+        "startLine": 127,
+        "startChar": 8,
+        "endLine": 127,
+        "endChar": 11
+      },
+      "revId": "34b858e2d168049846f18cbf860d7d2c29c9fb8c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "36920b71_680d66e1",
         "filename": "src/chromiumos/cmd/tast/run/local.go",
         "patchSetId": 6
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "a3e2a109_32b11725",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-09T06:55:24Z",
+      "side": 1,
+      "message": "Actually I mean test bundle executable + its associated data files when I just say \"test bundle\", and that\u0027s what I mean here. I guess we want a glossary...",
+      "parentUuid": "36920b71_680d66e1",
+      "range": {
+        "startLine": 156,
+        "startChar": 73,
+        "endLine": 156,
+        "endChar": 83
+      },
+      "revId": "34b858e2d168049846f18cbf860d7d2c29c9fb8c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3cde9db8_23fccd4e",
         "filename": "src/chromiumos/cmd/tast/run/local.go",
         "patchSetId": 6
@@ -68,6 +116,30 @@
       "revId": "34b858e2d168049846f18cbf860d7d2c29c9fb8c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a5d08aa9_05fd3005",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 194,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-09T06:55:24Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "3cde9db8_23fccd4e",
+      "range": {
+        "startLine": 194,
+        "startChar": 3,
+        "endLine": 194,
+        "endChar": 13
+      },
+      "revId": "34b858e2d168049846f18cbf860d7d2c29c9fb8c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -118,6 +190,30 @@
     },
     {
       "key": {
+        "uuid": "4ca81139_25855f10",
+        "filename": "src/chromiumos/cmd/tast/run/run.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-09T06:55:24Z",
+      "side": 1,
+      "message": "Oka-san\u0027s right, we need devserver in local() to download external data files. But I agree it\u0027s confusing, so let me leave a comment.",
+      "parentUuid": "e7870f14_8875268f",
+      "range": {
+        "startLine": 63,
+        "startChar": 0,
+        "endLine": 69,
+        "endChar": 0
+      },
+      "revId": "34b858e2d168049846f18cbf860d7d2c29c9fb8c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c985ba91_fc0c5ee4",
         "filename": "src/chromiumos/cmd/tast/run/run.go",
         "patchSetId": 6
@@ -132,6 +228,24 @@
       "revId": "34b858e2d168049846f18cbf860d7d2c29c9fb8c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b6d4affc_8ebe987d",
+        "filename": "src/chromiumos/cmd/tast/run/run.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-09T06:55:24Z",
+      "side": 1,
+      "message": "Thanks for pointing it out. I\u0027ve added comments to the definition of downloadPrivateBundles.",
+      "parentUuid": "c985ba91_fc0c5ee4",
+      "revId": "34b858e2d168049846f18cbf860d7d2c29c9fb8c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -155,6 +269,30 @@
       "revId": "34b858e2d168049846f18cbf860d7d2c29c9fb8c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9df5aa70_d9838f4a",
+        "filename": "src/chromiumos/cmd/tast/run/run.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-09T06:55:24Z",
+      "side": 1,
+      "message": "Sounds good to me, done.",
+      "parentUuid": "a7b4c420_fab48ca4",
+      "range": {
+        "startLine": 129,
+        "startChar": 2,
+        "endLine": 131,
+        "endChar": 3
+      },
+      "revId": "34b858e2d168049846f18cbf860d7d2c29c9fb8c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

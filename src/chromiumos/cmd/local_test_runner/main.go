@@ -81,7 +81,7 @@ func main() {
 			"cros_config":             "unibuild",
 			"cros_internal":           "internal",
 			"crosvm_gpu":              `"crosvm-gpu"`,
-			"crossystem":              "!betty && !tast_vm",                     // VMs don't support few crossystem sub-commands: https://crbug.com/974615
+			"crossystem":              "!betty && !tast_vm", // VMs don't support few crossystem sub-commands: https://crbug.com/974615
 			"cups":                    "cups",
 			"diagnostics":             "diagnostics",
 			"display_backlight":       "display_backlight",

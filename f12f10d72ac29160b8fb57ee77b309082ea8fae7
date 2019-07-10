@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e7b73d65_c4ce4566",
+        "filename": "docs/running_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-10T04:41:50Z",
+      "side": 1,
+      "message": "How about explicitly stating non-test images are not supported?",
+      "revId": "f12f10d72ac29160b8fb57ee77b309082ea8fae7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

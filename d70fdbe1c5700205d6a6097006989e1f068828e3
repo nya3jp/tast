@@ -70,6 +70,30 @@
       "revId": "d70fdbe1c5700205d6a6097006989e1f068828e3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "25082eaf_abe76d69",
+        "filename": "docs/running_tests.md",
+        "patchSetId": 8
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-10T08:56:38Z",
+      "side": 1,
+      "message": "Ugh, pardon me, but I somehow thought your question was \"is the path unchanged?\". And I believed it is unchanged, but I was wrong... it is /usr/local/libexec/tast/bundles/local_pushed. I\u0027m not sure from when this was incorrect.\n\nLet me fix it in another CL.",
+      "parentUuid": "7800fcdb_c2296210",
+      "range": {
+        "startLine": 68,
+        "startChar": 1,
+        "endLine": 68,
+        "endChar": 42
+      },
+      "revId": "d70fdbe1c5700205d6a6097006989e1f068828e3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

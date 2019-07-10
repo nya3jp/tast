@@ -83,13 +83,8 @@ dependencies need to be manually emerged.
 To skip rebuilding a bundle and instead run all builtin bundles within the
 `/usr/local/share/tast/bundles` directory on the DUT (for local tests) and
 `/usr/share/tast/bundles` on the host system (for remote tests), pass
-`-build=false`. The default builtin `cros` local bundle will only be present if
-the `chromeos-base/tast-local-tests-cros` package was emerged to the DUT. This
-happens automatically when a `test` system image is built.
-
-If `-build` is true and `local_test_runner` isn't present on the DUT (presumably
-because it's running a `dev` system image rather than a `test` image), the
-`tast` command will attempt to build and deploy it.
+`-build=false`. The default builtin `cros` local bundle should be present on
+all `test` system images (non-`test` system images are not supposed by Tast).
 
 [tast-tests repository]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/
 [Go in Chromium OS]: https://www.chromium.org/chromium-os/developer-guide/go-in-chromium-os

@@ -46,6 +46,30 @@
       "revId": "d70fdbe1c5700205d6a6097006989e1f068828e3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7800fcdb_c2296210",
+        "filename": "docs/running_tests.md",
+        "patchSetId": 8
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-10T08:24:24Z",
+      "side": 1,
+      "message": "I see. Could you update it, maybe in another CL?",
+      "parentUuid": "5e6b23a1_adbb5c8d",
+      "range": {
+        "startLine": 68,
+        "startChar": 1,
+        "endLine": 68,
+        "endChar": 42
+      },
+      "revId": "d70fdbe1c5700205d6a6097006989e1f068828e3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

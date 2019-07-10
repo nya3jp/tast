@@ -65,8 +65,8 @@ func main() {
 			"android_all_vm":    `arc && arcvm`,
 			"android_all_both":  `arc`,
 			"android_p":         `arc && !arcvm && "android-container-pi"`,
-			"android_p_vm":      `arc && arcvm && "android-container-pi"`,
-			"android_p_both":    `arc && "android-container-pi"`,
+			"android_p_vm":      `arc && arcvm && "android-vm-pi"`,
+			"android_p_both":    `arc && ("android-container-pi" || "android-vm-pi")`,
 			"arc_camera3":       `"arc-camera3"`,
 			"aslr":              "!asan",                                                     // ASan instrumentation breaks ASLR
 			"audio_play":        "!betty && !tast_vm && !veyron_rialto && !(fizz && moblab)", // VMs and some boards don't have a speaker
@@ -81,7 +81,7 @@ func main() {
 			"cros_config":             "unibuild",
 			"cros_internal":           "internal",
 			"crosvm_gpu":              `"crosvm-gpu"`,
-			"crossystem":              "!betty && !tast_vm",                     // VMs don't support few crossystem sub-commands: https://crbug.com/974615
+			"crossystem":              "!betty && !tast_vm", // VMs don't support few crossystem sub-commands: https://crbug.com/974615
 			"cups":                    "cups",
 			"diagnostics":             "diagnostics",
 			"display_backlight":       "display_backlight",

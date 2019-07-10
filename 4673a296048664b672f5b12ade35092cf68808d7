@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "376b9d4a_5a200adf",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 308,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-10T14:20:57Z",
+      "side": 1,
+      "message": "(slightly offtopic, but as you touch this): unused?\n\nstyle: how about just following the common pattern?\nwsBytes, err :\u003d pushToHost(...)\nif err !\u003d nil {\n  ...\n}\nif ... {\n  if err :\u003d deleteFromHost(...); err !\u003d nil {\n    ...\n  }\n}",
+      "range": {
+        "startLine": 308,
+        "startChar": 14,
+        "endLine": 308,
+        "endChar": 22
+      },
+      "revId": "4673a296048664b672f5b12ade35092cf68808d7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

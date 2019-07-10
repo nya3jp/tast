@@ -70,6 +70,30 @@
       "revId": "f0b16f9b559a7e3e2cc74ea532ec9f23cf52f847",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f6641692_7eede4a7",
+        "filename": "src/chromiumos/cmd/tast/run/run.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-10T02:50:57Z",
+      "side": 1,
+      "message": "\u003e Is it meaningless to have both -buildbundle\u003dcros and -downloadprivatebundles, even if we specify both public and private test cases? Or is it not possible to specify both test cases?\n\nSupporting -buildbundle\u003dcros -downloadprivatebundles is technically feasible but it has several issues so I\u0027m hesitant to support the scenario unless there is strong need.\n\nBTW I guess this is a missing piece you don\u0027t know: when -build\u003dfalse, *all* test bundles preinstalled on the DUT are run, but when -build\u003dtrue, only the test bundle specified by -buildbundle is run. So the following command will give an error because example.Pass is in the cros bundle.\n\n tast run -buildbundle\u003dcrosint DUT example.Pass\n\n\u003e How do we tell tast to run prebuilt private tests on dut?\n\u003e If just omitting -buildbundle and have -downloadprivatebundles is the way to do it, I wonder how we avoid conflict of the test name with public ones.\n\nThe way to run prebuild private tests is\n\n tast run -build\u003dfalse -downloadprivatebundles DUT ...\n\nNote that -buildbundle does not take effect when -build\u003dfalse.\n\nAll tests from different bundles are put in the same namespace, so we should not put tests of the same name in different bundles.",
+      "parentUuid": "6830adaf_22adb309",
+      "range": {
+        "startLine": 121,
+        "startChar": 52,
+        "endLine": 121,
+        "endChar": 67
+      },
+      "revId": "f0b16f9b559a7e3e2cc74ea532ec9f23cf52f847",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

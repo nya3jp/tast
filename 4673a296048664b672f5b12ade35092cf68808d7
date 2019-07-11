@@ -22,6 +22,30 @@
       "revId": "4673a296048664b672f5b12ade35092cf68808d7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7394b1a9_6fbcfbe6",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 308,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-11T01:46:41Z",
+      "side": 1,
+      "message": "Let me fix it now since we\u0027re on it. Done.",
+      "parentUuid": "376b9d4a_5a200adf",
+      "range": {
+        "startLine": 308,
+        "startChar": 14,
+        "endLine": 308,
+        "endChar": 22
+      },
+      "revId": "4673a296048664b672f5b12ade35092cf68808d7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

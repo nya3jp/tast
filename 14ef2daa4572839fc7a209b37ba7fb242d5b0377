@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "cf142dc2_7d00786c",
+        "filename": "src/chromiumos/tast/host/ssh.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 396,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-11T05:30:31Z",
+      "side": 1,
+      "message": "Sorry for the late chime in, but could you mention it copies only changed files?",
+      "range": {
+        "startLine": 396,
+        "startChar": 76,
+        "endLine": 396,
+        "endChar": 80
+      },
+      "revId": "14ef2daa4572839fc7a209b37ba7fb242d5b0377",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

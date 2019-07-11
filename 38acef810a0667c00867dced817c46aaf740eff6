@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7bd5f85d_726c00ff",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-11T03:18:15Z",
+      "side": 1,
+      "message": "- Do we still need \"arcvm\" condition? If possible, please consider removing it to make it clearer that android_p_both \u003d android_p | android_p_vm.\n- Do we plan to use android-vm-* for other desserts, e.g. android-vm-qt?",
+      "range": {
+        "startLine": 67,
+        "startChar": 32,
+        "endLine": 68,
+        "endChar": 38
+      },
+      "revId": "38acef810a0667c00867dced817c46aaf740eff6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5761b611_2a26f311",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-11T03:18:15Z",
+      "side": 1,
+      "message": "You\u0027ll need to rebase on top of https://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/1692801 :)",
+      "range": {
+        "startLine": 84,
+        "startChar": 0,
+        "endLine": 84,
+        "endChar": 126
+      },
+      "revId": "38acef810a0667c00867dced817c46aaf740eff6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

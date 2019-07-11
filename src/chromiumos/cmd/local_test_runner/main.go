@@ -90,6 +90,7 @@ func main() {
 			"firewall":                "!moblab",                                // Moblab has relaxed iptables rules
 			"google_virtual_keyboard": "chrome_internal && internal && !moblab", // doesn't work on Moblab: https://crbug.com/949912
 			"gpu_sandboxing":          "!betty && !tast_vm",                     // no GPU sandboxing on VMs: https://crbug.com/914688
+			"gsc":                     "cr50_onboard",
 			"memd":                    "memd",
 			"ml_service":              "ml_service",
 			"mosys":                   "!betty && !tast_vm",

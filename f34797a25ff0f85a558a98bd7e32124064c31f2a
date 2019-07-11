@@ -22,6 +22,30 @@
       "revId": "f34797a25ff0f85a558a98bd7e32124064c31f2a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "086d25f1_07453901",
+        "filename": "src/chromiumos/tast/host/async.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-11T23:17:39Z",
+      "side": 1,
+      "message": "I considered the option to call clean only on successful timeout, but I concluded that it tends to duplicate cleanup logic in body and clean and the overall code gets longer. I\u0027ll send a note about comparison separately.",
+      "parentUuid": "61aed92c_106dd111",
+      "range": {
+        "startLine": 27,
+        "startChar": 21,
+        "endLine": 27,
+        "endChar": 24
+      },
+      "revId": "f34797a25ff0f85a558a98bd7e32124064c31f2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

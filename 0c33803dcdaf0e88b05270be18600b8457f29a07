@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "19bdcb2c_fe64fcbe",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-11T01:33:13Z",
+      "side": 1,
+      "message": "MatchString returns a bool.",
+      "range": {
+        "startLine": 27,
+        "startChar": 22,
+        "endLine": 27,
+        "endChar": 50
+      },
+      "revId": "0c33803dcdaf0e88b05270be18600b8457f29a07",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0c2bcb11_a088a7e3",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 258,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-11T01:33:13Z",
+      "side": 1,
+      "message": "huge nit: Currently all lint messages are one sentence, so how about:\n\n \"%s has verbs in the first argument (do you mean %s?)\"",
+      "range": {
+        "startLine": 258,
+        "startChar": 24,
+        "endLine": 258,
+        "endChar": 74
+      },
+      "revId": "0c33803dcdaf0e88b05270be18600b8457f29a07",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

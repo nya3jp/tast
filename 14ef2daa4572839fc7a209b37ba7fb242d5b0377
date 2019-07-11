@@ -22,6 +22,30 @@
       "revId": "14ef2daa4572839fc7a209b37ba7fb242d5b0377",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8f4420a0_edc44c26",
+        "filename": "src/chromiumos/tast/host/ssh.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 396,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-11T06:33:54Z",
+      "side": 1,
+      "message": "Done. Also I noticed I happened to remove the mention about \"bytes\" so I recovered it. Thanks!",
+      "parentUuid": "cf142dc2_7d00786c",
+      "range": {
+        "startLine": 396,
+        "startChar": 76,
+        "endLine": 396,
+        "endChar": 80
+      },
+      "revId": "14ef2daa4572839fc7a209b37ba7fb242d5b0377",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

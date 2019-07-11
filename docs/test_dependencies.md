@@ -60,6 +60,7 @@ The following software features are defined:
 *   `google_virtual_keyboard` - The proprietary Google onscreen virtual keyboard
     (as opposed to the builtin open-source virtual keyboard).
 *   `gpu_sandboxing` - Chrome's GPU process is [sandboxed].
+*   `gsc` - Whether the platform has an on-board Google security chip.
 *   `memd` - [Memory stats collection daemon].
 *   `ml_service` - ML Service daemon.
 *   `mosys` - Ability to run mosys command.

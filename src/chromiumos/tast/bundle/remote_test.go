@@ -69,8 +69,8 @@ func TestRemoteDUT(t *gotesting.T) {
 		output = "fake output"
 	)
 	td := test.NewTestData(userKey, hostKey, func(req *test.ExecReq) {
-		if req.Cmd != cmd {
-			log.Printf("Unexpected command %q", cmd)
+		if req.Cmd != "exec /bin/sh -c "+cmd {
+			log.Printf("Unexpected command %q", req.Cmd)
 			req.Start(false)
 		} else {
 			req.Start(true)

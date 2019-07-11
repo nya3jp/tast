@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "cbf0e305_55dbc7f2",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-11T10:03:30Z",
+      "side": 1,
+      "message": "Done.",
+      "parentUuid": "19bdcb2c_fe64fcbe",
+      "range": {
+        "startLine": 27,
+        "startChar": 22,
+        "endLine": 27,
+        "endChar": 50
+      },
+      "revId": "0c33803dcdaf0e88b05270be18600b8457f29a07",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0c2bcb11_a088a7e3",
         "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
         "patchSetId": 5
@@ -45,6 +69,30 @@
       "revId": "0c33803dcdaf0e88b05270be18600b8457f29a07",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2e1f1a69_ae1557de",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 258,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-11T10:03:30Z",
+      "side": 1,
+      "message": "Done.\nit\u0027s not necessarily the first argument (e.g. testing.ContextLogf(ctx, ...)).\nSo I changed it to first string.",
+      "parentUuid": "0c2bcb11_a088a7e3",
+      "range": {
+        "startLine": 258,
+        "startChar": 24,
+        "endLine": 258,
+        "endChar": 74
+      },
+      "revId": "0c33803dcdaf0e88b05270be18600b8457f29a07",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -17,6 +17,7 @@ readonly PKGDIR="${GOHOME}/pkg"
 readonly SRCDIRS=(
   "${HOME}/trunk/src/platform/tast"
   "${HOME}/trunk/src/platform/tast-tests"
+  "${HOME}/trunk/src/platform/tast-tests-pita"
   "${HOME}/trunk/src/platform/tast-tests-private"
 )
 

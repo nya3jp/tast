@@ -21,6 +21,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"golang.org/x/crypto/ssh"
@@ -609,68 +610,42 @@ func cleanRelativePath(p string) (string, error) {
 // If the command is interrupted or exits with a nonzero status code, the returned error will
 // be of type *ssh.ExitError.
 func (s *SSH) Run(ctx context.Context, cmd string) ([]byte, error) {
-	if s.AnnounceCmd != nil {
-		s.AnnounceCmd(cmd)
-	}
-
-	var b []byte
-	err := doAsync(ctx, func() error {
-		session, err := s.cl.NewSession()
-		if err != nil {
-			return fmt.Errorf("failed to create session: %v", err)
-		}
-		defer session.Close()
-		b, err = session.CombinedOutput(cmd)
-		return err
-	}, nil)
-	return b, err
+	return s.Command("/bin/sh", "-c", cmd).CombinedOutput(ctx)
 }
 
 // Start runs cmd asynchronously on the host and returns a handle that can be used to write input,
 // read output, and wait for completion. cmd is interpreted by the user's shell; arguments may be
 // quoted using shutil.Escape.
 func (s *SSH) Start(ctx context.Context, cmd string, input InputMode, output OutputMode) (*SSHCommandHandle, error) {
-	c := &SSHCommandHandle{}
+	c := s.Command("/bin/sh", "-c", cmd)
 
-	if err := doAsync(ctx, func() error {
-		var err error
-		c.session, err = s.cl.NewSession()
-		return err
-	}, nil); err != nil {
-		return nil, fmt.Errorf("failed to create session: %v", err)
-	}
+	h := &SSHCommandHandle{cmd: c}
 
 	if output == StdoutAndStderr || output == StdoutOnly {
 		var err error
-		if c.stdout, err = c.session.StdoutPipe(); err != nil {
-			c.Close(ctx)
-			return nil, fmt.Errorf("failed to get stdout: %v", err)
+		h.stdout, err = c.StdoutPipe()
+		if err != nil {
+			return nil, err
 		}
 	}
 	if output == StdoutAndStderr || output == StderrOnly {
 		var err error
-		if c.stderr, err = c.session.StderrPipe(); err != nil {
-			c.Close(ctx)
-			return nil, fmt.Errorf("failed to get stderr: %v", err)
+		h.stderr, err = c.StderrPipe()
+		if err != nil {
+			return nil, err
 		}
 	}
 	if input == OpenStdin {
 		var err error
-		if c.stdin, err = c.session.StdinPipe(); err != nil {
-			c.Close(ctx)
-			return nil, fmt.Errorf("failed to get stdin: %v", err)
+		h.stdin, err = c.StdinPipe()
+		if err != nil {
+			return nil, err
 		}
 	}
-
-	if s.AnnounceCmd != nil {
-		s.AnnounceCmd(cmd)
+	if err := c.Start(ctx); err != nil {
+		return nil, err
 	}
-
-	if err := doAsync(ctx, func() error { return c.session.Start(cmd) }, nil); err != nil {
-		c.Close(ctx)
-		return nil, fmt.Errorf("failed to start: %v", err)
-	}
-	return c, nil
+	return h, nil
 }
 
 // Ping checks that the connection to the host is still active, blocking until a
@@ -709,19 +684,17 @@ func (s *SSH) NewForwarder(localAddr, remoteAddr string, errFunc func(error)) (*
 
 // SSHCommandHandle represents an in-progress remote command.
 type SSHCommandHandle struct {
-	session        *ssh.Session
+	cmd            *Cmd
 	stderr, stdout io.Reader
 	stdin          io.WriteCloser
+	waitOnce       sync.Once
+	waitErr        error
 }
 
 // Close closes the session in which the command is running.
 // It returns an error if ctx's deadline is reached before the session has been closed.
 func (h *SSHCommandHandle) Close(ctx context.Context) error {
-	err := doAsync(ctx, func() error { return h.session.Close() }, nil)
-	if err == io.EOF {
-		return nil
-	}
-	return err
+	return h.Wait(ctx)
 }
 
 // Stderr returns a pipe connected to the command's stderr or nil if the OutputMode didn't include stderr.
@@ -741,5 +714,8 @@ func (h *SSHCommandHandle) Stdout() io.Reader {
 
 // Wait waits until the command finishes running or ctx's deadline is reached.
 func (h *SSHCommandHandle) Wait(ctx context.Context) error {
-	return doAsync(ctx, func() error { return h.session.Wait() }, nil)
+	h.waitOnce.Do(func() {
+		h.waitErr = h.cmd.Wait(ctx)
+	})
+	return h.waitErr
 }

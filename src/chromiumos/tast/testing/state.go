@@ -161,6 +161,9 @@ func (s *State) Var(name string) (val string, ok bool) {
 	return val, ok
 }
 
+// TODO comment
+func (s *State) Param() interface{} { return s.test.Val }
+
 // RequiredVar is similar to Var but aborts the test if the named variable was not supplied.
 func (s *State) RequiredVar(name string) string {
 	val, ok := s.Var(name)

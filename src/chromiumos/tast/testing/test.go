@@ -52,11 +52,18 @@ var testNameRegexp, testWordRegexp *regexp.Regexp
 func init() {
 	// Validates test names, which should consist of a package name, a period,
 	// and the name of the exported test function.
-	testNameRegexp = regexp.MustCompile("^[a-z][a-z0-9]*\\.[A-Z][A-Za-z0-9]*$")
+	testNameRegexp = regexp.MustCompile("^[a-z][a-z0-9]*\\.[A-Z][A-Za-z0-9]*(\\.[a-z0-9_]+)?$")
 
 	// Validates an individual word in a test function name.
 	// See checkFuncNameAgainstFilename for details.
 	testWordRegexp = regexp.MustCompile("^[A-Z0-9]+[a-z0-9]*[A-Z0-9]*$")
+}
+
+type Param struct {
+	Name      string
+	Val       interface{}
+	ExtraData []string
+	ExtraAttr []string
 }
 
 // TestFunc is the code associated with a test.
@@ -95,6 +102,11 @@ type Test struct {
 	// See https://chromium.googlesource.com/chromiumos/platform/tast/+/master/docs/test_dependencies.md
 	// for more information about dependencies.
 	SoftwareDeps []string `json:"softwareDeps,omitempty"`
+	// Params if this is a parametric test.
+	Params []Param `json:"-"`
+	// Value assigned to this test. In test body function, this value
+	// can be obtained via testing.State.Param() method.
+	Val interface{} `json:"-"`
 	// Pre contains a precondition that must be met before the test is run.
 	Pre Precondition `json:"-"`
 	// Timeout contains the maximum duration for which Func may run before the test is aborted.
@@ -261,11 +273,26 @@ DepLoop:
 // finalize fills in defaults and validates the result.
 // If autoName is true, tst.Name will be derived from tst.Func's name.
 // Otherwise (just used in unit tests), tst.Name should be filled already.
-func (tst *Test) finalize(autoName bool) error {
+func (tst *Test) finalize(autoName bool, param *Param) error {
 	// Fill in defaults.
-	if err := tst.populateNameAndPkg(autoName); err != nil {
+	var suffix string
+	if param != nil {
+		suffix = param.Name
+	}
+	if err := tst.populateNameAndPkg(autoName, suffix); err != nil {
 		return err
 	}
+
+	if param != nil {
+		if param.ExtraData != nil {
+			tst.Data = append(tst.Data, param.ExtraData...)
+		}
+		if param.ExtraAttr != nil {
+			tst.Attr = append(tst.Attr, param.ExtraAttr...)
+		}
+		tst.Val = param.Val
+	}
+
 	if err := tst.addAutoAttributes(); err != nil {
 		return err
 	}
@@ -293,7 +320,7 @@ func (tst *Test) finalize(autoName bool) error {
 // If autoName is true, tst.Name will be derived from tst.Func's name.
 // tst.Func's name will also be verified to match the name of the source file that declared it.
 // Otherwise (just used in unit tests), tst.Name should be filled already.
-func (tst *Test) populateNameAndPkg(autoName bool) error {
+func (tst *Test) populateNameAndPkg(autoName bool, suffix string) error {
 	if tst.Func == nil {
 		return errors.New("missing function")
 	}
@@ -315,7 +342,11 @@ func (tst *Test) populateNameAndPkg(autoName bool) error {
 		if err = checkFuncNameAgainstFilename(info.name, filepath.Base(info.file)); err != nil {
 			return err
 		}
-		tst.Name = fmt.Sprintf("%s.%s", category, info.name)
+		if suffix == "" {
+			tst.Name = fmt.Sprintf("%s.%s", category, info.name)
+		} else {
+			tst.Name = fmt.Sprintf("%s.%s.%s", category, info.name, suffix)
+		}
 	} else if tst.Name == "" {
 		return fmt.Errorf("missing name for test with func %s", info.name)
 	}
@@ -402,6 +433,10 @@ func (tst *Test) clone() *Test {
 	nv := reflect.Indirect(np)   // Test
 
 	for i := 0; i < ov.NumField(); i++ {
+		if ov.Type().Field(i).Name == "Params" {
+			// TODO: remove the workaround.
+			continue
+		}
 		of, nf := ov.Field(i), nv.Field(i)
 		switch {
 		case copyable(of.Type()) && nf.CanSet():

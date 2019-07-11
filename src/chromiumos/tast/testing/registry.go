@@ -52,9 +52,26 @@ func NewRegistry(opts ...registryOption) *Registry {
 // AddTest adds t to the registry. Missing fields are filled where possible.
 func (r *Registry) AddTest(t *Test) error {
 	// Copy the test to ensure that later changes made by the caller don't affect us.
-	t = t.clone()
+	orig := t.clone()
+	if t.Params == nil {
+		if err := r.addOneTest(orig, nil); err != nil {
+			return err
+		}
+	} else {
+		// Expand test parameters for parametric tests.
+		for _, p := range t.Params {
+			expanded := orig.clone()
+			if err := r.addOneTest(expanded, &p); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func (r *Registry) addOneTest(t *Test, param *Param) error {
 	if r.finalize {
-		if err := t.finalize(r.autoName); err != nil {
+		if err := t.finalize(r.autoName, param); err != nil {
 			return err
 		}
 	}
@@ -141,7 +158,7 @@ func (r *Registry) TestsForAttrExpr(s string) ([]*Test, error) {
 // for code outside this package to verify that a user-supplied glob matched at least one test.
 func NewTestGlobRegexp(g string) (*regexp.Regexp, error) {
 	for _, ch := range g {
-		if !unicode.IsLetter(ch) && !unicode.IsDigit(ch) && ch != '.' && ch != '*' {
+		if !unicode.IsLetter(ch) && !unicode.IsDigit(ch) && ch != '.' && ch != '*' && ch != '_' {
 			return nil, fmt.Errorf("invalid character %v", ch)
 		}
 	}

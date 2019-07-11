@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "fb100c9e_6de2886e",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1346383
+      },
+      "writtenOn": "2019-07-11T04:54:50Z",
+      "side": 1,
+      "message": "\u003e Do we still need \"arcvm\" condition? If possible, please consider removing it to make it clearer that android_p_both \u003d android_p | android_p_vm.\n\nRemoved.\n\n\u003e Do we plan to use android-vm-* for other desserts, e.g. android-vm-qt?\n\nI am not really sure, but I think we will. Currently, there is only android-vm-pi though.",
+      "parentUuid": "7bd5f85d_726c00ff",
+      "range": {
+        "startLine": 67,
+        "startChar": 32,
+        "endLine": 68,
+        "endChar": 38
+      },
+      "revId": "38acef810a0667c00867dced817c46aaf740eff6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5761b611_2a26f311",
         "filename": "src/chromiumos/cmd/local_test_runner/main.go",
         "patchSetId": 2
@@ -45,6 +69,30 @@
       "revId": "38acef810a0667c00867dced817c46aaf740eff6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ff99ea93_fcbc2b7a",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1346383
+      },
+      "writtenOn": "2019-07-11T04:54:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5761b611_2a26f311",
+      "range": {
+        "startLine": 84,
+        "startChar": 0,
+        "endLine": 84,
+        "endChar": 126
+      },
+      "revId": "38acef810a0667c00867dced817c46aaf740eff6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

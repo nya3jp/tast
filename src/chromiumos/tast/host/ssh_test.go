@@ -87,6 +87,18 @@ func newTestData(t *testing.T) *testData {
 	}
 	td.hst.AnnounceCmd = func(cmd string) { td.nextCmd = cmd }
 
+	// Automatically abort the test if it takes too long time.
+	go func() {
+		const timeout = 10 * time.Second
+		select {
+		case <-td.ctx.Done():
+			return
+		case <-time.After(timeout):
+		}
+		t.Errorf("Test blocked for %v", timeout)
+		td.cancel()
+	}()
+
 	return td
 }
 
@@ -117,7 +129,14 @@ func (td *testData) handleExec(req *test.ExecReq) {
 		time.Sleep(time.Minute)
 	}
 	req.Start(true)
-	status := req.RunRealCmd()
+
+	var status int
+	switch req.Cmd {
+	case shellCmd("", []string{"long_sleep"}):
+		time.Sleep(time.Hour)
+	default:
+		status = req.RunRealCmd()
+	}
 
 	if td.execTimeout == endTimeout && !ignoreTimeout {
 		td.cancel()
@@ -187,7 +206,7 @@ func TestRetry(t *testing.T) {
 	}
 }
 
-func TestRun(t *testing.T) {
+func TestLegacyRun(t *testing.T) {
 	t.Parallel()
 	td := newTestData(t)
 	defer td.close()
@@ -211,7 +230,7 @@ func TestRun(t *testing.T) {
 	}
 }
 
-func TestStart(t *testing.T) {
+func TestLegacyStart(t *testing.T) {
 	t.Parallel()
 	td := newTestData(t)
 	defer td.close()
@@ -283,7 +302,7 @@ func TestStart(t *testing.T) {
 	}
 }
 
-func TestRunTimeout(t *testing.T) {
+func TestLegacyRunTimeout(t *testing.T) {
 	t.Parallel()
 	td := newTestData(t)
 	defer td.close()
@@ -294,7 +313,7 @@ func TestRunTimeout(t *testing.T) {
 	}
 }
 
-func TestStartSessionTimeout(t *testing.T) {
+func TestLegacyStartSessionTimeout(t *testing.T) {
 	t.Parallel()
 	td := newTestData(t)
 	defer td.close()
@@ -306,7 +325,7 @@ func TestStartSessionTimeout(t *testing.T) {
 	}
 }
 
-func TestStartExecTimeout(t *testing.T) {
+func TestLegacyStartExecTimeout(t *testing.T) {
 	t.Parallel()
 	td := newTestData(t)
 	defer td.close()
@@ -317,7 +336,7 @@ func TestStartExecTimeout(t *testing.T) {
 	}
 }
 
-func TestWaitAndCloseTimeout(t *testing.T) {
+func TestLegacyWaitAndCloseTimeout(t *testing.T) {
 	t.Parallel()
 	td := newTestData(t)
 	defer td.close()

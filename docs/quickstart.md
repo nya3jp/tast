@@ -5,8 +5,8 @@
 ## Prerequisites
 
 You'll need a [Chrome OS chroot]. If you've only done Chrome development so far,
-note that this is different from the Chrome checkout described in the [Simple
-Chrome] documentation.
+note that this is different from the Chrome checkout described in the
+[Simple Chrome] documentation.
 
 You'll also need a Chrome OS device running a system image built with the `test`
 flag that's reachable from your workstation via SSH. An image running in a
@@ -17,6 +17,50 @@ version.
 [Chrome OS chroot]: http://www.chromium.org/chromium-os/quick-start-guide
 [Simple Chrome]: https://chromium.googlesource.com/chromiumos/docs/+/master/simple_chrome_workflow.md
 [virtual machine]: https://chromium.googlesource.com/chromiumos/docs/+/master/cros_vm.md
+
+## Setup
+
+### Update Chrome OS chroot
+
+Assuming that you already have a valid Chrome OS repo checked out (see
+[Chrome OS chroot]), it is recommended to update the chroot by doing:
+
+```sh
+cd ${CHROMEOS_SRC}
+chromite/bin/cros_sdk    # to enter chroot
+./update_chroot          # makes sure that the latest dependencies are installed
+```
+
+### IDE
+
+Any [modern editor] supports Go. The following are the instructions to setup
+[Visual Studio Code] with Tast code navigation:
+
+1.  Download [Visual Studio Code]
+2.  Install the
+    [Microsoft Go plugin] (VSCode will recommend that plugin once you open a Go file)
+3.  Update the `GOPATH` environment variable to make code navigation works (`F12` key)
+
+    ```sh
+    mkdir ~/go
+    # Main GOPATH, where extra binaries will get installed.
+    export GOPATH=$HOME/go
+    # Append Tast repos to GOPATH
+    export GOPATH=${GOPATH}:${CHROMEOS_SRC}/src/platform/tast-tests:${CHROMEOS_SRC}/src/platform/tast
+    # Append Tast dependencies
+    export GOPATH=${GOPATH}:${CHROMEOS_SRC}/chroot/usr/lib/gopath
+    ```
+
+4.  Start Visual Studio Code with Tast
+
+    ```sh
+    cd ${CHROMEOS_SRC}/src/platform/
+    code ./tast-tests ./tast
+    ```
+
+[modern editor]: https://github.com/golang/go/wiki/IDEsAndTextEditorPlugins
+[Visual Studio Code]: https://code.visualstudio.com/
+[Microsoft Go plugin]: https://code.visualstudio.com/docs/languages/go
 
 ## Run a prebuilt test
 
@@ -48,6 +92,7 @@ cached). The test should succeed again.
 
 > The first time you run this, or after you sync your checkout, you may see an
 > error similar to the following:
+
 ```
 The following dependencies are not installed:
   dev-go/cdp-0.9.1-r1
@@ -57,6 +102,7 @@ To install them, please run the following in your chroot:
   cros_workon --host start 'chromeos-base/tast-local-tests-cros-9999'
   sudo emerge --jobs=16 --onlydeps --onlydeps-with-rdeps=n '=chromeos-base/tast-local-tests-cros-9999'
 ```
+
 > This is expected: to speed things up, `tast` is building the tests directly
 > instead of emerging the `tast-local-tests-cros` package, so it needs some help
 > from you to make sure that all required dependencies are installed. If you run
@@ -101,9 +147,9 @@ If you build and run the test again, you should see it fail.
 
 ## Next steps
 
-See [Writing Tests] for more information, and explore the [tast-tests
-repository] to see existing tests and related packages. [Codelab #1] walks
-through the creation of a simple test.
+See [Writing Tests] for more information, and explore the
+[tast-tests repository] to see existing tests and related packages. [Codelab #1]
+walks through the creation of a simple test.
 
 Additional Tast documentation is available in the [tast repository].
 

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "61aed92c_106dd111",
+        "filename": "src/chromiumos/tast/host/async.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-11T12:44:35Z",
+      "side": 1,
+      "message": "I think usually body should tidy itself up if it returns error (consider analogous non-async method).\nSo here, I think we should call clean only if err is due to timeout, and body returns nil.",
+      "range": {
+        "startLine": 27,
+        "startChar": 21,
+        "endLine": 27,
+        "endChar": 24
+      },
+      "revId": "f34797a25ff0f85a558a98bd7e32124064c31f2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

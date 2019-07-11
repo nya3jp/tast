@@ -16,6 +16,24 @@
       "revId": "52121684b195d984684f22069068d1ef3cecc19a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c315cc01_d03cf1e7",
+        "filename": "src/chromiumos/cmd/tast/run/run.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-11T01:47:46Z",
+      "side": 1,
+      "message": "I believed so, but there was a mistaken rebase... Thanks for reminding me!\n\nNow I verified no diff is made (see TEST\u003d).",
+      "parentUuid": "8d0754e7_937b5c8f",
+      "revId": "52121684b195d984684f22069068d1ef3cecc19a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

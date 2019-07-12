@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "34ac1983_ecf58a92",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-12T07:15:37Z",
+      "side": 1,
+      "message": "(offtopic): Do we need same for arcvm? CC+\u003dYusuke,Jason to check.",
+      "revId": "4fa5edf54814c02576d2e97157f2fc4b5e35840d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

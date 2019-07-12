@@ -70,6 +70,133 @@
       "revId": "f34797a25ff0f85a558a98bd7e32124064c31f2a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "13634422_ef9d8327",
+        "filename": "src/chromiumos/tast/host/async.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-12T06:42:05Z",
+      "side": 1,
+      "message": "I\u0027m convinced that current API makes sense.",
+      "parentUuid": "d034ef33_92ff21c1",
+      "range": {
+        "startLine": 27,
+        "startChar": 21,
+        "endLine": 27,
+        "endChar": 24
+      },
+      "revId": "f34797a25ff0f85a558a98bd7e32124064c31f2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "94742fa8_3ac7964d",
+        "filename": "src/chromiumos/tast/host/async.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-12T06:42:05Z",
+      "side": 1,
+      "message": "Is it OK to return (non-nil) err from body even if ctx is canceled while we are waiting for clean to finish? It might be good to return ctx.Err() in that case because we consider (body + clean) as one unit.\nAlso, could you have a corresponding test?",
+      "range": {
+        "startLine": 37,
+        "startChar": 0,
+        "endLine": 37,
+        "endChar": 20
+      },
+      "revId": "f34797a25ff0f85a558a98bd7e32124064c31f2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1a40c6f2_47ece7e6",
+        "filename": "src/chromiumos/tast/host/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 231,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-12T06:42:05Z",
+      "side": 1,
+      "message": "Could you mention that caller is responsible for calling Close?",
+      "range": {
+        "startLine": 231,
+        "startChar": 0,
+        "endLine": 231,
+        "endChar": 1
+      },
+      "revId": "f34797a25ff0f85a558a98bd7e32124064c31f2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9a5db5ec_417db417",
+        "filename": "src/chromiumos/tast/host/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 335,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-12T06:42:05Z",
+      "side": 1,
+      "message": "nit: can you inline it in one if statement?",
+      "range": {
+        "startLine": 331,
+        "startChar": 0,
+        "endLine": 335,
+        "endChar": 16
+      },
+      "revId": "f34797a25ff0f85a558a98bd7e32124064c31f2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "282460d8_e641e7fe",
+        "filename": "src/chromiumos/tast/host/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 450,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-12T06:42:05Z",
+      "side": 1,
+      "message": "nit: can you inline it?\n\nif err :\u003d doAsync(...); err !\u003d nil {",
+      "revId": "f34797a25ff0f85a558a98bd7e32124064c31f2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b400dfa8_af99c9e2",
+        "filename": "src/chromiumos/tast/host/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 740,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-12T06:42:05Z",
+      "side": 1,
+      "message": "huge nit: can you inline it?\n\nif err :\u003d doAsync(...); err !\u003d nil \u0026\u0026 err !\u003d io.EOF {\n  return err\n}\nreturn nil",
+      "revId": "f34797a25ff0f85a558a98bd7e32124064c31f2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

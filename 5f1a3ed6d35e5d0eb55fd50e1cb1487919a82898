@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9909964e_f8aeb44f",
+        "filename": "docs/quickstart.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-12T07:07:22Z",
+      "side": 1,
+      "message": "maybe: s/you // ?",
+      "range": {
+        "startLine": 31,
+        "startChar": 43,
+        "endLine": 31,
+        "endChar": 47
+      },
+      "revId": "5f1a3ed6d35e5d0eb55fd50e1cb1487919a82898",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9df767a2_ea956b13",
+        "filename": "docs/quickstart.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-12T07:07:22Z",
+      "side": 1,
+      "message": "This approach is difficult to track?\nE.g., now have more dependencies;\nhttps://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/e406541da1de62d60663a4893121ef2db7898ca3/chromeos-base/tast-build-deps/tast-build-deps-1.ebuild#\n\nI\u0027m not using IDE, so defer to nya@.",
+      "revId": "5f1a3ed6d35e5d0eb55fd50e1cb1487919a82898",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

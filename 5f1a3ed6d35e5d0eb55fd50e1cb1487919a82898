@@ -39,6 +39,24 @@
       "revId": "5f1a3ed6d35e5d0eb55fd50e1cb1487919a82898",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fcb43920_3b11711b",
+        "filename": "docs/quickstart.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-12T08:36:28Z",
+      "side": 1,
+      "message": "I\u0027d recommend adding $CHROMEOS_SRC/chroot/usr/lib/gopath to GOPATH. Then we don\u0027t need to install deps by ourselves.",
+      "parentUuid": "9df767a2_ea956b13",
+      "revId": "5f1a3ed6d35e5d0eb55fd50e1cb1487919a82898",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

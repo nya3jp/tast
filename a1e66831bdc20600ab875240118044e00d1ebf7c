@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b200774d_9c3936e5",
+        "filename": "src/chromiumos/tast/host/test/ssh_server.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-16T16:35:32Z",
+      "side": 1,
+      "message": "nit: nice to comment the literal meaning.",
+      "range": {
+        "startLine": 215,
+        "startChar": 13,
+        "endLine": 215,
+        "endChar": 16
+      },
+      "revId": "a1e66831bdc20600ab875240118044e00d1ebf7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

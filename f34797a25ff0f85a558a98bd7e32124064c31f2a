@@ -144,6 +144,30 @@
     },
     {
       "key": {
+        "uuid": "375471c7_eb49a749",
+        "filename": "src/chromiumos/tast/host/async.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-16T13:00:47Z",
+      "side": 1,
+      "message": "Ah I see. Thank you for the example.\n\nRe returning immediately, race condition between clean and the err clause in main thread is the concern. Considering we might retry the operation, two clean calls can overlap. I think one might not expect about it on writing clean. So waiting for clean SGTM.",
+      "parentUuid": "fb3f51ad_b9fbe024",
+      "range": {
+        "startLine": 37,
+        "startChar": 0,
+        "endLine": 37,
+        "endChar": 20
+      },
+      "revId": "f34797a25ff0f85a558a98bd7e32124064c31f2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a40c6f2_47ece7e6",
         "filename": "src/chromiumos/tast/host/ssh.go",
         "patchSetId": 1

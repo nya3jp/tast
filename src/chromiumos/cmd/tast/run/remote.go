@@ -36,6 +36,13 @@ const (
 func remote(ctx context.Context, cfg *Config) (Status, []TestResult) {
 	start := time.Now()
 
+	// Skip remote tests if -build=true and there is no corresponding remote bundle.
+	if cfg.build {
+		if _, err := os.Stat(filepath.Join(cfg.remoteBundleDir, cfg.buildBundle)); os.IsNotExist(err) {
+			return successStatus, nil
+		}
+	}
+
 	if err := getSoftwareFeatures(ctx, cfg); err != nil {
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to get DUT software features: %v", err), nil
 	}

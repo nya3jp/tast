@@ -120,6 +120,30 @@
     },
     {
       "key": {
+        "uuid": "fb3f51ad_b9fbe024",
+        "filename": "src/chromiumos/tast/host/async.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-16T08:41:04Z",
+      "side": 1,
+      "message": "I\u0027m hesitant to do that. The strategy here is to return the first encountered error, which is common strategy in Go error handling IMO. What you suggest is to override an previous error, corresponding to code like this in synchronous function:\n\n func f(ctx context.Context) (retErr error) {\n   defer func() {\n     if err :\u003d cleanUp(ctx); err !\u003d nil {\n       retErr \u003d err // retErr is overridden even if it was non-nil\n     }\n   }()\n\n   return doSomething(ctx)\n }\n\nThat said, I\u0027m not sure if it\u0027s a good idea to wait for clean here. It might be an option to just return immediately.",
+      "parentUuid": "94742fa8_3ac7964d",
+      "range": {
+        "startLine": 37,
+        "startChar": 0,
+        "endLine": 37,
+        "endChar": 20
+      },
+      "revId": "f34797a25ff0f85a558a98bd7e32124064c31f2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "1a40c6f2_47ece7e6",
         "filename": "src/chromiumos/tast/host/ssh.go",
         "patchSetId": 1
@@ -140,6 +164,30 @@
       "revId": "f34797a25ff0f85a558a98bd7e32124064c31f2a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "57f62d4b_c4612d79",
+        "filename": "src/chromiumos/tast/host/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 231,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-16T08:41:04Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "1a40c6f2_47ece7e6",
+      "range": {
+        "startLine": 231,
+        "startChar": 0,
+        "endLine": 231,
+        "endChar": 1
+      },
+      "revId": "f34797a25ff0f85a558a98bd7e32124064c31f2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -166,6 +214,30 @@
     },
     {
       "key": {
+        "uuid": "a80fc839_149c3318",
+        "filename": "src/chromiumos/tast/host/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 335,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-16T08:41:04Z",
+      "side": 1,
+      "message": "I intentionally left them as is not to touch parts unrelated to this CL. Let me create another CL as usual.\nhttps://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/1703824/",
+      "parentUuid": "9a5db5ec_417db417",
+      "range": {
+        "startLine": 331,
+        "startChar": 0,
+        "endLine": 335,
+        "endChar": 16
+      },
+      "revId": "f34797a25ff0f85a558a98bd7e32124064c31f2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "282460d8_e641e7fe",
         "filename": "src/chromiumos/tast/host/ssh.go",
         "patchSetId": 1
@@ -183,6 +255,24 @@
     },
     {
       "key": {
+        "uuid": "d162f67e_c8abc6fa",
+        "filename": "src/chromiumos/tast/host/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 450,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-16T08:41:04Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "282460d8_e641e7fe",
+      "revId": "f34797a25ff0f85a558a98bd7e32124064c31f2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b400dfa8_af99c9e2",
         "filename": "src/chromiumos/tast/host/ssh.go",
         "patchSetId": 1
@@ -197,6 +287,24 @@
       "revId": "f34797a25ff0f85a558a98bd7e32124064c31f2a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0a74283f_516834b1",
+        "filename": "src/chromiumos/tast/host/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 740,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-16T08:41:04Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "b400dfa8_af99c9e2",
+      "revId": "f34797a25ff0f85a558a98bd7e32124064c31f2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

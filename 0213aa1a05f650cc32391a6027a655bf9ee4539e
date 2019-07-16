@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a820aa3_feccb1a6",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-16T01:31:12Z",
+      "side": 1,
+      "message": "I assume Test.Val can\u0027t be assigned directly (vs. indirectly via Param.Val).",
+      "range": {
+        "startLine": 108,
+        "startChar": 31,
+        "endLine": 108,
+        "endChar": 53
+      },
+      "revId": "0213aa1a05f650cc32391a6027a655bf9ee4539e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

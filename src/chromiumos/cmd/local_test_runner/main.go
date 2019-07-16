@@ -68,9 +68,9 @@ func main() {
 			"android_p_vm":      `arc && "android-vm-pi"`,
 			"android_p_both":    `arc && ("android-container-pi" || "android-vm-pi")`,
 			"arc_camera3":       `"arc-camera3"`,
-			"aslr":              "!asan",                                                     // ASan instrumentation breaks ASLR
-			"audio_play":        "!betty && !tast_vm && !veyron_rialto && !(fizz && moblab)", // VMs and some boards don't have a speaker
-			"audio_record":      "internal_mic && !tast_vm",                                  // VMs don't have a mic
+			"aslr":              "!asan",                        // ASan instrumentation breaks ASLR
+			"audio_play":        "internal_speaker && !tast_vm", // VMs and some boards don't have a speaker
+			"audio_record":      "internal_mic && !tast_vm",     // VMs don't have a mic
 			"biometrics_daemon": "biod",
 			// TODO(b/73436929) Grunt cannot run 720p due to performance issue,
 			// we should remove grunt after hardware encoding supported.

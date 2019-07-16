@@ -6,6 +6,7 @@ package testing
 
 import (
 	"fmt"
+	"regexp"
 	"runtime"
 )
 
@@ -26,9 +27,9 @@ func RegistrationErrors() []error {
 	return registrationErrors
 }
 
-// AddTest adds test T to the global registry.
+// AddTest adds test t to the global registry.
 func AddTest(t *Test) {
-	if err := GlobalRegistry().AddTest(t); err != nil {
+	if err := addTestInternal(t); err != nil {
 		_, file, line, _ := runtime.Caller(1)
 		if registrationErrors == nil {
 			registrationErrors = make([]error, 0)
@@ -37,11 +38,40 @@ func AddTest(t *Test) {
 	}
 }
 
+func addTestInternal(t *Test) error {
+	if verifyEnabled {
+		if err := verifyCaller(); err != nil {
+			return err
+		}
+	}
+	if err := GlobalRegistry().AddTest(t); err != nil {
+		return err
+	}
+	return nil
+}
+
+var initPattern = regexp.MustCompile(
+	`^chromiumos/tast/(local|remote)/bundles/[^/]+/[^/]+\.init.\d+$`)
+
+var verifyEnabled = true
+
+// verifyCaller checks the caller of AddTest(). The caller must be
+// init() function in the file under the category package.
+func verifyCaller() error {
+	pc, _, _, _ := runtime.Caller(3) // Skip AddTest and addTestInternal, too.
+	rf := runtime.FuncForPC(pc)
+	if !initPattern.MatchString(rf.Name()) {
+		return fmt.Errorf("test registration needs to be done in init() function in the category package: %s", rf.Name())
+	}
+	return nil
+}
+
 // SetGlobalRegistryForTesting temporarily sets reg as the global registry and clears registration errors.
 // The caller must call the returned function later to restore the original registry and errors.
 // This is intended to be used by unit tests that need to register tests in the global registry but don't
 // want to affect subsequent unit tests.
 func SetGlobalRegistryForTesting(reg *Registry) (restore func()) {
+	verifyEnabled = false
 	origReg := globalRegistry
 	origErrs := registrationErrors
 
@@ -51,5 +81,6 @@ func SetGlobalRegistryForTesting(reg *Registry) (restore func()) {
 	return func() {
 		globalRegistry = origReg
 		registrationErrors = origErrs
+		verifyEnabled = true
 	}
 }

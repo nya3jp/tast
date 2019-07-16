@@ -34,7 +34,15 @@ repository). Private tests are checked into private repositories such as the
 
 Tests are categorized into packages based on the functionality that
 they exercise; for example, the [ui package] contains local tests that exercise
-the Chrome OS UI.
+the Chrome OS UI. The category package needs to be directly under the bundle
+package. Thus the category package path should be matched with
+`chromiumos/tast/(local|remote)/bundles/(?P<bundlename>[^/]+)/(?P<category>[^/]+`.
+
+A test needs to be registred by calling `testing.AddTest` in the test entry
+file, which is located directly under a category package. The registration
+needs to be done in init() function in the file. The registration should be
+declarative, so calling testing.AddTest multiple times (e.g. in a loop) is
+not allowed.
 
 Support packages used by multiple test categories located in
 [src/chromiumos/tast/local/] and [src/chromiumos/tast/remote/], alongside the

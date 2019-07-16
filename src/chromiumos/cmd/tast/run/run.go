@@ -163,17 +163,30 @@ func buildAll(ctx context.Context, cfg *Config, hst *host.SSH) error {
 			OutDir:     filepath.Join(cfg.buildOutDir, cfg.targetArch, localBundleBuildSubdir),
 		},
 		{
-			Pkg:        path.Join(remoteBundlePkgPathPrefix, cfg.buildBundle),
-			Arch:       larch,
-			Workspaces: cfg.bundleWorkspaces(),
-			OutDir:     filepath.Join(cfg.buildOutDir, larch, remoteBundleBuildSubdir),
-		},
-		{
 			Pkg:        localRunnerPkg,
 			Arch:       cfg.targetArch,
 			Workspaces: cfg.commonWorkspaces(),
 			OutDir:     filepath.Join(cfg.buildOutDir, cfg.targetArch),
 		},
+	}
+
+	// Build the remote bundle only when it exists.
+	// This introduces asymmetricity between local bundles and remote bundles, but
+	// practically we have local tests in every bundles.
+	rpkg := path.Join(remoteBundlePkgPathPrefix, cfg.buildBundle)
+	if _, err := os.Stat(filepath.Join(cfg.buildWorkspace, "src", rpkg)); err == nil {
+		tgts = append(tgts, &build.Target{
+			Pkg:        rpkg,
+			Arch:       larch,
+			Workspaces: cfg.bundleWorkspaces(),
+			OutDir:     cfg.remoteBundleDir,
+		})
+	} else if os.IsNotExist(err) {
+		if err := os.Remove(filepath.Join(cfg.remoteBundleDir, cfg.buildBundle)); err != nil && !os.IsNotExist(err) {
+			return fmt.Errorf("failed to remove stale remote bundle executable: %v", err)
+		}
+	} else {
+		return fmt.Errorf("failed to stat remote bundle package dir: %v", err)
 	}
 
 	var names []string

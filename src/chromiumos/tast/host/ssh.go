@@ -230,6 +230,7 @@ func presentChallenges(stdin int, prefix, user, inst string, qs []string, es []b
 }
 
 // NewSSH establishes an SSH connection to the host described in o.
+// Callers are responsible to call SSH.Close after using it.
 func NewSSH(ctx context.Context, o *SSHOptions) (*SSH, error) {
 	hostPort := fmt.Sprintf("%s:%d", o.Hostname, o.Port)
 	am, err := getSSHAuthMethods(o, "["+o.Hostname+"] ")
@@ -325,28 +326,27 @@ func (s *SSH) GetFile(ctx context.Context, src, dst string) error {
 	if err != nil {
 		return fmt.Errorf("getting stdin for local tar failed: %v", err)
 	}
-	if err = cmd.Start(); err != nil {
+	if err := cmd.Start(); err != nil {
 		return fmt.Errorf("running local tar failed: %v", err)
 	}
 
-	err = doAsync(ctx, func() error {
+	if err := doAsync(ctx, func() error {
 		_, err := io.Copy(stdin, handle.Stdout())
 		return err
-	}, nil)
-	if err != nil {
+	}, nil); err != nil {
 		return fmt.Errorf("copying from remote to local tar failed: %v", err)
 	}
-	if err = handle.Wait(ctx); err != nil {
+	if err := handle.Wait(ctx); err != nil {
 		return fmt.Errorf("remote tar failed: %v", err)
 	}
 
-	if err = stdin.Close(); err != nil {
+	if err := stdin.Close(); err != nil {
 		return fmt.Errorf("closing local tar failed: %v", err)
 	}
-	if err = cmd.Wait(); err != nil {
+	if err := cmd.Wait(); err != nil {
 		return fmt.Errorf("local tar failed: %v", err)
 	}
-	if err = os.Rename(filepath.Join(td, sb), dst); err != nil {
+	if err := os.Rename(filepath.Join(td, sb), dst); err != nil {
 		return fmt.Errorf("moving local file failed: %v", err)
 	}
 	return nil
@@ -420,26 +420,25 @@ func (s *SSH) PutFiles(ctx context.Context, files map[string]string,
 	if err != nil {
 		return 0, fmt.Errorf("getting stdout for local tar failed: %v", err)
 	}
-	if err = cmd.Start(); err != nil {
+	if err := cmd.Start(); err != nil {
 		return 0, fmt.Errorf("running local tar failed: %v", err)
 	}
 
-	err = doAsync(ctx, func() error {
+	if err := doAsync(ctx, func() error {
 		var err error
 		bytes, err = io.Copy(handle.Stdin(), stdout)
 		if err == nil {
 			err = handle.Stdin().Close()
 		}
 		return err
-	}, nil)
-	if err != nil {
+	}, nil); err != nil {
 		return 0, fmt.Errorf("copying from local to remote tar failed: %v", err)
 	}
 
-	if err = cmd.Wait(); err != nil {
+	if err := cmd.Wait(); err != nil {
 		return 0, fmt.Errorf("local tar failed: %v", err)
 	}
-	if err = handle.Wait(ctx); err != nil {
+	if err := handle.Wait(ctx); err != nil {
 		return 0, fmt.Errorf("remote tar failed: %v", err)
 	}
 	return bytes, nil

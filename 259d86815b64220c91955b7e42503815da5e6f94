@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5ed7d9e8_571f540e",
+        "filename": "docs/quickstart.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-16T03:59:09Z",
+      "side": 1,
+      "message": "huge nit: mind inserting a whitespace between ] and ( ?",
+      "range": {
+        "startLine": 41,
+        "startChar": 25,
+        "endLine": 41,
+        "endChar": 26
+      },
+      "revId": "259d86815b64220c91955b7e42503815da5e6f94",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f598e93c_f6bab9c1",
+        "filename": "docs/quickstart.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-16T03:59:09Z",
+      "side": 1,
+      "message": "~ does not necessary work in middle of a string:\n\n bash$ export a\u003d~go\n bash$ echo $a\n ~go\n\nI recommend GOPATH\u003d$HOME/go.",
+      "range": {
+        "startLine": 47,
+        "startChar": 4,
+        "endLine": 47,
+        "endChar": 22
+      },
+      "revId": "259d86815b64220c91955b7e42503815da5e6f94",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

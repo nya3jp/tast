@@ -868,3 +868,16 @@ See the [example.DataFiles] test for a complete example of using both local and
 external data files.
 
 [example.DataFiles]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/bundles/cros/example/data_files.go
+
+## Runtime variables
+
+Occasionally tests need to access dynamic or secret data (i.e. *out-of-band* data), and that's when runtime variables become useful.
+
+To use runtime variables, in your test's `testing.AddTest` call, set the
+`testing.Test` struct's `Vars` field to contain a slice of runtime variables.
+The test can later access the values by calling `s.Var` or `s.RequiredVar` methods.
+
+For variables only used in a single test, prefix them with the test name
+(e.g. `arc.Boot.foo` for a variable used only in `arc.Boot`).
+
+To set runtime variables, add (possibly repeated) `-var=name=value` flags to `tast run`.

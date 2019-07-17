@@ -108,14 +108,14 @@ func TestReadTestOutput(t *gotesting.T) {
 	mw.WriteMessage(&control.RunStart{Time: runStartTime,
 		TestNames: []string{test1Name, test2Name, test3Name}, NumTests: 3})
 	mw.WriteMessage(&control.RunLog{Time: runLogTime, Text: runLogText})
-	mw.WriteMessage(&control.TestStart{Time: test1StartTime, Test: testing.Test{Name: test1Name, Desc: test1Desc}})
+	mw.WriteMessage(&control.TestStart{Time: test1StartTime, Test: testing.TestCase{Name: test1Name, Desc: test1Desc}})
 	mw.WriteMessage(&control.TestLog{Time: test1LogTime, Text: test1LogText})
 	mw.WriteMessage(&control.TestEnd{Time: test1EndTime, Name: test1Name})
-	mw.WriteMessage(&control.TestStart{Time: test2StartTime, Test: testing.Test{Name: test2Name, Desc: test2Desc}})
+	mw.WriteMessage(&control.TestStart{Time: test2StartTime, Test: testing.TestCase{Name: test2Name, Desc: test2Desc}})
 	mw.WriteMessage(&control.TestError{Time: test2ErrorTime, Error: testing.Error{
 		Reason: test2ErrorReason, File: test2ErrorFile, Line: test2ErrorLine, Stack: test2ErrorStack}})
 	mw.WriteMessage(&control.TestEnd{Time: test2EndTime, Name: test2Name})
-	mw.WriteMessage(&control.TestStart{Time: test3StartTime, Test: testing.Test{Name: test3Name, Desc: test3Desc}})
+	mw.WriteMessage(&control.TestStart{Time: test3StartTime, Test: testing.TestCase{Name: test3Name, Desc: test3Desc}})
 	mw.WriteMessage(&control.TestEnd{Time: test3EndTime, Name: test3Name, MissingSoftwareDeps: test3Deps})
 	mw.WriteMessage(&control.RunEnd{Time: runEndTime, OutDir: outDir})
 
@@ -142,13 +142,13 @@ func TestReadTestOutput(t *gotesting.T) {
 
 	expRes := []TestResult{
 		{
-			Test:   testing.Test{Name: test1Name, Desc: test1Desc},
-			Start:  test1StartTime,
-			End:    test1EndTime,
-			OutDir: filepath.Join(cfg.ResDir, testLogsDir, test1Name),
+			TestCase: testing.TestCase{Name: test1Name, Desc: test1Desc},
+			Start:    test1StartTime,
+			End:      test1EndTime,
+			OutDir:   filepath.Join(cfg.ResDir, testLogsDir, test1Name),
 		},
 		{
-			Test: testing.Test{Name: test2Name, Desc: test2Desc},
+			TestCase: testing.TestCase{Name: test2Name, Desc: test2Desc},
 			Errors: []TestError{
 				{
 					Time: test2ErrorTime,
@@ -165,7 +165,7 @@ func TestReadTestOutput(t *gotesting.T) {
 			OutDir: filepath.Join(cfg.ResDir, testLogsDir, test2Name),
 		},
 		{
-			Test:       testing.Test{Name: test3Name, Desc: test3Desc},
+			TestCase:   testing.TestCase{Name: test3Name, Desc: test3Desc},
 			Start:      test3StartTime,
 			End:        test3EndTime,
 			SkipReason: "missing deps: " + strings.Join(test3Deps, " "),
@@ -247,7 +247,7 @@ func TestReadTestOutputTimingLog(t *gotesting.T) {
 	b := bytes.Buffer{}
 	mw := control.NewMessageWriter(&b)
 	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 1})
-	mw.WriteMessage(&control.TestStart{Time: time.Unix(2, 0), Test: testing.Test{Name: testName}})
+	mw.WriteMessage(&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestCase{Name: testName}})
 	mw.WriteMessage(&control.TestEnd{Time: time.Unix(3, 0), Name: testName, TimingLog: testLog})
 	mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0)})
 
@@ -286,7 +286,7 @@ func TestPerTestLogContainsRunError(t *gotesting.T) {
 	b := bytes.Buffer{}
 	mw := control.NewMessageWriter(&b)
 	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 1})
-	mw.WriteMessage(&control.TestStart{Time: time.Unix(2, 0), Test: testing.Test{Name: testName}})
+	mw.WriteMessage(&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestCase{Name: testName}})
 	mw.WriteMessage(&control.RunError{Time: time.Unix(3, 0), Error: testing.Error{Reason: errorMsg}})
 
 	cfg := Config{Logger: logging.NewSimple(&bytes.Buffer{}, 0, false), ResDir: td}
@@ -338,13 +338,13 @@ func TestValidateMessages(t *gotesting.T) {
 		}},
 		{"unfinished test", []string{"test1", "test2"}, []interface{}{
 			&control.RunStart{Time: time.Unix(1, 0), TestNames: []string{"test1", "test2"}},
-			&control.TestStart{Time: time.Unix(2, 0), Test: testing.Test{Name: "test1"}},
+			&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestCase{Name: "test1"}},
 			&control.TestEnd{Time: time.Unix(3, 0), Name: "test1"},
-			&control.TestStart{Time: time.Unix(4, 0), Test: testing.Test{Name: "test2"}},
+			&control.TestStart{Time: time.Unix(4, 0), Test: testing.TestCase{Name: "test2"}},
 			&control.RunEnd{Time: time.Unix(5, 0), OutDir: ""},
 		}},
 		{"TestStart before RunStart", nil, []interface{}{
-			&control.TestStart{Time: time.Unix(1, 0), Test: testing.Test{Name: "test1"}},
+			&control.TestStart{Time: time.Unix(1, 0), Test: testing.TestCase{Name: "test1"}},
 			&control.RunStart{Time: time.Unix(2, 0), TestNames: []string{"test1"}},
 			&control.TestEnd{Time: time.Unix(3, 0), Name: "test1"},
 			&control.RunEnd{Time: time.Unix(4, 0), OutDir: ""},
@@ -356,22 +356,22 @@ func TestValidateMessages(t *gotesting.T) {
 		}},
 		{"wrong TestEnd", []string{"test1"}, []interface{}{
 			&control.RunStart{Time: time.Unix(1, 0), TestNames: []string{"test1"}},
-			&control.TestStart{Time: time.Unix(2, 0), Test: testing.Test{Name: "test1"}},
+			&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestCase{Name: "test1"}},
 			&control.TestEnd{Time: time.Unix(3, 0), Name: "test2"},
 			&control.RunEnd{Time: time.Unix(3, 0), OutDir: ""},
 		}},
 		{"no TestEnd", []string{"test1"}, []interface{}{
 			&control.RunStart{Time: time.Unix(1, 0), TestNames: []string{"test1", "test2"}},
-			&control.TestStart{Time: time.Unix(2, 0), Test: testing.Test{Name: "test1"}},
-			&control.TestStart{Time: time.Unix(3, 0), Test: testing.Test{Name: "test2"}},
+			&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestCase{Name: "test1"}},
+			&control.TestStart{Time: time.Unix(3, 0), Test: testing.TestCase{Name: "test2"}},
 			&control.TestEnd{Time: time.Unix(4, 0), Name: "test2"},
 			&control.RunEnd{Time: time.Unix(5, 0), OutDir: ""},
 		}},
 		{"TestStart with already-seen name", []string{"test1"}, []interface{}{
 			&control.RunStart{Time: time.Unix(1, 0), TestNames: []string{"test1", "test2"}},
-			&control.TestStart{Time: time.Unix(2, 0), Test: testing.Test{Name: "test1"}},
+			&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestCase{Name: "test1"}},
 			&control.TestEnd{Time: time.Unix(3, 0), Name: "test1"},
-			&control.TestStart{Time: time.Unix(4, 0), Test: testing.Test{Name: "test1"}},
+			&control.TestStart{Time: time.Unix(4, 0), Test: testing.TestCase{Name: "test1"}},
 			&control.TestEnd{Time: time.Unix(5, 0), Name: "test1"},
 			&control.RunEnd{Time: time.Unix(6, 0), OutDir: ""},
 		}},
@@ -390,7 +390,7 @@ func TestValidateMessages(t *gotesting.T) {
 		} else {
 			var resultNames []string
 			for _, res := range results {
-				resultNames = append(resultNames, res.Test.Name)
+				resultNames = append(resultNames, res.Name)
 			}
 			if !reflect.DeepEqual(resultNames, tc.resultNames) {
 				t.Errorf("readTestOutput for %v returned results %v; want %v", tc.desc, resultNames, tc.resultNames)
@@ -501,7 +501,7 @@ func TestNextMessageTimeout(t *gotesting.T) {
 		}
 		if !tc.testStart.IsZero() {
 			h.res = &TestResult{
-				Test: testing.Test{
+				TestCase: testing.TestCase{
 					Timeout:        tc.testTimeout,
 					AdditionalTime: tc.testAddTime,
 				},
@@ -614,9 +614,9 @@ func TestWritePartialResults(t *gotesting.T) {
 	b := bytes.Buffer{}
 	mw := control.NewMessageWriter(&b)
 	mw.WriteMessage(&control.RunStart{Time: run1Start, TestNames: []string{test1Name, test2Name, test3Name}})
-	mw.WriteMessage(&control.TestStart{Time: test1Start, Test: testing.Test{Name: test1Name}})
+	mw.WriteMessage(&control.TestStart{Time: test1Start, Test: testing.TestCase{Name: test1Name}})
 	mw.WriteMessage(&control.TestEnd{Time: test1End, Name: test1Name})
-	mw.WriteMessage(&control.TestStart{Time: test2Start, Test: testing.Test{Name: test2Name}})
+	mw.WriteMessage(&control.TestStart{Time: test2Start, Test: testing.TestCase{Name: test2Name}})
 	mw.WriteMessage(&control.TestError{Time: test2Error, Error: testing.Error{Reason: test2Reason}})
 
 	cfg := Config{
@@ -637,16 +637,16 @@ func TestWritePartialResults(t *gotesting.T) {
 	streamRes := readStreamedResults(t, bytes.NewBufferString(files[streamedResultsFilename]))
 	expRes := []TestResult{
 		{
-			Test:   testing.Test{Name: test1Name},
-			Start:  test1Start,
-			End:    test1End,
-			OutDir: filepath.Join(cfg.ResDir, testLogsDir, test1Name),
+			TestCase: testing.TestCase{Name: test1Name},
+			Start:    test1Start,
+			End:      test1End,
+			OutDir:   filepath.Join(cfg.ResDir, testLogsDir, test1Name),
 		},
 		// No TestEnd message was received for the second test, so its entry in the streamed results
 		// file should have an empty end time. The error should be included, though.
 		{
-			Test:  testing.Test{Name: test2Name},
-			Start: test2Start,
+			TestCase: testing.TestCase{Name: test2Name},
+			Start:    test2Start,
 			Errors: []TestError{
 				{Error: testing.Error{Reason: test2Reason}},
 				{Error: testing.Error{Reason: incompleteTestMsg}},
@@ -666,7 +666,7 @@ func TestWritePartialResults(t *gotesting.T) {
 	// Write control messages describing another run containing the third test.
 	b.Reset()
 	mw.WriteMessage(&control.RunStart{Time: run2Start, TestNames: []string{test4Name}})
-	mw.WriteMessage(&control.TestStart{Time: test4Start, Test: testing.Test{Name: test4Name}})
+	mw.WriteMessage(&control.TestStart{Time: test4Start, Test: testing.TestCase{Name: test4Name}})
 	mw.WriteMessage(&control.TestEnd{Time: test4End, Name: test4Name})
 	mw.WriteMessage(&control.RunEnd{Time: run2End})
 
@@ -679,10 +679,10 @@ func TestWritePartialResults(t *gotesting.T) {
 	}
 	streamRes = readStreamedResults(t, bytes.NewBufferString(files[streamedResultsFilename]))
 	expRes = append(expRes, TestResult{
-		Test:   testing.Test{Name: test4Name},
-		Start:  test4Start,
-		End:    test4End,
-		OutDir: filepath.Join(cfg.ResDir, testLogsDir, test4Name),
+		TestCase: testing.TestCase{Name: test4Name},
+		Start:    test4Start,
+		End:      test4End,
+		OutDir:   filepath.Join(cfg.ResDir, testLogsDir, test4Name),
 	})
 	if !testResultsEqual(streamRes, expRes) {
 		t.Errorf("%v contains %+v; want %+v", streamedResultsFilename, streamRes, expRes)
@@ -729,7 +729,7 @@ func TestUnfinishedTest(t *gotesting.T) {
 		b := bytes.Buffer{}
 		mw := control.NewMessageWriter(&b)
 		mw.WriteMessage(&control.RunStart{Time: tm, NumTests: 1})
-		mw.WriteMessage(&control.TestStart{Time: tm, Test: testing.Test{Name: testName}})
+		mw.WriteMessage(&control.TestStart{Time: tm, Test: testing.TestCase{Name: testName}})
 		if tc.writeTestErr {
 			mw.WriteMessage(&control.TestError{Time: tm, Error: testing.Error{Reason: testMsg}})
 		}
@@ -773,8 +773,8 @@ func TestWriteResultsUnmatchedGlobs(t *gotesting.T) {
 
 	// Report that two tests were executed.
 	results := []TestResult{
-		TestResult{Test: testing.Test{Name: "pkg.Test1"}},
-		TestResult{Test: testing.Test{Name: "pkg.Test2"}},
+		TestResult{TestCase: testing.TestCase{Name: "pkg.Test1"}},
+		TestResult{TestCase: testing.TestCase{Name: "pkg.Test2"}},
 	}
 
 	// This matches the message logged by WriteResults followed by patterns that

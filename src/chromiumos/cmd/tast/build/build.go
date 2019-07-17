@@ -48,6 +48,12 @@ func Build(ctx context.Context, cfg *Config, tgts []*Target) error {
 	ctx, st := timing.Start(ctx, "build")
 	defer st.End()
 
+	if cfg.TastWorkspace != "" {
+		if err := checkSourceCompat(cfg.TastWorkspace); err != nil {
+			return fmt.Errorf("tast is too old: %v; please run ./update_chroot", err)
+		}
+	}
+
 	if cfg.CheckBuildDeps {
 		cfg.Logger.Status("Checking build dependencies")
 		if missing, cmds, err := checkDeps(ctx, cfg.CheckDepsCachePath); err != nil {

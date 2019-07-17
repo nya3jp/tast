@@ -34,11 +34,11 @@ func TestReadArgsSortTests(t *gotesting.T) {
 		test3 = "pkg.Test3"
 	)
 
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
-	testing.AddTest(&testing.Test{Name: test2, Func: testFunc})
-	testing.AddTest(&testing.Test{Name: test3, Func: testFunc})
-	testing.AddTest(&testing.Test{Name: test1, Func: testFunc})
+	testing.AddTestCase(&testing.TestCase{Name: test2, Func: testFunc})
+	testing.AddTestCase(&testing.TestCase{Name: test3, Func: testFunc})
+	testing.AddTestCase(&testing.TestCase{Name: test1, Func: testFunc})
 
 	stdin := newBufferWithArgs(t, &Args{Mode: RunTestsMode, RunTests: &RunTestsArgs{}})
 	tests, err := readArgs(nil, stdin, ioutil.Discard, &Args{}, &runConfig{}, localBundle)
@@ -62,10 +62,10 @@ func TestReadArgsTestTimeouts(t *gotesting.T) {
 		defaultTimeout = 30 * time.Second
 	)
 
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
-	testing.AddTest(&testing.Test{Name: name1, Func: testFunc, Timeout: customTimeout})
-	testing.AddTest(&testing.Test{Name: name2, Func: testFunc})
+	testing.AddTestCase(&testing.TestCase{Name: name1, Func: testFunc, Timeout: customTimeout})
+	testing.AddTestCase(&testing.TestCase{Name: name2, Func: testFunc})
 
 	stdin := newBufferWithArgs(t, &Args{Mode: RunTestsMode, RunTests: &RunTestsArgs{}})
 	tests, err := readArgs(nil, stdin, ioutil.Discard, &Args{},
@@ -85,13 +85,13 @@ func TestReadArgsTestTimeouts(t *gotesting.T) {
 }
 
 func TestReadArgsRegistrationError(t *gotesting.T) {
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
 	const name = "cat.MyTest"
-	testing.AddTest(&testing.Test{Name: name, Func: testFunc})
+	testing.AddTestCase(&testing.TestCase{Name: name, Func: testFunc})
 
-	// Adding a test without a function should generate an error.
-	testing.AddTest(&testing.Test{})
+	// Adding a test with same name should generate an error.
+	testing.AddTestCase(&testing.TestCase{Name: name, Func: testFunc})
 	stdin := newBufferWithArgs(t, &Args{Mode: RunTestsMode, RunTests: &RunTestsArgs{}})
 	if _, err := readArgs(nil, stdin, ioutil.Discard, &Args{},
 		&runConfig{}, localBundle); !errorHasStatus(err, statusBadTests) {
@@ -104,9 +104,9 @@ func TestTestsToRun(t *gotesting.T) {
 		name1 = "cat.MyTest1"
 		name2 = "cat.MyTest2"
 	)
-	reg := testing.NewRegistry(testing.NoAutoName)
-	reg.AddTest(&testing.Test{Name: name1, Func: testFunc, Attr: []string{"attr1", "attr2"}})
-	reg.AddTest(&testing.Test{Name: name2, Func: testFunc, Attr: []string{"attr2"}})
+	reg := testing.NewRegistry()
+	reg.AddTestCase(&testing.TestCase{Name: name1, Func: testFunc, Attr: []string{"attr1", "attr2"}})
+	reg.AddTestCase(&testing.TestCase{Name: name2, Func: testFunc, Attr: []string{"attr2"}})
 
 	for _, tc := range []struct {
 		args     []string

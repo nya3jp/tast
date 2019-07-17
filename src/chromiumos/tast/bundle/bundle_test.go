@@ -125,13 +125,13 @@ func TestRunTests(t *gotesting.T) {
 		postTestMsg = "cleaning up for test"
 	)
 
-	reg := testing.NewRegistry(testing.NoAutoName)
-	reg.AddTest(&testing.Test{
+	reg := testing.NewRegistry()
+	reg.AddTestCase(&testing.TestCase{
 		Name:    name1,
 		Func:    func(context.Context, *testing.State) {},
 		Timeout: time.Minute},
 	)
-	reg.AddTest(&testing.Test{
+	reg.AddTestCase(&testing.TestCase{
 		Name:    name2,
 		Func:    func(ctx context.Context, s *testing.State) { s.Error("error") },
 		Timeout: time.Minute},
@@ -261,13 +261,13 @@ func TestRunTests(t *gotesting.T) {
 }
 
 func TestRunTestsTimeout(t *gotesting.T) {
-	reg := testing.NewRegistry(testing.NoAutoName)
+	reg := testing.NewRegistry()
 
 	// The first test blocks indefinitely on a channel.
 	const name1 = "foo.Test1"
 	ch := make(chan bool, 1)
 	defer func() { ch <- true }()
-	reg.AddTest(&testing.Test{
+	reg.AddTestCase(&testing.TestCase{
 		Name:        name1,
 		Func:        func(context.Context, *testing.State) { <-ch },
 		Timeout:     10 * time.Millisecond,
@@ -276,7 +276,7 @@ func TestRunTestsTimeout(t *gotesting.T) {
 
 	// The second test blocks for 50 ms and specifies a custom one-minute timeout.
 	const name2 = "foo.Test2"
-	reg.AddTest(&testing.Test{
+	reg.AddTestCase(&testing.TestCase{
 		Name:    name2,
 		Func:    func(context.Context, *testing.State) { time.Sleep(50 * time.Millisecond) },
 		Timeout: time.Minute,
@@ -319,13 +319,13 @@ func TestRunTestsTimeout(t *gotesting.T) {
 func TestRunTestsNoTests(t *gotesting.T) {
 	// runTests should report failure when passed an empty slice of tests.
 	if err := runTests(context.Background(), &bytes.Buffer{}, &Args{RunTests: &RunTestsArgs{}},
-		&runConfig{}, localBundle, []*testing.Test{}); !errorHasStatus(err, statusNoTests) {
+		&runConfig{}, localBundle, []*testing.TestCase{}); !errorHasStatus(err, statusNoTests) {
 		t.Fatalf("runTests() = %v; want status %v", err, statusNoTests)
 	}
 }
 
 func TestRunTestsMissingDeps(t *gotesting.T) {
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
 
 	const (
@@ -344,9 +344,9 @@ func TestRunTestsMissingDeps(t *gotesting.T) {
 	makeFunc := func(name string) testing.TestFunc {
 		return func(context.Context, *testing.State) { testRan[name] = true }
 	}
-	testing.AddTest(&testing.Test{Name: validName, Func: makeFunc(validName), SoftwareDeps: []string{validDep}})
-	testing.AddTest(&testing.Test{Name: missingName, Func: makeFunc(missingName), SoftwareDeps: []string{missingDep}})
-	testing.AddTest(&testing.Test{Name: unregName, Func: makeFunc(unregName), SoftwareDeps: []string{unregDep}})
+	testing.AddTestCase(&testing.TestCase{Name: validName, Func: makeFunc(validName), SoftwareDeps: []string{validDep}})
+	testing.AddTestCase(&testing.TestCase{Name: missingName, Func: makeFunc(missingName), SoftwareDeps: []string{missingDep}})
+	testing.AddTestCase(&testing.TestCase{Name: unregName, Func: makeFunc(unregName), SoftwareDeps: []string{unregDep}})
 
 	tmpDir := testutil.TempDir(t)
 	defer os.RemoveAll(tmpDir)
@@ -417,7 +417,7 @@ func TestRunTestsMissingDeps(t *gotesting.T) {
 }
 
 func TestRunTestsSkipTestWithPrecondition(t *gotesting.T) {
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
 
 	var actions []string
@@ -436,12 +436,12 @@ func TestRunTestsSkipTestWithPrecondition(t *gotesting.T) {
 
 	// Make the last test using each precondition get skipped due to unsatisfied dependencies.
 	f := func(context.Context, *testing.State) {}
-	testing.AddTest(&testing.Test{Name: "pkg.Test1", Func: f, Pre: pre1})
-	testing.AddTest(&testing.Test{Name: "pkg.Test2", Func: f, Pre: pre1})
-	testing.AddTest(&testing.Test{Name: "pkg.Test3", Func: f, Pre: pre1, SoftwareDeps: []string{"dep"}})
-	testing.AddTest(&testing.Test{Name: "pkg.Test4", Func: f, Pre: pre2})
-	testing.AddTest(&testing.Test{Name: "pkg.Test5", Func: f, Pre: pre2})
-	testing.AddTest(&testing.Test{Name: "pkg.Test6", Func: f, Pre: pre2, SoftwareDeps: []string{"dep"}})
+	testing.AddTestCase(&testing.TestCase{Name: "pkg.Test1", Func: f, Pre: pre1})
+	testing.AddTestCase(&testing.TestCase{Name: "pkg.Test2", Func: f, Pre: pre1})
+	testing.AddTestCase(&testing.TestCase{Name: "pkg.Test3", Func: f, Pre: pre1, SoftwareDeps: []string{"dep"}})
+	testing.AddTestCase(&testing.TestCase{Name: "pkg.Test4", Func: f, Pre: pre2})
+	testing.AddTestCase(&testing.TestCase{Name: "pkg.Test5", Func: f, Pre: pre2})
+	testing.AddTestCase(&testing.TestCase{Name: "pkg.Test6", Func: f, Pre: pre2, SoftwareDeps: []string{"dep"}})
 
 	tmpDir := testutil.TempDir(t)
 	defer os.RemoveAll(tmpDir)
@@ -470,11 +470,11 @@ func TestRunTestsSkipTestWithPrecondition(t *gotesting.T) {
 }
 
 func TestRunMeta(t *gotesting.T) {
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
 
 	var meta testing.Meta
-	testing.AddTest(&testing.Test{
+	testing.AddTestCase(&testing.TestCase{
 		Name: "meta.Test",
 		Func: func(ctx context.Context, s *testing.State) {
 			if m := s.Meta(); m != nil {
@@ -514,11 +514,11 @@ func TestRunMeta(t *gotesting.T) {
 }
 
 func TestRunList(t *gotesting.T) {
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
 	f := func(context.Context, *testing.State) {}
-	testing.AddTest(&testing.Test{Name: "pkg.Test", Func: f})
-	testing.AddTest(&testing.Test{Name: "pkg.Test2", Func: f})
+	testing.AddTestCase(&testing.TestCase{Name: "pkg.Test", Func: f})
+	testing.AddTestCase(&testing.TestCase{Name: "pkg.Test2", Func: f})
 
 	var exp bytes.Buffer
 	if err := testing.WriteTestsAsJSON(&exp, testing.GlobalRegistry().AllTests()); err != nil {

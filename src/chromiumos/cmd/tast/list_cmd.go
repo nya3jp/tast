@@ -77,10 +77,10 @@ func (lc *listCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{
 		panic("logger not attached to context")
 	}
 
-	var tests []*testing.Test
+	var tests []*testing.TestCase
 
 	if len(lc.inputFiles) > 0 {
-		reg := testing.NewRegistry(testing.NoFinalize)
+		reg := testing.NewRegistry()
 		for _, p := range lc.inputFiles {
 			if err := importTests(p, reg); err != nil {
 				lg.Logf("Failed to import tests from %v: %v", p, err)
@@ -112,9 +112,9 @@ func (lc *listCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{
 			os.Stderr.Write(b.Bytes())
 			return status.ExitCode
 		}
-		tests = make([]*testing.Test, len(results))
+		tests = make([]*testing.TestCase, len(results))
 		for i := range results {
-			tests[i] = &results[i].Test
+			tests[i] = &results[i].TestCase
 		}
 	}
 
@@ -126,7 +126,7 @@ func (lc *listCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{
 }
 
 // printTests writes the supplied tests to lc.stdout.
-func (lc *listCmd) printTests(tests []*testing.Test) error {
+func (lc *listCmd) printTests(tests []*testing.TestCase) error {
 	if lc.json {
 		enc := json.NewEncoder(lc.stdout)
 		enc.SetIndent("", "  ")
@@ -151,12 +151,12 @@ func importTests(p string, reg *testing.Registry) error {
 	}
 	defer f.Close()
 
-	var ts []*testing.Test
+	var ts []*testing.TestCase
 	if err := json.NewDecoder(f).Decode(&ts); err != nil {
 		return err
 	}
 	for _, t := range ts {
-		if err := reg.AddTest(t); err != nil {
+		if err := reg.AddTestCase(t); err != nil {
 			return fmt.Errorf("failed to add test %v: %v", t.Name, err)
 		}
 	}

@@ -43,9 +43,9 @@ const (
 // TestResult contains the results from a single test.
 // Fields are exported so they can be marshaled by the json package.
 type TestResult struct {
-	// Test contains basic information about the test. This is not a runnable
+	// TestCase contains basic information about the test. This is not a runnable
 	// testing.Test struct; only fields that can be marshaled to JSON are set.
-	testing.Test
+	testing.TestCase
 	// Errors contains errors encountered while running the test.
 	// If it is empty, the test passed.
 	Errors []TestError `json:"errors"`
@@ -290,7 +290,7 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.TestS
 	ctx, r.stage = timing.Start(ctx, msg.Test.Name)
 
 	r.results = append(r.results, TestResult{
-		Test:             msg.Test,
+		TestCase:         msg.Test,
 		Start:            msg.Time,
 		OutDir:           r.getTestOutputDir(msg.Test.Name),
 		testStartMsgTime: time.Now(),
@@ -664,13 +664,13 @@ func readTestOutput(ctx context.Context, cfg *Config, r io.Reader, crf copyAndRe
 // readTestList decodes JSON-serialized testing.Test objects from r and
 // copies them into an array of TestResult objects.
 func readTestList(r io.Reader) ([]TestResult, error) {
-	var ts []testing.Test
+	var ts []testing.TestCase
 	if err := json.NewDecoder(r).Decode(&ts); err != nil {
 		return nil, err
 	}
 	results := make([]TestResult, len(ts))
 	for i := 0; i < len(ts); i++ {
-		results[i].Test = ts[i]
+		results[i].TestCase = ts[i]
 	}
 	return results, nil
 }
@@ -693,7 +693,7 @@ func unmatchedTestPatterns(patterns []string, results []TestResult) []string {
 
 		matched := false
 		for _, res := range results {
-			if re.MatchString(res.Test.Name) {
+			if re.MatchString(res.Name) {
 				matched = true
 				break
 			}

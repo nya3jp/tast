@@ -25,9 +25,9 @@ func init() {
 }
 
 func TestRemoteMissingTarget(t *gotesting.T) {
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
-	testing.AddTest(&testing.Test{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
+	testing.AddTestCase(&testing.TestCase{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
 
 	// Remote should fail if -target wasn't passed.
 	stdin := newBufferWithArgs(t, &Args{Mode: RunTestsMode, RunTests: &RunTestsArgs{}})
@@ -44,9 +44,9 @@ func TestRemoteCantConnect(t *gotesting.T) {
 	td := test.NewTestData(userKey, hostKey, nil)
 	defer td.Close()
 
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
-	testing.AddTest(&testing.Test{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
+	testing.AddTestCase(&testing.TestCase{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
 
 	// Remote should fail if the initial connection to the DUT couldn't be
 	// established since the user key wasn't passed.
@@ -82,9 +82,9 @@ func TestRemoteDUT(t *gotesting.T) {
 
 	// Register a test that runs a command on the DUT and saves its output.
 	realOutput := ""
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
-	testing.AddTest(&testing.Test{Name: "pkg.Test", Func: func(ctx context.Context, s *testing.State) {
+	testing.AddTestCase(&testing.TestCase{Name: "pkg.Test", Func: func(ctx context.Context, s *testing.State) {
 		dt, ok := dut.FromContext(ctx)
 		if !ok {
 			s.Fatal("Failed to get DUT from context")
@@ -135,10 +135,10 @@ func TestRemoteReconnectBetweenTests(t *gotesting.T) {
 	}
 
 	var conn1, conn2 bool
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
-	testing.AddTest(&testing.Test{Name: "pkg.Test1", Func: makeFunc(&conn1)})
-	testing.AddTest(&testing.Test{Name: "pkg.Test2", Func: makeFunc(&conn2)})
+	testing.AddTestCase(&testing.TestCase{Name: "pkg.Test1", Func: makeFunc(&conn1)})
+	testing.AddTestCase(&testing.TestCase{Name: "pkg.Test2", Func: makeFunc(&conn2)})
 
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)

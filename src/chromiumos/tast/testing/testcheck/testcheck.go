@@ -13,7 +13,7 @@ import (
 	"chromiumos/tast/testing"
 )
 
-func getTests(t *gotesting.T, glob string) []*testing.Test {
+func getTests(t *gotesting.T, glob string) []*testing.TestCase {
 	tests, err := testing.GlobalRegistry().TestsForGlobs([]string{glob})
 	if err != nil {
 		t.Fatalf("Failed to get tests for %s: %v", glob, err)

@@ -19,9 +19,9 @@ import (
 
 func TestLocalBadTest(t *gotesting.T) {
 	// A test without a function should trigger a registration error.
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
-	testing.AddTest(&testing.Test{Name: "pkg.Test"})
+	testing.AddTest(&testing.Test{})
 
 	args := Args{Mode: RunTestsMode}
 	stdin := newBufferWithArgs(t, &args)
@@ -37,9 +37,9 @@ func TestLocalBadTest(t *gotesting.T) {
 func TestLocalRunTest(t *gotesting.T) {
 	const name = "pkg.Test"
 	ran := false
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
-	testing.AddTest(&testing.Test{Name: name, Func: func(context.Context, *testing.State) { ran = true }})
+	testing.AddTestCase(&testing.TestCase{Name: name, Func: func(context.Context, *testing.State) { ran = true }})
 
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
@@ -59,9 +59,9 @@ func TestLocalRunTest(t *gotesting.T) {
 
 func TestLocalFaillog(t *gotesting.T) {
 	const name = "pkg.Test"
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
-	testing.AddTest(&testing.Test{Name: name, Func: func(ctx context.Context, s *testing.State) { s.Error("fail") }})
+	testing.AddTestCase(&testing.TestCase{Name: name, Func: func(ctx context.Context, s *testing.State) { s.Error("fail") }})
 
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
@@ -80,9 +80,9 @@ func TestLocalFaillog(t *gotesting.T) {
 }
 
 func TestLocalReadyFunc(t *gotesting.T) {
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
-	testing.AddTest(&testing.Test{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
+	testing.AddTestCase(&testing.TestCase{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
 
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
@@ -123,9 +123,9 @@ func TestLocalReadyFunc(t *gotesting.T) {
 }
 
 func TestLocalReadyFuncDisabled(t *gotesting.T) {
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
-	testing.AddTest(&testing.Test{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
+	testing.AddTestCase(&testing.TestCase{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
 
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)

@@ -31,9 +31,6 @@ func RegistrationErrors() []error {
 func AddTest(t *Test) {
 	if err := addTestInternal(t); err != nil {
 		_, file, line, _ := runtime.Caller(1)
-		if registrationErrors == nil {
-			registrationErrors = make([]error, 0)
-		}
 		registrationErrors = append(registrationErrors, fmt.Errorf("%s:%d: %v", file, line, err))
 	}
 }
@@ -48,6 +45,15 @@ func addTestInternal(t *Test) error {
 		return err
 	}
 	return nil
+}
+
+// AddTestCase adds test case t to the global registry. This is only for
+// testing purpose.
+func AddTestCase(t *TestCase) {
+	if err := GlobalRegistry().AddTestCase(t); err != nil {
+		_, file, line, _ := runtime.Caller(1)
+		registrationErrors = append(registrationErrors, fmt.Errorf("%s:%d: %v", file, line, err))
+	}
 }
 
 var initPattern = regexp.MustCompile(

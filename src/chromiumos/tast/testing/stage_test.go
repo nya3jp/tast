@@ -12,7 +12,7 @@ import (
 
 func TestRunStagesFatal(t *gotesting.T) {
 	or := newOutputReader()
-	s := newState(&Test{}, or.ch, &TestConfig{})
+	s := newState(&TestCase{}, or.ch, &TestConfig{})
 	ranSecond := false
 	finished := runStages(context.Background(), s, []stage{
 		stage{func(ctx context.Context, s *State) { s.Fatal("failed") }, 0, time.Minute},
@@ -31,7 +31,7 @@ func TestRunStagesFatal(t *gotesting.T) {
 
 func TestRunStagesPanic(t *gotesting.T) {
 	or := newOutputReader()
-	s := newState(&Test{}, or.ch, &TestConfig{})
+	s := newState(&TestCase{}, or.ch, &TestConfig{})
 	ranSecond := false
 	finished := runStages(context.Background(), s, []stage{
 		stage{func(ctx context.Context, s *State) { panic("panicked") }, 0, time.Minute},
@@ -50,7 +50,7 @@ func TestRunStagesPanic(t *gotesting.T) {
 
 func TestRunStagesTimeout(t *gotesting.T) {
 	or := newOutputReader()
-	s := newState(&Test{}, or.ch, &TestConfig{})
+	s := newState(&TestCase{}, or.ch, &TestConfig{})
 
 	cont := make(chan struct{}, 2)        // used to signal to first stage to exit
 	defer func() { cont <- struct{}{} }() // wait until unit test is over

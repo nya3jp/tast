@@ -98,7 +98,7 @@ func runFakeBundle() int {
 		os.Exit(1)
 	}
 
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry(testing.NoAutoName))
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
 	for i, res := range parts[2] {
 		var f testing.TestFunc
@@ -109,7 +109,7 @@ func runFakeBundle() int {
 		} else {
 			log.Fatalf("Bad rune %v in result string %q", res, parts[2])
 		}
-		testing.AddTest(&testing.Test{
+		testing.AddTestCase(&testing.TestCase{
 			Name: getTestName(bundleNum, i),
 			Func: f,
 		})

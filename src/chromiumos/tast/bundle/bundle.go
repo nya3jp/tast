@@ -111,7 +111,7 @@ func (ew *eventWriter) RunLog(msg string) error {
 	return ew.mw.WriteMessage(&control.RunLog{Time: time.Now(), Text: msg})
 }
 
-func (ew *eventWriter) TestStart(t *testing.Test) error {
+func (ew *eventWriter) TestStart(t *testing.TestCase) error {
 	ew.testName = t.Name
 	if ew.lg != nil {
 		ew.lg.Info(fmt.Sprintf("%s: ======== start", t.Name))
@@ -133,7 +133,7 @@ func (ew *eventWriter) TestError(ts time.Time, e *testing.Error) error {
 	return ew.mw.WriteMessage(&control.TestError{Time: ts, Error: *e})
 }
 
-func (ew *eventWriter) TestEnd(t *testing.Test, missingDeps []string, timingLog *timing.Log) error {
+func (ew *eventWriter) TestEnd(t *testing.TestCase, missingDeps []string, timingLog *timing.Log) error {
 	ew.testName = ""
 	if ew.lg != nil {
 		ew.lg.Info(fmt.Sprintf("%s: ======== end", t.Name))
@@ -152,7 +152,7 @@ func (ew *eventWriter) TestEnd(t *testing.Test, missingDeps []string, timingLog 
 // If an error is encountered in the test harness (as opposed to in a test), an error is returned.
 // Otherwise, nil is returned (test errors will be reported via TestError control messages).
 func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
-	bt bundleType, tests []*testing.Test) error {
+	bt bundleType, tests []*testing.TestCase) error {
 	mw := control.NewMessageWriter(stdout)
 
 	hbw := control.NewHeartbeatWriter(mw, args.RunTests.HeartbeatInterval)
@@ -197,9 +197,9 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 	// As we go, build up a slice of the next test that will actually be run after each test.
 	// We pass this information to runTest later to ensure that we don't incorrectly fail
 	// to close a precondition if the final test using the precondition is skipped: https://crbug.com/950499
-	var rt *testing.Test                           // last-seen test that will be run
-	missingDeps := make([][]string, len(tests))    // per-test missing deps, in same order as tests
-	nextTests := make([]*testing.Test, len(tests)) // test to run after each test, in same order as tests
+	var rt *testing.TestCase                           // last-seen test that will be run
+	missingDeps := make([][]string, len(tests))        // per-test missing deps, in same order as tests
+	nextTests := make([]*testing.TestCase, len(tests)) // test to run after each test, in same order as tests
 	for i := len(tests) - 1; i >= 0; i-- {
 		nextTests[i] = rt
 		if args.RunTests.CheckSoftwareDeps {
@@ -228,7 +228,7 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 
 // runTest runs t per args and cfg, writing the appropriate control.Test* control messages to mw.
 func runTest(ctx context.Context, ew *eventWriter, args *Args, cfg *runConfig,
-	t, next *testing.Test, meta *testing.Meta) {
+	t, next *testing.TestCase, meta *testing.Meta) {
 	ew.TestStart(t)
 
 	// Attach a log that the test can use to report timing events.
@@ -267,7 +267,7 @@ func runTest(ctx context.Context, ew *eventWriter, args *Args, cfg *runConfig,
 // reportSkippedTest is called instead of runTest for a test that is skipped due to
 // having unsatisfied dependencies.
 func reportSkippedTest(ctx context.Context, ew *eventWriter, args *Args,
-	t *testing.Test, missingDeps []string) {
+	t *testing.TestCase, missingDeps []string) {
 	ew.TestStart(t)
 
 	// Additionally report an error if one or more dependencies refer to features that

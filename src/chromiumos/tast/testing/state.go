@@ -74,7 +74,7 @@ func (m *Meta) clone() *Meta {
 // It is intended to be safe when called concurrently by multiple goroutines
 // while a test is running.
 type State struct {
-	test *Test         // test being run
+	test *TestCase     // test being run
 	ch   chan<- Output // channel to which logging messages and errors are written
 	cfg  *TestConfig   // details about how to run test
 
@@ -101,11 +101,11 @@ type TestConfig struct {
 	// PostTestFunc is run after Test.Func (and Test.Pre.Cleanup, when applicable) if non-nil.
 	PostTestFunc func(context.Context, *State)
 	// NextTest is the test that will be run after this one.
-	NextTest *Test
+	NextTest *TestCase
 }
 
 // newState returns a new State object.
-func newState(test *Test, ch chan<- Output, cfg *TestConfig) *State {
+func newState(test *TestCase, ch chan<- Output, cfg *TestConfig) *State {
 	return &State{test: test, ch: ch, cfg: cfg}
 }
 

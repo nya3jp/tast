@@ -83,6 +83,54 @@
     },
     {
       "key": {
+        "uuid": "0faae142_2995d2dc",
+        "filename": "src/chromiumos/cmd/tast/run/remote.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-17T04:52:47Z",
+      "side": 1,
+      "message": "I didn\u0027t understand what you mean by \"It looks similar to skipping test in runtime.\" could you elaborate on it?\n\nThat said, I chose to put this logic in remote(), not in Run(), because I wanted Run() to concentrate on overall flow. What\u0027s your opinion?",
+      "parentUuid": "2951cc07_fc4dabb4",
+      "range": {
+        "startLine": 42,
+        "startChar": 10,
+        "endLine": 42,
+        "endChar": 23
+      },
+      "revId": "0f783b8f7a93a80855747798d005792e537be26a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5c2a0283_2b79b088",
+        "filename": "src/chromiumos/cmd/tast/run/remote.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-17T04:52:47Z",
+      "side": 1,
+      "message": "Sure, that is a good idea.",
+      "parentUuid": "c7a8c7eb_d1abc5b4",
+      "range": {
+        "startLine": 42,
+        "startChar": 2,
+        "endLine": 42,
+        "endChar": 3
+      },
+      "revId": "0f783b8f7a93a80855747798d005792e537be26a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "693080df_e2c8cf5a",
         "filename": "src/chromiumos/cmd/tast/run/run.go",
         "patchSetId": 2
@@ -118,6 +166,30 @@
       "side": 1,
       "message": "To check my understanding: Is it for the case cfg.remoteBundleDir is manually set (in addition to -build)?\nIs there a such use case? Anyways lgtm to use the shorter representation though.",
       "parentUuid": "693080df_e2c8cf5a",
+      "range": {
+        "startLine": 182,
+        "startChar": 15,
+        "endLine": 182,
+        "endChar": 35
+      },
+      "revId": "0f783b8f7a93a80855747798d005792e537be26a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a503c11d_eb03833d",
+        "filename": "src/chromiumos/cmd/tast/run/run.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-17T04:52:47Z",
+      "side": 1,
+      "message": "The old code built a remote test executable in a wrong place when --remotebundledir is set. Since the test execution uses cfg.remoteBundleDir, wrong executable was run.",
+      "parentUuid": "13179795_4d584cd8",
       "range": {
         "startLine": 182,
         "startChar": 15,

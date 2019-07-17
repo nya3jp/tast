@@ -135,7 +135,7 @@ const (
 // args contains default values for arguments and is further updated by decoding a JSON-marshaled Args struct from stdin.
 // Matched tests are returned. The caller is responsible for performing the requested action.
 func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer,
-	args *Args, cfg *runConfig, bt bundleType) ([]*testing.Test, error) {
+	args *Args, cfg *runConfig, bt bundleType) ([]*testing.TestCase, error) {
 	if len(clArgs) != 0 {
 		flags := flag.NewFlagSet("", flag.ContinueOnError)
 		flags.SetOutput(stderr)
@@ -233,7 +233,7 @@ func GetTestPatternType(pats []string) TestPatternType {
 // it is treated as a boolean expression specifying test attributes.
 //
 // Otherwise, pattern(s) are interpreted as globs matching test names.
-func TestsToRun(reg *testing.Registry, pats []string) ([]*testing.Test, error) {
+func TestsToRun(reg *testing.Registry, pats []string) ([]*testing.TestCase, error) {
 	switch GetTestPatternType(pats) {
 	case TestPatternGlobs:
 		if len(pats) == 0 {

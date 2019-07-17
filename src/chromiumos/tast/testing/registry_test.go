@@ -12,7 +12,7 @@ import (
 
 // testsEqual returns true if a and b contain tests with matching fields.
 // This is useful when comparing slices that contain copies of the same underlying tests.
-func testsEqual(a, b []*Test) bool {
+func testsEqual(a, b []*TestCase) bool {
 	if len(a) != len(b) {
 		return false
 	}
@@ -27,12 +27,12 @@ func testsEqual(a, b []*Test) bool {
 }
 
 // getDupeTestPtrs returns pointers present in both a and b.
-func getDupeTestPtrs(a, b []*Test) []*Test {
-	am := make(map[*Test]struct{}, len(a))
+func getDupeTestPtrs(a, b []*TestCase) []*TestCase {
+	am := make(map[*TestCase]struct{}, len(a))
 	for _, t := range a {
 		am[t] = struct{}{}
 	}
-	var dupes []*Test
+	var dupes []*TestCase
 	for _, t := range b {
 		if _, ok := am[t]; ok {
 			dupes = append(dupes, t)
@@ -42,13 +42,13 @@ func getDupeTestPtrs(a, b []*Test) []*Test {
 }
 
 func TestAllTests(t *gotesting.T) {
-	reg := NewRegistry(NoAutoName)
-	allTests := []*Test{
-		&Test{Name: "test.Foo", Func: func(context.Context, *State) {}},
-		&Test{Name: "test.Bar", Func: func(context.Context, *State) {}},
+	reg := NewRegistry()
+	allTests := []*TestCase{
+		&TestCase{Name: "test.Foo", Func: func(context.Context, *State) {}},
+		&TestCase{Name: "test.Bar", Func: func(context.Context, *State) {}},
 	}
 	for _, test := range allTests {
-		if err := reg.AddTest(test); err != nil {
+		if err := reg.AddTestCase(test); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -63,32 +63,32 @@ func TestAllTests(t *gotesting.T) {
 }
 
 func TestTestsForGlob(t *gotesting.T) {
-	reg := NewRegistry(NoAutoName)
-	allTests := []*Test{
-		&Test{Name: "test.Foo", Func: func(context.Context, *State) {}},
-		&Test{Name: "test.Bar", Func: func(context.Context, *State) {}},
-		&Test{Name: "blah.Foo", Func: func(context.Context, *State) {}},
+	reg := NewRegistry()
+	allTests := []*TestCase{
+		&TestCase{Name: "test.Foo", Func: func(context.Context, *State) {}},
+		&TestCase{Name: "test.Bar", Func: func(context.Context, *State) {}},
+		&TestCase{Name: "blah.Foo", Func: func(context.Context, *State) {}},
 	}
 	for _, test := range allTests {
-		if err := reg.AddTest(test); err != nil {
+		if err := reg.AddTestCase(test); err != nil {
 			t.Fatal(err)
 		}
 	}
 
 	for _, tc := range []struct {
 		glob     string
-		expected []*Test
+		expected []*TestCase
 	}{
-		{"test.Foo", []*Test{allTests[0]}},
-		{"test.Bar", []*Test{allTests[1]}},
-		{"test.*", []*Test{allTests[0], allTests[1]}},
-		{"*.Foo", []*Test{allTests[0], allTests[2]}},
-		{"*.*", []*Test{allTests[0], allTests[1], allTests[2]}},
-		{"*", []*Test{allTests[0], allTests[1], allTests[2]}},
-		{"", []*Test{}},
-		{"bogus", []*Test{}},
+		{"test.Foo", []*TestCase{allTests[0]}},
+		{"test.Bar", []*TestCase{allTests[1]}},
+		{"test.*", []*TestCase{allTests[0], allTests[1]}},
+		{"*.Foo", []*TestCase{allTests[0], allTests[2]}},
+		{"*.*", []*TestCase{allTests[0], allTests[1], allTests[2]}},
+		{"*", []*TestCase{allTests[0], allTests[1], allTests[2]}},
+		{"", []*TestCase{}},
+		{"bogus", []*TestCase{}},
 		// Test that periods are escaped.
-		{"test.Fo.", []*Test{}},
+		{"test.Fo.", []*TestCase{}},
 	} {
 		if tests, err := reg.testsForGlob(tc.glob); err != nil {
 			t.Fatalf("testsForGlob(%q) failed: %v", tc.glob, err)
@@ -100,12 +100,12 @@ func TestTestsForGlob(t *gotesting.T) {
 	// Now test multiple globs.
 	for _, tc := range []struct {
 		globs    []string
-		expected []*Test
+		expected []*TestCase
 	}{
-		{[]string{"test.Foo"}, []*Test{allTests[0]}},
-		{[]string{"test.Foo", "test.Foo"}, []*Test{allTests[0]}},
-		{[]string{"test.Foo", "test.Bar"}, []*Test{allTests[0], allTests[1]}},
-		{[]string{"no.Matches"}, []*Test{}},
+		{[]string{"test.Foo"}, []*TestCase{allTests[0]}},
+		{[]string{"test.Foo", "test.Foo"}, []*TestCase{allTests[0]}},
+		{[]string{"test.Foo", "test.Bar"}, []*TestCase{allTests[0], allTests[1]}},
+		{[]string{"no.Matches"}, []*TestCase{}},
 	} {
 		if tests, err := reg.TestsForGlobs(tc.globs); err != nil {
 			t.Fatalf("TestsForGlobs(%v) failed: %v", tc.globs, err)
@@ -121,13 +121,13 @@ func TestTestsForGlob(t *gotesting.T) {
 }
 
 func TestTestsForAttrExpr(t *gotesting.T) {
-	reg := NewRegistry(NoAutoName)
-	allTests := []*Test{
-		&Test{Name: "test.Foo", Func: func(context.Context, *State) {}, Attr: []string{"test", "foo"}},
-		&Test{Name: "test.Bar", Func: func(context.Context, *State) {}, Attr: []string{"test", "bar"}},
+	reg := NewRegistry()
+	allTests := []*TestCase{
+		&TestCase{Name: "test.Foo", Func: func(context.Context, *State) {}, Attr: []string{"test", "foo"}},
+		&TestCase{Name: "test.Bar", Func: func(context.Context, *State) {}, Attr: []string{"test", "bar"}},
 	}
 	for _, test := range allTests {
-		if err := reg.AddTest(test); err != nil {
+		if err := reg.AddTestCase(test); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -135,15 +135,15 @@ func TestTestsForAttrExpr(t *gotesting.T) {
 	// More-complicated expressions are tested by the attr package's tests.
 	for _, tc := range []struct {
 		expr     string
-		expected []*Test
+		expected []*TestCase
 	}{
-		{"foo", []*Test{allTests[0]}},
-		{"bar", []*Test{allTests[1]}},
+		{"foo", []*TestCase{allTests[0]}},
+		{"bar", []*TestCase{allTests[1]}},
 		{"test", allTests},
-		{"test && !bar", []*Test{allTests[0]}},
+		{"test && !bar", []*TestCase{allTests[0]}},
 		{"\"*est\"", allTests},
-		{"\"*est\" && \"f*\"", []*Test{allTests[0]}},
-		{"baz", []*Test{}},
+		{"\"*est\" && \"f*\"", []*TestCase{allTests[0]}},
+		{"baz", []*TestCase{}},
 	} {
 		tests, err := reg.TestsForAttrExpr(tc.expr)
 		if err != nil {
@@ -161,25 +161,25 @@ func TestTestsForAttrExpr(t *gotesting.T) {
 
 func TestAddTestDuplicateName(t *gotesting.T) {
 	const name = "test.Foo"
-	reg := NewRegistry(NoAutoName)
-	if err := reg.AddTest(&Test{Name: name, Func: func(context.Context, *State) {}}); err != nil {
+	reg := NewRegistry()
+	if err := reg.AddTestCase(&TestCase{Name: name, Func: func(context.Context, *State) {}}); err != nil {
 		t.Fatal("Failed to add initial test: ", err)
 	}
-	if err := reg.AddTest(&Test{Name: name, Func: func(context.Context, *State) {}}); err == nil {
+	if err := reg.AddTestCase(&TestCase{Name: name, Func: func(context.Context, *State) {}}); err == nil {
 		t.Fatal("Duplicate test name unexpectedly not rejected")
 	}
 }
 
 func TestAddTestModifyOriginal(t *gotesting.T) {
-	reg := NewRegistry(NoAutoName)
+	reg := NewRegistry()
 	const origName = "test.OldName"
 	const origDep = "olddep"
-	test := &Test{
+	test := &TestCase{
 		Name:         origName,
 		Func:         func(context.Context, *State) {},
 		SoftwareDeps: []string{origDep},
 	}
-	if err := reg.AddTest(test); err != nil {
+	if err := reg.AddTestCase(test); err != nil {
 		t.Fatal("AddTest failed: ", err)
 	}
 

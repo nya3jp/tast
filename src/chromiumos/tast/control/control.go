@@ -84,7 +84,7 @@ type TestStart struct {
 	Time time.Time `json:"testStartTime"`
 	// Test contains details about the test.
 	// Some fields, e.g. Func (containing the test function), are dropped during marshaling.
-	Test testing.Test `json:"testStartTest"`
+	Test testing.TestCase `json:"testStartTest"`
 }
 
 // TestLog contains an informative logging message produced by a test.

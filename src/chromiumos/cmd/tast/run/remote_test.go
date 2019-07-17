@@ -161,7 +161,7 @@ func TestRemoteRun(t *gotesting.T) {
 	tm := time.Unix(1, 0)
 	mw := control.NewMessageWriter(&b)
 	mw.WriteMessage(&control.RunStart{Time: tm, NumTests: 1})
-	mw.WriteMessage(&control.TestStart{Time: tm, Test: testing.Test{Name: testName}})
+	mw.WriteMessage(&control.TestStart{Time: tm, Test: testing.TestCase{Name: testName}})
 	mw.WriteMessage(&control.TestEnd{Time: tm, Name: testName})
 	mw.WriteMessage(&control.RunEnd{Time: tm, OutDir: ""})
 
@@ -225,9 +225,9 @@ func TestRemoteRun(t *gotesting.T) {
 
 func TestRemoteList(t *gotesting.T) {
 	// Make the runner print serialized tests.
-	tests := []testing.Test{
-		testing.Test{Name: "pkg.Test1", Desc: "First description", Attr: []string{"attr1", "attr2"}, Pkg: "pkg"},
-		testing.Test{Name: "pkg2.Test2", Desc: "Second description", Attr: []string{"attr3"}, Pkg: "pkg2"},
+	tests := []testing.TestCase{
+		{Name: "pkg.Test1", Desc: "First description", Attr: []string{"attr1", "attr2"}, Pkg: "pkg"},
+		{Name: "pkg2.Test2", Desc: "Second description", Attr: []string{"attr3"}, Pkg: "pkg2"},
 	}
 	b, err := json.Marshal(&tests)
 	if err != nil {
@@ -258,9 +258,9 @@ func TestRemoteList(t *gotesting.T) {
 		t.Errorf("remote(%+v) passed args %+v; want %+v", td.cfg, td.args, expArgs)
 	}
 
-	listed := make([]testing.Test, len(results))
+	listed := make([]testing.TestCase, len(results))
 	for i := 0; i < len(results); i++ {
-		listed[i] = results[i].Test
+		listed[i] = results[i].TestCase
 	}
 	if !reflect.DeepEqual(listed, tests) {
 		t.Errorf("remote() listed tests %+v; want %+v", listed, tests)

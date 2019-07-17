@@ -23,7 +23,7 @@ import (
 
 func TestLog(t *gotesting.T) {
 	or := newOutputReader()
-	s := newState(&Test{Timeout: time.Minute}, or.ch, &TestConfig{})
+	s := newState(&TestCase{Timeout: time.Minute}, or.ch, &TestConfig{})
 	s.Log("msg ", 1)
 	s.Logf("msg %d", 2)
 	close(or.ch)
@@ -35,7 +35,7 @@ func TestLog(t *gotesting.T) {
 
 func TestReportError(t *gotesting.T) {
 	or := newOutputReader()
-	s := newState(&Test{Timeout: time.Minute}, or.ch, &TestConfig{})
+	s := newState(&TestCase{Timeout: time.Minute}, or.ch, &TestConfig{})
 
 	// Keep these lines next to each other (see below comparison).
 	s.Error("error ", 1)
@@ -82,7 +82,7 @@ func errorFunc() error {
 
 func TestExtractErrorSimple(t *gotesting.T) {
 	or := newOutputReader()
-	s := newState(&Test{Timeout: time.Minute}, or.ch, &TestConfig{})
+	s := newState(&TestCase{Timeout: time.Minute}, or.ch, &TestConfig{})
 
 	err := errorFunc()
 	s.Error(err)
@@ -108,7 +108,7 @@ func TestExtractErrorSimple(t *gotesting.T) {
 
 func TestExtractErrorHeuristic(t *gotesting.T) {
 	or := newOutputReader()
-	s := newState(&Test{Timeout: time.Minute}, or.ch, &TestConfig{})
+	s := newState(&TestCase{Timeout: time.Minute}, or.ch, &TestConfig{})
 
 	err := errorFunc()
 	s.Error("Failed something  :  ", err)
@@ -138,7 +138,7 @@ func TestExtractErrorHeuristic(t *gotesting.T) {
 
 func TestFatal(t *gotesting.T) {
 	or := newOutputReader()
-	s := newState(&Test{Timeout: time.Minute}, or.ch, &TestConfig{})
+	s := newState(&TestCase{Timeout: time.Minute}, or.ch, &TestConfig{})
 
 	// Log the fatal message in a goroutine so the main goroutine that's running the test won't exit.
 	done := make(chan bool)
@@ -167,7 +167,7 @@ func TestDataPathDeclared(t *gotesting.T) {
 	const (
 		dataDir = "/tmp/data"
 	)
-	test := Test{
+	test := TestCase{
 		Timeout: time.Minute,
 		Data:    []string{"foo", "foo/bar", "foo/baz"},
 	}
@@ -186,7 +186,7 @@ func TestDataPathDeclared(t *gotesting.T) {
 
 func TestDataPathNotDeclared(t *gotesting.T) {
 	or := newOutputReader()
-	test := Test{
+	test := TestCase{
 		Timeout: time.Minute,
 		Data:    []string{"foo"},
 	}
@@ -227,7 +227,7 @@ func TestDataFileServer(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	test := Test{Data: []string{file1}}
+	test := TestCase{Data: []string{file1}}
 	or := newOutputReader()
 	s := newState(&test, or.ch, &TestConfig{DataDir: td})
 
@@ -279,7 +279,7 @@ func TestVars(t *gotesting.T) {
 		unregValue = "unreg value"
 	)
 
-	test := &Test{Vars: []string{validName, unsetName}}
+	test := &TestCase{Vars: []string{validName, unsetName}}
 	cfg := &TestConfig{Vars: map[string]string{validName: validValue, unregName: unregValue}}
 	or := newOutputReader()
 	s := newState(test, or.ch, cfg)
@@ -335,7 +335,7 @@ func TestVars(t *gotesting.T) {
 
 func TestMeta(t *gotesting.T) {
 	meta := Meta{TastPath: "/foo/bar", Target: "example.net", RunFlags: []string{"-foo", "-bar"}}
-	getMeta := func(test *Test, cfg *TestConfig) (*State, *Meta) {
+	getMeta := func(test *TestCase, cfg *TestConfig) (*State, *Meta) {
 		or := newOutputReader()
 		s := newState(test, or.ch, cfg)
 
@@ -356,7 +356,7 @@ func TestMeta(t *gotesting.T) {
 	)
 
 	// Meta info should be provided to tests in the "meta" package.
-	if s, m := getMeta(&Test{Name: metaTest}, &TestConfig{Meta: &meta}); s.HasError() {
+	if s, m := getMeta(&TestCase{Name: metaTest}, &TestConfig{Meta: &meta}); s.HasError() {
 		t.Errorf("Meta() reported error for %v", metaTest)
 	} else if m == nil {
 		t.Errorf("Meta() = nil for %v", metaTest)
@@ -365,14 +365,14 @@ func TestMeta(t *gotesting.T) {
 	}
 
 	// Tests not in the "meta" package shouldn't have access to meta info.
-	if s, m := getMeta(&Test{Name: nonMetaTest}, &TestConfig{Meta: &meta}); !s.HasError() {
+	if s, m := getMeta(&TestCase{Name: nonMetaTest}, &TestConfig{Meta: &meta}); !s.HasError() {
 		t.Errorf("Meta() didn't report error for %v", nonMetaTest)
 	} else if m != nil {
 		t.Errorf("Meta() = %+v for %v", *m, nonMetaTest)
 	}
 
 	// Check that newState doesn't crash or somehow get a non-nil Meta struct when initially passed a nil struct.
-	if s, m := getMeta(&Test{Name: metaTest}, &TestConfig{}); !s.HasError() {
+	if s, m := getMeta(&TestCase{Name: metaTest}, &TestConfig{}); !s.HasError() {
 		t.Error("Meta() didn't report error for nil info")
 	} else if m != nil {
 		t.Errorf("Meta() = %+v despite nil info", *m)

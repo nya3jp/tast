@@ -99,7 +99,6 @@ func NewSSHServer(pk *rsa.PublicKey, hk *rsa.PrivateKey, handler ExecHandler) (*
 		for {
 			conn, err := ls.Accept()
 			if err != nil {
-				log.Print("Shutting down")
 				return
 			}
 			if err := s.handleConn(conn); err != nil {

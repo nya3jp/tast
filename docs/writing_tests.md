@@ -36,7 +36,7 @@ Tests are categorized into packages based on the functionality that
 they exercise; for example, the [ui package] contains local tests that exercise
 the Chrome OS UI. The category package needs to be directly under the bundle
 package. Thus the category package path should be matched with
-`chromiumos/tast/(local|remote)/bundles/(?P<bundlename>[^/]+)/(?P<category>[^/]+`.
+`chromiumos/tast/(local|remote)/bundles/(?P<bundlename>[^/]+)/(?P<category>[^/]+)`.
 
 A test needs to be registred by calling `testing.AddTest` in the test entry
 file, which is located directly under a category package. The registration

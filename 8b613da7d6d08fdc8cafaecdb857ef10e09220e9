@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9537f587_19a4cfe3",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 205,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-17T16:38:45Z",
+      "side": 1,
+      "message": "Note: this was checked in addAutoAttributes().",
+      "revId": "8b613da7d6d08fdc8cafaecdb857ef10e09220e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2d037e3e_bc9b9228",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 216,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-17T16:38:45Z",
+      "side": 1,
+      "message": "Note: this used to be validateDataPath().",
+      "revId": "8b613da7d6d08fdc8cafaecdb857ef10e09220e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "552b9b2f_61728f55",
+        "filename": "src/chromiumos/tast/testing/test_case.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-17T16:38:45Z",
+      "side": 1,
+      "message": "This and below in this file, mostly copied from test.go, except;\n- Test -\u003e TestCase name conversion.\n- tst -\u003e t name conversion.",
+      "revId": "8b613da7d6d08fdc8cafaecdb857ef10e09220e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

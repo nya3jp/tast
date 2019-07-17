@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4cb6438a_350d99f5",
+        "filename": "src/chromiumos/tast/testing/registry.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-17T16:38:45Z",
+      "side": 0,
+      "message": "Note: thanks to the splitting Test/TestCase and AddTestCase testing method introduction, we no longer need these options.",
+      "revId": "662d9eb134c264e434a80249b9ffa2a4bdea9d35",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f0d069a4_a271f8e6",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 329,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-17T16:38:45Z",
+      "side": 0,
+      "message": "Note: moved to validateName().",
+      "revId": "662d9eb134c264e434a80249b9ffa2a4bdea9d35",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

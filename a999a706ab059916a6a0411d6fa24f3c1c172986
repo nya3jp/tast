@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "44f3c99f_988cad1f",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-17T06:32:33Z",
+      "side": 1,
+      "message": "nit: specifies",
+      "range": {
+        "startLine": 30,
+        "startChar": 8,
+        "endLine": 30,
+        "endChar": 17
+      },
+      "revId": "a999a706ab059916a6a0411d6fa24f3c1c172986",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ec92ccc8_6b943f33",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-17T06:32:33Z",
+      "side": 1,
+      "message": "qq: is there a naming convention for functions to have \u0027do\u0027 prefix?",
+      "range": {
+        "startLine": 94,
+        "startChar": 10,
+        "endLine": 94,
+        "endChar": 24
+      },
+      "revId": "a999a706ab059916a6a0411d6fa24f3c1c172986",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a38e2658_670bc31b",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 400,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-17T06:32:33Z",
+      "side": 1,
+      "message": "It looks it depends on underlying implementation of CloseWithError. Is it documented somewhere?",
+      "range": {
+        "startLine": 400,
+        "startChar": 3,
+        "endLine": 400,
+        "endChar": 62
+      },
+      "revId": "a999a706ab059916a6a0411d6fa24f3c1c172986",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -21,6 +21,9 @@ type Config struct {
 	// CheckDepsCachePath is the path to a JSON file storing cached information to avoid running emerge
 	// to check build dependencies when possible. See checkDepsCache for the format.
 	CheckDepsCachePath string
+	// TastWorkspace is the path to the Go workspace containing Tast framework. This path is used to perform
+	// source compatibility version checks. If it is empty, no check is performed.
+	TastWorkspace string
 }
 
 // Target describes a Go executable package to build and configurations needed to built it.

@@ -2,6 +2,121 @@
   "comments": [
     {
       "key": {
+        "uuid": "c339c600_d100b22e",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-17T10:13:13Z",
+      "side": 1,
+      "message": "nit: holds ?",
+      "range": {
+        "startLine": 27,
+        "startChar": 9,
+        "endLine": 27,
+        "endChar": 13
+      },
+      "revId": "a1e66831bdc20600ab875240118044e00d1ebf7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "976f6774_838f02d0",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-17T10:13:13Z",
+      "side": 1,
+      "message": "Is it used?",
+      "range": {
+        "startLine": 49,
+        "startChar": 1,
+        "endLine": 49,
+        "endChar": 10
+      },
+      "revId": "a1e66831bdc20600ab875240118044e00d1ebf7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4db3490f_af6410dc",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 375,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-17T10:13:13Z",
+      "side": 1,
+      "message": "Don\u0027t we expect stateStarted ?\nIs it valid this method be called on stateClosing or stateDone?",
+      "range": {
+        "startLine": 375,
+        "startChar": 15,
+        "endLine": 375,
+        "endChar": 23
+      },
+      "revId": "a1e66831bdc20600ab875240118044e00d1ebf7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e703c8ee_f469f5c3",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 376,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-17T10:13:13Z",
+      "side": 1,
+      "message": "It may be worth to implement String() for cmdState, so that canonical error message is shown even if cmdState is modified later.",
+      "range": {
+        "startLine": 376,
+        "startChar": 61,
+        "endLine": 376,
+        "endChar": 62
+      },
+      "revId": "a1e66831bdc20600ab875240118044e00d1ebf7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5147baf1_a9686e4c",
+        "filename": "src/chromiumos/tast/host/exec_test.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-17T10:13:13Z",
+      "side": 1,
+      "message": "I think we want some mechanism to prevent this (and other) test to be blocked indefinitely in case of logic error.\nHow about updating newTestData to have a mechanism to self-abort in case of some timeout?\nYon can do it in a new CL.",
+      "range": {
+        "startLine": 103,
+        "startChar": 7,
+        "endLine": 103,
+        "endChar": 18
+      },
+      "revId": "a1e66831bdc20600ab875240118044e00d1ebf7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b200774d_9c3936e5",
         "filename": "src/chromiumos/tast/host/test/ssh_server.go",
         "patchSetId": 8

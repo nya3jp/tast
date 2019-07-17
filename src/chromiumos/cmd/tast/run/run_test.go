@@ -31,7 +31,7 @@ func TestRunPartialRun(t *gotesting.T) {
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		mw := control.NewMessageWriter(stdout)
 		mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 1})
-		mw.WriteMessage(&control.TestStart{Time: time.Unix(2, 0), Test: testing.Test{Name: testName}})
+		mw.WriteMessage(&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestCase{Name: testName}})
 		mw.WriteMessage(&control.TestEnd{Time: time.Unix(3, 0), Name: testName})
 		mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0), OutDir: ""})
 		return 0

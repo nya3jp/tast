@@ -39,10 +39,10 @@ func executeListCmd(t *gotesting.T, stdout io.Writer, args []string,
 }
 
 func TestListTests(t *gotesting.T) {
-	test1 := testing.Test{Name: "pkg.Test1", Desc: "First description", Attr: []string{"attr1"}}
-	test2 := testing.Test{Name: "pkg.Test2", Desc: "Second description"}
+	test1 := testing.TestCase{Name: "pkg.Test1", Desc: "First description", Attr: []string{"attr1"}}
+	test2 := testing.TestCase{Name: "pkg.Test2", Desc: "Second description"}
 	wrapper := stubRunWrapper{
-		runRes: []run.TestResult{run.TestResult{Test: test1}, run.TestResult{Test: test2}},
+		runRes: []run.TestResult{run.TestResult{TestCase: test1}, run.TestResult{TestCase: test2}},
 	}
 
 	// Verify that the default one-test-per-line mode works.
@@ -61,11 +61,11 @@ func TestListTests(t *gotesting.T) {
 	if status := executeListCmd(t, &stdout, args, &wrapper, logging.NewDiscard()); status != subcommands.ExitSuccess {
 		t.Fatalf("listCmd.Execute(%v) returned status %v; want %v", args, status, subcommands.ExitSuccess)
 	}
-	act := make([]testing.Test, 0)
+	var act []testing.TestCase
 	if err := json.Unmarshal(stdout.Bytes(), &act); err != nil {
 		t.Errorf("Failed to unmarshal output from listCmd.Execute(%v): %v", args, err)
 	}
-	if exp := []testing.Test{test1, test2}; !reflect.DeepEqual(exp, act) {
+	if exp := []testing.TestCase{test1, test2}; !reflect.DeepEqual(exp, act) {
 		t.Errorf("listCmd.Execute(%v) printed %+v; want %+v", args, act, exp)
 	}
 }
@@ -75,7 +75,7 @@ func TestListTestsReadFile(t *gotesting.T) {
 	defer os.RemoveAll(td)
 
 	// Writes tests to fn within td and returns the full path.
-	writeTests := func(fn string, tests []*testing.Test) string {
+	writeTests := func(fn string, tests []*testing.TestCase) string {
 		b, err := json.Marshal(tests)
 		if err != nil {
 			t.Fatal("Failed to marshal tests: ", err)
@@ -87,23 +87,23 @@ func TestListTestsReadFile(t *gotesting.T) {
 		return p
 	}
 
-	test1 := testing.Test{Name: "pkg.Test1", Attr: []string{"a"}}
-	test2 := testing.Test{Name: "pkg.Test2", Attr: []string{"b"}}
-	p1 := writeTests("1.json", []*testing.Test{&test1, &test2})
+	test1 := testing.TestCase{Name: "pkg.Test1", Attr: []string{"a"}}
+	test2 := testing.TestCase{Name: "pkg.Test2", Attr: []string{"b"}}
+	p1 := writeTests("1.json", []*testing.TestCase{&test1, &test2})
 
-	test3 := testing.Test{Name: "pkg.Test3", Attr: []string{"b"}}
-	test4 := testing.Test{Name: "pkg.Test4", Attr: []string{"a"}}
-	p2 := writeTests("2.json", []*testing.Test{&test3, &test4})
+	test3 := testing.TestCase{Name: "pkg.Test3", Attr: []string{"b"}}
+	test4 := testing.TestCase{Name: "pkg.Test4", Attr: []string{"a"}}
+	p2 := writeTests("2.json", []*testing.TestCase{&test3, &test4})
 
 	var stdout bytes.Buffer
 	args := []string{"-json", "-readfile=" + p1, "-readfile=" + p2, "(b)"}
 	if status := executeListCmd(t, &stdout, args, nil, logging.NewDiscard()); status != subcommands.ExitSuccess {
 		t.Fatalf("listCmd.Execute(%v) returned status %v; want %v", args, status, subcommands.ExitSuccess)
 	}
-	var act []testing.Test
+	var act []testing.TestCase
 	if err := json.Unmarshal(stdout.Bytes(), &act); err != nil {
 		t.Errorf("Failed to unmarshal output from listCmd.Execute(%v): %v", args, err)
-	} else if exp := []testing.Test{test2, test3}; !reflect.DeepEqual(exp, act) {
+	} else if exp := []testing.TestCase{test2, test3}; !reflect.DeepEqual(exp, act) {
 		t.Errorf("listCmd.Execute(%v) printed %+v; want %+v", args, act, exp)
 	}
 }

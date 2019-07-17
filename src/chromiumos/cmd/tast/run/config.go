@@ -281,15 +281,21 @@ func (c *Config) buildCfg() *build.Config {
 		CheckBuildDeps:     c.checkPortageDeps,
 		CheckDepsCachePath: filepath.Join(c.buildOutDir, checkDepsCacheFile),
 		InstallPortageDeps: c.installPortageDeps,
+		TastWorkspace:      c.tastWorkspace(),
 	}
 }
 
 // commonWorkspaces returns Go workspaces containing source code needed to build all Tast-related executables.
 func (c *Config) commonWorkspaces() []string {
 	return []string{
-		filepath.Join(c.trunkDir, "src/platform/tast"), // shared code
+		c.tastWorkspace(), // shared code
 		"/usr/lib/gopath", // system packages
 	}
+}
+
+// tastWorkspace returns the Go workspace containing the Tast framework.
+func (c *Config) tastWorkspace() string {
+	return filepath.Join(c.trunkDir, "src/platform/tast")
 }
 
 // crosTestWorkspace returns the Go workspace containing standard test-related code.

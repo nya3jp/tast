@@ -285,25 +285,5 @@ func TestRemoteFailure(t *gotesting.T) {
 	}
 }
 
-func TestRemoteNotBuild(t *gotesting.T) {
-	// Set up the fake remote runner to always fail.
-	td := newRemoteTestData(t, "", "whoops", 1)
-	defer td.close()
-
-	// Simulate that the built bundle does not contain remote tests.
-	td.cfg.build = true
-	td.cfg.remoteBundleDir = td.dir
-	td.cfg.buildBundle = "missingbundle"
-
-	// Call remote directly. remote does not create fakeRunnerArgsFile, so td.run always fails.
-	status, results := remote(context.Background(), &td.cfg)
-	if status.ExitCode != subcommands.ExitSuccess {
-		t.Errorf("remote(%v) returned status %v; want %v", td.cfg, status.ExitCode, subcommands.ExitSuccess)
-	}
-	if len(results) > 0 {
-		t.Errorf("remote(%v) returned %d results; want 0", td.cfg, len(results))
-	}
-}
-
 // TODO(derat): Add a test that verifies that getInitialSysInfo is called before tests are run.
 // Also verify that cfg.startedRun is false if we see an early failure during getInitialSysInfo.

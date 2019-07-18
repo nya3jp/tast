@@ -27,6 +27,8 @@ func TestRunPartialRun(t *gotesting.T) {
 
 	// Make the local runner report success, but set a nonexistent path for
 	// the remote runner so that it will fail.
+	td.cfg.runLocal = true
+	td.cfg.runRemote = true
 	const testName = "pkg.Test"
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		mw := control.NewMessageWriter(stdout)
@@ -54,7 +56,9 @@ func TestRunError(t *gotesting.T) {
 	td := newLocalTestData(t)
 	defer td.close()
 
+	td.cfg.runLocal = true
 	td.cfg.KeyFile = "" // force SSH auth error
+
 	if status, _ := Run(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitFailure {
 		t.Errorf("Run() = %v; want %v", status, subcommands.ExitFailure)
 	} else if !status.FailedBeforeRun {
@@ -67,18 +71,17 @@ func TestRunEphemeralDevserver(t *gotesting.T) {
 	td := newLocalTestData(t)
 	defer td.close()
 
+	td.cfg.runLocal = true
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		mw := control.NewMessageWriter(stdout)
 		mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
 		mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
 		return 0
 	}
-	td.cfg.remoteRunner = filepath.Join(td.tempDir, "missing_remote_test_runner")
-
 	td.cfg.useEphemeralDevserver = true
 
-	if status, _ := Run(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitFailure {
-		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitFailure, td.logbuf.String())
+	if status, _ := Run(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
+		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
 	}
 
 	exp := []string{fmt.Sprintf("http://127.0.0.1:%d", ephemeralDevserverPort)}
@@ -91,8 +94,8 @@ func TestRunDownloadPrivateBundles(t *gotesting.T) {
 	td := newLocalTestData(t)
 	defer td.close()
 
+	td.cfg.runLocal = true
 	called := false
-
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case runner.RunTestsMode:
@@ -111,13 +114,12 @@ func TestRunDownloadPrivateBundles(t *gotesting.T) {
 		}
 		return 0
 	}
-	td.cfg.remoteRunner = filepath.Join(td.tempDir, "missing_remote_test_runner")
 
 	td.cfg.devservers = []string{"http://example.com:8080"}
 	td.cfg.downloadPrivateBundles = true
 
-	if status, _ := Run(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitFailure {
-		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitFailure, td.logbuf.String())
+	if status, _ := Run(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
+		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
 	}
 	if !called {
 		t.Errorf("Run did not call downloadPrivateBundles")

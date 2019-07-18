@@ -6,7 +6,11 @@ package run
 
 import (
 	"flag"
+	"os"
+	"path/filepath"
 	"testing"
+
+	"chromiumos/tast/testutil"
 )
 
 func TestConfigRunDefaults(t *testing.T) {
@@ -37,12 +41,41 @@ func TestConfigListDefaults(t *testing.T) {
 	}
 }
 
-func TestConfigDeriveDefaults(t *testing.T) {
+func TestConfigDeriveDefaultsNoBuild(t *testing.T) {
 	cfg := NewConfig(RunTestsMode, "", "")
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
 	cfg.SetFlags(flags)
 
-	cfg.buildBundle = "cros"
+	cfg.build = false
+
+	if err := cfg.DeriveDefaults(); err != nil {
+		t.Error("DeriveDefaults failed: ", err)
+	}
+	if !cfg.runLocal {
+		t.Error("runLocal is false; want true")
+	}
+	if !cfg.runRemote {
+		t.Error("runRemote is false; want true")
+	}
+}
+
+func TestConfigDeriveDefaultsBuild(t *testing.T) {
+	const buildBundle = "cros"
+
+	td := testutil.TempDir(t)
+	defer os.RemoveAll(td)
+
+	// Create the local bundle package.
+	if err := os.MkdirAll(filepath.Join(td, "src/platform/tast-tests/src", localBundlePkgPathPrefix, buildBundle), 0755); err != nil {
+		t.Fatal("mkdir failed: ", err)
+	}
+
+	cfg := NewConfig(RunTestsMode, "", td)
+	flags := flag.NewFlagSet("", flag.ContinueOnError)
+	cfg.SetFlags(flags)
+
+	cfg.buildBundle = buildBundle
+
 	if err := cfg.DeriveDefaults(); err != nil {
 		t.Error("DeriveDefaults failed: ", err)
 	}
@@ -52,23 +85,67 @@ func TestConfigDeriveDefaults(t *testing.T) {
 	if cfg.localBundleDir == "" {
 		t.Error("localBundleDir is not set")
 	}
+	if !cfg.runLocal {
+		t.Error("runLocal is false; want true")
+	}
+	if cfg.runRemote {
+		t.Error("runRemote is true; want false")
+	}
 }
 
-func TestConfigDeriveDefaultsNonStandardBundle(t *testing.T) {
+func TestConfigDeriveDefaultsBuildNonStandardBundle(t *testing.T) {
+	const buildBundle = "nonstandardbundle"
+
+	td := testutil.TempDir(t)
+	defer os.RemoveAll(td)
+
+	// Create the remote bundle package.
+	if err := os.MkdirAll(filepath.Join(td, "src", remoteBundlePkgPathPrefix, buildBundle), 0755); err != nil {
+		t.Fatal("mkdir failed: ", err)
+	}
+
 	cfg := NewConfig(RunTestsMode, "", "")
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
 	cfg.SetFlags(flags)
 
-	cfg.buildBundle = "nonstandardbundle"
+	cfg.buildBundle = buildBundle
+
+	// Since buildBundle is a not known bundle, DeriveDefaults fails to compute
+	// buildWorkspace.
 	if err := cfg.DeriveDefaults(); err == nil {
 		t.Error("DeriveDefaults succeeded; want failure")
 	}
 
-	cfg.buildWorkspace = "/path/to/workspace"
+	// It works if buildWorkspace is set explicitly.
+	cfg.buildWorkspace = td
 	if err := cfg.DeriveDefaults(); err != nil {
 		t.Error("DeriveDefaults failed: ", err)
 	}
 	if cfg.localBundleDir == "" {
 		t.Error("localBundleDir is not set")
+	}
+	if cfg.runLocal {
+		t.Error("runLocal is true; want false")
+	}
+	if !cfg.runRemote {
+		t.Error("runRemote is false; want true")
+	}
+}
+
+func TestConfigDeriveDefaultsBuildMissingBundle(t *testing.T) {
+	const buildBundle = "nosuchbundle"
+
+	td := testutil.TempDir(t)
+	defer os.RemoveAll(td)
+
+	cfg := NewConfig(RunTestsMode, "", td)
+	flags := flag.NewFlagSet("", flag.ContinueOnError)
+	cfg.SetFlags(flags)
+
+	cfg.buildBundle = buildBundle
+
+	// At least either one of local/remote bundle package should exist.
+	if err := cfg.DeriveDefaults(); err == nil {
+		t.Error("DeriveDefaults succeeded; want failure")
 	}
 }

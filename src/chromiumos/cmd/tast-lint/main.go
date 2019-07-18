@@ -83,6 +83,8 @@ func checkAll(g *git.Git, paths []string, debug bool) ([]*check.Issue, error) {
 		var issues []*check.Issue // issues in this file
 
 		issues = append(issues, check.Golint(path, data, debug)...)
+		issues = append(issues, check.Comments(fs, f)...)
+
 		if !hasFmtError(data, path) {
 			// goimports applies gofmt, so skip it if the code has any formatting
 			// error to avoid confusing reports. gofmt will be run by the repo

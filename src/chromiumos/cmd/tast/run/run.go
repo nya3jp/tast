@@ -71,7 +71,7 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []TestResult)
 	// TODO(crbug.com/982181): Once we move the logic to download external data
 	// files to the prepare, try restricting the lifetime of the ephemeral
 	// devserver.
-	if len(cfg.devservers) == 0 && cfg.useEphemeralDevserver {
+	if cfg.runLocal && len(cfg.devservers) == 0 && cfg.useEphemeralDevserver {
 		if err := startEphemeralDevserver(ctx, hst, cfg); err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start ephemeral devserver: %v", err), nil
 		}
@@ -83,7 +83,9 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []TestResult)
 	}
 
 	// Run local tests.
-	status, results = local(ctx, cfg)
+	if cfg.runLocal {
+		status, results = local(ctx, cfg)
+	}
 
 	// Turn down the ephemeral devserver before running remote tests. Some remote tests
 	// in the meta category run the tast command which starts yet another ephemeral devserver
@@ -93,7 +95,7 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []TestResult)
 	// Run remote tests and merge the results.
 	// TODO(derat): While test runners are always supposed to report success even if tests fail,
 	// it'd probably be better to run both types here even if one fails.
-	if status.ExitCode == subcommands.ExitSuccess {
+	if cfg.runRemote && status.ExitCode == subcommands.ExitSuccess {
 		var rres []TestResult
 		status, rres = remote(ctx, cfg)
 		results = append(results, rres...)
@@ -155,13 +157,9 @@ func buildAll(ctx context.Context, cfg *Config, hst *host.SSH) error {
 		return fmt.Errorf("failed to get local arch: %v", err)
 	}
 
+	// local_test_runner is required even if we are running only remote tests,
+	// e.g. to compute software dependencies.
 	tgts := []*build.Target{
-		{
-			Pkg:        path.Join(localBundlePkgPathPrefix, cfg.buildBundle),
-			Arch:       cfg.targetArch,
-			Workspaces: cfg.bundleWorkspaces(),
-			OutDir:     filepath.Join(cfg.buildOutDir, cfg.targetArch, localBundleBuildSubdir),
-		},
 		{
 			Pkg:        localRunnerPkg,
 			Arch:       cfg.targetArch,
@@ -170,23 +168,21 @@ func buildAll(ctx context.Context, cfg *Config, hst *host.SSH) error {
 		},
 	}
 
-	// Build the remote bundle only when it exists.
-	// This introduces asymmetricity between local bundles and remote bundles, but
-	// practically we have local tests in every bundles.
-	rpkg := path.Join(remoteBundlePkgPathPrefix, cfg.buildBundle)
-	if _, err := os.Stat(filepath.Join(cfg.buildWorkspace, "src", rpkg)); err == nil {
+	if cfg.runLocal {
 		tgts = append(tgts, &build.Target{
-			Pkg:        rpkg,
+			Pkg:        path.Join(localBundlePkgPathPrefix, cfg.buildBundle),
+			Arch:       cfg.targetArch,
+			Workspaces: cfg.bundleWorkspaces(),
+			OutDir:     filepath.Join(cfg.buildOutDir, cfg.targetArch, localBundleBuildSubdir),
+		})
+	}
+	if cfg.runRemote {
+		tgts = append(tgts, &build.Target{
+			Pkg:        path.Join(remoteBundlePkgPathPrefix, cfg.buildBundle),
 			Arch:       larch,
 			Workspaces: cfg.bundleWorkspaces(),
 			OutDir:     cfg.remoteBundleDir,
 		})
-	} else if os.IsNotExist(err) {
-		if err := os.Remove(filepath.Join(cfg.remoteBundleDir, cfg.buildBundle)); err != nil && !os.IsNotExist(err) {
-			return fmt.Errorf("failed to remove stale remote bundle executable: %v", err)
-		}
-	} else {
-		return fmt.Errorf("failed to stat remote bundle package dir: %v", err)
 	}
 
 	var names []string
@@ -248,7 +244,7 @@ func pushAll(ctx context.Context, cfg *Config, hst *host.SSH) error {
 		return fmt.Errorf("failed to push local executables: %v", err)
 	}
 
-	if cfg.mode == ListTestsMode {
+	if !cfg.runLocal || cfg.mode == ListTestsMode {
 		return nil
 	}
 
@@ -275,9 +271,14 @@ func pushAll(ctx context.Context, cfg *Config, hst *host.SSH) error {
 // executable to the DUT if necessary.
 func pushExecutables(ctx context.Context, cfg *Config, hst *host.SSH) error {
 	srcDir := filepath.Join(cfg.buildOutDir, cfg.targetArch)
+
+	// local_test_runner is required even if we are running only remote tests,
+	// e.g. to compute software dependencies.
 	files := map[string]string{
-		filepath.Join(srcDir, localBundleBuildSubdir, cfg.buildBundle): filepath.Join(cfg.localBundleDir, cfg.buildBundle),
-		filepath.Join(srcDir, path.Base(localRunnerPkg)):               cfg.localRunner,
+		filepath.Join(srcDir, path.Base(localRunnerPkg)): cfg.localRunner,
+	}
+	if cfg.runLocal {
+		files[filepath.Join(srcDir, localBundleBuildSubdir, cfg.buildBundle)] = filepath.Join(cfg.localBundleDir, cfg.buildBundle)
 	}
 
 	ctx, st := timing.Start(ctx, "push_executables")

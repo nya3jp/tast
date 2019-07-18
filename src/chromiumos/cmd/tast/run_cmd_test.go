@@ -31,6 +31,7 @@ func executeRunCmd(t *gotesting.T, args []string, wrapper *stubRunWrapper, lg lo
 	if err := flags.Parse(args); err != nil {
 		t.Fatal(err)
 	}
+	flags.Set("build", "false") // DeriveDefaults fails if -build=true and bundle dirs are missing
 	status := cmd.Execute(logging.NewContext(context.Background(), lg), flags)
 
 	if wrapper.runRes != nil && wrapper.runCfg == nil {

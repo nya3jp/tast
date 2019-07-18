@@ -35,6 +35,7 @@ func executeListCmd(t *gotesting.T, stdout io.Writer, args []string,
 	if err := flags.Parse(args); err != nil {
 		t.Fatal(err)
 	}
+	flags.Set("build", "false") // DeriveDefaults fails if -build=true and bundle dirs are missing
 	return cmd.Execute(logging.NewContext(context.Background(), lg), flags)
 }
 

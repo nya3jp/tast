@@ -2,6 +2,121 @@
   "comments": [
     {
       "key": {
+        "uuid": "c09c3f75_d2bdcaaa",
+        "filename": "src/chromiumos/cmd/tast/run/results.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-18T12:56:46Z",
+      "side": 1,
+      "message": "TestCase",
+      "range": {
+        "startLine": 46,
+        "startChar": 4,
+        "endLine": 46,
+        "endChar": 8
+      },
+      "revId": "8b613da7d6d08fdc8cafaecdb857ef10e09220e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "452d64ee_5bb93646",
+        "filename": "src/chromiumos/tast/testing/registry.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-18T12:56:46Z",
+      "side": 1,
+      "message": "It is unfortunate we still need to export AddTestCase. Could you add a TODO comment to unexport or remove this method?",
+      "range": {
+        "startLine": 42,
+        "startChar": 0,
+        "endLine": 43,
+        "endChar": 51
+      },
+      "revId": "8b613da7d6d08fdc8cafaecdb857ef10e09220e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0bdf4793_8050a699",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-18T12:56:46Z",
+      "side": 1,
+      "message": "Currently tast/errors is used to construct errors only in user code, not in framework code. This might be worth revisiting, but would you mind sticking with standard libraries now?",
+      "range": {
+        "startLine": 18,
+        "startChar": 1,
+        "endLine": 18,
+        "endChar": 25
+      },
+      "revId": "8b613da7d6d08fdc8cafaecdb857ef10e09220e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ed8b82ec_fc56d6c1",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-18T12:56:46Z",
+      "side": 1,
+      "message": "Could you clarify that primary purpose of this type is test declaration?",
+      "range": {
+        "startLine": 37,
+        "startChar": 1,
+        "endLine": 37,
+        "endChar": 62
+      },
+      "revId": "8b613da7d6d08fdc8cafaecdb857ef10e09220e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3d606f00_00077fcf",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-18T12:56:46Z",
+      "side": 1,
+      "message": "huge nit: I think this should be \"Func\" since it refers a Test member name.",
+      "range": {
+        "startLine": 116,
+        "startChar": 26,
+        "endLine": 116,
+        "endChar": 30
+      },
+      "revId": "8b613da7d6d08fdc8cafaecdb857ef10e09220e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "9537f587_19a4cfe3",
         "filename": "src/chromiumos/tast/testing/test.go",
         "patchSetId": 2
@@ -16,6 +131,24 @@
       "revId": "8b613da7d6d08fdc8cafaecdb857ef10e09220e9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a592a24d_da8443a1",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 205,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-18T12:56:46Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "9537f587_19a4cfe3",
+      "revId": "8b613da7d6d08fdc8cafaecdb857ef10e09220e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -36,6 +169,93 @@
     },
     {
       "key": {
+        "uuid": "53e0f9c9_c9a33080",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 216,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-18T12:56:46Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "2d037e3e_bc9b9228",
+      "revId": "8b613da7d6d08fdc8cafaecdb857ef10e09220e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b1bff858_2026118b",
+        "filename": "src/chromiumos/tast/testing/test_case.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-18T12:56:46Z",
+      "side": 1,
+      "message": "Mind removing? (dup with test.go)",
+      "range": {
+        "startLine": 5,
+        "startChar": 0,
+        "endLine": 5,
+        "endChar": 57
+      },
+      "revId": "8b613da7d6d08fdc8cafaecdb857ef10e09220e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cc1de919_682893fa",
+        "filename": "src/chromiumos/tast/testing/test_case.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-18T12:56:46Z",
+      "side": 1,
+      "message": "typo: given",
+      "range": {
+        "startLine": 73,
+        "startChar": 52,
+        "endLine": 73,
+        "endChar": 57
+      },
+      "revId": "8b613da7d6d08fdc8cafaecdb857ef10e09220e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bee0526c_e69baaaa",
+        "filename": "src/chromiumos/tast/testing/test_case.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-18T12:56:46Z",
+      "side": 1,
+      "message": "autoAttrs",
+      "range": {
+        "startLine": 103,
+        "startChar": 3,
+        "endLine": 103,
+        "endChar": 20
+      },
+      "revId": "8b613da7d6d08fdc8cafaecdb857ef10e09220e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "552b9b2f_61728f55",
         "filename": "src/chromiumos/tast/testing/test_case.go",
         "patchSetId": 2
@@ -47,6 +267,70 @@
       "writtenOn": "2019-07-17T16:38:45Z",
       "side": 1,
       "message": "This and below in this file, mostly copied from test.go, except;\n- Test -\u003e TestCase name conversion.\n- tst -\u003e t name conversion.",
+      "revId": "8b613da7d6d08fdc8cafaecdb857ef10e09220e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "20942c7b_e9b6c7b9",
+        "filename": "src/chromiumos/tast/testing/test_case.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-18T12:56:46Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "552b9b2f_61728f55",
+      "revId": "8b613da7d6d08fdc8cafaecdb857ef10e09220e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "45d2a278_ea311f4a",
+        "filename": "src/chromiumos/tast/testing/test_case.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-18T12:56:46Z",
+      "side": 1,
+      "message": "Could you replace tst in comments with t?",
+      "range": {
+        "startLine": 158,
+        "startChar": 57,
+        "endLine": 158,
+        "endChar": 60
+      },
+      "revId": "8b613da7d6d08fdc8cafaecdb857ef10e09220e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d8552be0_7d58bb4a",
+        "filename": "src/chromiumos/tast/testing/test_case_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-18T12:56:46Z",
+      "side": 1,
+      "message": "huge nit: Now we consider both \"test\" and \"case\" as acronyms.",
+      "range": {
+        "startLine": 23,
+        "startChar": 49,
+        "endLine": 23,
+        "endChar": 98
+      },
       "revId": "8b613da7d6d08fdc8cafaecdb857ef10e09220e9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

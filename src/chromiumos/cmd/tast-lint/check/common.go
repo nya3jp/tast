@@ -14,9 +14,14 @@ import (
 // testMainPathRegexp matches a file name of a Tast test main file.
 var testMainPathRegexp = regexp.MustCompile(`/src/chromiumos/tast/(?:local|remote)/bundles/[^/]+/[^/]+/[^/]+\.go$`)
 
-// isTestMainFile checks if path is a Test test main file.
+// isTestMainFile checks if path is a Tast test main file.
 func isTestMainFile(path string) bool {
-	path, err := filepath.Abs(path)
+	realpath, err := filepath.EvalSymlinks(path)
+	// Ignore the error because tests can use non-existent file path.
+	if err == nil {
+		path = realpath
+	}
+	path, err = filepath.Abs(path)
 	if err != nil {
 		return false
 	}

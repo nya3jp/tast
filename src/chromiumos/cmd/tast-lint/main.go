@@ -28,7 +28,11 @@ func getTargetFiles(g *git.Git) ([]string, error) {
 
 // isTestFile checks if a file path is under Tast test directories.
 func isTestFile(path string) bool {
-	path, err := filepath.Abs(path)
+	path, err := filepath.EvalSymlinks(path)
+	if err != nil {
+		return false
+	}
+	path, err = filepath.Abs(path)
 	if err != nil {
 		return false
 	}

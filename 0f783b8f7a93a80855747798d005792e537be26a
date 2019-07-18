@@ -131,6 +131,30 @@
     },
     {
       "key": {
+        "uuid": "9b53f52f_15d4b21f",
+        "filename": "src/chromiumos/cmd/tast/run/remote.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-18T04:51:41Z",
+      "side": 1,
+      "message": "Chatted offline. Oka\u0027s suggestion was to decide whether to run local/remote tests in Config.DeriveDefaults.\n\nWhile it sounds clearer, it\u0027s going to be hundreds of lines of changes, so let me land this first to unblock Tast users.",
+      "parentUuid": "0faae142_2995d2dc",
+      "range": {
+        "startLine": 42,
+        "startChar": 10,
+        "endLine": 42,
+        "endChar": 23
+      },
+      "revId": "0f783b8f7a93a80855747798d005792e537be26a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "693080df_e2c8cf5a",
         "filename": "src/chromiumos/cmd/tast/run/run.go",
         "patchSetId": 2

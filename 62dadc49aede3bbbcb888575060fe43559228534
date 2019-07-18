@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f67036fe_51525be2",
+        "filename": "src/chromiumos/cmd/tast-lint/check/comments.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-18T13:06:31Z",
+      "side": 1,
+      "message": "Don\u0027t we have to skip if ast.IsExported(fn) to avoid duplication with golint?",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 22,
+        "endChar": 3
+      },
+      "revId": "62dadc49aede3bbbcb888575060fe43559228534",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "52b021e4_e7ed25fa",
+        "filename": "src/chromiumos/cmd/tast-lint/check/comments.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-18T13:06:31Z",
+      "side": 1,
+      "message": "nit: addIssue is used only once, mind inlining?",
+      "range": {
+        "startLine": 32,
+        "startChar": 2,
+        "endLine": 32,
+        "endChar": 10
+      },
+      "revId": "62dadc49aede3bbbcb888575060fe43559228534",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "851b3118_35488d7c",
+        "filename": "src/chromiumos/cmd/tast-lint/check/comments.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-18T13:06:31Z",
+      "side": 1,
+      "message": "I recommend briefly describing the violated rule. How about borrowing the golint\u0027s message, e.g.\n\n Comment on function %s should be of the form %q",
+      "range": {
+        "startLine": 36,
+        "startChar": 24,
+        "endLine": 36,
+        "endChar": 61
+      },
+      "revId": "62dadc49aede3bbbcb888575060fe43559228534",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

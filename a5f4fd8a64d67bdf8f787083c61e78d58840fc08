@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "29effa56_22f98d64",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-19T06:45:47Z",
+      "side": 1,
+      "message": "Sorry overlooked... r needs to be closed, after use.",
+      "revId": "a5f4fd8a64d67bdf8f787083c61e78d58840fc08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

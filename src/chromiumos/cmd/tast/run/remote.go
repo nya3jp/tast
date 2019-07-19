@@ -23,6 +23,8 @@ import (
 )
 
 const (
+	remoteRunnerPkg = "chromiumos/cmd/remote_test_runner" // Go package for remote_test_runner
+
 	remoteBundlePkgPathPrefix = "chromiumos/tast/remote/bundles" // Go package path prefix for test bundles
 
 	// remoteBundleBuildSubdir is a subdirectory used for compiled remote test bundles.

@@ -169,7 +169,7 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 	f.StringVar(&c.localDataDir, "localdatadir", "", "directory containing builtin local test data")
 
 	// These are configurable since files may be installed elsewhere when running in the lab.
-	f.StringVar(&c.remoteRunner, "remoterunner", "/usr/bin/remote_test_runner", "executable that runs remote test bundles")
+	f.StringVar(&c.remoteRunner, "remoterunner", "", "executable that runs remote test bundles")
 	f.StringVar(&c.remoteBundleDir, "remotebundledir", "", "directory containing builtin remote test bundles")
 	f.StringVar(&c.remoteDataDir, "remotedatadir", "", "directory containing builtin remote test data")
 
@@ -245,6 +245,7 @@ func (c *Config) DeriveDefaults() error {
 		setIfEmpty(&c.localRunner, "/usr/local/libexec/tast/bin_pushed/local_test_runner")
 		setIfEmpty(&c.localBundleDir, "/usr/local/libexec/tast/bundles/local_pushed")
 		setIfEmpty(&c.localDataDir, "/usr/local/share/tast/data_pushed")
+		setIfEmpty(&c.remoteRunner, filepath.Join(c.buildOutDir, larch, "remote_test_runner"))
 		setIfEmpty(&c.remoteBundleDir, filepath.Join(c.buildOutDir, larch, remoteBundleBuildSubdir))
 		// Remote data files are read from the source checkout directly.
 		setIfEmpty(&c.remoteDataDir, filepath.Join(c.buildWorkspace, "src"))
@@ -263,6 +264,7 @@ func (c *Config) DeriveDefaults() error {
 		setIfEmpty(&c.localRunner, "/usr/local/bin/local_test_runner")
 		setIfEmpty(&c.localBundleDir, "/usr/local/libexec/tast/bundles/local")
 		setIfEmpty(&c.localDataDir, "/usr/local/share/tast/data")
+		setIfEmpty(&c.remoteRunner, "/usr/bin/remote_test_runner")
 		setIfEmpty(&c.remoteBundleDir, "/usr/libexec/tast/bundles/remote")
 		setIfEmpty(&c.remoteDataDir, "/usr/share/tast/data")
 		// Always run both local and remote tests.

@@ -29,8 +29,7 @@ const (
 	sshPingTimeout    = 5 * time.Second  // timeout for checking if SSH connection to DUT is open
 	sshRetryInterval  = 5 * time.Second  // minimum time to wait between SSH connection attempts
 
-	localRunnerPkg        = "chromiumos/cmd/local_test_runner"          // Go package for local_test_runner
-	localRunnerPortagePkg = "chromeos-base/tast-local-test-runner-9999" // Portage package for local_test_runner
+	localRunnerPkg = "chromiumos/cmd/local_test_runner" // Go package for local_test_runner
 
 	localBundlePkgPathPrefix = "chromiumos/tast/local/bundles" // Go package path prefix for test bundles
 

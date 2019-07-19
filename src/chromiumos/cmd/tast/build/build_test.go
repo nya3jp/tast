@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"testing"
 
@@ -68,7 +69,7 @@ func TestBuild(t *testing.T) {
 			filepath.Join(td, commonDir),
 			filepath.Join(td, sysDir),
 		},
-		OutDir: outDir,
+		Out: filepath.Join(outDir, path.Base(mainPkgName)),
 	}
 
 	if err := Build(context.Background(), cfg, []*Target{tgt}); err != nil {
@@ -76,7 +77,7 @@ func TestBuild(t *testing.T) {
 	}
 
 	exp := commonConstVal + sysConstVal
-	bin := filepath.Join(outDir, filepath.Base(mainPkgName))
+	bin := filepath.Join(outDir, path.Base(mainPkgName))
 	if out, err := exec.Command(bin).CombinedOutput(); err != nil {
 		t.Errorf("Failed to run %s: %v", bin, err)
 	} else if string(out) != exp {
@@ -120,13 +121,13 @@ func main() {
 			Pkg:        pkg1,
 			Arch:       arch,
 			Workspaces: []string{filepath.Join(td, wsDir)},
-			OutDir:     outDir,
+			Out:        filepath.Join(outDir, pkg1),
 		},
 		{
 			Pkg:        pkg2,
 			Arch:       arch,
 			Workspaces: []string{filepath.Join(td, wsDir)},
-			OutDir:     outDir,
+			Out:        filepath.Join(outDir, pkg2),
 		},
 	}
 
@@ -164,7 +165,7 @@ func TestBuildBadWorkspace(t *testing.T) {
 		Pkg:        "good",
 		Arch:       arch,
 		Workspaces: []string{filepath.Join(td, "ws1")},
-		OutDir:     filepath.Join(td, "out"),
+		Out:        filepath.Join(td, "out/good"),
 	}
 
 	if err := Build(context.Background(), cfg, []*Target{tgt}); err != nil {

@@ -164,7 +164,7 @@ func buildAll(ctx context.Context, cfg *Config, hst *host.SSH) error {
 			Pkg:        localRunnerPkg,
 			Arch:       cfg.targetArch,
 			Workspaces: cfg.commonWorkspaces(),
-			OutDir:     filepath.Join(cfg.buildOutDir, cfg.targetArch),
+			Out:        filepath.Join(cfg.buildOutDir, cfg.targetArch, path.Base(localRunnerPkg)),
 		},
 	}
 
@@ -173,7 +173,7 @@ func buildAll(ctx context.Context, cfg *Config, hst *host.SSH) error {
 			Pkg:        path.Join(localBundlePkgPathPrefix, cfg.buildBundle),
 			Arch:       cfg.targetArch,
 			Workspaces: cfg.bundleWorkspaces(),
-			OutDir:     filepath.Join(cfg.buildOutDir, cfg.targetArch, localBundleBuildSubdir),
+			Out:        filepath.Join(cfg.buildOutDir, cfg.targetArch, localBundleBuildSubdir, cfg.buildBundle),
 		})
 	}
 	if cfg.runRemote {
@@ -181,7 +181,7 @@ func buildAll(ctx context.Context, cfg *Config, hst *host.SSH) error {
 			Pkg:        path.Join(remoteBundlePkgPathPrefix, cfg.buildBundle),
 			Arch:       larch,
 			Workspaces: cfg.bundleWorkspaces(),
-			OutDir:     cfg.remoteBundleDir,
+			Out:        filepath.Join(cfg.remoteBundleDir, cfg.buildBundle),
 		})
 	}
 

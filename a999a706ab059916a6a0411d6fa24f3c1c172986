@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "633d4edd_3ba71481",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-19T01:13:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "44f3c99f_988cad1f",
+      "range": {
+        "startLine": 30,
+        "startChar": 8,
+        "endLine": 30,
+        "endChar": 17
+      },
+      "revId": "a999a706ab059916a6a0411d6fa24f3c1c172986",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ec92ccc8_6b943f33",
         "filename": "src/chromiumos/tast/host/exec.go",
         "patchSetId": 7
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "51818a43_78e60e2a",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-19T01:13:16Z",
+      "side": 1,
+      "message": "Not really, let me rename this to waitAndClose.",
+      "parentUuid": "ec92ccc8_6b943f33",
+      "range": {
+        "startLine": 94,
+        "startChar": 10,
+        "endLine": 94,
+        "endChar": 24
+      },
+      "revId": "a999a706ab059916a6a0411d6fa24f3c1c172986",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a38e2658_670bc31b",
         "filename": "src/chromiumos/tast/host/exec.go",
         "patchSetId": 7
@@ -68,6 +116,30 @@
       "revId": "a999a706ab059916a6a0411d6fa24f3c1c172986",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "040b5967_51cb9cfa",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 400,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-19T01:13:16Z",
+      "side": 1,
+      "message": "Good point, though I checked io.Pipe\u0027s implementation allows this, we should not depend on internal details. Let me use sync.Once to avoid calling CloseWithError multiple times.",
+      "parentUuid": "a38e2658_670bc31b",
+      "range": {
+        "startLine": 400,
+        "startChar": 3,
+        "endLine": 400,
+        "endChar": 62
+      },
+      "revId": "a999a706ab059916a6a0411d6fa24f3c1c172986",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

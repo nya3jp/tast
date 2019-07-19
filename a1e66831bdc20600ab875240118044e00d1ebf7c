@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "4f4ece77_422ef26b",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-19T01:13:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c339c600_d100b22e",
+      "range": {
+        "startLine": 27,
+        "startChar": 9,
+        "endLine": 27,
+        "endChar": 13
+      },
+      "revId": "a1e66831bdc20600ab875240118044e00d1ebf7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "976f6774_838f02d0",
         "filename": "src/chromiumos/tast/host/exec.go",
         "patchSetId": 8
@@ -45,6 +69,30 @@
       "revId": "a1e66831bdc20600ab875240118044e00d1ebf7c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "163d5143_0dce9500",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-19T01:13:16Z",
+      "side": 1,
+      "message": "Good catch, removed.",
+      "parentUuid": "976f6774_838f02d0",
+      "range": {
+        "startLine": 49,
+        "startChar": 1,
+        "endLine": 49,
+        "endChar": 10
+      },
+      "revId": "a1e66831bdc20600ab875240118044e00d1ebf7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "88d7a0b7_7a119a83",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 375,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-19T01:13:16Z",
+      "side": 1,
+      "message": "Hmm, I think you\u0027re right. I don\u0027t remember why I made this condition... perhaps it is because I initially allowed Cmd.Wait() to be called multiple times.",
+      "parentUuid": "4db3490f_af6410dc",
+      "range": {
+        "startLine": 375,
+        "startChar": 15,
+        "endLine": 375,
+        "endChar": 23
+      },
+      "revId": "a1e66831bdc20600ab875240118044e00d1ebf7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e703c8ee_f469f5c3",
         "filename": "src/chromiumos/tast/host/exec.go",
         "patchSetId": 8
@@ -91,6 +163,30 @@
       "revId": "a1e66831bdc20600ab875240118044e00d1ebf7c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "86d8fb36_9b8de3b7",
+        "filename": "src/chromiumos/tast/host/exec.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 376,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-19T01:13:16Z",
+      "side": 1,
+      "message": "That is a good idea! Let me implement it.",
+      "parentUuid": "e703c8ee_f469f5c3",
+      "range": {
+        "startLine": 376,
+        "startChar": 61,
+        "endLine": 376,
+        "endChar": 62
+      },
+      "revId": "a1e66831bdc20600ab875240118044e00d1ebf7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "4975ae92_8634fd04",
+        "filename": "src/chromiumos/tast/host/exec_test.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-19T01:13:16Z",
+      "side": 1,
+      "message": "That is a good idea, I\u0027ve added a timeout to testData.",
+      "parentUuid": "5147baf1_a9686e4c",
+      "range": {
+        "startLine": 103,
+        "startChar": 7,
+        "endLine": 103,
+        "endChar": 18
+      },
+      "revId": "a1e66831bdc20600ab875240118044e00d1ebf7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b200774d_9c3936e5",
         "filename": "src/chromiumos/tast/host/test/ssh_server.go",
         "patchSetId": 8
@@ -137,6 +257,30 @@
       "revId": "a1e66831bdc20600ab875240118044e00d1ebf7c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "38c03700_6c9394a7",
+        "filename": "src/chromiumos/tast/host/test/ssh_server.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-19T01:13:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b200774d_9c3936e5",
+      "range": {
+        "startLine": 215,
+        "startChar": 13,
+        "endLine": 215,
+        "endChar": 16
+      },
+      "revId": "a1e66831bdc20600ab875240118044e00d1ebf7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

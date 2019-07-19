@@ -178,6 +178,11 @@ func buildAll(ctx context.Context, cfg *Config, hst *host.SSH) error {
 	}
 	if cfg.runRemote {
 		tgts = append(tgts, &build.Target{
+			Pkg:        remoteRunnerPkg,
+			Arch:       larch,
+			Workspaces: cfg.commonWorkspaces(),
+			Out:        cfg.remoteRunner,
+		}, &build.Target{
 			Pkg:        path.Join(remoteBundlePkgPathPrefix, cfg.buildBundle),
 			Arch:       larch,
 			Workspaces: cfg.bundleWorkspaces(),

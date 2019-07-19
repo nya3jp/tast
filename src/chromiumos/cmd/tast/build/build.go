@@ -97,8 +97,7 @@ func buildOne(ctx context.Context, log logging.Logger, tgt *Target) error {
 	}
 
 	const ldFlags = "-ldflags=-s -w"
-	dest := filepath.Join(tgt.OutDir, filepath.Base(tgt.Pkg))
-	cmd := exec.Command(comp, "build", ldFlags, "-o", dest, tgt.Pkg)
+	cmd := exec.Command(comp, "build", ldFlags, "-o", tgt.Out, tgt.Pkg)
 	cmd.Env = append(os.Environ(),
 		"GOPATH="+strings.Join(tgt.Workspaces, ":"),
 		// Disable cgo and PIE on building Tast binaries. See:

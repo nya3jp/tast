@@ -33,7 +33,6 @@ type Target struct {
 	// Workspaces contains paths to Go workspaces (i.e. with "src" subdirectories) containing source code to be compiled.
 	// These are placed into the GOPATH environment variable in the listed order.
 	Workspaces []string
-	// OutDir is the path of the directory to save a built executable to. The executable file name is assigned
-	// by "go install" (i.e. it's the last component of the package name).
-	OutDir string
+	// Out is the path to save a built executable to.
+	Out string
 }

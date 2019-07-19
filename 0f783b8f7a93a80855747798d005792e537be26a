@@ -179,6 +179,30 @@
     },
     {
       "key": {
+        "uuid": "2c6e9c1e_61c92b16",
+        "filename": "src/chromiumos/cmd/tast/run/remote.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-19T00:43:40Z",
+      "side": 1,
+      "message": "I\u0027ve written adn uploaded the change: https://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/1710028",
+      "parentUuid": "ee88ed8b_7e055f8c",
+      "range": {
+        "startLine": 42,
+        "startChar": 10,
+        "endLine": 42,
+        "endChar": 23
+      },
+      "revId": "0f783b8f7a93a80855747798d005792e537be26a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "693080df_e2c8cf5a",
         "filename": "src/chromiumos/cmd/tast/run/run.go",
         "patchSetId": 2

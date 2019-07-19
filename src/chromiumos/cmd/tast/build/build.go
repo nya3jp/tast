@@ -97,38 +97,15 @@ func buildOne(ctx context.Context, log logging.Logger, tgt *Target) error {
 	}
 
 	const ldFlags = "-ldflags=-s -w"
-
-	env := append(os.Environ(),
+	dest := filepath.Join(tgt.OutDir, filepath.Base(tgt.Pkg))
+	cmd := exec.Command(comp, "build", ldFlags, "-o", dest, tgt.Pkg)
+	cmd.Env = append(os.Environ(),
 		"GOPATH="+strings.Join(tgt.Workspaces, ":"),
 		// Disable cgo and PIE on building Tast binaries. See:
 		// https://crbug.com/976196
 		// https://github.com/golang/go/issues/30986#issuecomment-475626018
 		"CGO_ENABLED=0",
 		"GOPIE=0")
-
-	// This is frustrating:
-	//
-	// - "go build" always rebuilds the final executable (but not its dependencies).
-	// - "go install" avoids rebuilding the executable when it hasn't changed, so it's faster.
-	// - We need to set $GOBIN when using "go install" to avoid installing alongside the source code.
-	// - But "go install" refuses to cross-compile if $GOBIN is set (by design; see https://golang.org/issue/11778).
-	//
-	// So, use "go install" when compiling for the local arch to get faster builds,
-	// but fall back to using "go build" when cross-compiling.
-	larch, err := GetLocalArch()
-	if err != nil {
-		return fmt.Errorf("failed to get local arch: %v", err)
-	}
-
-	var cmd *exec.Cmd
-	if larch == tgt.Arch {
-		cmd = exec.Command(comp, "install", ldFlags, tgt.Pkg)
-		env = append(env, "GOBIN="+tgt.OutDir)
-	} else {
-		dest := filepath.Join(tgt.OutDir, filepath.Base(tgt.Pkg))
-		cmd = exec.Command(comp, "build", ldFlags, "-o", dest, tgt.Pkg)
-	}
-	cmd.Env = env
 
 	log.Status("Compiling " + tgt.Pkg)
 

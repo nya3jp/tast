@@ -132,6 +132,11 @@ func (s *State) DataPath(p string) string {
 	return ""
 }
 
+// Param returns Val specified at the Param struct for the current test case.
+func (s *State) Param() interface{} {
+	return s.test.Val
+}
+
 // DataFileSystem returns an http.FileSystem implementation that serves a test's data files.
 //
 //	srv := httptest.NewServer(http.FileServer(s.DataFileSystem()))

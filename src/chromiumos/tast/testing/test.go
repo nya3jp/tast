@@ -73,6 +73,34 @@ type Test struct {
 	// This should almost always be omitted when defining tests; a reasonable default will be used.
 	// This field is serialized as an integer nanosecond count.
 	Timeout time.Duration
+
+	// Params lists the Param structs for parametric tests.
+	// TODO(hidehiko): Link to a document explaining the parametric test in Tast.
+	Params []Param
+}
+
+// Param defines parameters for a parametric test case.
+type Param struct {
+	// Name is the name of this parametric test.
+	// Full name of the test case will be category.TestFuncName.param_name,
+	// or category.TestFuncName if Name is empty.
+	// Name should match with [a-z0-9_]*.
+	Name string
+
+	// ExtraAttr contains freeform text attributes describing the test,
+	// in addition to Attr declared in the enclosing Test.
+	ExtraAttr []string
+
+	// ExtraData contains paths of data files needed by the test case of this
+	// param in addition to Data declared in the enclosing Test.
+	ExtraData []string
+
+	// ExtraSoftwareDeps lists software features that are required to run the test case for this param,
+	// in addition to SoftwareDeps in the enclosing Test.
+	ExtraSoftwareDeps []string
+
+	// Val is the value which can be retrieved from testing.State.Param() method.
+	Val interface{}
 }
 
 func validateTest(t *Test) error {
@@ -96,6 +124,11 @@ func validateTest(t *Test) error {
 	if t.Pre != nil {
 		if _, ok := t.Pre.(preconditionImpl); !ok {
 			return fmt.Errorf("precondition %s does not implement preconditionImpl", t.Pre)
+		}
+	}
+	for _, p := range t.Params {
+		if err := validateParam(&p); err != nil {
+			return err
 		}
 	}
 
@@ -218,5 +251,56 @@ func validateData(data []string) error {
 			return fmt.Errorf("data path %q is invalid", p)
 		}
 	}
+	return nil
+}
+
+// paramNameRegexp validates each parametiric case names.
+var paramNameRegexp = regexp.MustCompile("^[a-z0-9_]*$")
+
+func validateParams(params []Param) error {
+	if len(params) == 0 {
+		return nil
+	}
+
+	for _, p := range params {
+		if err := validateParam(&p); err != nil {
+			return err
+		}
+	}
+
+	// Ensure unique param name.
+	seen := make(map[string]struct{})
+	for _, p := range params {
+		name := p.Name
+		if _, ok := seen[name]; ok {
+			return fmt.Errorf("duplicate param name is found: %s", name)
+		}
+		seen[name] = struct{}{}
+	}
+
+	// Ensure all value assigned to Val should have the same type.
+	typ0 := reflect.TypeOf(params[0].Val)
+	for _, p := range params {
+		typ := reflect.TypeOf(p.Val)
+		if typ != typ0 {
+			return fmt.Errorf("unmatched Val type: got %v; want %v", typ, typ0)
+		}
+	}
+
+	return nil
+}
+
+func validateParam(p *Param) error {
+	if !paramNameRegexp.MatchString(p.Name) {
+		return fmt.Errorf("invalid param name %q (want to match with [a-z0-9_]*)", p.Name)
+	}
+
+	if err := validateAttr(p.ExtraAttr); err != nil {
+		return err
+	}
+	if err := validateData(p.ExtraData); err != nil {
+		return err
+	}
+
 	return nil
 }

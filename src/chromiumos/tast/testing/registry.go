@@ -32,11 +32,24 @@ func (r *Registry) AddTest(t *Test) error {
 	if err := validateTest(t); err != nil {
 		return err
 	}
-	tc, err := newTestCase(t)
-	if err != nil {
-		return err
+	if len(t.Params) == 0 {
+		tc, err := newTestCase(t, nil)
+		if err != nil {
+			return err
+		}
+		return r.AddTestCase(tc)
 	}
-	return r.AddTestCase(tc)
+
+	for _, p := range t.Params {
+		tc, err := newTestCase(t, &p)
+		if err != nil {
+			return err
+		}
+		if err := r.AddTestCase(tc); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // AddTestCase adds t to the registry.

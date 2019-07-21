@@ -55,6 +55,10 @@ type TestCase struct {
 	// AdditionalTime contains an upper bound of additional time allocated to the test.
 	AdditionalTime time.Duration `json:"additionalTime,omitEmpty"`
 
+	// Val contains the value inherited from the expanded Param struct for a parametric test case.
+	// This can be retrieved from testing.State.Param().
+	Val interface{} `json:"-"`
+
 	// Following fields are copied from testing.Test struct.
 	// See the documents of the struct.
 
@@ -71,14 +75,29 @@ type TestCase struct {
 
 // newTestCase creates a TestCase instance from the given Test info.
 // t must be validated one.
-func newTestCase(t *Test) (*TestCase, error) {
+// For a parametric test case, p is specified. p must be contained in t.Params.
+func newTestCase(t *Test, p *Param) (*TestCase, error) {
 	info, err := getTestFuncInfo(t.Func)
 	if err != nil {
 		return nil, err
 	}
 	name := fmt.Sprintf("%s.%s", info.category, info.name)
 
-	attrs, err := autoAttrs(name, info.pkg, t.SoftwareDeps)
+	attrs := append([]string(nil), t.Attr...)
+	data := append([]string(nil), t.Data...)
+	swDeps := append([]string(nil), t.SoftwareDeps...)
+	var val interface{}
+	if p != nil {
+		if p.Name != "" {
+			name = fmt.Sprintf("%s.%s", name, p.Name)
+		}
+		attrs = append(attrs, p.ExtraAttr...)
+		data = append(data, p.ExtraData...)
+		swDeps = append(swDeps, p.ExtraSoftwareDeps...)
+		val = p.Val
+	}
+
+	aattrs, err := autoAttrs(name, info.pkg, swDeps)
 	if err != nil {
 		return nil, err
 	}
@@ -87,13 +106,14 @@ func newTestCase(t *Test) (*TestCase, error) {
 		Name:           name,
 		Pkg:            info.pkg,
 		AdditionalTime: additionalTime(t),
+		Val:            val,
 		Func:           t.Func,
 		Desc:           t.Desc,
 		Contacts:       append([]string(nil), t.Contacts...),
-		Attr:           append(attrs, t.Attr...),
-		Data:           append([]string(nil), t.Data...),
+		Attr:           append(aattrs, attrs...),
+		Data:           data,
 		Vars:           append([]string(nil), t.Vars...),
-		SoftwareDeps:   append([]string(nil), t.SoftwareDeps...),
+		SoftwareDeps:   swDeps,
 		Pre:            t.Pre,
 		Timeout:        t.Timeout,
 	}, nil

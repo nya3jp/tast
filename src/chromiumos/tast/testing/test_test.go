@@ -114,3 +114,59 @@ func TestNegativeTimeout(t *gotesting.T) {
 		t.Error("Didn't get error with negative timeout")
 	}
 }
+
+func TestParamUniqueName(t *gotesting.T) {
+	ps := []Param{{
+		Name: "abc",
+	}, {
+		Name: "abc",
+	}}
+
+	if err := validateParams(ps); err == nil {
+		t.Error("Did not get an error with duplicated param case names")
+	}
+}
+
+func TestParamValType(t *gotesting.T) {
+	ps := []Param{{
+		Name: "case1",
+		Val:  1,
+	}, {
+		Name: "case2",
+		Val:  "string",
+	}}
+	if err := validateParams(ps); err == nil {
+		t.Error("Did not get an error with param cases containing different value type")
+	}
+}
+
+func TestParamName(t *gotesting.T) {
+	if err := validateParam(&Param{}); err != nil {
+		t.Error("Empty name should be allowed: ", err)
+	}
+	if err := validateParam(&Param{Name: "word1_word2"}); err != nil {
+		t.Error("Unexpected param name validation failure: ", err)
+	}
+	if err := validateParam(&Param{Name: "CapitalName"}); err == nil {
+		t.Error("Capital Param.Name is unexpectedly passed")
+	}
+	if err := validateParam(&Param{Name: "!#$%&'()"}); err == nil {
+		t.Error("Symbol in Param.Name is unexpectedly passed")
+	}
+}
+
+func TestParamExtraAttr(t *gotesting.T) {
+	// Just one test case. Detailed check is deferred to validateAttr()'s test.
+	attr := testNameAttrPrefix + "foo"
+	if err := validateParam(&Param{ExtraAttr: []string{attr}}); err == nil {
+		t.Errorf("Did not get an error for reserved attribute %q", attr)
+	}
+}
+
+func TestParamExtraData(t *gotesting.T) {
+	// Just one test case. Detailed check is deferred to validateData()'s test.
+	const data = "/etc/passwd"
+	if err := validateParam(&Param{ExtraData: []string{data}}); err == nil {
+		t.Error("Did not get an error with absolute path")
+	}
+}

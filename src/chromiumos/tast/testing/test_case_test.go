@@ -48,7 +48,7 @@ func (p *testPre) Timeout() time.Duration { return time.Minute }
 func (p *testPre) String() string { return p.name }
 
 func TestAutoName(t *gotesting.T) {
-	tc, err := newTestCase(&Test{Func: TESTCASETEST})
+	tc, err := newTestCase(&Test{Func: TESTCASETEST}, nil)
 	if err != nil {
 		t.Fatal("failed to instantiate TestCase: ", err)
 	}
@@ -62,7 +62,7 @@ func TestAutoAttr(t *gotesting.T) {
 		Func:         TESTCASETEST,
 		Attr:         []string{"attr1", "attr2"},
 		SoftwareDeps: []string{"dep1", "dep2"},
-	})
+	}, nil)
 	if err != nil {
 		t.Fatal("failed to instantiate test case failed: ", err)
 	}
@@ -84,7 +84,7 @@ func TestAutoAttr(t *gotesting.T) {
 
 func TestAdditionalTime(t *gotesting.T) {
 	pre := &testPre{}
-	test, err := newTestCase(&Test{Func: TESTCASETEST, Timeout: 5 * time.Minute, Pre: pre})
+	test, err := newTestCase(&Test{Func: TESTCASETEST, Timeout: 5 * time.Minute, Pre: pre}, nil)
 	if err != nil {
 		t.Fatal("finalize() failed: ", err)
 	}
@@ -93,8 +93,61 @@ func TestAdditionalTime(t *gotesting.T) {
 	}
 }
 
+func TestParamTest(t *gotesting.T) {
+	test, err := newTestCase(
+		&Test{
+			Func:         TESTCASETEST,
+			Attr:         []string{"attr1"},
+			Data:         []string{"data1"},
+			SoftwareDeps: []string{"dep1"},
+		},
+		&Param{
+			Name:              "param1",
+			Val:               10,
+			ExtraAttr:         []string{"attr2"},
+			ExtraData:         []string{"data2"},
+			ExtraSoftwareDeps: []string{"dep2"},
+		})
+	if err != nil {
+		t.Fatal("newTestCase failed: ", err)
+	}
+
+	if test.Val != 10 {
+		t.Errorf("Unexpected Val: got %v; want 10", test.Val)
+	}
+
+	if test.Name != "testing.TESTCASETEST.param1" {
+		t.Errorf("Unexpected name: got %s; want testing.TESTCASETEST.param1", test.Name)
+	}
+
+	expectedAttr := []string{"name:testing.TESTCASETEST.param1", "bundle:tast", "dep:dep1", "dep:dep2", "attr1", "attr2"}
+	if !reflect.DeepEqual(test.Attr, expectedAttr) {
+		t.Errorf("Unexpected attrs: got %v; want %v", test.Attr, expectedAttr)
+	}
+
+	expectedData := []string{"data1", "data2"}
+	if !reflect.DeepEqual(test.Data, expectedData) {
+		t.Errorf("Unexpected data: got %v; want %v", test.Data, expectedData)
+	}
+
+	expectedDeps := []string{"dep1", "dep2"}
+	if !reflect.DeepEqual(test.SoftwareDeps, expectedDeps) {
+		t.Errorf("Unexpected SoftwareDeps: got %v; want %v", test.SoftwareDeps, expectedDeps)
+	}
+}
+
+func TestParamTestWithEmptyName(t *gotesting.T) {
+	test, err := newTestCase(&Test{Func: TESTCASETEST}, &Param{})
+	if err != nil {
+		t.Fatal("newTestCase failed: ", err)
+	}
+	if test.Name != "testing.TESTCASETEST" {
+		t.Errorf("Unexpected name: got %s; want testing.TESTCASETEST", test.Name)
+	}
+}
+
 func TestDataDir(t *gotesting.T) {
-	test, err := newTestCase(&Test{Func: TESTCASETEST})
+	test, err := newTestCase(&Test{Func: TESTCASETEST}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}

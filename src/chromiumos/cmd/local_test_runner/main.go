@@ -58,14 +58,12 @@ func main() {
 			// ARC and ARCVM guest.
 			// master-arc-dev and qt are under development and not stable to run Tast tests.
 			"android":      `arc && !arcvm && !"android-container-master-arc-dev" && !"android-container-qt"`,
-			"android_vm":   `arc && arcvm && !"android-container-master-arc-dev" && !"android-container-qt"`,
+			"android_vm":   `arc && arcvm`,
 			"android_both": `arc && !"android-container-master-arc-dev" && !"android-container-qt"`,
 			// Run all ARC versions, including master-arc-dev and qt.
 			"android_all":       `arc && !arcvm`,
-			"android_all_vm":    `arc && arcvm`,
 			"android_all_both":  `arc`,
 			"android_p":         `arc && "android-container-pi"`,
-			"android_p_vm":      `arc && "android-vm-pi"`,
 			"android_p_both":    `arc && ("android-container-pi" || "android-vm-pi")`,
 			"arc_camera3":       `"arc-camera3"`,
 			"aslr":              "!asan",                        // ASan instrumentation breaks ASLR

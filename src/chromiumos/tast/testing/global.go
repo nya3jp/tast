@@ -13,6 +13,10 @@ import (
 var globalRegistry *Registry   // singleton, initialized on first use
 var registrationErrors []error // singleton for errors encountered in AddTest calls
 
+// verifier is a global singleton to check if AddTest() is used as designed.
+var verifier = newCallerVerifier(
+	regexp.MustCompile(`^chromiumos/tast/(local|remote)/bundles/[^/]+/[^/]+\.init.\d+$`))
+
 // GlobalRegistry returns a global registry containing tests
 // registered by calls to AddTest.
 func GlobalRegistry() *Registry {
@@ -29,15 +33,15 @@ func RegistrationErrors() []error {
 
 // AddTest adds test t to the global registry.
 func AddTest(t *Test) {
-	if err := addTestInternal(t); err != nil {
-		_, file, line, _ := runtime.Caller(1)
+	pc, file, line, _ := runtime.Caller(1)
+	if err := addTestInternal(t, pc); err != nil {
 		registrationErrors = append(registrationErrors, fmt.Errorf("%s:%d: %v", file, line, err))
 	}
 }
 
-func addTestInternal(t *Test) error {
-	if verifyEnabled {
-		if err := verifyCaller(); err != nil {
+func addTestInternal(t *Test, pc uintptr) error {
+	if verifier != nil {
+		if err := verifier.verifyAndRegister(pc); err != nil {
 			return err
 		}
 	}
@@ -56,37 +60,22 @@ func AddTestCase(t *TestCase) {
 	}
 }
 
-var initPattern = regexp.MustCompile(
-	`^chromiumos/tast/(local|remote)/bundles/[^/]+/[^/]+\.init.\d+$`)
-
-var verifyEnabled = true
-
-// verifyCaller checks the caller of AddTest(). The caller must be
-// init() function in the file under the category package.
-func verifyCaller() error {
-	pc, _, _, _ := runtime.Caller(3) // Skip AddTest and addTestInternal, too.
-	rf := runtime.FuncForPC(pc)
-	if !initPattern.MatchString(rf.Name()) {
-		return fmt.Errorf("test registration needs to be done in init() function in the category package: %s", rf.Name())
-	}
-	return nil
-}
-
 // SetGlobalRegistryForTesting temporarily sets reg as the global registry and clears registration errors.
 // The caller must call the returned function later to restore the original registry and errors.
 // This is intended to be used by unit tests that need to register tests in the global registry but don't
 // want to affect subsequent unit tests.
 func SetGlobalRegistryForTesting(reg *Registry) (restore func()) {
-	verifyEnabled = false
 	origReg := globalRegistry
 	origErrs := registrationErrors
+	origVerifier := verifier
 
 	globalRegistry = reg
 	registrationErrors = nil
+	verifier = nil
 
 	return func() {
-		globalRegistry = origReg
+		verifier = origVerifier
 		registrationErrors = origErrs
-		verifyEnabled = true
+		globalRegistry = origReg
 	}
 }

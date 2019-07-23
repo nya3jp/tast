@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c44ba100_7feaec0d",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-23T09:29:22Z",
+      "side": 1,
+      "message": "Could you add a link to an appropriate documentation about parametric test, like the comment for SoftwareDeps ?",
+      "range": {
+        "startLine": 77,
+        "startChar": 0,
+        "endLine": 77,
+        "endChar": 56
+      },
+      "revId": "49f6dda14bb22898158776fa061bcc32acd554de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b92834d9_c2d9bc92",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-23T09:29:22Z",
+      "side": 1,
+      "message": "nit: make it one line ?",
+      "range": {
+        "startLine": 102,
+        "startChar": 0,
+        "endLine": 103,
+        "endChar": 11
+      },
+      "revId": "49f6dda14bb22898158776fa061bcc32acd554de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1728792b_776d7f63",
+        "filename": "src/chromiumos/tast/testing/test_case.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-23T09:29:22Z",
+      "side": 1,
+      "message": "nit: Could you make it one line to for consistency with other comments in this struct?",
+      "range": {
+        "startLine": 58,
+        "startChar": 0,
+        "endLine": 59,
+        "endChar": 31
+      },
+      "revId": "49f6dda14bb22898158776fa061bcc32acd554de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a53bdea2_e730bd6d",
+        "filename": "src/chromiumos/tast/testing/test_case.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-23T09:29:22Z",
+      "side": 1,
+      "message": "Is it allowed Name being empty?",
+      "range": {
+        "startLine": 92,
+        "startChar": 7,
+        "endLine": 92,
+        "endChar": 11
+      },
+      "revId": "49f6dda14bb22898158776fa061bcc32acd554de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

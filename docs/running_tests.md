@@ -152,3 +152,15 @@ don't have a Chrome OS chroot containing the `tast` executable), the
 ```shell
 local_test_runner ui.ChromeLogin
 ```
+
+## Reset the device owner of the DUT after test run
+
+Tast resets the device owner of the DUT before test run, and after the test run,
+the device owner remains to be testuser. To reset that, run the following on the
+DUT:
+
+```shell
+stop ui
+rm -rf /var/lib/whitelist "'/home/chronos/Local State'"
+start ui
+```

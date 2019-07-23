@@ -10,8 +10,9 @@ import (
 	"runtime"
 )
 
-var globalRegistry *Registry   // singleton, initialized on first use
-var registrationErrors []error // singleton for errors encountered in AddTest calls
+var globalRegistry *Registry                    // singleton, initialized on first use
+var registrationErrors []error                  // singleton for errors encountered in AddTest calls
+var registeredFiles = make(map[string]struct{}) // singleton to remember files where AddTest is called in init().
 
 // GlobalRegistry returns a global registry containing tests
 // registered by calls to AddTest.
@@ -69,6 +70,13 @@ func verifyCaller() error {
 	if !initPattern.MatchString(rf.Name()) {
 		return fmt.Errorf("test registration needs to be done in init() function in the category package: %s", rf.Name())
 	}
+
+	file, _ := rf.FileLine(pc)
+	if _, ok := registeredFiles[file]; ok {
+		return fmt.Errorf("testing.AddTest can be called at most once in a file: %s", file)
+	}
+	registeredFiles[file] = struct{}{}
+
 	return nil
 }
 

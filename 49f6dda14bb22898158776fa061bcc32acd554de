@@ -137,6 +137,29 @@
       "revId": "49f6dda14bb22898158776fa061bcc32acd554de",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0e904cf2_0a62913d",
+        "filename": "src/chromiumos/tast/testing/test_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-23T09:39:25Z",
+      "side": 1,
+      "message": "huge nit:\nfunction definition and tests for them are different order.\nIn test.go, validateParams is defined earlier than validateParam.\nSo could you move these tests to L117 ?",
+      "range": {
+        "startLine": 149,
+        "startChar": 1,
+        "endLine": 172,
+        "endChar": 1
+      },
+      "revId": "49f6dda14bb22898158776fa061bcc32acd554de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "616d47ed_928e3c47",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-23T13:39:19Z",
+      "side": 1,
+      "message": "It will be another amount of change, so let\u0027s split. Instead, I added TODO now.",
+      "parentUuid": "c44ba100_7feaec0d",
+      "range": {
+        "startLine": 77,
+        "startChar": 0,
+        "endLine": 77,
+        "endChar": 56
+      },
+      "revId": "49f6dda14bb22898158776fa061bcc32acd554de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b92834d9_c2d9bc92",
         "filename": "src/chromiumos/tast/testing/test.go",
         "patchSetId": 1
@@ -45,6 +69,30 @@
       "revId": "49f6dda14bb22898158776fa061bcc32acd554de",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "78abb281_59732b7c",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-23T13:39:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b92834d9_c2d9bc92",
+      "range": {
+        "startLine": 102,
+        "startChar": 0,
+        "endLine": 103,
+        "endChar": 11
+      },
+      "revId": "49f6dda14bb22898158776fa061bcc32acd554de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "de68ab85_fd405fe3",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 259,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-23T13:39:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e2358334_20c63845",
+      "range": {
+        "startLine": 258,
+        "startChar": 27,
+        "endLine": 259,
+        "endChar": 56
+      },
+      "revId": "49f6dda14bb22898158776fa061bcc32acd554de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1728792b_776d7f63",
         "filename": "src/chromiumos/tast/testing/test_case.go",
         "patchSetId": 1
@@ -82,6 +154,30 @@
       "writtenOn": "2019-07-23T09:29:22Z",
       "side": 1,
       "message": "nit: Could you make it one line to for consistency with other comments in this struct?",
+      "range": {
+        "startLine": 58,
+        "startChar": 0,
+        "endLine": 59,
+        "endChar": 31
+      },
+      "revId": "49f6dda14bb22898158776fa061bcc32acd554de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4230cb38_41c59e13",
+        "filename": "src/chromiumos/tast/testing/test_case.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-23T13:39:19Z",
+      "side": 1,
+      "message": "Done, but the above ones also has line breaks...?",
+      "parentUuid": "1728792b_776d7f63",
       "range": {
         "startLine": 58,
         "startChar": 0,
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "b1bc394d_2862826c",
+        "filename": "src/chromiumos/tast/testing/test_case.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-23T13:39:19Z",
+      "side": 1,
+      "message": "Yes.",
+      "parentUuid": "a53bdea2_e730bd6d",
+      "range": {
+        "startLine": 92,
+        "startChar": 7,
+        "endLine": 92,
+        "endChar": 11
+      },
+      "revId": "49f6dda14bb22898158776fa061bcc32acd554de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6a54485f_3597a827",
         "filename": "src/chromiumos/tast/testing/test_case_test.go",
         "patchSetId": 1
@@ -128,6 +248,30 @@
       "writtenOn": "2019-07-23T09:32:52Z",
       "side": 1,
       "message": "Could you test Val ?",
+      "range": {
+        "startLine": 106,
+        "startChar": 0,
+        "endLine": 106,
+        "endChar": 25
+      },
+      "revId": "49f6dda14bb22898158776fa061bcc32acd554de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "42eb38a6_393fefc0",
+        "filename": "src/chromiumos/tast/testing/test_case_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-23T13:39:19Z",
+      "side": 1,
+      "message": "Good catch. Done.",
+      "parentUuid": "6a54485f_3597a827",
       "range": {
         "startLine": 106,
         "startChar": 0,
@@ -160,6 +304,30 @@
       "revId": "49f6dda14bb22898158776fa061bcc32acd554de",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7771c4bd_d94c68b8",
+        "filename": "src/chromiumos/tast/testing/test_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-23T13:39:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0e904cf2_0a62913d",
+      "range": {
+        "startLine": 149,
+        "startChar": 1,
+        "endLine": 172,
+        "endChar": 1
+      },
+      "revId": "49f6dda14bb22898158776fa061bcc32acd554de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

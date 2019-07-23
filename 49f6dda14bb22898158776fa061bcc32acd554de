@@ -91,6 +91,29 @@
       "revId": "49f6dda14bb22898158776fa061bcc32acd554de",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6a54485f_3597a827",
+        "filename": "src/chromiumos/tast/testing/test_case_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-23T09:32:52Z",
+      "side": 1,
+      "message": "Could you test Val ?",
+      "range": {
+        "startLine": 106,
+        "startChar": 0,
+        "endLine": 106,
+        "endChar": 25
+      },
+      "revId": "49f6dda14bb22898158776fa061bcc32acd554de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -1,0 +1,188 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "dd9bf957_e6eeaad6",
+        "filename": "src/chromiumos/tast/testing/caller_verifier.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-24T08:03:10Z",
+      "side": 1,
+      "message": "nit: make it oneline?",
+      "range": {
+        "startLine": 14,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 13
+      },
+      "revId": "1bc6aa82acde51da786b5f9731c9972a328d4376",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f9ff641b_346986e8",
+        "filename": "src/chromiumos/tast/testing/caller_verifier.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-24T08:03:10Z",
+      "side": 1,
+      "message": "nit: set",
+      "range": {
+        "startLine": 18,
+        "startChar": 15,
+        "endLine": 18,
+        "endChar": 19
+      },
+      "revId": "1bc6aa82acde51da786b5f9731c9972a328d4376",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6994bb3c_4a68f76f",
+        "filename": "src/chromiumos/tast/testing/caller_verifier.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-24T08:03:10Z",
+      "side": 1,
+      "message": "How about passing regexp instead?\nOr name it mustNewCallerVerifier to indicate it panics on compile failure?\nCould you add func comment?",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 22,
+        "endChar": 56
+      },
+      "revId": "1bc6aa82acde51da786b5f9731c9972a328d4376",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dc9f6192_c9493d4e",
+        "filename": "src/chromiumos/tast/testing/caller_verifier.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-24T08:03:10Z",
+      "side": 1,
+      "message": "nit: remove If ?",
+      "range": {
+        "startLine": 30,
+        "startChar": 5,
+        "endLine": 30,
+        "endChar": 7
+      },
+      "revId": "1bc6aa82acde51da786b5f9731c9972a328d4376",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6ff2a10d_a905ddc8",
+        "filename": "src/chromiumos/tast/testing/caller_verifier.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-24T08:03:10Z",
+      "side": 1,
+      "message": "nit: remove",
+      "range": {
+        "startLine": 31,
+        "startChar": 5,
+        "endLine": 31,
+        "endChar": 7
+      },
+      "revId": "1bc6aa82acde51da786b5f9731c9972a328d4376",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "158dd637_85223092",
+        "filename": "src/chromiumos/tast/testing/caller_verifier.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-24T08:03:10Z",
+      "side": 1,
+      "message": "nit: the",
+      "range": {
+        "startLine": 31,
+        "startChar": 44,
+        "endLine": 31,
+        "endChar": 45
+      },
+      "revId": "1bc6aa82acde51da786b5f9731c9972a328d4376",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "73d88bf8_329339b5",
+        "filename": "src/chromiumos/tast/testing/caller_verifier.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-24T08:03:10Z",
+      "side": 1,
+      "message": "Could you expand what does it mean here?",
+      "range": {
+        "startLine": 31,
+        "startChar": 8,
+        "endLine": 31,
+        "endChar": 10
+      },
+      "revId": "1bc6aa82acde51da786b5f9731c9972a328d4376",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dc9482c9_83d790ec",
+        "filename": "src/chromiumos/tast/testing/caller_verifier_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-24T08:03:10Z",
+      "side": 1,
+      "message": "nit: $\"\n?",
+      "range": {
+        "startLine": 13,
+        "startChar": 68,
+        "endLine": 13,
+        "endChar": 69
+      },
+      "revId": "1bc6aa82acde51da786b5f9731c9972a328d4376",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

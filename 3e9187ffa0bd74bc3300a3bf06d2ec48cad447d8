@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "df5e1bd6_00018726",
+        "filename": "src/chromiumos/tast/testing/caller_verifier.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-24T11:00:44Z",
+      "side": 1,
+      "message": "Sorry I missed that but could you document callerVerifier?\nThis comment looks not very meaningful without documenting callerVerifier...\nFor example,\ncallerVerifier provides means to verify a set of in-test function calls obey our discipline.",
+      "range": {
+        "startLine": 21,
+        "startChar": 48,
+        "endLine": 21,
+        "endChar": 62
+      },
+      "revId": "3e9187ffa0bd74bc3300a3bf06d2ec48cad447d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "980f5e7a_e290259c",
+        "filename": "src/chromiumos/tast/testing/caller_verifier.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-24T11:00:44Z",
+      "side": 1,
+      "message": "for a file (retrieved from pc)\n?\nthis function is called from global.go twice or more...",
+      "range": {
+        "startLine": 31,
+        "startChar": 46,
+        "endLine": 31,
+        "endChar": 58
+      },
+      "revId": "3e9187ffa0bd74bc3300a3bf06d2ec48cad447d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

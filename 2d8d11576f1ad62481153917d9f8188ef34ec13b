@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b0deca09_bb83dc18",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2019-07-24T18:27:33Z",
+      "side": 1,
+      "message": "WiFi or Wi-Fi",
+      "range": {
+        "startLine": 95,
+        "startChar": 29,
+        "endLine": 95,
+        "endChar": 33
+      },
+      "revId": "2d8d11576f1ad62481153917d9f8188ef34ec13b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8188ba45_f569538d",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-24T02:05:36Z",
+      "side": 1,
+      "message": "nit: parametric test\n?\nIt may be a matter of taste, but Parametric Tast sounds strange to me.\nTast is a name of framework. Parametric Tast sounds like an extension of the framework itself.",
+      "range": {
+        "startLine": 78,
+        "startChar": 50,
+        "endLine": 78,
+        "endChar": 65
+      },
+      "revId": "674bc798d2c76560db778bb2f3172eec1e572840",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "08a66568_1d4c7183",
+        "filename": "src/chromiumos/tast/testing/test_case_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-24T02:05:36Z",
+      "side": 1,
+      "message": "nit: move to L118, to match the definition order?",
+      "range": {
+        "startLine": 133,
+        "startChar": 0,
+        "endLine": 136,
+        "endChar": 2
+      },
+      "revId": "674bc798d2c76560db778bb2f3172eec1e572840",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1277cab0_1c4a4164",
+        "filename": "docs/running_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-24T06:53:59Z",
+      "side": 1,
+      "message": "nit: I think \"initctl\" can be dropped?\n\nstop ui\nrm ...\nstart ui",
+      "range": {
+        "startLine": 163,
+        "startChar": 0,
+        "endLine": 163,
+        "endChar": 8
+      },
+      "revId": "0a75198aafa8c38257001491d36ee9aa0dcde258",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

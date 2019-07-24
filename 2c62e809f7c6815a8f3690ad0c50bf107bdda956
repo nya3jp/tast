@@ -22,6 +22,30 @@
       "revId": "2c62e809f7c6815a8f3690ad0c50bf107bdda956",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "29f9f661_90abba50",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-24T06:00:41Z",
+      "side": 1,
+      "message": "Sure, but for the purpose extracted the code into a dedicated file.\n(without the refactoring, it was difficult to add the unittest).\nI hope the direction is ok for you.",
+      "parentUuid": "ab183345_ccfec36b",
+      "range": {
+        "startLine": 10,
+        "startChar": 5,
+        "endLine": 10,
+        "endChar": 64
+      },
+      "revId": "2c62e809f7c6815a8f3690ad0c50bf107bdda956",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

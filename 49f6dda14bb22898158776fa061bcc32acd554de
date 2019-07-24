@@ -73,6 +73,30 @@
     },
     {
       "key": {
+        "uuid": "4402854a_b014d763",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-24T04:35:47Z",
+      "side": 1,
+      "message": "Discussed offline. This change is needed for linter and document needs linter to be implemented.",
+      "parentUuid": "5877a091_103970bf",
+      "range": {
+        "startLine": 77,
+        "startChar": 0,
+        "endLine": 77,
+        "endChar": 56
+      },
+      "revId": "49f6dda14bb22898158776fa061bcc32acd554de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0218468a_09037330",
         "filename": "src/chromiumos/tast/testing/test.go",
         "patchSetId": 1

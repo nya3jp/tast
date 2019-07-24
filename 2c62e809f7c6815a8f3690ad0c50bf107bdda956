@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ab183345_ccfec36b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-24T02:15:23Z",
+      "side": 1,
+      "message": "Could you have a unit test?",
+      "range": {
+        "startLine": 10,
+        "startChar": 5,
+        "endLine": 10,
+        "endChar": 64
+      },
+      "revId": "2c62e809f7c6815a8f3690ad0c50bf107bdda956",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -29,8 +29,17 @@ const (
 	MinidumpExt = ".dmp"
 	// LogExt is the extension for log files containing additional information that are written by crash_reporter.
 	LogExt = ".log"
+	// GPUStateExt is the extension for GPU state files written by crash_reporter.
+	GPUStateExt = ".xz"
 	// MetadataExt is the extension for metadata files written by crash collectors and read by crash_sender.
 	MetadataExt = ".meta"
+
+	// CompressedLogExt1 is the first extension on the compressed log files written by crash_reporter. It is the
+	// actual extension on the file.
+	CompressedLogExt1 = ".gz"
+	// CompressedLogExt2 is the first extension on the compressed log files written by crash_reporter. It is the
+	// extension on the file after removing CompressedLogExt1.
+	CompressedLogExt2 = ".txt"
 
 	lsbReleasePath = "/etc/lsb-release"
 )
@@ -59,8 +68,13 @@ func GetCrashes(dirs ...string) ([]string, error) {
 
 		for _, fn := range files {
 			ext := filepath.Ext(fn)
-			if ext == CoreExt || ext == MinidumpExt || ext == LogExt || ext == MetadataExt {
+			if ext == CoreExt || ext == MinidumpExt || ext == LogExt || ext == MetadataExt || ext == GPUStateExt {
 				crashFiles = append(crashFiles, filepath.Join(dir, fn))
+			} else if ext == CompressedLogExt1 {
+				subname := strings.TrimSuffix(fn, CompressedLogExt1)
+				if filepath.Ext(subname) == CompressedLogExt2 {
+					crashFiles = append(crashFiles, filepath.Join(dir, fn))
+				}
 			}
 		}
 	}

@@ -113,6 +113,7 @@ func main() {
 			"vp9_sanity": "!rk3399", // RK3399 crashes on playing unsupported VP9 profile: https://crbug.com/971032
 			"vulkan":     "vulkan",
 			"wilco":      "wilco",
+			"wifi":       "!betty && !tast_vm",
 		},
 		// The autotest-capability package tries to install this to /etc but it's diverted to /usr/local.
 		AutotestCapabilityDir: autocaps.DefaultCapabilityDir,

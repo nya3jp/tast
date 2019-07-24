@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3b6d75eb_7278e4bf",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-24T08:07:43Z",
+      "side": 1,
+      "message": "remove?\nIt\u0027s already mentioned.",
+      "range": {
+        "startLine": 87,
+        "startChar": 38,
+        "endLine": 89,
+        "endChar": 33
+      },
+      "revId": "36b6c2cad4d788adeaa9cc97722dc0d62182c0a9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

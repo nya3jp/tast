@@ -92,6 +92,7 @@ The following software features are defined:
 *   `wilco` - If this DUT is a [wilco] device. These features include
     the DTC (Diagnostic and Telemetry Controller) VM, a special EC interface,
     and a dock firmware updater.
+*   `wifi` - If this DUT has wifi device.
 
 [amd64]: https://en.wikipedia.org/wiki/X86-64
 [run Android apps]: https://developer.android.com/topic/arc/
@@ -112,7 +113,7 @@ The following software features are defined:
 [Vulkan]: https://www.khronos.org/vulkan/
 [wilco]: https://sites.google.com/corp/google.com/wilco/home
 
-## New features
+## Adding new features
 
 Features should be descriptive and precise. Consider a hypothetical test that
 exercises authentication using a biometrics daemon that isn't present in system

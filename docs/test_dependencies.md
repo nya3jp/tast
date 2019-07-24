@@ -92,6 +92,7 @@ The following software features are defined:
 *   `wilco` - If this DUT is a [wilco] device. These features include
     the DTC (Diagnostic and Telemetry Controller) VM, a special EC interface,
     and a dock firmware updater.
+*   `wifi` - If this DUT has WiFi device.
 
 [amd64]: https://en.wikipedia.org/wiki/X86-64
 [run Android apps]: https://developer.android.com/topic/arc/

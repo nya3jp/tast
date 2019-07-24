@@ -211,7 +211,7 @@ The following software features are defined:
 [virtual-usb-printer-readme]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/third_party/virtual-usb-printer/README.md
 [wilco]: https://sites.google.com/corp/google.com/wilco/home
 
-### New features
+## Adding new features
 
 Features should be descriptive and precise. Consider a hypothetical test that
 exercises authentication using a biometrics daemon that isn't present in system

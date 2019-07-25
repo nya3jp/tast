@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "5cfc09c4_11af7bfd",
+        "filename": "src/chromiumos/tast/crash/crash.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1300299
+      },
+      "writtenOn": "2019-07-25T22:41:06Z",
+      "side": 1,
+      "message": "first as in, if you repeatedly call filepath.Ext() and then remove the resulting extension, first is the first one you get. I changed the description since it seems to be confusing.",
+      "parentUuid": "06d2d40c_ee70ca52",
+      "range": {
+        "startLine": 37,
+        "startChar": 29,
+        "endLine": 37,
+        "endChar": 34
+      },
+      "revId": "2f566ee57bc5bfe816f6c8dfaa3d73a9e378c29b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1700d9bc_0a20c41b",
         "filename": "src/chromiumos/tast/crash/crash.go",
         "patchSetId": 1
@@ -36,6 +60,24 @@
       "writtenOn": "2019-07-25T22:27:21Z",
       "side": 1,
       "message": "Are line 72 and 76 the same? I think it\u0027s better to combine the conditions and just have one of those statement.",
+      "revId": "2f566ee57bc5bfe816f6c8dfaa3d73a9e378c29b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fcb4196d_0cd41a92",
+        "filename": "src/chromiumos/tast/crash/crash.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1300299
+      },
+      "writtenOn": "2019-07-25T22:41:06Z",
+      "side": 1,
+      "message": "Yes, they\u0027re the same. I think the conditional is getting pretty confusing to put into a single if. It looks like \n\nif ext \u003d\u003d CoreExt || ext \u003d\u003d MinidumpExt || ext \u003d\u003d LogExt || ext \u003d\u003d MetadataExt || ext \u003d\u003d GPUStateExt || (ext \u003d\u003d CompressedLogExt1 \u0026\u0026 filepath.Ext(strings.TrimSuffix(fn, CompressedLogExt1)) \u003d\u003d CompressedLogExt2) {\n\nThat feels like a lot to be cramming into a single if statement.",
+      "parentUuid": "1700d9bc_0a20c41b",
       "revId": "2f566ee57bc5bfe816f6c8dfaa3d73a9e378c29b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

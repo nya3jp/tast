@@ -81,6 +81,24 @@
       "revId": "2f566ee57bc5bfe816f6c8dfaa3d73a9e378c29b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "85654626_f51c86b0",
+        "filename": "src/chromiumos/tast/crash/crash.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1212939
+      },
+      "writtenOn": "2019-07-25T23:50:10Z",
+      "side": 1,
+      "message": "It doesn\u0027t need to be crammed into a single statement. Why not creating a function such as \"shouldAppend(...)\" or some more meaningful name. Return true if you want to call \"crashFiles \u003d append(CrashFiles, filepath.Join(dir, fn))\"?",
+      "parentUuid": "fcb4196d_0cd41a92",
+      "revId": "2f566ee57bc5bfe816f6c8dfaa3d73a9e378c29b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

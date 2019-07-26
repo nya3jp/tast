@@ -32,6 +32,10 @@ func RegistrationErrors() []error {
 }
 
 // AddTest adds test t to the global registry.
+// This should be called only once in a test main file's init(),
+// and it should be the top level statement of the init()'s body.
+// The argument of AddTest() in the case should be a pointer to a
+// composite literal of testing.Test.
 func AddTest(t *Test) {
 	pc, file, line, _ := runtime.Caller(1)
 	if err := addTestInternal(t, pc); err != nil {

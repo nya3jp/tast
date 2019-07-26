@@ -40,6 +40,13 @@ func init() {
 		Desc:     "This description is fine",
 		// Contacts is missing
 	})
+
+	for {
+		testing.AddTest(&testing.Test{
+			Func: DoStuff,
+		})
+	}
+	testing.AddTest(ts)
 }
 
 func DoStuff(ctx context.Context, s *testing.State) {}
@@ -53,7 +60,9 @@ func DoStuff(ctx context.Context, s *testing.State) {}
 	expects := []string{
 		path + ":19:13: " + badDescMsg,
 		path + ":24:13: " + badDescMsg,
-		path + ":27:19: " + noContactMsg,
+		path + ":27:18: " + noContactMsg,
+		path + ":34:3: " + notTopAddTestMsg,
+		path + ":38:18: " + addTestArgLitMsg,
 	}
 	verifyIssues(t, issues, expects)
 }

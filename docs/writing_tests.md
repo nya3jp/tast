@@ -38,21 +38,43 @@ the Chrome OS UI. The category package needs to be directly under the bundle
 package. Thus the category package path should be matched with
 `chromiumos/tast/(local|remote)/bundles/(?P<bundlename>[^/]+)/(?P<category>[^/]+)`.
 
-A test needs to be registred by calling `testing.AddTest` in the test entry
-file, which is located directly under a category package. The registration
-needs to be done in init() function in the file. The registration should be
-declarative, so calling testing.AddTest multiple times (e.g. in a loop) is
-not allowed.
+A local test named `ui.DoSomething` should be defined in a file named
+`src/chromiumos/tast/local/bundles/cros/ui/do_something.go` (i.e. convert the
+test name to lowercase and insert underscores between words).
 
 Support packages used by multiple test categories located in
 [src/chromiumos/tast/local/] and [src/chromiumos/tast/remote/], alongside the
 `bundles/` directories. For example, the [chrome package] can be used by local
 tests to interact with Chrome.
 
-A local test named `ui.DoSomething` should be defined in a file named
-`src/chromiumos/tast/local/bundles/cros/ui/do_something.go` (i.e. convert the
-test name to lowercase and insert underscores between words) with contents
-similar to the following:
+If there's a support package that's specific to a single category, it's often
+best to place it underneath the category's directory. See the [Scoping and
+shared code] section.
+
+[test bundles]: overview.md#Test-bundles
+[tast-tests repository]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD
+[tast-tests-private repository]: https://chrome-internal.googlesource.com/chromeos/platform/tast-tests-private/+/HEAD
+[src/chromiumos/tast/local/bundles/cros/]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/bundles/cros/
+[src/chromiumos/tast/remote/bundles/cros/]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/remote/bundles/cros/
+[ui package]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/bundles/cros/ui/
+[src/chromiumos/tast/local/]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/
+[src/chromiumos/tast/remote/]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/remote/
+[chrome package]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/chrome/
+[Scoping and shared code]: #Scoping-and-shared-code
+
+### Test registration
+
+A test needs to be registred by calling `testing.AddTest()` in the test entry
+file, which is located directly under a category package. The registration
+needs to be done in `init()` function in the file. The registration should be
+declarative, which means:
+- `testing.AddTest()` should be called at a top level statement of `init()`'s
+body.
+- Calling `testing.AddTest()` multiple times (e.g. in a loop) is not allowed.
+- `testing.AddTest()` should take a pointer of a `testing.Test` composite
+literal.
+
+The test registration code will be similar to the following:
 
 ```go
 // Copyright 2018 The Chromium OS Authors. All rights reserved.
@@ -90,23 +112,9 @@ Tests may specify [attributes] and [software dependencies] when they are
 declared. Setting the `informational` attribute on new tests is recommended, as
 tests without this attribute will block the Commit Queue on failure otherwise.
 
-If there's a support package that's specific to a single category, it's often
-best to place it underneath the category's directory. See the [Scoping and
-shared code] section.
-
-[test bundles]: overview.md#Test-bundles
-[tast-tests repository]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD
-[tast-tests-private repository]: https://chrome-internal.googlesource.com/chromeos/platform/tast-tests-private/+/HEAD
-[src/chromiumos/tast/local/bundles/cros/]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/bundles/cros/
-[src/chromiumos/tast/remote/bundles/cros/]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/remote/bundles/cros/
-[ui package]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/bundles/cros/ui/
-[src/chromiumos/tast/local/]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/
-[src/chromiumos/tast/remote/]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/remote/
-[chrome package]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/chrome/
 [Contacts]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Test
 [attributes]: test_attributes.md
 [software dependencies]: test_dependencies.md
-[Scoping and shared code]: #Scoping-and-shared-code
 
 ### Adding new test categories
 

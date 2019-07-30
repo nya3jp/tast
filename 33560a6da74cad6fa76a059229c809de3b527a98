@@ -22,6 +22,30 @@
       "revId": "33560a6da74cad6fa76a059229c809de3b527a98",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a9770220_8d3f45aa",
+        "filename": "src/chromiumos/tast/crash/crash.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1300299
+      },
+      "writtenOn": "2019-07-30T00:13:50Z",
+      "side": 1,
+      "message": "It actually is! The full name is something like /home/chronos/crash/chrome.20190729.143255.32164.i915_error_state.log.xz\nso it\u0027s actually an extension after the dot. (If you look at the previous patch set, you can see I made the same mistake.)",
+      "parentUuid": "a0dc9e75_d29598d0",
+      "range": {
+        "startLine": 33,
+        "startChar": 1,
+        "endLine": 33,
+        "endChar": 12
+      },
+      "revId": "33560a6da74cad6fa76a059229c809de3b527a98",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

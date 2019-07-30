@@ -14,10 +14,16 @@ import (
 
 // Exposed here for unit tests.
 const (
-	notTopAddTestMsg    = `testing.AddTest() should be called only at a top statement of init()`
-	addTestArgLitMsg    = `testing.AddTest() should take &testing.Test{...} composite literal`
-	noContactMsg        = `Test should list owners' email addresses in Contacts field`
-	badDescMsg          = `Test descriptions should be capitalized phrases without trailing punctuation, e.g. "Checks that foo is bar"`
+	notTopAddTestMsg = `testing.AddTest() should be called only at a top statement of init()`
+	addTestArgLitMsg = `testing.AddTest() should take &testing.Test{...} composite literal`
+
+	noDescMsg         = `Test should have its description`
+	nonLiteralDescMsg = `Test descriptions should be string literal`
+	badDescMsg        = `Test descriptions should be capitalized phrases without trailing punctuation, e.g. "Checks that foo is bar"`
+
+	noContactMsg          = `Test should list owners' email addresses in Contacts field`
+	nonLiteralContactsMsg = `Test Contacts should be an array literal of string literals`
+
 	testRegistrationURL = `https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Test-registration`
 )
 
@@ -99,7 +105,7 @@ func verifyInitBody(fs *token.FileSet, stmt ast.Stmt) []*Issue {
 
 	// The compiler should check the type. Skip it.
 	var issues []*Issue
-	hasContacts := false
+	var hasDesc, hasContacts bool
 	for _, el := range comp.Elts {
 		kv, ok := el.(*ast.KeyValueExpr)
 		if !ok {
@@ -111,12 +117,21 @@ func verifyInitBody(fs *token.FileSet, stmt ast.Stmt) []*Issue {
 		}
 		switch ident.Name {
 		case "Desc":
+			hasDesc = true
 			issues = append(issues, verifyDesc(fs, kv.Value)...)
 		case "Contacts":
 			hasContacts = true
+			issues = append(issues, verifyContacts(fs, kv.Value)...)
 		}
 	}
 
+	if !hasDesc {
+		issues = append(issues, &Issue{
+			Pos:  fs.Position(arg.Pos()),
+			Msg:  noDescMsg,
+			Link: testRegistrationURL,
+		})
+	}
 	if !hasContacts {
 		issues = append(issues, &Issue{
 			Pos:  fs.Position(arg.Pos()),
@@ -130,8 +145,11 @@ func verifyInitBody(fs *token.FileSet, stmt ast.Stmt) []*Issue {
 func verifyDesc(fs *token.FileSet, node ast.Node) []*Issue {
 	s, ok := toString(node)
 	if !ok {
-		// TODO(hidehiko): Make the check more strict that Desc should have string literal.
-		return nil
+		return []*Issue{{
+			Pos:  fs.Position(node.Pos()),
+			Msg:  nonLiteralDescMsg,
+			Link: testRegistrationURL,
+		}}
 	}
 	if s == "" || !unicode.IsUpper(rune(s[0])) || s[len(s)-1] == '.' {
 		return []*Issue{{
@@ -141,6 +159,29 @@ func verifyDesc(fs *token.FileSet, node ast.Node) []*Issue {
 		}}
 	}
 	return nil
+}
+
+func verifyContacts(fs *token.FileSet, node ast.Node) []*Issue {
+	comp, ok := node.(*ast.CompositeLit)
+	if !ok {
+		return []*Issue{{
+			Pos:  fs.Position(node.Pos()),
+			Msg:  nonLiteralContactsMsg,
+			Link: testRegistrationURL,
+		}}
+	}
+
+	var issues []*Issue
+	for _, el := range comp.Elts {
+		if _, ok := toString(el); !ok {
+			issues = append(issues, &Issue{
+				Pos:  fs.Position(el.Pos()),
+				Msg:  nonLiteralContactsMsg,
+				Link: testRegistrationURL,
+			})
+		}
+	}
+	return issues
 }
 
 // isTestingAddTestCall returns true if the call is an expression

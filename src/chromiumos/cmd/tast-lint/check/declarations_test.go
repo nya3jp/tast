@@ -20,9 +20,31 @@ import (
 func init() {
 	// We wouldn't normally permit multiple AddTest calls like this, but including
 	// them here makes this unit test shorter.
+
+	// Simple pass case.
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+	})
+
+	// AddTest invocation tests.
+	for {
+		testing.AddTest(&testing.Test{
+			Func: DoStuff,
+		})
+	}
+	testing.AddTest(ts)
+
+	// Desc verification.
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		// Desc is missing
+		Contacts: []string{"me@chromium.org"},
+	})
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     variableDesc,
 		Contacts: []string{"me@chromium.org"},
 	})
 	testing.AddTest(&testing.Test{
@@ -35,18 +57,23 @@ func init() {
 		Desc:     "Ends with a period.",
 		Contacts: []string{"me@chromium.org"},
 	})
+
+	// Contacts verification.
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
 		// Contacts is missing
 	})
-
-	for {
-		testing.AddTest(&testing.Test{
-			Func: DoStuff,
-		})
-	}
-	testing.AddTest(ts)
+	testing.AddTest(&testing.Test{
+		Func: DoStuff,
+		Desc: "This description is fine",
+		Contacts: []string{variableAddress},
+	})
+	testing.AddTest(&testing.Test{
+		Func: DoStuff,
+		Desc: "This description is fine",
+		Contacts: variableContacts,
+	})
 }
 
 func DoStuff(ctx context.Context, s *testing.State) {}
@@ -58,11 +85,17 @@ func DoStuff(ctx context.Context, s *testing.State) {}
 
 	issues := Declarations(fs, f)
 	expects := []string{
-		path + ":19:13: " + badDescMsg,
-		path + ":24:13: " + badDescMsg,
-		path + ":27:18: " + noContactMsg,
-		path + ":34:3: " + notTopAddTestMsg,
-		path + ":38:18: " + addTestArgLitMsg,
+		path + ":22:3: " + notTopAddTestMsg,
+		path + ":26:18: " + addTestArgLitMsg,
+
+		path + ":29:18: " + noDescMsg,
+		path + ":36:13: " + nonLiteralDescMsg,
+		path + ":41:13: " + badDescMsg,
+		path + ":46:13: " + badDescMsg,
+
+		path + ":51:18: " + noContactMsg,
+		path + ":59:22: " + nonLiteralContactsMsg,
+		path + ":64:13: " + nonLiteralContactsMsg,
 	}
 	verifyIssues(t, issues, expects)
 }

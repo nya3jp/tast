@@ -22,6 +22,29 @@
       "revId": "1a952dbffe1afab5ce21afe171fa90935ebdcb4c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1c765b4a_b2476940",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-30T14:02:36Z",
+      "side": 1,
+      "message": "nit: \"Allow\" sounds like untouching other things, but actually this is switching from OutDir to Out. How about:\n\ntast: Use build output (or target?) filename directly.\n\nor something...? It\u0027s nice to be mention this is switching dir to file in the commit message as details.",
+      "range": {
+        "startLine": 7,
+        "startChar": 6,
+        "endLine": 7,
+        "endChar": 11
+      },
+      "revId": "1a952dbffe1afab5ce21afe171fa90935ebdcb4c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

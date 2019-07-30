@@ -472,6 +472,30 @@
     },
     {
       "key": {
+        "uuid": "cc7b0402_165f958e",
+        "filename": "src/chromiumos/cmd/tast-lint/check/declarations.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-30T00:53:30Z",
+      "side": 1,
+      "message": "IMHO \"already\" used in present tense is a bit strange if the verb is not a stative verb. For example, \"I already know it\" is fine, while \"I already finish it\" is not.",
+      "parentUuid": "acd98f30_04574b6a",
+      "range": {
+        "startLine": 100,
+        "startChar": 24,
+        "endLine": 100,
+        "endChar": 31
+      },
+      "revId": "14d86116d615cc4c4a51f1670c09daedaf800749",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "fb05d6b2_195b7106",
         "filename": "src/chromiumos/cmd/tast-lint/check/declarations.go",
         "patchSetId": 1

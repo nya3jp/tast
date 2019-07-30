@@ -70,6 +70,30 @@
       "revId": "33560a6da74cad6fa76a059229c809de3b527a98",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2de7e1c4_a60c2c95",
+        "filename": "src/chromiumos/tast/crash/crash.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1300299
+      },
+      "writtenOn": "2019-07-30T03:18:00Z",
+      "side": 1,
+      "message": "You\u0027re right, it should have a . to be consistent. I\u0027ll remove from CQ and change.",
+      "parentUuid": "701fc92f_1926ab89",
+      "range": {
+        "startLine": 33,
+        "startChar": 1,
+        "endLine": 33,
+        "endChar": 12
+      },
+      "revId": "33560a6da74cad6fa76a059229c809de3b527a98",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

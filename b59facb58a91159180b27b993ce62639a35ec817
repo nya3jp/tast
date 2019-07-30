@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "71a1913d_cd50f54e",
+        "filename": "src/chromiumos/cmd/tast/run/config_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-07-30T02:30:27Z",
+      "side": 1,
+      "message": "huge nit: how about using localBundlePkgPathPrefix to improve coverage?\nIt looks the pattern of runLocal \u003d true for build \u003d true is not covered in these tests.",
+      "range": {
+        "startLine": 103,
+        "startChar": 48,
+        "endLine": 103,
+        "endChar": 73
+      },
+      "revId": "b59facb58a91159180b27b993ce62639a35ec817",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

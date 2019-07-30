@@ -104,9 +104,12 @@ func DoSomething(ctx context.Context, s *testing.State) {
 }
 ```
 
+Tests have to specify the descriptions, which should be the string literal.
+
 Tests have to specify email addresses of persons and groups who are familiar
 with those tests in [Contacts]. At least one personal email address of an active
 committer should be specified so that we can file bugs or ask for code reviews.
+The Contacts fields should be an array literal of string literals.
 
 Tests may specify [attributes] and [software dependencies] when they are
 declared. Setting the `informational` attribute on new tests is recommended, as

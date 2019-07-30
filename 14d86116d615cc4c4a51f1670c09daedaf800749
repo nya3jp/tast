@@ -496,6 +496,30 @@
     },
     {
       "key": {
+        "uuid": "f6eef51e_f14f896f",
+        "filename": "src/chromiumos/cmd/tast-lint/check/declarations.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-30T07:31:43Z",
+      "side": 1,
+      "message": "Got it. Thank you for explanation.",
+      "parentUuid": "cc7b0402_165f958e",
+      "range": {
+        "startLine": 100,
+        "startChar": 24,
+        "endLine": 100,
+        "endChar": 31
+      },
+      "revId": "14d86116d615cc4c4a51f1670c09daedaf800749",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "fb05d6b2_195b7106",
         "filename": "src/chromiumos/cmd/tast-lint/check/declarations.go",
         "patchSetId": 1

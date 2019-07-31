@@ -24,7 +24,12 @@ const (
 	noContactMsg          = `Test should list owners' email addresses in Contacts field`
 	nonLiteralContactsMsg = `Test Contacts should be an array literal of string literals`
 
-	testRegistrationURL = `https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Test-registration`
+	nonLiteralAttrMsg         = `Test Attr should be an array literal of string literals`
+	nonLiteralVarsMsg         = `Test Vars should be an array literal of string literals`
+	nonLiteralSoftwareDepsMsg = `Test SoftwareDeps should be an array literal of string literals or (possibly qualified) identifiers`
+
+	testRegistrationURL     = `https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Test-registration`
+	testRuntimeVariablesURL = `https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Runtime-variables`
 )
 
 // Declarations checks declarations of testing.Test structs.
@@ -122,6 +127,12 @@ func verifyInitBody(fs *token.FileSet, stmt ast.Stmt) []*Issue {
 		case "Contacts":
 			hasContacts = true
 			issues = append(issues, verifyContacts(fs, kv.Value)...)
+		case "Attr":
+			issues = append(issues, verifyAttr(fs, kv.Value)...)
+		case "Vars":
+			issues = append(issues, verifyVars(fs, kv.Value)...)
+		case "SoftwareDeps":
+			issues = append(issues, verifySoftwareDeps(fs, kv.Value)...)
 		}
 	}
 
@@ -184,6 +195,75 @@ func verifyContacts(fs *token.FileSet, node ast.Node) []*Issue {
 	return issues
 }
 
+func verifyAttr(fs *token.FileSet, node ast.Node) []*Issue {
+	comp, ok := node.(*ast.CompositeLit)
+	if !ok {
+		return []*Issue{{
+			Pos:  fs.Position(node.Pos()),
+			Msg:  nonLiteralAttrMsg,
+			Link: testRegistrationURL,
+		}}
+	}
+
+	var issues []*Issue
+	for _, el := range comp.Elts {
+		if _, ok := toString(el); !ok {
+			issues = append(issues, &Issue{
+				Pos:  fs.Position(el.Pos()),
+				Msg:  nonLiteralAttrMsg,
+				Link: testRegistrationURL,
+			})
+		}
+	}
+	return issues
+}
+
+func verifyVars(fs *token.FileSet, node ast.Node) []*Issue {
+	comp, ok := node.(*ast.CompositeLit)
+	if !ok {
+		return []*Issue{{
+			Pos:  fs.Position(node.Pos()),
+			Msg:  nonLiteralVarsMsg,
+			Link: testRegistrationURL,
+		}}
+	}
+
+	var issues []*Issue
+	for _, el := range comp.Elts {
+		if _, ok := toString(el); !ok {
+			issues = append(issues, &Issue{
+				Pos:  fs.Position(el.Pos()),
+				Msg:  nonLiteralVarsMsg,
+				Link: testRegistrationURL,
+			})
+		}
+	}
+	return issues
+}
+
+func verifySoftwareDeps(fs *token.FileSet, node ast.Node) []*Issue {
+	comp, ok := node.(*ast.CompositeLit)
+	if !ok {
+		return []*Issue{{
+			Pos:  fs.Position(node.Pos()),
+			Msg:  nonLiteralSoftwareDepsMsg,
+			Link: testRegistrationURL,
+		}}
+	}
+
+	var issues []*Issue
+	for _, el := range comp.Elts {
+		if !isStringLiteralOrIdent(el) {
+			issues = append(issues, &Issue{
+				Pos:  fs.Position(el.Pos()),
+				Msg:  nonLiteralSoftwareDepsMsg,
+				Link: testRegistrationURL,
+			})
+		}
+	}
+	return issues
+}
+
 // isTestingAddTestCall returns true if the call is an expression
 // to invoke testing.AddTest().
 func isTestingAddTestCall(node ast.Node) bool {
@@ -192,6 +272,13 @@ func isTestingAddTestCall(node ast.Node) bool {
 		return false
 	}
 	return toQualifiedName(call.Fun) == "testing.AddTest"
+}
+
+func isStringLiteralOrIdent(node ast.Node) bool {
+	if _, ok := toString(node); ok {
+		return true
+	}
+	return toQualifiedName(node) != ""
 }
 
 // toString converts the given node representing a string literal

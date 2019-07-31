@@ -74,6 +74,72 @@ func init() {
 		Desc: "This description is fine",
 		Contacts: variableContacts,
 	})
+
+	// Attr verification.
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+		Attr:     []string{"this", "is", "valid", "attr"},
+	})
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+		Attr:     foobar,  // non array literal.
+	})
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+		Attr:     []string{variableAttr},
+	})
+
+	// Vars verification.
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+		Vars:     []string{"this", "is", "valid", "vars"},
+	})
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+		Vars:     foobar,  // non array literal.
+	})
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+		Vars:     []string{variableVar},
+	})
+
+	// SoftwareDeps verification.
+	testing.AddTest(&testing.Test{
+		Func:         DoStuff,
+		Desc:         "This description is fine",
+		Contacts:     []string{"me@chromium.org"},
+		SoftwareDeps: []string{"this", "is", "valid", "dep"},
+	})
+	testing.AddTest(&testing.Test{
+		Func:         DoStuff,
+		Desc:         "This description is fine",
+		Contacts:     []string{"me@chromium.org"},
+		SoftwareDeps: []string{qualified.variable, is, "allowed"},
+	})
+	testing.AddTest(&testing.Test{
+		Func:         DoStuff,
+		Desc:         "This description is fine",
+		Contacts:     []string{"me@chromium.org"},
+		SoftwareDeps: foobar,  // non array literal.
+	})
+	testing.AddTest(&testing.Test{
+		Func:         DoStuff,
+		Desc:         "This description is fine",
+		Contacts:     []string{"me@chromium.org"},
+		SoftwareDeps: []string{fun()},  // invocation is not allowed.
+	})
 }
 
 func DoStuff(ctx context.Context, s *testing.State) {}
@@ -96,6 +162,15 @@ func DoStuff(ctx context.Context, s *testing.State) {}
 		path + ":51:18: " + noContactMsg,
 		path + ":59:22: " + nonLiteralContactsMsg,
 		path + ":64:13: " + nonLiteralContactsMsg,
+
+		path + ":78:13: " + nonLiteralAttrMsg,
+		path + ":84:22: " + nonLiteralAttrMsg,
+
+		path + ":98:13: " + nonLiteralVarsMsg,
+		path + ":104:22: " + nonLiteralVarsMsg,
+
+		path + ":124:17: " + nonLiteralSoftwareDepsMsg,
+		path + ":130:26: " + nonLiteralSoftwareDepsMsg,
 	}
 	verifyIssues(t, issues, expects)
 }

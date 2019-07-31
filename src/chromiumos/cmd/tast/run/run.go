@@ -25,6 +25,24 @@ import (
 	"chromiumos/tast/timing"
 )
 
+const (
+	localRunnerPkg  = "chromiumos/cmd/local_test_runner"  // Go package for local_test_runner
+	remoteRunnerPkg = "chromiumos/cmd/remote_test_runner" // Go package for remote_test_runner
+
+	localBundlePkgPathPrefix  = "chromiumos/tast/local/bundles"  // Go package path prefix for local test bundles
+	remoteBundlePkgPathPrefix = "chromiumos/tast/remote/bundles" // Go package path prefix for remote test bundles
+
+	// localBundleBuildSubdir is a subdirectory used for compiled local test bundles.
+	// Bundles are placed here rather than in the top-level build artifacts dir so that
+	// local and remote bundles with the same name won't overwrite each other.
+	localBundleBuildSubdir = "local_bundles"
+
+	// remoteBundleBuildSubdir is a subdirectory used for compiled remote test bundles.
+	// Bundles are placed here rather than in the top-level build artifacts dir so that
+	// local and remote bundles with the same name won't overwrite each other.
+	remoteBundleBuildSubdir = "remote_bundles"
+)
+
 // Status describes the result of a Run call.
 type Status struct {
 	// ExitCode contains the exit code that should be used by the tast process.

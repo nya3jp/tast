@@ -29,15 +29,6 @@ const (
 	sshPingTimeout    = 5 * time.Second  // timeout for checking if SSH connection to DUT is open
 	sshRetryInterval  = 5 * time.Second  // minimum time to wait between SSH connection attempts
 
-	localRunnerPkg = "chromiumos/cmd/local_test_runner" // Go package for local_test_runner
-
-	localBundlePkgPathPrefix = "chromiumos/tast/local/bundles" // Go package path prefix for test bundles
-
-	// localBundleBuildSubdir is a subdirectory used for compiled local test bundles.
-	// Bundles are placed here rather than in the top-level build artifacts dir so that
-	// local and remote bundles with the same name won't overwrite each other.
-	localBundleBuildSubdir = "local_bundles"
-
 	defaultLocalRunnerWaitTimeout = 10 * time.Second // default timeout for waiting for local_test_runner to exit
 	heartbeatInterval             = time.Second      // interval for heartbeat messages
 )

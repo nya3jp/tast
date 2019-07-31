@@ -22,17 +22,6 @@ import (
 	"chromiumos/tast/timing"
 )
 
-const (
-	remoteRunnerPkg = "chromiumos/cmd/remote_test_runner" // Go package for remote_test_runner
-
-	remoteBundlePkgPathPrefix = "chromiumos/tast/remote/bundles" // Go package path prefix for test bundles
-
-	// remoteBundleBuildSubdir is a subdirectory used for compiled remote test bundles.
-	// Bundles are placed here rather than in the top-level build artifacts dir so that
-	// local and remote bundles with the same name won't overwrite each other.
-	remoteBundleBuildSubdir = "remote_bundles"
-)
-
 // remote runs remote tests as directed by cfg and returns the command's exit status.
 // If non-nil, the returned results may be passed to WriteResults.
 func remote(ctx context.Context, cfg *Config) (Status, []TestResult) {

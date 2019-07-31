@@ -69,6 +69,24 @@
       "revId": "0846675bc08fdecbfe76bd22b54c187d3943531c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3c7e97f0_5db40958",
+        "filename": "src/chromiumos/cmd/tast/run/run.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-07-31T11:45:19Z",
+      "side": 1,
+      "message": "Oops, very sorry, I probably overlooked because the diff didn\u0027t show that part... It works for me.",
+      "parentUuid": "0f98ade3_57df79da",
+      "revId": "0846675bc08fdecbfe76bd22b54c187d3943531c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

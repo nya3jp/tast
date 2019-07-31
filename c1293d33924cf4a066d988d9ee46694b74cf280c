@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "1aecc541_8d7d6bf0",
+        "filename": "src/chromiumos/cmd/tast/build/compat.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-31T08:00:40Z",
+      "side": 1,
+      "message": "I definitely agree we may forget to update this, but what do you think we can do to catch it with presubmit checks? I have no idea.",
+      "parentUuid": "e67b5a32_9dae4bb5",
+      "range": {
+        "startLine": 23,
+        "startChar": 3,
+        "endLine": 25,
+        "endChar": 0
+      },
+      "revId": "c1293d33924cf4a066d988d9ee46694b74cf280c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "80017df7_78e88da5",
         "filename": "src/chromiumos/cmd/tast/build/compat.go",
         "patchSetId": 4
@@ -36,6 +60,30 @@
       "writtenOn": "2019-07-30T14:20:13Z",
       "side": 1,
       "message": "huge nit: \";\" for consistency?",
+      "range": {
+        "startLine": 39,
+        "startChar": 46,
+        "endLine": 39,
+        "endChar": 47
+      },
+      "revId": "c1293d33924cf4a066d988d9ee46694b74cf280c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5fd8f78e_64a9d042",
+        "filename": "src/chromiumos/cmd/tast/build/compat.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-31T08:00:40Z",
+      "side": 1,
+      "message": "IMHO this is fine. This is very difficult to explain, and you know, I\u0027m not a native English speaker. But my intuition is that if the message is simple enough like \"X is %d, want %d\" or \"X got %d, want \"%d\" it is fine to use a comma at least, and there are many other cases a comma is fine (or preferred). I\u0027m happy to discuss this offline.\n\nBTW, as an objective metric, there are many more \"got, want\" than \"got; want\" in Google internal:\n\nhttps://cs.corp.google.com/search/?q\u003dt.(Error%7CFatal).*got.*,%5C+want%5C++file:_test.go\u0026type\u003dcs\nhttps://cs.corp.google.com/search/?q\u003dt.(Error%7CFatal).*got.*;%5C+want%5C++file:_test.go\u0026type\u003dcs",
+      "parentUuid": "80017df7_78e88da5",
       "range": {
         "startLine": 39,
         "startChar": 46,

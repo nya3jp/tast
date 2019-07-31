@@ -104,16 +104,19 @@ func DoSomething(ctx context.Context, s *testing.State) {
 }
 ```
 
-Tests have to specify the descriptions, which should be the string literal.
+Tests have to specify the descriptions in `Desc`, which should be a string literal.
 
 Tests have to specify email addresses of persons and groups who are familiar
 with those tests in [Contacts]. At least one personal email address of an active
 committer should be specified so that we can file bugs or ask for code reviews.
-The Contacts fields should be an array literal of string literals.
+The `Contacts` fields should be an array literal of string literals.
 
 Tests may specify [attributes] and [software dependencies] when they are
 declared. Setting the `informational` attribute on new tests is recommended, as
 tests without this attribute will block the Commit Queue on failure otherwise.
+The `Attr` fields should be an array literal of string literals.
+The `SoftwareDeps` fields should be an array literal of string literals or
+(possibly qualified) identifiers which are constant value.
 
 [Contacts]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Test
 [attributes]: test_attributes.md
@@ -886,6 +889,7 @@ Occasionally tests need to access dynamic or secret data (i.e. *out-of-band* dat
 
 To use runtime variables, in your test's `testing.AddTest` call, set the
 `testing.Test` struct's `Vars` field to contain a slice of runtime variables.
+The `Vars` field should be an array literal of string literals.
 The test can later access the values by calling `s.Var` or `s.RequiredVar` methods.
 
 For variables only used in a single test, prefix them with the test name

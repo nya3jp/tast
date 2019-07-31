@@ -22,6 +22,30 @@
       "revId": "b59facb58a91159180b27b993ce62639a35ec817",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "336878f7_3b1da6ed",
+        "filename": "src/chromiumos/cmd/tast/run/config_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-31T07:41:26Z",
+      "side": 1,
+      "message": "Sounds like a good idea, done.",
+      "parentUuid": "71a1913d_cd50f54e",
+      "range": {
+        "startLine": 103,
+        "startChar": 48,
+        "endLine": 103,
+        "endChar": 73
+      },
+      "revId": "b59facb58a91159180b27b993ce62639a35ec817",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

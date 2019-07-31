@@ -22,6 +22,30 @@
       "revId": "1a952dbffe1afab5ce21afe171fa90935ebdcb4c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9cfeff28_12612ef9",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-31T07:42:41Z",
+      "side": 0,
+      "message": "Yes it is, but please allow me to do it as I\u0027m introducing remoteRunnerPkg.",
+      "parentUuid": "b630141d_7e78d951",
+      "range": {
+        "startLine": 33,
+        "startChar": 1,
+        "endLine": 33,
+        "endChar": 22
+      },
+      "revId": "1a952dbffe1afab5ce21afe171fa90935ebdcb4c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

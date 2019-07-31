@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "355ef41a_c5ee07ed",
+        "filename": "src/chromiumos/cmd/tast/run/remote.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-31T07:42:41Z",
+      "side": 1,
+      "message": "Actually I found there are a few constants to move, please let me do it in a separate change.\nhttps://crrev.com/c/1728493/",
+      "parentUuid": "24e2d4b4_fb04c994",
+      "revId": "0846675bc08fdecbfe76bd22b54c187d3943531c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "85f449ee_97d13b9f",
         "filename": "src/chromiumos/cmd/tast/run/run.go",
         "patchSetId": 2
@@ -30,6 +48,24 @@
       "writtenOn": "2019-07-30T14:10:36Z",
       "side": 1,
       "message": "The reason of the asymmetric between localRunner and remoteRunner here looks not very trivial.\nCould you comment it?",
+      "revId": "0846675bc08fdecbfe76bd22b54c187d3943531c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0f98ade3_57df79da",
+        "filename": "src/chromiumos/cmd/tast/run/run.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-07-31T07:42:41Z",
+      "side": 1,
+      "message": "Do you think the comment above is insufficient? Could you recommend me what to describe?\n\n\t// local_test_runner is required even if we are running only remote tests,\n\t// e.g. to compute software dependencies.",
+      "parentUuid": "85f449ee_97d13b9f",
       "revId": "0846675bc08fdecbfe76bd22b54c187d3943531c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

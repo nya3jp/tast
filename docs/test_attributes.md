@@ -15,6 +15,8 @@ results are interpreted:
     are uploaded to [crosbolt]. When you add this attribute, you also need to
     add one of `crosbolt_perbuild`, `crosbolt_nightly` or `crosbolt_weekly`.
 
+**Googlers:** You can find more information about `group:crosbolt` in [go/tast-add-test].
+
 Tests without `disabled` or any `group:`-prefixed attributes are called
 *mainline* tests. Mainline tests without the `informational` attribute are
 called *critical* tests. Failures in critical tests justify rejecting or
@@ -35,6 +37,7 @@ select which tests to run.
 
 [testing.Test]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Test
 [crosbolt]: https://crosbolt.teams.x20web.corp.google.com/prod/crosbolt/index.html
+[go/tast-add-test]: http://go/tast-add-test
 [bundle]: overview.md#Test-bundles
 [software dependency]: test_dependencies.md
 [name]: writing_tests.md#Test-names

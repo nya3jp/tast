@@ -74,14 +74,14 @@ type Test struct {
 	// This field is serialized as an integer nanosecond count.
 	Timeout time.Duration
 
-	// Params lists the Param structs for parametric tests.
-	// TODO(hidehiko): Link to a document explaining the parametric test in Tast.
+	// Params lists the Param structs for parameterized tests.
 	Params []Param
 }
 
-// Param defines parameters for a parametric test case.
+// Param defines parameters for a parameterized test case.
+// See also https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Parameterized-tests
 type Param struct {
-	// Name is the name of this parametric test.
+	// Name is the name of this parameterized test.
 	// Full name of the test case will be category.TestFuncName.param_name,
 	// or category.TestFuncName if Name is empty.
 	// Name should match with [a-z0-9_]*.

@@ -55,7 +55,7 @@ type TestCase struct {
 	// AdditionalTime contains an upper bound of additional time allocated to the test.
 	AdditionalTime time.Duration `json:"additionalTime,omitEmpty"`
 
-	// Val contains the value inherited from the expanded Param struct for a parametric test case.
+	// Val contains the value inherited from the expanded Param struct for a parameterized test case.
 	// This can be retrieved from testing.State.Param().
 	Val interface{} `json:"-"`
 
@@ -75,7 +75,7 @@ type TestCase struct {
 
 // newTestCase creates a TestCase instance from the given Test info.
 // t must be validated one.
-// For a parametric test case, p is specified. p must be contained in t.Params.
+// For a parameterized test case, p is specified. p must be contained in t.Params.
 func newTestCase(t *Test, p *Param) (*TestCase, error) {
 	info, err := getTestFuncInfo(t.Func)
 	if err != nil {

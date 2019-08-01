@@ -45,6 +45,54 @@
       "revId": "efc01e320895135afacc47ce50e3fc05b9a63054",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e5997c2c_582f786e",
+        "filename": "src/chromiumos/cmd/tast-lint/check/declarations.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-01T04:23:31Z",
+      "side": 1,
+      "message": "Done. I\u0027d like to keep it, because just \"identifier(s)\" sounds like a name of something simply, so a.b.c sounds like not out of scope, so would like to keep it clear.",
+      "parentUuid": "701a9a55_7134a26a",
+      "range": {
+        "startLine": 29,
+        "startChar": 98,
+        "endLine": 29,
+        "endChar": 106
+      },
+      "revId": "efc01e320895135afacc47ce50e3fc05b9a63054",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6c90c73c_6ff4d2ec",
+        "filename": "src/chromiumos/cmd/tast-lint/check/declarations.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-01T04:23:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "125bbc06_95d4a554",
+      "range": {
+        "startLine": 29,
+        "startChar": 118,
+        "endLine": 29,
+        "endChar": 128
+      },
+      "revId": "efc01e320895135afacc47ce50e3fc05b9a63054",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -75,11 +75,11 @@ type Test struct {
 	Timeout time.Duration
 
 	// Params lists the Param structs for parametric tests.
-	// TODO(hidehiko): Link to a document explaining the parametric test in Tast.
 	Params []Param
 }
 
 // Param defines parameters for a parametric test case.
+// See also https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/parametric_test.md
 type Param struct {
 	// Name is the name of this parametric test.
 	// Full name of the test case will be category.TestFuncName.param_name,

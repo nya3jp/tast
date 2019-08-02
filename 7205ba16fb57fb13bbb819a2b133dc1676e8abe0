@@ -1,0 +1,412 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "354911f4_e74a8bc2",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-02T05:33:50Z",
+      "side": 1,
+      "message": "For long documentations I recommend adding native speaker reviewer.\n\nI\u0027ll be also making many nitpicky comments here than other code reviews. Please don\u0027t trust me about English, though I\u0027m trying to be right.",
+      "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "55d55c2d_eb3d067e",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-02T05:33:50Z",
+      "side": 1,
+      "message": "What do you think about writing this in go/tast-writing? It should be good to mention it there since the doc covers almost everything about Tast tests.",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 17
+      },
+      "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "496d0071_dfc0e9f0",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-02T05:33:50Z",
+      "side": 1,
+      "message": "nit: Parameteric tests (lower case, plural form)",
+      "range": {
+        "startLine": 1,
+        "startChar": 13,
+        "endLine": 1,
+        "endChar": 17
+      },
+      "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b9f31406_e2ac6df9",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-02T05:33:50Z",
+      "side": 1,
+      "message": "variations of the test (plural)\n\nor\n\nvariants of the test\n\nc.f. https://eow.alc.co.jp/search?q\u003dvariation\u0026ref\u003dsa",
+      "range": {
+        "startLine": 3,
+        "startChar": 40,
+        "endLine": 3,
+        "endChar": 66
+      },
+      "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b5641f4a_d5af18da",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-02T05:33:50Z",
+      "side": 1,
+      "message": "Registration of a parametric test looks as follows:\n\nor\n\nRegistration of a parametric test will look as follows:",
+      "range": {
+        "startLine": 4,
+        "startChar": 18,
+        "endLine": 4,
+        "endChar": 22
+      },
+      "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bf17331c_0ee19923",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-02T05:33:50Z",
+      "side": 1,
+      "message": "\"parametric test\" is not a defined term at this point. How about inserting:\n\nA test with variants is called a *parametric test*.",
+      "range": {
+        "startLine": 4,
+        "startChar": 0,
+        "endLine": 4,
+        "endChar": 12
+      },
+      "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "560c9caa_acfd2262",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-02T05:33:50Z",
+      "side": 1,
+      "message": "The same comment as example.Param applies here: please try to give meaningful variant names, and use structs in Val.",
+      "range": {
+        "startLine": 11,
+        "startChar": 2,
+        "endLine": 17,
+        "endChar": 5
+      },
+      "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "91101669_7b62dfa2",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-02T05:33:50Z",
+      "side": 1,
+      "message": "Let us establish consistent terms about parametric tests and define them here. Particularly we want names of (1) tests with variants and (2) test variant instances. Currently (1) is not explicitly defined, and we use inconsistent terms for (2) (\"variations of the test\", \"param case\", etc.)\n\nI think we want to name (1) \"parametric tests\". I don\u0027t have strong opinion about (2) but maybe \"test variants\"?\n\nFor example:\n\n A test is called *parametric* if Params is set in its metadata. Each entry in Params defines a *test variant*.",
+      "range": {
+        "startLine": 25,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 3
+      },
+      "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fbc814c0_df71b1e4",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-02T05:33:50Z",
+      "side": 1,
+      "message": "I see you use the term \"param case\" to describe a variant of a parametric test, but I\u0027m not very confortable with use of \"param\" as a word because it\u0027s not clear what is its full wording.\n\nI guess it is \"parametric case\", but I\u0027m not sure if it\u0027s a natural wording. https://www.google.com/search?hl\u003den\u0026gl\u003dus\u0026q\u003d\"parametric+case\"\n\nHow about \"test parameter\" or \"test variant\"?",
+      "range": {
+        "startLine": 29,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 15
+      },
+      "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fc0b108d_40cd1d85",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-02T05:33:50Z",
+      "side": 1,
+      "message": "should be in",
+      "range": {
+        "startLine": 29,
+        "startChar": 51,
+        "endLine": 29,
+        "endChar": 54
+      },
+      "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a4a00c8a_9f5d0ae2",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-02T05:33:50Z",
+      "side": 1,
+      "message": "to the test name with a leading dot.",
+      "range": {
+        "startLine": 30,
+        "startChar": 58,
+        "endLine": 30,
+        "endChar": 64
+      },
+      "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3819944c_2f4e3bd1",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-02T05:33:50Z",
+      "side": 1,
+      "message": "I think we can simply say \"All `Name\u0027 in a `Params` array should be unique\".",
+      "range": {
+        "startLine": 32,
+        "startChar": 0,
+        "endLine": 32,
+        "endChar": 48
+      },
+      "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "78141f67_627d4514",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-02T05:33:50Z",
+      "side": 1,
+      "message": "a leading dot",
+      "range": {
+        "startLine": 33,
+        "startChar": 76,
+        "endLine": 33,
+        "endChar": 80
+      },
+      "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ef390d47_e2bd2648",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-02T05:33:50Z",
+      "side": 1,
+      "message": "type-asserted",
+      "range": {
+        "startLine": 41,
+        "startChar": 56,
+        "endLine": 41,
+        "endChar": 62
+      },
+      "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ba56dbc1_36e17355",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-02T05:33:50Z",
+      "side": 1,
+      "message": "All Vals in a Params array should have the same type.\n\n... because Params contains values, not types.",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 43,
+        "endChar": 53
+      },
+      "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "78a5beaf_b2ed078f",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-02T05:33:50Z",
+      "side": 1,
+      "message": "testing.Param",
+      "range": {
+        "startLine": 55,
+        "startChar": 12,
+        "endLine": 55,
+        "endChar": 17
+      },
+      "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "25e765a2_aaa0969c",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-02T05:33:50Z",
+      "side": 1,
+      "message": "Plase try to give meaningful names. Maybe \"play\" and \"record\"?",
+      "range": {
+        "startLine": 56,
+        "startChar": 11,
+        "endLine": 56,
+        "endChar": 17
+      },
+      "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a4133f17_4a9e43f8",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-02T05:33:50Z",
+      "side": 1,
+      "message": "will",
+      "range": {
+        "startLine": 67,
+        "startChar": 15,
+        "endLine": 67,
+        "endChar": 18
+      },
+      "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

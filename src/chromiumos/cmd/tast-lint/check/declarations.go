@@ -27,8 +27,11 @@ const (
 	nonLiteralAttrMsg         = `Test Attr should be an array literal of string literals`
 	nonLiteralVarsMsg         = `Test Vars should be an array literal of string literals`
 	nonLiteralSoftwareDepsMsg = `Test SoftwareDeps should be an array literal of string literals or (possibly qualified) identifiers`
+	nonLiteralParamsMsg       = `Test Params should be an array literal of Param struct literals`
+	nonLiteralParamNameMsg    = `Name of Param should be a string literal`
 
 	testRegistrationURL     = `https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Test-registration`
+	testParamTestURL        = `https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Parameterized-test-registration`
 	testRuntimeVariablesURL = `https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Runtime-variables`
 )
 
@@ -133,6 +136,8 @@ func verifyInitBody(fs *token.FileSet, stmt ast.Stmt) []*Issue {
 			issues = append(issues, verifyVars(fs, kv.Value)...)
 		case "SoftwareDeps":
 			issues = append(issues, verifySoftwareDeps(fs, kv.Value)...)
+		case "Params":
+			issues = append(issues, verifyParams(fs, kv.Value)...)
 		}
 	}
 
@@ -259,6 +264,61 @@ func verifySoftwareDeps(fs *token.FileSet, node ast.Node) []*Issue {
 				Msg:  nonLiteralSoftwareDepsMsg,
 				Link: testRegistrationURL,
 			})
+		}
+	}
+	return issues
+}
+
+func verifyParams(fs *token.FileSet, node ast.Node) []*Issue {
+	comp, ok := node.(*ast.CompositeLit)
+	if !ok {
+		return []*Issue{{
+			Pos:  fs.Position(node.Pos()),
+			Msg:  nonLiteralParamsMsg,
+			Link: testParamTestURL,
+		}}
+	}
+
+	var issues []*Issue
+	for _, el := range comp.Elts {
+		issues = append(issues, verifyParamElement(fs, el)...)
+	}
+	return issues
+}
+
+func verifyParamElement(fs *token.FileSet, node ast.Node) []*Issue {
+	comp, ok := node.(*ast.CompositeLit)
+	if !ok {
+		return []*Issue{{
+			Pos:  fs.Position(node.Pos()),
+			Msg:  nonLiteralParamsMsg,
+			Link: testParamTestURL,
+		}}
+	}
+
+	var issues []*Issue
+	for _, el := range comp.Elts {
+		kv, ok := el.(*ast.KeyValueExpr)
+		if !ok {
+			continue
+		}
+		ident, ok := kv.Key.(*ast.Ident)
+		if !ok {
+			continue
+		}
+		switch ident.Name {
+		case "Name":
+			if _, ok := toString(kv.Value); !ok {
+				issues = append(issues, &Issue{
+					Pos:  fs.Position(kv.Value.Pos()),
+					Msg:  nonLiteralParamNameMsg,
+					Link: testParamTestURL,
+				})
+			}
+		case "ExtraAttr":
+			issues = append(issues, verifyAttr(fs, kv.Value)...)
+		case "ExtraSoftwareDeps":
+			issues = append(issues, verifySoftwareDeps(fs, kv.Value)...)
 		}
 	}
 	return issues

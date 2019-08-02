@@ -140,6 +140,48 @@ func init() {
 		Contacts:     []string{"me@chromium.org"},
 		SoftwareDeps: []string{fun()},  // invocation is not allowed.
 	})
+
+	// Params verification.
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+		Params: []Param{{
+			Name: "param1",
+			ExtraAttr:         []string{"attr1"},
+			ExtraSoftwareDeps: []string{"deps1", qualified.name},
+		}, {
+			Name: "param2",
+		}},
+	})
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+		Params:   variableParams,
+	})
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+		Params:   []Param{variableParamStruct},
+	})
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+		Params: []Param{{
+			Name: variableParamName,
+                }, {
+			ExtraAttr:         variableAttrs,
+                }, {
+			ExtraAttr:         []string{variableAttr},
+                }, {
+			ExtraSoftwareDeps: variableSoftwareDeps,
+		}, {
+			ExtraSoftwareDeps: []string{fun()},
+                }},
+	})
 }
 
 func DoStuff(ctx context.Context, s *testing.State) {}
@@ -171,6 +213,14 @@ func DoStuff(ctx context.Context, s *testing.State) {}
 
 		path + ":124:17: " + nonLiteralSoftwareDepsMsg,
 		path + ":130:26: " + nonLiteralSoftwareDepsMsg,
+
+		path + ":150:13: " + nonLiteralParamsMsg,
+		path + ":156:21: " + nonLiteralParamsMsg,
+		path + ":163:10: " + nonLiteralParamNameMsg,
+		path + ":165:23: " + nonLiteralAttrMsg,
+		path + ":167:32: " + nonLiteralAttrMsg,
+		path + ":169:23: " + nonLiteralSoftwareDepsMsg,
+		path + ":171:32: " + nonLiteralSoftwareDepsMsg,
 	}
 	verifyIssues(t, issues, expects)
 }

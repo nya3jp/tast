@@ -232,7 +232,8 @@ func TestReadTestOutput(t *gotesting.T) {
 
 func TestReadTestOutputTimingLog(t *gotesting.T) {
 	const (
-		testName  = "pkg.Test"
+		testName1 = "pkg.Test1"
+		testName2 = "pkg.Test2"
 		stageName = "timing_stage"
 	)
 
@@ -240,16 +241,21 @@ func TestReadTestOutputTimingLog(t *gotesting.T) {
 	globalLog := timing.NewLog()
 	ctx := timing.NewContext(context.Background(), globalLog)
 
-	// Create a log containing a stage reported by the test itself.
-	testLog := timing.NewLog()
-	testLog.StartTop(stageName).End()
+	// Test1 reports an empty timing.
+	testLog1 := timing.NewLog()
+
+	// Test2 reports a single stage.
+	testLog2 := timing.NewLog()
+	testLog2.StartTop(stageName).End()
 
 	b := bytes.Buffer{}
 	mw := control.NewMessageWriter(&b)
-	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 1})
-	mw.WriteMessage(&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestCase{Name: testName}})
-	mw.WriteMessage(&control.TestEnd{Time: time.Unix(3, 0), Name: testName, TimingLog: testLog})
-	mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0)})
+	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 2})
+	mw.WriteMessage(&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestCase{Name: testName1}})
+	mw.WriteMessage(&control.TestEnd{Time: time.Unix(3, 0), Name: testName1, TimingLog: testLog1})
+	mw.WriteMessage(&control.TestStart{Time: time.Unix(4, 0), Test: testing.TestCase{Name: testName2}})
+	mw.WriteMessage(&control.TestEnd{Time: time.Unix(5, 0), Name: testName2, TimingLog: testLog2})
+	mw.WriteMessage(&control.RunEnd{Time: time.Unix(6, 0)})
 
 	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
@@ -262,14 +268,32 @@ func TestReadTestOutputTimingLog(t *gotesting.T) {
 		t.Fatal("readTestOutput failed: ", err)
 	}
 
-	// Check that there's a stage representing the test with the single test-reported stage under it.
-	if len(globalLog.Root.Children) != 1 {
-		t.Errorf("Got %d top-level stages; want 1", len(globalLog.Root.Children))
-	} else if topStage := globalLog.Root.Children[0]; topStage.Name != testName {
-		t.Errorf("Top-level stage has name %q; want %q", topStage.Name, testName)
-	} else if len(topStage.Children) != 1 {
-		t.Errorf("Got %d stages under test; want 1", len(topStage.Children))
-	} else if subStage := topStage.Children[0]; subStage.Name != stageName {
+	// Check that there are stages representing the tests.
+	if len(globalLog.Root.Children) != 2 {
+		t.Fatalf("Got %d top-level stages; want 2", len(globalLog.Root.Children))
+	}
+
+	stage1 := globalLog.Root.Children[0]
+	if stage1.Name != testName1 {
+		t.Errorf("Stage 1 has name %q; want %q", stage1.Name, testName1)
+	}
+	if len(stage1.Children) != 0 {
+		t.Errorf("Got %d stages under stage 1; want 0", len(stage1.Children))
+	}
+	if stage1.EndTime.IsZero() {
+		t.Errorf("Stage 1 is not finished")
+	}
+
+	stage2 := globalLog.Root.Children[1]
+	if stage2.Name != testName2 {
+		t.Errorf("Stage 2 has name %q; want %q", stage2.Name, testName2)
+	}
+	if stage2.EndTime.IsZero() {
+		t.Errorf("Stage 2 is not finished")
+	}
+	if len(stage2.Children) != 1 {
+		t.Errorf("Got %d stages under stage 2; want 1", len(stage2.Children))
+	} else if subStage := stage2.Children[0]; subStage.Name != stageName {
 		t.Errorf("Sub-stage has name %q; want %q", subStage.Name, stageName)
 	}
 }

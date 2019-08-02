@@ -349,9 +349,11 @@ func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.TestEnd
 	}
 
 	// If the test reported timing stages, import them under the current stage.
-	if r.stage != nil && msg.TimingLog != nil && !msg.TimingLog.Empty() {
-		if err := r.stage.Import(msg.TimingLog); err != nil {
-			r.cfg.Logger.Logf("Failed importing timing log for %v: %v", msg.Name, err)
+	if r.stage != nil {
+		if msg.TimingLog != nil {
+			if err := r.stage.Import(msg.TimingLog); err != nil {
+				r.cfg.Logger.Logf("Failed importing timing log for %v: %v", msg.Name, err)
+			}
 		}
 		r.stage.End()
 	}

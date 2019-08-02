@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "968ba04c_451d7b78",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-02T16:22:10Z",
+      "side": 1,
+      "message": "Technically, it is not necessary to depend on lint, but I think lint is mandatory, while submitting doc sounds like it is supported now.\nSo, please let me land them atomically.",
+      "revId": "da397233437aaea0e75ea47b0f6451231f77897e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

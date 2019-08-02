@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "d606a376_31801fc3",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-02T16:22:10Z",
+      "side": 1,
+      "message": "Sounds good to me to have a native speaker reviewer.",
+      "parentUuid": "354911f4_e74a8bc2",
+      "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "55d55c2d_eb3d067e",
         "filename": "docs/parametric_test.md",
         "patchSetId": 1
@@ -65,6 +83,54 @@
     },
     {
       "key": {
+        "uuid": "4129c6bf_8a9edc57",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-02T16:22:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "496d0071_dfc0e9f0",
+      "range": {
+        "startLine": 1,
+        "startChar": 13,
+        "endLine": 1,
+        "endChar": 17
+      },
+      "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a7b0f2eb_709e3c01",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-02T16:22:10Z",
+      "side": 1,
+      "message": "I\u0027m ok to move, but it looks already so long?\nI\u0027ll move to there, almost at the end of review in order to make the diff/comment easier to track.",
+      "parentUuid": "55d55c2d_eb3d067e",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 17
+      },
+      "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b9f31406_e2ac6df9",
         "filename": "docs/parametric_test.md",
         "patchSetId": 1
@@ -85,6 +151,30 @@
       "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8ba331d1_2cad0cea",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-02T16:22:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b9f31406_e2ac6df9",
+      "range": {
+        "startLine": 3,
+        "startChar": 40,
+        "endLine": 3,
+        "endChar": 66
+      },
+      "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -134,6 +224,54 @@
     },
     {
       "key": {
+        "uuid": "d93bda1f_0b6e4d59",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-02T16:22:10Z",
+      "side": 1,
+      "message": "Done. Defined by Params array.",
+      "parentUuid": "bf17331c_0ee19923",
+      "range": {
+        "startLine": 4,
+        "startChar": 0,
+        "endLine": 4,
+        "endChar": 12
+      },
+      "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da00d96f_a8e5d2a9",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-02T16:22:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b5641f4a_d5af18da",
+      "range": {
+        "startLine": 4,
+        "startChar": 18,
+        "endLine": 4,
+        "endChar": 22
+      },
+      "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "560c9caa_acfd2262",
         "filename": "docs/parametric_test.md",
         "patchSetId": 1
@@ -145,6 +283,30 @@
       "writtenOn": "2019-08-02T05:33:50Z",
       "side": 1,
       "message": "The same comment as example.Param applies here: please try to give meaningful variant names, and use structs in Val.",
+      "range": {
+        "startLine": 11,
+        "startChar": 2,
+        "endLine": 17,
+        "endChar": 5
+      },
+      "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eba485ed_d759779b",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-02T16:22:10Z",
+      "side": 1,
+      "message": "Will revisit after the discussion. Defer to crrev.com/c/1730943.",
+      "parentUuid": "560c9caa_acfd2262",
       "range": {
         "startLine": 11,
         "startChar": 2,
@@ -177,6 +339,30 @@
       "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0acefe92_90dbae23",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-02T16:22:10Z",
+      "side": 1,
+      "message": "(1) is defined above, now. With refinement of the sentences below, I don\u0027t think we need (2) now.\n\nAs for (2), I\u0027m feeling that I and you have somehow slightly different model in our mind.\nOffline chat may be useful to be aligned, I think.",
+      "parentUuid": "91101669_7b62dfa2",
+      "range": {
+        "startLine": 25,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 3
+      },
+      "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -226,6 +412,54 @@
     },
     {
       "key": {
+        "uuid": "40fc3913_215e6c34",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-02T16:22:10Z",
+      "side": 1,
+      "message": "Then, I\u0027d call \u0027Param\u0027, which is the struct name, so it is clear in this context, I believe.",
+      "parentUuid": "fbc814c0_df71b1e4",
+      "range": {
+        "startLine": 29,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 15
+      },
+      "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4223779b_6f72dca9",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-02T16:22:10Z",
+      "side": 1,
+      "message": "Done (reordered, because test name appending looks more important).",
+      "parentUuid": "fc0b108d_40cd1d85",
+      "range": {
+        "startLine": 29,
+        "startChar": 51,
+        "endLine": 29,
+        "endChar": 54
+      },
+      "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a4a00c8a_9f5d0ae2",
         "filename": "docs/parametric_test.md",
         "patchSetId": 1
@@ -246,6 +480,30 @@
       "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6439b7db_55671e31",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-02T16:22:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a4a00c8a_9f5d0ae2",
+      "range": {
+        "startLine": 30,
+        "startChar": 58,
+        "endLine": 30,
+        "endChar": 64
+      },
+      "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -272,6 +530,30 @@
     },
     {
       "key": {
+        "uuid": "c350bfff_e1f94925",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-02T16:22:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3819944c_2f4e3bd1",
+      "range": {
+        "startLine": 32,
+        "startChar": 0,
+        "endLine": 32,
+        "endChar": 48
+      },
+      "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "78141f67_627d4514",
         "filename": "docs/parametric_test.md",
         "patchSetId": 1
@@ -292,6 +574,30 @@
       "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4530b328_8c577c39",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-02T16:22:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "78141f67_627d4514",
+      "range": {
+        "startLine": 33,
+        "startChar": 76,
+        "endLine": 33,
+        "endChar": 80
+      },
+      "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -318,6 +624,30 @@
     },
     {
       "key": {
+        "uuid": "0ae4e2ca_cdcbe207",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-02T16:22:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ef390d47_e2bd2648",
+      "range": {
+        "startLine": 41,
+        "startChar": 56,
+        "endLine": 41,
+        "endChar": 62
+      },
+      "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba56dbc1_36e17355",
         "filename": "docs/parametric_test.md",
         "patchSetId": 1
@@ -338,6 +668,30 @@
       "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b6401243_e6b5d42b",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-02T16:22:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba56dbc1_36e17355",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 43,
+        "endChar": 53
+      },
+      "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -364,6 +718,30 @@
     },
     {
       "key": {
+        "uuid": "26d491a1_581c3afe",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-02T16:22:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "78a5beaf_b2ed078f",
+      "range": {
+        "startLine": 55,
+        "startChar": 12,
+        "endLine": 55,
+        "endChar": 17
+      },
+      "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "25e765a2_aaa0969c",
         "filename": "docs/parametric_test.md",
         "patchSetId": 1
@@ -387,6 +765,30 @@
     },
     {
       "key": {
+        "uuid": "8fc9e1a2_7f019533",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-02T16:22:10Z",
+      "side": 1,
+      "message": "SGTM. Done.",
+      "parentUuid": "25e765a2_aaa0969c",
+      "range": {
+        "startLine": 56,
+        "startChar": 11,
+        "endLine": 56,
+        "endChar": 17
+      },
+      "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a4133f17_4a9e43f8",
         "filename": "docs/parametric_test.md",
         "patchSetId": 1
@@ -407,6 +809,30 @@
       "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "58c0a733_52f7d017",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-02T16:22:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a4133f17_4a9e43f8",
+      "range": {
+        "startLine": 67,
+        "startChar": 15,
+        "endLine": 67,
+        "endChar": 18
+      },
+      "revId": "7205ba16fb57fb13bbb819a2b133dc1676e8abe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

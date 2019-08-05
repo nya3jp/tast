@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "cdd7ba0b_7d292cc1",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-08-05T07:11:52Z",
+      "side": 1,
+      "message": "Maybe it\u0027s time to fix this TODO http://cs/chromeos_public/src/platform/tast/src/chromiumos/cmd/tast/paths.go?l\u003d16 ?\nI think the error message being confusing is a distinct problem than this fix.\ntrunkDir() probably should panic if trunk directory doesn\u0027t exist, shouldn\u0027t it?",
+      "range": {
+        "startLine": 10,
+        "startChar": 39,
+        "endLine": 10,
+        "endChar": 50
+      },
+      "revId": "5aedfccb862b7612aa4894d0ec12980e8d92faca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9212993b_2b3ccc58",
+        "filename": "src/chromiumos/cmd/tast/list_cmd_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-08-05T07:11:52Z",
+      "side": 1,
+      "message": "nit: inline it if td is not used elsewhere?",
+      "range": {
+        "startLine": 32,
+        "startChar": 27,
+        "endLine": 32,
+        "endChar": 29
+      },
+      "revId": "5aedfccb862b7612aa4894d0ec12980e8d92faca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3cac533c_090ca135",
+        "filename": "src/chromiumos/cmd/tast/list_cmd_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-08-05T07:11:52Z",
+      "side": 1,
+      "message": "QQ: How list command depends on the actual trunk dir, and how the dependency not cause a problem in unit tests?",
+      "range": {
+        "startLine": 31,
+        "startChar": 0,
+        "endLine": 32,
+        "endChar": 30
+      },
+      "revId": "5aedfccb862b7612aa4894d0ec12980e8d92faca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7efb430d_a41b4b8f",
+        "filename": "src/chromiumos/cmd/tast/run_cmd_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-08-05T07:11:52Z",
+      "side": 1,
+      "message": "QQ: How the run command depends on the actual trunk dir, and how the dependency not cause a problem in unit tests?",
+      "range": {
+        "startLine": 28,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 21
+      },
+      "revId": "5aedfccb862b7612aa4894d0ec12980e8d92faca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cddcab1b_d0671715",
+        "filename": "src/chromiumos/cmd/tast/run_cmd_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-08-05T07:11:52Z",
+      "side": 1,
+      "message": "nit: inline it if td is not used elsewhere?",
+      "range": {
+        "startLine": 29,
+        "startChar": 18,
+        "endLine": 29,
+        "endChar": 20
+      },
+      "revId": "5aedfccb862b7612aa4894d0ec12980e8d92faca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

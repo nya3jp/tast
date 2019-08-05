@@ -25,6 +25,29 @@
     },
     {
       "key": {
+        "uuid": "f3931177_420252f5",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-05T07:35:04Z",
+      "side": 1,
+      "message": "Could you explain a bit more details about what is special on moblab...?",
+      "range": {
+        "startLine": 11,
+        "startChar": 24,
+        "endLine": 13,
+        "endChar": 0
+      },
+      "revId": "5aedfccb862b7612aa4894d0ec12980e8d92faca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "9212993b_2b3ccc58",
         "filename": "src/chromiumos/cmd/tast/list_cmd_test.go",
         "patchSetId": 1

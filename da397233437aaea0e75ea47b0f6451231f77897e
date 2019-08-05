@@ -65,6 +65,29 @@
     },
     {
       "key": {
+        "uuid": "7edb1121_839e6868",
+        "filename": "docs/parametric_test.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-05T01:55:06Z",
+      "side": 1,
+      "message": "Before submitting the change, please join the lines so that 80 cols are fully used. Unlike HTML or LaTeX, markdown docs are often read in raw, rather than in the rendered format.",
+      "range": {
+        "startLine": 30,
+        "startChar": 0,
+        "endLine": 30,
+        "endChar": 56
+      },
+      "revId": "da397233437aaea0e75ea47b0f6451231f77897e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "66ec76c4_3286dc1d",
         "filename": "docs/parametric_test.md",
         "patchSetId": 2

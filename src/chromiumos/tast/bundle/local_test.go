@@ -13,6 +13,7 @@ import (
 	gotesting "testing"
 
 	"chromiumos/tast/errors"
+	"chromiumos/tast/faillog"
 	"chromiumos/tast/testing"
 	"chromiumos/tast/testutil"
 )
@@ -79,6 +80,30 @@ func TestLocalFaillog(t *gotesting.T) {
 	}
 }
 
+func TestLocalFaillogDelegate(t *gotesting.T) {
+	const name = "pkg.Test"
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
+	defer restore()
+	testing.AddTestCase(&testing.TestCase{Name: name, Func: func(ctx context.Context, s *testing.State) { s.Error("fail") }})
+
+	outDir := testutil.TempDir(t)
+	defer os.RemoveAll(outDir)
+	args := Args{Mode: RunTestsMode, RunTests: &RunTestsArgs{OutDir: outDir}}
+	stdin := newBufferWithArgs(t, &args)
+	stderr := bytes.Buffer{}
+	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, &LocalDelegate{
+		Faillog: faillog.Save,
+	}); status != statusSuccess {
+		t.Errorf("Local(%+v) = %v; want %v", args, status, statusSuccess)
+	}
+
+	// ps.txt is saved by faillog.
+	p := filepath.Join(outDir, name, "faillog", "ps.txt")
+	if _, err := os.Stat(p); err != nil {
+		t.Errorf("Local(%+v) didn't save faillog: %v", args, err)
+	}
+}
+
 func TestLocalReadyFunc(t *gotesting.T) {
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
@@ -102,7 +127,9 @@ func TestLocalReadyFunc(t *gotesting.T) {
 		ranReady = true
 		return nil
 	}
-	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, ready); status != statusSuccess {
+	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, &LocalDelegate{
+		Ready: ready,
+	}); status != statusSuccess {
 		t.Errorf("Local(%+v) = %v; want %v", args, status, statusSuccess)
 	}
 	if !ranReady {
@@ -114,7 +141,9 @@ func TestLocalReadyFunc(t *gotesting.T) {
 	stderr = bytes.Buffer{}
 	const msg = "intentional failure"
 	ready = func(context.Context, func(string)) error { return errors.New(msg) }
-	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, ready); status != statusError {
+	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, &LocalDelegate{
+		Ready: ready,
+	}); status != statusError {
 		t.Errorf("Local(%+v) = %v; want %v", args, status, statusError)
 	}
 	if s := stderr.String(); !strings.Contains(s, msg) {
@@ -145,7 +174,9 @@ func TestLocalReadyFuncDisabled(t *gotesting.T) {
 		ranReady = true
 		return nil
 	}
-	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, ready); status != statusSuccess {
+	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, &LocalDelegate{
+		Ready: ready,
+	}); status != statusSuccess {
 		t.Errorf("Local(%+v) = %v; want %v", args, status, statusSuccess)
 	}
 	if ranReady {

@@ -47,6 +47,7 @@ const (
 var allowedPkgs = []string{
 	"chromiumos/cmd/tast/symbolize",
 	"chromiumos/tast/local/arc",                          // For SDKVersion.
+	"chromiumos/tast/local/bundles/crosint/arc",          // For Board.
 	"chromiumos/tast/local/bundles/crosint/arc/authperf", // For Version.
 	"chromiumos/tast/local/bundles/cros/platform/updateserver",
 	"chromiumos/tast/local/rialto",

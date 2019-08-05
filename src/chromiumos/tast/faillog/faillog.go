@@ -15,13 +15,6 @@ import (
 	"chromiumos/tast/testing"
 )
 
-// SaveIfError saves a faillog only if the test has any errors.
-func SaveIfError(ctx context.Context, s *testing.State) {
-	if s.HasError() {
-		Save(ctx, s)
-	}
-}
-
 // Save saves a faillog unconditionally.
 func Save(ctx context.Context, s *testing.State) {
 	// If test setup failed, then the output dir may not exist.

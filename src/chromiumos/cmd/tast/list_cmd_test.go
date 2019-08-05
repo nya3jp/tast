@@ -28,7 +28,10 @@ import (
 // executeListCmd creates a listCmd and executes it using the supplied args and wrapper.
 func executeListCmd(t *gotesting.T, stdout io.Writer, args []string,
 	wrapper *stubRunWrapper, lg logging.Logger) subcommands.ExitStatus {
-	cmd := newListCmd(stdout)
+	td := testutil.TempDir(t)
+	defer os.RemoveAll(td)
+
+	cmd := newListCmd(stdout, td)
 	cmd.wrapper = wrapper
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
 	cmd.SetFlags(flags)

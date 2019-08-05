@@ -38,9 +38,9 @@ type runCmd struct {
 	timeout      time.Duration // overall timeout; 0 if no timeout
 }
 
-func newRunCmd() *runCmd {
+func newRunCmd(trunkDir string) *runCmd {
 	return &runCmd{
-		cfg:     run.NewConfig(run.RunTestsMode, tastDir, trunkDir()),
+		cfg:     run.NewConfig(run.RunTestsMode, tastDir, trunkDir),
 		wrapper: &realRunWrapper{},
 	}
 }

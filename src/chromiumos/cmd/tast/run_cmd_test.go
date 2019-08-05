@@ -10,6 +10,7 @@ import (
 	"errors"
 	"flag"
 	"log"
+	"os"
 	"reflect"
 	"strings"
 	gotesting "testing"
@@ -20,11 +21,15 @@ import (
 	"chromiumos/cmd/tast/logging"
 	"chromiumos/cmd/tast/run"
 	"chromiumos/tast/testing"
+	"chromiumos/tast/testutil"
 )
 
 // executeRunCmd creates a runCmd and executes it using the supplied args, wrapper, and Logger.
 func executeRunCmd(t *gotesting.T, args []string, wrapper *stubRunWrapper, lg logging.Logger) subcommands.ExitStatus {
-	cmd := newRunCmd()
+	td := testutil.TempDir(t)
+	defer os.RemoveAll(td)
+
+	cmd := newRunCmd(td)
 	cmd.wrapper = wrapper
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
 	cmd.SetFlags(flags)

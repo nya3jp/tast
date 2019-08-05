@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "db58d53d_12f81b66",
+        "filename": "src/chromiumos/cmd/tast/build/compat.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-08-05T06:27:14Z",
+      "side": 1,
+      "message": "Just an idea: how about incrementing this automatically say once a month? This way it can be prevented everyone forget about this mechanism forever. Of course we can reject the created CL if it\u0027s not applicable. The main motivation is for reminder.",
+      "parentUuid": "1aecc541_8d7d6bf0",
+      "range": {
+        "startLine": 23,
+        "startChar": 3,
+        "endLine": 25,
+        "endChar": 0
+      },
+      "revId": "c1293d33924cf4a066d988d9ee46694b74cf280c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "80017df7_78e88da5",
         "filename": "src/chromiumos/cmd/tast/build/compat.go",
         "patchSetId": 4

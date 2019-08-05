@@ -33,9 +33,9 @@ type listCmd struct {
 }
 
 // newListCmd returns a new listCmd that will write tests to stdout.
-func newListCmd(stdout io.Writer) *listCmd {
+func newListCmd(stdout io.Writer, trunkDir string) *listCmd {
 	return &listCmd{
-		cfg:     run.NewConfig(run.ListTestsMode, tastDir, trunkDir()),
+		cfg:     run.NewConfig(run.ListTestsMode, tastDir, trunkDir),
 		wrapper: &realRunWrapper{},
 		stdout:  stdout,
 	}

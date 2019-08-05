@@ -79,8 +79,8 @@ func doMain() int {
 	subcommands.Register(subcommands.HelpCommand(), "")
 	subcommands.Register(subcommands.FlagsCommand(), "")
 	subcommands.Register(subcommands.CommandsCommand(), "")
-	subcommands.Register(newListCmd(os.Stdout), "")
-	subcommands.Register(newRunCmd(), "")
+	subcommands.Register(newListCmd(os.Stdout, trunkDir()), "")
+	subcommands.Register(newRunCmd(trunkDir()), "")
 	subcommands.Register(&symbolizeCmd{}, "")
 
 	version := flag.Bool("version", false, "print version and exit")

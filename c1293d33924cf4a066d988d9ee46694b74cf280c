@@ -97,6 +97,30 @@
     },
     {
       "key": {
+        "uuid": "8463f482_2d809f96",
+        "filename": "src/chromiumos/cmd/tast/build/compat.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-08-06T01:33:10Z",
+      "side": 1,
+      "message": "I see. How about updating the document https://cs.corp.google.com/chromeos_public/src/platform/tast/docs/modifying_tast.md ?\nIt looks a good place to explain tast versioning for ones modifying tast.",
+      "parentUuid": "9ab1b0a8_a4bb41a2",
+      "range": {
+        "startLine": 23,
+        "startChar": 3,
+        "endLine": 25,
+        "endChar": 0
+      },
+      "revId": "c1293d33924cf4a066d988d9ee46694b74cf280c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "80017df7_78e88da5",
         "filename": "src/chromiumos/cmd/tast/build/compat.go",
         "patchSetId": 4

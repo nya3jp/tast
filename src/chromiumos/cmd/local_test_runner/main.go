@@ -57,7 +57,7 @@ func main() {
 			// There are three types of android dependency to differentiate between
 			// ARC and ARCVM guest.
 			// master-arc-dev and qt are under development and not stable to run Tast tests.
-			"android":      `arc && !arcvm && !"android-container-master-arc-dev" && !"android-container-qt"`,
+			"android":      `arc && !arcvm && !"android-container-master-arc-dev"`,
 			"android_vm":   `arc && arcvm`,
 			"android_both": `arc && !"android-container-master-arc-dev" && !"android-container-qt"`,
 			// Run all ARC versions, including master-arc-dev and qt.

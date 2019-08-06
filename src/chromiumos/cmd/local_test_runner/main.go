@@ -57,14 +57,14 @@ func main() {
 			// There are three types of android dependency to differentiate between
 			// ARC and ARCVM guest.
 			// master-arc-dev and qt are under development and not stable to run Tast tests.
-			"android":      `arc && !arcvm && !"android-container-master-arc-dev" && !"android-container-qt"`,
+			"android":      `arc && !arcvm && !"android-container-master-arc-dev"`,
 			"android_vm":   `arc && arcvm`,
 			"android_both": `arc && !"android-container-master-arc-dev" && !"android-container-qt"`,
 			// Run all ARC versions, including master-arc-dev and qt.
 			"android_all":       `arc && !arcvm`,
 			"android_all_both":  `arc`,
-			"android_p":         `arc && "android-container-pi"`,
-			"android_p_both":    `arc && ("android-container-pi" || "android-vm-pi")`,
+			"android_p":         `arc && ("android-container-pi" || "android-container-qt")`,
+			"android_p_both":    `arc && ("android-container-pi" || "android-container-qt" || "android-vm-pi")`,
 			"arc_camera3":       `"arc-camera3"`,
 			"aslr":              "!asan",                        // ASan instrumentation breaks ASLR
 			"audio_play":        "internal_speaker && !tast_vm", // VMs and some boards don't have a speaker

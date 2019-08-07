@@ -149,8 +149,8 @@ func (s *State) DataFileSystem() *dataFS { return (*dataFS)(s) }
 func (s *State) OutDir() string { return s.cfg.OutDir }
 
 // Var returns the value for the named variable, which must have been registered via Test.Vars.
-// If a value was not supplied at runtime via the -var flag to "tast run", ok will be false.
-func (s *State) Var(name string) (val string, ok bool) {
+// Default values are set in .yaml files in /vars directory. It can be overwritten with -var flag to "tast run".
+func (s *State) Var(name string) string {
 	seen := false
 	for _, n := range s.test.Vars {
 		if n == name {
@@ -162,15 +162,9 @@ func (s *State) Var(name string) (val string, ok bool) {
 		s.Fatalf("Variable %q was not registered in testing.Test.Vars", name)
 	}
 
-	val, ok = s.cfg.Vars[name]
-	return val, ok
-}
-
-// RequiredVar is similar to Var but aborts the test if the named variable was not supplied.
-func (s *State) RequiredVar(name string) string {
-	val, ok := s.Var(name)
+	val, ok := s.cfg.Vars[name]
 	if !ok {
-		s.Fatalf("Required variable %q not supplied via -var", name)
+		panic(fmt.Sprintf("Internal error: test should have been skipped if var is missing; name=%q", name))
 	}
 	return val
 }

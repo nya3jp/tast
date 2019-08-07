@@ -286,23 +286,16 @@ func TestVars(t *gotesting.T) {
 	defer close(or.ch)
 
 	for _, tc := range []struct {
-		req   bool   // if true, call RequiredVar instead of Var
-		name  string // name to pass to Var/RequiredVar
+		name  string // name to pass to Var
 		value string // expected variable value to be returned
 		ok    bool   // expected 'ok' return value (only used if req is false)
 		fatal bool   // if true, test should be aborted
 	}{
-		{false, validName, validValue, true, false},
-		{false, unsetName, "", false, false},
-		{false, unregName, "", false, true},
-		{true, validName, validValue, false, false},
-		{true, unsetName, "", false, true},
-		{true, unregName, "", false, true},
+		{validName, validValue, false, false},
+		{unsetName, "", false, true},
+		{unregName, "", false, true},
 	} {
-		funcCall := fmt.Sprintf("Var(%q)", tc.name)
-		if tc.req {
-			funcCall = fmt.Sprintf("RequiredVar(%q)", tc.name)
-		}
+		funcCall = fmt.Sprintf("Var(%q)", tc.name)
 
 		// Call the function in a goroutine since it may call runtime.Goexit() via Fatal.
 		finished := false
@@ -312,14 +305,8 @@ func TestVars(t *gotesting.T) {
 				recover()
 				close(done)
 			}()
-			if tc.req {
-				if value := s.RequiredVar(tc.name); value != tc.value {
-					t.Errorf("%s = %q; want %q", funcCall, value, tc.value)
-				}
-			} else {
-				if value, ok := s.Var(tc.name); value != tc.value || ok != tc.ok {
-					t.Errorf("%s = (%q, %v); want (%q, %v)", funcCall, value, ok, tc.value, tc.ok)
-				}
+			if value, ok := s.Var(tc.name); value != tc.value || ok != tc.ok {
+				t.Errorf("%s = (%q, %v); want (%q, %v)", funcCall, value, ok, tc.value, tc.ok)
 			}
 			finished = true
 		}()

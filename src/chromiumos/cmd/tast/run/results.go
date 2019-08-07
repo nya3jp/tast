@@ -358,13 +358,17 @@ func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.TestEnd
 		r.stage.End()
 	}
 
-	if len(msg.MissingSoftwareDeps) == 0 {
-		r.cfg.Logger.Logf("Completed test %s in %v with %d error(s)",
-			msg.Name, msg.Time.Sub(r.res.Start).Round(time.Millisecond), len(r.res.Errors))
-	} else {
+	if len(msg.MissingSoftwareDeps) > 0 {
 		r.cfg.Logger.Logf("Skipped test %s due to missing dependencies: %s",
 			msg.Name, strings.Join(msg.MissingSoftwareDeps, " "))
 		r.res.SkipReason = "missing deps: " + strings.Join(msg.MissingSoftwareDeps, " ")
+	} else if len(msg.MissingVars) > 0 {
+		r.cfg.Logger.Logf("Skipped test %s due to missing vars: %s",
+			msg.Name, strings.Join(msg.MissingVars, " "))
+		r.res.SkipReason = "missing vars: " + strings.Join(msg.MissingVars, " ")
+	} else {
+		r.cfg.Logger.Logf("Completed test %s in %v with %d error(s)",
+			msg.Name, msg.Time.Sub(r.res.Start).Round(time.Millisecond), len(r.res.Errors))
 	}
 
 	r.res.End = msg.Time

@@ -96,6 +96,7 @@ type Config struct {
 	proxy                proxyMode         // how proxies should be used
 	collectSysInfo       bool              // collect system info (logs, crashes, etc.) generated during testing
 	testVars             map[string]string // names and values of variables used to pass out-of-band data to tests
+	flagVars             map[string]string // values given by -var flags to override defaults of testVars
 
 	msgTimeout             time.Duration // timeout for reading control messages; default used if zero
 	localRunnerWaitTimeout time.Duration // timeout for waiting for local_test_runner to exit; default used if zero
@@ -185,7 +186,7 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 			if len(parts) != 2 {
 				return errors.New(`want "name=value"`)
 			}
-			c.testVars[parts[0]] = parts[1]
+			c.flagVars[parts[0]] = parts[1]
 			return nil
 		})
 		f.Var(&vf, "var", `runtime variable to pass to tests, as "name=value" (can be repeated)`)
@@ -252,6 +253,9 @@ func (c *Config) DeriveDefaults() error {
 		setIfEmpty(&c.localDataDir, "/usr/local/share/tast/data")
 		setIfEmpty(&c.remoteBundleDir, "/usr/libexec/tast/bundles/remote")
 		setIfEmpty(&c.remoteDataDir, "/usr/share/tast/data")
+	}
+	if err := deriveVars(c); err != nil {
+		return fmt.Errorf("failed to compute vars: %v", err)
 	}
 	return nil
 }

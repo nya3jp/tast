@@ -306,6 +306,19 @@ DepLoop:
 	return missing
 }
 
+// MissingVars returns a sorted list of dependencies from Vars
+// that aren't passed as args.
+func (t *TestCase) MissingVars(vars map[string]string) []string {
+	var missing []string
+	for _, k := range t.Vars {
+		if _, ok := vars[k]; !ok {
+			missing = append(missing, k)
+		}
+	}
+	sort.Strings(missing)
+	return missing
+}
+
 // SortTests sorts tests, primarily by ascending precondition name
 // (with tests with no preconditions coming first) and secondarily by ascending test name.
 func SortTests(tests []*TestCase) {

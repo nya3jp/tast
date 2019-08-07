@@ -251,6 +251,12 @@ func logMessages(r io.Reader, lg *log.Logger) *command.StatusError {
 			} else {
 				lg.Print("Finished ", v.Name)
 			}
+			// FIXME: refactor
+			if len(v.MissingVars) > 0 {
+				lg.Printf("Skipped %s for missing vars: %v", v.Name, v.MissingVars)
+			} else {
+				lg.Print("Finished ", v.Name)
+			}
 			lg.Print(strings.Repeat("-", 80))
 			if testFailed {
 				failedTests = append(failedTests, v.Name)

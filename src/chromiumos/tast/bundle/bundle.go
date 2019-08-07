@@ -133,18 +133,35 @@ func (ew *eventWriter) TestError(ts time.Time, e *testing.Error) error {
 	return ew.mw.WriteMessage(&control.TestError{Time: ts, Error: *e})
 }
 
-func (ew *eventWriter) TestEnd(t *testing.TestCase, missingDeps []string, timingLog *timing.Log) error {
+func (ew *eventWriter) TestEnd(t *testing.TestCase, missingDeps *missing, timingLog *timing.Log) error {
 	ew.testName = ""
 	if ew.lg != nil {
 		ew.lg.Info(fmt.Sprintf("%s: ======== end", t.Name))
 	}
 
+	var msd []string
+	var mv []string
+	if missingDeps != nil {
+		msd = missingDeps.software
+		mv = missingDeps.vars
+	}
+
 	return ew.mw.WriteMessage(&control.TestEnd{
 		Time:                time.Now(),
 		Name:                t.Name,
-		MissingSoftwareDeps: missingDeps,
+		MissingSoftwareDeps: msd,
+		MissingVars:         mv,
 		TimingLog:           timingLog,
 	})
+}
+
+type missing struct {
+	software []string
+	vars     []string
+}
+
+func (d *missing) ok() bool {
+	return len(d.software)+len(d.vars) == 0
 }
 
 // runTests runs tests per args and cfg and writes control messages to stdout.
@@ -198,23 +215,24 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 	// We pass this information to runTest later to ensure that we don't incorrectly fail
 	// to close a precondition if the final test using the precondition is skipped: https://crbug.com/950499
 	var rt *testing.TestCase                           // last-seen test that will be run
-	missingDeps := make([][]string, len(tests))        // per-test missing deps, in same order as tests
+	missingDeps := make([]missing, len(tests))         // per-test missing deps, in same order as tests
 	nextTests := make([]*testing.TestCase, len(tests)) // test to run after each test, in same order as tests
 	for i := len(tests) - 1; i >= 0; i-- {
 		nextTests[i] = rt
 		if args.RunTests.CheckSoftwareDeps {
-			missingDeps[i] = tests[i].MissingSoftwareDeps(args.RunTests.AvailableSoftwareFeatures)
+			missingDeps[i].software = tests[i].MissingSoftwareDeps(args.RunTests.AvailableSoftwareFeatures)
 		}
-		if len(missingDeps[i]) == 0 {
+		missingDeps[i].vars = tests[i].MissingVars(args.RunTests.TestVars)
+		if missingDeps[i].ok() {
 			rt = tests[i]
 		}
 	}
 
 	for i, t := range tests {
-		if md := missingDeps[i]; len(md) == 0 {
+		if md := missingDeps[i]; md.ok() {
 			runTest(ctx, ew, args, cfg, t, nextTests[i], meta)
 		} else {
-			reportSkippedTest(ctx, ew, args, t, md)
+			reportSkippedTest(ctx, ew, args, t, &md)
 		}
 	}
 
@@ -267,12 +285,12 @@ func runTest(ctx context.Context, ew *eventWriter, args *Args, cfg *runConfig,
 // reportSkippedTest is called instead of runTest for a test that is skipped due to
 // having unsatisfied dependencies.
 func reportSkippedTest(ctx context.Context, ew *eventWriter, args *Args,
-	t *testing.TestCase, missingDeps []string) {
+	t *testing.TestCase, missingDeps *missing) {
 	ew.TestStart(t)
 
 	// Additionally report an error if one or more dependencies refer to features that
 	// we don't know anything about (possibly indicating a typo in the test's dependencies).
-	if unknown := getUnknownDeps(missingDeps, args); len(unknown) > 0 {
+	if unknown := getUnknownDeps(missingDeps.software, args); len(unknown) > 0 {
 		_, fn, ln, _ := runtime.Caller(0)
 		ew.TestError(time.Now(), &testing.Error{
 			Reason: "Unknown dependencies: " + strings.Join(unknown, " "),

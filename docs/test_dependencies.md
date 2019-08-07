@@ -22,7 +22,8 @@ The following software features are defined:
 *   `android_all` - in addition to `android`, runs on `master-arc-dev`, too.
 *   `android_all_both` - `android_all` feature that runs in both vm and container.
 *   `android_p` - The ability to [run Android apps] that require Android P or
-    later.
+    later. (TODO actually implement the later part after something after P is 
+    launched.)
 *   `android_p_both` - `android_p` feature that runs in both vm and container.
 *   `arc_camera3` - The [Camera HAL3] interface in Android.
 *   `aslr` - Address space layout randomization, which mitigates buffer-overflow

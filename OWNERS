@@ -7,6 +7,6 @@ set noparent
 # allows the owners to distribute code review loads.
 tast-owners@google.com
 
-derat@chromium.org
 hidehiko@chromium.org
 nya@chromium.org
+oka@chromium.org

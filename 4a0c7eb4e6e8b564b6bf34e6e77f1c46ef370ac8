@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ea44b28d_d5131341",
+        "filename": "OWNERS",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-08-08T11:33:45Z",
+      "side": 1,
+      "message": "remove?",
+      "range": {
+        "startLine": 10,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 5
+      },
+      "revId": "4a0c7eb4e6e8b564b6bf34e6e77f1c46ef370ac8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

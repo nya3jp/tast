@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "d7a28c56_1b10ca45",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-08T07:35:05Z",
+      "side": 1,
+      "message": "While the TODO is good to address, it\u0027s an orthogonal issue.\n\n- In this CL I want *unit tests* to be independent of the source tree layout.\n- The TODO comment you mentioned is about detecting whether the tast command is running within CrOS chroot or not *in production*.\n\nI updated the description here to say \"unit tests should not depend on source tree\" rather than \"failures are confusing\".\n\nIn any case, trunkDir must not panic because it prevents us from running the tast command outside of CrOS chroot. For example, Chrome CQ will cease to function.",
+      "parentUuid": "cdd7ba0b_7d292cc1",
+      "range": {
+        "startLine": 10,
+        "startChar": 39,
+        "endLine": 10,
+        "endChar": 50
+      },
+      "revId": "5aedfccb862b7612aa4894d0ec12980e8d92faca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f3931177_420252f5",
         "filename": "/COMMIT_MSG",
         "patchSetId": 1
@@ -45,6 +69,30 @@
       "revId": "5aedfccb862b7612aa4894d0ec12980e8d92faca",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ed410b18_f6d1864b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-08T07:35:05Z",
+      "side": 1,
+      "message": "Actually I\u0027m not very familiar with moblab configuration, but pre-CQ failure suggests me that the trunk dir layout is different or completely missing.\n\nhttps://ci.chromium.org/p/chromeos/builders/general/PreCQ/b8906434093349923632\n\ntast-cmd-0.0.1-r379: \u003e\u003e\u003e Test phase: chromeos-base/tast-cmd-0.0.1-r379\ntast-cmd-0.0.1-r379: --- FAIL: TestListTests (0.00s)\ntast-cmd-0.0.1-r379:     list_cmd_test.go:52: listCmd.Execute([root@example.net]) returned status 2; want 0\ntast-cmd-0.0.1-r379: --- FAIL: TestRunConfig (0.00s)\ntast-cmd-0.0.1-r379:     run_cmd_test.go:37: runCmd.Execute([root@example.net pkg.Test1 pkg.Test2]) unexpectedly didn\u0027t run tests\ntast-cmd-0.0.1-r379: --- FAIL: TestRunNoResults (0.00s)\ntast-cmd-0.0.1-r379:     run_cmd_test.go:37: runCmd.Execute([root@example.net]) unexpectedly didn\u0027t run tests\ntast-cmd-0.0.1-r379: --- FAIL: TestRunResults (0.00s)\ntast-cmd-0.0.1-r379:     run_cmd_test.go:37: runCmd.Execute([root@example.net]) unexpectedly didn\u0027t run tests\ntast-cmd-0.0.1-r379: --- FAIL: TestRunExecFailure (0.00s)\ntast-cmd-0.0.1-r379:     run_cmd_test.go:37: runCmd.Execute([root@example.net]) unexpectedly didn\u0027t run tests\ntast-cmd-0.0.1-r379: --- FAIL: TestRunWriteFailure (0.00s)\ntast-cmd-0.0.1-r379:     run_cmd_test.go:37: runCmd.Execute([root@example.net]) unexpectedly didn\u0027t run tests\ntast-cmd-0.0.1-r379: --- FAIL: TestRunWriteResultsWithZeroTests (0.00s)\ntast-cmd-0.0.1-r379:     run_cmd_test.go:37: runCmd.Execute([root@example.net]) unexpectedly didn\u0027t run tests\ntast-cmd-0.0.1-r379: --- FAIL: TestRunDontWriteResultsForEarlyFailure (0.00s)\ntast-cmd-0.0.1-r379:     run_cmd_test.go:37: runCmd.Execute([root@example.net]) unexpectedly didn\u0027t run tests\ntast-cmd-0.0.1-r379: --- FAIL: TestRunReserveTimeToWriteResults (0.00s)\ntast-cmd-0.0.1-r379:     run_cmd_test.go:37: runCmd.Execute([-timeout\u003d3600 root@example.net]) unexpectedly didn\u0027t run tests\ntast-cmd-0.0.1-r379: FAIL\ntast-cmd-0.0.1-r379: FAIL\tchromiumos/cmd/tast\t0.022s\n\nNote that return status 2 is ExitUsageError, which is returned when DeriveDefaults fails.",
+      "parentUuid": "f3931177_420252f5",
+      "range": {
+        "startLine": 11,
+        "startChar": 24,
+        "endLine": 13,
+        "endChar": 0
+      },
+      "revId": "5aedfccb862b7612aa4894d0ec12980e8d92faca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -94,6 +142,54 @@
     },
     {
       "key": {
+        "uuid": "8e0b6232_acaf1b27",
+        "filename": "src/chromiumos/cmd/tast/list_cmd_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-08T07:35:05Z",
+      "side": 1,
+      "message": "Oops, I forgot to defer os.RemoveAll.",
+      "parentUuid": "9212993b_2b3ccc58",
+      "range": {
+        "startLine": 32,
+        "startChar": 27,
+        "endLine": 32,
+        "endChar": 29
+      },
+      "revId": "5aedfccb862b7612aa4894d0ec12980e8d92faca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "26c78bec_749ffd32",
+        "filename": "src/chromiumos/cmd/tast/list_cmd_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-08T07:35:05Z",
+      "side": 1,
+      "message": "At this moment this is not a problem because DeriveDefaults is a pure function. But the following CL modifies the function to depend on the trunk dir contents when -build\u003dtrue:\n\nhttps://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/1710028/4/src/chromiumos/cmd/tast/run/config.go\n\nIn that CL I avoided the problem by setting -build\u003dfalse, which should make sense, but I believe looking at the real trunk dir in unit tests is wrong at all.",
+      "parentUuid": "3cac533c_090ca135",
+      "range": {
+        "startLine": 31,
+        "startChar": 0,
+        "endLine": 32,
+        "endChar": 30
+      },
+      "revId": "5aedfccb862b7612aa4894d0ec12980e8d92faca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7efb430d_a41b4b8f",
         "filename": "src/chromiumos/cmd/tast/run_cmd_test.go",
         "patchSetId": 1
@@ -137,6 +233,54 @@
       "revId": "5aedfccb862b7612aa4894d0ec12980e8d92faca",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "90166d97_dbb149ee",
+        "filename": "src/chromiumos/cmd/tast/run_cmd_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-08T07:35:05Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "7efb430d_a41b4b8f",
+      "range": {
+        "startLine": 28,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 21
+      },
+      "revId": "5aedfccb862b7612aa4894d0ec12980e8d92faca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "61750e74_37568d0f",
+        "filename": "src/chromiumos/cmd/tast/run_cmd_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-08T07:35:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cddcab1b_d0671715",
+      "range": {
+        "startLine": 29,
+        "startChar": 18,
+        "endLine": 29,
+        "endChar": 20
+      },
+      "revId": "5aedfccb862b7612aa4894d0ec12980e8d92faca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

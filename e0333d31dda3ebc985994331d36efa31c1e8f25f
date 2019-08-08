@@ -237,6 +237,30 @@
     },
     {
       "key": {
+        "uuid": "e88b244d_2156f503",
+        "filename": "src/chromiumos/tast/bundle/local.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-08T03:46:36Z",
+      "side": 1,
+      "message": "What I care is assymmetricity between postTestFunc and preRunFunc. If you\u0027re setting postTestFunc conditionally later, it is also fine. Thanks!",
+      "parentUuid": "7ede8a87_df833d20",
+      "range": {
+        "startLine": 58,
+        "startChar": 0,
+        "endLine": 64,
+        "endChar": 3
+      },
+      "revId": "e0333d31dda3ebc985994331d36efa31c1e8f25f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3ef26bb4_c24025be",
         "filename": "src/chromiumos/tast/bundle/local_test.go",
         "patchSetId": 2

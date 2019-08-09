@@ -22,6 +22,30 @@
       "revId": "570991f3539f651fb8eb05322fb64504e99c5093",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8dbea65d_c06399a2",
+        "filename": "src/chromiumos/cmd/tast/run_cmd_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-08-09T00:39:14Z",
+      "side": 1,
+      "message": "(it looks added after my +1, so I missed it)",
+      "parentUuid": "7701f1f0_a53f1b67",
+      "range": {
+        "startLine": 34,
+        "startChar": 0,
+        "endLine": 34,
+        "endChar": 95
+      },
+      "revId": "570991f3539f651fb8eb05322fb64504e99c5093",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

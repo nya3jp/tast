@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7701f1f0_a53f1b67",
+        "filename": "src/chromiumos/cmd/tast/run_cmd_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-08-09T00:38:26Z",
+      "side": 1,
+      "message": "Sorry for commenting on old CL, but I\u0027m confused why build is set to false here (and list too).\nIt looks like ignoring user input.",
+      "range": {
+        "startLine": 34,
+        "startChar": 0,
+        "endLine": 34,
+        "endChar": 95
+      },
+      "revId": "570991f3539f651fb8eb05322fb64504e99c5093",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

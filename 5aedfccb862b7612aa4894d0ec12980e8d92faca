@@ -96,6 +96,30 @@
     },
     {
       "key": {
+        "uuid": "73b7d135_80cd8110",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-08-09T00:49:41Z",
+      "side": 1,
+      "message": "I see. So the lesson is that in general unit tests could run in isolated environment, and they generally should run standalone, right? It makes sense.",
+      "parentUuid": "ed410b18_f6d1864b",
+      "range": {
+        "startLine": 11,
+        "startChar": 24,
+        "endLine": 13,
+        "endChar": 0
+      },
+      "revId": "5aedfccb862b7612aa4894d0ec12980e8d92faca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9212993b_2b3ccc58",
         "filename": "src/chromiumos/cmd/tast/list_cmd_test.go",
         "patchSetId": 1
@@ -183,6 +207,54 @@
         "startChar": 0,
         "endLine": 32,
         "endChar": 30
+      },
+      "revId": "5aedfccb862b7612aa4894d0ec12980e8d92faca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c20b106a_ac06657a",
+        "filename": "src/chromiumos/cmd/tast/list_cmd_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-08-09T00:49:41Z",
+      "side": 1,
+      "message": "I see. Then now can you revert the change of setting -build false you made in the said CL?\nIt was a workaround to make unit tests pass IIUC?",
+      "parentUuid": "26c78bec_749ffd32",
+      "range": {
+        "startLine": 31,
+        "startChar": 0,
+        "endLine": 32,
+        "endChar": 30
+      },
+      "revId": "5aedfccb862b7612aa4894d0ec12980e8d92faca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "32f0e430_4103bc8d",
+        "filename": "src/chromiumos/cmd/tast/list_cmd_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-08-09T00:49:41Z",
+      "side": 1,
+      "message": "Ah. That\u0027s important. Thank you.",
+      "parentUuid": "8e0b6232_acaf1b27",
+      "range": {
+        "startLine": 32,
+        "startChar": 27,
+        "endLine": 32,
+        "endChar": 29
       },
       "revId": "5aedfccb862b7612aa4894d0ec12980e8d92faca",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",

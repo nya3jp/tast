@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "36d96a38_8536ad1e",
+        "filename": "docs/running_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1158909
+      },
+      "writtenOn": "2019-08-11T02:17:28Z",
+      "side": 1,
+      "message": "This line is quite confusing for the newbie - I read this and attempted `tast run ${DUT_IP} -buildbundle\u003dcrosint` in my chroot, getting this:\n(cr) ((1d8ed67...)) kirtika@kirtika2 ~/trunk/src/scripts $ tast run hatch -buildbundle\u003dcrosint\n2019/08/10 19:15:34 Command line: tast run hatch -buildbundle\u003dcrosint\n2019/08/10 19:15:34 Writing results to /tmp/tast/results/20190810-191534\n2019/08/10 19:15:34 Connecting to hatch\n2019/08/10 19:15:35 Building cros, local_test_runner, cros\n2019/08/10 19:15:35 Built in 837ms\n2019/08/10 19:15:35 Pushing executables to target\n2019/08/10 19:15:36 Pushed executables in 96ms (sent 0 B)\n2019/08/10 19:15:36 Failed to build and push: failed to get data file list: Process exited with status 5: exit status 4 (failed getting tests for [-buildbundle\u003dcrosint]: bad glob \"-buildbundle\u003dcrosint\": invalid character 45)\n\nNow I don\u0027t know if I misinterpreted the syntax from this line, or if I need to cros_workon start the tast private tests first, or some other error. \nCan you add a line or two about where tast private tasts live, and a proper example of how to run them?",
+      "range": {
+        "startLine": 14,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 0
+      },
+      "revId": "4b866e0ac73c00ab43da5baf5e7fb88f46a209ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

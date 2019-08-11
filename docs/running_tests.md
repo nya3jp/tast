@@ -50,8 +50,8 @@ Any additional positional arguments describe which tests should be executed:
     `ui.`. Multiple patterns can be supplied: passing `example.Pass` and
     `example.Fail` selects those two tests.
 
-    Patterns ending in ".*" match as above and additionally, against
-    the test ending without the trailing dot (it it exists). For example,
+    Patterns ending in ".*" match as above and, additionally, against
+    the test ending without the trailing dot (if it exists). For example,
     "ui.Login.*" matches both "ui.Login" and "ui.Login.Managed" but
     does not match "ui.LoginLogout".
 

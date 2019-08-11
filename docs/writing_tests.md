@@ -70,7 +70,8 @@ needs to be done in `init()` function in the file. The registration should be
 declarative, which means:
 - `testing.AddTest()` should be called at a top level statement of `init()`'s
 body.
-- Calling `testing.AddTest()` multiple times (e.g. in a loop) is not allowed.
+- Calling `testing.AddTest()` multiple times with the same test function
+(e.g. in a loop) is not allowed.
 - `testing.AddTest()` should take a pointer of a `testing.Test` composite
 literal.
 
@@ -994,3 +995,95 @@ with `snake_case` name if present. `ExtraAttr`, `ExtraData` and
 and `SoftwareDeps` in [test registration].
 
 [test registration]: #Test-registration
+
+## Multiple test per file
+
+To encourage granular tests, code sharing, and use of [preconditions]
+multiple tests can appear in a single source in a situation similar to
+[parameterized tests].
+
+A group of test with named `ui.ChromeLogin`, `ui.ChromeLogin.Managed`, and
+`ui.ChromeLogin.Child` can all be defined in a single source file. The
+source file in this case would be `chrome_login.go` as expected from
+[code location].
+
+The test functions must be names `ChromeLogin`, `ChromeLoginManaged`, and
+`ChromeLoginChild`, respectively. This consistency with [test names]
+maintains the easy mapping from the test name to file and test function
+for a developer who is investigating a test such as when debugging
+a failure.
+
+[precondition]: #Preconditions
+[parameterized tests]: #Parameterized-tests
+[code location]: #Code-location
+[test names]: #Test-names
+
+### Granular tests
+
+By declaring a [precondition] local to a file and reusing the precondition
+across many small granular tests we can reduce unneccesary tradeoffs.
+
+- We can have fast test excution.
+- And, we can have granular tests.
+- And, we can have tests grouped logically by file.
+- And, we can have have easy code sharing between related tests.
+
+[preconditions]: #Preconditions
+
+### Repeating tests with different preconditions
+
+The test [preconditions] must be defined in the test when passed to
+`AddTest()` so that Tast can group the tests with like preconditions
+together across test files. However, sometimes it makes sense to run the
+same, or similar tests, in many different conditions.
+
+For example, a filesystem security test might need to be repeated with
+anunmanaged user login, with a guest user, with a managed user, and in
+demo mode. Note that [precondition] is not part of the test [parameters].
+Instead, add multiple tests with these different preconditions and
+different test functions.
+
+[preconditions]: #Preconditions
+[precondition]: #Preconditions
+[parameters]: #Parameterized-tests
+
+### Avoiding feature tests
+
+If some parts of a feature are different on different devices. For
+example, a feature may have additional funcitonality only in tablet mode.
+However, some devices do not support tablet mode. This can be handled by
+specifying multiple test with different [test dependencies].
+
+Note that in some cases similar result can be attained by using the
+`ExtraSoftwareDeps` field with [parameterized tests].
+
+[test dependencies]: test_dependencies.md
+[parameterized tests]: #Parameterized-test-registration
+
+### Stabilizing tests incrementally
+
+If we are developing a new (amazing) feature called
+`NewThing` we will eventually have a comprehensive test called
+`arc.NewThing` that exercises all the (amazing) functionality.
+
+As `NewThing` is still under development `arc.NewThing` is flakey. Some of
+the functionality is very new and prone to regressions as development
+moves forward. Other parts work most of the time but provoke some
+instability elsewhere in the system. Becuase of this, we mark
+`ui.NewThing` as `informational`.
+
+However, the basic functionality is quite stable and we would like to
+ensure this does not regress and give other developers confidence that
+they are not breaking the shiny `NewThing`. We can simply create
+`arc.NewThing` and `arc.NewThing.Unstable` tests with different
+attributes. Internally we can move graduate subtests funcitonality
+between these as facets of the feature stabilize.
+
+Eventually, we empty and remove `arc.NewThing.Unstable` and we are left
+with our test in its final form. This is all possible without refactoring
+churn or introducing unnecessary layers or abstractions just to share
+code.
+
+These unstable, or even tests for unimplemented code, are useful for
+developers to run manauly to exercise code under developement in a
+consistent and repeatable way.

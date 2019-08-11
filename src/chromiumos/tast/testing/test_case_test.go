@@ -23,6 +23,11 @@ import (
 // will interpret it as itself being a unit test, so let's just pretend that "test" and "case" are acronyms.
 func TESTCASETEST(context.Context, *State) {}
 
+// TESTCASETESTSuffix is a public test function with a name that's chosen to be appropriate for this file's
+// name (test_case_test.go). The obvious choice, "TestCaseTestSuffix", is unavailable since Go's testing package
+// will interpret it as itself being a unit test, so let's just pretend that "test" and "case" are acronyms.
+func TESTCASETESTSuffix(context.Context, *State) {}
+
 // testPre implements both Precondition and preconditionImpl for unit tests.
 type testPre struct {
 	prepareFunc func(context.Context, *State) interface{}
@@ -54,6 +59,16 @@ func TestAutoName(t *gotesting.T) {
 	}
 	if tc.Name != "testing.TESTCASETEST" {
 		t.Errorf("Unexpected test case name: got %s; want testing.TESTCASETEST", tc.Name)
+	}
+}
+
+func TestAutoSuffixName(t *gotesting.T) {
+	tc, err := newTestCase(&Test{Func: TESTCASETESTSuffix}, nil)
+	if err != nil {
+		t.Fatal("failed to instantiate TestCase: ", err)
+	}
+	if tc.Name != "testing.TESTCASETEST.Suffix" {
+		t.Errorf("Unexpected test case name: got %s; want testing.TESTCASETEST.Suffix", tc.Name)
 	}
 }
 

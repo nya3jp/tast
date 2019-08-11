@@ -169,12 +169,22 @@ func getTestFuncInfo(f TestFunc) (*testFuncInfo, error) {
 		name:     p[1],
 	}
 	info.file, _ = rf.FileLine(pc)
+
+	// Apply syntactic sugar to make name appear as function FileNameWithSuffix appear
+	// as "FileName.WithSuffix" to multiple tests per file
+	const goExt = ".go"
+	filename := filepath.Base(info.file)
+	funcIdx := len(strings.Replace(filename, "_", "", -1)) - len(goExt)
+	if funcIdx < len(info.name) {
+		info.name = info.name[:funcIdx] + "." + info.name[funcIdx:]
+	}
+
 	return info, nil
 }
 
 // testNameRegexp validates test names, which should consist of a package name,
 // a period, and the name of the exported test function.
-var testNameRegexp = regexp.MustCompile("^[a-z][a-z0-9]*\\.[A-Z][A-Za-z0-9]*$")
+var testNameRegexp = regexp.MustCompile("^[a-z][a-z0-9]*\\.[A-Z][A-Za-z0-9]*(?:\\.[A-Z]+[A-Za-z0-9]*)?$")
 
 // testWordRegexp validates an individual word in a test function name.
 // See checkFuncNameAgainstFilename for details.
@@ -228,7 +238,9 @@ func validateName(funcName, category, filename string) error {
 	}
 
 	if funcIdx < len(funcName) {
-		return fmt.Errorf("name %q has extra suffix %q not in filename %q", funcName, funcName[funcIdx:], filename)
+		if funcName[funcIdx] != '.' {
+			return fmt.Errorf("name %q has extra suffix %q not in filename %q", funcName, funcName[funcIdx:], filename)
+		}
 	}
 
 	return nil

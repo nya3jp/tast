@@ -29,7 +29,7 @@ func TestRegisterTwiceVerify(t *gotesting.T) {
 	if err := v.verifyAndRegister(pc); err != nil {
 		t.Fatal("Unexpected verification failure: ", err)
 	}
-	if err := v.verifyAndRegister(pc); err == nil {
-		t.Fatal("Unexpected verification pass for two times registration")
+	if err := v.verifyAndRegister(pc); err != nil {
+		t.Fatal("Unexpected verification failure for two times registration: ", err)
 	}
 }

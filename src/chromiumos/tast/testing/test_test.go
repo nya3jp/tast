@@ -15,6 +15,12 @@ import (
 // will interpret it as itself being a unit test, so let's just pretend that "test" is an acronym.
 func TESTTEST(context.Context, *State) {}
 
+// TESTTESTSuffix is a public test function with a name that's chosen to be appropriate for this
+// file's name (test_test.go). The obvious choice, "TestTestSuffix", is unavailable since Go's
+// testing package will interpret it as itself being a unit test, so let's just pretend that
+// "test" is an acronym.
+func TESTTESTSuffix(context.Context, *State) {}
+
 // InvalidTestName is an arbitrary public test function used by unit tests.
 func InvalidTestName(context.Context, *State) {}
 
@@ -42,9 +48,12 @@ func TestValidateName(t *gotesting.T) {
 		{"Foo123Bar", "testing", "foo123_bar.go", true},          // word with trailing digits
 		{"Foo123bar", "testing", "foo_123bar.go", true},          // word with leading digits
 		{"Foo123Bar", "testing", "foo_123_bar.go", true},         // word consisting only of digits
+		{"First.Test", "testing", "first.go", true},              // func name has suffix not in filename
+		{"First.TestCPU3", "testing", "first.go", true},          // func suffix with uppercase and numbers
 		{"foo", "testing", "foo.go", false},                      // lowercase func name
 		{"Foobar", "testing", "foo_bar.go", false},               // lowercase word
-		{"FirstTest", "testing", "first.go", false},              // func name has word not in filename
+		{"First.Test_more", "testing", "first.go", false},        // func suffix has underscore
+		{"First.Test.Test", "testing", "first.go", false},        // func suffix has dot
 		{"Firstblah", "testing", "first.go", false},              // func name has word longer than filename
 		{"First", "testing", "firstabc.go", false},               // filename has word longer than func name
 		{"First", "testing", "first_test.go", false},             // filename has word not in func name
@@ -67,6 +76,9 @@ func TestValidateName(t *gotesting.T) {
 func TestFuncName(t *gotesting.T) {
 	if err := validateTest(&Test{Func: TESTTEST}); err != nil {
 		t.Error("Got error when finalizing test with valid test func name: ", err)
+	}
+	if err := validateTest(&Test{Func: TESTTESTSuffix}); err != nil {
+		t.Error("Got error when finalizing test with valid suffixed test func name: ", err)
 	}
 	if err := validateTest(&Test{Func: InvalidTestName}); err == nil {
 		t.Error("Didn't get expected error when finalizing test with invalid test func name")

@@ -5,6 +5,7 @@
 package check
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -31,65 +32,65 @@ func init() {
 	// AddTest invocation tests.
 	for {
 		testing.AddTest(&testing.Test{
-			Func: DoStuff,
+			Func: DoStuffA,
 		})
 	}
 	testing.AddTest(ts)
 
 	// Desc verification.
 	testing.AddTest(&testing.Test{
-		Func:     DoStuff,
+		Func:     DoStuffB,
 		// Desc is missing
 		Contacts: []string{"me@chromium.org"},
 	})
 	testing.AddTest(&testing.Test{
-		Func:     DoStuff,
+		Func:     DoStuffC,
 		Desc:     variableDesc,
 		Contacts: []string{"me@chromium.org"},
 	})
 	testing.AddTest(&testing.Test{
-		Func:     DoStuff,
+		Func:     DoStuffD,
 		Desc:     "not capitalized",
 		Contacts: []string{"me@chromium.org"},
 	})
 	testing.AddTest(&testing.Test{
-		Func:     DoStuff,
+		Func:     DoStuffE,
 		Desc:     "Ends with a period.",
 		Contacts: []string{"me@chromium.org"},
 	})
 
 	// Contacts verification.
 	testing.AddTest(&testing.Test{
-		Func:     DoStuff,
+		Func:     DoStuffF,
 		Desc:     "This description is fine",
 		// Contacts is missing
 	})
 	testing.AddTest(&testing.Test{
-		Func: DoStuff,
+		Func: DoStuffG,
 		Desc: "This description is fine",
 		Contacts: []string{variableAddress},
 	})
 	testing.AddTest(&testing.Test{
-		Func: DoStuff,
+		Func: DoStuffH,
 		Desc: "This description is fine",
 		Contacts: variableContacts,
 	})
 
 	// Attr verification.
 	testing.AddTest(&testing.Test{
-		Func:     DoStuff,
+		Func:     DoStuffI,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		Attr:     []string{"this", "is", "valid", "attr"},
 	})
 	testing.AddTest(&testing.Test{
-		Func:     DoStuff,
+		Func:     DoStuffJ,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		Attr:     foobar,  // non array literal.
 	})
 	testing.AddTest(&testing.Test{
-		Func:     DoStuff,
+		Func:     DoStuffK,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		Attr:     []string{variableAttr},
@@ -97,19 +98,19 @@ func init() {
 
 	// Vars verification.
 	testing.AddTest(&testing.Test{
-		Func:     DoStuff,
+		Func:     DoStuffL,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		Vars:     []string{"this", "is", "valid", "vars"},
 	})
 	testing.AddTest(&testing.Test{
-		Func:     DoStuff,
+		Func:     DoStuffM,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		Vars:     foobar,  // non array literal.
 	})
 	testing.AddTest(&testing.Test{
-		Func:     DoStuff,
+		Func:     DoStuffN,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		Vars:     []string{variableVar},
@@ -117,25 +118,25 @@ func init() {
 
 	// SoftwareDeps verification.
 	testing.AddTest(&testing.Test{
-		Func:         DoStuff,
+		Func:         DoStuffO,
 		Desc:         "This description is fine",
 		Contacts:     []string{"me@chromium.org"},
 		SoftwareDeps: []string{"this", "is", "valid", "dep"},
 	})
 	testing.AddTest(&testing.Test{
-		Func:         DoStuff,
+		Func:         DoStuffP,
 		Desc:         "This description is fine",
 		Contacts:     []string{"me@chromium.org"},
 		SoftwareDeps: []string{qualified.variable, is, "allowed"},
 	})
 	testing.AddTest(&testing.Test{
-		Func:         DoStuff,
+		Func:         DoStuffQ,
 		Desc:         "This description is fine",
 		Contacts:     []string{"me@chromium.org"},
 		SoftwareDeps: foobar,  // non array literal.
 	})
 	testing.AddTest(&testing.Test{
-		Func:         DoStuff,
+		Func:         DoStuffR,
 		Desc:         "This description is fine",
 		Contacts:     []string{"me@chromium.org"},
 		SoftwareDeps: []string{fun()},  // invocation is not allowed.
@@ -143,7 +144,7 @@ func init() {
 
 	// Params verification.
 	testing.AddTest(&testing.Test{
-		Func:     DoStuff,
+		Func:     DoStuffS,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		Params: []Param{{
@@ -155,19 +156,19 @@ func init() {
 		}},
 	})
 	testing.AddTest(&testing.Test{
-		Func:     DoStuff,
+		Func:     DoStuffT,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		Params:   variableParams,
 	})
 	testing.AddTest(&testing.Test{
-		Func:     DoStuff,
+		Func:     DoStuffU,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		Params:   []Param{variableParamStruct},
 	})
 	testing.AddTest(&testing.Test{
-		Func:     DoStuff,
+		Func:     DoStuffV,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		Params: []Param{{
@@ -182,9 +183,43 @@ func init() {
 			ExtraSoftwareDeps: []string{fun()},
                 }},
 	})
+	// Pass case now fails because repeated reference
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+	})
+	testing.AddTest(&testing.Test{
+		Func:     doStuff,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+	})
 }
 
 func DoStuff(ctx context.Context, s *testing.State) {}
+func DoStuffA(ctx context.Context, s *testing.State) {}
+func DoStuffB(ctx context.Context, s *testing.State) {}
+func DoStuffC(ctx context.Context, s *testing.State) {}
+func DoStuffD(ctx context.Context, s *testing.State) {}
+func DoStuffE(ctx context.Context, s *testing.State) {}
+func DoStuffF(ctx context.Context, s *testing.State) {}
+func DoStuffG(ctx context.Context, s *testing.State) {}
+func DoStuffH(ctx context.Context, s *testing.State) {}
+func DoStuffI(ctx context.Context, s *testing.State) {}
+func DoStuffJ(ctx context.Context, s *testing.State) {}
+func DoStuffK(ctx context.Context, s *testing.State) {}
+func DoStuffL(ctx context.Context, s *testing.State) {}
+func DoStuffM(ctx context.Context, s *testing.State) {}
+func DoStuffN(ctx context.Context, s *testing.State) {}
+func DoStuffO(ctx context.Context, s *testing.State) {}
+func DoStuffP(ctx context.Context, s *testing.State) {}
+func DoStuffQ(ctx context.Context, s *testing.State) {}
+func DoStuffR(ctx context.Context, s *testing.State) {}
+func DoStuffS(ctx context.Context, s *testing.State) {}
+func DoStuffT(ctx context.Context, s *testing.State) {}
+func DoStuffU(ctx context.Context, s *testing.State) {}
+func DoStuffV(ctx context.Context, s *testing.State) {}
+func doStuff(ctx context.Context, s *testing.State) {}
 `
 
 	const path = "/src/chromiumos/tast/local/bundles/cros/example/do_stuff.go"
@@ -221,6 +256,9 @@ func DoStuff(ctx context.Context, s *testing.State) {}
 		path + ":167:32: " + nonLiteralAttrMsg,
 		path + ":169:23: " + nonLiteralSoftwareDepsMsg,
 		path + ":171:32: " + nonLiteralSoftwareDepsMsg,
+		path + ":176:13: " + repeatedTestFuncMsg,
+		path + ":181:13: " + notFoundFuncMsg,
+		path + ":188:1: " + fmt.Sprintf(unusedFuncMsg, "DoStuffA"),
 	}
 	verifyIssues(t, issues, expects)
 }

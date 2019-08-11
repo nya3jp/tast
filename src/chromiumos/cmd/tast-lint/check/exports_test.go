@@ -20,8 +20,6 @@ func SomeFunc2() {}
 		filename + ":3:6: Tast forbids exporting anything but one test function here; unexport type SomeType",
 		filename + ":4:7: Tast forbids exporting anything but one test function here; unexport const SomeConst",
 		filename + ":5:5: Tast forbids exporting anything but one test function here; unexport var SomeVar",
-		filename + ":6:6: Tast forbids exporting anything but one test function here; unexport func SomeFunc1 if it is not a test function",
-		filename + ":7:6: Tast forbids exporting anything but one test function here; unexport func SomeFunc2 if it is not a test function",
 	}
 
 	f, fs := parse(code, filename)
@@ -34,7 +32,7 @@ func TestExports_ZeroFunc(t *testing.T) {
 	const code = `package example
 `
 	expects := []string{
-		filename + ": Tast requires exactly one test function to be exported in a test main file",
+		filename + ": Tast requires at least one test function to be exported in a test main file",
 	}
 
 	f, fs := parse(code, filename)

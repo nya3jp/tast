@@ -71,17 +71,9 @@ func Exports(fs *token.FileSet, f *ast.File) []*Issue {
 	if len(expFuncs) == 0 {
 		issues = append(issues, &Issue{
 			Pos:  token.Position{Filename: filename},
-			Msg:  "Tast requires exactly one test function to be exported in a test main file",
+			Msg:  "Tast requires at least one test function to be exported in a test main file",
 			Link: docURL,
 		})
-	} else if len(expFuncs) >= 2 {
-		for _, d := range expFuncs {
-			issues = append(issues, &Issue{
-				Pos:  fs.Position(d.name.NamePos),
-				Msg:  fmt.Sprintf("Tast forbids exporting anything but one test function here; unexport %s %s if it is not a test function", d.token, d.name.Name),
-				Link: docURL,
-			})
-		}
 	}
 
 	// TODO(nya): Check the test function name.

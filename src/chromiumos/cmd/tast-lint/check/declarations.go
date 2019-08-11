@@ -5,6 +5,7 @@
 package check
 
 import (
+	"fmt"
 	"go/ast"
 	"go/token"
 	"strconv"
@@ -24,11 +25,16 @@ const (
 	noContactMsg          = `Test should list owners' email addresses in Contacts field`
 	nonLiteralContactsMsg = `Test Contacts should be an array literal of string literals`
 
+	nonIdentifierFuncMsg      = `Test Func should be a function identifier`
 	nonLiteralAttrMsg         = `Test Attr should be an array literal of string literals`
 	nonLiteralVarsMsg         = `Test Vars should be an array literal of string literals`
 	nonLiteralSoftwareDepsMsg = `Test SoftwareDeps should be an array literal of string literals or (possibly qualified) identifiers`
 	nonLiteralParamsMsg       = `Test Params should be an array literal of Param struct literals`
 	nonLiteralParamNameMsg    = `Name of Param should be a string literal`
+
+	repeatedTestFuncMsg = `Test Func must be referenced only once`
+	unusedFuncMsg       = `All exported functions must be referenced in testing.AddTest(); unexport %s if it is not a test function`
+	notFoundFuncMsg     = `Test Func must be exported`
 
 	testRegistrationURL     = `https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Test-registration`
 	testParamTestURL        = `https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Parameterized-test-registration`
@@ -42,16 +48,48 @@ func Declarations(fs *token.FileSet, f *ast.File) []*Issue {
 		return nil
 	}
 
+	testFuncs := map[string]*ast.Ident{}
 	var issues []*Issue
 	for _, decl := range f.Decls {
-		issues = append(issues, verifyInit(fs, decl)...)
+		issues = append(issues, verifyInit(fs, decl, testFuncs)...)
 	}
+
+	exportedFuncs := map[string]decl{}
+	for _, d := range getDecls(f) {
+		if d.name.IsExported() {
+			switch d.decl.(type) {
+			case *ast.FuncDecl:
+				exportedFuncs[d.name.Name] = d
+			}
+		}
+	}
+
+	for name, ident := range testFuncs {
+		_, ok := exportedFuncs[name]
+		if !ok {
+			issues = append(issues, &Issue{
+				Pos:  fs.Position(ident.NamePos),
+				Msg:  notFoundFuncMsg,
+				Link: testRegistrationURL,
+			})
+		}
+		delete(exportedFuncs, name)
+	}
+
+	for name, d := range exportedFuncs {
+		issues = append(issues, &Issue{
+			Pos:  fs.Position(d.decl.Pos()),
+			Msg:  fmt.Sprintf(unusedFuncMsg, name),
+			Link: testRegistrationURL,
+		})
+	}
+
 	return issues
 }
 
 // verifyInit checks init() function declared at node.
 // If the node is not init() function, returns nil.
-func verifyInit(fs *token.FileSet, node ast.Decl) []*Issue {
+func verifyInit(fs *token.FileSet, node ast.Decl, testFuncs map[string]*ast.Ident) []*Issue {
 	decl, ok := node.(*ast.FuncDecl)
 	if !ok || decl.Recv != nil || decl.Name.Name != "init" {
 		// Not an init() function declaration. Skip.
@@ -60,7 +98,7 @@ func verifyInit(fs *token.FileSet, node ast.Decl) []*Issue {
 
 	var issues []*Issue
 	for _, stmt := range decl.Body.List {
-		issues = append(issues, verifyInitBody(fs, stmt)...)
+		issues = append(issues, verifyInitBody(fs, stmt, testFuncs)...)
 	}
 	return issues
 }
@@ -69,7 +107,7 @@ func verifyInit(fs *token.FileSet, node ast.Decl) []*Issue {
 // - testing.AddTest() can be called at a top level statement.
 // - testing.AddTest() can take a pointer of a testing.Test composite literal.
 // - verifies each element of testing.Test literal.
-func verifyInitBody(fs *token.FileSet, stmt ast.Stmt) []*Issue {
+func verifyInitBody(fs *token.FileSet, stmt ast.Stmt, testFuncs map[string]*ast.Ident) []*Issue {
 	estmt, ok := stmt.(*ast.ExprStmt)
 	if !ok || !isTestingAddTestCall(estmt.X) {
 		var issues []*Issue
@@ -138,6 +176,8 @@ func verifyInitBody(fs *token.FileSet, stmt ast.Stmt) []*Issue {
 			issues = append(issues, verifySoftwareDeps(fs, kv.Value)...)
 		case "Params":
 			issues = append(issues, verifyParams(fs, kv.Value)...)
+		case "Func":
+			issues = append(issues, verifyFunc(fs, kv.Value, testFuncs)...)
 		}
 	}
 
@@ -322,6 +362,29 @@ func verifyParamElement(fs *token.FileSet, node ast.Node) []*Issue {
 		}
 	}
 	return issues
+}
+
+func verifyFunc(fs *token.FileSet, node ast.Node, testFuncs map[string]*ast.Ident) []*Issue {
+	ident, ok := node.(*ast.Ident)
+	if !ok {
+		return []*Issue{{
+			Pos:  fs.Position(node.Pos()),
+			Msg:  nonIdentifierFuncMsg,
+			Link: testRegistrationURL,
+		}}
+	}
+
+	_, ok = testFuncs[ident.Name]
+	if ok {
+		return []*Issue{{
+			Pos:  fs.Position(node.Pos()),
+			Msg:  repeatedTestFuncMsg,
+			Link: testRegistrationURL,
+		}}
+	}
+	testFuncs[ident.Name] = ident
+
+	return nil
 }
 
 // isTestingAddTestCall returns true if the call is an expression

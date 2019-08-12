@@ -22,6 +22,30 @@
       "revId": "75160d4e9479d8771fa01c8ef2223563e47c5fc5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aed0cf96_89ca4b1d",
+        "filename": "docs/running_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1117055
+      },
+      "writtenOn": "2019-08-12T22:11:49Z",
+      "side": 1,
+      "message": "These are all shell quoting issues. Try surrounding the expression in single quotes.",
+      "parentUuid": "caf19d6f_938d1a4a",
+      "range": {
+        "startLine": 42,
+        "startChar": 1,
+        "endLine": 44,
+        "endChar": 47
+      },
+      "revId": "75160d4e9479d8771fa01c8ef2223563e47c5fc5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

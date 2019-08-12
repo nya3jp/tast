@@ -143,8 +143,20 @@ func NewTestGlobRegexp(g string) (*regexp.Regexp, error) {
 			return nil, fmt.Errorf("invalid character %v", ch)
 		}
 	}
+	trailing := ""
+	if strings.HasSuffix(g, ".*") {
+		// If glob ends in "blah.*", also match match without dot
+		g = g[:len(g)-2]
+		trailing = "(?:\\..*)?"
+	}
+	leading := ""
+	if strings.HasPrefix(g, "*.") {
+		// If glob starts with "*.", force match against first dot
+		g = g[2:]
+		leading = "[^.]*\\."
+	}
 	g = strings.Replace(g, ".", "\\.", -1)
 	g = strings.Replace(g, "*", ".*", -1)
-	g = "^" + g + "$"
+	g = "^" + leading + g + trailing + "$"
 	return regexp.Compile(g)
 }

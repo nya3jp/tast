@@ -50,6 +50,15 @@ Any additional positional arguments describe which tests should be executed:
     `ui.`. Multiple patterns can be supplied: passing `example.Pass` and
     `example.Fail` selects those two tests.
 
+    Patterns ending in ".*" match as above and additionally, against
+    the test ending without the trailing dot (it it exists). For example,
+    "ui.Login.*" matches both "ui.Login" and "ui.Login.Managed" but
+    does not match "ui.LoginLogout".
+
+    Starting a pattern with "*." will match only against the initial
+    package part. For example, "*.Login" will match against "ui.Login" and
+    "acessibility.Login" but will not match "keep.PWA.Login".
+
 It's invalid to mix attribute expressions and wildcard patterns. See the [Test
 Attributes] document for more information about attributes.
 

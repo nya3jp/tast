@@ -68,7 +68,9 @@ func TestTestsForGlob(t *gotesting.T) {
 		&TestCase{Name: "test.Foo", Func: func(context.Context, *State) {}},
 		&TestCase{Name: "test.Bar", Func: func(context.Context, *State) {}},
 		&TestCase{Name: "blah.Foo", Func: func(context.Context, *State) {}},
+		&TestCase{Name: "test.BarBaz", Func: func(context.Context, *State) {}},
 		&TestCase{Name: "test.Bar.Baz", Func: func(context.Context, *State) {}},
+		&TestCase{Name: "test.Bar.Foo", Func: func(context.Context, *State) {}},
 	}
 	for _, test := range allTests {
 		if err := reg.AddTestCase(test); err != nil {
@@ -80,14 +82,15 @@ func TestTestsForGlob(t *gotesting.T) {
 		glob     string
 		expected []*TestCase
 	}{
-		{"test.Bar.Baz", []*TestCase{allTests[3]}},
+		{"test.Bar.Baz", []*TestCase{allTests[4]}},
 		{"test.Foo", []*TestCase{allTests[0]}},
 		{"test.Bar", []*TestCase{allTests[1]}},
-		{"test.Bar*", []*TestCase{allTests[1], allTests[3]}},
-		{"test.*", []*TestCase{allTests[0], allTests[1], allTests[3]}},
+		{"test.Bar*", []*TestCase{allTests[1], allTests[3], allTests[4], allTests[5]}},
+		{"test.Bar.*", []*TestCase{allTests[1], allTests[4], allTests[5]}},
+		{"test.*", []*TestCase{allTests[0], allTests[1], allTests[3], allTests[4], allTests[5]}},
 		{"*.Foo", []*TestCase{allTests[0], allTests[2]}},
-		{"*.*", []*TestCase{allTests[0], allTests[1], allTests[2], allTests[3]}},
-		{"*", []*TestCase{allTests[0], allTests[1], allTests[2], allTests[3]}},
+		{"*.*", []*TestCase{allTests[0], allTests[1], allTests[2], allTests[3], allTests[4], allTests[5]}},
+		{"*", []*TestCase{allTests[0], allTests[1], allTests[2], allTests[3], allTests[4], allTests[5]}},
 		{"", []*TestCase{}},
 		{"bogus", []*TestCase{}},
 		// Test that periods are escaped.

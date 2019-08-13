@@ -22,6 +22,30 @@
       "revId": "4b866e0ac73c00ab43da5baf5e7fb88f46a209ec",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "486f9548_5f883c11",
+        "filename": "docs/running_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-13T06:43:34Z",
+      "side": 1,
+      "message": "\"flag\" go standard library requires to put commandline flags before positional arguments.\nsubcommand requires to follow the global flags, followed by the subcommands\u0027 flags.\nSo, could you give it a try;\n\ntast run -buildbundle\u003dcrosint ${DUTIP} ${TEST_GLOB}\n\n?\n\n\u003e Can you add a line or two about where tast private tasts live, and a proper example of how to run them\n\nSGTM",
+      "parentUuid": "36d96a38_8536ad1e",
+      "range": {
+        "startLine": 14,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 0
+      },
+      "revId": "4b866e0ac73c00ab43da5baf5e7fb88f46a209ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

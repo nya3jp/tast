@@ -70,6 +70,30 @@
       "revId": "570991f3539f651fb8eb05322fb64504e99c5093",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e648e8c4_8efe68f8",
+        "filename": "src/chromiumos/cmd/tast/run_cmd_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-08-13T02:32:14Z",
+      "side": 1,
+      "message": "Oops. Sorry I didn\u0027t notice to this be a test file.\nlgtm",
+      "parentUuid": "68889ea8_587777c9",
+      "range": {
+        "startLine": 34,
+        "startChar": 0,
+        "endLine": 34,
+        "endChar": 95
+      },
+      "revId": "570991f3539f651fb8eb05322fb64504e99c5093",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

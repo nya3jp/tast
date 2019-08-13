@@ -113,7 +113,7 @@ func main() {
 			"vm_host":    "kvm_host && !tast_vm && !kvm_transition",
 			"vp9_sanity": "!rk3399", // RK3399 crashes on playing unsupported VP9 profile: https://crbug.com/971032
 			"vulkan":     "vulkan",
-			"wifi":       "!betty && !tast_vm",
+			"wifi":       "!betty && !tast_vm && !nyan_kitty",
 			"wilco":      "wilco",
 		},
 		// The autotest-capability package tries to install this to /etc but it's diverted to /usr/local.

@@ -46,6 +46,30 @@
       "revId": "75160d4e9479d8771fa01c8ef2223563e47c5fc5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3ac16fc2_5d84db41",
+        "filename": "docs/running_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1158909
+      },
+      "writtenOn": "2019-08-13T18:31:57Z",
+      "side": 1,
+      "message": "Doesn\u0027t help, though gets me to a more sane issue. \n\n(cr) (hrp2-entry) kirtika@kirtika2 ~/trunk/src/third_party/autotest/files $ tast run hatch \u0027!flaky\u0027\n2019/08/12 15:43:25 Command line: tast run hatch !flaky\n2019/08/12 15:43:25 Writing results to /tmp/tast/results/20190812-154325\n2019/08/12 15:43:25 Connecting to hatch\n2019/08/12 15:43:25 Building cros, local_test_runner, cros\n2019/08/12 15:43:26 Built in 893ms\n2019/08/12 15:43:26 Pushing executables to target\n2019/08/12 15:43:28 Pushed executables in 1.68s (sent 8.8 MB)\n2019/08/12 15:43:28 Failed to build and push: failed to get data file list: Process exited with status 5: exit status 4 (failed getting tests for [!flaky]: bad glob \"!flaky\": invalid character 33)",
+      "parentUuid": "aed0cf96_89ca4b1d",
+      "range": {
+        "startLine": 42,
+        "startChar": 1,
+        "endLine": 44,
+        "endChar": 47
+      },
+      "revId": "75160d4e9479d8771fa01c8ef2223563e47c5fc5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

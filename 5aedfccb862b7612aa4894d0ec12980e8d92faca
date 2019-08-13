@@ -262,6 +262,30 @@
     },
     {
       "key": {
+        "uuid": "79ef44f9_c929e6d7",
+        "filename": "src/chromiumos/cmd/tast/list_cmd_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-13T02:18:34Z",
+      "side": 1,
+      "message": "No, I don\u0027t think we need to change -build\u003dfalse change because there\u0027s no reason to specifically test -build\u003dtrue case.",
+      "parentUuid": "c20b106a_ac06657a",
+      "range": {
+        "startLine": 31,
+        "startChar": 0,
+        "endLine": 32,
+        "endChar": 30
+      },
+      "revId": "5aedfccb862b7612aa4894d0ec12980e8d92faca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7efb430d_a41b4b8f",
         "filename": "src/chromiumos/cmd/tast/run_cmd_test.go",
         "patchSetId": 1

@@ -1,0 +1,297 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "628340c4_9ca2874b",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1337146
+      },
+      "writtenOn": "2019-08-14T03:53:14Z",
+      "side": 1,
+      "message": "s/these/the following/",
+      "range": {
+        "startLine": 5,
+        "startChar": 44,
+        "endLine": 5,
+        "endChar": 49
+      },
+      "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "89c2e566_5100d323",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1337146
+      },
+      "writtenOn": "2019-08-14T03:53:14Z",
+      "side": 1,
+      "message": "The code review is assigned to one or more [Tast reviewers] using the gwsq bot. \n \nmaybe add a link to gwsq.",
+      "range": {
+        "startLine": 12,
+        "startChar": 31,
+        "endLine": 12,
+        "endChar": 80
+      },
+      "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e8ebc2df_6cc7a6f3",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1337146
+      },
+      "writtenOn": "2019-08-14T03:53:14Z",
+      "side": 1,
+      "message": "s/via/the change via/",
+      "range": {
+        "startLine": 15,
+        "startChar": 11,
+        "endLine": 15,
+        "endChar": 14
+      },
+      "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "56838677_5b8edcf8",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1337146
+      },
+      "writtenOn": "2019-08-14T03:53:14Z",
+      "side": 1,
+      "message": "this is chromeos CQ, right?",
+      "range": {
+        "startLine": 28,
+        "startChar": 39,
+        "endLine": 28,
+        "endChar": 41
+      },
+      "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a404e993_292dcd58",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1337146
+      },
+      "writtenOn": "2019-08-14T03:53:14Z",
+      "side": 1,
+      "message": "s/trying to stabilize/stabilizing/",
+      "range": {
+        "startLine": 30,
+        "startChar": 49,
+        "endLine": 30,
+        "endChar": 68
+      },
+      "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d8c0f5ee_210f7936",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1337146
+      },
+      "writtenOn": "2019-08-14T03:53:14Z",
+      "side": 1,
+      "message": "s/are recommended to/should/",
+      "range": {
+        "startLine": 30,
+        "startChar": 17,
+        "endLine": 30,
+        "endChar": 35
+      },
+      "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cb7c0ddf_2d040c72",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1337146
+      },
+      "writtenOn": "2019-08-14T03:53:14Z",
+      "side": 1,
+      "message": "s/you/them/\n\nyou use test authors above.",
+      "range": {
+        "startLine": 31,
+        "startChar": 50,
+        "endLine": 31,
+        "endChar": 53
+      },
+      "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "83da3da4_c9e46d17",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1337146
+      },
+      "writtenOn": "2019-08-14T03:53:14Z",
+      "side": 1,
+      "message": "s/and make it easier/, making it easier/",
+      "range": {
+        "startLine": 32,
+        "startChar": 11,
+        "endLine": 32,
+        "endChar": 30
+      },
+      "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1283ae17_e3269a0b",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1337146
+      },
+      "writtenOn": "2019-08-14T03:53:14Z",
+      "side": 1,
+      "message": "Tast repositories are configured to run many linters ([gofmt], [goimports],\n[go vet], [golint] and [tast-lint]) as repo upload hooks to find obvious mistakes and style guide violations before time-consuming manual code reviews.",
+      "range": {
+        "startLine": 65,
+        "startChar": 0,
+        "endLine": 68,
+        "endChar": 41
+      },
+      "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4ca658cb_53847a79",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1337146
+      },
+      "writtenOn": "2019-08-14T03:53:14Z",
+      "side": 1,
+      "message": "d\ndoes not provide any information.",
+      "range": {
+        "startLine": 112,
+        "startChar": 0,
+        "endLine": 112,
+        "endChar": 66
+      },
+      "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c0005e26_99dd5426",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 1337146
+      },
+      "writtenOn": "2019-08-14T03:53:14Z",
+      "side": 1,
+      "message": "is it recommended or required? line 9 above?",
+      "range": {
+        "startLine": 119,
+        "startChar": 6,
+        "endLine": 119,
+        "endChar": 17
+      },
+      "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "db93d095_a1dacc66",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1337146
+      },
+      "writtenOn": "2019-08-14T03:53:14Z",
+      "side": 1,
+      "message": "d",
+      "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0d596695_66fd8295",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1337146
+      },
+      "writtenOn": "2019-08-14T03:53:14Z",
+      "side": 1,
+      "message": "Tast reviews are designed to maintain the quality of the test code. The reviews are done by Tast reviewers.\n\nTast reviewers are engineers from various teams in Chrome OS who have experience with writing and reviewing Tast tests. Their review insures that test are written using learned best practices for test execution speed, stability and maintainability.",
+      "range": {
+        "startLine": 124,
+        "startChar": 0,
+        "endLine": 130,
+        "endChar": 57
+      },
+      "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

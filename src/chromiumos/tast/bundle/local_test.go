@@ -8,7 +8,6 @@ import (
 	"bytes"
 	"context"
 	"os"
-	"path/filepath"
 	"strings"
 	gotesting "testing"
 
@@ -54,28 +53,6 @@ func TestLocalRunTest(t *gotesting.T) {
 	}
 	if len(stderr.String()) != 0 {
 		t.Errorf("Local(%+v) unexpectedly wrote %q to stderr", args, stderr.String())
-	}
-}
-
-func TestLocalFaillog(t *gotesting.T) {
-	const name = "pkg.Test"
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
-	defer restore()
-	testing.AddTestCase(&testing.TestCase{Name: name, Func: func(ctx context.Context, s *testing.State) { s.Error("fail") }})
-
-	outDir := testutil.TempDir(t)
-	defer os.RemoveAll(outDir)
-	args := Args{Mode: RunTestsMode, RunTests: &RunTestsArgs{OutDir: outDir}}
-	stdin := newBufferWithArgs(t, &args)
-	stderr := bytes.Buffer{}
-	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, LocalDelegate{}); status != statusSuccess {
-		t.Errorf("Local(%+v) = %v; want %v", args, status, statusSuccess)
-	}
-
-	// ps.txt is saved by faillog.
-	p := filepath.Join(outDir, name, "faillog", "ps.txt")
-	if _, err := os.Stat(p); err != nil {
-		t.Errorf("Local(%+v) didn't save faillog: %v", args, err)
 	}
 }
 

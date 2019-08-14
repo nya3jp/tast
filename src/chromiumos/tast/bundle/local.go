@@ -9,7 +9,6 @@ import (
 	"io"
 	"time"
 
-	"chromiumos/tast/faillog"
 	"chromiumos/tast/testing"
 )
 
@@ -40,19 +39,15 @@ type LocalDelegate struct {
 func Local(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, delegate LocalDelegate) int {
 	args := Args{RunTests: &RunTestsArgs{DataDir: localTestDataDir}}
 	cfg := runConfig{
-		postTestFunc: func(ctx context.Context, s *testing.State) {
+		defaultTestTimeout: localTestTimeout,
+	}
+	if delegate.Faillog != nil {
+		cfg.postTestFunc = func(ctx context.Context, s *testing.State) {
 			if !s.HasError() {
 				return
 			}
-			if delegate.Faillog != nil {
-				delegate.Faillog(ctx, s)
-			} else {
-				// TODO(crbug.com/984390): Remove this after faillog migration to
-				// tast-tests repository.
-				faillog.Save(ctx, s)
-			}
-		},
-		defaultTestTimeout: localTestTimeout,
+			delegate.Faillog(ctx, s)
+		}
 	}
 	if delegate.Ready != nil {
 		cfg.preRunFunc = func(ctx context.Context, lf logFunc) (context.Context, error) {

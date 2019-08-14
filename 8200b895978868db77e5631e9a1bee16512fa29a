@@ -25,6 +25,40 @@
     },
     {
       "key": {
+        "uuid": "a88726f2_ca6d4d67",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-14T10:57:31Z",
+      "side": 1,
+      "message": "I think it\u0027s better to briefly mention about the goal of Team review and Tast review.\nIt\u0027s not necessary to be long, because its details are in FAQ section, but I still think it\u0027s nice to have a quick explanation here.",
+      "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a5116259_88ec70a5",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-14T10:57:31Z",
+      "side": 1,
+      "message": "Per offline chat, could you relax that 2. and 3. can be in parallel?",
+      "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "89c2e566_5100d323",
         "filename": "docs/code_reviews.md",
         "patchSetId": 2
@@ -65,6 +99,23 @@
         "endLine": 15,
         "endChar": 14
       },
+      "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "711cca52_d93ea92f",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-14T10:57:31Z",
+      "side": 1,
+      "message": "Optional: it\u0027s nice to encourage to run \"tast/fast_build.sh -T\", because it could capture some mistakes (including govet stuff) earlier.\n\nAlso, it\u0027s nice to encourage CQ+1 (run pre-CQ). It helps both of us to find a mistake in earlier  stage.",
       "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e96c66b3_0c9257da",
+        "filename": "src/chromiumos/tast/crash/crash.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1300299
+      },
+      "writtenOn": "2019-08-15T20:14:25Z",
+      "side": 1,
+      "message": "It feels a little weird to have this in crash; there\u0027s no reason it couldn\u0027t be used to check for new downloaded files or such that has nothing to do with crashes.\n\nMaybe fsutil or diff would be better?",
+      "revId": "0f6f9b95182e076eb1acce5170a4efa1f4a742c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

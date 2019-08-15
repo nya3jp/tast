@@ -4,7 +4,10 @@
 
 package diff
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 func TestDiff(t *testing.T) {
 	for _, data := range []struct{ in1, in2, expect string }{
@@ -19,5 +22,16 @@ func TestDiff(t *testing.T) {
 		} else if d != data.expect {
 			t.Errorf("Diff(%q, %q) produced %q; want %q", data.in1, data.in2, d, data.expect)
 		}
+	}
+}
+
+func TestGetNew(t *testing.T) {
+	before := []string{"a.0.dmp", "a.1.dmp", "a.2.dmp"}
+	after := []string{"a.0.dmp", "a.1.dmp", "b.0.dmp", "c.0.dmp"}
+
+	justNew := GetNew(before, after)
+	expected := []string{"b.0.dmp", "c.0.dmp"}
+	if !reflect.DeepEqual(justNew, expected) {
+		t.Errorf("Unexpected files: got %v, want %v", justNew, expected)
 	}
 }

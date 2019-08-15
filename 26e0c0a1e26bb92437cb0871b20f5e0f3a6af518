@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c3b515c2_e4ccbae9",
+        "filename": "src/chromiumos/tast/diff/diff.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1302247
+      },
+      "writtenOn": "2019-08-15T20:59:16Z",
+      "side": 1,
+      "message": "This might be a little cleaner as \u0027map[string]bool\u0027 instead...then a few lines below it\u0027ll be:\n\nom[p] \u003d true",
+      "range": {
+        "startLine": 70,
+        "startChar": 11,
+        "endLine": 70,
+        "endChar": 31
+      },
+      "revId": "26e0c0a1e26bb92437cb0871b20f5e0f3a6af518",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

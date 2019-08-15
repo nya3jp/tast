@@ -64,3 +64,18 @@ func Diff(orig, expect string) (string, error) {
 	}
 	return string(parts[2]), nil
 }
+
+// GetNew returns all strings present in cur but not in orig.
+func GetNew(orig, cur []string) (added []string) {
+	om := make(map[string]struct{}, len(orig))
+	for _, p := range orig {
+		om[p] = struct{}{}
+	}
+
+	for _, p := range cur {
+		if _, ok := om[p]; !ok {
+			added = append(added, p)
+		}
+	}
+	return added
+}

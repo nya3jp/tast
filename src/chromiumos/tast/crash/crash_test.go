@@ -56,6 +56,35 @@ func TestGetCrashes(t *testing.T) {
 	}
 }
 
+func TestGetNewCrashes(t *testing.T) {
+	td := testutil.TempDir(t)
+	defer os.RemoveAll(td)
+
+	_ = writeCrashFile(t, td, "a.0.dmp", "a0")
+	_ = writeCrashFile(t, td, "a.1.dmp", "a1")
+	_ = writeCrashFile(t, td, "a.2.dmp", "a2")
+
+	dirs := []string{td}
+	files, err := GetCrashes(dirs...)
+	if err != nil {
+		t.Fatalf("GetCrashes(%v) failed: %v", dirs, err)
+	}
+
+	_ = writeCrashFile(t, td, "b.0.dmp", "b0")
+	_ = writeCrashFile(t, td, "c.0.dmp", "c0")
+
+	newFiles, err := GetCrashes(dirs...)
+	if err != nil {
+		t.Fatalf("GetCrashes(%v) failed: %v", dirs, err)
+	}
+
+	justNew := GetNewFiles(files, newFiles)
+	expected := []string{filepath.Join(td, "b.0.dmp"), filepath.Join(td, "c.0.dmp")}
+	if !reflect.DeepEqual(justNew, expected) {
+		t.Errorf("Unexpected files: got %v, want %v", justNew, expected)
+	}
+}
+
 func TestCopyNewFiles(t *testing.T) {
 	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)

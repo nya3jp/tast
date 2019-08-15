@@ -63,6 +63,21 @@ func isCrashFile(filename string) bool {
 	return false
 }
 
+// GetNewFiles returns all paths present in cur but not in orig.
+func GetNewFiles(orig, cur []string) (added []string) {
+	om := make(map[string]struct{}, len(orig))
+	for _, p := range orig {
+		om[p] = struct{}{}
+	}
+
+	for _, p := range cur {
+		if _, ok := om[p]; !ok {
+			added = append(added, p)
+		}
+	}
+	return added
+}
+
 // GetCrashes returns the paths of all files in dirs generated in response to crashes.
 // Nonexistent directories are skipped.
 func GetCrashes(dirs ...string) ([]string, error) {

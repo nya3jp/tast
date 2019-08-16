@@ -5,9 +5,11 @@
 package run
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net"
 	"os"
 	"path/filepath"
@@ -20,7 +22,6 @@ import (
 	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/host"
 	"chromiumos/tast/runner"
-	"chromiumos/tast/shutil"
 	"chromiumos/tast/timing"
 )
 
@@ -171,13 +172,24 @@ func runLocalTests(ctx context.Context, cfg *Config, hst *host.SSH) ([]TestResul
 	return allResults, nil
 }
 
+type localRunnerHandle struct {
+	cmd            *host.Cmd
+	stdout, stderr io.Reader
+}
+
+// Close kills and waits the remote process.
+func (h *localRunnerHandle) Close(ctx context.Context) error {
+	h.cmd.Abort()
+	return h.cmd.Wait(ctx)
+}
+
 // startLocalRunner asynchronously starts local_test_runner on hst and passes args to it.
 // args.FillDeprecated() is called first to backfill any deprecated fields for old runners.
 // The caller is responsible for reading the handle's stdout and closing the handle.
-func startLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, args *runner.Args) (*host.SSHCommandHandle, error) {
+func startLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, args *runner.Args) (*localRunnerHandle, error) {
 	// Set proxy-related environment variables for local_test_runner so it will use them
 	// when accessing network.
-	envPrefix := ""
+	execArgs := []string{"env"}
 	if cfg.proxy == proxyEnv {
 		// Proxy-related variables can be either uppercase or lowercase.
 		// See https://golang.org/pkg/net/http/#ProxyFromEnvironment.
@@ -186,27 +198,34 @@ func startLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, args *run
 			"http_proxy", "https_proxy", "no_proxy",
 		} {
 			if val := os.Getenv(name); val != "" {
-				envPrefix += fmt.Sprintf("%s=%s ", name, shutil.Escape(val))
+				execArgs = append(execArgs, fmt.Sprintf("%s=%s", name, val))
 			}
 		}
 	}
+	execArgs = append(execArgs, cfg.localRunner)
 
 	args.FillDeprecated()
 
-	handle, err := hst.Start(ctx, envPrefix+cfg.localRunner, host.OpenStdin, host.StdoutAndStderr)
+	argsData, err := json.Marshal(args)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("marshal args: %v", err)
 	}
 
-	if err = json.NewEncoder(handle.Stdin()).Encode(&args); err != nil {
-		handle.Close(ctx)
-		return nil, fmt.Errorf("write args: %v", err)
+	cmd := hst.Command(execArgs[0], execArgs[1:]...)
+	cmd.Stdin = bytes.NewBuffer(argsData)
+	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		return nil, fmt.Errorf("failed to open stdout pipe: %v", err)
 	}
-	if err = handle.Stdin().Close(); err != nil {
-		handle.Close(ctx)
-		return nil, fmt.Errorf("close stdin: %v", err)
+	stderr, err := cmd.StderrPipe()
+	if err != nil {
+		return nil, fmt.Errorf("failed to open stderr pipe: %v", err)
 	}
-	return handle, nil
+
+	if err := cmd.Start(ctx); err != nil {
+		return nil, fmt.Errorf("failed to start local_test_runner: %v", err)
+	}
+	return &localRunnerHandle{cmd, stdout, stderr}, nil
 }
 
 // runLocalRunner synchronously runs local_test_runner to completion on hst.
@@ -266,16 +285,16 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, patterns []
 	defer handle.Close(ctx)
 
 	// Read stderr in the background so it can be included in error messages.
-	stderrReader := newFirstLineReader(handle.Stderr())
+	stderrReader := newFirstLineReader(handle.stderr)
 
 	var rerr error
 	switch cfg.mode {
 	case ListTestsMode:
-		results, rerr = readTestList(handle.Stdout())
+		results, rerr = readTestList(handle.stdout)
 	case RunTestsMode:
 		crf := func(src, dst string) error { return moveFromHost(ctx, cfg, hst, src, dst) }
 		df := func(ctx context.Context) string { return diagnoseLocalRunError(ctx, cfg) }
-		results, unstarted, rerr = readTestOutput(ctx, cfg, handle.Stdout(), crf, df)
+		results, unstarted, rerr = readTestOutput(ctx, cfg, handle.stdout, crf, df)
 	}
 
 	// Check that the runner exits successfully first so that we don't give a useless error
@@ -286,18 +305,18 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, patterns []
 	}
 	wctx, wcancel := context.WithTimeout(ctx, timeout)
 	defer wcancel()
-	if err := handle.Wait(wctx); err != nil {
+	if err := handle.cmd.Wait(wctx); err != nil {
 		return results, unstarted, stderrReader.appendToError(err, stderrTimeout)
 	}
 	return results, unstarted, rerr
 }
 
 // readLocalRunnerOutput unmarshals a single JSON value from handle.Stdout into out.
-func readLocalRunnerOutput(ctx context.Context, handle *host.SSHCommandHandle, out interface{}) error {
+func readLocalRunnerOutput(ctx context.Context, handle *localRunnerHandle, out interface{}) error {
 	// Handle errors returned by Wait() first, as they'll be more useful than generic JSON decode errors.
-	stderrReader := newFirstLineReader(handle.Stderr())
-	jerr := json.NewDecoder(handle.Stdout()).Decode(out)
-	if err := handle.Wait(ctx); err != nil {
+	stderrReader := newFirstLineReader(handle.stderr)
+	jerr := json.NewDecoder(handle.stdout).Decode(out)
+	if err := handle.cmd.Wait(ctx); err != nil {
 		return stderrReader.appendToError(err, stderrTimeout)
 	}
 	return jerr

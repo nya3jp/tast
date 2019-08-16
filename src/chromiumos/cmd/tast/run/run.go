@@ -157,7 +157,7 @@ func prepare(ctx context.Context, cfg *Config, hst *host.SSH) error {
 	// even if the DUT crashes later. This is important especially when we push local_test_runner
 	// because it can appear as zero-byte binary after a crash and subsequent sysinfo phase fails.
 	if written {
-		if _, err := hst.Run(ctx, "sync"); err != nil {
+		if err := hst.Command("sync").Run(ctx); err != nil {
 			return fmt.Errorf("failed to sync disk writes: %v", err)
 		}
 	}
@@ -235,7 +235,7 @@ func getTargetArch(ctx context.Context, cfg *Config, hst *host.SSH) error {
 	cfg.Logger.Debug("Getting architecture from target")
 
 	// Get the userland architecture by inspecting an arbitrary binary on the target.
-	out, err := hst.Run(ctx, "file -b -L /sbin/init")
+	out, err := hst.Command("file", "-b", "-L", "/sbin/init").Output(ctx)
 	if err != nil {
 		return err
 	}

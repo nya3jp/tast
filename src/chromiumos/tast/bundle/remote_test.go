@@ -69,7 +69,7 @@ func TestRemoteDUT(t *gotesting.T) {
 		output = "fake output"
 	)
 	td := test.NewTestData(userKey, hostKey, func(req *test.ExecReq) {
-		if req.Cmd != "exec /bin/sh -c "+cmd {
+		if req.Cmd != "exec "+cmd {
 			log.Printf("Unexpected command %q", req.Cmd)
 			req.Start(false)
 		} else {
@@ -89,7 +89,7 @@ func TestRemoteDUT(t *gotesting.T) {
 		if !ok {
 			s.Fatal("Failed to get DUT from context")
 		}
-		out, err := dt.Run(ctx, cmd)
+		out, err := dt.Command(cmd).Output(ctx)
 		if err != nil {
 			s.Fatalf("Got error when running %q: %v", cmd, err)
 		}

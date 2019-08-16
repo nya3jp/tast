@@ -21,40 +21,12 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"sync"
+	"syscall"
 	"time"
 
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/agent"
 	"golang.org/x/crypto/ssh/terminal"
-
-	"chromiumos/tast/shutil"
-)
-
-// InputMode describes how stdin should be handled when running a remote command.
-// Commands may block if stdin is never closed.
-type InputMode int
-
-const (
-	// OpenStdin indicates that stdin should be copied to the remote command.
-	OpenStdin InputMode = iota
-	// CloseStdin indicates that stdin should be closed.
-	CloseStdin
-)
-
-// OutputMode describes how stdout and stderr should be handled when running a remote command.
-// Commands may block if output is not consumed.
-type OutputMode int
-
-const (
-	// StdoutAndStderr indicates that stdout and stderr should both be returned separately.
-	StdoutAndStderr OutputMode = iota
-	// StdoutOnly indicates that only stdout should be returned (i.e. stderr should be closed).
-	StdoutOnly
-	// StderrOnly indicates that only stderr should be returned (i.e. stdout should be closed).
-	StderrOnly
-	// NoOutput indicates that both stdout and stderr should be closed.
-	NoOutput
 )
 
 const (
@@ -314,38 +286,23 @@ func (s *SSH) GetFile(ctx context.Context, src, dst string) error {
 	defer os.RemoveAll(td)
 
 	sb := filepath.Base(src)
-	rc := fmt.Sprintf("tar -c --gzip -C %s %s", shutil.Escape(filepath.Dir(src)), shutil.Escape(sb))
-	handle, err := s.Start(ctx, rc, CloseStdin, StdoutOnly)
+	rcmd := s.Command("tar", "-c", "--gzip", "-C", filepath.Dir(src), sb)
+	p, err := rcmd.StdoutPipe()
 	if err != nil {
+		return fmt.Errorf("failed to get stdout pipe: %v", err)
+	}
+	if err := rcmd.Start(ctx); err != nil {
 		return fmt.Errorf("running remote tar failed: %v", err)
 	}
-	defer handle.Close(ctx)
+	defer rcmd.Wait(ctx)
+	defer rcmd.Abort()
 
-	cmd := exec.Command("/bin/tar", "-x", "--gzip", "--no-same-owner", "-C", td)
-	stdin, err := cmd.StdinPipe()
-	if err != nil {
-		return fmt.Errorf("getting stdin for local tar failed: %v", err)
-	}
-	if err := cmd.Start(); err != nil {
+	cmd := exec.CommandContext(ctx, "/bin/tar", "-x", "--gzip", "--no-same-owner", "-C", td)
+	cmd.Stdin = p
+	if err := cmd.Run(); err != nil {
 		return fmt.Errorf("running local tar failed: %v", err)
 	}
 
-	if err := doAsync(ctx, func() error {
-		_, err := io.Copy(stdin, handle.Stdout())
-		return err
-	}, nil); err != nil {
-		return fmt.Errorf("copying from remote to local tar failed: %v", err)
-	}
-	if err := handle.Wait(ctx); err != nil {
-		return fmt.Errorf("remote tar failed: %v", err)
-	}
-
-	if err := stdin.Close(); err != nil {
-		return fmt.Errorf("closing local tar failed: %v", err)
-	}
-	if err := cmd.Wait(); err != nil {
-		return fmt.Errorf("local tar failed: %v", err)
-	}
 	if err := os.Rename(filepath.Join(td, sb), dst); err != nil {
 		return fmt.Errorf("moving local file failed: %v", err)
 	}
@@ -361,6 +318,18 @@ const (
 	// DereferenceSymlinks indicates that symlinks should be dereferenced and turned into normal files.
 	DereferenceSymlinks
 )
+
+// countingReader is an io.Reader wrapper that counts the transferred bytes.
+type countingReader struct {
+	r     io.Reader
+	bytes int64
+}
+
+func (r *countingReader) Read(p []byte) (int, error) {
+	c, err := r.r.Read(p)
+	r.bytes += int64(c)
+	return c, err
+}
 
 // PutFiles copies files on the local machine to the host. files describes
 // a mapping from a local file path to a remote file path. For example, the call:
@@ -398,13 +367,6 @@ func (s *SSH) PutFiles(ctx context.Context, files map[string]string,
 		return 0, nil
 	}
 
-	const rc = "tar -x --gzip --no-same-owner --recursive-unlink -C / 2>&1"
-	handle, err := s.Start(ctx, rc, OpenStdin, StdoutOnly)
-	if err != nil {
-		return 0, fmt.Errorf("running remote command %q failed: %v", rc, err)
-	}
-	defer handle.Close(ctx)
-
 	args := []string{"-c", "--gzip", "-C", "/"}
 	if symlinkPolicy == DereferenceSymlinks {
 		args = append(args, "--dereference")
@@ -415,33 +377,24 @@ func (s *SSH) PutFiles(ctx context.Context, files map[string]string,
 	for l := range cf {
 		args = append(args, strings.TrimPrefix(l, "/"))
 	}
-	cmd := exec.Command("/bin/tar", args...)
-	stdout, err := cmd.StdoutPipe()
+	cmd := exec.CommandContext(ctx, "/bin/tar", args...)
+	p, err := cmd.StdoutPipe()
 	if err != nil {
-		return 0, fmt.Errorf("getting stdout for local tar failed: %v", err)
+		return 0, fmt.Errorf("failed to open stdout pipe: %v", err)
 	}
 	if err := cmd.Start(); err != nil {
 		return 0, fmt.Errorf("running local tar failed: %v", err)
 	}
+	defer cmd.Wait()
+	defer syscall.Kill(cmd.Process.Pid, syscall.SIGKILL)
 
-	if err := doAsync(ctx, func() error {
-		var err error
-		bytes, err = io.Copy(handle.Stdin(), stdout)
-		if err == nil {
-			err = handle.Stdin().Close()
-		}
-		return err
-	}, nil); err != nil {
-		return 0, fmt.Errorf("copying from local to remote tar failed: %v", err)
-	}
-
-	if err := cmd.Wait(); err != nil {
-		return 0, fmt.Errorf("local tar failed: %v", err)
-	}
-	if err := handle.Wait(ctx); err != nil {
+	rcmd := s.Command("tar", "-x", "--gzip", "--no-same-owner", "--recursive-unlink", "-C", "/")
+	cr := &countingReader{r: p}
+	rcmd.Stdin = cr
+	if err := rcmd.Run(ctx); err != nil {
 		return 0, fmt.Errorf("remote tar failed: %v", err)
 	}
-	return bytes, nil
+	return cr.bytes, nil
 }
 
 // tarTransformFlag returns a GNU tar --transform flag for renaming path s to d when
@@ -514,16 +467,12 @@ func (s *SSH) findChangedFiles(ctx context.Context, files map[string]string) (ma
 // getRemoteSHA1s returns SHA1s for the files paths on s.
 // Missing files are excluded from the returned map.
 func (s *SSH) getRemoteSHA1s(ctx context.Context, paths []string) (map[string]string, error) {
-	cmd := "sha1sum"
-	for _, p := range paths {
-		cmd += " " + shutil.Escape(p)
-	}
-	// TODO(derat): Find a classier way to ignore missing files.
-	cmd += " 2>/dev/null || true"
-
-	out, err := s.Run(ctx, cmd)
+	out, err := s.Command("sha1sum", paths...).Output(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to hash files: %v", err)
+		// TODO(derat): Find a classier way to ignore missing files.
+		if _, ok := err.(*ssh.ExitError); !ok {
+			return nil, fmt.Errorf("failed to hash files: %v", err)
+		}
 	}
 
 	sums := make(map[string]string, len(paths))
@@ -574,19 +523,19 @@ func getLocalSHA1s(paths []string) (map[string]string, error) {
 // If a specified file is a directory, all files under it are recursively deleted.
 // Non-existent files are ignored.
 func (s *SSH) DeleteTree(ctx context.Context, baseDir string, files []string) error {
-	qd := shutil.Escape(baseDir)
-	var qfs []string
+	var cfs []string
 	for _, f := range files {
-		f, err := cleanRelativePath(f)
+		cf, err := cleanRelativePath(f)
 		if err != nil {
 			return err
 		}
-		qfs = append(qfs, shutil.Escape(f))
+		cfs = append(cfs, cf)
 	}
 
-	rc := fmt.Sprintf("cd %s && rm -rf -- %s", qd, strings.Join(qfs, " "))
-	if _, err := s.Run(ctx, rc); err != nil {
-		return fmt.Errorf("running remote command %q failed: %v", rc, err)
+	cmd := s.Command("rm", append([]string{"-rf", "--"}, cfs...)...)
+	cmd.Dir = baseDir
+	if err := cmd.Run(ctx); err != nil {
+		return fmt.Errorf("running remote rm failed: %v", err)
 	}
 	return nil
 }
@@ -602,49 +551,6 @@ func cleanRelativePath(p string) (string, error) {
 		return "", fmt.Errorf("%s escapes the base directory", p)
 	}
 	return cp, nil
-}
-
-// Run runs cmd synchronously on the host and returns its output. stdout and stderr are combined.
-// cmd is interpreted by the user's shell; arguments may be quoted using shutil.Escape.
-// If the command is interrupted or exits with a nonzero status code, the returned error will
-// be of type *ssh.ExitError.
-func (s *SSH) Run(ctx context.Context, cmd string) ([]byte, error) {
-	return s.Command("/bin/sh", "-c", cmd).CombinedOutput(ctx)
-}
-
-// Start runs cmd asynchronously on the host and returns a handle that can be used to write input,
-// read output, and wait for completion. cmd is interpreted by the user's shell; arguments may be
-// quoted using shutil.Escape.
-func (s *SSH) Start(ctx context.Context, cmd string, input InputMode, output OutputMode) (*SSHCommandHandle, error) {
-	c := s.Command("/bin/sh", "-c", cmd)
-
-	h := &SSHCommandHandle{cmd: c}
-
-	if output == StdoutAndStderr || output == StdoutOnly {
-		var err error
-		h.stdout, err = c.StdoutPipe()
-		if err != nil {
-			return nil, err
-		}
-	}
-	if output == StdoutAndStderr || output == StderrOnly {
-		var err error
-		h.stderr, err = c.StderrPipe()
-		if err != nil {
-			return nil, err
-		}
-	}
-	if input == OpenStdin {
-		var err error
-		h.stdin, err = c.StdinPipe()
-		if err != nil {
-			return nil, err
-		}
-	}
-	if err := c.Start(ctx); err != nil {
-		return nil, err
-	}
-	return h, nil
 }
 
 // Ping checks that the connection to the host is still active, blocking until a
@@ -679,42 +585,4 @@ func (s *SSH) ListenTCP(addr *net.TCPAddr) (net.Listener, error) {
 func (s *SSH) NewForwarder(localAddr, remoteAddr string, errFunc func(error)) (*Forwarder, error) {
 	connFunc := func() (net.Conn, error) { return s.cl.Dial("tcp", remoteAddr) }
 	return newForwarder(localAddr, connFunc, errFunc)
-}
-
-// SSHCommandHandle represents an in-progress remote command.
-type SSHCommandHandle struct {
-	cmd            *Cmd
-	stderr, stdout io.Reader
-	stdin          io.WriteCloser
-	waitOnce       sync.Once
-	waitErr        error
-}
-
-// Close closes the session in which the command is running.
-// It returns an error if ctx's deadline is reached before the session has been closed.
-func (h *SSHCommandHandle) Close(ctx context.Context) error {
-	return h.Wait(ctx)
-}
-
-// Stderr returns a pipe connected to the command's stderr or nil if the OutputMode didn't include stderr.
-func (h *SSHCommandHandle) Stderr() io.Reader {
-	return h.stderr
-}
-
-// Stdin returns a pipe connected to the command's stdin or nil if the InputMode was not OpenStdin.
-func (h *SSHCommandHandle) Stdin() io.WriteCloser {
-	return h.stdin
-}
-
-// Stdout returns a pipe connected to the command's stdout or nil if the OutputMode didn't include stdin.
-func (h *SSHCommandHandle) Stdout() io.Reader {
-	return h.stdout
-}
-
-// Wait waits until the command finishes running or ctx's deadline is reached.
-func (h *SSHCommandHandle) Wait(ctx context.Context) error {
-	h.waitOnce.Do(func() {
-		h.waitErr = h.cmd.Wait(ctx)
-	})
-	return h.waitErr
 }

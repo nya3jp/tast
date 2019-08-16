@@ -6,11 +6,9 @@ package run
 
 import (
 	"context"
-	"fmt"
 	"path/filepath"
 
 	"chromiumos/tast/host"
-	"chromiumos/tast/shutil"
 )
 
 // pushToHost is a wrapper around hst.PutFiles that should be used instead of calling PutFiles directly.
@@ -43,7 +41,7 @@ func moveFromHost(ctx context.Context, cfg *Config, hst *host.SSH, src, dst stri
 		return err
 	}
 	cfg.Logger.Debugf("Cleaning %s on host", src)
-	if out, err := hst.Run(ctx, fmt.Sprintf("rm -rf -- %s", shutil.Escape(src))); err != nil {
+	if out, err := hst.Command("rm", "-rf", "--", src).Output(ctx); err != nil {
 		cfg.Logger.Logf("Failed cleaning %s: %v\n%s", src, err, out)
 	}
 	return nil

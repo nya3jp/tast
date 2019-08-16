@@ -99,11 +99,18 @@ func (d *DUT) Disconnect(ctx context.Context) error {
 }
 
 // Run runs cmd synchronously on the DUT and returns combined stdout and stderr.
+//
+// This method is deprecated and will be removed soon. Use Command instead.
 func (d *DUT) Run(ctx context.Context, cmd string) ([]byte, error) {
-	if d.hst == nil {
-		return nil, errors.New("not connected")
-	}
-	return d.hst.Run(ctx, cmd)
+	return d.Command("sh", "-c", cmd).CombinedOutput(ctx)
+}
+
+// Command returns the Cmd struct to execute the named program with the given arguments.
+//
+// See https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/host#Command
+func (d *DUT) Command(name string, args ...string) *host.Cmd {
+	// It is fine even if d.hst is nil; subsequent method calls will just fail.
+	return d.hst.Command(name, args...)
 }
 
 // WaitUnreachable waits for the DUT to become unreachable.

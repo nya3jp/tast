@@ -1,0 +1,27 @@
+// Copyright 2019 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package tast.core;
+option go_package = "chromiumos/tast/testing";
+
+import "device/config.proto";
+
+// DeviceDep contains device dependencies of a test.
+// Each field in this message describes a requirement. A device is considered
+// to be satisfying device dependencies if all requirements are satisfied.
+// In other words, requirements are joined by AND.
+message DeviceDep {
+  // See https://chromium.googlesource.com/chromiumos/infra/proto/+/master/src/device/config.proto
+  // for details of these fields.
+  string carrier = 1;
+  device.Config.FormFactor form_factor = 2;
+  string gpu_family = 3;
+  repeated device.Config.HardwareFeature hardware_features = 4;
+  device.Config.PowerSupply power = 5;
+  device.Config.Storage storage = 6;
+  repeated device.Config.VideoAcceleration video_acceleration_supports = 7;
+  device.Config.SOC soc = 8;
+}

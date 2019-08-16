@@ -1,0 +1,60 @@
+// Copyright 2019 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package tast.core;
+option go_package = "chromiumos/tast/testing";
+
+import "chromiumos/tast/testing/device_dep.proto";
+import "google/protobuf/duration.proto";
+
+// TestInfo contains information about a test.
+message TestInfo {
+  // name specifies the test's name as "category.TestName".
+  // The name is derived from Func's package and function name.
+  // The category is the final component of the package.
+  string name = 1;
+
+  // pkg contains the Go package in which the test function is located.
+  string pkg = 2;
+
+  // desc is a short one-line description of the test.
+  string desc = 3;
+
+  // contacts is a list of email addresses of persons and groups who are
+  // familiar with the test.
+  repeated string contacts = 4;
+
+  // attrs contains freeform text attributes describing the test.
+  // See https://chromium.googlesource.com/chromiumos/platform/tast/+/master/docs/test_attributes.md
+  // for commonly-used attributes.
+  repeated string attrs = 5;
+
+  // data contains paths of data files needed by the test, relative to a
+  // "data" subdirectory within the/ directory in which the test function is
+  // located.
+  repeated string data = 6;
+
+  // vars contains the names of runtime variables used to pass out-of-band
+  // data to tests. Values are supplied using "tast run -var=name=value", and
+  // tests can access values via State.Var.
+  repeated string vars = 7;
+
+  // software_deps lists software features that are required to run the test.
+  // If any dependencies are not satisfied by the DUT, the test will be skipped.
+  // See https://chromium.googlesource.com/chromiumos/platform/tast/+/master/docs/test_dependencies.md
+  // for more information about dependencies.
+  repeated string software_deps = 8;
+
+  // Timeout contains the maximum duration for which the test may run before it
+  // is aborted.
+  google.protobuf.Duration timeout = 9;
+
+  // device_deps contains a list of device dependencies. If it is empty, this
+  // test is eligible for running on all devices. Otherwise, this test is
+  // eligible only on devices that satisfies requirements of at least one
+  // DeviceDep. In other words, multiple DeviceDep are joined by OR.
+  repeated DeviceDep device_deps = 10;
+}

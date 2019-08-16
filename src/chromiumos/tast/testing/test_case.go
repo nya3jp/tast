@@ -34,7 +34,7 @@ const (
 //
 // While this struct can be marshaled to a JSON object, note that unmarshaling that object
 // will not yield a runnable Test struct; Func will not be present.
-// TODO(crbug.com/984387): Split JSON part into another struct.
+// TODO(WIP): Stop serializing TestCase into JSON and use TestInfo instead.
 type TestCase struct {
 	// Name specifies the test's name as "category.TestName".
 	// The name is derived from Func's package and function name.

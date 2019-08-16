@@ -76,6 +76,10 @@ type Test struct {
 
 	// Params lists the Param structs for parameterized tests.
 	Params []Param
+
+	// DeviceDeps contains a list of device dependencies. If DeviceDeps is non-empty, this test is
+	// eligible for running only if the DUT satisfies requirements of at least one DeviceDep.
+	DeviceDeps []DeviceDep
 }
 
 // Param defines parameters for a parameterized test case.

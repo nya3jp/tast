@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "3a634d76_d2fc2bdb",
+        "filename": "src/chromiumos/tast/diff/diff.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1305461
+      },
+      "writtenOn": "2019-08-16T17:54:26Z",
+      "side": 1,
+      "message": "Moved to a different package in tast/src/chromiumos/tast/.\n\nWhy do you prefer restricting it to local tests? It could also be useful for remote crash tests",
+      "parentUuid": "da7b38b1_97946e24",
+      "revId": "a3da17fba158a9daf38df754434840d2e1e61d4d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "88413544_3e49b6d1",
         "filename": "src/chromiumos/tast/diff/diff.go",
         "patchSetId": 5
@@ -39,6 +57,30 @@
       "revId": "a3da17fba158a9daf38df754434840d2e1e61d4d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "808555cd_e85106a3",
+        "filename": "src/chromiumos/tast/diff/diff.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1305461
+      },
+      "writtenOn": "2019-08-16T17:54:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "88413544_3e49b6d1",
+      "range": {
+        "startLine": 69,
+        "startChar": 5,
+        "endLine": 69,
+        "endChar": 11
+      },
+      "revId": "a3da17fba158a9daf38df754434840d2e1e61d4d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -1,0 +1,28 @@
+// Copyright 2019 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package tast.core;
+option go_package = "chromiumos/tast/testing";
+
+import "chromiumos/tast/testing/device_dep.proto";
+
+// TestInfo contains information about a test.
+//
+// This message is used for communication between Tast and testing
+// infrastructure. Never make incompatible changes. Do not add new fields until
+// we find them absolutely necessary.
+message TestInfo {
+  // name specifies the test's name as "category.TestName".
+  // The name is derived from Func's package and function name.
+  // The category is the final component of the package.
+  string name = 1;
+
+  // device_deps contains a list of device dependencies. If it is empty, this
+  // test is eligible for running on all devices. Otherwise, this test is
+  // eligible only on devices that satisfies requirements of at least one
+  // DeviceDep. In other words, multiple DeviceDep are joined by OR.
+  repeated DeviceDep device_deps = 2;
+}

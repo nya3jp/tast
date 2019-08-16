@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "278639e7_c3d5e653",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-16T01:24:12Z",
+      "side": 0,
+      "message": "Note: I need to change tast-tests to follow this API change, but there are a few in-flight changes that use dut.Run, so let me prepare it after this CL is approved.",
+      "range": {
+        "startLine": 102,
+        "startChar": 14,
+        "endLine": 102,
+        "endChar": 17
+      },
+      "revId": "610e76b582f23273c6bd8d6a0cccc96b440b4b41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

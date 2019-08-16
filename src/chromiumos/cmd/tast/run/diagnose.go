@@ -17,7 +17,7 @@ import (
 
 // readBootID reads the current boot_id at hst.
 func readBootID(ctx context.Context, hst *host.SSH) (string, error) {
-	out, err := hst.Run(ctx, "cat /proc/sys/kernel/random/boot_id")
+	out, err := hst.Command("cat", "/proc/sys/kernel/random/boot_id").Output(ctx)
 	if err != nil {
 		return "", err
 	}
@@ -75,8 +75,7 @@ var (
 func diagnoseReboot(ctx context.Context, cfg *Config) string {
 	// Read the journal just before the reboot.
 	denseBootID := strings.Replace(cfg.initBootID, "-", "", -1)
-	cmd := fmt.Sprintf("journalctl -q -b %s -n 1000", denseBootID)
-	out, err := cfg.hst.Run(ctx, cmd)
+	out, err := cfg.hst.Command("journalctl", "-q", "-b", denseBootID, "-n", "1000").Output(ctx)
 	if err != nil {
 		cfg.Logger.Log("Failed to read journal: ", err)
 	}
@@ -84,9 +83,9 @@ func diagnoseReboot(ctx context.Context, cfg *Config) string {
 
 	// Read console-ramoops. Its path varies by systems, and it might not exist
 	// for normal reboots.
-	out, err = cfg.hst.Run(ctx, "cat /sys/fs/pstore/console-ramoops-0")
+	out, err = cfg.hst.Command("cat", "/sys/fs/pstore/console-ramoops-0").Output(ctx)
 	if err != nil {
-		out, err = cfg.hst.Run(ctx, "cat /sys/fs/pstore/console-ramoops")
+		out, err = cfg.hst.Command("cat", "/sys/fs/pstore/console-ramoops").Output(ctx)
 		if err != nil {
 			cfg.Logger.Log("console-ramoops not found")
 		}

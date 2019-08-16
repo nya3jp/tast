@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da7b38b1_97946e24",
+        "filename": "src/chromiumos/tast/diff/diff.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-16T17:20:29Z",
+      "side": 1,
+      "message": "As documented above, this package is to run \"diff\" command to obtain the diff of strings.\nSo, could you move this into another package, probably under tast-tests/src/chromiumos/tast/local/...?\n\nHow about tast-tests/src/chromiumos/tast/local/collection or something?",
+      "revId": "a3da17fba158a9daf38df754434840d2e1e61d4d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "88413544_3e49b6d1",
+        "filename": "src/chromiumos/tast/diff/diff.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-16T17:20:29Z",
+      "side": 1,
+      "message": "GetNew sounds too generic, because go does not have generics.\nAlso, it is not clear what is \"new\" from the caller\u0027s arguments, so I\u0027d recommend to avoid it, too.\n\nThis operation is conceptually set-difference, so how about naming it after it?\n\nE.g. SetDiffStringSlice(a, b), returning \"a - b\" set operaion, though it\u0027s slightly lengthy...\n\nAlternatively, if we follow the \"sort\" approach, maybe the package name will be setdiff, and the method name will be StringSlice().\n\nsetdiff.StringSlice(a, b).",
+      "range": {
+        "startLine": 69,
+        "startChar": 5,
+        "endLine": 69,
+        "endChar": 11
+      },
+      "revId": "a3da17fba158a9daf38df754434840d2e1e61d4d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9fbc42e1_9280b605",
+        "filename": "src/chromiumos/tast/bundle/local_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-16T03:14:13Z",
+      "side": 0,
+      "message": "This test failed, because this feature was removed.\nAlong with the change, test is also removed (note that now faillog is tested via TestLocalFaillogDelegate*)",
+      "revId": "5a9f9a231235db8e9c186a9f592cbe26953c5862",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

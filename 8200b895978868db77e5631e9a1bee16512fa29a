@@ -42,6 +42,48 @@
     },
     {
       "key": {
+        "uuid": "aa5b3ef6_33610fb4",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-19T22:42:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "628340c4_9ca2874b",
+      "range": {
+        "startLine": 5,
+        "startChar": 44,
+        "endLine": 5,
+        "endChar": 49
+      },
+      "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9e9cfacc_92e0d6c7",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-19T22:42:32Z",
+      "side": 1,
+      "message": "That sounds good, done.",
+      "parentUuid": "a88726f2_ca6d4d67",
+      "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a5116259_88ec70a5",
         "filename": "docs/code_reviews.md",
         "patchSetId": 2
@@ -56,6 +98,24 @@
       "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3ed6e966_5365f38d",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-19T22:42:32Z",
+      "side": 1,
+      "message": "Sure, done.",
+      "parentUuid": "a5116259_88ec70a5",
+      "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -82,6 +142,30 @@
     },
     {
       "key": {
+        "uuid": "5ff13fdc_a663d725",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-19T22:42:32Z",
+      "side": 1,
+      "message": "Done. Also added a link to gwsq.",
+      "parentUuid": "89c2e566_5100d323",
+      "range": {
+        "startLine": 12,
+        "startChar": 31,
+        "endLine": 12,
+        "endChar": 80
+      },
+      "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e8ebc2df_6cc7a6f3",
         "filename": "docs/code_reviews.md",
         "patchSetId": 2
@@ -105,6 +189,30 @@
     },
     {
       "key": {
+        "uuid": "17bbb214_fd4f4d57",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-19T22:42:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e8ebc2df_6cc7a6f3",
+      "range": {
+        "startLine": 15,
+        "startChar": 11,
+        "endLine": 15,
+        "endChar": 14
+      },
+      "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "711cca52_d93ea92f",
         "filename": "docs/code_reviews.md",
         "patchSetId": 2
@@ -119,6 +227,24 @@
       "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3471307a_068ae67f",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-19T22:42:32Z",
+      "side": 1,
+      "message": "Done both.",
+      "parentUuid": "711cca52_d93ea92f",
+      "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -142,6 +268,30 @@
       "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5c14c06c_59136009",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-19T22:42:32Z",
+      "side": 1,
+      "message": "Yes. BTW I now think it\u0027s better to replace \"the CQ\" with \"critical test\".",
+      "parentUuid": "56838677_5b8edcf8",
+      "range": {
+        "startLine": 28,
+        "startChar": 39,
+        "endLine": 28,
+        "endChar": 41
+      },
+      "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -191,6 +341,54 @@
     },
     {
       "key": {
+        "uuid": "aa12de81_06c00fe8",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-19T22:42:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d8c0f5ee_210f7936",
+      "range": {
+        "startLine": 30,
+        "startChar": 17,
+        "endLine": 30,
+        "endChar": 35
+      },
+      "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dc901ebd_81dfe536",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-19T22:42:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a404e993_292dcd58",
+      "range": {
+        "startLine": 30,
+        "startChar": 49,
+        "endLine": 30,
+        "endChar": 68
+      },
+      "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "cb7c0ddf_2d040c72",
         "filename": "docs/code_reviews.md",
         "patchSetId": 2
@@ -211,6 +409,30 @@
       "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "96928e13_d8d1daab",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-19T22:42:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cb7c0ddf_2d040c72",
+      "range": {
+        "startLine": 31,
+        "startChar": 50,
+        "endLine": 31,
+        "endChar": 53
+      },
+      "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -237,6 +459,30 @@
     },
     {
       "key": {
+        "uuid": "9787fad6_06b91058",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-19T22:42:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "83da3da4_c9e46d17",
+      "range": {
+        "startLine": 32,
+        "startChar": 11,
+        "endLine": 32,
+        "endChar": 30
+      },
+      "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1283ae17_e3269a0b",
         "filename": "docs/code_reviews.md",
         "patchSetId": 2
@@ -257,6 +503,30 @@
       "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a08d59c1_64e77580",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-19T22:42:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1283ae17_e3269a0b",
+      "range": {
+        "startLine": 65,
+        "startChar": 0,
+        "endLine": 68,
+        "endChar": 41
+      },
+      "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -283,6 +553,30 @@
     },
     {
       "key": {
+        "uuid": "57be1f42_9abc0046",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-19T22:42:32Z",
+      "side": 1,
+      "message": "SGTM, removed.",
+      "parentUuid": "4ca658cb_53847a79",
+      "range": {
+        "startLine": 112,
+        "startChar": 0,
+        "endLine": 112,
+        "endChar": 66
+      },
+      "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c0005e26_99dd5426",
         "filename": "docs/code_reviews.md",
         "patchSetId": 2
@@ -306,6 +600,30 @@
     },
     {
       "key": {
+        "uuid": "bc0143d7_c116a8ae",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-19T22:42:32Z",
+      "side": 1,
+      "message": "Now this is not a recommendation.",
+      "parentUuid": "c0005e26_99dd5426",
+      "range": {
+        "startLine": 119,
+        "startChar": 6,
+        "endLine": 119,
+        "endChar": 17
+      },
+      "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "db93d095_a1dacc66",
         "filename": "docs/code_reviews.md",
         "patchSetId": 2
@@ -320,6 +638,24 @@
       "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d26ce3bc_3f176e94",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-19T22:42:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "db93d095_a1dacc66",
+      "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -343,6 +679,30 @@
       "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "295b0bc4_984262d0",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-19T22:42:32Z",
+      "side": 1,
+      "message": "For the first paragraph, I chose to keep the original one because Tast reviews are not only about code quality but also about speed and stability.\n\nFor the second paragraph, I applied your suggestion. Thanks!",
+      "parentUuid": "0d596695_66fd8295",
+      "range": {
+        "startLine": 124,
+        "startChar": 0,
+        "endLine": 130,
+        "endChar": 57
+      },
+      "revId": "8200b895978868db77e5631e9a1bee16512fa29a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

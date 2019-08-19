@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0bbbb0fc_a84e4ca3",
+        "filename": "src/chromiumos/tast/host/ssh.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 469,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-08-19T06:00:25Z",
+      "side": 1,
+      "message": "Q: Is it still ignoring missing files? How about removing the TODO?",
+      "range": {
+        "startLine": 469,
+        "startChar": 0,
+        "endLine": 469,
+        "endChar": 61
+      },
+      "revId": "3e6a21ed7a2a17f311075b4632eb0d4c8bcc2237",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

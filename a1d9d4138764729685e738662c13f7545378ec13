@@ -42,6 +42,48 @@
     },
     {
       "key": {
+        "uuid": "3cf1b4b8_20b7cb0c",
+        "filename": "src/chromiumos/tast/set/set.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1305461
+      },
+      "writtenOn": "2019-08-19T21:11:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "180e4d90_5230b93c",
+      "revId": "a1d9d4138764729685e738662c13f7545378ec13",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "88273528_d7f8bf85",
+        "filename": "src/chromiumos/tast/set/set.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1305461
+      },
+      "writtenOn": "2019-08-19T21:11:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5fdfc1ff_339de588",
+      "range": {
+        "startLine": 10,
+        "startChar": 21,
+        "endLine": 10,
+        "endChar": 39
+      },
+      "revId": "a1d9d4138764729685e738662c13f7545378ec13",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d51f25b8_9529f3da",
         "filename": "src/chromiumos/tast/set/set_test.go",
         "patchSetId": 6
@@ -62,6 +104,30 @@
       "revId": "a1d9d4138764729685e738662c13f7545378ec13",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5a10ae9e_238cf39f",
+        "filename": "src/chromiumos/tast/set/set_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1305461
+      },
+      "writtenOn": "2019-08-19T21:11:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d51f25b8_9529f3da",
+      "range": {
+        "startLine": 16,
+        "startChar": 1,
+        "endLine": 16,
+        "endChar": 8
+      },
+      "revId": "a1d9d4138764729685e738662c13f7545378ec13",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

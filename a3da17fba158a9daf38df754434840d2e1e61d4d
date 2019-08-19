@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "c9685e67_a9614161",
+        "filename": "src/chromiumos/tast/diff/diff.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-19T03:08:06Z",
+      "side": 1,
+      "message": "My major point is; in tast-tests/ repository not tast/ repository.\n\ntast/ repository is to put tast framework, but this is for support library (utilities to be used in test scenarios), which should be under tast-tests/.\n\nI\u0027m ok to put somewhere to share the library between local/remote, but at the moment there\u0027s no such a place.\nIn addition, considering 1) we often expand the scope upon necessary, 2) at the moment, this is only needed for local test, I recommended to tast-tests/src/chromiumos/tast/local/...\n\ncf) Filed a bug: crbug.com/995143. You can use it for TODO to promote it if you\u0027d like to.",
+      "parentUuid": "3a634d76_d2fc2bdb",
+      "revId": "a3da17fba158a9daf38df754434840d2e1e61d4d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "88413544_3e49b6d1",
         "filename": "src/chromiumos/tast/diff/diff.go",
         "patchSetId": 5

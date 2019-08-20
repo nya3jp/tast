@@ -22,6 +22,30 @@
       "revId": "610e76b582f23273c6bd8d6a0cccc96b440b4b41",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2e3265d9_7ada49da",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-20T00:25:17Z",
+      "side": 0,
+      "message": "optional: you can split CLs into three to avoid atomic commit if you\u0027d like as you may find.\nAdding Command(), tast-tests refactoring, then removing Run().\nUp to you.",
+      "parentUuid": "278639e7_c3d5e653",
+      "range": {
+        "startLine": 102,
+        "startChar": 14,
+        "endLine": 102,
+        "endChar": 17
+      },
+      "revId": "610e76b582f23273c6bd8d6a0cccc96b440b4b41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

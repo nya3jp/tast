@@ -2,6 +2,46 @@
   "comments": [
     {
       "key": {
+        "uuid": "1c1f1c18_6bd3801c",
+        "filename": "src/chromiumos/tast/host/ssh.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 297,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-20T00:25:17Z",
+      "side": 1,
+      "message": "Clar/offtopic: in this kind of case, which is preferred?\n\ndefer foo()\ndefer bar()\n\nor\n\ndefer func() {\n  bar()\n  foo()\n}()",
+      "range": {
+        "startLine": 296,
+        "startChar": 1,
+        "endLine": 297,
+        "endChar": 19
+      },
+      "revId": "3e6a21ed7a2a17f311075b4632eb0d4c8bcc2237",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7ae72272_fe09e4ca",
+        "filename": "src/chromiumos/tast/host/ssh.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 357,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-20T00:25:17Z",
+      "side": 1,
+      "message": "by swapping the order of command execution, as you did in GetFile(), can you set cmd.Stdin instead?",
+      "revId": "3e6a21ed7a2a17f311075b4632eb0d4c8bcc2237",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "0bbbb0fc_a84e4ca3",
         "filename": "src/chromiumos/tast/host/ssh.go",
         "patchSetId": 7

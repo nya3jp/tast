@@ -174,8 +174,8 @@ in Gerrit for reference.
 ### How can I become a Tast reviewer?
 
 Please write and review Tast changes to get used to Go, Tast and integration
-test best practices in general. Typically you need to write more than 10
-non-trivial changes to feel familiar with Tast.
+test best practices in general. Typically one writes more than 5 non-trivial
+changes before feeling familiar with Tast.
 
 Once you feel ready to go, please send a mail to chromeos-velocity@google.com to
 join shadow reviews. See [go/tast-shadow-review] for details of the process.

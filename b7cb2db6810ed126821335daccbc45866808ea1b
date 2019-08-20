@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1560b47e_9d822d07",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-20T06:20:25Z",
+      "side": 1,
+      "message": "How about adding something like; \"if this fails, CQ will fail to so your CL will be blocked from landing\"",
+      "revId": "b7cb2db6810ed126821335daccbc45866808ea1b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ea7452d8_7e2132e2",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-20T06:20:25Z",
+      "side": 1,
+      "message": "Good clarification :-)",
+      "range": {
+        "startLine": 104,
+        "startChar": 26,
+        "endLine": 105,
+        "endChar": 41
+      },
+      "revId": "b7cb2db6810ed126821335daccbc45866808ea1b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

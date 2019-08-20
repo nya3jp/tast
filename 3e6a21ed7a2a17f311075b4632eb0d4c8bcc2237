@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "fd1a5d02_452a8174",
+        "filename": "src/chromiumos/tast/host/ssh.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 297,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-08-20T04:15:20Z",
+      "side": 1,
+      "message": "fyi, in go/tast-codelab-2,\n\tdefer dmesgCmd.Wait()\n\tdefer dmesgCmd.Kill()\nis used.",
+      "parentUuid": "1c1f1c18_6bd3801c",
+      "range": {
+        "startLine": 296,
+        "startChar": 1,
+        "endLine": 297,
+        "endChar": 19
+      },
+      "revId": "3e6a21ed7a2a17f311075b4632eb0d4c8bcc2237",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "7ae72272_fe09e4ca",
         "filename": "src/chromiumos/tast/host/ssh.go",
         "patchSetId": 7

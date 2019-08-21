@@ -38,7 +38,10 @@ func TestGetCrashes(t *testing.T) {
 	fooLog := writeCrashFile(t, td, "foo.log", "")
 	fooMeta := writeCrashFile(t, td, "foo.meta", "")
 	fooGPU := writeCrashFile(t, td, "foo.i915_error_state.log.xz", "")
-	fooCompressedLog := writeCrashFile(t, td, "foo.txt.gz", "")
+	fooCompressedTxt := writeCrashFile(t, td, "foo.txt.gz", "")
+	fooBIOSLog := writeCrashFile(t, td, "foo.bios_log", "")
+	fooKCrash := writeCrashFile(t, td, "foo.kcrash", "")
+	fooCompressedLog := writeCrashFile(t, td, "foo.log.gz", "")
 	barDmp := writeCrashFile(t, td, "bar.dmp", "")
 	writeCrashFile(t, td, "bar", "")            // skipped because no extenison
 	writeCrashFile(t, td, "subdir/baz.dmp", "") // skipped because in subdir
@@ -51,7 +54,7 @@ func TestGetCrashes(t *testing.T) {
 		t.Fatalf("GetCrashes(%v) failed: %v", dirs, err)
 	}
 	sort.Strings(files)
-	if exp := []string{barDmp.abs, fooCore.abs, fooDmp.abs, fooGPU.abs, fooLog.abs, fooMeta.abs, fooCompressedLog.abs}; !reflect.DeepEqual(files, exp) {
+	if exp := []string{barDmp.abs, fooBIOSLog.abs, fooCore.abs, fooDmp.abs, fooGPU.abs, fooKCrash.abs, fooLog.abs, fooCompressedLog.abs, fooMeta.abs, fooCompressedTxt.abs}; !reflect.DeepEqual(files, exp) {
 		t.Errorf("GetCrashes(%v) = %v; want %v", dirs, files, exp)
 	}
 }

@@ -23,18 +23,24 @@ const (
 	// the user's cryptohome and hence is only accessible while they are logged in.
 	ChromeCrashDir = "/home/chronos/crash"
 
+	// BIOSExt is the extension for bios crash files.
+	BIOSExt = ".bios_log"
 	// CoreExt is the extension for core files.
 	CoreExt = ".core"
 	// MinidumpExt is the extension for minidump crash files.
 	MinidumpExt = ".dmp"
 	// LogExt is the extension for log files containing additional information that are written by crash_reporter.
 	LogExt = ".log"
+	// KCrashExt is the extension for log files created by kernel warnings and crashes.
+	KCrashExt = ".kcrash"
 	// GPUStateExt is the extension for GPU state files written by crash_reporter.
 	GPUStateExt = ".i915_error_state.log.xz"
 	// MetadataExt is the extension for metadata files written by crash collectors and read by crash_sender.
 	MetadataExt = ".meta"
-	// CompressedLogExt is the extension on the compressed log files written by crash_reporter.
-	CompressedLogExt = ".txt.gz"
+	// CompressedTxtExt is an extension on the compressed log files written by crash_reporter.
+	CompressedTxtExt = ".txt.gz"
+	// CompressedLogExt is an extension on the compressed log files written by crash_reporter.
+	CompressedLogExt = ".log.gz"
 
 	lsbReleasePath = "/etc/lsb-release"
 )
@@ -48,11 +54,14 @@ func DefaultDirs() []string {
 // crashes or crash_reporter.
 func isCrashFile(filename string) bool {
 	knownExts := []string{
+		BIOSExt,
 		CoreExt,
 		MinidumpExt,
 		LogExt,
+		KCrashExt,
 		GPUStateExt,
 		MetadataExt,
+		CompressedTxtExt,
 		CompressedLogExt,
 	}
 	for _, ext := range knownExts {

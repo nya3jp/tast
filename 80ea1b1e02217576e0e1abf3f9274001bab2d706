@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ab8c9ebf_a6db9dfa",
+        "filename": "src/chromiumos/tast/crash/crash_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1300299
+      },
+      "writtenOn": "2019-08-21T00:26:41Z",
+      "side": 1,
+      "message": "Also fooBIOSLog",
+      "range": {
+        "startLine": 42,
+        "startChar": 1,
+        "endLine": 42,
+        "endChar": 11
+      },
+      "revId": "80ea1b1e02217576e0e1abf3f9274001bab2d706",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "34f42a6b_d9677bb0",
+        "filename": "src/chromiumos/tast/crash/crash_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1300299
+      },
+      "writtenOn": "2019-08-21T00:26:41Z",
+      "side": 1,
+      "message": "and fooKCrash",
+      "range": {
+        "startLine": 43,
+        "startChar": 1,
+        "endLine": 43,
+        "endChar": 10
+      },
+      "revId": "80ea1b1e02217576e0e1abf3f9274001bab2d706",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

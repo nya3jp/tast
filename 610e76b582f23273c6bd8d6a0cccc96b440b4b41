@@ -46,6 +46,30 @@
       "revId": "610e76b582f23273c6bd8d6a0cccc96b440b4b41",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "694b83ce_ca19a257",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-21T19:21:09Z",
+      "side": 0,
+      "message": "That sounds better, let me do that.",
+      "parentUuid": "2e3265d9_7ada49da",
+      "range": {
+        "startLine": 102,
+        "startChar": 14,
+        "endLine": 102,
+        "endChar": 17
+      },
+      "revId": "610e76b582f23273c6bd8d6a0cccc96b440b4b41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

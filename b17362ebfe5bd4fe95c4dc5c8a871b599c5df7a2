@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a714c04_04df55b5",
+        "filename": "src/chromiumos/tast/crash/crash.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1300299
+      },
+      "writtenOn": "2019-08-21T00:24:09Z",
+      "side": 1,
+      "message": "Should be BIOSExt https://github.com/golang/go/wiki/CodeReviewComments#initialisms",
+      "range": {
+        "startLine": 27,
+        "startChar": 1,
+        "endLine": 27,
+        "endChar": 8
+      },
+      "revId": "b17362ebfe5bd4fe95c4dc5c8a871b599c5df7a2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "416ea054_39bfbdc3",
+        "filename": "src/chromiumos/tast/crash/crash.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1300299
+      },
+      "writtenOn": "2019-08-21T00:24:09Z",
+      "side": 1,
+      "message": "Since k is short for Kernel, and thus a different word than Crash, I would write this KCrashExt",
+      "range": {
+        "startLine": 35,
+        "startChar": 1,
+        "endLine": 35,
+        "endChar": 10
+      },
+      "revId": "b17362ebfe5bd4fe95c4dc5c8a871b599c5df7a2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

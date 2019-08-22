@@ -51,6 +51,7 @@ var allowedPkgs = []string{
 	"chromiumos/tast/local/bundles/cros/platform/updateserver",
 	"chromiumos/tast/local/rialto",
 	"chromiumos/tast/lsbrelease",
+	"chromiumos/tast/local/bundles/cros/power",
 	"main", // for local_test_runner
 }
 

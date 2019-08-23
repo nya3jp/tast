@@ -107,6 +107,7 @@ func main() {
 			"selinux_current":         "selinux && !selinux_experimental",
 			"selinux_experimental":    "selinux && selinux_experimental",
 			"smartdim":                "smartdim",
+			"storage_wearout_detect":  "storage_wearout_detect && !betty && !tast_vm", // Skip wearout checks for VMs and eMMC < 5.0
 			"tablet_mode":             "touchview",
 			"tpm":                     "!mocktpm && !tast_vm",
 			"transparent_hugepage":    "transparent_hugepage",

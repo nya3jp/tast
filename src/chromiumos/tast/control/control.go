@@ -75,6 +75,8 @@ type RunEnd struct {
 	// Time is the device-local time at which the run ended.
 	Time time.Time `json:"runEndTime"`
 	// OutDir is the base directory under which tests wrote output files.
+	// DEPRECATED: Client should always set OutDir in the request.
+	// TODO(crbug.com/1000549): Remove this field after 20191001.
 	OutDir string `json:"runEndOutDir"`
 }
 

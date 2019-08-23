@@ -198,20 +198,43 @@ func newRunErrorMessagef(status int, format string, args ...interface{}) *contro
 }
 
 // setUpBaseOutDir creates and assigns a temporary directory if args.RunTests.OutDir is empty.
-// It also ensures that the dir is accessible to all users.
+// It also ensures that the dir is accessible to all users. The returned boolean created
+// indicates whether a new directory was created.
 func setUpBaseOutDir(args *bundle.Args) (created bool, err error) {
+	defer func() {
+		if err != nil && created {
+			os.RemoveAll(args.RunTests.OutDir)
+			created = false
+		}
+	}()
+
+	// TODO(crbug.com/1000549): Stop handling empty OutDir here.
+	// Latest tast command always sets OutDir. The only cases where OutDir is unset are
+	// (1) the runner is run manually or (2) the runner is run by an old tast command.
+	// Once old tast commands disappear, we can handle the manual run case specially,
+	// then we can avoid setting OutDir here in the middle of the runner execution.
 	if args.RunTests.OutDir == "" {
 		if args.RunTests.OutDir, err = ioutil.TempDir("", "tast_out."); err != nil {
 			return false, err
 		}
 		created = true
+	} else {
+		if _, err := os.Stat(args.RunTests.OutDir); os.IsNotExist(err) {
+			if err := os.MkdirAll(args.RunTests.OutDir, 0755); err != nil {
+				return false, err
+			}
+			created = true
+		} else if err != nil {
+			return false, err
+		}
 	}
+
 	// Make the directory traversable in case a test wants to write a file as another user.
 	// (Note that we can't guarantee that all the parent directories are also accessible, though.)
-	if err = os.Chmod(args.RunTests.OutDir, 0755); err != nil && created {
-		os.RemoveAll(args.RunTests.OutDir)
+	if err := os.Chmod(args.RunTests.OutDir, 0755); err != nil {
+		return created, err
 	}
-	return created, err
+	return created, nil
 }
 
 // logMessages reads control messages from r and logs them to lg.

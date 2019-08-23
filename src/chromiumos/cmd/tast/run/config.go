@@ -9,6 +9,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"math/rand"
 	"os"
 	"path/filepath"
 	"strings"
@@ -86,6 +87,7 @@ type Config struct {
 	localRunner    string // path to executable that runs local test bundles
 	localBundleDir string // dir where packaged local test bundles are installed
 	localDataDir   string // dir containing packaged local test data
+	localOutDir    string // dir where intermediate test outputs are written
 
 	remoteRunner    string // path to executable that runs remote test bundles
 	remoteBundleDir string // dir where packaged remote test bundles are installed
@@ -167,6 +169,8 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 	f.StringVar(&c.localRunner, "localrunner", "", "executable that runs local test bundles")
 	f.StringVar(&c.localBundleDir, "localbundledir", "", "directory containing builtin local test bundles")
 	f.StringVar(&c.localDataDir, "localdatadir", "", "directory containing builtin local test data")
+	randomLocalOutDir := fmt.Sprintf("/usr/local/tmp/tast_out.%s.%d", time.Now().Format("20060102-150405"), rand.Int())
+	f.StringVar(&c.localOutDir, "localoutdir", randomLocalOutDir, "directory where intermediate test outputs are written")
 
 	// These are configurable since files may be installed elsewhere when running in the lab.
 	f.StringVar(&c.remoteRunner, "remoterunner", "", "executable that runs remote test bundles")

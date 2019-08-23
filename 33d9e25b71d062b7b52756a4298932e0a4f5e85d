@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e34238c1_32f73e13",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1182889
+      },
+      "writtenOn": "2019-08-23T06:22:12Z",
+      "side": 1,
+      "message": "Can you say, tested in conjunction with the crrev.com/blabla next CL?",
+      "range": {
+        "startLine": 13,
+        "startChar": 5,
+        "endLine": 13,
+        "endChar": 9
+      },
+      "revId": "33d9e25b71d062b7b52756a4298932e0a4f5e85d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

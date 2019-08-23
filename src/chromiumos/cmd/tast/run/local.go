@@ -253,12 +253,19 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, patterns []
 
 	switch cfg.mode {
 	case RunTestsMode:
+		// Older local_test_runner does not create the specified output directory.
+		// TODO(crbug.com/1000549): Delete this workaround after 20191001.
+		// This workaround costs one round-trip time to the DUT.
+		if err := hst.Command("mkdir", "-p", cfg.localOutDir).Run(ctx); err != nil {
+			return nil, nil, err
+		}
 		args = runner.Args{
 			Mode: runner.RunTestsMode,
 			RunTests: &runner.RunTestsArgs{
 				BundleArgs: bundle.RunTestsArgs{
 					Patterns:          patterns,
 					DataDir:           cfg.localDataDir,
+					OutDir:            cfg.localOutDir,
 					TestVars:          cfg.testVars,
 					WaitUntilReady:    cfg.waitUntilReady,
 					HeartbeatInterval: heartbeatInterval,

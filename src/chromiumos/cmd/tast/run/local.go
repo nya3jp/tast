@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math/rand"
 	"net"
 	"os"
 	"path/filepath"
@@ -253,6 +254,13 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, patterns []
 
 	switch cfg.mode {
 	case RunTestsMode:
+		outDir := randomLocalOutDir()
+		// Older local_test_runner does not create the specified output directory.
+		// TODO(crbug.com/XXXXXX): Delete this workaround after 20191001.
+		// This workaround costs one round-trip time to the DUT.
+		if err := hst.Command("mkdir", "-p", outDir).Run(ctx); err != nil {
+			return nil, nil, err
+		}
 		args = runner.Args{
 			Mode: runner.RunTestsMode,
 			RunTests: &runner.RunTestsArgs{
@@ -262,6 +270,7 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, patterns []
 					TestVars:          cfg.testVars,
 					WaitUntilReady:    cfg.waitUntilReady,
 					HeartbeatInterval: heartbeatInterval,
+					OutDir:            outDir,
 				},
 				BundleGlob: bundleGlob,
 				Devservers: cfg.devservers,
@@ -309,6 +318,13 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, patterns []
 		return results, unstarted, stderrReader.appendToError(err, stderrTimeout)
 	}
 	return results, unstarted, rerr
+}
+
+// randomLocalOutDir returns a directory path suitable for local test output.
+// Paths are randomly generated to avoid path conflicts.
+func randomLocalOutDir() string {
+	ts := time.Now().Format("20060102-150405")
+	return fmt.Sprintf("/usr/local/tmp/tast_out.%s.%d", ts, rand.Int())
 }
 
 // readLocalRunnerOutput unmarshals a single JSON value from handle.Stdout into out.

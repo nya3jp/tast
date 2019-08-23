@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ab028556_161d5fbd",
+        "filename": "src/chromiumos/cmd/tast/run/diagnose.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-23T17:44:15Z",
+      "side": 1,
+      "message": ":(",
+      "range": {
+        "startLine": 86,
+        "startChar": 36,
+        "endLine": 86,
+        "endChar": 38
+      },
+      "revId": "642137988e8faa1aa53d89b92db33193e4004788",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

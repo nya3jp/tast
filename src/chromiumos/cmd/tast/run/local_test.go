@@ -43,6 +43,7 @@ const (
 	mockLocalRunner    = "/mock/local_test_runner"
 	mockLocalBundleDir = "/mock/local_bundles"
 	mockLocalDataDir   = "/mock/local_data"
+	mockLocalOutDir    = "/mock/local_out"
 
 	mockLocalBundleGlob = mockLocalBundleDir + "/*"
 
@@ -90,6 +91,7 @@ func newLocalTestData(t *gotesting.T) *localTestData {
 	td.cfg.localRunner = mockLocalRunner
 	td.cfg.localBundleDir = mockLocalBundleDir
 	td.cfg.localDataDir = mockLocalDataDir
+	td.cfg.localOutDir = mockLocalOutDir
 
 	// Avoid checking test dependencies, which causes an extra local_test_runner call.
 	td.cfg.checkTestDeps = false
@@ -156,6 +158,9 @@ func (td *localTestData) handleExec(req *test.ExecReq) {
 		req.Start(true)
 		io.WriteString(req, td.ramOops)
 		req.End(0)
+	case "exec mkdir -p " + td.cfg.localOutDir:
+		req.Start(true)
+		req.End(0)
 	default:
 		log.Printf("Unexpected command %q", req.Cmd)
 		req.Start(false)
@@ -189,6 +194,7 @@ func TestLocalSuccess(t *gotesting.T) {
 			RunTests: &runner.RunTestsArgs{
 				BundleArgs: bundle.RunTestsArgs{
 					DataDir:           mockLocalDataDir,
+					OutDir:            mockLocalOutDir,
 					HeartbeatInterval: heartbeatInterval,
 				},
 				BundleGlob: mockLocalBundleGlob,

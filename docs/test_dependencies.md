@@ -79,6 +79,7 @@ The following software features are defined:
 *   `selinux_experimental` - An experimental SELinux board. An experimental
     board has `SELINUX=permissive` in `/etc/selinux/config`, thus no policy
     will be enforced. This implies `selinux`.
+*   `smartdim` - Use smart dim to defer the imminent screen dimming.
 *   `tablet_mode` - The ability to enter tablet mode. The device is either
     a convertible device or a tablet device.
 *   `tpm` - A [Trusted Platform Module] chip.

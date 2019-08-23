@@ -102,6 +102,7 @@ func main() {
 			"selinux":                 "selinux",
 			"selinux_current":         "selinux && !selinux_experimental",
 			"selinux_experimental":    "selinux && selinux_experimental",
+			"smartdim":                "smartdim",
 			"tablet_mode":             "touchview",
 			"tpm":                     "!mocktpm && !tast_vm",
 			"transparent_hugepage":    "transparent_hugepage",

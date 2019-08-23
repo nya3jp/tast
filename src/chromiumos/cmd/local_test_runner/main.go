@@ -101,6 +101,7 @@ func main() {
 			"selinux":                 "selinux",
 			"selinux_current":         "selinux && !selinux_experimental",
 			"selinux_experimental":    "selinux && selinux_experimental",
+			"storage_wearout_detect":  "storage_wearout_detect && !betty && !tast_vm", // Skip checking storage health on VMs
 			"tablet_mode":             "touchview",
 			"tpm":                     "!mocktpm && !tast_vm",
 			"transparent_hugepage":    "transparent_hugepage",

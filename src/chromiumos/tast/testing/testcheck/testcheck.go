@@ -13,32 +13,49 @@ import (
 	"chromiumos/tast/testing"
 )
 
-func getTests(t *gotesting.T, glob string) []*testing.TestCase {
-	tests, err := testing.GlobalRegistry().TestsForGlobs([]string{glob})
-	if err != nil {
-		t.Fatalf("Failed to get tests for %s: %v", glob, err)
+// TestFilter defines the condition whether or not the test should be checked.
+type TestFilter func(t *testing.TestCase) bool
+
+func getTests(t *gotesting.T, f TestFilter) []*testing.TestCase {
+	var tests []*testing.TestCase
+	for _, tst := range testing.GlobalRegistry().AllTests() {
+		if f(tst) {
+			tests = append(tests, tst)
+		}
 	}
 	if len(tests) == 0 {
-		t.Fatalf("No tests matched for %s", glob)
+		t.Fatalf("No tests matched")
 	}
 	return tests
 }
 
-// Timeout checks that tests matched by glob have timeout no less than minTimeout.
-func Timeout(t *gotesting.T, glob string, minTimeout time.Duration) {
-	for _, tst := range getTests(t, glob) {
+// Glob returns a TestFilter which returns true for a test if the test name
+// matches with the given glob pattern.
+func Glob(t *gotesting.T, glob string) TestFilter {
+	re, err := testing.NewTestGlobRegexp(glob)
+	if err != nil {
+		t.Fatalf("Bad glob %q: %v", glob, err)
+	}
+	return func(t *testing.TestCase) bool {
+		return re.MatchString(t.Name)
+	}
+}
+
+// Timeout checks that tests matched by f have timeout no less than minTimeout.
+func Timeout(t *gotesting.T, f TestFilter, minTimeout time.Duration) {
+	for _, tst := range getTests(t, f) {
 		if tst.Timeout < minTimeout {
 			t.Errorf("%s: timeout is too short (%v < %v)", tst.Name, tst.Timeout, minTimeout)
 		}
 	}
 }
 
-// SoftwareDeps checks that tests matched by glob declare requiredDeps as software dependencies.
+// SoftwareDeps checks that tests matched by f declare requiredDeps as software dependencies.
 // requiredDeps is a list of items which the test's SoftwareDeps needs to
 // satisfy. Each item is one or '|'-connected multiple software feature names,
 // and SoftwareDeps must contain at least one of them.
-func SoftwareDeps(t *gotesting.T, glob string, requiredDeps []string) {
-	for _, tst := range getTests(t, glob) {
+func SoftwareDeps(t *gotesting.T, f TestFilter, requiredDeps []string) {
+	for _, tst := range getTests(t, f) {
 		deps := make(map[string]struct{})
 		for _, d := range tst.SoftwareDeps {
 			deps[d] = struct{}{}

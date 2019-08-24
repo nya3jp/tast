@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "50d870de_bc7335a3",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1336055
+      },
+      "writtenOn": "2019-08-24T05:29:04Z",
+      "side": 1,
+      "message": "If the test needs to be skipped on VM only then we can use flag as below(not required separate flag: storage_wearout_detect)\n\"storage_wearout_detect\": \"!betty \u0026\u0026 !tast_vm\"",
+      "range": {
+        "startLine": 104,
+        "startChar": 81,
+        "endLine": 104,
+        "endChar": 116
+      },
+      "revId": "e65ed200f2f1bf891a4a5e12baafe532de1a6644",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

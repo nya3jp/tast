@@ -285,7 +285,10 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, patterns []
 		}
 	}
 
-	handle, err := startLocalRunner(ctx, cfg, hst, &args)
+	runCtx, cancel := ctxutil.Shorten(ctx, postRunProcessingTime)
+	defer cancel()
+
+	handle, err := startLocalRunner(runCtx, cfg, hst, &args)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -299,9 +302,13 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, patterns []
 	case ListTestsMode:
 		results, rerr = readTestList(handle.stdout)
 	case RunTestsMode:
-		crf := func(src, dst string) error { return moveFromHost(ctx, cfg, hst, src, dst) }
-		df := func(ctx context.Context) string { return diagnoseLocalRunError(ctx, cfg) }
-		results, unstarted, rerr = readTestOutput(ctx, cfg, handle.stdout, crf, df)
+		crf := func(ctx context.Context, dst string) error {
+			return moveFromHost(ctx, cfg, hst, cfg.localOutDir, dst)
+		}
+		df := func(ctx context.Context) string {
+			return diagnoseLocalRunError(ctx, cfg)
+		}
+		results, unstarted, rerr = readTestOutput(ctx, runCtx, cfg, handle.stdout, crf, df)
 	}
 
 	// Check that the runner exits successfully first so that we don't give a useless error
@@ -310,7 +317,7 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, patterns []
 	if cfg.localRunnerWaitTimeout > 0 {
 		timeout = cfg.localRunnerWaitTimeout
 	}
-	wctx, wcancel := context.WithTimeout(ctx, timeout)
+	wctx, wcancel := context.WithTimeout(runCtx, timeout)
 	defer wcancel()
 	if err := handle.cmd.Wait(wctx); err != nil {
 		return results, unstarted, stderrReader.appendToError(err, stderrTimeout)

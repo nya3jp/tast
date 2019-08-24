@@ -18,6 +18,7 @@ import (
 	"github.com/google/subcommands"
 
 	"chromiumos/tast/bundle"
+	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/runner"
 	"chromiumos/tast/timing"
 )
@@ -107,7 +108,10 @@ func runRemoteRunner(ctx context.Context, cfg *Config) ([]TestResult, error) {
 	// Backfill deprecated fields in case we're executing an old test runner.
 	args.FillDeprecated()
 
-	cmd := exec.Command(cfg.remoteRunner)
+	runCtx, cancel := ctxutil.Shorten(ctx, postRunProcessingTime)
+	defer cancel()
+
+	cmd := exec.CommandContext(runCtx, cfg.remoteRunner)
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
 		return nil, err
@@ -139,7 +143,10 @@ func runRemoteRunner(ctx context.Context, cfg *Config) ([]TestResult, error) {
 	case ListTestsMode:
 		results, rerr = readTestList(stdout)
 	case RunTestsMode:
-		results, _, rerr = readTestOutput(ctx, cfg, stdout, os.Rename, nil)
+		crf := func(ctx context.Context, dst string) error {
+			return os.Rename(args.RunTests.BundleArgs.OutDir, dst)
+		}
+		results, _, rerr = readTestOutput(ctx, runCtx, cfg, stdout, crf, nil)
 	}
 
 	// Check that the runner exits successfully first so that we don't give a useless error

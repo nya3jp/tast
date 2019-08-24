@@ -203,7 +203,7 @@ func TestLocalSuccess(t *gotesting.T) {
 
 		mw := control.NewMessageWriter(stdout)
 		mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
-		mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
+		mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0)})
 		return 0
 	}
 
@@ -222,7 +222,7 @@ func TestLocalProxy(t *gotesting.T) {
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		mw := control.NewMessageWriter(stdout)
 		mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
-		mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
+		mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0)})
 		return 0
 	}
 
@@ -272,7 +272,7 @@ func TestLocalExecFailure(t *gotesting.T) {
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		mw := control.NewMessageWriter(stdout)
 		mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
-		mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
+		mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0)})
 		io.WriteString(stderr, msg)
 		return 1
 	}
@@ -560,7 +560,7 @@ func TestLocalGetSoftwareFeatures(t *gotesting.T) {
 		case runner.RunTestsMode:
 			mw := control.NewMessageWriter(stdout)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
-			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
+			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0)})
 		case runner.GetSoftwareFeaturesMode:
 			// Just check that getSoftwareFeatures is called; details of args are
 			// tested in deps_test.go.
@@ -595,7 +595,7 @@ func TestLocalGetInitialSysInfo(t *gotesting.T) {
 		case runner.RunTestsMode:
 			mw := control.NewMessageWriter(stdout)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
-			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
+			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0)})
 		case runner.GetSysInfoStateMode:
 			// Just check that getInitialSysInfo is called; details of args are
 			// tested in sys_info_test.go.

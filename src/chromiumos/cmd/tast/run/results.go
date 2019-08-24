@@ -154,9 +154,9 @@ func WriteResults(ctx context.Context, cfg *Config, results []TestResult, comple
 	return sysInfoErr
 }
 
-// copyAndRemoveFunc copies src on a DUT to dst on the local machine and then
-// removes src from the DUT.
-type copyAndRemoveFunc func(src, dst string) error
+// copyAndRemoveFunc moves output files to dst. For local tests, files are coped and removed from a DUT.
+// For remote tests, files are renamed locally.
+type copyAndRemoveFunc func(ctx context.Context, dst string) error
 
 // diagnoseRunErrorFunc is called after a run error is encountered while reading test results to get additional
 // information about the cause of the error. An empty string should be returned if additional information
@@ -261,16 +261,6 @@ func (r *resultsHandler) handleRunEnd(ctx context.Context, msg *control.RunEnd) 
 		return errors.New("multiple RunEnd messages")
 	}
 	r.runEnd = msg.Time
-
-	if len(msg.OutDir) != 0 {
-		r.setProgress("Copying output files")
-		localOutDir := filepath.Join(r.cfg.ResDir, "out.tmp")
-		if err := r.crf(msg.OutDir, localOutDir); err != nil {
-			r.cfg.Logger.Log("Failed to copy test output data: ", err)
-		} else if err := r.moveTestOutputData(localOutDir); err != nil {
-			r.cfg.Logger.Log("Failed to move test output data: ", err)
-		}
-	}
 	return nil
 }
 
@@ -498,10 +488,11 @@ func (r *resultsHandler) handleMessage(ctx context.Context, msg interface{}) err
 }
 
 // processMessages processes control messages and errors supplied by mch and ech.
+// runCtx is a context used to run the test runner.
 // It returns results from executed tests and the names of tests that should have been
 // run but were not started (likely due to an error). unstarted is nil if the list of
 // tests was unavailable; see readTestOutput.
-func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interface{}, ech <-chan error) (
+func (r *resultsHandler) processMessages(ctx, runCtx context.Context, mch <-chan interface{}, ech <-chan error) (
 	results []TestResult, unstarted []string, err error) {
 	// If a test is incomplete when we finish reading messages, rewrite its entry at the
 	// end of the streamed results file to make sure that all of its errors are recorded.
@@ -529,11 +520,19 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 			case <-time.After(timeout):
 				return fmt.Errorf("timed out after waiting %v for next message (probably lost SSH connection to DUT)",
 					timeout.Round(time.Millisecond))
-			case <-ctx.Done():
-				return ctx.Err()
+			case <-runCtx.Done():
+				return runCtx.Err()
 			}
 		}
 	}()
+
+	r.setProgress("Copying output files")
+	localOutDir := filepath.Join(r.cfg.ResDir, "out.tmp")
+	if err := r.crf(ctx, localOutDir); err != nil {
+		r.cfg.Logger.Log("Failed to pull test output data: ", err)
+	} else if err := r.moveTestOutputData(localOutDir); err != nil {
+		r.cfg.Logger.Log("Failed to move test output data: ", err)
+	}
 
 	if len(r.testsToRun) > 0 {
 		// Let callers distinguish between an empty list and a missing list.
@@ -647,8 +646,8 @@ func readMessages(r io.Reader, mch chan<- interface{}, ech chan<- error) {
 // A zero-length slice indicates certainty that there are no more tests to run.
 // A nil slice indicates that the list of tests to run was unavailable.
 //
-// df may be nil if diagnosis is unavailable.
-func readTestOutput(ctx context.Context, cfg *Config, r io.Reader, crf copyAndRemoveFunc, df diagnoseRunErrorFunc) (
+// runCtx is a context used to run the test runner. df may be nil if diagnosis is unavailable.
+func readTestOutput(ctx, runCtx context.Context, cfg *Config, r io.Reader, crf copyAndRemoveFunc, df diagnoseRunErrorFunc) (
 	results []TestResult, unstarted []string, err error) {
 	rh, err := newResultsHandler(cfg, crf, df)
 	if err != nil {
@@ -660,7 +659,7 @@ func readTestOutput(ctx context.Context, cfg *Config, r io.Reader, crf copyAndRe
 	ech := make(chan error)
 	go readMessages(r, mch, ech)
 
-	return rh.processMessages(ctx, mch, ech)
+	return rh.processMessages(ctx, runCtx, mch, ech)
 }
 
 // readTestList decodes JSON-serialized testing.Test objects from r and

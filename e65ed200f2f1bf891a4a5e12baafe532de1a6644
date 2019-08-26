@@ -22,6 +22,30 @@
       "revId": "e65ed200f2f1bf891a4a5e12baafe532de1a6644",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4ef30b5e_d93bda0f",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1111649
+      },
+      "writtenOn": "2019-08-26T15:00:28Z",
+      "side": 1,
+      "message": "The USE flag is needed to skip Chromebooks using eMMC devices before version 5.0. At the moment the test checks this at run time, which isn\u0027t the correct approach for Tast.",
+      "parentUuid": "50d870de_bc7335a3",
+      "range": {
+        "startLine": 104,
+        "startChar": 81,
+        "endLine": 104,
+        "endChar": 116
+      },
+      "revId": "e65ed200f2f1bf891a4a5e12baafe532de1a6644",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

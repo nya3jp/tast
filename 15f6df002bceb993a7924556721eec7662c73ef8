@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ddad66d2_7ac56ab3",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 257,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-08-27T22:44:31Z",
+      "side": 1,
+      "message": "I\u0027ll fill the bug number once I get LGTM.",
+      "range": {
+        "startLine": 257,
+        "startChar": 20,
+        "endLine": 257,
+        "endChar": 26
+      },
+      "revId": "15f6df002bceb993a7924556721eec7662c73ef8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

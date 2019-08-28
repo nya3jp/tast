@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "44dca075_6992dabe",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 241,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-28T11:42:37Z",
+      "side": 1,
+      "message": "Indeed, practically it should be rare, but I\u0027m still slightly worried about the conflict.\n\nHow about just create the tempdir in the localTestRunner at the beginning, and tells the path to the tast caller, immediately?",
+      "range": {
+        "startLine": 240,
+        "startChar": 1,
+        "endLine": 241,
+        "endChar": 116
+      },
+      "revId": "15f6df002bceb993a7924556721eec7662c73ef8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ddad66d2_7ac56ab3",
         "filename": "src/chromiumos/cmd/tast/run/local.go",
         "patchSetId": 4

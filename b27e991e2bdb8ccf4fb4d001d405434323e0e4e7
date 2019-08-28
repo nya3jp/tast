@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d628a855_06a53536",
+        "filename": "src/chromiumos/cmd/tast/run/results.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 495,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-08-28T11:38:13Z",
+      "side": 1,
+      "message": "This looks only for timeout handling in the nested function.\nPassing two context.Context looks a bit weird. Is it possible to avoid?\nE.g. how about just passsing timeout duration?",
+      "range": {
+        "startLine": 495,
+        "startChar": 46,
+        "endLine": 495,
+        "endChar": 52
+      },
+      "revId": "b27e991e2bdb8ccf4fb4d001d405434323e0e4e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

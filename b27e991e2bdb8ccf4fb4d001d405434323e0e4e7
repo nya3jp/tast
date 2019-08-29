@@ -22,6 +22,29 @@
       "revId": "b27e991e2bdb8ccf4fb4d001d405434323e0e4e7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f84a4dd4_73a3d43c",
+        "filename": "src/chromiumos/cmd/tast/run/results.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 523,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-08-29T00:41:15Z",
+      "side": 1,
+      "message": "Can\u0027t ech be used for this?\nI imagine when timeout error on local test runner happens, something that handles it could send the error to ech.\nSorry if I am misunderstanding something.",
+      "range": {
+        "startLine": 523,
+        "startChar": 10,
+        "endLine": 523,
+        "endChar": 23
+      },
+      "revId": "b27e991e2bdb8ccf4fb4d001d405434323e0e4e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

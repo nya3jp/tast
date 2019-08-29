@@ -89,6 +89,7 @@ func main() {
 			"google_virtual_keyboard": "chrome_internal && internal && !moblab", // doesn't work on Moblab: https://crbug.com/949912
 			"gpu_sandboxing":          "!betty && !tast_vm",                     // no GPU sandboxing on VMs: https://crbug.com/914688
 			"gsc":                     "cr50_onboard",
+			"lock_core_pattern":       `"kernel-3_10" || "kernel-3_14" || "kernel-3_18"`,
 			"memd":                    "memd",
 			"ml_service":              "ml_service",
 			"mosys":                   "!betty && !tast_vm",

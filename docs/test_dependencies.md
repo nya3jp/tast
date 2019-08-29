@@ -59,6 +59,8 @@ The following software features are defined:
     (as opposed to the builtin open-source virtual keyboard).
 *   `gpu_sandboxing` - Chrome's GPU process is [sandboxed].
 *   `gsc` - Whether the platform has an onboard Google security chip.
+*   `lock_core_pattern` - Ability to lock down |core_pattern| from further
+    modifications.
 *   `memd` - [Memory stats collection daemon].
 *   `ml_service` - ML Service daemon.
 *   `mosys` - Ability to run mosys command.

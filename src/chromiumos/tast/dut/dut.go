@@ -10,6 +10,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"reflect"
 	"time"
 
 	"chromiumos/tast/host"
@@ -167,3 +168,38 @@ func (d *DUT) KeyFile() string { return d.sopt.KeyFile }
 // This is provided for tests that may need to establish SSH connections to additional hosts
 // (e.g. a host running a servod instance).
 func (d *DUT) KeyDir() string { return d.sopt.KeyDir }
+
+// getBootID returns a random boot id associated with the device's current boot.
+func (d *DUT) getBootID(ctx context.Context) ([]byte, error) {
+	cmd := d.Command("cat", "/proc/sys/kernel/random/boot_id")
+	return cmd.Output(ctx)
+}
+
+// Reboot reboots the device under test, waits for it to boot up again and reconnects to the DUT
+// after the device up and running.
+func (d *DUT) Reboot(ctx context.Context) error {
+	// Run the reboot command in the background to avoid the DUT potentially going down before
+	// success is reported over the SSH connection. Redirect all I/O streams to ensure that the
+	// SSH exec request doesn't hang (see https://en.wikipedia.org/wiki/Nohup#Overcoming_hanging).
+	initialBootID, _ := d.getBootID(ctx)
+	cmd := d.Command("sh", "-c", "nohup sh -c 'sleep 2; reboot' >/dev/null 2>&1 </dev/null &")
+	if err := cmd.Run(ctx); err != nil {
+		return fmt.Errorf("Failed to reboot DUT: %s", err)
+	}
+
+	// Wait for device to be unreachable before trying to connect again.
+	if err := d.WaitUnreachable(ctx); err != nil {
+		return fmt.Errorf("Failed to wait for DUT to become unreachable: %s", err)
+	}
+
+	// Try to reconnect to device under test.
+	if err := d.WaitConnect(ctx); err != nil {
+		return fmt.Errorf("Failed to reconnect to DUT: %s", err)
+	}
+
+	if nextBootID, _ := d.getBootID(ctx); reflect.DeepEqual(nextBootID, initialBootID) {
+		return fmt.Errorf("Failed to reboot device")
+	}
+
+	return nil
+}

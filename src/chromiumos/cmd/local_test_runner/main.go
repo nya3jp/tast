@@ -94,8 +94,9 @@ func main() {
 			"mosys":                   "!betty && !tast_vm",
 			"no_android":              "!arc",
 			"no_asan":                 "!asan",
-			"no_symlink_mount":        "!lxc",                         // boards using LXC set CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT=n
-			"oci":                     "containers && !moblab",        // run_oci doesn't work on Moblab: https://crbug.com/951691
+			"no_symlink_mount":        "!lxc",                  // boards using LXC set CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT=n
+			"oci":                     "containers && !moblab", // run_oci doesn't work on Moblab: https://crbug.com/951691
+			"qemu":                    "betty || tast_vm",
 			"reboot":                  "!betty && !tast_vm",           // weird missing-runner-after-reboot bug: https://crbug.com/909955
 			"screenshot":              "display_backlight && !rk3399", // screenshot command broken on RK3399: https://crbug.com/880597
 			"selinux":                 "selinux",

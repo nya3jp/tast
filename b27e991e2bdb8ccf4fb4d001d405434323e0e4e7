@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "e3b81f84_96c9e46a",
+        "filename": "src/chromiumos/cmd/tast/run/results.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 495,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-09-02T03:49:10Z",
+      "side": 1,
+      "message": "Makes sense, let me introduce a function corresponding to runCtx.Err since that\u0027s the only needed thing.\n\nNote that passing deadline is not okay since a context can be canceled before deadline.",
+      "parentUuid": "d628a855_06a53536",
+      "range": {
+        "startLine": 495,
+        "startChar": 46,
+        "endLine": 495,
+        "endChar": 52
+      },
+      "revId": "b27e991e2bdb8ccf4fb4d001d405434323e0e4e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f84a4dd4_73a3d43c",
         "filename": "src/chromiumos/cmd/tast/run/results.go",
         "patchSetId": 2
@@ -45,6 +69,30 @@
       "revId": "b27e991e2bdb8ccf4fb4d001d405434323e0e4e7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5d9b7da2_872ddc4f",
+        "filename": "src/chromiumos/cmd/tast/run/results.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 523,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-09-02T03:49:10Z",
+      "side": 1,
+      "message": "Good point, I think we can skip waiting for context timeout since an error is sent to ech in that case.",
+      "parentUuid": "f84a4dd4_73a3d43c",
+      "range": {
+        "startLine": 523,
+        "startChar": 10,
+        "endLine": 523,
+        "endChar": 23
+      },
+      "revId": "b27e991e2bdb8ccf4fb4d001d405434323e0e4e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

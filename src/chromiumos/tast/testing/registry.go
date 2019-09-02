@@ -133,13 +133,13 @@ func (r *Registry) TestsForAttrExpr(s string) ([]*TestCase, error) {
 
 // NewTestGlobRegexp returns a compiled regular expression corresponding to g,
 // a glob for matching test names. g may consist of letters, digits, periods,
-// and '*' to match zero or more arbitrary characters.
+// underscores and '*' to match zero or more arbitrary characters.
 //
 // This matches the logic used by TestsForGlobs and is exported to make it possible
 // for code outside this package to verify that a user-supplied glob matched at least one test.
 func NewTestGlobRegexp(g string) (*regexp.Regexp, error) {
 	for _, ch := range g {
-		if !unicode.IsLetter(ch) && !unicode.IsDigit(ch) && ch != '.' && ch != '*' {
+		if !unicode.IsLetter(ch) && !unicode.IsDigit(ch) && ch != '.' && ch != '_' && ch != '*' {
 			return nil, fmt.Errorf("invalid character %v", ch)
 		}
 	}

@@ -232,3 +232,47 @@ func TestParamTestRegistration(t *gotesting.T) {
 		t.Errorf("Unexpected test name: got %s; want testing.RegistryTest.param2", tests[1].Name)
 	}
 }
+
+func TestNewTestGlobRegexp(t *gotesting.T) {
+	// Exact match case.
+	if r, err := NewTestGlobRegexp("arc.Test"); err != nil {
+		t.Error("Unexpected glob pattern error: ", err)
+	} else {
+		if !r.MatchString("arc.Test") {
+			t.Error("Exact match didn't work")
+		}
+		if r.MatchString("arcXTest") {
+			t.Error("Dot matched non-dot character unexpectedly")
+		}
+		if r.MatchString("fooarc.Test") {
+			t.Error("Matched as suffix unexpectedly")
+		}
+		if r.MatchString("arc.TestFoo") {
+			t.Error("Matched as prefix unexpectedly")
+		}
+	}
+
+	// Glob pattern.
+	if r, err := NewTestGlobRegexp("arc.*"); err != nil {
+		t.Error("Unexpected glob pattern error: ", err)
+	} else {
+		if !r.MatchString("arc.Test") {
+			t.Error("Glob didn't match")
+		}
+		if r.MatchString("arcXTest") {
+			t.Error("Dot matched non-dot character unexpectedly")
+		}
+	}
+
+	// Underscore is allowed for parameterized test.
+	if r, err := NewTestGlobRegexp("arc.Test.param_1"); err != nil {
+		t.Error("Unexpected glob pattern error: ", err)
+	} else if !r.MatchString("arc.Test.param_1") {
+		t.Error("Pattern with underscore didn't match with the name")
+	}
+
+	// Unexepcted glob pattern case.
+	if _, err := NewTestGlobRegexp("arc.#*"); err == nil {
+		t.Error("Glob pattern with '#' is successfully compiled unexpectedly")
+	}
+}

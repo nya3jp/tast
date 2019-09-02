@@ -32,6 +32,10 @@ import (
 
 // testResultsDelegate implements resultsDelegate for unit tests.
 type testResultsDelegate struct {
+	// outDir is a directory where output files are written. If is empty, pullOutput
+	// does nothing.
+	outDir string
+
 	// diagFunc is called for diagnoseRunError if it is not nil.
 	diagFunc func(ctx context.Context) string
 
@@ -39,8 +43,11 @@ type testResultsDelegate struct {
 	runCtxErr error
 }
 
-func (d *testResultsDelegate) copyAndRemove(ctx context.Context, src, dst string) error {
-	return os.Rename(src, dst)
+func (d *testResultsDelegate) pullOutput(ctx context.Context, dst string) error {
+	if d.outDir == "" {
+		return nil
+	}
+	return os.Rename(d.outDir, dst)
 }
 
 func (d *testResultsDelegate) diagnoseRunError(ctx context.Context) string {
@@ -138,14 +145,18 @@ func TestReadTestOutput(t *gotesting.T) {
 	mw.WriteMessage(&control.TestEnd{Time: test2EndTime, Name: test2Name})
 	mw.WriteMessage(&control.TestStart{Time: test3StartTime, Test: testing.TestCase{Name: test3Name, Desc: test3Desc}})
 	mw.WriteMessage(&control.TestEnd{Time: test3EndTime, Name: test3Name, MissingSoftwareDeps: test3Deps})
-	mw.WriteMessage(&control.RunEnd{Time: runEndTime, OutDir: outDir})
+	mw.WriteMessage(&control.RunEnd{Time: runEndTime})
 
 	var logBuf bytes.Buffer
 	cfg := Config{
-		Logger: logging.NewSimple(&logBuf, 0, false), // drop debug messages
-		ResDir: filepath.Join(tempDir, "results"),
+		Logger:      logging.NewSimple(&logBuf, 0, false), // drop debug messages
+		ResDir:      filepath.Join(tempDir, "results"),
+		localOutDir: outDir,
 	}
-	results, unstartedTests, err := readTestOutput(context.Background(), &cfg, &b, &testResultsDelegate{})
+	del := &testResultsDelegate{
+		outDir: outDir,
+	}
+	results, unstartedTests, err := readTestOutput(context.Background(), &cfg, &b, del)
 	if err != nil {
 		t.Fatal("readTestOutput failed:", err)
 	}
@@ -362,55 +373,55 @@ func TestValidateMessages(t *gotesting.T) {
 		msgs        []interface{}
 	}{
 		{"no RunStart", nil, []interface{}{
-			&control.RunEnd{Time: time.Unix(1, 0), OutDir: ""},
+			&control.RunEnd{Time: time.Unix(1, 0)},
 		}},
 		{"multiple RunStart", nil, []interface{}{
 			&control.RunStart{Time: time.Unix(1, 0)},
 			&control.RunStart{Time: time.Unix(2, 0)},
-			&control.RunEnd{Time: time.Unix(3, 0), OutDir: ""},
+			&control.RunEnd{Time: time.Unix(3, 0)},
 		}},
 		{"no RunEnd", nil, []interface{}{
 			&control.RunStart{Time: time.Unix(1, 0)},
 		}},
 		{"multiple RunEnd", nil, []interface{}{
 			&control.RunStart{Time: time.Unix(1, 0)},
-			&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""},
-			&control.RunEnd{Time: time.Unix(3, 0), OutDir: ""},
+			&control.RunEnd{Time: time.Unix(2, 0)},
+			&control.RunEnd{Time: time.Unix(3, 0)},
 		}},
 		{"num tests mismatch", nil, []interface{}{
 			&control.RunStart{Time: time.Unix(1, 0), TestNames: []string{"test1"}},
-			&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""},
+			&control.RunEnd{Time: time.Unix(2, 0)},
 		}},
 		{"unfinished test", []string{"test1", "test2"}, []interface{}{
 			&control.RunStart{Time: time.Unix(1, 0), TestNames: []string{"test1", "test2"}},
 			&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestCase{Name: "test1"}},
 			&control.TestEnd{Time: time.Unix(3, 0), Name: "test1"},
 			&control.TestStart{Time: time.Unix(4, 0), Test: testing.TestCase{Name: "test2"}},
-			&control.RunEnd{Time: time.Unix(5, 0), OutDir: ""},
+			&control.RunEnd{Time: time.Unix(5, 0)},
 		}},
 		{"TestStart before RunStart", nil, []interface{}{
 			&control.TestStart{Time: time.Unix(1, 0), Test: testing.TestCase{Name: "test1"}},
 			&control.RunStart{Time: time.Unix(2, 0), TestNames: []string{"test1"}},
 			&control.TestEnd{Time: time.Unix(3, 0), Name: "test1"},
-			&control.RunEnd{Time: time.Unix(4, 0), OutDir: ""},
+			&control.RunEnd{Time: time.Unix(4, 0)},
 		}},
 		{"TestError without TestStart", nil, []interface{}{
 			&control.RunStart{Time: time.Unix(1, 0)},
 			&control.TestError{Time: time.Unix(2, 0), Error: testing.Error{}},
-			&control.RunEnd{Time: time.Unix(3, 0), OutDir: ""},
+			&control.RunEnd{Time: time.Unix(3, 0)},
 		}},
 		{"wrong TestEnd", []string{"test1"}, []interface{}{
 			&control.RunStart{Time: time.Unix(1, 0), TestNames: []string{"test1"}},
 			&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestCase{Name: "test1"}},
 			&control.TestEnd{Time: time.Unix(3, 0), Name: "test2"},
-			&control.RunEnd{Time: time.Unix(3, 0), OutDir: ""},
+			&control.RunEnd{Time: time.Unix(3, 0)},
 		}},
 		{"no TestEnd", []string{"test1"}, []interface{}{
 			&control.RunStart{Time: time.Unix(1, 0), TestNames: []string{"test1", "test2"}},
 			&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestCase{Name: "test1"}},
 			&control.TestStart{Time: time.Unix(3, 0), Test: testing.TestCase{Name: "test2"}},
 			&control.TestEnd{Time: time.Unix(4, 0), Name: "test2"},
-			&control.RunEnd{Time: time.Unix(5, 0), OutDir: ""},
+			&control.RunEnd{Time: time.Unix(5, 0)},
 		}},
 		{"TestStart with already-seen name", []string{"test1"}, []interface{}{
 			&control.RunStart{Time: time.Unix(1, 0), TestNames: []string{"test1", "test2"}},
@@ -418,7 +429,7 @@ func TestValidateMessages(t *gotesting.T) {
 			&control.TestEnd{Time: time.Unix(3, 0), Name: "test1"},
 			&control.TestStart{Time: time.Unix(4, 0), Test: testing.TestCase{Name: "test1"}},
 			&control.TestEnd{Time: time.Unix(5, 0), Name: "test1"},
-			&control.RunEnd{Time: time.Unix(6, 0), OutDir: ""},
+			&control.RunEnd{Time: time.Unix(6, 0)},
 		}},
 	} {
 		b := bytes.Buffer{}

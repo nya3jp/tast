@@ -228,6 +228,20 @@ func startLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, args *run
 	return &localRunnerHandle{cmd, stdout, stderr}, nil
 }
 
+// localResultsDelegate implements resultsDelegate for local tests.
+type localResultsDelegate struct {
+	cfg *Config
+	hst *host.SSH
+}
+
+func (d *localResultsDelegate) copyAndRemove(ctx context.Context, src, dst string) error {
+	return moveFromHost(ctx, d.cfg, d.hst, src, dst)
+}
+
+func (d *localResultsDelegate) diagnoseRunError(ctx context.Context) string {
+	return diagnoseLocalRunError(ctx, d.cfg)
+}
+
 // runLocalRunner synchronously runs local_test_runner to completion on hst.
 // The supplied patterns (rather than cfg.Patterns) are passed to the runner.
 //
@@ -299,9 +313,8 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, patterns []
 	case ListTestsMode:
 		results, rerr = readTestList(handle.stdout)
 	case RunTestsMode:
-		crf := func(src, dst string) error { return moveFromHost(ctx, cfg, hst, src, dst) }
-		df := func(ctx context.Context) string { return diagnoseLocalRunError(ctx, cfg) }
-		results, unstarted, rerr = readTestOutput(ctx, cfg, handle.stdout, crf, df)
+		del := &localResultsDelegate{cfg: cfg, hst: hst}
+		results, unstarted, rerr = readTestOutput(ctx, cfg, handle.stdout, del)
 	}
 
 	// Check that the runner exits successfully first so that we don't give a useless error

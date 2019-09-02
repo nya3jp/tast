@@ -10,9 +10,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"chromiumos/tast/host"
+	"chromiumos/tast/testing"
 )
 
 const (
@@ -156,6 +158,49 @@ func (d *DUT) WaitConnect(ctx context.Context) error {
 			return fmt.Errorf("%v (%v)", ctx.Err(), err)
 		}
 	}
+}
+
+// Reboot reboots the DUT.
+func (d *DUT) Reboot(ctx context.Context) error {
+	readBootID := func(ctx context.Context) (string, error) {
+		out, err := d.Command("cat", "/proc/sys/kernel/random/boot_id").Output(ctx)
+		if err != nil {
+			return "", err
+		}
+		return strings.TrimSpace(string(out)), nil
+	}
+
+	initID, err := readBootID(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to read initial boot_id: %v", err)
+	}
+
+	// Run the reboot command with a short timeout. This command can block for long time
+	// if the network interface of the DUT goes down before the SSH command finishes.
+	rebootCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+	d.Command("reboot").Run(rebootCtx) // ignore the error
+
+	if err := testing.Poll(ctx, func(ctx context.Context) error {
+		// Set a short timeout to the iteration in case of any of SSH operations
+		// blocking for long time.
+		ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+		defer cancel()
+		if err := d.WaitConnect(ctx); err != nil {
+			return fmt.Errorf("failed to connect to DUT: %v", err)
+		}
+		curID, err := readBootID(ctx)
+		if err != nil {
+			return fmt.Errorf("failed to read boot_id: %v", err)
+		}
+		if curID == initID {
+			return errors.New("boot_id did not change")
+		}
+		return nil
+	}, &testing.PollOptions{Timeout: time.Minute}); err != nil {
+		return fmt.Errorf("failed to wait for DUT to reboot: %v", err)
+	}
+	return nil
 }
 
 // KeyFile returns the path to the SSH private key used to connect to the DUT.

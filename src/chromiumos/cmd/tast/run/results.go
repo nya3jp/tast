@@ -156,9 +156,9 @@ func WriteResults(ctx context.Context, cfg *Config, results []TestResult, comple
 
 // resultsDelegate is passed to readTestOutput to customize its behavior.
 type resultsDelegate interface {
-	// copyAndRemove copies src on a DUT to dst on the local machine and then
-	// removes src from the DUT.
-	copyAndRemove(ctx context.Context, src, dst string) error
+	// pullOutput moves output files to dst. For local tests, files are coped and removed from a DUT.
+	// For remote tests, files are renamed locally.
+	pullOutput(ctx context.Context, dst string) error
 
 	// diagnoseRunError is called after a run error is encountered while reading test results to get additional
 	// information about the cause of the error. An empty string should be returned if additional information
@@ -175,7 +175,6 @@ type resultsDelegate interface {
 // resultsHandler processes the output from a test binary.
 type resultsHandler struct {
 	cfg *Config
-	del resultsDelegate
 
 	runStart, runEnd time.Time              // test-runner-reported times at which run started and ended
 	numTests         int                    // total number of tests that are expected to run
@@ -187,10 +186,9 @@ type resultsHandler struct {
 	streamWriter     *streamedResultsWriter // used to write results as control messages are read
 }
 
-func newResultsHandler(cfg *Config, del resultsDelegate) (*resultsHandler, error) {
+func newResultsHandler(cfg *Config) (*resultsHandler, error) {
 	r := &resultsHandler{
 		cfg:       cfg,
-		del:       del,
 		seenTests: make(map[string]struct{}),
 	}
 
@@ -265,16 +263,6 @@ func (r *resultsHandler) handleRunEnd(ctx context.Context, msg *control.RunEnd) 
 		return errors.New("multiple RunEnd messages")
 	}
 	r.runEnd = msg.Time
-
-	if len(msg.OutDir) != 0 {
-		r.setProgress("Copying output files")
-		localOutDir := filepath.Join(r.cfg.ResDir, "out.tmp")
-		if err := r.del.copyAndRemove(ctx, msg.OutDir, localOutDir); err != nil {
-			r.cfg.Logger.Log("Failed to copy test output data: ", err)
-		} else if err := r.moveTestOutputData(localOutDir); err != nil {
-			r.cfg.Logger.Log("Failed to move test output data: ", err)
-		}
-	}
 	return nil
 }
 
@@ -480,7 +468,7 @@ func (r *resultsHandler) handleMessage(ctx context.Context, msg interface{}) err
 // It returns results from executed tests and the names of tests that should have been
 // run but were not started (likely due to an error). unstarted is nil if the list of
 // tests was unavailable; see readTestOutput.
-func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interface{}, ech <-chan error) (
+func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interface{}, ech <-chan error, del resultsDelegate) (
 	results []TestResult, unstarted []string, err error) {
 	// If a test is incomplete when we finish reading messages, rewrite its entry at the
 	// end of the streamed results file to make sure that all of its errors are recorded.
@@ -519,8 +507,16 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 	}()
 
 	// If the test execution has been canceled, overwrite the error for better reporting.
-	if err := r.del.runCanceled(); err != nil {
+	if err := del.runCanceled(); err != nil {
 		runErr = fmt.Errorf("terminated test runner: %v", err)
+	}
+
+	r.setProgress("Copying output files")
+	localOutDir := filepath.Join(r.cfg.ResDir, "out.tmp")
+	if err := del.pullOutput(ctx, localOutDir); err != nil {
+		r.cfg.Logger.Log("Failed to pull test output data: ", err)
+	} else if err := r.moveTestOutputData(localOutDir); err != nil {
+		r.cfg.Logger.Log("Failed to move test output data: ", err)
 	}
 
 	if len(r.testsToRun) > 0 {
@@ -536,7 +532,7 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 	if runErr != nil {
 		// Try to get a more-specific diagnosis of what went wrong.
 		msg := fmt.Sprintf("Got global error: %v", runErr)
-		if dm := r.del.diagnoseRunError(ctx); dm != "" {
+		if dm := del.diagnoseRunError(ctx); dm != "" {
 			msg = dm
 		}
 
@@ -634,7 +630,7 @@ func readMessages(r io.Reader, mch chan<- interface{}, ech chan<- error) {
 // A nil slice indicates that the list of tests to run was unavailable.
 func readTestOutput(ctx context.Context, cfg *Config, r io.Reader, del resultsDelegate) (
 	results []TestResult, unstarted []string, err error) {
-	rh, err := newResultsHandler(cfg, del)
+	rh, err := newResultsHandler(cfg)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -644,7 +640,7 @@ func readTestOutput(ctx context.Context, cfg *Config, r io.Reader, del resultsDe
 	ech := make(chan error)
 	go readMessages(r, mch, ech)
 
-	return rh.processMessages(ctx, mch, ech)
+	return rh.processMessages(ctx, mch, ech, del)
 }
 
 // readTestList decodes JSON-serialized testing.Test objects from r and

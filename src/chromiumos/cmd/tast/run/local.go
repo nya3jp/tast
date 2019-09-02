@@ -235,8 +235,8 @@ type localResultsDelegate struct {
 	runCtxErr func() error
 }
 
-func (d *localResultsDelegate) copyAndRemove(ctx context.Context, src, dst string) error {
-	return moveFromHost(ctx, d.cfg, d.hst, src, dst)
+func (d *localResultsDelegate) pullOutput(ctx context.Context, dst string) error {
+	return moveFromHost(ctx, d.cfg, d.hst, d.cfg.localOutDir, dst)
 }
 
 func (d *localResultsDelegate) diagnoseRunError(ctx context.Context) string {

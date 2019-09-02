@@ -35,7 +35,7 @@ func TestRunPartialRun(t *gotesting.T) {
 		mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 1})
 		mw.WriteMessage(&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestCase{Name: testName}})
 		mw.WriteMessage(&control.TestEnd{Time: time.Unix(3, 0), Name: testName})
-		mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0), OutDir: ""})
+		mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0)})
 		return 0
 	}
 	td.cfg.remoteRunner = filepath.Join(td.tempDir, "missing_remote_test_runner")
@@ -75,7 +75,7 @@ func TestRunEphemeralDevserver(t *gotesting.T) {
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		mw := control.NewMessageWriter(stdout)
 		mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
-		mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
+		mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0)})
 		return 0
 	}
 	td.cfg.useEphemeralDevserver = true
@@ -101,7 +101,7 @@ func TestRunDownloadPrivateBundles(t *gotesting.T) {
 		case runner.RunTestsMode:
 			mw := control.NewMessageWriter(stdout)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
-			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
+			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0)})
 		case runner.DownloadPrivateBundlesMode:
 			exp := runner.DownloadPrivateBundlesArgs{Devservers: td.cfg.devservers}
 			if !reflect.DeepEqual(*args.DownloadPrivateBundles, exp) {

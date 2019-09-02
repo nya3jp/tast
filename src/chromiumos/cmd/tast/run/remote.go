@@ -46,11 +46,12 @@ func remote(ctx context.Context, cfg *Config) (Status, []TestResult) {
 
 // remoteResultsDelegate implements resultsDelegate for remote tests.
 type remoteResultsDelegate struct {
+	outDir    string
 	runCtxErr func() error
 }
 
-func (d *remoteResultsDelegate) copyAndRemove(ctx context.Context, src, dst string) error {
-	return os.Rename(src, dst)
+func (d *remoteResultsDelegate) pullOutput(ctx context.Context, dst string) error {
+	return os.Rename(d.outDir, dst)
 }
 
 func (d *remoteResultsDelegate) diagnoseRunError(ctx context.Context) string {
@@ -161,6 +162,7 @@ func runRemoteRunner(ctx context.Context, cfg *Config) ([]TestResult, error) {
 		results, rerr = readTestList(stdout)
 	case RunTestsMode:
 		del := &remoteResultsDelegate{
+			outDir:    args.RunTests.BundleArgs.OutDir,
 			runCtxErr: runCtx.Err,
 		}
 		results, _, rerr = readTestOutput(ctx, cfg, stdout, del)

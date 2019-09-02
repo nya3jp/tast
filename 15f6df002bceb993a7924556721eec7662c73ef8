@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "7b452b7f_bbecb0a4",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-09-02T03:42:57Z",
+      "side": 1,
+      "message": "IIUC we don\u0027t need \"to\" because of \"where\". Please let me know if I\u0027m wrong...",
+      "parentUuid": "ddebd010_68ae56e9",
+      "range": {
+        "startLine": 90,
+        "startChar": 66,
+        "endLine": 90,
+        "endChar": 73
+      },
+      "revId": "15f6df002bceb993a7924556721eec7662c73ef8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c14e2bed_81f96a02",
         "filename": "src/chromiumos/cmd/tast/run/config.go",
         "patchSetId": 4
@@ -45,6 +69,30 @@
       "revId": "15f6df002bceb993a7924556721eec7662c73ef8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "274bde9f_470483b1",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-09-02T03:42:57Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "c14e2bed_81f96a02",
+      "range": {
+        "startLine": 172,
+        "startChar": 95,
+        "endLine": 172,
+        "endChar": 102
+      },
+      "revId": "15f6df002bceb993a7924556721eec7662c73ef8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -118,6 +166,54 @@
     },
     {
       "key": {
+        "uuid": "32b52059_b8e019cc",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 241,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-09-02T03:42:57Z",
+      "side": 1,
+      "message": "/tmp is on-memory tmpfs, but /usr/local/tmp is ext4 stateful partition. Writing a lot of files to /tmp can lead to out of disk.",
+      "parentUuid": "b9760c6d_5314ccd9",
+      "range": {
+        "startLine": 241,
+        "startChar": 35,
+        "endLine": 241,
+        "endChar": 50
+      },
+      "revId": "15f6df002bceb993a7924556721eec7662c73ef8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9185755d_7999541c",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 241,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-09-02T03:42:57Z",
+      "side": 1,
+      "message": "Keigo:\n\nRandom seed is a very good point, I overlooked that! I think adding nanosecond part is sufficient to avoid conflicts. Let me choose that approach.\n\n\nHidehiko:\n\nI considered the approach to put OutDir field in RunStart control message (which is sent at the beginning of the runner execution), but I chose this this approach because it simplifies code flow.\n\nAs you may know, one of the things I\u0027ve been trying to remove from Tast framework is logic to decide a value in run.Config in the middle of test execution. With this approach we can move forward to this goal for cfg.localOutDir.\n\nAs for conflicts, I think that\u0027s a matter of probability. I guess you\u0027re fine with this approach if I put 512bit true randomness to the file name generated here (otherwise you can\u0027t trust SHA512). What is the threshold you\u0027ll be satisfied with?",
+      "parentUuid": "26f790c3_9850f1d4",
+      "range": {
+        "startLine": 240,
+        "startChar": 1,
+        "endLine": 241,
+        "endChar": 116
+      },
+      "revId": "15f6df002bceb993a7924556721eec7662c73ef8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "00c46fb9_bf059737",
         "filename": "src/chromiumos/cmd/tast/run/config.go",
         "patchSetId": 4
@@ -138,6 +234,30 @@
       "revId": "15f6df002bceb993a7924556721eec7662c73ef8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "73948d02_76ee975f",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 242,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-09-02T03:42:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "00c46fb9_bf059737",
+      "range": {
+        "startLine": 242,
+        "startChar": 28,
+        "endLine": 242,
+        "endChar": 45
+      },
+      "revId": "15f6df002bceb993a7924556721eec7662c73ef8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {

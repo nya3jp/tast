@@ -34,6 +34,9 @@ import (
 type testResultsDelegate struct {
 	// diagFunc is called for diagnoseRunError if it is not nil.
 	diagFunc func(ctx context.Context) string
+
+	// runCtxErr is returned for runCanceled.
+	runCtxErr error
 }
 
 func (d *testResultsDelegate) copyAndRemove(ctx context.Context, src, dst string) error {
@@ -45,6 +48,10 @@ func (d *testResultsDelegate) diagnoseRunError(ctx context.Context) string {
 		return ""
 	}
 	return d.diagFunc(ctx)
+}
+
+func (d *testResultsDelegate) runCanceled() error {
+	return d.runCtxErr
 }
 
 // readStreamedResults decodes newline-terminated, JSON-marshaled TestResult structs from r.
@@ -455,9 +462,23 @@ func TestReadTestOutputTimeout(t *gotesting.T) {
 	if _, _, err := readTestOutput(context.Background(), &cfg, pr, &testResultsDelegate{}); err == nil {
 		t.Error("readTestOutput didn't return error for message timeout")
 	}
+}
 
-	// An error should also be reported for a canceled context.
-	cfg.msgTimeout = time.Minute
+func TestReadTestOutputContextTimeout(t *gotesting.T) {
+	tempDir := testutil.TempDir(t)
+	defer os.RemoveAll(tempDir)
+
+	// Create a pipe, but don't write to it or close it during the test.
+	// readTestOutput should time out and report an error.
+	pr, pw := io.Pipe()
+	defer pw.Close()
+
+	// An error should be reported for a canceled context.
+	cfg := Config{
+		Logger:     logging.NewSimple(&bytes.Buffer{}, 0, false),
+		ResDir:     tempDir,
+		msgTimeout: time.Minute,
+	}
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
 	start := time.Now()
@@ -466,6 +487,33 @@ func TestReadTestOutputTimeout(t *gotesting.T) {
 	}
 	if elapsed := time.Now().Sub(start); elapsed >= cfg.msgTimeout {
 		t.Error("readTestOutput used message timeout instead of noticing context was canceled")
+	}
+}
+
+func TestReadTestOutputRunCanceled(t *gotesting.T) {
+	tempDir := testutil.TempDir(t)
+	defer os.RemoveAll(tempDir)
+
+	// Create a closed pipe.
+	pr, pw := io.Pipe()
+	pw.Close()
+
+	// If the test execution is canceled, an error is reported immediately.
+	cfg := Config{
+		Logger:     logging.NewSimple(&bytes.Buffer{}, 0, false),
+		ResDir:     tempDir,
+		msgTimeout: time.Minute,
+	}
+	del := &testResultsDelegate{runCtxErr: context.DeadlineExceeded}
+	start := time.Now()
+	_, _, err := readTestOutput(context.Background(), &cfg, pr, del)
+	if err == nil {
+		t.Error("readTestOutput didn't return error for canceled test execution")
+	} else if exp := "terminated test runner: context deadline exceeded"; !strings.HasSuffix(err.Error(), exp) {
+		t.Errorf("readTestOutput returned an error %q; want %q", err.Error(), exp)
+	}
+	if elapsed := time.Now().Sub(start); elapsed >= cfg.msgTimeout {
+		t.Error("readTestOutput used message timeout instead of noticing test execution was canceled")
 	}
 }
 

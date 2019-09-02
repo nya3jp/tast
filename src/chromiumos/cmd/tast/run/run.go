@@ -41,6 +41,9 @@ const (
 	// Bundles are placed here rather than in the top-level build artifacts dir so that
 	// local and remote bundles with the same name won't overwrite each other.
 	remoteBundleBuildSubdir = "remote_bundles"
+
+	// postRunProcessingTime is the time saved for postprocessing of test runs.
+	postRunProcessingTime = 10 * time.Second
 )
 
 // Status describes the result of a Run call.

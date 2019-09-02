@@ -164,7 +164,6 @@ type copyAndRemoveFunc func(src, dst string) error
 type diagnoseRunErrorFunc func(ctx context.Context) string
 
 // resultsHandler processes the output from a test binary.
-// TODO(nya): Delete seenHeartbeat after 20190701.
 type resultsHandler struct {
 	cfg *Config
 
@@ -178,7 +177,6 @@ type resultsHandler struct {
 	crf              copyAndRemoveFunc      // function used to copy and remove files from DUT
 	diagFunc         diagnoseRunErrorFunc   // called to diagnose run errors; may be nil
 	streamWriter     *streamedResultsWriter // used to write results as control messages are read
-	seenHeartbeat    bool                   // whether heartbeat messages were ever seen
 }
 
 func newResultsHandler(cfg *Config, crf copyAndRemoveFunc, df diagnoseRunErrorFunc) (*resultsHandler, error) {
@@ -387,7 +385,6 @@ func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.TestEnd
 
 // handleHeartbeat handles Heartbeat control messages from test executables.
 func (r *resultsHandler) handleHeartbeat(ctx context.Context, msg *control.Heartbeat) error {
-	r.seenHeartbeat = true
 	return nil
 }
 
@@ -447,30 +444,6 @@ func (r *resultsHandler) moveTestOutputData(srcBase string) error {
 	return nil
 }
 
-// nextMessageTimeout calculates the maximum amount of time to wait for the next
-// control message from the test executable.
-func (r *resultsHandler) nextMessageTimeout(now time.Time) time.Duration {
-	timeout := defaultMsgTimeout
-	if r.cfg.msgTimeout > 0 {
-		timeout = r.cfg.msgTimeout
-	}
-
-	// If the bundle supports heartbeat messages, we don't need to consider
-	// test timeouts.
-	if r.seenHeartbeat {
-		return timeout
-	}
-
-	// Otherwise, if we're in the middle of a test, add its timeout.
-	if r.res != nil {
-		elapsed := now.Sub(r.res.testStartMsgTime)
-		if tm := r.res.Timeout + r.res.AdditionalTime; elapsed < tm {
-			timeout += tm - elapsed
-		}
-	}
-	return timeout
-}
-
 // handleMessage handles generic control messages from test runners.
 func (r *resultsHandler) handleMessage(ctx context.Context, msg interface{}) error {
 	switch v := msg.(type) {
@@ -512,9 +485,13 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 		}
 	}()
 
+	timeout := defaultMsgTimeout
+	if r.cfg.msgTimeout > 0 {
+		timeout = r.cfg.msgTimeout
+	}
+
 	runErr := func() error {
 		for {
-			timeout := r.nextMessageTimeout(time.Now())
 			select {
 			case msg := <-mch:
 				if msg == nil {
@@ -528,7 +505,7 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 				return err
 			case <-time.After(timeout):
 				return fmt.Errorf("timed out after waiting %v for next message (probably lost SSH connection to DUT)",
-					timeout.Round(time.Millisecond))
+					timeout)
 			case <-ctx.Done():
 				return ctx.Err()
 			}

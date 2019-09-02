@@ -164,6 +164,12 @@ type resultsDelegate interface {
 	// information about the cause of the error. An empty string should be returned if additional information
 	// is unavailable.
 	diagnoseRunError(ctx context.Context) string
+
+	// runCanceled checks if the test execution has been canceled or not.
+	// If the test execution has been canceled, it returns an error that describes the reason. Otherwise
+	// nil is returned. This method usually calls ctx.Err internally where ctx is context.Context used to
+	// run tests.
+	runCanceled() error
 }
 
 // resultsHandler processes the output from a test binary.
@@ -511,6 +517,11 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 			}
 		}
 	}()
+
+	// If the test execution has been canceled, overwrite the error for better reporting.
+	if err := r.del.runCanceled(); err != nil {
+		runErr = fmt.Errorf("terminated test runner: %v", err)
+	}
 
 	if len(r.testsToRun) > 0 {
 		// Let callers distinguish between an empty list and a missing list.

@@ -230,8 +230,9 @@ func startLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, args *run
 
 // localResultsDelegate implements resultsDelegate for local tests.
 type localResultsDelegate struct {
-	cfg *Config
-	hst *host.SSH
+	cfg       *Config
+	hst       *host.SSH
+	runCtxErr func() error
 }
 
 func (d *localResultsDelegate) copyAndRemove(ctx context.Context, src, dst string) error {
@@ -240,6 +241,10 @@ func (d *localResultsDelegate) copyAndRemove(ctx context.Context, src, dst strin
 
 func (d *localResultsDelegate) diagnoseRunError(ctx context.Context) string {
 	return diagnoseLocalRunError(ctx, d.cfg)
+}
+
+func (d *localResultsDelegate) runCanceled() error {
+	return d.runCtxErr()
 }
 
 // runLocalRunner synchronously runs local_test_runner to completion on hst.
@@ -299,7 +304,10 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, patterns []
 		}
 	}
 
-	handle, err := startLocalRunner(ctx, cfg, hst, &args)
+	runCtx, cancel := ctxutil.Shorten(ctx, postRunProcessingTime)
+	defer cancel()
+
+	handle, err := startLocalRunner(runCtx, cfg, hst, &args)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -313,7 +321,11 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, patterns []
 	case ListTestsMode:
 		results, rerr = readTestList(handle.stdout)
 	case RunTestsMode:
-		del := &localResultsDelegate{cfg: cfg, hst: hst}
+		del := &localResultsDelegate{
+			cfg:       cfg,
+			hst:       hst,
+			runCtxErr: runCtx.Err,
+		}
 		results, unstarted, rerr = readTestOutput(ctx, cfg, handle.stdout, del)
 	}
 
@@ -323,7 +335,7 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, patterns []
 	if cfg.localRunnerWaitTimeout > 0 {
 		timeout = cfg.localRunnerWaitTimeout
 	}
-	wctx, wcancel := context.WithTimeout(ctx, timeout)
+	wctx, wcancel := context.WithTimeout(runCtx, timeout)
 	defer wcancel()
 	if err := handle.cmd.Wait(wctx); err != nil {
 		return results, unstarted, stderrReader.appendToError(err, stderrTimeout)

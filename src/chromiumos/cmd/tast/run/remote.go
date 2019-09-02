@@ -18,6 +18,7 @@ import (
 	"github.com/google/subcommands"
 
 	"chromiumos/tast/bundle"
+	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/runner"
 	"chromiumos/tast/timing"
 )
@@ -44,7 +45,9 @@ func remote(ctx context.Context, cfg *Config) (Status, []TestResult) {
 }
 
 // remoteResultsDelegate implements resultsDelegate for remote tests.
-type remoteResultsDelegate struct{}
+type remoteResultsDelegate struct {
+	runCtxErr func() error
+}
 
 func (d *remoteResultsDelegate) copyAndRemove(ctx context.Context, src, dst string) error {
 	return os.Rename(src, dst)
@@ -52,6 +55,10 @@ func (d *remoteResultsDelegate) copyAndRemove(ctx context.Context, src, dst stri
 
 func (d *remoteResultsDelegate) diagnoseRunError(ctx context.Context) string {
 	return ""
+}
+
+func (d *remoteResultsDelegate) runCanceled() error {
+	return d.runCtxErr()
 }
 
 // runRemoteRunner runs the remote test runner and reads its output.
@@ -118,7 +125,10 @@ func runRemoteRunner(ctx context.Context, cfg *Config) ([]TestResult, error) {
 	// Backfill deprecated fields in case we're executing an old test runner.
 	args.FillDeprecated()
 
-	cmd := exec.Command(cfg.remoteRunner)
+	runCtx, cancel := ctxutil.Shorten(ctx, postRunProcessingTime)
+	defer cancel()
+
+	cmd := exec.CommandContext(runCtx, cfg.remoteRunner)
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
 		return nil, err
@@ -150,7 +160,9 @@ func runRemoteRunner(ctx context.Context, cfg *Config) ([]TestResult, error) {
 	case ListTestsMode:
 		results, rerr = readTestList(stdout)
 	case RunTestsMode:
-		del := &remoteResultsDelegate{}
+		del := &remoteResultsDelegate{
+			runCtxErr: runCtx.Err,
+		}
 		results, _, rerr = readTestOutput(ctx, cfg, stdout, del)
 	}
 

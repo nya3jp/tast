@@ -43,6 +43,17 @@ func remote(ctx context.Context, cfg *Config) (Status, []TestResult) {
 	return successStatus, results
 }
 
+// remoteResultsDelegate implements resultsDelegate for remote tests.
+type remoteResultsDelegate struct{}
+
+func (d *remoteResultsDelegate) copyAndRemove(ctx context.Context, src, dst string) error {
+	return os.Rename(src, dst)
+}
+
+func (d *remoteResultsDelegate) diagnoseRunError(ctx context.Context) string {
+	return ""
+}
+
 // runRemoteRunner runs the remote test runner and reads its output.
 func runRemoteRunner(ctx context.Context, cfg *Config) ([]TestResult, error) {
 	ctx, st := timing.Start(ctx, "run_remote_tests")
@@ -139,7 +150,8 @@ func runRemoteRunner(ctx context.Context, cfg *Config) ([]TestResult, error) {
 	case ListTestsMode:
 		results, rerr = readTestList(stdout)
 	case RunTestsMode:
-		results, _, rerr = readTestOutput(ctx, cfg, stdout, os.Rename, nil)
+		del := &remoteResultsDelegate{}
+		results, _, rerr = readTestOutput(ctx, cfg, stdout, del)
 	}
 
 	// Check that the runner exits successfully first so that we don't give a useless error

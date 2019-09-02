@@ -154,18 +154,22 @@ func WriteResults(ctx context.Context, cfg *Config, results []TestResult, comple
 	return sysInfoErr
 }
 
-// copyAndRemoveFunc copies src on a DUT to dst on the local machine and then
-// removes src from the DUT.
-type copyAndRemoveFunc func(src, dst string) error
+// resultsDelegate is passed to readTestOutput to customize its behavior.
+type resultsDelegate interface {
+	// copyAndRemove copies src on a DUT to dst on the local machine and then
+	// removes src from the DUT.
+	copyAndRemove(ctx context.Context, src, dst string) error
 
-// diagnoseRunErrorFunc is called after a run error is encountered while reading test results to get additional
-// information about the cause of the error. An empty string should be returned if additional information
-// is unavailable.
-type diagnoseRunErrorFunc func(ctx context.Context) string
+	// diagnoseRunError is called after a run error is encountered while reading test results to get additional
+	// information about the cause of the error. An empty string should be returned if additional information
+	// is unavailable.
+	diagnoseRunError(ctx context.Context) string
+}
 
 // resultsHandler processes the output from a test binary.
 type resultsHandler struct {
 	cfg *Config
+	del resultsDelegate
 
 	runStart, runEnd time.Time              // test-runner-reported times at which run started and ended
 	numTests         int                    // total number of tests that are expected to run
@@ -174,18 +178,14 @@ type resultsHandler struct {
 	res              *TestResult            // currently-running test, if any (i.e. last element of results)
 	seenTests        map[string]struct{}    // names of tests seen so far
 	stage            *timing.Stage          // current test's timing stage
-	crf              copyAndRemoveFunc      // function used to copy and remove files from DUT
-	diagFunc         diagnoseRunErrorFunc   // called to diagnose run errors; may be nil
 	streamWriter     *streamedResultsWriter // used to write results as control messages are read
 }
 
-func newResultsHandler(cfg *Config, crf copyAndRemoveFunc, df diagnoseRunErrorFunc) (*resultsHandler, error) {
+func newResultsHandler(cfg *Config, del resultsDelegate) (*resultsHandler, error) {
 	r := &resultsHandler{
 		cfg:       cfg,
-		results:   make([]TestResult, 0),
+		del:       del,
 		seenTests: make(map[string]struct{}),
-		crf:       crf,
-		diagFunc:  df,
 	}
 
 	var err error
@@ -263,7 +263,7 @@ func (r *resultsHandler) handleRunEnd(ctx context.Context, msg *control.RunEnd) 
 	if len(msg.OutDir) != 0 {
 		r.setProgress("Copying output files")
 		localOutDir := filepath.Join(r.cfg.ResDir, "out.tmp")
-		if err := r.crf(msg.OutDir, localOutDir); err != nil {
+		if err := r.del.copyAndRemove(ctx, msg.OutDir, localOutDir); err != nil {
 			r.cfg.Logger.Log("Failed to copy test output data: ", err)
 		} else if err := r.moveTestOutputData(localOutDir); err != nil {
 			r.cfg.Logger.Log("Failed to move test output data: ", err)
@@ -525,10 +525,8 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 	if runErr != nil {
 		// Try to get a more-specific diagnosis of what went wrong.
 		msg := fmt.Sprintf("Got global error: %v", runErr)
-		if r.diagFunc != nil {
-			if dm := r.diagFunc(ctx); dm != "" {
-				msg = dm
-			}
+		if dm := r.del.diagnoseRunError(ctx); dm != "" {
+			msg = dm
 		}
 
 		// Log the message. If the error interrupted a test, the message will be written to the test's
@@ -623,11 +621,9 @@ func readMessages(r io.Reader, mch chan<- interface{}, ech chan<- error) {
 // unstarted contains the names of tests that should have been run but were not started (likely due to an error).
 // A zero-length slice indicates certainty that there are no more tests to run.
 // A nil slice indicates that the list of tests to run was unavailable.
-//
-// df may be nil if diagnosis is unavailable.
-func readTestOutput(ctx context.Context, cfg *Config, r io.Reader, crf copyAndRemoveFunc, df diagnoseRunErrorFunc) (
+func readTestOutput(ctx context.Context, cfg *Config, r io.Reader, del resultsDelegate) (
 	results []TestResult, unstarted []string, err error) {
-	rh, err := newResultsHandler(cfg, crf, df)
+	rh, err := newResultsHandler(cfg, del)
 	if err != nil {
 		return nil, nil, err
 	}

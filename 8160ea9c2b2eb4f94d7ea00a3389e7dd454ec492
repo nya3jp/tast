@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "88356215_ec52cbee",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-02T09:47:19Z",
+      "side": 1,
+      "message": "nit/style: you can inline.\n\nreturn d.Command(...).Output(ctx)",
+      "range": {
+        "startLine": 174,
+        "startChar": 1,
+        "endLine": 175,
+        "endChar": 23
+      },
+      "revId": "8160ea9c2b2eb4f94d7ea00a3389e7dd454ec492",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c0866868_0ca1fd47",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 184,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-02T09:47:19Z",
+      "side": 1,
+      "message": "no err should be ignored.",
+      "range": {
+        "startLine": 184,
+        "startChar": 16,
+        "endLine": 184,
+        "endChar": 17
+      },
+      "revId": "8160ea9c2b2eb4f94d7ea00a3389e7dd454ec492",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e5ed9508_74a10639",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-02T09:47:19Z",
+      "side": 1,
+      "message": "ditto.",
+      "range": {
+        "startLine": 185,
+        "startChar": 1,
+        "endLine": 185,
+        "endChar": 4
+      },
+      "revId": "8160ea9c2b2eb4f94d7ea00a3389e7dd454ec492",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7467f92d_ca43f8a9",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-02T09:47:19Z",
+      "side": 1,
+      "message": "errors.Wrap() ?",
+      "range": {
+        "startLine": 187,
+        "startChar": 9,
+        "endLine": 187,
+        "endChar": 19
+      },
+      "revId": "8160ea9c2b2eb4f94d7ea00a3389e7dd454ec492",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e4efb1d9_1a87a7b7",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 200,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-02T09:47:19Z",
+      "side": 1,
+      "message": "nit: bytes.Equal() is common function to compare contents of byte arrays.\n\nhttps://golang.org/pkg/bytes/#Equal",
+      "range": {
+        "startLine": 200,
+        "startChar": 39,
+        "endLine": 200,
+        "endChar": 56
+      },
+      "revId": "8160ea9c2b2eb4f94d7ea00a3389e7dd454ec492",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c8a1964e_95deab26",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 200,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-02T09:47:19Z",
+      "side": 1,
+      "message": "ditto.",
+      "range": {
+        "startLine": 200,
+        "startChar": 16,
+        "endLine": 200,
+        "endChar": 17
+      },
+      "revId": "8160ea9c2b2eb4f94d7ea00a3389e7dd454ec492",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

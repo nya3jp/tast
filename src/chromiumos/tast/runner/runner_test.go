@@ -316,7 +316,9 @@ func TestRunSysInfo(t *gotesting.T) {
 	}
 }
 
-func TestRunTests(t *gotesting.T) {
+// disabledTestRunTests is temporarily disabled for crbug.com/1000030.
+// TODO(crbug.com/1000030): Investigate and reenable.
+func disabledTestRunTests(t *gotesting.T) {
 	dir := createBundleSymlinks(t, []bool{false, true}, []bool{true})
 	defer os.RemoveAll(dir)
 

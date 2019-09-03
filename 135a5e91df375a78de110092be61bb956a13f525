@@ -22,6 +22,30 @@
       "revId": "135a5e91df375a78de110092be61bb956a13f525",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a4a42f82_edc403c0",
+        "filename": "src/chromiumos/tast/testing/registry.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-03T15:14:26Z",
+      "side": 1,
+      "message": "SGTM. Done.",
+      "parentUuid": "9c0c3e1d_ce5ab9d0",
+      "range": {
+        "startLine": 142,
+        "startChar": 67,
+        "endLine": 142,
+        "endChar": 89
+      },
+      "revId": "135a5e91df375a78de110092be61bb956a13f525",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9c0c3e1d_ce5ab9d0",
+        "filename": "src/chromiumos/tast/testing/registry.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-09-03T10:11:11Z",
+      "side": 1,
+      "message": "huge nit: you may want to exchange _ and * to match the order with the document.",
+      "range": {
+        "startLine": 142,
+        "startChar": 67,
+        "endLine": 142,
+        "endChar": 89
+      },
+      "revId": "135a5e91df375a78de110092be61bb956a13f525",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "06a25670_e53f7b8b",
+        "filename": "src/chromiumos/tast/runner/runner_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 319,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-09-03T00:18:08Z",
+      "side": 1,
+      "message": "Without this line I get a false positive of tast-lint...\n\n src/chromiumos/tast/runner/runner_test.go:319:1: Comment on function disabledTestRunTests should be of the form \"disabledTestRunTests ...\"",
+      "range": {
+        "startLine": 319,
+        "startChar": 3,
+        "endLine": 319,
+        "endChar": 23
+      },
+      "revId": "65f6f02f3ec8a330889d8fcb29b1e2f1d831e53c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

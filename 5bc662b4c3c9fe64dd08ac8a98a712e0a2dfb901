@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "288c1801_5fad4966",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-09-04T00:25:08Z",
+      "side": 1,
+      "message": "Hmm, we used to not use chromiumos/tast/errors in framework, but I think it\u0027s actually better to use it everywhere. Let me use errors here, and filed crbug.com/1000504 for other code in the framework.",
+      "parentUuid": "d2f139dd_1eb3372c",
+      "range": {
+        "startLine": 175,
+        "startChar": 9,
+        "endLine": 175,
+        "endChar": 19
+      },
+      "revId": "5bc662b4c3c9fe64dd08ac8a98a712e0a2dfb901",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1046091d_f1ecef53",
         "filename": "src/chromiumos/tast/dut/dut.go",
         "patchSetId": 1
@@ -39,6 +63,24 @@
       "revId": "5bc662b4c3c9fe64dd08ac8a98a712e0a2dfb901",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "827a4490_3e38d213",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-09-04T00:25:08Z",
+      "side": 1,
+      "message": "That\u0027s a good idea, done.",
+      "parentUuid": "1046091d_f1ecef53",
+      "revId": "5bc662b4c3c9fe64dd08ac8a98a712e0a2dfb901",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

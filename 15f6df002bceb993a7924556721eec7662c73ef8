@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "30d9f5ef_90aa0884",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-09-04T04:08:22Z",
+      "side": 1,
+      "message": "Ah that\u0027d be right. Thank you.",
+      "parentUuid": "7b452b7f_bbecb0a4",
+      "range": {
+        "startLine": 90,
+        "startChar": 66,
+        "endLine": 90,
+        "endChar": 73
+      },
+      "revId": "15f6df002bceb993a7924556721eec7662c73ef8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c14e2bed_81f96a02",
         "filename": "src/chromiumos/cmd/tast/run/config.go",
         "patchSetId": 4
@@ -235,6 +259,30 @@
       "revId": "15f6df002bceb993a7924556721eec7662c73ef8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4374492f_d3d97200",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 241,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-09-04T04:08:22Z",
+      "side": 1,
+      "message": "Thank you! Didn\u0027t know /tmp is tmpfs.",
+      "parentUuid": "32b52059_b8e019cc",
+      "range": {
+        "startLine": 241,
+        "startChar": 35,
+        "endLine": 241,
+        "endChar": 50
+      },
+      "revId": "15f6df002bceb993a7924556721eec7662c73ef8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {

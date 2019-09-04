@@ -353,6 +353,30 @@
       "revId": "15f6df002bceb993a7924556721eec7662c73ef8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6e8dc0bc_3f211b0d",
+        "filename": "src/chromiumos/cmd/tast/run/local.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 257,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-09-04T04:09:05Z",
+      "side": 1,
+      "message": "Please do it. Thank you.",
+      "parentUuid": "ddad66d2_7ac56ab3",
+      "range": {
+        "startLine": 257,
+        "startChar": 20,
+        "endLine": 257,
+        "endChar": 26
+      },
+      "revId": "15f6df002bceb993a7924556721eec7662c73ef8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

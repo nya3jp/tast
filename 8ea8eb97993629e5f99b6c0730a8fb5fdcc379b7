@@ -22,6 +22,30 @@
       "revId": "8ea8eb97993629e5f99b6c0730a8fb5fdcc379b7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ccdacefc_f173e960",
+        "filename": "src/chromiumos/cmd/tast/run/results.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 537,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-09-04T04:58:45Z",
+      "side": 1,
+      "message": "You\u0027re making a good point, but I\u0027m a bit lazy to do it now because it will involve large amount of rework...\n\nToday there are several \"post-run\" processings actually.\n\n1. at handleRunEnd https://chromium.googlesource.com/chromiumos/platform/tast/+/e08dda1d1e5697a16ce83375123429ec754270aa/src/chromiumos/cmd/tast/run/results.go#265\n2. at end of processMessages https://chromium.googlesource.com/chromiumos/platform/tast/+/e08dda1d1e5697a16ce83375123429ec754270aa/src/chromiumos/cmd/tast/run/results.go#504\n3. at WriteResults https://chromium.googlesource.com/chromiumos/platform/tast/+/e08dda1d1e5697a16ce83375123429ec754270aa/src/chromiumos/cmd/tast/run/results.go#86\n\nEventually we want to do all of these post-processing at the same place. However it will involve refactoring the whole structure down from run_cmd.go.\n\nWith this change 1 and 2 are merged to the same place, so I believe it\u0027s an improvement towards the goal...",
+      "parentUuid": "ac85136a_6028f535",
+      "range": {
+        "startLine": 526,
+        "startChar": 2,
+        "endLine": 537,
+        "endChar": 3
+      },
+      "revId": "8ea8eb97993629e5f99b6c0730a8fb5fdcc379b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

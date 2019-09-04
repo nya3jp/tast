@@ -99,6 +99,24 @@
       "revId": "12cfc4fe5b349f685bb3c6bc69bc8ddc4f0739e5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d9ff045a_e4dfe37e",
+        "filename": "src/chromiumos/cmd/tast/run/results.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 387,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-09-04T04:42:37Z",
+      "side": 1,
+      "message": "I don\u0027t have strong opinion, but let me leave this handler for symmetricity.",
+      "parentUuid": "febf059c_ca819bcd",
+      "revId": "12cfc4fe5b349f685bb3c6bc69bc8ddc4f0739e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

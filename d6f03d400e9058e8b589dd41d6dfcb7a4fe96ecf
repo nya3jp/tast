@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d00feab3_a8cdf4f9",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-04T07:57:21Z",
+      "side": 1,
+      "message": "It looks like /tmp, but it is persistent, so they should be necessary to be clobbered at some point, IIUC.\n\nAt least, I\u0027d recommend to create the process dedicated tmpdir (one level deeper), and remove at the end of the bundle run.",
+      "revId": "d6f03d400e9058e8b589dd41d6dfcb7a4fe96ecf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8e284296_1608d74a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-04T07:57:21Z",
+      "side": 1,
+      "message": "Clar: what process accesses to the tmp dir? It includes \"tast\" in the path, so I thought it is designed only for tast?",
+      "range": {
+        "startLine": 10,
+        "startChar": 33,
+        "endLine": 11,
+        "endChar": 67
+      },
+      "revId": "d6f03d400e9058e8b589dd41d6dfcb7a4fe96ecf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

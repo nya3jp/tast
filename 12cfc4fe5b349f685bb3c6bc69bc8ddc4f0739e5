@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "e319d6ae_6e6237fa",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-09-04T04:20:20Z",
+      "side": 1,
+      "message": "Is it opposite? Old protocol was sending heartbeat, but now not?",
+      "range": {
+        "startLine": 9,
+        "startChar": 43,
+        "endLine": 9,
+        "endChar": 64
+      },
+      "revId": "12cfc4fe5b349f685bb3c6bc69bc8ddc4f0739e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "02627b29_d8b50735",
         "filename": "src/chromiumos/cmd/tast/run/results.go",
         "patchSetId": 1
@@ -13,6 +36,24 @@
       "writtenOn": "2019-09-04T03:50:52Z",
       "side": 1,
       "message": "Do we need empty handler?",
+      "revId": "12cfc4fe5b349f685bb3c6bc69bc8ddc4f0739e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1bc43312_452e8afe",
+        "filename": "src/chromiumos/cmd/tast/run/results.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 387,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-09-04T04:20:20Z",
+      "side": 1,
+      "message": "+1 to remove. Could you remove control.HeartBeat etc. too?",
+      "parentUuid": "02627b29_d8b50735",
       "revId": "12cfc4fe5b349f685bb3c6bc69bc8ddc4f0739e5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

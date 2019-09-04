@@ -46,6 +46,30 @@
       "revId": "8ea8eb97993629e5f99b6c0730a8fb5fdcc379b7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "05fb9370_89454299",
+        "filename": "src/chromiumos/cmd/tast/run/results.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 537,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-04T15:52:13Z",
+      "side": 1,
+      "message": "I may not get fully your point. Probably miscommunication. Let me explain what I thought;\n\n- The eventual goal of the series of CLs are to extract log data even if test aborted.\n- Currently log extraction is done in handleRunEnd() callback, but it wouldn\u0027t be called on abort.\n- crrev.com/c/1768383 is a CL to move it from handleRunEnd() to after test output read.\n- With the change, even if current processMessages times out, we\u0027d like to extract log data.\n  So, the original CL passed two contexts, while I requested you to avoid it.\n- This CL and crrev.com/c/1778457 are the CLs to address it.\n\n(Pls correct me if I have misunderstanding).\n\nMy comment looks like independent from work items you listed in the reply, IIUC.\nWhat I requested you is, in precise, move this part out to readTestOutput()\u0027s callers.\n\nprocessMessage is called only from readTestOutput().\nreadTestOutput() is called in tast/run/{local,remote}.go. However, diagnosing is only needed for local case.\nAlso, those files are where timeout is shorten (in next CL), so moving this part to there could resolve the dependency, so that delegate can be removed, I thought.\n\nWith the code moving, you can just pass a context.Context instance with shorter timeout to readTestOutput(). diagnose wouldn\u0027t be affected by the timeout, because it is out of the function.\nLog data extraction also could be done in the local.go and remote.go, too, for each.\nIn local.go, it needs to extract the data from DUT, and move to output dir.\nIn remote.go, it just can move to the output dir directly (i.e., I don\u0027t think you need to rename twice).\nBecause of the diff of implementation, I think it is reasonable to have the code in each file.\nOf course, it is nice to be commented that local.go and remote.go somehow need to be consistent.\n\nI believe, such a change does not need much rework, and not need to touch other parts than ones you touched to achieve the eventual goal (pulling log data on abort) in the series of CLs.\nFor further discussion, let\u0027s do it offline.\nNote that, IIUC, current approach has timing issue on cancel handling.\nSo, I guess anyways it is necessary to have a structural fix.",
+      "parentUuid": "ccdacefc_f173e960",
+      "range": {
+        "startLine": 526,
+        "startChar": 2,
+        "endLine": 537,
+        "endChar": 3
+      },
+      "revId": "8ea8eb97993629e5f99b6c0730a8fb5fdcc379b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -325,13 +325,11 @@ func copyTestOutput(ch <-chan testing.Output, ew *eventWriter, abort <-chan bool
 	}
 }
 
-// prepareTempDir clobbers tempDir and sets the TMPDIR environment variable so that
-// subsequent ioutil.TempFile/TempDir calls create temporary files under tempDir.
+// prepareTempDir sets up tempDir to be used for the base temporary directory,
+// and sets the TMPDIR environment variable to tempDir so that subsequent
+// ioutil.TempFile/TempDir calls create temporary files under the directory.
 // Returned function can be called to restore TMPDIR to the original value.
 func prepareTempDir(tempDir string) (restore func(), err error) {
-	if err := os.RemoveAll(tempDir); err != nil {
-		return nil, command.NewStatusErrorf(statusError, "failed to clobber %s: %v", tempDir, err)
-	}
 	if err := os.MkdirAll(tempDir, 0755); err != nil {
 		return nil, command.NewStatusErrorf(statusError, "failed to create %s: %v", tempDir, err)
 	}
@@ -343,7 +341,6 @@ func prepareTempDir(tempDir string) (restore func(), err error) {
 	oldTempDir, hasOldTempDir := os.LookupEnv(envTempDir)
 	os.Setenv(envTempDir, tempDir)
 	return func() {
-		os.RemoveAll(tempDir)
 		if hasOldTempDir {
 			os.Setenv(envTempDir, oldTempDir)
 		} else {

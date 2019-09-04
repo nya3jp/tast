@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ac85136a_6028f535",
+        "filename": "src/chromiumos/cmd/tast/run/results.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 537,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-04T04:13:13Z",
+      "side": 1,
+      "message": "Instead, can this part be extracted to caller in some good shape?\nThe major complexity we hit is that, IIUC; The above parts run under the shortened context, while we still would like to run this even after its timed out.\n\nThat implies this part is out of the context, so extracting it may be natural, I guess?\nWDYT?",
+      "range": {
+        "startLine": 526,
+        "startChar": 2,
+        "endLine": 537,
+        "endChar": 3
+      },
+      "revId": "8ea8eb97993629e5f99b6c0730a8fb5fdcc379b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

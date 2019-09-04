@@ -197,12 +197,6 @@ func TestRunTests(t *gotesting.T) {
 		t.Errorf("%v called post-test function %d time(s); want %d", sig, postTestCalls, len(tests))
 	}
 
-	if _, err := os.Stat(runTmpDir); err == nil {
-		t.Errorf("Temporary directory %s still exists", runTmpDir)
-	} else if !os.IsNotExist(err) {
-		t.Errorf("Failed to stat %s: %v", runTmpDir, err)
-	}
-
 	// Just check some basic details of the control messages.
 	r := control.NewMessageReader(&stdout)
 	for i, ei := range []interface{}{
@@ -552,6 +546,12 @@ func TestPrepareTempDir(t *gotesting.T) {
 	tmpDir := testutil.TempDir(t)
 	defer os.RemoveAll(tmpDir)
 
+	if err := testutil.WriteFiles(tmpDir, map[string]string{
+		"existing.txt": "foo",
+	}); err != nil {
+		t.Fatal("Failed to create initial files: ", err)
+	}
+
 	origTmpDir := os.Getenv("TMPDIR")
 
 	restore, err := prepareTempDir(tmpDir)
@@ -581,6 +581,10 @@ func TestPrepareTempDir(t *gotesting.T) {
 		t.Error("Incorrect $TMPDIR permission: sticky bit not set")
 	}
 
+	if _, err := os.Stat(filepath.Join(tmpDir, "existing.txt")); err != nil {
+		t.Error("prepareTempDir should not clobber the directory: ", err)
+	}
+
 	restore()
 	restore = nil
 
@@ -588,9 +592,7 @@ func TestPrepareTempDir(t *gotesting.T) {
 		t.Errorf("restore did not restore $TMPDIR; got %q, want %q", env, origTmpDir)
 	}
 
-	if _, err := os.Stat(tmpDir); err == nil {
-		t.Error("restore did not delete the temporary directory")
-	} else if !os.IsNotExist(err) {
-		t.Error("Stat failed: ", err)
+	if _, err := os.Stat(tmpDir); err != nil {
+		t.Error("restore must preserve the temporary directory: ", err)
 	}
 }

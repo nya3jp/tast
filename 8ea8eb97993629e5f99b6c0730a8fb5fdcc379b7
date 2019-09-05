@@ -70,6 +70,30 @@
       "revId": "8ea8eb97993629e5f99b6c0730a8fb5fdcc379b7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e0b1a3e8_a9b9c726",
+        "filename": "src/chromiumos/cmd/tast/run/results.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 537,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-09-05T00:31:40Z",
+      "side": 1,
+      "message": "I think I got your point, but I doubt your following statement:\n\n\u003e I believe, such a change does not need much rework\n\nLet us discuss it offline.",
+      "parentUuid": "05fb9370_89454299",
+      "range": {
+        "startLine": 526,
+        "startChar": 2,
+        "endLine": 537,
+        "endChar": 3
+      },
+      "revId": "8ea8eb97993629e5f99b6c0730a8fb5fdcc379b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

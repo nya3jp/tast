@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b5e448bd_b893acc1",
+        "filename": "src/chromiumos/tast/host/ssh_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-09-10T02:03:16Z",
+      "side": 1,
+      "message": "This issue can be reliably reproduced by inserting time.Sleep here.",
+      "range": {
+        "startLine": 142,
+        "startChar": 2,
+        "endLine": 142,
+        "endChar": 13
+      },
+      "revId": "b3268a3b7bab0443c7cfdf1a4a2943b72f312c8d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

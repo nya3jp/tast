@@ -2,6 +2,109 @@
   "comments": [
     {
       "key": {
+        "uuid": "f5c0840b_512ee427",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2019-09-10T09:38:50Z",
+      "side": 1,
+      "message": "docs:",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 15
+      },
+      "revId": "42b3c5ac7c5dfe492beb8318db36eb013eda0ae2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "15058228_4a395f5b",
+        "filename": "docs/video_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2019-09-10T09:38:50Z",
+      "side": 1,
+      "message": "I wonder if we can\u0027t have this document under /platform2/tast-tests/ instead of /platform2/tast/. I think it\u0027d be better because this document is not about Tast framework but about Tast test cases.\n\nHow about creating /docs/ directory under /tast-tests/ to have a document about each test case like this doc?",
+      "revId": "42b3c5ac7c5dfe492beb8318db36eb013eda0ae2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "976089e4_9c601ba1",
+        "filename": "docs/video_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2019-09-10T09:38:50Z",
+      "side": 1,
+      "message": "Need an empty line below a heading\nhttps://github.com/google/styleguide/blob/gh-pages/docguide/style.md#add-spacing-to-headings\n\nSame for all other headings",
+      "revId": "42b3c5ac7c5dfe492beb8318db36eb013eda0ae2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "81af797c_2a74d0ea",
+        "filename": "docs/video_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2019-09-10T09:38:50Z",
+      "side": 1,
+      "message": "How about changing this to a link to https://cs.chromium.org/chromium/src/media/gpu/video_decode_accelerator_tests.cc?\nSo, it\u0027ll be clearer where the main test logic is implemented.\n\nSame for other tests.",
+      "range": {
+        "startLine": 26,
+        "startChar": 0,
+        "endLine": 26,
+        "endChar": 32
+      },
+      "revId": "42b3c5ac7c5dfe492beb8318db36eb013eda0ae2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e9ad01b5_88e7aeee",
+        "filename": "docs/video_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2019-09-10T09:38:50Z",
+      "side": 1,
+      "message": "nit: master?",
+      "range": {
+        "startLine": 31,
+        "startChar": 71,
+        "endLine": 31,
+        "endChar": 75
+      },
+      "revId": "42b3c5ac7c5dfe492beb8318db36eb013eda0ae2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "0f5b935a_31110aba",
         "filename": "docs/video_tests.md",
         "patchSetId": 4
@@ -19,6 +122,63 @@
         "endLine": 37,
         "endChar": 62
       },
+      "revId": "42b3c5ac7c5dfe492beb8318db36eb013eda0ae2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cc9c5377_6ff9038b",
+        "filename": "docs/video_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2019-09-10T09:38:50Z",
+      "side": 1,
+      "message": "optional: How about having a link to crosbolt or chromeperf?",
+      "revId": "42b3c5ac7c5dfe492beb8318db36eb013eda0ae2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4cb6efac_f22ab0b8",
+        "filename": "docs/video_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2019-09-10T09:38:50Z",
+      "side": 1,
+      "message": "nit: lower case?",
+      "range": {
+        "startLine": 136,
+        "startChar": 9,
+        "endLine": 136,
+        "endChar": 10
+      },
+      "revId": "42b3c5ac7c5dfe492beb8318db36eb013eda0ae2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bf01ed72_441d3967",
+        "filename": "docs/video_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2019-09-10T09:38:50Z",
+      "side": 1,
+      "message": "Should we also explain video.ARC* and video.LibVDA*?",
       "revId": "42b3c5ac7c5dfe492beb8318db36eb013eda0ae2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

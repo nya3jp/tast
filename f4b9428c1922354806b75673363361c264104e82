@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2187be33_2f70614e",
+        "filename": "docs/video_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2019-09-10T09:38:50Z",
+      "side": 0,
+      "message": "Could you add a link to this file in README? So, we\u0027ll be able to access this doc from go/tast-docs easily.\nhttps://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/README.md",
+      "revId": "f4b9428c1922354806b75673363361c264104e82",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

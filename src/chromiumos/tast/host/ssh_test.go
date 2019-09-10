@@ -290,7 +290,7 @@ func TestGetFileTimeout(t *testing.T) {
 
 	srcFile := filepath.Join(srcDir, "file")
 	dstFile := filepath.Join(tmpDir, "file")
-	td.execTimeout = endTimeout
+	td.execTimeout = startTimeout
 	if err := td.hst.GetFile(td.ctx, srcFile, dstFile); err == nil {
 		t.Errorf("GetFile() with expired context didn't return error")
 	}

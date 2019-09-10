@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "184f31c3_db557804",
+        "filename": "src/chromiumos/tast/testing/stage.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-09-10T02:03:07Z",
+      "side": 1,
+      "message": "The race can be reproduced by inserting time.Sleep(time.Second) here.",
+      "range": {
+        "startLine": 42,
+        "startChar": 2,
+        "endLine": 42,
+        "endChar": 3
+      },
+      "revId": "eeb2d708278dc92adf289b948c277376f8e8f620",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

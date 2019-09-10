@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "b7741ca9_ec5fdd1a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-09-10T02:37:09Z",
+      "side": 1,
+      "message": "Makes sense, I\u0027ve updated the change to create a unique root dir.",
+      "parentUuid": "d00feab3_a8cdf4f9",
+      "revId": "d6f03d400e9058e8b589dd41d6dfcb7a4fe96ecf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8e284296_1608d74a",
         "filename": "/COMMIT_MSG",
         "patchSetId": 1
@@ -39,6 +57,30 @@
       "revId": "d6f03d400e9058e8b589dd41d6dfcb7a4fe96ecf",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d4f9a169_7d992297",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-09-10T02:37:09Z",
+      "side": 1,
+      "message": "On DUT, it\u0027s only bundle processes (e.g. \"cros\") that access the directory. At this moment, there should be only one bundle process running at a time. This can change in the future though, e.g. by introduction of gRPC servers.\n\nIn unit tests on host, I\u0027m afraid there can be concurrent processes running bundle unit tests. In this case, unit tests in at least two packages can execute bundle.Local(): chromiumos/tast/runner and chromiumos/tast/bundle. Note that \"go test\" can concurrently run tests from different packages even if the test does not call t.Parallel.\n\nhttps://golang.org/pkg/cmd/go/internal/test/\n\n        -parallel n\n            Allow parallel execution of test functions that call t.Parallel.\n            The value of this flag is the maximum number of tests to run\n            simultaneously; by default, it is set to the value of GOMAXPROCS.\n            Note that -parallel only applies within a single test binary.\n            The \u0027go test\u0027 command may run tests for different packages\n            in parallel as well, according to the setting of the -p flag\n            (see \u0027go help build\u0027).",
+      "parentUuid": "8e284296_1608d74a",
+      "range": {
+        "startLine": 10,
+        "startChar": 33,
+        "endLine": 11,
+        "endChar": 67
+      },
+      "revId": "d6f03d400e9058e8b589dd41d6dfcb7a4fe96ecf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

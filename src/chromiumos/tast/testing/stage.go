@@ -32,6 +32,7 @@ func runStages(ctx context.Context, s *State, stages []stage) bool {
 	// Run tests in a goroutine to allow the test bundle to go on to run additional tests even
 	// if one test is buggy and doesn't return after its context's deadline is reached.
 	go func() {
+		defer close(stageCh)
 		defer s.close()
 		for _, st := range stages {
 			rctx, rcancel := ctxutil.OptionalTimeout(ctx, st.ctxTimeout)
@@ -51,6 +52,8 @@ func runStages(ctx context.Context, s *State, stages []stage) bool {
 			return false
 		}
 	}
+	// All stages finished. Wait for the state to be closed.
+	<-stageCh
 	return true
 }
 

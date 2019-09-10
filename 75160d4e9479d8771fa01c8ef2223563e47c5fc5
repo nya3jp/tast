@@ -70,6 +70,30 @@
       "revId": "75160d4e9479d8771fa01c8ef2223563e47c5fc5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3e288345_378dad18",
+        "filename": "docs/running_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2019-09-10T18:46:13Z",
+      "side": 1,
+      "message": "\u003e Doesn\u0027t help, though gets me to a more sane issue. \n\u003e \n\u003e (cr) (hrp2-entry) kirtika@kirtika2 ~/trunk/src/third_party/autotest/files $ tast run hatch \u0027!flaky\u0027\n\nYou need parentheses around the expression (but inside the quotes).\n\n  $ tast run $HOST \u0027(!flaky)\u0027\n\n  $ tast run --help\n  Usage: run [flag]... \u003ctarget\u003e [pattern]...\n  ...\n  Patterns are either globs matching test names or a single test attribute\n  boolean expression in parentheses (e.g. \"(informational \u0026\u0026 !disabled)\").\n\nThat\u0027s also what the bullet point you\u0027re modifying says: \"If a single argument surrounded by parentheses is supplied...\". Otherwise, you\u0027re served by the next bullet point, which doesn\u0027t handle anything but wildcards.",
+      "parentUuid": "3ac16fc2_5d84db41",
+      "range": {
+        "startLine": 42,
+        "startChar": 1,
+        "endLine": 44,
+        "endChar": 47
+      },
+      "revId": "75160d4e9479d8771fa01c8ef2223563e47c5fc5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "c6e4cb4e_ece28812",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2019-09-11T16:35:31Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "f5c0840b_512ee427",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 15
+      },
+      "revId": "42b3c5ac7c5dfe492beb8318db36eb013eda0ae2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "15058228_4a395f5b",
         "filename": "docs/video_tests.md",
         "patchSetId": 4
@@ -113,6 +137,30 @@
       "side": 1,
       "message": "Where did you find md_format? I can\u0027t find it on my machine.",
       "parentUuid": "c226ae71_7ec7fa4d",
+      "range": {
+        "startLine": 5,
+        "startChar": 64,
+        "endLine": 6,
+        "endChar": 11
+      },
+      "revId": "42b3c5ac7c5dfe492beb8318db36eb013eda0ae2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5d346876_21295155",
+        "filename": "docs/video_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2019-09-11T16:35:31Z",
+      "side": 1,
+      "message": "I guess go/mdformat",
+      "parentUuid": "37293571_dbf770ff",
       "range": {
         "startLine": 5,
         "startChar": 64,
@@ -336,6 +384,24 @@
     },
     {
       "key": {
+        "uuid": "f7c099aa_b1c2d3e6",
+        "filename": "docs/video_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2019-09-11T16:35:31Z",
+      "side": 1,
+      "message": "Ah, that\u0027s a good point. Tast results are unavailable externally on both board.",
+      "parentUuid": "12417ad8_72860e92",
+      "revId": "42b3c5ac7c5dfe492beb8318db36eb013eda0ae2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4cb6efac_f22ab0b8",
         "filename": "docs/video_tests.md",
         "patchSetId": 4
@@ -415,6 +481,24 @@
       "revId": "42b3c5ac7c5dfe492beb8318db36eb013eda0ae2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b8ca5c7a_f655af8e",
+        "filename": "docs/video_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2019-09-11T16:35:31Z",
+      "side": 1,
+      "message": "sgtm. Thanks!",
+      "parentUuid": "4a902dee_c5378440",
+      "revId": "42b3c5ac7c5dfe492beb8318db36eb013eda0ae2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

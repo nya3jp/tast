@@ -95,7 +95,9 @@ func main() {
 			"mosys":                   "!betty && !tast_vm",
 			"no_android":              "!arc",
 			"no_asan":                 "!asan",
-			"no_symlink_mount":        "!lxc",                  // boards using LXC set CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT=n
+			"no_msan":                 "!msan",
+			"no_symlink_mount":        "!lxc", // boards using LXC set CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT=n
+			"no_ubsan":                "!ubsan",
 			"oci":                     "containers && !moblab", // run_oci doesn't work on Moblab: https://crbug.com/951691
 			"qemu":                    "betty || tast_vm",
 			"reboot":                  "!betty && !tast_vm",           // weird missing-runner-after-reboot bug: https://crbug.com/909955

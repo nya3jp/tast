@@ -60,6 +60,24 @@
     },
     {
       "key": {
+        "uuid": "e66eb728_46fab9c6",
+        "filename": "docs/video_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1288602
+      },
+      "writtenOn": "2019-09-11T04:29:12Z",
+      "side": 1,
+      "message": "cros/video/README.md sounds like a great idea, thanks!",
+      "parentUuid": "90e796bd_a78bcfad",
+      "revId": "42b3c5ac7c5dfe492beb8318db36eb013eda0ae2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c226ae71_7ec7fa4d",
         "filename": "docs/video_tests.md",
         "patchSetId": 4
@@ -71,6 +89,30 @@
       "writtenOn": "2019-09-10T14:54:16Z",
       "side": 1,
       "message": "huge nit: \nrun \"md_format --in_place video_tests.md\" and it will automatically fix format issues like:\n   \"of the decode\" fits in one line.\n\nand other nits.",
+      "range": {
+        "startLine": 5,
+        "startChar": 64,
+        "endLine": 6,
+        "endChar": 11
+      },
+      "revId": "42b3c5ac7c5dfe492beb8318db36eb013eda0ae2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "37293571_dbf770ff",
+        "filename": "docs/video_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1288602
+      },
+      "writtenOn": "2019-09-11T04:29:12Z",
+      "side": 1,
+      "message": "Where did you find md_format? I can\u0027t find it on my machine.",
+      "parentUuid": "c226ae71_7ec7fa4d",
       "range": {
         "startLine": 5,
         "startChar": 64,
@@ -100,6 +142,24 @@
     },
     {
       "key": {
+        "uuid": "eb2f3a6a_69e39a64",
+        "filename": "docs/video_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1288602
+      },
+      "writtenOn": "2019-09-11T04:29:12Z",
+      "side": 1,
+      "message": "Thanks!",
+      "parentUuid": "976089e4_9c601ba1",
+      "revId": "42b3c5ac7c5dfe492beb8318db36eb013eda0ae2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "81af797c_2a74d0ea",
         "filename": "docs/video_tests.md",
         "patchSetId": 4
@@ -120,6 +180,30 @@
       "revId": "42b3c5ac7c5dfe492beb8318db36eb013eda0ae2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cec53283_81ba63e2",
+        "filename": "docs/video_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1288602
+      },
+      "writtenOn": "2019-09-11T04:29:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "81af797c_2a74d0ea",
+      "range": {
+        "startLine": 26,
+        "startChar": 0,
+        "endLine": 26,
+        "endChar": 32
+      },
+      "revId": "42b3c5ac7c5dfe492beb8318db36eb013eda0ae2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -146,6 +230,30 @@
     },
     {
       "key": {
+        "uuid": "a6e852f8_31d6fc41",
+        "filename": "docs/video_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1288602
+      },
+      "writtenOn": "2019-09-11T04:29:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e9ad01b5_88e7aeee",
+      "range": {
+        "startLine": 31,
+        "startChar": 71,
+        "endLine": 31,
+        "endChar": 75
+      },
+      "revId": "42b3c5ac7c5dfe492beb8318db36eb013eda0ae2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0f5b935a_31110aba",
         "filename": "docs/video_tests.md",
         "patchSetId": 4
@@ -169,6 +277,30 @@
     },
     {
       "key": {
+        "uuid": "16706c7b_b930f6b5",
+        "filename": "docs/video_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1288602
+      },
+      "writtenOn": "2019-09-11T04:29:12Z",
+      "side": 1,
+      "message": "Thanks, didn\u0027t know that worked!",
+      "parentUuid": "0f5b935a_31110aba",
+      "range": {
+        "startLine": 37,
+        "startChar": 19,
+        "endLine": 37,
+        "endChar": 62
+      },
+      "revId": "42b3c5ac7c5dfe492beb8318db36eb013eda0ae2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "cc9c5377_6ff9038b",
         "filename": "docs/video_tests.md",
         "patchSetId": 4
@@ -180,6 +312,24 @@
       "writtenOn": "2019-09-10T09:38:50Z",
       "side": 1,
       "message": "optional: How about having a link to crosbolt or chromeperf?",
+      "revId": "42b3c5ac7c5dfe492beb8318db36eb013eda0ae2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "12417ad8_72860e92",
+        "filename": "docs/video_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1288602
+      },
+      "writtenOn": "2019-09-11T04:29:12Z",
+      "side": 1,
+      "message": "Is chromeperf/crosbolt available to externals? Lately it seems that a lot of Tast tests have disappeared from chromeperf again, I mostly use crosbolt now.",
+      "parentUuid": "cc9c5377_6ff9038b",
       "revId": "42b3c5ac7c5dfe492beb8318db36eb013eda0ae2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -209,6 +359,30 @@
     },
     {
       "key": {
+        "uuid": "26f95509_045100db",
+        "filename": "docs/video_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1288602
+      },
+      "writtenOn": "2019-09-11T04:29:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4cb6efac_f22ab0b8",
+      "range": {
+        "startLine": 136,
+        "startChar": 9,
+        "endLine": 136,
+        "endChar": 10
+      },
+      "revId": "42b3c5ac7c5dfe492beb8318db36eb013eda0ae2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "bf01ed72_441d3967",
         "filename": "docs/video_tests.md",
         "patchSetId": 4
@@ -220,6 +394,24 @@
       "writtenOn": "2019-09-10T09:38:50Z",
       "side": 1,
       "message": "Should we also explain video.ARC* and video.LibVDA*?",
+      "revId": "42b3c5ac7c5dfe492beb8318db36eb013eda0ae2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4a902dee_c5378440",
+        "filename": "docs/video_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 1288602
+      },
+      "writtenOn": "2019-09-11T04:29:12Z",
+      "side": 1,
+      "message": "This should be done in a future CL. I haven\u0027t described these yet as I\u0027m not very familiar with these tests. My plan is to finish this document, then ask people to add similar documentation for video.ARC*/video.LibVDA*/camera.*/webrtc.*",
+      "parentUuid": "bf01ed72_441d3967",
       "revId": "42b3c5ac7c5dfe492beb8318db36eb013eda0ae2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

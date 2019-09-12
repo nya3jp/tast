@@ -26,6 +26,13 @@ func getTargetFiles(g *git.Git) ([]string, error) {
 	return flag.Args(), nil
 }
 
+// isSupportPackageFile checks if a file path is of support packages.
+func isSupportPackageFile(path string) bool {
+	return isTestFile(path) &&
+		!strings.Contains(path, "src/chromiumos/tast/local/bundles/") &&
+		!strings.Contains(path, "src/chromiumos/tast/remote/bundles/")
+}
+
 // isTestFile checks if a file path is under Tast test directories.
 func isTestFile(path string) bool {
 	path, err := filepath.Abs(path)
@@ -99,6 +106,10 @@ func checkAll(g *git.Git, paths []string, debug bool) ([]*check.Issue, error) {
 			issues = append(issues, check.ForbiddenImports(fs, f)...)
 			issues = append(issues, check.InterFileRefs(fs, f)...)
 			issues = append(issues, check.Messages(fs, f)...)
+		}
+
+		if isSupportPackageFile(path) {
+			issues = append(issues, check.VerifyTestingState(fs, f)...)
 		}
 
 		// Only collect issues that weren't ignored by NOLINT comments.

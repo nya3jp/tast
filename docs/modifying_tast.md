@@ -126,7 +126,7 @@ builds when you run `FEATURES=test sudo emerge tast-cmd` (after running
 `cros_workon --host start tast-cmd`).
 
 *   Without any arguments, `fast_build.sh` compiles the `tast` executable to
-    `$HOME/bin/tast`.
+    `$HOME/go/bin/tast`.
 *   `fast_build.sh -t chromiumos/tast/testing` runs the unit tests for the
     `chromiumos/tast/testing` package.
 *   `fast_build.sh -T` runs all unit tests (including ones in the `tast-tests`

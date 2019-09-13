@@ -43,11 +43,6 @@ func isTestFile(path string) bool {
 		strings.Contains(path, "src/chromiumos/tast/remote/")
 }
 
-// isGoFile checks is a file is a Go code.
-func isGoFile(path string) bool {
-	return filepath.Ext(path) == ".go"
-}
-
 // hasFmtError runs gofmt to see if code has any formatting error.
 func hasFmtError(code []byte, path string) bool {
 	cmd := exec.Command("gofmt", "-l")
@@ -66,7 +61,11 @@ func checkAll(g *git.Git, paths []string, debug bool) ([]*check.Issue, error) {
 
 	var allIssues []*check.Issue
 	for _, path := range paths {
-		if !isGoFile(path) {
+		if !strings.HasSuffix(path, ".go") {
+			continue
+		}
+		// Exempt protoc-generated Go files from lint checks.
+		if strings.HasSuffix(path, ".pb.go") {
 			continue
 		}
 

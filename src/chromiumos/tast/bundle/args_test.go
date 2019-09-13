@@ -6,20 +6,16 @@ package bundle
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"io/ioutil"
-	"reflect"
-	gotesting "testing"
-	"time"
+	"testing"
 
-	"chromiumos/tast/testing"
+	"github.com/google/go-cmp/cmp"
 )
 
-var testFunc = func(context.Context, *testing.State) {}
-
 // newBufferWithArgs returns a bytes.Buffer containing the JSON representation of args.
-func newBufferWithArgs(t *gotesting.T, args *Args) *bytes.Buffer {
+func newBufferWithArgs(t *testing.T, args *Args) *bytes.Buffer {
+	t.Helper()
 	b := bytes.Buffer{}
 	if err := json.NewEncoder(&b).Encode(args); err != nil {
 		t.Fatal(err)
@@ -27,74 +23,53 @@ func newBufferWithArgs(t *gotesting.T, args *Args) *bytes.Buffer {
 	return &b
 }
 
-func TestReadArgsSortTests(t *gotesting.T) {
+func TestReadArgs(t *testing.T) {
 	const (
-		test1 = "pkg.Test1"
-		test2 = "pkg.Test2"
-		test3 = "pkg.Test3"
+		defaultDataDir = "/mock/data"
+		pattern        = "example.*"
 	)
 
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
-	defer restore()
-	testing.AddTestCase(&testing.TestCase{Name: test2, Func: testFunc})
-	testing.AddTestCase(&testing.TestCase{Name: test3, Func: testFunc})
-	testing.AddTestCase(&testing.TestCase{Name: test1, Func: testFunc})
+	args := &Args{
+		RunTests: &RunTestsArgs{
+			DataDir: defaultDataDir,
+		},
+	}
+	stdin := newBufferWithArgs(t, &Args{
+		Mode: ListTestsMode,
+		ListTests: &ListTestsArgs{
+			Patterns: []string{pattern},
+		},
+	})
+	if err := readArgs(nil, stdin, ioutil.Discard, args, localBundle); err != nil {
+		t.Fatal("readArgs failed: ", err)
+	}
 
-	stdin := newBufferWithArgs(t, &Args{Mode: RunTestsMode, RunTests: &RunTestsArgs{}})
-	tests, err := readArgs(nil, stdin, ioutil.Discard, &Args{}, &runConfig{}, localBundle)
-	if err != nil {
-		t.Fatal("readArgs() failed: ", err)
+	// Args are merged.
+	exp := &Args{
+		Mode: ListTestsMode,
+		RunTests: &RunTestsArgs{
+			DataDir: defaultDataDir,
+		},
+		ListTests: &ListTestsArgs{
+			Patterns: []string{pattern},
+		},
 	}
-	var act []string
-	for _, t := range tests {
-		act = append(act, t.Name)
-	}
-	if exp := []string{test1, test2, test3}; !reflect.DeepEqual(act, exp) {
-		t.Errorf("readArgs() returned tests %v; want sorted %v", act, exp)
+	if diff := cmp.Diff(args, exp); diff != "" {
+		t.Fatal("Args mismatch (-want +got): ", diff)
 	}
 }
 
-func TestReadArgsTestTimeouts(t *gotesting.T) {
-	const (
-		name1          = "pkg.Test1"
-		name2          = "pkg.Test2"
-		customTimeout  = 45 * time.Second
-		defaultTimeout = 30 * time.Second
-	)
-
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
-	defer restore()
-	testing.AddTestCase(&testing.TestCase{Name: name1, Func: testFunc, Timeout: customTimeout})
-	testing.AddTestCase(&testing.TestCase{Name: name2, Func: testFunc})
-
-	stdin := newBufferWithArgs(t, &Args{Mode: RunTestsMode, RunTests: &RunTestsArgs{}})
-	tests, err := readArgs(nil, stdin, ioutil.Discard, &Args{},
-		&runConfig{defaultTestTimeout: defaultTimeout}, localBundle)
-	if err != nil {
-		t.Fatal("readArgs() failed: ", err)
+func TestReadArgsDumpTests(t *testing.T) {
+	args := &Args{}
+	if err := readArgs([]string{"-dumptests"}, &bytes.Buffer{}, ioutil.Discard, args, localBundle); err != nil {
+		t.Fatal("readArgs failed: ", err)
 	}
 
-	act := make(map[string]time.Duration, len(tests))
-	for _, t := range tests {
-		act[t.Name] = t.Timeout
+	exp := &Args{
+		Mode:      ListTestsMode,
+		ListTests: &ListTestsArgs{},
 	}
-	exp := map[string]time.Duration{name1: customTimeout, name2: defaultTimeout}
-	if !reflect.DeepEqual(act, exp) {
-		t.Errorf("Wanted tests/timeouts %v; got %v", act, exp)
-	}
-}
-
-func TestReadArgsRegistrationError(t *gotesting.T) {
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
-	defer restore()
-	const name = "cat.MyTest"
-	testing.AddTestCase(&testing.TestCase{Name: name, Func: testFunc})
-
-	// Adding a test with same name should generate an error.
-	testing.AddTestCase(&testing.TestCase{Name: name, Func: testFunc})
-	stdin := newBufferWithArgs(t, &Args{Mode: RunTestsMode, RunTests: &RunTestsArgs{}})
-	if _, err := readArgs(nil, stdin, ioutil.Discard, &Args{},
-		&runConfig{}, localBundle); !errorHasStatus(err, statusBadTests) {
-		t.Errorf("readArgs() with bad test returned error %v; want status %v", err, statusBadTests)
+	if diff := cmp.Diff(args, exp); diff != "" {
+		t.Fatal("Args mismatch (-want +got): ", diff)
 	}
 }

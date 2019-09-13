@@ -11,11 +11,9 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"strings"
 	"time"
 
 	"chromiumos/tast/command"
-	"chromiumos/tast/testing"
 )
 
 // RunMode describes the bundle's behavior.
@@ -133,9 +131,8 @@ const (
 // readArgs parses runtime arguments.
 // clArgs contains command-line arguments and is typically os.Args[1:].
 // args contains default values for arguments and is further updated by decoding a JSON-marshaled Args struct from stdin.
-// Matched tests are returned. The caller is responsible for performing the requested action.
-func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer,
-	args *Args, cfg *runConfig, bt bundleType) ([]*testing.TestCase, error) {
+// The caller is responsible for performing the requested action.
+func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, bt bundleType) error {
 	if len(clArgs) != 0 {
 		flags := flag.NewFlagSet("", flag.ContinueOnError)
 		flags.SetOutput(stderr)
@@ -153,53 +150,26 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer,
 
 		dump := flags.Bool("dumptests", false, "dump all tests as a JSON-marshaled array of testing.Test structs")
 		if err := flags.Parse(clArgs); err != nil {
-			return nil, command.NewStatusErrorf(statusBadArgs, "%v", err)
+			return command.NewStatusErrorf(statusBadArgs, "%v", err)
 		}
 		if *dump {
 			args.Mode = ListTestsMode
-			return testing.GlobalRegistry().AllTests(), nil
+			args.ListTests = &ListTestsArgs{}
+			return nil
 		}
 	}
 
 	if err := json.NewDecoder(stdin).Decode(args); err != nil {
-		return nil, command.NewStatusErrorf(statusBadArgs, "failed to decode args from stdin: %v", err)
+		return command.NewStatusErrorf(statusBadArgs, "failed to decode args from stdin: %v", err)
 	}
 
 	if (args.Mode == RunTestsMode && args.RunTests == nil) ||
 		(args.Mode == ListTestsMode && args.ListTests == nil) {
-		return nil, command.NewStatusErrorf(statusBadArgs, "args not set for mode %v", args.Mode)
+		return command.NewStatusErrorf(statusBadArgs, "args not set for mode %v", args.Mode)
 	}
 
 	// Use non-zero-valued deprecated fields if they were supplied by an old test runner.
 	args.PromoteDeprecated()
 
-	if errs := testing.RegistrationErrors(); len(errs) > 0 {
-		es := make([]string, len(errs))
-		for i, err := range errs {
-			es[i] = err.Error()
-		}
-		return nil, command.NewStatusErrorf(statusBadTests, "error(s) in registered tests: %v", strings.Join(es, ", "))
-	}
-
-	var patterns []string
-	switch args.Mode {
-	case RunTestsMode:
-		patterns = args.RunTests.Patterns
-	case ListTestsMode:
-		patterns = args.ListTests.Patterns
-	default:
-		return nil, command.NewStatusErrorf(statusBadArgs, "invalid mode %d", args.Mode)
-	}
-
-	tests, err := testing.SelectTestsByArgs(testing.GlobalRegistry().AllTests(), patterns)
-	if err != nil {
-		return nil, command.NewStatusErrorf(statusBadPatterns, "failed getting tests for %v: %v", patterns, err.Error())
-	}
-	for _, tp := range tests {
-		if tp.Timeout == 0 {
-			tp.Timeout = cfg.defaultTestTimeout
-		}
-	}
-	testing.SortTests(tests)
-	return tests, nil
+	return nil
 }

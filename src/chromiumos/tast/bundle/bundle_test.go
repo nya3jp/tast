@@ -23,6 +23,8 @@ import (
 	"chromiumos/tast/testutil"
 )
 
+var testFunc = func(context.Context, *testing.State) {}
+
 // testPre implements both Precondition and preconditionImpl for unit tests.
 // TODO(derat): This is duplicated from tast/testing/test_test.go. Find a common location.
 type testPre struct {
@@ -539,6 +541,77 @@ func TestRunList(t *gotesting.T) {
 	}
 	if stdout.String() != exp.String() {
 		t.Errorf("run(%v) wrote %q; want %q", clArgs, stdout.String(), exp.String())
+	}
+}
+
+func TestRunRegistrationError(t *gotesting.T) {
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
+	defer restore()
+	const name = "cat.MyTest"
+	testing.AddTestCase(&testing.TestCase{Name: name, Func: testFunc})
+
+	// Adding a test with same name should generate an error.
+	testing.AddTestCase(&testing.TestCase{Name: name, Func: testFunc})
+
+	stdin := newBufferWithArgs(t, &Args{Mode: ListTestsMode, ListTests: &ListTestsArgs{}})
+	if status := run(context.Background(), nil, stdin, ioutil.Discard, ioutil.Discard,
+		&Args{}, &runConfig{}, localBundle); status != statusBadTests {
+		t.Errorf("run() with bad test returned status %v; want %v", status, statusBadTests)
+	}
+}
+
+func TestTestsToRunSortTests(t *gotesting.T) {
+	const (
+		test1 = "pkg.Test1"
+		test2 = "pkg.Test2"
+		test3 = "pkg.Test3"
+	)
+
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
+	defer restore()
+	testing.AddTestCase(&testing.TestCase{Name: test2, Func: testFunc})
+	testing.AddTestCase(&testing.TestCase{Name: test3, Func: testFunc})
+	testing.AddTestCase(&testing.TestCase{Name: test1, Func: testFunc})
+
+	tests, err := testsToRun(&runConfig{}, nil)
+	if err != nil {
+		t.Fatal("testsToRun failed: ", err)
+	}
+
+	var act []string
+	for _, t := range tests {
+		act = append(act, t.Name)
+	}
+	if exp := []string{test1, test2, test3}; !reflect.DeepEqual(act, exp) {
+		t.Errorf("testsToRun() returned tests %v; want sorted %v", act, exp)
+	}
+}
+
+func TestTestsToRunTestTimeouts(t *gotesting.T) {
+	const (
+		name1          = "pkg.Test1"
+		name2          = "pkg.Test2"
+		customTimeout  = 45 * time.Second
+		defaultTimeout = 30 * time.Second
+	)
+
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
+	defer restore()
+	testing.AddTestCase(&testing.TestCase{Name: name1, Func: testFunc, Timeout: customTimeout})
+	testing.AddTestCase(&testing.TestCase{Name: name2, Func: testFunc})
+
+	tests, err := testsToRun(&runConfig{defaultTestTimeout: defaultTimeout}, nil)
+	if err != nil {
+		t.Fatal("testsToRun failed: ", err)
+	}
+
+	act := make(map[string]time.Duration, len(tests))
+	for _, t := range tests {
+		act[t.Name] = t.Timeout
+	}
+	exp := map[string]time.Duration{name1: customTimeout, name2: defaultTimeout}
+	if !reflect.DeepEqual(act, exp) {
+		t.Errorf("Wanted tests/timeouts %v; got %v", act, exp)
 	}
 }
 

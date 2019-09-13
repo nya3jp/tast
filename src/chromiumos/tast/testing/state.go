@@ -120,6 +120,7 @@ func (s *State) testContext() *TestContext {
 		logger:       func(msg string) { s.Log(msg) },
 		outDir:       s.OutDir(),
 		softwareDeps: s.SoftwareDeps(),
+		serviceDeps:  s.ServiceDeps(),
 	}
 }
 
@@ -187,6 +188,11 @@ func (s *State) PreValue() interface{} { return s.preValue }
 // SoftwareDeps returns software dependencies declared in the currently running test.
 func (s *State) SoftwareDeps() []string {
 	return append([]string(nil), s.test.SoftwareDeps...)
+}
+
+// ServiceDeps returns service dependencies declared in the currently running test.
+func (s *State) ServiceDeps() []string {
+	return append([]string(nil), s.test.ServiceDeps...)
 }
 
 // Meta returns information about how the "tast" process used to initiate testing was run.

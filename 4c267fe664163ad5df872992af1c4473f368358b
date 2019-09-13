@@ -1,0 +1,370 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6efb674b_11c17b2a",
+        "filename": "src/chromiumos/cmd/tast-lint/check/disallow_testingstate.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-13T01:24:00Z",
+      "side": 1,
+      "message": "It depends on the situation, but in thins case, I think it\u0027s nice to make the method name a verb.\n\nHow about CheckTestingState, or VerifyTestingState?",
+      "range": {
+        "startLine": 13,
+        "startChar": 3,
+        "endLine": 13,
+        "endChar": 20
+      },
+      "revId": "4c267fe664163ad5df872992af1c4473f368358b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "03c24127_7fb42e45",
+        "filename": "src/chromiumos/cmd/tast-lint/check/disallow_testingstate.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-13T01:24:00Z",
+      "side": 1,
+      "message": "Line comment should be full sentence(s) (in imperative form, in most cases).\n\n// Ignore known valid use cases.",
+      "revId": "4c267fe664163ad5df872992af1c4473f368358b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b563ab19_d190d84d",
+        "filename": "src/chromiumos/cmd/tast-lint/check/disallow_testingstate.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-13T01:24:00Z",
+      "side": 1,
+      "message": "Could you also check the FuncLit, too?",
+      "revId": "4c267fe664163ad5df872992af1c4473f368358b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3b2a62b7_05183eaa",
+        "filename": "src/chromiumos/cmd/tast-lint/check/disallow_testingstate.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-13T01:24:00Z",
+      "side": 1,
+      "message": "to support FuncLit, I think it is necessary to recursively check.",
+      "range": {
+        "startLine": 27,
+        "startChar": 11,
+        "endLine": 27,
+        "endChar": 16
+      },
+      "revId": "4c267fe664163ad5df872992af1c4473f368358b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bc75e713_88a0bad9",
+        "filename": "src/chromiumos/cmd/tast-lint/check/disallow_testingstate.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-13T01:24:00Z",
+      "side": 1,
+      "message": "style: You can just overwrite \"ok\", instead, which is common pattern in go.",
+      "range": {
+        "startLine": 32,
+        "startChar": 8,
+        "endLine": 32,
+        "endChar": 11
+      },
+      "revId": "4c267fe664163ad5df872992af1c4473f368358b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2252ef4b_4ba8a43c",
+        "filename": "src/chromiumos/cmd/tast-lint/check/disallow_testingstate.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-13T01:24:00Z",
+      "side": 1,
+      "message": "style: Go prefers guard ish pattern for smaller number of indents.\n\nif !ok {\n  continue\n}\n\nditto for below.",
+      "range": {
+        "startLine": 33,
+        "startChar": 4,
+        "endLine": 33,
+        "endChar": 12
+      },
+      "revId": "4c267fe664163ad5df872992af1c4473f368358b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a4958554_bf462daa",
+        "filename": "src/chromiumos/cmd/tast-lint/check/disallow_testingstate.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-13T01:24:00Z",
+      "side": 1,
+      "message": "To match with testing.State, you don\u0027t need comp array and reformat.\nYou can just compare names directly.",
+      "range": {
+        "startLine": 31,
+        "startChar": 4,
+        "endLine": 56,
+        "endChar": 5
+      },
+      "revId": "4c267fe664163ad5df872992af1c4473f368358b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8027ae14_adfeb808",
+        "filename": "src/chromiumos/cmd/tast-lint/check/disallow_testingstate.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-13T01:24:00Z",
+      "side": 1,
+      "message": "Same as L27.",
+      "range": {
+        "startLine": 59,
+        "startChar": 10,
+        "endLine": 59,
+        "endChar": 15
+      },
+      "revId": "4c267fe664163ad5df872992af1c4473f368358b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "179b02dd_dd2d03df",
+        "filename": "src/chromiumos/cmd/tast-lint/check/disallow_testingstate.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-13T01:24:00Z",
+      "side": 1,
+      "message": "the namespace this function belongs to is the package.\nSo, this name looks a bit too generic.\nMaybe it\u0027s necessary to come up with concrete name.\nOr maybe inline because it\u0027s short...?",
+      "range": {
+        "startLine": 66,
+        "startChar": 5,
+        "endLine": 66,
+        "endChar": 18
+      },
+      "revId": "4c267fe664163ad5df872992af1c4473f368358b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0aed8ffb_b4ac782e",
+        "filename": "src/chromiumos/cmd/tast-lint/check/disallow_testingstate.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-13T01:24:00Z",
+      "side": 1,
+      "message": "Ditto for the line comment style.\n\nBTW, \"add if needed\" looks not much meaningful. Anyways if necessary, we need to add an entry here.",
+      "revId": "4c267fe664163ad5df872992af1c4473f368358b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "91a1cbb4_1e53b04d",
+        "filename": "src/chromiumos/cmd/tast-lint/check/disallow_testingstate.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-13T01:24:00Z",
+      "side": 1,
+      "message": "In this approach, whilelist instance could be created multiple times if compiler is not wise enough.\nCould you move this out from this function?\n\nname: how about \"allowList\" ?",
+      "revId": "4c267fe664163ad5df872992af1c4473f368358b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eee88459_1dba60fd",
+        "filename": "src/chromiumos/cmd/tast-lint/check/disallow_testingstate.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-13T01:24:00Z",
+      "side": 1,
+      "message": "The full path depends on the current working directory.\nThus, it is better to check if the given filepath ends with the src/chromium/tast/local/{something}.\n\nCould you add comments for each, why it is allowed?",
+      "revId": "4c267fe664163ad5df872992af1c4473f368358b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2e0cdb3e_c58cb967",
+        "filename": "src/chromiumos/cmd/tast-lint/check/disallow_testingstate.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-13T01:24:00Z",
+      "side": 1,
+      "message": "src/chromiumos/tast/local/faillog/faillog.go, src/chromiumos/tast/local/graphics/trace/trace.go and src/chromiumos/tast/local/media/binsetup/binsetup.go are missing.\nEventually, we\u0027d like to remove the use of testing.State from those files, but not yet at the moment unfortunately.",
+      "revId": "4c267fe664163ad5df872992af1c4473f368358b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a3f66d95_725fa774",
+        "filename": "src/chromiumos/cmd/tast-lint/check/disallow_testingstate_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-13T01:24:00Z",
+      "side": 1,
+      "message": "Could you add a test case for handling exceptionally allowed files?",
+      "revId": "4c267fe664163ad5df872992af1c4473f368358b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f92fc51c_9cf7483a",
+        "filename": "src/chromiumos/cmd/tast-lint/check/disallow_testingstate_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-13T01:24:00Z",
+      "side": 1,
+      "message": "Looks redundant? Ditto for below.",
+      "range": {
+        "startLine": 22,
+        "startChar": 17,
+        "endLine": 22,
+        "endChar": 22
+      },
+      "revId": "4c267fe664163ad5df872992af1c4473f368358b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f9e48a6a_5012216f",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-13T01:24:00Z",
+      "side": 1,
+      "message": "\"is\" is followed by a singular form. In precise, given \"path\" is not a \"package\" but a go file.\nCould you reflect the fact to the name?",
+      "range": {
+        "startLine": 29,
+        "startChar": 3,
+        "endLine": 29,
+        "endChar": 20
+      },
+      "revId": "4c267fe664163ad5df872992af1c4473f368358b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aa4d9b34_94fa6edb",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-13T01:24:00Z",
+      "side": 1,
+      "message": "Could you share common code with isTestFile.",
+      "revId": "4c267fe664163ad5df872992af1c4473f368358b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0ffaff3d_7cdd587f",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-13T01:24:00Z",
+      "side": 1,
+      "message": "With this condition,\n\nsrc/chromiumos/tast/local/bundlemain is handled as non-support-lib code.\nCould you fix?",
+      "range": {
+        "startLine": 44,
+        "startChar": 26,
+        "endLine": 44,
+        "endChar": 35
+      },
+      "revId": "4c267fe664163ad5df872992af1c4473f368358b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

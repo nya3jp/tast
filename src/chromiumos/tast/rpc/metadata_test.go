@@ -47,7 +47,19 @@ func TestIncomingTestContext(t *gotesting.T) {
 	md := metadata.MD{
 		metadataSoftwareDeps: []string{"chrome", "android"},
 	}
-	tc := incomingTestContext(md)
+	var lastMsg string
+	logger := func(msg string) { lastMsg = msg }
+
+	tc := incomingTestContext(md, logger)
+
+	// Functions are not comparable, so test tc.Logger first and set it to nil.
+	if tc.Logger == nil {
+		t.Error("tc.Logger is nil")
+	} else if tc.Logger("foo"); lastMsg != "foo" {
+		t.Error("tc.Logger does not work as expected")
+	}
+	tc.Logger = nil
+
 	exp := &testing.TestContext{
 		SoftwareDeps: md[metadataSoftwareDeps],
 	}

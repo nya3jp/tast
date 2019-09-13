@@ -101,7 +101,7 @@ func newPingPair(ctx context.Context, t *gotesting.T, onPing func(context.Contex
 }
 
 func TestRPCSuccess(t *gotesting.T) {
-	ctx := context.Background()
+	ctx := testing.WithTestContext(context.Background(), &testing.TestContext{})
 	called := false
 	pp := newPingPair(ctx, t, func(context.Context) error {
 		called = true
@@ -121,7 +121,7 @@ func TestRPCSuccess(t *gotesting.T) {
 }
 
 func TestRPCFailure(t *gotesting.T) {
-	ctx := context.Background()
+	ctx := testing.WithTestContext(context.Background(), &testing.TestContext{})
 	called := false
 	pp := newPingPair(ctx, t, func(context.Context) error {
 		called = true
@@ -141,7 +141,7 @@ func TestRPCFailure(t *gotesting.T) {
 }
 
 func TestRPCNoTestContext(t *gotesting.T) {
-	ctx := context.Background()
+	ctx := testing.WithTestContext(context.Background(), &testing.TestContext{})
 	called := false
 	pp := newPingPair(ctx, t, func(context.Context) error {
 		called = true
@@ -149,7 +149,7 @@ func TestRPCNoTestContext(t *gotesting.T) {
 	})
 	defer pp.Close(ctx)
 
-	if _, err := pp.Client.Ping(ctx, &PingRequest{}); err == nil {
+	if _, err := pp.Client.Ping(context.Background(), &PingRequest{}); err == nil {
 		t.Error("Ping unexpectedly succeeded for a context missing TestContext")
 	}
 	if called {
@@ -158,7 +158,7 @@ func TestRPCNoTestContext(t *gotesting.T) {
 }
 
 func TestRPCRejectUndeclaredServices(t *gotesting.T) {
-	ctx := context.Background()
+	ctx := testing.WithTestContext(context.Background(), &testing.TestContext{})
 	pp := newPingPair(ctx, t, func(context.Context) error { return nil })
 	defer pp.Close(ctx)
 
@@ -173,7 +173,7 @@ func TestRPCRejectUndeclaredServices(t *gotesting.T) {
 func TestRPCForwardTestContext(t *gotesting.T) {
 	expectedDeps := []string{"chrome", "android"}
 
-	ctx := context.Background()
+	ctx := testing.WithTestContext(context.Background(), &testing.TestContext{})
 	called := false
 	var deps []string
 	var depsOK bool
@@ -201,5 +201,36 @@ func TestRPCForwardTestContext(t *gotesting.T) {
 		t.Error("SoftwareDeps unavailable")
 	} else if !reflect.DeepEqual(deps, expectedDeps) {
 		t.Errorf("SoftwareDeps mismatch: got %v, want %v", deps, expectedDeps)
+	}
+}
+
+func TestRPCForwardLogs(t *gotesting.T) {
+	const exp = "hello"
+
+	logs := make(chan string, 1)
+	ctx := testing.WithTestContext(context.Background(), &testing.TestContext{
+		Logger: func(msg string) { logs <- msg },
+	})
+
+	called := false
+	pp := newPingPair(ctx, t, func(ctx context.Context) error {
+		called = true
+		testing.ContextLog(ctx, exp)
+		return nil
+	})
+	defer pp.Close(ctx)
+
+	callCtx := testing.WithTestContext(ctx, &testing.TestContext{
+		ServiceDeps: []string{pingServiceName},
+	})
+	if _, err := pp.Client.Ping(callCtx, &PingRequest{}); err != nil {
+		t.Error("Ping failed: ", err)
+	}
+	if !called {
+		t.Error("onPing not called")
+	}
+
+	if msg := <-logs; msg != exp {
+		t.Errorf("Got log %q; want %q", msg, exp)
 	}
 }

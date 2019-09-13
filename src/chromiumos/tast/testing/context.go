@@ -103,10 +103,10 @@ const (
 	metadataSoftwareDeps = "tast-testcontext-softwaredeps"
 )
 
-func TestContextFromRPCMetadata(md metadata.MD) (*TestContext, error) {
+func TestContextFromRPCMetadata(md metadata.MD, logger func(msg string)) (*TestContext, error) {
 	softwareDeps := md[metadataSoftwareDeps]
 	return &TestContext{
-		// TODO(crbug.com/969627): Support log forwarding.
+		Logger: logger,
 		// TODO(crbug.com/969627): Support OutDir in gRPC services.
 		SoftwareDeps: softwareDeps,
 		// ServiceDeps is not available in gRPC services.

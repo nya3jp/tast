@@ -20,12 +20,6 @@ import (
 	"chromiumos/tast/errors/stack"
 )
 
-// Key type for objects attached to context.Context objects.
-type contextKeyType string
-
-// Key used for attaching a *State to a context.Context.
-var logKey contextKeyType = "log"
-
 const metaCategory = "meta" // category for remote tests exercising Tast, as in "meta.TestName"
 
 // Error describes an error encountered while running a test.
@@ -117,6 +111,15 @@ func (s *State) close() {
 	if !s.closed {
 		close(s.ch)
 		s.closed = true
+	}
+}
+
+// testContext returns a TestContext for the test.
+func (s *State) testContext() *TestContext {
+	return &TestContext{
+		logger:       func(msg string) { s.Log(msg) },
+		outDir:       s.OutDir(),
+		softwareDeps: s.SoftwareDeps(),
 	}
 }
 
@@ -380,40 +383,4 @@ func NewError(err error, fullMsg, lastMsg string, skipFrames int) *Error {
 		Line:   ln,
 		Stack:  trace,
 	}
-}
-
-// ContextLog formats its arguments using default formatting and logs them via
-// ctx. It is intended to be used for informational logging by packages
-// providing support for tests. If testing.State is available, just call
-// State.Log or State.Logf instead.
-func ContextLog(ctx context.Context, args ...interface{}) {
-	if s, ok := ctx.Value(logKey).(*State); ok {
-		s.Log(args...)
-	}
-}
-
-// ContextLogf is similar to ContextLog but formats its arguments using fmt.Sprintf.
-func ContextLogf(ctx context.Context, format string, args ...interface{}) {
-	if s, ok := ctx.Value(logKey).(*State); ok {
-		s.Logf(format, args...)
-	}
-}
-
-// ContextOutDir is similar to OutDir but takes context instead. It is intended to be
-// used by packages providing support for tests that need to write files.
-func ContextOutDir(ctx context.Context) (dir string, ok bool) {
-	if s, ok := ctx.Value(logKey).(*State); ok {
-		return s.OutDir(), true
-	}
-	return "", false
-}
-
-// ContextSoftwareDeps is similar to SoftwareDeps but takes context instead.
-// It is intended to be used by packages providing support for tests that want to
-// make sure tests declare proper dependencies.
-func ContextSoftwareDeps(ctx context.Context) ([]string, bool) {
-	if s, ok := ctx.Value(logKey).(*State); ok {
-		return s.SoftwareDeps(), true
-	}
-	return nil, false
 }

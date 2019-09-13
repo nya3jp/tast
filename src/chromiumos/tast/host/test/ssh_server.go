@@ -189,8 +189,7 @@ func (s *SSHServer) handleConn(conn net.Conn) error {
 
 // handleChannel services a channel. Only "exec" requests are supported.
 func (s *SSHServer) handleChannel(ch ssh.Channel, reqs <-chan *ssh.Request) {
-	abort := make(chan struct{})
-	aborted := false
+	defer ch.Close()
 
 	for req := range reqs {
 		switch req.Type {
@@ -203,27 +202,12 @@ func (s *SSHServer) handleChannel(ch ssh.Channel, reqs <-chan *ssh.Request) {
 				req.Reply(false, nil)
 			} else {
 				er := ExecReq{cmd, ch, req, false}
-				done := make(chan struct{})
-				go func() {
-					s.execHandler(&er)
-					close(done)
-				}()
-				go func() {
-					select {
-					case <-done:
-					case <-abort:
-						er.End(137) // pretend to be killed by SIGKILL
-					}
+				s.execHandler(&er)
+				if er.success {
 					// Only one "exec" request can succeed per channel (see RFC 4254 6.5).
-					ch.Close()
-				}()
+					return
+				}
 			}
-		case "signal":
-			if !aborted {
-				close(abort)
-				aborted = true
-			}
-			req.Reply(true, nil)
 		default:
 			log.Printf("Unhandled request of type %q", req.Type)
 			req.Reply(false, nil)

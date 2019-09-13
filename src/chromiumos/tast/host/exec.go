@@ -45,7 +45,6 @@ type Cmd struct {
 	ssh *SSH
 
 	state                  cmdState
-	done                   chan struct{}  // closed when state is set to stateDone
 	abort                  chan struct{}  // closed when Abort is called
 	stdoutPipe, stderrPipe *io.PipeWriter // set when StdoutPipe/StderrPipe are called
 	onceClose              sync.Once      // used to close stdoutPipe/stderrPipe just once
@@ -87,7 +86,6 @@ func (s *SSH) Command(name string, args ...string) *Cmd {
 	return &Cmd{
 		Args:  append([]string{name}, args...),
 		ssh:   s,
-		done:  make(chan struct{}),
 		abort: make(chan struct{}),
 	}
 }
@@ -253,7 +251,6 @@ func (c *Cmd) Start(ctx context.Context) error {
 		c.sess.Close()
 	}); err != nil {
 		c.state = stateDone
-		close(c.done)
 		c.closePipes(io.EOF)
 		return err
 	}
@@ -281,13 +278,14 @@ func (c *Cmd) Wait(ctx context.Context) error {
 	})
 }
 
-// Abort requests to abort all I/O operations and send SIGKILL to the remote
-// process.
+// Abort requests to abort the command execution.
 //
 // This method does not block, but you still need to call Wait. It is safe to
 // call this method while calling Wait/Run/Output/CombinedOutput in another
-// goroutine. This method can be called at most once.
+// goroutine. After calling this method, Wait/Run/Output/CombinedOutput will
+// return immediately. This method can be called at most once.
 func (c *Cmd) Abort() {
+	c.closePipes(errors.New("aborted by client"))
 	close(c.abort)
 }
 
@@ -318,13 +316,11 @@ func (c *Cmd) startSession(ctx context.Context) error {
 		}
 	}); err != nil {
 		c.state = stateDone
-		close(c.done)
 		c.closePipes(io.EOF)
 		return fmt.Errorf("failed to create session: %v", err)
 	}
 
 	c.sess = sess
-	go c.handleAbort(ctx)
 	return nil
 }
 
@@ -368,22 +364,6 @@ func (c *Cmd) setupSession(sess *ssh.Session) error {
 	return nil
 }
 
-// handleAbort kills the command and closes the pipes when abort is requested
-// or the context deadline is reached. This is called on a background goroutine
-// after successfully creating a new session to make sure deadlines are honored.
-func (c *Cmd) handleAbort(ctx context.Context) {
-	select {
-	case <-c.done:
-		return
-	case <-ctx.Done():
-	case <-c.abort:
-	}
-
-	// Close pipes first since Signal may block.
-	c.closePipes(ctx.Err())
-	c.sess.Signal(ssh.SIGKILL)
-}
-
 // waitAndClose runs f which waits for the command to finish, and close the
 // session.
 func (c *Cmd) waitAndClose(ctx context.Context, f func() error) error {
@@ -392,6 +372,18 @@ func (c *Cmd) waitAndClose(ctx context.Context, f func() error) error {
 	}
 
 	c.state = stateClosing
+
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
+	// Cancel the context when Abort is called.
+	go func() {
+		select {
+		case <-c.abort:
+			cancel()
+		case <-ctx.Done():
+		}
+	}()
 
 	retErr := doAsync(ctx, f, nil)
 
@@ -407,7 +399,6 @@ func (c *Cmd) waitAndClose(ctx context.Context, f func() error) error {
 	}
 
 	c.state = stateDone
-	close(c.done)
 	return retErr
 }
 

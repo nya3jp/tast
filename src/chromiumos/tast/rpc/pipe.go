@@ -5,10 +5,13 @@
 package rpc
 
 import (
+	"context"
 	"errors"
 	"io"
 	"net"
 	"time"
+
+	"google.golang.org/grpc"
 )
 
 var (
@@ -117,3 +120,17 @@ func (l *PipeListener) Addr() net.Addr {
 }
 
 var _ net.Listener = (*PipeListener)(nil)
+
+// NewPipeClientConn constructs ClientConn based on r and w.
+//
+// The returned ClientConn is suitable for talking with a gRPC server over a
+// bidirectional pipe.
+func NewPipeClientConn(ctx context.Context, r io.Reader, w io.Writer, extraOpts ...grpc.DialOption) (*grpc.ClientConn, error) {
+	opts := append([]grpc.DialOption{
+		grpc.WithInsecure(),
+		grpc.WithDialer(func(string, time.Duration) (net.Conn, error) {
+			return &pipeConn{r: r, w: w}, nil
+		}),
+	}, extraOpts...)
+	return grpc.DialContext(ctx, "", opts...)
+}

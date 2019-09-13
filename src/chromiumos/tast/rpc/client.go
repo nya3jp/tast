@@ -26,6 +26,7 @@ type Client struct {
 	// Conn is the gRPC connection. Use this to create gRPC service stubs.
 	Conn *grpc.ClientConn
 
+	log *remoteLoggingClient
 	// clean is a function to be called on closing the client.
 	// In the typical case of a gRPC connection established over an SSH connection,
 	// this function should terminate the test bundle executable running on the DUT.
@@ -35,6 +36,9 @@ type Client struct {
 // Close closes this client.
 func (c *Client) Close(ctx context.Context) error {
 	var firstErr error
+	if err := c.log.Close(); err != nil && firstErr == nil {
+		firstErr = err
+	}
 	if err := c.Conn.Close(); err != nil && firstErr == nil {
 		firstErr = err
 	}
@@ -103,10 +107,20 @@ func newClient(ctx context.Context, r io.Reader, w io.Writer, clean func(context
 		}
 	}()
 
+	log, err := newRemoteLoggingClient(ctx, conn, func(msg string) { testing.ContextLog(ctx, msg) })
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to start remote logging")
+	}
+
 	return &Client{
 		Conn:  conn,
+		log:   log,
 		clean: clean,
 	}, nil
+}
+
+var alwaysAllowedServices = []string{
+	"tast.core.Logging",
 }
 
 // clientOpts returns gRPC client-side interceptors to manipulate context.
@@ -117,6 +131,7 @@ func clientOpts() []grpc.DialOption {
 		if !ok {
 			return nil, status.Errorf(codes.FailedPrecondition, "refusing to call %s because ServiceDeps is unavailable (using a wrong context?)", method)
 		}
+		svcs = append(svcs, alwaysAllowedServices...)
 		matched := false
 		for _, svc := range svcs {
 			if strings.HasPrefix(method, fmt.Sprintf("/%s/", svc)) {

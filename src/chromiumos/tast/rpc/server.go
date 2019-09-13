@@ -19,7 +19,9 @@ import (
 // RunServer runs a gRPC server providing svcs on r/w channels.
 // It blocks until the client connection is closed or it encounters an error.
 func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service) error {
-	srv := grpc.NewServer(serverOpts()...)
+	ls := newRemoteLoggingServer()
+	srv := grpc.NewServer(serverOpts(ls.Log)...)
+	RegisterLoggingServer(srv, ls)
 
 	// Register the reflection service for easier debugging.
 	reflection.Register(srv)
@@ -48,13 +50,13 @@ func (s *serverStreamWithContext) Context() context.Context {
 var _ grpc.ServerStream = (*serverStreamWithContext)(nil)
 
 // serverOpts returns gRPC server-side interceptors to manipulate context.
-func serverOpts() []grpc.ServerOption {
+func serverOpts(logger func(msg string)) []grpc.ServerOption {
 	before := func(ctx context.Context) (context.Context, error) {
 		md, ok := metadata.FromIncomingContext(ctx)
 		if !ok {
 			return nil, errors.New("metadata not available")
 		}
-		tc := incomingTestContext(md)
+		tc := incomingTestContext(md, logger)
 		return testing.WithTestContext(ctx, tc), nil
 	}
 

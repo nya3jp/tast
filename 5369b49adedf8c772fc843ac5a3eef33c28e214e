@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8e38b23a_d59822df",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-13T16:01:37Z",
+      "side": 1,
+      "message": "huge nit: I often see no empty line between BUG\u003d and TEST\u003d lines.",
+      "revId": "5369b49adedf8c772fc843ac5a3eef33c28e214e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4e45e1af_5e77c912",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-13T16:01:37Z",
+      "side": 1,
+      "message": "huge nit. s/  / / (two spaces -\u003e one space).",
+      "range": {
+        "startLine": 70,
+        "startChar": 41,
+        "endLine": 70,
+        "endChar": 43
+      },
+      "revId": "5369b49adedf8c772fc843ac5a3eef33c28e214e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

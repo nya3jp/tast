@@ -99,14 +99,14 @@ const (
 	metadataSoftwareDeps = "tast-testcontext-softwaredeps"
 )
 
-func TestContextFromRPCMetadata(md metadata.MD) (*TestContext, error) {
+func TestContextFromRPCMetadata(md metadata.MD, logger func(msg string)) (*TestContext, error) {
 	outDirs := md[metadataOutDir]
 	if len(outDirs) != 1 {
 		return nil, fmt.Errorf("metadata corrupted: %s = %q; want 1 element", metadataOutDir, outDirs)
 	}
 	softwareDeps := md[metadataSoftwareDeps]
 	return &TestContext{
-		// TODO(crbug.com/965896): Support log forwarding.
+		logger:       logger,
 		outDir:       outDirs[0],
 		softwareDeps: softwareDeps,
 	}, nil

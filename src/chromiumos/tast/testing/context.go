@@ -26,6 +26,7 @@ type TestContext struct {
 	logger       func(msg string)
 	outDir       string
 	softwareDeps []string
+	serviceDeps  []string
 }
 
 // WithTestContext attaches TestContext to context.Context.
@@ -77,4 +78,15 @@ func ContextSoftwareDeps(ctx context.Context) ([]string, bool) {
 		return nil, false
 	}
 	return append([]string(nil), tc.softwareDeps...), true
+}
+
+// ContextServiceDeps is similar to ServiceDeps but takes context instead.
+// It is intended to be used by packages providing support for tests that want to
+// make sure tests declare proper dependencies.
+func ContextServiceDeps(ctx context.Context) ([]string, bool) {
+	tc, ok := ctx.Value(testContextKey).(*TestContext)
+	if !ok {
+		return nil, false
+	}
+	return append([]string(nil), tc.serviceDeps...), true
 }

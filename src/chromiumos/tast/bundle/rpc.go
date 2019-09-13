@@ -11,6 +11,7 @@ import (
 	"google.golang.org/grpc/reflection"
 
 	"chromiumos/tast/rpc"
+	"chromiumos/tast/testing"
 )
 
 // runRPCServer runs a gRPC server on stdin and stdout.
@@ -19,6 +20,10 @@ func runRPCServer(stdin io.Reader, stdout io.Writer) error {
 
 	// Register the reflection service for easier debugging.
 	reflection.Register(srv)
+
+	for _, s := range testing.GlobalRegistry().AllServices() {
+		s.Register(srv, &testing.ServiceState{})
+	}
 
 	if err := srv.Serve(rpc.NewPipeListener(stdin, stdout)); err != nil && err != io.EOF {
 		return err

@@ -117,10 +117,10 @@ func ContextRPCMetadata(ctx context.Context) (metadata.MD, bool) {
 
 // TestContextFromRPCMetadata creates TestContext from metadata.MD.
 // It is called on gRPC servers to forward TestContext over gRPC.
-func TestContextFromRPCMetadata(md metadata.MD) (*TestContext, error) {
+func TestContextFromRPCMetadata(md metadata.MD, logger func(msg string)) (*TestContext, error) {
 	softwareDeps := md[metadataSoftwareDeps]
 	return &TestContext{
-		// TODO(crbug.com/969627): Support log forwarding.
+		Logger: logger,
 		// TODO(crbug.com/969627): Support OutDir.
 		SoftwareDeps: softwareDeps,
 		// ServiceDeps is not forwarded.

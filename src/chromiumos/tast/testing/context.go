@@ -8,6 +8,8 @@ import (
 	"context"
 	"fmt"
 
+	"google.golang.org/grpc/metadata"
+
 	"chromiumos/tast/caller"
 )
 
@@ -33,7 +35,7 @@ type TestContext struct {
 // be called from tests.
 func WithTestContext(ctx context.Context, tc *TestContext) context.Context {
 	caller.Check(2, []string{
-		// NOTE: chromiumos/tast/bundle is added here soon.
+		"chromiumos/tast/bundle",
 		"chromiumos/tast/testing",
 	})
 	return context.WithValue(ctx, testContextKey, tc)
@@ -90,4 +92,34 @@ func ContextServiceDeps(ctx context.Context) ([]string, bool) {
 		return nil, false
 	}
 	return append([]string(nil), tc.serviceDeps...), true
+}
+
+// Keys of metadata.MD. Allowed characters are [a-z0-9._-].
+const (
+	metadataOutDir       = "tast-testcontext-outdir"
+	metadataSoftwareDeps = "tast-testcontext-softwaredeps"
+)
+
+func TestContextFromRPCMetadata(md metadata.MD) (*TestContext, error) {
+	outDirs := md[metadataOutDir]
+	if len(outDirs) != 1 {
+		return nil, fmt.Errorf("metadata corrupted: %s = %q; want 1 element", metadataOutDir, outDirs)
+	}
+	softwareDeps := md[metadataSoftwareDeps]
+	return &TestContext{
+		// TODO(crbug.com/965896): Support log forwarding.
+		outDir:       outDirs[0],
+		softwareDeps: softwareDeps,
+	}, nil
+}
+
+func ContextRPCMetadata(ctx context.Context) (metadata.MD, bool) {
+	tc, ok := ctx.Value(testContextKey).(*TestContext)
+	if !ok {
+		return nil, false
+	}
+	return metadata.MD{
+		metadataOutDir:       []string{tc.outDir},
+		metadataSoftwareDeps: append([]string(nil), tc.softwareDeps...),
+	}, true
 }

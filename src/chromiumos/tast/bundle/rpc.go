@@ -19,7 +19,9 @@ import (
 
 // runRPCServer runs a gRPC server on stdin and stdout.
 func runRPCServer(stdin io.Reader, stdout io.Writer) error {
-	srv := grpc.NewServer(interceptors()...)
+	ls := rpc.NewLoggingServerImpl()
+	srv := grpc.NewServer(interceptors(ls.Log)...)
+	rpc.RegisterLoggingServer(srv, ls)
 	reflection.Register(srv)
 
 	for _, s := range testing.GlobalRegistry().AllServices() {
@@ -43,13 +45,13 @@ func (s *serverStreamWithContext) Context() context.Context {
 
 var _ grpc.ServerStream = (*serverStreamWithContext)(nil)
 
-func interceptors() []grpc.ServerOption {
+func interceptors(logger func(msg string)) []grpc.ServerOption {
 	before := func(ctx context.Context) (context.Context, error) {
 		md, ok := metadata.FromIncomingContext(ctx)
 		if !ok {
 			return nil, errors.New("metadata not available")
 		}
-		tc, err := testing.TestContextFromRPCMetadata(md)
+		tc, err := testing.TestContextFromRPCMetadata(md, logger)
 		if err != nil {
 			return nil, err
 		}

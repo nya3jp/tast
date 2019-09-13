@@ -9,18 +9,28 @@ import (
 )
 
 func TestTestingState(t *testing.T) {
+	const path1 = "/src/chromiumos/tast/local/test1.go"
+	const path2 = "/src/chromiumos/tast/local/arc/pre.go"
 	const code = `package main
   func A(id int.abc, a *float64.hoge, b *testing.State) {}
-  func B(dame *testing.State) {}
+  func B(dame *testing.State) {
+		fn(decl, func(a int, param *testing.State) bool {
+			return false
+		})
+	}
 `
-	const path = "/src/chromiumos/tast/local/bundles/cros/example/do_stuff.go"
-
-	f, fs := parse(code, path)
-
-	issues := TestingStateCheck(fs, f)
+	f, fs := parse(code, path1)
+	issues := VerifyTestingState(fs, f)
 	expects := []string{
-		path + ":2:42: " + "'testing.State' should not be used in support packages",
-		path + ":3:16: " + "'testing.State' should not be used in support packages",
+		path1 + ":2:42: 'testing.State' should not be used in support packages",
+		path1 + ":3:16: 'testing.State' should not be used in support packages",
+		path1 + ":4:31: 'testing.State' should not be used in support packages",
 	}
 	verifyIssues(t, issues, expects)
+
+	// Test for specific allowed files
+	f2, fs2 := parse(code, path2)
+	issues2 := VerifyTestingState(fs2, f2)
+	expects2 := []string{}
+	verifyIssues(t, issues2, expects2)
 }

@@ -26,22 +26,11 @@ func getTargetFiles(g *git.Git) ([]string, error) {
 	return flag.Args(), nil
 }
 
-// isSupportPackages checks if a file path is of support packages.
-func isSupportPackages(path string) bool {
-	path, err := filepath.Abs(path)
-	if err != nil {
-		return false
-	}
-	// Scripts and packages used for code generation are ignored since they're executed by "go run"
-	// and can't easily include normal Tast packages.
-	d := filepath.Dir(path)
-	if strings.HasSuffix(d, "/gen") || strings.HasSuffix(d, "/genutil") {
-		return false
-	}
-
-	return (strings.Contains(path, "src/chromiumos/tast/local/") ||
-		strings.Contains(path, "src/chromiumos/tast/remote/")) &&
-		!strings.Contains(path, "/bundle")
+// isSupportPackageFile checks if a file path is of support packages.
+func isSupportPackageFile(path string) bool {
+	return isTestFile(path) &&
+		!strings.Contains(path, "src/chromiumos/tast/local/bundles/") &&
+		!strings.Contains(path, "src/chromiumos/tast/remote/bundles/")
 }
 
 // isTestFile checks if a file path is under Tast test directories.
@@ -120,8 +109,8 @@ func checkAll(g *git.Git, paths []string, debug bool) ([]*check.Issue, error) {
 			issues = append(issues, check.Messages(fs, f)...)
 		}
 
-		if isSupportPackages(path) {
-			issues = append(issues, check.TestingStateCheck(fs, f)...)
+		if isSupportPackageFile(path) {
+			issues = append(issues, check.VerifyTestingState(fs, f)...)
 		}
 
 		// Only collect issues that weren't ignored by NOLINT comments.

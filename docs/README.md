@@ -15,7 +15,7 @@ For more general information about Tast, see [README](../README.md).
 *   [Test Dependencies](test_dependencies.md)
 *   [Test Validation](test_validation.md)
 *   [Public test repository](https://chromium.googlesource.com/chromiumos/platform/tast-tests/)
-*   [Video Tests](https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/refs/heads/master/src/chromiumos/tast/local/bundles/cros/video/)
+*   [Video Tests](https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/refs/heads/master/src/chromiumos/tast/local/bundles/cros/video/README.md)
 
 ## Tast framework
 

@@ -73,3 +73,17 @@ func TestReadArgsDumpTests(t *testing.T) {
 		t.Fatal("Args mismatch (-want +got): ", diff)
 	}
 }
+
+func TestReadArgsRPC(t *testing.T) {
+	args := &Args{}
+	if err := readArgs([]string{"-rpc"}, &bytes.Buffer{}, ioutil.Discard, args, localBundle); err != nil {
+		t.Fatal("readArgs failed: ", err)
+	}
+
+	exp := &Args{
+		Mode: RPCMode,
+	}
+	if diff := cmp.Diff(args, exp); diff != "" {
+		t.Fatal("Args mismatch (-want +got): ", diff)
+	}
+}

@@ -378,3 +378,39 @@ func TestMeta(t *gotesting.T) {
 		t.Errorf("Meta() = %+v despite nil info", *m)
 	}
 }
+
+func TestConvertParam(t *gotesting.T) {
+	type p struct {
+		I int
+		S string
+	}
+	for _, c := range []struct {
+		name     string
+		param    map[string]interface{}
+		expected *p
+	}{
+		{"base", map[string]interface{}{"i": 42, "s": "foo"}, &p{I: 42, S: "foo"}},
+		{"no_value", map[string]interface{}{}, &p{}},
+		{"extra_value", map[string]interface{}{"i": 42, "s": "foo", "foo": "bar"}, &p{I: 42, S: "foo"}},
+		{"unmarshal_failure", map[string]interface{}{"i": "str"}, nil},
+		{"marshal_failure", map[string]interface{}{"i": 42, "s": "foo", "func": func() {}}, nil},
+	} {
+		t.Run(c.name, func(t *gotesting.T) {
+			s := newState(&TestCase{Name: "meta.ConvertParam." + c.name, Val: c.param}, nil, &TestConfig{})
+			var got p
+			err := s.ConvertParam(&got)
+			if c.expected == nil {
+				if err == nil {
+					t.Fatalf("Expected failure, got %#v", got)
+				}
+				return
+			}
+			if got.I != c.expected.I {
+				t.Errorf("Expected %d, got %d", c.expected.I, got.I)
+			}
+			if got.S != c.expected.S {
+				t.Errorf("Expected %s, got %s", c.expected.S, got.S)
+			}
+		})
+	}
+}

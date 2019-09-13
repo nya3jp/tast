@@ -6,6 +6,7 @@ package testing
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -135,6 +136,15 @@ func (s *State) DataPath(p string) string {
 // Param returns Val specified at the Param struct for the current test case.
 func (s *State) Param() interface{} {
 	return s.test.Val
+}
+
+// ConvertParam converts Val at the current Param into p.
+func (s *State) ConvertParam(p interface{}) error {
+	buf, err := json.Marshal(s.Param())
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(buf, p)
 }
 
 // DataFileSystem returns an http.FileSystem implementation that serves a test's data files.

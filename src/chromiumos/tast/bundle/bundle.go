@@ -71,7 +71,7 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 		}
 		return statusSuccess
 	case RPCMode:
-		if err := rpc.RunServer(stdin, stdout); err != nil {
+		if err := rpc.RunServer(stdin, stdout, testing.GlobalRegistry().AllServices()); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess

@@ -18,7 +18,6 @@ import (
 	"strings"
 	"time"
 
-	"chromiumos/tast/bundle"
 	"chromiumos/tast/control"
 	"chromiumos/tast/testing"
 	"chromiumos/tast/timing"
@@ -658,7 +657,7 @@ func readTestList(r io.Reader) ([]TestResult, error) {
 // that failed to match any tests in results.
 func unmatchedTestPatterns(patterns []string, results []TestResult) []string {
 	// TODO(derat): Consider also checking attribute expressions.
-	if bundle.GetTestPatternType(patterns) != bundle.TestPatternGlobs {
+	if testing.GetTestPatternType(patterns) != testing.TestPatternGlobs {
 		return nil
 	}
 

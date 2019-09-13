@@ -191,7 +191,7 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer,
 		return nil, command.NewStatusErrorf(statusBadArgs, "invalid mode %d", args.Mode)
 	}
 
-	tests, err := TestsToRun(testing.GlobalRegistry(), patterns)
+	tests, err := testing.SelectTestsByArgs(testing.GlobalRegistry().AllTests(), patterns)
 	if err != nil {
 		return nil, command.NewStatusErrorf(statusBadPatterns, "failed getting tests for %v: %v", patterns, err.Error())
 	}
@@ -202,50 +202,4 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer,
 	}
 	testing.SortTests(tests)
 	return tests, nil
-}
-
-// TestPatternType describes the manner in which test patterns will be interpreted.
-type TestPatternType int
-
-const (
-	// TestPatternGlobs means the patterns will be interpreted as one or more globs (possibly literal test names).
-	TestPatternGlobs TestPatternType = iota
-	// TestPatternAttrExpr means the patterns will be interpreted as a boolean expression referring to test attributes.
-	TestPatternAttrExpr
-)
-
-// GetTestPatternType returns the manner in which test patterns pats will be interpreted.
-// This is exported so it can be used by the tast command.
-func GetTestPatternType(pats []string) TestPatternType {
-	switch {
-	case len(pats) == 1 && strings.HasPrefix(pats[0], "(") && strings.HasSuffix(pats[0], ")"):
-		return TestPatternAttrExpr
-	default:
-		return TestPatternGlobs
-	}
-}
-
-// TestsToRun returns tests from reg to run for a command invoked with test patterns pats.
-//
-// If no patterns are supplied, all registered tests are returned.
-//
-// If a single pattern is supplied and it is surrounded by parentheses,
-// it is treated as a boolean expression specifying test attributes.
-//
-// Otherwise, pattern(s) are interpreted as globs matching test names.
-func TestsToRun(reg *testing.Registry, pats []string) ([]*testing.TestCase, error) {
-	switch GetTestPatternType(pats) {
-	case TestPatternGlobs:
-		if len(pats) == 0 {
-			return reg.AllTests(), nil
-		}
-		// Print a helpful error message if it looks like the user wanted an attribute expression.
-		if len(pats) == 1 && (strings.Contains(pats[0], "&&") || strings.Contains(pats[0], "||")) {
-			return nil, fmt.Errorf("attr expr %q must be within parentheses", pats[0])
-		}
-		return reg.TestsForGlobs(pats)
-	case TestPatternAttrExpr:
-		return reg.TestsForAttrExpr(pats[0][1 : len(pats[0])-1])
-	}
-	return nil, fmt.Errorf("invalid test pattern(s) %v", pats)
 }

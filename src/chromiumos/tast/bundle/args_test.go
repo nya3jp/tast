@@ -16,7 +16,7 @@ import (
 	"chromiumos/tast/testing"
 )
 
-var testFunc func(context.Context, *testing.State) = func(context.Context, *testing.State) {}
+var testFunc = func(context.Context, *testing.State) {}
 
 // newBufferWithArgs returns a bytes.Buffer containing the JSON representation of args.
 func newBufferWithArgs(t *gotesting.T, args *Args) *bytes.Buffer {
@@ -96,55 +96,5 @@ func TestReadArgsRegistrationError(t *gotesting.T) {
 	if _, err := readArgs(nil, stdin, ioutil.Discard, &Args{},
 		&runConfig{}, localBundle); !errorHasStatus(err, statusBadTests) {
 		t.Errorf("readArgs() with bad test returned error %v; want status %v", err, statusBadTests)
-	}
-}
-
-func TestTestsToRun(t *gotesting.T) {
-	const (
-		name1 = "cat.MyTest1"
-		name2 = "cat.MyTest2"
-	)
-	reg := testing.NewRegistry()
-	reg.AddTestCase(&testing.TestCase{Name: name1, Func: testFunc, Attr: []string{"attr1", "attr2"}})
-	reg.AddTestCase(&testing.TestCase{Name: name2, Func: testFunc, Attr: []string{"attr2"}})
-
-	for _, tc := range []struct {
-		args     []string
-		expNames []string // expected test names, or nil if error is expected
-	}{
-		{[]string{}, []string{name1, name2}},
-		{[]string{name1}, []string{name1}},
-		{[]string{name2, name1}, []string{name2, name1}},
-		{[]string{"cat.*"}, []string{name1, name2}},
-		{[]string{"(attr1)"}, []string{name1}},
-		{[]string{"(attr2)"}, []string{name1, name2}},
-		{[]string{"(!attr1)"}, []string{name2}},
-		{[]string{"(attr1 || attr2)"}, []string{name1, name2}},
-		{[]string{""}, []string{}},
-		{[]string{"("}, nil},
-		{[]string{"()"}, nil},
-		{[]string{"attr1 || attr2"}, nil},
-		{[]string{"(attr3)"}, []string{}},
-		{[]string{"foo.BogusTest"}, []string{}},
-	} {
-		tests, err := TestsToRun(reg, tc.args)
-		if tc.expNames == nil {
-			if err == nil {
-				t.Errorf("TestsToRun(..., %v) succeeded unexpectedly", tc.args)
-			}
-			continue
-		}
-
-		if err != nil {
-			t.Errorf("TestsToRun(..., %v) failed: %v", tc.args, err)
-		} else {
-			actNames := make([]string, len(tests))
-			for i := range tests {
-				actNames[i] = tests[i].Name
-			}
-			if !reflect.DeepEqual(actNames, tc.expNames) {
-				t.Errorf("TestsToRun(..., %v) = %v; want %v", tc.args, actNames, tc.expNames)
-			}
-		}
 	}
 }

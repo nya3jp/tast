@@ -18,7 +18,6 @@ import (
 
 	"chromiumos/cmd/tast/logging"
 	"chromiumos/cmd/tast/run"
-	"chromiumos/tast/bundle"
 	"chromiumos/tast/command"
 	"chromiumos/tast/testing"
 )
@@ -88,7 +87,7 @@ func (lc *listCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{
 			}
 		}
 		var err error
-		if tests, err = bundle.TestsToRun(reg, f.Args()); err != nil {
+		if tests, err = testing.SelectTestsByArgs(reg.AllTests(), f.Args()); err != nil {
 			lg.Log("Failed to select tests: ", err)
 			return subcommands.ExitUsageError
 		}

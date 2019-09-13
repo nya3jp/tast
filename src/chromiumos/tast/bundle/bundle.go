@@ -69,6 +69,11 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
+	case RPCMode:
+		if err := runRPCServer(stdin, stdout); err != nil {
+			return command.WriteError(stderr, err)
+		}
+		return statusSuccess
 	default:
 		return command.WriteError(stderr, command.NewStatusErrorf(statusBadArgs, "invalid mode %v", args.Mode))
 	}

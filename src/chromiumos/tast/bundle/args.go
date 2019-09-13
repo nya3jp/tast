@@ -26,6 +26,8 @@ const (
 	// ListTestsMode indicates that the bundle should write information about matched tests to stdout as a
 	// JSON array of testing.Test structs and exit.
 	ListTestsMode = 1
+	// RPCMode indicates that the bundle should run a gRPC server on the stdin/stdout.
+	RPCMode = 2
 )
 
 // Args is used to pass arguments from test runners to test bundles.
@@ -149,12 +151,17 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, bt
 		}
 
 		dump := flags.Bool("dumptests", false, "dump all tests as a JSON-marshaled array of testing.Test structs")
+		rpc := flags.Bool("rpc", false, "run gRPC server")
 		if err := flags.Parse(clArgs); err != nil {
 			return command.NewStatusErrorf(statusBadArgs, "%v", err)
 		}
 		if *dump {
 			args.Mode = ListTestsMode
 			args.ListTests = &ListTestsArgs{}
+			return nil
+		}
+		if *rpc {
+			args.Mode = RPCMode
 			return nil
 		}
 	}

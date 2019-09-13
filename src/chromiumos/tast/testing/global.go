@@ -11,7 +11,7 @@ import (
 )
 
 var globalRegistry *Registry   // singleton, initialized on first use
-var registrationErrors []error // singleton for errors encountered in AddTest calls
+var registrationErrors []error // singleton for errors encountered in Add* calls
 
 // verifier is a global singleton to check if AddTest() is used as designed.
 var verifier = newCallerVerifier(
@@ -59,6 +59,15 @@ func addTestInternal(t *Test, pc uintptr) error {
 // testing purpose.
 func AddTestCase(t *TestCase) {
 	if err := GlobalRegistry().AddTestCase(t); err != nil {
+		_, file, line, _ := runtime.Caller(1)
+		registrationErrors = append(registrationErrors, fmt.Errorf("%s:%d: %v", file, line, err))
+	}
+}
+
+// AddService adds service s to the global registry.
+// This should be called only once in a service main file's init().
+func AddService(s *Service) {
+	if err := GlobalRegistry().AddService(s); err != nil {
 		_, file, line, _ := runtime.Caller(1)
 		registrationErrors = append(registrationErrors, fmt.Errorf("%s:%d: %v", file, line, err))
 	}

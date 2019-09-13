@@ -8,6 +8,8 @@ import (
 	"context"
 	"reflect"
 	gotesting "testing"
+
+	"google.golang.org/grpc"
 )
 
 // testsEqual returns true if a and b contain tests with matching fields.
@@ -133,5 +135,25 @@ func TestParamTestRegistration(t *gotesting.T) {
 
 	if tests[1].Name != "testing.RegistryTest.param2" {
 		t.Errorf("Unexpected test name: got %s; want testing.RegistryTest.param2", tests[1].Name)
+	}
+}
+
+func TestAllServices(t *gotesting.T) {
+	reg := NewRegistry()
+	allSvcs := []*Service{
+		{Register: func(*grpc.Server, *ServiceState) {}},
+		{Register: func(*grpc.Server, *ServiceState) {}},
+		{Register: func(*grpc.Server, *ServiceState) {}},
+	}
+
+	for _, svc := range allSvcs {
+		if err := reg.AddService(svc); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	svcs := reg.AllServices()
+	if !reflect.DeepEqual(svcs, allSvcs) {
+		t.Errorf("AllServices() = %v; want %v", svcs, allSvcs)
 	}
 }

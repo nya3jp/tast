@@ -1,0 +1,267 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "59a7b9f0_a7487a72",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-17T09:39:05Z",
+      "side": 1,
+      "message": "style: copyright should be at the beginning of this file in comment, not in doc string.",
+      "range": {
+        "startLine": 2,
+        "startChar": 0,
+        "endLine": 5,
+        "endChar": 0
+      },
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2df91743_a5fe7dbe",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-17T09:39:05Z",
+      "side": 1,
+      "message": "I think you need shebang and executable bit to support this behavior.",
+      "range": {
+        "startLine": 13,
+        "startChar": 2,
+        "endLine": 13,
+        "endChar": 29
+      },
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a2a8c6c6_a981b0e4",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-17T09:39:05Z",
+      "side": 1,
+      "message": "style: constants should be CAPITAL\nAlso, could you add \u0027_\u0027 prefix to make it module private?",
+      "range": {
+        "startLine": 30,
+        "startChar": 0,
+        "endLine": 30,
+        "endChar": 10
+      },
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8217e0c0_742e7772",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-17T09:39:05Z",
+      "side": 1,
+      "message": "_parse_args() to make it module private.",
+      "range": {
+        "startLine": 33,
+        "startChar": 4,
+        "endLine": 33,
+        "endChar": 14
+      },
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "155c56ee_302ee989",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-17T09:39:05Z",
+      "side": 1,
+      "message": "Ditto.",
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "42ca6432_7eeb989e",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-17T09:39:05Z",
+      "side": 1,
+      "message": "Could you avoid read twice?\n\nwhile True:\n  buf \u003d infile.read(...)\n  if not buf:\n    break\n  sha256.update(buf)\n\nCould you avoid 1024 hard coding. IIUC, it needs to be integer multiple of block size. Could you write so?",
+      "range": {
+        "startLine": 49,
+        "startChar": 4,
+        "endLine": 52,
+        "endChar": 29
+      },
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8c527db5_78470ab6",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-17T09:39:05Z",
+      "side": 1,
+      "message": "This is URL not file path, so os.path.join should not be used (it could be \\ in some platform) conceptually. \"gs://%s/%s/%s\" % (...) is a way I think?",
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5bc60c71_cfbc5732",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-17T09:39:05Z",
+      "side": 1,
+      "message": "clar/optional: do you need to warn on overwriting?",
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6e32382d_0eed6adb",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-17T09:39:05Z",
+      "side": 1,
+      "message": "nit: json.dump(link, outfile, ...)",
+      "range": {
+        "startLine": 68,
+        "startChar": 4,
+        "endLine": 68,
+        "endChar": 48
+      },
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a87e98b5_4254ff29",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-17T09:39:05Z",
+      "side": 1,
+      "message": "IIRC, this keeps the original data file.\nIf so, the original data file (rather than downloaded external data) is used to run the test.\nThat could be confusing behavior.",
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3fe399a4_c94c5adc",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-17T09:39:05Z",
+      "side": 1,
+      "message": "print_function is needed for compatibility.",
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3b8ff5fc_17b6c91e",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-17T09:39:05Z",
+      "side": 1,
+      "message": "I think subprocess.check_call() is better?",
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "34ee84ad_a5d53f5c",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-17T09:39:05Z",
+      "side": 1,
+      "message": "Clar: is stderr captured? I guess not...?",
+      "range": {
+        "startLine": 75,
+        "startChar": 47,
+        "endLine": 75,
+        "endChar": 53
+      },
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

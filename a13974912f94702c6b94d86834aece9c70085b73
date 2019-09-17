@@ -1,0 +1,176 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a64faee6_f78affeb",
+        "filename": "src/chromiumos/cmd/tast-lint/check/disallow_testingstate.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-17T04:10:17Z",
+      "side": 1,
+      "message": "nit: maybe \"in\"?\nnit: The doc string needs to be the complete sentence. Could you add \".\" at the end?",
+      "range": {
+        "startLine": 13,
+        "startChar": 42,
+        "endLine": 13,
+        "endChar": 44
+      },
+      "revId": "a13974912f94702c6b94d86834aece9c70085b73",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "baa4b6f4_61266343",
+        "filename": "src/chromiumos/cmd/tast-lint/check/disallow_testingstate.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-17T04:10:17Z",
+      "side": 1,
+      "message": "This is not hardware reason but the dependency.\n\nCould move webrtc entry to below? IIUC, engs maintaining this package agrees to resolve.\nSo, it should eventually be resolved, similar to faillog.go, trace.go etc.",
+      "revId": "a13974912f94702c6b94d86834aece9c70085b73",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fe35fafb_11cc1a32",
+        "filename": "src/chromiumos/cmd/tast-lint/check/disallow_testingstate.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-17T04:10:17Z",
+      "side": 1,
+      "message": "At the moment, the valid use cases are only for precondition. Could you add it to the Msg so that authors can easily notice it. E.g.\n\n\"\u0027testing.State\u0027 should not be used in support packages, except for precondition implementation\"",
+      "range": {
+        "startLine": 50,
+        "startChar": 12,
+        "endLine": 50,
+        "endChar": 68
+      },
+      "revId": "a13974912f94702c6b94d86834aece9c70085b73",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bd163bf5_92f9a9ce",
+        "filename": "src/chromiumos/cmd/tast-lint/check/disallow_testingstate.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-17T04:10:17Z",
+      "side": 1,
+      "message": "Do you have any specific reason that this is still duplicated?\nI think these can be merged...? Let\u0027s chat offline.",
+      "range": {
+        "startLine": 57,
+        "startChar": 2,
+        "endLine": 66,
+        "endChar": 3
+      },
+      "revId": "a13974912f94702c6b94d86834aece9c70085b73",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "59b5271a_e96c0d38",
+        "filename": "src/chromiumos/cmd/tast-lint/check/disallow_testingstate.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-17T04:10:17Z",
+      "side": 1,
+      "message": "Go prefers to use early return.\n\nif n.Sel.Name !\u003d \"State\" {\n  return nil\n}\n\nif id, ok :\u003d n.X.(*ast.Ident); !ok || id.Name !\u003d \"testing\" {\n  return nil\n}\n\nreturn n",
+      "range": {
+        "startLine": 82,
+        "startChar": 1,
+        "endLine": 90,
+        "endChar": 2
+      },
+      "revId": "a13974912f94702c6b94d86834aece9c70085b73",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fadf985a_786ca824",
+        "filename": "src/chromiumos/cmd/tast-lint/check/disallow_testingstate_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-17T04:10:17Z",
+      "side": 1,
+      "message": "Could you declare the variable at the latest timing?",
+      "revId": "a13974912f94702c6b94d86834aece9c70085b73",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5003e0cf_ed2d15de",
+        "filename": "src/chromiumos/cmd/tast-lint/check/disallow_testingstate_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-17T04:10:17Z",
+      "side": 1,
+      "message": "(in case you decide to keep these two tests in a same test case): You can just overwrite vars here and below which is common go practices, AFAIK.",
+      "range": {
+        "startLine": 32,
+        "startChar": 1,
+        "endLine": 32,
+        "endChar": 8
+      },
+      "revId": "a13974912f94702c6b94d86834aece9c70085b73",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e6cc1dba_c9007af4",
+        "filename": "src/chromiumos/cmd/tast-lint/check/disallow_testingstate_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-17T04:10:17Z",
+      "side": 1,
+      "message": "optional: I think you can run this as another test case.",
+      "range": {
+        "startLine": 31,
+        "startChar": 1,
+        "endLine": 35,
+        "endChar": 35
+      },
+      "revId": "a13974912f94702c6b94d86834aece9c70085b73",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

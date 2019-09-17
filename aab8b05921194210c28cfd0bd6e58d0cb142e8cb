@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "ed6e1151_aab2b50d",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1242535
+      },
+      "writtenOn": "2019-09-17T18:25:48Z",
+      "side": 1,
+      "message": "Moved to tast-tests repo:\nhttps://crrev.com/c/1808486",
+      "parentUuid": "68bd21a9_c2ab7abd",
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "59a7b9f0_a7487a72",
         "filename": "tools/generate_external_file.py",
         "patchSetId": 1
@@ -39,6 +57,30 @@
       "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d576004d_408e9d69",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1242535
+      },
+      "writtenOn": "2019-09-17T18:25:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "59a7b9f0_a7487a72",
+      "range": {
+        "startLine": 2,
+        "startChar": 0,
+        "endLine": 5,
+        "endChar": 0
+      },
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -112,6 +154,54 @@
     },
     {
       "key": {
+        "uuid": "15cc0912_2ef5a373",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1242535
+      },
+      "writtenOn": "2019-09-17T18:25:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "15e1bc82_5a7de3da",
+      "range": {
+        "startLine": 13,
+        "startChar": 44,
+        "endLine": 13,
+        "endChar": 49
+      },
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "008cba72_a60d6582",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1242535
+      },
+      "writtenOn": "2019-09-17T18:25:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "609534bc_79c21a75",
+      "range": {
+        "startLine": 13,
+        "startChar": 2,
+        "endLine": 13,
+        "endChar": 29
+      },
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a2a8c6c6_a981b0e4",
         "filename": "tools/generate_external_file.py",
         "patchSetId": 1
@@ -158,6 +248,54 @@
     },
     {
       "key": {
+        "uuid": "9e49cd66_7b4f7210",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1242535
+      },
+      "writtenOn": "2019-09-17T18:25:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a2a8c6c6_a981b0e4",
+      "range": {
+        "startLine": 30,
+        "startChar": 0,
+        "endLine": 30,
+        "endChar": 10
+      },
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "85fbfb37_4a0944b6",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1242535
+      },
+      "writtenOn": "2019-09-17T18:25:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "81e80d10_7752da21",
+      "range": {
+        "startLine": 30,
+        "startChar": 13,
+        "endLine": 30,
+        "endChar": 14
+      },
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8217e0c0_742e7772",
         "filename": "tools/generate_external_file.py",
         "patchSetId": 1
@@ -181,6 +319,30 @@
     },
     {
       "key": {
+        "uuid": "f7ff1e42_ac93691f",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1242535
+      },
+      "writtenOn": "2019-09-17T18:25:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8217e0c0_742e7772",
+      "range": {
+        "startLine": 33,
+        "startChar": 4,
+        "endLine": 33,
+        "endChar": 14
+      },
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "155c56ee_302ee989",
         "filename": "tools/generate_external_file.py",
         "patchSetId": 1
@@ -198,6 +360,24 @@
     },
     {
       "key": {
+        "uuid": "9498bdf8_7742fbf5",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1242535
+      },
+      "writtenOn": "2019-09-17T18:25:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "155c56ee_302ee989",
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "42ca6432_7eeb989e",
         "filename": "tools/generate_external_file.py",
         "patchSetId": 1
@@ -209,6 +389,30 @@
       "writtenOn": "2019-09-17T09:39:05Z",
       "side": 1,
       "message": "Could you avoid read twice?\n\nwhile True:\n  buf \u003d infile.read(...)\n  if not buf:\n    break\n  sha256.update(buf)\n\nCould you avoid 1024 hard coding. IIUC, it needs to be integer multiple of block size. Could you write so?",
+      "range": {
+        "startLine": 49,
+        "startChar": 4,
+        "endLine": 52,
+        "endChar": 29
+      },
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fa621166_2bdc8d25",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1242535
+      },
+      "writtenOn": "2019-09-17T18:25:48Z",
+      "side": 1,
+      "message": "\u003e IIUC, it needs to be integer multiple of block size. Could you write so?\n\nSorry can you elaborate on this a bit?",
+      "parentUuid": "42ca6432_7eeb989e",
       "range": {
         "startLine": 49,
         "startChar": 4,
@@ -256,6 +460,24 @@
     },
     {
       "key": {
+        "uuid": "e4b77880_5b1224ad",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1242535
+      },
+      "writtenOn": "2019-09-17T18:25:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3c42106f_8e247cec",
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5bc60c71_cfbc5732",
         "filename": "tools/generate_external_file.py",
         "patchSetId": 1
@@ -270,6 +492,24 @@
       "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b77eedcc_4d176d25",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1242535
+      },
+      "writtenOn": "2019-09-17T18:25:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5bc60c71_cfbc5732",
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -319,6 +559,54 @@
     },
     {
       "key": {
+        "uuid": "517cb36a_21879835",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1242535
+      },
+      "writtenOn": "2019-09-17T18:25:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6e32382d_0eed6adb",
+      "range": {
+        "startLine": 68,
+        "startChar": 4,
+        "endLine": 68,
+        "endChar": 48
+      },
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "49b0bfb8_5cb4c6a5",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1242535
+      },
+      "writtenOn": "2019-09-17T18:25:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2ddff64d_6ef9daf5",
+      "range": {
+        "startLine": 68,
+        "startChar": 35,
+        "endLine": 68,
+        "endChar": 48
+      },
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a87e98b5_4254ff29",
         "filename": "tools/generate_external_file.py",
         "patchSetId": 1
@@ -333,6 +621,24 @@
       "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "abbfe68a_4997e17d",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1242535
+      },
+      "writtenOn": "2019-09-17T18:25:48Z",
+      "side": 1,
+      "message": "Changed to use \"gsutil mv\" which will remove the local file after a successful upload.",
+      "parentUuid": "a87e98b5_4254ff29",
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -368,6 +674,24 @@
       "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "170d0a02_1a3467b3",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1242535
+      },
+      "writtenOn": "2019-09-17T18:25:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "73346d53_66a2a6a9",
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -411,6 +735,30 @@
     },
     {
       "key": {
+        "uuid": "2b60074f_82ff30f4",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1242535
+      },
+      "writtenOn": "2019-09-17T18:25:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "113b2f25_e1ce5ee4",
+      "range": {
+        "startLine": 73,
+        "startChar": 39,
+        "endLine": 73,
+        "endChar": 42
+      },
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "34ee84ad_a5d53f5c",
         "filename": "tools/generate_external_file.py",
         "patchSetId": 1
@@ -431,6 +779,30 @@
       "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "06b95c49_72fb9ea5",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1242535
+      },
+      "writtenOn": "2019-09-17T18:25:48Z",
+      "side": 1,
+      "message": "Now capturing stderr",
+      "parentUuid": "34ee84ad_a5d53f5c",
+      "range": {
+        "startLine": 75,
+        "startChar": 47,
+        "endLine": 75,
+        "endChar": 53
+      },
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

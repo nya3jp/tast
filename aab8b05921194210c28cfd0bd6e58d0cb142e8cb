@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "68bd21a9_c2ab7abd",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-09-17T14:07:36Z",
+      "side": 1,
+      "message": "We might want to put tast-tests repository since this tool is primarily used for tests. I don\u0027t have strong opinion, though.",
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "59a7b9f0_a7487a72",
         "filename": "tools/generate_external_file.py",
         "patchSetId": 1
@@ -48,6 +65,53 @@
     },
     {
       "key": {
+        "uuid": "15e1bc82_5a7de3da",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-09-17T14:07:36Z",
+      "side": 1,
+      "message": "What does \"audio\" mean in this example? Please add an explanation.",
+      "range": {
+        "startLine": 13,
+        "startChar": 44,
+        "endLine": 13,
+        "endChar": 49
+      },
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "609534bc_79c21a75",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-09-17T14:07:36Z",
+      "side": 1,
+      "message": "Please make sure to use #!/usr/bin/python3 to make it clear this script is Python3-compatible :)",
+      "parentUuid": "2df91743_a5fe7dbe",
+      "range": {
+        "startLine": 13,
+        "startChar": 2,
+        "endLine": 13,
+        "endChar": 29
+      },
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "a2a8c6c6_a981b0e4",
         "filename": "tools/generate_external_file.py",
         "patchSetId": 1
@@ -64,6 +128,29 @@
         "startChar": 0,
         "endLine": 30,
         "endChar": 10
+      },
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "81e80d10_7752da21",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-09-17T14:07:36Z",
+      "side": 1,
+      "message": "style nit: Could you use single quotes for string literals (except for \"\"\"multiline strings\"\"\")?",
+      "range": {
+        "startLine": 30,
+        "startChar": 13,
+        "endLine": 30,
+        "endChar": 14
       },
       "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
@@ -151,6 +238,24 @@
     },
     {
       "key": {
+        "uuid": "3c42106f_8e247cec",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-09-17T14:07:36Z",
+      "side": 1,
+      "message": "+1.",
+      "parentUuid": "8c527db5_78470ab6",
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "5bc60c71_cfbc5732",
         "filename": "tools/generate_external_file.py",
         "patchSetId": 1
@@ -182,6 +287,29 @@
       "range": {
         "startLine": 68,
         "startChar": 4,
+        "endLine": 68,
+        "endChar": 48
+      },
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2ddff64d_6ef9daf5",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-09-17T14:07:36Z",
+      "side": 1,
+      "message": "Please set sort_keys\u003dTrue for consistent output.\n\nPlease also set an integer to indent\u003d, e.g. indent\u003d2.\n\nhttps://docs.python.org/3/library/json.html",
+      "range": {
+        "startLine": 68,
+        "startChar": 35,
         "endLine": 68,
         "endChar": 48
       },
@@ -225,6 +353,24 @@
     },
     {
       "key": {
+        "uuid": "73346d53_66a2a6a9",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-09-17T14:07:36Z",
+      "side": 1,
+      "message": "This won\u0027t be necessary if we declare that this script runs on Python 3 only. :)",
+      "parentUuid": "3fe399a4_c94c5adc",
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "3b8ff5fc_17b6c91e",
         "filename": "tools/generate_external_file.py",
         "patchSetId": 1
@@ -236,6 +382,29 @@
       "writtenOn": "2019-09-17T09:39:05Z",
       "side": 1,
       "message": "I think subprocess.check_call() is better?",
+      "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "113b2f25_e1ce5ee4",
+        "filename": "tools/generate_external_file.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-09-17T14:07:36Z",
+      "side": 1,
+      "message": "Could you pass -n option to avoid overriding an existing file accidentally?",
+      "range": {
+        "startLine": 73,
+        "startChar": 39,
+        "endLine": 73,
+        "endChar": 42
+      },
       "revId": "aab8b05921194210c28cfd0bd6e58d0cb142e8cb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

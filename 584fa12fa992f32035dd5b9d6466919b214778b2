@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f7b81ebd_908e20f1",
+        "filename": "src/chromiumos/cmd/tast-lint/check/disallow_testingstate_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-17T10:02:35Z",
+      "side": 1,
+      "message": "huge nit: you can remove these white spaces. Ditto for the line just below.",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 2
+      },
+      "revId": "584fa12fa992f32035dd5b9d6466919b214778b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

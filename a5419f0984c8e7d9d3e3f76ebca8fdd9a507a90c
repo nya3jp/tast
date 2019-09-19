@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bf5517f6_b2f81ef3",
+        "filename": "src/chromiumos/tast/testing/attr.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-19T10:31:31Z",
+      "side": 1,
+      "message": "In precise, this is not true. In release builders, failures are considered as failures. What this does is, \"do not run in pre-submit tests, thus not block CLs to land.\"",
+      "range": {
+        "startLine": 51,
+        "startChar": 11,
+        "endLine": 51,
+        "endChar": 49
+      },
+      "revId": "a5419f0984c8e7d9d3e3f76ebca8fdd9a507a90c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b0cb4a3a_23fb5dcd",
+        "filename": "src/chromiumos/tast/testing/attr.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-19T10:31:31Z",
+      "side": 1,
+      "message": "This approach looks conflicting with crbug.com/955640.",
+      "range": {
+        "startLine": 78,
+        "startChar": 2,
+        "endLine": 95,
+        "endChar": 4
+      },
+      "revId": "a5419f0984c8e7d9d3e3f76ebca8fdd9a507a90c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bac35a17_f7107d18",
+        "filename": "docs/test_attributes.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-19T10:24:32Z",
+      "side": 1,
+      "message": "I think it is better to move this to the group\u0027s explanation, because, IMO, this is more like a goal of the mainline tests.",
+      "range": {
+        "startLine": 19,
+        "startChar": 47,
+        "endLine": 20,
+        "endChar": 54
+      },
+      "revId": "5ed22a228c35812d49648cc52afd921014a56df7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

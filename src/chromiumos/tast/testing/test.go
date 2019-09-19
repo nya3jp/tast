@@ -242,6 +242,9 @@ func validateAttr(attr []string) error {
 			}
 		}
 	}
+	if err := checkKnownAttrs(attr); err != nil {
+		return err
+	}
 	return nil
 }
 

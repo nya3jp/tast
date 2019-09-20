@@ -25,6 +25,46 @@
     },
     {
       "key": {
+        "uuid": "875adab8_01fb4157",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 935,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-20T05:39:54Z",
+      "side": 1,
+      "message": "Could you extract this part as an standalone section?\n\nIt is one of the common topics, and it\u0027s nice if we could refer this specific part in code review or email discussion etc.",
+      "range": {
+        "startLine": 902,
+        "startChar": 0,
+        "endLine": 935,
+        "endChar": 0
+      },
+      "revId": "5aff4cb676f605f4221def10b364b3754ba48dc6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "454534d1_a9ceea0e",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 962,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-20T05:39:54Z",
+      "side": 1,
+      "message": "I\u0027d like more abstracted cases.\nSpecifically, at least, video has some unique characteristics even compared to other tests,\nso it is very nice to avoid video not to be biased, IMO.",
+      "revId": "5aff4cb676f605f4221def10b364b3754ba48dc6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "7a2b89f4_087c9348",
         "filename": "docs/writing_tests.md",
         "patchSetId": 1
@@ -53,6 +93,46 @@
       "writtenOn": "2019-09-20T01:51:32Z",
       "side": 1,
       "message": "pc, not tc",
+      "revId": "5aff4cb676f605f4221def10b364b3754ba48dc6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5d6bd3d6_908dd54e",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 998,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-20T05:39:54Z",
+      "side": 1,
+      "message": "This caution is applicable only for the new bullet item you added,\nand is not for other cases.",
+      "range": {
+        "startLine": 998,
+        "startChar": 0,
+        "endLine": 998,
+        "endChar": 75
+      },
+      "revId": "5aff4cb676f605f4221def10b364b3754ba48dc6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2f62c359_b5d12dda",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 1005,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-20T05:39:54Z",
+      "side": 1,
+      "message": "dup entry?",
       "revId": "5aff4cb676f605f4221def10b364b3754ba48dc6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

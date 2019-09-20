@@ -899,42 +899,110 @@ To set runtime variables, add (possibly repeated) `-var=name=value` flags to `ta
 
 ## Parameterized tests
 
-A test may specify `Params` to generate variations of the test. A test with
-`Params` is called a *parameterized test*. Registration of a parameterized test
-looks like the following:
+It is often the case that multiple scenarios with very slight differences should
+be tested. For example, we might want to test hardware-accelerated video
+playback functionality with a few different video formats. In this case, the
+most straightforward way is write a [table-driven test], which is a common
+pattern in Go unit tests.
 
 ```
-type animal struct {
-    numLegs int
-    crying  string
+for _, tc := range struct {
+    format   string
+    filename string
+    duration time.Duration
+}{
+    {
+        format:   "VP8",
+        filename: "sample.vp8",
+        duration: 3 * time.Second,
+    },
+    {
+        format:   "VP9",
+        filename: "sample.vp9",
+        duration: 3 * time.Second,
+    },
+    {
+        format:   "H.264",
+        filename: "sample.h264",
+        duration: 5 * time.Second,
+    },
+} {
+    if err := testHWAccelPlayback(ctx, tc.filename, tc.duration); err != nil {
+        s.Errorf("Playback test failed for %s: %v", tc.format, err)
+    }
+}
+```
+
+However keeping multiple scenarios in a single test might be undesirable for
+several reasons:
+
+*   Test results should be reported separately. In the example case,
+    reporting test results separately for different video formats is preferred
+    to track the progress of hardware acceleration support.
+*   Tests should have different attributes. For example, we might want
+    to set some of them [critical] to avoid regressions, while keeping others
+    [informational] due to test flakiness.
+*   Tests should declare different dependencies. For example, VP8 playback
+    test should declare the "hardware-accelerated VP8 decoding" hardware
+    dependency, while other playback tests should declare their respective
+    dependencies.
+
+In such cases, *parameterized tests* can be used to define multiple similar
+tests. To define a parameterized test, a test should specify `Params`.
+Registration of a parameterized test looks like the following:
+
+```
+type playbackCase struct {
+    filename string
+    duration time.Duration
 }
 
 func init() {
     testing.AddTest(&testing.Test{
-        Func:     Param,
-        Desc:     "Parameterized test example",
+        Func:     HWAccelPlayback,
+        Desc:     "Tests hardware-accelerated video playback",
         Contacts: []string{"tast-owners@google.com"},
         Params: []testing.Param{{
-            Name: "dog",
-            Val: animal{
-                numLegs: 4,
-                crying:  "bow-wow",
+            Name: "vp8",
+            Val: playbackCase{
+                filename: "sample.vp8",
+                duration: 3 * time.Second,
             },
+            ExtraData: []string{"sample.vp8"},
         }, {
-            Name: "duck",
-            Val: animal{
-                numLegs: 2,
-                crying:  "quack",
+            Name: "vp9",
+            Val: playbackCase{
+                filename: "sample.vp9",
+                duration: 3 * time.Second,
             },
+            ExtraData: []string{"sample.vp9"},
+        }, {
+            Name: "h264",
+            Val: playbackCase{
+                filename: "sample.h264",
+                duration: 5 * time.Second,
+            },
+            ExtraData: []string{"sample.h264"},
         }},
     })
 }
 
-func Param(ctx context.Context, s *testing.State) {
-    // This will print {4 bow-wow} for "dog", and {2 quack} for "duck".
-    s.Logf("Value: ", s.Param().(animal))
+func HWAccelPlayback(ctx context.Context, s *testing.State) {
+    pc := s.Param().(playbackCase)
+    if err := testHWAccelPlayback(ctx, tc.filename, tc.duration); err != nil {
+        s.Fatal("Playback test failed: ", err)
+    }
 }
 ```
+
+When using parameterized tests, please make sure that it is worth reporting
+their results separately. For trivial parameters, [table-driven tests] might be
+easier.
+
+[table-driven test]: https://github.com/golang/go/wiki/TableDrivenTests
+[critical]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/test_attributes.md
+[informational]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/test_attributes.md
+[table-driven tests]: https://github.com/golang/go/wiki/TableDrivenTests
 
 ### Name
 

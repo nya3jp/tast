@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5bd7c72e_06369d96",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 902,
+      "author": {
+        "id": 1002858
+      },
+      "writtenOn": "2019-09-20T01:51:32Z",
+      "side": 1,
+      "message": "I\u0027d say \"sometimes\" instead of often, since you\u0027re not trying to encourage people to use them freely",
+      "range": {
+        "startLine": 902,
+        "startChar": 6,
+        "endLine": 902,
+        "endChar": 11
+      },
+      "revId": "5aff4cb676f605f4221def10b364b3754ba48dc6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7a2b89f4_087c9348",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 971,
+      "author": {
+        "id": 1002858
+      },
+      "writtenOn": "2019-09-20T01:51:32Z",
+      "side": 1,
+      "message": "maybe one of these cases should demonstrate having ExtraSoftwareDeps and ExtraAttr",
+      "revId": "5aff4cb676f605f4221def10b364b3754ba48dc6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f8bcc0f5_aad71ed7",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 992,
+      "author": {
+        "id": 1002858
+      },
+      "writtenOn": "2019-09-20T01:51:32Z",
+      "side": 1,
+      "message": "pc, not tc",
+      "revId": "5aff4cb676f605f4221def10b364b3754ba48dc6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

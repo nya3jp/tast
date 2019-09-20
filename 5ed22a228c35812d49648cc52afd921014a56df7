@@ -22,6 +22,30 @@
       "revId": "5ed22a228c35812d49648cc52afd921014a56df7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "da92418e_182ea441",
+        "filename": "docs/test_attributes.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-09-20T04:34:16Z",
+      "side": 1,
+      "message": "It is difficult to explain this without defining `informational` and `critical` first... Tried to clean this up.",
+      "parentUuid": "bac35a17_f7107d18",
+      "range": {
+        "startLine": 19,
+        "startChar": 47,
+        "endLine": 20,
+        "endChar": 54
+      },
+      "revId": "5ed22a228c35812d49648cc52afd921014a56df7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

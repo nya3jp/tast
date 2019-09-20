@@ -122,6 +122,29 @@
     },
     {
       "key": {
+        "uuid": "0d341e8d_8089b566",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 1002,
+      "author": {
+        "id": 1305461
+      },
+      "writtenOn": "2019-09-20T23:18:05Z",
+      "side": 1,
+      "message": "This won\u0027t work as-is with the tast testing library, since there is no `testing.State.Run` method (afaict).  Can you elaborate on how to change this example to work with Tast, or just write an example that uses tast directly?",
+      "range": {
+        "startLine": 1002,
+        "startChar": 0,
+        "endLine": 1002,
+        "endChar": 71
+      },
+      "revId": "5aff4cb676f605f4221def10b364b3754ba48dc6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "2f62c359_b5d12dda",
         "filename": "docs/writing_tests.md",
         "patchSetId": 1

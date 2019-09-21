@@ -439,7 +439,7 @@ The above document describes how to define new dependencies.
 If a test depends on the DUT being in a specific configurable state (e.g. tablet
 mode), it should put it into that state. For example, [chrome.ExtraArgs] can be
 passed to [chrome.New] to pass additional command-line flags (e.g.
-`--force-tablet-mode=tablet`) when starting Chrome.
+`--force-tablet-mode=touch_view`) when starting Chrome.
 
 The [tast-users mailing list] is a good place to ask questions about test
 dependencies.

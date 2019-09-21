@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f2e303fd_0509aa18",
+        "filename": "src/chromiumos/tast/testing/attr_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1197299
+      },
+      "writtenOn": "2019-09-21T05:05:53Z",
+      "side": 1,
+      "message": "I left some idea in crbug.com/955640. Instead of calling it crosbolt_weekly, how about name it as \"weekly\"/\"schedule_weekly\" etc?",
+      "range": {
+        "startLine": 69,
+        "startChar": 38,
+        "endLine": 69,
+        "endChar": 53
+      },
+      "revId": "774b234cff58a9e2474518b47f71dd3d40416d84",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -22,6 +22,30 @@
       "revId": "774b234cff58a9e2474518b47f71dd3d40416d84",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4e0c00c1_0ab3a5fb",
+        "filename": "src/chromiumos/tast/testing/attr_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-09-24T02:56:09Z",
+      "side": 1,
+      "message": "TBH I\u0027m not very sure at this point whether is a good idea, graphics_daily vs. schedule_daily. Since available scheduling periods (e.g. perbuild/daily/weekly) differ by groups, I guess it\u0027s okay to keep them group-suffixed, i.e. graphics_daily. I don\u0027t have strong opinion though, and we can revisit it when necessary.",
+      "parentUuid": "f2e303fd_0509aa18",
+      "range": {
+        "startLine": 69,
+        "startChar": 38,
+        "endLine": 69,
+        "endChar": 53
+      },
+      "revId": "774b234cff58a9e2474518b47f71dd3d40416d84",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

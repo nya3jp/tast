@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "70fdc027_d90e9fbc",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 902,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-09-24T07:08:21Z",
+      "side": 1,
+      "message": "Makes sense, done.",
+      "parentUuid": "5bd7c72e_06369d96",
+      "range": {
+        "startLine": 902,
+        "startChar": 6,
+        "endLine": 902,
+        "endChar": 11
+      },
+      "revId": "5aff4cb676f605f4221def10b364b3754ba48dc6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "875adab8_01fb4157",
         "filename": "docs/writing_tests.md",
         "patchSetId": 1
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "09857af9_df00cf30",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 935,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-09-24T07:08:21Z",
+      "side": 1,
+      "message": "I\u0027m not sure if I understand your request correctly, but I assume you meant that you want to isolate the section for table-driven tests.",
+      "parentUuid": "875adab8_01fb4157",
+      "range": {
+        "startLine": 902,
+        "startChar": 0,
+        "endLine": 935,
+        "endChar": 0
+      },
+      "revId": "5aff4cb676f605f4221def10b364b3754ba48dc6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "454534d1_a9ceea0e",
         "filename": "docs/writing_tests.md",
         "patchSetId": 1
@@ -59,6 +107,24 @@
       "writtenOn": "2019-09-20T05:39:54Z",
       "side": 1,
       "message": "I\u0027d like more abstracted cases.\nSpecifically, at least, video has some unique characteristics even compared to other tests,\nso it is very nice to avoid video not to be biased, IMO.",
+      "revId": "5aff4cb676f605f4221def10b364b3754ba48dc6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1d1b082f_f15b57bb",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 962,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-09-24T07:08:21Z",
+      "side": 1,
+      "message": "I have a different opinion: I don\u0027t like too unrealistic examples like dogs and ducks. Such example is an ineffective way to explain things to users. I believe the playback test is a good example to describe the three use cases explained above.\n\nBut of course, I\u0027m open to alternative proposals.",
+      "parentUuid": "454534d1_a9ceea0e",
       "revId": "5aff4cb676f605f4221def10b364b3754ba48dc6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -82,6 +148,24 @@
     },
     {
       "key": {
+        "uuid": "44be40af_d3bf12fd",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 971,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-09-24T07:08:21Z",
+      "side": 1,
+      "message": "That is a good idea, let me do.",
+      "parentUuid": "7a2b89f4_087c9348",
+      "revId": "5aff4cb676f605f4221def10b364b3754ba48dc6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f8bcc0f5_aad71ed7",
         "filename": "docs/writing_tests.md",
         "patchSetId": 1
@@ -99,6 +183,24 @@
     },
     {
       "key": {
+        "uuid": "38e0baf7_348761b9",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 992,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-09-24T07:08:21Z",
+      "side": 1,
+      "message": "Good catch! Done.",
+      "parentUuid": "f8bcc0f5_aad71ed7",
+      "revId": "5aff4cb676f605f4221def10b364b3754ba48dc6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5d6bd3d6_908dd54e",
         "filename": "docs/writing_tests.md",
         "patchSetId": 1
@@ -110,6 +212,30 @@
       "writtenOn": "2019-09-20T05:39:54Z",
       "side": 1,
       "message": "This caution is applicable only for the new bullet item you added,\nand is not for other cases.",
+      "range": {
+        "startLine": 998,
+        "startChar": 0,
+        "endLine": 998,
+        "endChar": 75
+      },
+      "revId": "5aff4cb676f605f4221def10b364b3754ba48dc6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "92f79a38_b78ebd53",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 998,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-09-24T07:08:21Z",
+      "side": 1,
+      "message": "I don\u0027t get what you meant: what is \"the new bullet item you added\"?",
+      "parentUuid": "5d6bd3d6_908dd54e",
       "range": {
         "startLine": 998,
         "startChar": 0,
@@ -145,6 +271,30 @@
     },
     {
       "key": {
+        "uuid": "cf84e05d_68a9b7cb",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 1002,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-09-24T07:08:21Z",
+      "side": 1,
+      "message": "It is true Run method is not available in testing.State, but still the similar thing is possible without it. I added an explicit mention and filed a bug to consider adding testing.State.Run.",
+      "parentUuid": "0d341e8d_8089b566",
+      "range": {
+        "startLine": 1002,
+        "startChar": 0,
+        "endLine": 1002,
+        "endChar": 71
+      },
+      "revId": "5aff4cb676f605f4221def10b364b3754ba48dc6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2f62c359_b5d12dda",
         "filename": "docs/writing_tests.md",
         "patchSetId": 1
@@ -159,6 +309,24 @@
       "revId": "5aff4cb676f605f4221def10b364b3754ba48dc6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2695d584_98c78313",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 1005,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-09-24T07:08:21Z",
+      "side": 1,
+      "message": "It\u0027s not dup (singular vs. plural)",
+      "parentUuid": "2f62c359_b5d12dda",
+      "revId": "5aff4cb676f605f4221def10b364b3754ba48dc6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

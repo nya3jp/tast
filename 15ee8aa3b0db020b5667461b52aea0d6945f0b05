@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8d36776b_2dfd9cc4",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-09-25T09:01:41Z",
+      "side": 1,
+      "message": "stdin",
+      "range": {
+        "startLine": 29,
+        "startChar": 70,
+        "endLine": 29,
+        "endChar": 75
+      },
+      "revId": "15ee8aa3b0db020b5667461b52aea0d6945f0b05",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0f6febce_de956a7f",
+        "filename": "src/chromiumos/tast/bundle/rpc.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-09-25T09:01:41Z",
+      "side": 1,
+      "message": "Could you comment for what purpose this service is needed?",
+      "range": {
+        "startLine": 19,
+        "startChar": 0,
+        "endLine": 19,
+        "endChar": 25
+      },
+      "revId": "15ee8aa3b0db020b5667461b52aea0d6945f0b05",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "18e4b962_86d1e927",
+        "filename": "src/chromiumos/tast/rpc/pipe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-09-25T09:01:41Z",
+      "side": 1,
+      "message": "and\n?",
+      "range": {
+        "startLine": 22,
+        "startChar": 66,
+        "endLine": 22,
+        "endChar": 67
+      },
+      "revId": "15ee8aa3b0db020b5667461b52aea0d6945f0b05",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

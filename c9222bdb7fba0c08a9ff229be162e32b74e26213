@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a4e13d6e_9b2d26c8",
+        "filename": "src/chromiumos/cmd/tast-lint/git/git.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-26T07:21:37Z",
+      "side": 1,
+      "message": "Status has more variation:\nhttps://git-scm.com/docs/git-diff-tree#Documentation/git-diff-tree.txt---diff-filterACDMRTUXB82308203\n\nSpecifically, with this change some pattern will be ignored, such as copy/rename.\nCould you handle them, too?",
+      "revId": "c9222bdb7fba0c08a9ff229be162e32b74e26213",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9b21f08e_a30c9a38",
+        "filename": "src/chromiumos/cmd/tast-lint/git/git.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-26T07:21:37Z",
+      "side": 1,
+      "message": "(assuming you handle all the case), could you report an error if the status is unknown?",
+      "revId": "c9222bdb7fba0c08a9ff229be162e32b74e26213",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "899634eb_c2bdd6af",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-26T07:21:37Z",
+      "side": 1,
+      "message": "You can calculate the commit status out of the for loop.",
+      "range": {
+        "startLine": 32,
+        "startChar": 38,
+        "endLine": 32,
+        "endChar": 50
+      },
+      "revId": "c9222bdb7fba0c08a9ff229be162e32b74e26213",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

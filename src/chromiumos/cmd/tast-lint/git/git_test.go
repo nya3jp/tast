@@ -18,6 +18,8 @@ import (
 const (
 	staticName    = "static.txt"
 	testName      = "test.txt"
+	deleteName    = "delete.txt"
+	newName       = "new.txt"
 	untrackedName = "untracked.txt"
 
 	headContent = "foo"
@@ -30,14 +32,17 @@ const (
 //  In the first commit:
 //    static.txt = "static"
 //    test.txt = ""
+// 		delete.txt = ""
 //
 //  In the second commit:
 //    static.txt = "static"
 //    test.txt = "foo"
+//		new.txt = "baz"
 //
 //  In the work tree:
 //    static.txt = "static"
 //    test.txt = "bar"
+// 		new.txt = "baz"
 //    untracked.txt = ""
 func newTestRepo(t *testing.T) string {
 	t.Helper()
@@ -75,6 +80,9 @@ func newTestRepo(t *testing.T) string {
 	if err := ioutil.WriteFile(testPath, nil, 0644); err != nil {
 		t.Fatal("WriteFile failed: ", err)
 	}
+	if err := ioutil.WriteFile(filepath.Join(repoDir, deleteName), nil, 0644); err != nil {
+		t.Fatal("WriteFile failed: ", err)
+	}
 
 	cmd := exec.Command("git", "add", "-A")
 	cmd.Dir = repoDir
@@ -91,6 +99,21 @@ func newTestRepo(t *testing.T) string {
 	// Create the second commit.
 	if err := ioutil.WriteFile(testPath, []byte(headContent), 0644); err != nil {
 		t.Fatal("WriteFile failed: ", err)
+	}
+	if err := ioutil.WriteFile(filepath.Join(repoDir, newName), []byte("baz"), 0644); err != nil {
+		t.Fatal("WriteFile failed: ", err)
+	}
+
+	cmd = exec.Command("git", "rm", deleteName)
+	cmd.Dir = repoDir
+	if err := cmd.Run(); err != nil {
+		t.Fatal("git add failed: ", err)
+	}
+
+	cmd = exec.Command("git", "add", "-A")
+	cmd.Dir = repoDir
+	if err := cmd.Run(); err != nil {
+		t.Fatal("git add failed: ", err)
 	}
 
 	cmd = exec.Command("git", "commit", "-a", "-m", "hello")
@@ -111,27 +134,27 @@ func newTestRepo(t *testing.T) string {
 	return repoDir
 }
 
-func TestModifiedFilesInHistory(t *testing.T) {
+func TestChangedFilesInHistory(t *testing.T) {
 	repoDir := newTestRepo(t)
 	defer os.RemoveAll(repoDir)
 
 	g := New(repoDir, "HEAD")
-	fns, err := g.ModifiedFiles()
+	fns, err := g.ChangedFiles()
 	if err != nil {
-		t.Fatal("ModifiedFiles failed: ", err)
+		t.Fatal("ChangedFiles failed: ", err)
 	}
-	if exp := []string{testName}; !reflect.DeepEqual(fns, exp) {
-		t.Errorf("ModifiedFiles() = %q; want %q", fns, exp)
+	if exp := []CommitFile{CommitFile{Deleted, deleteName}, CommitFile{Added, newName}, CommitFile{Modified, testName}}; !reflect.DeepEqual(fns, exp) {
+		t.Errorf("ChangedFiles() = %q; want %q", fns, exp)
 	}
 }
 
-func TestModifiedFilesInWorkTree(t *testing.T) {
+func TestChangedFilesInWorkTree(t *testing.T) {
 	repoDir := newTestRepo(t)
 	defer os.RemoveAll(repoDir)
 
 	g := New(repoDir, "")
-	if _, err := g.ModifiedFiles(); err == nil {
-		t.Error("ModifiedFiles unexpectedly succeeded")
+	if _, err := g.ChangedFiles(); err == nil {
+		t.Error("ChangedFiles unexpectedly succeeded")
 	}
 }
 
@@ -178,7 +201,7 @@ func TestListDirInHistory(t *testing.T) {
 
 	if fns, err := g.ListDir(""); err != nil {
 		t.Errorf("ListDir(%q) failed: %v", "", err)
-	} else if exp := []string{staticName, testName}; !reflect.DeepEqual(fns, exp) {
+	} else if exp := []string{newName, staticName, testName}; !reflect.DeepEqual(fns, exp) {
 		t.Errorf("ListDir(%q) = %q; want %q", "", fns, exp)
 	}
 
@@ -195,7 +218,7 @@ func TestListDirInWorkTree(t *testing.T) {
 
 	if fns, err := g.ListDir(""); err != nil {
 		t.Errorf("ListDir(%q) failed: %v", "", err)
-	} else if exp := []string{".git", staticName, testName, untrackedName}; !reflect.DeepEqual(fns, exp) {
+	} else if exp := []string{".git", newName, staticName, testName, untrackedName}; !reflect.DeepEqual(fns, exp) {
 		t.Errorf("ListDir(%q) = %q; want %q", "", fns, exp)
 	}
 

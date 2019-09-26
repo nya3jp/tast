@@ -19,11 +19,24 @@ import (
 )
 
 // getTargetFiles returns the list of files to run lint according to flags.
-func getTargetFiles(g *git.Git) ([]string, error) {
+func getTargetFiles(g *git.Git) ([]git.CommitFile, error) {
 	if len(flag.Args()) == 0 && g.Commit != "" {
-		return g.ModifiedFiles()
+		return g.ChangedFiles()
 	}
-	return flag.Args(), nil
+
+	var args []git.CommitFile
+	var status string
+	flag.StringVar(&status, "status", "M", "File Status")
+	for _, p := range flag.Args() {
+		if status == "M" {
+			args = append(args, git.CommitFile{git.Modified, p})
+		} else if status == "A" {
+			args = append(args, git.CommitFile{git.Added, p})
+		} else if status == "D" {
+			args = append(args, git.CommitFile{git.Deleted, p})
+		}
+	}
+	return args, nil
 }
 
 // isTestFile checks if a file path is under Tast test directories.
@@ -60,50 +73,54 @@ func hasFmtError(code []byte, path string) bool {
 }
 
 // checkAll runs all checks against paths.
-func checkAll(g *git.Git, paths []string, debug bool) ([]*check.Issue, error) {
+func checkAll(g *git.Git, paths []git.CommitFile, debug bool) ([]*check.Issue, error) {
 	cp := newCachedParser(g)
 	fs := cp.fs
 
 	var allIssues []*check.Issue
 	for _, path := range paths {
-		if !isGoFile(path) {
-			continue
+		if path.Status != git.Deleted {
+
+			if !isGoFile(path.Path) {
+				continue
+			}
+
+			data, err := g.ReadFile(path.Path)
+			if err != nil {
+				return nil, err
+			}
+
+			f, err := cp.parseFile(path.Path)
+			if err != nil {
+				return nil, err
+			}
+
+			var issues []*check.Issue // issues in this file
+
+			issues = append(issues, check.Golint(path.Path, data, debug)...)
+			issues = append(issues, check.Comments(fs, f)...)
+
+			if !hasFmtError(data, path.Path) {
+				// goimports applies gofmt, so skip it if the code has any formatting
+				// error to avoid confusing reports. gofmt will be run by the repo
+				// upload hook anyway.
+				issues = append(issues, check.ImportOrder(path.Path, data)...)
+			}
+
+			if isTestFile(path.Path) {
+				issues = append(issues, check.Declarations(fs, f)...)
+				issues = append(issues, check.Exports(fs, f)...)
+				issues = append(issues, check.ForbiddenBundleImports(fs, f)...)
+				issues = append(issues, check.ForbiddenCalls(fs, f)...)
+				issues = append(issues, check.ForbiddenImports(fs, f)...)
+				issues = append(issues, check.InterFileRefs(fs, f)...)
+				issues = append(issues, check.Messages(fs, f)...)
+			}
+
+			// Only collect issues that weren't ignored by NOLINT comments.
+			allIssues = append(allIssues, check.DropIgnoredIssues(issues, fs, f)...)
+
 		}
-
-		data, err := g.ReadFile(path)
-		if err != nil {
-			return nil, err
-		}
-
-		f, err := cp.parseFile(path)
-		if err != nil {
-			return nil, err
-		}
-
-		var issues []*check.Issue // issues in this file
-
-		issues = append(issues, check.Golint(path, data, debug)...)
-		issues = append(issues, check.Comments(fs, f)...)
-
-		if !hasFmtError(data, path) {
-			// goimports applies gofmt, so skip it if the code has any formatting
-			// error to avoid confusing reports. gofmt will be run by the repo
-			// upload hook anyway.
-			issues = append(issues, check.ImportOrder(path, data)...)
-		}
-
-		if isTestFile(path) {
-			issues = append(issues, check.Declarations(fs, f)...)
-			issues = append(issues, check.Exports(fs, f)...)
-			issues = append(issues, check.ForbiddenBundleImports(fs, f)...)
-			issues = append(issues, check.ForbiddenCalls(fs, f)...)
-			issues = append(issues, check.ForbiddenImports(fs, f)...)
-			issues = append(issues, check.InterFileRefs(fs, f)...)
-			issues = append(issues, check.Messages(fs, f)...)
-		}
-
-		// Only collect issues that weren't ignored by NOLINT comments.
-		allIssues = append(allIssues, check.DropIgnoredIssues(issues, fs, f)...)
 	}
 
 	return allIssues, nil

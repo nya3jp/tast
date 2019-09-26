@@ -19,11 +19,40 @@ import (
 )
 
 // getTargetFiles returns the list of files to run lint according to flags.
-func getTargetFiles(g *git.Git) ([]string, error) {
+func getTargetFiles(g *git.Git) ([]git.CommitFile, error) {
 	if len(flag.Args()) == 0 && g.Commit != "" {
-		return g.ModifiedFiles()
+		return g.ChangedFiles()
 	}
-	return flag.Args(), nil
+
+	var args []git.CommitFile
+	var status string
+	flag.StringVar(&status, "status", "M", "File Status")
+	A, C, D, M, R, T, U, X, B := git.Added, git.Copied, git.Deleted, git.Modified, git.Renamed,
+		git.TypeChanged, git.Unmerged, git.Unknown, git.Broken
+	for _, p := range flag.Args() {
+		if status == "A" {
+			args = append(args, git.CommitFile{A, p})
+		} else if status == "C" {
+			args = append(args, git.CommitFile{C, p})
+		} else if status == "D" {
+			args = append(args, git.CommitFile{D, p})
+		} else if status == "M" {
+			args = append(args, git.CommitFile{M, p})
+		} else if status == "R" {
+			args = append(args, git.CommitFile{R, p})
+		} else if status == "T" {
+			args = append(args, git.CommitFile{T, p})
+		} else if status == "U" {
+			args = append(args, git.CommitFile{U, p})
+		} else if status == "X" {
+			args = append(args, git.CommitFile{X, p})
+		} else if status == "B" {
+			args = append(args, git.CommitFile{B, p})
+		} else {
+			fmt.Errorf("please input valid status")
+		}
+	}
+	return args, nil
 }
 
 // isSupportPackageFile checks if a file path is of support packages.
@@ -62,58 +91,60 @@ func hasFmtError(code []byte, path string) bool {
 }
 
 // checkAll runs all checks against paths.
-func checkAll(g *git.Git, paths []string, debug bool) ([]*check.Issue, error) {
+func checkAll(g *git.Git, paths []git.CommitFile, debug bool) ([]*check.Issue, error) {
 	cp := newCachedParser(g)
 	fs := cp.fs
 
 	var allIssues []*check.Issue
 	for _, path := range paths {
-		if !strings.HasSuffix(path, ".go") {
-			continue
+		if path.Status != git.Deleted {
+			if !strings.HasSuffix(path.Path, ".go") {
+				continue
+			}
+			// Exempt protoc-generated Go files from lint checks.
+			if strings.HasSuffix(path.Path, ".pb.go") {
+				continue
+			}
+
+			data, err := g.ReadFile(path.Path)
+			if err != nil {
+				return nil, err
+			}
+
+			f, err := cp.parseFile(path.Path)
+			if err != nil {
+				return nil, err
+			}
+
+			var issues []*check.Issue // issues in this file
+
+			issues = append(issues, check.Golint(path.Path, data, debug)...)
+			issues = append(issues, check.Comments(fs, f)...)
+
+			if !hasFmtError(data, path.Path) {
+				// goimports applies gofmt, so skip it if the code has any formatting
+				// error to avoid confusing reports. gofmt will be run by the repo
+				// upload hook anyway.
+				issues = append(issues, check.ImportOrder(path.Path, data)...)
+			}
+
+			if isTestFile(path.Path) {
+				issues = append(issues, check.Declarations(fs, f)...)
+				issues = append(issues, check.Exports(fs, f)...)
+				issues = append(issues, check.ForbiddenBundleImports(fs, f)...)
+				issues = append(issues, check.ForbiddenCalls(fs, f)...)
+				issues = append(issues, check.ForbiddenImports(fs, f)...)
+				issues = append(issues, check.InterFileRefs(fs, f)...)
+				issues = append(issues, check.Messages(fs, f)...)
+			}
+
+			if isSupportPackageFile(path.Path) {
+				issues = append(issues, check.VerifyTestingState(fs, f)...)
+			}
+
+			// Only collect issues that weren't ignored by NOLINT comments.
+			allIssues = append(allIssues, check.DropIgnoredIssues(issues, fs, f)...)
 		}
-		// Exempt protoc-generated Go files from lint checks.
-		if strings.HasSuffix(path, ".pb.go") {
-			continue
-		}
-
-		data, err := g.ReadFile(path)
-		if err != nil {
-			return nil, err
-		}
-
-		f, err := cp.parseFile(path)
-		if err != nil {
-			return nil, err
-		}
-
-		var issues []*check.Issue // issues in this file
-
-		issues = append(issues, check.Golint(path, data, debug)...)
-		issues = append(issues, check.Comments(fs, f)...)
-
-		if !hasFmtError(data, path) {
-			// goimports applies gofmt, so skip it if the code has any formatting
-			// error to avoid confusing reports. gofmt will be run by the repo
-			// upload hook anyway.
-			issues = append(issues, check.ImportOrder(path, data)...)
-		}
-
-		if isTestFile(path) {
-			issues = append(issues, check.Declarations(fs, f)...)
-			issues = append(issues, check.Exports(fs, f)...)
-			issues = append(issues, check.ForbiddenBundleImports(fs, f)...)
-			issues = append(issues, check.ForbiddenCalls(fs, f)...)
-			issues = append(issues, check.ForbiddenImports(fs, f)...)
-			issues = append(issues, check.InterFileRefs(fs, f)...)
-			issues = append(issues, check.Messages(fs, f)...)
-		}
-
-		if isSupportPackageFile(path) {
-			issues = append(issues, check.VerifyTestingState(fs, f)...)
-		}
-
-		// Only collect issues that weren't ignored by NOLINT comments.
-		allIssues = append(allIssues, check.DropIgnoredIssues(issues, fs, f)...)
 	}
 
 	return allIssues, nil

@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8c6812ae_070bc8ec",
+        "filename": "src/chromiumos/cmd/tast-lint/check/check_informational.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-26T07:33:05Z",
+      "side": 1,
+      "message": "nit/style/optional:\n\nif ident.Name !\u003d \"Attr\" {\n    continue\n}\n\nto unindent one level.",
+      "range": {
+        "startLine": 54,
+        "startChar": 4,
+        "endLine": 54,
+        "endChar": 29
+      },
+      "revId": "95d70a375f9b548a64a446317e392e8736d64744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b9d99a31_ade2f825",
+        "filename": "src/chromiumos/cmd/tast-lint/check/check_informational.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-26T07:33:05Z",
+      "side": 1,
+      "message": "toString can be used?",
+      "range": {
+        "startLine": 61,
+        "startChar": 6,
+        "endLine": 68,
+        "endChar": 7
+      },
+      "revId": "95d70a375f9b548a64a446317e392e8736d64744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b78aca2f_6201cb37",
+        "filename": "src/chromiumos/cmd/tast-lint/check/check_informational.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-26T07:33:05Z",
+      "side": 1,
+      "message": "nit/style: if !hasInformational {",
+      "range": {
+        "startLine": 74,
+        "startChar": 8,
+        "endLine": 74,
+        "endChar": 33
+      },
+      "revId": "95d70a375f9b548a64a446317e392e8736d64744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2e0383ce_8b1168c9",
+        "filename": "src/chromiumos/cmd/tast-lint/check/check_informational.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-26T07:33:05Z",
+      "side": 1,
+      "message": "Could you;\n- check parameterized test cases?\n- warn only mainline test cases?",
+      "revId": "95d70a375f9b548a64a446317e392e8736d64744",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

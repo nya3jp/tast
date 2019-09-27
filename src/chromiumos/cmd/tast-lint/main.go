@@ -90,6 +90,7 @@ func checkAll(g *git.Git, paths []string, debug bool) ([]*check.Issue, error) {
 
 		issues = append(issues, check.Golint(path, data, debug)...)
 		issues = append(issues, check.Comments(fs, f)...)
+		issues = append(issues, check.EmptySlice(fs, f)...)
 
 		if !hasFmtError(data, path) {
 			// goimports applies gofmt, so skip it if the code has any formatting

@@ -1,0 +1,182 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9b9ce13b_2da188e1",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-27T14:02:32Z",
+      "side": 1,
+      "message": "You can just use simple type assertion.\n\nassign, ok :\u003d node.(*ast.AssignStmt)\nif !ok {\n  return true\n}\n...\n\nso that following block can be unindent.",
+      "range": {
+        "startLine": 18,
+        "startChar": 2,
+        "endLine": 19,
+        "endChar": 23
+      },
+      "revId": "aca7108fb547b4743fc47568e631aef32b5b703f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e922d122_2e520989",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-27T14:02:32Z",
+      "side": 1,
+      "message": "Thanks to lang spec, you can assume lhs are id list.\n\ncf) https://golang.org/ref/spec#Short_variable_declarations\n\nso you can skip this check.",
+      "range": {
+        "startLine": 23,
+        "startChar": 3,
+        "endLine": 26,
+        "endChar": 4
+      },
+      "revId": "aca7108fb547b4743fc47568e631aef32b5b703f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "72db2264_1d6b3f13",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-27T14:02:32Z",
+      "side": 1,
+      "message": "In golang, it is allowed to assign multiple variables at once. E.g.;\n\nx, y :\u003d 10, 20\nf, err :\u003d os.Open(...)\n\nthus, we cannot assume the left most var is the empty slice var declaration.\nCould you find the corresponding variable?",
+      "range": {
+        "startLine": 28,
+        "startChar": 3,
+        "endLine": 28,
+        "endChar": 31
+      },
+      "revId": "aca7108fb547b4743fc47568e631aef32b5b703f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "145e8880_c8523b9f",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-27T14:02:32Z",
+      "side": 1,
+      "message": "nit: you can inline vars.\n\nif arr.Len \u003d\u003d nil \u0026\u0026 comp.Elts \u003d\u003d nil {\n  ...\n}\n\nin this kind of simpler case (without reusing the var).",
+      "range": {
+        "startLine": 37,
+        "startChar": 4,
+        "endLine": 39,
+        "endChar": 33
+      },
+      "revId": "aca7108fb547b4743fc47568e631aef32b5b703f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ed70a793_51f67f34",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-27T14:02:32Z",
+      "side": 1,
+      "message": "For each case, could you add comment why/why not it is warned.",
+      "revId": "aca7108fb547b4743fc47568e631aef32b5b703f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5d9b80cb_d827ff9f",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-27T14:02:32Z",
+      "side": 1,
+      "message": "nit/style: Could you use tab for indent?",
+      "range": {
+        "startLine": 14,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 2
+      },
+      "revId": "aca7108fb547b4743fc47568e631aef32b5b703f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c96479fd_721953b0",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-27T14:02:32Z",
+      "side": 1,
+      "message": "!e\n\nBTW, this is type error (e is an array, so cannot be comparable with boolean literal).",
+      "range": {
+        "startLine": 20,
+        "startChar": 7,
+        "endLine": 20,
+        "endChar": 17
+      },
+      "revId": "aca7108fb547b4743fc47568e631aef32b5b703f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c43e19ef_00e9b874",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-27T14:02:32Z",
+      "side": 1,
+      "message": "for better coverage, could you add \"\u003d\" case, which should not be warned?",
+      "range": {
+        "startLine": 27,
+        "startChar": 6,
+        "endLine": 27,
+        "endChar": 8
+      },
+      "revId": "aca7108fb547b4743fc47568e631aef32b5b703f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "2a0d89ea_19043726",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-09-30T07:21:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9b9ce13b_2da188e1",
+      "range": {
+        "startLine": 18,
+        "startChar": 2,
+        "endLine": 19,
+        "endChar": 23
+      },
+      "revId": "aca7108fb547b4743fc47568e631aef32b5b703f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e922d122_2e520989",
         "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
         "patchSetId": 2
@@ -45,6 +69,30 @@
       "revId": "aca7108fb547b4743fc47568e631aef32b5b703f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f1546aa0_c5b6df56",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-09-30T07:21:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e922d122_2e520989",
+      "range": {
+        "startLine": 23,
+        "startChar": 3,
+        "endLine": 26,
+        "endChar": 4
+      },
+      "revId": "aca7108fb547b4743fc47568e631aef32b5b703f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "572e0093_6ed43311",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-09-30T07:21:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "72db2264_1d6b3f13",
+      "range": {
+        "startLine": 28,
+        "startChar": 3,
+        "endLine": 28,
+        "endChar": 31
+      },
+      "revId": "aca7108fb547b4743fc47568e631aef32b5b703f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "145e8880_c8523b9f",
         "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
         "patchSetId": 2
@@ -94,6 +166,30 @@
     },
     {
       "key": {
+        "uuid": "8f32675c_43034b9b",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-09-30T07:21:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "145e8880_c8523b9f",
+      "range": {
+        "startLine": 37,
+        "startChar": 4,
+        "endLine": 39,
+        "endChar": 33
+      },
+      "revId": "aca7108fb547b4743fc47568e631aef32b5b703f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ed70a793_51f67f34",
         "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice_test.go",
         "patchSetId": 2
@@ -108,6 +204,24 @@
       "revId": "aca7108fb547b4743fc47568e631aef32b5b703f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "567c4bb6_e398b3ad",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-09-30T07:21:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ed70a793_51f67f34",
+      "revId": "aca7108fb547b4743fc47568e631aef32b5b703f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -134,6 +248,30 @@
     },
     {
       "key": {
+        "uuid": "e89f9b87_8fee6aa4",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-09-30T07:21:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5d9b80cb_d827ff9f",
+      "range": {
+        "startLine": 14,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 2
+      },
+      "revId": "aca7108fb547b4743fc47568e631aef32b5b703f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c96479fd_721953b0",
         "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice_test.go",
         "patchSetId": 2
@@ -157,6 +295,30 @@
     },
     {
       "key": {
+        "uuid": "c8217f02_81b41596",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-09-30T07:21:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c96479fd_721953b0",
+      "range": {
+        "startLine": 20,
+        "startChar": 7,
+        "endLine": 20,
+        "endChar": 17
+      },
+      "revId": "aca7108fb547b4743fc47568e631aef32b5b703f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c43e19ef_00e9b874",
         "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice_test.go",
         "patchSetId": 2
@@ -177,6 +339,30 @@
       "revId": "aca7108fb547b4743fc47568e631aef32b5b703f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fb4a658d_b67c7de4",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-09-30T07:21:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c43e19ef_00e9b874",
+      "range": {
+        "startLine": 27,
+        "startChar": 6,
+        "endLine": 27,
+        "endChar": 8
+      },
+      "revId": "aca7108fb547b4743fc47568e631aef32b5b703f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

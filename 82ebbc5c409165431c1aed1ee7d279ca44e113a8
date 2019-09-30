@@ -1,0 +1,107 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b5feabda_1ca03902",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-30T08:52:31Z",
+      "side": 1,
+      "message": "It\u0027s better to check \"ok\" here, just in case.\nE.g.;\n\nif !ok {\n  // If assignment operator is DEFINE, it is expected that each lhs is an identifier, so this\n  // shouldn\u0027t happen. Skip to avoid false positive.\n  continue\n}",
+      "revId": "82ebbc5c409165431c1aed1ee7d279ca44e113a8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "de1b7d00_7069a03b",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-30T08:52:31Z",
+      "side": 1,
+      "message": "Could you describe, why this is error?",
+      "range": {
+        "startLine": 14,
+        "startChar": 21,
+        "endLine": 14,
+        "endChar": 26
+      },
+      "revId": "82ebbc5c409165431c1aed1ee7d279ca44e113a8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c25da8b8_896afdcf",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-30T08:52:31Z",
+      "side": 1,
+      "message": "Similarly, why this is valid?",
+      "range": {
+        "startLine": 15,
+        "startChar": 20,
+        "endLine": 15,
+        "endChar": 30
+      },
+      "revId": "82ebbc5c409165431c1aed1ee7d279ca44e113a8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0c016ca3_62a063cc",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-30T08:52:31Z",
+      "side": 1,
+      "message": "nit: empty",
+      "range": {
+        "startLine": 17,
+        "startChar": 33,
+        "endLine": 17,
+        "endChar": 34
+      },
+      "revId": "82ebbc5c409165431c1aed1ee7d279ca44e113a8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "778d6ebc_b604fa44",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-09-30T08:52:31Z",
+      "side": 1,
+      "message": "good test coverage :-).\n\nCould you add one more test case?\n\nx, y :\u003d someFunction()\n\nwhich is a common pattern.",
+      "revId": "82ebbc5c409165431c1aed1ee7d279ca44e113a8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

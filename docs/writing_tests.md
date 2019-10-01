@@ -94,7 +94,7 @@ func init() {
 		Func:         DoSomething,
 		Desc:         "Does X to verify Y",
 		Contacts:     []string{"me@chromium.org"},
-		Attr:         []string{"informational"},
+		Attr:         []string{"group:mainline", "informational"},
 		SoftwareDeps: []string{"chrome"},
 	})
 }
@@ -111,12 +111,17 @@ with those tests in [Contacts]. At least one personal email address of an active
 committer should be specified so that we can file bugs or ask for code reviews.
 The `Contacts` fields should be an array literal of string literals.
 
-Tests may specify [attributes] and [software dependencies] when they are
-declared. Setting the `informational` attribute on new tests is recommended, as
-tests without this attribute will block the Commit Queue on failure otherwise.
-The `Attr` fields should be an array literal of string literals.
-The `SoftwareDeps` fields should be an array literal of string literals or
-(possibly qualified) identifiers which are constant value.
+Tests have to specify [attributes] to describe how they are used in Chrome OS
+testing. A test belongs to zero or more groups by declaring attributes with
+`group:`-prefix. Typically functional tests belong to the mainline group by
+declaring the `group:mainline` attribute. New mainline tests should have the
+`informational` attribute, as tests without this attribute will block the Commit
+Queue on failure otherwise. The `Attr` fields should be an array literal of
+string literals.
+
+The `SoftwareDeps` field lists [software dependencies] that should be satisfied
+in order for the test to run. Its value should be an array literal of string
+literals or (possibly qualified) identifiers which are constant value.
 
 [Contacts]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Test
 [attributes]: test_attributes.md

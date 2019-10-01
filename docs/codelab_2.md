@@ -461,7 +461,7 @@ func init() {
 		Func:     LogMount,
 		Desc:     "Checks that the kernel logs a message when a filesystem is mounted",
 		Contacts: []string{"me@chromium.org", "tast-users@chromium.org"},
-		Attr:     []string{"informational"},
+		Attr:     []string{"group:mainline", "informational"},
 	})
 }
 

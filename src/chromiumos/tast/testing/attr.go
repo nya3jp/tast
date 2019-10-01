@@ -107,6 +107,36 @@ Tests in this group are not used for build verification.
 		},
 	},
 	{
+		Name:     "graphics",
+		Contacts: []string{"chromeos-gfx@google.com", "chromeos-gfx-video@google.com"},
+		Desc: `The group of graphics tests to be run regularly by the graphics team.
+
+Tests in this group are not used for build verification.
+`,
+		Subattrs: []*attr{
+			{
+				Name: "graphics_trace",
+				Desc: `Indicate this test is replaying a trace to reproduce graphics command.`,
+			},
+			{
+				Name: "graphics_video",
+				Desc: `Indicate this test is focos on video encode/decode.`,
+			},
+			{
+				Name: "graphics_perbuild",
+				Desc: `Indicates that this test should run for every Chrome OS build.`,
+			},
+			{
+				Name: "graphics_nightly",
+				Desc: `Indicates that this test should run nightly.`,
+			},
+			{
+				Name: "graphics_weekly",
+				Desc: `Indicates that this test should run weekly.`,
+			},
+		},
+	},
+	{
 		Name:     "stress",
 		Contacts: []string{"chromeos-engprod@google.com"},
 		Desc:     `A group of stress tests.`,

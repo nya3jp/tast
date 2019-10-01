@@ -21,6 +21,8 @@ func parse(code, filename string) (*ast.File, *token.FileSet) {
 }
 
 func verifyIssues(t *testing.T, issues []*Issue, expects []string) {
+	t.Helper()
+
 	SortIssues(issues)
 
 	if len(issues) != len(expects) {

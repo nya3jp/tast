@@ -1,0 +1,95 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "32242866_08d5b21c",
+        "filename": "src/chromiumos/cmd/tast-lint/git/git.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-01T07:24:22Z",
+      "side": 1,
+      "message": "Could you sort in the lexicographical order?",
+      "range": {
+        "startLine": 41,
+        "startChar": 1,
+        "endLine": 48,
+        "endChar": 7
+      },
+      "revId": "8a9bfe094ba91ea9cfd1a07981553e3f5efdef8e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2f1f7a2a_cb162f95",
+        "filename": "src/chromiumos/cmd/tast-lint/git/git.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-01T07:24:22Z",
+      "side": 1,
+      "message": "fmt.Errorf() creates an error instance, but not report the error.\nCould you return it?\n\ncf) https://golang.org/pkg/fmt/#Errorf\n\nor, with just warning, maybe it is better to return the file, in this case.\nIn order to avoid false-positive for lint.",
+      "revId": "8a9bfe094ba91ea9cfd1a07981553e3f5efdef8e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e0ae36e9_7853187c",
+        "filename": "src/chromiumos/cmd/tast-lint/git/git.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-01T07:24:22Z",
+      "side": 1,
+      "message": "This is not listed in the man. Where does this come from?\ncf) https://git-scm.com/docs/git-diff-tree#_raw_output_format",
+      "revId": "8a9bfe094ba91ea9cfd1a07981553e3f5efdef8e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c50668da_c89ec60f",
+        "filename": "src/chromiumos/cmd/tast-lint/git/git.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-01T07:24:22Z",
+      "side": 1,
+      "message": "ditto.",
+      "revId": "8a9bfe094ba91ea9cfd1a07981553e3f5efdef8e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "595dc372_49ce4779",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-01T07:24:22Z",
+      "side": 1,
+      "message": "Sorry for miscommunication. I meant;\n\nthe |status| is calculated at L29.\nThus, the value used for commit status can be calculated before entering in the for-loop. E.g.\n\nvar statusStr string\nflag.StringVar(...)\n\nvar status git.CommitStatus\nswitch statusStr {\n  ...\n}\n\nfor ... {\n  args \u003d append(args, git.CommitFile{status, p})\n}",
+      "revId": "8a9bfe094ba91ea9cfd1a07981553e3f5efdef8e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

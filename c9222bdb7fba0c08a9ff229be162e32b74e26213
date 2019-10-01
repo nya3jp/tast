@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "483ed94f_39e158a9",
+        "filename": "src/chromiumos/cmd/tast-lint/git/git.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-10-01T07:11:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a4e13d6e_9b2d26c8",
+      "revId": "c9222bdb7fba0c08a9ff229be162e32b74e26213",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9b21f08e_a30c9a38",
         "filename": "src/chromiumos/cmd/tast-lint/git/git.go",
         "patchSetId": 1
@@ -33,6 +51,24 @@
       "revId": "c9222bdb7fba0c08a9ff229be162e32b74e26213",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f7f8f7e4_387efd0a",
+        "filename": "src/chromiumos/cmd/tast-lint/git/git.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-10-01T07:11:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9b21f08e_a30c9a38",
+      "revId": "c9222bdb7fba0c08a9ff229be162e32b74e26213",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -56,6 +92,30 @@
       "revId": "c9222bdb7fba0c08a9ff229be162e32b74e26213",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a8e55262_171e641f",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-10-01T07:11:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "899634eb_c2bdd6af",
+      "range": {
+        "startLine": 32,
+        "startChar": 38,
+        "endLine": 32,
+        "endChar": 50
+      },
+      "revId": "c9222bdb7fba0c08a9ff229be162e32b74e26213",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

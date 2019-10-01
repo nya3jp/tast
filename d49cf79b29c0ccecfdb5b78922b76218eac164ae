@@ -22,6 +22,29 @@
       "revId": "d49cf79b29c0ccecfdb5b78922b76218eac164ae",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3a83bae5_1dd1ff80",
+        "filename": "src/chromiumos/cmd/tast-lint/check/declarations_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-01T08:48:15Z",
+      "side": 1,
+      "message": "I guess you\u0027d like to prohibit nil/non-Attr field, in order to capture the case where the test author forget to annotate it.\n\nIf so, could you explicitly document the empty attr case in the doc?\nTo be clear, current \"Test have to specify...\" looks not clear enough to me because it does not mention the diff between nil/empty array case. Also, it\u0027s nice to be mentioned when empty array should be used.\n\nBTW, why not check this in the test registration?",
+      "range": {
+        "startLine": 148,
+        "startChar": 2,
+        "endLine": 148,
+        "endChar": 45
+      },
+      "revId": "d49cf79b29c0ccecfdb5b78922b76218eac164ae",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

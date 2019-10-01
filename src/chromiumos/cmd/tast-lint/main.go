@@ -147,6 +147,10 @@ func checkAll(g *git.Git, paths []git.CommitFile, debug bool) ([]*check.Issue, e
 			issues = append(issues, check.VerifyTestingStateParam(fs, f)...)
 		}
 
+		if path.Status == git.Added {
+			issues = append(issues, check.VerifyInformationalAttr(fs, f)...)
+		}
+
 		// Only collect issues that weren't ignored by NOLINT comments.
 		allIssues = append(allIssues, check.DropIgnoredIssues(issues, fs, f)...)
 	}

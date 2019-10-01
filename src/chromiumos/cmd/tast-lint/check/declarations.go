@@ -24,15 +24,17 @@ const (
 	noContactMsg          = `Test should list owners' email addresses in Contacts field`
 	nonLiteralContactsMsg = `Test Contacts should be an array literal of string literals`
 
+	noAttrMsg    = `Test should have Attr field even if it is empty`
+	emptyAttrMsg = `Test should have non-empty Attr; set []string{"disabled"} to disable a test`
+
 	nonLiteralAttrMsg         = `Test Attr should be an array literal of string literals`
 	nonLiteralVarsMsg         = `Test Vars should be an array literal of string literals`
 	nonLiteralSoftwareDepsMsg = `Test SoftwareDeps should be an array literal of string literals or (possibly qualified) identifiers`
 	nonLiteralParamsMsg       = `Test Params should be an array literal of Param struct literals`
 	nonLiteralParamNameMsg    = `Name of Param should be a string literal`
 
-	testRegistrationURL     = `https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Test-registration`
-	testParamTestURL        = `https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Parameterized-test-registration`
-	testRuntimeVariablesURL = `https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Runtime-variables`
+	testRegistrationURL = `https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Test-registration`
+	testParamTestURL    = `https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Parameterized-test-registration`
 )
 
 // Declarations checks declarations of testing.Test structs.
@@ -113,7 +115,7 @@ func verifyInitBody(fs *token.FileSet, stmt ast.Stmt) []*Issue {
 
 	// The compiler should check the type. Skip it.
 	var issues []*Issue
-	var hasDesc, hasContacts bool
+	var hasDesc, hasContacts, hasAttr bool
 	for _, el := range comp.Elts {
 		kv, ok := el.(*ast.KeyValueExpr)
 		if !ok {
@@ -131,6 +133,7 @@ func verifyInitBody(fs *token.FileSet, stmt ast.Stmt) []*Issue {
 			hasContacts = true
 			issues = append(issues, verifyContacts(fs, kv.Value)...)
 		case "Attr":
+			hasAttr = true
 			issues = append(issues, verifyAttr(fs, kv.Value)...)
 		case "Vars":
 			issues = append(issues, verifyVars(fs, kv.Value)...)
@@ -152,6 +155,13 @@ func verifyInitBody(fs *token.FileSet, stmt ast.Stmt) []*Issue {
 		issues = append(issues, &Issue{
 			Pos:  fs.Position(arg.Pos()),
 			Msg:  noContactMsg,
+			Link: testRegistrationURL,
+		})
+	}
+	if !hasAttr {
+		issues = append(issues, &Issue{
+			Pos:  fs.Position(arg.Pos()),
+			Msg:  noAttrMsg,
 			Link: testRegistrationURL,
 		})
 	}
@@ -201,11 +211,27 @@ func verifyContacts(fs *token.FileSet, node ast.Node) []*Issue {
 }
 
 func verifyAttr(fs *token.FileSet, node ast.Node) []*Issue {
+	if id, ok := node.(*ast.Ident); ok && id.Name == "nil" {
+		return []*Issue{{
+			Pos:  fs.Position(node.Pos()),
+			Msg:  emptyAttrMsg,
+			Link: testRegistrationURL,
+		}}
+	}
+
 	comp, ok := node.(*ast.CompositeLit)
 	if !ok {
 		return []*Issue{{
 			Pos:  fs.Position(node.Pos()),
 			Msg:  nonLiteralAttrMsg,
+			Link: testRegistrationURL,
+		}}
+	}
+
+	if len(comp.Elts) == 0 {
+		return []*Issue{{
+			Pos:  fs.Position(node.Pos()),
+			Msg:  emptyAttrMsg,
 			Link: testRegistrationURL,
 		}}
 	}

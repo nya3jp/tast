@@ -17,6 +17,7 @@ func init() {
 		Func:     DoStuff,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
+		Attr:     []string{"group:mainline"},
 	})
 }
 `
@@ -52,21 +53,25 @@ func init() {
 		Func:     DoStuff,
 		// Desc is missing
 		Contacts: []string{"me@chromium.org"},
+		Attr:     []string{"group:mainline"},
 	})
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     variableDesc,
 		Contacts: []string{"me@chromium.org"},
+		Attr:     []string{"group:mainline"},
 	})
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "not capitalized",
 		Contacts: []string{"me@chromium.org"},
+		Attr:     []string{"group:mainline"},
 	})
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "Ends with a period.",
 		Contacts: []string{"me@chromium.org"},
+		Attr:     []string{"group:mainline"},
 	})
 }
 `
@@ -75,9 +80,9 @@ func init() {
 	issues := Declarations(fs, f)
 	expects := []string{
 		declTestPath + ":3:18: " + noDescMsg,
-		declTestPath + ":10:13: " + nonLiteralDescMsg,
-		declTestPath + ":15:13: " + badDescMsg,
-		declTestPath + ":20:13: " + badDescMsg,
+		declTestPath + ":11:13: " + nonLiteralDescMsg,
+		declTestPath + ":17:13: " + badDescMsg,
+		declTestPath + ":23:13: " + badDescMsg,
 	}
 	verifyIssues(t, issues, expects)
 }
@@ -89,16 +94,19 @@ func init() {
 		Func:     DoStuff,
 		Desc:     "This description is fine",
 		// Contacts is missing
+		Attr:     []string{"group:mainline"},
 	})
 	testing.AddTest(&testing.Test{
 		Func: DoStuff,
 		Desc: "This description is fine",
 		Contacts: []string{variableAddress},
+		Attr:     []string{"group:mainline"},
 	})
 	testing.AddTest(&testing.Test{
 		Func: DoStuff,
 		Desc: "This description is fine",
 		Contacts: variableContacts,
+		Attr:     []string{"group:mainline"},
 	})
 }
 `
@@ -106,8 +114,8 @@ func init() {
 	issues := Declarations(fs, f)
 	expects := []string{
 		declTestPath + ":3:18: " + noContactMsg,
-		declTestPath + ":11:22: " + nonLiteralContactsMsg,
-		declTestPath + ":16:13: " + nonLiteralContactsMsg,
+		declTestPath + ":12:22: " + nonLiteralContactsMsg,
+		declTestPath + ":18:13: " + nonLiteralContactsMsg,
 	}
 	verifyIssues(t, issues, expects)
 }
@@ -133,6 +141,24 @@ func init() {
 		Contacts: []string{"me@chromium.org"},
 		Attr:     []string{variableAttr},
 	})
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+		Attr:     []string{},
+	})
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+		Attr:     nil,
+	})
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+		// Attr is missing.
+	})
 }
 `
 	f, fs := parse(code, declTestPath)
@@ -140,6 +166,9 @@ func init() {
 	expects := []string{
 		declTestPath + ":13:13: " + nonLiteralAttrMsg,
 		declTestPath + ":19:22: " + nonLiteralAttrMsg,
+		declTestPath + ":25:13: " + emptyAttrMsg,
+		declTestPath + ":31:13: " + emptyAttrMsg,
+		declTestPath + ":33:18: " + noAttrMsg,
 	}
 	verifyIssues(t, issues, expects)
 }
@@ -152,26 +181,29 @@ func init() {
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		Vars:     []string{"this", "is", "valid", "vars"},
+		Attr:     []string{"group:mainline"},
 	})
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		Vars:     foobar,  // non array literal.
+		Attr:     []string{"group:mainline"},
 	})
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		Vars:     []string{variableVar},
+		Attr:     []string{"group:mainline"},
 	})
 }
 `
 	f, fs := parse(code, declTestPath)
 	issues := Declarations(fs, f)
 	expects := []string{
-		declTestPath + ":13:13: " + nonLiteralVarsMsg,
-		declTestPath + ":19:22: " + nonLiteralVarsMsg,
+		declTestPath + ":14:13: " + nonLiteralVarsMsg,
+		declTestPath + ":21:22: " + nonLiteralVarsMsg,
 	}
 	verifyIssues(t, issues, expects)
 }
@@ -184,32 +216,36 @@ func init() {
 		Desc:         "This description is fine",
 		Contacts:     []string{"me@chromium.org"},
 		SoftwareDeps: []string{"this", "is", "valid", "dep"},
+		Attr:         []string{"group:mainline"},
 	})
 	testing.AddTest(&testing.Test{
 		Func:         DoStuff,
 		Desc:         "This description is fine",
 		Contacts:     []string{"me@chromium.org"},
 		SoftwareDeps: []string{qualified.variable, is, "allowed"},
+		Attr:         []string{"group:mainline"},
 	})
 	testing.AddTest(&testing.Test{
 		Func:         DoStuff,
 		Desc:         "This description is fine",
 		Contacts:     []string{"me@chromium.org"},
 		SoftwareDeps: foobar,  // non array literal.
+		Attr:         []string{"group:mainline"},
 	})
 	testing.AddTest(&testing.Test{
 		Func:         DoStuff,
 		Desc:         "This description is fine",
 		Contacts:     []string{"me@chromium.org"},
 		SoftwareDeps: []string{fun()},  // invocation is not allowed.
+		Attr:         []string{"group:mainline"},
 	})
 }
 `
 	f, fs := parse(code, declTestPath)
 	issues := Declarations(fs, f)
 	expects := []string{
-		declTestPath + ":19:17: " + nonLiteralSoftwareDepsMsg,
-		declTestPath + ":25:26: " + nonLiteralSoftwareDepsMsg,
+		declTestPath + ":21:17: " + nonLiteralSoftwareDepsMsg,
+		declTestPath + ":28:26: " + nonLiteralSoftwareDepsMsg,
 	}
 	verifyIssues(t, issues, expects)
 }
@@ -228,18 +264,21 @@ func init() {
 		}, {
 			Name: "param2",
 		}},
+		Attr: []string{"group:mainline"},
 	})
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		Params:   variableParams,
+		Attr:     []string{"group:mainline"},
 	})
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		Params:   []Param{variableParamStruct},
+		Attr:     []string{"group:mainline"},
 	})
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
@@ -256,19 +295,20 @@ func init() {
 		}, {
 			ExtraSoftwareDeps: []string{fun()},
 		}},
+		Attr: []string{"group:mainline"},
 	})
 }
 `
 	f, fs := parse(code, declTestPath)
 	issues := Declarations(fs, f)
 	expects := []string{
-		declTestPath + ":19:13: " + nonLiteralParamsMsg,
-		declTestPath + ":25:21: " + nonLiteralParamsMsg,
-		declTestPath + ":32:10: " + nonLiteralParamNameMsg,
-		declTestPath + ":34:23: " + nonLiteralAttrMsg,
-		declTestPath + ":36:32: " + nonLiteralAttrMsg,
-		declTestPath + ":38:23: " + nonLiteralSoftwareDepsMsg,
-		declTestPath + ":40:32: " + nonLiteralSoftwareDepsMsg,
+		declTestPath + ":20:13: " + nonLiteralParamsMsg,
+		declTestPath + ":27:21: " + nonLiteralParamsMsg,
+		declTestPath + ":35:10: " + nonLiteralParamNameMsg,
+		declTestPath + ":37:23: " + nonLiteralAttrMsg,
+		declTestPath + ":39:32: " + nonLiteralAttrMsg,
+		declTestPath + ":41:23: " + nonLiteralSoftwareDepsMsg,
+		declTestPath + ":43:32: " + nonLiteralSoftwareDepsMsg,
 	}
 	verifyIssues(t, issues, expects)
 }

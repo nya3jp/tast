@@ -116,8 +116,9 @@ testing. A test belongs to zero or more groups by declaring attributes with
 `group:`-prefix. Typically functional tests belong to the mainline group by
 declaring the `group:mainline` attribute. New mainline tests should have the
 `informational` attribute, as tests without this attribute will block the Commit
-Queue on failure otherwise. The `Attr` fields should be an array literal of
-string literals.
+Queue on failure otherwise. A test belonging to no group should have the
+`disabled` attribute. The `Attr` field should be an array literal of string
+literals, and should never be empty.
 
 The `SoftwareDeps` field lists [software dependencies] that should be satisfied
 in order for the test to run. Its value should be an array literal of string

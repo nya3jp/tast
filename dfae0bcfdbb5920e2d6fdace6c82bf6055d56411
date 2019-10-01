@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1c4c13a3_d002fc4c",
+        "filename": "src/chromiumos/cmd/tast-lint/check/check_informational.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-01T07:43:02Z",
+      "side": 1,
+      "message": "Per offline chat, could you give it a try to simplify the logic?",
+      "revId": "dfae0bcfdbb5920e2d6fdace6c82bf6055d56411",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

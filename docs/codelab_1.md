@@ -66,7 +66,7 @@ func init() {
 			"me@chromium.org",         // Test author
 			"tast-users@chromium.org", // Backup mailing list
 		},
-		Attr: []string{"informational"},
+		Attr: []string{"group:mainline", "informational"},
 	})
 }
 ```
@@ -86,16 +86,19 @@ lists the email addresses of people and mailing lists that are responsible for
 the test.
 
 `Attr` contains free-form strings naming this test's [attributes].
-`informational` indicates that this test is non-critical, i.e. it won't run on
-the Chrome OS Commit Queue or on the Pre-Flight Queue (PFQ) builders that are
-used to integrate new versions of Chrome or Android into the OS. All [new tests]
-(internal link) should start out with the `informational` attribute until
-they've been proven to be stable.
+`group:mainline` indicates that this test is in [the mainline group], the
+default group for functional tests. `informational` indicates that this test is
+non-critical, i.e. it won't run on the Chrome OS Commit Queue or on the
+Pre-Flight Queue (PFQ) builders that are used to integrate new versions of
+Chrome or Android into the OS. All [new mainline tests] (internal link) should
+start out with the `informational` attribute until they've been proven to be
+stable.
 
 [testing.AddTest]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#AddTest
 [testing.Test]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Test
 [attributes]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/test_attributes.md
-[new tests]: https://chrome-internal.googlesource.com/chromeos/chromeos-admin/+/master/doc/tast_add_test.md
+[the mainline group]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/test_attributes.md
+[new mainline tests]: https://chrome-internal.googlesource.com/chromeos/chromeos-admin/+/master/doc/tast_add_test.md
 
 ## Test function
 
@@ -256,7 +259,7 @@ func init() {
 			"me@chromium.org",         // Test author
 			"tast-users@chromium.org", // Backup mailing list
 		},
-		Attr: []string{"informational"},
+		Attr: []string{"group:mainline", "informational"},
 	})
 }
 

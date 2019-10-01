@@ -8,35 +8,46 @@ import (
 	"testing"
 )
 
-func TestDeclaration(t *testing.T) {
+const declTestPath = "/src/chromiumos/tast/local/bundles/cros/example/do_stuff.go"
+
+func TestDeclarationsPass(t *testing.T) {
 	const code = `package pkg
-
-import (
-	"context"
-
-	"chromiumos/tast/testing"
-)
-
 func init() {
-	// We wouldn't normally permit multiple AddTest calls like this, but including
-	// them here makes this unit test shorter.
-
-	// Simple pass case.
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 	})
+}
+`
+	f, fs := parse(code, declTestPath)
+	issues := Declarations(fs, f)
+	verifyIssues(t, issues, nil)
+}
 
-	// AddTest invocation tests.
+func TestDeclarationsTopLevelAddTest(t *testing.T) {
+	const code = `package pkg
+func init() {
 	for {
 		testing.AddTest(&testing.Test{
 			Func: DoStuff,
 		})
 	}
 	testing.AddTest(ts)
+}
+`
+	f, fs := parse(code, declTestPath)
+	issues := Declarations(fs, f)
+	expects := []string{
+		declTestPath + ":4:3: " + notTopAddTestMsg,
+		declTestPath + ":8:18: " + addTestArgLitMsg,
+	}
+	verifyIssues(t, issues, expects)
+}
 
-	// Desc verification.
+func TestDeclarationsDesc(t *testing.T) {
+	const code = `package pkg
+func init() {
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		// Desc is missing
@@ -57,8 +68,23 @@ func init() {
 		Desc:     "Ends with a period.",
 		Contacts: []string{"me@chromium.org"},
 	})
+}
+`
 
-	// Contacts verification.
+	f, fs := parse(code, declTestPath)
+	issues := Declarations(fs, f)
+	expects := []string{
+		declTestPath + ":3:18: " + noDescMsg,
+		declTestPath + ":10:13: " + nonLiteralDescMsg,
+		declTestPath + ":15:13: " + badDescMsg,
+		declTestPath + ":20:13: " + badDescMsg,
+	}
+	verifyIssues(t, issues, expects)
+}
+
+func TestDeclarationsContacts(t *testing.T) {
+	const code = `package pkg
+func init() {
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
@@ -74,8 +100,21 @@ func init() {
 		Desc: "This description is fine",
 		Contacts: variableContacts,
 	})
+}
+`
+	f, fs := parse(code, declTestPath)
+	issues := Declarations(fs, f)
+	expects := []string{
+		declTestPath + ":3:18: " + noContactMsg,
+		declTestPath + ":11:22: " + nonLiteralContactsMsg,
+		declTestPath + ":16:13: " + nonLiteralContactsMsg,
+	}
+	verifyIssues(t, issues, expects)
+}
 
-	// Attr verification.
+func TestDeclarationsAttr(t *testing.T) {
+	const code = `package pkg
+func init() {
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
@@ -94,8 +133,20 @@ func init() {
 		Contacts: []string{"me@chromium.org"},
 		Attr:     []string{variableAttr},
 	})
+}
+`
+	f, fs := parse(code, declTestPath)
+	issues := Declarations(fs, f)
+	expects := []string{
+		declTestPath + ":13:13: " + nonLiteralAttrMsg,
+		declTestPath + ":19:22: " + nonLiteralAttrMsg,
+	}
+	verifyIssues(t, issues, expects)
+}
 
-	// Vars verification.
+func TestDeclarationsVars(t *testing.T) {
+	const code = `package pkg
+func init() {
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
@@ -114,8 +165,20 @@ func init() {
 		Contacts: []string{"me@chromium.org"},
 		Vars:     []string{variableVar},
 	})
+}
+`
+	f, fs := parse(code, declTestPath)
+	issues := Declarations(fs, f)
+	expects := []string{
+		declTestPath + ":13:13: " + nonLiteralVarsMsg,
+		declTestPath + ":19:22: " + nonLiteralVarsMsg,
+	}
+	verifyIssues(t, issues, expects)
+}
 
-	// SoftwareDeps verification.
+func TestDeclarationsSoftwareDeps(t *testing.T) {
+	const code = `package pkg
+func init() {
 	testing.AddTest(&testing.Test{
 		Func:         DoStuff,
 		Desc:         "This description is fine",
@@ -140,8 +203,20 @@ func init() {
 		Contacts:     []string{"me@chromium.org"},
 		SoftwareDeps: []string{fun()},  // invocation is not allowed.
 	})
+}
+`
+	f, fs := parse(code, declTestPath)
+	issues := Declarations(fs, f)
+	expects := []string{
+		declTestPath + ":19:17: " + nonLiteralSoftwareDepsMsg,
+		declTestPath + ":25:26: " + nonLiteralSoftwareDepsMsg,
+	}
+	verifyIssues(t, issues, expects)
+}
 
-	// Params verification.
+func TestDeclarationsParams(t *testing.T) {
+	const code = `package pkg
+func init() {
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
@@ -172,55 +247,28 @@ func init() {
 		Contacts: []string{"me@chromium.org"},
 		Params: []Param{{
 			Name: variableParamName,
-                }, {
+		}, {
 			ExtraAttr:         variableAttrs,
-                }, {
+		}, {
 			ExtraAttr:         []string{variableAttr},
-                }, {
+		}, {
 			ExtraSoftwareDeps: variableSoftwareDeps,
 		}, {
 			ExtraSoftwareDeps: []string{fun()},
-                }},
+		}},
 	})
 }
-
-func DoStuff(ctx context.Context, s *testing.State) {}
 `
-
-	const path = "/src/chromiumos/tast/local/bundles/cros/example/do_stuff.go"
-
-	f, fs := parse(code, path)
-
+	f, fs := parse(code, declTestPath)
 	issues := Declarations(fs, f)
 	expects := []string{
-		path + ":22:3: " + notTopAddTestMsg,
-		path + ":26:18: " + addTestArgLitMsg,
-
-		path + ":29:18: " + noDescMsg,
-		path + ":36:13: " + nonLiteralDescMsg,
-		path + ":41:13: " + badDescMsg,
-		path + ":46:13: " + badDescMsg,
-
-		path + ":51:18: " + noContactMsg,
-		path + ":59:22: " + nonLiteralContactsMsg,
-		path + ":64:13: " + nonLiteralContactsMsg,
-
-		path + ":78:13: " + nonLiteralAttrMsg,
-		path + ":84:22: " + nonLiteralAttrMsg,
-
-		path + ":98:13: " + nonLiteralVarsMsg,
-		path + ":104:22: " + nonLiteralVarsMsg,
-
-		path + ":124:17: " + nonLiteralSoftwareDepsMsg,
-		path + ":130:26: " + nonLiteralSoftwareDepsMsg,
-
-		path + ":150:13: " + nonLiteralParamsMsg,
-		path + ":156:21: " + nonLiteralParamsMsg,
-		path + ":163:10: " + nonLiteralParamNameMsg,
-		path + ":165:23: " + nonLiteralAttrMsg,
-		path + ":167:32: " + nonLiteralAttrMsg,
-		path + ":169:23: " + nonLiteralSoftwareDepsMsg,
-		path + ":171:32: " + nonLiteralSoftwareDepsMsg,
+		declTestPath + ":19:13: " + nonLiteralParamsMsg,
+		declTestPath + ":25:21: " + nonLiteralParamsMsg,
+		declTestPath + ":32:10: " + nonLiteralParamNameMsg,
+		declTestPath + ":34:23: " + nonLiteralAttrMsg,
+		declTestPath + ":36:32: " + nonLiteralAttrMsg,
+		declTestPath + ":38:23: " + nonLiteralSoftwareDepsMsg,
+		declTestPath + ":40:32: " + nonLiteralSoftwareDepsMsg,
 	}
 	verifyIssues(t, issues, expects)
 }

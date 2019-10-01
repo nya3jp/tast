@@ -24,15 +24,16 @@ const (
 	noContactMsg          = `Test should list owners' email addresses in Contacts field`
 	nonLiteralContactsMsg = `Test Contacts should be an array literal of string literals`
 
+	emptyAttrMsg = `Test should have non-empty Attr; set []string{"disabled"} to disable a test`
+
 	nonLiteralAttrMsg         = `Test Attr should be an array literal of string literals`
 	nonLiteralVarsMsg         = `Test Vars should be an array literal of string literals`
 	nonLiteralSoftwareDepsMsg = `Test SoftwareDeps should be an array literal of string literals or (possibly qualified) identifiers`
 	nonLiteralParamsMsg       = `Test Params should be an array literal of Param struct literals`
 	nonLiteralParamNameMsg    = `Name of Param should be a string literal`
 
-	testRegistrationURL     = `https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Test-registration`
-	testParamTestURL        = `https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Parameterized-test-registration`
-	testRuntimeVariablesURL = `https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Runtime-variables`
+	testRegistrationURL = `https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Test-registration`
+	testParamTestURL    = `https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Parameterized-test-registration`
 )
 
 // Declarations checks declarations of testing.Test structs.
@@ -111,9 +112,14 @@ func verifyInitBody(fs *token.FileSet, stmt ast.Stmt) []*Issue {
 		}}
 	}
 
-	// The compiler should check the type. Skip it.
+	// We skip checking that the composite literal type is testing.Test since
+	// it is checked by the compiler.
+
 	var issues []*Issue
 	var hasDesc, hasContacts bool
+	var baseAttrs []string
+	baseAttrsValid := true
+	var attrNode, paramsNode ast.Expr
 	for _, el := range comp.Elts {
 		kv, ok := el.(*ast.KeyValueExpr)
 		if !ok {
@@ -131,14 +137,30 @@ func verifyInitBody(fs *token.FileSet, stmt ast.Stmt) []*Issue {
 			hasContacts = true
 			issues = append(issues, verifyContacts(fs, kv.Value)...)
 		case "Attr":
-			issues = append(issues, verifyAttr(fs, kv.Value)...)
+			attrNode = kv.Value
+			var newIssues []*Issue
+			baseAttrs, newIssues = parseAttr(fs, attrNode)
+			issues = append(issues, newIssues...)
+			baseAttrsValid = len(newIssues) == 0
 		case "Vars":
 			issues = append(issues, verifyVars(fs, kv.Value)...)
 		case "SoftwareDeps":
 			issues = append(issues, verifySoftwareDeps(fs, kv.Value)...)
 		case "Params":
-			issues = append(issues, verifyParams(fs, kv.Value)...)
+			paramsNode = kv.Value
 		}
+	}
+
+	if paramsNode == nil {
+		if baseAttrsValid {
+			node := attrNode
+			if node == nil {
+				node = arg
+			}
+			issues = append(issues, verifyParsedAttr(fs, node, baseAttrs)...)
+		}
+	} else {
+		issues = append(issues, verifyParams(fs, paramsNode, baseAttrs, baseAttrsValid)...)
 	}
 
 	if !hasDesc {
@@ -200,19 +222,20 @@ func verifyContacts(fs *token.FileSet, node ast.Node) []*Issue {
 	return issues
 }
 
-func verifyAttr(fs *token.FileSet, node ast.Node) []*Issue {
+func parseAttr(fs *token.FileSet, node ast.Node) (attrs []string, issues []*Issue) {
 	comp, ok := node.(*ast.CompositeLit)
 	if !ok {
-		return []*Issue{{
+		return nil, []*Issue{{
 			Pos:  fs.Position(node.Pos()),
 			Msg:  nonLiteralAttrMsg,
 			Link: testRegistrationURL,
 		}}
 	}
 
-	var issues []*Issue
 	for _, el := range comp.Elts {
-		if _, ok := toString(el); !ok {
+		if attr, ok := toString(el); ok {
+			attrs = append(attrs, attr)
+		} else {
 			issues = append(issues, &Issue{
 				Pos:  fs.Position(el.Pos()),
 				Msg:  nonLiteralAttrMsg,
@@ -220,7 +243,18 @@ func verifyAttr(fs *token.FileSet, node ast.Node) []*Issue {
 			})
 		}
 	}
-	return issues
+	return attrs, issues
+}
+
+func verifyParsedAttr(fs *token.FileSet, node ast.Node, attrs []string) []*Issue {
+	if len(attrs) == 0 {
+		return []*Issue{{
+			Pos:  fs.Position(node.Pos()),
+			Msg:  emptyAttrMsg,
+			Link: testRegistrationURL,
+		}}
+	}
+	return nil
 }
 
 func verifyVars(fs *token.FileSet, node ast.Node) []*Issue {
@@ -269,7 +303,7 @@ func verifySoftwareDeps(fs *token.FileSet, node ast.Node) []*Issue {
 	return issues
 }
 
-func verifyParams(fs *token.FileSet, node ast.Node) []*Issue {
+func verifyParams(fs *token.FileSet, node ast.Node, baseAttrs []string, baseAttrsValid bool) []*Issue {
 	comp, ok := node.(*ast.CompositeLit)
 	if !ok {
 		return []*Issue{{
@@ -281,12 +315,12 @@ func verifyParams(fs *token.FileSet, node ast.Node) []*Issue {
 
 	var issues []*Issue
 	for _, el := range comp.Elts {
-		issues = append(issues, verifyParamElement(fs, el)...)
+		issues = append(issues, verifyParamElement(fs, el, baseAttrs, baseAttrsValid)...)
 	}
 	return issues
 }
 
-func verifyParamElement(fs *token.FileSet, node ast.Node) []*Issue {
+func verifyParamElement(fs *token.FileSet, node ast.Node, baseAttrs []string, baseAttrsValid bool) []*Issue {
 	comp, ok := node.(*ast.CompositeLit)
 	if !ok {
 		return []*Issue{{
@@ -297,6 +331,7 @@ func verifyParamElement(fs *token.FileSet, node ast.Node) []*Issue {
 	}
 
 	var issues []*Issue
+	var hasExtraAttr bool
 	for _, el := range comp.Elts {
 		kv, ok := el.(*ast.KeyValueExpr)
 		if !ok {
@@ -316,11 +351,21 @@ func verifyParamElement(fs *token.FileSet, node ast.Node) []*Issue {
 				})
 			}
 		case "ExtraAttr":
-			issues = append(issues, verifyAttr(fs, kv.Value)...)
+			hasExtraAttr = true
+			extraAttrs, newIssues := parseAttr(fs, kv.Value)
+			issues = append(issues, newIssues...)
+			if len(newIssues) == 0 && baseAttrsValid {
+				issues = append(issues, verifyParsedAttr(fs, kv.Value, append(extraAttrs, baseAttrs...))...)
+			}
 		case "ExtraSoftwareDeps":
 			issues = append(issues, verifySoftwareDeps(fs, kv.Value)...)
 		}
 	}
+
+	if !hasExtraAttr && baseAttrsValid {
+		issues = append(issues, verifyParsedAttr(fs, node, baseAttrs)...)
+	}
+
 	return issues
 }
 

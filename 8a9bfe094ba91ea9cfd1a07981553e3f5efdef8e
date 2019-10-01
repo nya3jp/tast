@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "bb42206f_271045de",
+        "filename": "src/chromiumos/cmd/tast-lint/git/git.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-10-01T08:43:57Z",
+      "side": 1,
+      "message": "Leave \"Unknown\" below \"Unmerged\" for convenience (because \"Unknown\" is represented as \u0027X\u0027 while \"Unmerged\" is \u0027U\u0027).",
+      "parentUuid": "32242866_08d5b21c",
+      "range": {
+        "startLine": 41,
+        "startChar": 1,
+        "endLine": 48,
+        "endChar": 7
+      },
+      "revId": "8a9bfe094ba91ea9cfd1a07981553e3f5efdef8e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2f1f7a2a_cb162f95",
         "filename": "src/chromiumos/cmd/tast-lint/git/git.go",
         "patchSetId": 2
@@ -39,6 +63,24 @@
       "revId": "8a9bfe094ba91ea9cfd1a07981553e3f5efdef8e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d8ebec48_ad843862",
+        "filename": "src/chromiumos/cmd/tast-lint/git/git.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-10-01T08:43:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2f1f7a2a_cb162f95",
+      "revId": "8a9bfe094ba91ea9cfd1a07981553e3f5efdef8e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -59,6 +101,24 @@
     },
     {
       "key": {
+        "uuid": "ace8abae_3dd7fa7d",
+        "filename": "src/chromiumos/cmd/tast-lint/git/git.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-10-01T08:43:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e0ae36e9_7853187c",
+      "revId": "8a9bfe094ba91ea9cfd1a07981553e3f5efdef8e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c50668da_c89ec60f",
         "filename": "src/chromiumos/cmd/tast-lint/git/git.go",
         "patchSetId": 2
@@ -76,6 +136,24 @@
     },
     {
       "key": {
+        "uuid": "fc314e93_2484a21d",
+        "filename": "src/chromiumos/cmd/tast-lint/git/git.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-10-01T08:43:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c50668da_c89ec60f",
+      "revId": "8a9bfe094ba91ea9cfd1a07981553e3f5efdef8e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "595dc372_49ce4779",
         "filename": "src/chromiumos/cmd/tast-lint/main.go",
         "patchSetId": 2
@@ -90,6 +168,24 @@
       "revId": "8a9bfe094ba91ea9cfd1a07981553e3f5efdef8e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9a4e9e41_9adc76bb",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-10-01T08:43:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "595dc372_49ce4779",
+      "revId": "8a9bfe094ba91ea9cfd1a07981553e3f5efdef8e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

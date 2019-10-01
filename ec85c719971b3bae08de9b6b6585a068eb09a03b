@@ -1,0 +1,84 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fff54c8b_da062128",
+        "filename": "src/chromiumos/cmd/tast-lint/git/git.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-01T08:54:35Z",
+      "side": 1,
+      "message": "to be clear, \"a bug of git\"",
+      "range": {
+        "startLine": 89,
+        "startChar": 46,
+        "endLine": 89,
+        "endChar": 51
+      },
+      "revId": "ec85c719971b3bae08de9b6b6585a068eb09a03b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1767fa96_a9a069fe",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-01T08:54:35Z",
+      "side": 1,
+      "message": "huge nit: let\u0027s move this at L51 (just before for loop), to narrow its scope.",
+      "revId": "ec85c719971b3bae08de9b6b6585a068eb09a03b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c7102a18_7fa105ec",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-01T08:54:35Z",
+      "side": 1,
+      "message": "Could you return an error, here? It should be specified by user explicitly, so it\u0027s likely their mistake, and should not be ignored.",
+      "revId": "ec85c719971b3bae08de9b6b6585a068eb09a03b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3843900e_70acc449",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-01T08:54:35Z",
+      "side": 1,
+      "message": "In go, it is preferred to handle error cases at early stage for unindent.\n\nif path.Status \u003d\u003d git.Deleted || path.Status \u003d\u003d git.TypeChanged || ... {\n  continue\n}\n\ncf) https://github.com/golang/go/wiki/CodeReviewComments#indent-error-flow",
+      "range": {
+        "startLine": 99,
+        "startChar": 2,
+        "endLine": 100,
+        "endChar": 62
+      },
+      "revId": "ec85c719971b3bae08de9b6b6585a068eb09a03b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

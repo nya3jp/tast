@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "9b63be64_0801e6c8",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-01T07:13:27Z",
+      "side": 1,
+      "message": "Ouch!",
+      "parentUuid": "8d36776b_2dfd9cc4",
+      "range": {
+        "startLine": 29,
+        "startChar": 70,
+        "endLine": 29,
+        "endChar": 75
+      },
+      "revId": "15ee8aa3b0db020b5667461b52aea0d6945f0b05",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0f6febce_de956a7f",
         "filename": "src/chromiumos/tast/bundle/rpc.go",
         "patchSetId": 1
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "397c9020_125c43b9",
+        "filename": "src/chromiumos/tast/bundle/rpc.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-01T07:13:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0f6febce_de956a7f",
+      "range": {
+        "startLine": 19,
+        "startChar": 0,
+        "endLine": 19,
+        "endChar": 25
+      },
+      "revId": "15ee8aa3b0db020b5667461b52aea0d6945f0b05",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "18e4b962_86d1e927",
         "filename": "src/chromiumos/tast/rpc/pipe.go",
         "patchSetId": 1
@@ -68,6 +116,30 @@
       "revId": "15ee8aa3b0db020b5667461b52aea0d6945f0b05",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3e8eace4_79506cd0",
+        "filename": "src/chromiumos/tast/rpc/pipe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-01T07:13:27Z",
+      "side": 1,
+      "message": "Good catch. pipeConn used to implement io.Closer as well, I blindly removed the third item. :)",
+      "parentUuid": "18e4b962_86d1e927",
+      "range": {
+        "startLine": 22,
+        "startChar": 66,
+        "endLine": 22,
+        "endChar": 67
+      },
+      "revId": "15ee8aa3b0db020b5667461b52aea0d6945f0b05",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

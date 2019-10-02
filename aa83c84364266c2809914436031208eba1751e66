@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9c04a3af_089a0da5",
+        "filename": "src/chromiumos/tast/rpc/pipe.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-10-02T04:57:47Z",
+      "side": 1,
+      "message": "WithDialer is deprecated, use WithContextDialer instead.\nhttps://godoc.org/google.golang.org/grpc#WithDialer",
+      "range": {
+        "startLine": 131,
+        "startChar": 7,
+        "endLine": 131,
+        "endChar": 17
+      },
+      "revId": "aa83c84364266c2809914436031208eba1751e66",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6b6e3053_641d08c9",
+        "filename": "src/chromiumos/tast/rpc/pipe_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-10-02T04:57:47Z",
+      "side": 1,
+      "message": "\"context\" ?",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 27
+      },
+      "revId": "aa83c84364266c2809914436031208eba1751e66",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "412c9a03_ee683883",
+        "filename": "src/chromiumos/tast/rpc/pipe_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-10-02T04:57:47Z",
+      "side": 1,
+      "message": "Could you use the returned ServerReflection_ServerReflectionInfoClient and invoke some method?",
+      "range": {
+        "startLine": 78,
+        "startChar": 4,
+        "endLine": 78,
+        "endChar": 5
+      },
+      "revId": "aa83c84364266c2809914436031208eba1751e66",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

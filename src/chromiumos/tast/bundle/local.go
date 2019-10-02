@@ -26,7 +26,7 @@ type LocalDelegate struct {
 	Ready func(ctx context.Context, log func(string)) error
 
 	// Faillog is called on each test failure. It is expected to save debugging info.
-	Faillog func(ctx context.Context, s *testing.State)
+	Faillog func(ctx context.Context)
 }
 
 // Local implements the main function for local test bundles.
@@ -46,7 +46,7 @@ func Local(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, delegate 
 			if !s.HasError() {
 				return
 			}
-			delegate.Faillog(ctx, s)
+			delegate.Faillog(ctx)
 		}
 	}
 	if delegate.Ready != nil {

@@ -69,7 +69,7 @@ func TestLocalFaillogDelegateSucceededTest(t *gotesting.T) {
 	stdin := newBufferWithArgs(t, &args)
 	stderr := bytes.Buffer{}
 	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, LocalDelegate{
-		Faillog: func(ctx context.Context, s *testing.State) {
+		Faillog: func(ctx context.Context) {
 			faillogCalled = true
 		},
 	}); status != statusSuccess {
@@ -94,7 +94,7 @@ func TestLocalFaillogDelegateFailTest(t *gotesting.T) {
 	stdin := newBufferWithArgs(t, &args)
 	stderr := bytes.Buffer{}
 	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, LocalDelegate{
-		Faillog: func(ctx context.Context, s *testing.State) {
+		Faillog: func(ctx context.Context) {
 			faillogCalled = true
 		},
 	}); status != statusSuccess {

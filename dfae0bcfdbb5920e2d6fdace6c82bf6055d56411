@@ -16,6 +16,24 @@
       "revId": "dfae0bcfdbb5920e2d6fdace6c82bf6055d56411",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7a1540f6_01f26306",
+        "filename": "src/chromiumos/cmd/tast-lint/check/check_informational.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-10-02T03:59:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1c4c13a3_d002fc4c",
+      "revId": "dfae0bcfdbb5920e2d6fdace6c82bf6055d56411",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

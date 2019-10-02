@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "80b702f7_6a3778f9",
+        "filename": "src/chromiumos/cmd/tast-lint/git/git.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-10-02T04:01:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fff54c8b_da062128",
+      "range": {
+        "startLine": 89,
+        "startChar": 46,
+        "endLine": 89,
+        "endChar": 51
+      },
+      "revId": "ec85c719971b3bae08de9b6b6585a068eb09a03b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1767fa96_a9a069fe",
         "filename": "src/chromiumos/cmd/tast-lint/main.go",
         "patchSetId": 3
@@ -42,6 +66,24 @@
     },
     {
       "key": {
+        "uuid": "436d2ec2_db5babcd",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-10-02T04:01:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1767fa96_a9a069fe",
+      "revId": "ec85c719971b3bae08de9b6b6585a068eb09a03b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c7102a18_7fa105ec",
         "filename": "src/chromiumos/cmd/tast-lint/main.go",
         "patchSetId": 3
@@ -56,6 +98,24 @@
       "revId": "ec85c719971b3bae08de9b6b6585a068eb09a03b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "60891075_96fa3502",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-10-02T04:01:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c7102a18_7fa105ec",
+      "revId": "ec85c719971b3bae08de9b6b6585a068eb09a03b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -79,6 +139,30 @@
       "revId": "ec85c719971b3bae08de9b6b6585a068eb09a03b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e337f458_4d524038",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-10-02T04:01:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3843900e_70acc449",
+      "range": {
+        "startLine": 99,
+        "startChar": 2,
+        "endLine": 100,
+        "endChar": 62
+      },
+      "revId": "ec85c719971b3bae08de9b6b6585a068eb09a03b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

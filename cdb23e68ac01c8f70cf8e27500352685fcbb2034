@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "621eaf9c_8d36eeb5",
+        "filename": "src/chromiumos/tast/testing/context.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-10-02T05:24:47Z",
+      "side": 1,
+      "message": "remove?",
+      "range": {
+        "startLine": 14,
+        "startChar": 74,
+        "endLine": 14,
+        "endChar": 81
+      },
+      "revId": "cdb23e68ac01c8f70cf8e27500352685fcbb2034",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d8467c21_b9ccafe1",
+        "filename": "src/chromiumos/tast/testing/context.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-10-02T05:24:47Z",
+      "side": 1,
+      "message": "Could you document that this method is exclusive to package XXX ?",
+      "range": {
+        "startLine": 31,
+        "startChar": 0,
+        "endLine": 31,
+        "endChar": 59
+      },
+      "revId": "cdb23e68ac01c8f70cf8e27500352685fcbb2034",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -1,0 +1,182 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8fd27075_0c50600c",
+        "filename": "src/chromiumos/cmd/tast-lint/check/check_informational.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-03T01:53:00Z",
+      "side": 1,
+      "message": "Could you declare vars at latest timing?",
+      "range": {
+        "startLine": 46,
+        "startChar": 3,
+        "endLine": 53,
+        "endChar": 0
+      },
+      "revId": "5b450c118e27c10038d7cb8dd08a47ce6ab51ab3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "17016543_b97b78cc",
+        "filename": "src/chromiumos/cmd/tast-lint/check/check_informational.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-03T01:53:00Z",
+      "side": 1,
+      "message": "continue?",
+      "range": {
+        "startLine": 73,
+        "startChar": 5,
+        "endLine": 73,
+        "endChar": 10
+      },
+      "revId": "5b450c118e27c10038d7cb8dd08a47ce6ab51ab3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1f51cd0a_27b5e2b5",
+        "filename": "src/chromiumos/cmd/tast-lint/check/check_informational.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-03T01:53:00Z",
+      "side": 1,
+      "message": "ditto",
+      "range": {
+        "startLine": 76,
+        "startChar": 5,
+        "endLine": 77,
+        "endChar": 28
+      },
+      "revId": "5b450c118e27c10038d7cb8dd08a47ce6ab51ab3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d936ace2_96018652",
+        "filename": "src/chromiumos/cmd/tast-lint/check/check_informational.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-03T01:53:00Z",
+      "side": 1,
+      "message": "This actually does not verify the Node, but takes the name of the field and value.\nCould you rename?",
+      "range": {
+        "startLine": 105,
+        "startChar": 5,
+        "endLine": 105,
+        "endChar": 16
+      },
+      "revId": "5b450c118e27c10038d7cb8dd08a47ce6ab51ab3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3707c925_88d99232",
+        "filename": "src/chromiumos/cmd/tast-lint/check/check_informational.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-03T01:53:00Z",
+      "side": 1,
+      "message": "Could you explicitly mention that we do not check the non-string-literal elements?",
+      "revId": "5b450c118e27c10038d7cb8dd08a47ce6ab51ab3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "76def33d_84b23363",
+        "filename": "src/chromiumos/cmd/tast-lint/check/check_informational.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-03T01:53:00Z",
+      "side": 1,
+      "message": "This is package scope (i.e., can be referred from other files in this dir), so the name is ambiguous.\n\nCould you rename focusing on \"this test is mainline but not informational\"?",
+      "range": {
+        "startLine": 136,
+        "startChar": 5,
+        "endLine": 136,
+        "endChar": 19
+      },
+      "revId": "5b450c118e27c10038d7cb8dd08a47ce6ab51ab3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5bb6a5fa_20d9e26d",
+        "filename": "src/chromiumos/cmd/tast-lint/check/check_informational.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-03T01:53:00Z",
+      "side": 1,
+      "message": "This works under the current implementation, but looks fragile.\n\nCould you set isMainlineTest \u003d false only when attr is prefixed \"group:\" but not mainline?",
+      "range": {
+        "startLine": 142,
+        "startChar": 9,
+        "endLine": 144,
+        "endChar": 3
+      },
+      "revId": "5b450c118e27c10038d7cb8dd08a47ce6ab51ab3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4cb30842_60674db2",
+        "filename": "src/chromiumos/cmd/tast-lint/check/check_informational_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-03T01:53:00Z",
+      "side": 1,
+      "message": "Could you indent by Tab?",
+      "range": {
+        "startLine": 139,
+        "startChar": 0,
+        "endLine": 139,
+        "endChar": 8
+      },
+      "revId": "5b450c118e27c10038d7cb8dd08a47ce6ab51ab3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "98bf73b7_a2090717",
+        "filename": "src/chromiumos/cmd/tast-lint/check/check_informational.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-03T14:51:40Z",
+      "side": 1,
+      "message": "How about decomposeKVNode() ?",
+      "range": {
+        "startLine": 51,
+        "startChar": 29,
+        "endLine": 51,
+        "endChar": 44
+      },
+      "revId": "7b938242f8ffad3b18bce331e252b8b093123ca2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f37e229b_18426d0f",
+        "filename": "src/chromiumos/cmd/tast-lint/check/check_informational.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-03T14:51:40Z",
+      "side": 1,
+      "message": "I think you\u0027d return an error for unexpected input (as fourth return value)",
+      "range": {
+        "startLine": 108,
+        "startChar": 9,
+        "endLine": 108,
+        "endChar": 29
+      },
+      "revId": "7b938242f8ffad3b18bce331e252b8b093123ca2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6832ff30_4c7dc31b",
+        "filename": "src/chromiumos/cmd/tast-lint/check/check_informational.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-03T14:51:40Z",
+      "side": 1,
+      "message": "Ditto.",
+      "range": {
+        "startLine": 112,
+        "startChar": 9,
+        "endLine": 112,
+        "endChar": 31
+      },
+      "revId": "7b938242f8ffad3b18bce331e252b8b093123ca2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dda12f3d_39eef66a",
+        "filename": "src/chromiumos/cmd/tast-lint/check/check_informational.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-03T14:51:40Z",
+      "side": 1,
+      "message": "Recommendation: isCriticalTest() (with negating the return value and checking disabled).",
+      "range": {
+        "startLine": 137,
+        "startChar": 5,
+        "endLine": 137,
+        "endChar": 21
+      },
+      "revId": "7b938242f8ffad3b18bce331e252b8b093123ca2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

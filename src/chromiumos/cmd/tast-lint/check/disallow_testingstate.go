@@ -10,8 +10,8 @@ import (
 	"strings"
 )
 
-// VerifyTestingState checks if functions in support packages use *testing.State as a parameter.
-func VerifyTestingState(fs *token.FileSet, f *ast.File) []*Issue {
+// VerifyTestingStateParam checks if functions in support packages use *testing.State as a parameter.
+func VerifyTestingStateParam(fs *token.FileSet, f *ast.File) []*Issue {
 	var issues []*Issue
 
 	// Ignore known valid use cases.
@@ -70,4 +70,48 @@ func funcType(node ast.Node) *ast.FuncType {
 		return fn.Type
 	}
 	return nil
+}
+
+// VerifyTestingStateStruct checks if testing.State is stored inside struct types.
+func VerifyTestingStateStruct(fs *token.FileSet, f *ast.File) []*Issue {
+	var issues []*Issue
+
+	// TODO(crbug.com/1012586): Make below file not use testing.State in struct types.
+	var allowList = []string{
+		"src/chromiumos/tast/local/bundles/cros/platform/memoryuser/mempressure_task.go",
+	}
+	filepath := fs.Position(f.Package).Filename
+	for _, p := range allowList {
+		if strings.HasSuffix(filepath, p) {
+			return issues
+		}
+	}
+
+	ast.Inspect(f, func(node ast.Node) bool {
+		st, ok := node.(*ast.StructType)
+		if !ok {
+			return true
+		}
+		for _, f := range st.Fields.List {
+			if toQualifiedName(removeStars(f.Type)) == "testing.State" {
+				issues = append(issues, &Issue{
+					Pos:  fs.Position(f.Type.Pos()),
+					Msg:  "'testing.State' should not be stored inside a struct type",
+					Link: "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#test-subpackages",
+				})
+			}
+		}
+		return true
+	})
+	return issues
+}
+
+// removeStars returns the exression without stars.
+func removeStars(node ast.Expr) ast.Expr {
+	star, ok := node.(*ast.StarExpr)
+	for ok {
+		node = star.X
+		star, ok = node.(*ast.StarExpr)
+	}
+	return node
 }

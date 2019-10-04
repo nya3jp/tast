@@ -93,6 +93,30 @@
       "revId": "4ad6074efeac79d78ebc824bf8a50bc93c627563",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "71c6bcdb_ffa748f3",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2019-10-04T17:44:47Z",
+      "side": 1,
+      "message": "Ah, sorry for the unclear comment.\nI thought the description should be like \"The ability to use media::VideoDecoder-based video decoders\" because it should describe which _feature_ is available.\nThe description like \"Whether ... are supported\" looks like a _condition_ rather than a _feature_.\n\nBut, I found that some descriptions are already the form of \"Whether ...\". So, it\u0027d be okay. Please just ignore this.",
+      "parentUuid": "f4cfdcce_0178597e",
+      "range": {
+        "startLine": 48,
+        "startChar": 26,
+        "endLine": 48,
+        "endChar": 34
+      },
+      "revId": "4ad6074efeac79d78ebc824bf8a50bc93c627563",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

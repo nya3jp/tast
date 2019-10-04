@@ -45,6 +45,8 @@ The following software features are defined:
 *   `cros_config` - `cros_config` utility is available.
 *   `cros_internal` - Functionality that is only available in internal builds of
     Chrome OS (i.e. ones built using `chromeos-overlay`).
+*   `cros_video_decoder` - Whether [media::VideoDecoder]-based video decoders
+    are supported.
 *   `crossystem` - Chrome OS firmware/system interface utility.
 *   `crosvm_gpu` - The ability to use hardware GPU acceleration in the guest VM environment.
 *   `cups` - CUPS daemon.
@@ -106,6 +108,7 @@ The following software features are defined:
 [AddressSanitizer]: https://github.com/google/sanitizers/wiki/AddressSanitizer
 [Autotest capability]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/autotest-capability-default/
 [chromeos-chrome]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/chromeos-chrome/chromeos-chrome-9999.ebuild
+[media::VideoDecoder]: https://cs.chromium.org/chromium/src/media/base/video_decoder.h
 [Diagnostic utilities]: https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/diagnostics/README.md
 [Downloadable Content]: https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/dlcservice
 [video hardware overlays]: https://en.wikipedia.org/wiki/Hardware_overlay

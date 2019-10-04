@@ -78,6 +78,7 @@ func main() {
 			"chrome_internal":         "chrome_internal",
 			"cros_config":             "unibuild",
 			"cros_internal":           "internal",
+			"cros_video_decoder":      "!disable_cros_video_decoder",
 			"crosvm_gpu":              `"crosvm-gpu"`,
 			"crossystem":              "!betty && !tast_vm", // VMs don't support few crossystem sub-commands: https://crbug.com/974615
 			"cups":                    "cups",

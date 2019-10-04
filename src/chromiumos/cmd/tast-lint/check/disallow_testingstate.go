@@ -71,3 +71,38 @@ func funcType(node ast.Node) *ast.FuncType {
 	}
 	return nil
 }
+
+// VerifyTestingStateStruct checks if testing.State is stored inside struct types.
+func VerifyTestingStateStruct(fs *token.FileSet, f *ast.File) []*Issue {
+	var issues []*Issue
+
+	ast.Inspect(f, func(node ast.Node) bool {
+		st, ok := node.(*ast.StructType)
+		if !ok {
+			return true
+		}
+		fl := st.Fields.List
+		if !ok {
+			return true
+		}
+		for _, f := range fl {
+			if toQualifiedName(starToSelector(f.Type)) == "testing.State" {
+				issues = append(issues, &Issue{
+					Pos:  fs.Position(f.Type.Pos()),
+					Msg:  "'testing.State' should not be stored inside a struct type",
+					Link: "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#test-subpackages",
+				})
+			}
+		}
+		return true
+	})
+	return issues
+}
+
+func starToSelector(node ast.Expr) ast.Expr {
+	star, ok := node.(*ast.StarExpr)
+	if !ok {
+		return node
+	}
+	return starToSelector(star.X)
+}

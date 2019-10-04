@@ -107,6 +107,7 @@ func checkAll(g *git.Git, paths []string, debug bool) ([]*check.Issue, error) {
 			issues = append(issues, check.ForbiddenImports(fs, f)...)
 			issues = append(issues, check.InterFileRefs(fs, f)...)
 			issues = append(issues, check.Messages(fs, f)...)
+			issues = append(issues, check.VerifyTestingStateStruct(fs, f)...)
 		}
 
 		if isSupportPackageFile(path) {

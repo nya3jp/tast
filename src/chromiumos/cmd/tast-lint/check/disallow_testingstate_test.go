@@ -36,6 +36,35 @@ func A(s *testing.State) {}
 	const path = "/src/chromiumos/tast/local/arc/pre.go"
 	f, fs := parse(code, path)
 	issues := VerifyTestingState(fs, f)
-	expects := []string{}
+	verifyIssues(t, issues, nil)
+}
+
+// TestTestingStateStruct checks VerifyTestingStateStruct surely returns issues
+// if there are testing.State inside struct types.
+func TestTestingStateStruct(t *testing.T) {
+	const code = `package main
+type NewStruct struct{
+	foo testing.State
+	bar context.Context
+	baz *testing.State
+	qux courge.grault
+	quux string
+	quuz **testing.State
+	corge ****testing.State
+}
+func main() {
+	var grault NewStruct
+	return grault
+}
+`
+	const path = "hoge.go"
+	f, fs := parse(code, path)
+	issues := VerifyTestingStateStruct(fs, f)
+	expects := []string{
+		path + ":3:6: 'testing.State' should not be stored inside a struct type",
+		path + ":5:6: 'testing.State' should not be stored inside a struct type",
+		path + ":8:7: 'testing.State' should not be stored inside a struct type",
+		path + ":9:8: 'testing.State' should not be stored inside a struct type",
+	}
 	verifyIssues(t, issues, expects)
 }

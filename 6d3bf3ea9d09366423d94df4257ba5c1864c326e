@@ -1,0 +1,107 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2bd3e8ae_60b8bd5b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-07T02:58:06Z",
+      "side": 1,
+      "message": "Could you run the new lint to existing sources?\nThere\u0027s at least one use, which needs to be allowlist.\n\nhttps://chromium.googlesource.com/chromiumos/platform/tast-tests/+/52e0a97937b6f3663465f7f455fd154a5b435a08/src/chromiumos/tast/local/bundles/cros/platform/memoryuser/mempressure_task.go#17",
+      "revId": "6d3bf3ea9d09366423d94df4257ba5c1864c326e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8ba730ba_fc743da7",
+        "filename": "src/chromiumos/cmd/tast-lint/check/disallow_testingstate.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-07T02:58:06Z",
+      "side": 1,
+      "message": "nit/optional: to make it symmetric, how about renaming this to VerifyTestingStateParam?",
+      "revId": "6d3bf3ea9d09366423d94df4257ba5c1864c326e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "908e4626_89c271a5",
+        "filename": "src/chromiumos/cmd/tast-lint/check/disallow_testingstate.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-07T02:58:06Z",
+      "side": 1,
+      "message": "\"ok\" is not updated in the line 84...? What is this check for...?",
+      "range": {
+        "startLine": 85,
+        "startChar": 2,
+        "endLine": 87,
+        "endChar": 3
+      },
+      "revId": "6d3bf3ea9d09366423d94df4257ba5c1864c326e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c4d79c55_8fa2ea3b",
+        "filename": "src/chromiumos/cmd/tast-lint/check/disallow_testingstate.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-07T02:58:06Z",
+      "side": 1,
+      "message": "XToY (or more often ToSomething()) is the name often used to \"convert\" the value in type X to another value in type Y.\nIn this case, it is not conversion, but extracting a node inside star.\n\nAlso, it is named \"ToSelector\", but actually there\u0027s no guarantee that the returned node is Selector.\n\nSo, it is nice to be renamed, IMO.\nMaybe removeStars() or something? Any better idea?\nAlso, could you add (even shorter) document?",
+      "range": {
+        "startLine": 102,
+        "startChar": 5,
+        "endLine": 102,
+        "endChar": 19
+      },
+      "revId": "6d3bf3ea9d09366423d94df4257ba5c1864c326e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "34d7705c_973c70ce",
+        "filename": "src/chromiumos/cmd/tast-lint/check/disallow_testingstate.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-07T02:58:06Z",
+      "side": 1,
+      "message": "In this simple case, could you use for?\nIIUC, golang supports some tail-recursion optimization, but it is not guaranteed.",
+      "range": {
+        "startLine": 103,
+        "startChar": 1,
+        "endLine": 107,
+        "endChar": 30
+      },
+      "revId": "6d3bf3ea9d09366423d94df4257ba5c1864c326e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

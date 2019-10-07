@@ -79,6 +79,11 @@ func isTestFile(path string) bool {
 		strings.Contains(path, "src/chromiumos/tast/remote/")
 }
 
+// isUnitTestFile checks if a file path is end with "_test.go", thus the file is unit test.
+func isUnitTestFile(path string) bool {
+	return strings.HasSuffix(path, "_test.go")
+}
+
 // hasFmtError runs gofmt to see if code has any formatting error.
 func hasFmtError(code []byte, path string) bool {
 	cmd := exec.Command("gofmt", "-l")
@@ -211,6 +216,10 @@ func checkAll(g *git.Git, paths []git.CommitFile, debug bool) ([]*check.Issue, e
 
 			if isSupportPackageFile(path.Path) {
 				issues = append(issues, check.VerifyTestingStateParam(fs, f)...)
+			}
+
+			if isUnitTestFile(path.Path) {
+				issues = append(issues, check.VerifyCallingTHelper(fs, f)...)
 			}
 
 			if path.Status == git.Added {

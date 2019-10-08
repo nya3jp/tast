@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d6ad2340_d7174850",
+        "filename": "src/chromiumos/cmd/tast-lint/check/disallow_testingstate.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-08T05:19:38Z",
+      "side": 1,
+      "message": "Actually, I\u0027d say this is not valid use, but a kind of escape-hatch in order to deal with the unfortunate existing code complexity.\nIn ideal world, it should be able to be cleaned up. Could you add TODO?",
+      "range": {
+        "startLine": 79,
+        "startChar": 1,
+        "endLine": 79,
+        "endChar": 33
+      },
+      "revId": "0e51ec18b31623048cd1c9dd9facad9b50ddca97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

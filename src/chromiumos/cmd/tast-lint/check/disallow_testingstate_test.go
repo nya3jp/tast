@@ -21,8 +21,8 @@ func B() {
 	f, fs := parse(code, path)
 	issues := VerifyTestingStateParam(fs, f)
 	expects := []string{
-		path + ":2:31: 'testing.State' should not be used in support packages, except for precondition implementation",
-		path + ":4:26: 'testing.State' should not be used in support packages, except for precondition implementation",
+		path + ":2:30: 'testing.State' should not be used in support packages, except for precondition implementation",
+		path + ":4:25: 'testing.State' should not be used in support packages, except for precondition implementation",
 	}
 	verifyIssues(t, issues, expects)
 }

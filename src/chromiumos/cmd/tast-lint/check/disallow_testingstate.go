@@ -39,26 +39,16 @@ func VerifyTestingStateParam(fs *token.FileSet, f *ast.File) []*Issue {
 			return true
 		}
 		for _, param := range t.Params.List {
-			st, ok := param.Type.(*ast.StarExpr)
-			if !ok {
-				continue
+			if toQualifiedName(removeStars(param.Type)) == "testing.State" {
+				issues = append(issues, &Issue{
+					Pos:  fs.Position(param.Type.Pos()),
+					Msg:  "'testing.State' should not be used in support packages, except for precondition implementation",
+					Link: "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#test-subpackages",
+				})
 			}
-			n, ok := st.X.(*ast.SelectorExpr)
-			if !ok || n.Sel.Name != "State" {
-				continue
-			}
-			if id, ok := n.X.(*ast.Ident); !ok || id.Name != "testing" {
-				continue
-			}
-			issues = append(issues, &Issue{
-				Pos:  fs.Position(n.Pos()),
-				Msg:  "'testing.State' should not be used in support packages, except for precondition implementation",
-				Link: "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#test-subpackages",
-			})
 		}
 		return true
 	})
-
 	return issues
 }
 

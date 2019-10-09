@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0ebf47d8_5d93e3f2",
+        "filename": "src/chromiumos/cmd/tast-lint/check/disallow_testingstate.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-09T03:49:48Z",
+      "side": 1,
+      "message": "TODO should be in the form of \"TODO(crbug.com/XXXXXX): ...\" or \"TODO(accountname): ...\"\nfor tracking.\n\nI filed the bug so could you update the message?\ncrbug.com/1012586",
+      "range": {
+        "startLine": 79,
+        "startChar": 4,
+        "endLine": 79,
+        "endChar": 8
+      },
+      "revId": "547603bc44c677c03ab6ad98f9297b655b48d7bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

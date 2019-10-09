@@ -7,7 +7,6 @@ package testing
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -16,6 +15,8 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	"chromiumos/tast/errors"
 )
 
 const (
@@ -86,6 +87,7 @@ func newTestCase(t *Test, p *Param) (*TestCase, error) {
 	attrs := append([]string(nil), t.Attr...)
 	data := append([]string(nil), t.Data...)
 	swDeps := append([]string(nil), t.SoftwareDeps...)
+	pre := t.Pre
 	var val interface{}
 	if p != nil {
 		if p.Name != "" {
@@ -95,6 +97,14 @@ func newTestCase(t *Test, p *Param) (*TestCase, error) {
 		data = append(data, p.ExtraData...)
 		swDeps = append(swDeps, p.ExtraSoftwareDeps...)
 		val = p.Val
+
+		// Only one precondition can be defined.
+		if t.Pre != nil && p.Pre != nil {
+			return nil, errors.Errorf("at most one Pre can be defined, got: %v and %v", t.Pre, p.Pre)
+		}
+		if p.Pre != nil {
+			pre = p.Pre
+		}
 	}
 
 	aattrs, err := autoAttrs(name, info.pkg, swDeps)
@@ -114,7 +124,7 @@ func newTestCase(t *Test, p *Param) (*TestCase, error) {
 		Data:           data,
 		Vars:           append([]string(nil), t.Vars...),
 		SoftwareDeps:   swDeps,
-		Pre:            t.Pre,
+		Pre:            pre,
 		Timeout:        t.Timeout,
 	}, nil
 }

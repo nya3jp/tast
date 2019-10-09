@@ -8,7 +8,6 @@ import (
 	"go/ast"
 	"go/token"
 	"strconv"
-	"strings"
 	"unicode"
 )
 
@@ -354,32 +353,4 @@ func toString(node ast.Node) (s string, ok bool) {
 		return "", false
 	}
 	return s, true
-}
-
-// toQualifiedName stringifies the given node, which is either
-// - an ast.Ident node
-// - an ast.SelectorExpr node whose .X node is convertible by toQualifiedName.
-// If failed, returns an empty string.
-func toQualifiedName(node ast.Node) string {
-	var comp []string
-	for {
-		s, ok := node.(*ast.SelectorExpr)
-		if !ok {
-			break
-		}
-		comp = append(comp, s.Sel.Name)
-		node = s.X
-	}
-
-	id, ok := node.(*ast.Ident)
-	if !ok {
-		return ""
-	}
-	comp = append(comp, id.Name)
-
-	// Reverse the comp, then join with '.'.
-	for i, j := 0, len(comp)-1; i < j; i, j = i+1, j-1 {
-		comp[i], comp[j] = comp[j], comp[i]
-	}
-	return strings.Join(comp, ".")
 }

@@ -146,6 +146,29 @@ func TestParamTestWithEmptyName(t *gotesting.T) {
 	}
 }
 
+func TestParamTestWithPre(t *gotesting.T) {
+	pre := &testPre{name: "precondition"}
+	// At most one Pre condition can be present. If newTestCase fails, test passes.
+	if _, err := newTestCase(&Test{Func: TESTCASETEST, Pre: pre}, &Param{Pre: pre}); err == nil {
+		t.Error("newTestCase unexpectedly passed for duplicated preconditions")
+	}
+
+	// Precondition only at enclosing test.
+	if _, err := newTestCase(&Test{Func: TESTCASETEST, Pre: pre}, &Param{}); err != nil {
+		t.Error(err)
+	}
+
+	// Precondition only at parametrized test.
+	if _, err := newTestCase(&Test{Func: TESTCASETEST}, &Param{Pre: pre}); err != nil {
+		t.Error(err)
+	}
+
+	// No preconditions.
+	if _, err := newTestCase(&Test{Func: TESTCASETEST}, &Param{}); err != nil {
+		t.Error(err)
+	}
+}
+
 func TestDataDir(t *gotesting.T) {
 	test, err := newTestCase(&Test{Func: TESTCASETEST}, nil)
 	if err != nil {

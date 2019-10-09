@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "14fd2847_4ce9d5b9",
+        "filename": "src/chromiumos/tast/rpc/pipe.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-10-09T01:38:55Z",
+      "side": 1,
+      "message": "Could you add TODO to update it after grpc-go is updated? Hopefully with a link to the bug to update the grpc-go version.",
+      "parentUuid": "c31f0e01_a7071c33",
+      "range": {
+        "startLine": 131,
+        "startChar": 7,
+        "endLine": 131,
+        "endChar": 17
+      },
+      "revId": "aa83c84364266c2809914436031208eba1751e66",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6b6e3053_641d08c9",
         "filename": "src/chromiumos/tast/rpc/pipe_test.go",
         "patchSetId": 3
@@ -140,6 +164,30 @@
       "revId": "aa83c84364266c2809914436031208eba1751e66",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "54db46c3_309c859c",
+        "filename": "src/chromiumos/tast/rpc/pipe_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-10-09T01:38:55Z",
+      "side": 1,
+      "message": "Hmm maybe I don\u0027t understand the API, but it looks the method ServerReflectionInfo only creates a connection, and the returned client is used to invoke actual RPC method.\nhttps://github.com/grpc/grpc-go/blob/master/reflection/grpc_reflection_v1alpha/reflection.pb.go#L661",
+      "parentUuid": "964f705f_3de783da",
+      "range": {
+        "startLine": 78,
+        "startChar": 4,
+        "endLine": 78,
+        "endChar": 5
+      },
+      "revId": "aa83c84364266c2809914436031208eba1751e66",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -99,6 +99,10 @@ type Param struct {
 	// in addition to SoftwareDeps in the enclosing Test.
 	ExtraSoftwareDeps []string
 
+	// Pre contains a precondition that must be met before the test is run.
+	// Can only be set if the enclosing test doesn't have one already set.
+	Pre Precondition
+
 	// Val is the value which can be retrieved from testing.State.Param() method.
 	Val interface{}
 }

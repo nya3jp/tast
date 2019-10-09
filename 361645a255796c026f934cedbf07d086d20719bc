@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "748635f2_7be4b0be",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-10-09T04:28:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "278f372e_b30d404e",
+      "revId": "361645a255796c026f934cedbf07d086d20719bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "cbe919af_bf23d060",
         "filename": "src/chromiumos/cmd/tast-lint/check/disallow_testingstate.go",
         "patchSetId": 2
@@ -56,6 +74,24 @@
       "revId": "361645a255796c026f934cedbf07d086d20719bc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7e6482a9_68fca703",
+        "filename": "src/chromiumos/cmd/tast-lint/check/disallow_testingstate_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-10-09T04:28:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5f87de8e_266d4490",
+      "revId": "361645a255796c026f934cedbf07d086d20719bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

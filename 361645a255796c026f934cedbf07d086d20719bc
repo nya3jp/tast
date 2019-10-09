@@ -60,6 +60,30 @@
     },
     {
       "key": {
+        "uuid": "069a1072_f34ce324",
+        "filename": "src/chromiumos/cmd/tast-lint/check/disallow_testingstate.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-10-09T08:55:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cbe919af_bf23d060",
+      "range": {
+        "startLine": 42,
+        "startChar": 6,
+        "endLine": 42,
+        "endChar": 21
+      },
+      "revId": "361645a255796c026f934cedbf07d086d20719bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5f87de8e_266d4490",
         "filename": "src/chromiumos/cmd/tast-lint/check/disallow_testingstate_test.go",
         "patchSetId": 2

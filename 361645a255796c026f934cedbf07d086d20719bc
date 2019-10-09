@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "278f372e_b30d404e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-09T03:37:33Z",
+      "side": 1,
+      "message": "Could you run the updated golint against all existing code in order to make sure your change does not have any regression?",
+      "revId": "361645a255796c026f934cedbf07d086d20719bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cbe919af_bf23d060",
+        "filename": "src/chromiumos/cmd/tast-lint/check/disallow_testingstate.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-09T03:37:33Z",
+      "side": 1,
+      "message": "This function is designed to be used in declarations.go, but you started to expand its use.\nCould you extract it to common.go, maybe with unittest?\nI think it\u0027s conceptually different from the main goal of this CL, so I think it\u0027s ok to work on it in another CL.",
+      "range": {
+        "startLine": 42,
+        "startChar": 6,
+        "endLine": 42,
+        "endChar": 21
+      },
+      "revId": "361645a255796c026f934cedbf07d086d20719bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5f87de8e_266d4490",
+        "filename": "src/chromiumos/cmd/tast-lint/check/disallow_testingstate_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-09T03:37:33Z",
+      "side": 1,
+      "message": "Could you add no- and multiple stars cases?",
+      "revId": "361645a255796c026f934cedbf07d086d20719bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

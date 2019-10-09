@@ -146,6 +146,35 @@ func TestParamTestWithEmptyName(t *gotesting.T) {
 	}
 }
 
+func TestParamTestWithPre(t *gotesting.T) {
+	pre := &testPre{name: "precondition"}
+	// At most one Pre condition can be present. If newTestCase fails, test passes.
+	if _, err := newTestCase(&Test{Func: TESTCASETEST, Pre: pre}, &Param{Pre: pre}); err == nil {
+		t.Error("newTestCase unexpectedly passed for duplicated preconditions")
+	}
+
+	// Precondition only at enclosing test.
+	if tc, err := newTestCase(&Test{Func: TESTCASETEST, Pre: pre}, &Param{}); err != nil {
+		t.Error(err)
+	} else if tc.Pre != pre {
+		t.Errorf("Invalid precondition = %v; want %v", tc.Pre, pre)
+	}
+
+	// Precondition only at parametrized test.
+	if tc, err := newTestCase(&Test{Func: TESTCASETEST}, &Param{Pre: pre}); err != nil {
+		t.Error(err)
+	} else if tc.Pre != pre {
+		t.Errorf("Invalid precondition = %v; want %v", tc.Pre, pre)
+	}
+
+	// No preconditions.
+	if tc, err := newTestCase(&Test{Func: TESTCASETEST}, &Param{}); err != nil {
+		t.Error(err)
+	} else if tc.Pre != nil {
+		t.Errorf("Invalid precondition = %v; want nil", tc.Pre)
+	}
+}
+
 func TestDataDir(t *gotesting.T) {
 	test, err := newTestCase(&Test{Func: TESTCASETEST}, nil)
 	if err != nil {

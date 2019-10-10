@@ -73,6 +73,30 @@
     },
     {
       "key": {
+        "uuid": "eb012c4c_2159f842",
+        "filename": "src/chromiumos/tast/rpc/pipe.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-10T00:37:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "14fd2847_4ce9d5b9",
+      "range": {
+        "startLine": 131,
+        "startChar": 7,
+        "endLine": 131,
+        "endChar": 17
+      },
+      "revId": "aa83c84364266c2809914436031208eba1751e66",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6b6e3053_641d08c9",
         "filename": "src/chromiumos/tast/rpc/pipe_test.go",
         "patchSetId": 3
@@ -188,6 +212,30 @@
       "revId": "aa83c84364266c2809914436031208eba1751e66",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9a77cd84_cea100e7",
+        "filename": "src/chromiumos/tast/rpc/pipe_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-10T00:37:25Z",
+      "side": 1,
+      "message": "Ah good point, that is because ServerReflectionInfo is a bidirectional RPC.\nhttps://www.grpc.io/docs/tutorials/basic/go/#bidirectional-streaming-rpc-1\n\nLet me add minimum code to make sure bidirection RPC call succeeds.",
+      "parentUuid": "54db46c3_309c859c",
+      "range": {
+        "startLine": 78,
+        "startChar": 4,
+        "endLine": 78,
+        "endChar": 5
+      },
+      "revId": "aa83c84364266c2809914436031208eba1751e66",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0f8cdbf4_301ed6aa",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 992,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-10T23:59:15Z",
+      "side": 1,
+      "message": "Based on the discussion in the design doc comment, can we introduce the restriction that the all Pre needs to share an interface to obtain some value?",
+      "revId": "bfba77d06aa7adc3ffcf51c16bbd17bcb2205062",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8c388b88_c263737e",
+        "filename": "src/chromiumos/tast/testing/test_case.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-10T23:59:15Z",
+      "side": 1,
+      "message": "This sounds a bit not very clear to me.\nHow about mentioning more explicitly? E.g.;\n\n\"Param has Pre and its enclosing Test struct also has Pre, while either one can be specified\" or something?",
+      "range": {
+        "startLine": 103,
+        "startChar": 30,
+        "endLine": 103,
+        "endChar": 60
+      },
+      "revId": "bfba77d06aa7adc3ffcf51c16bbd17bcb2205062",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

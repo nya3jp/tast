@@ -38,6 +38,8 @@ type runCmd struct {
 	timeout      time.Duration // overall timeout; 0 if no timeout
 }
 
+var _ = subcommands.Command(&runCmd{})
+
 func newRunCmd(trunkDir string) *runCmd {
 	return &runCmd{
 		cfg:     run.NewConfig(run.RunTestsMode, tastDir, trunkDir),

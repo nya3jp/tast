@@ -31,6 +31,8 @@ type listCmd struct {
 	stdout     io.Writer   // where to write tests
 }
 
+var _ = subcommands.Command(&runCmd{})
+
 // newListCmd returns a new listCmd that will write tests to stdout.
 func newListCmd(stdout io.Writer, trunkDir string) *listCmd {
 	return &listCmd{

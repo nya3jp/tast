@@ -278,6 +278,19 @@ func (c *Config) DeriveDefaults() error {
 		c.runLocal = true
 		c.runRemote = true
 	}
+
+	var varDir string
+	if c.build {
+		varDir = filepath.Join(c.trunkDir, "src/platform/tast-tests-private/vars")
+	} else {
+		varDir = "/etc/tast/vars/private"
+	}
+	if err := readAndUpdateVars(varDir, c.testVars); os.IsNotExist(err) {
+		// Do nothing. Private repository doesn't exist on public source tree.
+	} else if err != nil {
+		return fmt.Errorf("failed loading private vars: %v", err)
+	}
+
 	return nil
 }
 

@@ -8,6 +8,8 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+	"go/ast"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -78,6 +80,62 @@ func isTestFile(path string) bool {
 		strings.Contains(path, "src/chromiumos/tast/remote/")
 }
 
+// newlyAddedPackageFiles returns a map of newlyadded directory and its committed files.
+func newlyAddedPackageFiles(paths []git.CommitFile) map[string][]git.CommitFile {
+	dfmap := make(map[string][]git.CommitFile)
+	for _, path := range paths {
+		p, err := filepath.Abs(path.Path)
+		if err != nil {
+			continue
+		}
+		d := filepath.Dir(p)              // d is possible directory path
+		dfmap[d] = append(dfmap[d], path) // path is a committed file in d
+	}
+
+	for k, v := range dfmap { // k is a directory path, v is a slice of committed files in k
+		exfiles, err := ioutil.ReadDir(k) // exfiles is all existing files in k
+		if err != nil {
+			continue
+		}
+		sameLen := true
+		if len(exfiles) != len(v) {
+			sameLen = false
+		}
+
+		allAdded := true
+		for _, cf := range v { // for each files inside the directory k
+			if cf.Status != git.Added {
+				allAdded = false
+				break
+			}
+		}
+		if !allAdded || !sameLen {
+			delete(dfmap, k) // delete if k is not a newly added package
+		}
+	}
+	return dfmap
+}
+
+// newlyAddedPackageFilesAST replace git.CommitFile into parsed AST.
+func newlyAddedPackageFilesAST(cp *cachedParser, dfmap map[string][]git.CommitFile) map[string][]*ast.File {
+	m := make(map[string][]*ast.File)
+	for k, v := range dfmap {
+		var filesAST []*ast.File
+		for _, cf := range v {
+			f, err := cp.parseFile(cf.Path)
+			if err != nil {
+				delete(dfmap, k)
+				break
+			}
+			if err == nil {
+				filesAST = append(filesAST, f)
+			}
+		}
+		m[k] = filesAST
+	}
+	return m
+}
+
 // hasFmtError runs gofmt to see if code has any formatting error.
 func hasFmtError(code []byte, path string) bool {
 	cmd := exec.Command("gofmt", "-l")
@@ -95,6 +153,9 @@ func checkAll(g *git.Git, paths []git.CommitFile, debug bool) ([]*check.Issue, e
 	fs := cp.fs
 
 	var allIssues []*check.Issue
+
+	allIssues = append(allIssues, check.PackageComment(fs, newlyAddedPackageFilesAST(cp, newlyAddedPackageFiles(paths)))...)
+
 	for _, path := range paths {
 		if path.Status == git.Deleted || path.Status == git.TypeChanged ||
 			path.Status == git.Unmerged || path.Status == git.Unknown {

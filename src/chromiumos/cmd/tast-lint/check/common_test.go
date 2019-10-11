@@ -20,6 +20,20 @@ func parse(code, filename string) (*ast.File, *token.FileSet) {
 	return f, fs
 }
 
+// parseMultiple expanded parse() in order to parse multiple files at the same time.
+func parseMultiple(codes, filenames []string) ([]*ast.File, *token.FileSet) {
+	fs := token.NewFileSet()
+	var slicef []*ast.File
+	for i, code := range codes {
+		f, err := parser.ParseFile(fs, filenames[i], code, parser.ParseComments)
+		if err != nil {
+			panic(err)
+		}
+		slicef = append(slicef, f)
+	}
+	return slicef, fs
+}
+
 func verifyIssues(t *testing.T, issues []*Issue, expects []string) {
 	t.Helper()
 

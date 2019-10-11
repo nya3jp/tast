@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -89,70 +90,124 @@ func hasFmtError(code []byte, path string) bool {
 	return len(out) > 0
 }
 
+// makeMapDirGoFile returns a map of directories and their committed Go files.
+func makeMapDirGoFile(paths []git.CommitFile) map[string][]git.CommitFile {
+	// Map from directory path to committed Go files in the dir.
+	dfmap := make(map[string][]git.CommitFile)
+	for _, path := range paths {
+		if !strings.HasSuffix(path.Path, ".go") {
+			continue
+		}
+		d := filepath.Dir(path.Path)
+		dfmap[d] = append(dfmap[d], path)
+	}
+	return dfmap
+}
+
+// isNewlyAddedPackage returns true if given directory is a newly added package.
+// The directory is a newly added package represents its all Go files were newly added (not modified or something else)
+// at this commit.
+// Thus, such directory should satisfy the following conditions:
+//  - The number of ".go" files in the directory is equal to the number of ".go" files that were committed this time.
+//  - Status of all committed ".go" files were "Added".
+func isNewlyAddedPackage(dir string, paths []git.CommitFile) (bool, error) {
+	exfiles, err := ioutil.ReadDir(dir)
+	if err != nil {
+		return false, err
+	}
+	numExGofiles := 0
+	for _, e := range exfiles {
+		if !strings.HasSuffix(e.Name(), ".go") {
+			continue
+		}
+		numExGofiles++
+	}
+	if numExGofiles != len(paths) {
+		return false, nil
+	}
+	for _, path := range paths {
+		if path.Status != git.Added {
+			return false, nil
+		}
+	}
+	return true, nil
+}
+
 // checkAll runs all checks against paths.
 func checkAll(g *git.Git, paths []git.CommitFile, debug bool) ([]*check.Issue, error) {
 	cp := newCachedParser(g)
 	fs := cp.fs
 
 	var allIssues []*check.Issue
-	for _, path := range paths {
-		if path.Status == git.Deleted || path.Status == git.TypeChanged ||
-			path.Status == git.Unmerged || path.Status == git.Unknown {
-			continue
-		}
 
-		if !strings.HasSuffix(path.Path, ".go") {
-			continue
-		}
-		// Exempt protoc-generated Go files from lint checks.
-		if strings.HasSuffix(path.Path, ".pb.go") {
-			continue
-		}
-
-		data, err := g.ReadFile(path.Path)
+	dfmap := makeMapDirGoFile(paths)
+	for dir, cfs := range dfmap {
+		pkg, err := cp.parsePackage(dir)
 		if err != nil {
 			return nil, err
 		}
-
-		f, err := cp.parseFile(path.Path)
+		isNewlyAdded, err := isNewlyAddedPackage(dir, cfs)
 		if err != nil {
 			return nil, err
 		}
-
-		var issues []*check.Issue // issues in this file
-
-		issues = append(issues, check.Golint(path.Path, data, debug)...)
-		issues = append(issues, check.Comments(fs, f)...)
-		issues = append(issues, check.EmptySlice(fs, f)...)
-
-		if !hasFmtError(data, path.Path) {
-			// goimports applies gofmt, so skip it if the code has any formatting
-			// error to avoid confusing reports. gofmt will be run by the repo
-			// upload hook anyway.
-			issues = append(issues, check.ImportOrder(path.Path, data)...)
+		if isNewlyAdded {
+			allIssues = append(allIssues, check.PackageComment(fs, pkg)...)
 		}
 
-		if isTestFile(path.Path) {
-			issues = append(issues, check.Declarations(fs, f)...)
-			issues = append(issues, check.Exports(fs, f)...)
-			issues = append(issues, check.ForbiddenBundleImports(fs, f)...)
-			issues = append(issues, check.ForbiddenCalls(fs, f)...)
-			issues = append(issues, check.ForbiddenImports(fs, f)...)
-			issues = append(issues, check.InterFileRefs(fs, f)...)
-			issues = append(issues, check.Messages(fs, f)...)
-			issues = append(issues, check.VerifyTestingStateStruct(fs, f)...)
-		}
+		for _, path := range cfs {
+			if path.Status == git.Deleted || path.Status == git.TypeChanged ||
+				path.Status == git.Unmerged || path.Status == git.Unknown {
+				continue
+			}
 
-		if isSupportPackageFile(path.Path) {
-			issues = append(issues, check.VerifyTestingStateParam(fs, f)...)
-		}
+			// Exempt protoc-generated Go files from lint checks.
+			if strings.HasSuffix(path.Path, ".pb.go") {
+				continue
+			}
 
-		if path.Status == git.Added {
-			issues = append(issues, check.VerifyInformationalAttr(fs, f)...)
-		}
+			data, err := g.ReadFile(path.Path)
+			if err != nil {
+				return nil, err
+			}
 
-		// Only collect issues that weren't ignored by NOLINT comments.
-		allIssues = append(allIssues, check.DropIgnoredIssues(issues, fs, f)...)
+			f, ok := pkg.Files[path.Path] // take ast.File from parsed package
+			if !ok {
+				continue
+			}
+			var issues []*check.Issue
+
+			issues = append(issues, check.Golint(path.Path, data, debug)...)
+			issues = append(issues, check.Comments(fs, f)...)
+			issues = append(issues, check.EmptySlice(fs, f)...)
+
+			if !hasFmtError(data, path.Path) {
+				// goimports applies gofmt, so skip it if the code has any formatting
+				// error to avoid confusing reports. gofmt will be run by the repo
+				// upload hook anyway.
+				issues = append(issues, check.ImportOrder(path.Path, data)...)
+			}
+
+			if isTestFile(path.Path) {
+				issues = append(issues, check.Declarations(fs, f)...)
+				issues = append(issues, check.Exports(fs, f)...)
+				issues = append(issues, check.ForbiddenBundleImports(fs, f)...)
+				issues = append(issues, check.ForbiddenCalls(fs, f)...)
+				issues = append(issues, check.ForbiddenImports(fs, f)...)
+				issues = append(issues, check.InterFileRefs(fs, f)...)
+				issues = append(issues, check.Messages(fs, f)...)
+				issues = append(issues, check.VerifyTestingStateStruct(fs, f)...)
+			}
+
+			if isSupportPackageFile(path.Path) {
+				issues = append(issues, check.VerifyTestingStateParam(fs, f)...)
+			}
+
+			if path.Status == git.Added {
+				issues = append(issues, check.VerifyInformationalAttr(fs, f)...)
+			}
+			// Only collect issues that weren't ignored by NOLINT comments.
+			allIssues = append(allIssues, check.DropIgnoredIssues(issues, fs, f)...)
+		}
 	}
 
 	return allIssues, nil

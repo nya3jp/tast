@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -76,6 +77,20 @@ func isTestFile(path string) bool {
 
 	return strings.Contains(path, "src/chromiumos/tast/local/") ||
 		strings.Contains(path, "src/chromiumos/tast/remote/")
+}
+
+// isNewlyAddedPackageFile returns true if a file of given path newly created a package
+func isNewlyAddedPackageFile(path git.CommitFile) bool {
+	p, err := filepath.Abs(path.Path)
+	if err != nil {
+		return false
+	}
+	d := filepath.Dir(p)
+	files, err := ioutil.ReadDir(d)
+	if err != nil {
+		return false
+	}
+	return len(files) == 1 && path.Status == git.Added
 }
 
 // hasFmtError runs gofmt to see if code has any formatting error.
@@ -148,6 +163,10 @@ func checkAll(g *git.Git, paths []git.CommitFile, debug bool) ([]*check.Issue, e
 
 		if path.Status == git.Added {
 			issues = append(issues, check.VerifyInformationalAttr(fs, f)...)
+		}
+
+		if isNewlyAddedPackageFile(path) {
+			issues = append(issues, check.PackageComment(fs, f)...)
 		}
 
 		// Only collect issues that weren't ignored by NOLINT comments.

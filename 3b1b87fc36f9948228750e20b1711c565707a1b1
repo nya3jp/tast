@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "75f896c4_477b92ed",
+        "filename": "src/chromiumos/cmd/tast/run_cmd.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-11T23:27:23Z",
+      "side": 1,
+      "message": "Thanks! In this chance could you also add the same assertion to listCmd and symbolizeCmd?",
+      "range": {
+        "startLine": 41,
+        "startChar": 0,
+        "endLine": 41,
+        "endChar": 38
+      },
+      "revId": "3b1b87fc36f9948228750e20b1711c565707a1b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -23,9 +23,12 @@ const testContextKey contextKeyType = "TestContext"
 // and testing.Context* functions. Each member should have strong reason to be
 // accessible without testing.State.
 type TestContext struct {
-	logger       func(msg string)
-	outDir       string
-	softwareDeps []string
+	// Logger is a function that records a log message.
+	Logger func(msg string)
+	// OutDir is a directory where the current test can save output files.
+	OutDir string
+	// SoftwareDeps is a list of software dependencies declared in the current test.
+	SoftwareDeps []string
 }
 
 // WithTestContext attaches TestContext to context.Context. This function can't
@@ -47,7 +50,7 @@ func ContextLog(ctx context.Context, args ...interface{}) {
 	if !ok {
 		return
 	}
-	tc.logger(fmt.Sprint(args...))
+	tc.Logger(fmt.Sprint(args...))
 }
 
 // ContextLogf is similar to ContextLog but formats its arguments using fmt.Sprintf.
@@ -56,7 +59,7 @@ func ContextLogf(ctx context.Context, format string, args ...interface{}) {
 	if !ok {
 		return
 	}
-	tc.logger(fmt.Sprintf(format, args...))
+	tc.Logger(fmt.Sprintf(format, args...))
 }
 
 // ContextOutDir is similar to OutDir but takes context instead. It is intended to be
@@ -66,7 +69,7 @@ func ContextOutDir(ctx context.Context) (dir string, ok bool) {
 	if !ok {
 		return "", false
 	}
-	return tc.outDir, true
+	return tc.OutDir, true
 }
 
 // ContextSoftwareDeps is similar to SoftwareDeps but takes context instead.
@@ -77,5 +80,5 @@ func ContextSoftwareDeps(ctx context.Context) ([]string, bool) {
 	if !ok {
 		return nil, false
 	}
-	return append([]string(nil), tc.softwareDeps...), true
+	return append([]string(nil), tc.SoftwareDeps...), true
 }

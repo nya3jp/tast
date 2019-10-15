@@ -61,6 +61,10 @@ func hasFmtError(code []byte, path string) bool {
 	return len(out) > 0
 }
 
+func isVarFile(path string) bool {
+	return strings.HasPrefix(path, "vars") && filepath.Ext(path) == ".yaml"
+}
+
 // checkAll runs all checks against paths.
 func checkAll(g *git.Git, paths []string, debug bool) ([]*check.Issue, error) {
 	cp := newCachedParser(g)
@@ -68,17 +72,21 @@ func checkAll(g *git.Git, paths []string, debug bool) ([]*check.Issue, error) {
 
 	var allIssues []*check.Issue
 	for _, path := range paths {
+		data, err := g.ReadFile(path)
+		if err != nil {
+			return nil, err
+		}
+
+		if isVarFile(path) {
+			// NOLINT is not supported for var files.
+			allIssues = append(allIssues, check.VarFile(path, data)...)
+		}
 		if !strings.HasSuffix(path, ".go") {
 			continue
 		}
 		// Exempt protoc-generated Go files from lint checks.
 		if strings.HasSuffix(path, ".pb.go") {
 			continue
-		}
-
-		data, err := g.ReadFile(path)
-		if err != nil {
-			return nil, err
 		}
 
 		f, err := cp.parseFile(path)
@@ -107,6 +115,7 @@ func checkAll(g *git.Git, paths []string, debug bool) ([]*check.Issue, error) {
 			issues = append(issues, check.ForbiddenImports(fs, f)...)
 			issues = append(issues, check.InterFileRefs(fs, f)...)
 			issues = append(issues, check.Messages(fs, f)...)
+			// issues = append(issues, check.StaticVarsDeclaration(fs, f)...)
 		}
 
 		if isSupportPackageFile(path) {

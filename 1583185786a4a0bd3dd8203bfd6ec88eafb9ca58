@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d5460f57_a605feae",
+        "filename": "docs/features/secret_vars.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-15T20:54:41Z",
+      "side": 1,
+      "message": "I like having all features in one doc (go/tast-writing) because it can be searched easily by Ctrl+F. WDYT?",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 40
+      },
+      "revId": "1583185786a4a0bd3dd8203bfd6ec88eafb9ca58",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b8a46008_8ed92617",
+        "filename": "docs/features/secret_vars.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-15T20:54:41Z",
+      "side": 1,
+      "message": "It would be good to name a few examples where this is useful. For example, we don\u0027t want to make a test private just because it has to log in with real GAIA credentials (so that partners can still run the test with their own creds).",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 112
+      },
+      "revId": "1583185786a4a0bd3dd8203bfd6ec88eafb9ca58",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4ec8f26d_4cb342d4",
+        "filename": "docs/features/secret_vars.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-15T20:54:41Z",
+      "side": 1,
+      "message": "nit: would you mind expanding \\w with [...] to make the definition clear?",
+      "range": {
+        "startLine": 53,
+        "startChar": 115,
+        "endLine": 53,
+        "endChar": 117
+      },
+      "revId": "1583185786a4a0bd3dd8203bfd6ec88eafb9ca58",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

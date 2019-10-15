@@ -121,11 +121,11 @@ func (l *PipeListener) Addr() net.Addr {
 
 var _ net.Listener = (*PipeListener)(nil)
 
-// NewPipeClientConn constructs ClientConn based on r and w.
+// newPipeClientConn constructs ClientConn based on r and w.
 //
 // The returned ClientConn is suitable for talking with a gRPC server over a
 // bidirectional pipe.
-func NewPipeClientConn(ctx context.Context, r io.Reader, w io.Writer, extraOpts ...grpc.DialOption) (*grpc.ClientConn, error) {
+func newPipeClientConn(ctx context.Context, r io.Reader, w io.Writer, extraOpts ...grpc.DialOption) (*grpc.ClientConn, error) {
 	opts := append([]grpc.DialOption{
 		grpc.WithInsecure(),
 		// TODO(crbug.com/989419): Use grpc.WithContextDialer after updating grpc-go.

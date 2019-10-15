@@ -84,8 +84,8 @@ type PipeListener struct {
 	ch chan *pipeConn
 }
 
-// NewPipeListener constructs a new PipeListener based on r and w.
-func NewPipeListener(r io.Reader, w io.Writer) *PipeListener {
+// newPipeListener constructs a new PipeListener based on r and w.
+func newPipeListener(r io.Reader, w io.Writer) *PipeListener {
 	connCh := make(chan *pipeConn, 1)
 	lis := &PipeListener{ch: connCh}
 	conn := &pipeConn{

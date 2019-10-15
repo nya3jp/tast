@@ -7,6 +7,7 @@ package rpc
 import (
 	"context"
 	"io"
+	"reflect"
 	gotesting "testing"
 
 	"google.golang.org/grpc"
@@ -14,6 +15,8 @@ import (
 	"chromiumos/tast/errors"
 	"chromiumos/tast/testing"
 )
+
+const pingServiceName = "tast.core.Ping"
 
 type pingServer struct {
 	onPing func(context.Context) error
@@ -98,7 +101,10 @@ func TestRPCSuccess(t *gotesting.T) {
 	})
 	defer pp.Close(ctx)
 
-	if _, err := pp.Client.Ping(ctx, &PingRequest{}); err != nil {
+	callCtx := testing.WithTestContext(ctx, &testing.TestContext{
+		ServiceDeps: []string{pingServiceName},
+	})
+	if _, err := pp.Client.Ping(callCtx, &PingRequest{}); err != nil {
 		t.Error("Ping failed: ", err)
 	}
 	if !called {
@@ -115,10 +121,58 @@ func TestRPCFailure(t *gotesting.T) {
 	})
 	defer pp.Close(ctx)
 
-	if _, err := pp.Client.Ping(ctx, &PingRequest{}); err == nil {
+	callCtx := testing.WithTestContext(ctx, &testing.TestContext{
+		ServiceDeps: []string{pingServiceName},
+	})
+	if _, err := pp.Client.Ping(callCtx, &PingRequest{}); err == nil {
 		t.Error("Ping unexpectedly succeeded")
 	}
 	if !called {
 		t.Error("onPing not called")
+	}
+}
+
+func TestRPCForwardTestContext(t *gotesting.T) {
+	expectedDeps := []string{"chrome", "android"}
+
+	ctx := context.Background()
+	called := false
+	pp := newPingPair(ctx, t, func(ctx context.Context) error {
+		called = true
+		if deps, ok := testing.ContextSoftwareDeps(ctx); !ok {
+			return errors.New("SoftwareDeps unavailable")
+		} else if !reflect.DeepEqual(deps, expectedDeps) {
+			return errors.Errorf("SoftwareDeps mismatch: got %v, want %v", deps, expectedDeps)
+		}
+		return nil
+	})
+	defer pp.Close(ctx)
+
+	if _, err := pp.Client.Ping(ctx, &PingRequest{}); err == nil {
+		t.Error("Ping unexpectedly succeeded for a context without TestContext")
+	}
+
+	callCtx := testing.WithTestContext(ctx, &testing.TestContext{
+		ServiceDeps:  []string{pingServiceName},
+		SoftwareDeps: expectedDeps,
+	})
+	if _, err := pp.Client.Ping(callCtx, &PingRequest{}); err != nil {
+		t.Error("Ping failed: ", err)
+	}
+	if !called {
+		t.Error("onPing not called")
+	}
+}
+
+func TestRPCRejectUndeclaredServices(t *gotesting.T) {
+	ctx := context.Background()
+	pp := newPingPair(ctx, t, func(context.Context) error { return nil })
+	defer pp.Close(ctx)
+
+	callCtx := testing.WithTestContext(ctx, &testing.TestContext{
+		ServiceDeps: []string{"foo.Bar"},
+	})
+	if _, err := pp.Client.Ping(callCtx, &PingRequest{}); err == nil {
+		t.Error("Ping unexpectedly succeeded despite undeclared service")
 	}
 }

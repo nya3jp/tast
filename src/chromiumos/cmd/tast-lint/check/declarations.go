@@ -243,6 +243,7 @@ func verifyVars(fs *token.FileSet, node ast.Node) []*Issue {
 			})
 		}
 	}
+	// TODO(crbug.com): lint static var name is allowed in the test.
 	return issues
 }
 

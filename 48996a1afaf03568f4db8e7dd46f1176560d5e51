@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "554466a7_11903246",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1202079
+      },
+      "writtenOn": "2019-10-15T17:34:56Z",
+      "side": 1,
+      "message": "could you also update the go/tast-deps page in this CL?\nhttp://cs/chromeos_public/src/platform/tast/docs/test_dependencies.md",
+      "range": {
+        "startLine": 93,
+        "startChar": 3,
+        "endLine": 93,
+        "endChar": 46
+      },
+      "revId": "48996a1afaf03568f4db8e7dd46f1176560d5e51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

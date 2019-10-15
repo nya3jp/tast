@@ -25,7 +25,7 @@ func TestPipeListener(t *testing.T) {
 	r := bytes.NewBufferString(readStr)
 	w := &bytes.Buffer{}
 
-	lis := NewPipeListener(r, w)
+	lis := newPipeListener(r, w)
 	defer lis.Close()
 
 	func() {
@@ -65,7 +65,7 @@ func TestPipeClientConn(t *testing.T) {
 	srv := grpc.NewServer()
 	reflection.Register(srv)
 
-	go srv.Serve(NewPipeListener(sr, sw))
+	go srv.Serve(newPipeListener(sr, sw))
 	defer srv.Stop()
 
 	conn, err := newPipeClientConn(context.Background(), cr, cw)

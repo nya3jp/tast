@@ -19,6 +19,7 @@ import (
 
 	"chromiumos/tast/command"
 	"chromiumos/tast/control"
+	"chromiumos/tast/rpc"
 	"chromiumos/tast/testing"
 	"chromiumos/tast/timing"
 )
@@ -70,7 +71,7 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 		}
 		return statusSuccess
 	case RPCMode:
-		if err := runRPCServer(stdin, stdout); err != nil {
+		if err := rpc.RunServer(stdin, stdout); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess

@@ -117,9 +117,9 @@ func (s *State) close() {
 // testContext returns a TestContext for the test.
 func (s *State) testContext() *TestContext {
 	return &TestContext{
-		logger:       func(msg string) { s.Log(msg) },
-		outDir:       s.OutDir(),
-		softwareDeps: s.SoftwareDeps(),
+		Logger:       func(msg string) { s.Log(msg) },
+		OutDir:       s.OutDir(),
+		SoftwareDeps: s.SoftwareDeps(),
 	}
 }
 

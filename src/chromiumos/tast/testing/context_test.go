@@ -20,7 +20,7 @@ func TestContextLog(t *testing.T) {
 
 	var logs []string
 	tc := &TestContext{
-		logger: func(msg string) {
+		Logger: func(msg string) {
 			logs = append(logs, testLog)
 		},
 	}
@@ -42,7 +42,7 @@ func TestContextOutDir(t *testing.T) {
 		t.Error("ContextOutDir unexpectedly succeeded for context without TestContext")
 	}
 
-	tc := &TestContext{outDir: testOutDir}
+	tc := &TestContext{OutDir: testOutDir}
 	ctx = WithTestContext(ctx, tc)
 
 	if outDir, ok := ContextOutDir(ctx); !ok {
@@ -61,7 +61,7 @@ func TestContextSoftwareDeps(t *testing.T) {
 		t.Error("ContextSoftwareDeps unexpectedly succeeded for context without TestContext")
 	}
 
-	tc := &TestContext{softwareDeps: testSoftwareDeps}
+	tc := &TestContext{SoftwareDeps: testSoftwareDeps}
 	ctx = WithTestContext(ctx, tc)
 
 	if softwareDeps, ok := ContextSoftwareDeps(ctx); !ok {

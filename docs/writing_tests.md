@@ -902,6 +902,12 @@ For variables only used in a single test, prefix them with the test name
 
 To set runtime variables, add (possibly repeated) `-var=name=value` flags to `tast run`.
 
+### Secret variables
+
+Internal developers can store secret variables in a private repository and make public tests use them. See [secret_vars.md] for details.
+
+[secret_vars.md]: features/secret_vars.md
+
 ## Parameterized tests
 
 A test may specify `Params` to generate variations of the test. A test with

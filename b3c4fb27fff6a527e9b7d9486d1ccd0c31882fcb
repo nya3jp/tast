@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "29ec5ebc_6f222a27",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 289,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-16T23:04:05Z",
+      "side": 1,
+      "message": "I\u0027m a bit afraid this message can be a bit difficult for end-users. How about:\n\n \"failed loading private vars: %v\"",
+      "range": {
+        "startLine": 289,
+        "startChar": 21,
+        "endLine": 289,
+        "endChar": 45
+      },
+      "revId": "b3c4fb27fff6a527e9b7d9486d1ccd0c31882fcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "13f5d8ee_cfcb493e",
+        "filename": "src/chromiumos/cmd/tast/run/vars.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-16T23:04:05Z",
+      "side": 1,
+      "message": "Nice :)",
+      "range": {
+        "startLine": 18,
+        "startChar": 3,
+        "endLine": 18,
+        "endChar": 45
+      },
+      "revId": "b3c4fb27fff6a527e9b7d9486d1ccd0c31882fcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a4dd0370_3af73296",
+        "filename": "src/chromiumos/cmd/tast/run/vars.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-16T23:04:05Z",
+      "side": 1,
+      "message": "huge nit: else if",
+      "range": {
+        "startLine": 41,
+        "startChar": 1,
+        "endLine": 43,
+        "endChar": 4
+      },
+      "revId": "b3c4fb27fff6a527e9b7d9486d1ccd0c31882fcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "19beadc5_290f4229",
+        "filename": "src/chromiumos/cmd/tast/run/vars_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-16T23:04:05Z",
+      "side": 1,
+      "message": "Note that deferred statements are not run until the test function returns. I think it\u0027s okay in this case though...",
+      "range": {
+        "startLine": 84,
+        "startChar": 2,
+        "endLine": 84,
+        "endChar": 28
+      },
+      "revId": "b3c4fb27fff6a527e9b7d9486d1ccd0c31882fcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ca351df5_8977ce22",
+        "filename": "src/chromiumos/cmd/tast/run/vars_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-16T23:04:05Z",
+      "side": 1,
+      "message": "f is not closed. How about using ioutil.WriteFile instead?",
+      "range": {
+        "startLine": 86,
+        "startChar": 3,
+        "endLine": 86,
+        "endChar": 22
+      },
+      "revId": "b3c4fb27fff6a527e9b7d9486d1ccd0c31882fcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

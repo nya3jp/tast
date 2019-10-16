@@ -37,6 +37,14 @@ type Output struct {
 	Msg string
 }
 
+// RemoteData contains information relevant to remote tests.
+type RemoteData struct {
+	// Meta contains information about how the tast process was run.
+	Meta *Meta
+	// RPCHint contains information needed to establish gRPC connections.
+	RPCHint *RPCHint
+}
+
 // Meta contains information about how the "tast" process used to initiate testing was run.
 // It is used by remote tests in the "meta" category that run the tast executable to test Tast's behavior.
 type Meta struct {
@@ -53,6 +61,19 @@ func (m *Meta) clone() *Meta {
 	mc := *m
 	mc.RunFlags = append([]string{}, m.RunFlags...)
 	return &mc
+}
+
+// RPCHint contains information needed to establish gRPC connections.
+type RPCHint struct {
+	// LocalBundleDir is the directory on the DUT where local test bundle executables are located.
+	// This path is used by remote tests to invoke gRPC services in local test bundles.
+	LocalBundleDir string
+}
+
+// clone returns a deep copy of h.
+func (h *RPCHint) clone() *RPCHint {
+	hc := *h
+	return &hc
 }
 
 // State holds state relevant to the execution of a single test.
@@ -88,8 +109,9 @@ type TestConfig struct {
 	// Vars contains names and values of out-of-band variables passed to tests at runtime.
 	// Names must be registered in Test.Vars and values may be accessed using State.Var.
 	Vars map[string]string
-	// Meta contains information about how the tast process was run.
-	Meta *Meta
+	// RemoteData contains information relevant to remote tests.
+	// This is nil for local tests.
+	RemoteData *RemoteData
 	// PreTestFunc is run before Test.Func (and Test.Pre.Prepare, when applicable) if non-nil.
 	PreTestFunc func(context.Context, *State)
 	// PostTestFunc is run after Test.Func (and Test.Pre.Cleanup, when applicable) if non-nil.
@@ -196,12 +218,23 @@ func (s *State) Meta() *Meta {
 		s.Fatalf("Meta info unavailable since test doesn't have category %q", metaCategory)
 		return nil
 	}
-	if s.cfg.Meta == nil {
+	if s.cfg.RemoteData == nil {
 		s.Fatal("Meta info unavailable (is test non-remote?)")
 		return nil
 	}
 	// Return a copy to make sure the test doesn't modify the original struct.
-	return s.cfg.Meta.clone()
+	return s.cfg.RemoteData.Meta.clone()
+}
+
+// RPCHint returns information needed to establish gRPC connections.
+// It can only be called by remote tests.
+func (s *State) RPCHint() *RPCHint {
+	if s.cfg.RemoteData == nil {
+		s.Fatal("RPCHint unavailable (is test non-remote?)")
+		return nil
+	}
+	// Return a copy to make sure the test doesn't modify the original struct.
+	return s.cfg.RemoteData.RPCHint.clone()
 }
 
 // Log formats its arguments using default formatting and logs them.

@@ -107,6 +107,7 @@ func newRemoteTestData(t *gotesting.T, stdout, stderr string, status int) *remot
 	if err = os.MkdirAll(td.cfg.ResDir, 0755); err != nil {
 		t.Fatal(err)
 	}
+	td.cfg.localBundleDir = mockLocalBundleDir
 
 	// Create a symlink to ourselves that can be executed as a fake test runner.
 	td.cfg.remoteRunner = filepath.Join(td.dir, fakeRunnerName)
@@ -214,6 +215,7 @@ func TestRemoteRun(t *gotesting.T) {
 				KeyFile:           td.cfg.KeyFile,
 				TastPath:          exe,
 				RunFlags:          runFlags,
+				LocalBundleDir:    mockLocalBundleDir,
 				CheckSoftwareDeps: false,
 				HeartbeatInterval: heartbeatInterval,
 			},

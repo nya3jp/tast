@@ -356,7 +356,7 @@ func TestMeta(t *gotesting.T) {
 	)
 
 	// Meta info should be provided to tests in the "meta" package.
-	if s, m := getMeta(&TestCase{Name: metaTest}, &TestConfig{Meta: &meta}); s.HasError() {
+	if s, m := getMeta(&TestCase{Name: metaTest}, &TestConfig{RemoteData: &RemoteData{Meta: &meta}}); s.HasError() {
 		t.Errorf("Meta() reported error for %v", metaTest)
 	} else if m == nil {
 		t.Errorf("Meta() = nil for %v", metaTest)
@@ -365,7 +365,7 @@ func TestMeta(t *gotesting.T) {
 	}
 
 	// Tests not in the "meta" package shouldn't have access to meta info.
-	if s, m := getMeta(&TestCase{Name: nonMetaTest}, &TestConfig{Meta: &meta}); !s.HasError() {
+	if s, m := getMeta(&TestCase{Name: nonMetaTest}, &TestConfig{RemoteData: &RemoteData{Meta: &meta}}); !s.HasError() {
 		t.Errorf("Meta() didn't report error for %v", nonMetaTest)
 	} else if m != nil {
 		t.Errorf("Meta() = %+v for %v", *m, nonMetaTest)
@@ -376,5 +376,44 @@ func TestMeta(t *gotesting.T) {
 		t.Error("Meta() didn't report error for nil info")
 	} else if m != nil {
 		t.Errorf("Meta() = %+v despite nil info", *m)
+	}
+}
+
+func TestRPCHint(t *gotesting.T) {
+	hint := RPCHint{LocalBundleDir: "/path/to/bundles"}
+	getHint := func(test *TestCase, cfg *TestConfig) (*State, *RPCHint) {
+		or := newOutputReader()
+		s := newState(test, or.ch, cfg)
+
+		// RPCHint can call Fatal, which results in a call to runtime.Goexit(),
+		// so run this in a goroutine to isolate it from the test.
+		mch := make(chan *RPCHint)
+		go func() {
+			var hint *RPCHint
+			defer func() { mch <- hint }()
+			hint = s.RPCHint()
+		}()
+		return s, <-mch
+	}
+
+	const (
+		remoteTest = "do.Remotely"
+		localTest  = "do.Locally"
+	)
+
+	// RPCHint should be provided to remote tests.
+	if s, h := getHint(&TestCase{Name: remoteTest}, &TestConfig{RemoteData: &RemoteData{RPCHint: &hint}}); s.HasError() {
+		t.Errorf("RPCHint() reported error for %v", remoteTest)
+	} else if h == nil {
+		t.Errorf("RPCHint() = nil for %v", remoteTest)
+	} else if !reflect.DeepEqual(*h, hint) {
+		t.Errorf("RPCHint() = %+v for %v; want %+v", *h, remoteTest, hint)
+	}
+
+	// Local tests shouldn't have access to RPCHint.
+	if s, h := getHint(&TestCase{Name: localTest}, &TestConfig{}); !s.HasError() {
+		t.Errorf("RPCHint() didn't report error for %v", localTest)
+	} else if h != nil {
+		t.Errorf("RPCHint() = %+v for %v", *h, localTest)
 	}
 }

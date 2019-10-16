@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "62bf209e_fb01a70d",
+        "filename": "src/chromiumos/tast/testing/context.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-16T20:24:40Z",
+      "side": 1,
+      "message": "Hmm, please let me keep it \"Logger\" for now. I would name it \"Log\" if it is a method, but it is a variable, so \"Logger\" may clarify it.\n\nNote that Logger is not directly accessible by tests. Tests indirectly use it via testing.State.Log.",
+      "parentUuid": "af0d0e49_e525d062",
+      "range": {
+        "startLine": 26,
+        "startChar": 1,
+        "endLine": 26,
+        "endChar": 7
+      },
+      "revId": "40c247e87f4ec9fb0d0d62299f935360ea9636b9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b087ab53_39d24229",
         "filename": "src/chromiumos/tast/testing/context.go",
         "patchSetId": 1
@@ -45,6 +69,30 @@
       "revId": "40c247e87f4ec9fb0d0d62299f935360ea9636b9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eeb95fd5_768350a6",
+        "filename": "src/chromiumos/tast/testing/context.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-16T20:24:40Z",
+      "side": 1,
+      "message": "Sure, added documentation.",
+      "parentUuid": "b087ab53_39d24229",
+      "range": {
+        "startLine": 27,
+        "startChar": 0,
+        "endLine": 27,
+        "endChar": 20
+      },
+      "revId": "40c247e87f4ec9fb0d0d62299f935360ea9636b9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

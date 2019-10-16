@@ -97,6 +97,10 @@ type RunTestsArgs struct {
 	// e.g. paths to binaries used by the tast process and credentials for reconnecting to the DUT.
 	// It is only relevant for remote tests.
 	RunFlags []string `json:"runFlags,omitempty"`
+	// LocalBundleDir is the directory on the DUT where local test bundle executables are located.
+	// This path is used by remote tests to invoke gRPC services in local test bundles.
+	// It is only relevant for remote tests.
+	LocalBundleDir string `json:"localBundleDir,omitempty"`
 
 	// CheckSoftwareDeps is true if each test's SoftwareDeps field should be checked against
 	// AvailableSoftwareFeatures and UnavailableSoftwareFeatures.

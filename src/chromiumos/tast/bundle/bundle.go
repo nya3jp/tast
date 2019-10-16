@@ -233,12 +233,17 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		}
 	}
 
-	var meta *testing.Meta
+	var rd *testing.RemoteData
 	if bt == remoteBundle {
-		meta = &testing.Meta{
-			TastPath: args.RunTests.TastPath,
-			Target:   args.RunTests.Target,
-			RunFlags: args.RunTests.RunFlags,
+		rd = &testing.RemoteData{
+			Meta: &testing.Meta{
+				TastPath: args.RunTests.TastPath,
+				Target:   args.RunTests.Target,
+				RunFlags: args.RunTests.RunFlags,
+			},
+			RPCHint: &testing.RPCHint{
+				LocalBundleDir: args.RunTests.LocalBundleDir,
+			},
 		}
 	}
 
@@ -261,7 +266,7 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 
 	for i, t := range tests {
 		if md := missingDeps[i]; len(md) == 0 {
-			runTest(ctx, ew, args, cfg, t, nextTests[i], meta)
+			runTest(ctx, ew, args, cfg, t, nextTests[i], rd)
 		} else {
 			reportSkippedTest(ctx, ew, args, t, md)
 		}
@@ -277,7 +282,7 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 
 // runTest runs t per args and cfg, writing the appropriate control.Test* control messages to mw.
 func runTest(ctx context.Context, ew *eventWriter, args *Args, cfg *runConfig,
-	t, next *testing.TestCase, meta *testing.Meta) {
+	t, next *testing.TestCase, rd *testing.RemoteData) {
 	ew.TestStart(t)
 
 	// Attach a log that the test can use to report timing events.
@@ -288,7 +293,7 @@ func runTest(ctx context.Context, ew *eventWriter, args *Args, cfg *runConfig,
 		DataDir:      filepath.Join(args.RunTests.DataDir, t.DataDir()),
 		OutDir:       filepath.Join(args.RunTests.OutDir, t.Name),
 		Vars:         args.RunTests.TestVars,
-		Meta:         meta,
+		RemoteData:   rd,
 		PreTestFunc:  cfg.preTestFunc,
 		PostTestFunc: cfg.postTestFunc,
 		NextTest:     next,

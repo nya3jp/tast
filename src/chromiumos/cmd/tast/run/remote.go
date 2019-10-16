@@ -67,13 +67,14 @@ func runRemoteRunner(ctx context.Context, cfg *Config) ([]TestResult, error) {
 			Mode: runner.RunTestsMode,
 			RunTests: &runner.RunTestsArgs{
 				BundleArgs: bundle.RunTestsArgs{
-					Patterns: cfg.Patterns,
-					DataDir:  cfg.remoteDataDir,
-					TestVars: cfg.testVars,
-					Target:   cfg.Target,
-					KeyFile:  cfg.KeyFile,
-					KeyDir:   cfg.KeyDir,
-					TastPath: exe,
+					Patterns:       cfg.Patterns,
+					DataDir:        cfg.remoteDataDir,
+					TestVars:       cfg.testVars,
+					Target:         cfg.Target,
+					KeyFile:        cfg.KeyFile,
+					KeyDir:         cfg.KeyDir,
+					TastPath:       exe,
+					LocalBundleDir: cfg.localBundleDir,
 					RunFlags: []string{
 						"-keyfile=" + cfg.KeyFile,
 						"-keydir=" + cfg.KeyDir,

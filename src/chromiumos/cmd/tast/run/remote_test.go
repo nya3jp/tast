@@ -215,6 +215,7 @@ func TestRemoteRun(t *gotesting.T) {
 				TastPath:          exe,
 				RunFlags:          runFlags,
 				CheckSoftwareDeps: false,
+				HeartbeatInterval: heartbeatInterval,
 			},
 		},
 	}

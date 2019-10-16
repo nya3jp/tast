@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "79fdb6be_e90a3a34",
+        "filename": "docs/features/secret_vars.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-10-16T02:23:44Z",
+      "side": 1,
+      "message": "go/tast-writing\u0027s getting bigger is my concern. I think our stance for the document is everyone writing Tast should read through it, but the longer the document is the more intimigating it is.\n\nThis document is linked from go/tast-writing in Secret variables section, so I think needing developers can find it.\n\n\u003e it can be searched easily by Ctrl+F.\n\nI admit it can be useful, but I\u0027m personally fine with using code search over docs/ directory when needed.",
+      "parentUuid": "d5460f57_a605feae",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 40
+      },
+      "revId": "1583185786a4a0bd3dd8203bfd6ec88eafb9ca58",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b8a46008_8ed92617",
         "filename": "docs/features/secret_vars.md",
         "patchSetId": 4
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "2668a297_e6ceac90",
+        "filename": "docs/features/secret_vars.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-10-16T02:23:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b8a46008_8ed92617",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 112
+      },
+      "revId": "1583185786a4a0bd3dd8203bfd6ec88eafb9ca58",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4ec8f26d_4cb342d4",
         "filename": "docs/features/secret_vars.md",
         "patchSetId": 4
@@ -68,6 +116,30 @@
       "revId": "1583185786a4a0bd3dd8203bfd6ec88eafb9ca58",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fe614595_30abdc08",
+        "filename": "docs/features/secret_vars.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-10-16T02:23:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4ec8f26d_4cb342d4",
+      "range": {
+        "startLine": 53,
+        "startChar": 115,
+        "endLine": 53,
+        "endChar": 117
+      },
+      "revId": "1583185786a4a0bd3dd8203bfd6ec88eafb9ca58",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

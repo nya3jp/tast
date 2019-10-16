@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "8f153461_922bed85",
+        "filename": "docs/features/secret_vars.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-16T23:32:04Z",
+      "side": 1,
+      "message": "I have to agree that go/tast-writing is too long to read through it. IMO it has become a reference doc rather than kind of \"beginners guide to writing tests\".\n\nGiven the current state, I think adding the whole content to go/tast-writing is most natural way. How about having a separate discussion about reorganizing docs instead?",
+      "parentUuid": "79fdb6be_e90a3a34",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 40
+      },
+      "revId": "1583185786a4a0bd3dd8203bfd6ec88eafb9ca58",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b8a46008_8ed92617",
         "filename": "docs/features/secret_vars.md",
         "patchSetId": 4

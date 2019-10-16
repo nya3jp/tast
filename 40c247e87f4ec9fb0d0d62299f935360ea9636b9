@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "af0d0e49_e525d062",
+        "filename": "src/chromiumos/tast/testing/context.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-10-16T07:40:53Z",
+      "side": 1,
+      "message": "While we are here, WDYT about naming it Log, because it\u0027s used as tc.Log(str) ?\nLogger sounds like a struct having Log method.",
+      "range": {
+        "startLine": 26,
+        "startChar": 1,
+        "endLine": 26,
+        "endChar": 7
+      },
+      "revId": "40c247e87f4ec9fb0d0d62299f935360ea9636b9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

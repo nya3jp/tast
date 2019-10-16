@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "311b935c_2cb126e6",
+        "filename": "src/chromiumos/tast/rpc/pipe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-16T20:24:50Z",
+      "side": 1,
+      "message": "Good catch, we can now make it unexported. Thanks!",
+      "parentUuid": "8d73a55b_c28d23c8",
+      "range": {
+        "startLine": 83,
+        "startChar": 5,
+        "endLine": 83,
+        "endChar": 17
+      },
+      "revId": "f9cebbe15bf38e84309a2fc5622518d3c5215e02",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "733487f2_3e5308ee",
         "filename": "src/chromiumos/tast/rpc/server.go",
         "patchSetId": 1

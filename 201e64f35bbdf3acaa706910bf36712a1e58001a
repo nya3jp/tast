@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6db64627_2329b5ed",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 7
+      },
+      "lineNbr": 990,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-16T15:20:42Z",
+      "side": 1,
+      "message": "nit: testing.Test",
+      "range": {
+        "startLine": 990,
+        "startChar": 25,
+        "endLine": 990,
+        "endChar": 29
+      },
+      "revId": "201e64f35bbdf3acaa706910bf36712a1e58001a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1c565f36_b57c39b1",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 7
+      },
+      "lineNbr": 1011,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-16T15:20:42Z",
+      "side": 1,
+      "message": "huge nit: \", \"",
+      "range": {
+        "startLine": 1011,
+        "startChar": 64,
+        "endLine": 1011,
+        "endChar": 66
+      },
+      "revId": "201e64f35bbdf3acaa706910bf36712a1e58001a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "37f9d539_d5e1e71e",
+        "filename": "src/chromiumos/tast/testing/test_case_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-16T15:20:42Z",
+      "side": 1,
+      "message": "optional: How about check returned case\u0027s Pre is appropriately set?\n\nif tc, err :\u003d newTestCase(\u0026Test{... Pre: pre}. \u0026Param{}); err !\u003d nil {\n  t.Error(error)\n} else if tc.Pre !\u003d pre {\n  t.Error(... good message ...)\n}\n\n...",
+      "range": {
+        "startLine": 157,
+        "startChar": 1,
+        "endLine": 170,
+        "endChar": 1
+      },
+      "revId": "201e64f35bbdf3acaa706910bf36712a1e58001a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

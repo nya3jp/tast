@@ -248,6 +248,30 @@
     },
     {
       "key": {
+        "uuid": "4a48ab0d_be605735",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 998,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-16T18:37:25Z",
+      "side": 1,
+      "message": "I meant, even if there is no much benefit to split reporting test results, if each test case needs to have different Attr/dependencies etc., Parameterized test is the option.",
+      "parentUuid": "92f79a38_b78ebd53",
+      "range": {
+        "startLine": 998,
+        "startChar": 0,
+        "endLine": 998,
+        "endChar": 75
+      },
+      "revId": "5aff4cb676f605f4221def10b364b3754ba48dc6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0d341e8d_8089b566",
         "filename": "docs/writing_tests.md",
         "patchSetId": 1
@@ -327,6 +351,29 @@
       "revId": "5aff4cb676f605f4221def10b364b3754ba48dc6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "741971c9_886c986f",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 1041,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-16T18:37:25Z",
+      "side": 1,
+      "message": "Could you revive this example with crrev.com/c/1852191 somehow?\nI think 1) video example above is getting complicated, 2) as for Pre use, arc.Booted/VMBooted sounds a good example but it wouldn\u0027t match with video.\nThus, I think it is nice to have another example to explain Pre. (I\u0027m thinking to extend it to support Timeout, too).",
+      "range": {
+        "startLine": 1028,
+        "startChar": 0,
+        "endLine": 1041,
+        "endChar": 3
+      },
+      "revId": "5aff4cb676f605f4221def10b364b3754ba48dc6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

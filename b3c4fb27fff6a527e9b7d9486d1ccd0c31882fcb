@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "5156ee5a_c1fdd491",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 289,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-10-17T04:36:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "29ec5ebc_6f222a27",
+      "range": {
+        "startLine": 289,
+        "startChar": 21,
+        "endLine": 289,
+        "endChar": 45
+      },
+      "revId": "b3c4fb27fff6a527e9b7d9486d1ccd0c31882fcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "13f5d8ee_cfcb493e",
         "filename": "src/chromiumos/cmd/tast/run/vars.go",
         "patchSetId": 2
@@ -71,6 +95,30 @@
     },
     {
       "key": {
+        "uuid": "9ad1787a_77fc5678",
+        "filename": "src/chromiumos/cmd/tast/run/vars.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-10-17T04:36:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a4dd0370_3af73296",
+      "range": {
+        "startLine": 41,
+        "startChar": 1,
+        "endLine": 43,
+        "endChar": 4
+      },
+      "revId": "b3c4fb27fff6a527e9b7d9486d1ccd0c31882fcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "19beadc5_290f4229",
         "filename": "src/chromiumos/cmd/tast/run/vars_test.go",
         "patchSetId": 2
@@ -82,6 +130,30 @@
       "writtenOn": "2019-10-16T23:04:05Z",
       "side": 1,
       "message": "Note that deferred statements are not run until the test function returns. I think it\u0027s okay in this case though...",
+      "range": {
+        "startLine": 84,
+        "startChar": 2,
+        "endLine": 84,
+        "endChar": 28
+      },
+      "revId": "b3c4fb27fff6a527e9b7d9486d1ccd0c31882fcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "73905e1f_3007ac61",
+        "filename": "src/chromiumos/cmd/tast/run/vars_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-10-17T04:36:52Z",
+      "side": 1,
+      "message": "I admit it\u0027s not a good practice. I wrapped a test with a function call.",
+      "parentUuid": "19beadc5_290f4229",
       "range": {
         "startLine": 84,
         "startChar": 2,
@@ -114,6 +186,30 @@
       "revId": "b3c4fb27fff6a527e9b7d9486d1ccd0c31882fcb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8796e4dc_98179abc",
+        "filename": "src/chromiumos/cmd/tast/run/vars_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-10-17T04:36:52Z",
+      "side": 1,
+      "message": "Ouch! Fixed.",
+      "parentUuid": "ca351df5_8977ce22",
+      "range": {
+        "startLine": 86,
+        "startChar": 3,
+        "endLine": 86,
+        "endChar": 22
+      },
+      "revId": "b3c4fb27fff6a527e9b7d9486d1ccd0c31882fcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

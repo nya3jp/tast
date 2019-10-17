@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7201dd3e_a322dd99",
+        "filename": "src/chromiumos/cmd/tast-lint/check/declarations.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-17T17:18:47Z",
+      "side": 1,
+      "message": "Hmm.. the check logic looks a bit complicated to me...\nHow about...;\n\n- Check by verifyAttr as is. I.e., it checks if the value is not nil-literal, and each element of the array literal is a string literal.\n- verifyAttr should be applied to both testing.Test.Attr and testing.Params.ExtrAttr.\n- Separately, checks the appearance of Attr and ExtraAttr.\n  - If it is not param test, no Attr is an error.\n  - If it is param test, and neither Attr nor ExtrAttr is set, it is an error.\n\nhasAttr :\u003d false\nfor _, el :\u003d range comp.Elts {\n  ...\n  case \"Attr\":\n    issues \u003d append(issues, verifyAttr(...)...)\n    hasAttr \u003d true\n  ...\n  case \"Params\":\n    paramsNode \u003d kv.Value\n  ...\n}\n\nif paramsNode \u003d\u003d nil {\n  if !hasAttr {\n    issues \u003d append(...)\n  }\n} else {\n  issues \u003d append(issues, verifyParams(..., hasAttr)...)\n}\n\n...\nfunc verifyParamElement(..., hasAttr bool) ... {\n  ...\n  hasExtraAttr :\u003d false\n  for _, el :\u003d range comp.Elts {\n    ...\n    case \"ExtraAttr\": {\n      ...\n      hasExtraAttr \u003d true\n    }\n  }\n  if !hasAttr \u0026\u0026 !hasExtraAttr {\n    issues \u003d append(issues, ...)\n  }\n}\n\nWDYT?",
+      "revId": "8bb8f9d9309c49017fa3e12c7b5af2088554cb74",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

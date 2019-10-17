@@ -76,7 +76,7 @@ type RunEnd struct {
 	Time time.Time `json:"runEndTime"`
 	// OutDir is the base directory under which tests wrote output files.
 	// DEPRECATED: Client should always set OutDir in the request.
-	// TODO(crbug.com/1000549): Remove this field after 20191001.
+	// TODO(crbug.com/1000549): Remove this field after 20191201.
 	OutDir string `json:"runEndOutDir"`
 }
 

@@ -299,7 +299,10 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, patterns []
 	case ListTestsMode:
 		results, rerr = readTestList(handle.stdout)
 	case RunTestsMode:
-		crf := func(src, dst string) error { return moveFromHost(ctx, cfg, hst, src, dst) }
+		crf := func(testName, dst string) error {
+			src := filepath.Join(args.RunTests.BundleArgs.OutDir, testName)
+			return moveFromHost(ctx, cfg, hst, src, dst)
+		}
 		df := func(ctx context.Context) string { return diagnoseLocalRunError(ctx, cfg) }
 		results, unstarted, rerr = readTestOutput(ctx, cfg, handle.stdout, crf, df)
 	}

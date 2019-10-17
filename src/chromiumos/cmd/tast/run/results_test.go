@@ -31,7 +31,7 @@ import (
 )
 
 // noOpCopyAndRemove can be passed to readTestOutput by tests.
-func noOpCopyAndRemove(src, dst string) error { return nil }
+func noOpCopyAndRemove(testName, dst string) error { return nil }
 
 // readStreamedResults decodes newline-terminated, JSON-marshaled TestResult structs from r.
 func readStreamedResults(t *gotesting.T, r io.Reader) []TestResult {
@@ -124,7 +124,10 @@ func TestReadTestOutput(t *gotesting.T) {
 		Logger: logging.NewSimple(&logBuf, 0, false), // drop debug messages
 		ResDir: filepath.Join(tempDir, "results"),
 	}
-	results, unstartedTests, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, nil)
+	crf := func(testName, dst string) error {
+		return os.Rename(filepath.Join(outDir, testName), dst)
+	}
+	results, unstartedTests, err := readTestOutput(context.Background(), &cfg, &b, crf, nil)
 	if err != nil {
 		t.Fatal("readTestOutput failed:", err)
 	}
@@ -264,7 +267,7 @@ func TestReadTestOutputTimingLog(t *gotesting.T) {
 		Logger: logging.NewSimple(&bytes.Buffer{}, 0, false),
 		ResDir: td,
 	}
-	if _, _, err := readTestOutput(ctx, &cfg, &b, os.Rename, nil); err != nil {
+	if _, _, err := readTestOutput(ctx, &cfg, &b, noOpCopyAndRemove, nil); err != nil {
 		t.Fatal("readTestOutput failed: ", err)
 	}
 
@@ -314,7 +317,7 @@ func TestPerTestLogContainsRunError(t *gotesting.T) {
 	mw.WriteMessage(&control.RunError{Time: time.Unix(3, 0), Error: testing.Error{Reason: errorMsg}})
 
 	cfg := Config{Logger: logging.NewSimple(&bytes.Buffer{}, 0, false), ResDir: td}
-	if _, _, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, nil); err == nil {
+	if _, _, err := readTestOutput(context.Background(), &cfg, &b, noOpCopyAndRemove, nil); err == nil {
 		t.Fatal("readTestOutput didn't report run error")
 	} else if !strings.Contains(err.Error(), errorMsg) {
 		t.Fatalf("readTestOutput error %q doesn't contain %q", err.Error(), errorMsg)
@@ -498,11 +501,14 @@ func TestWriteResultsCollectSysInfoFailure(t *gotesting.T) {
 
 func TestWritePartialResults(t *gotesting.T) {
 	const (
-		test1Name   = "pkg.Test1"
-		test2Name   = "pkg.Test2"
-		test3Name   = "pkg.Test3"
-		test4Name   = "pkg.Test4"
-		test2Reason = "reason for error"
+		test1Name    = "pkg.Test1"
+		test2Name    = "pkg.Test2"
+		test3Name    = "pkg.Test3"
+		test4Name    = "pkg.Test4"
+		test2Reason  = "reason for error"
+		test1OutFile = "test1.txt"
+		test2OutFile = "test2.txt"
+		test4OutFile = "test4.txt"
 	)
 	run1Start := time.Unix(1, 0)
 	test1Start := time.Unix(2, 0)
@@ -517,6 +523,15 @@ func TestWritePartialResults(t *gotesting.T) {
 	tempDir := testutil.TempDir(t)
 	defer os.RemoveAll(tempDir)
 
+	outDir := filepath.Join(tempDir, "out")
+	if err := testutil.WriteFiles(outDir, map[string]string{
+		filepath.Join(test1Name, test1OutFile): "",
+		filepath.Join(test2Name, test2OutFile): "",
+		filepath.Join(test4Name, test4OutFile): "",
+	}); err != nil {
+		t.Fatal(err)
+	}
+
 	// Make the runner output end abruptly without a TestEnd control message for the second test,
 	// and without any messages for the third test.
 	b := bytes.Buffer{}
@@ -529,9 +544,12 @@ func TestWritePartialResults(t *gotesting.T) {
 
 	cfg := Config{
 		Logger: logging.NewSimple(&bytes.Buffer{}, 0, false),
-		ResDir: tempDir,
+		ResDir: filepath.Join(tempDir, "results"),
 	}
-	results, unstarted, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, nil)
+	crf := func(testName, dst string) error {
+		return os.Rename(filepath.Join(outDir, testName), dst)
+	}
+	results, unstarted, err := readTestOutput(context.Background(), &cfg, &b, crf, nil)
 	if err == nil {
 		t.Fatal("readTestOutput unexpectedly succeeded")
 	}
@@ -571,6 +589,14 @@ func TestWritePartialResults(t *gotesting.T) {
 		t.Errorf("Returned results contain contain %+v; want %+v", results, expRes)
 	}
 
+	// Output files should be saved for finished tests.
+	if _, ok := files[filepath.Join(testLogsDir, test1Name, test1OutFile)]; !ok {
+		t.Errorf("Output file for %s was not saved", test1Name)
+	}
+	if _, ok := files[filepath.Join(testLogsDir, test2Name, test2OutFile)]; ok {
+		t.Errorf("Output file for %s was saved unexpectedly", test2Name)
+	}
+
 	// Write control messages describing another run containing the third test.
 	b.Reset()
 	mw.WriteMessage(&control.RunStart{Time: run2Start, TestNames: []string{test4Name}})
@@ -579,7 +605,7 @@ func TestWritePartialResults(t *gotesting.T) {
 	mw.WriteMessage(&control.RunEnd{Time: run2End})
 
 	// The results for the third test should be appended to the existing streamed results file.
-	if _, _, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, nil); err != nil {
+	if _, _, err := readTestOutput(context.Background(), &cfg, &b, crf, nil); err != nil {
 		t.Error("readTestOutput failed: ", err)
 	}
 	if files, err = testutil.ReadFiles(cfg.ResDir); err != nil {
@@ -594,6 +620,15 @@ func TestWritePartialResults(t *gotesting.T) {
 	})
 	if !testResultsEqual(streamRes, expRes) {
 		t.Errorf("%v contains %+v; want %+v", streamedResultsFilename, streamRes, expRes)
+	}
+
+	// Output files for the earlier run should not be clobbered.
+	if _, ok := files[filepath.Join(testLogsDir, test1Name, test1OutFile)]; !ok {
+		t.Errorf("Output file for %s was clobbered", test1Name)
+	}
+	// Output files should be saved for finished tests.
+	if _, ok := files[filepath.Join(testLogsDir, test4Name, test4OutFile)]; !ok {
+		t.Errorf("Output file for %s was not saved", test4Name)
 	}
 }
 

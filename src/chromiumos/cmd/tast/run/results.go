@@ -16,6 +16,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"chromiumos/tast/control"
@@ -153,9 +154,9 @@ func WriteResults(ctx context.Context, cfg *Config, results []TestResult, comple
 	return sysInfoErr
 }
 
-// copyAndRemoveFunc copies src on a DUT to dst on the local machine and then
-// removes src from the DUT.
-type copyAndRemoveFunc func(src, dst string) error
+// copyAndRemoveFunc copies the output files of testName on a DUT to dst on the
+// local machine and then removes the directory on the DUT.
+type copyAndRemoveFunc func(testName, dst string) error
 
 // diagnoseRunErrorFunc is called after a run error is encountered while reading test results to get additional
 // information about the cause of the error. An empty string should be returned if additional information
@@ -176,6 +177,7 @@ type resultsHandler struct {
 	crf              copyAndRemoveFunc      // function used to copy and remove files from DUT
 	diagFunc         diagnoseRunErrorFunc   // called to diagnose run errors; may be nil
 	streamWriter     *streamedResultsWriter // used to write results as control messages are read
+	pullers          sync.WaitGroup         // used to wait for puller goroutines
 }
 
 func newResultsHandler(cfg *Config, crf copyAndRemoveFunc, df diagnoseRunErrorFunc) (*resultsHandler, error) {
@@ -200,6 +202,7 @@ func newResultsHandler(cfg *Config, crf copyAndRemoveFunc, df diagnoseRunErrorFu
 }
 
 func (r *resultsHandler) close() {
+	r.pullers.Wait()
 	if r.res != nil {
 		r.cfg.Logger.RemoveWriter(r.res.logFile)
 		r.res.logFile.Close()
@@ -258,16 +261,6 @@ func (r *resultsHandler) handleRunEnd(ctx context.Context, msg *control.RunEnd) 
 		return errors.New("multiple RunEnd messages")
 	}
 	r.runEnd = msg.Time
-
-	if len(msg.OutDir) != 0 {
-		r.setProgress("Copying output files")
-		localOutDir := filepath.Join(r.cfg.ResDir, "out.tmp")
-		if err := r.crf(msg.OutDir, localOutDir); err != nil {
-			r.cfg.Logger.Log("Failed to copy test output data: ", err)
-		} else if err := r.moveTestOutputData(localOutDir); err != nil {
-			r.cfg.Logger.Log("Failed to move test output data: ", err)
-		}
-	}
 	return nil
 }
 
@@ -377,6 +370,18 @@ func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.TestEnd
 	if err := r.res.logFile.Close(); err != nil {
 		r.cfg.Logger.Log(err)
 	}
+
+	// Pull finished test output files in a separate goroutine.
+	res := r.res
+	r.pullers.Add(1)
+	go func() {
+		defer r.pullers.Done()
+		if err := moveTestOutputData(r.crf, res.Name, r.getTestOutputDir(res.Name)); err != nil {
+			// This may be written to a log of an irrelevant test.
+			r.cfg.Logger.Logf("Failed to copy output data of %s: %v", res.Name, err)
+		}
+	}()
+
 	r.res = nil
 	r.stage = nil
 	return nil
@@ -392,53 +397,42 @@ func (r *resultsHandler) getTestOutputDir(testName string) string {
 	return filepath.Join(r.cfg.ResDir, testLogsDir, testName)
 }
 
-// moveTestOutputData moves per-test output data from test-named directories under srcBase
-// to the corresponding test directories under r.cfg.ResDir.
-func (r *resultsHandler) moveTestOutputData(srcBase string) error {
-	if _, err := os.Stat(srcBase); os.IsNotExist(err) {
-		return nil
-	}
-
-	// Iterate over per-test directories created by tests.
-	srcDirs, err := ioutil.ReadDir(srcBase)
+// moveTestOutputData moves per-test output data using crf. dstDir is the path
+// to the destination directory, typically ending with testName. dstDir should
+// already exist.
+//
+// This function is not associated to resultsHandler because it runs on a
+// separate goroutine that does not own resultsHandler and can be suffered from
+// data races.
+func moveTestOutputData(crf copyAndRemoveFunc, testName, dstDir string) error {
+	tmpDir, err := ioutil.TempDir(filepath.Dir(dstDir), "pulltmp.")
 	if err != nil {
 		return err
 	}
-	for _, fi := range srcDirs {
-		// We created a dest dir for each test when we saw its TestStart message.
-		// If we see a src dir without a matching dest dir, something strange happened.
-		dstDir := r.getTestOutputDir(fi.Name())
-		if _, err = os.Stat(dstDir); os.IsNotExist(err) {
-			r.cfg.Logger.Log("Skipping unexpected output dir ", fi.Name())
-			continue
-		}
+	defer os.RemoveAll(tmpDir)
 
-		// Iterate over the files in each directory.
-		srcDir := filepath.Join(srcBase, fi.Name())
-		files, err := ioutil.ReadDir(srcDir)
-		if err != nil {
-			return err
-		}
-		for _, fi2 := range files {
-			src := filepath.Join(srcDir, fi2.Name())
-			dst := filepath.Join(dstDir, fi2.Name())
-
-			// Check that the destination file doesn't already exist.
-			// This could happen if a test creates an output file named log.txt.
-			if _, err := os.Stat(dst); err == nil {
-				dst += testOutputFileRenameExt
-				r.cfg.Logger.Logf("File %v already exists; renaming test output to %v",
-					filepath.Base(fi2.Name()), filepath.Base(dst))
-			}
-
-			if err = os.Rename(src, dst); err != nil {
-				return err
-			}
-		}
+	srcDir := filepath.Join(tmpDir, testName)
+	if err := crf(testName, srcDir); err != nil {
+		return err
 	}
 
-	if err = os.RemoveAll(srcBase); err != nil {
-		r.cfg.Logger.Log("Failed to remove temp dir: ", err)
+	files, err := ioutil.ReadDir(srcDir)
+	if err != nil {
+		return err
+	}
+	for _, fi := range files {
+		src := filepath.Join(srcDir, fi.Name())
+		dst := filepath.Join(dstDir, fi.Name())
+
+		// Check that the destination file doesn't already exist.
+		// This could happen if a test creates an output file named log.txt.
+		if _, err := os.Stat(dst); err == nil {
+			dst += testOutputFileRenameExt
+		}
+
+		if err := os.Rename(src, dst); err != nil {
+			return err
+		}
 	}
 	return nil
 }

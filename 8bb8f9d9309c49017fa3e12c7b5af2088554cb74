@@ -16,6 +16,24 @@
       "revId": "8bb8f9d9309c49017fa3e12c7b5af2088554cb74",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "534dca2a_f8cbd3d0",
+        "filename": "src/chromiumos/cmd/tast-lint/check/declarations.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-17T18:48:50Z",
+      "side": 1,
+      "message": "Does it work in the following test case? (It\u0027s already in unit tests):\n\n\ttesting.AddTest(\u0026testing.Test{\n\t\tFunc:     DoStuff,\n\t\tDesc:     \"This description is fine\",\n\t\tContacts: []string{\"me@chromium.org\"},\n\t\t// Attr is missing.\n\t\tParams: []testing.Param{{\n\t\t\tName: \"a\",\n\t\t}, {\n\t\t\tName: \"b\",\n\t\t\tExtraAttr: []string{},\n\t\t}},\n\t})",
+      "parentUuid": "7201dd3e_a322dd99",
+      "revId": "8bb8f9d9309c49017fa3e12c7b5af2088554cb74",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -57,6 +57,7 @@ The following software features are defined:
 *   `drm_atomic` - The ability to synchronize video buffer overlays atomically.
     This is guarantees that [video hardware overlays] are supported.
 *   `firewall` - Standard Chrome OS network firewall rules.
+*   `flashrom` - Userspace utility to update firmware.
 *   `google_virtual_keyboard` - The proprietary Google onscreen virtual keyboard
     (as opposed to the builtin open-source virtual keyboard).
 *   `gpu_sandboxing` - Chrome's GPU process is [sandboxed].

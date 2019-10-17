@@ -61,6 +61,8 @@ The following software features are defined:
     (as opposed to the builtin open-source virtual keyboard).
 *   `gpu_sandboxing` - Chrome's GPU process is [sandboxed].
 *   `gsc` - Whether the platform has an onboard Google security chip.
+*   `hardware` - For tests that only give meaningful results only directly on
+    hardware (i.e. not in VMs).
 *   `lock_core_pattern` - Ability to lock down |core_pattern| from further
     modifications.
 *   `memd` - [Memory stats collection daemon].

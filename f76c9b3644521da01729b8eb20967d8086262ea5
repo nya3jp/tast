@@ -22,6 +22,30 @@
       "revId": "f76c9b3644521da01729b8eb20967d8086262ea5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c562acab_ef3c7e38",
+        "filename": "docs/features/secret_vars.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-10-17T05:39:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "182d5ea1_0f725b74",
+      "range": {
+        "startLine": 9,
+        "startChar": 85,
+        "endLine": 9,
+        "endChar": 97
+      },
+      "revId": "f76c9b3644521da01729b8eb20967d8086262ea5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

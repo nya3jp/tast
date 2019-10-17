@@ -73,6 +73,30 @@
     },
     {
       "key": {
+        "uuid": "df73efd7_609d9242",
+        "filename": "docs/features/secret_vars.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-10-17T05:34:03Z",
+      "side": 1,
+      "message": "I see. I admit I was trying to do two things in this CL; introducing features dir and explaining secret vars.\nI moved this to writing_tests.md and spawned another CL to move it to features/ .",
+      "parentUuid": "8f153461_922bed85",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 40
+      },
+      "revId": "1583185786a4a0bd3dd8203bfd6ec88eafb9ca58",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b8a46008_8ed92617",
         "filename": "docs/features/secret_vars.md",
         "patchSetId": 4

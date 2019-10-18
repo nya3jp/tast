@@ -52,6 +52,24 @@
       "revId": "8bb8f9d9309c49017fa3e12c7b5af2088554cb74",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "191d5a84_2557a1ce",
+        "filename": "src/chromiumos/cmd/tast-lint/check/declarations.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-18T08:01:00Z",
+      "side": 1,
+      "message": "The point of this CL is to warn the b case: \"Ensure Attr is always non-empty\"",
+      "parentUuid": "2202efe7_7f391f03",
+      "revId": "8bb8f9d9309c49017fa3e12c7b5af2088554cb74",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

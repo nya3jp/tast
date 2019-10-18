@@ -50,6 +50,13 @@ func TestContextOutDir(t *testing.T) {
 	} else if outDir != testOutDir {
 		t.Errorf("ContextOutDir = %q; want %q", outDir, testOutDir)
 	}
+
+	tc = &TestContext{OutDir: ""}
+	ctx = WithTestContext(ctx, tc)
+
+	if _, ok := ContextOutDir(ctx); ok {
+		t.Error("ContextOutDir unexpectedly succeeded for empty OutDir")
+	}
 }
 
 func TestContextSoftwareDeps(t *testing.T) {

@@ -7,6 +7,7 @@ package rpc
 import (
 	"context"
 	"io"
+	"reflect"
 	gotesting "testing"
 
 	"google.golang.org/grpc"
@@ -166,5 +167,39 @@ func TestRPCRejectUndeclaredServices(t *gotesting.T) {
 	})
 	if _, err := pp.Client.Ping(callCtx, &PingRequest{}); err == nil {
 		t.Error("Ping unexpectedly succeeded despite undeclared service")
+	}
+}
+
+func TestRPCForwardTestContext(t *gotesting.T) {
+	expectedDeps := []string{"chrome", "android"}
+
+	ctx := context.Background()
+	called := false
+	var deps []string
+	var depsOK bool
+	pp := newPingPair(ctx, t, func(ctx context.Context) error {
+		called = true
+		deps, depsOK = testing.ContextSoftwareDeps(ctx)
+		return nil
+	})
+	defer pp.Close(ctx)
+
+	if _, err := pp.Client.Ping(ctx, &PingRequest{}); err == nil {
+		t.Error("Ping unexpectedly succeeded for a context without TestContext")
+	}
+
+	callCtx := testing.WithTestContext(ctx, &testing.TestContext{
+		ServiceDeps:  []string{pingServiceName},
+		SoftwareDeps: expectedDeps,
+	})
+	if _, err := pp.Client.Ping(callCtx, &PingRequest{}); err != nil {
+		t.Error("Ping failed: ", err)
+	}
+	if !called {
+		t.Error("onPing not called")
+	} else if !depsOK {
+		t.Error("SoftwareDeps unavailable")
+	} else if !reflect.DeepEqual(deps, expectedDeps) {
+		t.Errorf("SoftwareDeps mismatch: got %v, want %v", deps, expectedDeps)
 	}
 }

@@ -13,6 +13,7 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 
 	"chromiumos/tast/dut"
@@ -127,8 +128,11 @@ func clientOpts() []grpc.DialOption {
 			return nil, status.Errorf(codes.FailedPrecondition, "refusing to call %s because it is not declared in ServiceDeps", method)
 		}
 
-		// TODO(crbug.com/969627): Replace ctx to forward testing.TestContext.
-		return ctx, nil
+		md, err := outgoingMetadata(ctx)
+		if err != nil {
+			return nil, status.Errorf(codes.FailedPrecondition, "refusing to call %s: %v", method, err)
+		}
+		return metadata.NewOutgoingContext(ctx, md), nil
 	}
 
 	return []grpc.DialOption{

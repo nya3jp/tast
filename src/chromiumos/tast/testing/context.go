@@ -68,7 +68,7 @@ func ContextLogf(ctx context.Context, format string, args ...interface{}) {
 // used by packages providing support for tests that need to write files.
 func ContextOutDir(ctx context.Context) (dir string, ok bool) {
 	tc, ok := ctx.Value(testContextKey).(*TestContext)
-	if !ok {
+	if !ok || tc.OutDir == "" {
 		return "", false
 	}
 	return tc.OutDir, true

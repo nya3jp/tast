@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "eabf3229_36f71ec2",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-10-21T07:52:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bdcdceb7_5773e97a",
+      "revId": "5f37b167ab7e2a1c4fad73c3ccdb128d3c42b94c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a7e1dbe_50fdbb4d",
         "filename": "src/chromiumos/cmd/tast-lint/check/package_comment.go",
         "patchSetId": 1
@@ -42,6 +60,30 @@
     },
     {
       "key": {
+        "uuid": "b8db8cbd_5132ea12",
+        "filename": "src/chromiumos/cmd/tast-lint/check/package_comment.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-10-21T07:52:25Z",
+      "side": 1,
+      "message": "Done\nhttps://github.com/golang/lint/blob/master/lint.go#L379",
+      "parentUuid": "9a7e1dbe_50fdbb4d",
+      "range": {
+        "startLine": 25,
+        "startChar": 8,
+        "endLine": 31,
+        "endChar": 2
+      },
+      "revId": "5f37b167ab7e2a1c4fad73c3ccdb128d3c42b94c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "81349002_34cd627b",
         "filename": "src/chromiumos/cmd/tast-lint/main.go",
         "patchSetId": 1
@@ -56,6 +98,24 @@
       "revId": "5f37b167ab7e2a1c4fad73c3ccdb128d3c42b94c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "70c1e214_3a7c614a",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-10-21T07:52:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "81349002_34cd627b",
+      "revId": "5f37b167ab7e2a1c4fad73c3ccdb128d3c42b94c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

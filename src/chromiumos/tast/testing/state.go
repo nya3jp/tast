@@ -175,7 +175,8 @@ func (s *State) DataFileSystem() *dataFS { return (*dataFS)(s) }
 
 // OutDir returns a directory into which the test may place arbitrary files
 // that should be included with the test results.
-func (s *State) OutDir() string { return s.cfg.OutDir }
+func (s *State) OutDir() string  { return s.cfg.OutDir }
+func (s *State) DataDir() string { return s.cfg.DataDir }
 
 // Var returns the value for the named variable, which must have been registered via Test.Vars.
 // If a value was not supplied at runtime via the -var flag to "tast run", ok will be false.

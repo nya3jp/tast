@@ -22,6 +22,30 @@
       "revId": "c97f03ec8ce9783ad97ccdace5fa5cc71765a3a5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "caa432c6_6ed78316",
+        "filename": "src/chromiumos/tast/rpc/gen.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-10-23T10:47:57Z",
+      "side": 1,
+      "message": "marked as unresolved.",
+      "parentUuid": "e1333d72_1f5c5f2a",
+      "range": {
+        "startLine": 11,
+        "startChar": 3,
+        "endLine": 11,
+        "endChar": 69
+      },
+      "revId": "c97f03ec8ce9783ad97ccdace5fa5cc71765a3a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

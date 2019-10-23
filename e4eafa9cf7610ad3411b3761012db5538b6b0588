@@ -1,0 +1,256 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e1326a4d_45ff906e",
+        "filename": "src/chromiumos/cmd/tast-lint/check/common_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-23T17:23:34Z",
+      "side": 1,
+      "message": "Could you check the length of both slices are same?\nAlso, could you explicitly document it?",
+      "range": {
+        "startLine": 24,
+        "startChar": 19,
+        "endLine": 24,
+        "endChar": 44
+      },
+      "revId": "e4eafa9cf7610ad3411b3761012db5538b6b0588",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5b47b0de_e6fd901a",
+        "filename": "src/chromiumos/cmd/tast-lint/check/package_comment.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-23T17:23:34Z",
+      "side": 1,
+      "message": "IIUC, []*ast.File is enough? IMO, it is good practice to keep the signature as small as possible.",
+      "range": {
+        "startLine": 14,
+        "startChar": 39,
+        "endLine": 14,
+        "endChar": 67
+      },
+      "revId": "e4eafa9cf7610ad3411b3761012db5538b6b0588",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2702a63a_111f1659",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-23T17:23:34Z",
+      "side": 1,
+      "message": "rather than comment, could you give it a try to make a good name (but shorter because this is go)?\n# I guess just \"d\" is fine in this case, though.\n\nBTW, what \"possible directory path\" does here mean?",
+      "range": {
+        "startLine": 91,
+        "startChar": 39,
+        "endLine": 91,
+        "endChar": 67
+      },
+      "revId": "e4eafa9cf7610ad3411b3761012db5538b6b0588",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6098078b_02547b6f",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-23T17:23:34Z",
+      "side": 1,
+      "message": "Looks redundant? Or if you\u0027re thinking \"path\" is a bit confusing, it\u0027s nice to be renamed.",
+      "range": {
+        "startLine": 92,
+        "startChar": 39,
+        "endLine": 92,
+        "endChar": 68
+      },
+      "revId": "e4eafa9cf7610ad3411b3761012db5538b6b0588",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "05af9f2a_0b44abd5",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-23T17:23:34Z",
+      "side": 1,
+      "message": "Maybe nice to be renamed. How about \"dir\" and \"cfs\" etc.?\n\nAlso, it may be worth commenting the semantics of dfmap at declaration. For example;\n\n// Map from directory path to commit files in the dir.\ndfmap :\u003d ...",
+      "range": {
+        "startLine": 95,
+        "startChar": 27,
+        "endLine": 95,
+        "endChar": 89
+      },
+      "revId": "e4eafa9cf7610ad3411b3761012db5538b6b0588",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "73b4f77f_990ec0b4",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-23T17:23:34Z",
+      "side": 1,
+      "message": "exfiles can contain not only files but also (sub) directories.",
+      "revId": "e4eafa9cf7610ad3411b3761012db5538b6b0588",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bb97b1f0_005083b5",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-23T17:23:34Z",
+      "side": 1,
+      "message": "It is missing to handle a case where \"there is sub dir, but there is not yet a file\" case, I think.",
+      "range": {
+        "startLine": 100,
+        "startChar": 2,
+        "endLine": 103,
+        "endChar": 3
+      },
+      "revId": "e4eafa9cf7610ad3411b3761012db5538b6b0588",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "272d6e4e_35ac03a4",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-23T17:23:34Z",
+      "side": 1,
+      "message": "Could you check if the file is .go file?\n\nIn general, it is recommended to do one thing in one function.\nHow about decouple the \"making a group of commit files by directory\", and \"checking if the directory is new\"?",
+      "range": {
+        "startLine": 105,
+        "startChar": 2,
+        "endLine": 114,
+        "endChar": 3
+      },
+      "revId": "e4eafa9cf7610ad3411b3761012db5538b6b0588",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "367cb1e1_288cc6e2",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-23T17:23:34Z",
+      "side": 1,
+      "message": "Could you report an error?\nIf parsing is failed, tast-lint could do little things.",
+      "revId": "e4eafa9cf7610ad3411b3761012db5538b6b0588",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "081d092a_7f4d9818",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-23T17:23:34Z",
+      "side": 1,
+      "message": "Looks valid formula here?",
+      "revId": "e4eafa9cf7610ad3411b3761012db5538b6b0588",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2958b017_cd131e7c",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-23T17:23:34Z",
+      "side": 1,
+      "message": "FYI: in the current code, in case of failure at L126, this will create an unexpected entry in m, I think.",
+      "revId": "e4eafa9cf7610ad3411b3761012db5538b6b0588",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "26ee4c30_81db70a5",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-23T17:23:34Z",
+      "side": 1,
+      "message": "To avoid parsing a file multiple times, could you reorder the iteration? Probably either;\n- Parse all files at the beginning and just use it.\n- If performance is concerning, parse for each package.",
+      "range": {
+        "startLine": 157,
+        "startChar": 1,
+        "endLine": 157,
+        "endChar": 121
+      },
+      "revId": "e4eafa9cf7610ad3411b3761012db5538b6b0588",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

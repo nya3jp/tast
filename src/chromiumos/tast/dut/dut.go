@@ -192,7 +192,7 @@ func (d *DUT) Reboot(ctx context.Context) error {
 			return errors.New("boot_id did not change")
 		}
 		return nil
-	}, &testing.PollOptions{Timeout: time.Minute}); err != nil {
+	}, &testing.PollOptions{Timeout: 3 * time.Minute}); err != nil {
 		return errors.Wrap(err, "failed to wait for DUT to reboot")
 	}
 	return nil

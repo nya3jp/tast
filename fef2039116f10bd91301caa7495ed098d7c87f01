@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "87d26c6f_4a7da309",
+        "filename": "src/chromiumos/tast/rpc/gen.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-23T09:57:31Z",
+      "side": 1,
+      "message": "That is a good idea, let me add it.",
+      "parentUuid": "894cccc1_d1de6920",
+      "range": {
+        "startLine": 5,
+        "startChar": 0,
+        "endLine": 5,
+        "endChar": 69
+      },
+      "revId": "fef2039116f10bd91301caa7495ed098d7c87f01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6ee31496_af04d15b",
         "filename": "src/chromiumos/tast/rpc/rpc_test.go",
         "patchSetId": 10
@@ -45,6 +69,30 @@
       "revId": "fef2039116f10bd91301caa7495ed098d7c87f01",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0e31b523_8717cb75",
+        "filename": "src/chromiumos/tast/rpc/rpc_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-23T09:57:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6ee31496_af04d15b",
+      "range": {
+        "startLine": 31,
+        "startChar": 5,
+        "endLine": 31,
+        "endChar": 13
+      },
+      "revId": "fef2039116f10bd91301caa7495ed098d7c87f01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "8fb076e3_ce13f969",
+        "filename": "src/chromiumos/tast/rpc/rpc_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-23T09:57:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b6444999_1bb1e12b",
+      "range": {
+        "startLine": 35,
+        "startChar": 1,
+        "endLine": 35,
+        "endChar": 5
+      },
+      "revId": "fef2039116f10bd91301caa7495ed098d7c87f01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3da2c426_52c1f831",
         "filename": "src/chromiumos/tast/rpc/rpc_test.go",
         "patchSetId": 10
@@ -82,6 +154,30 @@
       "writtenOn": "2019-10-16T07:38:56Z",
       "side": 1,
       "message": "qq: Why ctx is added here?",
+      "range": {
+        "startLine": 38,
+        "startChar": 25,
+        "endLine": 38,
+        "endChar": 28
+      },
+      "revId": "fef2039116f10bd91301caa7495ed098d7c87f01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3643a09f_34373ea8",
+        "filename": "src/chromiumos/tast/rpc/rpc_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-23T09:57:31Z",
+      "side": 1,
+      "message": "It\u0027s because I\u0027ll call a function needing ctx here in a later CL. It\u0027s not necessary in this CL, but I found I can make the later CL cleaner by introducing ctx in this CL. If you feel strong about keeping minimal interfaces, I can remove ctx for now. WDYT?",
+      "parentUuid": "3da2c426_52c1f831",
       "range": {
         "startLine": 38,
         "startChar": 25,
@@ -140,6 +236,54 @@
     },
     {
       "key": {
+        "uuid": "cc213159_c419e700",
+        "filename": "src/chromiumos/tast/rpc/rpc_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-23T09:57:31Z",
+      "side": 1,
+      "message": "I made it accept testing.T because I\u0027m very confident that no unit test wants to handle its error in different ways than t.Fatal. It\u0027s trivial to update it to return (*pingPair, error) instead, but I\u0027m afraid it\u0027s not very useful... WDYT?",
+      "parentUuid": "26e50d28_8caff965",
+      "range": {
+        "startLine": 46,
+        "startChar": 38,
+        "endLine": 46,
+        "endChar": 39
+      },
+      "revId": "fef2039116f10bd91301caa7495ed098d7c87f01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "511f766b_d5d51a76",
+        "filename": "src/chromiumos/tast/rpc/rpc_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-23T09:57:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "eb7f7537_2bb956ff",
+      "range": {
+        "startLine": 46,
+        "startChar": 5,
+        "endLine": 46,
+        "endChar": 16
+      },
+      "revId": "fef2039116f10bd91301caa7495ed098d7c87f01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "674f6097_53ef887b",
         "filename": "src/chromiumos/tast/rpc/rpc_test.go",
         "patchSetId": 10
@@ -163,6 +307,30 @@
     },
     {
       "key": {
+        "uuid": "7f322dba_14ca1bee",
+        "filename": "src/chromiumos/tast/rpc/rpc_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-23T09:57:31Z",
+      "side": 1,
+      "message": "Sure, added some comments.",
+      "parentUuid": "674f6097_53ef887b",
+      "range": {
+        "startLine": 64,
+        "startChar": 0,
+        "endLine": 64,
+        "endChar": 12
+      },
+      "revId": "fef2039116f10bd91301caa7495ed098d7c87f01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e4c98a72_f267e829",
         "filename": "src/chromiumos/tast/rpc/rpc_test.go",
         "patchSetId": 10
@@ -180,6 +348,24 @@
     },
     {
       "key": {
+        "uuid": "8347273b_ba6bc95e",
+        "filename": "src/chromiumos/tast/rpc/rpc_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-23T09:57:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e4c98a72_f267e829",
+      "revId": "fef2039116f10bd91301caa7495ed098d7c87f01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "877d8be0_3bf7635b",
         "filename": "src/chromiumos/tast/rpc/rpc_test.go",
         "patchSetId": 10
@@ -191,6 +377,30 @@
       "writtenOn": "2019-10-16T07:38:56Z",
       "side": 1,
       "message": "Could you comment why the error isn\u0027t checked here?",
+      "range": {
+        "startLine": 70,
+        "startChar": 3,
+        "endLine": 70,
+        "endChar": 7
+      },
+      "revId": "fef2039116f10bd91301caa7495ed098d7c87f01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ff12e3d9_76af216d",
+        "filename": "src/chromiumos/tast/rpc/rpc_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-23T09:57:31Z",
+      "side": 1,
+      "message": "Hmm, I thought it\u0027s very usual to report the first error only. Could you elaborate on what you want here?",
+      "parentUuid": "877d8be0_3bf7635b",
       "range": {
         "startLine": 70,
         "startChar": 3,
@@ -226,6 +436,30 @@
     },
     {
       "key": {
+        "uuid": "d208021c_25732d1e",
+        "filename": "src/chromiumos/tast/rpc/rpc_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-23T09:57:31Z",
+      "side": 1,
+      "message": "It was for symmetricity, but I don\u0027t have strong opinion. Removed.",
+      "parentUuid": "f5399577_60181d89",
+      "range": {
+        "startLine": 79,
+        "startChar": 6,
+        "endLine": 79,
+        "endChar": 13
+      },
+      "revId": "fef2039116f10bd91301caa7495ed098d7c87f01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ca02fe49_f63c3936",
         "filename": "src/chromiumos/tast/rpc/server.go",
         "patchSetId": 10
@@ -246,6 +480,30 @@
       "revId": "fef2039116f10bd91301caa7495ed098d7c87f01",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ae64a0aa_b47b735e",
+        "filename": "src/chromiumos/tast/rpc/server.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-23T09:57:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ca02fe49_f63c3936",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 63
+      },
+      "revId": "fef2039116f10bd91301caa7495ed098d7c87f01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -272,6 +530,30 @@
     },
     {
       "key": {
+        "uuid": "b68100a1_df1d6fe5",
+        "filename": "src/chromiumos/tast/testing/global.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-23T09:57:31Z",
+      "side": 1,
+      "message": "This is analogous to \"test main file\", and actually it\u0027s somewhat consistently used throughout Tast.\nhttps://cs.corp.google.com/search/?q\u003dfile:/tast/+\"test+main\"\n\nThat said I agree it\u0027s a bit confusing. We might want to establish better terminology.",
+      "parentUuid": "e415d1c5_f2fbd0b2",
+      "range": {
+        "startLine": 68,
+        "startChar": 40,
+        "endLine": 68,
+        "endChar": 57
+      },
+      "revId": "fef2039116f10bd91301caa7495ed098d7c87f01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "51faf985_50c4cf40",
         "filename": "src/chromiumos/tast/testing/global.go",
         "patchSetId": 10
@@ -292,6 +574,30 @@
       "revId": "fef2039116f10bd91301caa7495ed098d7c87f01",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "57e504de_905db7e9",
+        "filename": "src/chromiumos/tast/testing/global.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-23T09:57:31Z",
+      "side": 1,
+      "message": "That\u0027s a good point, but the problem is that Registry.AddService never returns an error at this moment :(\n\nI thought I can add a check of duplicated gRPC services (that is, the same service is provided by more than one implementations), but actually it\u0027s very difficult or even impossible to check on registration time. Such duplication will cause the gRPC server to fail to start anyway.\n\nSo, this time, please let me skip adding a unit test. TestAllServices should check the successful case though.",
+      "parentUuid": "51faf985_50c4cf40",
+      "range": {
+        "startLine": 69,
+        "startChar": 5,
+        "endLine": 69,
+        "endChar": 15
+      },
+      "revId": "fef2039116f10bd91301caa7495ed098d7c87f01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -318,6 +624,30 @@
     },
     {
       "key": {
+        "uuid": "01ca8833_f4fb0a06",
+        "filename": "src/chromiumos/tast/testing/registry.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-23T09:57:31Z",
+      "side": 1,
+      "message": "Definitely!",
+      "parentUuid": "2006d3fb_1877a9bb",
+      "range": {
+        "startLine": 11,
+        "startChar": 18,
+        "endLine": 11,
+        "endChar": 23
+      },
+      "revId": "fef2039116f10bd91301caa7495ed098d7c87f01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1acf6039_c1fe3fe3",
         "filename": "src/chromiumos/tast/testing/registry.go",
         "patchSetId": 10
@@ -329,6 +659,30 @@
       "writtenOn": "2019-10-16T07:38:56Z",
       "side": 1,
       "message": "It doesn\u0027t return error. If you have plan to make it return an error, could you leave TODO?",
+      "range": {
+        "startLine": 63,
+        "startChar": 42,
+        "endLine": 63,
+        "endChar": 47
+      },
+      "revId": "fef2039116f10bd91301caa7495ed098d7c87f01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8e851675_7fef29a6",
+        "filename": "src/chromiumos/tast/testing/registry.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-23T09:57:31Z",
+      "side": 1,
+      "message": "I think it is reasonable to assume that AddService can fail for some reason. And since it is a public API, I want to avoid changing it later, so that\u0027s why error is returned here.\n\nI\u0027m not sure what to put as a TODO here though.",
+      "parentUuid": "1acf6039_c1fe3fe3",
       "range": {
         "startLine": 63,
         "startChar": 42,
@@ -364,6 +718,30 @@
     },
     {
       "key": {
+        "uuid": "1eb8c5d4_0c2b82f2",
+        "filename": "src/chromiumos/tast/testing/registry_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-23T09:57:31Z",
+      "side": 1,
+      "message": "I guess DeepEqual skips checking the content of *testing.Service because the pointer matches.\nhttps://play.golang.org/p/1n4vk1lgdQz\n\nI hope it\u0027s okay for now.",
+      "parentUuid": "a24e5abb_9b0823b0",
+      "range": {
+        "startLine": 156,
+        "startChar": 13,
+        "endLine": 156,
+        "endChar": 22
+      },
+      "revId": "fef2039116f10bd91301caa7495ed098d7c87f01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4036d67e_29e83db9",
         "filename": "src/chromiumos/tast/testing/service.go",
         "patchSetId": 10
@@ -384,6 +762,30 @@
       "revId": "fef2039116f10bd91301caa7495ed098d7c87f01",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "440c4061_145883e5",
+        "filename": "src/chromiumos/tast/testing/service.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-23T09:57:31Z",
+      "side": 1,
+      "message": "Actually it\u0027s not, protoc generates functions like pb.RegisterPingServer.",
+      "parentUuid": "4036d67e_29e83db9",
+      "range": {
+        "startLine": 15,
+        "startChar": 40,
+        "endLine": 15,
+        "endChar": 55
+      },
+      "revId": "fef2039116f10bd91301caa7495ed098d7c87f01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

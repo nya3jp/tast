@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "1cdc2f21_b30ca114",
+        "filename": "tools/go.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-10-23T10:18:52Z",
+      "side": 1,
+      "message": "Can you use realpath X instead of cd X; pwd ?",
+      "range": {
+        "startLine": 8,
+        "startChar": 22,
+        "endLine": 8,
+        "endChar": 59
+      },
+      "revId": "d98c56979739808437190d961fffd4b98882610a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "8db2d866_59c5329e",
         "filename": "tools/go.sh",
         "patchSetId": 1

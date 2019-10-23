@@ -15,6 +15,8 @@ import (
 	"chromiumos/tast/testing"
 )
 
+const pingServiceName = "tast.core.Ping"
+
 // pingServer is an implementation of the Ping gRPC service.
 type pingServer struct {
 	// onPing is called when Ping is called by gRPC clients.
@@ -106,7 +108,10 @@ func TestRPCSuccess(t *gotesting.T) {
 	})
 	defer pp.Close(ctx)
 
-	if _, err := pp.Client.Ping(ctx, &PingRequest{}); err != nil {
+	callCtx := testing.WithTestContext(ctx, &testing.TestContext{
+		ServiceDeps: []string{pingServiceName},
+	})
+	if _, err := pp.Client.Ping(callCtx, &PingRequest{}); err != nil {
 		t.Error("Ping failed: ", err)
 	}
 	if !called {
@@ -123,10 +128,43 @@ func TestRPCFailure(t *gotesting.T) {
 	})
 	defer pp.Close(ctx)
 
-	if _, err := pp.Client.Ping(ctx, &PingRequest{}); err == nil {
+	callCtx := testing.WithTestContext(ctx, &testing.TestContext{
+		ServiceDeps: []string{pingServiceName},
+	})
+	if _, err := pp.Client.Ping(callCtx, &PingRequest{}); err == nil {
 		t.Error("Ping unexpectedly succeeded")
 	}
 	if !called {
 		t.Error("onPing not called")
+	}
+}
+
+func TestRPCNoTestContext(t *gotesting.T) {
+	ctx := context.Background()
+	called := false
+	pp := newPingPair(ctx, t, func(context.Context) error {
+		called = true
+		return nil
+	})
+	defer pp.Close(ctx)
+
+	if _, err := pp.Client.Ping(ctx, &PingRequest{}); err == nil {
+		t.Error("Ping unexpectedly succeeded for a context missing TestContext")
+	}
+	if called {
+		t.Error("onPing unexpectedly called")
+	}
+}
+
+func TestRPCRejectUndeclaredServices(t *gotesting.T) {
+	ctx := context.Background()
+	pp := newPingPair(ctx, t, func(context.Context) error { return nil })
+	defer pp.Close(ctx)
+
+	callCtx := testing.WithTestContext(ctx, &testing.TestContext{
+		ServiceDeps: []string{"foo.Bar"},
+	})
+	if _, err := pp.Client.Ping(callCtx, &PingRequest{}); err == nil {
+		t.Error("Ping unexpectedly succeeded despite undeclared service")
 	}
 }

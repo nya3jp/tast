@@ -6,10 +6,14 @@ package rpc
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"path/filepath"
+	"strings"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
@@ -107,6 +111,22 @@ func newClient(ctx context.Context, r io.Reader, w io.Writer, clean func(context
 // clientOpts returns gRPC client-side interceptors to manipulate context.
 func clientOpts() []grpc.DialOption {
 	before := func(ctx context.Context, method string) (context.Context, error) {
+		// Reject an outgoing RPC call if its service is not declared in ServiceDeps.
+		svcs, ok := testing.ContextServiceDeps(ctx)
+		if !ok {
+			return nil, status.Errorf(codes.FailedPrecondition, "refusing to call %s because ServiceDeps is unavailable (using a wrong context?)", method)
+		}
+		matched := false
+		for _, svc := range svcs {
+			if strings.HasPrefix(method, fmt.Sprintf("/%s/", svc)) {
+				matched = true
+				break
+			}
+		}
+		if !matched {
+			return nil, status.Errorf(codes.FailedPrecondition, "refusing to call %s because it is not declared in ServiceDeps", method)
+		}
+
 		// TODO(crbug.com/969627): Replace ctx to forward testing.TestContext.
 		return ctx, nil
 	}

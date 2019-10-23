@@ -33,15 +33,17 @@ var _ PingServer = (*pingServer)(nil)
 // pingPair manages a local client/server pair of the Ping gRPC service.
 type pingPair struct {
 	Client PingClient
+	// The server is missing here; it is implicitly owned by the background
+	// goroutine that calls RunServer.
 
-	conn *grpc.ClientConn
-	stop func() error // func to stop the gRPC server
+	rpcClient  *Client      // underlying gRPC connection of Client
+	stopServer func() error // func to stop the gRPC server
 }
 
 // Close closes the gRPC connection and stops the gRPC server.
 func (p *pingPair) Close(ctx context.Context) error {
-	firstErr := p.conn.Close()
-	if err := p.stop(); firstErr == nil {
+	firstErr := p.rpcClient.Close(ctx)
+	if err := p.stopServer(); firstErr == nil {
 		firstErr = err
 	}
 	return firstErr
@@ -68,7 +70,7 @@ func newPingPair(ctx context.Context, t *gotesting.T, onPing func(context.Contex
 	go func() {
 		stopped <- RunServer(sr, sw, []*testing.Service{svc})
 	}()
-	stop := func() error {
+	stopServer := func() error {
 		// Close the client pipes. This will let the gRPC server close the singleton
 		// gRPC connection, which triggers the gRPC server to stop via pipeListener.
 		cw.Close()
@@ -78,20 +80,20 @@ func newPingPair(ctx context.Context, t *gotesting.T, onPing func(context.Contex
 	success := false
 	defer func() {
 		if !success {
-			stop() // no error check; test has already failed
+			stopServer() // no error check; test has already failed
 		}
 	}()
 
-	conn, err := newPipeClientConn(ctx, cr, cw)
+	cl, err := newClient(ctx, cr, cw, func(context.Context) error { return nil })
 	if err != nil {
-		t.Fatal("newPipeClientConn failed: ", err)
+		t.Fatal("newClient failed: ", err)
 	}
 
 	success = true
 	return &pingPair{
-		Client: NewPingClient(conn),
-		conn:   conn,
-		stop:   stop,
+		Client:     NewPingClient(cl.Conn),
+		rpcClient:  cl,
+		stopServer: stopServer,
 	}
 }
 

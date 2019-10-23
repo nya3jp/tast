@@ -29,13 +29,15 @@ type TestContext struct {
 	OutDir string
 	// SoftwareDeps is a list of software dependencies declared in the current test.
 	SoftwareDeps []string
+	// ServiceDeps is a list of service dependencies declared in the current test.
+	ServiceDeps []string
 }
 
 // WithTestContext attaches TestContext to context.Context. This function can't
 // be called from tests.
 func WithTestContext(ctx context.Context, tc *TestContext) context.Context {
 	caller.Check(2, []string{
-		// NOTE: chromiumos/tast/bundle is added here soon.
+		"chromiumos/tast/rpc",
 		"chromiumos/tast/testing",
 	})
 	return context.WithValue(ctx, testContextKey, tc)
@@ -81,4 +83,15 @@ func ContextSoftwareDeps(ctx context.Context) ([]string, bool) {
 		return nil, false
 	}
 	return append([]string(nil), tc.SoftwareDeps...), true
+}
+
+// ContextServiceDeps is similar to ServiceDeps but takes context instead.
+// It is intended to be used by packages providing support for tests that want to
+// make sure tests declare proper dependencies.
+func ContextServiceDeps(ctx context.Context) ([]string, bool) {
+	tc, ok := ctx.Value(testContextKey).(*TestContext)
+	if !ok {
+		return nil, false
+	}
+	return append([]string(nil), tc.ServiceDeps...), true
 }

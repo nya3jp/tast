@@ -508,6 +508,8 @@ func TestTestClone(t *gotesting.T) {
 		timeout = time.Minute
 	)
 	attr := []string{"a", "b"}
+	softwareDeps := []string{"sw1", "sw2"}
+	serviceDeps := []string{"svc1", "svc2"}
 	f := func(context.Context, *State) {}
 
 	// Checks that tst's fields still contain the above values.
@@ -522,8 +524,11 @@ func TestTestClone(t *gotesting.T) {
 		if !reflect.DeepEqual(tst.Attr, attr) {
 			t.Errorf("%s set Attr to %v; want %v", msg, tst.Attr, attr)
 		}
-		if tst.SoftwareDeps != nil {
-			t.Errorf("%s set SoftwareDeps to %v; want nil", msg, tst.SoftwareDeps)
+		if !reflect.DeepEqual(tst.SoftwareDeps, softwareDeps) {
+			t.Errorf("%s set SoftwareDeps to %v; want %v", msg, tst.SoftwareDeps, softwareDeps)
+		}
+		if !reflect.DeepEqual(tst.ServiceDeps, serviceDeps) {
+			t.Errorf("%s set ServiceDeps to %v; want %v", msg, tst.ServiceDeps, serviceDeps)
 		}
 		if tst.Timeout != timeout {
 			t.Errorf("%s set Timeout to %v; want %v", msg, tst.Timeout, timeout)
@@ -532,10 +537,12 @@ func TestTestClone(t *gotesting.T) {
 
 	// First check that a cloned copy gets the correct values.
 	orig := TestCase{
-		Name:    name,
-		Func:    f,
-		Attr:    append([]string{}, attr...),
-		Timeout: timeout,
+		Name:         name,
+		Func:         f,
+		Attr:         append([]string(nil), attr...),
+		SoftwareDeps: append([]string(nil), softwareDeps...),
+		ServiceDeps:  append([]string(nil), serviceDeps...),
+		Timeout:      timeout,
 	}
 	clone := orig.clone()
 	checkTest("clone()", clone)
@@ -545,6 +552,8 @@ func TestTestClone(t *gotesting.T) {
 	clone.Func = nil
 	clone.Attr[0] = "new"
 	clone.Timeout = 2 * timeout
+	clone.SoftwareDeps[0] = "swnew"
+	clone.ServiceDeps[0] = "svcnew"
 	checkTest("update after clone()", &orig)
 }
 

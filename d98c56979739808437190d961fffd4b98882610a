@@ -45,6 +45,30 @@
       "revId": "d98c56979739808437190d961fffd4b98882610a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7ab51938_9785b1e5",
+        "filename": "tools/go.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-10-23T10:14:35Z",
+      "side": 1,
+      "message": "Well, I guess we assume chroot is available, so always use go in chroot?",
+      "parentUuid": "bf66e8f8_ee369b96",
+      "range": {
+        "startLine": 28,
+        "startChar": 5,
+        "endLine": 28,
+        "endChar": 7
+      },
+      "revId": "d98c56979739808437190d961fffd4b98882610a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

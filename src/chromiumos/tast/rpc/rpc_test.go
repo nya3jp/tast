@@ -34,13 +34,13 @@ var _ PingServer = (*pingServer)(nil)
 type pingPair struct {
 	Client PingClient
 
-	conn *grpc.ClientConn
-	stop func() error // func to stop the gRPC server
+	rpcClient *Client
+	stop      func() error // func to stop the gRPC server
 }
 
 // Close closes the gRPC connection and stops the gRPC server.
 func (p *pingPair) Close(ctx context.Context) error {
-	firstErr := p.conn.Close()
+	firstErr := p.rpcClient.Close(ctx)
 	if err := p.stop(); firstErr == nil {
 		firstErr = err
 	}
@@ -82,16 +82,16 @@ func newPingPair(ctx context.Context, t *gotesting.T, onPing func(context.Contex
 		}
 	}()
 
-	conn, err := newPipeClientConn(ctx, cr, cw)
+	cl, err := newClient(ctx, cr, cw, func(context.Context) error { return nil })
 	if err != nil {
-		t.Fatal("newPipeClientConn failed: ", err)
+		t.Fatal("newClient failed: ", err)
 	}
 
 	success = true
 	return &pingPair{
-		Client: NewPingClient(conn),
-		conn:   conn,
-		stop:   stop,
+		Client:    NewPingClient(cl.Conn),
+		rpcClient: cl,
+		stop:      stop,
 	}
 }
 

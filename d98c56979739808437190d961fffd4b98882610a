@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "61d1a2bf_56a0b656",
+        "filename": "tools/go.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-24T03:13:12Z",
+      "side": 1,
+      "message": "Sure, done.",
+      "parentUuid": "1cdc2f21_b30ca114",
+      "range": {
+        "startLine": 8,
+        "startChar": 22,
+        "endLine": 8,
+        "endChar": 59
+      },
+      "revId": "d98c56979739808437190d961fffd4b98882610a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8db2d866_59c5329e",
         "filename": "tools/go.sh",
         "patchSetId": 1
@@ -92,6 +116,30 @@
       "revId": "d98c56979739808437190d961fffd4b98882610a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "36b61962_e5d6d409",
+        "filename": "tools/go.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-24T03:13:12Z",
+      "side": 1,
+      "message": "This will run /usr/bin/go in chroot. And this script can be used outside chroot as well if the user has go in $PATH, though it won\u0027t be officially supported.",
+      "parentUuid": "7ab51938_9785b1e5",
+      "range": {
+        "startLine": 28,
+        "startChar": 5,
+        "endLine": 28,
+        "endChar": 7
+      },
+      "revId": "d98c56979739808437190d961fffd4b98882610a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -92,7 +92,7 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 		return subcommands.ExitUsageError
 	}
 
-	if err := r.cfg.DeriveDefaults(); err != nil {
+	if err := r.cfg.SetDefaults(); err != nil {
 		lg.Log("Failed to derive defaults: ", err)
 		return subcommands.ExitUsageError
 	}

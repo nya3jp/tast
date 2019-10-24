@@ -9,7 +9,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -69,6 +68,7 @@ func runRemoteRunner(ctx context.Context, cfg *Config) ([]TestResult, error) {
 				BundleArgs: bundle.RunTestsArgs{
 					Patterns:       cfg.Patterns,
 					DataDir:        cfg.remoteDataDir,
+					OutDir:         cfg.remoteOutDir,
 					TestVars:       cfg.testVars,
 					Target:         cfg.Target,
 					KeyFile:        cfg.KeyFile,
@@ -89,13 +89,12 @@ func runRemoteRunner(ctx context.Context, cfg *Config) ([]TestResult, error) {
 		}
 		setRunnerTestDepsArgs(cfg, &args)
 
-		// Create an output directory within the results dir so we can just move
-		// it to its final destination later.
-		outDir, err := ioutil.TempDir(cfg.ResDir, "out.")
-		if err != nil {
+		if err := os.MkdirAll(cfg.remoteOutDir, 0777); err != nil {
 			return nil, fmt.Errorf("failed to create output dir: %v", err)
 		}
-		args.RunTests.BundleArgs.OutDir = outDir
+		// At the end of tests remoteOutDir should be empty. Otherwise os.Remove
+		// fails and the directory is left for debugging.
+		defer os.Remove(cfg.remoteOutDir)
 	case ListTestsMode:
 		args = runner.Args{
 			Mode: runner.ListTestsMode,

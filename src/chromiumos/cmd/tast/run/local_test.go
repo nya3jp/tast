@@ -263,6 +263,46 @@ func TestLocalProxy(t *gotesting.T) {
 	}
 }
 
+func TestLocalCopyOutput(t *gotesting.T) {
+	const (
+		testName = "pkg.Test"
+		outFile  = "somefile.txt"
+		outData  = "somedata"
+	)
+
+	td := newLocalTestData(t)
+	defer td.close()
+
+	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		mw := control.NewMessageWriter(stdout)
+		mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), TestNames: []string{testName}})
+		mw.WriteMessage(&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestCase{Name: testName}})
+		mw.WriteMessage(&control.TestEnd{Time: time.Unix(3, 0), Name: testName})
+		mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0), OutDir: td.cfg.localOutDir})
+		return 0
+	}
+
+	if err := testutil.WriteFiles(filepath.Join(td.hostDir, td.cfg.localOutDir), map[string]string{
+		filepath.Join(testName, outFile): outData,
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	if status, _ := local(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
+		t.Errorf("local() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
+	}
+
+	files, err := testutil.ReadFiles(filepath.Join(td.cfg.ResDir, testLogsDir))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if out, ok := files[filepath.Join(testName, outFile)]; !ok {
+		t.Errorf("%s was not created", filepath.Join(testName, outFile))
+	} else if out != outData {
+		t.Errorf("%s was corrupted: got %q, want %q", filepath.Join(testName, outFile), out, outData)
+	}
+}
+
 func disabledTestLocalExecFailure(t *gotesting.T) {
 	td := newLocalTestData(t)
 	defer td.close()

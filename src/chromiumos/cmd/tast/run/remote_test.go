@@ -222,6 +222,54 @@ func TestRemoteRun(t *gotesting.T) {
 	}
 }
 
+func TestRemoteRunCopyOutput(t *gotesting.T) {
+	const (
+		testName = "pkg.Test"
+		outFile  = "somefile.txt"
+		outData  = "somedata"
+	)
+
+	outDir := testutil.TempDir(t)
+	defer os.RemoveAll(outDir)
+
+	b := bytes.Buffer{}
+	tm := time.Unix(1, 0)
+	mw := control.NewMessageWriter(&b)
+	mw.WriteMessage(&control.RunStart{Time: tm, NumTests: 1})
+	mw.WriteMessage(&control.TestStart{Time: tm, Test: testing.TestCase{Name: testName}})
+	mw.WriteMessage(&control.TestEnd{Time: tm, Name: testName})
+	mw.WriteMessage(&control.RunEnd{Time: tm, OutDir: outDir})
+
+	td := newRemoteTestData(t, b.String(), "", 0)
+	defer td.close()
+
+	// Set some parameters that can be overridden by flags to arbitrary values.
+	td.cfg.KeyFile = "/tmp/id_dsa"
+	td.cfg.remoteBundleDir = "/tmp/bundles"
+	td.cfg.remoteDataDir = "/tmp/data"
+	td.cfg.remoteOutDir = outDir
+
+	if err := testutil.WriteFiles(outDir, map[string]string{
+		filepath.Join(testName, outFile): outData,
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	if status, _ := td.run(t); status != subcommands.ExitSuccess {
+		t.Errorf("remote(%+v) returned status %v; want %v", td.cfg, status, subcommands.ExitSuccess)
+	}
+
+	files, err := testutil.ReadFiles(filepath.Join(td.cfg.ResDir, testLogsDir))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if out, ok := files[filepath.Join(testName, outFile)]; !ok {
+		t.Errorf("%s was not created", filepath.Join(testName, outFile))
+	} else if out != outData {
+		t.Errorf("%s was corrupted: got %q, want %q", filepath.Join(testName, outFile), out, outData)
+	}
+}
+
 func TestRemoteList(t *gotesting.T) {
 	// Make the runner print serialized tests.
 	tests := []testing.TestCase{

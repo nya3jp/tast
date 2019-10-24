@@ -108,6 +108,7 @@ func newRemoteTestData(t *gotesting.T, stdout, stderr string, status int) *remot
 		t.Fatal(err)
 	}
 	td.cfg.localBundleDir = mockLocalBundleDir
+	td.cfg.remoteOutDir = filepath.Join(td.cfg.ResDir, "out.tmp")
 
 	// Create a symlink to ourselves that can be executed as a fake test runner.
 	td.cfg.remoteRunner = filepath.Join(td.dir, fakeRunnerName)
@@ -173,6 +174,7 @@ func TestRemoteRun(t *gotesting.T) {
 	td.cfg.KeyFile = "/tmp/id_dsa"
 	td.cfg.remoteBundleDir = "/tmp/bundles"
 	td.cfg.remoteDataDir = "/tmp/data"
+	td.cfg.remoteOutDir = "/tmp/out"
 
 	status, res := td.run(t)
 	if status != subcommands.ExitSuccess {
@@ -186,13 +188,6 @@ func TestRemoteRun(t *gotesting.T) {
 	} else if res[0].Name != testName {
 		t.Errorf("remote(%+v) returned result for test %q; want %q", td.cfg, res[0].Name, testName)
 	}
-
-	// remote should create a temporary output dir rooted under the results dir: https://crbug.com/813282
-	if !strings.HasPrefix(td.args.RunTests.BundleArgs.OutDir, td.cfg.ResDir+"/") {
-		t.Errorf("remote(%+v) passed out dir %v not rooted under results dir %v",
-			td.cfg, td.args.RunTests.BundleArgs.OutDir, td.cfg.ResDir)
-	}
-	td.args.RunTests.BundleArgs.OutDir = "" // clear randomly-named dir
 
 	glob := filepath.Join(td.cfg.remoteBundleDir, "*")
 	exe, err := os.Executable()
@@ -212,6 +207,7 @@ func TestRemoteRun(t *gotesting.T) {
 			BundleGlob: glob,
 			BundleArgs: bundle.RunTestsArgs{
 				DataDir:           td.cfg.remoteDataDir,
+				OutDir:            td.cfg.remoteOutDir,
 				KeyFile:           td.cfg.KeyFile,
 				TastPath:          exe,
 				RunFlags:          runFlags,

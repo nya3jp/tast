@@ -86,11 +86,12 @@ type Config struct {
 	localRunner    string // path to executable that runs local test bundles
 	localBundleDir string // dir where packaged local test bundles are installed
 	localDataDir   string // dir containing packaged local test data
-	localOutDir    string // dir where intermediate test outputs are written
+	localOutDir    string // dir where intermediate outputs of local tests are written
 
 	remoteRunner    string // path to executable that runs remote test bundles
 	remoteBundleDir string // dir where packaged remote test bundles are installed
 	remoteDataDir   string // dir containing packaged remote test data
+	remoteOutDir    string // dir where intermediate outputs of remote tests are written
 
 	sshRetries           int               // number of SSH connect retries
 	continueAfterFailure bool              // try to run remaining local tests after bundle/DUT crash or lost SSH connection
@@ -228,6 +229,8 @@ func (c *Config) DeriveDefaults() error {
 		}
 	}
 
+	setIfEmpty(&c.ResDir, filepath.Join(c.tastDir, "results", time.Now().Format("20060102-150405")))
+
 	b := getKnownBundleInfo(c.buildBundle)
 	if b == nil {
 		if c.buildWorkspace == "" {
@@ -238,7 +241,10 @@ func (c *Config) DeriveDefaults() error {
 	}
 
 	// Generate a timestamped directory path to always create a new one.
-	setIfEmpty(&c.localOutDir, time.Now().Format("/usr/local/tmp/tast_out.20060102-150405.000000000"))
+	ts := time.Now().Format("20060102-150405.000000000")
+	setIfEmpty(&c.localOutDir, fmt.Sprintf("/usr/local/tmp/tast_out.%s", ts))
+	// remoteOutDir should be under ResDir so that we can move files with os.Rename (crbug.com/813282).
+	setIfEmpty(&c.remoteOutDir, fmt.Sprintf("%s/tast_out.%s", c.ResDir, ts))
 
 	larch, err := build.GetLocalArch()
 	if err != nil {

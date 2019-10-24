@@ -92,24 +92,25 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 		return subcommands.ExitUsageError
 	}
 
+	updateLatest := r.cfg.ResDir == ""
+
 	if err := r.cfg.DeriveDefaults(); err != nil {
 		lg.Log("Failed to derive defaults: ", err)
 		return subcommands.ExitUsageError
 	}
 
-	if r.cfg.ResDir == "" {
-		baseResultsDir := filepath.Join(tastDir, "results")
-		r.cfg.ResDir = filepath.Join(baseResultsDir, time.Now().Format("20060102-150405"))
+	if err := os.MkdirAll(r.cfg.ResDir, 0755); err != nil {
+		lg.Log(err)
+		return subcommands.ExitFailure
+	}
 
-		link := filepath.Join(baseResultsDir, "latest")
+	// Update the "latest" symlink if the default result directory is used.
+	if updateLatest {
+		link := filepath.Join(filepath.Dir(r.cfg.ResDir), "latest")
 		os.Remove(link)
 		if err := os.Symlink(filepath.Base(r.cfg.ResDir), link); err != nil {
 			lg.Log("Failed to create results symlink: ", err)
 		}
-	}
-	if err := os.MkdirAll(r.cfg.ResDir, 0755); err != nil {
-		lg.Log(err)
-		return subcommands.ExitFailure
 	}
 
 	// Write the timing log after the command finishes.

@@ -485,6 +485,30 @@
     },
     {
       "key": {
+        "uuid": "a29d55b5_d962de6c",
+        "filename": "src/chromiumos/tast/rpc/rpc_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-24T03:21:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f7c2610d_03600ec3",
+      "range": {
+        "startLine": 70,
+        "startChar": 3,
+        "endLine": 70,
+        "endChar": 7
+      },
+      "revId": "fef2039116f10bd91301caa7495ed098d7c87f01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f5399577_60181d89",
         "filename": "src/chromiumos/tast/rpc/rpc_test.go",
         "patchSetId": 10
@@ -600,6 +624,30 @@
       "revId": "fef2039116f10bd91301caa7495ed098d7c87f01",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "220738d1_6a1a2676",
+        "filename": "src/chromiumos/tast/rpc/server.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-24T03:21:48Z",
+      "side": 1,
+      "message": "Oops, sorry! I accidentally dropped the change to stash...",
+      "parentUuid": "9a57bd4b_16ef1365",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 63
+      },
+      "revId": "fef2039116f10bd91301caa7495ed098d7c87f01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {

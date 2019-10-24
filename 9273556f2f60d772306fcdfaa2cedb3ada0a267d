@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5358f054_ca4afe01",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-24T18:31:56Z",
+      "side": 1,
+      "message": "I think, in many cases in general, we set default values to an object, then overwrite some values to some specific ones later.\n\nOn the other hand, in this code, Config needs to have some specific values, then SetDefaults().\nI understand it is because the some default values depends on some other fields, but IMO it\u0027d be worth considering to follow the common approach.\n\nHow about;\n- Use different name, like FillEmptyMembersToDefault (or something better) etc. to represent what it does a bit clearer.\n- Take another approach. E.g., defines getter methods which look up other field to calculate default value if necessary.",
+      "revId": "9273556f2f60d772306fcdfaa2cedb3ada0a267d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

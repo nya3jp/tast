@@ -48,8 +48,8 @@ func TestConfigDeriveDefaultsNoBuild(t *testing.T) {
 
 	cfg.build = false
 
-	if err := cfg.DeriveDefaults(); err != nil {
-		t.Error("DeriveDefaults failed: ", err)
+	if err := cfg.SetDefaults(); err != nil {
+		t.Error("SetDefaults failed: ", err)
 	}
 	if !cfg.runLocal {
 		t.Error("runLocal is false; want true")
@@ -76,8 +76,8 @@ func TestConfigDeriveDefaultsBuild(t *testing.T) {
 
 	cfg.buildBundle = buildBundle
 
-	if err := cfg.DeriveDefaults(); err != nil {
-		t.Error("DeriveDefaults failed: ", err)
+	if err := cfg.SetDefaults(); err != nil {
+		t.Error("SetDefaults failed: ", err)
 	}
 	if cfg.buildWorkspace == "" {
 		t.Error("buildWorkspace is not set")
@@ -110,16 +110,16 @@ func TestConfigDeriveDefaultsBuildNonStandardBundle(t *testing.T) {
 
 	cfg.buildBundle = buildBundle
 
-	// Since buildBundle is a not known bundle, DeriveDefaults fails to compute
+	// Since buildBundle is a not known bundle, SetDefaults fails to compute
 	// buildWorkspace.
-	if err := cfg.DeriveDefaults(); err == nil {
-		t.Error("DeriveDefaults succeeded; want failure")
+	if err := cfg.SetDefaults(); err == nil {
+		t.Error("SetDefaults succeeded; want failure")
 	}
 
 	// It works if buildWorkspace is set explicitly.
 	cfg.buildWorkspace = td
-	if err := cfg.DeriveDefaults(); err != nil {
-		t.Error("DeriveDefaults failed: ", err)
+	if err := cfg.SetDefaults(); err != nil {
+		t.Error("SetDefaults failed: ", err)
 	}
 	if cfg.localBundleDir == "" {
 		t.Error("localBundleDir is not set")
@@ -145,7 +145,7 @@ func TestConfigDeriveDefaultsBuildMissingBundle(t *testing.T) {
 	cfg.buildBundle = buildBundle
 
 	// At least either one of local/remote bundle package should exist.
-	if err := cfg.DeriveDefaults(); err == nil {
-		t.Error("DeriveDefaults succeeded; want failure")
+	if err := cfg.SetDefaults(); err == nil {
+		t.Error("SetDefaults succeeded; want failure")
 	}
 }

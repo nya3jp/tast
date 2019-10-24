@@ -219,8 +219,9 @@ func (c *Config) Close(ctx context.Context) error {
 	return err
 }
 
-// DeriveDefaults sets some empty config values by deriving from the bundle name.
-func (c *Config) DeriveDefaults() error {
+// SetDefaults sets default config values, possibly deriving from other non-default values.
+// It should be called after non-default values are set to c.
+func (c *Config) SetDefaults() error {
 	setIfEmpty := func(p *string, s string) {
 		if *p == "" {
 			*p = s

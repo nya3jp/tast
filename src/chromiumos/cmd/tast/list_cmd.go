@@ -98,7 +98,7 @@ func (lc *listCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{
 			lg.Log("Missing target.\n\n" + lc.Usage())
 			return subcommands.ExitUsageError
 		}
-		if err := lc.cfg.DeriveDefaults(); err != nil {
+		if err := lc.cfg.SetDefaults(); err != nil {
 			lg.Log("Failed to derive defaults: ", err)
 			return subcommands.ExitUsageError
 		}

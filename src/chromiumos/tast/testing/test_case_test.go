@@ -175,6 +175,34 @@ func TestParamTestWithPre(t *gotesting.T) {
 	}
 }
 
+func TestParamTestWithTimeout(t *gotesting.T) {
+	// At most one Pre condition can be present. If newTestCase fails, test passes.
+	if _, err := newTestCase(&Test{Func: TESTCASETEST, Timeout: time.Minute}, &Param{Timeout: time.Minute}); err == nil {
+		t.Error("newTestCase unexpectedly passed for duplicated timeout")
+	}
+
+	// Timeout only at enclosing test.
+	if tc, err := newTestCase(&Test{Func: TESTCASETEST, Timeout: time.Minute}, &Param{}); err != nil {
+		t.Error(err)
+	} else if tc.Timeout != time.Minute {
+		t.Errorf("Invalid Timeout = %v; want %v", tc.Timeout, time.Minute)
+	}
+
+	// Timeout only at parametrized test.
+	if tc, err := newTestCase(&Test{Func: TESTCASETEST}, &Param{Timeout: time.Minute}); err != nil {
+		t.Error(err)
+	} else if tc.Timeout != time.Minute {
+		t.Errorf("Invalid precondition = %v; want %v", tc.Timeout, time.Minute)
+	}
+
+	// No Timeout.
+	if tc, err := newTestCase(&Test{Func: TESTCASETEST}, &Param{}); err != nil {
+		t.Error(err)
+	} else if tc.Timeout != 0 {
+		t.Errorf("Invalid precondition = %v; want 0", tc.Timeout)
+	}
+}
+
 func TestDataDir(t *gotesting.T) {
 	test, err := newTestCase(&Test{Func: TESTCASETEST}, nil)
 	if err != nil {

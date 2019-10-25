@@ -1021,10 +1021,10 @@ Each `Param` can have a `Val`. The specified value can be accessed via the
 `interface{}`, the returned value should be type-asserted to some concrete
 type immediately. All `Val`s in a `Params` array should have the same type.
 
-### ExtraAttr, ExtraData, ExtraSoftwareDeps, Pre
+### ExtraAttr, ExtraData, ExtraSoftwareDeps, Pre, Timeout
 
-Each `Param` can declare `ExtraAttr`, `ExtraData`, `ExtraSoftwareDeps` and `Pre`
-properties. For example, in the following code:
+Each `Param` can declare `ExtraAttr`, `ExtraData`, `ExtraSoftwareDeps`, `Pre`,
+and `Timeout` properties. For example, in the following code:
 
 ```
 testing.AddTest(&testing.Test{
@@ -1035,10 +1035,12 @@ testing.AddTest(&testing.Test{
         Name: "play",
         ExtraSoftwareDeps: []string{"audio_play"},
         Pre: arc.Booted(),
+        Timeout: 3 * time.Minute,
     }, {
         Name: "record",
         ExtraSoftwareDeps: []string{"audio_record"},
         Pre: arc.VMBooted(),
+        Timeout: 10 * time.Minute,
     }}
 })
 ```
@@ -1050,9 +1052,10 @@ available, while `DoSomething.record` will run on DUTs with `"chrome"` and
 `"audio_record"` available. Note that both will run on a DUT with all
 `"chrome"`, `"audio_play"` and `"audio_record"` available.
 
-For `Pre`, each parameterized test can define its own `Pre` as long as it is not
-defined in the enclosing `testing.Test`. If `Pre` is only defined in the enclosing
-`testing.Test`, it will be inherited by the parameterized tests.
+For `Pre` and `Timeout`, each parameterized test can define its own `Pre` and/or
+`Timeout` as long as it is not defined in the enclosing `testing.Test`.
+If `Pre` and/or `Timeout` is only defined in the enclosing `testing.Test`,
+it will be inherited by the parameterized tests.
 
 If more than one parameterized test define `Pre`, these `Pre` must return the
 same value type. E.g: It is Ok if a parameterized test uses `arc.Booted()` and

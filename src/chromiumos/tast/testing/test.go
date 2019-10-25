@@ -103,6 +103,10 @@ type Param struct {
 	// Can only be set if the enclosing test doesn't have one already set.
 	Pre Precondition
 
+	// Timeout contains the maximum duration for which Func may run before the test is aborted.
+	// Can only be set if the enclosing test doesn't have one already set.
+	Timeout time.Duration
+
 	// Val is the value which can be retrieved from testing.State.Param() method.
 	Val interface{}
 }

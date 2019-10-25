@@ -5,7 +5,10 @@
 package bundle
 
 import (
+	"bufio"
+	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -13,6 +16,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"runtime/pprof"
 	"sort"
 	"strings"
 	"time"
@@ -372,10 +376,35 @@ func copyTestOutput(ch <-chan testing.Output, ew *eventWriter, abort <-chan bool
 				ew.TestLog(o.T, o.Msg)
 			}
 		case <-abort:
-			const msg = "Test timed out"
+			const msg = "Test timed out (see log for goroutine dump)"
 			ew.TestError(time.Now(), testing.NewError(nil, msg, msg, 0))
+			dumpGoroutines(ew)
 			return
 		}
+	}
+}
+
+// dumpGoroutines dumps all goroutines to ew.
+func dumpGoroutines(ew *eventWriter) {
+	ew.TestLog(time.Now(), "Dumping all goroutines")
+	if err := func() error {
+		p := pprof.Lookup("goroutine")
+		if p == nil {
+			return errors.New("goroutine pprof not found")
+		}
+		var buf bytes.Buffer
+		if err := p.WriteTo(&buf, 2); err != nil {
+			return err
+		}
+		sc := bufio.NewScanner(&buf)
+		for sc.Scan() {
+			ew.TestLog(time.Now(), sc.Text())
+		}
+		return sc.Err()
+	}(); err != nil {
+		ew.TestError(time.Now(), &testing.Error{
+			Reason: fmt.Sprintf("Failed to dump goroutines: %v", err),
+		})
 	}
 }
 

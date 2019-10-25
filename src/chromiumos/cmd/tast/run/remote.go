@@ -113,14 +113,12 @@ func runRemoteRunner(ctx context.Context, cfg *Config) ([]TestResult, error) {
 	if err != nil {
 		return nil, err
 	}
-	var stdout, stderr io.Reader
+	var stdout io.Reader
 	if stdout, err = cmd.StdoutPipe(); err != nil {
 		return nil, err
 	}
-	if stderr, err = cmd.StderrPipe(); err != nil {
-		return nil, err
-	}
-	stderrReader := newFirstLineReader(stderr)
+	var stderrLine firstLineBuffer
+	cmd.Stderr = &stderrLine
 
 	cfg.Logger.Logf("Starting %v locally", cmd.Path)
 	if err = cmd.Start(); err != nil {
@@ -146,7 +144,7 @@ func runRemoteRunner(ctx context.Context, cfg *Config) ([]TestResult, error) {
 	// Check that the runner exits successfully first so that we don't give a useless error
 	// about incorrectly-formed output instead of e.g. an error about the runner being missing.
 	if err := cmd.Wait(); err != nil {
-		return results, stderrReader.appendToError(err, stderrTimeout)
+		return results, stderrLine.AppendToError(err)
 	}
 	return results, rerr
 }

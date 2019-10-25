@@ -88,6 +88,7 @@ func newTestCase(t *Test, p *Param) (*TestCase, error) {
 	data := append([]string(nil), t.Data...)
 	swDeps := append([]string(nil), t.SoftwareDeps...)
 	pre := t.Pre
+	timeout := t.Timeout
 	var val interface{}
 	if p != nil {
 		if p.Name != "" {
@@ -105,6 +106,14 @@ func newTestCase(t *Test, p *Param) (*TestCase, error) {
 		}
 		if p.Pre != nil {
 			pre = p.Pre
+		}
+
+		// Only one timeout can be set.
+		if t.Timeout != 0 && p.Timeout != 0 {
+			return nil, errors.New("Param has Timeout specified and its enclosing Test also has Timeout specified, but only one can be specified")
+		}
+		if p.Timeout != 0 {
+			timeout = p.Timeout
 		}
 	}
 
@@ -126,7 +135,7 @@ func newTestCase(t *Test, p *Param) (*TestCase, error) {
 		Vars:           append([]string(nil), t.Vars...),
 		SoftwareDeps:   swDeps,
 		Pre:            pre,
-		Timeout:        t.Timeout,
+		Timeout:        timeout,
 	}, nil
 }
 

@@ -263,7 +263,7 @@ func TestLocalProxy(t *gotesting.T) {
 	}
 }
 
-func TestLocalExecFailure(t *gotesting.T) {
+func disabledTestLocalExecFailure(t *gotesting.T) {
 	td := newLocalTestData(t)
 	defer td.close()
 

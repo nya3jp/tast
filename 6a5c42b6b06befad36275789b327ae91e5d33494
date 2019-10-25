@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "35471feb_09d1b94e",
+        "filename": "src/chromiumos/tast/testing/state_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 388,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-10-25T01:59:36Z",
+      "side": 1,
+      "message": "RPCHint",
+      "range": {
+        "startLine": 388,
+        "startChar": 5,
+        "endLine": 388,
+        "endChar": 9
+      },
+      "revId": "6a5c42b6b06befad36275789b327ae91e5d33494",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e496d8f2_3942a0f4",
+        "filename": "src/chromiumos/tast/testing/state_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 404,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-10-25T01:59:36Z",
+      "side": 1,
+      "message": "nit: remote tests",
+      "range": {
+        "startLine": 404,
+        "startChar": 34,
+        "endLine": 404,
+        "endChar": 39
+      },
+      "revId": "6a5c42b6b06befad36275789b327ae91e5d33494",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"strings"
 	gotesting "testing"
 	"time"
 
@@ -112,8 +113,26 @@ func TestCopyTestOutputTimeout(t *gotesting.T) {
 	} else if _, ok := msg.(*control.TestError); !ok {
 		t.Errorf("copyTestOutput() wrote %v; want TestError", msg)
 	}
-	if r.More() {
-		t.Error("copyTestOutput() wrote extra message(s)")
+
+	foundMe := false
+	for r.More() {
+		msg, err := r.ReadMessage()
+		if err != nil {
+			t.Error("Failed to read message: ", err)
+			break
+		}
+		log, ok := msg.(*control.TestLog)
+		if !ok {
+			t.Errorf("Got a message of %T, want *control.TestLog", msg)
+			continue
+		}
+		// The log should contain stack traces, including this test function.
+		if strings.Contains(log.Text, "TestCopyTestOutputTimeout") {
+			foundMe = true
+		}
+	}
+	if !foundMe {
+		t.Error("Did not find a stack trace containing TestCopyTestOutputTimeout in logs")
 	}
 }
 

@@ -173,8 +173,9 @@ func runLocalTests(ctx context.Context, cfg *Config, hst *host.SSH) ([]TestResul
 }
 
 type localRunnerHandle struct {
-	cmd            *host.Cmd
-	stdout, stderr io.Reader
+	cmd        *host.Cmd
+	stdout     io.Reader
+	stderrLine *firstLineBuffer
 }
 
 // Close kills and waits the remote process.
@@ -217,15 +218,13 @@ func startLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, args *run
 	if err != nil {
 		return nil, fmt.Errorf("failed to open stdout pipe: %v", err)
 	}
-	stderr, err := cmd.StderrPipe()
-	if err != nil {
-		return nil, fmt.Errorf("failed to open stderr pipe: %v", err)
-	}
+	var stderrLine firstLineBuffer
+	cmd.Stderr = &stderrLine
 
 	if err := cmd.Start(ctx); err != nil {
 		return nil, fmt.Errorf("failed to start local_test_runner: %v", err)
 	}
-	return &localRunnerHandle{cmd, stdout, stderr}, nil
+	return &localRunnerHandle{cmd, stdout, &stderrLine}, nil
 }
 
 // runLocalRunner synchronously runs local_test_runner to completion on hst.
@@ -291,9 +290,6 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, patterns []
 	}
 	defer handle.Close(ctx)
 
-	// Read stderr in the background so it can be included in error messages.
-	stderrReader := newFirstLineReader(handle.stderr)
-
 	var rerr error
 	switch cfg.mode {
 	case ListTestsMode:
@@ -313,7 +309,7 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, patterns []
 	wctx, wcancel := context.WithTimeout(ctx, timeout)
 	defer wcancel()
 	if err := handle.cmd.Wait(wctx); err != nil {
-		return results, unstarted, stderrReader.appendToError(err, stderrTimeout)
+		return results, unstarted, handle.stderrLine.AppendToError(err)
 	}
 	return results, unstarted, rerr
 }
@@ -321,10 +317,9 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, patterns []
 // readLocalRunnerOutput unmarshals a single JSON value from handle.Stdout into out.
 func readLocalRunnerOutput(ctx context.Context, handle *localRunnerHandle, out interface{}) error {
 	// Handle errors returned by Wait() first, as they'll be more useful than generic JSON decode errors.
-	stderrReader := newFirstLineReader(handle.stderr)
 	jerr := json.NewDecoder(handle.stdout).Decode(out)
 	if err := handle.cmd.Wait(ctx); err != nil {
-		return stderrReader.appendToError(err, stderrTimeout)
+		return handle.stderrLine.AppendToError(err)
 	}
 	return jerr
 }

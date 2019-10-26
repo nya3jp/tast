@@ -73,9 +73,10 @@ The following software features are defined:
     the `android` feature; DUTs will have exactly one of these two features.
 *   `no_asan` - Build was not built with Address Sanitizer. Similar to `aslr`.
 *   `no_msan` - Build was not built with Memory Sanitizer.
+*   `no_qemu` - For tests not for Chrome OS QEMU images.
 *   `no_symlink_mount` - Symlink mounting is disabled via the
-*   `no_ubsan` - Build was not built with Undefined Behavior Sanitizer.
     `CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT` kernel option.
+*   `no_ubsan` - Build was not built with Undefined Behavior Sanitizer.
 *   `oci` - The ability to use the `run_oci` program to execute code within
     [OCI] containers.
 *   `qemu` - For tests exclusive to Chrome OS QEMU images.

@@ -100,6 +100,7 @@ func main() {
 			"no_asan":                 "!asan",
 			"no_msan":                 "!msan",
 			"no_symlink_mount":        "!lxc", // boards using LXC set CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT=n
+			"no_qemu":                 "!betty && !tast_vm",
 			"no_ubsan":                "!ubsan",
 			"oci":                     "containers && !moblab", // run_oci doesn't work on Moblab: https://crbug.com/951691
 			"qemu":                    "betty || tast_vm",

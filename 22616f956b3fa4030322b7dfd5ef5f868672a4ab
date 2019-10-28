@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "cc731003_b63e0060",
+        "filename": "src/chromiumos/cmd/tast/run/line.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-28T14:45:05Z",
+      "side": 1,
+      "message": "Could you comment what \"mu\" guards?",
+      "revId": "22616f956b3fa4030322b7dfd5ef5f868672a4ab",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6897d560_8f93acac",
+        "filename": "src/chromiumos/cmd/tast/run/line.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-28T14:45:05Z",
+      "side": 1,
+      "message": "Could you update the document? Specifically, timeout is removed now.",
+      "revId": "22616f956b3fa4030322b7dfd5ef5f868672a4ab",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "952de7ff_330796ac",
+        "filename": "src/chromiumos/cmd/tast/run/line.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-28T14:45:05Z",
+      "side": 1,
+      "message": "Could you either;\n\n1) Wait for the first line is written? At the moment, there\u0027s no assumption when AppendToError is called. Or,\n2) If AppendToError must be called after \"Wait\", could you explicitly mention so in the document, and remove the lock (because writer goroutine should be gone when this is called)?",
+      "revId": "22616f956b3fa4030322b7dfd5ef5f868672a4ab",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -38,11 +38,13 @@ type DUT struct {
 }
 
 // NewContext returns a new context that carries value d.
+// TODO(crbug.com/970124): Remove this function.
 func NewContext(ctx context.Context, d *DUT) context.Context {
 	return context.WithValue(ctx, dutKey, d)
 }
 
-// FromContext returns the DUT value stored in ctx, if any.
+// FromContext is deprecated; use testing.State.DUT instead.
+// TODO(crbug.com/970124): Remove this function.
 func FromContext(ctx context.Context) (d *DUT, ok bool) {
 	d, ok = ctx.Value(dutKey).(*DUT)
 	return d, ok

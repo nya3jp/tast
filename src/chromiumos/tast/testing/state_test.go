@@ -417,3 +417,35 @@ func TestRPCHint(t *gotesting.T) {
 		t.Errorf("RPCHint() = %+v for %v", *h, localTest)
 	}
 }
+
+func TestDUT(t *gotesting.T) {
+	callDUT := func(test *TestCase, cfg *TestConfig) *State {
+		or := newOutputReader()
+		s := newState(test, or.ch, cfg)
+
+		// DUT can call Fatal, which results in a call to runtime.Goexit(),
+		// so run this in a goroutine to isolate it from the test.
+		done := make(chan struct{})
+		go func() {
+			defer close(done)
+			s.DUT()
+		}()
+		<-done
+		return s
+	}
+
+	const (
+		remoteTest = "do.Remotely"
+		localTest  = "do.Locally"
+	)
+
+	// DUT should be provided to remote tests.
+	if s := callDUT(&TestCase{Name: remoteTest}, &TestConfig{RemoteData: &RemoteData{}}); s.HasError() {
+		t.Errorf("DUT() reported error for %v", remoteTest)
+	}
+
+	// Local tests shouldn't have access to DUT.
+	if s := callDUT(&TestCase{Name: localTest}, &TestConfig{}); !s.HasError() {
+		t.Errorf("DUT() didn't report error for %v", localTest)
+	}
+}

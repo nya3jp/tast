@@ -16,6 +16,7 @@ import (
 	"sync"
 	"time"
 
+	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/errors/stack"
 )
@@ -43,6 +44,8 @@ type RemoteData struct {
 	Meta *Meta
 	// RPCHint contains information needed to establish gRPC connections.
 	RPCHint *RPCHint
+	// DUT is an SSH connection shared among remote tests.
+	DUT *dut.DUT
 }
 
 // Meta contains information about how the "tast" process used to initiate testing was run.
@@ -235,6 +238,16 @@ func (s *State) RPCHint() *RPCHint {
 	}
 	// Return a copy to make sure the test doesn't modify the original struct.
 	return s.cfg.RemoteData.RPCHint.clone()
+}
+
+// DUT returns a shared SSH connection.
+// It can only be called by remote tests.
+func (s *State) DUT() *dut.DUT {
+	if s.cfg.RemoteData == nil {
+		s.Fatal("DUT unavailable (is test non-remote?)")
+		return nil
+	}
+	return s.cfg.RemoteData.DUT
 }
 
 // Log formats its arguments using default formatting and logs them.

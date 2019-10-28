@@ -23,6 +23,7 @@ import (
 
 	"chromiumos/tast/command"
 	"chromiumos/tast/control"
+	"chromiumos/tast/dut"
 	"chromiumos/tast/rpc"
 	"chromiumos/tast/testing"
 	"chromiumos/tast/timing"
@@ -239,6 +240,17 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 
 	var rd *testing.RemoteData
 	if bt == remoteBundle {
+		lf("Connecting to DUT")
+		dt, err := connectToTarget(ctx, args)
+		if err != nil {
+			return command.NewStatusErrorf(statusError, "failed to connect to DUT: %v", err)
+		}
+		defer func() {
+			lf("Disconnecting from DUT")
+			// It is okay to ignore the error since we've finished testing at this point.
+			dt.Close(ctx)
+		}()
+
 		rd = &testing.RemoteData{
 			Meta: &testing.Meta{
 				TastPath: args.RunTests.TastPath,
@@ -248,7 +260,11 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 			RPCHint: &testing.RPCHint{
 				LocalBundleDir: args.RunTests.LocalBundleDir,
 			},
+			DUT: dt,
 		}
+		// For backward compatibility, attach dut.DUT to ctx.
+		// TODO(crbug.com/970124): Remove this transitional treatment.
+		ctx = dut.NewContext(ctx, dt)
 	}
 
 	// Make a backward pass through the tests, checking if each will be run (i.e. dependencies are satisfied).
@@ -282,6 +298,29 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		}
 	}
 	return nil
+}
+
+// connectToTarget connects to the target DUT and returns its connection.
+func connectToTarget(ctx context.Context, args *Args) (_ *dut.DUT, retErr error) {
+	if args.RunTests.Target == "" {
+		return nil, errors.New("target not supplied")
+	}
+
+	dt, err := dut.New(args.RunTests.Target, args.RunTests.KeyFile, args.RunTests.KeyDir)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create connection: %v", err)
+	}
+	defer func() {
+		if retErr != nil {
+			dt.Close(ctx)
+		}
+	}()
+
+	if err := dt.Connect(ctx); err != nil {
+		return nil, fmt.Errorf("failed to connect to DUT: %v", err)
+	}
+
+	return dt, nil
 }
 
 // runTest runs t per args and cfg, writing the appropriate control.Test* control messages to mw.

@@ -20,6 +20,8 @@ import (
 
 	"chromiumos/tast/command"
 	"chromiumos/tast/control"
+	"chromiumos/tast/dut"
+	"chromiumos/tast/host/test"
 	"chromiumos/tast/testing"
 	"chromiumos/tast/testutil"
 )
@@ -485,16 +487,23 @@ func TestRunTestsSkipTestWithPrecondition(t *gotesting.T) {
 }
 
 func TestRunRemoteData(t *gotesting.T) {
+	td := test.NewTestData(userKey, hostKey, nil)
+	defer td.Close()
+
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
 
-	var meta *testing.Meta
-	var hint *testing.RPCHint
+	var (
+		meta *testing.Meta
+		hint *testing.RPCHint
+		dt   *dut.DUT
+	)
 	testing.AddTestCase(&testing.TestCase{
 		Name: "meta.Test",
 		Func: func(ctx context.Context, s *testing.State) {
 			meta = s.Meta()
 			hint = s.RPCHint()
+			dt = s.DUT()
 		},
 	})
 
@@ -507,7 +516,8 @@ func TestRunRemoteData(t *gotesting.T) {
 			OutDir:         tmpDir,
 			DataDir:        tmpDir,
 			TastPath:       "/bogus/tast",
-			Target:         "root@example.net",
+			Target:         td.Srv.Addr().String(),
+			KeyFile:        td.UserKeyFile,
 			RunFlags:       []string{"-flag1", "-flag2"},
 			LocalBundleDir: "/mock/local/bundles",
 		},
@@ -532,6 +542,9 @@ func TestRunRemoteData(t *gotesting.T) {
 	}
 	if !reflect.DeepEqual(hint, expHint) {
 		t.Errorf("Test got RPCHint %+v; want %+v", *hint, *expHint)
+	}
+	if dt == nil {
+		t.Error("DUT is not available")
 	}
 }
 

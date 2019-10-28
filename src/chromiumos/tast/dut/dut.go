@@ -14,7 +14,7 @@ import (
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/host"
-	"chromiumos/tast/testing"
+	"chromiumos/tast/internal/testingutil"
 )
 
 const (
@@ -174,7 +174,7 @@ func (d *DUT) Reboot(ctx context.Context) error {
 	defer cancel()
 	d.Command("reboot").Run(rebootCtx) // ignore the error
 
-	if err := testing.Poll(ctx, func(ctx context.Context) error {
+	if err := testingutil.Poll(ctx, func(ctx context.Context) error {
 		// Set a short timeout to the iteration in case of any SSH operations
 		// blocking for long time. For example, the network interface of the DUT
 		// might go down in the middle of readBootID and it might block for
@@ -192,7 +192,7 @@ func (d *DUT) Reboot(ctx context.Context) error {
 			return errors.New("boot_id did not change")
 		}
 		return nil
-	}, &testing.PollOptions{Timeout: 3 * time.Minute}); err != nil {
+	}, &testingutil.PollOptions{Timeout: 3 * time.Minute}); err != nil {
 		return errors.Wrap(err, "failed to wait for DUT to reboot")
 	}
 	return nil

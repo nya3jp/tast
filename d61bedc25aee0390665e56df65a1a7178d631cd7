@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "698db00f_dedff494",
+        "filename": "src/chromiumos/cmd/tast/run/remote_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 236,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-28T14:01:24Z",
+      "side": 1,
+      "message": "optional: similar to TestLocalCopyOutput above, I\u0027d recommend to use different timestamp for each event.",
+      "range": {
+        "startLine": 236,
+        "startChar": 41,
+        "endLine": 236,
+        "endChar": 43
+      },
+      "revId": "d61bedc25aee0390665e56df65a1a7178d631cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

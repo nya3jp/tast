@@ -12,7 +12,6 @@ import (
 	"os"
 	gotesting "testing"
 
-	"chromiumos/tast/dut"
 	"chromiumos/tast/host/test"
 	"chromiumos/tast/testing"
 	"chromiumos/tast/testutil"
@@ -85,10 +84,7 @@ func TestRemoteDUT(t *gotesting.T) {
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
 	testing.AddTestCase(&testing.TestCase{Name: "pkg.Test", Func: func(ctx context.Context, s *testing.State) {
-		dt, ok := dut.FromContext(ctx)
-		if !ok {
-			s.Fatal("Failed to get DUT from context")
-		}
+		dt := s.DUT()
 		out, err := dt.Command(cmd).Output(ctx)
 		if err != nil {
 			s.Fatalf("Got error when running %q: %v", cmd, err)
@@ -123,10 +119,7 @@ func TestRemoteReconnectBetweenTests(t *gotesting.T) {
 	// to establish that remote bundles reconnect before each test if needed.
 	makeFunc := func(conn *bool) func(context.Context, *testing.State) {
 		return func(ctx context.Context, s *testing.State) {
-			dt, ok := dut.FromContext(ctx)
-			if !ok {
-				s.Fatal("Failed to get DUT from context")
-			}
+			dt := s.DUT()
 			*conn = dt.Connected(ctx)
 			if err := dt.Disconnect(ctx); err != nil {
 				s.Fatal("Failed to disconnect: ", err)

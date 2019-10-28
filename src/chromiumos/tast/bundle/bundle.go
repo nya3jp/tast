@@ -6,6 +6,7 @@ package bundle
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -19,6 +20,7 @@ import (
 
 	"chromiumos/tast/command"
 	"chromiumos/tast/control"
+	"chromiumos/tast/dut"
 	"chromiumos/tast/rpc"
 	"chromiumos/tast/testing"
 	"chromiumos/tast/timing"
@@ -235,16 +237,18 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 
 	var rd *testing.RemoteData
 	if bt == remoteBundle {
-		rd = &testing.RemoteData{
-			Meta: &testing.Meta{
-				TastPath: args.RunTests.TastPath,
-				Target:   args.RunTests.Target,
-				RunFlags: args.RunTests.RunFlags,
-			},
-			RPCHint: &testing.RPCHint{
-				LocalBundleDir: args.RunTests.LocalBundleDir,
-			},
+		var err error
+		if rd, err = newRemoteData(ctx, args, lf); err != nil {
+			return command.NewStatusErrorf(statusError, "remote test setup failed: %v", err)
 		}
+		defer func() {
+			lf("Disconnecting from DUT")
+			// It is okay to ignore the error since we've finished testing at this point.
+			rd.DUT.Close(ctx)
+		}()
+		// For backward compatibility, attach dut.DUT to ctx.
+		// TODO(crbug.com/970124): Remove this transitional treatment.
+		ctx = dut.NewContext(ctx, rd.DUT)
 	}
 
 	// Make a backward pass through the tests, checking if each will be run (i.e. dependencies are satisfied).
@@ -278,6 +282,39 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		}
 	}
 	return nil
+}
+
+// newRemoteData returns a new RemoteData for remote tests.
+func newRemoteData(ctx context.Context, args *Args, lf func(string)) (_ *testing.RemoteData, retErr error) {
+	if args.RunTests.Target == "" {
+		return nil, errors.New("target not supplied")
+	}
+
+	lf("Connecting to DUT")
+	dt, err := dut.New(args.RunTests.Target, args.RunTests.KeyFile, args.RunTests.KeyDir)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create connection: %v", err)
+	}
+	defer func() {
+		if retErr != nil {
+			dt.Close(ctx)
+		}
+	}()
+	if err := dt.Connect(ctx); err != nil {
+		return nil, fmt.Errorf("failed to connect to DUT: %v", err)
+	}
+
+	return &testing.RemoteData{
+		Meta: &testing.Meta{
+			TastPath: args.RunTests.TastPath,
+			Target:   args.RunTests.Target,
+			RunFlags: args.RunTests.RunFlags,
+		},
+		RPCHint: &testing.RPCHint{
+			LocalBundleDir: args.RunTests.LocalBundleDir,
+		},
+		DUT: dt,
+	}, nil
 }
 
 // runTest runs t per args and cfg, writing the appropriate control.Test* control messages to mw.

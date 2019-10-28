@@ -19,6 +19,8 @@ import (
 
 	"chromiumos/tast/command"
 	"chromiumos/tast/control"
+	"chromiumos/tast/dut"
+	"chromiumos/tast/host/test"
 	"chromiumos/tast/testing"
 	"chromiumos/tast/testutil"
 )
@@ -466,16 +468,23 @@ func TestRunTestsSkipTestWithPrecondition(t *gotesting.T) {
 }
 
 func TestRunRemoteData(t *gotesting.T) {
+	td := test.NewTestData(userKey, hostKey, nil)
+	defer td.Close()
+
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
 
-	var meta *testing.Meta
-	var hint *testing.RPCHint
+	var (
+		meta *testing.Meta
+		hint *testing.RPCHint
+		dt   *dut.DUT
+	)
 	testing.AddTestCase(&testing.TestCase{
 		Name: "meta.Test",
 		Func: func(ctx context.Context, s *testing.State) {
 			meta = s.Meta()
 			hint = s.RPCHint()
+			dt = s.DUT()
 		},
 	})
 
@@ -488,7 +497,8 @@ func TestRunRemoteData(t *gotesting.T) {
 			OutDir:         tmpDir,
 			DataDir:        tmpDir,
 			TastPath:       "/bogus/tast",
-			Target:         "root@example.net",
+			Target:         td.Srv.Addr().String(),
+			KeyFile:        td.UserKeyFile,
 			RunFlags:       []string{"-flag1", "-flag2"},
 			LocalBundleDir: "/mock/local/bundles",
 		},
@@ -513,6 +523,59 @@ func TestRunRemoteData(t *gotesting.T) {
 	}
 	if !reflect.DeepEqual(hint, expHint) {
 		t.Errorf("Test got RPCHint %+v; want %+v", *hint, *expHint)
+	}
+	if dt == nil {
+		t.Error("DUT is not available")
+	}
+}
+
+func TestRunDUTReconnect(t *gotesting.T) {
+	td := test.NewTestData(userKey, hostKey, nil)
+	defer td.Close()
+
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
+	defer restore()
+
+	var dt *dut.DUT
+	for _, name := range []string{"pkg.Test1", "pkg.Test2", "pkg.Test3"} {
+		testing.AddTestCase(&testing.TestCase{
+			Name: name,
+			Func: func(ctx context.Context, s *testing.State) {
+				dt = s.DUT()
+				// At the beginning of a remote tests, DUT should be connected.
+				if !dt.Connected(ctx) {
+					t.Errorf("DUT is unconnected in test %s", name)
+				}
+				// Disconnect from the DUT. It should not affect other tests.
+				if err := dt.Disconnect(ctx); err != nil {
+					t.Error("Failed to disconnect from DUT: ", err)
+				}
+			},
+		})
+	}
+
+	tmpDir := testutil.TempDir(t)
+	defer os.RemoveAll(tmpDir)
+
+	args := Args{
+		Mode: RunTestsMode,
+		RunTests: &RunTestsArgs{
+			OutDir:  tmpDir,
+			DataDir: tmpDir,
+			Target:  td.Srv.Addr().String(),
+			KeyFile: td.UserKeyFile,
+		},
+	}
+	stdin := newBufferWithArgs(t, &args)
+	if status := run(context.Background(), nil, stdin, &bytes.Buffer{}, &bytes.Buffer{}, &Args{},
+		&runConfig{defaultTestTimeout: time.Minute}, remoteBundle); status != statusSuccess {
+		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
+	}
+
+	if dt == nil {
+		t.Error("DUT is not available")
+	} else if dt.Connected(context.Background()) {
+		t.Error("DUT is connected after tests")
 	}
 }
 

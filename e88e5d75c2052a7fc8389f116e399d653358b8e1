@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "911f9438_a2f79b6b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-28T13:56:11Z",
+      "side": 1,
+      "message": "nit: Could you update?",
+      "revId": "e88e5d75c2052a7fc8389f116e399d653358b8e1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d057a152_f0b73d68",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 232,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-28T13:56:11Z",
+      "side": 1,
+      "message": "optional: How about using same timestamp for remote and local output dir?\nIt is pseudo ID, and actual time diff between L232 and L244 does not have clear meaning IIUC.\nAlso, if it is considered as an ID, it\u0027s nice to have same ID for (very slightly better) human readability. WDYT?\nIf you agree, could you move L244 to L232 and use ts in this line?",
+      "range": {
+        "startLine": 232,
+        "startChar": 59,
+        "endLine": 232,
+        "endChar": 95
+      },
+      "revId": "e88e5d75c2052a7fc8389f116e399d653358b8e1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "174d229a_c847f68d",
+        "filename": "src/chromiumos/cmd/tast/run/remote.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-28T13:56:11Z",
+      "side": 1,
+      "message": "Hmm... I may not fully understand of the intention of this removal.\nWhy not just leaving an empty directory in the case...?\nIf there\u0027s a special reasons, could you mention about it in the comment?",
+      "revId": "e88e5d75c2052a7fc8389f116e399d653358b8e1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

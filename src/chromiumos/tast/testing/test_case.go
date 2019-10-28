@@ -255,6 +255,17 @@ func (t *TestCase) Run(ctx context.Context, ch chan<- Output, cfg *TestConfig) b
 			return
 		}
 
+		// In remote tests, reconnect to the DUT if needed.
+		if s.cfg.RemoteData != nil {
+			dt := s.DUT()
+			if !dt.Connected(ctx) {
+				s.Log("Reconnecting to DUT")
+				if err := dt.Connect(ctx); err != nil {
+					s.Fatal("Failed to reconnect to DUT: ", err)
+				}
+			}
+		}
+
 		if cfg.PreTestFunc != nil {
 			cfg.PreTestFunc(ctx, s)
 		}

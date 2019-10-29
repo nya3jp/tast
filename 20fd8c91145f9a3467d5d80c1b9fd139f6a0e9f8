@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ed134770_8f70c71d",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 288,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-29T08:00:11Z",
+      "side": 1,
+      "message": "As per offline discussion, renamed to connectToTarget.",
+      "range": {
+        "startLine": 288,
+        "startChar": 5,
+        "endLine": 288,
+        "endChar": 18
+      },
+      "revId": "20fd8c91145f9a3467d5d80c1b9fd139f6a0e9f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

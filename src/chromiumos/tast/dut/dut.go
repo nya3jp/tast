@@ -108,6 +108,14 @@ func (d *DUT) Command(name string, args ...string) *host.Cmd {
 	return d.hst.Command(name, args...)
 }
 
+// GetFile copies a file or directory from the DUT to the local machine.
+// dst is the full destination name for the file or directory being copied, not
+// a destination directory into which it will be copied. dst will be replaced
+// if it already exists.
+func (d *DUT) GetFile(ctx context.Context, src, dst string) error {
+	return d.hst.GetFile(ctx, src, dst)
+}
+
 // WaitUnreachable waits for the DUT to become unreachable.
 // It requires that a connection is already established to the DUT.
 func (d *DUT) WaitUnreachable(ctx context.Context) error {

@@ -18,10 +18,6 @@ import (
 )
 
 const (
-	dutKey key = iota // key used for attaching a DUT to a context.Context
-)
-
-const (
 	pingTimeout    = time.Second
 	pingRetryDelay = time.Second
 
@@ -29,25 +25,10 @@ const (
 	reconnectRetryDelay = time.Second
 )
 
-type key int // unexported context.Context key type to avoid collisions with other packages
-
 // DUT represents a "Device Under Test" against which remote tests are run.
 type DUT struct {
 	sopt host.SSHOptions
 	hst  *host.SSH
-}
-
-// NewContext returns a new context that carries value d.
-// TODO(crbug.com/970124): Remove this function.
-func NewContext(ctx context.Context, d *DUT) context.Context {
-	return context.WithValue(ctx, dutKey, d)
-}
-
-// FromContext is deprecated; use testing.State.DUT instead.
-// TODO(crbug.com/970124): Remove this function.
-func FromContext(ctx context.Context) (d *DUT, ok bool) {
-	d, ok = ctx.Value(dutKey).(*DUT)
-	return d, ok
 }
 
 // New returns a new DUT usable for communication with target

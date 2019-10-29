@@ -246,9 +246,6 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 			// It is okay to ignore the error since we've finished testing at this point.
 			rd.DUT.Close(ctx)
 		}()
-		// For backward compatibility, attach dut.DUT to ctx.
-		// TODO(crbug.com/970124): Remove this transitional treatment.
-		ctx = dut.NewContext(ctx, rd.DUT)
 	}
 
 	// Make a backward pass through the tests, checking if each will be run (i.e. dependencies are satisfied).

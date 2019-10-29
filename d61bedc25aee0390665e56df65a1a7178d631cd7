@@ -22,6 +22,30 @@
       "revId": "d61bedc25aee0390665e56df65a1a7178d631cd7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0ba80401_7e945184",
+        "filename": "src/chromiumos/cmd/tast/run/remote_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 236,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-29T01:15:33Z",
+      "side": 1,
+      "message": "That\u0027s fair. Let me fix TestRemoteRun as well while I\u0027m at it.",
+      "parentUuid": "698db00f_dedff494",
+      "range": {
+        "startLine": 236,
+        "startChar": 41,
+        "endLine": 236,
+        "endChar": 43
+      },
+      "revId": "d61bedc25aee0390665e56df65a1a7178d631cd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -88,6 +88,24 @@
       "revId": "8bb8f9d9309c49017fa3e12c7b5af2088554cb74",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6e91d388_b754d74e",
+        "filename": "src/chromiumos/cmd/tast-lint/check/declarations.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-29T00:47:54Z",
+      "side": 1,
+      "message": "I\u0027m not sure I understand your intention correctly. Let me chat offline.",
+      "parentUuid": "782fcb28_a29c3879",
+      "revId": "8bb8f9d9309c49017fa3e12c7b5af2088554cb74",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

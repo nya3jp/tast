@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "32d030cf_640a1f9a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-29T06:28:14Z",
+      "side": 1,
+      "message": "SGTM, but I think it is time to consider the moving in the test code, too.\nCould you file a tracking issue?",
+      "revId": "668d226b97ec99a4d76546654681f7b0ff674bfc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "af4bdd2d_07e485fe",
+        "filename": "src/chromiumos/tast/internal/testingutil/poll.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-29T06:28:14Z",
+      "side": 1,
+      "message": "testingutil sounds like a bit kitchensink, so I think it\u0027s better to avoid in general.\nStepping back, Poll and Sleep are very fundamental utilities which can be used in many places, including local/remote tests as well as framework.\nHow about put them in, like chromium/tast/poll or something..., instead?",
+      "revId": "668d226b97ec99a4d76546654681f7b0ff674bfc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6e3e9b21_f8e4a056",
+        "filename": "src/chromiumos/tast/testing/util.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-29T06:28:14Z",
+      "side": 1,
+      "message": "Could you just forward to the document of the actual implementation?\nI\u0027m worried about this is not updated when the implementation is updated.",
+      "revId": "668d226b97ec99a4d76546654681f7b0ff674bfc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -170,11 +170,6 @@ func buildAll(ctx context.Context, cfg *Config, hst *host.SSH) error {
 		return fmt.Errorf("failed to get arch for %s: %v", cfg.Target, err)
 	}
 
-	larch, err := build.GetLocalArch()
-	if err != nil {
-		return fmt.Errorf("failed to get local arch: %v", err)
-	}
-
 	// local_test_runner is required even if we are running only remote tests,
 	// e.g. to compute software dependencies.
 	tgts := []*build.Target{
@@ -197,12 +192,12 @@ func buildAll(ctx context.Context, cfg *Config, hst *host.SSH) error {
 	if cfg.runRemote {
 		tgts = append(tgts, &build.Target{
 			Pkg:        remoteRunnerPkg,
-			Arch:       larch,
+			Arch:       build.ArchHost,
 			Workspaces: cfg.commonWorkspaces(),
 			Out:        cfg.remoteRunner,
 		}, &build.Target{
 			Pkg:        path.Join(remoteBundlePkgPathPrefix, cfg.buildBundle),
-			Arch:       larch,
+			Arch:       build.ArchHost,
 			Workspaces: cfg.bundleWorkspaces(),
 			Out:        filepath.Join(cfg.remoteBundleDir, cfg.buildBundle),
 		})

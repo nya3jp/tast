@@ -52,10 +52,6 @@ func TestBuild(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	arch, err := GetLocalArch()
-	if err != nil {
-		t.Fatal("Failed to get local arch: ", err)
-	}
 	outDir := filepath.Join(td, "out")
 
 	cfg := &Config{
@@ -63,7 +59,7 @@ func TestBuild(t *testing.T) {
 	}
 	tgt := &Target{
 		Pkg:  mainPkgName,
-		Arch: arch,
+		Arch: ArchHost,
 		Workspaces: []string{
 			filepath.Join(td, testDir),
 			filepath.Join(td, commonDir),
@@ -107,10 +103,6 @@ func main() {
 		t.Fatal(err)
 	}
 
-	arch, err := GetLocalArch()
-	if err != nil {
-		t.Fatal("Failed to get local arch: ", err)
-	}
 	outDir := filepath.Join(td, "out")
 
 	cfg := &Config{
@@ -119,13 +111,13 @@ func main() {
 	tgts := []*Target{
 		{
 			Pkg:        pkg1,
-			Arch:       arch,
+			Arch:       ArchHost,
 			Workspaces: []string{filepath.Join(td, wsDir)},
 			Out:        filepath.Join(outDir, pkg1),
 		},
 		{
 			Pkg:        pkg2,
-			Arch:       arch,
+			Arch:       ArchHost,
 			Workspaces: []string{filepath.Join(td, wsDir)},
 			Out:        filepath.Join(outDir, pkg2),
 		},
@@ -146,11 +138,6 @@ func TestBuildBadWorkspace(t *testing.T) {
 	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
 
-	arch, err := GetLocalArch()
-	if err != nil {
-		t.Fatal("Failed to get local arch: ", err)
-	}
-
 	if err := testutil.WriteFiles(td, map[string]string{
 		"ws1/src/good/main.go": "package main\nfunc main() {}\n",
 		"ws2/bad/foo.go":       "package bad\n",
@@ -163,7 +150,7 @@ func TestBuildBadWorkspace(t *testing.T) {
 	}
 	tgt := &Target{
 		Pkg:        "good",
-		Arch:       arch,
+		Arch:       ArchHost,
 		Workspaces: []string{filepath.Join(td, "ws1")},
 		Out:        filepath.Join(td, "out/good"),
 	}

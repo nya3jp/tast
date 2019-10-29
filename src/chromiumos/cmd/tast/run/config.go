@@ -240,19 +240,14 @@ func (c *Config) DeriveDefaults() error {
 	// Generate a timestamped directory path to always create a new one.
 	setIfEmpty(&c.localOutDir, time.Now().Format("/usr/local/tmp/tast_out.20060102-150405.000000000"))
 
-	larch, err := build.GetLocalArch()
-	if err != nil {
-		return fmt.Errorf("failed to get local arch: %v", err)
-	}
-
 	if c.build {
 		// If -build=true, use different paths than -build=false to avoid overwriting
 		// Portage-managed files.
 		setIfEmpty(&c.localRunner, "/usr/local/libexec/tast/bin_pushed/local_test_runner")
 		setIfEmpty(&c.localBundleDir, "/usr/local/libexec/tast/bundles/local_pushed")
 		setIfEmpty(&c.localDataDir, "/usr/local/share/tast/data_pushed")
-		setIfEmpty(&c.remoteRunner, filepath.Join(c.buildOutDir, larch, "remote_test_runner"))
-		setIfEmpty(&c.remoteBundleDir, filepath.Join(c.buildOutDir, larch, remoteBundleBuildSubdir))
+		setIfEmpty(&c.remoteRunner, filepath.Join(c.buildOutDir, build.ArchHost, "remote_test_runner"))
+		setIfEmpty(&c.remoteBundleDir, filepath.Join(c.buildOutDir, build.ArchHost, remoteBundleBuildSubdir))
 		// Remote data files are read from the source checkout directly.
 		setIfEmpty(&c.remoteDataDir, filepath.Join(c.buildWorkspace, "src"))
 		// Build and run local/remote tests only when the corresponding package exists.

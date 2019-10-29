@@ -262,9 +262,6 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 			},
 			DUT: dt,
 		}
-		// For backward compatibility, attach dut.DUT to ctx.
-		// TODO(crbug.com/970124): Remove this transitional treatment.
-		ctx = dut.NewContext(ctx, dt)
 	}
 
 	// Make a backward pass through the tests, checking if each will be run (i.e. dependencies are satisfied).

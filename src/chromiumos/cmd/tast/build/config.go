@@ -8,6 +8,10 @@ import (
 	"chromiumos/cmd/tast/logging"
 )
 
+// ArchHost represents the host architecture. It can be set in Target.Arch to
+// instruct to use the host toolchains.
+const ArchHost = "host"
+
 // Config describes a configuration for building an executable package.
 type Config struct {
 	// Logger is used to log informational messages.
@@ -32,6 +36,7 @@ type Target struct {
 	Pkg string
 	// Arch is the userland architecture to build for. It is usually given by "uname -m", but it can be different
 	// if the kernel and the userland use different architectures (e.g. aarch64 kernel with armv7l userland).
+	// If it is ArchHost, the toolchains for the host is used.
 	Arch string
 	// Workspaces contains paths to Go workspaces (i.e. with "src" subdirectories) containing source code to be compiled.
 	// These are placed into the GOPATH environment variable in the listed order.

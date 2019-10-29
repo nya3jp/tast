@@ -21,15 +21,6 @@ import (
 	"chromiumos/tast/timing"
 )
 
-// GetLocalArch returns the local system's architecture as described by "uname -m".
-func GetLocalArch() (string, error) {
-	b, err := exec.Command("uname", "-m").Output()
-	if err != nil {
-		return "", err
-	}
-	return strings.TrimRight(string(b), "\n"), nil
-}
-
 // archToCompiler maps from a userland architecture name to the corresponding Go command that
 // should be used for building. An architecture name is usually given by "uname -m", but it can
 // be different if the kernel and the userland use different architectures (e.g. aarch64 kernel with
@@ -37,6 +28,7 @@ func GetLocalArch() (string, error) {
 // TODO(derat): What's the right way to get the toolchain name for a given board?
 // "cros_setup_toolchains --show-board-cfg <board>" seems to print it, but it's very slow (700+ ms).
 var archToCompiler = map[string]string{
+	ArchHost:  "go",
 	"x86_64":  "x86_64-cros-linux-gnu-go",
 	"armv7l":  "armv7a-cros-linux-gnueabihf-go",
 	"aarch64": "aarch64-cros-linux-gnu-go",

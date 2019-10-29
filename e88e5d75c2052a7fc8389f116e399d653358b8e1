@@ -84,6 +84,30 @@
     },
     {
       "key": {
+        "uuid": "74c10c80_108cf838",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 232,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-10-29T04:54:01Z",
+      "side": 1,
+      "message": "I guess we have miscommunication.\nI\u0027m not requesting you to rename the dir, but use the same timestamp for this dir name and the tast_out.* suffix below.\n\nts :\u003d time.Now().Format(\"...\")\nsetIfEmpty(\u0026c.ResDir, filepath.Join(c.tastDir, \"results\", ts))\n\n...\n\nsetIfEmpty(\u0026c.localOutDir, \"/usr/local/tmp/tast_out.\" + ts)\nsetIfEmpty(\u0026c.remoteOutDir, filepath.Join(c.ResDir, \"tast_out.\" + ts))",
+      "parentUuid": "ec73d82d_569543ac",
+      "range": {
+        "startLine": 232,
+        "startChar": 59,
+        "endLine": 232,
+        "endChar": 95
+      },
+      "revId": "e88e5d75c2052a7fc8389f116e399d653358b8e1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "174d229a_c847f68d",
         "filename": "src/chromiumos/cmd/tast/run/remote.go",
         "patchSetId": 5

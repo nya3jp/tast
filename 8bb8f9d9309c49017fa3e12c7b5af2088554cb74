@@ -106,6 +106,24 @@
       "revId": "8bb8f9d9309c49017fa3e12c7b5af2088554cb74",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "26a12ad4_6ba1506f",
+        "filename": "src/chromiumos/cmd/tast-lint/check/declarations.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-29T06:50:26Z",
+      "side": 1,
+      "message": "Updated according to the offline discussion.",
+      "parentUuid": "6e91d388_b754d74e",
+      "revId": "8bb8f9d9309c49017fa3e12c7b5af2088554cb74",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

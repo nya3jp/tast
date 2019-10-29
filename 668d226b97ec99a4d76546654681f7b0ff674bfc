@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "b6374471_86b72999",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-29T07:45:45Z",
+      "side": 1,
+      "message": "Sure, filed crbug.com/1019099",
+      "parentUuid": "32d030cf_640a1f9a",
+      "revId": "668d226b97ec99a4d76546654681f7b0ff674bfc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "af4bdd2d_07e485fe",
         "filename": "src/chromiumos/tast/internal/testingutil/poll.go",
         "patchSetId": 1
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "6d99faf4_d1839cea",
+        "filename": "src/chromiumos/tast/internal/testingutil/poll.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-29T07:45:45Z",
+      "side": 1,
+      "message": "I\u0027d like to avoid refactoring utilities since it needs more careful discussion. Let me concentrate on breaking the circular dependency in this CL.\n\nI filed crbug.com/1019099 for further actions about utilities.",
+      "parentUuid": "af4bdd2d_07e485fe",
+      "revId": "668d226b97ec99a4d76546654681f7b0ff674bfc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6e3e9b21_f8e4a056",
         "filename": "src/chromiumos/tast/testing/util.go",
         "patchSetId": 1
@@ -50,6 +86,24 @@
       "revId": "668d226b97ec99a4d76546654681f7b0ff674bfc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "809580b9_a6dafdf6",
+        "filename": "src/chromiumos/tast/testing/util.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-29T07:45:45Z",
+      "side": 1,
+      "message": "Sure, let me shorten docs in the testingutil instead since keeping godoc in public packages is important.",
+      "parentUuid": "6e3e9b21_f8e4a056",
+      "revId": "668d226b97ec99a4d76546654681f7b0ff674bfc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

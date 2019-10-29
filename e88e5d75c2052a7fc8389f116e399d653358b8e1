@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "872a52f0_5e8192ad",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-29T01:15:23Z",
+      "side": 1,
+      "message": "Ouch, good catch.",
+      "parentUuid": "911f9438_a2f79b6b",
+      "revId": "e88e5d75c2052a7fc8389f116e399d653358b8e1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d057a152_f0b73d68",
         "filename": "src/chromiumos/cmd/tast/run/config.go",
         "patchSetId": 5
@@ -42,6 +60,30 @@
     },
     {
       "key": {
+        "uuid": "ec73d82d_569543ac",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 232,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-29T01:15:23Z",
+      "side": 1,
+      "message": "Actually I\u0027m hesitant to change the directory naming since it\u0027s user-facing. If we want to change it, I think it should be in a separate CL.\n\nPlease note that c.ResDir is something like\n\n /tmp/tast/results/20191029-092624\n\nwhere you find results for \"tast run\". OTOH localOutDir/remoteOutDir are temporary directories usually invisible to users.",
+      "parentUuid": "d057a152_f0b73d68",
+      "range": {
+        "startLine": 232,
+        "startChar": 59,
+        "endLine": 232,
+        "endChar": 95
+      },
+      "revId": "e88e5d75c2052a7fc8389f116e399d653358b8e1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "174d229a_c847f68d",
         "filename": "src/chromiumos/cmd/tast/run/remote.go",
         "patchSetId": 5
@@ -56,6 +98,24 @@
       "revId": "e88e5d75c2052a7fc8389f116e399d653358b8e1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e00f4d2c_6d607675",
+        "filename": "src/chromiumos/cmd/tast/run/remote.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-29T01:15:23Z",
+      "side": 1,
+      "message": "This might be a bit confusing without knowing how test outputs are copied back...\n\nremoteOutDir is not the final destination of test output files; final destination is ResDir. Remote tests write output files to remoteOutDir/\u003ctest-name\u003e, and after they finish, Tast moves them to ResDir/\u003ctest-name\u003e.\n\nThis may sound cumbersome, but at this moment we do in this way for two reasons:\n1. To align copy-back logic between local tests and remote tests\n2. To prevent tests from overwriting log.txt\n\nSo at the end of tests, remoteOutDir should be empty.\n\nPlease let me update the comment slightly.",
+      "parentUuid": "174d229a_c847f68d",
+      "revId": "e88e5d75c2052a7fc8389f116e399d653358b8e1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

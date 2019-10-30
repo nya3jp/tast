@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ad7dd6a5_3d753672",
+        "filename": "src/chromiumos/tast/rpc/client.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-10-30T08:45:04Z",
+      "side": 1,
+      "message": "owns a gRPC connection to the DUT for remote tests to use.",
+      "range": {
+        "startLine": 19,
+        "startChar": 10,
+        "endLine": 20,
+        "endChar": 25
+      },
+      "revId": "6c36e91b0ef65d3fa95dce05b5291a8387b58c4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d5b45667_54e7dca2",
+        "filename": "src/chromiumos/tast/rpc/client.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-10-30T08:45:04Z",
+      "side": 1,
+      "message": "qq: is it added later?",
+      "range": {
+        "startLine": 54,
+        "startChar": 15,
+        "endLine": 54,
+        "endChar": 34
+      },
+      "revId": "6c36e91b0ef65d3fa95dce05b5291a8387b58c4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0e2a0844_fcfa101b",
+        "filename": "src/chromiumos/tast/rpc/client.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-10-30T08:45:04Z",
+      "side": 1,
+      "message": "I wonder how long it takes to start up the RPC server.\nIf it takes long and can be a bottleneck for remote tests, we may want to leave TODO to reuse RPC server across tests.",
+      "range": {
+        "startLine": 71,
+        "startChar": 15,
+        "endLine": 71,
+        "endChar": 20
+      },
+      "revId": "6c36e91b0ef65d3fa95dce05b5291a8387b58c4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6035f5b9_8813e042",
+        "filename": "src/chromiumos/tast/rpc/client.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-10-30T08:45:04Z",
+      "side": 1,
+      "message": "withTestContext ?",
+      "range": {
+        "startLine": 110,
+        "startChar": 1,
+        "endLine": 110,
+        "endChar": 7
+      },
+      "revId": "6c36e91b0ef65d3fa95dce05b5291a8387b58c4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4f7fe788_da85b3b8",
+        "filename": "src/chromiumos/tast/rpc/rpc_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-10-30T08:45:04Z",
+      "side": 1,
+      "message": "It confused me that the memebers of this struct are not client/server pairs, but two clients.\n\nCould you document that the server is implicitly owned through the goroutine invoked in newPingPair ?",
+      "range": {
+        "startLine": 34,
+        "startChar": 5,
+        "endLine": 34,
+        "endChar": 13
+      },
+      "revId": "6c36e91b0ef65d3fa95dce05b5291a8387b58c4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ae3419ae_b09dcb1b",
+        "filename": "src/chromiumos/tast/rpc/rpc_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-10-30T08:45:04Z",
+      "side": 1,
+      "message": "// rpcClient is the underlying RPC client Client uses.",
+      "range": {
+        "startLine": 37,
+        "startChar": 1,
+        "endLine": 37,
+        "endChar": 10
+      },
+      "revId": "6c36e91b0ef65d3fa95dce05b5291a8387b58c4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

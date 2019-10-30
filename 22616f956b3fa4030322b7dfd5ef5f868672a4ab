@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "f945db4f_c811dde7",
+        "filename": "src/chromiumos/cmd/tast/run/line.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-30T07:27:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cc731003_b63e0060",
+      "revId": "22616f956b3fa4030322b7dfd5ef5f868672a4ab",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6897d560_8f93acac",
         "filename": "src/chromiumos/cmd/tast/run/line.go",
         "patchSetId": 1
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "2db5a1ee_48b3a449",
+        "filename": "src/chromiumos/cmd/tast/run/line.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-30T07:27:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6897d560_8f93acac",
+      "revId": "22616f956b3fa4030322b7dfd5ef5f868672a4ab",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "952de7ff_330796ac",
         "filename": "src/chromiumos/cmd/tast/run/line.go",
         "patchSetId": 1
@@ -47,6 +83,24 @@
       "writtenOn": "2019-10-28T14:45:05Z",
       "side": 1,
       "message": "Could you either;\n\n1) Wait for the first line is written? At the moment, there\u0027s no assumption when AppendToError is called. Or,\n2) If AppendToError must be called after \"Wait\", could you explicitly mention so in the document, and remove the lock (because writer goroutine should be gone when this is called)?",
+      "revId": "22616f956b3fa4030322b7dfd5ef5f868672a4ab",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "61ba86d5_f42c6d9d",
+        "filename": "src/chromiumos/cmd/tast/run/line.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-30T07:27:27Z",
+      "side": 1,
+      "message": "You made a very good point. I think it is reasonable to remove the mutex.\n\nHowever the problem is that host.Cmd doesn\u0027t guarantee that no data is written to Stdout/Stderr after Wait returns. I\u0027m working on a CL to guarantee it, but it\u0027s very difficult actually... please give me some time.",
+      "parentUuid": "952de7ff_330796ac",
       "revId": "22616f956b3fa4030322b7dfd5ef5f868672a4ab",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

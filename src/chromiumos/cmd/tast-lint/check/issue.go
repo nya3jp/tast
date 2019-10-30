@@ -17,6 +17,12 @@ type Issue struct {
 	Pos  token.Position
 	Msg  string
 	Link string
+	Fix  AutoFix
+}
+
+// AutoFix is interface for auto-fixable issues to be modified.
+type AutoFix interface {
+	AutoFix(i *Issue)
 }
 
 func (i *Issue) String() string {
@@ -33,6 +39,21 @@ func SortIssues(issues []*Issue) {
 		}
 		return pi.Offset < pj.Offset
 	})
+}
+
+// CategorizeIssues categorize issues into auto-fixable and un-auto-fixable,
+// then returns devided two slices.
+func CategorizeIssues(issues []*Issue) ([]*Issue, []*Issue) {
+	var issuesFixable []*Issue
+	var issuesUnFixable []*Issue
+	for _, i := range issues {
+		if i.Fix != nil {
+			issuesFixable = append(issuesFixable, i)
+		} else {
+			issuesUnFixable = append(issuesUnFixable, i)
+		}
+	}
+	return issuesFixable, issuesUnFixable
 }
 
 // DropIgnoredIssues drops all issues that are on the same lines as NOLINT comments.

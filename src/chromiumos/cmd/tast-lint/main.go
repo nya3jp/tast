@@ -5,6 +5,7 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"flag"
 	"fmt"
@@ -163,7 +164,7 @@ func report(issues []*check.Issue) {
 	check.SortIssues(issues)
 
 	for _, i := range issues {
-		fmt.Println(i)
+		fmt.Println(" ", i)
 	}
 
 	linkSet := make(map[string]struct{})
@@ -172,6 +173,7 @@ func report(issues []*check.Issue) {
 			linkSet[i.Link] = struct{}{}
 		}
 	}
+
 	if len(linkSet) > 0 {
 		var links []string
 		for link := range linkSet {
@@ -180,11 +182,37 @@ func report(issues []*check.Issue) {
 		sort.Strings(links)
 
 		fmt.Println()
-		fmt.Println("Refer the following documents for details:")
+		fmt.Println(" ", "Refer to the following documents for details:")
 		for _, link := range links {
-			fmt.Println(" ", link)
+			fmt.Println("   ", link)
 		}
 	}
+}
+
+// question returns the answer to given question as bool value.
+func question(q string) bool {
+	result := true
+	fmt.Printf("\x1b[36m%s\x1b[0m", q)
+
+	scanner := bufio.NewScanner(os.Stdin)
+	for scanner.Scan() {
+		i := scanner.Text()
+
+		if i == "yes" {
+			break
+		} else if i == "N" || i == "n" || i == "no" {
+			result = false
+			break
+		} else {
+			fmt.Println(" ", "Answer as yes or no")
+			fmt.Printf("\x1b[36m%s\x1b[0m", q)
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		panic(err)
+	}
+	return result
 }
 
 func main() {
@@ -214,7 +242,31 @@ func main() {
 		panic(err)
 	}
 	if len(issues) > 0 {
-		report(issues)
+		// categorize issues
+		issuesFixable, issuesUnFixable := check.CategorizeIssues(issues)
+
+		fmt.Printf("\x1b[33m%s\x1b[0m\n", "Following errors should be modified by yourself:")
+		report(issuesUnFixable)
+
+		if issuesFixable != nil {
+			fmt.Println()
+			fmt.Printf("\x1b[33m%s\x1b[1m%s\x1b[0m\x1b[33m%s\x1b[0m\n", "Following errors can be ", "automatically modified", ":")
+			report(issuesFixable)
+			fmt.Println()
+			if question("Continue auto-modifying (yes/no)? ") {
+				// [not necessary?] reverse slice in order to modify issues from back to front
+				// to avoid position change
+				for l, r := 0, len(issuesFixable)-1; l < r; l, r = l+1, r-1 {
+					issuesFixable[l], issuesFixable[r] = issuesFixable[r], issuesFixable[l]
+				}
+				// run AutoFix for each auto-fixable issues
+				for _, i := range issuesFixable {
+					i.Fix.AutoFix(i)
+				}
+				fmt.Println("Successfully modified.")
+			}
+		}
+
 		os.Exit(1)
 	}
 }

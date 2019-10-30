@@ -163,7 +163,7 @@ func report(issues []*check.Issue) {
 	check.SortIssues(issues)
 
 	for _, i := range issues {
-		fmt.Println(i)
+		fmt.Println(" ", i)
 	}
 
 	linkSet := make(map[string]struct{})
@@ -172,6 +172,7 @@ func report(issues []*check.Issue) {
 			linkSet[i.Link] = struct{}{}
 		}
 	}
+
 	if len(linkSet) > 0 {
 		var links []string
 		for link := range linkSet {
@@ -180,9 +181,9 @@ func report(issues []*check.Issue) {
 		sort.Strings(links)
 
 		fmt.Println()
-		fmt.Println("Refer the following documents for details:")
+		fmt.Println(" ", "Refer to the following documents for details:")
 		for _, link := range links {
-			fmt.Println(" ", link)
+			fmt.Println("   ", link)
 		}
 	}
 }
@@ -190,6 +191,7 @@ func report(issues []*check.Issue) {
 func main() {
 	commit := flag.String("commit", "", "if set, checks files in the specified Git commit")
 	debug := flag.Bool("debug", false, "enables debug outputs")
+	fix := flag.Bool("fix", false, "modifies auto-fixable errors automatically")
 	flag.Parse()
 
 	// TODO(nya): Allow running lint from arbitrary directories.
@@ -214,7 +216,30 @@ func main() {
 		panic(err)
 	}
 	if len(issues) > 0 {
-		report(issues)
+		// categorize issues
+		issuesFixable, issuesUnFixable := check.CategorizeIssues(issues)
+		fmt.Println("Following errors should be modified by yourself:")
+		report(issuesUnFixable)
+		if issuesFixable != nil {
+			fmt.Println()
+			if *fix {
+				// to avoid position change
+				for l, r := 0, len(issuesFixable)-1; l < r; l, r = l+1, r-1 {
+					issuesFixable[l], issuesFixable[r] = issuesFixable[r], issuesFixable[l]
+				}
+				// run AutoFix for each auto-fixable issues
+				for _, i := range issuesFixable {
+					i.Fix.AutoFix(i)
+				}
+				fmt.Println("Successfully modified auto-fixable errors")
+			} else {
+				fmt.Println("Following errors can be automatically modified:")
+				report(issuesFixable)
+				fmt.Println()
+				fmt.Printf("  You can run `%s -fix %s` to fix this\n", os.Args[0], strings.Join(os.Args[1:], " "))
+				fmt.Println()
+			}
+		}
 		os.Exit(1)
 	}
 }

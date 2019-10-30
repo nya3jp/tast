@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "68ca8935_631b403b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-10-30T08:47:20Z",
+      "side": 1,
+      "message": "Dial",
+      "range": {
+        "startLine": 9,
+        "startChar": 4,
+        "endLine": 9,
+        "endChar": 13
+      },
+      "revId": "6c36e91b0ef65d3fa95dce05b5291a8387b58c4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ad7dd6a5_3d753672",
         "filename": "src/chromiumos/tast/rpc/client.go",
         "patchSetId": 6

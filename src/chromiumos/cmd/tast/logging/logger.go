@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"sync"
 )
 
 // Logger is the interface used for logging by the tast executable.
@@ -61,36 +62,52 @@ func FromContext(ctx context.Context) (Logger, bool) {
 }
 
 // loggerCommon holds state shared between all implementations of the Logger interface.
-type loggerCommon map[io.Writer]*log.Logger
+// The zero value for loggerCommon is ready for use.
+// Its methods can be called from multiple goroutines concurrently.
+type loggerCommon struct {
+	mu sync.Mutex // protects ws
+	ws map[io.Writer]*log.Logger
+}
 
 // addWriter starts writing to w.
 func (c *loggerCommon) AddWriter(w io.Writer, flag int) error {
-	if _, ok := (*c)[w]; ok {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if _, ok := c.ws[w]; ok {
 		return fmt.Errorf("writer %v already added", w)
 	}
-	(*c)[w] = log.New(w, "", flag)
+	if c.ws == nil {
+		c.ws = make(map[io.Writer]*log.Logger)
+	}
+	c.ws[w] = log.New(w, "", flag)
 	return nil
 }
 
 // removeWriter stops writing to w.
 func (c *loggerCommon) RemoveWriter(w io.Writer) error {
-	if _, ok := (*c)[w]; !ok {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if _, ok := c.ws[w]; !ok {
 		return fmt.Errorf("writer %v not registered", w)
 	}
-	delete(*c, w)
+	delete(c.ws, w)
 	return nil
 }
 
 // print formats args using default formatting and writes them to all writers.
 func (c *loggerCommon) print(args ...interface{}) {
-	for _, l := range *c {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	for _, l := range c.ws {
 		l.Print(args...)
 	}
 }
 
 // printf formats args as per fmt.Sprintf and writes them to all open files.
 func (c *loggerCommon) printf(format string, args ...interface{}) {
-	for _, l := range *c {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	for _, l := range c.ws {
 		l.Printf(format, args...)
 	}
 }

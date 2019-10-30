@@ -25,9 +25,8 @@ type simpleLogger struct {
 // messages will be logged to w.
 func NewSimple(w io.Writer, flag int, verbose bool) Logger {
 	return &simpleLogger{
-		loggerCommon: make(loggerCommon),
-		l:            log.New(w, "", flag),
-		verbose:      verbose,
+		l:       log.New(w, "", flag),
+		verbose: verbose,
 	}
 }
 

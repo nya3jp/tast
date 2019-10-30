@@ -27,7 +27,7 @@ func NewFancy(lines int) (Logger, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &fancyLogger{loggerCommon: make(loggerCommon), d: disp}, nil
+	return &fancyLogger{d: disp}, nil
 }
 
 func (f *fancyLogger) Close() error {

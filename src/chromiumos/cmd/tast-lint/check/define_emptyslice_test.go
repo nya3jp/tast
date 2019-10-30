@@ -33,6 +33,8 @@ func main(){
 	k, l := 100, []float{} // error: "l" should be warned
 	m, n = "str", []string{} // valid (not define-declaration)
 	x, y := someFunction() // valid (not defines empty slice)
+	a, b, c := []int{}, []int{}, "string" // error: a and b is invalid
+	one, two, three, four, five := []int{}, []string{}, []float{}, 100, []byte{}
 }`
 	const path = "/src/chromiumos/tast/local/foo.go"
 	f, fs := parse(code, path)
@@ -45,6 +47,8 @@ func main(){
 		path + ":15:2: Use 'var' statement when you declare empty slice 'same'",
 		path + ":16:2: Use 'var' statement when you declare empty slice 'lst'",
 		path + ":22:5: Use 'var' statement when you declare empty slice 'l'",
+		path + ":25:2: Use 'var' statement when you declare empty slice 'a' and 'b'",
+		path + ":26:2: Use 'var' statement when you declare empty slice 'one', 'two', 'three' and 'five'",
 	}
 	verifyIssues(t, issues, expects)
 }

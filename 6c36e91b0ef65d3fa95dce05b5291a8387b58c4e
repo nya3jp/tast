@@ -160,6 +160,23 @@
       "revId": "6c36e91b0ef65d3fa95dce05b5291a8387b58c4e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2f9c6162_66146193",
+        "filename": "src/chromiumos/tast/rpc/rpc_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-10-30T08:50:12Z",
+      "side": 1,
+      "message": "How about closing cl in stop and remove rpcClient member from the pingPair ?",
+      "revId": "6c36e91b0ef65d3fa95dce05b5291a8387b58c4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

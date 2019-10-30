@@ -49,6 +49,15 @@ type Cmd struct {
 	stdoutPipe, stderrPipe *io.PipeWriter // set when StdoutPipe/StderrPipe are called
 	onceClose              sync.Once      // used to close stdoutPipe/stderrPipe just once
 	sess                   *ssh.Session
+
+	// lingerClose is used in unit tests to simulate race conditions. If it is true,
+	// the command execution is waited to finish before closing the SSH session,
+	// regardless of the context timeout.
+	lingerClose bool
+
+	// closed is closed when the SSH session is closed. It can be waited in unit
+	// tests to wait for runaway SSH operations ignoring the context timeout.
+	closed chan struct{}
 }
 
 // cmdState represents a state of a Cmd. cmdState is used to prevent typical misuse of
@@ -84,9 +93,10 @@ func (s cmdState) String() string {
 // See: https://godoc.org/os/exec#Command
 func (s *SSH) Command(name string, args ...string) *Cmd {
 	return &Cmd{
-		Args:  append([]string{name}, args...),
-		ssh:   s,
-		abort: make(chan struct{}),
+		Args:   append([]string{name}, args...),
+		ssh:    s,
+		abort:  make(chan struct{}),
+		closed: make(chan struct{}),
 	}
 }
 
@@ -249,6 +259,7 @@ func (c *Cmd) Start(ctx context.Context) error {
 		return c.sess.Start(cmd)
 	}, func() {
 		c.sess.Close()
+		close(c.closed)
 	}); err != nil {
 		c.state = stateDone
 		c.closePipes(io.EOF)
@@ -313,6 +324,7 @@ func (c *Cmd) startSession(ctx context.Context) error {
 	}, func() {
 		if sess != nil {
 			sess.Close()
+			close(c.closed)
 		}
 	}); err != nil {
 		c.state = stateDone
@@ -385,7 +397,8 @@ func (c *Cmd) waitAndClose(ctx context.Context, f func() error) error {
 		}
 	}()
 
-	retErr := doAsync(ctx, f, nil)
+	done := make(chan struct{})
+	retErr := doAsync(ctx, f, func() { close(done) })
 
 	// The remote process exited or timed out. Close pipes before running
 	// possibly blocking operations.
@@ -393,6 +406,10 @@ func (c *Cmd) waitAndClose(ctx context.Context, f func() error) error {
 
 	if err := doAsync(ctx, func() error {
 		c.sess.Signal(ssh.SIGKILL) // in case the command is still running
+		if c.lingerClose {
+			<-done
+		}
+		defer close(c.closed)
 		return c.sess.Close()
 	}, nil); err != nil && err != io.EOF && retErr == nil { // Close returns io.EOF on success
 		retErr = err

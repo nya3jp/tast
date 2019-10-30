@@ -6,6 +6,8 @@ package host
 
 import (
 	"bytes"
+	"context"
+	"errors"
 	"io"
 	"io/ioutil"
 	"os"
@@ -16,12 +18,13 @@ import (
 
 	"golang.org/x/crypto/ssh"
 
+	"chromiumos/tast/host/test"
 	"chromiumos/tast/testutil"
 )
 
 func TestRun(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
+	td := newTestData(t, nil)
 	defer td.close()
 
 	if err := td.hst.Command("true").Run(td.ctx); err != nil {
@@ -35,7 +38,7 @@ func TestRun(t *testing.T) {
 
 func TestOutput(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
+	td := newTestData(t, nil)
 	defer td.close()
 
 	if out, err := td.hst.Command("/bin/sh", "-c", "echo hello").Output(td.ctx); err != nil {
@@ -61,7 +64,7 @@ func TestOutput(t *testing.T) {
 
 func TestCombinedOutput(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
+	td := newTestData(t, nil)
 	defer td.close()
 
 	if out, err := td.hst.Command("/bin/sh", "-c", "echo hello").CombinedOutput(td.ctx); err != nil {
@@ -86,7 +89,7 @@ func TestCombinedOutput(t *testing.T) {
 
 func TestStartWait(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
+	td := newTestData(t, nil)
 	defer td.close()
 
 	cmd := td.hst.Command("true")
@@ -100,7 +103,7 @@ func TestStartWait(t *testing.T) {
 
 func TestAbort(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
+	td := newTestData(t, nil)
 	defer td.close()
 
 	cmd := td.hst.Command("long_sleep")
@@ -117,7 +120,7 @@ func TestAbort(t *testing.T) {
 
 func TestExitCode(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
+	td := newTestData(t, nil)
 	defer td.close()
 
 	checkExitCode := func(name string, err error) {
@@ -151,7 +154,7 @@ func TestExitCode(t *testing.T) {
 
 func TestDir(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
+	td := newTestData(t, nil)
 	defer td.close()
 
 	dir := testutil.TempDir(t)
@@ -172,7 +175,7 @@ func TestDir(t *testing.T) {
 
 func TestStdin(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
+	td := newTestData(t, nil)
 	defer td.close()
 
 	const want = "hello"
@@ -188,7 +191,7 @@ func TestStdin(t *testing.T) {
 
 func TestStdoutStderr(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
+	td := newTestData(t, nil)
 	defer td.close()
 
 	var stdout, stderr bytes.Buffer
@@ -210,7 +213,7 @@ func TestStdoutStderr(t *testing.T) {
 
 func TestStdinPipe(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
+	td := newTestData(t, nil)
 	defer td.close()
 
 	const want = "hello"
@@ -236,7 +239,7 @@ func TestStdinPipe(t *testing.T) {
 
 func TestStdoutPipeStderrPipe(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
+	td := newTestData(t, nil)
 	defer td.close()
 
 	cmd := td.hst.Command("/bin/sh", "-c", "echo hello; echo world >&2")
@@ -286,7 +289,7 @@ func TestStdoutPipeStderrPipe(t *testing.T) {
 
 func TestPipesClosedOnWait(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
+	td := newTestData(t, nil)
 	defer td.close()
 
 	cmd := td.hst.Command("true")
@@ -323,7 +326,7 @@ func TestPipesClosedOnWait(t *testing.T) {
 
 func TestPipesClosedOnAbort(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
+	td := newTestData(t, nil)
 	defer td.close()
 
 	cmd := td.hst.Command("long_sleep")
@@ -363,7 +366,7 @@ func TestPipesClosedOnAbort(t *testing.T) {
 
 func TestRunTimeout(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
+	td := newTestData(t, nil)
 	defer td.close()
 
 	td.execTimeout = endTimeout
@@ -375,7 +378,7 @@ func TestRunTimeout(t *testing.T) {
 
 func TestOutputTimeout(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
+	td := newTestData(t, nil)
 	defer td.close()
 
 	td.execTimeout = endTimeout
@@ -387,7 +390,7 @@ func TestOutputTimeout(t *testing.T) {
 
 func TestCombinedOutputTimeout(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
+	td := newTestData(t, nil)
 	defer td.close()
 
 	td.execTimeout = endTimeout
@@ -399,7 +402,7 @@ func TestCombinedOutputTimeout(t *testing.T) {
 
 func TestStartTimeout(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
+	td := newTestData(t, nil)
 	defer td.close()
 
 	td.execTimeout = startTimeout
@@ -413,7 +416,7 @@ func TestStartTimeout(t *testing.T) {
 
 func TestWaitTimeout(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
+	td := newTestData(t, nil)
 	defer td.close()
 
 	td.execTimeout = endTimeout
@@ -429,7 +432,7 @@ func TestWaitTimeout(t *testing.T) {
 
 func TestWaitTwice(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
+	td := newTestData(t, nil)
 	defer td.close()
 
 	cmd := td.hst.Command("true")
@@ -443,4 +446,50 @@ func TestWaitTwice(t *testing.T) {
 	if err := cmd.Wait(td.ctx); err == nil {
 		t.Fatal("Second Wait succeeded")
 	}
+}
+
+// failWriter reports a test failure to t when any data is written to it.
+type failWriter struct {
+	t *testing.T
+}
+
+func (w *failWriter) Write(p []byte) (int, error) {
+	w.t.Error("failWriter.Write called")
+	return 0, errors.New("failWriter.Write called")
+}
+
+func TestWaitClosesOutputs(t *testing.T) {
+	t.Parallel()
+
+	waited := make(chan struct{})
+	td := newTestData(t, func(req *test.ExecReq) {
+		req.Start(true)
+		<-waited
+		req.Write([]byte("somedata"))
+		req.Stderr().Write([]byte("somedata"))
+		req.End(0)
+	})
+	defer td.close()
+
+	cmd := td.hst.Command("somecommand")
+	cmd.Stdout = &failWriter{t}
+	cmd.Stderr = &failWriter{t}
+	cmd.lingerClose = true
+	if err := cmd.Start(td.ctx); err != nil {
+		t.Fatal("Start failed: ", err)
+	}
+
+	// Use a canceled context to return from Wait immediately.
+	canceledCtx, cancel := context.WithCancel(td.ctx)
+	cancel()
+	if err := cmd.Wait(canceledCtx); err == nil {
+		t.Error("Wait unexpectedly succeeded")
+	}
+
+	// Start the handler execution. It writes to stdout/stderr, but they should
+	// not be written to failWriter since Wait has returned.
+	close(waited)
+
+	// Wait for the SSH session to close.
+	<-cmd.closed
 }

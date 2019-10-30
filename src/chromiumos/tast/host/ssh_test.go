@@ -72,12 +72,18 @@ type testData struct {
 	execTimeout timeoutType // how "exec" requests should time out
 }
 
-func newTestData(t *testing.T) *testData {
+// newTestData starts a fake SSH server. If handler is non-nil, it is called back
+// on SSH commands; if it is nil, the default handler is used.
+func newTestData(t *testing.T, handler test.ExecHandler) *testData {
 	td := &testData{}
 	td.ctx, td.cancel = context.WithCancel(context.Background())
 
+	if handler == nil {
+		handler = td.handleExec
+	}
+
 	var err error
-	if td.srv, err = test.NewSSHServer(&userKey.PublicKey, hostKey, td.handleExec); err != nil {
+	if td.srv, err = test.NewSSHServer(&userKey.PublicKey, hostKey, handler); err != nil {
 		t.Fatal(err)
 	}
 
@@ -208,7 +214,7 @@ func TestRetry(t *testing.T) {
 
 func TestPing(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
+	td := newTestData(t, nil)
 	defer td.close()
 
 	td.srv.AnswerPings(true)
@@ -230,7 +236,7 @@ func TestPing(t *testing.T) {
 
 func TestGetFileRegular(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
+	td := newTestData(t, nil)
 	defer td.close()
 
 	files := map[string]string{"file": "foo"}
@@ -254,7 +260,7 @@ func TestGetFileRegular(t *testing.T) {
 
 func TestGetFileDir(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
+	td := newTestData(t, nil)
 	defer td.close()
 
 	files := map[string]string{
@@ -281,7 +287,7 @@ func TestGetFileDir(t *testing.T) {
 
 func TestGetFileTimeout(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
+	td := newTestData(t, nil)
 	defer td.close()
 
 	files := map[string]string{"file": "data"}
@@ -298,7 +304,7 @@ func TestGetFileTimeout(t *testing.T) {
 
 func TestPutFiles(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
+	td := newTestData(t, nil)
 	defer td.close()
 
 	const (
@@ -354,7 +360,7 @@ func TestPutFiles(t *testing.T) {
 
 func TestPutFilesUnchanged(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
+	td := newTestData(t, nil)
 	defer td.close()
 
 	files := map[string]string{
@@ -385,7 +391,7 @@ func TestPutFilesUnchanged(t *testing.T) {
 
 func TestPutFilesTimeout(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
+	td := newTestData(t, nil)
 	defer td.close()
 
 	files := map[string]string{"file": "data"}
@@ -402,7 +408,7 @@ func TestPutFilesTimeout(t *testing.T) {
 
 func TestPutFilesSymlinks(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
+	td := newTestData(t, nil)
 	defer td.close()
 
 	tmpDir, srcDir := initFileTest(t, nil)
@@ -466,7 +472,7 @@ func TestPutFilesSymlinks(t *testing.T) {
 
 func TestDeleteTree(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
+	td := newTestData(t, nil)
 	defer td.close()
 
 	files := map[string]string{
@@ -490,7 +496,7 @@ func TestDeleteTree(t *testing.T) {
 
 func TestDeleteTreeOutside(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
+	td := newTestData(t, nil)
 	defer td.close()
 
 	tmpDir, baseDir := initFileTest(t, nil)

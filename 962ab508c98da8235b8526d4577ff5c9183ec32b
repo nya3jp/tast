@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "61f4aa26_e4fbe1bd",
+        "filename": "src/chromiumos/tast/rpc/client.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-10-31T09:16:40Z",
+      "side": 1,
+      "message": "Shouldn\u0027t we return error if ok is false?",
+      "range": {
+        "startLine": 115,
+        "startChar": 50,
+        "endLine": 115,
+        "endChar": 52
+      },
+      "revId": "962ab508c98da8235b8526d4577ff5c9183ec32b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5aa61764_52be6fa9",
+        "filename": "src/chromiumos/tast/testing/test_case_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 570,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-10-31T09:16:40Z",
+      "side": 1,
+      "message": "qq: what\u0027s the difference of this to []string{} ?",
+      "range": {
+        "startLine": 570,
+        "startChar": 32,
+        "endLine": 570,
+        "endChar": 35
+      },
+      "revId": "962ab508c98da8235b8526d4577ff5c9183ec32b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "6f5c7db4_556f7a4d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-31T02:37:03Z",
+      "side": 1,
+      "message": "Oops, good catch!",
+      "parentUuid": "68ca8935_631b403b",
+      "range": {
+        "startLine": 9,
+        "startChar": 4,
+        "endLine": 9,
+        "endChar": 13
+      },
+      "revId": "6c36e91b0ef65d3fa95dce05b5291a8387b58c4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ad7dd6a5_3d753672",
         "filename": "src/chromiumos/tast/rpc/client.go",
         "patchSetId": 6
@@ -45,6 +69,30 @@
       "revId": "6c36e91b0ef65d3fa95dce05b5291a8387b58c4e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0306d11e_147ffead",
+        "filename": "src/chromiumos/tast/rpc/client.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-31T02:37:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ad7dd6a5_3d753672",
+      "range": {
+        "startLine": 19,
+        "startChar": 10,
+        "endLine": 20,
+        "endChar": 25
+      },
+      "revId": "6c36e91b0ef65d3fa95dce05b5291a8387b58c4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "d817a55a_04a38df2",
+        "filename": "src/chromiumos/tast/rpc/client.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-31T02:37:03Z",
+      "side": 1,
+      "message": "Yes, but it\u0027s just an example...",
+      "parentUuid": "d5b45667_54e7dca2",
+      "range": {
+        "startLine": 54,
+        "startChar": 15,
+        "endLine": 54,
+        "endChar": 34
+      },
+      "revId": "6c36e91b0ef65d3fa95dce05b5291a8387b58c4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0e2a0844_fcfa101b",
         "filename": "src/chromiumos/tast/rpc/client.go",
         "patchSetId": 6
@@ -94,6 +166,30 @@
     },
     {
       "key": {
+        "uuid": "9f08a641_6b9da9de",
+        "filename": "src/chromiumos/tast/rpc/client.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-31T02:37:03Z",
+      "side": 1,
+      "message": "That is a good point, filed crbug.com/1020030.",
+      "parentUuid": "0e2a0844_fcfa101b",
+      "range": {
+        "startLine": 71,
+        "startChar": 15,
+        "endLine": 71,
+        "endChar": 20
+      },
+      "revId": "6c36e91b0ef65d3fa95dce05b5291a8387b58c4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6035f5b9_8813e042",
         "filename": "src/chromiumos/tast/rpc/client.go",
         "patchSetId": 6
@@ -105,6 +201,30 @@
       "writtenOn": "2019-10-30T08:45:04Z",
       "side": 1,
       "message": "withTestContext ?",
+      "range": {
+        "startLine": 110,
+        "startChar": 1,
+        "endLine": 110,
+        "endChar": 7
+      },
+      "revId": "6c36e91b0ef65d3fa95dce05b5291a8387b58c4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d627853e_fa2426e8",
+        "filename": "src/chromiumos/tast/rpc/client.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-31T02:37:03Z",
+      "side": 1,
+      "message": "Actually it will do more things than replacing ctx, including rejecting undeclared RPC calls:\nhttps://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/1875969/5/src/chromiumos/tast/rpc/client.go\n\nSo please let me keep this name for now.",
+      "parentUuid": "6035f5b9_8813e042",
       "range": {
         "startLine": 110,
         "startChar": 1,
@@ -140,6 +260,30 @@
     },
     {
       "key": {
+        "uuid": "f3b6eb7e_49844b74",
+        "filename": "src/chromiumos/tast/rpc/rpc_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-31T02:37:03Z",
+      "side": 1,
+      "message": "That\u0027s fair, let me add a comment.",
+      "parentUuid": "4f7fe788_da85b3b8",
+      "range": {
+        "startLine": 34,
+        "startChar": 5,
+        "endLine": 34,
+        "endChar": 13
+      },
+      "revId": "6c36e91b0ef65d3fa95dce05b5291a8387b58c4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ae3419ae_b09dcb1b",
         "filename": "src/chromiumos/tast/rpc/rpc_test.go",
         "patchSetId": 6
@@ -163,6 +307,30 @@
     },
     {
       "key": {
+        "uuid": "82fbd552_481b4eca",
+        "filename": "src/chromiumos/tast/rpc/rpc_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-31T02:37:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ae3419ae_b09dcb1b",
+      "range": {
+        "startLine": 37,
+        "startChar": 1,
+        "endLine": 37,
+        "endChar": 10
+      },
+      "revId": "6c36e91b0ef65d3fa95dce05b5291a8387b58c4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2f9c6162_66146193",
         "filename": "src/chromiumos/tast/rpc/rpc_test.go",
         "patchSetId": 6
@@ -177,6 +345,24 @@
       "revId": "6c36e91b0ef65d3fa95dce05b5291a8387b58c4e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3e7a9ef4_1a446fc0",
+        "filename": "src/chromiumos/tast/rpc/rpc_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-10-31T02:37:03Z",
+      "side": 1,
+      "message": "Hmm, stop\u0027s purpose is to stop the server, not the client, and concentrating on stopping the server only is more straightforward IMHO. Please let me rename stop to stopServer to clarify it.",
+      "parentUuid": "2f9c6162_66146193",
+      "revId": "6c36e91b0ef65d3fa95dce05b5291a8387b58c4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

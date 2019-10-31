@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"google.golang.org/grpc"
@@ -97,7 +98,16 @@ func newClient(ctx context.Context, r io.Reader, w io.Writer, clean func(context
 		}
 	}()
 
-	conn, err := newPipeClientConn(ctx, r, w, clientOpts()...)
+	// To avoid data races, log must not be altered while there are active gRPC calls.
+	var log *remoteLoggingClient
+	waitSeq := func(ctx context.Context, seq int64) error {
+		if log == nil {
+			return nil
+		}
+		return log.WaitSeq(ctx, seq)
+	}
+
+	conn, err := newPipeClientConn(ctx, r, w, clientOpts(waitSeq)...)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to establish RPC connection")
 	}
@@ -107,7 +117,7 @@ func newClient(ctx context.Context, r io.Reader, w io.Writer, clean func(context
 		}
 	}()
 
-	log, err := newRemoteLoggingClient(ctx, conn, func(msg string) { testing.ContextLog(ctx, msg) })
+	log, err = newRemoteLoggingClient(ctx, conn, func(msg string) { testing.ContextLog(ctx, msg) })
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to start remote logging")
 	}
@@ -124,7 +134,8 @@ var alwaysAllowedServices = []string{
 }
 
 // clientOpts returns gRPC client-side interceptors to manipulate context.
-func clientOpts() []grpc.DialOption {
+// waitSeq is a function to wait for a log message with a sequence number no less than seq.
+func clientOpts(waitSeq func(ctx context.Context, seq int64) error) []grpc.DialOption {
 	before := func(ctx context.Context, method string) (context.Context, error) {
 		// Reject an outgoing RPC call if its service is not declared in ServiceDeps.
 		svcs, ok := testing.ContextServiceDeps(ctx)
@@ -157,7 +168,16 @@ func clientOpts() []grpc.DialOption {
 			if err != nil {
 				return err
 			}
-			return invoker(ctx, method, req, reply, cc, opts...)
+
+			var trailer metadata.MD
+			opts = append([]grpc.CallOption{grpc.Trailer(&trailer)}, opts...)
+			retErr := invoker(ctx, method, req, reply, cc, opts...)
+			if seq, ok := lastSeqFromTrailer(trailer); ok {
+				if err := waitSeq(ctx, seq); err != nil && retErr == nil {
+					retErr = err
+				}
+			}
+			return retErr
 		}),
 		grpc.WithStreamInterceptor(func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn,
 			method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
@@ -165,7 +185,36 @@ func clientOpts() []grpc.DialOption {
 			if err != nil {
 				return nil, err
 			}
-			return streamer(ctx, desc, cc, method, opts...)
+			stream, err := streamer(ctx, desc, cc, method, opts...)
+			return &waitSeqClientStream{stream, waitSeq}, err
 		}),
 	}
+}
+
+type waitSeqClientStream struct {
+	grpc.ClientStream
+	waitSeq func(ctx context.Context, seq int64) error
+}
+
+func (s *waitSeqClientStream) RecvMsg(m interface{}) error {
+	retErr := s.ClientStream.RecvMsg(m)
+	if retErr != nil {
+		if seq, ok := lastSeqFromTrailer(s.Trailer()); ok {
+			if err := s.waitSeq(s.Context(), seq); err != nil {
+				retErr = err
+			}
+		}
+	}
+	return retErr
+}
+
+func lastSeqFromTrailer(md metadata.MD) (int64, bool) {
+	if len(md[metadataLastSeq]) != 1 {
+		return 0, false
+	}
+	seq, err := strconv.ParseInt(md[metadataLastSeq][0], 10, 64)
+	if err != nil {
+		return 0, false
+	}
+	return seq, true
 }

@@ -19,6 +19,8 @@ type remoteLoggingServer struct {
 	// inbox is a channel to send logs from gRPC servers to. It is nil if there is
 	// no client. Sending to this channel will never block.
 	inbox chan<- *LogEntry
+	// lastSeq is the sequence number of the last log message.
+	lastSeq int64
 }
 
 func newRemoteLoggingServer() *remoteLoggingServer {
@@ -96,7 +98,15 @@ func (s *remoteLoggingServer) Log(msg string) {
 	if s.inbox == nil {
 		return
 	}
-	s.inbox <- &LogEntry{Msg: msg}
+	s.lastSeq++
+	s.inbox <- &LogEntry{Msg: msg, Seq: s.lastSeq}
+}
+
+// LastSeq returns the sequence number of the last log message.
+func (s *remoteLoggingServer) LastSeq() int64 {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.lastSeq
 }
 
 // bufferedRelay receives logs from src and sends them to dst keeping the order.

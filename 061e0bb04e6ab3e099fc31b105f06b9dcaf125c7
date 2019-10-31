@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "a248c7de_9cc5e9d4",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 485,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2019-10-31T13:36:45Z",
+      "side": 1,
+      "message": "This need to be: range []struct",
+      "range": {
+        "startLine": 485,
+        "startChar": 18,
+        "endLine": 485,
+        "endChar": 19
+      },
+      "revId": "061e0bb04e6ab3e099fc31b105f06b9dcaf125c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "beee5967_782ea0a7",
         "filename": "docs/writing_tests.md",
         "patchSetId": 3

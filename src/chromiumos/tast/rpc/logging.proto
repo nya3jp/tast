@@ -28,4 +28,5 @@ message ReadLogsResponse {
 
 message LogEntry {
   string msg = 1;
+  int64 seq = 2;
 }

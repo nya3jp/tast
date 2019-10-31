@@ -284,8 +284,8 @@ a condition:
 ```go
 if err := testing.Poll(ctx, func (ctx context.Context) error {
 	var url string
-	if err := conn.Eval(ctx, "location.href", &url); err != nil {
-		return errors.Wrap(err, "failed to evaluate location.href")
+	if err := MustSucceedEval(ctx, "location.href", &url); err != nil {
+		return testing.PollBreak(errors.Wrap(err, "failed to evaluate location.href"))
 	}
 	if url != targetURL {
 		return errors.Errorf("current URL is %s", url)
@@ -295,6 +295,9 @@ if err := testing.Poll(ctx, func (ctx context.Context) error {
 	return errors.Wrap(err, "failed to navigate")
 }
 ```
+
+Return a [testing.PollBreak] error to stop the polling. Useful when you get an
+unexpected error inside the polling.
 
 Sleeping without polling for a condition is discouraged, since it makes tests
 flakier (when the sleep duration isn't long enough) or slower (when the duration
@@ -314,6 +317,7 @@ Several blog posts discuss these patterns in more detail:
 [channel]: https://tour.golang.org/concurrency/2
 [select]: https://tour.golang.org/concurrency/5
 [testing.Poll]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Poll
+[testing.PollBreak]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#PollBreak
 [testing.Sleep]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Sleep
 [Go Concurrency Patterns: Context]: https://blog.golang.org/context
 [Go Concurrency Patterns: Timing out, moving on]: https://blog.golang.org/go-concurrency-patterns-timing-out-and

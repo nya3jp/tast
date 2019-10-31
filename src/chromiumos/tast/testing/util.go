@@ -17,12 +17,12 @@ type PollOptions = testingutil.PollOptions
 // PollBreak creates an error wrapping err that may be returned from a
 // function passed to Poll to terminate polling immediately. For example:
 //
-// err := testing.Poll(ctx, func(ctx context.Context) error {
-//   if err := mustSucceed(ctx); err != nil {
-//     return testing.PollBreak(err)
-//   }
-//   ...
-// }
+//   err := testing.Poll(ctx, func(ctx context.Context) error {
+//     if err := mustSucceed(ctx); err != nil {
+//       return testing.PollBreak(err)
+//     }
+//     ...
+//   })
 func PollBreak(err error) error {
 	return testingutil.PollBreak(err)
 }

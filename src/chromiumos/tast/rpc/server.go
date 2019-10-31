@@ -8,6 +8,7 @@ import (
 	"context"
 	"errors"
 	"io"
+	"strconv"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -20,7 +21,7 @@ import (
 // It blocks until the client connection is closed or it encounters an error.
 func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service) error {
 	ls := newRemoteLoggingServer()
-	srv := grpc.NewServer(serverOpts(ls.Log)...)
+	srv := grpc.NewServer(serverOpts(ls)...)
 	RegisterLoggingServer(srv, ls)
 
 	// Register the reflection service for easier debugging.
@@ -49,15 +50,21 @@ func (s *serverStreamWithContext) Context() context.Context {
 
 var _ grpc.ServerStream = (*serverStreamWithContext)(nil)
 
+const metadataLastSeq = "tast-remotelogging-lastseq"
+
 // serverOpts returns gRPC server-side interceptors to manipulate context.
-func serverOpts(logger func(msg string)) []grpc.ServerOption {
+func serverOpts(ls *remoteLoggingServer) []grpc.ServerOption {
 	before := func(ctx context.Context) (context.Context, error) {
 		md, ok := metadata.FromIncomingContext(ctx)
 		if !ok {
 			return nil, errors.New("metadata not available")
 		}
-		tc := incomingTestContext(md, logger)
+		tc := incomingTestContext(md, ls.Log)
 		return testing.WithTestContext(ctx, tc), nil
+	}
+
+	trailer := func() metadata.MD {
+		return metadata.Pairs(metadataLastSeq, strconv.FormatInt(ls.LastSeq(), 10))
 	}
 
 	return []grpc.ServerOption{
@@ -66,6 +73,9 @@ func serverOpts(logger func(msg string)) []grpc.ServerOption {
 			if err != nil {
 				return nil, err
 			}
+			defer func() {
+				grpc.SetTrailer(ctx, trailer())
+			}()
 			return handler(ctx, req)
 		}),
 		grpc.StreamInterceptor(func(srv interface{}, stream grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
@@ -74,6 +84,9 @@ func serverOpts(logger func(msg string)) []grpc.ServerOption {
 				return err
 			}
 			stream = &serverStreamWithContext{stream, ctx}
+			defer func() {
+				stream.SetTrailer(trailer())
+			}()
 			return handler(srv, stream)
 		}),
 	}

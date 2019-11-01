@@ -27,7 +27,7 @@ func shouldIgnore(p lint.Problem) bool {
 	}
 
 	// Tast test functions can be exported without comment.
-	if isTestMainFile(p.Position.Filename) &&
+	if isEntryFile(p.Position.Filename) &&
 		p.Category == "comments" &&
 		strings.Contains(p.Text, "should have comment or be unexported") {
 		return true

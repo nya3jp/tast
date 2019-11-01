@@ -11,7 +11,7 @@ import (
 	"path/filepath"
 )
 
-// InterFileRefs checks that test main files do not have inter-file references.
+// InterFileRefs checks that entry files do not have inter-file references.
 // f should be one obtained from cachedParser; that is, its references within
 // the package should have been resolved, but imports should not have been
 // resolved.
@@ -19,7 +19,7 @@ func InterFileRefs(fs *token.FileSet, f *ast.File) []*Issue {
 	const docURL = "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#scoping-and-shared-code"
 
 	filename := fs.Position(f.Package).Filename
-	if !isTestMainFile(filename) {
+	if !isEntryFile(filename) {
 		return nil
 	}
 
@@ -37,7 +37,7 @@ func InterFileRefs(fs *token.FileSet, f *ast.File) []*Issue {
 		if declFn != filename {
 			issues = append(issues, &Issue{
 				Pos:  fs.Position(node.Pos()),
-				Msg:  fmt.Sprintf("Tast forbids inter-file references in test main files; move %s %s in %s to a shared package", id.Obj.Kind, id.Name, filepath.Base(declFn)),
+				Msg:  fmt.Sprintf("Tast forbids inter-file references in entry files; move %s %s in %s to a shared package", id.Obj.Kind, id.Name, filepath.Base(declFn)),
 				Link: docURL,
 			})
 		}

@@ -9,6 +9,9 @@ import (
 	"go/parser"
 	"go/token"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 )
 
 func parse(code, filename string) (*ast.File, *token.FileSet) {
@@ -20,25 +23,17 @@ func parse(code, filename string) (*ast.File, *token.FileSet) {
 	return f, fs
 }
 
-func verifyIssues(t *testing.T, issues []*Issue, expects []string) {
+func verifyIssues(t *testing.T, issues []*Issue, want []string) {
 	t.Helper()
 
 	SortIssues(issues)
 
-	if len(issues) != len(expects) {
-		t.Errorf("Got %d issue(s); want %d", len(issues), len(expects))
+	got := make([]string, len(issues))
+	for i, issue := range issues {
+		got[i] = issue.String()
 	}
 
-	for i := 0; i < len(issues) || i < len(expects); i++ {
-		var msg, expect string
-		if i < len(issues) {
-			msg = issues[i].String()
-		}
-		if i < len(expects) {
-			expect = expects[i]
-		}
-		if msg != expect {
-			t.Errorf("Issue %d is %q; want %q", i, msg, expect)
-		}
+	if diff := cmp.Diff(got, want, cmpopts.EquateEmpty()); diff != "" {
+		t.Errorf("Issues mismatch (-got +want):\n%s", diff)
 	}
 }

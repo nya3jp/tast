@@ -66,6 +66,8 @@ func main() {
 			"android_p":         `arc && "android-container-pi"`,
 			"android_p_both":    `arc && ("android-container-pi" || "android-vm-pi")`,
 			"arc_camera3":       `"arc-camera3"`,
+			"arc_camera1":       `"arc-camera1"`,
+			"camera_legacy":     `!"arc-camera1" && !"arc-camera3"`,
 			"aslr":              "!asan",                        // ASan instrumentation breaks ASLR
 			"audio_play":        "internal_speaker && !tast_vm", // VMs and some boards don't have a speaker
 			"audio_record":      "internal_mic && !tast_vm",     // VMs don't have a mic

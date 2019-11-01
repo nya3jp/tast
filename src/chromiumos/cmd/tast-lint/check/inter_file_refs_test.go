@@ -56,10 +56,10 @@ func Test2() {
 `
 
 	expects2 := []string{
-		filename2 + ":4:8: Tast forbids inter-file references in test main files; move type someType in test1.go to a shared package",
-		filename2 + ":5:2: Tast forbids inter-file references in test main files; move var someVar in test1.go to a shared package",
-		filename2 + ":5:12: Tast forbids inter-file references in test main files; move const someConst in test1.go to a shared package",
-		filename2 + ":6:2: Tast forbids inter-file references in test main files; move func someFunc in test1.go to a shared package",
+		filename2 + ":4:8: Tast forbids inter-file references in entry files; move type someType in test1.go to a shared package",
+		filename2 + ":5:2: Tast forbids inter-file references in entry files; move var someVar in test1.go to a shared package",
+		filename2 + ":5:12: Tast forbids inter-file references in entry files; move const someConst in test1.go to a shared package",
+		filename2 + ":6:2: Tast forbids inter-file references in entry files; move func someFunc in test1.go to a shared package",
 	}
 
 	fs, f1, f2 := parse2(filename1, code1, filename2, code2)

@@ -37,7 +37,7 @@ const (
 // Declarations checks declarations of testing.Test structs.
 func Declarations(fs *token.FileSet, f *ast.File) []*Issue {
 	filename := fs.Position(f.Package).Filename
-	if !isTestMainFile(filename) {
+	if !isEntryFile(filename) {
 		return nil
 	}
 

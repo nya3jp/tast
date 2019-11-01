@@ -11,16 +11,16 @@ import (
 	"strings"
 )
 
-// testMainPathRegexp matches a file name of a Tast test main file.
-var testMainPathRegexp = regexp.MustCompile(`/src/chromiumos/tast/(?:local|remote)/bundles/[^/]+/[^/]+/[^/]+\.go$`)
+// entryPathRegexp matches a file name of an entry file.
+var entryPathRegexp = regexp.MustCompile(`/src/chromiumos/tast/(?:local|remote)/bundles/[^/]+/[^/]+/[^/]+\.go$`)
 
-// isTestMainFile checks if path is a Test test main file.
-func isTestMainFile(path string) bool {
+// isEntryFile checks if path is an entry file.
+func isEntryFile(path string) bool {
 	path, err := filepath.Abs(path)
 	if err != nil {
 		return false
 	}
-	return testMainPathRegexp.MatchString(path) &&
+	return entryPathRegexp.MatchString(path) &&
 		!isUnitTestFile(path) &&
 		filepath.Base(path) != "doc.go" // exclude package documentation
 }

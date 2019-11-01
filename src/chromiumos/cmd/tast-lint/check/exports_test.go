@@ -17,11 +17,11 @@ func SomeFunc1() {}
 func SomeFunc2() {}
 `
 	expects := []string{
-		filename + ":3:6: Tast forbids exporting anything but one test function here; unexport type SomeType",
-		filename + ":4:7: Tast forbids exporting anything but one test function here; unexport const SomeConst",
-		filename + ":5:5: Tast forbids exporting anything but one test function here; unexport var SomeVar",
-		filename + ":6:6: Tast forbids exporting anything but one test function here; unexport func SomeFunc1 if it is not a test function",
-		filename + ":7:6: Tast forbids exporting anything but one test function here; unexport func SomeFunc2 if it is not a test function",
+		filename + ":3:6: Tast requires exactly one symbol (test function or service type) to be exported in an entry file; unexport type SomeType if it is not one",
+		filename + ":4:7: Tast requires exactly one symbol (test function or service type) to be exported in an entry file; unexport const SomeConst",
+		filename + ":5:5: Tast requires exactly one symbol (test function or service type) to be exported in an entry file; unexport var SomeVar",
+		filename + ":6:6: Tast requires exactly one symbol (test function or service type) to be exported in an entry file; unexport func SomeFunc1 if it is not one",
+		filename + ":7:6: Tast requires exactly one symbol (test function or service type) to be exported in an entry file; unexport func SomeFunc2 if it is not one",
 	}
 
 	f, fs := parse(code, filename)
@@ -34,7 +34,7 @@ func TestExports_ZeroFunc(t *testing.T) {
 	const code = `package example
 `
 	expects := []string{
-		filename + ": Tast requires exactly one test function to be exported in a test main file",
+		filename + ": Tast requires exactly one symbol (test function or service type) to be exported in an entry file",
 	}
 
 	f, fs := parse(code, filename)
@@ -87,6 +87,17 @@ type someType int
 func (x someType) Close() {}
 
 func Test() {}
+`
+	f, fs := parse(code, filename)
+	issues := Exports(fs, f)
+	verifyIssues(t, issues, nil)
+}
+
+func TestExports_Service(t *testing.T) {
+	const filename = "src/chromiumos/tast/local/bundles/cros/example/service.go"
+	const code = `package example
+
+type Service struct {}
 `
 	f, fs := parse(code, filename)
 	issues := Exports(fs, f)

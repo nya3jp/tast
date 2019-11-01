@@ -40,45 +40,47 @@ func getDecls(f *ast.File) []decl {
 	return decls
 }
 
-// Exports checks that test main files does not export anything but a test function.
+// Exports checks that an entry file exports exactly one symbol, either a test
+// main function or a gRPC service implementation type.
 func Exports(fs *token.FileSet, f *ast.File) []*Issue {
 	const docURL = "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#scoping-and-shared-code"
 
 	filename := fs.Position(f.Package).Filename
-	if !isTestMainFile(filename) {
+	if !isEntryFile(filename) {
 		return nil
 	}
 
 	var issues []*Issue
 
-	var expFuncs []decl
+	var expDecls []decl
 	for _, d := range getDecls(f) {
 		if d.name.IsExported() {
-			if d.token == token.FUNC {
-				if d.decl.(*ast.FuncDecl).Recv == nil {
-					expFuncs = append(expFuncs, d)
-				}
-			} else {
-				issues = append(issues, &Issue{
-					Pos:  fs.Position(d.name.NamePos),
-					Msg:  fmt.Sprintf("Tast forbids exporting anything but one test function here; unexport %s %s", d.token, d.name.Name),
-					Link: docURL,
-				})
+			if d.token == token.FUNC && d.decl.(*ast.FuncDecl).Recv != nil {
+				continue
 			}
+			if d.token == token.FUNC || d.token == token.TYPE {
+				expDecls = append(expDecls, d)
+				continue
+			}
+			issues = append(issues, &Issue{
+				Pos:  fs.Position(d.name.NamePos),
+				Msg:  fmt.Sprintf("Tast requires exactly one symbol (test function or service type) to be exported in an entry file; unexport %s %s", d.token, d.name.Name),
+				Link: docURL,
+			})
 		}
 	}
 
-	if len(expFuncs) == 0 {
+	if len(expDecls) == 0 {
 		issues = append(issues, &Issue{
 			Pos:  token.Position{Filename: filename},
-			Msg:  "Tast requires exactly one test function to be exported in a test main file",
+			Msg:  "Tast requires exactly one symbol (test function or service type) to be exported in an entry file",
 			Link: docURL,
 		})
-	} else if len(expFuncs) >= 2 {
-		for _, d := range expFuncs {
+	} else if len(expDecls) >= 2 {
+		for _, d := range expDecls {
 			issues = append(issues, &Issue{
 				Pos:  fs.Position(d.name.NamePos),
-				Msg:  fmt.Sprintf("Tast forbids exporting anything but one test function here; unexport %s %s if it is not a test function", d.token, d.name.Name),
+				Msg:  fmt.Sprintf("Tast requires exactly one symbol (test function or service type) to be exported in an entry file; unexport %s %s if it is not one", d.token, d.name.Name),
 				Link: docURL,
 			})
 		}

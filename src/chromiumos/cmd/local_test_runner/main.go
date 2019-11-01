@@ -65,6 +65,7 @@ func main() {
 			"android_all_both":  `arc`,
 			"android_p":         `arc && "android-container-pi"`,
 			"android_p_both":    `arc && ("android-container-pi" || "android-vm-pi")`,
+			"arc_camera1":       `"arc-camera1"`,
 			"arc_camera3":       `"arc-camera3"`,
 			"aslr":              "!asan",                        // ASan instrumentation breaks ASLR
 			"audio_play":        "internal_speaker && !tast_vm", // VMs and some boards don't have a speaker
@@ -74,6 +75,7 @@ func main() {
 			// we should remove grunt after hardware encoding supported.
 			// daisy variants' cameras don't support 1280x720.
 			"camera_720p":             "!snow && !skate && !spring && !grunt",
+			"camera_legacy":           `!"arc-camera1" && !"arc-camera3"`,
 			"chrome":                  "!chromeless_tty && !rialto",
 			"chrome_internal":         "chrome_internal",
 			"cros_config":             "unibuild",

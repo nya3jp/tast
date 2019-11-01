@@ -24,7 +24,8 @@ The following software features are defined:
 *   `android_p` - The ability to [run Android apps] that require Android P or
     later.
 *   `android_p_both` - `android_p` feature that runs in both vm and container.
-*   `arc_camera3` - The [Camera HAL3] interface in Android.
+*   `arc_camera1` - Using [Camera HAL3] in Chrome and [Camera HAL1] in Android.
+*   `arc_camera3` - Using [Camera HAL3] interface in Chrome and Android.
 *   `aslr` - Address space layout randomization, which mitigates buffer-overflow
     attacks, is functional (this is not true for builds with [AddressSanitizer]
     instrumentation built in).
@@ -34,6 +35,8 @@ The following software features are defined:
 *   `biometrics_daemon` - The ability to process fingerprint authentication.
     This implies the presence of the `biod` package.
 *   `camera_720p` - The ability to capture video with frame size 1280x720.
+*   `camera_legacy` - Using [Linux Video Capture] in Chrome, and [Camera HAL1]
+    in Android if ARC++ is available.
 *   `chrome` - Support for performing user login via Chrome (i.e. using
     `session_manager` and `cryptohome`). This also implies that the
     [chromeos-chrome] Portage package is installed (which also installs Chrome
@@ -112,6 +115,8 @@ The following software features are defined:
 [amd64]: https://en.wikipedia.org/wiki/X86-64
 [run Android apps]: https://developer.android.com/topic/arc/
 [Camera HAL3]: https://source.android.com/devices/camera/camera3
+[Camera HAL1]: https://source.android.com/devices/camera#architecture-legacy
+[Linux Video Capture]: https://chromium.googlesource.com/chromium/src/+/HEAD/media/capture/video/linux/
 [AddressSanitizer]: https://github.com/google/sanitizers/wiki/AddressSanitizer
 [Autotest capability]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/autotest-capability-default/
 [chromeos-chrome]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/chromeos-chrome/chromeos-chrome-9999.ebuild

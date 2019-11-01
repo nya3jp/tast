@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fd27518f_df2de538",
+        "filename": "src/chromiumos/cmd/tast-lint/check/common.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-01T08:19:37Z",
+      "side": 1,
+      "message": "I know \"entry file\" is not very pretty naming... your suggestions are welcomed.",
+      "range": {
+        "startLine": 14,
+        "startChar": 44,
+        "endLine": 14,
+        "endChar": 56
+      },
+      "revId": "ad008fcae6f54a751982eb9c77e989e7d2b5e74e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

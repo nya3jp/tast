@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "5fc05c56_864f38e3",
+        "filename": "src/chromiumos/tast/rpc/client.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-01T02:09:13Z",
+      "side": 1,
+      "message": "See my other comment.",
+      "parentUuid": "bc452ddb_c5d512be",
+      "range": {
+        "startLine": 129,
+        "startChar": 20,
+        "endLine": 129,
+        "endChar": 38
+      },
+      "revId": "c9da4a3857d1c220b635ba9e9819861e8afdf532",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "effcacee_17f89cd5",
         "filename": "src/chromiumos/tast/rpc/rpc_test.go",
         "patchSetId": 17
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "6ab451b2_954ab5dd",
+        "filename": "src/chromiumos/tast/rpc/rpc_test.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-01T02:09:13Z",
+      "side": 1,
+      "message": "That\u0027s a good point, Ping may have failed to SoftwareDeps check...\n\nI updated onPing not to return an error and moved the check below.",
+      "parentUuid": "effcacee_17f89cd5",
+      "range": {
+        "startLine": 172,
+        "startChar": 51,
+        "endLine": 172,
+        "endChar": 54
+      },
+      "revId": "c9da4a3857d1c220b635ba9e9819861e8afdf532",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0ef39aaf_3e7ea347",
         "filename": "src/chromiumos/tast/testing/context.go",
         "patchSetId": 17
@@ -68,6 +116,30 @@
       "revId": "c9da4a3857d1c220b635ba9e9819861e8afdf532",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e864030d_6b06257d",
+        "filename": "src/chromiumos/tast/testing/context.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-01T02:09:13Z",
+      "side": 1,
+      "message": "I have these functions here because testContextKey is private to the testing package.\n\nBasically I agree with you, I wish I can move these functions to the rpc package, but I don\u0027t have a good idea to realize it.",
+      "parentUuid": "0ef39aaf_3e7ea347",
+      "range": {
+        "startLine": 120,
+        "startChar": 5,
+        "endLine": 120,
+        "endChar": 31
+      },
+      "revId": "c9da4a3857d1c220b635ba9e9819861e8afdf532",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

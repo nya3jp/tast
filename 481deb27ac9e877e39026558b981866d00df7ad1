@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "a7e65f61_ae27665b",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1318626
+      },
+      "writtenOn": "2019-11-05T06:34:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5a7610bc_dc900ea4",
+      "range": {
+        "startLine": 29,
+        "startChar": 64,
+        "endLine": 29,
+        "endChar": 89
+      },
+      "revId": "481deb27ac9e877e39026558b981866d00df7ad1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0b3e2630_34bbbd4b",
         "filename": "src/chromiumos/cmd/local_test_runner/main.go",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2019-11-04T17:41:58Z",
       "side": 1,
       "message": "is there a chance that devices with no cameras, (e.g: ChromeBox), think they have a camera_legacy?",
+      "range": {
+        "startLine": 70,
+        "startChar": 24,
+        "endLine": 70,
+        "endChar": 58
+      },
+      "revId": "481deb27ac9e877e39026558b981866d00df7ad1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "44aace0b_5cdacb1a",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1318626
+      },
+      "writtenOn": "2019-11-05T06:34:25Z",
+      "side": 1,
+      "message": "We still support external USB camera when there\u0027s no built-in camera, so I think it vaild to always have one of these camera stack implementation labels.",
+      "parentUuid": "0b3e2630_34bbbd4b",
       "range": {
         "startLine": 70,
         "startChar": 24,

@@ -96,6 +96,29 @@
     },
     {
       "key": {
+        "uuid": "a7dc2e36_b8d80399",
+        "filename": "src/chromiumos/tast/testing/context.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-11-05T06:46:33Z",
+      "side": 1,
+      "message": "You can get this from testing.ContextSoftwareDeps(ctx), without needing to access testContextKey. Does it help you to move this function to rpc package?",
+      "range": {
+        "startLine": 114,
+        "startChar": 46,
+        "endLine": 114,
+        "endChar": 61
+      },
+      "revId": "c9da4a3857d1c220b635ba9e9819861e8afdf532",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "0ef39aaf_3e7ea347",
         "filename": "src/chromiumos/tast/testing/context.go",
         "patchSetId": 17
@@ -131,6 +154,30 @@
       "side": 1,
       "message": "I have these functions here because testContextKey is private to the testing package.\n\nBasically I agree with you, I wish I can move these functions to the rpc package, but I don\u0027t have a good idea to realize it.",
       "parentUuid": "0ef39aaf_3e7ea347",
+      "range": {
+        "startLine": 120,
+        "startChar": 5,
+        "endLine": 120,
+        "endChar": 31
+      },
+      "revId": "c9da4a3857d1c220b635ba9e9819861e8afdf532",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a39078c7_03251573",
+        "filename": "src/chromiumos/tast/testing/context.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-11-05T06:46:33Z",
+      "side": 1,
+      "message": "I commented on ContextRPCMetadata my idea.",
+      "parentUuid": "e864030d_6b06257d",
       "range": {
         "startLine": 120,
         "startChar": 5,

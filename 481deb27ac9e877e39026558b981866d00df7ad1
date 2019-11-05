@@ -93,6 +93,30 @@
       "revId": "481deb27ac9e877e39026558b981866d00df7ad1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4e71525a_83eabac0",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1202079
+      },
+      "writtenOn": "2019-11-05T18:58:33Z",
+      "side": 1,
+      "message": "thanks. my concern was if a test requires a \"camera_legacy\", would it be possible that it will be executed in a device without a camera?\nif that is the case, it seems that the test will fail.\n\nFor context: In Tast, when a test runs in a device, it must either pass or fail. There is no \"not applicable\" return value.\n\n\n(...or perhaps I\u0027m missing something).",
+      "parentUuid": "44aace0b_5cdacb1a",
+      "range": {
+        "startLine": 70,
+        "startChar": 24,
+        "endLine": 70,
+        "endChar": 58
+      },
+      "revId": "481deb27ac9e877e39026558b981866d00df7ad1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

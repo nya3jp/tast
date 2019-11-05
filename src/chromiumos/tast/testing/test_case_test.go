@@ -91,6 +91,13 @@ func TestAdditionalTime(t *gotesting.T) {
 	if exp := preTestTimeout + postTestTimeout + 2*pre.Timeout(); test.AdditionalTime != exp {
 		t.Errorf("AdditionalTime = %v; want %v", test.AdditionalTime, exp)
 	}
+
+	pre = &testPre{}
+	if test, err := newTestCase(&Test{Func: TESTCASETEST}, &Param{Timeout: time.Minute, Pre: pre}); err != nil {
+		t.Error(err)
+	} else if exp := preTestTimeout + postTestTimeout + 2*pre.Timeout(); test.AdditionalTime != exp {
+		t.Errorf("AdditionalTime = %v; want %v", test.AdditionalTime, exp)
+	}
 }
 
 func TestParamTest(t *gotesting.T) {

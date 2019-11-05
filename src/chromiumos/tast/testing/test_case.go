@@ -126,7 +126,7 @@ func newTestCase(t *Test, p *Param) (*TestCase, error) {
 	return &TestCase{
 		Name:           name,
 		Pkg:            info.pkg,
-		AdditionalTime: additionalTime(t),
+		AdditionalTime: additionalTime(pre),
 		Val:            val,
 		Func:           t.Func,
 		Desc:           t.Desc,
@@ -160,16 +160,16 @@ func autoAttrs(name, pkg string, softwareDeps []string) ([]string, error) {
 	return result, nil
 }
 
-// additionalTime returns AdditionalTime to include time needed for t.Pre and pre-test or post-test functions.
-func additionalTime(t *Test) time.Duration {
+// additionalTime returns AdditionalTime to include time needed for Precondition and pre-test or post-test functions.
+func additionalTime(pre Precondition) time.Duration {
 	// We don't know whether a pre-test or post-test func will be specified until the test is run,
 	// so err on the side of including the time that would be allocated.
 	result := preTestTimeout + postTestTimeout
 
 	// The precondition's timeout applies both when preparing the precondition and when closing it
 	// (which we'll need to do if this is the final test using the precondition).
-	if t.Pre != nil {
-		result += 2 * t.Pre.Timeout()
+	if pre != nil {
+		result += 2 * pre.Timeout()
 	}
 
 	return result

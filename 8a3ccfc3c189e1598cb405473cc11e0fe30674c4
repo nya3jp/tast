@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a788f256_3a2d14ed",
+        "filename": "src/chromiumos/tast/testing/test_case.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-05T06:13:46Z",
+      "side": 1,
+      "message": "Could you pass pre instead? Then we don\u0027t need t nor p.",
+      "range": {
+        "startLine": 129,
+        "startChar": 18,
+        "endLine": 129,
+        "endChar": 39
+      },
+      "revId": "8a3ccfc3c189e1598cb405473cc11e0fe30674c4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

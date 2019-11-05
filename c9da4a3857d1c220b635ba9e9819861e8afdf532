@@ -119,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "6403c41a_ab51f9fa",
+        "filename": "src/chromiumos/tast/testing/context.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-05T06:57:38Z",
+      "side": 1,
+      "message": "Hmm, it works for SoftwareDeps for now, but it won\u0027t work for logger:\nhttps://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/1802725/20/src/chromiumos/tast/testing/context.go\n\nMy hope is to clean up the testing package in go/tast-reshuffle.",
+      "parentUuid": "a7dc2e36_b8d80399",
+      "range": {
+        "startLine": 114,
+        "startChar": 46,
+        "endLine": 114,
+        "endChar": 61
+      },
+      "revId": "c9da4a3857d1c220b635ba9e9819861e8afdf532",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "0ef39aaf_3e7ea347",
         "filename": "src/chromiumos/tast/testing/context.go",
         "patchSetId": 17

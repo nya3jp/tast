@@ -141,6 +141,30 @@
       "revId": "481deb27ac9e877e39026558b981866d00df7ad1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7229b793_8d2f34fb",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1202079
+      },
+      "writtenOn": "2019-11-06T18:34:46Z",
+      "side": 1,
+      "message": "thanks for the links.\n\nso, just to understand, which kind of tests will use the \"camera_legacy\" dependency? thanks!",
+      "parentUuid": "cec354d4_0447f19e",
+      "range": {
+        "startLine": 70,
+        "startChar": 24,
+        "endLine": 70,
+        "endChar": 58
+      },
+      "revId": "481deb27ac9e877e39026558b981866d00df7ad1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

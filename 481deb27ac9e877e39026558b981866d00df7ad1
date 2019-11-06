@@ -117,6 +117,30 @@
       "revId": "481deb27ac9e877e39026558b981866d00df7ad1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cec354d4_0447f19e",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1318626
+      },
+      "writtenOn": "2019-11-06T04:32:24Z",
+      "side": 1,
+      "message": "Thanks for taking care of this! There is another set of camera labels [1] to specify camera existence. I think a test should depend on them if it requires actual camera to run, like [2].\n\n[1] https://cs.corp.google.com/chromeos_public/src/third_party/chromiumos-overlay/chromeos-base/autotest-capability-default/files/managed-capabilities.yaml?l\u003d61\n[2] https://cs.corp.google.com/chromeos_public/src/platform/tast-tests/src/chromiumos/tast/local/bundles/cros/camera/gca_multi_camera.go?l\u003d24",
+      "parentUuid": "4e71525a_83eabac0",
+      "range": {
+        "startLine": 70,
+        "startChar": 24,
+        "endLine": 70,
+        "endChar": 58
+      },
+      "revId": "481deb27ac9e877e39026558b981866d00df7ad1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

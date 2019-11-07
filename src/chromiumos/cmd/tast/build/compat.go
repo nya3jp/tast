@@ -22,7 +22,7 @@ import (
 //
 // This number must be incremented when a framework change breaks "tast run -build"
 // with combination of older tast binary and newer source code.
-const sourceCompatVersion = 1
+const sourceCompatVersion = 2
 
 // compatGoPath is the path to this file, relative to the workspace root.
 const compatGoPath = "src/chromiumos/cmd/tast/build/compat.go"

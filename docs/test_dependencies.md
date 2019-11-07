@@ -62,6 +62,8 @@ The following software features are defined:
     (as opposed to the builtin open-source virtual keyboard).
 *   `gpu_sandboxing` - Chrome's GPU process is [sandboxed].
 *   `gsc` - Whether the platform has an onboard Google security chip.
+*   `hostap_hwsim` - Whether system has the hostap project's test dependencies
+    (scripts, daemons) installed and configured appropriately.
 *   `iwlwifi_rescan` - Ability to remove/rescan WiFi PCI device when the
     hardware becomes non-responsive.
 *   `lock_core_pattern` - Ability to lock down |core_pattern| from further

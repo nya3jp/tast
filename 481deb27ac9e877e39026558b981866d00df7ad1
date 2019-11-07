@@ -189,6 +189,30 @@
       "revId": "481deb27ac9e877e39026558b981866d00df7ad1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "df6b7225_3be072c7",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1202079
+      },
+      "writtenOn": "2019-11-07T15:55:39Z",
+      "side": 1,
+      "message": "thanks for the clarification!",
+      "parentUuid": "9f6392da_fcc9db1e",
+      "range": {
+        "startLine": 70,
+        "startChar": 24,
+        "endLine": 70,
+        "endChar": 58
+      },
+      "revId": "481deb27ac9e877e39026558b981866d00df7ad1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

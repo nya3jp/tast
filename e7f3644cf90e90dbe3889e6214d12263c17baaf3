@@ -1,0 +1,170 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "de0e1ecc_c5168009",
+        "filename": "src/chromiumos/cmd/tast-lint/check/package_comment.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-07T15:44:06Z",
+      "side": 1,
+      "message": "Could you declare a variable at the latest timing? In this case just before L29.\nOr, you can directly return an issue, instead.",
+      "revId": "e7f3644cf90e90dbe3889e6214d12263c17baaf3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cff78b96_ee0bc9f8",
+        "filename": "src/chromiumos/cmd/tast-lint/check/package_comment.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-07T15:44:06Z",
+      "side": 1,
+      "message": "Could you comment the strategy/reason of this comparing?",
+      "range": {
+        "startLine": 24,
+        "startChar": 2,
+        "endLine": 24,
+        "endChar": 29
+      },
+      "revId": "e7f3644cf90e90dbe3889e6214d12263c17baaf3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5b6c02c7_aa39416a",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-07T15:44:06Z",
+      "side": 1,
+      "message": "this does not match the implementation.\nThis is creating a map from dirpath to the go files in the commit?",
+      "range": {
+        "startLine": 93,
+        "startChar": 37,
+        "endLine": 93,
+        "endChar": 49
+      },
+      "revId": "e7f3644cf90e90dbe3889e6214d12263c17baaf3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1abab5fe_8e3992b2",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-07T15:44:06Z",
+      "side": 1,
+      "message": "Because this is called multiple times, it\u0027s nice to avoid the copy. How about using a pointer?",
+      "range": {
+        "startLine": 108,
+        "startChar": 38,
+        "endLine": 108,
+        "endChar": 71
+      },
+      "revId": "e7f3644cf90e90dbe3889e6214d12263c17baaf3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a23eb968_a65d9600",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-07T15:44:06Z",
+      "side": 1,
+      "message": "nit: Package (singular form), because this checks only one package, right?",
+      "range": {
+        "startLine": 108,
+        "startChar": 24,
+        "endLine": 108,
+        "endChar": 25
+      },
+      "revId": "e7f3644cf90e90dbe3889e6214d12263c17baaf3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7bb8e86a_f5b97c69",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-07T15:44:06Z",
+      "side": 1,
+      "message": "Could you avoid panic? Instead, could you return an error to caller?",
+      "revId": "e7f3644cf90e90dbe3889e6214d12263c17baaf3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "76a92966_66695080",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-07T15:44:06Z",
+      "side": 1,
+      "message": "The logic implemented here and the documentation has a gap.\nCould you comment why this approach works?",
+      "revId": "e7f3644cf90e90dbe3889e6214d12263c17baaf3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b350f6ab_dae2a601",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-07T15:44:06Z",
+      "side": 1,
+      "message": "sameLen :\u003d (numExGoFiles \u003d\u003d len(dfmap[dir]))",
+      "range": {
+        "startLine": 120,
+        "startChar": 1,
+        "endLine": 123,
+        "endChar": 2
+      },
+      "revId": "e7f3644cf90e90dbe3889e6214d12263c17baaf3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

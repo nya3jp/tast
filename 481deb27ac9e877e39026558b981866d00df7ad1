@@ -165,6 +165,30 @@
       "revId": "481deb27ac9e877e39026558b981866d00df7ad1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9f6392da_fcc9db1e",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1318626
+      },
+      "writtenOn": "2019-11-07T05:20:39Z",
+      "side": 1,
+      "message": "We would like to make webrtc.DecodeAccelUsedJPEG depends on camera_legacy in crrev.com/c/1895517. The test doesn\u0027t require a camera to run.\n\nThe tested decoding path is only used in the old camera stack, and will be broken by a optimization (crbug/982201) for new camera stack if it is enabled. Therefore we want to limit the test to run only on platforms using old camera stack, where we will not enable the optimization.",
+      "parentUuid": "7229b793_8d2f34fb",
+      "range": {
+        "startLine": 70,
+        "startChar": 24,
+        "endLine": 70,
+        "endChar": 58
+      },
+      "revId": "481deb27ac9e877e39026558b981866d00df7ad1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

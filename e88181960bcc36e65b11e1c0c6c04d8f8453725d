@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3e9e0e48_6dcd2e5f",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2019-11-08T18:06:48Z",
+      "side": 1,
+      "message": "seems like all the instances of USE in this file could be in backticks (`USE`) for consistent formatting",
+      "range": {
+        "startLine": 152,
+        "startChar": 13,
+        "endLine": 152,
+        "endChar": 16
+      },
+      "revId": "e88181960bcc36e65b11e1c0c6c04d8f8453725d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

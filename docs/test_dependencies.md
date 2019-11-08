@@ -147,18 +147,28 @@ cras && (audio_chipset_a || audio_chipset_b) && !broken_headphone_jack
 
 will be reported as available on systems where the `cras` USE flag is set,
 either `audio_chipset_a` or `audio_chipset_b` is set, and
-`broken_headphone_jack` is explicitly *not* set. Before a new USE flag can be
-used in an expression, it must be added to `IUSE` in the [tast-use-flags]
-package, and before a feature can be listed by a test, it must be registered in
-`local_test_runner`. Please use [CQ-DEPEND] in your commit messages to ensure
-that changes land in the correct order.
+`broken_headphone_jack` is explicitly *not* set.
+
+Before a new `USE` flag can be used in an expression, it must be added to `IUSE`
+in the [tast-use-flags] package. Local changes to `tast-use-flags-9999.ebuild`
+have to be pushed to the DUT manually to take effect:
+
+```
+cros_workon --board=$BOARD start chromeos-base/tast-use-flags
+emerge-$BOARD chromeos-base/tast-use-flags
+cros deploy --root=/usr/local $HOST chromeos-base/tast-use-flags
+```
+
+When submitting changes to add new `USE` flags to the [tast-use-flags] package,
+please use [Cq-Depend] in your commit messages to ensure that changes land in
+the correct order.
 
 If you're having trouble finding a way to specify your test's dependencies,
 please ask for help on the [tast-users mailing list].
 
 [local_test_runner]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/cmd/local_test_runner/main.go
 [tast-use-flags]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/tast-use-flags/
-[CQ-DEPEND]: https://chromium.googlesource.com/chromiumos/docs/+/master/contributing.md#cq-depend
+[Cq-Depend]: https://chromium.googlesource.com/chromiumos/docs/+/master/contributing.md#cq-depend
 [tast-users mailing list]: https://groups.google.com/a/chromium.org/forum/#!forum/tast-users
 
 ### Example changes

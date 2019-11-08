@@ -652,8 +652,8 @@ func TestUnfinishedTest(t *gotesting.T) {
 	diagErr := TestError{Error: testing.Error{Reason: diagMsg}}
 
 	// diagnoseRunErrorFunc implementations.
-	emptyDiag := func(context.Context) string { return "" }
-	goodDiag := func(context.Context) string { return diagMsg }
+	emptyDiag := func(context.Context, string) string { return "" }
+	goodDiag := func(context.Context, string) string { return diagMsg }
 
 	for i, tc := range []struct {
 		writeTestErr bool // write a TestError control message with testMsg

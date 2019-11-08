@@ -303,7 +303,13 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, patterns []
 			src := filepath.Join(args.RunTests.BundleArgs.OutDir, testName)
 			return moveFromHost(ctx, cfg, hst, src, dst)
 		}
-		df := func(ctx context.Context) string { return diagnoseLocalRunError(ctx, cfg) }
+		df := func(ctx context.Context, testName string) string {
+			outDir := cfg.ResDir
+			if testName != "" {
+				outDir = filepath.Join(outDir, testLogsDir, testName)
+			}
+			return diagnoseLocalRunError(ctx, cfg, outDir)
+		}
 		results, unstarted, rerr = readTestOutput(ctx, cfg, handle.stdout, crf, df)
 	}
 
@@ -381,12 +387,13 @@ func closeEphemeralDevserver(ctx context.Context, cfg *Config) error {
 
 // diagnoseLocalRunError is used to attempt to diagnose the cause of an error encountered
 // while running local tests. It returns a string that can be returned by a diagnoseRunErrorFunc.
-func diagnoseLocalRunError(ctx context.Context, cfg *Config) string {
+// Files useful for diagnosis might be saved under outDir.
+func diagnoseLocalRunError(ctx context.Context, cfg *Config, outDir string) string {
 	if cfg.hst == nil || ctxutil.DeadlineBefore(ctx, time.Now().Add(sshPingTimeout)) {
 		return ""
 	}
 	if err := cfg.hst.Ping(ctx, sshPingTimeout); err == nil {
 		return ""
 	}
-	return "Lost SSH connection: " + diagnoseSSHDrop(ctx, cfg)
+	return "Lost SSH connection: " + diagnoseSSHDrop(ctx, cfg, outDir)
 }

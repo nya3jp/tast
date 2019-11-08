@@ -161,7 +161,9 @@ type copyAndRemoveFunc func(testName, dst string) error
 // diagnoseRunErrorFunc is called after a run error is encountered while reading test results to get additional
 // information about the cause of the error. An empty string should be returned if additional information
 // is unavailable.
-type diagnoseRunErrorFunc func(ctx context.Context) string
+// testName is the name of the test that was running when a run error occurred. It might be empty if an run error
+// occurred outside of tests.
+type diagnoseRunErrorFunc func(ctx context.Context, testName string) string
 
 // resultsHandler processes the output from a test binary.
 type resultsHandler struct {
@@ -202,7 +204,6 @@ func newResultsHandler(cfg *Config, crf copyAndRemoveFunc, df diagnoseRunErrorFu
 }
 
 func (r *resultsHandler) close() {
-	r.pullers.Wait()
 	if r.res != nil {
 		r.cfg.Logger.RemoveWriter(r.res.logFile)
 		r.res.logFile.Close()
@@ -505,6 +506,10 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 		}
 	}()
 
+	// Wait for output file pullers to finish to avoid possible races between
+	// pullers and diagnoseRunErrorFunc.
+	r.pullers.Wait()
+
 	if len(r.testsToRun) > 0 {
 		// Let callers distinguish between an empty list and a missing list.
 		unstarted = make([]string, 0)
@@ -519,7 +524,11 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 		// Try to get a more-specific diagnosis of what went wrong.
 		msg := fmt.Sprintf("Got global error: %v", runErr)
 		if r.diagFunc != nil {
-			if dm := r.diagFunc(ctx); dm != "" {
+			var testName string
+			if r.res != nil {
+				testName = r.res.Name
+			}
+			if dm := r.diagFunc(ctx, testName); dm != "" {
 				msg = dm
 			}
 		}

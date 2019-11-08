@@ -7,6 +7,8 @@ package run
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"time"
@@ -25,8 +27,9 @@ func readBootID(ctx context.Context, hst *host.SSH) (string, error) {
 }
 
 // diagnoseSSHDrop diagnoses a SSH connection drop during local test runs
-// and returns a diagnosis message.
-func diagnoseSSHDrop(ctx context.Context, cfg *Config) string {
+// and returns a diagnosis message. Files useful for diagnosis might be saved
+// under outDir.
+func diagnoseSSHDrop(ctx context.Context, cfg *Config, outDir string) string {
 	if cfg.initBootID == "" {
 		return "failed to diagnose: initial boot_id is not available"
 	}
@@ -51,7 +54,7 @@ func diagnoseSSHDrop(ctx context.Context, cfg *Config) string {
 	}
 
 	// Target rebooted.
-	return diagnoseReboot(ctx, cfg)
+	return diagnoseReboot(ctx, cfg, outDir)
 }
 
 var (
@@ -71,8 +74,9 @@ var (
 )
 
 // diagnoseReboot diagnoses the target reboot during local test runs
-// and returns a diagnosis message.
-func diagnoseReboot(ctx context.Context, cfg *Config) string {
+// and returns a diagnosis message. Files useful for diagnosis might be saved
+// under outDir.
+func diagnoseReboot(ctx context.Context, cfg *Config, outDir string) string {
 	// Read the journal just before the reboot.
 	denseBootID := strings.Replace(cfg.initBootID, "-", "", -1)
 	out, err := cfg.hst.Command("journalctl", "-q", "-b", denseBootID, "-n", "1000").Output(ctx)
@@ -80,6 +84,13 @@ func diagnoseReboot(ctx context.Context, cfg *Config) string {
 		cfg.Logger.Log("Failed to read journal: ", err)
 	}
 	journal := string(out)
+
+	if journal != "" {
+		const fn = "journal.before-reboot.txt"
+		if err := ioutil.WriteFile(filepath.Join(outDir, fn), []byte(journal), 0666); err != nil {
+			cfg.Logger.Logf("Failed to save %s: %v", fn, err)
+		}
+	}
 
 	// Read console-ramoops. Its path varies by systems, and it might not exist
 	// for normal reboots.
@@ -91,6 +102,13 @@ func diagnoseReboot(ctx context.Context, cfg *Config) string {
 		}
 	}
 	ramOops := string(out)
+
+	if ramOops != "" {
+		const fn = "console-ramoops.txt"
+		if err := ioutil.WriteFile(filepath.Join(outDir, fn), []byte(ramOops), 0666); err != nil {
+			cfg.Logger.Logf("Failed to save %s: %v", fn, err)
+		}
+	}
 
 	if m := shutdownReasonRe.FindStringSubmatch(journal); m != nil {
 		return fmt.Sprintf("target normally shut down for %s (%s)", m[1], m[2])

@@ -1,0 +1,136 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "89fee6b3_28bd95bd",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 463,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-12T05:29:12Z",
+      "side": 1,
+      "message": "Could you nicely break the lines? It is not necessary to do for, like, URLs, but in some cases, .md files are read as text still, so it is slightly worth, IMO.",
+      "revId": "7807d9b604c2b13beb9d8d51b203128ed3fd8fb8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8a72a880_552a1802",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 463,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-12T05:29:12Z",
+      "side": 1,
+      "message": "\"preconditions\" is the first occurrence without definition, so it\u0027s nice to be explained what it is. Suggestion:\n\nRather than running the same setup for each of those tests, tests can declare the shared setup, which is named \"precondition\" in Tast.\n\nNit: \"set up\" (two words) is a verb phrase, and \"setup\" (one word) is a noun (which I told by native English speaker :-)).",
+      "range": {
+        "startLine": 463,
+        "startChar": 57,
+        "endLine": 463,
+        "endChar": 176
+      },
+      "revId": "7807d9b604c2b13beb9d8d51b203128ed3fd8fb8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "24c320b8_ba956e14",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 465,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-12T05:29:12Z",
+      "side": 1,
+      "message": "Great addition!\n\nRecommendation: I think it is nice to have the test running order, too. Suggestion;\n\nTests share the same precondition run consecutively. Prepare() of the precondition runs just before each test function, and \"Close()\" is called once just after the last of them completed.",
+      "range": {
+        "startLine": 465,
+        "startChar": 138,
+        "endLine": 465,
+        "endChar": 292
+      },
+      "revId": "7807d9b604c2b13beb9d8d51b203128ed3fd8fb8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a2727cac_7089d444",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 465,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-12T05:29:12Z",
+      "side": 1,
+      "message": "Suggestion:\nEach test can declare its precondition by setting testing.Test.Pre an instance implements testing.Precondition and testing.preconditionImpl.",
+      "range": {
+        "startLine": 465,
+        "startChar": 0,
+        "endLine": 465,
+        "endChar": 137
+      },
+      "revId": "7807d9b604c2b13beb9d8d51b203128ed3fd8fb8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "967e1e54_dcc27013",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 466,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-12T05:29:12Z",
+      "side": 1,
+      "message": "suggestion:\n\nBecause PreValue() returns interface{}, type assertion is needed to cast to the actual type.",
+      "range": {
+        "startLine": 466,
+        "startChar": 88,
+        "endLine": 466,
+        "endChar": 115
+      },
+      "revId": "7807d9b604c2b13beb9d8d51b203128ed3fd8fb8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b402461d_076baa52",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 469,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-12T05:29:12Z",
+      "side": 1,
+      "message": "how about re-line-breaking?",
+      "range": {
+        "startLine": 468,
+        "startChar": 0,
+        "endLine": 469,
+        "endChar": 42
+      },
+      "revId": "7807d9b604c2b13beb9d8d51b203128ed3fd8fb8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

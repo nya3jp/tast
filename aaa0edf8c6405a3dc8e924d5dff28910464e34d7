@@ -1,0 +1,78 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d7c6ded5_d3505c9d",
+        "filename": "src/chromiumos/cmd/tast-lint/check/package_comment.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-12T15:20:41Z",
+      "side": 1,
+      "message": "In general, it is nice to avoid negation flag.\nHow about \"hasDoc :\u003d false\"",
+      "revId": "aaa0edf8c6405a3dc8e924d5dff28910464e34d7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8a8de2fb_de98738d",
+        "filename": "src/chromiumos/cmd/tast-lint/check/package_comment_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-12T15:20:41Z",
+      "side": 1,
+      "message": "Could you avoid panic?",
+      "revId": "aaa0edf8c6405a3dc8e924d5dff28910464e34d7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "62ebe39d_6f6e59ec",
+        "filename": "src/chromiumos/cmd/tast-lint/check/package_comment_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-12T15:20:41Z",
+      "side": 1,
+      "message": "ditto.",
+      "revId": "aaa0edf8c6405a3dc8e924d5dff28910464e34d7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e61fdd23_94f74e03",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-12T15:20:41Z",
+      "side": 1,
+      "message": "This well explains what this function does internally I think, but at the same time, this looks implementation details. How about adding more comment about \"why this works to find a \"newly added\" package\"?",
+      "range": {
+        "startLine": 109,
+        "startChar": 4,
+        "endLine": 110,
+        "endChar": 55
+      },
+      "revId": "aaa0edf8c6405a3dc8e924d5dff28910464e34d7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

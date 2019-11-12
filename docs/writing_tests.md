@@ -460,12 +460,24 @@ dependencies.
 ### Preconditions
 
 Sometimes a lengthy setup process (e.g. restarting Chrome and logging in, which
-takes at least 6-7 seconds) is needed by multiple tests. Rather than calling
-[chrome.New] at the beginning of each test, tests can declare that they require
-a logged-in Chrome instance by setting [testing.Test.Pre] to
-[chrome.LoggedIn]. This enables Tast to just perform login once and then share
-the same Chrome instance with all tests that specify the precondition. See the
-[chrome.LoggedIn] documentation for more details.
+takes at least 6-7 seconds) is needed by multiple tests. Rather than running the
+same setup for each of those tests, tests can declare the shared setup, which is
+named "precondition" in Tast.
+
+Tests sharing the same precondition run consecutively. `Prepare()` of the
+precondition runs just before each test function, and `Close()` is called once
+just after the last of them completes. Each test can declare its precondition by
+setting [testing.Test.Pre] an instance that implements [testing.Precondition]
+and `testing.preconditionImpl`. The instance `Prepare()` returns can be obtained
+by calling `s.PreValue()` in the test. Because `PreValue()` returns an
+`interface{}`, type assertion is needed to cast it to the actual type.
+
+For example, rather than calling [chrome.New] at the beginning of each test,
+tests can declare that they require a logged-in Chrome instance by setting
+[testing.Test.Pre] to [chrome.LoggedIn] in `init()`. This enables Tast to just
+perform login once and then share the same Chrome instance with all tests that
+specify the precondition. See the [chrome.LoggedIn] documentation for more
+details, and [example.ChromeDisplay] for a test using the precondition.
 
 If you want a new Chrome precondition with custom options, call
 [chrome.NewPrecondition] from a single place in your test package and save the
@@ -474,11 +486,13 @@ registering themselves. It's best to initialize and store the precondition in a
 subpackage so it can be shared by multiple test files.
 For example, see [video tests' pre subpackage].
 
-[chrome.New]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#New
 [testing.Test.Pre]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Test.Pre
+[testing.Precondition]: https://chromium.git.corp.google.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/testing/pre.go
+[chrome.New]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#New
 [chrome.LoggedIn]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#LoggedIn
+[example.ChromeDisplay]: https://chromium.git.corp.google.com/chromiumos/platform/tast-tests/+/master/src/chromiumos/tast/local/bundles/cros/example/chrome_display.go
 [chrome.NewPrecondition]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#NewPrecondition
-[video tests' pre subpackage]: https://chromium.git.corp.google.com/chromiumos/platform/tast-tests/+/refs/heads/master/src/chromiumos/tast/local/bundles/cros/video/lib/pre/
+[video tests' pre subpackage]: https://chromium.git.corp.google.com/chromiumos/platform/tast-tests/+/refs/heads/master/src/chromiumos/tast/local/media/pre
 
 ## Errors and logging
 

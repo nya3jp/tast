@@ -237,6 +237,30 @@
     },
     {
       "key": {
+        "uuid": "4deef488_e786519d",
+        "filename": "src/chromiumos/tast/rpc/client.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-11-14T08:07:21Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "d627853e_fa2426e8",
+      "range": {
+        "startLine": 110,
+        "startChar": 1,
+        "endLine": 110,
+        "endChar": 7
+      },
+      "revId": "6c36e91b0ef65d3fa95dce05b5291a8387b58c4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4f7fe788_da85b3b8",
         "filename": "src/chromiumos/tast/rpc/rpc_test.go",
         "patchSetId": 6

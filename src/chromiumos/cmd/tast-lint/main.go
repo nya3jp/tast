@@ -90,7 +90,7 @@ func hasFmtError(code []byte, path string) bool {
 }
 
 // checkAll runs all checks against paths.
-func checkAll(g *git.Git, paths []git.CommitFile, debug bool) ([]*check.Issue, error) {
+func checkAll(g *git.Git, paths []git.CommitFile, debug bool, fix bool) ([]*check.Issue, error) {
 	cp := newCachedParser(g)
 	fs := cp.fs
 
@@ -123,7 +123,7 @@ func checkAll(g *git.Git, paths []git.CommitFile, debug bool) ([]*check.Issue, e
 
 		issues = append(issues, check.Golint(path.Path, data, debug)...)
 		issues = append(issues, check.Comments(fs, f)...)
-		issues = append(issues, check.EmptySlice(fs, f)...)
+		issues = append(issues, check.EmptySlice(fs, f, fix)...)
 
 		if !hasFmtError(data, path.Path) {
 			// goimports applies gofmt, so skip it if the code has any formatting
@@ -163,7 +163,7 @@ func report(issues []*check.Issue) {
 	check.SortIssues(issues)
 
 	for _, i := range issues {
-		fmt.Println(i)
+		fmt.Println(" ", i)
 	}
 
 	linkSet := make(map[string]struct{})
@@ -180,9 +180,9 @@ func report(issues []*check.Issue) {
 		sort.Strings(links)
 
 		fmt.Println()
-		fmt.Println("Refer the following documents for details:")
+		fmt.Println(" ", "Refer the following documents for details:")
 		for _, link := range links {
-			fmt.Println(" ", link)
+			fmt.Println("  ", link)
 		}
 	}
 }
@@ -190,6 +190,7 @@ func report(issues []*check.Issue) {
 func main() {
 	commit := flag.String("commit", "", "if set, checks files in the specified Git commit")
 	debug := flag.Bool("debug", false, "enables debug outputs")
+	fix := flag.Bool("fix", false, "modifies auto-fixable errors automatically")
 	flag.Parse()
 
 	// TODO(nya): Allow running lint from arbitrary directories.
@@ -209,12 +210,25 @@ func main() {
 		return
 	}
 
-	issues, err := checkAll(g, files, *debug)
+	issues, err := checkAll(g, files, *debug, *fix)
 	if err != nil {
 		panic(err)
 	}
-	if len(issues) > 0 {
-		report(issues)
+	if len(issues) > 0 && !*fix {
+		// categorize issues
+		issuesFixable, issuesUnFixable := check.CategorizeIssues(issues)
+		if issuesUnFixable != nil {
+			fmt.Println("Following errors should be modified by yourself:")
+			report(issuesUnFixable)
+			fmt.Println()
+		}
+		if issuesFixable != nil {
+			fmt.Println("Following errors can be automatically modified:")
+			report(issuesFixable)
+			fmt.Println()
+			fmt.Printf("  You can run `%s -fix %s` to fix this\n", os.Args[0], strings.Join(os.Args[1:], " "))
+			fmt.Println()
+		}
 		os.Exit(1)
 	}
 }

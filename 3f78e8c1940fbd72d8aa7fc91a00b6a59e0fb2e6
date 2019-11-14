@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "32c40229_f1ca6657",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-14T17:15:51Z",
+      "side": 1,
+      "message": "Let\u0027s handle an case that ptdfmap does not have an entry for dir. (Sorry I overlooked).\n\noptional/style: it can be refactored a bit.\n\npaths, ok :\u003d (*ptdfmap)[dir]\nif !ok {\n  ... // return error \n}\nif numGoFiles !\u003d len(paths) {\n  return false, nil\n}\n\nfor ... {\n  if ... {\n    return false, nil\n  }\n}\nreturn true, nil",
+      "range": {
+        "startLine": 125,
+        "startChar": 1,
+        "endLine": 133,
+        "endChar": 32
+      },
+      "revId": "3f78e8c1940fbd72d8aa7fc91a00b6a59e0fb2e6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

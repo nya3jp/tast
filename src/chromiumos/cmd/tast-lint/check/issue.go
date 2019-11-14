@@ -14,9 +14,10 @@ import (
 
 // Issue holds an issue reported by the linter.
 type Issue struct {
-	Pos  token.Position
-	Msg  string
-	Link string
+	Pos     token.Position
+	Msg     string
+	Link    string
+	Fixable bool
 }
 
 func (i *Issue) String() string {
@@ -64,4 +65,17 @@ func DropIgnoredIssues(issues []*Issue, fs *token.FileSet, f *ast.File) []*Issue
 		}
 	}
 	return kept
+}
+
+// CategorizeIssues categorize issues into auto-fixable and un-auto-fixable,
+// then returns devided two slices.
+func CategorizeIssues(issues []*Issue) (fixable []*Issue, unfixable []*Issue) {
+	for _, i := range issues {
+		if i.Fixable {
+			fixable = append(fixable, i)
+		} else {
+			unfixable = append(unfixable, i)
+		}
+	}
+	return
 }

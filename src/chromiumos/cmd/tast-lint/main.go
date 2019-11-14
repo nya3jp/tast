@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+	"go/format"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -17,6 +18,7 @@ import (
 
 	"chromiumos/cmd/tast-lint/check"
 	"chromiumos/cmd/tast-lint/git"
+	"chromiumos/tast/shutil"
 )
 
 // getTargetFiles returns the list of files to run lint according to flags.
@@ -134,7 +136,7 @@ func isNewlyAddedPackage(dir string, paths []git.CommitFile) (bool, error) {
 }
 
 // checkAll runs all checks against paths.
-func checkAll(g *git.Git, paths []git.CommitFile, debug bool) ([]*check.Issue, error) {
+func checkAll(g *git.Git, paths []git.CommitFile, debug bool, fix bool) ([]*check.Issue, error) {
 	cp := newCachedParser(g)
 	fs := cp.fs
 
@@ -178,7 +180,7 @@ func checkAll(g *git.Git, paths []git.CommitFile, debug bool) ([]*check.Issue, e
 
 			issues = append(issues, check.Golint(path.Path, data, debug)...)
 			issues = append(issues, check.Comments(fs, f)...)
-			issues = append(issues, check.EmptySlice(fs, f)...)
+			issues = append(issues, check.EmptySlice(fs, f, fix)...)
 
 			if !hasFmtError(data, path.Path) {
 				// goimports applies gofmt, so skip it if the code has any formatting
@@ -207,10 +209,70 @@ func checkAll(g *git.Git, paths []git.CommitFile, debug bool) ([]*check.Issue, e
 			}
 			// Only collect issues that weren't ignored by NOLINT comments.
 			allIssues = append(allIssues, check.DropIgnoredIssues(issues, fs, f)...)
+
+			// Format modified tree.
+			if fix {
+				if err := func() (retErr error) {
+					tempfile, err := ioutil.TempFile(filepath.Dir(path.Path), "temp")
+					defer tempfile.Close()
+					if err != nil {
+						return err
+					}
+					if err := format.Node(tempfile, fs, f); err != nil {
+						return err
+					}
+
+					defer func() {
+						tempfile, err := os.Open(tempfile.Name())
+						defer os.Remove(tempfile.Name())
+						if err != nil {
+							retErr = err
+							return
+						}
+						bytesread, err := ioutil.ReadFile(tempfile.Name())
+						if err != nil {
+							retErr = err
+							return
+						}
+						if hasFmtError(bytesread, tempfile.Name()) {
+							return
+						}
+
+						file, err := os.Open(path.Path)
+						defer file.Close()
+						if err != nil {
+							retErr = err
+							return
+						}
+						if err := os.Rename(tempfile.Name(), path.Path); err != nil {
+							retErr = err
+							return
+						}
+						return
+					}()
+
+					return
+				}(); err != nil {
+					return nil, err
+				}
+			}
 		}
 	}
 
 	return allIssues, nil
+}
+
+// categorizeIssues categorize issues into auto-fixable and un-auto-fixable,
+// then returns devided two slices.
+func categorizeIssues(issues []*check.Issue) (fixable []*check.Issue, unfixable []*check.Issue) {
+	for _, i := range issues {
+		if i.Fixable {
+			fixable = append(fixable, i)
+		} else {
+			unfixable = append(unfixable, i)
+		}
+	}
+	return
 }
 
 // report prints issues to stdout.
@@ -218,7 +280,7 @@ func report(issues []*check.Issue) {
 	check.SortIssues(issues)
 
 	for _, i := range issues {
-		fmt.Println(i)
+		fmt.Println(" ", i)
 	}
 
 	linkSet := make(map[string]struct{})
@@ -235,9 +297,9 @@ func report(issues []*check.Issue) {
 		sort.Strings(links)
 
 		fmt.Println()
-		fmt.Println("Refer the following documents for details:")
+		fmt.Println(" ", "Refer the following documents for details:")
 		for _, link := range links {
-			fmt.Println(" ", link)
+			fmt.Println("  ", link)
 		}
 	}
 }
@@ -245,6 +307,7 @@ func report(issues []*check.Issue) {
 func main() {
 	commit := flag.String("commit", "", "if set, checks files in the specified Git commit")
 	debug := flag.Bool("debug", false, "enables debug outputs")
+	fix := flag.Bool("fix", false, "modifies auto-fixable errors automatically")
 	flag.Parse()
 
 	// TODO(nya): Allow running lint from arbitrary directories.
@@ -264,12 +327,26 @@ func main() {
 		return
 	}
 
-	issues, err := checkAll(g, files, *debug)
+	issues, err := checkAll(g, files, *debug, *fix)
 	if err != nil {
 		panic(err)
 	}
-	if len(issues) > 0 {
-		report(issues)
+	if len(issues) > 0 && !*fix {
+		// categorize issues
+		fixable, unfixable := categorizeIssues(issues)
+		if len(unfixable) > 0 {
+			fmt.Println("Following errors should be modified by yourself:")
+			report(unfixable)
+			fmt.Println()
+		}
+		if len(fixable) > 0 {
+			fmt.Println("Following errors can be automatically modified:")
+			report(fixable)
+			fmt.Println()
+			cmd := append([]string{os.Args[0], "-fix"}, os.Args[1:]...)
+			fmt.Printf("  You can run `%s` to fix this\n", shutil.EscapeSlice(cmd))
+			fmt.Println()
+		}
 		os.Exit(1)
 	}
 }

@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "675d4749_cc7e12f2",
+        "filename": "src/chromiumos/tast/rpc/client.go",
+        "patchSetId": 21
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-11-14T08:04:48Z",
+      "side": 1,
+      "message": "qq: can we distinguish remote logs and DUT logs looking at the log? Don\u0027t we need any marker?",
+      "range": {
+        "startLine": 110,
+        "startChar": 47,
+        "endLine": 110,
+        "endChar": 95
+      },
+      "revId": "ba428a99e23c6346d10a24a2180c6d956bdd5a89",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "57f64944_a3fc6f7b",
+        "filename": "src/chromiumos/tast/rpc/logging_client.go",
+        "patchSetId": 21
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-11-14T08:04:48Z",
+      "side": 1,
+      "message": "nit: not sure what does this mean. Maybe you can make it clearer by avoiding passive voice and expanding the ambiguous \"we\".",
+      "range": {
+        "startLine": 32,
+        "startChar": 61,
+        "endLine": 33,
+        "endChar": 23
+      },
+      "revId": "ba428a99e23c6346d10a24a2180c6d956bdd5a89",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "62087c66_2c046c06",
+        "filename": "src/chromiumos/tast/rpc/logging_test.go",
+        "patchSetId": 21
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-11-14T08:04:48Z",
+      "side": 1,
+      "message": "I think lis is closed by gs.Stop() .\nhttps://godoc.org/google.golang.org/grpc#Server.Stop",
+      "range": {
+        "startLine": 27,
+        "startChar": 7,
+        "endLine": 27,
+        "endChar": 10
+      },
+      "revId": "ba428a99e23c6346d10a24a2180c6d956bdd5a89",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

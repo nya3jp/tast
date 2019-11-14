@@ -8,46 +8,102 @@ import (
 	"fmt"
 	"go/ast"
 	"go/token"
+	"strings"
+
+	"golang.org/x/tools/go/ast/astutil"
 )
 
 // EmptySlice warns the invalid empty slice declaration.
-func EmptySlice(fs *token.FileSet, f *ast.File) []*Issue {
+func EmptySlice(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 	var issues []*Issue
 
-	ast.Inspect(f, func(node ast.Node) bool {
-		x, ok := node.(*ast.AssignStmt)
+	// Traverse a syntax tree and find not-preferred empty slice declarations.
+	astutil.Apply(f, func(c *astutil.Cursor) bool {
+		// If parent is not a block statement, ignore.
+		// - For example, empty slice assginment in the statement like
+		//     `if a := []int{}; len(a) == 1 { // parent is ast.IfStmt
+		//        return
+		//     }`
+		//   is not replacable by 'var' statement.
+		_, ok := c.Parent().(*ast.BlockStmt)
 		if !ok {
 			return true
 		}
-		if x.Tok != token.DEFINE {
+
+		asgn, ok := c.Node().(*ast.AssignStmt)
+		if !ok {
 			return true
 		}
-		for i, rexp := range x.Rhs {
-			lvar, ok := x.Lhs[i].(*ast.Ident)
-			if !ok {
-				// If assignment operator is DEFINE, it is expected that each lhs is an identifier,
-				// so this shouldn't happen. Skip to avoid false positive.
-				continue
-			}
-			str := lvar.Name
+
+		if asgn.Tok != token.DEFINE {
+			return true
+		}
+
+		// Find invalid empty slice declarations.
+		var ids []string
+		var pos token.Pos
+		var id *ast.Ident
+		var elt ast.Expr
+
+		for i, rexp := range asgn.Rhs {
 			comp, ok := rexp.(*ast.CompositeLit)
 			if !ok {
 				continue
 			}
+
 			arr, ok := comp.Type.(*ast.ArrayType)
 			if !ok {
 				continue
 			}
+
 			if arr.Len == nil && comp.Elts == nil {
-				issues = append(issues, &Issue{
-					Pos:  fs.Position(lvar.Pos()),
-					Msg:  fmt.Sprintf("Use 'var' statement when you declare empty slice '%s'", str),
-					Link: "https://github.com/golang/go/wiki/CodeReviewComments#declaring-empty-slices",
-				})
+				id, ok = asgn.Lhs[i].(*ast.Ident)
+				if !ok {
+					continue
+				}
+
+				ids = append(ids, id.Name)
+				elt = arr.Elt
+				// Store the position of first element.
+				if pos == token.NoPos {
+					pos = id.Pos()
+				}
 			}
 		}
+
+		if len(ids) == 0 {
+			return true
+		}
+
+		if !fix {
+			issue := &Issue{
+				Pos:  fs.Position(pos),
+				Msg:  fmt.Sprintf("Use 'var' statement when you declare empty slice(s): %s", strings.Join(ids, ", ")),
+				Link: "https://github.com/golang/go/wiki/CodeReviewComments#declaring-empty-slices",
+			}
+			if len(asgn.Rhs) == 1 {
+				issue.Fixable = true
+			}
+			issues = append(issues, issue)
+		} else if fix && len(asgn.Rhs) == 1 {
+			c.Replace(&ast.DeclStmt{
+				Decl: &ast.GenDecl{
+					Tok:    token.VAR,
+					TokPos: id.NamePos,
+					Specs: []ast.Spec{
+						&ast.ValueSpec{
+							Names: []*ast.Ident{id},
+							Type: &ast.ArrayType{
+								Elt: elt,
+							},
+						},
+					},
+				},
+			})
+		}
+
 		return true
-	})
+	}, nil)
 
 	return issues
 }

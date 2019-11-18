@@ -101,6 +101,7 @@ The following software features are defined:
 *   `tpm` - A [Trusted Platform Module] chip.
 *   `transparent_hugepage` - [Transparent Hugepage] support in the Linux kernel.
 *   `usbguard` - The ability to allow or block USB devices based on policy.
+*   `vaapi` - Whether or not VA-API is supported by this DUT.
 *   `virtual_usb_printer` - Emulates a USB printer. This implies the presence of
     the `usbip` program.
 *   `vm_host` - The ability to [run virtual machines].

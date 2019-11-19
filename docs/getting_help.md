@@ -21,7 +21,7 @@ using the following components:
 [tast-reviewers]: https://groups.google.com/a/google.com/forum/#!forum/tast-reviewers
 [chromeos-velocity]: https://groups.google.com/a/google.com/forum/#!forum/chromeos-velocity
 
-## Core team meeting notes
+## Core team meeting notes (Googler only)
 
 Meeting notes of Tast core framework weekly is available at [go/tast-weekly].
 

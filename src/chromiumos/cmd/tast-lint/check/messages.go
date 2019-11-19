@@ -11,6 +11,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"golang.org/x/tools/go/ast/astutil"
 )
 
 // countVerbs returns the number of format verbs.
@@ -21,6 +23,9 @@ func countVerbs(s string) int {
 
 // printFormatRE matches format verbs.
 var printFormatRE = regexp.MustCompile(`%[#+]?\d*\.?\d*[dfqsvx]`)
+
+// unLetter matches suffix part that are not letters.
+var unLetter = regexp.MustCompile(`([^a-zA-Z0-9]*)$`)
 
 // hasVerbs returns if s contains format verbs.
 func hasVerbs(s string) bool {
@@ -40,21 +45,21 @@ func isFMTSprintf(call *ast.CallExpr) bool {
 }
 
 // Messages checks calls to logging- and error-related functions.
-func Messages(fs *token.FileSet, f *ast.File) []*Issue {
+func Messages(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 	var issues []*Issue
 
-	v := funcVisitor(func(node ast.Node) {
-		call, ok := node.(*ast.CallExpr)
+	astutil.Apply(f, func(c *astutil.Cursor) bool {
+		call, ok := c.Node().(*ast.CallExpr)
 		if !ok {
-			return
+			return true
 		}
 		sel, ok := call.Fun.(*ast.SelectorExpr)
 		if !ok {
-			return
+			return true
 		}
 		x, ok := sel.X.(*ast.Ident)
 		if !ok {
-			return
+			return true
 		}
 		recvName := x.Name
 		funcName := sel.Sel.Name
@@ -79,7 +84,7 @@ func Messages(fs *token.FileSet, f *ast.File) []*Issue {
 		}
 
 		if argOffset < 0 || len(call.Args) <= argOffset {
-			return
+			return true
 		}
 
 		// Keys are f-suffixed functions, values are corresponding non-f-suffixed functions.
@@ -116,7 +121,7 @@ func Messages(fs *token.FileSet, f *ast.File) []*Issue {
 			if lit, ok := a.(*ast.BasicLit); ok && lit.Kind == token.STRING {
 				val, err := strconv.Unquote(lit.Value)
 				if err != nil {
-					return
+					return true
 				}
 				args = append(args, argInfo{stringArg, val})
 			} else if ident, ok := a.(*ast.Ident); ok && ident.Name == "err" {
@@ -131,8 +136,24 @@ func Messages(fs *token.FileSet, f *ast.File) []*Issue {
 			}
 		}
 
-		addIssue := func(msg, link string) {
-			issues = append(issues, &Issue{Pos: fs.Position(x.Pos()), Msg: msg, Link: link})
+		addIssue := func(msg, link string, fixable bool) {
+			issues = append(issues, &Issue{Pos: fs.Position(x.Pos()), Msg: msg, Link: link, Fixable: fixable})
+		}
+
+		replaceNode := func(selname string, newarg []ast.Expr) {
+			correct := &ast.CallExpr{
+				Fun: &ast.SelectorExpr{
+					X: &ast.Ident{
+						Name:    recvName,
+						NamePos: x.NamePos,
+					},
+					Sel: &ast.Ident{
+						Name: selname,
+					},
+				},
+				Args: newarg,
+			}
+			c.Replace(correct)
 		}
 
 		const (
@@ -146,66 +167,43 @@ func Messages(fs *token.FileSet, f *ast.File) []*Issue {
 			fmtURL        = "https://golang.org/pkg/fmt/#hdr-Printing"
 		)
 
-		// Used Logf("Some message") instead of Log("Some message").
-		if isFmt && len(args) == 1 {
-			addIssue(fmt.Sprintf(`Use %v(%v"<msg>") instead of %v(%v"<msg>")`,
-				fmtMap[callName], argPrefix, callName, argPrefix), printfURL)
-		}
-
-		// Used Log(fmt.Sprintf(...)) instead of Logf(...)
-		if !isFmt && len(args) == 1 && args[0].typ == sprintfArg {
-			addIssue(fmt.Sprintf(`Use %v(%v...) instead of %v(%vfmt.Sprintf(...))`,
-				fmtMapRev[callName], argPrefix, callName, argPrefix), printfURL)
-		}
-
-		// Used Logf("Got %v", i) instead of Log("Got ", i).
-		if !isErr && isFmt && len(args) == 2 && args[0].typ == stringArg && strings.HasSuffix(args[0].val, " %v") {
-			addIssue(fmt.Sprintf(`Use %v(%v"<msg> ", val) instead of %v(%v"<msg> %%v", val)`,
-				fmtMap[callName], argPrefix, callName, argPrefix), printfURL)
-		}
-
-		// Used Log("Some error", err) instead of Log("Some error: ", err).
-		if !isFmt && !isErr && len(args) == 2 && args[0].typ == stringArg &&
-			args[1].typ == errorArg && !strings.HasSuffix(args[0].val, ": ") {
-			addIssue(fmt.Sprintf(`%v string arg should end with ": " when followed by error`, callName), logFmtURL)
-		}
-
-		// Used errors.Errorf("something failed: %v", err) instead of errors.Wrap(err, "something failed").
-		if callName == "errors.Errorf" && len(args) >= 2 && args[0].typ == stringArg &&
-			args[len(args)-1].typ == errorArg && strings.HasSuffix(args[0].val, "%v") {
-			if len(args) == 2 {
-				addIssue(`Use errors.Wrap(err, "<msg>") instead of errors.Errorf("<msg>: %v", err)`, errPkgURL)
-			} else {
-				addIssue(`Use errors.Wrapf(err, "<msg>", ...) instead of errors.Errorf("<msg>: %v", ..., err)`, errPkgURL)
-			}
-		}
-
-		// Used Log(err) instead of Log("Some error: ", err).
-		if !isErr && len(args) == 1 && args[0].typ == errorArg {
-			addIssue(fmt.Sprintf(`Use %v(%v"Something failed: ", err) instead of %v(%verr)`,
-				callName, argPrefix, callName, argPrefix), commonFmtURL)
-		}
-
 		// Lower-level string checks.
 		if len(args) >= 1 && args[0].typ == stringArg && args[0].val != "" {
 			str := args[0].val
 
 			// Used Log("Some message.") or Log("Some message!") instead of Log("Some message").
 			if strings.LastIndexAny(str, ".!") == len(str)-1 {
-				u := logFmtURL
-				if isErr {
-					u = errFmtURL
+				if !fix {
+					u := logFmtURL
+					if isErr {
+						u = errFmtURL
+					}
+					addIssue(fmt.Sprintf("%v string arg should not contain trailing punctuation", callName), u, true)
+				} else {
+					basiclit := call.Args[argOffset].(*ast.BasicLit)
+					if strtype, ok := getStringLiteralType(basiclit.Value); ok {
+						if str, err := strconv.Unquote(basiclit.Value); err == nil {
+							basiclit.Value = quoteAs(strings.TrimRight(str, ".!"), strtype)
+						}
+					}
 				}
-				addIssue(fmt.Sprintf("%v string arg should not contain trailing punctuation", callName), u)
 			}
 			// Used Log("Some message\nMore text") instead of Log("Some message") and Log("More text").
 			if strings.Contains(str, "\n") {
-				addIssue(fmt.Sprintf("%v string arg should not contain embedded newlines", callName), commonFmtURL)
+				addIssue(fmt.Sprintf("%v string arg should not contain embedded newlines", callName), commonFmtURL, false)
 			}
 			// Used Logf("'%s'", ...) instead of Logf("%q", ...).
 			if isFmt && (strings.Contains(str, `"%s"`) || strings.Contains(str, `'%s'`) ||
 				strings.Contains(str, `"%v"`) || strings.Contains(str, `'%v'`)) {
-				addIssue("Use %q to quote values instead of manually quoting them", commonFmtURL)
+				if !fix {
+					addIssue("Use %q to quote values instead of manually quoting them", commonFmtURL, true)
+				} else {
+					basiclit := call.Args[argOffset].(*ast.BasicLit)
+					basiclit.Value = strings.Replace(basiclit.Value, `\"%s\"`, "%q", -1)
+					basiclit.Value = strings.Replace(basiclit.Value, `'%s'`, "%q", -1)
+					basiclit.Value = strings.Replace(basiclit.Value, `\"%v\"`, "%q", -1)
+					basiclit.Value = strings.Replace(basiclit.Value, `'%v'`, "%q", -1)
+				}
 			}
 
 			// Logs should start with upper letters while errors should start with lower letters.
@@ -240,30 +238,158 @@ func Messages(fs *token.FileSet, f *ast.File) []*Issue {
 					continue
 				}
 				if isErr {
-					addIssue("Messages of the error type should not be capitalized", formattingURL)
+					if !fix {
+						addIssue("Messages of the error type should not be capitalized", formattingURL, true)
+					} else {
+						basiclit := call.Args[argOffset].(*ast.BasicLit)
+						str, _ := strconv.Unquote(basiclit.Value)
+						strtype, ok := getStringLiteralType(basiclit.Value)
+						if ok {
+							basiclit.Value = quoteAs(strings.ToLower(str[:1])+str[1:], strtype)
+						}
+					}
 				} else if isLog {
-					addIssue("Log messages should be capitalized", formattingURL)
+					if !fix {
+						addIssue("Log messages should be capitalized", formattingURL, true)
+					} else {
+						basiclit := call.Args[argOffset].(*ast.BasicLit)
+						str, _ := strconv.Unquote(basiclit.Value)
+						strtype, ok := getStringLiteralType(basiclit.Value)
+						if ok {
+							basiclit.Value = quoteAs(strings.ToUpper(str[:1])+str[1:], strtype)
+						}
+					}
 				} else {
-					addIssue("Test failure messages should be capitalized", formattingURL)
+					if !fix {
+						addIssue("Test failure messages should be capitalized", formattingURL, true)
+					} else {
+						basiclit := call.Args[argOffset].(*ast.BasicLit)
+						str, _ := strconv.Unquote(basiclit.Value)
+						strtype, ok := getStringLiteralType(basiclit.Value)
+						if ok {
+							basiclit.Value = quoteAs(strings.ToUpper(str[:1])+str[1:], strtype)
+						}
+					}
 				}
 			}
 		}
 
+		// Used Logf("Some message") instead of Log("Some message").
+		if isFmt && len(args) == 1 {
+			fixable := (args[0].typ != stringArg || countVerbs(args[0].val) == len(args)-1)
+			if !fix {
+				addIssue(fmt.Sprintf(`Use %v(%v"<msg>") instead of %v(%v"<msg>")`,
+					fmtMap[callName], argPrefix, callName, argPrefix), printfURL, fixable)
+			} else if fixable {
+				replaceNode(strings.TrimLeft(fmtMap[callName], recvName+"."), call.Args)
+			}
+		}
+
+		// Used Log(fmt.Sprintf(...)) instead of Logf(...)
+		if !isFmt && len(args) == 1 && args[0].typ == sprintfArg {
+			if !fix {
+				addIssue(fmt.Sprintf(`Use %v(%v...) instead of %v(%vfmt.Sprintf(...))`,
+					fmtMapRev[callName], argPrefix, callName, argPrefix), printfURL, true)
+			} else {
+				sprintf := call.Args[argOffset].(*ast.CallExpr)
+				newarg := append([]ast.Expr(nil), call.Args[:argOffset]...)
+				newarg = append(newarg, sprintf.Args...)
+				replaceNode(strings.TrimLeft(fmtMapRev[callName], recvName+"."), newarg)
+			}
+		}
+
+		// Used Logf("Got %v", i) instead of Log("Got ", i).
+		if !isErr && isFmt && len(args) == 2 && args[0].typ == stringArg && strings.HasSuffix(args[0].val, " %v") {
+			if !fix {
+				addIssue(fmt.Sprintf(`Use %v(%v"<msg> ", val) instead of %v(%v"<msg> %%v", val)`,
+					fmtMap[callName], argPrefix, callName, argPrefix), printfURL, true)
+			} else {
+				basiclit := call.Args[argOffset].(*ast.BasicLit)
+				str, _ := strconv.Unquote(basiclit.Value)
+				strtype, ok := getStringLiteralType(basiclit.Value)
+				if ok {
+					basiclit.Value = quoteAs(strings.TrimRight(str, "%v"), strtype)
+				}
+				replaceNode(strings.TrimLeft(fmtMap[callName], recvName+"."), call.Args)
+			}
+		}
+
+		// Used Log("Some error", err) instead of Log("Some error: ", err).
+		if !isFmt && !isErr && len(args) == 2 && args[0].typ == stringArg &&
+			args[1].typ == errorArg && !strings.HasSuffix(args[0].val, ": ") {
+			if !fix {
+				addIssue(fmt.Sprintf(`%v string arg should end with ": " when followed by error`, callName), logFmtURL, true)
+			} else {
+				basiclit := call.Args[argOffset].(*ast.BasicLit)
+				finds := unLetter.FindStringSubmatch(args[0].val)
+				str, _ := strconv.Unquote(basiclit.Value)
+				strtype, ok := getStringLiteralType(basiclit.Value)
+				if ok {
+					basiclit.Value = quoteAs(strings.TrimRight(str, finds[1])+": ", strtype)
+				}
+			}
+		}
+
+		// Used errors.Errorf("something failed: %v", err) instead of errors.Wrap(err, "something failed").
+		if callName == "errors.Errorf" && len(args) >= 2 && args[0].typ == stringArg &&
+			args[len(args)-1].typ == errorArg && strings.HasSuffix(args[0].val, "%v") {
+			if len(args) == 2 {
+				if !fix {
+					addIssue(`Use errors.Wrap(err, "<msg>") instead of errors.Errorf("<msg>: %v", err)`, errPkgURL, true)
+				} else {
+					basiclit := call.Args[argOffset].(*ast.BasicLit)
+					str, _ := strconv.Unquote(basiclit.Value)
+					str = strings.TrimRight(str, ": %v")
+					finds := unLetter.FindStringSubmatch(str)
+					strtype, ok := getStringLiteralType(basiclit.Value)
+					if ok {
+						basiclit.Value = quoteAs(strings.TrimRight(str, finds[1]), strtype)
+					}
+					newarg := append([]ast.Expr(nil), call.Args[1:]...)
+					newarg = append(newarg, basiclit)
+					replaceNode("Wrap", newarg)
+				}
+			} else {
+				if !fix {
+					addIssue(`Use errors.Wrapf(err, "<msg>", ...) instead of errors.Errorf("<msg>: %v", ..., err)`, errPkgURL, true)
+				} else {
+					basiclit := call.Args[argOffset].(*ast.BasicLit)
+					str, _ := strconv.Unquote(basiclit.Value)
+					str = strings.TrimRight(str, "%v")
+					finds := unLetter.FindStringSubmatch(str)
+					strtype, ok := getStringLiteralType(basiclit.Value)
+					if ok {
+						basiclit.Value = quoteAs(strings.TrimRight(str, finds[1]), strtype)
+					}
+					newarg := append(call.Args[len(args)-1:], basiclit)
+					newarg = append(newarg, call.Args[1:len(args)-1]...)
+					replaceNode("Wrapf", newarg)
+				}
+			}
+		}
+
+		// Used Log(err) instead of Log("Some error: ", err).
+		if !isErr && len(args) == 1 && args[0].typ == errorArg {
+			addIssue(fmt.Sprintf(`Use %v(%v"Something failed: ", err) instead of %v(%verr)`,
+				callName, argPrefix, callName, argPrefix), commonFmtURL, false)
+		}
+
 		// The number of verbs and the number of arguments must match.
 		if isFmt && len(args) >= 1 && args[0].typ == stringArg && countVerbs(args[0].val) != len(args)-1 {
-			addIssue("The number of verbs in format literal mismatches with the number of arguments", fmtURL)
+			addIssue("The number of verbs in format literal mismatches with the number of arguments", fmtURL, false)
 		}
 		// Used verbs in non *f families.
 		if !isFmt && len(args) >= 1 && args[0].typ == stringArg && hasVerbs(args[0].val) {
-			addIssue(fmt.Sprintf("%s has verbs in the first string (do you mean %s?)", callName, fmtMapRev[callName]), formattingURL)
+			addIssue(fmt.Sprintf("%s has verbs in the first string (do you mean %s?)", callName, fmtMapRev[callName]), formattingURL, false)
 		}
 
 		// Error messages should contain some surrounding context.
 		if !isLog && len(args) >= 1 && args[0].typ == stringArg && args[0].val == "" {
-			addIssue("Error message should have some surrounding context, so must not empty", errFmtURL)
+			addIssue("Error message should have some surrounding context, so must not empty", errFmtURL, false)
 		}
-	})
 
-	ast.Walk(v, f)
+		return true
+	}, nil)
+
 	return issues
 }

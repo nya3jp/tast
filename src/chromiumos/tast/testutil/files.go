@@ -9,13 +9,15 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
 // TempDir creates a temporary directory prefixed by "tast_unittest_[TestName]." and returns its path.
 // If the directory cannot be created, a fatal error is reported to t.
 func TempDir(t *testing.T) string {
-	td, err := ioutil.TempDir("", "tast_unittest_"+t.Name()+".")
+	t.Helper()
+	td, err := ioutil.TempDir("", "tast_unittest_"+strings.Replace(t.Name(), "/", "_", -1)+".")
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -5,116 +5,176 @@
 package run
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+
+	"chromiumos/tast/testutil"
 )
 
-func TestVarsReadAndUpdateVars(t *testing.T) {
+func TestFindVarsFiles(t *testing.T) {
+	td := testutil.TempDir(t)
+	defer os.RemoveAll(td)
+
+	if err := testutil.WriteFiles(td, map[string]string{
+		"valid1.yaml":      "",
+		"valid2.yaml":      "",
+		"ignored.txt":      "",
+		"ignored.json":     "",
+		"dir/ignored.yaml": "",
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	paths, err := findVarsFiles(td)
+	if err != nil {
+		t.Fatal("findVarsFiles failed: ", err)
+	}
+
+	exp := []string{
+		filepath.Join(td, "valid1.yaml"),
+		filepath.Join(td, "valid2.yaml"),
+	}
+	if diff := cmp.Diff(paths, exp); diff != "" {
+		t.Errorf("findVarsFiles returned unexpected paths (-got +want):\n%s", diff)
+	}
+}
+
+func TestFindVarsFilesNotExist(t *testing.T) {
+	td := testutil.TempDir(t)
+	defer os.RemoveAll(td)
+
+	if _, err := findVarsFiles(filepath.Join(td, "no_such_dir")); err != nil {
+		t.Fatal("findVarsFiles failed: ", err)
+	}
+}
+
+func TestReadVars(t *testing.T) {
+	td := testutil.TempDir(t)
+	defer os.RemoveAll(td)
+
+	if err := testutil.WriteFiles(td, map[string]string{
+		"empty.yaml":   "",
+		"test.yaml":    "a: foo\nb: bar",
+		"invalid.yaml": "123",
+	}); err != nil {
+		t.Fatal(err)
+	}
+
 	for _, tc := range []struct {
-		name string
-		// files is a map from file name to its content.
-		files     map[string]string
-		vars      map[string]string
+		name      string
 		want      map[string]string
 		wantError bool
 	}{
 		{
-			name:  "nothing",
-			files: map[string]string{},
-			want:  map[string]string{},
+			name: "empty.yaml",
+			want: map[string]string{},
 		},
 		{
-			name:  "one file",
-			files: map[string]string{"test.yaml": "foo: 42\nbaz: qux"},
-			want:  map[string]string{"foo": "42", "baz": "qux"},
+			name: "test.yaml",
+			want: map[string]string{"a": "foo", "b": "bar"},
 		},
 		{
-			name:  "filter by extension",
-			files: map[string]string{"test.txt": "foo: bar"},
-			want:  map[string]string{},
-		},
-		{
-			name:      "invalid",
-			files:     map[string]string{"invalid.yaml": "123"},
+			name:      "invalid.yaml",
 			wantError: true,
 		},
 		{
-			name: "merge",
-			files: map[string]string{
-				"a.yaml": "foo: bar",
-				"b.yaml": "baz: qux",
-			},
-			want: map[string]string{
-				"foo": "bar",
-				"baz": "qux",
-			},
-		},
-		{
-			name: "duplicated",
-			files: map[string]string{
-				"a.yaml": "foo: bar",
-				"b.yaml": "foo: baz",
-			},
+			name:      "missing.yaml",
 			wantError: true,
-		},
-		{
-			name: "vars",
-			vars: map[string]string{
-				"foo": "bar",
-			},
-			files: map[string]string{
-				"a.yaml": "foo: qux",
-				"b.yaml": "baz: qux",
-			},
-			want: map[string]string{
-				"foo": "bar",
-				"baz": "qux",
-			},
 		},
 	} {
-		// Wrap a test with func for defer statements not to be stacked.
-		func() {
-			varDir, err := ioutil.TempDir("", "vars")
+		t.Run(tc.name, func(t *testing.T) {
+			vars, err := readVarsFile(filepath.Join(td, tc.name))
 			if err != nil {
-				t.Fatal(err)
-			}
-			defer os.RemoveAll(varDir)
-			for k, v := range tc.files {
-				ioutil.WriteFile(filepath.Join(varDir, k), []byte(v), 0644)
-			}
-			// It's fine to modify tc.vars in readAndUpdateVars, as it has no later use.
-			vars := tc.vars
-			if vars == nil {
-				vars = map[string]string{}
-			}
-
-			if err := readAndUpdateVars(varDir, vars); err != nil {
 				if !tc.wantError {
-					t.Errorf("Test %q failed; unexpected error: %v", tc.name, err)
+					t.Fatal("readVarsFile failed: ", err)
 				}
 				return
 			}
 			if tc.wantError {
-				t.Errorf("Test %q failed; unexpected success", tc.name)
-				return
+				t.Fatal("readVarsFile succeeded unexpectedly")
 			}
-			if diff := cmp.Diff(tc.want, vars); diff != "" {
-				t.Errorf("Test %q failed; (-want +got):\n%v", tc.name, diff)
+			if diff := cmp.Diff(vars, tc.want); diff != "" {
+				t.Fatalf("readVarsFile returned unexpected vars (-got +want):\n%v", diff)
 			}
-		}()
+		})
 	}
 }
-func TestVarsReadAndUpdateVarsNotExist(t *testing.T) {
-	tmp, err := ioutil.TempDir("", "tmp")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer os.RemoveAll(tmp)
-	if err := readAndUpdateVars(filepath.Join(tmp, "nonexistent"), nil); !os.IsNotExist(err) {
-		t.Error("os.IsNotExist was unexpectedly false: ", err)
+
+func TestMergeVars(t *testing.T) {
+	td := testutil.TempDir(t)
+	defer os.RemoveAll(td)
+
+	for _, tc := range []struct {
+		name      string
+		vars      map[string]string
+		newVars   map[string]string
+		mode      mergeVarsMode
+		want      map[string]string
+		wantError bool
+	}{
+		{
+			name: "empty_skipOnDuplicate",
+			vars: map[string]string{},
+			mode: skipOnDuplicate,
+			want: map[string]string{},
+		},
+		{
+			name: "empty_errorOnDuplicate",
+			vars: map[string]string{},
+			mode: errorOnDuplicate,
+			want: map[string]string{},
+		},
+		{
+			name: "old_values_only",
+			vars: map[string]string{"a": "foo", "b": "bar"},
+			mode: errorOnDuplicate,
+			want: map[string]string{"a": "foo", "b": "bar"},
+		},
+		{
+			name:    "new_values_only",
+			vars:    map[string]string{},
+			newVars: map[string]string{"a": "foo", "b": "bar"},
+			mode:    errorOnDuplicate,
+			want:    map[string]string{"a": "foo", "b": "bar"},
+		},
+		{
+			name:    "merge",
+			vars:    map[string]string{"a": "foo", "b": "bar"},
+			newVars: map[string]string{"c": "baz"},
+			mode:    skipOnDuplicate,
+			want:    map[string]string{"a": "foo", "b": "bar", "c": "baz"},
+		},
+		{
+			name:    "duplicate_skipOnDuplicate",
+			vars:    map[string]string{"a": "foo", "b": "bar"},
+			newVars: map[string]string{"a": "hi"},
+			mode:    skipOnDuplicate,
+			want:    map[string]string{"a": "foo", "b": "bar"},
+		},
+		{
+			name:      "duplicate_errorOnDuplicate",
+			vars:      map[string]string{"a": "foo", "b": "bar"},
+			newVars:   map[string]string{"a": "hi"},
+			mode:      errorOnDuplicate,
+			wantError: true,
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if err := mergeVars(tc.vars, tc.newVars, tc.mode); err != nil {
+				if !tc.wantError {
+					t.Fatal("mergeVars failed: ", err)
+				}
+				return
+			}
+			if tc.wantError {
+				t.Fatal("mergeVars succeeded unexpectedly")
+			}
+			if diff := cmp.Diff(tc.vars, tc.want); diff != "" {
+				t.Fatalf("mergeVars returned unexpected vars (-got +want):\n%v", diff)
+			}
+		})
 	}
 }

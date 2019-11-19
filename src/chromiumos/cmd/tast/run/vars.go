@@ -13,53 +13,72 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// readAndUpdateVars reads static variables stored inside the directory as yaml files,
-// and updates given vars. It doesn't override the existing key value pairs.
-// vars isn't changed when error is returned.
-// If dir doesn't exist, os.IsNotExist will return true for the returned error.
-func readAndUpdateVars(dir string, vars map[string]string) error {
-	vs, err := readStaticVars(dir)
-	if err != nil {
-		return err
+// findVarsFiles returns a list of paths to vars files under dir. The returned
+// paths are sorted in a stable order. If dir doesn't exist, empty paths is
+// returned with no error.
+func findVarsFiles(dir string) (paths []string, err error) {
+	files, err := ioutil.ReadDir(dir)
+	if err != nil && !os.IsNotExist(err) {
+		return nil, fmt.Errorf("couldn't read vars dir: %v", err)
 	}
-	for k, v := range vs {
+	for _, f := range files {
+		if filepath.Ext(f.Name()) == ".yaml" {
+			paths = append(paths, filepath.Join(dir, f.Name()))
+		}
+	}
+	return paths, nil
+}
+
+// readVarsFile reads a YAML file at path containing key-value pairs.
+func readVarsFile(path string) (map[string]string, error) {
+	b, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	vars := make(map[string]string)
+	if err := yaml.Unmarshal(b, &vars); err != nil {
+		return nil, fmt.Errorf("failed to parse %s: %v", path, err)
+	}
+	return vars, nil
+}
+
+// mergeVarsMode specifies the behavior of mergeVars when it finds duplicated
+// entries.
+type mergeVarsMode int
+
+const (
+	skipOnDuplicate  = iota // skip duplicated entries
+	errorOnDuplicate        // error on duplicated entries
+)
+
+// mergeVars merges newVars into vars.
+// Behavior on key duplication is specified by mode: if mode is skipOnDuplicate,
+// an entry in newVars is skipped when vars already contains it; if mode is
+// errorOnDuplicate, an error is returned.
+// This function overwrites the given vars. vars must not be nil. In the case of
+// errors, the value of vars is unspecified.
+func mergeVars(vars, newVars map[string]string, mode mergeVarsMode) error {
+	for k, v := range newVars {
 		if _, ok := vars[k]; ok {
-			continue
+			if mode == skipOnDuplicate {
+				continue
+			}
+			return fmt.Errorf("duplicated key %q", k)
 		}
 		vars[k] = v
 	}
 	return nil
 }
 
-// readStaticVars reads static variables stored inside the directory as yaml files.
-// If dir doesn't exist, os.IsNotExist will return true for the returned error.
-func readStaticVars(dir string) (map[string]string, error) {
-	res := make(map[string]string)
-	files, err := ioutil.ReadDir(dir)
-	if os.IsNotExist(err) {
-		return nil, err
-	} else if err != nil {
-		return nil, fmt.Errorf("couldn't read vars dir: %v", err)
+// readAndMergeVarsFile reads a YAML file at path containing key-value pairs and
+// merges it into vars. See readVarsFile and mergeVars.
+func readAndMergeVarsFile(vars map[string]string, path string, mode mergeVarsMode) error {
+	newVars, err := readVarsFile(path)
+	if err != nil {
+		return fmt.Errorf("failed to read vars from %s: %v", path, err)
 	}
-	for _, f := range files {
-		if filepath.Ext(f.Name()) != ".yaml" {
-			continue
-		}
-		b, err := ioutil.ReadFile(filepath.Join(dir, f.Name()))
-		if err != nil {
-			return nil, fmt.Errorf("couldn't read vars file: %v", err)
-		}
-		m := make(map[string]string)
-		err = yaml.Unmarshal(b, &m)
-		if err != nil {
-			return nil, fmt.Errorf("couldn't parse %v: %v", f.Name(), err)
-		}
-		for k, v := range m {
-			if _, ok := res[k]; ok {
-				return nil, fmt.Errorf("key %q in %v is already defined in another file", k, f.Name())
-			}
-			res[k] = v
-		}
+	if err := mergeVars(vars, newVars, mode); err != nil {
+		return fmt.Errorf("failed to merge vars from %s: %v", path, err)
 	}
-	return res, nil
+	return nil
 }

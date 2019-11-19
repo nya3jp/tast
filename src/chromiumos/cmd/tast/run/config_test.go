@@ -10,6 +10,8 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
+
 	"chromiumos/tast/testutil"
 )
 
@@ -147,5 +149,109 @@ func TestConfigDeriveDefaultsBuildMissingBundle(t *testing.T) {
 	// At least either one of local/remote bundle package should exist.
 	if err := cfg.DeriveDefaults(); err == nil {
 		t.Error("DeriveDefaults succeeded; want failure")
+	}
+}
+
+func TestConfigDeriveDefaultsVars(t *testing.T) {
+	for _, tc := range []struct {
+		name      string
+		vars      map[string]string
+		overrides map[string]string
+		defaults  map[string]string
+		want      map[string]string
+		wantError bool
+	}{
+		{
+			name: "empty",
+			vars: map[string]string{},
+			want: map[string]string{},
+		},
+		{
+			name:      "merge",
+			vars:      map[string]string{"a": "1"},
+			overrides: map[string]string{"override.yaml": "b: 2"},
+			defaults:  map[string]string{"default.yaml": "c: 3"},
+			want:      map[string]string{"a": "1", "b": "2", "c": "3"},
+		},
+		{
+			name:     "var_overrides_default",
+			vars:     map[string]string{"a": "1"},
+			defaults: map[string]string{"default.yaml": "a: 2"},
+			want:     map[string]string{"a": "1"},
+		},
+		{
+			name:      "varsfile_overrides_default",
+			vars:      map[string]string{},
+			overrides: map[string]string{"override.yaml": "a: 1"},
+			defaults:  map[string]string{"default.yaml": "a: 2"},
+			want:      map[string]string{"a": "1"},
+		},
+		{
+			name:      "conflict_between_var_and_varsfile",
+			vars:      map[string]string{"a": "1"},
+			overrides: map[string]string{"override.yaml": "a: 2"},
+			wantError: true,
+		},
+		{
+			name: "conflict_within_varsfile",
+			vars: map[string]string{},
+			overrides: map[string]string{
+				"override1.yaml": "a: 1",
+				"override2.yaml": "a: 2",
+			},
+			wantError: true,
+		},
+		{
+			name: "conflict_within_defaults",
+			vars: map[string]string{},
+			defaults: map[string]string{
+				"default1.yaml": "a: 1",
+				"default2.yaml": "a: 2",
+			},
+			wantError: true,
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			td := testutil.TempDir(t)
+			defer os.RemoveAll(td)
+
+			defaultVarsDir := filepath.Join(td, "default_vars")
+			if len(tc.defaults) > 0 {
+				os.MkdirAll(defaultVarsDir, 0777)
+				if err := testutil.WriteFiles(defaultVarsDir, tc.defaults); err != nil {
+					t.Fatal(err)
+				}
+			}
+
+			overrideVarsDir := filepath.Join(td, "override_vars")
+			os.MkdirAll(overrideVarsDir, 0777)
+			if err := testutil.WriteFiles(overrideVarsDir, tc.overrides); err != nil {
+				t.Fatal(err)
+			}
+
+			cfg := NewConfig(RunTestsMode, "", td)
+			flags := flag.NewFlagSet("", flag.ContinueOnError)
+			cfg.SetFlags(flags)
+
+			cfg.build = false
+			cfg.testVars = tc.vars
+			cfg.defaultVarsDir = defaultVarsDir
+			for p := range tc.overrides {
+				cfg.varsFiles = append(cfg.varsFiles, filepath.Join(overrideVarsDir, p))
+			}
+
+			if err := cfg.DeriveDefaults(); err != nil {
+				if !tc.wantError {
+					t.Fatal("DeriveDefaults failed: ", err)
+				}
+				return
+			}
+			if tc.wantError {
+				t.Fatal("DeriveDefaults unexpectedly succeeded")
+			}
+			if diff := cmp.Diff(tc.vars, tc.want); diff != "" {
+				t.Fatalf("Unexpected vars after DeriveDefaults (-got +want):\n%s", diff)
+			}
+		})
 	}
 }

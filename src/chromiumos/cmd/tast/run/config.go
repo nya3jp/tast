@@ -93,14 +93,17 @@ type Config struct {
 	remoteDataDir   string // dir containing packaged remote test data
 	remoteOutDir    string // dir where intermediate outputs of remote tests are written
 
-	sshRetries           int               // number of SSH connect retries
-	continueAfterFailure bool              // try to run remaining local tests after bundle/DUT crash or lost SSH connection
-	checkTestDeps        bool              // whether test dependencies should be checked
-	waitUntilReady       bool              // whether to wait for DUT to be ready before running tests
-	extraUSEFlags        []string          // additional USE flags to inject when determining features
-	proxy                proxyMode         // how proxies should be used
-	collectSysInfo       bool              // collect system info (logs, crashes, etc.) generated during testing
-	testVars             map[string]string // names and values of variables used to pass out-of-band data to tests
+	sshRetries           int       // number of SSH connect retries
+	continueAfterFailure bool      // try to run remaining local tests after bundle/DUT crash or lost SSH connection
+	checkTestDeps        bool      // whether test dependencies should be checked
+	waitUntilReady       bool      // whether to wait for DUT to be ready before running tests
+	extraUSEFlags        []string  // additional USE flags to inject when determining features
+	proxy                proxyMode // how proxies should be used
+	collectSysInfo       bool      // collect system info (logs, crashes, etc.) generated during testing
+
+	testVars       map[string]string // names and values of variables used to pass out-of-band data to tests
+	varsFiles      []string          // paths to variable files
+	defaultVarsDir string            // dir containing default variable files
 
 	msgTimeout             time.Duration // timeout for reading control messages; default used if zero
 	localRunnerWaitTimeout time.Duration // timeout for waiting for local_test_runner to exit; default used if zero
@@ -195,6 +198,11 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 			return nil
 		})
 		f.Var(&vf, "var", `runtime variable to pass to tests, as "name=value" (can be repeated)`)
+		vff := command.RepeatedFlag(func(path string) error {
+			c.varsFiles = append(c.varsFiles, path)
+			return nil
+		})
+		f.Var(&vff, "varsfile", "YAML file containing variables (can be repeated)")
 
 		vals := map[string]int{
 			"env":  int(proxyEnv),
@@ -279,17 +287,30 @@ func (c *Config) DeriveDefaults() error {
 		c.runRemote = true
 	}
 
-	var varDir string
+	// Apply -varsfile.
+	for _, path := range c.varsFiles {
+		if err := readAndMergeVarsFile(c.testVars, path, errorOnDuplicate); err != nil {
+			return fmt.Errorf("failed to apply vars from %s: %v", path, err)
+		}
+	}
+
+	// Apply variables from default configurations.
 	if c.build {
-		varDir = filepath.Join(c.trunkDir, "src/platform/tast-tests-private/vars")
+		setIfEmpty(&c.defaultVarsDir, filepath.Join(c.trunkDir, "src/platform/tast-tests-private/vars"))
 	} else {
-		varDir = "/etc/tast/vars/private"
+		setIfEmpty(&c.defaultVarsDir, "/etc/tast/vars/private")
 	}
-	if err := readAndUpdateVars(varDir, c.testVars); os.IsNotExist(err) {
-		// Do nothing. Private repository doesn't exist on public source tree.
-	} else if err != nil {
-		return fmt.Errorf("failed loading private vars: %v", err)
+	defaultVarsFiles, err := findVarsFiles(c.defaultVarsDir)
+	if err != nil {
+		return fmt.Errorf("failed to find vars files under %s: %v", c.defaultVarsDir, err)
 	}
+	defaultVars := make(map[string]string)
+	for _, path := range defaultVarsFiles {
+		if err := readAndMergeVarsFile(defaultVars, path, errorOnDuplicate); err != nil {
+			return fmt.Errorf("failed to apply vars from %s: %v", path, err)
+		}
+	}
+	mergeVars(c.testVars, defaultVars, skipOnDuplicate) // -var and -varsfile override defaults
 
 	return nil
 }

@@ -122,7 +122,7 @@ func Test(ctx context.Context, s *testing.State) {
 }`
 
 	f, fs := parse(code, "test.go")
-	issues := Messages(fs, f)
+	issues := Messages(fs, f, false)
 	expects := []string{
 		`test.go:14:2: Use s.Log("<msg>") instead of s.Logf("<msg>")`,
 		`test.go:15:2: Use s.Log("<msg> ", val) instead of s.Logf("<msg> %v", val)`,
@@ -165,4 +165,105 @@ func Test(ctx context.Context, s *testing.State) {
 		`test.go:107:2: testing.ContextLog has verbs in the first string (do you mean testing.ContextLogf?)`,
 	}
 	verifyIssues(t, issues, expects)
+}
+
+func TestAutoFixMessages(t *testing.T) {
+	const filename = "foo.go"
+	files := make(map[string]string)
+	files[filename] = `package pkg
+
+import (
+	"context"
+
+	"chromiumos/tast/errors"
+	"chromiumos/tast/testing"
+)
+
+func Test(ctx context.Context, s *testing.State) {
+	var err error
+
+	// CASE 1:
+	s.Logf("Should use Log for single string arg")
+	s.Errorf("Just a string")
+	s.Fatalf("Just a string")
+	// CASE 2:
+	s.Error(fmt.Sprintf("Foo (%d)", 42))
+	errors.New(fmt.Sprintf("foo (%d)", 42))
+	errors.Wrap(err, fmt.Sprintf("foo (%d)", 42))
+	// CASE 3:
+	s.Logf("Should use Log for single trailing %v", err)
+	testing.ContextLogf(ctx, "Should've used ContextLog: %v", err)
+	// CASE 4:
+	s.Log("Should end with colon and space ", err)
+	s.Log("Should end with colon and space:", err)
+	// CASE 5:
+	errors.Errorf("should use Wrap: %v", err)
+	errors.Errorf("should use Wrapf %s%s: %v", "he", "re", err)
+	// CASE 6:
+	s.Log("Shouldn't use trailing period.")
+	errors.New("shouldn't use trailing period.")
+	// CASE 7:
+	s.Logf("Read value '%s' \"%s\"", "blah", "blah")
+	s.Errorf("Read value \"%v\" '%v'", "blah", "blah")
+	// CASE 8:
+	errors.New("Could not start ARC")
+	errors.Wrapf(err, "Too many (%d) files open", 28)
+	// CASE 9:
+	s.Log("got messages")
+	testing.ContextLogf(ctx, "found a file %q", "blah")
+	// CASE 10:
+	s.Error("failed to start ARC: ", err)
+	s.Fatalf("unexpected string %q received", "blah")
+
+}
+`
+	expects := make(map[string]string)
+	expects[filename] = `package pkg
+
+import (
+	"context"
+
+	"chromiumos/tast/errors"
+	"chromiumos/tast/testing"
+)
+
+func Test(ctx context.Context, s *testing.State) {
+	var err error
+
+	// CASE 1:
+	s.Log("Should use Log for single string arg")
+	s.Error("Just a string")
+	s.Fatal("Just a string")
+	// CASE 2:
+	s.Errorf("Foo (%d)", 42)
+	errors.Errorf("foo (%d)", 42)
+	errors.Wrapf(err, "foo (%d)", 42)
+	// CASE 3:
+	s.Log("Should use Log for single trailing ", err)
+	testing.ContextLog(ctx, "Should've used ContextLog: ", err)
+	// CASE 4:
+	s.Log("Should end with colon and space: ", err)
+	s.Log("Should end with colon and space: ", err)
+	// CASE 5:
+	errors.Wrap(err, "should use Wrap")
+	errors.Wrapf(err, "should use Wrapf %s%s", "he", "re")
+	// CASE 6:
+	s.Log("Shouldn't use trailing period")
+	errors.New("shouldn't use trailing period")
+	// CASE 7:
+	s.Logf("Read value %q %q", "blah", "blah")
+	s.Errorf("Read value %q %q", "blah", "blah")
+	// CASE 8:
+	errors.New("could not start ARC")
+	errors.Wrapf(err, "too many (%d) files open", 28)
+	// CASE 9:
+	s.Log("Got messages")
+	testing.ContextLogf(ctx, "Found a file %q", "blah")
+	// CASE 10:
+	s.Error("Failed to start ARC: ", err)
+	s.Fatalf("Unexpected string %q received", "blah")
+
+}
+`
+	verifyAutoFix(t, Messages, files, expects)
 }

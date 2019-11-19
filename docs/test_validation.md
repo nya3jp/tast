@@ -53,7 +53,6 @@ the above considerations.
 | `tast-lint`          |      ✓      |      ✓      |               |       ✓       |
 | Test registration    |             |             |       ✓       |       ✓       |
 | Unit tests           |             |             |       ✓       |               |
-| Python               |      ✓      |      ✓      |       ✓       |       ✓       |
 
 ### gofmt and goimport
 
@@ -136,16 +135,3 @@ repositories. The script's usage is described in the [Modifying Tast] document.
 [software features]: test_dependencies.md
 [registration_test.go]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/bundles/cros/arc/registration_test.go
 [testcheck]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing/testcheck
-
-### Python
-
-The [check_informational.py] script is executed as a pre-upload hook to verify
-that newly-added tests include the `informational` [attribute]. This prevents
-new tests from causing commit queue failures until they've been verified to pass
-reliably.
-
-The existing script was written before `tast-lint` was introduced. Please use
-`tast-lint` when adding similar checks in the future.
-
-[check_informational.py]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/tools/check_informational.py
-[attribute]: test_attributes.md

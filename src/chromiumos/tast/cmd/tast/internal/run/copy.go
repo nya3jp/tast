@@ -36,11 +36,9 @@ func moveFromHost(ctx context.Context, cfg *Config, hst *host.SSH, src, dst stri
 	defer undo()
 
 	src = filepath.Join(cfg.hstCopyBasePath, src)
-	cfg.Logger.Debugf("Copying %s from host to %s", src, dst)
 	if err := hst.GetFile(ctx, src, dst); err != nil {
 		return err
 	}
-	cfg.Logger.Debugf("Cleaning %s on host", src)
 	if out, err := hst.Command("rm", "-rf", "--", src).Output(ctx); err != nil {
 		cfg.Logger.Logf("Failed cleaning %s: %v\n%s", src, err, out)
 	}

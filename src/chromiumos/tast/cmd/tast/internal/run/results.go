@@ -372,16 +372,18 @@ func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.TestEnd
 		r.cfg.Logger.Log(err)
 	}
 
-	// Pull finished test output files in a separate goroutine.
-	res := r.res
-	r.pullers.Add(1)
-	go func() {
-		defer r.pullers.Done()
-		if err := moveTestOutputData(r.crf, res.Name, r.getTestOutputDir(res.Name)); err != nil {
-			// This may be written to a log of an irrelevant test.
-			r.cfg.Logger.Logf("Failed to copy output data of %s: %v", res.Name, err)
-		}
-	}()
+	// Pull finished test output files in a separate goroutine if the test is not skipped.
+	if r.res.SkipReason == "" {
+		res := r.res
+		r.pullers.Add(1)
+		go func() {
+			defer r.pullers.Done()
+			if err := moveTestOutputData(r.crf, res.Name, r.getTestOutputDir(res.Name)); err != nil {
+				// This may be written to a log of an irrelevant test.
+				r.cfg.Logger.Logf("Failed to copy output data of %s: %v", res.Name, err)
+			}
+		}()
+	}
 
 	r.res = nil
 	r.stage = nil

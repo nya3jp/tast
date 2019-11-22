@@ -37,6 +37,19 @@ func ForbiddenBundleImports(fs *token.FileSet, f *ast.File) []*Issue {
 	filename := fs.Position(f.Package).Filename
 	mypkg := strings.TrimPrefix(filepath.Dir(filename), "src/")
 
+	// Ignore known valid use cases.
+	var allowList = []string{
+		"src/chromiumos/tast/local/bundles/cros/camera/get_user_media_perf.go",
+		"src/chromiumos/tast/local/bundles/cros/camera/get_user_media.go",
+		"src/chromiumos/tast/local/bundles/cros/camera/getusermedia/get_user_media.go",
+	}
+	filepath := fs.Position(f.Package).Filename
+	for _, p := range allowList {
+		if strings.HasSuffix(filepath, p) {
+			return nil
+		}
+	}
+
 	var issues []*Issue
 	for _, im := range f.Imports {
 		p, err := strconv.Unquote(im.Path.Value)

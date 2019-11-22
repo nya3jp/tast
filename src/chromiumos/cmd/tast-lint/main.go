@@ -140,6 +140,17 @@ func checkAll(g *git.Git, paths []git.CommitFile, debug bool) ([]*check.Issue, e
 
 	var allIssues []*check.Issue
 
+	for _, path := range paths {
+		if !strings.HasSuffix(path.Path, ".external") {
+			continue
+		}
+		data, err := g.ReadFile(path.Path)
+		if err != nil {
+			continue
+		}
+		allIssues = append(allIssues, check.ExternalJSON(path.Path, data)...)
+	}
+
 	dfmap := makeMapDirGoFile(paths)
 	for dir, cfs := range dfmap {
 		pkg, err := cp.parsePackage(dir)

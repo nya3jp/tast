@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1ffc1afd_3ad10f48",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1152319
+      },
+      "writtenOn": "2019-11-22T19:30:24Z",
+      "side": 1,
+      "message": "nit: I\u0027d rather call it \"Define tpm2 feature.\" since we don\u0027t add a dependency on tpm2 to tast, but create a feature that tests can depend on.",
+      "range": {
+        "startLine": 7,
+        "startChar": 5,
+        "endLine": 7,
+        "endChar": 28
+      },
+      "revId": "7b6855eb4d5b142d8d8dc6897b0eef406df38566",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "638f3590_04ccb089",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1152319
+      },
+      "writtenOn": "2019-11-22T19:30:24Z",
+      "side": 1,
+      "message": "nit: do we need this comment?",
+      "range": {
+        "startLine": 116,
+        "startChar": 38,
+        "endLine": 116,
+        "endChar": 67
+      },
+      "revId": "7b6855eb4d5b142d8d8dc6897b0eef406df38566",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

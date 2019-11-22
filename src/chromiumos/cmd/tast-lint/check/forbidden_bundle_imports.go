@@ -17,7 +17,7 @@ import (
 
 var bundleCategoryRegex = regexp.MustCompile(`^(chromiumos/tast/(?:local|remote)/bundles/\w+)/(\w+)`)
 
-// bundlePackage analyzes full package path and returns matching bundle prefix and the category name.
+// parseBundlePackage analyzes full package path and returns matching bundle prefix and the category name.
 // Returns ok=false if it's not a bundle (sub)package.
 //
 // Example:
@@ -36,6 +36,17 @@ func parseBundlePackage(p string) (bundlePkg string, category string, ok bool) {
 func ForbiddenBundleImports(fs *token.FileSet, f *ast.File) []*Issue {
 	filename := fs.Position(f.Package).Filename
 	mypkg := strings.TrimPrefix(filepath.Dir(filename), "src/")
+
+	// Ignore known valid use cases.
+	var allowList = []string{
+		"src/chromiumos/tast/local/bundles/cros/camera/getusermedia/get_user_media.go",
+	}
+	filepath := fs.Position(f.Package).Filename
+	for _, p := range allowList {
+		if strings.HasSuffix(filepath, p) {
+			return nil
+		}
+	}
 
 	var issues []*Issue
 	for _, im := range f.Imports {

@@ -94,6 +94,7 @@ The following software features are defined:
 *   `tablet_mode` - The ability to enter tablet mode. The device is either
     a convertible device or a tablet device.
 *   `tpm` - A [Trusted Platform Module] chip.
+*   `tpm2` - Indicate a Trusted Platform Module supporting TPMv2 is available.
 *   `transparent_hugepage` - [Transparent Hugepage] support in the Linux kernel.
 *   `usbguard` - The ability to allow or block USB devices based on policy.
 *   `virtual_usb_printer` - Emulates a USB printer. This implies the presence of

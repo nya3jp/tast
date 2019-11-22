@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a6b9c24d_79c794d4",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 1148,
+      "author": {
+        "id": 1117055
+      },
+      "writtenOn": "2019-11-22T22:33:34Z",
+      "side": 1,
+      "message": "To make this a little more clear we might want to name the service and rpc method differently, so people don\u0027t assume there\u0027s some magic where they have to be the same.",
+      "range": {
+        "startLine": 1143,
+        "startChar": 0,
+        "endLine": 1148,
+        "endChar": 1
+      },
+      "revId": "f6d3133d195dccc7833d5f61040b7e3f9c3481d9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -101,6 +101,18 @@ func checkAll(g *git.Git, paths []git.CommitFile, debug bool) ([]*check.Issue, e
 			continue
 		}
 
+		var issues []*check.Issue // issues in this file
+
+		data, err := g.ReadFile(path.Path)
+		if err != nil {
+			return nil, err
+		}
+
+		if strings.HasSuffix(path.Path, ".external") {
+			issues = append(issues, check.ExternalJSON(path.Path, data)...)
+			allIssues = append(allIssues, issues...)
+		}
+
 		if !strings.HasSuffix(path.Path, ".go") {
 			continue
 		}
@@ -109,17 +121,10 @@ func checkAll(g *git.Git, paths []git.CommitFile, debug bool) ([]*check.Issue, e
 			continue
 		}
 
-		data, err := g.ReadFile(path.Path)
-		if err != nil {
-			return nil, err
-		}
-
 		f, err := cp.parseFile(path.Path)
 		if err != nil {
 			return nil, err
 		}
-
-		var issues []*check.Issue // issues in this file
 
 		issues = append(issues, check.Golint(path.Path, data, debug)...)
 		issues = append(issues, check.Comments(fs, f)...)

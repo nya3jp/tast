@@ -21,7 +21,6 @@ func VerifyTestingStateParam(fs *token.FileSet, f *ast.File) []*Issue {
 		"src/chromiumos/tast/local/chrome/pre.go",
 		"src/chromiumos/tast/local/crostini/pre.go",
 		// Below files are cases still under considering.
-		"src/chromiumos/tast/local/webrtc/camera.go",
 		"src/chromiumos/tast/local/graphics/trace/trace.go",
 	}
 	filepath := fs.Position(f.Package).Filename

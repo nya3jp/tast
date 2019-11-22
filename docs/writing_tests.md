@@ -1097,3 +1097,231 @@ struct literals. In each `Param` struct, `Name` should be a string literal with
 and `Pre` in [test registration].
 
 [test registration]: #Test-registration
+
+## Remote procedure calls with gRPC
+
+In many cases, remote tests have to run some Go functions on the DUT, possibly
+calling some support libraries for local tests (e.g. the [chrome] package).
+For this purpose, Tast supports defining, implementing, and calling into [gRPC]
+services.
+
+For the general usage of gRPC-Go, see also the [official tutorial].
+
+[chrome]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/chrome/
+[gRPC]: https://grpc.io
+[official tutorial]: https://grpc.io/docs/tutorials/basic/go/
+
+### Defining gRPC services
+
+gRPC services are defined as protocol buffer files stored under
+`tast-tests/src/chromiumos/tast/services`. The directory is organized in the
+similar way as test bundles at
+`tast-tests/src/chromiumos/tast/{local,remote}/bundles`. Below is an example of
+an imaginary gRPC service `arc.BootService`:
+
+```
+tast-tests/src/chromiumos/tast/services/
+  cros/                   ... test bundle name where this service is included
+    arc/                  ... service category name
+      gen.go              ... Go file containing go generate directives
+      boot_service.proto  ... gRPC service definition
+      boot_service.pb.go  ... generated gRPC bindings
+```
+
+gRPC services are defined in `.proto` files. `boot_service.proto` would look like:
+
+```proto
+syntax = "proto3";
+
+package tast.cros.arc;
+
+import "google/protobuf/empty.proto";
+
+option go_package = "chromiumos/tast/services/cros/arc";
+
+// BootService allows remote tests to boot ARC on the DUT.
+service BootService {
+  // CheckBoot logs into a new Chrome session, starts ARC and waits for its
+  // successful boot.
+  rpc CheckBoot (CheckBootRequest) returns (google.protobuf.Empty) {}
+}
+
+message CheckBootRequest {
+  enum AndroidImpl {
+    DEFAULT = 0;
+    CONTAINER = 1;
+    VM = 2;
+  }
+  // impl specifies which ARC implementation to use.
+  AndroidImpl impl = 1;
+}
+```
+
+Protocol buffers files should follow the
+[official protocol buffers style guide], as well as several Tast-specific
+guidelines:
+
+*   **File names**: Name `.proto` files in the same way as [test `.go` files].
+    For example, a service named `TPMStressService` should be defined in
+    `tpm_stress_service.proto`.
+*   **Package names**: Protocol buffer package name specified in the `package`
+    directive should be `tast.<bundle-name>.<category-name>`. Go package name
+    specified in the `option go_package` directive should be
+    `chromiumos/tast/services/<bundle-name>/<category-name>`.
+*   **Service names**: Name services with `Service` suffix.
+*   **Message names**: Method request/response messages should be named
+    `FooBarRequest`/`FooBarResponse`.
+*   **Comments**: Write comments in the [godoc style] since these protocol
+    buffers are used only by Tast tests in Go.
+
+`gen.go` is a small file containing a [`go generate` directive] to regenerate
+`.pb.go` files, looking like the following:
+
+```go
+// Copyright 2019 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+//go:generate protoc -I . --go_out=plugins=grpc:../../../../.. boot_service.proto
+
+package arc
+
+// Run the following command in CrOS chroot to regenerate protocol buffer bindings:
+//
+// ~/trunk/src/platform/tast/tools/go.sh generate chromiumos/tast/services/cros/arc
+```
+
+To regenerate `.pb.go` files, run the command mentioned in the file in Chrome OS
+chroot (remember to replace the last argument of the command with the path to
+the directory containing the protocol buffer files). This has to be done
+manually whenever `.proto` files are edited. Updated `.pb.go` files should be
+included and submitted in CLs adding/modifying/deleting `.proto` files.
+
+[official protocol buffers style guide]: https://developers.google.com/protocol-buffers/docs/style
+[test `.go` files]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#code-location
+[test functions]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#code-location
+[godoc style]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#documentation
+[`go generate` directive]: https://golang.org/pkg/cmd/go/internal/generate/
+
+### Implementing gRPC services
+
+gRPC service implementations should be placed at the same location as local
+tests, i.e. `tast-tests/src/chromiumos/tast/local/bundles`. For example, an
+imaginary `arc.BootService` would be implemented in
+`tast-tests/src/chromiumos/tast/local/bundles/arc/boot_service.go`.
+
+gRPC services can be registered with [`testing.AddService`] by passing
+[`testing.Service`] containing service descriptions. The most important field is
+`Register`, specifying a function to register a gRPC service to [`grpc.Server`].
+Below is an implementation of the `arc.BootService`:
+
+```go
+// tast-tests/src/chromiumos/tast/local/bundles/arc/boot_service.go
+package arc
+
+func init() {
+    testing.AddService(&testing.Service{
+        Register: func(srv *grpc.Server, s *testing.ServiceState) {
+            pb.RegisterBootServiceServer(srv, &BootService{s})
+        },
+    })
+}
+
+// BootService implements tast.cros.arc.BootService.
+type BootService struct {
+    s *testing.ServiceState
+}
+
+func (*BootService) CheckBoot(ctx context.Context, req *pb.CheckBootRequest) (*empty.Empty, error) {
+    ...
+}
+```
+
+For consistency, please follow these guidelines on implementing gRPC services:
+
+*   **File names**: Name gRPC service implementation `.go` files in the exactly
+    same way as [test `.go` files]. For example, a service named
+    `TPMStressService` should be implemented in `tpm_stress_service.go`.
+    This means that gRPC implementation files always have `_service.go` suffix.
+*   **Implementation type**: A type implementing gRPC service should have
+    exactly the same name as the service name. The type should be the only
+    exported symbol in the `_service.go` file. Exactly one gRPC service
+    implementation should be registered in a single file.
+*   **Inter-file references**: Similarly to test files, `_service.go` file
+    should not refer symbols in different files in the same directory.
+    Consequently, a gRPC service has to be implemented in a single file.
+    If the file gets too long, please consider introducing a subpackage just
+    like tests.
+
+`context.Context` given to gRPC methods can be passed to `testing.Context*`
+functions. Notably, gRPC services can emit logs with `testing.ContextLog`.
+Emitted messages are recorded in the log of the remote test calling the gRPC
+method.
+
+`Register` function receives [`testing.ServiceState`] which you can keep in
+a field of the struct type implementing the gRPC service. It allows the service
+to access service-specific information, such as data files
+(not implemented yet: [crbug.com/1027381]).
+
+[`testing.AddService`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#AddService
+[`testing.Service`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Service
+[`grpc.Server`]: https://godoc.org/google.golang.org/grpc#Server
+[test `.go` files]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#code-location
+[`testing.ServiceState`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#ServiceState
+[crbug.com/1027381]: https://crbug.com/1027381
+
+### Calling gRPC services
+
+A remote test should declare in its metadata which gRPC services it will call
+into. Undeclared gRPC method calls shall be rejected internally. For example,
+an imaginary remote test `arc.RemoteBoot` would be declared as:
+
+```go
+func init() {
+    testing.AddTest(&testing.Test{
+        Func:         RemoteTest,
+        SoftwareDeps: []string{"chrome", "android"},
+        ServiceDeps:  []string{"tast.cros.arc.BootService"},
+    })
+}
+```
+
+Call [`rpc.Dial`] in remote tests to establish a connection to the gRPC server.
+On success, it returns a struct containing [`grpc.ClientConn`] with which
+you can construct gRPC stubs.
+
+```go
+cl, err := rpc.Dial(ctx, s.DUT(), s.RPCHint(), "cros")
+if err != nil {
+    s.Fatal("Failed to connect to the RPC service on the DUT: ", err)
+}
+defer cl.Close(ctx)
+
+bc := pb.NewBootServiceClient(cl.Conn)
+
+req := pb.CheckBootRequest{Impl: pb.CheckBootRequest_VM}
+var res empty.Empty
+if err := bc.CheckBoot(ctx, &req, &res); err != nil {
+    ...
+}
+```
+
+[`rpc.Dial`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/rpc#Dial
+[`grpc.ClientConn`]: https://godoc.org/google.golang.org/grpc#ClientConn
+
+### Notes on designing gRPC services
+
+Tast's gRPC services don't have to worry about protocol compatibility because
+remote test bundles and local test bundles are always in sync (except when using
+`-build=false` in local environment: [crbug.com/1027368]). This means that you
+can rename gRPC methods or delete/renumber message fields as you like.
+
+Tast's gRPC services don't necessarily have to provide general-purpose APIs.
+It is perfectly fine to define gRPC services specific to a particular test case.
+For example, one may want to write a local test which exercises some features,
+and a remote test that performs the same testing *after rebooting the DUT*.
+In this case, they can put the whole local test content to a subpackage, and
+introduce a local test and a gRPC service both of which call into the
+subpackage.
+
+[crbug.com/1027368]: https://crbug.com/1027368

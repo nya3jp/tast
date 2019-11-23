@@ -25,6 +25,29 @@
     },
     {
       "key": {
+        "uuid": "e76d12ca_c6e45009",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1300049
+      },
+      "writtenOn": "2019-11-23T00:49:06Z",
+      "side": 1,
+      "message": "I think now it\u0027s better to explain what \"tpm\" here means, since it\u0027s different from the USE flag \"tpm\" we use in the daemons and overlays everywhere.",
+      "range": {
+        "startLine": 115,
+        "startChar": 30,
+        "endLine": 115,
+        "endChar": 53
+      },
+      "revId": "7b6855eb4d5b142d8d8dc6897b0eef406df38566",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "638f3590_04ccb089",
         "filename": "src/chromiumos/cmd/local_test_runner/main.go",
         "patchSetId": 1

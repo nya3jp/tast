@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "7ab64b20_6b722a0e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1314760
+      },
+      "writtenOn": "2019-11-25T14:29:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1ffc1afd_3ad10f48",
+      "range": {
+        "startLine": 7,
+        "startChar": 5,
+        "endLine": 7,
+        "endChar": 28
+      },
+      "revId": "7b6855eb4d5b142d8d8dc6897b0eef406df38566",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e76d12ca_c6e45009",
         "filename": "src/chromiumos/cmd/local_test_runner/main.go",
         "patchSetId": 1
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "e0eb5cac_0865a8a6",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1314760
+      },
+      "writtenOn": "2019-11-25T14:29:08Z",
+      "side": 1,
+      "message": "I\u0027m in favour of changing this to just use the tpm USE flag, what do you think?",
+      "parentUuid": "e76d12ca_c6e45009",
+      "range": {
+        "startLine": 115,
+        "startChar": 30,
+        "endLine": 115,
+        "endChar": 53
+      },
+      "revId": "7b6855eb4d5b142d8d8dc6897b0eef406df38566",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "638f3590_04ccb089",
         "filename": "src/chromiumos/cmd/local_test_runner/main.go",
         "patchSetId": 1
@@ -59,6 +107,30 @@
       "writtenOn": "2019-11-22T19:30:24Z",
       "side": 1,
       "message": "nit: do we need this comment?",
+      "range": {
+        "startLine": 116,
+        "startChar": 38,
+        "endLine": 116,
+        "endChar": 67
+      },
+      "revId": "7b6855eb4d5b142d8d8dc6897b0eef406df38566",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4ef42eef_a47d3834",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1314760
+      },
+      "writtenOn": "2019-11-25T14:29:08Z",
+      "side": 1,
+      "message": "For someone who doesn\u0027t work on hwsec related stuff, this comment will hopefully avoid the unlikely but still possible misconception that tpm2 is a variant of the tpm dependency, i.e. \"platform\" vs \"platform2\".",
+      "parentUuid": "638f3590_04ccb089",
       "range": {
         "startLine": 116,
         "startChar": 38,

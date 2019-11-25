@@ -96,6 +96,30 @@
     },
     {
       "key": {
+        "uuid": "8ee843ac_b36d8d61",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1300049
+      },
+      "writtenOn": "2019-11-25T14:50:20Z",
+      "side": 1,
+      "message": "The tpm USE flag is for TPM 1.2 boards, whereas this \"tpm\" here means all but \"VM\" boards.\nWe can have a separate software dep for 1.2 boards if we need that later. Probably call it tpm1?",
+      "parentUuid": "e0eb5cac_0865a8a6",
+      "range": {
+        "startLine": 115,
+        "startChar": 30,
+        "endLine": 115,
+        "endChar": 53
+      },
+      "revId": "7b6855eb4d5b142d8d8dc6897b0eef406df38566",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "638f3590_04ccb089",
         "filename": "src/chromiumos/cmd/local_test_runner/main.go",
         "patchSetId": 1

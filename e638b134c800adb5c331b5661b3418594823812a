@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c2ee0c56_47849087",
+        "filename": "src/chromiumos/cmd/tast-lint/check/external_json.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-25T16:52:40Z",
+      "side": 1,
+      "message": "Could you add the comment why crostini can be ignored?",
+      "revId": "e638b134c800adb5c331b5661b3418594823812a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "194c67a8_2918f187",
+        "filename": "src/chromiumos/cmd/tast-lint/check/external_json.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-25T16:52:40Z",
+      "side": 1,
+      "message": "This is Tast specific naming convention.\nThus, could you check files referring gs://chromiumos-test-assets-public/tast/... only?",
+      "revId": "e638b134c800adb5c331b5661b3418594823812a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "be6d99f4_a2d739b0",
+        "filename": "src/chromiumos/cmd/tast-lint/check/external_json.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-25T16:52:40Z",
+      "side": 1,
+      "message": "Could you check the error?",
+      "revId": "e638b134c800adb5c331b5661b3418594823812a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "da439d92_83b99473",
+        "filename": "src/chromiumos/cmd/tast-lint/check/external_json.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-25T16:52:40Z",
+      "side": 1,
+      "message": "This regex looks a bit too complicated. How about parsing in two steps?\n\nregex match with \"_(\\d{8})(?:\\.|$)\"\nThen time.Parse(\"20060102\", ...) and check if the extracted value is \n\nWDYT?",
+      "revId": "e638b134c800adb5c331b5661b3418594823812a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0e9f769a_c6ab9a78",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_bundle_imports.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-25T16:03:04Z",
+      "side": 1,
+      "message": "Could you just allow the specific dependency?\nI.e., could you, e.g., make get_user_media_perf can access to only cros/webrtc/... package.",
+      "revId": "91605a7f32e8dff0fde4d5254478881ff229a0d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

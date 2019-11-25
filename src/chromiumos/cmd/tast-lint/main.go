@@ -50,7 +50,7 @@ func getTargetFiles(g *git.Git) ([]git.CommitFile, error) {
 	}
 	var args []git.CommitFile
 	for _, p := range flag.Args() {
-		args = append(args, git.CommitFile{status, p})
+		args = append(args, git.CommitFile{Status: status, Path: p})
 	}
 	return args, nil
 }

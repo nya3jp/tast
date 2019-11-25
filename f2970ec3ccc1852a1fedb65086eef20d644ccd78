@@ -1,0 +1,302 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a18d87dd_494b16ae",
+        "filename": "src/chromiumos/cmd/tast-lint/check/common_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-25T18:29:06Z",
+      "side": 1,
+      "message": "the implementation does not check if it \"starts with\" \\t. Instead, all \\t are replaced.",
+      "range": {
+        "startLine": 94,
+        "startChar": 21,
+        "endLine": 94,
+        "endChar": 36
+      },
+      "revId": "f2970ec3ccc1852a1fedb65086eef20d644ccd78",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "67705788_960b3b06",
+        "filename": "src/chromiumos/cmd/tast-lint/check/common_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-25T18:29:06Z",
+      "side": 1,
+      "message": "replace by a white space?",
+      "range": {
+        "startLine": 94,
+        "startChar": 43,
+        "endLine": 94,
+        "endChar": 52
+      },
+      "revId": "f2970ec3ccc1852a1fedb65086eef20d644ccd78",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "87885471_d9e16cfb",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-25T18:29:06Z",
+      "side": 1,
+      "message": "This looks new condition. Could you explain why?",
+      "revId": "f2970ec3ccc1852a1fedb65086eef20d644ccd78",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "55bae5ff_bb342148",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-25T18:29:06Z",
+      "side": 1,
+      "message": "Extracting L44-L74 as a function will help to simplify remainids maintenance.",
+      "revId": "f2970ec3ccc1852a1fedb65086eef20d644ccd78",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3e66289f_d4e7d36f",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-25T18:29:06Z",
+      "side": 1,
+      "message": "This comment does not looks like what it does in the code...? You just obtaining Ident for lhs, and ignoring the error...?",
+      "range": {
+        "startLine": 53,
+        "startChar": 38,
+        "endLine": 53,
+        "endChar": 85
+      },
+      "revId": "f2970ec3ccc1852a1fedb65086eef20d644ccd78",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1f3499a6_b4cbfae5",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-25T18:29:06Z",
+      "side": 1,
+      "message": "style:\n\nnewType :\u003d true",
+      "range": {
+        "startLine": 56,
+        "startChar": 4,
+        "endLine": 56,
+        "endChar": 22
+      },
+      "revId": "f2970ec3ccc1852a1fedb65086eef20d644ccd78",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6e8d40a7_d8b51eb1",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-25T18:29:06Z",
+      "side": 1,
+      "message": "You can simply join the var names with commas, by reformatting message.\n\nuse \u0027var\u0027 statement when you declare empty slice(s): .../* comma joined var names */...",
+      "range": {
+        "startLine": 78,
+        "startChar": 3,
+        "endLine": 93,
+        "endChar": 4
+      },
+      "revId": "f2970ec3ccc1852a1fedb65086eef20d644ccd78",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "43c964be_67fa86bd",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-25T18:29:06Z",
+      "side": 1,
+      "message": "What is the expected behavior if\n\na, b, c, d, e :\u003d []int{}, foo(), []int{}, bar(), []int{}\n\n?",
+      "range": {
+        "startLine": 141,
+        "startChar": 4,
+        "endLine": 148,
+        "endChar": 5
+      },
+      "revId": "f2970ec3ccc1852a1fedb65086eef20d644ccd78",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ad44a792_867f3ffe",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-25T18:29:06Z",
+      "side": 1,
+      "message": "Could you add the comment why this change is safe to rewrite?",
+      "range": {
+        "startLine": 125,
+        "startChar": 4,
+        "endLine": 148,
+        "endChar": 5
+      },
+      "revId": "f2970ec3ccc1852a1fedb65086eef20d644ccd78",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e2ccc617_fb5e2df9",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-25T18:29:06Z",
+      "side": 1,
+      "message": "This looks like not a good place. If we implement more auto-fix, this approach requires to write fixed go-code into a file multiple times.",
+      "revId": "f2970ec3ccc1852a1fedb65086eef20d644ccd78",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bc3d3062_d05a9079",
+        "filename": "src/chromiumos/cmd/tast-lint/check/issue.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-25T18:29:06Z",
+      "side": 1,
+      "message": "Recommendation: use named return value, to represent what they are clearly for code readers without letting them read the details of the code.",
+      "range": {
+        "startLine": 72,
+        "startChar": 40,
+        "endLine": 72,
+        "endChar": 58
+      },
+      "revId": "f2970ec3ccc1852a1fedb65086eef20d644ccd78",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c1e4000e_e88dae42",
+        "filename": "src/chromiumos/cmd/tast-lint/check/issue.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-25T18:29:06Z",
+      "side": 1,
+      "message": "go heavily prefers shorter name by using surrounding context. In this case, \"issues\" looks trivial, so I think you can drop.",
+      "revId": "f2970ec3ccc1852a1fedb65086eef20d644ccd78",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "25911c0f_bce0bf31",
+        "filename": "src/chromiumos/cmd/tast-lint/check/issue.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-25T18:29:06Z",
+      "side": 1,
+      "message": "nit: \"Unfixable\" (one word)",
+      "range": {
+        "startLine": 74,
+        "startChar": 11,
+        "endLine": 74,
+        "endChar": 20
+      },
+      "revId": "f2970ec3ccc1852a1fedb65086eef20d644ccd78",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1904f4d2_8cc317b6",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 284,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-25T18:29:06Z",
+      "side": 1,
+      "message": "You may need to shell-escape here.",
+      "range": {
+        "startLine": 284,
+        "startChar": 83,
+        "endLine": 284,
+        "endChar": 94
+      },
+      "revId": "f2970ec3ccc1852a1fedb65086eef20d644ccd78",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

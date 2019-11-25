@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "9fbb7f7f_b796037e",
+        "filename": "docs/getting_help.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-25T05:11:50Z",
+      "side": 1,
+      "message": "Not at this moment, but let us update this doc if we get one in the future.",
+      "parentUuid": "4817fcdb_36c861c1",
+      "range": {
+        "startLine": 17,
+        "startChar": 5,
+        "endLine": 17,
+        "endChar": 22
+      },
+      "revId": "c32f087be01112bca0e32e47691081175064dafe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "65dc9169_d705d5ea",
         "filename": "docs/getting_help.md",
         "patchSetId": 1
@@ -45,6 +69,30 @@
       "revId": "c32f087be01112bca0e32e47691081175064dafe",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1c763ad2_e7460bfd",
+        "filename": "docs/getting_help.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-25T05:11:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "65dc9169_d705d5ea",
+      "range": {
+        "startLine": 24,
+        "startChar": 21,
+        "endLine": 24,
+        "endChar": 26
+      },
+      "revId": "c32f087be01112bca0e32e47691081175064dafe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

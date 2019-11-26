@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "3597c3e5_1ce01029",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2019-11-26T23:55:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c549e854_2a71ede8",
+      "range": {
+        "startLine": 102,
+        "startChar": 1,
+        "endLine": 102,
+        "endChar": 7
+      },
+      "revId": "fa60f663400037d82370e9fc71fb89bdef833958",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e5afcc3c_c9039243",
         "filename": "src/chromiumos/tast/testing/state.go",
         "patchSetId": 8
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "835121af_458d3924",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 211,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2019-11-26T23:55:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e5afcc3c_c9039243",
+      "range": {
+        "startLine": 211,
+        "startChar": 40,
+        "endLine": 211,
+        "endChar": 65
+      },
+      "revId": "fa60f663400037d82370e9fc71fb89bdef833958",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2e0599de_173ac646",
         "filename": "src/chromiumos/tast/testing/state.go",
         "patchSetId": 8
@@ -59,6 +107,30 @@
       "writtenOn": "2019-11-26T08:43:46Z",
       "side": 1,
       "message": "I\u0027m not sure if we want to prepend a prefix for all logs messages, it might be a bit verbose if a test outputs bunch of lines. (it makes perfect sense for error messages since each error message should be one-line and self-contained.) WDYT?",
+      "range": {
+        "startLine": 347,
+        "startChar": 4,
+        "endLine": 347,
+        "endChar": 24
+      },
+      "revId": "fa60f663400037d82370e9fc71fb89bdef833958",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "28d20c8c_fe698d1b",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 347,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2019-11-26T23:55:22Z",
+      "side": 1,
+      "message": "If there was no error you could not differentiate between the different subtests. \n\nThe best example is one subtest of many failing. Without a logging prefix you can not tell when it started because the previous one did not have an error with a prefix.\n\nWe could add messages when subtests are started/finished, but that will also be verbose. Do you have any other ideas?",
+      "parentUuid": "2e0599de_173ac646",
       "range": {
         "startLine": 347,
         "startChar": 4,
@@ -94,6 +166,30 @@
     },
     {
       "key": {
+        "uuid": "a7643f74_916d96b3",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 443,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2019-11-26T23:55:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6bf1528f_647ebcef",
+      "range": {
+        "startLine": 443,
+        "startChar": 13,
+        "endLine": 443,
+        "endChar": 32
+      },
+      "revId": "fa60f663400037d82370e9fc71fb89bdef833958",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1e067578_56c158da",
         "filename": "src/chromiumos/tast/testing/state_test.go",
         "patchSetId": 8
@@ -114,6 +210,30 @@
       "revId": "fa60f663400037d82370e9fc71fb89bdef833958",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "07d4dda9_8976e1dc",
+        "filename": "src/chromiumos/tast/testing/state_test.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2019-11-26T23:55:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1e067578_56c158da",
+      "range": {
+        "startLine": 25,
+        "startChar": 5,
+        "endLine": 25,
+        "endChar": 12
+      },
+      "revId": "fa60f663400037d82370e9fc71fb89bdef833958",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -140,6 +260,30 @@
     },
     {
       "key": {
+        "uuid": "6b0fdaab_de006ac7",
+        "filename": "src/chromiumos/tast/testing/state_test.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2019-11-26T23:55:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1c57df15_6e44307d",
+      "range": {
+        "startLine": 28,
+        "startChar": 6,
+        "endLine": 28,
+        "endChar": 7
+      },
+      "revId": "fa60f663400037d82370e9fc71fb89bdef833958",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "48cd9ce3_0f3732ae",
         "filename": "src/chromiumos/tast/testing/state_test.go",
         "patchSetId": 8
@@ -163,6 +307,30 @@
     },
     {
       "key": {
+        "uuid": "cfbfa871_e3e8bc91",
+        "filename": "src/chromiumos/tast/testing/state_test.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2019-11-26T23:55:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "48cd9ce3_0f3732ae",
+      "range": {
+        "startLine": 149,
+        "startChar": 5,
+        "endLine": 149,
+        "endChar": 20
+      },
+      "revId": "fa60f663400037d82370e9fc71fb89bdef833958",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "65aa5d14_d051cb62",
         "filename": "src/chromiumos/tast/testing/state_test.go",
         "patchSetId": 8
@@ -183,6 +351,30 @@
       "revId": "fa60f663400037d82370e9fc71fb89bdef833958",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cd71c6aa_457436de",
+        "filename": "src/chromiumos/tast/testing/state_test.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2019-11-26T23:55:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "65aa5d14_d051cb62",
+      "range": {
+        "startLine": 162,
+        "startChar": 8,
+        "endLine": 162,
+        "endChar": 9
+      },
+      "revId": "fa60f663400037d82370e9fc71fb89bdef833958",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -232,6 +424,54 @@
     },
     {
       "key": {
+        "uuid": "1ccad19b_79768ea9",
+        "filename": "src/chromiumos/tast/testing/state_test.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2019-11-26T23:55:22Z",
+      "side": 1,
+      "message": "Done, also updated next tes.t",
+      "parentUuid": "16a452db_d55fdc81",
+      "range": {
+        "startLine": 172,
+        "startChar": 4,
+        "endLine": 172,
+        "endChar": 10
+      },
+      "revId": "fa60f663400037d82370e9fc71fb89bdef833958",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8d126523_2f38b41c",
+        "filename": "src/chromiumos/tast/testing/state_test.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2019-11-26T23:55:22Z",
+      "side": 1,
+      "message": "It\u0027s the last check now. Updated the next test as well.",
+      "parentUuid": "45eed34a_7ef7466b",
+      "range": {
+        "startLine": 172,
+        "startChar": 32,
+        "endLine": 172,
+        "endChar": 36
+      },
+      "revId": "fa60f663400037d82370e9fc71fb89bdef833958",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ccda7fcc_bd5130f8",
         "filename": "src/chromiumos/tast/testing/state_test.go",
         "patchSetId": 8
@@ -252,6 +492,30 @@
       "revId": "fa60f663400037d82370e9fc71fb89bdef833958",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d3358276_9633eef9",
+        "filename": "src/chromiumos/tast/testing/state_test.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2019-11-26T23:55:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ccda7fcc_bd5130f8",
+      "range": {
+        "startLine": 176,
+        "startChar": 53,
+        "endLine": 176,
+        "endChar": 69
+      },
+      "revId": "fa60f663400037d82370e9fc71fb89bdef833958",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

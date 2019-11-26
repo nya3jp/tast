@@ -1,0 +1,257 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c549e854_2a71ede8",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-26T08:43:46Z",
+      "side": 1,
+      "message": "Maybe \"subtests\" to clarify that they are subtest names?",
+      "range": {
+        "startLine": 102,
+        "startChar": 1,
+        "endLine": 102,
+        "endChar": 7
+      },
+      "revId": "fa60f663400037d82370e9fc71fb89bdef833958",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e5afcc3c_c9039243",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 211,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-26T08:43:46Z",
+      "side": 1,
+      "message": "Could you mention that Run should not called concurrently?",
+      "range": {
+        "startLine": 211,
+        "startChar": 40,
+        "endLine": 211,
+        "endChar": 65
+      },
+      "revId": "fa60f663400037d82370e9fc71fb89bdef833958",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2e0599de_173ac646",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 347,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-26T08:43:46Z",
+      "side": 1,
+      "message": "I\u0027m not sure if we want to prepend a prefix for all logs messages, it might be a bit verbose if a test outputs bunch of lines. (it makes perfect sense for error messages since each error message should be one-line and self-contained.) WDYT?",
+      "range": {
+        "startLine": 347,
+        "startChar": 4,
+        "endLine": 347,
+        "endChar": 24
+      },
+      "revId": "fa60f663400037d82370e9fc71fb89bdef833958",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6bf1528f_647ebcef",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 443,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-26T08:43:46Z",
+      "side": 1,
+      "message": "huge nit: s.errorCount++",
+      "range": {
+        "startLine": 443,
+        "startChar": 13,
+        "endLine": 443,
+        "endChar": 32
+      },
+      "revId": "fa60f663400037d82370e9fc71fb89bdef833958",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1e067578_56c158da",
+        "filename": "src/chromiumos/tast/testing/state_test.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-26T08:43:46Z",
+      "side": 1,
+      "message": "This is a unit test of basic logging, would you mind introducing a separate test case for nested Run?",
+      "range": {
+        "startLine": 25,
+        "startChar": 5,
+        "endLine": 25,
+        "endChar": 12
+      },
+      "revId": "fa60f663400037d82370e9fc71fb89bdef833958",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1c57df15_6e44307d",
+        "filename": "src/chromiumos/tast/testing/state_test.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-26T08:43:46Z",
+      "side": 1,
+      "message": "We have to call the cancel function in all cases, otherwise resources can be leaked.\n\n ctx, cancel :\u003d context.WithCancel(context.Background())\n defer cancel()\n\nBTW, we can make this simply:\n\n ctx :\u003d context.Background()",
+      "range": {
+        "startLine": 28,
+        "startChar": 6,
+        "endLine": 28,
+        "endChar": 7
+      },
+      "revId": "fa60f663400037d82370e9fc71fb89bdef833958",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "48cd9ce3_0f3732ae",
+        "filename": "src/chromiumos/tast/testing/state_test.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-26T08:43:46Z",
+      "side": 1,
+      "message": "nit: Usual naming convention of unit tests is Test\u003cfunction-name\u003e\u003cscenario-name\u003e. So in this case I recommend TestRunNonFatal.",
+      "range": {
+        "startLine": 149,
+        "startChar": 5,
+        "endLine": 149,
+        "endChar": 20
+      },
+      "revId": "fa60f663400037d82370e9fc71fb89bdef833958",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "65aa5d14_d051cb62",
+        "filename": "src/chromiumos/tast/testing/state_test.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-26T08:43:46Z",
+      "side": 1,
+      "message": "ditto.",
+      "range": {
+        "startLine": 162,
+        "startChar": 8,
+        "endLine": 162,
+        "endChar": 9
+      },
+      "revId": "fa60f663400037d82370e9fc71fb89bdef833958",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "45eed34a_7ef7466b",
+        "filename": "src/chromiumos/tast/testing/state_test.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-26T08:43:46Z",
+      "side": 1,
+      "message": "Fatal?",
+      "range": {
+        "startLine": 172,
+        "startChar": 32,
+        "endLine": 172,
+        "endChar": 36
+      },
+      "revId": "fa60f663400037d82370e9fc71fb89bdef833958",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "16a452db_d55fdc81",
+        "filename": "src/chromiumos/tast/testing/state_test.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-26T08:43:46Z",
+      "side": 1,
+      "message": "huge nit: Error",
+      "range": {
+        "startLine": 172,
+        "startChar": 4,
+        "endLine": 172,
+        "endChar": 10
+      },
+      "revId": "fa60f663400037d82370e9fc71fb89bdef833958",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ccda7fcc_bd5130f8",
+        "filename": "src/chromiumos/tast/testing/state_test.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-26T08:43:46Z",
+      "side": 1,
+      "message": "We don\u0027t have to check the output in this unit test; let us concentrate on making sure t.Fatal is absorbed by Run in this test, and have another test to check message format.",
+      "range": {
+        "startLine": 176,
+        "startChar": 53,
+        "endLine": 176,
+        "endChar": 69
+      },
+      "revId": "fa60f663400037d82370e9fc71fb89bdef833958",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

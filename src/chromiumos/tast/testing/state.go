@@ -19,6 +19,7 @@ import (
 	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/errors/stack"
+	"chromiumos/tast/timing"
 )
 
 const metaCategory = "meta" // category for remote tests exercising Tast, as in "meta.TestName"
@@ -202,6 +203,21 @@ func (s *State) RequiredVar(name string) string {
 		s.Fatalf("Required variable %q not supplied via -var", name)
 	}
 	return val
+}
+
+// Run starts a new subtest with an unique name. Returns true if the subtest passed.
+func (s *State) Run(ctx context.Context, name string, run func(context.Context, *State)) bool {
+	ctx, st := timing.Start(ctx, name)
+	run(ctx, s)
+	st.End()
+
+	if s.HasError() {
+		s.Errorf("--- FAIL %s", name)
+
+		return fail
+	}
+
+	return true
 }
 
 // PreValue returns a value supplied by the test's precondition, which must have been declared via Test.Pre

@@ -5,6 +5,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -24,11 +25,20 @@ import (
 func TestLog(t *gotesting.T) {
 	or := newOutputReader()
 	s := newState(&TestCase{Timeout: time.Minute}, or.ch, &TestConfig{})
+	ctx, _ := context.WithCancel(context.Background())
 	s.Log("msg ", 1)
-	s.Logf("msg %d", 2)
+
+	s.Run(ctx, "p1", func(ctx context.Context, s *State) {
+		s.Log("msg ", 2)
+
+		s.Run(ctx, "p2", func(ctx context.Context, s *State) {
+			s.Logf("msg %d", 3)
+		})
+	})
+
 	close(or.ch)
 	out := or.read()
-	if len(out) != 2 || out[0].Msg != "msg 1" || out[1].Msg != "msg 2" {
+	if len(out) != 3 || out[0].Msg != "msg 1" || out[1].Msg != "p1: msg 2" || out[2].Msg != "p1: p2: msg 3" {
 		t.Errorf("Bad test output: %v", out)
 	}
 }
@@ -133,6 +143,38 @@ func TestExtractErrorHeuristic(t *gotesting.T) {
 		if exp := "\nmeow\n\tat chromiumos/tast/testing.errorFunc"; !strings.Contains(e.Stack, exp) {
 			t.Errorf("Stack trace %q doesn't contain %q", e.Stack, exp)
 		}
+	}
+}
+
+func TestNonFatalRun(t *gotesting.T) {
+	or := newOutputReader()
+	s := newState(&TestCase{Timeout: time.Minute}, or.ch, &TestConfig{})
+
+	// Log the fatal message in a goroutine so the main goroutine that's running the test won't exit.
+	done := make(chan bool)
+	died := true
+	go func() {
+		defer func() {
+			close(done)
+			close(or.ch)
+		}()
+
+		ctx, _ := context.WithCancel(context.Background())
+		s.Run(ctx, "f", func(ctx context.Context, s *State) {
+			s.Fatal("fatal msg")
+		})
+
+		died = false
+	}()
+	<-done
+
+	if died {
+		t.Errorf("Test stopped due to fail")
+	}
+	if out := or.read(); len(out) != 1 {
+		t.Errorf("Got %v outputs; want 1", len(out))
+	} else if out[0].Err == nil || out[0].Err.Reason != "f: fatal msg" {
+		t.Errorf("Got output %v; want reason %q", out[0].Err, "f: fatal msg")
 	}
 }
 

@@ -259,7 +259,7 @@ func (t *TestCase) Run(ctx context.Context, ch chan<- Output, cfg *TestConfig) b
 		}
 
 		// In remote tests, reconnect to the DUT if needed.
-		if s.cfg.RemoteData != nil {
+		if s.root.cfg.RemoteData != nil {
 			dt := s.DUT()
 			if !dt.Connected(ctx) {
 				s.Log("Reconnecting to DUT")
@@ -281,7 +281,7 @@ func (t *TestCase) Run(ctx context.Context, ch chan<- Output, cfg *TestConfig) b
 				return
 			}
 			s.Logf("Preparing precondition %q", t.Pre)
-			s.preValue = t.Pre.(preconditionImpl).Prepare(ctx, s)
+			s.root.preValue = t.Pre.(preconditionImpl).Prepare(ctx, s)
 		}, t.Pre.Timeout(), t.Pre.Timeout()+exitTimeout)
 	}
 

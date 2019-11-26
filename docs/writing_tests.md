@@ -494,6 +494,47 @@ For example, see [video tests' pre subpackage].
 [chrome.NewPrecondition]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#NewPrecondition
 [video tests' pre subpackage]: https://chromium.git.corp.google.com/chromiumos/platform/tast-tests/+/refs/heads/master/src/chromiumos/tast/local/media/pre
 
+## Common testing patterns
+
+### Table-driven tests
+
+It is sometimes the case that multiple scenarios with very slight differences
+should be tested. In this case you can write a [table-driven test], which is a
+common pattern in Go unit tests. Remember to include the subtest name in the
+error messages to allow distinguishing subtest errors (until [crbug.com/1007138]
+is fixed to add testing.State.Run).
+
+```
+for _, tc := range []struct {
+    format   string
+    filename string
+    duration time.Duration
+}{
+    {
+        format:   "VP8",
+        filename: "sample.vp8",
+        duration: 3 * time.Second,
+    },
+    {
+        format:   "VP9",
+        filename: "sample.vp9",
+        duration: 3 * time.Second,
+    },
+    {
+        format:   "H.264",
+        filename: "sample.h264",
+        duration: 5 * time.Second,
+    },
+} {
+    if err := testPlayback(ctx, tc.filename, tc.duration); err != nil {
+        s.Errorf("Playback test failed for %s: %v", tc.format, err)
+    }
+}
+```
+
+[table-driven test]: https://github.com/golang/go/wiki/TableDrivenTests
+[crbug.com/1007138]: https://crbug.com/1007138
+
 ## Errors and logging
 
 The [testing.State] struct provides functions that tests may use to report their
@@ -986,116 +1027,109 @@ TODO(crbug.com/1014386): linter is not fully implemented.
 
 ## Parameterized tests
 
-A test may specify `Params` to generate variations of the test. A test with
-`Params` is called a *parameterized test*. Registration of a parameterized test
-looks like the following:
+When multiple scenarios with very slight differences should be tested, the most
+common pattern is to write [table-driven tests]. However testing everything in
+a single test is sometimes undesirable for several reasons:
+
+*   Tests should have different attributes. For example, we might want
+    to set some of them [critical] to avoid regressions, while keeping others
+    [informational] due to test flakiness.
+*   Tests should declare different dependencies. For example, VP8 playback
+    test should declare the "hardware-accelerated VP8 decoding" hardware
+    dependency, while other playback tests should declare their respective
+    dependencies.
+*   Test results should be reported separately. For example, video playback
+    performance tests may want to report performance metrics separately for
+    different video formats (VP8/VP9/H.264/...).
+
+In such cases, *parameterized tests* can be used to define multiple similar
+tests with different test properties.
+
+To parameterize a test, specify a slice of [`testing.Param`] in the `Params`
+field on test registration. `Params` should be a literal since test
+registration should be [declarative]. If `Params` is non-empty,
+`testing.AddTest` expands the the test into one or more tests corresponding to
+each item in `Params` by merging `testing.Test` and [`testing.Param`] with the
+rules described below.
+
+Here is an example of a parameterized test registration:
 
 ```
-type animal struct {
-    numLegs int
-    crying  string
-}
-
 func init() {
     testing.AddTest(&testing.Test{
-        Func:     Param,
-        Desc:     "Parameterized test example",
-        Contacts: []string{"tast-owners@google.com"},
+        Func:     Playback,
+        Desc:     "Tests media playback",
+        Contacts: []string{"someone@chromium.org"},
+        Attr:     []string{"group:mainline"},
         Params: []testing.Param{{
-            Name: "dog",
-            Val: animal{
-                numLegs: 4,
-                crying:  "bow-wow",
-            },
+            Name:      "vp8",
+            Val:       "sample.vp8",
+            ExtraData: []string{"sample.vp8"},
+            ExtraAttr: []string{"informational"},
         }, {
-            Name: "duck",
-            Val: animal{
-                numLegs: 2,
-                crying:  "quack",
-            },
+            Name:      "vp9",
+            Val:       "sample.vp9",
+            ExtraData: []string{"sample.vp9"},
+            // No ExtraAttr; this test is critical.
+        }, {
+            Name:              "h264",
+            Val:               "sample.h264",
+            ExtraSoftwareDeps: []string{"chrome_internal"}, // H.264 codec is unavailable on Chromium OS
+            ExtraData:         []string{"sample.h264"},
+            ExtraAttr:         []string{"informational"},
         }},
     })
 }
 
-func Param(ctx context.Context, s *testing.State) {
-    // This will print {4 bow-wow} for "dog", and {2 quack} for "duck".
-    s.Logf("Value: ", s.Param().(animal))
+func Playback(ctx context.Context, s *testing.State) {
+    filename := s.Param().(string)
+    if err := playback(ctx, filename); err != nil {
+        s.Fatal("Failed to playback: ", err)
+    }
 }
 ```
 
-### Name
+`Name` in [`testing.Param`] is appended to the base test name with a leading dot
+to compute the test name, just like `category.TestName.parameter_name`.
+If `Name` is empty, the base test name is used as-is. `Name` should be in
+`lower_snake_case` style. `Name` must be unique within a parameterized test.
 
-Each `Param` can have a `Name`. It will be appended to the test name with
-a leading `.`. For example, `category.TestFuncName.param1`. The `Name` should
-be in `lower_case_snake_case` style. All `Name`s in a `Params` array should be
-unique. `Name` can be empty (or can be omitted). In this case, no suffix
-(including a leading `.`) will be appended. Because of the uniqueness
-requirement, a `Params` array can have at most one unnamed param case.
+`Val` in [`testing.Param`] is an arbitrary value that can be accessed in the
+test body via the `testing.State.Param` method. Since it returns the value as
+`interface{}`, it should be type-asserted to the original type immediately.
+All `Val` in a parameterized test must have the same type.
 
-### Val
+`Pre` and `Timeout` in [`testing.Param`] are equivalent to those in
+`testing.Test`. They can be set only if the corresponding fields in the base
+test are not set.
 
-Each `Param` can have a `Val`. The specified value can be accessed via the
-`testing.State.Param()` method in the test body. Because it just returns an
-`interface{}`, the returned value should be type-asserted to some concrete
-type immediately. All `Val`s in a `Params` array should have the same type.
+If `Pre` is set in more than one parameters of the same base test, these
+`Precondition` types should return the same value type. For example, it is fine
+to use the `arc.Booted` precondition in a test parameter and the (hypothetical)
+`arc.VMBooted` precondition in another test parameter as long as they return
+the same `arc.PreData` type. However we should not add a test parameter with the
+`chrome.LoggedIn` precondition since it returns an incompatible
+`*chrome.Chrome` type.
 
-### ExtraAttr, ExtraData, ExtraSoftwareDeps, Pre, Timeout
-
-Each `Param` can declare `ExtraAttr`, `ExtraData`, `ExtraSoftwareDeps`, `Pre`,
-and `Timeout` properties. For example, in the following code:
-
-```
-testing.AddTest(&testing.Test{
-    Func: DoSomething,
-    ...
-    SoftwareDeps: []string{"chrome"},
-    Params: []testing.Param{{
-        Name: "play",
-        ExtraSoftwareDeps: []string{"audio_play"},
-        Pre: arc.Booted(),
-        Timeout: 3 * time.Minute,
-    }, {
-        Name: "record",
-        ExtraSoftwareDeps: []string{"audio_record"},
-        Pre: arc.VMBooted(),
-        Timeout: 10 * time.Minute,
-    }}
-})
-```
-
-In each generated test, the `Extra*` values are appended to `Attr`, `Data` and
-`SoftwareDeps` in the enclosing `testing.Test` respectively. For example,
-`DoSomething.play` will run on DUTs with `"chrome"` and `"audio_play"`
-available, while `DoSomething.record` will run on DUTs with `"chrome"` and
-`"audio_record"` available. Note that both will run on a DUT with all
-`"chrome"`, `"audio_play"` and `"audio_record"` available.
-
-For `Pre` and `Timeout`, each parameterized test can define its own `Pre` and/or
-`Timeout` as long as it is not defined in the enclosing `testing.Test`.
-If `Pre` and/or `Timeout` is only defined in the enclosing `testing.Test`,
-it will be inherited by the parameterized tests.
-
-If more than one parameterized test define `Pre`, these `Pre` must return the
-same value type. E.g: It is Ok if a parameterized test uses `arc.Booted()` and
-another one uses the hypothetical `arc.VMBooted()` precondition, since both
-preconditions return the same value type. But it will fail if one uses `arc.Booted()`
-and another one uses `chrome.LoggedIn()` since they return different value types.
-
-Please see also [attributes], [data] and [software dependencies] for details.
-
-[attributes]: test_attributes.md
-[data]: #Data-files
-[software dependencies]: test_dependencies.md
-
-### Parameterized test registration
+`Extra*` in [`testing.Param`] (such as `ExtraAttr`) contains items added to
+their corresponding base test properties (such as `Attr`) to obtain the test
+properties.
 
 Because test registration should be declarative as written in
 [test registration], `Params` should be an array literal containing `Param`
 struct literals. In each `Param` struct, `Name` should be a string literal with
 `snake_case` name if present. `ExtraAttr`, `ExtraData`, `ExtraSoftwareDeps` and
-`Pre`, should follow the rule of the corresponding `Attr`, `Data` ,`SoftwareDeps`
+`Pre` should follow the rule of the corresponding `Attr`, `Data` ,`SoftwareDeps`
 and `Pre` in [test registration].
 
+See documentation of [`testing.Param`] for the full list of customizable
+properties.
+
+[table-driven tests]: #table-driven_tests
+[critical]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/test_attributes.md
+[informational]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/test_attributes.md
+[`testing.Param`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Param
+[declarative]: #Test-registration
 [test registration]: #Test-registration
 
 ## Remote procedure calls with gRPC

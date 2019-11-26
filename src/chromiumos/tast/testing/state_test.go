@@ -5,6 +5,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -14,6 +15,7 @@ import (
 	"reflect"
 	"runtime"
 	"strings"
+	"sync"
 	gotesting "testing"
 	"time"
 
@@ -30,6 +32,92 @@ func TestLog(t *gotesting.T) {
 	out := or.read()
 	if len(out) != 2 || out[0].Msg != "msg 1" || out[1].Msg != "msg 2" {
 		t.Errorf("Bad test output: %v", out)
+	}
+}
+
+func TestNestedRun(t *gotesting.T) {
+	or := newOutputReader()
+	s := newState(&TestCase{Timeout: time.Minute}, or.ch, &TestConfig{})
+	ctx := context.Background()
+
+	s.Run(ctx, "p1", func(ctx context.Context, s *State) {
+		s.Log("msg ", 1)
+
+		s.Run(ctx, "p2", func(ctx context.Context, s *State) {
+			s.Log("msg ", 2)
+		})
+
+		s.Log("msg ", 3)
+	})
+
+	s.Log("msg ", 4)
+
+	close(or.ch)
+	out := or.read()
+	if len(out) != 6 || out[0].Msg != "Starting subtest p1" || out[1].Msg != "msg 1" || out[2].Msg != "Starting subtest p1/p2" ||
+		out[3].Msg != "msg 2" || out[4].Msg != "msg 3" || out[5].Msg != "msg 4" {
+
+		t.Errorf("Bad test output: %v", out)
+	}
+}
+
+func TestParallelRun(t *gotesting.T) {
+	or := newOutputReader()
+	s := newState(&TestCase{Timeout: time.Minute}, or.ch, &TestConfig{})
+	ctx := context.Background()
+
+	var wg sync.WaitGroup
+	wg.Add(2)
+	s.Run(ctx, "r", func(ctx context.Context, s *State) {
+		go func() {
+			s.Run(ctx, "t1", func(ctx context.Context, s *State) {
+				s.Log("msg ", 1)
+			})
+			wg.Done()
+		}()
+		go func() {
+			s.Run(ctx, "t2", func(ctx context.Context, s *State) {
+				s.Log("msg ", 2)
+			})
+			wg.Done()
+		}()
+	})
+	wg.Wait()
+
+	close(or.ch)
+	out := or.read()
+	if len(out) != 5 || out[0].Msg != "Starting subtest r" {
+		t.Fatal("Bad test output: ", out)
+	}
+
+	// Check that both messages appear and are sequential. Ordering between
+	// subtests is random.
+	hasOutput := func(id string) bool {
+		fIndex := -1
+		for i, v := range out[1:] {
+			if strings.HasPrefix(v.Msg, "Starting subtest") &&
+				strings.HasSuffix(v.Msg, id) {
+				fIndex = i
+				break
+			}
+		}
+
+		sIndex := -1
+		if fIndex >= 0 {
+			for i, v := range out[fIndex+1:] {
+				if strings.HasPrefix(v.Msg, "msg") &&
+					strings.HasSuffix(v.Msg, id) {
+					sIndex = i
+					break
+				}
+			}
+		}
+
+		return sIndex > 0
+	}
+
+	if !hasOutput("1") || !hasOutput("2") {
+		t.Error("Bad test output: ", out)
 	}
 }
 
@@ -136,6 +224,66 @@ func TestExtractErrorHeuristic(t *gotesting.T) {
 	}
 }
 
+func TestRunUsePrefix(t *gotesting.T) {
+	or := newOutputReader()
+	s := newState(&TestCase{Timeout: time.Minute}, or.ch, &TestConfig{})
+
+	ctx := context.Background()
+	s.Run(ctx, "f1", func(ctx context.Context, s *State) {
+		s.Run(ctx, "f2", func(ctx context.Context, s *State) {
+			s.Errorf("error %s", "msg")
+		})
+	})
+	close(or.ch)
+
+	if !s.HasError() {
+		t.Error("Test is not reporting error")
+	}
+
+	if out := or.read(); len(out) != 3 {
+		t.Errorf("Got %v outputs; want 3", len(out))
+	} else {
+		if out[0].Err != nil || out[0].Msg != "Starting subtest f1" {
+			t.Errorf("Got output %v; want msg %q", out[0].Msg, "Starting subtest f1")
+		}
+
+		if out[1].Err != nil || out[1].Msg != "Starting subtest f1/f2" {
+			t.Errorf("Got output %v; want msg %q", out[1].Msg, "Starting subtest f1/f2")
+		}
+
+		if out[2].Err == nil || out[2].Err.Reason != "f1/f2: error msg" {
+			t.Errorf("Got output %v; want reason %q", out[2].Err, "f1/f2: error msg")
+		}
+	}
+}
+
+func TestRunNonFatal(t *gotesting.T) {
+	or := newOutputReader()
+	s := newState(&TestCase{Timeout: time.Minute}, or.ch, &TestConfig{})
+
+	// Log the fatal message in a goroutine so the main goroutine that's running the test won't exit.
+	done := make(chan bool)
+	died := true
+	go func() {
+		defer func() {
+			close(done)
+			close(or.ch)
+		}()
+
+		ctx := context.Background()
+		s.Run(ctx, "f", func(ctx context.Context, s *State) {
+			s.Fatal("fatal msg")
+		})
+
+		died = false
+	}()
+	<-done
+
+	if died {
+		t.Error("Test stopped due to fail")
+	}
+}
+
 func TestFatal(t *gotesting.T) {
 	or := newOutputReader()
 	s := newState(&TestCase{Timeout: time.Minute}, or.ch, &TestConfig{})
@@ -154,7 +302,7 @@ func TestFatal(t *gotesting.T) {
 	<-done
 
 	if !died {
-		t.Errorf("Test continued after call to Fatalf")
+		t.Fatal("Test continued after call to Fatalf")
 	}
 	if out := or.read(); len(out) != 1 {
 		t.Errorf("Got %v outputs; want 1", len(out))

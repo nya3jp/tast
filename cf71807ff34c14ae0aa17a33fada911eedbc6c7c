@@ -22,6 +22,30 @@
       "revId": "cf71807ff34c14ae0aa17a33fada911eedbc6c7c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e0307118_ba2f263b",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 303,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-26T03:54:00Z",
+      "side": 1,
+      "message": "This is okay since I\u0027ve changed the contract of findVarsFiles so that it returns no error if the directory is missing:\n\n // findVarsFiles returns a list of paths to vars files under dir. The returned\n // paths are sorted in a stable order. If dir doesn\u0027t exist, empty paths is\n // returned with no error.\n\nHowever this behavior was not tested in config_test.go. I modified the test to test this behavior.",
+      "parentUuid": "0a1cb02a_b7bcdc19",
+      "range": {
+        "startLine": 303,
+        "startChar": 19,
+        "endLine": 303,
+        "endChar": 22
+      },
+      "revId": "cf71807ff34c14ae0aa17a33fada911eedbc6c7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

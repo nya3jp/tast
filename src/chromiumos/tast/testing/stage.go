@@ -33,7 +33,7 @@ func runStages(ctx context.Context, s *State, stages []stage) bool {
 	// if one test is buggy and doesn't return after its context's deadline is reached.
 	go func() {
 		defer close(stageCh)
-		defer s.close()
+		defer s.root.close()
 		for _, st := range stages {
 			rctx, rcancel := ctxutil.OptionalTimeout(ctx, st.ctxTimeout)
 			defer rcancel()

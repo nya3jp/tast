@@ -19,6 +19,7 @@ import (
 	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/errors/stack"
+	"chromiumos/tast/timing"
 )
 
 const metaCategory = "meta" // category for remote tests exercising Tast, as in "meta.TestName"
@@ -79,6 +80,19 @@ func (h *RPCHint) clone() *RPCHint {
 	return &hc
 }
 
+// rootState contains all state shared between all subtests. Each subtest receives
+// its own instance of State.
+type rootState struct {
+	test *TestCase     // test being run
+	ch   chan<- Output // channel to which logging messages and errors are written
+	cfg  *TestConfig   // details about how to run test
+
+	preValue interface{} // value returned by test.Pre.Prepare; may be nil
+
+	closed bool       // true after close is called and ch is closed
+	mu     sync.Mutex // protects closed
+}
+
 // State holds state relevant to the execution of a single test.
 //
 // Parts of its interface are patterned after Go's testing.T type.
@@ -92,15 +106,12 @@ func (h *RPCHint) clone() *RPCHint {
 // It is intended to be safe when called concurrently by multiple goroutines
 // while a test is running.
 type State struct {
-	test *TestCase     // test being run
-	ch   chan<- Output // channel to which logging messages and errors are written
-	cfg  *TestConfig   // details about how to run test
+	root *rootState // root state for the test
 
-	preValue interface{} // value returned by test.Pre.Prepare; may be nil
+	subtests []string // subtest names; used to prefix error messages
 
-	closed   bool       // true after close is called and ch is closed
-	hasError bool       // whether the test has already reported errors or not
-	mu       sync.Mutex // protects closed and hasError
+	hasError bool       // true if the current subtest has encountered an error; the test fails if this is true for the initial subtest
+	mu       sync.Mutex // protects hasError
 }
 
 // TestConfig contains details about how an individual test should be run.
@@ -123,19 +134,23 @@ type TestConfig struct {
 	NextTest *TestCase
 }
 
-// newState returns a new State object.
+// newRootState returns a new rootState object.
+func newRootState(test *TestCase, ch chan<- Output, cfg *TestConfig) *rootState {
+	return &rootState{test: test, ch: ch, cfg: cfg}
+}
+
 func newState(test *TestCase, ch chan<- Output, cfg *TestConfig) *State {
-	return &State{test: test, ch: ch, cfg: cfg}
+	return &State{root: newRootState(test, ch, cfg)}
 }
 
 // close is called after the test has completed to close s.ch.
-func (s *State) close() {
-	s.mu.Lock()
-	defer s.mu.Unlock()
+func (r *rootState) close() {
+	r.mu.Lock()
+	defer r.mu.Unlock()
 
-	if !s.closed {
-		close(s.ch)
-		s.closed = true
+	if !r.closed {
+		close(r.ch)
+		r.closed = true
 	}
 }
 
@@ -152,9 +167,9 @@ func (s *State) testContext() *TestContext {
 // DataPath returns the absolute path to use to access a data file previously
 // registered via Test.Data.
 func (s *State) DataPath(p string) string {
-	for _, f := range s.test.Data {
+	for _, f := range s.root.test.Data {
 		if f == p {
-			return filepath.Join(s.cfg.DataDir, p)
+			return filepath.Join(s.root.cfg.DataDir, p)
 		}
 	}
 	s.Fatalf("Test data %q wasn't declared in definition passed to testing.AddTest", p)
@@ -163,7 +178,7 @@ func (s *State) DataPath(p string) string {
 
 // Param returns Val specified at the Param struct for the current test case.
 func (s *State) Param() interface{} {
-	return s.test.Val
+	return s.root.test.Val
 }
 
 // DataFileSystem returns an http.FileSystem implementation that serves a test's data files.
@@ -175,13 +190,13 @@ func (s *State) DataFileSystem() *dataFS { return (*dataFS)(s) }
 
 // OutDir returns a directory into which the test may place arbitrary files
 // that should be included with the test results.
-func (s *State) OutDir() string { return s.cfg.OutDir }
+func (s *State) OutDir() string { return s.root.cfg.OutDir }
 
 // Var returns the value for the named variable, which must have been registered via Test.Vars.
 // If a value was not supplied at runtime via the -var flag to "tast run", ok will be false.
 func (s *State) Var(name string) (val string, ok bool) {
 	seen := false
-	for _, n := range s.test.Vars {
+	for _, n := range s.root.test.Vars {
 		if n == name {
 			seen = true
 			break
@@ -191,7 +206,7 @@ func (s *State) Var(name string) (val string, ok bool) {
 		s.Fatalf("Variable %q was not registered in testing.Test.Vars", name)
 	}
 
-	val, ok = s.cfg.Vars[name]
+	val, ok = s.root.cfg.Vars[name]
 	return val, ok
 }
 
@@ -204,66 +219,104 @@ func (s *State) RequiredVar(name string) string {
 	return val
 }
 
+// Run starts a new subtest with an unique name. Error messages are prepended with the subtest
+// name during its execution. If Fatal/Fatalf is called from inside a subtest, only that subtest
+// is stopped; its parent continues. Returns true if the subtest passed.
+func (s *State) Run(ctx context.Context, name string, run func(context.Context, *State)) bool {
+	subtests := append([]string(nil), s.subtests...)
+	subtests = append(subtests, name)
+	ns := &State{root: s.root, subtests: subtests}
+
+	finished := make(chan struct{})
+
+	go func() {
+		ctx, cancel := context.WithCancel(ctx)
+		defer cancel()
+
+		ctx, st := timing.Start(ctx, name)
+		defer func() {
+			st.End()
+			close(finished)
+		}()
+
+		s.Logf("Starting subtest %s", strings.Join(subtests, "/"))
+		run(ctx, ns)
+	}()
+
+	<-finished
+
+	ns.mu.Lock()
+	defer ns.mu.Unlock()
+	// Bubble up failures
+	if ns.hasError {
+		s.mu.Lock()
+		defer s.mu.Unlock()
+		s.hasError = true
+	}
+
+	return ns.hasError
+}
+
 // PreValue returns a value supplied by the test's precondition, which must have been declared via Test.Pre
 // when the test was registered. Callers should cast the returned empty interface to the correct pointer
 // type; see the relevant precondition's documentation for specifics.
 // nil will be returned if the test did not declare a precondition.
-func (s *State) PreValue() interface{} { return s.preValue }
+func (s *State) PreValue() interface{} { return s.root.preValue }
 
 // SoftwareDeps returns software dependencies declared in the currently running test.
 func (s *State) SoftwareDeps() []string {
-	return append([]string(nil), s.test.SoftwareDeps...)
+	return append([]string(nil), s.root.test.SoftwareDeps...)
 }
 
 // ServiceDeps returns service dependencies declared in the currently running test.
 func (s *State) ServiceDeps() []string {
-	return append([]string(nil), s.test.ServiceDeps...)
+	return append([]string(nil), s.root.test.ServiceDeps...)
 }
 
 // Meta returns information about how the "tast" process used to initiate testing was run.
 // It can only be called by remote tests in the "meta" category.
 func (s *State) Meta() *Meta {
-	if parts := strings.SplitN(s.test.Name, ".", 2); len(parts) != 2 || parts[0] != metaCategory {
+	if parts := strings.SplitN(s.root.test.Name, ".", 2); len(parts) != 2 || parts[0] != metaCategory {
 		s.Fatalf("Meta info unavailable since test doesn't have category %q", metaCategory)
 		return nil
 	}
-	if s.cfg.RemoteData == nil {
+	if s.root.cfg.RemoteData == nil {
 		s.Fatal("Meta info unavailable (is test non-remote?)")
 		return nil
 	}
 	// Return a copy to make sure the test doesn't modify the original struct.
-	return s.cfg.RemoteData.Meta.clone()
+	return s.root.cfg.RemoteData.Meta.clone()
 }
 
 // RPCHint returns information needed to establish gRPC connections.
 // It can only be called by remote tests.
 func (s *State) RPCHint() *RPCHint {
-	if s.cfg.RemoteData == nil {
+	if s.root.cfg.RemoteData == nil {
 		s.Fatal("RPCHint unavailable (is test non-remote?)")
 		return nil
 	}
 	// Return a copy to make sure the test doesn't modify the original struct.
-	return s.cfg.RemoteData.RPCHint.clone()
+	return s.root.cfg.RemoteData.RPCHint.clone()
 }
 
 // DUT returns a shared SSH connection.
 // It can only be called by remote tests.
 func (s *State) DUT() *dut.DUT {
-	if s.cfg.RemoteData == nil {
+	if s.root.cfg.RemoteData == nil {
 		s.Fatal("DUT unavailable (is test non-remote?)")
 		return nil
 	}
-	return s.cfg.RemoteData.DUT
+	return s.root.cfg.RemoteData.DUT
 }
 
 // Log formats its arguments using default formatting and logs them.
 func (s *State) Log(args ...interface{}) {
-	s.writeOutput(Output{T: time.Now(), Msg: fmt.Sprint(args...)})
+	s.root.writeOutput(Output{T: time.Now(), Msg: fmt.Sprint(args...)})
 }
 
 // Logf is similar to Log but formats its arguments using fmt.Sprintf.
 func (s *State) Logf(format string, args ...interface{}) {
-	s.writeOutput(Output{T: time.Now(), Msg: fmt.Sprintf(format, args...)})
+	s.root.writeOutput(Output{T: time.Now(), Msg: fmt.Sprintf(format, args...)})
 }
 
 // Error formats its arguments using default formatting and marks the test
@@ -271,45 +324,45 @@ func (s *State) Logf(format string, args ...interface{}) {
 // while letting the test continue execution.
 func (s *State) Error(args ...interface{}) {
 	s.recordError()
-	fullMsg, lastMsg, err := formatError(args...)
+	fullMsg, lastMsg, err := s.formatError(args...)
 	e := NewError(err, fullMsg, lastMsg, 1)
-	s.writeOutput(Output{T: time.Now(), Err: e})
+	s.root.writeOutput(Output{T: time.Now(), Err: e})
 }
 
 // Errorf is similar to Error but formats its arguments using fmt.Sprintf.
 func (s *State) Errorf(format string, args ...interface{}) {
 	s.recordError()
-	fullMsg, lastMsg, err := formatErrorf(format, args...)
+	fullMsg, lastMsg, err := s.formatErrorf(format, args...)
 	e := NewError(err, fullMsg, lastMsg, 1)
-	s.writeOutput(Output{T: time.Now(), Err: e})
+	s.root.writeOutput(Output{T: time.Now(), Err: e})
 }
 
 // Fatal is similar to Error but additionally immediately ends the test.
 func (s *State) Fatal(args ...interface{}) {
 	s.recordError()
-	fullMsg, lastMsg, err := formatError(args...)
+	fullMsg, lastMsg, err := s.formatError(args...)
 	e := NewError(err, fullMsg, lastMsg, 1)
-	s.writeOutput(Output{T: time.Now(), Err: e})
+	s.root.writeOutput(Output{T: time.Now(), Err: e})
 	runtime.Goexit()
 }
 
 // Fatalf is similar to Fatal but formats its arguments using fmt.Sprintf.
 func (s *State) Fatalf(format string, args ...interface{}) {
 	s.recordError()
-	fullMsg, lastMsg, err := formatErrorf(format, args...)
+	fullMsg, lastMsg, err := s.formatErrorf(format, args...)
 	e := NewError(err, fullMsg, lastMsg, 1)
-	s.writeOutput(Output{T: time.Now(), Err: e})
+	s.root.writeOutput(Output{T: time.Now(), Err: e})
 	runtime.Goexit()
 }
 
 // writeOutput writes o to s.ch.
 // o is discarded if close has already been called since a write to a closed channel would panic.
-func (s *State) writeOutput(o Output) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
+func (r *rootState) writeOutput(o Output) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
 
-	if !s.closed {
-		s.ch <- o
+	if !r.closed {
+		r.ch <- o
 	}
 }
 
@@ -333,7 +386,7 @@ var errorSuffix = regexp.MustCompile(`(\s*:\s*|\s+)$`)
 //
 //  lastMsg = "Failed something"
 //  fullMsg = "Failed something: <error message>"
-func formatError(args ...interface{}) (fullMsg, lastMsg string, err error) {
+func (s *State) formatError(args ...interface{}) (fullMsg, lastMsg string, err error) {
 	fullMsg = fmt.Sprint(args...)
 	if len(args) == 1 {
 		if e, ok := args[0].(error); ok {
@@ -350,6 +403,14 @@ func formatError(args ...interface{}) (fullMsg, lastMsg string, err error) {
 		}
 	}
 	lastMsg = fmt.Sprint(args...)
+
+	if len(s.subtests) > 0 {
+		subtests := strings.Join(s.subtests, "/") + ": "
+
+		fullMsg = subtests + fullMsg
+		lastMsg = subtests + lastMsg
+	}
+
 	return fullMsg, lastMsg, err
 }
 
@@ -366,7 +427,7 @@ var errorfSuffix = regexp.MustCompile(`\s*:?\s*%v$`)
 //
 //  lastMsg = "Failed something"
 //  fullMsg = "Failed something: <error message>"
-func formatErrorf(format string, args ...interface{}) (fullMsg, lastMsg string, err error) {
+func (s *State) formatErrorf(format string, args ...interface{}) (fullMsg, lastMsg string, err error) {
 	fullMsg = fmt.Sprintf(format, args...)
 	if len(args) >= 1 {
 		if e, ok := args[len(args)-1].(error); ok {
@@ -378,6 +439,14 @@ func formatErrorf(format string, args ...interface{}) (fullMsg, lastMsg string, 
 		}
 	}
 	lastMsg = fmt.Sprintf(format, args...)
+
+	if len(s.subtests) > 0 {
+		subtests := strings.Join(s.subtests, "/") + ": "
+
+		fullMsg = subtests + fullMsg
+		lastMsg = subtests + lastMsg
+	}
+
 	return fullMsg, lastMsg, err
 }
 
@@ -405,7 +474,7 @@ func (d *dataFS) Open(name string) (http.File, error) {
 	// Report an error for nonexistent files to avoid making tests fail (or create favicon files) unnecessarily.
 	// DataPath will still make the test fail if it attempts to use a file that exists but that wasn't
 	// declared as a dependency.
-	if _, err := os.Stat(filepath.Join((*State)(d).cfg.DataDir, name)); os.IsNotExist(err) {
+	if _, err := os.Stat(filepath.Join((*State)(d).root.cfg.DataDir, name)); os.IsNotExist(err) {
 		return nil, errors.New("not found")
 	}
 

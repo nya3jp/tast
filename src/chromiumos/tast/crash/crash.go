@@ -31,6 +31,10 @@ const (
 	MinidumpExt = ".dmp"
 	// LogExt is the extension for log files containing additional information that are written by crash_reporter.
 	LogExt = ".log"
+	// InfoExt is the extention for info files.
+	InfoExt = ".info"
+	// ProclogExt is the extention for proclog files.
+	ProclogExt = ".proclog"
 	// KCrashExt is the extension for log files created by kernel warnings and crashes.
 	KCrashExt = ".kcrash"
 	// GPUStateExt is the extension for GPU state files written by crash_reporter.
@@ -58,6 +62,8 @@ func isCrashFile(filename string) bool {
 		CoreExt,
 		MinidumpExt,
 		LogExt,
+		ProclogExt,
+		InfoExt,
 		KCrashExt,
 		GPUStateExt,
 		MetadataExt,

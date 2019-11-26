@@ -151,6 +151,76 @@
     },
     {
       "key": {
+        "uuid": "77389f79_5583f90e",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-26T01:38:13Z",
+      "side": 1,
+      "message": "Alternatively you might want to just keep the original simple message since it seems a bit cumbersome to build the long message here...",
+      "parentUuid": "6e8d40a7_d8b51eb1",
+      "range": {
+        "startLine": 78,
+        "startChar": 3,
+        "endLine": 93,
+        "endChar": 4
+      },
+      "revId": "f2970ec3ccc1852a1fedb65086eef20d644ccd78",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d412caee_c8fd6359",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-26T01:38:13Z",
+      "side": 1,
+      "message": "I\u0027m not familiar with how astutil.Apply works, but do we need to set TokPos here? It seems to me that token positions are not meaningful for new nodes since they appear as new nodes...",
+      "range": {
+        "startLine": 107,
+        "startChar": 6,
+        "endLine": 107,
+        "endChar": 36
+      },
+      "revId": "f2970ec3ccc1852a1fedb65086eef20d644ccd78",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ce6db9d0_f8c21b58",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-26T01:38:13Z",
+      "side": 1,
+      "message": "Hmm, actually always using :\u003d may not work because :\u003d allows some already-defined variables in lhs.\n\nFor example,\n\n a :\u003d 1\n a, b :\u003d 2, 3 // ok since b is a new variable\n a, b :\u003d 4, 5 // NG since there is no new variable\n\nIn the case of slices, the following code is allowed:\n\n a :\u003d []int{28}\n a, b :\u003d []int{}, []int{} // ok\n\nSo it can\u0027t be rewritten to\n\n a :\u003d []int{28}\n var a []int // NG\n var b []int\n\nbut it should be rewritten to\n\n a :\u003d []int{28}\n a \u003d []int\n var b []int\n\nor\n\n a :\u003d []int{28}\n a \u003d nil\n var b []int",
+      "range": {
+        "startLine": 136,
+        "startChar": 0,
+        "endLine": 140,
+        "endChar": 6
+      },
+      "revId": "f2970ec3ccc1852a1fedb65086eef20d644ccd78",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "43c964be_67fa86bd",
         "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
         "patchSetId": 4

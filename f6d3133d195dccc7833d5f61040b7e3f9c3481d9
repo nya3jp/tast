@@ -22,6 +22,30 @@
       "revId": "f6d3133d195dccc7833d5f61040b7e3f9c3481d9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aa7231a1_67c8a13c",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 1148,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-26T04:13:11Z",
+      "side": 1,
+      "message": "That\u0027s a good point. I\u0027ve renamed the method to CheckBoot.",
+      "parentUuid": "a6b9c24d_79c794d4",
+      "range": {
+        "startLine": 1143,
+        "startChar": 0,
+        "endLine": 1148,
+        "endChar": 1
+      },
+      "revId": "f6d3133d195dccc7833d5f61040b7e3f9c3481d9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -2,6 +2,52 @@
   "comments": [
     {
       "key": {
+        "uuid": "8d17befa_3ba3dba7",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 1132,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-11-26T15:09:27Z",
+      "side": 1,
+      "message": "It repeats the same sentence as above. Maybe:\nboot.proto looks like this:",
+      "range": {
+        "startLine": 1131,
+        "startChar": 45,
+        "endLine": 1132,
+        "endChar": 32
+      },
+      "revId": "ebd8ac0c8902c7134267b2f3f1406c1db973a34d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8d871e1b_5524bf15",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 1145,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-11-26T15:09:27Z",
+      "side": 1,
+      "message": "CheckBoot",
+      "range": {
+        "startLine": 1145,
+        "startChar": 5,
+        "endLine": 1145,
+        "endChar": 9
+      },
+      "revId": "ebd8ac0c8902c7134267b2f3f1406c1db973a34d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "13653ed0_32c17a3e",
         "filename": "docs/writing_tests.md",
         "patchSetId": 4
@@ -48,6 +94,29 @@
     },
     {
       "key": {
+        "uuid": "916dfb29_114b167b",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 1236,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-11-26T15:09:27Z",
+      "side": 1,
+      "message": "What if we already have arc.Boot local test? What do you think about naming this BootService to avoid such possibility?",
+      "range": {
+        "startLine": 1236,
+        "startChar": 5,
+        "endLine": 1236,
+        "endChar": 9
+      },
+      "revId": "ebd8ac0c8902c7134267b2f3f1406c1db973a34d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "4e731678_e31566c7",
         "filename": "docs/writing_tests.md",
         "patchSetId": 4
@@ -82,6 +151,190 @@
       "writtenOn": "2019-11-26T14:21:25Z",
       "side": 1,
       "message": "ditto for lint.",
+      "revId": "ebd8ac0c8902c7134267b2f3f1406c1db973a34d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fa243644_156d1202",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 1258,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-11-26T15:09:27Z",
+      "side": 1,
+      "message": "How to name the subpackage? boot_service, bootservice, or boot?",
+      "range": {
+        "startLine": 1258,
+        "startChar": 61,
+        "endLine": 1258,
+        "endChar": 71
+      },
+      "revId": "ebd8ac0c8902c7134267b2f3f1406c1db973a34d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "65480965_0c023679",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 1267,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-11-26T15:09:27Z",
+      "side": 1,
+      "message": "and you can keep it in the struct\n?",
+      "range": {
+        "startLine": 1267,
+        "startChar": 0,
+        "endLine": 1267,
+        "endChar": 62
+      },
+      "revId": "ebd8ac0c8902c7134267b2f3f1406c1db973a34d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2934126b_1d044c15",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 1267,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-11-26T15:09:27Z",
+      "side": 1,
+      "message": "How about:\n`Register` function receives [`testing.ServiceState`]",
+      "range": {
+        "startLine": 1266,
+        "startChar": 0,
+        "endLine": 1267,
+        "endChar": 13
+      },
+      "revId": "ebd8ac0c8902c7134267b2f3f1406c1db973a34d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7993350b_36b6faeb",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 1294,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-11-26T15:09:27Z",
+      "side": 1,
+      "message": "nit: remove it?",
+      "range": {
+        "startLine": 1294,
+        "startChar": 49,
+        "endLine": 1294,
+        "endChar": 55
+      },
+      "revId": "ebd8ac0c8902c7134267b2f3f1406c1db973a34d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c76c888d_6eb442a5",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 1296,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-11-26T15:09:27Z",
+      "side": 1,
+      "message": "nit: to",
+      "range": {
+        "startLine": 1296,
+        "startChar": 0,
+        "endLine": 1296,
+        "endChar": 20
+      },
+      "revId": "ebd8ac0c8902c7134267b2f3f1406c1db973a34d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "374a684d_6a29095b",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 1322,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-11-26T15:09:27Z",
+      "side": 1,
+      "message": "nit: message",
+      "range": {
+        "startLine": 1322,
+        "startChar": 43,
+        "endLine": 1322,
+        "endChar": 51
+      },
+      "revId": "ebd8ac0c8902c7134267b2f3f1406c1db973a34d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9b26cb1d_03e4694a",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 1326,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-11-26T15:09:27Z",
+      "side": 1,
+      "message": "nit: exercises",
+      "range": {
+        "startLine": 1326,
+        "startChar": 54,
+        "endLine": 1326,
+        "endChar": 62
+      },
+      "revId": "ebd8ac0c8902c7134267b2f3f1406c1db973a34d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b9b2906c_bf05668f",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 1329,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-11-26T15:09:27Z",
+      "side": 1,
+      "message": "I guess the service and the test calls the same method defined in a subpackage. Could you mention it?",
+      "range": {
+        "startLine": 1329,
+        "startChar": 20,
+        "endLine": 1329,
+        "endChar": 21
+      },
       "revId": "ebd8ac0c8902c7134267b2f3f1406c1db973a34d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

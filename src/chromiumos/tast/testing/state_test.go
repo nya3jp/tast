@@ -5,6 +5,7 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -24,11 +25,40 @@ import (
 func TestLog(t *gotesting.T) {
 	or := newOutputReader()
 	s := newState(&TestCase{Timeout: time.Minute}, or.ch, &TestConfig{})
+	ctx := context.Background()
 	s.Log("msg ", 1)
-	s.Logf("msg %d", 2)
+
+	s.Run(ctx, "p1", func(ctx context.Context, s *State) {
+		s.Logf("msg %d", 2)
+	})
+
 	close(or.ch)
 	out := or.read()
-	if len(out) != 2 || out[0].Msg != "msg 1" || out[1].Msg != "msg 2" {
+	if len(out) != 2 || out[0].Msg != "msg 1" || out[1].Msg != "p1: msg 2" {
+		t.Errorf("Bad test output: %v", out)
+	}
+}
+
+func TestNestedRun(t *gotesting.T) {
+	or := newOutputReader()
+	s := newState(&TestCase{Timeout: time.Minute}, or.ch, &TestConfig{})
+	ctx := context.Background()
+
+	s.Run(ctx, "p1", func(ctx context.Context, s *State) {
+		s.Log("msg ", 1)
+
+		s.Run(ctx, "p2", func(ctx context.Context, s *State) {
+			s.Log("msg ", 2)
+		})
+
+		s.Log("msg ", 3)
+	})
+
+	s.Log("msg ", 4)
+
+	close(or.ch)
+	out := or.read()
+	if len(out) != 4 || out[0].Msg != "p1: msg 1" || out[1].Msg != "p1: p2: msg 2" || out[2].Msg != "p1: msg 3" || out[3].Msg != "msg 4" {
 		t.Errorf("Bad test output: %v", out)
 	}
 }
@@ -136,6 +166,50 @@ func TestExtractErrorHeuristic(t *gotesting.T) {
 	}
 }
 
+func TestRunUsePrefix(t *gotesting.T) {
+	or := newOutputReader()
+	s := newState(&TestCase{Timeout: time.Minute}, or.ch, &TestConfig{})
+
+	ctx := context.Background()
+	s.Run(ctx, "f", func(ctx context.Context, s *State) {
+		s.Errorf("error %s", "msg")
+	})
+	close(or.ch)
+
+	if out := or.read(); len(out) != 1 {
+		t.Errorf("Got %v outputs; want 1", len(out))
+	} else if out[0].Err == nil || out[0].Err.Reason != "f: error msg" {
+		t.Errorf("Got output %v; want reason %q", out[0].Err, "f: error msg")
+	}
+}
+
+func TestRunNonFatal(t *gotesting.T) {
+	or := newOutputReader()
+	s := newState(&TestCase{Timeout: time.Minute}, or.ch, &TestConfig{})
+
+	// Log the fatal message in a goroutine so the main goroutine that's running the test won't exit.
+	done := make(chan bool)
+	died := true
+	go func() {
+		defer func() {
+			close(done)
+			close(or.ch)
+		}()
+
+		ctx := context.Background()
+		s.Run(ctx, "f", func(ctx context.Context, s *State) {
+			s.Fatal("fatal msg")
+		})
+
+		died = false
+	}()
+	<-done
+
+	if died {
+		t.Error("Test stopped due to fail")
+	}
+}
+
 func TestFatal(t *gotesting.T) {
 	or := newOutputReader()
 	s := newState(&TestCase{Timeout: time.Minute}, or.ch, &TestConfig{})
@@ -154,7 +228,7 @@ func TestFatal(t *gotesting.T) {
 	<-done
 
 	if !died {
-		t.Errorf("Test continued after call to Fatalf")
+		t.Fatal("Test continued after call to Fatalf")
 	}
 	if out := or.read(); len(out) != 1 {
 		t.Errorf("Got %v outputs; want 1", len(out))

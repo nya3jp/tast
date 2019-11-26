@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "f1407c31_13433323",
+        "filename": "src/chromiumos/tast/testutil/files.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-26T03:51:53Z",
+      "side": 1,
+      "message": "I think this documentation is okay since a test name is actually included like this. Replacing slashes with underscores is an implementation detail that callers don\u0027t have to be aware of (and should not depend on neither).",
+      "parentUuid": "548a4ea5_f82215aa",
+      "revId": "13fc2d66d509cedfb5335adb6b4cc339cbc4a2d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "06d2cc20_a4facc65",
         "filename": "src/chromiumos/tast/testutil/files.go",
         "patchSetId": 1
@@ -39,6 +57,30 @@
       "revId": "13fc2d66d509cedfb5335adb6b4cc339cbc4a2d8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6a52d725_101c7e98",
+        "filename": "src/chromiumos/tast/testutil/files.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-26T03:51:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "06d2cc20_a4facc65",
+      "range": {
+        "startLine": 20,
+        "startChar": 0,
+        "endLine": 20,
+        "endChar": 92
+      },
+      "revId": "13fc2d66d509cedfb5335adb6b4cc339cbc4a2d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

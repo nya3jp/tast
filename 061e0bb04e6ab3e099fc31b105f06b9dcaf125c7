@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "707a5b1b_2a0c4459",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 485,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-26T04:48:09Z",
+      "side": 1,
+      "message": "Good catch!",
+      "parentUuid": "a248c7de_9cc5e9d4",
+      "range": {
+        "startLine": 485,
+        "startChar": 18,
+        "endLine": 485,
+        "endChar": 19
+      },
+      "revId": "061e0bb04e6ab3e099fc31b105f06b9dcaf125c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "beee5967_782ea0a7",
         "filename": "docs/writing_tests.md",
         "patchSetId": 3
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "65b21aa3_decb15a8",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 956,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-26T04:48:09Z",
+      "side": 1,
+      "message": "Makes sense, I\u0027ve reordered items and updated to mention performance tests.",
+      "parentUuid": "beee5967_782ea0a7",
+      "range": {
+        "startLine": 947,
+        "startChar": 0,
+        "endLine": 956,
+        "endChar": 17
+      },
+      "revId": "061e0bb04e6ab3e099fc31b105f06b9dcaf125c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "79a49661_cb095a62",
         "filename": "docs/writing_tests.md",
         "patchSetId": 3
@@ -59,6 +107,30 @@
       "writtenOn": "2019-10-16T18:37:25Z",
       "side": 1,
       "message": "I prefer using \"test case\" to be consistent with the struct defined in the source code.",
+      "range": {
+        "startLine": 964,
+        "startChar": 41,
+        "endLine": 964,
+        "endChar": 48
+      },
+      "revId": "061e0bb04e6ab3e099fc31b105f06b9dcaf125c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "98a3eb05_24bc33a4",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 964,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-26T04:48:09Z",
+      "side": 1,
+      "message": "Actually I really don\u0027t like the naming of TestCase... Difference of Test and TestCase is too obscure.\n\nLet us chat offline to establish terminology.",
+      "parentUuid": "79a49661_cb095a62",
       "range": {
         "startLine": 964,
         "startChar": 41,
@@ -88,6 +160,24 @@
     },
     {
       "key": {
+        "uuid": "316ead43_791aa787",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 978,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-26T04:48:09Z",
+      "side": 1,
+      "message": "That\u0027s true!",
+      "parentUuid": "ea8f2f0a_b4d56a87",
+      "revId": "061e0bb04e6ab3e099fc31b105f06b9dcaf125c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "bb44739d_2f4c83f2",
         "filename": "docs/writing_tests.md",
         "patchSetId": 3
@@ -111,6 +201,30 @@
     },
     {
       "key": {
+        "uuid": "5c561921_b3df50bb",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 981,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-26T04:48:09Z",
+      "side": 1,
+      "message": "My initial intention was that we should always define a type, but now I think it was not really necessary. Let us use strings directly here.",
+      "parentUuid": "bb44739d_2f4c83f2",
+      "range": {
+        "startLine": 981,
+        "startChar": 23,
+        "endLine": 981,
+        "endChar": 60
+      },
+      "revId": "061e0bb04e6ab3e099fc31b105f06b9dcaf125c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "91f274b9_24402285",
         "filename": "docs/writing_tests.md",
         "patchSetId": 3
@@ -131,6 +245,30 @@
       "revId": "061e0bb04e6ab3e099fc31b105f06b9dcaf125c7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eec2bb73_df33916f",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 992,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-26T04:48:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "91f274b9_24402285",
+      "range": {
+        "startLine": 992,
+        "startChar": 41,
+        "endLine": 992,
+        "endChar": 47
+      },
+      "revId": "061e0bb04e6ab3e099fc31b105f06b9dcaf125c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {

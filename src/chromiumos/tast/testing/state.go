@@ -19,6 +19,7 @@ import (
 	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/errors/stack"
+	"chromiumos/tast/timing"
 )
 
 const metaCategory = "meta" // category for remote tests exercising Tast, as in "meta.TestName"
@@ -98,9 +99,11 @@ type State struct {
 
 	preValue interface{} // value returned by test.Pre.Prepare; may be nil
 
-	closed   bool       // true after close is called and ch is closed
-	hasError bool       // whether the test has already reported errors or not
-	mu       sync.Mutex // protects closed and hasError
+	prefix []string
+
+	closed     bool       // true after close is called and ch is closed
+	errorCount uint       // whether the test has already reported errors or not
+	mu         sync.Mutex // protects closed and hasError
 }
 
 // TestConfig contains details about how an individual test should be run.
@@ -202,6 +205,37 @@ func (s *State) RequiredVar(name string) string {
 		s.Fatalf("Required variable %q not supplied via -var", name)
 	}
 	return val
+}
+
+// Run starts a new subtest with an unique name. Returns true if the subtest passed.
+func (s *State) Run(ctx context.Context, name string, run func(context.Context, *State)) bool {
+	s.prefix = append(s.prefix, name)
+
+	s.mu.Lock()
+	initialErrorCount := s.errorCount
+	s.mu.Unlock()
+
+	finished := make(chan bool)
+
+	ctx, st := timing.Start(ctx, name)
+	go func() {
+		defer func() {
+			finished <- true
+		}()
+
+		run(ctx, s)
+	}()
+	st.End()
+
+	<-finished
+
+	s.prefix = s.prefix[:len(s.prefix)-1]
+
+	s.mu.Lock()
+	currentErrorCount := s.errorCount
+	s.mu.Unlock()
+
+	return currentErrorCount == initialErrorCount
 }
 
 // PreValue returns a value supplied by the test's precondition, which must have been declared via Test.Pre
@@ -309,6 +343,10 @@ func (s *State) writeOutput(o Output) {
 	defer s.mu.Unlock()
 
 	if !s.closed {
+		if len(s.prefix) > 0 {
+			o.Msg = strings.Join(s.prefix, ": ") + ": " + o.Msg
+		}
+
 		s.ch <- o
 	}
 }
@@ -317,7 +355,7 @@ func (s *State) writeOutput(o Output) {
 func (s *State) HasError() bool {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	return s.hasError
+	return s.errorCount > 0
 }
 
 // errorSuffix matches the well-known error message suffixes for formatError.
@@ -385,7 +423,7 @@ func formatErrorf(format string, args ...interface{}) (fullMsg, lastMsg string, 
 func (s *State) recordError() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.hasError = true
+	s.errorCount = s.errorCount + 1
 }
 
 // dataFS implements http.FileSystem.

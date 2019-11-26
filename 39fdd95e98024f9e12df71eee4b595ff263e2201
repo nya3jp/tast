@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a9af6aca_19dd48f9",
+        "filename": "src/chromiumos/cmd/tast/run/vars.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-11-26T21:11:42Z",
+      "side": 1,
+      "message": "nit: remove",
+      "range": {
+        "startLine": 57,
+        "startChar": 41,
+        "endLine": 57,
+        "endChar": 53
+      },
+      "revId": "39fdd95e98024f9e12df71eee4b595ff263e2201",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "52166f1a_02a99b66",
+        "filename": "src/chromiumos/cmd/tast/run/vars_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-11-26T21:11:42Z",
+      "side": 1,
+      "message": "n",
+      "range": {
+        "startLine": 41,
+        "startChar": 66,
+        "endLine": 41,
+        "endChar": 68
+      },
+      "revId": "39fdd95e98024f9e12df71eee4b595ff263e2201",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

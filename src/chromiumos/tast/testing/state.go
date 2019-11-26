@@ -19,6 +19,7 @@ import (
 	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/errors/stack"
+	"chromiumos/tast/timing"
 )
 
 const metaCategory = "meta" // category for remote tests exercising Tast, as in "meta.TestName"
@@ -98,9 +99,11 @@ type State struct {
 
 	preValue interface{} // value returned by test.Pre.Prepare; may be nil
 
-	closed   bool       // true after close is called and ch is closed
-	hasError bool       // whether the test has already reported errors or not
-	mu       sync.Mutex // protects closed and hasError
+	subtests []string // prefix for logs
+
+	closed     bool       // true after close is called and ch is closed
+	errorCount uint       // whether the test has already reported errors or not
+	mu         sync.Mutex // protects closed and hasError
 }
 
 // TestConfig contains details about how an individual test should be run.
@@ -204,6 +207,38 @@ func (s *State) RequiredVar(name string) string {
 	return val
 }
 
+// Run starts a new subtest with an unique name. Logging messages are prepended with the subtest
+// name during its execution. Run must not be called in parallel. Returns true if the subtest passed.
+func (s *State) Run(ctx context.Context, name string, run func(context.Context, *State)) bool {
+	s.subtests = append(s.subtests, name)
+
+	s.mu.Lock()
+	initialErrorCount := s.errorCount
+	s.mu.Unlock()
+
+	finished := make(chan struct{})
+
+	go func() {
+		ctx, st := timing.Start(ctx, name)
+		defer func() {
+			st.End()
+			close(finished)
+		}()
+
+		run(ctx, s)
+	}()
+
+	<-finished
+
+	s.subtests = s.subtests[:len(s.subtests)-1]
+
+	s.mu.Lock()
+	currentErrorCount := s.errorCount
+	s.mu.Unlock()
+
+	return currentErrorCount == initialErrorCount
+}
+
 // PreValue returns a value supplied by the test's precondition, which must have been declared via Test.Pre
 // when the test was registered. Callers should cast the returned empty interface to the correct pointer
 // type; see the relevant precondition's documentation for specifics.
@@ -271,7 +306,7 @@ func (s *State) Logf(format string, args ...interface{}) {
 // while letting the test continue execution.
 func (s *State) Error(args ...interface{}) {
 	s.recordError()
-	fullMsg, lastMsg, err := formatError(args...)
+	fullMsg, lastMsg, err := s.formatError(args...)
 	e := NewError(err, fullMsg, lastMsg, 1)
 	s.writeOutput(Output{T: time.Now(), Err: e})
 }
@@ -279,7 +314,7 @@ func (s *State) Error(args ...interface{}) {
 // Errorf is similar to Error but formats its arguments using fmt.Sprintf.
 func (s *State) Errorf(format string, args ...interface{}) {
 	s.recordError()
-	fullMsg, lastMsg, err := formatErrorf(format, args...)
+	fullMsg, lastMsg, err := s.formatErrorf(format, args...)
 	e := NewError(err, fullMsg, lastMsg, 1)
 	s.writeOutput(Output{T: time.Now(), Err: e})
 }
@@ -287,7 +322,7 @@ func (s *State) Errorf(format string, args ...interface{}) {
 // Fatal is similar to Error but additionally immediately ends the test.
 func (s *State) Fatal(args ...interface{}) {
 	s.recordError()
-	fullMsg, lastMsg, err := formatError(args...)
+	fullMsg, lastMsg, err := s.formatError(args...)
 	e := NewError(err, fullMsg, lastMsg, 1)
 	s.writeOutput(Output{T: time.Now(), Err: e})
 	runtime.Goexit()
@@ -296,7 +331,7 @@ func (s *State) Fatal(args ...interface{}) {
 // Fatalf is similar to Fatal but formats its arguments using fmt.Sprintf.
 func (s *State) Fatalf(format string, args ...interface{}) {
 	s.recordError()
-	fullMsg, lastMsg, err := formatErrorf(format, args...)
+	fullMsg, lastMsg, err := s.formatErrorf(format, args...)
 	e := NewError(err, fullMsg, lastMsg, 1)
 	s.writeOutput(Output{T: time.Now(), Err: e})
 	runtime.Goexit()
@@ -309,6 +344,10 @@ func (s *State) writeOutput(o Output) {
 	defer s.mu.Unlock()
 
 	if !s.closed {
+		if len(s.subtests) > 0 {
+			o.Msg = strings.Join(s.subtests, ": ") + ": " + o.Msg
+		}
+
 		s.ch <- o
 	}
 }
@@ -317,7 +356,7 @@ func (s *State) writeOutput(o Output) {
 func (s *State) HasError() bool {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	return s.hasError
+	return s.errorCount > 0
 }
 
 // errorSuffix matches the well-known error message suffixes for formatError.
@@ -333,7 +372,7 @@ var errorSuffix = regexp.MustCompile(`(\s*:\s*|\s+)$`)
 //
 //  lastMsg = "Failed something"
 //  fullMsg = "Failed something: <error message>"
-func formatError(args ...interface{}) (fullMsg, lastMsg string, err error) {
+func (s *State) formatError(args ...interface{}) (fullMsg, lastMsg string, err error) {
 	fullMsg = fmt.Sprint(args...)
 	if len(args) == 1 {
 		if e, ok := args[0].(error); ok {
@@ -350,6 +389,14 @@ func formatError(args ...interface{}) (fullMsg, lastMsg string, err error) {
 		}
 	}
 	lastMsg = fmt.Sprint(args...)
+
+	if len(s.subtests) > 0 {
+		subtests := strings.Join(s.subtests, ": ") + ": "
+
+		fullMsg = subtests + fullMsg
+		lastMsg = subtests + lastMsg
+	}
+
 	return fullMsg, lastMsg, err
 }
 
@@ -366,7 +413,7 @@ var errorfSuffix = regexp.MustCompile(`\s*:?\s*%v$`)
 //
 //  lastMsg = "Failed something"
 //  fullMsg = "Failed something: <error message>"
-func formatErrorf(format string, args ...interface{}) (fullMsg, lastMsg string, err error) {
+func (s *State) formatErrorf(format string, args ...interface{}) (fullMsg, lastMsg string, err error) {
 	fullMsg = fmt.Sprintf(format, args...)
 	if len(args) >= 1 {
 		if e, ok := args[len(args)-1].(error); ok {
@@ -378,6 +425,14 @@ func formatErrorf(format string, args ...interface{}) (fullMsg, lastMsg string, 
 		}
 	}
 	lastMsg = fmt.Sprintf(format, args...)
+
+	if len(s.subtests) > 0 {
+		subtests := strings.Join(s.subtests, ": ") + ": "
+
+		fullMsg = subtests + fullMsg
+		lastMsg = subtests + lastMsg
+	}
+
 	return fullMsg, lastMsg, err
 }
 
@@ -385,7 +440,7 @@ func formatErrorf(format string, args ...interface{}) (fullMsg, lastMsg string, 
 func (s *State) recordError() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.hasError = true
+	s.errorCount++
 }
 
 // dataFS implements http.FileSystem.

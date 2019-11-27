@@ -1,0 +1,101 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f4fe8c9b_2c5381a7",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-27T16:38:29Z",
+      "side": 1,
+      "message": "The original code could generate the multiple error messages.\nHowever, the replaceNode does not seem to support such a situation.\n\nCould you reorganize the code to handle the case correctly...?",
+      "revId": "c3dfd04e008a05e4d9f256a1c6556cb963784a88",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "47f5a5ed_604da201",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-27T16:38:29Z",
+      "side": 1,
+      "message": "Could you remove \"// Case N:\" comments?",
+      "revId": "c3dfd04e008a05e4d9f256a1c6556cb963784a88",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3ef3ae5a_1aac4ed4",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-27T16:38:29Z",
+      "side": 1,
+      "message": "Could you create a new var length array to avoid overwriting call.Args. Ditto for below.",
+      "range": {
+        "startLine": 187,
+        "startChar": 14,
+        "endLine": 187,
+        "endChar": 35
+      },
+      "revId": "c3dfd04e008a05e4d9f256a1c6556cb963784a88",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2d7ee223_49d6729b",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-27T16:38:29Z",
+      "side": 1,
+      "message": "Looks no op? Ditto for below.",
+      "revId": "c3dfd04e008a05e4d9f256a1c6556cb963784a88",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9c3addea_f89354f0",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 237,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-27T16:38:29Z",
+      "side": 1,
+      "message": "Regex will help you to simplify this.",
+      "range": {
+        "startLine": 234,
+        "startChar": 5,
+        "endLine": 237,
+        "endChar": 14
+      },
+      "revId": "c3dfd04e008a05e4d9f256a1c6556cb963784a88",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

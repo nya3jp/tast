@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f91dd685_b05d5633",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2019-11-27T14:44:25Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 105,
+        "startChar": 26,
+        "endLine": 105,
+        "endChar": 77
+      },
+      "revId": "c2cc6f17406ed0b095a6d80686247181600b5e48",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b112b83e_3f613fcf",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2019-11-27T14:44:25Z",
+      "side": 1,
+      "message": "Can you please update documentation?",
+      "range": {
+        "startLine": 106,
+        "startChar": 1,
+        "endLine": 106,
+        "endChar": 54
+      },
+      "revId": "c2cc6f17406ed0b095a6d80686247181600b5e48",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "332f2ec3_b4cdf0b8",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 217,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2019-11-27T14:44:25Z",
+      "side": 1,
+      "message": "Do we need mutex here?",
+      "range": {
+        "startLine": 215,
+        "startChar": 0,
+        "endLine": 217,
+        "endChar": 14
+      },
+      "revId": "c2cc6f17406ed0b095a6d80686247181600b5e48",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8e0c69c6_29d978fb",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 230,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2019-11-27T14:44:25Z",
+      "side": 1,
+      "message": "What is the benefit to create a new goroutine here each time?",
+      "range": {
+        "startLine": 221,
+        "startChar": 0,
+        "endLine": 230,
+        "endChar": 4
+      },
+      "revId": "c2cc6f17406ed0b095a6d80686247181600b5e48",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9c5589c3_d9ae40ad",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 238,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2019-11-27T14:44:25Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 235,
+        "startChar": 0,
+        "endLine": 238,
+        "endChar": 14
+      },
+      "revId": "c2cc6f17406ed0b095a6d80686247181600b5e48",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

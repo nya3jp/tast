@@ -205,7 +205,7 @@ func checkAll(g *git.Git, paths []git.CommitFile, debug bool, fix bool) ([]*chec
 			}
 
 			if isTestFile(path.Path) {
-				issues = append(issues, check.Declarations(fs, f)...)
+				issues = append(issues, check.Declarations(fs, f, fix)...)
 				issues = append(issues, check.Exports(fs, f)...)
 				issues = append(issues, check.ForbiddenBundleImports(fs, f)...)
 				issues = append(issues, check.ForbiddenCalls(fs, f)...)

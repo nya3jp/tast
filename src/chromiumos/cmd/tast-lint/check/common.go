@@ -8,6 +8,7 @@ import (
 	"go/ast"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -67,4 +68,42 @@ func toQualifiedName(node ast.Node) string {
 		comp[i], comp[j] = comp[j], comp[i]
 	}
 	return strings.Join(comp, ".")
+}
+
+// stringLitType represent raw string literal or interpreted string literal
+// as enumerated value.
+type stringLitType int
+
+const (
+	rawStringLit stringLitType = iota
+	interpretedStringLit
+)
+
+// stringLitTypeOf returns the string literal type of s. If s does not belong
+// to either raw string literal or interpreted string literal, returns false for ok.
+func stringLitTypeOf(s string) (strtype stringLitType, ok bool) {
+	if s == "" {
+		return 0, false
+	}
+	quote := s[0]
+	if quote != s[len(s)-1] {
+		return 0, false
+	}
+	if quote == '`' {
+		return rawStringLit, true
+	} else if quote == '"' {
+		return interpretedStringLit, true
+	}
+	return 0, false
+}
+
+// quoteAs quotes given unquoted string with double quote or back quote,
+// based on stringLiteralType value.
+// If specified to be backquoted, but it is impossible, this function
+// falls back to the quoting by double-quotes.
+func quoteAs(s string, t stringLitType) string {
+	if t == rawStringLit && strconv.CanBackquote(s) {
+		return "`" + s + "`"
+	}
+	return strconv.Quote(s)
 }

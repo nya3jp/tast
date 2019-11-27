@@ -8,7 +8,10 @@ import (
 	"go/ast"
 	"go/token"
 	"strconv"
+	"strings"
 	"unicode"
+
+	"golang.org/x/tools/go/ast/astutil"
 )
 
 // Exposed here for unit tests.
@@ -35,7 +38,7 @@ const (
 )
 
 // Declarations checks declarations of testing.Test structs.
-func Declarations(fs *token.FileSet, f *ast.File) []*Issue {
+func Declarations(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 	filename := fs.Position(f.Package).Filename
 	if !isEntryFile(filename) {
 		return nil
@@ -43,14 +46,14 @@ func Declarations(fs *token.FileSet, f *ast.File) []*Issue {
 
 	var issues []*Issue
 	for _, decl := range f.Decls {
-		issues = append(issues, verifyInit(fs, decl)...)
+		issues = append(issues, verifyInit(fs, decl, fix)...)
 	}
 	return issues
 }
 
 // verifyInit checks init() function declared at node.
 // If the node is not init() function, returns nil.
-func verifyInit(fs *token.FileSet, node ast.Decl) []*Issue {
+func verifyInit(fs *token.FileSet, node ast.Decl, fix bool) []*Issue {
 	decl, ok := node.(*ast.FuncDecl)
 	if !ok || decl.Recv != nil || decl.Name.Name != "init" {
 		// Not an init() function declaration. Skip.
@@ -59,7 +62,7 @@ func verifyInit(fs *token.FileSet, node ast.Decl) []*Issue {
 
 	var issues []*Issue
 	for _, stmt := range decl.Body.List {
-		issues = append(issues, verifyInitBody(fs, stmt)...)
+		issues = append(issues, verifyInitBody(fs, stmt, fix)...)
 	}
 	return issues
 }
@@ -68,7 +71,7 @@ func verifyInit(fs *token.FileSet, node ast.Decl) []*Issue {
 // - testing.AddTest() can be called at a top level statement.
 // - testing.AddTest() can take a pointer of a testing.Test composite literal.
 // - verifies each element of testing.Test literal.
-func verifyInitBody(fs *token.FileSet, stmt ast.Stmt) []*Issue {
+func verifyInitBody(fs *token.FileSet, stmt ast.Stmt, fix bool) []*Issue {
 	estmt, ok := stmt.(*ast.ExprStmt)
 	if !ok || !isTestingAddTestCall(estmt.X) {
 		var issues []*Issue
@@ -125,7 +128,7 @@ func verifyInitBody(fs *token.FileSet, stmt ast.Stmt) []*Issue {
 		switch ident.Name {
 		case "Desc":
 			hasDesc = true
-			issues = append(issues, verifyDesc(fs, kv.Value)...)
+			issues = append(issues, verifyDesc(fs, kv, fix)...)
 		case "Contacts":
 			hasContacts = true
 			issues = append(issues, verifyContacts(fs, kv.Value)...)
@@ -157,7 +160,8 @@ func verifyInitBody(fs *token.FileSet, stmt ast.Stmt) []*Issue {
 	return issues
 }
 
-func verifyDesc(fs *token.FileSet, node ast.Node) []*Issue {
+func verifyDesc(fs *token.FileSet, kv *ast.KeyValueExpr, fix bool) []*Issue {
+	node := kv.Value
 	s, ok := toString(node)
 	if !ok {
 		return []*Issue{{
@@ -167,11 +171,31 @@ func verifyDesc(fs *token.FileSet, node ast.Node) []*Issue {
 		}}
 	}
 	if s == "" || !unicode.IsUpper(rune(s[0])) || s[len(s)-1] == '.' {
-		return []*Issue{{
-			Pos:  fs.Position(node.Pos()),
-			Msg:  badDescMsg,
-			Link: "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Formatting",
-		}}
+		if !fix {
+			return []*Issue{{
+				Pos:     fs.Position(node.Pos()),
+				Msg:     badDescMsg,
+				Link:    "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Formatting",
+				Fixable: true,
+			}}
+		}
+		astutil.Apply(kv, func(c *astutil.Cursor) bool {
+			lit, ok := c.Node().(*ast.BasicLit)
+			if !ok || lit.Kind != token.STRING {
+				return true
+			}
+			s, err := strconv.Unquote(lit.Value)
+			if err != nil {
+				return true
+			}
+			if strtype, ok := stringLitTypeOf(lit.Value); ok {
+				c.Replace(&ast.BasicLit{
+					Kind:  token.STRING,
+					Value: quoteAs(strings.TrimRight(strings.ToUpper(s[:1])+s[1:], "."), strtype),
+				})
+			}
+			return false
+		}, nil)
 	}
 	return nil
 }

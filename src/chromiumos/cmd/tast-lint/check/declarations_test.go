@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-const declTestPath = "/src/chromiumos/tast/local/bundles/cros/example/do_stuff.go"
+const declTestPath = "src/chromiumos/tast/local/bundles/cros/example/do_stuff.go"
 
 func TestDeclarationsPass(t *testing.T) {
 	const code = `package pkg
@@ -21,7 +21,7 @@ func init() {
 }
 `
 	f, fs := parse(code, declTestPath)
-	issues := Declarations(fs, f)
+	issues := Declarations(fs, f, false)
 	verifyIssues(t, issues, nil)
 }
 
@@ -37,7 +37,7 @@ func init() {
 }
 `
 	f, fs := parse(code, declTestPath)
-	issues := Declarations(fs, f)
+	issues := Declarations(fs, f, false)
 	expects := []string{
 		declTestPath + ":4:3: " + notTopAddTestMsg,
 		declTestPath + ":8:18: " + addTestArgLitMsg,
@@ -72,7 +72,7 @@ func init() {
 `
 
 	f, fs := parse(code, declTestPath)
-	issues := Declarations(fs, f)
+	issues := Declarations(fs, f, false)
 	expects := []string{
 		declTestPath + ":3:18: " + noDescMsg,
 		declTestPath + ":10:13: " + nonLiteralDescMsg,
@@ -103,7 +103,7 @@ func init() {
 }
 `
 	f, fs := parse(code, declTestPath)
-	issues := Declarations(fs, f)
+	issues := Declarations(fs, f, false)
 	expects := []string{
 		declTestPath + ":3:18: " + noContactMsg,
 		declTestPath + ":11:22: " + nonLiteralContactsMsg,
@@ -136,7 +136,7 @@ func init() {
 }
 `
 	f, fs := parse(code, declTestPath)
-	issues := Declarations(fs, f)
+	issues := Declarations(fs, f, false)
 	expects := []string{
 		declTestPath + ":13:13: " + nonLiteralAttrMsg,
 		declTestPath + ":19:22: " + nonLiteralAttrMsg,
@@ -168,7 +168,7 @@ func init() {
 }
 `
 	f, fs := parse(code, declTestPath)
-	issues := Declarations(fs, f)
+	issues := Declarations(fs, f, false)
 	expects := []string{
 		declTestPath + ":13:13: " + nonLiteralVarsMsg,
 		declTestPath + ":19:22: " + nonLiteralVarsMsg,
@@ -206,7 +206,7 @@ func init() {
 }
 `
 	f, fs := parse(code, declTestPath)
-	issues := Declarations(fs, f)
+	issues := Declarations(fs, f, false)
 	expects := []string{
 		declTestPath + ":19:17: " + nonLiteralSoftwareDepsMsg,
 		declTestPath + ":25:26: " + nonLiteralSoftwareDepsMsg,
@@ -260,7 +260,7 @@ func init() {
 }
 `
 	f, fs := parse(code, declTestPath)
-	issues := Declarations(fs, f)
+	issues := Declarations(fs, f, false)
 	expects := []string{
 		declTestPath + ":19:13: " + nonLiteralParamsMsg,
 		declTestPath + ":25:21: " + nonLiteralParamsMsg,
@@ -271,4 +271,50 @@ func init() {
 		declTestPath + ":40:32: " + nonLiteralSoftwareDepsMsg,
 	}
 	verifyIssues(t, issues, expects)
+}
+
+func TestAutoFixDeclarationDesc(t *testing.T) {
+	files := make(map[string]string)
+	files[declTestPath] = `package pkg
+
+func init() {
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "not capitalized",
+		Contacts: []string{"me@chromium.org"},
+	})
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "Ends with a period.",
+		Contacts: []string{"me@chromium.org"},
+	})
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "not capitalized and ends with a period.",
+		Contacts: []string{"me@chromium.org"},
+	})
+}
+`
+	expects := make(map[string]string)
+	expects[declTestPath] = `package pkg
+
+func init() {
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "Not capitalized",
+		Contacts: []string{"me@chromium.org"},
+	})
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "Ends with a period",
+		Contacts: []string{"me@chromium.org"},
+	})
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "Not capitalized and ends with a period",
+		Contacts: []string{"me@chromium.org"},
+	})
+}
+`
+	verifyAutoFix(t, Declarations, files, expects)
 }

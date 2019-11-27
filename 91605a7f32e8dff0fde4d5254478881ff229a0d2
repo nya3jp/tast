@@ -16,6 +16,24 @@
       "revId": "91605a7f32e8dff0fde4d5254478881ff229a0d2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a61fa8ad_07c071ee",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_bundle_imports.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-11-27T02:30:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0e9f769a_c6ab9a78",
+      "revId": "91605a7f32e8dff0fde4d5254478881ff229a0d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

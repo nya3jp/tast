@@ -143,6 +143,30 @@
     },
     {
       "key": {
+        "uuid": "b61e031b_0742dad4",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 347,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-27T05:30:52Z",
+      "side": 1,
+      "message": "How about printing the test name at the beginning of a subtest? It sounds less verbose than prefixing all log messages.\n\nActually it is a recommended practice to print logs before doing heavy operations. We don\u0027t know if a subtest is heavy or not, but it sounds not too bad.\n\n\u003e When you‘re about to do something that could take a while or even hang, log a message using Log or Logf first. This both lets developers know what’s happening when they run your test interactively and helps when looking at logs to investigate timeout failures.\nhttps://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#When-to-log",
+      "parentUuid": "28d20c8c_fe698d1b",
+      "range": {
+        "startLine": 347,
+        "startChar": 4,
+        "endLine": 347,
+        "endChar": 24
+      },
+      "revId": "fa60f663400037d82370e9fc71fb89bdef833958",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6bf1528f_647ebcef",
         "filename": "src/chromiumos/tast/testing/state.go",
         "patchSetId": 8

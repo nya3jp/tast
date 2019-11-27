@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "f215a58f_1a5f191a",
+        "filename": "src/chromiumos/cmd/tast-lint/check/external_json.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-11-27T06:02:56Z",
+      "side": 1,
+      "message": "It seems that \"gs://chromeos-test-assets-private/tast/crosint/graphics/traces/...\" is also managing version with non-date digits?\nThere are too many errors, and all of them holds its file under the 5-digits-named directory like \"gs://chromeos-test-assets-private/tast/crosint/graphics/traces/10011/~~.trace.xz\".",
+      "parentUuid": "c2ee0c56_47849087",
+      "revId": "e638b134c800adb5c331b5661b3418594823812a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "194c67a8_2918f187",
         "filename": "src/chromiumos/cmd/tast-lint/check/external_json.go",
         "patchSetId": 2
@@ -33,6 +51,24 @@
       "revId": "e638b134c800adb5c331b5661b3418594823812a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "94ab92ef_58525ec7",
+        "filename": "src/chromiumos/cmd/tast-lint/check/external_json.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-11-27T06:02:56Z",
+      "side": 1,
+      "message": "+ gs://chromeos-test-assets-private/tast/... \nDone",
+      "parentUuid": "194c67a8_2918f187",
+      "revId": "e638b134c800adb5c331b5661b3418594823812a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "0e3c3861_0a4cad73",
+        "filename": "src/chromiumos/cmd/tast-lint/check/external_json.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-11-27T06:02:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "be6d99f4_a2d739b0",
+      "revId": "e638b134c800adb5c331b5661b3418594823812a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da439d92_83b99473",
         "filename": "src/chromiumos/cmd/tast-lint/check/external_json.go",
         "patchSetId": 2
@@ -67,6 +121,24 @@
       "revId": "e638b134c800adb5c331b5661b3418594823812a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d2ceea5b_23f8093f",
+        "filename": "src/chromiumos/cmd/tast-lint/check/external_json.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-11-27T06:02:56Z",
+      "side": 1,
+      "message": "I found there are the cases such as \"-20060102(.|$)\" and \"20060102-\", so I added hyphens to the regex.",
+      "parentUuid": "da439d92_83b99473",
+      "revId": "e638b134c800adb5c331b5661b3418594823812a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

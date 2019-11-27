@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "cba71a7b_3493f4a0",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-27T06:05:42Z",
+      "side": 1,
+      "message": "This function looks a bit dense, would you mind inserting a few blank lines wherever looks good?",
+      "range": {
+        "startLine": 21,
+        "startChar": 1,
+        "endLine": 21,
+        "endChar": 48
+      },
+      "revId": "2a81f8d4b0c4ab291520d2a08a3dac0b39e975e4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3037c902_dcc58b8c",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-27T06:05:42Z",
+      "side": 1,
+      "message": "To check a slice is empty, please prefer len(ids) \u003d\u003d 0. In this case ids \u003d\u003d nil also works because its initial value is nil, but empty slice is not necessarily nil.",
+      "range": {
+        "startLine": 66,
+        "startChar": 5,
+        "endLine": 66,
+        "endChar": 17
+      },
+      "revId": "2a81f8d4b0c4ab291520d2a08a3dac0b39e975e4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f72dd796_7e75e0e8",
+        "filename": "src/chromiumos/cmd/tast-lint/check/issue.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-27T06:05:42Z",
+      "side": 1,
+      "message": "Since this function is used only from main, I\u0027d suggest moving it to main.go as categorizeIssues (unexported).",
+      "range": {
+        "startLine": 72,
+        "startChar": 5,
+        "endLine": 72,
+        "endChar": 21
+      },
+      "revId": "2a81f8d4b0c4ab291520d2a08a3dac0b39e975e4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aaf49921_2454a433",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 220,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-27T06:05:42Z",
+      "side": 1,
+      "message": "In this case file is kept open, which we want to avoid.\n\nNaive way is to insert file.Close() here. If you want to use deferred statements, it gets a bit longer:\n\n if fix {\n   if err :\u003d func() (retErr error) {\n     file, err :\u003d os.Create(path.Path)\n     if err !\u003d nil {\n       return err\n     }\n     defer func() {\n       if err :\u003d file.Close(); err !\u003d nil \u0026 retErr \u003d\u003d nil {\n         retErr \u003d err\n       }\n     }()\n     return format.Node(file, fs, f)\n   }(); err !\u003d nil {\n     return nil, err\n   }\n }",
+      "range": {
+        "startLine": 220,
+        "startChar": 6,
+        "endLine": 220,
+        "endChar": 20
+      },
+      "revId": "2a81f8d4b0c4ab291520d2a08a3dac0b39e975e4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "39ea61bb_09089fe1",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 291,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-27T06:05:42Z",
+      "side": 1,
+      "message": "same here: len(unfixable) \u003e 0, len(fixable) \u003e 0",
+      "range": {
+        "startLine": 291,
+        "startChar": 5,
+        "endLine": 291,
+        "endChar": 23
+      },
+      "revId": "2a81f8d4b0c4ab291520d2a08a3dac0b39e975e4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

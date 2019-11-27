@@ -94,6 +94,30 @@
     },
     {
       "key": {
+        "uuid": "564e44fb_5669c47f",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 230,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2019-11-27T14:52:20Z",
+      "side": 1,
+      "message": "I guess it\u0027s a protection from s.Fatal, right? But why we won\u0027t to crash here? I guess it\u0027s very unexpected, because I as a client expecting to crash and immediately stop test execution on s.Fatal and don\u0027t crash on s.Error.",
+      "parentUuid": "8e0c69c6_29d978fb",
+      "range": {
+        "startLine": 221,
+        "startChar": 0,
+        "endLine": 230,
+        "endChar": 4
+      },
+      "revId": "c2cc6f17406ed0b095a6d80686247181600b5e48",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "9c5589c3_d9ae40ad",
         "filename": "src/chromiumos/tast/testing/state.go",
         "patchSetId": 12
@@ -110,6 +134,29 @@
         "startChar": 0,
         "endLine": 238,
         "endChar": 14
+      },
+      "revId": "c2cc6f17406ed0b095a6d80686247181600b5e48",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "318d37d8_c4f01d0b",
+        "filename": "src/chromiumos/tast/testing/state_test.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 205,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2019-11-27T14:52:20Z",
+      "side": 1,
+      "message": "I would expect to fail in this case.\n\nWhat will happen on s.Fatal? Is it still test error?",
+      "range": {
+        "startLine": 202,
+        "startChar": 0,
+        "endLine": 205,
+        "endChar": 4
       },
       "revId": "c2cc6f17406ed0b095a6d80686247181600b5e48",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",

@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "188c3597_c4e13ecd",
+        "filename": "src/chromiumos/cmd/tast-lint/check/external_json.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-27T16:54:02Z",
+      "side": 1,
+      "message": "I don\u0027t think this explicit check is not needed?",
+      "range": {
+        "startLine": 27,
+        "startChar": 4,
+        "endLine": 27,
+        "endChar": 16
+      },
+      "revId": "85d333f24a66c7be2ab090177383bd8942a3c8c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2aadec5f_f2e3cc1b",
+        "filename": "src/chromiumos/cmd/tast-lint/check/external_json.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-27T16:54:02Z",
+      "side": 1,
+      "message": "optional: I\u0027d write [-.]",
+      "range": {
+        "startLine": 47,
+        "startChar": 44,
+        "endLine": 47,
+        "endChar": 48
+      },
+      "revId": "85d333f24a66c7be2ab090177383bd8942a3c8c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "74079202_a7bd7ac0",
+        "filename": "src/chromiumos/cmd/tast-lint/check/external_json.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-27T16:54:02Z",
+      "side": 1,
+      "message": "Could you compile the regexp at package level?",
+      "revId": "85d333f24a66c7be2ab090177383bd8942a3c8c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d15fcb6c_d43ef7a5",
+        "filename": "src/chromiumos/cmd/tast-lint/check/external_json.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-27T16:54:02Z",
+      "side": 1,
+      "message": "style: [-_]",
+      "range": {
+        "startLine": 47,
+        "startChar": 27,
+        "endLine": 47,
+        "endChar": 34
+      },
+      "revId": "85d333f24a66c7be2ab090177383bd8942a3c8c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

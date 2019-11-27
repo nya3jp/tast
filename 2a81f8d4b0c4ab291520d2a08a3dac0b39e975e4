@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "8f2a54fc_178e91e5",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-11-27T06:45:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cba71a7b_3493f4a0",
+      "range": {
+        "startLine": 21,
+        "startChar": 1,
+        "endLine": 21,
+        "endChar": 48
+      },
+      "revId": "2a81f8d4b0c4ab291520d2a08a3dac0b39e975e4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3037c902_dcc58b8c",
         "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
         "patchSetId": 5
@@ -45,6 +69,30 @@
       "revId": "2a81f8d4b0c4ab291520d2a08a3dac0b39e975e4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "42139edc_8d000e68",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-11-27T06:45:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3037c902_dcc58b8c",
+      "range": {
+        "startLine": 66,
+        "startChar": 5,
+        "endLine": 66,
+        "endChar": 17
+      },
+      "revId": "2a81f8d4b0c4ab291520d2a08a3dac0b39e975e4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "802e2565_6bf6f62c",
+        "filename": "src/chromiumos/cmd/tast-lint/check/issue.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-11-27T06:45:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f72dd796_7e75e0e8",
+      "range": {
+        "startLine": 72,
+        "startChar": 5,
+        "endLine": 72,
+        "endChar": 21
+      },
+      "revId": "2a81f8d4b0c4ab291520d2a08a3dac0b39e975e4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "aaf49921_2454a433",
         "filename": "src/chromiumos/cmd/tast-lint/main.go",
         "patchSetId": 5
@@ -94,6 +166,30 @@
     },
     {
       "key": {
+        "uuid": "720cb62a_ed8e2bcb",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 220,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-11-27T06:45:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "aaf49921_2454a433",
+      "range": {
+        "startLine": 220,
+        "startChar": 6,
+        "endLine": 220,
+        "endChar": 20
+      },
+      "revId": "2a81f8d4b0c4ab291520d2a08a3dac0b39e975e4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "39ea61bb_09089fe1",
         "filename": "src/chromiumos/cmd/tast-lint/main.go",
         "patchSetId": 5
@@ -114,6 +210,30 @@
       "revId": "2a81f8d4b0c4ab291520d2a08a3dac0b39e975e4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1505d448_0a658196",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 291,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-11-27T06:45:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "39ea61bb_09089fe1",
+      "range": {
+        "startLine": 291,
+        "startChar": 5,
+        "endLine": 291,
+        "endChar": 23
+      },
+      "revId": "2a81f8d4b0c4ab291520d2a08a3dac0b39e975e4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

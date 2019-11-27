@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "d27c60d8_6c173502",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 1132,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-27T08:31:32Z",
+      "side": 1,
+      "message": "Nice, done.",
+      "parentUuid": "8d17befa_3ba3dba7",
+      "range": {
+        "startLine": 1131,
+        "startChar": 45,
+        "endLine": 1132,
+        "endChar": 32
+      },
+      "revId": "ebd8ac0c8902c7134267b2f3f1406c1db973a34d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8d871e1b_5524bf15",
         "filename": "docs/writing_tests.md",
         "patchSetId": 4
@@ -45,6 +69,30 @@
       "revId": "ebd8ac0c8902c7134267b2f3f1406c1db973a34d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "960f0f15_9dc79c55",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 1145,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-27T08:31:32Z",
+      "side": 1,
+      "message": "Ugh, good catch.",
+      "parentUuid": "8d871e1b_5524bf15",
+      "range": {
+        "startLine": 1145,
+        "startChar": 5,
+        "endLine": 1145,
+        "endChar": 9
+      },
+      "revId": "ebd8ac0c8902c7134267b2f3f1406c1db973a34d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "db28e942_756217cb",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 1180,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-27T08:31:32Z",
+      "side": 1,
+      "message": "Not yet, but I\u0027ll work on some of them later (I don\u0027t know how to do some of them, e.g. comments in protobuf).",
+      "parentUuid": "13653ed0_32c17a3e",
+      "range": {
+        "startLine": 1165,
+        "startChar": 0,
+        "endLine": 1180,
+        "endChar": 46
+      },
+      "revId": "ebd8ac0c8902c7134267b2f3f1406c1db973a34d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a8f962ec_26963f39",
         "filename": "docs/writing_tests.md",
         "patchSetId": 4
@@ -91,6 +163,30 @@
       "revId": "ebd8ac0c8902c7134267b2f3f1406c1db973a34d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b711c0a7_81618a79",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 1202,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-27T08:31:32Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "a8f962ec_26963f39",
+      "range": {
+        "startLine": 1201,
+        "startChar": 53,
+        "endLine": 1202,
+        "endChar": 43
+      },
+      "revId": "ebd8ac0c8902c7134267b2f3f1406c1db973a34d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "8c55376e_0e4e6f27",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 1236,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-27T08:31:32Z",
+      "side": 1,
+      "message": "I investigate the trend of gRPC service names in Google3 with ttylenda@, and found that more than 50% of existing gRPC services are named with `Service` suffix. So I decided to mandate that services should be named with `Service` suffix.",
+      "parentUuid": "916dfb29_114b167b",
+      "range": {
+        "startLine": 1236,
+        "startChar": 5,
+        "endLine": 1236,
+        "endChar": 9
+      },
+      "revId": "ebd8ac0c8902c7134267b2f3f1406c1db973a34d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4e731678_e31566c7",
         "filename": "docs/writing_tests.md",
         "patchSetId": 4
@@ -140,6 +260,30 @@
     },
     {
       "key": {
+        "uuid": "f08e0bbb_46ed07f3",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 1238,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-27T08:31:32Z",
+      "side": 1,
+      "message": "Yes you\u0027re right. I\u0027ve renamed it to arc.BootService.",
+      "parentUuid": "4e731678_e31566c7",
+      "range": {
+        "startLine": 1236,
+        "startChar": 0,
+        "endLine": 1238,
+        "endChar": 1
+      },
+      "revId": "ebd8ac0c8902c7134267b2f3f1406c1db973a34d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "65db8c72_30d0b16c",
         "filename": "docs/writing_tests.md",
         "patchSetId": 4
@@ -154,6 +298,24 @@
       "revId": "ebd8ac0c8902c7134267b2f3f1406c1db973a34d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ffbaa679_aee535bd",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 1247,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-27T08:31:32Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "65db8c72_30d0b16c",
+      "revId": "ebd8ac0c8902c7134267b2f3f1406c1db973a34d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -177,6 +339,30 @@
       "revId": "ebd8ac0c8902c7134267b2f3f1406c1db973a34d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dfef74b0_4843b17c",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 1258,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-27T08:31:32Z",
+      "side": 1,
+      "message": "I think it\u0027s okay not to have a strict rule here. Particularly it is possible that a gRPC service imports multiple packages. In any case, naming packages with underscores is unusual in Go.",
+      "parentUuid": "fa243644_156d1202",
+      "range": {
+        "startLine": 1258,
+        "startChar": 61,
+        "endLine": 1258,
+        "endChar": 71
+      },
+      "revId": "ebd8ac0c8902c7134267b2f3f1406c1db973a34d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -226,6 +412,54 @@
     },
     {
       "key": {
+        "uuid": "6cd61938_f2bac07e",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 1267,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-27T08:31:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2934126b_1d044c15",
+      "range": {
+        "startLine": 1266,
+        "startChar": 0,
+        "endLine": 1267,
+        "endChar": 13
+      },
+      "revId": "ebd8ac0c8902c7134267b2f3f1406c1db973a34d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b0fc16cb_3767510d",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 1267,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-27T08:31:32Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "65480965_0c023679",
+      "range": {
+        "startLine": 1267,
+        "startChar": 0,
+        "endLine": 1267,
+        "endChar": 62
+      },
+      "revId": "ebd8ac0c8902c7134267b2f3f1406c1db973a34d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7993350b_36b6faeb",
         "filename": "docs/writing_tests.md",
         "patchSetId": 4
@@ -246,6 +480,30 @@
       "revId": "ebd8ac0c8902c7134267b2f3f1406c1db973a34d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9fe8dd81_09a69692",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 1294,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-27T08:31:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7993350b_36b6faeb",
+      "range": {
+        "startLine": 1294,
+        "startChar": 49,
+        "endLine": 1294,
+        "endChar": 55
+      },
+      "revId": "ebd8ac0c8902c7134267b2f3f1406c1db973a34d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -272,6 +530,30 @@
     },
     {
       "key": {
+        "uuid": "09829a7c_11c3c4ad",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 1296,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-27T08:31:32Z",
+      "side": 1,
+      "message": "Hmm, do you mean:\n\n On success, it returns a struct containing grpc.ClientConn to construct gRPC stubs.\n\nI\u0027m not sure if it\u0027s a natural sentence. How about:\n\n On success, it returns a struct containing [`grpc.ClientConn`] with which you can construct gRPC stubs.",
+      "parentUuid": "c76c888d_6eb442a5",
+      "range": {
+        "startLine": 1296,
+        "startChar": 0,
+        "endLine": 1296,
+        "endChar": 20
+      },
+      "revId": "ebd8ac0c8902c7134267b2f3f1406c1db973a34d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "374a684d_6a29095b",
         "filename": "docs/writing_tests.md",
         "patchSetId": 4
@@ -292,6 +574,30 @@
       "revId": "ebd8ac0c8902c7134267b2f3f1406c1db973a34d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8ba32cad_58fc64b7",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 1322,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-27T08:31:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "374a684d_6a29095b",
+      "range": {
+        "startLine": 1322,
+        "startChar": 43,
+        "endLine": 1322,
+        "endChar": 51
+      },
+      "revId": "ebd8ac0c8902c7134267b2f3f1406c1db973a34d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -318,6 +624,30 @@
     },
     {
       "key": {
+        "uuid": "946c9f92_f2fe6cb5",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 1326,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-27T08:31:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9b26cb1d_03e4694a",
+      "range": {
+        "startLine": 1326,
+        "startChar": 54,
+        "endLine": 1326,
+        "endChar": 62
+      },
+      "revId": "ebd8ac0c8902c7134267b2f3f1406c1db973a34d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b9b2906c_bf05668f",
         "filename": "docs/writing_tests.md",
         "patchSetId": 4
@@ -338,6 +668,30 @@
       "revId": "ebd8ac0c8902c7134267b2f3f1406c1db973a34d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fca48a36_c0af07f9",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 1329,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-27T08:31:32Z",
+      "side": 1,
+      "message": "Sure, I try to make it more explicit.",
+      "parentUuid": "b9b2906c_bf05668f",
+      "range": {
+        "startLine": 1329,
+        "startChar": 20,
+        "endLine": 1329,
+        "endChar": 21
+      },
+      "revId": "ebd8ac0c8902c7134267b2f3f1406c1db973a34d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

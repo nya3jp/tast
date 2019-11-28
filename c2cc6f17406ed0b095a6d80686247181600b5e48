@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "b49142ee_296682b6",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2019-11-28T00:25:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f91dd685_b05d5633",
+      "range": {
+        "startLine": 105,
+        "startChar": 26,
+        "endLine": 105,
+        "endChar": 77
+      },
+      "revId": "c2cc6f17406ed0b095a6d80686247181600b5e48",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b112b83e_3f613fcf",
         "filename": "src/chromiumos/tast/testing/state.go",
         "patchSetId": 12
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "e74ba8e8_8362dbf5",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2019-11-28T00:25:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b112b83e_3f613fcf",
+      "range": {
+        "startLine": 106,
+        "startChar": 1,
+        "endLine": 106,
+        "endChar": 54
+      },
+      "revId": "c2cc6f17406ed0b095a6d80686247181600b5e48",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "332f2ec3_b4cdf0b8",
         "filename": "src/chromiumos/tast/testing/state.go",
         "patchSetId": 12
@@ -68,6 +116,30 @@
       "revId": "c2cc6f17406ed0b095a6d80686247181600b5e48",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e891868f_129f7613",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 217,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2019-11-28T00:25:11Z",
+      "side": 1,
+      "message": "errorCount can be updated from different goroutines by using s.Error/s.Fatal. The mutex is required to synchronize. See also HasError/recordError.",
+      "parentUuid": "332f2ec3_b4cdf0b8",
+      "range": {
+        "startLine": 215,
+        "startChar": 0,
+        "endLine": 217,
+        "endChar": 14
+      },
+      "revId": "c2cc6f17406ed0b095a6d80686247181600b5e48",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -118,6 +190,30 @@
     },
     {
       "key": {
+        "uuid": "21f6768c_bb9f9df8",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 230,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2019-11-28T00:25:11Z",
+      "side": 1,
+      "message": "The execution of the subtest stops immediately. The parent test runs normally.\n\nhttps://golang.org/pkg/testing/#T.Run\nStandard go tests work the same way.",
+      "parentUuid": "564e44fb_5669c47f",
+      "range": {
+        "startLine": 221,
+        "startChar": 0,
+        "endLine": 230,
+        "endChar": 4
+      },
+      "revId": "c2cc6f17406ed0b095a6d80686247181600b5e48",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "9c5589c3_d9ae40ad",
         "filename": "src/chromiumos/tast/testing/state.go",
         "patchSetId": 12
@@ -141,6 +237,30 @@
     },
     {
       "key": {
+        "uuid": "6fe7e40a_40b0db3c",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 238,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2019-11-28T00:25:11Z",
+      "side": 1,
+      "message": "See above.",
+      "parentUuid": "9c5589c3_d9ae40ad",
+      "range": {
+        "startLine": 235,
+        "startChar": 0,
+        "endLine": 238,
+        "endChar": 14
+      },
+      "revId": "c2cc6f17406ed0b095a6d80686247181600b5e48",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "318d37d8_c4f01d0b",
         "filename": "src/chromiumos/tast/testing/state_test.go",
         "patchSetId": 12
@@ -152,6 +272,30 @@
       "writtenOn": "2019-11-27T14:52:20Z",
       "side": 1,
       "message": "I would expect to fail in this case.\n\nWhat will happen on s.Fatal? Is it still test error?",
+      "range": {
+        "startLine": 202,
+        "startChar": 0,
+        "endLine": 205,
+        "endChar": 4
+      },
+      "revId": "c2cc6f17406ed0b095a6d80686247181600b5e48",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bc6113d9_8a0c65e8",
+        "filename": "src/chromiumos/tast/testing/state_test.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 205,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2019-11-28T00:25:11Z",
+      "side": 1,
+      "message": "Yes. Error/Fatal fail the test. Fatal stops the current goroutine (defers are still executed).",
+      "parentUuid": "318d37d8_c4f01d0b",
       "range": {
         "startLine": 202,
         "startChar": 0,

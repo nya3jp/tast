@@ -101,9 +101,11 @@ type State struct {
 
 	subtests []string // subtest names; used to prefix error messages
 
+	values map[interface{}]interface{} // storage for arbitrary data
+
 	closed     bool       // true after close is called and ch is closed
 	errorCount uint       // how many erros has the test reported so far
-	mu         sync.Mutex // protects closed and errorCount
+	mu         sync.Mutex // protects closed, errorCount and values
 }
 
 // TestConfig contains details about how an individual test should be run.
@@ -438,6 +440,26 @@ func (s *State) recordError() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.errorCount++
+}
+
+// SetValue stores a new value. An old value with the same key is replaced.
+func (s *State) SetValue(k, v interface{}) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if s.values == nil {
+		s.values = make(map[interface{}]interface{})
+	}
+
+	s.values[k] = v
+}
+
+// GetValue retrieves a stored value.
+func (s *State) GetValue(k interface{}) interface{} {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	return s.values[k]
 }
 
 // dataFS implements http.FileSystem.

@@ -526,3 +526,42 @@ func TestDUT(t *gotesting.T) {
 		t.Errorf("DUT() didn't report error for %v", localTest)
 	}
 }
+
+func TestValues(t *gotesting.T) {
+	s := newState(&TestCase{Timeout: time.Minute}, nil, &TestConfig{})
+
+	type stateKey1 int
+	const stateKeyInst1 = stateKey1(1)
+
+	if _, ok := s.GetValue(stateKeyInst1).(int); ok {
+		t.Fatal("Not empty when created")
+	}
+
+	s.SetValue(stateKeyInst1, 1)
+
+	if val, ok := s.GetValue(stateKeyInst1).(int); !ok || val != 1 {
+		t.Fatal("Could not retrieve value")
+	}
+
+	type stateKey2 int
+	const stateKeyInst2 = stateKey2(1)
+
+	if _, ok := s.GetValue(stateKeyInst2).(int); ok {
+		t.Fatal("Not empty when created")
+	}
+
+	s.SetValue(stateKeyInst2, 2)
+
+	if val, ok := s.GetValue(stateKeyInst2).(int); !ok || val != 2 {
+		t.Fatal("Could not retrieve value")
+	}
+
+	if val, ok := s.GetValue(stateKeyInst1).(int); !ok || val != 1 {
+		t.Fatal("Could not retrieve previous value")
+	}
+
+	s.SetValue(stateKeyInst1, 4)
+	if val, ok := s.GetValue(stateKeyInst1).(int); !ok || val != 4 {
+		t.Fatal("Could not update value")
+	}
+}

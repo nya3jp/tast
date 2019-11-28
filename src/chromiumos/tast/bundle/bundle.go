@@ -119,7 +119,8 @@ type runConfig struct {
 	// preTestFunc is run before each test if non-nil.
 	// If this function panics or reports errors, the precondition (if any)
 	// will not be prepared and the test function will not run.
-	preTestFunc func(context.Context, *testing.State)
+	// The returned closure is executed after postTestFunc if not nil.
+	preTestFunc func(context.Context, *testing.State) func(context.Context, *testing.State)
 	// postTestFunc is run unconditionally at the end of each test if non-nil.
 	postTestFunc func(context.Context, *testing.State)
 	// defaultTestTimeout contains the default maximum time allotted to each test.

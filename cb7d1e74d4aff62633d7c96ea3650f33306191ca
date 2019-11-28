@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "433edef4_fdfdd57b",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 8
+      },
+      "lineNbr": 1052,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-11-28T16:27:05Z",
+      "side": 1,
+      "message": "This is not true, in terms of the current implementation.\nAlso, \"in the implementation\", I strongly recommend not to mix the test metadata that Test authors write, and actual test we run. They are in different domain.\nPractically, mixing them introduces a lot of assumption to many functions, so it makes them difficult to understand. It also makes it difficult to maintain because it makes it easier to misuse, like a function only for a test after expand to apply a test before expand. We should have different type for them at least internally.\n\nCould you avoid mentioning the concrete type name?",
+      "range": {
+        "startLine": 1050,
+        "startChar": 38,
+        "endLine": 1052,
+        "endChar": 14
+      },
+      "revId": "cb7d1e74d4aff62633d7c96ea3650f33306191ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

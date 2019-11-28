@@ -185,3 +185,37 @@ func TestLocalReadyFuncDisabled(t *gotesting.T) {
 		t.Errorf("Local(%+v) ran ready function despite being told not to", args)
 	}
 }
+
+func TestLocalPreTestRun(t *gotesting.T) {
+	const name = "pkg.Test"
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
+	defer restore()
+	testing.AddTestCase(&testing.TestCase{Name: name, Func: func(context.Context, *testing.State) {}})
+
+	outDir := testutil.TempDir(t)
+	defer os.RemoveAll(outDir)
+	args := Args{Mode: RunTestsMode, RunTests: &RunTestsArgs{OutDir: outDir}}
+	stdin := newBufferWithArgs(t, &args)
+	stderr := bytes.Buffer{}
+	var ranPre, ranPostHook bool
+	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, LocalDelegate{
+		PreTestRun: func(context.Context, *testing.State) func(context.Context, *testing.State) {
+			ranPre = true
+			return func(context.Context, *testing.State) {
+				ranPostHook = true
+			}
+		},
+	}); status != statusSuccess {
+		t.Errorf("Local(%+v) = %v; want %v", args, status, statusSuccess)
+	}
+	if !ranPre {
+		t.Errorf("Local(%+v) didn't run test pre %q", args, name)
+	}
+	if !ranPostHook {
+		t.Errorf("Local(%+v) didn't run test post hook %q", args, name)
+	}
+	if len(stderr.String()) != 0 {
+		t.Errorf("Local(%+v) unexpectedly wrote %q to stderr", args, stderr.String())
+	}
+
+}

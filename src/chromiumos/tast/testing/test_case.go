@@ -220,6 +220,8 @@ func (t *TestCase) Run(ctx context.Context, ch chan<- Output, cfg *TestConfig) b
 		stages = append(stages, stage{f, ctxTimeout, runTimeout})
 	}
 
+	var postTestHook func(ctx context.Context, s *State)
+
 	// First, perform setup and run the pre-test function.
 	addStage(func(ctx context.Context, s *State) {
 		// The test bundle is responsible for ensuring t.Timeout is nonzero before calling Run,
@@ -270,7 +272,7 @@ func (t *TestCase) Run(ctx context.Context, ch chan<- Output, cfg *TestConfig) b
 		}
 
 		if cfg.PreTestFunc != nil {
-			cfg.PreTestFunc(ctx, s)
+			postTestHook = cfg.PreTestFunc(ctx, s)
 		}
 	}, preTestTimeout, preTestTimeout+exitTimeout)
 
@@ -301,12 +303,16 @@ func (t *TestCase) Run(ctx context.Context, ch chan<- Output, cfg *TestConfig) b
 		}, t.Pre.Timeout(), t.Pre.Timeout()+exitTimeout)
 	}
 
-	// Finally, run the post-test function unconditionally.
-	if cfg.PostTestFunc != nil {
-		addStage(func(ctx context.Context, s *State) {
+	// Finally, run the post-test functions unconditionally.
+	addStage(func(ctx context.Context, s *State) {
+		if cfg.PostTestFunc != nil {
 			cfg.PostTestFunc(ctx, s)
-		}, postTestTimeout, postTestTimeout+exitTimeout)
-	}
+		}
+
+		if postTestHook != nil {
+			postTestHook(ctx, s)
+		}
+	}, postTestTimeout, postTestTimeout+exitTimeout)
 
 	return runStages(ctx, s, stages)
 }

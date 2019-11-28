@@ -340,26 +340,27 @@ func TestRunSkipStages(t *gotesting.T) {
 	// Define a sequence of tests to run and specify which stages should be executed for each.
 	var pre, pre2, pre3, pre4 testPre
 	cases := []struct {
-		pre            *testPre
-		preTestAction  action // TestConfig.PreTestFunc
-		prepareAction  action // Precondition.Prepare
-		testAction     action // Test.Func
-		closeAction    action // Precondition.Close
-		postTestAction action // TestConfig.PostTestFunc
-		desc           string
+		pre                *testPre
+		preTestAction      action // TestConfig.PreTestFunc
+		prepareAction      action // Precondition.Prepare
+		testAction         action // Test.Func
+		closeAction        action // Precondition.Close
+		postTestAction     action // TestConfig.PostTestFunc
+		postTestHookAction action // Return of TestConfig.PreTestFunc
+		desc               string
 	}{
-		{&pre, pass, pass, pass, noCall, pass, "everything passes"},
-		{&pre, doError, noCall, noCall, noCall, pass, "pre-test fails"},
-		{&pre, doPanic, noCall, noCall, noCall, pass, "pre-test panics"},
-		{&pre, pass, doError, noCall, noCall, pass, "prepare fails"},
-		{&pre, pass, doPanic, noCall, noCall, pass, "prepare panics"},
-		{&pre, pass, pass, doError, noCall, pass, "test fails"},
-		{&pre, pass, pass, doPanic, noCall, pass, "test panics"},
-		{&pre, pass, pass, pass, pass, pass, "everything passes, next test has different precondition"},
-		{&pre2, pass, doError, noCall, pass, pass, "prepare fails, next test has different precondition"},
-		{&pre3, pass, pass, doError, pass, pass, "test fails, next test has no precondition"},
-		{nil, pass, noCall, pass, noCall, pass, "no precondition"},
-		{&pre4, pass, pass, pass, pass, pass, "final test"},
+		{&pre, pass, pass, pass, noCall, pass, pass, "everything passes"},
+		{&pre, doError, noCall, noCall, noCall, pass, pass, "pre-test fails"},
+		{&pre, doPanic, noCall, noCall, noCall, pass, pass, "pre-test panics"},
+		{&pre, pass, doError, noCall, noCall, pass, pass, "prepare fails"},
+		{&pre, pass, doPanic, noCall, noCall, pass, pass, "prepare panics"},
+		{&pre, pass, pass, doError, noCall, pass, pass, "test fails"},
+		{&pre, pass, pass, doPanic, noCall, pass, pass, "test panics"},
+		{&pre, pass, pass, pass, pass, pass, pass, "everything passes, next test has different precondition"},
+		{&pre2, pass, doError, noCall, pass, pass, pass, "prepare fails, next test has different precondition"},
+		{&pre3, pass, pass, doError, pass, pass, pass, "test fails, next test has no precondition"},
+		{nil, pass, noCall, pass, noCall, pass, pass, "no precondition"},
+		{&pre4, pass, pass, pass, pass, pass, pass, "final test"},
 	}
 
 	// Create tests first so we can set TestConfig.NextTest later.
@@ -389,9 +390,25 @@ func TestRunSkipStages(t *gotesting.T) {
 		}
 	}
 
+	makeFuncWithCallback := func(a action, called *bool, cbA action, cbCalled *bool) func(ctx context.Context, s *State) func(ctx context.Context, s *State) {
+		return func(ctx context.Context, s *State) func(ctx context.Context, s *State) {
+			*called = true
+			switch a {
+			case doError:
+				s.Error("intentional error")
+			case doFatal:
+				s.Fatal("intentional fatal")
+			case doPanic:
+				panic("intentional panic")
+			}
+
+			return makeFunc(cbA, cbCalled)
+		}
+	}
+
 	// Now actually run each test.
 	for i, c := range cases {
-		var preTestRan, prepareRan, testRan, closeRan, postTestRan bool
+		var preTestRan, prepareRan, testRan, closeRan, postTestRan, postTestHookRan bool
 
 		test := tests[i]
 		test.Func = makeFunc(c.testAction, &testRan)
@@ -404,7 +421,7 @@ func TestRunSkipStages(t *gotesting.T) {
 			c.pre.closeFunc = makeFunc(c.closeAction, &closeRan)
 		}
 		cfg := &TestConfig{
-			PreTestFunc:  makeFunc(c.preTestAction, &preTestRan),
+			PreTestFunc:  makeFuncWithCallback(c.preTestAction, &preTestRan, c.postTestHookAction, &postTestHookRan),
 			PostTestFunc: makeFunc(c.postTestAction, &postTestRan),
 		}
 		if i < len(tests)-1 {

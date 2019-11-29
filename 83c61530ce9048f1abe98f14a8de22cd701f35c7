@@ -284,6 +284,30 @@
     },
     {
       "key": {
+        "uuid": "1ad91ca9_803c42b6",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-29T06:30:43Z",
+      "side": 1,
+      "message": "Oh that\u0027s right, then it should be fine.",
+      "parentUuid": "cef469b5_d2de2958",
+      "range": {
+        "startLine": 157,
+        "startChar": 16,
+        "endLine": 157,
+        "endChar": 27
+      },
+      "revId": "83c61530ce9048f1abe98f14a8de22cd701f35c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "342caeea_5f58f665",
         "filename": "src/chromiumos/tast/testing/state.go",
         "patchSetId": 17

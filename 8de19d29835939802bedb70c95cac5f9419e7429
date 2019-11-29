@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "37330cf8_4a55c46f",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 18
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2019-11-29T03:58:30Z",
+      "side": 1,
+      "message": "This is used by often tests, removing it would just move the implementation to the test themselves.",
+      "revId": "8de19d29835939802bedb70c95cac5f9419e7429",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

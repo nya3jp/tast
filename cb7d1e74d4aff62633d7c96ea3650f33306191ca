@@ -22,6 +22,30 @@
       "revId": "cb7d1e74d4aff62633d7c96ea3650f33306191ca",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9c66047c_92379fb2",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 8
+      },
+      "lineNbr": 1052,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-29T01:52:30Z",
+      "side": 1,
+      "message": "Sorry, I\u0027m completely lost. Could you suggest a concrete sentence that you think is \"correct\"?\n\n\n\u003e This is not true, in terms of the current implementation.\n\nThis documentation is not about implementation details. It describes the semantics of testing.Test with non-empty Params passed to testing.AddTest. Regardless of internal implementation details, I believe this explanation is conceptually correct.\n\n\u003e Also, \"in the implementation\"\n\nI don\u0027t understand what you mean by quoting \"in the implementation\" here.\n\n\u003e I strongly recommend not to mix the test metadata that Test authors write, and actual test we run. They are in different domain.\n\nI agree with you in this point, but I don\u0027t understand why do you think the current sentence mixes the two concepts. I use `testing.Test` to mention test metadata consistently.\n\n\u003e Practically, mixing them introduces a lot of assumption to many functions, so it makes them difficult to understand.\n\nWhat do you mean by \"practically\"? https://eow.alc.co.jp/search?q\u003dpractically\u0026ref\u003dsa\n\nI basically agree with you in the latter part, though I still don\u0027t understand what makes you think we mix these concepts.\n\n\u003e It also makes it difficult to maintain because it makes it easier to misuse, like a function only for a test after expand to apply a test before expand. We should have different type for them at least internally.\n\nThis sentence was unparsable for me.",
+      "parentUuid": "433edef4_fdfdd57b",
+      "range": {
+        "startLine": 1050,
+        "startChar": 38,
+        "endLine": 1052,
+        "endChar": 14
+      },
+      "revId": "cb7d1e74d4aff62633d7c96ea3650f33306191ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

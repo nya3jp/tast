@@ -1,0 +1,257 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "03d5df5c_8253a346",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-29T02:48:52Z",
+      "side": 1,
+      "message": "typo: initial",
+      "range": {
+        "startLine": 112,
+        "startChar": 43,
+        "endLine": 112,
+        "endChar": 49
+      },
+      "revId": "83c61530ce9048f1abe98f14a8de22cd701f35c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cc1ce97d_b9569b30",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-29T02:48:52Z",
+      "side": 1,
+      "message": "style nit: for end-line comments please try to fit in one line, just like:\n\n hasError bool // true if the current subtest has encountered an error; the test fails if this is true for the initial subtest\n\nIf you want to write multi-line comments, I\u0027d recommend following the godoc-style.\n\n // hasError is true if the current subtest has encountered an error.\n // The test fails if this is true for the initial subtest.\n hasError bool",
+      "range": {
+        "startLine": 111,
+        "startChar": 15,
+        "endLine": 112,
+        "endChar": 57
+      },
+      "revId": "83c61530ce9048f1abe98f14a8de22cd701f35c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8061fcff_1071741c",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-29T02:48:52Z",
+      "side": 1,
+      "message": "nit: Could you move this before hasError/mu? Then fields are ordered in immutable fields -\u003e mutable fields.",
+      "range": {
+        "startLine": 115,
+        "startChar": 1,
+        "endLine": 115,
+        "endChar": 66
+      },
+      "revId": "83c61530ce9048f1abe98f14a8de22cd701f35c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "650d7e66_b5efbc1d",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-29T02:48:52Z",
+      "side": 1,
+      "message": "Can we make this method to return *rootState instead (after renaming it newRootState). Please also see my comment below.",
+      "range": {
+        "startLine": 139,
+        "startChar": 5,
+        "endLine": 139,
+        "endChar": 13
+      },
+      "revId": "83c61530ce9048f1abe98f14a8de22cd701f35c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0fb938af_fc45e09b",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-29T02:48:52Z",
+      "side": 1,
+      "message": "Can we move this method to rootState? It is because ch is now owned by rootState.",
+      "range": {
+        "startLine": 144,
+        "startChar": 16,
+        "endLine": 144,
+        "endChar": 21
+      },
+      "revId": "83c61530ce9048f1abe98f14a8de22cd701f35c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0756d7d7_df895712",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-29T02:48:52Z",
+      "side": 1,
+      "message": "Same here: I guess we can move this to rootState.",
+      "range": {
+        "startLine": 157,
+        "startChar": 16,
+        "endLine": 157,
+        "endChar": 27
+      },
+      "revId": "83c61530ce9048f1abe98f14a8de22cd701f35c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "342caeea_5f58f665",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-29T02:48:52Z",
+      "side": 1,
+      "message": "We now prepend to error messages only, right?",
+      "range": {
+        "startLine": 221,
+        "startChar": 49,
+        "endLine": 221,
+        "endChar": 65
+      },
+      "revId": "83c61530ce9048f1abe98f14a8de22cd701f35c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2e8fc6f8_3fa959d9",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 241,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-29T02:48:52Z",
+      "side": 1,
+      "message": "I think it\u0027s easier to understand this message by including all subtest names if subtests are nested. For example, strings.Join(subtests, \"/\")\n\nIf we do so, we may want to use consistent formatting to mention a full path of subtests (here and the prefix prepended to error messages). Slashes are used by Go\u0027s testing package.",
+      "range": {
+        "startLine": 241,
+        "startChar": 32,
+        "endLine": 241,
+        "endChar": 36
+      },
+      "revId": "83c61530ce9048f1abe98f14a8de22cd701f35c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dd36e870_4dbff44c",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 247,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-29T02:48:52Z",
+      "side": 1,
+      "message": "typo: failures",
+      "range": {
+        "startLine": 247,
+        "startChar": 14,
+        "endLine": 247,
+        "endChar": 23
+      },
+      "revId": "83c61530ce9048f1abe98f14a8de22cd701f35c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "241300e4_b144ca0c",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 248,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-29T02:48:52Z",
+      "side": 1,
+      "message": "We have to lock ns.mu and s.mu here.",
+      "range": {
+        "startLine": 248,
+        "startChar": 1,
+        "endLine": 248,
+        "endChar": 17
+      },
+      "revId": "83c61530ce9048f1abe98f14a8de22cd701f35c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c9fce45f_8f845162",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 355,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-29T02:48:52Z",
+      "side": 1,
+      "message": "Can we move this to rootState as well?",
+      "range": {
+        "startLine": 355,
+        "startChar": 16,
+        "endLine": 355,
+        "endChar": 27
+      },
+      "revId": "83c61530ce9048f1abe98f14a8de22cd701f35c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

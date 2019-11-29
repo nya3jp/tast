@@ -34,6 +34,46 @@
       "revId": "8de19d29835939802bedb70c95cac5f9419e7429",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "db160931_b6ab1161",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 18
+      },
+      "lineNbr": 250,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2019-11-29T07:46:05Z",
+      "side": 1,
+      "message": "nit(optional): blank line before?",
+      "revId": "8de19d29835939802bedb70c95cac5f9419e7429",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5d764c6d_c73444ef",
+        "filename": "src/chromiumos/tast/testing/state_test.go",
+        "patchSetId": 18
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2019-11-29T07:46:05Z",
+      "side": 1,
+      "message": "nit(optional): as alternative approach, you can just iterate over all strings in out and create array of indexes. If array of indexes greater then 1 --\u003e return true.",
+      "range": {
+        "startLine": 96,
+        "startChar": 0,
+        "endLine": 114,
+        "endChar": 3
+      },
+      "revId": "8de19d29835939802bedb70c95cac5f9419e7429",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

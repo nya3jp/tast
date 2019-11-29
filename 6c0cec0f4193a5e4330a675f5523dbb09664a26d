@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "963c93d6_409772f6",
+        "filename": "src/chromiumos/cmd/tast-lint/check/common_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-29T08:11:29Z",
+      "side": 1,
+      "message": "Why don\u0027t we just pass the whole file content to cmp.Diff?",
+      "range": {
+        "startLine": 87,
+        "startChar": 2,
+        "endLine": 88,
+        "endChar": 39
+      },
+      "revId": "6c0cec0f4193a5e4330a675f5523dbb09664a26d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7e1c78b0_3a80bf9b",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-11-29T08:11:29Z",
+      "side": 1,
+      "message": "huge nit: how about defining fixable here to share the logic?\n\n fixable :\u003d len(asgn.Rhs) \u003d\u003d 1",
+      "revId": "6c0cec0f4193a5e4330a675f5523dbb09664a26d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

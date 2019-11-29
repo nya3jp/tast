@@ -6,12 +6,14 @@ package rpc
 
 import (
 	"context"
-	"errors"
 	"io"
 	"net"
+	"sync"
 	"time"
 
 	"google.golang.org/grpc"
+
+	"chromiumos/tast/errors"
 )
 
 var (
@@ -26,7 +28,10 @@ var (
 type pipeConn struct {
 	r io.Reader
 	w io.Writer
-	c func() error // if not nil, called on Close
+	c func() error // if not nil, called on the first Close
+
+	closed bool       // true after Close is called
+	mu     sync.Mutex // protects closed
 }
 
 // Read reads data from the underlying io.Reader.
@@ -41,6 +46,16 @@ func (c *pipeConn) Write(b []byte) (n int, err error) {
 
 // Close calls c if it is not nil.
 func (c *pipeConn) Close() error {
+	c.mu.Lock()
+	closed := c.closed
+	c.closed = true
+	c.mu.Unlock()
+
+	// Needs to protect from calling Close more than once. For example, grpc-go-1.25.0 calls Close twice.
+	if closed {
+		return errors.New("pipeConn: Close was already called")
+	}
+
 	if c.c == nil {
 		return nil
 	}

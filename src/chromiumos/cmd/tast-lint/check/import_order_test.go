@@ -126,3 +126,72 @@ func Foo() {
 	issues := ImportOrder("testfile.go", []byte(code))
 	verifyIssues(t, issues, expects)
 }
+
+func TestAutoFixImportOrder(t *testing.T) {
+	const filename1, filename2 = "testfile1.go", "testfile2.go"
+	files := make(map[string]string)
+	files[filename1] = `package main
+
+import (
+	"fmt"
+	"github.com/godbus/dbus"
+	"chromiumos/tast/errors"
+)
+
+func Foo() {
+	fmt.Print("")
+	dbus.New()
+	errors.New()
+}
+`
+	files[filename2] = `package main
+
+import (
+	"fmt"
+
+	"chromiumos/tast/errors"
+
+	"github.com/godbus/dbus"
+)
+
+func Foo() {
+	fmt.Print("")
+	dbus.New()
+	errors.New()
+}
+`
+	expects := make(map[string]string)
+	expects[filename1] = `package main
+
+import (
+	"fmt"
+
+	"github.com/godbus/dbus"
+
+	"chromiumos/tast/errors"
+)
+
+func Foo() {
+	fmt.Print("")
+	dbus.New()
+	errors.New()
+}
+`
+	expects[filename2] = `package main
+
+import (
+	"fmt"
+
+	"github.com/godbus/dbus"
+
+	"chromiumos/tast/errors"
+)
+
+func Foo() {
+	fmt.Print("")
+	dbus.New()
+	errors.New()
+}
+`
+	verifyAutoFix(t, ImportOrderAutoFix, files, expects)
+}

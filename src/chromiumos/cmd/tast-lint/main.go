@@ -197,7 +197,11 @@ func checkAll(g *git.Git, paths []git.CommitFile, debug bool, fix bool) ([]*chec
 				// goimports applies gofmt, so skip it if the code has any formatting
 				// error to avoid confusing reports. gofmt will be run by the repo
 				// upload hook anyway.
-				issues = append(issues, check.ImportOrder(path.Path, data)...)
+				issue := check.ImportOrder(path.Path, data)
+				issues = append(issues, issue...)
+				if len(issue) > 0 {
+					check.ImportOrderAutoFix(fs, f, fix)
+				}
 			}
 
 			if isTestFile(path.Path) {

@@ -8,22 +8,35 @@ import (
 	"fmt"
 	"go/ast"
 	"go/token"
+
+	"golang.org/x/tools/go/ast/astutil"
 )
 
 // ForbiddenCalls checks if any forbidden functions are called.
-func ForbiddenCalls(fs *token.FileSet, f *ast.File) []*Issue {
+func ForbiddenCalls(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 	isUnitTest := isUnitTestFile(fs.Position(f.Package).Filename)
 	var issues []*Issue
+	var errorsAdded bool
 
-	v := funcVisitor(func(node ast.Node) {
-		sel, ok := node.(*ast.SelectorExpr)
+	// Fixable condition is defined as (1) the file don't have the ident node
+	// whose name is "errors" and (2) the file is able to be ran goimports.
+	// TODO: handle the case if there is "chromium/tast/errors" in import list.
+	fixable := false
+	if !hasErrorsIdent(f) {
+		if src, err := formatASTNode(f); err == nil {
+			fixable = goimportApplicable(src)
+		}
+	}
+
+	astutil.Apply(f, func(c *astutil.Cursor) bool {
+		sel, ok := c.Node().(*ast.SelectorExpr)
 		if !ok {
-			return
+			return true
 		}
 		// TODO(nya): Support imports with different aliases.
 		x, ok := sel.X.(*ast.Ident)
 		if !ok {
-			return
+			return true
 		}
 
 		call := fmt.Sprintf("%s.%s", x.Name, sel.Sel.Name)
@@ -37,11 +50,24 @@ func ForbiddenCalls(fs *token.FileSet, f *ast.File) []*Issue {
 				})
 			}
 		case "fmt.Errorf":
-			issues = append(issues, &Issue{
-				Pos:  fs.Position(x.Pos()),
-				Msg:  "chromiumos/tast/errors.Errorf should be used instead of fmt.Errorf",
-				Link: "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Error-construction",
-			})
+			if !fix {
+				issues = append(issues, &Issue{
+					Pos:     fs.Position(x.Pos()),
+					Msg:     "chromiumos/tast/errors.Errorf should be used instead of fmt.Errorf",
+					Link:    "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Error-construction",
+					Fixable: fixable,
+				})
+			} else if fixable {
+				c.Replace(&ast.SelectorExpr{
+					X: &ast.Ident{
+						Name: "errors",
+					},
+					Sel: &ast.Ident{
+						Name: "Errorf",
+					},
+				})
+				errorsAdded = true
+			}
 		case "time.Sleep":
 			issues = append(issues, &Issue{
 				Pos:  fs.Position(x.Pos()),
@@ -49,8 +75,37 @@ func ForbiddenCalls(fs *token.FileSet, f *ast.File) []*Issue {
 				Link: "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Contexts-and-timeouts",
 			})
 		}
+
+		return true
+	}, nil)
+
+	if errorsAdded {
+		if astutil.AddImport(fs, f, "chromiumos/tast/errors") {
+			newf, err := ImportOrderAutoFix(fs, f)
+			if err != nil {
+				return issues
+			}
+			*f = *newf
+		}
+	}
+
+	return issues
+}
+
+// hasErrorsIdent returns true if there is an identifier node whose name is "errors".
+func hasErrorsIdent(f *ast.File) bool {
+	hasErrors := false
+	ast.Inspect(f, func(node ast.Node) bool {
+		id, ok := node.(*ast.Ident)
+		if !ok {
+			return true
+		}
+		if id.Name == "errors" {
+			hasErrors = true
+			return false
+		}
+		return true
 	})
 
-	ast.Walk(v, f)
-	return issues
+	return hasErrors
 }

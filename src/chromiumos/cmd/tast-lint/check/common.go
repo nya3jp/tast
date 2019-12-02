@@ -5,7 +5,10 @@
 package check
 
 import (
+	"bytes"
 	"go/ast"
+	"go/format"
+	"go/token"
 	"path/filepath"
 	"regexp"
 	"strconv"
@@ -106,4 +109,13 @@ func quoteAs(s string, t stringLitType) string {
 		return "`" + s + "`"
 	}
 	return strconv.Quote(s)
+}
+
+// formatASTNode returns the byte slice of source code from given file nodes.
+func formatASTNode(f *ast.File) ([]byte, error) {
+	var buf bytes.Buffer
+	if err := format.Node(&buf, token.NewFileSet(), f); err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
 }

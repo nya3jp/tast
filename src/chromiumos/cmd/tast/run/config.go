@@ -103,7 +103,7 @@ type Config struct {
 
 	testVars       map[string]string // names and values of variables used to pass out-of-band data to tests
 	varsFiles      []string          // paths to variable files
-	defaultVarsDir string            // dir containing default variable files
+	defaultVarsDir string            // dir containing variable files
 
 	msgTimeout             time.Duration // timeout for reading control messages; default used if zero
 	localRunnerWaitTimeout time.Duration // timeout for waiting for local_test_runner to exit; default used if zero
@@ -198,6 +198,7 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 			return nil
 		})
 		f.Var(&vf, "var", `runtime variable to pass to tests, as "name=value" (can be repeated)`)
+		f.StringVar(&c.defaultVarsDir, "varsdir", "", "directory having YAML files containing variables")
 		vff := command.RepeatedFlag(func(path string) error {
 			c.varsFiles = append(c.varsFiles, path)
 			return nil

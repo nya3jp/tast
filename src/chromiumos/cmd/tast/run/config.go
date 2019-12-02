@@ -198,6 +198,7 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 			return nil
 		})
 		f.Var(&vf, "var", `runtime variable to pass to tests, as "name=value" (can be repeated)`)
+		f.StringVar(&c.defaultVarsDir, "defaultvarsdir", "", "directory having YAML files containing variables")
 		vff := command.RepeatedFlag(func(path string) error {
 			c.varsFiles = append(c.varsFiles, path)
 			return nil

@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "16fc9a44_33d3b758",
+        "filename": "src/chromiumos/cmd/tast-lint/check/common_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-12-02T05:19:19Z",
+      "side": 1,
+      "message": "Ah, sorry I didn\u0027t know go-cmp/cmp doesn\u0027t format multiline-string diffs in a pretty way. We can use https://godoc.org/github.com/kylelemons/godebug/diff#Diff for better formatting, but it\u0027s never a blocker for this change. Thanks for explanation!",
+      "parentUuid": "0935420d_cec73ae2",
+      "range": {
+        "startLine": 87,
+        "startChar": 2,
+        "endLine": 88,
+        "endChar": 39
+      },
+      "revId": "6c0cec0f4193a5e4330a675f5523dbb09664a26d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7e1c78b0_3a80bf9b",
         "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
         "patchSetId": 7

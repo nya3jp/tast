@@ -141,6 +141,11 @@ Tests in this group are not used for build verification.
 		Contacts: []string{"chromeos-engprod@google.com"},
 		Desc:     `A group of stress tests.`,
 	},
+	{
+		Name:     "flashrom",
+		Contacts: []string{"chromeos-platform-syd@google.com"},
+		Desc:     `A group of Flashrom destructive tests.`,
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

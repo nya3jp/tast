@@ -199,7 +199,7 @@ func (s *State) Var(name string) (val string, ok bool) {
 func (s *State) RequiredVar(name string) string {
 	val, ok := s.Var(name)
 	if !ok {
-		s.Fatalf("Required variable %q not supplied via -var", name)
+		s.Fatalf("Required variable %q not supplied via -var or -varsfile", name)
 	}
 	return val
 }

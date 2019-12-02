@@ -212,7 +212,7 @@ func checkAll(g *git.Git, paths []git.CommitFile, debug bool, fix bool) ([]*chec
 				issues = append(issues, check.Declarations(fs, f, fix)...)
 				issues = append(issues, check.Exports(fs, f)...)
 				issues = append(issues, check.ForbiddenBundleImports(fs, f)...)
-				issues = append(issues, check.ForbiddenCalls(fs, f)...)
+				issues = append(issues, check.ForbiddenCalls(fs, f, fix)...)
 				issues = append(issues, check.ForbiddenImports(fs, f)...)
 				issues = append(issues, check.InterFileRefs(fs, f)...)
 				issues = append(issues, check.Messages(fs, f, fix)...)

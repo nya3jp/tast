@@ -8,7 +8,6 @@ import (
 	"bytes"
 	"fmt"
 	"go/ast"
-	"go/format"
 	"go/parser"
 	"go/token"
 	"os/exec"
@@ -105,10 +104,7 @@ func runGoimports(in []byte) ([]byte, error) {
 }
 
 func formatImports(in []byte) ([]byte, error) {
-	// Skip this file if there is any comment inside an import block since
-	// we can't handle it correctly now.
-	// TODO(crbug.com/900131): Handle it correctly and remove this check.
-	if commentInImportRegexp.Match(in) {
+	if !goimportApplicable(in) {
 		return in, nil
 	}
 
@@ -128,11 +124,10 @@ func formatImports(in []byte) ([]byte, error) {
 // ImportOrderAutoFix returns ast.File node whose import was fixed from given node correctly.
 func ImportOrderAutoFix(fs *token.FileSet, f *ast.File) (*ast.File, error) {
 	// Format ast.File to buffer.
-	var buf bytes.Buffer
-	if err := format.Node(&buf, fs, f); err != nil {
+	in, err := formatASTNode(f)
+	if err != nil {
 		return nil, err
 	}
-	in := buf.Bytes()
 	out, err := formatImports(in)
 	if err != nil {
 		return nil, err
@@ -144,4 +139,11 @@ func ImportOrderAutoFix(fs *token.FileSet, f *ast.File) (*ast.File, error) {
 		return nil, err
 	}
 	return newf, nil
+}
+
+// goimportApplicable returns true if there is no comment inside an import block
+// since we can't handle it correctly now.
+// TODO(crbug.com/900131): Handle it correctly and remove this check.
+func goimportApplicable(in []byte) bool {
+	return !commentInImportRegexp.Match(in)
 }

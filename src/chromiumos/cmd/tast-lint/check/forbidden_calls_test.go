@@ -35,6 +35,49 @@ func main() {
 	}
 
 	f, fs := parse(code, "testfile.go")
-	issues := ForbiddenCalls(fs, f)
+	issues := ForbiddenCalls(fs, f, false)
 	verifyIssues(t, issues, expects)
+}
+
+func TestAutoFixForbiddenCalls(t *testing.T) {
+	const filename = "foo.go"
+	files := make(map[string]string)
+	files[filename] = `package main
+
+import (
+	"fmt"
+	"time"
+
+	"chromiumos/tast/errors"
+)
+
+func main() {
+	fmt.Printf("foo")
+	fmt.Errorf("foo")
+	errors.Errorf("foo")
+	time.Sleep(time.Second)
+	context.Background()
+	context.TODO()
+}
+`
+	expects := make(map[string]string)
+	expects[filename] = `package main
+
+import (
+	"fmt"
+	"time"
+
+	"chromiumos/tast/errors"
+)
+
+func main() {
+	fmt.Printf("foo")
+	errors.Errorf("foo")
+	errors.Errorf("foo")
+	time.Sleep(time.Second)
+	context.Background()
+	context.TODO()
+}
+`
+	verifyAutoFix(t, ForbiddenCalls, files, expects)
 }

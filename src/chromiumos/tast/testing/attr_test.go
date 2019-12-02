@@ -47,6 +47,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 		{
 			attrs: []string{"group:stress"},
 		},
+		{
+			attrs: []string{"group:flashrom"},
+		},
 
 		// Invalid cases.
 		{

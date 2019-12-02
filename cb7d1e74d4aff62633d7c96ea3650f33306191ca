@@ -46,6 +46,30 @@
       "revId": "cb7d1e74d4aff62633d7c96ea3650f33306191ca",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e7b67e47_ac3758d2",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 8
+      },
+      "lineNbr": 1052,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-02T06:40:00Z",
+      "side": 1,
+      "message": "I should have a suggestion in the previous reply. Sorry about that.\n\nSuggestion:\n\n\u003d\u003d\u003d\nTo parameterize a test, specify a slice of [`testing.Param`] in the `Params` field on test registration. `Params` should be a literal since test registration should be [declarative]. If `Params` is non-empty, `testing.AddTest` expands the test into multiple tests, corresponding to each item in `Params` and the other fields in the enclosing `testing.Test` as follows:\n\u003d\u003d\u003d\n\nTo me, PS8\u0027s sentence sounded to explain the implementation rather than the concept of testing.\nI couldn\u0027t read `testing.Test` is a metadata concept. I sounded to me explanation of the struct itself.\n\nNote: I\u0027m ok to explain either in the concept of \"yours\" or \"mine\" in the offline discussion. However, for implementation, I still recommend to have different stuff for \"testing.Test\" (to describe the metadata, including Params), and something other, which is now named \"testing.TestCase\" (but I wouldn\u0027t stick the name itself as I told), to run the test (after expansion of Param).\n\nHereafter, let me give it a try to answer your questions, inline.\n\n\u003e I don\u0027t understand what you mean by quoting \"in the implementation\" here.\n\nI wanted to clarify that \"recommend not to mix the test metadata that Test authors write, and actual test we run\" is for implementation, rather than the explanation here. If it were for the explanation, that would conflict with what we agreed in the offline discussion, and that was not my intention. (Sorry, if double quotes confused you).\n\n\u003e I don\u0027t understand why do you think the current sentence mixes the two concepts. I use `testing.Test` to mention test metadata consistently.\n\n`testing.Test` is a struct so it sounded to me to explain the implementation, rather than the concept.\n\n\u003e What do you mean by \"practically\"? https://eow.alc.co.jp/search?q\u003dpractically\u0026ref\u003dsa\n\n2\n\n\u003e This sentence was unparsable for me.\n\nSorry about it. What I\u0027d like to say was;\n\nWe should use different type for \"test metadata\" which test authors write, and \"a struct to run a test\". They live in different domain, thus there are functions only for the former, or ones only for the latter. If those two structs are mixed, compiler couldn\u0027t catch the misuse.\n\nFinally/nit: I\u0027d recommend to use \"field\" instead of \"property\" to mention the struct, based on go\u0027s syntax definition: https://golang.org/ref/spec#Struct_types\n\n\u003d\u003d\u003d quote \u003d\u003d\u003d\nA struct is a sequence of named elements, called fields ...\n\u003d\u003d\u003d quote end \u003d\u003d\u003d\n\nIf we still have some different thought, how about having another offline chat?",
+      "parentUuid": "9c66047c_92379fb2",
+      "range": {
+        "startLine": 1050,
+        "startChar": 38,
+        "endLine": 1052,
+        "endChar": 14
+      },
+      "revId": "cb7d1e74d4aff62633d7c96ea3650f33306191ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

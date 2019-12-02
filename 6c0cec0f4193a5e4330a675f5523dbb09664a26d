@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "0935420d_cec73ae2",
+        "filename": "src/chromiumos/cmd/tast-lint/check/common_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-02T03:51:52Z",
+      "side": 1,
+      "message": "I wanted to show which line number was failed to autofix, and I think gots and expects cannot be compared for each line if we just input whole file without splitting as lines. (I was looking for some functions enable to do that in go-cmp package, but I could not find them.)",
+      "parentUuid": "963c93d6_409772f6",
+      "range": {
+        "startLine": 87,
+        "startChar": 2,
+        "endLine": 88,
+        "endChar": 39
+      },
+      "revId": "6c0cec0f4193a5e4330a675f5523dbb09664a26d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "7e1c78b0_3a80bf9b",
         "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
         "patchSetId": 7
@@ -39,6 +63,24 @@
       "revId": "6c0cec0f4193a5e4330a675f5523dbb09664a26d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cf1db6ec_8cb961da",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-02T03:51:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7e1c78b0_3a80bf9b",
+      "revId": "6c0cec0f4193a5e4330a675f5523dbb09664a26d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -7,6 +7,9 @@ package check
 import (
 	"bytes"
 	"fmt"
+	"go/ast"
+	"go/format"
+	"go/parser"
 	"go/token"
 	"os/exec"
 	"regexp"
@@ -55,9 +58,10 @@ func ImportOrder(path string, in []byte) []*Issue {
 
 	if diff != "" {
 		return []*Issue{{
-			Pos:  token.Position{Filename: path},
-			Msg:  fmt.Sprintf("Import should be grouped into standard packages, third-party packages and chromiumos packages in this order separated by empty lines.\nApply the following patch to fix:\n%s", diff),
-			Link: "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#import",
+			Pos:     token.Position{Filename: path},
+			Msg:     fmt.Sprintf("Import should be grouped into standard packages, third-party packages and chromiumos packages in this order separated by empty lines.\nApply the following patch to fix:\n%s", diff),
+			Link:    "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#import",
+			Fixable: true,
 		}}
 	}
 
@@ -115,4 +119,31 @@ func runGoimports(in []byte) ([]byte, error) {
 		return nil, err
 	}
 	return out, nil
+}
+
+// ImportOrderAutoFix returns ast.File node whose import was fixed from given node correctly.
+func ImportOrderAutoFix(fs *token.FileSet, f *ast.File) (*ast.File, error) {
+	// Format ast.File to buffer.
+	var buf bytes.Buffer
+	if err := format.Node(&buf, fs, f); err != nil {
+		return f, err
+	}
+	in := buf.Bytes()
+
+	if commentInImportRegexp.Match(in) {
+		return f, nil
+	}
+	// Trim the buffer data and check with goimports.
+	trimmed := trimImportEmptyLine(in)
+	out, err := runGoimports(trimmed)
+	if err != nil {
+		return f, err
+	}
+	// Parse again.
+	path := fs.Position(f.Pos()).Filename
+	newf, err := parser.ParseFile(fs, path, out, parser.ParseComments)
+	if err != nil {
+		return f, err
+	}
+	return newf, nil
 }

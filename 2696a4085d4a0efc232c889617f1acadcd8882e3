@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0914df95_acbe45e8",
+        "filename": "src/chromiumos/cmd/tast-lint/check/external_json.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-02T10:44:36Z",
+      "side": 1,
+      "message": "nit:\n\next :\u003d filepath.Ext(base)\nreturn []*Issue{{\n  ...\n  ...: fmt.Sprintf(\"include the date as a suffix in the filename like \\\".../%s_YYYYMMDD%s\", strings.TrimRight(base, ext), ext))\n  ...\n}}\n\n- let\u0027s cache ext to avoid calculating twice.\n- Also, let\u0027s apply filepath.Ext to base, rather than url. It should return the same value, but conceptually you\u0027re handling base rather than whole url string here.",
+      "range": {
+        "startLine": 58,
+        "startChar": 8,
+        "endLine": 58,
+        "endChar": 160
+      },
+      "revId": "2696a4085d4a0efc232c889617f1acadcd8882e3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

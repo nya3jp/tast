@@ -8,22 +8,28 @@ import (
 	"fmt"
 	"go/ast"
 	"go/token"
+	"path/filepath"
+	"strconv"
+
+	"golang.org/x/tools/go/ast/astutil"
 )
 
 // ForbiddenCalls checks if any forbidden functions are called.
-func ForbiddenCalls(fs *token.FileSet, f *ast.File) []*Issue {
+func ForbiddenCalls(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 	isUnitTest := isUnitTestFile(fs.Position(f.Package).Filename)
 	var issues []*Issue
+	var errorsAdded bool
+	tastErrorsPath := "chromiumos/tast/errors"
 
-	v := funcVisitor(func(node ast.Node) {
-		sel, ok := node.(*ast.SelectorExpr)
+	astutil.Apply(f, func(c *astutil.Cursor) bool {
+		sel, ok := c.Node().(*ast.SelectorExpr)
 		if !ok {
-			return
+			return true
 		}
 		// TODO(nya): Support imports with different aliases.
 		x, ok := sel.X.(*ast.Ident)
 		if !ok {
-			return
+			return true
 		}
 
 		call := fmt.Sprintf("%s.%s", x.Name, sel.Sel.Name)
@@ -37,11 +43,26 @@ func ForbiddenCalls(fs *token.FileSet, f *ast.File) []*Issue {
 				})
 			}
 		case "fmt.Errorf":
-			issues = append(issues, &Issue{
-				Pos:  fs.Position(x.Pos()),
-				Msg:  "chromiumos/tast/errors.Errorf should be used instead of fmt.Errorf",
-				Link: "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Error-construction",
-			})
+			if !fix {
+				issues = append(issues, &Issue{
+					Pos:     fs.Position(x.Pos()),
+					Msg:     "chromiumos/tast/errors.Errorf should be used instead of fmt.Errorf",
+					Link:    "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Error-construction",
+					Fixable: true,
+				})
+			} else {
+				if !contains(importedPkgNames(f), "errors") || contains(importPathList(f), tastErrorsPath) {
+					c.Replace(&ast.SelectorExpr{
+						X: &ast.Ident{
+							Name: "errors",
+						},
+						Sel: &ast.Ident{
+							Name: "Errorf",
+						},
+					})
+					errorsAdded = true
+				}
+			}
 		case "time.Sleep":
 			issues = append(issues, &Issue{
 				Pos:  fs.Position(x.Pos()),
@@ -49,8 +70,63 @@ func ForbiddenCalls(fs *token.FileSet, f *ast.File) []*Issue {
 				Link: "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Contexts-and-timeouts",
 			})
 		}
-	})
 
-	ast.Walk(v, f)
+		return true
+	}, nil)
+
+	if errorsAdded {
+		if !contains(importPathList(f), tastErrorsPath) {
+			tastErrorsNode := &ast.ImportSpec{
+				Path: &ast.BasicLit{
+					Kind:  token.STRING,
+					Value: strconv.Quote(tastErrorsPath),
+				},
+			}
+			f.Imports = append(f.Imports, tastErrorsNode)
+		}
+		newf, err := ImportOrderAutoFix(fs, f)
+		if err != nil {
+			return issues
+		}
+		*f = *newf
+	}
+
 	return issues
+}
+
+func importPathList(f *ast.File) []string {
+	var importlist []string
+	for _, im := range f.Imports {
+		path, err := strconv.Unquote(im.Path.Value)
+		if err != nil {
+			continue
+		}
+		importlist = append(importlist, path)
+	}
+	return importlist
+}
+
+func importedPkgNames(f *ast.File) []string {
+	var pkgNames []string
+	for _, im := range f.Imports {
+		if im.Name != nil {
+			pkgNames = append(pkgNames, im.Name.Name)
+		} else {
+			path, err := strconv.Unquote(im.Path.Value)
+			if err != nil {
+				continue
+			}
+			pkgNames = append(pkgNames, filepath.Base(path))
+		}
+	}
+	return pkgNames
+}
+
+func contains(lst []string, s string) bool {
+	for _, e := range lst {
+		if e == s {
+			return true
+		}
+	}
+	return false
 }

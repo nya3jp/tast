@@ -7,6 +7,9 @@ package check
 import (
 	"bytes"
 	"fmt"
+	"go/ast"
+	"go/format"
+	"go/parser"
 	"go/token"
 	"os/exec"
 	"regexp"
@@ -26,24 +29,7 @@ var commentInImportRegexp = regexp.MustCompile(`import \([^)]*(//|/\*)`)
 //   - The groups should be separated by an empty line.
 // This order should be same as what "goimports --local chromiumos/" does.
 func ImportOrder(path string, in []byte) []*Issue {
-	// Skip this file if there is any comment inside an import block since
-	// we can't handle it correctly now.
-	// TODO(crbug.com/900131): Handle it correctly and remove this check.
-	if commentInImportRegexp.Match(in) {
-		return nil
-	}
-
-	// goimports preserves import blocks separated by empty lines. To avoid
-	// unexpected sorting, remove all empty lines here in import
-	// declaration.
-	trimmed := trimImportEmptyLine(in)
-
-	// This may potentially raise a false alarm. goimports actually adds
-	// or removes some entries in import(), which depends on GOPATH.
-	// However, this lint check is running outside of the chroot, unlike
-	// actual build, so the GOPATH value and directory structure can be
-	// different.
-	out, err := runGoimports(trimmed)
+	out, err := formatImports(in)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -55,9 +41,10 @@ func ImportOrder(path string, in []byte) []*Issue {
 
 	if diff != "" {
 		return []*Issue{{
-			Pos:  token.Position{Filename: path},
-			Msg:  fmt.Sprintf("Import should be grouped into standard packages, third-party packages and chromiumos packages in this order separated by empty lines.\nApply the following patch to fix:\n%s", diff),
-			Link: "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#import",
+			Pos:     token.Position{Filename: path},
+			Msg:     fmt.Sprintf("Import should be grouped into standard packages, third-party packages and chromiumos packages in this order separated by empty lines.\nApply the following patch to fix:\n%s", diff),
+			Link:    "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#import",
+			Fixable: true,
 		}}
 	}
 
@@ -115,4 +102,46 @@ func runGoimports(in []byte) ([]byte, error) {
 		return nil, err
 	}
 	return out, nil
+}
+
+func formatImports(in []byte) ([]byte, error) {
+	// Skip this file if there is any comment inside an import block since
+	// we can't handle it correctly now.
+	// TODO(crbug.com/900131): Handle it correctly and remove this check.
+	if commentInImportRegexp.Match(in) {
+		return in, nil
+	}
+
+	// goimports preserves import blocks separated by empty lines. To avoid
+	// unexpected sorting, remove all empty lines here in import
+	// declaration.
+	trimmed := trimImportEmptyLine(in)
+
+	// This may potentially raise a false alarm. goimports actually adds
+	// or removes some entries in import(), which depends on GOPATH.
+	// However, this lint check is running outside of the chroot, unlike
+	// actual build, so the GOPATH value and directory structure can be
+	// different.
+	return runGoimports(trimmed)
+}
+
+// ImportOrderAutoFix returns ast.File node whose import was fixed from given node correctly.
+func ImportOrderAutoFix(fs *token.FileSet, f *ast.File) (*ast.File, error) {
+	// Format ast.File to buffer.
+	var buf bytes.Buffer
+	if err := format.Node(&buf, fs, f); err != nil {
+		return nil, err
+	}
+	in := buf.Bytes()
+	out, err := formatImports(in)
+	if err != nil {
+		return nil, err
+	}
+	// Parse again.
+	path := fs.Position(f.Pos()).Filename
+	newf, err := parser.ParseFile(fs, path, out, parser.ParseComments)
+	if err != nil {
+		return nil, err
+	}
+	return newf, nil
 }

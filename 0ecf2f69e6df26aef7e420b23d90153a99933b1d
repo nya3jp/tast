@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4acd41e9_373e20c0",
+        "filename": "src/chromiumos/cmd/tast/run/config.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 201,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-12-03T11:15:31Z",
+      "side": 1,
+      "message": "This is a bit misleading because -varsdir and -varsfile are resembled but they have different behavior (i.e. -varsdir can\u0027t be replaced by a bunch of -varsfile).\n\nHow about naming it -defaultvarsdir to make it explicit?",
+      "range": {
+        "startLine": 201,
+        "startChar": 34,
+        "endLine": 201,
+        "endChar": 41
+      },
+      "revId": "0ecf2f69e6df26aef7e420b23d90153a99933b1d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6f5e7b3c_6f4fb2ce",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-12-03T11:15:31Z",
+      "side": 1,
+      "message": "Good catch!\n\nWe might want to avoid mentioning -varsdir since ordinal users are not supposed to set it.",
+      "range": {
+        "startLine": 202,
+        "startChar": 66,
+        "endLine": 202,
+        "endChar": 76
+      },
+      "revId": "0ecf2f69e6df26aef7e420b23d90153a99933b1d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

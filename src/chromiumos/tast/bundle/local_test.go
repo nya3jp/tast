@@ -56,56 +56,6 @@ func TestLocalRunTest(t *gotesting.T) {
 	}
 }
 
-func TestLocalFaillogDelegateSucceededTest(t *gotesting.T) {
-	const name = "pkg.Test"
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
-	defer restore()
-	testing.AddTestCase(&testing.TestCase{Name: name, Func: func(ctx context.Context, s *testing.State) { /* success */ }})
-
-	faillogCalled := false
-	outDir := testutil.TempDir(t)
-	defer os.RemoveAll(outDir)
-	args := Args{Mode: RunTestsMode, RunTests: &RunTestsArgs{OutDir: outDir}}
-	stdin := newBufferWithArgs(t, &args)
-	stderr := bytes.Buffer{}
-	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, LocalDelegate{
-		Faillog: func(ctx context.Context) {
-			faillogCalled = true
-		},
-	}); status != statusSuccess {
-		t.Errorf("Local(%+v) = %v; want %v", args, status, statusSuccess)
-	}
-
-	if faillogCalled {
-		t.Error("Unexpectedly faillog is called for a succeeded test case")
-	}
-}
-
-func TestLocalFaillogDelegateFailTest(t *gotesting.T) {
-	const name = "pkg.Test"
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
-	defer restore()
-	testing.AddTestCase(&testing.TestCase{Name: name, Func: func(ctx context.Context, s *testing.State) { s.Error("fail") }})
-
-	faillogCalled := false
-	outDir := testutil.TempDir(t)
-	defer os.RemoveAll(outDir)
-	args := Args{Mode: RunTestsMode, RunTests: &RunTestsArgs{OutDir: outDir}}
-	stdin := newBufferWithArgs(t, &args)
-	stderr := bytes.Buffer{}
-	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, LocalDelegate{
-		Faillog: func(ctx context.Context) {
-			faillogCalled = true
-		},
-	}); status != statusSuccess {
-		t.Errorf("Local(%+v) = %v; want %v", args, status, statusSuccess)
-	}
-
-	if !faillogCalled {
-		t.Error("Faillog is not called for a failed test case")
-	}
-}
-
 func TestLocalReadyFunc(t *gotesting.T) {
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()

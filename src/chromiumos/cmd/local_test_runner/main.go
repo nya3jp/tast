@@ -89,6 +89,7 @@ func main() {
 			"dlc":                     "dlc_test",
 			"dmverity_stable":         `"kernel-3_8" || "kernel-3_10" || "kernel-3_14" || "kernel-3_18" || "kernel-4_4" || "kernel-4_14"`,
 			"dmverity_unstable":       `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14" || "kernel-3_18" || "kernel-4_4" || "kernel-4_14")`,
+			"drivefs":                 "drivefs",
 			"drm_atomic":              "drm_atomic",
 			"firewall":                "!moblab", // Moblab has relaxed iptables rules
 			"flashrom":                "!betty && !tast_vm",

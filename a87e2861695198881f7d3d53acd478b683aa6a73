@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4cdccf33_b180f878",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-03T08:40:58Z",
+      "side": 1,
+      "message": "Check:\n- Why is this working?\n- Replace node once at last?",
+      "revId": "a87e2861695198881f7d3d53acd478b683aa6a73",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

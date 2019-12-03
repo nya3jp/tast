@@ -57,6 +57,7 @@ The following software features are defined:
     [Diagnostic utilities].
 *   `display_backlight` - An internal display backlight.
 *   `dlc` - Support of [Downloadable Content] (DLC).
+*   `drivefs` - Google Drive support enabled.
 *   `drm_atomic` - The ability to synchronize video buffer overlays atomically.
     This is guarantees that [video hardware overlays] are supported.
 *   `firewall` - Standard Chrome OS network firewall rules.

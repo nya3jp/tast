@@ -25,9 +25,6 @@ type LocalDelegate struct {
 	// If an error is returned, none of the bundle's tests will run.
 	Ready func(ctx context.Context, log func(string)) error
 
-	// Faillog is called on each test failure. It is expected to save debugging info.
-	Faillog func(ctx context.Context)
-
 	// PreTestRun is called before each test run. The returned closure is executed after the test if not nil.
 	PreTestRun func(ctx context.Context, s *testing.State) func(ctx context.Context, s *testing.State)
 }
@@ -43,15 +40,6 @@ func Local(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, delegate 
 	args := Args{RunTests: &RunTestsArgs{DataDir: localTestDataDir}}
 	cfg := runConfig{
 		defaultTestTimeout: localTestTimeout,
-	}
-
-	if delegate.Faillog != nil {
-		cfg.postTestFunc = func(ctx context.Context, s *testing.State) {
-			if !s.HasError() {
-				return
-			}
-			delegate.Faillog(ctx)
-		}
 	}
 
 	cfg.preTestFunc = delegate.PreTestRun

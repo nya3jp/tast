@@ -87,6 +87,7 @@ func main() {
 			"diagnostics":             "diagnostics",
 			"display_backlight":       "display_backlight",
 			"dlc":                     "dlc_test",
+			"drivefs":                 "drivefs",
 			"drm_atomic":              "drm_atomic",
 			"firewall":                "!moblab", // Moblab has relaxed iptables rules
 			"flashrom":                "!betty && !tast_vm",

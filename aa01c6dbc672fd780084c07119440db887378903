@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "16b8fac5_4eb75f2d",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-04T06:56:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b2ef20f1_d25eec71",
+      "revId": "aa01c6dbc672fd780084c07119440db887378903",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "363b30de_fdc7ba4d",
         "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
         "patchSetId": 8
@@ -42,6 +60,30 @@
     },
     {
       "key": {
+        "uuid": "8dd0f41f_9f4428b8",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-04T06:56:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "363b30de_fdc7ba4d",
+      "range": {
+        "startLine": 81,
+        "startChar": 25,
+        "endLine": 81,
+        "endChar": 28
+      },
+      "revId": "aa01c6dbc672fd780084c07119440db887378903",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0354a213_1c74787e",
         "filename": "src/chromiumos/cmd/tast-lint/main.go",
         "patchSetId": 8
@@ -56,6 +98,24 @@
       "revId": "aa01c6dbc672fd780084c07119440db887378903",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fbd5521f_456cc9c0",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 216,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-04T06:56:10Z",
+      "side": 1,
+      "message": "I also make sure that the created tempfile has no gofmt error",
+      "parentUuid": "0354a213_1c74787e",
+      "revId": "aa01c6dbc672fd780084c07119440db887378903",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

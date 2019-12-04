@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2908a2f6_110c26b3",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 271,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-04T07:11:20Z",
+      "side": 1,
+      "message": "I thought it\u0027s better not to modify this case if the string value of format function contains verbs. then I added `fixable` variable to make explicit.",
+      "revId": "e0105d6b5950d4cba6301d07e5930b5943a22f7d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

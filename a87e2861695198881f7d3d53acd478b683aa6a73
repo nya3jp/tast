@@ -16,6 +16,24 @@
       "revId": "a87e2861695198881f7d3d53acd478b683aa6a73",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c009cb00_591c2367",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-04T07:11:20Z",
+      "side": 1,
+      "message": "As I sent through chat, this works because `basiclit` is directly modified, not with `c.Replace()`.\nAfter I removed unnecessary call of `replaceNode()` for such cases, there is no possibility for `c.Replace()` to be called more than twice.\nThis direct modification seems dangerous, but now I leave it as it is.",
+      "parentUuid": "4cdccf33_b180f878",
+      "revId": "a87e2861695198881f7d3d53acd478b683aa6a73",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

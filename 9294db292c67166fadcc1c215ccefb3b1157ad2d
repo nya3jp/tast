@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "418247fc_3cb4d131",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-04T09:35:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "53d0341e_41fd0574",
+      "range": {
+        "startLine": 183,
+        "startChar": 5,
+        "endLine": 183,
+        "endChar": 17
+      },
+      "revId": "9294db292c67166fadcc1c215ccefb3b1157ad2d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "be5c44f6_f5d3d995",
         "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
         "patchSetId": 9
@@ -45,6 +69,30 @@
       "revId": "9294db292c67166fadcc1c215ccefb3b1157ad2d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b3e3fa71_a98e8c5d",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-04T09:35:29Z",
+      "side": 1,
+      "message": "Thanks, I decided to use strconv.Unquote() and strconv.Quote() to solve this problem.",
+      "parentUuid": "be5c44f6_f5d3d995",
+      "range": {
+        "startLine": 184,
+        "startChar": 5,
+        "endLine": 185,
+        "endChar": 68
+      },
+      "revId": "9294db292c67166fadcc1c215ccefb3b1157ad2d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

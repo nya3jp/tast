@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "53d0341e_41fd0574",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-12-04T07:42:41Z",
+      "side": 1,
+      "message": "Could you omit the second parameter, i.e.\n\n basiclit :\u003d call...\n\nThen it will panic if the type assertion fails. It\u0027s better than continuing nil pointer.",
+      "range": {
+        "startLine": 183,
+        "startChar": 5,
+        "endLine": 183,
+        "endChar": 17
+      },
+      "revId": "9294db292c67166fadcc1c215ccefb3b1157ad2d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "be5c44f6_f5d3d995",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-12-04T07:42:41Z",
+      "side": 1,
+      "message": "There are other quoting characters like `foo`, so trimming with \" may not always work.\n\nWe can check in advance that the raw string ends with [.!]\". If that\u0027s not the case, we can set fixable\u003dfalse.",
+      "range": {
+        "startLine": 184,
+        "startChar": 5,
+        "endLine": 185,
+        "endChar": 68
+      },
+      "revId": "9294db292c67166fadcc1c215ccefb3b1157ad2d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

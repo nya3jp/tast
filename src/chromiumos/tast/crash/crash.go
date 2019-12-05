@@ -45,6 +45,8 @@ const (
 	CompressedTxtExt = ".txt.gz"
 	// CompressedLogExt is an extension on the compressed log files written by crash_reporter.
 	CompressedLogExt = ".log.gz"
+	// DevCoredumpExt is an extension for device coredump files.
+	DevCoredumpExt = ".devcore"
 
 	lsbReleasePath = "/etc/lsb-release"
 )
@@ -69,6 +71,7 @@ func isCrashFile(filename string) bool {
 		MetadataExt,
 		CompressedTxtExt,
 		CompressedLogExt,
+		DevCoredumpExt,
 	}
 	for _, ext := range knownExts {
 		if strings.HasSuffix(filename, ext) {

@@ -98,13 +98,13 @@ You need to run them manually by the following command in the Chrome OS chroot:
 ~/trunk/src/platform/tast/fast_build.sh -T
 ```
 
-CLs breaking unit tests are rejected by the (Pre) Commit Queue.
+CLs breaking unit tests are rejected by the Commit Queue.
 
-### Run Pre-CQ
+### Start a CQ dry run
 
-In the Gerrit UI, set the Commit-Queue+1 label to run the Pre Commit Queue
-(Pre-CQ) for your change. You do not have to wait for the Pre-CQ to finish
-before sending code reviews to reviewers.
+In the Gerrit UI, set the Commit-Queue+1 label to start a CQ dry run for your
+change. You do not have to wait for the dry run to finish before sending code
+reviews to reviewers.
 
 ### Check frequent code review comments
 

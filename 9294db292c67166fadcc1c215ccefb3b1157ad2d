@@ -93,6 +93,30 @@
       "revId": "9294db292c67166fadcc1c215ccefb3b1157ad2d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "708747e0_3984c1cd",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-12-06T10:05:54Z",
+      "side": 1,
+      "message": "This should be okay as well... but please note that it will convert all `strings` to \"strings\".",
+      "parentUuid": "b3e3fa71_a98e8c5d",
+      "range": {
+        "startLine": 184,
+        "startChar": 5,
+        "endLine": 185,
+        "endChar": 68
+      },
+      "revId": "9294db292c67166fadcc1c215ccefb3b1157ad2d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

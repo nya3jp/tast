@@ -1,0 +1,118 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "95c20042_778ecd26",
+        "filename": "src/chromiumos/cmd/tast-lint/check/common_test.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-09T15:43:59Z",
+      "side": 1,
+      "message": "missing \"continue\"",
+      "revId": "18daa98916ef5f990cdb6387bce361e494b367d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4d65f78b_f6617b22",
+        "filename": "src/chromiumos/cmd/tast-lint/check/common_test.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-09T15:43:59Z",
+      "side": 1,
+      "message": "Unlike the production code, you can just dump the content to the file directly.\nEven if a writing is somehow failed in the mid-point, it isn\u0027t problematic, because anyway the test should fail.\nAlso, you don\u0027t need fmtError check here, because it is also covered by the comparation against expects.\n\n# Sorry, I should have talked to you this offline already...",
+      "revId": "18daa98916ef5f990cdb6387bce361e494b367d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d9c65079_083ae280",
+        "filename": "src/chromiumos/cmd/tast-lint/check/common_test.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-09T15:43:59Z",
+      "side": 1,
+      "message": "If err is nil but \"out\" is not empty, this prints \"Failed gofmt: nil\", which is not informative.\nCould return proper error even if err is nil?",
+      "revId": "18daa98916ef5f990cdb6387bce361e494b367d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8c4ff4ca_8e683c00",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-09T15:43:59Z",
+      "side": 1,
+      "message": "nit/style:\n\nif _, ok :\u003d ...; !ok {\n  return true\n}",
+      "range": {
+        "startLine": 28,
+        "startChar": 1,
+        "endLine": 30,
+        "endChar": 0
+      },
+      "revId": "18daa98916ef5f990cdb6387bce361e494b367d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5828dcc3_ec6ef16c",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-09T15:43:59Z",
+      "side": 1,
+      "message": "hugenit/style: Because the L38 check and L34 check are somewhat related, could you remove this empty line?",
+      "revId": "18daa98916ef5f990cdb6387bce361e494b367d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "75e3faf4_e7f00b5c",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 245,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-09T15:43:59Z",
+      "side": 1,
+      "message": "optional: there\u0027s a few other use cases of atomic file content writing.\nE.g.\nhttps://chromium.googlesource.com/chromiumos/platform/tast/+/9c19d619f1d5277d086ae118f4dbf22276b3ccae/src/chromiumos/cmd/tast/build/portage.go#202\nhttps://chromium.googlesource.com/chromiumos/platform/tast-tests/+/1184f0c65991f0a4ced5fd4888f8370ce3a37c38/src/chromiumos/tast/local/genutil/util.go#165\nhttps://chromium.googlesource.com/chromiumos/platform/tast-tests/+/1184f0c65991f0a4ced5fd4888f8370ce3a37c38/src/chromiumos/tast/local/metrics/metrics.go#84\n\nthey may be nice to be consolidated. It\u0027s not a blocker of this CL, though.",
+      "range": {
+        "startLine": 234,
+        "startChar": 5,
+        "endLine": 245,
+        "endChar": 6
+      },
+      "revId": "18daa98916ef5f990cdb6387bce361e494b367d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

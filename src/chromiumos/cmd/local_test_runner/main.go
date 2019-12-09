@@ -119,7 +119,7 @@ func main() {
 			"transparent_hugepage":    "transparent_hugepage",
 			"usbguard":                "usbguard",
 			"vaapi":                   "vaapi",
-			"virtual_usb_printer":     "usbip",
+			"virtual_usb_printer":     `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14")`,
 			// Some VM builds actually can run nested VM with right host configuration.
 			// But we haven't enable this feature on builders. For now, just disable
 			// vm_host feature for VM builds. The kvm_transition flag indicates the

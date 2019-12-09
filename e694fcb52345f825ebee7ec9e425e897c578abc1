@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0e0c11c1_eb2827b2",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-09T16:05:27Z",
+      "side": 1,
+      "message": "Could you check if chromiumos/tast/errors is already imported? And, if not, could you insert?",
+      "revId": "e694fcb52345f825ebee7ec9e425e897c578abc1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

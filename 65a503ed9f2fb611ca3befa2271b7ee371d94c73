@@ -1,0 +1,107 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "60e49f61_589a588d",
+        "filename": "src/chromiumos/cmd/tast-lint/check/common.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-09T16:01:19Z",
+      "side": 1,
+      "message": "Probably...:\n\nIf specified to be backquoted, but it is impossible, this function falls back to the quoting by double-quotes.",
+      "range": {
+        "startLine": 100,
+        "startChar": 0,
+        "endLine": 103,
+        "endChar": 47
+      },
+      "revId": "65a503ed9f2fb611ca3befa2271b7ee371d94c73",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "19a38bdb_9797966d",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-09T16:01:19Z",
+      "side": 1,
+      "message": "maybe: nonLetter?",
+      "revId": "65a503ed9f2fb611ca3befa2271b7ee371d94c73",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e0036ab5_24972df9",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-09T16:01:19Z",
+      "side": 1,
+      "message": "As discussed offline, I\u0027d update str in this block, and update basiclit at the end of this block.",
+      "revId": "65a503ed9f2fb611ca3befa2271b7ee371d94c73",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "069bc1f1_e2b5ca1b",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 279,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-09T16:01:19Z",
+      "side": 1,
+      "message": "The condition looks wrong...?",
+      "range": {
+        "startLine": 279,
+        "startChar": 43,
+        "endLine": 279,
+        "endChar": 82
+      },
+      "revId": "65a503ed9f2fb611ca3befa2271b7ee371d94c73",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b98e9570_34354c9c",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 302,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-09T16:01:19Z",
+      "side": 1,
+      "message": "(optional): can this check updated value...?\n\nIf impossible, could you add comments the reason, or if you think it makes this CL more complicated and nice to do it separately, could you add TODO?",
+      "range": {
+        "startLine": 302,
+        "startChar": 88,
+        "endLine": 302,
+        "endChar": 99
+      },
+      "revId": "65a503ed9f2fb611ca3befa2271b7ee371d94c73",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

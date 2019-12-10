@@ -19,7 +19,7 @@ import (
 	"strings"
 	"time"
 
-	"chromiumos/tast/devserver"
+	"chromiumos/tast/internal/devserver"
 	"chromiumos/tast/testing"
 )
 

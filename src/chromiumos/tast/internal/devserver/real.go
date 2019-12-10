@@ -192,7 +192,7 @@ func (c *RealClient) DownloadGS(ctx context.Context, w io.Writer, gsURL string) 
 	return size, nil
 }
 
-// findStages tries to find an already staged file from selected servers.
+// findStaged tries to find an already staged file from selected servers.
 // It returns errNotStaged if no staged file is found.
 func (c *RealClient) findStaged(ctx context.Context, bucket, path string) (dsURL string, err error) {
 	dsURLs := c.upServerURLs()
@@ -273,7 +273,7 @@ func (c *RealClient) checkStaged(ctx context.Context, dsURL, bucket, gsPath stri
 	}
 }
 
-// chooseServers chooses a devserver to use from c.selected. It tries to choose
+// chooseServer chooses a devserver to use from c.selected. It tries to choose
 // the same server for the same gsURL.
 func (c *RealClient) chooseServer(gsURL string) string {
 	dsURLs := c.upServerURLs()
@@ -290,7 +290,7 @@ func (c *RealClient) chooseServer(gsURL string) string {
 	return dsURLs[0]
 }
 
-// stages requests the devserver at dsURL to stage a file.
+// stage requests the devserver at dsURL to stage a file.
 func (c *RealClient) stage(ctx context.Context, dsURL, bucket, gsPath string) error {
 	gsDirURL := url.URL{
 		Scheme: "gs",

@@ -13,7 +13,7 @@ import (
 	"reflect"
 	gotesting "testing"
 
-	"chromiumos/tast/devserver"
+	"chromiumos/tast/internal/devserver"
 	"chromiumos/tast/testing"
 	"chromiumos/tast/testutil"
 )

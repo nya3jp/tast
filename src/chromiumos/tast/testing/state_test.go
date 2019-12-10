@@ -92,32 +92,37 @@ func TestParallelRun(t *gotesting.T) {
 
 	// Check that both messages appear and are sequential. Ordering between
 	// subtests is random.
-	hasOutput := func(id string) bool {
-		fIndex := -1
-		for i, v := range out[1:] {
-			if strings.HasPrefix(v.Msg, "Starting subtest") &&
-				strings.HasSuffix(v.Msg, id) {
-				fIndex = i
-				break
-			}
+
+	// indexes contains the index of the 4 messages as follows:
+	// 0: Starting subtest 1, 1: msg 1, 2: Starting subtest 2, 3: msg2
+	var indexes [4]int
+
+	for i, v := range out[1:] {
+		msgID := 0
+
+		if strings.HasSuffix(v.Msg, "2") {
+			msgID = 2
+		} else if !strings.HasSuffix(v.Msg, "1") {
+			t.Fatal("Bad test output, mangled message: ", v.Msg)
 		}
 
-		sIndex := -1
-		if fIndex >= 0 {
-			for i, v := range out[fIndex+1:] {
-				if strings.HasPrefix(v.Msg, "msg") &&
-					strings.HasSuffix(v.Msg, id) {
-					sIndex = i
-					break
-				}
-			}
+		if strings.HasPrefix(v.Msg, "msg") {
+			msgID++
+		} else if !strings.HasPrefix(v.Msg, "Starting subtest") {
+			t.Fatal("Bad test output, mangled message: ", v.Msg)
 		}
 
-		return sIndex > 0
+		indexes[msgID] = i + 1 // We cut off the first element
 	}
 
-	if !hasOutput("1") || !hasOutput("2") {
-		t.Error("Bad test output: ", out)
+	for i, v := range indexes {
+		if v == 0 {
+			t.Errorf("Bad test output, missing message %d: %v", i, out)
+		}
+	}
+
+	if indexes[0] >= indexes[1] || indexes[2] >= indexes[3] {
+		t.Error("Bad test output, invalid ordering: ", out)
 	}
 }
 

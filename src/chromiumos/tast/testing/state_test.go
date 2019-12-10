@@ -586,3 +586,15 @@ func TestDUT(t *gotesting.T) {
 		t.Errorf("DUT() didn't report error for %v", localTest)
 	}
 }
+
+func TestCloudStorage(t *gotesting.T) {
+	want := NewCloudStorage(nil)
+
+	or := newOutputReader()
+	s := newState(&TestInstance{Name: "example.Test"}, or.ch, &TestConfig{CloudStorage: want})
+	got := s.CloudStorage()
+
+	if got != want {
+		t.Errorf("CloudStorage returned %v; want %v", got, want)
+	}
+}

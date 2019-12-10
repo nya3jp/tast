@@ -50,6 +50,8 @@ const (
 	defaultBootID = "01234567-89ab-cdef-0123-456789abcdef"
 )
 
+var mockDevservers = []string{"192.168.0.1:12345", "192.168.0.2:23456"}
+
 type runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int)
 
 // localTestData holds data shared between tests that exercise the local function.
@@ -92,6 +94,7 @@ func newLocalTestData(t *gotesting.T) *localTestData {
 	td.cfg.localBundleDir = mockLocalBundleDir
 	td.cfg.localDataDir = mockLocalDataDir
 	td.cfg.localOutDir = mockLocalOutDir
+	td.cfg.devservers = mockDevservers
 
 	// Avoid checking test dependencies, which causes an extra local_test_runner call.
 	td.cfg.checkTestDeps = false
@@ -195,9 +198,11 @@ func TestLocalSuccess(t *gotesting.T) {
 				BundleArgs: bundle.RunTestsArgs{
 					DataDir:           mockLocalDataDir,
 					OutDir:            mockLocalOutDir,
+					Devservers:        mockDevservers,
 					HeartbeatInterval: heartbeatInterval,
 				},
 				BundleGlob: mockLocalBundleGlob,
+				Devservers: mockDevservers,
 			},
 		})
 

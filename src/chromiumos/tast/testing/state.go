@@ -7,6 +7,7 @@ package testing
 import (
 	"context"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -19,6 +20,7 @@ import (
 	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/errors/stack"
+	"chromiumos/tast/internal/devserver"
 	"chromiumos/tast/timing"
 )
 
@@ -123,6 +125,8 @@ type TestConfig struct {
 	// Vars contains names and values of out-of-band variables passed to tests at runtime.
 	// Names must be registered in Test.Vars and values may be accessed using State.Var.
 	Vars map[string]string
+	// CloudStorage is a client to read files on Google Cloud Storage.
+	CloudStorage *CloudStorage
 	// RemoteData contains information relevant to remote tests.
 	// This is nil for local tests.
 	RemoteData *RemoteData
@@ -133,6 +137,40 @@ type TestConfig struct {
 	PostTestFunc func(context.Context, *State)
 	// NextTest is the test that will be run after this one.
 	NextTest *TestCase
+}
+
+// CloudStorage allows Tast tests to read files on Google Cloud Storage.
+type CloudStorage struct {
+	devservers []string
+
+	once sync.Once
+	cl   devserver.Client
+}
+
+// NewCloudStorage constructs a new CloudStorage from a list of Devserver URLs.
+func NewCloudStorage(devservers []string) *CloudStorage {
+	return &CloudStorage{devservers: devservers}
+}
+
+// Open opens a file on Google Cloud Storage for read. Callers are responsible for
+// closing the returned io.ReadCloser.
+func (c *CloudStorage) Open(ctx context.Context, url string) (io.ReadCloser, error) {
+	c.once.Do(func() {
+		c.cl = func() devserver.Client {
+			if len(c.devservers) == 0 {
+				ContextLog(ctx, "Warning: Directly accessing Cloud Storage files because no devserver is available (using old tast command?)")
+				return devserver.NewPseudoClient(nil)
+			}
+
+			const timeout = 3 * time.Second
+			ctx, cancel := context.WithTimeout(ctx, timeout)
+			defer cancel()
+
+			o := &devserver.RealClientOptions{LogFunc: func(msg string) { ContextLog(ctx, msg) }}
+			return devserver.NewRealClient(ctx, c.devservers, o)
+		}()
+	})
+	return c.cl.Open(ctx, url)
 }
 
 // newRootState returns a new rootState object.
@@ -272,6 +310,11 @@ func (s *State) SoftwareDeps() []string {
 // ServiceDeps returns service dependencies declared in the currently running test.
 func (s *State) ServiceDeps() []string {
 	return append([]string(nil), s.root.test.ServiceDeps...)
+}
+
+// CloudStorage returns a client for Google Cloud Storage.
+func (s *State) CloudStorage() *CloudStorage {
+	return s.root.cfg.CloudStorage
 }
 
 // Meta returns information about how the "tast" process used to initiate testing was run.

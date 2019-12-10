@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f612217e_fe16d777",
+        "filename": "src/chromiumos/cmd/tast-lint/check/common_test.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-10T16:49:31Z",
+      "side": 1,
+      "message": "file.Close() should put on the defer stack only after making sure file is valid.\nThus, it should be moved to L74.",
+      "range": {
+        "startLine": 71,
+        "startChar": 3,
+        "endLine": 71,
+        "endChar": 21
+      },
+      "revId": "93374616809abfce632db6c4688c5e4178728474",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "330df3d4_42dc36a7",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 236,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-10T16:49:31Z",
+      "side": 1,
+      "message": "nit: these need to be done after error check at L237.",
+      "range": {
+        "startLine": 235,
+        "startChar": 5,
+        "endLine": 236,
+        "endChar": 27
+      },
+      "revId": "93374616809abfce632db6c4688c5e4178728474",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

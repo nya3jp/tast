@@ -13,7 +13,8 @@ import (
 
 // Client is a client interface to communicate with devservers.
 type Client interface {
-	// DownloadGS downloads a file on Google Cloud Storage at gsURL.
-	// gsURL must have a "gs://" scheme. If the file does not exist, os.ErrNotExist is returned.
-	DownloadGS(ctx context.Context, w io.Writer, gsURL string) (size int64, err error)
+	// Open opens a file on Google Cloud Storage at gsURL. gsURL must have a "gs://" scheme.
+	// Callers are responsible to close the/ returned io.ReadCloser after use.
+	// If the file does not exist, os.ErrNotExist is returned.
+	Open(ctx context.Context, gsURL string) (io.ReadCloser, error)
 }

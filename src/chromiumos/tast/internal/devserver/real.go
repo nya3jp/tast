@@ -146,15 +146,15 @@ func (c *RealClient) Status() string {
 	return fmt.Sprint(c.servers)
 }
 
-// DownloadGS downloads a file on GCS via devservers. It returns an error if no devserver is up.
-func (c *RealClient) DownloadGS(ctx context.Context, w io.Writer, gsURL string) (size int64, err error) {
+// Open downloads a file on GCS via devservers. It returns an error if no devserver is up.
+func (c *RealClient) Open(ctx context.Context, gsURL string) (io.ReadCloser, error) {
 	bucket, path, err := parseGSURL(gsURL)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 
 	if len(c.upServerURLs()) == 0 {
-		return 0, errors.New("no devserver is up")
+		return nil, errors.New("no devserver is up")
 	}
 
 	sctx, cancel := context.WithTimeout(ctx, 3*time.Second)
@@ -162,34 +162,34 @@ func (c *RealClient) DownloadGS(ctx context.Context, w io.Writer, gsURL string) 
 
 	// Use an already staged file if there is any.
 	if dsURL, err := c.findStaged(sctx, bucket, path); err == nil {
-		size, err := c.downloadFrom(ctx, w, dsURL, bucket, path)
+		r, err := c.openStaged(ctx, dsURL, bucket, path)
 		if err != nil {
-			return 0, fmt.Errorf("failed to download from %s: %v", dsURL, err)
+			return nil, fmt.Errorf("failed to download from %s: %v", dsURL, err)
 		}
-		return size, nil
+		return r, nil
 	} else if err != errNotStaged {
-		return 0, fmt.Errorf("failed to find a staged file: %v", err)
+		return nil, fmt.Errorf("failed to find a staged file: %v", err)
 	}
 
 	// Choose a devserver and download the file via it.
 	dsURL := c.chooseServer(gsURL)
 	if err := c.stage(ctx, dsURL, bucket, path); err != nil {
 		if os.IsNotExist(err) {
-			return 0, err
+			return nil, err
 		}
-		return 0, fmt.Errorf("failed to stage on %s: %v", dsURL, err)
+		return nil, fmt.Errorf("failed to stage on %s: %v", dsURL, err)
 	}
 
 	// Do a sanity check that the file has been staged successfully.
 	if err := c.checkStaged(ctx, dsURL, bucket, path); err != nil {
-		return 0, fmt.Errorf("failed to stage on %s: %v", dsURL, err)
+		return nil, fmt.Errorf("failed to stage on %s: %v", dsURL, err)
 	}
 
-	size, err = c.downloadFrom(ctx, w, dsURL, bucket, path)
+	r, err := c.openStaged(ctx, dsURL, bucket, path)
 	if err != nil {
-		return 0, fmt.Errorf("failed to download from %s: %v", dsURL, err)
+		return nil, fmt.Errorf("failed to download from %s: %v", dsURL, err)
 	}
-	return size, nil
+	return r, nil
 }
 
 // findStaged tries to find an already staged file from selected servers.
@@ -354,16 +354,16 @@ func (c *RealClient) sendStageRequest(ctx context.Context, req *http.Request) (r
 	}
 }
 
-// downloadFrom downloads a file from the devserver at dsURL.
-func (c *RealClient) downloadFrom(ctx context.Context, w io.Writer, dsURL, bucket, path string) (size int64, err error) {
+// openStaged opens a staged file from the devserver at dsURL.
+func (c *RealClient) openStaged(ctx context.Context, dsURL, bucket, path string) (io.ReadCloser, error) {
 	staticURL, err := url.Parse(dsURL)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 	staticURL.Path += "/static/" + path
 	req, err := http.NewRequest("GET", staticURL.String(), nil)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 	// Negotiate header disables automatic content negotiation. See:
 	// https://crbug.com/967305
@@ -373,19 +373,20 @@ func (c *RealClient) downloadFrom(ctx context.Context, w io.Writer, dsURL, bucke
 
 	res, err := c.cl.Do(req)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
-	defer res.Body.Close()
 
 	switch res.StatusCode {
 	case http.StatusOK:
-		return io.Copy(w, res.Body)
+		return res.Body, nil
 	case http.StatusInternalServerError:
+		defer res.Body.Close()
 		out, _ := ioutil.ReadAll(res.Body)
 		s := scrapeInternalError(out)
-		return 0, fmt.Errorf("got status %d: %s", res.StatusCode, s)
+		return nil, fmt.Errorf("got status %d: %s", res.StatusCode, s)
 	default:
-		return 0, fmt.Errorf("got status %d", res.StatusCode)
+		res.Body.Close()
+		return nil, fmt.Errorf("got status %d", res.StatusCode)
 	}
 }
 

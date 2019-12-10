@@ -277,16 +277,24 @@ func handleDownloadPrivateBundles(ctx context.Context, args *Args, cfg *Config, 
 	lf(fmt.Sprintf("Downloading private bundles from %s", cfg.PrivateBundleArchiveURL))
 	cl := newDevserverClient(ctx, args.DownloadPrivateBundles.Devservers, lf)
 
+	r, err := cl.Open(ctx, cfg.PrivateBundleArchiveURL)
+	if err != nil {
+		return err
+	}
+	defer r.Close()
+
 	tf, err := ioutil.TempFile("", "tast_bundles.")
 	if err != nil {
 		return err
 	}
 	defer os.Remove(tf.Name())
 
-	_, err = cl.DownloadGS(ctx, tf, cfg.PrivateBundleArchiveURL)
+	_, err = io.Copy(tf, r)
+
 	if cerr := tf.Close(); err == nil {
 		err = cerr
 	}
+
 	if err == nil {
 		// Extract the archive, and touch the stamp file.
 		cmd := exec.Command("tar", "xf", tf.Name())

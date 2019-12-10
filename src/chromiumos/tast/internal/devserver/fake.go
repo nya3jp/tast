@@ -5,8 +5,10 @@
 package devserver
 
 import (
+	"bytes"
 	"context"
 	"io"
+	"io/ioutil"
 	"os"
 )
 
@@ -22,12 +24,11 @@ func NewFakeClient(files map[string][]byte) *FakeClient {
 	return &FakeClient{files}
 }
 
-// DownloadGS simulates a download from Google Cloud Storage.
-func (c *FakeClient) DownloadGS(ctx context.Context, w io.Writer, gsURL string) (size int64, err error) {
+// Open simulates a download from Google Cloud Storage.
+func (c *FakeClient) Open(ctx context.Context, gsURL string) (io.ReadCloser, error) {
 	data, ok := c.files[gsURL]
 	if !ok {
-		return 0, os.ErrNotExist
+		return nil, os.ErrNotExist
 	}
-	n, err := w.Write(data)
-	return int64(n), err
+	return ioutil.NopCloser(bytes.NewReader(data)), nil
 }

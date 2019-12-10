@@ -107,6 +107,7 @@ func newRemoteTestData(t *gotesting.T, stdout, stderr string, status int) *remot
 	if err = os.MkdirAll(td.cfg.ResDir, 0755); err != nil {
 		t.Fatal(err)
 	}
+	td.cfg.devservers = mockDevservers
 	td.cfg.localBundleDir = mockLocalBundleDir
 	td.cfg.remoteOutDir = filepath.Join(td.cfg.ResDir, "out.tmp")
 
@@ -212,6 +213,7 @@ func TestRemoteRun(t *gotesting.T) {
 				RunFlags:          runFlags,
 				LocalBundleDir:    mockLocalBundleDir,
 				CheckSoftwareDeps: false,
+				Devservers:        mockDevservers,
 				HeartbeatInterval: heartbeatInterval,
 			},
 		},

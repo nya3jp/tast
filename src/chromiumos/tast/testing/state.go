@@ -123,6 +123,8 @@ type TestConfig struct {
 	// Vars contains names and values of out-of-band variables passed to tests at runtime.
 	// Names must be registered in Test.Vars and values may be accessed using State.Var.
 	Vars map[string]string
+	// CloudStorage is a client to read files on Google Cloud Storage.
+	CloudStorage *CloudStorage
 	// RemoteData contains information relevant to remote tests.
 	// This is nil for local tests.
 	RemoteData *RemoteData
@@ -272,6 +274,11 @@ func (s *State) SoftwareDeps() []string {
 // ServiceDeps returns service dependencies declared in the currently running test.
 func (s *State) ServiceDeps() []string {
 	return append([]string(nil), s.root.test.ServiceDeps...)
+}
+
+// CloudStorage returns a client for Google Cloud Storage.
+func (s *State) CloudStorage() *CloudStorage {
+	return s.root.cfg.CloudStorage
 }
 
 // Meta returns information about how the "tast" process used to initiate testing was run.

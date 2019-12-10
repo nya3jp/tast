@@ -21,9 +21,9 @@ import (
 	"github.com/shirou/gopsutil/process"
 
 	"chromiumos/tast/bundle"
-	"chromiumos/tast/devserver"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/control"
+	"chromiumos/tast/internal/devserver"
 	"chromiumos/tast/testing"
 )
 

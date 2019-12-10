@@ -92,28 +92,17 @@ func TestParallelRun(t *gotesting.T) {
 
 	// Check that both messages appear and are sequential. Ordering between
 	// subtests is random.
+
 	hasOutput := func(id string) bool {
-		fIndex := -1
-		for i, v := range out[1:] {
-			if strings.HasPrefix(v.Msg, "Starting subtest") &&
-				strings.HasSuffix(v.Msg, id) {
-				fIndex = i
-				break
+		var relatedLogs []string
+		for _, log := range out[1:] {
+			if strings.HasSuffix(log.Msg, id) {
+				relatedLogs = append(relatedLogs, log.Msg)
 			}
 		}
-
-		sIndex := -1
-		if fIndex >= 0 {
-			for i, v := range out[fIndex+1:] {
-				if strings.HasPrefix(v.Msg, "msg") &&
-					strings.HasSuffix(v.Msg, id) {
-					sIndex = i
-					break
-				}
-			}
-		}
-
-		return sIndex > 0
+		return len(relatedLogs) == 2 &&
+			strings.HasPrefix(relatedLogs[0], "Starting subtest") &&
+			strings.HasPrefix(relatedLogs[1], "msg")
 	}
 
 	if !hasOutput("1") || !hasOutput("2") {

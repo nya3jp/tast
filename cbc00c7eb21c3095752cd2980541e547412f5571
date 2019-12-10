@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "91bf92a9_91cec359",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-10T17:17:05Z",
+      "side": 1,
+      "message": "1) I think you can use src of ParseFile instead of tempfile.\n2) Could you preserve the file name?",
+      "range": {
+        "startLine": 143,
+        "startChar": 1,
+        "endLine": 156,
+        "endChar": 2
+      },
+      "revId": "cbc00c7eb21c3095752cd2980541e547412f5571",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "18701fe2_37b5c6da",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-10T17:17:05Z",
+      "side": 1,
+      "message": "Do you need reflection?\nEither: overwriting the f, or return newf works?",
+      "revId": "cbc00c7eb21c3095752cd2980541e547412f5571",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

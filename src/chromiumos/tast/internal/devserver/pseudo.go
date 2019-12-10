@@ -31,33 +31,34 @@ func NewPseudoClient(cl *http.Client) *PseudoClient {
 	return &PseudoClient{cl: cl, url: gsDownloadURL}
 }
 
-// DownloadGS downloads a file on GCS directly from storage.googleapis.com.
-func (c *PseudoClient) DownloadGS(ctx context.Context, w io.Writer, gsURL string) (size int64, err error) {
+// Open downloads a file on GCS directly from storage.googleapis.com.
+func (c *PseudoClient) Open(ctx context.Context, gsURL string) (io.ReadCloser, error) {
 	bucket, path, err := parseGSURL(gsURL)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 
 	dlURL, _ := url.Parse(c.url)
 	dlURL.Path = fmt.Sprintf("/%s/%s", bucket, path)
 	req, err := http.NewRequest("GET", dlURL.String(), nil)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 	req = req.WithContext(ctx)
 
 	res, err := c.cl.Do(req)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
-	defer res.Body.Close()
 
 	switch res.StatusCode {
 	case http.StatusOK:
-		return io.Copy(w, res.Body)
+		return res.Body, nil
 	case http.StatusNotFound:
-		return 0, os.ErrNotExist
+		res.Body.Close()
+		return nil, os.ErrNotExist
 	default:
-		return 0, fmt.Errorf("got status %d", res.StatusCode)
+		res.Body.Close()
+		return nil, fmt.Errorf("got status %d", res.StatusCode)
 	}
 }

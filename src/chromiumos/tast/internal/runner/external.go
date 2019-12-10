@@ -306,14 +306,18 @@ func runDownloads(ctx context.Context, dataDir string, jobs []*downloadJob, cl d
 }
 
 // runDownload downloads an external data file.
-func runDownload(ctx context.Context, dataDir string, job *downloadJob, cl devserver.Client) (size int64, err error) {
+func runDownload(ctx context.Context, dataDir string, job *downloadJob, cl devserver.Client) (size int64, retErr error) {
 	// Create the temporary file under dataDir to make use of hard links.
 	f, err := ioutil.TempFile(dataDir, ".external-download.")
 	if err != nil {
 		return 0, err
 	}
 	defer os.Remove(f.Name())
-	defer f.Close()
+	defer func() {
+		if err := f.Close(); err != nil && retErr == nil {
+			retErr = err
+		}
+	}()
 
 	var mode os.FileMode = 0644
 	if job.link.Executable {
@@ -323,21 +327,27 @@ func runDownload(ctx context.Context, dataDir string, job *downloadJob, cl devse
 		return 0, err
 	}
 
-	size, err = cl.DownloadGS(ctx, f, job.link.computedURL)
+	r, err := cl.Open(ctx, job.link.computedURL)
 	if err != nil {
 		return 0, err
 	}
+	defer r.Close()
+
+	size, err = io.Copy(f, r)
+	if err != nil {
+		return size, err
+	}
 
 	if err := verify(f, job.link); err != nil {
-		return 0, err
+		return size, err
 	}
 
 	for _, dest := range job.dests {
 		if err := os.Remove(dest); err != nil && !os.IsNotExist(err) {
-			return 0, err
+			return size, err
 		}
 		if err := os.Link(f.Name(), dest); err != nil {
-			return 0, err
+			return size, err
 		}
 	}
 	return size, nil

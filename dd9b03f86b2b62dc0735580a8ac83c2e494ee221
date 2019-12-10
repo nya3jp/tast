@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "43619565_7441e040",
+        "filename": "src/chromiumos/tast/testing/attr.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-12-10T06:12:30Z",
+      "side": 1,
+      "message": "Do you plan to run these tests on CQ, or in out-of-band?",
+      "range": {
+        "startLine": 147,
+        "startChar": 12,
+        "endLine": 147,
+        "endChar": 53
+      },
+      "revId": "dd9b03f86b2b62dc0735580a8ac83c2e494ee221",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

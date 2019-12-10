@@ -22,6 +22,30 @@
       "revId": "9c19d619f1d5277d086ae118f4dbf22276b3ccae",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9f78bf3c_5c88e270",
+        "filename": "src/chromiumos/tast/testing/state_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2019-12-10T16:10:32Z",
+      "side": 0,
+      "message": "Much better than my check.",
+      "parentUuid": "042f473b_e1f175de",
+      "range": {
+        "startLine": 95,
+        "startChar": 1,
+        "endLine": 118,
+        "endChar": 0
+      },
+      "revId": "9c19d619f1d5277d086ae118f4dbf22276b3ccae",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

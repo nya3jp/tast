@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "042f473b_e1f175de",
+        "filename": "src/chromiumos/tast/testing/state_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2019-12-10T15:48:04Z",
+      "side": 0,
+      "message": "What about \n\nhasOutput :\u003d func(id string) bool {\n\tvar relatedLogs []string\n\tfor _, log :\u003d range out[1:] {\n\t\tif strings.HasSuffix(log, id) {\n\t\t\trelatedLogs \u003d append(relatedLogs, log)\n\t\t}\n\t}\n\treturn len(relatedLogs) \u003d\u003d 2 \u0026\u0026\n               string.HasPrefix(relatedLogs[0], \"Starting subtest\") \u0026\u0026 \n               string.HasPrefix(relatedLogs[1], \"msg\")\n}\n\t\n?",
+      "range": {
+        "startLine": 95,
+        "startChar": 1,
+        "endLine": 118,
+        "endChar": 0
+      },
+      "revId": "9c19d619f1d5277d086ae118f4dbf22276b3ccae",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

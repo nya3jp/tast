@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5b966cb8_3fd8fdb8",
+        "filename": "src/chromiumos/cmd/local_test_runner/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1151689
+      },
+      "writtenOn": "2019-12-10T01:57:50Z",
+      "side": 1,
+      "message": "Leave a TODO to clean this up once 3.14 goes EOL.",
+      "range": {
+        "startLine": 122,
+        "startChar": 0,
+        "endLine": 122,
+        "endChar": 82
+      },
+      "revId": "b1beadef428bb63ff00e489c8ae19596dd2a19a9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

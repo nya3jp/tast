@@ -5,7 +5,6 @@
 package devserver
 
 import (
-	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -180,18 +179,17 @@ func TestRealClientSimple(t *testing.T) {
 
 	cl := NewRealClient(context.Background(), []string{s.URL}, nil)
 
-	var buf bytes.Buffer
-	n, err := cl.DownloadGS(context.Background(), &buf, fakeFileURL)
-	if err != nil {
-		t.Error("DownloadGS failed: ", err)
-	} else if data := buf.String(); data != fakeFileData {
-		t.Errorf("DownloadGS returned %q; want %q", data, fakeFileData)
-	} else if n != int64(len(fakeFileData)) {
-		t.Errorf("DownloadGS returned %d; want %d", n, len(fakeFileData))
+	if r, err := cl.Open(context.Background(), fakeFileURL); err != nil {
+		t.Error("Open failed: ", err)
+	} else if data, err := ioutil.ReadAll(r); err != nil {
+		t.Error("ReadAll failed: ", err)
+	} else if string(data) != fakeFileData {
+		t.Errorf("Open returned %q; want %q", string(data), fakeFileData)
 	}
 
-	if _, err := cl.DownloadGS(context.Background(), &buf, "gs://bucket/path/to/wrong_file"); err == nil {
-		t.Error("DownloadGS unexpectedly succeeded")
+	if r, err := cl.Open(context.Background(), "gs://bucket/path/to/wrong_file"); err == nil {
+		r.Close()
+		t.Error("Open unexpectedly succeeded")
 	}
 }
 
@@ -202,11 +200,11 @@ func TestRealClientNotFound(t *testing.T) {
 
 	cl := NewRealClient(context.Background(), []string{s.URL}, nil)
 
-	_, err := cl.DownloadGS(context.Background(), ioutil.Discard, notFoundURL)
-	if err == nil {
-		t.Error("DownloadGS unexpectedly succeeded")
+	if r, err := cl.Open(context.Background(), notFoundURL); err == nil {
+		r.Close()
+		t.Error("Open unexpectedly succeeded")
 	} else if !os.IsNotExist(err) {
-		t.Errorf("DownloadGS returned %q; want %q", err, os.ErrNotExist)
+		t.Errorf("Open returned %q; want %q", err, os.ErrNotExist)
 	}
 }
 
@@ -227,9 +225,11 @@ func TestRealClientPreferStagedServer(t *testing.T) {
 	_, stagePath, _ := parseGSURL(fakeFileURL)
 
 	for i := 1; i <= 10; i++ {
-		if _, err := cl.DownloadGS(context.Background(), &bytes.Buffer{}, fakeFileURL); err != nil {
+		r, err := cl.Open(context.Background(), fakeFileURL)
+		if err != nil {
 			t.Fatal(err)
 		}
+		r.Close()
 		c1 := s1.dlCounter[stagePath]
 		c2 := s2.dlCounter[stagePath]
 		if c1 != i || c2 != 0 {
@@ -247,9 +247,11 @@ func TestRealClientRetryStage(t *testing.T) {
 	o := &RealClientOptions{StageRetryWaits: []time.Duration{time.Duration(1 * time.Millisecond)}}
 	cl := NewRealClient(context.Background(), []string{s.URL}, o)
 
-	if _, err := cl.DownloadGS(context.Background(), &bytes.Buffer{}, fakeFileURL); err != nil {
-		t.Error("DownloadGS failed despite retries: ", err)
+	r, err := cl.Open(context.Background(), fakeFileURL)
+	if err != nil {
+		t.Error("Open failed despite retries: ", err)
 	}
+	r.Close()
 }
 
 // TestRealClientRetryStageFail tests too many failures causes the download to fail.
@@ -261,8 +263,9 @@ func TestRealClientRetryStageFail(t *testing.T) {
 	o := &RealClientOptions{StageRetryWaits: []time.Duration{time.Duration(1 * time.Millisecond)}}
 	cl := NewRealClient(context.Background(), []string{s.URL}, o)
 
-	if _, err := cl.DownloadGS(context.Background(), &bytes.Buffer{}, fakeFileURL); err == nil {
-		t.Error("DownloadGS succeeded despite too many failures")
+	if r, err := cl.Open(context.Background(), fakeFileURL); err == nil {
+		r.Close()
+		t.Error("Open succeeded despite too many failures")
 	}
 }
 
@@ -276,18 +279,22 @@ func TestRealClientStableServerSelection(t *testing.T) {
 	cl := NewRealClient(context.Background(), []string{s1.URL, s2.URL}, nil)
 
 	// Download the file once and make sure s1 is always selected.
-	if _, err := cl.DownloadGS(context.Background(), &bytes.Buffer{}, fakeFileURL); err != nil {
+	r, err := cl.Open(context.Background(), fakeFileURL)
+	if err != nil {
 		t.Fatal(err)
 	}
+	r.Close()
 	_, stagePath, _ := parseGSURL(fakeFileURL)
 	if s2.dlCounter[stagePath] > 0 {
 		s1, s2 = s2, s1
 	}
 
 	for i := 2; i <= 10; i++ {
-		if _, err := cl.DownloadGS(context.Background(), &bytes.Buffer{}, fakeFileURL); err != nil {
+		r, err := cl.Open(context.Background(), fakeFileURL)
+		if err != nil {
 			t.Fatal(err)
 		}
+		r.Close()
 		c1 := s1.dlCounter[stagePath]
 		c2 := s2.dlCounter[stagePath]
 		if c1 != i || c2 != 0 {
@@ -329,7 +336,8 @@ func TestRealClientNoUpServer(t *testing.T) {
 		t.Errorf("upServerURLs = %v; want nil", upURLs)
 	}
 
-	if _, err := cl.DownloadGS(context.Background(), &bytes.Buffer{}, fakeFileURL); err == nil {
-		t.Fatal("DownloadGS unexpectedly succeeded")
+	if r, err := cl.Open(context.Background(), fakeFileURL); err == nil {
+		r.Close()
+		t.Fatal("Open unexpectedly succeeded")
 	}
 }

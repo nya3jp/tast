@@ -5,7 +5,6 @@
 package devserver
 
 import (
-	"bytes"
 	"context"
 	"io"
 	"io/ioutil"
@@ -29,19 +28,21 @@ func TestPseudoClient(t *testing.T) {
 	cl := NewPseudoClient(nil)
 	cl.url = server.URL
 
-	var buf bytes.Buffer
-	n, err := cl.DownloadGS(context.Background(), &buf, "gs://bucket/path/to/some%20file%2521")
+	r, err := cl.Open(context.Background(), "gs://bucket/path/to/some%20file%2521")
 	if err != nil {
-		t.Error("DownloadGS failed: ", err)
-	} else if data := buf.String(); data != expected {
-		t.Errorf("DownloadGS returned %q; want %q", data, expected)
-	} else if n != int64(len(expected)) {
-		t.Errorf("DownloadGS returned %d; want %d", n, len(expected))
+		t.Error("Open failed: ", err)
+	}
+	defer r.Close()
+	if data, err := ioutil.ReadAll(r); err != nil {
+		t.Error("ReadAll failed: ", err)
+	} else if string(data) != expected {
+		t.Errorf("Open returned %q; want %q", string(data), expected)
 	}
 
-	if _, err := cl.DownloadGS(context.Background(), ioutil.Discard, "gs://bucket/path/to/wrong_file"); err == nil {
-		t.Error("DownloadGS unexpectedly succeeded")
+	if r, err := cl.Open(context.Background(), "gs://bucket/path/to/wrong_file"); err == nil {
+		r.Close()
+		t.Error("Open unexpectedly succeeded")
 	} else if !os.IsNotExist(err) {
-		t.Errorf("DownloadGS returned %q; want %q", err, os.ErrNotExist)
+		t.Errorf("Open returned %q; want %q", err, os.ErrNotExist)
 	}
 }

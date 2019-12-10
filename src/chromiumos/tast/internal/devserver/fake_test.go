@@ -5,8 +5,8 @@
 package devserver
 
 import (
-	"bytes"
 	"context"
+	"io/ioutil"
 	"os"
 	"testing"
 )
@@ -21,19 +21,21 @@ func TestFakeClient(t *testing.T) {
 		url: []byte(expected),
 	})
 
-	var buf bytes.Buffer
-	n, err := cl.DownloadGS(context.Background(), &buf, url)
+	r, err := cl.Open(context.Background(), url)
 	if err != nil {
-		t.Error("DownloadGS failed: ", err)
-	} else if data := buf.String(); data != expected {
-		t.Errorf("DownloadGS returned %q; want %q", data, expected)
-	} else if n != int64(len(expected)) {
-		t.Errorf("DownloadGS returned %d; want %d", n, len(expected))
+		t.Error("Open failed: ", err)
+	}
+	defer r.Close()
+	if data, err := ioutil.ReadAll(r); err != nil {
+		t.Error("ReadAll failed: ", err)
+	} else if string(data) != expected {
+		t.Errorf("Open returned %q; want %q", string(data), expected)
 	}
 
-	if _, err := cl.DownloadGS(context.Background(), &buf, "wrong_url"); err == nil {
-		t.Error("DownloadGS unexpectedly succeeded")
+	if r, err := cl.Open(context.Background(), "wrong_url"); err == nil {
+		r.Close()
+		t.Error("Open unexpectedly succeeded")
 	} else if !os.IsNotExist(err) {
-		t.Errorf("DownloadGS returned %q; want %q", err, os.ErrNotExist)
+		t.Errorf("Open returned %q; want %q", err, os.ErrNotExist)
 	}
 }

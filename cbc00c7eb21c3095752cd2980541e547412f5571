@@ -2,6 +2,46 @@
   "comments": [
     {
       "key": {
+        "uuid": "9ba29702_88eeaa76",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-10T17:26:13Z",
+      "side": 1,
+      "message": "nit: nil is returned always...?",
+      "range": {
+        "startLine": 128,
+        "startChar": 66,
+        "endLine": 128,
+        "endChar": 74
+      },
+      "revId": "cbc00c7eb21c3095752cd2980541e547412f5571",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "04be35f1_1c557daf",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-10T17:26:13Z",
+      "side": 1,
+      "message": "Unlike others, this function works as \"only fix\". Thus, I\u0027d recommend to remove fix. It\u0027d be slightly simpler to make it the responsibility of the caller.",
+      "revId": "cbc00c7eb21c3095752cd2980541e547412f5571",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "91bf92a9_91cec359",
         "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
         "patchSetId": 1

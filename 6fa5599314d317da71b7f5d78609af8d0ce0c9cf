@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7decc333_0d33ea20",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-10T17:24:27Z",
+      "side": 1,
+      "message": "Is this reliably add \"chromeos/tast/errors\" if missing, rather than something other, like \"errors\"?\ncf) https://golang.org/pkg/errors/\n\nIf so, it is very nice to have a comment referring the source to guarantee it.\nIf not, maybe it is necessary to modify import section (then run goimport), I think. WDYT?",
+      "revId": "6fa5599314d317da71b7f5d78609af8d0ce0c9cf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

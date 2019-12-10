@@ -559,6 +559,44 @@ func TestRunRemoteData(t *gotesting.T) {
 	}
 }
 
+func TestRunCloudStorage(t *gotesting.T) {
+	td := test.NewTestData(userKey, hostKey, nil)
+	defer td.Close()
+
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
+	defer restore()
+
+	testing.AddTestInstance(&testing.TestInstance{
+		Name: "example.Test",
+		Func: func(ctx context.Context, s *testing.State) {
+			if s.CloudStorage() == nil {
+				t.Error("testing.State.CloudStorage is nil")
+			}
+		},
+	})
+
+	tmpDir := testutil.TempDir(t)
+	defer os.RemoveAll(tmpDir)
+
+	args := Args{
+		Mode: RunTestsMode,
+		RunTests: &RunTestsArgs{
+			OutDir:         tmpDir,
+			DataDir:        tmpDir,
+			TastPath:       "/bogus/tast",
+			Target:         td.Srv.Addr().String(),
+			KeyFile:        td.UserKeyFile,
+			RunFlags:       []string{"-flag1", "-flag2"},
+			LocalBundleDir: "/mock/local/bundles",
+		},
+	}
+	stdin := newBufferWithArgs(t, &args)
+	if status := run(context.Background(), nil, stdin, &bytes.Buffer{}, &bytes.Buffer{}, &Args{},
+		&runConfig{defaultTestTimeout: time.Minute}, remoteBundle); status != statusSuccess {
+		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
+	}
+}
+
 func TestRunList(t *gotesting.T) {
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()

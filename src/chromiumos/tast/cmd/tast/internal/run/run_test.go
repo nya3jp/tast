@@ -78,6 +78,7 @@ func TestRunEphemeralDevserver(t *gotesting.T) {
 		mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
 		return 0
 	}
+	td.cfg.devservers = nil // clear the default mock devservers set in newLocalTestData
 	td.cfg.useEphemeralDevserver = true
 
 	if status, _ := Run(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {

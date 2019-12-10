@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "d90405c2_067241bf",
+        "filename": "src/chromiumos/cmd/tast-lint/check/common_test.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-10T10:02:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "95c20042_778ecd26",
+      "revId": "18daa98916ef5f990cdb6387bce361e494b367d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4d65f78b_f6617b22",
         "filename": "src/chromiumos/cmd/tast-lint/check/common_test.go",
         "patchSetId": 13
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "edbb21cd_05e82f75",
+        "filename": "src/chromiumos/cmd/tast-lint/check/common_test.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-10T10:02:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4d65f78b_f6617b22",
+      "revId": "18daa98916ef5f990cdb6387bce361e494b367d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d9c65079_083ae280",
         "filename": "src/chromiumos/cmd/tast-lint/check/common_test.go",
         "patchSetId": 13
@@ -50,6 +86,24 @@
       "revId": "18daa98916ef5f990cdb6387bce361e494b367d3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4ebe11fc_f2012873",
+        "filename": "src/chromiumos/cmd/tast-lint/check/common_test.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-10T10:02:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d9c65079_083ae280",
+      "revId": "18daa98916ef5f990cdb6387bce361e494b367d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -76,6 +130,30 @@
     },
     {
       "key": {
+        "uuid": "974c4a76_f35f39ee",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-10T10:02:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8c4ff4ca_8e683c00",
+      "range": {
+        "startLine": 28,
+        "startChar": 1,
+        "endLine": 30,
+        "endChar": 0
+      },
+      "revId": "18daa98916ef5f990cdb6387bce361e494b367d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5828dcc3_ec6ef16c",
         "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
         "patchSetId": 13
@@ -90,6 +168,24 @@
       "revId": "18daa98916ef5f990cdb6387bce361e494b367d3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c4a8fea0_e611ea29",
+        "filename": "src/chromiumos/cmd/tast-lint/check/define_emptyslice.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-10T10:02:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5828dcc3_ec6ef16c",
+      "revId": "18daa98916ef5f990cdb6387bce361e494b367d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -113,6 +209,30 @@
       "revId": "18daa98916ef5f990cdb6387bce361e494b367d3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ef7c2235_8641e9b4",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 245,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-10T10:02:56Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "75e3faf4_e7f00b5c",
+      "range": {
+        "startLine": 234,
+        "startChar": 5,
+        "endLine": 245,
+        "endChar": 6
+      },
+      "revId": "18daa98916ef5f990cdb6387bce361e494b367d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

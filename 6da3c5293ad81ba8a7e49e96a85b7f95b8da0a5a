@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "32c40600_4d0d5064",
+        "filename": "src/chromiumos/tast/testing/state_test.go",
+        "patchSetId": 19
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2019-12-10T09:16:04Z",
+      "side": 1,
+      "message": "Hi Victor, do you have following CL to simplify this logic due to our offline discussion in Tokyo?",
+      "range": {
+        "startLine": 93,
+        "startChar": 0,
+        "endLine": 117,
+        "endChar": 2
+      },
+      "revId": "6da3c5293ad81ba8a7e49e96a85b7f95b8da0a5a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

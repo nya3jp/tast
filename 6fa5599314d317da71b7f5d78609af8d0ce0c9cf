@@ -16,6 +16,24 @@
       "revId": "6fa5599314d317da71b7f5d78609af8d0ce0c9cf",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5cdd8f75_d66bfea0",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-11T07:35:48Z",
+      "side": 1,
+      "message": "I add \"chromiumos/tast/errors\" first, then run goimport.\n\n---\nI was trying to find the source but it seems that packages of standard library and under the GOROOT have higher priority than local, under GOPATH packages...\n\u003e https://github.com/golang/tools/blob/master/internal/imports/fix.go#L632\n\nBut as for gofmt-ed \u0026\u0026 import-grouped files, it was likely to import local packages like \"chromiumos/tast/errors/\" rather than \"errors\", as long as I tested.\n\nI\u0027ll continue to read source code of goimport and understand algorithms more as time permits...",
+      "parentUuid": "7decc333_0d33ea20",
+      "revId": "6fa5599314d317da71b7f5d78609af8d0ce0c9cf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

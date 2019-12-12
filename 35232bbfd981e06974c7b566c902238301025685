@@ -16,6 +16,24 @@
       "revId": "35232bbfd981e06974c7b566c902238301025685",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "efc6ca80_90402c5f",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-12T11:47:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8f46c812_94666975",
+      "revId": "35232bbfd981e06974c7b566c902238301025685",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

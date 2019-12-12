@@ -50,6 +50,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 		{
 			attrs: []string{"group:flashrom"},
 		},
+		{
+			attrs: []string{"group:runtime_probe"},
+		},
 
 		// Invalid cases.
 		{

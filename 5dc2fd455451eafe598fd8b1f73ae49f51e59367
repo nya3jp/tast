@@ -34,6 +34,24 @@
       "revId": "5dc2fd455451eafe598fd8b1f73ae49f51e59367",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b4f9945d_8ed41c75",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-12T09:37:42Z",
+      "side": 1,
+      "message": "Per offline chat, how about;\n\n- keeping g.ListDir() here makes sense. Thank you for explanation.\n- As for filtering at L97, let\u0027s filter paths at the beginning of checkAll().",
+      "parentUuid": "21a045ca_db6a7990",
+      "revId": "5dc2fd455451eafe598fd8b1f73ae49f51e59367",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

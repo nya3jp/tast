@@ -146,6 +146,19 @@ Tests in this group are not used for build verification.
 		Contacts: []string{"chromeos-platform-syd@google.com"},
 		Desc:     `A group of Flashrom destructive tests.`,
 	},
+	{
+		Name:     "runtime_probe",
+		Contacts: []string{"chromeos-runtime-probe@google.com"},
+		Desc: `A group of tests that tests the functionality of runtime probe.
+
+The group of tests compare results probed by |runtime_probe| and corresponding information
+in cros-labels decoded from HWID string.  These tests mainly check if runtime-probe works
+as expected (in terms of D-Bus connection, probe function, and probe result).  For
+short-term plan, only autotest can invoke these tests with host_info information.  That's
+why we add this group and run tests of this group in a control file at
+third_party/autotest/files/server/site_tests/tast/control.runtime-probe
+`,
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

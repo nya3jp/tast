@@ -112,14 +112,14 @@ func makeMapDirGoFile(paths []git.CommitFile) map[string][]git.CommitFile {
 // Thus, such directory should satisfy the following conditions:
 //  - The number of ".go" files in the directory is equal to the number of ".go" files that were committed this time.
 //  - Status of all committed ".go" files were "Added".
-func isNewlyAddedPackage(dir string, paths []git.CommitFile) (bool, error) {
-	exfiles, err := ioutil.ReadDir(dir)
+func isNewlyAddedPackage(g *git.Git, dir string, paths []git.CommitFile) (bool, error) {
+	exfiles, err := g.ListDir(dir)
 	if err != nil {
 		return false, err
 	}
 	numExGofiles := 0
 	for _, e := range exfiles {
-		if !strings.HasSuffix(e.Name(), ".go") {
+		if !strings.HasSuffix(e, ".go") {
 			continue
 		}
 		numExGofiles++
@@ -142,7 +142,16 @@ func checkAll(g *git.Git, paths []git.CommitFile, debug bool, fix bool) ([]*chec
 
 	var allIssues []*check.Issue
 
+	var validPaths []git.CommitFile
 	for _, path := range paths {
+		if path.Status == git.Deleted || path.Status == git.TypeChanged ||
+			path.Status == git.Unmerged || path.Status == git.Unknown {
+			continue
+		}
+		validPaths = append(validPaths, path)
+	}
+
+	for _, path := range validPaths {
 		if !strings.HasSuffix(path.Path, ".external") {
 			continue
 		}
@@ -153,13 +162,13 @@ func checkAll(g *git.Git, paths []git.CommitFile, debug bool, fix bool) ([]*chec
 		allIssues = append(allIssues, check.ExternalJSON(path.Path, data)...)
 	}
 
-	dfmap := makeMapDirGoFile(paths)
+	dfmap := makeMapDirGoFile(validPaths)
 	for dir, cfs := range dfmap {
 		pkg, err := cp.parsePackage(dir)
 		if err != nil {
 			return nil, err
 		}
-		isNewlyAdded, err := isNewlyAddedPackage(dir, cfs)
+		isNewlyAdded, err := isNewlyAddedPackage(g, dir, cfs)
 		if err != nil {
 			return nil, err
 		}
@@ -168,11 +177,6 @@ func checkAll(g *git.Git, paths []git.CommitFile, debug bool, fix bool) ([]*chec
 		}
 
 		for _, path := range cfs {
-			if path.Status == git.Deleted || path.Status == git.TypeChanged ||
-				path.Status == git.Unmerged || path.Status == git.Unknown {
-				continue
-			}
-
 			// Exempt protoc-generated Go files from lint checks.
 			if strings.HasSuffix(path.Path, ".pb.go") {
 				continue

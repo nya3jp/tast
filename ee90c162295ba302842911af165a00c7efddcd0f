@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c95a4ffd_432fc40b",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-12-12T10:41:57Z",
+      "side": 1,
+      "message": "I personally prefer introducing a new variable rather than overwriting path. How about something like\n\n var validPaths []git.CommitFile\n for _, path :\u003d range paths { ... }\n\n for _, path :\u003d range validPaths {",
+      "range": {
+        "startLine": 145,
+        "startChar": 1,
+        "endLine": 155,
+        "endChar": 4
+      },
+      "revId": "ee90c162295ba302842911af165a00c7efddcd0f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

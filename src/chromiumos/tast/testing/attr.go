@@ -141,6 +141,11 @@ Tests in this group are not used for build verification.
 		Contacts: []string{"chromeos-engprod@google.com"},
 		Desc:     `A group of stress tests.`,
 	},
+	{
+		Name:     "runtime_probe",
+		Contacts: []string{"chromeos-runtime-probe@google.com"},
+		Desc:     `A group of runtime-probe tests.`,
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

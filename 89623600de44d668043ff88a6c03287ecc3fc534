@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "feee21a0_6bf030e7",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-12T10:02:38Z",
+      "side": 1,
+      "message": "per offline chat: how about extracting this part into a function, like\n\nformatImports(in[]byte) ([]byte, err)?\n\nYou may want to return an error if commentInImportRegexp matches with in.\nYou can just give up to check here in the case, or you can just give up to reformat below.",
+      "range": {
+        "startLine": 32,
+        "startChar": 1,
+        "endLine": 53,
+        "endChar": 0
+      },
+      "revId": "89623600de44d668043ff88a6c03287ecc3fc534",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7d5c7562_ac1cb8f9",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 205,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-12T10:02:38Z",
+      "side": 1,
+      "message": "In this approach, if import order was wrong, tast-lint -fix returns issues even if it is automatically fixed.\n\nHow about,\n\nif fix {\n  ... auto fix ...\n} else {\n  issues \u003d append(issues, check.ImportOrder(...)...)\n}",
+      "range": {
+        "startLine": 200,
+        "startChar": 4,
+        "endLine": 205,
+        "endChar": 5
+      },
+      "revId": "89623600de44d668043ff88a6c03287ecc3fc534",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

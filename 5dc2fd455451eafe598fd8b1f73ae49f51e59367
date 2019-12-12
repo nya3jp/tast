@@ -16,6 +16,24 @@
       "revId": "5dc2fd455451eafe598fd8b1f73ae49f51e59367",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "21a045ca_db6a7990",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-12T06:23:39Z",
+      "side": 1,
+      "message": "If I don\u0027t move path.Status checking to makeMapDirGoFile, it seems to return the error \"failed to list files at ~\" at parsePackage (L159) when commit contains deleted file..\n\nAnd, if I use just ioutil.ReadDir() at L117, it cannot correctly read files at the commit (ex: files in the commit will be deleted at the following commit, then at the commit to be linted, linter cannot read the files)\n\nanyway I\u0027ll ask about that offline later!",
+      "parentUuid": "e75e5769_2bb4c0b0",
+      "revId": "5dc2fd455451eafe598fd8b1f73ae49f51e59367",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

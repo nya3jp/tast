@@ -12,7 +12,7 @@ import (
 	"os"
 
 	"chromiumos/tast/bundle"
-	"chromiumos/tast/runner"
+	"chromiumos/tast/internal/runner"
 )
 
 func main() {

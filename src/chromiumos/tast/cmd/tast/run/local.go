@@ -21,7 +21,7 @@ import (
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/host"
-	"chromiumos/tast/runner"
+	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/timing"
 )
 

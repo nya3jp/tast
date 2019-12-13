@@ -20,7 +20,7 @@ import (
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/cmd/tast/build"
 	"chromiumos/tast/host"
-	"chromiumos/tast/runner"
+	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/testing"
 	"chromiumos/tast/timing"
 )

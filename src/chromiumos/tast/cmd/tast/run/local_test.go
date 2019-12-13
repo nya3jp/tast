@@ -24,10 +24,10 @@ import (
 
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/cmd/tast/logging"
-	"chromiumos/tast/command"
-	"chromiumos/tast/control"
 	"chromiumos/tast/host/test"
-	"chromiumos/tast/runner"
+	"chromiumos/tast/internal/command"
+	"chromiumos/tast/internal/control"
+	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/shutil"
 	"chromiumos/tast/testing"
 	"chromiumos/tast/testutil"

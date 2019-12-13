@@ -12,7 +12,7 @@ import (
 	"testing"
 
 	"chromiumos/tast/bundle"
-	"chromiumos/tast/runner"
+	"chromiumos/tast/internal/runner"
 )
 
 // writeGetSoftwareFeaturesResult writes runner.GetSoftwareFeaturesResult to w.

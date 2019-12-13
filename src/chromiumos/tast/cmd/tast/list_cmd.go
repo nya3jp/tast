@@ -18,7 +18,7 @@ import (
 
 	"chromiumos/tast/cmd/tast/logging"
 	"chromiumos/tast/cmd/tast/run"
-	"chromiumos/tast/command"
+	"chromiumos/tast/internal/command"
 	"chromiumos/tast/testing"
 )
 

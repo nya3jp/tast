@@ -15,7 +15,7 @@ import (
 
 	"chromiumos/tast/autocaps"
 	"chromiumos/tast/bundle"
-	"chromiumos/tast/command"
+	"chromiumos/tast/internal/command"
 )
 
 // RunMode describes the runner's behavior.
@@ -246,7 +246,7 @@ type Config struct {
 	// SoftwareFeatureDefinitions maps from software feature names (e.g. "myfeature") to boolean expressions
 	// used to compose them from USE flags (e.g. "a && !(b || c)"). The USE flags used in these expressions
 	// must be listed in USEFlagsFile if they were set when building the system image.
-	// See chromiumos/tast/expr for details about expression syntax.
+	// See chromiumos/tast/internal/expr for details about expression syntax.
 	SoftwareFeatureDefinitions map[string]string
 	// AutotestCapabilityDir contains the path to a directory containing autotest-capability YAML files used to
 	// define the DUT's capabilities for the purpose of determining which video tests it is able to run.

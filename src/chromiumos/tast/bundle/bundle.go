@@ -21,9 +21,9 @@ import (
 	"strings"
 	"time"
 
-	"chromiumos/tast/command"
-	"chromiumos/tast/control"
 	"chromiumos/tast/dut"
+	"chromiumos/tast/internal/command"
+	"chromiumos/tast/internal/control"
 	"chromiumos/tast/rpc"
 	"chromiumos/tast/testing"
 	"chromiumos/tast/timing"

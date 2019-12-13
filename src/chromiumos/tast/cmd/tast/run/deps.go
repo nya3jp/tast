@@ -9,7 +9,7 @@ import (
 	"errors"
 	"strings"
 
-	"chromiumos/tast/runner"
+	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/timing"
 )
 

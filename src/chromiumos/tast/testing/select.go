@@ -10,7 +10,7 @@ import (
 	"strings"
 	"unicode"
 
-	"chromiumos/tast/expr"
+	"chromiumos/tast/internal/expr"
 )
 
 // TestPatternType describes the manner in which test patterns will be interpreted.
@@ -102,7 +102,7 @@ func SelectTestsByGlobs(tests []*TestCase, gs []string) ([]*TestCase, error) {
 
 // SelectTestsByAttrExpr returns a subset of tests with attributes matched by s,
 // a boolean expression of attributes, e.g. "(attr1 && !attr2) || attr3".
-// See chromiumos/tast/expr for details about expression syntax.
+// See chromiumos/tast/internal/expr for details about expression syntax.
 func SelectTestsByAttrExpr(tests []*TestCase, s string) ([]*TestCase, error) {
 	expr, err := expr.New(s)
 	if err != nil {

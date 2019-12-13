@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "741905ef_c5948ec4",
+        "filename": "src/chromiumos/tast/testing/attr.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-12-13T08:40:24Z",
+      "side": 1,
+      "message": "Thanks for nice explanation!",
+      "range": {
+        "startLine": 152,
+        "startChar": 9,
+        "endLine": 160,
+        "endChar": 2
+      },
+      "revId": "8a9500d89f1bbc84761ed4c9746997b3298ab46e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

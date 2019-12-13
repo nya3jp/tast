@@ -5,7 +5,7 @@
 package build
 
 import (
-	"chromiumos/cmd/tast/logging"
+	"chromiumos/tast/cmd/tast/logging"
 )
 
 // ArchHost represents the host architecture. It can be set in Target.Arch to

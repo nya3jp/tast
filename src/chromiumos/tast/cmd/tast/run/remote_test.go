@@ -19,8 +19,8 @@ import (
 
 	"github.com/google/subcommands"
 
-	"chromiumos/cmd/tast/logging"
 	"chromiumos/tast/bundle"
+	"chromiumos/tast/cmd/tast/logging"
 	"chromiumos/tast/control"
 	"chromiumos/tast/runner"
 	"chromiumos/tast/testing"

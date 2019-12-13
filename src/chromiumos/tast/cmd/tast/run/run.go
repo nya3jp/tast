@@ -17,8 +17,8 @@ import (
 
 	"github.com/google/subcommands"
 
-	"chromiumos/cmd/tast/build"
 	"chromiumos/tast/bundle"
+	"chromiumos/tast/cmd/tast/build"
 	"chromiumos/tast/host"
 	"chromiumos/tast/runner"
 	"chromiumos/tast/testing"
@@ -26,8 +26,8 @@ import (
 )
 
 const (
-	localRunnerPkg  = "chromiumos/cmd/local_test_runner"  // Go package for local_test_runner
-	remoteRunnerPkg = "chromiumos/cmd/remote_test_runner" // Go package for remote_test_runner
+	localRunnerPkg  = "chromiumos/tast/cmd/local_test_runner"  // Go package for local_test_runner
+	remoteRunnerPkg = "chromiumos/tast/cmd/remote_test_runner" // Go package for remote_test_runner
 
 	localBundlePkgPathPrefix  = "chromiumos/tast/local/bundles"  // Go package path prefix for local test bundles
 	remoteBundlePkgPathPrefix = "chromiumos/tast/remote/bundles" // Go package path prefix for remote test bundles

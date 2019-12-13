@@ -24,9 +24,9 @@ and terminology in Tast.
 *   [remote_test_runner] is run on the host system by the `tast` process to
     initiate running remote tests.
 
-[tast executable]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/cmd/tast/
-[local_test_runner]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/cmd/local_test_runner/
-[remote_test_runner]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/cmd/remote_test_runner/
+[tast executable]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/cmd/tast/
+[local_test_runner]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/cmd/local_test_runner/
+[remote_test_runner]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/cmd/remote_test_runner/
 
 ### Libraries
 
@@ -102,7 +102,7 @@ while preserving its original marshaled name in its `json` tag.
 [runner] and [bundle] packages should copy the old fields to the new fields when
 the former are provided. See [change 1474620] for an example.
 
-[run]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/cmd/tast/run/
+[run]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/cmd/tast/run/
 [runner.Args]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/runner#Args
 [bundle.Args]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/bundle#Args
 [runner.RunTestsArgs]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/runner#RunTestsArgs

@@ -10,8 +10,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"chromiumos/cmd/tast/logging"
-	"chromiumos/cmd/tast/symbolize/breakpad"
+	"chromiumos/tast/cmd/tast/logging"
+	"chromiumos/tast/cmd/tast/symbolize/breakpad"
 	"chromiumos/tast/testutil"
 )
 

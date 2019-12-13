@@ -22,10 +22,10 @@ import (
 //
 // This number must be incremented when a framework change breaks "tast run -build"
 // with combination of older tast binary and newer source code.
-const sourceCompatVersion = 2
+const sourceCompatVersion = 3
 
 // compatGoPath is the path to this file, relative to the workspace root.
-const compatGoPath = "src/chromiumos/cmd/tast/build/compat.go"
+const compatGoPath = "src/chromiumos/tast/cmd/tast/build/compat.go"
 
 // checkSourceCompat checks if the Tast source code has the same sourceCompatVersion
 // as what we know. workspace is the path to the Go workspace containing the Tast

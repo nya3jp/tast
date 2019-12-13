@@ -17,7 +17,7 @@ import (
 	"github.com/google/subcommands"
 	"golang.org/x/crypto/ssh/terminal"
 
-	"chromiumos/cmd/tast/logging"
+	"chromiumos/tast/cmd/tast/logging"
 )
 
 const (

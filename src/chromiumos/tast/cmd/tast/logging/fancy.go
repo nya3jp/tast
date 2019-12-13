@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"chromiumos/cmd/tast/display"
+	"chromiumos/tast/cmd/tast/display"
 )
 
 type fancyLogger struct {

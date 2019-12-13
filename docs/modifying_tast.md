@@ -102,7 +102,7 @@ while preserving its original marshaled name in its `json` tag.
 [runner] and [bundle] packages should copy the old fields to the new fields when
 the former are provided. See [change 1474620] for an example.
 
-[run]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/cmd/tast/run/
+[run]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/cmd/tast/internal/run/
 [runner.Args]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/internal/runner#Args
 [bundle.Args]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/bundle#Args
 [runner.RunTestsArgs]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/internal/runner#RunTestsArgs

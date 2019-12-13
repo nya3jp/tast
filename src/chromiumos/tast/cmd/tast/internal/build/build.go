@@ -16,7 +16,7 @@ import (
 
 	"golang.org/x/sync/errgroup"
 
-	"chromiumos/tast/cmd/tast/logging"
+	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/shutil"
 	"chromiumos/tast/timing"
 )

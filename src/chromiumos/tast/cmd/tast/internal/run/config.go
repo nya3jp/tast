@@ -14,8 +14,8 @@ import (
 	"strings"
 	"time"
 
-	"chromiumos/tast/cmd/tast/build"
-	"chromiumos/tast/cmd/tast/logging"
+	"chromiumos/tast/cmd/tast/internal/build"
+	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/command"
 	"chromiumos/tast/host"
 	"chromiumos/tast/internal/runner"

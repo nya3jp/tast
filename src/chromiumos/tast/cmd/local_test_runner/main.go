@@ -21,7 +21,7 @@ import (
 
 	"chromiumos/tast/autocaps"
 	"chromiumos/tast/bundle"
-	"chromiumos/tast/crash"
+	"chromiumos/tast/internal/crash"
 	"chromiumos/tast/lsbrelease"
 	"chromiumos/tast/runner"
 	"chromiumos/tast/shutil"

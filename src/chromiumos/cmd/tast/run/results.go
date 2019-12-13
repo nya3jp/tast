@@ -27,6 +27,7 @@ import (
 const (
 	// These paths are relative to Config.ResDir.
 	resultsFilename         = "results.json"           // file containing JSON array of TestResult objects
+	htmlReportFile          = "results.html"           // file containting the results in html table format
 	streamedResultsFilename = "streamed_results.jsonl" // file containing stream of newline-separated JSON TestResult objects
 	systemLogsDir           = "system_logs"            // dir containing DUT's system logs
 	crashesDir              = "crashes"                // dir containing DUT's crashes
@@ -90,6 +91,12 @@ func WriteResults(ctx context.Context, cfg *Config, results []TestResult, comple
 	}
 	defer f.Close()
 
+	htmlFile, err := os.Create(filepath.Join(cfg.ResDir, htmlReportFile))
+	if err != nil {
+		return err
+	}
+	defer htmlFile.Close()
+
 	// We don't want to bail out before writing test results if sys info collection fails,
 	// but we'll still return the error later.
 	sysInfoErr := collectSysInfo(ctx, cfg)
@@ -113,26 +120,59 @@ func WriteResults(ctx context.Context, cfg *Config, results []TestResult, comple
 	sep := strings.Repeat("-", 80)
 	cfg.Logger.Log(sep)
 
+	// HTML Results varialbles
+	errorMessage := ""
+	status := ""
+	tcCount := 0
+	htmlTableData := ""
+	htmlBody := `<html>
+				<head>
+					<title>TAST Results</title>
+				</head>
+				<body>
+					<table border='1'>
+						<thead style='background-color:#33D7FF'>
+							<th>S.No</th>
+							<th>Name</th>
+							<th>Status</th>
+							<th>Error</th>
+						</thead>
+						<tbody>
+						%s
+						</tbody>
+					</table>
+				</body>
+				</html>`
+
 	for _, res := range results {
 		pn := fmt.Sprintf("%-"+strconv.Itoa(ml)+"s", res.Name)
+		errorMessage = ""
 		if len(res.Errors) == 0 {
 			if res.SkipReason == "" {
 				cfg.Logger.Log(pn + "  [ PASS ]")
+				status = "<td style='background-color:green'>PASS</td>"
 			} else {
 				cfg.Logger.Log(pn + "  [ SKIP ] " + res.SkipReason)
+				status = "<td style='background-color:gold'>SKIP</td>"
+				errorMessage = res.SkipReason
 			}
 		} else {
 			const failStr = "  [ FAIL ] "
+			status = "<td style='background-color:red'>FAIL</td>"
 			for i, te := range res.Errors {
 				if i == 0 {
 					cfg.Logger.Log(pn + failStr + te.Reason)
 				} else {
 					cfg.Logger.Log(strings.Repeat(" ", ml+len(failStr)) + te.Reason)
 				}
+				errorMessage = errorMessage + "</br>" + te.Reason
 			}
 		}
+		tcCount++
+		htmlTableData = htmlTableData + fmt.Sprintf("<tr><td>%d</td><td>%s</td>%s<td>%s</td></tr>\n", tcCount, res.Name, status, errorMessage)
 	}
-
+	htmlFile.WriteString(fmt.Sprintf(htmlBody, htmlTableData))
+	htmlFile.Sync()
 	if complete {
 		// Let the user know if one or more of the globs that they supplied didn't match any tests.
 		if pats := unmatchedTestPatterns(cfg.Patterns, results); len(pats) > 0 {

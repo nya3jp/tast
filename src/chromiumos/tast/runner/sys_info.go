@@ -14,7 +14,7 @@ import (
 	"path/filepath"
 
 	"chromiumos/tast/command"
-	"chromiumos/tast/crash"
+	"chromiumos/tast/internal/crash"
 	"chromiumos/tast/logs"
 )
 

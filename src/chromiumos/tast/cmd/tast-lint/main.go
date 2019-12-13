@@ -16,8 +16,8 @@ import (
 	"sort"
 	"strings"
 
-	"chromiumos/cmd/tast-lint/check"
-	"chromiumos/cmd/tast-lint/git"
+	"chromiumos/tast/cmd/tast-lint/check"
+	"chromiumos/tast/cmd/tast-lint/git"
 	"chromiumos/tast/shutil"
 )
 

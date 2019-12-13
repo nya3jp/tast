@@ -131,7 +131,7 @@ Various files and directories are created within the results directory:
     test run produced by the [timing] package.
 
 [Breakpad]: https://github.com/google/breakpad/
-[run.TestResult]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/cmd/tast/run#TestResult
+[run.TestResult]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/cmd/tast/run#TestResult
 [JSONL]: http://jsonlines.org/
 [journald]: https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html
 [output files]: writing_tests.md#Output-files

@@ -7,7 +7,7 @@ package main
 import (
 	"context"
 
-	"chromiumos/cmd/tast/run"
+	"chromiumos/tast/cmd/tast/run"
 )
 
 // stubRunWrapper is a stub implementation of runWrapper used for testing.

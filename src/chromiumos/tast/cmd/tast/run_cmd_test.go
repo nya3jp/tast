@@ -18,8 +18,8 @@ import (
 
 	"github.com/google/subcommands"
 
-	"chromiumos/cmd/tast/logging"
-	"chromiumos/cmd/tast/run"
+	"chromiumos/tast/cmd/tast/logging"
+	"chromiumos/tast/cmd/tast/run"
 	"chromiumos/tast/testing"
 	"chromiumos/tast/testutil"
 )

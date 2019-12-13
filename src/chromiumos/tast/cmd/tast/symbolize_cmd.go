@@ -12,8 +12,8 @@ import (
 
 	"github.com/google/subcommands"
 
-	"chromiumos/cmd/tast/logging"
-	"chromiumos/cmd/tast/symbolize"
+	"chromiumos/tast/cmd/tast/logging"
+	"chromiumos/tast/cmd/tast/symbolize"
 )
 
 // symbolizeCmd implements subcommands.Command to support symbolizing crashes.

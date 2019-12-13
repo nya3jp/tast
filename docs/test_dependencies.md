@@ -176,7 +176,7 @@ the correct order.
 If you're having trouble finding a way to specify your test's dependencies,
 please ask for help on the [tast-users mailing list].
 
-[local_test_runner]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/cmd/local_test_runner/main.go
+[local_test_runner]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/cmd/local_test_runner/main.go
 [tast-use-flags]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/tast-use-flags/
 [Cq-Depend]: https://chromium.googlesource.com/chromiumos/docs/+/master/contributing.md#cq-depend
 [tast-users mailing list]: https://groups.google.com/a/chromium.org/forum/#!forum/tast-users

@@ -14,7 +14,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"chromiumos/cmd/tast/logging"
+	"chromiumos/tast/cmd/tast/logging"
 	"chromiumos/tast/testutil"
 )
 

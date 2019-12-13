@@ -13,7 +13,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"chromiumos/tast/command"
+	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/crash"
 	"chromiumos/tast/logs"
 )

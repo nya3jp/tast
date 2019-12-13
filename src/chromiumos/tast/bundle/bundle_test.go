@@ -18,10 +18,10 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
-	"chromiumos/tast/command"
-	"chromiumos/tast/control"
 	"chromiumos/tast/dut"
 	"chromiumos/tast/host/test"
+	"chromiumos/tast/internal/command"
+	"chromiumos/tast/internal/control"
 	"chromiumos/tast/testing"
 	"chromiumos/tast/testutil"
 )

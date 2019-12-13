@@ -13,7 +13,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"chromiumos/tast/command"
+	"chromiumos/tast/internal/command"
 )
 
 // RunMode describes the bundle's behavior.

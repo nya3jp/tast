@@ -19,7 +19,7 @@ import (
 	"sync"
 	"time"
 
-	"chromiumos/tast/control"
+	"chromiumos/tast/internal/control"
 	"chromiumos/tast/testing"
 	"chromiumos/tast/timing"
 )

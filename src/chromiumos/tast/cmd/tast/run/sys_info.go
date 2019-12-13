@@ -8,7 +8,7 @@ import (
 	"context"
 	"path/filepath"
 
-	"chromiumos/tast/runner"
+	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/timing"
 )
 

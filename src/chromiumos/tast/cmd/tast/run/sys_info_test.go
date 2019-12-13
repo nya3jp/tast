@@ -11,7 +11,7 @@ import (
 	"reflect"
 	"testing"
 
-	"chromiumos/tast/runner"
+	"chromiumos/tast/internal/runner"
 )
 
 // This file uses types and functions from local_test.go.

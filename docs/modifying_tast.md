@@ -46,7 +46,7 @@ are particularly important:
 [bundle]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/bundle/
 [control]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/control/
 [host]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/host/
-[runner]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/runner/
+[runner]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/internal/runner/
 [testing]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/testing/
 
 ## Making changes
@@ -103,11 +103,11 @@ while preserving its original marshaled name in its `json` tag.
 the former are provided. See [change 1474620] for an example.
 
 [run]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/cmd/tast/run/
-[runner.Args]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/runner#Args
+[runner.Args]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/internal/runner#Args
 [bundle.Args]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/bundle#Args
-[runner.RunTestsArgs]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/runner#RunTestsArgs
+[runner.RunTestsArgs]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/internal/runner#RunTestsArgs
 [bundle.RunTestsArgs]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/bundle#RunTestsArgs
-[runner.ListTestsArgs]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/runner#ListTestsArgs
+[runner.ListTestsArgs]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/internal/runner#ListTestsArgs
 [bundle.ListTestsArgs]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/bundle#ListTestsArgs
 [json package]: https://golang.org/pkg/encoding/json/
 [change 1474620]: https://crrev.com/c/1474620

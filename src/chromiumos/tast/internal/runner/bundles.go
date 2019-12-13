@@ -26,7 +26,7 @@ import (
 	"golang.org/x/sys/unix"
 
 	"chromiumos/tast/bundle"
-	"chromiumos/tast/command"
+	"chromiumos/tast/internal/command"
 	"chromiumos/tast/testing"
 )
 

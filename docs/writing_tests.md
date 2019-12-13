@@ -847,7 +847,7 @@ An example external link file to reference a build artifact is below:
 
 To upload a file to Google Cloud Storage you can use the [`gsutil cp`] command.
 
-[external link format]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/runner/external.go
+[external link format]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/internal/runner/external.go
 [example.DataFiles]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/master/src/chromiumos/tast/local/bundles/cros/example/data_files.go
 [build artifacts of Chrome OS]: https://goto.google.com/cros-build/google-storage
 [`gsutil cp`]: https://cloud.google.com/storage/docs/gsutil/commands/cp

@@ -14,8 +14,8 @@ import (
 	"strings"
 
 	"chromiumos/tast/autocaps"
-	"chromiumos/tast/command"
-	"chromiumos/tast/expr"
+	"chromiumos/tast/internal/command"
+	"chromiumos/tast/internal/expr"
 )
 
 const autotestCapPrefix = "autotest-capability:" // prefix for autotest-capability feature names

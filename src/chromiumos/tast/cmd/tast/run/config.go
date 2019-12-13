@@ -18,7 +18,7 @@ import (
 	"chromiumos/tast/cmd/tast/logging"
 	"chromiumos/tast/command"
 	"chromiumos/tast/host"
-	"chromiumos/tast/runner"
+	"chromiumos/tast/internal/runner"
 )
 
 // Mode describes the action to perform.

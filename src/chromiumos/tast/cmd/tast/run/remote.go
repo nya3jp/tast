@@ -17,7 +17,7 @@ import (
 	"github.com/google/subcommands"
 
 	"chromiumos/tast/bundle"
-	"chromiumos/tast/runner"
+	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/timing"
 )
 

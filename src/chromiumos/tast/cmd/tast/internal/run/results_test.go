@@ -22,7 +22,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
-	"chromiumos/tast/cmd/tast/logging"
+	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/testing"

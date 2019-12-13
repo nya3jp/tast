@@ -18,7 +18,7 @@ import (
 	"github.com/google/subcommands"
 
 	"chromiumos/tast/bundle"
-	"chromiumos/tast/cmd/tast/build"
+	"chromiumos/tast/cmd/tast/internal/build"
 	"chromiumos/tast/host"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/testing"

@@ -14,8 +14,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"chromiumos/tast/cmd/tast/logging"
-	"chromiumos/tast/cmd/tast/symbolize/breakpad"
+	"chromiumos/tast/cmd/tast/internal/logging"
+	"chromiumos/tast/cmd/tast/internal/symbolize/breakpad"
 )
 
 // Config contains parameters used when symbolizing crash files.

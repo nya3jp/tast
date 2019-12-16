@@ -99,3 +99,16 @@ func TestExternalJSONCrostini(t *testing.T) {
 	issues := ExternalJSON(path, []byte(code))
 	verifyIssues(t, issues, nil)
 }
+
+func TestExternalJSONCameraApk(t *testing.T) {
+	const code = `{
+	"_comment": "Camera APK name pattern"
+	"url": "gs://chromeos-test-assets-private/tast/cros/camera/GoogleCameraArc_20191017_RC02.apk",
+	"sha256sum": "somehash",
+	"size": 100000
+}
+`
+	const path = "src/chromiumos/tast/local/bundles/cros/camera/data/GoogleCameraArc.apk.external"
+	issues := ExternalJSON(path, []byte(code))
+	verifyIssues(t, issues, nil)
+}

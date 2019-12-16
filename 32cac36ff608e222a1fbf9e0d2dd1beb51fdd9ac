@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "cef95d95_ec08c861",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1285903
+      },
+      "writtenOn": "2019-12-16T10:14:05Z",
+      "side": 1,
+      "message": "The pattern is actually used by many other projects at Google, not just camera.\n\"for Google build system\" maybe?\nI\u0027m okay with the commit description as is though.",
+      "range": {
+        "startLine": 7,
+        "startChar": 38,
+        "endLine": 7,
+        "endChar": 52
+      },
+      "revId": "32cac36ff608e222a1fbf9e0d2dd1beb51fdd9ac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

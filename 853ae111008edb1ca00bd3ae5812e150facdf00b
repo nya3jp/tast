@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "34c6ad0e_8c5c5c3b",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-16T06:05:07Z",
+      "side": 1,
+      "message": "nit: nil instead of f. Ditto for below.",
+      "revId": "853ae111008edb1ca00bd3ae5812e150facdf00b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b5e6c82f_ce3dce85",
+        "filename": "src/chromiumos/cmd/tast-lint/check/import_order.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-16T06:05:07Z",
+      "side": 1,
+      "message": "I think you can drop this.",
+      "range": {
+        "startLine": 140,
+        "startChar": 1,
+        "endLine": 144,
+        "endChar": 2
+      },
+      "revId": "853ae111008edb1ca00bd3ae5812e150facdf00b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

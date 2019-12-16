@@ -43,6 +43,9 @@ func isFMTSprintf(call *ast.CallExpr) bool {
 func Messages(fs *token.FileSet, f *ast.File) []*Issue {
 	var issues []*Issue
 
+	// Handle Sprintf cases beforehand.
+	issues = append(issues, MessagesSprintf(fs, f)...)
+
 	v := funcVisitor(func(node ast.Node) {
 		call, ok := node.(*ast.CallExpr)
 		if !ok {
@@ -266,4 +269,10 @@ func Messages(fs *token.FileSet, f *ast.File) []*Issue {
 
 	ast.Walk(v, f)
 	return issues
+}
+
+// MessagesSprintf checks calls to logging- and error-related functions
+// which has fmt.Sprintf argument inside them.
+func MessagesSprintf(fs *token.FileSet, f *ast.File) []*Issue {
+	return nil
 }

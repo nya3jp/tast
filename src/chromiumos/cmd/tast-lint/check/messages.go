@@ -11,6 +11,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"golang.org/x/tools/go/ast/astutil"
 )
 
 // countVerbs returns the number of format verbs.
@@ -39,61 +41,49 @@ func isFMTSprintf(call *ast.CallExpr) bool {
 	return x.Name == "fmt" && sel.Sel.Name == "Sprintf"
 }
 
+const (
+	baseURL       = "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md"
+	printfURL     = baseURL + "#log-vs-logf"
+	errPkgURL     = baseURL + "#error-pkg"
+	errFmtURL     = baseURL + "#error-fmt"
+	logFmtURL     = baseURL + "#log-fmt"
+	commonFmtURL  = baseURL + "#common-fmt"
+	formattingURL = baseURL + "#Formatting"
+	fmtURL        = "https://golang.org/pkg/fmt/#hdr-Printing"
+)
+
+// fmtMap holds f-suffixed functions as keys and their values are corresponding non-f-suffixed functions.
+var fmtMap = map[string]string{
+	"s.Logf":              "s.Log",
+	"s.Errorf":            "s.Error",
+	"s.Fatalf":            "s.Fatal",
+	"testing.ContextLogf": "testing.ContextLog",
+	"errors.Errorf":       "errors.New",
+	"errors.Wrapf":        "errors.Wrap",
+}
+
+// fmtMapRev is reversed map of fmtMap.
+var fmtMapRev = map[string]string{}
+
+func init() {
+	for k, v := range fmtMap {
+		fmtMapRev[v] = k
+	}
+}
+
 // Messages checks calls to logging- and error-related functions.
 func Messages(fs *token.FileSet, f *ast.File) []*Issue {
-	var issues []*Issue
+	// Handle Sprintf cases beforehand.
+	issues := messagesSprintf(fs, f)
 
 	v := funcVisitor(func(node ast.Node) {
 		call, ok := node.(*ast.CallExpr)
 		if !ok {
 			return
 		}
-		sel, ok := call.Fun.(*ast.SelectorExpr)
+		recvName, _, callName, argOffset, argPrefix, ok := messagesInfo(call)
 		if !ok {
 			return
-		}
-		x, ok := sel.X.(*ast.Ident)
-		if !ok {
-			return
-		}
-		recvName := x.Name
-		funcName := sel.Sel.Name
-		callName := recvName + "." + funcName
-
-		argOffset := -1 // index of first interesting arg in call.Args
-		argPrefix := "" // uninteresting args, e.g. "ctx, " or "err, "
-		switch callName {
-		// Just matching a variable name is hacky, but getting the actual type seems
-		// very challenging, if not impossible (as ":=" may be used to assign types
-		// returned by functions exported by other packages).
-		case "s.Log", "s.Logf", "s.Error", "s.Errorf", "s.Fatal", "s.Fatalf":
-			argOffset = 0
-		case "testing.ContextLog", "testing.ContextLogf":
-			argOffset = 1
-			argPrefix = "ctx, "
-		case "errors.New", "errors.Errorf":
-			argOffset = 0
-		case "errors.Wrap", "errors.Wrapf":
-			argOffset = 1
-			argPrefix = "err, "
-		}
-
-		if argOffset < 0 || len(call.Args) <= argOffset {
-			return
-		}
-
-		// Keys are f-suffixed functions, values are corresponding non-f-suffixed functions.
-		var fmtMap = map[string]string{
-			"s.Logf":              "s.Log",
-			"s.Errorf":            "s.Error",
-			"s.Fatalf":            "s.Fatal",
-			"testing.ContextLogf": "testing.ContextLog",
-			"errors.Errorf":       "errors.New",
-			"errors.Wrapf":        "errors.Wrap",
-		}
-		fmtMapRev := make(map[string]string)
-		for k, v := range fmtMap {
-			fmtMapRev[v] = k
 		}
 
 		_, isFmt := fmtMap[callName]
@@ -132,30 +122,13 @@ func Messages(fs *token.FileSet, f *ast.File) []*Issue {
 		}
 
 		addIssue := func(msg, link string) {
-			issues = append(issues, &Issue{Pos: fs.Position(x.Pos()), Msg: msg, Link: link})
+			issues = append(issues, &Issue{Pos: fs.Position(call.Pos()), Msg: msg, Link: link})
 		}
-
-		const (
-			baseURL       = "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md"
-			printfURL     = baseURL + "#log-vs-logf"
-			errPkgURL     = baseURL + "#error-pkg"
-			errFmtURL     = baseURL + "#error-fmt"
-			logFmtURL     = baseURL + "#log-fmt"
-			commonFmtURL  = baseURL + "#common-fmt"
-			formattingURL = baseURL + "#Formatting"
-			fmtURL        = "https://golang.org/pkg/fmt/#hdr-Printing"
-		)
 
 		// Used Logf("Some message") instead of Log("Some message").
 		if isFmt && len(args) == 1 {
 			addIssue(fmt.Sprintf(`Use %v(%v"<msg>") instead of %v(%v"<msg>")`,
 				fmtMap[callName], argPrefix, callName, argPrefix), printfURL)
-		}
-
-		// Used Log(fmt.Sprintf(...)) instead of Logf(...)
-		if !isFmt && len(args) == 1 && args[0].typ == sprintfArg {
-			addIssue(fmt.Sprintf(`Use %v(%v...) instead of %v(%vfmt.Sprintf(...))`,
-				fmtMapRev[callName], argPrefix, callName, argPrefix), printfURL)
 		}
 
 		// Used Logf("Got %v", i) instead of Log("Got ", i).
@@ -266,4 +239,81 @@ func Messages(fs *token.FileSet, f *ast.File) []*Issue {
 
 	ast.Walk(v, f)
 	return issues
+}
+
+// messagesSprintf checks calls to logging- and error-related functions
+// which has fmt.Sprintf argument inside them.
+func messagesSprintf(fs *token.FileSet, f *ast.File) []*Issue {
+	var issues []*Issue
+
+	astutil.Apply(f, func(c *astutil.Cursor) bool {
+		call, ok := c.Node().(*ast.CallExpr)
+		if !ok {
+			return true
+		}
+		_, _, callName, argOffset, argPrefix, ok := messagesInfo(call)
+		if !ok {
+			return true
+		}
+
+		_, isFmt := fmtMap[callName]
+
+		// Used Log(fmt.Sprintf(...)) instead of Logf(...)
+		if argcall, ok := call.Args[argOffset].(*ast.CallExpr); ok && isFMTSprintf(argcall) && len(call.Args)-argOffset == 1 {
+			msg := ""
+			if isFmt {
+				msg = fmt.Sprintf(`Use %v(%v...) instead of %v(%vfmt.Sprintf(...))`, callName, argPrefix, callName, argPrefix)
+			} else {
+				msg = fmt.Sprintf(`Use %v(%v...) instead of %v(%vfmt.Sprintf(...))`, fmtMapRev[callName], argPrefix, callName, argPrefix)
+			}
+			issues = append(issues, &Issue{
+				Pos:     fs.Position(call.Pos()),
+				Msg:     msg,
+				Link:    printfURL,
+				Fixable: true,
+			})
+		}
+
+		return true
+	}, nil)
+
+	return issues
+}
+
+// messagesInfo returns function name and argument information.
+func messagesInfo(call *ast.CallExpr) (recvName, funcName, callName string, argOffset int, argPrefix string, ok bool) {
+	argOffset = -1
+	sel, ok := call.Fun.(*ast.SelectorExpr)
+	if !ok {
+		return
+	}
+	x, ok := sel.X.(*ast.Ident)
+	if !ok {
+		return
+	}
+	recvName = x.Name
+	funcName = sel.Sel.Name
+	callName = recvName + "." + funcName
+
+	switch callName {
+	// Just matching a variable name is hacky, but getting the actual type seems
+	// very challenging, if not impossible (as ":=" may be used to assign types
+	// returned by functions exported by other packages).
+	case "s.Log", "s.Logf", "s.Error", "s.Errorf", "s.Fatal", "s.Fatalf", "errors.New", "errors.Errorf":
+		argOffset = 0
+	case "testing.ContextLog", "testing.ContextLogf":
+		argOffset = 1
+		argPrefix = "ctx, "
+	case "errors.Wrap", "errors.Wrapf":
+		argOffset = 1
+		argPrefix = "err, "
+	default:
+		ok = false
+	}
+
+	if len(call.Args) <= argOffset {
+		ok = false
+	}
+
+	return
 }

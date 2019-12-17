@@ -24,6 +24,9 @@ attributes. Below is the list of most popular attributes:
 *   `group:crosbolt` - Test failures are ignored and the test's performance data
     are uploaded to [crosbolt]. When you add this attribute, you also need to
     add one of `crosbolt_perbuild`, `crosbolt_nightly` or `crosbolt_weekly`.
+*   `group:wificell` - Tests that depends on [wificell] fixture to run.
+    Currently it has only one sub-attribute: `wifi_func`, which is used to
+    verify basic WiFi functionalities.
 
 See [attr.go] for the full list of valid attributes.
 
@@ -42,6 +45,7 @@ select which tests to run.
 
 [testing.Test]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Test
 [crosbolt]: https://crosbolt.teams.x20web.corp.google.com/prod/crosbolt/index.html
+[wificell]: https://chromium.git.corp.google.com/chromiumos/third_party/autotest/+/master/docs/wificell.md
 [attr.go]: https://chromium.googlesource.com/chromiumos/platform/tast/+/refs/heads/master/src/chromiumos/tast/testing/attr.go
 [bundle]: overview.md#Test-bundles
 [software dependency]: test_dependencies.md

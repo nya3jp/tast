@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e5ad5ec5_a87be79b",
+        "filename": "src/chromiumos/tast/testing/attr.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2019-12-17T21:35:11Z",
+      "side": 1,
+      "message": "Does this really need to be \"wifi_matfunc\"? Isn\u0027t this independent of the Autotest suite name? I wonder if it\u0027s time to drop the \"mat\" from \"matfunc\", since AFAIK no one actually knows what the \"mat\" means, and the real meaning is just \"WiFi functionality\" tests.",
+      "range": {
+        "startLine": 153,
+        "startChar": 4,
+        "endLine": 153,
+        "endChar": 25
+      },
+      "revId": "103826f660264a7394a783e7b4a0744672e0d69a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -22,6 +22,30 @@
       "revId": "103826f660264a7394a783e7b4a0744672e0d69a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1ded4f05_ee6e1a25",
+        "filename": "src/chromiumos/tast/testing/attr.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 1108324
+      },
+      "writtenOn": "2019-12-17T21:52:41Z",
+      "side": 1,
+      "message": "We may still need to make changes to suite_scheduler if we change the name.\nhttps://cs.corp.google.com/chromeos_public/infra/suite_scheduler/configs/suite_scheduler.ini?l\u003d1087-1118",
+      "parentUuid": "e5ad5ec5_a87be79b",
+      "range": {
+        "startLine": 153,
+        "startChar": 4,
+        "endLine": 153,
+        "endChar": 25
+      },
+      "revId": "103826f660264a7394a783e7b4a0744672e0d69a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -46,6 +46,30 @@
       "revId": "103826f660264a7394a783e7b4a0744672e0d69a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ddc389c9_c0e18a6e",
+        "filename": "src/chromiumos/tast/testing/attr.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2019-12-17T21:55:01Z",
+      "side": 1,
+      "message": "My point was that this Tast attribute is *not* what\u0027s used in suite_scheduler or the Autotest harness, AFAIK -- so there\u0027s no need to use the same name.",
+      "parentUuid": "1ded4f05_ee6e1a25",
+      "range": {
+        "startLine": 153,
+        "startChar": 4,
+        "endLine": 153,
+        "endChar": 25
+      },
+      "revId": "103826f660264a7394a783e7b4a0744672e0d69a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

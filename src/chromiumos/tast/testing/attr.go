@@ -159,6 +159,20 @@ why we add this group and run tests of this group in a control file at
 third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 `,
 	},
+	{
+		Name:     "wificell",
+		Contacts: []string{"chromeos-kernel-wifi@google.com"},
+		Desc: `The group of WiFi tests to be run with wificell fixture.
+
+Tests in this group are not used for build verification.
+`,
+		Subattrs: []*attr{
+			{
+				Name: "wifi_func",
+				Desc: `Indicates that this test is for verifying basic WiFi functionalities.`,
+			},
+		},
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

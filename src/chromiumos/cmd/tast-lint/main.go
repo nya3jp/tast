@@ -6,14 +6,19 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"flag"
 	"fmt"
+	"go/ast"
+	"go/token"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"sort"
 	"strings"
+
+	"golang.org/x/sync/errgroup"
 
 	"chromiumos/cmd/tast-lint/check"
 	"chromiumos/cmd/tast-lint/git"
@@ -152,6 +157,11 @@ func checkAll(g *git.Git, paths []git.CommitFile, debug bool) ([]*check.Issue, e
 	}
 
 	dfmap := makeMapDirGoFile(paths)
+
+	// Run individual file check in parallel.
+	var fileIssues [][]*check.Issue
+	eg, _ := errgroup.WithContext(context.Background())
+
 	for dir, cfs := range dfmap {
 		pkg, err := cp.parsePackage(dir)
 		if err != nil {
@@ -175,53 +185,72 @@ func checkAll(g *git.Git, paths []git.CommitFile, debug bool) ([]*check.Issue, e
 			if strings.HasSuffix(path.Path, ".pb.go") {
 				continue
 			}
-
-			data, err := g.ReadFile(path.Path)
-			if err != nil {
-				return nil, err
-			}
-
 			f, ok := pkg.Files[path.Path] // take ast.File from parsed package
 			if !ok {
 				continue
 			}
-			var issues []*check.Issue
 
-			issues = append(issues, check.Golint(path.Path, data, debug)...)
-			issues = append(issues, check.Comments(fs, f)...)
-			issues = append(issues, check.EmptySlice(fs, f)...)
-
-			if !hasFmtError(data, path.Path) {
-				// goimports applies gofmt, so skip it if the code has any formatting
-				// error to avoid confusing reports. gofmt will be run by the repo
-				// upload hook anyway.
-				issues = append(issues, check.ImportOrder(path.Path, data)...)
-			}
-
-			if isTestFile(path.Path) {
-				issues = append(issues, check.Declarations(fs, f)...)
-				issues = append(issues, check.Exports(fs, f)...)
-				issues = append(issues, check.ForbiddenBundleImports(fs, f)...)
-				issues = append(issues, check.ForbiddenCalls(fs, f)...)
-				issues = append(issues, check.ForbiddenImports(fs, f)...)
-				issues = append(issues, check.InterFileRefs(fs, f)...)
-				issues = append(issues, check.Messages(fs, f)...)
-				issues = append(issues, check.VerifyTestingStateStruct(fs, f)...)
-			}
-
-			if isSupportPackageFile(path.Path) {
-				issues = append(issues, check.VerifyTestingStateParam(fs, f)...)
-			}
-
-			if path.Status == git.Added {
-				issues = append(issues, check.VerifyInformationalAttr(fs, f)...)
-			}
-			// Only collect issues that weren't ignored by NOLINT comments.
-			allIssues = append(allIssues, check.DropIgnoredIssues(issues, fs, f)...)
+			i := len(fileIssues)
+			fileIssues = append(fileIssues, nil)
+			path := path
+			eg.Go(func() error {
+				data, err := g.ReadFile(path.Path)
+				if err != nil {
+					return err
+				}
+				fileIssues[i] = checkFile(path, data, debug, fs, f)
+				return nil
+			})
 		}
 	}
 
+	if err := eg.Wait(); err != nil {
+		return nil, err
+	}
+	for _, issues := range fileIssues {
+		allIssues = append(allIssues, issues...)
+	}
+
 	return allIssues, nil
+}
+
+// checkFile checks all the issues in the Go file in the given path.
+func checkFile(path git.CommitFile, data []byte, debug bool, fs *token.FileSet, f *ast.File) []*check.Issue {
+
+	var issues []*check.Issue
+	issues = append(issues, check.Golint(path.Path, data, debug)...)
+	issues = append(issues, check.Comments(fs, f)...)
+	issues = append(issues, check.EmptySlice(fs, f)...)
+
+	if !hasFmtError(data, path.Path) {
+		// goimports applies gofmt, so skip it if the code has any formatting
+		// error to avoid confusing reports. gofmt will be run by the repo
+		// upload hook anyway.
+		issues = append(issues, check.ImportOrder(path.Path, data)...)
+	}
+
+	if isTestFile(path.Path) {
+		issues = append(issues, check.Declarations(fs, f)...)
+		issues = append(issues, check.Exports(fs, f)...)
+		issues = append(issues, check.ForbiddenBundleImports(fs, f)...)
+		issues = append(issues, check.ForbiddenCalls(fs, f)...)
+		issues = append(issues, check.ForbiddenImports(fs, f)...)
+		issues = append(issues, check.InterFileRefs(fs, f)...)
+		issues = append(issues, check.Messages(fs, f)...)
+		issues = append(issues, check.VerifyTestingStateStruct(fs, f)...)
+	}
+
+	if isSupportPackageFile(path.Path) {
+		issues = append(issues, check.VerifyTestingStateParam(fs, f)...)
+	}
+
+	if path.Status == git.Added {
+		issues = append(issues, check.VerifyInformationalAttr(fs, f)...)
+	}
+	// Only collect issues that weren't ignored by NOLINT comments.
+	issues = check.DropIgnoredIssues(issues, fs, f)
+
+	return issues
 }
 
 // report prints issues to stdout.

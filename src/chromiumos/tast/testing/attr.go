@@ -141,6 +141,20 @@ Tests in this group are not used for build verification.
 		Contacts: []string{"chromeos-engprod@google.com"},
 		Desc:     `A group of stress tests.`,
 	},
+	{
+		Name:     "wificell",
+		Contacts: []string{"chromeos-kernel-wifi@google.com"},
+		Desc: `The group of WiFi tests to be run with wificell fixture.
+
+Tests in this group are not used for build verification.
+`,
+		Subattrs: []*attr{
+			{
+				Name: "wifi_matfunc",
+				Desc: `Indicate this test is for verifying basic WiFi functionalties.`,
+			},
+		},
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

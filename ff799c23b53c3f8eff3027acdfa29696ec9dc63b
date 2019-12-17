@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9fa833d8_c8133087",
+        "filename": "src/chromiumos/tast/testing/attr.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 1291807
+      },
+      "writtenOn": "2019-12-17T22:45:30Z",
+      "side": 1,
+      "message": "How about naming this flashrom-destructive?  Not every flashrom test should be destructive, I could see nondestructive flashrom tests getting marked with this unnecessarily.",
+      "revId": "ff799c23b53c3f8eff3027acdfa29696ec9dc63b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -7,6 +7,7 @@ package testing
 import (
 	"context"
 	"fmt"
+	"net"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -19,6 +20,7 @@ import (
 	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/errors/stack"
+	"chromiumos/tast/host"
 	"chromiumos/tast/timing"
 )
 
@@ -354,6 +356,37 @@ func (s *State) Fatalf(format string, args ...interface{}) {
 	e := NewError(err, fullMsg, lastMsg, 1)
 	s.root.writeOutput(Output{T: time.Now(), Err: e})
 	runtime.Goexit()
+}
+
+// companionDeviceHostname derives the hostname of companion device from test target
+// with the convention in Autotest.
+func (s *State) companionDeviceHostname(suffix string) (string, error) {
+	if s.root.cfg.RemoteData == nil {
+		s.Fatal("Companion device unavailable (is test non-remote?)")
+	}
+	target := s.root.cfg.RemoteData.Meta.Target
+
+	// Get the hostname from target.
+	var sopt host.SSHOptions
+	if err := host.ParseSSHTarget(target, &sopt); err != nil {
+		return "", errors.Wrap(err, "failed to parse dut target")
+	}
+
+	host := sopt.Hostname
+	if ip := net.ParseIP(host); ip != nil {
+		// We don't mangle IP address, return error.
+		return "", errors.New("cannot derive companion device hostname from ip")
+	}
+
+	// Companion device hostname convention: append suffix after the first sub-domain string.
+	d := strings.SplitN(host, ".", 2)
+	d[0] = d[0] + suffix
+	return strings.Join(d, "."), nil
+}
+
+// WifiHostname returns the hostname of wifi ap in the test environment.
+func (s *State) WifiHostname() (string, error) {
+	return s.companionDeviceHostname("-router")
 }
 
 // writeOutput writes o to s.ch.

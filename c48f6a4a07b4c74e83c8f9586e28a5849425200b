@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d6824e01_c6941771",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 205,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-12-18T05:52:58Z",
+      "side": 1,
+      "message": "We\u0027re making a lot of changes to test infra in 2020 and we\u0027ll soon lose access to real host names. I don\u0027t want tests to depend on real hostnames.\n\nInstead could you add a method to get the WiFi hostname (not DUT hostname) in testing.State? I hope this approach makes it easier to migrate wifi tests next year.\n\n func (s *State) WifiHostname() string",
+      "range": {
+        "startLine": 205,
+        "startChar": 14,
+        "endLine": 205,
+        "endChar": 22
+      },
+      "revId": "c48f6a4a07b4c74e83c8f9586e28a5849425200b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

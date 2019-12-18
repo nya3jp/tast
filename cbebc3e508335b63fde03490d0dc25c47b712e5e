@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a508cd27_02d02b05",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 20
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-12-18T09:24:47Z",
+      "side": 1,
+      "message": "In any case we convert the first character if fix\u003dtrue, how about:\n\n if !fix {\n   if isErr { ... }\n   else if isLog { ... }\n   else { ... }\n } else {\n   str \u003d strings.ToUpper(str[:1]) + str[1:]\n }",
+      "range": {
+        "startLine": 238,
+        "startChar": 4,
+        "endLine": 255,
+        "endChar": 5
+      },
+      "revId": "cbebc3e508335b63fde03490d0dc25c47b712e5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fe927b18_97f93010",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 20
+      },
+      "lineNbr": 259,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-12-18T09:24:47Z",
+      "side": 1,
+      "message": "I\u0027m a bit afraid that this might overly normalize strings. For example, for the following Go code:\n\n s.Log(\"Hello\\x20world\")\n\nI guess this rule coverts it to\n\n s.Log(\"Hello world\")\n\nHow about rewriting the node only if any change is made? That is, if str !\u003d args[0].val.",
+      "range": {
+        "startLine": 259,
+        "startChar": 3,
+        "endLine": 259,
+        "endChar": 8
+      },
+      "revId": "cbebc3e508335b63fde03490d0dc25c47b712e5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "85503100_bb7714e8",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 20
+      },
+      "lineNbr": 275,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-12-18T09:24:47Z",
+      "side": 1,
+      "message": "nit: The following expression might be direct and easier to understand:\n\n strings.TrimSuffix(funcName, \"f\")",
+      "range": {
+        "startLine": 275,
+        "startChar": 24,
+        "endLine": 275,
+        "endChar": 32
+      },
+      "revId": "cbebc3e508335b63fde03490d0dc25c47b712e5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b4af6424_0b79315d",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 20
+      },
+      "lineNbr": 292,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-12-18T09:24:47Z",
+      "side": 1,
+      "message": "Should we move this to inside \"ok\" condition? That is, do this only when we rewrite basiclit.Value.",
+      "range": {
+        "startLine": 292,
+        "startChar": 4,
+        "endLine": 292,
+        "endChar": 15
+      },
+      "revId": "cbebc3e508335b63fde03490d0dc25c47b712e5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5525dc9a_6604eee5",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 20
+      },
+      "lineNbr": 330,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-12-18T09:24:47Z",
+      "side": 1,
+      "message": "same here, should we do this only when stringLitTypeOf succeeds?",
+      "range": {
+        "startLine": 328,
+        "startChar": 6,
+        "endLine": 330,
+        "endChar": 33
+      },
+      "revId": "cbebc3e508335b63fde03490d0dc25c47b712e5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6a579f56_b7ab8631",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 20
+      },
+      "lineNbr": 348,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-12-18T09:24:47Z",
+      "side": 1,
+      "message": "ditto",
+      "range": {
+        "startLine": 346,
+        "startChar": 6,
+        "endLine": 348,
+        "endChar": 34
+      },
+      "revId": "cbebc3e508335b63fde03490d0dc25c47b712e5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

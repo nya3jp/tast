@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4a6bad79_4eca8544",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 20
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-12-18T09:24:47Z",
+      "side": 0,
+      "message": "Overall I found that strings.TrimLeft/TrimRight are used instead of strings.TrimPrefix/TrimSuffix. Please use the latter to avoid trimming extra characters. I know they\u0027re very confusing...",
+      "revId": "2429189e9ca7965f97f0c35b43439334810b0d19",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

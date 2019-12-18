@@ -9,6 +9,7 @@ package dut
 import (
 	"context"
 	"fmt"
+	"net"
 	"strings"
 	"time"
 
@@ -198,3 +199,40 @@ func (d *DUT) KeyFile() string { return d.sopt.KeyFile }
 // This is provided for tests that may need to establish SSH connections to additional hosts
 // (e.g. a host running a servod instance).
 func (d *DUT) KeyDir() string { return d.sopt.KeyDir }
+
+// companionDeviceHostname derives the hostname of companion device from test target
+// with the convention in Autotest.
+// (see server/cros/dnsname_mangler.py in Autotest)
+func companionDeviceHostname(dutHost, suffix string) (string, error) {
+	if ip := net.ParseIP(dutHost); ip != nil {
+		// We don't mangle IP address. Return error.
+		return "", errors.New("cannot derive companion device hostname from IP")
+	}
+
+	// Companion device hostname convention: append suffix after the first sub-domain string.
+	d := strings.SplitN(dutHost, ".", 2)
+	d[0] = d[0] + suffix
+	return strings.Join(d, "."), nil
+}
+
+// connectCompanionDevice connects to a companion device in test environment. e.g. WiFi AP.
+// It reuses SSH key from DUT for establishing SSH connection to a companion device.
+func (d *DUT) connectCompanionDevice(ctx context.Context, suffix string) (*host.SSH, error) {
+	var sopt host.SSHOptions
+	hostname, err := companionDeviceHostname(d.sopt.Hostname, suffix)
+	if err != nil {
+		return nil, err
+	}
+	sopt.Hostname = hostname
+	sopt.ConnectTimeout = connectTimeout
+	// Companion devices use the same key as DUT.
+	sopt.KeyFile = d.sopt.KeyFile
+	sopt.KeyDir = d.sopt.KeyDir
+
+	return host.NewSSH(ctx, &sopt)
+}
+
+// DefaultWifiRouterHost connects to the default WiFi router and returns SSH object.
+func (d *DUT) DefaultWifiRouterHost(ctx context.Context) (*host.SSH, error) {
+	return d.connectCompanionDevice(ctx, "-router")
+}

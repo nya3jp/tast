@@ -198,3 +198,8 @@ func (d *DUT) KeyFile() string { return d.sopt.KeyFile }
 // This is provided for tests that may need to establish SSH connections to additional hosts
 // (e.g. a host running a servod instance).
 func (d *DUT) KeyDir() string { return d.sopt.KeyDir }
+
+// Hostname returns the hostname used to connect to DUT. This is provided for tests that may need
+// to establish SSH connections to companion deivces which are setup with hostnames mangled from
+// DUT hostname. (e.g. an AP in wifi tests)
+func (d *DUT) Hostname() string { return d.sopt.Hostname }

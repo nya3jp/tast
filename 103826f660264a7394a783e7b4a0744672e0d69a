@@ -70,6 +70,30 @@
       "revId": "103826f660264a7394a783e7b4a0744672e0d69a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3e84d603_81593e4a",
+        "filename": "src/chromiumos/tast/testing/attr.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2019-12-18T03:08:50Z",
+      "side": 1,
+      "message": "Harpreet, this CL defines Tast attribute \"group:wificell\" and its sub-attribute, \"wifi_func\". The connection between Tast attribute and autotest suite is defined in https://crrev.com/c/1971331/1/server/site_tests/tast/control.wifi-matfunc : \nThe file associates suite:wifi_matfunc with Tast tests that has attribute group:wificell and wifi_func.\n\nBrian, I admit that I don\u0027t know what \"mat\" means. Rename it as \"wifi_func\".",
+      "parentUuid": "ddc389c9_c0e18a6e",
+      "range": {
+        "startLine": 153,
+        "startChar": 4,
+        "endLine": 153,
+        "endChar": 25
+      },
+      "revId": "103826f660264a7394a783e7b4a0744672e0d69a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

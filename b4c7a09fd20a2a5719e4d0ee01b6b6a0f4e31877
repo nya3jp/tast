@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9f9fe4e9_f7d5619c",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-12-18T09:35:44Z",
+      "side": 1,
+      "message": "nit: const tastErrorsPath \u003d ...\n\nAlso, since this const appears only once, we can move this to just before the appearance.",
+      "range": {
+        "startLine": 22,
+        "startChar": 1,
+        "endLine": 22,
+        "endChar": 15
+      },
+      "revId": "b4c7a09fd20a2a5719e4d0ee01b6b6a0f4e31877",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3e821799_3e1421cb",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-12-18T09:35:44Z",
+      "side": 1,
+      "message": "These functions (hasErrorsIdent, importedPkgNames, goimportApplicable) are heavy functions that possibly scan the whole file, so it\u0027s inefficient to call while scanning the file (in worst case they can impose O(n^2) time complexity where n is the size of the file). Fortunately their results are not dependent on the node we\u0027re visiting now. Could you call them just once at the beginning of this lint rule and cache the result?",
+      "range": {
+        "startLine": 51,
+        "startChar": 15,
+        "endLine": 51,
+        "endChar": 29
+      },
+      "revId": "b4c7a09fd20a2a5719e4d0ee01b6b6a0f4e31877",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "45a38d81_b9b61e9a",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-12-18T09:35:44Z",
+      "side": 1,
+      "message": "Do we need to check the \"contains\" condition? It seems sufficient to check hasErrorsIdent.",
+      "range": {
+        "startLine": 51,
+        "startChar": 36,
+        "endLine": 51,
+        "endChar": 76
+      },
+      "revId": "b4c7a09fd20a2a5719e4d0ee01b6b6a0f4e31877",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "799be9dc_df043d39",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-19T02:50:35Z",
+      "side": 1,
+      "message": "Removed and input to Quote() directly.",
+      "parentUuid": "9f9fe4e9_f7d5619c",
+      "range": {
+        "startLine": 22,
+        "startChar": 1,
+        "endLine": 22,
+        "endChar": 15
+      },
+      "revId": "b4c7a09fd20a2a5719e4d0ee01b6b6a0f4e31877",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3e821799_3e1421cb",
         "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_calls.go",
         "patchSetId": 9
@@ -68,6 +92,54 @@
       "revId": "b4c7a09fd20a2a5719e4d0ee01b6b6a0f4e31877",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e11ab1be_aad5bc0d",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-19T02:50:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "45a38d81_b9b61e9a",
+      "range": {
+        "startLine": 51,
+        "startChar": 36,
+        "endLine": 51,
+        "endChar": 76
+      },
+      "revId": "b4c7a09fd20a2a5719e4d0ee01b6b6a0f4e31877",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "965533d7_cee6d9a3",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-19T02:50:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3e821799_3e1421cb",
+      "range": {
+        "startLine": 51,
+        "startChar": 15,
+        "endLine": 51,
+        "endChar": 29
+      },
+      "revId": "b4c7a09fd20a2a5719e4d0ee01b6b6a0f4e31877",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

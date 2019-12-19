@@ -1,0 +1,169 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "98cddb53_15503e73",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-19T11:19:52Z",
+      "side": 1,
+      "message": "You don\u0027t need this. the line just below declares the var.",
+      "revId": "430b4b032646234e16ace9acb143d110413d0533",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8851b967_9c35df14",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-19T11:19:52Z",
+      "side": 1,
+      "message": "Would you mind to comment what this keeps briefly? E.g.\n\n// preArgs keeps the arguments before the formatting string.",
+      "revId": "430b4b032646234e16ace9acb143d110413d0533",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "10262e45_c017d0ec",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-19T11:19:52Z",
+      "side": 1,
+      "message": "nit: to avoid looks up twice:\n\ncallName \u003d fmtMap[callName]\nfuincName \u003d strings.TrimPrefix(callName, recvName+\".\")",
+      "revId": "430b4b032646234e16ace9acb143d110413d0533",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bd746723_bfa039c3",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-19T11:19:52Z",
+      "side": 1,
+      "message": "Ditto",
+      "revId": "430b4b032646234e16ace9acb143d110413d0533",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3b1a81fe_55e4b5f2",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 211,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-19T11:19:52Z",
+      "side": 1,
+      "message": "optional: I\u0027d recommend to branch by fix first to reduce the dup.\n\nif !fix {\n  var formatSuffix, varArgs string\n  if len(args) \u003e 2 {\n    formatSuffix, varArgs \u003d \"f\", \", ...\"\n  }\n  addIssue(fmt.Sprintf(`Use errors.Wrap%s(err, \"\u003cmsg\u003e\"%s) instead of errors.Errorf(\"\u003cmsg\u003e: %%v\", ..., err)`, formatSuffix, varArgs), errPkgUrl, true)\n} else {\n  args[0].val \u003d ...\n  args[0].fixed \u003d true\n  preArgs \u003d ...\n  args \u003d ...\n  if len(args) \u003e 2 {\n    funcName \u003d \"Wrapf\"\n    isFmt \u003d true\n  } else {\n    funcName \u003d \"Wrap\"\n    isFmt \u003d false\n  }\n}",
+      "range": {
+        "startLine": 188,
+        "startChar": 3,
+        "endLine": 211,
+        "endChar": 4
+      },
+      "revId": "430b4b032646234e16ace9acb143d110413d0533",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "31b32249_45c0c783",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 289,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-19T11:19:52Z",
+      "side": 1,
+      "message": "huge nit: \"exp\" may be better to indicate this is replacing the first part by exp?",
+      "range": {
+        "startLine": 289,
+        "startChar": 41,
+        "endLine": 289,
+        "endChar": 45
+      },
+      "revId": "430b4b032646234e16ace9acb143d110413d0533",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9f45205c_56728e0c",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 367,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-19T11:19:52Z",
+      "side": 1,
+      "message": "nit style:\nsel :\u003d funcName\nif !isFmt {\n  sel \u003d strings.TrimPrefix(fmtMapRev[callName], recvName+\".\")\n}",
+      "revId": "430b4b032646234e16ace9acb143d110413d0533",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6cf0dbd2_1aca12a9",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 454,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-19T11:19:52Z",
+      "side": 1,
+      "message": "Is it ok to skip overwriting Pos here?",
+      "revId": "430b4b032646234e16ace9acb143d110413d0533",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5512e731_e98693b6",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages_test.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-19T11:19:52Z",
+      "side": 1,
+      "message": "Unnecessary change?",
+      "revId": "430b4b032646234e16ace9acb143d110413d0533",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1dab475a_245797d5",
+        "filename": "src/chromiumos/cmd/tast-lint/check/common.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-19T09:59:21Z",
+      "side": 1,
+      "message": "formatASTFile",
+      "range": {
+        "startLine": 115,
+        "startChar": 5,
+        "endLine": 115,
+        "endChar": 16
+      },
+      "revId": "2444652b7b978f52b248923d27889265d06ca061",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "50a62455_bed37b2a",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-19T09:59:21Z",
+      "side": 1,
+      "message": "// why below\nfixable :\u003d false\nif !hasErrorsIdent(f) {\n  if src,... ; err \u003d\u003d nil {\n    fixable \u003d goimportApp...\n  }\n}",
+      "range": {
+        "startLine": 23,
+        "startChar": 1,
+        "endLine": 23,
+        "endChar": 22
+      },
+      "revId": "2444652b7b978f52b248923d27889265d06ca061",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ee21e795_e1c9200b",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-19T09:59:21Z",
+      "side": 1,
+      "message": "delete",
+      "range": {
+        "startLine": 53,
+        "startChar": 3,
+        "endLine": 53,
+        "endChar": 40
+      },
+      "revId": "2444652b7b978f52b248923d27889265d06ca061",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0eb4dc98_435d7a67",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-19T09:59:21Z",
+      "side": 1,
+      "message": "hasErrors :\u003d false",
+      "range": {
+        "startLine": 103,
+        "startChar": 1,
+        "endLine": 103,
+        "endChar": 19
+      },
+      "revId": "2444652b7b978f52b248923d27889265d06ca061",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ee54042e_12576191",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-19T09:59:21Z",
+      "side": 1,
+      "message": "delete",
+      "range": {
+        "startLine": 119,
+        "startChar": 0,
+        "endLine": 154,
+        "endChar": 1
+      },
+      "revId": "2444652b7b978f52b248923d27889265d06ca061",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

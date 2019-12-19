@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "85a06b42_f8cd59a1",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-19T12:00:38Z",
+      "side": 1,
+      "message": "https://godoc.org/golang.org/x/tools/go/ast/astutil#AddImport\n\nAddImport can be usable.",
+      "revId": "cd02f9857769bbf72f0a39f1326bd7b67f579816",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

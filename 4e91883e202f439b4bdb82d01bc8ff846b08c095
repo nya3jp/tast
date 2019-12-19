@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "21425389_423a76e0",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 363,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2019-12-19T22:26:16Z",
+      "side": 1,
+      "message": "can we get a simple unit test for this? It\u0027s not obvious without looking into the strings.SplitN API that this handles both hostnames with and without dots (\u0027.\u0027).",
+      "range": {
+        "startLine": 363,
+        "startChar": 16,
+        "endLine": 363,
+        "endChar": 39
+      },
+      "revId": "4e91883e202f439b4bdb82d01bc8ff846b08c095",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "94717664_dcf43c49",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 387,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2019-12-19T22:26:16Z",
+      "side": 1,
+      "message": "WiFi AP",
+      "range": {
+        "startLine": 387,
+        "startChar": 40,
+        "endLine": 387,
+        "endChar": 47
+      },
+      "revId": "4e91883e202f439b4bdb82d01bc8ff846b08c095",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "de0f2036_c5d2d742",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 388,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2019-12-19T22:26:16Z",
+      "side": 1,
+      "message": "I don\u0027t think that\u0027s a very descriptive name. We also have \"-pcap\" and \"-attenuator\" suffixes for other companion devices that are \"hosts\" related to \"WiFi tests\".\n\nMaybe \"WifiAPHostname\" or \"WifiRouterHostname\"?",
+      "range": {
+        "startLine": 388,
+        "startChar": 16,
+        "endLine": 388,
+        "endChar": 28
+      },
+      "revId": "4e91883e202f439b4bdb82d01bc8ff846b08c095",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

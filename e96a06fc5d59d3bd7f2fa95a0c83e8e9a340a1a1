@@ -1,0 +1,188 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e68d3382_82e659f9",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 25
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-19T10:54:32Z",
+      "side": 1,
+      "message": "0\nadd comment: if there is a verb, ...",
+      "range": {
+        "startLine": 144,
+        "startChar": 70,
+        "endLine": 144,
+        "endChar": 81
+      },
+      "revId": "e96a06fc5d59d3bd7f2fa95a0c83e8e9a340a1a1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "db82c3e2_41b6491f",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 25
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-19T10:54:32Z",
+      "side": 1,
+      "message": "callName",
+      "range": {
+        "startLine": 149,
+        "startChar": 64,
+        "endLine": 149,
+        "endChar": 65
+      },
+      "revId": "e96a06fc5d59d3bd7f2fa95a0c83e8e9a340a1a1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6d390dea_c2b7b7ad",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 25
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-19T10:54:32Z",
+      "side": 1,
+      "message": ".!",
+      "range": {
+        "startLine": 173,
+        "startChar": 13,
+        "endLine": 173,
+        "endChar": 21
+      },
+      "revId": "e96a06fc5d59d3bd7f2fa95a0c83e8e9a340a1a1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a4c4c290_379da809",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 25
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-19T10:54:32Z",
+      "side": 1,
+      "message": "no need",
+      "range": {
+        "startLine": 187,
+        "startChar": 5,
+        "endLine": 188,
+        "endChar": 60
+      },
+      "revId": "e96a06fc5d59d3bd7f2fa95a0c83e8e9a340a1a1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "56bd6ea2_0e6f3ec6",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 25
+      },
+      "lineNbr": 231,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-19T10:54:32Z",
+      "side": 1,
+      "message": "regexp",
+      "range": {
+        "startLine": 230,
+        "startChar": 15,
+        "endLine": 231,
+        "endChar": 83
+      },
+      "revId": "e96a06fc5d59d3bd7f2fa95a0c83e8e9a340a1a1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2f913ae0_69ae5b41",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 25
+      },
+      "lineNbr": 238,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-19T10:54:32Z",
+      "side": 1,
+      "message": "regexp",
+      "range": {
+        "startLine": 235,
+        "startChar": 5,
+        "endLine": 238,
+        "endChar": 65
+      },
+      "revId": "e96a06fc5d59d3bd7f2fa95a0c83e8e9a340a1a1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f97c1570_69e7f7e1",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 25
+      },
+      "lineNbr": 286,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-19T10:54:32Z",
+      "side": 1,
+      "message": "exp?",
+      "range": {
+        "startLine": 283,
+        "startChar": 5,
+        "endLine": 286,
+        "endChar": 70
+      },
+      "revId": "e96a06fc5d59d3bd7f2fa95a0c83e8e9a340a1a1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9fd64490_4b8cbaea",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 25
+      },
+      "lineNbr": 447,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-19T10:54:32Z",
+      "side": 1,
+      "message": "comment: delete pos\n\na.node.Pos \u003d token.NoPos",
+      "range": {
+        "startLine": 444,
+        "startChar": 4,
+        "endLine": 447,
+        "endChar": 6
+      },
+      "revId": "e96a06fc5d59d3bd7f2fa95a0c83e8e9a340a1a1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

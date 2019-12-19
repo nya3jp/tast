@@ -159,6 +159,11 @@ why we add this group and run tests of this group in a control file at
 third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 `,
 	},
+	{
+		Name:     "toolchain",
+		Contacts: []string{"chromeos-toolchain@google.com"},
+		Desc:     `A group of tests to verify toolchain changes.`,
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

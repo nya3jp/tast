@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e6bdbcde_05f67bb3",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-19T04:54:44Z",
+      "side": 1,
+      "message": "nit: this should be guaranteed by messagesInfo. Thus, \"ok\" check just above should be enough. Could you remove?",
+      "range": {
+        "startLine": 91,
+        "startChar": 1,
+        "endLine": 94,
+        "endChar": 0
+      },
+      "revId": "ef363626e9c51438d301fe28f803841c1b8cd384",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "024e4c7d_cbd8c107",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 252,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-19T04:54:44Z",
+      "side": 1,
+      "message": "nit: messageSprintf to make this package private",
+      "range": {
+        "startLine": 252,
+        "startChar": 5,
+        "endLine": 252,
+        "endChar": 20
+      },
+      "revId": "ef363626e9c51438d301fe28f803841c1b8cd384",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c76e6566_27c8f072",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 267,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-19T04:54:44Z",
+      "side": 1,
+      "message": "nit: this should be guaranteed by messagesInfo. Thus, \"ok\" check just above should be enough. Could you remove?",
+      "range": {
+        "startLine": 265,
+        "startChar": 2,
+        "endLine": 267,
+        "endChar": 3
+      },
+      "revId": "ef363626e9c51438d301fe28f803841c1b8cd384",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "e2a8dabe_20b23bc7",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 20
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-19T04:40:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a508cd27_02d02b05",
+      "range": {
+        "startLine": 238,
+        "startChar": 4,
+        "endLine": 255,
+        "endChar": 5
+      },
+      "revId": "cbebc3e508335b63fde03490d0dc25c47b712e5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fe927b18_97f93010",
         "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
         "patchSetId": 20
@@ -36,6 +60,30 @@
       "writtenOn": "2019-12-18T09:24:47Z",
       "side": 1,
       "message": "I\u0027m a bit afraid that this might overly normalize strings. For example, for the following Go code:\n\n s.Log(\"Hello\\x20world\")\n\nI guess this rule coverts it to\n\n s.Log(\"Hello world\")\n\nHow about rewriting the node only if any change is made? That is, if str !\u003d args[0].val.",
+      "range": {
+        "startLine": 259,
+        "startChar": 3,
+        "endLine": 259,
+        "endChar": 8
+      },
+      "revId": "cbebc3e508335b63fde03490d0dc25c47b712e5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bbe8f00b_421a50fa",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 20
+      },
+      "lineNbr": 259,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-19T04:40:43Z",
+      "side": 1,
+      "message": "I added `fixed` struct member in argInfo... WDYT?\nIt enables to rewrite the node only if changed, but still cannot handle the case of fixed \u0026\u0026 has \\x20 inside",
+      "parentUuid": "fe927b18_97f93010",
       "range": {
         "startLine": 259,
         "startChar": 3,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "a1950c08_34a145a9",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 20
+      },
+      "lineNbr": 275,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-19T04:40:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "85503100_bb7714e8",
+      "range": {
+        "startLine": 275,
+        "startChar": 24,
+        "endLine": 275,
+        "endChar": 32
+      },
+      "revId": "cbebc3e508335b63fde03490d0dc25c47b712e5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b4af6424_0b79315d",
         "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
         "patchSetId": 20
@@ -91,6 +163,30 @@
       "revId": "cbebc3e508335b63fde03490d0dc25c47b712e5e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c5f24a9c_da902e48",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 20
+      },
+      "lineNbr": 292,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-19T04:40:43Z",
+      "side": 1,
+      "message": "Changed the way to replace. (call c.Replace() once after all fixes has done)\nand also handled this issue with makeCallArgs maybe..?",
+      "parentUuid": "b4af6424_0b79315d",
+      "range": {
+        "startLine": 292,
+        "startChar": 4,
+        "endLine": 292,
+        "endChar": 15
+      },
+      "revId": "cbebc3e508335b63fde03490d0dc25c47b712e5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "98bb8a72_3ff7bd00",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 20
+      },
+      "lineNbr": 330,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-19T04:40:43Z",
+      "side": 1,
+      "message": "maybe done with makeCallArgs?",
+      "parentUuid": "5525dc9a_6604eee5",
+      "range": {
+        "startLine": 328,
+        "startChar": 6,
+        "endLine": 330,
+        "endChar": 33
+      },
+      "revId": "cbebc3e508335b63fde03490d0dc25c47b712e5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6a579f56_b7ab8631",
         "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
         "patchSetId": 20
@@ -137,6 +257,30 @@
       "revId": "cbebc3e508335b63fde03490d0dc25c47b712e5e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f2b04a2f_5e2b389d",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 20
+      },
+      "lineNbr": 348,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-19T04:40:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6a579f56_b7ab8631",
+      "range": {
+        "startLine": 346,
+        "startChar": 6,
+        "endLine": 348,
+        "endChar": 34
+      },
+      "revId": "cbebc3e508335b63fde03490d0dc25c47b712e5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

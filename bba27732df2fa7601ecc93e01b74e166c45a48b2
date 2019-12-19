@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "85ec766d_8e820478",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 21
+      },
+      "lineNbr": 432,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-19T04:40:43Z",
+      "side": 1,
+      "message": "need to consider the name...",
+      "range": {
+        "startLine": 432,
+        "startChar": 5,
+        "endLine": 432,
+        "endChar": 17
+      },
+      "revId": "bba27732df2fa7601ecc93e01b74e166c45a48b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

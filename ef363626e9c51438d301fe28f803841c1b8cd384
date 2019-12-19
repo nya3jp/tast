@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "d6325db1_c66f8991",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-19T06:27:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e6bdbcde_05f67bb3",
+      "range": {
+        "startLine": 91,
+        "startChar": 1,
+        "endLine": 94,
+        "endChar": 0
+      },
+      "revId": "ef363626e9c51438d301fe28f803841c1b8cd384",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "024e4c7d_cbd8c107",
         "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
         "patchSetId": 4
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "4ebacde8_1951e84e",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 252,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-19T06:27:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "024e4c7d_cbd8c107",
+      "range": {
+        "startLine": 252,
+        "startChar": 5,
+        "endLine": 252,
+        "endChar": 20
+      },
+      "revId": "ef363626e9c51438d301fe28f803841c1b8cd384",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c76e6566_27c8f072",
         "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
         "patchSetId": 4
@@ -68,6 +116,30 @@
       "revId": "ef363626e9c51438d301fe28f803841c1b8cd384",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9883db32_5f467139",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 267,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-19T06:27:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c76e6566_27c8f072",
+      "range": {
+        "startLine": 265,
+        "startChar": 2,
+        "endLine": 267,
+        "endChar": 3
+      },
+      "revId": "ef363626e9c51438d301fe28f803841c1b8cd384",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

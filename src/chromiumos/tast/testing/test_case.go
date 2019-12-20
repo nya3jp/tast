@@ -78,47 +78,17 @@ type TestCase struct {
 // newTestCase creates a TestCase instance from the given Test info.
 // t must be validated one.
 // For a parameterized test case, p is specified. p must be contained in t.Params.
-func newTestCase(t *Test, p *Param) (*TestCase, error) {
+func newTestCase(t *Test) (*TestCase, error) {
 	info, err := getTestFuncInfo(t.Func)
 	if err != nil {
 		return nil, err
 	}
 	name := fmt.Sprintf("%s.%s", info.category, info.name)
-
-	attrs := append([]string(nil), t.Attr...)
-	data := append([]string(nil), t.Data...)
-	swDeps := append([]string(nil), t.SoftwareDeps...)
-	pre := t.Pre
-	timeout := t.Timeout
-	var val interface{}
-	if p != nil {
-		if p.Name != "" {
-			name = fmt.Sprintf("%s.%s", name, p.Name)
-		}
-		attrs = append(attrs, p.ExtraAttr...)
-		data = append(data, p.ExtraData...)
-		swDeps = append(swDeps, p.ExtraSoftwareDeps...)
-		val = p.Val
-
-		// Only one precondition can be defined.
-		if t.Pre != nil && p.Pre != nil {
-			return nil, errors.New("Param has Pre specified and its enclosing Test also has Pre specified," +
-				"but only one can be specified")
-		}
-		if p.Pre != nil {
-			pre = p.Pre
-		}
-
-		// Only one timeout can be set.
-		if t.Timeout != 0 && p.Timeout != 0 {
-			return nil, errors.New("Param has Timeout specified and its enclosing Test also has Timeout specified, but only one can be specified")
-		}
-		if p.Timeout != 0 {
-			timeout = p.Timeout
-		}
+	if t.suffix != "" {
+		name += "." + t.suffix
 	}
 
-	aattrs, err := autoAttrs(name, info.pkg, swDeps)
+	aattrs, err := autoAttrs(name, info.pkg, t.SoftwareDeps)
 	if err != nil {
 		return nil, err
 	}
@@ -126,18 +96,18 @@ func newTestCase(t *Test, p *Param) (*TestCase, error) {
 	return &TestCase{
 		Name:           name,
 		Pkg:            info.pkg,
-		AdditionalTime: additionalTime(pre),
-		Val:            val,
+		AdditionalTime: additionalTime(t.Pre),
+		Val:            t.val,
 		Func:           t.Func,
 		Desc:           t.Desc,
 		Contacts:       append([]string(nil), t.Contacts...),
-		Attr:           append(aattrs, attrs...),
-		Data:           data,
+		Attr:           append(aattrs, t.Attr...),
+		Data:           append([]string(nil), t.Data...),
 		Vars:           append([]string(nil), t.Vars...),
-		SoftwareDeps:   swDeps,
+		SoftwareDeps:   append([]string(nil), t.SoftwareDeps...),
 		ServiceDeps:    append([]string(nil), t.ServiceDeps...),
-		Pre:            pre,
-		Timeout:        timeout,
+		Pre:            t.Pre,
+		Timeout:        t.Timeout,
 	}, nil
 }
 

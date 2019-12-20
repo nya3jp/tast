@@ -112,10 +112,13 @@ func TestParamTestRegistration(t *gotesting.T) {
 	reg := NewRegistry()
 	test := &Test{
 		Func: RegistryTest,
+		Attr: []string{"group:crosbolt"},
 		Params: []Param{{
-			Name: "param1",
+			Name:      "param1",
+			ExtraAttr: []string{"crosbolt_perbuild"},
 		}, {
-			Name: "param2",
+			Name:      "param2",
+			ExtraAttr: []string{"crosbolt_nightly"},
 		}},
 	}
 

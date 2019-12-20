@@ -99,31 +99,35 @@ func main() {
 			"iwlwifi_rescan":          "iwlwifi_rescan",
 			"lock_core_pattern":       `"kernel-3_10" || "kernel-3_14" || "kernel-3_18"`,
 			"memd":                    "memd",
-			"ml_service":              "ml_service",
-			"mosys":                   "!betty && !tast_vm",
-			"no_android":              "!arc",
-			"no_asan":                 "!asan",
-			"no_msan":                 "!msan",
-			"no_qemu":                 "!betty && !tast_vm",
-			"no_symlink_mount":        "!lxc", // boards using LXC set CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT=n
-			"no_ubsan":                "!ubsan",
-			"oci":                     "containers && !moblab", // run_oci doesn't work on Moblab: https://crbug.com/951691
-			"plugin_vm":               "pita",
-			"qemu":                    "betty || tast_vm",
-			"reboot":                  "!betty && !tast_vm",           // weird missing-runner-after-reboot bug: https://crbug.com/909955
-			"screenshot":              "display_backlight && !rk3399", // screenshot command broken on RK3399: https://crbug.com/880597
-			"selinux":                 "selinux",
-			"selinux_current":         "selinux && !selinux_experimental",
-			"selinux_experimental":    "selinux && selinux_experimental",
-			"smartdim":                "smartdim",
-			"storage_wearout_detect":  "storage_wearout_detect && !betty && !tast_vm", // Skip wearout checks for VMs and eMMC < 5.0
-			"tablet_mode":             "touchview",
-			"tpm":                     "!mocktpm && !tast_vm",
-			"tpm2":                    "tpm2", // Indicate tpm2 is available
-			"transparent_hugepage":    "transparent_hugepage",
-			"usbguard":                "usbguard",
-			"vaapi":                   "vaapi",
-			"virtual_usb_printer":     "usbip",
+			// Only official builds are considered to have metrics consent.
+			// See: ChromeCrashReporterClient::GetCollectStatsConsent()
+			// Also metrics consent needs TPM (crbug.com/1035197).
+			"metrics_consent":        "chrome_internal && !mocktpm && !tast_vm",
+			"ml_service":             "ml_service",
+			"mosys":                  "!betty && !tast_vm",
+			"no_android":             "!arc",
+			"no_asan":                "!asan",
+			"no_msan":                "!msan",
+			"no_qemu":                "!betty && !tast_vm",
+			"no_symlink_mount":       "!lxc", // boards using LXC set CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT=n
+			"no_ubsan":               "!ubsan",
+			"oci":                    "containers && !moblab", // run_oci doesn't work on Moblab: https://crbug.com/951691
+			"plugin_vm":              "pita",
+			"qemu":                   "betty || tast_vm",
+			"reboot":                 "!betty && !tast_vm",           // weird missing-runner-after-reboot bug: https://crbug.com/909955
+			"screenshot":             "display_backlight && !rk3399", // screenshot command broken on RK3399: https://crbug.com/880597
+			"selinux":                "selinux",
+			"selinux_current":        "selinux && !selinux_experimental",
+			"selinux_experimental":   "selinux && selinux_experimental",
+			"smartdim":               "smartdim",
+			"storage_wearout_detect": "storage_wearout_detect && !betty && !tast_vm", // Skip wearout checks for VMs and eMMC < 5.0
+			"tablet_mode":            "touchview",
+			"tpm":                    "!mocktpm && !tast_vm",
+			"tpm2":                   "tpm2", // Indicate tpm2 is available
+			"transparent_hugepage":   "transparent_hugepage",
+			"usbguard":               "usbguard",
+			"vaapi":                  "vaapi",
+			"virtual_usb_printer":    "usbip",
 			// Some VM builds actually can run nested VM with right host configuration.
 			// But we haven't enable this feature on builders. For now, just disable
 			// vm_host feature for VM builds. The kvm_transition flag indicates the

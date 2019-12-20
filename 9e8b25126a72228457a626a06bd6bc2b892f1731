@@ -45,6 +45,30 @@
       "revId": "9e8b25126a72228457a626a06bd6bc2b892f1731",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "06261dd4_bebee06c",
+        "filename": "src/chromiumos/cmd/tast-lint/check/messages.go",
+        "patchSetId": 28
+      },
+      "lineNbr": 201,
+      "author": {
+        "id": 1367607
+      },
+      "writtenOn": "2019-12-20T03:36:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9714bb8a_680db47f",
+      "range": {
+        "startLine": 201,
+        "startChar": 18,
+        "endLine": 201,
+        "endChar": 57
+      },
+      "revId": "9e8b25126a72228457a626a06bd6bc2b892f1731",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

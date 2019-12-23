@@ -230,8 +230,9 @@ func getTargetArch(ctx context.Context, cfg *Config, hst *host.SSH) error {
 	cfg.Logger.Debug("Getting architecture from target")
 
 	// Get the userland architecture by inspecting an arbitrary binary on the target.
-	out, err := hst.Command("file", "-b", "-L", "/sbin/init").Output(ctx)
+	out, err := hst.Command("file", "-b", "-L", "/sbin/init").CombinedOutput(ctx)
 	if err != nil {
+		cfg.Logger.Logf("Error message: %s", out)
 		return err
 	}
 	s := string(out)

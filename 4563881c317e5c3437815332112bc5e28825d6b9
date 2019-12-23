@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "14b10a60_a10fa083",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 233,
+      "author": {
+        "id": 1108259
+      },
+      "writtenOn": "2019-12-23T04:11:08Z",
+      "side": 1,
+      "message": "It\u0027s probably possible to grab stderr too ?",
+      "range": {
+        "startLine": 233,
+        "startChar": 59,
+        "endLine": 233,
+        "endChar": 73
+      },
+      "revId": "4563881c317e5c3437815332112bc5e28825d6b9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

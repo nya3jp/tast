@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "42d54cb6_8b5ade5d",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 363,
+      "author": {
+        "id": 1371981
+      },
+      "writtenOn": "2019-12-23T09:38:34Z",
+      "side": 1,
+      "message": "Unit tests added.",
+      "parentUuid": "21425389_423a76e0",
+      "range": {
+        "startLine": 363,
+        "startChar": 16,
+        "endLine": 363,
+        "endChar": 39
+      },
+      "revId": "4e91883e202f439b4bdb82d01bc8ff846b08c095",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "94717664_dcf43c49",
         "filename": "src/chromiumos/tast/testing/state.go",
         "patchSetId": 3
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "cf9564fd_d46a264d",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 387,
+      "author": {
+        "id": 1371981
+      },
+      "writtenOn": "2019-12-23T09:38:34Z",
+      "side": 1,
+      "message": "The comment is fixed in comment of new interface.",
+      "parentUuid": "94717664_dcf43c49",
+      "range": {
+        "startLine": 387,
+        "startChar": 40,
+        "endLine": 387,
+        "endChar": 47
+      },
+      "revId": "4e91883e202f439b4bdb82d01bc8ff846b08c095",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "de0f2036_c5d2d742",
         "filename": "src/chromiumos/tast/testing/state.go",
         "patchSetId": 3
@@ -68,6 +116,30 @@
       "revId": "4e91883e202f439b4bdb82d01bc8ff846b08c095",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3bcbb7f2_fde7f64a",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 388,
+      "author": {
+        "id": 1371981
+      },
+      "writtenOn": "2019-12-23T09:38:34Z",
+      "side": 1,
+      "message": "Use ...WifiRouter... in new interface.",
+      "parentUuid": "de0f2036_c5d2d742",
+      "range": {
+        "startLine": 388,
+        "startChar": 16,
+        "endLine": 388,
+        "endChar": 28
+      },
+      "revId": "4e91883e202f439b4bdb82d01bc8ff846b08c095",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

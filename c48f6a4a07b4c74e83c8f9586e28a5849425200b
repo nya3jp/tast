@@ -46,6 +46,30 @@
       "revId": "c48f6a4a07b4c74e83c8f9586e28a5849425200b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7a5453de_d245e434",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 205,
+      "author": {
+        "id": 1371981
+      },
+      "writtenOn": "2019-12-23T09:38:34Z",
+      "side": 1,
+      "message": "Make SSH connection directly instead of exporting Hostname.",
+      "parentUuid": "933bf20a_1af0b805",
+      "range": {
+        "startLine": 205,
+        "startChar": 14,
+        "endLine": 205,
+        "endChar": 22
+      },
+      "revId": "c48f6a4a07b4c74e83c8f9586e28a5849425200b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

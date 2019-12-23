@@ -204,6 +204,13 @@ func presentChallenges(stdin int, prefix, user, inst string, qs []string, es []b
 // NewSSH establishes an SSH connection to the host described in o.
 // Callers are responsible to call SSH.Close after using it.
 func NewSSH(ctx context.Context, o *SSHOptions) (*SSH, error) {
+	if o.Port == 0 {
+		o.Port = defaultSSHPort
+	}
+	if o.User == "" {
+		o.User = defaultSSHUser
+	}
+
 	hostPort := fmt.Sprintf("%s:%d", o.Hostname, o.Port)
 	am, err := getSSHAuthMethods(o, "["+o.Hostname+"] ")
 	if err != nil {

@@ -62,6 +62,24 @@
       "revId": "c7cddb345a46235ccfb98353a4c201551125b5de",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "09634809_4a58b71f",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 235,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2019-12-24T01:38:04Z",
+      "side": 1,
+      "message": "Revert my previous comment. Keep the function here can hide connectCompanionDevice() as its only use case right now is DefaultWifiRouterHost().",
+      "parentUuid": "23543e50_c3e7ef5a",
+      "revId": "c7cddb345a46235ccfb98353a4c201551125b5de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

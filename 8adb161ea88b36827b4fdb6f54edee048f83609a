@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bac1c575_8cb36c2c",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 375,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2019-12-24T22:18:26Z",
+      "side": 1,
+      "message": "if test is not skipped.",
+      "range": {
+        "startLine": 375,
+        "startChar": 59,
+        "endLine": 375,
+        "endChar": 60
+      },
+      "revId": "8adb161ea88b36827b4fdb6f54edee048f83609a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "95983c49_bb015286",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2019-12-24T01:33:49Z",
+      "side": 1,
+      "message": ". Return error.",
+      "range": {
+        "startLine": 208,
+        "startChar": 31,
+        "endLine": 208,
+        "endChar": 46
+      },
+      "revId": "c7cddb345a46235ccfb98353a4c201551125b5de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "42b5ede1_ad1b93d6",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 218,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2019-12-24T01:33:49Z",
+      "side": 1,
+      "message": "WiFi AP.",
+      "range": {
+        "startLine": 218,
+        "startChar": 83,
+        "endLine": 218,
+        "endChar": 90
+      },
+      "revId": "c7cddb345a46235ccfb98353a4c201551125b5de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "23543e50_c3e7ef5a",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 235,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2019-12-24T01:33:49Z",
+      "side": 1,
+      "message": "This shall be lived in tast-tests/src/chromiumos/tast/remote/network/",
+      "revId": "c7cddb345a46235ccfb98353a4c201551125b5de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

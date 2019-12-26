@@ -48,7 +48,7 @@ func (p *testPre) Timeout() time.Duration { return time.Minute }
 func (p *testPre) String() string { return p.name }
 
 func TestAutoName(t *gotesting.T) {
-	tc, err := newRunnableTest(&Test{Func: RUNTEST}, nil)
+	tc, err := newRunnableTest(&Test{Func: RUNTEST})
 	if err != nil {
 		t.Fatal("failed to instantiate RunnableTest: ", err)
 	}
@@ -62,7 +62,7 @@ func TestAutoAttr(t *gotesting.T) {
 		Func:         RUNTEST,
 		Attr:         []string{"attr1", "attr2"},
 		SoftwareDeps: []string{"dep1", "dep2"},
-	}, nil)
+	})
 	if err != nil {
 		t.Fatal("failed to instantiate test case failed: ", err)
 	}
@@ -84,7 +84,7 @@ func TestAutoAttr(t *gotesting.T) {
 
 func TestAdditionalTime(t *gotesting.T) {
 	pre := &testPre{}
-	test, err := newRunnableTest(&Test{Func: RUNTEST, Timeout: 5 * time.Minute, Pre: pre}, nil)
+	test, err := newRunnableTest(&Test{Func: RUNTEST, Timeout: 5 * time.Minute, Pre: pre})
 	if err != nil {
 		t.Fatal("finalize() failed: ", err)
 	}
@@ -93,7 +93,7 @@ func TestAdditionalTime(t *gotesting.T) {
 	}
 
 	pre = &testPre{}
-	if test, err := newRunnableTest(&Test{Func: RUNTEST}, &Param{Timeout: time.Minute, Pre: pre}); err != nil {
+	if test, err := newRunnableTest(&Test{Func: RUNTEST, Timeout: time.Minute, Pre: pre}); err != nil {
 		t.Error(err)
 	} else if exp := preTestTimeout + postTestTimeout + 2*pre.Timeout(); test.AdditionalTime != exp {
 		t.Errorf("AdditionalTime = %v; want %v", test.AdditionalTime, exp)
@@ -101,20 +101,11 @@ func TestAdditionalTime(t *gotesting.T) {
 }
 
 func TestParamTest(t *gotesting.T) {
-	test, err := newRunnableTest(
-		&Test{
-			Func:         RUNTEST,
-			Attr:         []string{"attr1"},
-			Data:         []string{"data1"},
-			SoftwareDeps: []string{"dep1"},
-		},
-		&Param{
-			Name:              "param1",
-			Val:               10,
-			ExtraAttr:         []string{"attr2"},
-			ExtraData:         []string{"data2"},
-			ExtraSoftwareDeps: []string{"dep2"},
-		})
+	test, err := newRunnableTest(&Test{
+		Func:   RUNTEST,
+		suffix: "param1",
+		val:    10,
+	})
 	if err != nil {
 		t.Fatal("newRunnableTest failed: ", err)
 	}
@@ -126,92 +117,10 @@ func TestParamTest(t *gotesting.T) {
 	if test.Name != "testing.RUNTEST.param1" {
 		t.Errorf("Unexpected name: got %s; want testing.RUNTEST.param1", test.Name)
 	}
-
-	expectedAttr := []string{"name:testing.RUNTEST.param1", "bundle:tast", "dep:dep1", "dep:dep2", "attr1", "attr2"}
-	if !reflect.DeepEqual(test.Attr, expectedAttr) {
-		t.Errorf("Unexpected attrs: got %v; want %v", test.Attr, expectedAttr)
-	}
-
-	expectedData := []string{"data1", "data2"}
-	if !reflect.DeepEqual(test.Data, expectedData) {
-		t.Errorf("Unexpected data: got %v; want %v", test.Data, expectedData)
-	}
-
-	expectedDeps := []string{"dep1", "dep2"}
-	if !reflect.DeepEqual(test.SoftwareDeps, expectedDeps) {
-		t.Errorf("Unexpected SoftwareDeps: got %v; want %v", test.SoftwareDeps, expectedDeps)
-	}
-}
-
-func TestParamTestWithEmptyName(t *gotesting.T) {
-	test, err := newRunnableTest(&Test{Func: RUNTEST}, &Param{})
-	if err != nil {
-		t.Fatal("newRunnableTest failed: ", err)
-	}
-	if test.Name != "testing.RUNTEST" {
-		t.Errorf("Unexpected name: got %s; want testing.RUNTEST", test.Name)
-	}
-}
-
-func TestParamTestWithPre(t *gotesting.T) {
-	pre := &testPre{name: "precondition"}
-	// At most one Pre condition can be present. If newRunnableTest fails, test passes.
-	if _, err := newRunnableTest(&Test{Func: RUNTEST, Pre: pre}, &Param{Pre: pre}); err == nil {
-		t.Error("newRunnableTest unexpectedly passed for duplicated preconditions")
-	}
-
-	// Precondition only at enclosing test.
-	if tc, err := newRunnableTest(&Test{Func: RUNTEST, Pre: pre}, &Param{}); err != nil {
-		t.Error(err)
-	} else if tc.Pre != pre {
-		t.Errorf("Invalid precondition = %v; want %v", tc.Pre, pre)
-	}
-
-	// Precondition only at parametrized test.
-	if tc, err := newRunnableTest(&Test{Func: RUNTEST}, &Param{Pre: pre}); err != nil {
-		t.Error(err)
-	} else if tc.Pre != pre {
-		t.Errorf("Invalid precondition = %v; want %v", tc.Pre, pre)
-	}
-
-	// No preconditions.
-	if tc, err := newRunnableTest(&Test{Func: RUNTEST}, &Param{}); err != nil {
-		t.Error(err)
-	} else if tc.Pre != nil {
-		t.Errorf("Invalid precondition = %v; want nil", tc.Pre)
-	}
-}
-
-func TestParamTestWithTimeout(t *gotesting.T) {
-	// At most one Pre condition can be present. If newRunnableTest fails, test passes.
-	if _, err := newRunnableTest(&Test{Func: RUNTEST, Timeout: time.Minute}, &Param{Timeout: time.Minute}); err == nil {
-		t.Error("newRunnableTest unexpectedly passed for duplicated timeout")
-	}
-
-	// Timeout only at enclosing test.
-	if tc, err := newRunnableTest(&Test{Func: RUNTEST, Timeout: time.Minute}, &Param{}); err != nil {
-		t.Error(err)
-	} else if tc.Timeout != time.Minute {
-		t.Errorf("Invalid Timeout = %v; want %v", tc.Timeout, time.Minute)
-	}
-
-	// Timeout only at parametrized test.
-	if tc, err := newRunnableTest(&Test{Func: RUNTEST}, &Param{Timeout: time.Minute}); err != nil {
-		t.Error(err)
-	} else if tc.Timeout != time.Minute {
-		t.Errorf("Invalid precondition = %v; want %v", tc.Timeout, time.Minute)
-	}
-
-	// No Timeout.
-	if tc, err := newRunnableTest(&Test{Func: RUNTEST}, &Param{}); err != nil {
-		t.Error(err)
-	} else if tc.Timeout != 0 {
-		t.Errorf("Invalid precondition = %v; want 0", tc.Timeout)
-	}
 }
 
 func TestDataDir(t *gotesting.T) {
-	test, err := newRunnableTest(&Test{Func: RUNTEST}, nil)
+	test, err := newRunnableTest(&Test{Func: RUNTEST})
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -75,11 +75,69 @@ type Test struct {
 	Timeout time.Duration
 
 	// Params lists the Param structs for parameterized tests.
+	// This field must be nil for a settled Test.
 	Params []Param
 
 	// ServiceDeps contains a list of RPC service names in local test bundles that this remote test
 	// will access. This field is valid only for remote tests.
 	ServiceDeps []string
+
+	// suffix is a string to be appended to the test name with a leading dot.
+	// This field can be set only for a settled Test.
+	suffix string
+
+	// val is the value can be obtained with testing.State.PreValue.
+	// This field can be set only for a settled Test.
+	val interface{}
+}
+
+// clone makes a deep copy of t.
+func (t *Test) clone() *Test {
+	ct := *t
+	ct.Contacts = append([]string(nil), ct.Contacts...)
+	ct.Attr = append([]string(nil), ct.Attr...)
+	ct.Data = append([]string(nil), ct.Data...)
+	ct.Vars = append([]string(nil), ct.Vars...)
+	ct.SoftwareDeps = append([]string(nil), ct.SoftwareDeps...)
+	for i, p := range ct.Params {
+		ct.Params[i] = *p.clone()
+	}
+	ct.ServiceDeps = append([]string(nil), ct.ServiceDeps...)
+	return &ct
+}
+
+// settle validates t and expands t to one more Tests by applying Params.
+// This method must be called before passing Test to newRunnableTest.
+func (t *Test) settle() ([]*Test, error) {
+	if err := validateParams(t.Params); err != nil {
+		return nil, err
+	}
+
+	// Expand t.Params.
+	var es []*Test
+	if len(t.Params) == 0 {
+		e := t.clone()
+		e.Params = nil
+		es = []*Test{e}
+	} else {
+		es = make([]*Test, len(t.Params))
+		for i, p := range t.Params {
+			e := t.clone()
+			e.Params = nil
+			if err := p.apply(e); err != nil {
+				return nil, err
+			}
+			es[i] = e
+		}
+	}
+
+	for _, e := range es {
+		if err := validateTest(e); err != nil {
+			return nil, err
+		}
+	}
+
+	return es, nil
 }
 
 // Param defines parameters for a parameterized test case.
@@ -115,7 +173,49 @@ type Param struct {
 	Val interface{}
 }
 
+// clone makes a deep copy of p.
+func (p *Param) clone() *Param {
+	cp := *p
+	cp.ExtraAttr = append([]string(nil), cp.ExtraAttr...)
+	cp.ExtraData = append([]string(nil), cp.ExtraData...)
+	cp.ExtraSoftwareDeps = append([]string(nil), cp.ExtraSoftwareDeps...)
+	return &cp
+}
+
+// apply applies p by modifying t.
+func (p *Param) apply(t *Test) error {
+	if t.Params != nil {
+		return errors.New("Test.Params is not nil")
+	}
+
+	t.suffix = p.Name
+	t.Attr = append(t.Attr, p.ExtraAttr...)
+	t.Data = append(t.Data, p.ExtraData...)
+	t.SoftwareDeps = append(t.SoftwareDeps, p.ExtraSoftwareDeps...)
+	if p.Pre != nil {
+		if t.Pre != nil {
+			return errors.New("both Param and its enclosing Test have Pre; only either one of them can be set")
+		}
+		t.Pre = p.Pre
+	}
+	if p.Timeout != 0 {
+		if t.Timeout != 0 {
+			return errors.New("both Param and its enclosing Test have Timeout; only either one of them can be set")
+		}
+		t.Timeout = p.Timeout
+	}
+	t.val = p.Val
+	return nil
+}
+
+// paramNameRegexp validates each parametiric case names.
+var paramNameRegexp = regexp.MustCompile("^[a-z0-9_]*$")
+
 func validateTest(t *Test) error {
+	if t.Params != nil {
+		return errors.New("Test must be settled before validation")
+	}
+
 	info, err := getTestFuncInfo(t.Func)
 	if err != nil {
 		return err
@@ -138,12 +238,9 @@ func validateTest(t *Test) error {
 			return fmt.Errorf("precondition %s does not implement preconditionImpl", t.Pre)
 		}
 	}
-	for _, p := range t.Params {
-		if err := validateParam(&p); err != nil {
-			return err
-		}
+	if t.suffix != "" && !paramNameRegexp.MatchString(t.suffix) {
+		return fmt.Errorf("invalid param name %q (want to match with [a-z0-9_]*)", t.suffix)
 	}
-
 	return nil
 }
 
@@ -269,18 +366,9 @@ func validateData(data []string) error {
 	return nil
 }
 
-// paramNameRegexp validates each parametiric case names.
-var paramNameRegexp = regexp.MustCompile("^[a-z0-9_]*$")
-
 func validateParams(params []Param) error {
 	if len(params) == 0 {
 		return nil
-	}
-
-	for _, p := range params {
-		if err := validateParam(&p); err != nil {
-			return err
-		}
 	}
 
 	// Ensure unique param name.
@@ -300,21 +388,6 @@ func validateParams(params []Param) error {
 		if typ != typ0 {
 			return fmt.Errorf("unmatched Val type: got %v; want %v", typ, typ0)
 		}
-	}
-
-	return nil
-}
-
-func validateParam(p *Param) error {
-	if !paramNameRegexp.MatchString(p.Name) {
-		return fmt.Errorf("invalid param name %q (want to match with [a-z0-9_]*)", p.Name)
-	}
-
-	if err := validateAttr(p.ExtraAttr); err != nil {
-		return err
-	}
-	if err := validateData(p.ExtraData); err != nil {
-		return err
 	}
 
 	return nil

@@ -6,6 +6,7 @@ package testing
 
 import (
 	"context"
+	"reflect"
 	gotesting "testing"
 	"time"
 )
@@ -17,12 +18,6 @@ func TESTTEST(context.Context, *State) {}
 
 // InvalidTestName is an arbitrary public test function used by unit tests.
 func InvalidTestName(context.Context, *State) {}
-
-func TestMissingFunc(t *gotesting.T) {
-	if err := validateTest(&Test{}); err == nil {
-		t.Error("Didn't get error with missing function")
-	}
-}
 
 func TestValidateName(t *gotesting.T) {
 	for _, tc := range []struct {
@@ -62,111 +57,263 @@ func TestValidateName(t *gotesting.T) {
 	}
 }
 
-// TestAutoName makes sure the validateName runs agains the name delived from
-// the Func's function name and its source file name.
-func TestFuncName(t *gotesting.T) {
-	if err := validateTest(&Test{Func: TESTTEST}); err != nil {
+func TestSettle(t *gotesting.T) {
+	test := &Test{
+		Func:         TESTTEST,
+		Attr:         []string{"group:mainline", "group:crosbolt"},
+		Data:         []string{"data1.txt", "data2.txt"},
+		SoftwareDeps: []string{"chrome", "android"},
+		Params: []Param{{
+			Name:              "p10",
+			Val:               10,
+			ExtraAttr:         []string{"informational"},
+			ExtraData:         []string{"data10.txt"},
+			ExtraSoftwareDeps: []string{"tpm"},
+		}, {
+			Name:              "p20",
+			Val:               20,
+			ExtraAttr:         []string{"crosbolt_weekly"},
+			ExtraData:         []string{"data20.txt"},
+			ExtraSoftwareDeps: []string{"wifi"},
+		}},
+	}
+	sts, err := test.settle()
+	if err != nil {
+		t.Fatal("settle failed: ", err)
+	}
+	if len(sts) != 2 {
+		t.Fatalf("settle returned %d Test(s); want 2", len(sts))
+	}
+	{
+		st := sts[0]
+		if got, want := st.suffix, "p10"; got != want {
+			t.Errorf("sts[0].suffix = %q; want %q", got, want)
+		}
+		if got, want := st.val.(int), 10; got != want {
+			t.Errorf("sts[0].val = %q; want %q", got, want)
+		}
+		if got, want := st.Attr, []string{"group:mainline", "group:crosbolt", "informational"}; !reflect.DeepEqual(got, want) {
+			t.Errorf("sts[0].Attr = %q; want %q", got, want)
+		}
+		if got, want := st.Data, []string{"data1.txt", "data2.txt", "data10.txt"}; !reflect.DeepEqual(got, want) {
+			t.Errorf("sts[0].Data = %q; want %q", got, want)
+		}
+		if got, want := st.SoftwareDeps, []string{"chrome", "android", "tpm"}; !reflect.DeepEqual(got, want) {
+			t.Errorf("sts[0].SoftwareDeps = %q; want %q", got, want)
+		}
+	}
+	{
+		st := sts[1]
+		if got, want := st.suffix, "p20"; got != want {
+			t.Errorf("sts[1].suffix = %q; want %q", got, want)
+		}
+		if got, want := st.val.(int), 20; got != want {
+			t.Errorf("sts[1].val = %q; want %q", got, want)
+		}
+		if got, want := st.Attr, []string{"group:mainline", "group:crosbolt", "crosbolt_weekly"}; !reflect.DeepEqual(got, want) {
+			t.Errorf("sts[1].Attr = %q; want %q", got, want)
+		}
+		if got, want := st.Data, []string{"data1.txt", "data2.txt", "data20.txt"}; !reflect.DeepEqual(got, want) {
+			t.Errorf("sts[1].Data = %q; want %q", got, want)
+		}
+		if got, want := st.SoftwareDeps, []string{"chrome", "android", "wifi"}; !reflect.DeepEqual(got, want) {
+			t.Errorf("sts[1].SoftwareDeps = %q; want %q", got, want)
+		}
+	}
+}
+
+func TestSettleMissingFunc(t *gotesting.T) {
+	test := &Test{}
+	if _, err := test.settle(); err == nil {
+		t.Error("Didn't get error with missing function")
+	}
+}
+
+func TestSettleFuncName(t *gotesting.T) {
+	test := &Test{
+		Func: TESTTEST,
+	}
+	if _, err := test.settle(); err != nil {
 		t.Error("Got error when finalizing test with valid test func name: ", err)
 	}
-	if err := validateTest(&Test{Func: InvalidTestName}); err == nil {
+	test = &Test{
+		Func: InvalidTestName,
+	}
+	if _, err := test.settle(); err == nil {
 		t.Error("Didn't get expected error when finalizing test with invalid test func name")
 	}
 }
 
-func TestValidateDataPath(t *gotesting.T) {
-	if err := validateData([]string{"foo", "bar/baz"}); err != nil {
-		t.Errorf("Got an unexpected error: %v", err)
+func TestSettleInvalidDataPaths(t *gotesting.T) {
+	for _, path := range []string{
+		"/etc/passwd",
+		"foo/../foo/bar",
+		"../baz",
+	} {
+		test := &Test{
+			Func: TESTTEST,
+			Data: []string{path},
+		}
+		if _, err := test.settle(); err == nil {
+			t.Errorf("settle unexpectedly succeeded for data path %q", path)
+		}
 	}
 }
 
-func TestValidateDataPathUnclean(t *gotesting.T) {
-	if err := validateData([]string{"foo", "bar/../bar/baz"}); err == nil {
-		t.Error("Did not get an error with unclean path")
-	}
-}
-
-func TestValidateDataPathAbsolutePath(t *gotesting.T) {
-	if err := validateData([]string{"foo", "/etc/passwd"}); err == nil {
-		t.Error("Did not get an error with absolute path")
-	}
-}
-
-func TestValidateDataPathRelativePath(t *gotesting.T) {
-	if err := validateData([]string{"foo", "../baz"}); err == nil {
-		t.Error("Did not get an error with relative path")
-	}
-}
-
-func TestReservedAttrPrefixes(t *gotesting.T) {
+func TestSettleReservedAttrPrefixes(t *gotesting.T) {
 	for _, attr := range []string{
 		testNameAttrPrefix + "foo",
 		testBundleAttrPrefix + "bar",
 		testDepAttrPrefix + "dep",
 	} {
-		if err := validateAttr([]string{attr}); err == nil {
-			t.Errorf("Did not get an error for reserved attribute %q", attr)
+		test := &Test{
+			Func: TESTTEST,
+			Attr: []string{attr},
+		}
+		if _, err := test.settle(); err == nil {
+			t.Errorf("settle unexpectedly succeeded for attr %q", attr)
 		}
 	}
 }
 
-func TestNegativeTimeout(t *gotesting.T) {
-	if err := validateTest(&Test{Func: TESTTEST, Timeout: -1 * time.Second}); err == nil {
-		t.Error("Didn't get error with negative timeout")
+func TestSettleNegativeTimeout(t *gotesting.T) {
+	test := &Test{
+		Func:    TESTTEST,
+		Timeout: -1 * time.Second,
+	}
+	if _, err := test.settle(); err == nil {
+		t.Error("settle unexpectedly succeeded with negative timeout")
 	}
 }
 
-func TestParamUniqueName(t *gotesting.T) {
-	ps := []Param{{
-		Name: "abc",
-	}, {
-		Name: "abc",
-	}}
-
-	if err := validateParams(ps); err == nil {
-		t.Error("Did not get an error with duplicated param case names")
+func TestSettleUniqueParamNames(t *gotesting.T) {
+	test := &Test{
+		Func: TESTTEST,
+		Params: []Param{{
+			Name: "abc",
+		}, {
+			Name: "abc",
+		}},
+	}
+	if _, err := test.settle(); err == nil {
+		t.Error("settle unexpectedly succeeded with duplicated parameter names")
 	}
 }
 
-func TestParamValType(t *gotesting.T) {
-	ps := []Param{{
-		Name: "case1",
-		Val:  1,
-	}, {
-		Name: "case2",
-		Val:  "string",
-	}}
-	if err := validateParams(ps); err == nil {
-		t.Error("Did not get an error with param cases containing different value type")
+func TestSettleValTypes(t *gotesting.T) {
+	test := &Test{
+		Func: TESTTEST,
+		Params: []Param{{
+			Name: "case1",
+			Val:  1,
+		}, {
+			Name: "case2",
+			Val:  "string",
+		}},
+	}
+	if _, err := test.settle(); err == nil {
+		t.Error("settle unexpectedly succeeded with inconsistent val types")
 	}
 }
 
-func TestParamName(t *gotesting.T) {
-	if err := validateParam(&Param{}); err != nil {
-		t.Error("Empty name should be allowed: ", err)
-	}
-	if err := validateParam(&Param{Name: "word1_word2"}); err != nil {
-		t.Error("Unexpected param name validation failure: ", err)
-	}
-	if err := validateParam(&Param{Name: "CapitalName"}); err == nil {
-		t.Error("Capital Param.Name is unexpectedly passed")
-	}
-	if err := validateParam(&Param{Name: "!#$%&'()"}); err == nil {
-		t.Error("Symbol in Param.Name is unexpectedly passed")
+func TestSettleSuffix(t *gotesting.T) {
+	for _, tc := range []struct {
+		suffix  string
+		success bool
+	}{
+		{"", true},
+		{"word1_word2", true},
+		{"CapitalName", false},
+		{"!#$%&'()", false},
+	} {
+		test := &Test{
+			Func:   TESTTEST,
+			Params: []Param{{Name: tc.suffix}},
+		}
+		_, err := test.settle()
+		if tc.success {
+			if err != nil {
+				t.Errorf("settle failed for suffix %q: %v", tc.suffix, err)
+			}
+		} else {
+			if err == nil {
+				t.Errorf("settle unexpectedly succeeded for suffix %q", tc.suffix)
+			}
+		}
 	}
 }
 
-func TestParamExtraAttr(t *gotesting.T) {
-	// Just one test case. Detailed check is deferred to validateAttr()'s test.
-	attr := testNameAttrPrefix + "foo"
-	if err := validateParam(&Param{ExtraAttr: []string{attr}}); err == nil {
-		t.Errorf("Did not get an error for reserved attribute %q", attr)
+func TestSettleNoParams(t *gotesting.T) {
+	test := &Test{
+		Func:         TESTTEST,
+		Attr:         []string{"group:mainline", "group:crosbolt"},
+		Data:         []string{"data1.txt", "data2.txt"},
+		SoftwareDeps: []string{"chrome", "android"},
+	}
+	sts, err := test.settle()
+	if err != nil {
+		t.Fatal("settle failed: ", err)
+	}
+	if len(sts) != 1 {
+		t.Fatalf("settle returned %d Test(s); want 1", len(sts))
 	}
 }
 
-func TestParamExtraData(t *gotesting.T) {
-	// Just one test case. Detailed check is deferred to validateData()'s test.
-	const data = "/etc/passwd"
-	if err := validateParam(&Param{ExtraData: []string{data}}); err == nil {
-		t.Error("Did not get an error with absolute path")
+func TestSettlePreConflict(t *gotesting.T) {
+	pre := &testPre{}
+	if _, err := (&Test{
+		Func:   TESTTEST,
+		Pre:    pre,
+		Params: []Param{{}},
+	}).settle(); err != nil {
+		t.Error("settle failed: ", err)
+	}
+
+	if _, err := (&Test{
+		Func: TESTTEST,
+		Params: []Param{{
+			Pre: pre,
+		}},
+	}).settle(); err != nil {
+		t.Error("settle failed: ", err)
+	}
+
+	if _, err := (&Test{
+		Func: TESTTEST,
+		Pre:  pre,
+		Params: []Param{{
+			Pre: pre,
+		}},
+	}).settle(); err == nil {
+		t.Error("settle unexpectedly succeeded")
+	}
+}
+
+func TestSettleTimeoutConflict(t *gotesting.T) {
+	if _, err := (&Test{
+		Func:    TESTTEST,
+		Timeout: time.Hour,
+		Params:  []Param{{}},
+	}).settle(); err != nil {
+		t.Error("settle failed: ", err)
+	}
+
+	if _, err := (&Test{
+		Func: TESTTEST,
+		Params: []Param{{
+			Timeout: time.Hour,
+		}},
+	}).settle(); err != nil {
+		t.Error("settle failed: ", err)
+	}
+
+	if _, err := (&Test{
+		Func:    TESTTEST,
+		Timeout: time.Hour,
+		Params: []Param{{
+			Timeout: time.Hour,
+		}},
+	}).settle(); err == nil {
+		t.Error("settle unexpectedly succeeded")
 	}
 }

@@ -22,6 +22,30 @@
       "revId": "8adb161ea88b36827b4fdb6f54edee048f83609a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "99744edd_23d83a2e",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 375,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-12-26T02:43:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bac1c575_8cb36c2c",
+      "range": {
+        "startLine": 375,
+        "startChar": 59,
+        "endLine": 375,
+        "endChar": 60
+      },
+      "revId": "8adb161ea88b36827b4fdb6f54edee048f83609a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

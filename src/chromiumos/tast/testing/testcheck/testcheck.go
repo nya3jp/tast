@@ -14,10 +14,10 @@ import (
 )
 
 // TestFilter defines the condition whether or not the test should be checked.
-type TestFilter func(t *testing.TestCase) bool
+type TestFilter func(t *testing.TestInstance) bool
 
-func getTests(t *gotesting.T, f TestFilter) []*testing.TestCase {
-	var tests []*testing.TestCase
+func getTests(t *gotesting.T, f TestFilter) []*testing.TestInstance {
+	var tests []*testing.TestInstance
 	for _, tst := range testing.GlobalRegistry().AllTests() {
 		if f(tst) {
 			tests = append(tests, tst)
@@ -36,7 +36,7 @@ func Glob(t *gotesting.T, glob string) TestFilter {
 	if err != nil {
 		t.Fatalf("Bad glob %q: %v", glob, err)
 	}
-	return func(t *testing.TestCase) bool {
+	return func(t *testing.TestInstance) bool {
 		return re.MatchString(t.Name)
 	}
 }

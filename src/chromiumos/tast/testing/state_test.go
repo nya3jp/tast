@@ -25,7 +25,7 @@ import (
 
 func TestLog(t *gotesting.T) {
 	or := newOutputReader()
-	s := newState(&TestCase{Timeout: time.Minute}, or.ch, &TestConfig{})
+	s := newState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
 	s.Log("msg ", 1)
 	s.Logf("msg %d", 2)
 	close(or.ch)
@@ -37,7 +37,7 @@ func TestLog(t *gotesting.T) {
 
 func TestNestedRun(t *gotesting.T) {
 	or := newOutputReader()
-	s := newState(&TestCase{Timeout: time.Minute}, or.ch, &TestConfig{})
+	s := newState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
 	ctx := context.Background()
 
 	s.Run(ctx, "p1", func(ctx context.Context, s *State) {
@@ -63,7 +63,7 @@ func TestNestedRun(t *gotesting.T) {
 
 func TestParallelRun(t *gotesting.T) {
 	or := newOutputReader()
-	s := newState(&TestCase{Timeout: time.Minute}, or.ch, &TestConfig{})
+	s := newState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
 	ctx := context.Background()
 
 	var wg sync.WaitGroup
@@ -112,7 +112,7 @@ func TestParallelRun(t *gotesting.T) {
 
 func TestReportError(t *gotesting.T) {
 	or := newOutputReader()
-	s := newState(&TestCase{Timeout: time.Minute}, or.ch, &TestConfig{})
+	s := newState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
 
 	// Keep these lines next to each other (see below comparison).
 	s.Error("error ", 1)
@@ -159,7 +159,7 @@ func errorFunc() error {
 
 func TestExtractErrorSimple(t *gotesting.T) {
 	or := newOutputReader()
-	s := newState(&TestCase{Timeout: time.Minute}, or.ch, &TestConfig{})
+	s := newState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
 
 	err := errorFunc()
 	s.Error(err)
@@ -185,7 +185,7 @@ func TestExtractErrorSimple(t *gotesting.T) {
 
 func TestExtractErrorHeuristic(t *gotesting.T) {
 	or := newOutputReader()
-	s := newState(&TestCase{Timeout: time.Minute}, or.ch, &TestConfig{})
+	s := newState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
 
 	err := errorFunc()
 	s.Error("Failed something  :  ", err)
@@ -215,7 +215,7 @@ func TestExtractErrorHeuristic(t *gotesting.T) {
 
 func TestRunUsePrefix(t *gotesting.T) {
 	or := newOutputReader()
-	s := newState(&TestCase{Timeout: time.Minute}, or.ch, &TestConfig{})
+	s := newState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
 
 	ctx := context.Background()
 	s.Run(ctx, "f1", func(ctx context.Context, s *State) {
@@ -248,7 +248,7 @@ func TestRunUsePrefix(t *gotesting.T) {
 
 func TestRunNonFatal(t *gotesting.T) {
 	or := newOutputReader()
-	s := newState(&TestCase{Timeout: time.Minute}, or.ch, &TestConfig{})
+	s := newState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
 
 	// Log the fatal message in a goroutine so the main goroutine that's running the test won't exit.
 	done := make(chan bool)
@@ -275,7 +275,7 @@ func TestRunNonFatal(t *gotesting.T) {
 
 func TestFatal(t *gotesting.T) {
 	or := newOutputReader()
-	s := newState(&TestCase{Timeout: time.Minute}, or.ch, &TestConfig{})
+	s := newState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
 
 	// Log the fatal message in a goroutine so the main goroutine that's running the test won't exit.
 	done := make(chan bool)
@@ -304,7 +304,7 @@ func TestDataPathDeclared(t *gotesting.T) {
 	const (
 		dataDir = "/tmp/data"
 	)
-	test := TestCase{
+	test := TestInstance{
 		Timeout: time.Minute,
 		Data:    []string{"foo", "foo/bar", "foo/baz"},
 	}
@@ -323,7 +323,7 @@ func TestDataPathDeclared(t *gotesting.T) {
 
 func TestDataPathNotDeclared(t *gotesting.T) {
 	or := newOutputReader()
-	test := TestCase{
+	test := TestInstance{
 		Timeout: time.Minute,
 		Data:    []string{"foo"},
 	}
@@ -364,7 +364,7 @@ func TestDataFileServer(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	test := TestCase{Data: []string{file1}}
+	test := TestInstance{Data: []string{file1}}
 	or := newOutputReader()
 	s := newState(&test, or.ch, &TestConfig{DataDir: td})
 
@@ -416,7 +416,7 @@ func TestVars(t *gotesting.T) {
 		unregValue = "unreg value"
 	)
 
-	test := &TestCase{Vars: []string{validName, unsetName}}
+	test := &TestInstance{Vars: []string{validName, unsetName}}
 	cfg := &TestConfig{Vars: map[string]string{validName: validValue, unregName: unregValue}}
 	or := newOutputReader()
 	s := newState(test, or.ch, cfg)
@@ -472,7 +472,7 @@ func TestVars(t *gotesting.T) {
 
 func TestMeta(t *gotesting.T) {
 	meta := Meta{TastPath: "/foo/bar", Target: "example.net", RunFlags: []string{"-foo", "-bar"}}
-	getMeta := func(test *TestCase, cfg *TestConfig) (*State, *Meta) {
+	getMeta := func(test *TestInstance, cfg *TestConfig) (*State, *Meta) {
 		or := newOutputReader()
 		s := newState(test, or.ch, cfg)
 
@@ -493,7 +493,7 @@ func TestMeta(t *gotesting.T) {
 	)
 
 	// Meta info should be provided to tests in the "meta" package.
-	if s, m := getMeta(&TestCase{Name: metaTest}, &TestConfig{RemoteData: &RemoteData{Meta: &meta}}); s.HasError() {
+	if s, m := getMeta(&TestInstance{Name: metaTest}, &TestConfig{RemoteData: &RemoteData{Meta: &meta}}); s.HasError() {
 		t.Errorf("Meta() reported error for %v", metaTest)
 	} else if m == nil {
 		t.Errorf("Meta() = nil for %v", metaTest)
@@ -502,14 +502,14 @@ func TestMeta(t *gotesting.T) {
 	}
 
 	// Tests not in the "meta" package shouldn't have access to meta info.
-	if s, m := getMeta(&TestCase{Name: nonMetaTest}, &TestConfig{RemoteData: &RemoteData{Meta: &meta}}); !s.HasError() {
+	if s, m := getMeta(&TestInstance{Name: nonMetaTest}, &TestConfig{RemoteData: &RemoteData{Meta: &meta}}); !s.HasError() {
 		t.Errorf("Meta() didn't report error for %v", nonMetaTest)
 	} else if m != nil {
 		t.Errorf("Meta() = %+v for %v", *m, nonMetaTest)
 	}
 
 	// Check that newState doesn't crash or somehow get a non-nil Meta struct when initially passed a nil struct.
-	if s, m := getMeta(&TestCase{Name: metaTest}, &TestConfig{}); !s.HasError() {
+	if s, m := getMeta(&TestInstance{Name: metaTest}, &TestConfig{}); !s.HasError() {
 		t.Error("Meta() didn't report error for nil info")
 	} else if m != nil {
 		t.Errorf("Meta() = %+v despite nil info", *m)
@@ -518,7 +518,7 @@ func TestMeta(t *gotesting.T) {
 
 func TestRPCHint(t *gotesting.T) {
 	hint := RPCHint{LocalBundleDir: "/path/to/bundles"}
-	getHint := func(test *TestCase, cfg *TestConfig) (*State, *RPCHint) {
+	getHint := func(test *TestInstance, cfg *TestConfig) (*State, *RPCHint) {
 		or := newOutputReader()
 		s := newState(test, or.ch, cfg)
 
@@ -539,7 +539,7 @@ func TestRPCHint(t *gotesting.T) {
 	)
 
 	// RPCHint should be provided to remote tests.
-	if s, h := getHint(&TestCase{Name: remoteTest}, &TestConfig{RemoteData: &RemoteData{RPCHint: &hint}}); s.HasError() {
+	if s, h := getHint(&TestInstance{Name: remoteTest}, &TestConfig{RemoteData: &RemoteData{RPCHint: &hint}}); s.HasError() {
 		t.Errorf("RPCHint() reported error for %v", remoteTest)
 	} else if h == nil {
 		t.Errorf("RPCHint() = nil for %v", remoteTest)
@@ -548,7 +548,7 @@ func TestRPCHint(t *gotesting.T) {
 	}
 
 	// Local tests shouldn't have access to RPCHint.
-	if s, h := getHint(&TestCase{Name: localTest}, &TestConfig{}); !s.HasError() {
+	if s, h := getHint(&TestInstance{Name: localTest}, &TestConfig{}); !s.HasError() {
 		t.Errorf("RPCHint() didn't report error for %v", localTest)
 	} else if h != nil {
 		t.Errorf("RPCHint() = %+v for %v", *h, localTest)
@@ -556,7 +556,7 @@ func TestRPCHint(t *gotesting.T) {
 }
 
 func TestDUT(t *gotesting.T) {
-	callDUT := func(test *TestCase, cfg *TestConfig) *State {
+	callDUT := func(test *TestInstance, cfg *TestConfig) *State {
 		or := newOutputReader()
 		s := newState(test, or.ch, cfg)
 
@@ -577,12 +577,12 @@ func TestDUT(t *gotesting.T) {
 	)
 
 	// DUT should be provided to remote tests.
-	if s := callDUT(&TestCase{Name: remoteTest}, &TestConfig{RemoteData: &RemoteData{}}); s.HasError() {
+	if s := callDUT(&TestInstance{Name: remoteTest}, &TestConfig{RemoteData: &RemoteData{}}); s.HasError() {
 		t.Errorf("DUT() reported error for %v", remoteTest)
 	}
 
 	// Local tests shouldn't have access to DUT.
-	if s := callDUT(&TestCase{Name: localTest}, &TestConfig{}); !s.HasError() {
+	if s := callDUT(&TestInstance{Name: localTest}, &TestConfig{}); !s.HasError() {
 		t.Errorf("DUT() didn't report error for %v", localTest)
 	}
 }

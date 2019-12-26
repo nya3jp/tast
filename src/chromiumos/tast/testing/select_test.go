@@ -15,7 +15,7 @@ func TestSelectTestsByArgs(t *testing.T) {
 		name1 = "cat.MyTest1"
 		name2 = "cat.MyTest2"
 	)
-	allTests := []*TestCase{
+	allTests := []*TestInstance{
 		{Name: name1, Func: func(context.Context, *State) {}, Attr: []string{"attr1", "attr2"}},
 		{Name: name2, Func: func(context.Context, *State) {}, Attr: []string{"attr2"}},
 	}
@@ -62,7 +62,7 @@ func TestSelectTestsByArgs(t *testing.T) {
 }
 
 func TestSelectTestsByGlobs(t *testing.T) {
-	allTests := []*TestCase{
+	allTests := []*TestInstance{
 		{Name: "test.Foo", Func: func(context.Context, *State) {}},
 		{Name: "test.Bar", Func: func(context.Context, *State) {}},
 		{Name: "blah.Foo", Func: func(context.Context, *State) {}},
@@ -70,18 +70,18 @@ func TestSelectTestsByGlobs(t *testing.T) {
 
 	for _, tc := range []struct {
 		glob     string
-		expected []*TestCase
+		expected []*TestInstance
 	}{
-		{"test.Foo", []*TestCase{allTests[0]}},
-		{"test.Bar", []*TestCase{allTests[1]}},
-		{"test.*", []*TestCase{allTests[0], allTests[1]}},
-		{"*.Foo", []*TestCase{allTests[0], allTests[2]}},
-		{"*.*", []*TestCase{allTests[0], allTests[1], allTests[2]}},
-		{"*", []*TestCase{allTests[0], allTests[1], allTests[2]}},
-		{"", []*TestCase{}},
-		{"bogus", []*TestCase{}},
+		{"test.Foo", []*TestInstance{allTests[0]}},
+		{"test.Bar", []*TestInstance{allTests[1]}},
+		{"test.*", []*TestInstance{allTests[0], allTests[1]}},
+		{"*.Foo", []*TestInstance{allTests[0], allTests[2]}},
+		{"*.*", []*TestInstance{allTests[0], allTests[1], allTests[2]}},
+		{"*", []*TestInstance{allTests[0], allTests[1], allTests[2]}},
+		{"", []*TestInstance{}},
+		{"bogus", []*TestInstance{}},
 		// Test that periods are escaped.
-		{"test.Fo.", []*TestCase{}},
+		{"test.Fo.", []*TestInstance{}},
 	} {
 		if tests, err := selectTestsByGlob(allTests, tc.glob); err != nil {
 			t.Fatalf("selectTestsByGlob(%q) failed: %v", tc.glob, err)
@@ -93,12 +93,12 @@ func TestSelectTestsByGlobs(t *testing.T) {
 	// Now test multiple globs.
 	for _, tc := range []struct {
 		globs    []string
-		expected []*TestCase
+		expected []*TestInstance
 	}{
-		{[]string{"test.Foo"}, []*TestCase{allTests[0]}},
-		{[]string{"test.Foo", "test.Foo"}, []*TestCase{allTests[0]}},
-		{[]string{"test.Foo", "test.Bar"}, []*TestCase{allTests[0], allTests[1]}},
-		{[]string{"no.Matches"}, []*TestCase{}},
+		{[]string{"test.Foo"}, []*TestInstance{allTests[0]}},
+		{[]string{"test.Foo", "test.Foo"}, []*TestInstance{allTests[0]}},
+		{[]string{"test.Foo", "test.Bar"}, []*TestInstance{allTests[0], allTests[1]}},
+		{[]string{"no.Matches"}, []*TestInstance{}},
 	} {
 		if tests, err := SelectTestsByGlobs(allTests, tc.globs); err != nil {
 			t.Fatalf("SelectTestsByGlobs(%v) failed: %v", tc.globs, err)
@@ -114,7 +114,7 @@ func TestSelectTestsByGlobs(t *testing.T) {
 }
 
 func TestSelectTestsByAttrExpr(t *testing.T) {
-	allTests := []*TestCase{
+	allTests := []*TestInstance{
 		{Name: "test.Foo", Func: func(context.Context, *State) {}, Attr: []string{"test", "foo"}},
 		{Name: "test.Bar", Func: func(context.Context, *State) {}, Attr: []string{"test", "bar"}},
 	}
@@ -122,15 +122,15 @@ func TestSelectTestsByAttrExpr(t *testing.T) {
 	// More-complicated expressions are tested by the attr package's tests.
 	for _, tc := range []struct {
 		expr     string
-		expected []*TestCase
+		expected []*TestInstance
 	}{
-		{"foo", []*TestCase{allTests[0]}},
-		{"bar", []*TestCase{allTests[1]}},
+		{"foo", []*TestInstance{allTests[0]}},
+		{"bar", []*TestInstance{allTests[1]}},
 		{"test", allTests},
-		{"test && !bar", []*TestCase{allTests[0]}},
+		{"test && !bar", []*TestInstance{allTests[0]}},
 		{"\"*est\"", allTests},
-		{"\"*est\" && \"f*\"", []*TestCase{allTests[0]}},
-		{"baz", []*TestCase{}},
+		{"\"*est\" && \"f*\"", []*TestInstance{allTests[0]}},
+		{"baz", []*TestInstance{}},
 	} {
 		tests, err := SelectTestsByAttrExpr(allTests, tc.expr)
 		if err != nil {

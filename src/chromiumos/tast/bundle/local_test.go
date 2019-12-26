@@ -38,7 +38,7 @@ func TestLocalRunTest(t *gotesting.T) {
 	ran := false
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
-	testing.AddTestCase(&testing.TestCase{Name: name, Func: func(context.Context, *testing.State) { ran = true }})
+	testing.AddTestInstance(&testing.TestInstance{Name: name, Func: func(context.Context, *testing.State) { ran = true }})
 
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
@@ -59,7 +59,7 @@ func TestLocalRunTest(t *gotesting.T) {
 func TestLocalReadyFunc(t *gotesting.T) {
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
-	testing.AddTestCase(&testing.TestCase{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
+	testing.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
 
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
@@ -106,7 +106,7 @@ func TestLocalReadyFunc(t *gotesting.T) {
 func TestLocalReadyFuncDisabled(t *gotesting.T) {
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
-	testing.AddTestCase(&testing.TestCase{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
+	testing.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
 
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
@@ -140,7 +140,7 @@ func TestLocalPreTestRun(t *gotesting.T) {
 	const name = "pkg.Test"
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
-	testing.AddTestCase(&testing.TestCase{Name: name, Func: func(context.Context, *testing.State) {}})
+	testing.AddTestInstance(&testing.TestInstance{Name: name, Func: func(context.Context, *testing.State) {}})
 
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)

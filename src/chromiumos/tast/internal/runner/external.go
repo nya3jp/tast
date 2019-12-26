@@ -123,7 +123,7 @@ type downloadResult struct {
 // ending with a slash, containing build artifacts for the current Chrome OS image.
 // This function does not return errors; instead it tries to download files as far as possible and
 // logs encountered errors with lf so that a single download error does not cause all tests to fail.
-func processExternalDataLinks(ctx context.Context, dataDir, artifactsURL string, tests []*testing.TestCase, cl devserver.Client, lf func(msg string)) {
+func processExternalDataLinks(ctx context.Context, dataDir, artifactsURL string, tests []*testing.TestInstance, cl devserver.Client, lf func(msg string)) {
 	jobs := prepareDownloads(dataDir, artifactsURL, tests, lf)
 	if len(jobs) == 0 {
 		return
@@ -135,7 +135,7 @@ func processExternalDataLinks(ctx context.Context, dataDir, artifactsURL string,
 // It also removes stale files so they are never used even if we fail to download them later.
 // When it encounters errors, *.external-error files are saved so that they can be read and
 // reported by bundles later.
-func prepareDownloads(dataDir, artifactsURL string, tests []*testing.TestCase, lf func(msg string)) []*downloadJob {
+func prepareDownloads(dataDir, artifactsURL string, tests []*testing.TestInstance, lf func(msg string)) []*downloadJob {
 	urlToJob := make(map[string]*downloadJob)
 	hasErr := false
 

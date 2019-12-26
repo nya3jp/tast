@@ -109,7 +109,7 @@ func runFakeBundle() int {
 		} else {
 			log.Fatalf("Bad rune %v in result string %q", res, parts[2])
 		}
-		testing.AddTestCase(&testing.TestCase{
+		testing.AddTestInstance(&testing.TestInstance{
 			Name: getTestName(bundleNum, i),
 			Func: f,
 		})

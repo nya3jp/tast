@@ -26,7 +26,7 @@ func init() {
 func TestRemoteMissingTarget(t *gotesting.T) {
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
-	testing.AddTestCase(&testing.TestCase{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
+	testing.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
 
 	// Remote should fail if -target wasn't passed.
 	stdin := newBufferWithArgs(t, &Args{Mode: RunTestsMode, RunTests: &RunTestsArgs{}})
@@ -45,7 +45,7 @@ func TestRemoteCantConnect(t *gotesting.T) {
 
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
-	testing.AddTestCase(&testing.TestCase{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
+	testing.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
 
 	// Remote should fail if the initial connection to the DUT couldn't be
 	// established since the user key wasn't passed.
@@ -83,7 +83,7 @@ func TestRemoteDUT(t *gotesting.T) {
 	realOutput := ""
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
-	testing.AddTestCase(&testing.TestCase{Name: "pkg.Test", Func: func(ctx context.Context, s *testing.State) {
+	testing.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(ctx context.Context, s *testing.State) {
 		dt := s.DUT()
 		out, err := dt.Command(cmd).Output(ctx)
 		if err != nil {
@@ -130,8 +130,8 @@ func TestRemoteReconnectBetweenTests(t *gotesting.T) {
 	var conn1, conn2 bool
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
-	testing.AddTestCase(&testing.TestCase{Name: "pkg.Test1", Func: makeFunc(&conn1)})
-	testing.AddTestCase(&testing.TestCase{Name: "pkg.Test2", Func: makeFunc(&conn2)})
+	testing.AddTestInstance(&testing.TestInstance{Name: "pkg.Test1", Func: makeFunc(&conn1)})
+	testing.AddTestInstance(&testing.TestInstance{Name: "pkg.Test2", Func: makeFunc(&conn2)})
 
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)

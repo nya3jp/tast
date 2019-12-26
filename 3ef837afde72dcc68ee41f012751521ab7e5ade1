@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fbe9ebba_eae1883f",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-26T17:02:26Z",
+      "side": 1,
+      "message": "FYI:\n\nI know you do not like the name TestCase and I agreed with your point.\nHowever, I wonder if \"Runnable\" is a good name, too, because 1) in general, any test wants to run, and 2) RunnableTest may not be runnable because of dependencies etc.\n\nWhen I made the struct, the most important diff between Test and TestCase is \"Param\". TestCases contains test configuration calculated from Test\u0027s data and one Param (if exists), which is nice to be reflected in the new name.\n\nSuggestion \"TestInstance\" borrowed from gtest macro name: https://github.com/google/googletest/blob/master/googletest/docs/advanced.md#how-to-write-value-parameterized-tests",
+      "revId": "3ef837afde72dcc68ee41f012751521ab7e5ade1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

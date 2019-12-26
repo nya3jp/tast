@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "859bf58b_f552b497",
+        "filename": "src/chromiumos/tast/internal/devserver/client.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-12-26T02:41:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f019cde6_fbbaaf80",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 37
+      },
+      "revId": "08c2feb149bc6aed9e2ef030e6b22bf93b19b0ff",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2e43b933_596621e5",
         "filename": "src/chromiumos/tast/internal/devserver/real_test.go",
         "patchSetId": 1
@@ -45,6 +69,30 @@
       "revId": "08c2feb149bc6aed9e2ef030e6b22bf93b19b0ff",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0d987f22_3a43e408",
+        "filename": "src/chromiumos/tast/internal/devserver/real_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-12-26T02:41:29Z",
+      "side": 1,
+      "message": "Oops, good catch.",
+      "parentUuid": "2e43b933_596621e5",
+      "range": {
+        "startLine": 182,
+        "startChar": 4,
+        "endLine": 182,
+        "endChar": 5
+      },
+      "revId": "08c2feb149bc6aed9e2ef030e6b22bf93b19b0ff",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -55,10 +55,10 @@ func addTestInternal(t *Test, pc uintptr) error {
 	return nil
 }
 
-// AddTestCase adds test case t to the global registry. This is only for
+// AddRunnableTest adds test case t to the global registry. This is only for
 // testing purpose.
-func AddTestCase(t *TestCase) {
-	if err := GlobalRegistry().AddTestCase(t); err != nil {
+func AddRunnableTest(t *RunnableTest) {
+	if err := GlobalRegistry().AddRunnableTest(t); err != nil {
 		_, file, line, _ := runtime.Caller(1)
 		registrationErrors = append(registrationErrors, fmt.Errorf("%s:%d: %v", file, line, err))
 	}

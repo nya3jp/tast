@@ -18,10 +18,10 @@ import (
 	"chromiumos/tast/testutil"
 )
 
-// TESTCASETEST is a public test function with a name that's chosen to be appropriate for this file's
-// name (test_case_test.go). The obvious choice, "TestCaseTest", is unavailable since Go's testing package
-// will interpret it as itself being a unit test, so let's just pretend that "test" and "case" are acronyms.
-func TESTCASETEST(context.Context, *State) {}
+// RUNTEST is a public test function with a name that's chosen to be appropriate for this file's
+// name (run_test.go). The obvious choice, "RunTest", is unavailable since Go's testing package
+// will interpret it as itself being a unit test, so let's just pretend that "run" and "test" are acronyms.
+func RUNTEST(context.Context, *State) {}
 
 // testPre implements both Precondition and preconditionImpl for unit tests.
 type testPre struct {
@@ -48,18 +48,18 @@ func (p *testPre) Timeout() time.Duration { return time.Minute }
 func (p *testPre) String() string { return p.name }
 
 func TestAutoName(t *gotesting.T) {
-	tc, err := newTestCase(&Test{Func: TESTCASETEST}, nil)
+	tc, err := newRunnableTest(&Test{Func: RUNTEST}, nil)
 	if err != nil {
-		t.Fatal("failed to instantiate TestCase: ", err)
+		t.Fatal("failed to instantiate RunnableTest: ", err)
 	}
-	if tc.Name != "testing.TESTCASETEST" {
-		t.Errorf("Unexpected test case name: got %s; want testing.TESTCASETEST", tc.Name)
+	if tc.Name != "testing.RUNTEST" {
+		t.Errorf("Unexpected test case name: got %s; want testing.RUNTEST", tc.Name)
 	}
 }
 
 func TestAutoAttr(t *gotesting.T) {
-	test, err := newTestCase(&Test{
-		Func:         TESTCASETEST,
+	test, err := newRunnableTest(&Test{
+		Func:         RUNTEST,
 		Attr:         []string{"attr1", "attr2"},
 		SoftwareDeps: []string{"dep1", "dep2"},
 	}, nil)
@@ -69,7 +69,7 @@ func TestAutoAttr(t *gotesting.T) {
 	exp := []string{
 		"attr1",
 		"attr2",
-		testNameAttrPrefix + "testing.TESTCASETEST",
+		testNameAttrPrefix + "testing.RUNTEST",
 		// The bundle name is the second-to-last component in the package's path.
 		testBundleAttrPrefix + "tast",
 		testDepAttrPrefix + "dep1",
@@ -84,7 +84,7 @@ func TestAutoAttr(t *gotesting.T) {
 
 func TestAdditionalTime(t *gotesting.T) {
 	pre := &testPre{}
-	test, err := newTestCase(&Test{Func: TESTCASETEST, Timeout: 5 * time.Minute, Pre: pre}, nil)
+	test, err := newRunnableTest(&Test{Func: RUNTEST, Timeout: 5 * time.Minute, Pre: pre}, nil)
 	if err != nil {
 		t.Fatal("finalize() failed: ", err)
 	}
@@ -93,7 +93,7 @@ func TestAdditionalTime(t *gotesting.T) {
 	}
 
 	pre = &testPre{}
-	if test, err := newTestCase(&Test{Func: TESTCASETEST}, &Param{Timeout: time.Minute, Pre: pre}); err != nil {
+	if test, err := newRunnableTest(&Test{Func: RUNTEST}, &Param{Timeout: time.Minute, Pre: pre}); err != nil {
 		t.Error(err)
 	} else if exp := preTestTimeout + postTestTimeout + 2*pre.Timeout(); test.AdditionalTime != exp {
 		t.Errorf("AdditionalTime = %v; want %v", test.AdditionalTime, exp)
@@ -101,9 +101,9 @@ func TestAdditionalTime(t *gotesting.T) {
 }
 
 func TestParamTest(t *gotesting.T) {
-	test, err := newTestCase(
+	test, err := newRunnableTest(
 		&Test{
-			Func:         TESTCASETEST,
+			Func:         RUNTEST,
 			Attr:         []string{"attr1"},
 			Data:         []string{"data1"},
 			SoftwareDeps: []string{"dep1"},
@@ -116,18 +116,18 @@ func TestParamTest(t *gotesting.T) {
 			ExtraSoftwareDeps: []string{"dep2"},
 		})
 	if err != nil {
-		t.Fatal("newTestCase failed: ", err)
+		t.Fatal("newRunnableTest failed: ", err)
 	}
 
 	if test.Val != 10 {
 		t.Errorf("Unexpected Val: got %v; want 10", test.Val)
 	}
 
-	if test.Name != "testing.TESTCASETEST.param1" {
-		t.Errorf("Unexpected name: got %s; want testing.TESTCASETEST.param1", test.Name)
+	if test.Name != "testing.RUNTEST.param1" {
+		t.Errorf("Unexpected name: got %s; want testing.RUNTEST.param1", test.Name)
 	}
 
-	expectedAttr := []string{"name:testing.TESTCASETEST.param1", "bundle:tast", "dep:dep1", "dep:dep2", "attr1", "attr2"}
+	expectedAttr := []string{"name:testing.RUNTEST.param1", "bundle:tast", "dep:dep1", "dep:dep2", "attr1", "attr2"}
 	if !reflect.DeepEqual(test.Attr, expectedAttr) {
 		t.Errorf("Unexpected attrs: got %v; want %v", test.Attr, expectedAttr)
 	}
@@ -144,38 +144,38 @@ func TestParamTest(t *gotesting.T) {
 }
 
 func TestParamTestWithEmptyName(t *gotesting.T) {
-	test, err := newTestCase(&Test{Func: TESTCASETEST}, &Param{})
+	test, err := newRunnableTest(&Test{Func: RUNTEST}, &Param{})
 	if err != nil {
-		t.Fatal("newTestCase failed: ", err)
+		t.Fatal("newRunnableTest failed: ", err)
 	}
-	if test.Name != "testing.TESTCASETEST" {
-		t.Errorf("Unexpected name: got %s; want testing.TESTCASETEST", test.Name)
+	if test.Name != "testing.RUNTEST" {
+		t.Errorf("Unexpected name: got %s; want testing.RUNTEST", test.Name)
 	}
 }
 
 func TestParamTestWithPre(t *gotesting.T) {
 	pre := &testPre{name: "precondition"}
-	// At most one Pre condition can be present. If newTestCase fails, test passes.
-	if _, err := newTestCase(&Test{Func: TESTCASETEST, Pre: pre}, &Param{Pre: pre}); err == nil {
-		t.Error("newTestCase unexpectedly passed for duplicated preconditions")
+	// At most one Pre condition can be present. If newRunnableTest fails, test passes.
+	if _, err := newRunnableTest(&Test{Func: RUNTEST, Pre: pre}, &Param{Pre: pre}); err == nil {
+		t.Error("newRunnableTest unexpectedly passed for duplicated preconditions")
 	}
 
 	// Precondition only at enclosing test.
-	if tc, err := newTestCase(&Test{Func: TESTCASETEST, Pre: pre}, &Param{}); err != nil {
+	if tc, err := newRunnableTest(&Test{Func: RUNTEST, Pre: pre}, &Param{}); err != nil {
 		t.Error(err)
 	} else if tc.Pre != pre {
 		t.Errorf("Invalid precondition = %v; want %v", tc.Pre, pre)
 	}
 
 	// Precondition only at parametrized test.
-	if tc, err := newTestCase(&Test{Func: TESTCASETEST}, &Param{Pre: pre}); err != nil {
+	if tc, err := newRunnableTest(&Test{Func: RUNTEST}, &Param{Pre: pre}); err != nil {
 		t.Error(err)
 	} else if tc.Pre != pre {
 		t.Errorf("Invalid precondition = %v; want %v", tc.Pre, pre)
 	}
 
 	// No preconditions.
-	if tc, err := newTestCase(&Test{Func: TESTCASETEST}, &Param{}); err != nil {
+	if tc, err := newRunnableTest(&Test{Func: RUNTEST}, &Param{}); err != nil {
 		t.Error(err)
 	} else if tc.Pre != nil {
 		t.Errorf("Invalid precondition = %v; want nil", tc.Pre)
@@ -183,27 +183,27 @@ func TestParamTestWithPre(t *gotesting.T) {
 }
 
 func TestParamTestWithTimeout(t *gotesting.T) {
-	// At most one Pre condition can be present. If newTestCase fails, test passes.
-	if _, err := newTestCase(&Test{Func: TESTCASETEST, Timeout: time.Minute}, &Param{Timeout: time.Minute}); err == nil {
-		t.Error("newTestCase unexpectedly passed for duplicated timeout")
+	// At most one Pre condition can be present. If newRunnableTest fails, test passes.
+	if _, err := newRunnableTest(&Test{Func: RUNTEST, Timeout: time.Minute}, &Param{Timeout: time.Minute}); err == nil {
+		t.Error("newRunnableTest unexpectedly passed for duplicated timeout")
 	}
 
 	// Timeout only at enclosing test.
-	if tc, err := newTestCase(&Test{Func: TESTCASETEST, Timeout: time.Minute}, &Param{}); err != nil {
+	if tc, err := newRunnableTest(&Test{Func: RUNTEST, Timeout: time.Minute}, &Param{}); err != nil {
 		t.Error(err)
 	} else if tc.Timeout != time.Minute {
 		t.Errorf("Invalid Timeout = %v; want %v", tc.Timeout, time.Minute)
 	}
 
 	// Timeout only at parametrized test.
-	if tc, err := newTestCase(&Test{Func: TESTCASETEST}, &Param{Timeout: time.Minute}); err != nil {
+	if tc, err := newRunnableTest(&Test{Func: RUNTEST}, &Param{Timeout: time.Minute}); err != nil {
 		t.Error(err)
 	} else if tc.Timeout != time.Minute {
 		t.Errorf("Invalid precondition = %v; want %v", tc.Timeout, time.Minute)
 	}
 
 	// No Timeout.
-	if tc, err := newTestCase(&Test{Func: TESTCASETEST}, &Param{}); err != nil {
+	if tc, err := newRunnableTest(&Test{Func: RUNTEST}, &Param{}); err != nil {
 		t.Error(err)
 	} else if tc.Timeout != 0 {
 		t.Errorf("Invalid precondition = %v; want 0", tc.Timeout)
@@ -211,7 +211,7 @@ func TestParamTestWithTimeout(t *gotesting.T) {
 }
 
 func TestDataDir(t *gotesting.T) {
-	test, err := newTestCase(&Test{Func: TESTCASETEST}, nil)
+	test, err := newRunnableTest(&Test{Func: RUNTEST}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -222,7 +222,7 @@ func TestDataDir(t *gotesting.T) {
 }
 
 func TestSoftwareDeps(t *gotesting.T) {
-	test := TestCase{SoftwareDeps: []string{"dep3", "dep1", "dep2"}}
+	test := RunnableTest{SoftwareDeps: []string{"dep3", "dep1", "dep2"}}
 	missing := test.MissingSoftwareDeps([]string{"dep0", "dep2", "dep4"})
 	if exp := []string{"dep1", "dep3"}; !reflect.DeepEqual(missing, exp) {
 		t.Errorf("MissingSoftwareDeps() = %v; want %v", missing, exp)
@@ -230,7 +230,7 @@ func TestSoftwareDeps(t *gotesting.T) {
 }
 
 func TestRunSuccess(t *gotesting.T) {
-	test := TestCase{Func: func(context.Context, *State) {}, Timeout: time.Minute}
+	test := RunnableTest{Func: func(context.Context, *State) {}, Timeout: time.Minute}
 	or := newOutputReader()
 	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
@@ -247,7 +247,7 @@ func TestRunSuccess(t *gotesting.T) {
 }
 
 func TestRunPanic(t *gotesting.T) {
-	test := TestCase{Func: func(context.Context, *State) { panic("intentional panic") }, Timeout: time.Minute}
+	test := RunnableTest{Func: func(context.Context, *State) { panic("intentional panic") }, Timeout: time.Minute}
 	or := newOutputReader()
 	test.Run(context.Background(), or.ch, &TestConfig{})
 	if errs := getOutputErrors(or.read()); len(errs) != 1 {
@@ -261,7 +261,7 @@ func TestRunDeadline(t *gotesting.T) {
 		<-ctx.Done()
 		s.Error("Saw timeout within test")
 	}
-	test := TestCase{Func: f, Timeout: time.Millisecond, ExitTimeout: 10 * time.Second}
+	test := RunnableTest{Func: f, Timeout: time.Millisecond, ExitTimeout: 10 * time.Second}
 	or := newOutputReader()
 	test.Run(context.Background(), or.ch, &TestConfig{})
 	// The error that was reported by the test after its deadline was hit
@@ -285,7 +285,7 @@ func TestRunLogAfterTimeout(t *gotesting.T) {
 		s.Log("Done waiting")
 		completed = true
 	}
-	test := TestCase{Func: f, Timeout: time.Millisecond, ExitTimeout: time.Millisecond}
+	test := RunnableTest{Func: f, Timeout: time.Millisecond, ExitTimeout: time.Millisecond}
 
 	or := newOutputReader()
 	test.Run(context.Background(), or.ch, &TestConfig{})
@@ -306,7 +306,7 @@ func TestRunLateWriteFromGoroutine(t *gotesting.T) {
 	// Run a test that calls s.Error from a goroutine after the test has finished.
 	start := make(chan struct{}) // tells goroutine to start
 	end := make(chan struct{})   // announces goroutine is done
-	test := TestCase{Func: func(ctx context.Context, s *State) {
+	test := RunnableTest{Func: func(ctx context.Context, s *State) {
 		go func() {
 			<-start
 			s.Error("This message should be discarded since the test is done")
@@ -364,9 +364,9 @@ func TestRunSkipStages(t *gotesting.T) {
 	}
 
 	// Create tests first so we can set TestConfig.NextTest later.
-	var tests []*TestCase
+	var tests []*RunnableTest
 	for _, c := range cases {
-		test := &TestCase{Timeout: time.Minute}
+		test := &RunnableTest{Timeout: time.Minute}
 		// We can't just do "test.Pre = c.pre" here. See e.g. https://tour.golang.org/methods/12:
 		// "Note that an interface value that holds a nil concrete value is itself non-nil."
 		if c.pre != nil {
@@ -456,7 +456,7 @@ func TestRunMissingData(t *gotesting.T) {
 		missingErrorFile1 = missingFile1 + ExternalErrorSuffix
 	)
 
-	test := TestCase{
+	test := RunnableTest{
 		Func:    func(context.Context, *State) {},
 		Data:    []string{existingFile, missingFile1, missingFile2},
 		Timeout: time.Minute,
@@ -490,7 +490,7 @@ func TestRunPrecondition(t *gotesting.T) {
 	preData := &data{}
 
 	// The test should be able to access the data via State.PreValue.
-	test := &TestCase{
+	test := &RunnableTest{
 		// Use a precondition that returns the struct that we declared earlier from its Prepare method.
 		Pre: &testPre{
 			prepareFunc: func(context.Context, *State) interface{} { return preData },
@@ -515,7 +515,7 @@ func TestRunPrecondition(t *gotesting.T) {
 }
 
 func TestAttachStateToContext(t *gotesting.T) {
-	test := TestCase{
+	test := RunnableTest{
 		Func: func(ctx context.Context, s *State) {
 			ContextLog(ctx, "msg ", 1)
 			ContextLogf(ctx, "msg %d", 2)
@@ -531,8 +531,8 @@ func TestAttachStateToContext(t *gotesting.T) {
 }
 
 func TestJSON(t *gotesting.T) {
-	orig := TestCase{
-		Func: TESTCASETEST,
+	orig := RunnableTest{
+		Func: RUNTEST,
 		Desc: "Description",
 		Attr: []string{"attr1", "attr2"},
 		Data: []string{"foo.txt"},
@@ -542,7 +542,7 @@ func TestJSON(t *gotesting.T) {
 	if err != nil {
 		t.Fatalf("Failed to marshal %v: %v", orig, err)
 	}
-	loaded := TestCase{}
+	loaded := RunnableTest{}
 	if err = json.Unmarshal(b, &loaded); err != nil {
 		t.Fatalf("Failed to unmarshal %s: %v", string(b), err)
 	}
@@ -565,7 +565,7 @@ func TestTestClone(t *gotesting.T) {
 	f := func(context.Context, *State) {}
 
 	// Checks that tst's fields still contain the above values.
-	checkTest := func(msg string, tst *TestCase) {
+	checkTest := func(msg string, tst *RunnableTest) {
 		if tst.Name != name {
 			t.Errorf("%s set Name to %q; want %q", msg, tst.Name, name)
 		}
@@ -588,7 +588,7 @@ func TestTestClone(t *gotesting.T) {
 	}
 
 	// First check that a cloned copy gets the correct values.
-	orig := TestCase{
+	orig := RunnableTest{
 		Name:         name,
 		Func:         f,
 		Attr:         append([]string(nil), attr...),
@@ -614,14 +614,14 @@ func TestSortTests(t *gotesting.T) {
 	pre2 := &testPre{name: "pre2"}
 
 	// Assign names with different leading digits to make sure we don't sort by name primarily.
-	t1 := &TestCase{Name: "3-test1", Pre: nil}
-	t2 := &TestCase{Name: "4-test2", Pre: nil}
-	t3 := &TestCase{Name: "1-test3", Pre: pre1}
-	t4 := &TestCase{Name: "2-test4", Pre: pre1}
-	t5 := &TestCase{Name: "0-test5", Pre: pre2}
-	tests := []*TestCase{t4, t2, t3, t5, t1}
+	t1 := &RunnableTest{Name: "3-test1", Pre: nil}
+	t2 := &RunnableTest{Name: "4-test2", Pre: nil}
+	t3 := &RunnableTest{Name: "1-test3", Pre: pre1}
+	t4 := &RunnableTest{Name: "2-test4", Pre: pre1}
+	t5 := &RunnableTest{Name: "0-test5", Pre: pre2}
+	tests := []*RunnableTest{t4, t2, t3, t5, t1}
 
-	getNames := func(tests []*TestCase) (names []string) {
+	getNames := func(tests []*RunnableTest) (names []string) {
 		for _, test := range tests {
 			names = append(names, test.Name)
 		}
@@ -631,7 +631,7 @@ func TestSortTests(t *gotesting.T) {
 	in := getNames(tests)
 	SortTests(tests)
 	actual := getNames(tests)
-	expected := getNames([]*TestCase{t1, t2, t3, t4, t5})
+	expected := getNames([]*RunnableTest{t1, t2, t3, t4, t5})
 	if !reflect.DeepEqual(actual, expected) {
 		t.Errorf("Sort(%v) = %v; want %v", in, actual, expected)
 	}

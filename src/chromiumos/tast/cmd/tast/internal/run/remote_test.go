@@ -162,7 +162,7 @@ func TestRemoteRun(t *gotesting.T) {
 	b := bytes.Buffer{}
 	mw := control.NewMessageWriter(&b)
 	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 1})
-	mw.WriteMessage(&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestCase{Name: testName}})
+	mw.WriteMessage(&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestInstance{Name: testName}})
 	mw.WriteMessage(&control.TestEnd{Time: time.Unix(3, 0), Name: testName})
 	mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0), OutDir: ""})
 
@@ -234,7 +234,7 @@ func TestRemoteRunCopyOutput(t *gotesting.T) {
 	b := bytes.Buffer{}
 	mw := control.NewMessageWriter(&b)
 	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 1})
-	mw.WriteMessage(&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestCase{Name: testName}})
+	mw.WriteMessage(&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestInstance{Name: testName}})
 	mw.WriteMessage(&control.TestEnd{Time: time.Unix(3, 0), Name: testName})
 	mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0), OutDir: outDir})
 
@@ -270,7 +270,7 @@ func TestRemoteRunCopyOutput(t *gotesting.T) {
 
 func TestRemoteList(t *gotesting.T) {
 	// Make the runner print serialized tests.
-	tests := []testing.TestCase{
+	tests := []testing.TestInstance{
 		{Name: "pkg.Test1", Desc: "First description", Attr: []string{"attr1", "attr2"}, Pkg: "pkg"},
 		{Name: "pkg2.Test2", Desc: "Second description", Attr: []string{"attr3"}, Pkg: "pkg2"},
 	}
@@ -303,9 +303,9 @@ func TestRemoteList(t *gotesting.T) {
 		t.Errorf("remote(%+v) passed args %+v; want %+v", td.cfg, td.args, expArgs)
 	}
 
-	listed := make([]testing.TestCase, len(results))
+	listed := make([]testing.TestInstance, len(results))
 	for i := 0; i < len(results); i++ {
-		listed[i] = results[i].TestCase
+		listed[i] = results[i].TestInstance
 	}
 	if !reflect.DeepEqual(listed, tests) {
 		t.Errorf("remote() listed tests %+v; want %+v", listed, tests)

@@ -10,7 +10,7 @@ import (
 
 // Registry holds tests and services.
 type Registry struct {
-	allTests    []*TestCase
+	allTests    []*TestInstance
 	testNames   map[string]struct{} // names of registered tests
 	allServices []*Service
 }
@@ -28,28 +28,28 @@ func (r *Registry) AddTest(t *Test) error {
 		return err
 	}
 	if len(t.Params) == 0 {
-		tc, err := newTestCase(t, nil)
+		tc, err := newTestInstance(t, nil)
 		if err != nil {
 			return err
 		}
-		return r.AddTestCase(tc)
+		return r.AddTestInstance(tc)
 	}
 
 	for _, p := range t.Params {
-		tc, err := newTestCase(t, &p)
+		tc, err := newTestInstance(t, &p)
 		if err != nil {
 			return err
 		}
-		if err := r.AddTestCase(tc); err != nil {
+		if err := r.AddTestInstance(tc); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-// AddTestCase adds t to the registry.
+// AddTestInstance adds t to the registry.
 // TODO(crbug.com/985381): Consider to hide the method for better encapsulation.
-func (r *Registry) AddTestCase(t *TestCase) error {
+func (r *Registry) AddTestInstance(t *TestInstance) error {
 	t = t.clone()
 	if _, ok := r.testNames[t.Name]; ok {
 		return fmt.Errorf("test %q already registered", t.Name)
@@ -66,8 +66,8 @@ func (r *Registry) AddService(s *Service) error {
 }
 
 // AllTests returns copies of all registered tests.
-func (r *Registry) AllTests() []*TestCase {
-	ts := make([]*TestCase, len(r.allTests))
+func (r *Registry) AllTests() []*TestInstance {
+	ts := make([]*TestInstance, len(r.allTests))
 	for i, t := range r.allTests {
 		ts[i] = t.clone()
 	}

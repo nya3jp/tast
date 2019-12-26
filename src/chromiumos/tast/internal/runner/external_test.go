@@ -47,7 +47,7 @@ func TestPrepareDownloadsStatic(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	tests := []*testing.TestCase{
+	tests := []*testing.TestInstance{
 		{Pkg: pkg, Data: []string{extFile1}},
 		{Pkg: pkg, Data: []string{intFile, extFile2}},
 	}
@@ -93,7 +93,7 @@ func TestPrepareDownloadsArtifact(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	tests := []*testing.TestCase{
+	tests := []*testing.TestInstance{
 		{Pkg: pkg, Data: []string{extFile1}},
 		{Pkg: pkg, Data: []string{intFile, extFile2}},
 	}
@@ -139,7 +139,7 @@ func TestPrepareDownloadsDupLinks(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	tests := []*testing.TestCase{
+	tests := []*testing.TestInstance{
 		{Pkg: pkg, Data: []string{extFile1, extFile2}},
 		{Pkg: pkg, Data: []string{extFile2, extFile3}},
 	}
@@ -183,7 +183,7 @@ func TestPrepareDownloadsInconsistentDupLinks(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	tests := []*testing.TestCase{
+	tests := []*testing.TestInstance{
 		{Pkg: pkg, Data: []string{extFile1, extFile2}},
 	}
 	jobs := prepareDownloads(dataDir, fakeArtifactURL, tests, dummyLogFn)
@@ -229,7 +229,7 @@ func TestPrepareDownloadsStale(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	tests := []*testing.TestCase{
+	tests := []*testing.TestInstance{
 		{Pkg: pkg, Data: []string{extFile1, extFile2}},
 	}
 	jobs := prepareDownloads(dataDir, fakeArtifactURL, tests, dummyLogFn)
@@ -280,7 +280,7 @@ func TestPrepareDownloadsUpToDate(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	tests := []*testing.TestCase{
+	tests := []*testing.TestInstance{
 		{Pkg: pkg, Data: []string{extFile1, extFile2}},
 	}
 	jobs := prepareDownloads(dataDir, fakeArtifactURL, tests, dummyLogFn)
@@ -317,7 +317,7 @@ func TestPrepareDownloadsBrokenLink(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	tests := []*testing.TestCase{
+	tests := []*testing.TestInstance{
 		{Pkg: pkg, Data: []string{extFile1, extFile2}},
 	}
 	jobs := prepareDownloads(dataDir, fakeArtifactURL, tests, dummyLogFn)
@@ -354,7 +354,7 @@ func TestPrepareDownloadsArtifactUnavailable(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	tests := []*testing.TestCase{
+	tests := []*testing.TestInstance{
 		{Pkg: pkg, Data: []string{extFile1}},
 	}
 	jobs := prepareDownloads(dataDir, "", tests, dummyLogFn)
@@ -390,7 +390,7 @@ func TestPrepareDownloadsError(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	tests := []*testing.TestCase{
+	tests := []*testing.TestInstance{
 		{Pkg: pkg, Data: []string{extFile1, extFile2}},
 	}
 	prepareDownloads(dataDir, fakeArtifactURL, tests, dummyLogFn)

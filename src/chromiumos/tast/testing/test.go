@@ -33,8 +33,14 @@ const (
 // TestFunc is the code associated with a test.
 type TestFunc func(context.Context, *State)
 
-// Test contains information about a test and its code itself.
-// This is designed to declare each test.
+// Test describes a registration of one or more test instances.
+//
+// Test can be passed to testing.AddTest to actually register test instances
+// to the framework.
+//
+// In the most basic form where Params field is empty, Test describes exactly
+// one test instance. If Params is not empty, multiple test instances are
+// generated on registration by merging each testing.Param to the base Test.
 type Test struct {
 	// Func is the function to be executed to perform the test.
 	Func TestFunc

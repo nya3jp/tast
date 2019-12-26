@@ -31,12 +31,18 @@ const (
 	postTestTimeout = 15 * time.Second // timeout for TestConfig.PostTestFunc
 )
 
-// TestCase contains information about a test and its code itself.
+// TestInstance represents a test instance registered to the framework.
 //
-// While this struct can be marshaled to a JSON object, note that unmarshaling that object
-// will not yield a runnable Test struct; Func will not be present.
+// A test instance is the unit of "tests" exposed to outside of the framework.
+// For example, in the command line of the "tast" command, users specify
+// which tests to run by names of test instances. Single testing.AddTest call
+// may register multiple test instances at once if testing.Test passed to the
+// function has non-empty Params field.
+//
+// While this struct can be marshaled to a JSON object, unmarshaling that object
+// will not yield a runnable TestInstance struct; Func will not be present.
 // TODO(crbug.com/984387): Split JSON part into another struct.
-type TestCase struct {
+type TestInstance struct {
 	// Name specifies the test's name as "category.TestName".
 	// The name is derived from Func's package and function name.
 	// The category is the final component of the package.
@@ -75,10 +81,10 @@ type TestCase struct {
 	Timeout      time.Duration `json:"timeout"`
 }
 
-// newTestCase creates a TestCase instance from the given Test info.
+// newTestInstance creates a TestInstance instance from the given Test info.
 // t must be validated one.
 // For a parameterized test case, p is specified. p must be contained in t.Params.
-func newTestCase(t *Test, p *Param) (*TestCase, error) {
+func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 	info, err := getTestFuncInfo(t.Func)
 	if err != nil {
 		return nil, err
@@ -123,7 +129,7 @@ func newTestCase(t *Test, p *Param) (*TestCase, error) {
 		return nil, err
 	}
 
-	return &TestCase{
+	return &TestInstance{
 		Name:           name,
 		Pkg:            info.pkg,
 		AdditionalTime: additionalTime(pre),
@@ -175,8 +181,8 @@ func additionalTime(pre Precondition) time.Duration {
 	return result
 }
 
-func (t *TestCase) clone() *TestCase {
-	ret := &TestCase{}
+func (t *TestInstance) clone() *TestInstance {
+	ret := &TestInstance{}
 	*ret = *t
 	ret.Contacts = append([]string(nil), ret.Contacts...)
 	ret.Attr = append([]string(nil), ret.Attr...)
@@ -189,7 +195,7 @@ func (t *TestCase) clone() *TestCase {
 
 // DataDir returns the path to the directory in which files listed in Data will be located,
 // relative to the top-level directory containing data files.
-func (t *TestCase) DataDir() string {
+func (t *TestInstance) DataDir() string {
 	return filepath.Join(t.Pkg, testDataSubdir)
 }
 
@@ -210,7 +216,7 @@ func (t *TestCase) DataDir() string {
 //	- t.Func (if no errors yet)
 //	- t.Pre.Close (if t.Pre is non-nil and cfg.NextTest.Pre is different)
 //	- cfg.PostTestFunc (if non-nil)
-func (t *TestCase) Run(ctx context.Context, ch chan<- Output, cfg *TestConfig) bool {
+func (t *TestInstance) Run(ctx context.Context, ch chan<- Output, cfg *TestConfig) bool {
 	// Attach the state to a context so support packages can log to it.
 	s := newState(t, ch, cfg)
 	ctx = WithTestContext(ctx, s.testContext())
@@ -325,13 +331,13 @@ func timeoutOrDefault(timeout, def time.Duration) time.Duration {
 	return def
 }
 
-func (t *TestCase) String() string {
+func (t *TestInstance) String() string {
 	return t.Name
 }
 
 // MissingSoftwareDeps returns a sorted list of dependencies from SoftwareDeps
 // that aren't present on the DUT (per the passed-in features list).
-func (t *TestCase) MissingSoftwareDeps(features []string) []string {
+func (t *TestInstance) MissingSoftwareDeps(features []string) []string {
 	var missing []string
 DepLoop:
 	for _, d := range t.SoftwareDeps {
@@ -348,7 +354,7 @@ DepLoop:
 
 // SortTests sorts tests, primarily by ascending precondition name
 // (with tests with no preconditions coming first) and secondarily by ascending test name.
-func SortTests(tests []*TestCase) {
+func SortTests(tests []*TestInstance) {
 	sort.Slice(tests, func(i, j int) bool {
 		ti := tests[i]
 		tj := tests[j]
@@ -369,7 +375,7 @@ func SortTests(tests []*TestCase) {
 }
 
 // WriteTestsAsJSON marshals ts to JSON and writes the resulting data to w.
-func WriteTestsAsJSON(w io.Writer, ts []*TestCase) error {
+func WriteTestsAsJSON(w io.Writer, ts []*TestInstance) error {
 	b, err := json.Marshal(ts)
 	if err != nil {
 		return err

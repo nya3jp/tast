@@ -78,7 +78,7 @@ func (lc *listCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{
 		panic("logger not attached to context")
 	}
 
-	var tests []*testing.TestCase
+	var tests []*testing.TestInstance
 
 	if len(lc.inputFiles) > 0 {
 		reg := testing.NewRegistry()
@@ -113,9 +113,9 @@ func (lc *listCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{
 			os.Stderr.Write(b.Bytes())
 			return status.ExitCode
 		}
-		tests = make([]*testing.TestCase, len(results))
+		tests = make([]*testing.TestInstance, len(results))
 		for i := range results {
-			tests[i] = &results[i].TestCase
+			tests[i] = &results[i].TestInstance
 		}
 	}
 
@@ -127,7 +127,7 @@ func (lc *listCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{
 }
 
 // printTests writes the supplied tests to lc.stdout.
-func (lc *listCmd) printTests(tests []*testing.TestCase) error {
+func (lc *listCmd) printTests(tests []*testing.TestInstance) error {
 	if lc.json {
 		enc := json.NewEncoder(lc.stdout)
 		enc.SetIndent("", "  ")
@@ -152,12 +152,12 @@ func importTests(p string, reg *testing.Registry) error {
 	}
 	defer f.Close()
 
-	var ts []*testing.TestCase
+	var ts []*testing.TestInstance
 	if err := json.NewDecoder(f).Decode(&ts); err != nil {
 		return err
 	}
 	for _, t := range ts {
-		if err := reg.AddTestCase(t); err != nil {
+		if err := reg.AddTestInstance(t); err != nil {
 			return fmt.Errorf("failed to add test %v: %v", t.Name, err)
 		}
 	}

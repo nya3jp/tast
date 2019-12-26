@@ -83,7 +83,7 @@ func (h *RPCHint) clone() *RPCHint {
 // rootState contains all state shared between all subtests. Each subtest receives
 // its own instance of State.
 type rootState struct {
-	test *TestCase     // test being run
+	test *TestInstance // test being run
 	ch   chan<- Output // channel to which logging messages and errors are written
 	cfg  *TestConfig   // details about how to run test
 
@@ -132,15 +132,15 @@ type TestConfig struct {
 	// PostTestFunc is run after Test.Func (and Test.Pre.Cleanup, when applicable) if non-nil.
 	PostTestFunc func(context.Context, *State)
 	// NextTest is the test that will be run after this one.
-	NextTest *TestCase
+	NextTest *TestInstance
 }
 
 // newRootState returns a new rootState object.
-func newRootState(test *TestCase, ch chan<- Output, cfg *TestConfig) *rootState {
+func newRootState(test *TestInstance, ch chan<- Output, cfg *TestConfig) *rootState {
 	return &rootState{test: test, ch: ch, cfg: cfg}
 }
 
-func newState(test *TestCase, ch chan<- Output, cfg *TestConfig) *State {
+func newState(test *TestInstance, ch chan<- Output, cfg *TestConfig) *State {
 	return &State{root: newRootState(test, ch, cfg)}
 }
 

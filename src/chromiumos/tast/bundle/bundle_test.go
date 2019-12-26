@@ -150,12 +150,12 @@ func TestRunTests(t *gotesting.T) {
 	)
 
 	reg := testing.NewRegistry()
-	reg.AddTestCase(&testing.TestCase{
+	reg.AddTestInstance(&testing.TestInstance{
 		Name:    name1,
 		Func:    func(context.Context, *testing.State) {},
 		Timeout: time.Minute},
 	)
-	reg.AddTestCase(&testing.TestCase{
+	reg.AddTestInstance(&testing.TestInstance{
 		Name:    name2,
 		Func:    func(ctx context.Context, s *testing.State) { s.Error("error") },
 		Timeout: time.Minute},
@@ -295,7 +295,7 @@ func TestRunTestsTimeout(t *gotesting.T) {
 	const name1 = "foo.Test1"
 	ch := make(chan bool, 1)
 	defer func() { ch <- true }()
-	reg.AddTestCase(&testing.TestCase{
+	reg.AddTestInstance(&testing.TestInstance{
 		Name:        name1,
 		Func:        func(context.Context, *testing.State) { <-ch },
 		Timeout:     10 * time.Millisecond,
@@ -304,7 +304,7 @@ func TestRunTestsTimeout(t *gotesting.T) {
 
 	// The second test blocks for 50 ms and specifies a custom one-minute timeout.
 	const name2 = "foo.Test2"
-	reg.AddTestCase(&testing.TestCase{
+	reg.AddTestInstance(&testing.TestInstance{
 		Name:    name2,
 		Func:    func(context.Context, *testing.State) { time.Sleep(50 * time.Millisecond) },
 		Timeout: time.Minute,
@@ -347,7 +347,7 @@ func TestRunTestsTimeout(t *gotesting.T) {
 func TestRunTestsNoTests(t *gotesting.T) {
 	// runTests should report failure when passed an empty slice of tests.
 	if err := runTests(context.Background(), &bytes.Buffer{}, &Args{RunTests: &RunTestsArgs{}},
-		&runConfig{}, localBundle, []*testing.TestCase{}); !errorHasStatus(err, statusNoTests) {
+		&runConfig{}, localBundle, []*testing.TestInstance{}); !errorHasStatus(err, statusNoTests) {
 		t.Fatalf("runTests() = %v; want status %v", err, statusNoTests)
 	}
 }
@@ -372,9 +372,9 @@ func TestRunTestsMissingDeps(t *gotesting.T) {
 	makeFunc := func(name string) testing.TestFunc {
 		return func(context.Context, *testing.State) { testRan[name] = true }
 	}
-	testing.AddTestCase(&testing.TestCase{Name: validName, Func: makeFunc(validName), SoftwareDeps: []string{validDep}})
-	testing.AddTestCase(&testing.TestCase{Name: missingName, Func: makeFunc(missingName), SoftwareDeps: []string{missingDep}})
-	testing.AddTestCase(&testing.TestCase{Name: unregName, Func: makeFunc(unregName), SoftwareDeps: []string{unregDep}})
+	testing.AddTestInstance(&testing.TestInstance{Name: validName, Func: makeFunc(validName), SoftwareDeps: []string{validDep}})
+	testing.AddTestInstance(&testing.TestInstance{Name: missingName, Func: makeFunc(missingName), SoftwareDeps: []string{missingDep}})
+	testing.AddTestInstance(&testing.TestInstance{Name: unregName, Func: makeFunc(unregName), SoftwareDeps: []string{unregDep}})
 
 	tmpDir := testutil.TempDir(t)
 	defer os.RemoveAll(tmpDir)
@@ -464,12 +464,12 @@ func TestRunTestsSkipTestWithPrecondition(t *gotesting.T) {
 
 	// Make the last test using each precondition get skipped due to unsatisfied dependencies.
 	f := func(context.Context, *testing.State) {}
-	testing.AddTestCase(&testing.TestCase{Name: "pkg.Test1", Func: f, Pre: pre1})
-	testing.AddTestCase(&testing.TestCase{Name: "pkg.Test2", Func: f, Pre: pre1})
-	testing.AddTestCase(&testing.TestCase{Name: "pkg.Test3", Func: f, Pre: pre1, SoftwareDeps: []string{"dep"}})
-	testing.AddTestCase(&testing.TestCase{Name: "pkg.Test4", Func: f, Pre: pre2})
-	testing.AddTestCase(&testing.TestCase{Name: "pkg.Test5", Func: f, Pre: pre2})
-	testing.AddTestCase(&testing.TestCase{Name: "pkg.Test6", Func: f, Pre: pre2, SoftwareDeps: []string{"dep"}})
+	testing.AddTestInstance(&testing.TestInstance{Name: "pkg.Test1", Func: f, Pre: pre1})
+	testing.AddTestInstance(&testing.TestInstance{Name: "pkg.Test2", Func: f, Pre: pre1})
+	testing.AddTestInstance(&testing.TestInstance{Name: "pkg.Test3", Func: f, Pre: pre1, SoftwareDeps: []string{"dep"}})
+	testing.AddTestInstance(&testing.TestInstance{Name: "pkg.Test4", Func: f, Pre: pre2})
+	testing.AddTestInstance(&testing.TestInstance{Name: "pkg.Test5", Func: f, Pre: pre2})
+	testing.AddTestInstance(&testing.TestInstance{Name: "pkg.Test6", Func: f, Pre: pre2, SoftwareDeps: []string{"dep"}})
 
 	tmpDir := testutil.TempDir(t)
 	defer os.RemoveAll(tmpDir)
@@ -509,7 +509,7 @@ func TestRunRemoteData(t *gotesting.T) {
 		hint *testing.RPCHint
 		dt   *dut.DUT
 	)
-	testing.AddTestCase(&testing.TestCase{
+	testing.AddTestInstance(&testing.TestInstance{
 		Name: "meta.Test",
 		Func: func(ctx context.Context, s *testing.State) {
 			meta = s.Meta()
@@ -563,8 +563,8 @@ func TestRunList(t *gotesting.T) {
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
 	f := func(context.Context, *testing.State) {}
-	testing.AddTestCase(&testing.TestCase{Name: "pkg.Test", Func: f})
-	testing.AddTestCase(&testing.TestCase{Name: "pkg.Test2", Func: f})
+	testing.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: f})
+	testing.AddTestInstance(&testing.TestInstance{Name: "pkg.Test2", Func: f})
 
 	var exp bytes.Buffer
 	if err := testing.WriteTestsAsJSON(&exp, testing.GlobalRegistry().AllTests()); err != nil {
@@ -598,10 +598,10 @@ func TestRunRegistrationError(t *gotesting.T) {
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
 	const name = "cat.MyTest"
-	testing.AddTestCase(&testing.TestCase{Name: name, Func: testFunc})
+	testing.AddTestInstance(&testing.TestInstance{Name: name, Func: testFunc})
 
 	// Adding a test with same name should generate an error.
-	testing.AddTestCase(&testing.TestCase{Name: name, Func: testFunc})
+	testing.AddTestInstance(&testing.TestInstance{Name: name, Func: testFunc})
 
 	stdin := newBufferWithArgs(t, &Args{Mode: ListTestsMode, ListTests: &ListTestsArgs{}})
 	if status := run(context.Background(), nil, stdin, ioutil.Discard, ioutil.Discard,
@@ -619,9 +619,9 @@ func TestTestsToRunSortTests(t *gotesting.T) {
 
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
-	testing.AddTestCase(&testing.TestCase{Name: test2, Func: testFunc})
-	testing.AddTestCase(&testing.TestCase{Name: test3, Func: testFunc})
-	testing.AddTestCase(&testing.TestCase{Name: test1, Func: testFunc})
+	testing.AddTestInstance(&testing.TestInstance{Name: test2, Func: testFunc})
+	testing.AddTestInstance(&testing.TestInstance{Name: test3, Func: testFunc})
+	testing.AddTestInstance(&testing.TestInstance{Name: test1, Func: testFunc})
 
 	tests, err := testsToRun(&runConfig{}, nil)
 	if err != nil {
@@ -647,8 +647,8 @@ func TestTestsToRunTestTimeouts(t *gotesting.T) {
 
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
-	testing.AddTestCase(&testing.TestCase{Name: name1, Func: testFunc, Timeout: customTimeout})
-	testing.AddTestCase(&testing.TestCase{Name: name2, Func: testFunc})
+	testing.AddTestInstance(&testing.TestInstance{Name: name1, Func: testFunc, Timeout: customTimeout})
+	testing.AddTestInstance(&testing.TestInstance{Name: name2, Func: testFunc})
 
 	tests, err := testsToRun(&runConfig{defaultTestTimeout: defaultTimeout}, nil)
 	if err != nil {

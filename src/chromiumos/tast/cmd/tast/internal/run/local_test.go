@@ -276,7 +276,7 @@ func TestLocalCopyOutput(t *gotesting.T) {
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		mw := control.NewMessageWriter(stdout)
 		mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), TestNames: []string{testName}})
-		mw.WriteMessage(&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestCase{Name: testName}})
+		mw.WriteMessage(&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestInstance{Name: testName}})
 		mw.WriteMessage(&control.TestEnd{Time: time.Unix(3, 0), Name: testName})
 		mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0), OutDir: td.cfg.localOutDir})
 		return 0
@@ -355,7 +355,7 @@ func TestLocalList(t *gotesting.T) {
 	td := newLocalTestData(t)
 	defer td.close()
 
-	tests := []testing.TestCase{
+	tests := []testing.TestInstance{
 		{Name: "pkg.Test", Desc: "This is a test", Attr: []string{"attr1", "attr2"}},
 		{Name: "pkg.AnotherTest", Desc: "Another test"},
 	}
@@ -377,9 +377,9 @@ func TestLocalList(t *gotesting.T) {
 		t.Errorf("local() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
 	}
 
-	listed := make([]testing.TestCase, len(results))
+	listed := make([]testing.TestInstance, len(results))
 	for i := 0; i < len(results); i++ {
-		listed[i] = results[i].TestCase
+		listed[i] = results[i].TestInstance
 	}
 	if !reflect.DeepEqual(listed, tests) {
 		t.Errorf("local() listed tests %+v; want %+v", listed, tests)
@@ -409,7 +409,7 @@ func TestLocalDataFiles(t *gotesting.T) {
 	)
 
 	// Make local_test_runner list two tests containing the first three files (with overlap).
-	tests := []testing.TestCase{
+	tests := []testing.TestInstance{
 		{Name: category + ".Test1", Pkg: categoryPkg, Data: []string{file1, file2}},
 		{Name: category + ".Test2", Pkg: categoryPkg, Data: []string{file2, file3, extFile1, extFile2}},
 	}
@@ -535,7 +535,7 @@ func TestLocalContinueAfterFailure(t *gotesting.T) {
 			}
 			mw := control.NewMessageWriter(stdout)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), TestNames: []string{test1, test2, test3}})
-			mw.WriteMessage(&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestCase{Name: test1}})
+			mw.WriteMessage(&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestInstance{Name: test1}})
 			return 1
 		case 2:
 			// The second time, list the remaining two tests, run test #2 successfully, and abort after #3.
@@ -544,9 +544,9 @@ func TestLocalContinueAfterFailure(t *gotesting.T) {
 			}
 			mw := control.NewMessageWriter(stdout)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(3, 0), TestNames: []string{test2, test3}})
-			mw.WriteMessage(&control.TestStart{Time: time.Unix(4, 0), Test: testing.TestCase{Name: test2}})
+			mw.WriteMessage(&control.TestStart{Time: time.Unix(4, 0), Test: testing.TestInstance{Name: test2}})
 			mw.WriteMessage(&control.TestEnd{Time: time.Unix(5, 0), Name: test2})
-			mw.WriteMessage(&control.TestStart{Time: time.Unix(6, 0), Test: testing.TestCase{Name: test3}})
+			mw.WriteMessage(&control.TestStart{Time: time.Unix(6, 0), Test: testing.TestInstance{Name: test3}})
 			return 1
 		default:
 			// There aren't any more tests to run.

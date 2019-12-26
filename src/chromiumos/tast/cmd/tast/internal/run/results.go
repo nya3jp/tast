@@ -43,9 +43,9 @@ const (
 // TestResult contains the results from a single test.
 // Fields are exported so they can be marshaled by the json package.
 type TestResult struct {
-	// TestCase contains basic information about the test. This is not a runnable
+	// TestInstance contains basic information about the test. This is not a runnable
 	// testing.Test struct; only fields that can be marshaled to JSON are set.
-	testing.TestCase
+	testing.TestInstance
 	// Errors contains errors encountered while running the test.
 	// If it is empty, the test passed.
 	Errors []TestError `json:"errors"`
@@ -281,7 +281,7 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.TestS
 	ctx, r.stage = timing.Start(ctx, msg.Test.Name)
 
 	r.results = append(r.results, TestResult{
-		TestCase:         msg.Test,
+		TestInstance:     msg.Test,
 		Start:            msg.Time,
 		OutDir:           r.getTestOutputDir(msg.Test.Name),
 		testStartMsgTime: time.Now(),
@@ -647,13 +647,13 @@ func readTestOutput(ctx context.Context, cfg *Config, r io.Reader, crf copyAndRe
 // readTestList decodes JSON-serialized testing.Test objects from r and
 // copies them into an array of TestResult objects.
 func readTestList(r io.Reader) ([]TestResult, error) {
-	var ts []testing.TestCase
+	var ts []testing.TestInstance
 	if err := json.NewDecoder(r).Decode(&ts); err != nil {
 		return nil, err
 	}
 	results := make([]TestResult, len(ts))
 	for i := 0; i < len(ts); i++ {
-		results[i].TestCase = ts[i]
+		results[i].TestInstance = ts[i]
 	}
 	return results, nil
 }

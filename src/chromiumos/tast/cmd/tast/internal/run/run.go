@@ -334,7 +334,7 @@ func getDataFilePaths(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlo
 	}
 	defer handle.Close(ctx)
 
-	var ts []testing.TestCase
+	var ts []testing.TestInstance
 	if err = readLocalRunnerOutput(ctx, handle, &ts); err != nil {
 		return nil, err
 	}

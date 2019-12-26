@@ -77,8 +77,8 @@ func TestRunResults(t *gotesting.T) {
 	// As long as results were returned and no run-level errors occurred, success should be reported.
 	wrapper := stubRunWrapper{runRes: []run.TestResult{
 		run.TestResult{
-			TestCase: testing.TestCase{Name: "pkg.LocalTest"},
-			Errors:   []run.TestError{run.TestError{}},
+			TestInstance: testing.TestInstance{Name: "pkg.LocalTest"},
+			Errors:       []run.TestError{run.TestError{}},
 		},
 	}}
 	args := []string{"root@example.net"}
@@ -109,7 +109,7 @@ func TestRunExecFailure(t *gotesting.T) {
 	// If tests fail to be executed, an error should be reported.
 	const msg = "exec failed"
 	wrapper := stubRunWrapper{
-		runRes:    []run.TestResult{run.TestResult{TestCase: testing.TestCase{Name: "pkg.LocalTest"}}},
+		runRes:    []run.TestResult{run.TestResult{TestInstance: testing.TestInstance{Name: "pkg.LocalTest"}}},
 		runStatus: run.Status{ExitCode: subcommands.ExitFailure, ErrorMsg: msg + "\nmore details"},
 	}
 	args := []string{"root@example.net"}
@@ -139,7 +139,7 @@ func TestRunWriteFailure(t *gotesting.T) {
 	// If writing results fails, an error should be reported.
 	const msg = "writing failed"
 	wrapper := stubRunWrapper{
-		runRes:   []run.TestResult{run.TestResult{TestCase: testing.TestCase{Name: "pkg.LocalTest"}}},
+		runRes:   []run.TestResult{run.TestResult{TestInstance: testing.TestInstance{Name: "pkg.LocalTest"}}},
 		writeErr: errors.New(msg),
 	}
 	args := []string{"root@example.net"}
@@ -196,7 +196,7 @@ func TestRunDontWriteResultsForEarlyFailure(t *gotesting.T) {
 
 func TestRunReserveTimeToWriteResults(t *gotesting.T) {
 	wrapper := stubRunWrapper{
-		runRes: []run.TestResult{run.TestResult{TestCase: testing.TestCase{Name: "pkg.Test"}}},
+		runRes: []run.TestResult{run.TestResult{TestInstance: testing.TestInstance{Name: "pkg.Test"}}},
 	}
 	executeRunCmd(t, []string{"-timeout=3600", "root@example.net"}, &wrapper, logging.NewDiscard())
 

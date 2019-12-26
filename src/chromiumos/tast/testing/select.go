@@ -43,7 +43,7 @@ func GetTestPatternType(pats []string) TestPatternType {
 // it is treated as a boolean expression specifying test attributes.
 //
 // Otherwise, arg(s) are interpreted as globs matching test names.
-func SelectTestsByArgs(tests []*TestCase, args []string) ([]*TestCase, error) {
+func SelectTestsByArgs(tests []*TestInstance, args []string) ([]*TestInstance, error) {
 	switch GetTestPatternType(args) {
 	case TestPatternGlobs:
 		if len(args) == 0 {
@@ -62,13 +62,13 @@ func SelectTestsByArgs(tests []*TestCase, args []string) ([]*TestCase, error) {
 
 // selectTestsByGlob returns a subset of tests with names matched by w,
 // which may contain '*' to match zero or more arbitrary characters.
-func selectTestsByGlob(tests []*TestCase, g string) ([]*TestCase, error) {
+func selectTestsByGlob(tests []*TestInstance, g string) ([]*TestInstance, error) {
 	re, err := NewTestGlobRegexp(g)
 	if err != nil {
 		return nil, fmt.Errorf("bad glob %q: %v", g, err)
 	}
 
-	var filtered []*TestCase
+	var filtered []*TestInstance
 	for _, t := range tests {
 		if re.MatchString(t.Name) {
 			filtered = append(filtered, t)
@@ -79,9 +79,9 @@ func selectTestsByGlob(tests []*TestCase, g string) ([]*TestCase, error) {
 
 // SelectTestsByGlobs de-duplicates and returns a subset of tests with names matched by
 // any glob in gs. See NewTestGlobRegexp for details about the glob format.
-func SelectTestsByGlobs(tests []*TestCase, gs []string) ([]*TestCase, error) {
-	var filtered []*TestCase
-	seen := make(map[*TestCase]struct{})
+func SelectTestsByGlobs(tests []*TestInstance, gs []string) ([]*TestInstance, error) {
+	var filtered []*TestInstance
+	seen := make(map[*TestInstance]struct{})
 	for _, g := range gs {
 		ts, err := selectTestsByGlob(tests, g)
 		if err != nil {
@@ -103,13 +103,13 @@ func SelectTestsByGlobs(tests []*TestCase, gs []string) ([]*TestCase, error) {
 // SelectTestsByAttrExpr returns a subset of tests with attributes matched by s,
 // a boolean expression of attributes, e.g. "(attr1 && !attr2) || attr3".
 // See chromiumos/tast/internal/expr for details about expression syntax.
-func SelectTestsByAttrExpr(tests []*TestCase, s string) ([]*TestCase, error) {
+func SelectTestsByAttrExpr(tests []*TestInstance, s string) ([]*TestInstance, error) {
 	expr, err := expr.New(s)
 	if err != nil {
 		return nil, fmt.Errorf("bad expr: %v", err)
 	}
 
-	var filtered []*TestCase
+	var filtered []*TestInstance
 	for _, t := range tests {
 		if expr.Matches(t.Attr) {
 			filtered = append(filtered, t.clone())

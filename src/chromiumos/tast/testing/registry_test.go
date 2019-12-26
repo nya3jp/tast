@@ -14,7 +14,7 @@ import (
 
 // testsEqual returns true if a and b contain tests with matching fields.
 // This is useful when comparing slices that contain copies of the same underlying tests.
-func testsEqual(a, b []*TestCase) bool {
+func testsEqual(a, b []*RunnableTest) bool {
 	if len(a) != len(b) {
 		return false
 	}
@@ -29,12 +29,12 @@ func testsEqual(a, b []*TestCase) bool {
 }
 
 // getDupeTestPtrs returns pointers present in both a and b.
-func getDupeTestPtrs(a, b []*TestCase) []*TestCase {
-	am := make(map[*TestCase]struct{}, len(a))
+func getDupeTestPtrs(a, b []*RunnableTest) []*RunnableTest {
+	am := make(map[*RunnableTest]struct{}, len(a))
 	for _, t := range a {
 		am[t] = struct{}{}
 	}
-	var dupes []*TestCase
+	var dupes []*RunnableTest
 	for _, t := range b {
 		if _, ok := am[t]; ok {
 			dupes = append(dupes, t)
@@ -45,12 +45,12 @@ func getDupeTestPtrs(a, b []*TestCase) []*TestCase {
 
 func TestAllTests(t *gotesting.T) {
 	reg := NewRegistry()
-	allTests := []*TestCase{
-		&TestCase{Name: "test.Foo", Func: func(context.Context, *State) {}},
-		&TestCase{Name: "test.Bar", Func: func(context.Context, *State) {}},
+	allTests := []*RunnableTest{
+		&RunnableTest{Name: "test.Foo", Func: func(context.Context, *State) {}},
+		&RunnableTest{Name: "test.Bar", Func: func(context.Context, *State) {}},
 	}
 	for _, test := range allTests {
-		if err := reg.AddTestCase(test); err != nil {
+		if err := reg.AddRunnableTest(test); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -67,10 +67,10 @@ func TestAllTests(t *gotesting.T) {
 func TestAddTestDuplicateName(t *gotesting.T) {
 	const name = "test.Foo"
 	reg := NewRegistry()
-	if err := reg.AddTestCase(&TestCase{Name: name, Func: func(context.Context, *State) {}}); err != nil {
+	if err := reg.AddRunnableTest(&RunnableTest{Name: name, Func: func(context.Context, *State) {}}); err != nil {
 		t.Fatal("Failed to add initial test: ", err)
 	}
-	if err := reg.AddTestCase(&TestCase{Name: name, Func: func(context.Context, *State) {}}); err == nil {
+	if err := reg.AddRunnableTest(&RunnableTest{Name: name, Func: func(context.Context, *State) {}}); err == nil {
 		t.Fatal("Duplicate test name unexpectedly not rejected")
 	}
 }
@@ -79,12 +79,12 @@ func TestAddTestModifyOriginal(t *gotesting.T) {
 	reg := NewRegistry()
 	const origName = "test.OldName"
 	const origDep = "olddep"
-	test := &TestCase{
+	test := &RunnableTest{
 		Name:         origName,
 		Func:         func(context.Context, *State) {},
 		SoftwareDeps: []string{origDep},
 	}
-	if err := reg.AddTestCase(test); err != nil {
+	if err := reg.AddRunnableTest(test); err != nil {
 		t.Fatal("AddTest failed: ", err)
 	}
 

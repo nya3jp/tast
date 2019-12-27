@@ -70,6 +70,30 @@
       "revId": "cb7d1e74d4aff62633d7c96ea3650f33306191ca",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "411185a7_49d6852f",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 8
+      },
+      "lineNbr": 1052,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-12-27T03:32:23Z",
+      "side": 1,
+      "message": "Sorry for very delayed reply, and thanks for explanation.\n\nYour suggested sentence is fine for me, so let me just use the suggested one.",
+      "parentUuid": "e7b67e47_ac3758d2",
+      "range": {
+        "startLine": 1050,
+        "startChar": 38,
+        "endLine": 1052,
+        "endChar": 14
+      },
+      "revId": "cb7d1e74d4aff62633d7c96ea3650f33306191ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -34,6 +34,24 @@
       "revId": "3ef837afde72dcc68ee41f012751521ab7e5ade1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fc199ba3_5b16b4cc",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2019-12-27T04:56:09Z",
+      "side": 1,
+      "message": "\u003e I\u0027ll add comments in the next CL (crrev.com/c/1978442) at the definition of RunnableTest to clarify what \"runnable\" means (I did not do it in this CL because the explanation will change in the next CL anyway). I don\u0027t think it\u0027s possible to choose a *single* word to perfectly explain the difference, and \"runnable\" is the best one I could come up with. At least I believe it\u0027s far better than the current meaningless suffix (\"case\").\n\nI\u0027d recommend to avoid using \"runnable\" still here, unless \"runnable\" has unique meaning across the Tast at all.\n\n\u003e This will no longer be true by my next change to expand testing.Test before constructing testing.RunnableTest:\nhttps://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/1978442\n\nFYI, too: I\u0027d recommend to introduce another struct, instead.\nRe-using the existing struct for multiple semantics with introducing several limitations of some field just makes maintenance harder. Actually, that\u0027s why I split the Test and TestCase.",
+      "parentUuid": "49c330c5_db18af6c",
+      "revId": "3ef837afde72dcc68ee41f012751521ab7e5ade1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

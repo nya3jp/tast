@@ -37,6 +37,10 @@ func main() {
 			},
 		},
 	}
+	const (
+		androidContainerStable   = `("android-container-nyc" || "android-container-pi")`
+		androidContainerUnstable = `("android-container-qt" || "android-container-master-arc-dev")`
+	)
 	cfg := runner.Config{
 		Type:              runner.LocalRunner,
 		KillStaleRunners:  true,
@@ -57,11 +61,10 @@ func main() {
 			// There are three types of android dependency to differentiate between
 			// ARC and ARCVM guest.
 			// master-arc-dev and qt are under development and not stable to run Tast tests.
-			"android":      `arc && !arcvm && !"android-container-master-arc-dev" && !"android-container-qt"`,
-			"android_vm":   `arc && arcvm`,
-			"android_both": `arc && !"android-container-master-arc-dev" && !"android-container-qt"`,
-			// Run all ARC versions, including master-arc-dev and qt.
-			"android_all":       `arc && !arcvm`,
+			"android":           `arc && ` + androidContainerStable + ` && !` + androidContainerUnstable,
+			"android_vm":        `arc && arcvm`,
+			"android_both":      `arc && !` + androidContainerUnstable,
+			"android_all":       `arc && (` + androidContainerStable + ` || ` + androidContainerUnstable + `)`,
 			"android_all_both":  `arc`,
 			"android_p":         `arc && "android-container-pi"`,
 			"android_p_both":    `arc && ("android-container-pi" || "android-vm-pi")`,

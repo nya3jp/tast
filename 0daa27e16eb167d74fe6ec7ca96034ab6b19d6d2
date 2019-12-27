@@ -46,6 +46,30 @@
       "revId": "0daa27e16eb167d74fe6ec7ca96034ab6b19d6d2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "da13cae0_69e3b0de",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1305461
+      },
+      "writtenOn": "2019-12-27T03:28:58Z",
+      "side": 1,
+      "message": "Oops, yes, sorry - I think I confused myself. Nevermind. :-)",
+      "parentUuid": "33992e64_7f8e38a9",
+      "range": {
+        "startLine": 105,
+        "startChar": 4,
+        "endLine": 105,
+        "endChar": 19
+      },
+      "revId": "0daa27e16eb167d74fe6ec7ca96034ab6b19d6d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

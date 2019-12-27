@@ -16,6 +16,24 @@
       "revId": "3ef837afde72dcc68ee41f012751521ab7e5ade1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "49c330c5_db18af6c",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-12-27T03:26:28Z",
+      "side": 1,
+      "message": "If you still have concerns about naming I\u0027d like to discuss offline because it\u0027s difficult to discuss this kind of subtle things online.\n\n\n\u003e However, I wonder if \"Runnable\" is a good name, too, because 1) in general, any test wants to run, and 2) RunnableTest may not be runnable because of dependencies etc.\n\nI think it is a matter of the definition of \"runnable\". Your interpretation of \"runnable\" is sort of specific one (e.g. software/hardware dependencies are already checked), but here I meant just that metadata validation is finished and Run method is available (but the method can return immediately without actually executing the test due to unsatisfied dependencies).\n\nI\u0027ll add comments in the next CL (crrev.com/c/1978442) at the definition of RunnableTest to clarify what \"runnable\" means (I did not do it in this CL because the explanation will change in the next CL anyway). I don\u0027t think it\u0027s possible to choose a *single* word to perfectly explain the difference, and \"runnable\" is the best one I could come up with. At least I believe it\u0027s far better than the current meaningless suffix (\"case\").\n\n\n\u003e When I made the struct, the most important diff between Test and TestCase is \"Param\". TestCases contains test configuration calculated from Test\u0027s data and one Param (if exists), which is nice to be reflected in the new name.\n\u003e \n\u003e Suggestion \"TestInstance\" borrowed from gtest macro name: https://github.com/google/googletest/blob/master/googletest/docs/advanced.md#how-to-write-value-parameterized-tests\n\nThis will no longer be true by my next change to expand testing.Test before constructing testing.RunnableTest:\nhttps://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/1978442",
+      "parentUuid": "fbe9ebba_eae1883f",
+      "revId": "3ef837afde72dcc68ee41f012751521ab7e5ade1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

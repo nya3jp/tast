@@ -22,6 +22,30 @@
       "revId": "0daa27e16eb167d74fe6ec7ca96034ab6b19d6d2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "33992e64_7f8e38a9",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-12-27T01:50:17Z",
+      "side": 1,
+      "message": "Hmm, this is a definition of a software feature, not a precondition. I think \"metrics consent software feature\" is clear enough... what do you think?",
+      "parentUuid": "c36d7ae6_e74d69ba",
+      "range": {
+        "startLine": 105,
+        "startChar": 4,
+        "endLine": 105,
+        "endChar": 19
+      },
+      "revId": "0daa27e16eb167d74fe6ec7ca96034ab6b19d6d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

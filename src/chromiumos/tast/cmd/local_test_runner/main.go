@@ -37,6 +37,10 @@ func main() {
 			},
 		},
 	}
+	const (
+		androidContainerStable   = `("android-container-nyc" || "android-container-pi")`
+		androidContainerUnstable = `("android-container-qt" || "android-container-master-arc-dev")`
+	)
 	cfg := runner.Config{
 		Type:              runner.LocalRunner,
 		KillStaleRunners:  true,
@@ -54,14 +58,14 @@ func main() {
 			// The one exception is tast_vm, which is inserted by VM builders via -extrauseflags.
 			"alt_syscall": `!"kernel-3_8" && !"kernel-3_10"`,
 			"amd64":       "amd64",
-			// There are three types of android dependency to differentiate between
-			// ARC and ARCVM guest.
+			// There are three types of android dependency to differentiate between ARC and ARCVM guest.
 			// master-arc-dev and qt are under development and not stable to run Tast tests.
-			"android":      `arc && !arcvm && !"android-container-master-arc-dev" && !"android-container-qt"`,
-			"android_vm":   `arc && arcvm`,
-			"android_both": `arc && !"android-container-master-arc-dev" && !"android-container-qt"`,
-			// Run all ARC versions, including master-arc-dev and qt.
-			"android_all":       `arc && !arcvm`,
+			// ARC USE flags are defined here:
+			// http://cs/chromeos_public/src/third_party/chromiumos-overlay/eclass/arc-build-constants.eclass
+			"android":           `arc && ` + androidContainerStable + ` && !` + androidContainerUnstable,
+			"android_vm":        `arc && arcvm`,
+			"android_both":      `arc && !` + androidContainerUnstable,
+			"android_all":       `arc && arcpp`,
 			"android_all_both":  `arc`,
 			"android_p":         `arc && "android-container-pi"`,
 			"android_p_both":    `arc && ("android-container-pi" || "android-vm-pi")`,

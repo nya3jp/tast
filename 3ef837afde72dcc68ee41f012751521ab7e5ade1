@@ -52,6 +52,24 @@
       "revId": "3ef837afde72dcc68ee41f012751521ab7e5ade1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f36556c9_a023ba27",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2019-12-27T05:09:13Z",
+      "side": 1,
+      "message": "Sorry, I can\u0027t agree with you in any point. Let\u0027s have an offline discussion next year (you\u0027re already on vacation, right?)",
+      "parentUuid": "fc199ba3_5b16b4cc",
+      "revId": "3ef837afde72dcc68ee41f012751521ab7e5ade1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

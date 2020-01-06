@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0721ea87_5393d45b",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1000303
+      },
+      "writtenOn": "2020-01-06T23:43:15Z",
+      "side": 1,
+      "message": "ok this is getting complicated.. \u0027android\u0027 means N/P container, and _all means N/P/Q/R. _p means P only. _both means container+VM.\n\nShould we still keep _both when we have _vm? nya@, any preferences?",
+      "revId": "09df7c55ca5eea82d0b7437a2af40f15223f2bd3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

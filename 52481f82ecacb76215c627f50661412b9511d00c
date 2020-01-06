@@ -22,6 +22,30 @@
       "revId": "52481f82ecacb76215c627f50661412b9511d00c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3c523dc7_a2202a51",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1237241
+      },
+      "writtenOn": "2020-01-06T06:41:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a40cd63_80cb600a",
+      "range": {
+        "startLine": 92,
+        "startChar": 3,
+        "endLine": 92,
+        "endChar": 40
+      },
+      "revId": "52481f82ecacb76215c627f50661412b9511d00c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

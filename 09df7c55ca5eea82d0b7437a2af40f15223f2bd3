@@ -16,6 +16,24 @@
       "revId": "09df7c55ca5eea82d0b7437a2af40f15223f2bd3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cbec4f94_fbf60236",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1202079
+      },
+      "writtenOn": "2020-01-07T00:03:41Z",
+      "side": 1,
+      "message": "agreed, it is confusing.\n\nperhaps we can deprecate \"android_both\", since we are migrating tests to run in both \"container\" and \"vm\" modes.\nand we can re-introduce \"android_both\" in the future (but perhaps with a better name) once VM is more stable.",
+      "parentUuid": "0721ea87_5393d45b",
+      "revId": "09df7c55ca5eea82d0b7437a2af40f15223f2bd3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

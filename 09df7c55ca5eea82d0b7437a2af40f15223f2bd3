@@ -93,6 +93,23 @@
       "revId": "09df7c55ca5eea82d0b7437a2af40f15223f2bd3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "40e76887_d1a9daf4",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1366225
+      },
+      "writtenOn": "2020-01-07T07:59:53Z",
+      "side": 1,
+      "message": "(androidContainerStable || androidContainerUnstable) \u003d arcpp?",
+      "revId": "09df7c55ca5eea82d0b7437a2af40f15223f2bd3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

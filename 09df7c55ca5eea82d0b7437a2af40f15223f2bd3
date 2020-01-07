@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "16d98340_ebc8123c",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-01-07T03:05:19Z",
+      "side": 1,
+      "message": "We have to update tast-use-flags to include this USE flag.\nhttps://cs.corp.google.com/chromeos_public/src/third_party/chromiumos-overlay/chromeos-base/tast-use-flags/tast-use-flags-0.0.1.ebuild?q\u003dtast-use-flags\u0026dr",
+      "range": {
+        "startLine": 41,
+        "startChar": 32,
+        "endLine": 41,
+        "endChar": 53
+      },
+      "revId": "09df7c55ca5eea82d0b7437a2af40f15223f2bd3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "0721ea87_5393d45b",
         "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
         "patchSetId": 2
@@ -31,6 +54,24 @@
       "side": 1,
       "message": "agreed, it is confusing.\n\nperhaps we can deprecate \"android_both\", since we are migrating tests to run in both \"container\" and \"vm\" modes.\nand we can re-introduce \"android_both\" in the future (but perhaps with a better name) once VM is more stable.",
       "parentUuid": "0721ea87_5393d45b",
+      "revId": "09df7c55ca5eea82d0b7437a2af40f15223f2bd3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6bdd7d2d_142a6f2a",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-01-07T03:05:19Z",
+      "side": 1,
+      "message": "I have one quick question. On a dual ARC boards, are container/vm images built from the same version? That is, on ARC++ P board, is ARCVM also P?\n\nIf that\u0027s not the case (e.g. ARC++ P and ARCVM R are on the same board), I think we should remove \"android_both\" software feature first because its meaning will become unclear. For example, a test with android_both would not run on ARC++ R but run on ARCVM R, which usually doesn\u0027t make sense.",
+      "parentUuid": "cbec4f94_fbf60236",
       "revId": "09df7c55ca5eea82d0b7437a2af40f15223f2bd3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

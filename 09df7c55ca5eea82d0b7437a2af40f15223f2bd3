@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "f5c26c1b_a5f132c2",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1202079
+      },
+      "writtenOn": "2020-01-07T17:35:35Z",
+      "side": 1,
+      "message": "good catch. fixed.\nhttps://chromium-review.googlesource.com/c/chromiumos/overlays/chromiumos-overlay/+/1989163/\n\nadded Cq-Depend",
+      "parentUuid": "16d98340_ebc8123c",
+      "range": {
+        "startLine": 41,
+        "startChar": 32,
+        "endLine": 41,
+        "endChar": 53
+      },
+      "revId": "09df7c55ca5eea82d0b7437a2af40f15223f2bd3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0721ea87_5393d45b",
         "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
         "patchSetId": 2
@@ -107,6 +131,24 @@
       "writtenOn": "2020-01-07T07:59:53Z",
       "side": 1,
       "message": "(androidContainerStable || androidContainerUnstable) \u003d arcpp?",
+      "revId": "09df7c55ca5eea82d0b7437a2af40f15223f2bd3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aafd4d54_8fa2a17a",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1202079
+      },
+      "writtenOn": "2020-01-07T17:35:35Z",
+      "side": 1,
+      "message": "sorry, I didn\u0027t get your comment. Do you suggest creating a new constant with the union of stable + unstable?",
+      "parentUuid": "40e76887_d1a9daf4",
       "revId": "09df7c55ca5eea82d0b7437a2af40f15223f2bd3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

@@ -152,6 +152,24 @@
       "revId": "09df7c55ca5eea82d0b7437a2af40f15223f2bd3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bd8c8c57_562f486c",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1366225
+      },
+      "writtenOn": "2020-01-08T01:20:50Z",
+      "side": 1,
+      "message": "(androidContainerStable || androidContainerUnstable) contains all the andorid-container* variants. There is a flag called \"arcpp\", and it should be enabled when one of these variants is enabled. I thought using \"arcpp\" might make the code cleaner.",
+      "parentUuid": "aafd4d54_8fa2a17a",
+      "revId": "09df7c55ca5eea82d0b7437a2af40f15223f2bd3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "57dcd9ee_84b943b0",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-01-08T15:38:48Z",
+      "side": 1,
+      "message": "Great improvement :-)",
+      "revId": "a685827b5fb86a801473b06dbb614d0987894c6a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "119e2dfd_d23fd61f",
+        "filename": "src/chromiumos/tast/bundle/bundle_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 350,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-01-08T15:38:48Z",
+      "side": 1,
+      "message": "off topic: maybe \"nil\" following\nhttps://github.com/golang/go/wiki/CodeReviewComments#declaring-empty-slices\n\n?",
+      "range": {
+        "startLine": 350,
+        "startChar": 29,
+        "endLine": 350,
+        "endChar": 54
+      },
+      "revId": "6e274da72e12bb4f9d6bb5f665b70dd2a351a290",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

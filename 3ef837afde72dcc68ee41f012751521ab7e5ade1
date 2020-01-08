@@ -70,6 +70,24 @@
       "revId": "3ef837afde72dcc68ee41f012751521ab7e5ade1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "114d843b_b50add31",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-01-08T10:02:44Z",
+      "side": 1,
+      "message": "After thinking over holidays, I think now I understand the original intention of separating Test and TestCase. Now it makes sense to me that naming the other struct TestInstance.",
+      "parentUuid": "f36556c9_a023ba27",
+      "revId": "3ef837afde72dcc68ee41f012751521ab7e5ade1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

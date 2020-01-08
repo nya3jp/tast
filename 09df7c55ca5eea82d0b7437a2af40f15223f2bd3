@@ -120,6 +120,24 @@
     },
     {
       "key": {
+        "uuid": "37ae08df_eaa63a1f",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-01-08T08:58:55Z",
+      "side": 1,
+      "message": "Hmm, I thought again and I guess the confusing behavior of \"android_both\" being satisfied on ARCVM R but not on ARC++ R is already applicable today? Then removing _both variables won\u0027t be a blocker of this change.",
+      "parentUuid": "a6d29f74_9dbb4831",
+      "revId": "09df7c55ca5eea82d0b7437a2af40f15223f2bd3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "40e76887_d1a9daf4",
         "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
         "patchSetId": 2

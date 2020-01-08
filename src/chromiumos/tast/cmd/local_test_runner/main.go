@@ -87,6 +87,7 @@ func main() {
 			"cros_config":             "unibuild",
 			"cros_internal":           "internal",
 			"cros_video_decoder":      "!disable_cros_video_decoder",
+			"crostini_stable":         "!grunt && !octopus && !kukui", // Boards that can run Crostini tests reliably.
 			"crosvm_gpu":              `"crosvm-gpu"`,
 			"crossystem":              "!betty && !tast_vm", // VMs don't support few crossystem sub-commands: https://crbug.com/974615
 			"cups":                    "cups",

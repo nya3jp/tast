@@ -49,6 +49,10 @@ func init() {
 type SSH struct {
 	cl *ssh.Client
 
+	// platform describes the Operating System running on the remote computer. Guaranteed to
+	// be non-nil.
+	platform *Platform
+
 	// AnnounceCmd (if non-nil) is called with every remote command immediately before it's executed.
 	// This is useful for testing (i.e. to ensure that only expected commands are executed).
 	AnnounceCmd func(string)
@@ -83,6 +87,10 @@ type SSHOptions struct {
 
 	// WarnFunc (if non-nil) is used to log non-fatal errors encountered while connecting to the host.
 	WarnFunc func(string)
+
+	// Platform describes the operating system running on the SSH server. This controls how certain
+	// commands will be executed on the remote system. If nil, assumes a Chrome OS system.
+	Platform *Platform
 }
 
 // ParseSSHTarget parses target (of the form "[<user>@]host[:<port>]") and fills
@@ -210,6 +218,9 @@ func NewSSH(ctx context.Context, o *SSHOptions) (*SSH, error) {
 	if o.User == "" {
 		o.User = defaultSSHUser
 	}
+	if o.Platform == nil {
+		o.Platform = DefaultPlatform
+	}
 
 	hostPort := fmt.Sprintf("%s:%d", o.Hostname, o.Port)
 	am, err := getSSHAuthMethods(o, "["+o.Hostname+"] ")
@@ -227,7 +238,7 @@ func NewSSH(ctx context.Context, o *SSHOptions) (*SSH, error) {
 		start := time.Now()
 		var cl *ssh.Client
 		if cl, err = connectSSH(ctx, hostPort, cfg); err == nil {
-			return &SSH{cl, nil}, nil
+			return &SSH{cl, o.Platform, nil}, nil
 		}
 		if ctx.Err() != nil {
 			return nil, ctx.Err()

@@ -6,16 +6,19 @@ package host
 
 import (
 	"bytes"
+	"context"
 	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"testing"
 	"time"
 
 	"golang.org/x/crypto/ssh"
 
+	"chromiumos/tast/host/test"
 	"chromiumos/tast/testutil"
 )
 
@@ -30,6 +33,44 @@ func TestRun(t *testing.T) {
 
 	if err := td.hst.Command("echo hello").Run(td.ctx); err == nil {
 		t.Error("Passing shell command worked unexpectedly")
+	}
+}
+
+func TestCommandsOnCustomPlatform(t *testing.T) {
+	t.Parallel()
+
+	var expectedCmd string
+	srv, err := test.NewSSHServer(&userKey.PublicKey, hostKey, func(req *test.ExecReq) {
+		if req.Cmd != expectedCmd {
+			t.Errorf("Unexpected command %q (want %q)", req.Cmd, expectedCmd)
+			req.Start(false)
+			return
+		}
+		req.Start(true)
+		req.End(0)
+	})
+	if err != nil {
+		t.Fatal("Failed starting server: ", err)
+	}
+	defer srv.Close()
+
+	platform := &Platform{
+		BuildShellCommand: func(dir string, args []string) string {
+			return dir + "|" + strings.Join(args, "|")
+		},
+	}
+
+	ctx := context.Background()
+	hst, err := connectToServer(ctx, srv, userKey, &SSHOptions{ConnectRetries: 1, Platform: platform})
+	if err != nil {
+		t.Fatal("Unable to connect to SSH Server")
+	}
+	// Run a command
+	cmd := hst.Command("echo", "abc")
+	cmd.Dir = "/home/user/files/"
+	expectedCmd = "/home/user/files/|echo|abc"
+	if err := cmd.Run(ctx); err != nil {
+		t.Error("Failed to run command in directory: ", err)
 	}
 }
 

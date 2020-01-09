@@ -138,6 +138,24 @@
     },
     {
       "key": {
+        "uuid": "92a94ed6_5a04fc50",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1202079
+      },
+      "writtenOn": "2020-01-09T00:31:19Z",
+      "side": 1,
+      "message": "+1 for removing \"_both\".\n\nFor a test that is designed to run \"container stable\", it doesn\u0027t make sense to run it on \"arcvm unstable\".\n\nandroid-vm-pi and android-vm-master are defined here: https://source.corp.google.com/chromeos_public/src/third_party/chromiumos-overlay/eclass/arc-build-constants.eclass\n\nperhaps we should define \"android_both_stable\" or similar.",
+      "parentUuid": "37ae08df_eaa63a1f",
+      "revId": "09df7c55ca5eea82d0b7437a2af40f15223f2bd3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "40e76887_d1a9daf4",
         "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
         "patchSetId": 2
@@ -188,6 +206,24 @@
       "revId": "09df7c55ca5eea82d0b7437a2af40f15223f2bd3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d2fe464c_c23a6e37",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1202079
+      },
+      "writtenOn": "2020-01-09T00:31:19Z",
+      "side": 1,
+      "message": "thanks. I wasn\u0027t aware of that one.",
+      "parentUuid": "bd8c8c57_562f486c",
+      "revId": "09df7c55ca5eea82d0b7437a2af40f15223f2bd3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

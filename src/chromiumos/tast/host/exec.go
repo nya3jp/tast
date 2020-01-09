@@ -12,8 +12,6 @@ import (
 	"sync"
 
 	"golang.org/x/crypto/ssh"
-
-	"chromiumos/tast/shutil"
 )
 
 // Cmd represents an external command being prepared or run on a remote host.
@@ -100,7 +98,7 @@ func (c *Cmd) Run(ctx context.Context) error {
 		return err
 	}
 
-	cmd := shellCmd(c.Dir, c.Args)
+	cmd := c.buildCmd(c.Dir, c.Args)
 	if c.ssh.AnnounceCmd != nil {
 		c.ssh.AnnounceCmd(cmd)
 	}
@@ -120,7 +118,7 @@ func (c *Cmd) Output(ctx context.Context) ([]byte, error) {
 		return nil, err
 	}
 
-	cmd := shellCmd(c.Dir, c.Args)
+	cmd := c.buildCmd(c.Dir, c.Args)
 	if c.ssh.AnnounceCmd != nil {
 		c.ssh.AnnounceCmd(cmd)
 	}
@@ -144,7 +142,7 @@ func (c *Cmd) CombinedOutput(ctx context.Context) ([]byte, error) {
 		return nil, err
 	}
 
-	cmd := shellCmd(c.Dir, c.Args)
+	cmd := c.buildCmd(c.Dir, c.Args)
 	if c.ssh.AnnounceCmd != nil {
 		c.ssh.AnnounceCmd(cmd)
 	}
@@ -240,7 +238,7 @@ func (c *Cmd) Start(ctx context.Context) error {
 		return err
 	}
 
-	cmd := shellCmd(c.Dir, c.Args)
+	cmd := c.buildCmd(c.Dir, c.Args)
 	if c.ssh.AnnounceCmd != nil {
 		c.ssh.AnnounceCmd(cmd)
 	}
@@ -415,13 +413,7 @@ func (c *Cmd) closePipes(err error) {
 	})
 }
 
-// shellCmd builds a shell command string to execute a process with exec.
-func shellCmd(dir string, args []string) string {
-	cmd := "exec " + shutil.EscapeSlice(args)
-	if dir != "" {
-		// Return 125 (chosen arbitrarily) if dir does not exist.
-		// TODO(nya): Consider handling the directory error more gracefully.
-		cmd = fmt.Sprintf("cd %s > /dev/null 2>&1 || exit 125; %s", shutil.Escape(dir), cmd)
-	}
-	return cmd
+// buildCmd builds a shell command in a platform-specific manner.
+func (c *Cmd) buildCmd(dir string, args []string) string {
+	return c.ssh.platform.BuildShellCommand(dir, args)
 }

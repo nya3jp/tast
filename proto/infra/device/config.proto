@@ -1,0 +1,226 @@
+// Copyright 2019 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package device;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/device";
+
+import "device/config_id.proto";
+
+// These are the distinct configs combinations that will constitue a ChromeOS
+// device.
+
+// Next tag: 21
+message Config {
+
+  // Required. Unique ID of the device config.
+  ConfigId id = 1;
+
+  // NOTE: anytime a proto field is removed, make sure to add them to these
+  // "reserved" lists below (see
+  // https://developers.google.com/protocol-buffers/docs/proto3#reserved)
+
+  // For removing `carrier = 2`
+  reserved 2;
+  reserved "carrier";
+
+  // Next tag: 8
+  enum FormFactor {
+    FORM_FACTOR_UNSPECIFIED = 0;
+    FORM_FACTOR_CLAMSHELL = 1;
+    FORM_FACTOR_CONVERTIBLE = 2;
+    FORM_FACTOR_DETACHABLE = 3;
+    FORM_FACTOR_CHROMEBASE = 4;
+    FORM_FACTOR_CHROMEBOX = 5;
+    FORM_FACTOR_CHROMEBIT = 6;
+    FORM_FACTOR_CHROMESLATE = 7;
+  }
+
+  FormFactor form_factor = 3;
+
+  // e.g: "haswell", "tegra",...
+  string gpu_family = 4;
+
+  // Next Tag: 3
+  enum Graphics {
+    GRAPHICS_UNSPECIFIED = 0;
+    GRAPHICS_GL = 1;
+    GRAPHICS_GLE = 2;
+  }
+
+  Graphics graphics = 5;
+
+  // Next Tag: 12
+  enum HardwareFeature {
+    HARDWARE_FEATURE_UNSPECIFIED = 0;
+    HARDWARE_FEATURE_BLUETOOTH = 1;
+    HARDWARE_FEATURE_FLASHROM = 2;
+    // Indicate if the device support audio hotwording, an audio listening module
+    // included with Google Chrome and Chromium to support Google Assistant.
+    // https://chromeos.google.com/partner/dlm/docs/latest-requirements/chromebook.html#audio-hotwording-always-on-listening
+    HARDWARE_FEATURE_HOTWORDING = 3;
+    HARDWARE_FEATURE_INTERNAL_DISPLAY = 4;
+    // Indicate if the device has support for lucid sleep (a connected lower power state,
+    // in which the device should still has some network communications)
+    // https://chromeos.google.com/partner/dlm/docs/p-hardware-specs/lucidsleep.html
+    HARDWARE_FEATURE_LUCID_SLEEP = 5;
+    HARDWARE_FEATURE_WEBCAM = 6;
+    HARDWARE_FEATURE_STYLUS = 7;
+    HARDWARE_FEATURE_TOUCHPAD = 8;
+    HARDWARE_FEATURE_TOUCHSCREEN = 9;
+    // Indicate if the device has detachable keyboard.
+    // https://chromeos.google.com/partner/dlm/docs/latest-requirements/detachable.html#keyboard-external
+    HARDWARE_FEATURE_DETACHABLE_KEYBOARD = 10;
+    // Indicate if the device has fingerprint sensor.
+    HARDWARE_FEATURE_FINGERPRINT = 11;
+  }
+
+  // If a hardware feature isn't specified, one can assume that it doesn't
+  // exist on the device.
+  repeated HardwareFeature hardware_features = 6;
+
+  // Indicate the device's power supply.
+  // Next Tag: 3
+  enum PowerSupply {
+    POWER_SUPPLY_UNSPECIFIED = 0;
+    POWER_SUPPLY_BATTERY = 1;
+    POWER_SUPPLY_AC_ONLY = 2;
+  }
+  PowerSupply power = 8;
+
+  // Next Tag: 6
+  enum Storage {
+    STORAGE_UNSPECIFIED = 0;
+    STORAGE_SSD = 1;
+    STORAGE_HDD = 2;
+    STORAGE_MMC = 3;
+    STORAGE_NVME = 4;
+    STORAGE_UFS = 5;
+  }
+  // Indicate the device's storage type.
+  Storage storage = 9;
+
+  // Next tag: 13
+  enum VideoAcceleration {
+    VIDEO_UNSPECIFIED = 0;
+    VIDEO_ACCELERATION_H264 = 1;
+    VIDEO_ACCELERATION_ENC_H264 = 2;
+    VIDEO_ACCELERATION_VP8 = 3;
+    VIDEO_ACCELERATION_ENC_VP8 = 4;
+    VIDEO_ACCELERATION_VP9 = 5;
+    VIDEO_ACCELERATION_ENC_VP9 = 6;
+    VIDEO_ACCELERATION_VP9_2 = 7;
+    VIDEO_ACCELERATION_ENC_VP9_2 = 8;
+    VIDEO_ACCELERATION_H265 = 9;
+    VIDEO_ACCELERATION_ENC_H265 = 10;
+    VIDEO_ACCELERATION_MJPG = 11;
+    VIDEO_ACCELERATION_ENC_MJPG = 12;
+  }
+  repeated VideoAcceleration video_acceleration_supports = 10;
+
+  // Next Tag: 31
+  enum SOC {
+    SOC_UNSPECIFIED = 0;
+    // Aka AML-Y
+    SOC_AMBERLAKE_Y = 1;
+    SOC_APOLLO_LAKE = 2;
+    SOC_BAY_TRAIL = 3;
+    SOC_BRASWELL = 4;
+    SOC_BROADWELL = 5;
+    SOC_CANNON_LAKE_Y = 6;
+    SOC_COMET_LAKE_U = 7;
+    SOC_EXYNOS_5250 = 8;
+    SOC_EXYNOS_5420 = 9;
+    // Aka GLK
+    SOC_GEMINI_LAKE = 10;
+    SOC_HASWELL = 11;
+    SOC_ICE_LAKE_Y = 12;
+    SOC_IVY_BRIDGE = 13;
+    SOC_KABYLAKE_U = 14;
+    // KabyLake U refresh
+    SOC_KABYLAKE_U_R = 15;
+    SOC_KABYLAKE_Y = 16;
+    SOC_MT8173 = 17;
+    SOC_MT8176 = 18;
+    SOC_MT8183 = 19;
+    SOC_PICASSO = 20;
+    SOC_PINE_TRAIL = 21;
+    SOC_RK3288 = 22;
+    SOC_RK3399 = 23;
+    SOC_SANDY_BRIDGE = 24;
+    SOC_SDM845 = 25;
+    SOC_SKYLAKE_U = 26;
+    SOC_SKYLAKE_Y = 27;
+    SOC_STONEY_RIDGE = 28;
+    SOC_TEGRA_K1 = 29;
+    SOC_WHISKEY_LAKE_U = 30;
+  }
+
+  SOC soc = 11;
+
+  // Full email address for TAMs responsible for device
+  repeated string tam = 12;
+
+  // Full email address for Google EEs responsible for device
+  repeated string ee = 13;
+
+  // Next Tag: 6
+  enum ODM {
+    ODM_UNSPECIFIED = 0;
+    ODM_QUANTA = 1;
+    ODM_BITLAND = 2;
+    ODM_SAMSUNG = 3;
+    ODM_PEGATRON = 4;
+    ODM_COMPAL = 5;
+  }
+
+  // ODM for device
+  ODM odm = 14;
+
+  // Group email address for this device's odm contact in buganizer (@google.com)
+  string odm_email_group = 15;
+
+  enum OEM {
+    OEM_UNSPECIFIED = 0;
+    OEM_ACER = 1;
+    OEM_DELL = 2;
+    OEM_SAMSUNG = 3;
+    OEM_HP = 4;
+    OEM_LENOVO = 5;
+    OEM_ASUS = 6;
+  }
+
+  // OEM for device
+  OEM oem = 16;
+
+  // Group email address for this device's oem contact in buganizer (@google.com)
+  string oem_email_group = 17;
+
+  // Group email address for this device's SoC contact in buganizer (@google.com)
+  string soc_email_group = 18;
+
+  // A bit field used by firmware to make decisions. The definition of this
+  // firmware configuration field is per firmware build. This does not have
+  // 1st-class definitions for values in the top-level configuration proto since
+  // each firmware build target can appropriate the bits within this 32-bit
+  // field differently. Each firmware build can vary significantly in the
+  // configuration space that needs customization.
+  uint32 firmware_configuration = 19;
+
+  enum Architecture {
+    ARCHITECTURE_UNDEFINED = 0;
+    X86 = 1;
+    X86_64 = 2;
+    ARM = 3;
+    ARM64 = 4;
+  }
+  Architecture cpu = 20;
+}
+
+// Message contains all ChromeOS device configs.
+message AllConfigs {
+  repeated Config configs = 1;
+}

@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "a516c067_d12df20a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2020-01-09T19:39:27Z",
+      "side": 1,
+      "message": "Generally speaking Crostini is usable on these devices, but probably not pleasant.  The core issue here though is that we are unable to run the tast tests on these devices reliably.  This usually seems to be due to issues with earlier tests not cleaning up properly which reduces available disk space and may leave other processes running using up available CPU resources.",
+      "parentUuid": "e3603c03_47e38f4f",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 49
+      },
+      "revId": "7d390de15f5153f666cf1620d0ecf762843a5ba8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "47cf8e3a_76fd9fee",
         "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
         "patchSetId": 3
@@ -36,6 +60,30 @@
       "writtenOn": "2020-01-09T09:52:37Z",
       "side": 1,
       "message": "Does this mean crostini won\u0027t work on well on those devices practically...?",
+      "range": {
+        "startLine": 84,
+        "startChar": 52,
+        "endLine": 84,
+        "endChar": 120
+      },
+      "revId": "7d390de15f5153f666cf1620d0ecf762843a5ba8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "80b53404_96e0c5f6",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2020-01-09T19:39:27Z",
+      "side": 1,
+      "message": "Depends what you want to do.  You will be experiencing long startup times, slow performance and be squeezed for disk space on these devices though.  \n\nThese are low powered EDU devices and Crostini\u0027s target audience is software developers that typically use much more powerful machines.  There is not much overlap here.",
+      "parentUuid": "47cf8e3a_76fd9fee",
       "range": {
         "startLine": 84,
         "startChar": 52,

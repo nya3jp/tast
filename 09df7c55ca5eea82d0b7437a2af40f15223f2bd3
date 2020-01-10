@@ -242,6 +242,24 @@
       "revId": "09df7c55ca5eea82d0b7437a2af40f15223f2bd3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2acd9647_ebc67b91",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1366225
+      },
+      "writtenOn": "2020-01-10T02:06:17Z",
+      "side": 1,
+      "message": "Oh you\u0027ve added it to http://crrev.com/c/1989163. Nevermind. Thanks!",
+      "parentUuid": "e2269dfb_69f8dd35",
+      "revId": "09df7c55ca5eea82d0b7437a2af40f15223f2bd3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

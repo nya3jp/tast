@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "77e24bd7_755c897a",
+        "filename": "src/chromiumos/tast/host/exec_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2020-01-12T23:51:59Z",
+      "side": 1,
+      "message": "Good spot, thank you! Fixed.",
+      "parentUuid": "f995ecea_e13c1b67",
+      "range": {
+        "startLine": 46,
+        "startChar": 7,
+        "endLine": 46,
+        "endChar": 12
+      },
+      "revId": "154415cbbd823f583f892c2003758b514e0c73a9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0ede67a5_592562b4",
         "filename": "src/chromiumos/tast/host/platform.go",
         "patchSetId": 1
@@ -45,6 +69,30 @@
       "revId": "154415cbbd823f583f892c2003758b514e0c73a9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6626855e_1624a46e",
+        "filename": "src/chromiumos/tast/host/platform.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2020-01-12T23:51:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0ede67a5_592562b4",
+      "range": {
+        "startLine": 15,
+        "startChar": 1,
+        "endLine": 15,
+        "endChar": 57
+      },
+      "revId": "154415cbbd823f583f892c2003758b514e0c73a9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "85c9d823_c760bdde",
+        "filename": "src/chromiumos/tast/host/platform.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2020-01-12T23:51:59Z",
+      "side": 1,
+      "message": "Done, thank you!",
+      "parentUuid": "084a1bd0_9396d2d6",
+      "range": {
+        "startLine": 29,
+        "startChar": 54,
+        "endLine": 29,
+        "endChar": 58
+      },
+      "revId": "154415cbbd823f583f892c2003758b514e0c73a9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f3a63996_aff96782",
         "filename": "src/chromiumos/tast/host/platform.go",
         "patchSetId": 1
@@ -94,6 +166,30 @@
     },
     {
       "key": {
+        "uuid": "a8565217_af561419",
+        "filename": "src/chromiumos/tast/host/platform.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2020-01-12T23:51:59Z",
+      "side": 1,
+      "message": "Done, thanks",
+      "parentUuid": "f3a63996_aff96782",
+      "range": {
+        "startLine": 33,
+        "startChar": 1,
+        "endLine": 33,
+        "endChar": 57
+      },
+      "revId": "154415cbbd823f583f892c2003758b514e0c73a9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7c2ebee8_db521344",
         "filename": "src/chromiumos/tast/host/ssh.go",
         "patchSetId": 1
@@ -105,6 +201,24 @@
       "writtenOn": "2020-01-10T06:29:49Z",
       "side": 1,
       "message": "Can we set the default Platform here? Other defaults are set here.",
+      "revId": "154415cbbd823f583f892c2003758b514e0c73a9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b55ccda9_67a76c09",
+        "filename": "src/chromiumos/tast/host/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 220,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2020-01-12T23:51:59Z",
+      "side": 1,
+      "message": "Done. I\u0027ve updated the defaulting to be here and in the same style.\nIn theory the way the defaulting is done up here is subject to a TOCTOU issue (a parallel thread could modify SSHOptions back to nil after the check), but as this is a testing API and we are working in a memory-safe language I am assuming we don\u0027t care?",
+      "parentUuid": "7c2ebee8_db521344",
       "revId": "154415cbbd823f583f892c2003758b514e0c73a9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

@@ -22,6 +22,30 @@
       "revId": "6e274da72e12bb4f9d6bb5f665b70dd2a351a290",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "80a7f4df_0b6d7df0",
+        "filename": "src/chromiumos/tast/bundle/bundle_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 350,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-01-14T03:34:13Z",
+      "side": 1,
+      "message": "True, but let me concentrate on simple renamed (+ documentation update). Actually there are many style violations in existing Tast framework code..",
+      "parentUuid": "119e2dfd_d23fd61f",
+      "range": {
+        "startLine": 350,
+        "startChar": 29,
+        "endLine": 350,
+        "endChar": 54
+      },
+      "revId": "6e274da72e12bb4f9d6bb5f665b70dd2a351a290",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

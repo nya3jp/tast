@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "15f5453c_1eb2c8ad",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2020-01-14T21:43:08Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "a516c067_d12df20a",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 49
+      },
+      "revId": "7d390de15f5153f666cf1620d0ecf762843a5ba8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "47cf8e3a_76fd9fee",
         "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
         "patchSetId": 3
@@ -116,6 +140,54 @@
       "revId": "7d390de15f5153f666cf1620d0ecf762843a5ba8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "48b5490a_6f8dfd83",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2020-01-14T21:43:08Z",
+      "side": 1,
+      "message": "Renamed to crostini_stable as suggested.",
+      "parentUuid": "ddda771e_ff95b5c5",
+      "range": {
+        "startLine": 84,
+        "startChar": 4,
+        "endLine": 84,
+        "endChar": 15
+      },
+      "revId": "7d390de15f5153f666cf1620d0ecf762843a5ba8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f72e311c_7057b838",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2020-01-14T21:43:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "80b53404_96e0c5f6",
+      "range": {
+        "startLine": 84,
+        "startChar": 52,
+        "endLine": 84,
+        "endChar": 120
+      },
+      "revId": "7d390de15f5153f666cf1620d0ecf762843a5ba8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

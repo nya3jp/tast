@@ -222,6 +222,24 @@
       "revId": "154415cbbd823f583f892c2003758b514e0c73a9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "895e63ba_c0492bb0",
+        "filename": "src/chromiumos/tast/host/ssh.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 220,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-01-14T08:14:28Z",
+      "side": 1,
+      "message": "I think it\u0027s a reasonable assumption that callers should not modify the passed SSHOptions while NewSSH is being called. And we don\u0027t have security boundary between support libraries and tests, just like kernel and userland :)",
+      "parentUuid": "b55ccda9_67a76c09",
+      "revId": "154415cbbd823f583f892c2003758b514e0c73a9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

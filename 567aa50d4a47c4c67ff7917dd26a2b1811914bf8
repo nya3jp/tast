@@ -22,6 +22,30 @@
       "revId": "567aa50d4a47c4c67ff7917dd26a2b1811914bf8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9cc0b57c_aa62872f",
+        "filename": "tools/import_infra_proto.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-01-14T10:20:29Z",
+      "side": 1,
+      "message": "Oops. Good catch. Fixed.",
+      "parentUuid": "9ac6a829_7cc1bdb4",
+      "range": {
+        "startLine": 29,
+        "startChar": 9,
+        "endLine": 29,
+        "endChar": 12
+      },
+      "revId": "567aa50d4a47c4c67ff7917dd26a2b1811914bf8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

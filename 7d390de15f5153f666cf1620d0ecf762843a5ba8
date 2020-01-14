@@ -93,6 +93,29 @@
       "revId": "7d390de15f5153f666cf1620d0ecf762843a5ba8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ddda771e_ff95b5c5",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-01-14T07:41:38Z",
+      "side": 1,
+      "message": "I understood the necessity of restricting the boards/models to run this test on.\n\nThat said, I\u0027d really want this software feature to avoid mentioning \"CQ\" because it\u0027s a scheduling concept. How about something like \"crostini_stable\" which means capability to run Crostini stably? Then it is a feature concept (though it\u0027s still more like a hardware capability, not a software feature).",
+      "range": {
+        "startLine": 84,
+        "startChar": 4,
+        "endLine": 84,
+        "endChar": 15
+      },
+      "revId": "7d390de15f5153f666cf1620d0ecf762843a5ba8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

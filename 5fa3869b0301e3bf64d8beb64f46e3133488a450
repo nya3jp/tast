@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "7306ca45_f4690c43",
+        "filename": "tools/import_infra_proto.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-01-14T08:58:38Z",
+      "side": 1,
+      "message": "Oops... Done.",
+      "parentUuid": "c9198647_1ef8a98c",
+      "range": {
+        "startLine": 16,
+        "startChar": 34,
+        "endLine": 16,
+        "endChar": 45
+      },
+      "revId": "5fa3869b0301e3bf64d8beb64f46e3133488a450",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "16340b00_b1830614",
         "filename": "tools/import_infra_proto.sh",
         "patchSetId": 1
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "90723469_68a98597",
+        "filename": "tools/import_infra_proto.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-01-14T08:58:38Z",
+      "side": 1,
+      "message": "Good point. Done.",
+      "parentUuid": "16340b00_b1830614",
+      "range": {
+        "startLine": 26,
+        "startChar": 0,
+        "endLine": 26,
+        "endChar": 11
+      },
+      "revId": "5fa3869b0301e3bf64d8beb64f46e3133488a450",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "533211aa_b95485c0",
         "filename": "tools/import_infra_proto.sh",
         "patchSetId": 1
@@ -68,6 +116,30 @@
       "revId": "5fa3869b0301e3bf64d8beb64f46e3133488a450",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8bfd7e94_179ab7ee",
+        "filename": "tools/import_infra_proto.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-01-14T08:58:38Z",
+      "side": 1,
+      "message": "I was thinking it is necessary to make output as an array, but TIL it is not.",
+      "parentUuid": "533211aa_b95485c0",
+      "range": {
+        "startLine": 47,
+        "startChar": 61,
+        "endLine": 47,
+        "endChar": 67
+      },
+      "revId": "5fa3869b0301e3bf64d8beb64f46e3133488a450",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ce6463ec_15c64225",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 218,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-01-15T05:10:14Z",
+      "side": 1,
+      "message": "How about adding a comment:\n// It reuses SSH key from DUT for establishing SSH connection to a companion device.",
+      "revId": "cb8035c26aeab39a0850e75ecc8ce871a06797f2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e1ec2331_64668abb",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 234,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-01-15T05:10:14Z",
+      "side": 1,
+      "message": "returns",
+      "range": {
+        "startLine": 234,
+        "startChar": 65,
+        "endLine": 234,
+        "endChar": 71
+      },
+      "revId": "cb8035c26aeab39a0850e75ecc8ce871a06797f2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -21,17 +21,15 @@ import (
 	"chromiumos/tast/timing"
 )
 
-// archToCompiler maps from a userland architecture name to the corresponding Go command that
+// archToEnvs maps from a userland architecture name to the corresponding Go command environment variables that
 // should be used for building. An architecture name is usually given by "uname -m", but it can
 // be different if the kernel and the userland use different architectures (e.g. aarch64 kernel with
 // armv7l userland).
-// TODO(derat): What's the right way to get the toolchain name for a given board?
-// "cros_setup_toolchains --show-board-cfg <board>" seems to print it, but it's very slow (700+ ms).
-var archToCompiler = map[string]string{
-	ArchHost:  "go",
-	"x86_64":  "x86_64-cros-linux-gnu-go",
-	"armv7l":  "armv7a-cros-linux-gnueabihf-go",
-	"aarch64": "aarch64-cros-linux-gnu-go",
+var archToEnvs = map[string][]string{
+	ArchHost:  nil,
+	"x86_64":  {"GOOS=linux", "GOARCH=amd64"},
+	"armv7l":  {"GOOS=linux", "GOARCH=arm", "GOARM=7"},
+	"aarch64": {"GOOS=linux", "GOARCH=arm64"},
 }
 
 // Build builds executables as dictated by cfg.
@@ -89,13 +87,13 @@ func buildOne(ctx context.Context, log logging.Logger, tgt *Target) error {
 		}
 	}
 
-	comp := archToCompiler[tgt.Arch]
-	if comp == "" {
+	archEnvs, ok := archToEnvs[tgt.Arch]
+	if !ok {
 		return fmt.Errorf("unknown arch %q", tgt.Arch)
 	}
 
 	const ldFlags = "-ldflags=-s -w"
-	cmd := exec.Command(comp, "build", ldFlags, "-o", tgt.Out, tgt.Pkg)
+	cmd := exec.Command("go", "build", ldFlags, "-o", tgt.Out, tgt.Pkg)
 	cmd.Env = append(os.Environ(),
 		"GOPATH="+strings.Join(tgt.Workspaces, ":"),
 		// Disable cgo and PIE on building Tast binaries. See:
@@ -103,18 +101,11 @@ func buildOne(ctx context.Context, log logging.Logger, tgt *Target) error {
 		// https://github.com/golang/go/issues/30986#issuecomment-475626018
 		"CGO_ENABLED=0",
 		"GOPIE=0")
+	cmd.Env = append(cmd.Env, archEnvs...)
 
 	log.Status("Compiling " + tgt.Pkg)
 
 	if out, err := cmd.CombinedOutput(); err != nil {
-		// The compiler won't be installed if the user has never run setup_board for a board using
-		// the target arch. Suggest manually setting up toolchains.
-		if strings.HasSuffix(err.Error(), exec.ErrNotFound.Error()) {
-			log.Log("To install toolchains for all architectures, please run:")
-			log.Log()
-			log.Log("  sudo ~/trunk/chromite/bin/cros_setup_toolchains -t sdk")
-			return err
-		}
 		writeMultiline(log, string(out))
 		return err
 	}

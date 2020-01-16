@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "36a03094_b984d902",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-01-16T07:05:47Z",
+      "side": 1,
+      "message": "Note: moved to anonymous function to unify closeEphemeralDevserver.",
+      "revId": "085e7698f68e3faaafcdd5453c838847241fbad4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ad5b0739_04519726",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-01-16T07:05:47Z",
+      "side": 1,
+      "message": "Clar: do we have hst caching policy?\ngetSoftwareFeatures internally calls connectToTarget, which pings and reconnect if necessary.\nHowever, in this function, hst is directly used. I wonder if there\u0027s some strategy/policy about reconnection. Any thoughts?",
+      "revId": "085e7698f68e3faaafcdd5453c838847241fbad4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e2db0f3b_da98aee4",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-01-16T07:05:47Z",
+      "side": 1,
+      "message": "These three are almost copy-n-pasted from local_test, except test renaming TestLocal* to TestRun*.",
+      "revId": "085e7698f68e3faaafcdd5453c838847241fbad4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "67416577_6ab54029",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/sys_info.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-01-16T07:05:47Z",
+      "side": 1,
+      "message": "Note: similary caching is no longer supported.",
+      "revId": "085e7698f68e3faaafcdd5453c838847241fbad4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

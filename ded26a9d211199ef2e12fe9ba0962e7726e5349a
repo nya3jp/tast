@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e3cd54bc_5a369b3d",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/deps.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-01-16T07:05:47Z",
+      "side": 0,
+      "message": "note: this was dead code.",
+      "range": {
+        "startLine": 58,
+        "startChar": 2,
+        "endLine": 60,
+        "endChar": 12
+      },
+      "revId": "ded26a9d211199ef2e12fe9ba0962e7726e5349a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c43a9b7e_06a2a116",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/deps_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-01-16T07:05:47Z",
+      "side": 0,
+      "message": "Caching is no longer supported, since we no longer need to lazy-evaluation.",
+      "revId": "ded26a9d211199ef2e12fe9ba0962e7726e5349a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

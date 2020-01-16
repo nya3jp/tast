@@ -89,31 +89,35 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []TestResult)
 	// TODO(crbug.com/982181): Once we move the logic to download external data
 	// files to the prepare, try restricting the lifetime of the ephemeral
 	// devserver.
-	if cfg.runLocal && len(cfg.devservers) == 0 && cfg.useEphemeralDevserver {
-		if err := startEphemeralDevserver(ctx, hst, cfg); err != nil {
-			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start ephemeral devserver: %v", err), nil
+	if status, results = func() (Status, []TestResult) {
+		if cfg.runLocal && len(cfg.devservers) == 0 && cfg.useEphemeralDevserver {
+			if err := startEphemeralDevserver(ctx, hst, cfg); err != nil {
+				return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start ephemeral devserver: %v", err), nil
+			}
+
+			// Turn down the ephemeral devserver before running remote tests. Some remote tests
+			// in the meta category run the tast command which starts yet another ephemeral devserver
+			// and reverse forwarding port can conflict.
+			defer closeEphemeralDevserver(ctx, cfg)
 		}
-		defer closeEphemeralDevserver(ctx, cfg)
-	}
 
-	if err := prepare(ctx, cfg, hst); err != nil {
-		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to build and push: %v", err), nil
-	}
+		if err := prepare(ctx, cfg, hst); err != nil {
+			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to prepare running tests: %v", err), nil
+		}
 
-	// Run local tests.
-	if cfg.runLocal {
-		status, results = local(ctx, cfg)
+		// Run local tests.
+		if cfg.runLocal {
+			return local(ctx, cfg)
+		}
+		return Status{}, nil
+	}(); status.ExitCode != subcommands.ExitSuccess {
+		// TODO(derat): While test runners are always supposed to report success even if tests fail,
+		// it'd probably be better to run both types here even if one fails.
+		return status, results
 	}
-
-	// Turn down the ephemeral devserver before running remote tests. Some remote tests
-	// in the meta category run the tast command which starts yet another ephemeral devserver
-	// and reverse forwarding port can conflict.
-	closeEphemeralDevserver(ctx, cfg)
 
 	// Run remote tests and merge the results.
-	// TODO(derat): While test runners are always supposed to report success even if tests fail,
-	// it'd probably be better to run both types here even if one fails.
-	if cfg.runRemote && status.ExitCode == subcommands.ExitSuccess {
+	if cfg.runRemote {
 		var rres []TestResult
 		status, rres = remote(ctx, cfg)
 		results = append(results, rres...)
@@ -159,6 +163,17 @@ func prepare(ctx context.Context, cfg *Config, hst *host.SSH) error {
 	if written {
 		if err := hst.Command("sync").Run(ctx); err != nil {
 			return fmt.Errorf("failed to sync disk writes: %v", err)
+		}
+	}
+
+	// If tests are actually being run, filling missing cfg fields with talking to
+	// local_test_runner to obtain DUT info.
+	if cfg.mode == RunTestsMode {
+		if err := getSoftwareFeatures(ctx, cfg); err != nil {
+			return fmt.Errorf("failed to get DUT software features: %v", err)
+		}
+		if err := getInitialSysInfo(ctx, cfg); err != nil {
+			return fmt.Errorf("failed to get initial sysinfo: %v", err)
 		}
 	}
 	return nil

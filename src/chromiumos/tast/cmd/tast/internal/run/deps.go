@@ -18,9 +18,9 @@ import (
 // If cfg.checkTestDeps is checkTestDepsAuto, it may be updated (e.g. if it's not
 // possible to check dependencies).
 func getSoftwareFeatures(ctx context.Context, cfg *Config) error {
-	// Don't collect features if we're not checking deps or if we already have feature lists.
-	if !cfg.checkTestDeps || len(cfg.availableSoftwareFeatures) > 0 ||
-		len(cfg.unavailableSoftwareFeatures) > 0 {
+	// Don't collect features if we're not checking deps.
+	if !cfg.checkTestDeps {
+		cfg.Logger.Debug("Test software dependencies will not be checked")
 		return nil
 	}
 
@@ -32,6 +32,7 @@ func getSoftwareFeatures(ctx context.Context, cfg *Config) error {
 	if err != nil {
 		return err
 	}
+
 	handle, err := startLocalRunner(ctx, cfg, hst, &runner.Args{
 		Mode: runner.GetSoftwareFeaturesMode,
 		GetSoftwareFeatures: &runner.GetSoftwareFeaturesArgs{
@@ -52,12 +53,7 @@ func getSoftwareFeatures(ctx context.Context, cfg *Config) error {
 	// a listing of relevant USE flags).
 	if len(res.Available) == 0 && len(res.Unavailable) == 0 {
 		cfg.Logger.Debug("No software features reported by DUT -- non-test image?")
-		if cfg.checkTestDeps {
-			return errors.New("can't check test deps; no software features reported by DUT")
-		}
-		cfg.Logger.Debug("Test software dependencies will not be checked")
-		cfg.checkTestDeps = false
-		return nil
+		return errors.New("can't check test deps; no software features reported by DUT")
 	}
 
 	for _, warn := range res.Warnings {

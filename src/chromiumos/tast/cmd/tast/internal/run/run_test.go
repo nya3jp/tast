@@ -126,5 +126,88 @@ func TestRunDownloadPrivateBundles(t *gotesting.T) {
 	}
 }
 
+func TestRunFailureBeforeRun(t *gotesting.T) {
+	td := newLocalTestData(t)
+	defer td.close()
+
+	// Make the runner always fail, and ask to check test deps so we'll get a failure before trying
+	// to run tests. local() shouldn't set startedRun to true since we failed before then.
+	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) { return 1 }
+	td.cfg.checkTestDeps = true
+	if status, _ := Run(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitFailure {
+		t.Errorf("local() = %v; want %v", status.ExitCode, subcommands.ExitFailure)
+	} else if td.cfg.startedRun {
+		t.Error("local() incorrectly reported that run was started after early failure")
+	}
+}
+
+func TestRunGetSoftwareFeatures(t *gotesting.T) {
+	td := newLocalTestData(t)
+	defer td.close()
+
+	called := false
+
+	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		switch args.Mode {
+		case runner.RunTestsMode:
+			mw := control.NewMessageWriter(stdout)
+			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
+			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
+		case runner.GetSoftwareFeaturesMode:
+			// Just check that getSoftwareFeatures is called; details of args are
+			// tested in deps_test.go.
+			called = true
+			json.NewEncoder(stdout).Encode(&runner.GetSoftwareFeaturesResult{
+				Available: []string{"foo"}, // must report non-empty features
+			})
+		default:
+			t.Errorf("Unexpected args.Mode = %v", args.Mode)
+		}
+		return 0
+	}
+
+	td.cfg.checkTestDeps = true
+
+	if status, _ := Run(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
+		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
+	}
+	if !called {
+		t.Errorf("Run() did not call getSoftwareFeatures")
+	}
+}
+
+func TestRunGetInitialSysInfo(t *gotesting.T) {
+	td := newLocalTestData(t)
+	defer td.close()
+
+	called := false
+
+	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		switch args.Mode {
+		case runner.RunTestsMode:
+			mw := control.NewMessageWriter(stdout)
+			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
+			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
+		case runner.GetSysInfoStateMode:
+			// Just check that getInitialSysInfo is called; details of args are
+			// tested in sys_info_test.go.
+			called = true
+			json.NewEncoder(stdout).Encode(&runner.GetSysInfoStateResult{})
+		default:
+			t.Errorf("Unexpected args.Mode = %v", args.Mode)
+		}
+		return 0
+	}
+
+	td.cfg.collectSysInfo = true
+
+	if status, _ := Run(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
+		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
+	}
+	if !called {
+		t.Errorf("Run() did not call getInitialSysInfo")
+	}
+}
+
 // TODO(crbug.com/982171): Add a test that runs remote tests successfully.
 // This may require merging LocalTestData and RemoteTestData into one.

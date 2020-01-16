@@ -67,18 +67,6 @@ func TestGetSoftwareFeatures(t *testing.T) {
 		t.Fatalf("getSoftwareFeatures(%+v) failed: %v", td.cfg, err)
 	}
 	checkRunnerTestDepsArgs(t, &td.cfg, true, avail, unavail)
-
-	// Change the features reported by local_test_runner and call getSoftwareFeature again.
-	// Since we already have the features, we shouldn't run local_test_runner again and should
-	// continue using the original features.
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		writeGetSoftwareFeaturesResult(stdout, []string{"new1"}, []string{"new2"})
-		return 0
-	}
-	if err := getSoftwareFeatures(context.Background(), &td.cfg); err != nil {
-		t.Fatalf("getSoftwareFeatures(%+v) failed on second call: %v", td.cfg, err)
-	}
-	checkRunnerTestDepsArgs(t, &td.cfg, true, avail, unavail)
 }
 
 func TestGetSoftwareFeaturesNoCheckTestDeps(t *testing.T) {

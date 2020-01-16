@@ -50,12 +50,6 @@ func local(ctx context.Context, cfg *Config) (Status, []TestResult) {
 		}
 		return successStatus, results
 	case RunTestsMode:
-		if err := getSoftwareFeatures(ctx, cfg); err != nil {
-			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to get DUT software features: %v", err), nil
-		}
-		if err := getInitialSysInfo(ctx, cfg); err != nil {
-			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to get initial sysinfo: %v", err), nil
-		}
 		results, err := runLocalTests(ctx, cfg, hst)
 		if err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to run tests: %v", err), results

@@ -15,7 +15,8 @@ import (
 // getInitialSysInfo saves the initial state of the DUT's system information to cfg if
 // requested and if it hasn't already been saved. This is called before testing.
 func getInitialSysInfo(ctx context.Context, cfg *Config) error {
-	if !cfg.collectSysInfo || cfg.initialSysInfo != nil {
+	// If it is not necessary to collect sysinfo, no need to know the initial system state.
+	if !cfg.collectSysInfo {
 		return nil
 	}
 
@@ -27,6 +28,7 @@ func getInitialSysInfo(ctx context.Context, cfg *Config) error {
 	if err != nil {
 		return err
 	}
+
 	handle, err := startLocalRunner(ctx, cfg, hst, &runner.Args{Mode: runner.GetSysInfoStateMode})
 	if err != nil {
 		return err

@@ -25,14 +25,6 @@ import (
 // If non-nil, the returned results may be passed to WriteResults.
 func remote(ctx context.Context, cfg *Config) (Status, []TestResult) {
 	start := time.Now()
-
-	if err := getSoftwareFeatures(ctx, cfg); err != nil {
-		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to get DUT software features: %v", err), nil
-	}
-	if err := getInitialSysInfo(ctx, cfg); err != nil {
-		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to get initial sysinfo: %v", err), nil
-	}
-
 	cfg.startedRun = true
 	results, err := runRemoteRunner(ctx, cfg)
 	if err != nil {

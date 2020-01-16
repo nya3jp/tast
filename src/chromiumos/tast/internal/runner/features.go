@@ -23,36 +23,56 @@ const autotestCapPrefix = "autotest-capability:" // prefix for autotest-capabili
 // handleGetSoftwareFeatures handles a GetSoftwareFeaturesMode request from args
 // and JSON-marshals a GetSoftwareFeaturesResult struct to w.
 func handleGetSoftwareFeatures(args *Args, cfg *Config, w io.Writer) error {
-	if cfg.USEFlagsFile == "" {
-		return command.NewStatusErrorf(statusBadArgs, "feature enumeration unsupported")
+	available, unavailable, warnings, err := getSoftwareFeatures(
+		cfg.SoftwareFeatureDefinitions, cfg.USEFlagsFile, args.GetSoftwareFeatures.ExtraUSEFlags, cfg.AutotestCapabilityDir)
+	if err != nil {
+		return err
+	}
+	res := GetSoftwareFeaturesResult{
+		Available:   available,
+		Unavailable: unavailable,
+		Warnings:    warnings,
+	}
+	if err := json.NewEncoder(w).Encode(&res); err != nil {
+		return command.NewStatusErrorf(statusError, "failed to serialize into JSON: %v", err)
+	}
+	return nil
+}
+
+// getSoftwareFeatures implements the main function of GetSoftwareFeaturesMode (i.e., except input/output
+// conversion for RPC).
+func getSoftwareFeatures(definitions map[string]string, useFlagsFile string, extraUSEFlags []string, autotestCapsDir string) (
+	available, unavailable, warnings []string, err error) {
+	if useFlagsFile == "" {
+		return nil, nil, nil, command.NewStatusErrorf(statusBadArgs, "feature enumeration unsupported")
 	}
 
 	// If the file listing USE flags doesn't exist, we're probably running on a non-test
 	// image. Return an empty response to signal that to the caller.
-	if _, err := os.Stat(cfg.USEFlagsFile); os.IsNotExist(err) {
-		return json.NewEncoder(w).Encode(&GetSoftwareFeaturesResult{})
+	if _, err := os.Stat(useFlagsFile); os.IsNotExist(err) {
+		return nil, nil, nil, nil
 	}
-	flags, err := readUSEFlagsFile(cfg.USEFlagsFile)
-	if err != nil {
-		return err
-	}
-	flags = append(flags, args.GetSoftwareFeatures.ExtraUSEFlags...)
 
-	res := GetSoftwareFeaturesResult{}
+	flags, err := readUSEFlagsFile(useFlagsFile)
+	if err != nil {
+		return nil, nil, nil, command.NewStatusErrorf(statusError, "failed to read %v: %v", useFlagsFile, err)
+	}
+	flags = append(flags, extraUSEFlags...)
+
 	var autotestCaps map[string]autocaps.State
-	if cfg.AutotestCapabilityDir != "" {
-		if ac, err := autocaps.Read(cfg.AutotestCapabilityDir, nil); err != nil {
-			res.Warnings = append(res.Warnings, fmt.Sprintf("%s: %v", cfg.AutotestCapabilityDir, err))
+	if autotestCapsDir != "" {
+		if ac, err := autocaps.Read(autotestCapsDir, nil); err != nil {
+			warnings = append(warnings, fmt.Sprintf("%s: %v", autotestCapsDir, err))
 		} else {
 			autotestCaps = ac
 		}
 	}
 
-	if res.Available, res.Unavailable, err =
-		determineSoftwareFeatures(cfg.SoftwareFeatureDefinitions, flags, autotestCaps); err != nil {
-		return command.NewStatusErrorf(statusError, "%s", err)
+	available, unavailable, err = determineSoftwareFeatures(definitions, flags, autotestCaps)
+	if err != nil {
+		return nil, nil, nil, command.NewStatusErrorf(statusError, "%v", err)
 	}
-	return json.NewEncoder(w).Encode(&res)
+	return available, unavailable, warnings, nil
 }
 
 // readUSEFlagsFile reads a list of USE flags from fn (see Config.USEFlagsFile).
@@ -73,9 +93,9 @@ func readUSEFlagsFile(fn string) ([]string, error) {
 		}
 	}
 	if err = sc.Err(); err != nil {
-		return nil, command.NewStatusErrorf(statusError, "failed to read %v: %v", fn, err)
+		return nil, err
 	}
-	return flags, err
+	return flags, nil
 }
 
 // determineSoftwareFeatures computes the DUT's available and unavailable software features.

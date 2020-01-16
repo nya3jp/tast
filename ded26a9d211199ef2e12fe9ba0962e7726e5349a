@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "405d074a_d8be31b3",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-01-16T08:48:21Z",
+      "side": 0,
+      "message": "note: moved to caller to wrap the error for consistency, since err returned from os.Open() is directly returned at L63.",
+      "revId": "ded26a9d211199ef2e12fe9ba0962e7726e5349a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "66e835d7_b8cced0e",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-01-16T08:48:21Z",
+      "side": 0,
+      "message": "replaced by \"nil\" constant, to slightly explicitly indicate this is success code path.",
+      "range": {
+        "startLine": 78,
+        "startChar": 15,
+        "endLine": 78,
+        "endChar": 18
+      },
+      "revId": "ded26a9d211199ef2e12fe9ba0962e7726e5349a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

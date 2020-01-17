@@ -36,6 +36,8 @@ The following software features are defined:
 *   `autotest-capability:foo` - An [Autotest capability] named `foo`. See below.
 *   `biometrics_daemon` - The ability to process fingerprint authentication.
     This implies the presence of the `biod` package.
+*   `breakpad` - Whether the platform supports the breakpad crash handler
+    for Chrome.
 *   `camera_720p` - The ability to capture video with frame size 1280x720.
 *   `camera_legacy` - Using [Linux Video Capture] in Chrome, and [Camera HAL1]
     in Android if ARC++ is available.

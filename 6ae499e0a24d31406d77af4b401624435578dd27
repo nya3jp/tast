@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c37f96a8_a36a2793",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-01-17T07:25:52Z",
+      "side": 1,
+      "message": "nit/style/optional: you can drop \"[]string\" from here for simplicity.\n\nvar archToEnvs \u003d map[string][]string {\n  ...\n  \"x86_64\": {\"GOOS\u003dlinux\", \"GOARCH\u003damd64\"},\n  ...\n}\n\nIIUC.",
+      "range": {
+        "startLine": 30,
+        "startChar": 12,
+        "endLine": 30,
+        "endChar": 20
+      },
+      "revId": "6ae499e0a24d31406d77af4b401624435578dd27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -1125,7 +1125,7 @@ and `Pre` in [test registration].
 See documentation of [`testing.Param`] for the full list of customizable
 properties.
 
-[table-driven tests]: #table-driven_tests
+[table-driven tests]: #Table_driven-tests
 [critical]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/test_attributes.md
 [informational]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/test_attributes.md
 [`testing.Param`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Param

@@ -22,6 +22,30 @@
       "revId": "6ae499e0a24d31406d77af4b401624435578dd27",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d90951c4_2ef1de6a",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/build/build.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-01-17T07:32:21Z",
+      "side": 1,
+      "message": "You\u0027re right indeed! Dropped those explicit types.",
+      "parentUuid": "c37f96a8_a36a2793",
+      "range": {
+        "startLine": 30,
+        "startChar": 12,
+        "endLine": 30,
+        "endChar": 20
+      },
+      "revId": "6ae499e0a24d31406d77af4b401624435578dd27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

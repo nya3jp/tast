@@ -32,18 +32,18 @@ func getSoftwareFeatures(ctx context.Context, cfg *Config) error {
 	if err != nil {
 		return err
 	}
-	handle, err := startLocalRunner(ctx, cfg, hst, &runner.Args{
-		Mode: runner.GetSoftwareFeaturesMode,
-		GetSoftwareFeatures: &runner.GetSoftwareFeaturesArgs{
-			ExtraUSEFlags: cfg.extraUSEFlags,
-		},
-	})
-	if err != nil {
-		return err
-	}
-	defer handle.Close(ctx)
+
 	var res runner.GetSoftwareFeaturesResult
-	if err = readLocalRunnerOutput(ctx, handle, &res); err != nil {
+	if err := runTestRunnerCommand(
+		localRunnerCommand(ctx, cfg, hst),
+		&runner.Args{
+			Mode: runner.GetSoftwareFeaturesMode,
+			GetSoftwareFeatures: &runner.GetSoftwareFeaturesArgs{
+				ExtraUSEFlags: cfg.extraUSEFlags,
+			},
+		},
+		&res,
+	); err != nil {
 		return err
 	}
 

@@ -27,16 +27,16 @@ func getInitialSysInfo(ctx context.Context, cfg *Config) error {
 	if err != nil {
 		return err
 	}
-	handle, err := startLocalRunner(ctx, cfg, hst, &runner.Args{Mode: runner.GetSysInfoStateMode})
-	if err != nil {
-		return err
-	}
-	defer handle.Close(ctx)
 
 	var res runner.GetSysInfoStateResult
-	if err = readLocalRunnerOutput(ctx, handle, &res); err != nil {
+	if err := runTestRunnerCommand(
+		localRunnerCommand(ctx, cfg, hst),
+		&runner.Args{Mode: runner.GetSysInfoStateMode},
+		&res,
+	); err != nil {
 		return err
 	}
+
 	for _, warn := range res.Warnings {
 		cfg.Logger.Log("Error getting system info: ", warn)
 	}
@@ -60,17 +60,16 @@ func collectSysInfo(ctx context.Context, cfg *Config) error {
 	if err != nil {
 		return err
 	}
-	handle, err := startLocalRunner(ctx, cfg, hst, &runner.Args{
-		Mode:           runner.CollectSysInfoMode,
-		CollectSysInfo: &runner.CollectSysInfoArgs{InitialState: *cfg.initialSysInfo},
-	})
-	if err != nil {
-		return err
-	}
-	defer handle.Close(ctx)
 
 	var res runner.CollectSysInfoResult
-	if err = readLocalRunnerOutput(ctx, handle, &res); err != nil {
+	if err := runTestRunnerCommand(
+		localRunnerCommand(ctx, cfg, hst),
+		&runner.Args{
+			Mode:           runner.CollectSysInfoMode,
+			CollectSysInfo: &runner.CollectSysInfoArgs{InitialState: *cfg.initialSysInfo},
+		},
+		&res,
+	); err != nil {
 		return err
 	}
 

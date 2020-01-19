@@ -426,7 +426,7 @@ func TestLocalDataFiles(t *gotesting.T) {
 	}
 	td.cfg.buildBundle = bundleName
 	td.cfg.Patterns = []string{pattern}
-	paths, err := getDataFilePaths(context.Background(), &td.cfg, td.cfg.hst, mockLocalBundleGlob)
+	paths, err := getDataFilePaths(context.Background(), &td.cfg, td.cfg.hst)
 	if err != nil {
 		t.Fatal("getDataFilePaths() failed: ", err)
 	}

@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"time"
 
@@ -51,65 +50,45 @@ func runRemoteRunner(ctx context.Context, cfg *Config) ([]TestResult, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	var bundleGlob string
-	if cfg.build {
-		bundleGlob = filepath.Join(cfg.remoteBundleDir, cfg.buildBundle)
-	} else {
-		bundleGlob = filepath.Join(cfg.remoteBundleDir, "*")
-	}
-
-	var args runner.Args
-	switch cfg.mode {
-	case RunTestsMode:
-		args = runner.Args{
-			Mode: runner.RunTestsMode,
-			RunTests: &runner.RunTestsArgs{
-				BundleArgs: bundle.RunTestsArgs{
-					Patterns: cfg.Patterns,
-					TestVars: cfg.testVars,
-					DataDir:  cfg.remoteDataDir,
-					OutDir:   cfg.remoteOutDir,
-					Target:   cfg.Target,
-					KeyFile:  cfg.KeyFile,
-					KeyDir:   cfg.KeyDir,
-					TastPath: exe,
-					RunFlags: []string{
-						"-keyfile=" + cfg.KeyFile,
-						"-keydir=" + cfg.KeyDir,
-						"-remoterunner=" + cfg.remoteRunner,
-						"-remotebundledir=" + cfg.remoteBundleDir,
-						"-remotedatadir=" + cfg.remoteDataDir,
-					},
-					LocalBundleDir:    cfg.localBundleDir,
-					Devservers:        cfg.devservers,
-					HeartbeatInterval: heartbeatInterval,
+	args := runner.Args{
+		Mode: runner.RunTestsMode,
+		RunTests: &runner.RunTestsArgs{
+			BundleArgs: bundle.RunTestsArgs{
+				Patterns: cfg.Patterns,
+				TestVars: cfg.testVars,
+				DataDir:  cfg.remoteDataDir,
+				OutDir:   cfg.remoteOutDir,
+				Target:   cfg.Target,
+				KeyFile:  cfg.KeyFile,
+				KeyDir:   cfg.KeyDir,
+				TastPath: exe,
+				RunFlags: []string{
+					"-keyfile=" + cfg.KeyFile,
+					"-keydir=" + cfg.KeyDir,
+					"-remoterunner=" + cfg.remoteRunner,
+					"-remotebundledir=" + cfg.remoteBundleDir,
+					"-remotedatadir=" + cfg.remoteDataDir,
 				},
-				BundleGlob: bundleGlob,
+				LocalBundleDir:    cfg.localBundleDir,
+				Devservers:        cfg.devservers,
+				HeartbeatInterval: heartbeatInterval,
 			},
-		}
-		setRunnerTestDepsArgs(cfg, &args)
-
-		if err := os.MkdirAll(cfg.remoteOutDir, 0777); err != nil {
-			return nil, fmt.Errorf("failed to create output dir: %v", err)
-		}
-		// At the end of tests remoteOutDir should be empty. Otherwise os.Remove
-		// fails and the directory is left for debugging.
-		defer os.Remove(cfg.remoteOutDir)
-	case ListTestsMode:
-		args = runner.Args{
-			Mode: runner.ListTestsMode,
-			ListTests: &runner.ListTestsArgs{
-				BundleArgs: bundle.ListTestsArgs{Patterns: cfg.Patterns},
-				BundleGlob: bundleGlob,
-			},
-		}
+			BundleGlob: cfg.remoteBundleGlob(),
+		},
 	}
+	setRunnerTestDepsArgs(cfg, &args)
+
+	if err := os.MkdirAll(cfg.remoteOutDir, 0777); err != nil {
+		return nil, fmt.Errorf("failed to create output dir: %v", err)
+	}
+	// At the end of tests remoteOutDir should be empty. Otherwise os.Remove
+	// fails and the directory is left for debugging.
+	defer os.Remove(cfg.remoteOutDir)
 
 	// Backfill deprecated fields in case we're executing an old test runner.
 	args.FillDeprecated()
 
-	cmd := exec.Command(cfg.remoteRunner)
+	cmd := remoteRunnerCommand(ctx, cfg)
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
 		return nil, err
@@ -135,18 +114,11 @@ func runRemoteRunner(ctx context.Context, cfg *Config) ([]TestResult, error) {
 		return nil, fmt.Errorf("close stdin: %v", err)
 	}
 
-	var results []TestResult
-	var rerr error
-	switch cfg.mode {
-	case ListTestsMode:
-		results, rerr = readTestList(stdout)
-	case RunTestsMode:
-		crf := func(testName, dst string) error {
-			src := filepath.Join(args.RunTests.BundleArgs.OutDir, testName)
-			return os.Rename(src, dst)
-		}
-		results, _, rerr = readTestOutput(ctx, cfg, stdout, crf, nil)
+	crf := func(testName, dst string) error {
+		src := filepath.Join(args.RunTests.BundleArgs.OutDir, testName)
+		return os.Rename(src, dst)
 	}
+	results, _, rerr := readTestOutput(ctx, cfg, stdout, crf, nil)
 
 	// Check that the runner exits successfully first so that we don't give a useless error
 	// about incorrectly-formed output instead of e.g. an error about the runner being missing.

@@ -272,17 +272,6 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, patterns []
 	return results, unstarted, rerr
 }
 
-// readLocalRunnerOutput unmarshals a single JSON value from handle.Stdout into out.
-func readLocalRunnerOutput(ctx context.Context, handle *localRunnerHandle, out interface{}) error {
-	// Handle errors returned by Wait() first, as they'll be more useful than generic JSON decode errors.
-	stderrReader := newFirstLineReader(handle.stderr)
-	jerr := json.NewDecoder(handle.stdout).Decode(out)
-	if err := handle.cmd.Wait(ctx); err != nil {
-		return stderrReader.appendToError(err, stderrTimeout)
-	}
-	return jerr
-}
-
 // formatBytes formats bytes as a human-friendly string.
 func formatBytes(bytes int64) string {
 	const (

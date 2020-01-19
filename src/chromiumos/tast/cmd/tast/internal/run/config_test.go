@@ -255,3 +255,33 @@ func TestConfigDeriveDefaultsVars(t *testing.T) {
 		})
 	}
 }
+
+func TestConfigLocalBundleGlob(t *testing.T) {
+	cfg := NewConfig(RunTestsMode, "", "")
+	cfg.localBundleDir = "/mock/local_bundle_dir"
+	cfg.buildBundle = "mock_build_bundle"
+
+	cfg.build = true
+	if g := cfg.localBundleGlob(); g != "/mock/local_bundle_dir/mock_build_bundle" {
+		t.Fatalf(`Unexpected build localBundleGlob: got %q; want "/mock/local_bundle_dir/mock_bundle_dir"`, g)
+	}
+	cfg.build = false
+	if g := cfg.localBundleGlob(); g != "/mock/local_bundle_dir/*" {
+		t.Fatalf(`Unexpected non-build localBundleGlob: got %q; want "/mock/local_bundle_dir/*"`, g)
+	}
+}
+
+func TestConfigRemoteBundleGlob(t *testing.T) {
+	cfg := NewConfig(RunTestsMode, "", "")
+	cfg.remoteBundleDir = "/mock/remote_bundle_dir"
+	cfg.buildBundle = "mock_build_bundle"
+
+	cfg.build = true
+	if g := cfg.remoteBundleGlob(); g != "/mock/remote_bundle_dir/mock_build_bundle" {
+		t.Fatalf(`Unexpected build remoteBundleGlob: got %q; want "/mock/remote_bundle_dir/mock_bundle_dir"`, g)
+	}
+	cfg.build = false
+	if g := cfg.remoteBundleGlob(); g == "/mock/remote_budnle_dir/*" {
+		t.Fatalf(`Unexpected non-build remoteBundleGlob: got %q, want "/mock/remote_budnle_dir/*"`, g)
+	}
+}

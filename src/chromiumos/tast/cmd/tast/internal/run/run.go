@@ -100,26 +100,36 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []TestResult)
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to build and push: %v", err), nil
 	}
 
-	// Run local tests.
-	if cfg.runLocal {
-		status, results = local(ctx, cfg)
+	switch cfg.mode {
+	case ListTestsMode:
+		results, err := listTests(ctx, cfg)
+		if err != nil {
+			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to list tests: %v", err), nil
+		}
+		return successStatus, results
+	case RunTestsMode:
+		// Run local tests.
+		if cfg.runLocal {
+			status, results = local(ctx, cfg)
+		}
+
+		// Turn down the ephemeral devserver before running remote tests. Some remote tests
+		// in the meta category run the tast command which starts yet another ephemeral devserver
+		// and reverse forwarding port can conflict.
+		closeEphemeralDevserver(ctx, cfg)
+
+		// Run remote tests and merge the results.
+		// TODO(derat): While test runners are always supposed to report success even if tests fail,
+		// it'd probably be better to run both types here even if one fails.
+		if cfg.runRemote && status.ExitCode == subcommands.ExitSuccess {
+			var rres []TestResult
+			status, rres = remote(ctx, cfg)
+			results = append(results, rres...)
+		}
+		return status, results
+	default:
+		return errorStatusf(cfg, subcommands.ExitFailure, "Unhandled mode %d", cfg.mode), nil
 	}
-
-	// Turn down the ephemeral devserver before running remote tests. Some remote tests
-	// in the meta category run the tast command which starts yet another ephemeral devserver
-	// and reverse forwarding port can conflict.
-	closeEphemeralDevserver(ctx, cfg)
-
-	// Run remote tests and merge the results.
-	// TODO(derat): While test runners are always supposed to report success even if tests fail,
-	// it'd probably be better to run both types here even if one fails.
-	if cfg.runRemote && status.ExitCode == subcommands.ExitSuccess {
-		var rres []TestResult
-		status, rres = remote(ctx, cfg)
-		results = append(results, rres...)
-	}
-
-	return status, results
 }
 
 // prepare prepares the DUT for running tests. When instructed in cfg, it builds

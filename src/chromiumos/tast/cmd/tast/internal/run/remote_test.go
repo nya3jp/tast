@@ -270,50 +270,6 @@ func TestRemoteRunCopyOutput(t *gotesting.T) {
 	}
 }
 
-func TestRemoteList(t *gotesting.T) {
-	// Make the runner print serialized tests.
-	tests := []testing.TestInstance{
-		{Name: "pkg.Test1", Desc: "First description", Attr: []string{"attr1", "attr2"}, Pkg: "pkg"},
-		{Name: "pkg2.Test2", Desc: "Second description", Attr: []string{"attr3"}, Pkg: "pkg2"},
-	}
-	b, err := json.Marshal(&tests)
-	if err != nil {
-		t.Fatal(err)
-	}
-	td := newRemoteTestData(t, string(b), "", 0)
-	defer td.close()
-
-	// List matching tests instead of running them.
-	td.cfg.mode = ListTestsMode
-	td.cfg.remoteDataDir = "/tmp/data"
-	td.cfg.Patterns = []string{"*Test*"}
-
-	var status subcommands.ExitStatus
-	var results []TestResult
-	if status, results = td.run(t); status != subcommands.ExitSuccess {
-		t.Errorf("remote(%v) returned status %v; want %v", td.cfg, status, subcommands.ExitSuccess)
-	}
-	glob := filepath.Join(td.cfg.remoteBundleDir, "*")
-	expArgs := runner.Args{
-		Mode: runner.ListTestsMode,
-		ListTests: &runner.ListTestsArgs{
-			BundleArgs: bundle.ListTestsArgs{Patterns: td.cfg.Patterns},
-			BundleGlob: glob,
-		},
-	}
-	if !reflect.DeepEqual(td.args, expArgs) {
-		t.Errorf("remote(%+v) passed args %+v; want %+v", td.cfg, td.args, expArgs)
-	}
-
-	listed := make([]testing.TestInstance, len(results))
-	for i := 0; i < len(results); i++ {
-		listed[i] = results[i].TestInstance
-	}
-	if !reflect.DeepEqual(listed, tests) {
-		t.Errorf("remote() listed tests %+v; want %+v", listed, tests)
-	}
-}
-
 func TestRemoteFailure(t *gotesting.T) {
 	// Make the test runner print a message to stderr and fail.
 	const errorMsg = "Whoops, something failed\n"

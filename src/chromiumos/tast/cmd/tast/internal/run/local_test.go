@@ -356,41 +356,6 @@ func TestLocalWaitTimeout(t *gotesting.T) {
 	}
 }
 
-func TestLocalList(t *gotesting.T) {
-	td := newLocalTestData(t)
-	defer td.close()
-
-	tests := []testing.TestInstance{
-		{Name: "pkg.Test", Desc: "This is a test", Attr: []string{"attr1", "attr2"}},
-		{Name: "pkg.AnotherTest", Desc: "Another test"},
-	}
-
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		checkArgs(t, args, &runner.Args{
-			Mode:      runner.ListTestsMode,
-			ListTests: &runner.ListTestsArgs{BundleGlob: mockLocalBundleGlob},
-		})
-
-		json.NewEncoder(stdout).Encode(tests)
-		return 0
-	}
-
-	td.cfg.mode = ListTestsMode
-	var status Status
-	var results []TestResult
-	if status, results = local(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
-		t.Errorf("local() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
-	}
-
-	listed := make([]testing.TestInstance, len(results))
-	for i := 0; i < len(results); i++ {
-		listed[i] = results[i].TestInstance
-	}
-	if !reflect.DeepEqual(listed, tests) {
-		t.Errorf("local() listed tests %+v; want %+v", listed, tests)
-	}
-}
-
 func TestLocalDataFiles(t *gotesting.T) {
 	td := newLocalTestData(t)
 	defer td.close()

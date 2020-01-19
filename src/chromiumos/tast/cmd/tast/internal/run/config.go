@@ -357,3 +357,19 @@ func (c *Config) bundleWorkspaces() []string {
 	}
 	return ws
 }
+
+func (c *Config) localBundleGlob() string {
+	return c.bundleGlob(c.localBundleDir)
+}
+
+func (c *Config) remoteBundleGlob() string {
+	return c.bundleGlob(c.remoteBundleDir)
+}
+
+func (c *Config) bundleGlob(dir string) string {
+	last := "*"
+	if c.build {
+		last = c.buildBundle
+	}
+	return filepath.Join(dir, last)
+}

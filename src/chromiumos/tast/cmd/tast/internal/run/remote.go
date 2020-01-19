@@ -13,38 +13,17 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/google/subcommands"
-
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/timing"
 )
 
-// remote runs remote tests as directed by cfg and returns the command's exit status.
-// If non-nil, the returned results may be passed to WriteResults.
-func remote(ctx context.Context, cfg *Config) (Status, []TestResult) {
-	start := time.Now()
-
-	if err := getSoftwareFeatures(ctx, cfg); err != nil {
-		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to get DUT software features: %v", err), nil
-	}
-	if err := getInitialSysInfo(ctx, cfg); err != nil {
-		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to get initial sysinfo: %v", err), nil
-	}
-
-	cfg.startedRun = true
-	results, err := runRemoteRunner(ctx, cfg)
-	if err != nil {
-		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to run tests: %v", err), results
-	}
-	cfg.Logger.Logf("Ran %v remote test(s) in %v", len(results), time.Now().Sub(start).Round(time.Millisecond))
-	return successStatus, results
-}
-
-// runRemoteRunner runs the remote test runner and reads its output.
-func runRemoteRunner(ctx context.Context, cfg *Config) ([]TestResult, error) {
+// runRemoteTests runs the remote test runner and reads its output.
+func runRemoteTests(ctx context.Context, cfg *Config) ([]TestResult, error) {
 	ctx, st := timing.Start(ctx, "run_remote_tests")
 	defer st.End()
+
+	start := time.Now()
 
 	exe, err := os.Executable()
 	if err != nil {
@@ -125,5 +104,8 @@ func runRemoteRunner(ctx context.Context, cfg *Config) ([]TestResult, error) {
 	if err := cmd.Wait(); err != nil {
 		return results, stderrReader.appendToError(err, stderrTimeout)
 	}
+
+	cfg.Logger.Logf("Ran %v remote test(s) in %v", len(results), time.Now().Sub(start).Round(time.Millisecond))
+
 	return results, rerr
 }

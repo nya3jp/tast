@@ -20,8 +20,6 @@ import (
 	gotesting "testing"
 	"time"
 
-	"github.com/google/subcommands"
-
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/host/test"
@@ -212,11 +210,8 @@ func TestLocalSuccess(t *gotesting.T) {
 		return 0
 	}
 
-	if status, _ := local(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
-		t.Errorf("local() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
-	}
-	if !td.cfg.startedRun {
-		t.Error("local() incorrectly reported that run wasn't started")
+	if _, err := runLocalTests(context.Background(), &td.cfg); err != nil {
+		t.Error("runLocalTest failed: ", err)
 	}
 }
 
@@ -263,8 +258,8 @@ func TestLocalProxy(t *gotesting.T) {
 		mockLocalRunner,
 	}, " ")
 
-	if status, _ := local(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
-		t.Errorf("local() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
+	if _, err := runLocalTests(context.Background(), &td.cfg); err != nil {
+		t.Error("runLocalTests failed: ", err)
 	}
 }
 
@@ -293,8 +288,8 @@ func TestLocalCopyOutput(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	if status, _ := local(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
-		t.Errorf("local() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
+	if _, err := runLocalTests(context.Background(), &td.cfg); err != nil {
+		t.Error("runLocalTests failed: ", err)
 	}
 
 	files, err := testutil.ReadFiles(filepath.Join(td.cfg.ResDir, testLogsDir))
@@ -322,14 +317,11 @@ func disabledTestLocalExecFailure(t *gotesting.T) {
 		return 1
 	}
 
-	if status, _ := local(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitFailure {
-		t.Errorf("local() = %v; want %v", status.ExitCode, subcommands.ExitFailure)
+	if _, err := runLocalTests(context.Background(), &td.cfg); err == nil {
+		t.Error("runLocalTests unexpectedly passed")
 	}
 	if !strings.Contains(td.logbuf.String(), msg) {
-		t.Errorf("local() logged %q; want substring %q", td.logbuf.String(), msg)
-	}
-	if !td.cfg.startedRun {
-		t.Error("local() incorrectly reported that run wasn't started")
+		t.Errorf("runLocalTests logged %q; want substring %q", td.logbuf.String(), msg)
 	}
 }
 
@@ -348,11 +340,8 @@ func TestLocalWaitTimeout(t *gotesting.T) {
 
 	// After setting a short wait timeout, an error should be reported.
 	td.cfg.localRunnerWaitTimeout = time.Millisecond
-	if status, _ := local(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitFailure {
-		t.Errorf("local() = %v; want %v (%v)", status.ExitCode, subcommands.ExitFailure, td.logbuf.String())
-	}
-	if !td.cfg.startedRun {
-		t.Error("local() incorrectly reported that run wasn't started")
+	if _, err := runLocalTests(context.Background(), &td.cfg); err == nil {
+		t.Error("runLocalTests unexpectedly passed")
 	}
 }
 
@@ -463,21 +452,6 @@ func TestLocalDataFiles(t *gotesting.T) {
 	}
 }
 
-func TestLocalFailureBeforeRun(t *gotesting.T) {
-	td := newLocalTestData(t)
-	defer td.close()
-
-	// Make the runner always fail, and ask to check test deps so we'll get a failure before trying
-	// to run tests. local() shouldn't set startedRun to true since we failed before then.
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) { return 1 }
-	td.cfg.checkTestDeps = true
-	if status, _ := local(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitFailure {
-		t.Errorf("local() = %v; want %v", status.ExitCode, subcommands.ExitFailure)
-	} else if td.cfg.startedRun {
-		t.Error("local() incorrectly reported that run was started after early failure")
-	}
-}
-
 func TestLocalContinueAfterFailure(t *gotesting.T) {
 	td := newLocalTestData(t)
 	defer td.close()
@@ -527,10 +501,10 @@ func TestLocalContinueAfterFailure(t *gotesting.T) {
 
 	td.cfg.Patterns = []string{glob}
 	td.cfg.continueAfterFailure = true
-	status, results := local(context.Background(), &td.cfg)
+	results, err := runLocalTests(context.Background(), &td.cfg)
 	// Success should be reported since the bundle tried to execute all tests.
-	if status.ExitCode != subcommands.ExitSuccess {
-		t.Errorf("local() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
+	if err != nil {
+		t.Error("runLocalTests failed: ", err)
 	}
 	if numCalls != 2 {
 		t.Errorf("Got %d RunTests call(s); want 2", numCalls)
@@ -550,79 +524,11 @@ func TestLocalContinueAfterFailureNoTests(t *gotesting.T) {
 
 	// The run should be reported as having failed.
 	td.cfg.continueAfterFailure = true
-	status, results := local(context.Background(), &td.cfg)
-	if status.ExitCode != subcommands.ExitFailure {
-		t.Errorf("local() = %v; want %v (%v)", status.ExitCode, subcommands.ExitFailure, td.logbuf.String())
+	results, err := runLocalTests(context.Background(), &td.cfg)
+	if err == nil {
+		t.Error("runLocalTests unexpectedly passed")
 	}
 	if len(results) != 0 {
 		t.Errorf("Got result(s) %+v; want none", results)
-	}
-}
-
-func TestLocalGetSoftwareFeatures(t *gotesting.T) {
-	td := newLocalTestData(t)
-	defer td.close()
-
-	called := false
-
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		switch args.Mode {
-		case runner.RunTestsMode:
-			mw := control.NewMessageWriter(stdout)
-			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
-			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
-		case runner.GetSoftwareFeaturesMode:
-			// Just check that getSoftwareFeatures is called; details of args are
-			// tested in deps_test.go.
-			called = true
-			json.NewEncoder(stdout).Encode(&runner.GetSoftwareFeaturesResult{
-				Available: []string{"foo"}, // must report non-empty features
-			})
-		default:
-			t.Errorf("Unexpected args.Mode = %v", args.Mode)
-		}
-		return 0
-	}
-
-	td.cfg.checkTestDeps = true
-
-	if status, _ := local(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
-		t.Errorf("local() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
-	}
-	if !called {
-		t.Errorf("local did not call getSoftwareFeatures")
-	}
-}
-
-func TestLocalGetInitialSysInfo(t *gotesting.T) {
-	td := newLocalTestData(t)
-	defer td.close()
-
-	called := false
-
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		switch args.Mode {
-		case runner.RunTestsMode:
-			mw := control.NewMessageWriter(stdout)
-			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
-			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
-		case runner.GetSysInfoStateMode:
-			// Just check that getInitialSysInfo is called; details of args are
-			// tested in sys_info_test.go.
-			called = true
-			json.NewEncoder(stdout).Encode(&runner.GetSysInfoStateResult{})
-		default:
-			t.Errorf("Unexpected args.Mode = %v", args.Mode)
-		}
-		return 0
-	}
-
-	td.cfg.collectSysInfo = true
-
-	if status, _ := local(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
-		t.Errorf("local() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
-	}
-	if !called {
-		t.Errorf("local did not call getInitialSysInfo")
 	}
 }

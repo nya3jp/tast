@@ -15,10 +15,9 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/google/subcommands"
-
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/ctxutil"
+	"chromiumos/tast/errors"
 	"chromiumos/tast/host"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/timing"
@@ -32,27 +31,6 @@ const (
 	defaultLocalRunnerWaitTimeout = 10 * time.Second // default timeout for waiting for local_test_runner to exit
 	heartbeatInterval             = time.Second      // interval for heartbeat messages
 )
-
-// local runs local tests as directed by cfg and returns the command's exit status.
-// If non-nil, the returned results may be passed to WriteResults.
-func local(ctx context.Context, cfg *Config) (Status, []TestResult) {
-	hst, err := connectToTarget(ctx, cfg)
-	if err != nil {
-		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to %s: %v", cfg.Target, err), nil
-	}
-
-	if err := getSoftwareFeatures(ctx, cfg); err != nil {
-		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to get DUT software features: %v", err), nil
-	}
-	if err := getInitialSysInfo(ctx, cfg); err != nil {
-		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to get initial sysinfo: %v", err), nil
-	}
-	results, err := runLocalTests(ctx, cfg, hst)
-	if err != nil {
-		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to run tests: %v", err), results
-	}
-	return successStatus, results
-}
 
 // connectToTarget establishes an SSH connection to the target specified in cfg.
 // The connection will be cached in cfg and should not be closed by the caller.
@@ -99,12 +77,16 @@ func connectToTarget(ctx context.Context, cfg *Config) (*host.SSH, error) {
 
 // runLocalTests executes tests as described by cfg on hst and returns the results.
 // It is only used for RunTestsMode.
-func runLocalTests(ctx context.Context, cfg *Config, hst *host.SSH) ([]TestResult, error) {
+func runLocalTests(ctx context.Context, cfg *Config) ([]TestResult, error) {
 	cfg.Logger.Status("Running local tests on target")
 	ctx, st := timing.Start(ctx, "run_local_tests")
 	defer st.End()
 
-	cfg.startedRun = true
+	hst, err := connectToTarget(ctx, cfg)
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to connect to %s", cfg.Target)
+	}
+
 	start := time.Now()
 
 	// Run local_test_runner in a loop so we can try to run the remaining tests on failure.

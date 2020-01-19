@@ -17,8 +17,6 @@ import (
 	gotesting "testing"
 	"time"
 
-	"github.com/google/subcommands"
-
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/internal/control"
@@ -141,8 +139,8 @@ func (td *remoteTestData) close() {
 }
 
 // run calls remote and records the Args struct that was passed to the fake runner.
-func (td *remoteTestData) run(t *gotesting.T) (subcommands.ExitStatus, []TestResult) {
-	status, res := remote(context.Background(), &td.cfg)
+func (td *remoteTestData) run(t *gotesting.T) ([]TestResult, error) {
+	res, rerr := runRemoteTests(context.Background(), &td.cfg)
 
 	f, err := os.Open(filepath.Join(td.dir, fakeRunnerArgsFile))
 	if err != nil {
@@ -154,7 +152,7 @@ func (td *remoteTestData) run(t *gotesting.T) (subcommands.ExitStatus, []TestRes
 		t.Fatal(err)
 	}
 
-	return status.ExitCode, res
+	return res, rerr
 }
 
 func TestRemoteRun(t *gotesting.T) {
@@ -176,17 +174,14 @@ func TestRemoteRun(t *gotesting.T) {
 	td.cfg.remoteDataDir = "/tmp/data"
 	td.cfg.remoteOutDir = "/tmp/out"
 
-	status, res := td.run(t)
-	if status != subcommands.ExitSuccess {
-		t.Errorf("remote(%+v) returned status %v; want %v", td.cfg, status, subcommands.ExitSuccess)
-	}
-	if !td.cfg.startedRun {
-		t.Error("remote() incorrectly reported that run wasn't started")
+	res, err := td.run(t)
+	if err != nil {
+		t.Errorf("runRemoteTests(%+v) failed: %v", td.cfg, err)
 	}
 	if len(res) != 1 {
-		t.Errorf("remote(%+v) returned %v result(s); want 1", td.cfg, len(res))
+		t.Errorf("runRemoteTests(%+v) returned %v result(s); want 1", td.cfg, len(res))
 	} else if res[0].Name != testName {
-		t.Errorf("remote(%+v) returned result for test %q; want %q", td.cfg, res[0].Name, testName)
+		t.Errorf("runRemoteTests(%+v) returned result for test %q; want %q", td.cfg, res[0].Name, testName)
 	}
 
 	glob := filepath.Join(td.cfg.remoteBundleDir, "*")
@@ -219,7 +214,7 @@ func TestRemoteRun(t *gotesting.T) {
 		},
 	}
 	if !reflect.DeepEqual(td.args, expArgs) {
-		t.Errorf("remote(%+v) passed args %+v; want %+v", td.cfg, td.args, expArgs)
+		t.Errorf("runRemoteTests(%+v) passed args %+v; want %+v", td.cfg, td.args, expArgs)
 	}
 }
 
@@ -255,8 +250,8 @@ func TestRemoteRunCopyOutput(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	if status, _ := td.run(t); status != subcommands.ExitSuccess {
-		t.Errorf("remote(%+v) returned status %v; want %v", td.cfg, status, subcommands.ExitSuccess)
+	if _, err := td.run(t); err != nil {
+		t.Errorf("runRemoteTests(%+v) failed: %v", td.cfg, err)
 	}
 
 	files, err := testutil.ReadFiles(filepath.Join(td.cfg.ResDir, testLogsDir))
@@ -276,15 +271,11 @@ func TestRemoteFailure(t *gotesting.T) {
 	td := newRemoteTestData(t, "", errorMsg, 1)
 	defer td.close()
 
-	if status, _ := td.run(t); status != subcommands.ExitFailure {
-		t.Errorf("remote(%v) returned status %v; want %v", td.cfg, status, subcommands.ExitFailure)
-	}
-	// The runner's error message should've been logged.
-	if !strings.Contains(td.logbuf.String(), errorMsg) {
-		t.Errorf("remote(%v) didn't log runner error %q in %q", td.cfg, errorMsg, td.logbuf.String())
-	}
-	if !td.cfg.startedRun {
-		t.Error("remote() incorrectly reported that run wasn't started")
+	if _, err := td.run(t); err == nil {
+		t.Errorf("runRemoteTests(%v) unexpectedly passed", td.cfg)
+	} else if !strings.Contains(err.Error(), strings.TrimRight(errorMsg, "\n")) {
+		// The runner's error message should've been logged.
+		t.Errorf("runRemoteTests(%v) didn't log runner error %q in %q", td.cfg, errorMsg, err.Error())
 	}
 }
 

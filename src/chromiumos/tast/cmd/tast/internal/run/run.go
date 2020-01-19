@@ -17,7 +17,6 @@ import (
 
 	"github.com/google/subcommands"
 
-	"chromiumos/tast/bundle"
 	"chromiumos/tast/cmd/tast/internal/build"
 	"chromiumos/tast/host"
 	"chromiumos/tast/internal/runner"
@@ -276,11 +275,8 @@ func pushAll(ctx context.Context, cfg *Config, hst *host.SSH) error {
 		return nil
 	}
 
-	// Only consider tests from the newly-pushed bundle.
-	bundleGlob := filepath.Join(cfg.localBundleDir, cfg.buildBundle)
-
 	cfg.Logger.Status("Getting data file list")
-	paths, err := getDataFilePaths(ctx, cfg, hst, bundleGlob)
+	paths, err := getDataFilePaths(ctx, cfg, hst)
 	if err != nil {
 		return fmt.Errorf("failed to get data file list: %v", err)
 	}
@@ -325,27 +321,15 @@ func pushExecutables(ctx context.Context, cfg *Config, hst *host.SSH) error {
 
 // getDataFilePaths returns the paths to data files needed for running cfg.Patterns on hst.
 // The returned paths are relative to the test bundle directory, i.e. they take the form "<category>/data/<filename>".
-func getDataFilePaths(ctx context.Context, cfg *Config, hst *host.SSH, bundleGlob string) (
+func getDataFilePaths(ctx context.Context, cfg *Config, hst *host.SSH) (
 	paths []string, err error) {
 	ctx, st := timing.Start(ctx, "get_data_paths")
 	defer st.End()
 
 	cfg.Logger.Debug("Getting data file list from target")
 
-	handle, err := startLocalRunner(ctx, cfg, hst, &runner.Args{
-		Mode: runner.ListTestsMode,
-		ListTests: &runner.ListTestsArgs{
-			BundleArgs: bundle.ListTestsArgs{Patterns: cfg.Patterns},
-			BundleGlob: bundleGlob,
-		},
-	})
+	ts, err := listLocalTests(ctx, cfg, hst)
 	if err != nil {
-		return nil, err
-	}
-	defer handle.Close(ctx)
-
-	var ts []testing.TestInstance
-	if err = readLocalRunnerOutput(ctx, handle, &ts); err != nil {
 		return nil, err
 	}
 
@@ -438,21 +422,20 @@ func downloadPrivateBundles(ctx context.Context, cfg *Config, hst *host.SSH) err
 	ctx, st := timing.Start(ctx, "download_private_bundles")
 	defer st.End()
 
-	handle, err := startLocalRunner(ctx, cfg, hst, &runner.Args{
-		Mode: runner.DownloadPrivateBundlesMode,
-		DownloadPrivateBundles: &runner.DownloadPrivateBundlesArgs{
-			Devservers: cfg.devservers,
-		},
-	})
-	if err != nil {
-		return err
-	}
-	defer handle.Close(ctx)
-
 	var res runner.DownloadPrivateBundlesResult
-	if err := readLocalRunnerOutput(ctx, handle, &res); err != nil {
+	if err := runTestRunnerCommand(
+		localRunnerCommand(ctx, cfg, hst),
+		&runner.Args{
+			Mode: runner.DownloadPrivateBundlesMode,
+			DownloadPrivateBundles: &runner.DownloadPrivateBundlesArgs{
+				Devservers: cfg.devservers,
+			},
+		},
+		&res,
+	); err != nil {
 		return err
 	}
+
 	for _, msg := range res.Messages {
 		cfg.Logger.Log(msg)
 	}

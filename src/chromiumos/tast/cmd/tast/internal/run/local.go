@@ -5,11 +5,8 @@
 package run
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
-	"io"
 	"net"
 	"path/filepath"
 	"reflect"
@@ -28,8 +25,7 @@ const (
 	sshPingTimeout    = 5 * time.Second  // timeout for checking if SSH connection to DUT is open
 	sshRetryInterval  = 5 * time.Second  // minimum time to wait between SSH connection attempts
 
-	defaultLocalRunnerWaitTimeout = 10 * time.Second // default timeout for waiting for local_test_runner to exit
-	heartbeatInterval             = time.Second      // interval for heartbeat messages
+	heartbeatInterval = time.Second // interval for heartbeat messages
 )
 
 // connectToTarget establishes an SSH connection to the target specified in cfg.
@@ -87,13 +83,52 @@ func runLocalTests(ctx context.Context, cfg *Config) ([]TestResult, error) {
 		return nil, errors.Wrapf(err, "failed to connect to %s", cfg.Target)
 	}
 
+	// Older local_test_runner does not create the specified output directory.
+	// TODO(crbug.com/1000549): Delete this workaround after 20191001.
+	// This workaround costs one round-trip time to the DUT.
+	if err := hst.Command("mkdir", "-p", cfg.localOutDir).Run(ctx); err != nil {
+		return nil, err
+	}
+
 	start := time.Now()
 
 	// Run local_test_runner in a loop so we can try to run the remaining tests on failure.
 	var allResults []TestResult
 	patterns := cfg.Patterns
 	for {
-		results, unstarted, err := runLocalRunner(ctx, cfg, hst, patterns)
+		args := runner.Args{
+			Mode: runner.RunTestsMode,
+			RunTests: &runner.RunTestsArgs{
+				BundleArgs: bundle.RunTestsArgs{
+					Patterns:          patterns,
+					DataDir:           cfg.localDataDir,
+					OutDir:            cfg.localOutDir,
+					TestVars:          cfg.testVars,
+					WaitUntilReady:    cfg.waitUntilReady,
+					HeartbeatInterval: heartbeatInterval,
+				},
+				BundleGlob: cfg.localBundleGlob(),
+				Devservers: cfg.devservers,
+			},
+		}
+		setRunnerTestDepsArgs(cfg, &args)
+
+		results, unstarted, err := runTestsOnce(
+			ctx,
+			cfg,
+			newLocalRunner(ctx, cfg, hst),
+			&args,
+			func(testName, dst string) error {
+				src := filepath.Join(args.RunTests.BundleArgs.OutDir, testName)
+				return moveFromHost(ctx, cfg, hst, src, dst)
+			},
+			func(ctx context.Context, testName string) string {
+				outDir := cfg.ResDir
+				if testName != "" {
+					outDir = filepath.Join(outDir, testLogsDir, testName)
+				}
+				return diagnoseLocalRunError(ctx, cfg, outDir)
+			})
 		allResults = append(allResults, results...)
 		if err == nil {
 			break
@@ -140,117 +175,6 @@ func runLocalTests(ctx context.Context, cfg *Config) ([]TestResult, error) {
 	elapsed := time.Now().Sub(start)
 	cfg.Logger.Logf("Ran %v local test(s) in %v", len(allResults), elapsed.Round(time.Millisecond))
 	return allResults, nil
-}
-
-type localRunnerHandle struct {
-	cmd            *host.Cmd
-	stdout, stderr io.Reader
-}
-
-// Close kills and waits the remote process.
-func (h *localRunnerHandle) Close(ctx context.Context) error {
-	h.cmd.Abort()
-	return h.cmd.Wait(ctx)
-}
-
-// startLocalRunner asynchronously starts local_test_runner on hst and passes args to it.
-// args.FillDeprecated() is called first to backfill any deprecated fields for old runners.
-// The caller is responsible for reading the handle's stdout and closing the handle.
-func startLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, args *runner.Args) (*localRunnerHandle, error) {
-	args.FillDeprecated()
-	argsData, err := json.Marshal(args)
-	if err != nil {
-		return nil, fmt.Errorf("marshal args: %v", err)
-	}
-
-	cmd := newLocalRunner(ctx, cfg, hst)
-	cmd.Stdin = bytes.NewBuffer(argsData)
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		return nil, fmt.Errorf("failed to open stdout pipe: %v", err)
-	}
-	stderr, err := cmd.StderrPipe()
-	if err != nil {
-		return nil, fmt.Errorf("failed to open stderr pipe: %v", err)
-	}
-
-	if err := cmd.Start(ctx); err != nil {
-		return nil, fmt.Errorf("failed to start local_test_runner: %v", err)
-	}
-	return &localRunnerHandle{cmd.Cmd, stdout, stderr}, nil
-}
-
-// runLocalRunner synchronously runs local_test_runner to completion on hst.
-// The supplied patterns (rather than cfg.Patterns) are passed to the runner.
-//
-// If cfg.mode is RunTestsMode, tests are executed and the results from started tests
-// and the names of tests that should have been started but weren't (in the order in which
-// they should've been run) are returned.
-//
-// If cfg.mode is ListTestsMode, serialized test information is returned via TestResult.Test
-// but other fields are left blank and unstarted is empty.
-func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, patterns []string) (
-	results []TestResult, unstarted []string, err error) {
-	ctx, st := timing.Start(ctx, "run_local_tests")
-	defer st.End()
-
-	// Older local_test_runner does not create the specified output directory.
-	// TODO(crbug.com/1000549): Delete this workaround after 20191001.
-	// This workaround costs one round-trip time to the DUT.
-	if err := hst.Command("mkdir", "-p", cfg.localOutDir).Run(ctx); err != nil {
-		return nil, nil, err
-	}
-	args := runner.Args{
-		Mode: runner.RunTestsMode,
-		RunTests: &runner.RunTestsArgs{
-			BundleArgs: bundle.RunTestsArgs{
-				Patterns:          patterns,
-				DataDir:           cfg.localDataDir,
-				OutDir:            cfg.localOutDir,
-				TestVars:          cfg.testVars,
-				WaitUntilReady:    cfg.waitUntilReady,
-				HeartbeatInterval: heartbeatInterval,
-			},
-			BundleGlob: cfg.localBundleGlob(),
-			Devservers: cfg.devservers,
-		},
-	}
-	setRunnerTestDepsArgs(cfg, &args)
-
-	handle, err := startLocalRunner(ctx, cfg, hst, &args)
-	if err != nil {
-		return nil, nil, err
-	}
-	defer handle.Close(ctx)
-
-	// Read stderr in the background so it can be included in error messages.
-	stderrReader := newFirstLineReader(handle.stderr)
-
-	crf := func(testName, dst string) error {
-		src := filepath.Join(args.RunTests.BundleArgs.OutDir, testName)
-		return moveFromHost(ctx, cfg, hst, src, dst)
-	}
-	df := func(ctx context.Context, testName string) string {
-		outDir := cfg.ResDir
-		if testName != "" {
-			outDir = filepath.Join(outDir, testLogsDir, testName)
-		}
-		return diagnoseLocalRunError(ctx, cfg, outDir)
-	}
-	results, unstarted, rerr := readTestOutput(ctx, cfg, handle.stdout, crf, df)
-
-	// Check that the runner exits successfully first so that we don't give a useless error
-	// about incorrectly-formed output instead of e.g. an error about the runner being missing.
-	timeout := defaultLocalRunnerWaitTimeout
-	if cfg.localRunnerWaitTimeout > 0 {
-		timeout = cfg.localRunnerWaitTimeout
-	}
-	wctx, wcancel := context.WithTimeout(ctx, timeout)
-	defer wcancel()
-	if err := handle.cmd.Wait(wctx); err != nil {
-		return results, unstarted, stderrReader.appendToError(err, stderrTimeout)
-	}
-	return results, unstarted, rerr
 }
 
 // formatBytes formats bytes as a human-friendly string.

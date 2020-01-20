@@ -12,6 +12,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"time"
 
 	"chromiumos/tast/host"
 	"chromiumos/tast/internal/runner"
@@ -22,6 +23,18 @@ type cmd interface {
 	// SetStdin sets the given stdin as the subprocess's stdin.
 	SetStdin(stdin io.Reader)
 
+	// StdoutPipe returns a Reader to read the data from subprocess's stdout.
+	StdoutPipe() (io.ReadCloser, error)
+
+	// StderrPipe returns a Reader to read the data from subprocess's stderr.
+	StderrPipe() (io.ReadCloser, error)
+
+	// Start begins the subprocess.
+	Start() error
+
+	// Wait waits for the termination of the subprocess.
+	Wait() error
+
 	// Output executes the command, and returns its stdout.
 	Output() ([]byte, error)
 }
@@ -31,6 +44,9 @@ type localRunner struct {
 
 	// ctx is used to run host.Cmd.Start() and host.Cmd.Wait().
 	ctx context.Context
+
+	// waitTimeout is the duriation to wait for the subprocess.
+	waitTimeout time.Duration
 }
 
 func newLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH) *localRunner {
@@ -51,11 +67,33 @@ func newLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH) *localRunne
 	}
 	execArgs = append(execArgs, cfg.localRunner)
 
-	return &localRunner{hst.Command(execArgs[0], execArgs[1:]...), ctx}
+	// Calculate the timeout duration for Wait().
+	const defaultWaitTimeout = 10 * time.Second
+	timeout := defaultWaitTimeout
+	if cfg.localRunnerWaitTimeout > 0 {
+		timeout = cfg.localRunnerWaitTimeout
+	}
+
+	return &localRunner{hst.Command(execArgs[0], execArgs[1:]...), ctx, timeout}
 }
 
 func (r *localRunner) SetStdin(stdin io.Reader) {
 	r.Stdin = stdin
+}
+
+func (r *localRunner) Start() error {
+	return r.Cmd.Start(r.ctx)
+}
+
+func (r *localRunner) Wait() error {
+	ctx, cancel := context.WithTimeout(r.ctx, r.waitTimeout)
+	defer cancel()
+	if err := r.Cmd.Wait(ctx); err != nil {
+		r.Cmd.Abort()
+		r.Cmd.Wait(r.ctx)
+		return err
+	}
+	return nil
 }
 
 func (r *localRunner) Output() ([]byte, error) {

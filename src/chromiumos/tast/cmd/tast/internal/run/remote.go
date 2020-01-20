@@ -6,9 +6,7 @@ package run
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 
@@ -26,6 +24,13 @@ func runRemoteTests(ctx context.Context, cfg *Config) ([]TestResult, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	if err := os.MkdirAll(cfg.remoteOutDir, 0777); err != nil {
+		return nil, fmt.Errorf("failed to create output dir: %v", err)
+	}
+	// At the end of tests remoteOutDir should be empty. Otherwise os.Remove
+	// fails and the directory is left for debugging.
+	defer os.Remove(cfg.remoteOutDir)
 
 	args := runner.Args{
 		Mode: runner.RunTestsMode,
@@ -54,53 +59,17 @@ func runRemoteTests(ctx context.Context, cfg *Config) ([]TestResult, error) {
 	}
 	setRunnerTestDepsArgs(cfg, &args)
 
-	if err := os.MkdirAll(cfg.remoteOutDir, 0777); err != nil {
-		return nil, fmt.Errorf("failed to create output dir: %v", err)
-	}
-	// At the end of tests remoteOutDir should be empty. Otherwise os.Remove
-	// fails and the directory is left for debugging.
-	defer os.Remove(cfg.remoteOutDir)
-
-	// Backfill deprecated fields in case we're executing an old test runner.
-	args.FillDeprecated()
-
-	cmd := newRemoteRunner(ctx, cfg)
-	stdin, err := cmd.StdinPipe()
-	if err != nil {
-		return nil, err
-	}
-	var stdout, stderr io.Reader
-	if stdout, err = cmd.StdoutPipe(); err != nil {
-		return nil, err
-	}
-	if stderr, err = cmd.StderrPipe(); err != nil {
-		return nil, err
-	}
-	stderrReader := newFirstLineReader(stderr)
-
-	cfg.Logger.Logf("Starting %v locally", cmd.Path)
-	if err = cmd.Start(); err != nil {
-		return nil, err
-	}
-
-	if err = json.NewEncoder(stdin).Encode(&args); err != nil {
-		return nil, fmt.Errorf("write to stdin: %v", err)
-	}
-	if err = stdin.Close(); err != nil {
-		return nil, fmt.Errorf("close stdin: %v", err)
-	}
-
-	crf := func(testName, dst string) error {
-		src := filepath.Join(args.RunTests.BundleArgs.OutDir, testName)
-		return os.Rename(src, dst)
-	}
-	results, _, rerr := readTestOutput(ctx, cfg, stdout, crf, nil)
-
-	// Check that the runner exits successfully first so that we don't give a useless error
-	// about incorrectly-formed output instead of e.g. an error about the runner being missing.
-	if err := cmd.Wait(); err != nil {
-		return results, stderrReader.appendToError(err, stderrTimeout)
-	}
-
-	return results, rerr
+	r := newRemoteRunner(ctx, cfg)
+	cfg.Logger.Logf("Starting %v locally", r.Path)
+	results, _, err := runTestsOnce(
+		ctx,
+		cfg,
+		r,
+		&args,
+		func(testName, dst string) error {
+			src := filepath.Join(args.RunTests.BundleArgs.OutDir, testName)
+			return os.Rename(src, dst)
+		},
+		nil)
+	return results, err
 }

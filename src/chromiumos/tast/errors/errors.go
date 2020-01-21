@@ -62,6 +62,11 @@ func (e *E) Error() string {
 	return fmt.Sprintf("%s: %s", e.msg, e.cause.Error())
 }
 
+// Unwrap implements the error Unwrap interface introduced in go1.13.
+func (e *E) Unwrap() error {
+	return e.cause
+}
+
 // unwrapper is a private interface of *E providing access to its fields.
 // We should access *E via this interface to allow embedding *E in
 // user-defined custom error types.

@@ -114,10 +114,11 @@ The following software features are defined:
 *   `vp9_sanity` - The ability to stay alive playing a VP9 video with hardware
     acceleration even for a profile which the driver doesn't support.
 *   `vulkan` - Whether [Vulkan] is enabled.
+*   `wifi` - If this DUT has WiFi device.
 *   `wilco` - If this DUT is a [wilco] device. These features include
     the DTC (Diagnostic and Telemetry Controller) VM, a special EC interface,
     and a dock firmware updater.
-*   `wifi` - If this DUT has WiFi device.
+*   `wired_8021x' - The ability to use 802.1X for authentication over Ethernet.
 
 [amd64]: https://en.wikipedia.org/wiki/X86-64
 [run Android apps]: https://developer.android.com/topic/arc/

@@ -62,13 +62,13 @@ func main() {
 			// master-arc-dev and qt are under development and not stable to run Tast tests.
 			// ARC USE flags are defined here:
 			// http://cs/chromeos_public/src/third_party/chromiumos-overlay/eclass/arc-build-constants.eclass
-			"android":           `arc && ` + androidContainerStable + ` && !` + androidContainerUnstable,
-			"android_vm":        `arc && arcvm`,
-			"android_both":      `arc && !` + androidContainerUnstable,
-			"android_all":       `arc && arcpp`,
-			"android_all_both":  `arc`,
-			"android_p":         `arc && "android-container-pi"`,
-			"android_p_both":    `arc && ("android-container-pi" || "android-vm-pi")`,
+			"android":          `arc && ` + androidContainerStable + ` && !` + androidContainerUnstable,
+			"android_vm":       `arc && arcvm`,
+			"android_both":     `arc && !` + androidContainerUnstable,
+			"android_all":      `arc && arcpp`,
+			"android_all_both": `arc`,
+			"android_p":        `arc && "android-container-pi"`,
+			"android_p_both":   `arc && ("android-container-pi" || "android-vm-pi")`,
 			// TODO(b/146584985): update to use R flags
 			"android_r":         `arc && "android-container-master-arc-dev"`,
 			"arc_camera1":       `"arc-camera1"`,
@@ -145,8 +145,9 @@ func main() {
 			"vulkan":     "vulkan",
 			// nyan_kitty is skipped as its WiFi device is unresolvably flaky (crrev.com/c/944502),
 			// exhibiting very similar symptoms to crbug.com/693724, b/65858242, b/36264732.
-			"wifi":  "!betty && !tast_vm && !nyan_kitty",
-			"wilco": "wilco",
+			"wifi":        "!betty && !tast_vm && !nyan_kitty",
+			"wilco":       "wilco",
+			"wired_8021x": "wired_8021x",
 		},
 		// The autotest-capability package tries to install this to /etc but it's diverted to /usr/local.
 		AutotestCapabilityDir: autocaps.DefaultCapabilityDir,

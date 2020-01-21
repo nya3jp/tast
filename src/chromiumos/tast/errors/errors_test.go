@@ -109,3 +109,21 @@ woof
 
 	check(t, err, msg, traceRegexp)
 }
+
+func TestUnwrap(t *testing.T) {
+	// Verifies that Unwrap interface on E can properly fit in golang errors library.
+	errBase := &customError{E: New("woof")}
+	errWrap := Wrap(errBase, "meow")
+	if err := Unwrap(errWrap); err != error(errBase) {
+		t.Errorf("Unwrap(errWrap) returns %v, want %v", err, errBase)
+	}
+	if !Is(errWrap, errBase) {
+		t.Error("Is(errWrap, errBase) should be true")
+	}
+	var asErr *customError
+	if !As(errWrap, &asErr) {
+		t.Error("As(errWrap, &asErr) should return true")
+	} else if asErr != errBase {
+		t.Errorf("As returns %v, want %v", asErr, errBase)
+	}
+}

@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "02362cbc_2cdd5bff",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-01-21T06:49:20Z",
+      "side": 1,
+      "message": "SGTM. JFYI non-StatusError errors are treated just like StatusError with status \u003d 1 (at command.WriteError).",
+      "parentUuid": "8b3a50f9_0731f3a8",
+      "revId": "4e857f726d1e5348f1b5a7360e70fbb6ddf46e0f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f54407ce_568f9969",
         "filename": "src/chromiumos/tast/internal/runner/features.go",
         "patchSetId": 1
@@ -39,6 +57,30 @@
       "revId": "4e857f726d1e5348f1b5a7360e70fbb6ddf46e0f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d894a788_b6a8d8ee",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-01-21T06:49:20Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "f54407ce_568f9969",
+      "range": {
+        "startLine": 73,
+        "startChar": 63,
+        "endLine": 73,
+        "endChar": 64
+      },
+      "revId": "4e857f726d1e5348f1b5a7360e70fbb6ddf46e0f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

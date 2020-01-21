@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "d8628975_fa11d615",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-01-21T06:49:20Z",
+      "side": 0,
+      "message": "Ack",
+      "parentUuid": "405d074a_d8be31b3",
+      "revId": "ded26a9d211199ef2e12fe9ba0962e7726e5349a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "66e835d7_b8cced0e",
         "filename": "src/chromiumos/tast/internal/runner/features.go",
         "patchSetId": 1
@@ -39,6 +57,30 @@
       "revId": "ded26a9d211199ef2e12fe9ba0962e7726e5349a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dfbd55cc_9bbb37d2",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-01-21T06:49:20Z",
+      "side": 0,
+      "message": "Ack, I agree this is a good practice.",
+      "parentUuid": "66e835d7_b8cced0e",
+      "range": {
+        "startLine": 78,
+        "startChar": 15,
+        "endLine": 78,
+        "endChar": 18
+      },
+      "revId": "ded26a9d211199ef2e12fe9ba0962e7726e5349a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

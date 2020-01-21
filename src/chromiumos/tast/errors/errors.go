@@ -40,6 +40,7 @@
 package errors
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"strings"
@@ -60,6 +61,11 @@ func (e *E) Error() string {
 		return e.msg
 	}
 	return fmt.Sprintf("%s: %s", e.msg, e.cause.Error())
+}
+
+// Unwrap implements the error Unwrap interface introduced in go1.13.
+func (e *E) Unwrap() error {
+	return e.cause
 }
 
 // unwrapper is a private interface of *E providing access to its fields.
@@ -132,4 +138,24 @@ func Wrapf(cause error, format string, args ...interface{}) *E {
 	s := stack.New(1)
 	msg := fmt.Sprintf(format, args...)
 	return &E{msg, s, cause}
+}
+
+// Unwrap is a wrapper of built-in errors.Unwrap. It returns the result of
+// calling the Unwrap method on err, if err's type contains an Unwrap method
+// returning error. Otherwise, Unwrap returns nil.
+func Unwrap(err error) error {
+	return errors.Unwrap(err)
+}
+
+// As is a wrapper of built-in errors.As. It finds the first error in err's
+// chain that matches target, and if so, sets target to that error value and
+// returns true.
+func As(err error, target interface{}) bool {
+	return errors.As(err, target)
+}
+
+// Is is a wrapper of built-in errors.Is. It reports whether any error in err's
+// chain matches target.
+func Is(err, target error) bool {
+	return errors.Is(err, target)
 }

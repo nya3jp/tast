@@ -22,6 +22,30 @@
       "revId": "d6aca54c108f1291da8a3a9671c7c2686a4799c0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4433cd9e_198dc4cd",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2020-01-22T01:48:38Z",
+      "side": 0,
+      "message": "Yes (well, assuming you run the next line, `emerge-...`). A non-cros-workon ebuild [1] will always pick up changes to itself on rebuild.\n\n(One caveat there is the you don\u0027t always get a rebuild in, e.g., the CQ. That\u0027s why you need revbumps, etc. But you do get a rebuild when you specifically point emerge at something and don\u0027t use flags like --usepkg.)\n\n[1] Or really, any ebuild, if you\u0027re modifying the non-masked one (which you really shouldn\u0027t do -- you should always modify the 9999 one).",
+      "parentUuid": "57f84163_d29da2a5",
+      "range": {
+        "startLine": 170,
+        "startChar": 0,
+        "endLine": 170,
+        "endChar": 61
+      },
+      "revId": "d6aca54c108f1291da8a3a9671c7c2686a4799c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

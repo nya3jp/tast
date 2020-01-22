@@ -22,6 +22,30 @@
       "revId": "dffd059131c8ec1642234769c0e89e0b435a92ba",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "208ce547_5a54f14b",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2020-01-22T02:11:08Z",
+      "side": 1,
+      "message": "Did you do \u0027gofmt -w src/chromiumos/tast/cmd/local_test_runner/main.go\u0027?\n\nIf so, I dunno what to say -- both in and out of the chroot, I see this change being made.",
+      "parentUuid": "9ce80370_d497f95e",
+      "range": {
+        "startLine": 65,
+        "startChar": 0,
+        "endLine": 72,
+        "endChar": 46
+      },
+      "revId": "dffd059131c8ec1642234769c0e89e0b435a92ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

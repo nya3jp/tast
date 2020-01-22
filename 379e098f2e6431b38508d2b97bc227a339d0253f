@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "2b14129a_da6b3ec3",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/config.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 370,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-01-22T15:34:34Z",
+      "side": 1,
+      "message": "o_O. Done.",
+      "parentUuid": "ded27e8a_812214fb",
+      "range": {
+        "startLine": 370,
+        "startChar": 1,
+        "endLine": 370,
+        "endChar": 15
+      },
+      "revId": "379e098f2e6431b38508d2b97bc227a339d0253f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6cc819ed_ef4a25a6",
         "filename": "src/chromiumos/tast/cmd/tast/internal/run/list_tests.go",
         "patchSetId": 1
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "bd09cd2d_0d7d5f40",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/list_tests.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-01-22T15:34:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6cc819ed_ef4a25a6",
+      "range": {
+        "startLine": 45,
+        "startChar": 0,
+        "endLine": 81,
+        "endChar": 1
+      },
+      "revId": "379e098f2e6431b38508d2b97bc227a339d0253f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ac4948c5_a2775113",
         "filename": "src/chromiumos/tast/cmd/tast/internal/run/test_runner.go",
         "patchSetId": 1
@@ -62,6 +110,24 @@
       "revId": "379e098f2e6431b38508d2b97bc227a339d0253f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f777a266_d1e1b807",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/test_runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-01-22T15:34:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ac4948c5_a2775113",
+      "revId": "379e098f2e6431b38508d2b97bc227a339d0253f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -88,6 +154,30 @@
     },
     {
       "key": {
+        "uuid": "c5cfc00f_ae01fbd1",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/test_runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-01-22T15:34:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "84927293_1e7df794",
+      "range": {
+        "startLine": 20,
+        "startChar": 3,
+        "endLine": 20,
+        "endChar": 54
+      },
+      "revId": "379e098f2e6431b38508d2b97bc227a339d0253f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fa470dff_34d0d0c4",
         "filename": "src/chromiumos/tast/cmd/tast/internal/run/test_runner.go",
         "patchSetId": 1
@@ -99,6 +189,30 @@
       "writtenOn": "2020-01-21T07:57:29Z",
       "side": 1,
       "message": "While this type is used generally to abstract exec.Cmd, it is used only for *_test_runner for now. How about naming it runnerCmd to make it explicit?\n\nOtherwise, in appearance of cmd like \"func foo(r cmd) error\", it\u0027s not clear what r is for (e.g. I wonder if it is possible that cmd is for bundle executables). It can be resolved either by (1) naming variables explicitly, i.e. \"func foo(runner cmd) error\", or (2) naming the type explicitly, i.e. \"func foo(r runnerCmd) error\". I personally prefer the second choice.",
+      "range": {
+        "startLine": 20,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 20
+      },
+      "revId": "379e098f2e6431b38508d2b97bc227a339d0253f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c8aa9c41_8e35e7e2",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/test_runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-01-22T15:34:34Z",
+      "side": 1,
+      "message": "Done with (2).",
+      "parentUuid": "fa470dff_34d0d0c4",
       "range": {
         "startLine": 20,
         "startChar": 0,
@@ -134,6 +248,30 @@
     },
     {
       "key": {
+        "uuid": "c240e671_6e16be7b",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/test_runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-01-22T15:34:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fbcd709d_d0a22231",
+      "range": {
+        "startLine": 29,
+        "startChar": 5,
+        "endLine": 29,
+        "endChar": 16
+      },
+      "revId": "379e098f2e6431b38508d2b97bc227a339d0253f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d5172583_34074bfa",
         "filename": "src/chromiumos/tast/cmd/tast/internal/run/test_runner.go",
         "patchSetId": 1
@@ -154,6 +292,30 @@
       "revId": "379e098f2e6431b38508d2b97bc227a339d0253f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9a3908d9_34aabee3",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/test_runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-01-22T15:34:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d5172583_34074bfa",
+      "range": {
+        "startLine": 30,
+        "startChar": 1,
+        "endLine": 30,
+        "endChar": 10
+      },
+      "revId": "379e098f2e6431b38508d2b97bc227a339d0253f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

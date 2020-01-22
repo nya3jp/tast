@@ -70,7 +70,7 @@ func main() {
 			"android_p":        `arc && "android-container-pi"`,
 			"android_p_both":   `arc && ("android-container-pi" || "android-vm-pi")`,
 			// TODO(b/146584985): update to use R flags
-			"android_r":         `arc && "android-container-master-arc-dev"`,
+			"android_r":         `arc && ` + androidContainerUnstable,
 			"arc_camera1":       `"arc-camera1"`,
 			"arc_camera3":       `"arc-camera3"`,
 			"aslr":              "!asan",                        // ASan instrumentation breaks ASLR

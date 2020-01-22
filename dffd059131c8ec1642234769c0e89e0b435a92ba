@@ -46,6 +46,30 @@
       "revId": "dffd059131c8ec1642234769c0e89e0b435a92ba",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f4a2b2df_d2f0b0dc",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1158909
+      },
+      "writtenOn": "2020-01-22T02:16:58Z",
+      "side": 1,
+      "message": "Sorry, my (GUI) diff-viewer fooled me. \n\nI did not know about the -w switch, so I did \n`gofmt src/chromiumos/tast/cmd/local_test_runner/main.go \u003e new`\nfollowed by `meld src/chromiumos/tast/cmd/local_test_runner/main.go src/chromiumos/tast/cmd/local_test_runner/new`\nand got a \"Files are identical\" prompt. I checked for my diff-viewing settings. \nChoosing \"diff -u\" on command-line does show me the spacing difference. Sorry for the false alarm.",
+      "parentUuid": "208ce547_5a54f14b",
+      "range": {
+        "startLine": 65,
+        "startChar": 0,
+        "endLine": 72,
+        "endChar": 46
+      },
+      "revId": "dffd059131c8ec1642234769c0e89e0b435a92ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

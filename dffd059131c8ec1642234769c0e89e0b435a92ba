@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9ce80370_d497f95e",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1158909
+      },
+      "writtenOn": "2020-01-22T01:29:09Z",
+      "side": 1,
+      "message": "I thought gofmt or something added these spacing changes, but I ran gofmt locally and didn\u0027t hit this.",
+      "range": {
+        "startLine": 65,
+        "startChar": 0,
+        "endLine": 72,
+        "endChar": 46
+      },
+      "revId": "dffd059131c8ec1642234769c0e89e0b435a92ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

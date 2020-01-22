@@ -165,11 +165,10 @@ either `audio_chipset_a` or `audio_chipset_b` is set, and
 `broken_headphone_jack` is explicitly *not* set.
 
 Before a new `USE` flag can be used in an expression, it must be added to `IUSE`
-in the [tast-use-flags] package. Local changes to `tast-use-flags-9999.ebuild`
+in the [tast-use-flags] package. Local changes to the `tast-use-flags` ebuild
 have to be pushed to the DUT manually to take effect:
 
 ```
-cros_workon --board=$BOARD start chromeos-base/tast-use-flags
 emerge-$BOARD chromeos-base/tast-use-flags
 cros deploy --root=/usr/local $HOST chromeos-base/tast-use-flags
 ```

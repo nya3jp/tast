@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "57f84163_d29da2a5",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 1158909
+      },
+      "writtenOn": "2020-01-22T01:40:08Z",
+      "side": 0,
+      "message": "Yep, this doesn\u0027t work:\n\n(cr) ((ddd20eb...)) kirtika@kirtika2 ~/trunk/src/scripts $ cros_workon --board hatch start chromeos-base/tast-use-flags\n17:37:54: WARNING: In order to cros_workon a package, it must have a -9999 ebuild that inherits from cros-workon.\n\"/mnt/host/source/src/third_party/chromiumos-overlay/chromeos-base/tast-use-flags/tast-use-flags-0.0.1-r60.ebuild\" is not a -9999 ebuild.\n\nDoes this mean any changes I make locally are automatically picked up?",
+      "range": {
+        "startLine": 170,
+        "startChar": 0,
+        "endLine": 170,
+        "endChar": 61
+      },
+      "revId": "d6aca54c108f1291da8a3a9671c7c2686a4799c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

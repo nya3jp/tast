@@ -46,6 +46,30 @@
       "revId": "e6d75b11e41bfaed7850b47c71f0dbafe2570432",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0b80de63_b313e2b6",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1202079
+      },
+      "writtenOn": "2020-01-23T01:52:03Z",
+      "side": 1,
+      "message": "yes, it wasn\u0027t clear to me what\u0027s the meaning of that, that\u0027s why I asked for a clarification.\n\nIn any case, if this is a temporal solution (e.g:, once android-qt is no longer used), then what about adding a TODO ?",
+      "parentUuid": "1ea70a25_09086b6d",
+      "range": {
+        "startLine": 73,
+        "startChar": 36,
+        "endLine": 73,
+        "endChar": 60
+      },
+      "revId": "e6d75b11e41bfaed7850b47c71f0dbafe2570432",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

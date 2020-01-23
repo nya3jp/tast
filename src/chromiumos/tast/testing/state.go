@@ -111,7 +111,10 @@ type State struct {
 	subtests []string // subtest names; used to prefix error messages
 
 	hasError bool       // true if the current subtest has encountered an error; the test fails if this is true for the initial subtest
-	mu       sync.Mutex // protects hasError
+	errorMu  sync.Mutex // protects hasError
+
+	inPrecon bool       // true if a precondition is currently executing.
+	preconMu sync.Mutex // protects inPrecon
 }
 
 // TestConfig contains details about how an individual test should be run.
@@ -246,12 +249,12 @@ func (s *State) Run(ctx context.Context, name string, run func(context.Context, 
 
 	<-finished
 
-	ns.mu.Lock()
-	defer ns.mu.Unlock()
+	ns.errorMu.Lock()
+	defer ns.errorMu.Unlock()
 	// Bubble up failures
 	if ns.hasError {
-		s.mu.Lock()
-		defer s.mu.Unlock()
+		s.errorMu.Lock()
+		defer s.errorMu.Unlock()
 		s.hasError = true
 	}
 
@@ -369,9 +372,16 @@ func (r *rootState) writeOutput(o Output) {
 
 // HasError reports whether the test has already reported errors.
 func (s *State) HasError() bool {
-	s.mu.Lock()
-	defer s.mu.Unlock()
+	s.errorMu.Lock()
+	defer s.errorMu.Unlock()
 	return s.hasError
+}
+
+// InPrecon sets whether the state is currently in a precondition or not.
+func (s *State) InPrecon(inPrecon bool) {
+	s.preconMu.Lock()
+	defer s.preconMu.Unlock()
+	s.inPrecon = inPrecon
 }
 
 // errorSuffix matches the well-known error message suffixes for formatError.
@@ -412,6 +422,13 @@ func (s *State) formatError(args ...interface{}) (fullMsg, lastMsg string, err e
 		lastMsg = subtests + lastMsg
 	}
 
+	s.preconMu.Lock()
+	defer s.preconMu.Unlock()
+	if s.inPrecon {
+		fullMsg = "[Precondition failure] " + fullMsg
+		lastMsg = "[Precondition failure] " + lastMsg
+	}
+
 	return fullMsg, lastMsg, err
 }
 
@@ -448,13 +465,20 @@ func (s *State) formatErrorf(format string, args ...interface{}) (fullMsg, lastM
 		lastMsg = subtests + lastMsg
 	}
 
+	s.preconMu.Lock()
+	defer s.preconMu.Unlock()
+	if s.inPrecon {
+		fullMsg = "[Precondition failure] " + fullMsg
+		lastMsg = "[Precondition failure] " + lastMsg
+	}
+
 	return fullMsg, lastMsg, err
 }
 
 // recordError records that the test has reported an error.
 func (s *State) recordError() {
-	s.mu.Lock()
-	defer s.mu.Unlock()
+	s.errorMu.Lock()
+	defer s.errorMu.Unlock()
 	s.hasError = true
 }
 

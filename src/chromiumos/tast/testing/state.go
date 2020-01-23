@@ -110,6 +110,8 @@ type State struct {
 
 	subtests []string // subtest names; used to prefix error messages
 
+	inPrecon bool // true if a precondition is currently executing.
+
 	hasError bool       // true if the current subtest has encountered an error; the test fails if this is true for the initial subtest
 	mu       sync.Mutex // protects hasError
 }
@@ -412,6 +414,11 @@ func (s *State) formatError(args ...interface{}) (fullMsg, lastMsg string, err e
 		lastMsg = subtests + lastMsg
 	}
 
+	if s.inPrecon {
+		fullMsg = "[Precondition failure] " + fullMsg
+		lastMsg = "[Precondition failure] " + lastMsg
+	}
+
 	return fullMsg, lastMsg, err
 }
 
@@ -446,6 +453,11 @@ func (s *State) formatErrorf(format string, args ...interface{}) (fullMsg, lastM
 
 		fullMsg = subtests + fullMsg
 		lastMsg = subtests + lastMsg
+	}
+
+	if s.inPrecon {
+		fullMsg = "[Precondition failure] " + fullMsg
+		lastMsg = "[Precondition failure] " + lastMsg
 	}
 
 	return fullMsg, lastMsg, err

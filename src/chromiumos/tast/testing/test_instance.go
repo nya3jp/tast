@@ -289,7 +289,9 @@ func (t *TestInstance) Run(ctx context.Context, ch chan<- Output, cfg *TestConfi
 				return
 			}
 			s.Logf("Preparing precondition %q", t.Pre)
+			s.inPrecon = true
 			s.root.preValue = t.Pre.(preconditionImpl).Prepare(ctx, s)
+			s.inPrecon = false
 		}, t.Pre.Timeout(), t.Pre.Timeout()+exitTimeout)
 	}
 
@@ -305,7 +307,9 @@ func (t *TestInstance) Run(ctx context.Context, ch chan<- Output, cfg *TestConfi
 	if t.Pre != nil && (cfg.NextTest == nil || cfg.NextTest.Pre != t.Pre) {
 		addStage(func(ctx context.Context, s *State) {
 			s.Logf("Closing precondition %q", t.Pre.String())
+			s.inPrecon = true
 			t.Pre.(preconditionImpl).Close(ctx, s)
+			s.inPrecon = false
 		}, t.Pre.Timeout(), t.Pre.Timeout()+exitTimeout)
 	}
 

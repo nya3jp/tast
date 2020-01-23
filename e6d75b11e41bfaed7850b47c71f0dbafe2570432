@@ -70,6 +70,30 @@
       "revId": "e6d75b11e41bfaed7850b47c71f0dbafe2570432",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d0a8fe40_a4a6d50d",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1001280
+      },
+      "writtenOn": "2020-01-23T02:15:34Z",
+      "side": 1,
+      "message": "Done with commit message, PTAL.\nAs to TODO, existing TODO message covers it: TODO(b/146584985): update to use R flags.",
+      "parentUuid": "0b80de63_b313e2b6",
+      "range": {
+        "startLine": 73,
+        "startChar": 36,
+        "endLine": 73,
+        "endChar": 60
+      },
+      "revId": "e6d75b11e41bfaed7850b47c71f0dbafe2570432",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

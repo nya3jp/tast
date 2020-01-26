@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9362d5d0_525f3777",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/deps.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-01-26T16:20:24Z",
+      "side": 0,
+      "message": "Note: this logic looks stale, at least the comment is conflicting with implementation.\nNow, if there\u0027s no file containing USE flags, local_test_runner reports error.\n\ncf)\nhttps://chromium.googlesource.com/chromiumos/platform/tast/+/refs/heads/master/src/chromiumos/tast/internal/runner/features.go#56\nhttps://chromium.googlesource.com/chromiumos/platform/tast/+/refs/heads/master/src/chromiumos/tast/internal/runner/features.go#80",
+      "revId": "eed77f92bb8d045cc22524403910c8d70dfdfb53",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -11,7 +11,7 @@ import (
 )
 
 func runTests(ctx context.Context, cfg *Config) ([]TestResult, error) {
-	if err := getSoftwareFeatures(ctx, cfg); err != nil {
+	if err := getDUTInfo(ctx, cfg); err != nil {
 		return nil, errors.Wrap(err, "failed to get DUT software features")
 	}
 	if err := getInitialSysInfo(ctx, cfg); err != nil {

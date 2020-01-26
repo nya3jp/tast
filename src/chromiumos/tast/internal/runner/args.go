@@ -36,10 +36,9 @@ const (
 	// the tast executable to get system info after testing is completed.
 	// This mode is only supported by local_test_runner.
 	CollectSysInfoMode = 4
-	// GetSoftwareFeaturesMode indicates that the runner should return information about software features
-	// supported by the DUT via a JSON-marshaled GetSoftwareFeaturesResult struct written to stdout. This mode
-	// is only supported by local_test_runner.
-	GetSoftwareFeaturesMode = 5
+	// GetDUTInfoMode indicates that the runner should return DUT information via a JSON-marshaled
+	// GetDUTInfoResult struct written to stdout. This mode is only supported by local_test_runner.
+	GetDUTInfoMode = 5
 	// DownloadPrivateBundlesMode indicates that the runner should download private bundles from devservers,
 	// install them to the DUT, write a JSON-marshaled DownloadPrivateBundlesResult struct to stdout and exit.
 	// This mode is only supported by local_test_runner.
@@ -58,8 +57,9 @@ type Args struct {
 	ListTests *ListTestsArgs `json:"listTests,omitempty"`
 	// CollectSysInfo contains arguments used by CollectSysInfoMode.
 	CollectSysInfo *CollectSysInfoArgs `json:"collectSysInfo,omitempty"`
-	// GetSoftwareFeatures contains arguments used by GetSoftwareFeaturesMode.
-	GetSoftwareFeatures *GetSoftwareFeaturesArgs `json:"getSoftwareFeatures,omitempty"`
+	// GetDUTInfo contains arguments used by GetDUTInfoMode.
+	// Note that, for backward compatibility, the JSON's field name is getSoftwareFeatures.
+	GetDUTInfo *GetDUTInfoArgs `json:"getSoftwareFeatures,omitempty"`
 	// DownloadPrivateBundles contains arguments used by DownloadPrivateBundlesMode.
 	DownloadPrivateBundles *DownloadPrivateBundlesArgs `json:"downloadPrivateBundles,omitempty"`
 
@@ -166,21 +166,75 @@ type CollectSysInfoResult struct {
 	Warnings []string `json:"warnings,omitempty"`
 }
 
-// GetSoftwareFeaturesArgs is nested within Args and contains arguments used by GetSoftwareFeaturesMode.
-type GetSoftwareFeaturesArgs struct {
+// GetDUTInfoArgs is nested within Args and contains arguments used by GetDUTInfoMode.
+type GetDUTInfoArgs struct {
 	// ExtraUSEFlags lists USE flags that should be treated as being set an addition to
-	// the ones read from Config.USEFlagsFile when computing the feature sets for GetSoftwareFeaturesResult.
+	// the ones read from Config.USEFlagsFile when computing the feature sets for GetDUTInfoResult.
 	ExtraUSEFlags []string `json:"extraUseFlags,omitempty"`
 }
 
-// GetSoftwareFeaturesResult contains the result of a GetSoftwareFeaturesMode command.
-type GetSoftwareFeaturesResult struct {
+// SoftwareFeatures contains information about software features of the DUT.
+type SoftwareFeatures struct {
 	// Available contains a list of software features supported by the DUT.
-	Available []string `json:"available,omitempty"`
+	Available []string
+
 	// Unavailable contains a list of software features not supported by the DUT.
-	Unavailable []string `json:"missing,omitempty"`
+	Unavailable []string
+}
+
+// GetDUTInfoResult contains the result of a GetDUTInfoMode command.
+type GetDUTInfoResult struct {
+	// SoftwareFeatures contains the information about the software features of the DUT.
+	// For backward compatibility, in JSON format, fields are flatten.
+	// This struct has MarshalJSON/UnmarshalJSON and the serialization/deserialization
+	// of this field are handled in the methods respectively.
+	SoftwareFeatures *SoftwareFeatures `json:"-"`
 	// Warnings contains descriptions of non-fatal errors encountered while determining features.
 	Warnings []string `json:"warnings,omitempty"`
+}
+
+// MarshalJSON marshals the given GetDUTInfoResult with handing protocol
+// backward compatibility.
+func (r *GetDUTInfoResult) MarshalJSON() ([]byte, error) {
+	var available, missing []string
+	if r.SoftwareFeatures != nil {
+		available = r.SoftwareFeatures.Available
+		missing = r.SoftwareFeatures.Unavailable
+	}
+
+	type Alias GetDUTInfoResult
+	return json.Marshal(struct {
+		Available []string `json:"available,omitempty"`
+		Missing   []string `json:"missing,omitempty"`
+		*Alias
+	}{
+		Available: available,
+		Missing:   missing,
+		Alias:     (*Alias)(r),
+	})
+}
+
+// UnmarshalJSON unmarshals the given b to this r object with handing protocol
+// backward compatibility.
+func (r *GetDUTInfoResult) UnmarshalJSON(b []byte) error {
+	type Alias GetDUTInfoResult
+	aux := struct {
+		Available []string `json:"available,omitempty"`
+		Missing   []string `json:"missing,omitempty"`
+		*Alias
+	}{
+		Alias: (*Alias)(r),
+	}
+	if err := json.Unmarshal(b, &aux); err != nil {
+		return err
+	}
+	if len(aux.Available) > 0 || len(aux.Missing) > 0 {
+		r.SoftwareFeatures = &SoftwareFeatures{
+			Available:   aux.Available,
+			Unavailable: aux.Missing,
+		}
+	}
+	return nil
 }
 
 // SysInfoState contains the state of the DUT's system information.
@@ -330,7 +384,7 @@ errors, including the failure of an individual test.
 
 		// When the runner is executed by the "tast run" command, the list of software features (used to skip
 		// unsupported tests) is passed in after having been gathered by an earlier call to local_test_runner
-		// with GetSoftwareFeaturesMode. When the runner is executed directly, gather the list here instead.
+		// with GetDUTInfoMode. When the runner is executed directly, gather the list here instead.
 		if err := setManualDepsArgs(args, cfg, extraUSEFlags); err != nil {
 			return err
 		}
@@ -339,7 +393,7 @@ errors, including the failure of an individual test.
 	if (args.Mode == RunTestsMode && args.RunTests == nil) ||
 		(args.Mode == ListTestsMode && args.ListTests == nil) ||
 		(args.Mode == CollectSysInfoMode && args.CollectSysInfo == nil) ||
-		(args.Mode == GetSoftwareFeaturesMode && args.GetSoftwareFeatures == nil) ||
+		(args.Mode == GetDUTInfoMode && args.GetDUTInfo == nil) ||
 		(args.Mode == DownloadPrivateBundlesMode && args.DownloadPrivateBundles == nil) {
 		return command.NewStatusErrorf(statusBadArgs, "args not set for mode %v", args.Mode)
 	}
@@ -373,12 +427,12 @@ func setManualDepsArgs(args *Args, cfg *Config, extraUSEFlags []string) error {
 		autotestCaps, _ = autocaps.Read(cfg.AutotestCapabilityDir, nil)
 	}
 
-	avail, unavail, err := determineSoftwareFeatures(cfg.SoftwareFeatureDefinitions, useFlags, autotestCaps)
+	features, err := determineSoftwareFeatures(cfg.SoftwareFeatureDefinitions, useFlags, autotestCaps)
 	if err != nil {
 		return command.NewStatusErrorf(statusError, "%v", err)
 	}
 	args.RunTests.BundleArgs.CheckSoftwareDeps = true
-	args.RunTests.BundleArgs.AvailableSoftwareFeatures = avail
-	args.RunTests.BundleArgs.UnavailableSoftwareFeatures = unavail
+	args.RunTests.BundleArgs.AvailableSoftwareFeatures = features.Available
+	args.RunTests.BundleArgs.UnavailableSoftwareFeatures = features.Unavailable
 	return nil
 }

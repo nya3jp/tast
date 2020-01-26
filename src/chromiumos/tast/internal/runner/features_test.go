@@ -15,7 +15,7 @@ import (
 	"chromiumos/tast/testutil"
 )
 
-func TestGetSoftwareFeatures(t *testing.T) {
+func TestGetDUTInfo(t *testing.T) {
 	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
 
@@ -36,22 +36,27 @@ func TestGetSoftwareFeatures(t *testing.T) {
 			"not_bar_glob": "!\"b*\"",
 		},
 	}
-	defaultArgs := Args{
-		GetSoftwareFeatures: &GetSoftwareFeaturesArgs{
-			ExtraUSEFlags: []string{"baz"},
+	status, stdout, _, sig := callRun(
+		t, nil,
+		&Args{
+			Mode: GetDUTInfoMode,
+			GetDUTInfo: &GetDUTInfoArgs{
+				ExtraUSEFlags: []string{"baz"},
+			},
 		},
-	}
-	status, stdout, _, sig := callRun(t, nil, &Args{Mode: GetSoftwareFeaturesMode}, &defaultArgs, &cfg)
+		nil, &cfg)
 	if status != statusSuccess {
 		t.Fatalf("%v = %v; want %v", sig, status, statusSuccess)
 	}
-	var res GetSoftwareFeaturesResult
+	var res GetDUTInfoResult
 	if err := json.NewDecoder(stdout).Decode(&res); err != nil {
 		t.Fatalf("%v gave bad output: %v", sig, err)
 	}
-	exp := GetSoftwareFeaturesResult{
-		Available:   []string{"foo_glob", "foobar", "other"},
-		Unavailable: []string{"not_bar_glob", "not_foo"},
+	exp := GetDUTInfoResult{
+		SoftwareFeatures: &SoftwareFeatures{
+			Available:   []string{"foo_glob", "foobar", "other"},
+			Unavailable: []string{"not_bar_glob", "not_foo"},
+		},
 	}
 	if !reflect.DeepEqual(res, exp) {
 		t.Errorf("%v wrote result %+v; want %+v", sig, res, exp)
@@ -66,18 +71,18 @@ func TestGetSoftwareFeaturesNoFile(t *testing.T) {
 		SoftwareFeatureDefinitions: map[string]string{"foo": "bar"},
 	}
 	args := &Args{
-		Mode:                GetSoftwareFeaturesMode,
-		GetSoftwareFeatures: &GetSoftwareFeaturesArgs{},
+		Mode:       GetDUTInfoMode,
+		GetDUTInfo: &GetDUTInfoArgs{},
 	}
 	status, stdout, _, sig := callRun(t, nil, args, nil, &cfg)
 	if status != statusSuccess {
 		t.Fatalf("%v = %v; want %v", sig, status, statusSuccess)
 	}
-	var res GetSoftwareFeaturesResult
+	var res GetDUTInfoResult
 	if err := json.NewDecoder(stdout).Decode(&res); err != nil {
 		t.Fatalf("%v gave bad output: %v", sig, err)
 	}
-	exp := GetSoftwareFeaturesResult{}
+	exp := GetDUTInfoResult{}
 	if !reflect.DeepEqual(res, exp) {
 		t.Errorf("%v wrote result %+v; want %+v", sig, res, exp)
 	}
@@ -87,16 +92,16 @@ func TestDetermineSoftwareFeatures(t *testing.T) {
 	defs := map[string]string{"a": "foo && bar", "b": "foo && baz"}
 	flags := []string{"foo", "bar"}
 	autotestCaps := map[string]autocaps.State{"c": autocaps.Yes, "d": autocaps.No, "e": autocaps.Disable}
-	avail, unavail, err := determineSoftwareFeatures(defs, flags, autotestCaps)
+	features, err := determineSoftwareFeatures(defs, flags, autotestCaps)
 	if err != nil {
 		t.Fatalf("determineSoftwareFeatures(%v, %v, %v) failed: %v", defs, flags, autotestCaps, err)
 	}
-	if exp := []string{"a", autotestCapPrefix + "c"}; !reflect.DeepEqual(avail, exp) {
+	if exp := []string{"a", autotestCapPrefix + "c"}; !reflect.DeepEqual(features.Available, exp) {
 		t.Errorf("determineSoftwareFeatures(%v, %v, %v) returned available features %v; want %v",
-			defs, flags, autotestCaps, avail, exp)
+			defs, flags, autotestCaps, features.Available, exp)
 	}
-	if exp := []string{autotestCapPrefix + "d", autotestCapPrefix + "e", "b"}; !reflect.DeepEqual(unavail, exp) {
+	if exp := []string{autotestCapPrefix + "d", autotestCapPrefix + "e", "b"}; !reflect.DeepEqual(features.Unavailable, exp) {
 		t.Errorf("determineSoftwareFeatures(%v, %v, %v) returned unavailable features %v; want %v",
-			defs, flags, autotestCaps, unavail, exp)
+			defs, flags, autotestCaps, features.Unavailable, exp)
 	}
 }

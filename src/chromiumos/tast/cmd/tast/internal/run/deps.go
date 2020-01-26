@@ -15,13 +15,14 @@ import (
 
 // getSoftwareFeatures executes local_test_runner on the DUT to get a list of
 // available software features. These features are used to check tests' dependencies.
-// If cfg.checkTestDeps is checkTestDepsAuto, it may be updated (e.g. if it's not
-// possible to check dependencies).
+// This updates cfg.availableSoftwareFeatures and cfg.unavailableSoftwareFeatures.
+// Thus, calling this twice won't work.
 func getSoftwareFeatures(ctx context.Context, cfg *Config) error {
-	// Don't collect features if we're not checking deps or if we already have feature lists.
-	if !cfg.checkTestDeps || len(cfg.availableSoftwareFeatures) > 0 ||
-		len(cfg.unavailableSoftwareFeatures) > 0 {
+	if !cfg.checkTestDeps {
 		return nil
+	}
+	if len(cfg.availableSoftwareFeatures) > 0 || len(cfg.unavailableSoftwareFeatures) > 0 {
+		return errors.New("getSoftwareFeatures is already called")
 	}
 
 	ctx, st := timing.Start(ctx, "get_software_features")
@@ -52,12 +53,7 @@ func getSoftwareFeatures(ctx context.Context, cfg *Config) error {
 	// a listing of relevant USE flags).
 	if len(res.Available) == 0 && len(res.Unavailable) == 0 {
 		cfg.Logger.Debug("No software features reported by DUT -- non-test image?")
-		if cfg.checkTestDeps {
-			return errors.New("can't check test deps; no software features reported by DUT")
-		}
-		cfg.Logger.Debug("Test software dependencies will not be checked")
-		cfg.checkTestDeps = false
-		return nil
+		return errors.New("can't check test deps; no software features reported by DUT")
 	}
 
 	for _, warn := range res.Warnings {

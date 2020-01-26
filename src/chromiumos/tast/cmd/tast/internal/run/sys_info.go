@@ -6,6 +6,7 @@ package run
 
 import (
 	"context"
+	"errors"
 	"path/filepath"
 
 	"chromiumos/tast/internal/runner"
@@ -14,9 +15,13 @@ import (
 
 // getInitialSysInfo saves the initial state of the DUT's system information to cfg if
 // requested and if it hasn't already been saved. This is called before testing.
+// This updates cfg.initialSysInfo, so calling twice won't work.
 func getInitialSysInfo(ctx context.Context, cfg *Config) error {
-	if !cfg.collectSysInfo || cfg.initialSysInfo != nil {
+	if !cfg.collectSysInfo {
 		return nil
+	}
+	if cfg.initialSysInfo != nil {
+		return errors.New("getInitialSysInfo is already called")
 	}
 
 	ctx, st := timing.Start(ctx, "initial_sys_info")

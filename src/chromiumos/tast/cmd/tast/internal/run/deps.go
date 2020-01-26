@@ -13,33 +13,32 @@ import (
 	"chromiumos/tast/timing"
 )
 
-// getSoftwareFeatures executes local_test_runner on the DUT to get a list of
-// available software features. These features are used to check tests' dependencies.
-// This updates cfg.availableSoftwareFeatures and cfg.unavailableSoftwareFeatures.
-// Thus, calling this twice won't work.
-func getSoftwareFeatures(ctx context.Context, cfg *Config) error {
+// getDUTInfo executes local_test_runner on the DUT to get a list of DUT info.
+// The info is used to check tests' dependencies.
+// This updates cfg.softwareFeatures, thus calling this twice won't work.
+func getDUTInfo(ctx context.Context, cfg *Config) error {
 	if !cfg.checkTestDeps {
 		return nil
 	}
-	if len(cfg.availableSoftwareFeatures) > 0 || len(cfg.unavailableSoftwareFeatures) > 0 {
-		return errors.New("getSoftwareFeatures is already called")
+	if cfg.softwareFeatures != nil {
+		return errors.New("getDUTInfo is already called")
 	}
 
-	ctx, st := timing.Start(ctx, "get_software_features")
+	ctx, st := timing.Start(ctx, "get_dut_info")
 	defer st.End()
-	cfg.Logger.Debug("Getting software features supported by DUT")
+	cfg.Logger.Debug("Getting DUT info")
 
 	hst, err := connectToTarget(ctx, cfg)
 	if err != nil {
 		return err
 	}
 
-	var res runner.GetSoftwareFeaturesResult
+	var res runner.GetDUTInfoResult
 	if err := runTestRunnerCommand(
 		localRunnerCommand(ctx, cfg, hst),
 		&runner.Args{
-			Mode: runner.GetSoftwareFeaturesMode,
-			GetSoftwareFeatures: &runner.GetSoftwareFeaturesArgs{
+			Mode: runner.GetDUTInfoMode,
+			GetDUTInfo: &runner.GetDUTInfoArgs{
 				ExtraUSEFlags: cfg.extraUSEFlags,
 			},
 		},
@@ -48,10 +47,9 @@ func getSoftwareFeatures(ctx context.Context, cfg *Config) error {
 		return err
 	}
 
-	// If both the available and unavailable lists were empty, then the DUT doesn't
-	// know about its features (e.g. because it's a non-test image and doesn't have
-	// a listing of relevant USE flags).
-	if len(res.Available) == 0 && len(res.Unavailable) == 0 {
+	// If the software feature is empty, then the DUT doesn't know about its features
+	// (e.g. because it's a non-test image and doesn't have a listing of relevant USE flags).
+	if res.SoftwareFeatures == nil {
 		cfg.Logger.Debug("No software features reported by DUT -- non-test image?")
 		return errors.New("can't check test deps; no software features reported by DUT")
 	}
@@ -59,14 +57,15 @@ func getSoftwareFeatures(ctx context.Context, cfg *Config) error {
 	for _, warn := range res.Warnings {
 		cfg.Logger.Log(warn)
 	}
-	cfg.Logger.Debug("Software features supported by DUT: ", strings.Join(res.Available, " "))
-	cfg.availableSoftwareFeatures = res.Available
-	cfg.unavailableSoftwareFeatures = res.Unavailable
+	cfg.Logger.Debug("Software features supported by DUT: ", strings.Join(res.SoftwareFeatures.Available, " "))
+	cfg.softwareFeatures = res.SoftwareFeatures
 	return nil
 }
 
 func setRunnerTestDepsArgs(cfg *Config, args *runner.Args) {
 	args.RunTests.BundleArgs.CheckSoftwareDeps = cfg.checkTestDeps
-	args.RunTests.BundleArgs.AvailableSoftwareFeatures = cfg.availableSoftwareFeatures
-	args.RunTests.BundleArgs.UnavailableSoftwareFeatures = cfg.unavailableSoftwareFeatures
+	if cfg.softwareFeatures != nil {
+		args.RunTests.BundleArgs.AvailableSoftwareFeatures = cfg.softwareFeatures.Available
+		args.RunTests.BundleArgs.UnavailableSoftwareFeatures = cfg.softwareFeatures.Unavailable
+	}
 }

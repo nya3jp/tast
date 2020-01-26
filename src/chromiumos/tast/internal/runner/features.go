@@ -20,18 +20,17 @@ import (
 
 const autotestCapPrefix = "autotest-capability:" // prefix for autotest-capability feature names
 
-// handleGetSoftwareFeatures handles a GetSoftwareFeaturesMode request from args
-// and JSON-marshals a GetSoftwareFeaturesResult struct to w.
-func handleGetSoftwareFeatures(args *Args, cfg *Config, w io.Writer) error {
-	available, unavailable, warnings, err := getSoftwareFeatures(
-		cfg.SoftwareFeatureDefinitions, cfg.USEFlagsFile, args.GetSoftwareFeatures.ExtraUSEFlags, cfg.AutotestCapabilityDir)
+// handleGetDUTInfo handles a GetDUTInfoMode request from args
+// and JSON-marshals a GetDUTInfoResult struct to w.
+func handleGetDUTInfo(args *Args, cfg *Config, w io.Writer) error {
+	features, warnings, err := getSoftwareFeatures(
+		cfg.SoftwareFeatureDefinitions, cfg.USEFlagsFile, args.GetDUTInfo.ExtraUSEFlags, cfg.AutotestCapabilityDir)
 	if err != nil {
 		return err
 	}
-	res := GetSoftwareFeaturesResult{
-		Available:   available,
-		Unavailable: unavailable,
-		Warnings:    warnings,
+	res := GetDUTInfoResult{
+		SoftwareFeatures: features,
+		Warnings:         warnings,
 	}
 	if err := json.NewEncoder(w).Encode(&res); err != nil {
 		return command.NewStatusErrorf(statusError, "failed to serialize into JSON: %v", err)
@@ -39,23 +38,23 @@ func handleGetSoftwareFeatures(args *Args, cfg *Config, w io.Writer) error {
 	return nil
 }
 
-// getSoftwareFeatures implements the main function of GetSoftwareFeaturesMode (i.e., except input/output
+// getSoftwareFeatures implements the main function of GetDUTInfoMode (i.e., except input/output
 // conversion for RPC).
 func getSoftwareFeatures(definitions map[string]string, useFlagsFile string, extraUSEFlags []string, autotestCapsDir string) (
-	available, unavailable, warnings []string, err error) {
+	features *SoftwareFeatures, warnings []string, err error) {
 	if useFlagsFile == "" {
-		return nil, nil, nil, command.NewStatusErrorf(statusBadArgs, "feature enumeration unsupported")
+		return nil, nil, command.NewStatusErrorf(statusBadArgs, "feature enumeration unsupported")
 	}
 
 	// If the file listing USE flags doesn't exist, we're probably running on a non-test
 	// image. Return an empty response to signal that to the caller.
 	if _, err := os.Stat(useFlagsFile); os.IsNotExist(err) {
-		return nil, nil, nil, nil
+		return nil, nil, nil
 	}
 
 	flags, err := readUSEFlagsFile(useFlagsFile)
 	if err != nil {
-		return nil, nil, nil, command.NewStatusErrorf(statusError, "failed to read %v: %v", useFlagsFile, err)
+		return nil, nil, command.NewStatusErrorf(statusError, "failed to read %v: %v", useFlagsFile, err)
 	}
 	flags = append(flags, extraUSEFlags...)
 
@@ -68,11 +67,11 @@ func getSoftwareFeatures(definitions map[string]string, useFlagsFile string, ext
 		}
 	}
 
-	available, unavailable, err = determineSoftwareFeatures(definitions, flags, autotestCaps)
+	features, err = determineSoftwareFeatures(definitions, flags, autotestCaps)
 	if err != nil {
-		return nil, nil, nil, command.NewStatusErrorf(statusError, "%v", err)
+		return nil, nil, command.NewStatusErrorf(statusError, "%v", err)
 	}
-	return available, unavailable, warnings, nil
+	return features, warnings, nil
 }
 
 // readUSEFlagsFile reads a list of USE flags from fn (see Config.USEFlagsFile).
@@ -102,17 +101,17 @@ func readUSEFlagsFile(fn string) ([]string, error) {
 // definitions maps feature names to definitions (see Config.SoftwareFeatureDefinitions).
 // useFlags contains a list of relevant USE flags that were set when building the system image (see Config.USEFlagsFile).
 // autotestCaps contains a mapping from autotest-capability names to the corresponding states.
-func determineSoftwareFeatures(definitions map[string]string, useFlags []string,
-	autotestCaps map[string]autocaps.State) (
-	available, unavailable []string, err error) {
+func determineSoftwareFeatures(definitions map[string]string, useFlags []string, autotestCaps map[string]autocaps.State) (
+	*SoftwareFeatures, error) {
+	var available, unavailable []string
 	for ft, es := range definitions {
 		if strings.HasPrefix(ft, autotestCapPrefix) {
-			return nil, nil, fmt.Errorf("feature %q has reserved prefix %q", ft, autotestCapPrefix)
+			return nil, fmt.Errorf("feature %q has reserved prefix %q", ft, autotestCapPrefix)
 		}
 
 		ex, err := expr.New(es)
 		if err != nil {
-			return nil, nil, fmt.Errorf("failed to parse %q feature expression %q: %v", ft, es, err)
+			return nil, fmt.Errorf("failed to parse %q feature expression %q: %v", ft, es, err)
 		}
 		if ex.Matches(useFlags) {
 			available = append(available, ft)
@@ -131,5 +130,5 @@ func determineSoftwareFeatures(definitions map[string]string, useFlags []string,
 
 	sort.Strings(available)
 	sort.Strings(unavailable)
-	return available, unavailable, nil
+	return &SoftwareFeatures{Available: available, Unavailable: unavailable}, nil
 }

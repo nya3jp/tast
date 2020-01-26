@@ -62,8 +62,8 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Args,
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
-	case GetSoftwareFeaturesMode:
-		if err := handleGetSoftwareFeatures(args, cfg, stdout); err != nil {
+	case GetDUTInfoMode:
+		if err := handleGetDUTInfo(args, cfg, stdout); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess

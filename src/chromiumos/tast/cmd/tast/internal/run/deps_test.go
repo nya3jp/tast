@@ -68,17 +68,10 @@ func TestGetSoftwareFeatures(t *testing.T) {
 	}
 	checkRunnerTestDepsArgs(t, &td.cfg, true, avail, unavail)
 
-	// Change the features reported by local_test_runner and call getSoftwareFeature again.
-	// Since we already have the features, we shouldn't run local_test_runner again and should
-	// continue using the original features.
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		writeGetSoftwareFeaturesResult(stdout, []string{"new1"}, []string{"new2"})
-		return 0
+	// The second call should fail, because it tries to update cfg's fields twice.
+	if err := getSoftwareFeatures(context.Background(), &td.cfg); err == nil {
+		t.Fatal("Calling getSoftwareFeatures twice unexpectedly succeeded")
 	}
-	if err := getSoftwareFeatures(context.Background(), &td.cfg); err != nil {
-		t.Fatalf("getSoftwareFeatures(%+v) failed on second call: %v", td.cfg, err)
-	}
-	checkRunnerTestDepsArgs(t, &td.cfg, true, avail, unavail)
 }
 
 func TestGetSoftwareFeaturesNoCheckTestDeps(t *testing.T) {
@@ -91,23 +84,4 @@ func TestGetSoftwareFeaturesNoCheckTestDeps(t *testing.T) {
 		t.Fatalf("getSoftwareFeatures(%+v) failed: %v", td.cfg, err)
 	}
 	checkRunnerTestDepsArgs(t, &td.cfg, false, nil, nil)
-}
-
-func TestGetSoftwareFeaturesNoFeatures(t *testing.T) {
-	td := newLocalTestData(t)
-	defer td.close()
-
-	// "always" should fail if the runner doesn't know about any features.
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		checkArgs(t, args, &runner.Args{
-			Mode:                runner.GetSoftwareFeaturesMode,
-			GetSoftwareFeatures: &runner.GetSoftwareFeaturesArgs{},
-		})
-		writeGetSoftwareFeaturesResult(stdout, []string{}, []string{})
-		return 0
-	}
-	td.cfg.checkTestDeps = true
-	if err := getSoftwareFeatures(context.Background(), &td.cfg); err == nil {
-		t.Fatalf("getSoftwareFeatures(%+v) succeeded unexpectedly", td.cfg)
-	}
 }

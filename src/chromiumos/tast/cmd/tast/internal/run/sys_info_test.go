@@ -46,13 +46,9 @@ func TestGetInitialSysInfo(t *testing.T) {
 		t.Errorf("initialSysInfo is %+v; want %+v", *td.cfg.initialSysInfo, res.State)
 	}
 
-	// After a second call, the initial state should be left unchanged
-	// (and a request shouldn't even be sent to the DUT).
-	if err := getInitialSysInfo(context.Background(), &td.cfg); err != nil {
-		t.Fatalf("no-op getInitialSysInfo(..., %+v) failed: %v", td.cfg, err)
-	}
-	if !reflect.DeepEqual(*td.cfg.initialSysInfo, res.State) {
-		t.Errorf("updated initialSysInfo is %+v; want %+v", *td.cfg.initialSysInfo, res.State)
+	// The second call should fail, because it tried to update cfg's field twice.
+	if err := getInitialSysInfo(context.Background(), &td.cfg); err == nil {
+		t.Fatal("Calling getInitialSysInfo twice unexpectedly succeeded")
 	}
 }
 

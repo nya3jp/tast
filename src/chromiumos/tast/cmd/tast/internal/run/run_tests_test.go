@@ -28,7 +28,7 @@ func TestRunTestsFailureBeforeRun(t *gotesting.T) {
 	}
 }
 
-func TestRunTestsGetSoftwareFeatures(t *gotesting.T) {
+func TestRunTestsGetDUTInfo(t *gotesting.T) {
 	td := newLocalTestData(t)
 	defer td.close()
 
@@ -36,12 +36,14 @@ func TestRunTestsGetSoftwareFeatures(t *gotesting.T) {
 
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
-		case runner.GetSoftwareFeaturesMode:
-			// Just check that getSoftwareFeatures is called; details of args are
+		case runner.GetDUTInfoMode:
+			// Just check that getDUTInfo is called; details of args are
 			// tested in deps_test.go.
 			called = true
-			json.NewEncoder(stdout).Encode(&runner.GetSoftwareFeaturesResult{
-				Available: []string{"foo"}, // must report non-empty features
+			json.NewEncoder(stdout).Encode(&runner.GetDUTInfoResult{
+				SoftwareFeatures: &runner.SoftwareFeatures{
+					Available: []string{"foo"}, // must report non-empty features
+				},
 			})
 		default:
 			t.Errorf("Unexpected args.Mode = %v", args.Mode)

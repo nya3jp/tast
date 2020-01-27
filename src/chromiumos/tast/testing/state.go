@@ -258,6 +258,27 @@ func (s *State) Run(ctx context.Context, name string, run func(context.Context, 
 	return ns.hasError
 }
 
+// RunWithPrecondition starts a new subtest after running the test precontition. See Run.
+func (s *State) RunWithPrecondition(ctx context.Context, name string, run func(context.Context, *State)) bool {
+	if s.root.test.Pre == nil {
+		s.Fatal("Test does not have a precondition")
+	}
+
+	pre := s.root.test.Pre
+
+	preCtx, cancel := context.WithTimeout(ctx, pre.Timeout())
+	defer cancel()
+
+	if s.Run(preCtx, "prepare_"+name, func(ctx context.Context, s *State) {
+		s.Logf("Preparing precondition %q", pre)
+		s.root.preValue = pre.(preconditionImpl).Prepare(ctx, s)
+	}) {
+		return false
+	}
+
+	return s.Run(ctx, name, run)
+}
+
 // PreValue returns a value supplied by the test's precondition, which must have been declared via Test.Pre
 // when the test was registered. Callers should cast the returned empty interface to the correct pointer
 // type; see the relevant precondition's documentation for specifics.

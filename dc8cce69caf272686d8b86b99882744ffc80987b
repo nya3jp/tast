@@ -1,0 +1,113 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "43baac92_8b6ba819",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-01-27T07:42:39Z",
+      "side": 1,
+      "message": "Would you mind writing unit tests for these additions?",
+      "revId": "dc8cce69caf272686d8b86b99882744ffc80987b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bb4748a5_64b61140",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-01-27T07:42:39Z",
+      "side": 1,
+      "message": "huge nit: \"precon\" is a not popular short name of \"preconditions\" in existing Tast code. Mind renaming this to \"inPre\"?",
+      "range": {
+        "startLine": 113,
+        "startChar": 1,
+        "endLine": 113,
+        "endChar": 9
+      },
+      "revId": "dc8cce69caf272686d8b86b99882744ffc80987b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c0bea8ae_b81eaaa7",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 459,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-01-27T07:42:39Z",
+      "side": 1,
+      "message": "nit: Would you mind introducing a constant for this prefix?",
+      "range": {
+        "startLine": 459,
+        "startChar": 12,
+        "endLine": 459,
+        "endChar": 36
+      },
+      "revId": "dc8cce69caf272686d8b86b99882744ffc80987b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "670e8d06_1b482ecb",
+        "filename": "src/chromiumos/tast/testing/test_instance.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 294,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-01-27T07:42:39Z",
+      "side": 1,
+      "message": "This statement is not executed if s.Fatal is called in Prepare. Could you do it in a deferred statement?",
+      "range": {
+        "startLine": 294,
+        "startChar": 3,
+        "endLine": 294,
+        "endChar": 21
+      },
+      "revId": "dc8cce69caf272686d8b86b99882744ffc80987b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dfe6f373_01ccf7a3",
+        "filename": "src/chromiumos/tast/testing/test_instance.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 312,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-01-27T07:42:39Z",
+      "side": 1,
+      "message": "ditto",
+      "range": {
+        "startLine": 312,
+        "startChar": 3,
+        "endLine": 312,
+        "endChar": 21
+      },
+      "revId": "dc8cce69caf272686d8b86b99882744ffc80987b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

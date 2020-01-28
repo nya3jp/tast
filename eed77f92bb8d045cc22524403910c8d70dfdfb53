@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "823e5fd5_d050e698",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-01-28T07:27:21Z",
+      "side": 1,
+      "message": "Does it make sense to move this to runRemoteTests to align with runLocalTests?",
+      "range": {
+        "startLine": 46,
+        "startChar": 1,
+        "endLine": 46,
+        "endChar": 108
+      },
+      "revId": "eed77f92bb8d045cc22524403910c8d70dfdfb53",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "48def67d_4a376280",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-01-28T07:27:21Z",
+      "side": 1,
+      "message": "huge nit: In this case I think it makes sense to keep runRemoteTests in a nested branch, i.e.\n\n if cfg.runRemote {\n   ...\n }\n\nfor the sake of symmetricity with local tests.",
+      "range": {
+        "startLine": 40,
+        "startChar": 1,
+        "endLine": 47,
+        "endChar": 35
+      },
+      "revId": "eed77f92bb8d045cc22524403910c8d70dfdfb53",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

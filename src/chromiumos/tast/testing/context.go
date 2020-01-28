@@ -64,6 +64,30 @@ func ContextLogf(ctx context.Context, format string, args ...interface{}) {
 	tc.Logger(fmt.Sprintf(format, args...))
 }
 
+// Logger allows test helpers to log messages when no context.Context or testing.State is available.
+type Logger struct {
+	sink func(msg string)
+}
+
+// Print formats its arguments using default formatting and logs them.
+func (l *Logger) Print(args ...interface{}) {
+	l.sink(fmt.Sprint(args...))
+}
+
+// Printf is similar to Print but formats its arguments using fmt.Sprintf.
+func (l *Logger) Printf(format string, args ...interface{}) {
+	l.sink(fmt.Sprintf(format, args...))
+}
+
+// ContextLogger returns Logger from a context.
+func ContextLogger(ctx context.Context) (*Logger, bool) {
+	tc, ok := ctx.Value(testContextKey).(*TestContext)
+	if !ok {
+		return nil, false
+	}
+	return &Logger{tc.Logger}, true
+}
+
 // ContextOutDir is similar to OutDir but takes context instead. It is intended to be
 // used by packages providing support for tests that need to write files.
 func ContextOutDir(ctx context.Context) (dir string, ok bool) {

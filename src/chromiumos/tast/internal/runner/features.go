@@ -6,14 +6,19 @@ package runner
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
 	"os"
+	"os/exec"
 	"sort"
 	"strings"
 
+	"go.chromium.org/chromiumos/infra/proto/go/device"
+
 	"chromiumos/tast/autocaps"
+	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/expr"
 )
@@ -28,8 +33,17 @@ func handleGetDUTInfo(args *Args, cfg *Config, w io.Writer) error {
 	if err != nil {
 		return err
 	}
+
+	var dc *device.Config
+	if args.GetDUTInfo.RequestDeviceConfig {
+		var ws []string
+		dc, ws = newDeviceConfig()
+		warnings = append(warnings, ws...)
+	}
+
 	res := GetDUTInfoResult{
 		SoftwareFeatures: features,
+		DeviceConfig:     dc,
 		Warnings:         warnings,
 	}
 	if err := json.NewEncoder(w).Encode(&res); err != nil {
@@ -131,4 +145,57 @@ func determineSoftwareFeatures(definitions map[string]string, useFlags []string,
 	sort.Strings(available)
 	sort.Strings(unavailable)
 	return &SoftwareFeatures{Available: available, Unavailable: unavailable}, nil
+}
+
+// newDeviceConfig returns a device.Config instance some of whose members are filled
+// based on runtime information.
+func newDeviceConfig() (dc *device.Config, warns []string) {
+	crosConfig := func(path, prop string) (string, error) {
+		cmd := exec.Command("cros_config", path, prop)
+		var buf bytes.Buffer
+		cmd.Stderr = &buf
+		b, err := cmd.Output()
+		if err != nil {
+			return "", errors.Errorf("cros_config failed (stderr: %q): %v", buf.Bytes(), err)
+		}
+		return string(b), nil
+	}
+
+	platform, err := func() (*device.PlatformId, error) {
+		out, err := crosConfig("/identity", "platform-name")
+		if err != nil {
+			return nil, err
+		}
+		return &device.PlatformId{Value: out}, nil
+	}()
+	if err != nil {
+		warns = append(warns, fmt.Sprintf("unknown platform-id: %v", err))
+	}
+	model, err := func() (*device.ModelId, error) {
+		out, err := crosConfig("/", "name")
+		if err != nil {
+			return nil, err
+		}
+		return &device.ModelId{Value: out}, nil
+	}()
+	if err != nil {
+		warns = append(warns, fmt.Sprintf("unknown model-id: %v", err))
+	}
+	brand, err := func() (*device.BrandId, error) {
+		out, err := crosConfig("/", "brand-code")
+		if err != nil {
+			return nil, err
+		}
+		return &device.BrandId{Value: out}, nil
+	}()
+	if err != nil {
+		warns = append(warns, fmt.Sprintf("unknown brand-id: %v", err))
+	}
+	return &device.Config{
+		Id: &device.ConfigId{
+			PlatformId: platform,
+			ModelId:    model,
+			BrandId:    brand,
+		},
+	}, warns
 }

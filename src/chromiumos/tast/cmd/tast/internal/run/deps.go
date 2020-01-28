@@ -7,11 +7,19 @@ package run
 import (
 	"context"
 	"errors"
+	"io/ioutil"
+	"path/filepath"
 	"strings"
+
+	"github.com/golang/protobuf/proto"
 
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/timing"
 )
+
+// deviceConfigFile is a file name containing the dump of obtained device.Config of the DUT,
+// which is directly under ResDir.
+const deviceConfigFile = "device-config.txt"
 
 // getDUTInfo executes local_test_runner on the DUT to get a list of DUT info.
 // The info is used to check tests' dependencies.
@@ -39,7 +47,8 @@ func getDUTInfo(ctx context.Context, cfg *Config) error {
 		&runner.Args{
 			Mode: runner.GetDUTInfoMode,
 			GetDUTInfo: &runner.GetDUTInfoArgs{
-				ExtraUSEFlags: cfg.extraUSEFlags,
+				ExtraUSEFlags:       cfg.extraUSEFlags,
+				RequestDeviceConfig: true,
 			},
 		},
 		&res,
@@ -58,6 +67,12 @@ func getDUTInfo(ctx context.Context, cfg *Config) error {
 		cfg.Logger.Log(warn)
 	}
 	cfg.Logger.Debug("Software features supported by DUT: ", strings.Join(res.SoftwareFeatures.Available, " "))
+	if res.DeviceConfig != nil {
+		cfg.Logger.Debug("Got DUT device.Config data; dumping to ", deviceConfigFile)
+		if err := ioutil.WriteFile(filepath.Join(cfg.ResDir, deviceConfigFile), []byte(proto.MarshalTextString(res.DeviceConfig)), 0644); err != nil {
+			cfg.Logger.Debugf("Failed to dump %s: %v", deviceConfigFile, err)
+		}
+	}
 	cfg.softwareFeatures = res.SoftwareFeatures
 	return nil
 }

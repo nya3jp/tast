@@ -10,10 +10,14 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/exec"
 	"sort"
 	"strings"
 
+	"go.chromium.org/chromiumos/infra/proto/go/device"
+
 	"chromiumos/tast/autocaps"
+	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/expr"
 )
@@ -28,8 +32,17 @@ func handleGetDUTInfo(args *Args, cfg *Config, w io.Writer) error {
 	if err != nil {
 		return err
 	}
+
+	var dc *device.Config
+	if args.GetDUTInfo.RequestDeviceConfig {
+		var ws []string
+		dc, ws = newDeviceConfig()
+		warnings = append(warnings, ws...)
+	}
+
 	res := GetDUTInfoResult{
 		SoftwareFeatures: features,
+		DeviceConfig:     dc,
 		Warnings:         warnings,
 	}
 	if err := json.NewEncoder(w).Encode(&res); err != nil {
@@ -131,4 +144,46 @@ func determineSoftwareFeatures(definitions map[string]string, useFlags []string,
 	sort.Strings(available)
 	sort.Strings(unavailable)
 	return &SoftwareFeatures{Available: available, Unavailable: unavailable}, nil
+}
+
+// newDeviceConfig returns a device.Config instance some of whose members are filled
+// based on runtime information.
+func newDeviceConfig() (dc *device.Config, warns []string) {
+	platform, err := func() (*device.PlatformId, error) {
+		b, err := exec.Command("cros_config", "/identity", "platform-name").CombinedOutput()
+		if err != nil {
+			return nil, errors.Errorf("%v: %s", err, b)
+		}
+		return &device.PlatformId{Value: string(b)}, nil
+	}()
+	if err != nil {
+		warns = append(warns, fmt.Sprintf("unknown platform-id: %v", err))
+	}
+	model, err := func() (*device.ModelId, error) {
+		b, err := exec.Command("cros_config", "/", "name").CombinedOutput()
+		if err != nil {
+			return nil, errors.Errorf("%v: %s", err, b)
+		}
+		return &device.ModelId{Value: string(b)}, nil
+	}()
+	if err != nil {
+		warns = append(warns, fmt.Sprintf("unknown model-id: %v", err))
+	}
+	brand, err := func() (*device.BrandId, error) {
+		b, err := exec.Command("cros_config", "/", "brand-code").CombinedOutput()
+		if err != nil {
+			return nil, errors.Errorf("%v: %s", err, b)
+		}
+		return &device.BrandId{Value: string(b)}, nil
+	}()
+	if err != nil {
+		warns = append(warns, fmt.Sprintf("unknown brand-id: %v", err))
+	}
+	return &device.Config{
+		Id: &device.ConfigId{
+			PlatformId: platform,
+			ModelId:    model,
+			BrandId:    brand,
+		},
+	}, warns
 }

@@ -8,20 +8,27 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 	"reflect"
 	"testing"
+
+	"github.com/golang/protobuf/proto"
+	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/internal/runner"
 )
 
 // writeGetDUTInfoResult writes runner.GetDUTInfoResult to w.
-func writeGetDUTInfoResult(w io.Writer, avail, unavail []string) error {
+func writeGetDUTInfoResult(w io.Writer, avail, unavail []string, dc *device.Config) error {
 	res := runner.GetDUTInfoResult{
 		SoftwareFeatures: &runner.SoftwareFeatures{
 			Available:   avail,
 			Unavailable: unavail,
 		},
+		DeviceConfig: dc,
 	}
 	return json.NewEncoder(w).Encode(&res)
 }
@@ -56,15 +63,23 @@ func TestGetDUTInfo(t *testing.T) {
 	// and dependencies should be checked.
 	avail := []string{"dep1", "dep2"}
 	unavail := []string{"dep3"}
+	dc := &device.Config{
+		Id: &device.ConfigId{
+			PlatformId: &device.PlatformId{Value: "platform-id"},
+			ModelId:    &device.ModelId{Value: "model-id"},
+			BrandId:    &device.BrandId{Value: "brand-id"},
+		},
+	}
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		checkArgs(t, args, &runner.Args{
 			Mode: runner.GetDUTInfoMode,
 			GetDUTInfo: &runner.GetDUTInfoArgs{
-				ExtraUSEFlags: td.cfg.extraUSEFlags,
+				ExtraUSEFlags:       td.cfg.extraUSEFlags,
+				RequestDeviceConfig: true,
 			},
 		})
 
-		writeGetDUTInfoResult(stdout, avail, unavail)
+		writeGetDUTInfoResult(stdout, avail, unavail, dc)
 		return 0
 	}
 	td.cfg.checkTestDeps = true
@@ -74,9 +89,53 @@ func TestGetDUTInfo(t *testing.T) {
 	}
 	checkRunnerTestDepsArgs(t, &td.cfg, true, avail, unavail)
 
+	// Make sure device-config.txt is created.
+	if b, err := ioutil.ReadFile(filepath.Join(td.cfg.ResDir, "device-config.txt")); err != nil {
+		t.Error("Failed to read device-config.txt: ", err)
+	} else {
+		var readDc device.Config
+		if err := proto.UnmarshalText(string(b), &readDc); err != nil {
+			t.Error("Failed to unmarshal device config: ", err)
+		} else if !proto.Equal(dc, &readDc) {
+			t.Errorf("Unexpected device config: got %+v, want %+v", &readDc, dc)
+		}
+	}
+
 	// The second call should fail, because it tries to update cfg's fields twice.
 	if err := getDUTInfo(context.Background(), &td.cfg); err == nil {
 		t.Fatal("Calling getDUTInfo twice unexpectedly succeeded")
+	}
+}
+
+func TestGetDUTInfoNoDeviceConfig(t *testing.T) {
+	// If local_test_runner is older, it may not return device.Config even if it is requested.
+	// For backward compatibility, it is not handled as an error case, but the device-config.txt
+	// won't be created.
+	td := newLocalTestData(t)
+	defer td.close()
+
+	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		checkArgs(t, args, &runner.Args{
+			Mode: runner.GetDUTInfoMode,
+			GetDUTInfo: &runner.GetDUTInfoArgs{
+				ExtraUSEFlags:       td.cfg.extraUSEFlags,
+				RequestDeviceConfig: true,
+			},
+		})
+
+		// Note: if both avail/unavail are empty, it is handled as an error.
+		// Add dummy here to avoid it.
+		writeGetDUTInfoResult(stdout, []string{"dep1"}, nil, nil)
+		return 0
+	}
+	td.cfg.checkTestDeps = true
+	if err := getDUTInfo(context.Background(), &td.cfg); err != nil {
+		t.Fatalf("getDUTInfo(%+v) failed: %v", td.cfg, err)
+	}
+
+	// Make sure device-config.txt is created.
+	if _, err := os.Stat(filepath.Join(td.cfg.ResDir, deviceConfigFile)); err == nil || !os.IsNotExist(err) {
+		t.Error("Unexpected device config file: ", err)
 	}
 }
 
@@ -98,10 +157,12 @@ func TestGetSoftwareFeaturesNoFeatures(t *testing.T) {
 	// "always" should fail if the runner doesn't know about any features.
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		checkArgs(t, args, &runner.Args{
-			Mode:       runner.GetDUTInfoMode,
-			GetDUTInfo: &runner.GetDUTInfoArgs{},
+			Mode: runner.GetDUTInfoMode,
+			GetDUTInfo: &runner.GetDUTInfoArgs{
+				RequestDeviceConfig: true,
+			},
 		})
-		writeGetDUTInfoResult(stdout, []string{}, []string{})
+		writeGetDUTInfoResult(stdout, []string{}, []string{}, nil)
 		return 0
 	}
 	td.cfg.checkTestDeps = true

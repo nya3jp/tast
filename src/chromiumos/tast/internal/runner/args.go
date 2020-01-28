@@ -13,6 +13,9 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/golang/protobuf/proto"
+	"go.chromium.org/chromiumos/infra/proto/go/device"
+
 	"chromiumos/tast/autocaps"
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/internal/command"
@@ -171,6 +174,10 @@ type GetDUTInfoArgs struct {
 	// ExtraUSEFlags lists USE flags that should be treated as being set an addition to
 	// the ones read from Config.USEFlagsFile when computing the feature sets for GetDUTInfoResult.
 	ExtraUSEFlags []string `json:"extraUseFlags,omitempty"`
+
+	// RequestDeviceConfig specifies if GetDUTInfoMode should return a device.Config instance
+	// generated from runtime DUT configuration.
+	RequestDeviceConfig bool `json:"requestDeviceConfig,omitempty"`
 }
 
 // SoftwareFeatures contains information about software features of the DUT.
@@ -189,6 +196,12 @@ type GetDUTInfoResult struct {
 	// This struct has MarshalJSON/UnmarshalJSON and the serialization/deserialization
 	// of this field are handled in the methods respectively.
 	SoftwareFeatures *SoftwareFeatures `json:"-"`
+
+	// DeviceConfig contains the DUT's device characteristic.
+	// Similar to SoftwareFeatures field, the serialization/deserialization
+	// of this field are handled in MarshalJSON/UnmarshalJSON respectively.
+	DeviceConfig *device.Config `json:"-"`
+
 	// Warnings contains descriptions of non-fatal errors encountered while determining features.
 	Warnings []string `json:"warnings,omitempty"`
 }
@@ -202,15 +215,26 @@ func (r *GetDUTInfoResult) MarshalJSON() ([]byte, error) {
 		missing = r.SoftwareFeatures.Unavailable
 	}
 
+	var dc []byte
+	if r.DeviceConfig != nil {
+		var err error
+		dc, err = proto.Marshal(r.DeviceConfig)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	type Alias GetDUTInfoResult
 	return json.Marshal(struct {
-		Available []string `json:"available,omitempty"`
-		Missing   []string `json:"missing,omitempty"`
+		Available    []string `json:"available,omitempty"`
+		Missing      []string `json:"missing,omitempty"`
+		DeviceConfig []byte   `json:"deviceConfig,omitempty"`
 		*Alias
 	}{
-		Available: available,
-		Missing:   missing,
-		Alias:     (*Alias)(r),
+		Available:    available,
+		Missing:      missing,
+		DeviceConfig: dc,
+		Alias:        (*Alias)(r),
 	})
 }
 
@@ -219,8 +243,9 @@ func (r *GetDUTInfoResult) MarshalJSON() ([]byte, error) {
 func (r *GetDUTInfoResult) UnmarshalJSON(b []byte) error {
 	type Alias GetDUTInfoResult
 	aux := struct {
-		Available []string `json:"available,omitempty"`
-		Missing   []string `json:"missing,omitempty"`
+		Available    []string `json:"available,omitempty"`
+		Missing      []string `json:"missing,omitempty"`
+		DeviceConfig []byte   `json:"deviceConfig,omitempty"`
 		*Alias
 	}{
 		Alias: (*Alias)(r),
@@ -233,6 +258,13 @@ func (r *GetDUTInfoResult) UnmarshalJSON(b []byte) error {
 			Available:   aux.Available,
 			Unavailable: aux.Missing,
 		}
+	}
+	if len(aux.DeviceConfig) > 0 {
+		var dc device.Config
+		if err := proto.Unmarshal(aux.DeviceConfig, &dc); err != nil {
+			return err
+		}
+		r.DeviceConfig = &dc
 	}
 	return nil
 }

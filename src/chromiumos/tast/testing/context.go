@@ -64,6 +64,15 @@ func ContextLogf(ctx context.Context, format string, args ...interface{}) {
 	tc.Logger(fmt.Sprintf(format, args...))
 }
 
+// ContextLogger returns a function that can be used to log messages.
+func ContextLogger(ctx context.Context) (func(msg string), bool) {
+	tc, ok := ctx.Value(testContextKey).(*TestContext)
+	if !ok {
+		return nil, false
+	}
+	return tc.Logger, true
+}
+
 // ContextOutDir is similar to OutDir but takes context instead. It is intended to be
 // used by packages providing support for tests that need to write files.
 func ContextOutDir(ctx context.Context) (dir string, ok bool) {

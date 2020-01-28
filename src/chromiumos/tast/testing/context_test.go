@@ -33,6 +33,35 @@ func TestContextLog(t *testing.T) {
 	}
 }
 
+func TestContextLogger(t *testing.T) {
+	const testLog = "foo"
+
+	ctx := context.Background()
+
+	if _, ok := ContextLogger(ctx); ok {
+		t.Errorf("Expected logger to not be available from background context")
+	}
+
+	var logs []string
+	tc := &TestContext{
+		Logger: func(msg string) {
+			logs = append(logs, testLog)
+		},
+	}
+	ctx = WithTestContext(ctx, tc)
+
+	logger, ok := ContextLogger(ctx)
+	if !ok {
+		t.Errorf("Expected logger to be available")
+	}
+
+	logger.Print(testLog)
+
+	if exp := []string{testLog}; !reflect.DeepEqual(logs, exp) {
+		t.Errorf("Print did not work as expected: got %v, want %v", logs, exp)
+	}
+}
+
 func TestContextOutDir(t *testing.T) {
 	const testOutDir = "/mock/outdir"
 

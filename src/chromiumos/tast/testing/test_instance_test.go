@@ -15,6 +15,7 @@ import (
 	gotesting "testing"
 	"time"
 
+	"chromiumos/tast/testing/hwdep"
 	"chromiumos/tast/testutil"
 )
 
@@ -226,6 +227,17 @@ func TestSoftwareDeps(t *gotesting.T) {
 	missing := test.MissingSoftwareDeps([]string{"dep0", "dep2", "dep4"})
 	if exp := []string{"dep1", "dep3"}; !reflect.DeepEqual(missing, exp) {
 		t.Errorf("MissingSoftwareDeps() = %v; want %v", missing, exp)
+	}
+}
+
+func TestHardwareDeps(t *gotesting.T) {
+	test := TestInstance{HardwareDeps: hwdep.D(hwdep.Model("eve"))}
+	ok, reason := test.ShouldRun(nil, nil)
+	if ok {
+		t.Fatal("Unexpectedly considered that the test should run")
+	}
+	if e := []string{"device.Config does not have ModelId"}; !reflect.DeepEqual(reason.HardwareDepsUnsatisfiedReasons, e) {
+		t.Errorf("Unexpected HardwareDeps check error message: got %v; want %v", reason.HardwareDepsUnsatisfiedReasons, e)
 	}
 }
 

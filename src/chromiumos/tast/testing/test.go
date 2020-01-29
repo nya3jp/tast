@@ -15,6 +15,8 @@ import (
 	"runtime"
 	"strings"
 	"time"
+
+	"chromiumos/tast/testing/hwdep"
 )
 
 const (
@@ -72,6 +74,9 @@ type Test struct {
 	// for more information about dependencies.
 	SoftwareDeps []string
 
+	// HardwareDeps describes hardware features and setup that are required to run the test.
+	HardwareDeps hwdep.Deps
+
 	// Pre contains a precondition that must be met before the test is run.
 	Pre Precondition
 
@@ -108,6 +113,10 @@ type Param struct {
 	// ExtraSoftwareDeps lists software features that are required to run the test case for this param,
 	// in addition to SoftwareDeps in the enclosing Test.
 	ExtraSoftwareDeps []string
+
+	// ExtraHardwareDeps describes hardware features and setup that are required to run the test for this
+	// param, in addition to HardwareDeps in the enclosing Test.
+	ExtraHardwareDeps hwdep.Deps
 
 	// Pre contains a precondition that must be met before the test is run.
 	// Can only be set if the enclosing test doesn't have one already set.

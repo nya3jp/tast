@@ -171,7 +171,7 @@ func TestReadTestOutput(t *gotesting.T) {
 			TestInstance: testing.TestInstance{Name: test3Name, Desc: test3Desc},
 			Start:        test3StartTime,
 			End:          test3EndTime,
-			SkipReason:   "missing deps: " + strings.Join(test3Deps, " "),
+			SkipReason:   "missing SoftwareDeps: " + strings.Join(test3Deps, " "),
 			OutDir:       filepath.Join(cfg.ResDir, testLogsDir, test3Name),
 		},
 	}

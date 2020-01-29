@@ -14,6 +14,8 @@ import (
 	"strings"
 	"time"
 
+	"go.chromium.org/chromiumos/infra/proto/go/device"
+
 	"chromiumos/tast/cmd/tast/internal/build"
 	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/host"
@@ -127,6 +129,7 @@ type Config struct {
 	ephemeralDevserver *ephemeralDevserver      // cached devserver; may be nil
 	initialSysInfo     *runner.SysInfoState     // initial state of system info (logs, crashes, etc.) on DUT before testing
 	softwareFeatures   *runner.SoftwareFeatures // software features of the DUT
+	deviceConfig       *device.Config           // hardware features of the DUT
 }
 
 // NewConfig returns a new configuration for executing test runners in the supplied mode.

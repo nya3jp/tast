@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "feadefb6_5f0607ac",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1356080
+      },
+      "writtenOn": "2020-01-29T00:34:00Z",
+      "side": 1,
+      "message": "Are both needed if they\u0027re inverses, or is the plan that they\u0027ll diverge (e.g. known-good, known-bad and maybe buckets)?",
+      "revId": "3966a3ecc9394c9ddcbfad22ae75425e882bcb39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

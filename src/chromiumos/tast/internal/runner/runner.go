@@ -269,8 +269,15 @@ func logMessages(r io.Reader, lg *log.Logger) *command.StatusError {
 			lg.Printf("Error: [%s:%d] %v", filepath.Base(v.Error.File), v.Error.Line, v.Error.Reason)
 			testFailed = true
 		case *control.TestEnd:
+			var reasons []string
 			if len(v.MissingSoftwareDeps) > 0 {
-				lg.Printf("Skipped %s for missing deps: %v", v.Name, v.MissingSoftwareDeps)
+				reasons = append(reasons, "missing SoftwareDeps: "+strings.Join(v.MissingSoftwareDeps, " "))
+			}
+			if len(v.HardwareDepsUnsatisfiedReasons) > 0 {
+				reasons = append(reasons, v.HardwareDepsUnsatisfiedReasons...)
+			}
+			if len(reasons) > 0 {
+				lg.Printf("Skipped %s for missing deps: %s", v.Name, strings.Join(reasons, ", "))
 			} else {
 				lg.Print("Finished ", v.Name)
 			}

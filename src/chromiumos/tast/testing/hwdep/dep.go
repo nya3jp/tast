@@ -1,0 +1,161 @@
+// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Package hwdep provides the hardware dependency mechanism to select tests to run on
+// a DUT based on its hardware features and setup.
+package hwdep
+
+import (
+	"go.chromium.org/chromiumos/infra/proto/go/device"
+
+	"chromiumos/tast/errors"
+)
+
+// Deps holds hardware dependencies all of which need to be satisfied to run a test.
+type Deps struct {
+	// conds hold a slice of Conditions. The enclosing Deps instance will be satisified
+	// iff all conds return true. Note that, if conds is empty, Deps is considered as
+	// satisfied.
+	conds []Condition
+}
+
+// Condition represents one condition of hardware dependencies.
+type Condition func(d *deviceSetup) error
+
+type deviceSetup struct {
+	dc *device.Config
+	// TODO(hidehiko): Consider adding lab peripherals here.
+}
+
+// D returns hardware dependencies representing the given Conditions.
+func D(conds ...Condition) *Deps {
+	return &Deps{conds: conds}
+}
+
+// UnsatisfiedError is reported when Satisfied() fails.
+type UnsatisfiedError struct {
+	*errors.E
+
+	// Reasons contain the detailed reasons why Satisfied failed.
+	Reasons []error
+}
+
+// Satisfied returns true if the given device.Config satisfies the dependencies,
+// i.e., the test can run on the current device setup.
+func (d *Deps) Satisfied(dc *device.Config) *UnsatisfiedError {
+	setup := &deviceSetup{dc: dc}
+	var reasons []error
+	for _, c := range d.conds {
+		if err := c(setup); err != nil {
+			reasons = append(reasons, err)
+		}
+	}
+	if len(reasons) > 0 {
+		return &UnsatisfiedError{
+			E:       errors.New("Deps is not satisfied"),
+			Reasons: reasons,
+		}
+	}
+	return nil
+}
+
+// Merge merges two Deps instance into one Deps instance.
+// The returned Deps is satisfied iff all conditions in d1 and ones in d2 are
+// satisfied.
+func Merge(d1 *Deps, d2 *Deps) *Deps {
+	var conds []Condition
+	if d1 != nil {
+		conds = append(conds, d1.conds...)
+	}
+	if d2 != nil {
+		conds = append(conds, d2.conds...)
+	}
+	return &Deps{conds: conds}
+}
+
+// Model returns a hardware dependency condition that is satisfied if the DUT's model ID is
+// one of the given names.
+// Practically, this is not recommended to be used in most cases. Please consider again
+// if this is the appropriate use, and whether there exists another option, such as
+// check whether DUT needs to have touchscreen, some specific SKU, internal display etc.
+//
+// Expected example use case is; there is a problem in some code where we do not have
+// control, such as a device specific driver, or hardware etc., and unfortnately
+// it unlikely be fixed for a while.
+// Another use case is; a test is stably running on most of models, but failing on some
+// specific models. By using Model() and SkipOnModel() combination, the test can be
+// promoted to critical on stably running models, while it is still informational
+// on other models. Note that, in this case, it is expected that an engineer is
+// assigned to stabilize/fix issues of the test on informational models.
+func Model(names ...string) Condition {
+	return func(d *deviceSetup) error {
+		// If the field is unavailable, return false as not satisfied.
+		if d.dc == nil || d.dc.Id == nil || d.dc.Id.ModelId == nil {
+			return errors.New("device.Config does not have ModelId")
+		}
+		modelID := d.dc.Id.ModelId.Value
+		for _, name := range names {
+			if name == modelID {
+				return nil
+			}
+		}
+		return errors.New("ModelId did not match")
+	}
+}
+
+// SkipOnModel returns a hardware dependency condition that is satisfied
+// iff the DUT's model ID is none of the given names.
+// Please find the doc of Model(), too, for details about the expected usage.
+func SkipOnModel(names ...string) Condition {
+	return func(d *deviceSetup) error {
+		// If the field is unavailable, return false as not satisfied.
+		if d.dc == nil || d.dc.Id == nil || d.dc.Id.ModelId == nil {
+			return errors.New("device.Config does not have ModelId")
+		}
+		modelID := d.dc.Id.ModelId.Value
+		for _, name := range names {
+			if name == modelID {
+				return errors.New("ModelId matched with skip-on list")
+			}
+		}
+		return nil
+	}
+}
+
+// Platform returns a hardware dependency condition that is satisfied
+// iff the DUT's platform ID is one of the give names.
+// Please find the doc of Model(), too, for details about the expected usage.
+func Platform(names ...string) Condition {
+	return func(d *deviceSetup) error {
+		// If the field is unavailable, return false as not satisfied.
+		if d.dc == nil || d.dc.Id == nil || d.dc.Id.PlatformId == nil {
+			return errors.New("device.Config does not have PlatformId")
+		}
+		platformID := d.dc.Id.PlatformId.Value
+		for _, name := range names {
+			if name == platformID {
+				return nil
+			}
+		}
+		return errors.New("PlatformId did not match")
+	}
+}
+
+// SkipOnPlatform returns a hardware dependency condition that is satisfied
+// iff the DUT's platform ID is none of the give names.
+// Please find the doc of Model(), too, for details about the expected usage.
+func SkipOnPlatform(names ...string) Condition {
+	return func(d *deviceSetup) error {
+		if d.dc == nil || d.dc.Id == nil || d.dc.Id.PlatformId == nil {
+			return errors.New("device.Config does not have PlatformId")
+		}
+		platformID := d.dc.Id.PlatformId.Value
+		for _, name := range names {
+			if name == platformID {
+				return errors.New("PlatformId matched with skip-on list")
+			}
+		}
+		return nil
+	}
+}

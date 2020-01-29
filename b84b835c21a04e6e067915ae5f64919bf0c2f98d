@@ -1,0 +1,97 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8e58fad5_bb959fbc",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/deps.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-01-29T09:49:38Z",
+      "side": 1,
+      "message": "\u003e \"containg\" is a possible misspelling of \"containing\".\n\nPlease fix.",
+      "parentUuid": "f3bfb22c_c6269244",
+      "range": {
+        "startLine": 20,
+        "startChar": 35,
+        "endLine": 20,
+        "endChar": 43
+      },
+      "revId": "b84b835c21a04e6e067915ae5f64919bf0c2f98d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "edc0614b_429e12cd",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 199,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-01-29T09:49:38Z",
+      "side": 1,
+      "message": "Same here: mind mentioning that this field is handled by custom marshaler/unmarshaler?",
+      "range": {
+        "startLine": 199,
+        "startChar": 41,
+        "endLine": 199,
+        "endChar": 58
+      },
+      "revId": "b84b835c21a04e6e067915ae5f64919bf0c2f98d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0dd4660f_64fac2a4",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 228,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-01-29T09:49:38Z",
+      "side": 1,
+      "message": "You can use []byte to avoid manually encoding/decoding BASE64.\n\n\u003e []byte encodes as a base64-encoded string\nhttps://godoc.org/encoding/json",
+      "range": {
+        "startLine": 228,
+        "startChar": 15,
+        "endLine": 228,
+        "endChar": 21
+      },
+      "revId": "b84b835c21a04e6e067915ae5f64919bf0c2f98d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c1b06a29_0d2f7972",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-01-29T09:49:38Z",
+      "side": 1,
+      "message": "Do we need CombinedOutput instead of Output?\n\nI generally don\u0027t recommend CombinedOutput for non-informational purpose ecause mixture of stdout and stderr is inherently racy.",
+      "range": {
+        "startLine": 153,
+        "startChar": 70,
+        "endLine": 153,
+        "endChar": 84
+      },
+      "revId": "b84b835c21a04e6e067915ae5f64919bf0c2f98d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

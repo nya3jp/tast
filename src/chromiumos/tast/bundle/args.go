@@ -13,6 +13,9 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/golang/protobuf/proto"
+	"go.chromium.org/chromiumos/infra/proto/go/device"
+
 	"chromiumos/tast/internal/command"
 )
 
@@ -109,6 +112,10 @@ type RunTestsArgs struct {
 	AvailableSoftwareFeatures []string `json:"availableSoftwareFeatures,omitempty"`
 	// UnavailableSoftwareFeatures contains a list of software features supported by the DUT.
 	UnavailableSoftwareFeatures []string `json:"unavailableSoftwareFeatures,omitempty"`
+	// DeviceConfig contains the hardware info about the DUT.
+	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON
+	// respectively.
+	DeviceConfig *device.Config `json:"-"`
 
 	// Devservers contains URLs of devservers that can be used to download files.
 	Devservers []string `json:"devservers,omitempty"`
@@ -120,6 +127,51 @@ type RunTestsArgs struct {
 	// periodically from runners (before running bundles) and bundles. If this value is not
 	// positive, heartbeat messages are not sent.
 	HeartbeatInterval time.Duration `json:"heartbeatInterval,omitempty"`
+}
+
+// MarshalJSON marshals the RunTestsArgs struct into JSON.
+func (a *RunTestsArgs) MarshalJSON() ([]byte, error) {
+	var dc []byte
+	if a.DeviceConfig != nil {
+		var err error
+		dc, err = proto.Marshal(a.DeviceConfig)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// Use alias to break the infinite recursion in json.Marshal.
+	type Alias RunTestsArgs
+	return json.Marshal(struct {
+		DeviceConfig []byte `json:"deviceConfig"`
+		*Alias
+	}{
+		DeviceConfig: dc,
+		Alias:        (*Alias)(a),
+	})
+}
+
+// UnmarshalJSON unmarshals JSON blob.
+func (a *RunTestsArgs) UnmarshalJSON(b []byte) error {
+	// Use alias to break the infinite recursion in json.Unmarshal.
+	type Alias RunTestsArgs
+	aux := struct {
+		DeviceConfig []byte `json:"deviceConfig"`
+		*Alias
+	}{
+		Alias: (*Alias)(a),
+	}
+	if err := json.Unmarshal(b, &aux); err != nil {
+		return err
+	}
+	if len(aux.DeviceConfig) > 0 {
+		var dc device.Config
+		if err := proto.Unmarshal(aux.DeviceConfig, &dc); err != nil {
+			return err
+		}
+		a.DeviceConfig = &dc
+	}
+	return nil
 }
 
 // ListTestsArgs is nested within Args and contains arguments used by ListTestsMode.

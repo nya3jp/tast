@@ -177,17 +177,23 @@ func (ew *eventWriter) TestError(ts time.Time, e *testing.Error) error {
 	return ew.mw.WriteMessage(&control.TestError{Time: ts, Error: *e})
 }
 
-func (ew *eventWriter) TestEnd(t *testing.TestInstance, missingDeps []string, timingLog *timing.Log) error {
+func (ew *eventWriter) TestEnd(t *testing.TestInstance, skipReason *testing.SkipReason, timingLog *timing.Log) error {
 	ew.testName = ""
 	if ew.lg != nil {
 		ew.lg.Info(fmt.Sprintf("%s: ======== end", t.Name))
 	}
 
+	var missings, reasons []string
+	if skipReason != nil {
+		missings = skipReason.MissingSoftwareDeps
+		reasons = skipReason.HardwareDepsUnsatisfiedReasons
+	}
 	return ew.mw.WriteMessage(&control.TestEnd{
-		Time:                time.Now(),
-		Name:                t.Name,
-		MissingSoftwareDeps: missingDeps,
-		TimingLog:           timingLog,
+		Time:                           time.Now(),
+		Name:                           t.Name,
+		MissingSoftwareDeps:            missings,
+		HardwareDepsUnsatisfiedReasons: reasons,
+		TimingLog:                      timingLog,
 	})
 }
 
@@ -265,28 +271,31 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		}
 	}
 
-	// Make a backward pass through the tests, checking if each will be run (i.e. dependencies are satisfied).
-	// As we go, build up a slice of the next test that will actually be run after each test.
-	// We pass this information to runTest later to ensure that we don't incorrectly fail
-	// to close a precondition if the final test using the precondition is skipped: https://crbug.com/950499
-	var rt *testing.TestInstance                           // last-seen test that will be run
-	missingDeps := make([][]string, len(tests))            // per-test missing deps, in same order as tests
-	nextTests := make([]*testing.TestInstance, len(tests)) // test to run after each test, in same order as tests
-	for i := len(tests) - 1; i >= 0; i-- {
-		nextTests[i] = rt
+	// If a test should be skipped, the element of this array at the index will be set.
+	skipReasons := make([]*testing.SkipReason, len(tests))
+	// If a test should run, the element of this array at the index will have a pointer to the next test (except last one).
+	// We pass this information to runTest later to ensure that we don't incorrectly fail to close a precondition
+	// if the final test using precondition is skipped: https://crbug.com/950499.
+	nextTests := make([]*testing.TestInstance, len(tests))
+	lastIdx := -1
+	for i, t := range tests {
 		if args.RunTests.CheckSoftwareDeps {
-			missingDeps[i] = tests[i].MissingSoftwareDeps(args.RunTests.AvailableSoftwareFeatures)
+			if ok, reason := tests[i].ShouldRun(args.RunTests.AvailableSoftwareFeatures, args.RunTests.DeviceConfig); !ok {
+				skipReasons[i] = reason
+			}
 		}
-		if len(missingDeps[i]) == 0 {
-			rt = tests[i]
+		if skipReasons[i] == nil {
+			if lastIdx >= 0 {
+				nextTests[lastIdx] = t
+			}
+			lastIdx = i
 		}
 	}
-
 	for i, t := range tests {
-		if md := missingDeps[i]; len(md) == 0 {
+		if reason := skipReasons[i]; reason == nil {
 			runTest(ctx, ew, args, cfg, t, nextTests[i], rd)
 		} else {
-			reportSkippedTest(ctx, ew, args, t, md)
+			reportSkippedTest(ctx, ew, args, t, reason)
 		}
 	}
 
@@ -363,12 +372,12 @@ func runTest(ctx context.Context, ew *eventWriter, args *Args, cfg *runConfig,
 // reportSkippedTest is called instead of runTest for a test that is skipped due to
 // having unsatisfied dependencies.
 func reportSkippedTest(ctx context.Context, ew *eventWriter, args *Args,
-	t *testing.TestInstance, missingDeps []string) {
+	t *testing.TestInstance, reason *testing.SkipReason) {
 	ew.TestStart(t)
 
 	// Additionally report an error if one or more dependencies refer to features that
 	// we don't know anything about (possibly indicating a typo in the test's dependencies).
-	if unknown := getUnknownDeps(missingDeps, args); len(unknown) > 0 {
+	if unknown := getUnknownDeps(reason.MissingSoftwareDeps, args); len(unknown) > 0 {
 		_, fn, ln, _ := runtime.Caller(0)
 		ew.TestError(time.Now(), &testing.Error{
 			Reason: "Unknown dependencies: " + strings.Join(unknown, " "),
@@ -377,7 +386,7 @@ func reportSkippedTest(ctx context.Context, ew *eventWriter, args *Args,
 		})
 	}
 
-	ew.TestEnd(t, missingDeps, nil)
+	ew.TestEnd(t, reason, nil)
 }
 
 // getUnknownDeps returns a sorted list of software dependencies from missingDeps that

@@ -26,6 +26,7 @@ import (
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/testing"
+	"chromiumos/tast/testing/hwdep"
 	"chromiumos/tast/testutil"
 	"chromiumos/tast/timing"
 )
@@ -52,7 +53,7 @@ func readStreamedResults(t *gotesting.T, r io.Reader) []TestResult {
 // to generate timestamps for certain types of errors.
 func testResultsEqual(a, b []TestResult) bool {
 	return cmp.Equal(a, b, cmpopts.IgnoreUnexported(TestResult{}),
-		cmpopts.IgnoreFields(TestError{}, "Time"))
+		cmpopts.IgnoreFields(TestError{}, "Time"), cmp.AllowUnexported(hwdep.Deps{}))
 }
 
 func TestReadTestOutput(t *gotesting.T) {
@@ -171,7 +172,7 @@ func TestReadTestOutput(t *gotesting.T) {
 			TestInstance: testing.TestInstance{Name: test3Name, Desc: test3Desc},
 			Start:        test3StartTime,
 			End:          test3EndTime,
-			SkipReason:   "missing deps: " + strings.Join(test3Deps, " "),
+			SkipReason:   "missing SoftwareDeps: " + strings.Join(test3Deps, " "),
 			OutDir:       filepath.Join(cfg.ResDir, testLogsDir, test3Name),
 		},
 	}
@@ -179,13 +180,13 @@ func TestReadTestOutput(t *gotesting.T) {
 	if err := json.Unmarshal([]byte(files[resultsFilename]), &actRes); err != nil {
 		t.Errorf("Failed to decode %v: %v", resultsFilename, err)
 	}
-	if !cmp.Equal(actRes, expRes, cmp.AllowUnexported(TestResult{})) {
+	if !cmp.Equal(actRes, expRes, cmp.AllowUnexported(TestResult{}, hwdep.Deps{})) {
 		t.Errorf("%v contains %+v; want %+v", resultsFilename, actRes, expRes)
 	}
 
 	// The streamed results file should contain the same set of results.
 	streamRes := readStreamedResults(t, bytes.NewBufferString(files[streamedResultsFilename]))
-	if !cmp.Equal(streamRes, expRes, cmp.AllowUnexported(TestResult{})) {
+	if !cmp.Equal(streamRes, expRes, cmp.AllowUnexported(TestResult{}, hwdep.Deps{})) {
 		t.Errorf("%v contains %+v; want %+v", streamedResultsFilename, streamRes, expRes)
 	}
 
@@ -701,7 +702,7 @@ func TestUnfinishedTest(t *gotesting.T) {
 			t.Errorf("readTestOutput returned non-zero end time %v", res[0].End)
 		}
 		// Ignore timestamps since run errors contain time.Now.
-		if !cmp.Equal(res[0].Errors, tc.expErrs, cmpopts.IgnoreFields(TestError{}, "Time")) {
+		if !cmp.Equal(res[0].Errors, tc.expErrs, cmpopts.IgnoreFields(TestError{}, "Time"), cmp.AllowUnexported(hwdep.Deps{})) {
 			t.Errorf("readTestOutput returned errors %+v; want %+v", res[0].Errors, tc.expErrs)
 		}
 	}

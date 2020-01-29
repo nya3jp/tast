@@ -72,6 +72,7 @@ func getDUTInfo(ctx context.Context, cfg *Config) error {
 		if err := ioutil.WriteFile(filepath.Join(cfg.ResDir, deviceConfigFile), []byte(proto.MarshalTextString(res.DeviceConfig)), 0644); err != nil {
 			cfg.Logger.Debugf("Failed to dump %s: %v", deviceConfigFile, err)
 		}
+		cfg.deviceConfig = res.DeviceConfig
 	}
 	cfg.softwareFeatures = res.SoftwareFeatures
 	return nil
@@ -82,5 +83,6 @@ func setRunnerTestDepsArgs(cfg *Config, args *runner.Args) {
 	if cfg.softwareFeatures != nil {
 		args.RunTests.BundleArgs.AvailableSoftwareFeatures = cfg.softwareFeatures.Available
 		args.RunTests.BundleArgs.UnavailableSoftwareFeatures = cfg.softwareFeatures.Unavailable
+		args.RunTests.BundleArgs.DeviceConfig = cfg.deviceConfig
 	}
 }

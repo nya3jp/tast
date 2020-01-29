@@ -16,7 +16,10 @@ import (
 	"strings"
 	"time"
 
+	"go.chromium.org/chromiumos/infra/proto/go/device"
+
 	"chromiumos/tast/errors"
+	"chromiumos/tast/testing/internal/hwdep"
 )
 
 const (
@@ -74,13 +77,16 @@ type TestInstance struct {
 	// Following fields are copied from testing.Test struct.
 	// See the documents of the struct.
 
-	Func         TestFunc      `json:"-"`
-	Desc         string        `json:"desc"`
-	Contacts     []string      `json:"contacts"`
-	Attr         []string      `json:"attr"`
-	Data         []string      `json:"data"`
-	Vars         []string      `json:"vars,omitempty"`
-	SoftwareDeps []string      `json:"softwareDeps,omitempty"`
+	Func         TestFunc `json:"-"`
+	Desc         string   `json:"desc"`
+	Contacts     []string `json:"contacts"`
+	Attr         []string `json:"attr"`
+	Data         []string `json:"data"`
+	Vars         []string `json:"vars,omitempty"`
+	SoftwareDeps []string `json:"softwareDeps,omitempty"`
+	// HardwareDeps field is not in the protocol yet. When the scheduler in infra is
+	// implemented, it is needed.
+	HardwareDeps hwdep.Deps    `json:"-"`
 	ServiceDeps  []string      `json:"serviceDeps,omitempty"`
 	Pre          Precondition  `json:"-"`
 	Timeout      time.Duration `json:"timeout"`
@@ -99,6 +105,7 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 	attrs := append([]string(nil), t.Attr...)
 	data := append([]string(nil), t.Data...)
 	swDeps := append([]string(nil), t.SoftwareDeps...)
+	hwDeps := t.HardwareDeps
 	pre := t.Pre
 	timeout := t.Timeout
 	var val interface{}
@@ -109,6 +116,7 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 		attrs = append(attrs, p.ExtraAttr...)
 		data = append(data, p.ExtraData...)
 		swDeps = append(swDeps, p.ExtraSoftwareDeps...)
+		hwDeps = hwdep.Merge(hwDeps, p.ExtraHardwareDeps)
 		val = p.Val
 
 		// Only one precondition can be defined.
@@ -146,6 +154,7 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 		Data:           data,
 		Vars:           append([]string(nil), t.Vars...),
 		SoftwareDeps:   swDeps,
+		HardwareDeps:   hwDeps,
 		ServiceDeps:    append([]string(nil), t.ServiceDeps...),
 		Pre:            pre,
 		Timeout:        timeout,
@@ -360,6 +369,33 @@ func timeoutOrDefault(timeout, def time.Duration) time.Duration {
 
 func (t *TestInstance) String() string {
 	return t.Name
+}
+
+// SkipReason represents the reasons why the test needs to be skipped.
+type SkipReason struct {
+	// MissingSoftwareDeps contains a list of features which is required by the test,
+	// but not satisfied under the current DUT.
+	MissingSoftwareDeps []string
+
+	// HardwareDepsUnsatisfiedReasons contains a list of error messages, why
+	// some hardware dependencies were not satisfied.
+	HardwareDepsUnsatisfiedReasons []string
+}
+
+// ShouldRun returns whether this test should run under the current testing environment.
+// In case of not, in addition, the reason why it should be skipped is also returned.
+func (t *TestInstance) ShouldRun(features []string, dc *device.Config) (bool, *SkipReason) {
+	missing := t.MissingSoftwareDeps(features)
+	var hwReasons []string
+	if err := t.HardwareDeps.Satisfied(dc); err != nil {
+		for _, r := range err.Reasons {
+			hwReasons = append(hwReasons, r.Error())
+		}
+	}
+	if len(missing) > 0 || len(hwReasons) > 0 {
+		return false, &SkipReason{missing, hwReasons}
+	}
+	return true, nil
 }
 
 // MissingSoftwareDeps returns a sorted list of dependencies from SoftwareDeps

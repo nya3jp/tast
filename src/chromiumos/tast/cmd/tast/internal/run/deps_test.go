@@ -35,7 +35,7 @@ func writeGetDUTInfoResult(w io.Writer, avail, unavail []string, dc *device.Conf
 
 // checkRunnerTestDepsArgs calls setRunnerTestDepsArgs using cfg and verifies
 // that it sets runner args as specified per checkDeps, avail, and unavail.
-func checkRunnerTestDepsArgs(t *testing.T, cfg *Config, checkDeps bool, avail, unavail []string) {
+func checkRunnerTestDepsArgs(t *testing.T, cfg *Config, checkDeps bool, avail, unavail []string, dc *device.Config) {
 	t.Helper()
 	args := runner.Args{
 		Mode:     runner.RunTestsMode,
@@ -48,6 +48,7 @@ func checkRunnerTestDepsArgs(t *testing.T, cfg *Config, checkDeps bool, avail, u
 			CheckSoftwareDeps:           checkDeps,
 			AvailableSoftwareFeatures:   avail,
 			UnavailableSoftwareFeatures: unavail,
+			DeviceConfig:                dc,
 		},
 	}
 	if !reflect.DeepEqual(*args.RunTests, exp) {
@@ -87,7 +88,7 @@ func TestGetDUTInfo(t *testing.T) {
 	if err := getDUTInfo(context.Background(), &td.cfg); err != nil {
 		t.Fatalf("getDUTInfo(%+v) failed: %v", td.cfg, err)
 	}
-	checkRunnerTestDepsArgs(t, &td.cfg, true, avail, unavail)
+	checkRunnerTestDepsArgs(t, &td.cfg, true, avail, unavail, dc)
 
 	// Make sure device-config.txt is created.
 	if b, err := ioutil.ReadFile(filepath.Join(td.cfg.ResDir, "device-config.txt")); err != nil {
@@ -148,7 +149,7 @@ func TestGetDUTInfoNoCheckTestDeps(t *testing.T) {
 	if err := getDUTInfo(context.Background(), &td.cfg); err != nil {
 		t.Fatalf("getDUTInfo(%+v) failed: %v", td.cfg, err)
 	}
-	checkRunnerTestDepsArgs(t, &td.cfg, false, nil, nil)
+	checkRunnerTestDepsArgs(t, &td.cfg, false, nil, nil, nil)
 }
 
 func TestGetSoftwareFeaturesNoFeatures(t *testing.T) {

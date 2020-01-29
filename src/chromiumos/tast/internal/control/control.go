@@ -114,6 +114,9 @@ type TestEnd struct {
 	// MissingSoftwareDeps contains software dependencies declared by the test that were
 	// not present on the DUT. If non-empty, the test was skipped.
 	MissingSoftwareDeps []string `json:"testEndMissingSoftwareDeps"`
+	// HardwareDepsUnsatisfiedReasons contains hardware dependencies declared by the test that
+	// were not satisfied on the DUT. If non-empty, the test was skipped.
+	HardwareDepsUnsatisfiedReasons []string `json:"testEndHardwareDepsUnsatisfiedReasons"`
 	// TimingLog contains test-reported timing information to be incorporated into the main timing.json file.
 	TimingLog *timing.Log `json:"testEndTimingLog"`
 }

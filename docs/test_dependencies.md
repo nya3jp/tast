@@ -30,6 +30,7 @@ The following software features are defined:
     only when ARC is supported on the board.
 *   `arc_camera1` - Using [Camera HAL3] in Chrome and [Camera HAL1] in Android.
 *   `arc_camera3` - Using [Camera HAL3] interface in Chrome and Android.
+*   `arm` - The [arm] 32 and 64 bit processor architecture.
 *   `aslr` - Address space layout randomization, which mitigates buffer-overflow
     attacks, is functional (this is not true for builds with [AddressSanitizer]
     instrumentation built in).
@@ -131,6 +132,7 @@ The following software features are defined:
 *   `wired_8021x` - The ability to use 802.1X for authentication over Ethernet.
 
 [amd64]: https://en.wikipedia.org/wiki/X86-64
+[arm]: https://en.wikipedia.org/wiki/ARM_architecture
 [run Android apps]: https://developer.android.com/topic/arc/
 [Camera HAL3]: https://source.android.com/devices/camera/camera3
 [Camera HAL1]: https://source.android.com/devices/camera#architecture-legacy

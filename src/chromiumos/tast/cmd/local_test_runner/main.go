@@ -74,6 +74,7 @@ func main() {
 			"arc":               `arc`,
 			"arc_camera1":       `"arc-camera1"`,
 			"arc_camera3":       `"arc-camera3"`,
+			"arm":               `"arm" || "arm64"`,
 			"aslr":              "!asan",                        // ASan instrumentation breaks ASLR
 			"audio_play":        "internal_speaker && !tast_vm", // VMs and some boards don't have a speaker
 			"audio_record":      "internal_mic && !tast_vm",     // VMs don't have a mic

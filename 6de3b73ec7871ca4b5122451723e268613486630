@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5ce07c5d_7b03820a",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-01-30T13:18:37Z",
+      "side": 1,
+      "message": "Based on the description, \"breakpad\" sounds like a software dependency name. I.e., if a test has \"breakpad\" dependency, the test will run on the devices where breakpad is supported.\n\nCould you rename?",
+      "revId": "6de3b73ec7871ca4b5122451723e268613486630",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

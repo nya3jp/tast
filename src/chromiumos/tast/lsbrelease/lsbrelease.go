@@ -48,8 +48,8 @@ var allowedPkgs = []string{
 	"chromiumos/tast/cmd/tast/internal/symbolize",
 	"chromiumos/tast/local/arc",              // For SDKVersion.
 	"chromiumos/tast/local/bundles/cros/arc", // For Version.
-	"chromiumos/tast/local/bundles/cros/crash/sender",
 	"chromiumos/tast/local/bundles/cros/platform/updateserver",
+	"chromiumos/tast/local/crash",
 	"chromiumos/tast/local/rialto",
 	"chromiumos/tast/lsbrelease",
 	"main", // for local_test_runner

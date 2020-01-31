@@ -34,6 +34,24 @@
       "revId": "6de3b73ec7871ca4b5122451723e268613486630",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c46f1ccc_0cb560f6",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-01-31T02:34:51Z",
+      "side": 1,
+      "message": "yes",
+      "parentUuid": "a6ace5c1_514233ce",
+      "revId": "6de3b73ec7871ca4b5122451723e268613486630",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

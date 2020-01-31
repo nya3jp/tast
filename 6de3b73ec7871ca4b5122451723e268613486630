@@ -16,6 +16,24 @@
       "revId": "6de3b73ec7871ca4b5122451723e268613486630",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a6ace5c1_514233ce",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1300299
+      },
+      "writtenOn": "2020-01-31T02:28:34Z",
+      "side": 1,
+      "message": "Is this the rename you wanted?",
+      "parentUuid": "5ce07c5d_7b03820a",
+      "revId": "6de3b73ec7871ca4b5122451723e268613486630",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

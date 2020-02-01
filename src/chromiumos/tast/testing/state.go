@@ -22,10 +22,7 @@ import (
 	"chromiumos/tast/timing"
 )
 
-const (
-	metaCategory  = "meta"                    // category for remote tests exercising Tast, as in "meta.TestName".
-	preFailPrefix = "[Precondition failure] " // the prefix used then a precondition failure is logged.
-)
+const metaCategory = "meta" // category for remote tests exercising Tast, as in "meta.TestName"
 
 // Error describes an error encountered while running a test.
 type Error struct {
@@ -112,8 +109,6 @@ type State struct {
 	root *rootState // root state for the test
 
 	subtests []string // subtest names; used to prefix error messages
-
-	inPre bool // true if a precondition is currently executing.
 
 	hasError bool       // true if the current subtest has encountered an error; the test fails if this is true for the initial subtest
 	mu       sync.Mutex // protects hasError
@@ -424,11 +419,6 @@ func (s *State) formatError(args ...interface{}) (fullMsg, lastMsg string, err e
 		lastMsg = subtests + lastMsg
 	}
 
-	if s.inPre {
-		fullMsg = preFailPrefix + fullMsg
-		lastMsg = preFailPrefix + lastMsg
-	}
-
 	return fullMsg, lastMsg, err
 }
 
@@ -463,11 +453,6 @@ func (s *State) formatErrorf(format string, args ...interface{}) (fullMsg, lastM
 
 		fullMsg = subtests + fullMsg
 		lastMsg = subtests + lastMsg
-	}
-
-	if s.inPre {
-		fullMsg = preFailPrefix + fullMsg
-		lastMsg = preFailPrefix + lastMsg
 	}
 
 	return fullMsg, lastMsg, err

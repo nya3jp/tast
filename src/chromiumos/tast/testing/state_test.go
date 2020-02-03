@@ -61,6 +61,29 @@ func TestNestedRun(t *gotesting.T) {
 	}
 }
 
+func TestRunReturn(t *gotesting.T) {
+	or := newOutputReader()
+	s := newState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
+	ctx := context.Background()
+
+	if res := s.Run(ctx, "p1", func(ctx context.Context, s *State) {
+		s.Fatal("fail")
+	}); res != false {
+		t.Error("Expected failiure to return false")
+	}
+
+	if res := s.Run(ctx, "p1", func(ctx context.Context, s *State) {
+		s.Log("ok")
+	}); res != true {
+		t.Error("Expected success to return true")
+	}
+
+	close(or.ch)
+	if out := or.read(); len(out) != 4 {
+		t.Errorf("Bad test output: %v", out)
+	}
+}
+
 func TestParallelRun(t *gotesting.T) {
 	or := newOutputReader()
 	s := newState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})

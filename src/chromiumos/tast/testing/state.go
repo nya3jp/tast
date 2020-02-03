@@ -224,7 +224,7 @@ func (s *State) RequiredVar(name string) string {
 
 // Run starts a new subtest with an unique name. Error messages are prepended with the subtest
 // name during its execution. If Fatal/Fatalf is called from inside a subtest, only that subtest
-// is stopped; its parent continues. Returns true if the subtest passed.
+// is stopped; its parent continues. Returns true when there were failures.
 func (s *State) Run(ctx context.Context, name string, run func(context.Context, *State)) bool {
 	subtests := append([]string(nil), s.subtests...)
 	subtests = append(subtests, name)

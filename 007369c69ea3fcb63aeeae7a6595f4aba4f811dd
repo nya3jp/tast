@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f591a948_f72e4471",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-02-03T10:54:17Z",
+      "side": 1,
+      "message": "nit: appending a string to another error generates a message difficult to read in general. how about:\n\n cros_config failed (stderr: %q): %v",
+      "revId": "007369c69ea3fcb63aeeae7a6595f4aba4f811dd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

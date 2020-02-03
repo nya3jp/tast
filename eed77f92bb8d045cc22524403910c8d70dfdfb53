@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "c8db5249_18ad4a90",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-02-03T10:22:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "823e5fd5_d050e698",
+      "range": {
+        "startLine": 46,
+        "startChar": 1,
+        "endLine": 46,
+        "endChar": 108
+      },
+      "revId": "eed77f92bb8d045cc22524403910c8d70dfdfb53",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "48def67d_4a376280",
         "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
         "patchSetId": 3
@@ -45,6 +69,30 @@
       "revId": "eed77f92bb8d045cc22524403910c8d70dfdfb53",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ed143804_0bded3a9",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-02-03T10:22:34Z",
+      "side": 1,
+      "message": "In the case, probably we\u0027d like to change the behavior either here or in local part.\nLet me work on it in another CL.",
+      "parentUuid": "48def67d_4a376280",
+      "range": {
+        "startLine": 40,
+        "startChar": 1,
+        "endLine": 47,
+        "endChar": 35
+      },
+      "revId": "eed77f92bb8d045cc22524403910c8d70dfdfb53",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

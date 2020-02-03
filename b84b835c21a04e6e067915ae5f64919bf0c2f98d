@@ -26,6 +26,30 @@
     },
     {
       "key": {
+        "uuid": "b710aa81_2af24ac4",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/deps.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-02-03T10:23:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8e58fad5_bb959fbc",
+      "range": {
+        "startLine": 20,
+        "startChar": 35,
+        "endLine": 20,
+        "endChar": 43
+      },
+      "revId": "b84b835c21a04e6e067915ae5f64919bf0c2f98d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "edc0614b_429e12cd",
         "filename": "src/chromiumos/tast/internal/runner/args.go",
         "patchSetId": 1
@@ -46,6 +70,30 @@
       "revId": "b84b835c21a04e6e067915ae5f64919bf0c2f98d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aadc0ee8_7ca789f5",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 199,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-02-03T10:23:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "edc0614b_429e12cd",
+      "range": {
+        "startLine": 199,
+        "startChar": 41,
+        "endLine": 199,
+        "endChar": 58
+      },
+      "revId": "b84b835c21a04e6e067915ae5f64919bf0c2f98d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -72,6 +120,30 @@
     },
     {
       "key": {
+        "uuid": "55c2f39f_7160e05b",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 228,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-02-03T10:23:12Z",
+      "side": 1,
+      "message": "Good to know. Done.",
+      "parentUuid": "0dd4660f_64fac2a4",
+      "range": {
+        "startLine": 228,
+        "startChar": 15,
+        "endLine": 228,
+        "endChar": 21
+      },
+      "revId": "b84b835c21a04e6e067915ae5f64919bf0c2f98d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c1b06a29_0d2f7972",
         "filename": "src/chromiumos/tast/internal/runner/features.go",
         "patchSetId": 1
@@ -83,6 +155,30 @@
       "writtenOn": "2020-01-29T09:49:38Z",
       "side": 1,
       "message": "Do we need CombinedOutput instead of Output?\n\nI generally don\u0027t recommend CombinedOutput for non-informational purpose ecause mixture of stdout and stderr is inherently racy.",
+      "range": {
+        "startLine": 153,
+        "startChar": 70,
+        "endLine": 153,
+        "endChar": 84
+      },
+      "revId": "b84b835c21a04e6e067915ae5f64919bf0c2f98d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c3cad954_8c3dab0c",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-02-03T10:23:12Z",
+      "side": 1,
+      "message": "My intention was to include stderr message in case cros_config failed.\nUpdated the code without race.",
+      "parentUuid": "c1b06a29_0d2f7972",
       "range": {
         "startLine": 153,
         "startChar": 70,

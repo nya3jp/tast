@@ -257,7 +257,7 @@ func (s *State) Run(ctx context.Context, name string, run func(context.Context, 
 		s.hasError = true
 	}
 
-	return ns.hasError
+	return !ns.hasError
 }
 
 // PreValue returns a value supplied by the test's precondition, which must have been declared via Test.Pre

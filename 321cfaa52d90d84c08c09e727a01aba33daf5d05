@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "687da024_8c33d66e",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-02-05T10:23:40Z",
+      "side": 1,
+      "message": "It seems testing.T.Run returns true iff the subtest passed (\u003d no error). Should we fix the return value rather than the comment here?",
+      "range": {
+        "startLine": 227,
+        "startChar": 37,
+        "endLine": 227,
+        "endChar": 75
+      },
+      "revId": "321cfaa52d90d84c08c09e727a01aba33daf5d05",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

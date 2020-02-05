@@ -16,6 +16,24 @@
       "revId": "007369c69ea3fcb63aeeae7a6595f4aba4f811dd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5b74e61c_3b2a3fd8",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-02-05T11:36:09Z",
+      "side": 1,
+      "message": "Done\n\nThank you for suggestion.",
+      "parentUuid": "f591a948_f72e4471",
+      "revId": "007369c69ea3fcb63aeeae7a6595f4aba4f811dd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

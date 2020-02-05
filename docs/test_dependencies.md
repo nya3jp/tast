@@ -89,7 +89,10 @@ The following software features are defined:
 *   `no_ubsan` - Build was not built with Undefined Behavior Sanitizer.
 *   `oci` - The ability to use the `run_oci` program to execute code within
     [OCI] containers.
-*   `plugin_vm` - The ability to run Plugin VMs.
+*   `plugin_vm` - The ability to run Plugin VMs. Only if PluginVM is present
+    and the device is licenced to run it, is this capability present.
+*   `plugin_vm_stable` - Boards that can run Plugin VM tests reliably.
+*   `plugin_vm_unstable` - Boards that cannot run Plugin VM tests reliably.
 *   `qemu` - For tests exclusive to Chrome OS QEMU images.
 *   `reboot` - The ability to reboot reliably during a remote test.
 *   `screenshot` - The [screenshot command] can save screenshots.

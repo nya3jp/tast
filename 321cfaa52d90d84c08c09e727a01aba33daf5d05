@@ -22,6 +22,30 @@
       "revId": "321cfaa52d90d84c08c09e727a01aba33daf5d05",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5ddbae40_0e61b859",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-02-05T10:49:13Z",
+      "side": 1,
+      "message": "https://golang.org/pkg/testing/#B.Run\nhttps://golang.org/pkg/testing/#T.Run\n\ntesting is also inconsistent... I looked at benchmarks.\n\nI prefer fixing the return value to be consistent with T.Run as that is its closest equivalent. WDYT?",
+      "parentUuid": "687da024_8c33d66e",
+      "range": {
+        "startLine": 227,
+        "startChar": 37,
+        "endLine": 227,
+        "endChar": 75
+      },
+      "revId": "321cfaa52d90d84c08c09e727a01aba33daf5d05",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

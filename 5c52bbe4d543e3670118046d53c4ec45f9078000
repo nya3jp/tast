@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8451de05_fc7195ff",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1003044
+      },
+      "writtenOn": "2020-02-06T03:18:29Z",
+      "side": 1,
+      "message": "\"Plugin VM\" for consistency?",
+      "range": {
+        "startLine": 92,
+        "startChar": 57,
+        "endLine": 92,
+        "endChar": 65
+      },
+      "revId": "5c52bbe4d543e3670118046d53c4ec45f9078000",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

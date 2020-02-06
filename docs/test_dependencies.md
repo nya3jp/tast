@@ -1,15 +1,17 @@
 # Tast Test Dependencies (go/tast-deps)
 
-A test may specify software features that must be supported by the DUT's system
-image in order for the test to run successfully. If one or more features aren't
+A test may specify software features or hardware features that must be supported on the DUT
+in order for the test to run successfully. If one or more features aren't
 supported by the DUT, the test will usually be skipped. See the `tast` command's
 `-checktestdeps` flag to control this behavior.
 
-Tests specify dependencies through the `SoftwareDeps` field in [testing.Test].
+Tests specify dependencies through the `SoftwareDeps` field and `HardwareDeps` field in [testing.Test].
 
 [testing.Test]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Test
 
-## Existing features
+## Software dependencies
+
+### Existing features
 
 The following software features are defined:
 
@@ -150,7 +152,7 @@ The following software features are defined:
 [Vulkan]: https://www.khronos.org/vulkan/
 [wilco]: https://sites.google.com/corp/google.com/wilco/home
 
-## New features
+### New features
 
 Features should be descriptive and precise. Consider a hypothetical test that
 exercises authentication using a biometrics daemon that isn't present in system
@@ -191,9 +193,9 @@ please ask for help on the [tast-users mailing list].
 [local_test_runner]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/cmd/local_test_runner/main.go
 [tast-use-flags]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/tast-use-flags/
 [Cq-Depend]: https://chromium.googlesource.com/chromiumos/docs/+/master/contributing.md#cq-depend
-[tast-users mailing list]: https://groups.google.com/a/chromium.org/forum/#!forum/tast-users
+[tast-users mailing list]: https://groups.google.com/a/chromium.org/forum/#!forum/tast-user
 
-### Example changes
+#### Example changes
 
 See the following changes for an example of adding a new `containers` software
 feature based on the `containers` USE flag and making a test depend on it:
@@ -204,7 +206,7 @@ feature based on the `containers` USE flag and making a test depend on it:
 
 (Note that the `containers` feature has since been renamed to `oci`.)
 
-## autotest-capability
+### autotest-capability
 
 There are also `autotest-capability:`-prefixed features, which are added by the
 [autocaps package] as specified by YAML files in
@@ -213,3 +215,44 @@ existing Autotest-based video tests to Tast. Do not depend on capabilities from
 outside of video tests.
 
 [autocaps package]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/autocaps/
+
+
+## Hardware dependencies
+
+Tast provides a way to run/skip tests based on the device characteristic.
+For example, in order to run tests on DUT where touchscreen is available,
+the dependency can be declared in the `HardwareDeps` field of `testing.Test`.
+
+
+```go
+func init() {
+  testing.AddTest(&testing.Test{
+    ...
+    HardwareDeps: hwdep.D(hwdep.Touchscreen()),
+    ...
+  })
+}
+```
+
+You can provide multiple `Condition`s to `hwdep.D`. In the case,
+the test will run only on DUTs where all the conditions are satisfied.
+
+You can find the full list of supported conditions in [hwdep package].
+
+[hwdep package]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/testing/hwdep/
+
+### Adding new hardware conditions
+
+Because of forward compatibility with Chrome OS infra migration,
+each `Condition` should be based on `device.Config` protobuf schema.
+
+For example, the `hwdep.Touchscreen()` can check
+whether `device.Config.hardware_features` contains
+`HARDWARE_FEATURE_TOUCHSCREEN`.
+
+Any condition should not depend on any other surrounding environment,
+such as some command execution on DUT or reading some config file on DUT, etc.
+
+Note that, currently `device.Config` instance is generated
+internally on Tast runtime, so only limited fields are filled.
+In the future, Chrome OS infra will provide the instance.

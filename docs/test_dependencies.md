@@ -122,7 +122,7 @@ The following software features are defined:
 *   `wilco` - If this DUT is a [wilco] device. These features include
     the DTC (Diagnostic and Telemetry Controller) VM, a special EC interface,
     and a dock firmware updater.
-*   `wired_8021x' - The ability to use 802.1X for authentication over Ethernet.
+*   `wired_8021x` - The ability to use 802.1X for authentication over Ethernet.
 
 [amd64]: https://en.wikipedia.org/wiki/X86-64
 [run Android apps]: https://developer.android.com/topic/arc/

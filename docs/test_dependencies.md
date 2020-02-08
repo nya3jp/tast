@@ -49,6 +49,7 @@ The following software features are defined:
     of Chrome (e.g. official branding and proprietary codecs like H.264). Any
     test that specifies this dependency should also explicitly specify a
     `chrome` dependency.
+*   `chrome_media` - To handle proprietary codec cases 
 *   `cros_config` - `cros_config` utility is available.
 *   `cros_internal` - Functionality that is only available in internal builds of
     Chrome OS (i.e. ones built using `chromeos-overlay`).

@@ -162,6 +162,19 @@ func checkAll(g *git.Git, paths []git.CommitFile, debug bool, fix bool) ([]*chec
 		allIssues = append(allIssues, check.ExternalJSON(path.Path, data)...)
 	}
 
+	// Check secret variables naming convention
+	for _, path := range validPaths {
+		dir, file := filepath.Split(path.Path)
+		if isVarFile := strings.HasSuffix(file, ".yaml") && strings.HasSuffix(dir, "vars"); !isVarFile {
+			continue
+		}
+		data, err := g.ReadFile(path.Path)
+		if err != nil {
+			continue
+		}
+		allIssues = append(allIssues, check.SecretVarFile(path.Path, data)...)
+	}
+
 	dfmap := makeMapDirGoFile(validPaths)
 	for dir, cfs := range dfmap {
 		pkg, err := cp.parsePackage(dir)

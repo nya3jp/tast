@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "20ffb2e3_8c3cb5f1",
+        "filename": "src/chromiumos/cmd/tast-lint/check/secret_vars.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-02-10T02:14:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1b883cac_a1976016",
+      "revId": "c352a4708c588307a442d3df58ab77fb683054e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "23e034f8_d259005a",
         "filename": "src/chromiumos/cmd/tast-lint/check/secret_vars.go",
         "patchSetId": 3
@@ -42,6 +60,30 @@
     },
     {
       "key": {
+        "uuid": "9abb658c_7bde5c60",
+        "filename": "src/chromiumos/cmd/tast-lint/check/secret_vars.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-02-10T02:14:10Z",
+      "side": 1,
+      "message": "It happens if file\u0027s basename doesn\u0027t match with expected regex. I don\u0027t return in L40 to unmarshal the data anyway to report parse error too if any.",
+      "parentUuid": "23e034f8_d259005a",
+      "range": {
+        "startLine": 52,
+        "startChar": 1,
+        "endLine": 54,
+        "endChar": 2
+      },
+      "revId": "c352a4708c588307a442d3df58ab77fb683054e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8ecf3493_37872f1e",
         "filename": "src/chromiumos/cmd/tast-lint/main.go",
         "patchSetId": 3
@@ -62,6 +104,30 @@
       "revId": "c352a4708c588307a442d3df58ab77fb683054e8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fe64e685_c1d0b2b1",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-02-10T02:14:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8ecf3493_37872f1e",
+      "range": {
+        "startLine": 168,
+        "startChar": 5,
+        "endLine": 168,
+        "endChar": 97
+      },
+      "revId": "c352a4708c588307a442d3df58ab77fb683054e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

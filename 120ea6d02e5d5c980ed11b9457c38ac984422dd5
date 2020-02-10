@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "b06361b7_9fb74aa8",
+        "filename": "src/chromiumos/cmd/tast-lint/check/secret_vars.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-02-10T04:47:09Z",
+      "side": 1,
+      "message": "Sure. Will do.",
+      "parentUuid": "84600094_cf98286e",
+      "range": {
+        "startLine": 21,
+        "startChar": 42,
+        "endLine": 21,
+        "endChar": 61
+      },
+      "revId": "120ea6d02e5d5c980ed11b9457c38ac984422dd5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "575ba86d_d1b6f8eb",
         "filename": "src/chromiumos/cmd/tast-lint/check/secret_vars.go",
         "patchSetId": 8
@@ -45,6 +69,30 @@
       "revId": "120ea6d02e5d5c980ed11b9457c38ac984422dd5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9dbd8e06_a5012a6c",
+        "filename": "src/chromiumos/cmd/tast-lint/check/secret_vars.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-02-10T04:47:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "575ba86d_d1b6f8eb",
+      "range": {
+        "startLine": 40,
+        "startChar": 21,
+        "endLine": 40,
+        "endChar": 22
+      },
+      "revId": "120ea6d02e5d5c980ed11b9457c38ac984422dd5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

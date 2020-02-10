@@ -997,33 +997,31 @@ Then the test can access the variables just like normal variables assigned to th
 func init() {
 	testing.AddTest(&testing.Test{
 		Func:     Bar,
-        ...
+	...
 		Vars: []string{"foo.Bar.user", "foo.Bar.password"},
 		// or foo.user, foo.password
 	})
 }
 
 func Bar(ctx context.Context, s *testing.State) {
-    user := s.RequiredVar("foo.Bar.user")
-    ...
+	user := s.RequiredVar("foo.Bar.user")
+	...
 }
 ```
 
-See example.SecretVars for working example. TODO(oka): add the link to the test after it's submitted.
+See [example.SecretVars](https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/bundles/cros/example/secret_vars.go) for working example.
 
 #### Naming convention
 
 Secret variables definition and usage should follow these rules:
 
-* Variable name should have the form of `foo.Bar.something` or `foo.something`, where `something` matches `[a-zA-Z][0-9A-Za-z_]*`
+* Variable name should have the form of `foo.Bar.something` or `foo.something`, where `something` matches `[A-Za-z][A-Za-z0-9_]*`
 * The file defining `foo.Bar.something` should be `foo.Bar.yaml`
 * The file defining `foo.something` should be `foo.yaml`
 * Only the test `foo.Bar` can access `foo.Bar.something`
 * Only tests in `foo` category can access `foo.something`
 
 If one violates this convention, Tast linter will complain. Please honor the linter errors.
-
-TODO(crbug.com/1014386): linter is not fully implemented.
 
 ## Parameterized tests
 

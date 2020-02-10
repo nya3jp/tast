@@ -84,6 +84,30 @@
     },
     {
       "key": {
+        "uuid": "3b76a33c_25ad773d",
+        "filename": "src/chromiumos/cmd/tast-lint/check/secret_vars.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-02-10T03:09:44Z",
+      "side": 1,
+      "message": "Ah, I see.\n\n1) Could you at least add the comment about not-immediately-return from L40?\n2) (optional) wdyt about:\n\nif m :\u003d varFileBaseNameRe....; m \u003d\u003d nil {\n  addIssue(...)\n} else {\n  wantPrefix \u003d m[1]\n}\n\nif err :\u003d ...; err !\u003d nil {\n  addIssue(...)\n}\n\nif len(issues) \u003e 0 {\n  return\n}\n\n- No return from yaml parse error, for consistency with varFileBaseNameRe check.\n- Check any issues, instead of wantPrefix, which is probably what we\u0027d like to check here, I think?",
+      "parentUuid": "9abb658c_7bde5c60",
+      "range": {
+        "startLine": 52,
+        "startChar": 1,
+        "endLine": 54,
+        "endChar": 2
+      },
+      "revId": "c352a4708c588307a442d3df58ab77fb683054e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8ecf3493_37872f1e",
         "filename": "src/chromiumos/cmd/tast-lint/main.go",
         "patchSetId": 3

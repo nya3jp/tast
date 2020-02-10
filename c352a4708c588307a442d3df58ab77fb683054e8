@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1b883cac_a1976016",
+        "filename": "src/chromiumos/cmd/tast-lint/check/secret_vars.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-02-10T00:58:35Z",
+      "side": 1,
+      "message": "This should match with the pattern used in the verification on test registration.\n\nhttps://chromium.googlesource.com/chromiumos/platform/tast/+/cafb1e549e159a44d99a66ddc98d78ebd89d8da3/src/chromiumos/tast/testing/test.go#195",
+      "revId": "c352a4708c588307a442d3df58ab77fb683054e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "23e034f8_d259005a",
+        "filename": "src/chromiumos/cmd/tast-lint/check/secret_vars.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-02-10T00:58:35Z",
+      "side": 1,
+      "message": "Because of the pattern, this should not happen?",
+      "range": {
+        "startLine": 52,
+        "startChar": 1,
+        "endLine": 54,
+        "endChar": 2
+      },
+      "revId": "c352a4708c588307a442d3df58ab77fb683054e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8ecf3493_37872f1e",
+        "filename": "src/chromiumos/cmd/tast-lint/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-02-10T00:58:35Z",
+      "side": 1,
+      "message": "nit: how about just simply\n\nif !strings.HasSuffix(dir, \"vars/\") || !strings.HasSuffix(file, \".yaml\") {\n  continue\n}",
+      "range": {
+        "startLine": 168,
+        "startChar": 5,
+        "endLine": 168,
+        "endChar": 97
+      },
+      "revId": "c352a4708c588307a442d3df58ab77fb683054e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

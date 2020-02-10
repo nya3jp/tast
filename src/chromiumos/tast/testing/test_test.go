@@ -6,6 +6,7 @@ package testing
 
 import (
 	"context"
+	"testing"
 	gotesting "testing"
 	"time"
 )
@@ -105,6 +106,42 @@ func TestReservedAttrPrefixes(t *gotesting.T) {
 	} {
 		if err := validateAttr([]string{attr}); err == nil {
 			t.Errorf("Did not get an error for reserved attribute %q", attr)
+		}
+	}
+}
+
+func TestValidateVars_OK(t *testing.T) {
+	const (
+		category = "a"
+		name     = "B"
+	)
+	for _, vars := range [][]string{
+		{"x"},
+		{"a.B.c", "a.c"},
+		{"a.B.cC1_"},
+	} {
+		if err := validateVars(category, name, vars); err != nil {
+			t.Errorf("validateVars(%v, %v, %v) = %v; want nil", category, name, vars, err)
+		}
+	}
+}
+
+func TestValidateVars_Error(t *testing.T) {
+	const (
+		category = "a"
+		name     = "B"
+	)
+	for _, vars := range [][]string{
+		{"a."},
+		{"a.c", "a."},
+		{"a.B."},
+		{"x.c"},
+		{"a.X.c"},
+		{"a.B.c."},
+		{"a.B._"},
+	} {
+		if err := validateVars(category, name, vars); err == nil {
+			t.Errorf("validateVars(%v, %v, %v) = nil; want error", category, name, vars)
 		}
 	}
 }

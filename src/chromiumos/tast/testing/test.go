@@ -136,6 +136,9 @@ func validateTest(t *Test) error {
 	if err := validateData(t.Data); err != nil {
 		return err
 	}
+	if err := validateVars(info.category, info.name, t.Vars); err != nil {
+		return err
+	}
 	if t.Timeout < 0 {
 		return fmt.Errorf("%s.%s has negative timeout %v", info.category, info.name, t.Timeout)
 	}
@@ -271,6 +274,26 @@ func validateData(data []string) error {
 		if p != filepath.Clean(p) || strings.HasPrefix(p, ".") || strings.HasPrefix(p, "/") {
 			return fmt.Errorf("data path %q is invalid", p)
 		}
+	}
+	return nil
+}
+
+var validVarLastPartRE = regexp.MustCompile("[a-zA-Z][0-9A-Za-z_]*")
+
+func validateVars(category, name string, vars []string) error {
+	for _, v := range vars {
+		parts := strings.Split(v, ".")
+		// Allow e.g. "servo".
+		if len(parts) == 1 {
+			continue
+		}
+		if len(parts) == 2 && parts[0] == category && validVarLastPartRE.MatchString(parts[1]) {
+			continue
+		}
+		if len(parts) == 3 && parts[0] == category && parts[1] == name && validVarLastPartRE.MatchString(parts[2]) {
+			continue
+		}
+		return fmt.Errorf("valiable name %s violates our naming convention defined in https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Runtime-variables", v)
 	}
 	return nil
 }

@@ -71,7 +71,14 @@ func TestContextOutDir(t *testing.T) {
 		t.Error("ContextOutDir unexpectedly succeeded for context without TestContext")
 	}
 
-	tc := &TestContext{OutDir: testOutDir}
+	tcs := &TestContext{}
+	ctxs := WithTestContext(ctx, tcs)
+
+	if _, ok := ContextOutDir(ctxs); ok {
+		t.Error("ContextOutDir unexpectedly succeeded for context without TestInfo")
+	}
+
+	tc := &TestContext{TestInfo: &TestContextTestInfo{OutDir: testOutDir}}
 	ctx = WithTestContext(ctx, tc)
 
 	if outDir, ok := ContextOutDir(ctx); !ok {
@@ -80,7 +87,7 @@ func TestContextOutDir(t *testing.T) {
 		t.Errorf("ContextOutDir = %q; want %q", outDir, testOutDir)
 	}
 
-	tc = &TestContext{OutDir: ""}
+	tc = &TestContext{TestInfo: &TestContextTestInfo{OutDir: ""}}
 	ctx = WithTestContext(ctx, tc)
 
 	if _, ok := ContextOutDir(ctx); ok {
@@ -97,7 +104,14 @@ func TestContextSoftwareDeps(t *testing.T) {
 		t.Error("ContextSoftwareDeps unexpectedly succeeded for context without TestContext")
 	}
 
-	tc := &TestContext{SoftwareDeps: testSoftwareDeps}
+	tcs := &TestContext{}
+	ctxs := WithTestContext(ctx, tcs)
+
+	if _, ok := ContextSoftwareDeps(ctxs); ok {
+		t.Error("ContextSoftwareDeps unexpectedly succeeded for context without TestInfo")
+	}
+
+	tc := &TestContext{TestInfo: &TestContextTestInfo{SoftwareDeps: testSoftwareDeps}}
 	ctx = WithTestContext(ctx, tc)
 
 	if softwareDeps, ok := ContextSoftwareDeps(ctx); !ok {
@@ -116,7 +130,14 @@ func TestContextServiceDeps(t *testing.T) {
 		t.Error("ContextServiceDeps unexpectedly succeeded for context without TestContext")
 	}
 
-	tc := &TestContext{ServiceDeps: testServiceDeps}
+	tcs := &TestContext{}
+	ctxs := WithTestContext(ctx, tcs)
+
+	if _, ok := ContextServiceDeps(ctxs); ok {
+		t.Error("ContextServiceDeps unexpectedly succeeded for context without TestInfo")
+	}
+
+	tc := &TestContext{TestInfo: &TestContextTestInfo{ServiceDeps: testServiceDeps}}
 	ctx = WithTestContext(ctx, tc)
 
 	if serviceDeps, ok := ContextServiceDeps(ctx); !ok {

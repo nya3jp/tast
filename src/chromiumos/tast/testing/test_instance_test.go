@@ -514,6 +514,71 @@ func TestRunPrecondition(t *gotesting.T) {
 	}
 }
 
+func TestRunPreconditionContext(t *gotesting.T) {
+	var testCtx context.Context
+	testCtx = nil
+
+	prepareFunc := func(ctx context.Context, s *State) interface{} {
+		if testCtx == nil {
+			testCtx = s.PreCtx()
+		}
+
+		if testCtx != s.PreCtx() {
+			t.Errorf("Different context in Prepare")
+		}
+
+		return nil
+	}
+
+	closeFunc := func(ctx context.Context, s *State) {
+		if testCtx != s.PreCtx() {
+			t.Errorf("Different context in Close")
+		}
+	}
+
+	testFunc := func(ctx context.Context, s *State) {
+		defer func() {
+			if r := recover(); r == nil {
+				t.Errorf("PreCtx did not panic")
+			}
+		}()
+
+		s.PreCtx()
+	}
+
+	pre := &testPre{
+		prepareFunc: prepareFunc,
+		closeFunc:   closeFunc,
+	}
+
+	t1 := &TestInstance{Name: "t1", Pre: pre, Timeout: time.Minute, Func: testFunc}
+	t2 := &TestInstance{Name: "t2", Pre: pre, Timeout: time.Minute, Func: testFunc}
+
+	or := newOutputReader()
+	t1.Run(context.Background(), or.ch, &TestConfig{
+		NextTest: t2,
+	})
+	for _, err := range getOutputErrors(or.read()) {
+		t.Error("Got error: ", err.Reason)
+	}
+
+	if t1.PreCtx != t2.PreCtx {
+		t.Errorf("PreCtx different between test instances")
+	}
+
+	or = newOutputReader()
+	t2.Run(context.Background(), or.ch, &TestConfig{
+		NextTest: nil,
+	})
+	for _, err := range getOutputErrors(or.read()) {
+		t.Error("Got error: ", err.Reason)
+	}
+
+	if t1.PreCtx.Err() == nil {
+		t.Errorf("Context not cancelled")
+	}
+}
+
 func TestAttachStateToContext(t *gotesting.T) {
 	test := TestInstance{
 		Func: func(ctx context.Context, s *State) {

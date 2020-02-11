@@ -90,7 +90,8 @@ type rootState struct {
 	ch   chan<- Output // channel to which logging messages and errors are written
 	cfg  *TestConfig   // details about how to run test
 
-	preValue interface{} // value returned by test.Pre.Prepare; may be nil
+	preValue interface{}     // value returned by test.Pre.Prepare; may be nil
+	preCtx   context.Context // context that lives as long as the precondition; can only be accessed in the precondition phase
 
 	closed bool       // true after close is called and ch is closed
 	mu     sync.Mutex // protects closed
@@ -165,10 +166,12 @@ func (r *rootState) close() {
 // testContext returns a TestContext for the test.
 func (s *State) testContext() *TestContext {
 	return &TestContext{
-		Logger:       func(msg string) { s.Log(msg) },
-		OutDir:       s.OutDir(),
-		SoftwareDeps: s.SoftwareDeps(),
-		ServiceDeps:  s.ServiceDeps(),
+		Logger: func(msg string) { s.Log(msg) },
+		TestInfo: &TestContextTestInfo{
+			OutDir:       s.OutDir(),
+			SoftwareDeps: s.SoftwareDeps(),
+			ServiceDeps:  s.ServiceDeps(),
+		},
 	}
 }
 
@@ -384,6 +387,16 @@ func (s *State) HasError() bool {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	return s.hasError
+}
+
+// PreCtx returns a context that lives as long as the precondition.
+// Can only be called from inside a precondition; it panics otherwise.
+func (s *State) PreCtx() context.Context {
+	if !s.inPre {
+		panic("PreCtx can only be called in a precondition")
+	}
+
+	return s.root.preCtx
 }
 
 // errorSuffix matches the well-known error message suffixes for formatError.

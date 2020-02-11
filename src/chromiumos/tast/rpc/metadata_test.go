@@ -16,10 +16,12 @@ import (
 
 func TestOutgoingMetadata(t *gotesting.T) {
 	tc := &testing.TestContext{
-		Logger:       func(msg string) {},
-		OutDir:       "/mock/outdir",
-		SoftwareDeps: []string{"chrome", "android"},
-		ServiceDeps:  []string{"tast.core.Ping"},
+		Logger: func(msg string) {},
+		TestInfo: &testing.TestContextTestInfo{
+			OutDir:       "/mock/outdir",
+			SoftwareDeps: []string{"chrome", "android"},
+			ServiceDeps:  []string{"tast.core.Ping"},
+		},
 	}
 
 	ctx := testing.WithTestContext(context.Background(), tc)
@@ -29,7 +31,7 @@ func TestOutgoingMetadata(t *gotesting.T) {
 	}
 
 	exp := metadata.MD{
-		metadataSoftwareDeps: tc.SoftwareDeps,
+		metadataSoftwareDeps: tc.TestInfo.SoftwareDeps,
 	}
 	if diff := cmp.Diff(md, exp); diff != "" {
 		t.Errorf("outgoingMetadata returned unexpected MD (-got +want):\n%s", diff)
@@ -61,7 +63,9 @@ func TestIncomingTestContext(t *gotesting.T) {
 	tc.Logger = nil
 
 	exp := &testing.TestContext{
-		SoftwareDeps: md[metadataSoftwareDeps],
+		TestInfo: &testing.TestContextTestInfo{
+			SoftwareDeps: md[metadataSoftwareDeps],
+		},
 	}
 	if diff := cmp.Diff(tc, exp); diff != "" {
 		t.Errorf("incomingTestContext returned unexpected TestContext (-got +want):\n%s", diff)

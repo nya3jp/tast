@@ -17,7 +17,17 @@ type contextKeyType string
 // testContextKey is the key used for attaching a *TestContext to a context.Context.
 const testContextKey contextKeyType = "TestContext"
 
-// TestContext contains information about the currently running test.
+// TestContextTestInfo contains information about the currently running test.
+type TestContextTestInfo struct {
+	// OutDir is a directory where the current test can save output files.
+	OutDir string
+	// SoftwareDeps is a list of software dependencies declared in the current test.
+	SoftwareDeps []string
+	// ServiceDeps is a list of service dependencies declared in the current test.
+	ServiceDeps []string
+}
+
+// TestContext contains information accessible by using context.Context.
 //
 // Information in this struct is accessible from anywhere via context.Context
 // and testing.Context* functions. Each member should have strong reason to be
@@ -25,12 +35,9 @@ const testContextKey contextKeyType = "TestContext"
 type TestContext struct {
 	// Logger is a function that records a log message.
 	Logger func(msg string)
-	// OutDir is a directory where the current test can save output files.
-	OutDir string
-	// SoftwareDeps is a list of software dependencies declared in the current test.
-	SoftwareDeps []string
-	// ServiceDeps is a list of service dependencies declared in the current test.
-	ServiceDeps []string
+
+	// TestInfo contains information about the current test
+	TestInfo *TestContextTestInfo
 }
 
 // WithTestContext attaches TestContext to context.Context. This function can't
@@ -92,10 +99,10 @@ func ContextLogger(ctx context.Context) (*Logger, bool) {
 // used by packages providing support for tests that need to write files.
 func ContextOutDir(ctx context.Context) (dir string, ok bool) {
 	tc, ok := ctx.Value(testContextKey).(*TestContext)
-	if !ok || tc.OutDir == "" {
+	if !ok || tc.TestInfo == nil || tc.TestInfo.OutDir == "" {
 		return "", false
 	}
-	return tc.OutDir, true
+	return tc.TestInfo.OutDir, true
 }
 
 // ContextSoftwareDeps is similar to SoftwareDeps but takes context instead.
@@ -103,10 +110,11 @@ func ContextOutDir(ctx context.Context) (dir string, ok bool) {
 // make sure tests declare proper dependencies.
 func ContextSoftwareDeps(ctx context.Context) ([]string, bool) {
 	tc, ok := ctx.Value(testContextKey).(*TestContext)
-	if !ok {
+	if !ok || tc.TestInfo == nil {
 		return nil, false
 	}
-	return append([]string(nil), tc.SoftwareDeps...), true
+
+	return append([]string(nil), tc.TestInfo.SoftwareDeps...), true
 }
 
 // ContextServiceDeps is similar to ServiceDeps but takes context instead.
@@ -114,8 +122,9 @@ func ContextSoftwareDeps(ctx context.Context) ([]string, bool) {
 // make sure tests declare proper dependencies.
 func ContextServiceDeps(ctx context.Context) ([]string, bool) {
 	tc, ok := ctx.Value(testContextKey).(*TestContext)
-	if !ok {
+	if !ok || tc.TestInfo == nil {
 		return nil, false
 	}
-	return append([]string(nil), tc.ServiceDeps...), true
+
+	return append([]string(nil), tc.TestInfo.ServiceDeps...), true
 }

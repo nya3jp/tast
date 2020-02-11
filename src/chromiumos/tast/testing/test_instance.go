@@ -66,6 +66,11 @@ type TestInstance struct {
 	// This can be retrieved from testing.State.Param().
 	Val interface{} `json:"-"`
 
+	// PreCtx is a context that lives as long as the precondition.
+	PreCtx context.Context `json:"-"`
+	// PreCtxCancel cancels PreCtx.
+	PreCtxCancel func() `json:"-"`
+
 	// Following fields are copied from testing.Test struct.
 	// See the documents of the struct.
 
@@ -289,8 +294,23 @@ func (t *TestInstance) Run(ctx context.Context, ch chan<- Output, cfg *TestConfi
 				return
 			}
 			s.Logf("Preparing precondition %q", t.Pre)
+
+			if t.PreCtx == nil {
+				tc := &TestContext{
+					Logger: func(msg string) { s.Log(msg) },
+				}
+
+				t.PreCtx, t.PreCtxCancel = context.WithCancel(WithTestContext(context.Background(), tc))
+			}
+
+			if cfg.NextTest != nil && cfg.NextTest.Pre == t.Pre {
+				cfg.NextTest.PreCtx = t.PreCtx
+				cfg.NextTest.PreCtxCancel = t.PreCtxCancel
+			}
+
 			s.inPre = true
 			defer func() { s.inPre = false }()
+			s.root.preCtx = t.PreCtx
 			s.root.preValue = t.Pre.(preconditionImpl).Prepare(ctx, s)
 		}, t.Pre.Timeout(), t.Pre.Timeout()+exitTimeout)
 	}
@@ -310,6 +330,9 @@ func (t *TestInstance) Run(ctx context.Context, ch chan<- Output, cfg *TestConfi
 			s.inPre = true
 			defer func() { s.inPre = false }()
 			t.Pre.(preconditionImpl).Close(ctx, s)
+			if t.PreCtxCancel != nil {
+				t.PreCtxCancel()
+			}
 		}, t.Pre.Timeout(), t.Pre.Timeout()+exitTimeout)
 	}
 

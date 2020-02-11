@@ -37,7 +37,9 @@ func incomingTestContext(md metadata.MD, logger func(msg string)) *testing.TestC
 	return &testing.TestContext{
 		Logger: logger,
 		// TODO(crbug.com/969627): Support OutDir.
-		SoftwareDeps: softwareDeps,
-		// ServiceDeps is not forwarded.
+		TestInfo: &testing.TestContextTestInfo{
+			SoftwareDeps: softwareDeps,
+			// ServiceDeps is not forwarded.
+		},
 	}
 }

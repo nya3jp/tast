@@ -1,0 +1,188 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "dae0edad_b74fa4b5",
+        "filename": "src/chromiumos/tast/testing/test_instance.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2020-02-12T13:25:27Z",
+      "side": 1,
+      "message": "Do we want/need them to be public?",
+      "range": {
+        "startLine": 69,
+        "startChar": 0,
+        "endLine": 72,
+        "endChar": 31
+      },
+      "revId": "0b3ae81f8a7bec931181b8cfe78e5f5574dcbb71",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8c2ac20a_90182d84",
+        "filename": "src/chromiumos/tast/testing/test_instance.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 299,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2020-02-12T13:25:27Z",
+      "side": 1,
+      "message": "optional: t.PreCtx, t.PreCtxCancel \u003d ...",
+      "range": {
+        "startLine": 299,
+        "startChar": 4,
+        "endLine": 299,
+        "endChar": 15
+      },
+      "revId": "0b3ae81f8a7bec931181b8cfe78e5f5574dcbb71",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a74d75cc_e299fbad",
+        "filename": "src/chromiumos/tast/testing/test_instance.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 331,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2020-02-12T13:25:27Z",
+      "side": 1,
+      "message": "When it can be nil? looks like it\u0027s always not nil unless structure value was changed manually.",
+      "range": {
+        "startLine": 331,
+        "startChar": 6,
+        "endLine": 331,
+        "endChar": 27
+      },
+      "revId": "0b3ae81f8a7bec931181b8cfe78e5f5574dcbb71",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "11bd4246_1c4c749e",
+        "filename": "src/chromiumos/tast/testing/test_instance_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 519,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2020-02-12T13:25:27Z",
+      "side": 1,
+      "message": "it\u0027s already nil",
+      "range": {
+        "startLine": 519,
+        "startChar": 1,
+        "endLine": 519,
+        "endChar": 14
+      },
+      "revId": "0b3ae81f8a7bec931181b8cfe78e5f5574dcbb71",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6dd063c1_783fbcb9",
+        "filename": "src/chromiumos/tast/testing/test_instance_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 527,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2020-02-12T13:25:27Z",
+      "side": 1,
+      "message": "let\u0027s add want and got",
+      "range": {
+        "startLine": 527,
+        "startChar": 13,
+        "endLine": 527,
+        "endChar": 41
+      },
+      "revId": "0b3ae81f8a7bec931181b8cfe78e5f5574dcbb71",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8a4ba881_3e48dbb8",
+        "filename": "src/chromiumos/tast/testing/test_instance_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 535,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2020-02-12T13:25:27Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 535,
+        "startChar": 13,
+        "endLine": 535,
+        "endChar": 39
+      },
+      "revId": "0b3ae81f8a7bec931181b8cfe78e5f5574dcbb71",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "41ef9b2e_fbe0f517",
+        "filename": "src/chromiumos/tast/testing/test_instance_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 541,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2020-02-12T13:25:27Z",
+      "side": 1,
+      "message": "Let\u0027s maybe check whether it panics due to expected reason?",
+      "range": {
+        "startLine": 541,
+        "startChar": 22,
+        "endLine": 541,
+        "endChar": 30
+      },
+      "revId": "0b3ae81f8a7bec931181b8cfe78e5f5574dcbb71",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0f7ddabc_c1516ae8",
+        "filename": "src/chromiumos/tast/testing/test_instance_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 566,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2020-02-12T13:25:27Z",
+      "side": 1,
+      "message": "same: want+got",
+      "range": {
+        "startLine": 566,
+        "startChar": 12,
+        "endLine": 566,
+        "endChar": 51
+      },
+      "revId": "0b3ae81f8a7bec931181b8cfe78e5f5574dcbb71",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

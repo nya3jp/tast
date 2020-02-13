@@ -48,6 +48,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 			attrs: []string{"group:stress"},
 		},
 		{
+			attrs: []string{"group:arc-data-collector"},
+		},
+		{
 			attrs: []string{"group:appcompat"},
 		},
 		{

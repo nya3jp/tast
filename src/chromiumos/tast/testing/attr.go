@@ -142,6 +142,11 @@ Tests in this group are not used for build verification.
 		Desc:     `A group of stress tests.`,
 	},
 	{
+		Name:     "arc-data-collector",
+		Contacts: []string{"chromeos-engprod@google.com"},
+		Desc:     `A group of ARC tests to be run in Android PFQ and collect data for specific Android build.`,
+	},
+	{
 		Name:     "appcompat",
 		Contacts: []string{"chromeos-engprod@google.com"},
 		Desc:     `A group of ARC app compatibility tests.`,

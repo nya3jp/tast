@@ -48,6 +48,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 			attrs: []string{"group:stress"},
 		},
 		{
+			attrs: []string{"group:android-pfq"},
+		},
+		{
 			attrs: []string{"group:appcompat"},
 		},
 		{

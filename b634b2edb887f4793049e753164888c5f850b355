@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bc201f3b_3b2b2e2a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1300299
+      },
+      "writtenOn": "2020-02-14T22:25:12Z",
+      "side": 1,
+      "message": "Cq-Depend on 2057546 as well to make it clear that all 3 go together?  (And Cq-Depend on this and 2057546 in 2057546)",
+      "range": {
+        "startLine": 12,
+        "startChar": 10,
+        "endLine": 12,
+        "endChar": 11
+      },
+      "revId": "b634b2edb887f4793049e753164888c5f850b355",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

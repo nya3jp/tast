@@ -22,6 +22,30 @@
       "revId": "b634b2edb887f4793049e753164888c5f850b355",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "21d3270d_bc89cc21",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1305461
+      },
+      "writtenOn": "2020-02-14T22:30:30Z",
+      "side": 1,
+      "message": "I was trying to have the minimal set of Cq-Depends to make it easier to submit them; crrev.com/c/2057328 doesn\u0027t depend on anything, so I want to be able to get it in even without the other two submitting, and likewise this one doesn\u0027t need the downstream CL crrev.com/c/2057546, so I\u0027d like to be able to submit it without that.\n\nIs there some reason that wouldn\u0027t work?",
+      "parentUuid": "bc201f3b_3b2b2e2a",
+      "range": {
+        "startLine": 12,
+        "startChar": 10,
+        "endLine": 12,
+        "endChar": 11
+      },
+      "revId": "b634b2edb887f4793049e753164888c5f850b355",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

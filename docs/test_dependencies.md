@@ -59,6 +59,7 @@ The following software features are defined:
 *   `crostini_unstable` - Boards that cannot run Crostini tests reliably.
 *   `crosvm_gpu` - The ability to use hardware GPU acceleration in the guest VM environment.
 *   `cups` - CUPS daemon.
+*   `daisydog` - daisydog watchdog daemon
 *   `diagnostics` - Boards that contain generic cross-platform
     [Diagnostic utilities].
 *   `display_backlight` - An internal display backlight.

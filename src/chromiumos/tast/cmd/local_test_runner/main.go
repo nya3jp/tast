@@ -93,6 +93,7 @@ func main() {
 			"crosvm_gpu":              `"crosvm-gpu"`,
 			"crossystem":              "!betty && !tast_vm", // VMs don't support few crossystem sub-commands: https://crbug.com/974615
 			"cups":                    "cups",
+			"daisydog":                "daisydog",
 			"diagnostics":             "diagnostics",
 			"display_backlight":       "display_backlight",
 			"dlc":                     "dlc_test",

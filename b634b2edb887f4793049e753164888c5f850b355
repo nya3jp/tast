@@ -70,6 +70,30 @@
       "revId": "b634b2edb887f4793049e753164888c5f850b355",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "112aef52_41ad5c9c",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1305461
+      },
+      "writtenOn": "2020-02-14T22:47:56Z",
+      "side": 1,
+      "message": "OK. I think I\u0027d like to leave as-is for now unless someone has a stronger objection 😊",
+      "parentUuid": "9ef4f0a1_50acb4e8",
+      "range": {
+        "startLine": 12,
+        "startChar": 10,
+        "endLine": 12,
+        "endChar": 11
+      },
+      "revId": "b634b2edb887f4793049e753164888c5f850b355",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

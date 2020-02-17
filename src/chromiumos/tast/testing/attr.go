@@ -120,7 +120,7 @@ Tests in this group are not used for build verification.
 			},
 			{
 				Name: "graphics_video",
-				Desc: `Indicate this test is focos on video encode/decode.`,
+				Desc: `Indicate this test is focus on video encode/decode.`,
 			},
 			{
 				Name: "graphics_perbuild",

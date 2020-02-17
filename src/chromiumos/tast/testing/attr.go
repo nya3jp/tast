@@ -147,6 +147,11 @@ Tests in this group are not used for build verification.
 		Desc:     `A group of ARC app compatibility tests.`,
 	},
 	{
+		Name:     "enrollment",
+		Contacts: []string{"vsavu@google.com", "enterprise-policy-support-rotation@google.com"},
+		Desc:     `A group of tests performing enrollment and will clobber the stateful partition.`,
+	},
+	{
 		Name:     "flashrom",
 		Contacts: []string{"chromeos-platform-syd@google.com"},
 		Desc:     `A group of Flashrom destructive tests.`,

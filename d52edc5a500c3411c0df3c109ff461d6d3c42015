@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "bf384978_d26847a6",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 392,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-02-17T12:19:48Z",
+      "side": 1,
+      "message": "PreCtx makes it clear that this should only be used in preconditions and not by tests. Background also implies that the context will never be cancelled, which is not true.",
+      "parentUuid": "199a2429_27e063f8",
+      "range": {
+        "startLine": 392,
+        "startChar": 16,
+        "endLine": 392,
+        "endChar": 22
+      },
+      "revId": "d52edc5a500c3411c0df3c109ff461d6d3c42015",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "cde47916_fbfdcfd2",
         "filename": "src/chromiumos/tast/testing/test_instance.go",
         "patchSetId": 2
@@ -45,6 +69,30 @@
       "revId": "d52edc5a500c3411c0df3c109ff461d6d3c42015",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f67fdaf1_0edf1f42",
+        "filename": "src/chromiumos/tast/testing/test_instance.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 299,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-02-17T12:19:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cde47916_fbfdcfd2",
+      "range": {
+        "startLine": 299,
+        "startChar": 4,
+        "endLine": 299,
+        "endChar": 71
+      },
+      "revId": "d52edc5a500c3411c0df3c109ff461d6d3c42015",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

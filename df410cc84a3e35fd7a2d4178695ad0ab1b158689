@@ -2,6 +2,52 @@
   "comments": [
     {
       "key": {
+        "uuid": "dd822aea_ea01e456",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-02-18T16:18:20Z",
+      "side": 1,
+      "message": "Tast provides a way to run/skip tests ...",
+      "range": {
+        "startLine": 215,
+        "startChar": 23,
+        "endLine": 215,
+        "endChar": 39
+      },
+      "revId": "df410cc84a3e35fd7a2d4178695ad0ab1b158689",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c4bb4130_616af04a",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 216,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-02-18T16:18:20Z",
+      "side": 1,
+      "message": "touchscreen",
+      "range": {
+        "startLine": 216,
+        "startChar": 48,
+        "endLine": 216,
+        "endChar": 59
+      },
+      "revId": "df410cc84a3e35fd7a2d4178695ad0ab1b158689",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "fd8bc3d4_02d028b0",
         "filename": "docs/test_dependencies.md",
         "patchSetId": 2
@@ -13,6 +59,75 @@
       "writtenOn": "2020-02-06T04:33:06Z",
       "side": 1,
       "message": "I\u0027m not very sure if this is ok to be listed here, because it is not (yet) implemented...\n(but should be soon). Any thoughts...?",
+      "revId": "df410cc84a3e35fd7a2d4178695ad0ab1b158689",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fb98d594_0b12a5a3",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 230,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-02-18T16:18:20Z",
+      "side": 1,
+      "message": "You can provide multiple `Condition`s to `hwdep.D`.",
+      "range": {
+        "startLine": 230,
+        "startChar": 38,
+        "endLine": 230,
+        "endChar": 45
+      },
+      "revId": "df410cc84a3e35fd7a2d4178695ad0ab1b158689",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c1318a6f_686282ce",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 235,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-02-18T16:18:20Z",
+      "side": 1,
+      "message": "s/hwdeps/hwdep/ ?",
+      "range": {
+        "startLine": 235,
+        "startChar": 113,
+        "endLine": 235,
+        "endChar": 119
+      },
+      "revId": "df410cc84a3e35fd7a2d4178695ad0ab1b158689",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "30934b57_93161da9",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 237,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-02-18T16:18:20Z",
+      "side": 1,
+      "message": "conditions",
+      "range": {
+        "startLine": 237,
+        "startChar": 24,
+        "endLine": 237,
+        "endChar": 33
+      },
       "revId": "df410cc84a3e35fd7a2d4178695ad0ab1b158689",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

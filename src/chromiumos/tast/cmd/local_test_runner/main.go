@@ -104,6 +104,7 @@ func main() {
 			"flashrom":                "!betty && !tast_vm",
 			"google_virtual_keyboard": "chrome_internal && internal && !moblab", // doesn't work on Moblab: https://crbug.com/949912
 			"gpu_sandboxing":          "!betty && !tast_vm",                     // no GPU sandboxing on VMs: https://crbug.com/914688
+			"graphics_debugfs":        `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14" || "kernel-3_18")`,
 			"gsc":                     "cr50_onboard",
 			"hostap_hwsim":            "wifi_hostap_test",
 			"iwlwifi_rescan":          "iwlwifi_rescan",

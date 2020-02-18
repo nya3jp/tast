@@ -71,6 +71,7 @@ The following software features are defined:
 *   `google_virtual_keyboard` - The proprietary Google onscreen virtual keyboard
     (as opposed to the builtin open-source virtual keyboard).
 *   `gpu_sandboxing` - Chrome's GPU process is [sandboxed].
+*   `graphics_debugfs` - Whether the kernel DRM subsystem supports Debug FS for Graphics.
 *   `gsc` - Whether the platform has an onboard Google security chip.
 *   `hostap_hwsim` - Whether system has the hostap project's test dependencies
     (scripts, daemons) installed and configured appropriately.

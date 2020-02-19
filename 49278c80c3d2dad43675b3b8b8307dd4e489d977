@@ -72,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "ed3e9d68_b2ae2baa",
+        "filename": "src/chromiumos/tast/testing/hwdep/dep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-02-19T16:54:15Z",
+      "side": 1,
+      "message": "This is used from chromiumos/tast/testing package to merge ExtraHardwareDeps in Param and its enclosing testing.Test\u0027s HardwareDeps.\n\nIs there any approach to hide from other packages in the case...?",
+      "parentUuid": "72688b7c_f8165844",
+      "range": {
+        "startLine": 66,
+        "startChar": 5,
+        "endLine": 66,
+        "endChar": 10
+      },
+      "revId": "49278c80c3d2dad43675b3b8b8307dd4e489d977",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "d3c84758_7a1d6d9a",
         "filename": "src/chromiumos/tast/testing/hwdep/dep.go",
         "patchSetId": 2
@@ -83,6 +107,30 @@
       "writtenOn": "2020-02-19T16:47:14Z",
       "side": 1,
       "message": "Should we treat nil *Deps as valid in general? If so I think we have to change Satisfied as well to allow nil receiver, as well as adding comments to Deps itself.\n\nAlternatively, what do you think about using Deps instead of *Deps? Then the zero value of Deps is valid and we don\u0027t need special care.",
+      "range": {
+        "startLine": 68,
+        "startChar": 0,
+        "endLine": 73,
+        "endChar": 2
+      },
+      "revId": "49278c80c3d2dad43675b3b8b8307dd4e489d977",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cdd64cab_589f083b",
+        "filename": "src/chromiumos/tast/testing/hwdep/dep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-02-19T16:54:15Z",
+      "side": 1,
+      "message": "So, considering the above use case (actually I\u0027d like to limit this for param merging...),\nI think taking ptr looks natural. WDYT?",
+      "parentUuid": "d3c84758_7a1d6d9a",
       "range": {
         "startLine": 68,
         "startChar": 0,

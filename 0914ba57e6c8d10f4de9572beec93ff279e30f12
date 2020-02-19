@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7d1b99bc_1db28596",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-02-19T16:32:29Z",
+      "side": 1,
+      "message": "- You nave multiple \"kernelnext\".\n- \"arcnext\" dependency looks independent from crostini...?\n- Could you list boards you\u0027re promoting to stable?\n- Scarlet is at least failing on CQ corresponding tests.\n  - crostini.DisplayDensity.x11_artifact_unstable\n  - crostini.CopyPaste.wayland_to_x11_artifact_unstable",
+      "revId": "0914ba57e6c8d10f4de9572beec93ff279e30f12",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "95582e01_775a82fb",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-02-19T16:32:29Z",
+      "side": 1,
+      "message": "style: to avoid maintaining two list, could you define constant (like androidContainerUnstable, above)?",
+      "revId": "0914ba57e6c8d10f4de9572beec93ff279e30f12",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

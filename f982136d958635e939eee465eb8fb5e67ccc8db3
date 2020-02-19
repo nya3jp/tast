@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fad24c41_4b45b1e5",
+        "filename": "src/chromiumos/tast/testing/context.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-02-19T10:20:20Z",
+      "side": 1,
+      "message": "\u003e \"accesible\" is a possible misspelling of \"accessible\".\n\nDone.",
+      "parentUuid": "d6672a87_26642e9d",
+      "range": {
+        "startLine": 30,
+        "startChar": 36,
+        "endLine": 30,
+        "endChar": 45
+      },
+      "revId": "f982136d958635e939eee465eb8fb5e67ccc8db3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

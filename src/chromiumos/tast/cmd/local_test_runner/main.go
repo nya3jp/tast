@@ -81,15 +81,17 @@ func main() {
 			// TODO(b/73436929) Grunt cannot run 720p due to performance issue,
 			// we should remove grunt after hardware encoding supported.
 			// daisy variants' cameras don't support 1280x720.
-			"camera_720p":             "!snow && !skate && !spring && !grunt",
-			"camera_legacy":           `!"arc-camera1" && !"arc-camera3"`,
-			"chrome":                  "!chromeless_tty && !rialto",
-			"chrome_internal":         "chrome_internal",
-			"cros_config":             "unibuild",
-			"cros_internal":           "internal",
-			"cros_video_decoder":      "!disable_cros_video_decoder",
-			"crostini_stable":         "eve || atlas",    // Boards that can run Crostini tests reliably.
-			"crostini_unstable":       "!(eve || atlas)", // Boards that cannot run Crostini tests reliably.
+			"camera_720p":        "!snow && !skate && !spring && !grunt",
+			"camera_legacy":      `!"arc-camera1" && !"arc-camera3"`,
+			"chrome":             "!chromeless_tty && !rialto",
+			"chrome_internal":    "chrome_internal",
+			"cros_config":        "unibuild",
+			"cros_internal":      "internal",
+			"cros_video_decoder": "!disable_cros_video_decoder",
+			// Boards that can run Crostini tests reliably.
+			"crostini_stable": "!(auron_paine || auron_yuna || banon || bob || buddy || celes || coral || cyan || edgar || kernelnext || fizz || gandof || grunt || kernelnext || hana || kernelnext || kefka || kevin64 || arcnext || kevin || kukui || lulu || nocturne || octopus || reks || relm || kernelnext || samus || kvm || setzer || terra || ultima || wizpig)",
+			// Boards that cannot run Crostini tests reliably.
+			"crostini_unstable":       "auron_paine || auron_yuna || banon || bob || buddy || celes || coral || cyan || edgar || kernelnext || fizz || gandof || grunt || kernelnext || hana || kernelnext || kefka || kevin64 || arcnext || kevin || kukui || lulu || nocturne || octopus || reks || relm || kernelnext || samus || kvm || setzer || terra || ultima || wizpig",
 			"crosvm_gpu":              `"crosvm-gpu"`,
 			"crossystem":              "!betty && !tast_vm", // VMs don't support few crossystem sub-commands: https://crbug.com/974615
 			"cups":                    "cups",

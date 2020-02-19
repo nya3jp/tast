@@ -40,6 +40,8 @@ func main() {
 	const (
 		androidContainerStable   = `("android-container-nyc" || "android-container-pi")`
 		androidContainerUnstable = `("android-container-qt" || "android-container-master-arc-dev")`
+		// Boards that cannot run Crostini tests reliably.
+		crostiniUnstableBoards = `auron_paine || auron_yuna || banon || bob || buddy || celes || coral || cyan || edgar || elm || fizz || gandof || grunt || hana || kefka || kevin || kevin64 || kukui || kefka || lulu || nocturne || octopus || reks || relm || samus || sarien || setzer || terra || ultima || wizpig`
 	)
 	cfg := runner.Config{
 		Type:              runner.LocalRunner,
@@ -91,8 +93,8 @@ func main() {
 			"cros_config":             "unibuild",
 			"cros_internal":           "internal",
 			"cros_video_decoder":      "!disable_cros_video_decoder",
-			"crostini_stable":         "eve || atlas",    // Boards that can run Crostini tests reliably.
-			"crostini_unstable":       "!(eve || atlas)", // Boards that cannot run Crostini tests reliably.
+			"crostini_stable":         "!(" + crostiniUnstableBoards + ")",
+			"crostini_unstable":       crostiniUnstableBoards,
 			"crosvm_gpu":              `"crosvm-gpu"`,
 			"crossystem":              "!betty && !tast_vm", // VMs don't support few crossystem sub-commands: https://crbug.com/974615
 			"cups":                    "cups",

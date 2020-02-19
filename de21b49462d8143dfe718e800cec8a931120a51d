@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "78406799_d12e95ff",
+        "filename": "src/chromiumos/tast/testing/test_instance.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 299,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-02-19T09:39:09Z",
+      "side": 1,
+      "message": "For the precondition context, there should be no \"current test\", so context functions about the current test (testing.ContextOutDir, testing.ContextSoftwareDeps, testing.ContextServiceDeps) should fail.\n\nCould you refactor TestContext to hold two fields, logger and current test info, and here leave the current test info unset?",
+      "range": {
+        "startLine": 299,
+        "startChar": 88,
+        "endLine": 299,
+        "endChar": 103
+      },
+      "revId": "de21b49462d8143dfe718e800cec8a931120a51d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -62,8 +62,11 @@ func main() {
 			// master-arc-dev and qt are under development and not stable to run Tast tests.
 			// ARC USE flags are defined here:
 			// http://cs/chromeos_public/src/third_party/chromiumos-overlay/eclass/arc-build-constants.eclass
-			"android":          `arc && ` + androidContainerStable + ` && !` + androidContainerUnstable,
-			"android_vm":       `arc && arcvm`,
+			"android":      `arc && ` + androidContainerStable + ` && !` + androidContainerUnstable,
+			"android_vm":   `arc && arcvm`,
+			"android_vm_p": `arc && arcvm && "android-vm-pi"`,
+			// TODO(b/146584985): update to use R flags
+			"android_vm_r":     `arc && arcvm && "android-vm-master"`,
 			"android_both":     `arc && !` + androidContainerUnstable,
 			"android_all":      `arc && arcpp`,
 			"android_all_both": `arc`,

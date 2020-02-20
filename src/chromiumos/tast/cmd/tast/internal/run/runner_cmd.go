@@ -23,6 +23,9 @@ type runnerCmd interface {
 	// SetStdin sets the given stdin as the subprocess's stdin.
 	SetStdin(stdin io.Reader)
 
+	// SetStderr sets the given stderr as the subprocess's stderr.
+	SetStderr(stderr io.Writer)
+
 	// Output executes the command, and returns its stdout.
 	Output() ([]byte, error)
 }
@@ -60,6 +63,10 @@ func (r *localRunnerCmd) SetStdin(stdin io.Reader) {
 	r.cmd.Stdin = stdin
 }
 
+func (r *localRunnerCmd) SetStderr(stderr io.Writer) {
+	r.cmd.Stderr = stderr
+}
+
 func (r *localRunnerCmd) Output() ([]byte, error) {
 	return r.cmd.Output(r.ctx)
 }
@@ -76,6 +83,10 @@ func (r *remoteRunnerCmd) SetStdin(stdin io.Reader) {
 	r.Stdin = stdin
 }
 
+func (r *remoteRunnerCmd) SetStderr(stderr io.Writer) {
+	r.Stderr = stderr
+}
+
 // runTestRunnerCommand executes the given test_runner r. The test_runner reads
 // serialized args from its stdin, then output json serialized value to stdout.
 // This function unmarshals the output to out, so the pointer to an appropriate
@@ -88,8 +99,16 @@ func runTestRunnerCommand(r runnerCmd, args *runner.Args, out interface{}) error
 	}
 	r.SetStdin(bytes.NewBuffer(stdin))
 
+	var stderr bytes.Buffer
+	r.SetStderr(&stderr)
+
 	b, err := r.Output()
 	if err != nil {
+		// Append the first line of stderr, which often contains useful info
+		// for debugging to users.
+		if split := bytes.SplitN(stderr.Bytes(), []byte(","), 2); len(split) > 0 {
+			err = fmt.Errorf("%s: %s", err, string(split[0]))
+		}
 		return err
 	}
 	if err := json.Unmarshal(b, out); err != nil {

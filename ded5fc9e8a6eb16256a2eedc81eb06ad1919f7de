@@ -16,6 +16,46 @@
       "revId": "ded5fc9e8a6eb16256a2eedc81eb06ad1919f7de",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "97d8ea29_fa8b147a",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-02-20T10:37:07Z",
+      "side": 1,
+      "message": "Could you explicitly mention that this is only for container?\nOr, should we name this \"android_container\" ?",
+      "revId": "ded5fc9e8a6eb16256a2eedc81eb06ad1919f7de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "88299d4d_7db5a57a",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-02-20T10:37:07Z",
+      "side": 1,
+      "message": "In ARCVM team, do you have any term that represents both Container and VM?\nI think \"both\" is unclear, and if there\u0027s a good term, this is good chance to rename.\nAlso, this is re-purposing the name, so I\u0027m a bit concerned about it, too.",
+      "range": {
+        "startLine": 27,
+        "startChar": 13,
+        "endLine": 27,
+        "endChar": 17
+      },
+      "revId": "ded5fc9e8a6eb16256a2eedc81eb06ad1919f7de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -39,9 +39,9 @@ Any additional positional arguments describe which tests should be executed:
 *   If no arguments are supplied, all tests are selected.
 *   If a single argument surrounded by parentheses is supplied, it is
     interpreted as a boolean expression consisting of test attributes. For
-    example, the expression `(("dep:chrome" || "dep:android") && !flaky &&
-    !disabled)` matches all tests with a `dep:chrome` or `dep:android` attribute
-    but not a `flaky` or `disabled` attribute. Attributes that don't consist of
+    example, the expression `(("dep:chrome" || "dep:android") && !disabled)`
+    matches all tests with a `dep:chrome` or `dep:android` attribute
+    but not a `disabled` attribute. Attributes that don't consist of
     a letter or underscore followed by letters, digits, and underscores must be
     double-quoted. '*' characters in quoted strings are interpreted as
     wildcards. See [chromiumos/tast/internal/expr] for details about expression syntax.

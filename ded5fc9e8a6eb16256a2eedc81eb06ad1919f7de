@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3b2a61d4_7319a1c6",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1000303
+      },
+      "writtenOn": "2020-02-20T05:29:05Z",
+      "side": 1,
+      "message": "The \"android_any\" idea was needed for https://chromium-review.googlesource.com/c/chromiumos/platform/tast-tests/+/2065069 . I just repurposed android_both.",
+      "revId": "ded5fc9e8a6eb16256a2eedc81eb06ad1919f7de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "f6b4e265_c61f6b38",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2020-02-20T01:10:09Z",
+      "side": 1,
+      "message": "Sorry, it seems something went wrong with adding the lists, I fixed and manually reverified.\n\nI can\u0027t see any Scarlet failures on tip of tree artifact tests, only on branch builds.",
+      "parentUuid": "7d1b99bc_1db28596",
+      "revId": "0914ba57e6c8d10f4de9572beec93ff279e30f12",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "95582e01_775a82fb",
         "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
         "patchSetId": 1
@@ -33,6 +51,24 @@
       "revId": "0914ba57e6c8d10f4de9572beec93ff279e30f12",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "34095673_84279c4d",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2020-02-20T01:10:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "95582e01_775a82fb",
+      "revId": "0914ba57e6c8d10f4de9572beec93ff279e30f12",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

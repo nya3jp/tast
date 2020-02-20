@@ -24,11 +24,9 @@ The following software features are defined:
 *   `android_both` - `android` feature that runs in both vm and container.
 *   `android_all` - in addition to `android`, runs on `master-arc-dev`, too.
 *   `android_all_both` - `android_all` feature that runs in both vm and container.
-*   `android_p` - The ability to [run Android apps] that require Android P or
-    later.
+*   `android_p` - The ability to [run Android apps] that require Android P.
 *   `android_p_both` - `android_p` feature that runs in both vm and container.
-*   `android_r` - The ability to [run Android apps] that require Android R or
-    later.
+*   `android_r` - The ability to [run Android apps] that require Android Q or R.
 *   `arc_camera1` - Using [Camera HAL3] in Chrome and [Camera HAL1] in Android.
 *   `arc_camera3` - Using [Camera HAL3] interface in Chrome and Android.
 *   `aslr` - Address space layout randomization, which mitigates buffer-overflow

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6bdc6366_ee453a6f",
+        "filename": "src/chromiumos/tast/testing/state.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1002858
+      },
+      "writtenOn": "2020-02-20T06:54:37Z",
+      "side": 1,
+      "message": "add an extra note that \"this context can only be used in the precondition phase\", just to be very clear",
+      "revId": "fcec740fdba60e6299d1b1e91ec194a7e3eb4dcf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fb8e43a8_09fc9589",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-02-20T10:21:54Z",
+      "side": 1,
+      "message": "\u003e  kefka || kevin64 || kevin || kukui\n\nnit: Could you reorder in the lexicographical order?",
+      "revId": "92092d08eb1aec04c47ff9e534b08ada9ae38248",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

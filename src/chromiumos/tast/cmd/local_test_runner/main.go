@@ -64,18 +64,19 @@ func main() {
 			// master-arc-dev and qt are under development and not stable to run Tast tests.
 			// ARC USE flags are defined here:
 			// http://cs/chromeos_public/src/third_party/chromiumos-overlay/eclass/arc-build-constants.eclass
+			// TODO(b/149854594): Merge "android" into "android_p" and remove "android".
 			"android":      `arc && ` + androidContainerStable + ` && !` + androidContainerUnstable,
 			"android_vm":   `arc && arcvm`,
 			"android_vm_p": `arc && arcvm && "android-vm-pi"`,
 			// TODO(b/146584985): update to use R flags
-			"android_vm_r":     `arc && arcvm && "android-vm-master"`,
-			"android_both":     `arc && !` + androidContainerUnstable,
-			"android_all":      `arc && arcpp`,
-			"android_all_both": `arc`,
-			"android_p":        `arc && "android-container-pi"`,
-			"android_p_both":   `arc && ("android-container-pi" || "android-vm-pi")`,
+			"android_vm_r": `arc && arcvm && "android-vm-master"`,
+			// TODO(b/149854594): Remove android_both.
+			"android_both": `arc && !` + androidContainerUnstable,
+			"android_all":  `arc && arcpp`,
+			"android_p":    `arc && "android-container-pi"`,
 			// TODO(b/146584985): update to use R flags
 			"android_r":         `arc && ` + androidContainerUnstable,
+			"arc":               `arc`,
 			"arc_camera1":       `"arc-camera1"`,
 			"arc_camera3":       `"arc-camera3"`,
 			"aslr":              "!asan",                        // ASan instrumentation breaks ASLR

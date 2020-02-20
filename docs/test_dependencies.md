@@ -15,18 +15,19 @@ The following software features are defined:
 
 *   `alt_syscall` - Whether the platform supports the alt syscall framework.
 *   `amd64` - The [amd64] processor architecture.
-*   `android` - The ability to [run Android apps]. Any production version of
-    Android (i.e. ones except `master-arc-dev`) can be used.
+*   `android` - The same as `android_p`. Do not use in new code.
 *   `android_vm` - The ability to [run Android apps] in VM instead of container.
     Any version of Android can be used.
 *   `android_vm_p` - `android_vm` feature that runs in P VM.
 *   `android_vm_r` - `android_vm` feature that runs in R VM.
-*   `android_both` - `android` feature that runs in both vm and container.
-*   `android_all` - in addition to `android`, runs on `master-arc-dev`, too.
-*   `android_all_both` - `android_all` feature that runs in both vm and container.
+*   `android_both` - Deprecated. Do not use.
+*   `android_all` - The ability to [run Android apps] in container. Any version
+    of Android can be used.
 *   `android_p` - The ability to [run Android apps] that require Android P.
-*   `android_p_both` - `android_p` feature that runs in both vm and container.
 *   `android_r` - The ability to [run Android apps] that require Android Q or R.
+*   `arc` - The ability to [run Android apps] in any way, in VM or container,
+    with any Android version. This is intended to be used to run non-ARC tests
+    only when ARC is supported on the board.
 *   `arc_camera1` - Using [Camera HAL3] in Chrome and [Camera HAL1] in Android.
 *   `arc_camera3` - Using [Camera HAL3] interface in Chrome and Android.
 *   `aslr` - Address space layout randomization, which mitigates buffer-overflow

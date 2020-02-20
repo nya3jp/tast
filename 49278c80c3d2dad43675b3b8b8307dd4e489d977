@@ -96,6 +96,30 @@
     },
     {
       "key": {
+        "uuid": "1b2e58c2_488bd684",
+        "filename": "src/chromiumos/tast/testing/hwdep/dep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-02-20T09:48:06Z",
+      "side": 1,
+      "message": "Easiest way would be to use caller.Check.\n\nAlternatively, I think we can have core impls in an internal package, e.g. chromiumos/tast/internal/hwdep. While I think it would be a good step towards separating public framework APIs and private framework impls, but I know it\u0027s a heavy lifting.\n\n // chromiumos/tast/testing/hwdep\n import \"chromiumos/tast/internal/hwdep\"\n\n type Deps \u003d hwdep.Deps\n type Condition \u003d hwdep.Condition\n func D(conds ...Condition) *Deps {\n   return hwdep.D(conds...)\n }\n\n // chromiumos/tast/internal/hwdep\n type Deps struct { ... }\n type Condition struct { ... }\n func D(conds ...Condition) *Deps {\n   ...\n }\n func Merge(d1, d2 *Deps) *Deps { // callable only from framework\n   ...\n }",
+      "parentUuid": "ed3e9d68_b2ae2baa",
+      "range": {
+        "startLine": 66,
+        "startChar": 5,
+        "endLine": 66,
+        "endChar": 10
+      },
+      "revId": "49278c80c3d2dad43675b3b8b8307dd4e489d977",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "d3c84758_7a1d6d9a",
         "filename": "src/chromiumos/tast/testing/hwdep/dep.go",
         "patchSetId": 2
@@ -131,6 +155,30 @@
       "side": 1,
       "message": "So, considering the above use case (actually I\u0027d like to limit this for param merging...),\nI think taking ptr looks natural. WDYT?",
       "parentUuid": "d3c84758_7a1d6d9a",
+      "range": {
+        "startLine": 68,
+        "startChar": 0,
+        "endLine": 73,
+        "endChar": 2
+      },
+      "revId": "49278c80c3d2dad43675b3b8b8307dd4e489d977",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "67b5be2f_b8061dbf",
+        "filename": "src/chromiumos/tast/testing/hwdep/dep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-02-20T09:48:06Z",
+      "side": 1,
+      "message": "Generally I think it\u0027s good to make the zero value meaningful because we don\u0027t need to deal with exceptional cases. In this case hwdep.Deps is an opaque type (i.e. users don\u0027t have access to any of its fields), so I think we can design hwdep.Deps to be copyable and to have meaningful zero value.\n\nDo you imagine any bad consequence if we ask users to use Deps instead of *Deps?",
+      "parentUuid": "cdd64cab_589f083b",
       "range": {
         "startLine": 68,
         "startChar": 0,

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c8c91af4_4e7894f8",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1366225
+      },
+      "writtenOn": "2020-02-21T00:36:38Z",
+      "side": 1,
+      "message": "I think morg@ is adding the android-vm-rvc USE flag soon. Morg, please update this when your CL is ready.",
+      "revId": "57b72a6ed7e7f2d514521040a01b3ca44899bc24",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

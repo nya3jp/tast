@@ -398,7 +398,7 @@ errors, including the failure of an individual test.
 		flags.Var(command.NewListFlag(",", func(v []string) { extraUSEFlags = v }, nil),
 			"extrauseflags", "comma-separated list of additional USE flags to inject when checking test dependencies")
 		flags.BoolVar(&args.RunTests.BundleArgs.WaitUntilReady, "waituntilready",
-			false, "wait until DUT is ready before running tests")
+			true, "wait until DUT is ready before running tests")
 
 		if cfg.Type == RemoteRunner {
 			flags.StringVar(&args.RunTests.BundleArgs.Target, "target",

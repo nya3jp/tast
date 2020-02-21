@@ -102,6 +102,9 @@ type Config struct {
 	collectSysInfo       bool              // collect system info (logs, crashes, etc.) generated during testing
 	testVars             map[string]string // names and values of variables used to pass out-of-band data to tests
 
+	varsFiles      []string // paths to variable files
+	defaultVarsDir string   // dir containing default variable files
+
 	msgTimeout             time.Duration // timeout for reading control messages; default used if zero
 	localRunnerWaitTimeout time.Duration // timeout for waiting for local_test_runner to exit; default used if zero
 
@@ -197,6 +200,12 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 			return nil
 		})
 		f.Var(&vf, "var", `runtime variable to pass to tests, as "name=value" (can be repeated)`)
+		f.StringVar(&c.defaultVarsDir, "defaultvarsdir", "", "directory having YAML files containing variables")
+		vff := command.RepeatedFlag(func(path string) error {
+			c.varsFiles = append(c.varsFiles, path)
+			return nil
+		})
+		f.Var(&vff, "varsfile", "YAML file containing variables (can be repeated)")
 
 		vals := map[string]int{
 			"env":  int(proxyEnv),
@@ -279,6 +288,32 @@ func (c *Config) DeriveDefaults() error {
 		c.runLocal = true
 		c.runRemote = true
 	}
+
+	// Apply -varsfile.
+	for _, path := range c.varsFiles {
+		if err := readAndMergeVarsFile(c.testVars, path, errorOnDuplicate); err != nil {
+			return fmt.Errorf("failed to apply vars from %s: %v", path, err)
+		}
+	}
+
+	// Apply variables from default configurations.
+	if c.build {
+		setIfEmpty(&c.defaultVarsDir, filepath.Join(c.trunkDir, "src/platform/tast-tests-private/vars"))
+	} else {
+		setIfEmpty(&c.defaultVarsDir, "/etc/tast/vars/private")
+	}
+	defaultVarsFiles, err := findVarsFiles(c.defaultVarsDir)
+	if err != nil {
+		return fmt.Errorf("failed to find vars files under %s: %v", c.defaultVarsDir, err)
+	}
+	defaultVars := make(map[string]string)
+	for _, path := range defaultVarsFiles {
+		if err := readAndMergeVarsFile(defaultVars, path, errorOnDuplicate); err != nil {
+			return fmt.Errorf("failed to apply vars from %s: %v", path, err)
+		}
+	}
+	mergeVars(c.testVars, defaultVars, skipOnDuplicate) // -var and -varsfile override defaults
+
 	return nil
 }
 

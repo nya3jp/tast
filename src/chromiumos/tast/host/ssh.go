@@ -285,6 +285,14 @@ func (s *SSH) Close(ctx context.Context) error {
 	return doAsync(ctx, func() error { return s.cl.Conn.Close() }, nil)
 }
 
+// Conn is the interface to run a command in remote host.
+type Conn interface {
+	// Command returns the Cmd struct to execute the named program with the given arguments.
+	//
+	// See: https://godoc.org/os/exec#Command
+	Command(name string, args ...string) *Cmd
+}
+
 // GetFile copies a file or directory from the host to the local machine.
 // dst is the full destination name for the file or directory being copied, not
 // a destination directory into which it will be copied. dst will be replaced
@@ -358,8 +366,7 @@ func (r *countingReader) Read(p []byte) (int, error) {
 // Local file paths can be absolute or relative. Remote file paths must be absolute.
 // SHA1 hashes of remote files are checked in advance to send updated files only.
 // bytes is the amount of data sent over the wire (possibly after compression).
-func (s *SSH) PutFiles(ctx context.Context, files map[string]string,
-	symlinkPolicy SymlinkPolicy) (bytes int64, err error) {
+func (s *SSH) PutFiles(ctx context.Context, files map[string]string, symlinkPolicy SymlinkPolicy) (bytes int64, err error) {
 	af := make(map[string]string)
 	for src, dst := range files {
 		if !filepath.IsAbs(src) {
@@ -377,7 +384,7 @@ func (s *SSH) PutFiles(ctx context.Context, files map[string]string,
 
 	// TODO(derat): When copying a small amount of data, it may be faster to avoid the extra
 	// comparison round trip(s) and instead just copy unconditionally.
-	cf, err := s.findChangedFiles(ctx, af)
+	cf, err := findChangedFiles(ctx, s, af)
 	if err != nil {
 		return 0, err
 	}
@@ -433,7 +440,7 @@ func tarTransformFlag(s, d string) string {
 // and the remote machine. This function is intended for use when pushing files to s;
 // an error is returned if one or more files are missing locally, but not if they're
 // only missing remotely. Local directories are always listed as having been changed.
-func (s *SSH) findChangedFiles(ctx context.Context, files map[string]string) (map[string]string, error) {
+func findChangedFiles(ctx context.Context, conn Conn, files map[string]string) (map[string]string, error) {
 	if len(files) == 0 {
 		return nil, nil
 	}
@@ -462,7 +469,7 @@ func (s *SSH) findChangedFiles(ctx context.Context, files map[string]string) (ma
 	}()
 	go func() {
 		var err error
-		rh, err = s.getRemoteSHA1s(ctx, rp)
+		rh, err = getRemoteSHA1s(ctx, conn, rp)
 		ch <- err
 	}()
 	for i := 0; i < 2; i++ {
@@ -484,8 +491,8 @@ func (s *SSH) findChangedFiles(ctx context.Context, files map[string]string) (ma
 
 // getRemoteSHA1s returns SHA1s for the files paths on s.
 // Missing files are excluded from the returned map.
-func (s *SSH) getRemoteSHA1s(ctx context.Context, paths []string) (map[string]string, error) {
-	out, err := s.Command("sha1sum", paths...).Output(ctx)
+func getRemoteSHA1s(ctx context.Context, conn Conn, paths []string) (map[string]string, error) {
+	out, err := conn.Command("sha1sum", paths...).Output(ctx)
 	if err != nil {
 		// TODO(derat): Find a classier way to ignore missing files.
 		if _, ok := err.(*ssh.ExitError); !ok {

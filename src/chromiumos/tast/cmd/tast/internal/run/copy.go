@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 
 	"chromiumos/tast/host"
+	"chromiumos/tast/linuxssh"
 )
 
 // pushToHost is a wrapper around hst.PutFiles that should be used instead of calling PutFiles directly.
@@ -36,7 +37,7 @@ func moveFromHost(ctx context.Context, cfg *Config, hst *host.SSH, src, dst stri
 	defer undo()
 
 	src = filepath.Join(cfg.hstCopyBasePath, src)
-	if err := hst.GetFile(ctx, src, dst); err != nil {
+	if err := linuxssh.GetFile(ctx, hst, src, dst); err != nil {
 		return err
 	}
 	if out, err := hst.Command("rm", "-rf", "--", src).Output(ctx); err != nil {

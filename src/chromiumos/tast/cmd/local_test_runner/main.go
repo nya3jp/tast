@@ -70,8 +70,6 @@ func main() {
 			"android_vm_p": `arc && arcvm && "android-vm-pi"`,
 			// TODO(b/146584985): update to use R flags
 			"android_vm_r": `arc && arcvm && "android-vm-master"`,
-			// TODO(b/149854594): Remove android_both.
-			"android_both": `arc && !` + androidContainerUnstable,
 			"android_all":  `arc && arcpp`,
 			"android_p":    `arc && "android-container-pi"`,
 			// TODO(b/146584985): update to use R flags

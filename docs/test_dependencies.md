@@ -20,7 +20,6 @@ The following software features are defined:
     Any version of Android can be used.
 *   `android_vm_p` - `android_vm` feature that runs in P VM.
 *   `android_vm_r` - `android_vm` feature that runs in R VM.
-*   `android_both` - Deprecated. Do not use.
 *   `android_all` - The ability to [run Android apps] in container. Any version
     of Android can be used.
 *   `android_p` - The ability to [run Android apps] that require Android P.

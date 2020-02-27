@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ee10b609_0a7baa37",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-02-27T09:05:26Z",
+      "side": 1,
+      "message": "This method and other subroutines are kept in this file just to minimize the diff for reviewing. I will move them to test_instance.go once the CL is LGTM\u0027ed.",
+      "range": {
+        "startLine": 131,
+        "startChar": 0,
+        "endLine": 131,
+        "endChar": 89
+      },
+      "revId": "8ef4b167e5325f787a1bd78e079287db64f50dce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "45993a64_ed9669e9",
+        "filename": "src/chromiumos/tast/testing/test_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-02-27T09:05:26Z",
+      "side": 1,
+      "message": "Same for tests in this file.",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 69
+      },
+      "revId": "8ef4b167e5325f787a1bd78e079287db64f50dce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

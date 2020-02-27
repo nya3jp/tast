@@ -7,13 +7,8 @@ package testing
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"path/filepath"
 	"reflect"
-	"regexp"
-	"runtime"
-	"strings"
 	"time"
 
 	"chromiumos/tast/testing/hwdep"
@@ -130,172 +125,21 @@ type Param struct {
 	Val interface{}
 }
 
-func validateTest(t *Test) error {
-	info, err := getTestFuncInfo(t.Func)
-	if err != nil {
-		return err
-	}
-
-	if err := validateName(info.name, info.category, filepath.Base(info.file)); err != nil {
-		return err
-	}
-	if err := validateAttr(t.Attr); err != nil {
-		return err
-	}
-	if err := validateData(t.Data); err != nil {
-		return err
-	}
-	if t.Timeout < 0 {
-		return fmt.Errorf("%s.%s has negative timeout %v", info.category, info.name, t.Timeout)
-	}
-	if t.Pre != nil {
-		if _, ok := t.Pre.(preconditionImpl); !ok {
-			return fmt.Errorf("precondition %s does not implement preconditionImpl", t.Pre)
-		}
-	}
-	for _, p := range t.Params {
-		if err := validateParam(&p); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// testFuncInfo contains information about a TestFunc.
-type testFuncInfo struct {
-	pkg      string // package name, e.g. "chromiumos/tast/local/bundles/cros/ui"
-	category string // Tast category name, e.g. "ui". The last component of pkg
-	name     string // function name, e.g. "ChromeLogin"
-	file     string // full source path, e.g. "/home/user/chromeos/src/platform/tast-tests/.../ui/chrome_login.go"
-}
-
-// getTestFuncInfo returns info about f.
-func getTestFuncInfo(f TestFunc) (*testFuncInfo, error) {
-	if f == nil {
-		return nil, errors.New("Func is nil")
-	}
-	pc := reflect.ValueOf(f).Pointer()
-	rf := runtime.FuncForPC(pc)
-	if rf == nil {
-		return nil, errors.New("failed to get function from PC")
-	}
-	p := strings.SplitN(rf.Name(), ".", 2)
-	if len(p) != 2 {
-		return nil, fmt.Errorf("didn't find package.function in %q", rf.Name())
-	}
-
-	cs := strings.Split(p[0], "/")
-	if len(cs) < 2 {
-		return nil, fmt.Errorf("failed to split package %q into at least two components", p[0])
-	}
-
-	info := &testFuncInfo{
-		pkg:      p[0],
-		category: cs[len(cs)-1],
-		name:     p[1],
-	}
-	info.file, _ = rf.FileLine(pc)
-	return info, nil
-}
-
-// testNameRegexp validates test names, which should consist of a package name,
-// a period, and the name of the exported test function.
-var testNameRegexp = regexp.MustCompile("^[a-z][a-z0-9]*\\.[A-Z][A-Za-z0-9]*$")
-
-// testWordRegexp validates an individual word in a test function name.
-// See checkFuncNameAgainstFilename for details.
-var testWordRegexp = regexp.MustCompile("^[A-Z0-9]+[a-z0-9]*[A-Z0-9]*$")
-
-func validateName(funcName, category, filename string) error {
-	name := fmt.Sprintf("%s.%s", category, funcName)
-	if !testNameRegexp.MatchString(name) {
-		return fmt.Errorf("invalid test name %q (want pkg.ExportedTestFunc)", name)
-	}
-
-	if strings.ToLower(filename) != filename {
-		return fmt.Errorf("filename %q isn't lowercase", filename)
-	}
-	const goExt = ".go"
-	if filepath.Ext(filename) != goExt {
-		return fmt.Errorf("filename %q doesn't have extension %q", filename, goExt)
-	}
-
-	// First, split the name into words based on underscores in the filename.
-	funcIdx := 0
-	fileWords := strings.Split(filename[:len(filename)-len(goExt)], "_")
-	for _, fileWord := range fileWords {
-		// Disallow repeated underscores.
-		if len(fileWord) == 0 {
-			return fmt.Errorf("empty word in filename %q", filename)
-		}
-
-		// Extract the characters from the function name corresponding to the word from the filename.
-		if funcIdx+len(fileWord) > len(funcName) {
-			return fmt.Errorf("name %q doesn't include all of filename %q", funcName, filename)
-		}
-		funcWord := funcName[funcIdx : funcIdx+len(fileWord)]
-		if strings.ToLower(funcWord) != strings.ToLower(fileWord) {
-			return fmt.Errorf("word %q at %q[%d] doesn't match %q in filename %q", funcWord, funcName, funcIdx, fileWord, filename)
-		}
-
-		// Test names are taken from Go function names, so they should follow Go's naming conventions.
-		// Generally speaking, that means camel case with acronyms fully capitalized (although we can't catch
-		// miscapitalized acronyms here, as we don't know if a given word is an acronym or not).
-		// Every word should begin with either an uppercase letter or a digit.
-		// Multiple leading or trailing uppercase letters are allowed to permit filename -> func-name pairings like
-		// dbus.go -> "DBus", webrtc.go -> "WebRTC", and crosvm.go -> "CrosVM".
-		// Note that this also permits incorrect filenames like loadurl.go for "LoadURL", but that's not something code can prevent.
-		if !testWordRegexp.MatchString(funcWord) {
-			return fmt.Errorf("word %q at %q[%d] should probably be %q (acronyms also allowed at beginning and end)",
-				funcWord, funcName, funcIdx, strings.Title(strings.ToLower(funcWord)))
-		}
-
-		funcIdx += len(funcWord)
-	}
-
-	if funcIdx < len(funcName) {
-		return fmt.Errorf("name %q has extra suffix %q not in filename %q", funcName, funcName[funcIdx:], filename)
-	}
-
-	return nil
-}
-
-func validateAttr(attr []string) error {
-	for _, a := range attr {
-		for _, pre := range []string{testNameAttrPrefix, testBundleAttrPrefix, testDepAttrPrefix} {
-			if strings.HasPrefix(a, pre) {
-				return fmt.Errorf("attribute %q has reserved prefix", a)
-			}
-		}
-	}
-	if err := checkKnownAttrs(attr); err != nil {
+// validate performs initial validations of Test.
+// Most validations are done while constructing TestInstance from a combination
+// of Test and Param in newTestInstance, not in this method, so that we can
+// validate fields of the final products. However some validations can be done
+// only in this method, e.g. checking consistencies among multiple parameters.
+func (t *Test) validate() error {
+	if err := validateParams(t.Params); err != nil {
 		return err
 	}
 	return nil
 }
-
-func validateData(data []string) error {
-	for _, p := range data {
-		if p != filepath.Clean(p) || strings.HasPrefix(p, ".") || strings.HasPrefix(p, "/") {
-			return fmt.Errorf("data path %q is invalid", p)
-		}
-	}
-	return nil
-}
-
-// paramNameRegexp validates each parametiric case names.
-var paramNameRegexp = regexp.MustCompile("^[a-z0-9_]*$")
 
 func validateParams(params []Param) error {
 	if len(params) == 0 {
 		return nil
-	}
-
-	for _, p := range params {
-		if err := validateParam(&p); err != nil {
-			return err
-		}
 	}
 
 	// Ensure unique param name.
@@ -315,21 +159,6 @@ func validateParams(params []Param) error {
 		if typ != typ0 {
 			return fmt.Errorf("unmatched Val type: got %v; want %v", typ, typ0)
 		}
-	}
-
-	return nil
-}
-
-func validateParam(p *Param) error {
-	if !paramNameRegexp.MatchString(p.Name) {
-		return fmt.Errorf("invalid param name %q (want to match with [a-z0-9_]*)", p.Name)
-	}
-
-	if err := validateAttr(p.ExtraAttr); err != nil {
-		return err
-	}
-	if err := validateData(p.ExtraData); err != nil {
-		return err
 	}
 
 	return nil

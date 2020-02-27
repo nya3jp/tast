@@ -18,6 +18,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 			attrs: nil,
 		},
 		{
+			attrs: []string{"name:example.Pass", "bundle:cros", "dep:chrome"},
+		},
+		{
 			attrs: []string{"informational"},
 		},
 		{
@@ -71,6 +74,10 @@ func TestCheckKnownAttrs(t *testing.T) {
 		{
 			attrs: []string{"foo"},
 			error: `attribute "foo" is invalid in current groups; see chromiumos/tast/testing/attr.go for the full list of valid attributes`,
+		},
+		{
+			attrs: []string{"foo:bar"},
+			error: `attribute "foo:bar" is invalid in current groups; see chromiumos/tast/testing/attr.go for the full list of valid attributes`,
 		},
 		{
 			attrs: []string{"group:mainline", "foo"},

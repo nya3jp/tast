@@ -11,9 +11,12 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
-	"sort"
 	gotesting "testing"
 	"time"
+
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
+	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/testing/hwdep"
 	"chromiumos/tast/testutil"
@@ -23,6 +26,9 @@ import (
 // name (test_instance_test.go). The obvious choice, "TestInstanceTest", is unavailable since Go's testing package
 // will interpret it as itself being a unit test, so let's just pretend that "instance" and "test" are acronyms.
 func TESTINSTANCETEST(context.Context, *State) {}
+
+// InvalidTestName is an arbitrary public test function used by unit tests.
+func InvalidTestName(context.Context, *State) {}
 
 // testPre implements both Precondition and preconditionImpl for unit tests.
 type testPre struct {
@@ -48,159 +54,413 @@ func (p *testPre) Timeout() time.Duration { return time.Minute }
 
 func (p *testPre) String() string { return p.name }
 
-func TestAutoName(t *gotesting.T) {
-	tc, err := newTestInstance(&Test{Func: TESTINSTANCETEST}, nil)
-	if err != nil {
-		t.Fatal("failed to instantiate TestInstance: ", err)
-	}
-	if tc.Name != "testing.TESTINSTANCETEST" {
-		t.Errorf("Unexpected test case name: got %s; want testing.TESTINSTANCETEST", tc.Name)
-	}
-}
-
-func TestAutoAttr(t *gotesting.T) {
-	test, err := newTestInstance(&Test{
-		Func:         TESTINSTANCETEST,
-		Attr:         []string{"attr1", "attr2"},
-		SoftwareDeps: []string{"dep1", "dep2"},
-	}, nil)
-	if err != nil {
-		t.Fatal("failed to instantiate test case failed: ", err)
-	}
-	exp := []string{
-		"attr1",
-		"attr2",
-		testNameAttrPrefix + "testing.TESTINSTANCETEST",
-		// The bundle name is the second-to-last component in the package's path.
-		testBundleAttrPrefix + "tast",
-		testDepAttrPrefix + "dep1",
-		testDepAttrPrefix + "dep2",
-	}
-	sort.Strings(test.Attr)
-	sort.Strings(exp)
-	if !reflect.DeepEqual(test.Attr, exp) {
-		t.Errorf("Attr = %v; want %v", test.Attr, exp)
-	}
-}
-
-func TestParamTest(t *gotesting.T) {
-	test, err := newTestInstance(
-		&Test{
-			Func:         TESTINSTANCETEST,
-			Attr:         []string{"attr1"},
-			Data:         []string{"data1"},
-			SoftwareDeps: []string{"dep1"},
+func deviceConfig(model string) *device.Config {
+	return &device.Config{
+		Id: &device.ConfigId{
+			ModelId: &device.ModelId{
+				Value: model,
+			},
 		},
-		&Param{
-			Name:              "param1",
-			Val:               10,
-			ExtraAttr:         []string{"attr2"},
-			ExtraData:         []string{"data2"},
+	}
+}
+
+func TestInstantiate(t *gotesting.T) {
+	pre := &testPre{}
+	got, err := instantiate(&Test{
+		Func:         TESTINSTANCETEST,
+		Desc:         "hello",
+		Contacts:     []string{"a@example.com", "b@example.com"},
+		Attr:         []string{"group:mainline", "informational"},
+		Data:         []string{"data1.txt", "data2.txt"},
+		Vars:         []string{"var1", "var2"},
+		SoftwareDeps: []string{"dep1", "dep2"},
+		HardwareDeps: hwdep.D(hwdep.Model("model1", "model2")),
+		Pre:          pre,
+		Timeout:      123 * time.Second,
+		ServiceDeps:  []string{"svc1", "svc2"},
+	})
+	if err != nil {
+		t.Fatal("Failed to instantiate test: ", err)
+	}
+	want := []*TestInstance{{
+		Name:     "testing.TESTINSTANCETEST",
+		Pkg:      "chromiumos/tast/testing",
+		Desc:     "hello",
+		Contacts: []string{"a@example.com", "b@example.com"},
+		Attr: []string{
+			"group:mainline",
+			"informational",
+			testNameAttrPrefix + "testing.TESTINSTANCETEST",
+			// The bundle name is the second-to-last component in the package's path.
+			testBundleAttrPrefix + "tast",
+			testDepAttrPrefix + "dep1",
+			testDepAttrPrefix + "dep2",
+		},
+		Data:         []string{"data1.txt", "data2.txt"},
+		Vars:         []string{"var1", "var2"},
+		SoftwareDeps: []string{"dep1", "dep2"},
+		Timeout:      123 * time.Second,
+		ServiceDeps:  []string{"svc1", "svc2"},
+	}}
+	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(TestInstance{}, "Func", "HardwareDeps", "Pre")); diff != "" {
+		t.Errorf("Got unexpected test instances (-got +want):\n%s", diff)
+	}
+	if len(got) == 1 {
+		if got[0].Func == nil {
+			t.Error("Got nil Func")
+		}
+		if ok, reason := got[0].ShouldRun([]string{"dep1", "dep2"}, deviceConfig("model1")); !ok {
+			t.Error("Got unexpected HardwareDeps: ShouldRun returned false for model1: ", reason)
+		}
+		if ok, _ := got[0].ShouldRun([]string{"dep1", "dep2"}, deviceConfig("modelX")); ok {
+			t.Error("Got unexpected HardwareDeps: ShouldRun returned true for modelX")
+		}
+		if got[0].Pre != pre {
+			t.Errorf("Got unexpected Pre: got %v, want %v", got[0].Pre, pre)
+		}
+	}
+}
+
+func TestInstantiateParams(t *gotesting.T) {
+	got, err := instantiate(&Test{
+		Func:         TESTINSTANCETEST,
+		Attr:         []string{"group:crosbolt"},
+		Data:         []string{"data0.txt"},
+		SoftwareDeps: []string{"dep0"},
+		HardwareDeps: hwdep.D(hwdep.Model("model1", "model2")),
+		Params: []Param{{
+			Val:               123,
+			ExtraAttr:         []string{"crosbolt_nightly"},
+			ExtraData:         []string{"data1.txt"},
+			ExtraSoftwareDeps: []string{"dep1"},
+			ExtraHardwareDeps: hwdep.D(hwdep.SkipOnModel("model2")),
+		}, {
+			Name:              "foo",
+			Val:               456,
+			ExtraAttr:         []string{"crosbolt_weekly"},
+			ExtraData:         []string{"data2.txt"},
 			ExtraSoftwareDeps: []string{"dep2"},
-		})
+			ExtraHardwareDeps: hwdep.D(hwdep.SkipOnModel("model1")),
+		}},
+	})
 	if err != nil {
-		t.Fatal("newTestInstance failed: ", err)
+		t.Fatal("Failed to instantiate test: ", err)
 	}
 
-	if test.Val != 10 {
-		t.Errorf("Unexpected Val: got %v; want 10", test.Val)
+	want := []*TestInstance{
+		{
+			Name: "testing.TESTINSTANCETEST",
+			Pkg:  "chromiumos/tast/testing",
+			Val:  123,
+			Attr: []string{
+				"group:crosbolt",
+				"crosbolt_nightly",
+				testNameAttrPrefix + "testing.TESTINSTANCETEST",
+				// The bundle name is the second-to-last component in the package's path.
+				testBundleAttrPrefix + "tast",
+				testDepAttrPrefix + "dep0",
+				testDepAttrPrefix + "dep1",
+			},
+			Data:         []string{"data0.txt", "data1.txt"},
+			SoftwareDeps: []string{"dep0", "dep1"},
+		},
+		{
+			Name: "testing.TESTINSTANCETEST.foo",
+			Pkg:  "chromiumos/tast/testing",
+			Val:  456,
+			Attr: []string{
+				"group:crosbolt",
+				"crosbolt_weekly",
+				testNameAttrPrefix + "testing.TESTINSTANCETEST.foo",
+				// The bundle name is the second-to-last component in the package's path.
+				testBundleAttrPrefix + "tast",
+				testDepAttrPrefix + "dep0",
+				testDepAttrPrefix + "dep2",
+			},
+			Data:         []string{"data0.txt", "data2.txt"},
+			SoftwareDeps: []string{"dep0", "dep2"},
+		},
 	}
-
-	if test.Name != "testing.TESTINSTANCETEST.param1" {
-		t.Errorf("Unexpected name: got %s; want testing.TESTINSTANCETEST.param1", test.Name)
+	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(TestInstance{}, "Func", "HardwareDeps", "Pre")); diff != "" {
+		t.Errorf("Got unexpected test instances (-got +want):\n%s", diff)
 	}
-
-	expectedAttr := []string{"name:testing.TESTINSTANCETEST.param1", "bundle:tast", "dep:dep1", "dep:dep2", "attr1", "attr2"}
-	if !reflect.DeepEqual(test.Attr, expectedAttr) {
-		t.Errorf("Unexpected attrs: got %v; want %v", test.Attr, expectedAttr)
-	}
-
-	expectedData := []string{"data1", "data2"}
-	if !reflect.DeepEqual(test.Data, expectedData) {
-		t.Errorf("Unexpected data: got %v; want %v", test.Data, expectedData)
-	}
-
-	expectedDeps := []string{"dep1", "dep2"}
-	if !reflect.DeepEqual(test.SoftwareDeps, expectedDeps) {
-		t.Errorf("Unexpected SoftwareDeps: got %v; want %v", test.SoftwareDeps, expectedDeps)
+	if len(got) == 2 {
+		if got[0].Func == nil {
+			t.Error("Got nil Func for the first test instance")
+		}
+		if ok, reason := got[0].ShouldRun([]string{"dep0", "dep1"}, deviceConfig("model1")); !ok {
+			t.Error("Got unexpected HardwareDeps for first test instance: ShouldRun returned false for model1: ", reason)
+		}
+		if ok, _ := got[0].ShouldRun([]string{"dep0", "dep1"}, deviceConfig("model2")); ok {
+			t.Error("Got unexpected HardwareDeps for first test instance: ShouldRun returned true for model2")
+		}
+		if got[1].Func == nil {
+			t.Error("Got nil Func for the second test instance")
+		}
+		if ok, reason := got[1].ShouldRun([]string{"dep0", "dep2"}, deviceConfig("model2")); !ok {
+			t.Error("Got unexpected HardwareDeps for second test instance: ShouldRun returned false for model2: ", reason)
+		}
+		if ok, _ := got[1].ShouldRun([]string{"dep0", "dep2"}, deviceConfig("model1")); ok {
+			t.Error("Got unexpected HardwareDeps for second test instance: ShouldRun returned true for model1")
+		}
 	}
 }
 
-func TestParamTestWithEmptyName(t *gotesting.T) {
-	test, err := newTestInstance(&Test{Func: TESTINSTANCETEST}, &Param{})
+func TestInstantiateParamsPre(t *gotesting.T) {
+	pre := &testPre{}
+
+	// Duplicated fields should be rejected.
+	if _, err := instantiate(&Test{
+		Func: TESTINSTANCETEST,
+		Pre:  pre,
+		Params: []Param{{
+			Pre: pre,
+		}},
+	}); err == nil {
+		t.Error("instantiate succeeded unexpectedly for duplicated Pre")
+	}
+
+	// OK if the field in the base test is unset.
+	got, err := instantiate(&Test{
+		Func: TESTINSTANCETEST,
+		Params: []Param{{
+			Pre: pre,
+		}},
+	})
 	if err != nil {
-		t.Fatal("newTestInstance failed: ", err)
+		t.Fatal("Failed to instantiate test: ", err)
 	}
-	if test.Name != "testing.TESTINSTANCETEST" {
-		t.Errorf("Unexpected name: got %s; want testing.TESTINSTANCETEST", test.Name)
+	if len(got) != 1 {
+		t.Fatalf("Got %d test instances; want 1", len(got))
 	}
-}
-
-func TestParamTestWithPre(t *gotesting.T) {
-	pre := &testPre{name: "precondition"}
-	// At most one Pre condition can be present. If newTestInstance fails, test passes.
-	if _, err := newTestInstance(&Test{Func: TESTINSTANCETEST, Pre: pre}, &Param{Pre: pre}); err == nil {
-		t.Error("newTestInstance unexpectedly passed for duplicated preconditions")
-	}
-
-	// Precondition only at enclosing test.
-	if tc, err := newTestInstance(&Test{Func: TESTINSTANCETEST, Pre: pre}, &Param{}); err != nil {
-		t.Error(err)
-	} else if tc.Pre != pre {
-		t.Errorf("Invalid precondition = %v; want %v", tc.Pre, pre)
-	}
-
-	// Precondition only at parametrized test.
-	if tc, err := newTestInstance(&Test{Func: TESTINSTANCETEST}, &Param{Pre: pre}); err != nil {
-		t.Error(err)
-	} else if tc.Pre != pre {
-		t.Errorf("Invalid precondition = %v; want %v", tc.Pre, pre)
-	}
-
-	// No preconditions.
-	if tc, err := newTestInstance(&Test{Func: TESTINSTANCETEST}, &Param{}); err != nil {
-		t.Error(err)
-	} else if tc.Pre != nil {
-		t.Errorf("Invalid precondition = %v; want nil", tc.Pre)
+	if got[0].Pre != pre {
+		t.Fatalf("TestInstance.Pre = %v; want %v", got[0].Pre, pre)
 	}
 }
 
-func TestParamTestWithTimeout(t *gotesting.T) {
-	// At most one Pre condition can be present. If newTestInstance fails, test passes.
-	if _, err := newTestInstance(&Test{Func: TESTINSTANCETEST, Timeout: time.Minute}, &Param{Timeout: time.Minute}); err == nil {
-		t.Error("newTestInstance unexpectedly passed for duplicated timeout")
+func TestInstantiateParamsTimeout(t *gotesting.T) {
+	const timeout = 123 * time.Second
+
+	// Duplicated fields should be rejected.
+	if _, err := instantiate(&Test{
+		Func:    TESTINSTANCETEST,
+		Timeout: timeout,
+		Params: []Param{{
+			Timeout: timeout,
+		}},
+	}); err == nil {
+		t.Error("instantiate succeeded unexpectedly for duplicated Timeout")
 	}
 
-	// Timeout only at enclosing test.
-	if tc, err := newTestInstance(&Test{Func: TESTINSTANCETEST, Timeout: time.Minute}, &Param{}); err != nil {
-		t.Error(err)
-	} else if tc.Timeout != time.Minute {
-		t.Errorf("Invalid Timeout = %v; want %v", tc.Timeout, time.Minute)
+	// OK if the field in the base test is unset.
+	got, err := instantiate(&Test{
+		Func: TESTINSTANCETEST,
+		Params: []Param{{
+			Timeout: timeout,
+		}},
+	})
+	if err != nil {
+		t.Fatal("Failed to instantiate test: ", err)
 	}
-
-	// Timeout only at parametrized test.
-	if tc, err := newTestInstance(&Test{Func: TESTINSTANCETEST}, &Param{Timeout: time.Minute}); err != nil {
-		t.Error(err)
-	} else if tc.Timeout != time.Minute {
-		t.Errorf("Invalid precondition = %v; want %v", tc.Timeout, time.Minute)
+	if len(got) != 1 {
+		t.Fatalf("Got %d test instances; want 1", len(got))
 	}
-
-	// No Timeout.
-	if tc, err := newTestInstance(&Test{Func: TESTINSTANCETEST}, &Param{}); err != nil {
-		t.Error(err)
-	} else if tc.Timeout != 0 {
-		t.Errorf("Invalid precondition = %v; want 0", tc.Timeout)
+	if got[0].Timeout != timeout {
+		t.Fatalf("TestInstance.Timeout = %v; want %v", got[0].Timeout, timeout)
 	}
 }
 
 func TestDataDir(t *gotesting.T) {
-	test, err := newTestInstance(&Test{Func: TESTINSTANCETEST}, nil)
+	tests, err := instantiate(&Test{Func: TESTINSTANCETEST})
 	if err != nil {
 		t.Fatal(err)
 	}
+	if len(tests) != 1 {
+		t.Fatalf("Got %d test instances; want 1", len(tests))
+	}
+	test := tests[0]
 	exp := filepath.Join("chromiumos/tast/testing", testDataSubdir)
 	if test.DataDir() != exp {
 		t.Errorf("DataDir() = %q; want %q", test.DataDir(), exp)
+	}
+}
+
+func TestInstantiateNoFunc(t *gotesting.T) {
+	if _, err := instantiate(&Test{}); err == nil {
+		t.Error("Didn't get error with missing function")
+	}
+}
+
+// TestValidateName tests name validation of instantiate.
+// It is better to call instantiate instead, but it is difficult to define
+// Go functions with corresponding names.
+func TestValidateName(t *gotesting.T) {
+	for _, tc := range []struct {
+		name  string
+		valid bool
+	}{
+		{"example.ChromeLogin", true},
+		{"example.ChromeLogin2", true},
+		{"example2.ChromeLogin", true},
+		{"example.ChromeLogin.stress", true},
+		{"example.ChromeLogin.more_stress", true},
+		{"example.chromeLogin", false},
+		{"example.7hromeLogin", false},
+		{"example.Chrome_Login", false},
+		{"example.Chrome@Login", false},
+		{"Example.ChromeLogin", false},
+		{"3xample.ChromeLogin", false},
+		{"exam_ple.ChromeLogin", false},
+		{"exam@ple.ChromeLogin", false},
+		{"example.ChromeLogin.Stress", false},
+		{"example.ChromeLogin.more-stress", false},
+		{"example.ChromeLogin.more@stress", false},
+	} {
+		err := validateName(tc.name)
+		if err != nil && tc.valid {
+			t.Errorf("validateName(%q) failed: %v", tc.name, err)
+		} else if err == nil && !tc.valid {
+			t.Errorf("validateName(%q) didn't return expected error", tc.name)
+		}
+	}
+}
+
+// TestValidateFileName tests file name validation of instantiate.
+// It is better to call instantiate instead, but it is difficult to define
+// Go functions with corresponding names.
+func TestValidateFileName(t *gotesting.T) {
+	for _, tc := range []struct {
+		name, fn string
+		valid    bool
+	}{
+		{"Test", "test.go", true},                     // single word
+		{"MyTest", "my_test.go", true},                // two words separated with underscores
+		{"LoadURL", "load_url.go", true},              // word and acronym
+		{"PlayMP3", "play_mp3.go", true},              // word contains numbers
+		{"PlayMP3Song", "play_mp3_song.go", true},     // acronym followed by word
+		{"ConnectToDBus", "connect_to_dbus.go", true}, // word with multiple leading caps
+		{"RestartCrosVM", "restart_crosvm.go", true},  // word with ending acronym
+		{"RestartCrosVM", "restart_cros_vm.go", true}, // word followed by acronym
+		{"Foo123bar", "foo123bar.go", true},           // word contains digits
+		{"Foo123Bar", "foo123_bar.go", true},          // word with trailing digits
+		{"Foo123bar", "foo_123bar.go", true},          // word with leading digits
+		{"Foo123Bar", "foo_123_bar.go", true},         // word consisting only of digits
+		{"foo", "foo.go", false},                      // lowercase func name
+		{"Foobar", "foo_bar.go", false},               // lowercase word
+		{"FirstTest", "first.go", false},              // func name has word not in filename
+		{"Firstblah", "first.go", false},              // func name has word longer than filename
+		{"First", "firstabc.go", false},               // filename has word longer than func name
+		{"First", "first_test.go", false},             // filename has word not in func name
+		{"FooBar", "foo__bar.go", false},              // empty word in filename
+		{"Foo", "bar.go", false},                      // completely different words
+		{"Foo", "Foo.go", false},                      // non-lowercase filename
+		{"Foo", "foo.txt", false},                     // filename without ".go" extension
+	} {
+		err := validateFileName(tc.name, tc.fn)
+		if err != nil && tc.valid {
+			t.Errorf("validateFileName(%q, %q) failed: %v", tc.name, tc.fn, err)
+		} else if err == nil && !tc.valid {
+			t.Errorf("validateFileName(%q, %q) didn't return expected error", tc.name, tc.fn)
+		}
+	}
+}
+
+// TestInstantiateFuncName makes sure the validateFileName runs against the name
+// derived from the Func's function name and its source file name.
+func TestInstantiateFuncName(t *gotesting.T) {
+	if _, err := instantiate(&Test{Func: TESTINSTANCETEST}); err != nil {
+		t.Error("instantiate failed: ", err)
+	}
+	if _, err := instantiate(&Test{Func: InvalidTestName}); err == nil {
+		t.Error("instantiate succeeded unexpectedly for wrongly named test func")
+	}
+}
+
+func TestInstantiateDataPath(t *gotesting.T) {
+	if _, err := instantiate(&Test{
+		Func: TESTINSTANCETEST,
+		Data: []string{"foo", "bar/baz"},
+	}); err != nil {
+		t.Errorf("Got an unexpected error: %v", err)
+	}
+}
+
+func TestInstantiateUncleanDataPath(t *gotesting.T) {
+	if _, err := instantiate(&Test{
+		Func: TESTINSTANCETEST,
+		Data: []string{"foo", "bar/../bar/baz"},
+	}); err == nil {
+		t.Error("Did not get an error with unclean path")
+	}
+}
+
+func TestInstantiateAbsoluteDataPath(t *gotesting.T) {
+	if _, err := instantiate(&Test{
+		Func: TESTINSTANCETEST,
+		Data: []string{"foo", "/etc/passwd"},
+	}); err == nil {
+		t.Error("Did not get an error with absolute path")
+	}
+}
+
+func TestInstantiateRelativeDataPath(t *gotesting.T) {
+	if _, err := instantiate(&Test{
+		Func: TESTINSTANCETEST,
+		Data: []string{"foo", "../baz"},
+	}); err == nil {
+		t.Error("Did not get an error with relative path")
+	}
+}
+
+func TestInstantiateReservedAttrPrefixes(t *gotesting.T) {
+	for _, attr := range []string{
+		testNameAttrPrefix + "foo",
+		testBundleAttrPrefix + "bar",
+		testDepAttrPrefix + "dep",
+	} {
+		if _, err := instantiate(&Test{
+			Func: TESTINSTANCETEST,
+			Attr: []string{attr},
+		}); err == nil {
+			t.Errorf("Did not get an error for reserved attribute %q", attr)
+		}
+	}
+}
+
+func TestInstantiateNegativeTimeout(t *gotesting.T) {
+	if _, err := instantiate(&Test{
+		Func:    TESTINSTANCETEST,
+		Timeout: -1 * time.Second,
+	}); err == nil {
+		t.Error("Didn't get error with negative timeout")
+	}
+}
+
+func TestInstantiateDuplicatedParamName(t *gotesting.T) {
+	if _, err := instantiate(&Test{
+		Func: TESTINSTANCETEST,
+		Params: []Param{{
+			Name: "abc",
+		}, {
+			Name: "abc",
+		}},
+	}); err == nil {
+		t.Error("Did not get an error with duplicated param case names")
+	}
+}
+
+func TestInstantiateInconsistentParamValType(t *gotesting.T) {
+	if _, err := instantiate(&Test{
+		Func: TESTINSTANCETEST,
+		Params: []Param{{
+			Name: "case1",
+			Val:  1,
+		}, {
+			Name: "case2",
+			Val:  "string",
+		}},
+	}); err == nil {
+		t.Error("Did not get an error with param cases containing different value type")
 	}
 }
 

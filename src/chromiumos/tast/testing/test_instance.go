@@ -12,6 +12,9 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"reflect"
+	"regexp"
+	"runtime"
 	"sort"
 	"strings"
 	"time"
@@ -89,64 +92,99 @@ type TestInstance struct {
 	Timeout      time.Duration `json:"timeout"`
 }
 
-// newTestInstance creates a TestInstance instance from the given Test info.
-// t must be validated one.
-// For a parameterized test case, p is specified. p must be contained in t.Params.
+// instantiate creates one or more TestInstance from t.
+func instantiate(t *Test) ([]*TestInstance, error) {
+	if err := t.validate(); err != nil {
+		return nil, err
+	}
+
+	// Empty Params is equivalent to one Param with all default values.
+	ps := t.Params
+	if len(ps) == 0 {
+		ps = []Param{{}}
+	}
+
+	tis := make([]*TestInstance, 0, len(ps))
+	for _, p := range ps {
+		ti, err := newTestInstance(t, &p)
+		if err != nil {
+			return nil, err
+		}
+		tis = append(tis, ti)
+	}
+
+	return tis, nil
+}
+
 func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 	info, err := getTestFuncInfo(t.Func)
 	if err != nil {
 		return nil, err
 	}
+
+	if err := validateFileName(info.name, filepath.Base(info.file)); err != nil {
+		return nil, err
+	}
+
 	name := fmt.Sprintf("%s.%s", info.category, info.name)
+	if p.Name != "" {
+		name += "." + p.Name
+	}
+	if err := validateName(name); err != nil {
+		return nil, err
+	}
 
-	attrs := append([]string(nil), t.Attr...)
-	data := append([]string(nil), t.Data...)
-	swDeps := append([]string(nil), t.SoftwareDeps...)
-	hwDeps := t.HardwareDeps
+	manualAttrs := append(append([]string(nil), t.Attr...), p.ExtraAttr...)
+	if err := validateManualAttr(manualAttrs); err != nil {
+		return nil, err
+	}
+
+	data := append(append([]string(nil), t.Data...), p.ExtraData...)
+	if err := validateData(t.Data); err != nil {
+		return nil, err
+	}
+
+	swDeps := append(append([]string(nil), t.SoftwareDeps...), p.ExtraSoftwareDeps...)
+	hwDeps := hwdep.Merge(t.HardwareDeps, p.ExtraHardwareDeps)
+
+	attrs := append(manualAttrs, autoAttrs(name, info.pkg, swDeps)...)
+	if err := validateAttr(t.Attr); err != nil {
+		return nil, err
+	}
+
 	pre := t.Pre
-	timeout := t.Timeout
-	var val interface{}
-	if p != nil {
-		if p.Name != "" {
-			name = fmt.Sprintf("%s.%s", name, p.Name)
-		}
-		attrs = append(attrs, p.ExtraAttr...)
-		data = append(data, p.ExtraData...)
-		swDeps = append(swDeps, p.ExtraSoftwareDeps...)
-		hwDeps = hwdep.Merge(hwDeps, p.ExtraHardwareDeps)
-		val = p.Val
-
-		// Only one precondition can be defined.
-		if t.Pre != nil && p.Pre != nil {
+	if p.Pre != nil {
+		if t.Pre != nil {
 			return nil, errors.New("Param has Pre specified and its enclosing Test also has Pre specified," +
 				"but only one can be specified")
 		}
-		if p.Pre != nil {
-			pre = p.Pre
-		}
-
-		// Only one timeout can be set.
-		if t.Timeout != 0 && p.Timeout != 0 {
-			return nil, errors.New("Param has Timeout specified and its enclosing Test also has Timeout specified, but only one can be specified")
-		}
-		if p.Timeout != 0 {
-			timeout = p.Timeout
+		pre = p.Pre
+	}
+	if pre != nil {
+		if _, ok := pre.(preconditionImpl); !ok {
+			return nil, fmt.Errorf("precondition %s does not implement preconditionImpl", pre)
 		}
 	}
 
-	aattrs, err := autoAttrs(name, info.pkg, swDeps)
-	if err != nil {
-		return nil, err
+	timeout := t.Timeout
+	if p.Timeout != 0 {
+		if t.Timeout != 0 {
+			return nil, errors.New("Param has Timeout specified and its enclosing Test also has Timeout specified, but only one can be specified")
+		}
+		timeout = p.Timeout
+	}
+	if timeout < 0 {
+		return nil, fmt.Errorf("timeout is negative (%v)", timeout)
 	}
 
 	return &TestInstance{
 		Name:         name,
 		Pkg:          info.pkg,
-		Val:          val,
+		Val:          p.Val,
 		Func:         t.Func,
 		Desc:         t.Desc,
 		Contacts:     append([]string(nil), t.Contacts...),
-		Attr:         append(aattrs, attrs...),
+		Attr:         attrs,
 		Data:         data,
 		Vars:         append([]string(nil), t.Vars...),
 		SoftwareDeps: swDeps,
@@ -157,23 +195,152 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 	}, nil
 }
 
-// autoAttrs adds automatically-generated attributes to Attr.
-func autoAttrs(name, pkg string, softwareDeps []string) ([]string, error) {
-	if name == "" {
-		return nil, errors.New("test name is empty")
-	}
-	if pkg == "" {
-		return nil, errors.New("test package is empty")
-	}
-
-	result := []string{testNameAttrPrefix + name}
+// autoAttrs returns automatically-generated attributes.
+func autoAttrs(name, pkg string, softwareDeps []string) []string {
+	attrs := []string{testNameAttrPrefix + name}
 	if comps := strings.Split(pkg, "/"); len(comps) >= 2 {
-		result = append(result, testBundleAttrPrefix+comps[len(comps)-2])
+		attrs = append(attrs, testBundleAttrPrefix+comps[len(comps)-2])
 	}
 	for _, dep := range softwareDeps {
-		result = append(result, testDepAttrPrefix+dep)
+		attrs = append(attrs, testDepAttrPrefix+dep)
 	}
-	return result, nil
+	return attrs
+}
+
+// testFuncInfo contains information about a TestFunc.
+type testFuncInfo struct {
+	pkg      string // package name, e.g. "chromiumos/tast/local/bundles/cros/ui"
+	category string // Tast category name, e.g. "ui". The last component of pkg
+	name     string // function name, e.g. "ChromeLogin"
+	file     string // full source path, e.g. "/home/user/chromeos/src/platform/tast-tests/.../ui/chrome_login.go"
+}
+
+// getTestFuncInfo returns info about f.
+func getTestFuncInfo(f TestFunc) (*testFuncInfo, error) {
+	if f == nil {
+		return nil, errors.New("Func is nil")
+	}
+	pc := reflect.ValueOf(f).Pointer()
+	rf := runtime.FuncForPC(pc)
+	if rf == nil {
+		return nil, errors.New("failed to get function from PC")
+	}
+	p := strings.SplitN(rf.Name(), ".", 2)
+	if len(p) != 2 {
+		return nil, fmt.Errorf("didn't find package.function in %q", rf.Name())
+	}
+
+	cs := strings.Split(p[0], "/")
+	if len(cs) < 2 {
+		return nil, fmt.Errorf("failed to split package %q into at least two components", p[0])
+	}
+
+	info := &testFuncInfo{
+		pkg:      p[0],
+		category: cs[len(cs)-1],
+		name:     p[1],
+	}
+	info.file, _ = rf.FileLine(pc)
+	return info, nil
+}
+
+// testNameRegexp validates test names, which should consist of a package name,
+// a period, the name of the exported test function, followed optionally by
+// a period and the name of the parameter.
+var testNameRegexp = regexp.MustCompile(`^[a-z][a-z0-9]*\.[A-Z][A-Za-z0-9]*(?:\.[a-z0-9_]+)?$`)
+
+func validateName(name string) error {
+	if !testNameRegexp.MatchString(name) {
+		return fmt.Errorf("invalid test name %q", name)
+	}
+	return nil
+}
+
+// testWordRegexp validates an individual word in a test function name.
+// See checkFuncNameAgainstFilename for details.
+var testWordRegexp = regexp.MustCompile("^[A-Z0-9]+[a-z0-9]*[A-Z0-9]*$")
+
+func validateFileName(funcName, filename string) error {
+	if strings.ToLower(filename) != filename {
+		return fmt.Errorf("filename %q isn't lowercase", filename)
+	}
+	const goExt = ".go"
+	if filepath.Ext(filename) != goExt {
+		return fmt.Errorf("filename %q doesn't have extension %q", filename, goExt)
+	}
+
+	// First, split the name into words based on underscores in the filename.
+	funcIdx := 0
+	fileWords := strings.Split(filename[:len(filename)-len(goExt)], "_")
+	for _, fileWord := range fileWords {
+		// Disallow repeated underscores.
+		if len(fileWord) == 0 {
+			return fmt.Errorf("empty word in filename %q", filename)
+		}
+
+		// Extract the characters from the function name corresponding to the word from the filename.
+		if funcIdx+len(fileWord) > len(funcName) {
+			return fmt.Errorf("name %q doesn't include all of filename %q", funcName, filename)
+		}
+		funcWord := funcName[funcIdx : funcIdx+len(fileWord)]
+		if strings.ToLower(funcWord) != strings.ToLower(fileWord) {
+			return fmt.Errorf("word %q at %q[%d] doesn't match %q in filename %q", funcWord, funcName, funcIdx, fileWord, filename)
+		}
+
+		// Test names are taken from Go function names, so they should follow Go's naming conventions.
+		// Generally speaking, that means camel case with acronyms fully capitalized (although we can't catch
+		// miscapitalized acronyms here, as we don't know if a given word is an acronym or not).
+		// Every word should begin with either an uppercase letter or a digit.
+		// Multiple leading or trailing uppercase letters are allowed to permit filename -> func-name pairings like
+		// dbus.go -> "DBus", webrtc.go -> "WebRTC", and crosvm.go -> "CrosVM".
+		// Note that this also permits incorrect filenames like loadurl.go for "LoadURL", but that's not something code can prevent.
+		if !testWordRegexp.MatchString(funcWord) {
+			return fmt.Errorf("word %q at %q[%d] should probably be %q (acronyms also allowed at beginning and end)",
+				funcWord, funcName, funcIdx, strings.Title(strings.ToLower(funcWord)))
+		}
+
+		funcIdx += len(funcWord)
+	}
+
+	if funcIdx < len(funcName) {
+		return fmt.Errorf("name %q has extra suffix %q not in filename %q", funcName, funcName[funcIdx:], filename)
+	}
+
+	return nil
+}
+
+func isAutoAttr(attr string) bool {
+	for _, pre := range []string{testNameAttrPrefix, testBundleAttrPrefix, testDepAttrPrefix} {
+		if strings.HasPrefix(attr, pre) {
+			return true
+		}
+	}
+	return false
+}
+
+func validateManualAttr(attr []string) error {
+	for _, a := range attr {
+		if isAutoAttr(a) {
+			return fmt.Errorf("attribute %q has reserved prefix", a)
+		}
+	}
+	return nil
+}
+
+func validateAttr(attr []string) error {
+	if err := checkKnownAttrs(attr); err != nil {
+		return err
+	}
+	return nil
+}
+
+func validateData(data []string) error {
+	for _, p := range data {
+		if p != filepath.Clean(p) || strings.HasPrefix(p, ".") || strings.HasPrefix(p, "/") {
+			return fmt.Errorf("data path %q is invalid", p)
+		}
+	}
+	return nil
 }
 
 func (t *TestInstance) clone() *TestInstance {

@@ -24,23 +24,12 @@ func NewRegistry() *Registry {
 
 // AddTest adds t to the registry.
 func (r *Registry) AddTest(t *Test) error {
-	if err := validateTest(t); err != nil {
+	tis, err := instantiate(t)
+	if err != nil {
 		return err
 	}
-	if len(t.Params) == 0 {
-		tc, err := newTestInstance(t, nil)
-		if err != nil {
-			return err
-		}
-		return r.AddTestInstance(tc)
-	}
-
-	for _, p := range t.Params {
-		tc, err := newTestInstance(t, &p)
-		if err != nil {
-			return err
-		}
-		if err := r.AddTestInstance(tc); err != nil {
+	for _, ti := range tis {
+		if err := r.AddTestInstance(ti); err != nil {
 			return err
 		}
 	}

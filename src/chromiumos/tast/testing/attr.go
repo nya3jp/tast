@@ -207,7 +207,7 @@ func checkKnownAttrs(attrs []string) error {
 
 	var groups []*group
 	for _, attr := range attrs {
-		if !strings.HasPrefix(attr, groupPrefix) {
+		if isAutoAttr(attr) || !strings.HasPrefix(attr, groupPrefix) {
 			continue
 		}
 		name := strings.TrimPrefix(attr, groupPrefix)
@@ -225,7 +225,7 @@ func checkKnownAttrs(attrs []string) error {
 	}
 
 	for _, attr := range attrs {
-		if strings.HasPrefix(attr, groupPrefix) {
+		if isAutoAttr(attr) || strings.HasPrefix(attr, groupPrefix) {
 			continue
 		}
 		found := false

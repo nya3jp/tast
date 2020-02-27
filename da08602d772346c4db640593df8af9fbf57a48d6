@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ad3e08f9_c6ecb74b",
+        "filename": "src/chromiumos/tast/testing/hwdep/dep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-02-27T06:02:24Z",
+      "side": 1,
+      "message": "I think it\u0027s good to keep the public documentation of these symbols here, rather than redirecting users to internal definitions.",
+      "range": {
+        "startLine": 14,
+        "startChar": 2,
+        "endLine": 14,
+        "endChar": 65
+      },
+      "revId": "da08602d772346c4db640593df8af9fbf57a48d6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

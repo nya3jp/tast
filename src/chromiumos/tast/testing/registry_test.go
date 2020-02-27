@@ -105,39 +105,6 @@ func TestAddTestModifyOriginal(t *gotesting.T) {
 	}
 }
 
-// Dummy function to register the test.
-func RegistryTest(context.Context, *State) {}
-
-func TestParamTestRegistration(t *gotesting.T) {
-	reg := NewRegistry()
-	test := &Test{
-		Func: RegistryTest,
-		Params: []Param{{
-			Name: "param1",
-		}, {
-			Name: "param2",
-		}},
-	}
-
-	if err := reg.AddTest(test); err != nil {
-		t.Error("Unexpecetd test registration error: ", err)
-	}
-
-	// Makes sure the test is registered in order.
-	tests := reg.AllTests()
-	if len(tests) != 2 {
-		t.Errorf("Unexpected number of registered tests: got %d; want 2", len(tests))
-	}
-
-	if tests[0].Name != "testing.RegistryTest.param1" {
-		t.Errorf("Unexpected test name: got %s; want testing.RegistryTest.param1", tests[0].Name)
-	}
-
-	if tests[1].Name != "testing.RegistryTest.param2" {
-		t.Errorf("Unexpected test name: got %s; want testing.RegistryTest.param2", tests[1].Name)
-	}
-}
-
 func TestAllServices(t *gotesting.T) {
 	reg := NewRegistry()
 	allSvcs := []*Service{

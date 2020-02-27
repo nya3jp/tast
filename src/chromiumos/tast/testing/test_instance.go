@@ -62,9 +62,6 @@ type TestInstance struct {
 	// a reasonable default will be used.
 	ExitTimeout time.Duration `json:"-"`
 
-	// AdditionalTime contains an upper bound of additional time allocated to the test.
-	AdditionalTime time.Duration `json:"additionalTime,omitEmpty"`
-
 	// Val contains the value inherited from the expanded Param struct for a parameterized test case.
 	// This can be retrieved from testing.State.Param().
 	Val interface{} `json:"-"`
@@ -143,21 +140,20 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 	}
 
 	return &TestInstance{
-		Name:           name,
-		Pkg:            info.pkg,
-		AdditionalTime: additionalTime(pre),
-		Val:            val,
-		Func:           t.Func,
-		Desc:           t.Desc,
-		Contacts:       append([]string(nil), t.Contacts...),
-		Attr:           append(aattrs, attrs...),
-		Data:           data,
-		Vars:           append([]string(nil), t.Vars...),
-		SoftwareDeps:   swDeps,
-		HardwareDeps:   hwDeps,
-		ServiceDeps:    append([]string(nil), t.ServiceDeps...),
-		Pre:            pre,
-		Timeout:        timeout,
+		Name:         name,
+		Pkg:          info.pkg,
+		Val:          val,
+		Func:         t.Func,
+		Desc:         t.Desc,
+		Contacts:     append([]string(nil), t.Contacts...),
+		Attr:         append(aattrs, attrs...),
+		Data:         data,
+		Vars:         append([]string(nil), t.Vars...),
+		SoftwareDeps: swDeps,
+		HardwareDeps: hwDeps,
+		ServiceDeps:  append([]string(nil), t.ServiceDeps...),
+		Pre:          pre,
+		Timeout:      timeout,
 	}, nil
 }
 
@@ -178,21 +174,6 @@ func autoAttrs(name, pkg string, softwareDeps []string) ([]string, error) {
 		result = append(result, testDepAttrPrefix+dep)
 	}
 	return result, nil
-}
-
-// additionalTime returns AdditionalTime to include time needed for Precondition and pre-test or post-test functions.
-func additionalTime(pre Precondition) time.Duration {
-	// We don't know whether a pre-test or post-test func will be specified until the test is run,
-	// so err on the side of including the time that would be allocated.
-	result := preTestTimeout + postTestTimeout
-
-	// The precondition's timeout applies both when preparing the precondition and when closing it
-	// (which we'll need to do if this is the final test using the precondition).
-	if pre != nil {
-		result += 2 * pre.Timeout()
-	}
-
-	return result
 }
 
 func (t *TestInstance) clone() *TestInstance {

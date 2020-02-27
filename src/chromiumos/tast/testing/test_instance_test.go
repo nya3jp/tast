@@ -83,24 +83,6 @@ func TestAutoAttr(t *gotesting.T) {
 	}
 }
 
-func TestAdditionalTime(t *gotesting.T) {
-	pre := &testPre{}
-	test, err := newTestInstance(&Test{Func: TESTINSTANCETEST, Timeout: 5 * time.Minute, Pre: pre}, nil)
-	if err != nil {
-		t.Fatal("finalize() failed: ", err)
-	}
-	if exp := preTestTimeout + postTestTimeout + 2*pre.Timeout(); test.AdditionalTime != exp {
-		t.Errorf("AdditionalTime = %v; want %v", test.AdditionalTime, exp)
-	}
-
-	pre = &testPre{}
-	if test, err := newTestInstance(&Test{Func: TESTINSTANCETEST}, &Param{Timeout: time.Minute, Pre: pre}); err != nil {
-		t.Error(err)
-	} else if exp := preTestTimeout + postTestTimeout + 2*pre.Timeout(); test.AdditionalTime != exp {
-		t.Errorf("AdditionalTime = %v; want %v", test.AdditionalTime, exp)
-	}
-}
-
 func TestParamTest(t *gotesting.T) {
 	test, err := newTestInstance(
 		&Test{

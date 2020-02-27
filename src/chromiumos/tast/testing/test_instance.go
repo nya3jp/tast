@@ -89,64 +89,99 @@ type TestInstance struct {
 	Timeout      time.Duration `json:"timeout"`
 }
 
-// newTestInstance creates a TestInstance instance from the given Test info.
-// t must be validated one.
-// For a parameterized test case, p is specified. p must be contained in t.Params.
+// instantiate creates one or more TestInstance from t.
+func instantiate(t *Test) ([]*TestInstance, error) {
+	if err := t.validate(); err != nil {
+		return nil, err
+	}
+
+	// Empty Params is equivalent to one Param with all default values.
+	ps := t.Params
+	if len(ps) == 0 {
+		ps = []Param{{}}
+	}
+
+	tis := make([]*TestInstance, 0, len(ps))
+	for _, p := range ps {
+		ti, err := newTestInstance(t, &p)
+		if err != nil {
+			return nil, err
+		}
+		tis = append(tis, ti)
+	}
+
+	return tis, nil
+}
+
 func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 	info, err := getTestFuncInfo(t.Func)
 	if err != nil {
 		return nil, err
 	}
+
+	if err := validateFileName(info.name, filepath.Base(info.file)); err != nil {
+		return nil, err
+	}
+
 	name := fmt.Sprintf("%s.%s", info.category, info.name)
+	if p.Name != "" {
+		name += "." + p.Name
+	}
+	if err := validateName(name); err != nil {
+		return nil, err
+	}
 
-	attrs := append([]string(nil), t.Attr...)
-	data := append([]string(nil), t.Data...)
-	swDeps := append([]string(nil), t.SoftwareDeps...)
-	hwDeps := t.HardwareDeps
+	manualAttrs := append(append([]string(nil), t.Attr...), p.ExtraAttr...)
+	if err := validateManualAttr(manualAttrs); err != nil {
+		return nil, err
+	}
+
+	data := append(append([]string(nil), t.Data...), p.ExtraData...)
+	if err := validateData(t.Data); err != nil {
+		return nil, err
+	}
+
+	swDeps := append(append([]string(nil), t.SoftwareDeps...), p.ExtraSoftwareDeps...)
+	hwDeps := hwdep.Merge(t.HardwareDeps, p.ExtraHardwareDeps)
+
+	attrs := append(manualAttrs, autoAttrs(name, info.pkg, swDeps)...)
+	if err := validateAttr(t.Attr); err != nil {
+		return nil, err
+	}
+
 	pre := t.Pre
-	timeout := t.Timeout
-	var val interface{}
-	if p != nil {
-		if p.Name != "" {
-			name = fmt.Sprintf("%s.%s", name, p.Name)
-		}
-		attrs = append(attrs, p.ExtraAttr...)
-		data = append(data, p.ExtraData...)
-		swDeps = append(swDeps, p.ExtraSoftwareDeps...)
-		hwDeps = hwdep.Merge(hwDeps, p.ExtraHardwareDeps)
-		val = p.Val
-
-		// Only one precondition can be defined.
-		if t.Pre != nil && p.Pre != nil {
+	if p.Pre != nil {
+		if t.Pre != nil {
 			return nil, errors.New("Param has Pre specified and its enclosing Test also has Pre specified," +
 				"but only one can be specified")
 		}
-		if p.Pre != nil {
-			pre = p.Pre
-		}
-
-		// Only one timeout can be set.
-		if t.Timeout != 0 && p.Timeout != 0 {
-			return nil, errors.New("Param has Timeout specified and its enclosing Test also has Timeout specified, but only one can be specified")
-		}
-		if p.Timeout != 0 {
-			timeout = p.Timeout
+		pre = p.Pre
+	}
+	if pre != nil {
+		if _, ok := pre.(preconditionImpl); !ok {
+			return nil, fmt.Errorf("precondition %s does not implement preconditionImpl", pre)
 		}
 	}
 
-	aattrs, err := autoAttrs(name, info.pkg, swDeps)
-	if err != nil {
-		return nil, err
+	timeout := t.Timeout
+	if p.Timeout != 0 {
+		if t.Timeout != 0 {
+			return nil, errors.New("Param has Timeout specified and its enclosing Test also has Timeout specified, but only one can be specified")
+		}
+		timeout = p.Timeout
+	}
+	if timeout < 0 {
+		return nil, fmt.Errorf("timeout is negative (%v)", timeout)
 	}
 
 	return &TestInstance{
 		Name:         name,
 		Pkg:          info.pkg,
-		Val:          val,
+		Val:          p.Val,
 		Func:         t.Func,
 		Desc:         t.Desc,
 		Contacts:     append([]string(nil), t.Contacts...),
-		Attr:         append(aattrs, attrs...),
+		Attr:         attrs,
 		Data:         data,
 		Vars:         append([]string(nil), t.Vars...),
 		SoftwareDeps: swDeps,
@@ -157,23 +192,16 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 	}, nil
 }
 
-// autoAttrs adds automatically-generated attributes to Attr.
-func autoAttrs(name, pkg string, softwareDeps []string) ([]string, error) {
-	if name == "" {
-		return nil, errors.New("test name is empty")
-	}
-	if pkg == "" {
-		return nil, errors.New("test package is empty")
-	}
-
-	result := []string{testNameAttrPrefix + name}
+// autoAttrs returns automatically-generated attributes.
+func autoAttrs(name, pkg string, softwareDeps []string) []string {
+	attrs := []string{testNameAttrPrefix + name}
 	if comps := strings.Split(pkg, "/"); len(comps) >= 2 {
-		result = append(result, testBundleAttrPrefix+comps[len(comps)-2])
+		attrs = append(attrs, testBundleAttrPrefix+comps[len(comps)-2])
 	}
 	for _, dep := range softwareDeps {
-		result = append(result, testDepAttrPrefix+dep)
+		attrs = append(attrs, testDepAttrPrefix+dep)
 	}
-	return result, nil
+	return attrs
 }
 
 func (t *TestInstance) clone() *TestInstance {

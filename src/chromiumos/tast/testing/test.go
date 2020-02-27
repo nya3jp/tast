@@ -130,13 +130,24 @@ type Param struct {
 	Val interface{}
 }
 
-func validateTest(t *Test) error {
+func (t *Test) validate() error {
+	if err := validateParams(t.Params); err != nil {
+		return err
+	}
+	return nil
+}
+
+// TODO(before submission): Move this function and other subroutines to test_instance.go.
+func (t *TestInstance) validate() error {
 	info, err := getTestFuncInfo(t.Func)
 	if err != nil {
 		return err
 	}
 
-	if err := validateName(info.name, info.category, filepath.Base(info.file)); err != nil {
+	if err := validateName(t.Name); err != nil {
+		return err
+	}
+	if err := validateFileName(info.name, filepath.Base(info.file)); err != nil {
 		return err
 	}
 	if err := validateAttr(t.Attr); err != nil {
@@ -153,12 +164,6 @@ func validateTest(t *Test) error {
 			return fmt.Errorf("precondition %s does not implement preconditionImpl", t.Pre)
 		}
 	}
-	for _, p := range t.Params {
-		if err := validateParam(&p); err != nil {
-			return err
-		}
-	}
-
 	return nil
 }
 
@@ -200,19 +205,22 @@ func getTestFuncInfo(f TestFunc) (*testFuncInfo, error) {
 }
 
 // testNameRegexp validates test names, which should consist of a package name,
-// a period, and the name of the exported test function.
-var testNameRegexp = regexp.MustCompile("^[a-z][a-z0-9]*\\.[A-Z][A-Za-z0-9]*$")
+// a period, the name of the exported test function, followed optionally by
+// a period and the name of the parameter.
+var testNameRegexp = regexp.MustCompile(`^[a-z][a-z0-9]*\.[A-Z][A-Za-z0-9]*(?:\.[a-z0-9_]+)?$`)
+
+func validateName(name string) error {
+	if !testNameRegexp.MatchString(name) {
+		return fmt.Errorf("invalid test name %q", name)
+	}
+	return nil
+}
 
 // testWordRegexp validates an individual word in a test function name.
 // See checkFuncNameAgainstFilename for details.
 var testWordRegexp = regexp.MustCompile("^[A-Z0-9]+[a-z0-9]*[A-Z0-9]*$")
 
-func validateName(funcName, category, filename string) error {
-	name := fmt.Sprintf("%s.%s", category, funcName)
-	if !testNameRegexp.MatchString(name) {
-		return fmt.Errorf("invalid test name %q (want pkg.ExportedTestFunc)", name)
-	}
-
+func validateFileName(funcName, filename string) error {
 	if strings.ToLower(filename) != filename {
 		return fmt.Errorf("filename %q isn't lowercase", filename)
 	}
@@ -284,18 +292,9 @@ func validateData(data []string) error {
 	return nil
 }
 
-// paramNameRegexp validates each parametiric case names.
-var paramNameRegexp = regexp.MustCompile("^[a-z0-9_]*$")
-
 func validateParams(params []Param) error {
 	if len(params) == 0 {
 		return nil
-	}
-
-	for _, p := range params {
-		if err := validateParam(&p); err != nil {
-			return err
-		}
 	}
 
 	// Ensure unique param name.
@@ -315,21 +314,6 @@ func validateParams(params []Param) error {
 		if typ != typ0 {
 			return fmt.Errorf("unmatched Val type: got %v; want %v", typ, typ0)
 		}
-	}
-
-	return nil
-}
-
-func validateParam(p *Param) error {
-	if !paramNameRegexp.MatchString(p.Name) {
-		return fmt.Errorf("invalid param name %q (want to match with [a-z0-9_]*)", p.Name)
-	}
-
-	if err := validateAttr(p.ExtraAttr); err != nil {
-		return err
-	}
-	if err := validateData(p.ExtraData); err != nil {
-		return err
 	}
 
 	return nil

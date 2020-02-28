@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b5f3544b_0c125145",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/test_runner.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-02-28T06:33:18Z",
+      "side": 1,
+      "message": "When Cmd.Wait fails, the command is aborted, so we don\u0027t need to call Abort and Wait further.",
+      "range": {
+        "startLine": 91,
+        "startChar": 13,
+        "endLine": 91,
+        "endChar": 18
+      },
+      "revId": "cfb10e553ec54a4e49a20c4c1474a9a0c1d9ab1f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

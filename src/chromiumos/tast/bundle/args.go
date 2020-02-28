@@ -74,7 +74,9 @@ type RunTestsArgs struct {
 	TestVars map[string]string `json:"testVars,omitempty"`
 
 	// SortTests indicates if the test cases order need sorting
-	SortTests bool `json:"sortests,omitempty"`
+	SortTests bool `json:"sortTests,omitempty"` // SortTests indicates if the test cases order need sorting
+	// DetachDuration defines the duration running in detach mode.
+	DetachDuration int `json:"detachDuration,omitempty"`
 
 	// DataDir is the path to the directory containing test data files.
 	DataDir string `json:"dataDir,omitempty"`

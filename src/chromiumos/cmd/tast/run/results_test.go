@@ -124,7 +124,7 @@ func TestReadTestOutput(t *gotesting.T) {
 		Logger: logging.NewSimple(&logBuf, 0, false), // drop debug messages
 		ResDir: filepath.Join(tempDir, "results"),
 	}
-	results, unstartedTests, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, nil)
+	results, unstartedTests, _, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, nil)
 	if err != nil {
 		t.Fatal("readTestOutput failed:", err)
 	}
@@ -264,7 +264,7 @@ func TestReadTestOutputTimingLog(t *gotesting.T) {
 		Logger: logging.NewSimple(&bytes.Buffer{}, 0, false),
 		ResDir: td,
 	}
-	if _, _, err := readTestOutput(ctx, &cfg, &b, os.Rename, nil); err != nil {
+	if _, _, _, err := readTestOutput(ctx, &cfg, &b, os.Rename, nil); err != nil {
 		t.Fatal("readTestOutput failed: ", err)
 	}
 
@@ -314,7 +314,7 @@ func TestPerTestLogContainsRunError(t *gotesting.T) {
 	mw.WriteMessage(&control.RunError{Time: time.Unix(3, 0), Error: testing.Error{Reason: errorMsg}})
 
 	cfg := Config{Logger: logging.NewSimple(&bytes.Buffer{}, 0, false), ResDir: td}
-	if _, _, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, nil); err == nil {
+	if _, _, _, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, nil); err == nil {
 		t.Fatal("readTestOutput didn't report run error")
 	} else if !strings.Contains(err.Error(), errorMsg) {
 		t.Fatalf("readTestOutput error %q doesn't contain %q", err.Error(), errorMsg)
@@ -409,7 +409,7 @@ func TestValidateMessages(t *gotesting.T) {
 			Logger: logging.NewSimple(&bytes.Buffer{}, 0, false),
 			ResDir: filepath.Join(tempDir, tc.desc),
 		}
-		if results, _, err := readTestOutput(context.Background(), &cfg, &b, noOpCopyAndRemove, nil); err == nil {
+		if results, _, _, err := readTestOutput(context.Background(), &cfg, &b, noOpCopyAndRemove, nil); err == nil {
 			t.Errorf("readTestOutput didn't fail for %s", tc.desc)
 		} else {
 			var resultNames []string
@@ -438,7 +438,7 @@ func TestReadTestOutputTimeout(t *gotesting.T) {
 		ResDir:     tempDir,
 		msgTimeout: time.Millisecond,
 	}
-	if _, _, err := readTestOutput(context.Background(), &cfg, pr, noOpCopyAndRemove, nil); err == nil {
+	if _, _, _, err := readTestOutput(context.Background(), &cfg, pr, noOpCopyAndRemove, nil); err == nil {
 		t.Error("readTestOutput didn't return error for message timeout")
 	}
 
@@ -447,7 +447,7 @@ func TestReadTestOutputTimeout(t *gotesting.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
 	start := time.Now()
-	if _, _, err := readTestOutput(ctx, &cfg, pr, noOpCopyAndRemove, nil); err == nil {
+	if _, _, _, err := readTestOutput(ctx, &cfg, pr, noOpCopyAndRemove, nil); err == nil {
 		t.Error("readTestOutput didn't return error for canceled context")
 	}
 	if elapsed := time.Now().Sub(start); elapsed >= cfg.msgTimeout {
@@ -531,7 +531,7 @@ func TestWritePartialResults(t *gotesting.T) {
 		Logger: logging.NewSimple(&bytes.Buffer{}, 0, false),
 		ResDir: tempDir,
 	}
-	results, unstarted, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, nil)
+	results, unstarted, _, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, nil)
 	if err == nil {
 		t.Fatal("readTestOutput unexpectedly succeeded")
 	}
@@ -579,7 +579,7 @@ func TestWritePartialResults(t *gotesting.T) {
 	mw.WriteMessage(&control.RunEnd{Time: run2End})
 
 	// The results for the third test should be appended to the existing streamed results file.
-	if _, _, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, nil); err != nil {
+	if _, _, _, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, nil); err != nil {
 		t.Error("readTestOutput failed: ", err)
 	}
 	if files, err = testutil.ReadFiles(cfg.ResDir); err != nil {
@@ -649,7 +649,7 @@ func TestUnfinishedTest(t *gotesting.T) {
 			Logger: logging.NewSimple(&bytes.Buffer{}, 0, false),
 			ResDir: filepath.Join(tempDir, strconv.Itoa(i)),
 		}
-		res, _, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, tc.diagFunc)
+		res, _, _, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, tc.diagFunc)
 		if err == nil {
 			t.Error("readTestOutput unexpectedly succeeded")
 			continue

@@ -105,6 +105,8 @@ type Config struct {
 	varsFiles      []string // paths to variable files
 	defaultVarsDir string   // dir containing default variable files
 
+	detachDuration int // the detach mode running duration, in seconds
+
 	msgTimeout             time.Duration // timeout for reading control messages; default used if zero
 	localRunnerWaitTimeout time.Duration // timeout for waiting for local_test_runner to exit; default used if zero
 
@@ -183,6 +185,8 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 
 	// Some flags are only relevant if we're running tests rather than listing them.
 	if c.mode == RunTestsMode {
+		f.IntVar(&c.detachDuration, "detachduration", 0, "duration running in detach mode")
+
 		f.StringVar(&c.ResDir, "resultsdir", "", "directory for test results")
 		f.BoolVar(&c.collectSysInfo, "sysinfo", true, "collect system information (logs, crashes, etc.)")
 		f.BoolVar(&c.waitUntilReady, "waituntilready", false, "wait until DUT is ready before running tests")

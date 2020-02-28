@@ -140,7 +140,7 @@ func runRemoteRunner(ctx context.Context, cfg *Config) ([]TestResult, error) {
 	case ListTestsMode:
 		results, rerr = readTestList(stdout)
 	case RunTestsMode:
-		results, _, rerr = readTestOutput(ctx, cfg, stdout, os.Rename, nil)
+		results, _, _, rerr = readTestOutput(ctx, cfg, stdout, os.Rename, nil)
 	}
 
 	// Check that the runner exits successfully first so that we don't give a useless error

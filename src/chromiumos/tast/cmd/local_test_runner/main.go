@@ -58,8 +58,9 @@ func main() {
 			// This list is documented at docs/test_dependencies.md.
 			// All USE flags referenced here must be listed in IUSE in the tast-use-flags ebuild.
 			// The one exception is tast_vm, which is inserted by VM builders via -extrauseflags.
-			"alt_syscall": `!"kernel-3_8" && !"kernel-3_10"`,
-			"amd64":       "amd64",
+			"alt_syscall":          `!"kernel-3_8" && !"kernel-3_10"`,
+			"amd64":                "amd64",
+			"amd64_video_overlays": `amd64 && drm_atomic`,
 			// There are three types of android dependency to differentiate between ARC and ARCVM guest.
 			// master-arc-dev and qt are under development and not stable to run Tast tests.
 			// ARC USE flags are defined here:

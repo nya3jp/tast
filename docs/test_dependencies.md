@@ -15,6 +15,7 @@ The following software features are defined:
 
 *   `alt_syscall` - Whether the platform supports the alt syscall framework.
 *   `amd64` - The [amd64] processor architecture.
+*   `amd64_video_overlays` - [amd64] processors with support for video overlays, i.e. NV12 DRM Plane formats.
 *   `android` - The same as `android_p`. Do not use in new code.
 *   `android_vm` - The ability to [run Android apps] in VM instead of container.
     Any version of Android can be used.

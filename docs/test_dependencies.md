@@ -65,8 +65,7 @@ The following software features are defined:
 *   `display_backlight` - An internal display backlight.
 *   `dlc` - Support of [Downloadable Content] (DLC).
 *   `drivefs` - Google Drive support enabled.
-*   `drm_atomic` - The ability to synchronize video buffer overlays atomically.
-    This is guarantees that [video hardware overlays] are supported.
+*   `drm_atomic` - The [DRM/KMS] kernel subsystem supports atomic commits. 
 *   `firewall` - Standard Chrome OS network firewall rules.
 *   `flashrom` - Userspace utility to update firmware.
 *   `google_virtual_keyboard` - The proprietary Google onscreen virtual keyboard
@@ -114,6 +113,7 @@ The following software features are defined:
 *   `transparent_hugepage` - [Transparent Hugepage] support in the Linux kernel.
 *   `usbguard` - The ability to allow or block USB devices based on policy.
 *   `vaapi` - Whether or not VA-API is supported by this DUT.
+*   `video_overlays` - The kernel [DRM/KMS] version and underlying hardware support atomic commits and the the NV12 DRM Plane format need to promote videos to [hardware overlays].
 *   `virtual_usb_printer` - Emulates a USB printer. This implies the presence of
     the `usbip` program.
 *   `vm_host` - The ability to [run virtual machines].
@@ -138,7 +138,8 @@ The following software features are defined:
 [media::VideoDecoder]: https://cs.chromium.org/chromium/src/media/base/video_decoder.h
 [Diagnostic utilities]: https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/diagnostics/README.md
 [Downloadable Content]: https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/dlcservice
-[video hardware overlays]: https://en.wikipedia.org/wiki/Hardware_overlay
+[DRM/KMS]: https://www.kernel.org/doc/Documentation/gpu/drm-kms.rst
+[hardware overlays]: https://en.wikipedia.org/wiki/Hardware_overlay
 [sandboxed]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/linux_sandboxing.md
 [Memory stats collection daemon]: https://chromium.googlesource.com/chromiumos/platform2/+/master/metrics/memd/
 [OCI]: https://www.opencontainers.org/

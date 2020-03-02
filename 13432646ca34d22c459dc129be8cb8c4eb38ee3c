@@ -34,6 +34,24 @@
       "revId": "13432646ca34d22c459dc129be8cb8c4eb38ee3c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "02366fab_596a3aa4",
+        "filename": "src/chromiumos/tast/testing/test_instance.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-03-02T17:17:49Z",
+      "side": 1,
+      "message": "\u003e but since attribute validation should be done against a complete set of attributes (rather than checking testing.Test.Attr and testing.Param.Attr separately)\n\nWhy? You can verify the attrs on testing.Test, like;\n\nfunc verifyAttrs(attrs, extraAttrs []string) error {\n  ...\n}\n\nfor each param, instead, if you\u0027d like to check the combination of the attrs.\n\nOr, in this specific case, verifying for each individual name is just fine,\n\nfunc verifyAttr(attr string) error {\n  ...\n}\n\nworks, too.\n\nI don\u0027t think distributing the verification into three locations is a good approach. If you\u0027d like to verify in newTestInstance, why not verify each field\u0027s value in newTestInstance, instead of introducing TestInstance.verify().\n\n(It may be worth considered regardless of the \"manual attr\" verification, in the sense that \"create possibly invalid instance and the call validate\" v.s. \"always create valid instance\").",
+      "parentUuid": "08677c6d_df27532d",
+      "revId": "13432646ca34d22c459dc129be8cb8c4eb38ee3c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

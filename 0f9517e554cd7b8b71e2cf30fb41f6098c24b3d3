@@ -50,6 +50,47 @@
       "revId": "0f9517e554cd7b8b71e2cf30fb41f6098c24b3d3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "30aa2dd9_a9c7513f",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2020-03-02T14:48:16Z",
+      "side": 1,
+      "message": "\u003e There already is \"drm_atomic\" software deps, and it says \"to synchronize video buffer overlays atomically\". My understanding is \"drm_atomic\" is (almost) arch independent and meaning \"video_overlays\"? If so, I don\u0027t think you need this software deps, instead you can list \"amd64\" and \"drm_atomic\" in your test\u0027s SoftwareDeps.\n\nYes and no, the atomic DRM API is necessary to have overlays of any kind, but\nnot enough to have them for video, for the latter we also need them to support\nNV12 format, which itself depends on the silicon generation, i.e. Broadwell\ndoesn\u0027t have it, whereas KabyLake does. By coincidence, drm_atomic greatly\nresembles support for video overlays, because we don\u0027t support the atomic API\non old boards, so my idea here was to make basically a synonym for AMD64 boards,\nthinking that it\u0027d be easier to read at the use sites \"amd64_video_overlays\"\nthan {\"amd64\", \"drm_atomic\"}. What do you suggest would be the best way to\ndo it?\n\n\u003e If \"drm_atomic\" and \"video_overlays\" should have different meaning, could you clearly clarify them? (example; \"crossystem\" and \"reboot\" have the same condition at the moment, but they have different concepts so they are defined separately.)",
+      "parentUuid": "ba0d64ae_6cb3f207",
+      "revId": "0f9517e554cd7b8b71e2cf30fb41f6098c24b3d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8a35344e_bf310503",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2020-03-02T14:48:16Z",
+      "side": 1,
+      "message": "Heh well this is not what |drm_atomic| is, for sure; atomic refers to being \nable to commit a new set of DRM properties, e.g. planes, formats, configurations,\natomically (whereas before user code had to configure and commit one step at\nat time, unwinding the committed actions if anything failed). \n\nMaybe what we could do in this CL is:\na) Rename this |drm_atomic| to |video_overlays{_supported}|, to better \n represent what it means.  Usage is not widespread: \n https://source.chromium.org/search?q\u003dsrc%2Fplatform%2F%20drm_atomic\u0026ss\u003dchromiumos\nb) Remove the proposed |amd64_video_overlays|\nc) in the follow up CL, use the |video_overlays{_supported}|.\n\nWDYT?",
+      "range": {
+        "startLine": 69,
+        "startChar": 4,
+        "endLine": 70,
+        "endChar": 68
+      },
+      "revId": "0f9517e554cd7b8b71e2cf30fb41f6098c24b3d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

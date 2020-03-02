@@ -236,3 +236,8 @@ func (d *DUT) connectCompanionDevice(ctx context.Context, suffix string) (*host.
 func (d *DUT) DefaultWifiRouterHost(ctx context.Context) (*host.SSH, error) {
 	return d.connectCompanionDevice(ctx, "-router")
 }
+
+// DefaultWifiPcapHost connects to the default WiFi pcap router and returns SSH object.
+func (d *DUT) DefaultWifiPcapHost(ctx context.Context) (*host.SSH, error) {
+	return d.connectCompanionDevice(ctx, "-pcap")
+}

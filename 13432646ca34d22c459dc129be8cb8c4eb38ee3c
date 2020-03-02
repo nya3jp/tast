@@ -16,6 +16,24 @@
       "revId": "13432646ca34d22c459dc129be8cb8c4eb38ee3c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "08677c6d_df27532d",
+        "filename": "src/chromiumos/tast/testing/test_instance.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-03-02T06:21:53Z",
+      "side": 1,
+      "message": "Good point, and actually that\u0027s the point I was wondering.\n\nI considered checking manual attributes in testing.Test validation, but since attribute validation should be done against a complete set of attributes (rather than checking testing.Test.Attr and testing.Param.Attr separately), let me check it in newTestInstance.",
+      "parentUuid": "d5d8b018_088ed832",
+      "revId": "13432646ca34d22c459dc129be8cb8c4eb38ee3c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

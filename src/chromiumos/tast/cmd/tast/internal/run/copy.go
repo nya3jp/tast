@@ -27,7 +27,7 @@ func pushToHost(ctx context.Context, cfg *Config, hst *host.SSH, files map[strin
 		files = rewritten
 	}
 
-	return hst.PutFiles(ctx, files, host.DereferenceSymlinks)
+	return linuxssh.PutFiles(ctx, hst, files, linuxssh.DereferenceSymlinks)
 }
 
 // moveFromHost copies the tree rooted at src on hst to dst on the local system and deletes src from hst.
@@ -52,7 +52,7 @@ func deleteFromHost(ctx context.Context, cfg *Config, hst *host.SSH, baseDir str
 	undo := setAnnounceCmdForCopy(cfg, hst)
 	defer undo()
 
-	return hst.DeleteTree(ctx, filepath.Join(cfg.hstCopyBasePath, baseDir), files)
+	return linuxssh.DeleteTree(ctx, hst, filepath.Join(cfg.hstCopyBasePath, baseDir), files)
 }
 
 // setAnnounceCmdForCopy is a helper function that configures hst to temporarily run the

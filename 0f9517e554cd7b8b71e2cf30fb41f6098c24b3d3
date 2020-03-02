@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "3629932f_d48d12b1",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2020-03-02T20:07:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c22720e9_c3fd4296",
+      "revId": "0f9517e554cd7b8b71e2cf30fb41f6098c24b3d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "65523df3_a1a62c19",
         "filename": "/COMMIT_MSG",
         "patchSetId": 2
@@ -33,6 +51,24 @@
       "revId": "0f9517e554cd7b8b71e2cf30fb41f6098c24b3d3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ad390b40_53117da6",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2020-03-02T20:07:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "65523df3_a1a62c19",
+      "revId": "0f9517e554cd7b8b71e2cf30fb41f6098c24b3d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -89,6 +125,24 @@
     },
     {
       "key": {
+        "uuid": "74dd2294_d334a06f",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2020-03-02T20:07:44Z",
+      "side": 1,
+      "message": "Yeah! See the next reply.",
+      "parentUuid": "dd767a39_3a7a1cfb",
+      "revId": "0f9517e554cd7b8b71e2cf30fb41f6098c24b3d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8a35344e_bf310503",
         "filename": "docs/test_dependencies.md",
         "patchSetId": 2
@@ -133,6 +187,30 @@
       "revId": "0f9517e554cd7b8b71e2cf30fb41f6098c24b3d3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "196b8e97_1b3a2fae",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2020-03-02T20:07:44Z",
+      "side": 1,
+      "message": "SGTM, I\u0027ll add |video_overlays|, add some explanation, and change the\nsubsequent CL crrev.com/c/2079653 to {\"amd64\", \"video_overlay\"} as you \nmention.",
+      "parentUuid": "471bba5c_70cb8687",
+      "range": {
+        "startLine": 69,
+        "startChar": 4,
+        "endLine": 70,
+        "endChar": 68
+      },
+      "revId": "0f9517e554cd7b8b71e2cf30fb41f6098c24b3d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

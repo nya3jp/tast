@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c22720e9_c3fd4296",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-03-02T02:54:53Z",
+      "side": 1,
+      "message": "s/preconditions/software dependency/",
+      "revId": "0f9517e554cd7b8b71e2cf30fb41f6098c24b3d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "65523df3_a1a62c19",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-03-02T02:54:53Z",
+      "side": 1,
+      "message": "ditto.",
+      "revId": "0f9517e554cd7b8b71e2cf30fb41f6098c24b3d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ba0d64ae_6cb3f207",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-03-02T02:54:53Z",
+      "side": 1,
+      "message": "There already is \"drm_atomic\" software deps, and it says \"to synchronize video buffer overlays atomically\". My understanding is \"drm_atomic\" is (almost) arch independent and meaning \"video_overlays\"? If so, I don\u0027t think you need this software deps, instead you can list \"amd64\" and \"drm_atomic\" in your test\u0027s SoftwareDeps.\nIf \"drm_atomic\" and \"video_overlays\" should have different meaning, could you clearly clarify them? (example; \"crossystem\" and \"reboot\" have the same condition at the moment, but they have different concepts so they are defined separately.)",
+      "revId": "0f9517e554cd7b8b71e2cf30fb41f6098c24b3d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

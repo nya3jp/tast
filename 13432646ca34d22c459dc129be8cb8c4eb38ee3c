@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d5d8b018_088ed832",
+        "filename": "src/chromiumos/tast/testing/test_instance.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-03-02T03:22:17Z",
+      "side": 1,
+      "message": "My understanding is, TestInstance.validate() should validates the data stored in |ti|, then updating Attrs after the validate looks very weird.\nI\u0027d recommend;\n- not to create a half-baked TestInstance, and\n- not to validate on the half-baked instance,\nfor simplicity and less error surfaces.\n\nIt looks like it comes from that validate() contains two things;\n- Checking preserved prefix.\n- Checking known group.\n\nThe former looks like a part of testing.Test validation, while the latter looks like a part of testing.TestInstance validation. Separating them clearly should help fix the problem.\n\nAlternative I considered is to calculate autoAttr on runtime, e.g.:\n\nfunc (t *TestInstance) Attrs() []string {\n  attrs :\u003d append([]string(nil), t.Attrs...)\n  ... // calculate auto attrs\n  return attrs\n}\n\nthough, it looks like more changes are needed, including taking care of JSON marshalling.",
+      "revId": "13432646ca34d22c459dc129be8cb8c4eb38ee3c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

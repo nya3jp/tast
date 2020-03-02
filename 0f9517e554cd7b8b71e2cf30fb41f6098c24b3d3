@@ -71,6 +71,24 @@
     },
     {
       "key": {
+        "uuid": "dd767a39_3a7a1cfb",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-03-02T18:31:12Z",
+      "side": 1,
+      "message": "With your suggestion below, the software deps will be; {\"amd64\", \"video_overlay\"}. Does it work for you?",
+      "parentUuid": "30aa2dd9_a9c7513f",
+      "revId": "0f9517e554cd7b8b71e2cf30fb41f6098c24b3d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "8a35344e_bf310503",
         "filename": "docs/test_dependencies.md",
         "patchSetId": 2
@@ -82,6 +100,30 @@
       "writtenOn": "2020-03-02T14:48:16Z",
       "side": 1,
       "message": "Heh well this is not what |drm_atomic| is, for sure; atomic refers to being \nable to commit a new set of DRM properties, e.g. planes, formats, configurations,\natomically (whereas before user code had to configure and commit one step at\nat time, unwinding the committed actions if anything failed). \n\nMaybe what we could do in this CL is:\na) Rename this |drm_atomic| to |video_overlays{_supported}|, to better \n represent what it means.  Usage is not widespread: \n https://source.chromium.org/search?q\u003dsrc%2Fplatform%2F%20drm_atomic\u0026ss\u003dchromiumos\nb) Remove the proposed |amd64_video_overlays|\nc) in the follow up CL, use the |video_overlays{_supported}|.\n\nWDYT?",
+      "range": {
+        "startLine": 69,
+        "startChar": 4,
+        "endLine": 70,
+        "endChar": 68
+      },
+      "revId": "0f9517e554cd7b8b71e2cf30fb41f6098c24b3d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "471bba5c_70cb8687",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-03-02T18:31:12Z",
+      "side": 1,
+      "message": "As for graphics.DRM.atomic_test, I\u0027m not very familiar with the content of the test, but it looks like actually \"drm_atomic\"?\n\nIf so, maybe, instead of renaming, introducing video_overlays, whose implementation is just drm_atomic, may work better?\n\nOther than that, your proposal makes sense to me.\nIt\u0027d be great if the implementation (i.e. in .go file), there\u0027s some explanation about the relationship between drm_atomic USE flag, and video_overlay (which is by coincidence).",
+      "parentUuid": "8a35344e_bf310503",
       "range": {
         "startLine": 69,
         "startChar": 4,

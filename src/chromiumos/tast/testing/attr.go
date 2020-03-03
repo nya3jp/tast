@@ -152,6 +152,17 @@ Tests in this group are not used for build verification.
 		Desc:     `A group of tests performing enrollment and will clobber the stateful partition.`,
 	},
 	{
+		Name:     "firmware",
+		Contacts: []string{"chromeos-engprod@google.com"},
+		Desc:     `A group of tests for firmware (AP, EC, GSC)`,
+		Subattrs: []*attr{
+			{
+				Name: "firmware_cr50",
+				Desc: `Indicates that this is a test of the Google Security Chip firmware (Cr50).`,
+			},
+		},
+	},
+	{
 		Name:     "flashrom",
 		Contacts: []string{"chromeos-platform-syd@google.com"},
 		Desc:     `A group of Flashrom destructive tests.`,

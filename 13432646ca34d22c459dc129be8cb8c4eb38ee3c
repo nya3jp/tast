@@ -52,6 +52,24 @@
       "revId": "13432646ca34d22c459dc129be8cb8c4eb38ee3c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dc93dd5d_98a7bea2",
+        "filename": "src/chromiumos/tast/testing/test_instance.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-03-03T02:07:56Z",
+      "side": 1,
+      "message": "The beliefs I have on making this change is:\n\n1. Attribute validation should be done after merging attributes from base tests and parameters\n2. Attribute merge should be done in one place\n\nGiven them, I\u0027m hesitant to take the suggested two approaches:\n\n- `func verifyAttrs(attrs, extraAttrs []string) error` contradicts the second belief\n- `func verifyAttr(attr string) error` contradicts the first belief (even though it works *for now*)\n\nYour suggestion to put validation in newTestInstance makes sense. Let me do that.",
+      "parentUuid": "02366fab_596a3aa4",
+      "revId": "13432646ca34d22c459dc129be8cb8c4eb38ee3c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -22,12 +22,12 @@ func runTests(ctx context.Context, cfg *Config) ([]TestResult, error) {
 	var results []TestResult
 	if cfg.runLocal {
 		lres, err := runLocalTests(ctx, cfg)
+		results = append(results, lres...)
 		if err != nil {
 			// TODO(derat): While test runners are always supposed to report success even if tests fail,
 			// it'd probably be better to run both types here even if one fails.
-			return nil, err
+			return results, err
 		}
-		results = append(results, lres...)
 	}
 
 	// Turn down the ephemeral devserver before running remote tests. Some remote tests

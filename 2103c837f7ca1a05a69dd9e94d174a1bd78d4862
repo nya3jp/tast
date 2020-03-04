@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b71b4195_608a0870",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-03-04T14:54:26Z",
+      "side": 1,
+      "message": "Could you add the doc that what the scope of this validate() and the reason, since this does not validate most of the fields?",
+      "revId": "2103c837f7ca1a05a69dd9e94d174a1bd78d4862",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7158a71d_3a8c50cc",
+        "filename": "src/chromiumos/tast/testing/test_instance_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-03-04T14:54:26Z",
+      "side": 1,
+      "message": "how about check Func, too, here?",
+      "revId": "2103c837f7ca1a05a69dd9e94d174a1bd78d4862",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3ccbc4fa_9d003070",
+        "filename": "src/chromiumos/tast/testing/test_instance_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 194,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-03-04T14:54:26Z",
+      "side": 1,
+      "message": "Ditto for Func check.",
+      "revId": "2103c837f7ca1a05a69dd9e94d174a1bd78d4862",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

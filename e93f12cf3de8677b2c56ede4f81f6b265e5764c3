@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "02fac31e_28308e27",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1111649
+      },
+      "writtenOn": "2020-03-04T16:12:16Z",
+      "side": 1,
+      "message": "Please include a description.",
+      "revId": "e93f12cf3de8677b2c56ede4f81f6b265e5764c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

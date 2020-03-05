@@ -80,7 +80,7 @@ func main() {
 			"aslr":              "!asan",                        // ASan instrumentation breaks ASLR
 			"audio_play":        "internal_speaker && !tast_vm", // VMs and some boards don't have a speaker
 			"audio_record":      "internal_mic && !tast_vm",     // VMs don't have a mic
-			"biometrics_daemon": "biod",
+			"biometrics_daemon": "biod && !unibuild",            // Unibuild boards need hardware dependency support
 			"breakpad":          "!force_crashpad",
 			// TODO(b/73436929) Grunt cannot run 720p due to performance issue,
 			// we should remove grunt after hardware encoding supported.

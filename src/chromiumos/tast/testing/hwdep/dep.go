@@ -7,6 +7,8 @@
 package hwdep
 
 import (
+	"go.chromium.org/chromiumos/infra/proto/go/device"
+
 	"chromiumos/tast/errors"
 	"chromiumos/tast/testing/internal/hwdep"
 )
@@ -105,5 +107,21 @@ func SkipOnPlatform(names ...string) Condition {
 			}
 		}
 		return nil
+	}
+}
+
+// TouchScreen returns a hardware dependency condition that is satisfied
+// iff the DUT has touchscreen.
+func TouchScreen() Condition {
+	return func(d *hwdep.DeviceSetup) error {
+		if d.DC == nil {
+			return errors.New("device.Config is not given")
+		}
+		for _, f := range d.DC.HardwareFeatures {
+			if f == device.Config_HARDWARE_FEATURE_TOUCHSCREEN {
+				return nil
+			}
+		}
+		return errors.New("DUT does not have touchscreen")
 	}
 }

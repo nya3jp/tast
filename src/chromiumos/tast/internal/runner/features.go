@@ -12,6 +12,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"regexp"
 	"sort"
 	"strings"
 
@@ -191,11 +192,24 @@ func newDeviceConfig() (dc *device.Config, warns []string) {
 	if err != nil {
 		warns = append(warns, fmt.Sprintf("unknown brand-id: %v", err))
 	}
-	return &device.Config{
+	config := &device.Config{
 		Id: &device.ConfigId{
 			PlatformId: platform,
 			ModelId:    model,
 			BrandId:    brand,
 		},
-	}, warns
+	}
+
+	hasTouchScreen := func() bool {
+		b, err := exec.Command("udevadm", "info", "--export-db").Output()
+		if err != nil {
+			return false
+		}
+		return regexp.MustCompile(`(?m)^E: ID_INPUT_TOUCHSCREEN=1$`).Match(b)
+	}()
+	if hasTouchScreen {
+		config.HardwareFeatures = append(config.HardwareFeatures, device.Config_HARDWARE_FEATURE_TOUCHSCREEN)
+	}
+
+	return config, warns
 }

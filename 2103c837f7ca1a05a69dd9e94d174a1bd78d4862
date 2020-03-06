@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "bcefe8e7_391c9d4d",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-03-06T04:27:36Z",
+      "side": 1,
+      "message": "That\u0027s a good point, added comments.",
+      "parentUuid": "b71b4195_608a0870",
+      "revId": "2103c837f7ca1a05a69dd9e94d174a1bd78d4862",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7158a71d_3a8c50cc",
         "filename": "src/chromiumos/tast/testing/test_instance_test.go",
         "patchSetId": 6
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "9fe46811_f06f0930",
+        "filename": "src/chromiumos/tast/testing/test_instance_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-03-06T04:27:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7158a71d_3a8c50cc",
+      "revId": "2103c837f7ca1a05a69dd9e94d174a1bd78d4862",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3ccbc4fa_9d003070",
         "filename": "src/chromiumos/tast/testing/test_instance_test.go",
         "patchSetId": 6
@@ -50,6 +86,24 @@
       "revId": "2103c837f7ca1a05a69dd9e94d174a1bd78d4862",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4a4910f8_f4eb135e",
+        "filename": "src/chromiumos/tast/testing/test_instance_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 194,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-03-06T04:27:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3ccbc4fa_9d003070",
+      "revId": "2103c837f7ca1a05a69dd9e94d174a1bd78d4862",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

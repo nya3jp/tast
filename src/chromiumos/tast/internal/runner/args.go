@@ -98,7 +98,10 @@ func (a *Args) bundleArgs(mode bundle.RunMode) (*bundle.Args, error) {
 		switch a.Mode {
 		case RunTestsMode:
 			// We didn't receive ListTests args, so copy the shared patterns field from RunTests.
-			ba.ListTests = &bundle.ListTestsArgs{Patterns: a.RunTests.BundleArgs.Patterns}
+			ba.ListTests = &bundle.ListTestsArgs{
+				Patterns: a.RunTests.BundleArgs.Patterns,
+				SkipSort: a.RunTests.BundleArgs.SkipSort,
+			}
 		case ListTestsMode:
 			ba.ListTests = &a.ListTests.BundleArgs
 		default:

@@ -78,18 +78,27 @@ type Config struct {
 	// StartFixtureImpl gives an implementation of a start fixture.
 	// If it is nil, a default stub implementation is used.
 	StartFixtureImpl testing.FixtureImpl
+	// SkipSort indicates whether tests sorting shall be performed.
+	SkipSort bool
 }
 
 // RunTests runs a set of tests, writing outputs to out.
 //
 // RunTests is responsible for building an efficient plan to run the given tests.
 // Therefore the order of tests in the argument is ignored; it just specifies
-// a set of tests to run.
+// a set of tests to run. But if Config.SkipSort is set to true, it keeps the
+// original test orders given, and build a sequential plan with given test order.
 //
 // RunTests runs tests on goroutines. If a test does not finish after reaching
 // its timeout, this function returns with an error without waiting for its finish.
 func RunTests(ctx context.Context, tests []*testing.TestInstance, out OutputStream, pcfg *Config) error {
-	plan, err := buildPlan(tests, pcfg)
+	var plan *plan
+	var err error
+	if !pcfg.SkipSort {
+		plan, err = buildPlan(tests, pcfg)
+	} else {
+		plan, err = buildPlanSkipSort(tests, pcfg)
+	}
 	if err != nil {
 		return err
 	}
@@ -151,6 +160,37 @@ func buildPlan(tests []*testing.TestInstance, pcfg *Config) (*plan, error) {
 		return nil, err
 	}
 	return &plan{skips, fixtPlan, prePlans, pcfg}, nil
+}
+
+func buildPlanSkipSort(tests []*testing.TestInstance, pcfg *Config) (*plan, error) {
+	var runs []*testing.TestInstance
+	var skips []*skippedTest
+	for _, t := range tests {
+		r := t.ShouldRun(&pcfg.Features)
+		if r.OK() {
+			runs = append(runs, t)
+		} else {
+			skips = append(skips, &skippedTest{test: t, result: r})
+		}
+	}
+
+	impl := &stubFixture{}
+	fixt := &testing.Fixture{
+		// Do not set Name of a start fixture. entityOutputStream do not emit
+		// EntityStart/EntityEnd for unnamed entities.
+		Impl: impl,
+		// TODO(crbug.com/1035940): Set timeouts of a start fixture.
+	}
+
+	fPlan := &fixtPlan{
+		pcfg: pcfg,
+		tree: &fixtTree{
+			fixt:  fixt,
+			tests: runs,
+		},
+	}
+
+	return &plan{skips, fPlan, nil, pcfg}, nil
 }
 
 func (p *plan) run(ctx context.Context, out OutputStream) error {

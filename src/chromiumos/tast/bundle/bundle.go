@@ -56,7 +56,7 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 
 	switch args.Mode {
 	case ListTestsMode:
-		tests, err := testsToRun(cfg, args.ListTests.Patterns)
+		tests, err := testsToRun(cfg, args.ListTests.Patterns, args.ListTests.SkipSort)
 		if err != nil {
 			return command.WriteError(stderr, err)
 		}
@@ -72,7 +72,7 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 		// TODO(oka): Implement ListFixturesMode.
 		panic("to be implemented")
 	case ExportMetadataMode:
-		tests, err := testsToRun(cfg, nil)
+		tests, err := testsToRun(cfg, nil, false)
 		if err != nil {
 			return command.WriteError(stderr, err)
 		}
@@ -81,7 +81,7 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 		}
 		return statusSuccess
 	case RunTestsMode:
-		tests, err := testsToRun(cfg, args.RunTests.Patterns)
+		tests, err := testsToRun(cfg, args.RunTests.Patterns, args.RunTests.SkipSort)
 		if err != nil {
 			return command.WriteError(stderr, err)
 		}
@@ -100,7 +100,8 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 }
 
 // testsToRun returns a sorted list of tests to run for the given patterns.
-func testsToRun(cfg *runConfig, patterns []string) ([]*testing.TestInstance, error) {
+// If skipSort flag is true, sorting will not be performed.
+func testsToRun(cfg *runConfig, patterns []string, skipSort bool) ([]*testing.TestInstance, error) {
 	tests, err := testing.SelectTestsByArgs(testing.GlobalRegistry().AllTests(), patterns)
 	if err != nil {
 		return nil, command.NewStatusErrorf(statusBadPatterns, "failed getting tests for %v: %v", patterns, err.Error())
@@ -110,9 +111,12 @@ func testsToRun(cfg *runConfig, patterns []string) ([]*testing.TestInstance, err
 			tp.Timeout = cfg.defaultTestTimeout
 		}
 	}
-	sort.Slice(tests, func(i, j int) bool {
-		return tests[i].Name < tests[j].Name
-	})
+
+	if !skipSort {
+		sort.Slice(tests, func(i, j int) bool {
+			return tests[i].Name < tests[j].Name
+		})
+	}
 	return tests, nil
 }
 
@@ -278,6 +282,7 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		TestHook:          cfg.testHook,
 		DownloadMode:      args.RunTests.DownloadMode,
 		Fixtures:          testing.GlobalRegistry().AllFixtures(),
+		SkipSort:          args.RunTests.SkipSort,
 	}
 
 	if err := planner.RunTests(ctx, tests, ew, pcfg); err != nil {

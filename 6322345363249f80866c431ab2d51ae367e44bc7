@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "e95c5fc5_62312521",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1314845
+      },
+      "writtenOn": "2020-03-06T18:22:15Z",
+      "side": 1,
+      "message": "Hidehiko, here\u0027s exactly what we do for autotest: https://chromium.googlesource.com/chromiumos/third_party/autotest/+/57bf2010bf788fac074e9c9415157b37af437366/server/hosts/cros_label.py#837\n\nWe need the same thing for tast, since for a given DUT there are some SKUs with fingerprint and some without. Looks like you are very close to having this functionality in tast with this example: https://crrev.com/c/2089153.",
+      "parentUuid": "08f6e53f_630bc87e",
+      "revId": "6322345363249f80866c431ab2d51ae367e44bc7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "43b33884_446bbbc6",
         "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
         "patchSetId": 1

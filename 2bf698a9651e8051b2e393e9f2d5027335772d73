@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fc0c118d_6d96ba95",
+        "filename": "src/chromiumos/tast/bundle/local.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-03-06T07:20:10Z",
+      "side": 1,
+      "message": "Note: I\u0027m leaving this function exported because there\u0027s a caller within platform/tast.",
+      "range": {
+        "startLine": 45,
+        "startChar": 5,
+        "endLine": 45,
+        "endChar": 10
+      },
+      "revId": "2bf698a9651e8051b2e393e9f2d5027335772d73",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

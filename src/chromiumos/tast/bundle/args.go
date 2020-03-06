@@ -73,6 +73,9 @@ type RunTestsArgs struct {
 	// Names correspond to testing.Test.Vars and values are accessed using testing.State.Var.
 	TestVars map[string]string `json:"testVars,omitempty"`
 
+	// SortTests indicates if the test cases order need sorting
+	SortTests bool `json:"sortests,omitempty"`
+
 	// DataDir is the path to the directory containing test data files.
 	DataDir string `json:"dataDir,omitempty"`
 	// OutDir is the path to the base directory under which tests should write output files.
@@ -120,6 +123,8 @@ type ListTestsArgs struct {
 	// Patterns contains patterns (either empty to list all tests, exactly one attribute expression,
 	// or one or more globs) describing which tests to list.
 	Patterns []string `json:"patterns,omitempty"`
+	// SortTests indicates if the test cases order need sorting
+	SortTests bool `json:"sortests,omitempty"`
 }
 
 // bundleType describes the type of tests contained in a test bundle (i.e. local or remote).

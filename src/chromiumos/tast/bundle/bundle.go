@@ -53,7 +53,7 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 
 	switch args.Mode {
 	case ListTestsMode:
-		tests, err := testsToRun(cfg, args.ListTests.Patterns)
+		tests, err := testsToRun(cfg, args.ListTests.Patterns, args.ListTests.SortTests)
 		if err != nil {
 			return command.WriteError(stderr, err)
 		}
@@ -62,7 +62,7 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 		}
 		return statusSuccess
 	case RunTestsMode:
-		tests, err := testsToRun(cfg, args.RunTests.Patterns)
+		tests, err := testsToRun(cfg, args.RunTests.Patterns, args.RunTests.SortTests)
 		if err != nil {
 			return command.WriteError(stderr, err)
 		}
@@ -81,7 +81,7 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 }
 
 // testsToRun returns a sorted list of tests to run for the given patterns.
-func testsToRun(cfg *runConfig, patterns []string) ([]*testing.TestCase, error) {
+func testsToRun(cfg *runConfig, patterns []string, sortTests bool) ([]*testing.TestCase, error) {
 	tests, err := testing.SelectTestsByArgs(testing.GlobalRegistry().AllTests(), patterns)
 	if err != nil {
 		return nil, command.NewStatusErrorf(statusBadPatterns, "failed getting tests for %v: %v", patterns, err.Error())
@@ -91,7 +91,9 @@ func testsToRun(cfg *runConfig, patterns []string) ([]*testing.TestCase, error) 
 			tp.Timeout = cfg.defaultTestTimeout
 		}
 	}
-	testing.SortTests(tests)
+	if sortTests {
+		testing.SortTests(tests)
+	}
 	return tests, nil
 }
 

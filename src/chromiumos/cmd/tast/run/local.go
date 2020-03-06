@@ -269,6 +269,7 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, patterns []
 					TestVars:          cfg.testVars,
 					WaitUntilReady:    cfg.waitUntilReady,
 					HeartbeatInterval: heartbeatInterval,
+					SortTests:         cfg.SortTests,
 				},
 				BundleGlob: bundleGlob,
 				Devservers: cfg.devservers,
@@ -279,7 +280,10 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, patterns []
 		args = runner.Args{
 			Mode: runner.ListTestsMode,
 			ListTests: &runner.ListTestsArgs{
-				BundleArgs: bundle.ListTestsArgs{Patterns: patterns},
+				BundleArgs: bundle.ListTestsArgs{
+					Patterns:  patterns,
+					SortTests: cfg.SortTests,
+				},
 				BundleGlob: bundleGlob,
 			},
 		}

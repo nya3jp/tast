@@ -79,6 +79,7 @@ type Config struct {
 	checkPortageDeps   bool   // check whether test bundle's dependencies are installed before building
 	installPortageDeps bool   // install old or missing test bundle dependencies; no-op if checkPortageDeps is false
 
+	SortTests              bool     // sort tests in alphabetic order
 	useEphemeralDevserver  bool     // start an ephemeral devserver if no devserver is specified
 	devservers             []string // list of devserver URLs; set by -devservers but may be dynamically modified
 	downloadPrivateBundles bool     // whether to download private bundles if missing
@@ -164,6 +165,8 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 	f.BoolVar(&c.downloadPrivateBundles, "downloadprivatebundles", false, "download private bundles if missing")
 	f.BoolVar(&c.continueAfterFailure, "continueafterfailure", false, "try to run remaining tests after bundle/DUT crash or lost SSH connection")
 	f.IntVar(&c.sshRetries, "sshretries", 0, "number of SSH connect retries")
+
+	f.BoolVar(&c.SortTests, "sorttests", true, "sort tests in alphabetic order")
 
 	f.StringVar(&c.localRunner, "localrunner", "", "executable that runs local test bundles")
 	f.StringVar(&c.localBundleDir, "localbundledir", "", "directory containing builtin local test bundles")

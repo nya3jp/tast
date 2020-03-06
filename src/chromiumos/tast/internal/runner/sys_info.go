@@ -15,7 +15,7 @@ import (
 
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/crash"
-	"chromiumos/tast/logs"
+	"chromiumos/tast/internal/logs"
 )
 
 const (

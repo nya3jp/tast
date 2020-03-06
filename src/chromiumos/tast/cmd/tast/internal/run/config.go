@@ -94,6 +94,8 @@ type Config struct {
 	downloadMode           planner.DownloadMode // strategy to download external data files
 	tlwServer              string               // address of the TLW server if available
 
+	skipSort bool // skip tests sorting when running an listing tests
+
 	localRunner    string // path to executable that runs local test bundles
 	localBundleDir string // dir where packaged local test bundles are installed
 	localDataDir   string // dir containing packaged local test data
@@ -187,6 +189,7 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 	f.BoolVar(&c.continueAfterFailure, "continueafterfailure", true, "try to run remaining tests after bundle/DUT crash or lost SSH connection")
 	f.IntVar(&c.sshRetries, "sshretries", 0, "number of SSH connect retries")
 	f.StringVar(&c.tlwServer, "tlwserver", "", "TLW server address")
+	f.BoolVar(&c.skipSort, "skipsort", false, "skip tests sorting when running an listing tests")
 
 	f.StringVar(&c.localRunner, "localrunner", "", "executable that runs local test bundles")
 	f.StringVar(&c.localBundleDir, "localbundledir", "", "directory containing builtin local test bundles")

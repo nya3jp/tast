@@ -125,3 +125,19 @@ func TouchScreen() Condition {
 		return errors.New("DUT does not have touchscreen")
 	}
 }
+
+// Fingerprint returns a hardware dependency condition that is satisfied
+// iff the DUT has fingerprint sensor.
+func Fingerprint() Condition {
+	return func(d *hwdep.DeviceSetup) error {
+		if d.DC == nil {
+			return errors.New("device.Config is not given")
+		}
+		for _, f := range d.DC.HardwareFeatures {
+			if f == device.Config_HARDWARE_FEATURE_TOUCHSCREEN {
+				return nil
+			}
+		}
+		return errors.New("DUT does not have fingerprint sensor")
+	}
+}

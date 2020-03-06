@@ -478,3 +478,24 @@ func prepareTempDir(tempDir string) (restore func(), err error) {
 		}
 	}, nil
 }
+
+// lockStdIO replaces os.Stdin, os.Stdout and os.Stderr with closed pipes and
+// returns the original files. This function can be called at the beginning of
+// test bundles to ensure that calling fmt.Print and its family does not corrupt
+// the control channel.
+func lockStdIO() (stdin, stdout, stderr *os.File) {
+	r, w, err := os.Pipe()
+	if err != nil {
+		panic(fmt.Sprint("Failed to lock stdio: ", err))
+	}
+	r.Close()
+	w.Close()
+
+	stdin = os.Stdin
+	stdout = os.Stdout
+	stderr = os.Stderr
+	os.Stdin = r
+	os.Stdout = w
+	os.Stderr = w
+	return stdin, stdout, stderr
+}

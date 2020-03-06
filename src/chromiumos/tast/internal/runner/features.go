@@ -211,5 +211,16 @@ func newDeviceConfig() (dc *device.Config, warns []string) {
 		config.HardwareFeatures = append(config.HardwareFeatures, device.Config_HARDWARE_FEATURE_TOUCHSCREEN)
 	}
 
+	hasFingerprint := func() bool {
+		fi, err := os.Stat("/dev/cros_fp")
+		if err != nil {
+			return false
+		}
+		return (fi.Mode() & os.ModeCharDevice) != 0
+	}()
+	if hasFingerprint {
+		config.HardwareFeatures = append(config.HardwareFeatures, device.Config_HARDWARE_FEATURE_FINGERPRINT)
+	}
+
 	return config, warns
 }

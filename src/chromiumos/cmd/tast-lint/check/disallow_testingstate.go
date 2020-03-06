@@ -22,6 +22,7 @@ func VerifyTestingStateParam(fs *token.FileSet, f *ast.File) []*Issue {
 		"src/chromiumos/tast/local/arc/pre.go",
 		"src/chromiumos/tast/local/chrome/pre.go",
 		"src/chromiumos/tast/local/chrome/ash/pre.go",
+		"src/chromiumos/tast/local/crash/fixture.go",
 		"src/chromiumos/tast/local/crostini/pre.go",
 		"src/chromiumos/tast/local/wpr/pre.go",
 		"src/chromiumos/tast/local/bundles/cros/lacros/launcher/pre.go",

@@ -711,11 +711,12 @@ func TestRunRegistrationError(t *gotesting.T) {
 	}
 }
 
-func TestTestsToRunSortTests(t *gotesting.T) {
+func TestTestsToRunSkipSort(t *gotesting.T) {
 	const (
-		test1 = "pkg.Test1"
-		test2 = "pkg.Test2"
-		test3 = "pkg.Test3"
+		skipSort = false
+		test1    = "pkg.Test1"
+		test2    = "pkg.Test2"
+		test3    = "pkg.Test3"
 	)
 
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
@@ -724,7 +725,7 @@ func TestTestsToRunSortTests(t *gotesting.T) {
 	testing.AddTestInstance(&testing.TestInstance{Name: test3, Func: testFunc})
 	testing.AddTestInstance(&testing.TestInstance{Name: test1, Func: testFunc})
 
-	tests, err := testsToRun(&runConfig{}, nil)
+	tests, err := testsToRun(&runConfig{}, nil, skipSort)
 	if err != nil {
 		t.Fatal("testsToRun failed: ", err)
 	}
@@ -738,6 +739,33 @@ func TestTestsToRunSortTests(t *gotesting.T) {
 	}
 }
 
+func TestTestsToRunNotSkipSort(t *gotesting.T) {
+	const (
+		skipSort = true
+		test1    = "pkg.Test1"
+		test2    = "pkg.Test2"
+		test3    = "pkg.Test3"
+	)
+
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
+	defer restore()
+	testing.AddTestInstance(&testing.TestInstance{Name: test2, Func: testFunc})
+	testing.AddTestInstance(&testing.TestInstance{Name: test3, Func: testFunc})
+	testing.AddTestInstance(&testing.TestInstance{Name: test1, Func: testFunc})
+
+	tests, err := testsToRun(&runConfig{}, nil, skipSort)
+	if err != nil {
+		t.Fatal("testsToRun failed: ", err)
+	}
+
+	var act []string
+	for _, t := range tests {
+		act = append(act, t.Name)
+	}
+	if exp := []string{test2, test3, test1}; !reflect.DeepEqual(act, exp) {
+		t.Errorf("testsToRun() returned tests %v; want unsorted %v", act, exp)
+	}
+}
 func TestTestsToRunTestTimeouts(t *gotesting.T) {
 	const (
 		name1          = "pkg.Test1"
@@ -751,7 +779,7 @@ func TestTestsToRunTestTimeouts(t *gotesting.T) {
 	testing.AddTestInstance(&testing.TestInstance{Name: name1, Func: testFunc, Timeout: customTimeout})
 	testing.AddTestInstance(&testing.TestInstance{Name: name2, Func: testFunc})
 
-	tests, err := testsToRun(&runConfig{defaultTestTimeout: defaultTimeout}, nil)
+	tests, err := testsToRun(&runConfig{defaultTestTimeout: defaultTimeout}, nil, true)
 	if err != nil {
 		t.Fatal("testsToRun failed: ", err)
 	}

@@ -7,6 +7,7 @@ package bundle
 import (
 	"context"
 	"io"
+	"os"
 	"time"
 
 	"chromiumos/tast/testing"
@@ -29,13 +30,18 @@ type LocalDelegate struct {
 	PreTestRun func(ctx context.Context, s *testing.State) func(ctx context.Context, s *testing.State)
 }
 
+// LocalDefault implements the main function for local test bundles.
+//
+// Usually the Main function of a local test bundles should just this function,
+// and pass the returned status code to os.Exit.
+func LocalDefault(delegate LocalDelegate) int {
+	stdin, stdout, stderr := lockStdIO()
+	return Local(os.Args[1:], stdin, stdout, stderr, delegate)
+}
+
 // Local implements the main function for local test bundles.
 //
-// clArgs should typically be os.Args[1:].
-// If ready is non-nil, it will be executed before any tests from this bundle are run to ensure
-// that the DUT is ready for testing. This can be used to wait for all important system services
-// to be running on a newly-booted DUT, for instance.
-// The returned status code should be passed to os.Exit.
+// Main function of local test bundles should call LocalDefault instead.
 func Local(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, delegate LocalDelegate) int {
 	args := Args{RunTests: &RunTestsArgs{DataDir: localTestDataDir}}
 	cfg := runConfig{

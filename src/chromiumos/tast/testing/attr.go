@@ -168,6 +168,11 @@ Tests in this group are not used for build verification.
 		Desc:     `A group of Flashrom destructive tests.`,
 	},
 	{
+		Name:     "hwsec_destructive",
+		Contacts: []string{"cros-hwsec@google.com"},
+		Desc:     `A group of HWSec destructive tests that wipe and recreate encstateful in the tests.`,
+	},
+	{
 		Name:     "runtime_probe",
 		Contacts: []string{"chromeos-runtime-probe@google.com"},
 		Desc: `A group of tests that tests the functionality of runtime probe.

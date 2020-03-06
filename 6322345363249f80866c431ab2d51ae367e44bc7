@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "08f6e53f_630bc87e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1345639
+      },
+      "writtenOn": "2020-03-06T07:20:23Z",
+      "side": 1,
+      "message": "For unbuild boards we need to know whether the  device has fingerprint sensor. This may be achieved by consulting cros-config, or some other mapping based on the SKU.",
+      "parentUuid": "b445deea_f22f4629",
+      "revId": "6322345363249f80866c431ab2d51ae367e44bc7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "43b33884_446bbbc6",
         "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
         "patchSetId": 1

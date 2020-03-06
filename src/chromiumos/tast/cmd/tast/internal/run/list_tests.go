@@ -45,23 +45,26 @@ func listTests(ctx context.Context, cfg *Config) ([]*EntityResult, error) {
 // listLocalTests returns a list of local tests to run.
 func listLocalTests(ctx context.Context, cfg *Config, hst *ssh.Conn) ([]testing.EntityInfo, error) {
 	return runListTestsCommand(
-		localRunnerCommand(ctx, cfg, hst), cfg.Patterns, cfg.localBundleGlob())
+		localRunnerCommand(ctx, cfg, hst), cfg.Patterns, cfg.localBundleGlob(), cfg.skipSort)
 }
 
 // listRemoteTests returns a list of remote tests to run.
 func listRemoteTests(ctx context.Context, cfg *Config) ([]testing.EntityInfo, error) {
 	return runListTestsCommand(
-		remoteRunnerCommand(ctx, cfg), cfg.Patterns, cfg.remoteBundleGlob())
+		remoteRunnerCommand(ctx, cfg), cfg.Patterns, cfg.remoteBundleGlob(), cfg.skipSort)
 }
 
-func runListTestsCommand(r runnerCmd, ptns []string, glob string) ([]testing.EntityInfo, error) {
+func runListTestsCommand(r runnerCmd, ptns []string, glob string, skipSort bool) ([]testing.EntityInfo, error) {
 	var ts []testing.EntityInfo
 	if err := runTestRunnerCommand(
 		r,
 		&runner.Args{
 			Mode: runner.ListTestsMode,
 			ListTests: &runner.ListTestsArgs{
-				BundleArgs: bundle.ListTestsArgs{Patterns: ptns},
+				BundleArgs: bundle.ListTestsArgs{
+					Patterns: ptns,
+					SkipSort: skipSort,
+				},
 				BundleGlob: glob,
 			},
 		},

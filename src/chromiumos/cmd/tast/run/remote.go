@@ -63,24 +63,36 @@ func runRemoteRunner(ctx context.Context, cfg *Config) ([]TestResult, error) {
 	var args runner.Args
 	switch cfg.mode {
 	case RunTestsMode:
+		// Put flags that will be used by sub-tests into runFlags
+		runFlags := []string{
+			"-keyfile=" + cfg.KeyFile,
+			"-keydir=" + cfg.KeyDir,
+			"-remoterunner=" + cfg.remoteRunner,
+			"-remotebundledir=" + cfg.remoteBundleDir,
+			"-remotedatadir=" + cfg.remoteDataDir,
+			"-localrunner=" + cfg.localRunner,
+			"-localbundledir=" + cfg.localBundleDir,
+			"-localdatadir=" + cfg.localDataDir,
+			"-buildworkspace=" + cfg.buildWorkspace,
+			"-buildbundle=" + cfg.buildBundle,
+		}
+		// vars from -defaultvarsdir and -varsfile have already been put to testVars
+		for k, v := range cfg.testVars {
+			runFlags = append(runFlags, "-var="+k+"="+v)
+		}
+
 		args = runner.Args{
 			Mode: runner.RunTestsMode,
 			RunTests: &runner.RunTestsArgs{
 				BundleArgs: bundle.RunTestsArgs{
-					Patterns: cfg.Patterns,
-					DataDir:  cfg.remoteDataDir,
-					TestVars: cfg.testVars,
-					Target:   cfg.Target,
-					KeyFile:  cfg.KeyFile,
-					KeyDir:   cfg.KeyDir,
-					TastPath: exe,
-					RunFlags: []string{
-						"-keyfile=" + cfg.KeyFile,
-						"-keydir=" + cfg.KeyDir,
-						"-remoterunner=" + cfg.remoteRunner,
-						"-remotebundledir=" + cfg.remoteBundleDir,
-						"-remotedatadir=" + cfg.remoteDataDir,
-					},
+					Patterns:          cfg.Patterns,
+					DataDir:           cfg.remoteDataDir,
+					TestVars:          cfg.testVars,
+					Target:            cfg.Target,
+					KeyFile:           cfg.KeyFile,
+					KeyDir:            cfg.KeyDir,
+					TastPath:          exe,
+					RunFlags:          runFlags,
 					HeartbeatInterval: heartbeatInterval,
 					LocalBundleDir:    cfg.localBundleDir,
 				},

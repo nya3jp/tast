@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "7611c35a_dc3014a7",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 489,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-03-09T07:17:17Z",
+      "side": 1,
+      "message": "nit: I think this should be rather lockStdIO, because the error message from os package should be self-explanatory. (in this case, should contain \"pipe\").",
+      "range": {
+        "startLine": 489,
+        "startChar": 20,
+        "endLine": 489,
+        "endChar": 27
+      },
+      "revId": "2bf698a9651e8051b2e393e9f2d5027335772d73",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "fc0c118d_6d96ba95",
         "filename": "src/chromiumos/tast/bundle/local.go",
         "patchSetId": 2

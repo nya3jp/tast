@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "89958791_e0d3ad64",
+        "filename": "src/chromiumos/tast/testing/test_instance.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-03-10T05:21:59Z",
+      "side": 1,
+      "message": "Shouldn\u0027t this be data?",
+      "range": {
+        "startLine": 143,
+        "startChar": 24,
+        "endLine": 143,
+        "endChar": 30
+      },
+      "revId": "53671e187c7daf9620f346535f68a44593d0175f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "426d4cb8_736054a2",
+        "filename": "src/chromiumos/tast/testing/test_instance.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-03-10T05:21:59Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 151,
+        "startChar": 24,
+        "endLine": 151,
+        "endChar": 30
+      },
+      "revId": "53671e187c7daf9620f346535f68a44593d0175f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -626,6 +626,10 @@ errors.Wrap(err, "failed to connect to Chrome browser process")
 errors.Wrapf(err, "failed to connect to Chrome renderer process %d", pid)
 ```
 
+To examine sentinel errors which may be `Wrap`ed, use [errors.Is] or
+[errors.As]. The usage is the same as the functions with the same names in the
+official errors package.
+
 Sometimes you may want to define custom error types, for example, to inspect and
 react to errors. In that case, embed `*errors.E` to your custom error struct.
 
@@ -639,11 +643,28 @@ if err := doSomething(); err != nil {
 }
 ```
 
+It is recommended to wrap when you cross package boundary, which represents
+some kind of barrier beneath which everything is an implementation detail.
+Otherwise it is fine to return an error without wrapping, if you can't really
+add much context to make debugging easier. Use your best judgement to decide
+wrap or not.
+
+Following quotes from
+*[The Go programming language] 5.4.1 Error-Handling Strategies*
+are useful to design good errors:
+
+> - When designing error messages, be deliberate, so that each one is a meaningful description of the problem with sufficient and relevant detail.
+> - In general, the call `f(x)` is responsible for reporting the attempted operation `f` and the argument value `x` as they relate to the context of the error.
+> - The caller is responsible for adding further information that it has but the call `f(x)` does not.
+
 [chromiumos/tast/errors]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/errors
 [errors.New]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/errors#New
 [errors.Errorf]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/errors#Errorf
 [errors.Wrap]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/errors#Wrap
 [errors.Wrapf]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/errors#Wrapf
+[errors.Is]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/errors#Is
+[errors.As]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/errors#As
+[The Go programming language]: https://www.gopl.io/
 
 ### Formatting
 

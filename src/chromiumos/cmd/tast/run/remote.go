@@ -82,6 +82,7 @@ func runRemoteRunner(ctx context.Context, cfg *Config) ([]TestResult, error) {
 						"-remotedatadir=" + cfg.remoteDataDir,
 					},
 					HeartbeatInterval: heartbeatInterval,
+					LocalBundleDir:    cfg.localBundleDir,
 				},
 				BundleGlob: bundleGlob,
 			},

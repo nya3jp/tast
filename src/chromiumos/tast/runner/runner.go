@@ -188,6 +188,7 @@ func runTestsAndReport(ctx context.Context, args *Args, cfg *Config, stdout io.W
 
 		for _, bundle := range bundles {
 			// Copy each bundle's output (consisting of control messages) directly to stdout.
+			mw.WriteMessage(&control.RunLog{Time: time.Now(), Text: fmt.Sprintf("bundle %s, bundleArgs %#v\n", bundle, bundleArgs)})
 			if err := runBundle(bundle, bundleArgs, stdoutW, fd); err != nil {
 				// TODO(derat): The tast command currently aborts the run as soon as it sees a RunError
 				// message, but consider changing that and continuing to run other bundles here.

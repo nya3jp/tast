@@ -76,6 +76,10 @@ type Test struct {
 
 	// Params lists the Param structs for parameterized tests.
 	Params []Param
+
+	// ServiceDeps contains a list of RPC service names in local test bundles that this remote test
+	// will access. This field is valid only for remote tests.
+	ServiceDeps []string
 }
 
 // Param defines parameters for a parameterized test case.

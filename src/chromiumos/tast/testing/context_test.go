@@ -42,7 +42,8 @@ func TestContextOutDir(t *testing.T) {
 		t.Error("ContextOutDir unexpectedly succeeded for context without TestContext")
 	}
 
-	tc := &TestContext{OutDir: testOutDir}
+	tci := &TestContextTestInfo{OutDir: testOutDir}
+	tc := &TestContext{TestInfo: tci}
 	ctx = WithTestContext(ctx, tc)
 
 	if outDir, ok := ContextOutDir(ctx); !ok {
@@ -61,7 +62,8 @@ func TestContextSoftwareDeps(t *testing.T) {
 		t.Error("ContextSoftwareDeps unexpectedly succeeded for context without TestContext")
 	}
 
-	tc := &TestContext{SoftwareDeps: testSoftwareDeps}
+	tci := &TestContextTestInfo{SoftwareDeps: testSoftwareDeps}
+	tc := &TestContext{TestInfo: tci}
 	ctx = WithTestContext(ctx, tc)
 
 	if softwareDeps, ok := ContextSoftwareDeps(ctx); !ok {

@@ -14,7 +14,7 @@ import (
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/host"
-	"chromiumos/tast/testing"
+	"chromiumos/tast/internal/testingutil"
 )
 
 const (
@@ -37,17 +37,6 @@ type DUT struct {
 	hst  *host.SSH
 }
 
-// NewContext returns a new context that carries value d.
-func NewContext(ctx context.Context, d *DUT) context.Context {
-	return context.WithValue(ctx, dutKey, d)
-}
-
-// FromContext returns the DUT value stored in ctx, if any.
-func FromContext(ctx context.Context) (d *DUT, ok bool) {
-	d, ok = ctx.Value(dutKey).(*DUT)
-	return d, ok
-}
-
 // New returns a new DUT usable for communication with target
 // (of the form "[<user>@]host[:<port>]") using the SSH key at keyFile or
 // keys located in keyDir.
@@ -62,6 +51,17 @@ func New(target, keyFile, keyDir string) (*DUT, error) {
 	d.sopt.KeyDir = keyDir
 
 	return &d, nil
+}
+
+// NewContext returns a new context that carries value d.
+func NewContext(ctx context.Context, d *DUT) context.Context {
+	return context.WithValue(ctx, dutKey, d)
+}
+
+// FromContext returns the DUT value stored in ctx, if any.
+func FromContext(ctx context.Context) (d *DUT, ok bool) {
+	d, ok = ctx.Value(dutKey).(*DUT)
+	return d, ok
 }
 
 // Close releases the DUT's resources.
@@ -174,7 +174,7 @@ func (d *DUT) Reboot(ctx context.Context) error {
 	defer cancel()
 	d.Command("reboot").Run(rebootCtx) // ignore the error
 
-	if err := testing.Poll(ctx, func(ctx context.Context) error {
+	if err := testingutil.Poll(ctx, func(ctx context.Context) error {
 		// Set a short timeout to the iteration in case of any SSH operations
 		// blocking for long time. For example, the network interface of the DUT
 		// might go down in the middle of readBootID and it might block for
@@ -192,7 +192,7 @@ func (d *DUT) Reboot(ctx context.Context) error {
 			return errors.New("boot_id did not change")
 		}
 		return nil
-	}, &testing.PollOptions{Timeout: time.Minute}); err != nil {
+	}, &testingutil.PollOptions{Timeout: time.Minute}); err != nil {
 		return errors.Wrap(err, "failed to wait for DUT to reboot")
 	}
 	return nil

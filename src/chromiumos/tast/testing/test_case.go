@@ -70,6 +70,7 @@ type TestCase struct {
 	Data         []string      `json:"data"`
 	Vars         []string      `json:"vars,omitempty"`
 	SoftwareDeps []string      `json:"softwareDeps,omitempty"`
+	ServiceDeps  []string      `json:"serviceDeps,omitempty"`
 	Pre          Precondition  `json:"-"`
 	Timeout      time.Duration `json:"timeout"`
 }
@@ -127,6 +128,7 @@ func newTestCase(t *Test, p *Param) (*TestCase, error) {
 		SoftwareDeps:   swDeps,
 		Pre:            pre,
 		Timeout:        t.Timeout,
+		ServiceDeps:    append([]string(nil), t.ServiceDeps...),
 	}, nil
 }
 
@@ -172,6 +174,7 @@ func (t *TestCase) clone() *TestCase {
 	ret.Data = append([]string(nil), ret.Data...)
 	ret.Vars = append([]string(nil), ret.Vars...)
 	ret.SoftwareDeps = append([]string(nil), ret.SoftwareDeps...)
+	ret.ServiceDeps = append([]string(nil), ret.ServiceDeps...)
 	return ret
 }
 

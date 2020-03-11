@@ -19,6 +19,8 @@ import (
 
 	"chromiumos/tast/command"
 	"chromiumos/tast/control"
+	"chromiumos/tast/dut"
+	"chromiumos/tast/host/test"
 	"chromiumos/tast/testing"
 	"chromiumos/tast/testutil"
 )
@@ -466,16 +468,23 @@ func TestRunTestsSkipTestWithPrecondition(t *gotesting.T) {
 }
 
 func TestRunMeta(t *gotesting.T) {
+	td := test.NewTestData(userKey, hostKey, nil)
+	defer td.Close()
+
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
 
-	var meta testing.Meta
+	var (
+		meta *testing.Meta
+		hint *testing.RPCHint
+		dt   *dut.DUT
+	)
 	testing.AddTestCase(&testing.TestCase{
 		Name: "meta.Test",
 		Func: func(ctx context.Context, s *testing.State) {
-			if m := s.Meta(); m != nil {
-				meta = *m
-			}
+			meta = s.Meta()
+			hint = s.RPCHint()
+			dt = s.DUT()
 		},
 	})
 
@@ -488,8 +497,11 @@ func TestRunMeta(t *gotesting.T) {
 			OutDir:   tmpDir,
 			DataDir:  tmpDir,
 			TastPath: "/bogus/tast",
-			Target:   "root@example.net",
-			RunFlags: []string{"-flag1", "-flag2"},
+			//Target:   "9999@example.net",
+			Target:         td.Srv.Addr().String(),
+			KeyFile:        td.UserKeyFile,
+			RunFlags:       []string{"-flag1", "-flag2"},
+			LocalBundleDir: "/mock/local/bundles",
 		},
 	}
 	stdin := newBufferWithArgs(t, &args)
@@ -498,14 +510,23 @@ func TestRunMeta(t *gotesting.T) {
 		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
 	}
 
-	// The test should have access to meta-related information data.
-	expMeta := testing.Meta{
+	// The test should have access to information related to remote tests.
+	expMeta := &testing.Meta{
 		TastPath: args.RunTests.TastPath,
 		Target:   args.RunTests.Target,
 		RunFlags: args.RunTests.RunFlags,
 	}
 	if !reflect.DeepEqual(meta, expMeta) {
-		t.Errorf("Test got meta %+v; want %+v", meta, expMeta)
+		t.Errorf("Test got Meta %+v; want %+v", *meta, *expMeta)
+	}
+	expHint := &testing.RPCHint{
+		LocalBundleDir: args.RunTests.LocalBundleDir,
+	}
+	if !reflect.DeepEqual(hint, expHint) {
+		t.Errorf("Test got RPCHint %+v; want %+v", *hint, *expHint)
+	}
+	if dt == nil {
+		t.Error("DUT is not available")
 	}
 }
 

@@ -64,6 +64,15 @@ func AddTestCase(t *TestCase) {
 	}
 }
 
+// AddService adds service s to the global registry.
+// This should be called only once in a service main file's init().
+func AddService(s *Service) {
+	if err := GlobalRegistry().AddService(s); err != nil {
+		_, file, line, _ := runtime.Caller(1)
+		registrationErrors = append(registrationErrors, fmt.Errorf("%s:%d: %v", file, line, err))
+	}
+}
+
 // SetGlobalRegistryForTesting temporarily sets reg as the global registry and clears registration errors.
 // The caller must call the returned function later to restore the original registry and errors.
 // This is intended to be used by unit tests that need to register tests in the global registry but don't

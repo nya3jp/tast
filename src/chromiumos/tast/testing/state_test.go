@@ -389,7 +389,7 @@ func TestMeta(t *gotesting.T) {
 	)
 
 	// Meta info should be provided to tests in the "meta" package.
-	if s, m := getMeta(&TestCase{Name: metaTest}, &TestConfig{Meta: &meta}); s.HasError() {
+	if s, m := getMeta(&TestCase{Name: metaTest}, &TestConfig{RemoteData: &RemoteData{Meta: &meta}}); s.HasError() {
 		t.Errorf("Meta() reported error for %v", metaTest)
 	} else if m == nil {
 		t.Errorf("Meta() = nil for %v", metaTest)
@@ -398,7 +398,7 @@ func TestMeta(t *gotesting.T) {
 	}
 
 	// Tests not in the "meta" package shouldn't have access to meta info.
-	if s, m := getMeta(&TestCase{Name: nonMetaTest}, &TestConfig{Meta: &meta}); !s.HasError() {
+	if s, m := getMeta(&TestCase{Name: nonMetaTest}, &TestConfig{RemoteData: &RemoteData{Meta: &meta}}); !s.HasError() {
 		t.Errorf("Meta() didn't report error for %v", nonMetaTest)
 	} else if m != nil {
 		t.Errorf("Meta() = %+v for %v", *m, nonMetaTest)

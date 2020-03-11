@@ -6,6 +6,7 @@ package bundle
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -19,6 +20,7 @@ import (
 
 	"chromiumos/tast/command"
 	"chromiumos/tast/control"
+	"chromiumos/tast/dut"
 	"chromiumos/tast/rpc"
 	"chromiumos/tast/testing"
 	"chromiumos/tast/timing"
@@ -50,7 +52,6 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 		err := command.NewStatusErrorf(statusBadTests, "error(s) in registered tests: %v", strings.Join(es, ", "))
 		return command.WriteError(stderr, err)
 	}
-
 	switch args.Mode {
 	case ListTestsMode:
 		tests, err := testsToRun(cfg, args.ListTests.Patterns, args.ListTests.SortTests)
@@ -71,7 +72,7 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 		}
 		return statusSuccess
 	case RPCMode:
-		if err := rpc.RunServer(stdin, stdout); err != nil {
+		if err := rpc.RunServer(stdin, stdout, testing.GlobalRegistry().AllServices()); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
@@ -235,12 +236,30 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		}
 	}
 
-	var meta *testing.Meta
+	var rd *testing.RemoteData
 	if bt == remoteBundle {
-		meta = &testing.Meta{
-			TastPath: args.RunTests.TastPath,
-			Target:   args.RunTests.Target,
-			RunFlags: args.RunTests.RunFlags,
+		lf("Connecting to DUT")
+		lf(args.RunTests.LocalBundleDir)
+		dt, err := connectToTarget(ctx, args)
+		if err != nil {
+			return command.NewStatusErrorf(statusError, "failed to connect to DUT: %v", err)
+		}
+		defer func() {
+			lf("Disconnecting from DUT")
+			// It is okay to ignore the error since we've finished testing at this point.
+			dt.Close(ctx)
+		}()
+
+		rd = &testing.RemoteData{
+			Meta: &testing.Meta{
+				TastPath: args.RunTests.TastPath,
+				Target:   args.RunTests.Target,
+				RunFlags: args.RunTests.RunFlags,
+			},
+			RPCHint: &testing.RPCHint{
+				LocalBundleDir: args.RunTests.LocalBundleDir,
+			},
+			DUT: dt,
 		}
 	}
 
@@ -263,7 +282,7 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 
 	for i, t := range tests {
 		if md := missingDeps[i]; len(md) == 0 {
-			runTest(ctx, ew, args, cfg, t, nextTests[i], meta)
+			runTest(ctx, ew, args, cfg, t, nextTests[i], rd)
 		} else {
 			reportSkippedTest(ctx, ew, args, t, md)
 		}
@@ -277,9 +296,32 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 	return nil
 }
 
+// connectToTarget connects to the target DUT and returns its connection.
+func connectToTarget(ctx context.Context, args *Args) (_ *dut.DUT, retErr error) {
+	if args.RunTests.Target == "" {
+		return nil, errors.New("target not supplied")
+	}
+
+	dt, err := dut.New(args.RunTests.Target, args.RunTests.KeyFile, args.RunTests.KeyDir)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create connection: %v", err)
+	}
+	defer func() {
+		if retErr != nil {
+			dt.Close(ctx)
+		}
+	}()
+
+	if err := dt.Connect(ctx); err != nil {
+		return nil, fmt.Errorf("failed to connect to DUT: %v", err)
+	}
+
+	return dt, nil
+}
+
 // runTest runs t per args and cfg, writing the appropriate control.Test* control messages to mw.
 func runTest(ctx context.Context, ew *eventWriter, args *Args, cfg *runConfig,
-	t, next *testing.TestCase, meta *testing.Meta) {
+	t, next *testing.TestCase, rd *testing.RemoteData) {
 	ew.TestStart(t)
 
 	// Attach a log that the test can use to report timing events.
@@ -290,7 +332,7 @@ func runTest(ctx context.Context, ew *eventWriter, args *Args, cfg *runConfig,
 		DataDir:      filepath.Join(args.RunTests.DataDir, t.DataDir()),
 		OutDir:       filepath.Join(args.RunTests.OutDir, t.Name),
 		Vars:         args.RunTests.TestVars,
-		Meta:         meta,
+		RemoteData:   rd,
 		PreTestFunc:  cfg.preTestFunc,
 		PostTestFunc: cfg.postTestFunc,
 		NextTest:     next,

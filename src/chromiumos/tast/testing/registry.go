@@ -10,8 +10,9 @@ import (
 
 // Registry holds tests.
 type Registry struct {
-	allTests  []*TestCase
-	testNames map[string]struct{} // names of registered tests
+	allTests    []*TestCase
+	testNames   map[string]struct{} // names of registered tests
+	allServices []*Service
 }
 
 // NewRegistry returns a new test registry.
@@ -59,6 +60,12 @@ func (r *Registry) AddTestCase(t *TestCase) error {
 	return nil
 }
 
+// AddService adds s to the registry.
+func (r *Registry) AddService(s *Service) error {
+	r.allServices = append(r.allServices, s)
+	return nil
+}
+
 // AllTests returns copies of all registered tests.
 func (r *Registry) AllTests() []*TestCase {
 	ts := make([]*TestCase, len(r.allTests))
@@ -66,4 +73,9 @@ func (r *Registry) AllTests() []*TestCase {
 		ts[i] = t.clone()
 	}
 	return ts
+}
+
+// AllServices returns copies of all registered services.
+func (r *Registry) AllServices() []*Service {
+	return append(([]*Service)(nil), r.allServices...)
 }

@@ -49,6 +49,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 			attrs: []string{"group:crosbolt", "crosbolt_weekly"},
 		},
 		{
+			attrs: []string{"group:crosbolt", "disabled"},
+		},
+		{
 			attrs: []string{"group:stress"},
 		},
 		{

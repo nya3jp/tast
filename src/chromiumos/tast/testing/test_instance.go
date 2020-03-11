@@ -148,7 +148,7 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 	hwDeps := hwdep.Merge(t.HardwareDeps, p.ExtraHardwareDeps)
 
 	attrs := append(manualAttrs, autoAttrs(name, info.pkg, swDeps)...)
-	if err := validateAttr(t.Attr); err != nil {
+	if err := validateAttr(attrs); err != nil {
 		return nil, err
 	}
 

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "62c533de_9d66c0eb",
+        "filename": "src/chromiumos/tast/testing/attr.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-03-11T01:56:04Z",
+      "side": 1,
+      "message": "data-collector sounds a bit generic. How about arc-data-collector?",
+      "range": {
+        "startLine": 145,
+        "startChar": 13,
+        "endLine": 145,
+        "endChar": 27
+      },
+      "revId": "50452c8553eeaec73ab4542aa3baf0925750e71e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

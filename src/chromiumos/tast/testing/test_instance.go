@@ -331,6 +331,9 @@ func validateManualAttr(attr []string) error {
 		if isAutoAttr(a) {
 			return fmt.Errorf("attribute %q has reserved prefix", a)
 		}
+		if a == "disabled" {
+			return errors.New("the disabled attribute is deprecated; remove group:* attributes instead")
+		}
 	}
 	return nil
 }

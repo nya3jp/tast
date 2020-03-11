@@ -37,6 +37,29 @@
     },
     {
       "key": {
+        "uuid": "f9a9266d_0ac11603",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 631,
+      "author": {
+        "id": 1337146
+      },
+      "writtenOn": "2020-03-11T05:43:43Z",
+      "side": 1,
+      "message": "Did you mean:\nThe usage is the same as the functions with the same names in the official errors package.",
+      "range": {
+        "startLine": 631,
+        "startChar": 0,
+        "endLine": 631,
+        "endChar": 0
+      },
+      "revId": "cf4ec81f008ba5a0a8051402da5f9b678cf29eb7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ef01f86c_b04b1734",
         "filename": "docs/writing_tests.md",
         "patchSetId": 6
@@ -69,6 +92,29 @@
       "revId": "cf4ec81f008ba5a0a8051402da5f9b678cf29eb7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3314f301_56d0a14a",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 645,
+      "author": {
+        "id": 1337146
+      },
+      "writtenOn": "2020-03-11T05:43:43Z",
+      "side": 1,
+      "message": "It is recommended to use Wrap() when crossing package boundary to expose the implementation details of the original error.",
+      "range": {
+        "startLine": 645,
+        "startChar": 0,
+        "endLine": 645,
+        "endChar": 118
+      },
+      "revId": "cf4ec81f008ba5a0a8051402da5f9b678cf29eb7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     },
     {
       "key": {
@@ -210,6 +256,29 @@
       "revId": "cf4ec81f008ba5a0a8051402da5f9b678cf29eb7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e0c3478f_a45da533",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 650,
+      "author": {
+        "id": 1337146
+      },
+      "writtenOn": "2020-03-11T05:43:43Z",
+      "side": 1,
+      "message": "It is fine to return an error without wrapping it if the original error does not add information to make debugging easier. Use your best judgement on when to use Wrap() or not.\nThe Following quotes .... are useful to implement good errors.\n\ns/relevant detail/relevant details/",
+      "range": {
+        "startLine": 650,
+        "startChar": 0,
+        "endLine": 650,
+        "endChar": 151
+      },
+      "revId": "cf4ec81f008ba5a0a8051402da5f9b678cf29eb7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     },
     {
       "key": {

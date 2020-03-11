@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ab9904a7_7e1e6db4",
+        "filename": "src/chromiumos/tast/testing/attr.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 1000303
+      },
+      "writtenOn": "2020-03-11T18:11:01Z",
+      "side": 1,
+      "message": "The name seemed a bit too generic but I couldn\u0027t come up with a better one either..",
+      "revId": "89f7dfd864f9939942521be9cb2ce288157c2d83",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -66,18 +66,6 @@ All mainline tests should be initially marked informational, and should be
 promoted to critical tests after stabilization.
 `,
 			},
-			// TODO(crbug.com/1005041): Consider removing this attribute. After introducing group:mainline,
-			// we can disable a test by removing group:mainline.
-			{
-				Name: "disabled",
-				Desc: `Indicates that this test should not be run in the lab.
-
-Usually faulty tests should be marked informational, instead of disabled, so
-that their results can be tracked without blocking changes. However we might
-want to disable tests in some cases, for example when they interact with other
-tests badly.
-`,
-			},
 		},
 	},
 	{
@@ -241,6 +229,13 @@ func checkKnownAttrs(attrs []string) error {
 
 	for _, attr := range attrs {
 		if isAutoAttr(attr) || strings.HasPrefix(attr, groupPrefix) {
+			continue
+		}
+		// Allow the "disabled" attribute.
+		// Note that manually specifying the "disabled" attribute is prohibited,
+		// so we only allow automatically-added "disabled" attribute here.
+		// TODO(crbug.com/1005041): Remove this transitional handling.
+		if attr == "disabled" {
 			continue
 		}
 		found := false

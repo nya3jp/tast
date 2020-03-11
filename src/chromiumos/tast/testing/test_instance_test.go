@@ -499,6 +499,21 @@ func TestInstantiateInconsistentParamValType(t *gotesting.T) {
 	}
 }
 
+func TestInstantiateNoManualDisabled(t *gotesting.T) {
+	for _, attrs := range [][]string{
+		{"disabled"},
+		{"group:mainline", "disabled"},
+		{"group:crosbolt", "disabled"},
+	} {
+		if _, err := instantiate(&Test{
+			Func: TESTINSTANCETEST,
+			Attr: attrs,
+		}); err == nil {
+			t.Errorf("instantiate unexpectedly succeeded with Attr = %q", attrs)
+		}
+	}
+}
+
 func TestInstantiateCompatAttrs(t *gotesting.T) {
 	got, err := instantiate(&Test{
 		Func: TESTINSTANCETEST,

@@ -219,12 +219,11 @@ func init() {
 	}
 }
 
+const groupPrefix = "group:"
+
 // checkKnownAttrs validate attrs against valid groups.
 func checkKnownAttrs(attrs []string) error {
-	const (
-		groupPrefix = "group:"
-		defPath     = "chromiumos/tast/testing/attr.go"
-	)
+	const defPath = "chromiumos/tast/testing/attr.go"
 
 	var groups []*group
 	for _, attr := range attrs {
@@ -265,4 +264,23 @@ func checkKnownAttrs(attrs []string) error {
 	}
 
 	return nil
+}
+
+// modifyAttrsForCompat modifies an attribute list for compatibility.
+func modifyAttrsForCompat(attrs []string) []string {
+	// If no "group:*" attribute is set, append the "disabled" attribute.
+	// TODO(crbug.com/1005041): Remove this workaround once infra is updated to
+	// not rely on the "disabled" attribute.
+	hasGroup := false
+	for _, a := range attrs {
+		if strings.HasPrefix(a, groupPrefix) {
+			hasGroup = true
+			break
+		}
+	}
+
+	if hasGroup {
+		return attrs
+	}
+	return append(attrs, "disabled")
 }

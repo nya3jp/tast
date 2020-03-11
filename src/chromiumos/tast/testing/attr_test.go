@@ -5,6 +5,7 @@
 package testing
 
 import (
+	"reflect"
 	"testing"
 )
 
@@ -106,6 +107,25 @@ func TestCheckKnownAttrs(t *testing.T) {
 			} else if err.Error() != tc.error {
 				t.Errorf("checkKnownAttrs(%+v) returned %q; want %q", tc.attrs, err.Error(), tc.error)
 			}
+		}
+	}
+}
+
+func TestModifyAttrsForCompat(t *testing.T) {
+	for _, tc := range []struct {
+		orig []string
+		want []string
+	}{
+		{nil, []string{"disabled"}},
+		{[]string{"dep:chrome"}, []string{"dep:chrome", "disabled"}},
+		{[]string{"group:mainline"}, []string{"group:mainline"}},
+		{[]string{"group:mainline", "dep:chrome"}, []string{"group:mainline", "dep:chrome"}},
+		{[]string{"group:foo"}, []string{"group:foo"}},
+	} {
+		attrs := append([]string(nil), tc.orig...)
+		got := modifyAttrsForCompat(attrs)
+		if !reflect.DeepEqual(got, tc.want) {
+			t.Errorf("modifyAttrsForCompat(%q) = %q; want %q", tc.orig, got, tc.want)
 		}
 	}
 }

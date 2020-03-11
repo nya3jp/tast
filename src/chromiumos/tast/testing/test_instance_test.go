@@ -499,6 +499,29 @@ func TestInstantiateInconsistentParamValType(t *gotesting.T) {
 	}
 }
 
+func TestInstantiateCompatAttrs(t *gotesting.T) {
+	got, err := instantiate(&Test{
+		Func: TESTINSTANCETEST,
+	})
+	if err != nil {
+		t.Fatal("Failed to instantiate test: ", err)
+	}
+	want := []*TestInstance{{
+		Name: "testing.TESTINSTANCETEST",
+		Pkg:  "chromiumos/tast/testing",
+		Attr: []string{
+			testNameAttrPrefix + "testing.TESTINSTANCETEST",
+			// The bundle name is the second-to-last component in the package's path.
+			testBundleAttrPrefix + "tast",
+			// This attribute is added for compatibility.
+			"disabled",
+		},
+	}}
+	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(TestInstance{}, "Func", "HardwareDeps", "Pre")); diff != "" {
+		t.Errorf("Got unexpected test instances (-got +want):\n%s", diff)
+	}
+}
+
 func TestSoftwareDeps(t *gotesting.T) {
 	test := TestInstance{SoftwareDeps: []string{"dep3", "dep1", "dep2"}}
 	missing := test.MissingSoftwareDeps([]string{"dep0", "dep2", "dep4"})

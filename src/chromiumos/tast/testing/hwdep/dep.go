@@ -19,6 +19,9 @@ type Deps = hwdep.Deps
 // Condition represents one condition of hardware dependencies.
 type Condition = hwdep.Condition
 
+// ConfigSoc is an enum type SOC defined in proto/infra/device/config.proto
+type ConfigSoc = device.Config_SOC
+
 // D returns hardware dependencies representing the given Conditions.
 func D(conds ...Condition) Deps {
 	return hwdep.D(conds...)
@@ -123,5 +126,22 @@ func TouchScreen() Condition {
 			}
 		}
 		return errors.New("DUT does not have touchscreen")
+	}
+}
+
+// Soc returns a hardware dependency condition that is satisfied
+// iff the DUT's SOC is one of the given.
+func Soc(socs ...ConfigSoc) Condition {
+	return func(d *hwdep.DeviceSetup) error {
+		// If the field is unavailable, return false as not satisfied.
+		if d.DC == nil {
+			return errors.New("device.Config is not given")
+		}
+		for _, s := range socs {
+			if s == d.DC.Soc {
+				return nil
+			}
+		}
+		return errors.Errorf("SOC did not match; has %s, want %q", d.DC.Soc, socs)
 	}
 }

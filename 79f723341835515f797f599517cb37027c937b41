@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "75a3d71a_977472aa",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 8
+      },
+      "lineNbr": 648,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-03-11T09:34:16Z",
+      "side": 1,
+      "message": "s/judge/judgement/ ?",
+      "range": {
+        "startLine": 648,
+        "startChar": 22,
+        "endLine": 648,
+        "endChar": 27
+      },
+      "revId": "79f723341835515f797f599517cb37027c937b41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9885c97b_e9b27c93",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 8
+      },
+      "lineNbr": 652,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-03-11T09:34:16Z",
+      "side": 1,
+      "message": "huge nit: s/./:/",
+      "range": {
+        "startLine": 652,
+        "startChar": 36,
+        "endLine": 652,
+        "endChar": 37
+      },
+      "revId": "79f723341835515f797f599517cb37027c937b41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c26f1785_a22b52be",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 8
+      },
+      "lineNbr": 656,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-03-11T09:34:16Z",
+      "side": 1,
+      "message": "Since this is a quote, I recommend formatting it in that way with ``` ... ```.",
+      "range": {
+        "startLine": 654,
+        "startChar": 0,
+        "endLine": 656,
+        "endChar": 100
+      },
+      "revId": "79f723341835515f797f599517cb37027c937b41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

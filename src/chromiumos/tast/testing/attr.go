@@ -226,12 +226,6 @@ func checkKnownAttrs(attrs []string) error {
 		groups = append(groups, g)
 	}
 
-	// For transition, treat tests belonging to no group as mainline tests.
-	// TODO(crbug.com/1005041): Remove this transitional hack.
-	if len(groups) == 0 {
-		groups = append(groups, validGroupMap["mainline"])
-	}
-
 	for _, attr := range attrs {
 		if isAutoAttr(attr) || strings.HasPrefix(attr, groupPrefix) {
 			continue

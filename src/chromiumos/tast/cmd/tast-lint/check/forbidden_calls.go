@@ -16,17 +16,17 @@ import (
 func ForbiddenCalls(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 	isUnitTest := isUnitTestFile(fs.Position(f.Package).Filename)
 	var issues []*Issue
-	var errorsAdded bool
+	var importsRequired []string
 
-	// Fixable condition is defined as (1) the file don't have the ident node
-	// whose name is "errors" and (2) the file is able to be ran goimports.
-	// TODO: handle the case if there is "chromium/tast/errors" in import list.
+	// Being able to run goimports is a precondition to being able to make any fixes.
 	fixable := false
-	if !hasErrorsIdent(f) {
-		if src, err := formatASTNode(fs, f); err == nil {
-			fixable = goimportApplicable(src)
-		}
+	if src, err := formatASTNode(fs, f); err == nil {
+		fixable = goimportApplicable(src)
 	}
+	// If a file contains an ident node whose name is "errors", importing the package
+	// "chromium/tast/errors" could introduce a naming conflict.
+	// TODO: handle the case where these usages are already from "chromium/tast/errors".
+	usesErrors := hasErrorsIdent(f)
 
 	astutil.Apply(f, func(c *astutil.Cursor) bool {
 		sel, ok := c.Node().(*ast.SelectorExpr)
@@ -39,7 +39,8 @@ func ForbiddenCalls(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 			return true
 		}
 
-		call := fmt.Sprintf("%s.%s", x.Name, sel.Sel.Name)
+		methodName := sel.Sel.Name
+		call := fmt.Sprintf("%s.%s", x.Name, methodName)
 		switch call {
 		case "context.Background", "context.TODO":
 			if !isUnitTest {
@@ -57,7 +58,7 @@ func ForbiddenCalls(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 					Link:    "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Error-construction",
 					Fixable: fixable,
 				})
-			} else if fixable {
+			} else if fixable && !usesErrors {
 				c.Replace(&ast.SelectorExpr{
 					X: &ast.Ident{
 						Name: "errors",
@@ -66,7 +67,7 @@ func ForbiddenCalls(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 						Name: "Errorf",
 					},
 				})
-				errorsAdded = true
+				importsRequired = append(importsRequired, "chromiumos/tast/errors")
 			}
 		case "time.Sleep":
 			issues = append(issues, &Issue{
@@ -74,21 +75,40 @@ func ForbiddenCalls(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 				Msg:  "time.Sleep ignores context deadline; use testing.Poll or testing.Sleep instead",
 				Link: "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Contexts-and-timeouts",
 			})
+		case "dbus.SystemBus", "dbus.SystemBusPrivate":
+			if !fix {
+				issues = append(issues, &Issue{
+					Pos:     fs.Position(x.Pos()),
+					Msg:     fmt.Sprintf("dbus.%v may reorder signals; use chromiumos/tast/local/dbusutil.%v instead", methodName, methodName),
+					Link:    "https://github.com/godbus/dbus/issues/187",
+					Fixable: fixable,
+				})
+			} else if fixable {
+				c.Replace(&ast.SelectorExpr{
+					X: &ast.Ident{
+						Name: "dbusutil",
+					},
+					Sel: &ast.Ident{
+						Name: methodName,
+					},
+				})
+				importsRequired = append(importsRequired, "chromiumos/tast/local/dbusutil")
+			}
 		}
 
 		return true
 	}, nil)
 
-	if errorsAdded {
-		if astutil.AddImport(fs, f, "chromiumos/tast/errors") {
-			newf, err := ImportOrderAutoFix(fs, f)
-			if err != nil {
-				return issues
-			}
-			*f = *newf
-		}
+	for _, pkg := range importsRequired {
+		astutil.AddImport(fs, f, pkg)
 	}
-
+	if len(importsRequired) > 0 {
+		newf, err := ImportOrderAutoFix(fs, f)
+		if err != nil {
+			return issues
+		}
+		*f = *newf
+	}
 	return issues
 }
 

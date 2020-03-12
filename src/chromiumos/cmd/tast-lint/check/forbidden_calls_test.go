@@ -15,6 +15,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/godbus/dbus"
+
 	"chromiumos/tast/errors"
 )
 
@@ -25,13 +27,17 @@ func main() {
 	time.Sleep(time.Second)
 	context.Background()
 	context.TODO()
+	dbus.SystemBus()
+	dbus.SystemBusPrivate()
 }
 `
 	expects := []string{
-		"testfile.go:12:2: chromiumos/tast/errors.Errorf should be used instead of fmt.Errorf",
-		"testfile.go:14:2: time.Sleep ignores context deadline; use testing.Poll or testing.Sleep instead",
-		"testfile.go:15:2: context.Background ignores test timeout; use test function's ctx arg instead",
-		"testfile.go:16:2: context.TODO ignores test timeout; use test function's ctx arg instead",
+		"testfile.go:14:2: chromiumos/tast/errors.Errorf should be used instead of fmt.Errorf",
+		"testfile.go:16:2: time.Sleep ignores context deadline; use testing.Poll or testing.Sleep instead",
+		"testfile.go:17:2: context.Background ignores test timeout; use test function's ctx arg instead",
+		"testfile.go:18:2: context.TODO ignores test timeout; use test function's ctx arg instead",
+		"testfile.go:19:2: dbus.SystemBus may reorder signals; use chromiumos/tast/local/dbusutil.SystemBus instead",
+		"testfile.go:20:2: dbus.SystemBusPrivate may reorder signals; use chromiumos/tast/local/dbusutil.SystemBusPrivate instead",
 	}
 
 	f, fs := parse(code, "testfile.go")
@@ -42,13 +48,18 @@ func main() {
 func TestAutoFixForbiddenCalls(t *testing.T) {
 	files := make(map[string]string)
 	expects := make(map[string]string)
-	const filename1, filename2, filename3 = "foo.go", "bar.go", "baz.go"
+	const filename1, filename2, filename3, filename4 = "foo.go", "bar.go", "baz.go", "dbus.go"
+
+	// This first file is currently considered "not fixable"
+	// because it contains an "errors" identifier node.
 	files[filename1] = `package main
 
 import (
 	"fmt"
 	"time"
 
+	"github.com/godbus/dbus"
+
 	"chromiumos/tast/errors"
 )
 
@@ -60,14 +71,19 @@ func main() {
 	time.Sleep(time.Second)
 	context.Background()
 	context.TODO()
+	dbus.SystemBus()
+	dbus.SystemBusPrivate()
 }
 `
+
 	expects[filename1] = `package main
 
 import (
 	"fmt"
 	"time"
 
+	"github.com/godbus/dbus"
+
 	"chromiumos/tast/errors"
 )
 
@@ -79,6 +95,8 @@ func main() {
 	time.Sleep(time.Second)
 	context.Background()
 	context.TODO()
+	dbus.SystemBus()
+	dbus.SystemBusPrivate()
 }
 `
 	files[filename2] = `package main
@@ -125,5 +143,31 @@ func main() {
 	errors.Errorf("foo")
 }
 `
+	files[filename4] = `package main
+
+import (
+	"github.com/godbus/dbus"
+)
+
+func main() {
+	dbus.SystemBus()
+	dbus.SystemBusPrivate(dbus.WithHandler(nil))
+}
+`
+
+	expects[filename4] = `package main
+
+import (
+	"github.com/godbus/dbus"
+
+	"chromiumos/tast/local/dbusutil"
+)
+
+func main() {
+	dbusutil.SystemBus()
+	dbusutil.SystemBusPrivate(dbus.WithHandler(nil))
+}
+`
+
 	verifyAutoFix(t, ForbiddenCalls, files, expects)
 }

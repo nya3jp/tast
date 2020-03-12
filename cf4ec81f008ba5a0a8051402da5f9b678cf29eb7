@@ -60,6 +60,30 @@
     },
     {
       "key": {
+        "uuid": "28601257_fd3def35",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 631,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-03-12T08:12:40Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f9a9266d_0ac11603",
+      "range": {
+        "startLine": 631,
+        "startChar": 0,
+        "endLine": 631,
+        "endChar": 0
+      },
+      "revId": "cf4ec81f008ba5a0a8051402da5f9b678cf29eb7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ef01f86c_b04b1734",
         "filename": "docs/writing_tests.md",
         "patchSetId": 6
@@ -115,6 +139,30 @@
       "revId": "cf4ec81f008ba5a0a8051402da5f9b678cf29eb7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ea1b8918_4e188fec",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 645,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-03-12T08:12:40Z",
+      "side": 1,
+      "message": "Ack.\nIt seems it alters meaning of the origianl sentence.\nI reworded it hopefully for it to make more sense.",
+      "parentUuid": "3314f301_56d0a14a",
+      "range": {
+        "startLine": 645,
+        "startChar": 0,
+        "endLine": 645,
+        "endChar": 118
+      },
+      "revId": "cf4ec81f008ba5a0a8051402da5f9b678cf29eb7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -279,6 +327,30 @@
       "revId": "cf4ec81f008ba5a0a8051402da5f9b678cf29eb7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "90109a41_2fba0d0b",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 650,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-03-12T08:12:40Z",
+      "side": 1,
+      "message": "Done.\nThanks. For the first sentence, your suggestion seems change the meaning, so I kept it as is.\nFor s/relevant detail/relevant details/, given it\u0027s a quote from a book, I kept it as is too.",
+      "parentUuid": "e0c3478f_a45da533",
+      "range": {
+        "startLine": 650,
+        "startChar": 0,
+        "endLine": 650,
+        "endChar": 151
+      },
+      "revId": "cf4ec81f008ba5a0a8051402da5f9b678cf29eb7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {

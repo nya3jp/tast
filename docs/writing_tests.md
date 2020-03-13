@@ -349,9 +349,10 @@ level:
 > ... declared at top level (outside any function) is the package block.
 
 As such, all tests within a package like `platform` or `ui` share the same
-namespace. Please be careful of conflicts. Also, please avoid referencing
-identifiers declared in other files; otherwise `repo upload` will fail with
-lint errors.
+namespace. It is ok to declare top level unexported symbols
+(e.g. functions, constants, etc), but please be careful of conflicts. Also,
+please avoid referencing identifiers declared in other files; otherwise
+`repo upload` will fail with lint errors.
 
 If you need to share functionality between tests in the same package, please
 introduce a new descriptively-named subpackage; see e.g. the [chromecrash]

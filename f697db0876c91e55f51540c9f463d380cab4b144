@@ -16,6 +16,24 @@
       "revId": "f697db0876c91e55f51540c9f463d380cab4b144",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b5e8891e_045f8c38",
+        "filename": "proto/infra/device/config.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1360092
+      },
+      "writtenOn": "2020-03-16T15:36:27Z",
+      "side": 1,
+      "message": "Oops,I should\u0027ve noticed that -- abandoning this CL.",
+      "parentUuid": "05625c52_441d3f3d",
+      "revId": "f697db0876c91e55f51540c9f463d380cab4b144",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

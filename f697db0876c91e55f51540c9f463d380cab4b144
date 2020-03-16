@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "05625c52_441d3f3d",
+        "filename": "proto/infra/device/config.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-03-16T07:09:20Z",
+      "side": 1,
+      "message": "Looks conflicting with \"\u003d 7\"?",
+      "revId": "f697db0876c91e55f51540c9f463d380cab4b144",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

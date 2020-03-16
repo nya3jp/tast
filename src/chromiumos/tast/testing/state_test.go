@@ -333,6 +333,39 @@ func TestVars(t *gotesting.T) {
 	}
 }
 
+func TestCheckVars(t *gotesting.T) {
+	const (
+		validName = "valid" // registered by test and provided
+		unsetName = "unset" // registered by test but not provided at runtime
+		unregName = "unreg" // not registered by test but provided at runtime
+
+		validValue = "valid value"
+		unregValue = "unreg value"
+	)
+
+	test := &TestCase{Vars: []string{validName, unsetName}}
+	cfg := &TestConfig{Vars: map[string]string{validName: validValue, unregName: unregValue}}
+	or := newOutputReader()
+	s := newState(test, or.ch, cfg)
+	defer close(or.ch)
+
+	for _, tc := range []struct {
+		name  string // name to pass to Var/RequiredVar
+		value string // expected variable value to be returned
+		ok    bool   // expected 'ok' return value (only used if req is false)
+	}{
+		{validName, validValue, true},
+		{unsetName, "", false},
+		{unregName, unregValue, true},
+	} {
+		funcCall := fmt.Sprintf("CheckVar(%q)", tc.name)
+
+		if value, ok := s.CheckVar(tc.name); value != tc.value || ok != tc.ok {
+			t.Errorf("%s = (%q, %v); want (%q, %v)", funcCall, value, ok, tc.value, tc.ok)
+		}
+	}
+}
+
 func TestMeta(t *gotesting.T) {
 	meta := Meta{TastPath: "/foo/bar", Target: "example.net", RunFlags: []string{"-foo", "-bar"}}
 	getMeta := func(test *TestCase, cfg *TestConfig) (*State, *Meta) {

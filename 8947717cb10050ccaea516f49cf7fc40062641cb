@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "34f10a76_945f8d01",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-03-16T13:06:17Z",
+      "side": 1,
+      "message": "# I\u0027m not an native English speaker, but...\n\nThe new sentence sounds like \"encouraging top level identifiers\", rather than \"allowing it\"?\n\nIt could be softer, like;\n\n\"It is ok to declare top level unexported symbols, such as functions, constants, or variables), but please ...\"",
+      "range": {
+        "startLine": 7,
+        "startChar": 6,
+        "endLine": 7,
+        "endChar": 64
+      },
+      "revId": "8947717cb10050ccaea516f49cf7fc40062641cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

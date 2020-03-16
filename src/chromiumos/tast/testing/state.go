@@ -178,11 +178,24 @@ func (s *State) RequiredVar(name string) string {
 	return val
 }
 
+// CheckVar is similar to Var but doesn't check the Test.Vars registration.
+// It is useful when the variable is not used in test case but in other logics like precondition.
+func (s *State) CheckVar(name string) (val string, ok bool) {
+	val, ok = s.cfg.Vars[name]
+	return val, ok
+}
+
 // PreValue returns a value supplied by the test's precondition, which must have been declared via Test.Pre
 // when the test was registered. Callers should cast the returned empty interface to the correct pointer
 // type; see the relevant precondition's documentation for specifics.
 // nil will be returned if the test did not declare a precondition.
 func (s *State) PreValue() interface{} { return s.preValue }
+
+// SetPreValue sets the precondition value
+func (s *State) SetPreValue(v interface{}) { s.preValue = v }
+
+// Pre returns the precondtion
+func (s *State) Pre() interface{} { return s.test.Pre }
 
 // SoftwareDeps returns software dependencies declared in the currently running test.
 func (s *State) SoftwareDeps() []string {

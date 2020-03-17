@@ -46,6 +46,8 @@ func init() {
 }
 
 // SSH represents an SSH connection to another computer.
+//
+// DEPRECATED: please use ssh.Conn instead.
 type SSH struct {
 	cl *ssh.Client
 
@@ -289,6 +291,8 @@ func (s *SSH) Close(ctx context.Context) error {
 // dst is the full destination name for the file or directory being copied, not
 // a destination directory into which it will be copied. dst will be replaced
 // if it already exists.
+//
+// DEPRECATED: please use linuxssh.GetFile instead.
 func (s *SSH) GetFile(ctx context.Context, src, dst string) error {
 	src = filepath.Clean(src)
 	dst = filepath.Clean(dst)
@@ -328,12 +332,18 @@ func (s *SSH) GetFile(ctx context.Context, src, dst string) error {
 }
 
 // SymlinkPolicy describes how symbolic links should be handled by PutFiles.
+//
+// DEPRECATED: please use linuxssh.SymlinkPolicy instead.
 type SymlinkPolicy int
 
 const (
 	// PreserveSymlinks indicates that symlinks should be preserved during the copy.
+	//
+	// DEPRECATED: please use linuxssh.PreserveSymlinks instead.
 	PreserveSymlinks SymlinkPolicy = iota
 	// DereferenceSymlinks indicates that symlinks should be dereferenced and turned into normal files.
+	//
+	// DEPRECATED: please use linuxssh.DereferenceSymlinks instead.
 	DereferenceSymlinks
 )
 
@@ -358,6 +368,8 @@ func (r *countingReader) Read(p []byte) (int, error) {
 // Local file paths can be absolute or relative. Remote file paths must be absolute.
 // SHA1 hashes of remote files are checked in advance to send updated files only.
 // bytes is the amount of data sent over the wire (possibly after compression).
+//
+// DEPRECATED: please use linuxssh.PutFiles.
 func (s *SSH) PutFiles(ctx context.Context, files map[string]string,
 	symlinkPolicy SymlinkPolicy) (bytes int64, err error) {
 	af := make(map[string]string)
@@ -540,6 +552,8 @@ func getLocalSHA1s(paths []string) (map[string]string, error) {
 // DeleteTree deletes all relative paths in files from baseDir on the host.
 // If a specified file is a directory, all files under it are recursively deleted.
 // Non-existent files are ignored.
+//
+// DEPRECATED: please use linuxssh.DeleteTree instead.
 func (s *SSH) DeleteTree(ctx context.Context, baseDir string, files []string) error {
 	var cfs []string
 	for _, f := range files {

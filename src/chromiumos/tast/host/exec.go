@@ -22,6 +22,8 @@ import (
 // Command does not accept context.Context, but Cmd's methods do. This is to
 // support existing use cases where we want to use different deadlines for
 // different operations (e.g. Start and Wait) on the same command execution.
+//
+// DEPRECATED: please use ssh.Cmd instead.
 type Cmd struct {
 	// Args holds command line arguments, including the command as Args[0].
 	Args []string

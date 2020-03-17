@@ -11,6 +11,8 @@ import (
 )
 
 // Platform defines platform-specific behaviours for SSH connections.
+//
+// DEPRECATED: use ssh.Platform instead.
 type Platform struct {
 	// BuildShellCommand builds the shell command required to execute the given command
 	// in the given directory on the target platform. args[0] is the name of the command
@@ -30,4 +32,6 @@ func shellCmd(dir string, args []string) string {
 }
 
 // DefaultPlatform represents a system with a generic POSIX shell.
+//
+// DEPRECATED:  use ssh.DefaultPlatform instead.
 var DefaultPlatform = &Platform{BuildShellCommand: shellCmd}

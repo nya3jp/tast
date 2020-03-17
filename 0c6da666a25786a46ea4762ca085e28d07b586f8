@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "92ec68ae_4d860a0d",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2020-03-17T12:09:33Z",
+      "side": 1,
+      "message": "What if I am test owner as well? Maybe mention that to get LGTM from person who knows the context?",
+      "range": {
+        "startLine": 186,
+        "startChar": 0,
+        "endLine": 188,
+        "endChar": 0
+      },
+      "revId": "0c6da666a25786a46ea4762ca085e28d07b586f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

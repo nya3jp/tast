@@ -171,6 +171,22 @@ CC the change/bug to the test contacts listed in the Contacts field. If you need
 to chump a change, please get an approval from the sheriffs and leave a comment
 in Gerrit for reference.
 
+### Can I send changes to a specific Tast reviewer?
+
+Yes in some cases.
+
+You can send changes to a specific Tast reviewer if you contact the reviewer in
+advance and they say okay.
+
+Also, when you are sending a stack of related changes to reviews, you may send
+only the first change to tast-owners@ and rest to the same reviewer.
+
+### I am a Tast reviewer. Do I need approvals from other Tast reviewers for my own changes?
+
+No, you do not need approvals from other Tast reviewers. But please make sure
+to get LGTM from a test owner (or someone who knows the context if you are
+also a test owner).
+
 ### How can I become a Tast reviewer?
 
 Please write and review Tast changes to get used to Go, Tast and integration

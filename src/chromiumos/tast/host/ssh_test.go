@@ -239,7 +239,7 @@ func TestGetFileRegular(t *testing.T) {
 
 	srcFile := filepath.Join(srcDir, "file")
 	dstFile := filepath.Join(tmpDir, "file.copy")
-	if err := td.hst.GetFile(td.ctx, srcFile, dstFile); err != nil {
+	if err := td.hst.DeprecatedGetFile(td.ctx, srcFile, dstFile); err != nil {
 		t.Fatal(err)
 	}
 	if err := checkFile(dstFile, files["file"]); err != nil {
@@ -247,7 +247,7 @@ func TestGetFileRegular(t *testing.T) {
 	}
 
 	// GetFile should overwrite local files.
-	if err := td.hst.GetFile(td.ctx, srcFile, dstFile); err != nil {
+	if err := td.hst.DeprecatedGetFile(td.ctx, srcFile, dstFile); err != nil {
 		t.Error(err)
 	}
 }
@@ -266,7 +266,7 @@ func TestGetFileDir(t *testing.T) {
 
 	// Copy the full source directory.
 	dstDir := filepath.Join(tmpDir, "dst")
-	if err := td.hst.GetFile(td.ctx, srcDir, dstDir); err != nil {
+	if err := td.hst.DeprecatedGetFile(td.ctx, srcDir, dstDir); err != nil {
 		t.Fatal(err)
 	}
 	if err := checkDir(dstDir, files); err != nil {
@@ -274,7 +274,7 @@ func TestGetFileDir(t *testing.T) {
 	}
 
 	// GetFile should overwrite local dirs.
-	if err := td.hst.GetFile(td.ctx, srcDir, dstDir); err != nil {
+	if err := td.hst.DeprecatedGetFile(td.ctx, srcDir, dstDir); err != nil {
 		t.Error(err)
 	}
 }
@@ -291,7 +291,7 @@ func TestGetFileTimeout(t *testing.T) {
 	srcFile := filepath.Join(srcDir, "file")
 	dstFile := filepath.Join(tmpDir, "file")
 	td.execTimeout = startTimeout
-	if err := td.hst.GetFile(td.ctx, srcFile, dstFile); err == nil {
+	if err := td.hst.DeprecatedGetFile(td.ctx, srcFile, dstFile); err == nil {
 		t.Errorf("GetFile() with expired context didn't return error")
 	}
 }
@@ -326,13 +326,13 @@ func TestPutFiles(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if n, err := td.hst.PutFiles(td.ctx, map[string]string{
+	if n, err := td.hst.DeprecatedPutFiles(td.ctx, map[string]string{
 		filepath.Join(srcDir, "file1"):             filepath.Join(dstDir, "newfile1"),           // rename to preserve orig file
 		filepath.Join(srcDir, "dir/file2"):         filepath.Join(dstDir, "dir/file2"),          // overwrite orig file
 		filepath.Join(srcDir, "dir2/subdir/file3"): filepath.Join(dstDir, "dir2/subdir2/file3"), // rename subdir
 		filepath.Join(srcDir, weirdSrcName):        filepath.Join(dstDir, "file5"),              // check that regexp chars are escaped
 		filepath.Join(srcDir, "file6"):             filepath.Join(dstDir, weirdDstName),         // check that replacement chars are also escaped
-	}, PreserveSymlinks); err != nil {
+	}, DeprecatedPreserveSymlinks); err != nil {
 		t.Fatal(err)
 	} else if n <= 0 {
 		t.Errorf("Copied non-positive %v bytes", n)
@@ -373,10 +373,10 @@ func TestPutFilesUnchanged(t *testing.T) {
 	}
 
 	// No bytes should be sent since the dest dir already contains the renamed source files.
-	if n, err := td.hst.PutFiles(td.ctx, map[string]string{
+	if n, err := td.hst.DeprecatedPutFiles(td.ctx, map[string]string{
 		filepath.Join(srcDir, "src1"):     filepath.Join(dstDir, "dst1"),
 		filepath.Join(srcDir, "dir/src2"): filepath.Join(dstDir, "dir/dst2"),
-	}, PreserveSymlinks); err != nil {
+	}, DeprecatedPreserveSymlinks); err != nil {
 		t.Fatal(err)
 	} else if n != 0 {
 		t.Errorf("PutFiles() copied %v bytes; want 0", n)
@@ -393,9 +393,9 @@ func TestPutFilesTimeout(t *testing.T) {
 	defer os.RemoveAll(tmpDir)
 	dstDir := filepath.Join(tmpDir, "dst")
 	td.execTimeout = endTimeout
-	if _, err := td.hst.PutFiles(td.ctx, map[string]string{
+	if _, err := td.hst.DeprecatedPutFiles(td.ctx, map[string]string{
 		filepath.Join(srcDir, "file"): filepath.Join(dstDir, "file"),
-	}, PreserveSymlinks); err == nil {
+	}, DeprecatedPreserveSymlinks); err == nil {
 		t.Errorf("PutFiles() with expired context didn't return error")
 	}
 }
@@ -424,9 +424,9 @@ func TestPutFilesSymlinks(t *testing.T) {
 
 	// PreserveSymlinks should copy symlinks directly.
 	dstDir := filepath.Join(tmpDir, "dst_preserve")
-	if _, err := td.hst.PutFiles(td.ctx, map[string]string{
+	if _, err := td.hst.DeprecatedPutFiles(td.ctx, map[string]string{
 		filepath.Join(srcDir, link): filepath.Join(dstDir, link),
-	}, PreserveSymlinks); err != nil {
+	}, DeprecatedPreserveSymlinks); err != nil {
 		t.Error("PutFiles failed with PreserveSymlinks: ", err)
 	} else {
 		dstFile := filepath.Join(dstDir, link)
@@ -443,9 +443,9 @@ func TestPutFilesSymlinks(t *testing.T) {
 
 	// DereferenceSymlinks should copy symlinks' targets while preserving the original mode.
 	dstDir = filepath.Join(tmpDir, "dst_deref")
-	if _, err := td.hst.PutFiles(td.ctx, map[string]string{
+	if _, err := td.hst.DeprecatedPutFiles(td.ctx, map[string]string{
 		filepath.Join(srcDir, link): filepath.Join(dstDir, link),
-	}, DereferenceSymlinks); err != nil {
+	}, DeprecatedDereferenceSymlinks); err != nil {
 		t.Error("PutFiles failed with DereferenceSymlinks: ", err)
 	} else {
 		dstFile := filepath.Join(dstDir, link)
@@ -478,7 +478,7 @@ func TestDeleteTree(t *testing.T) {
 	tmpDir, baseDir := initFileTest(t, files)
 	defer os.RemoveAll(tmpDir)
 
-	if err := td.hst.DeleteTree(td.ctx, baseDir, []string{"file1", "dir", "file9"}); err != nil {
+	if err := td.hst.DeprecatedDeleteTree(td.ctx, baseDir, []string{"file1", "dir", "file9"}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -496,7 +496,7 @@ func TestDeleteTreeOutside(t *testing.T) {
 	tmpDir, baseDir := initFileTest(t, nil)
 	defer os.RemoveAll(tmpDir)
 
-	if err := td.hst.DeleteTree(td.ctx, baseDir, []string{"dir/../../outside"}); err == nil {
+	if err := td.hst.DeprecatedDeleteTree(td.ctx, baseDir, []string{"dir/../../outside"}); err == nil {
 		t.Error("DeleteTree succeeded; should fail")
 	}
 }

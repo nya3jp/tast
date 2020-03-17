@@ -291,13 +291,13 @@ func (s *SSH) Close(ctx context.Context) error {
 	return doAsync(ctx, func() error { return s.cl.Conn.Close() }, nil)
 }
 
-// GetFile copies a file or directory from the host to the local machine.
+// DeprecatedGetFile copies a file or directory from the host to the local machine.
 // dst is the full destination name for the file or directory being copied, not
 // a destination directory into which it will be copied. dst will be replaced
 // if it already exists.
 //
 // DEPRECATED: please use linuxssh.GetFile instead.
-func (s *SSH) GetFile(ctx context.Context, src, dst string) error {
+func (s *SSH) DeprecatedGetFile(ctx context.Context, src, dst string) error {
 	src = filepath.Clean(src)
 	dst = filepath.Clean(dst)
 
@@ -335,20 +335,20 @@ func (s *SSH) GetFile(ctx context.Context, src, dst string) error {
 	return nil
 }
 
-// SymlinkPolicy describes how symbolic links should be handled by PutFiles.
+// DeprecatedSymlinkPolicy describes how symbolic links should be handled by PutFiles.
 //
 // DEPRECATED: please use linuxssh.SymlinkPolicy instead.
-type SymlinkPolicy int
+type DeprecatedSymlinkPolicy int
 
 const (
-	// PreserveSymlinks indicates that symlinks should be preserved during the copy.
+	// DeprecatedPreserveSymlinks indicates that symlinks should be preserved during the copy.
 	//
 	// DEPRECATED: please use linuxssh.PreserveSymlinks instead.
-	PreserveSymlinks SymlinkPolicy = iota
-	// DereferenceSymlinks indicates that symlinks should be dereferenced and turned into normal files.
+	DeprecatedPreserveSymlinks DeprecatedSymlinkPolicy = iota
+	// DeprecatedDereferenceSymlinks indicates that symlinks should be dereferenced and turned into normal files.
 	//
 	// DEPRECATED: please use linuxssh.DereferenceSymlinks instead.
-	DereferenceSymlinks
+	DeprecatedDereferenceSymlinks
 )
 
 // countingReader is an io.Reader wrapper that counts the transferred bytes.
@@ -363,7 +363,7 @@ func (r *countingReader) Read(p []byte) (int, error) {
 	return c, err
 }
 
-// PutFiles copies files on the local machine to the host. files describes
+// DeprecatedPutFiles copies files on the local machine to the host. files describes
 // a mapping from a local file path to a remote file path. For example, the call:
 //
 //	PutFiles(ctx, map[string]string{"/src/from": "/dst/to"})
@@ -374,8 +374,8 @@ func (r *countingReader) Read(p []byte) (int, error) {
 // bytes is the amount of data sent over the wire (possibly after compression).
 //
 // DEPRECATED: please use linuxssh.PutFiles.
-func (s *SSH) PutFiles(ctx context.Context, files map[string]string,
-	symlinkPolicy SymlinkPolicy) (bytes int64, err error) {
+func (s *SSH) DeprecatedPutFiles(ctx context.Context, files map[string]string,
+	symlinkPolicy DeprecatedSymlinkPolicy) (bytes int64, err error) {
 	af := make(map[string]string)
 	for src, dst := range files {
 		if !filepath.IsAbs(src) {
@@ -402,7 +402,7 @@ func (s *SSH) PutFiles(ctx context.Context, files map[string]string,
 	}
 
 	args := []string{"-c", "--gzip", "-C", "/"}
-	if symlinkPolicy == DereferenceSymlinks {
+	if symlinkPolicy == DeprecatedDereferenceSymlinks {
 		args = append(args, "--dereference")
 	}
 	for l, r := range cf {
@@ -553,12 +553,12 @@ func getLocalSHA1s(paths []string) (map[string]string, error) {
 	return sums, nil
 }
 
-// DeleteTree deletes all relative paths in files from baseDir on the host.
+// DeprecatedDeleteTree deletes all relative paths in files from baseDir on the host.
 // If a specified file is a directory, all files under it are recursively deleted.
 // Non-existent files are ignored.
 //
 // DEPRECATED: please use linuxssh.DeleteTree instead.
-func (s *SSH) DeleteTree(ctx context.Context, baseDir string, files []string) error {
+func (s *SSH) DeprecatedDeleteTree(ctx context.Context, baseDir string, files []string) error {
 	var cfs []string
 	for _, f := range files {
 		cf, err := cleanRelativePath(f)

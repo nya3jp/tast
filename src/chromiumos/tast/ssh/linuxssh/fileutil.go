@@ -17,11 +17,11 @@ import (
 // a destination directory into which it will be copied. dst will be replaced
 // if it already exists.
 func GetFile(ctx context.Context, c *ssh.Conn, src, dst string) error {
-	return c.GetFile(ctx, src, dst)
+	return c.DeprecatedGetFile(ctx, src, dst)
 }
 
 // SymlinkPolicy describes how symbolic links should be handled by PutFiles.
-type SymlinkPolicy = host.SymlinkPolicy
+type SymlinkPolicy = host.DeprecatedSymlinkPolicy
 
 const (
 	// PreserveSymlinks indicates that symlinks should be preserved during the copy.
@@ -41,12 +41,12 @@ const (
 // bytes is the amount of data sent over the wire (possibly after compression).
 func PutFiles(ctx context.Context, c *ssh.Conn, files map[string]string,
 	symlinkPolicy SymlinkPolicy) (bytes int64, err error) {
-	return c.PutFiles(ctx, files, symlinkPolicy)
+	return c.DeprecatedPutFiles(ctx, files, symlinkPolicy)
 }
 
 // DeleteTree deletes all relative paths in files from baseDir on the host.
 // If a specified file is a directory, all files under it are recursively deleted.
 // Non-existent files are ignored.
 func DeleteTree(ctx context.Context, c *ssh.Conn, baseDir string, files []string) error {
-	return c.DeleteTree(ctx, baseDir, files)
+	return c.DeprecatedDeleteTree(ctx, baseDir, files)
 }

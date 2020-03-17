@@ -9,9 +9,10 @@ import (
 	"path/filepath"
 
 	"chromiumos/tast/host"
+	"chromiumos/tast/ssh/linuxssh"
 )
 
-// pushToHost is a wrapper around hst.PutFiles that should be used instead of calling PutFiles directly.
+// pushToHost is a wrapper around linuxssh.PutFiles that should be used instead of calling PutFiles directly.
 // dstDir is appended to cfg.hstCopyBasePath to support unit tests.
 // Symbolic links are dereferenced to support symlinked data files: https://crbug.com/927424
 func pushToHost(ctx context.Context, cfg *Config, hst *host.SSH, files map[string]string) (bytes int64, err error) {
@@ -26,7 +27,7 @@ func pushToHost(ctx context.Context, cfg *Config, hst *host.SSH, files map[strin
 		files = rewritten
 	}
 
-	return hst.PutFiles(ctx, files, host.DereferenceSymlinks)
+	return linuxssh.PutFiles(ctx, hst, files, linuxssh.DereferenceSymlinks)
 }
 
 // moveFromHost copies the tree rooted at src on hst to dst on the local system and deletes src from hst.
@@ -36,7 +37,7 @@ func moveFromHost(ctx context.Context, cfg *Config, hst *host.SSH, src, dst stri
 	defer undo()
 
 	src = filepath.Join(cfg.hstCopyBasePath, src)
-	if err := hst.GetFile(ctx, src, dst); err != nil {
+	if err := linuxssh.GetFile(ctx, hst, src, dst); err != nil {
 		return err
 	}
 	if out, err := hst.Command("rm", "-rf", "--", src).Output(ctx); err != nil {
@@ -51,7 +52,7 @@ func deleteFromHost(ctx context.Context, cfg *Config, hst *host.SSH, baseDir str
 	undo := setAnnounceCmdForCopy(cfg, hst)
 	defer undo()
 
-	return hst.DeleteTree(ctx, filepath.Join(cfg.hstCopyBasePath, baseDir), files)
+	return linuxssh.DeleteTree(ctx, hst, filepath.Join(cfg.hstCopyBasePath, baseDir), files)
 }
 
 // setAnnounceCmdForCopy is a helper function that configures hst to temporarily run the

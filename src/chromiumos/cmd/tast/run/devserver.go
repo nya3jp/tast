@@ -172,6 +172,7 @@ var whitelistedBuckets = map[string]struct{}{
 	"chromeos-image-archive":        {},
 	"chromeos-test-assets-private":  {},
 	"chromiumos-test-assets-public": {},
+	"mtbf-testing":                  {},
 }
 
 // parseGSURL checks if the given Google Cloud Storage URL is a valid and

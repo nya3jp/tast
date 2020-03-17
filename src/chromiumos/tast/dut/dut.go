@@ -16,6 +16,7 @@ import (
 	"chromiumos/tast/errors"
 	"chromiumos/tast/host"
 	"chromiumos/tast/internal/testingutil"
+	"chromiumos/tast/ssh/linuxssh"
 )
 
 const (
@@ -97,7 +98,7 @@ func (d *DUT) Command(name string, args ...string) *host.Cmd {
 // a destination directory into which it will be copied. dst will be replaced
 // if it already exists.
 func (d *DUT) GetFile(ctx context.Context, src, dst string) error {
-	return d.hst.GetFile(ctx, src, dst)
+	return linuxssh.GetFile(ctx, d.hst, src, dst)
 }
 
 // WaitUnreachable waits for the DUT to become unreachable.

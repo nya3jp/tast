@@ -18,6 +18,8 @@ import (
 //                 Local               |    SSH Host    |   Remote
 //  -----------------------------------+----------------+-------------
 //  [client] <- TCP -> [Forwarder] <- SSH -> [sshd] <- TCP -> [server]
+//
+// DEPRECATED: use ssh.Forwarder instead.
 type Forwarder struct {
 	connFunc func() (net.Conn, error) // opens remote conns
 	ls       net.Listener             // listens for local conns

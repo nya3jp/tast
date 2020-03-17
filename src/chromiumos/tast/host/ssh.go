@@ -61,6 +61,8 @@ type SSH struct {
 }
 
 // SSHOptions contains options used when connecting to an SSH server.
+//
+// DEPRECATED: please use ssh.Options instead.
 type SSHOptions struct {
 	// User is the username to user when connecting.
 	User string
@@ -213,6 +215,8 @@ func presentChallenges(stdin int, prefix, user, inst string, qs []string, es []b
 
 // NewSSH establishes an SSH connection to the host described in o.
 // Callers are responsible to call SSH.Close after using it.
+//
+// DEPRECATED: please use ssh.New.
 func NewSSH(ctx context.Context, o *SSHOptions) (*SSH, error) {
 	if o.Port == 0 {
 		o.Port = defaultSSHPort

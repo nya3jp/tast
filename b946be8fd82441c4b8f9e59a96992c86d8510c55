@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "acea5df8_fbd50f2d",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1003044
+      },
+      "writtenOn": "2020-03-17T00:28:50Z",
+      "side": 1,
+      "message": "this bool looks like it only checks for the \u0027errors\u0027 ident, might not be appropriate now",
+      "revId": "b946be8fd82441c4b8f9e59a96992c86d8510c55",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -8,8 +8,8 @@ package linuxssh
 import (
 	"context"
 
-	"chromiumos/tast/host"
 	"chromiumos/tast/ssh"
+	"chromiumos/tast/ssh/internal/host"
 )
 
 // GetFile copies a file or directory from the host to the local machine.

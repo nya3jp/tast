@@ -18,8 +18,8 @@ import (
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/errors"
-	"chromiumos/tast/host"
 	"chromiumos/tast/internal/runner"
+	"chromiumos/tast/ssh"
 	"chromiumos/tast/timing"
 )
 
@@ -35,7 +35,7 @@ const (
 // connectToTarget establishes an SSH connection to the target specified in cfg.
 // The connection will be cached in cfg and should not be closed by the caller.
 // If a connection is already established, it will be returned.
-func connectToTarget(ctx context.Context, cfg *Config) (*host.SSH, error) {
+func connectToTarget(ctx context.Context, cfg *Config) (*ssh.Conn, error) {
 	// If we already have a connection, reuse it if it's still open.
 	if cfg.hst != nil {
 		if err := cfg.hst.Ping(ctx, sshPingTimeout); err == nil {
@@ -49,7 +49,7 @@ func connectToTarget(ctx context.Context, cfg *Config) (*host.SSH, error) {
 	cfg.Logger.Status("Connecting to target")
 	cfg.Logger.Logf("Connecting to %s", cfg.Target)
 
-	o := host.SSHOptions{
+	o := ssh.Options{
 		ConnectTimeout:       sshConnectTimeout,
 		ConnectRetries:       cfg.sshRetries,
 		ConnectRetryInterval: sshRetryInterval,
@@ -57,12 +57,12 @@ func connectToTarget(ctx context.Context, cfg *Config) (*host.SSH, error) {
 		KeyDir:               cfg.KeyDir,
 		WarnFunc:             func(s string) { cfg.Logger.Log(s) },
 	}
-	if err := host.ParseSSHTarget(cfg.Target, &o); err != nil {
+	if err := ssh.ParseTarget(cfg.Target, &o); err != nil {
 		return nil, err
 	}
 
 	var err error
-	if cfg.hst, err = host.NewSSH(ctx, &o); err != nil {
+	if cfg.hst, err = ssh.New(ctx, &o); err != nil {
 		return nil, err
 	}
 
@@ -143,7 +143,7 @@ func runLocalTests(ctx context.Context, cfg *Config) ([]TestResult, error) {
 }
 
 type localRunnerHandle struct {
-	cmd            *host.Cmd
+	cmd            *ssh.Cmd
 	stdout, stderr io.Reader
 }
 
@@ -156,7 +156,7 @@ func (h *localRunnerHandle) Close(ctx context.Context) error {
 // startLocalRunner asynchronously starts local_test_runner on hst and passes args to it.
 // args.FillDeprecated() is called first to backfill any deprecated fields for old runners.
 // The caller is responsible for reading the handle's stdout and closing the handle.
-func startLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, args *runner.Args) (*localRunnerHandle, error) {
+func startLocalRunner(ctx context.Context, cfg *Config, hst *ssh.Conn, args *runner.Args) (*localRunnerHandle, error) {
 	args.FillDeprecated()
 	argsData, err := json.Marshal(args)
 	if err != nil {
@@ -189,7 +189,7 @@ func startLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, args *run
 //
 // If cfg.mode is ListTestsMode, serialized test information is returned via TestResult.Test
 // but other fields are left blank and unstarted is empty.
-func runLocalRunner(ctx context.Context, cfg *Config, hst *host.SSH, patterns []string) (
+func runLocalRunner(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns []string) (
 	results []TestResult, unstarted []string, err error) {
 	ctx, st := timing.Start(ctx, "run_local_tests")
 	defer st.End()
@@ -272,7 +272,7 @@ func formatBytes(bytes int64) string {
 // startEphemeralDevserver starts an ephemeral devserver serving on hst.
 // cfg's ephemeralDevserver and devservers fields are updated.
 // If ephemeralDevserver is non-nil, it is closed first.
-func startEphemeralDevserver(ctx context.Context, hst *host.SSH, cfg *Config) error {
+func startEphemeralDevserver(ctx context.Context, hst *ssh.Conn, cfg *Config) error {
 	closeEphemeralDevserver(ctx, cfg) // ignore errors; this may rely on a now-dead SSH connection
 
 	lis, err := hst.ListenTCP(&net.TCPAddr{IP: net.IPv4(127, 0, 0, 1), Port: ephemeralDevserverPort})

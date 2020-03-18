@@ -8,8 +8,8 @@ import (
 	"context"
 
 	"chromiumos/tast/bundle"
-	"chromiumos/tast/host"
 	"chromiumos/tast/internal/runner"
+	"chromiumos/tast/ssh"
 	"chromiumos/tast/testing"
 )
 
@@ -43,7 +43,7 @@ func listTests(ctx context.Context, cfg *Config) ([]TestResult, error) {
 }
 
 // listLocalTests returns a list of local tests to run.
-func listLocalTests(ctx context.Context, cfg *Config, hst *host.SSH) ([]testing.TestInstance, error) {
+func listLocalTests(ctx context.Context, cfg *Config, hst *ssh.Conn) ([]testing.TestInstance, error) {
 	return runListTestsCommand(
 		localRunnerCommand(ctx, cfg, hst), cfg.Patterns, cfg.localBundleGlob())
 }

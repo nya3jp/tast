@@ -13,8 +13,8 @@ import (
 	"os"
 	"os/exec"
 
-	"chromiumos/tast/host"
 	"chromiumos/tast/internal/runner"
+	"chromiumos/tast/ssh"
 )
 
 // runnerCmd provides common interface to execute a test_runner.
@@ -32,13 +32,13 @@ type runnerCmd interface {
 
 type localRunnerCmd struct {
 	// cmd holds the instance to execute a command on DUT.
-	cmd *host.Cmd
+	cmd *ssh.Cmd
 
-	// ctx is used to run host.Cmd.Start() and host.Cmd.Wait().
+	// ctx is used to run ssh.Cmd.Start() and ssh.Cmd.Wait().
 	ctx context.Context
 }
 
-func localRunnerCommand(ctx context.Context, cfg *Config, hst *host.SSH) *localRunnerCmd {
+func localRunnerCommand(ctx context.Context, cfg *Config, hst *ssh.Conn) *localRunnerCmd {
 	// Set proxy-related environment variables for local_test_runner so it will use them
 	// when accessing network.
 	execArgs := []string{"env"}

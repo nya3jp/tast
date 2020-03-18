@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "124e3d88_f7273866",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 293,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-03-18T06:21:23Z",
+      "side": 1,
+      "message": "FYI, MT8183 (kukui / krane)\u0027s model is 4.\n{\n   \"lscpu\": [\n      {\"field\": \"Architecture:\", \"data\": \"aarch64\"},\n      {\"field\": \"Byte Order:\", \"data\": \"Little Endian\"},\n      {\"field\": \"CPU(s):\", \"data\": \"8\"},\n      {\"field\": \"On-line CPU(s) list:\", \"data\": \"0-7\"},\n      {\"field\": \"Thread(s) per core:\", \"data\": \"1\"},\n      {\"field\": \"Core(s) per socket:\", \"data\": \"4\"},\n      {\"field\": \"Socket(s):\", \"data\": \"2\"},\n      {\"field\": \"Vendor ID:\", \"data\": \"ARM\"},\n      {\"field\": \"Model:\", \"data\": \"4\"},\n      {\"field\": \"Model name:\", \"data\": \"Cortex-A53\"},\n      {\"field\": \"Stepping:\", \"data\": \"r0p4\"},\n      {\"field\": \"CPU max MHz:\", \"data\": \"1989.0000\"},\n      {\"field\": \"CPU min MHz:\", \"data\": \"793.0000\"},\n      {\"field\": \"BogoMIPS:\", \"data\": \"26.00\"},\n      {\"field\": \"Flags:\", \"data\": \"fp asimd evtstrm aes pmull sha1 sha2 crc32 cpuid\"}\n   ]\n}\n\nHere is RK3399 lscpu obtained from a dru device:\n{\n   \"lscpu\": [\n      {\"field\": \"Architecture:\", \"data\": \"aarch64\"},\n      {\"field\": \"Byte Order:\", \"data\": \"Little Endian\"},\n      {\"field\": \"CPU(s):\", \"data\": \"6\"},\n      {\"field\": \"On-line CPU(s) list:\", \"data\": \"0-5\"},\n      {\"field\": \"Thread(s) per core:\", \"data\": \"1\"},\n      {\"field\": \"Core(s) per socket:\", \"data\": \"3\"},\n      {\"field\": \"Socket(s):\", \"data\": \"2\"},\n      {\"field\": \"Vendor ID:\", \"data\": \"ARM\"},\n      {\"field\": \"Model:\", \"data\": \"4\"},\n      {\"field\": \"Model name:\", \"data\": \"Cortex-A53\"},\n      {\"field\": \"Stepping:\", \"data\": \"r0p4\"},\n      {\"field\": \"CPU max MHz:\", \"data\": \"2016.0000\"},\n      {\"field\": \"CPU min MHz:\", \"data\": \"408.0000\"},\n      {\"field\": \"BogoMIPS:\", \"data\": \"48.00\"},\n      {\"field\": \"Flags:\", \"data\": \"fp asimd evtstrm aes pmull sha1 sha2 crc32\"}\n   ]\n}",
+      "revId": "b00e91a00c2a8fb802f68dfd14beec52c32fb679",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

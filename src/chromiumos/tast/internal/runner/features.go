@@ -14,6 +14,7 @@ import (
 	"os/exec"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 
 	"go.chromium.org/chromiumos/infra/proto/go/device"
@@ -192,12 +193,18 @@ func newDeviceConfig() (dc *device.Config, warns []string) {
 	if err != nil {
 		warns = append(warns, fmt.Sprintf("unknown brand-id: %v", err))
 	}
+
+	soc, err := findSOC()
+	if err != nil {
+		warns = append(warns, fmt.Sprintf("Unknown SOC: %v", err))
+	}
 	config := &device.Config{
 		Id: &device.ConfigId{
 			PlatformId: platform,
 			ModelId:    model,
 			BrandId:    brand,
 		},
+		Soc: soc,
 	}
 
 	hasTouchScreen := func() bool {
@@ -223,4 +230,179 @@ func newDeviceConfig() (dc *device.Config, warns []string) {
 	}
 
 	return config, warns
+}
+
+type lscpuEntry struct {
+	Field string `json:"field"` // includes trailing ":"
+	Data  string `json:"data"`
+}
+
+type lscpuResult struct {
+	Entries []lscpuEntry `json:"lscpu"`
+}
+
+func (r *lscpuResult) find(name string) (data string, ok bool) {
+	for _, e := range r.Entries {
+		if e.Field == name {
+			return e.Data, true
+		}
+	}
+	return "", false
+}
+
+func findSOC() (device.Config_SOC, error) {
+	b, err := exec.Command("lscpu", "--json").Output()
+	if err != nil {
+		return device.Config_SOC_UNSPECIFIED, err
+	}
+	var parsed lscpuResult
+	if err := json.Unmarshal(b, &parsed); err != nil {
+		return device.Config_SOC_UNSPECIFIED, errors.Wrap(err, "failed to parse lscpu result")
+	}
+	vendorID, ok := parsed.find("Vendor ID:")
+	if !ok {
+		return device.Config_SOC_UNSPECIFIED, errors.Errorf("vendor ID not found")
+	}
+
+	switch vendorID {
+	case "ARM":
+		return findArmSOC(&parsed)
+	case "GenuineIntel":
+		return findIntelSOC(&parsed)
+	case "AuthenticAMD":
+		return findAMDSOC(&parsed)
+	default:
+		return device.Config_SOC_UNSPECIFIED, errors.Errorf("unknown vendor ID: %q", vendorID)
+	}
+}
+
+func findArmSOC(parsed *lscpuResult) (device.Config_SOC, error) {
+	model, ok := parsed.find("Model:")
+	if !ok {
+		return device.Config_SOC_UNSPECIFIED, errors.New("ARM model not found")
+	}
+
+	// SOC_MT8176 is unsupported, since there are no devices.
+	switch model {
+	case "1":
+		return device.Config_SOC_RK3288, nil
+	case "2":
+		return device.Config_SOC_MT8173, nil
+	case "3":
+		return device.Config_SOC_TEGRA_K1, nil
+	case "4":
+		// RK3399 and MT8183 share the same model. RK3399 is hex core, and MT8183 is octa core,
+		// so disambiguate by the number of CPUs.
+		cpus, ok := parsed.find("CPU(s):")
+		if !ok {
+			return device.Config_SOC_UNSPECIFIED, errors.Errorf("unknown number of cores")
+		}
+		switch cpus {
+		case "8":
+			return device.Config_SOC_MT8183, nil
+		case "6":
+			return device.Config_SOC_RK3399, nil
+		default:
+			return device.Config_SOC_UNSPECIFIED, errors.Errorf("Unknown ARM SOC (model=%s, cpus=%s)", model, cpus)
+		}
+	default:
+		return device.Config_SOC_UNSPECIFIED, errors.Errorf("unknown ARM model: %s", model)
+	}
+}
+
+func findIntelSOC(parsed *lscpuResult) (device.Config_SOC, error) {
+	if family, ok := parsed.find("CPU family:"); !ok {
+		return device.Config_SOC_UNSPECIFIED, errors.New("Intel family not found")
+	} else if family != "6" {
+		return device.Config_SOC_UNSPECIFIED, errors.Errorf("unknown Intel family: %s", family)
+	}
+
+	modelStr, ok := parsed.find("Model:")
+	if !ok {
+		return device.Config_SOC_UNSPECIFIED, errors.New("Intel model not found")
+	}
+	model, err := strconv.ParseInt(modelStr, 10, 64)
+	if err != nil {
+		return device.Config_SOC_UNSPECIFIED, errors.Wrapf(err, "failed to parse intel model: %q", modelStr)
+	}
+	switch model {
+	case IntelFam6KabylakeL:
+		// AMBERLAKE_Y, COMET_LAKE_U, WHISKEY_LAKE_U, KABYLAKE_U, KABYLAKE_U_R, and
+		// KABYLAKE_Y share the same model. Parse model name.
+		modelName, ok := parsed.find("Model name:")
+		if !ok {
+			return device.Config_SOC_UNSPECIFIED, errors.New("Intel model name not found")
+		}
+		for _, e := range []struct {
+			soc device.Config_SOC
+			ptn string
+		}{
+			{device.Config_SOC_AMBERLAKE_Y, `i7-8500Y|i5-(8210|8200)Y|m3-8100Y`},
+			{device.Config_SOC_COMET_LAKE_U, `i7-(10710|10510)U|i5-10210U|i3-10110U|Pentium.*6405U|Celeron.*5205U`},
+			{device.Config_SOC_WHISKEY_LAKE_U, `i7-(8665|8565)U|i5-(8365|8265)U|i3-8145U|Pentium.*5405U|Celeron.*4205U`},
+			{device.Config_SOC_KABYLAKE_U, `i7-7500U|i5-7200U|i3-7100U`},
+			{device.Config_SOC_KABYLAKE_U_R, `i7-(8650|8550)U|i5-(8350|8250)U|i3-8130U`},
+			{device.Config_SOC_KABYLAKE_Y, `i7-7Y75|i5-7Y54|m3-7Y30`},
+		} {
+			r := regexp.MustCompile(e.ptn)
+			if r.MatchString(modelName) {
+				return e.soc, nil
+			}
+		}
+		return device.Config_SOC_UNSPECIFIED, errors.Errorf("Unknown model name: %s", modelName)
+	case IntelFam6IcelakeL:
+		return device.Config_SOC_ICE_LAKE_Y, nil
+	case IntelFam6AtomGoldmontPlus:
+		return device.Config_SOC_GEMINI_LAKE, nil
+	case IntelFam6Cannonlake:
+		return device.Config_SOC_CANNON_LAKE_Y, nil
+	case IntelFam6AtomGoldmont:
+		return device.Config_SOC_APOLLO_LAKE, nil
+	case IntelFam6SkylakeL:
+		// SKYLAKE_U and SKYLAKE_Y share the same model. Parse model name.
+		modelName, ok := parsed.find("Model name:")
+		if !ok {
+			return device.Config_SOC_UNSPECIFIED, errors.New("Intel model name not found")
+		}
+		for _, e := range []struct {
+			soc device.Config_SOC
+			ptn string
+		}{
+			{device.Config_SOC_SKYLAKE_U, `i[357]-\d+U`},
+			{device.Config_SOC_SKYLAKE_Y, `m[357]-6Y\d+`},
+		} {
+			r := regexp.MustCompile(e.ptn)
+			if r.MatchString(modelName) {
+				return e.soc, nil
+			}
+		}
+		return device.Config_SOC_UNSPECIFIED, errors.Errorf("Unknown model name: %s", modelName)
+	case IntelFam6AtomAirmont:
+		return device.Config_SOC_BRASWELL, nil
+	case IntelFam6Broadwell:
+		return device.Config_SOC_BROADWELL, nil
+	case IntelFam6Haswell, IntelFam6HaswellL:
+		return device.Config_SOC_HASWELL, nil
+	case IntelFam6Ivybridge:
+		return device.Config_SOC_IVY_BRIDGE, nil
+	case IntelFam6AtomSilvermont:
+		return device.Config_SOC_BAY_TRAIL, nil
+	case IntelFam6Sandybridge:
+		return device.Config_SOC_SANDY_BRIDGE, nil
+	case IntelFam6AtomBonnell:
+		return device.Config_SOC_PINE_TRAIL, nil
+	default:
+		return device.Config_SOC_UNSPECIFIED, errors.Errorf("unknown Intel model: %d", model)
+	}
+}
+
+func findAMDSOC(parsed *lscpuResult) (device.Config_SOC, error) {
+	model, ok := parsed.find("Model:")
+	if !ok {
+		return device.Config_SOC_UNSPECIFIED, errors.New("AMD model not found")
+	}
+	if model == "112" {
+		return device.Config_SOC_STONEY_RIDGE, nil
+	}
+	return device.Config_SOC_UNSPECIFIED, errors.Errorf("unknown AMD model: %s", model)
 }

@@ -8,7 +8,7 @@ package linuxssh
 import (
 	"context"
 
-	"chromiumos/tast/host"
+	"chromiumos/tast/internal/host"
 	"chromiumos/tast/ssh"
 )
 

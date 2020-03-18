@@ -16,6 +16,24 @@
       "revId": "b00e91a00c2a8fb802f68dfd14beec52c32fb679",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d945e648_140610f2",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 293,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-03-18T06:36:41Z",
+      "side": 1,
+      "message": "Thank you for catching. Do you have recommendation to distinguishing those two SOCs?",
+      "parentUuid": "124e3d88_f7273866",
+      "revId": "b00e91a00c2a8fb802f68dfd14beec52c32fb679",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -19,8 +19,8 @@ The following software features are defined:
 *   `amd64` - The [amd64] processor architecture.
 *   `android` - The same as `android_p`. Do not use in new code.
 *   `android_vm` - The ability to [run Android apps] in VM instead of container.
-    Any version of Android can be used.
-*   `android_vm_p` - `android_vm` feature that runs in P VM.
+    Any version of Android can be used. Prefer this over `android_vm_r` if possible.
+*   `android_vm_p` - `android_vm` feature that runs in P VM. Don't use in new code.
 *   `android_vm_r` - `android_vm` feature that runs in R VM.
 *   `android_all` - The ability to [run Android apps] in container. Any version
     of Android can be used.

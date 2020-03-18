@@ -22,9 +22,9 @@ import (
 
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/cmd/tast/internal/logging"
-	"chromiumos/tast/host/test"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/control"
+	"chromiumos/tast/internal/host/test"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/shutil"
 	"chromiumos/tast/testing"

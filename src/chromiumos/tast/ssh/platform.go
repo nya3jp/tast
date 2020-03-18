@@ -4,7 +4,7 @@
 
 package ssh
 
-import "chromiumos/tast/host"
+import "chromiumos/tast/internal/host"
 
 // Platform defines platform-specific behaviours for SSH connections.
 type Platform = host.Platform

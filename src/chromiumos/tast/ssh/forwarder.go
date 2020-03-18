@@ -5,7 +5,7 @@
 package ssh
 
 import (
-	"chromiumos/tast/host"
+	"chromiumos/tast/internal/host"
 )
 
 // Forwarder creates a local listener that forwards TCP connections to a remote host

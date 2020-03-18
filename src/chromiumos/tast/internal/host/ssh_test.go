@@ -17,7 +17,7 @@ import (
 	"testing"
 	"time"
 
-	"chromiumos/tast/host/test"
+	"chromiumos/tast/internal/host/test"
 	"chromiumos/tast/testutil"
 )
 

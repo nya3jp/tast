@@ -18,7 +18,7 @@ import (
 
 	"golang.org/x/crypto/ssh"
 
-	"chromiumos/tast/host/test"
+	"chromiumos/tast/internal/host/test"
 	"chromiumos/tast/testutil"
 )
 

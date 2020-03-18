@@ -19,7 +19,7 @@ func TestOutgoingMetadata(t *gotesting.T) {
 		Logger: func(msg string) {},
 		TestInfo: &testing.TestContextTestInfo{
 			OutDir:       "/mock/outdir",
-			SoftwareDeps: []string{"chrome", "android"},
+			SoftwareDeps: []string{"chrome", "android_p"},
 			ServiceDeps:  []string{"tast.core.Ping"},
 		},
 	}
@@ -47,7 +47,7 @@ func TestOutgoingMetadataNoContext(t *gotesting.T) {
 
 func TestIncomingTestContext(t *gotesting.T) {
 	md := metadata.MD{
-		metadataSoftwareDeps: []string{"chrome", "android"},
+		metadataSoftwareDeps: []string{"chrome", "android_p"},
 	}
 	var lastMsg string
 	logger := func(msg string) { lastMsg = msg }

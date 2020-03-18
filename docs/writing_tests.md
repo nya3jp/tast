@@ -1339,7 +1339,7 @@ an imaginary remote test `arc.RemoteBoot` would be declared as:
 func init() {
     testing.AddTest(&testing.Test{
         Func:         RemoteTest,
-        SoftwareDeps: []string{"chrome", "android"},
+        SoftwareDeps: []string{"chrome", "android_p"},
         ServiceDeps:  []string{"tast.cros.arc.BootService"},
     })
 }

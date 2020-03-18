@@ -13,12 +13,12 @@ import (
 	"strings"
 	"time"
 
-	"chromiumos/tast/host"
+	"chromiumos/tast/ssh"
 	"chromiumos/tast/testing"
 )
 
 // readBootID reads the current boot_id at hst.
-func readBootID(ctx context.Context, hst *host.SSH) (string, error) {
+func readBootID(ctx context.Context, hst *ssh.Conn) (string, error) {
 	out, err := hst.Command("cat", "/proc/sys/kernel/random/boot_id").Output(ctx)
 	if err != nil {
 		return "", err

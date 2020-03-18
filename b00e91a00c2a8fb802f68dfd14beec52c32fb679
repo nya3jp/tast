@@ -60,6 +60,23 @@
     },
     {
       "key": {
+        "uuid": "016422a3_b3fc7b50",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 299,
+      "author": {
+        "id": 1000221
+      },
+      "writtenOn": "2020-03-18T23:07:56Z",
+      "side": 1,
+      "message": "Can we keep this in sync with INTEL_UARCH_TABLE\n\nhttps://cs.corp.google.com/chromeos_public/src/third_party/autotest/files/client/bin/utils.py?q\u003dINTEL_UARCH_TABLE+file:%5Esrc/third_party/autotest/files/client/+package:%5Echromeos_public$\u0026dr",
+      "revId": "b00e91a00c2a8fb802f68dfd14beec52c32fb679",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c17a6f12_f7265f7f",
         "filename": "src/chromiumos/tast/internal/runner/features.go",
         "patchSetId": 1
@@ -76,6 +93,29 @@
         "startChar": 8,
         "endLine": 310,
         "endChar": 13
+      },
+      "revId": "b00e91a00c2a8fb802f68dfd14beec52c32fb679",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5e17eb31_98cde0d2",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 322,
+      "author": {
+        "id": 1000221
+      },
+      "writtenOn": "2020-03-18T23:07:56Z",
+      "side": 1,
+      "message": "I don\u0027t see how this code is maintainable. We need tables from upstream/partners that can be easily merged.",
+      "range": {
+        "startLine": 322,
+        "startChar": 0,
+        "endLine": 322,
+        "endChar": 72
       },
       "revId": "b00e91a00c2a8fb802f68dfd14beec52c32fb679",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",

@@ -14,8 +14,8 @@ import (
 	"time"
 
 	"chromiumos/tast/errors"
-	"chromiumos/tast/host"
 	"chromiumos/tast/internal/testingutil"
+	"chromiumos/tast/ssh"
 	"chromiumos/tast/ssh/linuxssh"
 )
 
@@ -29,8 +29,8 @@ const (
 
 // DUT represents a "Device Under Test" against which remote tests are run.
 type DUT struct {
-	sopt host.SSHOptions
-	hst  *host.SSH
+	sopt ssh.Options
+	hst  *ssh.Conn
 }
 
 // New returns a new DUT usable for communication with target
@@ -39,7 +39,7 @@ type DUT struct {
 // The DUT does not start out in a connected state; Connect must be called.
 func New(target, keyFile, keyDir string) (*DUT, error) {
 	d := DUT{}
-	if err := host.ParseSSHTarget(target, &d.sopt); err != nil {
+	if err := ssh.ParseTarget(target, &d.sopt); err != nil {
 		return nil, err
 	}
 	d.sopt.ConnectTimeout = connectTimeout
@@ -71,7 +71,7 @@ func (d *DUT) Connect(ctx context.Context) error {
 	d.Disconnect(ctx)
 
 	var err error
-	d.hst, err = host.NewSSH(ctx, &d.sopt)
+	d.hst, err = ssh.New(ctx, &d.sopt)
 	return err
 }
 
@@ -88,7 +88,7 @@ func (d *DUT) Disconnect(ctx context.Context) error {
 // Command returns the Cmd struct to execute the named program with the given arguments.
 //
 // See https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/host#Command
-func (d *DUT) Command(name string, args ...string) *host.Cmd {
+func (d *DUT) Command(name string, args ...string) *ssh.Cmd {
 	// It is fine even if d.hst is nil; subsequent method calls will just fail.
 	return d.hst.Command(name, args...)
 }
@@ -218,8 +218,8 @@ func companionDeviceHostname(dutHost, suffix string) (string, error) {
 
 // connectCompanionDevice connects to a companion device in test environment. e.g. WiFi AP.
 // It reuses SSH key from DUT for establishing SSH connection to a companion device.
-func (d *DUT) connectCompanionDevice(ctx context.Context, suffix string) (*host.SSH, error) {
-	var sopt host.SSHOptions
+func (d *DUT) connectCompanionDevice(ctx context.Context, suffix string) (*ssh.Conn, error) {
+	var sopt ssh.Options
 	hostname, err := companionDeviceHostname(d.sopt.Hostname, suffix)
 	if err != nil {
 		return nil, err
@@ -230,15 +230,15 @@ func (d *DUT) connectCompanionDevice(ctx context.Context, suffix string) (*host.
 	sopt.KeyFile = d.sopt.KeyFile
 	sopt.KeyDir = d.sopt.KeyDir
 
-	return host.NewSSH(ctx, &sopt)
+	return ssh.New(ctx, &sopt)
 }
 
 // DefaultWifiRouterHost connects to the default WiFi router and returns SSH object.
-func (d *DUT) DefaultWifiRouterHost(ctx context.Context) (*host.SSH, error) {
+func (d *DUT) DefaultWifiRouterHost(ctx context.Context) (*ssh.Conn, error) {
 	return d.connectCompanionDevice(ctx, "-router")
 }
 
 // DefaultWifiPcapHost connects to the default WiFi pcap router and returns SSH object.
-func (d *DUT) DefaultWifiPcapHost(ctx context.Context) (*host.SSH, error) {
+func (d *DUT) DefaultWifiPcapHost(ctx context.Context) (*ssh.Conn, error) {
 	return d.connectCompanionDevice(ctx, "-pcap")
 }

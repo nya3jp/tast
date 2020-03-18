@@ -38,7 +38,6 @@ func main() {
 		},
 	}
 	const (
-		androidContainerStable   = `("android-container-nyc" || "android-container-pi")`
 		androidContainerUnstable = `("android-container-qt" || "android-container-master-arc-dev")`
 		// Boards that cannot run Crostini tests reliably.
 		crostiniUnstableBoards = `auron_paine || auron_yuna || banon || bob || buddy || celes || coral || cyan || edgar || elm || fizz || gandof || grunt || hana || kefka || kevin || kevin64 || kukui || kefka || lulu || nocturne || octopus || reks || relm || samus || sarien || scarlet || setzer || terra || ultima || wizpig`
@@ -64,8 +63,6 @@ func main() {
 			// master-arc-dev and qt are under development and not stable to run Tast tests.
 			// ARC USE flags are defined here:
 			// http://cs/chromeos_public/src/third_party/chromiumos-overlay/eclass/arc-build-constants.eclass
-			// TODO(b/149854594): Merge "android" into "android_p" and remove "android".
-			"android":      `arc && ` + androidContainerStable + ` && !` + androidContainerUnstable,
 			"android_vm":   `arc && arcvm`,
 			"android_vm_p": `arc && arcvm && "android-vm-pi"`,
 			// TODO(b/146584985): update to use R flags

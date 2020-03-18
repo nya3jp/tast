@@ -177,7 +177,7 @@ func TestRPCRejectUndeclaredServices(t *gotesting.T) {
 }
 
 func TestRPCForwardTestContext(t *gotesting.T) {
-	expectedDeps := []string{"chrome", "android"}
+	expectedDeps := []string{"chrome", "android_p"}
 
 	ctx := testing.WithTestContext(context.Background(), &testing.TestContext{TestInfo: &testing.TestContextTestInfo{}})
 	called := false

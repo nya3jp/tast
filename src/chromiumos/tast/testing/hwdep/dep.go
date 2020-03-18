@@ -134,7 +134,7 @@ func Fingerprint() Condition {
 			return errors.New("device.Config is not given")
 		}
 		for _, f := range d.DC.HardwareFeatures {
-			if f == device.Config_HARDWARE_FEATURE_TOUCHSCREEN {
+			if f == device.Config_HARDWARE_FEATURE_FINGERPRINT {
 				return nil
 			}
 		}

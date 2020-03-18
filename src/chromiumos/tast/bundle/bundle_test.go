@@ -19,9 +19,9 @@ import (
 	"github.com/google/go-cmp/cmp"
 
 	"chromiumos/tast/dut"
-	"chromiumos/tast/host/test"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/control"
+	"chromiumos/tast/internal/host/test"
 	"chromiumos/tast/testing"
 	"chromiumos/tast/testutil"
 )

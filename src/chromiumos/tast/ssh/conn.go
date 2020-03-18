@@ -7,7 +7,7 @@ package ssh
 import (
 	"context"
 
-	"chromiumos/tast/host"
+	"chromiumos/tast/internal/host"
 )
 
 // Conn represents an SSH connection to another computer.

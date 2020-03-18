@@ -5,7 +5,7 @@
 package ssh
 
 import (
-	"chromiumos/tast/host"
+	"chromiumos/tast/internal/host"
 )
 
 // Cmd represents an external command being prepared or run on a remote host.

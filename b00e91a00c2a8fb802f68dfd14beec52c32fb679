@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "a254377c_c1e31d61",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 282,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2020-03-18T14:35:32Z",
+      "side": 1,
+      "message": "Parsing of the \"Model\" is common to all three architectures (ARM, AMD and Intel),\nperhaps we should factor it out to l.265 ?",
+      "range": {
+        "startLine": 279,
+        "startChar": 1,
+        "endLine": 282,
+        "endChar": 2
+      },
+      "revId": "b00e91a00c2a8fb802f68dfd14beec52c32fb679",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "124e3d88_f7273866",
         "filename": "src/chromiumos/tast/internal/runner/features.go",
         "patchSetId": 1
@@ -31,6 +54,52 @@
       "side": 1,
       "message": "Thank you for catching. Do you have recommendation to distinguishing those two SOCs?",
       "parentUuid": "124e3d88_f7273866",
+      "revId": "b00e91a00c2a8fb802f68dfd14beec52c32fb679",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c17a6f12_f7265f7f",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 310,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2020-03-18T14:35:32Z",
+      "side": 1,
+      "message": "It would be great to have a comment here as to where these identifiers come from,\nso future developers will know how to extend it for e.g. the coming JSL and TGL;\nDo they come from kernel/v5.4/arch/x86/include/asm/intel-family.h [1] ?\n\n\n[1] https://source.chromium.org/chromiumos/chromiumos/codesearch/+/master:src/third_party/kernel/v5.4/arch/x86/include/asm/intel-family.h;l\u003d72?q\u003darch%2Fx86%2Finclude%2Fasm%2Fintel-family.h",
+      "range": {
+        "startLine": 310,
+        "startChar": 8,
+        "endLine": 310,
+        "endChar": 13
+      },
+      "revId": "b00e91a00c2a8fb802f68dfd14beec52c32fb679",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "92858967_654dc792",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 386,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2020-03-18T14:35:32Z",
+      "side": 1,
+      "message": "AMD? SoC?",
+      "range": {
+        "startLine": 386,
+        "startChar": 52,
+        "endLine": 386,
+        "endChar": 57
+      },
       "revId": "b00e91a00c2a8fb802f68dfd14beec52c32fb679",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

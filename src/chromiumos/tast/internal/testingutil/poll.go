@@ -46,11 +46,11 @@ func Poll(ctx context.Context, f func(context.Context) error, opts *PollOptions)
 		return ctx.Err()
 	}
 
-	var timeout time.Duration
+	timeout := ctxutil.MaxTimeout
 	if opts != nil {
 		timeout = opts.Timeout
 	}
-	ctx, cancel := ctxutil.OptionalTimeout(ctx, timeout)
+	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
 	interval := defaultPollInterval

@@ -501,9 +501,8 @@ For example, see [video tests' pre subpackage].
 
 It is sometimes the case that multiple scenarios with very slight differences
 should be tested. In this case you can write a [table-driven test], which is a
-common pattern in Go unit tests. Remember to include the subtest name in the
-error messages to allow distinguishing subtest errors (until [crbug.com/1007138]
-is fixed to add testing.State.Run).
+common pattern in Go unit tests. [testing.State.Run] can be used to start a
+subtest.
 
 ```
 for _, tc := range []struct {
@@ -527,14 +526,16 @@ for _, tc := range []struct {
         duration: 5 * time.Second,
     },
 } {
-    if err := testPlayback(ctx, tc.filename, tc.duration); err != nil {
-        s.Errorf("Playback test failed for %s: %v", tc.format, err)
-    }
+    s.Run(ctx, tc.format, func(ctx context.Context, s *testing.State) {
+        if err := testPlayback(ctx, tc.filename, tc.duration); err != nil {
+            s.Error("Playback test failed: ", err)
+        }
+    })
 }
 ```
 
 [table-driven test]: https://github.com/golang/go/wiki/TableDrivenTests
-[crbug.com/1007138]: https://crbug.com/1007138
+[testing.State.Run]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#State.Run
 
 ## Errors and logging
 

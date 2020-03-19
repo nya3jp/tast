@@ -68,7 +68,7 @@ for failing tests. -failfortests can be supplied to override this behavior.
 
 func (r *runCmd) SetFlags(f *flag.FlagSet) {
 	f.BoolVar(&r.failForTests, "failfortests", false, "exit with 1 if any tests fail")
-	f.Var(command.NewDurationFlag(time.Second, &r.timeout, 0), "timeout", "run timeout in seconds, or 0 for none")
+	f.Var(command.NewDurationFlag(time.Second, &r.timeout, ctxutil.MaxTimeout), "timeout", "run timeout in seconds")
 	r.cfg.SetFlags(f)
 }
 
@@ -78,7 +78,7 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 		panic("logger not attached to context")
 	}
 
-	ctx, cancel := ctxutil.OptionalTimeout(ctx, r.timeout) // zero or negative ignored
+	ctx, cancel := context.WithTimeout(ctx, r.timeout)
 	defer cancel()
 
 	defer r.cfg.Close(ctx)

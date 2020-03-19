@@ -3,25 +3,56 @@
 
 package device
 
-import proto "github.com/golang/protobuf/proto"
-import fmt "fmt"
-import math "math"
+import (
+	fmt "fmt"
+	proto "github.com/golang/protobuf/proto"
+	math "math"
+)
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
 
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the proto package it is being compiled against.
+// A compilation error at this line likely means your copy of the
+// proto package needs to be updated.
+const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
+
 // Globally unique identifier.
 type PlatformId struct {
 	// Required. Source: 'mosys platform name'.
-	Value string `protobuf:"bytes,1,opt,name=value" json:"value,omitempty"`
+	Value                string   `protobuf:"bytes,1,opt,name=value,proto3" json:"value,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *PlatformId) Reset()                    { *m = PlatformId{} }
-func (m *PlatformId) String() string            { return proto.CompactTextString(m) }
-func (*PlatformId) ProtoMessage()               {}
-func (*PlatformId) Descriptor() ([]byte, []int) { return fileDescriptor3, []int{0} }
+func (m *PlatformId) Reset()         { *m = PlatformId{} }
+func (m *PlatformId) String() string { return proto.CompactTextString(m) }
+func (*PlatformId) ProtoMessage()    {}
+func (*PlatformId) Descriptor() ([]byte, []int) {
+	return fileDescriptor_b1928d25c5f36b19, []int{0}
+}
+
+func (m *PlatformId) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_PlatformId.Unmarshal(m, b)
+}
+func (m *PlatformId) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_PlatformId.Marshal(b, m, deterministic)
+}
+func (m *PlatformId) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PlatformId.Merge(m, src)
+}
+func (m *PlatformId) XXX_Size() int {
+	return xxx_messageInfo_PlatformId.Size(m)
+}
+func (m *PlatformId) XXX_DiscardUnknown() {
+	xxx_messageInfo_PlatformId.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_PlatformId proto.InternalMessageInfo
 
 func (m *PlatformId) GetValue() string {
 	if m != nil {
@@ -34,9 +65,9 @@ func init() {
 	proto.RegisterType((*PlatformId)(nil), "device.PlatformId")
 }
 
-func init() { proto.RegisterFile("device/platform_id.proto", fileDescriptor3) }
+func init() { proto.RegisterFile("device/platform_id.proto", fileDescriptor_b1928d25c5f36b19) }
 
-var fileDescriptor3 = []byte{
+var fileDescriptor_b1928d25c5f36b19 = []byte{
 	// 124 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x92, 0x48, 0x49, 0x2d, 0xcb,
 	0x4c, 0x4e, 0xd5, 0x2f, 0xc8, 0x49, 0x2c, 0x49, 0xcb, 0x2f, 0xca, 0x8d, 0xcf, 0x4c, 0xd1, 0x2b,

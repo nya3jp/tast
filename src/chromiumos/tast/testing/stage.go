@@ -7,8 +7,6 @@ package testing
 import (
 	"context"
 	"time"
-
-	"chromiumos/tast/ctxutil"
 )
 
 // stage represents part of the execution of a single test (i.e. a Test.Run call).
@@ -35,7 +33,7 @@ func runStages(ctx context.Context, s *State, stages []stage) bool {
 		defer close(stageCh)
 		defer s.root.close()
 		for _, st := range stages {
-			rctx, rcancel := ctxutil.OptionalTimeout(ctx, st.ctxTimeout)
+			rctx, rcancel := context.WithTimeout(ctx, st.ctxTimeout)
 			defer rcancel()
 			runAndRecover(func() { st.f(rctx, s) }, s)
 			stageCh <- struct{}{}

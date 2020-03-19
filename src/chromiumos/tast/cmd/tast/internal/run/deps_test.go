@@ -33,6 +33,15 @@ func writeGetDUTInfoResult(w io.Writer, avail, unavail []string, dc *device.Conf
 	return json.NewEncoder(w).Encode(&res)
 }
 
+func runTestsArgsEqual(x, y runner.RunTestsArgs) bool {
+	if !proto.Equal(x.BundleArgs.DeviceConfig, y.BundleArgs.DeviceConfig) {
+		return false
+	}
+	x.BundleArgs.DeviceConfig = nil
+	y.BundleArgs.DeviceConfig = nil
+	return reflect.DeepEqual(x, y)
+}
+
 // checkRunnerTestDepsArgs calls setRunnerTestDepsArgs using cfg and verifies
 // that it sets runner args as specified per checkDeps, avail, and unavail.
 func checkRunnerTestDepsArgs(t *testing.T, cfg *Config, checkDeps bool, avail, unavail []string, dc *device.Config) {
@@ -51,7 +60,7 @@ func checkRunnerTestDepsArgs(t *testing.T, cfg *Config, checkDeps bool, avail, u
 			DeviceConfig:                dc,
 		},
 	}
-	if !reflect.DeepEqual(*args.RunTests, exp) {
+	if !runTestsArgsEqual(*args.RunTests, exp) {
 		t.Errorf("setRunnerTestDepsArgs(%+v) set %+v; want %+v", cfg, *args.RunTests, exp)
 	}
 }

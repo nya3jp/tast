@@ -7,11 +7,24 @@ package ctxutil
 
 import (
 	"context"
+	"math"
 	"time"
 )
 
+// MaxTimeout is the maximum value of time.Duration, approximately 290 years.
+//
+// This value might be useful on calling some timeout-related functions.
+// For example, context.WithTimeout(ctx, ctxutil.MaxTimeout) returns a new
+// context with effectively the same deadline as the original context.
+// (Precisely, if the original context has no deadline or a deadline later than
+// MaxDuration, the new deadline is different, but it is so future that we do
+// not need to distinguish them.)
+const MaxTimeout time.Duration = math.MaxInt64
+
 // OptionalTimeout returns a context and cancel function derived from ctx with the specified timeout.
 // If timeout is zero or negative (indicating an unset timeout), no new timeout will be applied.
+//
+// This function is deprecated. Use context.WithTimeout with MaxTimeout in place of non-positive timeouts.
 func OptionalTimeout(ctx context.Context, timeout time.Duration) (context.Context, context.CancelFunc) {
 	if timeout <= 0 {
 		return context.WithCancel(ctx)

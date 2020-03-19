@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8dba5e80_e726b49d",
+        "filename": "src/chromiumos/tast/ssh/conn.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-03-19T02:31:07Z",
+      "side": 1,
+      "message": "Optional: I wonder if it\u0027s good to name this as ConnOptions to avoid possible conflicts with other \"options\" in the future.",
+      "range": {
+        "startLine": 17,
+        "startChar": 5,
+        "endLine": 17,
+        "endChar": 12
+      },
+      "revId": "f3d2d4162b96720f12ceb3b5350f55b3c284749f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -22,6 +22,30 @@
       "revId": "f3d2d4162b96720f12ceb3b5350f55b3c284749f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "93549b51_f24f3350",
+        "filename": "src/chromiumos/tast/ssh/conn.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-03-19T08:22:16Z",
+      "side": 1,
+      "message": "I think ssh.Options reads well as parameters for ssh.New, let me know if you have strong objection.",
+      "parentUuid": "8dba5e80_e726b49d",
+      "range": {
+        "startLine": 17,
+        "startChar": 5,
+        "endLine": 17,
+        "endChar": 12
+      },
+      "revId": "f3d2d4162b96720f12ceb3b5350f55b3c284749f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -21,17 +21,6 @@ import (
 // not need to distinguish them.)
 const MaxTimeout time.Duration = math.MaxInt64
 
-// OptionalTimeout returns a context and cancel function derived from ctx with the specified timeout.
-// If timeout is zero or negative (indicating an unset timeout), no new timeout will be applied.
-//
-// This function is deprecated. Use context.WithTimeout with MaxTimeout in place of non-positive timeouts.
-func OptionalTimeout(ctx context.Context, timeout time.Duration) (context.Context, context.CancelFunc) {
-	if timeout <= 0 {
-		return context.WithCancel(ctx)
-	}
-	return context.WithTimeout(ctx, timeout)
-}
-
 // Shorten returns a context and cancel function derived from ctx with its deadline shortened by d.
 // If ctx has no deadline, the returned context won't have one either. Note that if ctx's deadline is
 // less than d in the future, the returned context's deadline will have already expired.

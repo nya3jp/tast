@@ -24,29 +24,6 @@ func runAndGetDeadline(ctx context.Context, f func(context.Context, time.Duratio
 	return time.Time{}
 }
 
-func TestOptionalTimeoutPositive(t *testing.T) {
-	const timeout = time.Minute
-	start := time.Now()
-	lower := start.Add(timeout)
-	upper := start.Add(timeout + time.Minute) // intentionally-high upper bound
-	if dl := runAndGetDeadline(context.Background(), OptionalTimeout, timeout); dl.Before(lower) || dl.After(upper) {
-		t.Errorf("OptionalTimeout returned deadline %v for %v timeout; want in range [%v, %v]", dl, timeout, lower, upper)
-	}
-}
-
-func TestOptionalTimeoutZero(t *testing.T) {
-	if dl := runAndGetDeadline(context.Background(), OptionalTimeout, 0); !dl.IsZero() {
-		t.Errorf("OptionalTimeout returned deadline %v for 0 timeout; want 0", dl)
-	}
-}
-
-func TestOptionalTimeoutNegative(t *testing.T) {
-	const timeout = -time.Second
-	if dl := runAndGetDeadline(context.Background(), OptionalTimeout, timeout); !dl.IsZero() {
-		t.Errorf("OptionalTimeout returned deadline %v for %v timeout; want 0", dl, timeout)
-	}
-}
-
 func TestShortenExistingDeadline(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()

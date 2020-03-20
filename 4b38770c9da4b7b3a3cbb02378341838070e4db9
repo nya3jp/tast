@@ -46,6 +46,30 @@
       "revId": "4b38770c9da4b7b3a3cbb02378341838070e4db9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e485f684_6362d1f5",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1003044
+      },
+      "writtenOn": "2020-03-20T02:33:43Z",
+      "side": 1,
+      "message": "Yep the TODO is valid, I meant that the new comment made it sound incorrect. Thanks for updating",
+      "parentUuid": "e99b4cc8_001ab2d0",
+      "range": {
+        "startLine": 26,
+        "startChar": 0,
+        "endLine": 27,
+        "endChar": 53
+      },
+      "revId": "4b38770c9da4b7b3a3cbb02378341838070e4db9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

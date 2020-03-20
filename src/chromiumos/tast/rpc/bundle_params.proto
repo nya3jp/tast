@@ -1,0 +1,17 @@
+// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package tast.core;
+option go_package = "chromiumos/tast/rpc";
+
+message BundleParamsReq {
+  map<string, string> vars = 1;
+}
+
+message BundleParamsRsp {
+  bool   success = 1;
+  string errorMessage = 2;
+}

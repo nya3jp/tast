@@ -82,10 +82,37 @@ func Dial(ctx context.Context, d *dut.DUT, h *testing.RPCHint, bundleName string
 		return nil, errors.Wrap(err, "failed to connect to RPC service on DUT")
 	}
 
-	return newClient(ctx, stdout, stdin, func(ctx context.Context) error {
+	cmdCleanup := func(ctx context.Context) error {
 		cmd.Abort()
 		return cmd.Wait(ctx)
-	})
+	}
+
+	if err := setBundleParams(stdout, stdin, h); err != nil {
+		cmdCleanup(ctx)
+		return nil, errors.Wrap(err, "failed to set bundle parameters")
+	}
+
+	return newClient(ctx, stdout, stdin, cmdCleanup)
+}
+
+// setBundleParams sends raw protobuf messages to bundle process, and waits
+// for response messages.
+func setBundleParams(r io.Reader, w io.Writer, h *testing.RPCHint) error {
+	vars := testing.ExtractTestVars(h)
+	params := &BundleParamsReq{Vars: vars}
+	if err := SendRawMessage(w, params); err != nil {
+		return err
+	}
+	rsp := &BundleParamsRsp{}
+	// ReceiveRawMessage will time out if no message is received.
+	if err := ReceiveRawMessage(r, rsp); err != nil {
+		return err
+	}
+	// Server returns error.
+	if !rsp.Success {
+		return errors.Errorf("bundle returned error - %s", rsp.GetErrorMessage())
+	}
+	return nil
 }
 
 // newClient establishes a gRPC connection to a test bundle executable using r and w.
@@ -124,6 +151,7 @@ func newClient(ctx context.Context, r io.Reader, w io.Writer, clean func(context
 var alwaysAllowedServices = []string{
 	"tast.core.Logging",
 	"tast.cros.baserpc.FaillogService",
+	"tast.core.Management",
 }
 
 // clientOpts returns gRPC client-side interceptors to manipulate context.

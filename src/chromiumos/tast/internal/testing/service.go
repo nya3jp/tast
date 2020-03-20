@@ -6,6 +6,7 @@ package testing
 
 import (
 	"context"
+	"fmt"
 
 	"google.golang.org/grpc"
 
@@ -18,6 +19,27 @@ type Service struct {
 	// to grpc.Server. This should be a simple function that constructs a gRPC
 	// service implementation and calls pb.Register*Server.
 	Register func(srv *grpc.Server, s *ServiceState)
+	// Vars contains the names of runtime variables used by the service.
+	Vars []string
+}
+
+// ServiceParams holds shared service params data for all gRPC services.
+// The management data is managed by RPC Management Service, and used by all
+// other user defined services.
+type ServiceParams struct {
+	// testVars has the run-time test variables passed in from the client.
+	testVars map[string]string
+}
+
+// SetTestVars sets new testVars variable.
+func (m *ServiceParams) SetTestVars(vars map[string]string) {
+	m.testVars = vars
+}
+
+// Var returns the value for the named variable.
+func (m *ServiceParams) Var(name string) (val string, ok bool) {
+	val, ok = m.testVars[name]
+	return val, ok
 }
 
 // ServiceState holds state relevant to a gRPC service.
@@ -25,12 +47,18 @@ type ServiceState struct {
 	// ctx is a service-scoped context. It can be used to emit logs with
 	// testing.ContextLog. It is canceled on gRPC server shutdown.
 	ctx context.Context
+	// svc is a pointer to the registered service instance.
+	svc *Service
+	// params points to the shared service params data.
+	params *ServiceParams
 }
 
 // NewServiceState creates a new ServiceState.
-func NewServiceState(ctx context.Context) *ServiceState {
+func NewServiceState(ctx context.Context, svc *Service, params *ServiceParams) *ServiceState {
 	return &ServiceState{
-		ctx: ctx,
+		ctx:    ctx,
+		svc:    svc,
+		params: params,
 	}
 }
 
@@ -55,4 +83,21 @@ func (s *ServiceState) Logf(format string, args ...interface{}) {
 // logs to the currently connected remote bundle.
 func (s *ServiceState) ServiceContext() context.Context {
 	return s.ctx
+}
+
+// Var returns the value for the named variable.
+// The variable must be declared in the service definition with Vars.
+// If a value was not supplied at runtime via the -var flag, false will be returned.
+func (s *ServiceState) Var(name string) (val string, ok bool) {
+	seen := false
+	for _, n := range s.svc.Vars {
+		if n == name {
+			seen = true
+			break
+		}
+	}
+	if !seen {
+		panic(fmt.Sprintf("Variable %q was not registered in service", name))
+	}
+	return s.params.Var(name)
 }

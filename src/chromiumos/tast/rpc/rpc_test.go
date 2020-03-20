@@ -91,6 +91,11 @@ func newPingPair(ctx context.Context, t *gotesting.T, onPing func(context.Contex
 		}
 	}()
 
+	// Exchange initial bundle init messages.
+	h := testing.NewRPCHint("", map[string]string{})
+	if err := initBundleServer(cr, cw, h); err != nil {
+		t.Fatal("failed set initial bundle params: ", err)
+	}
 	cl, err := newClient(ctx, cr, cw, func(context.Context) error { return nil })
 	if err != nil {
 		t.Fatal("newClient failed: ", err)

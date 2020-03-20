@@ -23,6 +23,13 @@ import (
 // RunServer runs a gRPC server providing svcs on r/w channels.
 // It blocks until the client connection is closed or it encounters an error.
 func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service) error {
+	// Prepare and get bundle init message, and extract test vars.
+	iniReq, err := prepareServer(r, w)
+	if err != nil {
+		return err
+	}
+	testVars := iniReq.GetVars()
+
 	ls := newRemoteLoggingServer()
 	srv := grpc.NewServer(serverOpts(ls.Log)...)
 	RegisterLoggingServer(srv, ls)
@@ -36,7 +43,7 @@ func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service) error {
 	ctx = logging.NewContext(ctx, ls.Log)
 
 	for _, svc := range svcs {
-		svc.Register(srv, testing.NewServiceState(ctx))
+		svc.Register(srv, testing.NewServiceState(ctx, testing.NewServiceRoot(svc, testVars)))
 	}
 
 	if err := srv.Serve(newPipeListener(r, w)); err != nil && err != io.EOF {
@@ -104,4 +111,31 @@ func serverOpts(logger logging.SinkFunc) []grpc.ServerOption {
 			return handler(srv, stream)
 		}),
 	}
+}
+
+// prepareServer obtains RPC init data from the RPC client.
+func prepareServer(r io.Reader, w io.Writer) (*InitBundleServerRequest, error) {
+	paramsReq := &InitBundleServerRequest{}
+	if err := receiveRawMessage(r, paramsReq); err != nil {
+		// send error response.
+		sendRPCParamsRsp(w, err)
+		return nil, err
+	}
+
+	// Send success response with err set to nil.
+	if err := sendRPCParamsRsp(w, nil); err != nil {
+		return nil, err
+	}
+	return paramsReq, nil
+}
+
+func sendRPCParamsRsp(w io.Writer, err error) error {
+	rsp := &InitBundleServerResponse{
+		Success: err == nil,
+	}
+	if err != nil {
+		rsp.ErrorMessage = err.Error()
+	}
+
+	return sendRawMessage(w, rsp)
 }

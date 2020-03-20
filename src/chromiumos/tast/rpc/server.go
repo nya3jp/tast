@@ -22,10 +22,14 @@ import (
 
 // RunServer runs a gRPC server providing svcs on r/w channels.
 // It blocks until the client connection is closed or it encounters an error.
-func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service) error {
+func RunServer(r io.Reader, w io.Writer, bundleParams *BundleParamsReq, svcs []*testing.Service) error {
 	ls := newRemoteLoggingServer()
 	srv := grpc.NewServer(serverOpts(ls.Log)...)
 	RegisterLoggingServer(srv, ls)
+
+	// Shared service paramas data across all services.
+	params := &testing.ServiceParams{}
+	params.SetTestVars(bundleParams.GetVars())
 
 	// Register the reflection service for easier debugging.
 	reflection.Register(srv)
@@ -36,7 +40,7 @@ func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service) error {
 	ctx = logging.NewContext(ctx, ls.Log)
 
 	for _, svc := range svcs {
-		svc.Register(srv, testing.NewServiceState(ctx))
+		svc.Register(srv, testing.NewServiceState(ctx, svc, params))
 	}
 
 	if err := srv.Serve(newPipeListener(r, w)); err != nil && err != io.EOF {

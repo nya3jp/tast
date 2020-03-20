@@ -92,7 +92,7 @@ func newPingPair(ctx context.Context, t *gotesting.T, onPing func(context.Contex
 		}
 	}()
 
-	cl, err := newClient(ctx, cr, cw, func(context.Context) error { return nil })
+	cl, err := newClient(ctx, cr, cw, testing.NewRPCHint("", nil), func(context.Context) error { return nil })
 	if err != nil {
 		t.Fatal("newClient failed: ", err)
 	}

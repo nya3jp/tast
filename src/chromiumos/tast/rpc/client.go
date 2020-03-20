@@ -19,6 +19,7 @@ import (
 
 	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/timing"
@@ -69,7 +70,7 @@ func (c *Client) Close(ctx context.Context) error {
 //  	return err
 //  }
 func Dial(ctx context.Context, d *dut.DUT, h *testing.RPCHint, bundleName string) (*Client, error) {
-	bundlePath := filepath.Join(h.LocalBundleDir, bundleName)
+	bundlePath := filepath.Join(testing.ExtractLocalBundleDir(h), bundleName)
 	cmd := d.Command(bundlePath, "-rpc")
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
@@ -83,7 +84,7 @@ func Dial(ctx context.Context, d *dut.DUT, h *testing.RPCHint, bundleName string
 		return nil, errors.Wrap(err, "failed to connect to RPC service on DUT")
 	}
 
-	return newClient(ctx, stdout, stdin, func(ctx context.Context) error {
+	return newClient(ctx, stdout, stdin, h, func(ctx context.Context) error {
 		cmd.Abort()
 		return cmd.Wait(ctx)
 	})
@@ -93,12 +94,16 @@ func Dial(ctx context.Context, d *dut.DUT, h *testing.RPCHint, bundleName string
 //
 // When this function succeeds, clean is called in Client.Close. Otherwise it is called
 // before this function returns.
-func newClient(ctx context.Context, r io.Reader, w io.Writer, clean func(context.Context) error) (_ *Client, retErr error) {
+func newClient(ctx context.Context, r io.Reader, w io.Writer, h *testing.RPCHint, clean func(context.Context) error) (_ *Client, retErr error) {
 	defer func() {
 		if retErr != nil {
 			clean(ctx)
 		}
 	}()
+
+	if err := initBundleServer(r, w, h); err != nil {
+		return nil, errors.Wrap(err, "failed to set bundle parameters")
+	}
 
 	conn, err := newPipeClientConn(ctx, r, w, clientOpts()...)
 	if err != nil {
@@ -120,6 +125,24 @@ func newClient(ctx context.Context, r io.Reader, w io.Writer, clean func(context
 		log:   log,
 		clean: clean,
 	}, nil
+}
+
+// initBundleServer initializes the bundle server by sending raw protobuf message
+// to bundle process, and waits for response message.
+func initBundleServer(r io.Reader, w io.Writer, h *testing.RPCHint) error {
+	req := &protocol.InitBundleServerRequest{Vars: testing.ExtractTestVars(h)}
+	if err := sendRawMessage(w, req); err != nil {
+		return err
+	}
+	rsp := &protocol.InitBundleServerResponse{}
+	if err := receiveRawMessage(r, rsp); err != nil {
+		return err
+	}
+	// Server returns error.
+	if !rsp.Success {
+		return errors.Errorf("bundle returned error: %s", rsp.GetErrorMessage())
+	}
+	return nil
 }
 
 var alwaysAllowedServices = []string{

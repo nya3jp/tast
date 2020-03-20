@@ -322,16 +322,14 @@ func TestFixtureStackState(t *gotesting.T) {
 	ctx := context.Background()
 	cfg := &Config{
 		RemoteData: &testing.RemoteData{
-			RPCHint: &testing.RPCHint{
-				LocalBundleDir: localBundleDir,
-			},
+			RPCHint: testing.NewRPCHint(localBundleDir, nil),
 		},
 	}
 	stack := newFixtureStack(cfg, newOutputSink())
 
 	verifyState := func(t *gotesting.T, s *testing.FixtState) {
-		if dir := s.RPCHint().LocalBundleDir; dir != localBundleDir {
-			t.Errorf("RPCHint.LocalBundleDir = %q; want %q", dir, localBundleDir)
+		if dir := testing.ExtractLocalBundleDir(s.RPCHint()); dir != localBundleDir {
+			t.Errorf("localBundleDir of RPCHint = %q; want %q", dir, localBundleDir)
 		}
 	}
 

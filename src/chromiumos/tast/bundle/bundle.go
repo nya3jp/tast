@@ -260,10 +260,8 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 				Target:   args.RunTests.Target,
 				RunFlags: args.RunTests.RunFlags,
 			},
-			RPCHint: &testing.RPCHint{
-				LocalBundleDir: args.RunTests.LocalBundleDir,
-			},
-			DUT: dt,
+			RPCHint: testing.NewRPCHint(args.RunTests.LocalBundleDir, args.RunTests.TestVars),
+			DUT:     dt,
 		}
 	}
 

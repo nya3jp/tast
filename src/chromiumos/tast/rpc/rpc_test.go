@@ -58,26 +58,29 @@ func (p *pingPair) Close(ctx context.Context) error {
 	return firstErr
 }
 
-// newPingPair starts a local client/server pair of the Ping gRPC service.
+// newPingService defines a new Ping service.
 // onPing is called when Ping gRPC method is called on the server.
+func newPingService(onPing func(context.Context, *testing.ServiceState) error) *testing.Service {
+	return &testing.Service{
+		Register: func(srv *grpc.Server, s *testing.ServiceState) {
+			protocol.RegisterPingServer(srv, &pingServer{s, onPing})
+		},
+	}
+}
+
+// newPingPair starts a local client/server pair of the Ping gRPC service.
 //
 // It panics if it fails to start a local client/server pair. Returned pingPair
 // should be closed with pingPair.Close after its use.
-func newPingPair(ctx context.Context, t *gotesting.T, onPing func(context.Context, *testing.ServiceState) error) *pingPair {
+func newPingPair(ctx context.Context, t *gotesting.T, h *testing.RPCHint, pingSvc *testing.Service) *pingPair {
 	t.Helper()
 
 	sr, cw := io.Pipe()
 	cr, sw := io.Pipe()
 
-	svc := &testing.Service{
-		Register: func(srv *grpc.Server, s *testing.ServiceState) {
-			protocol.RegisterPingServer(srv, &pingServer{s, onPing})
-		},
-	}
-
 	stopped := make(chan error, 1)
 	go func() {
-		stopped <- RunServer(sr, sw, []*testing.Service{svc})
+		stopped <- RunServer(sr, sw, []*testing.Service{pingSvc})
 	}()
 	stopServer := func() error {
 		// Close the client pipes. This will let the gRPC server close the singleton
@@ -93,7 +96,7 @@ func newPingPair(ctx context.Context, t *gotesting.T, onPing func(context.Contex
 		}
 	}()
 
-	cl, err := newClient(ctx, cr, cw, func(context.Context) error { return nil })
+	cl, err := newClient(ctx, cr, cw, h, func(context.Context) error { return nil })
 	if err != nil {
 		t.Fatal("newClient failed: ", err)
 	}
@@ -108,11 +111,15 @@ func newPingPair(ctx context.Context, t *gotesting.T, onPing func(context.Contex
 
 func TestRPCSuccess(t *gotesting.T) {
 	ctx := testcontext.WithCurrentEntity(context.Background(), &testcontext.CurrentEntity{})
+	h := testing.NewRPCHint("", nil)
+
 	called := false
-	pp := newPingPair(ctx, t, func(context.Context, *testing.ServiceState) error {
+	svc := newPingService(func(context.Context, *testing.ServiceState) error {
 		called = true
 		return nil
 	})
+
+	pp := newPingPair(ctx, t, h, svc)
 	defer pp.Close(ctx)
 
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
@@ -128,11 +135,15 @@ func TestRPCSuccess(t *gotesting.T) {
 
 func TestRPCFailure(t *gotesting.T) {
 	ctx := testcontext.WithCurrentEntity(context.Background(), &testcontext.CurrentEntity{})
+	h := testing.NewRPCHint("", nil)
+
 	called := false
-	pp := newPingPair(ctx, t, func(context.Context, *testing.ServiceState) error {
+	svc := newPingService(func(context.Context, *testing.ServiceState) error {
 		called = true
 		return errors.New("failure")
 	})
+
+	pp := newPingPair(ctx, t, h, svc)
 	defer pp.Close(ctx)
 
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
@@ -148,11 +159,15 @@ func TestRPCFailure(t *gotesting.T) {
 
 func TestRPCNoCurrentEntity(t *gotesting.T) {
 	ctx := testcontext.WithCurrentEntity(context.Background(), &testcontext.CurrentEntity{})
+	h := testing.NewRPCHint("", nil)
+
 	called := false
-	pp := newPingPair(ctx, t, func(context.Context, *testing.ServiceState) error {
+	svc := newPingService(func(context.Context, *testing.ServiceState) error {
 		called = true
 		return nil
 	})
+
+	pp := newPingPair(ctx, t, h, svc)
 	defer pp.Close(ctx)
 
 	if _, err := pp.Client.Ping(context.Background(), &protocol.PingRequest{}); err == nil {
@@ -165,7 +180,9 @@ func TestRPCNoCurrentEntity(t *gotesting.T) {
 
 func TestRPCRejectUndeclaredServices(t *gotesting.T) {
 	ctx := testcontext.WithCurrentEntity(context.Background(), &testcontext.CurrentEntity{})
-	pp := newPingPair(ctx, t, func(context.Context, *testing.ServiceState) error { return nil })
+	h := testing.NewRPCHint("", nil)
+	svc := newPingService(func(context.Context, *testing.ServiceState) error { return nil })
+	pp := newPingPair(ctx, t, h, svc)
 	defer pp.Close(ctx)
 
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
@@ -180,14 +197,18 @@ func TestRPCForwardCurrentEntity(t *gotesting.T) {
 	expectedDeps := []string{"chrome", "android_p"}
 
 	ctx := testcontext.WithCurrentEntity(context.Background(), &testcontext.CurrentEntity{})
+	h := testing.NewRPCHint("", nil)
+
 	called := false
 	var deps []string
 	var depsOK bool
-	pp := newPingPair(ctx, t, func(ctx context.Context, s *testing.ServiceState) error {
+	svc := newPingService(func(ctx context.Context, s *testing.ServiceState) error {
 		called = true
 		deps, depsOK = testcontext.SoftwareDeps(ctx)
 		return nil
 	})
+
+	pp := newPingPair(ctx, t, h, svc)
 	defer pp.Close(ctx)
 
 	if _, err := pp.Client.Ping(ctx, &protocol.PingRequest{}); err == nil {
@@ -218,13 +239,16 @@ func TestRPCForwardLogs(t *gotesting.T) {
 	ctx := context.Background()
 	ctx = logging.NewContext(ctx, func(msg string) { logs <- msg })
 	ctx = testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{})
+	h := testing.NewRPCHint("", nil)
 
 	called := false
-	pp := newPingPair(ctx, t, func(ctx context.Context, s *testing.ServiceState) error {
+	svc := newPingService(func(ctx context.Context, s *testing.ServiceState) error {
 		called = true
 		logging.ContextLog(ctx, exp)
 		return nil
 	})
+
+	pp := newPingPair(ctx, t, h, svc)
 	defer pp.Close(ctx)
 
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
@@ -249,14 +273,17 @@ func TestRPCForwardTiming(t *gotesting.T) {
 	ctx = testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{})
 	log := timing.NewLog()
 	ctx = timing.NewContext(ctx, log)
+	h := testing.NewRPCHint("", nil)
 
 	called := false
-	pp := newPingPair(ctx, t, func(ctx context.Context, s *testing.ServiceState) error {
+	svc := newPingService(func(ctx context.Context, s *testing.ServiceState) error {
 		called = true
 		_, st := timing.Start(ctx, stageName)
 		st.End()
 		return nil
 	})
+
+	pp := newPingPair(ctx, t, h, svc)
 	defer pp.Close(ctx)
 
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
@@ -278,6 +305,40 @@ func TestRPCForwardTiming(t *gotesting.T) {
 	}
 }
 
+func TestRPCSetVars(t *gotesting.T) {
+	ctx := testcontext.WithCurrentEntity(context.Background(), &testcontext.CurrentEntity{})
+	key := "var1"
+	exp := "value1"
+	h := testing.NewRPCHint("", map[string]string{key: exp})
+
+	called := false
+	var value string
+	ok := false
+	svc := newPingService(func(ctx context.Context, s *testing.ServiceState) error {
+		called = true
+		value, ok = s.Var(key)
+		return nil
+	})
+	// Set service vars in service definition.
+	svc.Vars = []string{key}
+
+	pp := newPingPair(ctx, t, h, svc)
+	defer pp.Close(ctx)
+
+	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
+		ServiceDeps: []string{pingServiceName},
+	})
+	if _, err := pp.Client.Ping(callCtx, &protocol.PingRequest{}); err != nil {
+		t.Error("Ping failed: ", err)
+	}
+	if !called {
+		t.Error("onPing not called")
+	}
+	if !ok || value != exp {
+		t.Errorf("Runtime var not set for key %q: got ok %t and value %q, want %q", key, ok, value, exp)
+	}
+}
+
 func TestRPCServiceScopedContext(t *gotesting.T) {
 	const exp = "hello"
 
@@ -285,13 +346,16 @@ func TestRPCServiceScopedContext(t *gotesting.T) {
 	ctx := context.Background()
 	ctx = logging.NewContext(ctx, func(msg string) { logs <- msg })
 	ctx = testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{})
+	h := testing.NewRPCHint("", nil)
 
 	called := false
-	pp := newPingPair(ctx, t, func(ctx context.Context, s *testing.ServiceState) error {
+	svc := newPingService(func(ctx context.Context, s *testing.ServiceState) error {
 		called = true
 		logging.ContextLog(s.ServiceContext(), exp)
 		return nil
 	})
+
+	pp := newPingPair(ctx, t, h, svc)
 	defer pp.Close(ctx)
 
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{

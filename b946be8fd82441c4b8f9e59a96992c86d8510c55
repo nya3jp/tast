@@ -34,6 +34,24 @@
       "revId": "b946be8fd82441c4b8f9e59a96992c86d8510c55",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f9119062_917f6f66",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2020-03-20T00:51:20Z",
+      "side": 1,
+      "message": "Thanks all.\n\nMy analysis is that for this error to be fixable, we should be able to run goimports on the file (as that will be triggered in ImportOrderAutoFix) but it doesn\u0027t matter if the \u0027errors\u0027 package as been imported (because we are not concerned about introducing a namespace conflict between errors and chromiumos/tast/errors when we replace fmt.Errorf with chromiumos/tast/errors.Errorf).\n\nI will weaken the condition to only check the first requirement.",
+      "parentUuid": "e68e8d87_1989a099",
+      "revId": "b946be8fd82441c4b8f9e59a96992c86d8510c55",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

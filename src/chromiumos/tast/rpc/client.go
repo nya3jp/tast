@@ -82,10 +82,28 @@ func Dial(ctx context.Context, d *dut.DUT, h *testing.RPCHint, bundleName string
 		return nil, errors.Wrap(err, "failed to connect to RPC service on DUT")
 	}
 
-	return newClient(ctx, stdout, stdin, func(ctx context.Context) error {
+	client, err := newClient(ctx, stdout, stdin, func(ctx context.Context) error {
 		cmd.Abort()
 		return cmd.Wait(ctx)
 	})
+	if err != nil {
+		return nil, err
+	}
+
+	// Call management interfaces and set up RPC server management data.
+	mgmt := NewManagementClient(client.Conn)
+	vars := h.TestVars()
+	if len(vars) != 0 {
+		// set testVars to gRPC server.
+		tvs := &TestVars{
+			Var: vars,
+		}
+		if _, err := mgmt.SetTestVars(ctx, tvs); err != nil {
+			return nil, errors.Wrap(err, "failed to set test vars to RPC server")
+		}
+	}
+
+	return client, nil
 }
 
 // newClient establishes a gRPC connection to a test bundle executable using r and w.
@@ -124,6 +142,7 @@ func newClient(ctx context.Context, r io.Reader, w io.Writer, clean func(context
 var alwaysAllowedServices = []string{
 	"tast.core.Logging",
 	"tast.cros.baserpc.FaillogService",
+	"tast.core.Management",
 }
 
 // clientOpts returns gRPC client-side interceptors to manipulate context.

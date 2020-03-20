@@ -1,0 +1,68 @@
+// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package testing
+
+import (
+	"context"
+	gotesting "testing"
+
+	"google.golang.org/grpc"
+)
+
+func TestServiceState(t *gotesting.T) {
+	vars := []string{"var1", "var2"}
+
+	svc := &Service{
+		Register: func(srv *grpc.Server, s *ServiceState) {
+			return
+		},
+		Vars: vars,
+	}
+
+	ctx := context.Background()
+	testVars := map[string]string{
+		"var1": "value1",
+		"var3": "value3",
+	}
+	md := &ServiceManagementData{}
+	md.SetTestVars(testVars)
+
+	svcState := NewServiceState(ctx, svc, md)
+
+	var k, kv, v string
+	var ok bool
+
+	// 1. Variable both declared and provided by test.
+	k = "var1"
+	kv = "value1"
+	v, ok = svcState.Var(k)
+	if !ok {
+		t.Errorf("Variable %q is not found in ServiceState", k)
+	} else if v != kv {
+		t.Errorf("Failed to get variable %q: got %q, want %q", k, v, kv)
+	}
+
+	// 2. Variable declared but not provided by test.
+	k = "var2"
+	v, ok = svcState.Var(k)
+	if ok {
+		t.Errorf("Variable %q should not return from ServiceState. Got %q", k, v)
+	}
+
+	// 3. Variable not decluared, but provided by test.
+	func() {
+		defer func() {
+			// Request an undeclared variable will not cause a panic.
+			if recover() != nil {
+				t.Error("Undeclared variable caused panic")
+			}
+		}()
+		k = "var3"
+		v, ok = svcState.Var(k)
+		if ok {
+			t.Errorf("Variable %q should not return from ServiceState. Got %q", k, v)
+		}
+	}()
+}

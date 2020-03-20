@@ -1,0 +1,23 @@
+// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package tast.core;
+option go_package = "chromiumos/tast/rpc";
+
+import "google/protobuf/empty.proto";
+
+// Management service provides RPC methods to communicate management information
+// between RPC server and RPC client.
+service Management {
+  // SetTestVars sets run-time test variables to the RPC server. All services 
+  // in the RPC server will be set with these variables and can use them in
+  // RPC service logic.
+  rpc SetTestVars (TestVars) returns (google.protobuf.Empty) {}
+}
+
+message TestVars {
+  map<string, string> var = 1;
+}

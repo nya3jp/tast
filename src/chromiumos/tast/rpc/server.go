@@ -27,6 +27,12 @@ func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service) error {
 	srv := grpc.NewServer(serverOpts(ls.Log)...)
 	RegisterLoggingServer(srv, ls)
 
+	// Shared management data across all services, and managed by Management Server.
+	md := &testing.ServiceManagementData{}
+	// Register management server to receive managemen commands from client.
+	ms := newManagementServer(md)
+	RegisterManagementServer(srv, ms)
+
 	// Register the reflection service for easier debugging.
 	reflection.Register(srv)
 
@@ -36,7 +42,7 @@ func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service) error {
 	ctx = logging.NewContext(ctx, ls.Log)
 
 	for _, svc := range svcs {
-		svc.Register(srv, testing.NewServiceState(ctx))
+		svc.Register(srv, testing.NewServiceState(ctx, svc, md))
 	}
 
 	if err := srv.Serve(newPipeListener(r, w)); err != nil && err != io.EOF {

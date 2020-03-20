@@ -125,12 +125,27 @@ type RPCHint struct {
 	// LocalBundleDir is the directory on the DUT where local test bundle executables are located.
 	// This path is used by remote entities to invoke gRPC services in local test bundles.
 	LocalBundleDir string
+	// testVars holds all test variables and will pass to local bundle services.
+	testVars map[string]string
+}
+
+// NewRPCHint create a new RPCHint struct.
+func NewRPCHint(localBundleDir string, testVars map[string]string) *RPCHint {
+	return &RPCHint{
+		LocalBundleDir: localBundleDir,
+		testVars:       testVars,
+	}
 }
 
 // clone returns a deep copy of h.
 func (h *RPCHint) clone() *RPCHint {
 	hc := *h
 	return &hc
+}
+
+// TestVars return test vars.
+func (h *RPCHint) TestVars() map[string]string {
+	return h.testVars
 }
 
 // EntityRoot is the root of all State objects associated with an entity.

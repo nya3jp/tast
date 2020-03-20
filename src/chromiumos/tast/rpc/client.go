@@ -69,7 +69,11 @@ func (c *Client) Close(ctx context.Context) error {
 //  }
 func Dial(ctx context.Context, d *dut.DUT, h *testing.RPCHint, bundleName string) (*Client, error) {
 	bundlePath := filepath.Join(h.LocalBundleDir, bundleName)
-	cmd := d.Command(bundlePath, "-rpc")
+	testVars := []string{"-rpc"}
+	for k, v := range h.TestVars {
+		testVars = append(testVars, "-var="+k+"="+v)
+	}
+	cmd := d.Command(bundlePath, testVars...)
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
 		return nil, err

@@ -25,12 +25,15 @@ type ServiceState struct {
 	// ctx is a service-scoped context. It can be used to emit logs with
 	// testing.ContextLog. It is canceled on gRPC server shutdown.
 	ctx context.Context
+	// testVars is the test variables for the service
+	testVars map[string]string
 }
 
 // NewServiceState creates a new ServiceState.
-func NewServiceState(ctx context.Context) *ServiceState {
+func NewServiceState(ctx context.Context, testVars map[string]string) *ServiceState {
 	return &ServiceState{
-		ctx: ctx,
+		ctx:      ctx,
+		testVars: testVars,
 	}
 }
 
@@ -55,4 +58,11 @@ func (s *ServiceState) Logf(format string, args ...interface{}) {
 // logs to the currently connected remote bundle.
 func (s *ServiceState) ServiceContext() context.Context {
 	return s.ctx
+}
+
+// Var returns the value for the named variable.
+// If a value was not supplied at runtime via the -var flag, ok will be false.
+func (s *ServiceState) Var(name string) (val string, ok bool) {
+	val, ok = s.testVars[name]
+	return val, ok
 }

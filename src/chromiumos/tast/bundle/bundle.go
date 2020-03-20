@@ -90,7 +90,8 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 		}
 		return statusSuccess
 	case RPCMode:
-		if err := rpc.RunServer(stdin, stdout, testing.GlobalRegistry().AllServices()); err != nil {
+		if err := rpc.RunServer(stdin, stdout, testing.GlobalRegistry().AllServices(),
+			args.RunTests.TestVars); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
@@ -266,6 +267,7 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 			},
 			RPCHint: &testing.RPCHint{
 				LocalBundleDir: args.RunTests.LocalBundleDir,
+				TestVars:       args.RunTests.TestVars,
 			},
 			DUT: dt,
 		}

@@ -85,6 +85,9 @@ func TestReadArgsRPC(t *testing.T) {
 
 	exp := &Args{
 		Mode: RPCMode,
+		RunTests: &RunTestsArgs{
+			TestVars: map[string]string{},
+		},
 	}
 	if diff := cmp.Diff(args, exp); diff != "" {
 		t.Fatal("Args mismatch (-want +got): ", diff)

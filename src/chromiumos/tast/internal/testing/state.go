@@ -125,6 +125,8 @@ type RPCHint struct {
 	// LocalBundleDir is the directory on the DUT where local test bundle executables are located.
 	// This path is used by remote entities to invoke gRPC services in local test bundles.
 	LocalBundleDir string
+	//TestVars holds all test variables and will pass to local bundle services
+	TestVars map[string]string
 }
 
 // clone returns a deep copy of h.

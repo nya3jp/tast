@@ -6,11 +6,13 @@ package bundle
 
 import (
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/golang/protobuf/proto"
@@ -279,6 +281,18 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, bt
 		dump := flags.Bool("dumptests", false, "dump all tests as a JSON-marshaled array of testing.Test structs")
 		exportMetadata := flags.Bool("exportmetadata", false, "export all test metadata as a protobuf-marshaled message")
 		rpc := flags.Bool("rpc", false, "run gRPC server")
+
+		vars := make(map[string]string)
+		varsFunc := command.RepeatedFlag(func(v string) error {
+			parts := strings.SplitN(v, "=", 2)
+			if len(parts) != 2 {
+				return errors.New(`want "name=value"`)
+			}
+			vars[parts[0]] = parts[1]
+			return nil
+		})
+		flags.Var(&varsFunc, "var", `runtime variable to pass to tests, as "name=value" (can be repeated)`)
+
 		if err := flags.Parse(clArgs); err != nil {
 			return command.NewStatusErrorf(statusBadArgs, "%v", err)
 		}
@@ -293,6 +307,9 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, bt
 		}
 		if *rpc {
 			args.Mode = RPCMode
+			args.RunTests = &RunTestsArgs{
+				TestVars: vars,
+			}
 			return nil
 		}
 	}

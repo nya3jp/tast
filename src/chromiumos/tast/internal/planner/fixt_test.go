@@ -7,6 +7,7 @@ package planner
 import (
 	"context"
 	"fmt"
+	"reflect"
 	gotesting "testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -304,20 +305,22 @@ func TestFixtureStackContext(t *gotesting.T) {
 // TestFixtureStackState checks testing.FixtState passed to fixture methods.
 func TestFixtureStackState(t *gotesting.T) {
 	const localBundleDir = "/path/to/local/bundles"
+	var vars = map[string]string{"var1": "vale1"}
 
 	ctx := context.Background()
 	cfg := &Config{
 		RemoteData: &testing.RemoteData{
-			RPCHint: &testing.RPCHint{
-				LocalBundleDir: localBundleDir,
-			},
+			RPCHint: testing.NewRPCHint(localBundleDir, vars),
 		},
 	}
 	stack := newFixtureStack(cfg, newOutputSink())
 
 	verifyState := func(t *gotesting.T, s *testing.FixtState) {
-		if dir := s.RPCHint().LocalBundleDir; dir != localBundleDir {
-			t.Errorf("RPCHint.LocalBundleDir = %q; want %q", dir, localBundleDir)
+		if dir := testing.ExtractLocalBundleDir(s.RPCHint()); dir != localBundleDir {
+			t.Errorf("localBundleDir of RPCHint = %q; want %q", dir, localBundleDir)
+		}
+		if testVars := testing.ExtractTestVars(s.RPCHint()); !reflect.DeepEqual(testVars, vars) {
+			t.Errorf("testVars of RPCHint = %v; want %v", testVars, vars)
 		}
 	}
 

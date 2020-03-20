@@ -68,7 +68,7 @@ func (c *Client) Close(ctx context.Context) error {
 //  	return err
 //  }
 func Dial(ctx context.Context, d *dut.DUT, h *testing.RPCHint, bundleName string) (*Client, error) {
-	bundlePath := filepath.Join(h.LocalBundleDir, bundleName)
+	bundlePath := filepath.Join(testing.ExtractLocalBundleDir(h), bundleName)
 	cmd := d.Command(bundlePath, "-rpc")
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
@@ -82,10 +82,36 @@ func Dial(ctx context.Context, d *dut.DUT, h *testing.RPCHint, bundleName string
 		return nil, errors.Wrap(err, "failed to connect to RPC service on DUT")
 	}
 
-	return newClient(ctx, stdout, stdin, func(ctx context.Context) error {
+	cmdCleanup := func(ctx context.Context) error {
 		cmd.Abort()
 		return cmd.Wait(ctx)
-	})
+	}
+
+	if err := initBundleServer(stdout, stdin, h); err != nil {
+		cmdCleanup(ctx)
+		return nil, errors.Wrap(err, "failed to set bundle parameters")
+	}
+
+	return newClient(ctx, stdout, stdin, cmdCleanup)
+}
+
+// initBundleServer initialzes the bundle server by sending raw protobuf message
+// to bundle process, and waits for response message.
+func initBundleServer(r io.Reader, w io.Writer, h *testing.RPCHint) error {
+	vars := testing.ExtractTestVars(h)
+	req := &InitBundleServerRequest{Vars: vars}
+	if err := sendRawMessage(w, req); err != nil {
+		return err
+	}
+	rsp := &InitBundleServerResponse{}
+	if err := receiveRawMessage(r, rsp); err != nil {
+		return err
+	}
+	// Server returns error.
+	if !rsp.Success {
+		return errors.Errorf("bundle returned error - %s", rsp.GetErrorMessage())
+	}
+	return nil
 }
 
 // newClient establishes a gRPC connection to a test bundle executable using r and w.

@@ -18,5 +18,13 @@ type Service struct {
 
 // ServiceState holds state relevant to a gRPC service.
 type ServiceState struct {
-	// Nothing is provided for now.
+	// TestVars is the test variables for the service
+	TestVars map[string]string
+}
+
+// Var returns the value for the named variable.
+// If a value was not supplied at runtime via the -var flag, ok will be false.
+func (s *ServiceState) Var(name string) (val string, ok bool) {
+	val, ok = s.TestVars[name]
+	return val, ok
 }

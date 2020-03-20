@@ -693,7 +693,7 @@ func TestMeta(t *gotesting.T) {
 }
 
 func TestRPCHint(t *gotesting.T) {
-	hint := RPCHint{LocalBundleDir: "/path/to/bundles"}
+	hint := NewRPCHint("/path/to/bundles", map[string]string{"var": "value"})
 	getHint := func(test *TestInstance, cfg *RuntimeConfig) (hint *RPCHint, ok bool) {
 		var out outputSink
 		root := NewTestEntityRoot(test, cfg, &out)
@@ -714,12 +714,12 @@ func TestRPCHint(t *gotesting.T) {
 	)
 
 	// RPCHint should be provided to remote tests.
-	if h, ok := getHint(&TestInstance{Name: remoteTest}, &RuntimeConfig{RemoteData: &RemoteData{RPCHint: &hint}}); !ok {
+	if h, ok := getHint(&TestInstance{Name: remoteTest}, &RuntimeConfig{RemoteData: &RemoteData{RPCHint: hint}}); !ok {
 		t.Errorf("RPCHint() panicked for %v", remoteTest)
 	} else if h == nil {
 		t.Errorf("RPCHint() = nil for %v", remoteTest)
-	} else if !reflect.DeepEqual(*h, hint) {
-		t.Errorf("RPCHint() = %+v for %v; want %+v", *h, remoteTest, hint)
+	} else if !reflect.DeepEqual(h, hint) {
+		t.Errorf("RPCHint() = %+v for %v; want %+v", *h, remoteTest, *hint)
 	}
 
 	// Local tests shouldn't have access to RPCHint.

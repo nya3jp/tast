@@ -482,6 +482,7 @@ func TestRunRemoteData(t *gotesting.T) {
 			KeyFile:        td.UserKeyFile,
 			RunFlags:       []string{"-flag1", "-flag2"},
 			LocalBundleDir: "/mock/local/bundles",
+			TestVars:       map[string]string{"var1": "value1"},
 		},
 	}
 	stdin := newBufferWithArgs(t, &args)
@@ -499,9 +500,7 @@ func TestRunRemoteData(t *gotesting.T) {
 	if !reflect.DeepEqual(meta, expMeta) {
 		t.Errorf("Test got Meta %+v; want %+v", *meta, *expMeta)
 	}
-	expHint := &testing.RPCHint{
-		LocalBundleDir: args.RunTests.LocalBundleDir,
-	}
+	expHint := testing.NewRPCHint(args.RunTests.LocalBundleDir, args.RunTests.TestVars)
 	if !reflect.DeepEqual(hint, expHint) {
 		t.Errorf("Test got RPCHint %+v; want %+v", *hint, *expHint)
 	}

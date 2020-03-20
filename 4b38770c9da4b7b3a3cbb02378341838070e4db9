@@ -22,6 +22,30 @@
       "revId": "4b38770c9da4b7b3a3cbb02378341838070e4db9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e99b4cc8_001ab2d0",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2020-03-20T02:26:59Z",
+      "side": 1,
+      "message": "Thanks. Accept that new comment is not quite accurate -- will update.\n\nRe: the TODO. I think this code is doing a fairly non-discriminary search for any errors ident node, whether errors is a variable name, refers to the \"errors\" package or \"chromium/tast/errors\". (I.E. The analysis is syntactic not semantic.) Hence I think the TODO (taken from before) is still valid.",
+      "parentUuid": "fea05435_7013a665",
+      "range": {
+        "startLine": 26,
+        "startChar": 0,
+        "endLine": 27,
+        "endChar": 53
+      },
+      "revId": "4b38770c9da4b7b3a3cbb02378341838070e4db9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

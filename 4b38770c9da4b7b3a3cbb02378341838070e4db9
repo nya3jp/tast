@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fea05435_7013a665",
+        "filename": "src/chromiumos/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1003044
+      },
+      "writtenOn": "2020-03-20T01:30:33Z",
+      "side": 1,
+      "message": "I think the existing comment is better -- the new comment misses cases like where a local variable is named errors (would shadow the package name), and the TODO below looks wrong because it sounds like we\u0027re already only checking for the errors package.",
+      "range": {
+        "startLine": 26,
+        "startChar": 0,
+        "endLine": 27,
+        "endChar": 53
+      },
+      "revId": "4b38770c9da4b7b3a3cbb02378341838070e4db9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

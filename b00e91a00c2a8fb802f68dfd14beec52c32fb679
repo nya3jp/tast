@@ -60,6 +60,24 @@
     },
     {
       "key": {
+        "uuid": "c454e8c1_3759b58c",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 293,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-03-23T04:14:29Z",
+      "side": 1,
+      "message": "Sorry I don\u0027t have solution yet. Number of CPUs?",
+      "parentUuid": "d945e648_140610f2",
+      "revId": "b00e91a00c2a8fb802f68dfd14beec52c32fb679",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "016422a3_b3fc7b50",
         "filename": "src/chromiumos/tast/internal/runner/features.go",
         "patchSetId": 1

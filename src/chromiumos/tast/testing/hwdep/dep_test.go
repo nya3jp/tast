@@ -15,7 +15,7 @@ import (
 func verifyCondition(t *testing.T, c Condition, dc *device.Config, expectSatisfied bool) {
 	t.Helper()
 
-	err := c(&hwdep.DeviceSetup{DC: dc})
+	err := c.Satisfied(&hwdep.DeviceSetup{DC: dc})
 	if expectSatisfied {
 		if err != nil {
 			t.Error("Unexpectedly unsatisfied: ", err)
@@ -76,12 +76,13 @@ func TestSkipOnModel(t *testing.T) {
 }
 
 func TestPlatform(t *testing.T) {
-	c := Platform("Eve", "Kevin")
+	c := Platform("eve", "kevin")
 
 	for _, tc := range []struct {
 		platform        string
 		expectSatisfied bool
 	}{
+		// Use capital letters to emulate actual cases.
 		{"Eve", true},
 		{"Kevin", true},
 		{"Nocturne", false},
@@ -100,12 +101,13 @@ func TestPlatform(t *testing.T) {
 }
 
 func TestSkipOnPlatform(t *testing.T) {
-	c := SkipOnPlatform("Eve", "Kevin")
+	c := SkipOnPlatform("eve", "kevin")
 
 	for _, tc := range []struct {
 		platform        string
 		expectSatisfied bool
 	}{
+		// Use capital letters to emulate actual cases.
 		{"Eve", false},
 		{"Kevin", false},
 		{"Nocturne", true},

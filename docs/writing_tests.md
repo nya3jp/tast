@@ -68,11 +68,10 @@ A test needs to be registred by calling `testing.AddTest()` in the test entry
 file, which is located directly under a category package. The registration
 needs to be done in `init()` function in the file. The registration should be
 declarative, which means:
-- `testing.AddTest()` should be called at a top level statement of `init()`'s
-body.
+- `testing.AddTest()` should the first statement of `init()`'s body.
+- `testing.AddTest()` should take a pointer of a `testing.Test` composite literal.
 - Calling `testing.AddTest()` multiple times (e.g. in a loop) is not allowed.
-- `testing.AddTest()` should take a pointer of a `testing.Test` composite
-literal.
+- Using precaluculated variables in `testing.Test` is not allowed.
 
 The test registration code will be similar to the following:
 

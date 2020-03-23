@@ -7,6 +7,9 @@
 package hwdep
 
 import (
+	"regexp"
+	"strings"
+
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/errors"
@@ -24,6 +27,9 @@ func D(conds ...Condition) Deps {
 	return hwdep.D(conds...)
 }
 
+// idRegexp is the pattern that the given model/plaform ID names should match with.
+var idRegexp = regexp.MustCompile(`^[a-z0-9_]+$`)
+
 // Model returns a hardware dependency condition that is satisfied if the DUT's model ID is
 // one of the given names.
 // Practically, this is not recommended to be used in most cases. Please consider again
@@ -39,81 +45,105 @@ func D(conds ...Condition) Deps {
 // on other models. Note that, in this case, it is expected that an engineer is
 // assigned to stabilize/fix issues of the test on informational models.
 func Model(names ...string) Condition {
-	return func(d *hwdep.DeviceSetup) error {
+	for _, n := range names {
+		if !idRegexp.MatchString(n) {
+			return Condition{Err: errors.Errorf("ModelId should match with %v: %q", idRegexp, n)}
+		}
+	}
+
+	return Condition{Satisfied: func(d *hwdep.DeviceSetup) error {
 		// If the field is unavailable, return false as not satisfied.
 		if d.DC == nil || d.DC.Id == nil || d.DC.Id.ModelId == nil {
 			return errors.New("device.Config does not have ModelId")
 		}
-		modelID := d.DC.Id.ModelId.Value
+		modelID := strings.ToLower(d.DC.Id.ModelId.Value)
 		for _, name := range names {
 			if name == modelID {
 				return nil
 			}
 		}
 		return errors.New("ModelId did not match")
-	}
+	}}
 }
 
 // SkipOnModel returns a hardware dependency condition that is satisfied
 // iff the DUT's model ID is none of the given names.
 // Please find the doc of Model(), too, for details about the expected usage.
 func SkipOnModel(names ...string) Condition {
-	return func(d *hwdep.DeviceSetup) error {
+	for _, n := range names {
+		if !idRegexp.MatchString(n) {
+			return Condition{Err: errors.Errorf("ModelId should match with %v: %q", idRegexp, n)}
+		}
+	}
+
+	return Condition{Satisfied: func(d *hwdep.DeviceSetup) error {
 		// If the field is unavailable, return false as not satisfied.
 		if d.DC == nil || d.DC.Id == nil || d.DC.Id.ModelId == nil {
 			return errors.New("device.Config does not have ModelId")
 		}
-		modelID := d.DC.Id.ModelId.Value
+		modelID := strings.ToLower(d.DC.Id.ModelId.Value)
 		for _, name := range names {
 			if name == modelID {
 				return errors.New("ModelId matched with skip-on list")
 			}
 		}
 		return nil
-	}
+	}}
 }
 
 // Platform returns a hardware dependency condition that is satisfied
 // iff the DUT's platform ID is one of the give names.
 // Please find the doc of Model(), too, for details about the expected usage.
 func Platform(names ...string) Condition {
-	return func(d *hwdep.DeviceSetup) error {
+	for _, n := range names {
+		if !idRegexp.MatchString(n) {
+			return Condition{Err: errors.Errorf("PlatformId should match with %v: %q", idRegexp, n)}
+		}
+	}
+
+	return Condition{Satisfied: func(d *hwdep.DeviceSetup) error {
 		// If the field is unavailable, return false as not satisfied.
 		if d.DC == nil || d.DC.Id == nil || d.DC.Id.PlatformId == nil {
 			return errors.New("device.Config does not have PlatformId")
 		}
-		platformID := d.DC.Id.PlatformId.Value
+		platformID := strings.ToLower(d.DC.Id.PlatformId.Value)
 		for _, name := range names {
 			if name == platformID {
 				return nil
 			}
 		}
 		return errors.New("PlatformId did not match")
-	}
+	}}
 }
 
 // SkipOnPlatform returns a hardware dependency condition that is satisfied
 // iff the DUT's platform ID is none of the give names.
 // Please find the doc of Model(), too, for details about the expected usage.
 func SkipOnPlatform(names ...string) Condition {
-	return func(d *hwdep.DeviceSetup) error {
+	for _, n := range names {
+		if !idRegexp.MatchString(n) {
+			return Condition{Err: errors.Errorf("PlatformId should match with %v: %q", idRegexp, n)}
+		}
+	}
+
+	return Condition{Satisfied: func(d *hwdep.DeviceSetup) error {
 		if d.DC == nil || d.DC.Id == nil || d.DC.Id.PlatformId == nil {
 			return errors.New("device.Config does not have PlatformId")
 		}
-		platformID := d.DC.Id.PlatformId.Value
+		platformID := strings.ToLower(d.DC.Id.PlatformId.Value)
 		for _, name := range names {
 			if name == platformID {
 				return errors.New("PlatformId matched with skip-on list")
 			}
 		}
 		return nil
-	}
+	}}
 }
 
 // TouchScreen returns a hardware dependency condition that is satisfied
 // iff the DUT has touchscreen.
 func TouchScreen() Condition {
-	return func(d *hwdep.DeviceSetup) error {
+	return Condition{Satisfied: func(d *hwdep.DeviceSetup) error {
 		if d.DC == nil {
 			return errors.New("device.Config is not given")
 		}
@@ -123,13 +153,13 @@ func TouchScreen() Condition {
 			}
 		}
 		return errors.New("DUT does not have touchscreen")
-	}
+	}}
 }
 
 // Fingerprint returns a hardware dependency condition that is satisfied
 // iff the DUT has fingerprint sensor.
 func Fingerprint() Condition {
-	return func(d *hwdep.DeviceSetup) error {
+	return Condition{Satisfied: func(d *hwdep.DeviceSetup) error {
 		if d.DC == nil {
 			return errors.New("device.Config is not given")
 		}
@@ -139,5 +169,5 @@ func Fingerprint() Condition {
 			}
 		}
 		return errors.New("DUT does not have fingerprint sensor")
-	}
+	}}
 }

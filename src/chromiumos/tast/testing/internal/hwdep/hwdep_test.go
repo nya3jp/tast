@@ -12,27 +12,53 @@ import (
 	"chromiumos/tast/errors"
 )
 
+// success returns a Condition that is always satisified.
 func success() Condition {
-	return func(d *DeviceSetup) error {
+	return Condition{Satisfied: func(d *DeviceSetup) error {
 		return nil
-	}
+	}}
 }
 
+// fail returns a Condition that always fail to be satisfied.
 func fail() Condition {
-	return func(d *DeviceSetup) error {
+	return Condition{Satisfied: func(d *DeviceSetup) error {
 		return errors.New("failed")
-	}
+	}}
 }
 
-func TestSatisfiedSuccess(t *testing.T) {
+// invalid returns a Condition that always fail to be validated.
+// This emulates, e.g., the situation that invalid argument is
+// passed to a factory function to instantiate a Condition.
+func invalid() Condition {
+	return Condition{Err: errors.New("invalid condition")}
+}
+
+func TestSuccess(t *testing.T) {
 	d := D(success())
+	if err := d.Validate(); err != nil {
+		t.Fatal("Unexpected validation error: ", err)
+	}
 	if err := d.Satisfied(&device.Config{}); err != nil {
 		t.Error("Unexpected fail: ", err)
 	}
 }
 
-func TestSatisfiedFail(t *testing.T) {
+func TestFail(t *testing.T) {
 	d := D(fail())
+	if err := d.Validate(); err != nil {
+		t.Fatal("Unexpected validateion error: ", err)
+	}
+	if err := d.Satisfied(&device.Config{}); err == nil {
+		t.Error("Unexpected success")
+	}
+}
+
+func TestInvalid(t *testing.T) {
+	d := D(invalid())
+	if err := d.Validate(); err == nil {
+		t.Error("Unexpected validation pass")
+	}
+	// Make sure d.Satisfied() won't crash.
 	if err := d.Satisfied(&device.Config{}); err == nil {
 		t.Error("Unexpected success")
 	}

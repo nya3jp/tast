@@ -22,7 +22,16 @@ type Deps struct {
 }
 
 // Condition is exported via chromiumos/tast/testing/hwdep. Please find its document for details.
-type Condition func(d *DeviceSetup) error
+// Either Satisfied or Err should be nil exclusively.
+type Condition struct {
+	// Satisfied is a pointer to a function which checks if the given DeviceSetup satisfies
+	// the condition.
+	Satisfied func(d *DeviceSetup) error
+
+	// Err is an error to be reported on Test registration
+	// if instantiation of Condition fails.
+	Err error
+}
 
 // DeviceSetup represents the configuration of the current DUT.
 // Each condition expects to be implemented based only on this information.
@@ -52,7 +61,11 @@ func (d *Deps) Satisfied(dc *device.Config) *UnsatisfiedError {
 	setup := &DeviceSetup{DC: dc}
 	var reasons []error
 	for _, c := range d.conds {
-		if err := c(setup); err != nil {
+		if c.Satisfied == nil {
+			reasons = append(reasons, errors.New("Satisfied was nil"))
+			continue
+		}
+		if err := c.Satisfied(setup); err != nil {
 			reasons = append(reasons, err)
 		}
 	}
@@ -60,6 +73,16 @@ func (d *Deps) Satisfied(dc *device.Config) *UnsatisfiedError {
 		return &UnsatisfiedError{
 			E:       errors.New("Deps is not satisfied"),
 			Reasons: reasons,
+		}
+	}
+	return nil
+}
+
+// Validate returns error if one of the conditions failed to be instantiated.
+func (d *Deps) Validate() error {
+	for _, c := range d.conds {
+		if c.Err != nil {
+			return c.Err
 		}
 	}
 	return nil

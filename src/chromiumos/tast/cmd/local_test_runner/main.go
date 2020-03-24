@@ -112,7 +112,11 @@ func main() {
 			"hostap_hwsim":            "wifi_hostap_test",
 			"iwlwifi_rescan":          "iwlwifi_rescan",
 			"lock_core_pattern":       `"kernel-3_10" || "kernel-3_14" || "kernel-3_18"`,
-			"memd":                    "memd",
+			// QEMU has implemented memfd_create, but we haven't updated
+			// to a release with the change (https://bugs.launchpad.net/qemu/+bug/1734792).
+			// Remove "|| betty || tast_vm" from list when we upgrade.
+			"memfd_create": `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14" || betty || tast_vm)`,
+			"memd":         "memd",
 			// Only official builds are considered to have metrics consent.
 			// See: ChromeCrashReporterClient::GetCollectStatsConsent()
 			// Also metrics consent needs TPM (crbug.com/1035197).

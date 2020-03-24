@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "bb56a4ea_95f1d3cb",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1400377
+      },
+      "writtenOn": "2020-03-24T03:06:35Z",
+      "side": 1,
+      "message": "Hi Hidehiko,\nThis is to support the running of MTBF test:\n\n\"MTBF will be constructed as the collections of functional test scripts which are repeated and interrupted for several days. This will comprise of random execution of random tests selected from a list of well defined individual tests.\nMTBF testing shall be designed so it can run for an infinite amount of time simultaneously across many devices(several hundreds ).\"\n\nDuring MTBF run, we will randomly select tast tests and let them run in the given order. All tests will be MTBF test case with same precondition. \n\nHope this clarifies.",
+      "parentUuid": "ff42d60b_e55d2d2a",
+      "revId": "5113872f1cbc3bda545fd0f996b53810675aceb3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9f8a7f1f_4df5cdac",
         "filename": "/COMMIT_MSG",
         "patchSetId": 1

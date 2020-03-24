@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ff42d60b_e55d2d2a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-03-24T02:31:56Z",
+      "side": 1,
+      "message": "Could you clarify what cases do you need to support with this?",
+      "revId": "5113872f1cbc3bda545fd0f996b53810675aceb3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9f8a7f1f_4df5cdac",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-03-24T02:31:56Z",
+      "side": 1,
+      "message": "Please file a bug and link from here.\nSpecifically, you\u0027re working on release branches, you must be approved by TPMs beforehand.\nAlso, for changing the release branches, you need to check the code into master first, to make sure it is stable, then to CP to release branches.",
+      "revId": "5113872f1cbc3bda545fd0f996b53810675aceb3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

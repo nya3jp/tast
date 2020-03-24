@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "2909c2f2_cc446651",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-03-24T04:37:48Z",
+      "side": 1,
+      "message": "I\u0027m not sure what\u0027s the difference. Could you elaborate?",
+      "parentUuid": "c708b16f_07b34f21",
+      "revId": "9d7ecfec629da72adbbadf701b90892117f5def3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6efc1c06_5758e33d",
         "filename": "docs/writing_tests.md",
         "patchSetId": 3
@@ -30,6 +48,24 @@
       "writtenOn": "2020-03-24T02:25:40Z",
       "side": 1,
       "message": "Could you clarify this a bit more?\nFor example, some tests uses some constants to share the data between test declaration and test body \"already\".",
+      "revId": "9d7ecfec629da72adbbadf701b90892117f5def3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "21392d59_bed87fe8",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-03-24T04:37:48Z",
+      "side": 1,
+      "message": "That\u0027s a good point...\nI just removed this sentence for now.",
+      "parentUuid": "6efc1c06_5758e33d",
       "revId": "9d7ecfec629da72adbbadf701b90892117f5def3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

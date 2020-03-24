@@ -45,6 +45,30 @@
       "revId": "1b6ff767a0ad0363189e785f4317d4b192b54597",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "975e75f8_4349b779",
+        "filename": "src/chromiumos/tast/testing/hwdep/dep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-03-24T15:38:35Z",
+      "side": 1,
+      "message": "PlatformId and ModelId are different from BOARD name.\nSo, there\u0027s no \"samus-kernelnext\" Platforms nor Models. In the specific case, PlatformId is \"Samus\" and ModelId is \"samus\".",
+      "parentUuid": "42660dcf_a60d314f",
+      "range": {
+        "startLine": 31,
+        "startChar": 43,
+        "endLine": 31,
+        "endChar": 46
+      },
+      "revId": "1b6ff767a0ad0363189e785f4317d4b192b54597",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

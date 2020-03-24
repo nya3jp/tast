@@ -3,32 +3,63 @@
 
 package device
 
-import proto "github.com/golang/protobuf/proto"
-import fmt "fmt"
-import math "math"
+import (
+	fmt "fmt"
+	proto "github.com/golang/protobuf/proto"
+	math "math"
+)
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
 
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the proto package it is being compiled against.
+// A compilation error at this line likely means your copy of the
+// proto package needs to be updated.
+const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
+
 // These are the globally unique identifiers that determine what set of
 // configuration data is used for a given device.
 type ConfigId struct {
 	// Required.
-	PlatformId *PlatformId `protobuf:"bytes,1,opt,name=platform_id,json=platformId" json:"platform_id,omitempty"`
+	PlatformId *PlatformId `protobuf:"bytes,1,opt,name=platform_id,json=platformId,proto3" json:"platform_id,omitempty"`
 	// Required.
-	ModelId *ModelId `protobuf:"bytes,2,opt,name=model_id,json=modelId" json:"model_id,omitempty"`
+	ModelId *ModelId `protobuf:"bytes,2,opt,name=model_id,json=modelId,proto3" json:"model_id,omitempty"`
 	// Required.
-	VariantId *VariantId `protobuf:"bytes,3,opt,name=variant_id,json=variantId" json:"variant_id,omitempty"`
+	VariantId *VariantId `protobuf:"bytes,3,opt,name=variant_id,json=variantId,proto3" json:"variant_id,omitempty"`
 	// Required.
-	BrandId *BrandId `protobuf:"bytes,4,opt,name=brand_id,json=brandId" json:"brand_id,omitempty"`
+	BrandId              *BrandId `protobuf:"bytes,4,opt,name=brand_id,json=brandId,proto3" json:"brand_id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *ConfigId) Reset()                    { *m = ConfigId{} }
-func (m *ConfigId) String() string            { return proto.CompactTextString(m) }
-func (*ConfigId) ProtoMessage()               {}
-func (*ConfigId) Descriptor() ([]byte, []int) { return fileDescriptor1, []int{0} }
+func (m *ConfigId) Reset()         { *m = ConfigId{} }
+func (m *ConfigId) String() string { return proto.CompactTextString(m) }
+func (*ConfigId) ProtoMessage()    {}
+func (*ConfigId) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5967df6ee4aad538, []int{0}
+}
+
+func (m *ConfigId) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ConfigId.Unmarshal(m, b)
+}
+func (m *ConfigId) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ConfigId.Marshal(b, m, deterministic)
+}
+func (m *ConfigId) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ConfigId.Merge(m, src)
+}
+func (m *ConfigId) XXX_Size() int {
+	return xxx_messageInfo_ConfigId.Size(m)
+}
+func (m *ConfigId) XXX_DiscardUnknown() {
+	xxx_messageInfo_ConfigId.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ConfigId proto.InternalMessageInfo
 
 func (m *ConfigId) GetPlatformId() *PlatformId {
 	if m != nil {
@@ -62,9 +93,9 @@ func init() {
 	proto.RegisterType((*ConfigId)(nil), "device.ConfigId")
 }
 
-func init() { proto.RegisterFile("device/config_id.proto", fileDescriptor1) }
+func init() { proto.RegisterFile("device/config_id.proto", fileDescriptor_5967df6ee4aad538) }
 
-var fileDescriptor1 = []byte{
+var fileDescriptor_5967df6ee4aad538 = []byte{
 	// 238 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x64, 0x8f, 0x3f, 0x4f, 0xc3, 0x30,
 	0x10, 0xc5, 0x15, 0x40, 0xa5, 0xb8, 0x03, 0xc2, 0x12, 0x60, 0x75, 0x42, 0x4c, 0x88, 0xc1, 0xae,

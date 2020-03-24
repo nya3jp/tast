@@ -22,6 +22,30 @@
       "revId": "474f98560516db565bca1da94de44172ad37eadd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c53b3127_63dfa608",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1196199
+      },
+      "writtenOn": "2020-03-24T06:36:49Z",
+      "side": 1,
+      "message": "Good catch. I have to add arm64 here.",
+      "parentUuid": "54129d8a_9c095131",
+      "range": {
+        "startLine": 76,
+        "startChar": 26,
+        "endLine": 76,
+        "endChar": 29
+      },
+      "revId": "474f98560516db565bca1da94de44172ad37eadd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

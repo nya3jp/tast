@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "f9e68f69_082daabb",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-03-24T15:42:36Z",
+      "side": 1,
+      "message": "For example:\n\nvar re regexp.Regexp\n\nfunc init() {\n  re \u003d regexp.MustCompile(...)\n\n  testing.AddTest(\u0026testing.Test{\n    ...\n  })\n}\n\nis currently allowed (I know it is not a good example, and couldn\u0027t come up with a concrete good example, though). I.e., some a bit complex initialization is allowed before testing.AddTest, now.\n\nI looks not, with your update?",
+      "parentUuid": "2909c2f2_cc446651",
+      "revId": "9d7ecfec629da72adbbadf701b90892117f5def3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6efc1c06_5758e33d",
         "filename": "docs/writing_tests.md",
         "patchSetId": 3

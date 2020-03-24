@@ -11,10 +11,10 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"reflect"
 	"testing"
 
 	"github.com/golang/protobuf/proto"
+	"github.com/google/go-cmp/cmp"
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/bundle"
@@ -51,7 +51,7 @@ func checkRunnerTestDepsArgs(t *testing.T, cfg *Config, checkDeps bool, avail, u
 			DeviceConfig:                dc,
 		},
 	}
-	if !reflect.DeepEqual(*args.RunTests, exp) {
+	if !cmp.Equal(*args.RunTests, exp, cmp.Comparer(proto.Equal)) {
 		t.Errorf("setRunnerTestDepsArgs(%+v) set %+v; want %+v", cfg, *args.RunTests, exp)
 	}
 }

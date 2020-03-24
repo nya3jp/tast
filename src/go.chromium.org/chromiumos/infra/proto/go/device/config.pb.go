@@ -3,14 +3,22 @@
 
 package device
 
-import proto "github.com/golang/protobuf/proto"
-import fmt "fmt"
-import math "math"
+import (
+	fmt "fmt"
+	proto "github.com/golang/protobuf/proto"
+	math "math"
+)
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the proto package it is being compiled against.
+// A compilation error at this line likely means your copy of the
+// proto package needs to be updated.
+const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 // Next tag: 8
 type Config_FormFactor int32
@@ -36,6 +44,7 @@ var Config_FormFactor_name = map[int32]string{
 	6: "FORM_FACTOR_CHROMEBIT",
 	7: "FORM_FACTOR_CHROMESLATE",
 }
+
 var Config_FormFactor_value = map[string]int32{
 	"FORM_FACTOR_UNSPECIFIED": 0,
 	"FORM_FACTOR_CLAMSHELL":   1,
@@ -50,7 +59,10 @@ var Config_FormFactor_value = map[string]int32{
 func (x Config_FormFactor) String() string {
 	return proto.EnumName(Config_FormFactor_name, int32(x))
 }
-func (Config_FormFactor) EnumDescriptor() ([]byte, []int) { return fileDescriptor2, []int{0, 0} }
+
+func (Config_FormFactor) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_8272a55f8dc33811, []int{0, 0}
+}
 
 // Next Tag: 3
 type Config_Graphics int32
@@ -66,6 +78,7 @@ var Config_Graphics_name = map[int32]string{
 	1: "GRAPHICS_GL",
 	2: "GRAPHICS_GLE",
 }
+
 var Config_Graphics_value = map[string]int32{
 	"GRAPHICS_UNSPECIFIED": 0,
 	"GRAPHICS_GL":          1,
@@ -75,7 +88,10 @@ var Config_Graphics_value = map[string]int32{
 func (x Config_Graphics) String() string {
 	return proto.EnumName(Config_Graphics_name, int32(x))
 }
-func (Config_Graphics) EnumDescriptor() ([]byte, []int) { return fileDescriptor2, []int{0, 1} }
+
+func (Config_Graphics) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_8272a55f8dc33811, []int{0, 1}
+}
 
 // Next Tag: 12
 type Config_HardwareFeature int32
@@ -118,6 +134,7 @@ var Config_HardwareFeature_name = map[int32]string{
 	10: "HARDWARE_FEATURE_DETACHABLE_KEYBOARD",
 	11: "HARDWARE_FEATURE_FINGERPRINT",
 }
+
 var Config_HardwareFeature_value = map[string]int32{
 	"HARDWARE_FEATURE_UNSPECIFIED":         0,
 	"HARDWARE_FEATURE_BLUETOOTH":           1,
@@ -136,7 +153,10 @@ var Config_HardwareFeature_value = map[string]int32{
 func (x Config_HardwareFeature) String() string {
 	return proto.EnumName(Config_HardwareFeature_name, int32(x))
 }
-func (Config_HardwareFeature) EnumDescriptor() ([]byte, []int) { return fileDescriptor2, []int{0, 2} }
+
+func (Config_HardwareFeature) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_8272a55f8dc33811, []int{0, 2}
+}
 
 // Indicate the device's power supply.
 // Next Tag: 3
@@ -153,6 +173,7 @@ var Config_PowerSupply_name = map[int32]string{
 	1: "POWER_SUPPLY_BATTERY",
 	2: "POWER_SUPPLY_AC_ONLY",
 }
+
 var Config_PowerSupply_value = map[string]int32{
 	"POWER_SUPPLY_UNSPECIFIED": 0,
 	"POWER_SUPPLY_BATTERY":     1,
@@ -162,7 +183,10 @@ var Config_PowerSupply_value = map[string]int32{
 func (x Config_PowerSupply) String() string {
 	return proto.EnumName(Config_PowerSupply_name, int32(x))
 }
-func (Config_PowerSupply) EnumDescriptor() ([]byte, []int) { return fileDescriptor2, []int{0, 3} }
+
+func (Config_PowerSupply) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_8272a55f8dc33811, []int{0, 3}
+}
 
 // Next Tag: 6
 type Config_Storage int32
@@ -184,6 +208,7 @@ var Config_Storage_name = map[int32]string{
 	4: "STORAGE_NVME",
 	5: "STORAGE_UFS",
 }
+
 var Config_Storage_value = map[string]int32{
 	"STORAGE_UNSPECIFIED": 0,
 	"STORAGE_SSD":         1,
@@ -196,7 +221,10 @@ var Config_Storage_value = map[string]int32{
 func (x Config_Storage) String() string {
 	return proto.EnumName(Config_Storage_name, int32(x))
 }
-func (Config_Storage) EnumDescriptor() ([]byte, []int) { return fileDescriptor2, []int{0, 4} }
+
+func (Config_Storage) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_8272a55f8dc33811, []int{0, 4}
+}
 
 // Next tag: 13
 type Config_VideoAcceleration int32
@@ -232,6 +260,7 @@ var Config_VideoAcceleration_name = map[int32]string{
 	11: "VIDEO_ACCELERATION_MJPG",
 	12: "VIDEO_ACCELERATION_ENC_MJPG",
 }
+
 var Config_VideoAcceleration_value = map[string]int32{
 	"VIDEO_UNSPECIFIED":            0,
 	"VIDEO_ACCELERATION_H264":      1,
@@ -251,7 +280,10 @@ var Config_VideoAcceleration_value = map[string]int32{
 func (x Config_VideoAcceleration) String() string {
 	return proto.EnumName(Config_VideoAcceleration_name, int32(x))
 }
-func (Config_VideoAcceleration) EnumDescriptor() ([]byte, []int) { return fileDescriptor2, []int{0, 5} }
+
+func (Config_VideoAcceleration) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_8272a55f8dc33811, []int{0, 5}
+}
 
 // Next Tag: 31
 type Config_SOC int32
@@ -326,6 +358,7 @@ var Config_SOC_name = map[int32]string{
 	29: "SOC_TEGRA_K1",
 	30: "SOC_WHISKEY_LAKE_U",
 }
+
 var Config_SOC_value = map[string]int32{
 	"SOC_UNSPECIFIED":    0,
 	"SOC_AMBERLAKE_Y":    1,
@@ -363,7 +396,10 @@ var Config_SOC_value = map[string]int32{
 func (x Config_SOC) String() string {
 	return proto.EnumName(Config_SOC_name, int32(x))
 }
-func (Config_SOC) EnumDescriptor() ([]byte, []int) { return fileDescriptor2, []int{0, 6} }
+
+func (Config_SOC) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_8272a55f8dc33811, []int{0, 6}
+}
 
 // Next Tag: 6
 type Config_ODM int32
@@ -385,6 +421,7 @@ var Config_ODM_name = map[int32]string{
 	4: "ODM_PEGATRON",
 	5: "ODM_COMPAL",
 }
+
 var Config_ODM_value = map[string]int32{
 	"ODM_UNSPECIFIED": 0,
 	"ODM_QUANTA":      1,
@@ -397,7 +434,10 @@ var Config_ODM_value = map[string]int32{
 func (x Config_ODM) String() string {
 	return proto.EnumName(Config_ODM_name, int32(x))
 }
-func (Config_ODM) EnumDescriptor() ([]byte, []int) { return fileDescriptor2, []int{0, 7} }
+
+func (Config_ODM) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_8272a55f8dc33811, []int{0, 7}
+}
 
 type Config_OEM int32
 
@@ -420,6 +460,7 @@ var Config_OEM_name = map[int32]string{
 	5: "OEM_LENOVO",
 	6: "OEM_ASUS",
 }
+
 var Config_OEM_value = map[string]int32{
 	"OEM_UNSPECIFIED": 0,
 	"OEM_ACER":        1,
@@ -433,7 +474,10 @@ var Config_OEM_value = map[string]int32{
 func (x Config_OEM) String() string {
 	return proto.EnumName(Config_OEM_name, int32(x))
 }
-func (Config_OEM) EnumDescriptor() ([]byte, []int) { return fileDescriptor2, []int{0, 8} }
+
+func (Config_OEM) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_8272a55f8dc33811, []int{0, 8}
+}
 
 type Config_Architecture int32
 
@@ -452,6 +496,7 @@ var Config_Architecture_name = map[int32]string{
 	3: "ARM",
 	4: "ARM64",
 }
+
 var Config_Architecture_value = map[string]int32{
 	"ARCHITECTURE_UNDEFINED": 0,
 	"X86":                    1,
@@ -463,52 +508,78 @@ var Config_Architecture_value = map[string]int32{
 func (x Config_Architecture) String() string {
 	return proto.EnumName(Config_Architecture_name, int32(x))
 }
-func (Config_Architecture) EnumDescriptor() ([]byte, []int) { return fileDescriptor2, []int{0, 9} }
+
+func (Config_Architecture) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_8272a55f8dc33811, []int{0, 9}
+}
 
 // Next tag: 21
 type Config struct {
 	// Required. Unique ID of the device config.
-	Id         *ConfigId         `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
-	FormFactor Config_FormFactor `protobuf:"varint,3,opt,name=form_factor,json=formFactor,enum=device.Config_FormFactor" json:"form_factor,omitempty"`
+	Id         *ConfigId         `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	FormFactor Config_FormFactor `protobuf:"varint,3,opt,name=form_factor,json=formFactor,proto3,enum=device.Config_FormFactor" json:"form_factor,omitempty"`
 	// e.g: "haswell", "tegra",...
-	GpuFamily string          `protobuf:"bytes,4,opt,name=gpu_family,json=gpuFamily" json:"gpu_family,omitempty"`
-	Graphics  Config_Graphics `protobuf:"varint,5,opt,name=graphics,enum=device.Config_Graphics" json:"graphics,omitempty"`
+	GpuFamily string          `protobuf:"bytes,4,opt,name=gpu_family,json=gpuFamily,proto3" json:"gpu_family,omitempty"`
+	Graphics  Config_Graphics `protobuf:"varint,5,opt,name=graphics,proto3,enum=device.Config_Graphics" json:"graphics,omitempty"`
 	// If a hardware feature isn't specified, one can assume that it doesn't
 	// exist on the device.
-	HardwareFeatures []Config_HardwareFeature `protobuf:"varint,6,rep,packed,name=hardware_features,json=hardwareFeatures,enum=device.Config_HardwareFeature" json:"hardware_features,omitempty"`
-	Power            Config_PowerSupply       `protobuf:"varint,8,opt,name=power,enum=device.Config_PowerSupply" json:"power,omitempty"`
+	HardwareFeatures []Config_HardwareFeature `protobuf:"varint,6,rep,packed,name=hardware_features,json=hardwareFeatures,proto3,enum=device.Config_HardwareFeature" json:"hardware_features,omitempty"`
+	Power            Config_PowerSupply       `protobuf:"varint,8,opt,name=power,proto3,enum=device.Config_PowerSupply" json:"power,omitempty"`
 	// Indicate the device's storage type.
-	Storage                   Config_Storage             `protobuf:"varint,9,opt,name=storage,enum=device.Config_Storage" json:"storage,omitempty"`
-	VideoAccelerationSupports []Config_VideoAcceleration `protobuf:"varint,10,rep,packed,name=video_acceleration_supports,json=videoAccelerationSupports,enum=device.Config_VideoAcceleration" json:"video_acceleration_supports,omitempty"`
-	Soc                       Config_SOC                 `protobuf:"varint,11,opt,name=soc,enum=device.Config_SOC" json:"soc,omitempty"`
+	Storage                   Config_Storage             `protobuf:"varint,9,opt,name=storage,proto3,enum=device.Config_Storage" json:"storage,omitempty"`
+	VideoAccelerationSupports []Config_VideoAcceleration `protobuf:"varint,10,rep,packed,name=video_acceleration_supports,json=videoAccelerationSupports,proto3,enum=device.Config_VideoAcceleration" json:"video_acceleration_supports,omitempty"`
+	Soc                       Config_SOC                 `protobuf:"varint,11,opt,name=soc,proto3,enum=device.Config_SOC" json:"soc,omitempty"`
 	// Full email address for TAMs responsible for device
-	Tam []string `protobuf:"bytes,12,rep,name=tam" json:"tam,omitempty"`
+	Tam []string `protobuf:"bytes,12,rep,name=tam,proto3" json:"tam,omitempty"`
 	// Full email address for Google EEs responsible for device
-	Ee []string `protobuf:"bytes,13,rep,name=ee" json:"ee,omitempty"`
+	Ee []string `protobuf:"bytes,13,rep,name=ee,proto3" json:"ee,omitempty"`
 	// ODM for device
-	Odm Config_ODM `protobuf:"varint,14,opt,name=odm,enum=device.Config_ODM" json:"odm,omitempty"`
+	Odm Config_ODM `protobuf:"varint,14,opt,name=odm,proto3,enum=device.Config_ODM" json:"odm,omitempty"`
 	// Group email address for this device's odm contact in buganizer (@google.com)
-	OdmEmailGroup string `protobuf:"bytes,15,opt,name=odm_email_group,json=odmEmailGroup" json:"odm_email_group,omitempty"`
+	OdmEmailGroup string `protobuf:"bytes,15,opt,name=odm_email_group,json=odmEmailGroup,proto3" json:"odm_email_group,omitempty"`
 	// OEM for device
-	Oem Config_OEM `protobuf:"varint,16,opt,name=oem,enum=device.Config_OEM" json:"oem,omitempty"`
+	Oem Config_OEM `protobuf:"varint,16,opt,name=oem,proto3,enum=device.Config_OEM" json:"oem,omitempty"`
 	// Group email address for this device's oem contact in buganizer (@google.com)
-	OemEmailGroup string `protobuf:"bytes,17,opt,name=oem_email_group,json=oemEmailGroup" json:"oem_email_group,omitempty"`
+	OemEmailGroup string `protobuf:"bytes,17,opt,name=oem_email_group,json=oemEmailGroup,proto3" json:"oem_email_group,omitempty"`
 	// Group email address for this device's SoC contact in buganizer (@google.com)
-	SocEmailGroup string `protobuf:"bytes,18,opt,name=soc_email_group,json=socEmailGroup" json:"soc_email_group,omitempty"`
+	SocEmailGroup string `protobuf:"bytes,18,opt,name=soc_email_group,json=socEmailGroup,proto3" json:"soc_email_group,omitempty"`
 	// A bit field used by firmware to make decisions. The definition of this
 	// firmware configuration field is per firmware build. This does not have
 	// 1st-class definitions for values in the top-level configuration proto since
 	// each firmware build target can appropriate the bits within this 32-bit
 	// field differently. Each firmware build can vary significantly in the
 	// configuration space that needs customization.
-	FirmwareConfiguration uint32              `protobuf:"varint,19,opt,name=firmware_configuration,json=firmwareConfiguration" json:"firmware_configuration,omitempty"`
-	Cpu                   Config_Architecture `protobuf:"varint,20,opt,name=cpu,enum=device.Config_Architecture" json:"cpu,omitempty"`
+	FirmwareConfiguration uint32              `protobuf:"varint,19,opt,name=firmware_configuration,json=firmwareConfiguration,proto3" json:"firmware_configuration,omitempty"`
+	Cpu                   Config_Architecture `protobuf:"varint,20,opt,name=cpu,proto3,enum=device.Config_Architecture" json:"cpu,omitempty"`
+	XXX_NoUnkeyedLiteral  struct{}            `json:"-"`
+	XXX_unrecognized      []byte              `json:"-"`
+	XXX_sizecache         int32               `json:"-"`
 }
 
-func (m *Config) Reset()                    { *m = Config{} }
-func (m *Config) String() string            { return proto.CompactTextString(m) }
-func (*Config) ProtoMessage()               {}
-func (*Config) Descriptor() ([]byte, []int) { return fileDescriptor2, []int{0} }
+func (m *Config) Reset()         { *m = Config{} }
+func (m *Config) String() string { return proto.CompactTextString(m) }
+func (*Config) ProtoMessage()    {}
+func (*Config) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8272a55f8dc33811, []int{0}
+}
+
+func (m *Config) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Config.Unmarshal(m, b)
+}
+func (m *Config) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Config.Marshal(b, m, deterministic)
+}
+func (m *Config) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Config.Merge(m, src)
+}
+func (m *Config) XXX_Size() int {
+	return xxx_messageInfo_Config.Size(m)
+}
+func (m *Config) XXX_DiscardUnknown() {
+	xxx_messageInfo_Config.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Config proto.InternalMessageInfo
 
 func (m *Config) GetId() *ConfigId {
 	if m != nil {
@@ -638,13 +709,36 @@ func (m *Config) GetCpu() Config_Architecture {
 
 // Message contains all ChromeOS device configs.
 type AllConfigs struct {
-	Configs []*Config `protobuf:"bytes,1,rep,name=configs" json:"configs,omitempty"`
+	Configs              []*Config `protobuf:"bytes,1,rep,name=configs,proto3" json:"configs,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}  `json:"-"`
+	XXX_unrecognized     []byte    `json:"-"`
+	XXX_sizecache        int32     `json:"-"`
 }
 
-func (m *AllConfigs) Reset()                    { *m = AllConfigs{} }
-func (m *AllConfigs) String() string            { return proto.CompactTextString(m) }
-func (*AllConfigs) ProtoMessage()               {}
-func (*AllConfigs) Descriptor() ([]byte, []int) { return fileDescriptor2, []int{1} }
+func (m *AllConfigs) Reset()         { *m = AllConfigs{} }
+func (m *AllConfigs) String() string { return proto.CompactTextString(m) }
+func (*AllConfigs) ProtoMessage()    {}
+func (*AllConfigs) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8272a55f8dc33811, []int{1}
+}
+
+func (m *AllConfigs) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_AllConfigs.Unmarshal(m, b)
+}
+func (m *AllConfigs) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_AllConfigs.Marshal(b, m, deterministic)
+}
+func (m *AllConfigs) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AllConfigs.Merge(m, src)
+}
+func (m *AllConfigs) XXX_Size() int {
+	return xxx_messageInfo_AllConfigs.Size(m)
+}
+func (m *AllConfigs) XXX_DiscardUnknown() {
+	xxx_messageInfo_AllConfigs.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_AllConfigs proto.InternalMessageInfo
 
 func (m *AllConfigs) GetConfigs() []*Config {
 	if m != nil {
@@ -654,8 +748,6 @@ func (m *AllConfigs) GetConfigs() []*Config {
 }
 
 func init() {
-	proto.RegisterType((*Config)(nil), "device.Config")
-	proto.RegisterType((*AllConfigs)(nil), "device.AllConfigs")
 	proto.RegisterEnum("device.Config_FormFactor", Config_FormFactor_name, Config_FormFactor_value)
 	proto.RegisterEnum("device.Config_Graphics", Config_Graphics_name, Config_Graphics_value)
 	proto.RegisterEnum("device.Config_HardwareFeature", Config_HardwareFeature_name, Config_HardwareFeature_value)
@@ -666,11 +758,13 @@ func init() {
 	proto.RegisterEnum("device.Config_ODM", Config_ODM_name, Config_ODM_value)
 	proto.RegisterEnum("device.Config_OEM", Config_OEM_name, Config_OEM_value)
 	proto.RegisterEnum("device.Config_Architecture", Config_Architecture_name, Config_Architecture_value)
+	proto.RegisterType((*Config)(nil), "device.Config")
+	proto.RegisterType((*AllConfigs)(nil), "device.AllConfigs")
 }
 
-func init() { proto.RegisterFile("device/config.proto", fileDescriptor2) }
+func init() { proto.RegisterFile("device/config.proto", fileDescriptor_8272a55f8dc33811) }
 
-var fileDescriptor2 = []byte{
+var fileDescriptor_8272a55f8dc33811 = []byte{
 	// 1501 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x57, 0xdd, 0x76, 0xe2, 0xc8,
 	0x11, 0x0e, 0x88, 0x1f, 0xbb, 0xb0, 0x71, 0xbb, 0xed, 0xb1, 0x65, 0x7b, 0x66, 0x42, 0x38, 0x9b,

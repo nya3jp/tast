@@ -31,6 +31,8 @@ const (
 	ListTestsMode = 1
 	// RPCMode indicates that the bundle should run a gRPC server on the stdin/stdout.
 	RPCMode = 2
+	// ExportMetadataMode indicates that the bundle should compose and dump test metadata.
+	ExportMetadataMode = 3
 )
 
 // Args is used to pass arguments from test runners to test bundles.
@@ -210,6 +212,7 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, bt
 		}
 
 		dump := flags.Bool("dumptests", false, "dump all tests as a JSON-marshaled array of testing.Test structs")
+		exportMetadata := flags.Bool("exportmetadata", false, "export all test metadata as a protobuf-marshaled message")
 		rpc := flags.Bool("rpc", false, "run gRPC server")
 		if err := flags.Parse(clArgs); err != nil {
 			return command.NewStatusErrorf(statusBadArgs, "%v", err)
@@ -217,6 +220,10 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, bt
 		if *dump {
 			args.Mode = ListTestsMode
 			args.ListTests = &ListTestsArgs{}
+			return nil
+		}
+		if *exportMetadata {
+			args.Mode = ExportMetadataMode
 			return nil
 		}
 		if *rpc {

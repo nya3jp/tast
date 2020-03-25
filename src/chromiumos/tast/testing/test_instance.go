@@ -19,6 +19,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/golang/protobuf/proto"
+	testpb "go.chromium.org/chromiumos/config/go/api/test/metadata/v1"
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/errors"
@@ -594,6 +596,23 @@ DepLoop:
 	return missing
 }
 
+// Proto converts test metadata of TestInstance into a protobuf message.
+func (t *TestInstance) Proto() *testpb.Test {
+	r := testpb.Test{
+		Name:          t.Name,
+		Informational: &testpb.Informational{},
+	}
+	for _, a := range t.Attr {
+		r.Attributes = append(r.Attributes, &testpb.Attribute{Name: a})
+	}
+	// TODO(crbug.com/1047561): Fill r.DUTCondition.
+	for _, email := range t.Contacts {
+		c := testpb.Contact{Type: &testpb.Contact_Email{Email: email}}
+		r.Informational.Authors = append(r.Informational.Authors, &c)
+	}
+	return &r
+}
+
 // SortTests sorts tests, primarily by ascending precondition name
 // (with tests with no preconditions coming first) and secondarily by ascending test name.
 func SortTests(tests []*TestInstance) {
@@ -623,5 +642,20 @@ func WriteTestsAsJSON(w io.Writer, ts []*TestInstance) error {
 		return err
 	}
 	_, err = w.Write(b)
+	return err
+}
+
+// WriteTestsAsProto exports test metadata in the protobuf format defined by infra.
+func WriteTestsAsProto(w io.Writer, ts []*TestInstance) error {
+	var result testpb.RemoteTestDriver
+	result.Name = "remoteTestDrivers/tast"
+	for _, src := range ts {
+		result.Tests = append(result.Tests, src.Proto())
+	}
+	d, err := proto.Marshal(&result)
+	if err != nil {
+		return errors.Wrap(err, "Failed to marshalize the proto")
+	}
+	_, err = w.Write(d)
 	return err
 }

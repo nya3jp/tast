@@ -14,8 +14,10 @@ import (
 	gotesting "testing"
 	"time"
 
+	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	testpb "go.chromium.org/chromiumos/config/go/api/test/metadata/v1"
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/testing/hwdep"
@@ -1029,5 +1031,31 @@ func TestSortTests(t *gotesting.T) {
 	expected := getNames([]*TestInstance{t1, t2, t3, t4, t5})
 	if !reflect.DeepEqual(actual, expected) {
 		t.Errorf("Sort(%v) = %v; want %v", in, actual, expected)
+	}
+}
+
+func TestTestInstanceToTest(t *gotesting.T) {
+	in := TestInstance{
+		Attr: []string{"attr1", "attr2"},
+		Contacts: []string{
+			"someone1@chromium.org",
+			"someone2@chromium.org",
+		},
+	}
+	expected := testpb.Test{
+		Attributes: []*testpb.Attribute{
+			&testpb.Attribute{Name: "attr1"},
+			&testpb.Attribute{Name: "attr2"},
+		},
+		Informational: &testpb.Informational{
+			Authors: []*testpb.Contact{
+				&testpb.Contact{Type: &testpb.Contact_Email{Email: "someone1@chromium.org"}},
+				&testpb.Contact{Type: &testpb.Contact_Email{Email: "someone2@chromium.org"}},
+			},
+		},
+	}
+	actual := convertTestInstanceToTest(&in)
+	if !cmp.Equal(expected, actual, cmp.Comparer(proto.Equal)) {
+		t.Errorf("convertTestInstanceToTest(%v) = %v; want %v", in, actual, expected)
 	}
 }

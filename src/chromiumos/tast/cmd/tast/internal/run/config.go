@@ -31,6 +31,8 @@ const (
 	RunTestsMode Mode = iota
 	// ListTestsMode indicates that tests should only be listed.
 	ListTestsMode
+	// ExportMetadataMode indicates that tests tests should only be listed.
+	ExportMetadataMode
 )
 
 // proxyMode describes how proxies should be used when running tests.

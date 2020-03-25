@@ -1,0 +1,124 @@
+// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromiumos.config.api;
+
+import "api/component_id.proto";
+import "api/partner_id.proto";
+
+option go_package = "go.chromium.org/chromiumos/config/go/api";
+
+message Component {
+  // Globally unique component identifier.
+  ComponentId id = 1;
+
+  oneof type {
+    Soc soc = 2;
+    Memory memory = 3;
+    Bluetooth bluetooth = 4;
+    Camera camera = 5;
+    Touchscreen touchscreen = 6;
+  }
+
+  message Soc {
+    enum Architecture {
+      ARCHITECTURE_UNDEFINED = 0;
+      X86 = 1;
+      X86_64 = 2;
+      ARM = 3;
+      ARM64 = 4;
+    }
+
+    message Family {
+      Architecture arch = 1;
+      // Common name (human friendly) for the family
+      string name = 2;
+    }
+
+    Family family = 1;
+    // Unique model name returned from cpu_id instruction
+    string model = 2;
+    // Number of cores present on the SoC model
+    int32 cores = 3;
+  }
+
+  message Memory {
+    Profile profile = 1;
+    string part_number = 2;
+    PartnerId manufacturer_id = 3;
+
+    message Profile {
+      Type type = 1;
+      int32 speed_mhz = 2;
+      int32 size_megabytes = 3;
+      // Any new fields here should be messages or enums that can differentiate
+      // the unspecified value from the 0-value (or the 0-value is not valid)
+    }
+
+    enum Type {
+      TYPE_UNDEFINED = 0;
+      DDR = 1;
+      DDR2 = 2;
+      DDR3 = 3;
+      DDR4 = 4;
+      LP_DDR3 = 5;
+      LP_DDR4 = 6;
+    }
+  }
+
+  message Bluetooth {
+    // 4-digit hex
+    string vendor_id = 1;
+    // 4-digit hex
+    string product_id = 2;
+    // 4-digit hex
+    string bcd_device = 3;
+  }
+
+  message Camera {
+    enum Feature {
+      FEATURE_UNKNOWN = 0;
+      ACTIVITY_LED = 1;
+    }
+    enum ClockType {
+      CLOCK_TYPE_UNDEFINED = 0;
+      MONOTONIC = 1;
+      BOOTTIME = 2;
+    }
+
+    repeated Feature features = 1;
+    ClockType clock_type = 2;
+  }
+
+  message Touchscreen {
+    // 4-digit hex
+    string vendor_id = 1;
+    // 4-digit hex
+    string product_id = 2;
+    // 4-digit hex
+    string fw_version = 3;
+    // Relative path to the touch firmware binary
+    // that will be installed when a given
+    // component vendor/product is detected.
+    string fw_path = 4;
+  }
+
+  // Record of a component level qualification and the corresponding status.
+  message Qualification {
+    enum Status {
+      STATUS_UNKNOWN = 0;
+      REQUESTED = 1;
+      TECHNICALLY_QUALIFIED = 2;
+      QUALIFIED = 3;
+    }
+    ComponentId component_id = 1;
+    Status status = 2;
+  }
+}
+
+message ComponentList {
+  repeated Component value = 1;
+}

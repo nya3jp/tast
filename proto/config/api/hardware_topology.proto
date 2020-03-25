@@ -1,0 +1,91 @@
+// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromiumos.config.api;
+
+import "api/topology.proto";
+
+option go_package = "go.chromium.org/chromiumos/config/go/api";
+
+// Contains hardware related system features that are tracked by Google to
+// differentiate distinct hardware build configurations. Generally these
+// hardware-related system features are not easily probe-able at run time.
+//
+// This SHOULD NOT be used to track second sourced components that are drop in
+// replacements.
+//
+// Note the types here are Topology values instead of enums. The individual
+// Design repos should check that any CL landing has acceptable Topology values.
+// Most values are effectively stringly typed enums.
+message HardwareTopology {
+  // Specify hardware screen topology hardware.
+  // See ./hardware_topology.md#screen for more information.
+  Topology screen = 1;
+
+  // Specify functional form factor type of hardware.
+  // See ./hardware_topology.md#form-factor for more information.
+  Topology form_factor = 2;
+
+  // Specify the audio codec topology.
+  // See ./hardware_topology.md#audio for more information
+  Topology audio = 3;
+
+  // Specify the stylus topology.
+  // See ./hardware_topology.md#stylus for more information.
+  Topology stylus = 4;
+
+  // Specify the internal keyboard topology.
+  // See ./hardware_topology.md#keyboard for more information.
+  Topology keyboard = 5;
+
+  // Specify which thermal topology.
+  // See ./hardware_topology.md#thermal for more information.
+  Topology thermal = 6;
+
+  // Specify the camera topology.
+  // See ./hardware_topology.md#camera for more information.
+  Topology camera = 7;
+
+  // Specify the accelerometer/gyroscope/magetometer topology.
+  // See ./hardware_topology.md#sensor for more information.
+  Topology accelerometer_gyroscope_magnetometer = 8;
+
+  // Specify the fingerprint sensor topology.
+  // See ./hardware_topology.md#fingerprint-sensor for more information.
+  Topology fingerprint = 9;
+
+  // Specify the proximity sensor topology.
+  // See ./hardware_topology.md#sensor for more information.
+  Topology proximity_sensor = 10;
+
+  // Specify the daughter board topology.
+  // See ./hardware_topology.md#daughter-board for more information.
+  Topology daughter_board = 11;
+
+  // Specify the non-volatile storage topology.
+  // See ./hardware_topology.md#non_volatile-storage for more information.
+  Topology non_volatile_storage = 12;
+
+  // Specify the ram topology.
+  // See ./hardware_topology.md#ram for more information.
+  Topology ram = 13;
+
+  // Specify the wifi topology.
+  // See ./hardware_topology.md#wifi for more information.
+  Topology wifi = 14;
+
+  // Specify the LTE sub-board topology.
+  // See ./hardware_topology.md#lte-board for more information.
+  Topology lte_board = 15;
+
+  // Specify the SD card reader topology.
+  // See ./hardware_topology.md#sd-reader for more information.
+  Topology sd_reader = 16;
+
+  // Specify the motherboard USB topology
+  // See ./hardware_topology.md#motherboard-usb for more information.
+  Topology motherboard_usb = 17;
+}

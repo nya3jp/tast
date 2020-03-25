@@ -19,7 +19,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/golang/protobuf/proto"
 	"go.chromium.org/chromiumos/infra/proto/go/device"
+	testpb "go.chromium.org/chromiumos/infra/proto/go/test/metadata/v1"
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/testing/internal/hwdep"
@@ -624,4 +626,16 @@ func WriteTestsAsJSON(w io.Writer, ts []*TestInstance) error {
 	}
 	_, err = w.Write(b)
 	return err
+}
+
+// WriteTestsAsProto exports test metadata in the protobuf format defined by infra.
+func WriteTestsAsProto(w io.Writer, ts []*TestInstance) error {
+	var t testpb.Test
+	// TODO: implement
+	d, err := proto.Marshal(&t)
+	if err != nil {
+		return errors.Wrap(err, "Failed to marshalize the proto")
+	}
+	_, err = w.Write(d)
+	return nil
 }

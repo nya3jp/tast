@@ -3,4 +3,7 @@
 # found in the LICENSE file.
 
 This directory contains the snapshot of infra protofiles.
-The commit hash is e0fa1c1fedbdcc44285a2280b5d9d3328480ca29.
+The commit hash is .
+
+This directory contains the snapshot of config protofiles.
+The commit hash is 9821cb4251a62a8c7ed92b5f467be1371dfb45de.

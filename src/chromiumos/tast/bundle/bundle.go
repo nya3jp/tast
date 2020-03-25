@@ -66,6 +66,15 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
+	case ExportMetadataMode:
+		tests, err := testsToRun(cfg, nil)
+		if err != nil {
+			return command.WriteError(stderr, err)
+		}
+		if err := testing.WriteTestsAsProto(stdout, tests); err != nil {
+			return command.WriteError(stderr, err)
+		}
+		return statusSuccess
 	case RunTestsMode:
 		tests, err := testsToRun(cfg, args.RunTests.Patterns)
 		if err != nil {

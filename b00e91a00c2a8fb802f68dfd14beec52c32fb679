@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "19045a5c_99a0fd06",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 282,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-03-25T08:13:40Z",
+      "side": 1,
+      "message": "Technically it is possible to merge them, but at the same time I think\n- It looks like the definitions depend on vendors, IIUC (I may wrong, though).\n- It cannot save any lines, because anyways we need\n\nmodel, ok ;\u003d parsed.model()\nif !ok {\n  return ...\n}\n\nin caller, so it looks still same as well.\nI\u0027m thinking it may not have benefit to do...? WDYT?",
+      "parentUuid": "a254377c_c1e31d61",
+      "range": {
+        "startLine": 279,
+        "startChar": 1,
+        "endLine": 282,
+        "endChar": 2
+      },
+      "revId": "b00e91a00c2a8fb802f68dfd14beec52c32fb679",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "124e3d88_f7273866",
         "filename": "src/chromiumos/tast/internal/runner/features.go",
         "patchSetId": 1
@@ -78,6 +102,24 @@
     },
     {
       "key": {
+        "uuid": "e72c51c8_d097d85e",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 293,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-03-25T08:13:40Z",
+      "side": 1,
+      "message": "Done. The number of CPUs looks like the simplest approach. Thank you for suggestion.",
+      "parentUuid": "c454e8c1_3759b58c",
+      "revId": "b00e91a00c2a8fb802f68dfd14beec52c32fb679",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "016422a3_b3fc7b50",
         "filename": "src/chromiumos/tast/internal/runner/features.go",
         "patchSetId": 1
@@ -95,6 +137,24 @@
     },
     {
       "key": {
+        "uuid": "81aa0573_2fd2f4c7",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 299,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-03-25T08:13:40Z",
+      "side": 1,
+      "message": "The table is values to the name of uarch. This is the mapping from values to SOC. So, conceptually they are different in precise.\n\nI prefer Miguel\u0027s suggestion. Keep the code in sync with intel-family.h as its source of truth.\nIf necessary, autotest files can be changed to follow intel-family.h, too, but it is out of scope of this CL.",
+      "parentUuid": "016422a3_b3fc7b50",
+      "revId": "b00e91a00c2a8fb802f68dfd14beec52c32fb679",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c17a6f12_f7265f7f",
         "filename": "src/chromiumos/tast/internal/runner/features.go",
         "patchSetId": 1
@@ -106,6 +166,30 @@
       "writtenOn": "2020-03-18T14:35:32Z",
       "side": 1,
       "message": "It would be great to have a comment here as to where these identifiers come from,\nso future developers will know how to extend it for e.g. the coming JSL and TGL;\nDo they come from kernel/v5.4/arch/x86/include/asm/intel-family.h [1] ?\n\n\n[1] https://source.chromium.org/chromiumos/chromiumos/codesearch/+/master:src/third_party/kernel/v5.4/arch/x86/include/asm/intel-family.h;l\u003d72?q\u003darch%2Fx86%2Finclude%2Fasm%2Fintel-family.h",
+      "range": {
+        "startLine": 310,
+        "startChar": 8,
+        "endLine": 310,
+        "endChar": 13
+      },
+      "revId": "b00e91a00c2a8fb802f68dfd14beec52c32fb679",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3902d390_cab36c33",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 310,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-03-25T08:13:40Z",
+      "side": 1,
+      "message": "Extracted to another file, and added reference.\nAlso, changed the actual values by constants.",
+      "parentUuid": "c17a6f12_f7265f7f",
       "range": {
         "startLine": 310,
         "startChar": 8,
@@ -141,6 +225,30 @@
     },
     {
       "key": {
+        "uuid": "4a629cda_7bb91c70",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 322,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-03-25T08:13:40Z",
+      "side": 1,
+      "message": "Could you clarify what \"upstream\" did you mean here?\nAdding entry looks straightforward to me, either adding \"case\" or adding regexp.\n\nThis approach should be for a short term to enable test authors control their tests based on SoC soon.\nFor long term, eventually, the device config will be provided from the infra team with f20 effort.\nPartner support should be included in the f20 effort, too, so out of scope of this CL.",
+      "parentUuid": "5e17eb31_98cde0d2",
+      "range": {
+        "startLine": 322,
+        "startChar": 0,
+        "endLine": 322,
+        "endChar": 72
+      },
+      "revId": "b00e91a00c2a8fb802f68dfd14beec52c32fb679",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "92858967_654dc792",
         "filename": "src/chromiumos/tast/internal/runner/features.go",
         "patchSetId": 1
@@ -152,6 +260,30 @@
       "writtenOn": "2020-03-18T14:35:32Z",
       "side": 1,
       "message": "AMD? SoC?",
+      "range": {
+        "startLine": 386,
+        "startChar": 52,
+        "endLine": 386,
+        "endChar": 57
+      },
+      "revId": "b00e91a00c2a8fb802f68dfd14beec52c32fb679",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4849edc2_967d16c6",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 386,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-03-25T08:13:40Z",
+      "side": 1,
+      "message": "Good catch. Done.",
+      "parentUuid": "92858967_654dc792",
       "range": {
         "startLine": 386,
         "startChar": 52,

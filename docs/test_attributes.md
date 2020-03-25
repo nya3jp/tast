@@ -9,18 +9,19 @@ established meanings.
 The following attributes may be added to control how tests are run and how their
 results are interpreted.
 
-A test should have at least one or more `group:*` attribute or `disabled`
-attribute. Some additional attributes can be specified depending on `group:*`
-attributes. Below is the list of most popular attributes:
+A test should have zero or more `group:*` attributes. Extra attributes can be
+specified depending on `group:*` attributes.
+
+Below is the list of most popular groups and their associated extra attributes:
 
 *   `group:mainline` - The default group for functional tests. Tests having
     this attribute are called *mainline* tests. A mainline test falls under
-    exactly one of the three categories: *disabled* if it has `disabled`
-    attribute; *informational* if it has `informational` attribute; otherwise
-    it is *critical*. Failures in critical tests justify rejecting or reverting
-    the responsible change, while failures in informational tests are ignored.
-    Disabled tests are not run automatically in the lab. All informational
-    mainline tests are supposed to be promoted to critical tests.
+    exactly one of the two categories: *informational* if it has `informational`
+    attribute; otherwise it is *critical*.
+    Failures in critical tests justify rejecting or reverting the responsible
+    change, while failures in informational tests are ignored.
+    All informational mainline tests are supposed to be promoted to critical
+    tests.
 *   `group:crosbolt` - Test failures are ignored and the test's performance data
     are uploaded to [crosbolt]. When you add this attribute, you also need to
     add one of `crosbolt_perbuild`, `crosbolt_nightly` or `crosbolt_weekly`.

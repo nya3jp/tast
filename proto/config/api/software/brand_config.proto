@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package chromiumos.config.api.software;
+
+option go_package = "go.chromium.org/chromiumos/config/go/api/software";
+
+import "api/device_brand_id.proto";
+import "api/software/chromeos_config/identity_scan_config.proto";
+
+// Contains all of the device-brand-specific configuration that can be
+// updated via new software builds/releases.
+//
+// During manufacturing, the DeviceBrandId will be set for a given device,
+// which will subsequently determine what BrandConfig shall be selected from
+// the current software-build installed on the device.
+message BrandConfig {
+  DeviceBrandId brand_id = 1;
+  chromeos_config.IdentityScanConfig.BrandId scan_config = 2;
+  string wallpaper = 3;
+}

@@ -12,7 +12,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"chromiumos/cmd/tast-lint/git"
+	"chromiumos/tast/cmd/tast-lint/git"
 )
 
 // cachedParser is a Go parser with cache.

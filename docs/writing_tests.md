@@ -1385,3 +1385,26 @@ introduce a local test and a gRPC service both of which call into the
 subpackage.
 
 [crbug.com/1027368]: https://crbug.com/1027368
+
+## Use of third party libraries
+
+1. Add an ebuild to package the code as a Portage package in
+[third_party/chromiumos-overlay], and they will effectively review third party
+licensing ([example](
+https://chromium-review.googlesource.com/c/chromiumos/overlays/chromiumos-overlay/+/1146070)).
+2. Add the dependency to tast-build-deps ([example](
+https://chromium-review.googlesource.com/c/chromiumos/overlays/chromiumos-overlay/+/1737396)).
+Please send this CL to ebuild-reviews@ and tast-owners@.
+
+Tast doesn't have any official process to review third party libraries.
+Just take usual precautions on introducing libraries, such as
+
+- Is the library popular?
+- Is the author reliable? Do they respond to issues, solve bugs and accept pull requests?
+- Is the API well-documented?
+- Does the library cover all your requirements?
+
+If you are in doubt, please feel free to send your proposal to
+tast-reviewers@google.com.
+
+[third_party/chromiumos-overlay]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/refs/heads/master/dev-go/

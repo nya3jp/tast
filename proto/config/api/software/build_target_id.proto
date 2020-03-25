@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package chromiumos.config.api.software;
+
+option go_package = "go.chromium.org/chromiumos/config/go/api/software";
+
+// An id that other messages can use as a foreign key to specify a
+// BuildTarget. Id messages are equal iff their binary serialization is
+// equal.
+message BuildTargetId {
+  string value = 1;
+}

@@ -1,0 +1,113 @@
+// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test.rtd.v1;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test/rtd/v1;rtd";
+
+import "lab/peripherals.proto";
+import "lab/services/client.proto";
+import "test/rtd/v1/progress.proto";
+
+// From chromiumos/config repo.
+import "api/hardware_topology.proto";
+import "api/topology.proto";
+
+// Input to a Remote Test Driver invocation.
+//
+// TODO(crbug.com/1051691): Link to a reference implementation of Remote Test
+// Server & Remote Test Driver.
+message Invocation {
+  // Progress sink to be used to report progress of the Remote Test Driver
+  // invocation to the surrounding Remote Test Server.
+  ProgressSinkClientConfig progress_sink_client_config = 1;
+
+  // Set of DUTs used for each of the requests in this invocation.
+  repeated DUT duts = 2;
+
+  // Smallest unit of an invocation request for which results MUST be reported.
+  //
+  // An invocation MUST execute all requests serially in-order. This assumption
+  // is necessary for future support of test sequences in test plans.
+  repeated Request requests = 3;
+
+  // Configuration information for using Test Lab Services to interact
+  // with DUTs and their peripherals.
+  lab.services.ClientConfig test_lab_services_config = 4;
+}
+
+// Contains all configuration data required to interact with a single device
+// under test during a test invocation.
+message DUT {
+  // Peripherals information about the lab deployment of the device.
+  lab.Peripherals peripherals = 1;
+
+  // The relationship between topology and features is described at
+  // https://chromium.googlesource.com/chromiumos/config/+/master/proto/api/hardware_topology.md
+  chromiumos.config.api.HardwareTopology hardware_topology = 2;
+  chromiumos.config.api.HardwareFeatures hardware_features = 3;
+
+  // Name for the DUT for using Test Lab Services to interact with the
+  // device and its peripherals.
+  //
+  // The RTD MUST pass this to Test Lab Service RPCs that act on a particular
+  // DUT. See the tls.OpenDutPortRequest message for an example of where
+  // this is used.
+  string tls_dut_name = 4;
+}
+
+// Request for execution of a single test.metadata.Test
+message Request {
+  // name MUST be unique across all requests in this invocation.
+  //
+  // Remote Test Drivers are recommended to use name as the opaque tag
+  // required by the Test Lab Services API. Thus, name SHOULD be unique across
+  // all invocations to simplify analytics. UUIDs are recommended.
+  //
+  // See also:
+  //   Test Lab Services API: tls/README.md
+  string name = 1;
+
+  // The test to execute, identified by the test.metadata.Test.name field.
+  //
+  // Note that the request does not contain a reference to the Remote Test
+  // Driver to use, as the request is an input to the Remote Test Driver
+  // invocation.
+  string test = 2;
+
+  // Per-request Remote Test Server environment configuration.
+  message Environment {
+    // Absolute path to a directory for writing arbitrary files.
+    //
+    // This directory MUST be created by Remote Test Server prior to the Remote
+    // Test Driver invocation.
+    //
+    // * Remote Test Drivers SHOULD use
+    // test.invocation.ProgressClient.ReportLog() to report logs.
+    // * Remote Test Drivers SHOULD use
+    // test.invocation.ProgressClient.ArchiveArtifact() to archive critical
+    // artifacts.
+    //
+    // Remote Test Servers may archive the work_dir contents to non-ephemeral
+    // storage as a best effort asynchronous task.
+    string work_dir = 1;
+
+    // Absolute path to a directory for writing temporary files.
+    //
+    // This directory MUST be created by Remote Test Server prior to the Remote
+    // Test Driver invocation.
+    //
+    // Remote Test Drivers MUST use this directory for temporary files and MUST
+    // NOT attempt to use defaults like /tmp or the TMP environment variable.
+    //
+    // See also: Environment.work_dir
+    string temp_dir = 2;
+  }
+
+  // Environment configuration set by the Remote Test Server for a specific
+  // request of the Remote Test Driver.
+  Environment environment = 3;
+}

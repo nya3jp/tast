@@ -1,0 +1,101 @@
+// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromiumos.config.api;
+
+import "api/design_config_id.proto";
+import "api/design_id.proto";
+import "api/hardware_topology.proto";
+import "api/partner_id.proto";
+import "api/program_id.proto";
+import "api/topology.proto";
+
+option go_package = "go.chromium.org/chromiumos/config/go/api";
+
+message Design {
+  // Globally unique design identifier.
+  DesignId id = 1;
+
+  // Program that defines the constraints for this design.
+  ProgramId program_id = 2;
+
+  // ODM for the given hardware design.
+  PartnerId odm_id = 3;
+
+  // Design codename (human friendly).
+  string name = 4;
+
+  // Supported hardware configurations for a given design.
+  repeated Config configs = 6;
+
+  // Defines a unique hardware configuration for a given hardware design
+  // and the corresponding hardware features that will be supported.
+  message Config {
+    // The ID encoded in hardware on a device, typically in CBI.
+    DesignConfigId id = 1;
+
+    // Each unique value of hardware_topology requires a unique DesignConfigId
+    HardwareTopology hardware_topology = 2;
+
+    // This field is generated from hardware_topology by combining all of the
+    // partial HardwareFeatures definitions from each selected hardware topology
+    HardwareFeatures hardware_features = 3;
+
+    // Constraints on HardwareFeatures.
+    //
+    // Each Constraint should specify exactly one HardwareFeature to constrain.
+    // Constraints are OR'd across the same type of HardwareFeatures, and AND'd
+    // across different types of HardwareFeatures. For example, the following
+    // specifies CLAMSHELL or CONVERTIBLE form factors are allowed, and the
+    // screen must have touch support:
+    //
+    //   design_config_constraints: <
+    //     level: REQUIRED
+    //     features: <
+    //       form_factor: <
+    //         form_factor: CLAMSHELL
+    //       >
+    //     >
+    //   >
+    //   design_config_constraints: <
+    //     level: REQUIRED
+    //     features: <
+    //       form_factor: <
+    //         form_factor: CONVERTIBLE
+    //       >
+    //     >
+    //   >
+    //   design_config_constraints: <
+    //     level: REQUIRED
+    //     features: <
+    //       screen: <
+    //         touch_support: PRESENT
+    //       >
+    //     >
+    //   >
+    //
+    // TODO: Formalize constraint definitions further, e.g. what are the
+    // semantics of level?
+    // TODO: should this be moved into Design or Program? This isn't used here
+    message Constraint {
+      enum Level {
+        TYPE_UNKNOWN = 0;
+        REQUIRED = 1;
+        PREFERRED = 2;
+        OPTIONAL = 3;
+      }
+
+      Level level = 1;
+      HardwareFeatures features = 2;
+    }
+
+    reserved 4, 7;
+  }
+}
+
+message DesignList {
+  repeated Design value = 1;
+}

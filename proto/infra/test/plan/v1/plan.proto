@@ -1,0 +1,322 @@
+// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test.plan.v1;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test/plan/v1;plan";
+
+import "lab/device.proto";
+
+// From chromiumos/config repo.
+import "api/hardware_topology.proto";
+import "api/topology.proto";
+
+// A set of known test plans.
+//
+// In practice, a complete specification of all known plans may consist of
+// multiple Specification instances. In that case the plan names MUST be unique
+// across different Specification instances.
+message Specification {
+  repeated Plan plans = 1;
+}
+
+// A Plan fully specifies a Test Platform end-user's coverage needs.
+//
+// Plans SHOULD associate platform software and Device Under Test condition
+// coverage rules with tests that exercise those components. Plans MUST be used
+// in the Test Platform request API. Other Test Lab Environments may use plans
+// to ease interoperation with the Test Platform.
+message Plan {
+  // A globally unique test plan name.
+  //
+  // MUST be valid resource name per https://aip.dev/122.
+  //
+  // Pattern: plans/{plan}
+  string name = 1;
+
+  // Each test plan unit specifies a particular set of tests to be run to meet
+  // specific conditions.
+  repeated Unit units = 2;
+}
+
+// Specifies a particular set of tests to be run to meet specific conditions.
+message Unit {
+  // A globally unique test plan unit name.
+  //
+  // MUST be valid resource name per https://aip.dev/122.
+  //
+  // Pattern: plans/{plan}/units/{unit}
+  //   where {plan} is the parent Plan of this Unit.
+  string name = 1;
+
+  // Selects tests to include in this test plan unit.
+  TestCondition test_condition = 2;
+
+  // Selects the set of Devices Under Test that satisfy the coverage
+  // requirements of this test plan unit.
+  DUTCoverageCondition dut_coverage_condition = 3;
+
+  // Chrome OS platform software covered by this test plan.
+  //
+  // Test Platform requests may optionally include a reference to platform
+  // software to be tested via the test plan. For such requests, Test Platform
+  // MUST only execute test plan units that have non-trivial coverage of the
+  // referenced platform software. Unrelated test plan units MUST be skipped.
+  //
+  // A typical example is presubmit testing: When testing a change to the
+  // network manager, it may be desirable to only run test plan units that
+  // are known to exercise the network manager.
+  //
+  // For a test plan unit with no `code_coverage` specified, Test Platform MUST
+  // assume coverage of all platform software (i.e., this test plan unit MUST
+  // never be skipped for code coverage considerations).
+  CodeCoverage code_coverage = 4;
+}
+
+// Selects the test.metadata.Test to include in a test plan unit.
+message TestCondition {
+  // A Common Expression Language (CEL) expression to specify test conditions.
+  //
+  // The full CEL spec can be found at https://github.com/google/cel-spec.
+  // Test Platform MUST interpret `expression` in the scope of
+  // `test.plan.TestCondition.Scope` defined below.
+  //
+  // ## Examples
+  //
+  // Typical instructive examples of expressions are:
+  //
+  // - Tauto dummy tests
+  //     "suite:dummy" in scope.attributes
+  // - Tast's crosbolt tests
+  //     !("disabled" in scope.attributes)
+  //     && "group:crosbolt" in scope.attributes
+  //     && "crosbolt_perbuild" in scope.attributes
+  // - network Tauto tests, selected by name
+  //     scope.test.startsWith("network_")
+  //
+  // ## CEL support
+  //
+  // All standard CEL syntax, macros and functions MUST be supported.
+  //
+  // ### Evaluation context
+  //
+  // In general, a CEL expression must be evaluated in some context that
+  // provides the basic bindings for name resolution.
+  //
+  // In this case, `expression` MUST be evaluated in a context that contains
+  //
+  // - A variable 'scope' of type TestCondition.Scope. This variable contains
+  //   the information about a particular Test being tested for
+  //   inclusion in the test plan unit via `expression`.
+  // - Protobuf definitions in this git project (i.e., rooted at infra/proto/).
+  string expression = 1;
+
+  message Scope {
+    // Name of the test as specified in test.metadata.Test.name
+    string test = 1;
+
+    // The test attribute name as specified in the test.metadata.Attribute.name
+    //
+    // attributes are populated from test.metadata.Test.attributes.
+    repeated string attributes = 2;
+  }
+}
+
+// Selects sets of Devices Under Test to run the tests on in a test plan unit.
+message DUTCoverageCondition {
+  // A Common Expression Language (CEL) expression to specify set of DUTs that
+  // provide the necessary coverage.
+  //
+  // Test Platform MUST interpret `expression` in the scope of the
+  // protobuf message DUTCoverageCondition.Scope defined below. In summary, the
+  // expression allows selection of a set of Devices Under Test that provide the
+  // necessary coverage - Test Platform will determine a set of devices that
+  // satisfies `expression` and execute the tests in the plan on all selected
+  // devices.
+  // - Platform may freely choose the exact set of devices used if `expression`
+  //   is satisfiable by more than one set.
+  // - Different tests in the plan may be executed on different sets of devices,
+  //   as long as they all satisfy `expression` individually.
+  //
+  // The full CEL spec can be found at https://github.com/google/cel-spec.
+  // This API only supports a sub-set of the CEL features as described here.
+  // Test Platform MUST validate the expression and reject use of unsupported
+  // features.
+  //
+  // TODO(crbug.com/1051689) Add reference to the metadata validator package.
+  //
+  // ## Examples
+  //
+  // Typical instructive examples of expressions are:
+  //
+  // - Constraints: All pre-F20 plans only specify constraints on what devices
+  //   may be used, e.g.:
+  //    - Run each test on one DUT with model 'nautilus'.
+  //        TODO(pprabhu, shapiroc): Need a way to specify model for migration.
+  //        duts.all(dut, dut.id.model_id.value = 'nautilus') && size(duts) == 1
+  //    - Run each test on one DUT with a stylus.
+  //        (duts.all(dut, dut.hardware_features.stylus
+  //                       == dut.hardware_features.PRESENT))
+  //         && size(duts) == 1)
+  //  - Fanout (not yet supported): In addition to constraints, the
+  //    plan may want to ensure coverage across some device features.
+  //    TODO(pprabhu) This is an instructive example. We can't say what arch
+  //    yet.
+  //    - Run each test on one x86 and ARM DUT with a specific camera.
+  //        (duts.all(dut, dut.hardware_toplogy.camera.id != "gomoe")
+  //         && duts.exist(dut,
+  //                       dut.cpu = dut.Config.Architecture.X86)
+  //         && duts.exist(dut,
+  //                       dut.cpu = dut.Config.Architecture.ARM))
+  //      Note that this expression does not have a clause for size(duts). Thus
+  //      Test Platform may satisfy this expression by running the test on more
+  //      than two DUTs. This behaviour can be unexpected, especially if the
+  //      plan fails due to an error on test execution on one of the selected
+  //      devices, even though it passed on other devices in the set such that
+  //      the expression was satsifed by the passing subset. Selection of a
+  //      minimal set of devices to run the plan is best effort.
+  //
+  // Currently, only single-DUT constraints are supported by the Test Platform.
+  // i.e., `expression` MUST be of the form:
+  //   duts.all(DUT_SELECTOR) && size(duts) == 1
+  // where DUT_SELECTOR is an expression that does not refer to `duts`.
+  // This restriction will be lifted as this API matures.
+  //
+  // ## CEL support
+  //
+  // Current support for `expression` evaluation is very restricted due to
+  // limitations in the scheduling platform used by Test Platform. Specifying
+  // the conditions in CEL will allow gradual lifting of support restrictions.
+  //
+  // As this API matures, features will be added to the scheduling
+  // infrastructure of Test Platform and restrictions here will be lifted based
+  // on requirements collected from test plan authors. See milestones in
+  // go/cros-f20-plan for expected feature iterations.
+  //
+  // ### Evaluation context
+  //
+  // In general, a CEL expression must be evaluated in some context that
+  // provides the basic bindings for name resolution.
+  //
+  // In this case, `expression` MUST be evaluated in a context that contains
+  //
+  // - A variable 'scope' of type DUTCoverageCondition.Scope. This variable
+  //   contains the information about the set of Devices Under Test being
+  //   tested for acceptance via `expression`.
+  // - Protobuf definitions in this git project (i.e., rooted at infra/proto/)
+  //
+  // ### Syntax
+  //
+  // See full syntax definition at
+  // https://github.com/google/cel-spec/blob/master/doc/langdef.md#syntax
+  //
+  // CEL standard syntax allows expressions that evaluate to errors (e.g.,
+  // syntax allows negation of lists, which has no semantics in CEL).
+  // Thus, this spec does not attempt to restrict the syntax, but specifies what
+  // operations are unsupported to aid metadata producers. Ultimately, the
+  // reference metadata validator is the authority on what expressions are
+  // allowed.
+  //
+  // Unsupported standard CEL semantics:
+  //   - Binary arithmetic operations
+  //     e.g.: +, *, /, % ...
+  //   - Relational Operators beyond (in)equality are not supported.
+  //     e.g.: (>, <, >=, <= ...)
+  //   - Logical OR in expressions is not supported.
+  //     e.g.: (a || b), !(a && b) ...
+  //
+  // ### Macros
+  //
+  // See full macro definition at
+  // https://github.com/google/cel-spec/blob/master/doc/langdef.md#macros
+  //
+  // Supported macros: has(), e.all()
+  // Unsupported macros: e.exists(), e.exists_one(), e.map(), e.filter()
+  //
+  // ### Standard Functions
+  //
+  // See full list of standard definitions at
+  // https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions
+  //
+  // Most standard functions are not supported.
+  //
+  // - Supported operators: !_, -_, _!=_, _&&_, _=_, _[_]
+  //   - All other operators are not supported.
+  // - All other standard functions are not supported. In particular take note:
+  //   - size() is not supported, *except in the mandatory top-level size(duts)
+  //     expression*.
+  //   - string functions like endsWith() and contains() are not supported.
+  //   - type conversions like int() and string() are not supported.
+  //   - reflection with type(), null_type() and dyn() is not supported.
+  string expression = 1;
+
+  // `expression` above is interpreted in the scope of the following message.
+  // The scope contains the features for a set of Devices Under Test that will
+  // be used to satisfy the plan.
+  message Scope {
+    // Set of Devices Under Test to be used to satisfy the test plan unit.
+    repeated DUT duts = 1;
+
+    // Device Under Test features relevant for test plan conditions.
+    message DUT {
+      // Configuration information about the lab deployment of the device.
+      lab.DeviceUnderTest lab_dut = 1;
+      // The relationship between topology and features is described at
+      // https://chromium.googlesource.com/chromiumos/config/+/master/proto/api/hardware_topology.md
+      chromiumos.config.api.HardwareTopology hardware_topology = 2;
+      chromiumos.config.api.HardwareFeatures hardware_features = 3;
+    }
+  }
+}
+
+// Specifies platforms software covered by a test plan unit.
+message CodeCoverage {
+  // A Common Expression Language (CEL) expression to specify code coverage.
+  //
+  // The full CEL spec can be found at https://github.com/google/cel-spec.
+  // Test Platform MUST interpret `expression` in the scope of
+  // `test.plan.CodeCoverageCondition.Scope` defined below.
+  //
+  // ## Examples
+  //
+  // Typical instructive examples of expressions are:
+  //
+  // - Need to cover chromite changes
+  //     scope.src_paths.exists(p, p.startsWith("chromite"))
+  // - Need to cover chromite and autotest changes
+  //     scope.src_paths.exists(p, [
+  //         "src/third_party/autotest/files",
+  //         "chromite"
+  //       ].exists(s, p.startsWith(s)))
+  // - Need to not cover changes to private overlays
+  //     scope.src_paths.all(p, !p.contains("private-overlays"))
+  //
+  // ## CEL support
+  //
+  // All standard CEL syntax, macros and functions MUST be supported.
+  //
+  // ### Evaluation context
+  //
+  // In general, a CEL expression must be evaluated in some context that
+  // provides the basic bindings for name resolution.
+  //
+  // In this case, `expression` MUST be evaluated in a context that contains
+  //
+  // - A variable 'scope' of type CodeCoverage.Scope. This variable contains
+  //   the information about what platform software changes are intended to be
+  //   tested by this test plan unit.
+  // - Protobuf definitions in this git project (i.e., rooted at infra/proto/).
+  string expression = 1;
+
+  message Scope {
+    // Covered paths (usually directories) in a typical checkout of the Chrome
+    // OS source tree.
+    //
+    // Paths are relative to `repo` root. e.g., changes to the network manager
+    // are covered by `src/platform2/shill`.
+    repeated string src_paths = 1;
+  }
+}

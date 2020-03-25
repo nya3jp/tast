@@ -1,0 +1,17 @@
+// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test.custom_results.graphics;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test/custom_results/graphics";
+
+import "test/custom_results/graphics/package.proto";
+
+// Next Tag: 2
+message SoftwareOverridesConfig {
+  // Packages that were explicitly overridden from the normal system softare.
+  repeated Package packages = 1;
+}

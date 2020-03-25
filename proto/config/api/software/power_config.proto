@@ -1,0 +1,17 @@
+// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromiumos.config.api.software;
+
+option go_package = "go.chromium.org/chromiumos/config/go/api/software";
+
+// Defines configuration settings for power management.
+// For more details, see:
+// https://source.chromium.org/chromiumos/chromiumos/codesearch/+/master:src/platform2/chromeos-config/README.md
+message PowerConfig {
+  // Key/values that define all of the power management preferences.
+  map<string, string> preferences = 1;
+}

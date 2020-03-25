@@ -1,0 +1,14 @@
+// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromiumos.config.api;
+
+option go_package = "go.chromium.org/chromiumos/config/go/api";
+
+// Uniquely identifies a Chromium OS hardware design project.
+message DesignId {
+  string value = 1;
+}

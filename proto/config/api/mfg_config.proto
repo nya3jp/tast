@@ -1,0 +1,29 @@
+// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromiumos.config.api;
+
+import "api/mfg_config_id.proto";
+
+option go_package = "go.chromium.org/chromiumos/config/go/api";
+
+// Contains 2 types of information related to an actual
+// manufacturing production run of hardware.
+//
+// 1) Second sourced components used that do not affect system features.
+//    (If it affected system features then it belongs in HardwareTopology)
+// 2) Data proscribed by Google for the target run that cannot change
+//    for a given piece of hardware. E.g. region code
+message MfgConfig {
+  // Unique id scoped to a Design within a Platform.
+  MfgConfigId id = 1;
+
+  // Name of 2nd sourced PCB Vendor.
+  string pcb_vendor = 2;
+
+  // Ram part number. The characteristics are encoded in HardwareTopology.
+  string ram_part_number = 3;
+}

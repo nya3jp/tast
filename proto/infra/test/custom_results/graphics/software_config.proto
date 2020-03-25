@@ -1,0 +1,65 @@
+// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test.custom_results.graphics;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test/custom_results/graphics";
+
+import "google/protobuf/timestamp.proto";
+import "test/custom_results/graphics/package.proto";
+import "test/custom_results/graphics/software_config_id.proto";
+
+// Software configuration of installed software on a device.
+// Next Tag: 11
+message SoftwareConfig {
+  // Global unique software configuration identifier.
+  SoftwareConfigId id = 1;
+
+  google.protobuf.Timestamp create_time = 2;
+
+  // TODO(davidriley): Decide if the hierarchy of the software config should
+  // be expressed with parent pointers or as part of the run.
+  // TODO(davidriley): How to handle same system invoked as chroot or VM?
+  // TODO(davidriley): How to handle crosvm vs qemu.
+
+  // For nested systems, the software configuration of the host system.
+  SoftwareConfigId parent = 3;
+
+  repeated Package packages = 4;
+
+  string kernel_release = 5;
+  string kernel_version = 6;
+
+  message ChromeOS {
+    string board = 1;
+    uint32 branch_number = 2;
+    string builder_path = 3;
+    uint32 build_number = 4;
+    string build_type = 5;
+    uint32 chrome_milestone = 6;
+    string description = 7;
+    string keyset = 8;
+    string name = 9;
+    string patch_number = 10;
+    string track = 11;
+    string version = 12;
+  }
+  ChromeOS chromeos = 7;
+
+  message OS {
+    string build_id = 1;
+    string codename = 2;
+    string id = 3;
+    string name = 4;
+    string pretty_name = 5;
+    string version_id = 6;
+    string version = 7;
+  }
+  OS os = 8;
+
+  string bios_version = 9;
+  string ec_version = 10;
+}

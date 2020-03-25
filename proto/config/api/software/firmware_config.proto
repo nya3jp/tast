@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package chromiumos.config.api.software;
+
+option go_package = "go.chromium.org/chromiumos/config/go/api/software";
+
+// The type of a firmware binary.
+message FirmwareType {
+  enum Type {
+    UNKNOWN = 0;
+    MAIN = 1;
+    EC = 2;
+    PD = 3;
+  }
+}
+
+// Specifies the version of a firmware binary.
+message Version {
+  int32 major = 1;
+  int32 minor = 2;
+}
+
+// Specifies the location of a firmware binary.
+message FirmwarePayload {
+  // The build target the firmware was built for.
+  string build_target_name = 1;
+
+  // The name of the firmware image used by the firmware updater. Typically
+  // the device name, but can differ when a device may have two or more
+  // different firmware images.
+  string firmware_image_name = 2;
+
+  FirmwareType.Type type = 3;
+
+  Version version = 4;
+}
+
+// Specifies different firmware payloads to use in a build.
+message FirmwareConfig {
+  // The main read-only firmware.
+  FirmwarePayload main_ro_payload = 1;
+
+  // The main read-write firmware.
+  FirmwarePayload main_rw_payload = 2;
+
+  // The embedded controller read-only firmware.
+  FirmwarePayload ec_ro_payload = 3;
+
+  // Extra EC build targets to build/include in the EC firmware.
+  repeated string ec_extras = 4;
+
+  // The libpayload read-only firmware
+  FirmwarePayload pd_ro_payload = 5;
+}

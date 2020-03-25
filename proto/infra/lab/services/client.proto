@@ -1,0 +1,31 @@
+// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package lab.services;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/lab/services";
+
+// Configuration information required by clients of Test Lab Services.
+message ClientConfig {
+  // Address where Test Lab Services is reachable.
+  // This should be an IPv4 or IPv6 address to avoid name
+  // resolution issues.
+  // IPv4 addresses will be in standard dotted decimal notation.
+  // IPv6 addresses will be formatted according to RFC4291, Section
+  // 2.2, 1. (no zero compression)
+  // If this is a hostname, the RTS should ensure that the hostname
+  // can be resolved by the RTD via standard name resolution
+  // facilities.
+  string tls_address = 1;
+  // Port on the tls_address where the service is reachable.
+  int32 tls_port = 2;
+
+  // Address where Test Lab Services Wiring is reachable.
+  // This has the same format as tls_address.
+  string tlw_address = 3;
+  // Port on the tlw_address where the service is reachable.
+  int32 tlw_port = 4;
+}

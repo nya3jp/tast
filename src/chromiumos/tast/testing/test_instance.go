@@ -19,6 +19,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/golang/protobuf/proto"
+	testpb "go.chromium.org/chromiumos/config/go/api/test/metadata/v1"
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/errors"
@@ -624,4 +626,38 @@ func WriteTestsAsJSON(w io.Writer, ts []*TestInstance) error {
 	}
 	_, err = w.Write(b)
 	return err
+}
+
+func convertTestInstanceToTest(src *TestInstance) testpb.Test {
+	var t testpb.Test
+	t.Name = src.Name
+	for _, a := range src.Attr {
+		var attr testpb.Attribute
+		attr.Name = a
+		t.Attributes = append(t.Attributes, &attr)
+	}
+	// TODO(crbug.com/1047561): Fill t.DUTCondition.
+	t.Informational = &testpb.Informational{}
+	for _, email := range src.Contacts {
+		c := testpb.Contact{Type: &testpb.Contact_Email{Email: email}}
+		t.Informational.Authors = append(t.Informational.Authors, &c)
+	}
+	return t
+}
+
+// WriteTestsAsProto exports test metadata in the protobuf format defined by infra.
+func WriteTestsAsProto(w io.Writer, ts []*TestInstance) error {
+	// var tests []testpb.Test
+	var result testpb.RemoteTestDriver
+	result.Name = "remoteTestDrivers/tast"
+	for _, src := range ts {
+		t := convertTestInstanceToTest(src)
+		result.Tests = append(result.Tests, &t)
+	}
+	d, err := proto.Marshal(&result)
+	if err != nil {
+		return errors.Wrap(err, "Failed to marshalize the proto")
+	}
+	_, err = w.Write([]byte(d))
+	return nil
 }

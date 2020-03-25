@@ -1,0 +1,284 @@
+// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromiumos.config.api;
+
+import "api/component.proto";
+
+option go_package = "go.chromium.org/chromiumos/config/go/api";
+
+// Represents a specific hardware topology option for a hardware feature, e.g.
+// camera, microphone, gyroscope, daughter board connection. For ecample. one
+// camera topology would be represented by a unique instance of this Topology
+// message.
+//
+// All Topology instances are scoped to a particular Design.
+message Topology {
+  // Short, but meaningful string that represents the topology. Blank id is
+  // not valid. Id values are validated by Design repo. Ids are
+  // meaningful within a Design. Ids are scoped and unique within a
+  // particular hardware features for a Design. For example, it is valid to have
+  // a "NONE" id for both the camera and micropohne hardware feature within the
+  // same Design.
+  string id = 1;
+
+  // The type of hardware feature this topology describes. This is used to
+  // ensure that the correct Topology values are used correctly within the
+  // HardwareTopology message
+  Type type = 2;
+  enum Type {
+    TYPE_UNKNOWN = 0;
+    SCREEN = 1;
+    FORM_FACTOR = 2;
+    AUDIO = 3;
+    STYLUS = 4;
+    KEYBOARD = 5;
+    THERMAL = 6;
+    CAMERA = 7;
+    ACCELEROMETER_GYROSCOPE_MAGNETOMETER = 8;
+    FINGERPRINT = 9;
+    PROXIMITY_SENSOR = 10;
+    DAUGHTER_BOARD = 11;
+    NON_VOLATILE_STORAGE = 12;
+    RAM = 13;
+    WIFI = 14;
+    LTE_BOARD = 15;
+    SD_READER = 16;
+    MOTHERBOARD_USB = 17;
+  }
+
+  // Map of human readable descriptions in various languages. Maps language
+  // code, e.g. "EN" or "ZH", to description of topology. These descriptions can
+  // be displayed to factory operators to select the correct options that
+  // applies to the board they are assembling.
+  map<string, string> description = 3;
+
+  // Specify the subset of hardware features that this hardware topology
+  // provides
+  HardwareFeatures hardware_feature = 4;
+}
+
+// Each Topology message specifies what that topology means in a 1st class
+// queryable way. Each Topology will only the subset of hardware features that
+// are applicable to that value.
+// The DesignConfig layer will combine all of the Topology messages
+// HardwareFeature messages into a wholistic view of the hardware design
+// configuration.
+//
+// Note to API designers: each field needs to be able to differentiate
+// an unspecified value and from the 0-value; this can be down with
+// messages or enums. Each field also defines how multiple values should be
+// combined.
+message HardwareFeatures {
+  enum Present {
+    PRESENT_UNKNOWN = 0;
+    PRESENT = 1;
+    NOT_PRESENT = 2;
+  }
+
+  message Count {
+    uint32 value = 1;
+  }
+
+  // USB-C properties
+  UsbC usb_c = 1;
+  message UsbC {
+    // The number of USB-C ports
+    Count count = 1;
+  }
+
+  // USB-A properties
+  UsbA usb_a = 2;
+  message UsbA {
+    // The number of USB-A ports
+    Count count = 1;
+  }
+
+  // LTE properties
+  Lte lte = 3;
+  message Lte {
+    // If LTE is present on system
+    Present present = 1;
+  }
+
+  // HDMI properties
+  Hdmi hdmi = 4;
+  message Hdmi {
+    // If native HDMI support is present on system.
+    Present present = 1;
+  }
+
+  // Firmware configuration field programmed in CBI. The value from each
+  // topology value will be summed to create the final DesignConfig level
+  // firmware configuration value.
+  FirmwareConfiguration fw_config = 5;
+  message FirmwareConfiguration {
+    // The firmware configuration value
+    uint32 value = 1;
+
+    // The mask of valid bits that could be used by above value
+    uint32 mask = 2;
+  }
+
+  // Audio properties of system
+  Audio audio = 6;
+  message Audio {
+    // Which audio codec is in use
+    AudioCodec audio_codec = 1;
+    enum AudioCodec {
+      AUDIO_CODEC_UNKNOWN = 0;  // Also used for non-public audio codecs
+      RT5682 = 1;
+      ALC5682I = 2;
+      ALC5682 = 3;
+    }
+  }
+
+  // Camera properties of system.
+  Camera camera = 7;
+  message Camera {
+    // If front camera on A panel is present
+    Present a_panel_camera = 1;
+
+    // If user facing camer on B panel is present
+    Present b_panel_camera = 2;
+
+    // Number of camera present on system
+    Count count = 3;
+  }
+
+  // Camera properties of system.
+  Accelerometer accelerometer = 8;
+  message Accelerometer {
+    // If lid accelerometer is present on system
+    Present lid_accelerometer = 1;
+
+    // If base accelerometer is present on system
+    Present base_accelerometer = 2;
+  }
+
+  // Gyroscope properties of system.
+  Gyroscope gyroscope = 9;
+  message Gyroscope {
+    // If lid gyroscope is present on system
+    Present lid_gryoscope = 1;
+
+    // If base gryoscope is present on system
+    Present base_gryoscope = 2;
+  }
+
+  // Magnetometer properties of system.
+  Magnetometer magnetometer = 10;
+  message Magnetometer {
+    // If lid magnometer is present on system
+    Present lid_magnetometer = 1;
+
+    // If base magnometer is present on system
+    Present base_magnetometer = 2;
+  }
+
+  // LightSensor properties of system.
+  LightSensor light_sensor = 11;
+  message LightSensor {
+    // If lid light sensor is present on system
+    Present lid_lightsensor = 1;
+
+    // If base light sensor is present on system
+    Present base_lightsensor = 2;
+  }
+
+  // Screen properties of system
+  Screen screen = 12;
+  message Screen {
+    // Screen since in milli-inches. Would be 0 for systems without screen
+    Count milliinch = 1;
+
+    // If touch support is present on system
+    Present touch_support = 2;
+  }
+
+  // Function form factor of system
+  FormFactor form_factor = 13;
+  message FormFactor {
+    // Form factory of system
+    FormFactorType form_factor = 1;
+    enum FormFactorType {
+      FORM_FACTOR_UNKNOWN = 0;
+      CLAMSHELL = 1;
+      CONVERTIBLE = 2;
+      DETACHABLE = 3;
+      CHROMEBASE = 4;
+      CHROMEBOX = 5;
+      CHROMEBIT = 6;
+      CHROMESLATE = 7;
+    }
+  }
+
+  // Stylus properites of system.
+  Stylus stylus = 14;
+  message Stylus {
+    // Type of stylus
+    StylusType stylus = 1;
+    enum StylusType {
+      STYLUS_UNKNOWN = 0;
+      NONE = 1;
+      INTERNAL = 2;  // Garaged stylus
+      EXTERNAL = 3;  // Non-garaged stylus
+    }
+  }
+
+  // Keyboard properties of system
+  Keyboard keyboard = 15;
+  message Keyboard {
+    // Type of keyboard present on system
+    KeyboardType keyboard_type = 1;
+    enum KeyboardType {
+      KEYBOARD_TYPE_UNKNOWN = 0;
+      INTERNAL = 1;   // E.g. Clamshell/Convertible
+      NONE = 2;       // E.g. Chromebox
+      DETACHABLE = 3; // E.g. Tablet with detachable keyboard
+    }
+
+    // If keyboard backlight is present on system
+    Present backlight = 2;
+
+    // If power button is present on keyboard
+    Present power_button = 3;
+  }
+
+  // Memory properties of system
+  Memory memory = 16;
+  message Memory {
+    Component.Memory.Profile profile = 1;
+  }
+
+  // Fingerprint properties of system
+  Fingerprint fingerprint = 17;
+  message Fingerprint {
+    // Location of fingerprint sensor
+    Location location = 1;
+    // Fingerprint board used.
+    string board = 2;
+
+    enum Location {
+      LOCATION_UNKNOWN = 0;
+      POWER_BUTTON_TOP_LEFT = 1;
+      KEYBOARD_BOTTOM_LEFT = 2;
+      KEYBOARD_BOTTOM_RIGHT = 3;
+      KEYBOARD_TOP_RIGHT = 4;
+    }
+  }
+
+  // Non-volatile storage properties of system
+  Storage storage = 18;
+  message Storage {
+    StorageType storage_type = 1;
+    enum StorageType {
+      STORAGE_TYPE_UNKNOWN = 0;
+      EMMC = 1;
+      NVME = 2;
+    }
+  }
+}

@@ -1,0 +1,106 @@
+// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test.custom_results.graphics;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test/custom_results/graphics";
+
+import "google/protobuf/timestamp.proto";
+import "test/custom_results/graphics/machine_id.proto";
+import "test/custom_results/graphics/result_id.proto";
+import "test/custom_results/graphics/software_config_id.proto";
+import "test/custom_results/graphics/software_overrides_config.proto";
+import "test/custom_results/graphics/trace_id.proto";
+
+// Result of a single test, trace, or benchmark run.
+// Next Tag: 19
+message Result {
+  // Global unique result identifier.
+  ResultId id = 1;
+
+  // When the result started and finished being collected.
+  google.protobuf.Timestamp start_time = 2;
+  google.protobuf.Timestamp end_time = 3;
+
+  // Machine which generated the result.
+  MachineId machine = 4;
+
+  // Installed software at the time the result was collected.
+  SoftwareConfigId software_config = 5;
+
+  enum ExecutionEnvironment {
+    UNKNOWN = 0;
+    HOST = 1;
+    TERMINA = 2;
+    CROSTINI = 3;
+    STEAM = 4;
+    ARC = 5;
+    ARCVM = 6;
+    CROUTON = 7;
+    CROSVM = 8;
+  }
+  ExecutionEnvironment execution_environment = 6;
+
+  // Lab or user originating this result.
+  // Format:
+  // - lab/LABNAME
+  // - user/USERNAME
+  string invocation_source = 7;
+
+  // Details on the invocation if it was generated as part of a test.
+  // TODO(davidriley): Flesh these out better.
+  // TODO(davidriley): Record test status and error messages.
+  string test_id = 17;
+  string test_name = 8;
+  string test_job_id = 9;
+
+  // Command line used invoke the test.
+  string command_line = 10;
+
+  // Thing being tested.
+  string benchmark = 11;
+  TraceId trace = 12;
+
+  // TODO(davidriley): This unit could be made into a separate Message
+  // a) This stanza is directly part of TraceResult with TraceResult repeated.
+  // b) This stanze becomes a separate repeated Message within TraceResult.
+  // c) This stanza becomes a separate Message with TraceResultId link to them.
+  // Next Tag: 7
+  message Metric {
+    string name = 1;
+    uint64 index = 2;
+    double value = 3;
+    string units = 4;
+    bool larger_is_better = 5;
+    bool externally_gathered = 6;
+  }
+
+  // fps, frames, time
+  // usec for frame N
+  // cpu/gpu utilization/frequency
+  repeated Metric metrics = 13;
+
+  // Identify the most interesting metric to show by default for a given result.
+  string primary_metric_name = 14;
+
+  // General non-numeric details collected about the environment or system
+  // state.  eg Interesting environment variables, glxinfo info.
+  // Next Tag: 4
+  message Label {
+    string name = 1;
+    string value = 2;
+    string grouping = 3;
+  }
+  repeated Label labels = 15;
+
+  // Software that was explicitly overridden from the normal system software
+  // for a given result.
+  SoftwareOverridesConfig overrides = 18;
+}
+
+message ResultList {
+  repeated Result value = 1;
+}

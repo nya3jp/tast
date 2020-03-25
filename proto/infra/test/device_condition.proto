@@ -1,0 +1,162 @@
+// Copyright 2019 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file contains the schame to represent the condition which should match
+// with the Config in device/config.proto.
+
+syntax = "proto3";
+
+package test_condition;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_condition";
+
+import "device/config.proto";
+
+// Represents the condition of device.Config message. If all conditions for
+// each field are satisfied, this message is considered as satisfied.
+message DeviceConfigCondition {
+  // Condition of device.ConfigId. This condition needs to be satisfied by
+  // device.Config.id.
+  ConfigIdCondition id = 1;
+
+  // If this is not FORM_FACTOR_UNSPECIFIED, form_factor and
+  // device.Config.form_factor must have same value.
+  device.Config.FormFactor form_factor = 2;
+
+  // If not empty, the value of device.Config.form_factor must not be
+  // contained in this field.
+  repeated device.Config.FormFactor no_form_factors = 3;
+
+  // If not empty, gpu_family and device.Config.gpu_family must have same
+  // value.
+  string gpu_family = 4;
+
+  // If not empty, the value of device.Config.gpu_family must not be
+  // contained in this field.
+  repeated string no_gpu_families = 5;
+
+  // If this is not GRAPHICS_UNSPECIFIED, graphics and device.Config.graphics
+  // must have same value.
+  device.Config.Graphics graphics = 6;
+
+  // If not empty, the value of device.Config.graphics must not be contained
+  // in this field.
+  repeated device.Config.Graphics no_graphics = 7;
+
+  // If not empty, all values in this field must be contained in the
+  // device.Config.hardware_features list.
+  repeated device.Config.HardwareFeature hardware_features = 8;
+
+  // If not emtpy, any value in device.Config.hardware_features must not be
+  // contained in this field.
+  repeated device.Config.HardwareFeature no_hardware_features = 9;
+
+  // If this is not POWER_SUPPLY_UNSPECIFIED, power and device.Config.power
+  // must have same value.
+  device.Config.PowerSupply power = 10;
+
+  // If not empty, the value of device.Config.power must not be contained in
+  // this field.
+  repeated device.Config.PowerSupply no_powers = 11;
+
+  // If this is not STORAGE_UNSPECIFIED, storage and device.Condition.storage
+  // must have same value.
+  device.Config.Storage storage = 12;
+
+  // If not empty, the value of device.Config.storage must not be contained
+  // in this field.
+  repeated device.Config.Storage no_storages = 13;
+
+  // If not empty, all values in this field must be contained in the
+  // device.Config.video_accelerator_supports.
+  repeated device.Config.VideoAcceleration video_acceleration_supports = 14;
+
+  // If not empty, any value in device.Config.video_acceleration_supports
+  // must not be contained in this field.
+  repeated device.Config.VideoAcceleration no_video_acceleration_supports = 15;
+
+  // If this is not SOC_UNSPECIFIED, soc and device.Config.soc must have same
+  // value.
+  device.Config.SOC soc = 16;
+
+  // If not empty, the value of device.Config.soc must not be contained in
+  // this field.
+  repeated device.Config.SOC no_socs = 17;
+}
+
+// Represents the condition of device.ConfigId message. If all conditions for
+// each field are satisfied, this message is considered as satisfied.
+// chromeos/infra/config has similar feature, i.e. disabling tests by DUT
+// models. The big difference is; this configuration is provided from tests,
+// and specifically it is branched. chromeos/infra/config is not branched.
+// The majar use case of chromeos/infra/config is to disable whole tests on
+// a specific types DUT due to, e.g., lab/infra issues.
+// Example use case of this condition is; if there is a known issue in a
+// third_party drive only on some specific board, but it is expected that the
+// fix of the issue would take time. This condition can be used to disable
+// the test for such a case.
+// On the other hand, chromeos/infra/config is expected to be used for
+// disabling tests on a specific board, regardless of versions, because of
+// temporaly infra/lab issue, for example.
+message ConfigIdCondition {
+  // Condition of device.PlatformId. This condition needs to be satisfied by
+  // device.ConfigId.platform_id.
+  PlatformIdCondition platform_id = 1;
+
+  // Condition of device.ModelId. This condition needs to be satisfied by
+  // device.ConfigId.model_id.
+  ModelIdCondition model_id = 2;
+
+  // Condition of device.VariantId. This condition needs to be satisfied by
+  // device.ConfigId.variant_id.
+  VariantIdCondition variant_id = 3;
+
+  // Condition of device.BrandId. This condition needs to be satisfied by
+  // device.ConfigId.brand_id.
+  BrandIdCondition brand_id = 4;
+}
+
+// Represents the condition of device.PlatformId message. If all conditions for
+// each field are satisfied, this message is considered as satisfied.
+message PlatformIdCondition {
+  // If not empty, value and device.ConfigId.value must have same value.
+  string value = 1;
+
+  // If not empty, the value of device.ConfigId.value must not be contained
+  // in this field.
+  repeated string no_values = 2;
+}
+
+// Represents the condition of device.ModelId message. If all conditions for
+// each field are satisfied, this message is considered as satisfied.
+message ModelIdCondition {
+  // If not empty, value and device.ConfigId.value must have same value.
+  string value = 1;
+
+  // If not empty, the value of device.ConfigId.value must not be contained
+  // in this field.
+  repeated string no_values = 2;
+}
+
+// Represents the condition of device.VariantId message. If all conditions for
+// each field are satisfied, this message is considered as satisfied.
+message VariantIdCondition {
+  // If not empty, value and device.ConfigId.value must have same value.
+  string value = 1;
+
+  // If not empty, the value of device.ConfigId.value must not be contained
+  // in this field.
+  repeated string no_values = 2;
+}
+
+// Represents the condition of device.BrandId message. If all conditions for
+// each field are satisfied, this message is considered as satisfied.
+message BrandIdCondition {
+  // If not empty, value and device.ConfigId.value must have same value.
+  string value = 1;
+
+  // If not empty, the value of device.ConfigId.value must not be contained
+  // in this field.
+  repeated string no_values = 2;
+}

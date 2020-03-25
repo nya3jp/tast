@@ -1,0 +1,241 @@
+// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+// This package contains the definitions for the test metadata generated as
+// build artifacts for all supported tests.
+//
+// This metadata is used for test execution requests, scheduling decisions and
+// results analytics in various Test Lab Environments.
+//
+// Metadata must be generated for all tests in supported Remote Test Drivers and
+// must be respected in all Test Lab Environments.
+package test.metadata.v1;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test/metadata";
+option java_outer_classname = "MetadataProto";
+
+import "google/protobuf/struct.proto";
+import "lab/device.proto";
+import "test/common/device.proto";
+import "test/metadata/v1/remote_test_driver.proto";
+
+// Metadata required for scheduling, invocation and results analysis of tests
+// for a Remote Test Driver.
+message Metadata {
+  // The Remote Test Driver this test metadata is for.
+  //
+  // There may be more than one metadata instance for a Remote Test Driver.
+  // Common reasons for multiple instances are:
+  // - The test definitions may be split over multiple source locations. Thus,
+  //   it may be more convenient to generate metadata for the tests spearately.
+  // - The Remote Test Driver metadata may differ for tests in the same Remote
+  //   Test Driver.
+  RemoteTestDriver remote_test_driver = 1;
+
+  // Metadata for the smallest schedulable test units.
+  repeated Test test = 2;
+}
+
+// The smallest schedulable test unit.
+//
+// A Test is an atomic schdulable unit. In particular, it is not possible to
+// modify the behaviour of a Remote Test Driver execution for a given Test by
+// supplying test arguments. See the documentation of
+// test.metadata.v1.Informational on how paramaterized tests may be in light of
+// this restriction.
+//
+// A single test platform request or Remote Test Driver invocation may contain
+// multiple instances of multiple Tests, but each instance of a Test must
+// correspond to exactly one reported result.
+//
+// See Also:
+//    Test Platform request: TODO(pprabhu)
+//    Remote Test Driver invocation request: test/rtd/invocation.proto
+//    Remote Test Driver progress API: test/rtd/progress.proto
+message Test {
+  // Identifying name for this test.
+  //
+  // Must be a valid resource per https://aip.dev/122.
+  //
+  // Name must be unique across all known tests for the test's Remote Test
+  // Driver. Thus, the tuple (remote_test_driver.id, name) is globally unique
+  // across all test metadata.
+  string name = 1;
+
+  // Attributes are used to include tests in test plans.
+  //
+  // See Also:
+  //   Test plans: test/plan/plan.proto
+  repeated Attribute attributes = 2;
+
+  // Required condition to be met for each Device Under Test targeted by this
+  // test.
+  //
+  // Condition enforcement is an optional feature for test scheduling, i.e.,
+  // some Test Lab Environments may ignore conditions entirely.
+  //
+  // May be specified multiple times for tests that target more than one Device
+  // Under Test, once per required device.
+  repeated DUTCondition conditions = 3;
+
+  // Metadata about the test that doesn't affect scheduling or execution.
+  Informational informational = 4;
+}
+
+// Attributes used to include tests in test plans.
+message Attribute {
+  // Opaque name for this attribute.
+  //
+  // Value must be valid resource names per https://aip.dev/122.
+  //
+  // Must not be interpreted by Test Lab Environments.
+  string name = 1;
+}
+
+// Condition to be met for each Device Under Test targeted by a test.
+message DUTCondition {
+  // A Common Expression Language (CEL) expression to specify DUT conditions.
+  //
+  // Test Lab Environments may optionally support targeting test requests to
+  // Device Under Test based on DUTConditions. If this feature is supported, the
+  // Test Lab Environment must interpret `expression` in the scope of the
+  // protobuf message DUTCondition.Scope as defined below.
+  //
+  // The full CEL spec can be found at https://github.com/google/cel-spec.
+  // This API only currently only supports a small sub-set of the CEL features,
+  // as described here. Test Lab Environments should validate the expression and
+  // reject use of unsupported features.
+  //
+  // TODO(crbug.com/1051689) Add reference to the metadata validator package.
+  //
+  // ## Examples
+  //
+  // Typical instructive examples of expressions are:
+  //
+  // - A specific characteristic for a hardware feature, e.g.:
+  //     scope.device.hardware_topology.screen.milliinch.value == 14000    
+  // - A specific topology for a hardware feature, e.g.:
+  //     scope.device.hardware_topology.form_factor.id == "fancy_clamshell"
+  // - Existence of a hardware feature, e.g.:
+  //     (scope.device.hardware_features.lte ==
+  //      scope.device.hardware_features.PRESENT)
+  // - Exclude certain hardware topologies, e.g.:
+  //     scope.device.hardware_topology.stylus.id != "pencil"
+  //
+  // ## CEL support
+  //
+  // Current support for `expression` evaluation is very restricted due to
+  // limitations in the scheduling platform used by Test Platform. Specifying
+  // the conditions in CEL will allow gradual lifting of support restrictions.
+  //
+  // As this API matures, features will be added to the scheduling
+  // infrastructure of Test Platform and restrictions here will be lifted based
+  // on requirements collected from test authors. See milestones in
+  // go/cros-f20-plan for expected feature iterations.
+  //
+  // ### Evaluation context
+  //
+  // A CEL expression must be evaluated in some context that provides the basic
+  // bindings for name resolution. `expression` must be evaluated in an
+  // evaluation context that contains
+  //
+  // - A variable 'scope' of type DUTCondition.Scope. This variable contains the
+  //   information about a particular Device Under Test being tested for
+  //   acceptance via `expresssion`.
+  // - Protobuf definitions in this git project (i.e., rooted at infra/proto/).
+  //
+  // ### Syntax
+  //
+  // See full syntax definition at
+  // https://github.com/google/cel-spec/blob/master/doc/langdef.md#syntax
+  //
+  // CEL standard syntax allows expressions that evaluate to errors (e.g.,
+  // syntax allows negation of lists, which has no semantics in CEL).
+  // Thus, this spec does not attempt to restrict the syntax, but specifies what
+  // operations are unsupported to aid metadata producers. Ultimately, the
+  // reference metadata validator is the authority on what expressions are
+  // allowed.
+  //
+  // Unsupported standard CEL semantics:
+  //   - Binary arithmetic operations
+  //     e.g.: +, *, /, % ...
+  //   - Relational Operators beyond (in)equality are not supported.
+  //     e.g.: (>, <, >=, <= ...)
+  //   - Logical OR in expressions is not supported.
+  //     e.g.: (a || b), !(a && b) ...
+  //
+  // ### Macros
+  //
+  // See full macro definition at
+  // https://github.com/google/cel-spec/blob/master/doc/langdef.md#macros
+  //
+  // Supported macros: has(), e.all()
+  // Unsupported macros: e.exists(), e.exists_one(), e.map(), e.filter()
+  //
+  // ### Standard functions
+  //
+  // See full list of standard definitions at
+  // https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions
+  //
+  // Most standard functions are not supported.
+  //
+  // - Supported operators: !_, -_, _!=_, _&&_, _=_, _[_]
+  //   - All other operators are not supported.
+  // - All other standard functions are not supported. In particular take note:
+  //   - size() is not supported.
+  //   - string functions like endsWith() and contains() are not supported.
+  //   - type conversions like int() and string() are not supported.
+  //   - reflection with type(), null_type() and dyn() is not supported.
+  string expression = 1;
+
+  // Protocol buffer scope for interpretation of `expression`.
+  //
+  // Scope includes the Device Under Test features that can be targeted for test
+  // targetting.
+  message Scope {
+    // Device Under Test specification.
+    test.common.Device device = 1;
+
+    // Peripherals information about the lab deployment of the device.
+    lab.DeviceUnderTest lab_dut = 2;
+  }
+}
+
+// Contains metadata about the test that doesn't affect scheduling or execution.
+message Informational {
+  // Contacts for ownership / flakiness notification etc.
+  repeated Contact authors = 1;
+
+  // Machine readable test-specific information.
+  //
+  // Remote Test Drivers should include detailed information to aid analytics.
+  // For example, test authors may minimize code duplication by writing
+  // paramterized tests. Thus, multiple test metadata may refer to the
+  // same test implementation with different arguments. It is useful to include
+  // this information as details. An example for Tauto:
+  //   {
+  //      "test_project": "chromiumos/third_party/autotest",
+  //      "control_file": "site_tests/dummy_Pass/control.stress",
+  //      "args": {
+  //        "run_count": 35
+  //      }
+  //   }
+  //
+  // This field must not be interpreted by the Test Lab Environments, but Remote
+  // Test Drivers can enrich analytics by using uniform stable schema for
+  // details across all their tests.
+  google.protobuf.Struct details = 2;
+}
+
+// Contact information of individuals or teams.
+message Contact {
+  oneof type {
+    // e.g.: user@google.com
+    string email = 1;
+    // e.g.: team-name (not mdb/team-name)
+    string mdb_group = 2;
+  }
+}

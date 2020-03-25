@@ -1,0 +1,24 @@
+// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+// This package contains common messages used throughout the test specification
+// APIs.
+package test.common;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test/common";
+option java_outer_classname = "CommonProto";
+
+// From chromiumos/config repo.
+import "api/hardware_topology.proto";
+import "api/topology.proto";
+
+// Specification of known characteristics of a Device Under Test.
+message Device {
+    // The relationship between topology and features is described at
+    // https://chromium.googlesource.com/chromiumos/config/+/master/proto/api/hardware_topology.md
+    chromiumos.config.api.HardwareTopology hardware_topology = 1;
+    chromiumos.config.api.HardwareFeatures hardware_features = 2;
+}

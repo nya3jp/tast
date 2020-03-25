@@ -1,0 +1,75 @@
+// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test.metadata.v1;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test/metadata";
+
+// go/cros-rtd-spec describes the Remote Test Driver bootstrapping flow inside
+// the Remote Test Server. Remote Test Driver configures the bootstrapping flow
+// for a test invocation.
+message RemoteTestDriver {
+  // All supported Remote Test Drivers, per go/cros-f20.
+  enum ID {
+    // Unspecified emote Test Driver. Must not be used.
+    ID_UNSPECIFIED = 0;
+
+    // See http://go/tauto-tests
+    TAUTO = 1;
+
+    // See http://go/tast
+    TAST = 2;
+  }
+
+  // id is required to construct globally unique identifiers for test metadata.
+  ID id = 1;
+
+  // A container image containing all the required dependencies and other build
+  // artifacts required for test invocations.
+  //
+  // Test Lab Environments should fail with an error indicating that the request
+  // was invalid if the image fails to be found for a test invocation.
+  BuildArtifact image = 2;
+
+  // Command to invoke the Remote Test Driver inside `image`.
+  //
+  // Remote Test Servers must run `command` as
+  //   $ ${command} -input_json ${input_json}
+  // where ${intput_json} is an absolute file path.
+  //
+  // Remote Test Servers must populate `input_json` with a JSON encoded
+  // test.invocation.Request message.
+  string command = 3;
+}
+
+// A Chrome OS build artifact required for test execution.
+message BuildArtifact {
+  // All build artifacts are assumed to be archived in some common directory
+  // root. `relative_path` is the relative path inside the root archive
+  // directory.
+  //
+  // Infrastructure Test Lab Environment: Chrome OS Continuous Integration
+  // builders archive build artifacts to a path on Google Storage. The Test
+  // Platform requests include a reference to the root archival path.
+  // e.g.,
+  // * The builder archives all build artifacts to
+  //   gs://chromeos-image-archive/link-release/R64-0.0.0.0/
+  // * Test Platform request includes this archival path.
+  // * `relative_path` is set to tast/mighty.bin
+  // * Then, the full path to the artifact is
+  //   gs://chromeos-image-archive/link-release/R64-0.0.0.0/tast/mighty.bin
+  //
+  // Developer Test Lab Environment: For developer flow outside of the
+  // infrastructure, it is assumed that the build artifacts are available at a
+  // local path with the same directory layout as the Google Storage archival.
+  // e.g.,
+  // * Local build copies all artifacts to /tmp/cbuildbot/archive/
+  // * Local tooling includes a reference to this path.
+  // * `relative_path` is set to tauto/ssp.bin
+  // * Then, the full path to the artifact is
+  //   /tmp/cbuildbot/archive/tauto/ssp.bin
+  string relative_path = 1;
+}

@@ -1,0 +1,56 @@
+// Copyright 2019 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_condition;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_condition";
+
+
+import "test/device_condition.proto";
+import "test/lab_condition.proto";
+
+// TestCaseSet contains all information about the target test.
+message TestCaseSet {
+  repeated TestCase test_cases = 1;
+}
+
+// TestCase contains information about a test case.
+message TestCase {
+  enum Framework {
+    FRAMEWORK_UNSPECIFIED = 0;
+    FRAMEWORK_TAST = 1;
+  }
+
+  // Test framework where this test case comes from.
+  Framework framework = 1;
+
+  // Required. The name of this test case. E.g. "ui.ChromeLogin".
+  string name = 2;
+
+  // Describes the dependencies which needs to be satisfied to run this test.
+  TestCondition condition = 3;
+}
+
+// Describes the condition which needs to be satisfied to run a test case.
+// The condition is formed in a "Disjunctive normal form".
+message TestCondition {
+  // If an entry in the disjunct_components is satisfied, this condition is
+  // considered as satisfied. In other words, TestCondition is the "OR" of all
+  // disjunct_components.
+  // If there is no entry in disjunct_components, this TestCondition is always
+  // considered as satisfied.
+  repeated TestConditionComponent disjuct_components = 1;
+}
+
+// Describes one "disjunct component" of the TestCondition, which is the "AND"
+// of all its fields.
+message TestConditionComponent {
+  // Represents the condition about device/config.proto.
+  DeviceConfigCondition device_config = 1;
+
+  // Represents the condition about lab/peripherals.proto.
+  LabPeripheralsCondition lab_peripherals = 2;
+}

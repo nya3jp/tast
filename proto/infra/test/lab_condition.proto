@@ -1,0 +1,178 @@
+// Copyright 2019 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_condition;
+
+option go_package = "go.chromium.org/chromiumos/infra/proto/go/test_condition";
+
+import "lab/chameleon.proto";
+import "lab/peripherals.proto";
+
+// Represents boolean and "missing" value. If UNSPECIFIED, this matches with
+// any bool value. If TRUE or FALSE, these matches true and false respectively.
+enum Tribool {
+  UNSPECIFIED = 0;
+  TRUE = 1;
+  FALSE = 2;
+}
+
+// Represents the condition of lab.Peripherals message. If all conditions for
+// each field are satisfied, this message is considered as satisfied.
+message LabPeripheralsCondition {
+  // Condition of lab.Chameleon. This condition needs to be satisfied by
+  // lab.Peripherals.chameleon.
+  LabChameleonCondition chameleon = 1;
+
+  // Condition of lab.Servo. This condition needs to be satisfied by
+  // lab.Peripherals.servo.
+  LabServoCondition servo = 2;
+
+  // Condition of lab.RPM. This condition needs to be satisfied by
+  // lab.Peripherals.rpm.
+  LabRPMCondition rpm = 3;
+
+  // Condition of lab.Audio. This condition needs to be satisfied by
+  // lab.Peripherals.audio.
+  LabAudioCondition audio = 4;
+
+  // Condition of lab.Wifi. This condition needs to be satisfied by
+  // lab.Peripherals.wifi.
+  LabWifiCondition wifi = 5;
+
+  // Condition of lab.Camera. If not empty, all the condition in this field
+  // needs to be satisfied by any of lab.Peripherals.camera.
+  repeated LabCameraCondition cameras = 6;
+
+  // Condition of lab.Camera. If not empty, any value in lab.Peripherals.camera
+  // must not satisfy any condition in this field.
+  repeated LabCameraCondition no_cameras = 7;
+
+  // Condition of lab.Touch. This condition needs to be satisfied by
+  // lab.Peripherals.touch.
+  LabTouchCondition touch = 8;
+}
+
+// Represents the condition of lab.Chameleon message. If all conditions for
+// each field are satisfied, this message is considered as satisfied.
+message LabChameleonCondition {
+  reserved 1;
+  // If this is not CHAMELEON_TYPE_INVALID, chameleon_peripherals and
+  // labs.Chameleon.chameleon_peripherals must have same value.
+  repeated lab.ChameleonType chameleon_peripherals = 4;
+
+  // If not empty, the value of lab.Chameleon.chameleon_type must not be
+  // contained in this field.
+  repeated lab.ChameleonType no_chameleon_types = 2;
+
+  // If this is not UNSPECIFIED, the value of audio_board needs to be matched
+  // with the value in lab.Chameleon.audio_board.
+  Tribool audio_board = 3;
+}
+
+// Represents the condition of lab.Servo message. If all conditions for
+// each field are satisfied, this message is considered as satisfied.
+message LabServoCondition {
+  reserved 1;
+
+  // If not empty, servo_hostname and lab.Servo.servo_hostname must have
+  // same value.
+  string servo_hostname = 2;
+
+  // If not empty, the value of lab.Servo.servo_hostname must not be
+  // contained in this field.
+  repeated string no_servo_hostnames = 3;
+
+  // If servo_port is not 0, servo_port and lab.Servo.servo_port must have
+  // same value.
+  int32 servo_port = 4;
+
+  // If not empty, the value of lab.Servo.servo_port must not be contained
+  // in this field.
+  repeated int32 no_servo_ports = 5;
+
+  // If not empty, servo_serial and lab.Servo.servo_serial must have same
+  // value.
+  string servo_serial = 6;
+
+  // If not empty, the value of lab.Servo.servo_serial must not be contained
+  // in this field.
+  repeated string no_servo_serials = 7;
+
+  // If not empty, servo_type and lab.Servo.servo_type must have same value.
+  string servo_type = 8;
+
+  // If not empty, the value of lab.Servo.servo_type must not be contained
+  // in this field.
+  repeated string no_servo_types = 9;
+}
+
+// Represents the condition of lab.RPM message. If all conditions for
+// each field are satisfied, this message is considered as satisfied.
+message LabRPMCondition {
+  // If not empty, powerunit_name and lab.RPM.powerunit_name must have same
+  // value.
+  string powerunit_name = 1;
+
+  // If not empty, the value of lab.RPM.powerunit_name must not be contained
+  // in this field.
+  repeated string no_powerunit_names = 2;
+
+  // If not empty, powerunit_outlet and lab.RPM.powerunit_outlet must have
+  // same value.
+  string powerunit_outlet = 3;
+
+  // If not empty, the value of lab.RPM.powerunit_outlet must not be
+  // contained in this field.
+  repeated string no_powerunit_outlets = 4;
+}
+
+// Represents the condition of lab.Audio message. If all conditions for
+// each field are satisfied, this message is considered as satisfied.
+message LabAudioCondition {
+  // If this is not UNSPECIFIED, the value of audio_box needs to be matched
+  // with the value in lab.Audio.audio_box.
+  Tribool audio_box = 1;
+
+  // If this is not UNSPECIFIED, the value of atrus needs to be matched
+  // with the value in lab.Audio.atrus.
+  Tribool atrus = 2;
+}
+
+// Represents the condition of lab.Wifi message. If all conditions for
+// each field are satisfied, this message is considered as satisfied.
+message LabWifiCondition {
+  // If this is not UNSPECIFIED, the value of wificell needs to be matched
+  // with the value in lab.Wifi.wificell.
+  Tribool wificell = 1;
+
+  // If this is not CONN_UNKNOWN, antenna_conn and lab.Wifi.antenna_conn must
+  // have same value.
+  lab.Wifi.AntennaConnection antenna_conn = 2;
+
+  // If not empty, the value of lab.Wifi.antenna_conn must not be contained
+  // in this field.
+  repeated lab.Wifi.AntennaConnection no_antenna_conns = 3;
+}
+
+// Represents the condition of lab.Camera message. If all conditions for
+// each field are satisfied, this message is considered as satisfied.
+message LabCameraCondition {
+  // If this is not CAMERA_INVALID, camera_type and lab.Camera.camera_type
+  // must have same value.
+  lab.CameraType camera_type = 1;
+
+  // If not empty, the value of lab.Camera.camera_type must not be contained
+  // in this field.
+  repeated lab.CameraType no_camera_types = 2;
+}
+
+// Represents the condition of lab.Touch message. If all conditions for
+// each field are satisfied, this message is considered as satisfied.
+message LabTouchCondition {
+  // If this is not UNSPECIFIED, the value of mino needs to be matched
+  // with the value in lab.Touch.mino.
+  Tribool mino = 1;
+}

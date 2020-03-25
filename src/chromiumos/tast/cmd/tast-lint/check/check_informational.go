@@ -139,20 +139,17 @@ func makeSliceAttrs(node ast.Node) []string {
 	return attrs
 }
 
-// isCriticalTest returns true if there are no 'informational' and 'disabled' attribute
+// isCriticalTest returns true if there are no 'informational' attribute
 // in existing attributes and it is mainline test.
 func isCriticalTest(attrs []string) bool {
 	isMainlineTest := true
 	isInformational := false
-	isDisabled := false
 	for _, attr := range attrs {
 		if attr == "informational" {
 			isInformational = true
-		} else if attr == "disabled" {
-			isDisabled = true
 		} else if strings.HasPrefix(attr, "group:") && attr != "group:mainline" {
 			isMainlineTest = false
 		}
 	}
-	return isMainlineTest && !isInformational && !isDisabled
+	return isMainlineTest && !isInformational
 }

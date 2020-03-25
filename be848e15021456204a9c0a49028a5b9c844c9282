@@ -16,6 +16,24 @@
       "revId": "be848e15021456204a9c0a49028a5b9c844c9282",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7d79519c_92f5d429",
+        "filename": "docs/test_attributes.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-03-25T08:44:56Z",
+      "side": 1,
+      "message": "I was too lazy to explain it because it is incorrect to say \"a test is disabled if it has no group attribute\". But you\u0027re right, let me clarify this explanation.",
+      "parentUuid": "13e77d0b_fa244470",
+      "revId": "be848e15021456204a9c0a49028a5b9c844c9282",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

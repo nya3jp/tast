@@ -51,6 +51,24 @@
       "revId": "5113872f1cbc3bda545fd0f996b53810675aceb3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f24a92e5_a41ba226",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1400377
+      },
+      "writtenOn": "2020-03-25T00:32:30Z",
+      "side": 1,
+      "message": "https://bugs.chromium.org/p/chromium/issues/detail?id\u003d1064461\nI just filed bug to track this request. Working with the team on the release/branch issues. Thanks!",
+      "parentUuid": "9f8a7f1f_4df5cdac",
+      "revId": "5113872f1cbc3bda545fd0f996b53810675aceb3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

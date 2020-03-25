@@ -182,3 +182,20 @@ join shadow reviews. See [go/tast-shadow-review] for details of the process.
 Upon graduating from shadow reviews, you will be added to [Tast reviewers].
 
 [go/tast-shadow-review]: https://goto.google.com/tast-shadow-review
+
+### How to add a third party Go library?
+
+1. Add an ebuild to package the code as a Portage package in
+[third_party/chromiumos-overlay], and they will effectively review third party
+licensing. [example](https://chromium-review.googlesource.com/c/chromiumos/overlays/chromiumos-overlay/+/600996)
+2. Add the dependency to tast-build-deps.
+[example](https://chromium-review.googlesource.com/c/chromiumos/overlays/chromiumos-overlay/+/1808333)
+
+Tast doesn't have any offical process to review third party libraries.
+Just take usual precautions on introducing the library, such as ones discussed in
+[this blog](https://www.scalablepath.com/blog/third-party-libraries/).
+If you are in doubt, please feel free to send your proposal to
+[tast-reviewers@google.com].
+
+[third_party/chromiumos-overlay]: http://cs/chromeos_public/src/third_party/chromiumos-overlay/dev-go
+[tast-reviewers@google.com]: https://groups.google.com/a/google.com/g/tast-reviewers

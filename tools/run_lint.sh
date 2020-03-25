@@ -12,7 +12,7 @@ declare -r chroot_gopath="${repo_root}/chroot/usr/lib/gopath"
 export GOBIN="${tast_root}/bin"
 export GOPATH="${tast_root}:${chroot_gopath}"
 
-if ! go install chromiumos/cmd/tast-lint; then
+if ! go install chromiumos/tast/cmd/tast-lint; then
   echo "*** Failed to build tast-lint. Please run update_chroot."
   exit 1
 fi

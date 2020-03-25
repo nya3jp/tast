@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"go.chromium.org/chromiumos/infra/proto/go/device"
+	testpb "go.chromium.org/chromiumos/infra/proto/go/test/metadata/v1"
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/testing/internal/hwdep"
@@ -621,4 +622,10 @@ func WriteTestsAsJSON(w io.Writer, ts []*TestInstance) error {
 	}
 	_, err = w.Write(b)
 	return err
+}
+
+func WriteTestsAsProto(w io.Writer, ts []*TestInstance) error {
+	var t testpb.Test
+	// TODO: implement
+	return nil
 }

@@ -38,13 +38,14 @@ Any additional positional arguments describe which tests should be executed:
 
 *   If no arguments are supplied, all tests are selected.
 *   If a single argument surrounded by parentheses is supplied, it is
-    interpreted as a boolean expression consisting of test attributes. For
-    example, the expression `(("dep:chrome" || "dep:android") && !disabled)`
-    matches all tests with a `dep:chrome` or `dep:android` attribute
-    but not a `disabled` attribute. Attributes that don't consist of
-    a letter or underscore followed by letters, digits, and underscores must be
-    double-quoted. '*' characters in quoted strings are interpreted as
-    wildcards. See [chromiumos/tast/internal/expr] for details about expression syntax.
+    interpreted as a boolean expression consisting of test attributes.
+    For example, the expression
+    `(("dep:chrome" || "dep:android") && !informational)` matches all tests with
+    a `dep:chrome` or `dep:android` attribute but not an `informational`
+    attribute. Attributes that don't consist of a letter or underscore followed
+    by letters, digits, and underscores must be double-quoted. '*' characters in
+    quoted strings are interpreted as wildcards.
+    See [chromiumos/tast/internal/expr] for details about expression syntax.
 *   Otherwise, the argument(s) are interpreted as wildcard patterns matching
     test names. For example, `ui.*` matches all tests with names prefixed by
     `ui.`. Multiple patterns can be supplied: passing `example.Pass` and

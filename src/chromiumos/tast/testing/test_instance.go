@@ -19,7 +19,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/golang/protobuf/proto"
 	"go.chromium.org/chromiumos/infra/proto/go/device"
+	testpb "go.chromium.org/chromiumos/infra/proto/go/test/metadata/v1"
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/testing/internal/hwdep"
@@ -624,4 +626,32 @@ func WriteTestsAsJSON(w io.Writer, ts []*TestInstance) error {
 	}
 	_, err = w.Write(b)
 	return err
+}
+
+// WriteTestsAsProto exports test metadata in the protobuf format defined by infra.
+func WriteTestsAsProto(w io.Writer, ts []*TestInstance) error {
+	// var tests []testpb.Test
+	for _, src := range ts {
+		var t testpb.Test
+		t.Name = src.Name
+		for _, a := range src.Attr {
+			var attr testpb.Attribute
+			attr.Name = a
+			t.Attributes = append(t.Attributes, &attr)
+		}
+		// TODO: hardwareDeps is currently defined by functions. It should be changed either:
+		// - every test to have raw string for DUTCondition ESL
+		// - or build some wrapping framework in Tast
+		// for _, _ := range src.HardwareDeps2 {
+		// 	var c testpb.DUTCondition
+		// 	t.Conditions = append(t.Conditions, &c)
+		// }
+
+		d, err := proto.Marshal(&t)
+		if err != nil {
+			return errors.Wrap(err, "Failed to marshalize the proto")
+		}
+		_, err = w.Write([]byte(d))
+	}
+	return nil
 }

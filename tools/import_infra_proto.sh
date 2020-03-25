@@ -62,7 +62,6 @@ rm -rf "${tast_dir}/proto/{infra,config}"
 git -C "${infra_proto_dir}" archive --prefix=infra/ --format=tar \
   "${infra_commit}":src "${infra_import_dirs[@]}" | \
   tar x --exclude=OWNERS --directory="${tast_dir}/proto" || exit 1
-
 git -C "${config_dir}/proto" archive --prefix=config/ --format=tar \
   "${config_commit}": "${config_import_dirs[@]}" | \
   tar x --exclude=OWNERS --directory="${tast_dir}/proto" || exit 1

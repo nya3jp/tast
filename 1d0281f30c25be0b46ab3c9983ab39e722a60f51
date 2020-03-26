@@ -1,0 +1,165 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1413a30e_7cd7ca61",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-03-26T02:14:51Z",
+      "side": 1,
+      "message": "I think go/tast-writing is a better place to add this doc.\n\nHow about adding a new section like \"Use of third-party libraries\" section to the end of the doc?",
+      "range": {
+        "startLine": 186,
+        "startChar": 0,
+        "endLine": 186,
+        "endChar": 40
+      },
+      "revId": "1d0281f30c25be0b46ab3c9983ab39e722a60f51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "24de7931_f6495832",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-03-26T02:14:51Z",
+      "side": 1,
+      "message": "nit: ... ([example]).",
+      "range": {
+        "startLine": 190,
+        "startChar": 12,
+        "endLine": 190,
+        "endChar": 20
+      },
+      "revId": "1d0281f30c25be0b46ab3c9983ab39e722a60f51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aeda6845_de2de524",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-03-26T02:14:51Z",
+      "side": 1,
+      "message": "How about asking to send CL to ebuild-reviews@ and tast-owners@?",
+      "range": {
+        "startLine": 189,
+        "startChar": 34,
+        "endLine": 190,
+        "endChar": 10
+      },
+      "revId": "1d0281f30c25be0b46ab3c9983ab39e722a60f51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cc311a25_8b3d0a85",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 192,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-03-26T02:14:51Z",
+      "side": 1,
+      "message": "I\u0027m afraid this is a bad example because it lacks ebuild uprev.\n\nHow about this one?\nhttps://chromium-review.googlesource.com/c/chromiumos/overlays/chromiumos-overlay/+/1737396",
+      "range": {
+        "startLine": 192,
+        "startChar": 10,
+        "endLine": 192,
+        "endChar": 101
+      },
+      "revId": "1d0281f30c25be0b46ab3c9983ab39e722a60f51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c7d7a18b_2bed0dc9",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-03-26T02:14:51Z",
+      "side": 1,
+      "message": "I\u0027m not sure if it\u0027s good to link to a random blog entry. I recommend having short summary of precautions we should consider.",
+      "range": {
+        "startLine": 196,
+        "startChar": 0,
+        "endLine": 196,
+        "endChar": 70
+      },
+      "revId": "1d0281f30c25be0b46ab3c9983ab39e722a60f51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a2d6feb3_f22500e7",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 200,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-03-26T02:14:51Z",
+      "side": 1,
+      "message": "Could you link to a public page for non-Googlers?\nhttps://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/refs/heads/master/dev-go/",
+      "range": {
+        "startLine": 200,
+        "startChar": 34,
+        "endLine": 200,
+        "endChar": 101
+      },
+      "revId": "1d0281f30c25be0b46ab3c9983ab39e722a60f51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "13e7f606_4c1cf0e4",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 201,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-03-26T02:14:51Z",
+      "side": 1,
+      "message": "This is a private group, so I recommend not linking to the group UI.",
+      "range": {
+        "startLine": 201,
+        "startChar": 29,
+        "endLine": 201,
+        "endChar": 84
+      },
+      "revId": "1d0281f30c25be0b46ab3c9983ab39e722a60f51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

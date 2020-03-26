@@ -2,6 +2,75 @@
   "comments": [
     {
       "key": {
+        "uuid": "b7e5c424_d4157add",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 264,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-03-26T02:30:05Z",
+      "side": 1,
+      "message": "nit: errors.New",
+      "range": {
+        "startLine": 264,
+        "startChar": 47,
+        "endLine": 264,
+        "endChar": 53
+      },
+      "revId": "b3540ef6deeb490407e5491a9e0deef9c8039b6d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2d0338a2_523f3c99",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 298,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-03-26T02:30:05Z",
+      "side": 1,
+      "message": "nit: errors.New",
+      "range": {
+        "startLine": 298,
+        "startChar": 41,
+        "endLine": 298,
+        "endChar": 54
+      },
+      "revId": "b3540ef6deeb490407e5491a9e0deef9c8039b6d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "70fbca38_8bb4733a",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 306,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-03-26T02:30:05Z",
+      "side": 1,
+      "message": "nit: unknown",
+      "range": {
+        "startLine": 306,
+        "startChar": 56,
+        "endLine": 306,
+        "endChar": 63
+      },
+      "revId": "b3540ef6deeb490407e5491a9e0deef9c8039b6d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "4cb6eff1_df11b1df",
         "filename": "src/chromiumos/tast/internal/runner/features.go",
         "patchSetId": 2
@@ -25,6 +94,29 @@
     },
     {
       "key": {
+        "uuid": "cd6d15de_b503d9bf",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 352,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-03-26T02:30:05Z",
+      "side": 1,
+      "message": "nit: unknown",
+      "range": {
+        "startLine": 352,
+        "startChar": 55,
+        "endLine": 352,
+        "endChar": 62
+      },
+      "revId": "b3540ef6deeb490407e5491a9e0deef9c8039b6d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6c032883_b33c2fbb",
         "filename": "src/chromiumos/tast/internal/runner/features.go",
         "patchSetId": 2
@@ -41,6 +133,52 @@
         "startChar": 4,
         "endLine": 372,
         "endChar": 48
+      },
+      "revId": "b3540ef6deeb490407e5491a9e0deef9c8039b6d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9d701927_2284b3ee",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 379,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-03-26T02:30:05Z",
+      "side": 1,
+      "message": "nit: unknown",
+      "range": {
+        "startLine": 379,
+        "startChar": 55,
+        "endLine": 379,
+        "endChar": 62
+      },
+      "revId": "b3540ef6deeb490407e5491a9e0deef9c8039b6d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "543df196_d90d304a",
+        "filename": "src/chromiumos/tast/internal/runner/intel_family.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-03-26T02:30:05Z",
+      "side": 1,
+      "message": "This file is difficult to review and maintain manually.\n\nCan we write a generator like this?\nhttps://cs.corp.google.com/chromeos_public/src/platform/tast-tests/src/chromiumos/tast/local/input/gen/gen_constants.go\n\nAt this point I\u0027m afraid that writing a generator is blocker for this change. If we don\u0027t write it now, I\u0027m almost sure we\u0027ll never do it later.",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 43
       },
       "revId": "b3540ef6deeb490407e5491a9e0deef9c8039b6d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",

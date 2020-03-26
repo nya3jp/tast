@@ -202,6 +202,10 @@ Tests in this group are not used for build verification.
 				Name: "wifi_func",
 				Desc: `Indicates that this test is for verifying basic WiFi functionalities.`,
 			},
+			{
+				Name: "wifi_func_avl",
+				Desc: `Indicates that this test is for verifying basic WiFi functionalities and is part of WiFi AVL test suite:wifi_matfunc.`,
+			},
 		},
 	},
 }

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f8cb10cb_7dafe58b",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/check_informational_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-03-26T17:18:39Z",
+      "side": 1,
+      "message": "Now this should not be allowed? (I.e. rejected by the test registration, so I wonder if we should have this as a test example). WDYT?",
+      "revId": "92d1400cbd312bf24da860f2bff0011f87a0af41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

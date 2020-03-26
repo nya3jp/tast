@@ -118,8 +118,6 @@ The following software features are defined:
 *   `usbguard` - The ability to allow or block USB devices based on policy.
 *   `vaapi` - Whether or not VA-API is supported by this DUT.
 *   `video_overlays` - The kernel [DRM/KMS] version atomic commits and the underlying hardware display controller support the NV12 DRM Plane format needed to promote videos to [hardware overlays].
-*   `virtual_usb_printer` - Emulates a USB printer. This implies the presence of
-    the `usbip` program.
 *   `vm_host` - The ability to [run virtual machines].
 *   `vp9_sanity` - The ability to stay alive playing a VP9 video with hardware
     acceleration even for a profile which the driver doesn't support.

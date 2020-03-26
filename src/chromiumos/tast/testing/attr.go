@@ -202,6 +202,10 @@ Tests in this group are not used for build verification.
 				Name: "wifi_func",
 				Desc: `Indicates that this test is for verifying basic WiFi functionalities.`,
 			},
+			{
+				Name: "stable",
+				Desc: `Indicates that this test is stable.`,
+			},
 		},
 	},
 }

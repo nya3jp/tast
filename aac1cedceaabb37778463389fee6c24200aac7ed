@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e8d30097_6eacd731",
+        "filename": "tools/import_infra_proto.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-03-26T11:44:34Z",
+      "side": 1,
+      "message": "I think this is wrong; This would allow infra files resolve imports when compiling with protoc, but files from config will fail to resolve imports when compiling the generated go binding. It is because the directory name becomes inconsistent with the package name then.",
+      "range": {
+        "startLine": 52,
+        "startChar": 37,
+        "endLine": 52,
+        "endChar": 53
+      },
+      "revId": "aac1cedceaabb37778463389fee6c24200aac7ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

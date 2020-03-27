@@ -16,6 +16,24 @@
       "revId": "92d1400cbd312bf24da860f2bff0011f87a0af41",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "63978b44_4e6142f9",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/check_informational_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-03-27T08:41:53Z",
+      "side": 1,
+      "message": "Good point! Let me update other test cases as well.",
+      "parentUuid": "f8cb10cb_7dafe58b",
+      "revId": "92d1400cbd312bf24da860f2bff0011f87a0af41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

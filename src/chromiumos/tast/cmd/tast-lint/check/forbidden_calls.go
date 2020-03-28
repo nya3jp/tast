@@ -23,7 +23,7 @@ func ForbiddenCalls(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 	// TODO: handle the case if there is "chromium/tast/errors" in import list.
 	fixable := false
 	if !hasErrorsIdent(f) {
-		if src, err := formatASTNode(f); err == nil {
+		if src, err := formatASTNode(fs, f); err == nil {
 			fixable = goimportApplicable(src)
 		}
 	}

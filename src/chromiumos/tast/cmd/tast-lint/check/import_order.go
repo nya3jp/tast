@@ -124,7 +124,7 @@ func formatImports(in []byte) ([]byte, error) {
 // ImportOrderAutoFix returns ast.File node whose import was fixed from given node correctly.
 func ImportOrderAutoFix(fs *token.FileSet, f *ast.File) (*ast.File, error) {
 	// Format ast.File to buffer.
-	in, err := formatASTNode(f)
+	in, err := formatASTNode(fs, f)
 	if err != nil {
 		return nil, err
 	}

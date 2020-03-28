@@ -38,7 +38,6 @@ func main() {
 		},
 	}
 	const (
-		androidContainerUnstable = `("android-container-qt" || "android-container-master-arc-dev")`
 		// Boards that cannot run Crostini tests reliably.
 		crostiniUnstableBoards = `auron_paine || auron_yuna || banon || bob || buddy || celes || coral || cyan || edgar || elm || fizz || gandof || grunt || hana || kefka || kevin || kevin64 || kukui || kefka || lulu || nocturne || octopus || reks || relm || samus || sarien || scarlet || setzer || terra || ultima || wizpig`
 	)
@@ -66,11 +65,9 @@ func main() {
 			"android_vm":   `arc && arcvm`,
 			"android_vm_p": `arc && arcvm && "android-vm-pi"`,
 			// TODO(b/146584985): update to use R flags
-			"android_vm_r": `arc && arcvm && "android-vm-master"`,
-			"android_all":  `arc && arcpp`,
-			"android_p":    `arc && "android-container-pi"`,
-			// TODO(b/146584985): update to use R flags
-			"android_r":         `arc && ` + androidContainerUnstable,
+			"android_vm_r":      `arc && arcvm && "android-vm-master"`,
+			"android_all":       `arc && arcpp`,
+			"android_p":         `arc && "android-container-pi"`,
 			"arc":               `arc`,
 			"arc_camera1":       `"arc-camera1"`,
 			"arc_camera3":       `"arc-camera3"`,

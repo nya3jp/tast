@@ -22,9 +22,8 @@ The following software features are defined:
 *   `android_vm_p` - `android_vm` feature that runs in P VM. Don't use in new code.
 *   `android_vm_r` - `android_vm` feature that runs in R VM.
 *   `android_all` - The ability to [run Android apps] in container. Any version
-    of Android can be used.
+    of Android can be used. Don't use in new code. Support `android_vm_r` instead.
 *   `android_p` - The ability to [run Android apps] that require Android P.
-*   `android_r` - The ability to [run Android apps] that require Android Q or R.
 *   `arc` - The ability to [run Android apps] in any way, in VM or container,
     with any Android version. This is intended to be used to run non-ARC tests
     only when ARC is supported on the board.

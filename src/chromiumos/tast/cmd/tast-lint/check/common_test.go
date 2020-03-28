@@ -48,7 +48,7 @@ func verifyIssues(t *testing.T, issues []*Issue, want []string) {
 	}
 }
 
-func verifyAutoFix(t *testing.T, lintfunc func(*token.FileSet, *ast.File, bool) []*Issue, files map[string]string, expects map[string]string) {
+func verifyAutoFix(t *testing.T, lintfunc func(*token.FileSet, *ast.File, bool) []*Issue, files, expects map[string]string) {
 	t.Helper()
 
 	tempDir := testutil.TempDir(t)

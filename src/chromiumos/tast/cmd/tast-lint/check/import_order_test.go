@@ -132,7 +132,8 @@ func Foo() {
 func TestAutoFixImportOrder(t *testing.T) {
 	const filename1, filename2 = "testfile1.go", "testfile2.go"
 	files := make(map[string]string)
-	files[filename1] = `package main
+	files[filename1] = `// Package main
+package main
 
 import (
 	"fmt"
@@ -140,13 +141,15 @@ import (
 	"chromiumos/tast/errors"
 )
 
+// Foo does foo
 func Foo() {
 	fmt.Print("")
 	dbus.New()
 	errors.New()
 }
 `
-	files[filename2] = `package main
+	files[filename2] = `// Package main
+package main
 
 import (
 	"fmt"
@@ -156,6 +159,7 @@ import (
 	"github.com/godbus/dbus"
 )
 
+// Foo does foo
 func Foo() {
 	fmt.Print("")
 	dbus.New()
@@ -163,7 +167,8 @@ func Foo() {
 }
 `
 	expects := make(map[string]string)
-	expects[filename1] = `package main
+	expects[filename1] = `// Package main
+package main
 
 import (
 	"fmt"
@@ -173,13 +178,15 @@ import (
 	"chromiumos/tast/errors"
 )
 
+// Foo does foo
 func Foo() {
 	fmt.Print("")
 	dbus.New()
 	errors.New()
 }
 `
-	expects[filename2] = `package main
+	expects[filename2] = `// Package main
+package main
 
 import (
 	"fmt"
@@ -189,6 +196,7 @@ import (
 	"chromiumos/tast/errors"
 )
 
+// Foo does foo
 func Foo() {
 	fmt.Print("")
 	dbus.New()

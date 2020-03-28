@@ -66,7 +66,6 @@ func main() {
 			"android_vm_p": `arc && arcvm && "android-vm-pi"`,
 			// TODO(b/146584985): update to use R flags
 			"android_vm_r":      `arc && arcvm && "android-vm-master"`,
-			"android_all":       `arc && arcpp`,
 			"android_p":         `arc && "android-container-pi"`,
 			"arc":               `arc`,
 			"arc_camera1":       `"arc-camera1"`,

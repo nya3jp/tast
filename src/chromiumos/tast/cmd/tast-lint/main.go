@@ -142,7 +142,7 @@ func isNewlyAddedPackage(g *git.Git, dir string, paths []git.CommitFile) (bool, 
 }
 
 // checkAll runs all checks against paths.
-func checkAll(g *git.Git, paths []git.CommitFile, debug bool, fix bool) ([]*check.Issue, error) {
+func checkAll(g *git.Git, paths []git.CommitFile, debug, fix bool) ([]*check.Issue, error) {
 	cp := newCachedParser(g)
 	fs := cp.fs
 
@@ -249,6 +249,7 @@ func checkFile(path git.CommitFile, data []byte, debug bool, fs *token.FileSet, 
 	issues = append(issues, check.Golint(path.Path, data, debug)...)
 	issues = append(issues, check.Comments(fs, f)...)
 	issues = append(issues, check.EmptySlice(fs, f, fix)...)
+	issues = append(issues, check.FuncParams(fs, f)...)
 
 	if !hasFmtError(data, path.Path) {
 		// goimports applies gofmt, so skip it if the code has any formatting
@@ -315,7 +316,7 @@ func checkFile(path git.CommitFile, data []byte, debug bool, fs *token.FileSet, 
 
 // categorizeIssues categorize issues into auto-fixable and un-auto-fixable,
 // then returns devided two slices.
-func categorizeIssues(issues []*check.Issue) (fixable []*check.Issue, unfixable []*check.Issue) {
+func categorizeIssues(issues []*check.Issue) (fixable, unfixable []*check.Issue) {
 	for _, i := range issues {
 		if i.Fixable {
 			fixable = append(fixable, i)

@@ -6,15 +6,21 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"flag"
 	"fmt"
+	"go/ast"
 	"go/format"
+	"go/token"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"sort"
 	"strings"
+	"sync"
+
+	"golang.org/x/sync/errgroup"
 
 	"chromiumos/tast/cmd/tast-lint/check"
 	"chromiumos/tast/cmd/tast-lint/git"
@@ -176,6 +182,12 @@ func checkAll(g *git.Git, paths []git.CommitFile, debug bool, fix bool) ([]*chec
 	}
 
 	dfmap := makeMapDirGoFile(validPaths)
+
+	// Run individual file check in parallel.
+	var mux sync.Mutex // guards fileIssues
+	var fileIssues [][]*check.Issue
+	eg, _ := errgroup.WithContext(context.Background())
+
 	for dir, cfs := range dfmap {
 		pkg, err := cp.parsePackage(dir)
 		if err != nil {
@@ -194,85 +206,111 @@ func checkAll(g *git.Git, paths []git.CommitFile, debug bool, fix bool) ([]*chec
 			if strings.HasSuffix(path.Path, ".pb.go") {
 				continue
 			}
-
-			data, err := g.ReadFile(path.Path)
-			if err != nil {
-				return nil, err
-			}
-
 			f, ok := pkg.Files[path.Path] // take ast.File from parsed package
 			if !ok {
 				continue
 			}
-			var issues []*check.Issue
 
-			issues = append(issues, check.Golint(path.Path, data, debug)...)
-			issues = append(issues, check.Comments(fs, f)...)
-			issues = append(issues, check.EmptySlice(fs, f, fix)...)
-
-			if !hasFmtError(data, path.Path) {
-				// goimports applies gofmt, so skip it if the code has any formatting
-				// error to avoid confusing reports. gofmt will be run by the repo
-				// upload hook anyway.
-				if !fix {
-					issues = append(issues, check.ImportOrder(path.Path, data)...)
-				} else if newf, err := check.ImportOrderAutoFix(fs, f); err == nil {
-					*f = *newf
+			mux.Lock()
+			i := len(fileIssues)
+			fileIssues = append(fileIssues, nil)
+			mux.Unlock()
+			path := path
+			eg.Go(func() error {
+				data, err := g.ReadFile(path.Path)
+				if err != nil {
+					return err
 				}
-			}
-
-			if isTestFile(path.Path) {
-				issues = append(issues, check.Declarations(fs, f, fix)...)
-				issues = append(issues, check.Exports(fs, f)...)
-				issues = append(issues, check.ForbiddenBundleImports(fs, f)...)
-				issues = append(issues, check.ForbiddenCalls(fs, f, fix)...)
-				issues = append(issues, check.ForbiddenImports(fs, f)...)
-				issues = append(issues, check.InterFileRefs(fs, f)...)
-				issues = append(issues, check.Messages(fs, f, fix)...)
-				issues = append(issues, check.VerifyTestingStateStruct(fs, f)...)
-			}
-
-			if isSupportPackageFile(path.Path) {
-				issues = append(issues, check.VerifyTestingStateParam(fs, f)...)
-			}
-
-			if path.Status == git.Added {
-				issues = append(issues, check.VerifyInformationalAttr(fs, f)...)
-			}
-			// Only collect issues that weren't ignored by NOLINT comments.
-			allIssues = append(allIssues, check.DropIgnoredIssues(issues, fs, f)...)
-
-			// Format modified tree.
-			if fix {
-				if err := func() error {
-					var buf bytes.Buffer
-					if err := format.Node(&buf, fs, f); err != nil {
-						return err
-					}
-					if hasFmtError(buf.Bytes(), "buffer") {
-						return fmt.Errorf("failed gofmt")
-					}
-					tempfile, err := ioutil.TempFile(filepath.Dir(path.Path), "temp")
-					if err != nil {
-						return err
-					}
-					defer os.Remove(tempfile.Name())
-					defer tempfile.Close()
-					if _, err := buf.WriteTo(tempfile); err != nil {
-						return err
-					}
-					if err := os.Rename(tempfile.Name(), path.Path); err != nil {
-						return err
-					}
-					return nil
-				}(); err != nil {
-					return nil, err
+				is, err := checkFile(path, data, debug, fs, f, fix)
+				if err != nil {
+					return err
 				}
-			}
+				mux.Lock()
+				fileIssues[i] = is
+				mux.Unlock()
+				return nil
+			})
 		}
 	}
 
+	if err := eg.Wait(); err != nil {
+		return nil, err
+	}
+	for _, issues := range fileIssues {
+		allIssues = append(allIssues, issues...)
+	}
+
 	return allIssues, nil
+}
+
+// checkFile checks all the issues in the Go file in the given path. If fix is true, it automatically fixes f.
+func checkFile(path git.CommitFile, data []byte, debug bool, fs *token.FileSet, f *ast.File, fix bool) ([]*check.Issue, error) {
+	var issues []*check.Issue
+	issues = append(issues, check.Golint(path.Path, data, debug)...)
+	issues = append(issues, check.Comments(fs, f)...)
+	issues = append(issues, check.EmptySlice(fs, f, fix)...)
+
+	if !hasFmtError(data, path.Path) {
+		// goimports applies gofmt, so skip it if the code has any formatting
+		// error to avoid confusing reports. gofmt will be run by the repo
+		// upload hook anyway.
+		if !fix {
+			issues = append(issues, check.ImportOrder(path.Path, data)...)
+		} else if newf, err := check.ImportOrderAutoFix(fs, f); err == nil {
+			*f = *newf
+		}
+	}
+
+	if isTestFile(path.Path) {
+		issues = append(issues, check.Declarations(fs, f, fix)...)
+		issues = append(issues, check.Exports(fs, f)...)
+		issues = append(issues, check.ForbiddenBundleImports(fs, f)...)
+		issues = append(issues, check.ForbiddenCalls(fs, f, fix)...)
+		issues = append(issues, check.ForbiddenImports(fs, f)...)
+		issues = append(issues, check.InterFileRefs(fs, f)...)
+		issues = append(issues, check.Messages(fs, f, fix)...)
+		issues = append(issues, check.VerifyTestingStateStruct(fs, f)...)
+	}
+
+	if isSupportPackageFile(path.Path) {
+		issues = append(issues, check.VerifyTestingStateParam(fs, f)...)
+	}
+
+	if path.Status == git.Added {
+		issues = append(issues, check.VerifyInformationalAttr(fs, f)...)
+	}
+	// Only collect issues that weren't ignored by NOLINT comments.
+	issues = check.DropIgnoredIssues(issues, fs, f)
+
+	// Format modified tree.
+	if fix {
+		if err := func() error {
+			var buf bytes.Buffer
+			if err := format.Node(&buf, fs, f); err != nil {
+				return err
+			}
+			if hasFmtError(buf.Bytes(), "buffer") {
+				return fmt.Errorf("failed gofmt")
+			}
+			tempfile, err := ioutil.TempFile(filepath.Dir(path.Path), "temp")
+			if err != nil {
+				return err
+			}
+			defer os.Remove(tempfile.Name())
+			defer tempfile.Close()
+			if _, err := buf.WriteTo(tempfile); err != nil {
+				return err
+			}
+			if err := os.Rename(tempfile.Name(), path.Path); err != nil {
+				return err
+			}
+			return nil
+		}(); err != nil {
+			return nil, err
+		}
+	}
+
+	return issues, nil
 }
 
 // categorizeIssues categorize issues into auto-fixable and un-auto-fixable,

@@ -14,7 +14,7 @@ import (
 )
 
 // FuncParams checks function parameters and results.
-func FuncParams(fs *token.FileSet, f *ast.File) (issues []*Issue) {
+func FuncParams(fs *token.FileSet, f *ast.File, fix bool) (issues []*Issue) {
 	astutil.Apply(f, func(c *astutil.Cursor) (cont bool) {
 		// Always continue traversal.
 		cont = true
@@ -27,20 +27,54 @@ func FuncParams(fs *token.FileSet, f *ast.File) (issues []*Issue) {
 			if l == nil {
 				continue
 			}
-			var prev ast.Expr
+			var nfis []*ast.Field
+			var names []*ast.Ident
+			var prev *ast.Field
+			var removable []ast.Expr
 			for _, fi := range l.List {
 				if fi.Names == nil {
 					break
 				}
-				if prev != nil && sameType(fs, prev, fi.Type) {
-					issues = append(issues, &Issue{
-						Pos:     fs.Position(prev.Pos()),
-						Msg:     "When two or more consecutive named function parameters share a type, you can omit the type from all but the last",
-						Link:    "https://tour.golang.org/basics/5",
-						Fixable: false,
+				// This seems to be always false (i.e. all the fields in
+				// non-nil prev are nil). We have it to be on the safe side.
+				shouldSeparate := prev != nil && (prev.Doc != nil || prev.Tag != nil || prev.Comment != nil)
+				if shouldSeparate || prev != nil && !sameType(fs, prev.Type, fi.Type) {
+					nfis = append(nfis, &ast.Field{
+						Doc:     prev.Doc,
+						Names:   names,
+						Type:    prev.Type,
+						Tag:     prev.Tag,
+						Comment: prev.Comment,
 					})
+					names = nil
+				} else if prev != nil {
+					removable = append(removable, prev.Type)
 				}
-				prev = fi.Type
+				names = append(names, fi.Names...)
+				prev = fi
+			}
+			if prev != nil {
+				nfis = append(nfis, &ast.Field{
+					Doc:     prev.Doc,
+					Names:   names,
+					Type:    prev.Type,
+					Tag:     prev.Tag,
+					Comment: prev.Comment,
+				})
+			}
+			if nfis != nil && len(nfis) < len(l.List) {
+				if fix {
+					l.List = nfis
+				} else {
+					for _, t := range removable {
+						issues = append(issues, &Issue{
+							Pos:     fs.Position(t.Pos()),
+							Msg:     "When two or more consecutive named function parameters share a type, you can omit the type from all but the last",
+							Link:    "https://tour.golang.org/basics/5",
+							Fixable: true,
+						})
+					}
+				}
 			}
 		}
 		return

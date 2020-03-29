@@ -222,5 +222,19 @@ func newDeviceConfig() (dc *device.Config, warns []string) {
 		config.HardwareFeatures = append(config.HardwareFeatures, device.Config_HARDWARE_FEATURE_FINGERPRINT)
 	}
 
+	hasInternalDisplay := func() bool {
+		// Intel and AMD usually hang the panel at card0-eDP-1. Ignore any run error.
+		card0Edid, _ := exec.Command("cat", "/sys/class/drm/card0-eDP-1/edid").Output()
+		if len(card0Edid) > 0 {
+			return true
+		}
+		// ARM-based chromebooks hang the panel at card1-DSI-1.
+		card1Connected, _ := exec.Command("cat", "/sys/class/drm/card1-DSI-1/status").Output()
+		return strings.HasPrefix(string(card1Connected), "connected")
+	}()
+	if hasInternalDisplay {
+		config.HardwareFeatures = append(config.HardwareFeatures, device.Config_HARDWARE_FEATURE_INTERNAL_DISPLAY)
+	}
+
 	return config, warns
 }

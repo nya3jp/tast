@@ -249,7 +249,7 @@ func checkFile(path git.CommitFile, data []byte, debug bool, fs *token.FileSet, 
 	issues = append(issues, check.Golint(path.Path, data, debug)...)
 	issues = append(issues, check.Comments(fs, f)...)
 	issues = append(issues, check.EmptySlice(fs, f, fix)...)
-	issues = append(issues, check.FuncParams(fs, f)...)
+	issues = append(issues, check.FuncParams(fs, f, fix)...)
 
 	if !hasFmtError(data, path.Path) {
 		// goimports applies gofmt, so skip it if the code has any formatting

@@ -21,6 +21,7 @@ const (
 	deleteName    = "delete.txt"
 	newName       = "new.txt"
 	untrackedName = "untracked.txt"
+	symlinkName   = "symlink.txt"
 
 	headContent = "foo"
 	workContent = "bar"
@@ -32,17 +33,19 @@ const (
 //  In the first commit:
 //    static.txt = "static"
 //    test.txt = ""
-// 		delete.txt = ""
+//    delete.txt = ""
 //
 //  In the second commit:
 //    static.txt = "static"
 //    test.txt = "foo"
-//		new.txt = "baz"
+//    new.txt = "baz"
+//    symlink.txt = symlink to ./static.txt
 //
 //  In the work tree:
 //    static.txt = "static"
 //    test.txt = "bar"
-// 		new.txt = "baz"
+//    new.txt = "baz"
+//    symlink.txt = symlink to ./static.txt
 //    untracked.txt = ""
 func newTestRepo(t *testing.T) string {
 	t.Helper()
@@ -103,6 +106,9 @@ func newTestRepo(t *testing.T) string {
 	if err := ioutil.WriteFile(filepath.Join(repoDir, newName), []byte("baz"), 0644); err != nil {
 		t.Fatal("WriteFile failed: ", err)
 	}
+	if err := os.Symlink(filepath.Join(".", staticName), filepath.Join(repoDir, symlinkName)); err != nil {
+		t.Fatal("Set up new repo:", err)
+	}
 
 	cmd = exec.Command("git", "rm", deleteName)
 	cmd.Dir = repoDir
@@ -135,6 +141,7 @@ func newTestRepo(t *testing.T) string {
 }
 
 func TestChangedFilesInHistory(t *testing.T) {
+	t.Parallel()
 	repoDir := newTestRepo(t)
 	defer os.RemoveAll(repoDir)
 
@@ -143,12 +150,18 @@ func TestChangedFilesInHistory(t *testing.T) {
 	if err != nil {
 		t.Fatal("ChangedFiles failed: ", err)
 	}
-	if exp := []CommitFile{CommitFile{Deleted, deleteName}, CommitFile{Added, newName}, CommitFile{Modified, testName}}; !reflect.DeepEqual(fns, exp) {
+	if exp := []CommitFile{
+		CommitFile{Deleted, deleteName},
+		CommitFile{Added, newName},
+		CommitFile{Added, symlinkName},
+		CommitFile{Modified, testName},
+	}; !reflect.DeepEqual(fns, exp) {
 		t.Errorf("ChangedFiles() = %q; want %q", fns, exp)
 	}
 }
 
 func TestChangedFilesInWorkTree(t *testing.T) {
+	t.Parallel()
 	repoDir := newTestRepo(t)
 	defer os.RemoveAll(repoDir)
 
@@ -159,6 +172,7 @@ func TestChangedFilesInWorkTree(t *testing.T) {
 }
 
 func TestReadFileInHistory(t *testing.T) {
+	t.Parallel()
 	repoDir := newTestRepo(t)
 	defer os.RemoveAll(repoDir)
 
@@ -176,6 +190,7 @@ func TestReadFileInHistory(t *testing.T) {
 }
 
 func TestReadFileInWorkTree(t *testing.T) {
+	t.Parallel()
 	repoDir := newTestRepo(t)
 	defer os.RemoveAll(repoDir)
 
@@ -194,6 +209,7 @@ func TestReadFileInWorkTree(t *testing.T) {
 }
 
 func TestListDirInHistory(t *testing.T) {
+	t.Parallel()
 	repoDir := newTestRepo(t)
 	defer os.RemoveAll(repoDir)
 
@@ -201,7 +217,7 @@ func TestListDirInHistory(t *testing.T) {
 
 	if fns, err := g.ListDir(""); err != nil {
 		t.Errorf("ListDir(%q) failed: %v", "", err)
-	} else if exp := []string{newName, staticName, testName}; !reflect.DeepEqual(fns, exp) {
+	} else if exp := []string{newName, staticName, symlinkName, testName}; !reflect.DeepEqual(fns, exp) {
 		t.Errorf("ListDir(%q) = %q; want %q", "", fns, exp)
 	}
 
@@ -211,6 +227,7 @@ func TestListDirInHistory(t *testing.T) {
 }
 
 func TestListDirInWorkTree(t *testing.T) {
+	t.Parallel()
 	repoDir := newTestRepo(t)
 	defer os.RemoveAll(repoDir)
 
@@ -218,11 +235,42 @@ func TestListDirInWorkTree(t *testing.T) {
 
 	if fns, err := g.ListDir(""); err != nil {
 		t.Errorf("ListDir(%q) failed: %v", "", err)
-	} else if exp := []string{".git", newName, staticName, testName, untrackedName}; !reflect.DeepEqual(fns, exp) {
+	} else if exp := []string{".git", newName, staticName, symlinkName, testName, untrackedName}; !reflect.DeepEqual(fns, exp) {
 		t.Errorf("ListDir(%q) = %q; want %q", "", fns, exp)
 	}
 
 	if _, err := g.ListDir(testName); err == nil {
 		t.Errorf("ListDir(%q) unexpectedly succeeded", testName)
+	}
+}
+
+func TestIsSymlinkInHistory(t *testing.T) {
+	t.Parallel()
+	testIsSymlink(t, "HEAD")
+}
+
+func TestIsSmylinkInWorkTree(t *testing.T) {
+	t.Parallel()
+	testIsSymlink(t, "")
+}
+
+func testIsSymlink(t *testing.T, commit string) {
+	repoDir := newTestRepo(t)
+	defer os.RemoveAll(repoDir)
+
+	g := New(repoDir, commit)
+
+	for _, tc := range []struct {
+		file string
+		want bool
+	}{
+		{staticName, false},
+		{symlinkName, true},
+	} {
+		if got, err := g.IsSymlink(tc.file); err != nil {
+			t.Errorf("IsSymlink(%q) failed: %v", tc.file, err)
+		} else if got != tc.want {
+			t.Errorf("IsSymlink(%q) = %v; want %v", tc.file, got, tc.want)
+		}
 	}
 }

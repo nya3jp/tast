@@ -14,7 +14,7 @@ import (
 )
 
 // FuncParams checks function parameters and results.
-func FuncParams(fs *token.FileSet, f *ast.File) (issues []*Issue) {
+func FuncParams(fs *token.FileSet, f *ast.File, fix bool) (issues []*Issue) {
 	astutil.Apply(f, func(c *astutil.Cursor) (cont bool) {
 		// Always continue traversal.
 		cont = true
@@ -24,23 +24,55 @@ func FuncParams(fs *token.FileSet, f *ast.File) (issues []*Issue) {
 			return
 		}
 		for _, l := range []*ast.FieldList{n.Params, n.Results} {
-			if l == nil {
+			if l == nil || l.List == nil || l.List[0].Names == nil {
 				continue
 			}
-			var prev ast.Expr
+			var nfis []*ast.Field
+			var names []*ast.Ident
+			var prev *ast.Field
+			var removable []ast.Expr
 			for _, fi := range l.List {
-				if fi.Names == nil {
-					break
+				if prev == nil {
+					names = append(names, fi.Names...)
+					prev = fi
+					continue
 				}
-				if prev != nil && sameType(fs, prev, fi.Type) {
+				// This seems to be always false (i.e. all the fields in
+				// non-nil prev are nil). We have it to be on the safe side.
+				shouldSeparate := prev.Doc != nil || prev.Tag != nil || prev.Comment != nil
+				if shouldSeparate || !sameType(fs, prev.Type, fi.Type) {
+					nfis = append(nfis, &ast.Field{
+						Doc:     prev.Doc,
+						Names:   names,
+						Type:    prev.Type,
+						Tag:     prev.Tag,
+						Comment: prev.Comment,
+					})
+					names = nil
+				} else {
+					removable = append(removable, prev.Type)
+				}
+				names = append(names, fi.Names...)
+				prev = fi
+			}
+			nfis = append(nfis, &ast.Field{
+				Doc:     prev.Doc,
+				Names:   names,
+				Type:    prev.Type,
+				Tag:     prev.Tag,
+				Comment: prev.Comment,
+			})
+			if fix {
+				l.List = nfis
+			} else {
+				for _, t := range removable {
 					issues = append(issues, &Issue{
-						Pos:     fs.Position(prev.Pos()),
+						Pos:     fs.Position(t.Pos()),
 						Msg:     "When two or more consecutive named function parameters share a type, you can omit the type from all but the last",
 						Link:    "https://tour.golang.org/basics/5",
-						Fixable: false,
+						Fixable: true,
 					})
 				}
-				prev = fi.Type
 			}
 		}
 		return

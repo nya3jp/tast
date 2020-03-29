@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"regexp"
@@ -198,6 +199,27 @@ func newDeviceConfig() (dc *device.Config, warns []string) {
 			ModelId:    model,
 			BrandId:    brand,
 		},
+	}
+
+	hasInternalDisplay := func() bool {
+		// Intel and AMD usually hang the panel at card0-eDP-1 (this
+		// file only exists on those platforms).
+		card0Edid, err := ioutil.ReadFile("/sys/class/drm/card0-eDP-1/edid")
+		if err != nil && !os.IsNotExist(err) {
+			return false
+		}
+		if len(card0Edid) > 0 {
+			return true
+		}
+		// ARM-based chromebooks hang the panel at card1-DSI-1.
+		card1Connected, err := ioutil.ReadFile("/sys/class/drm/card1-DSI-1/status")
+		if err != nil && !os.IsNotExist(err) {
+			return false
+		}
+		return strings.HasPrefix(string(card1Connected), "connected")
+	}()
+	if hasInternalDisplay {
+		config.HardwareFeatures = append(config.HardwareFeatures, device.Config_HARDWARE_FEATURE_INTERNAL_DISPLAY)
 	}
 
 	hasTouchScreen := func() bool {

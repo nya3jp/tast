@@ -171,3 +171,19 @@ func Fingerprint() Condition {
 		return errors.New("DUT does not have fingerprint sensor")
 	}}
 }
+
+// InternalDisplay returns a hardware dependency condition that is satisfied
+// iff the DUT has an internal display, e.g. Chromeboxes and Chromebits don't.
+func InternalDisplay() Condition {
+	return Condition{Satisfied: func(d *hwdep.DeviceSetup) error {
+		if d.DC == nil {
+			return errors.New("device.Config is not given")
+		}
+		for _, f := range d.DC.HardwareFeatures {
+			if f == device.Config_HARDWARE_FEATURE_INTERNAL_DISPLAY {
+				return nil
+			}
+		}
+		return errors.New("DUT does not have an internal display")
+	}}
+}

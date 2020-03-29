@@ -206,6 +206,12 @@ func checkAll(g *git.Git, paths []git.CommitFile, debug, fix bool) ([]*check.Iss
 			if strings.HasSuffix(path.Path, ".pb.go") {
 				continue
 			}
+			if s, err := g.IsSymlink(path.Path); err != nil {
+				return nil, err
+			} else if s {
+				continue
+			}
+
 			f, ok := pkg.Files[path.Path] // take ast.File from parsed package
 			if !ok {
 				continue

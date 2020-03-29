@@ -14,7 +14,11 @@ import (
 )
 
 // FuncParams checks function parameters and results.
-func FuncParams(fs *token.FileSet, f *ast.File) (issues []*Issue) {
+func FuncParams(fs *token.FileSet, f *ast.File, fix bool) (issues []*Issue) {
+	if fix {
+		funcParamsAutofix(fs, f)
+		return nil
+	}
 	astutil.Apply(f, func(c *astutil.Cursor) (cont bool) {
 		// Always continue traversal.
 		cont = true
@@ -27,25 +31,75 @@ func FuncParams(fs *token.FileSet, f *ast.File) (issues []*Issue) {
 			if l == nil {
 				continue
 			}
-			var prev ast.Expr
+			var prev *ast.Field
 			for _, fi := range l.List {
 				if fi.Names == nil {
 					break
 				}
-				if prev != nil && sameType(fs, prev, fi.Type) {
+				if prev != nil && sameType(fs, prev.Type, fi.Type) {
 					issues = append(issues, &Issue{
-						Pos:     fs.Position(prev.Pos()),
+						Pos:     fs.Position(prev.Type.Pos()),
 						Msg:     "When two or more consecutive named function parameters share a type, you can omit the type from all but the last",
 						Link:    "https://tour.golang.org/basics/5",
-						Fixable: false,
+						Fixable: true,
 					})
 				}
-				prev = fi.Type
+				prev = fi
 			}
 		}
 		return
 	}, nil)
 	return
+}
+
+func funcParamsAutofix(fs *token.FileSet, f *ast.File) {
+	astutil.Apply(f, func(c *astutil.Cursor) (cont bool) {
+		// Always continue traversal.
+		cont = true
+
+		n, ok := c.Node().(*ast.FuncType)
+		if !ok {
+			return
+		}
+		for _, l := range []*ast.FieldList{n.Params, n.Results} {
+			if l == nil {
+				continue
+			}
+			var nfis []*ast.Field
+			var names []*ast.Ident
+			var prev *ast.Field
+			for _, fi := range l.List {
+				if fi.Names == nil {
+					break
+				}
+				if prev != nil && !sameType(fs, prev.Type, fi.Type) {
+					nfis = append(nfis, &ast.Field{
+						Doc:     prev.Doc,
+						Names:   names,
+						Type:    prev.Type,
+						Tag:     prev.Tag,
+						Comment: prev.Comment,
+					})
+					names = nil
+				}
+				names = append(names, fi.Names...)
+				prev = fi
+			}
+			if prev != nil {
+				nfis = append(nfis, &ast.Field{
+					Doc:     prev.Doc,
+					Names:   names,
+					Type:    prev.Type,
+					Tag:     prev.Tag,
+					Comment: prev.Comment,
+				})
+			}
+			if nfis != nil {
+				l.List = nfis
+			}
+		}
+		return
+	}, nil)
 }
 
 // sameType returns whether x and y are the same type.

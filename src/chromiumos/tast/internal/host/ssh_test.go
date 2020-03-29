@@ -7,9 +7,12 @@ package host
 import (
 	"context"
 	"crypto/rsa"
+	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -140,6 +143,42 @@ func (td *testData) handleExec(req *sshtest.ExecReq) {
 		time.Sleep(time.Minute)
 	}
 	req.End(status)
+}
+
+// initFileTest creates a temporary directory with a subdirectory containing files.
+// The temp dir's and subdir's paths are returned.
+func initFileTest(t *testing.T, files map[string]string) (tmpDir, srcDir string) {
+	tmpDir = testutil.TempDir(t)
+	srcDir = filepath.Join(tmpDir, "src")
+	if err := os.Mkdir(srcDir, 0755); err != nil {
+		os.RemoveAll(tmpDir)
+		t.Fatal(err)
+	}
+	if err := testutil.WriteFiles(srcDir, files); err != nil {
+		os.RemoveAll(tmpDir)
+		t.Fatal(err)
+	}
+	return tmpDir, srcDir
+}
+
+// checkFile returns an error if p's contents differ from exp.
+func checkFile(p, exp string) error {
+	if b, err := ioutil.ReadFile(p); err != nil {
+		return fmt.Errorf("failed to read %v after copy: %v", p, err)
+	} else if string(b) != exp {
+		return fmt.Errorf("expected content %q after copy, got %v", exp, string(b))
+	}
+	return nil
+}
+
+// checkDir returns an error if dir's contents don't match exp, a map from paths to data.
+func checkDir(dir string, exp map[string]string) error {
+	if act, err := testutil.ReadFiles(dir); err != nil {
+		return err
+	} else if !reflect.DeepEqual(exp, act) {
+		return fmt.Errorf("files not copied correctly: src %v, dst %v", exp, act)
+	}
+	return nil
 }
 
 func TestRetry(t *testing.T) {

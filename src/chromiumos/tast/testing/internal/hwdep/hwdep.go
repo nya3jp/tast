@@ -91,7 +91,7 @@ func (d *Deps) Validate() error {
 // Merge merges two Deps instance into one Deps instance.
 // The returned Deps is satisfied iff all conditions in d1 and ones in d2 are
 // satisfied.
-func Merge(d1 Deps, d2 Deps) Deps {
+func Merge(d1, d2 Deps) Deps {
 	var conds []Condition
 	conds = append(conds, d1.conds...)
 	conds = append(conds, d2.conds...)

@@ -151,7 +151,7 @@ func clientOpts() []grpc.DialOption {
 	}
 
 	return []grpc.DialOption{
-		grpc.WithUnaryInterceptor(func(ctx context.Context, method string, req interface{}, reply interface{},
+		grpc.WithUnaryInterceptor(func(ctx context.Context, method string, req, reply interface{},
 			cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 			ctx, err := before(ctx, method)
 			if err != nil {

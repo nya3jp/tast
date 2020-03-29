@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -91,6 +92,29 @@ func (g *Git) ChangedFiles() ([]CommitFile, error) {
 		}
 	}
 	return files, nil
+}
+
+// IsSymlink returns whether the path is a symlink.
+func (g *Git) IsSymlink(path string) (bool, error) {
+	if g.Commit == "" {
+		s, err := os.Lstat(filepath.Join(g.Dir, path))
+		if err != nil {
+			return false, err
+		}
+		return (s.Mode() & os.ModeSymlink) != 0, nil
+	}
+	cmd := exec.Command("git", "ls-tree", g.Commit, path)
+	cmd.Dir = g.Dir
+
+	b, err := cmd.Output()
+	if err != nil {
+		return false, err
+	}
+	es := strings.Split(strings.TrimSpace(string(b)), "\n")
+	if len(es) != 1 {
+		return false, fmt.Errorf("%s matches %d files; want exactly one match", path, len(es))
+	}
+	return strings.SplitN(es[0], " ", 2)[0] == "120000", nil
 }
 
 // ReadFile returns the content of a file at the commit.

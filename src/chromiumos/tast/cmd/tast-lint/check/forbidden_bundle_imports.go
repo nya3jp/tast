@@ -24,7 +24,7 @@ var bundleCategoryRegex = regexp.MustCompile(`^(chromiumos/tast/(?:local|remote)
 //   "chromiumos/tast/local/bundles/cros/foo"         -> "chromiumos/tast/local/bundles/cros", "foo", true
 //   "chromiumos/tast/remote/bundles/crosint/foo/bar" -> "chromiumos/tast/remote/bundles/crosint", "foo", true
 //   "chromiumos/tast/local/foo"                      -> "", "", false
-func parseBundlePackage(p string) (bundlePkg string, category string, ok bool) {
+func parseBundlePackage(p string) (bundlePkg, category string, ok bool) {
 	m := bundleCategoryRegex.FindStringSubmatch(p)
 	if len(m) == 0 {
 		return "", "", false

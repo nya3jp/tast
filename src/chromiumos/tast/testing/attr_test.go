@@ -58,6 +58,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 			attrs: []string{"group:appcompat"},
 		},
 		{
+			attrs: []string{"group:graphics"},
+		},
+		{
 			attrs: []string{"group:enrollment"},
 		},
 		{

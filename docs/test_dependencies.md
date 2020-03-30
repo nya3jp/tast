@@ -84,6 +84,8 @@ The following software features are defined:
 *   `memd` - [Memory stats collection daemon].
 *   `ml_service` - ML Service daemon.
 *   `mosys` - Ability to run mosys command.
+*   `native_bridge` - Availability of 32-bit native bridge support for ARC.
+*   `native_bridge64` - Availability of 64-bit native bridge support for ARC.
 *   `no_android` - The inability to run Android apps. This is the opposite of
     the `android` feature; DUTs will have exactly one of these two features.
 *   `no_asan` - Build was not built with Address Sanitizer. Similar to `aslr`.

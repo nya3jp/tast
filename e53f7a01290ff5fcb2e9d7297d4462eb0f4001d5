@@ -1,0 +1,188 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0160e947_d5b27f5d",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 224,
+      "author": {
+        "id": 1117055
+      },
+      "writtenOn": "2020-03-30T21:30:28Z",
+      "side": 1,
+      "message": "device",
+      "range": {
+        "startLine": 224,
+        "startChar": 20,
+        "endLine": 224,
+        "endChar": 26
+      },
+      "revId": "e53f7a01290ff5fcb2e9d7297d4462eb0f4001d5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ebff6900_f5a53725",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 248,
+      "author": {
+        "id": 1117055
+      },
+      "writtenOn": "2020-03-30T21:30:28Z",
+      "side": 1,
+      "message": "kinds",
+      "range": {
+        "startLine": 248,
+        "startChar": 28,
+        "endLine": 248,
+        "endChar": 32
+      },
+      "revId": "e53f7a01290ff5fcb2e9d7297d4462eb0f4001d5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a06a4ff6_3ed80747",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 250,
+      "author": {
+        "id": 1117055
+      },
+      "writtenOn": "2020-03-30T21:30:28Z",
+      "side": 1,
+      "message": "these",
+      "range": {
+        "startLine": 250,
+        "startChar": 5,
+        "endLine": 250,
+        "endChar": 8
+      },
+      "revId": "e53f7a01290ff5fcb2e9d7297d4462eb0f4001d5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d567fc91_9f4642c2",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 253,
+      "author": {
+        "id": 1117055
+      },
+      "writtenOn": "2020-03-30T21:30:28Z",
+      "side": 1,
+      "message": "maybe just \"If you feel you need these conditions\"?",
+      "range": {
+        "startLine": 252,
+        "startChar": 61,
+        "endLine": 253,
+        "endChar": 36
+      },
+      "revId": "e53f7a01290ff5fcb2e9d7297d4462eb0f4001d5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "00206e8f_2791cdad",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 257,
+      "author": {
+        "id": 1117055
+      },
+      "writtenOn": "2020-03-30T21:30:28Z",
+      "side": 1,
+      "message": "issues",
+      "range": {
+        "startLine": 257,
+        "startChar": 18,
+        "endLine": 257,
+        "endChar": 23
+      },
+      "revId": "e53f7a01290ff5fcb2e9d7297d4462eb0f4001d5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ee92eebf_4b9c82e7",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 259,
+      "author": {
+        "id": 1117055
+      },
+      "writtenOn": "2020-03-30T21:30:28Z",
+      "side": 1,
+      "message": "maybe \"should otherwise be promoted\" or \"we would like to promote it\"",
+      "range": {
+        "startLine": 258,
+        "startChar": 61,
+        "endLine": 259,
+        "endChar": 16
+      },
+      "revId": "e53f7a01290ff5fcb2e9d7297d4462eb0f4001d5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c04dfecc_6912a629",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 264,
+      "author": {
+        "id": 1117055
+      },
+      "writtenOn": "2020-03-30T21:30:28Z",
+      "side": 1,
+      "message": "a",
+      "range": {
+        "startLine": 264,
+        "startChar": 36,
+        "endLine": 264,
+        "endChar": 38
+      },
+      "revId": "e53f7a01290ff5fcb2e9d7297d4462eb0f4001d5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8f0d33fd_b67ab860",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 265,
+      "author": {
+        "id": 1117055
+      },
+      "writtenOn": "2020-03-30T21:30:28Z",
+      "side": 1,
+      "message": "I think we can leave this out since the engineer should be dedicated for this task.",
+      "range": {
+        "startLine": 265,
+        "startChar": 35,
+        "endLine": 265,
+        "endChar": 62
+      },
+      "revId": "e53f7a01290ff5fcb2e9d7297d4462eb0f4001d5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

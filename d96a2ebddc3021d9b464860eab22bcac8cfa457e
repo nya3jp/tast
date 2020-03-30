@@ -16,6 +16,24 @@
       "revId": "d96a2ebddc3021d9b464860eab22bcac8cfa457e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "db055295_15de2d50",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/func_parameters.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-03-30T11:03:10Z",
+      "side": 1,
+      "message": "In actuality, comments seem to be not lost, but I added extra check to be on the safe side.\n\nI merged the logic. It adds extra computation for !fix case, but I think it\u0027s acceptable (time complexity is the same).",
+      "parentUuid": "4180b9b2_aeaada1d",
+      "revId": "d96a2ebddc3021d9b464860eab22bcac8cfa457e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

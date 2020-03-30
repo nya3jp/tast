@@ -122,6 +122,10 @@ Tests in this group are not used for build verification.
 				Name: "graphics_weekly",
 				Desc: `Indicates that this test should run weekly.`,
 			},
+			{
+				Name: "graphics_av_analysis",
+				Desc: `Indicates that this test should run on audio/video analysis pool.`,
+			},
 		},
 	},
 	{

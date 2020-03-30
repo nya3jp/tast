@@ -221,9 +221,14 @@ outside of video tests.
 ## Hardware dependencies
 
 Tast provides a way to run/skip tests based on the device characteristics.
+The examples of the decive characteristics are as follows:
+
+* Whether the device has a touch screen.
+* Whether the device has fingerprint.
+* Whether the device has an internal display.
+
 For example, in order to run tests on DUT where touchscreen is available,
 the dependency can be declared in the `HardwareDeps` field of `testing.Test`.
-
 
 ```go
 func init() {
@@ -239,6 +244,25 @@ You can provide multiple `Condition`s to `hwdep.D`. In the case,
 the test will run only on DUTs where all the conditions are satisfied.
 
 You can find the full list of supported conditions in the [hwdep package].
+
+Note that there are special kind of hardware dependencies, named `Model`,
+`SkipOnModel`, `Platform`, and `SkipOnPlatform`.
+With the dependencies, tests will be controlled based on the device type names,
+rather than the device characteristics.
+In general, it is recommended *not* to use these conditions. If it comes
+to your mind to use these conditions, it is recommended to reconsider
+whether there is an alternative (and more appropriate) condition.
+Examples of their expected use cases are:
+
+* There are known issue in a driver of a specific device, which cannot be
+  fixed immediately. The test is stable on other models, and would like
+  to be promoted to critical.
+* There is a test running as informational. Flakiness failures are found
+  only on a few models, but the test is stable on other models.
+  With depending models/platforms, we can promote the test to most of
+  devices, except ones where the test causes flakiness.
+  In this case, it is expected that an dedicated engineer is assigned to
+  investigate the cause and its fix, and should be prioritized.
 
 [hwdep package]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/testing/hwdep/
 

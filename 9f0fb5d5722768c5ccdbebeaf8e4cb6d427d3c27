@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1ec791aa_b46e62d2",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 225,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-03-30T03:02:32Z",
+      "side": 1,
+      "message": "nit/style: Could you move this at L203 to list in order of the enum value?",
+      "revId": "9f0fb5d5722768c5ccdbebeaf8e4cb6d427d3c27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e26536f0_009036bb",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 226,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-03-30T03:02:32Z",
+      "side": 1,
+      "message": "why? If there\u0027s no special reason, could you check err before reading the output to follow the common practices?\n\nDitto for below.",
+      "range": {
+        "startLine": 226,
+        "startChar": 58,
+        "endLine": 226,
+        "endChar": 79
+      },
+      "revId": "9f0fb5d5722768c5ccdbebeaf8e4cb6d427d3c27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2de42f06_a99af8dc",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-03-30T03:02:32Z",
+      "side": 1,
+      "message": "Could you avoid using exec.Command when appropriate? ioutil.ReadFile(...) should be better in this case.",
+      "revId": "9f0fb5d5722768c5ccdbebeaf8e4cb6d427d3c27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

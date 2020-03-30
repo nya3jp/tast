@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b60888de_79284305",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/deps_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-03-30T02:41:29Z",
+      "side": 1,
+      "message": "go-cmp helps you, I think?\n\ncf) \"github.com/google/go-cmp/cmp\"\n\ncmp.Equal(*args.RunTests, exp, cmp.Comparer(proto.Equal))\n\ncould work? (or if not, cmp.FilterPath/FilterValues would help you).",
+      "revId": "f1bb5121b43bc57588599776bf68b22375b39bac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

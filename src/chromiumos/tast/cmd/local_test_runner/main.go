@@ -119,6 +119,7 @@ func main() {
 			"metrics_consent":        "chrome_internal && !mocktpm && !tast_vm",
 			"ml_service":             "ml_service",
 			"mosys":                  "!betty && !tast_vm",
+			"native_bridge":          "houdini || ndk_translation",
 			"no_android":             "!arc",
 			"no_asan":                "!asan",
 			"no_msan":                "!msan",

@@ -149,7 +149,8 @@ func main() {
 			// drm_atomic is a necessary but not sufficient condition to support
 			// video_overlays; in practice, they tend to be enabled at the same time.
 			// TODO(mcasas): query in advance for NV12 format DRM Plane support.
-			"video_overlays": "drm_atomic",
+			"video_overlays":      "drm_atomic",
+			"virtual_usb_printer": `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14")`,
 			// Some VM builds actually can run nested VM with right host configuration.
 			// But we haven't enable this feature on builders. For now, just disable
 			// vm_host feature for VM builds. The kvm_transition flag indicates the

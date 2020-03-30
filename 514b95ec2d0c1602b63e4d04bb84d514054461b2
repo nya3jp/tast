@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "630496bd_9ee86935",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/func_parameters.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-03-30T03:11:34Z",
+      "side": 1,
+      "message": "This is based on the string representation, so could be report wrongly if x and y come from different context.\nCould you explicitly document it? It would guard from future misuses.",
+      "revId": "514b95ec2d0c1602b63e4d04bb84d514054461b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

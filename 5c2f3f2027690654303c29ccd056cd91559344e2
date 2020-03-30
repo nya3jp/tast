@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9330847f_c577a2e5",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2020-03-30T23:17:36Z",
+      "side": 1,
+      "message": "ihf@ comment:\n\n\u003e I think this change is not good as it is somewhat circular. It assumes that if a display was found that there is a display and if none was found that there is none. I would move this code into an explicit test (comparing with lsb-release as below).\n\nThe code below looks for an internal display and only for an internal\ndisplay, because only panels can be connected to the eDP/DSI ports -- and \nif it\u0027s not found, it assumes that there is no internal display, making \nno assumptions as to the presence or amount of external displays. \n\n\u003e \n\u003e The hardware dependency should be keyed off /etc/lsb-release saying CHROMEBIT or CHROMEBOX (no display), otherwise yes.\n\nMaybe for a test..? chromeboxes and chromebits should have no internal \ndisplay, but I didn\u0027t want to assume that there\u0027s only 3 categories:\nchromebooks-with-internal-displays, chromeboxes and chromebits. I guess\nthat was confusingly stated in the commit message.",
+      "range": {
+        "startLine": 204,
+        "startChar": 1,
+        "endLine": 204,
+        "endChar": 19
+      },
+      "revId": "5c2f3f2027690654303c29ccd056cd91559344e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

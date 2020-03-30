@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4180b9b2_aeaada1d",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/func_parameters.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-03-30T04:26:55Z",
+      "side": 1,
+      "message": "Comment/Doc will be lost in case of merge?\nCould you preserve? Or, should these be nil always?\n\nAlso, this logic looks quite similar to above (as expected). Is it possible to merge them to avoid duplicating the similar logic?",
+      "revId": "d96a2ebddc3021d9b464860eab22bcac8cfa457e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

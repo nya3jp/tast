@@ -16,6 +16,24 @@
       "revId": "f12edbbda2e672cdabc12fbc15cc3504f7aa0050",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9b4a36dd_c54aa98c",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/func_parameters_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-03-31T06:27:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2c95a58c_ebfd3e77",
+      "revId": "f12edbbda2e672cdabc12fbc15cc3504f7aa0050",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

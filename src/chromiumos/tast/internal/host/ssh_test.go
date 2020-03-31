@@ -17,20 +17,20 @@ import (
 	"testing"
 	"time"
 
-	"chromiumos/tast/internal/host/test"
+	"chromiumos/tast/internal/sshtest"
 	"chromiumos/tast/testutil"
 )
 
 var userKey, hostKey *rsa.PrivateKey
 
 func init() {
-	userKey, hostKey = test.MustGenerateKeys()
+	userKey, hostKey = sshtest.MustGenerateKeys()
 }
 
 // connectToServer establishes a connection to srv using key.
 // base is used as a base set of options.
-func connectToServer(ctx context.Context, srv *test.SSHServer, key *rsa.PrivateKey, base *SSHOptions) (*SSH, error) {
-	keyFile, err := test.WriteKey(key)
+func connectToServer(ctx context.Context, srv *sshtest.SSHServer, key *rsa.PrivateKey, base *SSHOptions) (*SSH, error) {
+	keyFile, err := sshtest.WriteKey(key)
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ const (
 
 // testData wraps data common to all tests.
 type testData struct {
-	srv *test.SSHServer
+	srv *sshtest.SSHServer
 	hst *SSH
 
 	ctx    context.Context // used for performing operations using hst
@@ -77,7 +77,7 @@ func newTestData(t *testing.T) *testData {
 	td.ctx, td.cancel = context.WithCancel(context.Background())
 
 	var err error
-	if td.srv, err = test.NewSSHServer(&userKey.PublicKey, hostKey, td.handleExec); err != nil {
+	if td.srv, err = sshtest.NewSSHServer(&userKey.PublicKey, hostKey, td.handleExec); err != nil {
 		t.Fatal(err)
 	}
 
@@ -110,7 +110,7 @@ func (td *testData) close() {
 
 // handleExec handles an SSH "exec" request sent to td.srv by executing the requested command.
 // The command must already be present in td.nextCmd.
-func (td *testData) handleExec(req *test.ExecReq) {
+func (td *testData) handleExec(req *sshtest.ExecReq) {
 	if req.Cmd != td.nextCmd {
 		log.Printf("Unexpected command %q (want %q)", req.Cmd, td.nextCmd)
 		req.Start(false)
@@ -183,7 +183,7 @@ func checkDir(dir string, exp map[string]string) error {
 
 func TestRetry(t *testing.T) {
 	t.Parallel()
-	srv, err := test.NewSSHServer(&userKey.PublicKey, hostKey, func(*test.ExecReq) {})
+	srv, err := sshtest.NewSSHServer(&userKey.PublicKey, hostKey, func(*sshtest.ExecReq) {})
 	if err != nil {
 		t.Fatal("Failed starting server: ", err)
 	}
@@ -503,13 +503,13 @@ func TestDeleteTreeOutside(t *testing.T) {
 
 func TestKeyDir(t *testing.T) {
 	t.Parallel()
-	srv, err := test.NewSSHServer(&userKey.PublicKey, hostKey, nil)
+	srv, err := sshtest.NewSSHServer(&userKey.PublicKey, hostKey, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer srv.Close()
 
-	keyFile, err := test.WriteKey(userKey)
+	keyFile, err := sshtest.WriteKey(userKey)
 	if err != nil {
 		t.Fatal(err)
 	}

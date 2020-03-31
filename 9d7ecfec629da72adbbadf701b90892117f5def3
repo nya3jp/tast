@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "ba86a5c7_52136954",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-03-31T10:42:30Z",
+      "side": 1,
+      "message": "I checked curretly we always have testing.AddTest as the first statement in init() in tests.\n\ncat tast-tests{{,-private,-pita}/local_tests,/remote_tests}/**/*.go  | perl -lnae \u0027print $x if /testing.AddTest/ \u0026\u0026 $x!~/^func init/; $x\u003d$_ if !/^(\\s+(\\/\\/.*)?)$/\u0027\n\nI think it\u0027s fine to mandate this policy.\nnya@ WDYT?\n\nOnce approved, I can update the linter at the same time.",
+      "parentUuid": "f9e68f69_082daabb",
+      "revId": "9d7ecfec629da72adbbadf701b90892117f5def3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6efc1c06_5758e33d",
         "filename": "docs/writing_tests.md",
         "patchSetId": 3
@@ -87,6 +105,24 @@
       "revId": "9d7ecfec629da72adbbadf701b90892117f5def3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "12950dcd_4406acbb",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-03-31T10:42:30Z",
+      "side": 1,
+      "message": "resolved",
+      "parentUuid": "21392d59_bed87fe8",
+      "revId": "9d7ecfec629da72adbbadf701b90892117f5def3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

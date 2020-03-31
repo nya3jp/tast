@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Package test provides support code for testing the host package.
-package test
+// Package sshtest provides support code for testing the host package.
+package sshtest
 
 import (
 	"bytes"

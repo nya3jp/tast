@@ -16,6 +16,24 @@
       "revId": "f8f108e207bc37c9952546ff7206470ddaceef6b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f1a458b7_90f15c27",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/git/git.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-03-31T06:03:46Z",
+      "side": 1,
+      "message": "I\u0027d rather keep it as is, because cmd.Dir \u003d g.Dir is consistent with other place.\nOr do we want to update other places?",
+      "parentUuid": "3000ce32_4d0c75f3",
+      "revId": "f8f108e207bc37c9952546ff7206470ddaceef6b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

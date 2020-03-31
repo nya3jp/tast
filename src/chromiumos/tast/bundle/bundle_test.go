@@ -21,7 +21,7 @@ import (
 	"chromiumos/tast/dut"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/control"
-	"chromiumos/tast/internal/host/test"
+	"chromiumos/tast/internal/sshtest"
 	"chromiumos/tast/testing"
 	"chromiumos/tast/testutil"
 )
@@ -498,7 +498,7 @@ func TestRunTestsSkipTestWithPrecondition(t *gotesting.T) {
 }
 
 func TestRunRemoteData(t *gotesting.T) {
-	td := test.NewTestData(userKey, hostKey, nil)
+	td := sshtest.NewTestData(userKey, hostKey, nil)
 	defer td.Close()
 
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
@@ -560,7 +560,7 @@ func TestRunRemoteData(t *gotesting.T) {
 }
 
 func TestRunCloudStorage(t *gotesting.T) {
-	td := test.NewTestData(userKey, hostKey, nil)
+	td := sshtest.NewTestData(userKey, hostKey, nil)
 	defer td.Close()
 
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())

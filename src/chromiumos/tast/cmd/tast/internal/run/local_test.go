@@ -24,8 +24,8 @@ import (
 	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/control"
-	"chromiumos/tast/internal/host/test"
 	"chromiumos/tast/internal/runner"
+	"chromiumos/tast/internal/sshtest"
 	"chromiumos/tast/shutil"
 	"chromiumos/tast/testing"
 	"chromiumos/tast/testutil"
@@ -34,7 +34,7 @@ import (
 var userKey, hostKey *rsa.PrivateKey
 
 func init() {
-	userKey, hostKey = test.MustGenerateKeys()
+	userKey, hostKey = sshtest.MustGenerateKeys()
 }
 
 const (
@@ -54,7 +54,7 @@ type runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int)
 
 // localTestData holds data shared between tests that exercise the local function.
 type localTestData struct {
-	srvData *test.TestData
+	srvData *sshtest.TestData
 	logbuf  bytes.Buffer
 	cfg     Config
 	tempDir string
@@ -75,7 +75,7 @@ type localTestData struct {
 // It calls t.Fatal on error.
 func newLocalTestData(t *gotesting.T) *localTestData {
 	td := localTestData{expRunCmd: "exec env " + mockLocalRunner, bootID: defaultBootID}
-	td.srvData = test.NewTestData(userKey, hostKey, td.handleExec)
+	td.srvData = sshtest.NewTestData(userKey, hostKey, td.handleExec)
 	td.cfg.KeyFile = td.srvData.UserKeyFile
 
 	toClose := &td
@@ -125,7 +125,7 @@ func (td *localTestData) close() {
 
 // handleExec handles SSH "exec" requests sent to td.srvData.Srv.
 // Canned results are returned for local_test_runner, while file-copying-related commands are actually executed.
-func (td *localTestData) handleExec(req *test.ExecReq) {
+func (td *localTestData) handleExec(req *sshtest.ExecReq) {
 	defer func() { td.nextCopyCmd = "" }()
 
 	switch req.Cmd {

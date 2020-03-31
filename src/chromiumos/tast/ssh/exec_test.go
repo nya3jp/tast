@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package host
+package ssh
 
 import (
 	"bytes"
@@ -61,7 +61,7 @@ func TestCommandsOnCustomPlatform(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	hst, err := connectToServer(ctx, srv, userKey, &SSHOptions{ConnectRetries: 1, Platform: platform})
+	hst, err := connectToServer(ctx, srv, userKey, &Options{ConnectRetries: 1, Platform: platform})
 	if err != nil {
 		t.Fatal("Unable to connect to SSH Server")
 	}

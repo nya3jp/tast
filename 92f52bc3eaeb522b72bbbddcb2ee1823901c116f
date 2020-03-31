@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b866de16_a17f2d1f",
+        "filename": "docs/test_attributes.md",
+        "patchSetId": 9
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2020-03-31T19:14:11Z",
+      "side": 1,
+      "message": "This should have 2 more spaces. Same on the next line.",
+      "range": {
+        "startLine": 32,
+        "startChar": 5,
+        "endLine": 32,
+        "endChar": 6
+      },
+      "revId": "92f52bc3eaeb522b72bbbddcb2ee1823901c116f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "39885c34_8572f4cb",
+        "filename": "docs/test_attributes.md",
+        "patchSetId": 9
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2020-03-31T19:14:11Z",
+      "side": 1,
+      "message": "remove",
+      "range": {
+        "startLine": 34,
+        "startChar": 0,
+        "endLine": 34,
+        "endChar": 79
+      },
+      "revId": "92f52bc3eaeb522b72bbbddcb2ee1823901c116f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

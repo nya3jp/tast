@@ -49,15 +49,25 @@ type Cmd struct {
 	sess                   *ssh.Session
 }
 
+// CmdOption is enum of options which can be passed to Run, Output,
+// CombinedOutput and Wait to control precise behavior of them.
+type CmdOption int
+
+const (
+	// DumpLogOnError is an option to dump logs if the executed command fails
+	// (i.e., exited with non-zero status code).
+	DumpLogOnError CmdOption = iota
+)
+
 // cmdState represents a state of a Cmd. cmdState is used to prevent typical misuse of
 // Cmd methods, though it does not catch all concurrent cases.
 type cmdState int
 
 const (
 	stateNew     cmdState = iota // newly created
-	stateStarted                 // after Start is called
-	stateClosing                 // after waitAndClose is called
-	stateDone                    // after waitAndClose is returned or initialization failed
+	stateStarted cmdState        // after Start is called
+	stateClosing cmdState        // after waitAndClose is called
+	stateDone    cmdState        // after waitAndClose is returned or initialization failed
 )
 
 func (s cmdState) String() string {
@@ -93,7 +103,7 @@ func (s *Conn) Command(name string, args ...string) *Cmd {
 // The command is aborted when ctx's deadline is reached.
 //
 // See: https://godoc.org/os/exec#Cmd.Run
-func (c *Cmd) Run(ctx context.Context) error {
+func (c *Cmd) Run(ctx context.Context, opts ...CmdOption) error {
 	if err := c.startSession(ctx); err != nil {
 		return err
 	}
@@ -113,7 +123,7 @@ func (c *Cmd) Run(ctx context.Context) error {
 // The command is aborted when ctx's deadline is reached.
 //
 // See: https://godoc.org/os/exec#Cmd.Output
-func (c *Cmd) Output(ctx context.Context) ([]byte, error) {
+func (c *Cmd) Output(ctx context.Context, opts ...CmdOption) ([]byte, error) {
 	if err := c.startSession(ctx); err != nil {
 		return nil, err
 	}
@@ -137,7 +147,7 @@ func (c *Cmd) Output(ctx context.Context) ([]byte, error) {
 // The command is aborted when ctx's deadline is reached.
 //
 // See: https://godoc.org/os/exec#Cmd.CombinedOutput
-func (c *Cmd) CombinedOutput(ctx context.Context) ([]byte, error) {
+func (c *Cmd) CombinedOutput(ctx context.Context, opts ...CmdOption) ([]byte, error) {
 	if err := c.startSession(ctx); err != nil {
 		return nil, err
 	}
@@ -266,7 +276,7 @@ func (c *Cmd) Start(ctx context.Context) error {
 // of the context passed to Start also applies.
 //
 // See: https://godoc.org/os/exec#Cmd.Wait
-func (c *Cmd) Wait(ctx context.Context) error {
+func (c *Cmd) Wait(ctx context.Context, opts ...CmdOption) error {
 	if c.state != stateStarted {
 		return errors.New("process not active")
 	}

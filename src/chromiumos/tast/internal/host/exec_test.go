@@ -18,7 +18,7 @@ import (
 
 	"golang.org/x/crypto/ssh"
 
-	"chromiumos/tast/internal/host/test"
+	"chromiumos/tast/internal/sshtest"
 	"chromiumos/tast/testutil"
 )
 
@@ -40,7 +40,7 @@ func TestCommandsOnCustomPlatform(t *testing.T) {
 	t.Parallel()
 
 	var expectedCmd string
-	srv, err := test.NewSSHServer(&userKey.PublicKey, hostKey, func(req *test.ExecReq) {
+	srv, err := sshtest.NewSSHServer(&userKey.PublicKey, hostKey, func(req *sshtest.ExecReq) {
 		if req.Cmd != expectedCmd {
 			t.Errorf("Unexpected command %q (want %q)", req.Cmd, expectedCmd)
 			req.Start(false)

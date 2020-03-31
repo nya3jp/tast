@@ -12,7 +12,7 @@ import (
 	"os"
 	gotesting "testing"
 
-	"chromiumos/tast/internal/host/test"
+	"chromiumos/tast/internal/sshtest"
 	"chromiumos/tast/testing"
 	"chromiumos/tast/testutil"
 )
@@ -20,7 +20,7 @@ import (
 var userKey, hostKey *rsa.PrivateKey
 
 func init() {
-	userKey, hostKey = test.MustGenerateKeys()
+	userKey, hostKey = sshtest.MustGenerateKeys()
 }
 
 func TestRemoteMissingTarget(t *gotesting.T) {
@@ -40,7 +40,7 @@ func TestRemoteMissingTarget(t *gotesting.T) {
 }
 
 func TestRemoteCantConnect(t *gotesting.T) {
-	td := test.NewTestData(userKey, hostKey, nil)
+	td := sshtest.NewTestData(userKey, hostKey, nil)
 	defer td.Close()
 
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
@@ -67,7 +67,7 @@ func TestRemoteDUT(t *gotesting.T) {
 		cmd    = "some_command"
 		output = "fake output"
 	)
-	td := test.NewTestData(userKey, hostKey, func(req *test.ExecReq) {
+	td := sshtest.NewTestData(userKey, hostKey, func(req *sshtest.ExecReq) {
 		if req.Cmd != "exec "+cmd {
 			log.Printf("Unexpected command %q", req.Cmd)
 			req.Start(false)
@@ -111,7 +111,7 @@ func TestRemoteDUT(t *gotesting.T) {
 }
 
 func TestRemoteReconnectBetweenTests(t *gotesting.T) {
-	td := test.NewTestData(userKey, hostKey, nil)
+	td := sshtest.NewTestData(userKey, hostKey, nil)
 	defer td.Close()
 
 	// Returns a test function that sets the passed bool to true if the dut.DUT

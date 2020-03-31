@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package host
+package ssh
 
 import (
 	"context"
@@ -26,7 +26,7 @@ func init() {
 
 // connectToServer establishes a connection to srv using key.
 // base is used as a base set of options.
-func connectToServer(ctx context.Context, srv *sshtest.SSHServer, key *rsa.PrivateKey, base *SSHOptions) (*SSH, error) {
+func connectToServer(ctx context.Context, srv *sshtest.SSHServer, key *rsa.PrivateKey, base *Options) (*Conn, error) {
 	keyFile, err := sshtest.WriteKey(key)
 	if err != nil {
 		return nil, err
@@ -35,10 +35,10 @@ func connectToServer(ctx context.Context, srv *sshtest.SSHServer, key *rsa.Priva
 
 	o := *base
 	o.KeyFile = keyFile
-	if err = ParseSSHTarget(srv.Addr().String(), &o); err != nil {
+	if err = ParseTarget(srv.Addr().String(), &o); err != nil {
 		return nil, err
 	}
-	s, err := NewSSH(ctx, &o)
+	s, err := New(ctx, &o)
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +60,7 @@ const (
 // testData wraps data common to all tests.
 type testData struct {
 	srv *sshtest.SSHServer
-	hst *SSH
+	hst *Conn
 
 	ctx    context.Context // used for performing operations using hst
 	cancel func()          // cancels ctx to simulate a timeout
@@ -78,7 +78,7 @@ func newTestData(t *testing.T) *testData {
 		t.Fatal(err)
 	}
 
-	if td.hst, err = connectToServer(td.ctx, td.srv, userKey, &SSHOptions{}); err != nil {
+	if td.hst, err = connectToServer(td.ctx, td.srv, userKey, &Options{}); err != nil {
 		td.srv.Close()
 		t.Fatal(err)
 	}
@@ -153,14 +153,14 @@ func TestRetry(t *testing.T) {
 	// Configure the server to reject the next two connections and let the client only retry once.
 	srv.RejectConns(2)
 	ctx := context.Background()
-	if hst, err := connectToServer(ctx, srv, userKey, &SSHOptions{ConnectRetries: 1}); err == nil {
+	if hst, err := connectToServer(ctx, srv, userKey, &Options{ConnectRetries: 1}); err == nil {
 		t.Error("Unexpectedly able to connect to server with inadequate retries")
 		hst.Close(ctx)
 	}
 
 	// With two retries (i.e. three attempts), the connection should be successfully established.
 	srv.RejectConns(2)
-	if hst, err := connectToServer(ctx, srv, userKey, &SSHOptions{ConnectRetries: 2}); err != nil {
+	if hst, err := connectToServer(ctx, srv, userKey, &Options{ConnectRetries: 2}); err != nil {
 		t.Error("Failed connecting to server despite adequate retries: ", err)
 	} else {
 		hst.Close(ctx)
@@ -209,11 +209,11 @@ func TestKeyDir(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	opt := SSHOptions{KeyDir: td}
-	if err = ParseSSHTarget(srv.Addr().String(), &opt); err != nil {
+	opt := Options{KeyDir: td}
+	if err = ParseTarget(srv.Addr().String(), &opt); err != nil {
 		t.Fatal(err)
 	}
-	hst, err := NewSSH(context.Background(), &opt)
+	hst, err := New(context.Background(), &opt)
 	if err != nil {
 		t.Fatal(err)
 	}

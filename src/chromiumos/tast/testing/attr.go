@@ -199,11 +199,6 @@ Tests in this group are not used for build verification.
 `,
 		Subattrs: []*attr{
 			{
-				// TODO(crbug.com/1066377): remove this once its usage are gone.
-				Name: "wifi_func",
-				Desc: `Indicates that this test is for verifying basic WiFi functionalities.`,
-			},
-			{
 				Name: "wificell_func",
 				Desc: `Indicates that this test is for verifying basic WiFi functionalities.`,
 			},

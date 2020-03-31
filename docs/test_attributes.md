@@ -11,7 +11,10 @@ results are interpreted.
 
 A test should have at least one or more `group:*` attribute or `disabled`
 attribute. Some additional attributes can be specified depending on `group:*`
-attributes. Below is the list of most popular attributes:
+attributes. Noted that an attribute belongs to a `group:*` attribute is called
+sub-attribute. Each sub-attribute's name should have its group name with an
+underscore as prefix, e.g. `crosbolt_perbuild` is a sub-attribute of
+`group:crosbolt`. Below is the list of most popular attributes:
 
 *   `group:mainline` - The default group for functional tests. Tests having
     this attribute are called *mainline* tests. A mainline test falls under
@@ -25,7 +28,7 @@ attributes. Below is the list of most popular attributes:
     are uploaded to [crosbolt]. When you add this attribute, you also need to
     add one of `crosbolt_perbuild`, `crosbolt_nightly` or `crosbolt_weekly`.
 *   `group:wificell` - Tests that depends on [wificell] fixture to run.
-    Currently it has only one sub-attribute: `wifi_func`, which is used to
+    Currently it has only one sub-attribute: `wificell_func`, which is used to
     verify basic WiFi functionalities.
 
 See [attr.go] for the full list of valid attributes.

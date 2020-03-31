@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3000ce32_4d0c75f3",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/git/git.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-03-31T05:51:37Z",
+      "side": 1,
+      "message": "Recommendation: exec.Command(\"git\", \"-C\", g.Dir, \"ls-tree\", g.Commit, path)",
+      "revId": "f8f108e207bc37c9952546ff7206470ddaceef6b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -34,6 +34,24 @@
       "revId": "f8f108e207bc37c9952546ff7206470ddaceef6b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c790f1ed_98c894f3",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/git/git.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-03-31T06:05:16Z",
+      "side": 1,
+      "message": "Also, I feel cmd.Dir \u003d g.Dir can be more readable; not everyone knows git\u0027s -C option.",
+      "parentUuid": "f1a458b7_90f15c27",
+      "revId": "f8f108e207bc37c9952546ff7206470ddaceef6b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

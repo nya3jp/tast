@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2c95a58c_ebfd3e77",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/func_parameters_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-03-31T06:02:45Z",
+      "side": 1,
+      "message": "How about adding another case:\n\nfunc () (a x, /* b */ b x) {}\n\njust in case? (Optionally, ditto for \"a\").\nMaybe nice to check line comments, too?\n\nfunc (a x, // abc\n      b x, // def\n      c x) {",
+      "revId": "f12edbbda2e672cdabc12fbc15cc3504f7aa0050",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "ba92c19e_bcc90aed",
+        "filename": "src/chromiumos/tast/testing/attr_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-03-31T09:32:42Z",
+      "side": 1,
+      "message": "Because I\u0027m also renaming wifi_func to wificell_func and adding wificell_unstable attribute, how about writing the logic like:\n\nprefixes \u003d []string{g.Name + \"_\"}\nif g.Name \u003d\u003d \"wificell\" {\n\tprefixes \u003d append(prefixes, \"wifi_\")\n}\nfor _, a :\u003d range g.Subattrs {\n\thasPrefix :\u003d false\n\tfor _, pre :\u003d range prefixes {\n\t\tif strings.HasPrefix(a.Name, prefix) {\n\t\t\thasPrefix \u003d true\n\t\t\tbreak\n\t\t}\n\t}\n\tif !hasPrefix {\n\t\tt.Errorf(\"Group %q has a subattribute %q but it should have any of the prefix %q\", g.Name, a.Name, prefixes)\n\t}\n}",
+      "parentUuid": "b72e259a_b19e237a",
+      "revId": "7903a4d57d04869cd6ad7dfcb9ce472ca3b09201",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "09573d15_a78594fa",
         "filename": "src/chromiumos/tast/testing/attr_test.go",
         "patchSetId": 1

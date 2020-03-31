@@ -187,7 +187,7 @@ Tests in this group are not used for build verification.
 `,
 		Subattrs: []*attr{
 			{
-				Name: "wifi_func",
+				Name: "wificell_func",
 				Desc: `Indicates that this test is for verifying basic WiFi functionalities.`,
 			},
 		},

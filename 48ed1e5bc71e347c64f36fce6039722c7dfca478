@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d4b3f6fb_715ba448",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1000221
+      },
+      "writtenOn": "2020-03-31T04:23:39Z",
+      "side": 1,
+      "message": "av_analysis",
+      "range": {
+        "startLine": 7,
+        "startChar": 20,
+        "endLine": 7,
+        "endChar": 31
+      },
+      "revId": "48ed1e5bc71e347c64f36fce6039722c7dfca478",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ee724ccb_f99500e9",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1000221
+      },
+      "writtenOn": "2020-03-31T04:23:39Z",
+      "side": 1,
+      "message": "av_analysis",
+      "range": {
+        "startLine": 9,
+        "startChar": 4,
+        "endLine": 9,
+        "endChar": 15
+      },
+      "revId": "48ed1e5bc71e347c64f36fce6039722c7dfca478",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "89f903a1_b9140a17",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1000221
+      },
+      "writtenOn": "2020-03-31T04:23:39Z",
+      "side": 1,
+      "message": "pool:av-analysis",
+      "range": {
+        "startLine": 10,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 17
+      },
+      "revId": "48ed1e5bc71e347c64f36fce6039722c7dfca478",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bb0fb5ad_d5b0b768",
+        "filename": "src/chromiumos/tast/testing/attr.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1000221
+      },
+      "writtenOn": "2020-03-31T04:23:39Z",
+      "side": 1,
+      "message": "Wording \"on ... pool\".",
+      "range": {
+        "startLine": 139,
+        "startChar": 47,
+        "endLine": 139,
+        "endChar": 77
+      },
+      "revId": "48ed1e5bc71e347c64f36fce6039722c7dfca478",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

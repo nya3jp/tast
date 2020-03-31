@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "dbcbfc75_db77501a",
+        "filename": "docs/test_attributes.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2020-03-31T19:07:59Z",
+      "side": 1,
+      "message": "Note",
+      "range": {
+        "startLine": 14,
+        "startChar": 12,
+        "endLine": 14,
+        "endChar": 17
+      },
+      "revId": "72e0f114252b4e2bc5d50fc644b555fad792e2e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d9194e96_18cc705d",
+        "filename": "src/chromiumos/tast/testing/attr.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2020-03-31T19:07:59Z",
+      "side": 1,
+      "message": "I\u0027d think you could have just done [1] all in one go, as long as you have the appropriate Cq-Depend. But this works too, I guess.\n\n[1] https://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/2128183/2",
+      "range": {
+        "startLine": 202,
+        "startChar": 0,
+        "endLine": 202,
+        "endChar": 68
+      },
+      "revId": "72e0f114252b4e2bc5d50fc644b555fad792e2e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

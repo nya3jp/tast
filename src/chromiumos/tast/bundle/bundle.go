@@ -330,7 +330,7 @@ func connectToTarget(ctx context.Context, args *Args) (_ *dut.DUT, retErr error)
 	return dt, nil
 }
 
-// runTest runs t per args and cfg, writing the appropriate control.Test* control messages to mw.
+// runTest runs t per args and cfg, writing appropriate messages to ew.
 func runTest(ctx context.Context, ew *eventWriter, args *Args, cfg *runConfig,
 	t, next *testing.TestInstance, rd *testing.RemoteData) {
 	ew.TestStart(t)

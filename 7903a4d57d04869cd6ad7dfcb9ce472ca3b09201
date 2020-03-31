@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b72e259a_b19e237a",
+        "filename": "src/chromiumos/tast/testing/attr_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-03-31T08:51:36Z",
+      "side": 1,
+      "message": "Well I can fix that before it is widespread. Or let met take down the exception after I renamed wifi_func to wificell_func. WDYT?",
+      "revId": "7903a4d57d04869cd6ad7dfcb9ce472ca3b09201",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "09573d15_a78594fa",
+        "filename": "src/chromiumos/tast/testing/attr_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-03-31T08:51:36Z",
+      "side": 1,
+      "message": "have",
+      "range": {
+        "startLine": 147,
+        "startChar": 59,
+        "endLine": 147,
+        "endChar": 62
+      },
+      "revId": "7903a4d57d04869cd6ad7dfcb9ce472ca3b09201",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3b777a0a_a414d0b2",
+        "filename": "src/chromiumos/tast/testing/attr_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-03-31T08:51:36Z",
+      "side": 1,
+      "message": "sub-attribute",
+      "range": {
+        "startLine": 147,
+        "startChar": 29,
+        "endLine": 147,
+        "endChar": 41
+      },
+      "revId": "7903a4d57d04869cd6ad7dfcb9ce472ca3b09201",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

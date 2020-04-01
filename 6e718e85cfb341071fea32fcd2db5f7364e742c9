@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f0bfc61a_48ce00e2",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 213,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-04-01T02:34:24Z",
+      "side": 1,
+      "message": "There\u0027s no guarantee about the first return value in case of error. So, could you access it in case of error?\n\nAlso: Is the situation where the file is empty expected, and should be fallback to card1-DSI-1?\n\nProbably:\n\nif card0, err :\u003d ioutil.ReadFile(...); err !\u003d nil {\n  if !os.IsNotExist(err) {\n    return false\n  }\n} else {\n  return len(card0) \u003e 0\n}\n\n...",
+      "range": {
+        "startLine": 207,
+        "startChar": 2,
+        "endLine": 213,
+        "endChar": 3
+      },
+      "revId": "6e718e85cfb341071fea32fcd2db5f7364e742c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "44463851_d11157df",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 219,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-04-01T02:34:24Z",
+      "side": 1,
+      "message": "card1Status, err :\u003d ...\nif err !\u003d nil {\n  return false\n}\nreturn strings.HasPrefix(...)\n\nor if it should be in the same format with above,\n\nif card1Status, err :\u003d ...; err !\u003d nil {\n  if !os.IsNotExist(err) {\n     return false\n  }\n} else {\n  return strings.HasPrefix(...)\n}\n\n// No device is found.\nreturn false",
+      "range": {
+        "startLine": 215,
+        "startChar": 2,
+        "endLine": 219,
+        "endChar": 63
+      },
+      "revId": "6e718e85cfb341071fea32fcd2db5f7364e742c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

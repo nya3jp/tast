@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package ssh
+package ssh_test
 
 import (
 	"bytes"
@@ -16,22 +16,23 @@ import (
 	"testing"
 	"time"
 
-	"golang.org/x/crypto/ssh"
+	cryptossh "golang.org/x/crypto/ssh"
 
 	"chromiumos/tast/internal/sshtest"
+	"chromiumos/tast/ssh"
 	"chromiumos/tast/testutil"
 )
 
 func TestRun(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
-	defer td.close()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
 
-	if err := td.hst.Command("true").Run(td.ctx); err != nil {
+	if err := td.Hst.Command("true").Run(td.Ctx); err != nil {
 		t.Error("Failed to run true: ", err)
 	}
 
-	if err := td.hst.Command("echo hello").Run(td.ctx); err == nil {
+	if err := td.Hst.Command("echo hello").Run(td.Ctx); err == nil {
 		t.Error("Passing shell command worked unexpectedly")
 	}
 }
@@ -54,14 +55,14 @@ func TestCommandsOnCustomPlatform(t *testing.T) {
 	}
 	defer srv.Close()
 
-	platform := &Platform{
+	platform := &ssh.Platform{
 		BuildShellCommand: func(dir string, args []string) string {
 			return dir + "|" + strings.Join(args, "|")
 		},
 	}
 
 	ctx := context.Background()
-	hst, err := connectToServer(ctx, srv, userKey, &Options{ConnectRetries: 1, Platform: platform})
+	hst, err := sshtest.ConnectToServer(ctx, srv, userKey, &ssh.Options{ConnectRetries: 1, Platform: platform})
 	if err != nil {
 		t.Fatal("Unable to connect to SSH Server")
 	}
@@ -76,24 +77,24 @@ func TestCommandsOnCustomPlatform(t *testing.T) {
 
 func TestOutput(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
-	defer td.close()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
 
-	if out, err := td.hst.Command("/bin/sh", "-c", "echo hello").Output(td.ctx); err != nil {
+	if out, err := td.Hst.Command("/bin/sh", "-c", "echo hello").Output(td.Ctx); err != nil {
 		t.Error("Failed to run echo: ", err)
 	} else if got, want := string(out), "hello\n"; got != want {
 		t.Errorf("Failed to capture stdout: got %q, want %q", got, want)
 	}
 
 	// Standard error is not captured.
-	if out, err := td.hst.Command("/bin/sh", "-c", "echo hello >&2").Output(td.ctx); err != nil {
+	if out, err := td.Hst.Command("/bin/sh", "-c", "echo hello >&2").Output(td.Ctx); err != nil {
 		t.Error("Failed to run echo: ", err)
 	} else if got, want := string(out), ""; got != want {
 		t.Errorf("Unexpectedly captured stderr: got %q, want %q", got, want)
 	}
 
 	// Output is available even if the command exits abnormally.
-	if out, err := td.hst.Command("/bin/sh", "-c", "echo hello; exit 1").Output(td.ctx); err == nil {
+	if out, err := td.Hst.Command("/bin/sh", "-c", "echo hello; exit 1").Output(td.Ctx); err == nil {
 		t.Error("No error returned for exit 1")
 	} else if got, want := string(out), "hello\n"; got != want {
 		t.Errorf("Unexpected output from echo: got %q, want %q", got, want)
@@ -102,23 +103,23 @@ func TestOutput(t *testing.T) {
 
 func TestCombinedOutput(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
-	defer td.close()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
 
-	if out, err := td.hst.Command("/bin/sh", "-c", "echo hello").CombinedOutput(td.ctx); err != nil {
+	if out, err := td.Hst.Command("/bin/sh", "-c", "echo hello").CombinedOutput(td.Ctx); err != nil {
 		t.Error("Failed to run echo: ", err)
 	} else if got, want := string(out), "hello\n"; got != want {
 		t.Errorf("Failed to capture stdout: got %q, want %q", got, want)
 	}
 
-	if out, err := td.hst.Command("/bin/sh", "-c", "echo hello >&2").CombinedOutput(td.ctx); err != nil {
+	if out, err := td.Hst.Command("/bin/sh", "-c", "echo hello >&2").CombinedOutput(td.Ctx); err != nil {
 		t.Error("Failed to run echo: ", err)
 	} else if got, want := string(out), "hello\n"; got != want {
 		t.Errorf("Failed to capture stderr: got %q, want %q", got, want)
 	}
 
 	// Output is available even if the command exits abnormally.
-	if out, err := td.hst.Command("/bin/sh", "-c", "echo hello; exit 1").CombinedOutput(td.ctx); err == nil {
+	if out, err := td.Hst.Command("/bin/sh", "-c", "echo hello; exit 1").CombinedOutput(td.Ctx); err == nil {
 		t.Error("No error returned for exit 1")
 	} else if got, want := string(out), "hello\n"; got != want {
 		t.Errorf("Unexpected output from echo: got %q, want %q", got, want)
@@ -127,45 +128,45 @@ func TestCombinedOutput(t *testing.T) {
 
 func TestStartWait(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
-	defer td.close()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
 
-	cmd := td.hst.Command("true")
-	if err := cmd.Start(td.ctx); err != nil {
+	cmd := td.Hst.Command("true")
+	if err := cmd.Start(td.Ctx); err != nil {
 		t.Fatal("Start failed: ", err)
 	}
-	if err := cmd.Wait(td.ctx); err != nil {
+	if err := cmd.Wait(td.Ctx); err != nil {
 		t.Fatal("Wait failed: ", err)
 	}
 }
 
 func TestAbort(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
-	defer td.close()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
 
-	cmd := td.hst.Command("long_sleep")
-	if err := cmd.Start(td.ctx); err != nil {
+	cmd := td.Hst.Command("long_sleep")
+	if err := cmd.Start(td.Ctx); err != nil {
 		t.Fatal("Start failed: ", err)
 	}
 
 	cmd.Abort()
 
-	if err := cmd.Wait(td.ctx); err == nil {
+	if err := cmd.Wait(td.Ctx); err == nil {
 		t.Fatal("Wait unexpectedly succeeded")
 	}
 }
 
 func TestExitCode(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
-	defer td.close()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
 
 	checkExitCode := func(name string, err error) {
 		if err == nil {
 			t.Errorf("%s unexpectedly succeeded", name)
-		} else if exitErr, ok := err.(*ssh.ExitError); !ok {
-			t.Errorf("%s returned %T; want *ssh.ExitError", name, err)
+		} else if exitErr, ok := err.(*cryptossh.ExitError); !ok {
+			t.Errorf("%s returned %T; want *cryptossh.ExitError", name, err)
 		} else if code := exitErr.ExitStatus(); code != 28 {
 			t.Errorf("%s returned exit code %d; want 28", name, code)
 		}
@@ -173,36 +174,36 @@ func TestExitCode(t *testing.T) {
 
 	args := []string{"/bin/sh", "-c", "exit 28"}
 
-	err := td.hst.Command(args[0], args[1:]...).Run(td.ctx)
+	err := td.Hst.Command(args[0], args[1:]...).Run(td.Ctx)
 	checkExitCode("Run", err)
 
-	_, err = td.hst.Command(args[0], args[1:]...).Output(td.ctx)
+	_, err = td.Hst.Command(args[0], args[1:]...).Output(td.Ctx)
 	checkExitCode("Output", err)
 
-	_, err = td.hst.Command(args[0], args[1:]...).CombinedOutput(td.ctx)
+	_, err = td.Hst.Command(args[0], args[1:]...).CombinedOutput(td.Ctx)
 	checkExitCode("CombinedOutput", err)
 
-	cmd := td.hst.Command(args[0], args[1:]...)
-	if err := cmd.Start(td.ctx); err != nil {
+	cmd := td.Hst.Command(args[0], args[1:]...)
+	if err := cmd.Start(td.Ctx); err != nil {
 		t.Fatal("Start failed: ", err)
 	}
-	err = cmd.Wait(td.ctx)
+	err = cmd.Wait(td.Ctx)
 	checkExitCode("Wait", err)
 }
 
 func TestDir(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
-	defer td.close()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
 
 	dir := testutil.TempDir(t)
 	defer os.RemoveAll(dir)
 
 	const filename = "tast_unittest.TestDir.txt"
 
-	cmd := td.hst.Command("touch", filename)
+	cmd := td.Hst.Command("touch", filename)
 	cmd.Dir = dir
-	if err := cmd.Run(td.ctx); err != nil {
+	if err := cmd.Run(td.Ctx); err != nil {
 		t.Fatal("Run failed: ", err)
 	}
 
@@ -213,14 +214,14 @@ func TestDir(t *testing.T) {
 
 func TestStdin(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
-	defer td.close()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
 
 	const want = "hello"
 
-	cmd := td.hst.Command("cat")
+	cmd := td.Hst.Command("cat")
 	cmd.Stdin = bytes.NewBufferString(want)
-	if out, err := cmd.Output(td.ctx); err != nil {
+	if out, err := cmd.Output(td.Ctx); err != nil {
 		t.Fatal("Output failed: ", err)
 	} else if got := string(out); got != want {
 		t.Fatalf("Output returned %q; want %q", got, want)
@@ -229,15 +230,15 @@ func TestStdin(t *testing.T) {
 
 func TestStdoutStderr(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
-	defer td.close()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
 
 	var stdout, stderr bytes.Buffer
 
-	cmd := td.hst.Command("/bin/sh", "-c", "echo hello; echo world >&2")
+	cmd := td.Hst.Command("/bin/sh", "-c", "echo hello; echo world >&2")
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
-	if err := cmd.Run(td.ctx); err != nil {
+	if err := cmd.Run(td.Ctx); err != nil {
 		t.Fatal("Run failed: ", err)
 	}
 
@@ -251,12 +252,12 @@ func TestStdoutStderr(t *testing.T) {
 
 func TestStdinPipe(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
-	defer td.close()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
 
 	const want = "hello"
 
-	cmd := td.hst.Command("cat")
+	cmd := td.Hst.Command("cat")
 
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
@@ -268,7 +269,7 @@ func TestStdinPipe(t *testing.T) {
 		stdin.Close()
 	}()
 
-	if out, err := cmd.Output(td.ctx); err != nil {
+	if out, err := cmd.Output(td.Ctx); err != nil {
 		t.Fatal("Output failed: ", err)
 	} else if got := string(out); got != want {
 		t.Fatalf("Output returned %q; want %q", got, want)
@@ -277,10 +278,10 @@ func TestStdinPipe(t *testing.T) {
 
 func TestStdoutPipeStderrPipe(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
-	defer td.close()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
 
-	cmd := td.hst.Command("/bin/sh", "-c", "echo hello; echo world >&2")
+	cmd := td.Hst.Command("/bin/sh", "-c", "echo hello; echo world >&2")
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
@@ -291,7 +292,7 @@ func TestStdoutPipeStderrPipe(t *testing.T) {
 		t.Fatal("StderrPipe failed: ", err)
 	}
 
-	if err := cmd.Start(td.ctx); err != nil {
+	if err := cmd.Start(td.Ctx); err != nil {
 		t.Fatal("Start failed: ", err)
 	}
 
@@ -320,17 +321,17 @@ func TestStdoutPipeStderrPipe(t *testing.T) {
 
 	wg.Wait()
 
-	if err := cmd.Wait(td.ctx); err != nil {
+	if err := cmd.Wait(td.Ctx); err != nil {
 		t.Error("Wait failed: ", err)
 	}
 }
 
 func TestPipesClosedOnWait(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
-	defer td.close()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
 
-	cmd := td.hst.Command("true")
+	cmd := td.Hst.Command("true")
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
@@ -341,10 +342,10 @@ func TestPipesClosedOnWait(t *testing.T) {
 		t.Fatal("StderrPipe failed: ", err)
 	}
 
-	if err := cmd.Start(td.ctx); err != nil {
+	if err := cmd.Start(td.Ctx); err != nil {
 		t.Fatal("Start failed: ", err)
 	}
-	if err := cmd.Wait(td.ctx); err != nil {
+	if err := cmd.Wait(td.Ctx); err != nil {
 		t.Fatal("Wait failed: ", err)
 	}
 
@@ -364,10 +365,10 @@ func TestPipesClosedOnWait(t *testing.T) {
 
 func TestPipesClosedOnAbort(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
-	defer td.close()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
 
-	cmd := td.hst.Command("long_sleep")
+	cmd := td.Hst.Command("long_sleep")
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
@@ -378,7 +379,7 @@ func TestPipesClosedOnAbort(t *testing.T) {
 		t.Fatal("StderrPipe failed: ", err)
 	}
 
-	if err := cmd.Start(td.ctx); err != nil {
+	if err := cmd.Start(td.Ctx); err != nil {
 		t.Fatal("Start failed: ", err)
 	}
 
@@ -397,91 +398,91 @@ func TestPipesClosedOnAbort(t *testing.T) {
 		t.Fatal("I/O operations blocked after Abort")
 	}
 
-	if err := cmd.Wait(td.ctx); err == nil {
+	if err := cmd.Wait(td.Ctx); err == nil {
 		t.Fatal("Wait unexpectedly succeeded")
 	}
 }
 
 func TestRunTimeout(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
-	defer td.close()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
 
-	td.execTimeout = endTimeout
+	td.ExecTimeout = sshtest.EndTimeout
 
-	if err := td.hst.Command("true").Run(td.ctx); err == nil {
+	if err := td.Hst.Command("true").Run(td.Ctx); err == nil {
 		t.Fatal("Run did not honor the timeout")
 	}
 }
 
 func TestOutputTimeout(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
-	defer td.close()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
 
-	td.execTimeout = endTimeout
+	td.ExecTimeout = sshtest.EndTimeout
 
-	if _, err := td.hst.Command("true").Output(td.ctx); err == nil {
+	if _, err := td.Hst.Command("true").Output(td.Ctx); err == nil {
 		t.Fatal("Output did not honor the timeout")
 	}
 }
 
 func TestCombinedOutputTimeout(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
-	defer td.close()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
 
-	td.execTimeout = endTimeout
+	td.ExecTimeout = sshtest.EndTimeout
 
-	if _, err := td.hst.Command("true").CombinedOutput(td.ctx); err == nil {
+	if _, err := td.Hst.Command("true").CombinedOutput(td.Ctx); err == nil {
 		t.Fatal("CombinedOutput did not honor the timeout")
 	}
 }
 
 func TestStartTimeout(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
-	defer td.close()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
 
-	td.execTimeout = startTimeout
+	td.ExecTimeout = sshtest.StartTimeout
 
-	cmd := td.hst.Command("true")
-	if err := cmd.Start(td.ctx); err == nil {
-		defer cmd.Wait(td.ctx)
+	cmd := td.Hst.Command("true")
+	if err := cmd.Start(td.Ctx); err == nil {
+		defer cmd.Wait(td.Ctx)
 		t.Fatal("Start did not honor the timeout")
 	}
 }
 
 func TestWaitTimeout(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
-	defer td.close()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
 
-	td.execTimeout = endTimeout
+	td.ExecTimeout = sshtest.EndTimeout
 
-	cmd := td.hst.Command("true")
-	if err := cmd.Start(td.ctx); err != nil {
+	cmd := td.Hst.Command("true")
+	if err := cmd.Start(td.Ctx); err != nil {
 		t.Fatal("Start failed: ", err)
 	}
-	if err := cmd.Wait(td.ctx); err == nil {
+	if err := cmd.Wait(td.Ctx); err == nil {
 		t.Fatal("Wait did not honor the timeout")
 	}
 }
 
 func TestWaitTwice(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
-	defer td.close()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
 
-	cmd := td.hst.Command("true")
-	if err := cmd.Start(td.ctx); err != nil {
+	cmd := td.Hst.Command("true")
+	if err := cmd.Start(td.Ctx); err != nil {
 		t.Fatal("Start failed: ", err)
 	}
-	if err := cmd.Wait(td.ctx); err != nil {
+	if err := cmd.Wait(td.Ctx); err != nil {
 		t.Fatal("First Wait failed: ", err)
 	}
 	// Second Wait call fails, but it should not panic.
-	if err := cmd.Wait(td.ctx); err == nil {
+	if err := cmd.Wait(td.Ctx); err == nil {
 		t.Fatal("Second Wait succeeded")
 	}
 }

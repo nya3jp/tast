@@ -68,7 +68,8 @@ The following software features are defined:
 *   `display_backlight` - An internal display backlight.
 *   `dlc` - Support of [Downloadable Content] (DLC).
 *   `drivefs` - Google Drive support enabled.
-*   `drm_atomic` - The [DRM/KMS] kernel subsystem supports atomic commits. 
+*   `drm_atomic` - The [DRM/KMS] kernel subsystem supports atomic commits.
+*   `factory_toolkit` - Boards that support to install and run [Factory toolkit].
 *   `firewall` - Standard Chrome OS network firewall rules.
 *   `flashrom` - Userspace utility to update firmware.
 *   `google_virtual_keyboard` - The proprietary Google onscreen virtual keyboard
@@ -142,6 +143,7 @@ The following software features are defined:
 [Diagnostic utilities]: https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/diagnostics/README.md
 [Downloadable Content]: https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/dlcservice
 [DRM/KMS]: https://www.kernel.org/doc/Documentation/gpu/drm-kms.rst
+[Factory toolkit]: https://chromium.googlesource.com/chromiumos/platform/factory/+/refs/heads/master/README.md
 [hardware overlays]: https://en.wikipedia.org/wiki/Hardware_overlay
 [sandboxed]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/linux_sandboxing.md
 [Memory stats collection daemon]: https://chromium.googlesource.com/chromiumos/platform2/+/master/metrics/memd/

@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "562d8d07_c36f3282",
+        "filename": "docs/test_attributes.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-04-01T03:17:39Z",
+      "side": 1,
+      "message": "Revert the change to this paragraph.",
+      "parentUuid": "dbcbfc75_db77501a",
+      "range": {
+        "startLine": 14,
+        "startChar": 12,
+        "endLine": 14,
+        "endChar": 17
+      },
+      "revId": "72e0f114252b4e2bc5d50fc644b555fad792e2e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "41d88cf9_2ce64988",
         "filename": "docs/test_attributes.md",
         "patchSetId": 3
@@ -36,6 +60,30 @@
       "writtenOn": "2020-04-01T02:24:53Z",
       "side": 1,
       "message": "FYI, I\u0027m also updating this explanation in the following CL:\nhttps://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/2120122/5/docs/test_attributes.md#11",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 0
+      },
+      "revId": "72e0f114252b4e2bc5d50fc644b555fad792e2e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "977a488e_b87cadfa",
+        "filename": "docs/test_attributes.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-04-01T03:17:39Z",
+      "side": 1,
+      "message": "Let me revert the change of describing sub-attribute here. Maybe we can update later.",
+      "parentUuid": "41d88cf9_2ce64988",
       "range": {
         "startLine": 12,
         "startChar": 0,
@@ -83,6 +131,30 @@
       "side": 1,
       "message": "+1. Though this way also works, I think it\u0027s easier to land 3 changes at once with Cq-Depend:\n\n1. This CL to add a definition of wificell_func\n2. tast-tests CL to update test attributes (crrev.com/c/2128215)\n3. autotest CL to update control files (crrev.com/c/2129607)",
       "parentUuid": "d9194e96_18cc705d",
+      "range": {
+        "startLine": 202,
+        "startChar": 0,
+        "endLine": 202,
+        "endChar": 68
+      },
+      "revId": "72e0f114252b4e2bc5d50fc644b555fad792e2e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0c9e7eaf_47ae7c3a",
+        "filename": "src/chromiumos/tast/testing/attr.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-04-01T03:17:39Z",
+      "side": 1,
+      "message": "Brian, can I remove wifi_func in this CL? I thought that its users need to rename wifi_func to wificell_func after this change.\n\nnya, I currently make Cq-Depend chain:\n2128182: Tast: Add an attribute, wificell_func. | https://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/2128182\n2129607: Autotest: Add an attribute, wificell_func, on control.wifi-func. | https://chromium-review.googlesource.com/c/chromiumos/third_party/autotest/+/2129607\n2128215: Tast-tests: Rename attribute wifi_func to wificell_func. | https://chromium-review.googlesource.com/c/chromiumos/platform/tast-tests/+/2128215",
+      "parentUuid": "84fe33b4_7d0098a0",
       "range": {
         "startLine": 202,
         "startChar": 0,

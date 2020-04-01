@@ -49,6 +49,20 @@ func New(target, keyFile, keyDir string) (*DUT, error) {
 	return &d, nil
 }
 
+// Conn returns the connection to the DUT, or nil if there is no connection.
+// The ownership of the connection is managed by *DUT, so don't call Close for
+// the connection. To disconnect, call DUT.Disconnect.
+// Storing the returned value into a variable is not recommended, because
+// after reconnection (e.g. by Reboot), the instance previous Conn returned
+// is stale. Always call Conn to get the present connection.
+//
+// Examples:
+//  linuxssh.GetFile(ctx, d.Conn(), src, dst)
+//  d.Conn().Command("uptime")
+func (d *DUT) Conn() *ssh.Conn {
+	return d.hst
+}
+
 // Close releases the DUT's resources.
 func (d *DUT) Close(ctx context.Context) error {
 	return d.Disconnect(ctx)
@@ -88,6 +102,8 @@ func (d *DUT) Disconnect(ctx context.Context) error {
 // Command returns the Cmd struct to execute the named program with the given arguments.
 //
 // See https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/host#Command
+//
+// DEPRECATED: use d.Conn().Command
 func (d *DUT) Command(name string, args ...string) *ssh.Cmd {
 	// It is fine even if d.hst is nil; subsequent method calls will just fail.
 	return d.hst.Command(name, args...)
@@ -97,6 +113,8 @@ func (d *DUT) Command(name string, args ...string) *ssh.Cmd {
 // dst is the full destination name for the file or directory being copied, not
 // a destination directory into which it will be copied. dst will be replaced
 // if it already exists.
+//
+// DEPRECATED: use linuxssh.GetFile(ctx, d.Conn(), src, dst)
 func (d *DUT) GetFile(ctx context.Context, src, dst string) error {
 	return linuxssh.GetFile(ctx, d.hst, src, dst)
 }

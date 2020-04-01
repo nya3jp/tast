@@ -114,7 +114,7 @@ func TestGetFileTimeout(t *testing.T) {
 
 	srcFile := filepath.Join(srcDir, "file")
 	dstFile := filepath.Join(tmpDir, "file")
-	td.ExecTimeout = ssh.StartTimeout
+	td.ExecTimeout = ssh.TestRequestStartTimeout
 	if err := GetFile(td.Ctx, td.Hst, srcFile, dstFile); err == nil {
 		t.Errorf("GetFile() with expired context didn't return error")
 	}
@@ -216,7 +216,7 @@ func TestPutFilesTimeout(t *testing.T) {
 	tmpDir, srcDir := initFileTest(t, files)
 	defer os.RemoveAll(tmpDir)
 	dstDir := filepath.Join(tmpDir, "dst")
-	td.ExecTimeout = ssh.EndTimeout
+	td.ExecTimeout = ssh.TestRequestEndTimeout
 	if _, err := PutFiles(td.Ctx, td.Hst, map[string]string{
 		filepath.Join(srcDir, "file"): filepath.Join(dstDir, "file"),
 	}, PreserveSymlinks); err == nil {

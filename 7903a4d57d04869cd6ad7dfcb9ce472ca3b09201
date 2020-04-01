@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "b4748a7b_99d56674",
+        "filename": "src/chromiumos/tast/testing/attr_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-04-01T08:21:57Z",
+      "side": 1,
+      "message": "OK, let me just wait for your changes to land.",
+      "parentUuid": "ba92c19e_bcc90aed",
+      "revId": "7903a4d57d04869cd6ad7dfcb9ce472ca3b09201",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "09573d15_a78594fa",
         "filename": "src/chromiumos/tast/testing/attr_test.go",
         "patchSetId": 1

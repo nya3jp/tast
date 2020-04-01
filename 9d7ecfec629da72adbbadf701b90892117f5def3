@@ -73,6 +73,24 @@
     },
     {
       "key": {
+        "uuid": "a58587b5_adb7d17e",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-04-01T02:13:22Z",
+      "side": 1,
+      "message": "SGTM. Also how about s/first/only/? As you may know multiple init() functions are allowed in a single file so there should be no problem about enforcing this rule.",
+      "parentUuid": "ba86a5c7_52136954",
+      "revId": "9d7ecfec629da72adbbadf701b90892117f5def3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6efc1c06_5758e33d",
         "filename": "docs/writing_tests.md",
         "patchSetId": 3

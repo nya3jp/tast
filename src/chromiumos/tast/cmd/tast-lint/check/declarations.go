@@ -18,6 +18,7 @@ import (
 const (
 	notTopAddTestMsg = `testing.AddTest() should be called only at a top statement of init()`
 	addTestArgLitMsg = `testing.AddTest() should take &testing.Test{...} composite literal`
+	otherStmtMsg     = `init() should not contain statements other than testing.AddTest()`
 
 	noDescMsg         = `Test should have its description`
 	nonLiteralDescMsg = `Test descriptions should be string literal`
@@ -61,35 +62,36 @@ func verifyInit(fs *token.FileSet, node ast.Decl, fix bool) []*Issue {
 	}
 
 	var issues []*Issue
+
+	// init() containing testing.AddTest should not contain other statements.
+	var addTestCalls []*ast.CallExpr
+	var maybeIssues []*Issue
 	for _, stmt := range decl.Body.List {
-		issues = append(issues, verifyInitBody(fs, stmt, fix)...)
+		estmt, ok := stmt.(*ast.ExprStmt)
+		if ok && isTestingAddTestCall(estmt.X) {
+			// X's type is already verified in isTestingAddTestCall().
+			addTestCalls = append(addTestCalls, estmt.X.(*ast.CallExpr))
+			continue
+		}
+		maybeIssues = append(maybeIssues, &Issue{
+			Pos:  fs.Position(stmt.Pos()),
+			Msg:  otherStmtMsg,
+			Link: testRegistrationURL,
+		})
+	}
+	if addTestCalls != nil {
+		issues = append(issues, maybeIssues...)
+	}
+	for _, call := range addTestCalls {
+		issues = append(issues, verifyAddTestCall(fs, call, fix)...)
 	}
 	return issues
 }
 
-// verifyInitBody checks each statement of init()'s body. Specifically
-// - testing.AddTest() can be called at a top level statement.
+// verifyAddTestCall verifies testing.AddTest calls. Specifically
 // - testing.AddTest() can take a pointer of a testing.Test composite literal.
 // - verifies each element of testing.Test literal.
-func verifyInitBody(fs *token.FileSet, stmt ast.Stmt, fix bool) []*Issue {
-	estmt, ok := stmt.(*ast.ExprStmt)
-	if !ok || !isTestingAddTestCall(estmt.X) {
-		var issues []*Issue
-		v := funcVisitor(func(node ast.Node) {
-			if isTestingAddTestCall(node) {
-				issues = append(issues, &Issue{
-					Pos:  fs.Position(node.Pos()),
-					Msg:  notTopAddTestMsg,
-					Link: testRegistrationURL,
-				})
-			}
-		})
-		ast.Walk(v, stmt)
-		return issues
-	}
-
-	// This is already verified in isTestingAddTestCall().
-	call := estmt.X.(*ast.CallExpr)
+func verifyAddTestCall(fs *token.FileSet, call *ast.CallExpr, fix bool) []*Issue {
 	if len(call.Args) != 1 {
 		// This should be checked by a compiler, so skipped.
 		return nil
@@ -355,6 +357,16 @@ func isTestingAddTestCall(node ast.Node) bool {
 		return false
 	}
 	return toQualifiedName(call.Fun) == "testing.AddTest"
+}
+
+// isTestingAddServiceCall returns true if the call is an expression
+// to invoke testing.AddService().
+func isTestingAddServiceCall(node ast.Node) bool {
+	call, ok := node.(*ast.CallExpr)
+	if !ok {
+		return false
+	}
+	return toQualifiedName(call.Fun) == "testing.AddService"
 }
 
 func isStringLiteralOrIdent(node ast.Node) bool {

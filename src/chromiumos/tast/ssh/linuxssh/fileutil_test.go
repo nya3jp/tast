@@ -33,7 +33,7 @@ func initFileTest(t *testing.T, files map[string]string) (tmpDir, srcDir string)
 }
 
 // checkFile returns an error if p's contents differ from exp.
-func checkFile(p string, exp string) error {
+func checkFile(p, exp string) error {
 	if b, err := ioutil.ReadFile(p); err != nil {
 		return fmt.Errorf("failed to read %v after copy: %v", p, err)
 	} else if string(b) != exp {

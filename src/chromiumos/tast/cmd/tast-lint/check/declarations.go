@@ -18,6 +18,7 @@ import (
 const (
 	notTopAddTestMsg = `testing.AddTest() should be called only at a top statement of init()`
 	addTestArgLitMsg = `testing.AddTest() should take &testing.Test{...} composite literal`
+	otherStmtMsg     = `init() calling testing.AddTest() should not contain other statements`
 
 	noDescMsg         = `Test should have its description`
 	nonLiteralDescMsg = `Test descriptions should be string literal`
@@ -61,20 +62,18 @@ func verifyInit(fs *token.FileSet, node ast.Decl, fix bool) []*Issue {
 	}
 
 	var issues []*Issue
-	for _, stmt := range decl.Body.List {
-		issues = append(issues, verifyInitBody(fs, stmt, fix)...)
-	}
-	return issues
-}
 
-// verifyInitBody checks each statement of init()'s body. Specifically
-// - testing.AddTest() can be called at a top level statement.
-// - testing.AddTest() can take a pointer of a testing.Test composite literal.
-// - verifies each element of testing.Test literal.
-func verifyInitBody(fs *token.FileSet, stmt ast.Stmt, fix bool) []*Issue {
-	estmt, ok := stmt.(*ast.ExprStmt)
-	if !ok || !isTestingAddTestCall(estmt.X) {
-		var issues []*Issue
+	var addTestCalls []*ast.CallExpr
+	var otherStmt ast.Stmt
+	for _, stmt := range decl.Body.List {
+		if estmt, ok := stmt.(*ast.ExprStmt); ok && isTestingAddTestCall(estmt.X) {
+			// X's type is already verified in isTestingAddTestCall().
+			addTestCalls = append(addTestCalls, estmt.X.(*ast.CallExpr))
+			continue
+		}
+		if otherStmt == nil {
+			otherStmt = stmt
+		}
 		v := funcVisitor(func(node ast.Node) {
 			if isTestingAddTestCall(node) {
 				issues = append(issues, &Issue{
@@ -85,11 +84,25 @@ func verifyInitBody(fs *token.FileSet, stmt ast.Stmt, fix bool) []*Issue {
 			}
 		})
 		ast.Walk(v, stmt)
-		return issues
+	}
+	if addTestCalls != nil && otherStmt != nil {
+		issues = append(issues, &Issue{
+			Pos:  fs.Position(otherStmt.Pos()),
+			Msg:  otherStmtMsg,
+			Link: testRegistrationURL,
+		})
 	}
 
-	// This is already verified in isTestingAddTestCall().
-	call := estmt.X.(*ast.CallExpr)
+	for _, call := range addTestCalls {
+		issues = append(issues, verifyAddTestCall(fs, call, fix)...)
+	}
+	return issues
+}
+
+// verifyAddTestCall verifies testing.AddTest calls. Specifically
+// - testing.AddTest() can take a pointer of a testing.Test composite literal.
+// - verifies each element of testing.Test literal.
+func verifyAddTestCall(fs *token.FileSet, call *ast.CallExpr, fix bool) []*Issue {
 	if len(call.Args) != 1 {
 		// This should be checked by a compiler, so skipped.
 		return nil

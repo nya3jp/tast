@@ -13,11 +13,19 @@ const declTestPath = "src/chromiumos/tast/local/bundles/cros/example/do_stuff.go
 func TestDeclarationsPass(t *testing.T) {
 	const code = `package pkg
 func init() {
+	// Comments are allowed.
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 	})
+}
+
+var x SomeComplexStruct
+
+// init without AddTest should be allowed.
+func init() {
+	x = f()
 }
 `
 	f, fs := parse(code, declTestPath)
@@ -25,22 +33,23 @@ func init() {
 	verifyIssues(t, issues, nil)
 }
 
-func TestDeclarationsTopLevelAddTest(t *testing.T) {
+func TestDeclarationsOtherStmtThanAddTest(t *testing.T) {
 	const code = `package pkg
 func init() {
-	for {
-		testing.AddTest(&testing.Test{
-			Func: DoStuff,
-		})
-	}
-	testing.AddTest(ts)
+	_ = 1
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+	})
+	for {}
 }
 `
 	f, fs := parse(code, declTestPath)
 	issues := Declarations(fs, f, false)
 	expects := []string{
-		declTestPath + ":4:3: " + notTopAddTestMsg,
-		declTestPath + ":8:18: " + addTestArgLitMsg,
+		declTestPath + ":3:2: " + otherStmtMsg,
+		declTestPath + ":9:2: " + otherStmtMsg,
 	}
 	verifyIssues(t, issues, expects)
 }

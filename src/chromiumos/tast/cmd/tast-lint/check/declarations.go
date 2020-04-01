@@ -18,6 +18,7 @@ import (
 const (
 	notTopAddTestMsg = `testing.AddTest() should be called only at a top statement of init()`
 	addTestArgLitMsg = `testing.AddTest() should take &testing.Test{...} composite literal`
+	otherStmtMsg     = `init() should not contain statements other than testing.AddTest()`
 
 	noDescMsg         = `Test should have its description`
 	nonLiteralDescMsg = `Test descriptions should be string literal`
@@ -74,18 +75,14 @@ func verifyInit(fs *token.FileSet, node ast.Decl, fix bool) []*Issue {
 func verifyInitBody(fs *token.FileSet, stmt ast.Stmt, fix bool) []*Issue {
 	estmt, ok := stmt.(*ast.ExprStmt)
 	if !ok || !isTestingAddTestCall(estmt.X) {
-		var issues []*Issue
-		v := funcVisitor(func(node ast.Node) {
-			if isTestingAddTestCall(node) {
-				issues = append(issues, &Issue{
-					Pos:  fs.Position(node.Pos()),
-					Msg:  notTopAddTestMsg,
-					Link: testRegistrationURL,
-				})
-			}
-		})
-		ast.Walk(v, stmt)
-		return issues
+		if ok && isTestingAddServiceCall(estmt.X) {
+			return nil
+		}
+		return []*Issue{&Issue{
+			Pos:  fs.Position(stmt.Pos()),
+			Msg:  otherStmtMsg,
+			Link: testRegistrationURL,
+		}}
 	}
 
 	// This is already verified in isTestingAddTestCall().
@@ -355,6 +352,16 @@ func isTestingAddTestCall(node ast.Node) bool {
 		return false
 	}
 	return toQualifiedName(call.Fun) == "testing.AddTest"
+}
+
+// isTestingAddServiceCall returns true if the call is an expression
+// to invoke testing.AddService().
+func isTestingAddServiceCall(node ast.Node) bool {
+	call, ok := node.(*ast.CallExpr)
+	if !ok {
+		return false
+	}
+	return toQualifiedName(call.Fun) == "testing.AddService"
 }
 
 func isStringLiteralOrIdent(node ast.Node) bool {

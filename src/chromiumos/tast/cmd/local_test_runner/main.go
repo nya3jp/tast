@@ -132,6 +132,7 @@ func main() {
 			"selinux":                "selinux",
 			"selinux_current":        "selinux && !selinux_experimental",
 			"selinux_experimental":   "selinux && selinux_experimental",
+			"shill-wifi":             "!moblab", // fizz-moblab disables the WiFi technology for Shill
 			"smartdim":               "smartdim",
 			"storage_wearout_detect": "storage_wearout_detect && !betty && !tast_vm", // Skip wearout checks for VMs and eMMC < 5.0
 			"tablet_mode":            "touchview",

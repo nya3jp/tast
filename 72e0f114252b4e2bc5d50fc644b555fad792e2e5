@@ -25,6 +25,29 @@
     },
     {
       "key": {
+        "uuid": "41d88cf9_2ce64988",
+        "filename": "docs/test_attributes.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-04-01T02:24:53Z",
+      "side": 1,
+      "message": "FYI, I\u0027m also updating this explanation in the following CL:\nhttps://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/2120122/5/docs/test_attributes.md#11",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 0
+      },
+      "revId": "72e0f114252b4e2bc5d50fc644b555fad792e2e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "d9194e96_18cc705d",
         "filename": "src/chromiumos/tast/testing/attr.go",
         "patchSetId": 3
@@ -36,6 +59,30 @@
       "writtenOn": "2020-03-31T19:07:59Z",
       "side": 1,
       "message": "I\u0027d think you could have just done [1] all in one go, as long as you have the appropriate Cq-Depend. But this works too, I guess.\n\n[1] https://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/2128183/2",
+      "range": {
+        "startLine": 202,
+        "startChar": 0,
+        "endLine": 202,
+        "endChar": 68
+      },
+      "revId": "72e0f114252b4e2bc5d50fc644b555fad792e2e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "84fe33b4_7d0098a0",
+        "filename": "src/chromiumos/tast/testing/attr.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-04-01T02:24:53Z",
+      "side": 1,
+      "message": "+1. Though this way also works, I think it\u0027s easier to land 3 changes at once with Cq-Depend:\n\n1. This CL to add a definition of wificell_func\n2. tast-tests CL to update test attributes (crrev.com/c/2128215)\n3. autotest CL to update control files (crrev.com/c/2129607)",
+      "parentUuid": "d9194e96_18cc705d",
       "range": {
         "startLine": 202,
         "startChar": 0,

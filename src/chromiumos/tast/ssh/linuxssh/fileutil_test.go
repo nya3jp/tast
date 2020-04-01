@@ -5,119 +5,16 @@
 package linuxssh
 
 import (
-	"context"
-	"crypto/rsa"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
 	"testing"
-	"time"
 
 	"chromiumos/tast/internal/sshtest"
-	"chromiumos/tast/ssh"
 	"chromiumos/tast/testutil"
 )
-
-// TODO(oka): Test set up functions are duplicated between ssh_test.go.
-// Remove the duplication.
-var userKey, hostKey *rsa.PrivateKey
-
-func init() {
-	userKey, hostKey = sshtest.MustGenerateKeys()
-}
-
-type testData struct {
-	*sshtest.TestData
-
-	ctx    context.Context
-	cancel context.CancelFunc
-	hst    *ssh.Conn
-
-	execTimeout timeoutType // how "exec" requests should time out
-}
-
-func newTestData(t *testing.T) *testData {
-	td := &testData{}
-	td.TestData = sshtest.NewTestData(userKey, hostKey, td.handleExec)
-
-	td.ctx, td.cancel = context.WithCancel(context.Background())
-
-	var err error
-	if td.hst, err = connectToServer(td.ctx, td.Srv, td.UserKeyFile); err != nil {
-		td.Close()
-		t.Fatal(err)
-	}
-
-	// Automatically abort the test if it takes too long time.
-	go func() {
-		const timeout = 5 * time.Second
-		select {
-		case <-td.ctx.Done():
-			return
-		case <-time.After(timeout):
-		}
-		t.Errorf("Test blocked for %v", timeout)
-		td.cancel()
-	}()
-
-	return td
-}
-
-// timeoutType describes different types of timeouts that can be simulated during SSH "exec" requests.
-type timeoutType int
-
-const (
-	// noTimeout indicates that testData.ctx shouldn't be canceled.
-	noTimeout timeoutType = iota
-	// startTimeout indicates that testData.ctx should be canceled before the command starts.
-	startTimeout
-	// endTimeout indicates that testData.ctx should be canceled after the command runs but before its status is returned.
-	endTimeout
-)
-
-// handleExec handles an SSH "exec" request sent to td.srv by executing the requested command.
-// The command must already be present in td.nextCmd.
-func (td *testData) handleExec(req *sshtest.ExecReq) {
-	// If a timeout was requested, cancel the context and then sleep for an arbitrary-but-long
-	// amount of time to make sure that the client sees the expired context before the command
-	// actually runs.
-	if td.execTimeout == startTimeout {
-		td.cancel()
-		time.Sleep(time.Minute)
-	}
-	req.Start(true)
-
-	status := req.RunRealCmd()
-
-	if td.execTimeout == endTimeout {
-		td.cancel()
-		time.Sleep(time.Minute)
-	}
-	req.End(status)
-}
-
-func (td *testData) close() {
-	td.hst.Close(td.ctx)
-	td.cancel()
-	td.Close()
-}
-
-// connectToServer establishes a connection to srv using key.
-// base is used as a base set of options.
-func connectToServer(ctx context.Context, srv *sshtest.SSHServer, keyFile string) (*ssh.Conn, error) {
-	o := &ssh.Options{KeyFile: keyFile}
-	o.KeyFile = keyFile
-	if err := ssh.ParseTarget(srv.Addr().String(), o); err != nil {
-		return nil, err
-	}
-	s, err := ssh.New(ctx, o)
-	if err != nil {
-		return nil, err
-	}
-	return s, nil
-}
 
 // initFileTest creates a temporary directory with a subdirectory containing files.
 // The temp dir's and subdir's paths are returned.
@@ -157,8 +54,8 @@ func checkDir(dir string, exp map[string]string) error {
 
 func TestGetFileRegular(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
-	defer td.close()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
 
 	files := map[string]string{"file": "foo"}
 	tmpDir, srcDir := initFileTest(t, files)
@@ -166,7 +63,7 @@ func TestGetFileRegular(t *testing.T) {
 
 	srcFile := filepath.Join(srcDir, "file")
 	dstFile := filepath.Join(tmpDir, "file.copy")
-	if err := GetFile(td.ctx, td.hst, srcFile, dstFile); err != nil {
+	if err := GetFile(td.Ctx, td.Hst, srcFile, dstFile); err != nil {
 		t.Fatal(err)
 	}
 	if err := checkFile(dstFile, files["file"]); err != nil {
@@ -174,15 +71,15 @@ func TestGetFileRegular(t *testing.T) {
 	}
 
 	// GetFile should overwrite local files.
-	if err := GetFile(td.ctx, td.hst, srcFile, dstFile); err != nil {
+	if err := GetFile(td.Ctx, td.Hst, srcFile, dstFile); err != nil {
 		t.Error(err)
 	}
 }
 
 func TestGetFileDir(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
-	defer td.close()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
 
 	files := map[string]string{
 		"myfile":     "some data",
@@ -193,7 +90,7 @@ func TestGetFileDir(t *testing.T) {
 
 	// Copy the full source directory.
 	dstDir := filepath.Join(tmpDir, "dst")
-	if err := GetFile(td.ctx, td.hst, srcDir, dstDir); err != nil {
+	if err := GetFile(td.Ctx, td.Hst, srcDir, dstDir); err != nil {
 		t.Fatal(err)
 	}
 	if err := checkDir(dstDir, files); err != nil {
@@ -201,15 +98,15 @@ func TestGetFileDir(t *testing.T) {
 	}
 
 	// GetFile should overwrite local dirs.
-	if err := GetFile(td.ctx, td.hst, srcDir, dstDir); err != nil {
+	if err := GetFile(td.Ctx, td.Hst, srcDir, dstDir); err != nil {
 		t.Error(err)
 	}
 }
 
 func TestGetFileTimeout(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
-	defer td.close()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
 
 	files := map[string]string{"file": "data"}
 	tmpDir, srcDir := initFileTest(t, files)
@@ -217,16 +114,16 @@ func TestGetFileTimeout(t *testing.T) {
 
 	srcFile := filepath.Join(srcDir, "file")
 	dstFile := filepath.Join(tmpDir, "file")
-	td.execTimeout = startTimeout
-	if err := GetFile(td.ctx, td.hst, srcFile, dstFile); err == nil {
+	td.ExecTimeout = sshtest.StartTimeout
+	if err := GetFile(td.Ctx, td.Hst, srcFile, dstFile); err == nil {
 		t.Errorf("GetFile() with expired context didn't return error")
 	}
 }
 
 func TestPutFiles(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
-	defer td.close()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
 
 	const (
 		weirdSrcName = "weird[a], *.b" // various regexp chars plus comma delimiter
@@ -253,7 +150,7 @@ func TestPutFiles(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if n, err := PutFiles(td.ctx, td.hst, map[string]string{
+	if n, err := PutFiles(td.Ctx, td.Hst, map[string]string{
 		filepath.Join(srcDir, "file1"):             filepath.Join(dstDir, "newfile1"),           // rename to preserve orig file
 		filepath.Join(srcDir, "dir/file2"):         filepath.Join(dstDir, "dir/file2"),          // overwrite orig file
 		filepath.Join(srcDir, "dir2/subdir/file3"): filepath.Join(dstDir, "dir2/subdir2/file3"), // rename subdir
@@ -281,8 +178,8 @@ func TestPutFiles(t *testing.T) {
 
 func TestPutFilesUnchanged(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
-	defer td.close()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
 
 	files := map[string]string{
 		"src1":     "1",
@@ -300,7 +197,7 @@ func TestPutFilesUnchanged(t *testing.T) {
 	}
 
 	// No bytes should be sent since the dest dir already contains the renamed source files.
-	if n, err := PutFiles(td.ctx, td.hst, map[string]string{
+	if n, err := PutFiles(td.Ctx, td.Hst, map[string]string{
 		filepath.Join(srcDir, "src1"):     filepath.Join(dstDir, "dst1"),
 		filepath.Join(srcDir, "dir/src2"): filepath.Join(dstDir, "dir/dst2"),
 	}, PreserveSymlinks); err != nil {
@@ -312,15 +209,15 @@ func TestPutFilesUnchanged(t *testing.T) {
 
 func TestPutFilesTimeout(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
-	defer td.close()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
 
 	files := map[string]string{"file": "data"}
 	tmpDir, srcDir := initFileTest(t, files)
 	defer os.RemoveAll(tmpDir)
 	dstDir := filepath.Join(tmpDir, "dst")
-	td.execTimeout = endTimeout
-	if _, err := PutFiles(td.ctx, td.hst, map[string]string{
+	td.ExecTimeout = sshtest.EndTimeout
+	if _, err := PutFiles(td.Ctx, td.Hst, map[string]string{
 		filepath.Join(srcDir, "file"): filepath.Join(dstDir, "file"),
 	}, PreserveSymlinks); err == nil {
 		t.Errorf("PutFiles() with expired context didn't return error")
@@ -329,8 +226,8 @@ func TestPutFilesTimeout(t *testing.T) {
 
 func TestPutFilesSymlinks(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
-	defer td.close()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
 
 	tmpDir, srcDir := initFileTest(t, nil)
 	defer os.RemoveAll(tmpDir)
@@ -351,7 +248,7 @@ func TestPutFilesSymlinks(t *testing.T) {
 
 	// PreserveSymlinks should copy symlinks directly.
 	dstDir := filepath.Join(tmpDir, "dst_preserve")
-	if _, err := PutFiles(td.ctx, td.hst, map[string]string{
+	if _, err := PutFiles(td.Ctx, td.Hst, map[string]string{
 		filepath.Join(srcDir, link): filepath.Join(dstDir, link),
 	}, PreserveSymlinks); err != nil {
 		t.Error("PutFiles failed with PreserveSymlinks: ", err)
@@ -370,7 +267,7 @@ func TestPutFilesSymlinks(t *testing.T) {
 
 	// DereferenceSymlinks should copy symlinks' targets while preserving the original mode.
 	dstDir = filepath.Join(tmpDir, "dst_deref")
-	if _, err := PutFiles(td.ctx, td.hst, map[string]string{
+	if _, err := PutFiles(td.Ctx, td.Hst, map[string]string{
 		filepath.Join(srcDir, link): filepath.Join(dstDir, link),
 	}, DereferenceSymlinks); err != nil {
 		t.Error("PutFiles failed with DereferenceSymlinks: ", err)
@@ -393,8 +290,8 @@ func TestPutFilesSymlinks(t *testing.T) {
 
 func TestDeleteTree(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
-	defer td.close()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
 
 	files := map[string]string{
 		"file1":     "first file",
@@ -405,7 +302,7 @@ func TestDeleteTree(t *testing.T) {
 	tmpDir, baseDir := initFileTest(t, files)
 	defer os.RemoveAll(tmpDir)
 
-	if err := DeleteTree(td.ctx, td.hst, baseDir, []string{"file1", "dir", "file9"}); err != nil {
+	if err := DeleteTree(td.Ctx, td.Hst, baseDir, []string{"file1", "dir", "file9"}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -417,13 +314,13 @@ func TestDeleteTree(t *testing.T) {
 
 func TestDeleteTreeOutside(t *testing.T) {
 	t.Parallel()
-	td := newTestData(t)
-	defer td.close()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
 
 	tmpDir, baseDir := initFileTest(t, nil)
 	defer os.RemoveAll(tmpDir)
 
-	if err := DeleteTree(td.ctx, td.hst, baseDir, []string{"dir/../../outside"}); err == nil {
+	if err := DeleteTree(td.Ctx, td.Hst, baseDir, []string{"dir/../../outside"}); err == nil {
 		t.Error("DeleteTree succeeded; should fail")
 	}
 }

@@ -91,6 +91,24 @@
     },
     {
       "key": {
+        "uuid": "c898309b_b99b06da",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-04-01T05:38:35Z",
+      "side": 1,
+      "message": "I found actually we have disk_io_perf.go, which constructs Data before AddTest.\nhttps://cs.corp.google.com/chromeos_public/src/platform/tast-tests/src/chromiumos/tast/local/bundles/cros/crostini/disk_io_perf.go?type\u003dcs\u0026q\u003d%22fioJobs%22\u0026sq\u003dpackage:%5Echromeos_public$%7C%5Echromeos_internal$\u0026g\u003d0\u0026l\u003d24\n\nIt looks this is the only instance. Does it make sense to update the test?",
+      "parentUuid": "a58587b5_adb7d17e",
+      "revId": "9d7ecfec629da72adbbadf701b90892117f5def3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6efc1c06_5758e33d",
         "filename": "docs/writing_tests.md",
         "patchSetId": 3

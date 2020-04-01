@@ -407,7 +407,7 @@ func TestRunTimeout(t *testing.T) {
 	td := NewTestData(t)
 	defer td.Close()
 
-	td.ExecTimeout = EndTimeout
+	td.ExecTimeout = TestRequestEndTimeout
 
 	if err := td.Hst.Command("true").Run(td.Ctx); err == nil {
 		t.Fatal("Run did not honor the timeout")
@@ -419,7 +419,7 @@ func TestOutputTimeout(t *testing.T) {
 	td := NewTestData(t)
 	defer td.Close()
 
-	td.ExecTimeout = EndTimeout
+	td.ExecTimeout = TestRequestEndTimeout
 
 	if _, err := td.Hst.Command("true").Output(td.Ctx); err == nil {
 		t.Fatal("Output did not honor the timeout")
@@ -431,7 +431,7 @@ func TestCombinedOutputTimeout(t *testing.T) {
 	td := NewTestData(t)
 	defer td.Close()
 
-	td.ExecTimeout = EndTimeout
+	td.ExecTimeout = TestRequestEndTimeout
 
 	if _, err := td.Hst.Command("true").CombinedOutput(td.Ctx); err == nil {
 		t.Fatal("CombinedOutput did not honor the timeout")
@@ -443,7 +443,7 @@ func TestStartTimeout(t *testing.T) {
 	td := NewTestData(t)
 	defer td.Close()
 
-	td.ExecTimeout = StartTimeout
+	td.ExecTimeout = TestRequestStartTimeout
 
 	cmd := td.Hst.Command("true")
 	if err := cmd.Start(td.Ctx); err == nil {
@@ -457,7 +457,7 @@ func TestWaitTimeout(t *testing.T) {
 	td := NewTestData(t)
 	defer td.Close()
 
-	td.ExecTimeout = EndTimeout
+	td.ExecTimeout = TestRequestEndTimeout
 
 	cmd := td.Hst.Command("true")
 	if err := cmd.Start(td.Ctx); err != nil {

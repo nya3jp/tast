@@ -43,17 +43,16 @@ func connectToServer(ctx context.Context, srv *sshtest.SSHServer, key *rsa.Priva
 	return s, nil
 }
 
-// TimeoutType describes different types of timeouts that can be simulated during SSH "exec" requests.
-// TODO(oka): rename this type and constants to indicate they are for test only.
-type TimeoutType int
+// TestRequestTimeoutType describes different types of timeouts that can be simulated during SSH "exec" requests.
+type TestRequestTimeoutType int
 
 const (
-	// NoTimeout indicates that TestData.Ctx shouldn't be canceled.
-	NoTimeout TimeoutType = iota
-	// StartTimeout indicates that TestData.Ctx should be canceled before the command starts.
-	StartTimeout
-	// EndTimeout indicates that TestData.Ctx should be canceled after the command runs but before its status is returned.
-	EndTimeout
+	// TestRequestNoTimeout indicates that TestData.Ctx shouldn't be canceled.
+	TestRequestNoTimeout TestRequestTimeoutType = iota
+	// TestRequestStartTimeout indicates that TestData.Ctx should be canceled before the command starts.
+	TestRequestStartTimeout
+	// TestRequestEndTimeout indicates that TestData.Ctx should be canceled after the command runs but before its status is returned.
+	TestRequestEndTimeout
 )
 
 // TestData wraps data common to all tests.
@@ -68,7 +67,7 @@ type TestData struct {
 
 	nextCmd string // next command to be executed by client
 	// ExecTimeout directs how "exec" requests should time out.
-	ExecTimeout TimeoutType
+	ExecTimeout TestRequestTimeoutType
 }
 
 // NewTestData sets up local SSH server and connection to it, and
@@ -127,7 +126,7 @@ func (td *TestData) handleExec(req *sshtest.ExecReq) {
 	// If a timeout was requested, cancel the context and then sleep for an arbitrary-but-long
 	// amount of time to make sure that the client sees the expired context before the command
 	// actually runs.
-	if td.ExecTimeout == StartTimeout && !ignoreTimeout {
+	if td.ExecTimeout == TestRequestStartTimeout && !ignoreTimeout {
 		td.cancel()
 		time.Sleep(time.Minute)
 	}
@@ -141,7 +140,7 @@ func (td *TestData) handleExec(req *sshtest.ExecReq) {
 		status = req.RunRealCmd()
 	}
 
-	if td.ExecTimeout == EndTimeout && !ignoreTimeout {
+	if td.ExecTimeout == TestRequestEndTimeout && !ignoreTimeout {
 		td.cancel()
 		time.Sleep(time.Minute)
 	}

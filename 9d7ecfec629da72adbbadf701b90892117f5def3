@@ -109,6 +109,24 @@
     },
     {
       "key": {
+        "uuid": "bcdb54ca_e5e44d78",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-04-01T15:03:53Z",
+      "side": 1,
+      "message": "With looking at the actual code, i think the case is simply refactored, so it\u0027s ok to do IMHO.",
+      "parentUuid": "c898309b_b99b06da",
+      "revId": "9d7ecfec629da72adbbadf701b90892117f5def3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6efc1c06_5758e33d",
         "filename": "docs/writing_tests.md",
         "patchSetId": 3

@@ -16,6 +16,24 @@
       "revId": "b157cf93e3c0705adc8ddaaedbb7317aeaf59c1b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8a916b17_676d3be5",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 9
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-04-02T01:29:11Z",
+      "side": 1,
+      "message": "The .proto files were not actually updated since last time. The change is actually owing to renewed version of protoc.\nRevised the commit message and the summary.\n\n(cr) $ protoc --version\nlibprotoc 3.7.0\n\nHowever I could not find the exact file that defines version of protoc in chroot (not libprotobuf used by platform). Do you know where it is?",
+      "parentUuid": "873ca767_570cddcb",
+      "revId": "b157cf93e3c0705adc8ddaaedbb7317aeaf59c1b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -324,3 +324,21 @@ func TestDeleteTreeOutside(t *testing.T) {
 		t.Error("DeleteTree succeeded; should fail")
 	}
 }
+
+func TestReadFile(t *testing.T) {
+	t.Parallel()
+	td := ssh.NewTestData(t)
+	defer td.Close()
+
+	tmpDir, baseDir := initFileTest(t, map[string]string{"file": "foo"})
+	defer os.RemoveAll(tmpDir)
+
+	path := filepath.Join(baseDir, "file")
+	b, err := ReadFile(td.Ctx, td.Hst, path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := string(b), "foo"; got != want {
+		t.Errorf("got %s; want %s", got, want)
+	}
+}

@@ -16,6 +16,24 @@
       "revId": "8b9e20e03a649d24443e27b93a6fc974b7d41e2f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8030f50a_bc8afe49",
+        "filename": "src/chromiumos/tast/ssh/testutil.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-04-02T06:16:39Z",
+      "side": 1,
+      "message": "It doesn\u0027t work.\n_test.go file cannot be referenced from tests in other packages.\nI\u0027m not sure where it is documented, but I experimented rename and it failed.",
+      "parentUuid": "99cbac97_b2b4dc0c",
+      "revId": "8b9e20e03a649d24443e27b93a6fc974b7d41e2f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

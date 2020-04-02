@@ -22,6 +22,30 @@
       "revId": "a76232db18f1ae5d76e9c17dee7c3ca9106008a4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "24bed9ed_870315ca",
+        "filename": "src/chromiumos/cmd/tast/run/devserver.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 1400377
+      },
+      "writtenOn": "2020-04-02T19:23:36Z",
+      "side": 1,
+      "message": "Katherine, do you think we can put the video/audio files required by MTBF testing into chromiums-test-assets-public? Who shall we contact to get the write permission for that bucket?",
+      "parentUuid": "ca390d73_e3e228e2",
+      "range": {
+        "startLine": 175,
+        "startChar": 2,
+        "endLine": 175,
+        "endChar": 14
+      },
+      "revId": "a76232db18f1ae5d76e9c17dee7c3ca9106008a4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

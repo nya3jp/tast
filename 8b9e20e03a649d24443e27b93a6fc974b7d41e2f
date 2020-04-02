@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "99cbac97_b2b4dc0c",
+        "filename": "src/chromiumos/tast/ssh/testutil.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-04-02T06:01:17Z",
+      "side": 1,
+      "message": "Could you rename this file to have a suffix _test.go? Then we can avoid building this file for production builds.",
+      "revId": "8b9e20e03a649d24443e27b93a6fc974b7d41e2f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

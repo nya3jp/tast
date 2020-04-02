@@ -6,6 +6,7 @@
 package linuxssh
 
 import (
+	"bytes"
 	"context"
 	"crypto/sha1"
 	"encoding/hex"
@@ -22,6 +23,7 @@ import (
 
 	cryptossh "golang.org/x/crypto/ssh"
 
+	"chromiumos/tast/errors"
 	"chromiumos/tast/ssh"
 )
 
@@ -220,6 +222,11 @@ func (r *countingReader) Read(p []byte) (int, error) {
 // Local file paths can be absolute or relative. Remote file paths must be absolute.
 // SHA1 hashes of remote files are checked in advance to send updated files only.
 // bytes is the amount of data sent over the wire (possibly after compression).
+//
+// TODO(crbug.com/1066766): PutFiles does not work well for sysfs/procfs
+// because it uncompresses and compresses content, which invokes unlinks to
+// the target file. Consider moving this method to an internal package and
+// provide easier to use API for test authors.
 func PutFiles(ctx context.Context, s *ssh.Conn, files map[string]string,
 	symlinkPolicy SymlinkPolicy) (bytes int64, err error) {
 	af := make(map[string]string)
@@ -293,6 +300,9 @@ func cleanRelativePath(p string) (string, error) {
 // DeleteTree deletes all relative paths in files from baseDir on the host.
 // If a specified file is a directory, all files under it are recursively deleted.
 // Non-existent files are ignored.
+//
+// TODO(oka): This method is not used from test. Consider moving it in an
+// internal package, to be able to provide more user friendly API in the future.
 func DeleteTree(ctx context.Context, s *ssh.Conn, baseDir string, files []string) error {
 	var cfs []string
 	for _, f := range files {
@@ -307,6 +317,36 @@ func DeleteTree(ctx context.Context, s *ssh.Conn, baseDir string, files []string
 	cmd.Dir = baseDir
 	if err := cmd.Run(ctx); err != nil {
 		return fmt.Errorf("running remote rm failed: %v", err)
+	}
+	return nil
+}
+
+// ReadFile reads the remote file on the given path, and returns the contents.
+// path must be absolute.
+func ReadFile(ctx context.Context, s *ssh.Conn, path string) ([]byte, error) {
+	if path == "" || path[0] != '/' {
+		return nil, errors.Errorf("path to read %q should be absolute", path)
+	}
+	cmd := s.Command("cat", path)
+	var b bytes.Buffer
+	cmd.Stdout = &b
+	if err := cmd.Run(ctx); err != nil {
+		return nil, errors.Wrapf(err, "reading %s", path)
+	}
+	return b.Bytes(), nil
+}
+
+// WriteFile writes data to the file. If the file does not exist, WriteFile creates
+// it with permissions perm; otherwise WriteFile truncates it before writing.
+// path must be absolute.
+func WriteFile(ctx context.Context, s *ssh.Conn, path string, data []byte, perm os.FileMode) error {
+	if path == "" || path[0] != '/' {
+		return errors.Errorf("path to write %q should be absolute", path)
+	}
+	cmd := s.Command("tee", path)
+	cmd.Stdin = bytes.NewReader(data)
+	if err := cmd.Run(ctx); err != nil {
+		return errors.Wrapf(err, "writing to %s", path)
 	}
 	return nil
 }

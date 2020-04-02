@@ -34,6 +34,24 @@
       "revId": "8b9e20e03a649d24443e27b93a6fc974b7d41e2f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "193e0947_10e76d6f",
+        "filename": "src/chromiumos/tast/ssh/testutil.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-04-02T06:20:15Z",
+      "side": 1,
+      "message": "It seem tests are per package, and for testing a package only *_test.go in the package are including in the build.\nhttps://golang.org/cmd/go/#hdr-Test_packages",
+      "parentUuid": "8030f50a_bc8afe49",
+      "revId": "8b9e20e03a649d24443e27b93a6fc974b7d41e2f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

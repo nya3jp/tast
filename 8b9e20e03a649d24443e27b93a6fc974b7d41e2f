@@ -52,6 +52,24 @@
       "revId": "8b9e20e03a649d24443e27b93a6fc974b7d41e2f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d907136a_0b96776e",
+        "filename": "src/chromiumos/tast/ssh/testutil.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-04-03T02:14:39Z",
+      "side": 1,
+      "message": "I didn\u0027t know that, thanks for letting me know.\n\nBut I still don\u0027t think we should build this file for production builds.\n\nCan we move testutil.go to the sshtest package and rename this unit test package to ssh_test to avoid circular imports?\n\nhttps://tip.golang.org/cmd/go/#hdr-Test_packages\n\u003e Test files that declare a package with the suffix \"_test\" will be compiled as a\n\u003e separate package, and then linked and run with the main test binary.",
+      "parentUuid": "193e0947_10e76d6f",
+      "revId": "8b9e20e03a649d24443e27b93a6fc974b7d41e2f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "356b1ac2_c0d4b039",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/declarations.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-04-03T01:48:57Z",
+      "side": 1,
+      "message": "We should allow init to contain other statements as long as it does not contain AddTest/AddService.\n\ne.g.\n\n func init() {\n   testing.AddTest(...)\n }\n\n var x SomeComplexStruct\n\n func init() {\n   // Init x here...\n }",
+      "range": {
+        "startLine": 21,
+        "startChar": 21,
+        "endLine": 21,
+        "endChar": 84
+      },
+      "revId": "115a2da1bbb3bff78dc7078694b5b1b59fd36872",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d9434849_a5890840",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/declarations.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-04-03T01:48:57Z",
+      "side": 1,
+      "message": "Could you update the comment here?",
+      "range": {
+        "startLine": 71,
+        "startChar": 57,
+        "endLine": 74,
+        "endChar": 51
+      },
+      "revId": "115a2da1bbb3bff78dc7078694b5b1b59fd36872",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

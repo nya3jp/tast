@@ -34,6 +34,24 @@
       "revId": "b157cf93e3c0705adc8ddaaedbb7317aeaf59c1b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f9a2595a_2822f206",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 9
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-04-03T04:21:33Z",
+      "side": 1,
+      "message": "Ah, I see.\n\nAs for protoc, I think it is dev-libs/protobuf package.\nBut, the change of this CL seems to come from the update of dev-go/protobuf.\ncrrev.com/c/1943889, which is a few days after the importing protobuf data.\n\nSo, this CL is to update .pb.go for the new protoc output, rather than importing new proto file, IIUC? Could you mention it in the commit message?\nAlso, could you run tests?",
+      "parentUuid": "8a916b17_676d3be5",
+      "revId": "b157cf93e3c0705adc8ddaaedbb7317aeaf59c1b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -16,6 +16,24 @@
       "revId": "3f01749d739d3c48fef08d907ff4d676c6b23bef",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "858eac8c_986caee2",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1394308
+      },
+      "writtenOn": "2020-04-03T01:22:16Z",
+      "side": 1,
+      "message": "Thanks for the great suggestion! Done.",
+      "parentUuid": "22faf69c_d8661b60",
+      "revId": "3f01749d739d3c48fef08d907ff4d676c6b23bef",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

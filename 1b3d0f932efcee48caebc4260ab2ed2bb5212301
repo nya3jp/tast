@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d9862040_37fe2e69",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-04-04T15:25:56Z",
+      "side": 1,
+      "message": "Can we add \"!moblab\" in \"wifi\" defined below?",
+      "revId": "1b3d0f932efcee48caebc4260ab2ed2bb5212301",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

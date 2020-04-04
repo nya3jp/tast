@@ -195,7 +195,7 @@ func (mr *MessageReader) More() bool {
 }
 
 // ReadMessage reads and returns the next message.
-func (mr *MessageReader) ReadMessage() (interface{}, error) {
+func (mr *MessageReader) ReadMessage() (ret interface{}, err error) {
 	dec := (*json.Decoder)(mr)
 	var mu messageUnion
 	if err := dec.Decode(&mu); err != nil {

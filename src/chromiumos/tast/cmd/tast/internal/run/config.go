@@ -130,6 +130,8 @@ type Config struct {
 	initialSysInfo     *runner.SysInfoState     // initial state of system info (logs, crashes, etc.) on DUT before testing
 	softwareFeatures   *runner.SoftwareFeatures // software features of the DUT
 	deviceConfig       *device.Config           // hardware features of the DUT
+
+	v2 bool // use v2.
 }
 
 // NewConfig returns a new configuration for executing test runners in the supplied mode.
@@ -181,6 +183,7 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 	f.StringVar(&c.remoteBundleDir, "remotebundledir", "", "directory containing builtin remote test bundles")
 	f.StringVar(&c.remoteDataDir, "remotedatadir", "", "directory containing builtin remote test data")
 
+	f.BoolVar(&c.v2, "v2", false, "use v2")
 	// Some flags are only relevant if we're running tests rather than listing them.
 	if c.mode == RunTestsMode {
 		f.StringVar(&c.ResDir, "resultsdir", "", "directory for test results")
@@ -217,6 +220,7 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 	} else {
 		c.checkTestDeps = false
 	}
+
 }
 
 // Close releases the config's resources (e.g. cached SSH connections).

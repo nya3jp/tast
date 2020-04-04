@@ -50,9 +50,14 @@ func runRemoteTests(ctx context.Context, cfg *Config) ([]TestResult, error) {
 				},
 				LocalBundleDir:    cfg.localBundleDir,
 				Devservers:        cfg.devservers,
+				WaitUntilReady:    cfg.waitUntilReady,
 				HeartbeatInterval: heartbeatInterval,
 			},
 			BundleGlob: cfg.remoteBundleGlob(),
+			// RPCHint: &runner.RPCHint{
+			// 	LocalDataDir: cfg.localDataDir,
+			// 	LocalOutDir:  cfg.LocalOutDir,
+			// },
 		},
 	}
 	setRunnerTestDepsArgs(cfg, &args)

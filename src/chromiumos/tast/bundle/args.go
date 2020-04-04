@@ -43,6 +43,8 @@ type Args struct {
 	RunTests *RunTestsArgs `json:"runTests,omitempty"`
 	// ListTests contains arguments used by ListTestsMode.
 	ListTests *ListTestsArgs `json:"listTests,omitempty"`
+
+	V2 bool `json:"v2"`
 }
 
 // FillDeprecated backfills deprecated fields from the corresponding non-deprecated fields.

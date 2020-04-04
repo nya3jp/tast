@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net"
 	"path/filepath"
 	"reflect"
@@ -19,6 +20,7 @@ import (
 	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/runner"
+	"chromiumos/tast/rpc"
 	"chromiumos/tast/ssh"
 	"chromiumos/tast/timing"
 )
@@ -117,6 +119,7 @@ func runLocalTests(ctx context.Context, cfg *Config) ([]TestResult, error) {
 
 		cfg.Logger.Logf("Trying to run %v remaining test(s)", len(unstarted))
 		oldHst := hst
+
 		var connErr error
 		if hst, connErr = connectToTarget(ctx, cfg); connErr != nil {
 			cfg.Logger.Log("Failed reconnecting to target: ", connErr)
@@ -158,13 +161,31 @@ func (h *localRunnerHandle) Close(ctx context.Context) error {
 // The caller is responsible for reading the handle's stdout and closing the handle.
 func startLocalRunner(ctx context.Context, cfg *Config, hst *ssh.Conn, args *runner.Args) (*localRunnerHandle, error) {
 	args.FillDeprecated()
+
 	argsData, err := json.Marshal(args)
 	if err != nil {
 		return nil, fmt.Errorf("marshal args: %v", err)
 	}
+	log.Printf("startLocalRunner: args = %#v", string(argsData))
 
-	cmd := localRunnerCommand(ctx, cfg, hst)
-	cmd.cmd.Stdin = bytes.NewBuffer(argsData)
+	v2 := args.RunTests != nil && args.RunTests.V2
+
+	var flg []bool
+	if v2 {
+		flg = append(flg, true)
+	}
+	cmd := localRunnerCommand(ctx, cfg, hst, flg...)
+
+	var stdin io.Writer
+	if !v2 {
+		cmd.cmd.Stdin = bytes.NewBuffer(argsData)
+	} else {
+		stdin, err = cmd.cmd.StdinPipe()
+		if err != nil {
+			return nil, fmt.Errorf("hoge stdin: %v", err)
+		}
+	}
+
 	stdout, err := cmd.cmd.StdoutPipe()
 	if err != nil {
 		return nil, fmt.Errorf("failed to open stdout pipe: %v", err)
@@ -174,9 +195,62 @@ func startLocalRunner(ctx context.Context, cfg *Config, hst *ssh.Conn, args *run
 		return nil, fmt.Errorf("failed to open stderr pipe: %v", err)
 	}
 
+	log.Printf("hoge starting cmd: %v", cmd.cmd)
 	if err := cmd.cmd.Start(ctx); err != nil {
 		return nil, fmt.Errorf("failed to start local_test_runner: %v", err)
 	}
+
+	log.Println("hoge 22")
+
+	if args.RunTests.V2 {
+		// go func() {
+		// 	sc := bufio.NewScanner(stderr)
+		// 	for sc.Scan() {
+		// 		s := sc.Text()
+		// 		fmt.Fprintf(os.Stderr, "stderr: %v\n", s)
+		// 	}
+		// 	if err := sc.Err(); err != nil {
+		// 		log.Fatalf("failed reading stderr: %v", err)
+		// 	}
+		// }()
+
+		// FIXME: close conn.
+		conn, err := rpc.NewPipeClientConn(ctx, stdout, stdin)
+		if err != nil {
+			return nil, fmt.Errorf("hoge newPipe: %v", err)
+		}
+		log.Println("hoge running ping client")
+		if _, err = rpc.NewPingClient(conn).Ping(ctx, &rpc.PingRequest{}); err != nil {
+			return nil, fmt.Errorf("ping failure: %v", err)
+		}
+		log.Println("ping success")
+
+		stream, err := bundle.NewBundleServiceClient(conn).Run(ctx, &bundle.RunRequest{
+			Args: string(argsData),
+		})
+		if err != nil {
+			return nil, fmt.Errorf("cl prepare: %v", err)
+		}
+		log.Println("proxy server connected!")
+
+		var w io.Writer
+		stdout, w = io.Pipe()
+		go func() {
+			for {
+				msg, err := stream.Recv()
+				if err == io.EOF {
+					break
+				} else if err != nil {
+					log.Fatal("failed to recv: ", err)
+				}
+				log.Println("got control: ", msg.Control)
+				w.Write([]byte(msg.Control + "\n"))
+			}
+			stdout.Close()
+			stderr.Close()
+		}()
+	}
+
 	return &localRunnerHandle{cmd.cmd, stdout, stderr}, nil
 }
 
@@ -214,6 +288,7 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns []
 			},
 			BundleGlob: cfg.localBundleGlob(),
 			Devservers: cfg.devservers,
+			V2:         cfg.v2,
 		},
 	}
 	setRunnerTestDepsArgs(cfg, &args)
@@ -240,16 +315,18 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns []
 	}
 	results, unstarted, rerr := readTestOutput(ctx, cfg, handle.stdout, crf, df)
 
-	// Check that the runner exits successfully first so that we don't give a useless error
-	// about incorrectly-formed output instead of e.g. an error about the runner being missing.
-	timeout := defaultLocalRunnerWaitTimeout
-	if cfg.localRunnerWaitTimeout > 0 {
-		timeout = cfg.localRunnerWaitTimeout
-	}
-	wctx, wcancel := context.WithTimeout(ctx, timeout)
-	defer wcancel()
-	if err := handle.cmd.Wait(wctx); err != nil {
-		return results, unstarted, stderrReader.appendToError(err, stderrTimeout)
+	if !cfg.v2 {
+		// Check that the runner exits successfully first so that we don't give a useless error
+		// about incorrectly-formed output instead of e.g. an error about the runner being missing.
+		timeout := defaultLocalRunnerWaitTimeout
+		if cfg.localRunnerWaitTimeout > 0 {
+			timeout = cfg.localRunnerWaitTimeout
+		}
+		wctx, wcancel := context.WithTimeout(ctx, timeout)
+		defer wcancel()
+		if err := handle.cmd.Wait(wctx); err != nil {
+			return results, unstarted, stderrReader.appendToError(err, stderrTimeout)
+		}
 	}
 	return results, unstarted, rerr
 }

@@ -19,11 +19,13 @@ import (
 	"time"
 
 	"github.com/shirou/gopsutil/process"
+	"google.golang.org/grpc"
 
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/devserver"
+	"chromiumos/tast/rpc"
 	"chromiumos/tast/testing"
 )
 
@@ -47,51 +49,89 @@ const (
 func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Args, cfg *Config) int {
 	// TODO(derat|nya): Consider applying timeout.
 	ctx := context.TODO()
-	if err := readArgs(clArgs, stdin, stderr, args, cfg); err != nil {
-		return command.WriteError(stderr, err)
+
+	var v2 = false
+	var nClArgs []string
+	for _, a := range clArgs {
+		if a == "-v2" {
+			v2 = true
+		} else {
+			nClArgs = append(nClArgs, a)
+		}
+	}
+	clArgs = nClArgs
+
+	log.Println("clArgs: ", clArgs)
+
+	if !v2 {
+		if err := readArgs(clArgs, stdin, stderr, args, cfg); err != nil {
+			return command.WriteError(stderr, err)
+		}
+	}
+	f := func(args *Args, stdout io.Writer) int {
+		log.Printf("running f with args = %#v", args)
+		switch args.Mode {
+		case GetSysInfoStateMode:
+			if err := handleGetSysInfoState(ctx, cfg, stdout); err != nil {
+				return command.WriteError(stderr, err)
+			}
+			return statusSuccess
+		case CollectSysInfoMode:
+			if err := handleCollectSysInfo(ctx, args, cfg, stdout); err != nil {
+				return command.WriteError(stderr, err)
+			}
+			return statusSuccess
+		case GetDUTInfoMode:
+			if err := handleGetDUTInfo(args, cfg, stdout); err != nil {
+				return command.WriteError(stderr, err)
+			}
+			return statusSuccess
+		case ListTestsMode:
+			_, tests, err := getBundlesAndTests(args)
+			if err != nil {
+				return command.WriteError(stderr, err)
+			}
+			if err := testing.WriteTestsAsJSON(stdout, tests); err != nil {
+				return command.WriteError(stderr, err)
+			}
+			return statusSuccess
+		case RunTestsMode:
+			if args.report {
+				// Success is always reported when running tests on behalf of the tast command.
+				runTestsAndReport(ctx, args, cfg, stdout)
+			} else {
+				if err := runTestsAndLog(ctx, args, cfg, stdout); err != nil {
+					return command.WriteError(stderr, err)
+				}
+			}
+			return statusSuccess
+		case DownloadPrivateBundlesMode:
+			if err := handleDownloadPrivateBundles(ctx, args, cfg, stdout); err != nil {
+				return command.WriteError(stderr, err)
+			}
+			return statusSuccess
+		default:
+			return command.WriteError(stderr, command.NewStatusErrorf(statusBadArgs, "invalid mode %v", args.Mode))
+		}
+	}
+	if !v2 {
+		return f(args, stdout)
 	}
 
-	switch args.Mode {
-	case GetSysInfoStateMode:
-		if err := handleGetSysInfoState(ctx, cfg, stdout); err != nil {
-			return command.WriteError(stderr, err)
-		}
-		return statusSuccess
-	case CollectSysInfoMode:
-		if err := handleCollectSysInfo(ctx, args, cfg, stdout); err != nil {
-			return command.WriteError(stderr, err)
-		}
-		return statusSuccess
-	case GetDUTInfoMode:
-		if err := handleGetDUTInfo(args, cfg, stdout); err != nil {
-			return command.WriteError(stderr, err)
-		}
-		return statusSuccess
-	case ListTestsMode:
-		_, tests, err := getBundlesAndTests(args)
-		if err != nil {
-			return command.WriteError(stderr, err)
-		}
-		if err := testing.WriteTestsAsJSON(stdout, tests); err != nil {
-			return command.WriteError(stderr, err)
-		}
-		return statusSuccess
-	case RunTestsMode:
-		if args.report {
-			// Success is always reported when running tests on behalf of the tast command.
-			runTestsAndReport(ctx, args, cfg, stdout)
-		} else if err := runTestsAndLog(ctx, args, cfg, stdout); err != nil {
-			return command.WriteError(stderr, err)
-		}
-		return statusSuccess
-	case DownloadPrivateBundlesMode:
-		if err := handleDownloadPrivateBundles(ctx, args, cfg, stdout); err != nil {
-			return command.WriteError(stderr, err)
-		}
-		return statusSuccess
-	default:
-		return command.WriteError(stderr, command.NewStatusErrorf(statusBadArgs, "invalid mode %v", args.Mode))
+	if err := rpc.RunServer(stdin, stdout, func(srv *grpc.Server) {
+		rpc.RegisterPingServer(srv, &pingServer{})
+		bundle.RegisterBundleServiceServer(srv, newBundleProxyServer(args, f))
+	}); err != nil {
+		return command.WriteError(os.Stderr, err)
 	}
+	return statusSuccess
+}
+
+type pingServer struct {
+}
+
+func (s *pingServer) Ping(ctx context.Context, _ *rpc.PingRequest) (*rpc.PingResponse, error) {
+	return &rpc.PingResponse{}, nil
 }
 
 // runTestsAndReport runs bundles serially to perform testing and writes control messages to stdout.

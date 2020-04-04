@@ -46,6 +46,8 @@ const (
 	// install them to the DUT, write a JSON-marshaled DownloadPrivateBundlesResult struct to stdout and exit.
 	// This mode is only supported by local_test_runner.
 	DownloadPrivateBundlesMode = 6
+	// GRPCMode indicates to start gRPC server.
+	GRPCMode = 7
 )
 
 // Args provides a backward- and forward-compatible way to pass arguments from the tast executable to test runners.
@@ -76,7 +78,7 @@ type Args struct {
 // bundleArgs creates a bundle.Args appropriate for running bundles in the supplied mode.
 // The returned struct's slices should not be modified, as they are shared with a.
 func (a *Args) bundleArgs(mode bundle.RunMode) (*bundle.Args, error) {
-	ba := bundle.Args{Mode: mode}
+	ba := bundle.Args{Mode: mode, V2: a.RunTests != nil && a.RunTests.V2}
 
 	switch mode {
 	case bundle.RunTestsMode:
@@ -133,6 +135,12 @@ type RunTestsArgs struct {
 	BundleGlob string `json:"bundleGlob,omitempty"`
 	// Devservers contains URLs of devservers that can be used to download files.
 	Devservers []string `json:"devservers,omitempty"`
+	// V2 is v2 flag.
+	V2 bool `json:"v2:omitempty"`
+}
+
+type RPCHint struct {
+	LocalRunner string `json:"localRunner,omitempty"`
 }
 
 // ListTestsArgs is nested within Args and contains arguments used by ListTestsMode.
@@ -349,6 +357,11 @@ type Config struct {
 	// successfully downloaded and installed before. This prevents downloading private test bundles for
 	// every runner invocation.
 	PrivateBundlesStampPath string
+
+	// PreconditionV2 is the flag to use precondition V2.
+	// If this flag is enabled, remote_test_runner instead of tast communicates with local runner
+	// to run local tests.
+	PreconditionV2 bool
 }
 
 // readArgs parses runtime arguments.

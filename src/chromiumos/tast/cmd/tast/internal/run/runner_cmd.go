@@ -38,7 +38,7 @@ type localRunnerCmd struct {
 	ctx context.Context
 }
 
-func localRunnerCommand(ctx context.Context, cfg *Config, hst *ssh.Conn) *localRunnerCmd {
+func localRunnerCommand(ctx context.Context, cfg *Config, hst *ssh.Conn, v2 ...bool) *localRunnerCmd {
 	// Set proxy-related environment variables for local_test_runner so it will use them
 	// when accessing network.
 	execArgs := []string{"env"}
@@ -55,6 +55,9 @@ func localRunnerCommand(ctx context.Context, cfg *Config, hst *ssh.Conn) *localR
 		}
 	}
 	execArgs = append(execArgs, cfg.localRunner)
+	if v2 != nil && v2[0] {
+		execArgs = append(execArgs, "-v2")
+	}
 
 	return &localRunnerCmd{hst.Command(execArgs[0], execArgs[1:]...), ctx}
 }

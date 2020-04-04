@@ -138,6 +138,9 @@ func startBundleCmd(path string, bundleArgs *bundle.Args, stdout, stderr io.Writ
 	if err := json.NewEncoder(&stdin).Encode(bundleArgs); err != nil {
 		return nil, err
 	}
+	if bundleArgs.V2 {
+		// FIXME: hogehoge
+	}
 
 	cmd := exec.Command(path)
 	cmd.Stdin = &stdin
@@ -160,6 +163,7 @@ func startBundleCmd(path string, bundleArgs *bundle.Args, stdout, stderr io.Writ
 
 // runBundle runs the bundle at path to completion, passing bundleArgs.
 // The bundle's stdout is copied to the stdout arg.
+// In GRPC mode, launch gRPC server.
 func runBundle(path string, bundleArgs *bundle.Args, stdout io.Writer) *command.StatusError {
 	// Watch for stdout being closed so we can abort the bundle and clean up: https://crbug.com/945626
 	// Otherwise, the runner, bundle, and processes started by tests may run indefinitely.

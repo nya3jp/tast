@@ -185,6 +185,14 @@ func buildAll(ctx context.Context, cfg *Config, hst *ssh.Conn) error {
 		})
 	}
 	if cfg.runRemote {
+		if cfg.v2 {
+			tgts = append(tgts, &build.Target{
+				Pkg:        path.Join(localBundlePkgPathPrefix, cfg.buildBundle),
+				Arch:       cfg.targetArch,
+				Workspaces: cfg.bundleWorkspaces(),
+				Out:        filepath.Join(cfg.buildOutDir, cfg.targetArch, localBundleBuildSubdir, cfg.buildBundle),
+			})
+		}
 		tgts = append(tgts, &build.Target{
 			Pkg:        remoteRunnerPkg,
 			Arch:       build.ArchHost,
@@ -287,7 +295,7 @@ func pushExecutables(ctx context.Context, cfg *Config, hst *ssh.Conn) error {
 	files := map[string]string{
 		filepath.Join(srcDir, path.Base(localRunnerPkg)): cfg.localRunner,
 	}
-	if cfg.runLocal {
+	if cfg.runLocal || cfg.v2 {
 		files[filepath.Join(srcDir, localBundleBuildSubdir, cfg.buildBundle)] = filepath.Join(cfg.localBundleDir, cfg.buildBundle)
 	}
 

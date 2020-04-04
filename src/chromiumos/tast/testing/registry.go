@@ -12,6 +12,7 @@ import (
 type Registry struct {
 	allTests    []*TestInstance
 	testNames   map[string]struct{} // names of registered tests
+	pres        map[string]Precondition
 	allServices []*Service
 }
 
@@ -48,6 +49,16 @@ func (r *Registry) AddTestInstance(t *TestInstance) error {
 	return nil
 }
 
+// AddPrecondition adds p to the registry.
+func (r *Registry) AddPrecondition(p Precondition) error {
+	name := p.String()
+	if _, ok := r.pres[name]; ok {
+		return fmt.Errorf("%s registered twice", name)
+	}
+	r.pres[name] = p
+	return nil
+}
+
 // AddService adds s to the registry.
 func (r *Registry) AddService(s *Service) error {
 	r.allServices = append(r.allServices, s)
@@ -61,6 +72,11 @@ func (r *Registry) AllTests() []*TestInstance {
 		ts[i] = t.clone()
 	}
 	return ts
+}
+
+// AllPreconditions returns all registered preconditions.
+func (r *Registry) AllPreconditions() map[string]Precondition {
+	return r.pres
 }
 
 // AllServices returns copies of all registered services.

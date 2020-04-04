@@ -64,6 +64,12 @@ func AddTestInstance(t *TestInstance) {
 	}
 }
 
+// AddPrecondition adds test precondition p to the global registry.
+func AddPrecondition(p Precondition) {
+	// TODO: consider adding some check similar to AddTestInstance.
+	GlobalRegistry().AddPrecondition(p)
+}
+
 // AddService adds service s to the global registry.
 // This should be called only once in a service main file's init().
 func AddService(s *Service) {

@@ -9,6 +9,13 @@ import (
 	"time"
 )
 
+var preRegister []Precondition
+
+// RegisterPre should be called in init.
+func RegisterPre(pre Precondition) {
+	preRegister = append(preRegister, pre)
+}
+
 // Precondition represents a precondition that must be satisfied before a test is run.
 // Preconditions must also implement the unexported preconditionImpl interface,
 // which contains methods that are only intended to be called by the testing package.
@@ -23,6 +30,15 @@ type Precondition interface {
 	// We intentionally don't embed preconditionImpl here, as doing so lets tests call Prepare
 	// and Close on a Precondition (even though preconditionImpl isn't exported). Instead, we
 	// explicitly check that Preconditions implement preconditionImpl in Test.finalize.
+}
+
+// PreV2 is implemented by pars having a parent.
+type PreV2 interface {
+	// Parent is the name of the parent precondition.
+	Parent() string
+	// Clean is called in place of Close if the precondition is
+	// still used.
+	Clean(ctx context.Context, s *State)
 }
 
 // preconditionImpl contains the actual implementation of a Precondition.

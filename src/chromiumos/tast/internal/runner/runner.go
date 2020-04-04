@@ -19,11 +19,13 @@ import (
 	"time"
 
 	"github.com/shirou/gopsutil/process"
+	"google.golang.org/grpc"
 
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/devserver"
+	"chromiumos/tast/rpc"
 	"chromiumos/tast/testing"
 )
 
@@ -39,6 +41,9 @@ const (
 	statusTerminated   = 8 // SIGTERM was received
 )
 
+// FIXME: this shouldn't be global.
+var globalCurrentMode RunMode
+
 // Run reads command-line flags from clArgs (in the case of a manual run) or a JSON-marshaled
 // Args struct from stdin (when run by the tast command) and performs the requested action.
 // Default arguments may be passed via args, which is filled with the additional args that are read.
@@ -50,6 +55,8 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Args,
 	if err := readArgs(clArgs, stdin, stderr, args, cfg); err != nil {
 		return command.WriteError(stderr, err)
 	}
+
+	globalCurrentMode = args.Mode
 
 	switch args.Mode {
 	case GetSysInfoStateMode:
@@ -88,6 +95,21 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Args,
 		if err := handleDownloadPrivateBundles(ctx, args, cfg, stdout); err != nil {
 			return command.WriteError(stderr, err)
 		}
+		return statusSuccess
+	case GRPCMode:
+		if err := rpc.RunServer(os.Stdin, stdout, func(srv *grpc.Server) {
+			bundle.RegisterBundleServiceServer(srv, newBundleProxiyServer())
+		}); err != nil {
+			return command.WriteError(os.Stderr, err)
+		}
+
+		if args.report {
+			// Success is always reported when running tests on behalf of the tast command.
+			runTestsAndReport(ctx, args, cfg, stdout)
+		} else if err := runTestsAndLog(ctx, args, cfg, stdout); err != nil {
+			return command.WriteError(stderr, err)
+		}
+
 		return statusSuccess
 	default:
 		return command.WriteError(stderr, command.NewStatusErrorf(statusBadArgs, "invalid mode %v", args.Mode))

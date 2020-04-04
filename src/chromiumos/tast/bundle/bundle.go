@@ -21,6 +21,8 @@ import (
 	"strings"
 	"time"
 
+	"google.golang.org/grpc"
+
 	"chromiumos/tast/dut"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/control"
@@ -76,7 +78,13 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 		}
 		return statusSuccess
 	case RPCMode:
-		if err := rpc.RunServer(stdin, stdout, testing.GlobalRegistry().AllServices()); err != nil {
+		if err := rpc.RunServer(stdin, stdout, func(srv *grpc.Server) {
+			RegisterBundleServiceServer(srv, newBundleServer())
+
+			for _, svc := range testing.GlobalRegistry().AllServices() {
+				svc.Register(srv, &testing.ServiceState{})
+			}
+		}); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess

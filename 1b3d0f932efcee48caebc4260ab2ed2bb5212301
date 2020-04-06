@@ -16,6 +16,24 @@
       "revId": "1b3d0f932efcee48caebc4260ab2ed2bb5212301",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "42c0cd72_7fc9a87b",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2020-04-06T17:16:47Z",
+      "side": 1,
+      "message": "You can look at $BUG to see why I suggested they be separate.\n\nTL;DR: \"[reliable] WiFi hardware\" is a different property than \"WiFi software [in shill]\". The former probably could be HardwareDeps now, but we didn\u0027t have that at the time.\n\nAlso note how network.WLANDriver and a few other super-basic WiFi tests still pass on moblab. But then, if we start using shill.WifiInterface() and other Shill APIs for these tests, we\u0027ll need SW support again.\n\nMaybe the difference between these two (SW and HW) is small enough we don\u0027t really care? Although we still would have to separate these again if we start using HardwareDeps properly.",
+      "parentUuid": "d9862040_37fe2e69",
+      "revId": "1b3d0f932efcee48caebc4260ab2ed2bb5212301",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

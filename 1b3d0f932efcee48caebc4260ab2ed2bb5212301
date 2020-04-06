@@ -52,6 +52,24 @@
       "revId": "1b3d0f932efcee48caebc4260ab2ed2bb5212301",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c02e1a4f_55bc3248",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2020-04-06T19:22:54Z",
+      "side": 1,
+      "message": "\u003e Thanks for the explanation. It would be nice to attach the rationale as commnet so that users know which to use.\n\nI think the existing descriptions already describe \"hardware\" vs. \"software\", but yes, I suppose the exact rationale for choosing a dependency on one or the other isn\u0027t super clear.\n\noka@: Let us know if you want us to take over any aspects of this.\n\n\u003e For tests depend on shill-wifi, shall they also exclude betty, tast_vm and nyan_kitty?\n\nI suppose one *could* do that, but for the case of this CL [1], we don\u0027t actually need WiFi hardware -- we\u0027re just checking that Shill will save the service properties correctly.\n\n[1] https://chromium-review.googlesource.com/c/chromiumos/platform/tast-tests/+/2130390",
+      "parentUuid": "dec56cb0_f70a6b08",
+      "revId": "1b3d0f932efcee48caebc4260ab2ed2bb5212301",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

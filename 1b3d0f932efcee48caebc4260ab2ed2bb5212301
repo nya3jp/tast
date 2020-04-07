@@ -70,6 +70,24 @@
       "revId": "1b3d0f932efcee48caebc4260ab2ed2bb5212301",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d34fbc2e_f6faa4d8",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-04-07T04:02:45Z",
+      "side": 1,
+      "message": "\u003e oka@: Let us know if you want us to take over any aspects of this.\n\nOK. Please take over this.",
+      "parentUuid": "c02e1a4f_55bc3248",
+      "revId": "1b3d0f932efcee48caebc4260ab2ed2bb5212301",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

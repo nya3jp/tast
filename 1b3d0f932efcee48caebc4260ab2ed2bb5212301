@@ -88,6 +88,24 @@
       "revId": "1b3d0f932efcee48caebc4260ab2ed2bb5212301",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1bbb56d4_85b50814",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-04-07T04:59:58Z",
+      "side": 1,
+      "message": "Got it. \"shill-wifi\" is for boards that have shill with WiFi technology enabled. \"wifi\" is for boards with WiFi hardware. With comment added, +2.",
+      "parentUuid": "d34fbc2e_f6faa4d8",
+      "revId": "1b3d0f932efcee48caebc4260ab2ed2bb5212301",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

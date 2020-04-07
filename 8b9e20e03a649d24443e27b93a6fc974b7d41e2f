@@ -70,6 +70,24 @@
       "revId": "8b9e20e03a649d24443e27b93a6fc974b7d41e2f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a2a2848d_206bbc15",
+        "filename": "src/chromiumos/tast/ssh/testutil.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-04-07T10:16:05Z",
+      "side": 1,
+      "message": "Thanks. It worked!",
+      "parentUuid": "d907136a_0b96776e",
+      "revId": "8b9e20e03a649d24443e27b93a6fc974b7d41e2f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

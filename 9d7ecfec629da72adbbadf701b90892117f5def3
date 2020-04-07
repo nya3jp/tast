@@ -127,6 +127,24 @@
     },
     {
       "key": {
+        "uuid": "678f0b18_e65728c9",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-04-07T11:58:24Z",
+      "side": 1,
+      "message": "Done.\nhttps://chromium-review.googlesource.com/c/chromiumos/platform/tast-tests/+/2139911/1\nhttps://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/2131110",
+      "parentUuid": "bcdb54ca_e5e44d78",
+      "revId": "9d7ecfec629da72adbbadf701b90892117f5def3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6efc1c06_5758e33d",
         "filename": "docs/writing_tests.md",
         "patchSetId": 3

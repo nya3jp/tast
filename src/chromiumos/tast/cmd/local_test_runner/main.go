@@ -84,6 +84,7 @@ func main() {
 			"camera_legacy":           `!"arc-camera1" && !"arc-camera3"`,
 			"chrome":                  "!chromeless_tty && !rialto",
 			"chrome_internal":         "chrome_internal",
+			"chrome_media":		   "chrome_media",
 			"crashpad":                "!force_breakpad",
 			"cros_config":             "unibuild",
 			"cros_internal":           "internal",

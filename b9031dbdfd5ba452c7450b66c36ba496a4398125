@@ -34,6 +34,24 @@
       "revId": "b9031dbdfd5ba452c7450b66c36ba496a4398125",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d570e2b4_ae1af108",
+        "filename": "docs/test_attributes.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1108324
+      },
+      "writtenOn": "2020-04-08T18:30:21Z",
+      "side": 1,
+      "message": "At the moment wificell-cq is noncritical (informational) suite. This is done to initially make sure the wifi cq setup works as expected. We are not going to move it to \u0027critical\u0027 until its proven to be stable and we are sure that we have enough DUT capacity to handle the load.\n\n\u003e\u003e\u003e\u003e\u003eIsn\u0027t that exactly what \u0027wificell_unstable\u0027 is about?\nCorrect, once tests move out of wificell_unstable, we can decide if they should be in wificell-cq.",
+      "parentUuid": "04b243a7_b1e4c05b",
+      "revId": "b9031dbdfd5ba452c7450b66c36ba496a4398125",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

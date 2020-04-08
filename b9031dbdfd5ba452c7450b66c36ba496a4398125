@@ -70,6 +70,24 @@
       "revId": "b9031dbdfd5ba452c7450b66c36ba496a4398125",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0e3bd1dd_59ef8d8e",
+        "filename": "docs/test_attributes.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1108324
+      },
+      "writtenOn": "2020-04-08T23:08:00Z",
+      "side": 1,
+      "message": "\u003e\u003e\u003e\u003e\u003ewificell_unstable \u0026\u0026 wificell_cq: cq unstable -\u003e suite not available yet.\nWe can revisit this later if we think its useful to have a wificell_cq_informantion suite but until then, there should be no \"wificell_unstable \u0026\u0026 wificell_cq\" suite. All tests in wificell_cq should be a smaller subset of \"wificell_func \u0026\u0026 !wificell_unstable\".",
+      "parentUuid": "d948f644_7bba01b6",
+      "revId": "b9031dbdfd5ba452c7450b66c36ba496a4398125",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

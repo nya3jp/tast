@@ -195,6 +195,10 @@ Tests in this group are not used for build verification.
 				Desc: `Indicates that this test is for verifying basic WiFi functionalities.`,
 			},
 			{
+				Name: "wificell_pre_cq",
+				Desc: `Indicates that this test belongs to suite:wificell-pre-cq.`,
+			},
+			{
 				Name: "wificell_unstable",
 				Desc: `Indicates that this test is unstable or yet to be verified as stable.`,
 			},

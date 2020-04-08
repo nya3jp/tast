@@ -34,7 +34,8 @@ Below is the list of most popular groups and their associated extra attributes:
     add one of `crosbolt_perbuild`, `crosbolt_nightly` or `crosbolt_weekly`.
 *   `group:wificell` - Tests that depends on [wificell] fixture to run.
     Sub-attributes:
-    *  `wificell_func`: used to verify basic WiFi functionalities
+    *  `wificell_func`: used to verify basic WiFi functionalities.
+    *  `wificell_pre_cq`: indicates that the test belongs to suite:wificell-pre-cq.
     *  `wificell_unstable`: indicates that the test is unstable or yet to be verified as stable.
 
 See [attr.go] for the full list of valid attributes.

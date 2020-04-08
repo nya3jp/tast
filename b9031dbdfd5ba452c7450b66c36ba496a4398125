@@ -52,6 +52,24 @@
       "revId": "b9031dbdfd5ba452c7450b66c36ba496a4398125",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d948f644_7bba01b6",
+        "filename": "docs/test_attributes.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-04-08T19:09:40Z",
+      "side": 1,
+      "message": "We may categorize the group:wificell\u0027s sub-attributes as three types:\n* test purpose: wificell_func, wificell_perf (not yet created)\n* stability: \"\" (default stable) or wificell_unstable \n* suite place: \"\" (default nightly) or wificell_cq \n\nBased on the above sub-attribute categorization, group:wificell can have 2x2x2\u003d8 possible combination. Let\u0027s focus on wificell_func for now, four combinations:\n* \"\": nightly stable -\u003e suite:wifi_matfunc\n* wificell_cq: cq stable -\u003e suite:wificell_cq\n* wificell_unstable: nightly unstable -\u003e suite:wifi_func_tast\n* wificell_unstable \u0026\u0026 wificell_cq: cq unstable -\u003e suite not available yet.\n\nBy the way, we may omit wificell_func to treat functional test as the default test purpose. WDYT?",
+      "parentUuid": "d570e2b4_ae1af108",
+      "revId": "b9031dbdfd5ba452c7450b66c36ba496a4398125",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

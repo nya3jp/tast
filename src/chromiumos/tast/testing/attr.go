@@ -192,11 +192,15 @@ Tests in this group are not used for build verification.
 		Subattrs: []*attr{
 			{
 				Name: "wificell_func",
-				Desc: `Indicates that this test is for verifying basic WiFi functionalities.`,
+				Desc: `Tests basic WiFi functionalities nightly.`,
+			},
+			{
+				Name: "wificell_cq",
+				Desc: `Tests basic WiFi functionalities per related commit.`,
 			},
 			{
 				Name: "wificell_unstable",
-				Desc: `Indicates that this test is unstable or yet to be verified as stable.`,
+				Desc: `Indicates that this test is yet to be verified as stable.`,
 			},
 		},
 	},

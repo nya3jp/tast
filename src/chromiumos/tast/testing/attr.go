@@ -185,18 +185,19 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 	{
 		Name:     "wificell",
 		Contacts: []string{"chromeos-kernel-wifi@google.com"},
-		Desc: `The group of WiFi tests to be run with wificell fixture.
-
-Tests in this group are not used for build verification.
-`,
+		Desc:     `The group of WiFi tests to be run with Wificell fixture.`,
 		Subattrs: []*attr{
 			{
 				Name: "wificell_func",
-				Desc: `Indicates that this test is for verifying basic WiFi functionalities.`,
+				Desc: `Tests basic WiFi functionalities using Wificell fixture nightly.`,
+			},
+			{
+				Name: "wificell_cq",
+				Desc: `Similar to wificell_func, but triggered by CLs that touch specific code paths.`,
 			},
 			{
 				Name: "wificell_unstable",
-				Desc: `Indicates that this test is unstable or yet to be verified as stable.`,
+				Desc: `Indicates that this test is yet to be verified as stable.`,
 			},
 		},
 	},

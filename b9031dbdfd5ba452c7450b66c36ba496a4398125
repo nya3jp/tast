@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "04b243a7_b1e4c05b",
+        "filename": "docs/test_attributes.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-04-08T17:58:45Z",
+      "side": 1,
+      "message": "Allow me to discuss here:\nNow we have two pools with wificell fixtures: wificell and wificell-pre-cq (now renames as wificell-cq). Is it better we create another group, say group:wificell_cq? \nIf so, is it a good idea to have \"wificell_cq_informational\" sub-attribute for those CQ tests that are not stable enough to reject offending CLs?",
+      "revId": "b9031dbdfd5ba452c7450b66c36ba496a4398125",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

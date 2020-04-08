@@ -16,6 +16,24 @@
       "revId": "b9031dbdfd5ba452c7450b66c36ba496a4398125",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "69ffe50a_1c4392be",
+        "filename": "docs/test_attributes.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2020-04-08T18:06:27Z",
+      "side": 1,
+      "message": "\u003e Allow me to discuss here:\n\u003e Now we have two pools with wificell fixtures: wificell and wificell-pre-cq (now renames as wificell-cq). Is it better we create another group, say group:wificell_cq? \n\nWhy? The existing group is just to differentiate from \u0027mainline\u0027, with sub-attributes to reflect each role (so, \u0027wificell_cq\u0027 would be the role-specific sub-attribute).\n\n\u003e If so, is it a good idea to have \"wificell_cq_informational\" sub-attribute for those CQ tests that are not stable enough to reject offending CLs?\n\nIsn\u0027t that exactly what \u0027wificell_unstable\u0027 is about?",
+      "parentUuid": "04b243a7_b1e4c05b",
+      "revId": "b9031dbdfd5ba452c7450b66c36ba496a4398125",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

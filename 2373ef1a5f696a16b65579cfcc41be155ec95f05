@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e09bde94_4f9d0865",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1000303
+      },
+      "writtenOn": "2020-04-08T17:19:18Z",
+      "side": 0,
+      "message": "looks very obsolete, sorry for missing this. let me remove while I\u0027m at it.",
+      "range": {
+        "startLine": 61,
+        "startChar": 0,
+        "endLine": 62,
+        "endChar": 83
+      },
+      "revId": "2373ef1a5f696a16b65579cfcc41be155ec95f05",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

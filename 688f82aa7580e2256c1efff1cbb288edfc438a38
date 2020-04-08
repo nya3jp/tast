@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "9b7ce64c_9594935f",
+        "filename": "tools/import_infra_proto.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-04-08T16:20:16Z",
+      "side": 1,
+      "message": "(optional): BTW, this shell script is reaching to 100 LoC. It may be time to rewrite in python or so...?",
+      "revId": "688f82aa7580e2256c1efff1cbb288edfc438a38",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c3d076ae_ed89d2a6",
         "filename": "tools/import_infra_proto.sh",
         "patchSetId": 3

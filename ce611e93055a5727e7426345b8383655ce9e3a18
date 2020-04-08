@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f20b3365_913b0a5f",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/declarations.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-04-08T07:24:49Z",
+      "side": 1,
+      "message": "Does this check catch non-top-level testing.AddTest calls, e.g.\n\n func init() {\n   for _, x :\u003d range ... {\n     testing.AddTest(...)\n   }\n }",
+      "range": {
+        "startLine": 65,
+        "startChar": 1,
+        "endLine": 65,
+        "endChar": 71
+      },
+      "revId": "ce611e93055a5727e7426345b8383655ce9e3a18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1e8aad4d_9b8f5cdd",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/declarations.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-04-08T07:24:49Z",
+      "side": 1,
+      "message": "It\u0027s a bit verbose to emit one issue per one statement. I guess one per init is enough.",
+      "range": {
+        "startLine": 75,
+        "startChar": 2,
+        "endLine": 79,
+        "endChar": 4
+      },
+      "revId": "ce611e93055a5727e7426345b8383655ce9e3a18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

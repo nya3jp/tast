@@ -88,6 +88,24 @@
       "revId": "b9031dbdfd5ba452c7450b66c36ba496a4398125",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2c29891e_98457cd8",
+        "filename": "docs/test_attributes.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2020-04-08T23:53:38Z",
+      "side": 1,
+      "message": "What Harpreet says SGTM.",
+      "parentUuid": "0e3bd1dd_59ef8d8e",
+      "revId": "b9031dbdfd5ba452c7450b66c36ba496a4398125",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

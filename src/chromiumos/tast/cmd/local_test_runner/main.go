@@ -58,9 +58,11 @@ func main() {
 			// The one exception is tast_vm, which is inserted by VM builders via -extrauseflags.
 			"alt_syscall": `!"kernel-3_8" && !"kernel-3_10"`,
 			"amd64":       "amd64",
+			// TODO(yusukes): This is a temporary hack for running arc.Boot on ARCVM P. Remove once we abandon ARCVM P.
+			"android_vm_p_deprecated": `arc && arcvm && "android-vm-pi"`,
 			// ARC USE flags are defined here:
 			// http://cs/chromeos_public/src/third_party/chromiumos-overlay/eclass/arc-build-constants.eclass
-			"android_vm":        `arc && arcvm`,
+			"android_vm":        `arc && arcvm && !"android-vm-pi"`,
 			"android_vm_r":      `arc && arcvm && "android-vm-rvc"`,
 			"android_p":         `arc && "android-container-pi"`,
 			"arc":               `arc`,

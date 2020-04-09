@@ -187,3 +187,17 @@ func InternalDisplay() Condition {
 		return errors.New("DUT does not have an internal display")
 	}}
 }
+
+// Battery returns a hardware dependency condition that is satisfied iff the DUT
+// has a battery, e.g. Chromeboxes and Chromebits don't.
+func Battery() Condition {
+	return Condition{Satisfied: func(d *hwdep.DeviceSetup) error {
+		if d.DC == nil {
+			return errors.New("device.Config is not given")
+		}
+		if d.DC.GetPower() != device.Config_POWER_SUPPLY_BATTERY {
+			return errors.New("DUT does not have a battery")
+		}
+		return nil
+	}}
+}

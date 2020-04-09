@@ -106,6 +106,24 @@
       "revId": "1b3d0f932efcee48caebc4260ab2ed2bb5212301",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6b882a1a_175c511e",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-04-09T09:15:19Z",
+      "side": 1,
+      "message": "After a second thought. The current comment works fine. +2",
+      "parentUuid": "1bbb56d4_85b50814",
+      "revId": "1b3d0f932efcee48caebc4260ab2ed2bb5212301",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

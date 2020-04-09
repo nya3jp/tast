@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "e031e863_4a8d69ac",
+        "filename": "tools/import_infra_proto.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-04-09T10:16:02Z",
+      "side": 1,
+      "message": "I agree, but would like to do as a separate task.",
+      "parentUuid": "9b7ce64c_9594935f",
+      "revId": "688f82aa7580e2256c1efff1cbb288edfc438a38",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c3d076ae_ed89d2a6",
         "filename": "tools/import_infra_proto.sh",
         "patchSetId": 3
@@ -39,6 +57,30 @@
       "revId": "688f82aa7580e2256c1efff1cbb288edfc438a38",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "331508d3_a5452e94",
+        "filename": "tools/import_infra_proto.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-04-09T10:16:02Z",
+      "side": 1,
+      "message": "Done.\nNow I understood that infra/proto is the root of the repository, separated from infra/.",
+      "parentUuid": "c3d076ae_ed89d2a6",
+      "range": {
+        "startLine": 31,
+        "startChar": 39,
+        "endLine": 31,
+        "endChar": 49
+      },
+      "revId": "688f82aa7580e2256c1efff1cbb288edfc438a38",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -65,6 +107,30 @@
     },
     {
       "key": {
+        "uuid": "3ff48c17_f82982bc",
+        "filename": "tools/import_infra_proto.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-04-09T10:16:02Z",
+      "side": 1,
+      "message": "Changed to 1).",
+      "parentUuid": "33f97436_0f95bd71",
+      "range": {
+        "startLine": 33,
+        "startChar": 0,
+        "endLine": 43,
+        "endChar": 73
+      },
+      "revId": "688f82aa7580e2256c1efff1cbb288edfc438a38",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6ecc2b78_ea0697e3",
         "filename": "tools/import_infra_proto.sh",
         "patchSetId": 3
@@ -79,6 +145,24 @@
       "revId": "688f82aa7580e2256c1efff1cbb288edfc438a38",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8d6551e2_89b42718",
+        "filename": "tools/import_infra_proto.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-04-09T10:16:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6ecc2b78_ea0697e3",
+      "revId": "688f82aa7580e2256c1efff1cbb288edfc438a38",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -128,6 +212,30 @@
     },
     {
       "key": {
+        "uuid": "6e8aee42_70689996",
+        "filename": "tools/import_infra_proto.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-04-09T10:16:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "78c31613_21cf2943",
+      "range": {
+        "startLine": 62,
+        "startChar": 40,
+        "endLine": 62,
+        "endChar": 45
+      },
+      "revId": "688f82aa7580e2256c1efff1cbb288edfc438a38",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8639e726_6e92bdf1",
         "filename": "tools/import_infra_proto.sh",
         "patchSetId": 3
@@ -139,6 +247,30 @@
       "writtenOn": "2020-04-08T16:19:12Z",
       "side": 1,
       "message": "Do you need to find subdirs?\n\nfor dir in \"${infra_import_dirs[@]\"; do\n  # ... comment ...\n  proto_files\u003d(`find \"${tast_dir}/proto/infra/${dir}\" -name \u0027*.proto\u0027)\n  protoc \\\n    ...\n    \"${proto_files[@]}\"\ndone\n\nwon\u0027t work...?",
+      "range": {
+        "startLine": 72,
+        "startChar": 2,
+        "endLine": 85,
+        "endChar": 6
+      },
+      "revId": "688f82aa7580e2256c1efff1cbb288edfc438a38",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e8cf75a0_63f7da92",
+        "filename": "tools/import_infra_proto.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-04-09T10:16:02Z",
+      "side": 1,
+      "message": "protoc did not accept multiple packages within the set of the .proto files in a single command.\n\n\u003e protoc-gen-go: error:inconsistent package import paths: \"go.chromium.org/chromiumos/infra/proto/go/test/metadata/v1\", \"go.chromium.org/chromiumos/infra/proto/go/test/plan/v1\"\n\nsrc/test/metadata/v1/metadata.proto has:\noption go_package \u003d \"go.chromium.org/chromiumos/infra/proto/go/test/metadata/v1;metadata\";\nhowever src/test/plan/v1/plan.proto has:\noption go_package \u003d \"go.chromium.org/chromiumos/infra/proto/go/test/plan/v1;plan\";\n\nAlternatively the block below iterates over every file for same reason.\nWhich would be a better way?",
+      "parentUuid": "8639e726_6e92bdf1",
       "range": {
         "startLine": 72,
         "startChar": 2,

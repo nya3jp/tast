@@ -60,7 +60,7 @@ func main() {
 			"amd64":       "amd64",
 			// ARC USE flags are defined here:
 			// http://cs/chromeos_public/src/third_party/chromiumos-overlay/eclass/arc-build-constants.eclass
-			"android_vm": `arc && arcvm`,
+			"android_vm": `arc && arcvm && !"android-vm-pi"`,
 			// TODO(b/146584985): update to use R flags
 			"android_vm_r":      `arc && arcvm && "android-vm-master"`,
 			"android_p":         `arc && "android-container-pi"`,

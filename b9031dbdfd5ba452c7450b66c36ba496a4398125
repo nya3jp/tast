@@ -106,6 +106,24 @@
       "revId": "b9031dbdfd5ba452c7450b66c36ba496a4398125",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0c3b5a5d_81ce8663",
+        "filename": "docs/test_attributes.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-04-09T05:29:52Z",
+      "side": 1,
+      "message": "I modified the definition of \"wificell_func\" so that it mean the test is used to test basic WiFi functionalities nightly. Based on the description in patchset 2 [1], we have 4 combinations:\n* wificell_func: nightly stable -\u003e suite:wifi_matfunc\n* wificell_func \u0026\u0026 wificell_unstable: nightly unstable -\u003e suite:wifi_func_tast\n* wificell_cq: cq stable -\u003e suite:wificell_cq\n* wificell_cq \u0026\u0026 wificell_unstable: cq unstable -\u003e we don\u0027t have such plan yet. Maybe just use wificell_func \u0026\u0026 wificell_unstable.\n\n[1] https://chromium.googlesource.com/chromiumos/platform/tast/+/refs/changes/11/2141811/2/docs/test_attributes.md",
+      "parentUuid": "2c29891e_98457cd8",
+      "revId": "b9031dbdfd5ba452c7450b66c36ba496a4398125",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

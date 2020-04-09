@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5573840d_630d363f",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/declarations.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-04-09T09:29:03Z",
+      "side": 1,
+      "message": "Hmm, this logic is a bit hard to follow. How about the following simpler logic:\n\n- If decl is a single-statement init function calling testing.AddTest, check its arguments and return.\n- Otherwise check that decl\u0027s body contains no testing.AddTest call.",
+      "range": {
+        "startLine": 66,
+        "startChar": 1,
+        "endLine": 66,
+        "endChar": 33
+      },
+      "revId": "8c9040a24b677edfb6bb70b19db244f5c5070459",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

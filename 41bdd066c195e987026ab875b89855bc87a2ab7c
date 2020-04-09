@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c69732a3_99a07792",
+        "filename": "tools/import_infra_proto.sh",
+        "patchSetId": 6
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-04-09T19:51:15Z",
+      "side": 1,
+      "message": "# Sorry, I overlooked in the prev iteraiton.\n\nThis file is tast/proto/infra/README, while config/proto/* will be put under tast/proto/config/...\n\nMaybe you\u0027d need to create another README file at tast/proto/config/README for this part.",
+      "revId": "41bdd066c195e987026ab875b89855bc87a2ab7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

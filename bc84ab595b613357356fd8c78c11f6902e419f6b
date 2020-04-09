@@ -22,6 +22,30 @@
       "revId": "bc84ab595b613357356fd8c78c11f6902e419f6b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "531b0a85_5a466823",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1000303
+      },
+      "writtenOn": "2020-04-09T06:55:13Z",
+      "side": 1,
+      "message": "yes, and https://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/2141812 is in CQ already",
+      "parentUuid": "95a82497_bf24de11",
+      "range": {
+        "startLine": 65,
+        "startChar": 0,
+        "endLine": 65,
+        "endChar": 62
+      },
+      "revId": "bc84ab595b613357356fd8c78c11f6902e419f6b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

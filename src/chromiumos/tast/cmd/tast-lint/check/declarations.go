@@ -16,9 +16,8 @@ import (
 
 // Exposed here for unit tests.
 const (
-	notTopAddTestMsg = `testing.AddTest() should be called only at a top statement of init()`
-	addTestArgLitMsg = `testing.AddTest() should take &testing.Test{...} composite literal`
-	otherStmtMsg     = `init() calling testing.AddTest() should not contain other statements`
+	notOnlyTopAddTestMsg = `testing.AddTest() should be the only top level statement of init()`
+	addTestArgLitMsg     = `testing.AddTest() should take &testing.Test{...} composite literal`
 
 	noDescMsg         = `Test should have its description`
 	nonLiteralDescMsg = `Test descriptions should be string literal`
@@ -61,42 +60,28 @@ func verifyInit(fs *token.FileSet, node ast.Decl, fix bool) []*Issue {
 		return nil
 	}
 
-	var issues []*Issue
-
-	var addTestCalls []*ast.CallExpr
-	var otherStmt ast.Stmt
-	for _, stmt := range decl.Body.List {
-		if estmt, ok := stmt.(*ast.ExprStmt); ok && isTestingAddTestCall(estmt.X) {
+	if len(decl.Body.List) == 1 {
+		if estmt, ok := decl.Body.List[0].(*ast.ExprStmt); ok && isTestingAddTestCall(estmt.X) {
 			// X's type is already verified in isTestingAddTestCall().
-			addTestCalls = append(addTestCalls, estmt.X.(*ast.CallExpr))
-			continue
+			return verifyAddTestCall(fs, estmt.X.(*ast.CallExpr), fix)
 		}
-		if otherStmt == nil {
-			otherStmt = stmt
-		}
-		v := funcVisitor(func(node ast.Node) {
-			if isTestingAddTestCall(node) {
-				issues = append(issues, &Issue{
-					Pos:  fs.Position(node.Pos()),
-					Msg:  notTopAddTestMsg,
-					Link: testRegistrationURL,
-				})
-			}
-		})
-		ast.Walk(v, stmt)
-	}
-	if addTestCalls != nil && otherStmt != nil {
-		issues = append(issues, &Issue{
-			Pos:  fs.Position(otherStmt.Pos()),
-			Msg:  otherStmtMsg,
-			Link: testRegistrationURL,
-		})
 	}
 
-	for _, call := range addTestCalls {
-		issues = append(issues, verifyAddTestCall(fs, call, fix)...)
+	var addTestNode ast.Node
+	ast.Walk(funcVisitor(func(n ast.Node) {
+		if addTestNode == nil && isTestingAddTestCall(n) {
+			addTestNode = n
+		}
+	}), node)
+
+	if addTestNode != nil {
+		return []*Issue{{
+			Pos:  fs.Position(addTestNode.Pos()),
+			Msg:  notOnlyTopAddTestMsg,
+			Link: testRegistrationURL,
+		}}
 	}
-	return issues
+	return nil
 }
 
 // verifyAddTestCall verifies testing.AddTest calls. Specifically

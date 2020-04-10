@@ -5,6 +5,7 @@
 package check
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -33,219 +34,220 @@ func init() {
 	verifyIssues(t, issues, nil)
 }
 
-func TestDeclarationsTopLevelAddTest(t *testing.T) {
-	const code = `package pkg
-func init() {
+const initTmpl = `package pkg
+
+func init() {%v
+}
+`
+
+func TestDeclarationsOnlyTopLevelAddTest(t *testing.T) {
+	for _, tc := range []struct {
+		snip    string
+		wantMsg string
+	}{{`
 	for {
 		testing.AddTest(&testing.Test{
 			Func:     DoStuff,
 			Desc:     "This description is fine",
 			Contacts: []string{"me@chromium.org"},
 		})
-	}
-}
-`
-	f, fs := parse(code, declTestPath)
-	issues := Declarations(fs, f, false)
-	expects := []string{
-		declTestPath + ":4:3: " + notTopAddTestMsg,
-	}
-	verifyIssues(t, issues, expects)
-}
-
-func TestDeclarationsOtherStmtThanAddTest(t *testing.T) {
-	const code = `package pkg
-func init() {
+	}`, declTestPath + ":5:3: " + notOnlyTopAddTestMsg}, {`
 	_ = 1
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 	})
-	for {}
-}
-`
-	f, fs := parse(code, declTestPath)
-	issues := Declarations(fs, f, false)
-	// for {} is ignored; it only reports the first error.
-	expects := []string{
-		declTestPath + ":3:2: " + otherStmtMsg,
+	for {}`, declTestPath + ":5:2: " + notOnlyTopAddTestMsg}, {`
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+	})
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+	})`, declTestPath + ":4:2: " + notOnlyTopAddTestMsg}} {
+		code := fmt.Sprintf(initTmpl, tc.snip)
+		f, fs := parse(code, declTestPath)
+		issues := Declarations(fs, f, false)
+		verifyIssues(t, issues, []string{tc.wantMsg})
 	}
-	verifyIssues(t, issues, expects)
 }
 
 func TestDeclarationsDesc(t *testing.T) {
-	const code = `package pkg
-func init() {
+	for _, tc := range []struct {
+		snip    string
+		wantMsg string
+	}{{`
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		// Desc is missing
 		Contacts: []string{"me@chromium.org"},
-	})
+	})`, declTestPath + ":4:18: " + noDescMsg}, {`
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     variableDesc,
 		Contacts: []string{"me@chromium.org"},
-	})
+	})`, declTestPath + ":6:13: " + nonLiteralDescMsg}, {`
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "not capitalized",
 		Contacts: []string{"me@chromium.org"},
-	})
+	})`, declTestPath + ":6:13: " + badDescMsg}, {`
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "Ends with a period.",
 		Contacts: []string{"me@chromium.org"},
-	})
-}
-`
-
-	f, fs := parse(code, declTestPath)
-	issues := Declarations(fs, f, false)
-	expects := []string{
-		declTestPath + ":3:18: " + noDescMsg,
-		declTestPath + ":10:13: " + nonLiteralDescMsg,
-		declTestPath + ":15:13: " + badDescMsg,
-		declTestPath + ":20:13: " + badDescMsg,
+	})`, declTestPath + ":6:13: " + badDescMsg}} {
+		code := fmt.Sprintf(initTmpl, tc.snip)
+		f, fs := parse(code, declTestPath)
+		issues := Declarations(fs, f, false)
+		verifyIssues(t, issues, []string{tc.wantMsg})
 	}
-	verifyIssues(t, issues, expects)
 }
 
 func TestDeclarationsContacts(t *testing.T) {
-	const code = `package pkg
-func init() {
+	for _, tc := range []struct {
+		snip    string
+		wantMsg string
+	}{{`
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
 		// Contacts is missing
-	})
+	})`, declTestPath + ":4:18: " + noContactMsg}, {`
 	testing.AddTest(&testing.Test{
 		Func: DoStuff,
 		Desc: "This description is fine",
 		Contacts: []string{variableAddress},
-	})
+	})`, declTestPath + ":7:22: " + nonLiteralContactsMsg}, {`
 	testing.AddTest(&testing.Test{
 		Func: DoStuff,
 		Desc: "This description is fine",
 		Contacts: variableContacts,
-	})
-}
-`
-	f, fs := parse(code, declTestPath)
-	issues := Declarations(fs, f, false)
-	expects := []string{
-		declTestPath + ":3:18: " + noContactMsg,
-		declTestPath + ":11:22: " + nonLiteralContactsMsg,
-		declTestPath + ":16:13: " + nonLiteralContactsMsg,
+	})`, declTestPath + ":7:13: " + nonLiteralContactsMsg}} {
+		code := fmt.Sprintf(initTmpl, tc.snip)
+		f, fs := parse(code, declTestPath)
+		issues := Declarations(fs, f, false)
+		verifyIssues(t, issues, []string{tc.wantMsg})
 	}
-	verifyIssues(t, issues, expects)
 }
 
 func TestDeclarationsAttr(t *testing.T) {
-	const code = `package pkg
-func init() {
+	for _, tc := range []struct {
+		snip    string
+		wantMsg string
+	}{{snip: `
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		Attr:     []string{"this", "is", "valid", "attr"},
-	})
+	})`}, {`
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		Attr:     foobar,  // non array literal.
-	})
+	})`, declTestPath + ":8:13: " + nonLiteralAttrMsg}, {`
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		Attr:     []string{variableAttr},
-	})
-}
-`
-	f, fs := parse(code, declTestPath)
-	issues := Declarations(fs, f, false)
-	expects := []string{
-		declTestPath + ":13:13: " + nonLiteralAttrMsg,
-		declTestPath + ":19:22: " + nonLiteralAttrMsg,
+	})`, declTestPath + ":8:22: " + nonLiteralAttrMsg}} {
+		code := fmt.Sprintf(initTmpl, tc.snip)
+		f, fs := parse(code, declTestPath)
+		issues := Declarations(fs, f, false)
+		var expects []string
+		if tc.wantMsg != "" {
+			expects = append(expects, tc.wantMsg)
+		}
+		verifyIssues(t, issues, expects)
 	}
-	verifyIssues(t, issues, expects)
 }
 
 func TestDeclarationsVars(t *testing.T) {
-	const code = `package pkg
-func init() {
+	for _, tc := range []struct {
+		snip    string
+		wantMsg string
+	}{{snip: `
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		Vars:     []string{"this", "is", "valid", "vars"},
-	})
+	})`}, {`
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		Vars:     foobar,  // non array literal.
-	})
+	})`, declTestPath + ":8:13: " + nonLiteralVarsMsg}, {`
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		Vars:     []string{variableVar},
-	})
-}
-`
-	f, fs := parse(code, declTestPath)
-	issues := Declarations(fs, f, false)
-	expects := []string{
-		declTestPath + ":13:13: " + nonLiteralVarsMsg,
-		declTestPath + ":19:22: " + nonLiteralVarsMsg,
+	})`, declTestPath + ":8:22: " + nonLiteralVarsMsg}} {
+		code := fmt.Sprintf(initTmpl, tc.snip)
+		f, fs := parse(code, declTestPath)
+		issues := Declarations(fs, f, false)
+		var expects []string
+		if tc.wantMsg != "" {
+			expects = append(expects, tc.wantMsg)
+		}
+		verifyIssues(t, issues, expects)
 	}
-	verifyIssues(t, issues, expects)
 }
 
 func TestDeclarationsSoftwareDeps(t *testing.T) {
-	const code = `package pkg
-func init() {
+	for _, tc := range []struct {
+		snip    string
+		wantMsg string
+	}{{snip: `
 	testing.AddTest(&testing.Test{
 		Func:         DoStuff,
 		Desc:         "This description is fine",
 		Contacts:     []string{"me@chromium.org"},
 		SoftwareDeps: []string{"this", "is", "valid", "dep"},
-	})
+	})`}, {snip: `
 	testing.AddTest(&testing.Test{
 		Func:         DoStuff,
 		Desc:         "This description is fine",
 		Contacts:     []string{"me@chromium.org"},
 		SoftwareDeps: []string{qualified.variable, is, "allowed"},
-	})
+	})`}, {`
 	testing.AddTest(&testing.Test{
 		Func:         DoStuff,
 		Desc:         "This description is fine",
 		Contacts:     []string{"me@chromium.org"},
 		SoftwareDeps: foobar,  // non array literal.
-	})
+	})`, declTestPath + ":8:17: " + nonLiteralSoftwareDepsMsg}, {`
 	testing.AddTest(&testing.Test{
 		Func:         DoStuff,
 		Desc:         "This description is fine",
 		Contacts:     []string{"me@chromium.org"},
 		SoftwareDeps: []string{fun()},  // invocation is not allowed.
-	})
-}
-`
-	f, fs := parse(code, declTestPath)
-	issues := Declarations(fs, f, false)
-	expects := []string{
-		declTestPath + ":19:17: " + nonLiteralSoftwareDepsMsg,
-		declTestPath + ":25:26: " + nonLiteralSoftwareDepsMsg,
+	})`, declTestPath + ":8:26: " + nonLiteralSoftwareDepsMsg}} {
+		code := fmt.Sprintf(initTmpl, tc.snip)
+		f, fs := parse(code, declTestPath)
+		issues := Declarations(fs, f, false)
+		var expects []string
+		if tc.wantMsg != "" {
+			expects = append(expects, tc.wantMsg)
+		}
+		verifyIssues(t, issues, expects)
 	}
-	verifyIssues(t, issues, expects)
 }
 
 func TestDeclarationsParams(t *testing.T) {
-	const code = `package pkg
-func init() {
+	for _, tc := range []struct {
+		snip    string
+		wantMsg []string
+	}{{snip: `
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
@@ -257,19 +259,19 @@ func init() {
 		}, {
 			Name: "param2",
 		}},
-	})
+	})`}, {`
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		Params:   variableParams,
-	})
+	})`, []string{declTestPath + ":8:13: " + nonLiteralParamsMsg}}, {`
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		Params:   []Param{variableParamStruct},
-	})
+	})`, []string{declTestPath + ":8:21: " + nonLiteralParamsMsg}}, {`
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
@@ -285,65 +287,56 @@ func init() {
 		}, {
 			ExtraSoftwareDeps: []string{fun()},
 		}},
-	})
-}
-`
-	f, fs := parse(code, declTestPath)
-	issues := Declarations(fs, f, false)
-	expects := []string{
-		declTestPath + ":19:13: " + nonLiteralParamsMsg,
-		declTestPath + ":25:21: " + nonLiteralParamsMsg,
-		declTestPath + ":32:10: " + nonLiteralParamNameMsg,
-		declTestPath + ":34:23: " + nonLiteralAttrMsg,
-		declTestPath + ":36:32: " + nonLiteralAttrMsg,
-		declTestPath + ":38:23: " + nonLiteralSoftwareDepsMsg,
-		declTestPath + ":40:32: " + nonLiteralSoftwareDepsMsg,
+	})`, []string{
+		declTestPath + ":9:10: " + nonLiteralParamNameMsg,
+		declTestPath + ":11:23: " + nonLiteralAttrMsg,
+		declTestPath + ":13:32: " + nonLiteralAttrMsg,
+		declTestPath + ":15:23: " + nonLiteralSoftwareDepsMsg,
+		declTestPath + ":17:32: " + nonLiteralSoftwareDepsMsg,
+	}}} {
+		code := fmt.Sprintf(initTmpl, tc.snip)
+		f, fs := parse(code, declTestPath)
+		issues := Declarations(fs, f, false)
+		verifyIssues(t, issues, tc.wantMsg)
 	}
-	verifyIssues(t, issues, expects)
 }
 
 func TestAutoFixDeclarationDesc(t *testing.T) {
-	files := make(map[string]string)
-	files[declTestPath] = `package pkg
-
-func init() {
+	for _, tc := range []struct {
+		cur, want string
+	}{{`
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "not capitalized",
 		Contacts: []string{"me@chromium.org"},
-	})
-	testing.AddTest(&testing.Test{
-		Func:     DoStuff,
-		Desc:     "Ends with a period.",
-		Contacts: []string{"me@chromium.org"},
-	})
-	testing.AddTest(&testing.Test{
-		Func:     DoStuff,
-		Desc:     "not capitalized and ends with a period.",
-		Contacts: []string{"me@chromium.org"},
-	})
-}
-`
-	expects := make(map[string]string)
-	expects[declTestPath] = `package pkg
-
-func init() {
+	})`, `
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "Not capitalized",
 		Contacts: []string{"me@chromium.org"},
-	})
+	})`}, {`
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "Ends with a period.",
+		Contacts: []string{"me@chromium.org"},
+	})`, `
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "Ends with a period",
 		Contacts: []string{"me@chromium.org"},
-	})
+	})`}, {`
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "not capitalized and ends with a period.",
+		Contacts: []string{"me@chromium.org"},
+	})`, `
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "Not capitalized and ends with a period",
 		Contacts: []string{"me@chromium.org"},
-	})
-}
-`
-	verifyAutoFix(t, Declarations, files, expects)
+	})`}} {
+		verifyAutoFix(t, Declarations,
+			map[string]string{declTestPath: fmt.Sprintf(initTmpl, tc.cur)},
+			map[string]string{declTestPath: fmt.Sprintf(initTmpl, tc.want)})
+	}
 }

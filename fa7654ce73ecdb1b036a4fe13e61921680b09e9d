@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ac498cc2_26927ded",
+        "filename": "docs/code_review_comments.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1117055
+      },
+      "writtenOn": "2020-04-10T18:54:18Z",
+      "side": 1,
+      "message": "nit: at",
+      "range": {
+        "startLine": 70,
+        "startChar": 61,
+        "endLine": 70,
+        "endChar": 63
+      },
+      "revId": "fa7654ce73ecdb1b036a4fe13e61921680b09e9d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

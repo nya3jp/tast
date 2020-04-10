@@ -106,30 +106,16 @@ In the Gerrit UI, set the Commit-Queue+1 label to start a CQ dry run for your
 change. You do not have to wait for the dry run to finish before sending code
 reviews to reviewers.
 
-### Check frequent code review comments
+### Check common code review comments
 
-Tast code should follow Go's established best practices as described by these
-documents:
+Check the following documents for the most common comments made during code
+reviews.
 
-*   [Effective Go]
 *   [Go Code Review Comments]
+*   [Tast: Code Review Comments]
 
-There are quite a few Tast-specific best practices described by the
-[Tast: Writing Tests] document. Below is the list of best practices pointed out
-most often in code reviews:
-
-*   [Avoid passing around testing.State]
-*   [Use testing.Poll instead of testing.Sleep]
-*   [Do not skip tests at runtime]
-*   [Use preconditions]
-
-[Effective Go]: https://golang.org/doc/effective_go.html
 [Go Code Review Comments]: https://github.com/golang/go/wiki/CodeReviewComments
-[Tast: Writing Tests]: writing_tests.md
-[Avoid passing around testing.State]: writing_tests.md#test-subpackages
-[Use testing.Poll instead of testing.Sleep]: writing_tests.md#contexts-and-timeouts
-[Do not skip tests at runtime]: writing_tests.md#device-dependencies
-[Use preconditions]: writing_tests.md#preconditions
+[Tast: Code Review Comments]: code_review_comments.md
 
 
 ## FAQ

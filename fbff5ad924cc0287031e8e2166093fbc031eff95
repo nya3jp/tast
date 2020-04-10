@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "16f687dc_4fa74a30",
+        "filename": "tools/import_infra_proto.sh",
+        "patchSetId": 7
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-04-10T15:22:20Z",
+      "side": 1,
+      "message": "optional: this can be any options for protoc. (Actually it needs to be prefixed \"--proto_path\u003d\") How about renaming to extra_protoc_options.",
+      "revId": "fbff5ad924cc0287031e8e2166093fbc031eff95",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ff24c817_5c62510a",
+        "filename": "tools/import_infra_proto.sh",
+        "patchSetId": 7
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-04-10T15:22:20Z",
+      "side": 1,
+      "message": "nit: could you comment that you intentionally did not wrap ${extra_proto_path} by \"\", because it can be empty?",
+      "range": {
+        "startLine": 99,
+        "startChar": 11,
+        "endLine": 99,
+        "endChar": 12
+      },
+      "revId": "fbff5ad924cc0287031e8e2166093fbc031eff95",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ca636205_f3de4369",
+        "filename": "tools/import_infra_proto.sh",
+        "patchSetId": 7
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-04-10T15:22:20Z",
+      "side": 1,
+      "message": "nit: let\u0027s wrap by \"\" for safeness.\n\n\"${infra_commit}\"",
+      "range": {
+        "startLine": 108,
+        "startChar": 43,
+        "endLine": 108,
+        "endChar": 58
+      },
+      "revId": "fbff5ad924cc0287031e8e2166093fbc031eff95",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

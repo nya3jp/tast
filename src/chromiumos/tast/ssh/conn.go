@@ -34,7 +34,7 @@ const (
 var targetRegexp *regexp.Regexp
 
 func init() {
-	targetRegexp = regexp.MustCompile("^([^@]+@)?([^:@]+)(:\\d+)?$")
+	targetRegexp = regexp.MustCompile("^([^@]+@)?([^@]+)$")
 }
 
 // Conn represents an SSH connection to another computer.
@@ -56,8 +56,6 @@ type Options struct {
 	User string
 	// Hostname is the SSH server's hostname.
 	Hostname string
-	// Port is the SSH server's TCP port.
-	Port int
 
 	// KeyFile is an optional path to an unencrypted SSH private key.
 	KeyFile string
@@ -97,15 +95,12 @@ func ParseTarget(target string, o *Options) error {
 	if m[1] != "" {
 		o.User = m[1][0 : len(m[1])-1]
 	}
-	o.Hostname = m[2]
-	o.Port = defaultSSHPort
-	if m[3] != "" {
-		s := m[3][1:]
-		p, err := strconv.ParseInt(s, 10, 32)
-		if err != nil || p <= 0 || p > 65535 {
-			return fmt.Errorf("invalid port %q", s)
-		}
-		o.Port = int(p)
+
+	_, _, err := net.SplitHostPort(m[2])
+	if err != nil {
+		o.Hostname = net.JoinHostPort(m[2], strconv.Itoa(defaultSSHPort))
+	} else {
+		o.Hostname = m[2]
 	}
 
 	return nil
@@ -204,9 +199,6 @@ func presentChallenges(stdin int, prefix, user, inst string, qs []string, es []b
 // New establishes an SSH connection to the host described in o.
 // Callers are responsible to call Conn.Close after using it.
 func New(ctx context.Context, o *Options) (*Conn, error) {
-	if o.Port == 0 {
-		o.Port = defaultSSHPort
-	}
 	if o.User == "" {
 		o.User = defaultSSHUser
 	}
@@ -214,7 +206,6 @@ func New(ctx context.Context, o *Options) (*Conn, error) {
 		o.Platform = DefaultPlatform
 	}
 
-	hostPort := fmt.Sprintf("%s:%d", o.Hostname, o.Port)
 	am, err := getSSHAuthMethods(o, "["+o.Hostname+"] ")
 	if err != nil {
 		return nil, err
@@ -229,7 +220,7 @@ func New(ctx context.Context, o *Options) (*Conn, error) {
 	for i := 0; i < o.ConnectRetries+1; i++ {
 		start := time.Now()
 		var cl *ssh.Client
-		if cl, err = connectSSH(ctx, hostPort, cfg); err == nil {
+		if cl, err = connectSSH(ctx, o.Hostname, cfg); err == nil {
 			return &Conn{cl, o.Platform, nil}, nil
 		}
 		if ctx.Err() != nil {

@@ -19,7 +19,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"sort"
-	"strconv"
+	// "strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -100,25 +100,26 @@ type SSHOptions struct {
 // ParseSSHTarget parses target (of the form "[<user>@]host[:<port>]") and fills
 // the User, Hostname, and Port fields in o, using reasonable defaults for unspecified values.
 func ParseSSHTarget(target string, o *SSHOptions) error {
-	m := targetRegexp.FindStringSubmatch(target)
-	if m == nil {
-		return fmt.Errorf("couldn't parse %q as \"[user@]hostname[:port]\"", target)
-	}
+    //m := targetRegexp.FindStringSubmatch(target)
+	//if m == nil {
+	//	return fmt.Errorf("couldn't parse %q as \"[user@]hostname[:port]\"", target)
+	//}
 
 	o.User = defaultSSHUser
-	if m[1] != "" {
-		o.User = m[1][0 : len(m[1])-1]
-	}
-	o.Hostname = m[2]
+	//if m[1] != "" {
+	//	o.User = m[1][0 : len(m[1])-1]
+	//}
+	// o.Hostname = m[2]a
+	o.Hostname = target
 	o.Port = defaultSSHPort
-	if m[3] != "" {
-		s := m[3][1:]
-		p, err := strconv.ParseInt(s, 10, 32)
-		if err != nil || p <= 0 || p > 65535 {
-			return fmt.Errorf("invalid port %q", s)
-		}
-		o.Port = int(p)
-	}
+	//if m[3] != "" {
+	//	s := m[3][1:]
+	//	p, err := strconv.ParseInt(s, 10, 32)
+	//	if err != nil || p <= 0 || p > 65535 {
+	//		return fmt.Errorf("invalid port %q", s)
+	//	}
+	//	o.Port = int(p)
+	//}
 
 	return nil
 }

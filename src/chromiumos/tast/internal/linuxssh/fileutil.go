@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 // Package linuxssh provides Linux specific operations conducted via SSH
-// TODO(oka): now that this file is not used from framework, simplify the code.
 package linuxssh
 
 import (
@@ -276,4 +275,38 @@ func PutFiles(ctx context.Context, s *ssh.Conn, files map[string]string,
 		return 0, fmt.Errorf("remote tar failed: %v", err)
 	}
 	return cr.bytes, nil
+}
+
+// cleanRelativePath ensures p is a relative path not escaping the base directory and
+// returns a path cleaned by filepath.Clean.
+func cleanRelativePath(p string) (string, error) {
+	cp := filepath.Clean(p)
+	if filepath.IsAbs(cp) {
+		return "", fmt.Errorf("%s is an absolute path", p)
+	}
+	if strings.HasPrefix(cp, "../") {
+		return "", fmt.Errorf("%s escapes the base directory", p)
+	}
+	return cp, nil
+}
+
+// DeleteTree deletes all relative paths in files from baseDir on the host.
+// If a specified file is a directory, all files under it are recursively deleted.
+// Non-existent files are ignored.
+func DeleteTree(ctx context.Context, s *ssh.Conn, baseDir string, files []string) error {
+	var cfs []string
+	for _, f := range files {
+		cf, err := cleanRelativePath(f)
+		if err != nil {
+			return err
+		}
+		cfs = append(cfs, cf)
+	}
+
+	cmd := s.Command("rm", append([]string{"-rf", "--"}, cfs...)...)
+	cmd.Dir = baseDir
+	if err := cmd.Run(ctx); err != nil {
+		return fmt.Errorf("running remote rm failed: %v", err)
+	}
+	return nil
 }

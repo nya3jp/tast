@@ -23,14 +23,24 @@ import (
 
 	cryptossh "golang.org/x/crypto/ssh"
 
+	"chromiumos/tast/caller"
 	"chromiumos/tast/ssh"
 )
+
+// allowedPkgs is the list of Go packages that can use this package.
+var allowedPkgs = []string{
+	"chromiumos/tast/remote/wificell",
+	"chromiumos/tast/remote/wificell/fileutil",
+	"chromiumos/tast/ssh/linuxssh",
+}
 
 // GetFile copies a file or directory from the host to the local machine.
 // dst is the full destination name for the file or directory being copied, not
 // a destination directory into which it will be copied. dst will be replaced
 // if it already exists.
 func GetFile(ctx context.Context, s *ssh.Conn, src, dst string) error {
+	caller.Check(2, allowedPkgs)
+
 	src = filepath.Clean(src)
 	dst = filepath.Clean(dst)
 
@@ -223,6 +233,8 @@ func (r *countingReader) Read(p []byte) (int, error) {
 // bytes is the amount of data sent over the wire (possibly after compression).
 func PutFiles(ctx context.Context, s *ssh.Conn, files map[string]string,
 	symlinkPolicy SymlinkPolicy) (bytes int64, err error) {
+	caller.Check(2, allowedPkgs)
+
 	af := make(map[string]string)
 	for src, dst := range files {
 		if !filepath.IsAbs(src) {

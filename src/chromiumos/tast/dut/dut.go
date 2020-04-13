@@ -14,9 +14,9 @@ import (
 	"time"
 
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/internal/testingutil"
 	"chromiumos/tast/ssh"
-	"chromiumos/tast/ssh/linuxssh"
 )
 
 const (

@@ -287,3 +287,40 @@ func TestPutFilesSymlinks(t *testing.T) {
 		}
 	}
 }
+
+func TestDeleteTree(t *testing.T) {
+	t.Parallel()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
+
+	files := map[string]string{
+		"file1":     "first file",
+		"file2":     "second file",
+		"dir/file3": "third file",
+		"dir/file4": "fourth file",
+	}
+	tmpDir, baseDir := initFileTest(t, files)
+	defer os.RemoveAll(tmpDir)
+
+	if err := DeleteTree(td.Ctx, td.Hst, baseDir, []string{"file1", "dir", "file9"}); err != nil {
+		t.Fatal(err)
+	}
+
+	expected := map[string]string{"file2": "second file"}
+	if err := checkDir(baseDir, expected); err != nil {
+		t.Error(err)
+	}
+}
+
+func TestDeleteTreeOutside(t *testing.T) {
+	t.Parallel()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
+
+	tmpDir, baseDir := initFileTest(t, nil)
+	defer os.RemoveAll(tmpDir)
+
+	if err := DeleteTree(td.Ctx, td.Hst, baseDir, []string{"dir/../../outside"}); err == nil {
+		t.Error("DeleteTree succeeded; should fail")
+	}
+}

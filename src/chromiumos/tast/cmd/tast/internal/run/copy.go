@@ -8,8 +8,8 @@ import (
 	"context"
 	"path/filepath"
 
+	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/ssh"
-	"chromiumos/tast/ssh/linuxssh"
 )
 
 // pushToHost is a wrapper around linuxssh.PutFiles that should be used instead of calling PutFiles directly.

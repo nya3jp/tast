@@ -25,8 +25,8 @@ import (
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/runner"
-	"chromiumos/tast/internal/sshtest"
 	"chromiumos/tast/shutil"
+	"chromiumos/tast/ssh/sshtest"
 	"chromiumos/tast/testing"
 	"chromiumos/tast/testutil"
 )

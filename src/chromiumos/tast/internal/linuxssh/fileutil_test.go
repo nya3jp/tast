@@ -12,7 +12,7 @@ import (
 	"reflect"
 	"testing"
 
-	"chromiumos/tast/internal/sshtest"
+	"chromiumos/tast/ssh/sshtest"
 	"chromiumos/tast/testutil"
 )
 

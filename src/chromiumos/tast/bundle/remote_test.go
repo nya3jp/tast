@@ -12,7 +12,7 @@ import (
 	"os"
 	gotesting "testing"
 
-	"chromiumos/tast/internal/sshtest"
+	"chromiumos/tast/ssh/sshtest"
 	"chromiumos/tast/testing"
 	"chromiumos/tast/testutil"
 )

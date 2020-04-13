@@ -18,8 +18,8 @@ import (
 
 	cryptossh "golang.org/x/crypto/ssh"
 
-	"chromiumos/tast/internal/sshtest"
 	"chromiumos/tast/ssh"
+	"chromiumos/tast/ssh/sshtest"
 	"chromiumos/tast/testutil"
 )
 

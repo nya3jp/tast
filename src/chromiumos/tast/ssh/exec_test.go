@@ -7,6 +7,7 @@ package ssh_test
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
@@ -485,4 +486,87 @@ func TestWaitTwice(t *testing.T) {
 	if err := cmd.Wait(td.Ctx); err == nil {
 		t.Fatal("Second Wait succeeded")
 	}
+}
+
+func TestDumpLogOnError(t *testing.T) {
+	t.Parallel()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
+
+	ctx := context.Background()
+
+	type cmd func(context.Context, ...*ssh.RunOption) error
+	type cmd2 func(context.Context, ...*ssh.RunOption) ([]byte, error)
+
+	for i, tc := range []struct {
+		f          func(c *ssh.Cmd) cmd
+		f2         func(c *ssh.Cmd) cmd2
+		fail       bool
+		wantStdout bool
+		wantStderr bool
+	}{{
+		f:          func(c *ssh.Cmd) cmd { return c.Run },
+		fail:       true,
+		wantStdout: true,
+		wantStderr: true,
+	}, {
+		f:          func(c *ssh.Cmd) cmd { return c.Run },
+		fail:       false,
+		wantStdout: false,
+		wantStderr: false,
+	}, {
+		f2:         func(c *ssh.Cmd) cmd2 { return c.Output },
+		fail:       true,
+		wantStdout: false,
+		wantStderr: true,
+	}, {
+		f2:         func(c *ssh.Cmd) cmd2 { return c.CombinedOutput },
+		fail:       true,
+		wantStdout: false,
+		wantStderr: false,
+	}} {
+		t.Logf("Test#%d:", i)
+
+		// `echo "f"oo` doesn't match foo in itself, but produces `foo` when invoked.
+		script := `echo "f"oo; echo "b"ar >&2`
+		if tc.fail {
+			script += `; false`
+		}
+		cmd := td.Hst.Command("sh", "-c", script)
+
+		var log bytes.Buffer
+		logger := func(a ...interface{}) {
+			fmt.Fprintln(&log, a...)
+		}
+		opt := ssh.DumpLogOnError(logger)
+
+		var err error
+		if tc.f != nil {
+			err = tc.f(cmd)(ctx, opt)
+		} else {
+			_, err = tc.f2(cmd)(ctx, opt)
+		}
+
+		if !tc.fail && err != nil {
+			t.Fatal("Got error: ", err)
+		} else if tc.fail && err == nil {
+			t.Fatal("Got no error")
+		}
+
+		if got, want := strings.Contains(log.String(), "foo"), tc.wantStdout; got != want {
+			if got {
+				t.Errorf("log %q contains %q", log.String(), "foo")
+			} else {
+				t.Errorf("log %q does not contain %q", log.String(), "foo")
+			}
+		}
+		if got, want := strings.Contains(log.String(), "bar"), tc.wantStderr; got != want {
+			if got {
+				t.Errorf("log %q contains %q", log.String(), "bar")
+			} else {
+				t.Errorf("log %q does not contain %q", log.String(), "bar")
+			}
+		}
+	}
+
 }

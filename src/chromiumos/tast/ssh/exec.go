@@ -5,6 +5,7 @@
 package ssh
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -12,6 +13,8 @@ import (
 	"sync"
 
 	"golang.org/x/crypto/ssh"
+
+	"chromiumos/tast/shutil"
 )
 
 // Cmd represents an external command being prepared or run on a remote host.
@@ -39,6 +42,9 @@ type Cmd struct {
 
 	// Stderr specifies the process's standard error.
 	Stderr io.Writer
+
+	// log is the buffer uncaptured stdout/stderr is sent to by default.
+	log bytes.Buffer
 
 	ssh *Conn
 
@@ -75,6 +81,33 @@ func (s cmdState) String() string {
 	}
 }
 
+// RunOption is the type for options which can be passed to Run, Output,
+// CombinedOutput and Wait to control precise behavior of them.
+type RunOption struct {
+	dumpLogOnError func(s string)
+}
+
+// DumpLogOnError instructs to dump logs if the executed command fails
+// (i.e., exited with non-zero status code).
+//
+// TODO(oka): logger should be passed from tests because testing.ContextLog
+// can't be used from ssh package as it produces an import cycle.
+//
+// Usage:
+//   cmd.Run(..., ssh.DumpLogOnError(s.Log))
+func DumpLogOnError(log func(args ...interface{})) *RunOption {
+	return &RunOption{
+		dumpLogOnError: func(msg string) {
+			log(msg)
+		},
+	}
+}
+
+var (
+	errStdoutSet = errors.New("Stdout was already set")
+	errStderrSet = errors.New("Stderr was already set")
+)
+
 // Command returns the Cmd struct to execute the named program with the given arguments.
 //
 // It is fine to call this method with nil receiver; subsequent method calls will just fail.
@@ -93,8 +126,8 @@ func (s *Conn) Command(name string, args ...string) *Cmd {
 // The command is aborted when ctx's deadline is reached.
 //
 // See: https://godoc.org/os/exec#Cmd.Run
-func (c *Cmd) Run(ctx context.Context) error {
-	if err := c.startSession(ctx); err != nil {
+func (c *Cmd) Run(ctx context.Context, opts ...*RunOption) error {
+	if err := c.Start(ctx); err != nil {
 		return err
 	}
 
@@ -103,9 +136,7 @@ func (c *Cmd) Run(ctx context.Context) error {
 		c.ssh.AnnounceCmd(cmd)
 	}
 
-	return c.waitAndClose(ctx, func() error {
-		return c.sess.Run(cmd)
-	})
+	return c.Wait(ctx, opts...)
 }
 
 // Output runs the command and returns its standard output.
@@ -113,8 +144,15 @@ func (c *Cmd) Run(ctx context.Context) error {
 // The command is aborted when ctx's deadline is reached.
 //
 // See: https://godoc.org/os/exec#Cmd.Output
-func (c *Cmd) Output(ctx context.Context) ([]byte, error) {
-	if err := c.startSession(ctx); err != nil {
+func (c *Cmd) Output(ctx context.Context, opts ...*RunOption) ([]byte, error) {
+	if c.Stdout != nil {
+		return nil, errStdoutSet
+	}
+
+	var buf bytes.Buffer
+	c.Stdout = &buf
+
+	if err := c.Start(ctx); err != nil {
 		return nil, err
 	}
 
@@ -123,13 +161,8 @@ func (c *Cmd) Output(ctx context.Context) ([]byte, error) {
 		c.ssh.AnnounceCmd(cmd)
 	}
 
-	var out []byte
-	err := c.waitAndClose(ctx, func() error {
-		var err error
-		out, err = c.sess.Output(cmd)
-		return err
-	})
-	return out, err
+	err := c.Wait(ctx, opts...)
+	return buf.Bytes(), err
 }
 
 // CombinedOutput runs the command and returns its combined standard output and standard error.
@@ -137,8 +170,19 @@ func (c *Cmd) Output(ctx context.Context) ([]byte, error) {
 // The command is aborted when ctx's deadline is reached.
 //
 // See: https://godoc.org/os/exec#Cmd.CombinedOutput
-func (c *Cmd) CombinedOutput(ctx context.Context) ([]byte, error) {
-	if err := c.startSession(ctx); err != nil {
+func (c *Cmd) CombinedOutput(ctx context.Context, opts ...*RunOption) ([]byte, error) {
+	if c.Stdout != nil {
+		return nil, errStdoutSet
+	}
+	if c.Stderr != nil {
+		return nil, errStderrSet
+	}
+
+	var buf bytes.Buffer
+	c.Stdout = &buf
+	c.Stderr = &buf
+
+	if err := c.Start(ctx); err != nil {
 		return nil, err
 	}
 
@@ -147,13 +191,8 @@ func (c *Cmd) CombinedOutput(ctx context.Context) ([]byte, error) {
 		c.ssh.AnnounceCmd(cmd)
 	}
 
-	var out []byte
-	err := c.waitAndClose(ctx, func() error {
-		var err error
-		out, err = c.sess.CombinedOutput(cmd)
-		return err
-	})
-	return out, err
+	err := c.Wait(ctx, opts...)
+	return buf.Bytes(), err
 }
 
 // StdinPipe returns a pipe that will be connected to the command's standard input
@@ -234,6 +273,13 @@ func (c *Cmd) StderrPipe() (io.ReadCloser, error) {
 //
 // See: https://godoc.org/os/exec#Cmd.Start
 func (c *Cmd) Start(ctx context.Context) error {
+	if c.Stdout == nil {
+		c.Stdout = &c.log
+	}
+	if c.Stderr == nil {
+		c.Stderr = &c.log
+	}
+
 	if err := c.startSession(ctx); err != nil {
 		return err
 	}
@@ -266,14 +312,34 @@ func (c *Cmd) Start(ctx context.Context) error {
 // of the context passed to Start also applies.
 //
 // See: https://godoc.org/os/exec#Cmd.Wait
-func (c *Cmd) Wait(ctx context.Context) error {
+func (c *Cmd) Wait(ctx context.Context, opts ...*RunOption) error {
 	if c.state != stateStarted {
 		return errors.New("process not active")
 	}
 
-	return c.waitAndClose(ctx, func() error {
+	err := c.waitAndClose(ctx, func() error {
 		return c.sess.Wait()
 	})
+
+	for _, o := range opts {
+		if err != nil && o.dumpLogOnError != nil {
+			c.dumpLog(o.dumpLogOnError)
+		}
+	}
+	return err
+}
+
+// dumpLog logs details of the executed external command, including uncaptured output.
+//
+// This function must be called after Wait.
+func (c *Cmd) dumpLog(logger func(string)) {
+	if c.state != stateDone {
+		// This should never happen.
+		panic(fmt.Sprintf("dumpLog was called in invalid state %s", c.state))
+	}
+
+	logger("Command: " + shutil.EscapeSlice(c.Args))
+	logger("Uncaptured output:\n" + c.log.String())
 }
 
 // Abort requests to abort the command execution.
@@ -356,10 +422,30 @@ func (c *Cmd) setupSession(sess *ssh.Session) error {
 		})
 	}
 
+	// Unlike Cmd in os/exec, x/crypto/ssh isn't concurrent safe if Stdout
+	// and Stderr are the same writer.
+	if sess.Stdout != nil && sess.Stdout == sess.Stderr {
+		w := &safeWriter{w: sess.Stdout}
+		sess.Stdout = w
+		sess.Stderr = w
+	}
+
 	for _, f := range copiers {
 		go f()
 	}
 	return nil
+}
+
+type safeWriter struct {
+	w   io.Writer
+	mux sync.Mutex
+}
+
+func (w *safeWriter) Write(b []byte) (int, error) {
+	w.mux.Lock()
+	n, err := w.w.Write(b)
+	w.mux.Unlock()
+	return n, err
 }
 
 // waitAndClose runs f which waits for the command to finish, and close the

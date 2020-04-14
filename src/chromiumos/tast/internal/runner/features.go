@@ -226,6 +226,18 @@ func newDeviceConfig() (dc *device.Config, warns []string) {
 		config.HardwareFeatures = append(config.HardwareFeatures, device.Config_HARDWARE_FEATURE_INTERNAL_DISPLAY)
 	}
 
+	hasPsrEnabledPanel := func() bool {
+		//Intel uses the i915 driver and if sink support is set to yes PSR is enabled
+		psrStatus, err := exec.Command("cat", "/sys/kernel/debug/dri/0/i915_edp_psr_status").Output()
+		if err != nil {
+			return false
+		}
+		return regexp.MustCompile(`(?m)^Sink.*: yes`).Match(psrStatus)
+	}()
+	if hasPsrEnabledPanel {
+		config.HardwareFeatures = append(config.HardwareFeatures, device.Config_HARDWARE_FEATURE_PSR)
+	}
+
 	hasTouchScreen := func() bool {
 		b, err := exec.Command("udevadm", "info", "--export-db").Output()
 		if err != nil {

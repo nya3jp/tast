@@ -72,9 +72,9 @@ func ChangeWallpaper(ctx context.Context, s *testing.State) {
 	if err != nil {
 		s.Fatal("Failed to create Test API connection: ", err)
 	}
-  defer faillog.DumpUITreeOnError(ctx, s, tconn)
+	defer faillog.DumpUITreeOnError(ctx, s, tconn)
 
-  // Put test code here.
+	// Put test code here.
 
 	s.Fatal("I would like a UI dump")
 }
@@ -88,12 +88,12 @@ After running the test on a device, you should be able to find the UI dump at:
 The tree can be a little complex and unintuitive at times, but it should have
 nodes for anything we are looking for.
 
-Note: You can inspect the native UI by enabling
+> Note: You can inspect the native UI by enabling
 chrome://flags/#enable-ui-devtools on your device, going to
 chrome://inspect/#other, and clicking inspect under UiDevToolsClient. More
 details available [here].
 
-Note: You can interact directly with chrome.Automation on your device by:
+> Note: You can interact directly with chrome.Automation on your device by:
 Opening chrome, clicking Test Api Extension(T in top right) > Manage extensions,
 Enabling Developer mode toggle, Clicking background page > Console. It has a
 [Codelab].
@@ -121,9 +121,9 @@ if err := wallpaperView.RightClick(ctx); err != nil {
 }
 ```
 
-Warning: Always remember to defer the release of UI nodes.
+> **Warning:** Always remember to defer the release of UI nodes.
 
-Note: Generally it is preferred to use FindWithTimeout over Find because the
+> Note: Generally it is preferred to use FindWithTimeout over Find because the
 Accessibility Tree is asynchronous and may not immediately contain a node. If
 you are certain that a node exists, you can use Find.
 
@@ -139,7 +139,7 @@ node id=118 role=menuListPopup state={"vertical":true} parentID=117 childIds=[11
   node id=124 role=menuItem state={} parentID=118 childIds=[] name=Set wallpaper className=MenuItemView
 ```
 
-Note: If you don't see an update to `ui_tree.txt`, you may need to add
+> Note: If you don't see an update to `ui_tree.txt`, you may need to add
 `testing.Sleep(time.Second)` before causing the test to fail. Events are
 asynchronous and might not immediately update the UI tree.
 
@@ -178,7 +178,7 @@ if err := testing.Poll(ctx, func(ctx context.Context) error {
 }
 ```
 
-Note: Most nodes will not have race conditions and do not require this extra
+> Note: Most nodes will not have race conditions and do not require this extra
 work. UI nodes that are animating(like this menu) are an exception.
 
 ## More Basic Interactions

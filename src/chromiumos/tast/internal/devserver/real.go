@@ -361,6 +361,9 @@ func (c *RealClient) openStaged(ctx context.Context, dsURL, bucket, path string)
 		return nil, err
 	}
 	staticURL.Path += "/static/" + path
+	query := make(url.Values)
+	query.Set("gs_bucket", bucket)
+	staticURL.RawQuery = query.Encode()
 	req, err := http.NewRequest("GET", staticURL.String(), nil)
 	if err != nil {
 		return nil, err

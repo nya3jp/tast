@@ -34,11 +34,16 @@ var fakeServerFiles = map[string][]byte{
 	fakeFileURL: []byte("some_data"),
 }
 
+type stagedEntry struct {
+	data   []byte
+	bucket string
+}
+
 type fakeServer struct {
 	*httptest.Server
 
 	up     bool
-	staged map[string][]byte
+	staged map[string]*stagedEntry
 	// stageFailCount makes stage request fail for this time.
 	stageFailCount int
 	dlCounter      map[string]int
@@ -49,7 +54,7 @@ func newFakeServer(up bool) *fakeServer {
 	s := &fakeServer{
 		Server:    httptest.NewServer(mux),
 		up:        up,
-		staged:    make(map[string][]byte),
+		staged:    make(map[string]*stagedEntry),
 		dlCounter: make(map[string]int),
 	}
 	mux.Handle("/check_health", http.HandlerFunc(s.handleCheckHealth))
@@ -111,13 +116,17 @@ func (s *fakeServer) handleStatic(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	stagePath := strings.TrimPrefix(path, "/static/")
-	data, ok := s.staged[stagePath]
+	e, ok := s.staged[stagePath]
 	if !ok {
 		http.NotFound(w, r)
 		return
 	}
+	if bucket := r.URL.Query().Get("gs_bucket"); bucket != e.bucket {
+		http.Error(w, fmt.Sprintf("Incorrect gs_bucket: got %q, want %q", bucket, e.bucket), http.StatusBadRequest)
+		return
+	}
 	if r.Method != http.MethodHead {
-		w.Write(data)
+		w.Write(e.data)
 		s.dlCounter[stagePath]++
 	}
 }
@@ -127,7 +136,7 @@ func (s *fakeServer) stage(gsURL string) error {
 	if !ok {
 		return errors.New("file not found")
 	}
-	_, stagePath, err := parseGSURL(gsURL)
+	bucket, stagePath, err := parseGSURL(gsURL)
 	if err != nil {
 		return err
 	}
@@ -135,7 +144,10 @@ func (s *fakeServer) stage(gsURL string) error {
 		s.stageFailCount--
 		return errors.New("failed to stage")
 	}
-	s.staged[stagePath] = data
+	s.staged[stagePath] = &stagedEntry{
+		data:   data,
+		bucket: bucket,
+	}
 	return nil
 }
 

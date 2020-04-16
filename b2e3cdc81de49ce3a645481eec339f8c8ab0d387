@@ -22,6 +22,30 @@
       "revId": "b2e3cdc81de49ce3a645481eec339f8c8ab0d387",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "40e91e52_0b50c0b5",
+        "filename": "navbar.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-04-16T08:10:10Z",
+      "side": 1,
+      "message": "+1, it looks too large... Maybe we can add a smaller version later.",
+      "parentUuid": "3628cbcc_9ee3f24b",
+      "range": {
+        "startLine": 3,
+        "startChar": 0,
+        "endLine": 3,
+        "endChar": 26
+      },
+      "revId": "b2e3cdc81de49ce3a645481eec339f8c8ab0d387",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

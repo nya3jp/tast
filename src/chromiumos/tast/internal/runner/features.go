@@ -13,6 +13,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"path"
 	"regexp"
 	"sort"
 	"strings"
@@ -247,6 +248,52 @@ func newDeviceConfig() (dc *device.Config, warns []string) {
 	if hasFingerprint {
 		config.HardwareFeatures = append(config.HardwareFeatures, device.Config_HARDWARE_FEATURE_FINGERPRINT)
 	}
+
+	func() {
+		const sysFsPowerSupplyPath = "/sys/class/power_supply"
+		acPowerTypes := [...]string{"Mains", "USB", "USB_ACA", "USB_C", "USB_CDP", "USB_DCP",
+			"USB_PD", "USB_PD_DRP", "Unknown"}
+		files, err := ioutil.ReadDir(sysFsPowerSupplyPath)
+		if err != nil {
+			warns = append(warns, fmt.Sprintf("failed to read %v: %v", sysFsPowerSupplyPath, err))
+			return
+		}
+	probeSupplies:
+		for _, file := range files {
+			devPath := path.Join(sysFsPowerSupplyPath, file.Name())
+			supplyTypeBytes, err := ioutil.ReadFile(path.Join(devPath, "type"))
+			supplyType := strings.TrimSuffix(string(supplyTypeBytes), "\n")
+			if err != nil {
+				warns = append(warns, fmt.Sprintf("failed to read supply type of %v: %v", devPath, err))
+				continue
+			}
+			if strings.HasPrefix(supplyType, "Battery") {
+				supplyScopeBytes, err := ioutil.ReadFile(path.Join(devPath, "scope"))
+				supplyScope := strings.TrimSuffix(string(supplyScopeBytes), "\n")
+				if err != nil {
+					// Ignore IsNotExist error since /sys/class/power_supply/*/scope may not exists
+					if !os.IsNotExist(err) {
+						warns = append(warns, fmt.Sprintf("failed to read supply type of %v: %v", devPath, err))
+						continue
+					}
+				} else if strings.HasPrefix(string(supplyScope), "Device") {
+					// Ignore batteries for peripheral devices.
+					continue
+				}
+				config.Power = device.Config_POWER_SUPPLY_BATTERY
+				// Found at least one battery so this device is powered by battery.
+				break
+			}
+			for _, s := range acPowerTypes {
+				if s != supplyType {
+					continue
+				}
+				config.Power = device.Config_POWER_SUPPLY_AC_ONLY
+				continue probeSupplies
+			}
+			warns = append(warns, fmt.Sprintf("Unknown supply type: %v for %v", supplyType, devPath))
+		}
+	}()
 
 	return config, warns
 }

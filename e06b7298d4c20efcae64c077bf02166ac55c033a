@@ -51,6 +51,24 @@
       "revId": "e06b7298d4c20efcae64c077bf02166ac55c033a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c9475744_d24d3e8d",
+        "filename": "src/chromiumos/tast/testing/attr.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 198,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-04-16T22:39:35Z",
+      "side": 1,
+      "message": "That sounds like:\n\ngroup:mainline + lab peripherals hardware dependency\n\nat least for long term. Could you file a bug for it and add TODO to remove this at least?\n\nnya@, lab peripherals dependency is not yet supported in Tast.\nDo you think it\u0027s ok to workaround by adding attribute?",
+      "parentUuid": "ad3cbaf2_b884c112",
+      "revId": "e06b7298d4c20efcae64c077bf02166ac55c033a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

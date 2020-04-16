@@ -13,6 +13,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"path"
 	"regexp"
 	"sort"
 	"strings"
@@ -246,6 +247,37 @@ func newDeviceConfig() (dc *device.Config, warns []string) {
 	}()
 	if hasFingerprint {
 		config.HardwareFeatures = append(config.HardwareFeatures, device.Config_HARDWARE_FEATURE_FINGERPRINT)
+	}
+
+	isBattery := func(devPath string) bool {
+		if supplyType, err := ioutil.ReadFile(path.Join(devPath, "type")); err != nil || !strings.HasPrefix(string(supplyType), "Battery") {
+			if err != nil {
+				warns = append(warns, fmt.Sprintf("failed to read device type: %v", err))
+			}
+			return false
+		}
+		if supplyScope, err := ioutil.ReadFile(path.Join(devPath, "scope")); err != nil && strings.HasPrefix(string(supplyScope), "Device") {
+			// Ignore batteries for peripheral devices.
+			return false
+		}
+		return true
+	}
+	hasBattery := func() bool {
+		const sysFsPowerSupplyPath = "/sys/class/power_supply"
+		files, err := ioutil.ReadDir(sysFsPowerSupplyPath)
+		if err != nil {
+			warns = append(warns, fmt.Sprintf("failed to read %v: %v", sysFsPowerSupplyPath, err))
+			return false
+		}
+		for _, file := range files {
+			if isBattery(path.Join(SYSFS_POWER_SUPPLY_PATH, file.Name())) {
+				return true
+			}
+		}
+		return false
+	}()
+	if hasBattery {
+		config.Power = device.Config_POWER_SUPPLY_BATTERY
 	}
 
 	return config, warns

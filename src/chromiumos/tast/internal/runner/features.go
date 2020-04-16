@@ -13,6 +13,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"path"
 	"regexp"
 	"sort"
 	"strings"
@@ -247,6 +248,60 @@ func newDeviceConfig() (dc *device.Config, warns []string) {
 	if hasFingerprint {
 		config.HardwareFeatures = append(config.HardwareFeatures, device.Config_HARDWARE_FEATURE_FINGERPRINT)
 	}
+
+	func() {
+		// This function determines DUT's power supply type and stores it to config.Power.
+		// If DUT has a battery, config.Power is Config_POWER_SUPPLY_BATTERY.
+		// If DUT has AC power supplies only, config.Power is Config_POWER_SUPPLY_AC_ONLY.
+		// Otherwise, Config_POWER_SUPPLY_UNSPECIFIED is populated.
+		const sysFsPowerSupplyPath = "/sys/class/power_supply"
+		// AC power types come from power_supply driver in Linux kernel (drivers/power/supply/power_supply_sysfs.c)
+		acPowerTypes := [...]string{
+			"Unknown", "UPS", "Mains", "USB",
+			"USB_DCP", "USB_CDP", "USB_ACA", "USB_C",
+			"USB_PD", "USB_PD_DRP", "BrickID",
+		}
+		isACPower := make(map[string]bool)
+		for _, s := range acPowerTypes {
+			isACPower[s] = true
+		}
+		config.Power = device.Config_POWER_SUPPLY_UNSPECIFIED
+		files, err := ioutil.ReadDir(sysFsPowerSupplyPath)
+		if err != nil {
+			warns = append(warns, fmt.Sprintf("failed to read %v: %v", sysFsPowerSupplyPath, err))
+			return
+		}
+		for _, file := range files {
+			devPath := path.Join(sysFsPowerSupplyPath, file.Name())
+			supplyTypeBytes, err := ioutil.ReadFile(path.Join(devPath, "type"))
+			supplyType := strings.TrimSuffix(string(supplyTypeBytes), "\n")
+			if err != nil {
+				warns = append(warns, fmt.Sprintf("failed to read supply type of %v: %v", devPath, err))
+				continue
+			}
+			if strings.HasPrefix(supplyType, "Battery") {
+				supplyScopeBytes, err := ioutil.ReadFile(path.Join(devPath, "scope"))
+				supplyScope := strings.TrimSuffix(string(supplyScopeBytes), "\n")
+				if err != nil && !os.IsNotExist(err) {
+					// Ignore NotExist error since /sys/class/power_supply/*/scope may not exist
+					warns = append(warns, fmt.Sprintf("failed to read supply type of %v: %v", devPath, err))
+					continue
+				}
+				if strings.HasPrefix(string(supplyScope), "Device") {
+					// Ignore batteries for peripheral devices.
+					continue
+				}
+				config.Power = device.Config_POWER_SUPPLY_BATTERY
+				// Found at least one battery so this device is powered by battery.
+				break
+			}
+			if !isACPower[supplyType] {
+				warns = append(warns, fmt.Sprintf("Unknown supply type %v for %v", supplyType, devPath))
+				continue
+			}
+			config.Power = device.Config_POWER_SUPPLY_AC_ONLY
+		}
+	}()
 
 	return config, warns
 }

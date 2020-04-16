@@ -16,6 +16,24 @@
       "revId": "db8ed8b0fae66fbf1bcc89a47840c07a9330aa5f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6a9f06fc_52ed946b",
+        "filename": "src/chromiumos/tast/lsbrelease/lsbrelease.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1326157
+      },
+      "writtenOn": "2020-04-16T15:50:40Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7ea78c30_5820ed6b",
+      "revId": "db8ed8b0fae66fbf1bcc89a47840c07a9330aa5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

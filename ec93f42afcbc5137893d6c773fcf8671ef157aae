@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "217260d3_43970910",
+        "filename": "src/chromiumos/tast/testing/hwdep/dep.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-04-16T17:40:09Z",
+      "side": 1,
+      "message": "// Wifi80211ac returns a hardware dependency condition that is satisfied\n// iff the DUT\u0027s WiFi module supports 802.11ac.",
+      "revId": "ec93f42afcbc5137893d6c773fcf8671ef157aae",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

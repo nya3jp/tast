@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "81cd29e4_0e3e285e",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 280,
+      "author": {
+        "id": 1368712
+      },
+      "writtenOn": "2020-04-16T11:57:19Z",
+      "side": 1,
+      "message": "Is there a way we can also assign Config_POWER_SUPPLY_AC_ONLY?",
+      "revId": "a7fd93cf03b82c12dff2696f39abd3b34752e1e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

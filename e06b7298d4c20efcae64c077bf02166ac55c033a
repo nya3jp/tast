@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "14ee2506_4b256372",
+        "filename": "src/chromiumos/tast/testing/attr.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-04-16T16:23:45Z",
+      "side": 1,
+      "message": "We will have wificell_cq to run selective wificell dependent tests triggered by CQ. At first it is informational. When it is verified as stable, we may promote it as a CQ blocker.",
+      "revId": "e06b7298d4c20efcae64c077bf02166ac55c033a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "d85203a3_a840fb5b",
         "filename": "src/chromiumos/tast/testing/attr.go",
         "patchSetId": 4
@@ -13,6 +30,24 @@
       "writtenOn": "2020-04-16T09:22:34Z",
       "side": 1,
       "message": "Do you need some special condition to run the test in CQ, which group:mainline cannot guarantee?\nIf there is, could you mention it in the document?\nIf not, could you use group:mainline instead?",
+      "revId": "e06b7298d4c20efcae64c077bf02166ac55c033a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ad3cbaf2_b884c112",
+        "filename": "src/chromiumos/tast/testing/attr.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 198,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-04-16T16:23:45Z",
+      "side": 1,
+      "message": "It is in group:wificell, which indicates the test is run with wificell fixture. \n\nRephrased it. PTAL.",
+      "parentUuid": "d85203a3_a840fb5b",
       "revId": "e06b7298d4c20efcae64c077bf02166ac55c033a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

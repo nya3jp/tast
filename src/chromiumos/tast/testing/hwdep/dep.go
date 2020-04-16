@@ -187,3 +187,10 @@ func InternalDisplay() Condition {
 		return errors.New("DUT does not have an internal display")
 	}}
 }
+
+// Wifi80211ac skips the platforms that do not support 802.11ac.
+func Wifi80211ac() Condition {
+	// Monroe (ath9k) does not support 802.11ac.
+	// TODO(crbug.com/1024554): remove it after Monroe platform is end-of-life.
+	return SkipOnPlatform("monroe")
+}

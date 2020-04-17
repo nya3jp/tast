@@ -46,6 +46,30 @@
       "revId": "b2e3cdc81de49ce3a645481eec339f8c8ab0d387",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "88f17e20_186bf3b8",
+        "filename": "navbar.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1314845
+      },
+      "writtenOn": "2020-04-17T22:17:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "40e91e52_0b50c0b5",
+      "range": {
+        "startLine": 3,
+        "startChar": 0,
+        "endLine": 3,
+        "endChar": 26
+      },
+      "revId": "b2e3cdc81de49ce3a645481eec339f8c8ab0d387",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

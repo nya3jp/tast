@@ -69,6 +69,24 @@
       "revId": "e06b7298d4c20efcae64c077bf02166ac55c033a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f6c850a9_65ffdd55",
+        "filename": "src/chromiumos/tast/testing/attr.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 198,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-04-17T01:01:50Z",
+      "side": 1,
+      "message": "It is not exactly group:mainline + wificell fixture. It is triggered by CLs matching specific code path. See https://crbug.com/1068890#c3 which has a design doc for Connectivity CQ. \n\nRephrased. PTAL.",
+      "parentUuid": "c9475744_d24d3e8d",
+      "revId": "e06b7298d4c20efcae64c077bf02166ac55c033a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -53,6 +53,7 @@ var allowedPkgs = []string{
 	"chromiumos/tast/local/graphics/trace",
 	"chromiumos/tast/local/rialto",
 	"chromiumos/tast/lsbrelease",
+	"chromiumos/tast/remote/bundles/cros/firmware", // For finding firmware file.
 	"main", // for local_test_runner
 }
 

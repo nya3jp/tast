@@ -99,10 +99,10 @@ See [Running Tests] for more information.
 Now, let's modify the test. In your Chrome OS checkout, go to
 `src/platform/tast-tests/src/chromiumos/tast/local/bundles/cros/ui` and open
 `chrome_login.go` (for convenience, there's also a `local_tests` symlink at the
-top of `tast-tests`). The `ChromeLogin` function here will run directly on the
+top of `tast-tests`). The `testChromeLogin` function here will run directly on the
 test device.
 
-At the end of the function, add the following code:
+At the end of the anonymous function inside `testChromeLogin`, add the following code:
 
 ```go
 if _, err = cr.NewConn(ctx, "https://www.google.com/"); err != nil {

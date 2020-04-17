@@ -2,6 +2,183 @@
   "comments": [
     {
       "key": {
+        "uuid": "9363e07e_cf250858",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2020-04-17T08:21:51Z",
+      "side": 1,
+      "message": "Please add a prefix \"tast: \" or \"tast: features: \" in the commit message.\n\nSince ChromeOS consists of multiple repositories, it\u0027s good to say where a change will be in. For example, this will help to find a culprit CL when a build gets broken. \n\nYou can find a document about this(, which is not so clear unfortunately...)\nhttps://chromium.googlesource.com/chromiumos/docs/+/master/contributing.md#commit-messages",
+      "revId": "a7fd93cf03b82c12dff2696f39abd3b34752e1e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6d260812_c378a591",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2020-04-17T08:21:51Z",
+      "side": 1,
+      "message": "nit: You can write multiple TEST lines.\ne.g.\nTEST\u003dtast run \u003chatch\u003e arc.PowerIdlePerf, which passed\nTEST\u003dtast run \u003cveyron_tiger\u003e arc.PowerIdlePerf, which was skipped",
+      "revId": "a7fd93cf03b82c12dff2696f39abd3b34752e1e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "50d40c53_e3a72442",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 252,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2020-04-17T08:21:51Z",
+      "side": 1,
+      "message": "Could you please add a brief explanation about what will be checked below?\n\nAccording to the code, I guess\n* \"type\" is \"Battery\" and\n* \"scope\" is NOT \"Device\"",
+      "range": {
+        "startLine": 252,
+        "startChar": 1,
+        "endLine": 252,
+        "endChar": 10
+      },
+      "revId": "a7fd93cf03b82c12dff2696f39abd3b34752e1e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "faafe5fc_778bf8e8",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 252,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2020-04-17T08:21:51Z",
+      "side": 1,
+      "message": "Why do you want to make isBattery an inner function?\nIIUC, a benefit of introducing an inner function like hasTouchScreen is that we\u0027ll be allowed to do early-return inside. For this purpose, you can simply write the following code in hasBattery because we can do early-return.",
+      "revId": "a7fd93cf03b82c12dff2696f39abd3b34752e1e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "90f83f5c_a1d2209c",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 253,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2020-04-17T08:21:51Z",
+      "side": 1,
+      "message": "This condition looks complicated as it handles two types of errors at once.\nHow about separating this?\n\ne.g.\n\nsupplyType, err :\u003d ioutil.ReadFile(path.Join(devPath, \"type\"));\nif err !\u003d nil {\n  warns \u003d ...;\n  return false;\n}\nif !strings.HasPrefix(string(supplyType), \"Battery\") {\n  return false;\n}",
+      "revId": "a7fd93cf03b82c12dff2696f39abd3b34752e1e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "561da5d5_83a66b69",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2020-04-17T08:21:51Z",
+      "side": 1,
+      "message": "How about adding devPath in the warning?",
+      "revId": "a7fd93cf03b82c12dff2696f39abd3b34752e1e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "69dd2430_e10290dd",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 259,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2020-04-17T08:21:51Z",
+      "side": 1,
+      "message": "Why not adding a warning unlike the above case?",
+      "range": {
+        "startLine": 259,
+        "startChar": 70,
+        "endLine": 259,
+        "endChar": 81
+      },
+      "revId": "a7fd93cf03b82c12dff2696f39abd3b34752e1e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b51e0faa_ad81795b",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 259,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2020-04-17T08:21:51Z",
+      "side": 1,
+      "message": "separate the condition like the above?",
+      "range": {
+        "startLine": 259,
+        "startChar": 82,
+        "endLine": 259,
+        "endChar": 84
+      },
+      "revId": "a7fd93cf03b82c12dff2696f39abd3b34752e1e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ec595fce_b3ab6a9a",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 273,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2020-04-17T08:21:51Z",
+      "side": 1,
+      "message": "sysFsPowerSupplyPath?\nIt seems that trybots failed due to lack of the definition of this.",
+      "range": {
+        "startLine": 273,
+        "startChar": 26,
+        "endLine": 273,
+        "endChar": 49
+      },
+      "revId": "a7fd93cf03b82c12dff2696f39abd3b34752e1e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "81cd29e4_0e3e285e",
         "filename": "src/chromiumos/tast/internal/runner/features.go",
         "patchSetId": 4

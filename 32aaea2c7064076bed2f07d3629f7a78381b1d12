@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8ccb0930_f3577a04",
+        "filename": "docs/test_attributes.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-04-17T01:37:07Z",
+      "side": 1,
+      "message": "\u003e \"specifc\" is a possible misspelling of \"specific\".\n\nDone",
+      "parentUuid": "5975ac44_5e7ce561",
+      "range": {
+        "startLine": 40,
+        "startChar": 16,
+        "endLine": 40,
+        "endChar": 23
+      },
+      "revId": "32aaea2c7064076bed2f07d3629f7a78381b1d12",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

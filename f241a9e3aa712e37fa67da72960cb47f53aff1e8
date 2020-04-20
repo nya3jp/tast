@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9269662f_480d1cf2",
+        "filename": "docs/quickstart.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-04-20T03:29:58Z",
+      "side": 1,
+      "message": "I think \"ChromeLogin\" should be kept, because it is the test entry function. Maybe\n\nThe `ChromeLogin` function here will run directly on the test device, and it calls `testChromeLogin` function.",
+      "range": {
+        "startLine": 102,
+        "startChar": 22,
+        "endLine": 103,
+        "endChar": 12
+      },
+      "revId": "f241a9e3aa712e37fa67da72960cb47f53aff1e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "111202bd_e75619d7",
+        "filename": "docs/quickstart.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-04-20T03:29:58Z",
+      "side": 1,
+      "message": "(As you\u0027re here): To be clear `ChromeLogin`, too?",
+      "range": {
+        "startLine": 121,
+        "startChar": 70,
+        "endLine": 122,
+        "endChar": 9
+      },
+      "revId": "f241a9e3aa712e37fa67da72960cb47f53aff1e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

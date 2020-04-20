@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "b5b98805_b5de40b1",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1412469
+      },
+      "writtenOn": "2020-04-20T06:17:54Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9363e07e_cf250858",
+      "revId": "a7fd93cf03b82c12dff2696f39abd3b34752e1e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6d260812_c378a591",
         "filename": "/COMMIT_MSG",
         "patchSetId": 4
@@ -33,6 +51,24 @@
       "revId": "a7fd93cf03b82c12dff2696f39abd3b34752e1e8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6408c7d5_4449c940",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1412469
+      },
+      "writtenOn": "2020-04-20T06:17:54Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6d260812_c378a591",
+      "revId": "a7fd93cf03b82c12dff2696f39abd3b34752e1e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -76,6 +112,48 @@
     },
     {
       "key": {
+        "uuid": "616497f3_e8cbbbfe",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 252,
+      "author": {
+        "id": 1412469
+      },
+      "writtenOn": "2020-04-20T06:17:54Z",
+      "side": 1,
+      "message": "I added explanation about treating \"scope\" value. Thanks!",
+      "parentUuid": "50d40c53_e3a72442",
+      "range": {
+        "startLine": 252,
+        "startChar": 1,
+        "endLine": 252,
+        "endChar": 10
+      },
+      "revId": "a7fd93cf03b82c12dff2696f39abd3b34752e1e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5e84da37_d532bbfe",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 252,
+      "author": {
+        "id": 1412469
+      },
+      "writtenOn": "2020-04-20T06:17:54Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "faafe5fc_778bf8e8",
+      "revId": "a7fd93cf03b82c12dff2696f39abd3b34752e1e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "90f83f5c_a1d2209c",
         "filename": "src/chromiumos/tast/internal/runner/features.go",
         "patchSetId": 4
@@ -93,6 +171,24 @@
     },
     {
       "key": {
+        "uuid": "fc2fc761_e973f292",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 253,
+      "author": {
+        "id": 1412469
+      },
+      "writtenOn": "2020-04-20T06:17:54Z",
+      "side": 1,
+      "message": "Adopted your advice. thanks!",
+      "parentUuid": "90f83f5c_a1d2209c",
+      "revId": "a7fd93cf03b82c12dff2696f39abd3b34752e1e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "561da5d5_83a66b69",
         "filename": "src/chromiumos/tast/internal/runner/features.go",
         "patchSetId": 4
@@ -107,6 +203,24 @@
       "revId": "a7fd93cf03b82c12dff2696f39abd3b34752e1e8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "662af2ea_a6bb2b73",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 1412469
+      },
+      "writtenOn": "2020-04-20T06:17:54Z",
+      "side": 1,
+      "message": "Added devPath into the warning.",
+      "parentUuid": "561da5d5_83a66b69",
+      "revId": "a7fd93cf03b82c12dff2696f39abd3b34752e1e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -156,6 +270,54 @@
     },
     {
       "key": {
+        "uuid": "e90d4632_e53d5bb0",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 259,
+      "author": {
+        "id": 1412469
+      },
+      "writtenOn": "2020-04-20T06:17:54Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b51e0faa_ad81795b",
+      "range": {
+        "startLine": 259,
+        "startChar": 82,
+        "endLine": 259,
+        "endChar": 84
+      },
+      "revId": "a7fd93cf03b82c12dff2696f39abd3b34752e1e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "99ae1c2c_0329585f",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 259,
+      "author": {
+        "id": 1412469
+      },
+      "writtenOn": "2020-04-20T06:17:54Z",
+      "side": 1,
+      "message": "Since /sys/class/power_supply/*/scope is not always exist, we can ignore IsNotExist error. \nThis behavior is based on autotest: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/master:src/third_party/autotest/files/client/cros/power/power_status.py;l\u003d442-444?q\u003dsrc%2Fthird_party%2Fautotest%2Ffiles%2Fclient%2Fcros%2Fpower%2Fpower_status.py\u0026ss\u003dchromiumos%2Fchromiumos%2Fcodesearch\u0026originalUrl\u003dhttps:%2F%2Fcs.chromium.org%2F\nAdded warning if err is not a IsNotExist and a comment to explain this. Thanks!",
+      "parentUuid": "69dd2430_e10290dd",
+      "range": {
+        "startLine": 259,
+        "startChar": 70,
+        "endLine": 259,
+        "endChar": 81
+      },
+      "revId": "a7fd93cf03b82c12dff2696f39abd3b34752e1e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ec595fce_b3ab6a9a",
         "filename": "src/chromiumos/tast/internal/runner/features.go",
         "patchSetId": 4
@@ -179,6 +341,30 @@
     },
     {
       "key": {
+        "uuid": "6a79a0c8_69c0d9d1",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 273,
+      "author": {
+        "id": 1412469
+      },
+      "writtenOn": "2020-04-20T06:17:54Z",
+      "side": 1,
+      "message": "I sent wrong commit to trybots. This is fixed in the latest CL.",
+      "parentUuid": "ec595fce_b3ab6a9a",
+      "range": {
+        "startLine": 273,
+        "startChar": 26,
+        "endLine": 273,
+        "endChar": 49
+      },
+      "revId": "a7fd93cf03b82c12dff2696f39abd3b34752e1e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "81cd29e4_0e3e285e",
         "filename": "src/chromiumos/tast/internal/runner/features.go",
         "patchSetId": 4
@@ -193,6 +379,24 @@
       "revId": "a7fd93cf03b82c12dff2696f39abd3b34752e1e8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8d7062ec_9a33bdf8",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 280,
+      "author": {
+        "id": 1412469
+      },
+      "writtenOn": "2020-04-20T06:17:54Z",
+      "side": 1,
+      "message": "Updated CL to do that. Thanks for the advice!",
+      "parentUuid": "81cd29e4_0e3e285e",
+      "revId": "a7fd93cf03b82c12dff2696f39abd3b34752e1e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

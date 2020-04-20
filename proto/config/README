@@ -1,6 +1,0 @@
-# Copyright 2020 The Chromium OS Authors. All rights reserved.
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
-
-This directory contains the snapshot of src/config protofiles.
-The commit hash is 9821cb4251a62a8c7ed92b5f467be1371dfb45de.

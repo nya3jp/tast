@@ -2,5 +2,5 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-This directory contains the snapshot of chromiumos/infra/proto protofiles.
-The commit hash is 6eb7202e8895ed1711c7f59e009428a7c9ca047b.
+This directory contains the snapshot of infra protofiles.
+The commit hash is 3ac1beae3f331067530d7e0c779ba6ba77f50b17.

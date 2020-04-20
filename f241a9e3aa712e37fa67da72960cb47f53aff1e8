@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "689aa75f_685a093e",
+        "filename": "docs/quickstart.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1331721
+      },
+      "writtenOn": "2020-04-20T15:11:58Z",
+      "side": 1,
+      "message": "You\u0027re right.",
+      "parentUuid": "9269662f_480d1cf2",
+      "range": {
+        "startLine": 102,
+        "startChar": 22,
+        "endLine": 103,
+        "endChar": 12
+      },
+      "revId": "f241a9e3aa712e37fa67da72960cb47f53aff1e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "111202bd_e75619d7",
         "filename": "docs/quickstart.md",
         "patchSetId": 2
@@ -45,6 +69,30 @@
       "revId": "f241a9e3aa712e37fa67da72960cb47f53aff1e8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "afe2127b_95375b51",
+        "filename": "docs/quickstart.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1331721
+      },
+      "writtenOn": "2020-04-20T15:11:58Z",
+      "side": 1,
+      "message": "At the end of the anonymous function, just after the lines added above.",
+      "parentUuid": "111202bd_e75619d7",
+      "range": {
+        "startLine": 121,
+        "startChar": 70,
+        "endLine": 122,
+        "endChar": 9
+      },
+      "revId": "f241a9e3aa712e37fa67da72960cb47f53aff1e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

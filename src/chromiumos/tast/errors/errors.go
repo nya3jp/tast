@@ -125,7 +125,8 @@ func Errorf(format string, args ...interface{}) *E {
 
 // Wrap creates a new error with the given message, wrapping another error.
 // This function also records the location where it was called.
-// If cause is nil, this is the same as New.
+// If cause is nil, this is the same as New. Note that the above behaviour
+// is different from the popular github.com/pkg/errors package.
 func Wrap(cause error, msg string) *E {
 	s := stack.New(1)
 	return &E{msg, s, cause}
@@ -133,7 +134,8 @@ func Wrap(cause error, msg string) *E {
 
 // Wrapf creates a new error with the given message, wrapping another error.
 // This function also records the location where it was called.
-// If cause is nil, this is the same as Errorf.
+// If cause is nil, this is the same as Errorf. Note that the above behaviour
+// is different from the popular github.com/pkg/errors package.
 func Wrapf(cause error, format string, args ...interface{}) *E {
 	s := stack.New(1)
 	msg := fmt.Sprintf(format, args...)

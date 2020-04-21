@@ -48,6 +48,54 @@
     },
     {
       "key": {
+        "uuid": "4e14a63f_12453fa3",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1412469
+      },
+      "writtenOn": "2020-04-21T04:33:26Z",
+      "side": 1,
+      "message": "Actually, arc.PowerIdlePerf will be skipped on DUTs without batteries so I updated TEST field to describe that and mention related CLs.",
+      "parentUuid": "598d4982_f4905d96",
+      "range": {
+        "startLine": 14,
+        "startChar": 15,
+        "endLine": 14,
+        "endChar": 20
+      },
+      "revId": "3163bdab8ca7d83cf840c98283aafe8455b4f656",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "83e67a03_9e9d5c24",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1412469
+      },
+      "writtenOn": "2020-04-21T04:33:26Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "737cd365_03bcd975",
+      "range": {
+        "startLine": 14,
+        "startChar": 41,
+        "endLine": 14,
+        "endChar": 45
+      },
+      "revId": "3163bdab8ca7d83cf840c98283aafe8455b4f656",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "97daabfa_c1febde5",
         "filename": "/COMMIT_MSG",
         "patchSetId": 6
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "a826b85f_a841d9eb",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1412469
+      },
+      "writtenOn": "2020-04-21T04:33:26Z",
+      "side": 1,
+      "message": "This behavior is based on Tast\u0027s hardware dependency mechanisms and  hwdep.Battery will be implemented by later CLs which depend on this CL. I\u0027ll mention about it in the commit message. Thank you for asking clarification.",
+      "parentUuid": "97daabfa_c1febde5",
+      "range": {
+        "startLine": 15,
+        "startChar": 53,
+        "endLine": 15,
+        "endChar": 63
+      },
+      "revId": "3163bdab8ca7d83cf840c98283aafe8455b4f656",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a8b193d_ff272214",
         "filename": "src/chromiumos/tast/internal/runner/features.go",
         "patchSetId": 6
@@ -85,6 +157,24 @@
       "revId": "3163bdab8ca7d83cf840c98283aafe8455b4f656",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aaa2a7de_febb9f4c",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 254,
+      "author": {
+        "id": 1412469
+      },
+      "writtenOn": "2020-04-21T04:33:26Z",
+      "side": 1,
+      "message": "This list comes from a similar function in autotest ( https://source.chromium.org/chromiumos/chromiumos/codesearch/+/master:src/third_party/autotest/files/client/cros/power/power_status.py;l\u003d423-424;drc\u003de3bde74b98148a3302be4e3b91644c7687bc928e ) and this is originated from power_supply driver in kernel (driver/power/power_supply_sysfs.c) as noted in this commit ( https://chromium.googlesource.com/chromiumos/third_party/autotest/+/86341ee2bdb2e5a0ae508a928b7017ef2cbafb17 ).\nI\u0027ll add this info as a comment.",
+      "parentUuid": "9a8b193d_ff272214",
+      "revId": "3163bdab8ca7d83cf840c98283aafe8455b4f656",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -108,6 +198,30 @@
       "revId": "3163bdab8ca7d83cf840c98283aafe8455b4f656",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9487c7ec_d9777c77",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 273,
+      "author": {
+        "id": 1412469
+      },
+      "writtenOn": "2020-04-21T04:33:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7cd57c8a_f97a1bf5",
+      "range": {
+        "startLine": 273,
+        "startChar": 7,
+        "endLine": 273,
+        "endChar": 17
+      },
+      "revId": "3163bdab8ca7d83cf840c98283aafe8455b4f656",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -157,6 +271,54 @@
     },
     {
       "key": {
+        "uuid": "8e00fc8c_5aa722fb",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 274,
+      "author": {
+        "id": 1412469
+      },
+      "writtenOn": "2020-04-21T04:33:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c708c474_0ed94ff7",
+      "range": {
+        "startLine": 274,
+        "startChar": 78,
+        "endLine": 274,
+        "endChar": 84
+      },
+      "revId": "3163bdab8ca7d83cf840c98283aafe8455b4f656",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b4659e60_1140e65d",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 274,
+      "author": {
+        "id": 1412469
+      },
+      "writtenOn": "2020-04-21T04:33:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dfcd2061_9d7edda3",
+      "range": {
+        "startLine": 274,
+        "startChar": 15,
+        "endLine": 274,
+        "endChar": 25
+      },
+      "revId": "3163bdab8ca7d83cf840c98283aafe8455b4f656",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "937c9178_b7f0d4c3",
         "filename": "src/chromiumos/tast/internal/runner/features.go",
         "patchSetId": 6
@@ -171,6 +333,24 @@
       "revId": "3163bdab8ca7d83cf840c98283aafe8455b4f656",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "76353054_3a4172ee",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 294,
+      "author": {
+        "id": 1412469
+      },
+      "writtenOn": "2020-04-21T04:33:26Z",
+      "side": 1,
+      "message": "It\u0027s a good suggestion but only the first warning will be shown by this code. So I modified a bit to report warnings for all power supplies checked. Thanks!",
+      "parentUuid": "937c9178_b7f0d4c3",
+      "revId": "3163bdab8ca7d83cf840c98283aafe8455b4f656",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

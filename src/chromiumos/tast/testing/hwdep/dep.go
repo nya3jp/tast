@@ -197,3 +197,17 @@ func Wifi80211ac() Condition {
 	// TODO(crbug.com/1070299): replace this when we have hwdep for WiFi chips.
 	return SkipOnPlatform("monroe", "kip", "guado")
 }
+
+// Battery returns a hardware dependency condition that is satisfied iff the DUT
+// has a battery, e.g. Chromeboxes and Chromebits don't.
+func Battery() Condition {
+	return Condition{Satisfied: func(d *hwdep.DeviceSetup) error {
+		if d.DC == nil {
+			return errors.New("device.Config is not given")
+		}
+		if d.DC.Power != device.Config_POWER_SUPPLY_BATTERY {
+			return errors.New("DUT does not have a battery")
+		}
+		return nil
+	}}
+}

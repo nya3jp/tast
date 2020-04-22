@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "55a9f4a2_9cd65e56",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 1412469
+      },
+      "writtenOn": "2020-04-22T11:56:48Z",
+      "side": 1,
+      "message": "Based on current Linux kernel used by Chrome OS ( https://source.chromium.org/chromiumos/chromiumos/codesearch/+/master:src/third_party/kernel/v5.4/drivers/power/supply/power_supply_sysfs.c;l\u003d42-46 ), there are two power types (UPS and BrickID) in addition to the lists in autotest ( https://source.chromium.org/chromiumos/chromiumos/codesearch/+/master:src/third_party/autotest/files/client/cros/power/power_status.py;l\u003d423-424;drc\u003de3bde74b98148a3302be4e3b91644c7687bc928e ).\n\nBrickID is for Apple charger\nhttps://patchwork.kernel.org/patch/9716761/\n\nand UPS stands for Uninterruptible Power Supply.\nhttps://elinux.org/images/4/45/Power-supply_Sebastian-Reichel.pdf\n\nSo I decided to add these two types to this list.",
+      "revId": "d7f078d5eb3f1d2cb7ad458400211d69b85f58f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

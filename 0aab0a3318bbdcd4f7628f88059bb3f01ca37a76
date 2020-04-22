@@ -36,6 +36,24 @@
     },
     {
       "key": {
+        "uuid": "e5b97e60_ffb46651",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 260,
+      "author": {
+        "id": 1412469
+      },
+      "writtenOn": "2020-04-22T11:47:29Z",
+      "side": 1,
+      "message": "I decided to keep line breaks in the list as in Linux kernel.\nThank you for your advice!",
+      "parentUuid": "35ecd533_22bd4981",
+      "revId": "0aab0a3318bbdcd4f7628f88059bb3f01ca37a76",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9327b379_6c7c2a08",
         "filename": "src/chromiumos/tast/internal/runner/features.go",
         "patchSetId": 12
@@ -56,6 +74,30 @@
       "revId": "0aab0a3318bbdcd4f7628f88059bb3f01ca37a76",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0ca59c0e_8b47e37a",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 282,
+      "author": {
+        "id": 1412469
+      },
+      "writtenOn": "2020-04-22T11:47:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9327b379_6c7c2a08",
+      "range": {
+        "startLine": 282,
+        "startChar": 6,
+        "endLine": 282,
+        "endChar": 11
+      },
+      "revId": "0aab0a3318bbdcd4f7628f88059bb3f01ca37a76",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

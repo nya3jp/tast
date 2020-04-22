@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a7e0153b_e8c5ec0c",
+        "filename": "src/chromiumos/tast/errors/errors.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-04-22T16:45:54Z",
+      "side": 1,
+      "message": "To make it clearer what is \"above behavior\" (since there are multiple bahviors described above in precise) could you make them continuous line?\n\n// If cause is nil, this is the same as New. Note that this behavior\n// is different from the popular github.com/pkg/errors package\u0027s.",
+      "range": {
+        "startLine": 128,
+        "startChar": 0,
+        "endLine": 129,
+        "endChar": 93
+      },
+      "revId": "db380b7196775ba3c5c238ed4280d48eddb3e1db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cde8de56_34570496",
+        "filename": "src/chromiumos/tast/errors/errors.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-04-22T16:45:54Z",
+      "side": 1,
+      "message": "ditto.",
+      "revId": "db380b7196775ba3c5c238ed4280d48eddb3e1db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

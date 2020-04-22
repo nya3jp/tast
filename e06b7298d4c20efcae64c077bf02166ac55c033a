@@ -87,6 +87,24 @@
       "revId": "e06b7298d4c20efcae64c077bf02166ac55c033a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cae33c8f_85328bba",
+        "filename": "src/chromiumos/tast/testing/attr.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 198,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-04-22T08:32:09Z",
+      "side": 1,
+      "message": "SGTM. In offline chat Hidehiko pointed out that we want to do two things here:\n\n1. To trigger those tests for specific CLs only\n2. To run those tests on devices with wificell fixtures\n\nIn the short term, it is the only choice to define a new group to accomplish both of them.\n\nIn the long term, we want to switch to use hardware deps for (2). We\u0027ll still use the group for (1).",
+      "parentUuid": "f6c850a9_65ffdd55",
+      "revId": "e06b7298d4c20efcae64c077bf02166ac55c033a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

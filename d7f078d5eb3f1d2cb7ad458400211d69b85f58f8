@@ -33,6 +33,24 @@
       "revId": "d7f078d5eb3f1d2cb7ad458400211d69b85f58f8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "566139e0_8bcbb3e6",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 295,
+      "author": {
+        "id": 1412469
+      },
+      "writtenOn": "2020-04-23T02:26:24Z",
+      "side": 1,
+      "message": "Thanks for the suggestion. I thought the same way, but it has redundant \u0027true\u0027s and makes the list larger so I chose to use array instead of map to keep the list simple.",
+      "parentUuid": "a4c5292e_e8286e38",
+      "revId": "d7f078d5eb3f1d2cb7ad458400211d69b85f58f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

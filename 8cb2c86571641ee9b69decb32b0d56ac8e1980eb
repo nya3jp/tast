@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "644807f4_6e04f548",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-04-23T05:19:45Z",
+      "side": 1,
+      "message": "Can you add the following line here so that this change doesn\u0027t land before the other change?\n\n Cq-Depend: chromium:2152310\n\nc.f. https://chromium.googlesource.com/chromiumos/docs/+/master/contributing.md#cq-depend",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 6
+      },
+      "revId": "8cb2c86571641ee9b69decb32b0d56ac8e1980eb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6459a8f0_6ac46e1a",
+        "filename": "src/chromiumos/tast/testing/hwdep/dep.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 206,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-04-23T05:19:45Z",
+      "side": 1,
+      "message": "nit: We can access the field directly, i.e.\n\n d.DC.Power\n\nNote that GetPower() is implemented as:\n\n func (m *Config) GetPower() Config_PowerSupply {\n\tif m !\u003d nil {\n\t\treturn m.Power\n\t}\n\treturn Config_POWER_SUPPLY_UNSPECIFIED\n }",
+      "range": {
+        "startLine": 206,
+        "startChar": 10,
+        "endLine": 206,
+        "endChar": 18
+      },
+      "revId": "8cb2c86571641ee9b69decb32b0d56ac8e1980eb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

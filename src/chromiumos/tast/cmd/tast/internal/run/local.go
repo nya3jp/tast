@@ -281,7 +281,7 @@ func startEphemeralDevserver(ctx context.Context, hst *ssh.Conn, cfg *Config) er
 	}
 
 	cacheDir := filepath.Join(cfg.tastDir, "devserver", "static")
-	es, err := newEphemeralDevserver(lis, cacheDir)
+	es, err := newEphemeralDevserver(lis, cacheDir, cfg.extraAllowedBuckets)
 	if err != nil {
 		return err
 	}

@@ -80,7 +80,7 @@ func newEphemeralDevserverTestData(t *testing.T, gsutil string) *ephemeralDevser
 
 	url := fmt.Sprintf("http://%s", lis.Addr())
 
-	s, err := newEphemeralDevserver(lis, cacheDir)
+	s, err := newEphemeralDevserver(lis, cacheDir, []string{"extra-allowed-bucket"})
 	if err != nil {
 		t.Fatal("Failed to start the ephemeral devserver: ", err)
 	}
@@ -172,7 +172,10 @@ exit 1
 	}
 }
 
-func TestParseGSURL(t *testing.T) {
+func TestValidateGSURL(t *testing.T) {
+	td := newEphemeralDevserverTestData(t, "#!/bin/true")
+	defer td.Close()
+
 	for _, tc := range []struct {
 		gsURL     string
 		path      string
@@ -181,26 +184,27 @@ func TestParseGSURL(t *testing.T) {
 		{"gs://chromeos-image-archive/path/to/file.bin", "path/to/file.bin", ""},
 		{"gs://chromeos-test-assets-private/path/to/file.bin", "path/to/file.bin", ""},
 		{"gs://chromiumos-test-assets-public/path/to/file.bin", "path/to/file.bin", ""},
+		{"gs://extra-allowed-bucket/path/to/file.bin", "path/to/file.bin", ""},
 		{"http://chromeos-image-archive/path/to/file.bin", "", "is not a gs:// URL"},
-		{"gs://secret-bucket/path/to/file.bin", "", "doesn't use a whitelisted bucket"},
+		{"gs://secret-bucket/path/to/file.bin", "", "doesn't use an allowed bucket"},
 		{"gs://chromeos-image-archive//path/to/file.bin", "", "isn't a clean URL"},
 		{"gs://chromeos-image-archive/path/to/file.bin/", "", "isn't a clean URL"},
 		{"gs://chromeos-image-archive/../path/to/file.bin", "", "isn't a clean URL"},
 		{"gs://chromeos-image-archive/path/to/../file.bin", "", "isn't a clean URL"},
 		{"#$%", "", "failed to parse URL"},
 	} {
-		path, err := parseGSURL(tc.gsURL)
+		path, err := td.s.validateGSURL(tc.gsURL)
 		if tc.errSubstr == "" {
 			if err != nil {
-				t.Errorf("parseGSURL(%q) failed: %v", tc.gsURL, err)
+				t.Errorf("validateGSURL(%q) failed: %v", tc.gsURL, err)
 			} else if path != tc.path {
-				t.Errorf("parseGSURL(%q) = %q; want %q", tc.gsURL, path, tc.path)
+				t.Errorf("validateGSURL(%q) = %q; want %q", tc.gsURL, path, tc.path)
 			}
 		} else {
 			if err == nil {
-				t.Errorf("parseGSURL(%q) = %q; want error with prefix %q", tc.gsURL, path, tc.errSubstr)
+				t.Errorf("validateGSURL(%q) = %q; want error with prefix %q", tc.gsURL, path, tc.errSubstr)
 			} else if !strings.Contains(err.Error(), tc.errSubstr) {
-				t.Errorf("parseGSURL(%q) returned error %q; should contain %q", tc.gsURL, err.Error(), tc.errSubstr)
+				t.Errorf("validateGSURL(%q) returned error %q; should contain %q", tc.gsURL, err.Error(), tc.errSubstr)
 			}
 		}
 	}

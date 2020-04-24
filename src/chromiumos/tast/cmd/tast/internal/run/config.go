@@ -82,6 +82,7 @@ type Config struct {
 	installPortageDeps bool   // install old or missing test bundle dependencies; no-op if checkPortageDeps is false
 
 	useEphemeralDevserver  bool     // start an ephemeral devserver if no devserver is specified
+	extraAllowedBuckets    []string // extra Google Cloud Storage buckets ephemeral devserver is allowed to access
 	devservers             []string // list of devserver URLs; set by -devservers but may be dynamically modified
 	downloadPrivateBundles bool     // whether to download private bundles if missing
 
@@ -167,6 +168,7 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 	f.BoolVar(&c.installPortageDeps, "installbuilddeps", true, "automatically install/upgrade test bundle dependencies (requires -checkbuilddeps)")
 	f.Var(command.NewListFlag(",", func(v []string) { c.devservers = v }, nil), "devservers", "comma-separated list of devserver URLs")
 	f.BoolVar(&c.useEphemeralDevserver, "ephemeraldevserver", true, "start an ephemeral devserver if no devserver is specified")
+	f.Var(command.NewListFlag(",", func(v []string) { c.extraAllowedBuckets = v }, nil), "extraallowedbuckets", "comma-separated list of extra Google Cloud Storage buckets ephemeral devserver is allowed to access")
 	f.BoolVar(&c.downloadPrivateBundles, "downloadprivatebundles", false, "download private bundles if missing")
 	f.BoolVar(&c.continueAfterFailure, "continueafterfailure", false, "try to run remaining tests after bundle/DUT crash or lost SSH connection")
 	f.IntVar(&c.sshRetries, "sshretries", 0, "number of SSH connect retries")

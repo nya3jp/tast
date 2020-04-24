@@ -9,6 +9,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -84,6 +85,7 @@ type Config struct {
 	useEphemeralDevserver  bool     // start an ephemeral devserver if no devserver is specified
 	extraAllowedBuckets    []string // extra Google Cloud Storage buckets ephemeral devserver is allowed to access
 	devservers             []string // list of devserver URLs; set by -devservers but may be dynamically modified
+	buildArtifactsURL      string   // Google Cloud Storage URL of build artifacts
 	downloadPrivateBundles bool     // whether to download private bundles if missing
 
 	localRunner    string // path to executable that runs local test bundles
@@ -169,6 +171,7 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 	f.Var(command.NewListFlag(",", func(v []string) { c.devservers = v }, nil), "devservers", "comma-separated list of devserver URLs")
 	f.BoolVar(&c.useEphemeralDevserver, "ephemeraldevserver", true, "start an ephemeral devserver if no devserver is specified")
 	f.Var(command.NewListFlag(",", func(v []string) { c.extraAllowedBuckets = v }, nil), "extraallowedbuckets", "comma-separated list of extra Google Cloud Storage buckets ephemeral devserver is allowed to access")
+	f.StringVar(&c.buildArtifactsURL, "buildartifactsurl", "", "override Google Cloud Storage URL of build artifacts (implies -extraallowedbuckets)")
 	f.BoolVar(&c.downloadPrivateBundles, "downloadprivatebundles", false, "download private bundles if missing")
 	f.BoolVar(&c.continueAfterFailure, "continueafterfailure", false, "try to run remaining tests after bundle/DUT crash or lost SSH connection")
 	f.IntVar(&c.sshRetries, "sshretries", 0, "number of SSH connect retries")
@@ -316,6 +319,18 @@ func (c *Config) DeriveDefaults() error {
 		}
 	}
 	mergeVars(c.testVars, defaultVars, skipOnDuplicate) // -var and -varsfile override defaults
+
+	// If -buildartifactsurl is set, add the bucket to the extra allowed bucket list.
+	if c.buildArtifactsURL != "" {
+		u, err := url.Parse(c.buildArtifactsURL)
+		if err != nil {
+			return fmt.Errorf("failed to parse -buildartifactsurl: %v", err)
+		}
+		if u.Scheme != "gs" {
+			return errors.New("invalid -buildartifactsurl: not a gs:// URL")
+		}
+		c.extraAllowedBuckets = append(c.extraAllowedBuckets, u.Host)
+	}
 
 	return nil
 }

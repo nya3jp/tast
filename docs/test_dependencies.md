@@ -94,6 +94,8 @@ The following software features are defined:
 *   `no_ubsan` - Build was not built with Undefined Behavior Sanitizer.
 *   `oci` - The ability to use the `run_oci` program to execute code within
     [OCI] containers.
+*   `p2p_stable`, `p2p_unstable` - Kernel versions where P2P tests are
+    stable/unstable ([b/153182041](https://issuetracker.google.com/153182041)).
 *   `plugin_vm` - The ability to run Plugin VMs. Only if Plugin VM is present
     and the device is licensed to run it, is this capability present.
 *   `qemu` - For tests exclusive to Chrome OS QEMU images.

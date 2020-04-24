@@ -251,8 +251,12 @@ func killSession(sid int, sig syscall.Signal) {
 // handleDownloadPrivateBundles handles a DownloadPrivateBundlesMode request from args
 // and JSON-marshals a DownloadPrivateBundlesResult struct to w.
 func handleDownloadPrivateBundles(ctx context.Context, args *Args, cfg *Config, stdout io.Writer) error {
-	if cfg.PrivateBundleArchiveURL == "" || cfg.PrivateBundlesStampPath == "" {
+	if cfg.PrivateBundlesStampPath == "" {
 		return errors.New("this test runner is not configured for private bundles")
+	}
+
+	if args.DownloadPrivateBundles.BuildArtifactsURL == "" {
+		return errors.New("failed to determine the build artifacts URL (non-official image?)")
 	}
 
 	var logs []string
@@ -274,10 +278,11 @@ func handleDownloadPrivateBundles(ctx context.Context, args *Args, cfg *Config, 
 	}
 
 	// Download the archive via devserver.
-	lf(fmt.Sprintf("Downloading private bundles from %s", cfg.PrivateBundleArchiveURL))
+	archiveURL := args.DownloadPrivateBundles.BuildArtifactsURL + "tast_bundles.tar.bz2"
+	lf(fmt.Sprintf("Downloading private bundles from %s", archiveURL))
 	cl := newDevserverClient(ctx, args.DownloadPrivateBundles.Devservers, lf)
 
-	r, err := cl.Open(ctx, cfg.PrivateBundleArchiveURL)
+	r, err := cl.Open(ctx, archiveURL)
 	if err != nil {
 		return err
 	}
@@ -306,7 +311,7 @@ func handleDownloadPrivateBundles(ctx context.Context, args *Args, cfg *Config, 
 	} else if os.IsNotExist(err) {
 		lf("Private bundles not found")
 	} else {
-		return fmt.Errorf("failed to download %s: %v", cfg.PrivateBundleArchiveURL, err)
+		return fmt.Errorf("failed to download %s: %v", archiveURL, err)
 	}
 
 	return ioutil.WriteFile(cfg.PrivateBundlesStampPath, nil, 0644)

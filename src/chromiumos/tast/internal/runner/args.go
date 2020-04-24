@@ -104,6 +104,20 @@ func (a *Args) bundleArgs(mode bundle.RunMode) (*bundle.Args, error) {
 	return &ba, nil
 }
 
+// fillDefaults fills unset fields with default values from cfg.
+func (a *Args) fillDefaults(cfg *Config) {
+	switch a.Mode {
+	case RunTestsMode:
+		if a.RunTests.BuildArtifactsURL == "" {
+			a.RunTests.BuildArtifactsURL = cfg.DefaultBuildArtifactsURL
+		}
+	case DownloadPrivateBundlesMode:
+		if a.DownloadPrivateBundles.BuildArtifactsURL == "" {
+			a.DownloadPrivateBundles.BuildArtifactsURL = cfg.DefaultBuildArtifactsURL
+		}
+	}
+}
+
 // FillDeprecated backfills deprecated fields from the corresponding non-deprecated fields.
 // This method is called by the tast process to ensure that args will be interpreted
 // correctly by older test runners.
@@ -133,6 +147,10 @@ type RunTestsArgs struct {
 	BundleGlob string `json:"bundleGlob,omitempty"`
 	// Devservers contains URLs of devservers that can be used to download files.
 	Devservers []string `json:"devservers,omitempty"`
+	// BuildArtifactsURL is the URL of Google Cloud Storage directory, ending with a slash,
+	// containing build artifacts for the current Chrome OS image.
+	// If it is empty, DefaultBuildArtifactsURL in runner.Config is used.
+	BuildArtifactsURL string `json:"buildArtifactsUrl,omitempty"`
 }
 
 // ListTestsArgs is nested within Args and contains arguments used by ListTestsMode.
@@ -283,6 +301,10 @@ type SysInfoState struct {
 type DownloadPrivateBundlesArgs struct {
 	// Devservers contains URLs of devservers that can be used to download files.
 	Devservers []string `json:"devservers,omitempty"`
+	// BuildArtifactsURL is the URL of Google Cloud Storage directory, ending with a slash,
+	// containing build artifacts for the current Chrome OS image.
+	// If it is empty, DefaultBuildArtifactsURL in runner.Config is used.
+	BuildArtifactsURL string `json:"buildArtifactsUrl,omitempty"`
 }
 
 // DownloadPrivateBundlesResult contains the result of a DownloadPrivateBundlesMode command.
@@ -339,12 +361,10 @@ type Config struct {
 	// See https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/autotest-capability-default/
 	// and the autocaps package for more information.
 	AutotestCapabilityDir string
-	// BuildArtifactsURL is the URL of Google Cloud Storage directory, ending with a slash, containing build
-	// artifacts for the current Chrome OS image.
-	BuildArtifactsURL string
-	// PrivateBundleArchiveURL contains the URL of the private test bundles archive corresponding to the current
-	// Chrome OS image.
-	PrivateBundleArchiveURL string
+	// DefaultBuildArtifactsURL is the URL of Google Cloud Storage directory, ending with a slash,
+	// containing build artifacts for the current Chrome OS image. It can be empty if the image is
+	// not built by an official builder.
+	DefaultBuildArtifactsURL string
 	// PrivateBundlesStampPath contains the path to a stamp file indicating private test bundles have been
 	// successfully downloaded and installed before. This prevents downloading private test bundles for
 	// every runner invocation.
@@ -429,6 +449,8 @@ errors, including the failure of an individual test.
 		(args.Mode == DownloadPrivateBundlesMode && args.DownloadPrivateBundles == nil) {
 		return command.NewStatusErrorf(statusBadArgs, "args not set for mode %v", args.Mode)
 	}
+
+	args.fillDefaults(cfg)
 
 	// Use deprecated fields if they were supplied by an old tast binary.
 	args.PromoteDeprecated()

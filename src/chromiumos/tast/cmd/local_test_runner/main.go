@@ -168,13 +168,12 @@ func main() {
 			"wired_8021x": "wired_8021x",
 		},
 		// The autotest-capability package tries to install this to /etc but it's diverted to /usr/local.
-		AutotestCapabilityDir: autocaps.DefaultCapabilityDir,
+		AutotestCapabilityDir:   autocaps.DefaultCapabilityDir,
+		PrivateBundlesStampPath: "/usr/local/share/tast/.private-bundles-downloaded",
 	}
 	if kvs, err := lsbrelease.Load(); err == nil {
 		if bp := kvs[lsbrelease.BuilderPath]; bp != "" {
-			cfg.BuildArtifactsURL = "gs://chromeos-image-archive/" + bp + "/"
-			cfg.PrivateBundleArchiveURL = cfg.BuildArtifactsURL + "tast_bundles.tar.bz2"
-			cfg.PrivateBundlesStampPath = "/usr/local/share/tast/.private-bundles-downloaded"
+			cfg.DefaultBuildArtifactsURL = "gs://chromeos-image-archive/" + bp + "/"
 		}
 	}
 	os.Exit(runner.Run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, &args, &cfg))

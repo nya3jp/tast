@@ -212,8 +212,9 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns []
 				WaitUntilReady:    cfg.waitUntilReady,
 				HeartbeatInterval: heartbeatInterval,
 			},
-			BundleGlob: cfg.localBundleGlob(),
-			Devservers: cfg.devservers,
+			BundleGlob:        cfg.localBundleGlob(),
+			Devservers:        cfg.devservers,
+			BuildArtifactsURL: cfg.buildArtifactsURL,
 		},
 	}
 	setRunnerTestDepsArgs(cfg, &args)

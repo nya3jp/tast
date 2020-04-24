@@ -104,7 +104,10 @@ func TestRunDownloadPrivateBundles(t *gotesting.T) {
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
 		case runner.DownloadPrivateBundlesMode:
-			exp := runner.DownloadPrivateBundlesArgs{Devservers: td.cfg.devservers}
+			exp := runner.DownloadPrivateBundlesArgs{
+				Devservers:        td.cfg.devservers,
+				BuildArtifactsURL: td.cfg.buildArtifactsURL,
+			}
 			if !reflect.DeepEqual(*args.DownloadPrivateBundles, exp) {
 				t.Errorf("got args %+v; want %+v", *args.DownloadPrivateBundles, exp)
 			}

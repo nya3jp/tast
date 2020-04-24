@@ -8,6 +8,7 @@ import (
 	"flag"
 	"os"
 	"path/filepath"
+	"reflect"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -253,6 +254,24 @@ func TestConfigDeriveDefaultsVars(t *testing.T) {
 				t.Fatalf("Unexpected vars after DeriveDefaults (-got +want):\n%s", diff)
 			}
 		})
+	}
+}
+
+func TestConfigDeriveExtraAllowedBuckets(t *testing.T) {
+	cfg := NewConfig(RunTestsMode, "", "")
+	flags := flag.NewFlagSet("", flag.ContinueOnError)
+	cfg.SetFlags(flags)
+
+	cfg.build = false
+	cfg.extraAllowedBuckets = []string{"bucket1", "bucket2"}
+	cfg.buildArtifactsURL = "gs://bucket3/dir/"
+
+	if err := cfg.DeriveDefaults(); err != nil {
+		t.Error("DeriveDefaults failed: ", err)
+	}
+	want := []string{"bucket1", "bucket2", "bucket3"}
+	if got := cfg.extraAllowedBuckets; !reflect.DeepEqual(got, want) {
+		t.Errorf("cfg.extraAllowedBuckets = %q; want %q", got, want)
 	}
 }
 

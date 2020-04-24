@@ -1,0 +1,211 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3c34cd04_c8c5ef07",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-04-24T09:31:18Z",
+      "side": 1,
+      "message": "Could you update the help message?",
+      "range": {
+        "startLine": 215,
+        "startChar": 57,
+        "endLine": 215,
+        "endChar": 121
+      },
+      "revId": "23894df883e856c0d9cdbcf5b119e9829213705b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a7fb7a05_67a02f9a",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-04-24T09:31:18Z",
+      "side": 1,
+      "message": "Mind removing this? See my another comment as well.",
+      "range": {
+        "startLine": 227,
+        "startChar": 3,
+        "endLine": 227,
+        "endChar": 36
+      },
+      "revId": "23894df883e856c0d9cdbcf5b119e9829213705b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "838ba214_64813996",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-04-24T09:31:18Z",
+      "side": 1,
+      "message": "We should not access args.ListTests unless args.Mode \u003d\u003d ListTestsMode.\n\nCould you pass an empty string literal here to export all tests?",
+      "range": {
+        "startLine": 70,
+        "startChar": 32,
+        "endLine": 70,
+        "endChar": 55
+      },
+      "revId": "23894df883e856c0d9cdbcf5b119e9829213705b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "30f806c5_704a35ec",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/config.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-04-24T09:31:18Z",
+      "side": 1,
+      "message": "Unused?",
+      "range": {
+        "startLine": 34,
+        "startChar": 1,
+        "endLine": 35,
+        "endChar": 19
+      },
+      "revId": "23894df883e856c0d9cdbcf5b119e9829213705b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a8b937f3_8fa8da12",
+        "filename": "src/chromiumos/tast/testing/test_instance.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 631,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-04-24T09:31:18Z",
+      "side": 1,
+      "message": "I think it\u0027s good to make this a method. Also could you return *testpb.Test instead to avoid unnecessary copies?\n\n func (t *TestInstance) Proto() *testpb.Test",
+      "range": {
+        "startLine": 631,
+        "startChar": 5,
+        "endLine": 631,
+        "endChar": 30
+      },
+      "revId": "23894df883e856c0d9cdbcf5b119e9829213705b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bc407c56_8ef08e61",
+        "filename": "src/chromiumos/tast/testing/test_instance.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 633,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-04-24T09:31:18Z",
+      "side": 1,
+      "message": "nit: Please try to initialize protos with literals, e.g.\n\n t :\u003d testpb.Test{\n   Name: src.Name,\n }\n\nSame for other occurrences.",
+      "range": {
+        "startLine": 632,
+        "startChar": 1,
+        "endLine": 633,
+        "endChar": 18
+      },
+      "revId": "23894df883e856c0d9cdbcf5b119e9829213705b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "91c4888c_bdf6b64b",
+        "filename": "src/chromiumos/tast/testing/test_instance.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 660,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-04-24T09:31:18Z",
+      "side": 1,
+      "message": "I guess d is already []byte?",
+      "range": {
+        "startLine": 660,
+        "startChar": 18,
+        "endLine": 660,
+        "endChar": 27
+      },
+      "revId": "23894df883e856c0d9cdbcf5b119e9829213705b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aa9f7935_d1cbc265",
+        "filename": "src/chromiumos/tast/testing/test_instance.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 661,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-04-24T09:31:18Z",
+      "side": 1,
+      "message": "err",
+      "range": {
+        "startLine": 661,
+        "startChar": 8,
+        "endLine": 661,
+        "endChar": 11
+      },
+      "revId": "23894df883e856c0d9cdbcf5b119e9829213705b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2111f1ce_918d14af",
+        "filename": "src/chromiumos/tast/testing/test_instance_test.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 1040,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-04-24T09:31:18Z",
+      "side": 1,
+      "message": "nit: explicit type here is not needed; it\u0027s inferred from []*TestInstance above.\n\nSame for other type names below.",
+      "range": {
+        "startLine": 1040,
+        "startChar": 2,
+        "endLine": 1040,
+        "endChar": 15
+      },
+      "revId": "23894df883e856c0d9cdbcf5b119e9829213705b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

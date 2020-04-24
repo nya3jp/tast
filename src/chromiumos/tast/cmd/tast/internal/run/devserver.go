@@ -32,14 +32,15 @@ const ephemeralDevserverPort = 28082
 // host. This allows unprivileged DUTs to access ACL'ed resources, such as
 // private external data files on Google Cloud Storage.
 type ephemeralDevserver struct {
-	server   *http.Server
-	cacheDir string
+	server         *http.Server
+	cacheDir       string
+	allowedBuckets map[string]struct{}
 }
 
 // newEphemeralDevserver starts a new ephemeral devserver listening on lis.
 // Ownership of lis is taken, so the caller must not call lis.Close.
 // A directory is created at cacheDir if it does not exist.
-func newEphemeralDevserver(lis net.Listener, cacheDir string) (*ephemeralDevserver, error) {
+func newEphemeralDevserver(lis net.Listener, cacheDir string, extraAllowedBuckets []string) (*ephemeralDevserver, error) {
 	defer func() {
 		if lis != nil {
 			lis.Close()
@@ -50,10 +51,16 @@ func newEphemeralDevserver(lis net.Listener, cacheDir string) (*ephemeralDevserv
 		return nil, err
 	}
 
+	allowedBuckets := defaultAllowedBuckets()
+	for _, b := range extraAllowedBuckets {
+		allowedBuckets[b] = struct{}{}
+	}
+
 	mux := http.NewServeMux()
 	s := &ephemeralDevserver{
-		server:   &http.Server{Handler: mux},
-		cacheDir: cacheDir,
+		server:         &http.Server{Handler: mux},
+		cacheDir:       cacheDir,
+		allowedBuckets: allowedBuckets,
 	}
 
 	mux.HandleFunc("/", s.handleIndex)
@@ -91,7 +98,7 @@ func (s *ephemeralDevserver) handleIsStaged(w http.ResponseWriter, r *http.Reque
 		// We only allow single file specified in &files=.
 		gsURL := strings.TrimRight(q.Get("archive_url"), "/") + "/" + q.Get("files")
 
-		relPath, err := parseGSURL(gsURL)
+		relPath, err := s.validateGSURL(gsURL)
 		if err != nil {
 			return err
 		}
@@ -118,7 +125,7 @@ func (s *ephemeralDevserver) handleStage(w http.ResponseWriter, r *http.Request)
 		// We only allow single file specified in &files=.
 		gsURL := strings.TrimRight(q.Get("archive_url"), "/") + "/" + q.Get("files")
 
-		relPath, err := parseGSURL(gsURL)
+		relPath, err := s.validateGSURL(gsURL)
 		if err != nil {
 			return err
 		}
@@ -166,17 +173,19 @@ func writeError(w http.ResponseWriter, err error) {
 	fmt.Fprintf(w, "<pre>\n%s\n</pre>", html.EscapeString(err.Error()))
 }
 
-// whitelistedBuckets is a set of Google Cloud Storage buckets the ephemeral
-// devserver is allowed to access.
-var whitelistedBuckets = map[string]struct{}{
-	"chromeos-image-archive":        {},
-	"chromeos-test-assets-private":  {},
-	"chromiumos-test-assets-public": {},
+// defaultAllowedBuckets returns a set of Google Cloud Storage buckets the ephemeral
+// devserver is allowed to access by default.
+func defaultAllowedBuckets() map[string]struct{} {
+	return map[string]struct{}{
+		"chromeos-image-archive":        {},
+		"chromeos-test-assets-private":  {},
+		"chromiumos-test-assets-public": {},
+	}
 }
 
-// parseGSURL checks if the given Google Cloud Storage URL is a valid and
-// whitelisted, and returns the path in the URL (without a leading slash).
-func parseGSURL(gsURL string) (path string, err error) {
+// validateGSURL checks if the given Google Cloud Storage URL is a valid and
+// allowed, and returns the path in the URL (without a leading slash).
+func (s *ephemeralDevserver) validateGSURL(gsURL string) (path string, err error) {
 	p, err := url.Parse(gsURL)
 	if err != nil {
 		return "", fmt.Errorf("failed to parse URL %q: %v", gsURL, err)
@@ -184,8 +193,8 @@ func parseGSURL(gsURL string) (path string, err error) {
 	if p.Scheme != "gs" {
 		return "", fmt.Errorf("%q is not a gs:// URL", gsURL)
 	}
-	if _, ok := whitelistedBuckets[p.Host]; !ok {
-		return "", fmt.Errorf("%q doesn't use a whitelisted bucket", gsURL)
+	if _, ok := s.allowedBuckets[p.Host]; !ok {
+		return "", fmt.Errorf("%q doesn't use an allowed bucket", gsURL)
 	}
 	if filepath.Clean(p.Path) != p.Path {
 		return "", fmt.Errorf("%q isn't a clean URL", gsURL)

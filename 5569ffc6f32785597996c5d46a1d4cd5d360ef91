@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a05e6b3_3baff4df",
+        "filename": "tools/import_infra_proto.sh",
+        "patchSetId": 5
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-04-24T02:26:09Z",
+      "side": 1,
+      "message": "This line is the only diff from 0ac348a445c^ (i.e. what this change does other than the revert of 2139614, for this file). For resolving the shell linter error.",
+      "revId": "5569ffc6f32785597996c5d46a1d4cd5d360ef91",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

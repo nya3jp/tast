@@ -106,6 +106,7 @@ func newRemoteTestData(t *gotesting.T, stdout, stderr string, status int) *remot
 		t.Fatal(err)
 	}
 	td.cfg.devservers = mockDevservers
+	td.cfg.buildArtifactsURL = mockBuildArtifactsURL
 	td.cfg.localBundleDir = mockLocalBundleDir
 	td.cfg.remoteOutDir = filepath.Join(td.cfg.ResDir, "out.tmp")
 

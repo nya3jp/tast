@@ -148,7 +148,7 @@ func runTestsAndReport(ctx context.Context, args *Args, cfg *Config, stdout io.W
 		}
 
 		cl := newDevserverClient(ctx, args.RunTests.Devservers, lf)
-		processExternalDataLinks(ctx, args.RunTests.BundleArgs.DataDir, cfg.BuildArtifactsURL, tests, cl, lf)
+		processExternalDataLinks(ctx, args.RunTests.BundleArgs.DataDir, args.RunTests.BuildArtifactsURL, tests, cl, lf)
 
 		// Hereafter, heartbeat messages are sent by bundles.
 		hbw.Stop()

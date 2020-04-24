@@ -38,10 +38,11 @@ func init() {
 }
 
 const (
-	mockLocalRunner    = "/mock/local_test_runner"
-	mockLocalBundleDir = "/mock/local_bundles"
-	mockLocalDataDir   = "/mock/local_data"
-	mockLocalOutDir    = "/mock/local_out"
+	mockLocalRunner       = "/mock/local_test_runner"
+	mockLocalBundleDir    = "/mock/local_bundles"
+	mockLocalDataDir      = "/mock/local_data"
+	mockLocalOutDir       = "/mock/local_out"
+	mockBuildArtifactsURL = "gs://mock-images/artifacts/"
 
 	mockLocalBundleGlob = mockLocalBundleDir + "/*"
 
@@ -93,6 +94,7 @@ func newLocalTestData(t *gotesting.T) *localTestData {
 	td.cfg.localDataDir = mockLocalDataDir
 	td.cfg.localOutDir = mockLocalOutDir
 	td.cfg.devservers = mockDevservers
+	td.cfg.buildArtifactsURL = mockBuildArtifactsURL
 
 	// Avoid checking test dependencies, which causes an extra local_test_runner call.
 	td.cfg.checkTestDeps = false
@@ -199,8 +201,9 @@ func TestLocalSuccess(t *gotesting.T) {
 					Devservers:        mockDevservers,
 					HeartbeatInterval: heartbeatInterval,
 				},
-				BundleGlob: mockLocalBundleGlob,
-				Devservers: mockDevservers,
+				BundleGlob:        mockLocalBundleGlob,
+				Devservers:        mockDevservers,
+				BuildArtifactsURL: mockBuildArtifactsURL,
 			},
 		})
 

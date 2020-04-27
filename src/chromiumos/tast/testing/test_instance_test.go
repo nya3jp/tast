@@ -559,6 +559,32 @@ func TestHardwareDeps(t *gotesting.T) {
 	}
 }
 
+func TestHardwareDepsCEL(t *gotesting.T) {
+	for i, c := range []struct {
+		input    hwdep.Deps
+		expected string
+	}{
+		{hwdep.D(hwdep.Model("model1", "model2")), ""},
+		{hwdep.D(hwdep.SkipOnModel("model1", "model2")), ""},
+		{hwdep.D(hwdep.Platform("platform_id1", "platform_id2")), ""},
+		{hwdep.D(hwdep.SkipOnPlatform("platform_id1", "platform_id2")), ""},
+		{hwdep.D(hwdep.TouchScreen()), "scope.hardware_feature.screen.touch_support == scope.hardware_feature.PRESENT"},
+		{hwdep.D(hwdep.Fingerprint()), "scope.hardware_feature.fingerprint.location != scope.hardware_feature.fingerprint.NOT_PRESENT"},
+		{hwdep.D(hwdep.InternalDisplay()), "scope.hardware_feature.screen.milliinch.value != 0"},
+		// Wifi80211ac is judged by the board name. Not supported.
+		{hwdep.D(hwdep.Wifi80211ac()), ""},
+
+		{hwdep.D(hwdep.TouchScreen(), hwdep.Fingerprint()),
+			"scope.hardware_feature.screen.touch_support == scope.hardware_feature.PRESENT && scope.hardware_feature.fingerprint.location != scope.hardware_feature.fingerprint.NOT_PRESENT"},
+		{hwdep.D(hwdep.Model("model1", "model2"), hwdep.SkipOnPlatform("id1", "id2")), ""},
+	} {
+		actual := c.input.CEL()
+		if actual != c.expected {
+			t.Errorf("TestHardwareDepsCEL[%d]: got %q; want %q", i, actual, c.expected)
+		}
+	}
+}
+
 func TestRunSuccess(t *gotesting.T) {
 	test := TestInstance{Func: func(context.Context, *State) {}, Timeout: time.Minute}
 	or := newOutputReader()
@@ -1038,8 +1064,9 @@ func TestSortTests(t *gotesting.T) {
 func TestWriteTestsAsProto(t *gotesting.T) {
 	in := []*TestInstance{
 		{
-			Name: "test001",
-			Attr: []string{"attr1", "attr2"},
+			Name:         "test001",
+			Attr:         []string{"attr1", "attr2"},
+			HardwareDeps: hwdep.D(),
 			Contacts: []string{
 				"someone1@chromium.org",
 				"someone2@chromium.org",
@@ -1054,6 +1081,10 @@ func TestWriteTestsAsProto(t *gotesting.T) {
 				Attributes: []*testpb.Attribute{
 					{Name: "attr1"},
 					{Name: "attr2"},
+				},
+				DutCondition: &testpb.DUTCondition{
+					// DutCondition is tested separately in TestHardwareDepsCEL.
+					Expression: "",
 				},
 				Informational: &testpb.Informational{
 					Authors: []*testpb.Contact{

@@ -75,7 +75,6 @@ func SkipOnModel(names ...string) Condition {
 			return Condition{Err: errors.Errorf("ModelId should match with %v: %q", idRegexp, n)}
 		}
 	}
-
 	return Condition{Satisfied: func(d *hwdep.DeviceSetup) error {
 		// If the field is unavailable, return false as not satisfied.
 		if d.DC == nil || d.DC.Id == nil || d.DC.Id.ModelId == nil {
@@ -113,6 +112,7 @@ func Platform(names ...string) Condition {
 			}
 		}
 		return errors.New("PlatformId did not match")
+		// e.exists() is not supported. Using !e.all() instead.
 	}}
 }
 
@@ -153,7 +153,8 @@ func TouchScreen() Condition {
 			}
 		}
 		return errors.New("DUT does not have touchscreen")
-	}}
+	}, Cel: "scope.hardware_topology.screen.touch_support == scope.hardware_features.PRESENT",
+	}
 }
 
 // Fingerprint returns a hardware dependency condition that is satisfied
@@ -169,7 +170,8 @@ func Fingerprint() Condition {
 			}
 		}
 		return errors.New("DUT does not have fingerprint sensor")
-	}}
+	}, Cel: "scope.hardware_topology.fingerprint.location != scope.hardware_topology.fingerprint.NOT_PRESENT",
+	}
 }
 
 // InternalDisplay returns a hardware dependency condition that is satisfied
@@ -185,7 +187,8 @@ func InternalDisplay() Condition {
 			}
 		}
 		return errors.New("DUT does not have an internal display")
-	}}
+	}, Cel: "scope.hardware_topology.screen.milliinch.value != 0",
+	}
 }
 
 // Wifi80211ac returns a hardware dependency condition that is satisfied

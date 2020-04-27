@@ -8,6 +8,8 @@
 package hwdep
 
 import (
+	"strings"
+
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/errors"
@@ -27,6 +29,9 @@ type Condition struct {
 	// Satisfied is a pointer to a function which checks if the given DeviceSetup satisfies
 	// the condition.
 	Satisfied func(d *DeviceSetup) error
+
+	// Cel is the CEL expression denoting the condition
+	Cel string
 
 	// Err is an error to be reported on Test registration
 	// if instantiation of Condition fails.
@@ -88,10 +93,19 @@ func (d *Deps) Validate() error {
 	return nil
 }
 
+// Cel returns the CEL expression that reflects the conditions.
+func (d *Deps) Cel() string {
+	var allConds []string
+	for _, c := range d.conds {
+		allConds = append(allConds, c.Cel)
+	}
+	return strings.Join(allConds, " && ")
+}
+
 // Merge merges two Deps instance into one Deps instance.
 // The returned Deps is satisfied iff all conditions in d1 and ones in d2 are
 // satisfied.
-func Merge(d1 Deps, d2 Deps) Deps {
+func Merge(d1, d2 Deps) Deps {
 	var conds []Condition
 	conds = append(conds, d1.conds...)
 	conds = append(conds, d2.conds...)

@@ -599,13 +599,20 @@ DepLoop:
 // Proto converts test metadata of TestInstance into a protobuf message.
 func (t *TestInstance) Proto() *testpb.Test {
 	r := testpb.Test{
-		Name:          t.Name,
+		Name:          "remoteTestDrivers/tast/tests/" + t.Name,
 		Informational: &testpb.Informational{},
 	}
 	for _, a := range t.Attr {
 		r.Attributes = append(r.Attributes, &testpb.Attribute{Name: a})
 	}
-	// TODO(crbug.com/1047561): Fill r.DUTCondition.
+	hwdepConstraint := t.HardwareDeps.CEL()
+	if hwdepConstraint != "" {
+		r.DutConstraint = &testpb.DUTConstraint{
+			Config: &testpb.DUTConfigConstraint{
+				Expression: hwdepConstraint,
+			},
+		}
+	}
 	for _, email := range t.Contacts {
 		c := testpb.Contact{Type: &testpb.Contact_Email{Email: email}}
 		r.Informational.Authors = append(r.Informational.Authors, &c)
@@ -647,11 +654,13 @@ func WriteTestsAsJSON(w io.Writer, ts []*TestInstance) error {
 
 // WriteTestsAsProto exports test metadata in the protobuf format defined by infra.
 func WriteTestsAsProto(w io.Writer, ts []*TestInstance) error {
-	var result testpb.RemoteTestDriver
-	result.Name = "remoteTestDrivers/tast"
+	var result testpb.Specification
+	var driver testpb.RemoteTestDriver
+	driver.Name = "remoteTestDrivers/tast"
 	for _, src := range ts {
-		result.Tests = append(result.Tests, src.Proto())
+		driver.Tests = append(driver.Tests, src.Proto())
 	}
+	result.RemoteTestDrivers = append(result.RemoteTestDrivers, &driver)
 	d, err := proto.Marshal(&result)
 	if err != nil {
 		return errors.Wrap(err, "Failed to marshalize the proto")

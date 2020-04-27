@@ -605,7 +605,11 @@ func (t *TestInstance) Proto() *testpb.Test {
 	for _, a := range t.Attr {
 		r.Attributes = append(r.Attributes, &testpb.Attribute{Name: a})
 	}
-	// TODO(crbug.com/1047561): Fill r.DUTCondition.
+	r.DutConstraint = &testpb.DUTConstraint{
+		Config: &testpb.DUTConfigConstraint{
+			Expression: t.HardwareDeps.CEL(),
+		},
+	}
 	for _, email := range t.Contacts {
 		c := testpb.Contact{Type: &testpb.Contact_Email{Email: email}}
 		r.Informational.Authors = append(r.Informational.Authors, &c)

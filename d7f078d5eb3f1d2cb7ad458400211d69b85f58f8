@@ -92,6 +92,29 @@
       "revId": "d7f078d5eb3f1d2cb7ad458400211d69b85f58f8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cb2854aa_c259ca52",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 302,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-04-27T02:55:13Z",
+      "side": 1,
+      "message": "nit: remove :.\n: is usually used to separate errors.",
+      "range": {
+        "startLine": 302,
+        "startChar": 58,
+        "endLine": 302,
+        "endChar": 59
+      },
+      "revId": "d7f078d5eb3f1d2cb7ad458400211d69b85f58f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -9,6 +9,7 @@
 package main
 
 import (
+	"flag"
 	"os"
 
 	"chromiumos/tast/bundle"
@@ -16,6 +17,9 @@ import (
 )
 
 func main() {
+	flag.BoolVar(&runner.V2, "v2", false, "Enable v2 mode")
+	flag.Parse()
+
 	args := runner.Args{
 		RunTests: &runner.RunTestsArgs{
 			BundleGlob: "/usr/libexec/tast/bundles/remote/*", // default glob matching test bundles

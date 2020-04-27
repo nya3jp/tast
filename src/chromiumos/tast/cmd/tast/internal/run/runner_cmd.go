@@ -32,7 +32,7 @@ type runnerCmd interface {
 
 type localRunnerCmd struct {
 	// cmd holds the instance to execute a command on DUT.
-	cmd *ssh.Cmd
+	*ssh.Cmd
 
 	// ctx is used to run ssh.Cmd.Start() and ssh.Cmd.Wait().
 	ctx context.Context
@@ -60,15 +60,15 @@ func localRunnerCommand(ctx context.Context, cfg *Config, hst *ssh.Conn) *localR
 }
 
 func (r *localRunnerCmd) SetStdin(stdin io.Reader) {
-	r.cmd.Stdin = stdin
+	r.Stdin = stdin
 }
 
 func (r *localRunnerCmd) SetStderr(stderr io.Writer) {
-	r.cmd.Stderr = stderr
+	r.Stderr = stderr
 }
 
 func (r *localRunnerCmd) Output() ([]byte, error) {
-	return r.cmd.Output(r.ctx)
+	return r.Cmd.Output(r.ctx)
 }
 
 type remoteRunnerCmd struct {

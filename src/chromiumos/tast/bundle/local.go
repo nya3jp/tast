@@ -59,5 +59,8 @@ func Local(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, delegate 
 			return ctx, delegate.Ready(ctx, lf)
 		}
 	}
+	if clArgs[0] == "-grpcv2" {
+		return runServer(context.Background(), stdin, stdout, stderr)
+	}
 	return run(context.Background(), clArgs, stdin, stdout, stderr, &args, &cfg, localBundle)
 }

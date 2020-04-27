@@ -13,6 +13,7 @@ package main
 import (
 	"context"
 	"errors"
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
@@ -28,6 +29,9 @@ import (
 )
 
 func main() {
+	flag.BoolVar(&runner.V2, "v2", false, "Enable v2 mode")
+	flag.Parse()
+
 	args := runner.Args{
 		RunTests: &runner.RunTestsArgs{
 			BundleGlob: "/usr/local/libexec/tast/bundles/local/*",
@@ -177,7 +181,8 @@ func main() {
 			cfg.PrivateBundlesStampPath = "/usr/local/share/tast/.private-bundles-downloaded"
 		}
 	}
-	os.Exit(runner.Run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, &args, &cfg))
+	// os.Exit(runner.Run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, &args, &cfg))
+	os.Exit(runner.RunV2(os.Stdin, os.Stdout, &args, &cfg))
 }
 
 // writeSystemInfo writes additional system information from the DUT to files within dir.

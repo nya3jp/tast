@@ -27,6 +27,8 @@ import (
 	"chromiumos/tast/rpc"
 	"chromiumos/tast/testing"
 	"chromiumos/tast/timing"
+
+	"google.golang.org/grpc"
 )
 
 const (
@@ -37,6 +39,16 @@ const (
 	statusBadPatterns = 4 // one or more bad test patterns were passed to the bundle
 	statusNoTests     = 5 // no tests were matched by the supplied patterns
 )
+
+// runServer runs tast core server and wait.
+func runServer(ctx context.Context, stdin io.Reader, stdout, stderr io.Writer) int {
+	if err := rpc.RunServerV2(stdin, stdout, func(srv *grpc.Server) {
+		rpc.RegisterTastCoreServiceServer(srv, &Server{})
+	}); err != nil {
+		return command.WriteError(stderr, err)
+	}
+	return statusSuccess
+}
 
 // run reads a JSON-marshaled Args struct from stdin and performs the requested action.
 // Default arguments may be specified via args, which will also be updated from stdin.

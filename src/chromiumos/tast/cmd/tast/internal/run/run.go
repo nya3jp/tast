@@ -16,9 +16,11 @@ import (
 	"time"
 
 	"github.com/google/subcommands"
+	"google.golang.org/grpc"
 
 	"chromiumos/tast/cmd/tast/internal/build"
 	"chromiumos/tast/internal/runner"
+	"chromiumos/tast/rpc"
 	"chromiumos/tast/ssh"
 	"chromiumos/tast/testing"
 	"chromiumos/tast/timing"
@@ -64,6 +66,10 @@ func errorStatusf(cfg *Config, code subcommands.ExitStatus, format string, args 
 	return Status{ExitCode: code, ErrorMsg: msg}
 }
 
+func RunV2(ctx context.Context, cfg *Config) {
+	
+}
+
 // Run executes or lists tests per cfg and returns the results.
 // Messages are logged using cfg.Logger as the run progresses.
 // If an error is encountered, status.ErrorMsg will be logged to cfg.Logger before returning,
@@ -99,9 +105,24 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []TestResult)
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to build and push: %v", err), nil
 	}
 
+	var lc *grpc.ClientConn
+	if cfg.runLocal {
+		lc, err = startLocalRunnerServer(ctx, cfg, hst)
+		if err != nil {
+			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start local server: %v", err), nil
+		}
+	}
+	var rc *grpc.ClientConn
+	if cfg.runRemote {
+		rc, err = startRemoteRunnerServer(ctx, cfg)
+		if err != nil {
+			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start remote server: %v", err), nil
+		}
+	}
+
 	switch cfg.mode {
 	case ListTestsMode:
-		results, err := listTests(ctx, cfg)
+		results, err := listTests(ctx, cfg, lc, rc)
 		if err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to list tests: %v", err), nil
 		}
@@ -115,6 +136,51 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []TestResult)
 	default:
 		return errorStatusf(cfg, subcommands.ExitFailure, "Unhandled mode %d", cfg.mode), nil
 	}
+}
+
+// start both local/remote runner server.
+func startLocalRunnerServer(ctx context.Context, cfg *Config, hst *ssh.Conn) (*grpc.ClientConn, error) {
+	// run runner server command line.
+	r := localRunnerCommand(ctx, cfg, hst)
+	r.Args = append(r.Args, "-v2")
+	stdout, err := r.StdoutPipe()
+	if err != nil {
+		return nil, err
+	}
+	stdin, err := r.StdinPipe()
+	if err != nil {
+		return nil, err
+	}
+	r.Stderr = os.Stderr
+
+	if err := r.Start(ctx); err != nil {
+		return nil, err
+	}
+
+	conn, err := rpc.NewPipeClientConn(ctx, stdout, stdin)
+	if err != nil {
+		return nil, err
+	}
+	return conn, nil
+}
+
+func startRemoteRunnerServer(ctx context.Context, cfg *Config) (*grpc.ClientConn, error) {
+	r := remoteRunnerCommand(ctx, cfg)
+	stdout, err := r.StdoutPipe()
+	if err != nil {
+		return nil, err
+	}
+	stdin, err := r.StdinPipe()
+	if err != nil {
+		return nil, err
+	}
+	r.Start()
+
+	conn, err := rpc.NewPipeClientConn(ctx, stdout, stdin)
+	if err != nil {
+		return nil, err
+	}
+	return conn, nil
 }
 
 // prepare prepares the DUT for running tests. When instructed in cfg, it builds

@@ -46,6 +46,9 @@ const (
 	// install them to the DUT, write a JSON-marshaled DownloadPrivateBundlesResult struct to stdout and exit.
 	// This mode is only supported by local_test_runner.
 	DownloadPrivateBundlesMode = 6
+
+	// GRPCMode instruct to Start GRPC server.
+	GRPCMode = 7
 )
 
 // Args provides a backward- and forward-compatible way to pass arguments from the tast executable to test runners.

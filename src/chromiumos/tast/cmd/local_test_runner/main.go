@@ -177,7 +177,8 @@ func main() {
 			cfg.PrivateBundlesStampPath = "/usr/local/share/tast/.private-bundles-downloaded"
 		}
 	}
-	os.Exit(runner.Run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, &args, &cfg))
+	// os.Exit(runner.Run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, &args, &cfg))
+	os.Exit(runner.RunV2(os.Stdin, os.Stdout, &args, &cfg))
 }
 
 // writeSystemInfo writes additional system information from the DUT to files within dir.

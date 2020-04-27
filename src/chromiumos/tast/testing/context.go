@@ -7,6 +7,7 @@ package testing
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"chromiumos/tast/caller"
 )
@@ -46,6 +47,8 @@ func WithTestContext(ctx context.Context, tc *TestContext) context.Context {
 	caller.Check(2, []string{
 		"chromiumos/tast/rpc",
 		"chromiumos/tast/testing",
+		// FIXME
+		"chromiumos/tast/cmd/tast/internal/run",
 	})
 	return context.WithValue(ctx, testContextKey, tc)
 }
@@ -57,6 +60,7 @@ func WithTestContext(ctx context.Context, tc *TestContext) context.Context {
 func ContextLog(ctx context.Context, args ...interface{}) {
 	tc, ok := ctx.Value(testContextKey).(*TestContext)
 	if !ok {
+		log.Print(fmt.Sprint(args...))
 		return
 	}
 	tc.Logger(fmt.Sprint(args...))

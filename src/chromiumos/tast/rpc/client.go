@@ -80,24 +80,24 @@ func Dial(ctx context.Context, d *dut.DUT, h *testing.RPCHint, bundleName string
 		return nil, errors.Wrap(err, "failed to connect to RPC service on DUT")
 	}
 
-	return newClient(ctx, stdout, stdin, func(ctx context.Context) error {
+	return NewClient(ctx, stdout, stdin, func(ctx context.Context) error {
 		cmd.Abort()
 		return cmd.Wait(ctx)
 	})
 }
 
-// newClient establishes a gRPC connection to a test bundle executable using r and w.
+// NewClient establishes a gRPC connection to a test bundle executable using r and w.
 //
 // When this function succeeds, clean is called in Client.Close. Otherwise it is called
 // before this function returns.
-func newClient(ctx context.Context, r io.Reader, w io.Writer, clean func(context.Context) error) (_ *Client, retErr error) {
+func NewClient(ctx context.Context, r io.Reader, w io.Writer, clean func(context.Context) error) (_ *Client, retErr error) {
 	defer func() {
 		if retErr != nil {
 			clean(ctx)
 		}
 	}()
 
-	conn, err := newPipeClientConn(ctx, r, w, clientOpts()...)
+	conn, err := NewPipeClientConn(ctx, r, w, clientOpts()...)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to establish RPC connection")
 	}
@@ -121,6 +121,8 @@ func newClient(ctx context.Context, r io.Reader, w io.Writer, clean func(context
 
 var alwaysAllowedServices = []string{
 	"tast.core.Logging",
+	// FIXME: revert.
+	"tast.core.TastCoreService",
 }
 
 // clientOpts returns gRPC client-side interceptors to manipulate context.

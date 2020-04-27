@@ -7,6 +7,7 @@ package rpc
 import (
 	"context"
 	"io"
+	"log"
 	"net"
 	"sync"
 	"time"
@@ -112,6 +113,7 @@ func newPipeListener(r io.Reader, w io.Writer) *pipeListener {
 		},
 	}
 	connCh <- conn
+	log.Println("returning from newPipeListener")
 	return lis
 }
 
@@ -136,11 +138,11 @@ func (l *pipeListener) Addr() net.Addr {
 
 var _ net.Listener = (*pipeListener)(nil)
 
-// newPipeClientConn constructs ClientConn based on r and w.
+// NewPipeClientConn constructs ClientConn based on r and w.
 //
 // The returned ClientConn is suitable for talking with a gRPC server over a
 // bidirectional pipe.
-func newPipeClientConn(ctx context.Context, r io.Reader, w io.Writer, extraOpts ...grpc.DialOption) (*grpc.ClientConn, error) {
+func NewPipeClientConn(ctx context.Context, r io.Reader, w io.Writer, extraOpts ...grpc.DialOption) (*grpc.ClientConn, error) {
 	opts := append([]grpc.DialOption{
 		grpc.WithInsecure(),
 		// TODO(crbug.com/989419): Use grpc.WithContextDialer after updating grpc-go.

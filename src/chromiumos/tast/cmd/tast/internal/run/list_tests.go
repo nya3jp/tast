@@ -6,40 +6,45 @@ package run
 
 import (
 	"context"
+	"log"
 
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/internal/runner"
+	"chromiumos/tast/rpc"
 	"chromiumos/tast/ssh"
 	"chromiumos/tast/testing"
+
+	"google.golang.org/grpc"
 )
 
 // listTests returns the whole tests to run.
-func listTests(ctx context.Context, cfg *Config) ([]TestResult, error) {
-	var tests []testing.TestInstance
+func listTests(ctx context.Context, cfg *Config, lc *grpc.ClientConn, rc *grpc.ClientConn) ([]*rpc.TestInfo, error) {
+	var tests []*rpc.TestInfo
+
 	if cfg.runLocal {
-		hst, err := connectToTarget(ctx, cfg)
+		log.Println("listTests -> localTests.List")
+		localTests, err := rpc.NewTastCoreServiceClient(lc).List(ctx, &rpc.ListRequest{
+			Pattern:    cfg.Patterns,
+			BundleGlob: cfg.localBundleGlob(),
+		})
 		if err != nil {
 			return nil, err
 		}
-		localTests, err := listLocalTests(ctx, cfg, hst)
-		if err != nil {
-			return nil, err
-		}
-		tests = append(tests, localTests...)
+		tests = append(tests, localTests.Test...)
 	}
 	if cfg.runRemote {
-		remoteTests, err := listRemoteTests(ctx, cfg)
+		log.Println("listTests -> remoteTests.List")
+		remoteTests, err := rpc.NewTastCoreServiceClient(rc).List(ctx, &rpc.ListRequest{
+			Pattern:    cfg.Patterns,
+			BundleGlob: cfg.localBundleGlob(),
+		})
 		if err != nil {
 			return nil, err
 		}
-		tests = append(tests, remoteTests...)
+		tests = append(tests, remoteTests.Test...)
 	}
 
-	results := make([]TestResult, len(tests))
-	for i := 0; i < len(tests); i++ {
-		results[i].TestInstance = tests[i]
-	}
-	return results, nil
+	return tests, nil
 }
 
 // listLocalTests returns a list of local tests to run.

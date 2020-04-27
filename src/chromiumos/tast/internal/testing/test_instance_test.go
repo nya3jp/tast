@@ -559,6 +559,31 @@ func TestHardwareDeps(t *gotesting.T) {
 	}
 }
 
+func TestHardwareDepsCEL(t *gotesting.T) {
+	for i, c := range []struct {
+		input    hwdep.Deps
+		expected string
+	}{
+		{hwdep.D(hwdep.Model("model1", "model2")), "not_implemented"},
+		{hwdep.D(hwdep.SkipOnModel("model1", "model2")), "not_implemented"},
+		{hwdep.D(hwdep.Platform("platform_id1", "platform_id2")), "not_implemented"},
+		{hwdep.D(hwdep.SkipOnPlatform("platform_id1", "platform_id2")), "not_implemented"},
+		{hwdep.D(hwdep.TouchScreen()), "dut.hardware_features.screen.touch_support == api.HardwareFeatures.Present.PRESENT"},
+		{hwdep.D(hwdep.Fingerprint()), "dut.hardware_features.fingerprint.location != api.HardwareFeatures.Fingerprint.Location.NOT_PRESENT"},
+		{hwdep.D(hwdep.InternalDisplay()), "dut.hardware_features.screen.milliinch.value != 0U"},
+		{hwdep.D(hwdep.Wifi80211ac()), "not_implemented"},
+
+		{hwdep.D(hwdep.TouchScreen(), hwdep.Fingerprint()),
+			"dut.hardware_features.screen.touch_support == api.HardwareFeatures.Present.PRESENT && dut.hardware_features.fingerprint.location != api.HardwareFeatures.Fingerprint.Location.NOT_PRESENT"},
+		{hwdep.D(hwdep.Model("model1", "model2"), hwdep.SkipOnPlatform("id1", "id2")), "not_implemented && not_implemented"},
+	} {
+		actual := c.input.CEL()
+		if actual != c.expected {
+			t.Errorf("TestHardwareDepsCEL[%d]: got %q; want %q", i, actual, c.expected)
+		}
+	}
+}
+
 func TestRunSuccess(t *gotesting.T) {
 	test := TestInstance{Func: func(context.Context, *State) {}, Timeout: time.Minute}
 	or := newOutputReader()
@@ -1041,27 +1066,35 @@ func TestSortTests(t *gotesting.T) {
 func TestWriteTestsAsProto(t *gotesting.T) {
 	in := []*TestInstance{
 		{
-			Name: "test001",
-			Attr: []string{"attr1", "attr2"},
+			Name:         "test001",
+			Attr:         []string{"attr1", "attr2"},
+			HardwareDeps: hwdep.D(),
 			Contacts: []string{
 				"someone1@chromium.org",
 				"someone2@chromium.org",
 			},
 		},
 	}
-	expected := testpb.RemoteTestDriver{
-		Name: "remoteTestDrivers/tast",
-		Tests: []*testpb.Test{
+	expected := testpb.Specification{
+		RemoteTestDrivers: []*testpb.RemoteTestDriver{
 			{
-				Name: "test001",
-				Attributes: []*testpb.Attribute{
-					{Name: "attr1"},
-					{Name: "attr2"},
-				},
-				Informational: &testpb.Informational{
-					Authors: []*testpb.Contact{
-						{Type: &testpb.Contact_Email{Email: "someone1@chromium.org"}},
-						{Type: &testpb.Contact_Email{Email: "someone2@chromium.org"}},
+				Name: "remoteTestDrivers/tast",
+				Tests: []*testpb.Test{
+					{
+						Name: "remoteTestDrivers/tast/tests/test001",
+						Attributes: []*testpb.Attribute{
+							{Name: "attr1"},
+							{Name: "attr2"},
+						},
+
+						// dutconstraint is tested separately in TestHardwareDepsCEL.
+
+						Informational: &testpb.Informational{
+							Authors: []*testpb.Contact{
+								{Type: &testpb.Contact_Email{Email: "someone1@chromium.org"}},
+								{Type: &testpb.Contact_Email{Email: "someone2@chromium.org"}},
+							},
+						},
 					},
 				},
 			},
@@ -1069,7 +1102,7 @@ func TestWriteTestsAsProto(t *gotesting.T) {
 	}
 	var b bytes.Buffer
 	WriteTestsAsProto(&b, in)
-	var actual testpb.RemoteTestDriver
+	var actual testpb.Specification
 	proto.Unmarshal(b.Bytes(), &actual)
 	if !cmp.Equal(expected, actual, cmp.Comparer(proto.Equal)) {
 		t.Errorf("WriteTestsAsProto(%v): got %v; want %v", in, actual, expected)

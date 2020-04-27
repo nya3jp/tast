@@ -153,7 +153,8 @@ func TouchScreen() Condition {
 			}
 		}
 		return errors.New("DUT does not have touchscreen")
-	}}
+	}, CEL: "dut.hardware_features.screen.touch_support == api.HardwareFeatures.Present.PRESENT",
+	}
 }
 
 // Fingerprint returns a hardware dependency condition that is satisfied
@@ -169,7 +170,8 @@ func Fingerprint() Condition {
 			}
 		}
 		return errors.New("DUT does not have fingerprint sensor")
-	}}
+	}, CEL: "dut.hardware_features.fingerprint.location != api.HardwareFeatures.Fingerprint.Location.NOT_PRESENT",
+	}
 }
 
 // InternalDisplay returns a hardware dependency condition that is satisfied
@@ -185,7 +187,8 @@ func InternalDisplay() Condition {
 			}
 		}
 		return errors.New("DUT does not have an internal display")
-	}}
+	}, CEL: "dut.hardware_features.screen.milliinch.value != 0U",
+	}
 }
 
 // Wifi80211ac returns a hardware dependency condition that is satisfied

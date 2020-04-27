@@ -31,6 +31,14 @@ func RegistrationErrors() []error {
 	return registrationErrors
 }
 
+// AddPreconditionV2 adds t to the global registry.
+func AddPreconditionV2(p PreconditionV2) {
+	_, file, line, _ := runtime.Caller(1)
+	if err := GlobalRegistry().AddPreconditionV2(p); err != nil {
+		registrationErrors = append(registrationErrors, fmt.Errorf("%s:%d: %v", file, line, err))
+	}
+}
+
 // AddTest adds test t to the global registry.
 // This should be called only once in a test main file's init(),
 // and it should be the top level statement of the init()'s body.

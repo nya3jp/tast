@@ -39,3 +39,29 @@ type preconditionImpl interface {
 	// TestConfig.PreTestFunc fails); preconditions must be able to handle this.
 	Close(ctx context.Context, s *State)
 }
+
+// PreconditionV2 should be registered with testing.RegisterPreV2() in init().
+type PreconditionV2 interface {
+	// String has to be globally unique.
+	// Otherwise tast binally will fail.
+	String() string
+	// Timeout returns the timeout for this precondition (not including parents).
+	Timeout() time.Duration
+	// Parent returns the name of the parent precondition or an empty string if no parent.
+	// It can be remote precondition's name.
+	// TODO(oka): wa may want to specify in where the parent is defined.
+	Parent() string
+}
+
+// preconditinoV2Impl should be implelented if precondition has a parent.
+type preconditionV2Impl interface {
+	// Prepare is responsible for achieving the state the precondition aim for.
+	// It doesn't have to call parent precondition. It's done by the framework.
+	// Prepare isn't called if the parent precondition failed.
+	Prepare(ctx context.Context, s *State) interface{}
+	// Close is responsible for not leaving garbage Prepare may have created to the system.
+	Close(ctx context.Context, s *State)
+	// Clean is resopnsible for Close to fulfill its responsibility. It's run before the parent's Prepare().
+	// Clean is never called if parent doesn't exist.
+	Clean(ctx context.Context, s *State)
+}

@@ -8,6 +8,7 @@ import (
 	"context"
 	"errors"
 	"io"
+	"log"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -15,6 +16,28 @@ import (
 
 	"chromiumos/tast/testing"
 )
+
+// RunServerV2 runs a gRPC server for tastcore service.
+// It blocks until the client connection is closed or it encounters an error.
+// register registers services to the server.
+func RunServerV2(r io.Reader, w io.Writer, register func(srv *grpc.Server)) error {
+	ls := newRemoteLoggingServer()
+	srv := grpc.NewServer()
+	RegisterLoggingServer(srv, ls)
+
+	// Register the reflection service for easier debugging.
+	reflection.Register(srv)
+
+	register(srv)
+
+	log.Println("calling srv.Serve")
+	if err := srv.Serve(newPipeListener(r, w)); err != nil && err != io.EOF {
+		log.Println("RunServerV2 err: ", err)
+		return err
+	}
+	log.Println("returning from RunServerV2")
+	return nil
+}
 
 // RunServer runs a gRPC server providing svcs on r/w channels.
 // It blocks until the client connection is closed or it encounters an error.

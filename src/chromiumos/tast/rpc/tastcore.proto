@@ -1,0 +1,86 @@
+// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package tast.core;
+option go_package = "chromiumos/tast/rpc";
+
+// TastCoreService provides means to list/run tests.
+service TastCoreService {
+  rpc List(ListRequest) returns (ListResponse) {}
+  rpc Run(RunRequest) returns (stream RunResponse) {}
+}
+
+message ListRequest {
+  // Patterns contains patterns (either empty to list all tests, exactly one
+  // attribute expression, or one or more globs) describing which tests to list.
+  repeated string pattern = 1;
+
+  // Bundle is the path of the test bundle to execute.
+  string bundle = 2;
+}
+
+message ListResponse {
+  repeated TestInfo test = 1;
+  // Preconditions defined in the bundle.
+  repeated RawPrecondition raw_preconditions = 2;
+}
+
+message RawPrecondition {
+  // Name is the name of the precondition.
+  string name = 1;
+  // Parent is the parent precondition name or empty.
+  string parent = 2;
+}
+
+message RunRequest {
+  // args is json serialized Args.
+  string args = 1;
+
+  // Either test or pre should be filled.
+
+  // test is the tests to run.
+  // Preconditioins' method should be CLEAR or CLOSE to indicate
+  // the method to run after the main test finishes.
+  TestInfo test = 2;
+
+  // pre is the precondition to run.
+  // This field is used for running remote precondition
+  // before running a local test having the precondition.
+  // If if pre.method is PREPARE, run prepare phase.
+  // Otherwise run clean up phase.
+  Precondition precondition = 3;
+}
+
+message RunResponse {
+  // control is json serialized message of control.Run*
+  string control = 1;
+}
+
+// Precondition is the precondition info used in requests.
+message Precondition {
+  // name is the name of this precondition.
+  string name = 1;
+  // parent is the parent precondition if any.
+  Precondition parent = 2;
+  // external_parent is the name of the parent resides in a
+  // different bundle.
+  string external_parent = 3;
+  Method method = 4;
+  enum Method {
+    PREPARE = 0;
+    CLEAN = 1;
+    CLOSE = 2;
+  }
+}
+
+message TestInfo {
+  // name is the test name.
+  string name = 1;
+  // precondition is the precondition the test declares.
+  Precondition precondition = 2;
+  // skip_reason is non-empty if the test should be skipped.
+  string skip_reason = 3;
+}

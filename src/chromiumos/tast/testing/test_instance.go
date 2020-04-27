@@ -91,6 +91,7 @@ type TestInstance struct {
 	HardwareDeps hwdep.Deps    `json:"-"`
 	ServiceDeps  []string      `json:"serviceDeps,omitempty"`
 	Pre          Precondition  `json:"-"`
+	PreV2        string        `json:"pre_v2"` // TODO(oka): json field would not be needed.
 	Timeout      time.Duration `json:"timeout"`
 }
 
@@ -176,6 +177,14 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 		}
 	}
 
+	preV2 := t.PreV2
+	if preV2 != "" {
+		if pre != nil {
+			return nil, fmt.Errorf("precondition (%s) and precondition V2 (%s) can't coexist", pre, preV2)
+		}
+		// Do no check for preV2. preV2 might be defined in remote test bundle executable.
+	}
+
 	timeout := t.Timeout
 	if p.Timeout != 0 {
 		if t.Timeout != 0 {
@@ -201,6 +210,7 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 		HardwareDeps: hwDeps,
 		ServiceDeps:  append([]string(nil), t.ServiceDeps...),
 		Pre:          pre,
+		PreV2:        preV2,
 		Timeout:      timeout,
 	}, nil
 }

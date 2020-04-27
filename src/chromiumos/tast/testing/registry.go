@@ -10,6 +10,7 @@ import (
 
 // Registry holds tests and services.
 type Registry struct {
+	allPres     map[string]PreconditionV2
 	allTests    []*TestInstance
 	testNames   map[string]struct{} // names of registered tests
 	allServices []*Service
@@ -20,6 +21,21 @@ func NewRegistry() *Registry {
 	return &Registry{
 		testNames: make(map[string]struct{}),
 	}
+}
+
+// AddPreconditionV2 adds pre to the registory.
+// It only checks name duplication, but doesn't check cyclic deps.
+// Checking cyclic deps is the tast binary's responsibility.
+func (r *Registry) AddPreconditionV2(pre PreconditionV2) error {
+	if _, ok := pre.(preconditionV2Impl); !ok {
+		return fmt.Errorf("precondition V2 %s does not implement preconditionV2Impl", pre)
+	}
+	s := pre.String()
+	if _, ok := r.allPres[s]; ok {
+		return fmt.Errorf("precondition V2 %s is already registered", pre)
+	}
+	r.allPres[s] = pre
+	return nil
 }
 
 // AddTest adds t to the registry.
@@ -52,6 +68,15 @@ func (r *Registry) AddTestInstance(t *TestInstance) error {
 func (r *Registry) AddService(s *Service) error {
 	r.allServices = append(r.allServices, s)
 	return nil
+}
+
+// AllPreconditionV2s returns copies of all registered V2 preconditions.
+func (r *Registry) AllPreconditionV2s() map[string]PreconditionV2 {
+	ps := make(map[string]PreconditionV2)
+	for k, v := range r.allPres {
+		ps[k] = v
+	}
+	return ps
 }
 
 // AllTests returns copies of all registered tests.

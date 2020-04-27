@@ -9,6 +9,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"path"
 	"path/filepath"
@@ -16,9 +17,11 @@ import (
 	"time"
 
 	"github.com/google/subcommands"
+	"google.golang.org/grpc"
 
 	"chromiumos/tast/cmd/tast/internal/build"
 	"chromiumos/tast/internal/runner"
+	"chromiumos/tast/rpc"
 	"chromiumos/tast/ssh"
 	"chromiumos/tast/testing"
 	"chromiumos/tast/timing"
@@ -99,13 +102,46 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []TestResult)
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to build and push: %v", err), nil
 	}
 
+	// FIXME: adding dummy TestContextTestInfo. Revert it.
+	ctx = testing.WithTestContext(ctx, &testing.TestContext{
+		Logger:   func(msg string) { log.Print(msg) },
+		TestInfo: &testing.TestContextTestInfo{},
+	})
+
+	var lc *grpc.ClientConn
+	if cfg.runLocal {
+		lc, err = startLocalRunnerServer(ctx, cfg, hst)
+		if err != nil {
+			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start local server: %v", err), nil
+		}
+	}
+
+	cfg.runRemote = false // FIXME: revert.
+	var rc *grpc.ClientConn
+	if cfg.runRemote {
+		rc, err = startRemoteRunnerServer(ctx, cfg)
+		if err != nil {
+			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start remote server: %v", err), nil
+		}
+	}
+
 	switch cfg.mode {
 	case ListTestsMode:
-		results, err := listTests(ctx, cfg)
+		log.Println("listTests")
+		results, err := listTests(ctx, cfg, lc, rc)
+		log.Println("done listTests")
 		if err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to list tests: %v", err), nil
 		}
-		return successStatus, results
+		var res []TestResult
+		for _, r := range results {
+			res = append(res, TestResult{
+				TestInstance: testing.TestInstance{
+					Name: r.Name,
+				},
+			})
+		}
+		return successStatus, res
 	case RunTestsMode:
 		results, err := runTests(ctx, cfg)
 		if err != nil {
@@ -115,6 +151,65 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []TestResult)
 	default:
 		return errorStatusf(cfg, subcommands.ExitFailure, "Unhandled mode %d", cfg.mode), nil
 	}
+}
+
+// start both local/remote runner server.
+func startLocalRunnerServer(ctx context.Context, cfg *Config, hst *ssh.Conn) (*grpc.ClientConn, error) {
+	// run runner server command line.
+	r := localRunnerCommand(ctx, cfg, hst)
+	r.Args = append(r.Args, "-v2")
+	stdout, err := r.StdoutPipe()
+	if err != nil {
+		return nil, err
+	}
+	stdin, err := r.StdinPipe()
+	if err != nil {
+		return nil, err
+	}
+	r.Stderr = os.Stderr
+
+	if err := r.Start(ctx); err != nil {
+		return nil, err
+	}
+	go func() {
+		if err := r.Wait(ctx); err != nil {
+			log.Fatalf("local runner server failed: %v", err)
+		}
+	}()
+
+	cl, err := rpc.NewClient(ctx, stdout, stdin, func(ctx context.Context) error { return nil })
+	if err != nil {
+		return nil, err
+	}
+	// FIXME: close cl.
+	return cl.Conn, nil
+}
+
+func startRemoteRunnerServer(ctx context.Context, cfg *Config) (*grpc.ClientConn, error) {
+	r := remoteRunnerCommand(ctx, cfg)
+	stdout, err := r.StdoutPipe()
+	if err != nil {
+		return nil, err
+	}
+	stdin, err := r.StdinPipe()
+	if err != nil {
+		return nil, err
+	}
+	if err := r.Start(); err != nil {
+		return nil, err
+	}
+	go func() {
+		if err := r.Wait(); err != nil {
+			log.Fatalf("local runner server failed: %v", err)
+		}
+	}()
+
+	cl, err := rpc.NewClient(ctx, stdout, stdin, func(ctx context.Context) error { return nil })
+	if err != nil {
+		return nil, err
+	}
+	// FIXME: close cl.
+	return cl.Conn, nil
 }
 
 // prepare prepares the DUT for running tests. When instructed in cfg, it builds

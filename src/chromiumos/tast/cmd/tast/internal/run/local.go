@@ -164,20 +164,20 @@ func startLocalRunner(ctx context.Context, cfg *Config, hst *ssh.Conn, args *run
 	}
 
 	cmd := localRunnerCommand(ctx, cfg, hst)
-	cmd.cmd.Stdin = bytes.NewBuffer(argsData)
-	stdout, err := cmd.cmd.StdoutPipe()
+	cmd.Stdin = bytes.NewBuffer(argsData)
+	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		return nil, fmt.Errorf("failed to open stdout pipe: %v", err)
 	}
-	stderr, err := cmd.cmd.StderrPipe()
+	stderr, err := cmd.StderrPipe()
 	if err != nil {
 		return nil, fmt.Errorf("failed to open stderr pipe: %v", err)
 	}
 
-	if err := cmd.cmd.Start(ctx); err != nil {
+	if err := cmd.Start(ctx); err != nil {
 		return nil, fmt.Errorf("failed to start local_test_runner: %v", err)
 	}
-	return &localRunnerHandle{cmd.cmd, stdout, stderr}, nil
+	return &localRunnerHandle{cmd.Cmd, stdout, stderr}, nil
 }
 
 // runLocalRunner synchronously runs local_test_runner to completion on hst.

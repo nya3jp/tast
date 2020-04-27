@@ -40,6 +40,11 @@ The following software features are defined:
 *   `camera_720p` - The ability to capture video with frame size 1280x720.
 *   `camera_legacy` - Using [Linux Video Capture] in Chrome, and [Camera HAL1]
     in Android if ARC++ is available.
+*   `crash_selinux_stable`, `crash_selinux_unstable` - Kernel versions where
+    crash reporter components that rely selinux going to journald are stable
+    (unstable).
+    (https://crbug.com/1072054,
+     [b/155009503](https://issuetracker.google.com/155009503)).
 *   `chrome` - Support for performing user login via Chrome (i.e. using
     `session_manager` and `cryptohome`). This also implies that the
     [chromeos-chrome] Portage package is installed (which also installs Chrome

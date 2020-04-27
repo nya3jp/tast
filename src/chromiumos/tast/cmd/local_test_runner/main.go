@@ -82,6 +82,8 @@ func main() {
 			"chrome":                  "!chromeless_tty && !rialto",
 			"chrome_internal":         "chrome_internal",
 			"crashpad":                "!force_breakpad",
+			"crash_selinux_stable":    `!"kernel-5_4"`,
+			"crash_selinux_unstable":  `"kernel-5_4"`,
 			"cros_config":             "unibuild",
 			"cros_internal":           "internal",
 			"cros_video_decoder":      "!disable_cros_video_decoder",

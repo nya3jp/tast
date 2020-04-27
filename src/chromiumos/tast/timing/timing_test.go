@@ -8,10 +8,12 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"reflect"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 )
 
 // fakeClock can be used to simulate the package of time in tests.
@@ -210,8 +212,8 @@ func TestMarshalUnmarshal(t *testing.T) {
 	}
 
 	// log and newLog must be idential.
-	if !reflect.DeepEqual(log, &newLog) {
-		t.Fatalf("Log changed after marshal and unmarshal: got %+v, want +%v", &newLog, log)
+	if diff := cmp.Diff(&newLog, log, cmpopts.IgnoreUnexported(Stage{})); diff != "" {
+		t.Fatal("Log changed after marshal and unmarshal (-got +want)\n", diff)
 	}
 }
 

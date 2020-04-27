@@ -695,7 +695,7 @@ func TestUnfinishedTest(t *gotesting.T) {
 			continue
 		}
 
-		if res[0].Start != tm {
+		if !res[0].Start.Equal(tm) {
 			t.Errorf("readTestOutput returned start time %v; want %v", res[0].Start, tm)
 		}
 		if !res[0].End.IsZero() {

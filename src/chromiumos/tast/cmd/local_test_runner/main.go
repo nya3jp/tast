@@ -77,11 +77,14 @@ func main() {
 			// TODO(b/73436929) Grunt cannot run 720p due to performance issue,
 			// we should remove grunt after hardware encoding supported.
 			// daisy variants' cameras don't support 1280x720.
-			"camera_720p":             "!snow && !skate && !spring && !grunt",
-			"camera_legacy":           `!"arc-camera1" && !"arc-camera3"`,
-			"chrome":                  "!chromeless_tty && !rialto",
-			"chrome_internal":         "chrome_internal",
-			"crashpad":                "!force_breakpad",
+			"camera_720p":     "!snow && !skate && !spring && !grunt",
+			"camera_legacy":   `!"arc-camera1" && !"arc-camera3"`,
+			"chrome":          "!chromeless_tty && !rialto",
+			"chrome_internal": "chrome_internal",
+			"crashpad":        "!force_breakpad",
+			// TODO(b/155009503): Remove these once crash reporter works with selinux on 5.4
+			"crash_selinux_stable":    `!"kernel-5_4"`,
+			"crash_selinux_unstable":  `"kernel-5_4"`,
 			"cros_config":             "unibuild",
 			"cros_internal":           "internal",
 			"cros_video_decoder":      "!disable_cros_video_decoder",

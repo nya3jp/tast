@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "0fcb5593_7779f1fb",
+        "filename": "src/chromiumos/tast/ssh/exec.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-04-28T07:15:52Z",
+      "side": 1,
+      "message": "For this file only.",
+      "parentUuid": "7c49c998_65ebef9b",
+      "range": {
+        "startLine": 46,
+        "startChar": 0,
+        "endLine": 48,
+        "endChar": 0
+      },
+      "revId": "ed5209a2209ac7341a4e01575c81cd52c0fddad7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9276aedc_f2cd4675",
         "filename": "src/chromiumos/tast/ssh/exec.go",
         "patchSetId": 2
@@ -187,6 +211,30 @@
       "revId": "ed5209a2209ac7341a4e01575c81cd52c0fddad7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5093096b_6c7f0821",
+        "filename": "src/chromiumos/tast/ssh/exec.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 335,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-04-28T07:15:52Z",
+      "side": 1,
+      "message": "Ah, I failed to notice that signature of DumpLogOnError is different between testexec and ssh. I assume it\u0027s because this package can\u0027t depend on chromiumos/tast/testing, right?\n\nI hope we can use the same signature for the two packages. Can we avoid circular imports by introducing some internal packages for example?",
+      "parentUuid": "1561af8d_0225a135",
+      "range": {
+        "startLine": 335,
+        "startChar": 14,
+        "endLine": 335,
+        "endChar": 21
+      },
+      "revId": "ed5209a2209ac7341a4e01575c81cd52c0fddad7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     },
     {
       "key": {

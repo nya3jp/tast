@@ -14,17 +14,18 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
-	"testing"
+	gotesting "testing"
 	"time"
 
 	cryptossh "golang.org/x/crypto/ssh"
 
 	"chromiumos/tast/internal/sshtest"
+	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/ssh"
 	"chromiumos/tast/testutil"
 )
 
-func TestRun(t *testing.T) {
+func TestRun(t *gotesting.T) {
 	t.Parallel()
 	td := sshtest.NewTestDataConn(t)
 	defer td.Close()
@@ -38,7 +39,7 @@ func TestRun(t *testing.T) {
 	}
 }
 
-func TestCommandsOnCustomPlatform(t *testing.T) {
+func TestCommandsOnCustomPlatform(t *gotesting.T) {
 	t.Parallel()
 
 	var expectedCmd string
@@ -76,7 +77,7 @@ func TestCommandsOnCustomPlatform(t *testing.T) {
 	}
 }
 
-func TestOutput(t *testing.T) {
+func TestOutput(t *gotesting.T) {
 	t.Parallel()
 	td := sshtest.NewTestDataConn(t)
 	defer td.Close()
@@ -102,7 +103,7 @@ func TestOutput(t *testing.T) {
 	}
 }
 
-func TestCombinedOutput(t *testing.T) {
+func TestCombinedOutput(t *gotesting.T) {
 	t.Parallel()
 	td := sshtest.NewTestDataConn(t)
 	defer td.Close()
@@ -127,7 +128,7 @@ func TestCombinedOutput(t *testing.T) {
 	}
 }
 
-func TestStartWait(t *testing.T) {
+func TestStartWait(t *gotesting.T) {
 	t.Parallel()
 	td := sshtest.NewTestDataConn(t)
 	defer td.Close()
@@ -141,7 +142,7 @@ func TestStartWait(t *testing.T) {
 	}
 }
 
-func TestAbort(t *testing.T) {
+func TestAbort(t *gotesting.T) {
 	t.Parallel()
 	td := sshtest.NewTestDataConn(t)
 	defer td.Close()
@@ -158,7 +159,7 @@ func TestAbort(t *testing.T) {
 	}
 }
 
-func TestExitCode(t *testing.T) {
+func TestExitCode(t *gotesting.T) {
 	t.Parallel()
 	td := sshtest.NewTestDataConn(t)
 	defer td.Close()
@@ -192,7 +193,7 @@ func TestExitCode(t *testing.T) {
 	checkExitCode("Wait", err)
 }
 
-func TestDir(t *testing.T) {
+func TestDir(t *gotesting.T) {
 	t.Parallel()
 	td := sshtest.NewTestDataConn(t)
 	defer td.Close()
@@ -213,7 +214,7 @@ func TestDir(t *testing.T) {
 	}
 }
 
-func TestStdin(t *testing.T) {
+func TestStdin(t *gotesting.T) {
 	t.Parallel()
 	td := sshtest.NewTestDataConn(t)
 	defer td.Close()
@@ -229,7 +230,7 @@ func TestStdin(t *testing.T) {
 	}
 }
 
-func TestStdoutStderr(t *testing.T) {
+func TestStdoutStderr(t *gotesting.T) {
 	t.Parallel()
 	td := sshtest.NewTestDataConn(t)
 	defer td.Close()
@@ -251,7 +252,7 @@ func TestStdoutStderr(t *testing.T) {
 	}
 }
 
-func TestStdinPipe(t *testing.T) {
+func TestStdinPipe(t *gotesting.T) {
 	t.Parallel()
 	td := sshtest.NewTestDataConn(t)
 	defer td.Close()
@@ -277,7 +278,7 @@ func TestStdinPipe(t *testing.T) {
 	}
 }
 
-func TestStdoutPipeStderrPipe(t *testing.T) {
+func TestStdoutPipeStderrPipe(t *gotesting.T) {
 	t.Parallel()
 	td := sshtest.NewTestDataConn(t)
 	defer td.Close()
@@ -327,7 +328,7 @@ func TestStdoutPipeStderrPipe(t *testing.T) {
 	}
 }
 
-func TestPipesClosedOnWait(t *testing.T) {
+func TestPipesClosedOnWait(t *gotesting.T) {
 	t.Parallel()
 	td := sshtest.NewTestDataConn(t)
 	defer td.Close()
@@ -364,7 +365,7 @@ func TestPipesClosedOnWait(t *testing.T) {
 	}
 }
 
-func TestPipesClosedOnAbort(t *testing.T) {
+func TestPipesClosedOnAbort(t *gotesting.T) {
 	t.Parallel()
 	td := sshtest.NewTestDataConn(t)
 	defer td.Close()
@@ -404,7 +405,7 @@ func TestPipesClosedOnAbort(t *testing.T) {
 	}
 }
 
-func TestRunTimeout(t *testing.T) {
+func TestRunTimeout(t *gotesting.T) {
 	t.Parallel()
 	td := sshtest.NewTestDataConn(t)
 	defer td.Close()
@@ -416,7 +417,7 @@ func TestRunTimeout(t *testing.T) {
 	}
 }
 
-func TestOutputTimeout(t *testing.T) {
+func TestOutputTimeout(t *gotesting.T) {
 	t.Parallel()
 	td := sshtest.NewTestDataConn(t)
 	defer td.Close()
@@ -428,7 +429,7 @@ func TestOutputTimeout(t *testing.T) {
 	}
 }
 
-func TestCombinedOutputTimeout(t *testing.T) {
+func TestCombinedOutputTimeout(t *gotesting.T) {
 	t.Parallel()
 	td := sshtest.NewTestDataConn(t)
 	defer td.Close()
@@ -440,7 +441,7 @@ func TestCombinedOutputTimeout(t *testing.T) {
 	}
 }
 
-func TestStartTimeout(t *testing.T) {
+func TestStartTimeout(t *gotesting.T) {
 	t.Parallel()
 	td := sshtest.NewTestDataConn(t)
 	defer td.Close()
@@ -454,7 +455,7 @@ func TestStartTimeout(t *testing.T) {
 	}
 }
 
-func TestWaitTimeout(t *testing.T) {
+func TestWaitTimeout(t *gotesting.T) {
 	t.Parallel()
 	td := sshtest.NewTestDataConn(t)
 	defer td.Close()
@@ -470,7 +471,7 @@ func TestWaitTimeout(t *testing.T) {
 	}
 }
 
-func TestWaitTwice(t *testing.T) {
+func TestWaitTwice(t *gotesting.T) {
 	t.Parallel()
 	td := sshtest.NewTestDataConn(t)
 	defer td.Close()
@@ -488,12 +489,10 @@ func TestWaitTwice(t *testing.T) {
 	}
 }
 
-func TestDumpLogOnError(t *testing.T) {
+func TestDumpLogOnError(t *gotesting.T) {
 	t.Parallel()
 	td := sshtest.NewTestDataConn(t)
 	defer td.Close()
-
-	ctx := context.Background()
 
 	type cmd func(context.Context, ...ssh.RunOption) error
 	type cmd2 func(context.Context, ...ssh.RunOption) ([]byte, error)
@@ -535,16 +534,17 @@ func TestDumpLogOnError(t *testing.T) {
 		cmd := td.Hst.Command("sh", "-c", script)
 
 		var log bytes.Buffer
-		logger := func(a ...interface{}) {
-			fmt.Fprintln(&log, a...)
-		}
-		opt := ssh.DumpLogOnError(logger)
+		ctx := context.WithValue(context.Background(), testing.TestContextKey, &testing.TestContext{
+			Logger: func(msg string) {
+				fmt.Fprintln(&log, msg)
+			},
+		})
 
 		var err error
 		if tc.f != nil {
-			err = tc.f(cmd)(ctx, opt)
+			err = tc.f(cmd)(ctx, ssh.DumpLogOnError)
 		} else {
-			_, err = tc.f2(cmd)(ctx, opt)
+			_, err = tc.f2(cmd)(ctx, ssh.DumpLogOnError)
 		}
 
 		if !tc.fail && err != nil {
@@ -571,7 +571,7 @@ func TestDumpLogOnError(t *testing.T) {
 
 }
 
-func TestSameStdoutAndStderr(t *testing.T) {
+func TestSameStdoutAndStderr(t *gotesting.T) {
 	t.Parallel()
 	td := sshtest.NewTestDataConn(t)
 	defer td.Close()

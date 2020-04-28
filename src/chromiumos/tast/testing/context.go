@@ -9,36 +9,20 @@ import (
 	"fmt"
 
 	"chromiumos/tast/caller"
+	"chromiumos/tast/internal/testing"
 )
 
 // contextKeyType is the key type for objects attached to context.Context.
-type contextKeyType string
+type contextKeyType = testing.ContextKeyType
 
 // testContextKey is the key used for attaching a *TestContext to a context.Context.
-const testContextKey contextKeyType = "TestContext"
+const testContextKey contextKeyType = testing.TestContextKey
 
 // TestContextTestInfo contains information about the currently running test.
-type TestContextTestInfo struct {
-	// OutDir is a directory where the current test can save output files.
-	OutDir string
-	// SoftwareDeps is a list of software dependencies declared in the current test.
-	SoftwareDeps []string
-	// ServiceDeps is a list of service dependencies declared in the current test.
-	ServiceDeps []string
-}
+type TestContextTestInfo = testing.TestContextTestInfo
 
 // TestContext contains information accessible by using context.Context.
-//
-// Information in this struct is accessible from anywhere via context.Context
-// and testing.Context* functions. Each member should have strong reason to be
-// accessible without testing.State.
-type TestContext struct {
-	// Logger is a function that records a log message.
-	Logger func(msg string)
-
-	// TestInfo contains information about the current test
-	TestInfo *TestContextTestInfo
-}
+type TestContext = testing.TestContext
 
 // WithTestContext attaches TestContext to context.Context. This function can't
 // be called from tests.
@@ -55,11 +39,7 @@ func WithTestContext(ctx context.Context, tc *TestContext) context.Context {
 // providing support for tests. If testing.State is available, just call
 // State.Log or State.Logf instead.
 func ContextLog(ctx context.Context, args ...interface{}) {
-	tc, ok := ctx.Value(testContextKey).(*TestContext)
-	if !ok {
-		return
-	}
-	tc.Logger(fmt.Sprint(args...))
+	testing.ContextLog(ctx, args...)
 }
 
 // ContextLogf is similar to ContextLog but formats its arguments using fmt.Sprintf.

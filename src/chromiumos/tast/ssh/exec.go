@@ -14,6 +14,7 @@ import (
 
 	"golang.org/x/crypto/ssh"
 
+	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/shutil"
 )
 
@@ -84,39 +85,25 @@ func (s cmdState) String() string {
 
 // RunOption is the type for options which can be passed to Run, Output,
 // CombinedOutput and Wait to control precise behavior of them.
-//
-// Currently only DumpLogOnError() is the supported RunOption.
-type RunOption interface {
-	get() *runOption
-}
-
-type runOption struct {
-	dumpLogOnError func(s string)
-}
-
-func (o *runOption) get() *runOption {
-	return o
-}
+type RunOption int
 
 // DumpLogOnError instructs to dump logs if the executed command fails
 // (i.e., exited with non-zero status code).
-//
-// Usage:
-//   cmd.Run(..., ssh.DumpLogOnError(s.Log))
-//
-// TODO(oka): logger should be passed from tests because testing.ContextLog
-// can't be used from ssh package as it produces an import cycle.
-func DumpLogOnError(log func(args ...interface{})) RunOption {
-	return &runOption{
-		dumpLogOnError: func(msg string) {
-			log(msg)
-		},
+const DumpLogOnError = iota
+
+func hasOpt(opt RunOption, opts []RunOption) bool {
+	for _, o := range opts {
+		if o == opt {
+			return true
+		}
 	}
+	return false
 }
 
 var (
 	errStdoutSet = errors.New("Stdout was already set")
 	errStderrSet = errors.New("Stderr was already set")
+	errNotWaited = errors.New("Wait was not yet called")
 )
 
 // Command returns the Cmd struct to execute the named program with the given arguments.
@@ -314,26 +301,24 @@ func (c *Cmd) Wait(ctx context.Context, opts ...RunOption) error {
 		return c.sess.Wait()
 	})
 
-	for _, opt := range opts {
-		o := opt.get()
-		if err != nil && o.dumpLogOnError != nil {
-			c.dumpLog(o.dumpLogOnError)
+	if err != nil && hasOpt(DumpLogOnError, opts) {
+		if err2 := c.DumpLog(ctx); err2 != nil {
+			panic(err2) // never happen
 		}
 	}
 	return err
 }
 
-// dumpLog logs details of the executed external command, including uncaptured output.
+// DumpLog logs details of the executed external command, including uncaptured output.
 //
 // This function must be called after Wait.
-func (c *Cmd) dumpLog(logger func(string)) {
+func (c *Cmd) DumpLog(ctx context.Context) error {
 	if c.state != stateDone {
-		// This should never happen.
-		panic(fmt.Sprintf("dumpLog was called in invalid state %s", c.state))
+		return errNotWaited
 	}
-
-	logger("Command: " + shutil.EscapeSlice(c.Args))
-	logger("Uncaptured output:\n" + c.log.String())
+	testing.ContextLog(ctx, "Command: ", shutil.EscapeSlice(c.Args))
+	testing.ContextLog(ctx, "Uncaptured output:\n", c.log.String())
+	return nil
 }
 
 // Abort requests to abort the command execution.

@@ -310,6 +310,30 @@
     },
     {
       "key": {
+        "uuid": "ae4f4876_b00f761c",
+        "filename": "src/chromiumos/tast/ssh/exec.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 335,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-04-28T10:28:00Z",
+      "side": 1,
+      "message": "I confirmed we can fix cyclic imports by moving some methods and structs from tast/testing to tast/internal/testing. https://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/2169537\nWDYT?\n\nHaving a common way sounds nice, but also like a lot of work. What about leaving TODO in internal/testing and refactor it later?",
+      "parentUuid": "280d36ee_f37107a5",
+      "range": {
+        "startLine": 335,
+        "startChar": 14,
+        "endLine": 335,
+        "endChar": 21
+      },
+      "revId": "ed5209a2209ac7341a4e01575c81cd52c0fddad7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "4ade0d4c_ee779b41",
         "filename": "src/chromiumos/tast/ssh/exec.go",
         "patchSetId": 2

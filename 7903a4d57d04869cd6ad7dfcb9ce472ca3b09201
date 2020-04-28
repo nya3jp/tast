@@ -73,6 +73,24 @@
     },
     {
       "key": {
+        "uuid": "484cdcc6_b2ce3e96",
+        "filename": "src/chromiumos/tast/testing/attr_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-04-28T03:42:04Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "1281ace3_f3867c30",
+      "revId": "7903a4d57d04869cd6ad7dfcb9ce472ca3b09201",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "09573d15_a78594fa",
         "filename": "src/chromiumos/tast/testing/attr_test.go",
         "patchSetId": 1
@@ -116,6 +134,54 @@
       "revId": "7903a4d57d04869cd6ad7dfcb9ce472ca3b09201",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "343f755f_b0dce388",
+        "filename": "src/chromiumos/tast/testing/attr_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-04-28T03:42:04Z",
+      "side": 1,
+      "message": "I think \"subattribute\" is preferred spelling.\nc.f. https://english.stackexchange.com/questions/68642/should-i-use-hyphens-with-prefixes-like-sub-and-semi",
+      "parentUuid": "3b777a0a_a414d0b2",
+      "range": {
+        "startLine": 147,
+        "startChar": 29,
+        "endLine": 147,
+        "endChar": 41
+      },
+      "revId": "7903a4d57d04869cd6ad7dfcb9ce472ca3b09201",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "daf6d796_d058d749",
+        "filename": "src/chromiumos/tast/testing/attr_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-04-28T03:42:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "09573d15_a78594fa",
+      "range": {
+        "startLine": 147,
+        "startChar": 59,
+        "endLine": 147,
+        "endChar": 62
+      },
+      "revId": "7903a4d57d04869cd6ad7dfcb9ce472ca3b09201",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

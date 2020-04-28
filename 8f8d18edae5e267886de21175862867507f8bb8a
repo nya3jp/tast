@@ -19,6 +19,23 @@
     },
     {
       "key": {
+        "uuid": "09d92dfa_69cfc17a",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-04-28T16:53:03Z",
+      "side": 1,
+      "message": "Could you split this into two lines for consistency?\n\nOptional: I\u0027d recommend to avoid mentioning Kernel here, instead move it into the code.\n\nE.g.\n\n`crash_selinux_stable`: crash reporter components relying on selinux going to journald is stable.\n`crash_selinux_unstable`: ...\n\nAnd, in .go file,\n\n# Crash reporter selinux is currently unstable. TODO(b/...): remove them when resolved.\n\"crash_selinux_stable\": !\"kernel-5.4\"\n...",
+      "revId": "8f8d18edae5e267886de21175862867507f8bb8a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ae802ff8_239750fc",
         "filename": "docs/test_dependencies.md",
         "patchSetId": 2

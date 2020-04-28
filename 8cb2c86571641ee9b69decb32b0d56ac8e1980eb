@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "6bcf4359_b4013cc7",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1412469
+      },
+      "writtenOn": "2020-04-28T03:33:01Z",
+      "side": 1,
+      "message": "I think Cq-Depend is only needed when the related changes resides in other repos. In this case, chromium:2152310 is in the same repo. Do I still need to add it?",
+      "parentUuid": "644807f4_6e04f548",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 6
+      },
+      "revId": "8cb2c86571641ee9b69decb32b0d56ac8e1980eb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6459a8f0_6ac46e1a",
         "filename": "src/chromiumos/tast/testing/hwdep/dep.go",
         "patchSetId": 5
@@ -45,6 +69,30 @@
       "revId": "8cb2c86571641ee9b69decb32b0d56ac8e1980eb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1231363e_eb5c331a",
+        "filename": "src/chromiumos/tast/testing/hwdep/dep.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 206,
+      "author": {
+        "id": 1412469
+      },
+      "writtenOn": "2020-04-28T03:33:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6459a8f0_6ac46e1a",
+      "range": {
+        "startLine": 206,
+        "startChar": 10,
+        "endLine": 206,
+        "endChar": 18
+      },
+      "revId": "8cb2c86571641ee9b69decb32b0d56ac8e1980eb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

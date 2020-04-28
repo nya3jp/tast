@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "f8a87aac_ee25ab75",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-04-28T03:34:43Z",
+      "side": 1,
+      "message": "Ah you\u0027re right, it\u0027s not needed. I somehow thought that it\u0027s for a different repo.",
+      "parentUuid": "6bcf4359_b4013cc7",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 6
+      },
+      "revId": "8cb2c86571641ee9b69decb32b0d56ac8e1980eb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6459a8f0_6ac46e1a",
         "filename": "src/chromiumos/tast/testing/hwdep/dep.go",
         "patchSetId": 5

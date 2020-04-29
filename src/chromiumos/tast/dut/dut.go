@@ -219,13 +219,17 @@ func (d *DUT) KeyFile() string { return d.sopt.KeyFile }
 // (e.g. a host running a servod instance).
 func (d *DUT) KeyDir() string { return d.sopt.KeyDir }
 
+// ErrCompanionHostname is the error of deriving default companion device hostname from dut's hostname.
+// e.g. when DUT is connected with IP address.
+var ErrCompanionHostname = errors.New("cannot derive default companion device hostname")
+
 // companionDeviceHostname derives the hostname of companion device from test target
 // with the convention in Autotest.
 // (see server/cros/dnsname_mangler.py in Autotest)
 func companionDeviceHostname(dutHost, suffix string) (string, error) {
 	if ip := net.ParseIP(dutHost); ip != nil {
 		// We don't mangle IP address. Return error.
-		return "", errors.New("cannot derive companion device hostname from IP")
+		return "", ErrCompanionHostname
 	}
 
 	// Companion device hostname convention: append suffix after the first sub-domain string.

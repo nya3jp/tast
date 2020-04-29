@@ -151,10 +151,10 @@ func TestChangedFilesInHistory(t *testing.T) {
 		t.Fatal("ChangedFiles failed: ", err)
 	}
 	if exp := []CommitFile{
-		CommitFile{Deleted, deleteName},
-		CommitFile{Added, newName},
-		CommitFile{Added, symlinkName},
-		CommitFile{Modified, testName},
+		{Deleted, deleteName},
+		{Added, newName},
+		{Added, symlinkName},
+		{Modified, testName},
 	}; !reflect.DeepEqual(fns, exp) {
 		t.Errorf("ChangedFiles() = %q; want %q", fns, exp)
 	}

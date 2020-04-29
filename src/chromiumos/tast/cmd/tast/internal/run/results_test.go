@@ -717,8 +717,8 @@ func TestWriteResultsUnmatchedGlobs(t *gotesting.T) {
 
 	// Report that two tests were executed.
 	results := []TestResult{
-		TestResult{TestInstance: testing.TestInstance{Name: "pkg.Test1"}},
-		TestResult{TestInstance: testing.TestInstance{Name: "pkg.Test2"}},
+		{TestInstance: testing.TestInstance{Name: "pkg.Test1"}},
+		{TestInstance: testing.TestInstance{Name: "pkg.Test2"}},
 	}
 
 	// This matches the message logged by WriteResults followed by patterns that

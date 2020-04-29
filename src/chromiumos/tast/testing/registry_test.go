@@ -46,8 +46,8 @@ func getDupeTestPtrs(a, b []*TestInstance) []*TestInstance {
 func TestAllTests(t *gotesting.T) {
 	reg := NewRegistry()
 	allTests := []*TestInstance{
-		&TestInstance{Name: "test.Foo", Func: func(context.Context, *State) {}},
-		&TestInstance{Name: "test.Bar", Func: func(context.Context, *State) {}},
+		{Name: "test.Foo", Func: func(context.Context, *State) {}},
+		{Name: "test.Bar", Func: func(context.Context, *State) {}},
 	}
 	for _, test := range allTests {
 		if err := reg.AddTestInstance(test); err != nil {

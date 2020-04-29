@@ -15,8 +15,8 @@ func TestRunStagesFatal(t *gotesting.T) {
 	s := newState(&TestInstance{}, or.ch, &TestConfig{})
 	ranSecond := false
 	finished := runStages(context.Background(), s, []stage{
-		stage{func(ctx context.Context, s *State) { s.Fatal("failed") }, 0, time.Minute},
-		stage{func(ctx context.Context, s *State) { ranSecond = true }, 0, time.Minute},
+		{func(ctx context.Context, s *State) { s.Fatal("failed") }, 0, time.Minute},
+		{func(ctx context.Context, s *State) { ranSecond = true }, 0, time.Minute},
 	})
 	if !finished {
 		t.Error("runStages reported that stages didn't finish")
@@ -34,8 +34,8 @@ func TestRunStagesPanic(t *gotesting.T) {
 	s := newState(&TestInstance{}, or.ch, &TestConfig{})
 	ranSecond := false
 	finished := runStages(context.Background(), s, []stage{
-		stage{func(ctx context.Context, s *State) { panic("panicked") }, 0, time.Minute},
-		stage{func(ctx context.Context, s *State) { ranSecond = true }, 0, time.Minute},
+		{func(ctx context.Context, s *State) { panic("panicked") }, 0, time.Minute},
+		{func(ctx context.Context, s *State) { ranSecond = true }, 0, time.Minute},
 	})
 	if !finished {
 		t.Error("runStages reported that stages didn't finish")
@@ -56,8 +56,8 @@ func TestRunStagesTimeout(t *gotesting.T) {
 	defer func() { cont <- struct{}{} }() // wait until unit test is over
 	ranSecond := false
 	finished := runStages(context.Background(), s, []stage{
-		stage{func(ctx context.Context, s *State) { <-cont }, 0, time.Millisecond},
-		stage{func(ctx context.Context, s *State) { ranSecond = true }, 0, time.Minute},
+		{func(ctx context.Context, s *State) { <-cont }, 0, time.Millisecond},
+		{func(ctx context.Context, s *State) { ranSecond = true }, 0, time.Minute},
 	})
 	if finished {
 		t.Error("runStages reported that stages finished even though first was hanging")

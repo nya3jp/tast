@@ -64,10 +64,10 @@ func TestBadExpr(t *testing.T) {
 func ExampleExpr() {
 	e, _ := New("a && (b || c) && !d")
 	for _, attrs := range [][]string{
-		[]string{"a"},
-		[]string{"a", "b"},
-		[]string{"a", "c"},
-		[]string{"a", "c", "d"},
+		{"a"},
+		{"a", "b"},
+		{"a", "c"},
+		{"a", "c", "d"},
 	} {
 		if e.Matches(attrs) {
 			fmt.Println(attrs, "matched")
@@ -93,10 +93,10 @@ func ExampleExpr_quoted() {
 func ExampleExpr_wildcard() {
 	e, _ := New("\"foo:*\" && !\"*bar\"")
 	for _, attrs := range [][]string{
-		[]string{"foo:"},
-		[]string{"foo:a"},
-		[]string{"foo:a", "bar"},
-		[]string{"foo:a", "foo:bar"},
+		{"foo:"},
+		{"foo:a"},
+		{"foo:a", "bar"},
+		{"foo:a", "foo:bar"},
 	} {
 		if e.Matches(attrs) {
 			fmt.Println(attrs, "matched")

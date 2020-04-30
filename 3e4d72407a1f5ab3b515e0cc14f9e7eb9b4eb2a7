@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e368e5f9_8c3d9a07",
+        "filename": "src/chromiumos/tast/testing/test_instance_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 567,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-04-30T13:42:42Z",
+      "side": 1,
+      "message": "IIUC Tast supports filtering by model/platform just for a tentative implementation while we do that in the test instead of the infra during the transition period. Is this correct?",
+      "revId": "3e4d72407a1f5ab3b515e0cc14f9e7eb9b4eb2a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

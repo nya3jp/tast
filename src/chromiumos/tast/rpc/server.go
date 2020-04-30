@@ -6,7 +6,9 @@ package rpc
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 
 	"google.golang.org/grpc"
@@ -14,6 +16,7 @@ import (
 	"google.golang.org/grpc/reflection"
 
 	"chromiumos/tast/testing"
+	"chromiumos/tast/timing"
 )
 
 // RunServer runs a gRPC server providing svcs on r/w channels.
@@ -51,13 +54,25 @@ var _ grpc.ServerStream = (*serverStreamWithContext)(nil)
 
 // serverOpts returns gRPC server-side interceptors to manipulate context.
 func serverOpts(logger func(msg string)) []grpc.ServerOption {
+	var tl *timing.Log
 	before := func(ctx context.Context) (context.Context, error) {
 		md, ok := metadata.FromIncomingContext(ctx)
 		if !ok {
 			return nil, errors.New("metadata not available")
 		}
 		tc := incomingTestContext(md, logger)
-		return testing.WithTestContext(ctx, tc), nil
+		ctx = testing.WithTestContext(ctx, tc)
+		tl = timing.NewLog()
+		ctx = timing.NewContext(ctx, tl)
+		return ctx, nil
+	}
+	trailer := func() metadata.MD {
+		b, err := json.Marshal(tl)
+		if err != nil {
+			logger(fmt.Sprint("Failed to marshal timing JSON: ", err))
+			return nil
+		}
+		return metadata.Pairs(metadataTiming, string(b))
 	}
 
 	return []grpc.ServerOption{
@@ -66,6 +81,9 @@ func serverOpts(logger func(msg string)) []grpc.ServerOption {
 			if err != nil {
 				return nil, err
 			}
+			defer func() {
+				grpc.SetTrailer(ctx, trailer())
+			}()
 			return handler(ctx, req)
 		}),
 		grpc.StreamInterceptor(func(srv interface{}, stream grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
@@ -74,6 +92,9 @@ func serverOpts(logger func(msg string)) []grpc.ServerOption {
 				return err
 			}
 			stream = &serverStreamWithContext{stream, ctx}
+			defer func() {
+				stream.SetTrailer(trailer())
+			}()
 			return handler(srv, stream)
 		}),
 	}

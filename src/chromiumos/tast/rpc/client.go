@@ -6,6 +6,7 @@ package rpc
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"path/filepath"
@@ -19,6 +20,7 @@ import (
 	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/testing"
+	"chromiumos/tast/timing"
 )
 
 // Client owns a gRPC connection to the DUT for remote tests to use.
@@ -150,6 +152,27 @@ func clientOpts() []grpc.DialOption {
 		return metadata.NewOutgoingContext(ctx, md), nil
 	}
 
+	after := func(ctx context.Context, trailer metadata.MD) error {
+		tts := trailer.Get(metadataTiming)
+		if len(tts) == 0 {
+			return nil
+		}
+		if len(tts) >= 2 {
+			return errors.Errorf("gRPC trailer %s contains %d values", metadataTiming, len(tts))
+		}
+
+		var tl timing.Log
+		if err := json.Unmarshal([]byte(tts[0]), &tl); err != nil {
+			return errors.Wrapf(err, "failed to parse gRPC trailer %s", metadataTiming)
+		}
+		if _, stg, ok := timing.FromContext(ctx); ok {
+			if err := stg.Import(&tl); err != nil {
+				return errors.Wrap(err, "failed to import gRPC timing log")
+			}
+		}
+		return nil
+	}
+
 	return []grpc.DialOption{
 		grpc.WithUnaryInterceptor(func(ctx context.Context, method string, req, reply interface{},
 			cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
@@ -157,7 +180,14 @@ func clientOpts() []grpc.DialOption {
 			if err != nil {
 				return err
 			}
-			return invoker(ctx, method, req, reply, cc, opts...)
+
+			var trailer metadata.MD
+			opts = append([]grpc.CallOption{grpc.Trailer(&trailer)}, opts...)
+			retErr := invoker(ctx, method, req, reply, cc, opts...)
+			if err := after(ctx, trailer); err != nil && retErr == nil {
+				retErr = err
+			}
+			return retErr
 		}),
 		grpc.WithStreamInterceptor(func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn,
 			method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
@@ -165,7 +195,33 @@ func clientOpts() []grpc.DialOption {
 			if err != nil {
 				return nil, err
 			}
-			return streamer(ctx, desc, cc, method, opts...)
+			stream, err := streamer(ctx, desc, cc, method, opts...)
+			return &clientStreamWithAfter{ClientStream: stream, after: after}, err
 		}),
 	}
+}
+
+// clientStreamWithAfter wraps grpc.ClientStream with a function to be called
+// on the end of the streaming call.
+type clientStreamWithAfter struct {
+	grpc.ClientStream
+	after func(ctx context.Context, trailer metadata.MD) error
+	done  bool
+}
+
+func (s *clientStreamWithAfter) RecvMsg(m interface{}) error {
+	retErr := s.ClientStream.RecvMsg(m)
+	if retErr == nil {
+		return nil
+	}
+
+	if s.done {
+		return retErr
+	}
+	s.done = true
+
+	if err := s.after(s.Context(), s.Trailer()); err != nil && retErr == io.EOF {
+		retErr = err
+	}
+	return retErr
 }

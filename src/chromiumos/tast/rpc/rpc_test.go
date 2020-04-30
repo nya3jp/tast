@@ -6,6 +6,7 @@ package rpc
 
 import (
 	"context"
+	"encoding/json"
 	"io"
 	"reflect"
 	gotesting "testing"
@@ -14,6 +15,7 @@ import (
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/testing"
+	"chromiumos/tast/timing"
 )
 
 const pingServiceName = "tast.core.Ping"
@@ -243,5 +245,44 @@ func TestRPCForwardLogs(t *gotesting.T) {
 
 	if msg := <-logs; msg != exp {
 		t.Errorf("Got log %q; want %q", msg, exp)
+	}
+}
+
+func TestRPCForwardTiming(t *gotesting.T) {
+	const stageName = "hello"
+
+	log := timing.NewLog()
+	ctx := timing.NewContext(
+		testing.WithTestContext(
+			context.Background(),
+			&testing.TestContext{TestInfo: &testing.TestContextTestInfo{}}),
+		log)
+	called := false
+	pp := newPingPair(ctx, t, func(ctx context.Context) error {
+		called = true
+		_, st := timing.Start(ctx, stageName)
+		st.End()
+		return nil
+	})
+	defer pp.Close(ctx)
+
+	callCtx := testing.WithTestContext(ctx, &testing.TestContext{
+		TestInfo: &testing.TestContextTestInfo{
+			ServiceDeps: []string{pingServiceName},
+		},
+	})
+	if _, err := pp.Client.Ping(callCtx, &PingRequest{}); err != nil {
+		t.Error("Ping failed: ", err)
+	}
+	if !called {
+		t.Error("onPing not called")
+	}
+
+	if len(log.Root.Children) != 1 || log.Root.Children[0].Name != stageName {
+		b, err := json.Marshal(log)
+		if err != nil {
+			t.Fatal("Failed to marshal timing JSON: ", err)
+		}
+		t.Errorf("Unexpected timing log: got %s, want a single %q entry", string(b), stageName)
 	}
 }

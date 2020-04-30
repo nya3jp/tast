@@ -16,6 +16,7 @@ import (
 // Keys of metadata.MD. Allowed characters are [a-z0-9._-].
 const (
 	metadataSoftwareDeps = "tast-testcontext-softwaredeps"
+	metadataTiming       = "tast-timing"
 )
 
 // outgoingMetadata extracts TestContext from ctx and converts it to metadata.MD.

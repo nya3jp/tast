@@ -64,6 +64,20 @@ func FromContext(ctx context.Context) (d *DUT, ok bool) {
 	return d, ok
 }
 
+// GetHostname get the DUT's host name
+func (d *DUT) GetHostname() string {
+	return d.sopt.Hostname
+}
+
+// GetARCDeviceID get the DUT's device ID of ARC++
+func (d *DUT) GetARCDeviceID(ctx context.Context) (string, error) {
+	out, err := d.Command("android-sh", "-c", "/system/bin/getprop ro.serialno").Output(ctx)
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimSpace(string(out)), nil
+}
+
 // Close releases the DUT's resources.
 func (d *DUT) Close(ctx context.Context) error {
 	return d.Disconnect(ctx)

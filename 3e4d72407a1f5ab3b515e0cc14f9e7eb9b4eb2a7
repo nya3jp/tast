@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "9e016e7a_be8e8a3b",
+        "filename": "src/chromiumos/tast/testing/hwdep/dep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-05-01T06:46:59Z",
+      "side": 1,
+      "message": "screen resides in HardwareTopology. chromiumos/config/api/hardware_topology.proto\n\nconfig/proto/chromiumos/config/api/test/metadata/v1/metadata.proto\nmessage Scope {\n...\n   chromiumos.config.api.HardwareTopology hardware_topology \u003d 2;\n}",
+      "parentUuid": "c71ace30_17cb20b5",
+      "range": {
+        "startLine": 156,
+        "startChar": 16,
+        "endLine": 156,
+        "endChar": 33
+      },
+      "revId": "3e4d72407a1f5ab3b515e0cc14f9e7eb9b4eb2a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "a4dd7536_96e5f5bb",
         "filename": "src/chromiumos/tast/testing/internal/hwdep/hwdep.go",
         "patchSetId": 3
@@ -45,6 +69,30 @@
       "revId": "3e4d72407a1f5ab3b515e0cc14f9e7eb9b4eb2a7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e66f0ca8_000b4113",
+        "filename": "src/chromiumos/tast/testing/internal/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-05-01T06:46:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a4dd7536_96e5f5bb",
+      "range": {
+        "startLine": 33,
+        "startChar": 48,
+        "endLine": 33,
+        "endChar": 52
+      },
+      "revId": "3e4d72407a1f5ab3b515e0cc14f9e7eb9b4eb2a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "6f588f12_3a610471",
+        "filename": "src/chromiumos/tast/testing/internal/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-05-01T06:46:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3af54d72_06c03a10",
+      "range": {
+        "startLine": 34,
+        "startChar": 1,
+        "endLine": 34,
+        "endChar": 4
+      },
+      "revId": "3e4d72407a1f5ab3b515e0cc14f9e7eb9b4eb2a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e6880412_3ee55f09",
         "filename": "src/chromiumos/tast/testing/internal/hwdep/hwdep.go",
         "patchSetId": 3
@@ -94,6 +166,30 @@
     },
     {
       "key": {
+        "uuid": "2e2203e0_33656a96",
+        "filename": "src/chromiumos/tast/testing/internal/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-05-01T06:46:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e6880412_3ee55f09",
+      "range": {
+        "startLine": 97,
+        "startChar": 15,
+        "endLine": 97,
+        "endChar": 18
+      },
+      "revId": "3e4d72407a1f5ab3b515e0cc14f9e7eb9b4eb2a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5f32a2a5_55359881",
         "filename": "src/chromiumos/tast/testing/internal/hwdep/hwdep.go",
         "patchSetId": 3
@@ -105,6 +201,30 @@
       "writtenOn": "2020-05-01T06:07:31Z",
       "side": 1,
       "message": "We should not simply ignore empty CEL. It means that we haven\u0027t figured out the CEL for the condition, and thus it is not possible to compute the exported metadata correctly.\n\nI believe we should fail fast when we see an incomplete Condition without CEL. How about creating a constructor NewCondition which panics when CEL is not given? For example:\n\n func NewCondition(satisfied func(d *DeviceSetup) error, cel string, err error) Condition {\n   if cel \u003d\u003d \"\" {\n     panic(...)\n   }\n   return Condition{satisfied, cel, err}\n }\n\nThen we can drop the empty CEL check here.",
+      "range": {
+        "startLine": 100,
+        "startChar": 2,
+        "endLine": 102,
+        "endChar": 3
+      },
+      "revId": "3e4d72407a1f5ab3b515e0cc14f9e7eb9b4eb2a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c248abc5_3fbdbee3",
+        "filename": "src/chromiumos/tast/testing/internal/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-05-01T06:46:59Z",
+      "side": 1,
+      "message": "Then, should we update the protocol first for supporting functions like SkipOnModel?\nIIUC currently given data in scope.* doesn\u0027t include model / platform information.",
+      "parentUuid": "5f32a2a5_55359881",
       "range": {
         "startLine": 100,
         "startChar": 2,

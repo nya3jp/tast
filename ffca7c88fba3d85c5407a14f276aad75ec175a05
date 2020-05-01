@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0a9373ed_7bfefd0c",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-05-01T04:30:25Z",
+      "side": 1,
+      "message": "How about checking it ends with slash or accepting the form without a flash, given now it\u0027s a user\u0027s input?",
+      "range": {
+        "startLine": 150,
+        "startChar": 68,
+        "endLine": 150,
+        "endChar": 87
+      },
+      "revId": "ffca7c88fba3d85c5407a14f276aad75ec175a05",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "555cb39c_ea2a9e0c",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-05-01T04:30:25Z",
+      "side": 1,
+      "message": "Config?",
+      "range": {
+        "startLine": 152,
+        "startChar": 48,
+        "endLine": 152,
+        "endChar": 59
+      },
+      "revId": "ffca7c88fba3d85c5407a14f276aad75ec175a05",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2a0e82f6_f04e7171",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 306,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-05-01T04:30:25Z",
+      "side": 1,
+      "message": "Config?",
+      "range": {
+        "startLine": 306,
+        "startChar": 48,
+        "endLine": 306,
+        "endChar": 59
+      },
+      "revId": "ffca7c88fba3d85c5407a14f276aad75ec175a05",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

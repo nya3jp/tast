@@ -24,7 +24,7 @@ import (
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/devserver"
-	"chromiumos/tast/testing"
+	"chromiumos/tast/internal/testing"
 )
 
 const (

@@ -9,8 +9,8 @@ import (
 
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/internal/runner"
+	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/ssh"
-	"chromiumos/tast/testing"
 )
 
 // listTests returns the whole tests to run.

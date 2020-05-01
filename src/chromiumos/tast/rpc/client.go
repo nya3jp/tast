@@ -18,7 +18,7 @@ import (
 
 	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
-	"chromiumos/tast/testing"
+	"chromiumos/tast/internal/testing"
 )
 
 // Client owns a gRPC connection to the DUT for remote tests to use.

@@ -87,7 +87,7 @@ func TestInstantiate(t *gotesting.T) {
 	}
 	want := []*TestInstance{{
 		Name:     "testing.TESTINSTANCETEST",
-		Pkg:      "chromiumos/tast/testing",
+		Pkg:      "chromiumos/tast/internal/testing",
 		Desc:     "hello",
 		Contacts: []string{"a@example.com", "b@example.com"},
 		Attr: []string{
@@ -95,7 +95,7 @@ func TestInstantiate(t *gotesting.T) {
 			"informational",
 			testNameAttrPrefix + "testing.TESTINSTANCETEST",
 			// The bundle name is the second-to-last component in the package's path.
-			testBundleAttrPrefix + "tast",
+			testBundleAttrPrefix + "internal",
 			testDepAttrPrefix + "dep1",
 			testDepAttrPrefix + "dep2",
 		},
@@ -153,14 +153,14 @@ func TestInstantiateParams(t *gotesting.T) {
 	want := []*TestInstance{
 		{
 			Name: "testing.TESTINSTANCETEST",
-			Pkg:  "chromiumos/tast/testing",
+			Pkg:  "chromiumos/tast/internal/testing",
 			Val:  123,
 			Attr: []string{
 				"group:crosbolt",
 				"crosbolt_nightly",
 				testNameAttrPrefix + "testing.TESTINSTANCETEST",
 				// The bundle name is the second-to-last component in the package's path.
-				testBundleAttrPrefix + "tast",
+				testBundleAttrPrefix + "internal",
 				testDepAttrPrefix + "dep0",
 				testDepAttrPrefix + "dep1",
 			},
@@ -169,14 +169,14 @@ func TestInstantiateParams(t *gotesting.T) {
 		},
 		{
 			Name: "testing.TESTINSTANCETEST.foo",
-			Pkg:  "chromiumos/tast/testing",
+			Pkg:  "chromiumos/tast/internal/testing",
 			Val:  456,
 			Attr: []string{
 				"group:crosbolt",
 				"crosbolt_weekly",
 				testNameAttrPrefix + "testing.TESTINSTANCETEST.foo",
 				// The bundle name is the second-to-last component in the package's path.
-				testBundleAttrPrefix + "tast",
+				testBundleAttrPrefix + "internal",
 				testDepAttrPrefix + "dep0",
 				testDepAttrPrefix + "dep2",
 			},
@@ -282,7 +282,7 @@ func TestDataDir(t *gotesting.T) {
 		t.Fatalf("Got %d test instances; want 1", len(tests))
 	}
 	test := tests[0]
-	exp := filepath.Join("chromiumos/tast/testing", testDataSubdir)
+	exp := filepath.Join("chromiumos/tast/internal/testing", testDataSubdir)
 	if test.DataDir() != exp {
 		t.Errorf("DataDir() = %q; want %q", test.DataDir(), exp)
 	}
@@ -526,11 +526,11 @@ func TestInstantiateCompatAttrs(t *gotesting.T) {
 	}
 	want := []*TestInstance{{
 		Name: "testing.TESTINSTANCETEST",
-		Pkg:  "chromiumos/tast/testing",
+		Pkg:  "chromiumos/tast/internal/testing",
 		Attr: []string{
 			testNameAttrPrefix + "testing.TESTINSTANCETEST",
 			// The bundle name is the second-to-last component in the package's path.
-			testBundleAttrPrefix + "tast",
+			testBundleAttrPrefix + "internal",
 			// This attribute is added for compatibility.
 			"disabled",
 		},

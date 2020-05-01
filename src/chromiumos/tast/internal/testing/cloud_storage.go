@@ -10,7 +10,6 @@ import (
 	"sync"
 	"time"
 
-	"chromiumos/tast/caller"
 	"chromiumos/tast/internal/devserver"
 )
 
@@ -28,10 +27,6 @@ type CloudStorage struct {
 // This function is for the framework; tests should call testing.State.CloudStorage
 // to get an instance.
 func NewCloudStorage(devservers []string) *CloudStorage {
-	caller.Check(2, []string{
-		"chromiumos/tast/bundle",
-		"chromiumos/tast/testing",
-	})
 	return &CloudStorage{
 		newClient: func(ctx context.Context) devserver.Client {
 			return newClientForURLs(ctx, devservers)

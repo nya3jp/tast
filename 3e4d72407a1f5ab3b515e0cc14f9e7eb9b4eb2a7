@@ -73,6 +73,30 @@
     },
     {
       "key": {
+        "uuid": "246c7889_83efa982",
+        "filename": "src/chromiumos/tast/testing/hwdep/dep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-05-01T09:02:27Z",
+      "side": 1,
+      "message": "Thanks, now I could see it.",
+      "parentUuid": "69d2a8a5_5679e9bc",
+      "range": {
+        "startLine": 156,
+        "startChar": 16,
+        "endLine": 156,
+        "endChar": 33
+      },
+      "revId": "3e4d72407a1f5ab3b515e0cc14f9e7eb9b4eb2a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a4dd7536_96e5f5bb",
         "filename": "src/chromiumos/tast/testing/internal/hwdep/hwdep.go",
         "patchSetId": 3
@@ -285,6 +309,30 @@
     },
     {
       "key": {
+        "uuid": "0eb3dd9d_c37b97e2",
+        "filename": "src/chromiumos/tast/testing/internal/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-05-01T09:02:27Z",
+      "side": 1,
+      "message": "Started a thread there.",
+      "parentUuid": "c3ad2317_931c473f",
+      "range": {
+        "startLine": 100,
+        "startChar": 2,
+        "endLine": 102,
+        "endChar": 3
+      },
+      "revId": "3e4d72407a1f5ab3b515e0cc14f9e7eb9b4eb2a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e368e5f9_8c3d9a07",
         "filename": "src/chromiumos/tast/testing/test_instance_test.go",
         "patchSetId": 3
@@ -317,6 +365,24 @@
       "revId": "3e4d72407a1f5ab3b515e0cc14f9e7eb9b4eb2a7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "04656c47_20609fca",
+        "filename": "src/chromiumos/tast/testing/test_instance_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 567,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-05-01T09:02:27Z",
+      "side": 1,
+      "message": "Got it. We will try to bring the necessary information from f20 first.",
+      "parentUuid": "d9c74b89_fb516720",
+      "revId": "3e4d72407a1f5ab3b515e0cc14f9e7eb9b4eb2a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

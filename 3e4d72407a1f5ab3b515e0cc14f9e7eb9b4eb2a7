@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "69d2a8a5_5679e9bc",
+        "filename": "src/chromiumos/tast/testing/hwdep/dep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-05-01T06:54:37Z",
+      "side": 1,
+      "message": "scope.hardware_topology.screen exists, but it is Topology.\n\n message HardwareTopology {\n   // Specify hardware screen topology hardware.\n   // See ./hardware_topology.md#screen for more information.\n   Topology screen \u003d 1;\n\nAnd Topology does not have touch_support field.\nhttps://cs.corp.google.com/chromeos_public/src/config/proto/chromiumos/config/api/topology.proto?g\u003d0",
+      "parentUuid": "9e016e7a_be8e8a3b",
+      "range": {
+        "startLine": 156,
+        "startChar": 16,
+        "endLine": 156,
+        "endChar": 33
+      },
+      "revId": "3e4d72407a1f5ab3b515e0cc14f9e7eb9b4eb2a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "a4dd7536_96e5f5bb",
         "filename": "src/chromiumos/tast/testing/internal/hwdep/hwdep.go",
         "patchSetId": 3
@@ -225,6 +249,30 @@
       "side": 1,
       "message": "Then, should we update the protocol first for supporting functions like SkipOnModel?\nIIUC currently given data in scope.* doesn\u0027t include model / platform information.",
       "parentUuid": "5f32a2a5_55359881",
+      "range": {
+        "startLine": 100,
+        "startChar": 2,
+        "endLine": 102,
+        "endChar": 3
+      },
+      "revId": "3e4d72407a1f5ab3b515e0cc14f9e7eb9b4eb2a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c3ad2317_931c473f",
+        "filename": "src/chromiumos/tast/testing/internal/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-05-01T06:54:37Z",
+      "side": 1,
+      "message": "Yes, could you bring this up in cros-f20-discuss?",
+      "parentUuid": "c248abc5_3fbdbee3",
       "range": {
         "startLine": 100,
         "startChar": 2,

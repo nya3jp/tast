@@ -60,7 +60,7 @@ select which tests to run.
 [testing.Test]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Test
 [crosbolt]: https://crosbolt.teams.x20web.corp.google.com/prod/crosbolt/index.html
 [wificell]: https://chromium.googlesource.com/chromiumos/third_party/autotest/+/master/docs/wificell.md
-[attr.go]: https://chromium.googlesource.com/chromiumos/platform/tast/+/refs/heads/master/src/chromiumos/tast/testing/attr.go
+[attr.go]: https://chromium.googlesource.com/chromiumos/platform/tast/+/refs/heads/master/src/chromiumos/tast/internal/testing/attr.go
 [bundle]: overview.md#Test-bundles
 [software dependency]: test_dependencies.md
 [name]: writing_tests.md#Test-names

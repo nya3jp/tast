@@ -10,7 +10,7 @@ import (
 	"os"
 	"time"
 
-	"chromiumos/tast/testing"
+	"chromiumos/tast/internal/testing"
 )
 
 const (

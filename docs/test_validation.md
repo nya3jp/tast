@@ -107,7 +107,7 @@ by [PRESUBMIT.cfg] when a change is uploaded for review.
 
 Some test metadata (as specified via the [testing.Test] struct) is validated at
 runtime when tests are registered via [testing.AddTest]. This validation is
-performed by the unexported `finalize` method in [test.go]. Validated metadata
+performed by the `instantiate` function in [test_instance.go]. Validated metadata
 includes test names, data paths, and timeouts. If a test contains bad data, an
 error is reported and no tests are executed. As such, test authors typically
 notice problems while trying to run their tests locally.
@@ -117,7 +117,7 @@ unit test in [main_test.go].
 
 [testing.Test]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Test
 [testing.AddTest]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#AddTest
-[test.go]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/src/chromiumos/tast/testing/test.go
+[test_instance.go]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/src/chromiumos/tast/internal/testing/test_instance.go
 [main_test.go]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/bundles/cros/main_test.go
 
 ### Unit tests

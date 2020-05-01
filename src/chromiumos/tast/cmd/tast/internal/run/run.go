@@ -19,8 +19,8 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/build"
 	"chromiumos/tast/internal/runner"
+	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/ssh"
-	"chromiumos/tast/testing"
 	"chromiumos/tast/timing"
 )
 

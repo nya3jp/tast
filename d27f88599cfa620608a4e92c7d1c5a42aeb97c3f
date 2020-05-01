@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "98b9db8e_c283e765",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-05-01T06:16:07Z",
+      "side": 1,
+      "message": "It is like:\n\n         [14.388, \"run_remote_tests\", [\n                 [13.801, \"example.GRPC\", [\n                         [12.723, \"chrome_new\", [\n                                 [0.000, \"prepare_extensions\"],\n                                 [4.028, \"restart\", [\n                                         [3.798, \"restart_ui\"],\n                                         [0.004, \"dbusutil.Connect org.chromium.SessionManager:/org/chromium/SessionManager\"],\n                                         [0.001, \"enable_chrome_testing\"]]],\n                                 [0.152, \"wait_for_debugging_port\"],\n                                 [1.321, \"wait_for_oobe\"],\n                                 [7.069, \"login\"]]]]]]],",
+      "parentUuid": "4d9947d1_44f26286",
+      "range": {
+        "startLine": 15,
+        "startChar": 4,
+        "endLine": 15,
+        "endChar": 45
+      },
+      "revId": "d27f88599cfa620608a4e92c7d1c5a42aeb97c3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e96fe2eb_9a582cdd",
         "filename": "src/chromiumos/tast/rpc/client.go",
         "patchSetId": 1
@@ -45,6 +69,30 @@
       "revId": "d27f88599cfa620608a4e92c7d1c5a42aeb97c3f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0ef733dc_e7920b8d",
+        "filename": "src/chromiumos/tast/rpc/client.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-05-01T06:16:07Z",
+      "side": 1,
+      "message": "That is to avoid overwriting the given opts. Horrible...\n\nhttps://play.golang.org/p/W2MiiXFfoRR",
+      "parentUuid": "e96fe2eb_9a582cdd",
+      "range": {
+        "startLine": 185,
+        "startChar": 23,
+        "endLine": 185,
+        "endChar": 24
+      },
+      "revId": "d27f88599cfa620608a4e92c7d1c5a42aeb97c3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

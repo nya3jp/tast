@@ -24,7 +24,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/errors"
-	"chromiumos/tast/testing/internal/hwdep"
+	"chromiumos/tast/internal/testing/hwdep"
 )
 
 const (
@@ -171,7 +171,7 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 		pre = p.Pre
 	}
 	if pre != nil {
-		if _, ok := pre.(preconditionImpl); !ok {
+		if _, ok := pre.(PreconditionImpl); !ok {
 			return nil, fmt.Errorf("precondition %s does not implement preconditionImpl", pre)
 		}
 	}
@@ -498,7 +498,7 @@ func (t *TestInstance) Run(ctx context.Context, ch chan<- Output, cfg *TestConfi
 			s.inPre = true
 			defer func() { s.inPre = false }()
 			s.root.preCtx = t.PreCtx
-			s.root.preValue = t.Pre.(preconditionImpl).Prepare(ctx, s)
+			s.root.preValue = t.Pre.(PreconditionImpl).Prepare(ctx, s)
 		}, t.Pre.Timeout(), t.Pre.Timeout()+exitTimeout)
 	}
 
@@ -516,7 +516,7 @@ func (t *TestInstance) Run(ctx context.Context, ch chan<- Output, cfg *TestConfi
 			s.Logf("Closing precondition %q", t.Pre.String())
 			s.inPre = true
 			defer func() { s.inPre = false }()
-			t.Pre.(preconditionImpl).Close(ctx, s)
+			t.Pre.(PreconditionImpl).Close(ctx, s)
 			if t.PreCtxCancel != nil {
 				t.PreCtxCancel()
 			}

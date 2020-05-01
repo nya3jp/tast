@@ -24,8 +24,8 @@ import (
 	"chromiumos/tast/dut"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/control"
+	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/rpc"
-	"chromiumos/tast/testing"
 	"chromiumos/tast/timing"
 )
 

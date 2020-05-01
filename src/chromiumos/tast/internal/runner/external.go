@@ -20,7 +20,7 @@ import (
 	"time"
 
 	"chromiumos/tast/internal/devserver"
-	"chromiumos/tast/testing"
+	"chromiumos/tast/internal/testing"
 )
 
 // externalLinkType represents a type of an external data link.

@@ -220,7 +220,7 @@ const groupPrefix = "group:"
 
 // checkKnownAttrs validate attrs against valid groups.
 func checkKnownAttrs(attrs []string) error {
-	const defPath = "chromiumos/tast/testing/attr.go"
+	const defPath = "chromiumos/tast/internal/testing/attr.go"
 
 	var groups []*group
 	for _, attr := range attrs {

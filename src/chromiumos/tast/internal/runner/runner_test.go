@@ -21,7 +21,7 @@ import (
 
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/internal/control"
-	"chromiumos/tast/testing"
+	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
 )
 

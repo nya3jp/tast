@@ -16,7 +16,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
-	"chromiumos/tast/testing"
+	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testing/hwdep"
 	"chromiumos/tast/timing"
 )

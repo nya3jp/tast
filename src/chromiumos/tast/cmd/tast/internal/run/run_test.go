@@ -18,7 +18,7 @@ import (
 
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/runner"
-	"chromiumos/tast/testing"
+	"chromiumos/tast/internal/testing"
 )
 
 func TestRunPartialRun(t *gotesting.T) {

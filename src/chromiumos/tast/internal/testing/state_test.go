@@ -170,7 +170,7 @@ func TestReportError(t *gotesting.T) {
 		if exp := "error "; !strings.HasPrefix(lines[0], exp) {
 			t.Errorf("First line of stack trace %q doesn't start with %q", string(e.Stack), exp)
 		}
-		if exp := fmt.Sprintf("\tat chromiumos/tast/testing.TestReportError (%s:%d)", filepath.Base(e.File), e.Line); lines[1] != exp {
+		if exp := fmt.Sprintf("\tat chromiumos/tast/internal/testing.TestReportError (%s:%d)", filepath.Base(e.File), e.Line); lines[1] != exp {
 			t.Errorf("Second line of stack trace %q doesn't match %q", string(e.Stack), exp)
 		}
 	}
@@ -214,7 +214,7 @@ func TestReportErrorInPrecondition(t *gotesting.T) {
 		if exp := preFailPrefix + "error "; !strings.HasPrefix(lines[0], exp) {
 			t.Errorf("First line of stack trace %q doesn't start with %q", string(e.Stack), exp)
 		}
-		if exp := fmt.Sprintf("\tat chromiumos/tast/testing.TestReportErrorInPrecondition (%s:%d)", filepath.Base(e.File), e.Line); lines[1] != exp {
+		if exp := fmt.Sprintf("\tat chromiumos/tast/internal/testing.TestReportErrorInPrecondition (%s:%d)", filepath.Base(e.File), e.Line); lines[1] != exp {
 			t.Errorf("Second line of stack trace %q doesn't match %q", string(e.Stack), exp)
 		}
 	}
@@ -242,10 +242,10 @@ func TestExtractErrorSimple(t *gotesting.T) {
 	if exp := "meow"; e.Reason != exp {
 		t.Errorf("Error message %q is not %q", e.Reason, exp)
 	}
-	if exp := "meow\n\tat chromiumos/tast/testing.TestExtractErrorSimple"; !strings.HasPrefix(e.Stack, exp) {
+	if exp := "meow\n\tat chromiumos/tast/internal/testing.TestExtractErrorSimple"; !strings.HasPrefix(e.Stack, exp) {
 		t.Errorf("Stack trace %q doesn't start with %q", e.Stack, exp)
 	}
-	if exp := "meow\n\tat chromiumos/tast/testing.errorFunc"; !strings.Contains(e.Stack, exp) {
+	if exp := "meow\n\tat chromiumos/tast/internal/testing.errorFunc"; !strings.Contains(e.Stack, exp) {
 		t.Errorf("Stack trace %q doesn't contain %q", e.Stack, exp)
 	}
 }
@@ -271,10 +271,10 @@ func TestExtractErrorHeuristic(t *gotesting.T) {
 		if exp := "Failed something  "; !strings.HasPrefix(e.Reason, exp) {
 			t.Errorf("Error message %q doesn't start with %q", e.Reason, exp)
 		}
-		if exp := "Failed something\n\tat chromiumos/tast/testing.TestExtractErrorHeuristic"; !strings.HasPrefix(e.Stack, exp) {
+		if exp := "Failed something\n\tat chromiumos/tast/internal/testing.TestExtractErrorHeuristic"; !strings.HasPrefix(e.Stack, exp) {
 			t.Errorf("Stack trace %q doesn't start with %q", e.Stack, exp)
 		}
-		if exp := "\nmeow\n\tat chromiumos/tast/testing.errorFunc"; !strings.Contains(e.Stack, exp) {
+		if exp := "\nmeow\n\tat chromiumos/tast/internal/testing.errorFunc"; !strings.Contains(e.Stack, exp) {
 			t.Errorf("Stack trace %q doesn't contain %q", e.Stack, exp)
 		}
 	}

@@ -19,7 +19,7 @@ import (
 
 	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
-	"chromiumos/tast/testing"
+	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/timing"
 )
 

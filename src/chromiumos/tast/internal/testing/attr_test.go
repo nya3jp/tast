@@ -74,35 +74,35 @@ func TestCheckKnownAttrs(t *testing.T) {
 		// Invalid cases.
 		{
 			attrs: []string{""},
-			error: `attribute "" is invalid in current groups; see chromiumos/tast/testing/attr.go for the full list of valid attributes`,
+			error: `attribute "" is invalid in current groups; see chromiumos/tast/internal/testing/attr.go for the full list of valid attributes`,
 		},
 		{
 			attrs: []string{"informational"},
-			error: `attribute "informational" is invalid in current groups; see chromiumos/tast/testing/attr.go for the full list of valid attributes`,
+			error: `attribute "informational" is invalid in current groups; see chromiumos/tast/internal/testing/attr.go for the full list of valid attributes`,
 		},
 		{
 			attrs: []string{"informational", "disabled"},
-			error: `attribute "informational" is invalid in current groups; see chromiumos/tast/testing/attr.go for the full list of valid attributes`,
+			error: `attribute "informational" is invalid in current groups; see chromiumos/tast/internal/testing/attr.go for the full list of valid attributes`,
 		},
 		{
 			attrs: []string{"foo"},
-			error: `attribute "foo" is invalid in current groups; see chromiumos/tast/testing/attr.go for the full list of valid attributes`,
+			error: `attribute "foo" is invalid in current groups; see chromiumos/tast/internal/testing/attr.go for the full list of valid attributes`,
 		},
 		{
 			attrs: []string{"foo:bar"},
-			error: `attribute "foo:bar" is invalid in current groups; see chromiumos/tast/testing/attr.go for the full list of valid attributes`,
+			error: `attribute "foo:bar" is invalid in current groups; see chromiumos/tast/internal/testing/attr.go for the full list of valid attributes`,
 		},
 		{
 			attrs: []string{"group:mainline", "foo"},
-			error: `attribute "foo" is invalid in current groups; see chromiumos/tast/testing/attr.go for the full list of valid attributes`,
+			error: `attribute "foo" is invalid in current groups; see chromiumos/tast/internal/testing/attr.go for the full list of valid attributes`,
 		},
 		{
 			attrs: []string{"group:foo"},
-			error: `group "foo" is invalid; see chromiumos/tast/testing/attr.go for the full list of valid groups`,
+			error: `group "foo" is invalid; see chromiumos/tast/internal/testing/attr.go for the full list of valid groups`,
 		},
 		{
 			attrs: []string{"group:crosbolt", "crosbolt_weekly", "informational"},
-			error: `attribute "informational" is invalid in current groups; see chromiumos/tast/testing/attr.go for the full list of valid attributes`,
+			error: `attribute "informational" is invalid in current groups; see chromiumos/tast/internal/testing/attr.go for the full list of valid attributes`,
 		},
 	} {
 		err := checkKnownAttrs(tc.attrs)

@@ -11,7 +11,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/grpc/metadata"
 
-	"chromiumos/tast/testing"
+	"chromiumos/tast/internal/testing"
 )
 
 func TestOutgoingMetadata(t *gotesting.T) {

@@ -22,7 +22,7 @@ import (
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/sshtest"
-	"chromiumos/tast/testing"
+	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
 )
 

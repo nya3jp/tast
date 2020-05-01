@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "8e754e8f_4e1472ae",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-05-01T08:00:40Z",
+      "side": 1,
+      "message": "Nice!",
+      "parentUuid": "98b9db8e_c283e765",
+      "range": {
+        "startLine": 15,
+        "startChar": 4,
+        "endLine": 15,
+        "endChar": 45
+      },
+      "revId": "d27f88599cfa620608a4e92c7d1c5a42aeb97c3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e96fe2eb_9a582cdd",
         "filename": "src/chromiumos/tast/rpc/client.go",
         "patchSetId": 1
@@ -84,6 +108,30 @@
       "side": 1,
       "message": "That is to avoid overwriting the given opts. Horrible...\n\nhttps://play.golang.org/p/W2MiiXFfoRR",
       "parentUuid": "e96fe2eb_9a582cdd",
+      "range": {
+        "startLine": 185,
+        "startChar": 23,
+        "endLine": 185,
+        "endChar": 24
+      },
+      "revId": "d27f88599cfa620608a4e92c7d1c5a42aeb97c3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "55226ff6_a36f22d7",
+        "filename": "src/chromiumos/tast/rpc/client.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-05-01T08:00:40Z",
+      "side": 1,
+      "message": "Got it... I didn\u0027t know about this semantics.",
+      "parentUuid": "0ef733dc_e7920b8d",
       "range": {
         "startLine": 185,
         "startChar": 23,

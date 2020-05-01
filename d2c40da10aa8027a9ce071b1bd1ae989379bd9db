@@ -1,0 +1,141 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ee235996_41cabf46",
+        "filename": "src/chromiumos/tast/internal/testing/context.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-05-01T04:34:06Z",
+      "side": 1,
+      "message": "FYI: The only change from the original file is to remove caller.Check from this function.",
+      "range": {
+        "startLine": 44,
+        "startChar": 1,
+        "endLine": 44,
+        "endChar": 6
+      },
+      "revId": "d2c40da10aa8027a9ce071b1bd1ae989379bd9db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "320bf286_fb65ed26",
+        "filename": "src/chromiumos/tast/internal/testing/global.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-05-01T04:34:06Z",
+      "side": 1,
+      "message": "FYI: verifier was removed.",
+      "revId": "d2c40da10aa8027a9ce071b1bd1ae989379bd9db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2b6221d3_8064feae",
+        "filename": "src/chromiumos/tast/internal/testing/global.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-05-01T04:34:06Z",
+      "side": 1,
+      "message": "FYI: This is a new function.",
+      "range": {
+        "startLine": 60,
+        "startChar": 5,
+        "endLine": 60,
+        "endChar": 15
+      },
+      "revId": "d2c40da10aa8027a9ce071b1bd1ae989379bd9db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6ff68544_f1cd5a3f",
+        "filename": "src/chromiumos/tast/internal/testing/pre.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-05-01T04:34:06Z",
+      "side": 1,
+      "message": "FYI: PreconditionImpl is now exported.",
+      "range": {
+        "startLine": 29,
+        "startChar": 5,
+        "endLine": 29,
+        "endChar": 21
+      },
+      "revId": "d2c40da10aa8027a9ce071b1bd1ae989379bd9db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "977f28bf_3761e038",
+        "filename": "src/chromiumos/tast/internal/testing/service.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-05-01T04:34:06Z",
+      "side": 1,
+      "message": "FYI: No change in this file.",
+      "revId": "d2c40da10aa8027a9ce071b1bd1ae989379bd9db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e6f8a61a_e59b358e",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-05-01T04:34:06Z",
+      "side": 1,
+      "message": "FYI: No change in this file.",
+      "revId": "d2c40da10aa8027a9ce071b1bd1ae989379bd9db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8bad61eb_81e2d8c8",
+        "filename": "src/chromiumos/tast/internal/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-05-01T04:34:06Z",
+      "side": 1,
+      "message": "FYI: No change in this file.",
+      "revId": "d2c40da10aa8027a9ce071b1bd1ae989379bd9db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -2,6 +2,121 @@
   "comments": [
     {
       "key": {
+        "uuid": "c71ace30_17cb20b5",
+        "filename": "src/chromiumos/tast/testing/hwdep/dep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-05-01T06:07:31Z",
+      "side": 1,
+      "message": "s/hardware_topology/hardware_features/ ? Same for other conditions.",
+      "range": {
+        "startLine": 156,
+        "startChar": 16,
+        "endLine": 156,
+        "endChar": 33
+      },
+      "revId": "3e4d72407a1f5ab3b515e0cc14f9e7eb9b4eb2a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a4dd7536_96e5f5bb",
+        "filename": "src/chromiumos/tast/testing/internal/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-05-01T06:07:31Z",
+      "side": 1,
+      "message": "style: Please add a period to the end.",
+      "range": {
+        "startLine": 33,
+        "startChar": 48,
+        "endLine": 33,
+        "endChar": 52
+      },
+      "revId": "3e4d72407a1f5ab3b515e0cc14f9e7eb9b4eb2a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3af54d72_06c03a10",
+        "filename": "src/chromiumos/tast/testing/internal/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-05-01T06:07:31Z",
+      "side": 1,
+      "message": "style: CEL",
+      "range": {
+        "startLine": 34,
+        "startChar": 1,
+        "endLine": 34,
+        "endChar": 4
+      },
+      "revId": "3e4d72407a1f5ab3b515e0cc14f9e7eb9b4eb2a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e6880412_3ee55f09",
+        "filename": "src/chromiumos/tast/testing/internal/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-05-01T06:07:31Z",
+      "side": 1,
+      "message": "style: CEL",
+      "range": {
+        "startLine": 97,
+        "startChar": 15,
+        "endLine": 97,
+        "endChar": 18
+      },
+      "revId": "3e4d72407a1f5ab3b515e0cc14f9e7eb9b4eb2a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5f32a2a5_55359881",
+        "filename": "src/chromiumos/tast/testing/internal/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-05-01T06:07:31Z",
+      "side": 1,
+      "message": "We should not simply ignore empty CEL. It means that we haven\u0027t figured out the CEL for the condition, and thus it is not possible to compute the exported metadata correctly.\n\nI believe we should fail fast when we see an incomplete Condition without CEL. How about creating a constructor NewCondition which panics when CEL is not given? For example:\n\n func NewCondition(satisfied func(d *DeviceSetup) error, cel string, err error) Condition {\n   if cel \u003d\u003d \"\" {\n     panic(...)\n   }\n   return Condition{satisfied, cel, err}\n }\n\nThen we can drop the empty CEL check here.",
+      "range": {
+        "startLine": 100,
+        "startChar": 2,
+        "endLine": 102,
+        "endChar": 3
+      },
+      "revId": "3e4d72407a1f5ab3b515e0cc14f9e7eb9b4eb2a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e368e5f9_8c3d9a07",
         "filename": "src/chromiumos/tast/testing/test_instance_test.go",
         "patchSetId": 3
@@ -13,6 +128,24 @@
       "writtenOn": "2020-04-30T13:42:42Z",
       "side": 1,
       "message": "IIUC Tast supports filtering by model/platform just for a tentative implementation while we do that in the test instead of the infra during the transition period. Is this correct?",
+      "revId": "3e4d72407a1f5ab3b515e0cc14f9e7eb9b4eb2a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d9c74b89_fb516720",
+        "filename": "src/chromiumos/tast/testing/test_instance_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 567,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-05-01T06:07:31Z",
+      "side": 1,
+      "message": "- Filtering by model/platform should be supported forever. It is one of the most important use cases of hardware deps (e.g. when we want to disable a test failing only on a few old boards due to third-party driver issues).\n- It is likely that Tast stop computing device.Config at runtime. It is a short-term solution.",
+      "parentUuid": "e368e5f9_8c3d9a07",
       "revId": "3e4d72407a1f5ab3b515e0cc14f9e7eb9b4eb2a7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

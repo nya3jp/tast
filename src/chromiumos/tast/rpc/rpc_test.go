@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc"
 
 	"chromiumos/tast/errors"
-	"chromiumos/tast/testing"
+	"chromiumos/tast/internal/testing"
 )
 
 const pingServiceName = "tast.core.Ping"

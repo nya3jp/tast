@@ -10,7 +10,7 @@ import (
 	gotesting "testing"
 	"time"
 
-	"chromiumos/tast/testing"
+	"chromiumos/tast/internal/testing"
 )
 
 // TestFilter defines the condition whether or not the test should be checked.

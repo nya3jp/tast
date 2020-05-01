@@ -25,7 +25,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/runner"
-	"chromiumos/tast/testing"
+	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testing/hwdep"
 	"chromiumos/tast/testutil"
 	"chromiumos/tast/timing"

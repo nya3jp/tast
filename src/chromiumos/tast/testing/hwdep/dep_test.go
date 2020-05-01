@@ -9,7 +9,7 @@ import (
 
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
-	"chromiumos/tast/testing/internal/hwdep"
+	"chromiumos/tast/internal/testing/hwdep"
 )
 
 func verifyCondition(t *testing.T, c Condition, dc *device.Config, expectSatisfied bool) {

@@ -10,7 +10,7 @@ import (
 
 	"google.golang.org/grpc/metadata"
 
-	"chromiumos/tast/testing"
+	"chromiumos/tast/internal/testing"
 )
 
 // Keys of metadata.MD. Allowed characters are [a-z0-9._-].

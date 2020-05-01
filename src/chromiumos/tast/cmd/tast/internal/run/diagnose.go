@@ -13,8 +13,8 @@ import (
 	"strings"
 	"time"
 
+	"chromiumos/tast/internal/testingutil"
 	"chromiumos/tast/ssh"
-	"chromiumos/tast/testing"
 )
 
 // readBootID reads the current boot_id at hst.
@@ -36,10 +36,10 @@ func diagnoseSSHDrop(ctx context.Context, cfg *Config, outDir string) string {
 
 	cfg.Logger.Log("Reconnecting to diagnose lost SSH connection")
 	const reconnectTimeout = time.Minute
-	if err := testing.Poll(ctx, func(ctx context.Context) error {
+	if err := testingutil.Poll(ctx, func(ctx context.Context) error {
 		_, err := connectToTarget(ctx, cfg)
 		return err
-	}, &testing.PollOptions{Timeout: reconnectTimeout}); err != nil {
+	}, &testingutil.PollOptions{Timeout: reconnectTimeout}); err != nil {
 		return fmt.Sprint("target did not come back: ", err)
 	}
 

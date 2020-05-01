@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/reflection"
 
-	"chromiumos/tast/testing"
+	"chromiumos/tast/internal/testing"
 )
 
 // RunServer runs a gRPC server providing svcs on r/w channels.

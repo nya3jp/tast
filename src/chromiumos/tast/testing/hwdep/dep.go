@@ -13,7 +13,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/errors"
-	"chromiumos/tast/testing/internal/hwdep"
+	"chromiumos/tast/internal/testing/hwdep"
 )
 
 // Deps holds hardware dependencies all of which need to be satisfied to run a test.

@@ -14,7 +14,7 @@ import (
 	gotesting "testing"
 
 	"chromiumos/tast/internal/devserver"
-	"chromiumos/tast/testing"
+	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
 )
 

@@ -19,7 +19,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/cmd/tast/internal/run"
 	"chromiumos/tast/internal/command"
-	"chromiumos/tast/testing"
+	"chromiumos/tast/internal/testing"
 )
 
 // listCmd implements subcommands.Command to support listing tests.

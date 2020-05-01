@@ -15,7 +15,7 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/reflection"
 
-	"chromiumos/tast/testing"
+	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/timing"
 )
 

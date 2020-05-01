@@ -27,7 +27,7 @@ import (
 
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/internal/command"
-	"chromiumos/tast/testing"
+	"chromiumos/tast/internal/testing"
 )
 
 // getBundlesAndTests returns matched tests and paths to the bundles containing them.

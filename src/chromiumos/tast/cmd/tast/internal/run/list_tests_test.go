@@ -12,7 +12,7 @@ import (
 	gotesting "testing"
 
 	"chromiumos/tast/internal/runner"
-	"chromiumos/tast/testing"
+	"chromiumos/tast/internal/testing"
 )
 
 func TestListLocalTests(t *gotesting.T) {

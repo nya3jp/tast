@@ -18,8 +18,10 @@ func VerifyTestingState(fs *token.FileSet, f *ast.File) []*Issue {
 	var allowList = []string{
 		// Precondition files are valid use cases.
 		"src/chromiumos/tast/local/arc/pre.go",
+		"src/chromiumos/tast/local/arc/mtbf.go",
 		"src/chromiumos/tast/local/chrome/pre.go",
 		"src/chromiumos/tast/local/chrome/mtbf.go",
+		"src/chromiumos/tast/local/chrome/mtbfsvc.go",
 		"src/chromiumos/tast/local/crostini/pre.go",
 		// Below files are cases still under considering.
 		"src/chromiumos/tast/local/webrtc/camera.go",

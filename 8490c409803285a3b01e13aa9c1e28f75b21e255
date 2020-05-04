@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5878100e_90a68465",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-05-04T17:34:12Z",
+      "side": 1,
+      "message": "Just file a bug. Please also add b:155652348 .",
+      "revId": "8490c409803285a3b01e13aa9c1e28f75b21e255",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

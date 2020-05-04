@@ -16,6 +16,24 @@
       "revId": "880a91fd0270f4a89d91a1d28cfdbf18f1c9c126",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4c95e1be_91a1d6c5",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 231,
+      "author": {
+        "id": 1371981
+      },
+      "writtenOn": "2020-05-04T10:18:10Z",
+      "side": 1,
+      "message": "comment added.",
+      "parentUuid": "a2b3aa75_cdb4e6e7",
+      "revId": "880a91fd0270f4a89d91a1d28cfdbf18f1c9c126",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

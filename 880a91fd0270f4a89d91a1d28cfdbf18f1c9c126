@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a2b3aa75_cdb4e6e7",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 231,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-05-04T10:02:55Z",
+      "side": 1,
+      "message": "So we just drop the port info, right? Let\u0027s comment it in DefaultWifiRouterHost() and DefaultWifiPcapHost():\n\n// Note that it uses the derived hostname (from the DUT\u0027s hostname) with default port to establish a connection. If the router/pcap runs in a non-default port, caller should specify router/pcap target.",
+      "revId": "880a91fd0270f4a89d91a1d28cfdbf18f1c9c126",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

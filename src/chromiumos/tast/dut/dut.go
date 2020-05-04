@@ -227,6 +227,11 @@ var ErrCompanionHostname = errors.New("cannot derive default companion device ho
 // with the convention in Autotest.
 // (see server/cros/dnsname_mangler.py in Autotest)
 func companionDeviceHostname(dutHost, suffix string) (string, error) {
+	// Try split out port part.
+	if host, _, err := net.SplitHostPort(dutHost); err == nil {
+		dutHost = host
+	}
+
 	if ip := net.ParseIP(dutHost); ip != nil {
 		// We don't mangle IP address. Return error.
 		return "", ErrCompanionHostname
@@ -245,6 +250,9 @@ func (d *DUT) connectCompanionDevice(ctx context.Context, suffix string) (*ssh.C
 	hostname, err := companionDeviceHostname(d.sopt.Hostname, suffix)
 	if err != nil {
 		return nil, err
+	}
+	if err := ssh.ParseTarget(hostname, &sopt); err != nil {
+		return nil, ErrCompanionHostname
 	}
 	sopt.Hostname = hostname
 	sopt.ConnectTimeout = connectTimeout

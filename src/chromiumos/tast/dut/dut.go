@@ -227,6 +227,11 @@ var ErrCompanionHostname = errors.New("cannot derive default companion device ho
 // with the convention in Autotest.
 // (see server/cros/dnsname_mangler.py in Autotest)
 func companionDeviceHostname(dutHost, suffix string) (string, error) {
+	// Try split out port part.
+	if host, _, err := net.SplitHostPort(dutHost); err == nil {
+		dutHost = host
+	}
+
 	if ip := net.ParseIP(dutHost); ip != nil {
 		// We don't mangle IP address. Return error.
 		return "", ErrCompanionHostname
@@ -240,13 +245,19 @@ func companionDeviceHostname(dutHost, suffix string) (string, error) {
 
 // connectCompanionDevice connects to a companion device in test environment. e.g. WiFi AP.
 // It reuses SSH key from DUT for establishing SSH connection to a companion device.
+// Note that it uses the derived hostname (from the DUT's hostname) with default port to
+// establish a connection. If the router/pcap runs in a non-default port, router/pcap
+// target should be specified in test variables.
 func (d *DUT) connectCompanionDevice(ctx context.Context, suffix string) (*ssh.Conn, error) {
 	var sopt ssh.Options
 	hostname, err := companionDeviceHostname(d.sopt.Hostname, suffix)
 	if err != nil {
 		return nil, err
 	}
-	sopt.Hostname = hostname
+	// Let ParseTarget derive default user and port for us.
+	if err := ssh.ParseTarget(hostname, &sopt); err != nil {
+		return nil, ErrCompanionHostname
+	}
 	sopt.ConnectTimeout = connectTimeout
 	// Companion devices use the same key as DUT.
 	sopt.KeyFile = d.sopt.KeyFile

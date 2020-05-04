@@ -36,6 +36,25 @@ func TestCompanionDeviceHostnames(t *testing.T) {
 			Result:     "",
 			ShouldFail: true,
 		},
+		// With port.
+		{
+			Host:       "dut:1234",
+			Suffix:     "-suffix",
+			Result:     "dut-suffix",
+			ShouldFail: false,
+		},
+		{
+			Host:       "192.168.0.1:123",
+			Suffix:     "-suffix",
+			Result:     "",
+			ShouldFail: true,
+		},
+		{
+			Host:       "[2001:db8::1]:123",
+			Suffix:     "-suffix",
+			Result:     "",
+			ShouldFail: true,
+		},
 	}
 	for _, tc := range testcases {
 		ret, err := companionDeviceHostname(tc.Host, tc.Suffix)

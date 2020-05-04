@@ -63,6 +63,30 @@
       "revId": "8490c409803285a3b01e13aa9c1e28f75b21e255",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "88ca7a41_23481f23",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 257,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2020-05-04T23:18:55Z",
+      "side": 1,
+      "message": "Ah, I see, I missed the part about how the ssh.New() API changed, to require the caller fill in the port.\n\nI could go either way -- I\u0027d probably defer to whatever the test-breaker thinks ;)",
+      "parentUuid": "546af1c9_e3aa9d01",
+      "range": {
+        "startLine": 257,
+        "startChar": 15,
+        "endLine": 257,
+        "endChar": 26
+      },
+      "revId": "8490c409803285a3b01e13aa9c1e28f75b21e255",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

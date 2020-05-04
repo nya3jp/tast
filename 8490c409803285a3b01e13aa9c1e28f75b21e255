@@ -39,6 +39,30 @@
       "revId": "8490c409803285a3b01e13aa9c1e28f75b21e255",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "546af1c9_e3aa9d01",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 257,
+      "author": {
+        "id": 1371981
+      },
+      "writtenOn": "2020-05-04T23:13:59Z",
+      "side": 1,
+      "message": "We used to depend on the behavior that default port (22) is used if not assigned in ssh.Options. Now, Port field is merged into Hostname and we have to add port information to the Hostname field by ourselves. Then we should either net.JoinHostPort(hostname, \"22\") or do it with ParseTarget. I want to avoid re-defining 22 port here so I use ParseTarget. I think it is also possible to export the private defaultSSHPort in ssh package and do net.JoinHostPort(hostname, ssh.DefaultSSHPort).",
+      "parentUuid": "b63b44da_d1673504",
+      "range": {
+        "startLine": 257,
+        "startChar": 15,
+        "endLine": 257,
+        "endChar": 26
+      },
+      "revId": "8490c409803285a3b01e13aa9c1e28f75b21e255",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

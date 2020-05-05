@@ -37,10 +37,6 @@ func main() {
 			},
 		},
 	}
-	const (
-		// Boards that cannot run Crostini tests reliably.
-		crostiniUnstableBoards = `auron_paine || auron_yuna || banon || bob || buddy || celes || coral || cyan || edgar || elm || fizz || gandof || guado || grunt || hana || kefka || kevin || kevin64 || kukui || kefka || lulu || nocturne || octopus || reks || relm || samus || sarien || scarlet || setzer || terra || ultima || wizpig`
-	)
 	cfg := runner.Config{
 		Type:              runner.LocalRunner,
 		KillStaleRunners:  true,
@@ -88,8 +84,6 @@ func main() {
 			"cros_config":             "unibuild",
 			"cros_internal":           "internal",
 			"cros_video_decoder":      "!disable_cros_video_decoder",
-			"crostini_stable":         "!(" + crostiniUnstableBoards + ")",
-			"crostini_unstable":       crostiniUnstableBoards,
 			"crosvm_gpu":              `"crosvm-gpu"`,
 			"crossystem":              "!betty && !tast_vm", // VMs don't support few crossystem sub-commands: https://crbug.com/974615
 			"cups":                    "cups",

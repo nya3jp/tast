@@ -27,16 +27,20 @@ func runStages(ctx context.Context, s *State, stages []stage) bool {
 	// stageCh is used to signal each stage's completion to the main goroutine.
 	stageCh := make(chan struct{}, len(stages))
 
+	runStage := func(s *State, st stage) {
+		rctx, rcancel := context.WithTimeout(ctx, st.ctxTimeout)
+		defer rcancel()
+		runAndRecover(func() { st.f(rctx, s) }, s)
+		stageCh <- struct{}{}
+	}
+
 	// Run tests in a goroutine to allow the test bundle to go on to run additional tests even
 	// if one test is buggy and doesn't return after its context's deadline is reached.
 	go func() {
 		defer close(stageCh)
 		defer s.root.close()
 		for _, st := range stages {
-			rctx, rcancel := context.WithTimeout(ctx, st.ctxTimeout)
-			defer rcancel()
-			runAndRecover(func() { st.f(rctx, s) }, s)
-			stageCh <- struct{}{}
+			runStage(s, st)
 		}
 	}()
 

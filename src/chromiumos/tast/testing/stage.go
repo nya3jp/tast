@@ -32,11 +32,15 @@ func runStages(ctx context.Context, s *State, stages []stage) bool {
 	go func() {
 		defer close(stageCh)
 		defer s.root.close()
-		for _, st := range stages {
+
+		runStage := func(st stage) {
 			rctx, rcancel := context.WithTimeout(ctx, st.ctxTimeout)
 			defer rcancel()
 			runAndRecover(func() { st.f(rctx, s) }, s)
 			stageCh <- struct{}{}
+		}
+		for _, st := range stages {
+			runStage(st)
 		}
 	}()
 

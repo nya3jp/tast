@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0acc3973_8faa52ef",
+        "filename": "src/chromiumos/tast/testing/hwdep/dep.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-05-07T09:01:58Z",
+      "side": 1,
+      "message": "I believe this should be hardware_features (plural form)\n\nhttps://chromium.git.corp.google.com/chromiumos/config/+/cb9123b0b4d73e3b3e86b680b3e331d5a1a0cf85/proto/chromiumos/config/api/test/metadata/v1/metadata.proto#278",
+      "range": {
+        "startLine": 156,
+        "startChar": 16,
+        "endLine": 156,
+        "endChar": 32
+      },
+      "revId": "c1801160abd895972140669a1abbd20c36e76c24",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

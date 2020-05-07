@@ -333,6 +333,30 @@
     },
     {
       "key": {
+        "uuid": "51f1e631_4db2d1af",
+        "filename": "src/chromiumos/tast/testing/internal/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-05-07T09:01:58Z",
+      "side": 1,
+      "message": "I\u0027m afraid that it will take some time to settle on the discussion.\n\nMeanwhile, how about defaulting CEL expressions to something like \"not_implemented\"? Then evaluation will fail in infra, and it\u0027s safer than silently ignoring unsupported conditions.",
+      "parentUuid": "0eb3dd9d_c37b97e2",
+      "range": {
+        "startLine": 100,
+        "startChar": 2,
+        "endLine": 102,
+        "endChar": 3
+      },
+      "revId": "3e4d72407a1f5ab3b515e0cc14f9e7eb9b4eb2a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e368e5f9_8c3d9a07",
         "filename": "src/chromiumos/tast/testing/test_instance_test.go",
         "patchSetId": 3

@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "091e5c3c_24ea9c1a",
+        "filename": "src/chromiumos/tast/testing/stage.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-05-07T02:33:13Z",
+      "side": 1,
+      "message": "nit: s *State is not needed because it\u0027s a closure and variables from outside are available for reference.",
+      "range": {
+        "startLine": 30,
+        "startChar": 18,
+        "endLine": 30,
+        "endChar": 26
+      },
+      "revId": "b2f464380a12c2734b76972b4ab901bbad330ac0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e13de2b0_c4533dd0",
+        "filename": "src/chromiumos/tast/testing/stage.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-05-07T02:33:13Z",
+      "side": 1,
+      "message": "Could you define runStage here (i.e. just before the for loop)? runStage must not be called outside of the goroutine, and moving the function here would make it clear.",
+      "range": {
+        "startLine": 42,
+        "startChar": 2,
+        "endLine": 42,
+        "endChar": 6
+      },
+      "revId": "b2f464380a12c2734b76972b4ab901bbad330ac0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

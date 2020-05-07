@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "93989db1_e15de852",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-05-07T08:23:30Z",
+      "side": 1,
+      "message": "It sounds nice.",
+      "parentUuid": "0a9373ed_7bfefd0c",
+      "range": {
+        "startLine": 150,
+        "startChar": 68,
+        "endLine": 150,
+        "endChar": 87
+      },
+      "revId": "ffca7c88fba3d85c5407a14f276aad75ec175a05",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "555cb39c_ea2a9e0c",
         "filename": "src/chromiumos/tast/internal/runner/args.go",
         "patchSetId": 1
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "f55f5c1b_50b12b66",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-05-07T08:23:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "555cb39c_ea2a9e0c",
+      "range": {
+        "startLine": 152,
+        "startChar": 48,
+        "endLine": 152,
+        "endChar": 59
+      },
+      "revId": "ffca7c88fba3d85c5407a14f276aad75ec175a05",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2a0e82f6_f04e7171",
         "filename": "src/chromiumos/tast/internal/runner/args.go",
         "patchSetId": 1
@@ -68,6 +116,30 @@
       "revId": "ffca7c88fba3d85c5407a14f276aad75ec175a05",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "035d30f6_318c5260",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 306,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-05-07T08:23:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2a0e82f6_f04e7171",
+      "range": {
+        "startLine": 306,
+        "startChar": 48,
+        "endLine": 306,
+        "endChar": 59
+      },
+      "revId": "ffca7c88fba3d85c5407a14f276aad75ec175a05",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

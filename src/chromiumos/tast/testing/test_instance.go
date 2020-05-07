@@ -486,11 +486,8 @@ func (t *TestInstance) Run(ctx context.Context, ch chan<- Output, cfg *TestConfi
 			s.Logf("Preparing precondition %q", t.Pre)
 
 			if t.PreCtx == nil {
-				tc := &TestContext{
-					Logger: func(msg string) { s.Log(msg) },
-				}
-
-				t.PreCtx, t.PreCtxCancel = context.WithCancel(WithTestContext(context.Background(), tc))
+				// Associate PreCtx with TestContext for the first test.
+				t.PreCtx, t.PreCtxCancel = context.WithCancel(WithTestContext(context.Background(), s.testContext()))
 			}
 
 			if cfg.NextTest != nil && cfg.NextTest.Pre == t.Pre {

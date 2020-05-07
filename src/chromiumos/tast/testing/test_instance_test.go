@@ -856,6 +856,9 @@ func TestRunPreconditionContext(t *gotesting.T) {
 			t.Errorf("Different context in Prepare")
 		}
 
+		if _, ok := ContextSoftwareDeps(s.PreCtx()); !ok {
+			t.Error("ContextSoftwareDeps unavailable")
+		}
 		return nil
 	}
 

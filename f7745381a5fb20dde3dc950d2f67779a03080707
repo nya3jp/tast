@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "65470aa6_9e39d7aa",
+        "filename": "src/chromiumos/tast/genutil/genconst.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-05-07T14:14:48Z",
+      "side": 1,
+      "message": "Note: lint warned this, but skipped intentionally, since this is just moved from tast-tests repository.",
+      "range": {
+        "startLine": 1,
+        "startChar": 13,
+        "endLine": 1,
+        "endChar": 17
+      },
+      "revId": "f7745381a5fb20dde3dc950d2f67779a03080707",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7660fd2a_c6dcadf2",
+        "filename": "src/chromiumos/tast/genutil/genconst.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-05-07T14:14:48Z",
+      "side": 1,
+      "message": "The file content is exact same, except the package name and its comments.",
+      "range": {
+        "startLine": 5,
+        "startChar": 0,
+        "endLine": 5,
+        "endChar": 15
+      },
+      "revId": "f7745381a5fb20dde3dc950d2f67779a03080707",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

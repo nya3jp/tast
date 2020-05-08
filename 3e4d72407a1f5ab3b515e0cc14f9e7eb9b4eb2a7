@@ -357,6 +357,30 @@
     },
     {
       "key": {
+        "uuid": "cb5b448e_af71b4d8",
+        "filename": "src/chromiumos/tast/testing/internal/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-05-08T02:33:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "51f1e631_4db2d1af",
+      "range": {
+        "startLine": 100,
+        "startChar": 2,
+        "endLine": 102,
+        "endChar": 3
+      },
+      "revId": "3e4d72407a1f5ab3b515e0cc14f9e7eb9b4eb2a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e368e5f9_8c3d9a07",
         "filename": "src/chromiumos/tast/testing/test_instance_test.go",
         "patchSetId": 3

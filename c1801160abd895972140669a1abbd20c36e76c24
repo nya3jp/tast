@@ -22,6 +22,30 @@
       "revId": "c1801160abd895972140669a1abbd20c36e76c24",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9ab2a9a4_b38e89c6",
+        "filename": "src/chromiumos/tast/testing/hwdep/dep.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-05-08T02:33:36Z",
+      "side": 1,
+      "message": "Done.\nAlso changed to use the reference to the enum to use class name, as seen in the examples in metadata.proto.",
+      "parentUuid": "0acc3973_8faa52ef",
+      "range": {
+        "startLine": 156,
+        "startChar": 16,
+        "endLine": 156,
+        "endChar": 32
+      },
+      "revId": "c1801160abd895972140669a1abbd20c36e76c24",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

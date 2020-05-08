@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d389a53d_69984a84",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/disallow_testingstate.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-05-08T02:28:58Z",
+      "side": 0,
+      "message": "I think you\u0027d need to keep old ones until you move your preconditions.",
+      "revId": "1583cc62d5630e4d3aea5f806091243ca874df18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

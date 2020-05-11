@@ -16,6 +16,24 @@
       "revId": "1583cc62d5630e4d3aea5f806091243ca874df18",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f195cacf_abd1ea94",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/disallow_testingstate.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1179631
+      },
+      "writtenOn": "2020-05-11T05:18:55Z",
+      "side": 0,
+      "message": "I\u0027m planning on submitting this after those CLs are landed.",
+      "parentUuid": "d389a53d_69984a84",
+      "revId": "1583cc62d5630e4d3aea5f806091243ca874df18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

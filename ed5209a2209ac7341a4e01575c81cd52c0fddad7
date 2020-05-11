@@ -382,6 +382,30 @@
     },
     {
       "key": {
+        "uuid": "d492872f_9f5f8f66",
+        "filename": "src/chromiumos/tast/ssh/exec.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 335,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-05-11T02:48:16Z",
+      "side": 1,
+      "message": "As chatted offline, let me work on introducing the common logging framework.",
+      "parentUuid": "bdc63e53_19362760",
+      "range": {
+        "startLine": 335,
+        "startChar": 14,
+        "endLine": 335,
+        "endChar": 21
+      },
+      "revId": "ed5209a2209ac7341a4e01575c81cd52c0fddad7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "4ade0d4c_ee779b41",
         "filename": "src/chromiumos/tast/ssh/exec.go",
         "patchSetId": 2

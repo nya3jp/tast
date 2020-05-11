@@ -148,7 +148,8 @@ func runTestsAndReport(ctx context.Context, args *Args, cfg *Config, stdout io.W
 		}
 
 		cl := newDevserverClient(ctx, args.RunTests.Devservers, lf)
-		processExternalDataLinks(ctx, args.RunTests.BundleArgs.DataDir, args.RunTests.BuildArtifactsURL, tests, cl, lf)
+		actualTests := filterSkippedTests(args, tests)
+		processExternalDataLinks(ctx, args.RunTests.BundleArgs.DataDir, args.RunTests.BuildArtifactsURL, actualTests, cl, lf)
 
 		// Hereafter, heartbeat messages are sent by bundles.
 		hbw.Stop()
@@ -166,6 +167,21 @@ func runTestsAndReport(ctx context.Context, args *Args, cfg *Config, stdout io.W
 	}
 
 	mw.WriteMessage(&control.RunEnd{Time: time.Now(), OutDir: bundleArgs.RunTests.OutDir})
+}
+
+// filterSkippedTests computes a subset of tests which are not skipped by software/hardware dependencies.
+func filterSkippedTests(args *Args, tests []*testing.TestInstance) []*testing.TestInstance {
+	if !args.RunTests.BundleArgs.CheckSoftwareDeps {
+		return tests
+	}
+
+	var filtered []*testing.TestInstance
+	for _, t := range tests {
+		if ok, _ := t.ShouldRun(args.RunTests.BundleArgs.AvailableSoftwareFeatures, args.RunTests.BundleArgs.DeviceConfig); ok {
+			filtered = append(filtered, t)
+		}
+	}
+	return filtered
 }
 
 // runTestsAndLog runs bundles serially to perform testing and logs human-readable results to stdout.

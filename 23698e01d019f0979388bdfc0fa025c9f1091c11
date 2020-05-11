@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "25bb975c_51e622c0",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1300299
+      },
+      "writtenOn": "2020-05-11T23:14:03Z",
+      "side": 1,
+      "message": "hana-kernelnext, right?",
+      "range": {
+        "startLine": 7,
+        "startChar": 26,
+        "endLine": 7,
+        "endChar": 30
+      },
+      "revId": "23698e01d019f0979388bdfc0fa025c9f1091c11",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

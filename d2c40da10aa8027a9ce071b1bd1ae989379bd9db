@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "e1f0553e_4e22bfde",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-05-11T00:59:54Z",
+      "side": 1,
+      "message": "I agree with you in that attributes are part of public APIs. OTOH validGroups itself is unexported... IMHO it\u0027s rather internal implementations details, and strictly speaking we lack public API documentation of attributes.\n\nIn current F20 plan we\u0027re going to expose attributes to infra so that they can use them to select tests to run. Since the infra config is versioned (in contrast to Autotest control files), it means that we can never rename attributes after some point. So I expect we have to migrate testing.Test.Attr to non-string representations to make an API boundary, just like what we\u0027ve done with HardwareDeps. When it happens, we finally get the public APIs for attributes (e.g. something like group.Mainline{Informational: True}).\n\nSo, for now, please let me just keep attr.go in internal/testing, because it is likely we have to make drastic changes to attribute API.",
+      "parentUuid": "b75fb93d_27c9ce93",
+      "revId": "d2c40da10aa8027a9ce071b1bd1ae989379bd9db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ee235996_41cabf46",
         "filename": "src/chromiumos/tast/internal/testing/context.go",
         "patchSetId": 2
@@ -82,6 +100,30 @@
     },
     {
       "key": {
+        "uuid": "1fd8aac2_dd8e4950",
+        "filename": "src/chromiumos/tast/internal/testing/global.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-05-11T00:59:54Z",
+      "side": 1,
+      "message": "That\u0027s right, done.",
+      "parentUuid": "42efcc58_c536b868",
+      "range": {
+        "startLine": 31,
+        "startChar": 0,
+        "endLine": 32,
+        "endChar": 65
+      },
+      "revId": "d2c40da10aa8027a9ce071b1bd1ae989379bd9db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4891c518_97976be9",
         "filename": "src/chromiumos/tast/internal/testing/global.go",
         "patchSetId": 2
@@ -102,6 +144,30 @@
       "revId": "d2c40da10aa8027a9ce071b1bd1ae989379bd9db",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6776c1e9_94e96e1b",
+        "filename": "src/chromiumos/tast/internal/testing/global.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-05-11T00:59:54Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4891c518_97976be9",
+      "range": {
+        "startLine": 52,
+        "startChar": 0,
+        "endLine": 52,
+        "endChar": 67
+      },
+      "revId": "d2c40da10aa8027a9ce071b1bd1ae989379bd9db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -148,6 +214,30 @@
       "revId": "d2c40da10aa8027a9ce071b1bd1ae989379bd9db",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "014f1760_77ede825",
+        "filename": "src/chromiumos/tast/internal/testing/global.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-05-11T00:59:54Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a0975037_3908a0fe",
+      "range": {
+        "startLine": 63,
+        "startChar": 32,
+        "endLine": 63,
+        "endChar": 58
+      },
+      "revId": "d2c40da10aa8027a9ce071b1bd1ae989379bd9db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {

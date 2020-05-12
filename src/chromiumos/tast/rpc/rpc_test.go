@@ -14,6 +14,7 @@ import (
 	"google.golang.org/grpc"
 
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/timing"
 )
@@ -103,7 +104,7 @@ func newPingPair(ctx context.Context, t *gotesting.T, onPing func(context.Contex
 }
 
 func TestRPCSuccess(t *gotesting.T) {
-	ctx := testing.WithTestContext(context.Background(), &testing.TestContext{TestInfo: &testing.TestContextTestInfo{}})
+	ctx := testing.WithTestContext(context.Background(), &testing.TestContext{})
 	called := false
 	pp := newPingPair(ctx, t, func(context.Context) error {
 		called = true
@@ -112,9 +113,7 @@ func TestRPCSuccess(t *gotesting.T) {
 	defer pp.Close(ctx)
 
 	callCtx := testing.WithTestContext(ctx, &testing.TestContext{
-		TestInfo: &testing.TestContextTestInfo{
-			ServiceDeps: []string{pingServiceName},
-		},
+		ServiceDeps: []string{pingServiceName},
 	})
 	if _, err := pp.Client.Ping(callCtx, &PingRequest{}); err != nil {
 		t.Error("Ping failed: ", err)
@@ -125,7 +124,7 @@ func TestRPCSuccess(t *gotesting.T) {
 }
 
 func TestRPCFailure(t *gotesting.T) {
-	ctx := testing.WithTestContext(context.Background(), &testing.TestContext{TestInfo: &testing.TestContextTestInfo{}})
+	ctx := testing.WithTestContext(context.Background(), &testing.TestContext{})
 	called := false
 	pp := newPingPair(ctx, t, func(context.Context) error {
 		called = true
@@ -134,9 +133,7 @@ func TestRPCFailure(t *gotesting.T) {
 	defer pp.Close(ctx)
 
 	callCtx := testing.WithTestContext(ctx, &testing.TestContext{
-		TestInfo: &testing.TestContextTestInfo{
-			ServiceDeps: []string{pingServiceName},
-		},
+		ServiceDeps: []string{pingServiceName},
 	})
 	if _, err := pp.Client.Ping(callCtx, &PingRequest{}); err == nil {
 		t.Error("Ping unexpectedly succeeded")
@@ -147,7 +144,7 @@ func TestRPCFailure(t *gotesting.T) {
 }
 
 func TestRPCNoTestContext(t *gotesting.T) {
-	ctx := testing.WithTestContext(context.Background(), &testing.TestContext{TestInfo: &testing.TestContextTestInfo{}})
+	ctx := testing.WithTestContext(context.Background(), &testing.TestContext{})
 	called := false
 	pp := newPingPair(ctx, t, func(context.Context) error {
 		called = true
@@ -164,14 +161,12 @@ func TestRPCNoTestContext(t *gotesting.T) {
 }
 
 func TestRPCRejectUndeclaredServices(t *gotesting.T) {
-	ctx := testing.WithTestContext(context.Background(), &testing.TestContext{TestInfo: &testing.TestContextTestInfo{}})
+	ctx := testing.WithTestContext(context.Background(), &testing.TestContext{})
 	pp := newPingPair(ctx, t, func(context.Context) error { return nil })
 	defer pp.Close(ctx)
 
 	callCtx := testing.WithTestContext(ctx, &testing.TestContext{
-		TestInfo: &testing.TestContextTestInfo{
-			ServiceDeps: []string{"foo.Bar"},
-		},
+		ServiceDeps: []string{"foo.Bar"},
 	})
 	if _, err := pp.Client.Ping(callCtx, &PingRequest{}); err == nil {
 		t.Error("Ping unexpectedly succeeded despite undeclared service")
@@ -181,7 +176,7 @@ func TestRPCRejectUndeclaredServices(t *gotesting.T) {
 func TestRPCForwardTestContext(t *gotesting.T) {
 	expectedDeps := []string{"chrome", "android_p"}
 
-	ctx := testing.WithTestContext(context.Background(), &testing.TestContext{TestInfo: &testing.TestContextTestInfo{}})
+	ctx := testing.WithTestContext(context.Background(), &testing.TestContext{})
 	called := false
 	var deps []string
 	var depsOK bool
@@ -197,10 +192,8 @@ func TestRPCForwardTestContext(t *gotesting.T) {
 	}
 
 	callCtx := testing.WithTestContext(ctx, &testing.TestContext{
-		TestInfo: &testing.TestContextTestInfo{
-			ServiceDeps:  []string{pingServiceName},
-			SoftwareDeps: expectedDeps,
-		},
+		ServiceDeps:  []string{pingServiceName},
+		SoftwareDeps: expectedDeps,
 	})
 	if _, err := pp.Client.Ping(callCtx, &PingRequest{}); err != nil {
 		t.Error("Ping failed: ", err)
@@ -218,23 +211,20 @@ func TestRPCForwardLogs(t *gotesting.T) {
 	const exp = "hello"
 
 	logs := make(chan string, 1)
-	ctx := testing.WithTestContext(context.Background(), &testing.TestContext{
-		Logger:   func(msg string) { logs <- msg },
-		TestInfo: &testing.TestContextTestInfo{},
-	})
+	ctx := context.Background()
+	ctx = logging.NewContext(ctx, func(msg string) { logs <- msg })
+	ctx = testing.WithTestContext(ctx, &testing.TestContext{})
 
 	called := false
 	pp := newPingPair(ctx, t, func(ctx context.Context) error {
 		called = true
-		testing.ContextLog(ctx, exp)
+		logging.ContextLog(ctx, exp)
 		return nil
 	})
 	defer pp.Close(ctx)
 
 	callCtx := testing.WithTestContext(ctx, &testing.TestContext{
-		TestInfo: &testing.TestContextTestInfo{
-			ServiceDeps: []string{pingServiceName},
-		},
+		ServiceDeps: []string{pingServiceName},
 	})
 	if _, err := pp.Client.Ping(callCtx, &PingRequest{}); err != nil {
 		t.Error("Ping failed: ", err)
@@ -251,12 +241,11 @@ func TestRPCForwardLogs(t *gotesting.T) {
 func TestRPCForwardTiming(t *gotesting.T) {
 	const stageName = "hello"
 
+	ctx := context.Background()
+	ctx = testing.WithTestContext(ctx, &testing.TestContext{})
 	log := timing.NewLog()
-	ctx := timing.NewContext(
-		testing.WithTestContext(
-			context.Background(),
-			&testing.TestContext{TestInfo: &testing.TestContextTestInfo{}}),
-		log)
+	ctx = timing.NewContext(ctx, log)
+
 	called := false
 	pp := newPingPair(ctx, t, func(ctx context.Context) error {
 		called = true
@@ -267,9 +256,7 @@ func TestRPCForwardTiming(t *gotesting.T) {
 	defer pp.Close(ctx)
 
 	callCtx := testing.WithTestContext(ctx, &testing.TestContext{
-		TestInfo: &testing.TestContextTestInfo{
-			ServiceDeps: []string{pingServiceName},
-		},
+		ServiceDeps: []string{pingServiceName},
 	})
 	if _, err := pp.Client.Ping(callCtx, &PingRequest{}); err != nil {
 		t.Error("Ping failed: ", err)

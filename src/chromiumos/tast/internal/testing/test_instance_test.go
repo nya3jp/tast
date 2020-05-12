@@ -21,6 +21,7 @@ import (
 	testpb "go.chromium.org/chromiumos/config/go/api/test/metadata/v1"
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/testing/hwdep"
 	"chromiumos/tast/testutil"
 )
@@ -943,8 +944,8 @@ func TestRunPreconditionContext(t *gotesting.T) {
 func TestAttachStateToContext(t *gotesting.T) {
 	test := TestInstance{
 		Func: func(ctx context.Context, s *State) {
-			ContextLog(ctx, "msg ", 1)
-			ContextLogf(ctx, "msg %d", 2)
+			logging.ContextLog(ctx, "msg ", 1)
+			logging.ContextLogf(ctx, "msg %d", 2)
 		},
 		Timeout: time.Minute,
 	}

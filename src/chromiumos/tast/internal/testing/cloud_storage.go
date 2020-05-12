@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"chromiumos/tast/internal/devserver"
+	"chromiumos/tast/internal/logging"
 )
 
 // CloudStorage allows Tast tests to read files on Google Cloud Storage.
@@ -45,7 +46,7 @@ func (c *CloudStorage) Open(ctx context.Context, url string) (io.ReadCloser, err
 
 func newClientForURLs(ctx context.Context, urls []string) devserver.Client {
 	if len(urls) == 0 {
-		ContextLog(ctx, "Warning: Directly accessing Cloud Storage files because no devserver is available (using old tast command?)")
+		logging.ContextLog(ctx, "Warning: Directly accessing Cloud Storage files because no devserver is available (using old tast command?)")
 		return devserver.NewPseudoClient(nil)
 	}
 
@@ -53,6 +54,6 @@ func newClientForURLs(ctx context.Context, urls []string) devserver.Client {
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
-	o := &devserver.RealClientOptions{LogFunc: func(msg string) { ContextLog(ctx, msg) }}
+	o := &devserver.RealClientOptions{LogFunc: func(msg string) { logging.ContextLog(ctx, msg) }}
 	return devserver.NewRealClient(ctx, urls, o)
 }

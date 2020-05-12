@@ -24,6 +24,7 @@ import (
 	"chromiumos/tast/dut"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/control"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/rpc"
 	"chromiumos/tast/timing"
@@ -109,10 +110,6 @@ func testsToRun(cfg *runConfig, patterns []string) ([]*testing.TestInstance, err
 	return tests, nil
 }
 
-// logFunc can be called by functions registered in runConfig to log a message.
-// It is safe to call it concurrently from different goroutines.
-type logFunc func(msg string)
-
 // runConfig contains additional parameters used when running tests.
 //
 // The supplied functions are used to provide customizations that apply to all local or all remote bundles
@@ -122,9 +119,9 @@ type logFunc func(msg string)
 type runConfig struct {
 	// preRunFunc is run at the beginning of the entire series of tests if non-nil.
 	// The provided context (or a derived context with additional values) should be returned by the function.
-	preRunFunc func(context.Context, logFunc) (context.Context, error)
+	preRunFunc func(context.Context) (context.Context, error)
 	// postRunFunc is run at the end of the entire series of tests if non-nil.
-	postRunFunc func(context.Context, logFunc) error
+	postRunFunc func(context.Context) error
 	// preTestFunc is run before each test if non-nil.
 	// If this function panics or reports errors, the precondition (if any)
 	// will not be prepared and the test function will not run.
@@ -218,10 +215,9 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 	defer hbw.Stop()
 
 	ew := newEventWriter(mw)
-
-	lf := func(msg string) {
+	ctx = logging.NewContext(ctx, func(msg string) {
 		ew.RunLog(msg)
-	}
+	})
 
 	if len(tests) == 0 {
 		return command.NewStatusErrorf(statusNoTests, "no tests matched by pattern(s)")
@@ -249,20 +245,20 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 
 	if cfg.preRunFunc != nil {
 		var err error
-		if ctx, err = cfg.preRunFunc(ctx, lf); err != nil {
+		if ctx, err = cfg.preRunFunc(ctx); err != nil {
 			return command.NewStatusErrorf(statusError, "pre-run failed: %v", err)
 		}
 	}
 
 	var rd *testing.RemoteData
 	if bt == remoteBundle {
-		lf("Connecting to DUT")
+		logging.ContextLog(ctx, "Connecting to DUT")
 		dt, err := connectToTarget(ctx, args)
 		if err != nil {
 			return command.NewStatusErrorf(statusError, "failed to connect to DUT: %v", err)
 		}
 		defer func() {
-			lf("Disconnecting from DUT")
+			logging.ContextLog(ctx, "Disconnecting from DUT")
 			// It is okay to ignore the error since we've finished testing at this point.
 			dt.Close(ctx)
 		}()
@@ -309,7 +305,7 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 	}
 
 	if cfg.postRunFunc != nil {
-		if err := cfg.postRunFunc(ctx, lf); err != nil {
+		if err := cfg.postRunFunc(ctx); err != nil {
 			return command.NewStatusErrorf(statusError, "post-run failed: %v", err)
 		}
 	}

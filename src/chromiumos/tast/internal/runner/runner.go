@@ -24,6 +24,7 @@ import (
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/devserver"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/testing"
 )
 
@@ -120,12 +121,12 @@ func runTestsAndReport(ctx context.Context, args *Args, cfg *Config, stdout io.W
 	}
 	mw.WriteMessage(&control.RunStart{Time: time.Now(), TestNames: testNames, NumTests: len(tests)})
 
-	lf := func(msg string) {
+	ctx = logging.NewContext(ctx, func(msg string) {
 		mw.WriteMessage(&control.RunLog{Time: time.Now(), Text: msg})
-	}
+	})
 
 	if cfg.KillStaleRunners {
-		killStaleRunners(syscall.SIGTERM, lf)
+		killStaleRunners(ctx, syscall.SIGTERM)
 	}
 
 	// We expect to not match any tests if both local and remote tests are being run but the
@@ -147,9 +148,9 @@ func runTestsAndReport(ctx context.Context, args *Args, cfg *Config, stdout io.W
 			defer os.RemoveAll(bundleArgs.RunTests.OutDir)
 		}
 
-		cl := newDevserverClient(ctx, args.RunTests.Devservers, lf)
+		cl := newDevserverClient(ctx, args.RunTests.Devservers)
 		actualTests := filterSkippedTests(args, tests)
-		processExternalDataLinks(ctx, args.RunTests.BundleArgs.DataDir, args.RunTests.BuildArtifactsURL, actualTests, cl, lf)
+		processExternalDataLinks(ctx, args.RunTests.BundleArgs.DataDir, args.RunTests.BuildArtifactsURL, actualTests, cl)
 
 		// Hereafter, heartbeat messages are sent by bundles.
 		hbw.Stop()
@@ -319,17 +320,17 @@ func logMessages(r io.Reader, lg *log.Logger) *command.StatusError {
 
 // killStaleRunners sends sig to the process groups of any other processes sharing
 // the current process's executable. Status messages and errors are logged using lf.
-func killStaleRunners(sig syscall.Signal, lf func(msg string)) {
+func killStaleRunners(ctx context.Context, sig syscall.Signal) {
 	ourPID := os.Getpid()
 	ourExe, err := os.Executable()
 	if err != nil {
-		lf("Failed to look up current executable: " + err.Error())
+		logging.ContextLog(ctx, "Failed to look up current executable: ", err)
 		return
 	}
 
 	procs, err := process.Processes()
 	if err != nil {
-		lf("Failed to list processes while looking for stale runners: " + err.Error())
+		logging.ContextLog(ctx, "Failed to list processes while looking for stale runners: ", err)
 		return
 	}
 	for _, proc := range procs {
@@ -339,16 +340,16 @@ func killStaleRunners(sig syscall.Signal, lf func(msg string)) {
 		if exe, err := proc.Exe(); err != nil || exe != ourExe {
 			continue
 		}
-		lf(fmt.Sprintf("Sending signal %d to stale %v process group %d", sig, ourExe, proc.Pid))
+		logging.ContextLogf(ctx, "Sending signal %d to stale %v process group %d", sig, ourExe, proc.Pid)
 		if err := syscall.Kill(int(-proc.Pid), sig); err != nil {
-			lf(fmt.Sprintf("Failed killing process group %d: %v", proc.Pid, err))
+			logging.ContextLogf(ctx, "Failed killing process group %d: %v", proc.Pid, err)
 		}
 	}
 }
 
-func newDevserverClient(ctx context.Context, devservers []string, lf func(msg string)) devserver.Client {
+func newDevserverClient(ctx context.Context, devservers []string) devserver.Client {
 	if len(devservers) == 0 {
-		lf("Devserver status: using pseudo client")
+		logging.ContextLog(ctx, "Devserver status: using pseudo client")
 		return devserver.NewPseudoClient(nil)
 	}
 
@@ -356,8 +357,7 @@ func newDevserverClient(ctx context.Context, devservers []string, lf func(msg st
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
-	o := &devserver.RealClientOptions{LogFunc: lf}
-	cl := devserver.NewRealClient(ctx, devservers, o)
-	lf(fmt.Sprintf("Devserver status: %s", cl.Status()))
+	cl := devserver.NewRealClient(ctx, devservers, nil)
+	logging.ContextLogf(ctx, "Devserver status: %s", cl.Status())
 	return cl
 }

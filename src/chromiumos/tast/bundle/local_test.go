@@ -75,7 +75,7 @@ func TestLocalReadyFunc(t *gotesting.T) {
 	stdin := newBufferWithArgs(t, &args)
 	stderr := bytes.Buffer{}
 	ranReady := false
-	ready := func(context.Context, func(string)) error {
+	ready := func(context.Context) error {
 		ranReady = true
 		return nil
 	}
@@ -92,7 +92,7 @@ func TestLocalReadyFunc(t *gotesting.T) {
 	stdin = newBufferWithArgs(t, &args)
 	stderr = bytes.Buffer{}
 	const msg = "intentional failure"
-	ready = func(context.Context, func(string)) error { return errors.New(msg) }
+	ready = func(context.Context) error { return errors.New(msg) }
 	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, LocalDelegate{
 		Ready: ready,
 	}); status != statusError {
@@ -122,7 +122,7 @@ func TestLocalReadyFuncDisabled(t *gotesting.T) {
 	stdin := newBufferWithArgs(t, &args)
 	stderr := bytes.Buffer{}
 	ranReady := false
-	ready := func(context.Context, func(string)) error {
+	ready := func(context.Context) error {
 		ranReady = true
 		return nil
 	}

@@ -54,6 +54,5 @@ func newClientForURLs(ctx context.Context, urls []string) devserver.Client {
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
-	o := &devserver.RealClientOptions{LogFunc: func(msg string) { logging.ContextLog(ctx, msg) }}
-	return devserver.NewRealClient(ctx, urls, o)
+	return devserver.NewRealClient(ctx, urls, nil)
 }

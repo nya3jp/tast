@@ -9,6 +9,8 @@ import (
 	"io"
 
 	"google.golang.org/grpc"
+
+	"chromiumos/tast/internal/logging"
 )
 
 // remoteLoggingClient is a client of the tast.core.Logging gRPC service that
@@ -22,7 +24,7 @@ type remoteLoggingClient struct {
 
 // newRemoteLoggingClient constructs remoteLoggingClient using conn. logger is
 // called for every received ReadLogsResponse.
-func newRemoteLoggingClient(ctx context.Context, conn *grpc.ClientConn, logger func(msg string)) (*remoteLoggingClient, error) {
+func newRemoteLoggingClient(ctx context.Context, conn *grpc.ClientConn) (*remoteLoggingClient, error) {
 	cl := NewLoggingClient(conn)
 	st, err := cl.ReadLogs(ctx)
 	if err != nil {
@@ -55,7 +57,7 @@ func newRemoteLoggingClient(ctx context.Context, conn *grpc.ClientConn, logger f
 					}
 					return err
 				}
-				logger(res.Entry.Msg)
+				logging.ContextLog(ctx, res.Entry.Msg)
 			}
 		}()
 	}()

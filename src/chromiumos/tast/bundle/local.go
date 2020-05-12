@@ -21,10 +21,10 @@ const (
 // LocalDelegate injects several functions as a part of local test bundle framework implementation.
 type LocalDelegate struct {
 	// Ready can be passed to the Local function to wait for the DUT to be ready for tests to run.
-	// Informational messages can be passed to log and should be written at least once per minute to
+	// Informational messages should be written with testing.ContextLog at least once per minute to
 	// let the tast process (and the user) know the reason for the delay.
 	// If an error is returned, none of the bundle's tests will run.
-	Ready func(ctx context.Context, log func(string)) error
+	Ready func(ctx context.Context) error
 
 	// PreTestRun is called before each test run. The returned closure is executed after the test if not nil.
 	PreTestRun func(ctx context.Context, s *testing.State) func(ctx context.Context, s *testing.State)
@@ -51,12 +51,11 @@ func Local(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, delegate 
 	cfg.preTestFunc = delegate.PreTestRun
 
 	if delegate.Ready != nil {
-		cfg.preRunFunc = func(ctx context.Context, lf logFunc) (context.Context, error) {
+		cfg.preRunFunc = func(ctx context.Context) (context.Context, error) {
 			if !args.RunTests.WaitUntilReady {
 				return ctx, nil
 			}
-			lf("Waiting for DUT to be ready for testing")
-			return ctx, delegate.Ready(ctx, lf)
+			return ctx, delegate.Ready(ctx)
 		}
 	}
 	return run(context.Background(), clArgs, stdin, stdout, stderr, &args, &cfg, localBundle)

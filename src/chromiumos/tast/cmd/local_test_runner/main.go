@@ -140,7 +140,11 @@ func main() {
 			"tpm2":                   "tpm2", // Indicate tpm2 is available
 			"transparent_hugepage":   "transparent_hugepage",
 			"usbguard":               "usbguard",
-			"vaapi":                  "vaapi",
+			// platform.UncleanShutdownCollector is unstable on kukui devices.
+			// TODO(https://crbug.com/1041639): stabilize.
+			"unclean_shutdown_stable":   `!"kukui"`,
+			"unclean_shutdown_unstable": "kukui",
+			"vaapi":                     "vaapi",
 			// drm_atomic is a necessary but not sufficient condition to support
 			// video_overlays; in practice, they tend to be enabled at the same time.
 			// TODO(mcasas): query in advance for NV12 format DRM Plane support.

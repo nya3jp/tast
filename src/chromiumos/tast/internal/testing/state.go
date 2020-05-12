@@ -19,6 +19,7 @@ import (
 	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/errors/stack"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/timing"
 )
 
@@ -163,16 +164,15 @@ func (r *rootState) close() {
 	}
 }
 
-// testContext returns a TestContext for the test.
-func (s *State) testContext() *TestContext {
-	return &TestContext{
-		Logger: func(msg string) { s.Log(msg) },
-		TestInfo: &TestContextTestInfo{
-			OutDir:       s.OutDir(),
-			SoftwareDeps: s.SoftwareDeps(),
-			ServiceDeps:  s.ServiceDeps(),
-		},
-	}
+// newContext returns a context.Context to be used for the test.
+func (s *State) newContext(ctx context.Context) context.Context {
+	ctx = logging.NewContext(ctx, func(msg string) { s.Log(msg) })
+	ctx = WithTestContext(ctx, &TestContext{
+		OutDir:       s.OutDir(),
+		SoftwareDeps: s.SoftwareDeps(),
+		ServiceDeps:  s.ServiceDeps(),
+	})
+	return ctx
 }
 
 // DataPath returns the absolute path to use to access a data file previously

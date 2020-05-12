@@ -33,14 +33,11 @@ func outgoingMetadata(ctx context.Context) (metadata.MD, error) {
 
 // incomingTestContext creates TestContext from metadata.MD.
 // It is called on gRPC servers to forward TestContext over gRPC.
-func incomingTestContext(md metadata.MD, logger func(msg string)) *testing.TestContext {
+func incomingTestContext(md metadata.MD) *testing.TestContext {
 	softwareDeps := md[metadataSoftwareDeps]
 	return &testing.TestContext{
-		Logger: logger,
 		// TODO(crbug.com/969627): Support OutDir.
-		TestInfo: &testing.TestContextTestInfo{
-			SoftwareDeps: softwareDeps,
-			// ServiceDeps is not forwarded.
-		},
+		SoftwareDeps: softwareDeps,
+		// ServiceDeps is not forwarded.
 	}
 }

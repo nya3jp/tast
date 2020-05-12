@@ -416,7 +416,7 @@ func (t *TestInstance) DataDir() string {
 func (t *TestInstance) Run(ctx context.Context, ch chan<- Output, cfg *TestConfig) bool {
 	// Attach the state to a context so support packages can log to it.
 	s := newState(t, ch, cfg)
-	ctx = WithTestContext(ctx, s.testContext())
+	ctx = s.newContext(ctx)
 
 	var stages []stage
 	addStage := func(f stageFunc, ctxTimeout, runTimeout time.Duration) {
@@ -489,7 +489,7 @@ func (t *TestInstance) Run(ctx context.Context, ch chan<- Output, cfg *TestConfi
 
 			if t.PreCtx == nil {
 				// Associate PreCtx with TestContext for the first test.
-				t.PreCtx, t.PreCtxCancel = context.WithCancel(WithTestContext(context.Background(), s.testContext()))
+				t.PreCtx, t.PreCtxCancel = context.WithCancel(s.newContext(context.Background()))
 			}
 
 			if cfg.NextTest != nil && cfg.NextTest.Pre == t.Pre {

@@ -19,6 +19,7 @@ import (
 
 	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/timing"
 )
@@ -109,7 +110,12 @@ func newClient(ctx context.Context, r io.Reader, w io.Writer, clean func(context
 		}
 	}()
 
-	log, err := newRemoteLoggingClient(ctx, conn, func(msg string) { testing.ContextLog(ctx, msg) })
+	logger, ok := logging.SinkFromContext(ctx)
+	if !ok {
+		logger = func(msg string) {}
+	}
+
+	log, err := newRemoteLoggingClient(ctx, conn, logger)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to start remote logging")
 	}

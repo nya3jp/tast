@@ -10,58 +10,6 @@ import (
 	"testing"
 )
 
-func TestContextLog(t *testing.T) {
-	const testLog = "foo"
-
-	ctx := context.Background()
-
-	// ContextLog does nothing for contexts without TestContext.
-	ContextLog(ctx, testLog)
-
-	var logs []string
-	tc := &TestContext{
-		Logger: func(msg string) {
-			logs = append(logs, testLog)
-		},
-	}
-	ctx = WithTestContext(ctx, tc)
-
-	ContextLog(ctx, testLog)
-
-	if exp := []string{testLog}; !reflect.DeepEqual(logs, exp) {
-		t.Errorf("ContextLog did not work as expected: got %v, want %v", logs, exp)
-	}
-}
-
-func TestContextLogger(t *testing.T) {
-	const testLog = "foo"
-
-	ctx := context.Background()
-
-	if _, ok := ContextLogger(ctx); ok {
-		t.Errorf("Expected logger to not be available from background context")
-	}
-
-	var logs []string
-	tc := &TestContext{
-		Logger: func(msg string) {
-			logs = append(logs, testLog)
-		},
-	}
-	ctx = WithTestContext(ctx, tc)
-
-	logger, ok := ContextLogger(ctx)
-	if !ok {
-		t.Errorf("Expected logger to be available")
-	}
-
-	logger.Print(testLog)
-
-	if exp := []string{testLog}; !reflect.DeepEqual(logs, exp) {
-		t.Errorf("Print did not work as expected: got %v, want %v", logs, exp)
-	}
-}
-
 func TestContextOutDir(t *testing.T) {
 	const testOutDir = "/mock/outdir"
 
@@ -71,14 +19,7 @@ func TestContextOutDir(t *testing.T) {
 		t.Error("ContextOutDir unexpectedly succeeded for context without TestContext")
 	}
 
-	tcs := &TestContext{}
-	ctxs := WithTestContext(ctx, tcs)
-
-	if _, ok := ContextOutDir(ctxs); ok {
-		t.Error("ContextOutDir unexpectedly succeeded for context without TestInfo")
-	}
-
-	tc := &TestContext{TestInfo: &TestContextTestInfo{OutDir: testOutDir}}
+	tc := &TestContext{OutDir: testOutDir}
 	ctx = WithTestContext(ctx, tc)
 
 	if outDir, ok := ContextOutDir(ctx); !ok {
@@ -87,7 +28,7 @@ func TestContextOutDir(t *testing.T) {
 		t.Errorf("ContextOutDir = %q; want %q", outDir, testOutDir)
 	}
 
-	tc = &TestContext{TestInfo: &TestContextTestInfo{OutDir: ""}}
+	tc = &TestContext{OutDir: ""}
 	ctx = WithTestContext(ctx, tc)
 
 	if _, ok := ContextOutDir(ctx); ok {
@@ -104,14 +45,7 @@ func TestContextSoftwareDeps(t *testing.T) {
 		t.Error("ContextSoftwareDeps unexpectedly succeeded for context without TestContext")
 	}
 
-	tcs := &TestContext{}
-	ctxs := WithTestContext(ctx, tcs)
-
-	if _, ok := ContextSoftwareDeps(ctxs); ok {
-		t.Error("ContextSoftwareDeps unexpectedly succeeded for context without TestInfo")
-	}
-
-	tc := &TestContext{TestInfo: &TestContextTestInfo{SoftwareDeps: testSoftwareDeps}}
+	tc := &TestContext{SoftwareDeps: testSoftwareDeps}
 	ctx = WithTestContext(ctx, tc)
 
 	if softwareDeps, ok := ContextSoftwareDeps(ctx); !ok {
@@ -130,14 +64,7 @@ func TestContextServiceDeps(t *testing.T) {
 		t.Error("ContextServiceDeps unexpectedly succeeded for context without TestContext")
 	}
 
-	tcs := &TestContext{}
-	ctxs := WithTestContext(ctx, tcs)
-
-	if _, ok := ContextServiceDeps(ctxs); ok {
-		t.Error("ContextServiceDeps unexpectedly succeeded for context without TestInfo")
-	}
-
-	tc := &TestContext{TestInfo: &TestContextTestInfo{ServiceDeps: testServiceDeps}}
+	tc := &TestContext{ServiceDeps: testServiceDeps}
 	ctx = WithTestContext(ctx, tc)
 
 	if serviceDeps, ok := ContextServiceDeps(ctx); !ok {

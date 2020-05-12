@@ -15,6 +15,7 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/reflection"
 
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/timing"
 )
@@ -53,15 +54,15 @@ func (s *serverStreamWithContext) Context() context.Context {
 var _ grpc.ServerStream = (*serverStreamWithContext)(nil)
 
 // serverOpts returns gRPC server-side interceptors to manipulate context.
-func serverOpts(logger func(msg string)) []grpc.ServerOption {
+func serverOpts(logger logging.SinkFunc) []grpc.ServerOption {
 	var tl *timing.Log
 	before := func(ctx context.Context) (context.Context, error) {
 		md, ok := metadata.FromIncomingContext(ctx)
 		if !ok {
 			return nil, errors.New("metadata not available")
 		}
-		tc := incomingTestContext(md, logger)
-		ctx = testing.WithTestContext(ctx, tc)
+		ctx = logging.NewContext(ctx, logger)
+		ctx = testing.WithTestContext(ctx, incomingTestContext(md))
 		tl = timing.NewLog()
 		ctx = timing.NewContext(ctx, tl)
 		return ctx, nil

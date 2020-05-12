@@ -20,6 +20,8 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	"chromiumos/tast/internal/logging"
 )
 
 var errNotStaged = errors.New("no staged file found")
@@ -62,7 +64,6 @@ type RealClient struct {
 	servers         []server
 	cl              *http.Client
 	stageRetryWaits []time.Duration
-	logFunc         func(string)
 }
 
 var _ Client = &RealClient{}
@@ -76,15 +77,11 @@ type RealClientOptions struct {
 	// Its length is the number of retries and the i-th value is the interval before i-th retry.
 	// If nil, default strategy is used. If zero-length slice, no retry is attempted.
 	StageRetryWaits []time.Duration
-
-	// LogFunc (if non-nil) is used to log non-fatal errors.
-	LogFunc func(msg string)
 }
 
 var defaultOptions = &RealClientOptions{
 	HTTPClient:      defaultHTTPClient,
-	StageRetryWaits: []time.Duration{time.Duration(3 * time.Second)},
-	LogFunc:         func(string) {},
+	StageRetryWaits: []time.Duration{3 * time.Second},
 }
 
 // NewRealClient creates a RealClient.
@@ -105,10 +102,6 @@ func NewRealClient(ctx context.Context, dsURLs []string, o *RealClientOptions) *
 	if stageRetryWaits == nil {
 		stageRetryWaits = defaultOptions.StageRetryWaits
 	}
-	logFunc := o.LogFunc
-	if logFunc == nil {
-		logFunc = defaultOptions.LogFunc
-	}
 
 	ch := make(chan server, len(dsURLs))
 
@@ -127,7 +120,7 @@ func NewRealClient(ctx context.Context, dsURLs []string, o *RealClientOptions) *
 		return servers[i].url < servers[j].url
 	})
 
-	return &RealClient{servers, cl, stageRetryWaits, logFunc}
+	return &RealClient{servers, cl, stageRetryWaits}
 }
 
 // upServerURLs returns URLs of operational devservers.
@@ -318,14 +311,14 @@ func (c *RealClient) stage(ctx context.Context, dsURL, bucket, gsPath string) er
 
 		elapsed := time.Now().Sub(start)
 		if remaining := c.stageRetryWaits[i] - elapsed; remaining > 0 {
-			c.logFunc(fmt.Sprintf("Retry stage in %v: %v", remaining.Round(time.Millisecond), err))
+			logging.ContextLogf(ctx, "Retry stage in %v: %v", remaining.Round(time.Millisecond), err)
 			select {
 			case <-time.After(remaining):
 			case <-ctx.Done():
 				return ctx.Err()
 			}
 		} else {
-			c.logFunc(fmt.Sprintf("Retrying stage: %v", err))
+			logging.ContextLogf(ctx, "Retrying stage: %v", err)
 		}
 	}
 }

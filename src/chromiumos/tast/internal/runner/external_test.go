@@ -18,8 +18,6 @@ import (
 	"chromiumos/tast/testutil"
 )
 
-func dummyLogFn(msg string) {}
-
 const fakeArtifactURL = "gs://somebucket/path/to/artifacts/"
 
 // Simple scenario of one internal data file and two static external data files.
@@ -51,7 +49,7 @@ func TestPrepareDownloadsStatic(t *gotesting.T) {
 		{Pkg: pkg, Data: []string{extFile1}},
 		{Pkg: pkg, Data: []string{intFile, extFile2}},
 	}
-	jobs := prepareDownloads(dataDir, fakeArtifactURL, tests, dummyLogFn)
+	jobs := prepareDownloads(context.Background(), dataDir, fakeArtifactURL, tests)
 
 	exp := []*downloadJob{
 		{
@@ -97,7 +95,7 @@ func TestPrepareDownloadsArtifact(t *gotesting.T) {
 		{Pkg: pkg, Data: []string{extFile1}},
 		{Pkg: pkg, Data: []string{intFile, extFile2}},
 	}
-	jobs := prepareDownloads(dataDir, fakeArtifactURL, tests, dummyLogFn)
+	jobs := prepareDownloads(context.Background(), dataDir, fakeArtifactURL, tests)
 
 	exp := []*downloadJob{
 		{
@@ -143,7 +141,7 @@ func TestPrepareDownloadsDupLinks(t *gotesting.T) {
 		{Pkg: pkg, Data: []string{extFile1, extFile2}},
 		{Pkg: pkg, Data: []string{extFile2, extFile3}},
 	}
-	jobs := prepareDownloads(dataDir, fakeArtifactURL, tests, dummyLogFn)
+	jobs := prepareDownloads(context.Background(), dataDir, fakeArtifactURL, tests)
 
 	exp := []*downloadJob{
 		{
@@ -186,7 +184,7 @@ func TestPrepareDownloadsInconsistentDupLinks(t *gotesting.T) {
 	tests := []*testing.TestInstance{
 		{Pkg: pkg, Data: []string{extFile1, extFile2}},
 	}
-	jobs := prepareDownloads(dataDir, fakeArtifactURL, tests, dummyLogFn)
+	jobs := prepareDownloads(context.Background(), dataDir, fakeArtifactURL, tests)
 
 	exp := []*downloadJob{
 		{
@@ -232,7 +230,7 @@ func TestPrepareDownloadsStale(t *gotesting.T) {
 	tests := []*testing.TestInstance{
 		{Pkg: pkg, Data: []string{extFile1, extFile2}},
 	}
-	jobs := prepareDownloads(dataDir, fakeArtifactURL, tests, dummyLogFn)
+	jobs := prepareDownloads(context.Background(), dataDir, fakeArtifactURL, tests)
 
 	exp := []*downloadJob{
 		{
@@ -283,7 +281,7 @@ func TestPrepareDownloadsUpToDate(t *gotesting.T) {
 	tests := []*testing.TestInstance{
 		{Pkg: pkg, Data: []string{extFile1, extFile2}},
 	}
-	jobs := prepareDownloads(dataDir, fakeArtifactURL, tests, dummyLogFn)
+	jobs := prepareDownloads(context.Background(), dataDir, fakeArtifactURL, tests)
 
 	if len(jobs) > 0 {
 		t.Errorf("prepareDownloads returned %v; want []", jobs)
@@ -320,7 +318,7 @@ func TestPrepareDownloadsBrokenLink(t *gotesting.T) {
 	tests := []*testing.TestInstance{
 		{Pkg: pkg, Data: []string{extFile1, extFile2}},
 	}
-	jobs := prepareDownloads(dataDir, fakeArtifactURL, tests, dummyLogFn)
+	jobs := prepareDownloads(context.Background(), dataDir, fakeArtifactURL, tests)
 
 	exp := []*downloadJob{
 		{
@@ -357,7 +355,7 @@ func TestPrepareDownloadsArtifactUnavailable(t *gotesting.T) {
 	tests := []*testing.TestInstance{
 		{Pkg: pkg, Data: []string{extFile1}},
 	}
-	jobs := prepareDownloads(dataDir, "", tests, dummyLogFn)
+	jobs := prepareDownloads(context.Background(), dataDir, "", tests)
 
 	if len(jobs) > 0 {
 		t.Errorf("prepareDownloads returned %v; want []", jobs)
@@ -393,7 +391,7 @@ func TestPrepareDownloadsError(t *gotesting.T) {
 	tests := []*testing.TestInstance{
 		{Pkg: pkg, Data: []string{extFile1, extFile2}},
 	}
-	prepareDownloads(dataDir, fakeArtifactURL, tests, dummyLogFn)
+	prepareDownloads(context.Background(), dataDir, fakeArtifactURL, tests)
 
 	// extError1 should exist due to JSON parse error.
 	if _, err := os.Stat(filepath.Join(dataSubdir, extError1)); err != nil {
@@ -447,7 +445,7 @@ func TestRunDownloadsStatic(t *gotesting.T) {
 		url2: []byte(data2),
 	})
 
-	runDownloads(context.Background(), tmpDir, jobs, cl, dummyLogFn)
+	runDownloads(context.Background(), tmpDir, jobs, cl)
 
 	path1 := filepath.Join(tmpDir, file1)
 	if out, err := ioutil.ReadFile(path1); err != nil {
@@ -513,7 +511,7 @@ func TestRunDownloadsArtifact(t *gotesting.T) {
 		url2: []byte(data2),
 	})
 
-	runDownloads(context.Background(), tmpDir, jobs, cl, dummyLogFn)
+	runDownloads(context.Background(), tmpDir, jobs, cl)
 
 	path1 := filepath.Join(tmpDir, file1)
 	if out, err := ioutil.ReadFile(path1); err != nil {
@@ -593,7 +591,7 @@ func TestRunDownloadsCorrupted(t *gotesting.T) {
 		// url3 returns an error.
 	})
 
-	runDownloads(context.Background(), tmpDir, jobs, cl, dummyLogFn)
+	runDownloads(context.Background(), tmpDir, jobs, cl)
 
 	for _, name := range []string{file1, file2, file3} {
 		if _, err := os.Stat(filepath.Join(tmpDir, name)); err == nil {
@@ -636,7 +634,7 @@ func TestRunDownloadsError(t *gotesting.T) {
 	}
 	cl := devserver.NewFakeClient(map[string][]byte{url: []byte(data)})
 
-	runDownloads(context.Background(), tmpDir, jobs, cl, dummyLogFn)
+	runDownloads(context.Background(), tmpDir, jobs, cl)
 
 	for _, f := range []string{file1, file2} {
 		path := filepath.Join(tmpDir, f+testing.ExternalErrorSuffix)

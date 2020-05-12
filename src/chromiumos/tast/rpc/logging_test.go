@@ -11,6 +11,8 @@ import (
 	"testing"
 
 	"google.golang.org/grpc"
+
+	"chromiumos/tast/internal/logging"
 )
 
 func TestRemoteLogging(t *testing.T) {
@@ -38,9 +40,10 @@ func TestRemoteLogging(t *testing.T) {
 	sv.Log("foo") // logs before ReadLogs should be discarded
 
 	logs := make(chan string)
-	cl, err := newRemoteLoggingClient(context.Background(), conn, func(msg string) {
+	ctx := logging.NewContext(context.Background(), func(msg string) {
 		logs <- msg
 	})
+	cl, err := newRemoteLoggingClient(ctx, conn)
 	if err != nil {
 		t.Fatal("newRemoteLoggingClient failed: ", err)
 	}

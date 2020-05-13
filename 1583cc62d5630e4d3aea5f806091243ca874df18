@@ -34,6 +34,24 @@
       "revId": "1583cc62d5630e4d3aea5f806091243ca874df18",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2e5ad0e7_506385f3",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/disallow_testingstate.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-05-13T13:46:21Z",
+      "side": 0,
+      "message": "? You\u0027d need new one, before submitting those CLs?",
+      "parentUuid": "f195cacf_abd1ea94",
+      "revId": "1583cc62d5630e4d3aea5f806091243ca874df18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

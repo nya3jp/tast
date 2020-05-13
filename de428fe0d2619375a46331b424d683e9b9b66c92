@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "721a19d9_bb66765b",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 1300299
+      },
+      "writtenOn": "2020-05-13T01:50:34Z",
+      "side": 1,
+      "message": "Why the extra quotes?",
+      "range": {
+        "startLine": 145,
+        "startChar": 34,
+        "endLine": 145,
+        "endChar": 35
+      },
+      "revId": "de428fe0d2619375a46331b424d683e9b9b66c92",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

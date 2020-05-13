@@ -22,6 +22,30 @@
       "revId": "de428fe0d2619375a46331b424d683e9b9b66c92",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b767db67_96f3c4f8",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 1305461
+      },
+      "writtenOn": "2020-05-13T17:34:02Z",
+      "side": 1,
+      "message": "I thought they were necessary based on some other stuff (e.g. virtual_usb_printer), but I guess they\u0027re not. Removed.",
+      "parentUuid": "721a19d9_bb66765b",
+      "range": {
+        "startLine": 145,
+        "startChar": 34,
+        "endLine": 145,
+        "endChar": 35
+      },
+      "revId": "de428fe0d2619375a46331b424d683e9b9b66c92",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

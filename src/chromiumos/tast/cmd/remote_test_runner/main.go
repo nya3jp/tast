@@ -28,5 +28,5 @@ func main() {
 		Type:             runner.RemoteRunner,
 		KillStaleRunners: true,
 	}
-	os.Exit(runner.Run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, &args, &cfg))
+	os.Exit(runner.RunV2(os.Stdin, os.Stdout, &args, &cfg))
 }

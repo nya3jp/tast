@@ -116,7 +116,6 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []TestResult)
 		}
 	}
 
-	cfg.runRemote = false // FIXME: revert.
 	var rc *grpc.ClientConn
 	if cfg.runRemote {
 		rc, err = startRemoteRunnerServer(ctx, cfg)
@@ -128,18 +127,22 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []TestResult)
 	switch cfg.mode {
 	case ListTestsMode:
 		log.Println("listTests")
-		results, err := listTests(ctx, cfg, lc, rc)
+		results, err := listTests(ctx, cfg, lc, rc) // local? -> bundle path -> bundleinfo
 		log.Println("done listTests")
 		if err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to list tests: %v", err), nil
 		}
 		var res []TestResult
-		for _, r := range results {
-			res = append(res, TestResult{
-				TestInstance: testing.TestInstance{
-					Name: r.Name,
-				},
-			})
+		for _, m := range results {
+			for _, x := range m {
+				for _, t := range x.Test {
+					res = append(res, TestResult{
+						TestInstance: testing.TestInstance{
+							Name: t.Name,
+						},
+					})
+				}
+			}
 		}
 		return successStatus, res
 	case RunTestsMode:
@@ -195,12 +198,13 @@ func startRemoteRunnerServer(ctx context.Context, cfg *Config) (*grpc.ClientConn
 	if err != nil {
 		return nil, err
 	}
+	r.Stderr = os.Stderr
 	if err := r.Start(); err != nil {
 		return nil, err
 	}
 	go func() {
 		if err := r.Wait(); err != nil {
-			log.Fatalf("local runner server failed: %v", err)
+			panic(err)
 		}
 	}()
 

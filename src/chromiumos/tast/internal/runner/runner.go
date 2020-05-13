@@ -43,10 +43,7 @@ const (
 
 func RunV2(stdin io.Reader, stdout io.Writer, args *Args, cfg *Config) int {
 	if err := rpc.RunServerV2(stdin, stdout, func(srv *grpc.Server) {
-		rpc.RegisterTastCoreServiceServer(srv, &Server{
-			args: args,
-			cfg:  cfg,
-		})
+		rpc.RegisterTastCoreServiceServer(srv, NewTastCoreServer(args, cfg))
 	}); err != nil {
 		log.Print("RunV2 error: ", err)
 		return 1

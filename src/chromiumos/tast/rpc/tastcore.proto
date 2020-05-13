@@ -4,13 +4,27 @@
 
 syntax = "proto3";
 
+import "google/protobuf/empty.proto";
+
 package tast.core;
 option go_package = "chromiumos/tast/rpc";
 
 // TastCoreService provides means to list/run tests.
 service TastCoreService {
+  // Bundles returns pahts to the bundles exist in the DUT.
+  // This method is only meaningful for the runners, not bundle executables.
+  rpc Bundles(BundlesRequest) returns (BundlesResponse) {}
   rpc List(ListRequest) returns (ListResponse) {}
   rpc Run(RunRequest) returns (stream RunResponse) {}
+  rpc Close(google.protobuf.Empty) returns (google.protobuf.Empty) {}
+}
+
+message BundlesRequest {
+  string bundle_glob = 1;
+}
+
+message BundlesResponse {
+  repeated string bundles = 1;
 }
 
 message ListRequest {

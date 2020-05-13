@@ -4,6 +4,8 @@ import (
 	"chromiumos/tast/rpc"
 	"chromiumos/tast/testing"
 	"context"
+
+	"github.com/golang/protobuf/ptypes/empty"
 )
 
 // Server implements TastCoreServiceServer for local and remote bundle.
@@ -14,6 +16,14 @@ type Server struct {
 }
 
 var _ rpc.TastCoreServiceServer = (*Server)(nil)
+
+func (s *Server) Close(context.Context, *empty.Empty) (*empty.Empty, error) {
+	return nil, nil
+}
+
+func (s *Server) Bundles(context.Context, *rpc.BundlesRequest) (*rpc.BundlesResponse, error) {
+	panic("not implemented")
+}
 
 // List returns tests to run with skip information too.
 // Unlike previous ListTestsMode, it also checks software deps and returns exactly what

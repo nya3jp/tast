@@ -18,33 +18,53 @@ import (
 )
 
 // listTests returns the whole tests to run.
-func listTests(ctx context.Context, cfg *Config, lc *grpc.ClientConn, rc *grpc.ClientConn) ([]*rpc.TestInfo, error) {
-	var tests []*rpc.TestInfo
+func listTests(ctx context.Context, cfg *Config, lc *grpc.ClientConn, rc *grpc.ClientConn) (map[bool] /*true if local*/ map[string]*rpc.ListResponse, error) {
+	res := map[bool]map[string]*rpc.ListResponse{true: {}, false: {}}
 
 	if cfg.runLocal {
 		log.Println("listTests -> localTests.List")
-		localTests, err := rpc.NewTastCoreServiceClient(lc).List(ctx, &rpc.ListRequest{
-			Pattern:    cfg.Patterns,
-			BundleGlob: cfg.localBundleGlob(),
-		})
+		cl := rpc.NewTastCoreServiceClient(lc)
+		bs, err := cl.Bundles(ctx, &rpc.BundlesRequest{BundleGlob: cfg.localBundleGlob()})
 		if err != nil {
 			return nil, err
 		}
-		tests = append(tests, localTests.Test...)
+
+		for _, b := range bs.Bundles {
+			localTests, err := cl.List(ctx, &rpc.ListRequest{
+				Pattern: cfg.Patterns,
+				Bundle:  b,
+			})
+			if err != nil {
+				return nil, err
+			}
+			res[true][b] = localTests
+		}
 	}
 	if cfg.runRemote {
 		log.Println("listTests -> remoteTests.List")
-		remoteTests, err := rpc.NewTastCoreServiceClient(rc).List(ctx, &rpc.ListRequest{
-			Pattern:    cfg.Patterns,
-			BundleGlob: cfg.localBundleGlob(),
-		})
+		cl := rpc.NewTastCoreServiceClient(rc)
+		bs, err := cl.Bundles(ctx, &rpc.BundlesRequest{BundleGlob: cfg.remoteBundleGlob()})
 		if err != nil {
+			log.Fatal("remote Bundles failed:", err)
 			return nil, err
 		}
-		tests = append(tests, remoteTests.Test...)
+
+		log.Print("got remote tests: ", bs)
+
+		for _, b := range bs.Bundles {
+			localTests, err := cl.List(ctx, &rpc.ListRequest{
+				Pattern: cfg.Patterns,
+				Bundle:  b,
+			})
+			if err != nil {
+				log.Fatal("remote List failed2:", err)
+				return nil, err
+			}
+			res[false][b] = localTests
+		}
 	}
 
-	return tests, nil
+	return res, nil
 }
 
 // listLocalTests returns a list of local tests to run.

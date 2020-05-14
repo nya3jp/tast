@@ -52,6 +52,24 @@
       "revId": "1583cc62d5630e4d3aea5f806091243ca874df18",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b8c632fa_ee255319",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/disallow_testingstate.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1179631
+      },
+      "writtenOn": "2020-05-14T05:16:22Z",
+      "side": 0,
+      "message": "I figured it would be fine to temporarily have the disallow_testingstate in a broken state for lacros files to avoid having to submit multiple CLs affecting this file. If you don\u0027t like this, I can add a new one then submit a CL removing the old one.",
+      "parentUuid": "2e5ad0e7_506385f3",
+      "revId": "1583cc62d5630e4d3aea5f806091243ca874df18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

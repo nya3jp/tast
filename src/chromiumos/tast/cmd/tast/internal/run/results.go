@@ -349,16 +349,16 @@ func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.TestEnd
 		r.stage.End()
 	}
 
-	if len(msg.MissingSoftwareDeps) == 0 && len(msg.HardwareDepsUnsatisfiedReasons) == 0 {
+	if len(msg.DeprecatedMissingSoftwareDeps) == 0 && len(msg.SkipReasons) == 0 {
 		r.cfg.Logger.Logf("Completed test %s in %v with %d error(s)",
 			msg.Name, msg.Time.Sub(r.res.Start).Round(time.Millisecond), len(r.res.Errors))
 	} else {
 		var reasons []string
-		if len(msg.MissingSoftwareDeps) > 0 {
-			reasons = append(reasons, "missing SoftwareDeps: "+strings.Join(msg.MissingSoftwareDeps, " "))
+		if len(msg.DeprecatedMissingSoftwareDeps) > 0 {
+			reasons = append(reasons, "missing SoftwareDeps: "+strings.Join(msg.DeprecatedMissingSoftwareDeps, " "))
 		}
-		if len(msg.HardwareDepsUnsatisfiedReasons) > 0 {
-			reasons = append(reasons, msg.HardwareDepsUnsatisfiedReasons...)
+		if len(msg.SkipReasons) > 0 {
+			reasons = append(reasons, msg.SkipReasons...)
 		}
 		r.res.SkipReason = strings.Join(reasons, ", ")
 		r.cfg.Logger.Logf("Skipped test %s due to missing dependencies: %s", msg.Name, r.res.SkipReason)

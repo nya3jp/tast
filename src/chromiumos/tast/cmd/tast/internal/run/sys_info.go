@@ -7,6 +7,7 @@ package run
 import (
 	"context"
 	"errors"
+	"log"
 	"path/filepath"
 
 	"chromiumos/tast/internal/runner"
@@ -17,6 +18,7 @@ import (
 // requested and if it hasn't already been saved. This is called before testing.
 // This updates cfg.initialSysInfo, so calling twice won't work.
 func getInitialSysInfo(ctx context.Context, cfg *Config) error {
+	log.Print("tast: getInitialSysInfo")
 	if !cfg.collectSysInfo {
 		return nil
 	}
@@ -46,6 +48,7 @@ func getInitialSysInfo(ctx context.Context, cfg *Config) error {
 		cfg.Logger.Log("Error getting system info: ", warn)
 	}
 	cfg.initialSysInfo = &res.State
+	log.Print("tast: Done getInitialSysInfo")
 	return nil
 }
 

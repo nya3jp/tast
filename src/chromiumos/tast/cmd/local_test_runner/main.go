@@ -14,6 +14,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -37,13 +38,15 @@ func main() {
 			},
 		},
 	}
+	rpcV2 := len(os.Args) > 1 && os.Args[1] == "-rpcv2"
+
 	const (
 		// Boards that cannot run Crostini tests reliably.
 		crostiniUnstableBoards = `auron_paine || auron_yuna || banon || bob || buddy || celes || coral || cyan || edgar || elm || fizz || gandof || guado || grunt || hana || kefka || kevin || kevin64 || kukui || kefka || lulu || nocturne || octopus || reks || relm || samus || sarien || scarlet || setzer || terra || ultima || wizpig`
 	)
 	cfg := runner.Config{
 		Type:              runner.LocalRunner,
-		KillStaleRunners:  true,
+		KillStaleRunners:  rpcV2, // FIXME
 		SystemLogDir:      "/var/log",
 		SystemLogExcludes: []string{"journal"}, // journald binary logs: https://crbug.com/931951
 		JournaldSubdir:    "journal",           // destination for exported journald logs
@@ -177,8 +180,17 @@ func main() {
 			cfg.PrivateBundlesStampPath = "/usr/local/share/tast/.private-bundles-downloaded"
 		}
 	}
-	// os.Exit(runner.Run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, &args, &cfg))
-	os.Exit(runner.RunV2(os.Stdin, os.Stdout, &args, &cfg))
+
+	// TODO: merge logic with local_test_runner.go
+	// TODO: use flag
+	log.Printf("local runner: os.Args: %#v", os.Args)
+	if rpcV2 {
+		log.Println("local runner: using RPC V2")
+		os.Exit(runner.RunV2(os.Stdin, os.Stdout, &args, &cfg))
+		return
+	}
+	log.Println("local runner: using old method")
+	os.Exit(runner.Run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, &args, &cfg))
 }
 
 // writeSystemInfo writes additional system information from the DUT to files within dir.

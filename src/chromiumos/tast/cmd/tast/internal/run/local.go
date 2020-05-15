@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net"
 	"path/filepath"
 	"reflect"
@@ -36,6 +37,7 @@ const (
 // The connection will be cached in cfg and should not be closed by the caller.
 // If a connection is already established, it will be returned.
 func connectToTarget(ctx context.Context, cfg *Config) (*ssh.Conn, error) {
+	log.Print("tast: connectToTarget")
 	// If we already have a connection, reuse it if it's still open.
 	if cfg.hst != nil {
 		if err := cfg.hst.Ping(ctx, sshPingTimeout); err == nil {
@@ -78,6 +80,7 @@ func connectToTarget(ctx context.Context, cfg *Config) (*ssh.Conn, error) {
 // runLocalTests executes tests as described by cfg on hst and returns the results.
 // It is only used for RunTestsMode.
 func runLocalTests(ctx context.Context, cfg *Config) ([]TestResult, error) {
+	log.Print("tast: runLocalTests")
 	cfg.Logger.Status("Running local tests on target")
 	ctx, st := timing.Start(ctx, "run_local_tests")
 	defer st.End()
@@ -191,6 +194,7 @@ func startLocalRunner(ctx context.Context, cfg *Config, hst *ssh.Conn, args *run
 // but other fields are left blank and unstarted is empty.
 func runLocalRunner(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns []string) (
 	results []TestResult, unstarted []string, err error) {
+	log.Print("tast: runLocalRunner")
 	ctx, st := timing.Start(ctx, "run_local_tests")
 	defer st.End()
 

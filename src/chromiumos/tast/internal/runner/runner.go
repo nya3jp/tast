@@ -27,6 +27,8 @@ import (
 	"chromiumos/tast/internal/devserver"
 	"chromiumos/tast/rpc"
 	"chromiumos/tast/testing"
+
+	"chromiumos/tast/internal/dbg"
 )
 
 const (
@@ -42,13 +44,17 @@ const (
 )
 
 func RunV2(stdin io.Reader, stdout io.Writer, args *Args, cfg *Config) int {
+	if cfg.KillStaleRunners {
+		killStaleRunners(syscall.SIGTERM, func(s string) { testing.ContextLog(context.TODO(), s) })
+	}
+	log.Print("tast: RunV2")
 	if err := rpc.RunServerV2(stdin, stdout, func(srv *grpc.Server) {
 		rpc.RegisterTastCoreServiceServer(srv, NewTastCoreServer(args, cfg))
 	}); err != nil {
-		log.Print("RunV2 error: ", err)
+		log.Print("tast: RunV2 error: ", err)
 		return 1
 	}
-	log.Print("RunV2 success")
+	log.Print("tast: RunV2 success")
 	return 0
 }
 
@@ -66,23 +72,28 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Args,
 
 	switch args.Mode {
 	case GetSysInfoStateMode:
+		log.Println("runner: Run: GetSysInfoStateMode")
 		if err := handleGetSysInfoState(ctx, cfg, stdout); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
 	case CollectSysInfoMode:
+		log.Println("runner: Run: CollectSysInfoMode")
 		if err := handleCollectSysInfo(ctx, args, cfg, stdout); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
 	case GetDUTInfoMode:
+		log.Println("runner: Run: GetDUTInfoMode")
 		if err := handleGetDUTInfo(args, cfg, stdout); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
 	case ListTestsMode:
+		log.Println("runner: Run: ListTestsMode")
 		_, tests, err := getBundlesAndTests(args)
 		if err != nil {
+			log.Println("failed getBundlesAndTests: ", err)
 			return command.WriteError(stderr, err)
 		}
 		if err := testing.WriteTestsAsJSON(stdout, tests); err != nil {
@@ -90,6 +101,7 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Args,
 		}
 		return statusSuccess
 	case RunTestsMode:
+		log.Println(dbg.Magenta("runner:") + "Run: RunTestMode")
 		if args.report {
 			// Success is always reported when running tests on behalf of the tast command.
 			runTestsAndReport(ctx, args, cfg, stdout)
@@ -98,6 +110,7 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Args,
 		}
 		return statusSuccess
 	case DownloadPrivateBundlesMode:
+		log.Println("runner: Run: DownloadPrivateBundleMode")
 		if err := handleDownloadPrivateBundles(ctx, args, cfg, stdout); err != nil {
 			return command.WriteError(stderr, err)
 		}

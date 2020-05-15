@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -30,6 +31,7 @@ func readBootID(ctx context.Context, hst *ssh.Conn) (string, error) {
 // and returns a diagnosis message. Files useful for diagnosis might be saved
 // under outDir.
 func diagnoseSSHDrop(ctx context.Context, cfg *Config, outDir string) string {
+	log.Print("tast: diagnoseSSHDrop")
 	if cfg.initBootID == "" {
 		return "failed to diagnose: initial boot_id is not available"
 	}

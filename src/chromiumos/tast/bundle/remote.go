@@ -33,7 +33,7 @@ func Remote(clArgs []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		defaultTestTimeout: remoteTestTimeout,
 	}
 	// TODO: merge the logic with local.go
-	if clArgs[0] == "-rpcv2" {
+	if len(clArgs) > 0 && clArgs[0] == "-rpcv2" {
 		return runServer(context.Background(), stdin, stdout, stderr, &cfg)
 	}
 	return run(context.Background(), clArgs, stdin, stdout, stderr, &args, &cfg, remoteBundle)

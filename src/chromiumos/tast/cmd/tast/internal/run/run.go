@@ -108,20 +108,24 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []TestResult)
 		TestInfo: &testing.TestContextTestInfo{},
 	})
 
-	var lc *grpc.ClientConn
+	var lc rpc.TastCoreServiceClient
 	if cfg.runLocal {
-		lc, err = startLocalRunnerServer(ctx, cfg, hst)
+		// TODO: should close?
+		conn, err := startLocalRunnerServer(ctx, cfg, hst)
 		if err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start local server: %v", err), nil
 		}
+		lc = rpc.NewTastCoreServiceClient(conn)
 	}
 
-	var rc *grpc.ClientConn
+	var rc rpc.TastCoreServiceClient
 	if cfg.runRemote {
-		rc, err = startRemoteRunnerServer(ctx, cfg)
+		// TODO: should close?
+		conn, err := startRemoteRunnerServer(ctx, cfg)
 		if err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start remote server: %v", err), nil
 		}
+		rc = rpc.NewTastCoreServiceClient(conn)
 	}
 
 	switch cfg.mode {
@@ -146,6 +150,8 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []TestResult)
 		}
 		return successStatus, res
 	case RunTestsMode:
+		log.Println("tast: RunTestsMode")
+		// results, err := runTestsV2(ctx, cfg, lc, rc)
 		results, err := runTests(ctx, cfg)
 		if err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to run tests: %v", err), results
@@ -158,9 +164,10 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []TestResult)
 
 // start both local/remote runner server.
 func startLocalRunnerServer(ctx context.Context, cfg *Config, hst *ssh.Conn) (*grpc.ClientConn, error) {
+	log.Print("tast: startLocalRunnerServer")
 	// run runner server command line.
 	r := localRunnerCommand(ctx, cfg, hst)
-	r.Args = append(r.Args, "-v2")
+	r.Args = append(r.Args, "-rpcv2")
 	stdout, err := r.StdoutPipe()
 	if err != nil {
 		return nil, err
@@ -188,8 +195,11 @@ func startLocalRunnerServer(ctx context.Context, cfg *Config, hst *ssh.Conn) (*g
 	return cl.Conn, nil
 }
 
+// TODO: share come logic with startLocalRunnerServer.
 func startRemoteRunnerServer(ctx context.Context, cfg *Config) (*grpc.ClientConn, error) {
+	log.Print("tast: startRemoteRunnerServer")
 	r := remoteRunnerCommand(ctx, cfg)
+	r.Args = append(r.Args, "-rpcv2")
 	stdout, err := r.StdoutPipe()
 	if err != nil {
 		return nil, err
@@ -239,6 +249,7 @@ func prepare(ctx context.Context, cfg *Config, hst *ssh.Conn) error {
 	}
 
 	if cfg.downloadPrivateBundles {
+		log.Println("tast: cfg.downloadPrivateBundles.")
 		if err := downloadPrivateBundles(ctx, cfg, hst); err != nil {
 			return fmt.Errorf("failed downloading private bundles: %v", err)
 		}

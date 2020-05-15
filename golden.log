@@ -1,0 +1,245 @@
+2020/05/15 17:35:33 Command line: tast run localhost:9222 example.*
+2020/05/15 17:35:33 Writing results to /tmp/tast/results/20200515-173533
+2020/05/15 17:35:33 Connecting to localhost:9222
+2020/05/15 17:35:33 Failed to connect to ssh-agent at /tmp/ssh-auth-sock: dial unix /tmp/ssh-auth-sock: connect: connection refused
+2020/05/15 17:35:33 Building local_test_runner, cros, remote_test_runner, cros
+2020/05/15 17:35:34 Built in 763ms
+2020/05/15 17:35:34 Pushing executables to target
+2020/05/15 17:35:34 Pushed executables in 111ms (sent 0 B)
+2020/05/15 17:35:34 Pushing data files to target
+2020/05/15 17:35:34 Pushed data files in 99ms (sent 0 B)
+2020/05/15 17:35:37 unknown brand-id: cros_config failed (stderr: ""): exit status 1
+2020/05/15 17:35:38 [17:35:37.710] Devserver status: [[http://127.0.0.1:28082 UP]]
+2020/05/15 17:35:38 [17:35:37.711] Found 2 external linked data file(s), need to download 0
+2020/05/15 17:35:38 [17:35:37.750] Waiting for DUT to be ready for testing
+2020/05/15 17:35:38 [17:35:37.807] TPM not available, not waiting for readiness
+2020/05/15 17:35:38 Started test example.ArtifactFiles
+2020/05/15 17:35:38 [17:35:37.808] Read artifact external data file (1268 bytes)
+2020/05/15 17:35:38 Completed test example.ArtifactFiles in 1ms with 0 error(s)
+2020/05/15 17:35:38 Started test example.ChromeExtension
+2020/05/15 17:35:38 [17:35:37.809] Writing unpacked extension to /usr/local/tmp/tast/run_tmp/tast.example.ChromeExtension.007049810
+2020/05/15 17:35:38 [17:35:37.810] Extension ID is bijihlabcfdnabacffofojgmehjdielb
+2020/05/15 17:35:38 [17:35:37.817] Restarting ui job
+2020/05/15 17:35:38 [17:35:38.649] Clearing device owner info
+2020/05/15 17:35:39 [17:35:38.848] Asking session_manager to enable Chrome testing
+2020/05/15 17:35:39 [17:35:38.997] Waiting for Chrome to write its debugging port to /home/chronos/DevToolsActivePort
+2020/05/15 17:35:39 [17:35:39.494] Connecting to browser at ws://127.0.0.1:34735/devtools/browser/2a9091e7-94e1-44af-8fe2-c3c6a325e83c
+2020/05/15 17:35:39 [17:35:39.509] Removing cryptohome for testuser@gmail.com
+2020/05/15 17:35:39 [17:35:39.575] Finding OOBE DevTools target
+2020/05/15 17:35:39 [17:35:39.587] Connecting to Chrome target 11173209E2330E53EBDB2D127C46CC0D
+2020/05/15 17:35:39 [17:35:39.638] Waiting for OOBE
+2020/05/15 17:35:40 [17:35:40.673] Logging in as user "testuser@gmail.com"
+2020/05/15 17:35:41 [17:35:40.787] Waiting for cryptohome for user "testuser@gmail.com" with timeout 30s
+2020/05/15 17:35:48 [17:35:47.857] Waiting for OOBE to be dismissed
+2020/05/15 17:35:48 [17:35:48.166] Connecting to background page
+2020/05/15 17:35:48 [17:35:48.274] Connecting to Chrome target F5B034D1FD4C4257778AF0E5DD4CB65A
+2020/05/15 17:35:48 [17:35:48.361] Waiting for chrome.system.memory API to become available
+2020/05/15 17:35:48 [17:35:48.371] Exercising chrome.system.memory API
+2020/05/15 17:35:48 [17:35:48.381] System has 6100 MB available of 7963 MB total
+2020/05/15 17:35:48 Completed test example.ChromeExtension in 10.577s with 0 error(s)
+2020/05/15 17:35:48 Started test example.DBus
+2020/05/15 17:35:48 [17:35:48.385] Restarting ui job and waiting for org.chromium.SessionManager service
+2020/05/15 17:35:50 [17:35:50.200] Asking session_manager for session state
+2020/05/15 17:35:50 [17:35:50.200] Session state is "stopped"
+2020/05/15 17:35:50 Completed test example.DBus in 1.816s with 0 error(s)
+2020/05/15 17:35:50 Started test example.DataFiles
+2020/05/15 17:35:50 [17:35:50.202] Read internal data file: "This file is checked in."
+2020/05/15 17:35:50 [17:35:50.202] Read external data file: "This file is stored in Google Cloud Storage."
+2020/05/15 17:35:50 Completed test example.DataFiles in 1ms with 0 error(s)
+2020/05/15 17:35:50 Started test example.Fail
+2020/05/15 17:35:50 [17:35:50.203] Here's an informative message
+2020/05/15 17:35:50 [17:35:50.203] Error at fail.go:23: Here's an error
+2020/05/15 17:35:50 [17:35:50.203] Error at fail.go:24: And here's a second
+2020/05/15 17:35:50 [17:35:50.203] Error at fail.go:25: Finally, a fatal error
+2020/05/15 17:35:50 [17:35:50.270] Waiting for Chrome to write its debugging port to /home/chronos/DevToolsActivePort
+2020/05/15 17:35:50 [17:35:50.270] Failed to take screenshot by Chrome API: failed to create a new Chrome Devtools Protocol session: failed to query browser's HTTP endpoint: could not resolve IP for 127.0.0.1
+2020/05/15 17:35:50 [17:35:50.273] External command failed: exit status 1
+2020/05/15 17:35:50 [17:35:50.273] Command: screenshot /usr/local/tmp/tast_out.20200515-173533.217037172/example.Fail/faillog/screenshot_native.png
+2020/05/15 17:35:50 [17:35:50.273] Uncaptured output:
+[0515/173550.273452:ERROR:main.cc(100)] CRTC not found. Is the screen on?
+2020/05/15 17:35:50 [17:35:50.274] Failed to take screenshot by a command: failed running "screenshot /usr/local/tmp/tast_out.20200515-173533.217037172/example.Fail/faillog/screenshot_native.png"
+2020/05/15 17:35:50 Completed test example.Fail in 72ms with 3 error(s)
+2020/05/15 17:35:50 Started test example.HWDeps
+2020/05/15 17:35:50 Skipped test example.HWDeps due to missing dependencies: ModelId did not match
+2020/05/15 17:35:50 Started test example.HWDeps.fingerprint
+2020/05/15 17:35:50 Skipped test example.HWDeps.fingerprint due to missing dependencies: DUT does not have fingerprint sensor
+2020/05/15 17:35:50 Started test example.Param.dog
+2020/05/15 17:35:50 [17:35:50.274] Value: {4 bow-wow}
+2020/05/15 17:35:50 Completed test example.Param.dog in 0s with 0 error(s)
+2020/05/15 17:35:50 Started test example.Param.duck
+2020/05/15 17:35:50 [17:35:50.275] Value: {2 quack}
+2020/05/15 17:35:50 Completed test example.Param.duck in 0s with 0 error(s)
+2020/05/15 17:35:50 Started test example.Pass
+2020/05/15 17:35:50 Completed test example.Pass in 0s with 0 error(s)
+2020/05/15 17:35:50 Started test example.Perf
+2020/05/15 17:35:50 Completed test example.Perf in 1ms with 0 error(s)
+2020/05/15 17:35:50 Started test example.Profiler
+2020/05/15 17:35:52 Completed test example.Profiler in 2.063s with 0 error(s)
+2020/05/15 17:35:52 Started test example.Run
+2020/05/15 17:35:52 [17:35:52.340] Starting subtest ok
+2020/05/15 17:35:52 [17:35:52.340] ok
+2020/05/15 17:35:52 [17:35:52.340] Starting subtest error
+2020/05/15 17:35:52 [17:35:52.340] Error at run.go:27: error: Here's an error
+2020/05/15 17:35:52 [17:35:52.340] Starting subtest fatal
+2020/05/15 17:35:52 [17:35:52.340] Error at run.go:31: fatal: Here's a fatal error
+2020/05/15 17:35:52 [17:35:52.340] Starting subtest still-ok
+2020/05/15 17:35:52 [17:35:52.340] Still ok
+2020/05/15 17:35:52 [17:35:52.340] Starting subtest l1
+2020/05/15 17:35:52 [17:35:52.340] Level 1
+2020/05/15 17:35:52 [17:35:52.340] Starting subtest l1/l2
+2020/05/15 17:35:52 [17:35:52.340] Level 2
+2020/05/15 17:35:52 [17:35:52.421] Waiting for Chrome to write its debugging port to /home/chronos/DevToolsActivePort
+2020/05/15 17:35:52 [17:35:52.421] Failed to take screenshot by Chrome API: failed to create a new Chrome Devtools Protocol session: failed to query browser's HTTP endpoint: could not resolve IP for 127.0.0.1
+2020/05/15 17:35:52 [17:35:52.425] External command failed: exit status 1
+2020/05/15 17:35:52 [17:35:52.425] Command: screenshot /usr/local/tmp/tast_out.20200515-173533.217037172/example.Run/faillog/screenshot_native.png
+2020/05/15 17:35:52 [17:35:52.425] Uncaptured output:
+[0515/173552.425026:ERROR:main.cc(100)] CRTC not found. Is the screen on?
+2020/05/15 17:35:52 [17:35:52.425] Failed to take screenshot by a command: failed running "screenshot /usr/local/tmp/tast_out.20200515-173533.217037172/example.Run/faillog/screenshot_native.png"
+2020/05/15 17:35:52 Completed test example.Run in 86ms with 2 error(s)
+2020/05/15 17:35:52 Started test example.SecretVars
+2020/05/15 17:35:52 Completed test example.SecretVars in 0s with 0 error(s)
+2020/05/15 17:35:52 Started test example.ChromeDisplay
+2020/05/15 17:35:52 [17:35:52.426] Preparing precondition "chrome_logged_in"
+2020/05/15 17:35:52 [17:35:52.429] Restarting ui job
+2020/05/15 17:35:53 [17:35:53.027] Clearing device owner info
+2020/05/15 17:35:53 [17:35:53.240] Asking session_manager to enable Chrome testing
+2020/05/15 17:35:53 [17:35:53.392] Waiting for Chrome to write its debugging port to /home/chronos/DevToolsActivePort
+2020/05/15 17:35:54 [17:35:53.908] Connecting to browser at ws://127.0.0.1:34065/devtools/browser/83443c3e-2c16-4394-8d5e-e8b559c62603
+2020/05/15 17:35:54 [17:35:53.929] Removing cryptohome for testuser@gmail.com
+2020/05/15 17:35:54 [17:35:53.982] Finding OOBE DevTools target
+2020/05/15 17:35:54 [17:35:53.985] Connecting to Chrome target 0005BDE13EF4488F83DF1397DB64B1C9
+2020/05/15 17:35:54 [17:35:54.026] Waiting for OOBE
+2020/05/15 17:35:55 [17:35:55.006] Logging in as user "testuser@gmail.com"
+2020/05/15 17:35:55 [17:35:55.136] Waiting for cryptohome for user "testuser@gmail.com" with timeout 30s
+2020/05/15 17:36:02 [17:36:02.347] Waiting for OOBE to be dismissed
+2020/05/15 17:36:03 [17:36:02.687] Waiting for test API extension at chrome-extension://behllobkkfkfnphdnhnkndlbkcpglgmj/_generated_background_page.html
+2020/05/15 17:36:03 [17:36:02.707] Connecting to Chrome target B6DFC3214BB7DEED07F829143EF6545C
+2020/05/15 17:36:03 [17:36:02.865] Test API extension is ready
+2020/05/15 17:36:03 [17:36:02.873] Display info: &{ID:0 Name:Unknown Display MirroringSourceID: IsPrimary:true IsInternal:true IsEnabled:true IsUnified:false DPIX:96 DPIY:96 Rotation:0 Bounds:(0, 0) - (1024 x 768) Overscan:0xc000646360 WorkArea:(0, 0) - (1024 x 720) Modes:[0xc0004a8a00 0xc0004a8a40 0xc0004a8a80 0xc0004a8ac0 0xc0004a8b00 0xc0004a8b40 0xc0004a8b80 0xc0004a8bc0 0xc0004a8c00 0xc0004a8c40 0xc0004a8c80 0xc0004a8cc0 0xc0004a8d00 0xc0004a8d40 0xc0004a8d80 0xc0004a8dc0 0xc0004a8e00 0xc0004a8e40 0xc0004a8e80 0xc0004a8ec0 0xc0004a8f00 0xc0004a8f40 0xc0004a8f80 0xc0004a8fc0] HasTouchSupport:true AvailableDisplayZoomFactors:[1] DisplayZoomFactor:1}
+2020/05/15 17:36:03 [17:36:02.873] Supported display modes:
+2020/05/15 17:36:03 [17:36:02.873] Mode: {Width:640 Height:480 WidthInNativePixels:640 HeightInNativePixels:480 UIScale:0 DeviceScaleFactor:1 IsNative:false IsSelected:true IsInterlaced:false}
+2020/05/15 17:36:03 [17:36:02.873] Mode: {Width:848 Height:480 WidthInNativePixels:848 HeightInNativePixels:480 UIScale:0 DeviceScaleFactor:1 IsNative:false IsSelected:false IsInterlaced:false}
+2020/05/15 17:36:03 [17:36:02.873] Mode: {Width:800 Height:600 WidthInNativePixels:800 HeightInNativePixels:600 UIScale:0 DeviceScaleFactor:1 IsNative:false IsSelected:false IsInterlaced:false}
+2020/05/15 17:36:03 [17:36:02.873] Mode: {Width:1024 Height:768 WidthInNativePixels:1024 HeightInNativePixels:768 UIScale:0 DeviceScaleFactor:1 IsNative:true IsSelected:false IsInterlaced:false}
+2020/05/15 17:36:03 [17:36:02.873] Mode: {Width:1280 Height:720 WidthInNativePixels:1280 HeightInNativePixels:720 UIScale:0 DeviceScaleFactor:1 IsNative:false IsSelected:false IsInterlaced:false}
+2020/05/15 17:36:03 [17:36:02.873] Mode: {Width:1280 Height:768 WidthInNativePixels:1280 HeightInNativePixels:768 UIScale:0 DeviceScaleFactor:1 IsNative:false IsSelected:false IsInterlaced:false}
+2020/05/15 17:36:03 [17:36:02.873] Mode: {Width:1280 Height:800 WidthInNativePixels:1280 HeightInNativePixels:800 UIScale:0 DeviceScaleFactor:1 IsNative:false IsSelected:false IsInterlaced:false}
+2020/05/15 17:36:03 [17:36:02.873] Mode: {Width:1360 Height:768 WidthInNativePixels:1360 HeightInNativePixels:768 UIScale:0 DeviceScaleFactor:1 IsNative:false IsSelected:false IsInterlaced:false}
+2020/05/15 17:36:03 [17:36:02.873] Mode: {Width:1366 Height:768 WidthInNativePixels:1366 HeightInNativePixels:768 UIScale:0 DeviceScaleFactor:1 IsNative:false IsSelected:false IsInterlaced:false}
+2020/05/15 17:36:03 [17:36:02.873] Mode: {Width:1280 Height:960 WidthInNativePixels:1280 HeightInNativePixels:960 UIScale:0 DeviceScaleFactor:1 IsNative:false IsSelected:false IsInterlaced:false}
+2020/05/15 17:36:03 [17:36:02.873] Mode: {Width:1440 Height:900 WidthInNativePixels:1440 HeightInNativePixels:900 UIScale:0 DeviceScaleFactor:1 IsNative:false IsSelected:false IsInterlaced:false}
+2020/05/15 17:36:03 [17:36:02.873] Mode: {Width:1280 Height:1024 WidthInNativePixels:1280 HeightInNativePixels:1024 UIScale:0 DeviceScaleFactor:1 IsNative:false IsSelected:false IsInterlaced:false}
+2020/05/15 17:36:03 [17:36:02.873] Mode: {Width:1600 Height:900 WidthInNativePixels:1600 HeightInNativePixels:900 UIScale:0 DeviceScaleFactor:1 IsNative:false IsSelected:false IsInterlaced:false}
+2020/05/15 17:36:03 [17:36:02.873] Mode: {Width:1400 Height:1050 WidthInNativePixels:1400 HeightInNativePixels:1050 UIScale:0 DeviceScaleFactor:1 IsNative:false IsSelected:false IsInterlaced:false}
+2020/05/15 17:36:03 [17:36:02.873] Mode: {Width:1680 Height:1050 WidthInNativePixels:1680 HeightInNativePixels:1050 UIScale:0 DeviceScaleFactor:1 IsNative:false IsSelected:false IsInterlaced:false}
+2020/05/15 17:36:03 [17:36:02.873] Mode: {Width:1600 Height:1200 WidthInNativePixels:1600 HeightInNativePixels:1200 UIScale:0 DeviceScaleFactor:1 IsNative:false IsSelected:false IsInterlaced:false}
+2020/05/15 17:36:03 [17:36:02.874] Mode: {Width:1920 Height:1080 WidthInNativePixels:1920 HeightInNativePixels:1080 UIScale:0 DeviceScaleFactor:1 IsNative:false IsSelected:false IsInterlaced:false}
+2020/05/15 17:36:03 [17:36:02.874] Mode: {Width:1920 Height:1200 WidthInNativePixels:1920 HeightInNativePixels:1200 UIScale:0 DeviceScaleFactor:1 IsNative:false IsSelected:false IsInterlaced:false}
+2020/05/15 17:36:03 [17:36:02.874] Mode: {Width:2048 Height:1152 WidthInNativePixels:2048 HeightInNativePixels:1152 UIScale:0 DeviceScaleFactor:1 IsNative:false IsSelected:false IsInterlaced:false}
+2020/05/15 17:36:03 [17:36:02.874] Mode: {Width:1792 Height:1344 WidthInNativePixels:1792 HeightInNativePixels:1344 UIScale:0 DeviceScaleFactor:1 IsNative:false IsSelected:false IsInterlaced:false}
+2020/05/15 17:36:03 [17:36:02.874] Mode: {Width:1856 Height:1392 WidthInNativePixels:1856 HeightInNativePixels:1392 UIScale:0 DeviceScaleFactor:1 IsNative:false IsSelected:false IsInterlaced:false}
+2020/05/15 17:36:03 [17:36:02.874] Mode: {Width:1920 Height:1440 WidthInNativePixels:1920 HeightInNativePixels:1440 UIScale:0 DeviceScaleFactor:1 IsNative:false IsSelected:false IsInterlaced:false}
+2020/05/15 17:36:03 [17:36:02.874] Mode: {Width:2560 Height:1600 WidthInNativePixels:2560 HeightInNativePixels:1600 UIScale:0 DeviceScaleFactor:1 IsNative:false IsSelected:false IsInterlaced:false}
+2020/05/15 17:36:03 [17:36:02.874] Mode: {Width:4096 Height:2160 WidthInNativePixels:4096 HeightInNativePixels:2160 UIScale:0 DeviceScaleFactor:1 IsNative:false IsSelected:false IsInterlaced:false}
+2020/05/15 17:36:03 [17:36:02.874] Setting display properties: rotation=90, zoom=1
+2020/05/15 17:36:03 [17:36:02.877] Error at chrome_display.go:49: Failed to set display properties: Invalid display id
+2020/05/15 17:36:03 [17:36:02.932] Waiting for Chrome to write its debugging port to /home/chronos/DevToolsActivePort
+2020/05/15 17:36:03 [17:36:02.933] Connecting to browser at ws://127.0.0.1:34065/devtools/browser/83443c3e-2c16-4394-8d5e-e8b559c62603
+2020/05/15 17:36:03 [17:36:02.937] Connecting to Chrome target B6DFC3214BB7DEED07F829143EF6545C
+2020/05/15 17:36:03 [17:36:02.940] Taking screenshot via chrome API
+2020/05/15 17:36:04 Completed test example.ChromeDisplay in 11.791s with 1 error(s)
+2020/05/15 17:36:04 Started test example.Keyboard
+2020/05/15 17:36:04 [17:36:04.217] Preparing precondition "chrome_logged_in"
+2020/05/15 17:36:04 [17:36:04.219] Resetting Chrome's state
+2020/05/15 17:36:04 [17:36:04.221] Reusing existing Chrome session
+2020/05/15 17:36:04 [17:36:04.221] Loading input page
+2020/05/15 17:36:04 [17:36:04.221] Creating new page with URL http://127.0.0.1:39723
+2020/05/15 17:36:04 [17:36:04.240] Connecting to Chrome target E56040B589F310A3371EDE445B3DB0A8
+2020/05/15 17:36:04 [17:36:04.306] Waiting for focus
+2020/05/15 17:36:04 [17:36:04.317] Finding and opening keyboard device
+2020/05/15 17:36:04 [17:36:04.318] Using existing keyboard device /dev/input/event1 ("AT Translated Set 2 keyboard" 0011:0001:0001:ab41)
+2020/05/15 17:36:04 [17:36:04.318] Injecting keyboard events for "Hello, world!"
+2020/05/15 17:36:05 [17:36:04.971] Waiting for text from document.getElementById('text').value
+2020/05/15 17:36:05 [17:36:04.975] Navigating to "data:text/plain,mittens" via omnibox
+2020/05/15 17:36:06 [17:36:06.232] Waiting for text from document.body.innerText
+2020/05/15 17:36:06 [17:36:06.404] Closing precondition "chrome_logged_in"
+2020/05/15 17:36:06 Completed test example.Keyboard in 2.189s with 0 error(s)
+2020/05/15 17:36:06 Started test example.Touch
+2020/05/15 17:36:06 Skipped test example.Touch due to missing dependencies: missing SoftwareDeps: tablet_mode
+2020/05/15 17:36:06 Started test example.Touch.hwdep
+2020/05/15 17:36:06 Skipped test example.Touch.hwdep due to missing dependencies: DUT does not have touchscreen
+2020/05/15 17:36:06 Ran 18 local test(s) in 28.934s
+2020/05/15 17:36:06 Starting /tmp/tast/build/host/remote_test_runner locally
+2020/05/15 17:36:06 [17:36:06.865] Devserver status: using pseudo client
+2020/05/15 17:36:06 [17:36:06.865] Found 0 external linked data file(s), need to download 0
+2020/05/15 17:36:06 [17:36:06.877] Connecting to DUT
+2020/05/15 17:36:06 Started test example.GRPC
+2020/05/15 17:36:07 [17:36:07.125] Restarting ui job
+2020/05/15 17:36:07 [17:36:07.947] Clearing device owner info
+2020/05/15 17:36:08 [17:36:08.165] Asking session_manager to enable Chrome testing
+2020/05/15 17:36:08 [17:36:08.317] Waiting for Chrome to write its debugging port to /home/chronos/DevToolsActivePort
+2020/05/15 17:36:08 [17:36:08.777] Connecting to browser at ws://127.0.0.1:39165/devtools/browser/7fcbddff-85ea-4c39-990c-4540c30e034a
+2020/05/15 17:36:08 [17:36:08.786] Removing cryptohome for testuser@gmail.com
+2020/05/15 17:36:08 [17:36:08.859] Finding OOBE DevTools target
+2020/05/15 17:36:08 [17:36:08.863] Connecting to Chrome target 0622D607EFF2D93567931FE45F930EEE
+2020/05/15 17:36:08 [17:36:08.915] Waiting for OOBE
+2020/05/15 17:36:09 [17:36:09.903] Logging in as user "testuser@gmail.com"
+2020/05/15 17:36:10 [17:36:10.014] Waiting for cryptohome for user "testuser@gmail.com" with timeout 30s
+2020/05/15 17:36:17 [17:36:17.183] Waiting for OOBE to be dismissed
+2020/05/15 17:36:17 [17:36:17.617] Waiting for test API extension at chrome-extension://behllobkkfkfnphdnhnkndlbkcpglgmj/_generated_background_page.html
+2020/05/15 17:36:17 [17:36:17.637] Connecting to Chrome target 644DD4CA1663B56DA0FCBCFF425095E4
+2020/05/15 17:36:17 [17:36:17.729] Test API extension is ready
+2020/05/15 17:36:17 [17:36:17.730] Eval("chrome.i18n.getUILanguage()") = "en-US"
+2020/05/15 17:36:17 Completed test example.GRPC in 10.87s with 0 error(s)
+2020/05/15 17:36:17 Started test example.ReconnectToDUT
+2020/05/15 17:36:17 [17:36:17.855] Disconnecting from DUT
+2020/05/15 17:36:17 [17:36:17.855] Connecting to DUT
+2020/05/15 17:36:17 [17:36:17.968] Disconnecting from DUT again
+2020/05/15 17:36:17 Completed test example.ReconnectToDUT in 154ms with 0 error(s)
+2020/05/15 17:36:17 Started test example.RemoteFileSystem
+2020/05/15 17:36:17 [17:36:17.969] Reconnecting to DUT
+2020/05/15 17:36:18 [17:36:18.206] Files under /mnt/stateful_partition:
+2020/05/15 17:36:18 [17:36:18.206]   dev_image
+2020/05/15 17:36:18 [17:36:18.206]   encrypted
+2020/05/15 17:36:18 [17:36:18.206]   encrypted.block
+2020/05/15 17:36:18 [17:36:18.206]   encrypted.key
+2020/05/15 17:36:18 [17:36:18.206]   etc
+2020/05/15 17:36:18 [17:36:18.206]   home
+2020/05/15 17:36:18 [17:36:18.206]   lost+found
+2020/05/15 17:36:18 [17:36:18.207]   unencrypted
+2020/05/15 17:36:18 [17:36:18.207]   var_overlay
+2020/05/15 17:36:18 [17:36:18.207]   vmlinuz_hd.vblock
+2020/05/15 17:36:18 Completed test example.RemoteFileSystem in 279ms with 0 error(s)
+2020/05/15 17:36:18 Started test example.ServoEcho
+2020/05/15 17:36:18 [17:36:18.289] Error at state.go:228: Required variable "servo" not supplied via -var or -varsfile
+2020/05/15 17:36:18 Completed test example.ServoEcho in 41ms with 1 error(s)
+2020/05/15 17:36:18 [17:36:18.289] Disconnecting from DUT
+2020/05/15 17:36:18 Ran 4 remote test(s) in 11.453s
+2020/05/15 17:36:19 --------------------------------------------------------------------------------
+2020/05/15 17:36:19 example.ArtifactFiles       [ PASS ]
+2020/05/15 17:36:19 example.ChromeExtension     [ PASS ]
+2020/05/15 17:36:19 example.DBus                [ PASS ]
+2020/05/15 17:36:19 example.DataFiles           [ PASS ]
+2020/05/15 17:36:19 example.Fail                [ FAIL ] Here's an error
+2020/05/15 17:36:19                                      And here's a second
+2020/05/15 17:36:19                                      Finally, a fatal error
+2020/05/15 17:36:19 example.HWDeps              [ SKIP ] ModelId did not match
+2020/05/15 17:36:19 example.HWDeps.fingerprint  [ SKIP ] DUT does not have fingerprint sensor
+2020/05/15 17:36:19 example.Param.dog           [ PASS ]
+2020/05/15 17:36:19 example.Param.duck          [ PASS ]
+2020/05/15 17:36:19 example.Pass                [ PASS ]
+2020/05/15 17:36:19 example.Perf                [ PASS ]
+2020/05/15 17:36:19 example.Profiler            [ PASS ]
+2020/05/15 17:36:19 example.Run                 [ FAIL ] error: Here's an error
+2020/05/15 17:36:19                                      fatal: Here's a fatal error
+2020/05/15 17:36:19 example.SecretVars          [ PASS ]
+2020/05/15 17:36:19 example.ChromeDisplay       [ FAIL ] Failed to set display properties: Invalid display id
+2020/05/15 17:36:19 example.Keyboard            [ PASS ]
+2020/05/15 17:36:19 example.Touch               [ SKIP ] missing SoftwareDeps: tablet_mode
+2020/05/15 17:36:19 example.Touch.hwdep         [ SKIP ] DUT does not have touchscreen
+2020/05/15 17:36:19 example.GRPC                [ PASS ]
+2020/05/15 17:36:19 example.ReconnectToDUT      [ PASS ]
+2020/05/15 17:36:19 example.RemoteFileSystem    [ PASS ]
+2020/05/15 17:36:19 example.ServoEcho           [ FAIL ] Required variable "servo" not supplied via -var or -varsfile
+2020/05/15 17:36:19 --------------------------------------------------------------------------------
+2020/05/15 17:36:19 Results saved to /tmp/tast/results/20200515-173533

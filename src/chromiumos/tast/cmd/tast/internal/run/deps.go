@@ -8,6 +8,7 @@ import (
 	"context"
 	"errors"
 	"io/ioutil"
+	"log"
 	"path/filepath"
 	"strings"
 
@@ -25,6 +26,7 @@ const deviceConfigFile = "device-config.txt"
 // The info is used to check tests' dependencies.
 // This updates cfg.softwareFeatures, thus calling this twice won't work.
 func getDUTInfo(ctx context.Context, cfg *Config) error {
+	log.Println("tast: getDUTInfo")
 	if !cfg.checkTestDeps {
 		return nil
 	}

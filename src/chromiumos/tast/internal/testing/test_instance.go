@@ -21,7 +21,6 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	testpb "go.chromium.org/chromiumos/config/go/api/test/metadata/v1"
-	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/dep"
@@ -564,12 +563,17 @@ type SkipReason struct {
 
 // ShouldRun returns whether this test should run under the current testing environment.
 // In case of not, in addition, the reason why it should be skipped is also returned.
-func (t *TestInstance) ShouldRun(features []string, dc *device.Config) (bool, *SkipReason) {
-	missing := t.MissingSoftwareDeps(features)
+func (t *TestInstance) ShouldRun(f *dep.Features) (bool, *SkipReason) {
+	var missing []string
+	if f.Software != nil {
+		missing = t.MissingSoftwareDeps(f.Software.Available)
+	}
 	var hwReasons []string
-	if err := t.HardwareDeps.Satisfied(dc); err != nil {
-		for _, r := range err.Reasons {
-			hwReasons = append(hwReasons, r.Error())
+	if f.Hardware != nil {
+		if err := t.HardwareDeps.Satisfied(f.Hardware); err != nil {
+			for _, r := range err.Reasons {
+				hwReasons = append(hwReasons, r.Error())
+			}
 		}
 	}
 	if len(missing) > 0 || len(hwReasons) > 0 {

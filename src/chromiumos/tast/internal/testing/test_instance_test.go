@@ -21,6 +21,7 @@ import (
 	testpb "go.chromium.org/chromiumos/config/go/api/test/metadata/v1"
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
+	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/testing/hwdep"
 	"chromiumos/tast/testutil"
@@ -58,11 +59,18 @@ func (p *testPre) Timeout() time.Duration { return time.Minute }
 
 func (p *testPre) String() string { return p.name }
 
-func deviceConfig(model string) *device.Config {
-	return &device.Config{
-		Id: &device.ConfigId{
-			ModelId: &device.ModelId{
-				Value: model,
+func features(softwareFeatures []string, model string) *dep.Features {
+	return &dep.Features{
+		Software: &dep.SoftwareFeatures{
+			Available: softwareFeatures,
+		},
+		Hardware: &dep.HardwareFeatures{
+			DC: &device.Config{
+				Id: &device.ConfigId{
+					ModelId: &device.ModelId{
+						Value: model,
+					},
+				},
 			},
 		},
 	}
@@ -113,10 +121,10 @@ func TestInstantiate(t *gotesting.T) {
 		if got[0].Func == nil {
 			t.Error("Got nil Func")
 		}
-		if ok, reason := got[0].ShouldRun([]string{"dep1", "dep2"}, deviceConfig("model1")); !ok {
+		if ok, reason := got[0].ShouldRun(features([]string{"dep1", "dep2"}, "model1")); !ok {
 			t.Error("Got unexpected HardwareDeps: ShouldRun returned false for model1: ", reason)
 		}
-		if ok, _ := got[0].ShouldRun([]string{"dep1", "dep2"}, deviceConfig("modelX")); ok {
+		if ok, _ := got[0].ShouldRun(features([]string{"dep1", "dep2"}, "modelX")); ok {
 			t.Error("Got unexpected HardwareDeps: ShouldRun returned true for modelX")
 		}
 		if got[0].Pre != pre {
@@ -192,19 +200,19 @@ func TestInstantiateParams(t *gotesting.T) {
 		if got[0].Func == nil {
 			t.Error("Got nil Func for the first test instance")
 		}
-		if ok, reason := got[0].ShouldRun([]string{"dep0", "dep1"}, deviceConfig("model1")); !ok {
+		if ok, reason := got[0].ShouldRun(features([]string{"dep0", "dep1"}, "model1")); !ok {
 			t.Error("Got unexpected HardwareDeps for first test instance: ShouldRun returned false for model1: ", reason)
 		}
-		if ok, _ := got[0].ShouldRun([]string{"dep0", "dep1"}, deviceConfig("model2")); ok {
+		if ok, _ := got[0].ShouldRun(features([]string{"dep0", "dep1"}, "model2")); ok {
 			t.Error("Got unexpected HardwareDeps for first test instance: ShouldRun returned true for model2")
 		}
 		if got[1].Func == nil {
 			t.Error("Got nil Func for the second test instance")
 		}
-		if ok, reason := got[1].ShouldRun([]string{"dep0", "dep2"}, deviceConfig("model2")); !ok {
+		if ok, reason := got[1].ShouldRun(features([]string{"dep0", "dep2"}, "model2")); !ok {
 			t.Error("Got unexpected HardwareDeps for second test instance: ShouldRun returned false for model2: ", reason)
 		}
-		if ok, _ := got[1].ShouldRun([]string{"dep0", "dep2"}, deviceConfig("model1")); ok {
+		if ok, _ := got[1].ShouldRun(features([]string{"dep0", "dep2"}, "model1")); ok {
 			t.Error("Got unexpected HardwareDeps for second test instance: ShouldRun returned true for model1")
 		}
 	}
@@ -543,19 +551,22 @@ func TestInstantiateCompatAttrs(t *gotesting.T) {
 
 func TestSoftwareDeps(t *gotesting.T) {
 	test := TestInstance{SoftwareDeps: []string{"dep3", "dep1", "dep2"}}
-	missing := test.MissingSoftwareDeps([]string{"dep0", "dep2", "dep4"})
-	if exp := []string{"dep1", "dep3"}; !reflect.DeepEqual(missing, exp) {
-		t.Errorf("MissingSoftwareDeps() = %v; want %v", missing, exp)
+	ok, reason := test.ShouldRun(features([]string{"dep0", "dep2", "dep4"}, "eve"))
+	if ok {
+		t.Fatal("Unexpectedly considered that the test should run")
+	}
+	if exp := []string{"dep1", "dep3"}; !reflect.DeepEqual(reason.MissingSoftwareDeps, exp) {
+		t.Errorf("MissingSoftwareDeps() = %v; want %v", reason.MissingSoftwareDeps, exp)
 	}
 }
 
 func TestHardwareDeps(t *gotesting.T) {
 	test := TestInstance{HardwareDeps: hwdep.D(hwdep.Model("eve"))}
-	ok, reason := test.ShouldRun(nil, nil)
+	ok, reason := test.ShouldRun(features(nil, "samus"))
 	if ok {
 		t.Fatal("Unexpectedly considered that the test should run")
 	}
-	if e := []string{"device.Config does not have ModelId"}; !reflect.DeepEqual(reason.HardwareDepsUnsatisfiedReasons, e) {
+	if e := []string{"ModelId did not match"}; !reflect.DeepEqual(reason.HardwareDepsUnsatisfiedReasons, e) {
 		t.Errorf("Unexpected HardwareDeps check error message: got %v; want %v", reason.HardwareDepsUnsatisfiedReasons, e)
 	}
 }

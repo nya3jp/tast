@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Package hwdep provides implementation details of hardware dependency.
-// Specifically, this is designed to be called only from framework, or
-// exposed to tests via chromiumos/tast/testing/hwdep package.
-package hwdep
+package dep
 
 import (
 	"strings"
@@ -15,17 +12,17 @@ import (
 	"chromiumos/tast/errors"
 )
 
-// Deps is exported via chromiumos/tast/testing/hwdep. Please find its document for details.
-type Deps struct {
-	// conds hold a slice of Conditions. The enclosing Deps instance will be satisfied
-	// iff all conds return true. Note that, if conds is empty, Deps is considered as
+// HardwareDeps is exported as chromiumos/tast/testing/hwdep.Deps. Please find its document for details.
+type HardwareDeps struct {
+	// conds hold a slice of HardwareConditions. The enclosing HardwareDeps instance will be satisfied
+	// iff all conds return true. Note that, if conds is empty, HardwareDeps is considered as
 	// satisfied.
-	conds []Condition
+	conds []HardwareCondition
 }
 
-// Condition is exported via chromiumos/tast/testing/hwdep. Please find its document for details.
+// HardwareCondition is exported as chromiumos/tast/testing/hwdep.Condition. Please find its document for details.
 // Either Satisfied or Err should be nil exclusively.
-type Condition struct {
+type HardwareCondition struct {
 	// Satisfied is a pointer to a function which checks if the given DeviceSetup satisfies
 	// the condition.
 	Satisfied func(d *DeviceSetup) error
@@ -34,7 +31,7 @@ type Condition struct {
 	CEL string
 
 	// Err is an error to be reported on Test registration
-	// if instantiation of Condition fails.
+	// if instantiation of HardwareCondition fails.
 	Err error
 }
 
@@ -45,9 +42,9 @@ type DeviceSetup struct {
 	// TODO(hidehiko): Consider adding lab peripherals here.
 }
 
-// D is exported via chromiumos/tast/testing/hwdep. Please find its document for details
-func D(conds ...Condition) Deps {
-	return Deps{conds: conds}
+// NewHardwareDeps creates a HardwareDeps from a set of HWConditions.
+func NewHardwareDeps(conds ...HardwareCondition) HardwareDeps {
+	return HardwareDeps{conds: conds}
 }
 
 // UnsatisfiedError is reported when Satisfied() fails.
@@ -62,7 +59,7 @@ type UnsatisfiedError struct {
 // i.e., the test can run on the current device setup.
 // Otherwise, this returns an UnsatisfiedError instance, which contains a
 // collection of detailed errors in Reasons.
-func (d *Deps) Satisfied(dc *device.Config) *UnsatisfiedError {
+func (d *HardwareDeps) Satisfied(dc *device.Config) *UnsatisfiedError {
 	setup := &DeviceSetup{DC: dc}
 	var reasons []error
 	for _, c := range d.conds {
@@ -76,7 +73,7 @@ func (d *Deps) Satisfied(dc *device.Config) *UnsatisfiedError {
 	}
 	if len(reasons) > 0 {
 		return &UnsatisfiedError{
-			E:       errors.New("Deps is not satisfied"),
+			E:       errors.New("HardwareDeps is not satisfied"),
 			Reasons: reasons,
 		}
 	}
@@ -84,7 +81,7 @@ func (d *Deps) Satisfied(dc *device.Config) *UnsatisfiedError {
 }
 
 // Validate returns error if one of the conditions failed to be instantiated.
-func (d *Deps) Validate() error {
+func (d *HardwareDeps) Validate() error {
 	for _, c := range d.conds {
 		if c.Err != nil {
 			return c.Err
@@ -94,7 +91,7 @@ func (d *Deps) Validate() error {
 }
 
 // CEL returns the CEL expression that reflects the conditions.
-func (d *Deps) CEL() string {
+func (d *HardwareDeps) CEL() string {
 	var allConds []string
 	for _, c := range d.conds {
 		if c.CEL == "" {
@@ -111,12 +108,12 @@ func (d *Deps) CEL() string {
 	return strings.Join(allConds, " && ")
 }
 
-// Merge merges two Deps instance into one Deps instance.
-// The returned Deps is satisfied iff all conditions in d1 and ones in d2 are
+// MergeHardwareDeps merges two HardwareDeps instance into one HardwareDeps instance.
+// The returned HardwareDeps is satisfied iff all conditions in d1 and ones in d2 are
 // satisfied.
-func Merge(d1, d2 Deps) Deps {
-	var conds []Condition
+func MergeHardwareDeps(d1, d2 HardwareDeps) HardwareDeps {
+	var conds []HardwareCondition
 	conds = append(conds, d1.conds...)
 	conds = append(conds, d2.conds...)
-	return Deps{conds: conds}
+	return HardwareDeps{conds: conds}
 }

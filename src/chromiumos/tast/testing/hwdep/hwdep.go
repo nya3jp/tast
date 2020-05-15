@@ -13,18 +13,18 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/errors"
-	"chromiumos/tast/internal/testing/hwdep"
+	"chromiumos/tast/internal/dep"
 )
 
 // Deps holds hardware dependencies all of which need to be satisfied to run a test.
-type Deps = hwdep.Deps
+type Deps = dep.HardwareDeps
 
 // Condition represents one condition of hardware dependencies.
-type Condition = hwdep.Condition
+type Condition = dep.HardwareCondition
 
 // D returns hardware dependencies representing the given Conditions.
 func D(conds ...Condition) Deps {
-	return hwdep.D(conds...)
+	return dep.NewHardwareDeps(conds...)
 }
 
 // idRegexp is the pattern that the given model/plaform ID names should match with.
@@ -51,7 +51,7 @@ func Model(names ...string) Condition {
 		}
 	}
 
-	return Condition{Satisfied: func(d *hwdep.DeviceSetup) error {
+	return Condition{Satisfied: func(d *dep.DeviceSetup) error {
 		// If the field is unavailable, return false as not satisfied.
 		if d.DC == nil || d.DC.Id == nil || d.DC.Id.ModelId == nil {
 			return errors.New("device.Config does not have ModelId")
@@ -76,7 +76,7 @@ func SkipOnModel(names ...string) Condition {
 		}
 	}
 
-	return Condition{Satisfied: func(d *hwdep.DeviceSetup) error {
+	return Condition{Satisfied: func(d *dep.DeviceSetup) error {
 		// If the field is unavailable, return false as not satisfied.
 		if d.DC == nil || d.DC.Id == nil || d.DC.Id.ModelId == nil {
 			return errors.New("device.Config does not have ModelId")
@@ -101,7 +101,7 @@ func Platform(names ...string) Condition {
 		}
 	}
 
-	return Condition{Satisfied: func(d *hwdep.DeviceSetup) error {
+	return Condition{Satisfied: func(d *dep.DeviceSetup) error {
 		// If the field is unavailable, return false as not satisfied.
 		if d.DC == nil || d.DC.Id == nil || d.DC.Id.PlatformId == nil {
 			return errors.New("device.Config does not have PlatformId")
@@ -126,7 +126,7 @@ func SkipOnPlatform(names ...string) Condition {
 		}
 	}
 
-	return Condition{Satisfied: func(d *hwdep.DeviceSetup) error {
+	return Condition{Satisfied: func(d *dep.DeviceSetup) error {
 		if d.DC == nil || d.DC.Id == nil || d.DC.Id.PlatformId == nil {
 			return errors.New("device.Config does not have PlatformId")
 		}
@@ -143,7 +143,7 @@ func SkipOnPlatform(names ...string) Condition {
 // TouchScreen returns a hardware dependency condition that is satisfied
 // iff the DUT has touchscreen.
 func TouchScreen() Condition {
-	return Condition{Satisfied: func(d *hwdep.DeviceSetup) error {
+	return Condition{Satisfied: func(d *dep.DeviceSetup) error {
 		if d.DC == nil {
 			return errors.New("device.Config is not given")
 		}
@@ -160,7 +160,7 @@ func TouchScreen() Condition {
 // Fingerprint returns a hardware dependency condition that is satisfied
 // iff the DUT has fingerprint sensor.
 func Fingerprint() Condition {
-	return Condition{Satisfied: func(d *hwdep.DeviceSetup) error {
+	return Condition{Satisfied: func(d *dep.DeviceSetup) error {
 		if d.DC == nil {
 			return errors.New("device.Config is not given")
 		}
@@ -177,7 +177,7 @@ func Fingerprint() Condition {
 // InternalDisplay returns a hardware dependency condition that is satisfied
 // iff the DUT has an internal display, e.g. Chromeboxes and Chromebits don't.
 func InternalDisplay() Condition {
-	return Condition{Satisfied: func(d *hwdep.DeviceSetup) error {
+	return Condition{Satisfied: func(d *dep.DeviceSetup) error {
 		if d.DC == nil {
 			return errors.New("device.Config is not given")
 		}
@@ -204,7 +204,7 @@ func Wifi80211ac() Condition {
 // Battery returns a hardware dependency condition that is satisfied iff the DUT
 // has a battery, e.g. Chromeboxes and Chromebits don't.
 func Battery() Condition {
-	return Condition{Satisfied: func(d *hwdep.DeviceSetup) error {
+	return Condition{Satisfied: func(d *dep.DeviceSetup) error {
 		if d.DC == nil {
 			return errors.New("device.Config is not given")
 		}

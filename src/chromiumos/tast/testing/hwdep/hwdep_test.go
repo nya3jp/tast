@@ -9,13 +9,13 @@ import (
 
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
-	"chromiumos/tast/internal/testing/hwdep"
+	"chromiumos/tast/internal/dep"
 )
 
 func verifyCondition(t *testing.T, c Condition, dc *device.Config, expectSatisfied bool) {
 	t.Helper()
 
-	err := c.Satisfied(&hwdep.DeviceSetup{DC: dc})
+	err := c.Satisfied(&dep.DeviceSetup{DC: dc})
 	if expectSatisfied {
 		if err != nil {
 			t.Error("Unexpectedly unsatisfied: ", err)

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package hwdep
+package dep
 
 import (
 	"testing"
@@ -12,29 +12,29 @@ import (
 	"chromiumos/tast/errors"
 )
 
-// success returns a Condition that is always satisified.
-func success() Condition {
-	return Condition{Satisfied: func(d *DeviceSetup) error {
+// success returns a HardwareCondition that is always satisfied.
+func success() HardwareCondition {
+	return HardwareCondition{Satisfied: func(d *DeviceSetup) error {
 		return nil
 	}}
 }
 
-// fail returns a Condition that always fail to be satisfied.
-func fail() Condition {
-	return Condition{Satisfied: func(d *DeviceSetup) error {
+// fail returns a HardwareCondition that always fail to be satisfied.
+func fail() HardwareCondition {
+	return HardwareCondition{Satisfied: func(d *DeviceSetup) error {
 		return errors.New("failed")
 	}}
 }
 
-// invalid returns a Condition that always fail to be validated.
+// invalid returns a HardwareCondition that always fail to be validated.
 // This emulates, e.g., the situation that invalid argument is
-// passed to a factory function to instantiate a Condition.
-func invalid() Condition {
-	return Condition{Err: errors.New("invalid condition")}
+// passed to a factory function to instantiate a HardwareCondition.
+func invalid() HardwareCondition {
+	return HardwareCondition{Err: errors.New("invalid condition")}
 }
 
-func TestSuccess(t *testing.T) {
-	d := D(success())
+func TestHardwareDepsSuccess(t *testing.T) {
+	d := NewHardwareDeps(success())
 	if err := d.Validate(); err != nil {
 		t.Fatal("Unexpected validation error: ", err)
 	}
@@ -43,8 +43,8 @@ func TestSuccess(t *testing.T) {
 	}
 }
 
-func TestFail(t *testing.T) {
-	d := D(fail())
+func TestHardwareDepsFail(t *testing.T) {
+	d := NewHardwareDeps(fail())
 	if err := d.Validate(); err != nil {
 		t.Fatal("Unexpected validateion error: ", err)
 	}
@@ -53,8 +53,8 @@ func TestFail(t *testing.T) {
 	}
 }
 
-func TestInvalid(t *testing.T) {
-	d := D(invalid())
+func TestHardwareDepsInvalid(t *testing.T) {
+	d := NewHardwareDeps(invalid())
 	if err := d.Validate(); err == nil {
 		t.Error("Unexpected validation pass")
 	}
@@ -64,8 +64,8 @@ func TestInvalid(t *testing.T) {
 	}
 }
 
-func TestMultipleCondition(t *testing.T) {
-	d := D(success(), fail())
+func TestHardwareDepsMultipleCondition(t *testing.T) {
+	d := NewHardwareDeps(success(), fail())
 	if err := d.Satisfied(&device.Config{}); err == nil {
 		t.Error("Unexpected success")
 	} else if len(err.Reasons) != 1 {
@@ -73,10 +73,10 @@ func TestMultipleCondition(t *testing.T) {
 	}
 }
 
-func TestMerge(t *testing.T) {
-	d1 := D(success())
-	d2 := D(fail())
-	d := Merge(d1, d2)
+func TestMergeHardwareDeps(t *testing.T) {
+	d1 := NewHardwareDeps(success())
+	d2 := NewHardwareDeps(fail())
+	d := MergeHardwareDeps(d1, d2)
 
 	if err := d.Satisfied(&device.Config{}); err == nil {
 		t.Error("Unexpected success")

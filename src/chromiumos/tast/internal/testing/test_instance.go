@@ -24,7 +24,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/errors"
-	"chromiumos/tast/internal/testing/hwdep"
+	"chromiumos/tast/internal/dep"
 )
 
 const (
@@ -90,10 +90,10 @@ type TestInstance struct {
 	SoftwareDeps []string `json:"softwareDeps,omitempty"`
 	// HardwareDeps field is not in the protocol yet. When the scheduler in infra is
 	// implemented, it is needed.
-	HardwareDeps hwdep.Deps    `json:"-"`
-	ServiceDeps  []string      `json:"serviceDeps,omitempty"`
-	Pre          Precondition  `json:"-"`
-	Timeout      time.Duration `json:"timeout"`
+	HardwareDeps dep.HardwareDeps `json:"-"`
+	ServiceDeps  []string         `json:"serviceDeps,omitempty"`
+	Pre          Precondition     `json:"-"`
+	Timeout      time.Duration    `json:"timeout"`
 }
 
 // instantiate creates one or more TestInstance from t.
@@ -153,7 +153,7 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 	}
 
 	swDeps := append(append([]string(nil), t.SoftwareDeps...), p.ExtraSoftwareDeps...)
-	hwDeps := hwdep.Merge(t.HardwareDeps, p.ExtraHardwareDeps)
+	hwDeps := dep.MergeHardwareDeps(t.HardwareDeps, p.ExtraHardwareDeps)
 	if err := hwDeps.Validate(); err != nil {
 		return nil, err
 	}

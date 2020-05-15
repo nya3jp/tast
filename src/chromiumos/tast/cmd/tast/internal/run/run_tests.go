@@ -6,11 +6,18 @@ package run
 
 import (
 	"context"
+	"log"
 
 	"chromiumos/tast/errors"
+	"chromiumos/tast/rpc"
 )
 
+func runTestsV2(ctx context.Context, cfg *Config, lc rpc.TastCoreServiceClient, rc rpc.TastCoreServiceClient) ([]TestResult, error) {
+	return nil, nil
+}
+
 func runTests(ctx context.Context, cfg *Config) ([]TestResult, error) {
+	log.Print("tast: runTests")
 	if err := getDUTInfo(ctx, cfg); err != nil {
 		return nil, errors.Wrap(err, "failed to get DUT software features")
 	}

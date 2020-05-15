@@ -59,7 +59,7 @@ func Local(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, delegate 
 			return ctx, delegate.Ready(ctx, lf)
 		}
 	}
-	if clArgs[0] == "-rpcv2" {
+	if len(clArgs) > 0 && clArgs[0] == "-rpcv2" {
 		return runServer(context.Background(), stdin, stdout, stderr, &cfg)
 	}
 

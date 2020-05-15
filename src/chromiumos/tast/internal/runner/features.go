@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"os"
 	"os/exec"
 	"path"
@@ -31,6 +32,7 @@ const autotestCapPrefix = "autotest-capability:" // prefix for autotest-capabili
 // handleGetDUTInfo handles a GetDUTInfoMode request from args
 // and JSON-marshals a GetDUTInfoResult struct to w.
 func handleGetDUTInfo(args *Args, cfg *Config, w io.Writer) error {
+	log.Println("runner: handleGetDUTInfo")
 	features, warnings, err := getSoftwareFeatures(
 		cfg.SoftwareFeatureDefinitions, cfg.USEFlagsFile, args.GetDUTInfo.ExtraUSEFlags, cfg.AutotestCapabilityDir)
 	if err != nil {
@@ -59,6 +61,7 @@ func handleGetDUTInfo(args *Args, cfg *Config, w io.Writer) error {
 // conversion for RPC).
 func getSoftwareFeatures(definitions map[string]string, useFlagsFile string, extraUSEFlags []string, autotestCapsDir string) (
 	features *SoftwareFeatures, warnings []string, err error) {
+	log.Println("runner: getSoftwareFeatures")
 	if useFlagsFile == "" {
 		return nil, nil, command.NewStatusErrorf(statusBadArgs, "feature enumeration unsupported")
 	}
@@ -120,6 +123,7 @@ func readUSEFlagsFile(fn string) ([]string, error) {
 // autotestCaps contains a mapping from autotest-capability names to the corresponding states.
 func determineSoftwareFeatures(definitions map[string]string, useFlags []string, autotestCaps map[string]autocaps.State) (
 	*SoftwareFeatures, error) {
+	log.Println("runner: determineSoftwareFeatures")
 	var available, unavailable []string
 	for ft, es := range definitions {
 		if strings.HasPrefix(ft, autotestCapPrefix) {

@@ -60,7 +60,8 @@ The following software features are defined:
 *   `crossystem` - Chrome OS firmware/system interface utility.
 *   `crostini_stable` - Boards that can run Crostini tests reliably.
 *   `crostini_unstable` - Boards that cannot run Crostini tests reliably.
-*   `crosvm_gpu` - The ability to use hardware GPU acceleration in the guest VM environment.
+*   `crosvm_gpu` - Boards that use hardware GPU acceleration in the guest VM environment.
+*   `crosvm_no_gpu` - Boards that use software GPU emulation in the guest VM environment.
 *   `cups` - CUPS daemon.
 *   `diagnostics` - Boards that contain generic cross-platform
     [Diagnostic utilities].

@@ -552,51 +552,65 @@ func (t *TestInstance) String() string {
 
 // SkipReason represents the reasons why the test needs to be skipped.
 type SkipReason struct {
-	// MissingSoftwareDeps contains a list of features which is required by the test,
-	// but not satisfied under the current DUT.
-	MissingSoftwareDeps []string
+	// Reasons contains a list of messages describing why some dependencies
+	// were not satisfied. They should be reported as informational logs.
+	Reasons []string
 
-	// HardwareDepsUnsatisfiedReasons contains a list of error messages, why
-	// some hardware dependencies were not satisfied.
-	HardwareDepsUnsatisfiedReasons []string
+	// Errors contains a list of messages describing errors encountered while
+	// evaluating dependencies. They should be reported as test errors.
+	Errors []string
 }
 
 // ShouldRun returns whether this test should run under the current testing environment.
 // In case of not, in addition, the reason why it should be skipped is also returned.
 func (t *TestInstance) ShouldRun(f *dep.Features) (bool, *SkipReason) {
-	var missing []string
+	var reasons []string
+	var errs []string
 	if f.Software != nil {
-		missing = t.MissingSoftwareDeps(f.Software.Available)
+		missing, unknown := t.missingSoftwareDeps(f.Software)
+		if len(missing) > 0 {
+			reasons = append(reasons, fmt.Sprintf("missing SoftwareDeps: %s", strings.Join(missing, ", ")))
+		}
+		if len(unknown) > 0 {
+			errs = append(errs, fmt.Sprintf("unknown SoftwareDeps: %v", strings.Join(unknown, ", ")))
+		}
 	}
-	var hwReasons []string
 	if f.Hardware != nil {
 		if err := t.HardwareDeps.Satisfied(f.Hardware); err != nil {
 			for _, r := range err.Reasons {
-				hwReasons = append(hwReasons, r.Error())
+				reasons = append(reasons, r.Error())
 			}
 		}
 	}
-	if len(missing) > 0 || len(hwReasons) > 0 {
-		return false, &SkipReason{missing, hwReasons}
+	if len(reasons) > 0 || len(errs) > 0 {
+		return false, &SkipReason{reasons, errs}
 	}
 	return true, nil
 }
 
-// MissingSoftwareDeps returns a sorted list of dependencies from SoftwareDeps
+// missingSoftwareDeps returns a sorted list of dependencies from SoftwareDeps
 // that aren't present on the DUT (per the passed-in features list).
-func (t *TestInstance) MissingSoftwareDeps(features []string) []string {
-	var missing []string
+// unknown is a sorted list of unknown software features. It is always a subset
+// of missing.
+func (t *TestInstance) missingSoftwareDeps(features *dep.SoftwareFeatures) (missing, unknown []string) {
 DepLoop:
 	for _, d := range t.SoftwareDeps {
-		for _, f := range features {
+		for _, f := range features.Available {
 			if d == f {
 				continue DepLoop
 			}
 		}
 		missing = append(missing, d)
+		for _, f := range features.Unavailable {
+			if d == f {
+				continue DepLoop
+			}
+		}
+		unknown = append(unknown, d)
 	}
 	sort.Strings(missing)
-	return missing
+	sort.Strings(unknown)
+	return missing, unknown
 }
 
 // Proto converts test metadata of TestInstance into a protobuf message.

@@ -91,7 +91,7 @@ func TestReadTestOutput(t *gotesting.T) {
 	test3EndTime := time.Unix(11, 0)
 	runEndTime := time.Unix(12, 0)
 
-	test3Deps := []string{"dep1", "dep2"}
+	const skipReason = "weather is not good"
 
 	tempDir := testutil.TempDir(t)
 	defer os.RemoveAll(tempDir)
@@ -117,7 +117,7 @@ func TestReadTestOutput(t *gotesting.T) {
 		Reason: test2ErrorReason, File: test2ErrorFile, Line: test2ErrorLine, Stack: test2ErrorStack}})
 	mw.WriteMessage(&control.TestEnd{Time: test2EndTime, Name: test2Name})
 	mw.WriteMessage(&control.TestStart{Time: test3StartTime, Test: testing.TestInstance{Name: test3Name, Desc: test3Desc}})
-	mw.WriteMessage(&control.TestEnd{Time: test3EndTime, Name: test3Name, MissingSoftwareDeps: test3Deps})
+	mw.WriteMessage(&control.TestEnd{Time: test3EndTime, Name: test3Name, SkipReasons: []string{skipReason}})
 	mw.WriteMessage(&control.RunEnd{Time: runEndTime, OutDir: outDir})
 
 	var logBuf bytes.Buffer
@@ -172,7 +172,7 @@ func TestReadTestOutput(t *gotesting.T) {
 			TestInstance: testing.TestInstance{Name: test3Name, Desc: test3Desc},
 			Start:        test3StartTime,
 			End:          test3EndTime,
-			SkipReason:   "missing SoftwareDeps: " + strings.Join(test3Deps, " "),
+			SkipReason:   skipReason,
 			OutDir:       filepath.Join(cfg.ResDir, testLogsDir, test3Name),
 		},
 	}
@@ -208,8 +208,8 @@ func TestReadTestOutput(t *gotesting.T) {
 		t.Errorf("%s contains %q; want %q", test2OutPath, files[test2OutPath], test2OutData)
 	}
 	test3LogPath := filepath.Join(testLogsDir, test3Name, testLogFilename)
-	if !strings.Contains(files[test3LogPath], test3Deps[0]) {
-		t.Errorf("%s contents %q don't contain missing dependency %q", test3LogPath, files[test3LogPath], test3Deps[0])
+	if !strings.Contains(files[test3LogPath], skipReason) {
+		t.Errorf("%s contents %q don't contain skip reason %q", test3LogPath, files[test3LogPath], skipReason)
 	}
 
 	// With non-verbose logging, the global log should include run and test messages and
@@ -227,10 +227,8 @@ func TestReadTestOutput(t *gotesting.T) {
 	if strings.Contains(logData, test2ErrorStack) {
 		t.Errorf("Test stack %q incorrectly included in log %q", test2ErrorStack, logData)
 	}
-	for _, dep := range test3Deps {
-		if !strings.Contains(logData, dep) {
-			t.Errorf("Test dependency %q not included in log %q", dep, logData)
-		}
+	if !strings.Contains(logData, skipReason) {
+		t.Errorf("Skip reason %q not included in log %q", skipReason, logData)
 	}
 }
 

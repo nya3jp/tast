@@ -43,7 +43,7 @@ type RunStart struct {
 	// Time is the device-local time at which the run started.
 	Time time.Time `json:"runStartTime"`
 	// TestNames contains the names of tests to run, in the order in which they'll be executed.
-	// Note that some of these tests may later be skipped (see TestEnd.MissingSoftwareDeps).
+	// Note that some of these tests may later be skipped (see TestEnd).
 	TestNames []string `json:"runStartTestNames"`
 	// NumTests is the number of tests that will be run.
 	// TODO(derat): Delete this after 20190715; the tast command now uses TestNames instead: https://crbug.com/889119
@@ -111,12 +111,13 @@ type TestEnd struct {
 	Time time.Time `json:"testEndTime"`
 	// Name is the name of the test, matching the earlier TestStart.Test.Name.
 	Name string `json:"testEndName"`
-	// MissingSoftwareDeps contains software dependencies declared by the test that were
+	// DeprecatedMissingSoftwareDeps contains software dependencies declared by the test that were
 	// not present on the DUT. If non-empty, the test was skipped.
-	MissingSoftwareDeps []string `json:"testEndMissingSoftwareDeps"`
-	// HardwareDepsUnsatisfiedReasons contains hardware dependencies declared by the test that
-	// were not satisfied on the DUT. If non-empty, the test was skipped.
-	HardwareDepsUnsatisfiedReasons []string `json:"testEndHardwareDepsUnsatisfiedReasons"`
+	// DEPRECATED: This field is no longer filled by newer bundles.
+	DeprecatedMissingSoftwareDeps []string `json:"testEndMissingSoftwareDeps"`
+	// SkipReasons contains messages describing why the test was skipped.
+	// If non-empty, the test was skipped.
+	SkipReasons []string `json:"testEndHardwareDepsUnsatisfiedReasons"`
 	// TimingLog contains test-reported timing information to be incorporated into the main timing.json file.
 	TimingLog *timing.Log `json:"testEndTimingLog"`
 }

@@ -69,6 +69,7 @@ The following software features are defined:
 *   `dlc` - Support of [Downloadable Content] (DLC).
 *   `drivefs` - Google Drive support enabled.
 *   `drm_atomic` - The [DRM/KMS] kernel subsystem supports atomic commits.
+*   `encrypted_reboot_vault` - Whether the system can setup an encrypted reboot vault in the stateful partition.
 *   `factory_toolkit` - Boards that support to install and run [Factory toolkit].
 *   `firewall` - Standard Chrome OS network firewall rules.
 *   `flashrom` - Userspace utility to update firmware.

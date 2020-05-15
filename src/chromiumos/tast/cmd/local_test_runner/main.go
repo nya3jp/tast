@@ -95,6 +95,7 @@ func main() {
 			"dmverity_unstable":       `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14" || "kernel-3_18" || "kernel-4_4" || "kernel-4_14")`,
 			"drivefs":                 "drivefs",
 			"drm_atomic":              "drm_atomic",
+			"encrypted_reboot_vault":  `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14")`,
 			"factory_toolkit":         "betty || tast_vm",
 			"firewall":                "!moblab", // Moblab has relaxed iptables rules
 			"flashrom":                "!betty && !tast_vm",

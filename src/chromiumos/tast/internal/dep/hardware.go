@@ -12,6 +12,13 @@ import (
 	"chromiumos/tast/errors"
 )
 
+// HardwareFeatures contains information about hardware features of the DUT.
+// Hardware dependency conditions should decide eligibility based only on this information.
+type HardwareFeatures struct {
+	DC *device.Config
+	// TODO(hidehiko): Consider adding lab peripherals here.
+}
+
 // HardwareDeps is exported as chromiumos/tast/testing/hwdep.Deps. Please find its document for details.
 type HardwareDeps struct {
 	// conds hold a slice of HardwareConditions. The enclosing HardwareDeps instance will be satisfied
@@ -23,9 +30,9 @@ type HardwareDeps struct {
 // HardwareCondition is exported as chromiumos/tast/testing/hwdep.Condition. Please find its document for details.
 // Either Satisfied or Err should be nil exclusively.
 type HardwareCondition struct {
-	// Satisfied is a pointer to a function which checks if the given DeviceSetup satisfies
+	// Satisfied is a pointer to a function which checks if the given HardwareFeatures satisfies
 	// the condition.
-	Satisfied func(d *DeviceSetup) error
+	Satisfied func(f *HardwareFeatures) error
 
 	// CEL is the CEL expression denoting the condition.
 	CEL string
@@ -33,13 +40,6 @@ type HardwareCondition struct {
 	// Err is an error to be reported on Test registration
 	// if instantiation of HardwareCondition fails.
 	Err error
-}
-
-// DeviceSetup represents the configuration of the current DUT.
-// Each condition expects to be implemented based only on this information.
-type DeviceSetup struct {
-	DC *device.Config
-	// TODO(hidehiko): Consider adding lab peripherals here.
 }
 
 // NewHardwareDeps creates a HardwareDeps from a set of HWConditions.
@@ -59,15 +59,14 @@ type UnsatisfiedError struct {
 // i.e., the test can run on the current device setup.
 // Otherwise, this returns an UnsatisfiedError instance, which contains a
 // collection of detailed errors in Reasons.
-func (d *HardwareDeps) Satisfied(dc *device.Config) *UnsatisfiedError {
-	setup := &DeviceSetup{DC: dc}
+func (d *HardwareDeps) Satisfied(f *HardwareFeatures) *UnsatisfiedError {
 	var reasons []error
 	for _, c := range d.conds {
 		if c.Satisfied == nil {
 			reasons = append(reasons, errors.New("Satisfied was nil"))
 			continue
 		}
-		if err := c.Satisfied(setup); err != nil {
+		if err := c.Satisfied(f); err != nil {
 			reasons = append(reasons, err)
 		}
 	}

@@ -19,6 +19,7 @@ import (
 	"chromiumos/tast/autocaps"
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/internal/command"
+	"chromiumos/tast/internal/dep"
 )
 
 // RunMode describes the runner's behavior.
@@ -198,22 +199,13 @@ type GetDUTInfoArgs struct {
 	RequestDeviceConfig bool `json:"requestDeviceConfig,omitempty"`
 }
 
-// SoftwareFeatures contains information about software features of the DUT.
-type SoftwareFeatures struct {
-	// Available contains a list of software features supported by the DUT.
-	Available []string
-
-	// Unavailable contains a list of software features not supported by the DUT.
-	Unavailable []string
-}
-
 // GetDUTInfoResult contains the result of a GetDUTInfoMode command.
 type GetDUTInfoResult struct {
 	// SoftwareFeatures contains the information about the software features of the DUT.
 	// For backward compatibility, in JSON format, fields are flatten.
 	// This struct has MarshalJSON/UnmarshalJSON and the serialization/deserialization
 	// of this field are handled in the methods respectively.
-	SoftwareFeatures *SoftwareFeatures `json:"-"`
+	SoftwareFeatures *dep.SoftwareFeatures `json:"-"`
 
 	// DeviceConfig contains the DUT's device characteristic.
 	// Similar to SoftwareFeatures field, the serialization/deserialization
@@ -272,7 +264,7 @@ func (r *GetDUTInfoResult) UnmarshalJSON(b []byte) error {
 		return err
 	}
 	if len(aux.Available) > 0 || len(aux.Missing) > 0 {
-		r.SoftwareFeatures = &SoftwareFeatures{
+		r.SoftwareFeatures = &dep.SoftwareFeatures{
 			Available:   aux.Available,
 			Unavailable: aux.Missing,
 		}

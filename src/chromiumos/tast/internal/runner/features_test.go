@@ -12,6 +12,7 @@ import (
 	"testing"
 
 	"chromiumos/tast/autocaps"
+	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/testutil"
 )
 
@@ -53,7 +54,7 @@ func TestGetDUTInfo(t *testing.T) {
 		t.Fatalf("%v gave bad output: %v", sig, err)
 	}
 	exp := GetDUTInfoResult{
-		SoftwareFeatures: &SoftwareFeatures{
+		SoftwareFeatures: &dep.SoftwareFeatures{
 			Available:   []string{"foo_glob", "foobar", "other"},
 			Unavailable: []string{"not_bar_glob", "not_foo"},
 		},

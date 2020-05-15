@@ -15,7 +15,7 @@ import (
 func verifyCondition(t *testing.T, c Condition, dc *device.Config, expectSatisfied bool) {
 	t.Helper()
 
-	err := c.Satisfied(&dep.DeviceSetup{DC: dc})
+	err := c.Satisfied(&dep.HardwareFeatures{DC: dc})
 	if expectSatisfied {
 		if err != nil {
 			t.Error("Unexpectedly unsatisfied: ", err)

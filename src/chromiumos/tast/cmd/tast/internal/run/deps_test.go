@@ -18,13 +18,14 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/bundle"
+	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/runner"
 )
 
 // writeGetDUTInfoResult writes runner.GetDUTInfoResult to w.
 func writeGetDUTInfoResult(w io.Writer, avail, unavail []string, dc *device.Config) error {
 	res := runner.GetDUTInfoResult{
-		SoftwareFeatures: &runner.SoftwareFeatures{
+		SoftwareFeatures: &dep.SoftwareFeatures{
 			Available:   avail,
 			Unavailable: unavail,
 		},

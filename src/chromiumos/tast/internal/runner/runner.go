@@ -172,13 +172,10 @@ func runTestsAndReport(ctx context.Context, args *Args, cfg *Config, stdout io.W
 
 // filterSkippedTests computes a subset of tests which are not skipped by software/hardware dependencies.
 func filterSkippedTests(args *Args, tests []*testing.TestInstance) []*testing.TestInstance {
-	if !args.RunTests.BundleArgs.CheckSoftwareDeps {
-		return tests
-	}
-
+	features := args.RunTests.BundleArgs.Features()
 	var filtered []*testing.TestInstance
 	for _, t := range tests {
-		if ok, _ := t.ShouldRun(args.RunTests.BundleArgs.AvailableSoftwareFeatures, args.RunTests.BundleArgs.DeviceConfig); ok {
+		if ok, _ := t.ShouldRun(features); ok {
 			filtered = append(filtered, t)
 		}
 	}

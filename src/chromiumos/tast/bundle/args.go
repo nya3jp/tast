@@ -17,6 +17,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/internal/command"
+	"chromiumos/tast/internal/dep"
 )
 
 // RunMode describes the bundle's behavior.
@@ -129,6 +130,21 @@ type RunTestsArgs struct {
 	// periodically from runners (before running bundles) and bundles. If this value is not
 	// positive, heartbeat messages are not sent.
 	HeartbeatInterval time.Duration `json:"heartbeatInterval,omitempty"`
+}
+
+// Features returns dep.Features to be used to check test dependencies.
+func (a *RunTestsArgs) Features() *dep.Features {
+	var f dep.Features
+	if a.CheckSoftwareDeps {
+		f.Software = &dep.SoftwareFeatures{
+			Available:   a.AvailableSoftwareFeatures,
+			Unavailable: a.UnavailableSoftwareFeatures,
+		}
+		f.Hardware = &dep.HardwareFeatures{
+			DC: a.DeviceConfig,
+		}
+	}
+	return &f
 }
 
 // MarshalJSON marshals the RunTestsArgs struct into JSON.

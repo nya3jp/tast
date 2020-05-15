@@ -51,12 +51,12 @@ func Model(names ...string) Condition {
 		}
 	}
 
-	return Condition{Satisfied: func(d *dep.DeviceSetup) error {
+	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
 		// If the field is unavailable, return false as not satisfied.
-		if d.DC == nil || d.DC.Id == nil || d.DC.Id.ModelId == nil {
+		if f.DC == nil || f.DC.Id == nil || f.DC.Id.ModelId == nil {
 			return errors.New("device.Config does not have ModelId")
 		}
-		modelID := strings.ToLower(d.DC.Id.ModelId.Value)
+		modelID := strings.ToLower(f.DC.Id.ModelId.Value)
 		for _, name := range names {
 			if name == modelID {
 				return nil
@@ -76,12 +76,12 @@ func SkipOnModel(names ...string) Condition {
 		}
 	}
 
-	return Condition{Satisfied: func(d *dep.DeviceSetup) error {
+	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
 		// If the field is unavailable, return false as not satisfied.
-		if d.DC == nil || d.DC.Id == nil || d.DC.Id.ModelId == nil {
+		if f.DC == nil || f.DC.Id == nil || f.DC.Id.ModelId == nil {
 			return errors.New("device.Config does not have ModelId")
 		}
-		modelID := strings.ToLower(d.DC.Id.ModelId.Value)
+		modelID := strings.ToLower(f.DC.Id.ModelId.Value)
 		for _, name := range names {
 			if name == modelID {
 				return errors.New("ModelId matched with skip-on list")
@@ -101,12 +101,12 @@ func Platform(names ...string) Condition {
 		}
 	}
 
-	return Condition{Satisfied: func(d *dep.DeviceSetup) error {
+	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
 		// If the field is unavailable, return false as not satisfied.
-		if d.DC == nil || d.DC.Id == nil || d.DC.Id.PlatformId == nil {
+		if f.DC == nil || f.DC.Id == nil || f.DC.Id.PlatformId == nil {
 			return errors.New("device.Config does not have PlatformId")
 		}
-		platformID := strings.ToLower(d.DC.Id.PlatformId.Value)
+		platformID := strings.ToLower(f.DC.Id.PlatformId.Value)
 		for _, name := range names {
 			if name == platformID {
 				return nil
@@ -126,11 +126,11 @@ func SkipOnPlatform(names ...string) Condition {
 		}
 	}
 
-	return Condition{Satisfied: func(d *dep.DeviceSetup) error {
-		if d.DC == nil || d.DC.Id == nil || d.DC.Id.PlatformId == nil {
+	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
+		if f.DC == nil || f.DC.Id == nil || f.DC.Id.PlatformId == nil {
 			return errors.New("device.Config does not have PlatformId")
 		}
-		platformID := strings.ToLower(d.DC.Id.PlatformId.Value)
+		platformID := strings.ToLower(f.DC.Id.PlatformId.Value)
 		for _, name := range names {
 			if name == platformID {
 				return errors.New("PlatformId matched with skip-on list")
@@ -143,11 +143,11 @@ func SkipOnPlatform(names ...string) Condition {
 // TouchScreen returns a hardware dependency condition that is satisfied
 // iff the DUT has touchscreen.
 func TouchScreen() Condition {
-	return Condition{Satisfied: func(d *dep.DeviceSetup) error {
-		if d.DC == nil {
+	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
+		if f.DC == nil {
 			return errors.New("device.Config is not given")
 		}
-		for _, f := range d.DC.HardwareFeatures {
+		for _, f := range f.DC.HardwareFeatures {
 			if f == device.Config_HARDWARE_FEATURE_TOUCHSCREEN {
 				return nil
 			}
@@ -160,11 +160,11 @@ func TouchScreen() Condition {
 // Fingerprint returns a hardware dependency condition that is satisfied
 // iff the DUT has fingerprint sensor.
 func Fingerprint() Condition {
-	return Condition{Satisfied: func(d *dep.DeviceSetup) error {
-		if d.DC == nil {
+	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
+		if f.DC == nil {
 			return errors.New("device.Config is not given")
 		}
-		for _, f := range d.DC.HardwareFeatures {
+		for _, f := range f.DC.HardwareFeatures {
 			if f == device.Config_HARDWARE_FEATURE_FINGERPRINT {
 				return nil
 			}
@@ -177,11 +177,11 @@ func Fingerprint() Condition {
 // InternalDisplay returns a hardware dependency condition that is satisfied
 // iff the DUT has an internal display, e.g. Chromeboxes and Chromebits don't.
 func InternalDisplay() Condition {
-	return Condition{Satisfied: func(d *dep.DeviceSetup) error {
-		if d.DC == nil {
+	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
+		if f.DC == nil {
 			return errors.New("device.Config is not given")
 		}
-		for _, f := range d.DC.HardwareFeatures {
+		for _, f := range f.DC.HardwareFeatures {
 			if f == device.Config_HARDWARE_FEATURE_INTERNAL_DISPLAY {
 				return nil
 			}
@@ -204,11 +204,11 @@ func Wifi80211ac() Condition {
 // Battery returns a hardware dependency condition that is satisfied iff the DUT
 // has a battery, e.g. Chromeboxes and Chromebits don't.
 func Battery() Condition {
-	return Condition{Satisfied: func(d *dep.DeviceSetup) error {
-		if d.DC == nil {
+	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
+		if f.DC == nil {
 			return errors.New("device.Config is not given")
 		}
-		if d.DC.Power != device.Config_POWER_SUPPLY_BATTERY {
+		if f.DC.Power != device.Config_POWER_SUPPLY_BATTERY {
 			return errors.New("DUT does not have a battery")
 		}
 		return nil

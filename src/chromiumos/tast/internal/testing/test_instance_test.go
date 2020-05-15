@@ -59,10 +59,23 @@ func (p *testPre) Timeout() time.Duration { return time.Minute }
 
 func (p *testPre) String() string { return p.name }
 
-func features(softwareFeatures []string, model string) *dep.Features {
+func features(available []string, model string) *dep.Features {
+	availableSet := make(map[string]struct{})
+	for _, dep := range available {
+		availableSet[dep] = struct{}{}
+	}
+
+	var unavailable []string
+	for _, dep := range []string{"dep0", "dep1", "dep2", "dep3"} {
+		if _, ok := availableSet[dep]; !ok {
+			unavailable = append(unavailable, dep)
+		}
+	}
+
 	return &dep.Features{
 		Software: &dep.SoftwareFeatures{
-			Available: softwareFeatures,
+			Available:   available,
+			Unavailable: unavailable,
 		},
 		Hardware: &dep.HardwareFeatures{
 			DC: &device.Config{
@@ -550,24 +563,29 @@ func TestInstantiateCompatAttrs(t *gotesting.T) {
 }
 
 func TestSoftwareDeps(t *gotesting.T) {
-	test := TestInstance{SoftwareDeps: []string{"dep3", "dep1", "dep2"}}
-	ok, reason := test.ShouldRun(features([]string{"dep0", "dep2", "dep4"}, "eve"))
+	test := TestInstance{SoftwareDeps: []string{"dep3", "dep1", "dep2", "depX"}}
+	ok, got := test.ShouldRun(features([]string{"dep0", "dep2", "dep4"}, "eve"))
 	if ok {
 		t.Fatal("Unexpectedly considered that the test should run")
 	}
-	if exp := []string{"dep1", "dep3"}; !reflect.DeepEqual(reason.MissingSoftwareDeps, exp) {
-		t.Errorf("MissingSoftwareDeps() = %v; want %v", reason.MissingSoftwareDeps, exp)
+	want := &SkipReason{
+		Reasons: []string{"missing SoftwareDeps: dep1, dep3, depX"},
+		Errors:  []string{"unknown SoftwareDeps: depX"},
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("ShouldRun() = %+v; want %+v", got, want)
 	}
 }
 
 func TestHardwareDeps(t *gotesting.T) {
 	test := TestInstance{HardwareDeps: hwdep.D(hwdep.Model("eve"))}
-	ok, reason := test.ShouldRun(features(nil, "samus"))
+	ok, got := test.ShouldRun(features(nil, "samus"))
 	if ok {
 		t.Fatal("Unexpectedly considered that the test should run")
 	}
-	if e := []string{"ModelId did not match"}; !reflect.DeepEqual(reason.HardwareDepsUnsatisfiedReasons, e) {
-		t.Errorf("Unexpected HardwareDeps check error message: got %v; want %v", reason.HardwareDepsUnsatisfiedReasons, e)
+	want := &SkipReason{Reasons: []string{"ModelId did not match"}}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("ShouldRun() = %+v; want %+v", got, want)
 	}
 }
 

@@ -400,7 +400,7 @@ func TestRunTestsMissingDeps(t *gotesting.T) {
 	// Read through the control messages to get test results.
 	var testName string
 	testFailed := make(map[string][]testing.Error)
-	testMissingDeps := make(map[string][]string)
+	testSkipped := make(map[string]bool)
 	r := control.NewMessageReader(stdout)
 	for r.More() {
 		msg, err := r.ReadMessage()
@@ -411,7 +411,7 @@ func TestRunTestsMissingDeps(t *gotesting.T) {
 		case *control.TestStart:
 			testName = m.Test.Name
 		case *control.TestEnd:
-			testMissingDeps[testName] = m.MissingSoftwareDeps
+			testSkipped[testName] = len(m.SkipReasons) > 0 || len(m.DeprecatedMissingSoftwareDeps) > 0
 		case *control.TestError:
 			testFailed[testName] = append(testFailed[testName], m.Error)
 		}
@@ -419,14 +419,14 @@ func TestRunTestsMissingDeps(t *gotesting.T) {
 
 	// Verify that the expected results were reported for each test.
 	for _, tc := range []struct {
-		name        string
-		shouldRun   bool
-		shouldFail  bool
-		missingDeps []string
+		name       string
+		shouldRun  bool
+		shouldFail bool
+		shouldSkip bool
 	}{
-		{validName, true, false, nil},
-		{missingName, false, false, []string{missingDep}},
-		{unregName, false, true, []string{unregDep}},
+		{validName, true, false, false},
+		{missingName, false, false, true},
+		{unregName, false, true, true},
 	} {
 		if testRan[tc.name] && !tc.shouldRun {
 			t.Errorf("%v ran unexpectedly", tc.name)
@@ -438,9 +438,10 @@ func TestRunTestsMissingDeps(t *gotesting.T) {
 		} else if !failed && tc.shouldFail {
 			t.Errorf("%v didn't fail", tc.name)
 		}
-		if !reflect.DeepEqual(testMissingDeps[tc.name], tc.missingDeps) {
-			t.Errorf("%v had missing deps %v; want %v",
-				tc.name, testMissingDeps[tc.name], tc.missingDeps)
+		if skipped := testSkipped[tc.name]; skipped && !tc.shouldSkip {
+			t.Errorf("%v skipped unexpectedly", tc.name)
+		} else if !skipped && tc.shouldSkip {
+			t.Errorf("%v didn't skip", tc.name)
 		}
 	}
 }

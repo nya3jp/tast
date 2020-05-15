@@ -189,17 +189,18 @@ func (ew *eventWriter) TestEnd(t *testing.TestInstance, skipReason *testing.Skip
 		ew.lg.Info(fmt.Sprintf("%s: ======== end", t.Name))
 	}
 
-	var missings, reasons []string
+	var reasons []string
 	if skipReason != nil {
-		missings = skipReason.MissingSoftwareDeps
-		reasons = skipReason.HardwareDepsUnsatisfiedReasons
+		if len(skipReason.MissingSoftwareDeps) > 0 {
+			reasons = append(reasons, fmt.Sprintf("missing SoftwareDeps: %s", strings.Join(skipReason.MissingSoftwareDeps, ", ")))
+		}
+		reasons = append(reasons, skipReason.HardwareDepsUnsatisfiedReasons...)
 	}
 	return ew.mw.WriteMessage(&control.TestEnd{
-		Time:                           time.Now(),
-		Name:                           t.Name,
-		MissingSoftwareDeps:            missings,
-		HardwareDepsUnsatisfiedReasons: reasons,
-		TimingLog:                      timingLog,
+		Time:        time.Now(),
+		Name:        t.Name,
+		SkipReasons: reasons,
+		TimingLog:   timingLog,
 	})
 }
 

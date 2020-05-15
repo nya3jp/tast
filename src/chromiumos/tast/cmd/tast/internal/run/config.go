@@ -20,6 +20,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/build"
 	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/internal/command"
+	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/ssh"
 )
@@ -125,14 +126,14 @@ type Config struct {
 	// The following fields hold state that is accumulated over the course of the run.
 	// TODO(crbug.com/971517): Consider moving these fields into a separate struct,
 	// as they aren't really configuration.
-	targetArch         string                   // architecture of target userland (usually given by "uname -m", but may be different)
-	startedRun         bool                     // true if we got to the point where we started trying to execute tests
-	initBootID         string                   // boot_id at the initial SSH connection
-	hst                *ssh.Conn                // cached SSH connection to DUT; may be nil
-	ephemeralDevserver *ephemeralDevserver      // cached devserver; may be nil
-	initialSysInfo     *runner.SysInfoState     // initial state of system info (logs, crashes, etc.) on DUT before testing
-	softwareFeatures   *runner.SoftwareFeatures // software features of the DUT
-	deviceConfig       *device.Config           // hardware features of the DUT
+	targetArch         string                // architecture of target userland (usually given by "uname -m", but may be different)
+	startedRun         bool                  // true if we got to the point where we started trying to execute tests
+	initBootID         string                // boot_id at the initial SSH connection
+	hst                *ssh.Conn             // cached SSH connection to DUT; may be nil
+	ephemeralDevserver *ephemeralDevserver   // cached devserver; may be nil
+	initialSysInfo     *runner.SysInfoState  // initial state of system info (logs, crashes, etc.) on DUT before testing
+	softwareFeatures   *dep.SoftwareFeatures // software features of the DUT
+	deviceConfig       *device.Config        // hardware features of the DUT
 }
 
 // NewConfig returns a new configuration for executing test runners in the supplied mode.

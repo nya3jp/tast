@@ -276,6 +276,8 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		}
 	}
 
+	features := args.RunTests.Features()
+
 	// If a test should be skipped, the element of this array at the index will be set.
 	skipReasons := make([]*testing.SkipReason, len(tests))
 	// If a test should run, the element of this array at the index will have a pointer to the next test (except last one).
@@ -284,10 +286,8 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 	nextTests := make([]*testing.TestInstance, len(tests))
 	lastIdx := -1
 	for i, t := range tests {
-		if args.RunTests.CheckSoftwareDeps {
-			if ok, reason := tests[i].ShouldRun(args.RunTests.AvailableSoftwareFeatures, args.RunTests.DeviceConfig); !ok {
-				skipReasons[i] = reason
-			}
+		if ok, reason := tests[i].ShouldRun(features); !ok {
+			skipReasons[i] = reason
 		}
 		if skipReasons[i] == nil {
 			if lastIdx >= 0 {

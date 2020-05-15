@@ -10,6 +10,7 @@ import (
 	"io"
 	gotesting "testing"
 
+	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/runner"
 )
 
@@ -41,7 +42,7 @@ func TestRunTestsGetDUTInfo(t *gotesting.T) {
 			// tested in deps_test.go.
 			called = true
 			json.NewEncoder(stdout).Encode(&runner.GetDUTInfoResult{
-				SoftwareFeatures: &runner.SoftwareFeatures{
+				SoftwareFeatures: &dep.SoftwareFeatures{
 					Available: []string{"foo"}, // must report non-empty features
 				},
 			})

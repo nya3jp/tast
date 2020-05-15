@@ -17,7 +17,6 @@ import (
 	"path/filepath"
 	"runtime"
 	"runtime/pprof"
-	"sort"
 	"strings"
 	"time"
 
@@ -183,23 +182,16 @@ func (ew *eventWriter) TestError(ts time.Time, e *testing.Error) error {
 	return ew.mw.WriteMessage(&control.TestError{Time: ts, Error: *e})
 }
 
-func (ew *eventWriter) TestEnd(t *testing.TestInstance, skipReason *testing.SkipReason, timingLog *timing.Log) error {
+func (ew *eventWriter) TestEnd(t *testing.TestInstance, skipReasons []string, timingLog *timing.Log) error {
 	ew.testName = ""
 	if ew.lg != nil {
 		ew.lg.Info(fmt.Sprintf("%s: ======== end", t.Name))
 	}
 
-	var reasons []string
-	if skipReason != nil {
-		if len(skipReason.MissingSoftwareDeps) > 0 {
-			reasons = append(reasons, fmt.Sprintf("missing SoftwareDeps: %s", strings.Join(skipReason.MissingSoftwareDeps, ", ")))
-		}
-		reasons = append(reasons, skipReason.HardwareDepsUnsatisfiedReasons...)
-	}
 	return ew.mw.WriteMessage(&control.TestEnd{
 		Time:        time.Now(),
 		Name:        t.Name,
-		SkipReasons: reasons,
+		SkipReasons: skipReasons,
 		TimingLog:   timingLog,
 	})
 }
@@ -301,7 +293,7 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		if reason := skipReasons[i]; reason == nil {
 			runTest(ctx, ew, args, cfg, t, nextTests[i], rd)
 		} else {
-			reportSkippedTest(ctx, ew, args, t, reason)
+			reportSkippedTest(ew, t, reason)
 		}
 	}
 
@@ -377,39 +369,17 @@ func runTest(ctx context.Context, ew *eventWriter, args *Args, cfg *runConfig,
 
 // reportSkippedTest is called instead of runTest for a test that is skipped due to
 // having unsatisfied dependencies.
-func reportSkippedTest(ctx context.Context, ew *eventWriter, args *Args,
-	t *testing.TestInstance, reason *testing.SkipReason) {
+func reportSkippedTest(ew *eventWriter, t *testing.TestInstance, reason *testing.SkipReason) {
 	ew.TestStart(t)
-
-	// Additionally report an error if one or more dependencies refer to features that
-	// we don't know anything about (possibly indicating a typo in the test's dependencies).
-	if unknown := getUnknownDeps(reason.MissingSoftwareDeps, args); len(unknown) > 0 {
+	for _, msg := range reason.Errors {
 		_, fn, ln, _ := runtime.Caller(0)
 		ew.TestError(time.Now(), &testing.Error{
-			Reason: "Unknown dependencies: " + strings.Join(unknown, " "),
+			Reason: msg,
 			File:   fn,
 			Line:   ln,
 		})
 	}
-
-	ew.TestEnd(t, reason, nil)
-}
-
-// getUnknownDeps returns a sorted list of software dependencies from missingDeps that
-// aren't referring to known features.
-func getUnknownDeps(missingDeps []string, args *Args) []string {
-	var unknown []string
-DepsLoop:
-	for _, d := range missingDeps {
-		for _, f := range args.RunTests.UnavailableSoftwareFeatures {
-			if d == f {
-				continue DepsLoop
-			}
-		}
-		unknown = append(unknown, d)
-	}
-	sort.Strings(unknown)
-	return unknown
+	ew.TestEnd(t, reason.Reasons, nil)
 }
 
 // copyTestOutput reads test output from ch and writes it to ew until ch is closed.

@@ -83,6 +83,7 @@ func main() {
 			"crash_selinux_unstable":  `"kernel-5_4"`,
 			"cros_config":             "unibuild",
 			"cros_internal":           "internal",
+			"cros_media":              "chrome_media",
 			"cros_video_decoder":      "!disable_cros_video_decoder",
 			"crosvm_gpu":              `"crosvm-gpu"`,
 			"crossystem":              "!betty && !tast_vm", // VMs don't support few crossystem sub-commands: https://crbug.com/974615

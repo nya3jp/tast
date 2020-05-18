@@ -88,6 +88,24 @@
       "revId": "1583cc62d5630e4d3aea5f806091243ca874df18",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "10347e75_ab35163e",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/disallow_testingstate.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1179631
+      },
+      "writtenOn": "2020-05-18T05:39:56Z",
+      "side": 0,
+      "message": "Will do.\n\nMy understand was that you can just use repo upload --no-verify to get around it if this file is broken, but are there any other effects ? (e.g. in CQ or CI).",
+      "parentUuid": "daa4336e_3bc597eb",
+      "revId": "1583cc62d5630e4d3aea5f806091243ca874df18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

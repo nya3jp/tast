@@ -77,6 +77,7 @@ func main() {
 			"camera_legacy":   `!"arc-camera1" && !"arc-camera3"`,
 			"chrome":          "!chromeless_tty && !rialto",
 			"chrome_internal": "chrome_internal",
+			"chrome_media":    "chrome_media",
 			"crashpad":        "!force_breakpad",
 			// TODO(b/155009503): Remove these once crash reporter works with selinux on 5.4
 			"crash_selinux_stable":    `!"kernel-5_4"`,
@@ -135,6 +136,7 @@ func main() {
 			"shill-wifi":             "!moblab", // fizz-moblab disables the WiFi technology for Shill
 			"smartdim":               "smartdim",
 			"storage_wearout_detect": "storage_wearout_detect && !betty && !tast_vm", // Skip wearout checks for VMs and eMMC < 5.0
+			"supports_proprietary_codeds": "chrome_internal" || "chrome_media"
 			"tablet_mode":            "touchview",
 			"tpm":                    "!mocktpm && !tast_vm",
 			"tpm2":                   "tpm2", // Indicate tpm2 is available

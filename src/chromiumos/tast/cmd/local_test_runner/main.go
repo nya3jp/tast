@@ -77,6 +77,7 @@ func main() {
 			"camera_legacy":   `!"arc-camera1" && !"arc-camera3"`,
 			"chrome":          "!chromeless_tty && !rialto",
 			"chrome_internal": "chrome_internal",
+			"chrome_media":    "chrome_media",
 			"crashpad":        "!force_breakpad",
 			// TODO(b/155009503): Remove these once crash reporter works with selinux on 5.4
 			"crash_selinux_stable":    `!"kernel-5_4"`,

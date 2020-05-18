@@ -45,17 +45,12 @@ The following software features are defined:
     `session_manager` and `cryptohome`). This also implies that the
     [chromeos-chrome] Portage package is installed (which also installs Chrome
     binary tests), and that the `ui` Upstart job is present.
-*   `chrome_internal` - Functionality that is only available in internal builds
-    of Chrome (e.g. official branding and proprietary codecs like H.264). Any
-    test that specifies this dependency should also explicitly specify a
-    `chrome` dependency.
+*   `chrome_internal` - Functionality that is only available in internal builds of Chrome (e.g. official branding). Any test that specifies this dependency should also explicitly specify a `chrome` dependency.
 *   `crashpad` - Whether the platform supports the crashpad crash handler for
     Chrome.
 *   `cros_config` - `cros_config` utility is available.
-*   `cros_internal` - Functionality that is only available in internal builds of
-    Chrome OS (i.e. ones built using `chromeos-overlay`).
-*   `cros_video_decoder` - Whether the [media::VideoDecoder]-based video decoder
-    is supported and enabled.
+*   `cros_internal` - Functionality that is only available in internal builds of Chrome OS (i.e. ones built using `chromeos-overlay`).
+*   `cros_video_decoder` - Whether the [media::VideoDecoder]-based video decoder is supported and enabled.
 *   `crossystem` - Chrome OS firmware/system interface utility.
 *   `crostini_stable` - Boards that can run Crostini tests reliably.
 *   `crostini_unstable` - Boards that cannot run Crostini tests reliably.
@@ -125,6 +120,7 @@ The following software features are defined:
 *   `storage_wearout_detect` - The ability to measure storage device health.
 *   `tablet_mode` - The ability to enter tablet mode. The device is either
     a convertible device or a tablet device.
+*   `proprietary_codecs` - Indicates if Chrome supports proprietary video codecs (e.g. H.264). This is supported by Chrome official builds and Chromium builds with the |propietary_codecs| build flag set.
 *   `tpm` - A [Trusted Platform Module] chip.
 *   `tpm1` - Indicate a Trusted Platform Module supporting TPMv1.2 is available. Note that TPMv2 is not backward compatible.
 *   `tpm2` - Indicate a Trusted Platform Module supporting TPMv2 is available.

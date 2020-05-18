@@ -70,6 +70,24 @@
       "revId": "1583cc62d5630e4d3aea5f806091243ca874df18",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "daa4336e_3bc597eb",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/disallow_testingstate.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-05-18T03:05:24Z",
+      "side": 0,
+      "message": "Hmm... It\u0027s in production, so although lacros is in experiment for now, I don\u0027t think we\u0027d like to have some broken state here.\n\nCould you avoid the breakage? At least, could you make some atomic commit by Cq-Depend to avoid intermediate state?",
+      "parentUuid": "b8c632fa_ee255319",
+      "revId": "1583cc62d5630e4d3aea5f806091243ca874df18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

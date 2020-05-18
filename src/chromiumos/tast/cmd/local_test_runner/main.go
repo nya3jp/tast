@@ -127,6 +127,7 @@ func main() {
 			"no_ubsan":               "!ubsan",
 			"oci":                    "containers && !moblab", // run_oci doesn't work on Moblab: https://crbug.com/951691
 			"plugin_vm":              "pita",                  // boards that can run Plugin VM.
+			"proprietary_codecs":     "chrome_internal || chrome_media",
 			"pstore":                 "!betty && !tast_vm",    // These boards don't support pstore: https://crbug.com/971899
 			"qemu":                   "betty || tast_vm",
 			"reboot":                 "!betty && !tast_vm",           // weird missing-runner-after-reboot bug: https://crbug.com/909955

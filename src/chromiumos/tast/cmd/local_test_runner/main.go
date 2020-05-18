@@ -112,38 +112,39 @@ func main() {
 			// Only official builds are considered to have metrics consent.
 			// See: ChromeCrashReporterClient::GetCollectStatsConsent()
 			// Also metrics consent needs TPM (crbug.com/1035197).
-			"metrics_consent":        "chrome_internal && !mocktpm && !tast_vm",
-			"ml_service":             "ml_service",
-			"mosys":                  "!betty && !tast_vm",
-			"ndk_translation":        "ndk_translation",
-			"ndk_translation64":      "ndk_translation64",
-			"nnapi":                  "nnapi",
-			"no_android":             "!arc",
-			"no_asan":                "!asan",
-			"no_elm_hana_3_18":       `!((elm || hana) && "kernel-3_18")`, // board elm/hana with kernel-3.18 has issue performing WiFi scan: https://crbug.com/1015719
-			"no_msan":                "!msan",
-			"no_qemu":                "!betty && !tast_vm",
-			"no_symlink_mount":       "!lxc", // boards using LXC set CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT=n
-			"no_ubsan":               "!ubsan",
-			"oci":                    "containers && !moblab", // run_oci doesn't work on Moblab: https://crbug.com/951691
-			"plugin_vm":              "pita",                  // boards that can run Plugin VM.
-			"pstore":                 "!betty && !tast_vm",    // These boards don't support pstore: https://crbug.com/971899
-			"qemu":                   "betty || tast_vm",
-			"reboot":                 "!betty && !tast_vm",           // weird missing-runner-after-reboot bug: https://crbug.com/909955
-			"screenshot":             "display_backlight && !rk3399", // screenshot command broken on RK3399: https://crbug.com/880597
-			"selinux":                "selinux",
-			"selinux_current":        "selinux && !selinux_experimental",
-			"selinux_experimental":   "selinux && selinux_experimental",
-			"shill-wifi":             "!moblab", // fizz-moblab disables the WiFi technology for Shill
-			"smartdim":               "smartdim",
-			"storage_wearout_detect": "storage_wearout_detect && !betty && !tast_vm", // Skip wearout checks for VMs and eMMC < 5.0
-			"tablet_mode":            "touchview",
-			"tpm":                    "!mocktpm && !tast_vm",
-			"tpm1":                   "!mocktpm && !tast_vm && !tpm2", // Indicate tpm1.2 is available
-			"tpm2":                   "!mocktpm && !tast_vm && tpm2",  // Indicate tpm2 is available
-			"transparent_hugepage":   "transparent_hugepage",
-			"usbguard":               "usbguard",
-			"vaapi":                  "vaapi",
+			"metrics_consent":             "chrome_internal && !mocktpm && !tast_vm",
+			"ml_service":                  "ml_service",
+			"mosys":                       "!betty && !tast_vm",
+			"ndk_translation":             "ndk_translation",
+			"ndk_translation64":           "ndk_translation64",
+			"nnapi":                       "nnapi",
+			"no_android":                  "!arc",
+			"no_asan":                     "!asan",
+			"no_elm_hana_3_18":            `!((elm || hana) && "kernel-3_18")`, // board elm/hana with kernel-3.18 has issue performing WiFi scan: https://crbug.com/1015719
+			"no_msan":                     "!msan",
+			"no_qemu":                     "!betty && !tast_vm",
+			"no_symlink_mount":            "!lxc", // boards using LXC set CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT=n
+			"no_ubsan":                    "!ubsan",
+			"oci":                         "containers && !moblab", // run_oci doesn't work on Moblab: https://crbug.com/951691
+			"plugin_vm":                   "pita",                  // boards that can run Plugin VM.
+			"pstore":                      "!betty && !tast_vm",    // These boards don't support pstore: https://crbug.com/971899
+			"qemu":                        "betty || tast_vm",
+			"reboot":                      "!betty && !tast_vm",           // weird missing-runner-after-reboot bug: https://crbug.com/909955
+			"screenshot":                  "display_backlight && !rk3399", // screenshot command broken on RK3399: https://crbug.com/880597
+			"selinux":                     "selinux",
+			"selinux_current":             "selinux && !selinux_experimental",
+			"selinux_experimental":        "selinux && selinux_experimental",
+			"shill-wifi":                  "!moblab", // fizz-moblab disables the WiFi technology for Shill
+			"smartdim":                    "smartdim",
+			"storage_wearout_detect":      "storage_wearout_detect && !betty && !tast_vm", // Skip wearout checks for VMs and eMMC < 5.0
+			"proprietary_codecs": "chrome_internal || chrome_media",
+			"tablet_mode":                 "touchview",
+			"tpm":                         "!mocktpm && !tast_vm",
+			"tpm1":                        "!mocktpm && !tast_vm && !tpm2", // Indicate tpm1.2 is available
+			"tpm2":                        "!mocktpm && !tast_vm && tpm2",  // Indicate tpm2 is available
+			"transparent_hugepage":        "transparent_hugepage",
+			"usbguard":                    "usbguard",
+			"vaapi":                       "vaapi",
 			// drm_atomic is a necessary but not sufficient condition to support
 			// video_overlays; in practice, they tend to be enabled at the same time.
 			// TODO(mcasas): query in advance for NV12 format DRM Plane support.

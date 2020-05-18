@@ -75,6 +75,7 @@ func main() {
 			"camera_legacy":           `!"arc-camera1" && !"arc-camera3"`,
 			"chrome":                  "!chromeless_tty && !rialto",
 			"chrome_internal":         "chrome_internal",
+			"chrome_media":            "chrome_media",
 			"crashpad":                "!force_breakpad",
 			"cros_config":             "unibuild",
 			"cros_internal":           "internal",
@@ -137,6 +138,7 @@ func main() {
 			"shill-wifi":             "!moblab", // fizz-moblab disables the WiFi technology for Shill
 			"smartdim":               "smartdim",
 			"storage_wearout_detect": "storage_wearout_detect && !betty && !tast_vm", // Skip wearout checks for VMs and eMMC < 5.0
+			"supports_proprietary_codecs": "chrome_internal || chrome_media",
 			"tablet_mode":            "touchview",
 			"tpm":                    "!mocktpm && !tast_vm",
 			"tpm1":                   "!mocktpm && !tast_vm && !tpm2", // Indicate tpm1.2 is available

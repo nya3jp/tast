@@ -137,6 +137,7 @@ func main() {
 			"shill-wifi":             "!moblab", // fizz-moblab disables the WiFi technology for Shill
 			"smartdim":               "smartdim",
 			"storage_wearout_detect": "storage_wearout_detect && !betty && !tast_vm", // Skip wearout checks for VMs and eMMC < 5.0
+			"proprietary_codecs":     "chrome_internal || chrome_media",
 			"tablet_mode":            "touchview",
 			"tpm":                    "!mocktpm && !tast_vm",
 			"tpm1":                   "!mocktpm && !tast_vm && !tpm2", // Indicate tpm1.2 is available

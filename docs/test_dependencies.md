@@ -46,9 +46,8 @@ The following software features are defined:
     [chromeos-chrome] Portage package is installed (which also installs Chrome
     binary tests), and that the `ui` Upstart job is present.
 *   `chrome_internal` - Functionality that is only available in internal builds
-    of Chrome (e.g. official branding and proprietary codecs like H.264). Any
-    test that specifies this dependency should also explicitly specify a
-    `chrome` dependency.
+    of Chrome (e.g. official branding). Any test that specifies this dependency
+    should also explicitly specify a `chrome` dependency.
 *   `crashpad` - Whether the platform supports the crashpad crash handler for
     Chrome.
 *   `cros_config` - `cros_config` utility is available.
@@ -111,6 +110,9 @@ The following software features are defined:
     [OCI] containers.
 *   `ocr` - [Optical Character Recognition Service] daemon.
 *   `plugin_vm` - The ability to run Plugin VMs.
+*   `proprietary_codecs` - Indicates if Chrome supports proprietary video
+    codecs (e.g. H.264). This is supported by Chrome official builds and Chromium
+    builds with the |propietary_codecs| build flag set.
 *   `qemu` - For tests exclusive to Chrome OS QEMU images.
 *   `reboot` - The ability to reboot reliably during a remote test.
 *   `screenshot` - The [screenshot command] can save screenshots.

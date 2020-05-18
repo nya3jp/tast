@@ -50,7 +50,8 @@ The following software features are defined:
     of Chrome (e.g. official branding and proprietary codecs like H.264). Any
     test that specifies this dependency should also explicitly specify a
     `chrome` dependency.
-*   `crashpad` - Whether the platform supports the crashpad crash handler for
+*   `chrome_media` - Building Chromium with additional media codecs and containers
+*   `crashpad` - Whether the platform supports the crashpad crash handler for 
     Chrome.
 *   `cros_config` - `cros_config` utility is available.
 *   `cros_internal` - Functionality that is only available in internal builds of
@@ -115,6 +116,7 @@ The following software features are defined:
 *   `storage_wearout_detect` - The ability to measure storage device health.
 *   `tablet_mode` - The ability to enter tablet mode. The device is either
     a convertible device or a tablet device.
+*   `supports_proprietary_codec` - supports propreitary codecs
 *   `tpm` - A [Trusted Platform Module] chip.
 *   `tpm2` - Indicate a Trusted Platform Module supporting TPMv2 is available.
 *   `transparent_hugepage` - [Transparent Hugepage] support in the Linux kernel.

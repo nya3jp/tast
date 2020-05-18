@@ -22,6 +22,30 @@
       "revId": "3ebf99ceca8de9bd20335e746bb83b7c15205def",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9345373f_73a4146e",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 445,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-05-18T03:01:43Z",
+      "side": 1,
+      "message": "Good point. I think we can keep it for now, as long as they should work.",
+      "parentUuid": "ae272e24_83368d28",
+      "range": {
+        "startLine": 443,
+        "startChar": 90,
+        "endLine": 445,
+        "endChar": 42
+      },
+      "revId": "3ebf99ceca8de9bd20335e746bb83b7c15205def",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

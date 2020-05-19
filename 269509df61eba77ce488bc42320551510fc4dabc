@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a504b48_4bd726a5",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-05-19T14:09:39Z",
+      "side": 1,
+      "message": "Clar: I cannot find HWDeps update for Plugin VM.\nIf we remove atlas immediately, it means any devices with plugin_vm USE flag starts to run the tests. Is it intentional behavior change? And, if so, could you write it down here?\nIf not, could you make the HWDeps change first?",
+      "revId": "269509df61eba77ce488bc42320551510fc4dabc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

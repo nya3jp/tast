@@ -15,9 +15,26 @@ import (
 	"chromiumos/tast/testing"
 )
 
+type bundleType int
+
+const (
+	local bundleType = iota
+	remote
+)
+
+func (b bundleType) String() string {
+	switch b {
+	case local: return "local"
+	case remote: return "remote"
+	default log.Panic("Unknown bundleType ", b)
+	}
+}
+
+type allTests map[bundleType]map[string]*rpc.ListResponse // type -> bundle -> info
+
 // listTests returns the whole tests to run.
-func listTests(ctx context.Context, cfg *Config, lc rpc.TastCoreServiceClient, rc rpc.TastCoreServiceClient) (map[bool] /*true if local*/ map[string]*rpc.ListResponse, error) {
-	res := map[bool]map[string]*rpc.ListResponse{true: {}, false: {}}
+func listTests(ctx context.Context, cfg *Config, lc rpc.TastCoreServiceClient, rc rpc.TastCoreServiceClient) (allTests, error) {
+	res := map[bundleType]map[string]*rpc.ListResponse{local: {}, remote: {}}
 
 	if cfg.runLocal {
 		log.Println("listTests -> localTests.List")
@@ -34,7 +51,7 @@ func listTests(ctx context.Context, cfg *Config, lc rpc.TastCoreServiceClient, r
 			if err != nil {
 				return nil, err
 			}
-			res[true][b] = localTests
+			res[local][b] = localTests
 		}
 	}
 	if cfg.runRemote {
@@ -56,7 +73,7 @@ func listTests(ctx context.Context, cfg *Config, lc rpc.TastCoreServiceClient, r
 				log.Fatal("remote List failed2:", err)
 				return nil, err
 			}
-			res[false][b] = localTests
+			res[remote][b] = localTests
 		}
 	}
 

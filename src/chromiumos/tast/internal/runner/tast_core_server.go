@@ -71,7 +71,7 @@ func (s *Server) Close(context.Context, *empty.Empty) (_ *empty.Empty, retErr er
 	return
 }
 
-// Dial creats connection to the bundle. Returned value is not owned by the caller; no need to Close.
+// dial creates connection to the bundle. Returned value is not owned by the caller; no need to Close.
 func (s *Server) dial(ctx context.Context, bundle string) (*grpc.ClientConn, error) {
 	if _, ok := s.conn[bundle]; ok {
 		return s.conn[bundle].conn, nil

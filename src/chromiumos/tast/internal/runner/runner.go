@@ -43,11 +43,12 @@ const (
 	statusTerminated   = 8 // SIGTERM was received
 )
 
+// RunV2 start starts gRPC server.
 func RunV2(stdin io.Reader, stdout io.Writer, args *Args, cfg *Config) int {
+	log.Print("tast: RunV2")
 	if cfg.KillStaleRunners {
 		killStaleRunners(syscall.SIGTERM, func(s string) { testing.ContextLog(context.TODO(), s) })
 	}
-	log.Print("tast: RunV2")
 	if err := rpc.RunServerV2(stdin, stdout, func(srv *grpc.Server) {
 		rpc.RegisterTastCoreServiceServer(srv, NewTastCoreServer(args, cfg))
 	}); err != nil {

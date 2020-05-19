@@ -151,8 +151,8 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []TestResult)
 		return successStatus, res
 	case RunTestsMode:
 		log.Println("tast: RunTestsMode")
-		// results, err := runTestsV2(ctx, cfg, lc, rc)
-		results, err := runTests(ctx, cfg)
+		results, err := runTestsV2(ctx, cfg, lc, rc)
+		// results, err := runTests(ctx, cfg)
 		if err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to run tests: %v", err), results
 		}

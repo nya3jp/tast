@@ -90,8 +90,6 @@ func main() {
 			"diagnostics":             "diagnostics",
 			"display_backlight":       "display_backlight",
 			"dlc":                     "dlc_test",
-			"dmverity_stable":         `"kernel-3_8" || "kernel-3_10" || "kernel-3_14" || "kernel-3_18" || "kernel-4_4" || "kernel-4_14"`,
-			"dmverity_unstable":       `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14" || "kernel-3_18" || "kernel-4_4" || "kernel-4_14")`,
 			"drivefs":                 "drivefs",
 			"drm_atomic":              "drm_atomic",
 			"factory_toolkit":         "betty || tast_vm",

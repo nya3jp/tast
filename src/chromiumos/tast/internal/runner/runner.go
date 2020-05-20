@@ -175,7 +175,7 @@ func filterSkippedTests(args *Args, tests []*testing.TestInstance) []*testing.Te
 	features := args.RunTests.BundleArgs.Features()
 	var filtered []*testing.TestInstance
 	for _, t := range tests {
-		if ok, _ := t.ShouldRun(features); ok {
+		if t.ShouldRun(features).OK() {
 			filtered = append(filtered, t)
 		}
 	}

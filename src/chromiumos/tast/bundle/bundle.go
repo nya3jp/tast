@@ -271,18 +271,15 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 
 	features := args.RunTests.Features()
 
-	// If a test should be skipped, the element of this array at the index will be set.
-	skipReasons := make([]*testing.SkipReason, len(tests))
+	checkResults := make([]*testing.ShouldRunResult, len(tests))
 	// If a test should run, the element of this array at the index will have a pointer to the next test (except last one).
 	// We pass this information to runTest later to ensure that we don't incorrectly fail to close a precondition
 	// if the final test using precondition is skipped: https://crbug.com/950499.
 	nextTests := make([]*testing.TestInstance, len(tests))
 	lastIdx := -1
 	for i, t := range tests {
-		if ok, reason := tests[i].ShouldRun(features); !ok {
-			skipReasons[i] = reason
-		}
-		if skipReasons[i] == nil {
+		checkResults[i] = tests[i].ShouldRun(features)
+		if checkResults[i].OK() {
 			if lastIdx >= 0 {
 				nextTests[lastIdx] = t
 			}
@@ -290,10 +287,10 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		}
 	}
 	for i, t := range tests {
-		if reason := skipReasons[i]; reason == nil {
+		if checkResult := checkResults[i]; checkResult.OK() {
 			runTest(ctx, ew, args, cfg, t, nextTests[i], rd)
 		} else {
-			reportSkippedTest(ew, t, reason)
+			reportSkippedTest(ew, t, checkResult)
 		}
 	}
 
@@ -369,9 +366,9 @@ func runTest(ctx context.Context, ew *eventWriter, args *Args, cfg *runConfig,
 
 // reportSkippedTest is called instead of runTest for a test that is skipped due to
 // having unsatisfied dependencies.
-func reportSkippedTest(ew *eventWriter, t *testing.TestInstance, reason *testing.SkipReason) {
+func reportSkippedTest(ew *eventWriter, t *testing.TestInstance, result *testing.ShouldRunResult) {
 	ew.TestStart(t)
-	for _, msg := range reason.Errors {
+	for _, msg := range result.Errors {
 		_, fn, ln, _ := runtime.Caller(0)
 		ew.TestError(time.Now(), &testing.Error{
 			Reason: msg,
@@ -379,7 +376,7 @@ func reportSkippedTest(ew *eventWriter, t *testing.TestInstance, reason *testing
 			Line:   ln,
 		})
 	}
-	ew.TestEnd(t, reason.Reasons, nil)
+	ew.TestEnd(t, result.SkipReasons, nil)
 }
 
 // copyTestOutput reads test output from ch and writes it to ew until ch is closed.

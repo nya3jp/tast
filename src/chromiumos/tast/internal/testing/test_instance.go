@@ -550,20 +550,25 @@ func (t *TestInstance) String() string {
 	return t.Name
 }
 
-// SkipReason represents the reasons why the test needs to be skipped.
-type SkipReason struct {
-	// Reasons contains a list of messages describing why some dependencies
+// ShouldRunResult represents the result of the check whether to run a test.
+type ShouldRunResult struct {
+	// SkipReasons contains a list of messages describing why some dependencies
 	// were not satisfied. They should be reported as informational logs.
-	Reasons []string
+	SkipReasons []string
 
 	// Errors contains a list of messages describing errors encountered while
 	// evaluating dependencies. They should be reported as test errors.
 	Errors []string
 }
 
+// OK returns whether to run the test.
+func (r *ShouldRunResult) OK() bool {
+	return len(r.SkipReasons) == 0 && len(r.Errors) == 0
+}
+
 // ShouldRun returns whether this test should run under the current testing environment.
 // In case of not, in addition, the reason why it should be skipped is also returned.
-func (t *TestInstance) ShouldRun(f *dep.Features) (bool, *SkipReason) {
+func (t *TestInstance) ShouldRun(f *dep.Features) *ShouldRunResult {
 	var reasons []string
 	var errs []string
 	if f.Software != nil {
@@ -582,10 +587,7 @@ func (t *TestInstance) ShouldRun(f *dep.Features) (bool, *SkipReason) {
 			}
 		}
 	}
-	if len(reasons) > 0 || len(errs) > 0 {
-		return false, &SkipReason{reasons, errs}
-	}
-	return true, nil
+	return &ShouldRunResult{SkipReasons: reasons, Errors: errs}
 }
 
 // missingSoftwareDeps returns a sorted list of dependencies from SoftwareDeps

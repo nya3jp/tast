@@ -22,6 +22,30 @@
       "revId": "83d50c882b21176815424e2381c2e8a1fb609c91",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4d770b82_c603737d",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 592,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-05-21T10:16:51Z",
+      "side": 1,
+      "message": "Yes for sure. And it is intentional to reprecate the original behavior.",
+      "parentUuid": "2dbdb04e_619570e1",
+      "range": {
+        "startLine": 592,
+        "startChar": 8,
+        "endLine": 592,
+        "endChar": 14
+      },
+      "revId": "83d50c882b21176815424e2381c2e8a1fb609c91",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

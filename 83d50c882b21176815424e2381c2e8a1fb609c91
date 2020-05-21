@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2dbdb04e_619570e1",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 592,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-05-21T01:29:56Z",
+      "side": 1,
+      "message": "Could you document that missing is a superset of unknown, if it\u0027s intentional?",
+      "range": {
+        "startLine": 592,
+        "startChar": 8,
+        "endLine": 592,
+        "endChar": 14
+      },
+      "revId": "83d50c882b21176815424e2381c2e8a1fb609c91",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

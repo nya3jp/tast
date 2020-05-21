@@ -22,6 +22,30 @@
       "revId": "aba3ccaf5b98029f58c3c3bb2f762d81dc4ec16d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1b44fc5e_96427c70",
+        "filename": "src/chromiumos/tast/internal/control/control.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-05-21T10:16:43Z",
+      "side": 1,
+      "message": "Renaming this requires introducing protocol compatibility workaround. Given that we\u0027re moving to gRPC soon, I think we don\u0027t want to add yet another protocol compatibility code now...",
+      "parentUuid": "77684726_1a5e4b76",
+      "range": {
+        "startLine": 120,
+        "startChar": 29,
+        "endLine": 120,
+        "endChar": 66
+      },
+      "revId": "aba3ccaf5b98029f58c3c3bb2f762d81dc4ec16d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

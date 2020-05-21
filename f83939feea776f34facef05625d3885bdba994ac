@@ -23,6 +23,30 @@
       "revId": "f83939feea776f34facef05625d3885bdba994ac",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "252df1df_74e07c6e",
+        "filename": "src/chromiumos/tast/internal/dep/hardware_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-05-21T10:16:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "24e60cb0_d093b83e",
+      "range": {
+        "startLine": 15,
+        "startChar": 54,
+        "endLine": 15,
+        "endChar": 64
+      },
+      "revId": "f83939feea776f34facef05625d3885bdba994ac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

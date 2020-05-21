@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0d784a5d_736985a0",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 557,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-05-21T02:02:58Z",
+      "side": 1,
+      "message": "How about naming it SkipReasons ?",
+      "range": {
+        "startLine": 557,
+        "startChar": 1,
+        "endLine": 557,
+        "endChar": 8
+      },
+      "revId": "047e0828e9e5950a933b4ccc1196bf6a12641c4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

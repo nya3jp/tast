@@ -7,7 +7,9 @@ package testing
 import (
 	"bytes"
 	"context"
+	"os/exec"
 	"reflect"
+	"strings"
 	gotesting "testing"
 	"time"
 
@@ -718,5 +720,41 @@ func TestWriteTestsAsProto(t *gotesting.T) {
 	proto.Unmarshal(b.Bytes(), &actual)
 	if !cmp.Equal(expected, actual, cmp.Comparer(proto.Equal)) {
 		t.Errorf("WriteTestsAsProto(%v): got %v; want %v", in, actual, expected)
+	}
+}
+
+func TestWriteTestMetadataWithTCLint(t *gotesting.T) {
+	in := []*TestInstance{
+		{
+			Name: "test001",
+			Attr: []string{"attr1", "attr2"},
+			HardwareDeps: hwdep.D(
+				hwdep.TouchScreen(),
+				hwdep.Fingerprint(),
+				hwdep.InternalDisplay(),
+			),
+			Contacts: []string{
+				"someone1@chromium.org",
+				"someone2@chromium.org",
+			},
+		},
+	}
+
+	var b bytes.Buffer
+	if err := WriteTestsAsProto(&b, in); err != nil {
+		t.Fatal("Failed to export metadata as protobuf message")
+	}
+	cmd := exec.Command("/usr/bin/tclint", "metadata", "-binary", "/dev/stdin")
+	cmd.Stdin = &b
+	t.Log("Verifying output with tclint")
+	ob, err := cmd.CombinedOutput()
+	output := string(ob)
+	if err != nil {
+		t.Fatalf("Failed on tclint: %v\n%s", err, output)
+	}
+	// TODO(yamaguchi): Remove below when tclint returns non-zero exit code
+	//     on linting errors after crrev.com/c/2166542
+	if !strings.Contains(output, "All clean!") {
+		t.Fatalf("Failed on tclint: %v\n%s", err, output)
 	}
 }

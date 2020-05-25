@@ -124,3 +124,28 @@ func TestSkipOnPlatform(t *testing.T) {
 			tc.expectSatisfied)
 	}
 }
+
+func TestCEL(t *testing.T) {
+	for i, c := range []struct {
+		input    Deps
+		expected string
+	}{
+		{D(Model("model1", "model2")), "not_implemented"},
+		{D(SkipOnModel("model1", "model2")), "not_implemented"},
+		{D(Platform("platform_id1", "platform_id2")), "not_implemented"},
+		{D(SkipOnPlatform("platform_id1", "platform_id2")), "not_implemented"},
+		{D(TouchScreen()), "dut.hardware_features.screen.touch_support == api.HardwareFeatures.Present.PRESENT"},
+		{D(Fingerprint()), "dut.hardware_features.fingerprint.location != api.HardwareFeatures.Fingerprint.Location.NOT_PRESENT"},
+		{D(InternalDisplay()), "dut.hardware_features.screen.milliinch.value != 0U"},
+		{D(Wifi80211ac()), "not_implemented"},
+
+		{D(TouchScreen(), Fingerprint()),
+			"dut.hardware_features.screen.touch_support == api.HardwareFeatures.Present.PRESENT && dut.hardware_features.fingerprint.location != api.HardwareFeatures.Fingerprint.Location.NOT_PRESENT"},
+		{D(Model("model1", "model2"), SkipOnPlatform("id1", "id2")), "not_implemented && not_implemented"},
+	} {
+		actual := c.input.CEL()
+		if actual != c.expected {
+			t.Errorf("TestCEL[%d]: got %q; want %q", i, actual, c.expected)
+		}
+	}
+}

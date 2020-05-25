@@ -8,10 +8,14 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"io"
 	"io/ioutil"
 	"os"
+	"os/exec"
+	"path"
 	"path/filepath"
 	"reflect"
+	"strings"
 	gotesting "testing"
 	"time"
 
@@ -1105,5 +1109,38 @@ func TestWriteTestsAsProto(t *gotesting.T) {
 	proto.Unmarshal(b.Bytes(), &actual)
 	if !cmp.Equal(expected, actual, cmp.Comparer(proto.Equal)) {
 		t.Errorf("WriteTestsAsProto(%v): got %v; want %v", in, actual, expected)
+	}
+
+	// Install tclint.
+	// TODO: move to test setup
+	const cipdDir = "/tmp/cipd"
+
+	cmd := exec.Command("/mnt/host/depot_tools/cipd", "install", "-root", cipdDir,
+		"chromiumos/infra/tclint/${platform}", "released")
+	o, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("failed to install tclint: %v %s", err, o)
+	}
+	// cipd install -root ~/.local/cipd 'chromiumos/infra/tclint/${platform}' released
+	var jb bytes.Buffer
+	if err := writeTestMetadataAsJSON(&jb, in); err != nil {
+		t.Fatal("failed to export to json")
+	}
+	cmd = exec.Command(path.Join(cipdDir, "tclint"), "metadata", "/dev/stdin")
+	stdin, err := cmd.StdinPipe()
+	if err != nil {
+		t.Fatal(err, "")
+	}
+	go func() {
+		defer stdin.Close()
+		io.WriteString(stdin, jb.String())
+	}()
+	ob, err := cmd.CombinedOutput()
+	output := string(ob)
+	// TODO: tclint doesn't return error code for invalid input.
+	// Update tclint to return error code.
+	// if err != nil {
+	if !strings.Contains(output, "All clean!") {
+		t.Fatalf("failed on tclint: %v %s", err, output)
 	}
 }

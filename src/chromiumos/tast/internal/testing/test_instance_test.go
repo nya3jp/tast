@@ -8,8 +8,12 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"os"
+	"os/exec"
+	"path"
 	"path/filepath"
 	"reflect"
+	"strings"
 	gotesting "testing"
 	"time"
 
@@ -721,5 +725,53 @@ func TestWriteTestsAsProto(t *gotesting.T) {
 	proto.Unmarshal(b.Bytes(), &actual)
 	if !cmp.Equal(expected, actual, cmp.Comparer(proto.Equal)) {
 		t.Errorf("WriteTestsAsProto(%v): got %v; want %v", in, actual, expected)
+	}
+}
+
+func TestWriteTestMetadataWithTCLint(t *gotesting.T) {
+	in := []*TestInstance{
+		{
+			Name: "test001",
+			Attr: []string{"attr1", "attr2"},
+			HardwareDeps: hwdep.D(
+				hwdep.TouchScreen(),
+				hwdep.Fingerprint(),
+				hwdep.InternalDisplay(),
+			),
+			Contacts: []string{
+				"someone1@chromium.org",
+				"someone2@chromium.org",
+			},
+		},
+	}
+
+	// Install tclint.
+	const cipdClient = "/mnt/host/depot_tools/cipd"
+	cipdDir, hasCipdDir := os.LookupEnv("TAST_UNITTEST_CIPD_DIR")
+	if !hasCipdDir {
+		cipdDir = path.Join(os.Getenv("HOME"), ".cache/tast-unit-tests/cipd")
+	}
+	t.Log("Fetching tclint binary")
+	cmd := exec.Command(cipdClient, "install", "-root", cipdDir,
+		"chromiumos/infra/tclint/${platform}", "released")
+	o, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("Failed to install tclint: %v %s", err, o)
+	}
+
+	var b bytes.Buffer
+	if err := WriteTestsAsProto(&b, in); err != nil {
+		t.Fatal("Failed to export metadata as protobuf message")
+	}
+	cmd = exec.Command(path.Join(cipdDir, "tclint"), "metadata", "-binary", "/dev/stdin")
+	cmd.Stdin = bytes.NewBuffer(b.Bytes())
+	t.Log("Verifying output with tclint")
+	ob, err := cmd.CombinedOutput()
+	output := string(ob)
+	// TODO(yamaguchi): Rewrite when tclint returns non-zero exit code
+	//     on linting errors after crrev.com/c/2166542
+	// if err != nil {
+	if !strings.Contains(output, "All clean!") {
+		t.Fatalf("Failed on tclint: %v\n%s", err, output)
 	}
 }

@@ -17,6 +17,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
 	testpb "go.chromium.org/chromiumos/config/go/api/test/metadata/v1"
 
@@ -462,8 +463,7 @@ func WriteTestsAsJSON(w io.Writer, ts []*TestInstance) error {
 	return err
 }
 
-// WriteTestsAsProto exports test metadata in the protobuf format defined by infra.
-func WriteTestsAsProto(w io.Writer, ts []*TestInstance) error {
+func testMetadata(ts []*TestInstance) *testpb.Specification {
 	var result testpb.Specification
 	var driver testpb.RemoteTestDriver
 	driver.Name = remoteTestDriverName
@@ -471,10 +471,26 @@ func WriteTestsAsProto(w io.Writer, ts []*TestInstance) error {
 		driver.Tests = append(driver.Tests, src.Proto())
 	}
 	result.RemoteTestDrivers = append(result.RemoteTestDrivers, &driver)
-	d, err := proto.Marshal(&result)
+	return &result
+}
+
+// WriteTestsAsProto exports test metadata in the protobuf format defined by infra.
+func WriteTestsAsProto(w io.Writer, ts []*TestInstance) error {
+	metadata := testMetadata(ts)
+	d, err := proto.Marshal(metadata)
 	if err != nil {
 		return errors.Wrap(err, "Failed to marshalize the proto")
 	}
 	_, err = w.Write(d)
+	return err
+}
+
+func writeTestMetadataAsJSON(w io.Writer, ts []*TestInstance) error {
+	metadata := testMetadata(ts)
+	m := jsonpb.Marshaler{Indent: "  "}
+	err := m.Marshal(w, metadata)
+	if err != nil {
+		return errors.Wrap(err, "Failed to marshalize the proto")
+	}
 	return err
 }

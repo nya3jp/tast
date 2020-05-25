@@ -583,31 +583,6 @@ func TestHardwareDeps(t *gotesting.T) {
 	}
 }
 
-func TestHardwareDepsCEL(t *gotesting.T) {
-	for i, c := range []struct {
-		input    hwdep.Deps
-		expected string
-	}{
-		{hwdep.D(hwdep.Model("model1", "model2")), "not_implemented"},
-		{hwdep.D(hwdep.SkipOnModel("model1", "model2")), "not_implemented"},
-		{hwdep.D(hwdep.Platform("platform_id1", "platform_id2")), "not_implemented"},
-		{hwdep.D(hwdep.SkipOnPlatform("platform_id1", "platform_id2")), "not_implemented"},
-		{hwdep.D(hwdep.TouchScreen()), "dut.hardware_features.screen.touch_support == api.HardwareFeatures.Present.PRESENT"},
-		{hwdep.D(hwdep.Fingerprint()), "dut.hardware_features.fingerprint.location != api.HardwareFeatures.Fingerprint.Location.NOT_PRESENT"},
-		{hwdep.D(hwdep.InternalDisplay()), "dut.hardware_features.screen.milliinch.value != 0U"},
-		{hwdep.D(hwdep.Wifi80211ac()), "not_implemented"},
-
-		{hwdep.D(hwdep.TouchScreen(), hwdep.Fingerprint()),
-			"dut.hardware_features.screen.touch_support == api.HardwareFeatures.Present.PRESENT && dut.hardware_features.fingerprint.location != api.HardwareFeatures.Fingerprint.Location.NOT_PRESENT"},
-		{hwdep.D(hwdep.Model("model1", "model2"), hwdep.SkipOnPlatform("id1", "id2")), "not_implemented && not_implemented"},
-	} {
-		actual := c.input.CEL()
-		if actual != c.expected {
-			t.Errorf("TestHardwareDepsCEL[%d]: got %q; want %q", i, actual, c.expected)
-		}
-	}
-}
-
 func TestRunSuccess(t *gotesting.T) {
 	test := TestInstance{Func: func(context.Context, *State) {}, Timeout: time.Minute}
 	or := newOutputReader()

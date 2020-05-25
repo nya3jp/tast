@@ -8,10 +8,14 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"io"
 	"io/ioutil"
 	"os"
+	"os/exec"
+	"path"
 	"path/filepath"
 	"reflect"
+	"strings"
 	gotesting "testing"
 	"time"
 
@@ -1105,5 +1109,64 @@ func TestWriteTestsAsProto(t *gotesting.T) {
 	proto.Unmarshal(b.Bytes(), &actual)
 	if !cmp.Equal(expected, actual, cmp.Comparer(proto.Equal)) {
 		t.Errorf("WriteTestsAsProto(%v): got %v; want %v", in, actual, expected)
+	}
+}
+
+func TestPassLinter(t *gotesting.T) {
+	in := []*TestInstance{
+		{
+			Name: "test001",
+			Attr: []string{"attr1", "attr2"},
+			HardwareDeps: hwdep.D(
+				hwdep.TouchScreen(),
+				hwdep.Fingerprint(),
+				hwdep.InternalDisplay(),
+			),
+			Contacts: []string{
+				"someone1@chromium.org",
+				"someone2@chromium.org",
+			},
+		},
+	}
+
+	// Install tclint.
+	const cipdClient = "/mnt/host/depot_tools/cipd"
+	cipdDir, hasCipdDir := os.LookupEnv("TAST_UNITTEST_CIPD_DIR")
+	if !hasCipdDir {
+		var err error
+		cipdDir, err = ioutil.TempDir("", "tast_test_instance_test_cipd.")
+		if err != nil {
+			t.Fatal("Failed to create temporary directory: ", err)
+		}
+	}
+	t.Log("Fetching tclint binary")
+	cmd := exec.Command(cipdClient, "install", "-root", cipdDir,
+		"chromiumos/infra/tclint/${platform}", "released")
+	o, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("Failed to install tclint: %v %s", err, o)
+	}
+
+	var jb bytes.Buffer
+	if err := writeTestMetadataAsJSON(&jb, in); err != nil {
+		t.Fatal("Failed to export to json")
+	}
+	cmd = exec.Command(path.Join(cipdDir, "tclint"), "metadata", "/dev/stdin")
+	stdin, err := cmd.StdinPipe()
+	if err != nil {
+		t.Fatal(err, "Failed to open stdin pipe")
+	}
+	go func() {
+		defer stdin.Close()
+		io.WriteString(stdin, jb.String())
+	}()
+	t.Log("Verifying output with tclint")
+	ob, err := cmd.CombinedOutput()
+	output := string(ob)
+	// TODO(yamaguchi): Rewrite when tclint returns non-zero exit code
+	//     on linting errors after crrev.com/c/2166542
+	// if err != nil {
+	if !strings.Contains(output, "All clean!") {
+		t.Fatalf("Failed on tclint: %v %s", err, output)
 	}
 }

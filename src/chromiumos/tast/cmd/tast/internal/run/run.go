@@ -139,7 +139,7 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []TestResult)
 		var res []TestResult
 		for _, m := range results {
 			for _, x := range m {
-				for _, t := range x.Test {
+				for _, t := range x.Tests {
 					res = append(res, TestResult{
 						TestInstance: testing.TestInstance{
 							Name: t.Name,

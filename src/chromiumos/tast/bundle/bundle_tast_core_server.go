@@ -36,13 +36,14 @@ func (s *Server) List(ctx context.Context, req *rpc.ListRequest) (*rpc.ListRespo
 	}
 	res := &rpc.ListResponse{}
 	for _, t := range ts {
-		res.Test = append(res.Test, &rpc.TestInfo{
-			Name: t.Name,
+		res.Tests = append(res.Tests, &rpc.RawTestInfo{
+			Name:         t.Name,
+			Precondition: t.PreV2,
 		})
 	}
 	pres := testing.GlobalRegistry().AllPreconditionV2s()
 	for name, p := range pres {
-		res.RawPreconditions = append(res.RawPreconditions, &rpc.RawPrecondition{
+		res.Preconditions = append(res.Preconditions, &rpc.RawPrecondition{
 			Name:   name,
 			Parent: p.Parent(),
 		})

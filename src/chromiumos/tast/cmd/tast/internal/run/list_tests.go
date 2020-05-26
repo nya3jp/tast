@@ -24,10 +24,14 @@ const (
 
 func (b bundleType) String() string {
 	switch b {
-	case local: return "local"
-	case remote: return "remote"
-	default log.Panic("Unknown bundleType ", b)
+	case local:
+		return "local"
+	case remote:
+		return "remote"
+	default:
+		log.Panicf("Unknown bundleType %d", b)
 	}
+	return ""
 }
 
 type allTests map[bundleType]map[string]*rpc.ListResponse // type -> bundle -> info

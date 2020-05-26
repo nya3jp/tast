@@ -37,9 +37,14 @@ message ListRequest {
 }
 
 message ListResponse {
-  repeated TestInfo test = 1;
+  repeated RawTestInfo tests = 1;
   // Preconditions defined in the bundle.
-  repeated RawPrecondition raw_preconditions = 2;
+  repeated RawPrecondition preconditions = 2;
+}
+
+message RawTestInfo {
+  string name = 1;
+  string precondition = 2;
 }
 
 message RawPrecondition {
@@ -97,4 +102,6 @@ message TestInfo {
   Precondition precondition = 2;
   // skip_reason is non-empty if the test should be skipped.
   string skip_reason = 3;
+
+  string raw_precondition = 4;
 }

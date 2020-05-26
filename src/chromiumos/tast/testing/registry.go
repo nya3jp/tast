@@ -32,7 +32,7 @@ func (r *Registry) AddPreconditionV2(pre PreconditionV2) error {
 	}
 	s := pre.String()
 	if s == "" {
-		return fmt.Error("empty precondition name is not allowed")
+		return fmt.Errorf("empty precondition name is not allowed")
 	}
 	if _, ok := r.allPres[s]; ok {
 		return fmt.Errorf("precondition V2 %s is already registered", pre)

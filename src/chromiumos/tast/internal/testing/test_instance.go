@@ -80,13 +80,13 @@ type TestInstance struct {
 	// Following fields are copied from testing.Test struct.
 	// See the documents of the struct.
 
-	Func         TestFunc `json:"-"`
-	Desc         string   `json:"desc"`
-	Contacts     []string `json:"contacts"`
-	Attr         []string `json:"attr"`
-	Data         []string `json:"data"`
-	Vars         []string `json:"vars,omitempty"`
-	SoftwareDeps []string `json:"softwareDeps,omitempty"`
+	Func         TestFunc         `json:"-"`
+	Desc         string           `json:"desc"`
+	Contacts     []string         `json:"contacts"`
+	Attr         []string         `json:"attr"`
+	Data         []string         `json:"data"`
+	Vars         []string         `json:"vars,omitempty"`
+	SoftwareDeps dep.SoftwareDeps `json:"softwareDeps,omitempty"`
 	// HardwareDeps field is not in the protocol yet. When the scheduler in infra is
 	// implemented, it is needed.
 	HardwareDeps dep.HardwareDeps `json:"-"`
@@ -207,12 +207,12 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 }
 
 // autoAttrs returns automatically-generated attributes.
-func autoAttrs(name, pkg string, softwareDeps []string) []string {
+func autoAttrs(name, pkg string, deps dep.SoftwareDeps) []string {
 	attrs := []string{testNameAttrPrefix + name}
 	if comps := strings.Split(pkg, "/"); len(comps) >= 2 {
 		attrs = append(attrs, testBundleAttrPrefix+comps[len(comps)-2])
 	}
-	for _, dep := range softwareDeps {
+	for _, dep := range deps {
 		attrs = append(attrs, testDepAttrPrefix+dep)
 	}
 	return attrs
@@ -551,68 +551,16 @@ func (t *TestInstance) String() string {
 }
 
 // ShouldRunResult represents the result of the check whether to run a test.
-type ShouldRunResult struct {
-	// SkipReasons contains a list of messages describing why some dependencies
-	// were not satisfied. They should be reported as informational logs.
-	SkipReasons []string
-
-	// Errors contains a list of messages describing errors encountered while
-	// evaluating dependencies. They should be reported as test errors.
-	Errors []string
-}
-
-// OK returns whether to run the test.
-func (r *ShouldRunResult) OK() bool {
-	return len(r.SkipReasons) == 0 && len(r.Errors) == 0
-}
+type ShouldRunResult = dep.CheckResult
 
 // ShouldRun returns whether this test should run under the current testing environment.
 // In case of not, in addition, the reason why it should be skipped is also returned.
 func (t *TestInstance) ShouldRun(f *dep.Features) *ShouldRunResult {
-	var reasons []string
-	var errs []string
-	if f.Software != nil {
-		missing, unknown := t.missingSoftwareDeps(f.Software)
-		if len(missing) > 0 {
-			reasons = append(reasons, fmt.Sprintf("missing SoftwareDeps: %s", strings.Join(missing, ", ")))
-		}
-		if len(unknown) > 0 {
-			errs = append(errs, fmt.Sprintf("unknown SoftwareDeps: %v", strings.Join(unknown, ", ")))
-		}
+	deps := dep.Deps{
+		Software: t.SoftwareDeps,
+		Hardware: t.HardwareDeps,
 	}
-	if f.Hardware != nil {
-		if err := t.HardwareDeps.Satisfied(f.Hardware); err != nil {
-			for _, r := range err.Reasons {
-				reasons = append(reasons, r.Error())
-			}
-		}
-	}
-	return &ShouldRunResult{SkipReasons: reasons, Errors: errs}
-}
-
-// missingSoftwareDeps returns a sorted list of dependencies from SoftwareDeps
-// that aren't present on the DUT (per the passed-in features list).
-// unknown is a sorted list of unknown software features. It is always a subset
-// of missing.
-func (t *TestInstance) missingSoftwareDeps(features *dep.SoftwareFeatures) (missing, unknown []string) {
-DepLoop:
-	for _, d := range t.SoftwareDeps {
-		for _, f := range features.Available {
-			if d == f {
-				continue DepLoop
-			}
-		}
-		missing = append(missing, d)
-		for _, f := range features.Unavailable {
-			if d == f {
-				continue DepLoop
-			}
-		}
-		unknown = append(unknown, d)
-	}
-	sort.Strings(missing)
-	sort.Strings(unknown)
-	return missing, unknown
+	return deps.Check(f)
 }
 
 // Proto converts test metadata of TestInstance into a protobuf message.

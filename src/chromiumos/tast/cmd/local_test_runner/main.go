@@ -65,6 +65,7 @@ func main() {
 			"android_vm":        `arc && arcvm && !"android-vm-pi"`,
 			"android_vm_r":      `arc && arcvm && "android-vm-rvc"`,
 			"android_p":         `arc && "android-container-pi"`,
+			"android_r":         `arc && arcvm`,
 			"arc":               `arc`,
 			"arc_camera1":       `"arc-camera1"`,
 			"arc_camera3":       `"arc-camera3"`,

@@ -43,12 +43,12 @@ func (p *testPre) String() string { return p.name }
 
 func TestRunSuccess(t *testing.T) {
 	test := &TestInstance{Func: func(context.Context, *State) {}, Timeout: time.Minute}
-	or := newOutputReader()
+	or := NewOutputReader()
 	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
 	od := filepath.Join(td, "out")
-	Run(context.Background(), test, or.ch, &TestConfig{OutDir: od})
-	if errs := getOutputErrors(or.read()); len(errs) != 0 {
+	Run(context.Background(), test, or.Ch, &TestConfig{OutDir: od})
+	if errs := GetOutputErrors(or.Read()); len(errs) != 0 {
 		t.Errorf("Got unexpected error(s) for test: %v", errs)
 	}
 	if fi, err := os.Stat(od); err != nil {
@@ -60,9 +60,9 @@ func TestRunSuccess(t *testing.T) {
 
 func TestRunPanic(t *testing.T) {
 	test := &TestInstance{Func: func(context.Context, *State) { panic("intentional panic") }, Timeout: time.Minute}
-	or := newOutputReader()
-	Run(context.Background(), test, or.ch, &TestConfig{})
-	if errs := getOutputErrors(or.read()); len(errs) != 1 {
+	or := NewOutputReader()
+	Run(context.Background(), test, or.Ch, &TestConfig{})
+	if errs := GetOutputErrors(or.Read()); len(errs) != 1 {
 		t.Errorf("Got %v errors for panicking test; want 1", errs)
 	}
 }
@@ -74,11 +74,11 @@ func TestRunDeadline(t *testing.T) {
 		s.Error("Saw timeout within test")
 	}
 	test := &TestInstance{Func: f, Timeout: time.Millisecond, ExitTimeout: 10 * time.Second}
-	or := newOutputReader()
-	Run(context.Background(), test, or.ch, &TestConfig{})
+	or := NewOutputReader()
+	Run(context.Background(), test, or.Ch, &TestConfig{})
 	// The error that was reported by the test after its deadline was hit
 	// but within the exit delay should be available.
-	if errs := getOutputErrors(or.read()); len(errs) != 1 {
+	if errs := GetOutputErrors(or.Read()); len(errs) != 1 {
 		t.Errorf("Got %v errors for timed-out test; want 1", len(errs))
 	}
 }
@@ -99,8 +99,8 @@ func TestRunLogAfterTimeout(t *testing.T) {
 	}
 	test := &TestInstance{Func: f, Timeout: time.Millisecond, ExitTimeout: time.Millisecond}
 
-	or := newOutputReader()
-	Run(context.Background(), test, or.ch, &TestConfig{})
+	or := NewOutputReader()
+	Run(context.Background(), test, or.Ch, &TestConfig{})
 
 	// Tell the test to continue even though Run has already returned. The output channel should
 	// still be open so as to avoid a panic when the test writes to it: https://crbug.com/853406
@@ -109,7 +109,7 @@ func TestRunLogAfterTimeout(t *testing.T) {
 		t.Error("Test function didn't complete")
 	}
 	// No output errors should be written to the channel; reporting timeouts is the caller's job.
-	if errs := getOutputErrors(or.read()); len(errs) != 0 {
+	if errs := GetOutputErrors(or.Read()); len(errs) != 0 {
 		t.Errorf("Got %v error(s) for runaway test; want 0", len(errs))
 	}
 }
@@ -125,8 +125,8 @@ func TestRunLateWriteFromGoroutine(t *testing.T) {
 			close(end)
 		}()
 	}, Timeout: time.Minute}
-	or := newOutputReader()
-	Run(context.Background(), test, or.ch, &TestConfig{})
+	or := NewOutputReader()
+	Run(context.Background(), test, or.Ch, &TestConfig{})
 
 	// Tell the goroutine to start and wait for it to finish.
 	close(start)
@@ -134,7 +134,7 @@ func TestRunLateWriteFromGoroutine(t *testing.T) {
 
 	// No errors should be reported, and we also shouldn't panic due to
 	// the s.Error call trying to write to a closed channel.
-	for _, err := range getOutputErrors(or.read()) {
+	for _, err := range GetOutputErrors(or.Read()) {
 		t.Error("Got error: ", err.Reason)
 	}
 }
@@ -240,8 +240,8 @@ func TestRunSkipStages(t *testing.T) {
 			cfg.NextTest = tests[i+1]
 		}
 
-		or := newOutputReader()
-		Run(context.Background(), test, or.ch, cfg)
+		or := NewOutputReader()
+		Run(context.Background(), test, or.Ch, cfg)
 
 		// Verify that stages were executed or skipped as expected.
 		checkRan := func(name string, ran bool, a action) {
@@ -283,14 +283,14 @@ func TestRunMissingData(t *testing.T) {
 		t.Fatalf("Failed to write %s: %v", missingErrorFile1, err)
 	}
 
-	or := newOutputReader()
-	Run(context.Background(), test, or.ch, &TestConfig{DataDir: td})
+	or := NewOutputReader()
+	Run(context.Background(), test, or.Ch, &TestConfig{DataDir: td})
 
 	expected := []string{
 		"Required data file missing1.txt missing: some reason",
 		"Required data file missing2.txt missing",
 	}
-	if errs := getOutputErrors(or.read()); len(errs) != 2 {
+	if errs := GetOutputErrors(or.Read()); len(errs) != 2 {
 		t.Errorf("Got %v errors for missing data test; want 2", errs)
 	} else if actual := []string{errs[0].Reason, errs[1].Reason}; !reflect.DeepEqual(actual, expected) {
 		t.Errorf("Got errors %q; want %q", actual, expected)
@@ -319,9 +319,9 @@ func TestRunPrecondition(t *testing.T) {
 		Timeout: time.Minute,
 	}
 
-	or := newOutputReader()
-	Run(context.Background(), test, or.ch, &TestConfig{})
-	for _, err := range getOutputErrors(or.read()) {
+	or := NewOutputReader()
+	Run(context.Background(), test, or.Ch, &TestConfig{})
+	for _, err := range GetOutputErrors(or.Read()) {
 		t.Error("Got error: ", err.Reason)
 	}
 }
@@ -372,11 +372,11 @@ func TestRunPreconditionContext(t *testing.T) {
 	t1 := &TestInstance{Name: "t1", Pre: pre, Timeout: time.Minute, Func: testFunc}
 	t2 := &TestInstance{Name: "t2", Pre: pre, Timeout: time.Minute, Func: testFunc}
 
-	or := newOutputReader()
-	Run(context.Background(), t1, or.ch, &TestConfig{
+	or := NewOutputReader()
+	Run(context.Background(), t1, or.Ch, &TestConfig{
 		NextTest: t2,
 	})
-	for _, err := range getOutputErrors(or.read()) {
+	for _, err := range GetOutputErrors(or.Read()) {
 		t.Error("Got error: ", err.Reason)
 	}
 
@@ -384,11 +384,11 @@ func TestRunPreconditionContext(t *testing.T) {
 		t.Errorf("PreCtx different between test instances")
 	}
 
-	or = newOutputReader()
-	Run(context.Background(), t2, or.ch, &TestConfig{
+	or = NewOutputReader()
+	Run(context.Background(), t2, or.Ch, &TestConfig{
 		NextTest: nil,
 	})
-	for _, err := range getOutputErrors(or.read()) {
+	for _, err := range GetOutputErrors(or.Read()) {
 		t.Error("Got error: ", err.Reason)
 	}
 
@@ -406,9 +406,9 @@ func TestAttachStateToContext(t *testing.T) {
 		Timeout: time.Minute,
 	}
 
-	or := newOutputReader()
-	Run(context.Background(), test, or.ch, &TestConfig{})
-	if out := or.read(); len(out) != 2 || out[0].Msg != "msg 1" || out[1].Msg != "msg 2" {
+	or := NewOutputReader()
+	Run(context.Background(), test, or.Ch, &TestConfig{})
+	if out := or.Read(); len(out) != 2 || out[0].Msg != "msg 1" || out[1].Msg != "msg 2" {
 		t.Errorf("Bad test output: %v", out)
 	}
 }

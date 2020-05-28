@@ -24,21 +24,21 @@ import (
 )
 
 func TestLog(t *gotesting.T) {
-	or := newOutputReader()
-	root := newRootState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
+	or := NewOutputReader()
+	root := NewRootState(&TestInstance{Timeout: time.Minute}, or.Ch, &TestConfig{})
 	s := root.newTestState()
 	s.Log("msg ", 1)
 	s.Logf("msg %d", 2)
-	close(or.ch)
-	out := or.read()
+	close(or.Ch)
+	out := or.Read()
 	if len(out) != 2 || out[0].Msg != "msg 1" || out[1].Msg != "msg 2" {
 		t.Errorf("Bad test output: %v", out)
 	}
 }
 
 func TestNestedRun(t *gotesting.T) {
-	or := newOutputReader()
-	root := newRootState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
+	or := NewOutputReader()
+	root := NewRootState(&TestInstance{Timeout: time.Minute}, or.Ch, &TestConfig{})
 	s := root.newTestState()
 	ctx := context.Background()
 
@@ -54,8 +54,8 @@ func TestNestedRun(t *gotesting.T) {
 
 	s.Log("msg ", 4)
 
-	close(or.ch)
-	out := or.read()
+	close(or.Ch)
+	out := or.Read()
 	if len(out) != 6 || out[0].Msg != "Starting subtest p1" || out[1].Msg != "msg 1" || out[2].Msg != "Starting subtest p1/p2" ||
 		out[3].Msg != "msg 2" || out[4].Msg != "msg 3" || out[5].Msg != "msg 4" {
 
@@ -64,8 +64,8 @@ func TestNestedRun(t *gotesting.T) {
 }
 
 func TestRunReturn(t *gotesting.T) {
-	or := newOutputReader()
-	root := newRootState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
+	or := NewOutputReader()
+	root := NewRootState(&TestInstance{Timeout: time.Minute}, or.Ch, &TestConfig{})
 	s := root.newTestState()
 	ctx := context.Background()
 
@@ -81,15 +81,15 @@ func TestRunReturn(t *gotesting.T) {
 		t.Error("Expected success to return true")
 	}
 
-	close(or.ch)
-	if out := or.read(); len(out) != 4 {
+	close(or.Ch)
+	if out := or.Read(); len(out) != 4 {
 		t.Errorf("Bad test output: %v", out)
 	}
 }
 
 func TestParallelRun(t *gotesting.T) {
-	or := newOutputReader()
-	root := newRootState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
+	or := NewOutputReader()
+	root := NewRootState(&TestInstance{Timeout: time.Minute}, or.Ch, &TestConfig{})
 	s := root.newTestState()
 	ctx := context.Background()
 
@@ -111,8 +111,8 @@ func TestParallelRun(t *gotesting.T) {
 	})
 	wg.Wait()
 
-	close(or.ch)
-	out := or.read()
+	close(or.Ch)
+	out := or.Read()
 	if len(out) != 5 || out[0].Msg != "Starting subtest r" {
 		t.Fatal("Bad test output: ", out)
 	}
@@ -138,16 +138,16 @@ func TestParallelRun(t *gotesting.T) {
 }
 
 func TestReportError(t *gotesting.T) {
-	or := newOutputReader()
-	root := newRootState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
+	or := NewOutputReader()
+	root := NewRootState(&TestInstance{Timeout: time.Minute}, or.Ch, &TestConfig{})
 	s := root.newTestState()
 
 	// Keep these lines next to each other (see below comparison).
 	s.Error("error ", 1)
 	s.Errorf("error %d", 2)
-	close(or.ch)
+	close(or.Ch)
 
-	out := or.read()
+	out := or.Read()
 	if len(out) != 2 {
 		t.Fatalf("Got %v output(s); want 2", len(out))
 	}
@@ -182,16 +182,16 @@ func TestReportError(t *gotesting.T) {
 }
 
 func TestReportErrorInPrecondition(t *gotesting.T) {
-	or := newOutputReader()
-	root := newRootState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
+	or := NewOutputReader()
+	root := NewRootState(&TestInstance{Timeout: time.Minute}, or.Ch, &TestConfig{})
 	s := root.newPreState()
 
 	// Keep these lines next to each other (see below comparison).
 	s.Error("error ", 1)
 	s.Errorf("error %d", 2)
-	close(or.ch)
+	close(or.Ch)
 
-	out := or.read()
+	out := or.Read()
 	if len(out) != 2 {
 		t.Fatalf("Got %v output(s); want 2", len(out))
 	}
@@ -230,15 +230,15 @@ func errorFunc() error {
 }
 
 func TestExtractErrorSimple(t *gotesting.T) {
-	or := newOutputReader()
-	root := newRootState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
+	or := NewOutputReader()
+	root := NewRootState(&TestInstance{Timeout: time.Minute}, or.Ch, &TestConfig{})
 	s := root.newTestState()
 
 	err := errorFunc()
 	s.Error(err)
-	close(or.ch)
+	close(or.Ch)
 
-	out := or.read()
+	out := or.Read()
 	if len(out) != 1 {
 		t.Fatalf("Got %v output(s); want 1", len(out))
 	}
@@ -257,8 +257,8 @@ func TestExtractErrorSimple(t *gotesting.T) {
 }
 
 func TestExtractErrorHeuristic(t *gotesting.T) {
-	or := newOutputReader()
-	root := newRootState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
+	or := NewOutputReader()
+	root := NewRootState(&TestInstance{Timeout: time.Minute}, or.Ch, &TestConfig{})
 	s := root.newTestState()
 
 	err := errorFunc()
@@ -266,9 +266,9 @@ func TestExtractErrorHeuristic(t *gotesting.T) {
 	s.Error("Failed something  ", err)
 	s.Errorf("Failed something  :  %v", err)
 	s.Errorf("Failed something  %v", err)
-	close(or.ch)
+	close(or.Ch)
 
-	out := or.read()
+	out := or.Read()
 	if len(out) != 4 {
 		t.Fatalf("Got %v output(s); want 4", len(out))
 	}
@@ -288,8 +288,8 @@ func TestExtractErrorHeuristic(t *gotesting.T) {
 }
 
 func TestRunUsePrefix(t *gotesting.T) {
-	or := newOutputReader()
-	root := newRootState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
+	or := NewOutputReader()
+	root := NewRootState(&TestInstance{Timeout: time.Minute}, or.Ch, &TestConfig{})
 	s := root.newTestState()
 
 	ctx := context.Background()
@@ -298,13 +298,13 @@ func TestRunUsePrefix(t *gotesting.T) {
 			s.Errorf("error %s", "msg")
 		})
 	})
-	close(or.ch)
+	close(or.Ch)
 
 	if !s.HasError() {
 		t.Error("Test is not reporting error")
 	}
 
-	if out := or.read(); len(out) != 3 {
+	if out := or.Read(); len(out) != 3 {
 		t.Errorf("Got %v outputs; want 3", len(out))
 	} else {
 		if out[0].Err != nil || out[0].Msg != "Starting subtest f1" {
@@ -322,8 +322,8 @@ func TestRunUsePrefix(t *gotesting.T) {
 }
 
 func TestRunNonFatal(t *gotesting.T) {
-	or := newOutputReader()
-	root := newRootState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
+	or := NewOutputReader()
+	root := NewRootState(&TestInstance{Timeout: time.Minute}, or.Ch, &TestConfig{})
 	s := root.newTestState()
 
 	// Log the fatal message in a goroutine so the main goroutine that's running the test won't exit.
@@ -332,7 +332,7 @@ func TestRunNonFatal(t *gotesting.T) {
 	go func() {
 		defer func() {
 			close(done)
-			close(or.ch)
+			close(or.Ch)
 		}()
 
 		ctx := context.Background()
@@ -350,8 +350,8 @@ func TestRunNonFatal(t *gotesting.T) {
 }
 
 func TestFatal(t *gotesting.T) {
-	or := newOutputReader()
-	root := newRootState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
+	or := NewOutputReader()
+	root := NewRootState(&TestInstance{Timeout: time.Minute}, or.Ch, &TestConfig{})
 	s := root.newTestState()
 
 	// Log the fatal message in a goroutine so the main goroutine that's running the test won't exit.
@@ -360,7 +360,7 @@ func TestFatal(t *gotesting.T) {
 	go func() {
 		defer func() {
 			close(done)
-			close(or.ch)
+			close(or.Ch)
 		}()
 		s.Fatalf("fatal %s", "msg")
 		died = false
@@ -370,7 +370,7 @@ func TestFatal(t *gotesting.T) {
 	if !died {
 		t.Fatal("Test continued after call to Fatalf")
 	}
-	if out := or.read(); len(out) != 1 {
+	if out := or.Read(); len(out) != 1 {
 		t.Errorf("Got %v outputs; want 1", len(out))
 	} else if out[0].Err == nil || out[0].Err.Reason != "fatal msg" {
 		t.Errorf("Got output %v; want reason %q", out[0].Err, "fatal msg")
@@ -378,8 +378,8 @@ func TestFatal(t *gotesting.T) {
 }
 
 func TestFatalInPrecondition(t *gotesting.T) {
-	or := newOutputReader()
-	root := newRootState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
+	or := NewOutputReader()
+	root := NewRootState(&TestInstance{Timeout: time.Minute}, or.Ch, &TestConfig{})
 	s := root.newPreState()
 
 	// Log the fatal message in a goroutine so the main goroutine that's running the test won't exit.
@@ -388,7 +388,7 @@ func TestFatalInPrecondition(t *gotesting.T) {
 	go func() {
 		defer func() {
 			close(done)
-			close(or.ch)
+			close(or.Ch)
 		}()
 		s.Fatalf("fatal %s", "msg")
 		died = false
@@ -398,7 +398,7 @@ func TestFatalInPrecondition(t *gotesting.T) {
 	if !died {
 		t.Fatal("Test continued after call to Fatalf")
 	}
-	if out := or.read(); len(out) != 1 {
+	if out := or.Read(); len(out) != 1 {
 		t.Errorf("Got %v outputs; want 1", len(out))
 	} else if out[0].Err == nil || out[0].Err.Reason != preFailPrefix+"fatal msg" {
 		t.Errorf("Got output %v; want reason %q", out[0].Err, preFailPrefix+"fatal msg")
@@ -418,8 +418,8 @@ func TestDataPathDeclared(t *gotesting.T) {
 		{"foo", filepath.Join(dataDir, "foo")},
 		{"foo/bar", filepath.Join(dataDir, "foo/bar")},
 	} {
-		or := newOutputReader()
-		root := newRootState(&test, or.ch, &TestConfig{DataDir: dataDir})
+		or := NewOutputReader()
+		root := NewRootState(&test, or.Ch, &TestConfig{DataDir: dataDir})
 		s := root.newTestState()
 		if act := s.DataPath(tc.in); act != tc.exp {
 			t.Errorf("DataPath(%q) = %q; want %q", tc.in, act, tc.exp)
@@ -428,12 +428,12 @@ func TestDataPathDeclared(t *gotesting.T) {
 }
 
 func TestDataPathNotDeclared(t *gotesting.T) {
-	or := newOutputReader()
+	or := NewOutputReader()
 	test := TestInstance{
 		Timeout: time.Minute,
 		Data:    []string{"foo"},
 	}
-	root := newRootState(&test, or.ch, &TestConfig{DataDir: "/data"})
+	root := NewRootState(&test, or.Ch, &TestConfig{DataDir: "/data"})
 	s := root.newTestState()
 
 	// Request an undeclared data path to cause a fatal error. Do this in a goroutine
@@ -442,13 +442,13 @@ func TestDataPathNotDeclared(t *gotesting.T) {
 	go func() {
 		defer func() {
 			close(done)
-			close(or.ch)
+			close(or.Ch)
 		}()
 		s.DataPath("bar")
 	}()
 	<-done
 
-	out := or.read()
+	out := or.Read()
 	if len(out) != 1 || out[0].Err == nil {
 		t.Errorf("Got %v when requesting undeclared data path; wanted 1 error", out)
 	}
@@ -472,8 +472,8 @@ func TestDataFileServer(t *gotesting.T) {
 	}
 
 	test := TestInstance{Data: []string{file1}}
-	or := newOutputReader()
-	root := newRootState(&test, or.ch, &TestConfig{DataDir: td})
+	or := NewOutputReader()
+	root := NewRootState(&test, or.Ch, &TestConfig{DataDir: td})
 	s := root.newTestState()
 
 	srv := httptest.NewServer(http.FileServer(s.DataFileSystem()))
@@ -526,9 +526,9 @@ func TestVars(t *gotesting.T) {
 
 	test := &TestInstance{Vars: []string{validName, unsetName}}
 	cfg := &TestConfig{Vars: map[string]string{validName: validValue, unregName: unregValue}}
-	or := newOutputReader()
-	defer close(or.ch)
-	root := newRootState(test, or.ch, cfg)
+	or := NewOutputReader()
+	defer close(or.Ch)
+	root := NewRootState(test, or.Ch, cfg)
 	s := root.newTestState()
 
 	for _, tc := range []struct {
@@ -582,8 +582,8 @@ func TestVars(t *gotesting.T) {
 func TestMeta(t *gotesting.T) {
 	meta := Meta{TastPath: "/foo/bar", Target: "example.net", RunFlags: []string{"-foo", "-bar"}}
 	getMeta := func(test *TestInstance, cfg *TestConfig) (*State, *Meta) {
-		or := newOutputReader()
-		root := newRootState(test, or.ch, cfg)
+		or := NewOutputReader()
+		root := NewRootState(test, or.Ch, cfg)
 		s := root.newTestState()
 
 		// Meta can call Fatal, which results in a call to runtime.Goexit(),
@@ -629,8 +629,8 @@ func TestMeta(t *gotesting.T) {
 func TestRPCHint(t *gotesting.T) {
 	hint := RPCHint{LocalBundleDir: "/path/to/bundles"}
 	getHint := func(test *TestInstance, cfg *TestConfig) (*State, *RPCHint) {
-		or := newOutputReader()
-		root := newRootState(test, or.ch, cfg)
+		or := NewOutputReader()
+		root := NewRootState(test, or.Ch, cfg)
 		s := root.newTestState()
 
 		// RPCHint can call Fatal, which results in a call to runtime.Goexit(),
@@ -668,8 +668,8 @@ func TestRPCHint(t *gotesting.T) {
 
 func TestDUT(t *gotesting.T) {
 	callDUT := func(test *TestInstance, cfg *TestConfig) *State {
-		or := newOutputReader()
-		root := newRootState(test, or.ch, cfg)
+		or := NewOutputReader()
+		root := NewRootState(test, or.Ch, cfg)
 		s := root.newTestState()
 
 		// DUT can call Fatal, which results in a call to runtime.Goexit(),
@@ -702,8 +702,8 @@ func TestDUT(t *gotesting.T) {
 func TestCloudStorage(t *gotesting.T) {
 	want := NewCloudStorage(nil)
 
-	or := newOutputReader()
-	root := newRootState(&TestInstance{Name: "example.Test"}, or.ch, &TestConfig{CloudStorage: want})
+	or := NewOutputReader()
+	root := NewRootState(&TestInstance{Name: "example.Test"}, or.Ch, &TestConfig{CloudStorage: want})
 	s := root.newTestState()
 	got := s.CloudStorage()
 

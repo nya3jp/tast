@@ -84,9 +84,11 @@ func (h *RPCHint) clone() *RPCHint {
 	return &hc
 }
 
-// rootState contains all state shared between all subtests. Each subtest receives
-// its own instance of State.
-type rootState struct {
+// RootState is the root of all State objects.
+// State objects for tests and preconditions can be obtained from this object.
+//
+// RootState is private to the framework; never expose it to tests.
+type RootState struct {
 	test *TestInstance // test being run
 	ch   chan<- Output // channel to which logging messages and errors are written
 	cfg  *TestConfig   // details about how to run test
@@ -95,8 +97,8 @@ type rootState struct {
 	preCtx   context.Context // context that lives as long as the precondition; can only be accessed in the precondition phase
 
 	hasErr bool       // true if any error was reported
-	closed bool       // true after close is called and ch is closed
-	mu     sync.Mutex // protects hasError and closed
+	closed bool       // true after Close is called and ch is closed
+	mu     sync.Mutex // protects HasError and closed
 }
 
 // State holds state relevant to the execution of a single test.
@@ -112,12 +114,12 @@ type rootState struct {
 // It is intended to be safe when called concurrently by multiple goroutines
 // while a test is running.
 type State struct {
-	root     *rootState // root state for the test
+	root     *RootState // root state for the test
 	subtests []string   // subtest names; used to prefix error messages
 	inPre    bool       // true if a precondition is currently executing.
 
 	hasError bool       // true if the current subtest has encountered an error; the test fails if this is true for the initial subtest
-	mu       sync.Mutex // protects hasError
+	mu       sync.Mutex // protects HasError
 }
 
 // TestConfig contains details about how an individual test should be run.
@@ -143,38 +145,38 @@ type TestConfig struct {
 	NextTest *TestInstance
 }
 
-// newRootState returns a new rootState object.
-func newRootState(test *TestInstance, ch chan<- Output, cfg *TestConfig) *rootState {
-	return &rootState{test: test, ch: ch, cfg: cfg}
+// NewRootState returns a new RootState object.
+func NewRootState(test *TestInstance, ch chan<- Output, cfg *TestConfig) *RootState {
+	return &RootState{test: test, ch: ch, cfg: cfg}
 }
 
 // newTestState creates a State for a test.
-func (r *rootState) newTestState() *State {
+func (r *RootState) newTestState() *State {
 	return &State{root: r}
 }
 
 // newPreState creates a State for a precondition.
-func (r *rootState) newPreState() *State {
+func (r *RootState) newPreState() *State {
 	return &State{root: r, inPre: true}
 }
 
-// runWithTestState runs f, passing a Context and a State for a test.
+// RunWithTestState runs f, passing a Context and a State for a test.
 // If f panics, it recovers and reports the error via the State.
 // f is run within a goroutine to avoid making the calling goroutine exit if
 // f calls s.Fatal (which calls runtime.Goexit).
-func (r *rootState) runWithTestState(ctx context.Context, f func(ctx context.Context, s *State)) {
+func (r *RootState) RunWithTestState(ctx context.Context, f func(ctx context.Context, s *State)) {
 	s := r.newTestState()
-	ctx = s.newContext(ctx)
+	ctx = NewContext(ctx, s)
 	runAndRecover(func() { f(ctx, s) }, s)
 }
 
-// runWithPreState runs f, passing a Context and a State for a precondition.
+// RunWithPreState runs f, passing a Context and a State for a precondition.
 // If f panics, it recovers and reports the error via the State.
 // f is run within a goroutine to avoid making the calling goroutine exit if
 // f calls s.Fatal (which calls runtime.Goexit).
-func (r *rootState) runWithPreState(ctx context.Context, f func(ctx context.Context, s *State)) {
+func (r *RootState) RunWithPreState(ctx context.Context, f func(ctx context.Context, s *State)) {
 	s := r.newPreState()
-	ctx = s.newContext(ctx)
+	ctx = NewContext(ctx, s)
 	runAndRecover(func() { f(ctx, s) }, s)
 }
 
@@ -195,16 +197,16 @@ func runAndRecover(f func(), s *State) {
 	<-done
 }
 
-// hasError checks if any error has been reported.
-func (r *rootState) hasError() bool {
+// HasError checks if any error has been reported.
+func (r *RootState) HasError() bool {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	return r.hasErr
 }
 
 // writeOutput writes o to r.ch.
-// o is discarded if close has already been called since a write to a closed channel would panic.
-func (r *rootState) writeOutput(o Output) {
+// o is discarded if Close has already been called since a write to a closed channel would panic.
+func (r *RootState) writeOutput(o Output) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
@@ -216,8 +218,18 @@ func (r *rootState) writeOutput(o Output) {
 	}
 }
 
-// close is called after the test has completed to close s.ch.
-func (r *rootState) close() {
+// SetPreCtx sets a context available to the precondition.
+func (r *RootState) SetPreCtx(ctx context.Context) {
+	r.preCtx = ctx
+}
+
+// SetPreValue sets a precondition value available to the test.
+func (r *RootState) SetPreValue(val interface{}) {
+	r.preValue = val
+}
+
+// Close is called after the test has completed to close s.ch.
+func (r *RootState) Close() {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
@@ -227,8 +239,8 @@ func (r *rootState) close() {
 	}
 }
 
-// newContext returns a context.Context to be used for the test.
-func (s *State) newContext(ctx context.Context) context.Context {
+// NewContext returns a context.Context to be used for the test.
+func NewContext(ctx context.Context, s *State) context.Context {
 	ctx = logging.NewContext(ctx, func(msg string) { s.Log(msg) })
 	ctx = WithTestContext(ctx, &TestContext{
 		OutDir:       s.OutDir(),

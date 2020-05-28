@@ -111,11 +111,9 @@ type rootState struct {
 // It is intended to be safe when called concurrently by multiple goroutines
 // while a test is running.
 type State struct {
-	root *rootState // root state for the test
-
-	subtests []string // subtest names; used to prefix error messages
-
-	inPre bool // true if a precondition is currently executing.
+	root     *rootState // root state for the test
+	subtests []string   // subtest names; used to prefix error messages
+	inPre    bool       // true if a precondition is currently executing.
 
 	hasError bool       // true if the current subtest has encountered an error; the test fails if this is true for the initial subtest
 	mu       sync.Mutex // protects hasError
@@ -151,6 +149,15 @@ func newRootState(test *TestInstance, ch chan<- Output, cfg *TestConfig) *rootSt
 
 func newState(test *TestInstance, ch chan<- Output, cfg *TestConfig) *State {
 	return &State{root: newRootState(test, ch, cfg)}
+}
+
+// newPreState creates a State for a precondition.
+func newPreState(s *State) *State {
+	return &State{
+		root:     s.root,
+		subtests: s.subtests,
+		inPre:    true,
+	}
 }
 
 // close is called after the test has completed to close s.ch.

@@ -178,8 +178,7 @@ func TestReportError(t *gotesting.T) {
 
 func TestReportErrorInPrecondition(t *gotesting.T) {
 	or := newOutputReader()
-	s := newState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
-	s.inPre = true
+	s := newPreState(newState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{}))
 
 	// Keep these lines next to each other (see below comparison).
 	s.Error("error ", 1)
@@ -369,8 +368,7 @@ func TestFatal(t *gotesting.T) {
 
 func TestFatalInPrecondition(t *gotesting.T) {
 	or := newOutputReader()
-	s := newState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
-	s.inPre = true
+	s := newPreState(newState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{}))
 
 	// Log the fatal message in a goroutine so the main goroutine that's running the test won't exit.
 	done := make(chan bool)

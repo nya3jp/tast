@@ -24,6 +24,7 @@ import (
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/rpc"
 	"chromiumos/tast/timing"
@@ -355,7 +356,7 @@ func runTest(ctx context.Context, ew *eventWriter, args *Args, cfg *runConfig,
 		copierDone <- true
 	}()
 
-	if !testing.Run(ctx, t, ch, &testCfg) {
+	if !planner.Run(ctx, t, ch, &testCfg) {
 		// If Run reported that the test didn't finish, tell the copier to abort.
 		abortCopier <- true
 	}

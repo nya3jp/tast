@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package testing
+package planner
 
 import (
 	"context"
@@ -10,28 +10,29 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
-	"testing"
+	gotesting "testing"
 	"time"
 
 	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
 )
 
 // testPre implements both Precondition and preconditionImpl for unit tests.
 type testPre struct {
-	prepareFunc func(context.Context, *State) interface{}
-	closeFunc   func(context.Context, *State)
+	prepareFunc func(context.Context, *testing.State) interface{}
+	closeFunc   func(context.Context, *testing.State)
 	name        string // name to return from String
 }
 
-func (p *testPre) Prepare(ctx context.Context, s *State) interface{} {
+func (p *testPre) Prepare(ctx context.Context, s *testing.State) interface{} {
 	if p.prepareFunc != nil {
 		return p.prepareFunc(ctx, s)
 	}
 	return nil
 }
 
-func (p *testPre) Close(ctx context.Context, s *State) {
+func (p *testPre) Close(ctx context.Context, s *testing.State) {
 	if p.closeFunc != nil {
 		p.closeFunc(ctx, s)
 	}
@@ -41,14 +42,14 @@ func (p *testPre) Timeout() time.Duration { return time.Minute }
 
 func (p *testPre) String() string { return p.name }
 
-func TestRunSuccess(t *testing.T) {
-	test := &TestInstance{Func: func(context.Context, *State) {}, Timeout: time.Minute}
-	or := NewOutputReader()
+func TestRunSuccess(t *gotesting.T) {
+	test := &testing.TestInstance{Func: func(context.Context, *testing.State) {}, Timeout: time.Minute}
+	or := testing.NewOutputReader()
 	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
 	od := filepath.Join(td, "out")
-	Run(context.Background(), test, or.Ch, &TestConfig{OutDir: od})
-	if errs := GetOutputErrors(or.Read()); len(errs) != 0 {
+	Run(context.Background(), test, or.Ch, &testing.TestConfig{OutDir: od})
+	if errs := testing.GetOutputErrors(or.Read()); len(errs) != 0 {
 		t.Errorf("Got unexpected error(s) for test: %v", errs)
 	}
 	if fi, err := os.Stat(od); err != nil {
@@ -58,35 +59,35 @@ func TestRunSuccess(t *testing.T) {
 	}
 }
 
-func TestRunPanic(t *testing.T) {
-	test := &TestInstance{Func: func(context.Context, *State) { panic("intentional panic") }, Timeout: time.Minute}
-	or := NewOutputReader()
-	Run(context.Background(), test, or.Ch, &TestConfig{})
-	if errs := GetOutputErrors(or.Read()); len(errs) != 1 {
+func TestRunPanic(t *gotesting.T) {
+	test := &testing.TestInstance{Func: func(context.Context, *testing.State) { panic("intentional panic") }, Timeout: time.Minute}
+	or := testing.NewOutputReader()
+	Run(context.Background(), test, or.Ch, &testing.TestConfig{})
+	if errs := testing.GetOutputErrors(or.Read()); len(errs) != 1 {
 		t.Errorf("Got %v errors for panicking test; want 1", errs)
 	}
 }
 
-func TestRunDeadline(t *testing.T) {
-	f := func(ctx context.Context, s *State) {
+func TestRunDeadline(t *gotesting.T) {
+	f := func(ctx context.Context, s *testing.State) {
 		// Wait for the context to report that the deadline has been hit.
 		<-ctx.Done()
 		s.Error("Saw timeout within test")
 	}
-	test := &TestInstance{Func: f, Timeout: time.Millisecond, ExitTimeout: 10 * time.Second}
-	or := NewOutputReader()
-	Run(context.Background(), test, or.Ch, &TestConfig{})
+	test := &testing.TestInstance{Func: f, Timeout: time.Millisecond, ExitTimeout: 10 * time.Second}
+	or := testing.NewOutputReader()
+	Run(context.Background(), test, or.Ch, &testing.TestConfig{})
 	// The error that was reported by the test after its deadline was hit
 	// but within the exit delay should be available.
-	if errs := GetOutputErrors(or.Read()); len(errs) != 1 {
+	if errs := testing.GetOutputErrors(or.Read()); len(errs) != 1 {
 		t.Errorf("Got %v errors for timed-out test; want 1", len(errs))
 	}
 }
 
-func TestRunLogAfterTimeout(t *testing.T) {
+func TestRunLogAfterTimeout(t *gotesting.T) {
 	cont := make(chan bool)
 	done := make(chan bool)
-	f := func(ctx context.Context, s *State) {
+	f := func(ctx context.Context, s *testing.State) {
 		// Report when we're done, either after completing or after panicking before completion.
 		completed := false
 		defer func() { done <- completed }()
@@ -97,10 +98,10 @@ func TestRunLogAfterTimeout(t *testing.T) {
 		s.Log("Done waiting")
 		completed = true
 	}
-	test := &TestInstance{Func: f, Timeout: time.Millisecond, ExitTimeout: time.Millisecond}
+	test := &testing.TestInstance{Func: f, Timeout: time.Millisecond, ExitTimeout: time.Millisecond}
 
-	or := NewOutputReader()
-	Run(context.Background(), test, or.Ch, &TestConfig{})
+	or := testing.NewOutputReader()
+	Run(context.Background(), test, or.Ch, &testing.TestConfig{})
 
 	// Tell the test to continue even though Run has already returned. The output channel should
 	// still be open so as to avoid a panic when the test writes to it: https://crbug.com/853406
@@ -109,24 +110,24 @@ func TestRunLogAfterTimeout(t *testing.T) {
 		t.Error("Test function didn't complete")
 	}
 	// No output errors should be written to the channel; reporting timeouts is the caller's job.
-	if errs := GetOutputErrors(or.Read()); len(errs) != 0 {
+	if errs := testing.GetOutputErrors(or.Read()); len(errs) != 0 {
 		t.Errorf("Got %v error(s) for runaway test; want 0", len(errs))
 	}
 }
 
-func TestRunLateWriteFromGoroutine(t *testing.T) {
+func TestRunLateWriteFromGoroutine(t *gotesting.T) {
 	// Run a test that calls s.Error from a goroutine after the test has finished.
 	start := make(chan struct{}) // tells goroutine to start
 	end := make(chan struct{})   // announces goroutine is done
-	test := &TestInstance{Func: func(ctx context.Context, s *State) {
+	test := &testing.TestInstance{Func: func(ctx context.Context, s *testing.State) {
 		go func() {
 			<-start
 			s.Error("This message should be discarded since the test is done")
 			close(end)
 		}()
 	}, Timeout: time.Minute}
-	or := NewOutputReader()
-	Run(context.Background(), test, or.Ch, &TestConfig{})
+	or := testing.NewOutputReader()
+	Run(context.Background(), test, or.Ch, &testing.TestConfig{})
 
 	// Tell the goroutine to start and wait for it to finish.
 	close(start)
@@ -134,12 +135,12 @@ func TestRunLateWriteFromGoroutine(t *testing.T) {
 
 	// No errors should be reported, and we also shouldn't panic due to
 	// the s.Error call trying to write to a closed channel.
-	for _, err := range GetOutputErrors(or.Read()) {
+	for _, err := range testing.GetOutputErrors(or.Read()) {
 		t.Error("Got error: ", err.Reason)
 	}
 }
 
-func TestRunSkipStages(t *testing.T) {
+func TestRunSkipStages(t *gotesting.T) {
 	type action int // actions that can be performed by stages
 	const (
 		pass    action = iota
@@ -176,9 +177,9 @@ func TestRunSkipStages(t *testing.T) {
 	}
 
 	// Create tests first so we can set TestConfig.NextTest later.
-	var tests []*TestInstance
+	var tests []*testing.TestInstance
 	for _, c := range cases {
-		test := &TestInstance{Timeout: time.Minute}
+		test := &testing.TestInstance{Timeout: time.Minute}
 		// We can't just do "test.Pre = c.pre" here. See e.g. https://tour.golang.org/methods/12:
 		// "Note that an interface value that holds a nil concrete value is itself non-nil."
 		if c.pre != nil {
@@ -188,8 +189,8 @@ func TestRunSkipStages(t *testing.T) {
 	}
 
 	// makeFunc returns a function that sets *called to true and performs the action described by a.
-	makeFunc := func(a action, called *bool) func(context.Context, *State) {
-		return func(ctx context.Context, s *State) {
+	makeFunc := func(a action, called *bool) func(context.Context, *testing.State) {
+		return func(ctx context.Context, s *testing.State) {
 			*called = true
 			switch a {
 			case doError:
@@ -202,8 +203,8 @@ func TestRunSkipStages(t *testing.T) {
 		}
 	}
 
-	makeFuncWithCallback := func(a action, called *bool, cbA action, cbCalled *bool) func(ctx context.Context, s *State) func(ctx context.Context, s *State) {
-		return func(ctx context.Context, s *State) func(ctx context.Context, s *State) {
+	makeFuncWithCallback := func(a action, called *bool, cbA action, cbCalled *bool) func(ctx context.Context, s *testing.State) func(ctx context.Context, s *testing.State) {
+		return func(ctx context.Context, s *testing.State) func(ctx context.Context, s *testing.State) {
 			*called = true
 			switch a {
 			case doError:
@@ -226,13 +227,13 @@ func TestRunSkipStages(t *testing.T) {
 		test.Func = makeFunc(c.testAction, &testRan)
 		if c.pre != nil {
 			prepare := makeFunc(c.prepareAction, &prepareRan)
-			c.pre.prepareFunc = func(ctx context.Context, s *State) interface{} {
+			c.pre.prepareFunc = func(ctx context.Context, s *testing.State) interface{} {
 				prepare(ctx, s)
 				return nil
 			}
 			c.pre.closeFunc = makeFunc(c.closeAction, &closeRan)
 		}
-		cfg := &TestConfig{
+		cfg := &testing.TestConfig{
 			PreTestFunc:  makeFuncWithCallback(c.preTestAction, &preTestRan, c.postTestHookAction, &postTestHookRan),
 			PostTestFunc: makeFunc(c.postTestAction, &postTestRan),
 		}
@@ -240,7 +241,7 @@ func TestRunSkipStages(t *testing.T) {
 			cfg.NextTest = tests[i+1]
 		}
 
-		or := NewOutputReader()
+		or := testing.NewOutputReader()
 		Run(context.Background(), test, or.Ch, cfg)
 
 		// Verify that stages were executed or skipped as expected.
@@ -260,16 +261,16 @@ func TestRunSkipStages(t *testing.T) {
 	}
 }
 
-func TestRunMissingData(t *testing.T) {
+func TestRunMissingData(t *gotesting.T) {
 	const (
 		existingFile      = "existing.txt"
 		missingFile1      = "missing1.txt"
 		missingFile2      = "missing2.txt"
-		missingErrorFile1 = missingFile1 + ExternalErrorSuffix
+		missingErrorFile1 = missingFile1 + testing.ExternalErrorSuffix
 	)
 
-	test := &TestInstance{
-		Func:    func(context.Context, *State) {},
+	test := &testing.TestInstance{
+		Func:    func(context.Context, *testing.State) {},
 		Data:    []string{existingFile, missingFile1, missingFile2},
 		Timeout: time.Minute,
 	}
@@ -283,31 +284,31 @@ func TestRunMissingData(t *testing.T) {
 		t.Fatalf("Failed to write %s: %v", missingErrorFile1, err)
 	}
 
-	or := NewOutputReader()
-	Run(context.Background(), test, or.Ch, &TestConfig{DataDir: td})
+	or := testing.NewOutputReader()
+	Run(context.Background(), test, or.Ch, &testing.TestConfig{DataDir: td})
 
 	expected := []string{
 		"Required data file missing1.txt missing: some reason",
 		"Required data file missing2.txt missing",
 	}
-	if errs := GetOutputErrors(or.Read()); len(errs) != 2 {
+	if errs := testing.GetOutputErrors(or.Read()); len(errs) != 2 {
 		t.Errorf("Got %v errors for missing data test; want 2", errs)
 	} else if actual := []string{errs[0].Reason, errs[1].Reason}; !reflect.DeepEqual(actual, expected) {
 		t.Errorf("Got errors %q; want %q", actual, expected)
 	}
 }
 
-func TestRunPrecondition(t *testing.T) {
+func TestRunPrecondition(t *gotesting.T) {
 	type data struct{}
 	preData := &data{}
 
 	// The test should be able to access the data via State.PreValue.
-	test := &TestInstance{
+	test := &testing.TestInstance{
 		// Use a precondition that returns the struct that we declared earlier from its Prepare method.
 		Pre: &testPre{
-			prepareFunc: func(context.Context, *State) interface{} { return preData },
+			prepareFunc: func(context.Context, *testing.State) interface{} { return preData },
 		},
-		Func: func(ctx context.Context, s *State) {
+		Func: func(ctx context.Context, s *testing.State) {
 			if s.PreValue() == nil {
 				s.Fatal("Precondition value not supplied")
 			} else if d, ok := s.PreValue().(*data); !ok {
@@ -319,17 +320,17 @@ func TestRunPrecondition(t *testing.T) {
 		Timeout: time.Minute,
 	}
 
-	or := NewOutputReader()
-	Run(context.Background(), test, or.Ch, &TestConfig{})
-	for _, err := range GetOutputErrors(or.Read()) {
+	or := testing.NewOutputReader()
+	Run(context.Background(), test, or.Ch, &testing.TestConfig{})
+	for _, err := range testing.GetOutputErrors(or.Read()) {
 		t.Error("Got error: ", err.Reason)
 	}
 }
 
-func TestRunPreconditionContext(t *testing.T) {
+func TestRunPreconditionContext(t *gotesting.T) {
 	var testCtx context.Context
 
-	prepareFunc := func(ctx context.Context, s *State) interface{} {
+	prepareFunc := func(ctx context.Context, s *testing.State) interface{} {
 		if testCtx == nil {
 			testCtx = s.PreCtx()
 		}
@@ -338,19 +339,19 @@ func TestRunPreconditionContext(t *testing.T) {
 			t.Errorf("Different context in Prepare")
 		}
 
-		if _, ok := ContextSoftwareDeps(s.PreCtx()); !ok {
+		if _, ok := testing.ContextSoftwareDeps(s.PreCtx()); !ok {
 			t.Error("ContextSoftwareDeps unavailable")
 		}
 		return nil
 	}
 
-	closeFunc := func(ctx context.Context, s *State) {
+	closeFunc := func(ctx context.Context, s *testing.State) {
 		if testCtx != s.PreCtx() {
 			t.Errorf("Different context in Close")
 		}
 	}
 
-	testFunc := func(ctx context.Context, s *State) {
+	testFunc := func(ctx context.Context, s *testing.State) {
 		defer func() {
 			expectedPanic := "PreCtx can only be called in a precondition"
 
@@ -369,14 +370,14 @@ func TestRunPreconditionContext(t *testing.T) {
 		closeFunc:   closeFunc,
 	}
 
-	t1 := &TestInstance{Name: "t1", Pre: pre, Timeout: time.Minute, Func: testFunc}
-	t2 := &TestInstance{Name: "t2", Pre: pre, Timeout: time.Minute, Func: testFunc}
+	t1 := &testing.TestInstance{Name: "t1", Pre: pre, Timeout: time.Minute, Func: testFunc}
+	t2 := &testing.TestInstance{Name: "t2", Pre: pre, Timeout: time.Minute, Func: testFunc}
 
-	or := NewOutputReader()
-	Run(context.Background(), t1, or.Ch, &TestConfig{
+	or := testing.NewOutputReader()
+	Run(context.Background(), t1, or.Ch, &testing.TestConfig{
 		NextTest: t2,
 	})
-	for _, err := range GetOutputErrors(or.Read()) {
+	for _, err := range testing.GetOutputErrors(or.Read()) {
 		t.Error("Got error: ", err.Reason)
 	}
 
@@ -384,11 +385,11 @@ func TestRunPreconditionContext(t *testing.T) {
 		t.Errorf("PreCtx different between test instances")
 	}
 
-	or = NewOutputReader()
-	Run(context.Background(), t2, or.Ch, &TestConfig{
+	or = testing.NewOutputReader()
+	Run(context.Background(), t2, or.Ch, &testing.TestConfig{
 		NextTest: nil,
 	})
-	for _, err := range GetOutputErrors(or.Read()) {
+	for _, err := range testing.GetOutputErrors(or.Read()) {
 		t.Error("Got error: ", err.Reason)
 	}
 
@@ -397,17 +398,17 @@ func TestRunPreconditionContext(t *testing.T) {
 	}
 }
 
-func TestAttachStateToContext(t *testing.T) {
-	test := &TestInstance{
-		Func: func(ctx context.Context, s *State) {
+func TestAttachStateToContext(t *gotesting.T) {
+	test := &testing.TestInstance{
+		Func: func(ctx context.Context, s *testing.State) {
 			logging.ContextLog(ctx, "msg ", 1)
 			logging.ContextLogf(ctx, "msg %d", 2)
 		},
 		Timeout: time.Minute,
 	}
 
-	or := NewOutputReader()
-	Run(context.Background(), test, or.Ch, &TestConfig{})
+	or := testing.NewOutputReader()
+	Run(context.Background(), test, or.Ch, &testing.TestConfig{})
 	if out := or.Read(); len(out) != 2 || out[0].Msg != "msg 1" || out[1].Msg != "msg 2" {
 		t.Errorf("Bad test output: %v", out)
 	}

@@ -415,6 +415,7 @@ func (t *TestInstance) DataDir() string {
 func (t *TestInstance) Run(ctx context.Context, ch chan<- Output, cfg *TestConfig) bool {
 	// Attach the state to a context so support packages can log to it.
 	s := newState(t, ch, cfg)
+	pres := newPreState(s)
 	ctx = s.newContext(ctx)
 
 	var stages []stage
@@ -488,7 +489,7 @@ func (t *TestInstance) Run(ctx context.Context, ch chan<- Output, cfg *TestConfi
 
 			if t.PreCtx == nil {
 				// Associate PreCtx with TestContext for the first test.
-				t.PreCtx, t.PreCtxCancel = context.WithCancel(s.newContext(context.Background()))
+				t.PreCtx, t.PreCtxCancel = context.WithCancel(pres.newContext(context.Background()))
 			}
 
 			if cfg.NextTest != nil && cfg.NextTest.Pre == t.Pre {
@@ -496,18 +497,17 @@ func (t *TestInstance) Run(ctx context.Context, ch chan<- Output, cfg *TestConfi
 				cfg.NextTest.PreCtxCancel = t.PreCtxCancel
 			}
 
-			s.inPre = true
-			defer func() { s.inPre = false }()
 			s.root.preCtx = t.PreCtx
-			s.root.preValue = t.Pre.(PreconditionImpl).Prepare(ctx, s)
+			s.root.preValue = t.Pre.(PreconditionImpl).Prepare(ctx, pres)
 		}, t.Pre.Timeout(), t.Pre.Timeout()+exitTimeout)
 	}
 
 	// Next, run the test function itself if no errors have been reported so far.
 	addStage(func(ctx context.Context, s *State) {
-		if !s.HasError() {
-			t.Func(ctx, s)
+		if s.HasError() || pres.HasError() {
+			return
 		}
+		t.Func(ctx, s)
 	}, t.Timeout, t.Timeout+timeoutOrDefault(t.ExitTimeout, exitTimeout))
 
 	// If this is the final test using this precondition, close it
@@ -515,9 +515,7 @@ func (t *TestInstance) Run(ctx context.Context, ch chan<- Output, cfg *TestConfi
 	if t.Pre != nil && (cfg.NextTest == nil || cfg.NextTest.Pre != t.Pre) {
 		addStage(func(ctx context.Context, s *State) {
 			s.Logf("Closing precondition %q", t.Pre.String())
-			s.inPre = true
-			defer func() { s.inPre = false }()
-			t.Pre.(PreconditionImpl).Close(ctx, s)
+			t.Pre.(PreconditionImpl).Close(ctx, pres)
 			if t.PreCtxCancel != nil {
 				t.PreCtxCancel()
 			}

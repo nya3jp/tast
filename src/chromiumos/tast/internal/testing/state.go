@@ -147,17 +147,14 @@ func newRootState(test *TestInstance, ch chan<- Output, cfg *TestConfig) *rootSt
 	return &rootState{test: test, ch: ch, cfg: cfg}
 }
 
-func newState(test *TestInstance, ch chan<- Output, cfg *TestConfig) *State {
-	return &State{root: newRootState(test, ch, cfg)}
+// newTestState creates a State for a test.
+func (r *rootState) newTestState() *State {
+	return &State{root: r}
 }
 
 // newPreState creates a State for a precondition.
-func newPreState(s *State) *State {
-	return &State{
-		root:     s.root,
-		subtests: s.subtests,
-		inPre:    true,
-	}
+func (r *rootState) newPreState() *State {
+	return &State{root: r, inPre: true}
 }
 
 // close is called after the test has completed to close s.ch.

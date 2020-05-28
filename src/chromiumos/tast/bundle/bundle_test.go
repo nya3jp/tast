@@ -17,6 +17,7 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"chromiumos/tast/dut"
 	"chromiumos/tast/internal/command"
@@ -72,13 +73,11 @@ func TestCopyTestOutput(t *gotesting.T) {
 		Line:   16,
 		Stack:  "the stack",
 	}
-	t1 := time.Unix(1, 0)
-	t2 := time.Unix(2, 0)
 
 	ch := make(chan testing.Output)
 	go func() {
-		ch <- testing.Output{T: t1, Msg: msg}
-		ch <- testing.Output{T: t2, Err: &e}
+		ch <- testing.Output{Msg: msg}
+		ch <- testing.Output{Err: &e}
 		close(ch)
 	}()
 
@@ -88,12 +87,12 @@ func TestCopyTestOutput(t *gotesting.T) {
 
 	r := control.NewMessageReader(&b)
 	for i, em := range []interface{}{
-		&control.TestLog{Time: t1, Text: msg},
-		&control.TestError{Time: t2, Error: e},
+		&control.TestLog{Text: msg},
+		&control.TestError{Error: e},
 	} {
 		if am, err := r.ReadMessage(); err != nil {
 			t.Errorf("Failed to read message %v: %v", i, err)
-		} else if !cmp.Equal(am, em) {
+		} else if !cmp.Equal(am, em, cmpopts.IgnoreTypes(time.Time{})) {
 			t.Errorf("Message %v is %v; want %v", i, am, em)
 		}
 	}

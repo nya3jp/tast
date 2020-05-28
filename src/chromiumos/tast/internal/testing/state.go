@@ -14,7 +14,6 @@ import (
 	"runtime"
 	"strings"
 	"sync"
-	"time"
 
 	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
@@ -38,7 +37,6 @@ type Error struct {
 
 // Output contains a piece of output (either i.e. an error or log message) from a test.
 type Output struct {
-	T   time.Time
 	Err *Error
 	Msg string
 }
@@ -405,12 +403,12 @@ func (s *State) DUT() *dut.DUT {
 
 // Log formats its arguments using default formatting and logs them.
 func (s *State) Log(args ...interface{}) {
-	s.root.writeOutput(Output{T: time.Now(), Msg: fmt.Sprint(args...)})
+	s.root.writeOutput(Output{Msg: fmt.Sprint(args...)})
 }
 
 // Logf is similar to Log but formats its arguments using fmt.Sprintf.
 func (s *State) Logf(format string, args ...interface{}) {
-	s.root.writeOutput(Output{T: time.Now(), Msg: fmt.Sprintf(format, args...)})
+	s.root.writeOutput(Output{Msg: fmt.Sprintf(format, args...)})
 }
 
 // Error formats its arguments using default formatting and marks the test
@@ -420,7 +418,7 @@ func (s *State) Error(args ...interface{}) {
 	s.recordError()
 	fullMsg, lastMsg, err := s.formatError(args...)
 	e := NewError(err, fullMsg, lastMsg, 1)
-	s.root.writeOutput(Output{T: time.Now(), Err: e})
+	s.root.writeOutput(Output{Err: e})
 }
 
 // Errorf is similar to Error but formats its arguments using fmt.Sprintf.
@@ -428,7 +426,7 @@ func (s *State) Errorf(format string, args ...interface{}) {
 	s.recordError()
 	fullMsg, lastMsg, err := s.formatErrorf(format, args...)
 	e := NewError(err, fullMsg, lastMsg, 1)
-	s.root.writeOutput(Output{T: time.Now(), Err: e})
+	s.root.writeOutput(Output{Err: e})
 }
 
 // Fatal is similar to Error but additionally immediately ends the test.
@@ -436,7 +434,7 @@ func (s *State) Fatal(args ...interface{}) {
 	s.recordError()
 	fullMsg, lastMsg, err := s.formatError(args...)
 	e := NewError(err, fullMsg, lastMsg, 1)
-	s.root.writeOutput(Output{T: time.Now(), Err: e})
+	s.root.writeOutput(Output{Err: e})
 	runtime.Goexit()
 }
 
@@ -445,7 +443,7 @@ func (s *State) Fatalf(format string, args ...interface{}) {
 	s.recordError()
 	fullMsg, lastMsg, err := s.formatErrorf(format, args...)
 	e := NewError(err, fullMsg, lastMsg, 1)
-	s.root.writeOutput(Output{T: time.Now(), Err: e})
+	s.root.writeOutput(Output{Err: e})
 	runtime.Goexit()
 }
 

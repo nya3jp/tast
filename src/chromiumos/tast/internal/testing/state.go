@@ -94,8 +94,9 @@ type rootState struct {
 	preValue interface{}     // value returned by test.Pre.Prepare; may be nil
 	preCtx   context.Context // context that lives as long as the precondition; can only be accessed in the precondition phase
 
+	hasErr bool       // true if any error was reported
 	closed bool       // true after close is called and ch is closed
-	mu     sync.Mutex // protects closed
+	mu     sync.Mutex // protects hasError and closed
 }
 
 // State holds state relevant to the execution of a single test.
@@ -155,6 +156,27 @@ func (r *rootState) newTestState() *State {
 // newPreState creates a State for a precondition.
 func (r *rootState) newPreState() *State {
 	return &State{root: r, inPre: true}
+}
+
+// hasError checks if any error has been reported.
+func (r *rootState) hasError() bool {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	return r.hasErr
+}
+
+// writeOutput writes o to r.ch.
+// o is discarded if close has already been called since a write to a closed channel would panic.
+func (r *rootState) writeOutput(o Output) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	if o.Err != nil {
+		r.hasErr = true
+	}
+	if !r.closed {
+		r.ch <- o
+	}
 }
 
 // close is called after the test has completed to close s.ch.
@@ -373,17 +395,6 @@ func (s *State) Fatalf(format string, args ...interface{}) {
 	e := NewError(err, fullMsg, lastMsg, 1)
 	s.root.writeOutput(Output{T: time.Now(), Err: e})
 	runtime.Goexit()
-}
-
-// writeOutput writes o to s.ch.
-// o is discarded if close has already been called since a write to a closed channel would panic.
-func (r *rootState) writeOutput(o Output) {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-
-	if !r.closed {
-		r.ch <- o
-	}
 }
 
 // HasError reports whether the test has already reported errors.

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a4a431b8_e2a9d55e",
+        "filename": "docs/test_attributes.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1326157
+      },
+      "writtenOn": "2020-05-28T19:10:59Z",
+      "side": 1,
+      "message": "I would remove this line, as this list only describes the most commonly used groups, and labqual is only used by a few tests. But the full tast-reviewer might feel differently (I\u0027m just a shadow reviewer).",
+      "revId": "606e0304d3ae3d400c1422df18450b62fdac4d8b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

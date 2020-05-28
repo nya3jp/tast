@@ -62,6 +62,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 			attrs: []string{"group:enrollment"},
 		},
 		{
+			attrs: []string{"group:essential-inputs"},
+		},
+		{
 			attrs: []string{"group:flashrom"},
 		},
 		{

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9ccd37f1_e7e87211",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-05-28T09:52:15Z",
+      "side": 1,
+      "message": "Oh, this is not a pure code move. :(\n\nBut I believe this is only the non-move change.",
+      "range": {
+        "startLine": 34,
+        "startChar": 3,
+        "endLine": 34,
+        "endChar": 10
+      },
+      "revId": "bb5cdf42393a60b303a260e87fd3c38a1aa731f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -149,6 +149,11 @@ Tests in this group are not used for build verification.
 		Desc:     `A group of tests performing enrollment and will clobber the stateful partition.`,
 	},
 	{
+		Name:     "essential-inputs",
+		Contacts: []string{"essential-inputs-team@google.com"},
+		Desc:     `A group of essential inputs IME and Virtual Keyboard tests.`,
+	},
+	{
 		Name:     "firmware",
 		Contacts: []string{"chromeos-engprod@google.com"},
 		Desc:     `A group of tests for firmware (AP, EC, GSC)`,

@@ -483,7 +483,7 @@ func (t *TestInstance) Run(ctx context.Context, ch chan<- Output, cfg *TestConfi
 	// Prepare the test's precondition (if any) if setup was successful.
 	if t.Pre != nil {
 		addStage(func(ctx context.Context, s *State) {
-			if s.HasError() {
+			if root.hasError() {
 				return
 			}
 			s.Logf("Preparing precondition %q", t.Pre)
@@ -505,7 +505,7 @@ func (t *TestInstance) Run(ctx context.Context, ch chan<- Output, cfg *TestConfi
 
 	// Next, run the test function itself if no errors have been reported so far.
 	addStage(func(ctx context.Context, s *State) {
-		if s.HasError() || pres.HasError() {
+		if root.hasError() {
 			return
 		}
 		t.Func(ctx, s)

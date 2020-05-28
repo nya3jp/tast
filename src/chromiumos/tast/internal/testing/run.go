@@ -36,7 +36,7 @@ const (
 //	- cfg.PostTestFunc (if non-nil)
 func Run(ctx context.Context, t *TestInstance, ch chan<- Output, cfg *TestConfig) bool {
 	// Attach the state to a context so support packages can log to it.
-	root := newRootState(t, ch, cfg)
+	root := NewRootState(t, ch, cfg)
 
 	var stages []stage
 	addStage := func(f stageFunc, ctxTimeout, runTimeout time.Duration) {
@@ -46,8 +46,8 @@ func Run(ctx context.Context, t *TestInstance, ch chan<- Output, cfg *TestConfig
 	var postTestHook func(ctx context.Context, s *State)
 
 	// First, perform setup and run the pre-test function.
-	addStage(func(ctx context.Context, root *rootState) {
-		root.runWithTestState(ctx, func(ctx context.Context, s *State) {
+	addStage(func(ctx context.Context, root *RootState) {
+		root.RunWithTestState(ctx, func(ctx context.Context, s *State) {
 			// The test bundle is responsible for ensuring t.Timeout is nonzero before calling Run,
 			// but we call s.Fatal instead of panicking since it's arguably nicer to report individual
 			// test failures instead of aborting the entire run.
@@ -85,7 +85,7 @@ func Run(ctx context.Context, t *TestInstance, ch chan<- Output, cfg *TestConfig
 			}
 
 			// In remote tests, reconnect to the DUT if needed.
-			if s.root.cfg.RemoteData != nil {
+			if cfg.RemoteData != nil {
 				dt := s.DUT()
 				if !dt.Connected(ctx) {
 					s.Log("Reconnecting to DUT")
@@ -103,16 +103,16 @@ func Run(ctx context.Context, t *TestInstance, ch chan<- Output, cfg *TestConfig
 
 	// Prepare the test's precondition (if any) if setup was successful.
 	if t.Pre != nil {
-		addStage(func(ctx context.Context, root *rootState) {
-			if root.hasError() {
+		addStage(func(ctx context.Context, root *RootState) {
+			if root.HasError() {
 				return
 			}
-			root.runWithPreState(ctx, func(ctx context.Context, s *State) {
+			root.RunWithPreState(ctx, func(ctx context.Context, s *State) {
 				s.Logf("Preparing precondition %q", t.Pre)
 
 				if t.PreCtx == nil {
 					// Associate PreCtx with TestContext for the first test.
-					t.PreCtx, t.PreCtxCancel = context.WithCancel(s.newContext(context.Background()))
+					t.PreCtx, t.PreCtxCancel = context.WithCancel(NewContext(context.Background(), s))
 				}
 
 				if cfg.NextTest != nil && cfg.NextTest.Pre == t.Pre {
@@ -120,25 +120,25 @@ func Run(ctx context.Context, t *TestInstance, ch chan<- Output, cfg *TestConfig
 					cfg.NextTest.PreCtxCancel = t.PreCtxCancel
 				}
 
-				s.root.preCtx = t.PreCtx
-				s.root.preValue = t.Pre.(PreconditionImpl).Prepare(ctx, s)
+				root.SetPreCtx(t.PreCtx)
+				root.SetPreValue(t.Pre.(PreconditionImpl).Prepare(ctx, s))
 			})
 		}, t.Pre.Timeout(), t.Pre.Timeout()+exitTimeout)
 	}
 
 	// Next, run the test function itself if no errors have been reported so far.
-	addStage(func(ctx context.Context, root *rootState) {
-		if root.hasError() {
+	addStage(func(ctx context.Context, root *RootState) {
+		if root.HasError() {
 			return
 		}
-		root.runWithTestState(ctx, t.Func)
+		root.RunWithTestState(ctx, t.Func)
 	}, t.Timeout, t.Timeout+timeoutOrDefault(t.ExitTimeout, exitTimeout))
 
 	// If this is the final test using this precondition, close it
 	// (even if setup, t.Pre.Prepare, or t.Func failed).
 	if t.Pre != nil && (cfg.NextTest == nil || cfg.NextTest.Pre != t.Pre) {
-		addStage(func(ctx context.Context, root *rootState) {
-			root.runWithPreState(ctx, func(ctx context.Context, s *State) {
+		addStage(func(ctx context.Context, root *RootState) {
+			root.RunWithPreState(ctx, func(ctx context.Context, s *State) {
 				s.Logf("Closing precondition %q", t.Pre.String())
 				t.Pre.(PreconditionImpl).Close(ctx, s)
 				if t.PreCtxCancel != nil {
@@ -149,8 +149,8 @@ func Run(ctx context.Context, t *TestInstance, ch chan<- Output, cfg *TestConfig
 	}
 
 	// Finally, run the post-test functions unconditionally.
-	addStage(func(ctx context.Context, root *rootState) {
-		root.runWithTestState(ctx, func(ctx context.Context, s *State) {
+	addStage(func(ctx context.Context, root *RootState) {
+		root.RunWithTestState(ctx, func(ctx context.Context, s *State) {
 			if cfg.PostTestFunc != nil {
 				cfg.PostTestFunc(ctx, s)
 			}

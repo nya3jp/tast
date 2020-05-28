@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "940cecae_4e3f057c",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1116812
+      },
+      "writtenOn": "2020-05-28T22:27:30Z",
+      "side": 1,
+      "message": "should be arc \u0026\u0026 arcvm \u0026\u0026 \"android-vm-rvc\"\n\n(Basically android_vm_r, but we need to delete android_vm_r later and change its referees to use android_r instead. I\u0027d suggest do that in a separate CL.)",
+      "revId": "8e01a4dc49c808ad03636e3b50be8b6f65d7c18a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

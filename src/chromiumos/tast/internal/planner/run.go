@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package testing
+package planner
 
 import (
 	"context"
 	"io/ioutil"
 	"os"
 	"time"
+
+	"chromiumos/tast/internal/testing"
 )
 
 const (
@@ -34,20 +36,20 @@ const (
 //	- t.Func (if no errors yet)
 //	- t.Pre.Close (if t.Pre is non-nil and cfg.NextTest.Pre is different)
 //	- cfg.PostTestFunc (if non-nil)
-func Run(ctx context.Context, t *TestInstance, ch chan<- Output, cfg *TestConfig) bool {
+func Run(ctx context.Context, t *testing.TestInstance, ch chan<- testing.Output, cfg *testing.TestConfig) bool {
 	// Attach the state to a context so support packages can log to it.
-	root := NewRootState(t, ch, cfg)
+	root := testing.NewRootState(t, ch, cfg)
 
 	var stages []stage
 	addStage := func(f stageFunc, ctxTimeout, runTimeout time.Duration) {
 		stages = append(stages, stage{f, ctxTimeout, runTimeout})
 	}
 
-	var postTestHook func(ctx context.Context, s *State)
+	var postTestHook func(ctx context.Context, s *testing.State)
 
 	// First, perform setup and run the pre-test function.
-	addStage(func(ctx context.Context, root *RootState) {
-		root.RunWithTestState(ctx, func(ctx context.Context, s *State) {
+	addStage(func(ctx context.Context, root *testing.RootState) {
+		root.RunWithTestState(ctx, func(ctx context.Context, s *testing.State) {
 			// The test bundle is responsible for ensuring t.Timeout is nonzero before calling Run,
 			// but we call s.Fatal instead of panicking since it's arguably nicer to report individual
 			// test failures instead of aborting the entire run.
@@ -73,7 +75,7 @@ func Run(ctx context.Context, t *TestInstance, ch chan<- Output, cfg *TestConfig
 				if _, err := os.Stat(fp); err == nil {
 					continue
 				}
-				ep := fp + ExternalErrorSuffix
+				ep := fp + testing.ExternalErrorSuffix
 				if data, err := ioutil.ReadFile(ep); err == nil {
 					s.Errorf("Required data file %s missing: %s", fn, string(data))
 				} else {
@@ -103,16 +105,16 @@ func Run(ctx context.Context, t *TestInstance, ch chan<- Output, cfg *TestConfig
 
 	// Prepare the test's precondition (if any) if setup was successful.
 	if t.Pre != nil {
-		addStage(func(ctx context.Context, root *RootState) {
+		addStage(func(ctx context.Context, root *testing.RootState) {
 			if root.HasError() {
 				return
 			}
-			root.RunWithPreState(ctx, func(ctx context.Context, s *State) {
+			root.RunWithPreState(ctx, func(ctx context.Context, s *testing.State) {
 				s.Logf("Preparing precondition %q", t.Pre)
 
 				if t.PreCtx == nil {
 					// Associate PreCtx with TestContext for the first test.
-					t.PreCtx, t.PreCtxCancel = context.WithCancel(NewContext(context.Background(), s))
+					t.PreCtx, t.PreCtxCancel = context.WithCancel(testing.NewContext(context.Background(), s))
 				}
 
 				if cfg.NextTest != nil && cfg.NextTest.Pre == t.Pre {
@@ -121,13 +123,13 @@ func Run(ctx context.Context, t *TestInstance, ch chan<- Output, cfg *TestConfig
 				}
 
 				root.SetPreCtx(t.PreCtx)
-				root.SetPreValue(t.Pre.(PreconditionImpl).Prepare(ctx, s))
+				root.SetPreValue(t.Pre.(testing.PreconditionImpl).Prepare(ctx, s))
 			})
 		}, t.Pre.Timeout(), t.Pre.Timeout()+exitTimeout)
 	}
 
 	// Next, run the test function itself if no errors have been reported so far.
-	addStage(func(ctx context.Context, root *RootState) {
+	addStage(func(ctx context.Context, root *testing.RootState) {
 		if root.HasError() {
 			return
 		}
@@ -137,10 +139,10 @@ func Run(ctx context.Context, t *TestInstance, ch chan<- Output, cfg *TestConfig
 	// If this is the final test using this precondition, close it
 	// (even if setup, t.Pre.Prepare, or t.Func failed).
 	if t.Pre != nil && (cfg.NextTest == nil || cfg.NextTest.Pre != t.Pre) {
-		addStage(func(ctx context.Context, root *RootState) {
-			root.RunWithPreState(ctx, func(ctx context.Context, s *State) {
+		addStage(func(ctx context.Context, root *testing.RootState) {
+			root.RunWithPreState(ctx, func(ctx context.Context, s *testing.State) {
 				s.Logf("Closing precondition %q", t.Pre.String())
-				t.Pre.(PreconditionImpl).Close(ctx, s)
+				t.Pre.(testing.PreconditionImpl).Close(ctx, s)
 				if t.PreCtxCancel != nil {
 					t.PreCtxCancel()
 				}
@@ -149,8 +151,8 @@ func Run(ctx context.Context, t *TestInstance, ch chan<- Output, cfg *TestConfig
 	}
 
 	// Finally, run the post-test functions unconditionally.
-	addStage(func(ctx context.Context, root *RootState) {
-		root.RunWithTestState(ctx, func(ctx context.Context, s *State) {
+	addStage(func(ctx context.Context, root *testing.RootState) {
+		root.RunWithTestState(ctx, func(ctx context.Context, s *testing.State) {
 			if cfg.PostTestFunc != nil {
 				cfg.PostTestFunc(ctx, s)
 			}

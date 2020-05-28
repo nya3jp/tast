@@ -357,7 +357,7 @@ func runTest(ctx context.Context, ew *eventWriter, args *Args, cfg *runConfig,
 		copierDone <- true
 	}()
 
-	ok := t.Run(ctx, ch, &testCfg)
+	ok := testing.Run(ctx, t, ch, &testCfg)
 	if !ok {
 		// If Run reported that the test didn't finish, tell the copier to abort.
 		abortCopier <- true

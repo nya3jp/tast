@@ -169,18 +169,18 @@ func (ew *eventWriter) TestStart(t *testing.TestInstance) error {
 	return ew.mw.WriteMessage(&control.TestStart{Time: time.Now(), Test: *t})
 }
 
-func (ew *eventWriter) TestLog(ts time.Time, msg string) error {
+func (ew *eventWriter) TestLog(msg string) error {
 	if ew.lg != nil {
 		ew.lg.Info(fmt.Sprintf("%s: %s", ew.testName, msg))
 	}
-	return ew.mw.WriteMessage(&control.TestLog{Time: ts, Text: msg})
+	return ew.mw.WriteMessage(&control.TestLog{Time: time.Now(), Text: msg})
 }
 
-func (ew *eventWriter) TestError(ts time.Time, e *testing.Error) error {
+func (ew *eventWriter) TestError(e *testing.Error) error {
 	if ew.lg != nil {
 		ew.lg.Info(fmt.Sprintf("%s: Error at %s:%d: %s", ew.testName, filepath.Base(e.File), e.Line, e.Reason))
 	}
-	return ew.mw.WriteMessage(&control.TestError{Time: ts, Error: *e})
+	return ew.mw.WriteMessage(&control.TestError{Time: time.Now(), Error: *e})
 }
 
 func (ew *eventWriter) TestEnd(t *testing.TestInstance, skipReasons []string, timingLog *timing.Log) error {
@@ -379,7 +379,7 @@ func reportSkippedTest(ew *eventWriter, t *testing.TestInstance, result *testing
 	ew.TestStart(t)
 	for _, msg := range result.Errors {
 		_, fn, ln, _ := runtime.Caller(0)
-		ew.TestError(time.Now(), &testing.Error{
+		ew.TestError(&testing.Error{
 			Reason: msg,
 			File:   fn,
 			Line:   ln,
@@ -400,13 +400,13 @@ func copyTestOutput(ch <-chan testing.Output, ew *eventWriter, abort <-chan bool
 				return
 			}
 			if o.Err != nil {
-				ew.TestError(o.T, o.Err)
+				ew.TestError(o.Err)
 			} else {
-				ew.TestLog(o.T, o.Msg)
+				ew.TestLog(o.Msg)
 			}
 		case <-abort:
 			const msg = "Test did not return on timeout (see log for goroutine dump)"
-			ew.TestError(time.Now(), testing.NewError(nil, msg, msg, 0))
+			ew.TestError(testing.NewError(nil, msg, msg, 0))
 			dumpGoroutines(ew)
 			return
 		}
@@ -415,7 +415,7 @@ func copyTestOutput(ch <-chan testing.Output, ew *eventWriter, abort <-chan bool
 
 // dumpGoroutines dumps all goroutines to ew.
 func dumpGoroutines(ew *eventWriter) {
-	ew.TestLog(time.Now(), "Dumping all goroutines")
+	ew.TestLog("Dumping all goroutines")
 	if err := func() error {
 		p := pprof.Lookup("goroutine")
 		if p == nil {
@@ -427,11 +427,11 @@ func dumpGoroutines(ew *eventWriter) {
 		}
 		sc := bufio.NewScanner(&buf)
 		for sc.Scan() {
-			ew.TestLog(time.Now(), sc.Text())
+			ew.TestLog(sc.Text())
 		}
 		return sc.Err()
 	}(); err != nil {
-		ew.TestError(time.Now(), &testing.Error{
+		ew.TestError(&testing.Error{
 			Reason: fmt.Sprintf("Failed to dump goroutines: %v", err),
 		})
 	}

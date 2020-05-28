@@ -34,6 +34,24 @@
       "revId": "606e0304d3ae3d400c1422df18450b62fdac4d8b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "64e7a924_36de80d9",
+        "filename": "docs/test_attributes.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1326157
+      },
+      "writtenOn": "2020-05-28T19:18:36Z",
+      "side": 1,
+      "message": "Definitely prioritize Hidehiko\u0027s advice above mine!",
+      "parentUuid": "96807b36_68d99f13",
+      "revId": "606e0304d3ae3d400c1422df18450b62fdac4d8b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

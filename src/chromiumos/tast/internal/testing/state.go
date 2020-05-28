@@ -158,6 +158,43 @@ func (r *rootState) newPreState() *State {
 	return &State{root: r, inPre: true}
 }
 
+// runWithTestState runs f, passing a Context and a State for a test.
+// If f panics, it recovers and reports the error via the State.
+// f is run within a goroutine to avoid making the calling goroutine exit if
+// f calls s.Fatal (which calls runtime.Goexit).
+func (r *rootState) runWithTestState(ctx context.Context, f func(ctx context.Context, s *State)) {
+	s := r.newTestState()
+	ctx = s.newContext(ctx)
+	runAndRecover(func() { f(ctx, s) }, s)
+}
+
+// runWithPreState runs f, passing a Context and a State for a precondition.
+// If f panics, it recovers and reports the error via the State.
+// f is run within a goroutine to avoid making the calling goroutine exit if
+// f calls s.Fatal (which calls runtime.Goexit).
+func (r *rootState) runWithPreState(ctx context.Context, f func(ctx context.Context, s *State)) {
+	s := r.newPreState()
+	ctx = s.newContext(ctx)
+	runAndRecover(func() { f(ctx, s) }, s)
+}
+
+// runAndRecover runs f synchronously, and recovers and reports an error if it panics.
+// f is run within a goroutine to avoid making the calling goroutine exit if the test
+// calls s.Fatal (which calls runtime.Goexit).
+func runAndRecover(f func(), s *State) {
+	done := make(chan struct{}, 1)
+	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				s.Error("Panic: ", r)
+			}
+			done <- struct{}{}
+		}()
+		f()
+	}()
+	<-done
+}
+
 // hasError checks if any error has been reported.
 func (r *rootState) hasError() bool {
 	r.mu.Lock()

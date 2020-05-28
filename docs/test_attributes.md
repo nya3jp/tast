@@ -40,7 +40,7 @@ Below is the list of most popular groups and their associated extra attributes:
           touch specific code paths.
     *  Stability (optional): if `wificell_unstable` is present, the test is yet
        to be verified as stable; otherwise, the test is stable.
-
+*   `group:labqual` - Tests that must pass for devices to go to a low-touch lab.
 
 See [attr.go] for the full list of valid attributes.
 

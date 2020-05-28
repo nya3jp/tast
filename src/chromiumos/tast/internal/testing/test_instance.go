@@ -414,8 +414,9 @@ func (t *TestInstance) DataDir() string {
 //	- cfg.PostTestFunc (if non-nil)
 func (t *TestInstance) Run(ctx context.Context, ch chan<- Output, cfg *TestConfig) bool {
 	// Attach the state to a context so support packages can log to it.
-	s := newState(t, ch, cfg)
-	pres := newPreState(s)
+	root := newRootState(t, ch, cfg)
+	s := root.newTestState()
+	pres := root.newPreState()
 	ctx = s.newContext(ctx)
 
 	var stages []stage

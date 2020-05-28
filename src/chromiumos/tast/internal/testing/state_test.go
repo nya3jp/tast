@@ -25,7 +25,8 @@ import (
 
 func TestLog(t *gotesting.T) {
 	or := newOutputReader()
-	s := newState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
+	root := newRootState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
+	s := root.newTestState()
 	s.Log("msg ", 1)
 	s.Logf("msg %d", 2)
 	close(or.ch)
@@ -37,7 +38,8 @@ func TestLog(t *gotesting.T) {
 
 func TestNestedRun(t *gotesting.T) {
 	or := newOutputReader()
-	s := newState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
+	root := newRootState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
+	s := root.newTestState()
 	ctx := context.Background()
 
 	s.Run(ctx, "p1", func(ctx context.Context, s *State) {
@@ -63,7 +65,8 @@ func TestNestedRun(t *gotesting.T) {
 
 func TestRunReturn(t *gotesting.T) {
 	or := newOutputReader()
-	s := newState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
+	root := newRootState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
+	s := root.newTestState()
 	ctx := context.Background()
 
 	if res := s.Run(ctx, "p1", func(ctx context.Context, s *State) {
@@ -86,7 +89,8 @@ func TestRunReturn(t *gotesting.T) {
 
 func TestParallelRun(t *gotesting.T) {
 	or := newOutputReader()
-	s := newState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
+	root := newRootState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
+	s := root.newTestState()
 	ctx := context.Background()
 
 	var wg sync.WaitGroup
@@ -135,7 +139,8 @@ func TestParallelRun(t *gotesting.T) {
 
 func TestReportError(t *gotesting.T) {
 	or := newOutputReader()
-	s := newState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
+	root := newRootState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
+	s := root.newTestState()
 
 	// Keep these lines next to each other (see below comparison).
 	s.Error("error ", 1)
@@ -178,7 +183,8 @@ func TestReportError(t *gotesting.T) {
 
 func TestReportErrorInPrecondition(t *gotesting.T) {
 	or := newOutputReader()
-	s := newPreState(newState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{}))
+	root := newRootState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
+	s := root.newPreState()
 
 	// Keep these lines next to each other (see below comparison).
 	s.Error("error ", 1)
@@ -225,7 +231,8 @@ func errorFunc() error {
 
 func TestExtractErrorSimple(t *gotesting.T) {
 	or := newOutputReader()
-	s := newState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
+	root := newRootState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
+	s := root.newTestState()
 
 	err := errorFunc()
 	s.Error(err)
@@ -251,7 +258,8 @@ func TestExtractErrorSimple(t *gotesting.T) {
 
 func TestExtractErrorHeuristic(t *gotesting.T) {
 	or := newOutputReader()
-	s := newState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
+	root := newRootState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
+	s := root.newTestState()
 
 	err := errorFunc()
 	s.Error("Failed something  :  ", err)
@@ -281,7 +289,8 @@ func TestExtractErrorHeuristic(t *gotesting.T) {
 
 func TestRunUsePrefix(t *gotesting.T) {
 	or := newOutputReader()
-	s := newState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
+	root := newRootState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
+	s := root.newTestState()
 
 	ctx := context.Background()
 	s.Run(ctx, "f1", func(ctx context.Context, s *State) {
@@ -314,7 +323,8 @@ func TestRunUsePrefix(t *gotesting.T) {
 
 func TestRunNonFatal(t *gotesting.T) {
 	or := newOutputReader()
-	s := newState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
+	root := newRootState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
+	s := root.newTestState()
 
 	// Log the fatal message in a goroutine so the main goroutine that's running the test won't exit.
 	done := make(chan bool)
@@ -341,7 +351,8 @@ func TestRunNonFatal(t *gotesting.T) {
 
 func TestFatal(t *gotesting.T) {
 	or := newOutputReader()
-	s := newState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
+	root := newRootState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
+	s := root.newTestState()
 
 	// Log the fatal message in a goroutine so the main goroutine that's running the test won't exit.
 	done := make(chan bool)
@@ -368,7 +379,8 @@ func TestFatal(t *gotesting.T) {
 
 func TestFatalInPrecondition(t *gotesting.T) {
 	or := newOutputReader()
-	s := newPreState(newState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{}))
+	root := newRootState(&TestInstance{Timeout: time.Minute}, or.ch, &TestConfig{})
+	s := root.newPreState()
 
 	// Log the fatal message in a goroutine so the main goroutine that's running the test won't exit.
 	done := make(chan bool)
@@ -407,7 +419,8 @@ func TestDataPathDeclared(t *gotesting.T) {
 		{"foo/bar", filepath.Join(dataDir, "foo/bar")},
 	} {
 		or := newOutputReader()
-		s := newState(&test, or.ch, &TestConfig{DataDir: dataDir})
+		root := newRootState(&test, or.ch, &TestConfig{DataDir: dataDir})
+		s := root.newTestState()
 		if act := s.DataPath(tc.in); act != tc.exp {
 			t.Errorf("DataPath(%q) = %q; want %q", tc.in, act, tc.exp)
 		}
@@ -420,7 +433,8 @@ func TestDataPathNotDeclared(t *gotesting.T) {
 		Timeout: time.Minute,
 		Data:    []string{"foo"},
 	}
-	s := newState(&test, or.ch, &TestConfig{DataDir: "/data"})
+	root := newRootState(&test, or.ch, &TestConfig{DataDir: "/data"})
+	s := root.newTestState()
 
 	// Request an undeclared data path to cause a fatal error. Do this in a goroutine
 	// so the main goroutine that's running the test won't exit.
@@ -459,7 +473,8 @@ func TestDataFileServer(t *gotesting.T) {
 
 	test := TestInstance{Data: []string{file1}}
 	or := newOutputReader()
-	s := newState(&test, or.ch, &TestConfig{DataDir: td})
+	root := newRootState(&test, or.ch, &TestConfig{DataDir: td})
+	s := root.newTestState()
 
 	srv := httptest.NewServer(http.FileServer(s.DataFileSystem()))
 	defer srv.Close()
@@ -512,8 +527,9 @@ func TestVars(t *gotesting.T) {
 	test := &TestInstance{Vars: []string{validName, unsetName}}
 	cfg := &TestConfig{Vars: map[string]string{validName: validValue, unregName: unregValue}}
 	or := newOutputReader()
-	s := newState(test, or.ch, cfg)
 	defer close(or.ch)
+	root := newRootState(test, or.ch, cfg)
+	s := root.newTestState()
 
 	for _, tc := range []struct {
 		req   bool   // if true, call RequiredVar instead of Var
@@ -567,7 +583,8 @@ func TestMeta(t *gotesting.T) {
 	meta := Meta{TastPath: "/foo/bar", Target: "example.net", RunFlags: []string{"-foo", "-bar"}}
 	getMeta := func(test *TestInstance, cfg *TestConfig) (*State, *Meta) {
 		or := newOutputReader()
-		s := newState(test, or.ch, cfg)
+		root := newRootState(test, or.ch, cfg)
+		s := root.newTestState()
 
 		// Meta can call Fatal, which results in a call to runtime.Goexit(),
 		// so run this in a goroutine to isolate it from the test.
@@ -613,7 +630,8 @@ func TestRPCHint(t *gotesting.T) {
 	hint := RPCHint{LocalBundleDir: "/path/to/bundles"}
 	getHint := func(test *TestInstance, cfg *TestConfig) (*State, *RPCHint) {
 		or := newOutputReader()
-		s := newState(test, or.ch, cfg)
+		root := newRootState(test, or.ch, cfg)
+		s := root.newTestState()
 
 		// RPCHint can call Fatal, which results in a call to runtime.Goexit(),
 		// so run this in a goroutine to isolate it from the test.
@@ -651,7 +669,8 @@ func TestRPCHint(t *gotesting.T) {
 func TestDUT(t *gotesting.T) {
 	callDUT := func(test *TestInstance, cfg *TestConfig) *State {
 		or := newOutputReader()
-		s := newState(test, or.ch, cfg)
+		root := newRootState(test, or.ch, cfg)
+		s := root.newTestState()
 
 		// DUT can call Fatal, which results in a call to runtime.Goexit(),
 		// so run this in a goroutine to isolate it from the test.
@@ -684,7 +703,8 @@ func TestCloudStorage(t *gotesting.T) {
 	want := NewCloudStorage(nil)
 
 	or := newOutputReader()
-	s := newState(&TestInstance{Name: "example.Test"}, or.ch, &TestConfig{CloudStorage: want})
+	root := newRootState(&TestInstance{Name: "example.Test"}, or.ch, &TestConfig{CloudStorage: want})
+	s := root.newTestState()
 	got := s.CloudStorage()
 
 	if got != want {

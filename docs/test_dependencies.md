@@ -79,6 +79,8 @@ The following software features are defined:
 *   `gpu_sandboxing` - Chrome's GPU process is [sandboxed].
 *   `graphics_debugfs` - Whether the kernel DRM subsystem supports Debug FS for Graphics.
 *   `gsc` - Whether the platform has an onboard Google security chip.
+*   `houdini` - Availability of 32-bit Houdini library for ARC.
+*   `houdini64` - Availability of 64-bit Houdini library for ARC.
 *   `hostap_hwsim` - Whether system has the hostap project's test dependencies
     (scripts, daemons) installed and configured appropriately.
 *   `iwlwifi_rescan` - Ability to remove/rescan WiFi PCI device when the
@@ -91,6 +93,9 @@ The following software features are defined:
 *   `mosys` - Ability to run mosys command.
 *   `native_bridge` - Availability of 32-bit native bridge support for ARC.
 *   `native_bridge64` - Availability of 64-bit native bridge support for ARC.
+*   `ndk_translation` - Availability of 32-bit NDK translation library for ARC.
+*   `ndk_translation64` - Availability of 64-bit NDK translation library for
+    ARC.
 *   `no_android` - The inability to run Android apps. This is the opposite of
     the `android` feature; DUTs will have exactly one of these two features.
 *   `no_asan` - Build was not built with Address Sanitizer. Similar to `aslr`.

@@ -104,6 +104,8 @@ func main() {
 			"gpu_sandboxing":          "!betty && !tast_vm",                     // no GPU sandboxing on VMs: https://crbug.com/914688
 			"graphics_debugfs":        `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14" || "kernel-3_18")`,
 			"gsc":                     "cr50_onboard",
+			"houdini":                 "houdini",
+			"houdini64":               "houdini64",
 			"hostap_hwsim":            "wifi_hostap_test",
 			"iwlwifi_rescan":          "iwlwifi_rescan",
 			"lock_core_pattern":       `"kernel-3_10" || "kernel-3_14" || "kernel-3_18"`,
@@ -120,6 +122,8 @@ func main() {
 			"mosys":                  "!betty && !tast_vm",
 			"native_bridge":          "houdini || ndk_translation",
 			"native_bridge64":        "houdini64 || ndk_translation64",
+			"ndk_translation":        "ndk_translation",
+			"ndk_translation64":      "ndk_translation64",
 			"no_android":             "!arc",
 			"no_asan":                "!asan",
 			"no_msan":                "!msan",

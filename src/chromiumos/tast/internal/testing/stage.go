@@ -18,12 +18,12 @@ type stage struct {
 }
 
 // stageFunc encapsulates the work done by a stage.
-type stageFunc func(ctx context.Context, s *State)
+type stageFunc func(ctx context.Context, root *rootState)
 
 // runStages runs a sequence of "stages" (i.e. functions) on behalf of Test.Run.
 // If all stages finish, true is returned.
 // If a stage's function has not returned before its run timeout is reached, false is returned immediately.
-func runStages(ctx context.Context, s *State, stages []stage) bool {
+func runStages(ctx context.Context, root *rootState, stages []stage) bool {
 	// stageCh is used to signal each stage's completion to the main goroutine.
 	stageCh := make(chan struct{}, len(stages))
 
@@ -31,12 +31,12 @@ func runStages(ctx context.Context, s *State, stages []stage) bool {
 	// if one test is buggy and doesn't return after its context's deadline is reached.
 	go func() {
 		defer close(stageCh)
-		defer s.root.close()
+		defer root.close()
 
 		runStage := func(st stage) {
 			rctx, rcancel := context.WithTimeout(ctx, st.ctxTimeout)
 			defer rcancel()
-			runAndRecover(func() { st.f(rctx, s) }, s)
+			st.f(rctx, root)
 			stageCh <- struct{}{}
 		}
 		for _, st := range stages {
@@ -57,21 +57,4 @@ func runStages(ctx context.Context, s *State, stages []stage) bool {
 	// All stages finished. Wait for the state to be closed.
 	<-stageCh
 	return true
-}
-
-// runAndRecover runs f synchronously, and recovers and reports an error if it panics.
-// f is run within a goroutine to avoid making the calling goroutine exit if the test
-// calls s.Fatal (which calls runtime.Goexit).
-func runAndRecover(f func(), s *State) {
-	done := make(chan struct{}, 1)
-	go func() {
-		defer func() {
-			if r := recover(); r != nil {
-				s.Error("Panic: ", r)
-			}
-			done <- struct{}{}
-		}()
-		f()
-	}()
-	<-done
 }

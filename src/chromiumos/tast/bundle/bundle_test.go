@@ -299,15 +299,15 @@ func TestRunTestsTimeout(t *gotesting.T) {
 	reg.AddTestInstance(&testing.TestInstance{
 		Name:        name1,
 		Func:        func(context.Context, *testing.State) { <-ch },
-		Timeout:     10 * time.Millisecond,
+		Timeout:     time.Millisecond,
 		ExitTimeout: time.Millisecond, // avoid blocking after timeout
 	})
 
-	// The second test blocks for 50 ms and specifies a custom one-minute timeout.
+	// The second test passes.
 	const name2 = "foo.Test2"
 	reg.AddTestInstance(&testing.TestInstance{
 		Name:    name2,
-		Func:    func(context.Context, *testing.State) { time.Sleep(50 * time.Millisecond) },
+		Func:    func(context.Context, *testing.State) {},
 		Timeout: time.Minute,
 	})
 
@@ -321,27 +321,42 @@ func TestRunTestsTimeout(t *gotesting.T) {
 		},
 	}
 
-	// The first test should time out after 10 milliseconds.
-	// The second test should succeed since it finishes before its timeout.
-	if err := runTests(context.Background(), &stdout, &args, &runConfig{}, localBundle, reg.AllTests()); err != nil {
-		t.Fatalf("runTests(..., %+v, ...) failed: %v", args, err)
+	// The first test should time out after 1 millisecond.
+	// The second test is not run.
+	if err := runTests(context.Background(), &stdout, &args, &runConfig{}, localBundle, reg.AllTests()); err == nil {
+		t.Fatalf("runTests(..., %+v, ...) succeeded unexpectedly", args)
 	}
 
-	var name string             // name of current test
-	errors := make([]string, 0) // name of test from each error
+	// TestStart, TestError and TestEnd should be observed exactly once for the first test.
+	seenStart := 0
+	seenError := 0
+	seenEnd := 0
 	r := control.NewMessageReader(&stdout)
 	for r.More() {
 		if msg, err := r.ReadMessage(); err != nil {
 			t.Error("ReadMessage failed: ", err)
 		} else if ts, ok := msg.(*control.TestStart); ok {
-			name = ts.Test.Name
+			if ts.Test.Name != name1 {
+				t.Errorf("TestStart.Test.Name = %q; want %q", ts.Test.Name, name1)
+			}
+			seenStart++
 		} else if _, ok := msg.(*control.TestError); ok {
-			errors = append(errors, name)
+			seenError++
+		} else if te, ok := msg.(*control.TestEnd); ok {
+			if te.Name != name1 {
+				t.Errorf("TestEnd.Name = %q; want %q", te.Name, name1)
+			}
+			seenEnd++
 		}
 	}
-	exp := []string{name1}
-	if !reflect.DeepEqual(errors, exp) {
-		t.Errorf("Got errors %v; wanted %v", errors, exp)
+	if seenStart != 1 {
+		t.Errorf("Got TestStart %d time(s); want 1 time", seenStart)
+	}
+	if seenError != 1 {
+		t.Errorf("Got TestError %d time(s); want 1 time", seenError)
+	}
+	if seenEnd != 1 {
+		t.Errorf("Got TestEnd %d time(s); want 1 time", seenEnd)
 	}
 }
 

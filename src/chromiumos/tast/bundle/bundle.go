@@ -288,7 +288,9 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 	}
 	for i, t := range tests {
 		if checkResult := checkResults[i]; checkResult.OK() {
-			runTest(ctx, ew, args, cfg, t, nextTests[i], rd)
+			if err := runTest(ctx, ew, args, cfg, t, nextTests[i], rd); err != nil {
+				return command.NewStatusErrorf(statusError, "run failed: %v", err)
+			}
 		} else {
 			reportSkippedTest(ew, t, checkResult)
 		}
@@ -327,7 +329,7 @@ func connectToTarget(ctx context.Context, args *Args) (_ *dut.DUT, retErr error)
 
 // runTest runs t per args and cfg, writing appropriate messages to ew.
 func runTest(ctx context.Context, ew *eventWriter, args *Args, cfg *runConfig,
-	t, next *testing.TestInstance, rd *testing.RemoteData) {
+	t, next *testing.TestInstance, rd *testing.RemoteData) error {
 	ew.TestStart(t)
 
 	// Attach a log that the test can use to report timing events.
@@ -355,13 +357,19 @@ func runTest(ctx context.Context, ew *eventWriter, args *Args, cfg *runConfig,
 		copierDone <- true
 	}()
 
-	if !t.Run(ctx, ch, &testCfg) {
+	ok := t.Run(ctx, ch, &testCfg)
+	if !ok {
 		// If Run reported that the test didn't finish, tell the copier to abort.
 		abortCopier <- true
 	}
 	<-copierDone
 
 	ew.TestEnd(t, nil, timingLog)
+
+	if !ok {
+		return errors.New("test timed out")
+	}
+	return nil
 }
 
 // reportSkippedTest is called instead of runTest for a test that is skipped due to

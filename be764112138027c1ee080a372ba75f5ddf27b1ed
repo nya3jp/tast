@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ded01578_d74ff8f1",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1202079
+      },
+      "writtenOn": "2020-05-29T02:09:23Z",
+      "side": 1,
+      "message": "I\u0027d remove \"arcvm\" from here.\n\nrationale:\nwe already have android_vm_r.\nif you want to specify that it needs \"android r\" (but you don\u0027t care about the VM, even though there will be no Android R in container), then you don\u0027t have to force \"arcvm\".\n\nor you can do what mukai@ said: just rename \"android_vm_r\" to \"android_r\".",
+      "range": {
+        "startLine": 68,
+        "startChar": 32,
+        "endLine": 68,
+        "endChar": 37
+      },
+      "revId": "be764112138027c1ee080a372ba75f5ddf27b1ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

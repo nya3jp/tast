@@ -91,8 +91,6 @@ The following software features are defined:
 *   `memd` - [Memory stats collection daemon].
 *   `ml_service` - ML Service daemon.
 *   `mosys` - Ability to run mosys command.
-*   `native_bridge` - Availability of 32-bit native bridge support for ARC.
-*   `native_bridge64` - Availability of 64-bit native bridge support for ARC.
 *   `ndk_translation` - Availability of 32-bit NDK translation library for ARC.
 *   `ndk_translation64` - Availability of 64-bit NDK translation library for
     ARC.

@@ -118,8 +118,6 @@ func main() {
 			"metrics_consent":        "chrome_internal && !mocktpm && !tast_vm",
 			"ml_service":             "ml_service",
 			"mosys":                  "!betty && !tast_vm",
-			"native_bridge":          "houdini || ndk_translation",
-			"native_bridge64":        "houdini64 || ndk_translation64",
 			"ndk_translation":        "ndk_translation",
 			"ndk_translation64":      "ndk_translation64",
 			"no_android":             "!arc",

@@ -22,6 +22,30 @@
       "revId": "bb5cdf42393a60b303a260e87fd3c38a1aa731f1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4afffef3_92163823",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-05-29T05:16:13Z",
+      "side": 1,
+      "message": "OK, I extracted this part to crrev.com/c/2217980. This change is now really pure code move.",
+      "parentUuid": "9ccd37f1_e7e87211",
+      "range": {
+        "startLine": 34,
+        "startChar": 3,
+        "endLine": 34,
+        "endChar": 10
+      },
+      "revId": "bb5cdf42393a60b303a260e87fd3c38a1aa731f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

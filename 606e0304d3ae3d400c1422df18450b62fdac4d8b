@@ -52,6 +52,24 @@
       "revId": "606e0304d3ae3d400c1422df18450b62fdac4d8b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "971de5b5_62eeccbf",
+        "filename": "docs/test_attributes.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-05-29T04:45:37Z",
+      "side": 1,
+      "message": "I was suggesting to add this, but I\u0027m ok to drop, if you think this group is relatively minor.",
+      "parentUuid": "64e7a924_36de80d9",
+      "revId": "606e0304d3ae3d400c1422df18450b62fdac4d8b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -136,7 +136,7 @@ Various files and directories are created within the results directory:
 [JSONL]: http://jsonlines.org/
 [journald]: https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html
 [output files]: writing_tests.md#Output-files
-[perf]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/perf
+[perf]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/common/perf
 [timing]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/timing
 
 ## Running local tests manually on the DUT

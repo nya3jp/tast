@@ -206,6 +206,14 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 			},
 		},
 	},
+	{
+		Name:     "meta",
+		Contacts: []string{"tast-owners@google.com"},
+		Desc:     `A group of functional tests of the Tast framework itself.
+
+Meta tests should be a subset of mainline critical tests.
+`,
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

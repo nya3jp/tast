@@ -174,7 +174,7 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 	f.Var(command.NewListFlag(",", func(v []string) { c.extraAllowedBuckets = v }, nil), "extraallowedbuckets", "comma-separated list of extra Google Cloud Storage buckets ephemeral devserver is allowed to access")
 	f.StringVar(&c.buildArtifactsURL, "buildartifactsurl", "", "override Google Cloud Storage URL of build artifacts (implies -extraallowedbuckets)")
 	f.BoolVar(&c.downloadPrivateBundles, "downloadprivatebundles", false, "download private bundles if missing")
-	f.BoolVar(&c.continueAfterFailure, "continueafterfailure", false, "try to run remaining tests after bundle/DUT crash or lost SSH connection")
+	f.BoolVar(&c.continueAfterFailure, "continueafterfailure", true, "try to run remaining tests after bundle/DUT crash or lost SSH connection")
 	f.IntVar(&c.sshRetries, "sshretries", 0, "number of SSH connect retries")
 
 	f.StringVar(&c.localRunner, "localrunner", "", "executable that runs local test bundles")

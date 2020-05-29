@@ -35,6 +35,22 @@ func TESTINSTANCETEST(context.Context, *State) {}
 // InvalidTestName is an arbitrary public test function used by unit tests.
 func InvalidTestName(context.Context, *State) {}
 
+// fakePre implements both Precondition and preconditionImpl for unit tests.
+type fakePre struct {
+	name string // name to return from String
+}
+
+func (p *fakePre) Prepare(ctx context.Context, s *State) interface{} {
+	return nil
+}
+
+func (p *fakePre) Close(ctx context.Context, s *State) {
+}
+
+func (p *fakePre) Timeout() time.Duration { return time.Minute }
+
+func (p *fakePre) String() string { return p.name }
+
 // testPre implements both Precondition and preconditionImpl for unit tests.
 type testPre struct {
 	prepareFunc func(context.Context, *State) interface{}
@@ -90,7 +106,7 @@ func features(available []string, model string) *dep.Features {
 }
 
 func TestInstantiate(t *gotesting.T) {
-	pre := &testPre{}
+	pre := &fakePre{}
 	got, err := instantiate(&Test{
 		Func:         TESTINSTANCETEST,
 		Desc:         "hello",
@@ -232,7 +248,7 @@ func TestInstantiateParams(t *gotesting.T) {
 }
 
 func TestInstantiateParamsPre(t *gotesting.T) {
-	pre := &testPre{}
+	pre := &fakePre{}
 
 	// Duplicated fields should be rejected.
 	if _, err := instantiate(&Test{
@@ -1035,8 +1051,8 @@ func TestTestClone(t *gotesting.T) {
 }
 
 func TestSortTests(t *gotesting.T) {
-	pre1 := &testPre{name: "pre1"}
-	pre2 := &testPre{name: "pre2"}
+	pre1 := &fakePre{name: "pre1"}
+	pre2 := &fakePre{name: "pre2"}
 
 	// Assign names with different leading digits to make sure we don't sort by name primarily.
 	t1 := &TestInstance{Name: "3-test1", Pre: nil}

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ecc4aed5_d7d57660",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1000303
+      },
+      "writtenOn": "2020-05-30T01:45:50Z",
+      "side": 1,
+      "message": "Renaming android_vm_r but not android_vm seems kinda weird to me.. Can we first decide what to do with this? (we already have an email thread as you know.) Best case, we can just remove this.",
+      "revId": "5379f6fb302c1c6b1b0435264309de8c408d6c26",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

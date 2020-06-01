@@ -22,6 +22,30 @@
       "revId": "37d35e9e58c8c40efaddfcb9d728179e4da5c620",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4cffc77f_f32b4824",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1288602
+      },
+      "writtenOn": "2020-06-01T09:00:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1073b465_5269a6b5",
+      "range": {
+        "startLine": 65,
+        "startChar": 32,
+        "endLine": 65,
+        "endChar": 38
+      },
+      "revId": "37d35e9e58c8c40efaddfcb9d728179e4da5c620",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

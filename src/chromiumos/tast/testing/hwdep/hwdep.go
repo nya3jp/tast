@@ -62,7 +62,7 @@ func Model(names ...string) Condition {
 				return nil
 			}
 		}
-		return errors.New("ModelId did not match")
+		return errors.Errorf("ModelId \"%q\" did not match", modelID)
 	}}
 }
 
@@ -84,7 +84,7 @@ func SkipOnModel(names ...string) Condition {
 		modelID := strings.ToLower(f.DC.Id.ModelId.Value)
 		for _, name := range names {
 			if name == modelID {
-				return errors.New("ModelId matched with skip-on list")
+				return errors.Errorf("ModelId \"%q\" matched with skip-on list", modelID)
 			}
 		}
 		return nil
@@ -112,7 +112,7 @@ func Platform(names ...string) Condition {
 				return nil
 			}
 		}
-		return errors.New("PlatformId did not match")
+		return errors.Errorf("PlatformId \"%q\" did not match", platformID)
 	}}
 }
 
@@ -133,7 +133,7 @@ func SkipOnPlatform(names ...string) Condition {
 		platformID := strings.ToLower(f.DC.Id.PlatformId.Value)
 		for _, name := range names {
 			if name == platformID {
-				return errors.New("PlatformId matched with skip-on list")
+				return errors.Errorf("PlatformId \"%q\" matched with skip-on list", platformID)
 			}
 		}
 		return nil

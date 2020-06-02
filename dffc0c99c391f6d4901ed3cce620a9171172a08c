@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0c736353_ac388713",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 1115,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-06-02T10:53:54Z",
+      "side": 1,
+      "message": "I recommend including the feature/method name to be tested in the test name.\n\nFor example, TestWriteTestMetadataWithTCLint",
+      "range": {
+        "startLine": 1115,
+        "startChar": 5,
+        "endLine": 1115,
+        "endChar": 19
+      },
+      "revId": "dffc0c99c391f6d4901ed3cce620a9171172a08c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b25087d3_920a3519",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 1140,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-06-02T10:53:54Z",
+      "side": 1,
+      "message": "When the environment variable is not set (which is usual when running the unit tests locally), could you use a fixed path, e.g. $HOME/.cache/tast-unit-tests ?",
+      "range": {
+        "startLine": 1136,
+        "startChar": 2,
+        "endLine": 1140,
+        "endChar": 3
+      },
+      "revId": "dffc0c99c391f6d4901ed3cce620a9171172a08c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "176126e0_9f116b31",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 1151,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-06-02T10:53:54Z",
+      "side": 1,
+      "message": "Seems like -binary option is supported by tclint. Then we can verify the wire format.",
+      "range": {
+        "startLine": 1151,
+        "startChar": 11,
+        "endLine": 1151,
+        "endChar": 34
+      },
+      "revId": "dffc0c99c391f6d4901ed3cce620a9171172a08c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a3e2d636_69272793",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 1162,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-06-02T10:53:54Z",
+      "side": 1,
+      "message": "It\u0027s easier and safer to use Cmd.Stdin than StdinPipe when the input is static data.\n\n cmd \u003d ...\n cmd.Stdin \u003d bytes.NewBuffer(data)",
+      "range": {
+        "startLine": 1155,
+        "startChar": 1,
+        "endLine": 1162,
+        "endChar": 4
+      },
+      "revId": "dffc0c99c391f6d4901ed3cce620a9171172a08c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1a0e971c_af71dcc5",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 1170,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-06-02T10:53:54Z",
+      "side": 1,
+      "message": "nit: I recommend inserting \\n to separate the error message from tclint output.",
+      "range": {
+        "startLine": 1170,
+        "startChar": 32,
+        "endLine": 1170,
+        "endChar": 33
+      },
+      "revId": "dffc0c99c391f6d4901ed3cce620a9171172a08c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -144,6 +144,21 @@ Tests in this group are not used for build verification.
 		Desc:     `A group of ARC app compatibility tests.`,
 	},
 	{
+		Name:     "camerabox",
+		Contacts: []string{"chromeos-camera-eng@google.com"},
+		Desc:     `The group of camera tests to be run with Camerabox fixture.`,
+		Subattrs: []*attr{
+			{
+				Name: "camerabox_facing_front",
+				Desc: `Tests front camera functionalities using Camerabox front facing fixture.`,
+			},
+			{
+				Name: "camerabox_facing_back",
+				Desc: `Tests back camera functionalities using Camerabox back facing fixture.`,
+			},
+		},
+	},
+	{
 		Name:     "enrollment",
 		Contacts: []string{"vsavu@google.com", "enterprise-policy-support-rotation@google.com"},
 		Desc:     `A group of tests performing enrollment and will clobber the stateful partition.`,
@@ -214,7 +229,7 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 	{
 		Name:     "meta",
 		Contacts: []string{"tast-owners@google.com"},
-		Desc:     `A group of functional tests of the Tast framework itself.
+		Desc: `A group of functional tests of the Tast framework itself.
 
 Meta tests should be a subset of mainline critical tests.
 `,

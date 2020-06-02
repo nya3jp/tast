@@ -88,7 +88,7 @@ func main() {
 			"cups":                    "cups",
 			"diagnostics":             "diagnostics",
 			"display_backlight":       "display_backlight",
-			"dlc":                     "dlc_test",
+			"dlc":                     "dlc && dlc_test",
 			"dptf":                    "dptf",
 			"dmverity_stable":         `"kernel-3_8" || "kernel-3_10" || "kernel-3_14" || "kernel-3_18" || "kernel-4_4" || "kernel-4_14"`,
 			"dmverity_unstable":       `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14" || "kernel-3_18" || "kernel-4_4" || "kernel-4_14")`,

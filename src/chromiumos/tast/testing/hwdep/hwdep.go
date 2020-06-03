@@ -228,3 +228,58 @@ func Battery() Condition {
 		return nil
 	}}
 }
+
+var modelsWithoutForceDischargeSupport = []string{
+	"celes",
+	"drallion",
+	"lulu",
+	"sarien_signed",
+}
+
+// ForceDischarge returns a hardware dependency condition that is satisfied iff the DUT
+// has a battery and it supports force discharge through `ectool chargecontrol`.
+// The devices listed in modelsWithoutForceDischargeSupport do not satisfy this condition
+// even if they have a battery since they does not support force discharge via ectool.
+// This is a complement condition of NoForceDischarge.
+func ForceDischarge() Condition {
+	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
+		hasBattery, err := hasBattery(f)
+		if err != nil {
+			return err
+		}
+		if !hasBattery {
+			return errors.New("DUT does not have a battery")
+		}
+		doesNotSupportForceDischarge, err := isModelInList(f, modelsWithoutForceDischargeSupport...)
+		if err != nil {
+			return err
+		}
+		if doesNotSupportForceDischarge {
+			return errors.New("DUT has a battery but does not support force discharge")
+		}
+		return nil
+	}}
+}
+
+// NoForceDischarge is a complement condition of ForceDischarge.
+func NoForceDischarge() Condition {
+	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
+		doesNotSupportForceDischarge, err := isModelInList(f, modelsWithoutForceDischargeSupport...)
+		if err != nil {
+			return err
+		}
+		if doesNotSupportForceDischarge {
+			// Devices listed in modelsWithoutForceDischargeSupport always satisfy this condition
+			// since we can't measure meaningful metrics come from battery while charging.
+			return nil
+		}
+		hasBattery, err := hasBattery(f)
+		if err != nil {
+			return err
+		}
+		if hasBattery {
+			return errors.New("DUT supports force discharge")
+		}
+		return nil
+	}}
+}

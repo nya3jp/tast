@@ -77,8 +77,13 @@ func main() {
 			"chrome_internal": "chrome_internal",
 			"crashpad":        "!force_breakpad",
 			// TODO(b/155009503): Remove these once crash reporter works with selinux on 5.4
-			"crash_selinux_stable":    `!"kernel-5_4"`,
-			"crash_selinux_unstable":  `"kernel-5_4"`,
+			"crash_selinux_stable":   `!"kernel-5_4"`,
+			"crash_selinux_unstable": `"kernel-5_4"`,
+			// Log messages that these tests depends on are often
+			// missing on the nyan_kitty board.
+			// TODO(https://crbug.com/1081436): Remove unstable dep
+			"crash_sender_stable":     "!nyan_kitty",
+			"crash_sender_unstable":   "nyan_kitty",
 			"cros_config":             "unibuild",
 			"cros_internal":           "internal",
 			"cros_video_decoder":      "!disable_cros_video_decoder",

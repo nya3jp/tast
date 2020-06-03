@@ -89,6 +89,7 @@ The following software features are defined:
     modifications.
 *   `memfd_create` - memfd_create function implemented in the kernel.
 *   `memd` - [Memory stats collection daemon].
+*   `microcode` - Platforms that have CPU microcode.
 *   `ml_service` - ML Service daemon.
 *   `ml_benchmark_drivers` - [ML benchmarking suite](http://go/roadrollerda)
 *   `mosys` - Ability to run mosys command.

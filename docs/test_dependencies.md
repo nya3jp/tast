@@ -86,6 +86,7 @@ The following software features are defined:
     modifications.
 *   `memfd_create` - memfd_create function implemented in the kernel.
 *   `memd` - [Memory stats collection daemon].
+*   `microcode` - Platforms that have CPU microcode.
 *   `ml_service` - ML Service daemon.
 *   `mosys` - Ability to run mosys command.
 *   `ndk_translation` - Availability of 32-bit NDK translation library for ARC.

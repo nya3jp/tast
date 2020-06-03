@@ -30,6 +30,25 @@ func D(conds ...Condition) Deps {
 // idRegexp is the pattern that the given model/plaform ID names should match with.
 var idRegexp = regexp.MustCompile(`^[a-z0-9_]+$`)
 
+func isModelInList(f *dep.HardwareFeatures, names ...string) (bool, error) {
+	for _, n := range names {
+		if !idRegexp.MatchString(n) {
+			return false, errors.Errorf("ModelId should match with %v: %q", idRegexp, n)
+		}
+	}
+	// If the field is unavailable, return false as not satisfied.
+	if f.DC == nil || f.DC.Id == nil || f.DC.Id.ModelId == nil {
+		return false, errors.New("device.Config does not have ModelId")
+	}
+	modelID := strings.ToLower(f.DC.Id.ModelId.Value)
+	for _, name := range names {
+		if name == modelID {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
 // Model returns a hardware dependency condition that is satisfied if the DUT's model ID is
 // one of the given names.
 // Practically, this is not recommended to be used in most cases. Please consider again
@@ -45,24 +64,15 @@ var idRegexp = regexp.MustCompile(`^[a-z0-9_]+$`)
 // on other models. Note that, in this case, it is expected that an engineer is
 // assigned to stabilize/fix issues of the test on informational models.
 func Model(names ...string) Condition {
-	for _, n := range names {
-		if !idRegexp.MatchString(n) {
-			return Condition{Err: errors.Errorf("ModelId should match with %v: %q", idRegexp, n)}
-		}
-	}
-
 	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
-		// If the field is unavailable, return false as not satisfied.
-		if f.DC == nil || f.DC.Id == nil || f.DC.Id.ModelId == nil {
-			return errors.New("device.Config does not have ModelId")
+		isInList, err := isModelInList(f, names...)
+		if err != nil {
+			return err
 		}
-		modelID := strings.ToLower(f.DC.Id.ModelId.Value)
-		for _, name := range names {
-			if name == modelID {
-				return nil
-			}
+		if !isInList {
+			return errors.New("ModelId did not match")
 		}
-		return errors.New("ModelId did not match")
+		return nil
 	}}
 }
 
@@ -70,22 +80,13 @@ func Model(names ...string) Condition {
 // iff the DUT's model ID is none of the given names.
 // Please find the doc of Model(), too, for details about the expected usage.
 func SkipOnModel(names ...string) Condition {
-	for _, n := range names {
-		if !idRegexp.MatchString(n) {
-			return Condition{Err: errors.Errorf("ModelId should match with %v: %q", idRegexp, n)}
-		}
-	}
-
 	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
-		// If the field is unavailable, return false as not satisfied.
-		if f.DC == nil || f.DC.Id == nil || f.DC.Id.ModelId == nil {
-			return errors.New("device.Config does not have ModelId")
+		isInList, err := isModelInList(f, names...)
+		if err != nil {
+			return err
 		}
-		modelID := strings.ToLower(f.DC.Id.ModelId.Value)
-		for _, name := range names {
-			if name == modelID {
-				return errors.New("ModelId matched with skip-on list")
-			}
+		if isInList {
+			return errors.New("ModelId matched with skip-on list")
 		}
 		return nil
 	}}

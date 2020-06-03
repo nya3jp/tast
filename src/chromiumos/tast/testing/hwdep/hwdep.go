@@ -250,3 +250,60 @@ func SupportsNV12Overlays() Condition {
 		return nil
 	}}
 }
+
+// Since there are no way to get whether an EC supports force discharging on a device or not,
+// list up the models known not to support force discharging here.
+var modelsWithoutForceDischargeSupport = []string{
+	"celes",
+	"drallion",
+	"lulu",
+	"sarien_signed",
+}
+
+// ForceDischarge returns a hardware dependency condition that is satisfied iff the DUT
+// has a battery and it supports force discharge through `ectool chargecontrol`.
+// The devices listed in modelsWithoutForceDischargeSupport do not satisfy this condition
+// even though they have a battery since they does not support force discharge via ectool.
+// This is a complementary condition of NoForceDischarge.
+func ForceDischarge() Condition {
+	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
+		hasBattery, err := hasBattery(f)
+		if err != nil {
+			return err
+		}
+		if !hasBattery {
+			return errors.New("DUT does not have a battery")
+		}
+		doesNotSupportForceDischarge, err := modelListed(f.DC, modelsWithoutForceDischargeSupport...)
+		if err != nil {
+			return err
+		}
+		if doesNotSupportForceDischarge {
+			return errors.New("DUT has a battery but does not support force discharge")
+		}
+		return nil
+	}}
+}
+
+// NoForceDischarge is a complementary condition of ForceDischarge.
+func NoForceDischarge() Condition {
+	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
+		doesNotSupportForceDischarge, err := modelListed(f.DC, modelsWithoutForceDischargeSupport...)
+		if err != nil {
+			return err
+		}
+		if doesNotSupportForceDischarge {
+			// Devices listed in modelsWithoutForceDischargeSupport
+			// are known to always satisfy this condition
+			return nil
+		}
+		hasBattery, err := hasBattery(f)
+		if err != nil {
+			return err
+		}
+		if hasBattery {
+			return errors.New("DUT supports force discharge")
+		}
+		return nil
+	}}
+}

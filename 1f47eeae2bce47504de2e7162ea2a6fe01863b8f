@@ -22,6 +22,30 @@
       "revId": "1f47eeae2bce47504de2e7162ea2a6fe01863b8f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0810aa17_4bf672ee",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-06-03T02:21:06Z",
+      "side": 1,
+      "message": "I\u0027m planning to replace (chan Output) with an interface.\n\nCurrently chan Output is used like an interface in a sense that the testing package can call into its caller (the bundle package) without importing it. I found that using the channel is inconvenient in many aspects, e.g. callers must start a goroutine to handle outputs, difficult to generalize testing.Run, which runs a single test, to a function that runs multiple tests at once. So I\u0027m trying to replace it with an interface, and it will make the whole structure of test execution clearer.",
+      "parentUuid": "cee6de2d_2ee67215",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 6
+      },
+      "revId": "1f47eeae2bce47504de2e7162ea2a6fe01863b8f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

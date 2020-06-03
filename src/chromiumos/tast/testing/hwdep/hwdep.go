@@ -206,14 +206,22 @@ func Wifi80211ac() Condition {
 	return SkipOnPlatform("kip", "guado")
 }
 
+func hasBattery(f *dep.HardwareFeatures) (bool, error) {
+	if f.DC == nil {
+		return false, errors.New("device.Config is not given")
+	}
+	return f.DC.Power == device.Config_POWER_SUPPLY_BATTERY, nil
+}
+
 // Battery returns a hardware dependency condition that is satisfied iff the DUT
 // has a battery, e.g. Chromeboxes and Chromebits don't.
 func Battery() Condition {
 	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
-		if f.DC == nil {
-			return errors.New("device.Config is not given")
+		hasBattery, err := hasBattery(f)
+		if err != nil {
+			return err
 		}
-		if f.DC.Power != device.Config_POWER_SUPPLY_BATTERY {
+		if !hasBattery {
 			return errors.New("DUT does not have a battery")
 		}
 		return nil

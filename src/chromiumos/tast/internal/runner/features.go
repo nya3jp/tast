@@ -349,6 +349,8 @@ func findSOC() (device.Config_SOC, error) {
 	switch vendorID {
 	case "ARM":
 		return findArmSOC(&parsed)
+	case "Qualcomm":
+		return findQualcommSOC(&parsed)
 	case "GenuineIntel":
 		return findIntelSOC(&parsed)
 	case "AuthenticAMD":
@@ -389,6 +391,20 @@ func findArmSOC(parsed *lscpuResult) (device.Config_SOC, error) {
 		}
 	default:
 		return device.Config_SOC_UNSPECIFIED, errors.Errorf("unknown ARM model: %s", model)
+	}
+}
+
+func findQualcommSOC(parsed *lscpuResult) (device.Config_SOC, error) {
+	model, ok := parsed.find("Model:")
+	if !ok {
+		return device.Config_SOC_UNSPECIFIED, errors.New("Qualcomm model not found")
+	}
+
+	switch model {
+	case "14":
+		return device.Config_SOC_SC7180, nil
+	default:
+		return device.Config_SOC_UNSPECIFIED, errors.Errorf("unknown Qualcomm model: %s", model)
 	}
 }
 

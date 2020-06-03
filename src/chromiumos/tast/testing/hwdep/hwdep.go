@@ -223,3 +223,56 @@ func Battery() Condition {
 		return nil
 	}}
 }
+
+var modelsWithoutForceDischargeSupport = []string{
+	"celes",
+	"lulu",
+}
+
+// BatteryMetrics returns a hardware dependency condition that is satisfied iff the DUT
+// can report metrics come from battery. The devices listed in modelsWithoutForceDischargeSupport
+// do not satisfy this condition even if they have a battery since they does not support
+// force discharge via `ectool chargecontrol`.
+// This is a complement condition of NoBatteryMetrics.
+func BatteryMetrics() Condition {
+	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
+		hasBattery, err := hasBattery(f)
+		if err != nil {
+			return err
+		}
+		if !hasBattery {
+			return errors.New("DUT does not have a battery")
+		}
+		doesNotSupportForceDischarge, err := isModelInList(f, modelsWithoutForceDischargeSupport...)
+		if err != nil {
+			return err
+		}
+		if doesNotSupportForceDischarge {
+			return errors.New("DUT has a battery but does not support force discharge")
+		}
+		return nil
+	}}
+}
+
+// NoBatteryMetrics is a complement condition of BatteryMetrics.
+func NoBatteryMetrics() Condition {
+	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
+		doesNotSupportForceDischarge, err := isModelInList(f, modelsWithoutForceDischargeSupport...)
+		if err != nil {
+			return err
+		}
+		if doesNotSupportForceDischarge {
+			// Devices listed in modelsWithoutForceDischargeSupport always satisfy this condition
+			// since we can't measure meaningful metrics come from battery while charging.
+			return nil
+		}
+		hasBattery, err := hasBattery(f)
+		if err != nil {
+			return err
+		}
+		if hasBattery {
+			return errors.New("DUT is ready for metrics come from battery")
+		}
+		return nil
+	}}
+}

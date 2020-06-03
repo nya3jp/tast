@@ -16,6 +16,24 @@
       "revId": "d3e282ceeae0ea52dd0b5b7a7e2169be3e1317b5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a2c16c3e_8f9ce752",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2020-06-03T03:29:59Z",
+      "side": 1,
+      "message": "Luckily, there weren\u0027t any, but this should help in enforce it more strictly.\nSince they\u0027re two separate flags and tast tests depend on both to test DLCs, it\u0027s reasonable to set this as the software dep.",
+      "parentUuid": "3c3bd9c9_817288cf",
+      "revId": "d3e282ceeae0ea52dd0b5b7a7e2169be3e1317b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

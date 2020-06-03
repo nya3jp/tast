@@ -323,6 +323,7 @@ const (
 	Config_SOC_STONEY_RIDGE   Config_SOC = 28
 	Config_SOC_TEGRA_K1       Config_SOC = 29
 	Config_SOC_WHISKEY_LAKE_U Config_SOC = 30
+	Config_SOC_SC7180         Config_SOC = 31
 )
 
 var Config_SOC_name = map[int32]string{
@@ -357,6 +358,7 @@ var Config_SOC_name = map[int32]string{
 	28: "SOC_STONEY_RIDGE",
 	29: "SOC_TEGRA_K1",
 	30: "SOC_WHISKEY_LAKE_U",
+	31: "SOC_SC7180",
 }
 
 var Config_SOC_value = map[string]int32{
@@ -391,6 +393,7 @@ var Config_SOC_value = map[string]int32{
 	"SOC_STONEY_RIDGE":   28,
 	"SOC_TEGRA_K1":       29,
 	"SOC_WHISKEY_LAKE_U": 30,
+	"SOC_SC7180":         31,
 }
 
 func (x Config_SOC) String() string {

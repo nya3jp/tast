@@ -134,18 +134,13 @@ type runConfig struct {
 	defaultTestTimeout time.Duration
 }
 
-// eventWriter is used to report test events.
+// eventWriter wraps MessageWriter to write events to syslog in parallel.
 //
 // eventWriter is goroutine-safe; it is safe to call its methods concurrently from multiple
 // goroutines.
-//
-// Events are basically written through to MessageWriter, but they are also sent to syslog for
-// easier debugging.
 type eventWriter struct {
 	mw *control.MessageWriter
 	lg *syslog.Writer
-
-	testName string // name of the current test
 }
 
 func newEventWriter(mw *control.MessageWriter) *eventWriter {
@@ -162,29 +157,27 @@ func (ew *eventWriter) RunLog(msg string) error {
 }
 
 func (ew *eventWriter) TestStart(t *testing.TestInstance) error {
-	ew.testName = t.Name
 	if ew.lg != nil {
 		ew.lg.Info(fmt.Sprintf("%s: ======== start", t.Name))
 	}
 	return ew.mw.WriteMessage(&control.TestStart{Time: time.Now(), Test: *t})
 }
 
-func (ew *eventWriter) TestLog(msg string) error {
+func (ew *eventWriter) TestLog(t *testing.TestInstance, msg string) error {
 	if ew.lg != nil {
-		ew.lg.Info(fmt.Sprintf("%s: %s", ew.testName, msg))
+		ew.lg.Info(fmt.Sprintf("%s: %s", t.Name, msg))
 	}
 	return ew.mw.WriteMessage(&control.TestLog{Time: time.Now(), Text: msg})
 }
 
-func (ew *eventWriter) TestError(e *testing.Error) error {
+func (ew *eventWriter) TestError(t *testing.TestInstance, e *testing.Error) error {
 	if ew.lg != nil {
-		ew.lg.Info(fmt.Sprintf("%s: Error at %s:%d: %s", ew.testName, filepath.Base(e.File), e.Line, e.Reason))
+		ew.lg.Info(fmt.Sprintf("%s: Error at %s:%d: %s", t.Name, filepath.Base(e.File), e.Line, e.Reason))
 	}
 	return ew.mw.WriteMessage(&control.TestError{Time: time.Now(), Error: *e})
 }
 
 func (ew *eventWriter) TestEnd(t *testing.TestInstance, skipReasons []string, timingLog *timing.Log) error {
-	ew.testName = ""
 	if ew.lg != nil {
 		ew.lg.Info(fmt.Sprintf("%s: ======== end", t.Name))
 	}
@@ -195,6 +188,35 @@ func (ew *eventWriter) TestEnd(t *testing.TestInstance, skipReasons []string, ti
 		SkipReasons: skipReasons,
 		TimingLog:   timingLog,
 	})
+}
+
+func (ew *eventWriter) TestEventWriter(t *testing.TestInstance) *testEventWriter {
+	return &testEventWriter{ew, t}
+}
+
+// testEventWriter wraps eventWriter for a single test.
+//
+// testEventWriter is goroutine-safe; it is safe to call its methods concurrently from multiple
+// goroutines.
+type testEventWriter struct {
+	ew *eventWriter
+	t  *testing.TestInstance
+}
+
+func (tw *testEventWriter) Start() error {
+	return tw.ew.TestStart(tw.t)
+}
+
+func (tw *testEventWriter) Log(msg string) error {
+	return tw.ew.TestLog(tw.t, msg)
+}
+
+func (tw *testEventWriter) Error(e *testing.Error) error {
+	return tw.ew.TestError(tw.t, e)
+}
+
+func (tw *testEventWriter) End(skipReasons []string, timingLog *timing.Log) error {
+	return tw.ew.TestEnd(tw.t, skipReasons, timingLog)
 }
 
 // runTests runs tests per args and cfg and writes control messages to stdout.
@@ -288,12 +310,13 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		}
 	}
 	for i, t := range tests {
+		tw := ew.TestEventWriter(t)
 		if checkResult := checkResults[i]; checkResult.OK() {
-			if err := runTest(ctx, ew, args, cfg, t, nextTests[i], rd); err != nil {
+			if err := runTest(ctx, tw, args, cfg, t, nextTests[i], rd); err != nil {
 				return command.NewStatusErrorf(statusError, "run failed: %v", err)
 			}
 		} else {
-			reportSkippedTest(ew, t, checkResult)
+			reportSkippedTest(tw, checkResult)
 		}
 	}
 
@@ -329,9 +352,9 @@ func connectToTarget(ctx context.Context, args *Args) (_ *dut.DUT, retErr error)
 }
 
 // runTest runs t per args and cfg, writing appropriate messages to ew.
-func runTest(ctx context.Context, ew *eventWriter, args *Args, cfg *runConfig,
+func runTest(ctx context.Context, tw *testEventWriter, args *Args, cfg *runConfig,
 	t, next *testing.TestInstance, rd *testing.RemoteData) error {
-	ew.TestStart(t)
+	tw.Start()
 
 	// Attach a log that the test can use to report timing events.
 	timingLog := timing.NewLog()
@@ -354,7 +377,7 @@ func runTest(ctx context.Context, ew *eventWriter, args *Args, cfg *runConfig,
 
 	// Copy test output in the background as soon as it becomes available.
 	go func() {
-		copyTestOutput(ch, ew, abortCopier)
+		copyTestOutput(ch, tw, abortCopier)
 		copierDone <- true
 	}()
 
@@ -365,7 +388,7 @@ func runTest(ctx context.Context, ew *eventWriter, args *Args, cfg *runConfig,
 	}
 	<-copierDone
 
-	ew.TestEnd(t, nil, timingLog)
+	tw.End(nil, timingLog)
 
 	if !ok {
 		return errors.New("test did not return on timeout")
@@ -375,23 +398,23 @@ func runTest(ctx context.Context, ew *eventWriter, args *Args, cfg *runConfig,
 
 // reportSkippedTest is called instead of runTest for a test that is skipped due to
 // having unsatisfied dependencies.
-func reportSkippedTest(ew *eventWriter, t *testing.TestInstance, result *testing.ShouldRunResult) {
-	ew.TestStart(t)
+func reportSkippedTest(tw *testEventWriter, result *testing.ShouldRunResult) {
+	tw.Start()
 	for _, msg := range result.Errors {
 		_, fn, ln, _ := runtime.Caller(0)
-		ew.TestError(&testing.Error{
+		tw.Error(&testing.Error{
 			Reason: msg,
 			File:   fn,
 			Line:   ln,
 		})
 	}
-	ew.TestEnd(t, result.SkipReasons, nil)
+	tw.End(result.SkipReasons, nil)
 }
 
-// copyTestOutput reads test output from ch and writes it to ew until ch is closed.
+// copyTestOutput reads test output from ch and writes it to tw until ch is closed.
 // If abort becomes readable before ch is closed, a timeout error is written to ew
 // and the function returns immediately.
-func copyTestOutput(ch <-chan testing.Output, ew *eventWriter, abort <-chan bool) {
+func copyTestOutput(ch <-chan testing.Output, tw *testEventWriter, abort <-chan bool) {
 	for {
 		select {
 		case o, ok := <-ch:
@@ -400,22 +423,22 @@ func copyTestOutput(ch <-chan testing.Output, ew *eventWriter, abort <-chan bool
 				return
 			}
 			if o.Err != nil {
-				ew.TestError(o.Err)
+				tw.Error(o.Err)
 			} else {
-				ew.TestLog(o.Msg)
+				tw.Log(o.Msg)
 			}
 		case <-abort:
 			const msg = "Test did not return on timeout (see log for goroutine dump)"
-			ew.TestError(testing.NewError(nil, msg, msg, 0))
-			dumpGoroutines(ew)
+			tw.Error(testing.NewError(nil, msg, msg, 0))
+			dumpGoroutines(tw)
 			return
 		}
 	}
 }
 
-// dumpGoroutines dumps all goroutines to ew.
-func dumpGoroutines(ew *eventWriter) {
-	ew.TestLog("Dumping all goroutines")
+// dumpGoroutines dumps all goroutines to tw.
+func dumpGoroutines(tw *testEventWriter) {
+	tw.Log("Dumping all goroutines")
 	if err := func() error {
 		p := pprof.Lookup("goroutine")
 		if p == nil {
@@ -427,11 +450,11 @@ func dumpGoroutines(ew *eventWriter) {
 		}
 		sc := bufio.NewScanner(&buf)
 		for sc.Scan() {
-			ew.TestLog(sc.Text())
+			tw.Log(sc.Text())
 		}
 		return sc.Err()
 	}(); err != nil {
-		ew.TestError(&testing.Error{
+		tw.Error(&testing.Error{
 			Reason: fmt.Sprintf("Failed to dump goroutines: %v", err),
 		})
 	}

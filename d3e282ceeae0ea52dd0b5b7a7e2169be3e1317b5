@@ -34,6 +34,24 @@
       "revId": "d3e282ceeae0ea52dd0b5b7a7e2169be3e1317b5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "59ff0f71_91f5bbfc",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2020-06-03T03:41:40Z",
+      "side": 1,
+      "message": "More details:\n\nAt the ebuild level, there are two flags (dlc and dlc_test).\n\nCurrently the ebuilds that are included by using dlc_test flag all have a REQUIRED_USE for the dlc flag.\n\nShould we strictly enforce this at tast level as well or simply abandon this?",
+      "parentUuid": "a2c16c3e_8f9ce752",
+      "revId": "d3e282ceeae0ea52dd0b5b7a7e2169be3e1317b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -119,6 +119,7 @@ func main() {
 			// See: ChromeCrashReporterClient::GetCollectStatsConsent()
 			// Also metrics consent needs TPM (crbug.com/1035197).
 			"metrics_consent":        "chrome_internal && !mocktpm && !tast_vm",
+			"microcode":              "!betty && !tast_vm && amd64 && !amd_cpu",
 			"ml_service":             "ml_service",
 			"mosys":                  "!betty && !tast_vm",
 			"native_bridge":          "houdini || ndk_translation",

@@ -84,6 +84,7 @@ The following software features are defined:
     modifications.
     `memfd_create` - memfd_create function implemented in the kernel.
 *   `memd` - [Memory stats collection daemon].
+*   `microcode` - platforms that require CPU microcode updates.
 *   `ml_service` - ML Service daemon.
 *   `mosys` - Ability to run mosys command.
 *   `native_bridge` - Availability of 32-bit native bridge support for ARC.

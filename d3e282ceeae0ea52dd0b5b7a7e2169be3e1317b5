@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3c3bd9c9_817288cf",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-06-03T02:52:35Z",
+      "side": 1,
+      "message": "just curious, was there a board that dlc_test is set, but dlc is not?",
+      "revId": "d3e282ceeae0ea52dd0b5b7a7e2169be3e1317b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

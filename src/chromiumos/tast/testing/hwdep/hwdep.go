@@ -212,6 +212,14 @@ func Battery() Condition {
 		if f.DC.Power != device.Config_POWER_SUPPLY_BATTERY {
 			return errors.New("DUT does not have a battery")
 		}
+		// Some of pre-samus devices do not support ectool chargecontrol
+		isInList, err := isModelInList(f, "celes", "lulu")
+		if err != nil {
+			return err
+		}
+		if isInList {
+			return errors.New("DUT has a battery but not force dischargeable")
+		}
 		return nil
 	}}
 }

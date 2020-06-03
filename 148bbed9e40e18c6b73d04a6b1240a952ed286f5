@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "072b9bde_c686f83f",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1300299
+      },
+      "writtenOn": "2020-06-03T21:52:40Z",
+      "side": 1,
+      "message": "Two things:\n\n1. The bug \u0026 the comment \u0026 the CL description don\u0027t really explain why you think nyan_kitty specifically gets EAGAIN signals sent to journald. What is it about that board that makes journald unreliable?\n\n2. There are other tests which rely on log messages. I see 8 other references to syslog.NewReader() in tast-test. Should this variable be named something that is not crash-sender specific?",
+      "range": {
+        "startLine": 85,
+        "startChar": 0,
+        "endLine": 86,
+        "endChar": 41
+      },
+      "revId": "148bbed9e40e18c6b73d04a6b1240a952ed286f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

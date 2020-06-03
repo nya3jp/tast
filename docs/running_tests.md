@@ -157,6 +157,6 @@ DUT:
 
 ```shell
 stop ui
-rm -rf /var/lib/whitelist "'/home/chronos/Local State'"
+rm -rf /var/lib/whitelist '/home/chronos/Local State'
 start ui
 ```

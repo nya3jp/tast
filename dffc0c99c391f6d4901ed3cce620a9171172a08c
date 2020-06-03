@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "5d25c3d5_1197dd01",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 1115,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-06-03T10:41:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0c736353_ac388713",
+      "range": {
+        "startLine": 1115,
+        "startChar": 5,
+        "endLine": 1115,
+        "endChar": 19
+      },
+      "revId": "dffc0c99c391f6d4901ed3cce620a9171172a08c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b25087d3_920a3519",
         "filename": "src/chromiumos/tast/internal/testing/test_instance_test.go",
         "patchSetId": 9
@@ -45,6 +69,30 @@
       "revId": "dffc0c99c391f6d4901ed3cce620a9171172a08c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "778dde1a_0f560345",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 1140,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-06-03T10:41:45Z",
+      "side": 1,
+      "message": "Done.\nI was thinking opposite way, like adding such envvar to specify the ~/.cache in fast_build.sh. Now I got it\u0027s better to have it default, as the test is invoked by other ways.",
+      "parentUuid": "b25087d3_920a3519",
+      "range": {
+        "startLine": 1136,
+        "startChar": 2,
+        "endLine": 1140,
+        "endChar": 3
+      },
+      "revId": "dffc0c99c391f6d4901ed3cce620a9171172a08c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "9f100c65_792a19b8",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 1151,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-06-03T10:41:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "176126e0_9f116b31",
+      "range": {
+        "startLine": 1151,
+        "startChar": 11,
+        "endLine": 1151,
+        "endChar": 34
+      },
+      "revId": "dffc0c99c391f6d4901ed3cce620a9171172a08c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a3e2d636_69272793",
         "filename": "src/chromiumos/tast/internal/testing/test_instance_test.go",
         "patchSetId": 9
@@ -94,6 +166,30 @@
     },
     {
       "key": {
+        "uuid": "67ca88b5_50bb430b",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 1162,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-06-03T10:41:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a3e2d636_69272793",
+      "range": {
+        "startLine": 1155,
+        "startChar": 1,
+        "endLine": 1162,
+        "endChar": 4
+      },
+      "revId": "dffc0c99c391f6d4901ed3cce620a9171172a08c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a0e971c_af71dcc5",
         "filename": "src/chromiumos/tast/internal/testing/test_instance_test.go",
         "patchSetId": 9
@@ -114,6 +210,30 @@
       "revId": "dffc0c99c391f6d4901ed3cce620a9171172a08c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c045f937_dab1e27b",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 1170,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-06-03T10:41:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1a0e971c_af71dcc5",
+      "range": {
+        "startLine": 1170,
+        "startChar": 32,
+        "endLine": 1170,
+        "endChar": 33
+      },
+      "revId": "dffc0c99c391f6d4901ed3cce620a9171172a08c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -386,6 +386,8 @@ func findArmSOC(parsed *lscpuResult) (device.Config_SOC, error) {
 		default:
 			return device.Config_SOC_UNSPECIFIED, errors.Errorf("unknown ARM SOC (model=%s, cpus=%s)", model, cpus)
 		}
+	case "14":
+		return device.Config_SOC_SC7180, nil
 	default:
 		return device.Config_SOC_UNSPECIFIED, errors.Errorf("unknown ARM model: %s", model)
 	}

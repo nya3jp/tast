@@ -6,58 +6,14 @@
 package run
 
 import (
+	"chromiumos/tast/rpc"
 	"fmt"
 	"sort"
+
+	"github.com/golang/protobuf/proto"
 )
 
-type scheduler struct {
-	root *Node
-
-	// intermediate data structure
-}
-
-type orderType int
-
-const (
-	// Precondition shuold be closed even if prepare failed, and test doesn't run.
-	CLOSE_PRECONDITION orderType = iota
-	CLEAN_PRECONDITION
-	RUN_TEST
-)
-
-type runRequest struct {
-	// testName is the test to run, or an empty string if only preconditions should run.
-	testName string
-}
-
-type request struct {
-	name   string
-	order  orderType
-	bundle bundleType
-}
-
-type reqRunner func(*request) error
-
-func newScheduler() *scheduler {
-	return &scheduler{}
-}
-
-func (s *scheduler) addRemotePrecondition(name, parent string) {
-
-}
-
-func (s *scheduler) addLocalPrecondition(name, parent string) {
-
-}
-
-func (s *scheduler) addTest(name, pre string) {
-
-}
-
-func (s *scheduler) run() {
-
-}
-
+// Fields are exported for testability.
 type Node struct { // precondition node
 	Name  string     // precondition name
 	Ty    bundleType // local or remote
@@ -65,26 +21,53 @@ type Node struct { // precondition node
 	Cs    []*Node    // children
 }
 
-type test struct {
-	name         string
-	precondition *Node
-}
+func (tree *Node) generateTestRequests() []*rpc.TestRequest {
+	var res []*rpc.TestRequest
 
-type plan struct {
-	// remotePre
-}
+	var dfs func(*Node, *rpc.Precondition)
+	dfs = func(n *Node, p *rpc.Precondition) {
+		if n.Name != "" {
+			p = &rpc.Precondition{
+				Name:   n.Name,
+				Parent: p,
+			}
+			if n.Ty == local {
+				p.BundleType = rpc.BundleType_LOCAL
+			} else {
+				p.BundleType = rpc.BundleType_REMOTE
+			}
+		}
+		for _, t := range n.Tests {
+			res = append(res, &rpc.TestRequest{
+				Name:         t,
+				Precondition: proto.Clone(p).(*rpc.Precondition),
+			})
+		}
 
-// returns executed preconditions.
-// run precondition Prepare()s, and the test.
-func (t *test) execute() ([]*Node, error) {
-	panic("todo")
-}
+		for _, c := range n.Cs {
+			dfs(c, p)
+		}
+	}
+	dfs(tree, nil)
 
-func (n *Node) generatePlan() plan {
-	panic("todo")
-	// for _, c := range n.cs {
+	for i := 0; i < len(res); i++ {
+		last := make(map[string]*rpc.Precondition)
 
-	// }
+		for p := res[i].Precondition; p != nil; p = p.Parent {
+			last[p.Name] = p
+		}
+		if i+1 < len(res) {
+			for p := res[i+1].Precondition; p != nil; p = p.Parent {
+				delete(last, p.Name)
+			}
+		}
+
+		for _, p := range last {
+			p.ShouldClose = true
+		}
+	}
+
+	return res
 }
 
 func assembleTree(localPres, remotePres, tests map[string]string) (*Node, error) {

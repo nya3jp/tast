@@ -8,7 +8,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"path/filepath"
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/rpc"
@@ -44,18 +43,27 @@ func runTestsV2(ctx context.Context, cfg *Config, lc rpc.TastCoreServiceClient, 
 	//////////////////////////////// Run local tests //////////////////////////////////
 	if cfg.runLocal {
 		for bundle, ls := range ts[local] {
-			pre := make(map[string]string)
+			localPre := make(map[string]string)
 			for _, p := range ls.Preconditions {
-				if _, ok := remotePre[p.Name]; ok {
-					return nil, fmt.Errorf("multiply defined precondition %s in %s-%s and %s-%s", p.Name, local,
-						filepath.Base(bundle), remote, filepath.Base(remoteBundle),
-					)
-				}
-				pre[p.Name] = p.Parent
+				localPre[p.Name] = p.Parent
+			}
+			tests := make(map[string]string)
+			for _, t := range ls.Tests {
+				tests[t.Name] = t.Precondition
 			}
 
+			root, err := assembleTree(localPre, remotePre, tests)
 			if err != nil {
 				return nil, fmt.Errorf("runLocalTestsV2 failed: %v", err)
+			}
+			testsReq := root.generateTestRequests()
+
+			req := &rpc.RunRequest{
+				Tests: testsReq,
+			}
+			res, err := rc.Run(ctx, req)
+			if err != nil {
+				return nil, fmt.Errorf("failed to fulfill test request: %v", err)
 			}
 		}
 	}

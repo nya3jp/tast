@@ -58,50 +58,35 @@ message RunRequest {
   // args is json serialized Args.
   string args = 1;
 
-  // Either test or pre should be filled.
-
-  // test is the tests to run.
-  // Preconditioins' method should be CLEAR or CLOSE to indicate
-  // the method to run after the main test finishes.
-  TestInfo test = 2;
-
-  // pre is the precondition to run.
-  // This field is used for running remote precondition
-  // before running a local test having the precondition.
-  // If if pre.method is PREPARE, run prepare phase.
-  // Otherwise run clean up phase.
-  Precondition precondition = 3;
+  // The tests to run.
+  repeated TestRequest tests = 2;
 }
 
-message RunResponse {
-  // control is json serialized message of control.Run*
-  string control = 1;
+message TestRequest {
+  // Name is the test name.
+  string name = 1;
+
+  Precondition precondition = 2;
 }
 
 // Precondition is the precondition info used in requests.
 message Precondition {
-  // name is the name of this precondition.
+  // name is the name of the precondition.
   string name = 1;
-  // parent is the parent precondition if any.
-  Precondition parent = 2;
-  // external_parent is the name of the parent resides in a
-  // different bundle.
-  string external_parent = 3;
-  Method method = 4;
-  enum Method {
-    PREPARE = 0;
-    CLEAN = 1;
-    CLOSE = 2;
-  }
+
+  // The bundle location.
+  BundleType bundle_type = 2;
+
+  // The parent precondition if any.
+  Precondition parent = 3;
+
+  // Whether the precondition should be closed.
+  bool should_close = 4;
 }
 
-message TestInfo {
-  // name is the test name.
-  string name = 1;
-  // precondition is the precondition the test declares.
-  Precondition precondition = 2;
-  // skip_reason is non-empty if the test should be skipped.
-  string skip_reason = 3;
-
-  string raw_precondition = 4;
+enum BundleType {
+  LOCAL = 0;
+  REMOTE = 1;
 }
+
+message RunResponse {}

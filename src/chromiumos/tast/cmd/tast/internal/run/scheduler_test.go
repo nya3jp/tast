@@ -1,11 +1,104 @@
 package run
 
 import (
+	"chromiumos/tast/rpc"
 	"strings"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
 )
+
+func TestGenerateTestRequest(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		tree *Node
+		want []*rpc.TestRequest
+	}{
+		{
+			name: "nest",
+			/*
+				.[x]
+				└── a
+				    ├── b[y,z]
+				    └── c[w]
+			*/
+			tree: &Node{
+				Name:  "",
+				Ty:    remote,
+				Tests: []string{"x"},
+				Cs: []*Node{
+					{
+						Name: "a",
+						Ty:   remote,
+						Cs: []*Node{
+							{
+								Name:  "b",
+								Ty:    local,
+								Tests: []string{"y", "z"}},
+							{
+								Name:  "c",
+								Ty:    local,
+								Tests: []string{"w"},
+							},
+						},
+					},
+				},
+			},
+			want: []*rpc.TestRequest{
+				{
+					Name: "x",
+				},
+				{
+					Name: "y",
+					Precondition: &rpc.Precondition{
+						Name:       "b",
+						BundleType: rpc.BundleType_LOCAL,
+						Parent: &rpc.Precondition{
+							Name:       "a",
+							BundleType: rpc.BundleType_REMOTE,
+						},
+					},
+				},
+				{
+					Name: "z",
+					Precondition: &rpc.Precondition{
+						Name:       "b",
+						BundleType: rpc.BundleType_LOCAL,
+						Parent: &rpc.Precondition{
+							Name:       "a",
+							BundleType: rpc.BundleType_REMOTE,
+						},
+						ShouldClose: true,
+					},
+				},
+				{
+					Name: "w",
+					Precondition: &rpc.Precondition{
+						Name:       "c",
+						BundleType: rpc.BundleType_LOCAL,
+						Parent: &rpc.Precondition{
+							Name:        "a",
+							BundleType:  rpc.BundleType_REMOTE,
+							ShouldClose: true,
+						},
+						ShouldClose: true,
+					},
+				},
+			},
+		},
+	} {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			got := tc.tree.generateTestRequests()
+
+			if diff := cmp.Diff(got, tc.want); diff != "" {
+				t.Errorf("(-got +want): %v", diff)
+			}
+		})
+	}
+}
 
 func TestAssembleTree(t *testing.T) {
 	for _, tc := range []struct {
@@ -27,11 +120,11 @@ func TestAssembleTree(t *testing.T) {
 			name:   "correct tree",
 			local:  map[string]string{"a": "b", "b": "r", "c": "r", "d": ""},
 			remote: map[string]string{"r": "s", "s": ""},
-			tests:  map[string]string{"x": "a", "y": "r", "z": ""},
+			tests:  map[string]string{"x": "a", "y": "r", "z": "", "w": ""},
 			want: &Node{
 				Name:  "",
 				Ty:    remote,
-				Tests: []string{"z"},
+				Tests: []string{"w", "z"},
 				Cs: []*Node{
 					{
 						Name: "d",

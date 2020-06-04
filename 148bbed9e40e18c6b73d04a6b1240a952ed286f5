@@ -46,6 +46,30 @@
       "revId": "148bbed9e40e18c6b73d04a6b1240a952ed286f5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b513622f_10dfe32d",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1300299
+      },
+      "writtenOn": "2020-06-04T01:26:46Z",
+      "side": 1,
+      "message": "On the one hand, I understand the desire to keep the tests from getting kicked out of CQ-critical, and I appreciate that we have a root cause, even if we\u0027re still trying to figure out how best to make a proper fix.\n\nOn the other hand, it feels like we\u0027ve been down the \"mark a few boards as unstable without knowing why those particular boards are a problem\" route before, and sometimes the flakes just move to new boards. You have to admit, it does feel hacky....\n\nBut I\u0027ll +2 this for today in hopes we\u0027ll have a proper fix soon.",
+      "parentUuid": "c11ace03_ead05680",
+      "range": {
+        "startLine": 85,
+        "startChar": 0,
+        "endLine": 86,
+        "endChar": 41
+      },
+      "revId": "148bbed9e40e18c6b73d04a6b1240a952ed286f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -107,9 +107,9 @@ type Config struct {
 	proxy                proxyMode // how proxies should be used
 	collectSysInfo       bool      // collect system info (logs, crashes, etc.) generated during testing
 
-	testVars       map[string]string // names and values of variables used to pass out-of-band data to tests
-	varsFiles      []string          // paths to variable files
-	defaultVarsDir string            // dir containing default variable files
+	testVars        map[string]string // names and values of variables used to pass out-of-band data to tests
+	varsFiles       []string          // paths to variable files
+	defaultVarsDirs []string          // dirs containing default variable files
 
 	msgTimeout             time.Duration // timeout for reading control messages; default used if zero
 	localRunnerWaitTimeout time.Duration // timeout for waiting for local_test_runner to exit; default used if zero
@@ -202,7 +202,11 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 			return nil
 		})
 		f.Var(&vf, "var", `runtime variable to pass to tests, as "name=value" (can be repeated)`)
-		f.StringVar(&c.defaultVarsDir, "defaultvarsdir", "", "directory having YAML files containing variables")
+		dvd := command.RepeatedFlag(func(path string) error {
+			c.defaultVarsDirs = append(c.defaultVarsDirs, path)
+			return nil
+		})
+		f.Var(&dvd, "defaultvarsdir", "directory having YAML files containing variables (can be repeated)")
 		vff := command.RepeatedFlag(func(path string) error {
 			c.varsFiles = append(c.varsFiles, path)
 			return nil
@@ -300,14 +304,26 @@ func (c *Config) DeriveDefaults() error {
 	}
 
 	// Apply variables from default configurations.
-	if c.build {
-		setIfEmpty(&c.defaultVarsDir, filepath.Join(c.trunkDir, "src/platform/tast-tests-private/vars"))
-	} else {
-		setIfEmpty(&c.defaultVarsDir, "/etc/tast/vars/private")
+	if len(c.defaultVarsDirs) == 0 {
+		if c.build {
+			c.defaultVarsDirs = []string{
+				filepath.Join(c.trunkDir, "src/platform/tast-tests-private/vars"),
+				filepath.Join(c.trunkDir, "src/platform/tast-tests/vars"),
+			}
+		} else {
+			c.defaultVarsDirs = []string{
+				"/etc/tast/vars/private",
+				"/etc/tast/vars/public",
+			}
+		}
 	}
-	defaultVarsFiles, err := findVarsFiles(c.defaultVarsDir)
-	if err != nil {
-		return fmt.Errorf("failed to find vars files under %s: %v", c.defaultVarsDir, err)
+	var defaultVarsFiles []string
+	for _, d := range c.defaultVarsDirs {
+		fs, err := findVarsFiles(d)
+		if err != nil {
+			return fmt.Errorf("failed to find vars files under %s: %v", d, err)
+		}
+		defaultVarsFiles = append(defaultVarsFiles, fs...)
 	}
 	defaultVars := make(map[string]string)
 	for _, path := range defaultVarsFiles {

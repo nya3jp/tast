@@ -19,11 +19,11 @@ func TestFindVarsFiles(t *testing.T) {
 	defer os.RemoveAll(td)
 
 	if err := testutil.WriteFiles(td, map[string]string{
-		"valid1.yaml":      "",
-		"valid2.yaml":      "",
-		"ignored.txt":      "",
-		"ignored.json":     "",
-		"dir/ignored.yaml": "",
+		"valid1.yaml":    "",
+		"valid2.yaml":    "",
+		"ignored.txt":    "",
+		"ignored.json":   "",
+		"dir/inner.yaml": "",
 	}); err != nil {
 		t.Fatal(err)
 	}
@@ -34,6 +34,7 @@ func TestFindVarsFiles(t *testing.T) {
 	}
 
 	exp := []string{
+		filepath.Join(td, "dir/inner.yaml"),
 		filepath.Join(td, "valid1.yaml"),
 		filepath.Join(td, "valid2.yaml"),
 	}

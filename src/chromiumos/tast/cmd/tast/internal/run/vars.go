@@ -17,14 +17,13 @@ import (
 // paths are sorted in a stable order. If dir doesn't exist, empty paths is
 // returned with no error.
 func findVarsFiles(dir string) (paths []string, err error) {
-	files, err := ioutil.ReadDir(dir)
-	if err != nil && !os.IsNotExist(err) {
-		return nil, fmt.Errorf("couldn't read vars dir: %v", err)
-	}
-	for _, f := range files {
-		if filepath.Ext(f.Name()) == ".yaml" {
-			paths = append(paths, filepath.Join(dir, f.Name()))
+	if err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if filepath.Ext(path) == ".yaml" {
+			paths = append(paths, path)
 		}
+		return nil
+	}); err != nil && !os.IsNotExist(err) {
+		return nil, fmt.Errorf("couldn't walk vars dir: %v", err)
 	}
 	return paths, nil
 }

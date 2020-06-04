@@ -70,6 +70,30 @@
       "revId": "148bbed9e40e18c6b73d04a6b1240a952ed286f5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3c47ff3b_8232e260",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1305461
+      },
+      "writtenOn": "2020-06-04T18:13:53Z",
+      "side": 1,
+      "message": "Yeah, in general I agree, but in this case:\n\n1) We\u0027ve been seeing consistent flakes on this board and no others for a while\n2) journald is a cause of this flakiness and it\u0027s being removed soon.",
+      "parentUuid": "b513622f_10dfe32d",
+      "range": {
+        "startLine": 85,
+        "startChar": 0,
+        "endLine": 86,
+        "endChar": 41
+      },
+      "revId": "148bbed9e40e18c6b73d04a6b1240a952ed286f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

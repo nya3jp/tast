@@ -6,6 +6,7 @@ package run
 
 import (
 	"flag"
+	"fmt"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -159,6 +160,7 @@ func TestConfigDeriveDefaultsVars(t *testing.T) {
 		vars      map[string]string
 		overrides map[string]string
 		defaults  map[string]string
+		defaults2 map[string]string
 		want      map[string]string
 		wantError bool
 	}{
@@ -211,16 +213,34 @@ func TestConfigDeriveDefaultsVars(t *testing.T) {
 			},
 			wantError: true,
 		},
+		{
+			name:      "multiple_defaults",
+			vars:      map[string]string{},
+			defaults:  map[string]string{"a.yaml": "a: 1"},
+			defaults2: map[string]string{"a.yaml": "b: 2"},
+			want:      map[string]string{"a": "1", "b": "2"},
+		},
+		{
+			name:      "multiple_defaults_conflict",
+			vars:      map[string]string{},
+			defaults:  map[string]string{"a.yaml": "a: 1"},
+			defaults2: map[string]string{"a.yaml": "a: 2"},
+			wantError: true,
+		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			td := testutil.TempDir(t)
 			defer os.RemoveAll(td)
 
-			defaultVarsDir := filepath.Join(td, "default_vars")
-			if len(tc.defaults) > 0 {
-				os.MkdirAll(defaultVarsDir, 0777)
-				if err := testutil.WriteFiles(defaultVarsDir, tc.defaults); err != nil {
-					t.Fatal(err)
+			var defaultVarsDirs []string
+			for i, m := range []map[string]string{tc.defaults, tc.defaults2} {
+				dir := filepath.Join(td, fmt.Sprintf("default_vars%d", i+1))
+				defaultVarsDirs = append(defaultVarsDirs, dir)
+				if len(m) > 0 {
+					os.MkdirAll(dir, 0777)
+					if err := testutil.WriteFiles(dir, m); err != nil {
+						t.Fatal(err)
+					}
 				}
 			}
 
@@ -236,7 +256,7 @@ func TestConfigDeriveDefaultsVars(t *testing.T) {
 
 			cfg.build = false
 			cfg.testVars = tc.vars
-			cfg.defaultVarsDir = defaultVarsDir
+			cfg.defaultVarsDirs = defaultVarsDirs
 			for p := range tc.overrides {
 				cfg.varsFiles = append(cfg.varsFiles, filepath.Join(overrideVarsDir, p))
 			}

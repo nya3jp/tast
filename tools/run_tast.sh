@@ -47,5 +47,5 @@ exec "${basedir}/tast" -verbose run -build=false \
   -remotebundledir="${basedir}/bundles/remote" \
   -remotedatadir="${basedir}/data" \
   -remoterunner="${basedir}/remote_test_runner" \
-  -defaultvarsdir="${basedir}/vars/private" \
+  -defaultvarsdir="${basedir}/vars" \
   "${flags[@]}" "$@"

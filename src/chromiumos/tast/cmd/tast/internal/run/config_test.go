@@ -153,6 +153,62 @@ func TestConfigDeriveDefaultsBuildMissingBundle(t *testing.T) {
 	}
 }
 
+func TestConfigConbinesDefaultVarsDir(t *testing.T) {
+	for _, tc := range []struct {
+		name      string
+		dir1      map[string]string
+		dir2      map[string]string
+		want      map[string]string
+		wantError bool
+	}{
+		{
+			name: "empty",
+			dir1: map[string]string{},
+			dir2: map[string]string{},
+			want: map[string]string{},
+		},
+		{
+			name: "distinct",
+			dir1: map[string]string{"a.yaml": "a: 1"},
+			dir2: map[string]string{"a.yaml": "b: 2"},
+			want: map[string]string{"a": "1", "b": "2"},
+		},
+	} {
+		td := testutil.TempDir(t)
+		defer os.RemoveAll(td)
+
+		dir1 := filepath.Join(td, "vars1")
+		dir2 := filepath.Join(td, "vars2")
+		os.MkdirAll(dir1, 0777)
+		os.MkdirAll(dir2, 0777)
+		if err := testutil.WriteFiles(dir1, tc.dir1); err != nil {
+			t.Fatal(err)
+		}
+		if err := testutil.WriteFiles(dir2, tc.dir2); err != nil {
+			t.Fatal(err)
+		}
+
+		cfg := NewConfig(RunTestsMode, "", td)
+		flags := flag.NewFlagSet("", flag.ContinueOnError)
+		cfg.SetFlags(flags)
+		cfg.build = false
+		cfg.defaultVarsDirs = []string{dir1, dir2}
+
+		if err := cfg.DeriveDefaults(); err != nil {
+			if !tc.wantError {
+				t.Fatal("DeriveDefaults failed: ", err)
+			}
+			return
+		}
+		if tc.wantError {
+			t.Fatal("DeriveDefaults unexpectedly succeeded")
+		}
+		if diff := cmp.Diff(cfg.testVars, tc.want); diff != "" {
+			t.Fatalf("Unexpected vars after DeriveDefaults (-got +want):\n%s", diff)
+		}
+	}
+}
+
 func TestConfigDeriveDefaultsVars(t *testing.T) {
 	for _, tc := range []struct {
 		name      string
@@ -236,7 +292,7 @@ func TestConfigDeriveDefaultsVars(t *testing.T) {
 
 			cfg.build = false
 			cfg.testVars = tc.vars
-			cfg.defaultVarsDir = defaultVarsDir
+			cfg.defaultVarsDirs = []string{defaultVarsDir}
 			for p := range tc.overrides {
 				cfg.varsFiles = append(cfg.varsFiles, filepath.Join(overrideVarsDir, p))
 			}

@@ -227,6 +227,15 @@ func TestConfigDeriveDefaultsVars(t *testing.T) {
 			defaults2: map[string]string{"a.yaml": "a: 2"},
 			wantError: true,
 		},
+		{
+			name: "defaults_deep",
+			vars: map[string]string{},
+			defaults: map[string]string{
+				"x/a.yaml": "a: 1",
+				"y/a.yaml": "b: 2",
+			},
+			want: map[string]string{"a": "1", "b": "2"},
+		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			td := testutil.TempDir(t)

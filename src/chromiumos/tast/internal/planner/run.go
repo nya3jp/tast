@@ -27,8 +27,7 @@ const (
 //
 // The test function executes in a goroutine and may still be running if it ignores its deadline;
 // the returned value indicates whether the test completed within the allotted time or not.
-// ch is only closed after the test function completes, so if false is returned,
-// the caller is responsible for reporting that the test timed out.
+// In that case OutputStream methods may be called after this function returns.
 //
 // Stages are executed in the following order:
 //	- cfg.PreTestFunc (if non-nil)
@@ -36,9 +35,9 @@ const (
 //	- t.Func (if no errors yet)
 //	- t.Pre.Close (if t.Pre is non-nil and cfg.NextTest.Pre is different)
 //	- cfg.PostTestFunc (if non-nil)
-func Run(ctx context.Context, t *testing.TestInstance, ch chan<- testing.Output, cfg *testing.TestConfig) bool {
+func Run(ctx context.Context, t *testing.TestInstance, out testing.OutputStream, cfg *testing.TestConfig) bool {
 	// Attach the state to a context so support packages can log to it.
-	root := testing.NewRootState(t, ch, cfg)
+	root := testing.NewRootState(t, out, cfg)
 
 	var stages []stage
 	addStage := func(f stageFunc, ctxTimeout, runTimeout time.Duration) {

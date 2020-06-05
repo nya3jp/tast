@@ -94,6 +94,30 @@
       "revId": "148bbed9e40e18c6b73d04a6b1240a952ed286f5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "80a76396_fb1d113e",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-06-05T02:10:03Z",
+      "side": 1,
+      "message": "+1 to what Ian said. I\u0027m afraid that this issue is not specific to nyan, it\u0027s just that the issue is more frequent on nyan due to some device characteristics (maybe too slow?), and we want to have a proper fix as soon as possible.\n\nWhile yoshiki@ and ythjkt@ are working on removing journald, I\u0027m not sure when they complete deletion. I recommend not waiting their work and go ahead with patching journald.\n\nAnd finally, I recommend hardware dependencies instead of software dependencies to disable/enable tests on nyan. go/tast-deps",
+      "parentUuid": "3c47ff3b_8232e260",
+      "range": {
+        "startLine": 85,
+        "startChar": 0,
+        "endLine": 86,
+        "endChar": 41
+      },
+      "revId": "148bbed9e40e18c6b73d04a6b1240a952ed286f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

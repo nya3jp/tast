@@ -204,15 +204,18 @@ func (r *RootState) HasError() bool {
 	return r.hasErr
 }
 
+// recordError records that the test has reported an error.
+func (r *RootState) recordError() {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	r.hasErr = true
+}
+
 // writeOutput writes o to r.ch.
 // o is discarded if Close has already been called since a write to a closed channel would panic.
 func (r *RootState) writeOutput(o Output) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-
-	if o.Err != nil {
-		r.hasErr = true
-	}
 	if !r.closed {
 		r.ch <- o
 	}
@@ -552,6 +555,7 @@ func (s *State) formatErrorf(format string, args ...interface{}) (fullMsg, lastM
 
 // recordError records that the test has reported an error.
 func (s *State) recordError() {
+	s.root.recordError()
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.hasError = true

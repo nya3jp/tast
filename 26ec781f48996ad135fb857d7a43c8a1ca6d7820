@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6ec32641_ae62fd40",
+        "filename": "src/go.chromium.org/chromiumos/infra/proto/go/device/config.pb.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-06-05T18:29:02Z",
+      "side": 0,
+      "message": "https://chromium.googlesource.com/chromiumos/platform/tast/+/26ec781f48996ad135fb857d7a43c8a1ca6d7820/tools/import_infra_proto.sh\n\nCould you import .proto file, too, via this script?\nCould you split the CL into two? Just importing proto via the script, and features.go in this CL?",
+      "revId": "26ec781f48996ad135fb857d7a43c8a1ca6d7820",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

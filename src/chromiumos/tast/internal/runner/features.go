@@ -197,7 +197,7 @@ func newDeviceConfig() (dc *device.Config, warns []string) {
 		warns = append(warns, fmt.Sprintf("unknown brand-id: %v", err))
 	}
 
-	soc, err := findSOC()
+	vendor, soc, err := findSOC()
 	if err != nil {
 		warns = append(warns, fmt.Sprintf("Unknown SOC: %v", err))
 	}
@@ -207,7 +207,8 @@ func newDeviceConfig() (dc *device.Config, warns []string) {
 			ModelId:    model,
 			BrandId:    brand,
 		},
-		Soc: soc,
+		SocVendor: vendor,
+		Soc:       soc,
 	}
 
 	hasInternalDisplay := func() bool {
@@ -332,18 +333,22 @@ func (r *lscpuResult) find(name string) (data string, ok bool) {
 	return "", false
 }
 
-func findSOC() (device.Config_SOC, error) {
+func findSOC() (device.Config_SOCVendor, device.Config_SOC, error) {
+	findSOCErr := func(err error) (device.Config_SOCVendor, device.Config_SOC, error) {
+		return device.Config_SOC_VENDOR_UNSPECIFIED, device.Config_SOC_UNSPECIFIED, err
+	}
+
 	b, err := exec.Command("lscpu", "--json").Output()
 	if err != nil {
-		return device.Config_SOC_UNSPECIFIED, err
+		return findSOCErr(err)
 	}
 	var parsed lscpuResult
 	if err := json.Unmarshal(b, &parsed); err != nil {
-		return device.Config_SOC_UNSPECIFIED, errors.Wrap(err, "failed to parse lscpu result")
+		return findSOCErr(errors.Wrap(err, "failed to parse lscpu result"))
 	}
 	vendorID, ok := parsed.find("Vendor ID:")
 	if !ok {
-		return device.Config_SOC_UNSPECIFIED, errors.New("vendor ID not found")
+		return findSOCErr(errors.New("vendor ID not found"))
 	}
 
 	switch vendorID {
@@ -354,59 +359,69 @@ func findSOC() (device.Config_SOC, error) {
 	case "AuthenticAMD":
 		return findAMDSOC(&parsed)
 	default:
-		return device.Config_SOC_UNSPECIFIED, errors.Errorf("unknown vendor ID: %q", vendorID)
+		return findSOCErr(errors.Errorf("unknown vendor ID: %q", vendorID))
 	}
 }
 
-func findArmSOC(parsed *lscpuResult) (device.Config_SOC, error) {
+func findArmSOC(parsed *lscpuResult) (device.Config_SOCVendor, device.Config_SOC, error) {
+	findSOCErr := func(err error) (device.Config_SOCVendor, device.Config_SOC, error) {
+		return device.Config_SOC_VENDOR_UNSPECIFIED, device.Config_SOC_UNSPECIFIED, err
+	}
+
 	model, ok := parsed.find("Model:")
 	if !ok {
-		return device.Config_SOC_UNSPECIFIED, errors.New("ARM model not found")
+		return findSOCErr(errors.New("ARM model not found"))
 	}
 
 	// SOC_MT8176 is unsupported, since there are no devices.
 	switch model {
 	case "1":
-		return device.Config_SOC_RK3288, nil
+		return device.Config_SOC_VENDOR_ROCKCHIP, device.Config_SOC_RK3288, nil
 	case "2":
-		return device.Config_SOC_MT8173, nil
+		return device.Config_SOC_VENDOR_MEDIATEK, device.Config_SOC_MT8173, nil
 	case "3":
-		return device.Config_SOC_TEGRA_K1, nil
+		return device.Config_SOC_VENDOR_NVIDIA, device.Config_SOC_TEGRA_K1, nil
 	case "4":
 		// RK3399 and MT8183 share the same model. RK3399 is hex core, and MT8183 is octa core,
 		// so disambiguate by the number of CPUs.
 		cpus, ok := parsed.find("CPU(s):")
 		if !ok {
-			return device.Config_SOC_UNSPECIFIED, errors.New("unknown number of cores")
+			return findSOCErr(errors.New("unknown number of cores"))
 		}
 		switch cpus {
 		case "8":
-			return device.Config_SOC_MT8183, nil
+			return device.Config_SOC_VENDOR_MEDIATEK, device.Config_SOC_MT8183, nil
 		case "6":
-			return device.Config_SOC_RK3399, nil
+			return device.Config_SOC_VENDOR_ROCKCHIP, device.Config_SOC_RK3399, nil
 		default:
-			return device.Config_SOC_UNSPECIFIED, errors.Errorf("unknown ARM SOC (model=%s, cpus=%s)", model, cpus)
+			return findSOCErr(errors.Errorf("unknown ARM SOC (model=%s, cpus=%s)", model, cpus))
 		}
 	default:
-		return device.Config_SOC_UNSPECIFIED, errors.Errorf("unknown ARM model: %s", model)
+		return findSOCErr(errors.Errorf("unknown ARM model: %s", model))
 	}
 }
 
-func findIntelSOC(parsed *lscpuResult) (device.Config_SOC, error) {
+func findIntelSOC(parsed *lscpuResult) (device.Config_SOCVendor, device.Config_SOC, error) {
+	const vendor = device.Config_SOC_VENDOR_INTEL
+	findSOCErr := func(err error) (device.Config_SOCVendor, device.Config_SOC, error) {
+		return vendor, device.Config_SOC_UNSPECIFIED, err
+	}
+
 	if family, ok := parsed.find("CPU family:"); !ok {
-		return device.Config_SOC_UNSPECIFIED, errors.New("Intel family not found")
+		return findSOCErr(errors.New("Intel family not found"))
 	} else if family != "6" {
-		return device.Config_SOC_UNSPECIFIED, errors.Errorf("unknown Intel family: %s", family)
+		return findSOCErr(errors.Errorf("unknown Intel family: %s", family))
 	}
 
 	modelStr, ok := parsed.find("Model:")
 	if !ok {
-		return device.Config_SOC_UNSPECIFIED, errors.New("Intel model not found")
+		return findSOCErr(errors.New("Intel model not found"))
 	}
 	model, err := strconv.ParseInt(modelStr, 10, 64)
 	if err != nil {
-		return device.Config_SOC_UNSPECIFIED, errors.Wrapf(err, "failed to parse intel model: %q", modelStr)
+		return findSOCErr(errors.Wrapf(err, "failed to parse intel model: %q", modelStr))
 	}
+
 	switch model {
 	case INTEL_FAM6_KABYLAKE_L:
 		// AMBERLAKE_Y, COMET_LAKE_U, WHISKEY_LAKE_U, KABYLAKE_U, KABYLAKE_U_R, and
@@ -414,7 +429,7 @@ func findIntelSOC(parsed *lscpuResult) (device.Config_SOC, error) {
 		// Note that Pentium brand is unsupported.
 		modelName, ok := parsed.find("Model name:")
 		if !ok {
-			return device.Config_SOC_UNSPECIFIED, errors.New("Intel model name not found")
+			return findSOCErr(errors.New("Intel model name not found"))
 		}
 		for _, e := range []struct {
 			soc device.Config_SOC
@@ -438,23 +453,23 @@ func findIntelSOC(parsed *lscpuResult) (device.Config_SOC, error) {
 		} {
 			r := regexp.MustCompile(e.ptn)
 			if r.MatchString(modelName) {
-				return e.soc, nil
+				return vendor, e.soc, nil
 			}
 		}
-		return device.Config_SOC_UNSPECIFIED, errors.Errorf("unknown model name: %s", modelName)
+		return findSOCErr(errors.Errorf("unknown model name: %s", modelName))
 	case INTEL_FAM6_ICELAKE_L:
-		return device.Config_SOC_ICE_LAKE_Y, nil
+		return vendor, device.Config_SOC_ICE_LAKE_Y, nil
 	case INTEL_FAM6_ATOM_GOLDMONT_PLUS:
-		return device.Config_SOC_GEMINI_LAKE, nil
+		return vendor, device.Config_SOC_GEMINI_LAKE, nil
 	case INTEL_FAM6_CANNONLAKE_L:
-		return device.Config_SOC_CANNON_LAKE_Y, nil
+		return vendor, device.Config_SOC_CANNON_LAKE_Y, nil
 	case INTEL_FAM6_ATOM_GOLDMONT:
-		return device.Config_SOC_APOLLO_LAKE, nil
+		return vendor, device.Config_SOC_APOLLO_LAKE, nil
 	case INTEL_FAM6_SKYLAKE_L:
 		// SKYLAKE_U and SKYLAKE_Y share the same model. Parse model name.
 		modelName, ok := parsed.find("Model name:")
 		if !ok {
-			return device.Config_SOC_UNSPECIFIED, errors.New("Intel model name not found")
+			return findSOCErr(errors.New("Intel model name not found"))
 		}
 		for _, e := range []struct {
 			soc device.Config_SOC
@@ -466,36 +481,41 @@ func findIntelSOC(parsed *lscpuResult) (device.Config_SOC, error) {
 		} {
 			r := regexp.MustCompile(e.ptn)
 			if r.MatchString(modelName) {
-				return e.soc, nil
+				return vendor, e.soc, nil
 			}
 		}
-		return device.Config_SOC_UNSPECIFIED, errors.Errorf("unknown model name: %s", modelName)
+		return findSOCErr(errors.Errorf("unknown model name: %s", modelName))
 	case INTEL_FAM6_ATOM_AIRMONT:
-		return device.Config_SOC_BRASWELL, nil
+		return vendor, device.Config_SOC_BRASWELL, nil
 	case INTEL_FAM6_BROADWELL:
-		return device.Config_SOC_BROADWELL, nil
+		return vendor, device.Config_SOC_BROADWELL, nil
 	case INTEL_FAM6_HASWELL, INTEL_FAM6_HASWELL_L:
-		return device.Config_SOC_HASWELL, nil
+		return vendor, device.Config_SOC_HASWELL, nil
 	case INTEL_FAM6_IVYBRIDGE:
-		return device.Config_SOC_IVY_BRIDGE, nil
+		return vendor, device.Config_SOC_IVY_BRIDGE, nil
 	case INTEL_FAM6_ATOM_SILVERMONT:
-		return device.Config_SOC_BAY_TRAIL, nil
+		return vendor, device.Config_SOC_BAY_TRAIL, nil
 	case INTEL_FAM6_SANDYBRIDGE:
-		return device.Config_SOC_SANDY_BRIDGE, nil
+		return vendor, device.Config_SOC_SANDY_BRIDGE, nil
 	case INTEL_FAM6_ATOM_BONNELL:
-		return device.Config_SOC_PINE_TRAIL, nil
+		return vendor, device.Config_SOC_PINE_TRAIL, nil
 	default:
-		return device.Config_SOC_UNSPECIFIED, errors.Errorf("unknown Intel model: %d", model)
+		return findSOCErr(errors.Errorf("unknown Intel model: %d", model))
 	}
 }
 
-func findAMDSOC(parsed *lscpuResult) (device.Config_SOC, error) {
+func findAMDSOC(parsed *lscpuResult) (device.Config_SOCVendor, device.Config_SOC, error) {
+	const vendor = device.Config_SOC_VENDOR_AMD
+	findSOCErr := func(err error) (device.Config_SOCVendor, device.Config_SOC, error) {
+		return vendor, device.Config_SOC_UNSPECIFIED, err
+	}
+
 	model, ok := parsed.find("Model:")
 	if !ok {
-		return device.Config_SOC_UNSPECIFIED, errors.New("AMD model not found")
+		return findSOCErr(errors.New("AMD model not found"))
 	}
 	if model == "112" {
-		return device.Config_SOC_STONEY_RIDGE, nil
+		return vendor, device.Config_SOC_STONEY_RIDGE, nil
 	}
-	return device.Config_SOC_UNSPECIFIED, errors.Errorf("unknown AMD model: %s", model)
+	return findSOCErr(errors.Errorf("unknown AMD model: %s", model))
 }

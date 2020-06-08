@@ -214,3 +214,17 @@ func Battery() Condition {
 		return nil
 	}}
 }
+
+// SOCVendor returns a hardware dependency condition that is satisfied iff the
+// DUT's SoC vendor matches one of the specified ones.
+func SOCVendor(names ...string) Condition {
+	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
+		vendor := strings.TrimPrefix(f.DC.SocVendor.String(), "SOC_VENDOR_")
+		for _, name := range names {
+			if strings.EqualFold(name, vendor) {
+				return nil
+			}
+		}
+		return errors.Errorf("DUT SoC vendor does not match")
+	}}
+}

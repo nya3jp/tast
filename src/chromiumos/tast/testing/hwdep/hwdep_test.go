@@ -125,6 +125,27 @@ func TestSkipOnPlatform(t *testing.T) {
 	}
 }
 
+func TestSOCVendor(t *testing.T) {
+	c := SOCVendor("Intel", "MediaTek")
+
+	for _, tc := range []struct {
+		vendor          device.Config_SOCVendor
+		expectSatisfied bool
+	}{
+		{device.Config_SOC_VENDOR_UNSPECIFIED, false},
+		{device.Config_SOC_VENDOR_INTEL, true},
+		{device.Config_SOC_VENDOR_AMD, false},
+		{device.Config_SOC_VENDOR_MEDIATEK, true},
+	} {
+		verifyCondition(
+			t, c,
+			&device.Config{
+				SocVendor: tc.vendor,
+			},
+			tc.expectSatisfied)
+	}
+}
+
 func TestCEL(t *testing.T) {
 	for i, c := range []struct {
 		input    Deps
@@ -138,6 +159,7 @@ func TestCEL(t *testing.T) {
 		{D(Fingerprint()), "dut.hardware_features.fingerprint.location != api.HardwareFeatures.Fingerprint.Location.NOT_PRESENT"},
 		{D(InternalDisplay()), "dut.hardware_features.screen.milliinch.value != 0U"},
 		{D(Wifi80211ac()), "not_implemented"},
+		{D(SocVendor("Intel")), "not_implemented"},
 
 		{D(TouchScreen(), Fingerprint()),
 			"dut.hardware_features.screen.touch_support == api.HardwareFeatures.Present.PRESENT && dut.hardware_features.fingerprint.location != api.HardwareFeatures.Fingerprint.Location.NOT_PRESENT"},

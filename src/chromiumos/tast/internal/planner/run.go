@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	exitTimeout     = 3 * time.Second  // extra time granted to test-related funcs to exit
+	exitTimeout     = 30 * time.Second // extra time granted to test-related funcs to exit
 	preTestTimeout  = 15 * time.Second // timeout for TestConfig.PreTestFunc
 	postTestTimeout = 15 * time.Second // timeout for TestConfig.PostTestFunc
 )

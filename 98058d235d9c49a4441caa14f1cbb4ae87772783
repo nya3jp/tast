@@ -22,6 +22,30 @@
       "revId": "98058d235d9c49a4441caa14f1cbb4ae87772783",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "49710277_9fc8787a",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2020-06-08T22:39:15Z",
+      "side": 1,
+      "message": "Oh, you\u0027re right! Oops",
+      "parentUuid": "84194f60_b3516076",
+      "range": {
+        "startLine": 227,
+        "startChar": 43,
+        "endLine": 227,
+        "endChar": 45
+      },
+      "revId": "98058d235d9c49a4441caa14f1cbb4ae87772783",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

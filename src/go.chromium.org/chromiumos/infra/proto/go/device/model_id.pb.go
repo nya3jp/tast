@@ -65,7 +65,9 @@ func init() {
 	proto.RegisterType((*ModelId)(nil), "device.ModelId")
 }
 
-func init() { proto.RegisterFile("device/model_id.proto", fileDescriptor_cfe7d1a954e827c8) }
+func init() {
+	proto.RegisterFile("device/model_id.proto", fileDescriptor_cfe7d1a954e827c8)
+}
 
 var fileDescriptor_cfe7d1a954e827c8 = []byte{
 	// 121 bytes of a gzipped FileDescriptorProto

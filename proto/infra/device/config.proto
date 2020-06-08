@@ -13,7 +13,7 @@ import "device/config_id.proto";
 // These are the distinct configs combinations that will constitue a ChromeOS
 // device.
 
-// Next tag: 21
+// Next tag: 22
 message Config {
 
   // Required. Unique ID of the device config.
@@ -121,6 +121,19 @@ message Config {
   }
   repeated VideoAcceleration video_acceleration_supports = 10;
 
+  // Next tag: 7
+  enum SOCVendor {
+    SOC_VENDOR_UNSPECIFIED = 0;
+    SOC_VENDOR_AMD = 1;
+    SOC_VENDOR_INTEL = 2;
+    SOC_VENDOR_MEDIATEK = 3;
+    SOC_VENDOR_NVIDIA = 4;
+    SOC_VENDOR_QUALCOMM = 5;
+    SOC_VENDOR_ROCKCHIP = 6;
+  }
+
+  SOCVendor soc_vendor = 21;
+
   // Next Tag: 31
   enum SOC {
     SOC_UNSPECIFIED = 0;
@@ -157,6 +170,7 @@ message Config {
     SOC_STONEY_RIDGE = 28;
     SOC_TEGRA_K1 = 29;
     SOC_WHISKEY_LAKE_U = 30;
+    SOC_SC7180 = 31;
   }
 
   SOC soc = 11;
@@ -191,6 +205,7 @@ message Config {
     OEM_HP = 4;
     OEM_LENOVO = 5;
     OEM_ASUS = 6;
+    OEM_NEC = 7;
   }
 
   // OEM for device

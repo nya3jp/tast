@@ -214,3 +214,26 @@ func Battery() Condition {
 		return nil
 	}}
 }
+
+// SupportsNV12Overlays says true if the SoC supports NV12 hardware overlays,
+// which are commonly used for video overlays. SoCs with Intel Gen 7.5 (Haswell,
+// BayTrail) and Gen 8 GPUs (Broadwell, Braswell) for example, don't support
+// those.
+func SupportsNV12Overlays() Condition {
+	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
+		if f.DC == nil {
+			return errors.New("device.Config is not given")
+		}
+		if f.DC.Soc == device.Config_SOC_HASWELL ||
+			f.DC.Soc == device.Config_SOC_BAY_TRAIL ||
+			f.DC.Soc == device.Config_SOC_BROADWELL ||
+			f.DC.Soc == device.Config_SOC_BRASWELL ||
+			f.DC.Soc == device.Config_SOC_MT8173 ||
+			f.DC.Soc == device.Config_SOC_MT8176 ||
+			f.DC.Soc == device.Config_SOC_MT8183 ||
+			f.DC.Soc == device.Config_SOC_UNSPECIFIED {
+			return errors.New("SoC does not support NV12 Overlays")
+		}
+		return nil
+	}}
+}

@@ -39,19 +39,19 @@ func (o *outputSink) Error(e *testing.Error) error {
 
 // testPre implements both Precondition and preconditionImpl for unit tests.
 type testPre struct {
-	prepareFunc func(context.Context, *testing.State) interface{}
-	closeFunc   func(context.Context, *testing.State)
+	prepareFunc func(context.Context, *testing.PreState) interface{}
+	closeFunc   func(context.Context, *testing.PreState)
 	name        string // name to return from String
 }
 
-func (p *testPre) Prepare(ctx context.Context, s *testing.State) interface{} {
+func (p *testPre) Prepare(ctx context.Context, s *testing.PreState) interface{} {
 	if p.prepareFunc != nil {
 		return p.prepareFunc(ctx, s)
 	}
 	return nil
 }
 
-func (p *testPre) Close(ctx context.Context, s *testing.State) {
+func (p *testPre) Close(ctx context.Context, s *testing.PreState) {
 	if p.closeFunc != nil {
 		p.closeFunc(ctx, s)
 	}
@@ -208,8 +208,9 @@ func TestRunSkipStages(t *gotesting.T) {
 		tests = append(tests, test)
 	}
 
-	// makeFunc returns a function that sets *called to true and performs the action described by a.
-	makeFunc := func(a action, called *bool) func(context.Context, *testing.State) {
+	// makeTestFunc and MakePreFunc return a function that sets *called to true
+	// and performs the action described by a.
+	makeTestFunc := func(a action, called *bool) func(context.Context, *testing.State) {
 		return func(ctx context.Context, s *testing.State) {
 			*called = true
 			switch a {
@@ -222,8 +223,21 @@ func TestRunSkipStages(t *gotesting.T) {
 			}
 		}
 	}
+	makePreFunc := func(a action, called *bool) func(context.Context, *testing.PreState) {
+		return func(ctx context.Context, s *testing.PreState) {
+			*called = true
+			switch a {
+			case doError:
+				s.Error("intentional error")
+			case doFatal:
+				s.Fatal("intentional fatal")
+			case doPanic:
+				panic("intentional panic")
+			}
+		}
+	}
 
-	makeFuncWithCallback := func(a action, called *bool, cbA action, cbCalled *bool) func(ctx context.Context, s *testing.State) func(ctx context.Context, s *testing.State) {
+	makeTestFuncWithCallback := func(a action, called *bool, cbA action, cbCalled *bool) func(ctx context.Context, s *testing.State) func(ctx context.Context, s *testing.State) {
 		return func(ctx context.Context, s *testing.State) func(ctx context.Context, s *testing.State) {
 			*called = true
 			switch a {
@@ -235,7 +249,7 @@ func TestRunSkipStages(t *gotesting.T) {
 				panic("intentional panic")
 			}
 
-			return makeFunc(cbA, cbCalled)
+			return makeTestFunc(cbA, cbCalled)
 		}
 	}
 
@@ -244,18 +258,18 @@ func TestRunSkipStages(t *gotesting.T) {
 		var preTestRan, prepareRan, testRan, closeRan, postTestRan, postTestHookRan bool
 
 		test := tests[i]
-		test.Func = makeFunc(c.testAction, &testRan)
+		test.Func = makeTestFunc(c.testAction, &testRan)
 		if c.pre != nil {
-			prepare := makeFunc(c.prepareAction, &prepareRan)
-			c.pre.prepareFunc = func(ctx context.Context, s *testing.State) interface{} {
+			prepare := makePreFunc(c.prepareAction, &prepareRan)
+			c.pre.prepareFunc = func(ctx context.Context, s *testing.PreState) interface{} {
 				prepare(ctx, s)
 				return nil
 			}
-			c.pre.closeFunc = makeFunc(c.closeAction, &closeRan)
+			c.pre.closeFunc = makePreFunc(c.closeAction, &closeRan)
 		}
 		cfg := &testing.TestConfig{
-			PreTestFunc:  makeFuncWithCallback(c.preTestAction, &preTestRan, c.postTestHookAction, &postTestHookRan),
-			PostTestFunc: makeFunc(c.postTestAction, &postTestRan),
+			PreTestFunc:  makeTestFuncWithCallback(c.preTestAction, &preTestRan, c.postTestHookAction, &postTestHookRan),
+			PostTestFunc: makeTestFunc(c.postTestAction, &postTestRan),
 		}
 		if i < len(tests)-1 {
 			cfg.NextTest = tests[i+1]
@@ -326,7 +340,7 @@ func TestRunPrecondition(t *gotesting.T) {
 	test := &testing.TestInstance{
 		// Use a precondition that returns the struct that we declared earlier from its Prepare method.
 		Pre: &testPre{
-			prepareFunc: func(context.Context, *testing.State) interface{} { return preData },
+			prepareFunc: func(context.Context, *testing.PreState) interface{} { return preData },
 		},
 		Func: func(ctx context.Context, s *testing.State) {
 			if s.PreValue() == nil {
@@ -350,7 +364,7 @@ func TestRunPrecondition(t *gotesting.T) {
 func TestRunPreconditionContext(t *gotesting.T) {
 	var testCtx context.Context
 
-	prepareFunc := func(ctx context.Context, s *testing.State) interface{} {
+	prepareFunc := func(ctx context.Context, s *testing.PreState) interface{} {
 		if testCtx == nil {
 			testCtx = s.PreCtx()
 		}
@@ -365,7 +379,7 @@ func TestRunPreconditionContext(t *gotesting.T) {
 		return nil
 	}
 
-	closeFunc := func(ctx context.Context, s *testing.State) {
+	closeFunc := func(ctx context.Context, s *testing.PreState) {
 		if testCtx != s.PreCtx() {
 			t.Errorf("Different context in Close")
 		}
@@ -452,6 +466,11 @@ func (p runPhase) String() string {
 }
 
 func TestRunHasError(t *gotesting.T) {
+	type stateLike interface {
+		Error(args ...interface{})
+		HasError() bool
+	}
+
 	for _, failIn := range []runPhase{
 		phasePreTestFunc,
 		phasePrepareFunc,
@@ -462,7 +481,7 @@ func TestRunHasError(t *gotesting.T) {
 		phasePostTestHook,
 	} {
 		t.Run(fmt.Sprintf("Fail in %s", failIn), func(t *gotesting.T) {
-			onPhase := func(s *testing.State, current runPhase) {
+			onPhase := func(s stateLike, current runPhase) {
 				got := s.HasError()
 				want := current > failIn
 				if got != want {
@@ -474,11 +493,11 @@ func TestRunHasError(t *gotesting.T) {
 			}
 
 			pre := &testPre{
-				prepareFunc: func(ctx context.Context, s *testing.State) interface{} {
+				prepareFunc: func(ctx context.Context, s *testing.PreState) interface{} {
 					onPhase(s, phasePrepareFunc)
 					return nil
 				},
-				closeFunc: func(ctx context.Context, s *testing.State) {
+				closeFunc: func(ctx context.Context, s *testing.PreState) {
 					onPhase(s, phaseCloseFunc)
 				},
 			}

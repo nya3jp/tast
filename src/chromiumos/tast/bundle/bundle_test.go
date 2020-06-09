@@ -30,19 +30,19 @@ var testFunc = func(context.Context, *testing.State) {}
 // testPre implements both Precondition and preconditionImpl for unit tests.
 // TODO(derat): This is duplicated from tast/testing/test_test.go. Find a common location.
 type testPre struct {
-	prepareFunc func(context.Context, *testing.State) interface{}
-	closeFunc   func(context.Context, *testing.State)
+	prepareFunc func(context.Context, *testing.PreState) interface{}
+	closeFunc   func(context.Context, *testing.PreState)
 	name        string // name to return from String
 }
 
-func (p *testPre) Prepare(ctx context.Context, s *testing.State) interface{} {
+func (p *testPre) Prepare(ctx context.Context, s *testing.PreState) interface{} {
 	if p.prepareFunc != nil {
 		return p.prepareFunc(ctx, s)
 	}
 	return nil
 }
 
-func (p *testPre) Close(ctx context.Context, s *testing.State) {
+func (p *testPre) Close(ctx context.Context, s *testing.PreState) {
 	if p.closeFunc != nil {
 		p.closeFunc(ctx, s)
 	}
@@ -400,11 +400,11 @@ func TestRunTestsSkipTestWithPrecondition(t *gotesting.T) {
 	var actions []string
 	makePre := func(name string) *testPre {
 		return &testPre{
-			prepareFunc: func(context.Context, *testing.State) interface{} {
+			prepareFunc: func(context.Context, *testing.PreState) interface{} {
 				actions = append(actions, "prepare_"+name)
 				return nil
 			},
-			closeFunc: func(context.Context, *testing.State) { actions = append(actions, "close_"+name) },
+			closeFunc: func(context.Context, *testing.PreState) { actions = append(actions, "close_"+name) },
 			name:      name,
 		}
 	}

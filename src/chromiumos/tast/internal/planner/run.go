@@ -109,7 +109,7 @@ func Run(ctx context.Context, t *testing.TestInstance, ch chan<- testing.Output,
 			if root.HasError() {
 				return
 			}
-			root.RunWithPreState(ctx, func(ctx context.Context, s *testing.State) {
+			root.RunWithPreState(ctx, func(ctx context.Context, s *testing.PreState) {
 				s.Logf("Preparing precondition %q", t.Pre)
 
 				if t.PreCtx == nil {
@@ -140,7 +140,7 @@ func Run(ctx context.Context, t *testing.TestInstance, ch chan<- testing.Output,
 	// (even if setup, t.Pre.Prepare, or t.Func failed).
 	if t.Pre != nil && (cfg.NextTest == nil || cfg.NextTest.Pre != t.Pre) {
 		addStage(func(ctx context.Context, root *testing.RootState) {
-			root.RunWithPreState(ctx, func(ctx context.Context, s *testing.State) {
+			root.RunWithPreState(ctx, func(ctx context.Context, s *testing.PreState) {
 				s.Logf("Closing precondition %q", t.Pre.String())
 				t.Pre.(testing.PreconditionImpl).Close(ctx, s)
 				if t.PreCtxCancel != nil {

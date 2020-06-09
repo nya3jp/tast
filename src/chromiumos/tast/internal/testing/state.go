@@ -122,6 +122,14 @@ type State struct {
 	mu       sync.Mutex // protects HasError
 }
 
+// PreState holds state relevant to the execution of a single precondition.
+//
+// This is a State for preconditions. See State's documentation for general
+// guidance on how to treat PreState in preconditions.
+//
+// TODO(crbug.com/1090644): Make PreState a different type from State.
+type PreState = State
+
 // TestConfig contains details about how an individual test should be run.
 type TestConfig struct {
 	// DataDir is the directory in which the test's data files are located.
@@ -156,7 +164,7 @@ func (r *RootState) newTestState() *State {
 }
 
 // newPreState creates a State for a precondition.
-func (r *RootState) newPreState() *State {
+func (r *RootState) newPreState() *PreState {
 	return &State{root: r, inPre: true, hasError: r.HasError()}
 }
 
@@ -174,7 +182,7 @@ func (r *RootState) RunWithTestState(ctx context.Context, f func(ctx context.Con
 // If f panics, it recovers and reports the error via the State.
 // f is run within a goroutine to avoid making the calling goroutine exit if
 // f calls s.Fatal (which calls runtime.Goexit).
-func (r *RootState) RunWithPreState(ctx context.Context, f func(ctx context.Context, s *State)) {
+func (r *RootState) RunWithPreState(ctx context.Context, f func(ctx context.Context, s *PreState)) {
 	s := r.newPreState()
 	ctx = NewContext(ctx, s)
 	runAndRecover(func() { f(ctx, s) }, s)

@@ -16,6 +16,24 @@
       "revId": "35f4a235e481b461040aa9d2c5da0e184b358f62",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "92a5bfd0_b66dc0e3",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2020-06-09T15:23:57Z",
+      "side": 1,
+      "message": "Ah you\u0027re right, Rockchips do support it, MediaTeks don\u0027t. \nOlder SoCs like nVidia and Exynos, I think they didn\u0027t but\nanyway they\u0027re EOL so we don\u0027t care about them for Tast, correct?\n\nJust let me know if we want to be exhaustive here.",
+      "parentUuid": "56716979_b8320887",
+      "revId": "35f4a235e481b461040aa9d2c5da0e184b358f62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

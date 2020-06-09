@@ -36,11 +36,11 @@ type fakePre struct {
 	name string // name to return from String
 }
 
-func (p *fakePre) Prepare(ctx context.Context, s *State) interface{} {
+func (p *fakePre) Prepare(ctx context.Context, s *PreState) interface{} {
 	return nil
 }
 
-func (p *fakePre) Close(ctx context.Context, s *State) {
+func (p *fakePre) Close(ctx context.Context, s *PreState) {
 }
 
 func (p *fakePre) Timeout() time.Duration { return time.Minute }

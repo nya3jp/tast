@@ -50,9 +50,11 @@ Any additional positional arguments describe which tests should be executed:
     test names. For example, `ui.*` matches all tests with names prefixed by
     `ui.`. Multiple patterns can be supplied: passing `example.Pass` and
     `example.Fail` selects those two tests.
+*   It's invalid to mix attribute expressions and wildcard patterns. To use a 
+    wildcard to match against the test name you can use the `"name:ui.*"`
+    expression instead.
 
-It's invalid to mix attribute expressions and wildcard patterns. See the [Test
-Attributes] document for more information about attributes.
+See the [Test Attributes] document for more information about attributes.
 
 Tests may be skipped if they list [software dependencies] that aren't provided
 by the DUT. This behavior can be controlled via the `tast` command's

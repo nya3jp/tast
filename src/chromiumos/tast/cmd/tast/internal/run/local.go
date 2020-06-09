@@ -12,7 +12,6 @@ import (
 	"io"
 	"net"
 	"path/filepath"
-	"reflect"
 	"time"
 
 	"chromiumos/tast/bundle"
@@ -87,59 +86,32 @@ func runLocalTests(ctx context.Context, cfg *Config) ([]TestResult, error) {
 		return nil, errors.Wrapf(err, "failed to connect to %s", cfg.Target)
 	}
 
-	start := time.Now()
-
-	// Run local_test_runner in a loop so we can try to run the remaining tests on failure.
-	var allResults []TestResult
-	patterns := cfg.Patterns
-	for {
-		results, unstarted, err := runLocalRunner(ctx, cfg, hst, patterns)
-		allResults = append(allResults, results...)
-		if err == nil {
-			break
-		}
-
-		cfg.Logger.Logf("Test runner failed with %v result(s): %v", len(results), err)
-
-		// If local_test_runner didn't provide a list of remaining tests, give up.
-		if unstarted == nil {
-			return allResults, err
-		}
-		// If we know that there are no more tests left to execute, report the overall run as having succeeded.
-		// The test that was in progress when the run failed will be reported as having failed.
-		if len(unstarted) == 0 {
-			break
-		}
-		// If we don't want to try again, or we'd just be doing the same thing that we did last time, give up.
-		if !cfg.continueAfterFailure || reflect.DeepEqual(patterns, unstarted) {
-			return allResults, err
-		}
-
-		cfg.Logger.Logf("Trying to run %v remaining test(s)", len(unstarted))
+	runTests := func(ctx context.Context, patterns []string) (results []TestResult, unstarted []string, err error) {
+		return runLocalTestsOnce(ctx, cfg, hst, patterns)
+	}
+	beforeRetry := func(ctx context.Context) bool {
 		oldHst := hst
 		var connErr error
 		if hst, connErr = connectToTarget(ctx, cfg); connErr != nil {
 			cfg.Logger.Log("Failed reconnecting to target: ", connErr)
-			return allResults, err
+			return false
 		}
 		// The ephemeral devserver uses the SSH connection to the DUT, so a new devserver needs
 		// to be created if a new SSH connection was established.
 		if cfg.ephemeralDevserver != nil && hst != oldHst {
 			if devErr := startEphemeralDevserver(ctx, hst, cfg); devErr != nil {
 				cfg.Logger.Log("Failed restarting ephemeral devserver: ", connErr)
-				return allResults, err
+				return false
 			}
 		}
-
-		// Explicitly request running the remaining tests.
-		// "Auto" dependency checking has different behavior when using attribute expressions vs.
-		// globs, so make sure that deps will still be checked if they would've been checked initially.
-		patterns = unstarted
+		return true
 	}
 
-	elapsed := time.Now().Sub(start)
-	cfg.Logger.Logf("Ran %v local test(s) in %v", len(allResults), elapsed.Round(time.Millisecond))
-	return allResults, nil
+	start := time.Now()
+	results, err := runTestsWithRetry(ctx, cfg, cfg.Patterns, runTests, beforeRetry)
+	elapsed := time.Since(start)
+	cfg.Logger.Logf("Ran %v local test(s) in %v", len(results), elapsed.Round(time.Millisecond))
+	return results, err
 }
 
 type localRunnerHandle struct {
@@ -180,18 +152,15 @@ func startLocalRunner(ctx context.Context, cfg *Config, hst *ssh.Conn, args *run
 	return &localRunnerHandle{cmd.cmd, stdout, stderr}, nil
 }
 
-// runLocalRunner synchronously runs local_test_runner to completion on hst.
-// The supplied patterns (rather than cfg.Patterns) are passed to the runner.
+// runLocalTestsOnce synchronously runs local_test_runner to run local tests
+// matching the supplied patterns (rather than cfg.Patterns).
 //
-// If cfg.mode is RunTestsMode, tests are executed and the results from started tests
-// and the names of tests that should have been started but weren't (in the order in which
-// they should've been run) are returned.
-//
-// If cfg.mode is ListTestsMode, serialized test information is returned via TestResult.Test
-// but other fields are left blank and unstarted is empty.
-func runLocalRunner(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns []string) (
+// Results from started tests and the names of tests that should have been
+// started but weren't (in the order in which they should've been run) are
+// returned.
+func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns []string) (
 	results []TestResult, unstarted []string, err error) {
-	ctx, st := timing.Start(ctx, "run_local_tests")
+	ctx, st := timing.Start(ctx, "run_local_tests_once")
 	defer st.End()
 
 	// Older local_test_runner does not create the specified output directory.

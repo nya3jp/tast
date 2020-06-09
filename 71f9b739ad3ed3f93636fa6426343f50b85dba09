@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "50218361_0e5b9786",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 337,
+      "author": {
+        "id": 1135824
+      },
+      "writtenOn": "2020-06-09T08:00:16Z",
+      "side": 1,
+      "message": "I had that originally, but then realized that the Intel and AMD versions should return the respective vendor enum constant as opposed to SOC_VENDOR_UNSPECIFIED, and passing this as a parameter would reintroduce a significant amount of clutter that I intended to avoid with this.\n\nI\u0027ll rename to reportErr though, which is definitely clearer, thanks for the suggestion.",
+      "parentUuid": "5f7203a4_8dcecb31",
+      "revId": "71f9b739ad3ed3f93636fa6426343f50b85dba09",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e3a766ea_58a2e8cc",
         "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
         "patchSetId": 2
@@ -39,6 +57,30 @@
       "revId": "71f9b739ad3ed3f93636fa6426343f50b85dba09",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2c440153_2bfd1ef9",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 218,
+      "author": {
+        "id": 1135824
+      },
+      "writtenOn": "2020-06-09T08:00:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e3a766ea_58a2e8cc",
+      "range": {
+        "startLine": 218,
+        "startChar": 3,
+        "endLine": 218,
+        "endChar": 6
+      },
+      "revId": "71f9b739ad3ed3f93636fa6426343f50b85dba09",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

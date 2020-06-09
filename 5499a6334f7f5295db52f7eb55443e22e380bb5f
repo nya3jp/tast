@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1eaf55af_54208c35",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/retry.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-06-09T09:12:22Z",
+      "side": 1,
+      "message": "\"not available\" may be ambiguous. Does that imply internal-error cases?\nHow about like \"if the function is unable to report such list correctly\" or so?",
+      "range": {
+        "startLine": 14,
+        "startChar": 35,
+        "endLine": 14,
+        "endChar": 61
+      },
+      "revId": "5499a6334f7f5295db52f7eb55443e22e380bb5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

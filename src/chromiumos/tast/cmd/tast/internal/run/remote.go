@@ -20,20 +20,48 @@ import (
 
 // runRemoteTests runs the remote test runner and reads its output.
 func runRemoteTests(ctx context.Context, cfg *Config) ([]TestResult, error) {
+	cfg.Logger.Status("Running remote tests on target")
 	ctx, st := timing.Start(ctx, "run_remote_tests")
 	defer st.End()
 
+	if err := os.MkdirAll(cfg.remoteOutDir, 0777); err != nil {
+		return nil, fmt.Errorf("failed to create output dir: %v", err)
+	}
+	// At the end of tests remoteOutDir should be empty. Otherwise os.Remove
+	// fails and the directory is left for debugging.
+	defer os.Remove(cfg.remoteOutDir)
+
+	runTests := func(ctx context.Context, patterns []string) (results []TestResult, unstarted []string, err error) {
+		return runRemoteTestsOnce(ctx, cfg, patterns)
+	}
+	beforeRetry := func(ctx context.Context) bool { return true }
+
 	start := time.Now()
+	results, err := runTestsWithRetry(ctx, cfg, cfg.Patterns, runTests, beforeRetry)
+	elapsed := time.Since(start)
+	cfg.Logger.Logf("Ran %v remote test(s) in %v", len(results), elapsed.Round(time.Millisecond))
+	return results, err
+}
+
+// runRemoteTestsOnce synchronously runs remote_test_runner to run remote tests
+// matching the supplied patterns (rather than cfg.Patterns).
+//
+// Results from started tests and the names of tests that should have been
+// started but weren't (in the order in which they should've been run) are
+// returned.
+func runRemoteTestsOnce(ctx context.Context, cfg *Config, patterns []string) (results []TestResult, unstarted []string, err error) {
+	ctx, st := timing.Start(ctx, "run_remote_tests_once")
+	defer st.End()
 
 	exe, err := os.Executable()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	args := runner.Args{
 		Mode: runner.RunTestsMode,
 		RunTests: &runner.RunTestsArgs{
 			BundleArgs: bundle.RunTestsArgs{
-				Patterns: cfg.Patterns,
+				Patterns: patterns,
 				TestVars: cfg.testVars,
 				DataDir:  cfg.remoteDataDir,
 				OutDir:   cfg.remoteOutDir,
@@ -57,55 +85,45 @@ func runRemoteTests(ctx context.Context, cfg *Config) ([]TestResult, error) {
 	}
 	setRunnerTestDepsArgs(cfg, &args)
 
-	if err := os.MkdirAll(cfg.remoteOutDir, 0777); err != nil {
-		return nil, fmt.Errorf("failed to create output dir: %v", err)
-	}
-	// At the end of tests remoteOutDir should be empty. Otherwise os.Remove
-	// fails and the directory is left for debugging.
-	defer os.Remove(cfg.remoteOutDir)
-
 	// Backfill deprecated fields in case we're executing an old test runner.
 	args.FillDeprecated()
 
 	cmd := remoteRunnerCommand(ctx, cfg)
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	var stdout, stderr io.Reader
 	if stdout, err = cmd.StdoutPipe(); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	if stderr, err = cmd.StderrPipe(); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	stderrReader := newFirstLineReader(stderr)
 
 	cfg.Logger.Logf("Starting %v locally", cmd.Path)
 	if err = cmd.Start(); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	if err = json.NewEncoder(stdin).Encode(&args); err != nil {
-		return nil, fmt.Errorf("write to stdin: %v", err)
+		return nil, nil, fmt.Errorf("write to stdin: %v", err)
 	}
 	if err = stdin.Close(); err != nil {
-		return nil, fmt.Errorf("close stdin: %v", err)
+		return nil, nil, fmt.Errorf("close stdin: %v", err)
 	}
 
 	crf := func(testName, dst string) error {
 		src := filepath.Join(args.RunTests.BundleArgs.OutDir, testName)
 		return os.Rename(src, dst)
 	}
-	results, _, rerr := readTestOutput(ctx, cfg, stdout, crf, nil)
+	results, unstarted, rerr := readTestOutput(ctx, cfg, stdout, crf, nil)
 
 	// Check that the runner exits successfully first so that we don't give a useless error
 	// about incorrectly-formed output instead of e.g. an error about the runner being missing.
 	if err := cmd.Wait(); err != nil {
-		return results, stderrReader.appendToError(err, stderrTimeout)
+		return results, unstarted, stderrReader.appendToError(err, stderrTimeout)
 	}
-
-	cfg.Logger.Logf("Ran %v remote test(s) in %v", len(results), time.Now().Sub(start).Round(time.Millisecond))
-
-	return results, rerr
+	return results, unstarted, rerr
 }

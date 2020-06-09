@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5f7203a4_8dcecb31",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 337,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-06-09T03:25:44Z",
+      "side": 1,
+      "message": "nit: how about externalize this so that it can be shared across all findSOC variations?\nMaybe with renaming to reportSOCErr to represent what it does.",
+      "revId": "71f9b739ad3ed3f93636fa6426343f50b85dba09",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e3a766ea_58a2e8cc",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 218,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-06-09T03:25:44Z",
+      "side": 1,
+      "message": "nit/style: SOCVendor",
+      "range": {
+        "startLine": 218,
+        "startChar": 3,
+        "endLine": 218,
+        "endChar": 6
+      },
+      "revId": "71f9b739ad3ed3f93636fa6426343f50b85dba09",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

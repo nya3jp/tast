@@ -32,9 +32,9 @@ type PreconditionImpl interface {
 	// To report an error, Prepare can call either s.Error/Errorf or s.Fatal/Fatalf.
 	// If an error is reported, the test will not run, but the preconditionImpl must be left
 	// in a state where future calls to Prepare (and Close) can still succeed.
-	Prepare(ctx context.Context, s *State) interface{}
+	Prepare(ctx context.Context, s *PreState) interface{}
 	// Close is called immediately after completing the final test that depends on the precondition.
 	// This method may be called without an earlier call to Prepare in rare cases (e.g. if
 	// TestConfig.PreTestFunc fails); preconditions must be able to handle this.
-	Close(ctx context.Context, s *State)
+	Close(ctx context.Context, s *PreState)
 }

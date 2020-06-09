@@ -22,6 +22,12 @@ import (
 // while a test is running.
 type State = testing.State
 
+// PreState holds state relevant to the execution of a single precondition.
+//
+// This is a State for preconditions. See State's documentation for general
+// guidance on how to treat PreState in preconditions.
+type PreState = testing.PreState
+
 // Meta contains information about how the "tast" process used to initiate testing was run.
 // It is used by remote tests in the "meta" category that run the tast executable to test Tast's behavior.
 type Meta = testing.Meta

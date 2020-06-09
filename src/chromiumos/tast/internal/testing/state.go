@@ -102,6 +102,17 @@ type RootState struct {
 	hasErr bool // true if any error was reported
 }
 
+// baseState is a base type for State and PreState. It provides methods common
+// to State and PreState.
+type baseState struct {
+	root     *RootState // root state for the test
+	subtests []string   // subtest names; used to prefix error messages
+	inPre    bool       // true if a precondition is currently executing.
+
+	hasError bool       // true if the current subtest has encountered an error; the test fails if this is true for the initial subtest
+	mu       sync.Mutex // protects HasError
+}
+
 // State holds state relevant to the execution of a single test.
 //
 // Parts of its interface are patterned after Go's testing.T type.
@@ -115,13 +126,16 @@ type RootState struct {
 // It is intended to be safe when called concurrently by multiple goroutines
 // while a test is running.
 type State struct {
-	root     *RootState // root state for the test
-	subtests []string   // subtest names; used to prefix error messages
-	inPre    bool       // true if a precondition is currently executing.
-
-	hasError bool       // true if the current subtest has encountered an error; the test fails if this is true for the initial subtest
-	mu       sync.Mutex // protects HasError
+	baseState
 }
+
+// PreState holds state relevant to the execution of a single precondition.
+//
+// This is a State for preconditions. See State's documentation for general
+// guidance on how to treat PreState in preconditions.
+//
+// TODO(crbug.com/1090644): Make PreState a different type from State.
+type PreState = State
 
 // TestConfig contains details about how an individual test should be run.
 type TestConfig struct {
@@ -153,12 +167,12 @@ func NewRootState(test *TestInstance, out OutputStream, cfg *TestConfig) *RootSt
 
 // newTestState creates a State for a test.
 func (r *RootState) newTestState() *State {
-	return &State{root: r, hasError: r.HasError()}
+	return &State{baseState{root: r, hasError: r.HasError()}}
 }
 
 // newPreState creates a State for a precondition.
-func (r *RootState) newPreState() *State {
-	return &State{root: r, inPre: true, hasError: r.HasError()}
+func (r *RootState) newPreState() *PreState {
+	return &PreState{baseState{root: r, inPre: true, hasError: r.HasError()}}
 }
 
 // RunWithTestState runs f, passing a Context and a State for a test.
@@ -175,16 +189,20 @@ func (r *RootState) RunWithTestState(ctx context.Context, f func(ctx context.Con
 // If f panics, it recovers and reports the error via the State.
 // f is run within a goroutine to avoid making the calling goroutine exit if
 // f calls s.Fatal (which calls runtime.Goexit).
-func (r *RootState) RunWithPreState(ctx context.Context, f func(ctx context.Context, s *State)) {
+func (r *RootState) RunWithPreState(ctx context.Context, f func(ctx context.Context, s *PreState)) {
 	s := r.newPreState()
 	ctx = NewContext(ctx, s)
 	runAndRecover(func() { f(ctx, s) }, s)
 }
 
+type errorReporter interface {
+	Error(args ...interface{})
+}
+
 // runAndRecover runs f synchronously, and recovers and reports an error if it panics.
 // f is run within a goroutine to avoid making the calling goroutine exit if the test
 // calls s.Fatal (which calls runtime.Goexit).
-func runAndRecover(f func(), s *State) {
+func runAndRecover(f func(), s errorReporter) {
 	done := make(chan struct{}, 1)
 	go func() {
 		defer func() {
@@ -222,8 +240,16 @@ func (r *RootState) SetPreValue(val interface{}) {
 	r.preValue = val
 }
 
+// StateForContext is an interface from which context.Context can be derived.
+type StateForContext interface {
+	Log(args ...interface{})
+	OutDir() string
+	SoftwareDeps() []string
+	ServiceDeps() []string
+}
+
 // NewContext returns a context.Context to be used for the test.
-func NewContext(ctx context.Context, s *State) context.Context {
+func NewContext(ctx context.Context, s StateForContext) context.Context {
 	ctx = logging.NewContext(ctx, func(msg string) { s.Log(msg) })
 	ctx = WithTestContext(ctx, &TestContext{
 		OutDir:       s.OutDir(),
@@ -235,7 +261,7 @@ func NewContext(ctx context.Context, s *State) context.Context {
 
 // DataPath returns the absolute path to use to access a data file previously
 // registered via Test.Data.
-func (s *State) DataPath(p string) string {
+func (s *baseState) DataPath(p string) string {
 	for _, f := range s.root.test.Data {
 		if f == p {
 			return filepath.Join(s.root.cfg.DataDir, p)
@@ -255,15 +281,15 @@ func (s *State) Param() interface{} {
 //	srv := httptest.NewServer(http.FileServer(s.DataFileSystem()))
 //	defer srv.Close()
 //	resp, err := http.Get(srv.URL+"/data_file.html")
-func (s *State) DataFileSystem() *dataFS { return (*dataFS)(s) }
+func (s *baseState) DataFileSystem() *dataFS { return (*dataFS)(s) }
 
 // OutDir returns a directory into which the test may place arbitrary files
 // that should be included with the test results.
-func (s *State) OutDir() string { return s.root.cfg.OutDir }
+func (s *baseState) OutDir() string { return s.root.cfg.OutDir }
 
 // Var returns the value for the named variable, which must have been registered via Test.Vars.
 // If a value was not supplied at runtime via the -var flag to "tast run", ok will be false.
-func (s *State) Var(name string) (val string, ok bool) {
+func (s *baseState) Var(name string) (val string, ok bool) {
 	seen := false
 	for _, n := range s.root.test.Vars {
 		if n == name {
@@ -280,7 +306,7 @@ func (s *State) Var(name string) (val string, ok bool) {
 }
 
 // RequiredVar is similar to Var but aborts the test if the named variable was not supplied.
-func (s *State) RequiredVar(name string) string {
+func (s *baseState) RequiredVar(name string) string {
 	val, ok := s.Var(name)
 	if !ok {
 		s.Fatalf("Required variable %q not supplied via -var or -varsfile", name)
@@ -294,7 +320,7 @@ func (s *State) RequiredVar(name string) string {
 func (s *State) Run(ctx context.Context, name string, run func(context.Context, *State)) bool {
 	subtests := append([]string(nil), s.subtests...)
 	subtests = append(subtests, name)
-	ns := &State{root: s.root, subtests: subtests}
+	ns := &State{baseState{root: s.root, subtests: subtests}}
 
 	finished := make(chan struct{})
 
@@ -333,23 +359,23 @@ func (s *State) Run(ctx context.Context, name string, run func(context.Context, 
 func (s *State) PreValue() interface{} { return s.root.preValue }
 
 // SoftwareDeps returns software dependencies declared in the currently running test.
-func (s *State) SoftwareDeps() []string {
+func (s *baseState) SoftwareDeps() []string {
 	return append([]string(nil), s.root.test.SoftwareDeps...)
 }
 
 // ServiceDeps returns service dependencies declared in the currently running test.
-func (s *State) ServiceDeps() []string {
+func (s *baseState) ServiceDeps() []string {
 	return append([]string(nil), s.root.test.ServiceDeps...)
 }
 
 // CloudStorage returns a client for Google Cloud Storage.
-func (s *State) CloudStorage() *CloudStorage {
+func (s *baseState) CloudStorage() *CloudStorage {
 	return s.root.cfg.CloudStorage
 }
 
 // Meta returns information about how the "tast" process used to initiate testing was run.
 // It can only be called by remote tests in the "meta" category.
-func (s *State) Meta() *Meta {
+func (s *baseState) Meta() *Meta {
 	if parts := strings.SplitN(s.root.test.Name, ".", 2); len(parts) != 2 || parts[0] != metaCategory {
 		s.Fatalf("Meta info unavailable since test doesn't have category %q", metaCategory)
 		return nil
@@ -364,7 +390,7 @@ func (s *State) Meta() *Meta {
 
 // RPCHint returns information needed to establish gRPC connections.
 // It can only be called by remote tests.
-func (s *State) RPCHint() *RPCHint {
+func (s *baseState) RPCHint() *RPCHint {
 	if s.root.cfg.RemoteData == nil {
 		s.Fatal("RPCHint unavailable (is test non-remote?)")
 		return nil
@@ -375,7 +401,7 @@ func (s *State) RPCHint() *RPCHint {
 
 // DUT returns a shared SSH connection.
 // It can only be called by remote tests.
-func (s *State) DUT() *dut.DUT {
+func (s *baseState) DUT() *dut.DUT {
 	if s.root.cfg.RemoteData == nil {
 		s.Fatal("DUT unavailable (is test non-remote?)")
 		return nil
@@ -384,19 +410,19 @@ func (s *State) DUT() *dut.DUT {
 }
 
 // Log formats its arguments using default formatting and logs them.
-func (s *State) Log(args ...interface{}) {
+func (s *baseState) Log(args ...interface{}) {
 	s.root.out.Log(fmt.Sprint(args...))
 }
 
 // Logf is similar to Log but formats its arguments using fmt.Sprintf.
-func (s *State) Logf(format string, args ...interface{}) {
+func (s *baseState) Logf(format string, args ...interface{}) {
 	s.root.out.Log(fmt.Sprintf(format, args...))
 }
 
 // Error formats its arguments using default formatting and marks the test
 // as having failed (using the arguments as a reason for the failure)
 // while letting the test continue execution.
-func (s *State) Error(args ...interface{}) {
+func (s *baseState) Error(args ...interface{}) {
 	s.recordError()
 	fullMsg, lastMsg, err := s.formatError(args...)
 	e := NewError(err, fullMsg, lastMsg, 1)
@@ -404,7 +430,7 @@ func (s *State) Error(args ...interface{}) {
 }
 
 // Errorf is similar to Error but formats its arguments using fmt.Sprintf.
-func (s *State) Errorf(format string, args ...interface{}) {
+func (s *baseState) Errorf(format string, args ...interface{}) {
 	s.recordError()
 	fullMsg, lastMsg, err := s.formatErrorf(format, args...)
 	e := NewError(err, fullMsg, lastMsg, 1)
@@ -412,7 +438,7 @@ func (s *State) Errorf(format string, args ...interface{}) {
 }
 
 // Fatal is similar to Error but additionally immediately ends the test.
-func (s *State) Fatal(args ...interface{}) {
+func (s *baseState) Fatal(args ...interface{}) {
 	s.recordError()
 	fullMsg, lastMsg, err := s.formatError(args...)
 	e := NewError(err, fullMsg, lastMsg, 1)
@@ -421,7 +447,7 @@ func (s *State) Fatal(args ...interface{}) {
 }
 
 // Fatalf is similar to Fatal but formats its arguments using fmt.Sprintf.
-func (s *State) Fatalf(format string, args ...interface{}) {
+func (s *baseState) Fatalf(format string, args ...interface{}) {
 	s.recordError()
 	fullMsg, lastMsg, err := s.formatErrorf(format, args...)
 	e := NewError(err, fullMsg, lastMsg, 1)
@@ -430,7 +456,7 @@ func (s *State) Fatalf(format string, args ...interface{}) {
 }
 
 // HasError reports whether the test has already reported errors.
-func (s *State) HasError() bool {
+func (s *baseState) HasError() bool {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	return s.hasError
@@ -438,7 +464,7 @@ func (s *State) HasError() bool {
 
 // PreCtx returns a context that lives as long as the precondition.
 // Can only be called from inside a precondition; it panics otherwise.
-func (s *State) PreCtx() context.Context {
+func (s *PreState) PreCtx() context.Context {
 	if !s.inPre {
 		panic("PreCtx can only be called in a precondition")
 	}
@@ -459,7 +485,7 @@ var errorSuffix = regexp.MustCompile(`(\s*:\s*|\s+)$`)
 //
 //  lastMsg = "Failed something"
 //  fullMsg = "Failed something: <error message>"
-func (s *State) formatError(args ...interface{}) (fullMsg, lastMsg string, err error) {
+func (s *baseState) formatError(args ...interface{}) (fullMsg, lastMsg string, err error) {
 	fullMsg = fmt.Sprint(args...)
 	if len(args) == 1 {
 		if e, ok := args[0].(error); ok {
@@ -505,7 +531,7 @@ var errorfSuffix = regexp.MustCompile(`\s*:?\s*%v$`)
 //
 //  lastMsg = "Failed something"
 //  fullMsg = "Failed something: <error message>"
-func (s *State) formatErrorf(format string, args ...interface{}) (fullMsg, lastMsg string, err error) {
+func (s *baseState) formatErrorf(format string, args ...interface{}) (fullMsg, lastMsg string, err error) {
 	fullMsg = fmt.Sprintf(format, args...)
 	if len(args) >= 1 {
 		if e, ok := args[len(args)-1].(error); ok {
@@ -534,7 +560,7 @@ func (s *State) formatErrorf(format string, args ...interface{}) (fullMsg, lastM
 }
 
 // recordError records that the test has reported an error.
-func (s *State) recordError() {
+func (s *baseState) recordError() {
 	s.root.recordError()
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -542,7 +568,7 @@ func (s *State) recordError() {
 }
 
 // dataFS implements http.FileSystem.
-type dataFS State
+type dataFS baseState
 
 // Open opens the file at name, a path that would be passed to DataPath.
 func (d *dataFS) Open(name string) (http.File, error) {
@@ -558,11 +584,11 @@ func (d *dataFS) Open(name string) (http.File, error) {
 	// Report an error for nonexistent files to avoid making tests fail (or create favicon files) unnecessarily.
 	// DataPath will still make the test fail if it attempts to use a file that exists but that wasn't
 	// declared as a dependency.
-	if _, err := os.Stat(filepath.Join((*State)(d).root.cfg.DataDir, name)); os.IsNotExist(err) {
+	if _, err := os.Stat(filepath.Join((*baseState)(d).root.cfg.DataDir, name)); os.IsNotExist(err) {
 		return nil, errors.New("not found")
 	}
 
-	return os.Open((*State)(d).DataPath(name))
+	return os.Open((*baseState)(d).DataPath(name))
 }
 
 // NewError returns a new Error object containing reason rsn.

@@ -181,6 +181,38 @@ func TestReportError(t *gotesting.T) {
 	}
 }
 
+func TestInheritError(t *gotesting.T) {
+	or := NewOutputReader()
+	root := NewRootState(&TestInstance{Timeout: time.Minute}, or.Ch, &TestConfig{})
+	defer root.Close()
+
+	s1 := root.newTestState()
+	if s1.HasError() {
+		t.Error("First State: HasError()=true initially; want false")
+	}
+	s1.Error("Failure")
+	if !s1.HasError() {
+		t.Error("First State: HasError()=false after s1.Error; want true")
+	}
+
+	// The second state should be aware of the error reported to the first state.
+	s2 := root.newTestState()
+	if !s2.HasError() {
+		t.Error("Second State: HasError()=false initially; want true")
+	}
+
+	// Subtest State should not inherit the error status from the parent state.
+	s2.Run(context.Background(), "subtest", func(ctx context.Context, s2s *State) {
+		if s2s.HasError() {
+			t.Error("Subtest State: HasError()=true initially; want false")
+		}
+		s2s.Error("Failure")
+		if !s2s.HasError() {
+			t.Error("Subtest State: HasError()=false after s2s.Error; want true")
+		}
+	})
+}
+
 func TestReportErrorInPrecondition(t *gotesting.T) {
 	or := NewOutputReader()
 	root := NewRootState(&TestInstance{Timeout: time.Minute}, or.Ch, &TestConfig{})

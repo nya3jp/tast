@@ -152,12 +152,12 @@ func NewRootState(test *TestInstance, ch chan<- Output, cfg *TestConfig) *RootSt
 
 // newTestState creates a State for a test.
 func (r *RootState) newTestState() *State {
-	return &State{root: r}
+	return &State{root: r, hasError: r.HasError()}
 }
 
 // newPreState creates a State for a precondition.
 func (r *RootState) newPreState() *State {
-	return &State{root: r, inPre: true}
+	return &State{root: r, inPre: true, hasError: r.HasError()}
 }
 
 // RunWithTestState runs f, passing a Context and a State for a test.

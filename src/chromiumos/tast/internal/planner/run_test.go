@@ -385,19 +385,7 @@ func TestRunPreconditionContext(t *gotesting.T) {
 		}
 	}
 
-	testFunc := func(ctx context.Context, s *testing.State) {
-		defer func() {
-			expectedPanic := "PreCtx can only be called in a precondition"
-
-			if r := recover(); r == nil {
-				t.Errorf("PreCtx did not panic")
-			} else if r != expectedPanic {
-				t.Errorf("PreCtx unexpected panic: want %q; got %q", expectedPanic, r)
-			}
-		}()
-
-		s.PreCtx()
-	}
+	testFunc := func(ctx context.Context, s *testing.State) {}
 
 	pre := &testPre{
 		prepareFunc: prepareFunc,

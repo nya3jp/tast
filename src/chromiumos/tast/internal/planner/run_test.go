@@ -37,7 +37,7 @@ func (o *outputSink) Error(e *testing.Error) error {
 	return nil
 }
 
-// testPre implements both Precondition and preconditionImpl for unit tests.
+// testPre implements Precondition for unit tests.
 type testPre struct {
 	prepareFunc func(context.Context, *testing.PreState) interface{}
 	closeFunc   func(context.Context, *testing.PreState)

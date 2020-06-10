@@ -114,7 +114,7 @@ func Run(ctx context.Context, t *testing.TestInstance, ch chan<- testing.Output,
 
 				if t.PreCtx == nil {
 					// Associate PreCtx with TestContext for the first test.
-					t.PreCtx, t.PreCtxCancel = context.WithCancel(testing.NewContext(context.Background(), s))
+					t.PreCtx, t.PreCtxCancel = context.WithCancel(testing.NewContext(context.Background(), &s.BaseState))
 				}
 
 				if cfg.NextTest != nil && cfg.NextTest.Pre == t.Pre {

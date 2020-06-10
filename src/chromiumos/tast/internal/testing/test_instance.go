@@ -165,11 +165,6 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 		}
 		pre = p.Pre
 	}
-	if pre != nil {
-		if _, ok := pre.(PreconditionImpl); !ok {
-			return nil, fmt.Errorf("precondition %s does not implement preconditionImpl", pre)
-		}
-	}
 
 	timeout := t.Timeout
 	if p.Timeout != 0 {

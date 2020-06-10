@@ -27,7 +27,7 @@ import (
 
 var testFunc = func(context.Context, *testing.State) {}
 
-// testPre implements both Precondition and preconditionImpl for unit tests.
+// testPre implements Precondition for unit tests.
 // TODO(derat): This is duplicated from tast/testing/test_test.go. Find a common location.
 type testPre struct {
 	prepareFunc func(context.Context, *testing.PreState) interface{}

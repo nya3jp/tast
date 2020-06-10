@@ -133,9 +133,9 @@ type State struct {
 //
 // This is a State for preconditions. See State's documentation for general
 // guidance on how to treat PreState in preconditions.
-//
-// TODO(crbug.com/1090644): Make PreState a different type from State.
-type PreState = State
+type PreState struct {
+	baseState
+}
 
 // TestConfig contains details about how an individual test should be run.
 type TestConfig struct {

@@ -31,7 +31,7 @@ func TESTINSTANCETEST(context.Context, *State) {}
 // InvalidTestName is an arbitrary public test function used by unit tests.
 func InvalidTestName(context.Context, *State) {}
 
-// fakePre implements both Precondition and preconditionImpl for unit tests.
+// fakePre implements both Precondition for unit tests.
 type fakePre struct {
 	name string // name to return from String
 }

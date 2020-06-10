@@ -31,13 +31,13 @@ func D(s ***testing.State) {}
 	verifyIssues(t, issues, expects)
 }
 
-// TestTestingStatePrecondition checks that testing.State in precondition implementation
-// is valid use so that it shouldn't be warned.
-func TestTestingStatePrecondition(t *testing.T) {
+// TestTestingStateAllowed checks that particular uses of testing.State are
+// valid and not warned.
+func TestTestingStateAllowed(t *testing.T) {
 	const code = `package main
 func A(s *testing.State) {}
 `
-	const path = "/src/chromiumos/tast/local/arc/pre.go"
+	const path = "/src/chromiumos/tast/local/bundlemain/main.go"
 	f, fs := parse(code, path)
 	issues := VerifyTestingStateParam(fs, f)
 	verifyIssues(t, issues, nil)

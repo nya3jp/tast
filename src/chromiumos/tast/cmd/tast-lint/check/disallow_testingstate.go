@@ -18,14 +18,6 @@ func VerifyTestingStateParam(fs *token.FileSet, f *ast.File) []*Issue {
 	var allowList = []string{
 		// Runs code before and after each local test
 		"src/chromiumos/tast/local/bundlemain/main.go",
-		// Precondition files are valid use cases.
-		"src/chromiumos/tast/local/arc/pre.go",
-		"src/chromiumos/tast/local/chrome/pre.go",
-		"src/chromiumos/tast/local/chrome/ash/pre.go",
-		"src/chromiumos/tast/local/crostini/pre.go",
-		"src/chromiumos/tast/local/lacros/launcher/pre.go",
-		"src/chromiumos/tast/local/wpr/pre.go",
-		"src/chromiumos/tast/remote/wificell/pre.go",
 		// Below files are cases still under considering.
 		"src/chromiumos/tast/local/graphics/trace/trace.go",
 	}

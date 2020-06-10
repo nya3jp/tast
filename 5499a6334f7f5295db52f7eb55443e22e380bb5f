@@ -22,6 +22,30 @@
       "revId": "5499a6334f7f5295db52f7eb55443e22e380bb5f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7b054387_f8d4ec45",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/retry.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-06-10T01:33:18Z",
+      "side": 1,
+      "message": "That\u0027s a good point, I\u0027ve updated the doc.",
+      "parentUuid": "1eaf55af_54208c35",
+      "range": {
+        "startLine": 14,
+        "startChar": 35,
+        "endLine": 14,
+        "endChar": 61
+      },
+      "revId": "5499a6334f7f5295db52f7eb55443e22e380bb5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

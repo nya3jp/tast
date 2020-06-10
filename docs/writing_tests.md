@@ -465,10 +465,10 @@ named "precondition" in Tast.
 Tests sharing the same precondition run consecutively. `Prepare()` of the
 precondition runs just before each test function, and `Close()` is called once
 just after the last of them completes. Each test can declare its precondition by
-setting [testing.Test.Pre] an instance that implements [testing.Precondition]
-and `testing.preconditionImpl`. The instance `Prepare()` returns can be obtained
-by calling `s.PreValue()` in the test. Because `PreValue()` returns an
-`interface{}`, type assertion is needed to cast it to the actual type.
+setting [testing.Test.Pre] an instance that implements [testing.Precondition].
+The instance `Prepare()` returns can be obtained by calling `s.PreValue()` in
+the test. Because `PreValue()` returns an `interface{}`, type assertion is
+needed to cast it to the actual type.
 
 For example, rather than calling [chrome.New] at the beginning of each test,
 tests can declare that they require a logged-in Chrome instance by setting

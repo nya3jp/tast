@@ -6,6 +6,7 @@ package planner
 
 import (
 	"context"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -395,6 +396,101 @@ func TestRunPreconditionContext(t *gotesting.T) {
 
 	if t1.PreCtx.Err() == nil {
 		t.Errorf("Context not cancelled")
+	}
+}
+
+type runPhase int
+
+const (
+	phasePreTestFunc runPhase = iota
+	phasePrepareFunc
+	phaseTestFunc
+	phaseSubtestFunc
+	phaseCloseFunc
+	phasePostTestFunc
+	phasePostTestHook
+)
+
+func (p runPhase) String() string {
+	switch p {
+	case phasePreTestFunc:
+		return "preTestFunc"
+	case phasePrepareFunc:
+		return "prepareFunc"
+	case phaseTestFunc:
+		return "testFunc"
+	case phaseSubtestFunc:
+		return "subtestFunc"
+	case phaseCloseFunc:
+		return "closeFunc"
+	case phasePostTestFunc:
+		return "postTestFunc"
+	case phasePostTestHook:
+		return "postTestHook"
+	default:
+		return "unknown"
+	}
+}
+
+func TestRunHasError(t *gotesting.T) {
+	for _, failIn := range []runPhase{
+		phasePreTestFunc,
+		phasePrepareFunc,
+		phaseTestFunc,
+		phaseSubtestFunc,
+		phaseCloseFunc,
+		phasePostTestFunc,
+		phasePostTestHook,
+	} {
+		t.Run(fmt.Sprintf("Fail in %s", failIn), func(t *gotesting.T) {
+			onPhase := func(s *testing.State, current runPhase) {
+				got := s.HasError()
+				want := current > failIn
+				if got != want {
+					t.Errorf("Phase %v: HasError()=%t; want %t", current, got, want)
+				}
+				if current == failIn {
+					s.Error("Failure")
+				}
+			}
+
+			pre := &testPre{
+				prepareFunc: func(ctx context.Context, s *testing.State) interface{} {
+					onPhase(s, phasePrepareFunc)
+					return nil
+				},
+				closeFunc: func(ctx context.Context, s *testing.State) {
+					onPhase(s, phaseCloseFunc)
+				},
+			}
+			cfg := &testing.TestConfig{
+				PreTestFunc: func(ctx context.Context, s *testing.State) func(context.Context, *testing.State) {
+					onPhase(s, phasePreTestFunc)
+					return func(ctx context.Context, s *testing.State) {
+						onPhase(s, phasePostTestHook)
+					}
+				},
+				PostTestFunc: func(ctx context.Context, s *testing.State) {
+					onPhase(s, phasePostTestFunc)
+				},
+			}
+			testFunc := func(ctx context.Context, s *testing.State) {
+				onPhase(s, phaseTestFunc)
+				s.Run(ctx, "subtest", func(ctx context.Context, s *testing.State) {
+					// Subtests are somewhat special; they do not inherit the error status from the parent state.
+					if s.HasError() {
+						t.Errorf("Phase %v: HasError()=true; want false", phaseSubtestFunc)
+					}
+					if failIn == phaseSubtestFunc {
+						s.Error("Failure")
+					}
+				})
+			}
+			test := &testing.TestInstance{Name: "t", Pre: pre, Timeout: time.Minute, Func: testFunc}
+
+			or := testing.NewOutputReader()
+			Run(context.Background(), test, or.Ch, cfg)
+		})
 	}
 }
 

@@ -122,7 +122,7 @@ func Run(ctx context.Context, t *testing.TestInstance, out testing.OutputStream,
 				}
 
 				root.SetPreCtx(t.PreCtx)
-				root.SetPreValue(t.Pre.(testing.PreconditionImpl).Prepare(ctx, s))
+				root.SetPreValue(t.Pre.Prepare(ctx, s))
 			})
 		}, t.Pre.Timeout(), t.Pre.Timeout()+exitTimeout)
 	}
@@ -141,7 +141,7 @@ func Run(ctx context.Context, t *testing.TestInstance, out testing.OutputStream,
 		addStage(func(ctx context.Context, root *testing.RootState) {
 			root.RunWithPreState(ctx, func(ctx context.Context, s *testing.PreState) {
 				s.Logf("Closing precondition %q", t.Pre.String())
-				t.Pre.(testing.PreconditionImpl).Close(ctx, s)
+				t.Pre.Close(ctx, s)
 				if t.PreCtxCancel != nil {
 					t.PreCtxCancel()
 				}

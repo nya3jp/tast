@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5266e7fc_85f86a54",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-06-11T02:14:01Z",
+      "side": 1,
+      "message": "Could you add the brief document of this function\u0027s spec?\n\nLet\u0027s avoid using a stop word. (the is prefix in this case).\nMaybe \"func modelListed(...) ...\"\n\nHow about just passing the DeviceConfig instead of HardwareFeatures in order to minimize the interface?",
+      "revId": "04f5d4dd202e0afe3c38ea14394d1b3bdeaae003",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "128f47fd_dcdf7f35",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-06-11T02:14:01Z",
+      "side": 1,
+      "message": "I think you can drop this.\nReturning false is not that important here (just returning a zero value on error in Go),\nbut returning an error is.\n\nI think you can simply drop this.\n\nNote: This looks to come from the original code, which looks mistake already (actually made by me), because it does not return false but an error.\nWith this change, the meaning of the comment looks slightly changed because it starts to return false actually, so it becomes correct now!, but more important thing looks \"error\".",
+      "revId": "04f5d4dd202e0afe3c38ea14394d1b3bdeaae003",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3da81201_f6295f3a",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-06-11T02:14:01Z",
+      "side": 1,
+      "message": "nit/style: ditto here. Maybe just \"listed\"?",
+      "range": {
+        "startLine": 68,
+        "startChar": 2,
+        "endLine": 68,
+        "endChar": 10
+      },
+      "revId": "04f5d4dd202e0afe3c38ea14394d1b3bdeaae003",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

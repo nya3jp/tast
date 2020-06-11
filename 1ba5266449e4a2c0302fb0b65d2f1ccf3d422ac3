@@ -70,6 +70,30 @@
       "revId": "1ba5266449e4a2c0302fb0b65d2f1ccf3d422ac3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "349ea9b4_b3cc76d8",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-06-11T03:32:51Z",
+      "side": 1,
+      "message": "Sorry I missed that Prepare and Close takes PreState as a parameter, and thus test can\u0027t call these method.",
+      "parentUuid": "44e38687_4cedc218",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 53
+      },
+      "revId": "1ba5266449e4a2c0302fb0b65d2f1ccf3d422ac3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

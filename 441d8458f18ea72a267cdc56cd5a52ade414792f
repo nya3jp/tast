@@ -16,6 +16,24 @@
       "revId": "441d8458f18ea72a267cdc56cd5a52ade414792f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1f269a0e_776f09a5",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1371981
+      },
+      "writtenOn": "2020-06-11T07:54:54Z",
+      "side": 1,
+      "message": "Hmm..., I didn\u0027t find a bug for the AUE on b/ and crbug.com/. Maybe the build system just query the information on goldeneye, I guess?\n\nhttps://crbug.com/1088203 seems to be for the infra change, I\u0027m not sure if this cl fits the bug.",
+      "parentUuid": "43c2b435_1492b830",
+      "revId": "441d8458f18ea72a267cdc56cd5a52ade414792f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

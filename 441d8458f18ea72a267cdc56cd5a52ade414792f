@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "43c2b435_1492b830",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-06-11T07:23:15Z",
+      "side": 1,
+      "message": "Do you know the bug for Monroe AUE? Please append.\nI found a related one: https://crbug.com/1088203",
+      "revId": "441d8458f18ea72a267cdc56cd5a52ade414792f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

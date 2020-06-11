@@ -46,6 +46,30 @@
       "revId": "1ba5266449e4a2c0302fb0b65d2f1ccf3d422ac3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "44e38687_4cedc218",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-06-11T02:56:00Z",
+      "side": 1,
+      "message": "Ideally precondition methods should be called only from the framework. Some calls we wanted to ban are:\n\n1. test -\u003e precondition\n2. precondition A -\u003e precondition B (pseudo inheritance)\n\nPrecondition/preconditionImpl separation was to avoid them in somewhat weak way. As long as precondition constructors (e.g. arc.Booted()) return a testing.Precondition instead of a concrete type (e.g. arc.preImpl), anyone can\u0027t call Precondition methods unless they use type assertions.\n\nBut this was a weak restriction anyone could workaround. In fact, I see ash/pre.go using type assertion to call into a chrome precondition.\nhttps://cs.corp.google.com/chromeos_public/src/platform/tast-tests/src/chromiumos/tast/local/chrome/ash/pre.go?q\u003dash/pre.go\u0026dr\u0026l\u003d67\n\nWith introduction of testing.PreState, (1) is completely banned. (2) is still possible, but it\u0027s already possible as you see from the example above, and I expect such use cases are replaced by precondition chaining in precondition v2.\n\nSo I\u0027d like to merge Precondition and preconditionImpl at least after we migrate to precondition v2. I thought that we might be able to merge the two interfaces now because the more problematic case (1) is resolved... but I\u0027m happy wait for precondition v2 as well.\n\nWDYT?",
+      "parentUuid": "504c543d_af0c19b6",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 53
+      },
+      "revId": "1ba5266449e4a2c0302fb0b65d2f1ccf3d422ac3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

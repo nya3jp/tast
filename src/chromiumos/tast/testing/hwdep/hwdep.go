@@ -214,6 +214,20 @@ func Wifi80211ac() Condition {
 	return SkipOnPlatform("kip", "guado")
 }
 
+// WifiMACAddrRandomize returns a hardware dependency condition that is satisfied
+// iff the DUT support WiFi MAC Address Randomization.
+func WifiMACAddrRandomize() Condition {
+	// TODO(crbug.com/1070299): replace this when we have hwdep for WiFi chips.
+	return SkipOnPlatform(
+		// mwifiex in 3.10 kernel does not support it.
+		"nyan_kitty",
+		// Broadcom driver has only NL80211_FEATURE_SCHED_SCAN_RANDOM_MAC_ADDR
+		// but not NL80211_FEATURE_SCAN_RANDOM_MAC_ADDR. We require randomization
+		// for all supported scan types.
+		"veyron_mickey", "veyron_minnie", "veyron_speedy",
+	)
+}
+
 func hasBattery(f *dep.HardwareFeatures) (bool, error) {
 	if f.DC == nil {
 		return false, errors.New("device.Config is not given")

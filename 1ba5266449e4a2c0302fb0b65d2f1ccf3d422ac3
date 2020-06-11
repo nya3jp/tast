@@ -22,6 +22,30 @@
       "revId": "1ba5266449e4a2c0302fb0b65d2f1ccf3d422ac3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "504c543d_af0c19b6",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-06-11T02:27:24Z",
+      "side": 1,
+      "message": "Also, isn\u0027t it still possible to access preconditions because they are globally exported? e.g. with arc.Booted()",
+      "parentUuid": "7bb761a9_e8853127",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 53
+      },
+      "revId": "1ba5266449e4a2c0302fb0b65d2f1ccf3d422ac3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

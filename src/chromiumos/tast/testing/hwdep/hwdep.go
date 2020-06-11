@@ -194,11 +194,9 @@ func InternalDisplay() Condition {
 // Wifi80211ac returns a hardware dependency condition that is satisfied
 // iff the DUT's WiFi module supports 802.11ac.
 func Wifi80211ac() Condition {
-	// Monroe (ath9k) does not support 802.11ac.
-	// TODO(crbug.com/1024554): remove it after Monroe platform is end-of-life.
 	// Some of guado and kip SKUs do not support 802.11ac.
 	// TODO(crbug.com/1070299): replace this when we have hwdep for WiFi chips.
-	return SkipOnPlatform("monroe", "kip", "guado")
+	return SkipOnPlatform("kip", "guado")
 }
 
 // Battery returns a hardware dependency condition that is satisfied iff the DUT

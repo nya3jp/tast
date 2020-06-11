@@ -22,6 +22,30 @@
       "revId": "ae1a52be8289e8a062a0139de1ade8554daa4a19",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "270dae25_75e8a0a0",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1412469
+      },
+      "writtenOn": "2020-06-11T01:40:15Z",
+      "side": 1,
+      "message": "Thanks for pointing out. Reverted this check to stay in [SkipOn]Model().",
+      "parentUuid": "e252df29_1a5456f6",
+      "range": {
+        "startLine": 34,
+        "startChar": 0,
+        "endLine": 38,
+        "endChar": 2
+      },
+      "revId": "ae1a52be8289e8a062a0139de1ade8554daa4a19",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

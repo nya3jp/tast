@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "5b09ba1b_fbf831fa",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1412469
+      },
+      "writtenOn": "2020-06-11T02:21:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "69fe0964_88614544",
+      "range": {
+        "startLine": 9,
+        "startChar": 54,
+        "endLine": 9,
+        "endChar": 62
+      },
+      "revId": "9bd3cb0c489b79651ed77b33542550bf5d217f19",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1381cbde_df8fb74c",
         "filename": "/COMMIT_MSG",
         "patchSetId": 6
@@ -45,6 +69,30 @@
       "revId": "9bd3cb0c489b79651ed77b33542550bf5d217f19",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8359c0fe_88d6ed03",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1412469
+      },
+      "writtenOn": "2020-06-11T02:21:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1381cbde_df8fb74c",
+      "range": {
+        "startLine": 10,
+        "startChar": 58,
+        "endLine": 10,
+        "endChar": 65
+      },
+      "revId": "9bd3cb0c489b79651ed77b33542550bf5d217f19",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "ec54e3c0_0efd2ffd",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1412469
+      },
+      "writtenOn": "2020-06-11T02:21:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dfe638ee_090c6bca",
+      "range": {
+        "startLine": 11,
+        "startChar": 50,
+        "endLine": 11,
+        "endChar": 55
+      },
+      "revId": "9bd3cb0c489b79651ed77b33542550bf5d217f19",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "8a1a0d21_0a5ce7ac",
         "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
         "patchSetId": 6
@@ -91,6 +163,30 @@
       "revId": "9bd3cb0c489b79651ed77b33542550bf5d217f19",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "65c1aae6_6eb73f49",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 237,
+      "author": {
+        "id": 1412469
+      },
+      "writtenOn": "2020-06-11T02:21:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8a1a0d21_0a5ce7ac",
+      "range": {
+        "startLine": 237,
+        "startChar": 8,
+        "endLine": 237,
+        "endChar": 10
+      },
+      "revId": "9bd3cb0c489b79651ed77b33542550bf5d217f19",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "90946b4b_0b8f09ad",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 238,
+      "author": {
+        "id": 1412469
+      },
+      "writtenOn": "2020-06-11T02:21:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6373f328_d2780ec2",
+      "range": {
+        "startLine": 238,
+        "startChar": 13,
+        "endLine": 238,
+        "endChar": 23
+      },
+      "revId": "9bd3cb0c489b79651ed77b33542550bf5d217f19",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9417508f_3338c44a",
         "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
         "patchSetId": 6
@@ -140,6 +260,30 @@
     },
     {
       "key": {
+        "uuid": "decbe5dd_5737e164",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 267,
+      "author": {
+        "id": 1412469
+      },
+      "writtenOn": "2020-06-11T02:21:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9417508f_3338c44a",
+      "range": {
+        "startLine": 267,
+        "startChar": 79,
+        "endLine": 267,
+        "endChar": 88
+      },
+      "revId": "9bd3cb0c489b79651ed77b33542550bf5d217f19",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d86ca41f_472cfc16",
         "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
         "patchSetId": 6
@@ -160,6 +304,30 @@
       "revId": "9bd3cb0c489b79651ed77b33542550bf5d217f19",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a38bff37_9be7300f",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 268,
+      "author": {
+        "id": 1412469
+      },
+      "writtenOn": "2020-06-11T02:21:17Z",
+      "side": 1,
+      "message": "rewrote the comment and added a comment above modelsWithoutForceDischargeSupport to clarify why the list is used to check force discharging is supported or not.",
+      "parentUuid": "d86ca41f_472cfc16",
+      "range": {
+        "startLine": 267,
+        "startChar": 3,
+        "endLine": 268,
+        "endChar": 81
+      },
+      "revId": "9bd3cb0c489b79651ed77b33542550bf5d217f19",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

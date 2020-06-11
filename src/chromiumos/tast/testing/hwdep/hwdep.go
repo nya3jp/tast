@@ -199,6 +199,18 @@ func Wifi80211ac() Condition {
 	return SkipOnPlatform("kip", "guado")
 }
 
+// WifiMACAddrRandomize returns a hardware dependency condition that is satisfied
+// iff the DUT support WiFi MAC Address Randomization.
+func WifiMACAddrRandomize() Condition {
+	// TODO(crbug.com/1070299): replace this when we have hwdep for WiFi chips.
+	return SkipOnPlatform(
+		// mwifiex in 3.18/3.10 kernel does not support it.
+		"elm", "hana", "nyan_kitty",
+		// broadcom driver does not have NL80211_FEATURE_SCAN_RANDOM_MAC_ADDR.
+		"veyron_mickey",
+	)
+}
+
 // Battery returns a hardware dependency condition that is satisfied iff the DUT
 // has a battery, e.g. Chromeboxes and Chromebits don't.
 func Battery() Condition {

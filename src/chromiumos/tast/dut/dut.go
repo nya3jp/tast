@@ -219,6 +219,11 @@ func (d *DUT) KeyFile() string { return d.sopt.KeyFile }
 // (e.g. a host running a servod instance).
 func (d *DUT) KeyDir() string { return d.sopt.KeyDir }
 
+// HostName returns the a string representing the "<dut_hostname>:<ssh_port>" used to connect to the DUT.
+// This is provided for tests that may need to establish direct SSH connections to hosts.
+// (e.g. syzkaller connecting to a host).
+func (d *DUT) HostName() string { return d.sopt.Hostname }
+
 // ErrCompanionHostname is the error of deriving default companion device hostname from dut's hostname.
 // e.g. when DUT is connected with IP address.
 var ErrCompanionHostname = errors.New("cannot derive default companion device hostname")

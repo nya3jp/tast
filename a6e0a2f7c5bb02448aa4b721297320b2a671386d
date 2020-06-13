@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "63358576_ad9a0ed8",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 207,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2020-06-13T01:19:02Z",
+      "side": 1,
+      "message": "this is not a hardware dep. You\u0027ll see that, for instance, hana-kernelnext is already passing:\n\nhttps://stainless.corp.google.com/search?test\u003d%5Enetwork_WiFi_RandomMACAddress%24\u0026exclude_cts\u003dtrue\u0026exclude_non_release\u003dtrue\u0026view\u003dmatrix\u0026row\u003dboard_model\u0026col\u003dbuild\u0026first_date\u003d2020-06-07\u0026last_date\u003d2020-06-13",
+      "range": {
+        "startLine": 207,
+        "startChar": 0,
+        "endLine": 207,
+        "endChar": 53
+      },
+      "revId": "a6e0a2f7c5bb02448aa4b721297320b2a671386d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "85f624cd_951cbcdd",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 209,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2020-06-13T01:19:02Z",
+      "side": 1,
+      "message": "It has NL80211_FEATURE_SCHED_SCAN_RANDOM_MAC_ADDR though -- it\u0027s probably worth noting that (but that we require randomization for all supported scan types), just so this isn\u0027t as confusing.",
+      "range": {
+        "startLine": 209,
+        "startChar": 0,
+        "endLine": 209,
+        "endChar": 72
+      },
+      "revId": "a6e0a2f7c5bb02448aa4b721297320b2a671386d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3b153473_dcfe33e4",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 210,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2020-06-13T01:19:02Z",
+      "side": 1,
+      "message": "also, veyron_minnie and veyron_speedy?",
+      "range": {
+        "startLine": 210,
+        "startChar": 0,
+        "endLine": 210,
+        "endChar": 18
+      },
+      "revId": "a6e0a2f7c5bb02448aa4b721297320b2a671386d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

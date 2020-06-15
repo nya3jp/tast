@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "a389172f_21e9a086",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 207,
+      "author": {
+        "id": 1371981
+      },
+      "writtenOn": "2020-06-15T05:35:11Z",
+      "side": 1,
+      "message": "The condition will be \"mwifiex \u0026\u0026 (kernel-3_18 || kerne-3_10)\" and I think the mwifiex (i.e. Marvel WiFi) part is hwdep? (while the kernel version part is definitely swdep)\n\nA similar condition is also used in network.UdevRename, maybe we can create a bug for tracking all these dependencies and removing them after elm/hana uprev?",
+      "parentUuid": "63358576_ad9a0ed8",
+      "range": {
+        "startLine": 207,
+        "startChar": 0,
+        "endLine": 207,
+        "endChar": 53
+      },
+      "revId": "a6e0a2f7c5bb02448aa4b721297320b2a671386d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "85f624cd_951cbcdd",
         "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
         "patchSetId": 3
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "a193b19e_3a33be3a",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 209,
+      "author": {
+        "id": 1371981
+      },
+      "writtenOn": "2020-06-15T05:35:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "85f624cd_951cbcdd",
+      "range": {
+        "startLine": 209,
+        "startChar": 0,
+        "endLine": 209,
+        "endChar": 72
+      },
+      "revId": "a6e0a2f7c5bb02448aa4b721297320b2a671386d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3b153473_dcfe33e4",
         "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
         "patchSetId": 3
@@ -59,6 +107,30 @@
       "writtenOn": "2020-06-13T01:19:02Z",
       "side": 1,
       "message": "also, veyron_minnie and veyron_speedy?",
+      "range": {
+        "startLine": 210,
+        "startChar": 0,
+        "endLine": 210,
+        "endChar": 18
+      },
+      "revId": "a6e0a2f7c5bb02448aa4b721297320b2a671386d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ec2eb8c6_91451f96",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 210,
+      "author": {
+        "id": 1371981
+      },
+      "writtenOn": "2020-06-15T05:35:11Z",
+      "side": 1,
+      "message": "The two have R84 as AUE-Milestone, so I removed them.",
+      "parentUuid": "3b153473_dcfe33e4",
       "range": {
         "startLine": 210,
         "startChar": 0,

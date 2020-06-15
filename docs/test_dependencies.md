@@ -98,6 +98,7 @@ The following software features are defined:
     the `android` feature; DUTs will have exactly one of these two features.
 *   `no_asan` - Build was not built with Address Sanitizer. Similar to `aslr`.
 *   `no_msan` - Build was not built with Memory Sanitizer.
+*   `no_kefka_kernelnext` - Boards that are not kefka-kernelnext.
 *   `no_qemu` - For tests not for Chrome OS QEMU images.
 *   `no_symlink_mount` - Symlink mounting is disabled via the
     `CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT` kernel option.

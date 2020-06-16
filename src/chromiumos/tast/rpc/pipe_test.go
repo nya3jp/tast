@@ -68,9 +68,9 @@ func TestPipeClientConn(t *testing.T) {
 	go srv.Serve(newPipeListener(sr, sw))
 	defer srv.Stop()
 
-	conn, err := newPipeClientConn(context.Background(), cr, cw)
+	conn, err := NewPipeClientConn(context.Background(), cr, cw)
 	if err != nil {
-		t.Fatal("newPipeClientConn failed: ", err)
+		t.Fatal("NewPipeClientConn failed: ", err)
 	}
 	defer conn.Close()
 

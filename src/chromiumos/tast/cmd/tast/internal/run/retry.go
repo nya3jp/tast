@@ -58,6 +58,5 @@ func runTestsWithRetry(ctx context.Context, cfg *Config, patterns []string, runT
 		}
 		patterns = unstarted
 	}
-
 	return allResults, nil
 }

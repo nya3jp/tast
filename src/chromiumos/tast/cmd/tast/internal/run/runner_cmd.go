@@ -10,10 +10,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"os/exec"
 
 	"chromiumos/tast/internal/runner"
+	"chromiumos/tast/rpc"
 	"chromiumos/tast/ssh"
 )
 
@@ -30,15 +32,31 @@ type runnerCmd interface {
 	Output() ([]byte, error)
 }
 
+type streamableRunnerCmd interface {
+	runnerCmd
+
+	Start() error
+	Abort() error
+	Wait(ctx context.Context) error
+	StdoutPipe() (io.ReadCloser, error)
+	StderrPipe() (io.ReadCloser, error)
+}
+
 type localRunnerCmd struct {
 	// cmd holds the instance to execute a command on DUT.
 	cmd *ssh.Cmd
 
 	// ctx is used to run ssh.Cmd.Start() and ssh.Cmd.Wait().
 	ctx context.Context
+
+	// stdin to the command.
+	stdin io.Reader
+
+	// stdout from the command.
+	stdout io.Writer
 }
 
-func localRunnerCommand(ctx context.Context, cfg *Config, hst *ssh.Conn) *localRunnerCmd {
+func localRunnerCommand(ctx context.Context, cfg *Config, hst *ssh.Conn) streamableRunnerCmd {
 	// Set proxy-related environment variables for local_test_runner so it will use them
 	// when accessing network.
 	execArgs := []string{"env"}
@@ -56,18 +74,61 @@ func localRunnerCommand(ctx context.Context, cfg *Config, hst *ssh.Conn) *localR
 	}
 	execArgs = append(execArgs, cfg.localRunner)
 
-	return &localRunnerCmd{hst.Command(execArgs[0], execArgs[1:]...), ctx}
+	return &localRunnerCmd{
+		cmd:   hst.Command(execArgs[0], execArgs[1:]...),
+		ctx:   ctx,
+		stdin: os.Stdin,
+	}
 }
 
 func (r *localRunnerCmd) SetStdin(stdin io.Reader) {
-	r.cmd.Stdin = stdin
+	r.stdin = stdin
 }
 
 func (r *localRunnerCmd) SetStderr(stderr io.Writer) {
 	r.cmd.Stderr = stderr
 }
 
-func (r *localRunnerCmd) Output() ([]byte, error) {
+func (r *localRunnerCmd) Start() error {
+	conn, err := rpc.NewPipeClientConn(r.ctx, r.stdin, r.cmd.Stdout)
+}
+
+func (r *localRunnerCmd) Abort() {
+	r.cmd.Abort()
+}
+
+func (r *localRunnerCmd) Wait(ctx context.Context) error {
+	return r.cmd.Wait(ctx)
+}
+
+func (r *localRunnerCmd) StdoutPipe() (io.ReadCloser, error) {
+	return r.stdout.StdoutPipe()
+}
+
+func (r *localRunnerCmd) StderrPipe() (io.ReadCloser, error) {
+	return r.cmd.StderrPipe()
+}
+
+func (r *localRunnerCmd) Output() (_ []byte, retErr error) {
+	conn, err := rpc.NewPipeClientConn(r.ctx, r.cmd.Stdin, r.cmd.Stdout)
+	if err != nil {
+		return nil, fmt.Errorf("failed to make client: %v", err)
+	}
+	defer func() {
+		if err := conn.Close(); err != nil && retErr == nil {
+			retErr = fmt.Errorf("close connection: %v", err)
+		}
+	}()
+	cl := runner.NewTastCoreServiceClient(conn)
+	b, err := ioutil.ReadAll(r.stdin)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read stdin: %v", err)
+	}
+	dcl, err := cl.Delegate(r.ctx, &runner.DelegateRequest{Payload: string(b)})
+	if err != nil {
+		return nil, fmt.Errorf("cl.Delegate: %v", err)
+	}
+
 	return r.cmd.Output(r.ctx)
 }
 

@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net"
 	"path/filepath"
 	"time"
@@ -111,11 +112,12 @@ func runLocalTests(ctx context.Context, cfg *Config) ([]TestResult, error) {
 	results, err := runTestsWithRetry(ctx, cfg, cfg.Patterns, runTests, beforeRetry)
 	elapsed := time.Since(start)
 	cfg.Logger.Logf("Ran %v local test(s) in %v", len(results), elapsed.Round(time.Millisecond))
+	log.Println("Returning from ")
 	return results, err
 }
 
 type localRunnerHandle struct {
-	cmd            *ssh.Cmd
+	cmd            streamableRunnerCmd
 	stdout, stderr io.Reader
 }
 
@@ -136,20 +138,20 @@ func startLocalRunner(ctx context.Context, cfg *Config, hst *ssh.Conn, args *run
 	}
 
 	cmd := localRunnerCommand(ctx, cfg, hst)
-	cmd.cmd.Stdin = bytes.NewBuffer(argsData)
-	stdout, err := cmd.cmd.StdoutPipe()
+	cmd.SetStdin(bytes.NewBuffer(argsData))
+	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		return nil, fmt.Errorf("failed to open stdout pipe: %v", err)
 	}
-	stderr, err := cmd.cmd.StderrPipe()
+	stderr, err := cmd.StderrPipe()
 	if err != nil {
 		return nil, fmt.Errorf("failed to open stderr pipe: %v", err)
 	}
 
-	if err := cmd.cmd.Start(ctx); err != nil {
+	if err := cmd.Start(); err != nil {
 		return nil, fmt.Errorf("failed to start local_test_runner: %v", err)
 	}
-	return &localRunnerHandle{cmd.cmd, stdout, stderr}, nil
+	return &localRunnerHandle{cmd, stdout, stderr}, nil
 }
 
 // runLocalTestsOnce synchronously runs local_test_runner to run local tests
@@ -160,6 +162,7 @@ func startLocalRunner(ctx context.Context, cfg *Config, hst *ssh.Conn, args *run
 // returned.
 func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns []string) (
 	results []TestResult, unstarted []string, err error) {
+	log.Println("runLocalTestsOnce")
 	ctx, st := timing.Start(ctx, "run_local_tests_once")
 	defer st.End()
 
@@ -192,6 +195,7 @@ func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns
 	if err != nil {
 		return nil, nil, err
 	}
+	log.Println("Got handle")
 	defer handle.Close(ctx)
 
 	// Read stderr in the background so it can be included in error messages.
@@ -208,7 +212,9 @@ func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns
 		}
 		return diagnoseLocalRunError(ctx, cfg, outDir)
 	}
+	log.Println("Read test output")
 	results, unstarted, rerr := readTestOutput(ctx, cfg, handle.stdout, crf, df)
+	log.Println("Done read test output")
 
 	// Check that the runner exits successfully first so that we don't give a useless error
 	// about incorrectly-formed output instead of e.g. an error about the runner being missing.
@@ -218,9 +224,11 @@ func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns
 	}
 	wctx, wcancel := context.WithTimeout(ctx, timeout)
 	defer wcancel()
+	log.Printf("calling cmd.Wait() with timeout %v", timeout)
 	if err := handle.cmd.Wait(wctx); err != nil {
 		return results, unstarted, stderrReader.appendToError(err, stderrTimeout)
 	}
+	log.Println("returning from runLocalTestsOnce")
 	return results, unstarted, rerr
 }
 

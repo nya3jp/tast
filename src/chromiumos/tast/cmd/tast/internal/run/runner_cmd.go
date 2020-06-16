@@ -10,11 +10,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
+	"log"
 	"os"
 	"os/exec"
 
 	"chromiumos/tast/internal/runner"
+	"chromiumos/tast/rpc"
 	"chromiumos/tast/ssh"
+
+	"google.golang.org/grpc"
 )
 
 // runnerCmd provides common interface to execute a test_runner.
@@ -30,15 +35,117 @@ type runnerCmd interface {
 	Output() ([]byte, error)
 }
 
+type streamableRunnerCmd interface {
+	runnerCmd
+
+	Start() error
+	Abort()
+	Wait(ctx context.Context) error
+	StdoutPipe() (io.ReadCloser, error)
+	StderrPipe() (io.ReadCloser, error)
+}
+
+type delegateAdaptor struct {
+	// r is the reader to get the message from.
+	r io.Reader
+	// w is the writer to send the message to.
+	w io.WriteCloser
+
+	// ech is the channel to send an error on streaming.
+	ech     chan error
+	waitErr error
+
+	// conn is the connection to use.
+	conn *grpc.ClientConn
+}
+
+// newDelegateAdaptor gets conn and its ownership.
+// Caller must call close().
+func newDelegateAdaptor() *delegateAdaptor {
+	return &delegateAdaptor{
+		r:   os.Stdin,
+		w:   os.Stdout,
+		ech: make(chan error, 1),
+	}
+}
+
+// start invokes a Delegate request, and returns without blocking.
+// It invokes a goroutine that redirects the output stream to a.stdout.
+// The goroutine sends an error or nil to a.ech when the gRPC call finishes or timeouts, and returns.
+// start doesn't take ownership of conn.
+func (a *delegateAdaptor) start(ctx context.Context, conn *grpc.ClientConn) error {
+	a.conn = conn
+	cl := runner.NewTastCoreServiceClient(conn)
+	b, err := ioutil.ReadAll(a.r)
+	if err != nil {
+		return err
+	}
+	stream, err := cl.Delegate(ctx, &runner.DelegateRequest{Payload: string(b)})
+	if err != nil {
+		return err
+	}
+	go func() {
+		defer a.w.Close()
+		for {
+			m, err := stream.Recv()
+			log.Printf("recv %v: %v", m, err)
+			if err == io.EOF {
+				a.ech <- nil
+				break
+			}
+			if err != nil {
+				a.ech <- err
+				break
+			}
+			if _, err := fmt.Fprint(a.w, m.Payload); err != nil {
+				a.ech <- err
+				break
+			}
+		}
+	}()
+	return nil
+}
+
+// wait waits for the command to exit and waits for any copying to stdin or
+// copying from stdout or stderr to complete.
+//
+// This method can be called only if the command was started by start. It is an
+// error to call this method multiple times, but it will not panic as long as
+// it is not called in parallel.
+//
+// The command is aborted when ctx's deadline is reached. Note that the deadline
+// of the context passed to Start also applies.
+func (a *delegateAdaptor) wait(ctx context.Context) (retErr error) {
+	defer func() {
+		if err := a.conn.Close(); err != nil && retErr == nil {
+			retErr = err
+		}
+	}()
+	if a.waitErr != nil {
+		return a.waitErr
+	}
+	select {
+	case err := <-a.ech:
+		a.waitErr = err
+		return err
+	case <-ctx.Done():
+		return ctx.Err()
+	}
+}
+
 type localRunnerCmd struct {
 	// cmd holds the instance to execute a command on DUT.
 	cmd *ssh.Cmd
 
 	// ctx is used to run ssh.Cmd.Start() and ssh.Cmd.Wait().
 	ctx context.Context
+
+	// a is the adaptor to send and receive messages.
+	// Start() sets a.
+	a *delegateAdaptor
 }
 
-func localRunnerCommand(ctx context.Context, cfg *Config, hst *ssh.Conn) *localRunnerCmd {
+func localRunnerCommand(ctx context.Context, cfg *Config, hst *ssh.Conn) streamableRunnerCmd {
 	// Set proxy-related environment variables for local_test_runner so it will use them
 	// when accessing network.
 	execArgs := []string{"env"}
@@ -54,21 +161,81 @@ func localRunnerCommand(ctx context.Context, cfg *Config, hst *ssh.Conn) *localR
 			}
 		}
 	}
-	execArgs = append(execArgs, cfg.localRunner)
+	execArgs = append(execArgs, cfg.localRunner, "-grpc")
 
-	return &localRunnerCmd{hst.Command(execArgs[0], execArgs[1:]...), ctx}
+	return &localRunnerCmd{
+		cmd: hst.Command(execArgs[0], execArgs[1:]...),
+		ctx: ctx,
+		a:   newDelegateAdaptor(),
+	}
 }
 
-func (r *localRunnerCmd) SetStdin(stdin io.Reader) {
-	r.cmd.Stdin = stdin
+func (c *localRunnerCmd) SetStdin(stdin io.Reader) {
+	c.a.r = stdin
 }
 
-func (r *localRunnerCmd) SetStderr(stderr io.Writer) {
-	r.cmd.Stderr = stderr
+func (c *localRunnerCmd) SetStderr(stderr io.Writer) {
+	c.cmd.Stderr = stderr
 }
 
-func (r *localRunnerCmd) Output() ([]byte, error) {
-	return r.cmd.Output(r.ctx)
+func (c *localRunnerCmd) Start() error {
+	stdin, err := c.cmd.StdinPipe()
+	if err != nil {
+		return err
+	}
+	stdout, err := c.cmd.StdoutPipe()
+	if err != nil {
+		return err
+	}
+	if err := c.cmd.Start(c.ctx); err != nil {
+		return err
+	}
+	conn, err := rpc.NewPipeClientConn(c.ctx, stdout, stdin)
+	if err != nil {
+		return err
+	}
+	if err = c.a.start(c.ctx, conn); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *localRunnerCmd) Abort() {
+	c.cmd.Abort()
+}
+
+func (c *localRunnerCmd) Wait(ctx context.Context) error {
+	if err := c.a.wait(ctx); err != nil {
+		return err
+	}
+	c.cmd.Wait(ctx) // ignore context cancelled error
+	return nil
+}
+
+func (c *localRunnerCmd) StdoutPipe() (r io.ReadCloser, _ error) {
+	r, c.a.w = io.Pipe()
+	return r, nil
+}
+
+func (c *localRunnerCmd) StderrPipe() (io.ReadCloser, error) {
+	return c.cmd.StderrPipe()
+}
+
+func (c *localRunnerCmd) Output() (_ []byte, retErr error) {
+	r, err := c.StdoutPipe()
+	if err != nil {
+		return nil, err
+	}
+	if err := c.Start(); err != nil {
+		return nil, err
+	}
+	defer func() {
+		c.Abort()
+		if err := c.Wait(c.ctx); err != nil && retErr == nil {
+			retErr = err
+		}
+	}()
+	return ioutil.ReadAll(r)
 }
 
 type remoteRunnerCmd struct {

@@ -33,7 +33,6 @@ func runStages(ctx context.Context, root *testing.RootState, stages []stage) boo
 	// if one test is buggy and doesn't return after its context's deadline is reached.
 	go func() {
 		defer close(stageCh)
-		defer root.Close()
 
 		runStage := func(st stage) {
 			rctx, rcancel := context.WithTimeout(ctx, st.ctxTimeout)

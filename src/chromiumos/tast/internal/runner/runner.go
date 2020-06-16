@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"github.com/shirou/gopsutil/process"
+	grpc "google.golang.org/grpc"
 
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/internal/command"
@@ -27,7 +28,10 @@ import (
 	"chromiumos/tast/internal/devserver"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/testing"
+	"chromiumos/tast/rpc"
 )
+
+type RunnerError int
 
 const (
 	statusSuccess      = 0 // runner was successful
@@ -40,6 +44,25 @@ const (
 	statusInterrupted  = 7 // read end of stdout was closed or SIGINT was received
 	statusTerminated   = 8 // SIGTERM was received
 )
+
+func RunV2(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Args, cfg *Config, useRPC bool) int {
+	log.Println("start RunV2")
+	if !useRPC {
+		return Run(clArgs, stdin, stdout, stderr, args, cfg)
+	}
+	// launch a GRPC server that pipes inputs to Run.
+	srv := grpc.NewServer()
+	RegisterTastCoreServiceServer(srv, &server{
+		clArgs,
+		args,
+		cfg,
+		stderr,
+	})
+	if err := rpc.ServeOnPipe(srv, stdin, stdout); err != nil && err != io.EOF {
+		return command.WriteError(stderr, err)
+	}
+	return statusSuccess
+}
 
 // Run reads command-line flags from clArgs (in the case of a manual run) or a JSON-marshaled
 // Args struct from stdin (when run by the tast command) and performs the requested action.

@@ -18,6 +18,7 @@ import (
 	"runtime"
 	"runtime/pprof"
 	"strings"
+	"sync"
 	"time"
 
 	"chromiumos/tast/dut"
@@ -191,31 +192,57 @@ func (ew *eventWriter) TestEnd(t *testing.TestInstance, skipReasons []string, ti
 }
 
 func (ew *eventWriter) TestEventWriter(t *testing.TestInstance) *testEventWriter {
-	return &testEventWriter{ew, t}
+	return &testEventWriter{ew: ew, t: t}
 }
 
-// testEventWriter wraps eventWriter for a single test.
+// testEventWriter wraps eventWriter for a single test. It implements testing.OutputStream.
 //
 // testEventWriter is goroutine-safe; it is safe to call its methods concurrently from multiple
 // goroutines.
 type testEventWriter struct {
 	ew *eventWriter
 	t  *testing.TestInstance
+
+	mu    sync.Mutex
+	ended bool
 }
 
+var errAlreadyEnded = errors.New("test has already ended")
+
 func (tw *testEventWriter) Start() error {
+	tw.mu.Lock()
+	defer tw.mu.Unlock()
+	if tw.ended {
+		return errAlreadyEnded
+	}
 	return tw.ew.TestStart(tw.t)
 }
 
 func (tw *testEventWriter) Log(msg string) error {
+	tw.mu.Lock()
+	defer tw.mu.Unlock()
+	if tw.ended {
+		return errAlreadyEnded
+	}
 	return tw.ew.TestLog(tw.t, msg)
 }
 
 func (tw *testEventWriter) Error(e *testing.Error) error {
+	tw.mu.Lock()
+	defer tw.mu.Unlock()
+	if tw.ended {
+		return errAlreadyEnded
+	}
 	return tw.ew.TestError(tw.t, e)
 }
 
 func (tw *testEventWriter) End(skipReasons []string, timingLog *timing.Log) error {
+	tw.mu.Lock()
+	defer tw.mu.Unlock()
+	if tw.ended {
+		return errAlreadyEnded
+	}
+	tw.ended = true
 	return tw.ew.TestEnd(tw.t, skipReasons, timingLog)
 }
 
@@ -371,22 +398,13 @@ func runTest(ctx context.Context, tw *testEventWriter, args *Args, cfg *runConfi
 		NextTest:     next,
 	}
 
-	ch := make(chan testing.Output)
-	abortCopier := make(chan bool, 1)
-	copierDone := make(chan bool, 1)
-
-	// Copy test output in the background as soon as it becomes available.
-	go func() {
-		copyTestOutput(ch, tw, abortCopier)
-		copierDone <- true
-	}()
-
-	ok := planner.Run(ctx, t, ch, &testCfg)
+	ok := planner.Run(ctx, t, tw, &testCfg)
 	if !ok {
-		// If Run reported that the test didn't finish, tell the copier to abort.
-		abortCopier <- true
+		// If Run reported that the test didn't finish, print diagnostic messages.
+		const msg = "Test did not return on timeout (see log for goroutine dump)"
+		tw.Error(testing.NewError(nil, msg, msg, 0))
+		dumpGoroutines(tw)
 	}
-	<-copierDone
 
 	tw.End(nil, timingLog)
 
@@ -409,31 +427,6 @@ func reportSkippedTest(tw *testEventWriter, result *testing.ShouldRunResult) {
 		})
 	}
 	tw.End(result.SkipReasons, nil)
-}
-
-// copyTestOutput reads test output from ch and writes it to tw until ch is closed.
-// If abort becomes readable before ch is closed, a timeout error is written to ew
-// and the function returns immediately.
-func copyTestOutput(ch <-chan testing.Output, tw *testEventWriter, abort <-chan bool) {
-	for {
-		select {
-		case o, ok := <-ch:
-			if !ok {
-				// Channel was closed, i.e. test finished.
-				return
-			}
-			if o.Err != nil {
-				tw.Error(o.Err)
-			} else {
-				tw.Log(o.Msg)
-			}
-		case <-abort:
-			const msg = "Test did not return on timeout (see log for goroutine dump)"
-			tw.Error(testing.NewError(nil, msg, msg, 0))
-			dumpGoroutines(tw)
-			return
-		}
-	}
 }
 
 // dumpGoroutines dumps all goroutines to tw.

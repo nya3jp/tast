@@ -9,7 +9,7 @@ package runner
 // Do not change the above line; see https://golang.org/pkg/cmd/go/internal/generate/
 //
 // This file contains constants from arch/x86/include/asm/intel-family.h
-// in the Linux kernel repository at revision 4e8ae0c6a8aa41670b817bf02036cbfff2854227.
+// in the Linux kernel repository at revision e750aa38b72bb12d634d711213d2d8e5b23e5b09.
 // Run "go generate" to regenerate it.
 
 //go:generate ../../../../../tools/go.sh run gen/gen_intel_family.go ../../../../../../../third_party/kernel/v5.4/arch/x86/include/asm/intel-family.h generated_intel_family.go

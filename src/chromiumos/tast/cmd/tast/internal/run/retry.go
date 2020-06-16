@@ -6,6 +6,7 @@ package run
 
 import (
 	"context"
+	"log"
 	"reflect"
 )
 
@@ -30,6 +31,7 @@ func runTestsWithRetry(ctx context.Context, cfg *Config, patterns []string, runT
 	var allResults []TestResult
 	for {
 		results, unstarted, rerr := runTests(ctx, patterns)
+		log.Println("runTests -> ", results, unstarted, rerr)
 		allResults = append(allResults, results...)
 		if rerr == nil {
 			break
@@ -53,11 +55,12 @@ func runTestsWithRetry(ctx context.Context, cfg *Config, patterns []string, runT
 
 		cfg.Logger.Logf("Trying to run %v remaining test(s)", len(unstarted))
 
+		log.Println("running beforeRetry")
 		if !beforeRetry(ctx) {
 			return allResults, rerr
 		}
 		patterns = unstarted
 	}
-
+	log.Printf("runTestsWithRetry done: %v", allResults)
 	return allResults, nil
 }

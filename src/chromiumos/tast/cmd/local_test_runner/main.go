@@ -13,6 +13,7 @@ package main
 import (
 	"context"
 	"errors"
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
@@ -172,7 +173,10 @@ func main() {
 			cfg.DefaultBuildArtifactsURL = "gs://chromeos-image-archive/" + bp + "/"
 		}
 	}
-	os.Exit(runner.Run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, &args, &cfg))
+	var grpc bool
+	flag.BoolVar(&grpc, "grpc", false, "use gRPC server")
+	flag.Parse()
+	os.Exit(runner.RunV2(flag.Args(), os.Stdin, os.Stdout, os.Stderr, &args, &cfg, grpc))
 }
 
 // writeSystemInfo writes additional system information from the DUT to files within dir.

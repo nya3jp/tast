@@ -16,6 +16,9 @@ import (
 	gotesting "testing"
 	"time"
 
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
+
 	"chromiumos/tast/dut"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/control"
@@ -60,6 +63,83 @@ func errorHasStatus(err error, status int) bool {
 		return false
 	}
 	return true
+}
+
+func TestCopyTestOutput(t *gotesting.T) {
+	const msg = "here is a log message"
+	e := testing.Error{
+		Reason: "something went wrong",
+		File:   "file.go",
+		Line:   16,
+		Stack:  "the stack",
+	}
+
+	ch := make(chan testing.Output)
+	go func() {
+		ch <- testing.Output{Msg: msg}
+		ch <- testing.Output{Err: &e}
+		close(ch)
+	}()
+
+	b := bytes.Buffer{}
+	mw := control.NewMessageWriter(&b)
+	ew := newEventWriter(mw)
+	tw := ew.TestEventWriter(&testing.TestInstance{})
+	copyTestOutput(ch, tw, make(chan bool))
+
+	r := control.NewMessageReader(&b)
+	for i, em := range []interface{}{
+		&control.TestLog{Text: msg},
+		&control.TestError{Error: e},
+	} {
+		if am, err := r.ReadMessage(); err != nil {
+			t.Errorf("Failed to read message %v: %v", i, err)
+		} else if !cmp.Equal(am, em, cmpopts.IgnoreTypes(time.Time{})) {
+			t.Errorf("Message %v is %v; want %v", i, am, em)
+		}
+	}
+	if r.More() {
+		t.Error("copyTestOutput() wrote extra message(s)")
+	}
+}
+
+func TestCopyTestOutputTimeout(t *gotesting.T) {
+	// Simulate a test ignoring its timeout by requesting abort and leaving the output channel open.
+	abort := make(chan bool, 1)
+	abort <- true
+	b := bytes.Buffer{}
+	mw := control.NewMessageWriter(&b)
+	ew := newEventWriter(mw)
+	tw := ew.TestEventWriter(&testing.TestInstance{})
+	copyTestOutput(make(chan testing.Output), tw, abort)
+
+	r := control.NewMessageReader(&b)
+	if msg, err := r.ReadMessage(); err != nil {
+		t.Errorf("Failed to read message: %v", err)
+	} else if _, ok := msg.(*control.TestError); !ok {
+		t.Errorf("copyTestOutput() wrote %v; want TestError", msg)
+	}
+
+	foundMe := false
+	for r.More() {
+		msg, err := r.ReadMessage()
+		if err != nil {
+			t.Error("Failed to read message: ", err)
+			break
+		}
+		log, ok := msg.(*control.TestLog)
+		if !ok {
+			t.Errorf("Got a message of %T, want *control.TestLog", msg)
+			continue
+		}
+		// The log should contain stack traces, including this test function.
+		if strings.Contains(log.Text, "TestCopyTestOutputTimeout") {
+			foundMe = true
+		}
+	}
+	if !foundMe {
+		t.Error("Did not find a stack trace containing TestCopyTestOutputTimeout in logs")
+	}
 }
 
 func TestRunTests(t *gotesting.T) {
@@ -254,7 +334,6 @@ func TestRunTestsTimeout(t *gotesting.T) {
 	seenStart := 0
 	seenError := 0
 	seenEnd := 0
-	foundMe := false
 	r := control.NewMessageReader(&stdout)
 	for r.More() {
 		if msg, err := r.ReadMessage(); err != nil {
@@ -264,11 +343,6 @@ func TestRunTestsTimeout(t *gotesting.T) {
 				t.Errorf("TestStart.Test.Name = %q; want %q", ts.Test.Name, name1)
 			}
 			seenStart++
-		} else if tl, ok := msg.(*control.TestLog); ok {
-			// The log should contain stack traces, including this test function.
-			if strings.Contains(tl.Text, "TestRunTestsTimeout") {
-				foundMe = true
-			}
 		} else if _, ok := msg.(*control.TestError); ok {
 			seenError++
 		} else if te, ok := msg.(*control.TestEnd); ok {
@@ -286,9 +360,6 @@ func TestRunTestsTimeout(t *gotesting.T) {
 	}
 	if seenEnd != 1 {
 		t.Errorf("Got TestEnd %d time(s); want 1 time", seenEnd)
-	}
-	if !foundMe {
-		t.Error("Stack trace not found")
 	}
 }
 

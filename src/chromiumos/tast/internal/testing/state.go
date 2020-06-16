@@ -27,22 +27,18 @@ const (
 	preFailPrefix = "[Precondition failure] " // the prefix used then a precondition failure is logged.
 )
 
-// OutputStream is an interface to report streamed outputs of a test.
-type OutputStream interface {
-	// Log reports an informational log message from a test.
-	Log(msg string) error
-
-	// Error reports an error from by a test. A test that reported one or more
-	// errors should be considered failure.
-	Error(e *Error) error
-}
-
 // Error describes an error encountered while running a test.
 type Error struct {
 	Reason string `json:"reason"`
 	File   string `json:"file"`
 	Line   int    `json:"line"`
 	Stack  string `json:"stack"`
+}
+
+// Output contains a piece of output (either i.e. an error or log message) from a test.
+type Output struct {
+	Err *Error
+	Msg string
 }
 
 // RemoteData contains information relevant to remote tests.
@@ -92,14 +88,15 @@ func (h *RPCHint) clone() *RPCHint {
 // RootState is private to the framework; never expose it to tests.
 type RootState struct {
 	test *TestInstance // test being run
-	out  OutputStream  // stream to which logging messages and errors are reported
+	ch   chan<- Output // channel to which logging messages and errors are written
 	cfg  *TestConfig   // details about how to run test
 
 	preValue interface{}     // value returned by test.Pre.Prepare; may be nil
 	preCtx   context.Context // context that lives as long as the precondition; can only be accessed in the precondition phase
 
-	mu     sync.Mutex
-	hasErr bool // true if any error was reported
+	hasErr bool       // true if any error was reported
+	closed bool       // true after Close is called and ch is closed
+	mu     sync.Mutex // protects HasError and closed
 }
 
 // State holds state relevant to the execution of a single test.
@@ -147,8 +144,8 @@ type TestConfig struct {
 }
 
 // NewRootState returns a new RootState object.
-func NewRootState(test *TestInstance, out OutputStream, cfg *TestConfig) *RootState {
-	return &RootState{test: test, out: out, cfg: cfg}
+func NewRootState(test *TestInstance, ch chan<- Output, cfg *TestConfig) *RootState {
+	return &RootState{test: test, ch: ch, cfg: cfg}
 }
 
 // newTestState creates a State for a test.
@@ -212,6 +209,16 @@ func (r *RootState) recordError() {
 	r.hasErr = true
 }
 
+// writeOutput writes o to r.ch.
+// o is discarded if Close has already been called since a write to a closed channel would panic.
+func (r *RootState) writeOutput(o Output) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	if !r.closed {
+		r.ch <- o
+	}
+}
+
 // SetPreCtx sets a context available to the precondition.
 func (r *RootState) SetPreCtx(ctx context.Context) {
 	r.preCtx = ctx
@@ -220,6 +227,17 @@ func (r *RootState) SetPreCtx(ctx context.Context) {
 // SetPreValue sets a precondition value available to the test.
 func (r *RootState) SetPreValue(val interface{}) {
 	r.preValue = val
+}
+
+// Close is called after the test has completed to close s.ch.
+func (r *RootState) Close() {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	if !r.closed {
+		close(r.ch)
+		r.closed = true
+	}
 }
 
 // NewContext returns a context.Context to be used for the test.
@@ -385,12 +403,12 @@ func (s *State) DUT() *dut.DUT {
 
 // Log formats its arguments using default formatting and logs them.
 func (s *State) Log(args ...interface{}) {
-	s.root.out.Log(fmt.Sprint(args...))
+	s.root.writeOutput(Output{Msg: fmt.Sprint(args...)})
 }
 
 // Logf is similar to Log but formats its arguments using fmt.Sprintf.
 func (s *State) Logf(format string, args ...interface{}) {
-	s.root.out.Log(fmt.Sprintf(format, args...))
+	s.root.writeOutput(Output{Msg: fmt.Sprintf(format, args...)})
 }
 
 // Error formats its arguments using default formatting and marks the test
@@ -400,7 +418,7 @@ func (s *State) Error(args ...interface{}) {
 	s.recordError()
 	fullMsg, lastMsg, err := s.formatError(args...)
 	e := NewError(err, fullMsg, lastMsg, 1)
-	s.root.out.Error(e)
+	s.root.writeOutput(Output{Err: e})
 }
 
 // Errorf is similar to Error but formats its arguments using fmt.Sprintf.
@@ -408,7 +426,7 @@ func (s *State) Errorf(format string, args ...interface{}) {
 	s.recordError()
 	fullMsg, lastMsg, err := s.formatErrorf(format, args...)
 	e := NewError(err, fullMsg, lastMsg, 1)
-	s.root.out.Error(e)
+	s.root.writeOutput(Output{Err: e})
 }
 
 // Fatal is similar to Error but additionally immediately ends the test.
@@ -416,7 +434,7 @@ func (s *State) Fatal(args ...interface{}) {
 	s.recordError()
 	fullMsg, lastMsg, err := s.formatError(args...)
 	e := NewError(err, fullMsg, lastMsg, 1)
-	s.root.out.Error(e)
+	s.root.writeOutput(Output{Err: e})
 	runtime.Goexit()
 }
 
@@ -425,7 +443,7 @@ func (s *State) Fatalf(format string, args ...interface{}) {
 	s.recordError()
 	fullMsg, lastMsg, err := s.formatErrorf(format, args...)
 	e := NewError(err, fullMsg, lastMsg, 1)
-	s.root.out.Error(e)
+	s.root.writeOutput(Output{Err: e})
 	runtime.Goexit()
 }
 

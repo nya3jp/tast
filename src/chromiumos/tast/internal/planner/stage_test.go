@@ -12,13 +12,9 @@ import (
 	"chromiumos/tast/internal/testing"
 )
 
-type fakeOutputStream struct{}
-
-func (fakeOutputStream) Log(string) error           { return nil }
-func (fakeOutputStream) Error(*testing.Error) error { return nil }
-
 func TestRunStagesTimeout(t *gotesting.T) {
-	root := testing.NewRootState(&testing.TestInstance{}, fakeOutputStream{}, &testing.TestConfig{})
+	or := testing.NewOutputReader()
+	root := testing.NewRootState(&testing.TestInstance{}, or.Ch, &testing.TestConfig{})
 
 	cont := make(chan struct{}, 2)        // used to signal to first stage to exit
 	defer func() { cont <- struct{}{} }() // wait until unit test is over
@@ -37,7 +33,8 @@ func TestRunStagesTimeout(t *gotesting.T) {
 
 func TestRunStagesContext(t *gotesting.T) {
 	// Verifies that the context given to stage.f is closed before next stage.
-	root := testing.NewRootState(&testing.TestInstance{}, fakeOutputStream{}, &testing.TestConfig{})
+	or := testing.NewOutputReader()
+	root := testing.NewRootState(&testing.TestInstance{}, or.Ch, &testing.TestConfig{})
 
 	var stage1Ctx context.Context
 	closed := false

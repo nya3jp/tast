@@ -10,7 +10,11 @@ import (
 	"io/ioutil"
 	"testing"
 
+	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
+	configpb "go.chromium.org/chromiumos/config/go/api"
+	metadatapb "go.chromium.org/chromiumos/config/go/api/test/metadata/v1"
+	"go.chromium.org/chromiumos/infra/proto/go/device"
 )
 
 // newBufferWithArgs returns a bytes.Buffer containing the JSON representation of args.
@@ -85,5 +89,33 @@ func TestReadArgsRPC(t *testing.T) {
 	}
 	if diff := cmp.Diff(args, exp); diff != "" {
 		t.Fatal("Args mismatch (-want +got): ", diff)
+	}
+}
+
+func TestMarshal(t *testing.T) {
+	in := &RunTestsArgs{
+		DeviceConfig: &device.Config{},
+		DUT: &metadatapb.DUTConfigConstraint_DUT{
+			HardwareFeatures: &configpb.HardwareFeatures{
+				Screen: &configpb.HardwareFeatures_Screen{
+					TouchSupport: configpb.HardwareFeatures_PRESENT,
+				},
+			},
+		},
+	}
+	b, err := in.MarshalJSON()
+	if err != nil {
+		t.Fatal("Failed to marshalize JSON")
+	}
+	out := &RunTestsArgs{}
+	out.UnmarshalJSON(b)
+	if !proto.Equal(in.DeviceConfig, out.DeviceConfig) {
+		t.Error("DeviceConfig did not match")
+	}
+	if !proto.Equal(in.DUT, out.DUT) {
+		t.Error("DUT did not match")
+	}
+	if diff := cmp.Diff(in, out); diff != "" {
+		t.Error("In/out mismatch (-want +got): ", diff)
 	}
 }

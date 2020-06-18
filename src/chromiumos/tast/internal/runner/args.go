@@ -14,6 +14,7 @@ import (
 	"path/filepath"
 
 	"github.com/golang/protobuf/proto"
+	metadatapb "go.chromium.org/chromiumos/config/go/api/test/metadata/v1"
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/autocaps"
@@ -216,7 +217,8 @@ type GetDUTInfoResult struct {
 	// DeviceConfig contains the DUT's device characteristic.
 	// Similar to SoftwareFeatures field, the serialization/deserialization
 	// of this field are handled in MarshalJSON/UnmarshalJSON respectively.
-	DeviceConfig *device.Config `json:"-"`
+	DeviceConfig *device.Config                      `json:"-"`
+	DUT          *metadatapb.DUTConfigConstraint_DUT `json:"-"`
 
 	// Warnings contains descriptions of non-fatal errors encountered while determining features.
 	Warnings []string `json:"warnings,omitempty"`

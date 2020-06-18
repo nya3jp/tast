@@ -10,7 +10,10 @@ import (
 	"io/ioutil"
 	"testing"
 
+	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
+	configpb "go.chromium.org/chromiumos/config/go/api"
+	"go.chromium.org/chromiumos/infra/proto/go/device"
 )
 
 // newBufferWithArgs returns a bytes.Buffer containing the JSON representation of args.
@@ -85,5 +88,38 @@ func TestReadArgsRPC(t *testing.T) {
 	}
 	if diff := cmp.Diff(args, exp); diff != "" {
 		t.Fatal("Args mismatch (-want +got): ", diff)
+	}
+}
+
+func TestMarshal(t *testing.T) {
+	// 0-bytes data after marshal is treated as nil.
+	// Fill some fields to test non-nil case here.
+	in := &RunTestsArgs{
+		DeviceConfig: &device.Config{
+			Id: &device.ConfigId{
+				PlatformId: &device.PlatformId{Value: "platformId"},
+				ModelId:    &device.ModelId{Value: "modelId"},
+				BrandId:    &device.BrandId{Value: "brandId"},
+			},
+		},
+		HardwareFeatures: &configpb.HardwareFeatures{
+			Screen: &configpb.HardwareFeatures_Screen{
+				TouchSupport: configpb.HardwareFeatures_PRESENT,
+			},
+		},
+	}
+	b, err := in.MarshalJSON()
+	if err != nil {
+		t.Fatal("Failed to marshalize JSON")
+	}
+	out := &RunTestsArgs{}
+	if err := out.UnmarshalJSON(b); err != nil {
+		t.Fatal("Failed to unmarshal JSON: ", err)
+	}
+	if !proto.Equal(in.DeviceConfig, out.DeviceConfig) {
+		t.Errorf("DeviceConfig did not match: want %v, got %v", in.DeviceConfig, out.DeviceConfig)
+	}
+	if !proto.Equal(in.HardwareFeatures, out.HardwareFeatures) {
+		t.Errorf("HardwareFeatures did not match: want %v, got %v", in.HardwareFeatures, out.HardwareFeatures)
 	}
 }

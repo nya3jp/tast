@@ -7,15 +7,16 @@ package hwdep
 import (
 	"testing"
 
+	configpb "go.chromium.org/chromiumos/config/go/api"
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/internal/dep"
 )
 
-func verifyCondition(t *testing.T, c Condition, dc *device.Config, expectSatisfied bool) {
+func verifyCondition(t *testing.T, c Condition, dc *device.Config, features *configpb.HardwareFeatures, expectSatisfied bool) {
 	t.Helper()
 
-	err := c.Satisfied(&dep.HardwareFeatures{DC: dc})
+	err := c.Satisfied(&dep.HardwareFeatures{DC: dc, Features: features})
 	if expectSatisfied {
 		if err != nil {
 			t.Error("Unexpectedly unsatisfied: ", err)
@@ -47,6 +48,7 @@ func TestModel(t *testing.T) {
 					},
 				},
 			},
+			&configpb.HardwareFeatures{},
 			tc.expectSatisfied)
 	}
 }
@@ -71,6 +73,7 @@ func TestSkipOnModel(t *testing.T) {
 					},
 				},
 			},
+			&configpb.HardwareFeatures{},
 			tc.expectSatisfied)
 	}
 }
@@ -96,6 +99,7 @@ func TestPlatform(t *testing.T) {
 					},
 				},
 			},
+			&configpb.HardwareFeatures{},
 			tc.expectSatisfied)
 	}
 }
@@ -121,8 +125,52 @@ func TestSkipOnPlatform(t *testing.T) {
 					},
 				},
 			},
+			&configpb.HardwareFeatures{},
 			tc.expectSatisfied)
 	}
+}
+
+func TestTouchscreen(t *testing.T) {
+	c := TouchScreen()
+
+	for _, tc := range []struct {
+		TouchSupport    configpb.HardwareFeatures_Present
+		expectSatisfied bool
+	}{
+		{configpb.HardwareFeatures_PRESENT, true},
+		{configpb.HardwareFeatures_NOT_PRESENT, false},
+	} {
+		verifyCondition(
+			t, c,
+			&device.Config{
+				Id: &device.ConfigId{
+					PlatformId: &device.PlatformId{
+						Value: "dummy_platform",
+					},
+				},
+			},
+			&configpb.HardwareFeatures{
+				Screen: &configpb.HardwareFeatures_Screen{
+					TouchSupport: tc.TouchSupport,
+				},
+			},
+			tc.expectSatisfied)
+	}
+
+	verifyCondition(
+		t, c,
+		&device.Config{
+			Id: &device.ConfigId{
+				PlatformId: &device.PlatformId{
+					Value: "dummy_platform",
+				},
+			},
+			HardwareFeatures: []device.Config_HardwareFeature{
+				device.Config_HARDWARE_FEATURE_TOUCHSCREEN,
+			},
+		},
+		nil,
+		true)
 }
 
 func TestCEL(t *testing.T) {

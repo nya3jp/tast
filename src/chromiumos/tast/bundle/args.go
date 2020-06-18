@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/proto"
+	"go.chromium.org/chromiumos/config/go/api"
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/internal/command"
@@ -119,7 +120,12 @@ type RunTestsArgs struct {
 	// DeviceConfig contains the hardware info about the DUT.
 	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON
 	// respectively.
+	// Deprecated. Use HardwareFeatures instead.
 	DeviceConfig *device.Config `json:"-"`
+	// HardwareFeatures contains the hardware info about DUT.
+	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON
+	// respectively.
+	HardwareFeatures *api.HardwareFeatures `json:"-"`
 
 	// Devservers contains URLs of devservers that can be used to download files.
 	Devservers []string `json:"devservers,omitempty"`
@@ -148,7 +154,8 @@ func (a *RunTestsArgs) Features() *dep.Features {
 			Unavailable: a.UnavailableSoftwareFeatures,
 		}
 		f.Hardware = &dep.HardwareFeatures{
-			DC: a.DeviceConfig,
+			DC:       a.DeviceConfig,
+			Features: a.HardwareFeatures,
 		}
 	}
 	return &f
@@ -164,15 +171,25 @@ func (a *RunTestsArgs) MarshalJSON() ([]byte, error) {
 			return nil, err
 		}
 	}
+	var features []byte
+	if a.HardwareFeatures != nil {
+		var err error
+		features, err = proto.Marshal(a.HardwareFeatures)
+		if err != nil {
+			return nil, err
+		}
+	}
 
 	// Use alias to break the infinite recursion in json.Marshal.
 	type Alias RunTestsArgs
 	return json.Marshal(struct {
-		DeviceConfig []byte `json:"deviceConfig"`
+		DeviceConfig     []byte `json:"deviceConfig"`
+		HardwareFeatures []byte `json:"hardwareFeatures"`
 		*Alias
 	}{
-		DeviceConfig: dc,
-		Alias:        (*Alias)(a),
+		DeviceConfig:     dc,
+		HardwareFeatures: features,
+		Alias:            (*Alias)(a),
 	})
 }
 
@@ -181,7 +198,8 @@ func (a *RunTestsArgs) UnmarshalJSON(b []byte) error {
 	// Use alias to break the infinite recursion in json.Unmarshal.
 	type Alias RunTestsArgs
 	aux := struct {
-		DeviceConfig []byte `json:"deviceConfig"`
+		DeviceConfig     []byte `json:"deviceConfig"`
+		HardwareFeatures []byte `json:"hardwareFeatures"`
 		*Alias
 	}{
 		Alias: (*Alias)(a),
@@ -195,6 +213,13 @@ func (a *RunTestsArgs) UnmarshalJSON(b []byte) error {
 			return err
 		}
 		a.DeviceConfig = &dc
+	}
+	if len(aux.HardwareFeatures) > 0 {
+		var hw api.HardwareFeatures
+		if err := proto.Unmarshal(aux.HardwareFeatures, &hw); err != nil {
+			return err
+		}
+		a.HardwareFeatures = &hw
 	}
 	return nil
 }

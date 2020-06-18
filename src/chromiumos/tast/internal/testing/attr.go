@@ -234,6 +234,11 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 Meta tests should be a subset of mainline critical tests.
 `,
 	},
+	{
+		Name:     "syzkaller",
+		Contacts: []string{"zsm@google.com", "chromeos-kernel@google.com"},
+		Desc:     `A group of tests that utilize Syzkaller to fuzz the kernel.`,
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

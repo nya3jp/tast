@@ -73,6 +73,7 @@ func getDUTInfo(ctx context.Context, cfg *Config) error {
 			cfg.Logger.Debugf("Failed to dump %s: %v", deviceConfigFile, err)
 		}
 		cfg.deviceConfig = res.DeviceConfig
+		cfg.hardwareFeatures = res.HardwareFeatures
 	}
 	cfg.softwareFeatures = res.SoftwareFeatures
 	return nil

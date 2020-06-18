@@ -10,6 +10,7 @@ import (
 	"regexp"
 	"strings"
 
+	configpb "go.chromium.org/chromiumos/config/go/api"
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/errors"
@@ -159,15 +160,24 @@ func SkipOnPlatform(names ...string) Condition {
 // iff the DUT has touchscreen.
 func TouchScreen() Condition {
 	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
-		if f.DC == nil {
-			return errors.New("device.Config is not given")
-		}
-		for _, f := range f.DC.HardwareFeatures {
-			if f == device.Config_HARDWARE_FEATURE_TOUCHSCREEN {
+		if f.Features != nil {
+			if f.Features.Screen.TouchSupport == configpb.HardwareFeatures_PRESENT {
 				return nil
 			}
+			return errors.New("DUT does not have touchscreen")
 		}
-		return errors.New("DUT does not have touchscreen")
+
+		// Kept for protocol compatibility with an older version of Tast command.
+		// TODO(crbug.com/1094802): Remove this block when we bump sourceCompatVersion in tast/internal/build/compat.go.
+		if f.DC != nil {
+			for _, f := range f.DC.HardwareFeatures {
+				if f == device.Config_HARDWARE_FEATURE_TOUCHSCREEN {
+					return nil
+				}
+			}
+			return errors.New("DUT does not have touchscreen")
+		}
+		return errors.New("DUT HardwareFeatures data is not given")
 	}, CEL: "dut.hardware_features.screen.touch_support == api.HardwareFeatures.Present.PRESENT",
 	}
 }

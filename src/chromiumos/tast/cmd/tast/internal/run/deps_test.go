@@ -15,6 +15,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
+	configpb "go.chromium.org/chromiumos/config/go/api"
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/bundle"
@@ -23,20 +24,21 @@ import (
 )
 
 // writeGetDUTInfoResult writes runner.GetDUTInfoResult to w.
-func writeGetDUTInfoResult(w io.Writer, avail, unavail []string, dc *device.Config) error {
+func writeGetDUTInfoResult(w io.Writer, avail, unavail []string, dc *device.Config, hf *configpb.HardwareFeatures) error {
 	res := runner.GetDUTInfoResult{
 		SoftwareFeatures: &dep.SoftwareFeatures{
 			Available:   avail,
 			Unavailable: unavail,
 		},
-		DeviceConfig: dc,
+		DeviceConfig:     dc,
+		HardwareFeatures: hf,
 	}
 	return json.NewEncoder(w).Encode(&res)
 }
 
 // checkRunnerTestDepsArgs calls setRunnerTestDepsArgs using cfg and verifies
 // that it sets runner args as specified per checkDeps, avail, and unavail.
-func checkRunnerTestDepsArgs(t *testing.T, cfg *Config, checkDeps bool, avail, unavail []string, dc *device.Config) {
+func checkRunnerTestDepsArgs(t *testing.T, cfg *Config, checkDeps bool, avail, unavail []string, dc *device.Config, hf *configpb.HardwareFeatures) {
 	t.Helper()
 	args := runner.Args{
 		Mode:     runner.RunTestsMode,
@@ -50,6 +52,7 @@ func checkRunnerTestDepsArgs(t *testing.T, cfg *Config, checkDeps bool, avail, u
 			AvailableSoftwareFeatures:   avail,
 			UnavailableSoftwareFeatures: unavail,
 			DeviceConfig:                dc,
+			HardwareFeatures:            hf,
 		},
 	}
 	if !cmp.Equal(*args.RunTests, exp, cmp.Comparer(proto.Equal)) {
@@ -72,6 +75,11 @@ func TestGetDUTInfo(t *testing.T) {
 			BrandId:    &device.BrandId{Value: "brand-id"},
 		},
 	}
+	hf := &configpb.HardwareFeatures{
+		Screen: &configpb.HardwareFeatures_Screen{
+			TouchSupport: configpb.HardwareFeatures_PRESENT,
+		},
+	}
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		checkArgs(t, args, &runner.Args{
 			Mode: runner.GetDUTInfoMode,
@@ -81,7 +89,7 @@ func TestGetDUTInfo(t *testing.T) {
 			},
 		})
 
-		writeGetDUTInfoResult(stdout, avail, unavail, dc)
+		writeGetDUTInfoResult(stdout, avail, unavail, dc, hf)
 		return 0
 	}
 	td.cfg.checkTestDeps = true
@@ -89,7 +97,7 @@ func TestGetDUTInfo(t *testing.T) {
 	if err := getDUTInfo(context.Background(), &td.cfg); err != nil {
 		t.Fatalf("getDUTInfo(%+v) failed: %v", td.cfg, err)
 	}
-	checkRunnerTestDepsArgs(t, &td.cfg, true, avail, unavail, dc)
+	checkRunnerTestDepsArgs(t, &td.cfg, true, avail, unavail, dc, hf)
 
 	// Make sure device-config.txt is created.
 	if b, err := ioutil.ReadFile(filepath.Join(td.cfg.ResDir, "device-config.txt")); err != nil {
@@ -127,7 +135,7 @@ func TestGetDUTInfoNoDeviceConfig(t *testing.T) {
 
 		// Note: if both avail/unavail are empty, it is handled as an error.
 		// Add dummy here to avoid it.
-		writeGetDUTInfoResult(stdout, []string{"dep1"}, nil, nil)
+		writeGetDUTInfoResult(stdout, []string{"dep1"}, nil, nil, nil)
 		return 0
 	}
 	td.cfg.checkTestDeps = true
@@ -150,7 +158,7 @@ func TestGetDUTInfoNoCheckTestDeps(t *testing.T) {
 	if err := getDUTInfo(context.Background(), &td.cfg); err != nil {
 		t.Fatalf("getDUTInfo(%+v) failed: %v", td.cfg, err)
 	}
-	checkRunnerTestDepsArgs(t, &td.cfg, false, nil, nil, nil)
+	checkRunnerTestDepsArgs(t, &td.cfg, false, nil, nil, nil, nil)
 }
 
 func TestGetSoftwareFeaturesNoFeatures(t *testing.T) {
@@ -164,7 +172,7 @@ func TestGetSoftwareFeaturesNoFeatures(t *testing.T) {
 				RequestDeviceConfig: true,
 			},
 		})
-		writeGetDUTInfoResult(stdout, []string{}, []string{}, nil)
+		writeGetDUTInfoResult(stdout, []string{}, []string{}, nil, nil)
 		return 0
 	}
 	td.cfg.checkTestDeps = true

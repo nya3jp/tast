@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/proto"
+	metadatapb "go.chromium.org/chromiumos/config/go/api/test/metadata/v1"
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/internal/command"
@@ -118,7 +119,12 @@ type RunTestsArgs struct {
 	// DeviceConfig contains the hardware info about the DUT.
 	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON
 	// respectively.
+	// Deprecated. Use DUT instead.
 	DeviceConfig *device.Config `json:"-"`
+	// DUT contains the hardware info about DUT.
+	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON
+	// respectively.
+	DUT *metadatapb.DUTConfigConstraint_DUT `json:"-"`
 
 	// Devservers contains URLs of devservers that can be used to download files.
 	Devservers []string `json:"devservers,omitempty"`
@@ -141,7 +147,8 @@ func (a *RunTestsArgs) Features() *dep.Features {
 			Unavailable: a.UnavailableSoftwareFeatures,
 		}
 		f.Hardware = &dep.HardwareFeatures{
-			DC: a.DeviceConfig,
+			DC:  a.DeviceConfig,
+			DUT: a.DUT,
 		}
 	}
 	return &f
@@ -157,14 +164,24 @@ func (a *RunTestsArgs) MarshalJSON() ([]byte, error) {
 			return nil, err
 		}
 	}
+	var dut []byte
+	if a.DUT != nil {
+		var err error
+		dc, err = proto.Marshal(a.DUT)
+		if err != nil {
+			return nil, err
+		}
+	}
 
 	// Use alias to break the infinite recursion in json.Marshal.
 	type Alias RunTestsArgs
 	return json.Marshal(struct {
 		DeviceConfig []byte `json:"deviceConfig"`
+		DUT          []byte `json:"dut"`
 		*Alias
 	}{
 		DeviceConfig: dc,
+		DUT:          dut,
 		Alias:        (*Alias)(a),
 	})
 }
@@ -175,6 +192,7 @@ func (a *RunTestsArgs) UnmarshalJSON(b []byte) error {
 	type Alias RunTestsArgs
 	aux := struct {
 		DeviceConfig []byte `json:"deviceConfig"`
+		DUT          []byte `json:"dut"`
 		*Alias
 	}{
 		Alias: (*Alias)(a),
@@ -188,6 +206,13 @@ func (a *RunTestsArgs) UnmarshalJSON(b []byte) error {
 			return err
 		}
 		a.DeviceConfig = &dc
+	}
+	if len(aux.DUT) > 0 {
+		var dut metadatapb.DUTConfigConstraint_DUT
+		if err := proto.Unmarshal(aux.DUT, &dut); err != nil {
+			return err
+		}
+		a.DUT = &dut
 	}
 	return nil
 }

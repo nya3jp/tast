@@ -14,6 +14,7 @@ import (
 	"path/filepath"
 
 	"github.com/golang/protobuf/proto"
+	configpb "go.chromium.org/chromiumos/config/go/api"
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/autocaps"
@@ -216,7 +217,8 @@ type GetDUTInfoResult struct {
 	// DeviceConfig contains the DUT's device characteristic.
 	// Similar to SoftwareFeatures field, the serialization/deserialization
 	// of this field are handled in MarshalJSON/UnmarshalJSON respectively.
-	DeviceConfig *device.Config `json:"-"`
+	DeviceConfig     *device.Config             `json:"-"`
+	HardwareFeatures *configpb.HardwareFeatures `json:"-"`
 
 	// Warnings contains descriptions of non-fatal errors encountered while determining features.
 	Warnings []string `json:"warnings,omitempty"`
@@ -239,18 +241,28 @@ func (r *GetDUTInfoResult) MarshalJSON() ([]byte, error) {
 			return nil, err
 		}
 	}
+	var hf []byte
+	if r.HardwareFeatures != nil {
+		var err error
+		hf, err = proto.Marshal(r.HardwareFeatures)
+		if err != nil {
+			return nil, err
+		}
+	}
 
 	type Alias GetDUTInfoResult
 	return json.Marshal(struct {
-		Available    []string `json:"available,omitempty"`
-		Missing      []string `json:"missing,omitempty"`
-		DeviceConfig []byte   `json:"deviceConfig,omitempty"`
+		Available        []string `json:"available,omitempty"`
+		Missing          []string `json:"missing,omitempty"`
+		DeviceConfig     []byte   `json:"deviceConfig,omitempty"`
+		HardwareFeatures []byte   `json:"hardwareFeatures,omitempty"`
 		*Alias
 	}{
-		Available:    available,
-		Missing:      missing,
-		DeviceConfig: dc,
-		Alias:        (*Alias)(r),
+		Available:        available,
+		Missing:          missing,
+		DeviceConfig:     dc,
+		HardwareFeatures: hf,
+		Alias:            (*Alias)(r),
 	})
 }
 
@@ -259,9 +271,10 @@ func (r *GetDUTInfoResult) MarshalJSON() ([]byte, error) {
 func (r *GetDUTInfoResult) UnmarshalJSON(b []byte) error {
 	type Alias GetDUTInfoResult
 	aux := struct {
-		Available    []string `json:"available,omitempty"`
-		Missing      []string `json:"missing,omitempty"`
-		DeviceConfig []byte   `json:"deviceConfig,omitempty"`
+		Available        []string `json:"available,omitempty"`
+		Missing          []string `json:"missing,omitempty"`
+		DeviceConfig     []byte   `json:"deviceConfig,omitempty"`
+		HardwareFeatures []byte   `json:"hardwareFeatures,omitempty"`
 		*Alias
 	}{
 		Alias: (*Alias)(r),
@@ -281,6 +294,13 @@ func (r *GetDUTInfoResult) UnmarshalJSON(b []byte) error {
 			return err
 		}
 		r.DeviceConfig = &dc
+	}
+	if len(aux.HardwareFeatures) > 0 {
+		var hf configpb.HardwareFeatures
+		if err := proto.Unmarshal(aux.HardwareFeatures, &hf); err != nil {
+			return err
+		}
+		r.HardwareFeatures = &hf
 	}
 	return nil
 }

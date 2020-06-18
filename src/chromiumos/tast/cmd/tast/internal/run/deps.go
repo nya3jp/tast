@@ -73,6 +73,7 @@ func getDUTInfo(ctx context.Context, cfg *Config) error {
 			cfg.Logger.Debugf("Failed to dump %s: %v", deviceConfigFile, err)
 		}
 		cfg.deviceConfig = res.DeviceConfig
+		cfg.hardwareFeatures = res.HardwareFeatures
 	}
 	cfg.softwareFeatures = res.SoftwareFeatures
 	return nil
@@ -84,5 +85,6 @@ func setRunnerTestDepsArgs(cfg *Config, args *runner.Args) {
 		args.RunTests.BundleArgs.AvailableSoftwareFeatures = cfg.softwareFeatures.Available
 		args.RunTests.BundleArgs.UnavailableSoftwareFeatures = cfg.softwareFeatures.Unavailable
 		args.RunTests.BundleArgs.DeviceConfig = cfg.deviceConfig
+		args.RunTests.BundleArgs.HardwareFeatures = cfg.hardwareFeatures
 	}
 }

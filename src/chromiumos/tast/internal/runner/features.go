@@ -19,6 +19,8 @@ import (
 	"strconv"
 	"strings"
 
+	configpb "go.chromium.org/chromiumos/config/go/api"
+	metadatapb "go.chromium.org/chromiumos/config/go/api/test/metadata/v1"
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/autocaps"
@@ -29,6 +31,7 @@ import (
 )
 
 const autotestCapPrefix = "autotest-capability:" // prefix for autotest-capability feature names
+type dutType = metadatapb.DUTConfigConstraint_DUT
 
 // handleGetDUTInfo handles a GetDUTInfoMode request from args
 // and JSON-marshals a GetDUTInfoResult struct to w.
@@ -40,15 +43,17 @@ func handleGetDUTInfo(args *Args, cfg *Config, w io.Writer) error {
 	}
 
 	var dc *device.Config
+	var dut *dutType
 	if args.GetDUTInfo.RequestDeviceConfig {
 		var ws []string
-		dc, ws = newDeviceConfig()
+		dc, dut, ws = newDeviceConfig()
 		warnings = append(warnings, ws...)
 	}
 
 	res := GetDUTInfoResult{
 		SoftwareFeatures: features,
 		DeviceConfig:     dc,
+		DUT:              dut,
 		Warnings:         warnings,
 	}
 	if err := json.NewEncoder(w).Encode(&res); err != nil {
@@ -154,7 +159,7 @@ func determineSoftwareFeatures(definitions map[string]string, useFlags []string,
 
 // newDeviceConfig returns a device.Config instance some of whose members are filled
 // based on runtime information.
-func newDeviceConfig() (dc *device.Config, warns []string) {
+func newDeviceConfig() (dc *device.Config, retDUT *dutType, warns []string) {
 	crosConfig := func(path, prop string) (string, error) {
 		cmd := exec.Command("cros_config", path, prop)
 		var buf bytes.Buffer
@@ -209,6 +214,11 @@ func newDeviceConfig() (dc *device.Config, warns []string) {
 		},
 		Soc: soc,
 	}
+	dut := &dutType{
+		HardwareFeatures: &configpb.HardwareFeatures{
+			Screen: &configpb.HardwareFeatures_Screen{},
+		},
+	}
 
 	hasInternalDisplay := func() bool {
 		// Intel and AMD usually hang the panel at card0-eDP-1 (this
@@ -243,7 +253,7 @@ func newDeviceConfig() (dc *device.Config, warns []string) {
 		return regexp.MustCompile(`(?m)^E: ID_INPUT_TOUCHSCREEN=1$`).Match(b)
 	}()
 	if hasTouchScreen {
-		config.HardwareFeatures = append(config.HardwareFeatures, device.Config_HARDWARE_FEATURE_TOUCHSCREEN)
+		dut.HardwareFeatures.Screen.TouchSupport = configpb.HardwareFeatures_PRESENT
 	}
 
 	hasFingerprint := func() bool {
@@ -311,7 +321,7 @@ func newDeviceConfig() (dc *device.Config, warns []string) {
 		}
 	}()
 
-	return config, warns
+	return config, dut, warns
 }
 
 type lscpuEntry struct {

@@ -7,6 +7,7 @@ package dep
 import (
 	"strings"
 
+	"go.chromium.org/chromiumos/config/go/api"
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/errors"
@@ -15,7 +16,9 @@ import (
 // HardwareFeatures contains information about hardware features of the DUT.
 // Hardware dependency conditions should decide eligibility based only on this information.
 type HardwareFeatures struct {
-	DC *device.Config
+	DC  *device.Config
+	DUT *api.HardwareFeatures
+
 	// TODO(hidehiko): Consider adding lab peripherals here.
 }
 

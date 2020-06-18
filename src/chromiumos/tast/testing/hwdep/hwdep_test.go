@@ -7,15 +7,19 @@ package hwdep
 import (
 	"testing"
 
+	configpb "go.chromium.org/chromiumos/config/go/api"
+	metadatapb "go.chromium.org/chromiumos/config/go/api/test/metadata/v1"
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/internal/dep"
 )
 
-func verifyCondition(t *testing.T, c Condition, dc *device.Config, expectSatisfied bool) {
+type dutType = metadatapb.DUTConfigConstraint_DUT
+
+func verifyCondition(t *testing.T, c Condition, dc *device.Config, dut *dutType, expectSatisfied bool) {
 	t.Helper()
 
-	err := c.Satisfied(&dep.HardwareFeatures{DC: dc})
+	err := c.Satisfied(&dep.HardwareFeatures{DC: dc, DUT: dut})
 	if expectSatisfied {
 		if err != nil {
 			t.Error("Unexpectedly unsatisfied: ", err)
@@ -47,6 +51,7 @@ func TestModel(t *testing.T) {
 					},
 				},
 			},
+			&dutType{},
 			tc.expectSatisfied)
 	}
 }
@@ -71,6 +76,7 @@ func TestSkipOnModel(t *testing.T) {
 					},
 				},
 			},
+			&dutType{},
 			tc.expectSatisfied)
 	}
 }
@@ -96,6 +102,7 @@ func TestPlatform(t *testing.T) {
 					},
 				},
 			},
+			&dutType{},
 			tc.expectSatisfied)
 	}
 }
@@ -118,6 +125,37 @@ func TestSkipOnPlatform(t *testing.T) {
 				Id: &device.ConfigId{
 					PlatformId: &device.PlatformId{
 						Value: tc.platform,
+					},
+				},
+			},
+			&dutType{},
+			tc.expectSatisfied)
+	}
+}
+
+func TestTouchscreen(t *testing.T) {
+	c := TouchScreen()
+
+	for _, tc := range []struct {
+		TouchSupport    configpb.HardwareFeatures_Present
+		expectSatisfied bool
+	}{
+		{configpb.HardwareFeatures_PRESENT, true},
+		{configpb.HardwareFeatures_NOT_PRESENT, false},
+	} {
+		verifyCondition(
+			t, c,
+			&device.Config{
+				Id: &device.ConfigId{
+					PlatformId: &device.PlatformId{
+						Value: "dummy_platform",
+					},
+				},
+			},
+			&dutType{
+				HardwareFeatures: &configpb.HardwareFeatures{
+					Screen: &configpb.HardwareFeatures_Screen{
+						TouchSupport: tc.TouchSupport,
 					},
 				},
 			},

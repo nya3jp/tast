@@ -10,6 +10,7 @@ import (
 	"regexp"
 	"strings"
 
+	configpb "go.chromium.org/chromiumos/config/go/api"
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/errors"
@@ -151,13 +152,11 @@ func SkipOnPlatform(names ...string) Condition {
 // iff the DUT has touchscreen.
 func TouchScreen() Condition {
 	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
-		if f.DC == nil {
-			return errors.New("device.Config is not given")
+		if f.DUT == nil {
+			return errors.New("DUT data is not given")
 		}
-		for _, f := range f.DC.HardwareFeatures {
-			if f == device.Config_HARDWARE_FEATURE_TOUCHSCREEN {
-				return nil
-			}
+		if f.DUT.HardwareFeatures.Screen.TouchSupport == configpb.HardwareFeatures_PRESENT {
+			return nil
 		}
 		return errors.New("DUT does not have touchscreen")
 	}, CEL: "dut.hardware_features.screen.touch_support == api.HardwareFeatures.Present.PRESENT",

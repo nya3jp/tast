@@ -7,6 +7,7 @@ package dep
 import (
 	"strings"
 
+	metadatapb "go.chromium.org/chromiumos/config/go/api/test/metadata/v1"
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/errors"
@@ -16,6 +17,10 @@ import (
 // Hardware dependency conditions should decide eligibility based only on this information.
 type HardwareFeatures struct {
 	DC *device.Config
+
+	// TODO: migrate the above DC to this.
+	DUT *metadatapb.DUTConfigConstraint_DUT
+
 	// TODO(hidehiko): Consider adding lab peripherals here.
 }
 

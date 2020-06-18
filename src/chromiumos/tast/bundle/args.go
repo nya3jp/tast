@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/proto"
+	metadatapb "go.chromium.org/chromiumos/config/go/api/test/metadata/v1"
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/internal/command"
@@ -120,6 +121,9 @@ type RunTestsArgs struct {
 	// respectively.
 	DeviceConfig *device.Config `json:"-"`
 
+	//
+	DUT *metadatapb.DUTConfigConstraint_DUT `json:"-"`
+
 	// Devservers contains URLs of devservers that can be used to download files.
 	Devservers []string `json:"devservers,omitempty"`
 
@@ -141,7 +145,8 @@ func (a *RunTestsArgs) Features() *dep.Features {
 			Unavailable: a.UnavailableSoftwareFeatures,
 		}
 		f.Hardware = &dep.HardwareFeatures{
-			DC: a.DeviceConfig,
+			DC:  a.DeviceConfig,
+			DUT: a.DUT,
 		}
 	}
 	return &f

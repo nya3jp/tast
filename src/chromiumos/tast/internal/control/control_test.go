@@ -22,7 +22,7 @@ import (
 )
 
 func TestWriteAndRead(t *gotesting.T) {
-	msgs := []interface{}{
+	msgs := []Msg{
 		&RunStart{time.Unix(1, 0), []string{"pkg.MyTest"}, 1},
 		&RunLog{time.Unix(2, 0), "run message"},
 		&TestStart{time.Unix(3, 0), testing.TestInstance{
@@ -46,7 +46,7 @@ func TestWriteAndRead(t *gotesting.T) {
 		}
 	}
 
-	act := make([]interface{}, 0)
+	act := make([]Msg, 0)
 	mr := NewMessageReader(&b)
 	for mr.More() {
 		if msg, err := mr.ReadMessage(); err != nil {

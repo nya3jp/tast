@@ -11,9 +11,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
-	"path/filepath"
 	"reflect"
 	gotesting "testing"
 
@@ -70,44 +68,6 @@ func TestListTests(t *gotesting.T) {
 		t.Errorf("Failed to unmarshal output from listCmd.Execute(%v): %v", args, err)
 	}
 	if exp := []testing.TestInstance{test1, test2}; !reflect.DeepEqual(exp, act) {
-		t.Errorf("listCmd.Execute(%v) printed %+v; want %+v", args, act, exp)
-	}
-}
-
-func TestListTestsReadFile(t *gotesting.T) {
-	td := testutil.TempDir(t)
-	defer os.RemoveAll(td)
-
-	// Writes tests to fn within td and returns the full path.
-	writeTests := func(fn string, tests []*testing.TestInstance) string {
-		b, err := json.Marshal(tests)
-		if err != nil {
-			t.Fatal("Failed to marshal tests: ", err)
-		}
-		p := filepath.Join(td, fn)
-		if err := ioutil.WriteFile(p, b, 0644); err != nil {
-			t.Fatal(err)
-		}
-		return p
-	}
-
-	test1 := testing.TestInstance{Name: "pkg.Test1", Attr: []string{"a"}}
-	test2 := testing.TestInstance{Name: "pkg.Test2", Attr: []string{"b"}}
-	p1 := writeTests("1.json", []*testing.TestInstance{&test1, &test2})
-
-	test3 := testing.TestInstance{Name: "pkg.Test3", Attr: []string{"b"}}
-	test4 := testing.TestInstance{Name: "pkg.Test4", Attr: []string{"a"}}
-	p2 := writeTests("2.json", []*testing.TestInstance{&test3, &test4})
-
-	var stdout bytes.Buffer
-	args := []string{"-json", "-readfile=" + p1, "-readfile=" + p2, "(b)"}
-	if status := executeListCmd(t, &stdout, args, nil, logging.NewDiscard()); status != subcommands.ExitSuccess {
-		t.Fatalf("listCmd.Execute(%v) returned status %v; want %v", args, status, subcommands.ExitSuccess)
-	}
-	var act []testing.TestInstance
-	if err := json.Unmarshal(stdout.Bytes(), &act); err != nil {
-		t.Errorf("Failed to unmarshal output from listCmd.Execute(%v): %v", args, err)
-	} else if exp := []testing.TestInstance{test2, test3}; !reflect.DeepEqual(exp, act) {
 		t.Errorf("listCmd.Execute(%v) printed %+v; want %+v", args, act, exp)
 	}
 }

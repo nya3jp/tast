@@ -28,6 +28,7 @@ const (
 )
 
 // OutputStream is an interface to report streamed outputs of a test.
+// Note that planner.OutputStream is for multiple tests in contrast.
 type OutputStream interface {
 	// Log reports an informational log message from a test.
 	Log(msg string) error

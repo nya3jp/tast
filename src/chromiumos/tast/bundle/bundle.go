@@ -388,7 +388,7 @@ func runTest(ctx context.Context, tw *testEventWriter, args *Args, cfg *runConfi
 	ctx = timing.NewContext(ctx, timingLog)
 
 	testCfg := testing.TestConfig{
-		DataDir:      filepath.Join(args.RunTests.DataDir, t.DataDir()),
+		DataDir:      filepath.Join(args.RunTests.DataDir, testing.RelativeDataDir(t.Pkg)),
 		OutDir:       filepath.Join(args.RunTests.OutDir, t.Name),
 		Vars:         args.RunTests.TestVars,
 		CloudStorage: testing.NewCloudStorage(args.RunTests.Devservers),

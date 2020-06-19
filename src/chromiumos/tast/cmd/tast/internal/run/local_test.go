@@ -399,7 +399,7 @@ func TestLocalDataFiles(t *gotesting.T) {
 		extLinkFile1: extLinkFile1,
 		extFile2:     extFile2,
 	}
-	if err := testutil.WriteFiles(filepath.Join(td.cfg.buildWorkspace, "src", tests[0].DataDir()), srcFiles); err != nil {
+	if err := testutil.WriteFiles(filepath.Join(td.cfg.buildWorkspace, "src", testing.RelativeDataDir(tests[0].Pkg)), srcFiles); err != nil {
 		t.Fatal(err)
 	}
 
@@ -408,7 +408,7 @@ func TestLocalDataFiles(t *gotesting.T) {
 	dstFiles := map[string]string{
 		extLinkFile2: extLinkFile2,
 	}
-	if err := testutil.WriteFiles(filepath.Join(pushDir, tests[0].DataDir()), dstFiles); err != nil {
+	if err := testutil.WriteFiles(filepath.Join(pushDir, testing.RelativeDataDir(tests[0].Pkg)), dstFiles); err != nil {
 		t.Fatal(err)
 	}
 
@@ -439,18 +439,18 @@ func TestLocalDataFiles(t *gotesting.T) {
 		t.Fatal("pushDataFiles() failed: ", err)
 	}
 	expData := map[string]string{
-		filepath.Join(tests[0].DataDir(), file1):        file1,
-		filepath.Join(tests[0].DataDir(), file2):        file2,
-		filepath.Join(tests[1].DataDir(), file3):        file3,
-		filepath.Join(tests[1].DataDir(), extLinkFile1): extLinkFile1,
-		filepath.Join(tests[1].DataDir(), extFile2):     extFile2,
+		filepath.Join(testing.RelativeDataDir(tests[0].Pkg), file1):        file1,
+		filepath.Join(testing.RelativeDataDir(tests[0].Pkg), file2):        file2,
+		filepath.Join(testing.RelativeDataDir(tests[1].Pkg), file3):        file3,
+		filepath.Join(testing.RelativeDataDir(tests[1].Pkg), extLinkFile1): extLinkFile1,
+		filepath.Join(testing.RelativeDataDir(tests[1].Pkg), extFile2):     extFile2,
 	}
 	if data, err := testutil.ReadFiles(pushDir); err != nil {
 		t.Error(err)
 	} else if !reflect.DeepEqual(data, expData) {
 		t.Errorf("pushDataFiles() copied %v; want %v", data, expData)
 	}
-	if _, err := ioutil.ReadFile(filepath.Join(pushDir, tests[1].DataDir(), extFile1)); err == nil {
+	if _, err := ioutil.ReadFile(filepath.Join(pushDir, testing.RelativeDataDir(tests[1].Pkg), extFile1)); err == nil {
 		t.Errorf("pushDataFiles() unexpectedly copied %s", extFile1)
 	}
 }

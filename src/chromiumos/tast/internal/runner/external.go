@@ -142,7 +142,7 @@ func prepareDownloads(ctx context.Context, dataDir, artifactsURL string, tests [
 
 	for _, t := range tests {
 		for _, name := range t.Data {
-			destPath := filepath.Join(dataDir, t.DataDir(), name)
+			destPath := filepath.Join(dataDir, testing.RelativeDataDir(t.Pkg), name)
 			linkPath := destPath + testing.ExternalLinkSuffix
 			errorPath := destPath + testing.ExternalErrorSuffix
 
@@ -198,7 +198,7 @@ func prepareDownloads(ctx context.Context, dataDir, artifactsURL string, tests [
 				job = &downloadJob{link, nil}
 				urlToJob[link.computedURL] = job
 			} else if job.link != link {
-				reportErr("conflicting external data link found at %s: got %+v, want %+v", filepath.Join(t.DataDir(), name), link, job.link)
+				reportErr("conflicting external data link found at %s: got %+v, want %+v", filepath.Join(testing.RelativeDataDir(t.Pkg), name), link, job.link)
 				continue
 			}
 

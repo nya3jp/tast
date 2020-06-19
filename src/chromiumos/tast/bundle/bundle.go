@@ -64,7 +64,11 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 		if err != nil {
 			return command.WriteError(stderr, err)
 		}
-		if err := testing.WriteTestsAsJSON(stdout, tests); err != nil {
+		var infos []*testing.TestInfo
+		for _, test := range tests {
+			infos = append(infos, test.TestInfo())
+		}
+		if err := testing.WriteTestsAsJSON(stdout, infos); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
@@ -157,28 +161,28 @@ func (ew *eventWriter) RunLog(msg string) error {
 	return ew.mw.WriteMessage(&control.RunLog{Time: time.Now(), Text: msg})
 }
 
-func (ew *eventWriter) TestStart(t *testing.TestInstance) error {
+func (ew *eventWriter) TestStart(t *testing.TestInfo) error {
 	if ew.lg != nil {
 		ew.lg.Info(fmt.Sprintf("%s: ======== start", t.Name))
 	}
 	return ew.mw.WriteMessage(&control.TestStart{Time: time.Now(), Test: *t})
 }
 
-func (ew *eventWriter) TestLog(t *testing.TestInstance, msg string) error {
+func (ew *eventWriter) TestLog(t *testing.TestInfo, msg string) error {
 	if ew.lg != nil {
 		ew.lg.Info(fmt.Sprintf("%s: %s", t.Name, msg))
 	}
 	return ew.mw.WriteMessage(&control.TestLog{Time: time.Now(), Text: msg})
 }
 
-func (ew *eventWriter) TestError(t *testing.TestInstance, e *testing.Error) error {
+func (ew *eventWriter) TestError(t *testing.TestInfo, e *testing.Error) error {
 	if ew.lg != nil {
 		ew.lg.Info(fmt.Sprintf("%s: Error at %s:%d: %s", t.Name, filepath.Base(e.File), e.Line, e.Reason))
 	}
 	return ew.mw.WriteMessage(&control.TestError{Time: time.Now(), Error: *e})
 }
 
-func (ew *eventWriter) TestEnd(t *testing.TestInstance, skipReasons []string, timingLog *timing.Log) error {
+func (ew *eventWriter) TestEnd(t *testing.TestInfo, skipReasons []string, timingLog *timing.Log) error {
 	if ew.lg != nil {
 		ew.lg.Info(fmt.Sprintf("%s: ======== end", t.Name))
 	}
@@ -191,7 +195,7 @@ func (ew *eventWriter) TestEnd(t *testing.TestInstance, skipReasons []string, ti
 	})
 }
 
-func (ew *eventWriter) TestEventWriter(t *testing.TestInstance) *testEventWriter {
+func (ew *eventWriter) TestEventWriter(t *testing.TestInfo) *testEventWriter {
 	return &testEventWriter{ew: ew, t: t}
 }
 
@@ -201,7 +205,7 @@ func (ew *eventWriter) TestEventWriter(t *testing.TestInstance) *testEventWriter
 // goroutines.
 type testEventWriter struct {
 	ew *eventWriter
-	t  *testing.TestInstance
+	t  *testing.TestInfo
 
 	mu    sync.Mutex
 	ended bool
@@ -337,7 +341,7 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		}
 	}
 	for i, t := range tests {
-		tw := ew.TestEventWriter(t)
+		tw := ew.TestEventWriter(t.TestInfo())
 		if checkResult := checkResults[i]; checkResult.OK() {
 			if err := runTest(ctx, tw, args, cfg, t, nextTests[i], rd); err != nil {
 				return command.NewStatusErrorf(statusError, "run failed: %v", err)

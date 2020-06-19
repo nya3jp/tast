@@ -101,7 +101,7 @@ type TestStart struct {
 	Time time.Time `json:"testStartTime"`
 	// Test contains details about the test.
 	// Some fields, e.g. Func (containing the test function), are dropped during marshaling.
-	Test testing.TestInstance `json:"testStartTest"`
+	Test testing.TestInfo `json:"testStartTest"`
 }
 
 func (*TestStart) isMsg() {}

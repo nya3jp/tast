@@ -7,7 +7,6 @@ package testing
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"reflect"
 	gotesting "testing"
 	"time"
@@ -564,27 +563,37 @@ func TestHardwareDeps(t *gotesting.T) {
 	}
 }
 
-func TestJSON(t *gotesting.T) {
-	orig := TestInstance{
-		Func: TESTINSTANCETEST,
-		Desc: "Description",
-		Attr: []string{"attr1", "attr2"},
-		Data: []string{"foo.txt"},
-		Pkg:  "chromiumos/foo/bar",
-	}
-	b, err := json.Marshal(&orig)
-	if err != nil {
-		t.Fatalf("Failed to marshal %v: %v", orig, err)
-	}
-	loaded := TestInstance{}
-	if err = json.Unmarshal(b, &loaded); err != nil {
-		t.Fatalf("Failed to unmarshal %s: %v", string(b), err)
+func TestTestInfo(t *gotesting.T) {
+	test := &TestInstance{
+		Name:         "pkg.Test",
+		Pkg:          "chromiumos/foo/bar",
+		Val:          "somevalue",
+		Func:         TESTINSTANCETEST,
+		Desc:         "Description",
+		Contacts:     []string{"me@example.com"},
+		Attr:         []string{"attr1", "attr2"},
+		Data:         []string{"foo.txt"},
+		Vars:         []string{"var1", "var2"},
+		SoftwareDeps: []string{"dep1", "dep2"},
+		ServiceDeps:  []string{"svc1", "svc2"},
+		Timeout:      time.Hour,
 	}
 
-	// The function should be omitted.
-	orig.Func = nil
-	if !reflect.DeepEqual(loaded, orig) {
-		t.Fatalf("Unmarshaled to %v; want %v", loaded, orig)
+	got := test.TestInfo()
+	want := &TestInfo{
+		Name:         "pkg.Test",
+		Pkg:          "chromiumos/foo/bar",
+		Desc:         "Description",
+		Contacts:     []string{"me@example.com"},
+		Attr:         []string{"attr1", "attr2"},
+		Data:         []string{"foo.txt"},
+		Vars:         []string{"var1", "var2"},
+		SoftwareDeps: []string{"dep1", "dep2"},
+		ServiceDeps:  []string{"svc1", "svc2"},
+		Timeout:      time.Hour,
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Fatalf("TestInfo = %#v; want %#v", *got, *want)
 	}
 }
 

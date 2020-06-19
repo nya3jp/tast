@@ -45,7 +45,7 @@ const (
 type TestResult struct {
 	// TestInstance contains basic information about the test. This is not a runnable
 	// testing.Test struct; only fields that can be marshaled to JSON are set.
-	testing.TestInstance
+	testing.TestInfo
 	// Errors contains errors encountered while running the test.
 	// If it is empty, the test passed.
 	Errors []TestError `json:"errors"`
@@ -281,7 +281,7 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.TestS
 	ctx, r.stage = timing.Start(ctx, msg.Test.Name)
 
 	r.results = append(r.results, TestResult{
-		TestInstance:     msg.Test,
+		TestInfo:         msg.Test,
 		Start:            msg.Time,
 		OutDir:           r.getTestOutputDir(msg.Test.Name),
 		testStartMsgTime: time.Now(),
@@ -653,13 +653,13 @@ func readTestOutput(ctx context.Context, cfg *Config, r io.Reader, crf copyAndRe
 // readTestList decodes JSON-serialized testing.Test objects from r and
 // copies them into an array of TestResult objects.
 func readTestList(r io.Reader) ([]TestResult, error) {
-	var ts []testing.TestInstance
+	var ts []testing.TestInfo
 	if err := json.NewDecoder(r).Decode(&ts); err != nil {
 		return nil, err
 	}
 	results := make([]TestResult, len(ts))
 	for i := 0; i < len(ts); i++ {
-		results[i].TestInstance = ts[i]
+		results[i].TestInfo = ts[i]
 	}
 	return results, nil
 }

@@ -67,7 +67,7 @@ func (lc *listCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{
 		panic("logger not attached to context")
 	}
 
-	var tests []*testing.TestInstance
+	var tests []*testing.TestInfo
 
 	if len(f.Args()) == 0 {
 		lg.Log("Missing target.\n\n" + lc.Usage())
@@ -88,9 +88,9 @@ func (lc *listCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{
 		os.Stderr.Write(b.Bytes())
 		return status.ExitCode
 	}
-	tests = make([]*testing.TestInstance, len(results))
+	tests = make([]*testing.TestInfo, len(results))
 	for i := range results {
-		tests[i] = &results[i].TestInstance
+		tests[i] = &results[i].TestInfo
 	}
 
 	if err := lc.printTests(tests); err != nil {
@@ -101,7 +101,7 @@ func (lc *listCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{
 }
 
 // printTests writes the supplied tests to lc.stdout.
-func (lc *listCmd) printTests(tests []*testing.TestInstance) error {
+func (lc *listCmd) printTests(tests []*testing.TestInfo) error {
 	if lc.json {
 		enc := json.NewEncoder(lc.stdout)
 		enc.SetIndent("", "  ")

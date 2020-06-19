@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "82d09d5b_458eec40",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 216,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2020-06-19T18:51:01Z",
+      "side": 1,
+      "message": "Broadcom",
+      "range": {
+        "startLine": 216,
+        "startChar": 5,
+        "endLine": 216,
+        "endChar": 13
+      },
+      "revId": "d6797327d7419fa6b642e92948c2e43f6b29db94",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

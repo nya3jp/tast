@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "addf0538_c05d7039",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 207,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2020-06-19T18:51:01Z",
+      "side": 1,
+      "message": "\u003e The condition will be \"mwifiex \u0026\u0026 (kernel-3_18 || kerne-3_10)\" and I think the mwifiex (i.e. Marvel WiFi) part is hwdep? (while the kernel version part is definitely swdep)\n\nIt\u0027s not really the hardware that\u0027s the problem -- it\u0027s exclusively the kernel version, and maybe the firmware (it\u0027s unclear on Marvell-8797/Nyan-Kitty, as I\u0027ve never tested 8797 on newer kernels). Also, see below about why I don\u0027t want to skip these tests on elm/hana.\n\nMaybe just remove the mwifiex logic from hwdep.go, since it\u0027s complicated and non-general. We should only have ~2 tests that need this anyway.\n\nProposal (because it\u0027s hard to write a kernel+board swdep):\n* always skip on Broadcom WiFi\n* always skip on nyan_kitty\n* keep elm, hana in wifi_unstable (e.g., as a separate \"informational\" test variant?) until they uprev\n\n\u003e A similar condition is also used in network.UdevRename,\n\nA key difference: the dependency is open-coded in the test, so it\u0027s clearer what it\u0027s doing, including the fact that it\u0027s imprecise. Also, UdevRename is much more of an artificial test than MAC randomization tests.\n\n\u003e maybe we can create a bug for tracking all these dependencies and removing them after elm/hana uprev?\n\nIt seems like after the uprev is complete is a bit late to re-enable MAC randomization tests on these boards, because MAC randomization *will* be used on the new kernel.",
+      "parentUuid": "a389172f_21e9a086",
+      "range": {
+        "startLine": 207,
+        "startChar": 0,
+        "endLine": 207,
+        "endChar": 53
+      },
+      "revId": "a6e0a2f7c5bb02448aa4b721297320b2a671386d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "85f624cd_951cbcdd",
         "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
         "patchSetId": 3
@@ -131,6 +155,30 @@
       "side": 1,
       "message": "The two have R84 as AUE-Milestone, so I removed them.",
       "parentUuid": "3b153473_dcfe33e4",
+      "range": {
+        "startLine": 210,
+        "startChar": 0,
+        "endLine": 210,
+        "endChar": 18
+      },
+      "revId": "a6e0a2f7c5bb02448aa4b721297320b2a671386d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "62c9ca2f_c7c90e8d",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 210,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2020-06-19T18:51:01Z",
+      "side": 1,
+      "message": "They\u0027re still running in the lab though? And they probably will continue to, until we\u0027re sure there are no emergency updates needed.\n\nThere\u0027s no harm in excessive listing.",
+      "parentUuid": "ec2eb8c6_91451f96",
       "range": {
         "startLine": 210,
         "startChar": 0,

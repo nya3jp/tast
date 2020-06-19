@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "20ba94fe_2a031dc6",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-06-19T17:14:03Z",
+      "side": 1,
+      "message": "Conceptually, this looks a bit weird?\nWhat we need is a schema representing DUT, rather than the constraint of DUT here.\nConstraint should describe the HWDeps itself. Though, this is not. What data schema should we use?",
+      "revId": "d4c90130eb2b22773fed7ce0cc1c2904dfb06e00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

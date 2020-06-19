@@ -38,6 +38,13 @@ import (
 	"chromiumos/tast/timing"
 )
 
+// Msg is an interface implemented by all message types.
+type Msg interface {
+	// isMsg indicates that a type is a message type. It is not intended to be called.
+	// Since this method is unexported, no other packages can define message types.
+	isMsg()
+}
+
 // RunStart describes the start of a run (consisting of one or more tests).
 type RunStart struct {
 	// Time is the device-local time at which the run started.
@@ -50,6 +57,8 @@ type RunStart struct {
 	NumTests int `json:"runStartNumTests"`
 }
 
+func (*RunStart) isMsg() {}
+
 // RunLog contains an informative, high-level logging message produced by a run.
 type RunLog struct {
 	// Time is the device-local time at which the message was logged.
@@ -57,6 +66,8 @@ type RunLog struct {
 	// Text is the actual message.
 	Text string `json:"runLogText"`
 }
+
+func (*RunLog) isMsg() {}
 
 // RunError describes a fatal, high-level error encountered during the run.
 // This may be encountered at any time (including before RunStart) and
@@ -70,6 +81,8 @@ type RunError struct {
 	Status int `json:"runErrorStatus"`
 }
 
+func (*RunError) isMsg() {}
+
 // RunEnd describes the completion of a run.
 type RunEnd struct {
 	// Time is the device-local time at which the run ended.
@@ -80,6 +93,8 @@ type RunEnd struct {
 	OutDir string `json:"runEndOutDir"`
 }
 
+func (*RunEnd) isMsg() {}
+
 // TestStart describes the start of an individual test.
 type TestStart struct {
 	// Time is the device-local time at which the test started.
@@ -89,6 +104,8 @@ type TestStart struct {
 	Test testing.TestInstance `json:"testStartTest"`
 }
 
+func (*TestStart) isMsg() {}
+
 // TestLog contains an informative logging message produced by a test.
 type TestLog struct {
 	// Time is the device-local time at which the message was logged.
@@ -97,6 +114,8 @@ type TestLog struct {
 	Text string `json:"testLogText"`
 }
 
+func (*TestLog) isMsg() {}
+
 // TestError contains an error produced by a test.
 type TestError struct {
 	// Time is the device-local time at which the error occurred.
@@ -104,6 +123,8 @@ type TestError struct {
 	// Error describes the error that occurred.
 	Error testing.Error `json:"testErrorError"`
 }
+
+func (*TestError) isMsg() {}
 
 // TestEnd describes the end of an individual test.
 type TestEnd struct {
@@ -122,11 +143,15 @@ type TestEnd struct {
 	TimingLog *timing.Log `json:"testEndTimingLog"`
 }
 
+func (*TestEnd) isMsg() {}
+
 // Heartbeat is sent periodically to assert that the bundle is alive.
 type Heartbeat struct {
 	// Time is the device-local time at which this message was generated.
 	Time time.Time `json:"heartbeatTime"`
 }
+
+func (*Heartbeat) isMsg() {}
 
 // messageUnion contains all message types. It aids in marshaling and unmarshaling heterogeneous messages.
 type messageUnion struct {
@@ -154,7 +179,7 @@ func NewMessageWriter(w io.Writer) *MessageWriter {
 }
 
 // WriteMessage writes msg.
-func (mw *MessageWriter) WriteMessage(msg interface{}) error {
+func (mw *MessageWriter) WriteMessage(msg Msg) error {
 	mw.mu.Lock()
 	defer mw.mu.Unlock()
 
@@ -196,7 +221,7 @@ func (mr *MessageReader) More() bool {
 }
 
 // ReadMessage reads and returns the next message.
-func (mr *MessageReader) ReadMessage() (interface{}, error) {
+func (mr *MessageReader) ReadMessage() (Msg, error) {
 	dec := (*json.Decoder)(mr)
 	var mu messageUnion
 	if err := dec.Decode(&mu); err != nil {

@@ -340,60 +340,60 @@ func TestValidateMessages(t *gotesting.T) {
 	for _, tc := range []struct {
 		desc        string
 		resultNames []string
-		msgs        []interface{}
+		msgs        []control.Msg
 	}{
-		{"no RunStart", nil, []interface{}{
+		{"no RunStart", nil, []control.Msg{
 			&control.RunEnd{Time: time.Unix(1, 0), OutDir: ""},
 		}},
-		{"multiple RunStart", nil, []interface{}{
+		{"multiple RunStart", nil, []control.Msg{
 			&control.RunStart{Time: time.Unix(1, 0)},
 			&control.RunStart{Time: time.Unix(2, 0)},
 			&control.RunEnd{Time: time.Unix(3, 0), OutDir: ""},
 		}},
-		{"no RunEnd", nil, []interface{}{
+		{"no RunEnd", nil, []control.Msg{
 			&control.RunStart{Time: time.Unix(1, 0)},
 		}},
-		{"multiple RunEnd", nil, []interface{}{
+		{"multiple RunEnd", nil, []control.Msg{
 			&control.RunStart{Time: time.Unix(1, 0)},
 			&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""},
 			&control.RunEnd{Time: time.Unix(3, 0), OutDir: ""},
 		}},
-		{"num tests mismatch", nil, []interface{}{
+		{"num tests mismatch", nil, []control.Msg{
 			&control.RunStart{Time: time.Unix(1, 0), TestNames: []string{"test1"}},
 			&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""},
 		}},
-		{"unfinished test", []string{"test1", "test2"}, []interface{}{
+		{"unfinished test", []string{"test1", "test2"}, []control.Msg{
 			&control.RunStart{Time: time.Unix(1, 0), TestNames: []string{"test1", "test2"}},
 			&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestInstance{Name: "test1"}},
 			&control.TestEnd{Time: time.Unix(3, 0), Name: "test1"},
 			&control.TestStart{Time: time.Unix(4, 0), Test: testing.TestInstance{Name: "test2"}},
 			&control.RunEnd{Time: time.Unix(5, 0), OutDir: ""},
 		}},
-		{"TestStart before RunStart", nil, []interface{}{
+		{"TestStart before RunStart", nil, []control.Msg{
 			&control.TestStart{Time: time.Unix(1, 0), Test: testing.TestInstance{Name: "test1"}},
 			&control.RunStart{Time: time.Unix(2, 0), TestNames: []string{"test1"}},
 			&control.TestEnd{Time: time.Unix(3, 0), Name: "test1"},
 			&control.RunEnd{Time: time.Unix(4, 0), OutDir: ""},
 		}},
-		{"TestError without TestStart", nil, []interface{}{
+		{"TestError without TestStart", nil, []control.Msg{
 			&control.RunStart{Time: time.Unix(1, 0)},
 			&control.TestError{Time: time.Unix(2, 0), Error: testing.Error{}},
 			&control.RunEnd{Time: time.Unix(3, 0), OutDir: ""},
 		}},
-		{"wrong TestEnd", []string{"test1"}, []interface{}{
+		{"wrong TestEnd", []string{"test1"}, []control.Msg{
 			&control.RunStart{Time: time.Unix(1, 0), TestNames: []string{"test1"}},
 			&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestInstance{Name: "test1"}},
 			&control.TestEnd{Time: time.Unix(3, 0), Name: "test2"},
 			&control.RunEnd{Time: time.Unix(3, 0), OutDir: ""},
 		}},
-		{"no TestEnd", []string{"test1"}, []interface{}{
+		{"no TestEnd", []string{"test1"}, []control.Msg{
 			&control.RunStart{Time: time.Unix(1, 0), TestNames: []string{"test1", "test2"}},
 			&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestInstance{Name: "test1"}},
 			&control.TestStart{Time: time.Unix(3, 0), Test: testing.TestInstance{Name: "test2"}},
 			&control.TestEnd{Time: time.Unix(4, 0), Name: "test2"},
 			&control.RunEnd{Time: time.Unix(5, 0), OutDir: ""},
 		}},
-		{"TestStart with already-seen name", []string{"test1"}, []interface{}{
+		{"TestStart with already-seen name", []string{"test1"}, []control.Msg{
 			&control.RunStart{Time: time.Unix(1, 0), TestNames: []string{"test1", "test2"}},
 			&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestInstance{Name: "test1"}},
 			&control.TestEnd{Time: time.Unix(3, 0), Name: "test1"},

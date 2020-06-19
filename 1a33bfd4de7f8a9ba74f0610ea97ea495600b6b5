@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a7c3ebdc_d4288e2c",
+        "filename": "src/chromiumos/tast/internal/runner/runner.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 184,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-06-19T09:11:58Z",
+      "side": 1,
+      "message": "Note: This is why we should have split TestInstance and TestInfo earlier... When I made this change I didn\u0027t realize that TestInstance here were deserialized objects and thus hardware dependency info was missing. This does not change the behavior though it is suboptimal.",
+      "range": {
+        "startLine": 179,
+        "startChar": 0,
+        "endLine": 184,
+        "endChar": 3
+      },
+      "revId": "1a33bfd4de7f8a9ba74f0610ea97ea495600b6b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

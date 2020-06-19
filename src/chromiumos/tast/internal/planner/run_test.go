@@ -67,7 +67,7 @@ func TestRunSuccess(t *gotesting.T) {
 	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
 	od := filepath.Join(td, "out")
-	Run(context.Background(), test, &out, &testing.TestConfig{OutDir: od})
+	RunTest(context.Background(), test, nil, &out, &Config{}, &testing.TestConfig{OutDir: od})
 	if errs := out.Errs; len(errs) != 0 {
 		t.Errorf("Got unexpected error(s) for test: %v", errs)
 	}
@@ -81,7 +81,7 @@ func TestRunSuccess(t *gotesting.T) {
 func TestRunPanic(t *gotesting.T) {
 	test := &testing.TestInstance{Func: func(context.Context, *testing.State) { panic("intentional panic") }, Timeout: time.Minute}
 	var out outputSink
-	Run(context.Background(), test, &out, &testing.TestConfig{})
+	RunTest(context.Background(), test, nil, &out, &Config{}, &testing.TestConfig{})
 	if errs := out.Errs; len(errs) != 1 {
 		t.Errorf("Got %v errors for panicking test; want 1", len(errs))
 	}
@@ -95,7 +95,7 @@ func TestRunDeadline(t *gotesting.T) {
 	}
 	test := &testing.TestInstance{Func: f, Timeout: time.Millisecond, ExitTimeout: 10 * time.Second}
 	var out outputSink
-	Run(context.Background(), test, &out, &testing.TestConfig{})
+	RunTest(context.Background(), test, nil, &out, &Config{}, &testing.TestConfig{})
 	// The error that was reported by the test after its deadline was hit
 	// but within the exit delay should be available.
 	if errs := out.Errs; len(errs) != 1 {
@@ -120,7 +120,7 @@ func TestRunLogAfterTimeout(t *gotesting.T) {
 	test := &testing.TestInstance{Func: f, Timeout: time.Millisecond, ExitTimeout: time.Millisecond}
 
 	var out outputSink
-	Run(context.Background(), test, &out, &testing.TestConfig{})
+	RunTest(context.Background(), test, nil, &out, &Config{}, &testing.TestConfig{})
 
 	// Tell the test to continue even though Run has already returned. The output channel should
 	// still be open so as to avoid a panic when the test writes to it: https://crbug.com/853406
@@ -146,7 +146,7 @@ func TestRunLateWriteFromGoroutine(t *gotesting.T) {
 		}()
 	}, Timeout: time.Minute}
 	var out outputSink
-	Run(context.Background(), test, &out, &testing.TestConfig{})
+	RunTest(context.Background(), test, nil, &out, &Config{}, &testing.TestConfig{})
 
 	// Tell the goroutine to start and wait for it to finish.
 	close(start)
@@ -267,16 +267,17 @@ func TestRunSkipStages(t *gotesting.T) {
 			}
 			c.pre.closeFunc = makePreFunc(c.closeAction, &closeRan)
 		}
-		cfg := &testing.TestConfig{
+		pcfg := &Config{
 			PreTestFunc:  makeTestFuncWithCallback(c.preTestAction, &preTestRan, c.postTestHookAction, &postTestHookRan),
 			PostTestFunc: makeTestFunc(c.postTestAction, &postTestRan),
 		}
+		var next *testing.TestInstance
 		if i < len(tests)-1 {
-			cfg.NextTest = tests[i+1]
+			next = tests[i+1]
 		}
 
 		var out outputSink
-		Run(context.Background(), test, &out, cfg)
+		RunTest(context.Background(), test, next, &out, pcfg, &testing.TestConfig{})
 
 		// Verify that stages were executed or skipped as expected.
 		checkRan := func(name string, ran bool, a action) {
@@ -319,7 +320,7 @@ func TestRunMissingData(t *gotesting.T) {
 	}
 
 	var out outputSink
-	Run(context.Background(), test, &out, &testing.TestConfig{DataDir: td})
+	RunTest(context.Background(), test, nil, &out, &Config{}, &testing.TestConfig{DataDir: td})
 
 	expected := []string{
 		"Required data file missing1.txt missing: some reason",
@@ -355,7 +356,7 @@ func TestRunPrecondition(t *gotesting.T) {
 	}
 
 	var out outputSink
-	Run(context.Background(), test, &out, &testing.TestConfig{})
+	RunTest(context.Background(), test, nil, &out, &Config{}, &testing.TestConfig{})
 	for _, err := range out.Errs {
 		t.Error("Got error: ", err.Reason)
 	}
@@ -396,9 +397,7 @@ func TestRunPreconditionContext(t *gotesting.T) {
 	t2 := &testing.TestInstance{Name: "t2", Pre: pre, Timeout: time.Minute, Func: testFunc}
 
 	var out outputSink
-	Run(context.Background(), t1, &out, &testing.TestConfig{
-		NextTest: t2,
-	})
+	RunTest(context.Background(), t1, t2, &out, &Config{}, &testing.TestConfig{})
 	for _, err := range out.Errs {
 		t.Error("Got error: ", err.Reason)
 	}
@@ -408,9 +407,7 @@ func TestRunPreconditionContext(t *gotesting.T) {
 	}
 
 	out = outputSink{}
-	Run(context.Background(), t2, &out, &testing.TestConfig{
-		NextTest: nil,
-	})
+	RunTest(context.Background(), t2, nil, &out, &Config{}, &testing.TestConfig{})
 	for _, err := range out.Errs {
 		t.Error("Got error: ", err.Reason)
 	}
@@ -489,7 +486,7 @@ func TestRunHasError(t *gotesting.T) {
 					onPhase(s, phaseCloseFunc)
 				},
 			}
-			cfg := &testing.TestConfig{
+			pcfg := &Config{
 				PreTestFunc: func(ctx context.Context, s *testing.State) func(context.Context, *testing.State) {
 					onPhase(s, phasePreTestFunc)
 					return func(ctx context.Context, s *testing.State) {
@@ -515,7 +512,7 @@ func TestRunHasError(t *gotesting.T) {
 			test := &testing.TestInstance{Name: "t", Pre: pre, Timeout: time.Minute, Func: testFunc}
 
 			var out outputSink
-			Run(context.Background(), test, &out, cfg)
+			RunTest(context.Background(), test, nil, &out, pcfg, &testing.TestConfig{})
 		})
 	}
 }
@@ -530,7 +527,7 @@ func TestAttachStateToContext(t *gotesting.T) {
 	}
 
 	var out outputSink
-	Run(context.Background(), test, &out, &testing.TestConfig{})
+	RunTest(context.Background(), test, nil, &out, &Config{}, &testing.TestConfig{})
 	if logs := out.Logs; len(logs) != 2 || logs[0] != "msg 1" || logs[1] != "msg 2" {
 		t.Errorf("Bad test output: %v", logs)
 	}

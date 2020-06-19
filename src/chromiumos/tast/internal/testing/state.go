@@ -151,13 +151,6 @@ type TestConfig struct {
 	// RemoteData contains information relevant to remote tests.
 	// This is nil for local tests.
 	RemoteData *RemoteData
-	// PreTestFunc is run before Test.Func (and Test.Pre.Prepare, when applicable) if non-nil.
-	// The returned closure is executed after PostTestFunc if not nil.
-	PreTestFunc func(context.Context, *State) func(context.Context, *State)
-	// PostTestFunc is run after Test.Func (and Test.Pre.Cleanup, when applicable) if non-nil.
-	PostTestFunc func(context.Context, *State)
-	// NextTest is the test that will be run after this one.
-	NextTest *TestInstance
 }
 
 // NewRootState returns a new RootState object.

@@ -328,7 +328,7 @@ func getDataFilePaths(ctx context.Context, cfg *Config, hst *ssh.Conn) (
 
 		for _, p := range t.Data {
 			// t.DataDir returns the file's path relative to the top data dir, i.e. /usr/share/tast/data/local.
-			full := filepath.Clean(filepath.Join(t.DataDir(), p))
+			full := filepath.Clean(filepath.Join(testing.RelativeDataDir(t.Pkg), p))
 			if !strings.HasPrefix(full, bundlePath+"/") {
 				return nil, fmt.Errorf("data file path %q escapes base dir", full)
 			}

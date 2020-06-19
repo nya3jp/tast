@@ -378,12 +378,6 @@ func (t *TestInstance) clone() *TestInstance {
 	return ret
 }
 
-// DataDir returns the path to the directory in which files listed in Data will be located,
-// relative to the top-level directory containing data files.
-func (t *TestInstance) DataDir() string {
-	return filepath.Join(t.Pkg, testDataSubdir)
-}
-
 func (t *TestInstance) String() string {
 	return t.Name
 }
@@ -472,4 +466,10 @@ func WriteTestsAsProto(w io.Writer, ts []*TestInstance) error {
 	}
 	_, err = w.Write(d)
 	return err
+}
+
+// RelativeDataDir returns the path to the directory in which data files for tests in pkg
+// will be located, relative to the top-level directory containing data files.
+func RelativeDataDir(pkg string) string {
+	return filepath.Join(pkg, testDataSubdir)
 }

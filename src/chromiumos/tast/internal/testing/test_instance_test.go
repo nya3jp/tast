@@ -8,7 +8,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"path/filepath"
 	"reflect"
 	gotesting "testing"
 	"time"
@@ -283,18 +282,12 @@ func TestInstantiateParamsTimeout(t *gotesting.T) {
 	}
 }
 
-func TestDataDir(t *gotesting.T) {
-	tests, err := instantiate(&Test{Func: TESTINSTANCETEST})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if len(tests) != 1 {
-		t.Fatalf("Got %d test instances; want 1", len(tests))
-	}
-	test := tests[0]
-	exp := filepath.Join("chromiumos/tast/internal/testing", testDataSubdir)
-	if test.DataDir() != exp {
-		t.Errorf("DataDir() = %q; want %q", test.DataDir(), exp)
+func TestRelativeDataDir(t *gotesting.T) {
+	const pkg = "a/b/c"
+	got := RelativeDataDir(pkg)
+	want := "a/b/c/data"
+	if got != want {
+		t.Errorf("RelativeDataDir(%q) = %q; want %q", pkg, got, want)
 	}
 }
 

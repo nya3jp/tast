@@ -18,7 +18,6 @@ import (
 	"runtime"
 	"runtime/pprof"
 	"strings"
-	"sync"
 	"time"
 
 	"chromiumos/tast/dut"
@@ -197,61 +196,6 @@ func (ew *eventWriter) TestEnd(t *testing.TestInfo, skipReasons []string, timing
 	})
 }
 
-func (ew *eventWriter) TestEventWriter(t *testing.TestInfo) *testEventWriter {
-	return &testEventWriter{ew: ew, t: t}
-}
-
-// testEventWriter wraps eventWriter for a single test. It implements testing.OutputStream.
-//
-// testEventWriter is goroutine-safe; it is safe to call its methods concurrently from multiple
-// goroutines.
-type testEventWriter struct {
-	ew *eventWriter
-	t  *testing.TestInfo
-
-	mu    sync.Mutex
-	ended bool
-}
-
-var errAlreadyEnded = errors.New("test has already ended")
-
-func (tw *testEventWriter) Start() error {
-	tw.mu.Lock()
-	defer tw.mu.Unlock()
-	if tw.ended {
-		return errAlreadyEnded
-	}
-	return tw.ew.TestStart(tw.t)
-}
-
-func (tw *testEventWriter) Log(msg string) error {
-	tw.mu.Lock()
-	defer tw.mu.Unlock()
-	if tw.ended {
-		return errAlreadyEnded
-	}
-	return tw.ew.TestLog(tw.t, msg)
-}
-
-func (tw *testEventWriter) Error(e *testing.Error) error {
-	tw.mu.Lock()
-	defer tw.mu.Unlock()
-	if tw.ended {
-		return errAlreadyEnded
-	}
-	return tw.ew.TestError(tw.t, e)
-}
-
-func (tw *testEventWriter) End(skipReasons []string, timingLog *timing.Log) error {
-	tw.mu.Lock()
-	defer tw.mu.Unlock()
-	if tw.ended {
-		return errAlreadyEnded
-	}
-	tw.ended = true
-	return tw.ew.TestEnd(tw.t, skipReasons, timingLog)
-}
-
 // runTests runs tests per args and cfg and writes control messages to stdout.
 //
 // If an error is encountered in the test harness (as opposed to in a test), an error is returned.
@@ -350,13 +294,13 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 	extdata.Ensure(ctx, args.RunTests.DataDir, args.RunTests.BuildArtifactsURL, runTests, cl)
 
 	for i, t := range tests {
-		tw := ew.TestEventWriter(t.TestInfo())
+		tout := planner.NewTestOutputStream(ew, t.TestInfo())
 		if checkResult := checkResults[i]; checkResult.OK() {
-			if err := runTest(ctx, tw, args, cfg, t, nextTests[i], rd); err != nil {
+			if err := runTest(ctx, tout, args, cfg, t, nextTests[i], rd); err != nil {
 				return command.NewStatusErrorf(statusError, "run failed: %v", err)
 			}
 		} else {
-			reportSkippedTest(tw, checkResult)
+			reportSkippedTest(tout, checkResult)
 		}
 	}
 
@@ -392,9 +336,9 @@ func connectToTarget(ctx context.Context, args *Args) (_ *dut.DUT, retErr error)
 }
 
 // runTest runs t per args and cfg, writing appropriate messages to ew.
-func runTest(ctx context.Context, tw *testEventWriter, args *Args, cfg *runConfig,
+func runTest(ctx context.Context, tout *planner.TestOutputStream, args *Args, cfg *runConfig,
 	t, next *testing.TestInstance, rd *testing.RemoteData) error {
-	tw.Start()
+	tout.Start()
 
 	// Attach a log that the test can use to report timing events.
 	timingLog := timing.NewLog()
@@ -412,15 +356,15 @@ func runTest(ctx context.Context, tw *testEventWriter, args *Args, cfg *runConfi
 		RemoteData:   rd,
 	}
 
-	ok := planner.RunTest(ctx, t, next, tw, pcfg, tcfg)
+	ok := planner.RunTest(ctx, t, next, tout, pcfg, tcfg)
 	if !ok {
 		// If RunTest reported that the test didn't finish, print diagnostic messages.
 		const msg = "Test did not return on timeout (see log for goroutine dump)"
-		tw.Error(testing.NewError(nil, msg, msg, 0))
-		dumpGoroutines(tw)
+		tout.Error(testing.NewError(nil, msg, msg, 0))
+		dumpGoroutines(tout)
 	}
 
-	tw.End(nil, timingLog)
+	tout.End(nil, timingLog)
 
 	if !ok {
 		return errors.New("test did not return on timeout")
@@ -430,22 +374,22 @@ func runTest(ctx context.Context, tw *testEventWriter, args *Args, cfg *runConfi
 
 // reportSkippedTest is called instead of runTest for a test that is skipped due to
 // having unsatisfied dependencies.
-func reportSkippedTest(tw *testEventWriter, result *testing.ShouldRunResult) {
-	tw.Start()
+func reportSkippedTest(tout *planner.TestOutputStream, result *testing.ShouldRunResult) {
+	tout.Start()
 	for _, msg := range result.Errors {
 		_, fn, ln, _ := runtime.Caller(0)
-		tw.Error(&testing.Error{
+		tout.Error(&testing.Error{
 			Reason: msg,
 			File:   fn,
 			Line:   ln,
 		})
 	}
-	tw.End(result.SkipReasons, nil)
+	tout.End(result.SkipReasons, nil)
 }
 
-// dumpGoroutines dumps all goroutines to tw.
-func dumpGoroutines(tw *testEventWriter) {
-	tw.Log("Dumping all goroutines")
+// dumpGoroutines dumps all goroutines to tout.
+func dumpGoroutines(tout *planner.TestOutputStream) {
+	tout.Log("Dumping all goroutines")
 	if err := func() error {
 		p := pprof.Lookup("goroutine")
 		if p == nil {
@@ -457,11 +401,11 @@ func dumpGoroutines(tw *testEventWriter) {
 		}
 		sc := bufio.NewScanner(&buf)
 		for sc.Scan() {
-			tw.Log(sc.Text())
+			tout.Log(sc.Text())
 		}
 		return sc.Err()
 	}(); err != nil {
-		tw.Error(&testing.Error{
+		tout.Error(&testing.Error{
 			Reason: fmt.Sprintf("Failed to dump goroutines: %v", err),
 		})
 	}

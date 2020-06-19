@@ -17,7 +17,6 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"chromiumos/tast/internal/testing"
-	"chromiumos/tast/testing/hwdep"
 	"chromiumos/tast/timing"
 )
 
@@ -25,7 +24,7 @@ func TestWriteAndRead(t *gotesting.T) {
 	msgs := []Msg{
 		&RunStart{time.Unix(1, 0), []string{"pkg.MyTest"}, 1},
 		&RunLog{time.Unix(2, 0), "run message"},
-		&TestStart{time.Unix(3, 0), testing.TestInstance{
+		&TestStart{time.Unix(3, 0), testing.TestInfo{
 			Name: "pkg.MyTest",
 			Desc: "test description",
 			Attr: []string{"attr1", "attr2"},
@@ -55,7 +54,7 @@ func TestWriteAndRead(t *gotesting.T) {
 			act = append(act, msg)
 		}
 	}
-	if !cmp.Equal(act, msgs, cmpopts.IgnoreUnexported(timing.Stage{}, hwdep.Deps{})) {
+	if !cmp.Equal(act, msgs, cmpopts.IgnoreUnexported(timing.Stage{})) {
 		aj, _ := json.Marshal(act)
 		ej, _ := json.Marshal(msgs)
 		t.Errorf("Read messages %v; want %v", string(aj), string(ej))

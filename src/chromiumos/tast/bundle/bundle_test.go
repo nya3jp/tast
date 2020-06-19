@@ -157,12 +157,12 @@ func TestRunTests(t *gotesting.T) {
 	r := control.NewMessageReader(&stdout)
 	for i, ei := range []interface{}{
 		&control.RunLog{Text: preRunMsg},
-		&control.TestStart{Test: *tests[0]},
+		&control.TestStart{Test: *tests[0].TestInfo()},
 		&control.TestLog{Text: preTestMsg},
 		&control.TestLog{Text: postTestMsg},
 		&control.TestLog{Text: postTestHookMsg},
 		&control.TestEnd{Name: name1},
-		&control.TestStart{Test: *tests[1]},
+		&control.TestStart{Test: *tests[1].TestInfo()},
 		&control.TestLog{Text: preTestMsg},
 		&control.TestError{},
 		&control.TestLog{Text: postTestMsg},
@@ -549,12 +549,24 @@ func TestRunCloudStorage(t *gotesting.T) {
 func TestRunList(t *gotesting.T) {
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
+
 	f := func(context.Context, *testing.State) {}
-	testing.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: f})
-	testing.AddTestInstance(&testing.TestInstance{Name: "pkg.Test2", Func: f})
+	tests := []*testing.TestInstance{
+		{Name: "pkg.Test", Func: f},
+		{Name: "pkg.Test2", Func: f},
+	}
+
+	for _, test := range tests {
+		testing.AddTestInstance(test)
+	}
+
+	var infos []*testing.TestInfo
+	for _, test := range tests {
+		infos = append(infos, test.TestInfo())
+	}
 
 	var exp bytes.Buffer
-	if err := testing.WriteTestsAsJSON(&exp, testing.GlobalRegistry().AllTests()); err != nil {
+	if err := testing.WriteTestsAsJSON(&exp, infos); err != nil {
 		t.Fatal(err)
 	}
 

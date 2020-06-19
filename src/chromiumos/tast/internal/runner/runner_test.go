@@ -576,7 +576,7 @@ func TestFilterSkippedTests(t *gotesting.T) {
 			},
 		},
 	}
-	tests := []*testing.TestInstance{
+	tests := []*testing.TestInfo{
 		{
 			Name:         "aaa",
 			SoftwareDeps: []string{"kernel2x"},
@@ -587,7 +587,7 @@ func TestFilterSkippedTests(t *gotesting.T) {
 		},
 	}
 
-	names := func(ts []*testing.TestInstance) []string {
+	names := func(ts []*testing.TestInfo) []string {
 		var ns []string
 		for _, t := range ts {
 			ns = append(ns, t.Name)

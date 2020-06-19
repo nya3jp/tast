@@ -279,7 +279,7 @@ func TestLocalCopyOutput(t *gotesting.T) {
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		mw := control.NewMessageWriter(stdout)
 		mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), TestNames: []string{testName}})
-		mw.WriteMessage(&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestInstance{Name: testName}})
+		mw.WriteMessage(&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestInfo{Name: testName}})
 		mw.WriteMessage(&control.TestEnd{Time: time.Unix(3, 0), Name: testName})
 		mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0), OutDir: td.cfg.localOutDir})
 		return 0
@@ -371,7 +371,7 @@ func TestLocalDataFiles(t *gotesting.T) {
 	)
 
 	// Make local_test_runner list two tests containing the first three files (with overlap).
-	tests := []testing.TestInstance{
+	tests := []testing.TestInfo{
 		{Name: category + ".Test1", Pkg: categoryPkg, Data: []string{file1, file2}},
 		{Name: category + ".Test2", Pkg: categoryPkg, Data: []string{file2, file3, extFile1, extFile2}},
 	}

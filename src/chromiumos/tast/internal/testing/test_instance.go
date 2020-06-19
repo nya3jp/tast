@@ -44,15 +44,14 @@ const (
 //
 // While this struct can be marshaled to a JSON object, unmarshaling that object
 // will not yield a runnable TestInstance struct; Func will not be present.
-// TODO(crbug.com/984387): Split JSON part into another struct.
 type TestInstance struct {
 	// Name specifies the test's name as "category.TestName".
 	// The name is derived from Func's package and function name.
 	// The category is the final component of the package.
-	Name string `json:"name"`
+	Name string
 
 	// Pkg contains the Go package in which Func is located.
-	Pkg string `json:"pkg"`
+	Pkg string
 
 	// ExitTimeout contains the maximum duration to wait for Func to exit after a timeout.
 	// The context passed to Func has a deadline based on Timeout, but Tast waits for an additional ExitTimeout to elapse
@@ -60,33 +59,33 @@ type TestInstance struct {
 	// sees that its context has expired before an additional error is added about the timeout.
 	// This is exposed for unit tests and should almost always be omitted when defining tests;
 	// a reasonable default will be used.
-	ExitTimeout time.Duration `json:"-"`
+	ExitTimeout time.Duration
 
 	// Val contains the value inherited from the expanded Param struct for a parameterized test case.
 	// This can be retrieved from testing.State.Param().
-	Val interface{} `json:"-"`
+	Val interface{}
 
 	// PreCtx is a context that lives as long as the precondition.
-	PreCtx context.Context `json:"-"`
+	PreCtx context.Context
 	// PreCtxCancel cancels PreCtx.
-	PreCtxCancel func() `json:"-"`
+	PreCtxCancel func()
 
 	// Following fields are copied from testing.Test struct.
 	// See the documents of the struct.
 
-	Func         TestFunc         `json:"-"`
-	Desc         string           `json:"desc"`
-	Contacts     []string         `json:"contacts"`
-	Attr         []string         `json:"attr"`
-	Data         []string         `json:"data"`
-	Vars         []string         `json:"vars,omitempty"`
-	SoftwareDeps dep.SoftwareDeps `json:"softwareDeps,omitempty"`
+	Func         TestFunc
+	Desc         string
+	Contacts     []string
+	Attr         []string
+	Data         []string
+	Vars         []string
+	SoftwareDeps dep.SoftwareDeps
 	// HardwareDeps field is not in the protocol yet. When the scheduler in infra is
 	// implemented, it is needed.
-	HardwareDeps dep.HardwareDeps `json:"-"`
-	ServiceDeps  []string         `json:"serviceDeps,omitempty"`
-	Pre          Precondition     `json:"-"`
-	Timeout      time.Duration    `json:"timeout"`
+	HardwareDeps dep.HardwareDeps
+	ServiceDeps  []string
+	Pre          Precondition
+	Timeout      time.Duration
 }
 
 // instantiate creates one or more TestInstance from t.
@@ -419,6 +418,38 @@ func (t *TestInstance) Proto() *testpb.Test {
 	return &r
 }
 
+// TestInfo is a serialized form of TestInstance.
+type TestInfo struct {
+	// See TestInstance for details of the fields.
+
+	Name         string           `json:"name"`
+	Pkg          string           `json:"pkg"`
+	Desc         string           `json:"desc"`
+	Contacts     []string         `json:"contacts"`
+	Attr         []string         `json:"attr"`
+	Data         []string         `json:"data"`
+	Vars         []string         `json:"vars,omitempty"`
+	SoftwareDeps dep.SoftwareDeps `json:"softwareDeps,omitempty"`
+	ServiceDeps  []string         `json:"serviceDeps,omitempty"`
+	Timeout      time.Duration    `json:"timeout"`
+}
+
+// TestInfo converts TestInstance to TestInfo.
+func (t *TestInstance) TestInfo() *TestInfo {
+	return &TestInfo{
+		Name:         t.Name,
+		Pkg:          t.Pkg,
+		Desc:         t.Desc,
+		Contacts:     append([]string(nil), t.Contacts...),
+		Attr:         append([]string(nil), t.Attr...),
+		Data:         append([]string(nil), t.Data...),
+		Vars:         append([]string(nil), t.Vars...),
+		SoftwareDeps: append([]string(nil), t.SoftwareDeps...),
+		ServiceDeps:  append([]string(nil), t.ServiceDeps...),
+		Timeout:      t.Timeout,
+	}
+}
+
 // SortTests sorts tests, primarily by ascending precondition name
 // (with tests with no preconditions coming first) and secondarily by ascending test name.
 func SortTests(tests []*TestInstance) {
@@ -442,7 +473,7 @@ func SortTests(tests []*TestInstance) {
 }
 
 // WriteTestsAsJSON marshals ts to JSON and writes the resulting data to w.
-func WriteTestsAsJSON(w io.Writer, ts []*TestInstance) error {
+func WriteTestsAsJSON(w io.Writer, ts []*TestInfo) error {
 	b, err := json.Marshal(ts)
 	if err != nil {
 		return err

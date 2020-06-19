@@ -391,20 +391,21 @@ func runTest(ctx context.Context, tw *testEventWriter, args *Args, cfg *runConfi
 	timingLog := timing.NewLog()
 	ctx = timing.NewContext(ctx, timingLog)
 
-	testCfg := testing.TestConfig{
+	pcfg := &planner.Config{
+		PreTestFunc:  cfg.preTestFunc,
+		PostTestFunc: cfg.postTestFunc,
+	}
+	tcfg := &testing.TestConfig{
 		DataDir:      filepath.Join(args.RunTests.DataDir, testing.RelativeDataDir(t.Pkg)),
 		OutDir:       filepath.Join(args.RunTests.OutDir, t.Name),
 		Vars:         args.RunTests.TestVars,
 		CloudStorage: testing.NewCloudStorage(args.RunTests.Devservers),
 		RemoteData:   rd,
-		PreTestFunc:  cfg.preTestFunc,
-		PostTestFunc: cfg.postTestFunc,
-		NextTest:     next,
 	}
 
-	ok := planner.Run(ctx, t, tw, &testCfg)
+	ok := planner.RunTest(ctx, t, next, tw, pcfg, tcfg)
 	if !ok {
-		// If Run reported that the test didn't finish, print diagnostic messages.
+		// If RunTest reported that the test didn't finish, print diagnostic messages.
 		const msg = "Test did not return on timeout (see log for goroutine dump)"
 		tw.Error(testing.NewError(nil, msg, msg, 0))
 		dumpGoroutines(tw)

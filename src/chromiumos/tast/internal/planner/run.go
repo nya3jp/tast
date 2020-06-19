@@ -19,25 +19,27 @@ const (
 	postTestTimeout = 15 * time.Second // timeout for TestConfig.PostTestFunc
 )
 
-// Run runs the test per cfg and blocks until the test has either finished or its deadline is reached,
+// Config contains details about how the planner should run tests.
+type Config struct {
+	// PreTestFunc is run before TestInstance.Func (and TestInstance.Pre.Prepare, when applicable) if non-nil.
+	// The returned closure is executed after PostTestFunc if not nil.
+	PreTestFunc func(context.Context, *testing.State) func(context.Context, *testing.State)
+	// PostTestFunc is run after TestInstance.Func (and TestInstance.Pre.Cleanup, when applicable) if non-nil.
+	PostTestFunc func(context.Context, *testing.State)
+}
+
+// RunTest runs the test and blocks until the test has either finished or its deadline is reached,
 // whichever comes first.
 //
 // The time allotted to the test is generally the sum of t.Timeout and t.ExitTimeout, but
-// additional time may be allotted for t.Pre.Prepare, t.Pre.Close, cfg.PreTestFunc, and cfg.PostTestFunc.
+// additional time may be allotted for preconditions and pre/post-test hooks.
 //
 // The test function executes in a goroutine and may still be running if it ignores its deadline;
 // the returned value indicates whether the test completed within the allotted time or not.
 // In that case OutputStream methods may be called after this function returns.
-//
-// Stages are executed in the following order:
-//	- cfg.PreTestFunc (if non-nil)
-//	- t.Pre.Prepare (if t.Pre is non-nil and no errors yet)
-//	- t.Func (if no errors yet)
-//	- t.Pre.Close (if t.Pre is non-nil and cfg.NextTest.Pre is different)
-//	- cfg.PostTestFunc (if non-nil)
-func Run(ctx context.Context, t *testing.TestInstance, out testing.OutputStream, cfg *testing.TestConfig) bool {
+func RunTest(ctx context.Context, t, next *testing.TestInstance, out testing.OutputStream, pcfg *Config, tcfg *testing.TestConfig) bool {
 	// Attach the state to a context so support packages can log to it.
-	root := testing.NewRootState(t, out, cfg)
+	root := testing.NewRootState(t, out, tcfg)
 
 	var stages []stage
 	addStage := func(f stageFunc, ctxTimeout, runTimeout time.Duration) {
@@ -56,14 +58,14 @@ func Run(ctx context.Context, t *testing.TestInstance, out testing.OutputStream,
 				s.Fatal("Invalid timeout ", t.Timeout)
 			}
 
-			if cfg.OutDir != "" { // often left blank for unit tests
-				if err := os.MkdirAll(cfg.OutDir, 0755); err != nil {
+			if tcfg.OutDir != "" { // often left blank for unit tests
+				if err := os.MkdirAll(tcfg.OutDir, 0755); err != nil {
 					s.Fatal("Failed to create output dir: ", err)
 				}
 				// Make the directory world-writable so that tests can create files as other users,
 				// and set the sticky bit to prevent users from deleting other users' files.
 				// (The mode passed to os.MkdirAll is modified by umask, so we need an explicit chmod.)
-				if err := os.Chmod(cfg.OutDir, 0777|os.ModeSticky); err != nil {
+				if err := os.Chmod(tcfg.OutDir, 0777|os.ModeSticky); err != nil {
 					s.Fatal("Failed to set permissions on output dir: ", err)
 				}
 			}
@@ -86,7 +88,7 @@ func Run(ctx context.Context, t *testing.TestInstance, out testing.OutputStream,
 			}
 
 			// In remote tests, reconnect to the DUT if needed.
-			if cfg.RemoteData != nil {
+			if tcfg.RemoteData != nil {
 				dt := s.DUT()
 				if !dt.Connected(ctx) {
 					s.Log("Reconnecting to DUT")
@@ -96,8 +98,8 @@ func Run(ctx context.Context, t *testing.TestInstance, out testing.OutputStream,
 				}
 			}
 
-			if cfg.PreTestFunc != nil {
-				postTestHook = cfg.PreTestFunc(ctx, s)
+			if pcfg.PreTestFunc != nil {
+				postTestHook = pcfg.PreTestFunc(ctx, s)
 			}
 		})
 	}, preTestTimeout, preTestTimeout+exitTimeout)
@@ -116,9 +118,9 @@ func Run(ctx context.Context, t *testing.TestInstance, out testing.OutputStream,
 					t.PreCtx, t.PreCtxCancel = context.WithCancel(testing.NewContext(context.Background(), s))
 				}
 
-				if cfg.NextTest != nil && cfg.NextTest.Pre == t.Pre {
-					cfg.NextTest.PreCtx = t.PreCtx
-					cfg.NextTest.PreCtxCancel = t.PreCtxCancel
+				if next != nil && next.Pre == t.Pre {
+					next.PreCtx = t.PreCtx
+					next.PreCtxCancel = t.PreCtxCancel
 				}
 
 				root.SetPreCtx(t.PreCtx)
@@ -137,7 +139,7 @@ func Run(ctx context.Context, t *testing.TestInstance, out testing.OutputStream,
 
 	// If this is the final test using this precondition, close it
 	// (even if setup, t.Pre.Prepare, or t.Func failed).
-	if t.Pre != nil && (cfg.NextTest == nil || cfg.NextTest.Pre != t.Pre) {
+	if t.Pre != nil && (next == nil || next.Pre != t.Pre) {
 		addStage(func(ctx context.Context, root *testing.RootState) {
 			root.RunWithPreState(ctx, func(ctx context.Context, s *testing.PreState) {
 				s.Logf("Closing precondition %q", t.Pre.String())
@@ -152,8 +154,8 @@ func Run(ctx context.Context, t *testing.TestInstance, out testing.OutputStream,
 	// Finally, run the post-test functions unconditionally.
 	addStage(func(ctx context.Context, root *testing.RootState) {
 		root.RunWithTestState(ctx, func(ctx context.Context, s *testing.State) {
-			if cfg.PostTestFunc != nil {
-				cfg.PostTestFunc(ctx, s)
+			if pcfg.PostTestFunc != nil {
+				pcfg.PostTestFunc(ctx, s)
 			}
 
 			if postTestHook != nil {

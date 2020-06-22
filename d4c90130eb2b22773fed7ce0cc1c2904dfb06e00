@@ -34,6 +34,24 @@
       "revId": "d4c90130eb2b22773fed7ce0cc1c2904dfb06e00",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "81fd08fd_a4b0449c",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-06-22T03:32:41Z",
+      "side": 1,
+      "message": "Ah, I see. Thank you for explanation.\n\nDUT does not have enough fields of previous implementation.\nSpeicifically, power supply and SOC, which is needed in tests already, are missing.\nHow to deal with it...?",
+      "parentUuid": "69ede0d0_7fc7faa1",
+      "revId": "d4c90130eb2b22773fed7ce0cc1c2904dfb06e00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

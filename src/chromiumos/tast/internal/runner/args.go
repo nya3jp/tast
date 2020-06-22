@@ -109,8 +109,8 @@ func (a *Args) bundleArgs(mode bundle.RunMode) (*bundle.Args, error) {
 func (a *Args) fillDefaults(cfg *Config) {
 	switch a.Mode {
 	case RunTestsMode:
-		if a.RunTests.BuildArtifactsURL == "" {
-			a.RunTests.BuildArtifactsURL = cfg.DefaultBuildArtifactsURL
+		if a.RunTests.BundleArgs.BuildArtifactsURL == "" {
+			a.RunTests.BundleArgs.BuildArtifactsURL = cfg.DefaultBuildArtifactsURL
 		}
 	case DownloadPrivateBundlesMode:
 		if a.DownloadPrivateBundles.BuildArtifactsURL == "" {
@@ -126,6 +126,9 @@ func (a *Args) FillDeprecated() {
 	// If there were any deprecated fields, we would fill them from the corresponding
 	// non-deprecated fields here using command.CopyFieldIfNonZero for basic types or
 	// manual copies for structs.
+	if a.RunTests != nil {
+		command.CopyFieldIfNonZero(&a.RunTests.BundleArgs.BuildArtifactsURL, &a.RunTests.BuildArtifactsURLDeprecated)
+	}
 }
 
 // PromoteDeprecated copies all non-zero-valued deprecated fields to the corresponding non-deprecated fields.
@@ -137,7 +140,9 @@ func (a *Args) FillDeprecated() {
 // is non-zero, it was passed by an old tast executable (or by a new executable that called FillDeprecated),
 // so we use the old field to make sure that it overrides the default.
 func (a *Args) PromoteDeprecated() {
-	// We don't have any deprecated fields right now.
+	if a.RunTests != nil {
+		command.CopyFieldIfNonZero(&a.RunTests.BuildArtifactsURLDeprecated, &a.RunTests.BundleArgs.BuildArtifactsURL)
+	}
 }
 
 // RunTestsArgs is nested within Args and contains arguments used by RunTestsMode.
@@ -148,10 +153,11 @@ type RunTestsArgs struct {
 	BundleGlob string `json:"bundleGlob,omitempty"`
 	// Devservers contains URLs of devservers that can be used to download files.
 	Devservers []string `json:"devservers,omitempty"`
-	// BuildArtifactsURL is the URL of Google Cloud Storage directory, ending with a slash,
+	// BuildArtifactsURLDeprecated is the URL of Google Cloud Storage directory, ending with a slash,
 	// containing build artifacts for the current Chrome OS image.
 	// If it is empty, DefaultBuildArtifactsURL in runner.Config is used.
-	BuildArtifactsURL string `json:"buildArtifactsUrl,omitempty"`
+	// DEPRECATED: Use bundle.RunTestsArgs.BuildArtifactsURL instead.
+	BuildArtifactsURLDeprecated string `json:"buildArtifactsUrl,omitempty"`
 }
 
 // ListTestsArgs is nested within Args and contains arguments used by ListTestsMode.

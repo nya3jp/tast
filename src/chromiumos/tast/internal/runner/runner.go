@@ -23,9 +23,6 @@ import (
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/control"
-	"chromiumos/tast/internal/dep"
-	"chromiumos/tast/internal/devserver"
-	"chromiumos/tast/internal/extdata"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/testing"
 )
@@ -150,10 +147,6 @@ func runTestsAndReport(ctx context.Context, args *Args, cfg *Config, stdout io.W
 			defer os.RemoveAll(bundleArgs.RunTests.OutDir)
 		}
 
-		cl := devserver.NewClient(ctx, args.RunTests.Devservers)
-		actualTests := filterSkippedTests(args, tests)
-		extdata.Ensure(ctx, args.RunTests.BundleArgs.DataDir, args.RunTests.BuildArtifactsURL, actualTests, cl)
-
 		// Hereafter, heartbeat messages are sent by bundles.
 		hbw.Stop()
 
@@ -170,24 +163,6 @@ func runTestsAndReport(ctx context.Context, args *Args, cfg *Config, stdout io.W
 	}
 
 	mw.WriteMessage(&control.RunEnd{Time: time.Now(), OutDir: bundleArgs.RunTests.OutDir})
-}
-
-// filterSkippedTests computes a subset of tests which are not skipped by software/hardware dependencies.
-func filterSkippedTests(args *Args, tests []*testing.TestInfo) []*testing.TestInfo {
-	features := args.RunTests.BundleArgs.Features()
-	var filtered []*testing.TestInfo
-	for _, t := range tests {
-		// Runner doesn't know hardware deps, so check software deps only.
-		// TODO(crbug.com/965703): Move data download to bundles. Then we can check hardware deps.
-		deps := dep.Deps{
-			Software: t.SoftwareDeps,
-			Hardware: dep.NewHardwareDeps(),
-		}
-		if deps.Check(features).OK() {
-			filtered = append(filtered, t)
-		}
-	}
-	return filtered
 }
 
 // runTestsAndLog runs bundles serially to perform testing and logs human-readable results to stdout.

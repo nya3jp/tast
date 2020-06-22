@@ -130,7 +130,7 @@ type downloadResult struct {
 // ending with a slash, containing build artifacts for the current Chrome OS image.
 // This function does not return errors; instead it tries to download files as far as possible and
 // logs encountered errors with ctx so that a single download error does not cause all tests to fail.
-func Ensure(ctx context.Context, dataDir, artifactsURL string, tests []*testing.TestInfo, cl devserver.Client) {
+func Ensure(ctx context.Context, dataDir, artifactsURL string, tests []*testing.TestInstance, cl devserver.Client) {
 	jobs := prepareDownloads(ctx, dataDir, artifactsURL, tests)
 	if len(jobs) == 0 {
 		return
@@ -142,7 +142,7 @@ func Ensure(ctx context.Context, dataDir, artifactsURL string, tests []*testing.
 // It also removes stale files so they are never used even if we fail to download them later.
 // When it encounters errors, *.external-error files are saved so that they can be read and
 // reported by bundles later.
-func prepareDownloads(ctx context.Context, dataDir, artifactsURL string, tests []*testing.TestInfo) []*downloadJob {
+func prepareDownloads(ctx context.Context, dataDir, artifactsURL string, tests []*testing.TestInstance) []*downloadJob {
 	urlToJob := make(map[string]*downloadJob)
 	hasErr := false
 

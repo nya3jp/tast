@@ -97,6 +97,30 @@
     },
     {
       "key": {
+        "uuid": "a1a3251b_9a09e9e7",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 207,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2020-06-22T16:47:47Z",
+      "side": 1,
+      "message": "\u003e \u003e it\u0027s unclear on Marvell-8797/Nyan-Kitty, as I\u0027ve never tested 8797 on newer kernels\n\u003e \n\u003e I see go/crconn saying that kitty also uses Marvell-8897? If it\u0027s Marvel-8797, I\u0027ll update the comment for it.\n\nOh, no, I was probably wrong. I don\u0027t always remember the oldest boards (3.10 kernel was before my time here) correctly.",
+      "parentUuid": "f85f8e7c_7fcac49d",
+      "range": {
+        "startLine": 207,
+        "startChar": 0,
+        "endLine": 207,
+        "endChar": 53
+      },
+      "revId": "a6e0a2f7c5bb02448aa4b721297320b2a671386d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "85f624cd_951cbcdd",
         "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
         "patchSetId": 3

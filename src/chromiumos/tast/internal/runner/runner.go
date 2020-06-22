@@ -25,6 +25,7 @@ import (
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/devserver"
+	"chromiumos/tast/internal/extdata"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/testing"
 )
@@ -151,7 +152,7 @@ func runTestsAndReport(ctx context.Context, args *Args, cfg *Config, stdout io.W
 
 		cl := newDevserverClient(ctx, args.RunTests.Devservers)
 		actualTests := filterSkippedTests(args, tests)
-		processExternalDataLinks(ctx, args.RunTests.BundleArgs.DataDir, args.RunTests.BuildArtifactsURL, actualTests, cl)
+		extdata.Ensure(ctx, args.RunTests.BundleArgs.DataDir, args.RunTests.BuildArtifactsURL, actualTests, cl)
 
 		// Hereafter, heartbeat messages are sent by bundles.
 		hbw.Stop()

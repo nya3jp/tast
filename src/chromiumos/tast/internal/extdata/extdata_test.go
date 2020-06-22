@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package runner
+package extdata
 
 import (
 	"bytes"
@@ -53,11 +53,11 @@ func TestPrepareDownloadsStatic(t *gotesting.T) {
 
 	exp := []*downloadJob{
 		{
-			link:  externalLink{StaticURL: "url1", Size: 111, SHA256Sum: "aaaa", Executable: false, computedURL: "url1"},
+			link:  link{StaticURL: "url1", Size: 111, SHA256Sum: "aaaa", Executable: false, computedURL: "url1"},
 			dests: []string{filepath.Join(dataSubdir, extFile1)},
 		},
 		{
-			link:  externalLink{StaticURL: "url2", Size: 222, SHA256Sum: "bbbb", Executable: true, computedURL: "url2"},
+			link:  link{StaticURL: "url2", Size: 222, SHA256Sum: "bbbb", Executable: true, computedURL: "url2"},
 			dests: []string{filepath.Join(dataSubdir, extFile2)},
 		},
 	}
@@ -99,11 +99,11 @@ func TestPrepareDownloadsArtifact(t *gotesting.T) {
 
 	exp := []*downloadJob{
 		{
-			link:  externalLink{Type: typeArtifact, Name: "some_artifact1", computedURL: fakeArtifactURL + "some_artifact1"},
+			link:  link{Type: typeArtifact, Name: "some_artifact1", computedURL: fakeArtifactURL + "some_artifact1"},
 			dests: []string{filepath.Join(dataSubdir, extFile1)},
 		},
 		{
-			link:  externalLink{Type: typeArtifact, Name: "some_artifact2", Executable: true, computedURL: fakeArtifactURL + "some_artifact2"},
+			link:  link{Type: typeArtifact, Name: "some_artifact2", Executable: true, computedURL: fakeArtifactURL + "some_artifact2"},
 			dests: []string{filepath.Join(dataSubdir, extFile2)},
 		},
 	}
@@ -145,7 +145,7 @@ func TestPrepareDownloadsDupLinks(t *gotesting.T) {
 
 	exp := []*downloadJob{
 		{
-			link: externalLink{StaticURL: "url1", Size: 111, SHA256Sum: "aaaa", Executable: false, computedURL: "url1"},
+			link: link{StaticURL: "url1", Size: 111, SHA256Sum: "aaaa", Executable: false, computedURL: "url1"},
 			dests: []string{
 				filepath.Join(dataSubdir, extFile1),
 				filepath.Join(dataSubdir, extFile2),
@@ -188,7 +188,7 @@ func TestPrepareDownloadsInconsistentDupLinks(t *gotesting.T) {
 
 	exp := []*downloadJob{
 		{
-			link: externalLink{StaticURL: "same_url", Size: 111, SHA256Sum: "aaaa", Executable: false, computedURL: "same_url"},
+			link: link{StaticURL: "same_url", Size: 111, SHA256Sum: "aaaa", Executable: false, computedURL: "same_url"},
 			dests: []string{
 				filepath.Join(dataSubdir, extFile1),
 				// extFile2 is not downloaded due to inconsistent link data.
@@ -234,13 +234,13 @@ func TestPrepareDownloadsStale(t *gotesting.T) {
 
 	exp := []*downloadJob{
 		{
-			link: externalLink{StaticURL: "url1", Size: 9, SHA256Sum: "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae", computedURL: "url1"},
+			link: link{StaticURL: "url1", Size: 9, SHA256Sum: "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae", computedURL: "url1"},
 			dests: []string{
 				filepath.Join(dataSubdir, extFile1),
 			},
 		},
 		{
-			link: externalLink{StaticURL: "url2", Size: 3, SHA256Sum: "bbbb", computedURL: "url2"},
+			link: link{StaticURL: "url2", Size: 3, SHA256Sum: "bbbb", computedURL: "url2"},
 			dests: []string{
 				filepath.Join(dataSubdir, extFile2),
 			},
@@ -322,7 +322,7 @@ func TestPrepareDownloadsBrokenLink(t *gotesting.T) {
 
 	exp := []*downloadJob{
 		{
-			link: externalLink{StaticURL: "url2", Size: 222, SHA256Sum: "bbbb", Executable: false, computedURL: "url2"},
+			link: link{StaticURL: "url2", Size: 222, SHA256Sum: "bbbb", Executable: false, computedURL: "url2"},
 			dests: []string{
 				filepath.Join(dataSubdir, extFile2),
 			},
@@ -421,7 +421,7 @@ func TestRunDownloadsStatic(t *gotesting.T) {
 
 	jobs := []*downloadJob{
 		{
-			link: externalLink{
+			link: link{
 				StaticURL:   url1,
 				Size:        3,
 				SHA256Sum:   sha256Sum1,
@@ -430,7 +430,7 @@ func TestRunDownloadsStatic(t *gotesting.T) {
 			dests: []string{filepath.Join(tmpDir, file1)},
 		},
 		{
-			link: externalLink{
+			link: link{
 				StaticURL:   url2,
 				Size:        3,
 				SHA256Sum:   sha256Sum2,
@@ -489,7 +489,7 @@ func TestRunDownloadsArtifact(t *gotesting.T) {
 
 	jobs := []*downloadJob{
 		{
-			link: externalLink{
+			link: link{
 				Type:        typeArtifact,
 				Name:        name1,
 				computedURL: url1,
@@ -497,7 +497,7 @@ func TestRunDownloadsArtifact(t *gotesting.T) {
 			dests: []string{filepath.Join(tmpDir, file1)},
 		},
 		{
-			link: externalLink{
+			link: link{
 				Type:        typeArtifact,
 				Name:        name2,
 				Executable:  true,
@@ -558,7 +558,7 @@ func TestRunDownloadsCorrupted(t *gotesting.T) {
 
 	jobs := []*downloadJob{
 		{
-			link: externalLink{
+			link: link{
 				StaticURL:   url1,
 				Size:        12345, // wrong size
 				SHA256Sum:   sha256Sum1,
@@ -567,7 +567,7 @@ func TestRunDownloadsCorrupted(t *gotesting.T) {
 			dests: []string{filepath.Join(tmpDir, file1)},
 		},
 		{
-			link: externalLink{
+			link: link{
 				StaticURL:   url2,
 				Size:        3,
 				SHA256Sum:   sha256Sum2,
@@ -576,7 +576,7 @@ func TestRunDownloadsCorrupted(t *gotesting.T) {
 			dests: []string{filepath.Join(tmpDir, file2)},
 		},
 		{
-			link: externalLink{
+			link: link{
 				StaticURL:   url3,
 				Size:        3,
 				SHA256Sum:   sha256Sum3,
@@ -614,7 +614,7 @@ func TestRunDownloadsError(t *gotesting.T) {
 
 	jobs := []*downloadJob{
 		{
-			link: externalLink{
+			link: link{
 				StaticURL:   url,
 				Size:        3,
 				SHA256Sum:   sha256Sum,
@@ -623,7 +623,7 @@ func TestRunDownloadsError(t *gotesting.T) {
 			dests: []string{filepath.Join(tmpDir, file1)},
 		},
 		{
-			link: externalLink{
+			link: link{
 				StaticURL:   url,
 				Size:        3,
 				SHA256Sum:   sha256Sum,

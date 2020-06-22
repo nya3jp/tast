@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package runner
+// Package extdata implements the external data file mechanism.
+package extdata
 
 import (
 	"context"
@@ -24,22 +25,22 @@ import (
 	"chromiumos/tast/internal/testing"
 )
 
-// externalLinkType represents a type of an external data link.
-type externalLinkType string
+// linkType represents a type of an external data link.
+type linkType string
 
 const (
 	// typeStatic is for a link to a file on web with fixed URL and content.
-	typeStatic externalLinkType = ""
+	typeStatic linkType = ""
 
 	// typeArtifact is for a link to a file in Chrome OS build artifacts
 	// corresponding to the DUT image version.
-	typeArtifact = "artifact"
+	typeArtifact linkType = "artifact"
 )
 
-// externalLink holds information of an external data link.
-type externalLink struct {
+// link holds information of an external data link.
+type link struct {
 	// Type declares the type of the external data link.
-	Type externalLinkType `json:"type"`
+	Type linkType `json:"type"`
 
 	// StaticURL is the URL of the static external data file on Google Cloud Storage.
 	// This field is valid for static external data links only.
@@ -67,7 +68,7 @@ type externalLink struct {
 }
 
 // Finalize checks if the link definition is correct, and fills extra fields.
-func (l *externalLink) Finalize(artifactsURL string) error {
+func (l *link) Finalize(artifactsURL string) error {
 	switch l.Type {
 	case typeStatic:
 		if l.StaticURL == "" {
@@ -106,7 +107,7 @@ func (l *externalLink) Finalize(artifactsURL string) error {
 // downloadJob represents a job to download an external data file and make hard links
 // at several file paths.
 type downloadJob struct {
-	link  externalLink
+	link  link
 	dests []string
 }
 
@@ -118,13 +119,13 @@ type downloadResult struct {
 	err      error
 }
 
-// processExternalDataLinks downloads missing or stale external data files associated with tests.
+// Ensure downloads missing or stale external data files associated with tests.
 // dataDir is the path to the base directory containing external data link files (typically
 // "/usr/local/share/tast/data" on DUT). artifactURL is the URL of Google Cloud Storage directory,
 // ending with a slash, containing build artifacts for the current Chrome OS image.
 // This function does not return errors; instead it tries to download files as far as possible and
-// logs encountered errors with lf so that a single download error does not cause all tests to fail.
-func processExternalDataLinks(ctx context.Context, dataDir, artifactsURL string, tests []*testing.TestInfo, cl devserver.Client) {
+// logs encountered errors with ctx so that a single download error does not cause all tests to fail.
+func Ensure(ctx context.Context, dataDir, artifactsURL string, tests []*testing.TestInfo, cl devserver.Client) {
 	jobs := prepareDownloads(ctx, dataDir, artifactsURL, tests)
 	if len(jobs) == 0 {
 		return
@@ -165,7 +166,7 @@ func prepareDownloads(ctx context.Context, dataDir, artifactsURL string, tests [
 				continue
 			}
 
-			link, err := loadExternalLink(linkPath, artifactsURL)
+			link, err := loadLink(linkPath, artifactsURL)
 			if err != nil {
 				reportErr("failed to load %s: %v", linkPath, err)
 				continue
@@ -235,23 +236,23 @@ func prepareDownloads(ctx context.Context, dataDir, artifactsURL string, tests [
 	return jobs
 }
 
-// loadExternalLink loads a JSON file of externalLink.
-func loadExternalLink(path, artifactsURL string) (externalLink, error) {
+// loadLink loads a JSON file of link.
+func loadLink(path, artifactsURL string) (link, error) {
 	f, err := os.Open(path)
 	if err != nil {
-		return externalLink{}, err
+		return link{}, err
 	}
 	defer f.Close()
 
-	var link externalLink
-	if err := json.NewDecoder(f).Decode(&link); err != nil {
-		return externalLink{}, err
+	var l link
+	if err := json.NewDecoder(f).Decode(&l); err != nil {
+		return link{}, err
 	}
 
-	if err := link.Finalize(artifactsURL); err != nil {
-		return externalLink{}, err
+	if err := l.Finalize(artifactsURL); err != nil {
+		return link{}, err
 	}
-	return link, nil
+	return l, nil
 }
 
 // runDownloads downloads required external data files in parallel.
@@ -355,7 +356,7 @@ func runDownload(ctx context.Context, dataDir string, job *downloadJob, cl devse
 }
 
 // verify checks the integrity of an external data file.
-func verify(f *os.File, link externalLink) error {
+func verify(f *os.File, link link) error {
 	if link.Type == typeArtifact {
 		// For artifacts, we do not verify files.
 		return nil

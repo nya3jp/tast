@@ -194,10 +194,11 @@ func TestLocalSuccess(t *gotesting.T) {
 					OutDir:            mockLocalOutDir,
 					Devservers:        mockDevservers,
 					HeartbeatInterval: heartbeatInterval,
+					BuildArtifactsURL: mockBuildArtifactsURL,
 				},
-				BundleGlob:        mockLocalBundleGlob,
-				Devservers:        mockDevservers,
-				BuildArtifactsURL: mockBuildArtifactsURL,
+				BundleGlob:                  mockLocalBundleGlob,
+				Devservers:                  mockDevservers,
+				BuildArtifactsURLDeprecated: mockBuildArtifactsURL,
 			},
 		})
 

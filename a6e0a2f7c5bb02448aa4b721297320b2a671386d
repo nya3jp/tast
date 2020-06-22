@@ -73,6 +73,30 @@
     },
     {
       "key": {
+        "uuid": "f85f8e7c_7fcac49d",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 207,
+      "author": {
+        "id": 1371981
+      },
+      "writtenOn": "2020-06-22T06:13:53Z",
+      "side": 1,
+      "message": "\u003e It seems like after the uprev is complete is a bit late to re-enable MAC randomization tests on these boards, because MAC randomization *will* be used on the new kernel.\n\nOh, yes, this makes sense. Updated with the suggested proposal.\n\n\u003e it\u0027s unclear on Marvell-8797/Nyan-Kitty, as I\u0027ve never tested 8797 on newer kernels\n\nI see go/crconn saying that kitty also uses Marvell-8897? If it\u0027s Marvel-8797, I\u0027ll update the comment for it.",
+      "parentUuid": "addf0538_c05d7039",
+      "range": {
+        "startLine": 207,
+        "startChar": 0,
+        "endLine": 207,
+        "endChar": 53
+      },
+      "revId": "a6e0a2f7c5bb02448aa4b721297320b2a671386d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "85f624cd_951cbcdd",
         "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
         "patchSetId": 3
@@ -188,6 +212,30 @@
       "revId": "a6e0a2f7c5bb02448aa4b721297320b2a671386d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "beab830d_048e492d",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 210,
+      "author": {
+        "id": 1371981
+      },
+      "writtenOn": "2020-06-22T06:13:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "62c9ca2f_c7c90e8d",
+      "range": {
+        "startLine": 210,
+        "startChar": 0,
+        "endLine": 210,
+        "endChar": 18
+      },
+      "revId": "a6e0a2f7c5bb02448aa4b721297320b2a671386d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

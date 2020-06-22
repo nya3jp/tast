@@ -52,6 +52,24 @@
       "revId": "d4c90130eb2b22773fed7ce0cc1c2904dfb06e00",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bd6eb055_3319caca",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-06-22T08:14:57Z",
+      "side": 1,
+      "message": "I think we will be adding such fields to topology.proto hardware_features message.\n(or otherwise we cannot denote such conditions in ConfigConstraint expression.)",
+      "parentUuid": "81fd08fd_a4b0449c",
+      "revId": "d4c90130eb2b22773fed7ce0cc1c2904dfb06e00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

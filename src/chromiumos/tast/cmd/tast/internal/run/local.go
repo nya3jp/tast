@@ -180,10 +180,10 @@ func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns
 				Devservers:        cfg.devservers,
 				WaitUntilReady:    cfg.waitUntilReady,
 				HeartbeatInterval: heartbeatInterval,
+				BuildArtifactsURL: cfg.buildArtifactsURL,
 			},
-			BundleGlob:        cfg.localBundleGlob(),
-			Devservers:        cfg.devservers,
-			BuildArtifactsURL: cfg.buildArtifactsURL,
+			BundleGlob: cfg.localBundleGlob(),
+			Devservers: cfg.devservers,
 		},
 	}
 	setRunnerTestDepsArgs(cfg, &args)

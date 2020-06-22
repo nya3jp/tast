@@ -27,6 +27,7 @@ import (
 
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/internal/command"
+	"chromiumos/tast/internal/devserver"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/testing"
 )
@@ -281,7 +282,7 @@ func handleDownloadPrivateBundles(ctx context.Context, args *Args, cfg *Config, 
 	// Download the archive via devserver.
 	archiveURL := args.DownloadPrivateBundles.BuildArtifactsURL + "tast_bundles.tar.bz2"
 	logging.ContextLogf(ctx, "Downloading private bundles from %s", archiveURL)
-	cl := newDevserverClient(ctx, args.DownloadPrivateBundles.Devservers)
+	cl := devserver.NewClient(ctx, args.DownloadPrivateBundles.Devservers)
 
 	r, err := cl.Open(ctx, archiveURL)
 	if err != nil {

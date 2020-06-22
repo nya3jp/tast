@@ -150,7 +150,7 @@ func runTestsAndReport(ctx context.Context, args *Args, cfg *Config, stdout io.W
 			defer os.RemoveAll(bundleArgs.RunTests.OutDir)
 		}
 
-		cl := newDevserverClient(ctx, args.RunTests.Devservers)
+		cl := devserver.NewClient(ctx, args.RunTests.Devservers)
 		actualTests := filterSkippedTests(args, tests)
 		extdata.Ensure(ctx, args.RunTests.BundleArgs.DataDir, args.RunTests.BuildArtifactsURL, actualTests, cl)
 
@@ -350,19 +350,4 @@ func killStaleRunners(ctx context.Context, sig syscall.Signal) {
 			logging.ContextLogf(ctx, "Failed killing process group %d: %v", proc.Pid, err)
 		}
 	}
-}
-
-func newDevserverClient(ctx context.Context, devservers []string) devserver.Client {
-	if len(devservers) == 0 {
-		logging.ContextLog(ctx, "Devserver status: using pseudo client")
-		return devserver.NewPseudoClient(nil)
-	}
-
-	const timeout = 3 * time.Second
-	ctx, cancel := context.WithTimeout(ctx, timeout)
-	defer cancel()
-
-	cl := devserver.NewRealClient(ctx, devservers, nil)
-	logging.ContextLogf(ctx, "Devserver status: %s", cl.Status())
-	return cl
 }

@@ -122,6 +122,10 @@ type RunTestsArgs struct {
 
 	// Devservers contains URLs of devservers that can be used to download files.
 	Devservers []string `json:"devservers,omitempty"`
+	// BuildArtifactsURL is the URL of Google Cloud Storage directory, ending with a slash,
+	// containing build artifacts for the current Chrome OS image.
+	// If it is empty, DefaultBuildArtifactsURL in runner.Config is used.
+	BuildArtifactsURL string `json:"buildArtifactsUrl,omitempty"`
 
 	// WaitUntilReady indicates that the test bundle's "ready" function (see ReadyFunc) should
 	// be executed before any tests are executed.

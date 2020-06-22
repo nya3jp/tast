@@ -45,6 +45,21 @@ func modelListed(dc *device.Config, names ...string) (bool, error) {
 	return false, nil
 }
 
+// platformListed returns whether the platform represented by a device.Config is listed in
+// the given list of names or not.
+func platformListed(dc *device.Config, names ...string) (bool, error) {
+	if dc == nil || dc.Id == nil || dc.Id.PlatformId == nil {
+		return false, errors.New("device.Config does not have PlatformId")
+	}
+	platformID := strings.ToLower(dc.Id.PlatformId.Value)
+	for _, name := range names {
+		if name == platformID {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
 // Model returns a hardware dependency condition that is satisfied if the DUT's model ID is
 // one of the given names.
 // Practically, this is not recommended to be used in most cases. Please consider again
@@ -107,19 +122,15 @@ func Platform(names ...string) Condition {
 			return Condition{Err: errors.Errorf("PlatformId should match with %v: %q", idRegexp, n)}
 		}
 	}
-
 	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
-		// If the field is unavailable, return false as not satisfied.
-		if f.DC == nil || f.DC.Id == nil || f.DC.Id.PlatformId == nil {
-			return errors.New("device.Config does not have PlatformId")
+		listed, err := platformListed(f.DC, names...)
+		if err != nil {
+			return err
 		}
-		platformID := strings.ToLower(f.DC.Id.PlatformId.Value)
-		for _, name := range names {
-			if name == platformID {
-				return nil
-			}
+		if !listed {
+			return errors.New("PlatformId did not match")
 		}
-		return errors.New("PlatformId did not match")
+		return nil
 	}}
 }
 
@@ -132,16 +143,13 @@ func SkipOnPlatform(names ...string) Condition {
 			return Condition{Err: errors.Errorf("PlatformId should match with %v: %q", idRegexp, n)}
 		}
 	}
-
 	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
-		if f.DC == nil || f.DC.Id == nil || f.DC.Id.PlatformId == nil {
-			return errors.New("device.Config does not have PlatformId")
+		listed, err := platformListed(f.DC, names...)
+		if err != nil {
+			return err
 		}
-		platformID := strings.ToLower(f.DC.Id.PlatformId.Value)
-		for _, name := range names {
-			if name == platformID {
-				return errors.New("PlatformId matched with skip-on list")
-			}
+		if listed {
+			return errors.New("PlatformId matched with skip-on list")
 		}
 		return nil
 	}}

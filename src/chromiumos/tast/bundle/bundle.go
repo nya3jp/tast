@@ -24,6 +24,8 @@ import (
 	"chromiumos/tast/dut"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/control"
+	"chromiumos/tast/internal/devserver"
+	"chromiumos/tast/internal/extdata"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/testing"
@@ -330,16 +332,23 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 	// We pass this information to runTest later to ensure that we don't incorrectly fail to close a precondition
 	// if the final test using precondition is skipped: https://crbug.com/950499.
 	nextTests := make([]*testing.TestInstance, len(tests))
+	var runTests []*testing.TestInstance
 	lastIdx := -1
 	for i, t := range tests {
 		checkResults[i] = tests[i].ShouldRun(features)
 		if checkResults[i].OK() {
+			runTests = append(runTests, t)
 			if lastIdx >= 0 {
 				nextTests[lastIdx] = t
 			}
 			lastIdx = i
 		}
 	}
+
+	// Download external data files.
+	cl := devserver.NewClient(ctx, args.RunTests.Devservers)
+	extdata.Ensure(ctx, args.RunTests.DataDir, args.RunTests.BuildArtifactsURL, runTests, cl)
+
 	for i, t := range tests {
 		tw := ew.TestEventWriter(t.TestInfo())
 		if checkResult := checkResults[i]; checkResult.OK() {

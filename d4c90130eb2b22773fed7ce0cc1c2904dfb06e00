@@ -16,6 +16,24 @@
       "revId": "d4c90130eb2b22773fed7ce0cc1c2904dfb06e00",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "69ede0d0_7fc7faa1",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-06-22T01:43:11Z",
+      "side": 1,
+      "message": "I don\u0027t hink DUTConfigConstraint.DUT is a constraint of DUT, but it is the full data structure storing data representing DUT.\n\nin src/config/proto/chromiumos/config/api/test/metadata/v1/metadata.proto:\n\nmessage DUTConfigConstraint {\n  ...\n  string expression \u003d 1;\n\n  // The evaluation context for `expression` MUST include the Chrome OS\n  // configuration payload for a particular Device Under Test as a typed\n  // constant of the following type.\n  message DUT {\n    chromiumos.config.api.HardwareFeatures hardware_features \u003d 1;\n  }\n}\n\nI once thought chromiumos.config.api.HardwareFeatures could be used here, but technically other fields can be added to message DUT here for the use by the constraint.",
+      "parentUuid": "20ba94fe_2a031dc6",
+      "revId": "d4c90130eb2b22773fed7ce0cc1c2904dfb06e00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

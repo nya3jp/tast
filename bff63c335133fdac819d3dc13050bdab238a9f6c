@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "59c9579b_210e1017",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-06-23T06:53:10Z",
+      "side": 1,
+      "message": "Could you add Cq-depend to 2256961 before sending to CQ.\nOtherwise crosvm_gpu tests won\u0027t run on devices (if this Cl is accidentally landed before the depended CL).",
+      "revId": "bff63c335133fdac819d3dc13050bdab238a9f6c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

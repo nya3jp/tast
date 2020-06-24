@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package devserver
+package devserver_test
 
 import (
 	"context"
@@ -12,6 +12,8 @@ import (
 	"net/http/httptest"
 	"os"
 	"testing"
+
+	"chromiumos/tast/internal/devserver"
 )
 
 func TestPseudoClient(t *testing.T) {
@@ -25,8 +27,7 @@ func TestPseudoClient(t *testing.T) {
 	}))
 	defer server.Close()
 
-	cl := NewPseudoClient(nil)
-	cl.url = server.URL
+	cl := devserver.NewPseudoClient(devserver.WithBaseURL(server.URL))
 
 	r, err := cl.Open(context.Background(), "gs://bucket/path/to/some%20file%2521")
 	if err != nil {

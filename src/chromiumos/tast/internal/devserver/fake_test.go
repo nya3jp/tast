@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package devserver
+package devserver_test
 
 import (
 	"context"
 	"io/ioutil"
 	"os"
 	"testing"
+
+	"chromiumos/tast/internal/devserver"
 )
 
 func TestFakeClient(t *testing.T) {
@@ -17,7 +19,7 @@ func TestFakeClient(t *testing.T) {
 		expected = "some_data"
 	)
 
-	cl := NewFakeClient(map[string][]byte{
+	cl := devserver.NewFakeClient(map[string][]byte{
 		url: []byte(expected),
 	})
 

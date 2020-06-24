@@ -47,7 +47,7 @@ func (c *CloudStorage) Open(ctx context.Context, url string) (io.ReadCloser, err
 func newClientForURLs(ctx context.Context, urls []string) devserver.Client {
 	if len(urls) == 0 {
 		logging.ContextLog(ctx, "Warning: Directly accessing Cloud Storage files because no devserver is available (using old tast command?)")
-		return devserver.NewPseudoClient(nil)
+		return devserver.NewPseudoClient()
 	}
 
 	const timeout = 3 * time.Second

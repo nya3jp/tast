@@ -7,21 +7,15 @@ package devserver_test
 import (
 	"context"
 	"errors"
-	"fmt"
-	"html"
-	"io"
 	"io/ioutil"
-	"net/http"
-	"net/http/httptest"
-	"net/url"
 	"os"
 	"reflect"
 	"sort"
-	"strings"
 	"testing"
 	"time"
 
 	"chromiumos/tast/internal/devserver"
+	"chromiumos/tast/internal/devserver/devservertest"
 )
 
 const (
@@ -31,165 +25,21 @@ const (
 	notFoundURL = "gs://bucket/path/to/not_found"
 )
 
-// fakeServerFiles defines fake files served from fakeServer.
-var fakeServerFiles = map[string][]byte{
-	fakeFileURL: []byte("some_data"),
-}
-
-type stagedEntry struct {
-	data   []byte
-	bucket string
-}
-
-type fakeServer struct {
-	*httptest.Server
-
-	up     bool
-	staged map[string]*stagedEntry
-	// stageFailCount makes stage request fail for this time.
-	stageFailCount int
-	dlCounter      map[string]int
-}
-
-func newFakeServer(up bool) *fakeServer {
-	mux := http.NewServeMux()
-	s := &fakeServer{
-		Server:    httptest.NewServer(mux),
-		up:        up,
-		staged:    make(map[string]*stagedEntry),
-		dlCounter: make(map[string]int),
+func newFakeServer(t *testing.T, opts ...devservertest.Option) *devservertest.Server {
+	t.Helper()
+	files := []*devservertest.File{{URL: fakeFileURL, Data: []byte(fakeFileData)}}
+	opts = append([]devservertest.Option{devservertest.Files(files)}, opts...)
+	s, err := devservertest.NewServer(opts...)
+	if err != nil {
+		t.Fatal("NewServer: ", err)
 	}
-	mux.Handle("/check_health", http.HandlerFunc(s.handleCheckHealth))
-	mux.Handle("/is_staged", http.HandlerFunc(s.handleIsStaged))
-	mux.Handle("/stage", http.HandlerFunc(s.handleStage))
-	mux.Handle("/static/", http.HandlerFunc(s.handleStatic))
 	return s
-}
-
-func (s *fakeServer) close() {
-	s.Server.Close()
-}
-
-func (s *fakeServer) handleCheckHealth(w http.ResponseWriter, r *http.Request) {
-	if !s.up {
-		respondError(w, errors.New("down"))
-	}
-}
-
-func (s *fakeServer) handleIsStaged(w http.ResponseWriter, r *http.Request) {
-	if err := func() error {
-		q := r.URL.Query()
-		gsURL := q.Get("archive_url") + "/" + url.PathEscape(q.Get("files"))
-		_, stagePath, err := devserver.ParseGSURL(gsURL)
-		if err != nil {
-			return err
-		}
-		if _, ok := s.staged[stagePath]; ok {
-			io.WriteString(w, "True")
-		} else {
-			io.WriteString(w, "False")
-		}
-		return nil
-	}(); err != nil {
-		respondError(w, err)
-	}
-}
-
-func (s *fakeServer) handleStage(w http.ResponseWriter, r *http.Request) {
-	if err := func() error {
-		q := r.URL.Query()
-		gsURL := q.Get("archive_url") + "/" + url.PathEscape(q.Get("files"))
-		return s.stage(gsURL)
-	}(); err != nil {
-		respondError(w, err)
-	}
-}
-
-func (s *fakeServer) handleStatic(w http.ResponseWriter, r *http.Request) {
-	if r.Header.Get("Negotiate") != "vlist" {
-		http.Error(w, "Negotiate: vlist is required", http.StatusBadRequest)
-		return
-	}
-
-	// Python devserver distinguishes "/" and "%2F". We follow the way here.
-	path, err := pathUnescape(r.URL.EscapedPath())
-	if err != nil {
-		respondError(w, err)
-		return
-	}
-	stagePath := strings.TrimPrefix(path, "/static/")
-	e, ok := s.staged[stagePath]
-	if !ok {
-		http.NotFound(w, r)
-		return
-	}
-	if bucket := r.URL.Query().Get("gs_bucket"); bucket != e.bucket {
-		http.Error(w, fmt.Sprintf("Incorrect gs_bucket: got %q, want %q", bucket, e.bucket), http.StatusBadRequest)
-		return
-	}
-	if r.Method != http.MethodHead {
-		w.Write(e.data)
-		s.dlCounter[stagePath]++
-	}
-}
-
-func (s *fakeServer) stage(gsURL string) error {
-	data, ok := fakeServerFiles[gsURL]
-	if !ok {
-		return errors.New("file not found")
-	}
-	bucket, stagePath, err := devserver.ParseGSURL(gsURL)
-	if err != nil {
-		return err
-	}
-	if s.stageFailCount > 0 {
-		s.stageFailCount--
-		return errors.New("failed to stage")
-	}
-	s.staged[stagePath] = &stagedEntry{
-		data:   data,
-		bucket: bucket,
-	}
-	return nil
-}
-
-func (s *fakeServer) unstage(gsURL string) error {
-	_, stagePath, err := devserver.ParseGSURL(gsURL)
-	if err != nil {
-		return err
-	}
-	delete(s.staged, stagePath)
-	return nil
-}
-
-func respondError(w http.ResponseWriter, err error) {
-	w.WriteHeader(http.StatusInternalServerError)
-	fmt.Fprintf(w, "<pre>\n%s\n</pre>", html.EscapeString(err.Error()))
-}
-
-// pathUnescape unescapes the path part of a URL. It fails if the path contains %2F.
-func pathUnescape(escaped string) (string, error) {
-	if escaped == "" {
-		return "", nil
-	}
-
-	comps := strings.Split(escaped, "/")
-	for i, c := range comps {
-		uc, err := url.PathUnescape(c)
-		if err != nil {
-			return "", err
-		} else if strings.Contains(uc, "/") {
-			return "", errors.New("invalid path encoding")
-		}
-		comps[i] = uc
-	}
-	return strings.Join(comps, "/"), nil
 }
 
 // TestRealClientSimple tests the most simple case of successful download.
 func TestRealClientSimple(t *testing.T) {
-	s := newFakeServer(true)
-	defer s.close()
+	s := newFakeServer(t)
+	defer s.Close()
 
 	cl := devserver.NewRealClient(context.Background(), []string{s.URL}, nil)
 
@@ -213,8 +63,8 @@ func TestRealClientSimple(t *testing.T) {
 
 // TestRealClientNotFound tests when the file to be staged is not found.
 func TestRealClientNotFound(t *testing.T) {
-	s := newFakeServer(true)
-	defer s.close()
+	s := newFakeServer(t)
+	defer s.Close()
 
 	cl := devserver.NewRealClient(context.Background(), []string{s.URL}, nil)
 
@@ -228,19 +78,30 @@ func TestRealClientNotFound(t *testing.T) {
 
 // TestRealClientPreferStagedServer tests that already staged servers are preferred.
 func TestRealClientPreferStagedServer(t *testing.T) {
-	s1 := newFakeServer(true)
-	defer s1.close()
-	s2 := newFakeServer(true)
-	defer s2.close()
-
-	cl := devserver.NewRealClient(context.Background(), []string{s1.URL, s2.URL}, nil)
-
-	err := s1.stage(fakeFileURL)
-	if err != nil {
-		t.Fatal(err)
+	stageHook := func(gsURL string) error {
+		t.Error("Unexpected attempt to stage: ", gsURL)
+		return errors.New("stage failure")
 	}
 
-	_, stagePath, _ := devserver.ParseGSURL(fakeFileURL)
+	// First server doesn't have a staged file. Any attempt to stage a file will
+	// result in a test failure.
+	files1 := []*devservertest.File{{URL: fakeFileURL, Data: []byte(fakeFileData)}}
+	s1, err := devservertest.NewServer(devservertest.Files(files1), devservertest.StageHook(stageHook))
+	if err != nil {
+		t.Fatal("NewServer: ", err)
+	}
+	defer s1.Close()
+
+	// Second server has a staged file.
+	files2 := []*devservertest.File{files1[0].Copy()}
+	files2[0].Staged = true
+	s2, err := devservertest.NewServer(devservertest.Files(files2), devservertest.StageHook(stageHook))
+	if err != nil {
+		t.Fatal("NewServer: ", err)
+	}
+	defer s2.Close()
+
+	cl := devserver.NewRealClient(context.Background(), []string{s1.URL, s2.URL}, nil)
 
 	for i := 1; i <= 10; i++ {
 		r, err := cl.Open(context.Background(), fakeFileURL)
@@ -248,21 +109,23 @@ func TestRealClientPreferStagedServer(t *testing.T) {
 			t.Fatal(err)
 		}
 		r.Close()
-		c1 := s1.dlCounter[stagePath]
-		c2 := s2.dlCounter[stagePath]
-		if c1 != i || c2 != 0 {
-			t.Fatalf("After %d request(s), dlCounter = (%d, %d); want (%d, %d)", i, c1, c2, i, 0)
-		}
 	}
 }
 
 // TestRealClientRetryStage tests that failed stage request is retried.
 func TestRealClientRetryStage(t *testing.T) {
-	s := newFakeServer(true)
-	defer s.close()
-	s.stageFailCount = 1
+	calls := 0
+	stageHook := func(gsURL string) error {
+		calls++
+		if calls <= 1 {
+			return errors.New("stage failure")
+		}
+		return nil
+	}
+	s := newFakeServer(t, devservertest.StageHook(stageHook))
+	defer s.Close()
 
-	o := &devserver.RealClientOptions{StageRetryWaits: []time.Duration{time.Duration(1 * time.Millisecond)}}
+	o := &devserver.RealClientOptions{StageRetryWaits: []time.Duration{1 * time.Millisecond}}
 	cl := devserver.NewRealClient(context.Background(), []string{s.URL}, o)
 
 	r, err := cl.Open(context.Background(), fakeFileURL)
@@ -270,15 +133,26 @@ func TestRealClientRetryStage(t *testing.T) {
 		t.Error("Open failed despite retries: ", err)
 	}
 	r.Close()
+
+	if calls != 2 {
+		t.Errorf("stageHook called %d time(s); want 2 times", calls)
+	}
 }
 
 // TestRealClientRetryStageFail tests too many failures causes the download to fail.
 func TestRealClientRetryStageFail(t *testing.T) {
-	s := newFakeServer(true)
-	defer s.close()
-	s.stageFailCount = 2
+	calls := 0
+	stageHook := func(gsURL string) error {
+		calls++
+		if calls <= 2 {
+			return errors.New("stage failure")
+		}
+		return nil
+	}
+	s := newFakeServer(t, devservertest.StageHook(stageHook))
+	defer s.Close()
 
-	o := &devserver.RealClientOptions{StageRetryWaits: []time.Duration{time.Duration(1 * time.Millisecond)}}
+	o := &devserver.RealClientOptions{StageRetryWaits: []time.Duration{1 * time.Millisecond}}
 	cl := devserver.NewRealClient(context.Background(), []string{s.URL}, o)
 
 	if r, err := cl.Open(context.Background(), fakeFileURL); err == nil {
@@ -289,46 +163,37 @@ func TestRealClientRetryStageFail(t *testing.T) {
 
 // TestRealClientStableServerSelection tests that the server selection is stable.
 func TestRealClientStableServerSelection(t *testing.T) {
-	s1 := newFakeServer(true)
-	defer s1.close()
-	s2 := newFakeServer(true)
-	defer s2.close()
+	calls := 0
+	stageHook := func(gsURL string) error {
+		calls++
+		return nil
+	}
+	s1 := newFakeServer(t, devservertest.StageHook(stageHook))
+	defer s1.Close()
+	s2 := newFakeServer(t, devservertest.StageHook(stageHook))
+	defer s2.Close()
 
 	cl := devserver.NewRealClient(context.Background(), []string{s1.URL, s2.URL}, nil)
-
-	// Download the file once and make sure s1 is always selected.
-	r, err := cl.Open(context.Background(), fakeFileURL)
-	if err != nil {
-		t.Fatal(err)
-	}
-	r.Close()
-	_, stagePath, _ := devserver.ParseGSURL(fakeFileURL)
-	if s2.dlCounter[stagePath] > 0 {
-		s1, s2 = s2, s1
-	}
-
-	for i := 2; i <= 10; i++ {
+	for i := 0; i < 10; i++ {
 		r, err := cl.Open(context.Background(), fakeFileURL)
 		if err != nil {
 			t.Fatal(err)
 		}
 		r.Close()
-		c1 := s1.dlCounter[stagePath]
-		c2 := s2.dlCounter[stagePath]
-		if c1 != i || c2 != 0 {
-			t.Fatalf("After %d request(s), dlCounter = (%d, %d); want (%d, %d)", i, c1, c2, i, 0)
-		}
+	}
+	if calls != 1 {
+		t.Errorf("stageHook called %d time(s); want 1 time", calls)
 	}
 }
 
 // TestRealClientSomeUpServers tests that down servers are not selected.
 func TestRealClientSomeUpServers(t *testing.T) {
-	up1 := newFakeServer(true)
-	defer up1.close()
-	up2 := newFakeServer(true)
-	defer up2.close()
-	down := newFakeServer(false)
-	defer down.close()
+	up1 := newFakeServer(t)
+	defer up1.Close()
+	up2 := newFakeServer(t)
+	defer up2.Close()
+	down := newFakeServer(t, devservertest.Down())
+	defer down.Close()
 
 	cl := devserver.NewRealClient(context.Background(), []string{up1.URL, down.URL, up2.URL}, nil)
 
@@ -343,10 +208,10 @@ func TestRealClientSomeUpServers(t *testing.T) {
 
 // TestRealClientSomeUpServers tests the scenario where no servers are up.
 func TestRealClientNoUpServer(t *testing.T) {
-	down1 := newFakeServer(false)
-	defer down1.close()
-	down2 := newFakeServer(false)
-	defer down2.close()
+	down1 := newFakeServer(t, devservertest.Down())
+	defer down1.Close()
+	down2 := newFakeServer(t, devservertest.Down())
+	defer down2.Close()
 
 	cl := devserver.NewRealClient(context.Background(), []string{down1.URL, down2.URL}, nil)
 

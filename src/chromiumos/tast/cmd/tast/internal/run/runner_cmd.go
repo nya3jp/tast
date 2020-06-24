@@ -14,6 +14,7 @@ import (
 	"os"
 	"os/exec"
 
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/rpc"
 	"chromiumos/tast/ssh"
@@ -143,7 +144,71 @@ type localRunnerCmd struct {
 	a *delegateAdaptor
 }
 
-func localRunnerCommand(ctx context.Context, cfg *Config, hst *ssh.Conn) streamableRunnerCmd {
+type localRunner struct {
+	conn  *grpc.ClientConn
+	close func() error
+}
+
+// NewLocalRunner returns gRPC connection to the local runner.
+func NewLocalRunner(ctx context.Context, cfg *Config, hst *ssh.Conn) (*localRunner, error) {
+	c := localRunnerCommand(ctx, cfg, hst)
+	conn, close, err := c.makeClientConn(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &localRunner{
+		conn: conn,
+		close: func() (retErr error) {
+			defer func() {
+				if err := close(); err != nil && retErr == nil {
+					retErr = err
+				}
+			}()
+			return conn.Close()
+		},
+	}, nil
+}
+
+// Conn returns the grpc client owned by c.
+func (c *localRunner) Conn() *grpc.ClientConn {
+	return c.conn
+}
+
+// Close closes the client.
+func (c *localRunner) Close() error {
+	return c.close()
+}
+
+// makeClientConn creates a client connection from c. close must be called by the caller to stop the gRPC server.
+// ctx must be as long as the lifetime of conn.
+func (c *localRunnerCmd) makeClientConn(ctx context.Context) (conn *grpc.ClientConn, close func() error, err error) {
+	stdin, err := c.cmd.StdinPipe()
+	if err != nil {
+		return nil, nil, err
+	}
+	stdout, err := c.cmd.StdoutPipe()
+	if err != nil {
+		return nil, nil, err
+	}
+	if err := c.cmd.Start(ctx); err != nil {
+		return nil, nil, err
+	}
+	close = func() error {
+		c.cmd.Abort()
+		return c.cmd.Wait(ctx)
+	}
+	conn, err = rpc.NewPipeClientConn(ctx, stdout, stdin)
+	if err != nil {
+		if err := close(); err != nil {
+			logging.ContextLog(ctx, "failed to close: ", err)
+		}
+		return nil, nil, err
+	}
+	return conn, close, nil
+}
+
+// localRunnerCommand returns a streamableRunnerCmd.
+func localRunnerCommand(ctx context.Context, cfg *Config, hst *ssh.Conn) *localRunnerCmd {
 	// Set proxy-related environment variables for local_test_runner so it will use them
 	// when accessing network.
 	execArgs := []string{"env"}
@@ -177,22 +242,14 @@ func (c *localRunnerCmd) SetStderr(stderr io.Writer) {
 }
 
 func (c *localRunnerCmd) Start() error {
-	stdin, err := c.cmd.StdinPipe()
-	if err != nil {
-		return err
-	}
-	stdout, err := c.cmd.StdoutPipe()
-	if err != nil {
-		return err
-	}
-	if err := c.cmd.Start(c.ctx); err != nil {
-		return err
-	}
-	conn, err := rpc.NewPipeClientConn(c.ctx, stdout, stdin)
+	conn, close, err := c.makeClientConn(c.ctx)
 	if err != nil {
 		return err
 	}
 	if err = c.a.start(c.ctx, conn); err != nil {
+		if err := close(); err != nil {
+			logging.ContextLog(c.ctx, "failed to close: ", err)
+		}
 		return err
 	}
 	return nil
@@ -206,7 +263,8 @@ func (c *localRunnerCmd) Wait(ctx context.Context) error {
 	if err := c.a.wait(ctx); err != nil {
 		return err
 	}
-	c.cmd.Wait(ctx) // ignore context cancelled error
+	// Ignore context cancelled error, which happens when Abort() has been called.
+	c.cmd.Wait(ctx)
 	return nil
 }
 

@@ -21,13 +21,13 @@ var defaultHTTPClient = &http.Client{
 	},
 }
 
-// parseGSURL parses a Google Cloud Storage URL. It is parsed as:
+// ParseGSURL parses a Google Cloud Storage URL. It is parsed as:
 //
 //  gs://<bucket>/<path>
 //
 // Note that path is not prefixed with a slash, which is suitable for use with
 // GCS APIs.
-func parseGSURL(gsURL string) (bucket, path string, err error) {
+func ParseGSURL(gsURL string) (bucket, path string, err error) {
 	parsed, err := url.Parse(gsURL)
 	if err != nil {
 		return "", "", err

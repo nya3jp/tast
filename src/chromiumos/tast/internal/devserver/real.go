@@ -123,8 +123,8 @@ func NewRealClient(ctx context.Context, dsURLs []string, o *RealClientOptions) *
 	return &RealClient{servers, cl, stageRetryWaits}
 }
 
-// upServerURLs returns URLs of operational devservers.
-func (c *RealClient) upServerURLs() []string {
+// UpServerURLs returns URLs of operational devservers.
+func (c *RealClient) UpServerURLs() []string {
 	var urls []string
 	for _, s := range c.servers {
 		if s.err == nil {
@@ -141,12 +141,12 @@ func (c *RealClient) Status() string {
 
 // Open downloads a file on GCS via devservers. It returns an error if no devserver is up.
 func (c *RealClient) Open(ctx context.Context, gsURL string) (io.ReadCloser, error) {
-	bucket, path, err := parseGSURL(gsURL)
+	bucket, path, err := ParseGSURL(gsURL)
 	if err != nil {
 		return nil, err
 	}
 
-	if len(c.upServerURLs()) == 0 {
+	if len(c.UpServerURLs()) == 0 {
 		return nil, errors.New("no devserver is up")
 	}
 
@@ -188,7 +188,7 @@ func (c *RealClient) Open(ctx context.Context, gsURL string) (io.ReadCloser, err
 // findStaged tries to find an already staged file from selected servers.
 // It returns errNotStaged if no staged file is found.
 func (c *RealClient) findStaged(ctx context.Context, bucket, path string) (dsURL string, err error) {
-	dsURLs := c.upServerURLs()
+	dsURLs := c.UpServerURLs()
 	ch := make(chan string, len(dsURLs))
 
 	for _, dsURL := range dsURLs {
@@ -269,7 +269,7 @@ func (c *RealClient) checkStaged(ctx context.Context, dsURL, bucket, gsPath stri
 // chooseServer chooses a devserver to use from c.selected. It tries to choose
 // the same server for the same gsURL.
 func (c *RealClient) chooseServer(gsURL string) string {
-	dsURLs := c.upServerURLs()
+	dsURLs := c.UpServerURLs()
 
 	// score returns a random number from a devserver URL and a file URL as seeds.
 	// By using this function, the same devserver is usually selected for a file

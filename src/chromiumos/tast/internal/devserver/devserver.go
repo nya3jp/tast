@@ -16,7 +16,7 @@ import (
 func NewClient(ctx context.Context, devservers []string) Client {
 	if len(devservers) == 0 {
 		logging.ContextLog(ctx, "Devserver status: using pseudo client")
-		return NewPseudoClient(nil)
+		return NewPseudoClient()
 	}
 
 	const timeout = 3 * time.Second

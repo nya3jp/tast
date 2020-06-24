@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package devserver
+package devserver_test
 
 import (
 	"context"
@@ -20,6 +20,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"chromiumos/tast/internal/devserver"
 )
 
 const (
@@ -78,7 +80,7 @@ func (s *fakeServer) handleIsStaged(w http.ResponseWriter, r *http.Request) {
 	if err := func() error {
 		q := r.URL.Query()
 		gsURL := q.Get("archive_url") + "/" + url.PathEscape(q.Get("files"))
-		_, stagePath, err := parseGSURL(gsURL)
+		_, stagePath, err := devserver.ParseGSURL(gsURL)
 		if err != nil {
 			return err
 		}
@@ -136,7 +138,7 @@ func (s *fakeServer) stage(gsURL string) error {
 	if !ok {
 		return errors.New("file not found")
 	}
-	bucket, stagePath, err := parseGSURL(gsURL)
+	bucket, stagePath, err := devserver.ParseGSURL(gsURL)
 	if err != nil {
 		return err
 	}
@@ -152,7 +154,7 @@ func (s *fakeServer) stage(gsURL string) error {
 }
 
 func (s *fakeServer) unstage(gsURL string) error {
-	_, stagePath, err := parseGSURL(gsURL)
+	_, stagePath, err := devserver.ParseGSURL(gsURL)
 	if err != nil {
 		return err
 	}
@@ -189,7 +191,7 @@ func TestRealClientSimple(t *testing.T) {
 	s := newFakeServer(true)
 	defer s.close()
 
-	cl := NewRealClient(context.Background(), []string{s.URL}, nil)
+	cl := devserver.NewRealClient(context.Background(), []string{s.URL}, nil)
 
 	r, err := cl.Open(context.Background(), fakeFileURL)
 	if err != nil {
@@ -214,7 +216,7 @@ func TestRealClientNotFound(t *testing.T) {
 	s := newFakeServer(true)
 	defer s.close()
 
-	cl := NewRealClient(context.Background(), []string{s.URL}, nil)
+	cl := devserver.NewRealClient(context.Background(), []string{s.URL}, nil)
 
 	if r, err := cl.Open(context.Background(), notFoundURL); err == nil {
 		r.Close()
@@ -231,14 +233,14 @@ func TestRealClientPreferStagedServer(t *testing.T) {
 	s2 := newFakeServer(true)
 	defer s2.close()
 
-	cl := NewRealClient(context.Background(), []string{s1.URL, s2.URL}, nil)
+	cl := devserver.NewRealClient(context.Background(), []string{s1.URL, s2.URL}, nil)
 
 	err := s1.stage(fakeFileURL)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	_, stagePath, _ := parseGSURL(fakeFileURL)
+	_, stagePath, _ := devserver.ParseGSURL(fakeFileURL)
 
 	for i := 1; i <= 10; i++ {
 		r, err := cl.Open(context.Background(), fakeFileURL)
@@ -260,8 +262,8 @@ func TestRealClientRetryStage(t *testing.T) {
 	defer s.close()
 	s.stageFailCount = 1
 
-	o := &RealClientOptions{StageRetryWaits: []time.Duration{time.Duration(1 * time.Millisecond)}}
-	cl := NewRealClient(context.Background(), []string{s.URL}, o)
+	o := &devserver.RealClientOptions{StageRetryWaits: []time.Duration{time.Duration(1 * time.Millisecond)}}
+	cl := devserver.NewRealClient(context.Background(), []string{s.URL}, o)
 
 	r, err := cl.Open(context.Background(), fakeFileURL)
 	if err != nil {
@@ -276,8 +278,8 @@ func TestRealClientRetryStageFail(t *testing.T) {
 	defer s.close()
 	s.stageFailCount = 2
 
-	o := &RealClientOptions{StageRetryWaits: []time.Duration{time.Duration(1 * time.Millisecond)}}
-	cl := NewRealClient(context.Background(), []string{s.URL}, o)
+	o := &devserver.RealClientOptions{StageRetryWaits: []time.Duration{time.Duration(1 * time.Millisecond)}}
+	cl := devserver.NewRealClient(context.Background(), []string{s.URL}, o)
 
 	if r, err := cl.Open(context.Background(), fakeFileURL); err == nil {
 		r.Close()
@@ -292,7 +294,7 @@ func TestRealClientStableServerSelection(t *testing.T) {
 	s2 := newFakeServer(true)
 	defer s2.close()
 
-	cl := NewRealClient(context.Background(), []string{s1.URL, s2.URL}, nil)
+	cl := devserver.NewRealClient(context.Background(), []string{s1.URL, s2.URL}, nil)
 
 	// Download the file once and make sure s1 is always selected.
 	r, err := cl.Open(context.Background(), fakeFileURL)
@@ -300,7 +302,7 @@ func TestRealClientStableServerSelection(t *testing.T) {
 		t.Fatal(err)
 	}
 	r.Close()
-	_, stagePath, _ := parseGSURL(fakeFileURL)
+	_, stagePath, _ := devserver.ParseGSURL(fakeFileURL)
 	if s2.dlCounter[stagePath] > 0 {
 		s1, s2 = s2, s1
 	}
@@ -328,14 +330,14 @@ func TestRealClientSomeUpServers(t *testing.T) {
 	down := newFakeServer(false)
 	defer down.close()
 
-	cl := NewRealClient(context.Background(), []string{up1.URL, down.URL, up2.URL}, nil)
+	cl := devserver.NewRealClient(context.Background(), []string{up1.URL, down.URL, up2.URL}, nil)
 
-	actualUpURLs := cl.upServerURLs()
+	actualUpURLs := cl.UpServerURLs()
 	expectedUpURLs := []string{up1.URL, up2.URL}
 	sort.Strings(actualUpURLs)
 	sort.Strings(expectedUpURLs)
 	if !reflect.DeepEqual(actualUpURLs, expectedUpURLs) {
-		t.Errorf("upServerURLs = %v; want %v", actualUpURLs, expectedUpURLs)
+		t.Errorf("UpServerURLs = %v; want %v", actualUpURLs, expectedUpURLs)
 	}
 }
 
@@ -346,10 +348,10 @@ func TestRealClientNoUpServer(t *testing.T) {
 	down2 := newFakeServer(false)
 	defer down2.close()
 
-	cl := NewRealClient(context.Background(), []string{down1.URL, down2.URL}, nil)
+	cl := devserver.NewRealClient(context.Background(), []string{down1.URL, down2.URL}, nil)
 
-	if upURLs := cl.upServerURLs(); len(upURLs) > 0 {
-		t.Errorf("upServerURLs = %v; want nil", upURLs)
+	if upURLs := cl.UpServerURLs(); len(upURLs) > 0 {
+		t.Errorf("UpServerURLs = %v; want nil", upURLs)
 	}
 
 	if r, err := cl.Open(context.Background(), fakeFileURL); err == nil {

@@ -218,16 +218,7 @@ func (c *RealClient) findStaged(ctx context.Context, bucket, path string) (dsURL
 // checkStaged checks if a file is staged on the devserver at dsURL.
 // It returns errNotStaged if a file is not yet staged.
 func (c *RealClient) checkStaged(ctx context.Context, dsURL, bucket, gsPath string) error {
-	gsDirURL := url.URL{
-		Scheme: "gs",
-		Host:   bucket,
-		Path:   path.Dir(gsPath),
-	}
-	values := url.Values{
-		"archive_url": {gsDirURL.String()},
-		"files":       {path.Base(gsPath)},
-	}
-	checkURL := fmt.Sprintf("%s/is_staged?%s", dsURL, values.Encode())
+	checkURL := buildRequestURL(dsURL+"/is_staged", bucket, gsPath)
 	req, err := http.NewRequest("GET", checkURL, nil)
 	if err != nil {
 		return err
@@ -285,16 +276,7 @@ func (c *RealClient) chooseServer(gsURL string) string {
 
 // stage requests the devserver at dsURL to stage a file.
 func (c *RealClient) stage(ctx context.Context, dsURL, bucket, gsPath string) error {
-	gsDirURL := url.URL{
-		Scheme: "gs",
-		Host:   bucket,
-		Path:   path.Dir(gsPath),
-	}
-	values := url.Values{
-		"archive_url": {gsDirURL.String()},
-		"files":       {path.Base(gsPath)},
-	}
-	stageURL := fmt.Sprintf("%s/stage?%s", dsURL, values.Encode())
+	stageURL := buildRequestURL(dsURL+"/stage", bucket, gsPath)
 	req, err := http.NewRequest("GET", stageURL, nil)
 	if err != nil {
 		return err
@@ -396,4 +378,21 @@ func scrapeInternalError(out []byte) string {
 		return "unknown error"
 	}
 	return m[1]
+}
+
+// buildRequestURL builds a URL for devserver requests. endpoint is either
+// .../stage or .../is_staged.
+func buildRequestURL(endpoint, bucket, gsPath string) string {
+	gsDirURL := url.URL{
+		Scheme: "gs",
+		Host:   bucket,
+	}
+	if dir := path.Dir(gsPath); dir != "." {
+		gsDirURL.Path = dir
+	}
+	values := url.Values{
+		"archive_url": {gsDirURL.String()},
+		"files":       {path.Base(gsPath)},
+	}
+	return fmt.Sprintf("%s?%s", endpoint, values.Encode())
 }

@@ -118,10 +118,6 @@ type Config struct {
 	// tests, which can set this to a temp dir in order to inspect files that are copied to hst and
 	// control the files that are copied from it.
 	hstCopyBasePath string
-	// Assigned to hst.AnnounceCmd while file copies are being performed. Only relevant for unit
-	// tests, which can assign this to SSHServer.NextRealCmd from tast/internal/sshtest so that the commands
-	// that perform copies will actually be executed.
-	hstCopyAnnounceCmd func(string)
 
 	// The following fields hold state that is accumulated over the course of the run.
 	// TODO(crbug.com/971517): Consider moving these fields into a separate struct,

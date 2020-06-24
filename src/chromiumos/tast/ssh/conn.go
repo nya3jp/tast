@@ -44,10 +44,6 @@ type Conn struct {
 	// platform describes the Operating System running on the remote computer. Guaranteed to
 	// be non-nil.
 	platform *Platform
-
-	// AnnounceCmd (if non-nil) is called with every remote command immediately before it's executed.
-	// This is useful for testing (i.e. to ensure that only expected commands are executed).
-	AnnounceCmd func(string)
 }
 
 // Options contains options used when connecting to an SSH server.
@@ -221,7 +217,7 @@ func New(ctx context.Context, o *Options) (*Conn, error) {
 		start := time.Now()
 		var cl *ssh.Client
 		if cl, err = connectSSH(ctx, o.Hostname, cfg); err == nil {
-			return &Conn{cl, o.Platform, nil}, nil
+			return &Conn{cl, o.Platform}, nil
 		}
 		if ctx.Err() != nil {
 			return nil, ctx.Err()

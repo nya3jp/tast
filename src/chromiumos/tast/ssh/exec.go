@@ -98,13 +98,8 @@ func (c *Cmd) Run(ctx context.Context) error {
 		return err
 	}
 
-	cmd := c.buildCmd(c.Dir, c.Args)
-	if c.ssh.AnnounceCmd != nil {
-		c.ssh.AnnounceCmd(cmd)
-	}
-
 	return c.waitAndClose(ctx, func() error {
-		return c.sess.Run(cmd)
+		return c.sess.Run(c.buildCmd(c.Dir, c.Args))
 	})
 }
 
@@ -118,15 +113,10 @@ func (c *Cmd) Output(ctx context.Context) ([]byte, error) {
 		return nil, err
 	}
 
-	cmd := c.buildCmd(c.Dir, c.Args)
-	if c.ssh.AnnounceCmd != nil {
-		c.ssh.AnnounceCmd(cmd)
-	}
-
 	var out []byte
 	err := c.waitAndClose(ctx, func() error {
 		var err error
-		out, err = c.sess.Output(cmd)
+		out, err = c.sess.Output(c.buildCmd(c.Dir, c.Args))
 		return err
 	})
 	return out, err
@@ -142,15 +132,10 @@ func (c *Cmd) CombinedOutput(ctx context.Context) ([]byte, error) {
 		return nil, err
 	}
 
-	cmd := c.buildCmd(c.Dir, c.Args)
-	if c.ssh.AnnounceCmd != nil {
-		c.ssh.AnnounceCmd(cmd)
-	}
-
 	var out []byte
 	err := c.waitAndClose(ctx, func() error {
 		var err error
-		out, err = c.sess.CombinedOutput(cmd)
+		out, err = c.sess.CombinedOutput(c.buildCmd(c.Dir, c.Args))
 		return err
 	})
 	return out, err
@@ -238,13 +223,8 @@ func (c *Cmd) Start(ctx context.Context) error {
 		return err
 	}
 
-	cmd := c.buildCmd(c.Dir, c.Args)
-	if c.ssh.AnnounceCmd != nil {
-		c.ssh.AnnounceCmd(cmd)
-	}
-
 	if err := doAsync(ctx, func() error {
-		return c.sess.Start(cmd)
+		return c.sess.Start(c.buildCmd(c.Dir, c.Args))
 	}, func() {
 		c.sess.Close()
 	}); err != nil {

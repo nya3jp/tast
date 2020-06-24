@@ -16,9 +16,6 @@ import (
 // dstDir is appended to cfg.hstCopyBasePath to support unit tests.
 // Symbolic links are dereferenced to support symlinked data files: https://crbug.com/927424
 func pushToHost(ctx context.Context, cfg *Config, hst *ssh.Conn, files map[string]string) (bytes int64, err error) {
-	undo := setAnnounceCmdForCopy(cfg, hst)
-	defer undo()
-
 	if cfg.hstCopyBasePath != "" {
 		rewritten := make(map[string]string)
 		for src, dst := range files {
@@ -33,9 +30,6 @@ func pushToHost(ctx context.Context, cfg *Config, hst *ssh.Conn, files map[strin
 // moveFromHost copies the tree rooted at src on hst to dst on the local system and deletes src from hst.
 // src is appended to cfg.hstCopyBasePath to support unit tests.
 func moveFromHost(ctx context.Context, cfg *Config, hst *ssh.Conn, src, dst string) error {
-	undo := setAnnounceCmdForCopy(cfg, hst)
-	defer undo()
-
 	src = filepath.Join(cfg.hstCopyBasePath, src)
 	if err := linuxssh.GetFile(ctx, hst, src, dst); err != nil {
 		return err
@@ -49,18 +43,5 @@ func moveFromHost(ctx context.Context, cfg *Config, hst *ssh.Conn, src, dst stri
 // deleteFromHost is a wrapper around hst.DeleteTree that should be used instead of calling DeleteTree directly.
 // baseDir is appended to cfg.hstCopyBasePath to support unit tests.
 func deleteFromHost(ctx context.Context, cfg *Config, hst *ssh.Conn, baseDir string, files []string) error {
-	undo := setAnnounceCmdForCopy(cfg, hst)
-	defer undo()
-
 	return linuxssh.DeleteTree(ctx, hst, filepath.Join(cfg.hstCopyBasePath, baseDir), files)
-}
-
-// setAnnounceCmdForCopy is a helper function that configures hst to temporarily run the
-// file-copy-related commands that are passed to it; it only has an effect in unit tests
-// (where cfg.hstCopyAnnounceCmd may be non-nil). The returned function should be called
-// when the file copy is completed to undo the change. See hstCopyAnnounceCmd for details.
-func setAnnounceCmdForCopy(cfg *Config, hst *ssh.Conn) (undo func()) {
-	old := hst.AnnounceCmd
-	hst.AnnounceCmd = cfg.hstCopyAnnounceCmd
-	return func() { hst.AnnounceCmd = old }
 }

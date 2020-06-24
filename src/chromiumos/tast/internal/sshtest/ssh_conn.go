@@ -8,7 +8,6 @@ import (
 	"context"
 	"crypto/rsa"
 	"fmt"
-	"log"
 	"os"
 	"strings"
 	"testing"
@@ -69,7 +68,6 @@ type TestDataConn struct {
 	// Cancel cancels Ctx to simulate a timeout.
 	Cancel func()
 
-	nextCmd string // next command to be executed by client
 	// ExecTimeout directs how "exec" requests should time out.
 	ExecTimeout TimeoutType
 }
@@ -90,7 +88,6 @@ func NewTestDataConn(t *testing.T) *TestDataConn {
 		td.Srv.Close()
 		t.Fatal(err)
 	}
-	td.Hst.AnnounceCmd = func(cmd string) { td.nextCmd = cmd }
 
 	// Automatically abort the test if it takes too long time.
 	go func() {
@@ -115,14 +112,7 @@ func (td *TestDataConn) Close() {
 }
 
 // handleExec handles an SSH "exec" request sent to td.Srv by executing the requested command.
-// The command must already be present in td.nextCmd.
 func (td *TestDataConn) handleExec(req *ExecReq) {
-	if req.Cmd != td.nextCmd {
-		log.Printf("Unexpected command %q (want %q)", req.Cmd, td.nextCmd)
-		req.Start(false)
-		return
-	}
-
 	// PutFiles sends multiple "exec" requests.
 	// Ignore its initial "sha1sum" so we can hang during the tar command instead.
 	ignoreTimeout := strings.HasPrefix(req.Cmd, "sha1sum ")

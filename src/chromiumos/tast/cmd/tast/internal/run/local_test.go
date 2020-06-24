@@ -108,7 +108,6 @@ func newLocalTestData(t *gotesting.T) *localTestData {
 		t.Fatal(err)
 	}
 	td.cfg.hstCopyBasePath = td.hostDir
-	td.cfg.hstCopyAnnounceCmd = func(cmd string) { td.nextCopyCmd = cmd }
 
 	toClose = nil
 	return &td
@@ -128,8 +127,6 @@ func (td *localTestData) close() {
 // handleExec handles SSH "exec" requests sent to td.srvData.Srv.
 // Canned results are returned for local_test_runner, while file-copying-related commands are actually executed.
 func (td *localTestData) handleExec(req *sshtest.ExecReq) {
-	defer func() { td.nextCopyCmd = "" }()
-
 	switch req.Cmd {
 	case "exec cat /proc/sys/kernel/random/boot_id":
 		req.Start(true)
@@ -147,9 +144,6 @@ func (td *localTestData) handleExec(req *sshtest.ExecReq) {
 		req.CloseOutput()
 		time.Sleep(td.runDelay)
 		req.End(status)
-	case td.nextCopyCmd:
-		req.Start(true)
-		req.End(req.RunRealCmd())
 	case "exec sync":
 		req.Start(true)
 		req.End(0)
@@ -165,8 +159,8 @@ func (td *localTestData) handleExec(req *sshtest.ExecReq) {
 		req.Start(true)
 		req.End(0)
 	default:
-		log.Printf("Unexpected command %q", req.Cmd)
-		req.Start(false)
+		req.Start(true)
+		req.End(req.RunRealCmd())
 	}
 }
 

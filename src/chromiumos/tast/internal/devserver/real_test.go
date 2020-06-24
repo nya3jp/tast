@@ -224,3 +224,24 @@ func TestRealClientNoUpServer(t *testing.T) {
 		t.Fatal("Open unexpectedly succeeded")
 	}
 }
+
+// TestRealClientNoPath ensures that RealClient works for URLs having no path,
+// i.e. files are directly under the top-level directory.
+func TestRealClientNoPath(t *testing.T) {
+	const url = "gs://bucket/file"
+
+	files := []*devservertest.File{{URL: url}}
+	s, err := devservertest.NewServer(devservertest.Files(files))
+	if err != nil {
+		t.Fatal("NewServer: ", err)
+	}
+	defer s.Close()
+
+	cl := devserver.NewRealClient(context.Background(), []string{s.URL}, nil)
+
+	r, err := cl.Open(context.Background(), url)
+	if err != nil {
+		t.Fatal("Open failed: ", err)
+	}
+	r.Close()
+}

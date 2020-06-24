@@ -22,6 +22,30 @@
       "revId": "a056d05db4f7db14416f893343cb8cdb1a7ed31e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d4105efa_7f571acb",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-06-24T01:21:25Z",
+      "side": 1,
+      "message": "Sorry nvm.",
+      "parentUuid": "49294a72_b039cef8",
+      "range": {
+        "startLine": 50,
+        "startChar": 5,
+        "endLine": 50,
+        "endChar": 19
+      },
+      "revId": "a056d05db4f7db14416f893343cb8cdb1a7ed31e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -260,7 +260,7 @@ func TestLocalProxy(t *gotesting.T) {
 	}
 }
 
-func disabledTestLocalCopyOutput(t *gotesting.T) {
+func TestLocalCopyOutput(t *gotesting.T) {
 	const (
 		testName = "pkg.Test"
 		outFile  = "somefile.txt"

@@ -7,34 +7,59 @@ package planner
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
-	"reflect"
+	"strconv"
 	gotesting "testing"
 	"time"
 
 	"github.com/google/go-cmp/cmp"
 
+	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
 )
 
-// outputSink is an implementation of testing.OutputStream for unit tests.
-type outputSink struct {
-	Logs []string
-	Errs []*testing.Error
+// runConfig contains arguments to runTestsAndReadAll.
+// NOTE: This struct is merged to Config in the next change.
+type runConfig struct {
+	DataDir string
+	OutDir  string
 }
 
-func (o *outputSink) Log(msg string) error {
-	o.Logs = append(o.Logs, msg)
-	return nil
-}
+// runTestsAndReadAll runs tests and returns a slice of control messages written to the output.
+func runTestsAndReadAll(t *gotesting.T, tests []*testing.TestInstance, pcfg *Config, rcfg *runConfig) []control.Msg {
+	t.Helper()
 
-func (o *outputSink) Error(e *testing.Error) error {
-	o.Errs = append(o.Errs, e)
-	return nil
+	sink := newOutputSink()
+
+	for i := 0; i < len(tests); i++ {
+		test := tests[i]
+		var next *testing.TestInstance
+		if i+1 < len(tests) {
+			next = tests[i+1]
+		}
+
+		tcfg := &testing.TestConfig{}
+		if rcfg.DataDir != "" {
+			tcfg.DataDir = filepath.Join(rcfg.DataDir, testing.RelativeDataDir(test.Pkg))
+		}
+		if rcfg.OutDir != "" {
+			tcfg.OutDir = filepath.Join(rcfg.OutDir, test.Name)
+		}
+
+		tout := NewTestOutputStream(sink, test.TestInfo())
+		tout.Start()
+		RunTest(context.Background(), test, next, tout, pcfg, tcfg)
+		tout.End(nil, nil)
+	}
+
+	msgs, err := sink.ReadAll()
+	if err != nil {
+		t.Fatal("ReadAll: ", err)
+	}
+	return msgs
 }
 
 // testPre implements Precondition for unit tests.
@@ -62,16 +87,27 @@ func (p *testPre) Timeout() time.Duration { return time.Minute }
 func (p *testPre) String() string { return p.name }
 
 func TestRunSuccess(t *gotesting.T) {
-	test := &testing.TestInstance{Func: func(context.Context, *testing.State) {}, Timeout: time.Minute}
-	var out outputSink
 	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
 	od := filepath.Join(td, "out")
-	RunTest(context.Background(), test, nil, &out, &Config{}, &testing.TestConfig{OutDir: od})
-	if errs := out.Errs; len(errs) != 0 {
-		t.Errorf("Got unexpected error(s) for test: %v", errs)
+
+	tests := []*testing.TestInstance{{
+		Name:    "pkg.Test",
+		Func:    func(context.Context, *testing.State) {},
+		Timeout: time.Minute,
+	}}
+
+	msgs := runTestsAndReadAll(t, tests, &Config{}, &runConfig{OutDir: od})
+
+	want := []control.Msg{
+		&control.TestStart{Test: *tests[0].TestInfo()},
+		&control.TestEnd{Name: tests[0].Name},
 	}
-	if fi, err := os.Stat(od); err != nil {
+	if diff := cmp.Diff(msgs, want); diff != "" {
+		t.Error("Output mismatch (-got +want):\n", diff)
+	}
+
+	if fi, err := os.Stat(filepath.Join(od, tests[0].Name)); err != nil {
 		t.Errorf("Out dir %v not accessible after testing: %v", od, err)
 	} else if mode := fi.Mode()&os.ModePerm | os.ModeSticky; mode != 0777|os.ModeSticky {
 		t.Errorf("Out dir %v has mode 0%o; want 0%o", od, mode, 0777|os.ModeSticky)
@@ -79,58 +115,83 @@ func TestRunSuccess(t *gotesting.T) {
 }
 
 func TestRunPanic(t *gotesting.T) {
-	test := &testing.TestInstance{Func: func(context.Context, *testing.State) { panic("intentional panic") }, Timeout: time.Minute}
-	var out outputSink
-	RunTest(context.Background(), test, nil, &out, &Config{}, &testing.TestConfig{})
-	if errs := out.Errs; len(errs) != 1 {
-		t.Errorf("Got %v errors for panicking test; want 1", len(errs))
+	tests := []*testing.TestInstance{{
+		Name:    "pkg.Test",
+		Func:    func(context.Context, *testing.State) { panic("intentional panic") },
+		Timeout: time.Minute,
+	}}
+	msgs := runTestsAndReadAll(t, tests, &Config{}, &runConfig{})
+	want := []control.Msg{
+		&control.TestStart{Test: *tests[0].TestInfo()},
+		&control.TestError{Error: testing.Error{Reason: "Panic: intentional panic"}},
+		&control.TestEnd{Name: tests[0].Name},
+	}
+	if diff := cmp.Diff(msgs, want); diff != "" {
+		t.Error("Output mismatch (-got +want):\n", diff)
 	}
 }
 
 func TestRunDeadline(t *gotesting.T) {
-	f := func(ctx context.Context, s *testing.State) {
-		// Wait for the context to report that the deadline has been hit.
-		<-ctx.Done()
-		s.Error("Saw timeout within test")
-	}
-	test := &testing.TestInstance{Func: f, Timeout: time.Millisecond, ExitTimeout: 10 * time.Second}
-	var out outputSink
-	RunTest(context.Background(), test, nil, &out, &Config{}, &testing.TestConfig{})
+	tests := []*testing.TestInstance{{
+		Name: "pkg.Test",
+		Func: func(ctx context.Context, s *testing.State) {
+			// Wait for the context to report that the deadline has been hit.
+			<-ctx.Done()
+			s.Error("Saw timeout within test")
+		},
+		Timeout:     time.Millisecond,
+		ExitTimeout: 10 * time.Second,
+	}}
+	msgs := runTestsAndReadAll(t, tests, &Config{}, &runConfig{})
 	// The error that was reported by the test after its deadline was hit
 	// but within the exit delay should be available.
-	if errs := out.Errs; len(errs) != 1 {
-		t.Errorf("Got %v errors for timed-out test; want 1", len(errs))
+	want := []control.Msg{
+		&control.TestStart{Test: *tests[0].TestInfo()},
+		&control.TestError{Error: testing.Error{Reason: "Saw timeout within test"}},
+		&control.TestEnd{Name: tests[0].Name},
+	}
+	if diff := cmp.Diff(msgs, want); diff != "" {
+		t.Error("Output mismatch (-got +want):\n", diff)
 	}
 }
 
 func TestRunLogAfterTimeout(t *gotesting.T) {
 	cont := make(chan bool)
 	done := make(chan bool)
-	f := func(ctx context.Context, s *testing.State) {
-		// Report when we're done, either after completing or after panicking before completion.
-		completed := false
-		defer func() { done <- completed }()
+	tests := []*testing.TestInstance{{
+		Name: "pkg.Test",
+		Func: func(ctx context.Context, s *testing.State) {
+			// Report when we're done, either after completing or after panicking before completion.
+			completed := false
+			defer func() { done <- completed }()
 
-		// Ignore the deadline and wait until we're told to continue.
-		<-ctx.Done()
-		<-cont
-		s.Log("Done waiting")
-		completed = true
-	}
-	test := &testing.TestInstance{Func: f, Timeout: time.Millisecond, ExitTimeout: time.Millisecond}
+			// Ignore the deadline and wait until we're told to continue.
+			<-ctx.Done()
+			<-cont
+			s.Log("Done waiting")
+			completed = true
+		},
+		Timeout:     time.Millisecond,
+		ExitTimeout: time.Millisecond,
+	}}
 
-	var out outputSink
-	RunTest(context.Background(), test, nil, &out, &Config{}, &testing.TestConfig{})
+	msgs := runTestsAndReadAll(t, tests, &Config{}, &runConfig{})
 
-	// Tell the test to continue even though Run has already returned. The output channel should
-	// still be open so as to avoid a panic when the test writes to it: https://crbug.com/853406
+	// Tell the test to continue even though Run has already returned. The output stream should
+	// still be writable so as to avoid a panic when the test writes to it (https://crbug.com/853406),
+	// but they are dropped.
 	cont <- true
 	if completed := <-done; !completed {
 		t.Error("Test function didn't complete")
 	}
-	// No output errors should be written to the channel; reporting timeouts is the caller's job.
-	if errs := out.Errs; len(errs) != 0 {
-		t.Errorf("Got %v error(s) for runaway test; want 0", len(errs))
+
+	// No errors should be written to the output stream; reporting timeouts is the caller's job.
+	want := []control.Msg{
+		&control.TestStart{Test: *tests[0].TestInfo()},
+		&control.TestEnd{Name: tests[0].Name},
+	}
+	if diff := cmp.Diff(msgs, want); diff != "" {
+		t.Error("Output mismatch (-got +want):\n", diff)
 	}
 }
 
@@ -138,30 +199,37 @@ func TestRunLateWriteFromGoroutine(t *gotesting.T) {
 	// Run a test that calls s.Log from a goroutine after the test has finished.
 	start := make(chan struct{}) // tells goroutine to start
 	end := make(chan struct{})   // announces goroutine is done
-	test := &testing.TestInstance{Func: func(ctx context.Context, s *testing.State) {
-		go func() {
-			<-start
-			s.Log("This message should be still reported")
-			close(end)
-		}()
-	}, Timeout: time.Minute}
-	var out outputSink
-	RunTest(context.Background(), test, nil, &out, &Config{}, &testing.TestConfig{})
+	tests := []*testing.TestInstance{{
+		Name: "pkg.Test",
+		Func: func(ctx context.Context, s *testing.State) {
+			go func() {
+				<-start
+				s.Log("This message should be still reported")
+				close(end)
+			}()
+		},
+		Timeout: time.Minute,
+	}}
+
+	msgs := runTestsAndReadAll(t, tests, &Config{}, &runConfig{})
 
 	// Tell the goroutine to start and wait for it to finish.
 	close(start)
 	<-end
 
-	exp := outputSink{
-		Logs: []string{"This message should be still reported"},
+	want := []control.Msg{
+		&control.TestStart{Test: *tests[0].TestInfo()},
+		// Log message from the goroutine is not reported.
+		&control.TestEnd{Name: tests[0].Name},
 	}
-	if diff := cmp.Diff(out, exp); diff != "" {
-		t.Errorf("Bad test output (-got +want):\n%s", diff)
+	if diff := cmp.Diff(msgs, want); diff != "" {
+		t.Error("Output mismatch (-got +want):\n", diff)
 	}
 }
 
 func TestRunSkipStages(t *gotesting.T) {
-	type action int // actions that can be performed by stages
+	// action specifies an action performed in a stage.
+	type action int
 	const (
 		pass    action = iota
 		doError        // call State.Error
@@ -170,9 +238,8 @@ func TestRunSkipStages(t *gotesting.T) {
 		noCall         // stage should be skipped
 	)
 
-	// Define a sequence of tests to run and specify which stages should be executed for each.
-	var pre, pre2, pre3, pre4 testPre
-	cases := []struct {
+	// testBehavior specifies the behavior of a test in each of its stages.
+	type testBehavior struct {
 		pre                *testPre
 		preTestAction      action // TestConfig.PreTestFunc
 		prepareAction      action // Precondition.Prepare
@@ -180,119 +247,275 @@ func TestRunSkipStages(t *gotesting.T) {
 		closeAction        action // Precondition.Close
 		postTestAction     action // TestConfig.PostTestFunc
 		postTestHookAction action // Return of TestConfig.PreTestFunc
-		desc               string
+	}
+
+	// pre1 and pre2 are preconditions used in tests. prepareFunc and closeFunc
+	// are filled in each subtest.
+	pre1 := &testPre{name: "pre1"}
+	pre2 := &testPre{name: "pre2"}
+
+	for _, tc := range []struct {
+		name  string
+		tests []testBehavior
+		want  []control.Msg
 	}{
-		{&pre, pass, pass, pass, noCall, pass, pass, "everything passes"},
-		{&pre, doError, noCall, noCall, noCall, pass, pass, "pre-test fails"},
-		{&pre, doPanic, noCall, noCall, noCall, pass, pass, "pre-test panics"},
-		{&pre, pass, doError, noCall, noCall, pass, pass, "prepare fails"},
-		{&pre, pass, doPanic, noCall, noCall, pass, pass, "prepare panics"},
-		{&pre, pass, pass, doError, noCall, pass, pass, "test fails"},
-		{&pre, pass, pass, doPanic, noCall, pass, pass, "test panics"},
-		{&pre, pass, pass, pass, pass, pass, pass, "everything passes, next test has different precondition"},
-		{&pre2, pass, doError, noCall, pass, pass, pass, "prepare fails, next test has different precondition"},
-		{&pre3, pass, pass, doError, pass, pass, pass, "test fails, next test has no precondition"},
-		{nil, pass, noCall, pass, noCall, pass, pass, "no precondition"},
-		{&pre4, pass, pass, pass, pass, pass, pass, "final test"},
-	}
-
-	// Create tests first so we can set TestConfig.NextTest later.
-	var tests []*testing.TestInstance
-	for _, c := range cases {
-		test := &testing.TestInstance{Timeout: time.Minute}
-		// We can't just do "test.Pre = c.pre" here. See e.g. https://tour.golang.org/methods/12:
-		// "Note that an interface value that holds a nil concrete value is itself non-nil."
-		if c.pre != nil {
-			test.Pre = c.pre
-		}
-		tests = append(tests, test)
-	}
-
-	// makeTestFunc and MakePreFunc return a function that sets *called to true
-	// and performs the action described by a.
-	makeTestFunc := func(a action, called *bool) func(context.Context, *testing.State) {
-		return func(ctx context.Context, s *testing.State) {
-			*called = true
-			switch a {
-			case doError:
-				s.Error("intentional error")
-			case doFatal:
-				s.Fatal("intentional fatal")
-			case doPanic:
-				panic("intentional panic")
+		{
+			name: "no precondition",
+			tests: []testBehavior{
+				{nil, pass, noCall, pass, noCall, pass, pass},
+			},
+			want: []control.Msg{
+				&control.TestStart{Test: testing.TestInfo{Name: "0", Timeout: time.Minute}},
+				&control.TestLog{Text: "preTest: OK"},
+				&control.TestLog{Text: "test: OK"},
+				&control.TestLog{Text: "postTest: OK"},
+				&control.TestLog{Text: "postTestHook: OK"},
+				&control.TestEnd{Name: "0"},
+			},
+		},
+		{
+			name: "passes",
+			tests: []testBehavior{
+				{pre1, pass, pass, pass, pass, pass, pass},
+			},
+			want: []control.Msg{
+				&control.TestStart{Test: testing.TestInfo{Name: "0", Timeout: time.Minute}},
+				&control.TestLog{Text: "preTest: OK"},
+				&control.TestLog{Text: `Preparing precondition "pre1"`},
+				&control.TestLog{Text: "prepare: OK"},
+				&control.TestLog{Text: "test: OK"},
+				&control.TestLog{Text: `Closing precondition "pre1"`},
+				&control.TestLog{Text: "close: OK"},
+				&control.TestLog{Text: "postTest: OK"},
+				&control.TestLog{Text: "postTestHook: OK"},
+				&control.TestEnd{Name: "0"},
+			},
+		},
+		{
+			name: "pretest fails",
+			tests: []testBehavior{
+				{pre1, doError, noCall, noCall, pass, pass, pass},
+			},
+			want: []control.Msg{
+				&control.TestStart{Test: testing.TestInfo{Name: "0", Timeout: time.Minute}},
+				&control.TestError{Error: testing.Error{Reason: "preTest: Intentional error"}},
+				&control.TestLog{Text: `Closing precondition "pre1"`},
+				&control.TestLog{Text: "close: OK"},
+				&control.TestLog{Text: "postTest: OK"},
+				&control.TestLog{Text: "postTestHook: OK"},
+				&control.TestEnd{Name: "0"},
+			},
+		},
+		{
+			name: "pretest panics",
+			tests: []testBehavior{
+				{pre1, doPanic, noCall, noCall, pass, pass, pass},
+			},
+			want: []control.Msg{
+				&control.TestStart{Test: testing.TestInfo{Name: "0", Timeout: time.Minute}},
+				&control.TestError{Error: testing.Error{Reason: "Panic: preTest: Intentional panic"}},
+				&control.TestLog{Text: `Closing precondition "pre1"`},
+				&control.TestLog{Text: "close: OK"},
+				&control.TestLog{Text: "postTest: OK"},
+				&control.TestEnd{Name: "0"},
+			},
+		},
+		{
+			name: "prepare fails",
+			tests: []testBehavior{
+				{pre1, pass, doError, noCall, pass, pass, pass},
+			},
+			want: []control.Msg{
+				&control.TestStart{Test: testing.TestInfo{Name: "0", Timeout: time.Minute}},
+				&control.TestLog{Text: "preTest: OK"},
+				&control.TestLog{Text: `Preparing precondition "pre1"`},
+				&control.TestError{Error: testing.Error{Reason: "[Precondition failure] prepare: Intentional error"}},
+				&control.TestLog{Text: `Closing precondition "pre1"`},
+				&control.TestLog{Text: "close: OK"},
+				&control.TestLog{Text: "postTest: OK"},
+				&control.TestLog{Text: "postTestHook: OK"},
+				&control.TestEnd{Name: "0"},
+			},
+		},
+		{
+			name: "prepare panics",
+			tests: []testBehavior{
+				{pre1, pass, doPanic, noCall, pass, pass, pass},
+			},
+			want: []control.Msg{
+				&control.TestStart{Test: testing.TestInfo{Name: "0", Timeout: time.Minute}},
+				&control.TestLog{Text: "preTest: OK"},
+				&control.TestLog{Text: `Preparing precondition "pre1"`},
+				&control.TestError{Error: testing.Error{Reason: "[Precondition failure] Panic: prepare: Intentional panic"}},
+				&control.TestLog{Text: `Closing precondition "pre1"`},
+				&control.TestLog{Text: "close: OK"},
+				&control.TestLog{Text: "postTest: OK"},
+				&control.TestLog{Text: "postTestHook: OK"},
+				&control.TestEnd{Name: "0"},
+			},
+		},
+		{
+			name: "same precondition",
+			tests: []testBehavior{
+				{pre1, pass, pass, pass, noCall, pass, pass},
+				{pre1, pass, pass, pass, pass, pass, pass},
+			},
+			want: []control.Msg{
+				&control.TestStart{Test: testing.TestInfo{Name: "0", Timeout: time.Minute}},
+				&control.TestLog{Text: "preTest: OK"},
+				&control.TestLog{Text: `Preparing precondition "pre1"`},
+				&control.TestLog{Text: "prepare: OK"},
+				&control.TestLog{Text: "test: OK"},
+				&control.TestLog{Text: "postTest: OK"},
+				&control.TestLog{Text: "postTestHook: OK"},
+				&control.TestEnd{Name: "0"},
+				&control.TestStart{Test: testing.TestInfo{Name: "1", Timeout: time.Minute}},
+				&control.TestLog{Text: "preTest: OK"},
+				&control.TestLog{Text: `Preparing precondition "pre1"`},
+				&control.TestLog{Text: "prepare: OK"},
+				&control.TestLog{Text: "test: OK"},
+				&control.TestLog{Text: `Closing precondition "pre1"`},
+				&control.TestLog{Text: "close: OK"},
+				&control.TestLog{Text: "postTest: OK"},
+				&control.TestLog{Text: "postTestHook: OK"},
+				&control.TestEnd{Name: "1"},
+			},
+		},
+		{
+			name: "different preconditions",
+			tests: []testBehavior{
+				{pre1, pass, pass, pass, pass, pass, pass},
+				{pre2, pass, pass, pass, pass, pass, pass},
+			},
+			want: []control.Msg{
+				&control.TestStart{Test: testing.TestInfo{Name: "0", Timeout: time.Minute}},
+				&control.TestLog{Text: "preTest: OK"},
+				&control.TestLog{Text: `Preparing precondition "pre1"`},
+				&control.TestLog{Text: "prepare: OK"},
+				&control.TestLog{Text: "test: OK"},
+				&control.TestLog{Text: `Closing precondition "pre1"`},
+				&control.TestLog{Text: "close: OK"},
+				&control.TestLog{Text: "postTest: OK"},
+				&control.TestLog{Text: "postTestHook: OK"},
+				&control.TestEnd{Name: "0"},
+				&control.TestStart{Test: testing.TestInfo{Name: "1", Timeout: time.Minute}},
+				&control.TestLog{Text: "preTest: OK"},
+				&control.TestLog{Text: `Preparing precondition "pre2"`},
+				&control.TestLog{Text: "prepare: OK"},
+				&control.TestLog{Text: "test: OK"},
+				&control.TestLog{Text: `Closing precondition "pre2"`},
+				&control.TestLog{Text: "close: OK"},
+				&control.TestLog{Text: "postTest: OK"},
+				&control.TestLog{Text: "postTestHook: OK"},
+				&control.TestEnd{Name: "1"},
+			},
+		},
+		{
+			name: "first prepare fails",
+			tests: []testBehavior{
+				{pre1, pass, doError, noCall, noCall, pass, pass},
+				{pre1, pass, pass, pass, pass, pass, pass},
+			},
+			want: []control.Msg{
+				&control.TestStart{Test: testing.TestInfo{Name: "0", Timeout: time.Minute}},
+				&control.TestLog{Text: "preTest: OK"},
+				&control.TestLog{Text: `Preparing precondition "pre1"`},
+				&control.TestError{Error: testing.Error{Reason: "[Precondition failure] prepare: Intentional error"}},
+				&control.TestLog{Text: "postTest: OK"},
+				&control.TestLog{Text: "postTestHook: OK"},
+				&control.TestEnd{Name: "0"},
+				&control.TestStart{Test: testing.TestInfo{Name: "1", Timeout: time.Minute}},
+				&control.TestLog{Text: "preTest: OK"},
+				&control.TestLog{Text: `Preparing precondition "pre1"`},
+				&control.TestLog{Text: "prepare: OK"},
+				&control.TestLog{Text: "test: OK"},
+				&control.TestLog{Text: `Closing precondition "pre1"`},
+				&control.TestLog{Text: "close: OK"},
+				&control.TestLog{Text: "postTest: OK"},
+				&control.TestLog{Text: "postTestHook: OK"},
+				&control.TestEnd{Name: "1"},
+			},
+		},
+	} {
+		t.Run(tc.name, func(t *gotesting.T) {
+			type state interface {
+				Logf(fmt string, args ...interface{})
+				Errorf(fmt string, args ...interface{})
+				Fatalf(fmt string, args ...interface{})
 			}
-		}
-	}
-	makePreFunc := func(a action, called *bool) func(context.Context, *testing.PreState) {
-		return func(ctx context.Context, s *testing.PreState) {
-			*called = true
-			switch a {
-			case doError:
-				s.Error("intentional error")
-			case doFatal:
-				s.Fatal("intentional fatal")
-			case doPanic:
-				panic("intentional panic")
-			}
-		}
-	}
-
-	makeTestFuncWithCallback := func(a action, called *bool, cbA action, cbCalled *bool) func(ctx context.Context, s *testing.State) func(ctx context.Context, s *testing.State) {
-		return func(ctx context.Context, s *testing.State) func(ctx context.Context, s *testing.State) {
-			*called = true
-			switch a {
-			case doError:
-				s.Error("intentional error")
-			case doFatal:
-				s.Fatal("intentional fatal")
-			case doPanic:
-				panic("intentional panic")
+			doAction := func(s state, a action, stage string) {
+				switch a {
+				case pass:
+					s.Logf("%s: OK", stage)
+				case doError:
+					s.Errorf("%s: Intentional error", stage)
+				case doFatal:
+					s.Fatalf("%s: Intentional fatal", stage)
+				case doPanic:
+					panic(fmt.Sprintf("%s: Intentional panic", stage))
+				case noCall:
+					t.Errorf("%s: Called unexpectedly", stage)
+				}
 			}
 
-			return makeTestFunc(cbA, cbCalled)
-		}
-	}
-
-	// Now actually run each test.
-	for i, c := range cases {
-		var preTestRan, prepareRan, testRan, closeRan, postTestRan, postTestHookRan bool
-
-		test := tests[i]
-		test.Func = makeTestFunc(c.testAction, &testRan)
-		if c.pre != nil {
-			prepare := makePreFunc(c.prepareAction, &prepareRan)
-			c.pre.prepareFunc = func(ctx context.Context, s *testing.PreState) interface{} {
-				prepare(ctx, s)
-				return nil
+			currentBehavior := func(s interface{ OutDir() string }) testBehavior {
+				// Abuse OutDir to tell which test we're running currently.
+				i, err := strconv.Atoi(filepath.Base(s.OutDir()))
+				if err != nil {
+					t.Fatal("Failed to parse OutDir: ", err)
+				}
+				return tc.tests[i]
 			}
-			c.pre.closeFunc = makePreFunc(c.closeAction, &closeRan)
-		}
-		pcfg := &Config{
-			PreTestFunc:  makeTestFuncWithCallback(c.preTestAction, &preTestRan, c.postTestHookAction, &postTestHookRan),
-			PostTestFunc: makeTestFunc(c.postTestAction, &postTestRan),
-		}
-		var next *testing.TestInstance
-		if i < len(tests)-1 {
-			next = tests[i+1]
-		}
 
-		var out outputSink
-		RunTest(context.Background(), test, next, &out, pcfg, &testing.TestConfig{})
-
-		// Verify that stages were executed or skipped as expected.
-		checkRan := func(name string, ran bool, a action) {
-			wantRun := a != noCall
-			if !ran && wantRun {
-				t.Errorf("Test %d (%s) didn't run %s", i, c.desc, name)
-			} else if ran && !wantRun {
-				t.Errorf("Test %d (%s) ran %s unexpectedly", i, c.desc, name)
+			var tests []*testing.TestInstance
+			for i, tb := range tc.tests {
+				test := &testing.TestInstance{
+					Name: strconv.Itoa(i),
+					Func: func(ctx context.Context, s *testing.State) {
+						doAction(s, currentBehavior(s).testAction, "test")
+					},
+					Timeout: time.Minute,
+				}
+				// We can't just do "test.Pre =tbc.pre" here. See e.g. https://tour.golang.org/methods/12:
+				// "Note that an interface value that holds a nil concrete value is itself non-nil."
+				if tb.pre != nil {
+					test.Pre = tb.pre
+				}
+				tests = append(tests, test)
 			}
-		}
-		checkRan("TestConfig.PreTestFunc", preTestRan, c.preTestAction)
-		checkRan("Precondition.Prepare", prepareRan, c.prepareAction)
-		checkRan("Test.Func", testRan, c.testAction)
-		checkRan("Precondition.Close", closeRan, c.closeAction)
-		checkRan("TestConfig.PostTestFunc", postTestRan, c.postTestAction)
+
+			for _, pre := range []*testPre{pre1, pre2} {
+				pre.prepareFunc = func(ctx context.Context, s *testing.PreState) interface{} {
+					doAction(s, currentBehavior(s).prepareAction, "prepare")
+					return nil
+				}
+				pre.closeFunc = func(ctx context.Context, s *testing.PreState) {
+					doAction(s, currentBehavior(s).closeAction, "close")
+				}
+			}
+
+			outDir := testutil.TempDir(t)
+			defer os.RemoveAll(outDir)
+
+			pcfg := &Config{
+				PreTestFunc: func(ctx context.Context, s *testing.State) func(context.Context, *testing.State) {
+					doAction(s, currentBehavior(s).preTestAction, "preTest")
+					return func(ctx context.Context, s *testing.State) {
+						doAction(s, currentBehavior(s).postTestHookAction, "postTestHook")
+					}
+				},
+				PostTestFunc: func(ctx context.Context, s *testing.State) {
+					doAction(s, currentBehavior(s).postTestAction, "postTest")
+				},
+			}
+			rcfg := &runConfig{
+				OutDir: outDir,
+			}
+			msgs := runTestsAndReadAll(t, tests, pcfg, rcfg)
+			if diff := cmp.Diff(msgs, tc.want); diff != "" {
+				t.Error("Output mismatch (-got +want):\n", diff)
+			}
+		})
 	}
 }
 
@@ -304,32 +527,32 @@ func TestRunMissingData(t *gotesting.T) {
 		missingErrorFile1 = missingFile1 + testing.ExternalErrorSuffix
 	)
 
-	test := &testing.TestInstance{
+	tests := []*testing.TestInstance{{
+		Pkg:     "some/pkg",
 		Func:    func(context.Context, *testing.State) {},
 		Data:    []string{existingFile, missingFile1, missingFile2},
 		Timeout: time.Minute,
-	}
+	}}
 
 	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
-	if err := ioutil.WriteFile(filepath.Join(td, existingFile), nil, 0644); err != nil {
-		t.Fatalf("Failed to write %s: %v", existingFile, err)
-	}
-	if err := ioutil.WriteFile(filepath.Join(td, missingErrorFile1), []byte("some reason"), 0644); err != nil {
-		t.Fatalf("Failed to write %s: %v", missingErrorFile1, err)
+	if err := testutil.WriteFiles(filepath.Join(td, "some/pkg/data"), map[string]string{
+		existingFile:      "",
+		missingErrorFile1: "some reason",
+	}); err != nil {
+		t.Fatal("Failed to setup data dir: ", err)
 	}
 
-	var out outputSink
-	RunTest(context.Background(), test, nil, &out, &Config{}, &testing.TestConfig{DataDir: td})
+	msgs := runTestsAndReadAll(t, tests, &Config{}, &runConfig{DataDir: td})
 
-	expected := []string{
-		"Required data file missing1.txt missing: some reason",
-		"Required data file missing2.txt missing",
+	want := []control.Msg{
+		&control.TestStart{Test: *tests[0].TestInfo()},
+		&control.TestError{Error: testing.Error{Reason: "Required data file missing1.txt missing: some reason"}},
+		&control.TestError{Error: testing.Error{Reason: "Required data file missing2.txt missing"}},
+		&control.TestEnd{Name: tests[0].Name},
 	}
-	if errs := out.Errs; len(errs) != 2 {
-		t.Errorf("Got %v errors for missing data test; want 2", errs)
-	} else if actual := []string{errs[0].Reason, errs[1].Reason}; !reflect.DeepEqual(actual, expected) {
-		t.Errorf("Got errors %q; want %q", actual, expected)
+	if diff := cmp.Diff(msgs, want); diff != "" {
+		t.Error("Output mismatch (-got +want):\n", diff)
 	}
 }
 
@@ -338,9 +561,10 @@ func TestRunPrecondition(t *gotesting.T) {
 	preData := &data{}
 
 	// The test should be able to access the data via State.PreValue.
-	test := &testing.TestInstance{
+	tests := []*testing.TestInstance{{
 		// Use a precondition that returns the struct that we declared earlier from its Prepare method.
 		Pre: &testPre{
+			name:        "pre",
 			prepareFunc: func(context.Context, *testing.PreState) interface{} { return preData },
 		},
 		Func: func(ctx context.Context, s *testing.State) {
@@ -353,67 +577,79 @@ func TestRunPrecondition(t *gotesting.T) {
 			}
 		},
 		Timeout: time.Minute,
-	}
+	}}
 
-	var out outputSink
-	RunTest(context.Background(), test, nil, &out, &Config{}, &testing.TestConfig{})
-	for _, err := range out.Errs {
-		t.Error("Got error: ", err.Reason)
+	msgs := runTestsAndReadAll(t, tests, &Config{}, &runConfig{})
+
+	want := []control.Msg{
+		&control.TestStart{Test: *tests[0].TestInfo()},
+		&control.TestLog{Text: `Preparing precondition "pre"`},
+		&control.TestLog{Text: `Closing precondition "pre"`},
+		&control.TestEnd{Name: tests[0].Name},
+	}
+	if diff := cmp.Diff(msgs, want); diff != "" {
+		t.Error("Output mismatch (-got +want):\n", diff)
 	}
 }
 
 func TestRunPreconditionContext(t *gotesting.T) {
-	var testCtx context.Context
+	var prevCtx context.Context
 
 	prepareFunc := func(ctx context.Context, s *testing.PreState) interface{} {
-		if testCtx == nil {
-			testCtx = s.PreCtx()
+		pctx := s.PreCtx()
+		if prevCtx == nil {
+			// This is the first test. Save pctx.
+			prevCtx = pctx
+		} else {
+			// This is the second test. Ensure prevCtx is still alive.
+			if err := prevCtx.Err(); err != nil {
+				t.Error("Prepare (second test): PreCtx was canceled: ", err)
+			}
 		}
 
-		if testCtx != s.PreCtx() {
-			t.Errorf("Different context in Prepare")
-		}
-
-		if _, ok := testing.ContextSoftwareDeps(s.PreCtx()); !ok {
+		if _, ok := testing.ContextSoftwareDeps(pctx); !ok {
 			t.Error("ContextSoftwareDeps unavailable")
 		}
 		return nil
 	}
 
 	closeFunc := func(ctx context.Context, s *testing.PreState) {
-		if testCtx != s.PreCtx() {
-			t.Errorf("Different context in Close")
+		if prevCtx != nil {
+			if err := prevCtx.Err(); err != nil {
+				t.Error("Close: PreCtx was canceled: ", err)
+			}
 		}
 	}
 
 	testFunc := func(ctx context.Context, s *testing.State) {}
 
 	pre := &testPre{
+		name:        "pre",
 		prepareFunc: prepareFunc,
 		closeFunc:   closeFunc,
 	}
 
-	t1 := &testing.TestInstance{Name: "t1", Pre: pre, Timeout: time.Minute, Func: testFunc}
-	t2 := &testing.TestInstance{Name: "t2", Pre: pre, Timeout: time.Minute, Func: testFunc}
-
-	var out outputSink
-	RunTest(context.Background(), t1, t2, &out, &Config{}, &testing.TestConfig{})
-	for _, err := range out.Errs {
-		t.Error("Got error: ", err.Reason)
+	tests := []*testing.TestInstance{
+		{Name: "t1", Pre: pre, Timeout: time.Minute, Func: testFunc},
+		{Name: "t2", Pre: pre, Timeout: time.Minute, Func: testFunc},
 	}
 
-	if t1.PreCtx != t2.PreCtx {
-		t.Errorf("PreCtx different between test instances")
-	}
+	msgs := runTestsAndReadAll(t, tests, &Config{}, &runConfig{})
 
-	out = outputSink{}
-	RunTest(context.Background(), t2, nil, &out, &Config{}, &testing.TestConfig{})
-	for _, err := range out.Errs {
-		t.Error("Got error: ", err.Reason)
+	want := []control.Msg{
+		&control.TestStart{Test: *tests[0].TestInfo()},
+		&control.TestLog{Text: `Preparing precondition "pre"`},
+		&control.TestEnd{Name: tests[0].Name},
+		&control.TestStart{Test: *tests[1].TestInfo()},
+		&control.TestLog{Text: `Preparing precondition "pre"`},
+		&control.TestLog{Text: `Closing precondition "pre"`},
+		&control.TestEnd{Name: tests[1].Name},
 	}
-
-	if t1.PreCtx.Err() == nil {
-		t.Errorf("Context not cancelled")
+	if diff := cmp.Diff(msgs, want); diff != "" {
+		t.Error("Output mismatch (-got +want):\n", diff)
+	}
+	if prevCtx.Err() == nil {
+		t.Error("Context not cancelled")
 	}
 }
 
@@ -509,26 +745,31 @@ func TestRunHasError(t *gotesting.T) {
 					}
 				})
 			}
-			test := &testing.TestInstance{Name: "t", Pre: pre, Timeout: time.Minute, Func: testFunc}
+			tests := []*testing.TestInstance{{Name: "t", Pre: pre, Timeout: time.Minute, Func: testFunc}}
 
-			var out outputSink
-			RunTest(context.Background(), test, nil, &out, pcfg, &testing.TestConfig{})
+			runTestsAndReadAll(t, tests, pcfg, &runConfig{})
 		})
 	}
 }
 
 func TestAttachStateToContext(t *gotesting.T) {
-	test := &testing.TestInstance{
+	tests := []*testing.TestInstance{{
 		Func: func(ctx context.Context, s *testing.State) {
 			logging.ContextLog(ctx, "msg ", 1)
 			logging.ContextLogf(ctx, "msg %d", 2)
 		},
 		Timeout: time.Minute,
-	}
+	}}
 
-	var out outputSink
-	RunTest(context.Background(), test, nil, &out, &Config{}, &testing.TestConfig{})
-	if logs := out.Logs; len(logs) != 2 || logs[0] != "msg 1" || logs[1] != "msg 2" {
-		t.Errorf("Bad test output: %v", logs)
+	msgs := runTestsAndReadAll(t, tests, &Config{}, &runConfig{})
+
+	want := []control.Msg{
+		&control.TestStart{Test: *tests[0].TestInfo()},
+		&control.TestLog{Text: "msg 1"},
+		&control.TestLog{Text: "msg 2"},
+		&control.TestEnd{Name: tests[0].Name},
+	}
+	if diff := cmp.Diff(msgs, want); diff != "" {
+		t.Error("Output mismatch (-got +want):\n", diff)
 	}
 }

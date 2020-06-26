@@ -21,40 +21,12 @@ import (
 	"chromiumos/tast/testutil"
 )
 
-// runConfig contains arguments to runTestsAndReadAll.
-// NOTE: This struct is merged to Config in the next change.
-type runConfig struct {
-	DataDir string
-	OutDir  string
-}
-
 // runTestsAndReadAll runs tests and returns a slice of control messages written to the output.
-func runTestsAndReadAll(t *gotesting.T, tests []*testing.TestInstance, pcfg *Config, rcfg *runConfig) []control.Msg {
+func runTestsAndReadAll(t *gotesting.T, tests []*testing.TestInstance, pcfg *Config) []control.Msg {
 	t.Helper()
 
 	sink := newOutputSink()
-
-	for i := 0; i < len(tests); i++ {
-		test := tests[i]
-		var next *testing.TestInstance
-		if i+1 < len(tests) {
-			next = tests[i+1]
-		}
-
-		tcfg := &testing.TestConfig{}
-		if rcfg.DataDir != "" {
-			tcfg.DataDir = filepath.Join(rcfg.DataDir, testing.RelativeDataDir(test.Pkg))
-		}
-		if rcfg.OutDir != "" {
-			tcfg.OutDir = filepath.Join(rcfg.OutDir, test.Name)
-		}
-
-		tout := NewTestOutputStream(sink, test.TestInfo())
-		tout.Start()
-		RunTest(context.Background(), test, next, tout, pcfg, tcfg)
-		tout.End(nil, nil)
-	}
-
+	RunTests(context.Background(), tests, sink, pcfg)
 	msgs, err := sink.ReadAll()
 	if err != nil {
 		t.Fatal("ReadAll: ", err)
@@ -97,7 +69,7 @@ func TestRunSuccess(t *gotesting.T) {
 		Timeout: time.Minute,
 	}}
 
-	msgs := runTestsAndReadAll(t, tests, &Config{}, &runConfig{OutDir: od})
+	msgs := runTestsAndReadAll(t, tests, &Config{OutDir: od})
 
 	want := []control.Msg{
 		&control.TestStart{Test: *tests[0].TestInfo()},
@@ -120,7 +92,7 @@ func TestRunPanic(t *gotesting.T) {
 		Func:    func(context.Context, *testing.State) { panic("intentional panic") },
 		Timeout: time.Minute,
 	}}
-	msgs := runTestsAndReadAll(t, tests, &Config{}, &runConfig{})
+	msgs := runTestsAndReadAll(t, tests, &Config{})
 	want := []control.Msg{
 		&control.TestStart{Test: *tests[0].TestInfo()},
 		&control.TestError{Error: testing.Error{Reason: "Panic: intentional panic"}},
@@ -142,7 +114,7 @@ func TestRunDeadline(t *gotesting.T) {
 		Timeout:     time.Millisecond,
 		ExitTimeout: 10 * time.Second,
 	}}
-	msgs := runTestsAndReadAll(t, tests, &Config{}, &runConfig{})
+	msgs := runTestsAndReadAll(t, tests, &Config{})
 	// The error that was reported by the test after its deadline was hit
 	// but within the exit delay should be available.
 	want := []control.Msg{
@@ -175,7 +147,7 @@ func TestRunLogAfterTimeout(t *gotesting.T) {
 		ExitTimeout: time.Millisecond,
 	}}
 
-	msgs := runTestsAndReadAll(t, tests, &Config{}, &runConfig{})
+	msgs := runTestsAndReadAll(t, tests, &Config{})
 
 	// Tell the test to continue even though Run has already returned. The output stream should
 	// still be writable so as to avoid a panic when the test writes to it (https://crbug.com/853406),
@@ -185,12 +157,14 @@ func TestRunLogAfterTimeout(t *gotesting.T) {
 		t.Error("Test function didn't complete")
 	}
 
-	// No errors should be written to the output stream; reporting timeouts is the caller's job.
+	// An error is written with a goroutine dump.
 	want := []control.Msg{
 		&control.TestStart{Test: *tests[0].TestInfo()},
-		&control.TestEnd{Name: tests[0].Name},
+		&control.TestError{Error: testing.Error{Reason: "Test did not return on timeout (see log for goroutine dump)"}},
+		&control.TestLog{Text: "Dumping all goroutines"},
+		// A goroutine dump follows. Do not compare them as the content is undeterministic.
 	}
-	if diff := cmp.Diff(msgs, want); diff != "" {
+	if diff := cmp.Diff(msgs[:len(want)], want); diff != "" {
 		t.Error("Output mismatch (-got +want):\n", diff)
 	}
 }
@@ -211,7 +185,7 @@ func TestRunLateWriteFromGoroutine(t *gotesting.T) {
 		Timeout: time.Minute,
 	}}
 
-	msgs := runTestsAndReadAll(t, tests, &Config{}, &runConfig{})
+	msgs := runTestsAndReadAll(t, tests, &Config{})
 
 	// Tell the goroutine to start and wait for it to finish.
 	close(start)
@@ -498,6 +472,7 @@ func TestRunSkipStages(t *gotesting.T) {
 			defer os.RemoveAll(outDir)
 
 			pcfg := &Config{
+				OutDir: outDir,
 				PreTestFunc: func(ctx context.Context, s *testing.State) func(context.Context, *testing.State) {
 					doAction(s, currentBehavior(s).preTestAction, "preTest")
 					return func(ctx context.Context, s *testing.State) {
@@ -508,10 +483,7 @@ func TestRunSkipStages(t *gotesting.T) {
 					doAction(s, currentBehavior(s).postTestAction, "postTest")
 				},
 			}
-			rcfg := &runConfig{
-				OutDir: outDir,
-			}
-			msgs := runTestsAndReadAll(t, tests, pcfg, rcfg)
+			msgs := runTestsAndReadAll(t, tests, pcfg)
 			if diff := cmp.Diff(msgs, tc.want); diff != "" {
 				t.Error("Output mismatch (-got +want):\n", diff)
 			}
@@ -543,7 +515,7 @@ func TestRunMissingData(t *gotesting.T) {
 		t.Fatal("Failed to setup data dir: ", err)
 	}
 
-	msgs := runTestsAndReadAll(t, tests, &Config{}, &runConfig{DataDir: td})
+	msgs := runTestsAndReadAll(t, tests, &Config{DataDir: td})
 
 	want := []control.Msg{
 		&control.TestStart{Test: *tests[0].TestInfo()},
@@ -579,7 +551,7 @@ func TestRunPrecondition(t *gotesting.T) {
 		Timeout: time.Minute,
 	}}
 
-	msgs := runTestsAndReadAll(t, tests, &Config{}, &runConfig{})
+	msgs := runTestsAndReadAll(t, tests, &Config{})
 
 	want := []control.Msg{
 		&control.TestStart{Test: *tests[0].TestInfo()},
@@ -634,7 +606,7 @@ func TestRunPreconditionContext(t *gotesting.T) {
 		{Name: "t2", Pre: pre, Timeout: time.Minute, Func: testFunc},
 	}
 
-	msgs := runTestsAndReadAll(t, tests, &Config{}, &runConfig{})
+	msgs := runTestsAndReadAll(t, tests, &Config{})
 
 	want := []control.Msg{
 		&control.TestStart{Test: *tests[0].TestInfo()},
@@ -747,7 +719,7 @@ func TestRunHasError(t *gotesting.T) {
 			}
 			tests := []*testing.TestInstance{{Name: "t", Pre: pre, Timeout: time.Minute, Func: testFunc}}
 
-			runTestsAndReadAll(t, tests, pcfg, &runConfig{})
+			runTestsAndReadAll(t, tests, pcfg)
 		})
 	}
 }
@@ -761,7 +733,7 @@ func TestAttachStateToContext(t *gotesting.T) {
 		Timeout: time.Minute,
 	}}
 
-	msgs := runTestsAndReadAll(t, tests, &Config{}, &runConfig{})
+	msgs := runTestsAndReadAll(t, tests, &Config{})
 
 	want := []control.Msg{
 		&control.TestStart{Test: *tests[0].TestInfo()},

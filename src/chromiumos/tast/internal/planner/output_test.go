@@ -45,7 +45,8 @@ func (s *outputSink) TestError(t *testing.TestInfo, e *testing.Error) error {
 }
 
 func (s *outputSink) TestEnd(t *testing.TestInfo, skipReasons []string, timingLog *timing.Log) error {
-	return s.mw.WriteMessage(&control.TestEnd{Name: t.Name, SkipReasons: skipReasons, TimingLog: timingLog})
+	// Drop timingLog.
+	return s.mw.WriteMessage(&control.TestEnd{Name: t.Name, SkipReasons: skipReasons})
 }
 
 // ReadAll reads all control messages written to the sink.

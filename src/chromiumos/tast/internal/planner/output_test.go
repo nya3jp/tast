@@ -15,39 +15,41 @@ import (
 	"chromiumos/tast/timing"
 )
 
-type runOutputSink struct {
+type outputSink struct {
 	buf bytes.Buffer
 	mw  *control.MessageWriter
 }
 
-func newRunOutputSink() *runOutputSink {
-	s := runOutputSink{}
+func newOutputSink() *outputSink {
+	s := outputSink{}
 	s.mw = control.NewMessageWriter(&s.buf)
 	return &s
 }
 
-func (s *runOutputSink) RunLog(msg string) error {
+func (s *outputSink) RunLog(msg string) error {
 	return s.mw.WriteMessage(&control.RunLog{Text: msg})
 }
 
-func (s *runOutputSink) TestStart(t *testing.TestInfo) error {
+func (s *outputSink) TestStart(t *testing.TestInfo) error {
 	return s.mw.WriteMessage(&control.TestStart{Test: *t})
 }
 
-func (s *runOutputSink) TestLog(t *testing.TestInfo, msg string) error {
+func (s *outputSink) TestLog(t *testing.TestInfo, msg string) error {
 	return s.mw.WriteMessage(&control.TestLog{Text: msg})
 }
 
-func (s *runOutputSink) TestError(t *testing.TestInfo, e *testing.Error) error {
+func (s *outputSink) TestError(t *testing.TestInfo, e *testing.Error) error {
+	// Clear Error fields except for Reason.
+	e = &testing.Error{Reason: e.Reason}
 	return s.mw.WriteMessage(&control.TestError{Error: *e})
 }
 
-func (s *runOutputSink) TestEnd(t *testing.TestInfo, skipReasons []string, timingLog *timing.Log) error {
+func (s *outputSink) TestEnd(t *testing.TestInfo, skipReasons []string, timingLog *timing.Log) error {
 	return s.mw.WriteMessage(&control.TestEnd{Name: t.Name, SkipReasons: skipReasons, TimingLog: timingLog})
 }
 
 // ReadAll reads all control messages written to the sink.
-func (s *runOutputSink) ReadAll() ([]control.Msg, error) {
+func (s *outputSink) ReadAll() ([]control.Msg, error) {
 	var msgs []control.Msg
 	mr := control.NewMessageReader(&s.buf)
 	for mr.More() {
@@ -61,13 +63,13 @@ func (s *runOutputSink) ReadAll() ([]control.Msg, error) {
 }
 
 func TestTestOutputStream(t *gotesting.T) {
-	sink := newRunOutputSink()
+	sink := newOutputSink()
 	test := &testing.TestInfo{Name: "pkg.Test"}
 	tout := NewTestOutputStream(sink, test)
 
 	tout.Start()
 	tout.Log("hello")
-	tout.Error(&testing.Error{Reason: "faulty"})
+	tout.Error(&testing.Error{Reason: "faulty", File: "world.go"})
 	tout.Log("world")
 	tout.End(nil, nil)
 

@@ -6,6 +6,9 @@ package planner
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -16,45 +19,20 @@ import (
 	"github.com/google/go-cmp/cmp"
 
 	"chromiumos/tast/internal/control"
+	"chromiumos/tast/internal/dep"
+	"chromiumos/tast/internal/devserver/devservertest"
+	"chromiumos/tast/internal/extdata"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
 )
 
-// runConfig contains arguments to runTestsAndReadAll.
-// NOTE: This struct is merged to Config in the next change.
-type runConfig struct {
-	DataDir string
-	OutDir  string
-}
-
 // runTestsAndReadAll runs tests and returns a slice of control messages written to the output.
-func runTestsAndReadAll(t *gotesting.T, tests []*testing.TestInstance, pcfg *Config, rcfg *runConfig) []control.Msg {
+func runTestsAndReadAll(t *gotesting.T, tests []*testing.TestInstance, pcfg *Config) []control.Msg {
 	t.Helper()
 
 	sink := newOutputSink()
-
-	for i := 0; i < len(tests); i++ {
-		test := tests[i]
-		var next *testing.TestInstance
-		if i+1 < len(tests) {
-			next = tests[i+1]
-		}
-
-		tcfg := &testing.TestConfig{}
-		if rcfg.DataDir != "" {
-			tcfg.DataDir = filepath.Join(rcfg.DataDir, testing.RelativeDataDir(test.Pkg))
-		}
-		if rcfg.OutDir != "" {
-			tcfg.OutDir = filepath.Join(rcfg.OutDir, test.Name)
-		}
-
-		tout := NewTestOutputStream(sink, test.TestInfo())
-		tout.Start()
-		RunTest(context.Background(), test, next, tout, pcfg, tcfg)
-		tout.End(nil, nil)
-	}
-
+	RunTests(context.Background(), tests, sink, pcfg)
 	msgs, err := sink.ReadAll()
 	if err != nil {
 		t.Fatal("ReadAll: ", err)
@@ -97,7 +75,7 @@ func TestRunSuccess(t *gotesting.T) {
 		Timeout: time.Minute,
 	}}
 
-	msgs := runTestsAndReadAll(t, tests, &Config{}, &runConfig{OutDir: od})
+	msgs := runTestsAndReadAll(t, tests, &Config{OutDir: od})
 
 	want := []control.Msg{
 		&control.TestStart{Test: *tests[0].TestInfo()},
@@ -120,7 +98,7 @@ func TestRunPanic(t *gotesting.T) {
 		Func:    func(context.Context, *testing.State) { panic("intentional panic") },
 		Timeout: time.Minute,
 	}}
-	msgs := runTestsAndReadAll(t, tests, &Config{}, &runConfig{})
+	msgs := runTestsAndReadAll(t, tests, &Config{})
 	want := []control.Msg{
 		&control.TestStart{Test: *tests[0].TestInfo()},
 		&control.TestError{Error: testing.Error{Reason: "Panic: intentional panic"}},
@@ -142,7 +120,7 @@ func TestRunDeadline(t *gotesting.T) {
 		Timeout:     time.Millisecond,
 		ExitTimeout: 10 * time.Second,
 	}}
-	msgs := runTestsAndReadAll(t, tests, &Config{}, &runConfig{})
+	msgs := runTestsAndReadAll(t, tests, &Config{})
 	// The error that was reported by the test after its deadline was hit
 	// but within the exit delay should be available.
 	want := []control.Msg{
@@ -175,7 +153,7 @@ func TestRunLogAfterTimeout(t *gotesting.T) {
 		ExitTimeout: time.Millisecond,
 	}}
 
-	msgs := runTestsAndReadAll(t, tests, &Config{}, &runConfig{})
+	msgs := runTestsAndReadAll(t, tests, &Config{})
 
 	// Tell the test to continue even though Run has already returned. The output stream should
 	// still be writable so as to avoid a panic when the test writes to it (https://crbug.com/853406),
@@ -185,12 +163,14 @@ func TestRunLogAfterTimeout(t *gotesting.T) {
 		t.Error("Test function didn't complete")
 	}
 
-	// No errors should be written to the output stream; reporting timeouts is the caller's job.
+	// An error is written with a goroutine dump.
 	want := []control.Msg{
 		&control.TestStart{Test: *tests[0].TestInfo()},
-		&control.TestEnd{Name: tests[0].Name},
+		&control.TestError{Error: testing.Error{Reason: "Test did not return on timeout (see log for goroutine dump)"}},
+		&control.TestLog{Text: "Dumping all goroutines"},
+		// A goroutine dump follows. Do not compare them as the content is undeterministic.
 	}
-	if diff := cmp.Diff(msgs, want); diff != "" {
+	if diff := cmp.Diff(msgs[:len(want)], want); diff != "" {
 		t.Error("Output mismatch (-got +want):\n", diff)
 	}
 }
@@ -211,7 +191,7 @@ func TestRunLateWriteFromGoroutine(t *gotesting.T) {
 		Timeout: time.Minute,
 	}}
 
-	msgs := runTestsAndReadAll(t, tests, &Config{}, &runConfig{})
+	msgs := runTestsAndReadAll(t, tests, &Config{})
 
 	// Tell the goroutine to start and wait for it to finish.
 	close(start)
@@ -498,6 +478,7 @@ func TestRunSkipStages(t *gotesting.T) {
 			defer os.RemoveAll(outDir)
 
 			pcfg := &Config{
+				OutDir: outDir,
 				PreTestFunc: func(ctx context.Context, s *testing.State) func(context.Context, *testing.State) {
 					doAction(s, currentBehavior(s).preTestAction, "preTest")
 					return func(ctx context.Context, s *testing.State) {
@@ -508,10 +489,7 @@ func TestRunSkipStages(t *gotesting.T) {
 					doAction(s, currentBehavior(s).postTestAction, "postTest")
 				},
 			}
-			rcfg := &runConfig{
-				OutDir: outDir,
-			}
-			msgs := runTestsAndReadAll(t, tests, pcfg, rcfg)
+			msgs := runTestsAndReadAll(t, tests, pcfg)
 			if diff := cmp.Diff(msgs, tc.want); diff != "" {
 				t.Error("Output mismatch (-got +want):\n", diff)
 			}
@@ -519,40 +497,121 @@ func TestRunSkipStages(t *gotesting.T) {
 	}
 }
 
-func TestRunMissingData(t *gotesting.T) {
+func TestRunExternalData(t *gotesting.T) {
 	const (
-		existingFile      = "existing.txt"
-		missingFile1      = "missing1.txt"
-		missingFile2      = "missing2.txt"
-		missingErrorFile1 = missingFile1 + testing.ExternalErrorSuffix
+		file1URL  = "gs://bucket/file1.txt"
+		file1Path = "pkg/data/file1.txt"
+		file1Data = "data1"
+		file2URL  = "gs://bucket/file2.txt"
+		file2Path = "pkg/data/file2.txt"
+		file2Data = "data2"
+		file3URL  = "gs://bucket/file3.txt"
+		file3Path = "pkg/data/file3.txt"
 	)
 
-	tests := []*testing.TestInstance{{
-		Pkg:     "some/pkg",
-		Func:    func(context.Context, *testing.State) {},
-		Data:    []string{existingFile, missingFile1, missingFile2},
-		Timeout: time.Minute,
-	}}
+	ds, err := devservertest.NewServer(devservertest.Files([]*devservertest.File{
+		{URL: file1URL, Data: []byte(file1Data)},
+		{URL: file2URL, Data: []byte(file2Data)},
+		// file3.txt is missing.
+	}))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer ds.Close()
 
-	td := testutil.TempDir(t)
-	defer os.RemoveAll(td)
-	if err := testutil.WriteFiles(filepath.Join(td, "some/pkg/data"), map[string]string{
-		existingFile:      "",
-		missingErrorFile1: "some reason",
-	}); err != nil {
-		t.Fatal("Failed to setup data dir: ", err)
+	tests := []*testing.TestInstance{
+		{
+			Name:         "example.Test1",
+			Pkg:          "pkg",
+			Func:         func(ctx context.Context, s *testing.State) {},
+			Data:         []string{"file1.txt"},
+			SoftwareDeps: []string{"dep1"},
+			Timeout:      time.Minute,
+		},
+		{
+			Name:         "example.Test2",
+			Pkg:          "pkg",
+			Func:         func(ctx context.Context, s *testing.State) {},
+			Data:         []string{"file2.txt"},
+			SoftwareDeps: []string{"dep2"},
+			Timeout:      time.Minute,
+		},
+		{
+			Name:    "example.Test3",
+			Pkg:     "pkg",
+			Func:    func(ctx context.Context, s *testing.State) {},
+			Data:    []string{"file3.txt"},
+			Timeout: time.Minute,
+		},
 	}
 
-	msgs := runTestsAndReadAll(t, tests, &Config{}, &runConfig{DataDir: td})
+	tmpDir := testutil.TempDir(t)
+	defer os.RemoveAll(tmpDir)
+
+	buildLink := func(url, data string) string {
+		hash := sha256.Sum256([]byte(data))
+		ld := &extdata.LinkData{
+			Type:      extdata.TypeStatic,
+			StaticURL: url,
+			Size:      int64(len(data)),
+			SHA256Sum: hex.EncodeToString(hash[:]),
+		}
+		b, err := json.Marshal(ld)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return string(b)
+	}
+
+	dataDir := filepath.Join(tmpDir, "data")
+	if err := testutil.WriteFiles(dataDir, map[string]string{
+		file1Path + testing.ExternalLinkSuffix: buildLink(file1URL, file1Data),
+		file2Path + testing.ExternalLinkSuffix: buildLink(file2URL, file2Data),
+		file3Path + testing.ExternalLinkSuffix: buildLink(file3URL, ""),
+	}); err != nil {
+		t.Fatal("WriteFiles: ", err)
+	}
+
+	pcfg := &Config{
+		DataDir: dataDir,
+		Features: dep.Features{
+			Software: &dep.SoftwareFeatures{
+				Available:   []string{"dep2"},
+				Unavailable: []string{"dep1"},
+			},
+		},
+		Devservers: []string{ds.URL},
+	}
+
+	msgs := runTestsAndReadAll(t, tests, pcfg)
 
 	want := []control.Msg{
 		&control.TestStart{Test: *tests[0].TestInfo()},
-		&control.TestError{Error: testing.Error{Reason: "Required data file missing1.txt missing: some reason"}},
-		&control.TestError{Error: testing.Error{Reason: "Required data file missing2.txt missing"}},
-		&control.TestEnd{Name: tests[0].Name},
+		&control.TestEnd{Name: tests[0].Name, SkipReasons: []string{"missing SoftwareDeps: dep1"}},
+		&control.TestStart{Test: *tests[1].TestInfo()},
+		&control.TestEnd{Name: tests[1].Name},
+		&control.TestStart{Test: *tests[2].TestInfo()},
+		&control.TestError{Error: testing.Error{Reason: "Required data file file3.txt missing: failed to download gs://bucket/file3.txt: file does not exist"}},
+		&control.TestEnd{Name: tests[2].Name},
 	}
 	if diff := cmp.Diff(msgs, want); diff != "" {
 		t.Error("Output mismatch (-got +want):\n", diff)
+	}
+
+	files, err := testutil.ReadFiles(dataDir)
+	if err != nil {
+		t.Fatal("ReadFiles: ", err)
+	}
+	wantFiles := map[string]string{
+		// file1.txt is not downloaded since pkg.Test1 is not run.
+		file1Path + testing.ExternalLinkSuffix:  buildLink(file1URL, file1Data),
+		file2Path:                               file2Data,
+		file2Path + testing.ExternalLinkSuffix:  buildLink(file2URL, file2Data),
+		file3Path + testing.ExternalLinkSuffix:  buildLink(file3URL, ""),
+		file3Path + testing.ExternalErrorSuffix: "failed to download gs://bucket/file3.txt: file does not exist",
+	}
+	if diff := cmp.Diff(files, wantFiles); diff != "" {
+		t.Error("Data directory mismatch (-got +want):\n", diff)
 	}
 }
 
@@ -579,7 +638,7 @@ func TestRunPrecondition(t *gotesting.T) {
 		Timeout: time.Minute,
 	}}
 
-	msgs := runTestsAndReadAll(t, tests, &Config{}, &runConfig{})
+	msgs := runTestsAndReadAll(t, tests, &Config{})
 
 	want := []control.Msg{
 		&control.TestStart{Test: *tests[0].TestInfo()},
@@ -634,7 +693,7 @@ func TestRunPreconditionContext(t *gotesting.T) {
 		{Name: "t2", Pre: pre, Timeout: time.Minute, Func: testFunc},
 	}
 
-	msgs := runTestsAndReadAll(t, tests, &Config{}, &runConfig{})
+	msgs := runTestsAndReadAll(t, tests, &Config{})
 
 	want := []control.Msg{
 		&control.TestStart{Test: *tests[0].TestInfo()},
@@ -747,7 +806,7 @@ func TestRunHasError(t *gotesting.T) {
 			}
 			tests := []*testing.TestInstance{{Name: "t", Pre: pre, Timeout: time.Minute, Func: testFunc}}
 
-			runTestsAndReadAll(t, tests, pcfg, &runConfig{})
+			runTestsAndReadAll(t, tests, pcfg)
 		})
 	}
 }
@@ -761,7 +820,7 @@ func TestAttachStateToContext(t *gotesting.T) {
 		Timeout: time.Minute,
 	}}
 
-	msgs := runTestsAndReadAll(t, tests, &Config{}, &runConfig{})
+	msgs := runTestsAndReadAll(t, tests, &Config{})
 
 	want := []control.Msg{
 		&control.TestStart{Test: *tests[0].TestInfo()},

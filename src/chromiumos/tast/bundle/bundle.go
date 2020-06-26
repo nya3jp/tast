@@ -5,8 +5,6 @@
 package bundle
 
 import (
-	"bufio"
-	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -15,16 +13,12 @@ import (
 	"log/syslog"
 	"os"
 	"path/filepath"
-	"runtime"
-	"runtime/pprof"
 	"strings"
 	"time"
 
 	"chromiumos/tast/dut"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/control"
-	"chromiumos/tast/internal/devserver"
-	"chromiumos/tast/internal/extdata"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/testing"
@@ -269,39 +263,20 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		}
 	}
 
-	features := args.RunTests.Features()
-
-	checkResults := make([]*testing.ShouldRunResult, len(tests))
-	// If a test should run, the element of this array at the index will have a pointer to the next test (except last one).
-	// We pass this information to runTest later to ensure that we don't incorrectly fail to close a precondition
-	// if the final test using precondition is skipped: https://crbug.com/950499.
-	nextTests := make([]*testing.TestInstance, len(tests))
-	var runTests []*testing.TestInstance
-	lastIdx := -1
-	for i, t := range tests {
-		checkResults[i] = tests[i].ShouldRun(features)
-		if checkResults[i].OK() {
-			runTests = append(runTests, t)
-			if lastIdx >= 0 {
-				nextTests[lastIdx] = t
-			}
-			lastIdx = i
-		}
+	pcfg := &planner.Config{
+		DataDir:           args.RunTests.DataDir,
+		OutDir:            args.RunTests.OutDir,
+		Vars:              args.RunTests.TestVars,
+		Features:          *args.RunTests.Features(),
+		Devservers:        args.RunTests.Devservers,
+		BuildArtifactsURL: args.RunTests.BuildArtifactsURL,
+		RemoteData:        rd,
+		PreTestFunc:       cfg.preTestFunc,
+		PostTestFunc:      cfg.postTestFunc,
 	}
 
-	// Download external data files.
-	cl := devserver.NewClient(ctx, args.RunTests.Devservers)
-	extdata.Ensure(ctx, args.RunTests.DataDir, args.RunTests.BuildArtifactsURL, runTests, cl)
-
-	for i, t := range tests {
-		tout := planner.NewTestOutputStream(ew, t.TestInfo())
-		if checkResult := checkResults[i]; checkResult.OK() {
-			if err := runTest(ctx, tout, args, cfg, t, nextTests[i], rd); err != nil {
-				return command.NewStatusErrorf(statusError, "run failed: %v", err)
-			}
-		} else {
-			reportSkippedTest(tout, checkResult)
-		}
+	if err := planner.RunTests(ctx, tests, ew, pcfg); err != nil {
+		return command.NewStatusErrorf(statusError, "run failed: %v", err)
 	}
 
 	if cfg.postRunFunc != nil {
@@ -333,82 +308,6 @@ func connectToTarget(ctx context.Context, args *Args) (_ *dut.DUT, retErr error)
 	}
 
 	return dt, nil
-}
-
-// runTest runs t per args and cfg, writing appropriate messages to ew.
-func runTest(ctx context.Context, tout *planner.TestOutputStream, args *Args, cfg *runConfig,
-	t, next *testing.TestInstance, rd *testing.RemoteData) error {
-	tout.Start()
-
-	// Attach a log that the test can use to report timing events.
-	timingLog := timing.NewLog()
-	ctx = timing.NewContext(ctx, timingLog)
-
-	pcfg := &planner.Config{
-		PreTestFunc:  cfg.preTestFunc,
-		PostTestFunc: cfg.postTestFunc,
-	}
-	tcfg := &testing.TestConfig{
-		DataDir:      filepath.Join(args.RunTests.DataDir, testing.RelativeDataDir(t.Pkg)),
-		OutDir:       filepath.Join(args.RunTests.OutDir, t.Name),
-		Vars:         args.RunTests.TestVars,
-		CloudStorage: testing.NewCloudStorage(args.RunTests.Devservers),
-		RemoteData:   rd,
-	}
-
-	ok := planner.RunTest(ctx, t, next, tout, pcfg, tcfg)
-	if !ok {
-		// If RunTest reported that the test didn't finish, print diagnostic messages.
-		const msg = "Test did not return on timeout (see log for goroutine dump)"
-		tout.Error(testing.NewError(nil, msg, msg, 0))
-		dumpGoroutines(tout)
-	}
-
-	tout.End(nil, timingLog)
-
-	if !ok {
-		return errors.New("test did not return on timeout")
-	}
-	return nil
-}
-
-// reportSkippedTest is called instead of runTest for a test that is skipped due to
-// having unsatisfied dependencies.
-func reportSkippedTest(tout *planner.TestOutputStream, result *testing.ShouldRunResult) {
-	tout.Start()
-	for _, msg := range result.Errors {
-		_, fn, ln, _ := runtime.Caller(0)
-		tout.Error(&testing.Error{
-			Reason: msg,
-			File:   fn,
-			Line:   ln,
-		})
-	}
-	tout.End(result.SkipReasons, nil)
-}
-
-// dumpGoroutines dumps all goroutines to tout.
-func dumpGoroutines(tout *planner.TestOutputStream) {
-	tout.Log("Dumping all goroutines")
-	if err := func() error {
-		p := pprof.Lookup("goroutine")
-		if p == nil {
-			return errors.New("goroutine pprof not found")
-		}
-		var buf bytes.Buffer
-		if err := p.WriteTo(&buf, 2); err != nil {
-			return err
-		}
-		sc := bufio.NewScanner(&buf)
-		for sc.Scan() {
-			tout.Log(sc.Text())
-		}
-		return sc.Err()
-	}(); err != nil {
-		tout.Error(&testing.Error{
-			Reason: fmt.Sprintf("Failed to dump goroutines: %v", err),
-		})
-	}
 }
 
 // prepareTempDir sets up tempDir to be used for the base temporary directory,

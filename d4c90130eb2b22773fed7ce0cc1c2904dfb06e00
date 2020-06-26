@@ -70,6 +70,24 @@
       "revId": "d4c90130eb2b22773fed7ce0cc1c2904dfb06e00",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "556e0cce_f41fa720",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-06-26T16:53:36Z",
+      "side": 1,
+      "message": "Hidehiko\u0027s original gut feeling is on the mark -- we don\u0027t want to directly depend on metadatapb.DUTConfigConstraint_DUT for the data.\n\nThe sole purpose of that message is to act as an object to be used for constraints over DUT features for scheduling. There will never be any service that serves DUT information as that message.\n\nThe underlying Boxster protos (chromiumos.config.api.*) are the correct data structure to hold DUT information in.\n\nI think the key problem here is the different between HardwareTopology and Components and the fact that some of the Component information isn\u0027t available in HardwareTopology.\n\n+shpairoc/+andrewlamb to help understand which / how these should be used in this context.",
+      "parentUuid": "bd6eb055_3319caca",
+      "revId": "d4c90130eb2b22773fed7ce0cc1c2904dfb06e00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

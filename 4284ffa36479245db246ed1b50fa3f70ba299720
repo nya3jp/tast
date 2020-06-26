@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a47e6fc3_bfccb228",
+        "filename": "src/chromiumos/tast/internal/devserver/devservertest/server_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-06-26T03:45:04Z",
+      "side": 1,
+      "message": "404",
+      "range": {
+        "startLine": 129,
+        "startChar": 42,
+        "endLine": 129,
+        "endChar": 45
+      },
+      "revId": "4284ffa36479245db246ed1b50fa3f70ba299720",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "52f72fe0_620dfdd0",
+        "filename": "src/chromiumos/tast/internal/devserver/devservertest/server_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 312,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-06-26T03:45:04Z",
+      "side": 1,
+      "message": "nit: how about using `` to avoid escaping \" ?",
+      "range": {
+        "startLine": 312,
+        "startChar": 12,
+        "endLine": 312,
+        "endChar": 13
+      },
+      "revId": "4284ffa36479245db246ed1b50fa3f70ba299720",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a9a0fc40_da59f517",
+        "filename": "src/chromiumos/tast/internal/devserver/real_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-06-26T03:45:04Z",
+      "side": 1,
+      "message": "nit: write 2 here for consistency?",
+      "range": {
+        "startLine": 138,
+        "startChar": 46,
+        "endLine": 138,
+        "endChar": 49
+      },
+      "revId": "4284ffa36479245db246ed1b50fa3f70ba299720",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -88,6 +88,24 @@
       "revId": "d4c90130eb2b22773fed7ce0cc1c2904dfb06e00",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "89c8da24_1bf89227",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-06-29T06:27:47Z",
+      "side": 1,
+      "message": "\u003e The underlying Boxster protos (chromiumos.config.api.*) are the correct data structure to hold DUT information in.\nI agree. The only concern is that, it looks technically possible that a new field is added to metadatapb.DUTConfigConstraint_DUT. If that happens, having this field chromiumos.config.api.HardwareFeatures may not be able to fully store needed information.\n(Although I imagine it would be a minor case.)\n\n\n\u003e The sole purpose of that message is to act as an object to be used for constraints over DUT features for scheduling. There will never be any service that serves DUT information as that message.\n\nThe purpose of adding a new field here is to tentatively emulate the role of F20 scheduler before Tast is fully integrated with F20. The field is filled and consumed by Tast framework. It is not intended to store something actually received from F20.",
+      "parentUuid": "556e0cce_f41fa720",
+      "revId": "d4c90130eb2b22773fed7ce0cc1c2904dfb06e00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

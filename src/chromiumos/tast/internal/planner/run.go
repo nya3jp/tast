@@ -71,13 +71,33 @@ func RunTests(ctx context.Context, tests []*testing.TestInstance, out OutputStre
 
 // plan holds a top-level plan of test execution.
 type plan struct {
+	skips    []*skippedTest
 	prePlans []*prePlan
 	pcfg     *Config
 }
 
+type skippedTest struct {
+	test   *testing.TestInstance
+	result *testing.ShouldRunResult
+}
+
 func buildPlan(tests []*testing.TestInstance, pcfg *Config) *plan {
-	preMap := make(map[string][]*testing.TestInstance)
+	var runs []*testing.TestInstance
+	var skips []*skippedTest
 	for _, t := range tests {
+		r := t.ShouldRun(&pcfg.Features)
+		if r.OK() {
+			runs = append(runs, t)
+		} else {
+			skips = append(skips, &skippedTest{test: t, result: r})
+		}
+	}
+	sort.Slice(skips, func(i, j int) bool {
+		return skips[i].test.Name < skips[j].test.Name
+	})
+
+	preMap := make(map[string][]*testing.TestInstance)
+	for _, t := range runs {
 		var preName string
 		if t.Pre != nil {
 			preName = t.Pre.String()
@@ -95,13 +115,18 @@ func buildPlan(tests []*testing.TestInstance, pcfg *Config) *plan {
 	for i, preName := range preNames {
 		prePlans[i] = buildPrePlan(preMap[preName], pcfg)
 	}
-	return &plan{prePlans, pcfg}
+	return &plan{skips, prePlans, pcfg}
 }
 
 func (p *plan) run(ctx context.Context, out OutputStream) error {
 	// Download external data files.
 	cl := devserver.NewClient(ctx, p.pcfg.Devservers)
 	extdata.Ensure(ctx, p.pcfg.DataDir, p.pcfg.BuildArtifactsURL, p.testsToRun(), cl)
+
+	for _, s := range p.skips {
+		tout := NewTestOutputStream(out, s.test.TestInfo())
+		reportSkippedTest(tout, s.result)
+	}
 
 	for _, pp := range p.prePlans {
 		if err := pp.run(ctx, out); err != nil {
@@ -121,6 +146,7 @@ func (p *plan) testsToRun() []*testing.TestInstance {
 
 // prePlan holds execution plan of tests using the same precondition.
 type prePlan struct {
+	pre   testing.Precondition
 	tests []*testing.TestInstance
 	pcfg  *Config
 }
@@ -129,48 +155,25 @@ func buildPrePlan(tests []*testing.TestInstance, pcfg *Config) *prePlan {
 	sort.Slice(tests, func(i, j int) bool {
 		return tests[i].Name < tests[j].Name
 	})
-	return &prePlan{tests, pcfg}
+	return &prePlan{tests[0].Pre, tests, pcfg}
 }
 
 func (p *prePlan) run(ctx context.Context, out OutputStream) error {
-	checkResults := make([]*testing.ShouldRunResult, len(p.tests))
-	// If a test should run, the element of this array at the index will have a pointer to the next test (except last one).
-	// We pass this information to runTest later to ensure that we don't incorrectly fail to close a precondition
-	// if the final test using precondition is skipped: https://crbug.com/950499.
-	nextTests := make([]*testing.TestInstance, len(p.tests))
-	lastIdx := -1
 	for i, t := range p.tests {
-		checkResults[i] = t.ShouldRun(&p.pcfg.Features)
-		if checkResults[i].OK() {
-			if lastIdx >= 0 {
-				nextTests[lastIdx] = t
-			}
-			lastIdx = i
+		var next *testing.TestInstance
+		if i+1 < len(p.tests) {
+			next = p.tests[i+1]
 		}
-	}
-
-	for i, t := range p.tests {
 		tout := NewTestOutputStream(out, t.TestInfo())
-		if checkResult := checkResults[i]; checkResult.OK() {
-			if err := runTest(ctx, t, nextTests[i], tout, p.pcfg); err != nil {
-				return err
-			}
-		} else {
-			reportSkippedTest(tout, checkResult)
+		if err := runTest(ctx, t, next, tout, p.pcfg); err != nil {
+			return err
 		}
 	}
 	return nil
 }
 
 func (p *prePlan) testsToRun() []*testing.TestInstance {
-	// TODO(nya): Dedupe this logic with run.
-	var tests []*testing.TestInstance
-	for _, t := range p.tests {
-		if t.ShouldRun(&p.pcfg.Features).OK() {
-			tests = append(tests, t)
-		}
-	}
-	return tests
+	return append([]*testing.TestInstance(nil), p.tests...)
 }
 
 // runTest runs a single test, writing outputs messages to tout.

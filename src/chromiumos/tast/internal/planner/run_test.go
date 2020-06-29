@@ -666,8 +666,13 @@ func TestRunPreconditionContext(t *gotesting.T) {
 			}
 		}
 
+		logging.ContextLog(pctx, "Log via PreCtx")
+
 		if _, ok := testing.ContextSoftwareDeps(pctx); !ok {
 			t.Error("ContextSoftwareDeps unavailable")
+		}
+		if _, ok := testing.ContextOutDir(pctx); ok {
+			t.Error("ContextOutDir available")
 		}
 		return nil
 	}
@@ -698,9 +703,11 @@ func TestRunPreconditionContext(t *gotesting.T) {
 	want := []control.Msg{
 		&control.TestStart{Test: *tests[0].TestInfo()},
 		&control.TestLog{Text: `Preparing precondition "pre"`},
+		&control.TestLog{Text: "Log via PreCtx"},
 		&control.TestEnd{Name: tests[0].Name},
 		&control.TestStart{Test: *tests[1].TestInfo()},
 		&control.TestLog{Text: `Preparing precondition "pre"`},
+		&control.TestLog{Text: "Log via PreCtx"},
 		&control.TestLog{Text: `Closing precondition "pre"`},
 		&control.TestEnd{Name: tests[1].Name},
 	}

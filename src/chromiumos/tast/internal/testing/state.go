@@ -96,8 +96,7 @@ type RootState struct {
 	out  OutputStream  // stream to which logging messages and errors are reported
 	cfg  *TestConfig   // details about how to run test
 
-	preValue interface{}     // value returned by test.Pre.Prepare; may be nil
-	preCtx   context.Context // context that lives as long as the precondition; can only be accessed in the precondition phase
+	preValue interface{} // value returned by test.Pre.Prepare; may be nil
 
 	mu     sync.Mutex
 	hasErr bool // true if any error was reported
@@ -152,6 +151,9 @@ type TestConfig struct {
 	// RemoteData contains information relevant to remote tests.
 	// This is nil for local tests.
 	RemoteData *RemoteData
+	// PreCtx is the context that lives as long as the precondition.
+	// It can be accessed only from testing.PreState.
+	PreCtx context.Context
 }
 
 // NewRootState returns a new RootState object.
@@ -175,7 +177,7 @@ func (r *RootState) newPreState() *PreState {
 // f calls s.Fatal (which calls runtime.Goexit).
 func (r *RootState) RunWithTestState(ctx context.Context, f func(ctx context.Context, s *State)) {
 	s := r.newTestState()
-	ctx = NewContext(ctx, s)
+	ctx = NewContext(ctx, s.testContext(), func(msg string) { s.Log(msg) })
 	runAndRecover(func() { f(ctx, s) }, s)
 }
 
@@ -185,7 +187,7 @@ func (r *RootState) RunWithTestState(ctx context.Context, f func(ctx context.Con
 // f calls s.Fatal (which calls runtime.Goexit).
 func (r *RootState) RunWithPreState(ctx context.Context, f func(ctx context.Context, s *PreState)) {
 	s := r.newPreState()
-	ctx = NewContext(ctx, s)
+	ctx = NewContext(ctx, s.testContext(), func(msg string) { s.Log(msg) })
 	runAndRecover(func() { f(ctx, s) }, s)
 }
 
@@ -224,33 +226,25 @@ func (r *RootState) recordError() {
 	r.hasErr = true
 }
 
-// SetPreCtx sets a context available to the precondition.
-func (r *RootState) SetPreCtx(ctx context.Context) {
-	r.preCtx = ctx
-}
-
 // SetPreValue sets a precondition value available to the test.
 func (r *RootState) SetPreValue(val interface{}) {
 	r.preValue = val
 }
 
-// StateForContext is an interface from which context.Context can be derived.
-type StateForContext interface {
-	Log(args ...interface{})
-	OutDir() string
-	SoftwareDeps() []string
-	ServiceDeps() []string
+// NewContext returns a context.Context to be used for the test.
+func NewContext(ctx context.Context, tc *TestContext, log func(msg string)) context.Context {
+	ctx = logging.NewContext(ctx, log)
+	ctx = WithTestContext(ctx, tc)
+	return ctx
 }
 
-// NewContext returns a context.Context to be used for the test.
-func NewContext(ctx context.Context, s StateForContext) context.Context {
-	ctx = logging.NewContext(ctx, func(msg string) { s.Log(msg) })
-	ctx = WithTestContext(ctx, &TestContext{
+// testContext returns a TestContext for this state.
+func (s *baseState) testContext() *TestContext {
+	return &TestContext{
 		OutDir:       s.OutDir(),
 		SoftwareDeps: s.SoftwareDeps(),
 		ServiceDeps:  s.ServiceDeps(),
-	})
-	return ctx
+	}
 }
 
 // DataPath returns the absolute path to use to access a data file previously
@@ -459,11 +453,7 @@ func (s *baseState) HasError() bool {
 // PreCtx returns a context that lives as long as the precondition.
 // Can only be called from inside a precondition; it panics otherwise.
 func (s *PreState) PreCtx() context.Context {
-	if !s.inPre {
-		panic("PreCtx can only be called in a precondition")
-	}
-
-	return s.root.preCtx
+	return s.root.cfg.PreCtx
 }
 
 // errorSuffix matches the well-known error message suffixes for formatError.

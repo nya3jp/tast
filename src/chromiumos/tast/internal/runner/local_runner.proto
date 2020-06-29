@@ -11,6 +11,7 @@ import "device/config.proto";
 
 service LocalRunnerService {
   rpc DUTInfo(DUTInfoRequest) returns (DUTInfoResponse) {}
+  rpc SysInfoState(SysInfoStateRequest) returns (GetSysInfoStateResult) {}
 }
 
 message DUTInfoRequest {
@@ -27,4 +28,17 @@ message DUTInfoResponse {
 message SoftwareFeatures {
   repeated string available = 1;
   repeated string unavailable = 2;
+}
+
+message SysInfoStateRequest {}
+
+message GetSysInfoStateResult {
+  SysInfoState state = 1;
+  repeated string warnings = 2;
+}
+
+message SysInfoState {
+  map<uint64, int64> log_inode_sizes = 1;
+  string journald_cursor = 2;
+  repeated string minidump_paths = 3;
 }

@@ -7,6 +7,7 @@ package run
 import (
 	"context"
 	"errors"
+	"fmt"
 	"path/filepath"
 
 	"chromiumos/tast/internal/runner"
@@ -16,7 +17,7 @@ import (
 // getInitialSysInfo saves the initial state of the DUT's system information to cfg if
 // requested and if it hasn't already been saved. This is called before testing.
 // This updates cfg.initialSysInfo, so calling twice won't work.
-func getInitialSysInfo(ctx context.Context, cfg *Config) error {
+func getInitialSysInfo(ctx context.Context, cfg *Config) (retErr error) {
 	if !cfg.collectSysInfo {
 		return nil
 	}
@@ -33,19 +34,25 @@ func getInitialSysInfo(ctx context.Context, cfg *Config) error {
 		return err
 	}
 
-	var res runner.GetSysInfoStateResult
-	if err := runTestRunnerCommand(
-		localRunnerCommand(ctx, cfg, hst),
-		&runner.Args{Mode: runner.GetSysInfoStateMode},
-		&res,
-	); err != nil {
+	lr, err := NewLocalRunner(ctx, cfg, hst)
+	if err != nil {
 		return err
+	}
+	defer func() {
+		if err := lr.Close(); err != nil && retErr == nil {
+			retErr = fmt.Errorf("failed to close: %w", err)
+		}
+	}()
+	lc := runner.NewLocalRunnerServiceClient(lr.Conn())
+	res, err := lc.SysInfoState(ctx, &runner.SysInfoStateRequest{})
+	if err != nil {
+		return fmt.Errorf("DUTInfo: %w", err)
 	}
 
 	for _, warn := range res.Warnings {
 		cfg.Logger.Log("Error getting system info: ", warn)
 	}
-	cfg.initialSysInfo = &res.State
+	cfg.initialSysInfo = res.State
 	return nil
 }
 

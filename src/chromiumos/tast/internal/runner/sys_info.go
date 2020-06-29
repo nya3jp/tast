@@ -27,17 +27,27 @@ const (
 // handleGetSysInfoState gets information about the system's current state (e.g. log files
 // and crash reports) and writes a JSON-marshaled GetSysInfoStateResult struct to w.
 func handleGetSysInfoState(ctx context.Context, cfg *Config, w io.Writer) error {
+	res, err := sysInfoState(ctx, cfg)
+	if err != nil {
+		return err
+	}
+	return json.NewEncoder(w).Encode(res)
+}
+
+func sysInfoState(ctx context.Context, cfg *Config) (*GetSysInfoStateResult, error) {
 	if cfg.SystemLogDir == "" || len(cfg.SystemCrashDirs) == 0 {
-		return command.NewStatusErrorf(statusBadArgs, "system info collection unsupported")
+		return nil, command.NewStatusErrorf(statusBadArgs, "system info collection unsupported")
 	}
 
-	res := GetSysInfoStateResult{}
+	res := GetSysInfoStateResult{
+		State: &SysInfoState{},
+	}
 
 	var err error
 	var warnings map[string]error
 	if res.State.LogInodeSizes, warnings, err = logs.GetLogInodeSizes(
 		cfg.SystemLogDir, cfg.SystemLogExcludes); err != nil {
-		return err
+		return nil, err
 	}
 	for p, warning := range warnings {
 		res.Warnings = append(res.Warnings, fmt.Sprintf("%s: %v", p, warning))
@@ -51,10 +61,9 @@ func handleGetSysInfoState(ctx context.Context, cfg *Config, w io.Writer) error 
 	}
 
 	if res.State.MinidumpPaths, err = getMinidumps(cfg.SystemCrashDirs); err != nil {
-		return err
+		return nil, err
 	}
-
-	return json.NewEncoder(w).Encode(res)
+	return &res, nil
 }
 
 // handleCollectSysInfo copies system information that was written after args.CollectSysInfo.InitialState

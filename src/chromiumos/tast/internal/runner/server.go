@@ -58,3 +58,7 @@ func (s *server) DUTInfo(ctx context.Context, req *DUTInfoRequest) (*DUTInfoResp
 		Warnings:     res.Warnings,
 	}, nil
 }
+
+func (s *server) SysInfoState(ctx context.Context, req *SysInfoStateRequest) (*GetSysInfoStateResult, error) {
+	return sysInfoState(ctx, s.cfg)
+}

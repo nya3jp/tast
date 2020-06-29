@@ -15,6 +15,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"runtime/pprof"
+	"sort"
 	"time"
 
 	"chromiumos/tast/internal/dep"
@@ -59,16 +60,69 @@ type Config struct {
 // RunTests runs tests on goroutines. If a test does not finish after reaching
 // its timeout, this function returns with an error without waiting for its finish.
 func RunTests(ctx context.Context, tests []*testing.TestInstance, out OutputStream, pcfg *Config) error {
-	testing.SortTests(tests)
+	plan := buildPlan(tests, pcfg)
+	return plan.run(ctx, out)
+}
 
-	checkResults := make([]*testing.ShouldRunResult, len(tests))
+// plan holds a top-level plan of test execution.
+type plan struct {
+	prePlans []*prePlan
+}
+
+func buildPlan(tests []*testing.TestInstance, pcfg *Config) *plan {
+	preMap := make(map[string][]*testing.TestInstance)
+	for _, t := range tests {
+		var preName string
+		if t.Pre != nil {
+			preName = t.Pre.String()
+		}
+		preMap[preName] = append(preMap[preName], t)
+	}
+
+	preNames := make([]string, 0, len(preMap))
+	for preName := range preMap {
+		preNames = append(preNames, preName)
+	}
+	sort.Strings(preNames)
+
+	prePlans := make([]*prePlan, len(preNames))
+	for i, preName := range preNames {
+		prePlans[i] = buildPrePlan(preMap[preName], pcfg)
+	}
+	return &plan{prePlans}
+}
+
+func (p *plan) run(ctx context.Context, out OutputStream) error {
+	for _, pp := range p.prePlans {
+		if err := pp.run(ctx, out); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// prePlan holds execution plan of tests using the same precondition.
+type prePlan struct {
+	tests []*testing.TestInstance
+	pcfg  *Config
+}
+
+func buildPrePlan(tests []*testing.TestInstance, pcfg *Config) *prePlan {
+	sort.Slice(tests, func(i, j int) bool {
+		return tests[i].Name < tests[j].Name
+	})
+	return &prePlan{tests, pcfg}
+}
+
+func (p *prePlan) run(ctx context.Context, out OutputStream) error {
+	checkResults := make([]*testing.ShouldRunResult, len(p.tests))
 	// If a test should run, the element of this array at the index will have a pointer to the next test (except last one).
 	// We pass this information to runTest later to ensure that we don't incorrectly fail to close a precondition
 	// if the final test using precondition is skipped: https://crbug.com/950499.
-	nextTests := make([]*testing.TestInstance, len(tests))
+	nextTests := make([]*testing.TestInstance, len(p.tests))
 	lastIdx := -1
-	for i, t := range tests {
-		checkResults[i] = tests[i].ShouldRun(&pcfg.Features)
+	for i, t := range p.tests {
+		checkResults[i] = t.ShouldRun(&p.pcfg.Features)
 		if checkResults[i].OK() {
 			if lastIdx >= 0 {
 				nextTests[lastIdx] = t
@@ -77,10 +131,10 @@ func RunTests(ctx context.Context, tests []*testing.TestInstance, out OutputStre
 		}
 	}
 
-	for i, t := range tests {
+	for i, t := range p.tests {
 		tout := NewTestOutputStream(out, t.TestInfo())
 		if checkResult := checkResults[i]; checkResult.OK() {
-			if err := runTest(ctx, t, nextTests[i], tout, pcfg); err != nil {
+			if err := runTest(ctx, t, nextTests[i], tout, p.pcfg); err != nil {
 				return err
 			}
 		} else {

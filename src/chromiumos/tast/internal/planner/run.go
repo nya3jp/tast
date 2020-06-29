@@ -159,13 +159,26 @@ func buildPrePlan(tests []*testing.TestInstance, pcfg *Config) *prePlan {
 }
 
 func (p *prePlan) run(ctx context.Context, out OutputStream) error {
+	// Create a precondition-scoped context.
+	ptc := &testing.TestContext{
+		// OutDir is not available for a precondition-scoped context.
+		SoftwareDeps: append([]string(nil), p.tests[0].SoftwareDeps...),
+		ServiceDeps:  append([]string(nil), p.tests[0].ServiceDeps...),
+	}
+	plog := func(msg string) {
+		ptest := &testing.TestInfo{Name: p.pre.String()} // pseudo test for the precondition
+		out.TestLog(ptest, msg)
+	}
+	pctx, cancel := context.WithCancel(testing.NewContext(context.Background(), ptc, plog))
+	defer cancel()
+
 	for i, t := range p.tests {
-		var next *testing.TestInstance
-		if i+1 < len(p.tests) {
-			next = p.tests[i+1]
-		}
 		tout := NewTestOutputStream(out, t.TestInfo())
-		if err := runTest(ctx, t, next, tout, p.pcfg); err != nil {
+		precfg := &preConfig{
+			ctx:   pctx,
+			close: p.pre != nil && i == len(p.tests)-1,
+		}
+		if err := runTest(ctx, t, tout, p.pcfg, precfg); err != nil {
 			return err
 		}
 	}
@@ -176,11 +189,22 @@ func (p *prePlan) testsToRun() []*testing.TestInstance {
 	return append([]*testing.TestInstance(nil), p.tests...)
 }
 
+// preConfig contains information needed to interact with a precondition for
+// a single test.
+type preConfig struct {
+	// ctx is a context that lives as long as the precondition. It is available
+	// to preconditions as testing.PreState.PreCtx.
+	ctx context.Context
+	// close is true if the test is the last test using the precondition and thus
+	// it should be closed.
+	close bool
+}
+
 // runTest runs a single test, writing outputs messages to tout.
 //
 // runTest runs a test on a goroutine. If a test does not finish after reaching
 // its timeout, this function returns with an error without waiting for its finish.
-func runTest(ctx context.Context, t, next *testing.TestInstance, tout *TestOutputStream, pcfg *Config) error {
+func runTest(ctx context.Context, t *testing.TestInstance, tout *TestOutputStream, pcfg *Config, precfg *preConfig) error {
 	// Attach a log that the test can use to report timing events.
 	timingLog := timing.NewLog()
 	ctx = timing.NewContext(ctx, timingLog)
@@ -198,9 +222,10 @@ func runTest(ctx context.Context, t, next *testing.TestInstance, tout *TestOutpu
 		Vars:         pcfg.Vars,
 		CloudStorage: testing.NewCloudStorage(pcfg.Devservers),
 		RemoteData:   pcfg.RemoteData,
+		PreCtx:       precfg.ctx,
 	}
 	root := testing.NewRootState(t, tout, tcfg)
-	stages := buildStages(t, next, pcfg, tcfg)
+	stages := buildStages(t, pcfg, precfg, tcfg)
 
 	ok := runStages(ctx, root, stages)
 	if !ok {
@@ -220,7 +245,7 @@ func runTest(ctx context.Context, t, next *testing.TestInstance, tout *TestOutpu
 //
 // The time allotted to the test is generally the sum of t.Timeout and t.ExitTimeout, but
 // additional time may be allotted for preconditions and pre/post-test hooks.
-func buildStages(t, next *testing.TestInstance, pcfg *Config, tcfg *testing.TestConfig) []stage {
+func buildStages(t *testing.TestInstance, pcfg *Config, precfg *preConfig, tcfg *testing.TestConfig) []stage {
 	var stages []stage
 	addStage := func(f stageFunc, ctxTimeout, runTimeout time.Duration) {
 		stages = append(stages, stage{f, ctxTimeout, runTimeout})
@@ -292,18 +317,6 @@ func buildStages(t, next *testing.TestInstance, pcfg *Config, tcfg *testing.Test
 			}
 			root.RunWithPreState(ctx, func(ctx context.Context, s *testing.PreState) {
 				s.Logf("Preparing precondition %q", t.Pre)
-
-				if t.PreCtx == nil {
-					// Associate PreCtx with TestContext for the first test.
-					t.PreCtx, t.PreCtxCancel = context.WithCancel(testing.NewContext(context.Background(), s))
-				}
-
-				if next != nil && next.Pre == t.Pre {
-					next.PreCtx = t.PreCtx
-					next.PreCtxCancel = t.PreCtxCancel
-				}
-
-				root.SetPreCtx(t.PreCtx)
 				root.SetPreValue(t.Pre.Prepare(ctx, s))
 			})
 		}, t.Pre.Timeout(), t.Pre.Timeout()+exitTimeout)
@@ -319,14 +332,11 @@ func buildStages(t, next *testing.TestInstance, pcfg *Config, tcfg *testing.Test
 
 	// If this is the final test using this precondition, close it
 	// (even if setup, t.Pre.Prepare, or t.Func failed).
-	if t.Pre != nil && (next == nil || next.Pre != t.Pre) {
+	if precfg.close {
 		addStage(func(ctx context.Context, root *testing.RootState) {
 			root.RunWithPreState(ctx, func(ctx context.Context, s *testing.PreState) {
 				s.Logf("Closing precondition %q", t.Pre.String())
 				t.Pre.Close(ctx, s)
-				if t.PreCtxCancel != nil {
-					t.PreCtxCancel()
-				}
 			})
 		}, t.Pre.Timeout(), t.Pre.Timeout()+exitTimeout)
 	}

@@ -5,7 +5,6 @@
 package testing
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -63,11 +62,6 @@ type TestInstance struct {
 	// Val contains the value inherited from the expanded Param struct for a parameterized test case.
 	// This can be retrieved from testing.State.Param().
 	Val interface{}
-
-	// PreCtx is a context that lives as long as the precondition.
-	PreCtx context.Context
-	// PreCtxCancel cancels PreCtx.
-	PreCtxCancel func()
 
 	// Following fields are copied from testing.Test struct.
 	// See the documents of the struct.

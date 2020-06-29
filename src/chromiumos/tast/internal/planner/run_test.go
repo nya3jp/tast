@@ -879,11 +879,11 @@ func TestRunPlan(t *gotesting.T) {
 				{Name: "pkg.Test1", SoftwareDeps: []string{"no"}, Pre: pre2},
 			},
 			wantOrder: []string{
-				// Deps do not affect the order.
+				// Skipped tests come first.
+				"pkg.Test1",
+				"pkg.Test2",
 				"pkg.Test3",
 				"pkg.Test4",
-				"pkg.Test2",
-				"pkg.Test1",
 			},
 		},
 	} {

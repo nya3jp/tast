@@ -576,8 +576,8 @@ func TestRunExternalData(t *gotesting.T) {
 		DataDir: dataDir,
 		Features: dep.Features{
 			Software: &dep.SoftwareFeatures{
-				Available:   []string{"dep1"},
-				Unavailable: []string{"dep2"},
+				Available:   []string{"dep2"},
+				Unavailable: []string{"dep1"},
 			},
 		},
 		Devservers: []string{ds.URL},
@@ -587,9 +587,9 @@ func TestRunExternalData(t *gotesting.T) {
 
 	want := []control.Msg{
 		&control.TestStart{Test: *tests[0].TestInfo()},
-		&control.TestEnd{Name: tests[0].Name},
+		&control.TestEnd{Name: tests[0].Name, SkipReasons: []string{"missing SoftwareDeps: dep1"}},
 		&control.TestStart{Test: *tests[1].TestInfo()},
-		&control.TestEnd{Name: tests[1].Name, SkipReasons: []string{"missing SoftwareDeps: dep2"}},
+		&control.TestEnd{Name: tests[1].Name},
 		&control.TestStart{Test: *tests[2].TestInfo()},
 		&control.TestError{Error: testing.Error{Reason: "Required data file file3.txt missing: failed to download gs://bucket/file3.txt: file does not exist"}},
 		&control.TestEnd{Name: tests[2].Name},
@@ -603,9 +603,9 @@ func TestRunExternalData(t *gotesting.T) {
 		t.Fatal("ReadFiles: ", err)
 	}
 	wantFiles := map[string]string{
-		file1Path:                              file1Data,
-		file1Path + testing.ExternalLinkSuffix: buildLink(file1URL, file1Data),
-		// file2.txt is not downloaded since pkg.Test2 is not run.
+		// file1.txt is not downloaded since pkg.Test1 is not run.
+		file1Path + testing.ExternalLinkSuffix:  buildLink(file1URL, file1Data),
+		file2Path:                               file2Data,
 		file2Path + testing.ExternalLinkSuffix:  buildLink(file2URL, file2Data),
 		file3Path + testing.ExternalLinkSuffix:  buildLink(file3URL, ""),
 		file3Path + testing.ExternalErrorSuffix: "failed to download gs://bucket/file3.txt: file does not exist",
@@ -830,5 +830,74 @@ func TestAttachStateToContext(t *gotesting.T) {
 	}
 	if diff := cmp.Diff(msgs, want); diff != "" {
 		t.Error("Output mismatch (-got +want):\n", diff)
+	}
+}
+
+func TestRunPlan(t *gotesting.T) {
+	pre1 := &testPre{name: "pre1"}
+	pre2 := &testPre{name: "pre2"}
+	cfg := &Config{
+		Features: dep.Features{
+			Software: &dep.SoftwareFeatures{
+				Available:   []string{"yes"},
+				Unavailable: []string{"no"},
+			},
+		},
+	}
+
+	for _, tc := range []struct {
+		name      string
+		tests     []*testing.TestInstance
+		wantOrder []string
+	}{
+		{
+			name: "pre",
+			tests: []*testing.TestInstance{
+				{Name: "pkg.Test6", Pre: pre2},
+				{Name: "pkg.Test5", Pre: pre1},
+				{Name: "pkg.Test4"},
+				{Name: "pkg.Test3"},
+				{Name: "pkg.Test2", Pre: pre1},
+				{Name: "pkg.Test1", Pre: pre2},
+			},
+			wantOrder: []string{
+				// Sorted by (precondition name, test name).
+				"pkg.Test3",
+				"pkg.Test4",
+				"pkg.Test2",
+				"pkg.Test5",
+				"pkg.Test1",
+				"pkg.Test6",
+			},
+		},
+		{
+			name: "deps",
+			tests: []*testing.TestInstance{
+				{Name: "pkg.Test4", SoftwareDeps: []string{"yes"}},
+				{Name: "pkg.Test3", SoftwareDeps: []string{"no"}},
+				{Name: "pkg.Test2", SoftwareDeps: []string{"no"}, Pre: pre1},
+				{Name: "pkg.Test1", SoftwareDeps: []string{"no"}, Pre: pre2},
+			},
+			wantOrder: []string{
+				// Deps do not affect the order.
+				"pkg.Test3",
+				"pkg.Test4",
+				"pkg.Test2",
+				"pkg.Test1",
+			},
+		},
+	} {
+		t.Run(tc.name, func(t *gotesting.T) {
+			msgs := runTestsAndReadAll(t, tc.tests, cfg)
+			var order []string
+			for _, msg := range msgs {
+				if msg, ok := msg.(*control.TestStart); ok {
+					order = append(order, msg.Test.Name)
+				}
+			}
+			if diff := cmp.Diff(order, tc.wantOrder); diff != "" {
+				t.Error("Test order mismatch (-got +want):\n", diff)
+			}
+		})
 	}
 }

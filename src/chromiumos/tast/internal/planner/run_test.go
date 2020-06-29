@@ -832,3 +832,72 @@ func TestAttachStateToContext(t *gotesting.T) {
 		t.Error("Output mismatch (-got +want):\n", diff)
 	}
 }
+
+func TestRunPlan(t *gotesting.T) {
+	pre1 := &testPre{name: "pre1"}
+	pre2 := &testPre{name: "pre2"}
+	cfg := &Config{
+		Features: dep.Features{
+			Software: &dep.SoftwareFeatures{
+				Available:   []string{"yes"},
+				Unavailable: []string{"no"},
+			},
+		},
+	}
+
+	for _, tc := range []struct {
+		name      string
+		tests     []*testing.TestInstance
+		wantOrder []string
+	}{
+		{
+			name: "pre",
+			tests: []*testing.TestInstance{
+				{Name: "pkg.Test6", Pre: pre2},
+				{Name: "pkg.Test5", Pre: pre1},
+				{Name: "pkg.Test4"},
+				{Name: "pkg.Test3"},
+				{Name: "pkg.Test2", Pre: pre1},
+				{Name: "pkg.Test1", Pre: pre2},
+			},
+			wantOrder: []string{
+				// Sorted by (precondition name, test name).
+				"pkg.Test3",
+				"pkg.Test4",
+				"pkg.Test2",
+				"pkg.Test5",
+				"pkg.Test1",
+				"pkg.Test6",
+			},
+		},
+		{
+			name: "deps",
+			tests: []*testing.TestInstance{
+				{Name: "pkg.Test4", SoftwareDeps: []string{"yes"}},
+				{Name: "pkg.Test3", SoftwareDeps: []string{"no"}},
+				{Name: "pkg.Test2", SoftwareDeps: []string{"no"}, Pre: pre1},
+				{Name: "pkg.Test1", SoftwareDeps: []string{"no"}, Pre: pre2},
+			},
+			wantOrder: []string{
+				// Deps do not affect the order.
+				"pkg.Test3",
+				"pkg.Test4",
+				"pkg.Test2",
+				"pkg.Test1",
+			},
+		},
+	} {
+		t.Run(tc.name, func(t *gotesting.T) {
+			msgs := runTestsAndReadAll(t, tc.tests, cfg)
+			var order []string
+			for _, msg := range msgs {
+				if msg, ok := msg.(*control.TestStart); ok {
+					order = append(order, msg.Test.Name)
+				}
+			}
+			if diff := cmp.Diff(order, tc.wantOrder); diff != "" {
+				t.Error("Test order mismatch (-got +want):\n", diff)
+			}
+		})
+	}
+}

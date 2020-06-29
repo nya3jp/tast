@@ -5,9 +5,9 @@
 package runner
 
 import (
+	"context"
 	"fmt"
 	"io"
-	"log"
 	"strings"
 )
 
@@ -19,6 +19,7 @@ type server struct {
 }
 
 var _ TastCoreServiceServer = (*server)(nil)
+var _ LocalRunnerServiceServer = (*server)(nil)
 
 type delegateSender struct {
 	stream TastCoreService_DelegateServer
@@ -33,9 +34,27 @@ func (d *delegateSender) Write(b []byte) (int, error) {
 func (s *server) Delegate(req *DelegateRequest, stream TastCoreService_DelegateServer) error {
 	w := &delegateSender{stream}
 	r := strings.NewReader(req.Payload)
-	log.Println("hogehoge")
 	if status := Run(s.clArgs, r, w, s.stderr, s.args, s.cfg); status != statusSuccess {
 		return fmt.Errorf("runner failed with status %d", status)
 	}
 	return nil
+}
+
+func (s *server) DUTInfo(ctx context.Context, req *DUTInfoRequest) (*DUTInfoResponse, error) {
+	s.args.GetDUTInfo = &GetDUTInfoArgs{
+		ExtraUSEFlags:       req.ExtraUseFlags,
+		RequestDeviceConfig: req.RequestDeviceConfig,
+	}
+	res, err := dutInfo(s.args, s.cfg)
+	if err != nil {
+		return nil, fmt.Errorf("dutInfo: %w", err)
+	}
+	return &DUTInfoResponse{
+		SoftwareFeatures: &SoftwareFeatures{
+			Available:   res.SoftwareFeatures.Available,
+			Unavailable: res.SoftwareFeatures.Unavailable,
+		},
+		DeviceConfig: res.DeviceConfig,
+		Warnings:     res.Warnings,
+	}, nil
 }

@@ -33,10 +33,21 @@ const autotestCapPrefix = "autotest-capability:" // prefix for autotest-capabili
 // handleGetDUTInfo handles a GetDUTInfoMode request from args
 // and JSON-marshals a GetDUTInfoResult struct to w.
 func handleGetDUTInfo(args *Args, cfg *Config, w io.Writer) error {
+	res, err := dutInfo(args, cfg)
+	if err != nil {
+		return err
+	}
+	if err := json.NewEncoder(w).Encode(&res); err != nil {
+		return command.NewStatusErrorf(statusError, "failed to serialize into JSON: %v", err)
+	}
+	return nil
+}
+
+func dutInfo(args *Args, cfg *Config) (*GetDUTInfoResult, error) {
 	features, warnings, err := getSoftwareFeatures(
 		cfg.SoftwareFeatureDefinitions, cfg.USEFlagsFile, args.GetDUTInfo.ExtraUSEFlags, cfg.AutotestCapabilityDir)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	var dc *device.Config
@@ -46,15 +57,11 @@ func handleGetDUTInfo(args *Args, cfg *Config, w io.Writer) error {
 		warnings = append(warnings, ws...)
 	}
 
-	res := GetDUTInfoResult{
+	return &GetDUTInfoResult{
 		SoftwareFeatures: features,
 		DeviceConfig:     dc,
 		Warnings:         warnings,
-	}
-	if err := json.NewEncoder(w).Encode(&res); err != nil {
-		return command.NewStatusErrorf(statusError, "failed to serialize into JSON: %v", err)
-	}
-	return nil
+	}, nil
 }
 
 // getSoftwareFeatures implements the main function of GetDUTInfoMode (i.e., except input/output

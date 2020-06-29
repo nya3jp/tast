@@ -195,7 +195,8 @@ func (c *localRunnerCmd) makeClientConn(ctx context.Context) (conn *grpc.ClientC
 	}
 	close = func() error {
 		c.cmd.Abort()
-		return c.cmd.Wait(ctx)
+		c.cmd.Wait(ctx) // ignore context cancelled error
+		return nil
 	}
 	conn, err = rpc.NewPipeClientConn(ctx, stdout, stdin)
 	if err != nil {

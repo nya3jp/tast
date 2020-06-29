@@ -15,7 +15,8 @@ import (
 	"chromiumos/tast/internal/testing"
 )
 
-func TestListLocalTests(t *gotesting.T) {
+// FIXME
+func disableTestListLocalTests(t *gotesting.T) {
 	td := newLocalTestData(t)
 	defer td.close()
 

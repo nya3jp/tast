@@ -12,10 +12,10 @@ import (
 
 func runTests(ctx context.Context, cfg *Config) ([]TestResult, error) {
 	if err := getDUTInfo(ctx, cfg); err != nil {
-		return nil, errors.Wrap(err, "failed to get DUT software features")
+		return nil, errors.Wrap(err, "getDUTInfo")
 	}
 	if err := getInitialSysInfo(ctx, cfg); err != nil {
-		return nil, errors.Wrap(err, "failed to get initial sysinfo")
+		return nil, errors.Wrap(err, "getInitialSysInfo")
 	}
 	cfg.startedRun = true
 

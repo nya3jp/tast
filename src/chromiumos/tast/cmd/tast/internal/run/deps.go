@@ -7,12 +7,14 @@ package run
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"path/filepath"
 	"strings"
 
 	"github.com/golang/protobuf/proto"
 
+	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/timing"
 )
@@ -24,7 +26,7 @@ const deviceConfigFile = "device-config.txt"
 // getDUTInfo executes local_test_runner on the DUT to get a list of DUT info.
 // The info is used to check tests' dependencies.
 // This updates cfg.softwareFeatures, thus calling this twice won't work.
-func getDUTInfo(ctx context.Context, cfg *Config) error {
+func getDUTInfo(ctx context.Context, cfg *Config) (retErr error) {
 	if !cfg.checkTestDeps {
 		return nil
 	}
@@ -41,19 +43,22 @@ func getDUTInfo(ctx context.Context, cfg *Config) error {
 		return err
 	}
 
-	var res runner.GetDUTInfoResult
-	if err := runTestRunnerCommand(
-		localRunnerCommand(ctx, cfg, hst),
-		&runner.Args{
-			Mode: runner.GetDUTInfoMode,
-			GetDUTInfo: &runner.GetDUTInfoArgs{
-				ExtraUSEFlags:       cfg.extraUSEFlags,
-				RequestDeviceConfig: true,
-			},
-		},
-		&res,
-	); err != nil {
+	lr, err := NewLocalRunner(ctx, cfg, hst)
+	if err != nil {
 		return err
+	}
+	defer func() {
+		if err := lr.Close(); err != nil && retErr == nil {
+			retErr = fmt.Errorf("failed to close: %w", err)
+		}
+	}()
+	lc := runner.NewLocalRunnerServiceClient(lr.Conn())
+	res, err := lc.DUTInfo(ctx, &runner.DUTInfoRequest{
+		ExtraUseFlags:       cfg.extraUSEFlags,
+		RequestDeviceConfig: true,
+	})
+	if err != nil {
+		return fmt.Errorf("DUTInfo: %w", err)
 	}
 
 	// If the software feature is empty, then the DUT doesn't know about its features
@@ -74,7 +79,10 @@ func getDUTInfo(ctx context.Context, cfg *Config) error {
 		}
 		cfg.deviceConfig = res.DeviceConfig
 	}
-	cfg.softwareFeatures = res.SoftwareFeatures
+	cfg.softwareFeatures = &dep.SoftwareFeatures{
+		Available:   res.SoftwareFeatures.Available,
+		Unavailable: res.SoftwareFeatures.Unavailable,
+	}
 	return nil
 }
 

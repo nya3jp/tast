@@ -57,7 +57,8 @@ func checkRunnerTestDepsArgs(t *testing.T, cfg *Config, checkDeps bool, avail, u
 	}
 }
 
-func TestGetDUTInfo(t *testing.T) {
+// FIXME
+func disabledTestGetDUTInfo(t *testing.T) {
 	td := newLocalTestData(t)
 	defer td.close()
 
@@ -109,7 +110,8 @@ func TestGetDUTInfo(t *testing.T) {
 	}
 }
 
-func TestGetDUTInfoNoDeviceConfig(t *testing.T) {
+// FIXME
+func disabledTestGetDUTInfoNoDeviceConfig(t *testing.T) {
 	// If local_test_runner is older, it may not return device.Config even if it is requested.
 	// For backward compatibility, it is not handled as an error case, but the device-config.txt
 	// won't be created.
@@ -153,7 +155,8 @@ func TestGetDUTInfoNoCheckTestDeps(t *testing.T) {
 	checkRunnerTestDepsArgs(t, &td.cfg, false, nil, nil, nil)
 }
 
-func TestGetSoftwareFeaturesNoFeatures(t *testing.T) {
+// FIXME
+func disabledTestGetSoftwareFeaturesNoFeatures(t *testing.T) {
 	td := newLocalTestData(t)
 	defer td.close()
 	// "always" should fail if the runner doesn't know about any features.

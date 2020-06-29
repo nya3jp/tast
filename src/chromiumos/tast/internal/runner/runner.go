@@ -52,12 +52,9 @@ func RunV2(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Arg
 	}
 	// launch a GRPC server that pipes inputs to Run.
 	srv := grpc.NewServer()
-	RegisterTastCoreServiceServer(srv, &server{
-		clArgs,
-		args,
-		cfg,
-		stderr,
-	})
+	s := &server{clArgs, args, cfg, stderr}
+	RegisterTastCoreServiceServer(srv, s)
+	RegisterLocalRunnerServiceServer(srv, s)
 	if err := rpc.ServeOnPipe(srv, stdin, stdout); err != nil && err != io.EOF {
 		return command.WriteError(stderr, err)
 	}

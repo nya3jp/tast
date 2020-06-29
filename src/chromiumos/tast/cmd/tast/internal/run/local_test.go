@@ -132,7 +132,7 @@ func (td *localTestData) handleExec(req *sshtest.ExecReq) {
 		req.Start(true)
 		fmt.Fprintln(req, td.bootID)
 		req.End(0)
-	case td.expRunCmd:
+	case td.expRunCmd + " -grpc":
 		req.Start(true)
 		var args runner.Args
 		var status int
@@ -159,6 +159,7 @@ func (td *localTestData) handleExec(req *sshtest.ExecReq) {
 		req.Start(true)
 		req.End(0)
 	default:
+		log.Println("Running command: ", req.Cmd)
 		req.Start(true)
 		req.End(req.RunRealCmd())
 	}

@@ -1,0 +1,30 @@
+// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package tast.core;
+option go_package = "chromiumos/tast/internal/runner";
+
+import "device/config.proto";
+
+service LocalRunnerService {
+  rpc DUTInfo(DUTInfoRequest) returns (DUTInfoResponse) {}
+}
+
+message DUTInfoRequest {
+  repeated string extra_use_flags = 1;
+  bool request_device_config = 2;
+}
+
+message DUTInfoResponse {
+  SoftwareFeatures software_features = 1;
+  device.Config device_config = 2;
+  repeated string warnings = 3;
+}
+
+message SoftwareFeatures {
+  repeated string available = 1;
+  repeated string unavailable = 2;
+}

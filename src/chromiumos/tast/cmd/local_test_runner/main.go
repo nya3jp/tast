@@ -144,6 +144,11 @@ func main() {
 			"transparent_hugepage":   "transparent_hugepage",
 			"usbguard":               "usbguard",
 			"vaapi":                  "vaapi",
+			// Unloading the vhci-hcd module is known to sometimes cause kernel panic
+			// on devices with kernel 4.4.
+			// These features pair with the "virtual_usb_printer" feature.
+			"vhci_hcd_is_stable":   `!"kernel-4_4"`,
+			"vhci_hcd_is_unstable": `"kernel-4_4"`,
 			// drm_atomic is a necessary but not sufficient condition to support
 			// video_overlays; in practice, they tend to be enabled at the same time.
 			// TODO(mcasas): query in advance for NV12 format DRM Plane support.

@@ -125,12 +125,12 @@ The following software features are defined:
 *   `transparent_hugepage` - [Transparent Hugepage] support in the Linux kernel.
 *   `usbguard` - The ability to allow or block USB devices based on policy.
 *   `vaapi` - Whether or not VA-API is supported by this DUT.
-*   `vhci_hcd_is_stable` and `vhci_hcd_is_unstable` - Whether or not the
-    `vhci-hcd` kernel module is known to be flaky to unload. Used
-    together with the `virtual_usb_printer` feature.
 *   `video_overlays` - The kernel [DRM/KMS] version atomic commits and the underlying hardware display controller support the NV12 DRM Plane format needed to promote videos to [hardware overlays].
 *   `virtual_usb_printer` - Whether or not the device can run tests that
-    use [virtual USB printing][virtual-usb-printer-readme].
+    use [virtual USB printing][virtual-usb-printer-readme]. Note that
+    while the necessary kernel modules are available on kernel v4.4,
+    this feature excludes that version for known flakiness. See
+    [this bug](https://crbug.com/1083421#c10) for context.
 *   `vm_host` - The ability to [run virtual machines].
 *   `vp9_sanity` - The ability to stay alive playing a VP9 video with hardware
     acceleration even for a profile which the driver doesn't support.

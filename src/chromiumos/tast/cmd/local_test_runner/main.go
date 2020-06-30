@@ -139,7 +139,8 @@ func main() {
 			"storage_wearout_detect": "storage_wearout_detect && !betty && !tast_vm", // Skip wearout checks for VMs and eMMC < 5.0
 			"tablet_mode":            "touchview",
 			"tpm":                    "!mocktpm && !tast_vm",
-			"tpm2":                   "tpm2", // Indicate tpm2 is available
+			"tpm1":                   "!mocktpm && !tast_vm && !tpm2", // Indicate tpm1.2 is available
+			"tpm2":                   "!mocktpm && !tast_vm && tpm2",  // Indicate tpm2 is available
 			"transparent_hugepage":   "transparent_hugepage",
 			"usbguard":               "usbguard",
 			"vaapi":                  "vaapi",

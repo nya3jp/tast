@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "b8dc7c8f_c1aab5e7",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 200,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-06-30T08:49:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "791adaf3_a0a0b461",
+      "range": {
+        "startLine": 200,
+        "startChar": 9,
+        "endLine": 200,
+        "endChar": 13
+      },
+      "revId": "4a1170fe48ed542a7f16cf10592cc5e2ceeea0af",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e81e8102_c285cfdb",
         "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
         "patchSetId": 2
@@ -45,6 +69,30 @@
       "revId": "4a1170fe48ed542a7f16cf10592cc5e2ceeea0af",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "502484e3_f075535f",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 206,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-06-30T08:49:28Z",
+      "side": 1,
+      "message": "I agree that it is better to have it less intrusive for now.\nI\u0027ve also found -P is not needed as we don\u0027t use --human option here.",
+      "parentUuid": "e81e8102_c285cfdb",
+      "range": {
+        "startLine": 206,
+        "startChar": 57,
+        "endLine": 206,
+        "endChar": 59
+      },
+      "revId": "4a1170fe48ed542a7f16cf10592cc5e2ceeea0af",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

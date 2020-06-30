@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2e03be2b_914951c3",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 7
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1111649
+      },
+      "writtenOn": "2020-06-30T22:06:37Z",
+      "side": 1,
+      "message": "Remove spaces around equal sign for BUG and TEST lines.",
+      "revId": "83eaa1880b87decb64433fb3931877c6be8ffd23",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "377e0aa0_3c331593",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 7
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1111649
+      },
+      "writtenOn": "2020-06-30T22:06:37Z",
+      "side": 1,
+      "message": "Cq-Depend: chromium:2276739",
+      "revId": "83eaa1880b87decb64433fb3931877c6be8ffd23",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "698f7f88_40fb5a12",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1111649
+      },
+      "writtenOn": "2020-06-30T22:06:37Z",
+      "side": 1,
+      "message": "Relocate to the next line after chrome_internal (line 79 in this diff). Set chrome_media to chrome_media.",
+      "revId": "83eaa1880b87decb64433fb3931877c6be8ffd23",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

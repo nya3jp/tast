@@ -197,6 +197,13 @@ func writeSystemInfo(ctx context.Context, dir string) error {
 		"upstart_jobs.txt": exec.CommandContext(ctx, "initctl", "list"),
 		"ps.txt":           exec.CommandContext(ctx, "ps", "auxwwf"),
 		"du_stateful.txt":  exec.CommandContext(ctx, "du", "-m", "/mnt/stateful_partition"),
+		"lspci_-vvn.txt":   exec.CommandContext(ctx, "lspci", "-vvn"),
+		"mount.txt":        exec.CommandContext(ctx, "mount"),
+		"hostname.txt":     exec.CommandContext(ctx, "hostname"),
+		"uptime.txt":       exec.CommandContext(ctx, "uptime"),
+		"losetup.txt":      exec.CommandContext(ctx, "losetup"),
+		"df_-mP.txt":       exec.CommandContext(ctx, "df", "-mP"),
+		"dmesg_-c.txt":     exec.CommandContext(ctx, "dmseg", "-c", "-P"), // read and clear, no pager
 	} {
 		if err := runCmd(cmd, fn); err != nil {
 			errs = append(errs, fmt.Sprintf("failed running %q: %v", shutil.EscapeSlice(cmd.Args), err))

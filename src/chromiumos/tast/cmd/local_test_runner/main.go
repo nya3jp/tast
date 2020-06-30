@@ -144,16 +144,11 @@ func main() {
 			"transparent_hugepage":   "transparent_hugepage",
 			"usbguard":               "usbguard",
 			"vaapi":                  "vaapi",
-			// Unloading the vhci-hcd module is known to sometimes cause kernel panic
-			// on devices with kernel 4.4.
-			// These features pair with the "virtual_usb_printer" feature.
-			"vhci_hcd_is_stable":   `!"kernel-4_4"`,
-			"vhci_hcd_is_unstable": `"kernel-4_4"`,
 			// drm_atomic is a necessary but not sufficient condition to support
 			// video_overlays; in practice, they tend to be enabled at the same time.
 			// TODO(mcasas): query in advance for NV12 format DRM Plane support.
 			"video_overlays":      "drm_atomic",
-			"virtual_usb_printer": `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14")`,
+			"virtual_usb_printer": `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14" || "kernel-4_4")`,
 			// Some VM builds actually can run nested VM with right host configuration.
 			// But we haven't enable this feature on builders. For now, just disable
 			// vm_host feature for VM builds. The kvm_transition flag indicates the

@@ -408,18 +408,18 @@ func downloadPrivateBundles(ctx context.Context, cfg *Config, hst *ssh.Conn) err
 	ctx, st := timing.Start(ctx, "download_private_bundles")
 	defer st.End()
 
-	var res runner.DownloadPrivateBundlesResult
-	if err := runTestRunnerCommand(
-		localRunnerCommand(ctx, cfg, hst),
-		&runner.Args{
-			Mode: runner.DownloadPrivateBundlesMode,
-			DownloadPrivateBundles: &runner.DownloadPrivateBundlesArgs{
-				Devservers:        cfg.devservers,
-				BuildArtifactsURL: cfg.buildArtifactsURL,
-			},
-		},
-		&res,
-	); err != nil {
+	lr, err := NewLocalRunner(ctx, cfg, hst)
+	if err != nil {
+		return err
+	}
+	defer lr.Close()
+
+	lc := runner.NewLocalRunnerServiceClient(lr.Conn())
+	res, err := lc.DownloadPrivateBundles(ctx, &runner.DownloadPrivateBundlesArgs{
+		Devservers:        cfg.devservers,
+		BuildArtifactsURL: cfg.buildArtifactsURL,
+	})
+	if err != nil {
 		return err
 	}
 

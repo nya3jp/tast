@@ -253,22 +253,6 @@ func (r *GetDUTInfoResult) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-// DownloadPrivateBundlesArgs is nested within Args and contains arguments used by DownloadPrivateBundlesMode.
-type DownloadPrivateBundlesArgs struct {
-	// Devservers contains URLs of devservers that can be used to download files.
-	Devservers []string `json:"devservers,omitempty"`
-	// BuildArtifactsURL is the URL of Google Cloud Storage directory, ending with a slash,
-	// containing build artifacts for the current Chrome OS image.
-	// If it is empty, DefaultBuildArtifactsURL in runner.Config is used.
-	BuildArtifactsURL string `json:"buildArtifactsUrl,omitempty"`
-}
-
-// DownloadPrivateBundlesResult contains the result of a DownloadPrivateBundlesMode command.
-type DownloadPrivateBundlesResult struct {
-	// Messages contains log messages emitted while downloading test bundles.
-	Messages []string `json:"logs,omitempty"`
-}
-
 // RunnerType describes the type of test runner that is using this package.
 type RunnerType int // NOLINT
 

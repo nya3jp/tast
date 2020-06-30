@@ -13,6 +13,8 @@ service LocalRunnerService {
   rpc DUTInfo(DUTInfoRequest) returns (DUTInfoResponse) {}
   rpc SysInfoState(SysInfoStateRequest) returns (GetSysInfoStateResult) {}
   rpc CollectSysInfo(CollectSysInfoArgs) returns (CollectSysInfoResult) {}
+  rpc DownloadPrivateBundles(DownloadPrivateBundlesArgs)
+      returns (DownloadPrivateBundlesResult) {}
 }
 
 message DUTInfoRequest {
@@ -52,4 +54,13 @@ message CollectSysInfoResult {
   string log_dir = 1;
   string crash_dir = 2;
   repeated string warnings = 3;
+}
+
+message DownloadPrivateBundlesArgs {
+  repeated string devservers = 1;
+  string build_artifacts_u_r_l = 2;
+}
+
+message DownloadPrivateBundlesResult {
+  repeated string messages = 1;
 }

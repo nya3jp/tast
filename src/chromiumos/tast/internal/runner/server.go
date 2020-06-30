@@ -66,3 +66,11 @@ func (s *server) SysInfoState(ctx context.Context, req *SysInfoStateRequest) (*G
 func (s *server) CollectSysInfo(ctx context.Context, req *CollectSysInfoArgs) (*CollectSysInfoResult, error) {
 	return collectSysInfo(ctx, req, s.cfg)
 }
+
+func (s *server) DownloadPrivateBundles(ctx context.Context, req *DownloadPrivateBundlesArgs) (*DownloadPrivateBundlesResult, error) {
+	logs, err := downloadPrivateBundles(ctx, req, s.cfg)
+	if logs == nil {
+		return nil, err
+	}
+	return &DownloadPrivateBundlesResult{Messages: logs}, err
+}

@@ -106,6 +106,24 @@
       "revId": "d4c90130eb2b22773fed7ce0cc1c2904dfb06e00",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c9113779_4bc6d09e",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-06-30T02:38:03Z",
+      "side": 1,
+      "message": "\u003e The purpose of adding a new field here is to tentatively emulate the role of F20 scheduler before Tast is fully integrated with F20. The field is filled and consumed by Tast framework. It is not intended to store something actually received from F20.\n\nThis is not true. While tests are run locally (i.e. developer\u0027s environment, without connecting to CI), each test need to judge if it satisfies the condition by itself. Therefore this is not just a tentative workaround.",
+      "parentUuid": "89c8da24_1bf89227",
+      "revId": "d4c90130eb2b22773fed7ce0cc1c2904dfb06e00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

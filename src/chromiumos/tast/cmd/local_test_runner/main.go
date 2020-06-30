@@ -95,7 +95,6 @@ func main() {
 			"drivefs":                 "drivefs",
 			"drm_atomic":              "drm_atomic",
 			"encrypted_reboot_vault":  `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14")`,
-			"factory_toolkit":         "betty || tast_vm",
 			"firewall":                "!moblab", // Moblab has relaxed iptables rules
 			"flashrom":                "!betty && !tast_vm",
 			"google_virtual_keyboard": "chrome_internal && internal && !moblab", // doesn't work on Moblab: https://crbug.com/949912

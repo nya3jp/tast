@@ -12,6 +12,7 @@ import "device/config.proto";
 service LocalRunnerService {
   rpc DUTInfo(DUTInfoRequest) returns (DUTInfoResponse) {}
   rpc SysInfoState(SysInfoStateRequest) returns (GetSysInfoStateResult) {}
+  rpc CollectSysInfo(CollectSysInfoArgs) returns (CollectSysInfoResult) {}
 }
 
 message DUTInfoRequest {
@@ -41,4 +42,14 @@ message SysInfoState {
   map<uint64, int64> log_inode_sizes = 1;
   string journald_cursor = 2;
   repeated string minidump_paths = 3;
+}
+
+message CollectSysInfoArgs {
+  SysInfoState initial_state = 1;
+}
+
+message CollectSysInfoResult {
+  string log_dir = 1;
+  string crash_dir = 2;
+  repeated string warnings = 3;
 }

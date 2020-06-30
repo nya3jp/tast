@@ -62,3 +62,7 @@ func (s *server) DUTInfo(ctx context.Context, req *DUTInfoRequest) (*DUTInfoResp
 func (s *server) SysInfoState(ctx context.Context, req *SysInfoStateRequest) (*GetSysInfoStateResult, error) {
 	return sysInfoState(ctx, s.cfg)
 }
+
+func (s *server) CollectSysInfo(ctx context.Context, req *CollectSysInfoArgs) (*CollectSysInfoResult, error) {
+	return collectSysInfo(ctx, req, s.cfg)
+}

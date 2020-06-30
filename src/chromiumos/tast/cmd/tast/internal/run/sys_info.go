@@ -73,15 +73,15 @@ func collectSysInfo(ctx context.Context, cfg *Config) error {
 		return err
 	}
 
-	var res runner.CollectSysInfoResult
-	if err := runTestRunnerCommand(
-		localRunnerCommand(ctx, cfg, hst),
-		&runner.Args{
-			Mode:           runner.CollectSysInfoMode,
-			CollectSysInfo: &runner.CollectSysInfoArgs{InitialState: *cfg.initialSysInfo},
-		},
-		&res,
-	); err != nil {
+	lr, err := NewLocalRunner(ctx, cfg, hst)
+	if err != nil {
+		return err
+	}
+	defer lr.Close()
+
+	lc := runner.NewLocalRunnerServiceClient(lr.Conn())
+	res, err := lc.CollectSysInfo(ctx, &runner.CollectSysInfoArgs{InitialState: cfg.initialSysInfo})
+	if err != nil {
 		return err
 	}
 

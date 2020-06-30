@@ -69,25 +69,32 @@ func sysInfoState(ctx context.Context, cfg *Config) (*GetSysInfoStateResult, err
 // handleCollectSysInfo copies system information that was written after args.CollectSysInfo.InitialState
 // was generated into temporary directories and writes a JSON-marshaled CollectSysInfoResult struct to w.
 func handleCollectSysInfo(ctx context.Context, args *Args, cfg *Config, w io.Writer) error {
+	res, err := collectSysInfo(ctx, args.CollectSysInfo, cfg)
+	if err != nil {
+		return err
+	}
+	return json.NewEncoder(w).Encode(res)
+}
+
+func collectSysInfo(ctx context.Context, cmdArgs *CollectSysInfoArgs, cfg *Config) (*CollectSysInfoResult, error) {
 	if cfg.SystemLogDir == "" || len(cfg.SystemCrashDirs) == 0 {
-		return command.NewStatusErrorf(statusBadArgs, "system info collection unsupported")
+		return nil, command.NewStatusErrorf(statusBadArgs, "system info collection unsupported")
 	}
 
-	cmdArgs := args.CollectSysInfo
 	if cmdArgs == nil {
-		return command.NewStatusErrorf(statusBadArgs, "missing system info args")
+		return nil, command.NewStatusErrorf(statusBadArgs, "missing system info args")
 	}
 	res := CollectSysInfoResult{}
 
 	// Collect syslog logs.
 	var err error
 	if res.LogDir, err = ioutil.TempDir("", "tast_logs."); err != nil {
-		return err
+		return nil, err
 	}
 	var warnings map[string]error
 	if warnings, err = logs.CopyLogFileUpdates(cfg.SystemLogDir, res.LogDir, cfg.SystemLogExcludes,
 		cmdArgs.InitialState.LogInodeSizes); err != nil {
-		return err
+		return nil, err
 	}
 	for p, w := range warnings {
 		res.Warnings = append(res.Warnings, fmt.Sprintf("%s: %v", p, w))
@@ -115,13 +122,13 @@ func handleCollectSysInfo(ctx context.Context, args *Args, cfg *Config, w io.Wri
 	// Collect crashes.
 	dumps, err := getMinidumps(cfg.SystemCrashDirs)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if res.CrashDir, err = ioutil.TempDir("", "tast_crashes."); err != nil {
-		return err
+		return nil, err
 	}
 	if warnings, err = crash.CopyNewFiles(res.CrashDir, dumps, cmdArgs.InitialState.MinidumpPaths, maxCrashesPerExec); err != nil {
-		return err
+		return nil, err
 	}
 	for p, w := range warnings {
 		res.Warnings = append(res.Warnings, fmt.Sprintf("%s: %v", p, w))
@@ -129,7 +136,7 @@ func handleCollectSysInfo(ctx context.Context, args *Args, cfg *Config, w io.Wri
 	// TODO(derat): Decide if it's worthwhile to call crash.CopySystemInfo here to get /etc/lsb-release.
 	// Doing so makes it harder to exercise this code in unit tests.
 
-	return json.NewEncoder(w).Encode(res)
+	return &res, nil
 }
 
 // getMinidumps returns the paths of all minidump files within dirs.

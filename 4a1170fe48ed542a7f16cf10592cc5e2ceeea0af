@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "791adaf3_a0a0b461",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 200,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-06-30T08:40:10Z",
+      "side": 1,
+      "message": "nit: For Tast system logs we can skip flags in file names, e.g. \"_-vvn\".",
+      "range": {
+        "startLine": 200,
+        "startChar": 9,
+        "endLine": 200,
+        "endChar": 13
+      },
+      "revId": "4a1170fe48ed542a7f16cf10592cc5e2ceeea0af",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e81e8102_c285cfdb",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 206,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-06-30T08:40:10Z",
+      "side": 1,
+      "message": "Hmm, I\u0027m hesitant of -c option, even if it matches with what Autotest does. What do you think of dropping it for now?",
+      "range": {
+        "startLine": 206,
+        "startChar": 57,
+        "endLine": 206,
+        "endChar": 59
+      },
+      "revId": "4a1170fe48ed542a7f16cf10592cc5e2ceeea0af",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

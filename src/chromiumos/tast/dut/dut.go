@@ -280,3 +280,8 @@ func (d *DUT) DefaultWifiRouterHost(ctx context.Context) (*ssh.Conn, error) {
 func (d *DUT) DefaultWifiPcapHost(ctx context.Context) (*ssh.Conn, error) {
 	return d.connectCompanionDevice(ctx, "-pcap")
 }
+
+// DefaultCameraboxChart connects to paired chart tablet in camerabox setup and returns SSH object.
+func (d *DUT) DefaultCameraboxChart(ctx context.Context) (*ssh.Conn, error) {
+	return d.connectCompanionDevice(ctx, "-tablet")
+}

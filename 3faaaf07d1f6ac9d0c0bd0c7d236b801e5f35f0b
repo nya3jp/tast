@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "35934fbc_629d6992",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 12
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1111649
+      },
+      "writtenOn": "2020-07-01T21:21:30Z",
+      "side": 1,
+      "message": "Crashpad description accidentally modified.",
+      "revId": "3faaaf07d1f6ac9d0c0bd0c7d236b801e5f35f0b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

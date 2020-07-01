@@ -275,3 +275,39 @@ func (d *DUT) DefaultWifiRouterHost(ctx context.Context) (*ssh.Conn, error) {
 func (d *DUT) DefaultWifiPcapHost(ctx context.Context) (*ssh.Conn, error) {
 	return d.connectCompanionDevice(ctx, "-pcap")
 }
+
+// CameraboxChart connects to chart tablet corresponding to DUT d in
+// camerabox setup and returns the connected chart tablet as a DUT type
+// instance. In attempt of connection, same SSH options from DUT d will be used
+// and either altTarget or the d's hostname with '-tablet'
+// suffix(specifically for setup in test lab) will be used as chart SSH hostname.
+func (d *DUT) CameraboxChart(ctx context.Context, altTarget string) (*DUT, error) {
+	var sopt ssh.Options
+	hostname := altTarget
+	if len(hostname) == 0 {
+		var err error
+		hostname, err = companionDeviceHostname(d.sopt.Hostname, "-tablet")
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// Let ParseTarget derive default user and port for us.
+	if err := ssh.ParseTarget(hostname, &sopt); err != nil {
+		return nil, ErrCompanionHostname
+	}
+
+	// Companion devices use the same key as DUT.
+	sopt.KeyFile = d.sopt.KeyFile
+	sopt.KeyDir = d.sopt.KeyDir
+
+	// Try to connect to chart.
+	sopt.ConnectTimeout = connectTimeout
+	chart := &DUT{sopt: sopt}
+	if err := chart.Connect(ctx); err != nil {
+		return nil, errors.Wrapf(err,
+			"failed to connect to chart %v pairing with DUT %v",
+			sopt.Hostname, d.sopt.Hostname)
+	}
+	return chart, nil
+}

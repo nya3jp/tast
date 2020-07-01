@@ -72,6 +72,24 @@
     },
     {
       "key": {
+        "uuid": "0ea14ef2_fab9be2a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 7
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1111649
+      },
+      "writtenOn": "2020-07-01T22:36:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c4507798_603deca9",
+      "revId": "83eaa1880b87decb64433fb3931877c6be8ffd23",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "698f7f88_40fb5a12",
         "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
         "patchSetId": 7

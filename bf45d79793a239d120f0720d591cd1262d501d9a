@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6518b1c4_e0529053",
+        "filename": "src/chromiumos/tast/internal/planner/run.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-07-02T08:05:49Z",
+      "side": 1,
+      "message": "Did we confirm precondition names are unique in the bundle?",
+      "range": {
+        "startLine": 83,
+        "startChar": 0,
+        "endLine": 83,
+        "endChar": 27
+      },
+      "revId": "bf45d79793a239d120f0720d591cd1262d501d9a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

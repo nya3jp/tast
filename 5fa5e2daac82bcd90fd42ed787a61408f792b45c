@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "68ad67f7_c8b46dd3",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-07-02T04:32:52Z",
+      "side": 1,
+      "message": "Clar: so \"tpm\" should be conceptually \"tpm1\" || \"tpm2\", IIUC.\nIf \"tpm2\" is set iff \"!mocktpm \u0026\u0026 !tast_vm\" case, that\u0027s fine. But, otherwise, switching \"tpm2\" -\u003e \"tpm\" could cause some coverage regression. In case of tpm2 set, are tast_vm and mocktpm always false?",
+      "revId": "5fa5e2daac82bcd90fd42ed787a61408f792b45c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

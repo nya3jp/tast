@@ -16,6 +16,24 @@
       "revId": "5fa5e2daac82bcd90fd42ed787a61408f792b45c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e5020d99_d53d35ab",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1314760
+      },
+      "writtenOn": "2020-07-02T16:59:36Z",
+      "side": 1,
+      "message": "From what I understand, \"!mocktpm \u0026\u0026 !tast_vm\" is true if \"tpm2\" is true (i.e. tpm2 \u003d\u003e !mocktpm \u0026\u0026 !tast_vm, or in another word, tpm2 \u003d\u003e tpm), but the reverse doesn\u0027t always hold, and when it doesn\u0027t, it\u0027s a tpm1.2 board.\n\nRegarding the coverage regression, switching from \"tpm2\" to \"tpm\", we know that for those covered by \"tpm2\", \"tpm2\" is set, and tpm2 \u003d\u003e tpm, thus no coverage regression is lost.\n\nNote that there\u0027s no mechanical means of enforcing tpm2 \u003d\u003e !mocktpm \u0026\u0026 !tast_vm, it\u0027s just a convention that we have. I haven\u0027t seen usage of tast_vm in overlays, and mocktpm is only used in early stage bring-up of new boards.",
+      "parentUuid": "68ad67f7_c8b46dd3",
+      "revId": "5fa5e2daac82bcd90fd42ed787a61408f792b45c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

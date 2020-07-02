@@ -652,34 +652,6 @@ func TestTestClone(t *gotesting.T) {
 	checkTest("update after clone()", &orig)
 }
 
-func TestSortTests(t *gotesting.T) {
-	pre1 := &fakePre{name: "pre1"}
-	pre2 := &fakePre{name: "pre2"}
-
-	// Assign names with different leading digits to make sure we don't sort by name primarily.
-	t1 := &TestInstance{Name: "3-test1", Pre: nil}
-	t2 := &TestInstance{Name: "4-test2", Pre: nil}
-	t3 := &TestInstance{Name: "1-test3", Pre: pre1}
-	t4 := &TestInstance{Name: "2-test4", Pre: pre1}
-	t5 := &TestInstance{Name: "0-test5", Pre: pre2}
-	tests := []*TestInstance{t4, t2, t3, t5, t1}
-
-	getNames := func(tests []*TestInstance) (names []string) {
-		for _, test := range tests {
-			names = append(names, test.Name)
-		}
-		return names
-	}
-
-	in := getNames(tests)
-	SortTests(tests)
-	actual := getNames(tests)
-	expected := getNames([]*TestInstance{t1, t2, t3, t4, t5})
-	if !reflect.DeepEqual(actual, expected) {
-		t.Errorf("Sort(%v) = %v; want %v", in, actual, expected)
-	}
-}
-
 func TestWriteTestsAsProto(t *gotesting.T) {
 	in := []*TestInstance{
 		{

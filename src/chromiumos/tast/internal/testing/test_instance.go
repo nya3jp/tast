@@ -13,7 +13,6 @@ import (
 	"reflect"
 	"regexp"
 	"runtime"
-	"sort"
 	"strings"
 	"time"
 
@@ -448,28 +447,6 @@ func (t *TestInstance) TestInfo() *TestInfo {
 		ServiceDeps:  append([]string(nil), t.ServiceDeps...),
 		Timeout:      t.Timeout,
 	}
-}
-
-// SortTests sorts tests, primarily by ascending precondition name
-// (with tests with no preconditions coming first) and secondarily by ascending test name.
-func SortTests(tests []*TestInstance) {
-	sort.Slice(tests, func(i, j int) bool {
-		ti := tests[i]
-		tj := tests[j]
-
-		var pi, pj string
-		if ti.Pre != nil {
-			pi = ti.Pre.String()
-		}
-		if tj.Pre != nil {
-			pj = tj.Pre.String()
-		}
-
-		if pi != pj {
-			return pi < pj
-		}
-		return ti.Name < tj.Name
-	})
 }
 
 // WriteTestsAsJSON marshals ts to JSON and writes the resulting data to w.

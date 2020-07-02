@@ -13,6 +13,7 @@ import (
 	"log/syslog"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 
@@ -106,7 +107,9 @@ func testsToRun(cfg *runConfig, patterns []string) ([]*testing.TestInstance, err
 			tp.Timeout = cfg.defaultTestTimeout
 		}
 	}
-	testing.SortTests(tests)
+	sort.Slice(tests, func(i, j int) bool {
+		return tests[i].Name < tests[j].Name
+	})
 	return tests, nil
 }
 

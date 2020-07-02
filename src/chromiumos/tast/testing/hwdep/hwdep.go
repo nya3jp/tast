@@ -220,11 +220,11 @@ func WifiMACAddrRandomize() Condition {
 	// TODO(crbug.com/1070299): replace this when we have hwdep for WiFi chips.
 	return SkipOnPlatform(
 		// mwifiex in 3.10 kernel does not support it.
-		"nyan_kitty",
+		"kitty",
 		// Broadcom driver has only NL80211_FEATURE_SCHED_SCAN_RANDOM_MAC_ADDR
 		// but not NL80211_FEATURE_SCAN_RANDOM_MAC_ADDR. We require randomization
 		// for all supported scan types.
-		"veyron_mickey", "veyron_minnie", "veyron_speedy",
+		"mickey", "minnie", "speedy",
 	)
 }
 

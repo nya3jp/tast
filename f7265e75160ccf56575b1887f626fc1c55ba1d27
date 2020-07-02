@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2e79f76c_b5873779",
+        "filename": "src/chromiumos/tast/internal/planner/output_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-07-02T07:44:49Z",
+      "side": 1,
+      "message": "Why timing log is dropped here?",
+      "range": {
+        "startLine": 48,
+        "startChar": 9,
+        "endLine": 48,
+        "endChar": 18
+      },
+      "revId": "f7265e75160ccf56575b1887f626fc1c55ba1d27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

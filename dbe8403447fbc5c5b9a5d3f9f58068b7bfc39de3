@@ -22,6 +22,30 @@
       "revId": "dbe8403447fbc5c5b9a5d3f9f58068b7bfc39de3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f615af49_59ccb0be",
+        "filename": "src/chromiumos/tast/internal/planner/run.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-03T02:08:53Z",
+      "side": 1,
+      "message": "That will work, but I want to defer the change. Later it is possible that we want to distiniguish logs from fixtures and tests, then we want to annotate TestLog messages with test/fixture names.",
+      "parentUuid": "bb21f3e6_d44acad5",
+      "range": {
+        "startLine": 170,
+        "startChar": 14,
+        "endLine": 170,
+        "endChar": 17
+      },
+      "revId": "dbe8403447fbc5c5b9a5d3f9f58068b7bfc39de3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

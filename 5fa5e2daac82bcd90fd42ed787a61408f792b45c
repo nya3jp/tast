@@ -34,6 +34,24 @@
       "revId": "5fa5e2daac82bcd90fd42ed787a61408f792b45c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "30d6125c_bfa69e3a",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-07-03T02:10:20Z",
+      "side": 1,
+      "message": "Thank you for explanation.\n\n(optional): Then, for clarity and consistency, I\u0027d recommend to switch \"tpm2\" definition from \"tpm2\" to \"!mocktpm \u0026\u0026 !tastvm \u0026\u0026 tpm2\".\nSometimes, people outside of tpm team may need to take a look at the condition (such as infra team or sheriffs), and I think clearer condition would help them to understand the intention easier.",
+      "parentUuid": "e5020d99_d53d35ab",
+      "revId": "5fa5e2daac82bcd90fd42ed787a61408f792b45c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b980fbe2_c713e2ca",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1206284
+      },
+      "writtenOn": "2020-07-05T12:18:12Z",
+      "side": 1,
+      "message": "you may want to plumb something that looks more like:\nhttps://source.corp.google.com/chromeos_public/src/config/payload_utils/cros_config_proto_converter.py;l\u003d28\n\nHardwareFeatures is just a slice of the config that is known about a given device",
+      "revId": "1e7db3b2782b354097cb2b589a3f3f72507c14a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

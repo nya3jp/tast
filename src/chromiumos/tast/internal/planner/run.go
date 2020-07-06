@@ -27,8 +27,8 @@ import (
 
 const (
 	exitTimeout     = 30 * time.Second // extra time granted to test-related funcs to exit
-	preTestTimeout  = 15 * time.Second // timeout for TestConfig.PreTestFunc
-	postTestTimeout = 15 * time.Second // timeout for TestConfig.PostTestFunc
+	preTestTimeout  = 15 * time.Second // timeout for TestConfig.TestHook
+	postTestTimeout = 15 * time.Second // timeout for a closure returned by TestConfig.TestHook
 )
 
 // Config contains details about how the planner should run tests.
@@ -49,9 +49,9 @@ type Config struct {
 	// RemoteData contains information relevant to remote tests.
 	// It is nil for local tests.
 	RemoteData *testing.RemoteData
-	// PreTestFunc is run before TestInstance.Func (and TestInstance.Pre.Prepare, when applicable) if non-nil.
-	// The returned closure is executed after PostTestFunc if not nil.
-	PreTestFunc func(context.Context, *testing.State) func(context.Context, *testing.State)
+	// TestHook is run before TestInstance.Func (and TestInstance.Pre.Prepare, when applicable) if non-nil.
+	// The returned closure is executed after a test if not nil.
+	TestHook func(context.Context, *testing.State) func(context.Context, *testing.State)
 }
 
 // RunTests runs a set of tests, writing outputs to out.
@@ -249,7 +249,7 @@ func buildStages(t *testing.TestInstance, pcfg *Config, precfg *preConfig, tcfg 
 		stages = append(stages, stage{f, ctxTimeout, runTimeout})
 	}
 
-	var postTestHook func(ctx context.Context, s *testing.State)
+	var postTestFunc func(ctx context.Context, s *testing.State)
 
 	// First, perform setup and run the pre-test function.
 	addStage(func(ctx context.Context, root *testing.RootState) {
@@ -301,8 +301,8 @@ func buildStages(t *testing.TestInstance, pcfg *Config, precfg *preConfig, tcfg 
 				}
 			}
 
-			if pcfg.PreTestFunc != nil {
-				postTestHook = pcfg.PreTestFunc(ctx, s)
+			if pcfg.TestHook != nil {
+				postTestFunc = pcfg.TestHook(ctx, s)
 			}
 		})
 	}, preTestTimeout, preTestTimeout+exitTimeout)
@@ -342,8 +342,8 @@ func buildStages(t *testing.TestInstance, pcfg *Config, precfg *preConfig, tcfg 
 	// Finally, run the post-test functions unconditionally.
 	addStage(func(ctx context.Context, root *testing.RootState) {
 		root.RunWithTestState(ctx, func(ctx context.Context, s *testing.State) {
-			if postTestHook != nil {
-				postTestHook(ctx, s)
+			if postTestFunc != nil {
+				postTestFunc(ctx, s)
 			}
 		})
 	}, postTestTimeout, postTestTimeout+exitTimeout)

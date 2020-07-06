@@ -125,11 +125,11 @@ type runConfig struct {
 	preRunFunc func(context.Context) (context.Context, error)
 	// postRunFunc is run at the end of the entire series of tests if non-nil.
 	postRunFunc func(context.Context) error
-	// preTestFunc is run before each test if non-nil.
+	// testHook is run before each test if non-nil.
 	// If this function panics or reports errors, the precondition (if any)
 	// will not be prepared and the test function will not run.
-	// The returned closure is executed after postTestFunc if not nil.
-	preTestFunc func(context.Context, *testing.State) func(context.Context, *testing.State)
+	// The returned closure is executed after a test if not nil.
+	testHook func(context.Context, *testing.State) func(context.Context, *testing.State)
 	// defaultTestTimeout contains the default maximum time allotted to each test.
 	// It is only used if testing.Test.Timeout is unset.
 	defaultTestTimeout time.Duration
@@ -272,7 +272,7 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		Devservers:        args.RunTests.Devservers,
 		BuildArtifactsURL: args.RunTests.BuildArtifactsURL,
 		RemoteData:        rd,
-		PreTestFunc:       cfg.preTestFunc,
+		TestHook:          cfg.testHook,
 	}
 
 	if err := planner.RunTests(ctx, tests, ew, pcfg); err != nil {

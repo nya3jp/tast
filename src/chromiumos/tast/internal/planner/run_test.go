@@ -221,11 +221,11 @@ func TestRunSkipStages(t *gotesting.T) {
 	// testBehavior specifies the behavior of a test in each of its stages.
 	type testBehavior struct {
 		pre            *testPre
-		preTestAction  action // Config.PreTestFunc
+		preTestAction  action // Config.TestHook
 		prepareAction  action // Precondition.Prepare
 		testAction     action // Test.Func
 		closeAction    action // Precondition.Close
-		postTestAction action // Return of Config.PreTestFunc
+		postTestAction action // Return of Config.TestHook
 	}
 
 	// pre1 and pre2 are preconditions used in tests. prepareFunc and closeFunc
@@ -466,7 +466,7 @@ func TestRunSkipStages(t *gotesting.T) {
 
 			pcfg := &Config{
 				OutDir: outDir,
-				PreTestFunc: func(ctx context.Context, s *testing.State) func(context.Context, *testing.State) {
+				TestHook: func(ctx context.Context, s *testing.State) func(context.Context, *testing.State) {
 					doAction(s, currentBehavior(s).preTestAction, "preTest")
 					return func(ctx context.Context, s *testing.State) {
 						doAction(s, currentBehavior(s).postTestAction, "postTest")
@@ -769,7 +769,7 @@ func TestRunHasError(t *gotesting.T) {
 				},
 			}
 			pcfg := &Config{
-				PreTestFunc: func(ctx context.Context, s *testing.State) func(context.Context, *testing.State) {
+				TestHook: func(ctx context.Context, s *testing.State) func(context.Context, *testing.State) {
 					onPhase(s, phasePreTestFunc)
 					return func(ctx context.Context, s *testing.State) {
 						onPhase(s, phasePostTestFunc)

@@ -123,7 +123,7 @@ func TestRunTests(t *gotesting.T) {
 			logging.ContextLog(ctx, postRunMsg)
 			return nil
 		},
-		preTestFunc: func(ctx context.Context, s *testing.State) func(ctx context.Context, s *testing.State) {
+		testHook: func(ctx context.Context, s *testing.State) func(ctx context.Context, s *testing.State) {
 			preTestCalls++
 			s.Log(preTestMsg)
 

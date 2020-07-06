@@ -16,6 +16,24 @@
       "revId": "1e7db3b2782b354097cb2b589a3f3f72507c14a5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3e81da68_6d4602bb",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-07-06T02:27:35Z",
+      "side": 1,
+      "message": "Do you mean creating and adding an independent data structure for Tast\u0027s internal use, so that we can add more fields to there freely?\n\nIIUC, what Tast want to do is:\n1. Emurate everything done for DUT hardware dependency filtering done by scheduler.\n2. Do some additional filtering if some dependency is not scanned by scheduler.\n\nHardwareFeature contains everything needed for #1 (because hwdeps CEL is evaluated with an environment having it). Therefore I thought we should use HardwareFeature, althought that is slice of the config.",
+      "parentUuid": "b980fbe2_c713e2ca",
+      "revId": "1e7db3b2782b354097cb2b589a3f3f72507c14a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

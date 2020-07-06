@@ -328,7 +328,7 @@ func (r *resultsHandler) handleTestError(ctx context.Context, msg *control.TestE
 	ts := msg.Time.Format(testOutputTimeFmt)
 	r.cfg.Logger.Logf("[%s] Error at %s:%d: %s", ts, filepath.Base(msg.Error.File), msg.Error.Line, msg.Error.Reason)
 	if msg.Error.Stack != "" {
-		r.cfg.Logger.Debugf("[%s] Stack trace:\n%s", ts, msg.Error.Stack)
+		r.cfg.Logger.Logf("[%s] Stack trace:\n%s", ts, msg.Error.Stack)
 	}
 	return nil
 }

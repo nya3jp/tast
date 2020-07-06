@@ -202,7 +202,7 @@ func writeSystemInfo(ctx context.Context, dir string) error {
 		"uptime.txt":       exec.CommandContext(ctx, "uptime"),
 		"losetup.txt":      exec.CommandContext(ctx, "losetup"),
 		"df.txt":           exec.CommandContext(ctx, "df", "-mP"),
-		"dmesg.txt":        exec.CommandContext(ctx, "dmseg"),
+		"dmesg.txt":        exec.CommandContext(ctx, "dmesg"),
 	} {
 		if err := runCmd(cmd, fn); err != nil {
 			errs = append(errs, fmt.Sprintf("failed running %q: %v", shutil.EscapeSlice(cmd.Args), err))

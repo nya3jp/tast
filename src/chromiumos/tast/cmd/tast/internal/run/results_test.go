@@ -223,8 +223,8 @@ func TestReadTestOutput(t *gotesting.T) {
 	if !strings.Contains(logData, test2ErrorReason) {
 		t.Errorf("Test error reason %q not included in log %q", test2ErrorReason, logData)
 	}
-	if strings.Contains(logData, test2ErrorStack) {
-		t.Errorf("Test stack %q incorrectly included in log %q", test2ErrorStack, logData)
+	if !strings.Contains(logData, test2ErrorStack) {
+		t.Errorf("Test stack %q not included in log %q", test2ErrorStack, logData)
 	}
 	if !strings.Contains(logData, skipReason) {
 		t.Errorf("Skip reason %q not included in log %q", skipReason, logData)

@@ -71,13 +71,12 @@ func errorHasStatus(err error, status int) bool {
 
 func TestRunTests(t *gotesting.T) {
 	const (
-		name1           = "foo.Test1"
-		name2           = "foo.Test2"
-		preRunMsg       = "setting up for run"
-		postRunMsg      = "cleaning up after run"
-		preTestMsg      = "setting up for test"
-		postTestMsg     = "cleaning up for test"
-		postTestHookMsg = "setup hook for test"
+		name1       = "foo.Test1"
+		name2       = "foo.Test2"
+		preRunMsg   = "setting up for run"
+		postRunMsg  = "cleaning up after run"
+		preTestMsg  = "setting up for test"
+		postTestMsg = "cleaning up for test"
 	)
 
 	reg := testing.NewRegistry()
@@ -105,7 +104,7 @@ func TestRunTests(t *gotesting.T) {
 
 	stdout := bytes.Buffer{}
 	tests := reg.AllTests()
-	var preRunCalls, postRunCalls, preTestCalls, postTestCalls, postTestHookCalls int
+	var preRunCalls, postRunCalls, preTestCalls, postTestCalls int
 	args := Args{
 		RunTests: &RunTestsArgs{
 			OutDir:  tmpDir,
@@ -129,13 +128,9 @@ func TestRunTests(t *gotesting.T) {
 			s.Log(preTestMsg)
 
 			return func(ctx context.Context, s *testing.State) {
-				postTestHookCalls++
-				s.Log(postTestHookMsg)
+				postTestCalls++
+				s.Log(postTestMsg)
 			}
-		},
-		postTestFunc: func(ctx context.Context, s *testing.State) {
-			postTestCalls++
-			s.Log(postTestMsg)
 		},
 	}
 
@@ -156,9 +151,6 @@ func TestRunTests(t *gotesting.T) {
 	if postTestCalls != len(tests) {
 		t.Errorf("%v called post-test function %d time(s); want %d", sig, postTestCalls, len(tests))
 	}
-	if postTestHookCalls != len(tests) {
-		t.Errorf("%v called post-test-hook function %d time(s); want %d", sig, postTestHookCalls, len(tests))
-	}
 
 	// Just check some basic details of the control messages.
 	r := control.NewMessageReader(&stdout)
@@ -169,13 +161,11 @@ func TestRunTests(t *gotesting.T) {
 		&control.TestStart{Test: *tests[0].TestInfo()},
 		&control.TestLog{Text: preTestMsg},
 		&control.TestLog{Text: postTestMsg},
-		&control.TestLog{Text: postTestHookMsg},
 		&control.TestEnd{Name: name1},
 		&control.TestStart{Test: *tests[1].TestInfo()},
 		&control.TestLog{Text: preTestMsg},
 		&control.TestError{},
 		&control.TestLog{Text: postTestMsg},
-		&control.TestLog{Text: postTestHookMsg},
 		&control.TestEnd{Name: name2},
 		&control.RunLog{Text: postRunMsg},
 	} {

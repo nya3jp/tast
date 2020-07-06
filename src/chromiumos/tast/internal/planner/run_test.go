@@ -220,13 +220,12 @@ func TestRunSkipStages(t *gotesting.T) {
 
 	// testBehavior specifies the behavior of a test in each of its stages.
 	type testBehavior struct {
-		pre                *testPre
-		preTestAction      action // TestConfig.PreTestFunc
-		prepareAction      action // Precondition.Prepare
-		testAction         action // Test.Func
-		closeAction        action // Precondition.Close
-		postTestAction     action // TestConfig.PostTestFunc
-		postTestHookAction action // Return of TestConfig.PreTestFunc
+		pre            *testPre
+		preTestAction  action // Config.PreTestFunc
+		prepareAction  action // Precondition.Prepare
+		testAction     action // Test.Func
+		closeAction    action // Precondition.Close
+		postTestAction action // Return of Config.PreTestFunc
 	}
 
 	// pre1 and pre2 are preconditions used in tests. prepareFunc and closeFunc
@@ -242,21 +241,20 @@ func TestRunSkipStages(t *gotesting.T) {
 		{
 			name: "no precondition",
 			tests: []testBehavior{
-				{nil, pass, noCall, pass, noCall, pass, pass},
+				{nil, pass, noCall, pass, noCall, pass},
 			},
 			want: []control.Msg{
 				&control.TestStart{Test: testing.TestInfo{Name: "0", Timeout: time.Minute}},
 				&control.TestLog{Text: "preTest: OK"},
 				&control.TestLog{Text: "test: OK"},
 				&control.TestLog{Text: "postTest: OK"},
-				&control.TestLog{Text: "postTestHook: OK"},
 				&control.TestEnd{Name: "0"},
 			},
 		},
 		{
 			name: "passes",
 			tests: []testBehavior{
-				{pre1, pass, pass, pass, pass, pass, pass},
+				{pre1, pass, pass, pass, pass, pass},
 			},
 			want: []control.Msg{
 				&control.TestStart{Test: testing.TestInfo{Name: "0", Timeout: time.Minute}},
@@ -267,14 +265,13 @@ func TestRunSkipStages(t *gotesting.T) {
 				&control.TestLog{Text: `Closing precondition "pre1"`},
 				&control.TestLog{Text: "close: OK"},
 				&control.TestLog{Text: "postTest: OK"},
-				&control.TestLog{Text: "postTestHook: OK"},
 				&control.TestEnd{Name: "0"},
 			},
 		},
 		{
 			name: "pretest fails",
 			tests: []testBehavior{
-				{pre1, doError, noCall, noCall, pass, pass, pass},
+				{pre1, doError, noCall, noCall, pass, pass},
 			},
 			want: []control.Msg{
 				&control.TestStart{Test: testing.TestInfo{Name: "0", Timeout: time.Minute}},
@@ -282,28 +279,26 @@ func TestRunSkipStages(t *gotesting.T) {
 				&control.TestLog{Text: `Closing precondition "pre1"`},
 				&control.TestLog{Text: "close: OK"},
 				&control.TestLog{Text: "postTest: OK"},
-				&control.TestLog{Text: "postTestHook: OK"},
 				&control.TestEnd{Name: "0"},
 			},
 		},
 		{
 			name: "pretest panics",
 			tests: []testBehavior{
-				{pre1, doPanic, noCall, noCall, pass, pass, pass},
+				{pre1, doPanic, noCall, noCall, pass, pass},
 			},
 			want: []control.Msg{
 				&control.TestStart{Test: testing.TestInfo{Name: "0", Timeout: time.Minute}},
 				&control.TestError{Error: testing.Error{Reason: "Panic: preTest: Intentional panic"}},
 				&control.TestLog{Text: `Closing precondition "pre1"`},
 				&control.TestLog{Text: "close: OK"},
-				&control.TestLog{Text: "postTest: OK"},
 				&control.TestEnd{Name: "0"},
 			},
 		},
 		{
 			name: "prepare fails",
 			tests: []testBehavior{
-				{pre1, pass, doError, noCall, pass, pass, pass},
+				{pre1, pass, doError, noCall, pass, pass},
 			},
 			want: []control.Msg{
 				&control.TestStart{Test: testing.TestInfo{Name: "0", Timeout: time.Minute}},
@@ -313,14 +308,13 @@ func TestRunSkipStages(t *gotesting.T) {
 				&control.TestLog{Text: `Closing precondition "pre1"`},
 				&control.TestLog{Text: "close: OK"},
 				&control.TestLog{Text: "postTest: OK"},
-				&control.TestLog{Text: "postTestHook: OK"},
 				&control.TestEnd{Name: "0"},
 			},
 		},
 		{
 			name: "prepare panics",
 			tests: []testBehavior{
-				{pre1, pass, doPanic, noCall, pass, pass, pass},
+				{pre1, pass, doPanic, noCall, pass, pass},
 			},
 			want: []control.Msg{
 				&control.TestStart{Test: testing.TestInfo{Name: "0", Timeout: time.Minute}},
@@ -330,15 +324,14 @@ func TestRunSkipStages(t *gotesting.T) {
 				&control.TestLog{Text: `Closing precondition "pre1"`},
 				&control.TestLog{Text: "close: OK"},
 				&control.TestLog{Text: "postTest: OK"},
-				&control.TestLog{Text: "postTestHook: OK"},
 				&control.TestEnd{Name: "0"},
 			},
 		},
 		{
 			name: "same precondition",
 			tests: []testBehavior{
-				{pre1, pass, pass, pass, noCall, pass, pass},
-				{pre1, pass, pass, pass, pass, pass, pass},
+				{pre1, pass, pass, pass, noCall, pass},
+				{pre1, pass, pass, pass, pass, pass},
 			},
 			want: []control.Msg{
 				&control.TestStart{Test: testing.TestInfo{Name: "0", Timeout: time.Minute}},
@@ -347,7 +340,6 @@ func TestRunSkipStages(t *gotesting.T) {
 				&control.TestLog{Text: "prepare: OK"},
 				&control.TestLog{Text: "test: OK"},
 				&control.TestLog{Text: "postTest: OK"},
-				&control.TestLog{Text: "postTestHook: OK"},
 				&control.TestEnd{Name: "0"},
 				&control.TestStart{Test: testing.TestInfo{Name: "1", Timeout: time.Minute}},
 				&control.TestLog{Text: "preTest: OK"},
@@ -357,15 +349,14 @@ func TestRunSkipStages(t *gotesting.T) {
 				&control.TestLog{Text: `Closing precondition "pre1"`},
 				&control.TestLog{Text: "close: OK"},
 				&control.TestLog{Text: "postTest: OK"},
-				&control.TestLog{Text: "postTestHook: OK"},
 				&control.TestEnd{Name: "1"},
 			},
 		},
 		{
 			name: "different preconditions",
 			tests: []testBehavior{
-				{pre1, pass, pass, pass, pass, pass, pass},
-				{pre2, pass, pass, pass, pass, pass, pass},
+				{pre1, pass, pass, pass, pass, pass},
+				{pre2, pass, pass, pass, pass, pass},
 			},
 			want: []control.Msg{
 				&control.TestStart{Test: testing.TestInfo{Name: "0", Timeout: time.Minute}},
@@ -376,7 +367,6 @@ func TestRunSkipStages(t *gotesting.T) {
 				&control.TestLog{Text: `Closing precondition "pre1"`},
 				&control.TestLog{Text: "close: OK"},
 				&control.TestLog{Text: "postTest: OK"},
-				&control.TestLog{Text: "postTestHook: OK"},
 				&control.TestEnd{Name: "0"},
 				&control.TestStart{Test: testing.TestInfo{Name: "1", Timeout: time.Minute}},
 				&control.TestLog{Text: "preTest: OK"},
@@ -386,15 +376,14 @@ func TestRunSkipStages(t *gotesting.T) {
 				&control.TestLog{Text: `Closing precondition "pre2"`},
 				&control.TestLog{Text: "close: OK"},
 				&control.TestLog{Text: "postTest: OK"},
-				&control.TestLog{Text: "postTestHook: OK"},
 				&control.TestEnd{Name: "1"},
 			},
 		},
 		{
 			name: "first prepare fails",
 			tests: []testBehavior{
-				{pre1, pass, doError, noCall, noCall, pass, pass},
-				{pre1, pass, pass, pass, pass, pass, pass},
+				{pre1, pass, doError, noCall, noCall, pass},
+				{pre1, pass, pass, pass, pass, pass},
 			},
 			want: []control.Msg{
 				&control.TestStart{Test: testing.TestInfo{Name: "0", Timeout: time.Minute}},
@@ -402,7 +391,6 @@ func TestRunSkipStages(t *gotesting.T) {
 				&control.TestLog{Text: `Preparing precondition "pre1"`},
 				&control.TestError{Error: testing.Error{Reason: "[Precondition failure] prepare: Intentional error"}},
 				&control.TestLog{Text: "postTest: OK"},
-				&control.TestLog{Text: "postTestHook: OK"},
 				&control.TestEnd{Name: "0"},
 				&control.TestStart{Test: testing.TestInfo{Name: "1", Timeout: time.Minute}},
 				&control.TestLog{Text: "preTest: OK"},
@@ -412,7 +400,6 @@ func TestRunSkipStages(t *gotesting.T) {
 				&control.TestLog{Text: `Closing precondition "pre1"`},
 				&control.TestLog{Text: "close: OK"},
 				&control.TestLog{Text: "postTest: OK"},
-				&control.TestLog{Text: "postTestHook: OK"},
 				&control.TestEnd{Name: "1"},
 			},
 		},
@@ -482,11 +469,8 @@ func TestRunSkipStages(t *gotesting.T) {
 				PreTestFunc: func(ctx context.Context, s *testing.State) func(context.Context, *testing.State) {
 					doAction(s, currentBehavior(s).preTestAction, "preTest")
 					return func(ctx context.Context, s *testing.State) {
-						doAction(s, currentBehavior(s).postTestHookAction, "postTestHook")
+						doAction(s, currentBehavior(s).postTestAction, "postTest")
 					}
-				},
-				PostTestFunc: func(ctx context.Context, s *testing.State) {
-					doAction(s, currentBehavior(s).postTestAction, "postTest")
 				},
 			}
 			msgs := runTestsAndReadAll(t, tests, pcfg)
@@ -728,7 +712,6 @@ const (
 	phaseSubtestFunc
 	phaseCloseFunc
 	phasePostTestFunc
-	phasePostTestHook
 )
 
 func (p runPhase) String() string {
@@ -745,8 +728,6 @@ func (p runPhase) String() string {
 		return "closeFunc"
 	case phasePostTestFunc:
 		return "postTestFunc"
-	case phasePostTestHook:
-		return "postTestHook"
 	default:
 		return "unknown"
 	}
@@ -765,7 +746,6 @@ func TestRunHasError(t *gotesting.T) {
 		phaseSubtestFunc,
 		phaseCloseFunc,
 		phasePostTestFunc,
-		phasePostTestHook,
 	} {
 		t.Run(fmt.Sprintf("Fail in %s", failIn), func(t *gotesting.T) {
 			onPhase := func(s stateLike, current runPhase) {
@@ -792,11 +772,8 @@ func TestRunHasError(t *gotesting.T) {
 				PreTestFunc: func(ctx context.Context, s *testing.State) func(context.Context, *testing.State) {
 					onPhase(s, phasePreTestFunc)
 					return func(ctx context.Context, s *testing.State) {
-						onPhase(s, phasePostTestHook)
+						onPhase(s, phasePostTestFunc)
 					}
-				},
-				PostTestFunc: func(ctx context.Context, s *testing.State) {
-					onPhase(s, phasePostTestFunc)
 				},
 			}
 			testFunc := func(ctx context.Context, s *testing.State) {

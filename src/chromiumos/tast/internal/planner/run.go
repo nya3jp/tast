@@ -52,8 +52,6 @@ type Config struct {
 	// PreTestFunc is run before TestInstance.Func (and TestInstance.Pre.Prepare, when applicable) if non-nil.
 	// The returned closure is executed after PostTestFunc if not nil.
 	PreTestFunc func(context.Context, *testing.State) func(context.Context, *testing.State)
-	// PostTestFunc is run after TestInstance.Func (and TestInstance.Pre.Cleanup, when applicable) if non-nil.
-	PostTestFunc func(context.Context, *testing.State)
 }
 
 // RunTests runs a set of tests, writing outputs to out.
@@ -344,10 +342,6 @@ func buildStages(t *testing.TestInstance, pcfg *Config, precfg *preConfig, tcfg 
 	// Finally, run the post-test functions unconditionally.
 	addStage(func(ctx context.Context, root *testing.RootState) {
 		root.RunWithTestState(ctx, func(ctx context.Context, s *testing.State) {
-			if pcfg.PostTestFunc != nil {
-				pcfg.PostTestFunc(ctx, s)
-			}
-
 			if postTestHook != nil {
 				postTestHook(ctx, s)
 			}

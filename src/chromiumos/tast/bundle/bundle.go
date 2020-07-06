@@ -130,8 +130,6 @@ type runConfig struct {
 	// will not be prepared and the test function will not run.
 	// The returned closure is executed after postTestFunc if not nil.
 	preTestFunc func(context.Context, *testing.State) func(context.Context, *testing.State)
-	// postTestFunc is run unconditionally at the end of each test if non-nil.
-	postTestFunc func(context.Context, *testing.State)
 	// defaultTestTimeout contains the default maximum time allotted to each test.
 	// It is only used if testing.Test.Timeout is unset.
 	defaultTestTimeout time.Duration
@@ -275,7 +273,6 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		BuildArtifactsURL: args.RunTests.BuildArtifactsURL,
 		RemoteData:        rd,
 		PreTestFunc:       cfg.preTestFunc,
-		PostTestFunc:      cfg.postTestFunc,
 	}
 
 	if err := planner.RunTests(ctx, tests, ew, pcfg); err != nil {

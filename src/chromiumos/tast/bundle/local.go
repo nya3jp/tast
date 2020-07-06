@@ -48,7 +48,7 @@ func Local(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, delegate 
 		defaultTestTimeout: localTestTimeout,
 	}
 
-	cfg.preTestFunc = delegate.PreTestRun
+	cfg.testHook = delegate.PreTestRun
 
 	if delegate.Ready != nil {
 		cfg.preRunFunc = func(ctx context.Context) (context.Context, error) {

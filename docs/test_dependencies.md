@@ -93,6 +93,7 @@ The following software features are defined:
 *   `ndk_translation` - Availability of 32-bit NDK translation library for ARC.
 *   `ndk_translation64` - Availability of 64-bit NDK translation library for
     ARC.
+*   `nnapi` - Has the nnapi (libneuralnetworks.so) installed.
 *   `no_android` - The inability to run Android apps. This is the opposite of
     the `android` feature; DUTs will have exactly one of these two features.
 *   `no_asan` - Build was not built with Address Sanitizer. Similar to `aslr`.

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8002865b_af84dddc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-07T06:11:17Z",
+      "side": 1,
+      "message": "Ouch, I failed to update the unit tests...\n",
+      "revId": "35560d8d6b0ef84091728cbcfb677c5a2a119420",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

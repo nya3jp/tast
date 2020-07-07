@@ -66,7 +66,9 @@ func init() {
 	proto.RegisterType((*BuildTargetId)(nil), "chromiumos.config.api.software.BuildTargetId")
 }
 
-func init() { proto.RegisterFile("api/software/build_target_id.proto", fileDescriptor_79b372457295fbad) }
+func init() {
+	proto.RegisterFile("api/software/build_target_id.proto", fileDescriptor_79b372457295fbad)
+}
 
 var fileDescriptor_79b372457295fbad = []byte{
 	// 147 bytes of a gzipped FileDescriptorProto

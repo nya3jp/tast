@@ -283,8 +283,8 @@ func (r *GetDUTInfoResult) UnmarshalJSON(b []byte) error {
 type SysInfoState struct {
 	// LogInodeSizes maps from each log file's inode to its size in bytes.
 	LogInodeSizes map[uint64]int64 `json:"logInodeSizes,omitempty"`
-	// JournaldCursor contains an opaque cursor pointing at the current tip of journald logs.
-	JournaldCursor string `json:"journaldCursor,omitempty"`
+	// SystemLogCursor contains an opaque cursor pointing at the current tip of system logs.
+	SystemLogCursor string `json:"systemLogCursor,omitempty"`
 	// MinidumpPaths contains absolute paths to minidump crash files.
 	MinidumpPaths []string `json:"minidumpPaths,omitempty"`
 }
@@ -330,9 +330,9 @@ type Config struct {
 	SystemLogDir string
 	// SystemLogExcludes contains relative paths of directories and files in SystemLogDir to exclude.
 	SystemLogExcludes []string
-	// JournaldSubdir contains the subdirectory within CollectSysInfoResult.LogDir where journald logs will be written.
-	// No journald logs will be be collected if this is empty.
-	JournaldSubdir string `json:"-"`
+	// CombinedLogSubdir contains the subdirectory within CollectSysInfoResult.LogDir where system logs will be written.
+	// No system logs will be be collected if this is empty.
+	CombinedLogSubdir string `json:"-"`
 	// SystemInfoFunc contains a function that will be executed to gather additional system info.
 	// The information should be written to dir.
 	SystemInfoFunc func(ctx context.Context, dir string) error

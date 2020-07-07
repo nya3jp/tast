@@ -284,7 +284,9 @@ func init() {
 	proto.RegisterType((*FirmwareConfig)(nil), "chromiumos.config.api.software.FirmwareConfig")
 }
 
-func init() { proto.RegisterFile("api/software/firmware_config.proto", fileDescriptor_6660a02f418c569d) }
+func init() {
+	proto.RegisterFile("api/software/firmware_config.proto", fileDescriptor_6660a02f418c569d)
+}
 
 var fileDescriptor_6660a02f418c569d = []byte{
 	// 419 bytes of a gzipped FileDescriptorProto

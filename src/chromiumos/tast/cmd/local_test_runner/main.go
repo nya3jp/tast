@@ -119,6 +119,7 @@ func main() {
 			"mosys":                  "!betty && !tast_vm",
 			"ndk_translation":        "ndk_translation",
 			"ndk_translation64":      "ndk_translation64",
+			"nnapi":                  "nnapi",
 			"no_android":             "!arc",
 			"no_asan":                "!asan",
 			"no_msan":                "!msan",

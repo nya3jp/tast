@@ -113,15 +113,14 @@ func TestRunTests(t *gotesting.T) {
 		},
 	}
 	cfg := runConfig{
-		preRunFunc: func(ctx context.Context) (context.Context, error) {
+		runHook: func(ctx context.Context) (func(context.Context) error, error) {
 			preRunCalls++
 			logging.ContextLog(ctx, preRunMsg)
-			return ctx, nil
-		},
-		postRunFunc: func(ctx context.Context) error {
-			postRunCalls++
-			logging.ContextLog(ctx, postRunMsg)
-			return nil
+			return func(ctx context.Context) error {
+				postRunCalls++
+				logging.ContextLog(ctx, postRunMsg)
+				return nil
+			}, nil
 		},
 		testHook: func(ctx context.Context, s *testing.State) func(ctx context.Context, s *testing.State) {
 			preTestCalls++

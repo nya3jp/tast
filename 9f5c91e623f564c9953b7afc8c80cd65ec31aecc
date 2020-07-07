@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9d570e54_2c3848ab",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000175
+      },
+      "writtenOn": "2020-07-07T07:20:02Z",
+      "side": 1,
+      "message": "Nya-san, PTAL. I briefly ran the tast tests as mentioned in the description. If we should do another step to verify the change, please let me know. Thanks.",
+      "revId": "9f5c91e623f564c9953b7afc8c80cd65ec31aecc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

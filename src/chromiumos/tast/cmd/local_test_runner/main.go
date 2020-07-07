@@ -42,7 +42,7 @@ func main() {
 		KillStaleRunners:  true,
 		SystemLogDir:      "/var/log",
 		SystemLogExcludes: []string{"journal"}, // journald binary logs: https://crbug.com/931951
-		JournaldSubdir:    "journal",           // destination for exported journald logs
+		CombinedLogSubdir: "combined",          // destination for exported system logs
 		SystemInfoFunc:    writeSystemInfo,     // save additional system info at end of run
 		SystemCrashDirs:   crash.DefaultDirs(),
 		// The tast-use-flags package attempts to install this file to /etc,

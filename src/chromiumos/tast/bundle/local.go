@@ -51,11 +51,11 @@ func Local(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, delegate 
 	cfg.testHook = delegate.PreTestRun
 
 	if delegate.Ready != nil {
-		cfg.preRunFunc = func(ctx context.Context) (context.Context, error) {
+		cfg.runHook = func(ctx context.Context) (func(context.Context) error, error) {
 			if !args.RunTests.WaitUntilReady {
-				return ctx, nil
+				return nil, nil
 			}
-			return ctx, delegate.Ready(ctx)
+			return nil, delegate.Ready(ctx)
 		}
 	}
 	return run(context.Background(), clArgs, stdin, stdout, stderr, &args, &cfg, localBundle)

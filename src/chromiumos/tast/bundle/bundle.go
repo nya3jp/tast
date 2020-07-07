@@ -120,11 +120,9 @@ func testsToRun(cfg *runConfig, patterns []string) ([]*testing.TestInstance, err
 // since some bundles may run on Chrome-OS-derived systems that don't contain Chrome). See ReadyFunc if
 // bundle-specific work needs to be performed.
 type runConfig struct {
-	// preRunFunc is run at the beginning of the entire series of tests if non-nil.
-	// The provided context (or a derived context with additional values) should be returned by the function.
-	preRunFunc func(context.Context) (context.Context, error)
-	// postRunFunc is run at the end of the entire series of tests if non-nil.
-	postRunFunc func(context.Context) error
+	// runHook is run at the beginning of the entire series of tests if non-nil.
+	// The returned closure is executed after the entire series of tests if not nil.
+	runHook func(context.Context) (func(context.Context) error, error)
 	// testHook is run before each test if non-nil.
 	// If this function panics or reports errors, the precondition (if any)
 	// will not be prepared and the test function will not run.
@@ -231,9 +229,11 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 	}
 	defer restoreTempDir()
 
-	if cfg.preRunFunc != nil {
+	var postRunFunc func(context.Context) error
+	if cfg.runHook != nil {
 		var err error
-		if ctx, err = cfg.preRunFunc(ctx); err != nil {
+		postRunFunc, err = cfg.runHook(ctx)
+		if err != nil {
 			return command.NewStatusErrorf(statusError, "pre-run failed: %v", err)
 		}
 	}
@@ -279,8 +279,8 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		return command.NewStatusErrorf(statusError, "run failed: %v", err)
 	}
 
-	if cfg.postRunFunc != nil {
-		if err := cfg.postRunFunc(ctx); err != nil {
+	if postRunFunc != nil {
+		if err := postRunFunc(ctx); err != nil {
 			return command.NewStatusErrorf(statusError, "post-run failed: %v", err)
 		}
 	}

@@ -10,11 +10,6 @@ import (
 	"chromiumos/tast/internal/testing"
 )
 
-// TestInstance represents a test instance registered to the framework.
-//
-// DEPRECATED: Tests should not refer TestInstance.
-type TestInstance = testing.TestInstance
-
 // NewTestGlobRegexp returns a compiled regular expression corresponding to g,
 // a glob for matching test names.
 //

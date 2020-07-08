@@ -51,7 +51,7 @@ type Config struct {
 	RemoteData *testing.RemoteData
 	// PreTestFunc is run before TestInstance.Func (and TestInstance.Pre.Prepare, when applicable) if non-nil.
 	// The returned closure is executed after PostTestFunc if not nil.
-	PreTestFunc func(context.Context, *testing.State) func(context.Context, *testing.State)
+	PreTestFunc func(context.Context, *testing.State, string) func(context.Context, *testing.State)
 	// PostTestFunc is run after TestInstance.Func (and TestInstance.Pre.Cleanup, when applicable) if non-nil.
 	PostTestFunc func(context.Context, *testing.State)
 }
@@ -230,7 +230,7 @@ func buildStages(t, next *testing.TestInstance, pcfg *Config, tcfg *testing.Test
 
 	// First, perform setup and run the pre-test function.
 	addStage(func(ctx context.Context, root *testing.RootState) {
-		root.RunWithTestState(ctx, func(ctx context.Context, s *testing.State) {
+		root.RunWithPreTestState(ctx, func(ctx context.Context, s *testing.State, name string) {
 			// The test bundle is responsible for ensuring t.Timeout is nonzero before calling Run,
 			// but we call s.Fatal instead of panicking since it's arguably nicer to report individual
 			// test failures instead of aborting the entire run.
@@ -279,7 +279,7 @@ func buildStages(t, next *testing.TestInstance, pcfg *Config, tcfg *testing.Test
 			}
 
 			if pcfg.PreTestFunc != nil {
-				postTestHook = pcfg.PreTestFunc(ctx, s)
+				postTestHook = pcfg.PreTestFunc(ctx, s, name)
 			}
 		})
 	}, preTestTimeout, preTestTimeout+exitTimeout)

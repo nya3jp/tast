@@ -169,6 +169,16 @@ func (r *RootState) newPreState() *PreState {
 	return &PreState{baseState{root: r, inPre: true, hasError: r.HasError()}}
 }
 
+// RunWithPreTestState runs f, passing a Context, a State, for a pre-test func, and the test name.
+// If f panics, it recovers and reports the error via the State.
+// f is run within a goroutine to avoid making the calling goroutine exit if
+// f calls s.Fatal (which calls runtime.Goexit).
+func (r *RootState) RunWithPreTestState(ctx context.Context, f func(ctx context.Context, s *State, name string)) {
+	s := r.newTestState()
+	ctx = NewContext(ctx, s)
+	runAndRecover(func() { f(ctx, s, r.test.Name) }, s)
+}
+
 // RunWithTestState runs f, passing a Context and a State for a test.
 // If f panics, it recovers and reports the error via the State.
 // f is run within a goroutine to avoid making the calling goroutine exit if

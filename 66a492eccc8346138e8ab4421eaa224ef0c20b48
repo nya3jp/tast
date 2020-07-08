@@ -1,0 +1,234 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "074cb309_08c715c3",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-08T08:49:00Z",
+      "side": 1,
+      "message": "style: trailing period.",
+      "range": {
+        "startLine": 14,
+        "startChar": 36,
+        "endLine": 14,
+        "endChar": 40
+      },
+      "revId": "66a492eccc8346138e8ab4421eaa224ef0c20b48",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "117cc562_fcae52eb",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-08T08:49:00Z",
+      "side": 1,
+      "message": "Please panic here so that it\u0027s unintentionally used. Same applies to other unimplemented functions.",
+      "range": {
+        "startLine": 17,
+        "startChar": 1,
+        "endLine": 17,
+        "endChar": 28
+      },
+      "revId": "66a492eccc8346138e8ab4421eaa224ef0c20b48",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "40d4f3d2_07a6e027",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-08T08:49:00Z",
+      "side": 1,
+      "message": "I still don\u0027t have a good picture of how parameters for fixtures works.\n\nParameterized tests are useful because test functions have to be a simple top-level function with a fixed signature (func(ctx context.Context, s *testing.State)). But the situation is different for fixtures. I imagine we can parameterize fixtures in the following way for example:\n\n func newChromeFixture(opts ...Option) testing.Fixture { ... }\n\n func init() {\n   testing.AddFixt(\u0026testing.Fixt{\n     Name: \"fake_logged_in\",\n     Impl: newChromeFixture(),\n     ...\n   })\n   testing.AddFixt(\u0026testing.Fixt{\n     Name: \"gaia_logged_in\",\n     Impl: newChromeFixture(GAIALogin(\"user\", \"pass\")),\n     ...\n   })\n }\n\nPros about this approach is that parameterized fixtures don\u0027t share the same impl, so it\u0027s safer.\n\nDo you want to support Fixt.Params from the beginning? Then I think we need more discussion in the design doc.",
+      "range": {
+        "startLine": 20,
+        "startChar": 3,
+        "endLine": 20,
+        "endChar": 15
+      },
+      "revId": "66a492eccc8346138e8ab4421eaa224ef0c20b48",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "05866c63_8578b638",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-08T08:49:00Z",
+      "side": 1,
+      "message": "When do we need AddfixtParam instead of Fixt.Params?",
+      "range": {
+        "startLine": 31,
+        "startChar": 0,
+        "endLine": 31,
+        "endChar": 74
+      },
+      "revId": "66a492eccc8346138e8ab4421eaa224ef0c20b48",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bad0f271_1951f1b3",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-08T08:49:00Z",
+      "side": 1,
+      "message": "Can you remove these fields until we support them?",
+      "range": {
+        "startLine": 98,
+        "startChar": 0,
+        "endLine": 99,
+        "endChar": 22
+      },
+      "revId": "66a492eccc8346138e8ab4421eaa224ef0c20b48",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "17c96f5b_0959c613",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-08T08:49:00Z",
+      "side": 1,
+      "message": "Fixtures don\u0027t need to declare software/hardware dependencies. Tests need them because some tests should be skipped even if they\u0027re selected by attribute expressions. OTOH fixtures can\u0027t be \"skipped\" when any test depending on them are being run.",
+      "range": {
+        "startLine": 100,
+        "startChar": 0,
+        "endLine": 101,
+        "endChar": 24
+      },
+      "revId": "66a492eccc8346138e8ab4421eaa224ef0c20b48",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c5e67a5b_c2183ec5",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-08T08:49:00Z",
+      "side": 1,
+      "message": "Listing methods here would get stale easily. I recommend saying that ctx and s returns metadata of the fixture itself rather than the current test.",
+      "range": {
+        "startLine": 143,
+        "startChar": 0,
+        "endLine": 147,
+        "endChar": 95
+      },
+      "revId": "66a492eccc8346138e8ab4421eaa224ef0c20b48",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ba0e2374_4fe04f2b",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-08T08:49:00Z",
+      "side": 1,
+      "message": "Can you define which fixture/test errors reported in this method are attributed to? That is, I want an explanation similar to the following comment in Prepare:\n\n\t// Errors in this method are reported as errors of the fixture itself, rather than tests\n\t// depending on it.\n\nAnd I guess this explanation actually applies to this method as well.",
+      "range": {
+        "startLine": 154,
+        "startChar": 0,
+        "endLine": 154,
+        "endChar": 3
+      },
+      "revId": "66a492eccc8346138e8ab4421eaa224ef0c20b48",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9ef15a3b_d494c9b9",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-08T08:49:00Z",
+      "side": 1,
+      "message": "With this sequence, Tast might enter an infinite loop. For example, let\u0027s say we have two fixtures A and B, and B.Adjust always fails. Then a possible sequence would be:\n\n- A.Prepare\n- B.Prepare\n- A.Adjust\n- B.Adjust -\u003e fail\n- B.Close\n- B.Prepare\n- B.Adjust -\u003e fail\n- B.Close\n- B.Prepare\n- B.Adjust -\u003e fail\n- ...\n\nDo you have any idea to avoid such loops?",
+      "range": {
+        "startLine": 162,
+        "startChar": 0,
+        "endLine": 162,
+        "endChar": 55
+      },
+      "revId": "66a492eccc8346138e8ab4421eaa224ef0c20b48",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4f179cea_1a77e5da",
+        "filename": "src/chromiumos/tast/internal/testing/test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-08T08:49:00Z",
+      "side": 1,
+      "message": "This sounds the same as preconditions. Fixtures try to cover postconditions as well.",
+      "range": {
+        "startLine": 80,
+        "startChar": 42,
+        "endLine": 80,
+        "endChar": 72
+      },
+      "revId": "66a492eccc8346138e8ab4421eaa224ef0c20b48",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a78851f_9b11dae0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000175
+      },
+      "writtenOn": "2020-07-08T01:07:44Z",
+      "side": 1,
+      "message": "Some tast tests are failing on bots for some reason. Let me remove the reviewers until I fix them.",
+      "revId": "18d988c6d427a6b6fc2c1195245345814615287b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

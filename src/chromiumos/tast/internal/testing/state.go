@@ -137,6 +137,14 @@ type PreState struct {
 	baseState
 }
 
+// FixtState holds state relevant to the execution of a single fixture instance.
+//
+// This is a State for fixtures. See State's documentation for general
+// guidance on how to treat FixtState in fixtures.
+type FixtState struct {
+	// TODO(oka): implement it.
+}
+
 // TestConfig contains details about how an individual test should be run.
 type TestConfig struct {
 	// DataDir is the directory in which the test's data files are located.
@@ -350,6 +358,15 @@ func (s *State) Run(ctx context.Context, name string, run func(context.Context, 
 // type; see the relevant precondition's documentation for specifics.
 // nil will be returned if the test did not declare a precondition.
 func (s *State) PreValue() interface{} { return s.root.preValue }
+
+// FixtValue returns a value supplied by the parent fixture in the entity graph.
+// Callers should cast the returned empty interface to the correct pointer type; see the relevant
+// fixture's documentation for specifics.
+// nil will be returned if there's no parent fixture.
+func (s *baseState) FixtValue() interface{} {
+	// TODO(oka): implement it.
+	return nil
+}
 
 // SoftwareDeps returns software dependencies declared in the currently running test.
 func (s *baseState) SoftwareDeps() []string {

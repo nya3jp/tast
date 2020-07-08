@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "afbb3cdd_61c01322",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000175
+      },
+      "writtenOn": "2020-07-08T04:36:59Z",
+      "side": 1,
+      "message": "Nya-san, Yamaguchi-san. I confirmed fast_build.sh passed. PTAL. Thanks.",
+      "revId": "4962300ea3907202ce4e9e54ecb8fada58867fbc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

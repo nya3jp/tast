@@ -26,8 +26,9 @@ type LocalDelegate struct {
 	// If an error is returned, none of the bundle's tests will run.
 	Ready func(ctx context.Context) error
 
-	// PreTestRun is called before each test run. The returned closure is executed after the test if not nil.
-	PreTestRun func(ctx context.Context, s *testing.State) func(ctx context.Context, s *testing.State)
+	// TestHook is called before each test run if it is not nil. The returned closure is executed
+	// after the test if not nil.
+	TestHook func(ctx context.Context, s *testing.State) func(ctx context.Context, s *testing.State)
 }
 
 // LocalDefault implements the main function for local test bundles.
@@ -46,10 +47,8 @@ func Local(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, delegate 
 	args := Args{RunTests: &RunTestsArgs{DataDir: localTestDataDir}}
 	cfg := runConfig{
 		defaultTestTimeout: localTestTimeout,
+		testHook:           delegate.TestHook,
 	}
-
-	cfg.testHook = delegate.PreTestRun
-
 	if delegate.Ready != nil {
 		cfg.runHook = func(ctx context.Context) (func(context.Context) error, error) {
 			if !args.RunTests.WaitUntilReady {

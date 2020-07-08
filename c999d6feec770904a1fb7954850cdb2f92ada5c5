@@ -16,6 +16,78 @@
       "revId": "c999d6feec770904a1fb7954850cdb2f92ada5c5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9f5f4949_626de1bb",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-07-08T02:34:06Z",
+      "side": 1,
+      "message": "\u003e \"regisration\" is a possible misspelling of \"registration\".\n\nPlease fix.",
+      "parentUuid": "16ab820e_7996d0bd",
+      "range": {
+        "startLine": 40,
+        "startChar": 20,
+        "endLine": 40,
+        "endChar": 31
+      },
+      "revId": "c999d6feec770904a1fb7954850cdb2f92ada5c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2a175323_a09bee4e",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-07-08T02:34:06Z",
+      "side": 1,
+      "message": "\u003e \"servce\" is a possible misspelling of \"service\".\n\nPlease fix.",
+      "parentUuid": "f4387588_f64c8ecc",
+      "range": {
+        "startLine": 53,
+        "startChar": 22,
+        "endLine": 53,
+        "endChar": 28
+      },
+      "revId": "c999d6feec770904a1fb7954850cdb2f92ada5c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dd44c2d5_8fd78721",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-07-08T02:34:06Z",
+      "side": 1,
+      "message": "\u003e \"entitiy\" is a possible misspelling of \"entity\".\n\nPlease fix.",
+      "parentUuid": "0b6d56f2_2fa8850a",
+      "range": {
+        "startLine": 114,
+        "startChar": 45,
+        "endLine": 114,
+        "endChar": 52
+      },
+      "revId": "c999d6feec770904a1fb7954850cdb2f92ada5c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

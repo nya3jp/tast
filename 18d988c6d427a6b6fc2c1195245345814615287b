@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "e3785e39_e7fad781",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-08T03:06:38Z",
+      "side": 1,
+      "message": "You can run unit tests by\n\n ~/trunk/src/platform/tast/fast_build.sh -T",
+      "revId": "18d988c6d427a6b6fc2c1195245345814615287b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "5a78851f_9b11dae0",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 4
@@ -16,6 +33,52 @@
       "revId": "18d988c6d427a6b6fc2c1195245345814615287b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "06bce894_2735ede1",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/diagnose.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-08T03:06:38Z",
+      "side": 1,
+      "message": "typo",
+      "range": {
+        "startLine": 82,
+        "startChar": 50,
+        "endLine": 82,
+        "endChar": 56
+      },
+      "revId": "18d988c6d427a6b6fc2c1195245345814615287b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "276844e5_c3c16684",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 287,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-08T03:06:38Z",
+      "side": 1,
+      "message": "JSON field name is not easy to rename for protocol compatibility. Can you simply keep the original name?",
+      "range": {
+        "startLine": 287,
+        "startChar": 31,
+        "endLine": 287,
+        "endChar": 46
+      },
+      "revId": "18d988c6d427a6b6fc2c1195245345814615287b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

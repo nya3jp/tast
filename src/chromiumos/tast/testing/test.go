@@ -22,3 +22,12 @@ type Test = testing.Test
 // Param defines parameters for a parameterized test case.
 // See also https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Parameterized-tests
 type Param = testing.Param
+
+// TestInstance represents a test instance registered to the framework.
+//
+// A test instance is the unit of "tests" exposed to outside of the framework.
+// For example, in the command line of the "tast" command, users specify
+// which tests to run by names of test instances. Single testing.AddTest call
+// may register multiple test instances at once if testing.Test passed to the
+// function has non-empty Params field.
+type TestInstance = testing.TestInstance

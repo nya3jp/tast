@@ -27,7 +27,7 @@ type LocalDelegate struct {
 	Ready func(ctx context.Context) error
 
 	// TestHook is called before each test run. The returned closure is executed after the test if not nil.
-	TestHook func(ctx context.Context, s *testing.State) func(ctx context.Context, s *testing.State)
+	TestHook func(ctx context.Context, s *testing.TestHookState) func(ctx context.Context, s *testing.TestHookState)
 }
 
 // LocalDefault implements the main function for local test bundles.

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7e56af8f_ee1ced41",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1271173
+      },
+      "writtenOn": "2020-07-08T06:14:21Z",
+      "side": 1,
+      "message": "Hi reviewers,\nThe CL used this CL is here:\nhttps://chromium-review.googlesource.com/c/chromiumos/platform/tast-tests/+/2276082",
+      "revId": "5ac518774a8e5ed7703e0c70f989867855b0532f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

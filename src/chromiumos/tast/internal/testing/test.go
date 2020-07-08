@@ -75,6 +75,11 @@ type Test struct {
 	// Pre contains a precondition that must be met before the test is run.
 	Pre Precondition
 
+	// Fixt is not supported yet. TODO(oka): support it.
+	//
+	// Fixt is the name of the fixture to be set up before the test is run.
+	Fixt string
+
 	// Timeout contains the maximum duration for which Func may run before the test is aborted.
 	// This should almost always be omitted when defining tests; a reasonable default will be used.
 	// This field is serialized as an integer nanosecond count.

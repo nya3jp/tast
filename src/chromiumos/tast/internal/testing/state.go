@@ -622,3 +622,10 @@ func NewError(err error, fullMsg, lastMsg string, skipFrames int) *Error {
 		Stack:  trace,
 	}
 }
+
+// TestInstance returns TestInstance of the test being run.
+// The returned TestInstance is a copy of an original TestInstance. Modifying
+// its fields doesn't affect test execution.
+func (s *TestHookState) TestInstance() *TestInstance {
+	return s.root.test.clone()
+}

@@ -149,9 +149,9 @@ func TestLocalPreTestRun(t *gotesting.T) {
 	stderr := bytes.Buffer{}
 	var ranPre, ranPostHook bool
 	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, LocalDelegate{
-		TestHook: func(context.Context, *testing.State) func(context.Context, *testing.State) {
+		TestHook: func(context.Context, *testing.TestHookState) func(context.Context, *testing.TestHookState) {
 			ranPre = true
-			return func(context.Context, *testing.State) {
+			return func(context.Context, *testing.TestHookState) {
 				ranPostHook = true
 			}
 		},

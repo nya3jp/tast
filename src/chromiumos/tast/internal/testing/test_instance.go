@@ -39,9 +39,6 @@ const (
 // which tests to run by names of test instances. Single testing.AddTest call
 // may register multiple test instances at once if testing.Test passed to the
 // function has non-empty Params field.
-//
-// While this struct can be marshaled to a JSON object, unmarshaling that object
-// will not yield a runnable TestInstance struct; Func will not be present.
 type TestInstance struct {
 	// Name specifies the test's name as "category.TestName".
 	// The name is derived from Func's package and function name.

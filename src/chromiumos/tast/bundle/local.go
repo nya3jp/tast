@@ -27,7 +27,7 @@ type LocalDelegate struct {
 	Ready func(ctx context.Context) error
 
 	// PreTestRun is called before each test run. The returned closure is executed after the test if not nil.
-	PreTestRun func(ctx context.Context, s *testing.State) func(ctx context.Context, s *testing.State)
+	PreTestRun func(ctx context.Context, s *testing.State, name string) func(ctx context.Context, s *testing.State)
 }
 
 // LocalDefault implements the main function for local test bundles.

@@ -127,7 +127,7 @@ type runConfig struct {
 	// If this function panics or reports errors, the precondition (if any)
 	// will not be prepared and the test function will not run.
 	// The returned closure is executed after a test if not nil.
-	testHook func(context.Context, *testing.State) func(context.Context, *testing.State)
+	testHook func(context.Context, *testing.TestHookState) func(context.Context, *testing.TestHookState)
 	// defaultTestTimeout contains the default maximum time allotted to each test.
 	// It is only used if testing.Test.Timeout is unset.
 	defaultTestTimeout time.Duration

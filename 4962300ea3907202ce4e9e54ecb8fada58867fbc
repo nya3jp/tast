@@ -16,6 +16,29 @@
       "revId": "4962300ea3907202ce4e9e54ecb8fada58867fbc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "62ee7ca0_b60606bb",
+        "filename": "src/chromiumos/tast/internal/runner/sys_info.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-07-08T06:08:22Z",
+      "side": 1,
+      "message": "did you mean \"may not be installed\"?",
+      "range": {
+        "startLine": 48,
+        "startChar": 14,
+        "endLine": 48,
+        "endChar": 31
+      },
+      "revId": "4962300ea3907202ce4e9e54ecb8fada58867fbc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

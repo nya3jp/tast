@@ -19,9 +19,9 @@ import (
 )
 
 const (
-	maxCrashesPerExec  = 3                   // max crashes to collect per executable
-	journaldCompactLog = "journal.log"       // compact human-readable journald log
-	journaldExportLog  = "journal.export.gz" // full compressed journald log with metadata
+	maxCrashesPerExec  = 3                    // max crashes to collect per executable
+	compactLogFileName = "combined.log"       // compact human-readable system log
+	exportLogFileName  = "combined.export.gz" // full compressed system log with metadata
 )
 
 // handleGetSysInfoState gets information about the system's current state (e.g. log files
@@ -43,10 +43,10 @@ func handleGetSysInfoState(ctx context.Context, cfg *Config, w io.Writer) error 
 		res.Warnings = append(res.Warnings, fmt.Sprintf("%s: %v", p, warning))
 	}
 
-	if cfg.JournaldSubdir != "" {
-		if res.State.JournaldCursor, err = logs.GetJournaldCursor(ctx); err != nil {
-			// journald isn't widely used yet, so just warn about errors.
-			res.Warnings = append(res.Warnings, fmt.Sprintf("Failed to get journald cursor: %v", err))
+	if cfg.CombinedLogSubdir != "" {
+		if res.State.SystemLogCursor, err = logs.GetSystemLogCursor(ctx); err != nil {
+			// croslog may not installed, so just warn about errors.
+			res.Warnings = append(res.Warnings, fmt.Sprintf("Failed to get system log cursor: %v", err))
 		}
 	}
 
@@ -84,14 +84,14 @@ func handleCollectSysInfo(ctx context.Context, args *Args, cfg *Config, w io.Wri
 		res.Warnings = append(res.Warnings, fmt.Sprintf("%s: %v", p, w))
 	}
 
-	// Write journald logs into a subdirectory.
-	if subdir := cfg.JournaldSubdir; subdir != "" {
-		if cursor := cmdArgs.InitialState.JournaldCursor; cursor != "" {
-			if err := writeJournaldLog(ctx, filepath.Join(res.LogDir, subdir, journaldCompactLog), cursor, logs.JournaldCompact); err != nil {
-				res.Warnings = append(res.Warnings, fmt.Sprintf("Failed to collect compact journald entries: %v", err))
+	// Write system logs into a subdirectory.
+	if subdir := cfg.CombinedLogSubdir; subdir != "" {
+		if cursor := cmdArgs.InitialState.SystemLogCursor; cursor != "" {
+			if err := writeSystemLog(ctx, filepath.Join(res.LogDir, subdir, compactLogFileName), cursor, logs.CompactLogFormat); err != nil {
+				res.Warnings = append(res.Warnings, fmt.Sprintf("Failed to collect compact system log entries: %v", err))
 			}
-			if err := writeJournaldLog(ctx, filepath.Join(res.LogDir, subdir, journaldExportLog), cursor, logs.JournaldExport); err != nil {
-				res.Warnings = append(res.Warnings, fmt.Sprintf("Failed to collect exported journald entries: %v", err))
+			if err := writeSystemLog(ctx, filepath.Join(res.LogDir, subdir, exportLogFileName), cursor, logs.GzippedExportLogFormat); err != nil {
+				res.Warnings = append(res.Warnings, fmt.Sprintf("Failed to collect exported system log entries: %v", err))
 			}
 		}
 	}
@@ -138,9 +138,9 @@ func getMinidumps(dirs []string) ([]string, error) {
 	return dumps, nil
 }
 
-// writeJournaldLog writes all journald log entries generated after cursor to path using fm,
+// writeSystemLog writes all system log entries generated after cursor to path using fm,
 // creating the parent directory if necessary.
-func writeJournaldLog(ctx context.Context, path, cursor string, fm logs.JournaldFormat) error {
+func writeSystemLog(ctx context.Context, path, cursor string, fm logs.SystemLogFormat) error {
 	dir := filepath.Dir(path)
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return err
@@ -150,7 +150,7 @@ func writeJournaldLog(ctx context.Context, path, cursor string, fm logs.Journald
 		return err
 	}
 
-	err = logs.WriteJournaldLogs(ctx, f, cursor, fm)
+	err = logs.ExportSystemLogs(ctx, f, cursor, fm)
 	if closeErr := f.Close(); err == nil {
 		err = closeErr
 	}

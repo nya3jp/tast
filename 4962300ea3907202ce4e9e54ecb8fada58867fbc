@@ -2,6 +2,52 @@
   "comments": [
     {
       "key": {
+        "uuid": "eee1cb9b_af6e10d7",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-08T08:06:49Z",
+      "side": 1,
+      "message": "Crash diagnosis is a delicate feature without integration test coverage unfortunately.\n\nCan you manually test the behavior with two crash tests in crrev.com/c/2286974 ?",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 53
+      },
+      "revId": "4962300ea3907202ce4e9e54ecb8fada58867fbc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "feec8a97_1df5c757",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-08T08:06:49Z",
+      "side": 1,
+      "message": "Need Cq-Depend to croslog CLs.",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 52
+      },
+      "revId": "4962300ea3907202ce4e9e54ecb8fada58867fbc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "afbb3cdd_61c01322",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 5
@@ -16,6 +62,52 @@
       "revId": "4962300ea3907202ce4e9e54ecb8fada58867fbc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "05671bca_f531b927",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-08T08:06:49Z",
+      "side": 1,
+      "message": "In this CL, logs from croslog are referred in two names: \"combined logs\" and \"system logs\". I want them to be aligned for clarity.\n\nIMHO \"system logs\" is a bit confusing because it\u0027s not the only logs in the CrOS system (at this moment). I recommend deciding a unique name and using it consistently throughout your project.\n\nSome possible recommendations:\n\n- Unified logs\n- Combined logs\n- Collective logs\n\nc.f. https://www.thesaurus.com/browse/unified",
+      "range": {
+        "startLine": 45,
+        "startChar": 2,
+        "endLine": 45,
+        "endChar": 19
+      },
+      "revId": "4962300ea3907202ce4e9e54ecb8fada58867fbc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4f504914_3d28d7bd",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/diagnose.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-08T08:06:49Z",
+      "side": 1,
+      "message": "tast command can be used with older release of Chrome OS. Can you fallback to journalctl if croslog is not found on the DUT?",
+      "range": {
+        "startLine": 82,
+        "startChar": 29,
+        "endLine": 82,
+        "endChar": 38
+      },
+      "revId": "4962300ea3907202ce4e9e54ecb8fada58867fbc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     },
     {
       "key": {

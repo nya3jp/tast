@@ -113,7 +113,7 @@ func TestDiagnoseSSHDropNormalReboot(t *testing.T) {
 
 	// Simulate normal reboot.
 	td.bootID = anotherBootID
-	td.journal = `...
+	td.unifiedLog = `...
 Apr 19 07:12:49 pre-shutdown[31389]: Shutting down for reboot: system-update
 ...
 `
@@ -190,7 +190,7 @@ func TestDiagnoseSSHSaveFiles(t *testing.T) {
 	}
 
 	td.bootID = anotherBootID
-	td.journal = "foo"
+	td.unifiedLog = "foo"
 	td.ramOops = "bar"
 
 	outDir := filepath.Join(td.tempDir, "diagnosis")
@@ -203,8 +203,8 @@ func TestDiagnoseSSHSaveFiles(t *testing.T) {
 		t.Fatal("ReadFiles failed: ", err)
 	}
 	exp := map[string]string{
-		"journal.before-reboot.txt": "foo",
-		"console-ramoops.txt":       "bar",
+		"unified-logs.before-reboot.txt": "foo",
+		"console-ramoops.txt":            "bar",
 	}
 	if diff := cmp.Diff(files, exp); diff != "" {
 		t.Error("diagnoseSSHDrop did not save files as expected (-got +want):\n", diff)

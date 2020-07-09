@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "414577e3_ea497222",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-09T02:09:37Z",
+      "side": 1,
+      "message": "Since we want to expose a bit more information to test hooks, adding parameters to test hook functions is not scalable.\n\nActually I already sent CLs to introduce a new state type:\nhttps://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/2287015\nhttps://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/2287016\n\nI think I can land them in this week.\n",
+      "revId": "73eb08f3c3011fa5bdd60710c43c9df613e3e69e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

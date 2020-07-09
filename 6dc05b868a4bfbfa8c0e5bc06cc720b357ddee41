@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "719b0dd1_d1dbf854",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 637,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-07-09T04:55:37Z",
+      "side": 1,
+      "message": "nit: the ?",
+      "range": {
+        "startLine": 637,
+        "startChar": 42,
+        "endLine": 637,
+        "endChar": 44
+      },
+      "revId": "6dc05b868a4bfbfa8c0e5bc06cc720b357ddee41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1dc54379_58a2c09c",
+        "filename": "src/chromiumos/tast/testing/test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-07-09T04:55:37Z",
+      "side": 1,
+      "message": "I\u0027m not sure why this change is needed.\nThe TestInstance referred to in state.go lives in internal/testing.",
+      "range": {
+        "startLine": 33,
+        "startChar": 5,
+        "endLine": 33,
+        "endChar": 17
+      },
+      "revId": "6dc05b868a4bfbfa8c0e5bc06cc720b357ddee41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

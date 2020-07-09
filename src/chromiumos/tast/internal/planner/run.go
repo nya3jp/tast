@@ -51,7 +51,7 @@ type Config struct {
 	RemoteData *testing.RemoteData
 	// TestHook is run before TestInstance.Func (and TestInstance.Pre.Prepare, when applicable) if non-nil.
 	// The returned closure is executed after a test if not nil.
-	TestHook func(context.Context, *testing.TestHookState) func(context.Context, *testing.TestHookState)
+	TestHook func(context.Context, *testing.State) func(context.Context, *testing.State)
 }
 
 // RunTests runs a set of tests, writing outputs to out.
@@ -249,7 +249,7 @@ func buildStages(t *testing.TestInstance, pcfg *Config, precfg *preConfig, tcfg 
 		stages = append(stages, stage{f, ctxTimeout, runTimeout})
 	}
 
-	var postTestFunc func(ctx context.Context, s *testing.TestHookState)
+	var postTestFunc func(ctx context.Context, s *testing.State)
 
 	// First, perform setup and run the pre-test function.
 	addStage(func(ctx context.Context, root *testing.RootState) {
@@ -300,9 +300,7 @@ func buildStages(t *testing.TestInstance, pcfg *Config, precfg *preConfig, tcfg 
 					}
 				}
 			}
-		})
 
-		root.RunWithTestHookState(ctx, func(ctx context.Context, s *testing.TestHookState) {
 			if pcfg.TestHook != nil {
 				postTestFunc = pcfg.TestHook(ctx, s)
 			}
@@ -343,7 +341,7 @@ func buildStages(t *testing.TestInstance, pcfg *Config, precfg *preConfig, tcfg 
 
 	// Finally, run the post-test functions unconditionally.
 	addStage(func(ctx context.Context, root *testing.RootState) {
-		root.RunWithTestHookState(ctx, func(ctx context.Context, s *testing.TestHookState) {
+		root.RunWithTestState(ctx, func(ctx context.Context, s *testing.State) {
 			if postTestFunc != nil {
 				postTestFunc(ctx, s)
 			}

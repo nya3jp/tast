@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c100a322_6dae1cf2",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-07-09T04:16:00Z",
+      "side": 1,
+      "message": "the entire series of tests\n?",
+      "range": {
+        "startLine": 121,
+        "startChar": 43,
+        "endLine": 121,
+        "endChar": 49
+      },
+      "revId": "4c8b0a46db4026e00b855cdef0061bf5311fbe1b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

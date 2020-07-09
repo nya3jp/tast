@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2a1961d2_ab3b9db4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 21
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2020-07-09T21:14:01Z",
+      "side": 1,
+      "message": "Hi Madhulika,\n\nPlease don\u0027t add all people to review your Cl.\n\nYou just need to add tast-owners@google.com and then bot will assign reviewer for your CL.\n\nThanks!",
+      "revId": "4ac65d865cfde4fff830afb32288d448adc877c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

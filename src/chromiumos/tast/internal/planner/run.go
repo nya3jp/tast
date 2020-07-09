@@ -119,7 +119,7 @@ func buildPlan(tests []*testing.TestInstance, pcfg *Config) *plan {
 func (p *plan) run(ctx context.Context, out OutputStream) error {
 	// Download external data files.
 	cl := devserver.NewClient(ctx, p.pcfg.Devservers)
-	extdata.Ensure(ctx, p.pcfg.DataDir, p.pcfg.BuildArtifactsURL, p.testsToRun(), cl)
+	purgeable := extdata.Ensure(ctx, p.pcfg.DataDir, p.pcfg.BuildArtifactsURL, p.testsToRun(), cl)
 
 	for _, s := range p.skips {
 		tout := NewTestOutputStream(out, s.test.TestInfo())
@@ -127,7 +127,7 @@ func (p *plan) run(ctx context.Context, out OutputStream) error {
 	}
 
 	for _, pp := range p.prePlans {
-		if err := pp.run(ctx, out); err != nil {
+		if err := pp.run(ctx, out, purgeable); err != nil {
 			return err
 		}
 	}
@@ -156,7 +156,7 @@ func buildPrePlan(tests []*testing.TestInstance, pcfg *Config) *prePlan {
 	return &prePlan{tests[0].Pre, tests, pcfg}
 }
 
-func (p *prePlan) run(ctx context.Context, out OutputStream) error {
+func (p *prePlan) run(ctx context.Context, out OutputStream, purgeable []string) error {
 	// Create a precondition-scoped context.
 	ptc := &testing.TestContext{
 		// OutDir is not available for a precondition-scoped context.
@@ -176,7 +176,7 @@ func (p *prePlan) run(ctx context.Context, out OutputStream) error {
 			ctx:   pctx,
 			close: p.pre != nil && i == len(p.tests)-1,
 		}
-		if err := runTest(ctx, t, tout, p.pcfg, precfg); err != nil {
+		if err := runTest(ctx, t, tout, p.pcfg, precfg, purgeable); err != nil {
 			return err
 		}
 	}
@@ -202,7 +202,7 @@ type preConfig struct {
 //
 // runTest runs a test on a goroutine. If a test does not finish after reaching
 // its timeout, this function returns with an error without waiting for its finish.
-func runTest(ctx context.Context, t *testing.TestInstance, tout *TestOutputStream, pcfg *Config, precfg *preConfig) error {
+func runTest(ctx context.Context, t *testing.TestInstance, tout *TestOutputStream, pcfg *Config, precfg *preConfig, purgeable []string) error {
 	// Attach a log that the test can use to report timing events.
 	timingLog := timing.NewLog()
 	ctx = timing.NewContext(ctx, timingLog)
@@ -221,6 +221,7 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *TestOutputStrea
 		CloudStorage: testing.NewCloudStorage(pcfg.Devservers),
 		RemoteData:   pcfg.RemoteData,
 		PreCtx:       precfg.ctx,
+		Purgeable:    purgeable,
 	}
 	root := testing.NewRootState(t, tout, tcfg)
 	stages := buildStages(t, pcfg, precfg, tcfg)

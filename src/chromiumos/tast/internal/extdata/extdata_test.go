@@ -13,6 +13,8 @@ import (
 	"reflect"
 	gotesting "testing"
 
+	"github.com/google/go-cmp/cmp"
+
 	"chromiumos/tast/internal/devserver"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
@@ -49,7 +51,7 @@ func TestPrepareDownloadsStatic(t *gotesting.T) {
 		{Pkg: pkg, Data: []string{extFile1}},
 		{Pkg: pkg, Data: []string{intFile, extFile2}},
 	}
-	jobs := prepareDownloads(context.Background(), dataDir, fakeArtifactURL, tests)
+	jobs, _ := prepareDownloads(context.Background(), dataDir, fakeArtifactURL, tests)
 
 	exp := []*downloadJob{
 		{
@@ -95,7 +97,7 @@ func TestPrepareDownloadsArtifact(t *gotesting.T) {
 		{Pkg: pkg, Data: []string{extFile1}},
 		{Pkg: pkg, Data: []string{intFile, extFile2}},
 	}
-	jobs := prepareDownloads(context.Background(), dataDir, fakeArtifactURL, tests)
+	jobs, _ := prepareDownloads(context.Background(), dataDir, fakeArtifactURL, tests)
 
 	exp := []*downloadJob{
 		{
@@ -141,7 +143,7 @@ func TestPrepareDownloadsDupLinks(t *gotesting.T) {
 		{Pkg: pkg, Data: []string{extFile1, extFile2}},
 		{Pkg: pkg, Data: []string{extFile2, extFile3}},
 	}
-	jobs := prepareDownloads(context.Background(), dataDir, fakeArtifactURL, tests)
+	jobs, _ := prepareDownloads(context.Background(), dataDir, fakeArtifactURL, tests)
 
 	exp := []*downloadJob{
 		{
@@ -184,7 +186,7 @@ func TestPrepareDownloadsInconsistentDupLinks(t *gotesting.T) {
 	tests := []*testing.TestInstance{
 		{Pkg: pkg, Data: []string{extFile1, extFile2}},
 	}
-	jobs := prepareDownloads(context.Background(), dataDir, fakeArtifactURL, tests)
+	jobs, _ := prepareDownloads(context.Background(), dataDir, fakeArtifactURL, tests)
 
 	exp := []*downloadJob{
 		{
@@ -230,7 +232,7 @@ func TestPrepareDownloadsStale(t *gotesting.T) {
 	tests := []*testing.TestInstance{
 		{Pkg: pkg, Data: []string{extFile1, extFile2}},
 	}
-	jobs := prepareDownloads(context.Background(), dataDir, fakeArtifactURL, tests)
+	jobs, _ := prepareDownloads(context.Background(), dataDir, fakeArtifactURL, tests)
 
 	exp := []*downloadJob{
 		{
@@ -281,7 +283,7 @@ func TestPrepareDownloadsUpToDate(t *gotesting.T) {
 	tests := []*testing.TestInstance{
 		{Pkg: pkg, Data: []string{extFile1, extFile2}},
 	}
-	jobs := prepareDownloads(context.Background(), dataDir, fakeArtifactURL, tests)
+	jobs, _ := prepareDownloads(context.Background(), dataDir, fakeArtifactURL, tests)
 
 	if len(jobs) > 0 {
 		t.Errorf("prepareDownloads returned %v; want []", jobs)
@@ -318,7 +320,7 @@ func TestPrepareDownloadsBrokenLink(t *gotesting.T) {
 	tests := []*testing.TestInstance{
 		{Pkg: pkg, Data: []string{extFile1, extFile2}},
 	}
-	jobs := prepareDownloads(context.Background(), dataDir, fakeArtifactURL, tests)
+	jobs, _ := prepareDownloads(context.Background(), dataDir, fakeArtifactURL, tests)
 
 	exp := []*downloadJob{
 		{
@@ -355,7 +357,7 @@ func TestPrepareDownloadsArtifactUnavailable(t *gotesting.T) {
 	tests := []*testing.TestInstance{
 		{Pkg: pkg, Data: []string{extFile1}},
 	}
-	jobs := prepareDownloads(context.Background(), dataDir, "", tests)
+	jobs, _ := prepareDownloads(context.Background(), dataDir, "", tests)
 
 	if len(jobs) > 0 {
 		t.Errorf("prepareDownloads returned %v; want []", jobs)
@@ -401,6 +403,65 @@ func TestPrepareDownloadsError(t *gotesting.T) {
 	// extError2 should not exist.
 	if _, err := os.Stat(filepath.Join(dataSubdir, extError2)); err == nil {
 		t.Errorf("%s exists; expected to be deleted", extError2)
+	}
+}
+
+// Tests purgeable computation.
+func TestPrepareDownloadsPurgeable(t *gotesting.T) {
+	const (
+		pkg     = "cat"
+		extData = "dataA"
+		extLink = `{"url": "urlA", "size": 5, "sha256sum": "7e45b6647a5f7c34a572ca8a585c5c0703ab40152fbf9158e30bff7f339d64ac"}`
+	)
+
+	dataDir := testutil.TempDir(t)
+	defer os.RemoveAll(dataDir)
+	dataSubdir := filepath.Join(dataDir, pkg, "data")
+
+	if err := testutil.WriteFiles(dataSubdir, map[string]string{
+		// int_file1.txt and int_file2.txt are internal data files. Not purgeable.
+		"int_file1.txt": "data1",
+		"int_file2.txt": "data2",
+		// ext_file1.txt is already downloaded, correct, and used. Not purgeable.
+		"ext_file1.txt":          extData,
+		"ext_file1.txt.external": extLink,
+		// ext_file2.txt is already downloaded, correct, but not used. Purgeable.
+		"ext_file2.txt":          extData,
+		"ext_file2.txt.external": extLink,
+		// ext_file3.txt is used, but does not exist. Not purgeable.
+		"ext_file3.txt.external": extLink,
+		// ext_file4.txt is already downloaded, used, but broken. Not purgeable.
+		"ext_file4.txt":          "broken",
+		"ext_file4.txt.external": extLink,
+		// ext_file5.txt is already downloaded, but broken and not used. Purgeable.
+		"ext_file5.txt":          "broken",
+		"ext_file5.txt.external": extLink,
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	tests := []*testing.TestInstance{{
+		Pkg: pkg,
+		Data: []string{
+			"int_file1.txt",
+			// int_file2.txt is not used.
+			"ext_file1.txt",
+			// ext_file2.txt is not used.
+			"ext_file3.txt",
+			"ext_file4.txt",
+			// ext_file5.txt is not used.
+			"ext_file6.txt",
+		},
+	}}
+
+	_, purgeable := prepareDownloads(context.Background(), dataDir, fakeArtifactURL, tests)
+
+	want := []string{
+		filepath.Join(dataSubdir, "ext_file2.txt"),
+		filepath.Join(dataSubdir, "ext_file5.txt"),
+	}
+	if diff := cmp.Diff(purgeable, want); diff != "" {
+		t.Error("Purgeable mismatch (-got +want):\n", diff)
 	}
 }
 

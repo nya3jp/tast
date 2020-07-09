@@ -128,24 +128,46 @@ type downloadResult struct {
 // dataDir is the path to the base directory containing external data link files (typically
 // "/usr/local/share/tast/data" on DUT). artifactURL is the URL of Google Cloud Storage directory,
 // ending with a slash, containing build artifacts for the current Chrome OS image.
+// Ensure returns a list of external data file paths not needed to run the specified tests. They
+// can be deleted if the disk space is low.
 // This function does not return errors; instead it tries to download files as far as possible and
 // logs encountered errors with ctx so that a single download error does not cause all tests to fail.
-func Ensure(ctx context.Context, dataDir, artifactsURL string, tests []*testing.TestInstance, cl devserver.Client) {
-	jobs := prepareDownloads(ctx, dataDir, artifactsURL, tests)
-	if len(jobs) == 0 {
-		return
+func Ensure(ctx context.Context, dataDir, artifactsURL string, tests []*testing.TestInstance, cl devserver.Client) (purgeable []string) {
+	jobs, purgeable := prepareDownloads(ctx, dataDir, artifactsURL, tests)
+	if len(jobs) > 0 {
+		runDownloads(ctx, dataDir, jobs, cl)
 	}
-	runDownloads(ctx, dataDir, jobs, cl)
+	return purgeable
 }
 
 // prepareDownloads computes which external data files need to be downloaded.
 // It also removes stale files so they are never used even if we fail to download them later.
 // When it encounters errors, *.external-error files are saved so that they can be read and
 // reported by bundles later.
-func prepareDownloads(ctx context.Context, dataDir, artifactsURL string, tests []*testing.TestInstance) []*downloadJob {
+func prepareDownloads(ctx context.Context, dataDir, artifactsURL string, tests []*testing.TestInstance) (jobs []*downloadJob, purgeable []string) {
 	urlToJob := make(map[string]*downloadJob)
 	hasErr := false
 
+	// Initialize purgeableSet with all external data files under dataDir.
+	purgeableSet := make(map[string]struct{})
+	if err := filepath.Walk(dataDir, func(linkPath string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !strings.HasSuffix(linkPath, testing.ExternalLinkSuffix) {
+			return nil
+		}
+		destPath := strings.TrimSuffix(linkPath, testing.ExternalLinkSuffix)
+		if _, err := os.Stat(destPath); err != nil {
+			return nil
+		}
+		purgeableSet[destPath] = struct{}{}
+		return nil
+	}); err != nil {
+		logging.ContextLog(ctx, "Failed to walk data directory: ", err)
+	}
+
+	// Process tests.
 	for _, t := range tests {
 		for _, name := range t.Data {
 			destPath := filepath.Join(dataDir, testing.RelativeDataDir(t.Pkg), name)
@@ -170,6 +192,9 @@ func prepareDownloads(ctx context.Context, dataDir, artifactsURL string, tests [
 				reportErr("failed to stat %s: %v", linkPath, err)
 				continue
 			}
+
+			// This file is not purgeable.
+			delete(purgeableSet, destPath)
 
 			link, err := loadLink(linkPath, artifactsURL)
 			if err != nil {
@@ -224,7 +249,6 @@ func prepareDownloads(ctx context.Context, dataDir, artifactsURL string, tests [
 		}
 	}
 
-	var jobs []*downloadJob
 	for _, j := range urlToJob {
 		if len(j.dests) > 0 {
 			jobs = append(jobs, j)
@@ -234,11 +258,17 @@ func prepareDownloads(ctx context.Context, dataDir, artifactsURL string, tests [
 		return jobs[i].link.ComputedURL < jobs[j].link.ComputedURL
 	})
 
+	purgeable = make([]string, 0, len(purgeableSet))
+	for p := range purgeableSet {
+		purgeable = append(purgeable, p)
+	}
+	sort.Strings(purgeable)
+
 	logging.ContextLogf(ctx, "Found %d external linked data file(s), need to download %d", len(urlToJob), len(jobs))
 	if hasErr {
 		logging.ContextLog(ctx, "Encountered some errors on scanning external data link files, but continuing anyway; corresponding tests will fail")
 	}
-	return jobs
+	return jobs, purgeable
 }
 
 // loadLink loads a JSON file of LinkData.

@@ -162,6 +162,9 @@ type TestConfig struct {
 	// PreCtx is the context that lives as long as the precondition.
 	// It can be accessed only from testing.PreState.
 	PreCtx context.Context
+	// Purgeable is a list of file paths which are not used for now and thus
+	// can be deleted if the disk space is low.
+	Purgeable []string
 }
 
 // NewRootState returns a new RootState object.
@@ -628,4 +631,15 @@ func NewError(err error, fullMsg, lastMsg string, skipFrames int) *Error {
 // its fields doesn't affect test execution.
 func (s *TestHookState) TestInstance() *TestInstance {
 	return s.root.test.clone()
+}
+
+// Purgeable returns a list of paths of purgeable cache files. This list may
+// contain external data files downloaded previously but unused in the next
+// test, and the like. Test hooks can delete those files safely without
+// disrupting test execution if the disk space is low.
+// Some files might be already removed, so test hooks should ignore "file not
+// found" errors. Some files might have hard links, so test hooks should not
+// assume that deleting an 1GB file frees 1GB space.
+func (s *TestHookState) Purgeable() []string {
+	return append([]string(nil), s.root.cfg.Purgeable...)
 }

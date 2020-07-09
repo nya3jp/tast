@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f420c0ed_cb8143c1",
+        "filename": "src/chromiumos/tast/internal/planner/run.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-07-09T04:07:35Z",
+      "side": 1,
+      "message": "the closure returned from\n?\nI\u0027m not good at English grammar, but \"time out for return of TestConfig.TestHook\" may sound like the timeout for TestConfig.TestHook to return.",
+      "range": {
+        "startLine": 31,
+        "startChar": 51,
+        "endLine": 31,
+        "endChar": 60
+      },
+      "revId": "d492e2a42bf848b7361237cdab34e3d5571765a8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

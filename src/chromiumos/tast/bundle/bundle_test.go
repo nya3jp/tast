@@ -122,11 +122,11 @@ func TestRunTests(t *gotesting.T) {
 				return nil
 			}, nil
 		},
-		testHook: func(ctx context.Context, s *testing.TestHookState) func(ctx context.Context, s *testing.TestHookState) {
+		testHook: func(ctx context.Context, s *testing.State) func(ctx context.Context, s *testing.State) {
 			preTestCalls++
 			s.Log(preTestMsg)
 
-			return func(ctx context.Context, s *testing.TestHookState) {
+			return func(ctx context.Context, s *testing.State) {
 				postTestCalls++
 				s.Log(postTestMsg)
 			}

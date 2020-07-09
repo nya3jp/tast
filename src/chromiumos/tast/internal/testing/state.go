@@ -137,14 +137,6 @@ type PreState struct {
 	baseState
 }
 
-// TestHookState holds state relevant to the execution of a test hook.
-//
-// This is a State for test hooks. See State's documentation for general
-// guidance on how to treat TestHookState in test hooks.
-type TestHookState struct {
-	baseState
-}
-
 // TestConfig contains details about how an individual test should be run.
 type TestConfig struct {
 	// DataDir is the directory in which the test's data files are located.
@@ -179,11 +171,6 @@ func (r *RootState) newPreState() *PreState {
 	return &PreState{baseState{root: r, inPre: true, hasError: r.HasError()}}
 }
 
-// newTestHookState creates a State for a test hook.
-func (r *RootState) newTestHookState() *TestHookState {
-	return &TestHookState{baseState{root: r, hasError: r.HasError()}}
-}
-
 // RunWithTestState runs f, passing a Context and a State for a test.
 // If f panics, it recovers and reports the error via the State.
 // f is run within a goroutine to avoid making the calling goroutine exit if
@@ -195,22 +182,12 @@ func (r *RootState) RunWithTestState(ctx context.Context, f func(ctx context.Con
 }
 
 // RunWithPreState runs f, passing a Context and a State for a precondition.
-// If f panics, it recovers and reports the error via the PreState.
+// If f panics, it recovers and reports the error via the State.
 // f is run within a goroutine to avoid making the calling goroutine exit if
 // f calls s.Fatal (which calls runtime.Goexit).
 func (r *RootState) RunWithPreState(ctx context.Context, f func(ctx context.Context, s *PreState)) {
 	s := r.newPreState()
 	ctx = NewContext(ctx, s.testContext(), func(msg string) { s.Log(msg) })
-	runAndRecover(func() { f(ctx, s) }, s)
-}
-
-// RunWithTestHookState runs f, passing a Context and a State for a test hook.
-// If f panics, it recovers and reports the error via the TestHookState.
-// f is run within a goroutine to avoid making the calling goroutine exit if
-// f calls s.Fatal (which calls runtime.Goexit).
-func (r *RootState) RunWithTestHookState(ctx context.Context, f func(ctx context.Context, s *TestHookState)) {
-	s := r.newTestHookState()
-	ctx = NewContext(ctx, s)
 	runAndRecover(func() { f(ctx, s) }, s)
 }
 

@@ -466,9 +466,9 @@ func TestRunSkipStages(t *gotesting.T) {
 
 			pcfg := &Config{
 				OutDir: outDir,
-				TestHook: func(ctx context.Context, s *testing.TestHookState) func(context.Context, *testing.TestHookState) {
+				TestHook: func(ctx context.Context, s *testing.State) func(context.Context, *testing.State) {
 					doAction(s, currentBehavior(s).preTestAction, "preTest")
-					return func(ctx context.Context, s *testing.TestHookState) {
+					return func(ctx context.Context, s *testing.State) {
 						doAction(s, currentBehavior(s).postTestAction, "postTest")
 					}
 				},
@@ -769,9 +769,9 @@ func TestRunHasError(t *gotesting.T) {
 				},
 			}
 			pcfg := &Config{
-				TestHook: func(ctx context.Context, s *testing.TestHookState) func(context.Context, *testing.TestHookState) {
+				TestHook: func(ctx context.Context, s *testing.State) func(context.Context, *testing.State) {
 					onPhase(s, phasePreTestFunc)
-					return func(ctx context.Context, s *testing.TestHookState) {
+					return func(ctx context.Context, s *testing.State) {
 						onPhase(s, phasePostTestFunc)
 					}
 				},

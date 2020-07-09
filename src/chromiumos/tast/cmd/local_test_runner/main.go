@@ -77,8 +77,8 @@ func main() {
 			"chrome_internal": "chrome_internal",
 			"crashpad":        "!force_breakpad",
 			// TODO(b/155009503): Remove these once crash reporter works with selinux on 5.4
-			"crash_selinux_stable":    `!("kernel-5_4" || "kernel-5_7")`,
-			"crash_selinux_unstable":  `"kernel-5_4" || "kernel-5_7"`,
+			"crash_selinux_stable":    `!"kernel-5_4"`,
+			"crash_selinux_unstable":  `"kernel-5_4"`,
 			"cros_config":             "unibuild",
 			"cros_internal":           "internal",
 			"cros_video_decoder":      "!disable_cros_video_decoder",

@@ -119,7 +119,7 @@ func buildPlan(tests []*testing.TestInstance, pcfg *Config) *plan {
 func (p *plan) run(ctx context.Context, out OutputStream) error {
 	// Download external data files.
 	cl := devserver.NewClient(ctx, p.pcfg.Devservers)
-	extdata.Ensure(ctx, p.pcfg.DataDir, p.pcfg.BuildArtifactsURL, p.testsToRun(), cl)
+	purgeable := extdata.Ensure(ctx, p.pcfg.DataDir, p.pcfg.BuildArtifactsURL, p.testsToRun(), cl)
 
 	for _, s := range p.skips {
 		tout := NewTestOutputStream(out, s.test.TestInfo())
@@ -127,7 +127,7 @@ func (p *plan) run(ctx context.Context, out OutputStream) error {
 	}
 
 	for _, pp := range p.prePlans {
-		if err := pp.run(ctx, out); err != nil {
+		if err := pp.run(ctx, out, purgeable); err != nil {
 			return err
 		}
 	}
@@ -156,14 +156,14 @@ func buildPrePlan(tests []*testing.TestInstance, pcfg *Config) *prePlan {
 	return &prePlan{tests[0].Pre, tests, pcfg}
 }
 
-func (p *prePlan) run(ctx context.Context, out OutputStream) error {
+func (p *prePlan) run(ctx context.Context, out OutputStream, purgeable []string) error {
 	for i, t := range p.tests {
 		var next *testing.TestInstance
 		if i+1 < len(p.tests) {
 			next = p.tests[i+1]
 		}
 		tout := NewTestOutputStream(out, t.TestInfo())
-		if err := runTest(ctx, t, next, tout, p.pcfg); err != nil {
+		if err := runTest(ctx, t, next, tout, p.pcfg, purgeable); err != nil {
 			return err
 		}
 	}
@@ -178,7 +178,7 @@ func (p *prePlan) testsToRun() []*testing.TestInstance {
 //
 // runTest runs a test on a goroutine. If a test does not finish after reaching
 // its timeout, this function returns with an error without waiting for its finish.
-func runTest(ctx context.Context, t, next *testing.TestInstance, tout *TestOutputStream, pcfg *Config) error {
+func runTest(ctx context.Context, t, next *testing.TestInstance, tout *TestOutputStream, pcfg *Config, purgeable []string) error {
 	// Attach a log that the test can use to report timing events.
 	timingLog := timing.NewLog()
 	ctx = timing.NewContext(ctx, timingLog)
@@ -196,6 +196,7 @@ func runTest(ctx context.Context, t, next *testing.TestInstance, tout *TestOutpu
 		Vars:         pcfg.Vars,
 		CloudStorage: testing.NewCloudStorage(pcfg.Devservers),
 		RemoteData:   pcfg.RemoteData,
+		Purgeable:    purgeable,
 	}
 	root := testing.NewRootState(t, tout, tcfg)
 	stages := buildStages(t, next, pcfg, tcfg)

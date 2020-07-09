@@ -160,6 +160,9 @@ type TestConfig struct {
 	// RemoteData contains information relevant to remote tests.
 	// This is nil for local tests.
 	RemoteData *RemoteData
+	// Purgeable is a list of file paths which are not used for now and thus
+	// can be deleted if the disk space is low.
+	Purgeable []string
 }
 
 // NewRootState returns a new RootState object.
@@ -638,4 +641,10 @@ func NewError(err error, fullMsg, lastMsg string, skipFrames int) *Error {
 // its fields doesn't affect test execution.
 func (s *TestHookState) TestInstance() *TestInstance {
 	return s.root.test.clone()
+}
+
+// Purgeable returns a list of file paths which are not used for now and thus
+// can be deleted if the disk space is low.
+func (s *TestHookState) Purgeable() []string {
+	return append([]string(nil), s.root.cfg.Purgeable...)
 }

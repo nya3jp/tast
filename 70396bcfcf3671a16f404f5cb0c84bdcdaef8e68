@@ -16,6 +16,46 @@
       "revId": "70396bcfcf3671a16f404f5cb0c84bdcdaef8e68",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "eddbc76b_97726b18",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/diagnose.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-09T09:18:34Z",
+      "side": 1,
+      "message": "journalctl doesn\u0027t support --source.",
+      "range": {
+        "startLine": 85,
+        "startChar": 44,
+        "endLine": 85,
+        "endChar": 63
+      },
+      "revId": "70396bcfcf3671a16f404f5cb0c84bdcdaef8e68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6bdae7d8_3877ab1a",
+        "filename": "src/chromiumos/tast/internal/logs/reader.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-09T09:18:34Z",
+      "side": 1,
+      "message": "Note to self: We don\u0027t need journalctl fallback here because these functions are used only by runners, which are shipped in Chrome OS test images.",
+      "revId": "70396bcfcf3671a16f404f5cb0c84bdcdaef8e68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

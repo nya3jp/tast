@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c313de08_149955b2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000175
+      },
+      "writtenOn": "2020-07-09T01:03:26Z",
+      "side": 1,
+      "message": "Nya-san, Yamaguchi-san, PTAL. Thanks.",
+      "revId": "70396bcfcf3671a16f404f5cb0c84bdcdaef8e68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

@@ -73,6 +73,30 @@
     },
     {
       "key": {
+        "uuid": "d58d40dd_8ab86d03",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1000175
+      },
+      "writtenOn": "2020-07-09T10:40:42Z",
+      "side": 1,
+      "message": "I didn\u0027t use portforwarding. I directly connected to DUTs on my home (using IPv6) and in the skylab (v4), But the test to both DUTs failed.",
+      "parentUuid": "4acdde1b_e6f2ee4c",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 53
+      },
+      "revId": "4962300ea3907202ce4e9e54ecb8fada58867fbc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "feec8a97_1df5c757",
         "filename": "/COMMIT_MSG",
         "patchSetId": 5

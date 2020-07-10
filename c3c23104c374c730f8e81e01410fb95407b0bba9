@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3bac9873_2db16cbb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 22
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2020-07-10T10:33:48Z",
+      "side": 1,
+      "message": "Let me add Miguel who is an owner of many video tests and remove Tast reviewers who were manually added for now.\nLet\u0027s make a decision with Miguel and his team first. Then, let\u0027s ask Tast reviewers afterward.",
+      "revId": "c3c23104c374c730f8e81e01410fb95407b0bba9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c2664c9a_886d79bb",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 22
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2020-07-10T10:33:48Z",
+      "side": 1,
+      "message": "remove this?",
+      "range": {
+        "startLine": 50,
+        "startChar": 38,
+        "endLine": 50,
+        "endChar": 71
+      },
+      "revId": "c3c23104c374c730f8e81e01410fb95407b0bba9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

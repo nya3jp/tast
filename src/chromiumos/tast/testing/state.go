@@ -28,6 +28,12 @@ type State = testing.State
 // guidance on how to treat PreState in preconditions.
 type PreState = testing.PreState
 
+// TestHookState holds state relevant to the execution of a test hook.
+//
+// This is a State for test hooks. See State's documentation for general
+// guidance on how to treat TestHookState in test hooks.
+type TestHookState = testing.TestHookState
+
 // Meta contains information about how the "tast" process used to initiate testing was run.
 // It is used by remote tests in the "meta" category that run the tast executable to test Tast's behavior.
 type Meta = testing.Meta

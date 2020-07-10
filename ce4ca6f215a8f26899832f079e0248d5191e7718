@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ad7731e2_81a07db3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000175
+      },
+      "writtenOn": "2020-07-10T08:54:27Z",
+      "side": 1,
+      "message": "Sorry, the previous CL included a wip change. Let me remove it.",
+      "revId": "ce4ca6f215a8f26899832f079e0248d5191e7718",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

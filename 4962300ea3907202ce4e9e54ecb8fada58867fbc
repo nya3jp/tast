@@ -97,6 +97,30 @@
     },
     {
       "key": {
+        "uuid": "f7321b4a_e448b044",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-10T09:11:21Z",
+      "side": 1,
+      "message": "Hmm, it seems like the feature was broken at some point. I filed a bug to track the issue: crbug.com/1104109\n\nThanks for checking it!",
+      "parentUuid": "d58d40dd_8ab86d03",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 53
+      },
+      "revId": "4962300ea3907202ce4e9e54ecb8fada58867fbc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "feec8a97_1df5c757",
         "filename": "/COMMIT_MSG",
         "patchSetId": 5

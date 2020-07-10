@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "59b2c11d_89a5305f",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 646,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-10T07:17:05Z",
+      "side": 1,
+      "message": "Done (see my other comment)",
+      "parentUuid": "dd82bd19_c2816d80",
+      "range": {
+        "startLine": 646,
+        "startChar": 61,
+        "endLine": 646,
+        "endChar": 68
+      },
+      "revId": "f88c58a0465031f8a09a25e88bdb6990f3343e3a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "19fdfcdf_0bab2cd3",
         "filename": "src/chromiumos/tast/internal/testing/state.go",
         "patchSetId": 1
@@ -45,6 +69,30 @@
       "revId": "f88c58a0465031f8a09a25e88bdb6990f3343e3a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "278708ae_e4699bdf",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 648,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-10T07:17:05Z",
+      "side": 1,
+      "message": "Thanks, you made good points!\n\nIt is intentional that explanation here is somewhat abstrac. A returned list may contain unused external data files, but we don\u0027t define exact criteria by which the framework considers an external data file \"unused\", and also the list may contain other files than external data files. I just want the API to guarantee that the returned list of files can be deleted safely, but nothing more than that. I\u0027ve updated the comment here to make this contract clearer.\n\nI want to support deleting files between tests soon. But I\u0027m not yet sure if deleting files between tests is always good; for example, when running tests locally with \"tast run\", downloading files between tests might be annoying to users. So I\u0027m planning to introduce a flag to the tast command that controls when to download files. Thanks to the contract of purgeable files described above, test hooks don\u0027t need to care about which strategy was chosen for the current run (download files in advance or between tests).",
+      "parentUuid": "19fdfcdf_0bab2cd3",
+      "range": {
+        "startLine": 648,
+        "startChar": 0,
+        "endLine": 648,
+        "endChar": 4
+      },
+      "revId": "f88c58a0465031f8a09a25e88bdb6990f3343e3a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

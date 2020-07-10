@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "dd82bd19_c2816d80",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 646,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-07-10T03:48:24Z",
+      "side": 1,
+      "message": "Could you explain it more concretely?",
+      "range": {
+        "startLine": 646,
+        "startChar": 61,
+        "endLine": 646,
+        "endChar": 68
+      },
+      "revId": "f88c58a0465031f8a09a25e88bdb6990f3343e3a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "19fdfcdf_0bab2cd3",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 648,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-07-10T03:48:24Z",
+      "side": 1,
+      "message": "I think one might imagine this function recomputes the value each time it is called, by\n1. Excluding already removed files.\n2. Including external files which have become needless. For example external files the first test used might be no longer needed by the second and subsequent tests.\n\nI think 2 can be practically useful.\nCould you document this function doesn\u0027t do these, maybe adding TODO comment?",
+      "range": {
+        "startLine": 648,
+        "startChar": 0,
+        "endLine": 648,
+        "endChar": 4
+      },
+      "revId": "f88c58a0465031f8a09a25e88bdb6990f3343e3a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

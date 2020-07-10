@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "96b98d8a_957d7dd2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-10T01:40:32Z",
+      "side": 1,
+      "message": "Second try. PS1 is a plain revert, so diff between PS1 and PS2 are new in this reland.\n",
+      "revId": "019b5c8c88dbab1e94578ed8017c4afea5200d17",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

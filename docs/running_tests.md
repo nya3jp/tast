@@ -120,10 +120,10 @@ Various files and directories are created within the results directory:
     as a [JSONL] array of [run.TestResult] structs. Provides partial results if
     the `tast` process is interrupted before `results.json` is written.
 *   `system_logs/` - Diff of `/var/log` on the DUT before and after testing.
-    *   `journal/` - Log files collected from [journald].
-        *   `journal.log` - Human-readable journald log messages.
-        *   `journal.export.gz` - gzip-compressed logs with full metadata from
-            journalctl's `-o export` mode.
+    *   `unified/` - Unified log collected from system logs.
+        *   `unified.log` - Human-readable system log messages.
+        *   `unified.export.gz` - gzip-compressed logs with full metadata from
+            croslog's export mode which is similler to `journalctl -o export`.
 *   `tests/<test-name>/` - Per-test subdirectories, containing test logs and
     other output files.
     *   `log.txt` - Log of messages and errors reported by the test.
@@ -136,7 +136,6 @@ Various files and directories are created within the results directory:
 [Breakpad]: https://github.com/google/breakpad/
 [run.TestResult]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/cmd/tast/internal/run#TestResult
 [JSONL]: http://jsonlines.org/
-[journald]: https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html
 [output files]: writing_tests.md#Output-files
 [perf]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/common/perf
 [timing]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/timing

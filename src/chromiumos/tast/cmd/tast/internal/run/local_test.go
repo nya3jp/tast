@@ -63,9 +63,9 @@ type localTestData struct {
 	hostDir     string // directory simulating root dir on DUT for file copies
 	nextCopyCmd string // next "exec" command expected for file copies
 
-	bootID  string // simulated content of boot_id file
-	journal string // simulated content of systemd journal for the initial boot (defaultBootID)
-	ramOops string // simulated content of console-ramoops file
+	bootID     string // simulated content of boot_id file
+	unifiedLog string // simulated content of unified system log for the initial boot (defaultBootID)
+	ramOops    string // simulated content of console-ramoops file
 
 	expRunCmd string        // expected "exec" command for starting local_test_runner
 	runFunc   runFunc       // called for expRunCmd executions
@@ -147,9 +147,9 @@ func (td *localTestData) handleExec(req *sshtest.ExecReq) {
 	case "exec sync":
 		req.Start(true)
 		req.End(0)
-	case "exec journalctl -q -b " + strings.Replace(defaultBootID, "-", "", -1) + " -n 1000":
+	case "exec croslog --source=journal --quiet --boot=" + strings.Replace(defaultBootID, "-", "", -1) + " --lines=1000":
 		req.Start(true)
-		io.WriteString(req, td.journal)
+		io.WriteString(req, td.unifiedLog)
 		req.End(0)
 	case "exec cat /sys/fs/pstore/console-ramoops", "exec cat /sys/fs/pstore/console-ramoops-0":
 		req.Start(true)

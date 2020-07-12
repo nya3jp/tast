@@ -77,17 +77,23 @@ var (
 // and returns a diagnosis message. Files useful for diagnosis might be saved
 // under outDir.
 func diagnoseReboot(ctx context.Context, cfg *Config, outDir string) string {
-	// Read the journal just before the reboot.
+	// Read the unified system log just before the reboot.
 	denseBootID := strings.Replace(cfg.initBootID, "-", "", -1)
-	out, err := cfg.hst.Command("journalctl", "-q", "-b", denseBootID, "-n", "1000").Output(ctx)
+	out, err := cfg.hst.Command("croslog", "--source=journal", "--quiet", "--boot="+denseBootID, "--lines=1000").Output(ctx)
 	if err != nil {
-		cfg.Logger.Log("Failed to read journal: ", err)
+		cfg.Logger.Log("Failed to execute croslog command: ", err)
+		out, err = cfg.hst.Command("journalctl", "--quiet", "--boot="+denseBootID, "--lines=1000").Output(ctx)
+		if err != nil {
+			cfg.Logger.Log("Failed to execute journalctl command: ", err)
+		} else {
+			cfg.Logger.Log("Fell back to journalctl command")
+		}
 	}
-	journal := string(out)
+	logs := string(out)
 
-	if journal != "" {
-		const fn = "journal.before-reboot.txt"
-		if err := ioutil.WriteFile(filepath.Join(outDir, fn), []byte(journal), 0666); err != nil {
+	if logs != "" {
+		const fn = "unified-logs.before-reboot.txt"
+		if err := ioutil.WriteFile(filepath.Join(outDir, fn), []byte(logs), 0666); err != nil {
 			cfg.Logger.Logf("Failed to save %s: %v", fn, err)
 		}
 	}
@@ -110,7 +116,7 @@ func diagnoseReboot(ctx context.Context, cfg *Config, outDir string) string {
 		}
 	}
 
-	if m := shutdownReasonRe.FindStringSubmatch(journal); m != nil {
+	if m := shutdownReasonRe.FindStringSubmatch(logs); m != nil {
 		return fmt.Sprintf("target normally shut down for %s (%s)", m[1], m[2])
 	}
 

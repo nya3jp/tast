@@ -42,6 +42,30 @@
     },
     {
       "key": {
+        "uuid": "e14cdd76_9a390b9c",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance_test.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 725,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-07-13T05:34:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a915f1b4_f3575402",
+      "range": {
+        "startLine": 725,
+        "startChar": 13,
+        "endLine": 725,
+        "endChar": 39
+      },
+      "revId": "8c582286683e9e4600944ec8f870103d069c71cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c7dbcc9d_92fc05ee",
         "filename": "src/chromiumos/tast/internal/testing/test_instance_test.go",
         "patchSetId": 12
@@ -62,6 +86,30 @@
       "revId": "8c582286683e9e4600944ec8f870103d069c71cb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "617c5013_8c6b7457",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance_test.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 731,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-07-13T05:34:39Z",
+      "side": 1,
+      "message": "Done.\nI still think the expectation for the below should be removed, because the string is a one from the message made for the UI, thus leaving it a TODO.",
+      "parentUuid": "c7dbcc9d_92fc05ee",
+      "range": {
+        "startLine": 729,
+        "startChar": 1,
+        "endLine": 731,
+        "endChar": 19
+      },
+      "revId": "8c582286683e9e4600944ec8f870103d069c71cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -24,6 +24,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/control"
+	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/sshtest"
 	"chromiumos/tast/internal/testing"
@@ -95,6 +96,7 @@ func newLocalTestData(t *gotesting.T) *localTestData {
 	td.cfg.localOutDir = mockLocalOutDir
 	td.cfg.devservers = mockDevservers
 	td.cfg.buildArtifactsURL = mockBuildArtifactsURL
+	td.cfg.downloadMode = planner.DownloadLazy
 
 	// Avoid checking test dependencies, which causes an extra local_test_runner call.
 	td.cfg.checkTestDeps = false
@@ -193,8 +195,9 @@ func TestLocalSuccess(t *gotesting.T) {
 					DataDir:           mockLocalDataDir,
 					OutDir:            mockLocalOutDir,
 					Devservers:        mockDevservers,
-					HeartbeatInterval: heartbeatInterval,
 					BuildArtifactsURL: mockBuildArtifactsURL,
+					DownloadMode:      planner.DownloadLazy,
+					HeartbeatInterval: heartbeatInterval,
 				},
 				BundleGlob:                  mockLocalBundleGlob,
 				Devservers:                  mockDevservers,

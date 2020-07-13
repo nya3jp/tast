@@ -21,6 +21,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/dep"
+	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/ssh"
 )
@@ -83,11 +84,12 @@ type Config struct {
 	checkPortageDeps   bool   // check whether test bundle's dependencies are installed before building
 	installPortageDeps bool   // install old or missing test bundle dependencies; no-op if checkPortageDeps is false
 
-	useEphemeralDevserver  bool     // start an ephemeral devserver if no devserver is specified
-	extraAllowedBuckets    []string // extra Google Cloud Storage buckets ephemeral devserver is allowed to access
-	devservers             []string // list of devserver URLs; set by -devservers but may be dynamically modified
-	buildArtifactsURL      string   // Google Cloud Storage URL of build artifacts
-	downloadPrivateBundles bool     // whether to download private bundles if missing
+	useEphemeralDevserver  bool                 // start an ephemeral devserver if no devserver is specified
+	extraAllowedBuckets    []string             // extra Google Cloud Storage buckets ephemeral devserver is allowed to access
+	devservers             []string             // list of devserver URLs; set by -devservers but may be dynamically modified
+	buildArtifactsURL      string               // Google Cloud Storage URL of build artifacts
+	downloadPrivateBundles bool                 // whether to download private bundles if missing
+	downloadMode           planner.DownloadMode // strategy to download external data files
 
 	localRunner    string // path to executable that runs local test bundles
 	localBundleDir string // dir where packaged local test bundles are installed
@@ -170,6 +172,12 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 	f.Var(command.NewListFlag(",", func(v []string) { c.extraAllowedBuckets = v }, nil), "extraallowedbuckets", "comma-separated list of extra Google Cloud Storage buckets ephemeral devserver is allowed to access")
 	f.StringVar(&c.buildArtifactsURL, "buildartifactsurl", "", "override Google Cloud Storage URL of build artifacts (implies -extraallowedbuckets)")
 	f.BoolVar(&c.downloadPrivateBundles, "downloadprivatebundles", false, "download private bundles if missing")
+	ddfs := map[string]int{
+		"batch": int(planner.DownloadBatch),
+		"lazy":  int(planner.DownloadLazy),
+	}
+	ddf := command.NewEnumFlag(ddfs, func(v int) { c.downloadMode = planner.DownloadMode(v) }, "batch")
+	f.Var(ddf, "downloaddata", fmt.Sprintf("strategy to download external data files (%s; default %q)", ddf.QuotedValues(), ddf.Default()))
 	f.BoolVar(&c.continueAfterFailure, "continueafterfailure", true, "try to run remaining tests after bundle/DUT crash or lost SSH connection")
 	f.IntVar(&c.sshRetries, "sshretries", 0, "number of SSH connect retries")
 

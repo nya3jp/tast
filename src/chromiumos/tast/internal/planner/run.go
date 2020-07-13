@@ -31,6 +31,18 @@ const (
 	postTestTimeout = 15 * time.Second // timeout for a closure returned by TestConfig.TestHook
 )
 
+// DownloadMode specifies a strategy to download external data files.
+type DownloadMode int
+
+const (
+	// DownloadBatch specifies that the planner downloads external data files
+	// in batch before running tests.
+	DownloadBatch DownloadMode = iota
+	// DownloadLazy specifies that the planner download external data files
+	// as needed between tests.
+	DownloadLazy
+)
+
 // Config contains details about how the planner should run tests.
 type Config struct {
 	// DataDir is the path to the base directory containing test data files.
@@ -52,6 +64,8 @@ type Config struct {
 	// TestHook is run before TestInstance.Func (and TestInstance.Pre.Prepare, when applicable) if non-nil.
 	// The returned closure is executed after a test if not nil.
 	TestHook func(context.Context, *testing.TestHookState) func(context.Context, *testing.TestHookState)
+	// DownloadMode specifies a strategy to download external data files.
+	DownloadMode DownloadMode
 }
 
 // RunTests runs a set of tests, writing outputs to out.
@@ -117,9 +131,8 @@ func buildPlan(tests []*testing.TestInstance, pcfg *Config) *plan {
 }
 
 func (p *plan) run(ctx context.Context, out OutputStream) error {
-	// Download external data files.
-	cl := devserver.NewClient(ctx, p.pcfg.Devservers)
-	purgeable := extdata.Ensure(ctx, p.pcfg.DataDir, p.pcfg.BuildArtifactsURL, p.testsToRun(), cl)
+	dl := newDownloader(ctx, p.pcfg)
+	dl.BeforeRun(ctx, p.testsToRun())
 
 	for _, s := range p.skips {
 		tout := NewTestOutputStream(out, s.test.TestInfo())
@@ -127,7 +140,7 @@ func (p *plan) run(ctx context.Context, out OutputStream) error {
 	}
 
 	for _, pp := range p.prePlans {
-		if err := pp.run(ctx, out, purgeable); err != nil {
+		if err := pp.run(ctx, out, dl); err != nil {
 			return err
 		}
 	}
@@ -156,7 +169,7 @@ func buildPrePlan(tests []*testing.TestInstance, pcfg *Config) *prePlan {
 	return &prePlan{tests[0].Pre, tests, pcfg}
 }
 
-func (p *prePlan) run(ctx context.Context, out OutputStream, purgeable []string) error {
+func (p *prePlan) run(ctx context.Context, out OutputStream, dl *downloader) error {
 	// Create a precondition-scoped context.
 	ptc := &testing.TestContext{
 		// OutDir is not available for a precondition-scoped context.
@@ -176,7 +189,7 @@ func (p *prePlan) run(ctx context.Context, out OutputStream, purgeable []string)
 			ctx:   pctx,
 			close: p.pre != nil && i == len(p.tests)-1,
 		}
-		if err := runTest(ctx, t, tout, p.pcfg, precfg, purgeable); err != nil {
+		if err := runTest(ctx, t, tout, p.pcfg, precfg, dl); err != nil {
 			return err
 		}
 	}
@@ -202,7 +215,9 @@ type preConfig struct {
 //
 // runTest runs a test on a goroutine. If a test does not finish after reaching
 // its timeout, this function returns with an error without waiting for its finish.
-func runTest(ctx context.Context, t *testing.TestInstance, tout *TestOutputStream, pcfg *Config, precfg *preConfig, purgeable []string) error {
+func runTest(ctx context.Context, t *testing.TestInstance, tout *TestOutputStream, pcfg *Config, precfg *preConfig, dl *downloader) error {
+	dl.BeforeTest(ctx, t)
+
 	// Attach a log that the test can use to report timing events.
 	timingLog := timing.NewLog()
 	ctx = timing.NewContext(ctx, timingLog)
@@ -221,7 +236,7 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *TestOutputStrea
 		CloudStorage: testing.NewCloudStorage(pcfg.Devservers),
 		RemoteData:   pcfg.RemoteData,
 		PreCtx:       precfg.ctx,
-		Purgeable:    purgeable,
+		Purgeable:    dl.Purgeable(),
 	}
 	root := testing.NewRootState(t, tout, tcfg)
 	stages := buildStages(t, pcfg, precfg, tcfg)
@@ -238,6 +253,50 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *TestOutputStrea
 		return errors.New("test did not return on timeout")
 	}
 	return nil
+}
+
+// downloader encapsulates the logic to download external data files.
+type downloader struct {
+	pcfg *Config
+	cl   devserver.Client
+
+	purgeable []string
+}
+
+func newDownloader(ctx context.Context, pcfg *Config) *downloader {
+	cl := devserver.NewClient(ctx, pcfg.Devservers)
+	return &downloader{
+		pcfg: pcfg,
+		cl:   cl,
+	}
+}
+
+// BeforeRun must be called before running a set of tests. It downloads external
+// data files if Config.DownloadMode is DownloadBatch.
+func (d *downloader) BeforeRun(ctx context.Context, tests []*testing.TestInstance) {
+	if d.pcfg.DownloadMode == DownloadBatch {
+		d.download(ctx, tests)
+	}
+}
+
+// BeforeTest must be called before running each test. It downloads external
+// data files if Config.DownloadMode is DownloadLazy.
+func (d *downloader) BeforeTest(ctx context.Context, test *testing.TestInstance) {
+	if d.pcfg.DownloadMode == DownloadLazy {
+		// TODO(crbug.com/1106218): Make sure this approach is scalable.
+		// Recomputing purgeable on each test costs O(|purgeable| * |tests|) overall.
+		d.download(ctx, []*testing.TestInstance{test})
+	}
+}
+
+// Purgeable returns a list of cached external data files that can be deleted without
+// disrupting the test execution.
+func (d *downloader) Purgeable() []string {
+	return append([]string(nil), d.purgeable...)
+}
+
+func (d *downloader) download(ctx context.Context, tests []*testing.TestInstance) {
+	d.purgeable = extdata.Ensure(ctx, d.pcfg.DataDir, d.pcfg.BuildArtifactsURL, tests, d.cl)
 }
 
 // buildStages builds stages to run a test.

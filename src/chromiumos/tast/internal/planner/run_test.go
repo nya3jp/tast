@@ -493,109 +493,134 @@ func TestRunExternalData(t *gotesting.T) {
 		file3Path = "pkg/data/file3.txt"
 	)
 
-	ds, err := devservertest.NewServer(devservertest.Files([]*devservertest.File{
-		{URL: file1URL, Data: []byte(file1Data)},
-		{URL: file2URL, Data: []byte(file2Data)},
-		// file3.txt is missing.
-	}))
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer ds.Close()
+	for _, tc := range []struct {
+		name string
+		mode DownloadMode
+	}{{"batch", DownloadBatch}, {"lazy", DownloadLazy}} {
+		t.Run(tc.name, func(t *gotesting.T) {
+			ds, err := devservertest.NewServer(devservertest.Files([]*devservertest.File{
+				{URL: file1URL, Data: []byte(file1Data)},
+				{URL: file2URL, Data: []byte(file2Data)},
+				// file3.txt is missing.
+			}))
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer ds.Close()
 
-	tests := []*testing.TestInstance{
-		{
-			Name:         "example.Test1",
-			Pkg:          "pkg",
-			Func:         func(ctx context.Context, s *testing.State) {},
-			Data:         []string{"file1.txt"},
-			SoftwareDeps: []string{"dep1"},
-			Timeout:      time.Minute,
-		},
-		{
-			Name:         "example.Test2",
-			Pkg:          "pkg",
-			Func:         func(ctx context.Context, s *testing.State) {},
-			Data:         []string{"file2.txt"},
-			SoftwareDeps: []string{"dep2"},
-			Timeout:      time.Minute,
-		},
-		{
-			Name:    "example.Test3",
-			Pkg:     "pkg",
-			Func:    func(ctx context.Context, s *testing.State) {},
-			Data:    []string{"file3.txt"},
-			Timeout: time.Minute,
-		},
-	}
+			tmpDir := testutil.TempDir(t)
+			defer os.RemoveAll(tmpDir)
 
-	tmpDir := testutil.TempDir(t)
-	defer os.RemoveAll(tmpDir)
+			buildLink := func(url, data string) string {
+				hash := sha256.Sum256([]byte(data))
+				ld := &extdata.LinkData{
+					Type:      extdata.TypeStatic,
+					StaticURL: url,
+					Size:      int64(len(data)),
+					SHA256Sum: hex.EncodeToString(hash[:]),
+				}
+				b, err := json.Marshal(ld)
+				if err != nil {
+					t.Fatal(err)
+				}
+				return string(b)
+			}
 
-	buildLink := func(url, data string) string {
-		hash := sha256.Sum256([]byte(data))
-		ld := &extdata.LinkData{
-			Type:      extdata.TypeStatic,
-			StaticURL: url,
-			Size:      int64(len(data)),
-			SHA256Sum: hex.EncodeToString(hash[:]),
-		}
-		b, err := json.Marshal(ld)
-		if err != nil {
-			t.Fatal(err)
-		}
-		return string(b)
-	}
+			dataDir := filepath.Join(tmpDir, "data")
+			if err := testutil.WriteFiles(dataDir, map[string]string{
+				file1Path + testing.ExternalLinkSuffix: buildLink(file1URL, file1Data),
+				file2Path + testing.ExternalLinkSuffix: buildLink(file2URL, file2Data),
+				file3Path + testing.ExternalLinkSuffix: buildLink(file3URL, ""),
+			}); err != nil {
+				t.Fatal("WriteFiles: ", err)
+			}
 
-	dataDir := filepath.Join(tmpDir, "data")
-	if err := testutil.WriteFiles(dataDir, map[string]string{
-		file1Path + testing.ExternalLinkSuffix: buildLink(file1URL, file1Data),
-		file2Path + testing.ExternalLinkSuffix: buildLink(file2URL, file2Data),
-		file3Path + testing.ExternalLinkSuffix: buildLink(file3URL, ""),
-	}); err != nil {
-		t.Fatal("WriteFiles: ", err)
-	}
+			pcfg := &Config{
+				DataDir: dataDir,
+				Features: dep.Features{
+					Software: &dep.SoftwareFeatures{
+						Available:   []string{"dep2"},
+						Unavailable: []string{"dep1"},
+					},
+				},
+				Devservers:   []string{ds.URL},
+				DownloadMode: tc.mode,
+			}
 
-	pcfg := &Config{
-		DataDir: dataDir,
-		Features: dep.Features{
-			Software: &dep.SoftwareFeatures{
-				Available:   []string{"dep2"},
-				Unavailable: []string{"dep1"},
-			},
-		},
-		Devservers: []string{ds.URL},
-	}
+			tests := []*testing.TestInstance{
+				{
+					Name:         "example.Test1",
+					Pkg:          "pkg",
+					Func:         func(ctx context.Context, s *testing.State) {},
+					Data:         []string{"file1.txt"},
+					SoftwareDeps: []string{"dep1"},
+					Timeout:      time.Minute,
+				},
+				{
+					Name: "example.Test2",
+					Pkg:  "pkg",
+					Func: func(ctx context.Context, s *testing.State) {
+						fp := filepath.Join(dataDir, file3Path+testing.ExternalErrorSuffix)
+						_, err := os.Stat(fp)
+						switch tc.mode {
+						case DownloadBatch:
+							// In DownloadBatch mode, external data files for Test3 are already downloaded.
+							if err != nil {
+								t.Errorf("In Test2: %v; want present", err)
+							}
+						case DownloadLazy:
+							// In DownloadLazy mode, external data files for Test3 are not downloaded yet.
+							if err == nil {
+								t.Errorf("In Test2: %s exists; want missing", fp)
+							} else if !os.IsNotExist(err) {
+								t.Errorf("In Test2: %v; want missing", err)
+							}
+						}
+					},
+					Data:         []string{"file2.txt"},
+					SoftwareDeps: []string{"dep2"},
+					Timeout:      time.Minute,
+				},
+				{
+					Name:    "example.Test3",
+					Pkg:     "pkg",
+					Func:    func(ctx context.Context, s *testing.State) {},
+					Data:    []string{"file3.txt"},
+					Timeout: time.Minute,
+				},
+			}
 
-	msgs := runTestsAndReadAll(t, tests, pcfg)
+			msgs := runTestsAndReadAll(t, tests, pcfg)
 
-	want := []control.Msg{
-		&control.TestStart{Test: *tests[0].TestInfo()},
-		&control.TestEnd{Name: tests[0].Name, SkipReasons: []string{"missing SoftwareDeps: dep1"}},
-		&control.TestStart{Test: *tests[1].TestInfo()},
-		&control.TestEnd{Name: tests[1].Name},
-		&control.TestStart{Test: *tests[2].TestInfo()},
-		&control.TestError{Error: testing.Error{Reason: "Required data file file3.txt missing: failed to download gs://bucket/file3.txt: file does not exist"}},
-		&control.TestEnd{Name: tests[2].Name},
-	}
-	if diff := cmp.Diff(msgs, want); diff != "" {
-		t.Error("Output mismatch (-got +want):\n", diff)
-	}
+			want := []control.Msg{
+				&control.TestStart{Test: *tests[0].TestInfo()},
+				&control.TestEnd{Name: tests[0].Name, SkipReasons: []string{"missing SoftwareDeps: dep1"}},
+				&control.TestStart{Test: *tests[1].TestInfo()},
+				&control.TestEnd{Name: tests[1].Name},
+				&control.TestStart{Test: *tests[2].TestInfo()},
+				&control.TestError{Error: testing.Error{Reason: "Required data file file3.txt missing: failed to download gs://bucket/file3.txt: file does not exist"}},
+				&control.TestEnd{Name: tests[2].Name},
+			}
+			if diff := cmp.Diff(msgs, want); diff != "" {
+				t.Error("Output mismatch (-got +want):\n", diff)
+			}
 
-	files, err := testutil.ReadFiles(dataDir)
-	if err != nil {
-		t.Fatal("ReadFiles: ", err)
-	}
-	wantFiles := map[string]string{
-		// file1.txt is not downloaded since pkg.Test1 is not run.
-		file1Path + testing.ExternalLinkSuffix:  buildLink(file1URL, file1Data),
-		file2Path:                               file2Data,
-		file2Path + testing.ExternalLinkSuffix:  buildLink(file2URL, file2Data),
-		file3Path + testing.ExternalLinkSuffix:  buildLink(file3URL, ""),
-		file3Path + testing.ExternalErrorSuffix: "failed to download gs://bucket/file3.txt: file does not exist",
-	}
-	if diff := cmp.Diff(files, wantFiles); diff != "" {
-		t.Error("Data directory mismatch (-got +want):\n", diff)
+			files, err := testutil.ReadFiles(dataDir)
+			if err != nil {
+				t.Fatal("ReadFiles: ", err)
+			}
+			wantFiles := map[string]string{
+				// file1.txt is not downloaded since pkg.Test1 is not run.
+				file1Path + testing.ExternalLinkSuffix:  buildLink(file1URL, file1Data),
+				file2Path:                               file2Data,
+				file2Path + testing.ExternalLinkSuffix:  buildLink(file2URL, file2Data),
+				file3Path + testing.ExternalLinkSuffix:  buildLink(file3URL, ""),
+				file3Path + testing.ExternalErrorSuffix: "failed to download gs://bucket/file3.txt: file does not exist",
+			}
+			if diff := cmp.Diff(files, wantFiles); diff != "" {
+				t.Error("Data directory mismatch (-got +want):\n", diff)
+			}
+		})
 	}
 }
 

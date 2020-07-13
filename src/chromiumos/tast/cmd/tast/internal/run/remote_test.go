@@ -20,6 +20,7 @@ import (
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/internal/control"
+	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
@@ -107,6 +108,7 @@ func newRemoteTestData(t *gotesting.T, stdout, stderr string, status int) *remot
 	}
 	td.cfg.devservers = mockDevservers
 	td.cfg.buildArtifactsURL = mockBuildArtifactsURL
+	td.cfg.downloadMode = planner.DownloadLazy
 	td.cfg.localBundleDir = mockLocalBundleDir
 	td.cfg.remoteOutDir = filepath.Join(td.cfg.ResDir, "out.tmp")
 
@@ -210,6 +212,7 @@ func TestRemoteRun(t *gotesting.T) {
 				LocalBundleDir:    mockLocalBundleDir,
 				CheckSoftwareDeps: false,
 				Devservers:        mockDevservers,
+				DownloadMode:      planner.DownloadLazy,
 				HeartbeatInterval: heartbeatInterval,
 			},
 		},

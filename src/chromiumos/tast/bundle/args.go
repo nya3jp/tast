@@ -18,6 +18,7 @@ import (
 
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/dep"
+	"chromiumos/tast/internal/planner"
 )
 
 // RunMode describes the bundle's behavior.
@@ -126,6 +127,8 @@ type RunTestsArgs struct {
 	// containing build artifacts for the current Chrome OS image.
 	// If it is empty, DefaultBuildArtifactsURL in runner.Config is used.
 	BuildArtifactsURL string `json:"buildArtifactsUrl,omitempty"`
+	// DownloadMode specifies a strategy to download external data files.
+	DownloadMode planner.DownloadMode `json:"downloadMode,omitempty"`
 
 	// WaitUntilReady indicates that the test bundle's "ready" function (see ReadyFunc) should
 	// be executed before any tests are executed.

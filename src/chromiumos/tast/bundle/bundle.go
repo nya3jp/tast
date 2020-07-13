@@ -273,6 +273,7 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		BuildArtifactsURL: args.RunTests.BuildArtifactsURL,
 		RemoteData:        rd,
 		TestHook:          cfg.testHook,
+		DownloadMode:      args.RunTests.DownloadMode,
 	}
 
 	if err := planner.RunTests(ctx, tests, ew, pcfg); err != nil {

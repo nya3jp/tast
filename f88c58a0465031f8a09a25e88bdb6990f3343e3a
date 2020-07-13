@@ -117,6 +117,30 @@
       "revId": "f88c58a0465031f8a09a25e88bdb6990f3343e3a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0ae39f1f_002d8c41",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 648,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-13T08:40:47Z",
+      "side": 1,
+      "message": "I definitely agree that we want to prioritize files somehow. I still don\u0027t have a concrete idea to evaluate priority of a file though, because there are several evaluation factors (e.g. how large is a file, whether a file is used in a later test, how many tests use a file).\n\nCurrent API doesn\u0027t mention anything about the order of files. If we come up with a good evaluation method we can add it to the API contract later without breaking API compatibility.",
+      "parentUuid": "276814b3_6b170248",
+      "range": {
+        "startLine": 648,
+        "startChar": 0,
+        "endLine": 648,
+        "endChar": 4
+      },
+      "revId": "f88c58a0465031f8a09a25e88bdb6990f3343e3a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

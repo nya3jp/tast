@@ -79,6 +79,7 @@ func runRemoteTestsOnce(ctx context.Context, cfg *Config, patterns []string) (re
 				LocalBundleDir:    cfg.localBundleDir,
 				Devservers:        cfg.devservers,
 				HeartbeatInterval: heartbeatInterval,
+				DownloadMode:      cfg.downloadMode,
 			},
 			BundleGlob: cfg.remoteBundleGlob(),
 		},

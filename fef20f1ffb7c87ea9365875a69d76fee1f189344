@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fe675270_8ce050db",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-13T05:49:17Z",
+      "side": 1,
+      "message": "Sorry, seems like I failed to upload a new version. PS4 contains more comments.\n",
+      "revId": "fef20f1ffb7c87ea9365875a69d76fee1f189344",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

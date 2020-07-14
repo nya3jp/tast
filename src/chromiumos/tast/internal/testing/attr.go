@@ -221,6 +221,10 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 				Desc: `Similar to wificell_func, but triggered by CLs that touch specific code paths.`,
 			},
 			{
+				Name: "wificell_perf",
+				Desc: `Measures WiFi performance using Wificell fixture nightly.`,
+			},
+			{
 				Name: "wificell_unstable",
 				Desc: `Indicates that this test is yet to be verified as stable.`,
 			},

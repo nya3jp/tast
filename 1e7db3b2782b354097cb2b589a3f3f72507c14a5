@@ -34,6 +34,70 @@
       "revId": "1e7db3b2782b354097cb2b589a3f3f72507c14a5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d32e10af_5f3aba84",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1206284
+      },
+      "writtenOn": "2020-07-15T21:19:29Z",
+      "side": 1,
+      "message": "hwfeature is fine to start ... main point is ... the scope of the dataset available for filtering is larger\n\ne.g. if you wanted to restrict to a 2nd sourced component (wifi chip, etc...) ... this is beyond the scope of hwfeatures",
+      "parentUuid": "3e81da68_6d4602bb",
+      "revId": "1e7db3b2782b354097cb2b589a3f3f72507c14a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f41211a1_1adcd257",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1206284
+      },
+      "writtenOn": "2020-07-15T21:19:29Z",
+      "side": 1,
+      "message": "narrow slice of everything known about the dut",
+      "range": {
+        "startLine": 151,
+        "startChar": 3,
+        "endLine": 151,
+        "endChar": 6
+      },
+      "revId": "1e7db3b2782b354097cb2b589a3f3f72507c14a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "30417bb6_7d85e8f3",
+        "filename": "src/chromiumos/tast/bundle/args_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1206284
+      },
+      "writtenOn": "2020-07-15T21:19:29Z",
+      "side": 1,
+      "message": "not totally sure on why the coupling to infra protos\n\nthis causing versioning/compatibility issues\n\ntast should be working exclusively in the config/ scope, since this is exposed to the build/platform ecosystem",
+      "range": {
+        "startLine": 16,
+        "startChar": 29,
+        "endLine": 16,
+        "endChar": 34
+      },
+      "revId": "1e7db3b2782b354097cb2b589a3f3f72507c14a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

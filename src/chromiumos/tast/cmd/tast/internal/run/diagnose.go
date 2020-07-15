@@ -79,7 +79,7 @@ var (
 func diagnoseReboot(ctx context.Context, cfg *Config, outDir string) string {
 	// Read the unified system log just before the reboot.
 	denseBootID := strings.Replace(cfg.initBootID, "-", "", -1)
-	out, err := cfg.hst.Command("croslog", "--source=journal", "--quiet", "--boot="+denseBootID, "--lines=1000").Output(ctx)
+	out, err := cfg.hst.Command("croslog", "--quiet", "--boot="+denseBootID, "--lines=1000").Output(ctx)
 	if err != nil {
 		cfg.Logger.Log("Failed to execute croslog command: ", err)
 		out, err = cfg.hst.Command("journalctl", "--quiet", "--boot="+denseBootID, "--lines=1000").Output(ctx)

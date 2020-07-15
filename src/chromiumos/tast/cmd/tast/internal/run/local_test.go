@@ -149,7 +149,7 @@ func (td *localTestData) handleExec(req *sshtest.ExecReq) {
 	case "exec sync":
 		req.Start(true)
 		req.End(0)
-	case "exec croslog --source=journal --quiet --boot=" + strings.Replace(defaultBootID, "-", "", -1) + " --lines=1000":
+	case "exec croslog --quiet --boot=" + strings.Replace(defaultBootID, "-", "", -1) + " --lines=1000":
 		req.Start(true)
 		io.WriteString(req, td.unifiedLog)
 		req.End(0)

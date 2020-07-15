@@ -27,6 +27,13 @@ func D(conds ...Condition) Deps {
 	return dep.NewHardwareDeps(conds...)
 }
 
+// Merge merges two HardwareDeps instance into one HardwareDeps instance.
+// The returned HardwareDeps is satisfied iff all conditions in d1 and ones in d2 are
+// satisfied.
+func Merge(d1, d2 Deps) Deps {
+	return dep.MergeHardwareDeps(d1, d2)
+}
+
 // idRegexp is the pattern that the given model/plaform ID names should match with.
 var idRegexp = regexp.MustCompile(`^[a-z0-9_]+$`)
 

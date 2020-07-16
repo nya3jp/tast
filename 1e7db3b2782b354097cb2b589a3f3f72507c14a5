@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "e94f51d9_229d3886",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1206284
+      },
+      "writtenOn": "2020-07-16T13:58:11Z",
+      "side": 1,
+      "message": "See https://chrome-internal-review.googlesource.com/c/chromeos/infra/config/+/3164214/3/test/plan/chromeos-kernel-wifi.star\n\nas an example for 2nd source component based test coverage rules (and constraints potentially)",
+      "revId": "1e7db3b2782b354097cb2b589a3f3f72507c14a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b980fbe2_c713e2ca",
         "filename": "src/chromiumos/tast/bundle/args.go",
         "patchSetId": 6

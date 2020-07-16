@@ -16,6 +16,23 @@
       "revId": "1b79ecae30a22a849e72040f46f1e2e306c30963",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5b30fa71_3a0aa4be",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000175
+      },
+      "writtenOn": "2020-07-16T05:21:55Z",
+      "side": 1,
+      "message": "Yanaguchi-san, ping? Thanks.",
+      "revId": "1b79ecae30a22a849e72040f46f1e2e306c30963",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

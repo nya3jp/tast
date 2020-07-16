@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fe5674fc_c4683b6a",
+        "filename": "src/chromiumos/tast/internal/planner/run.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 283,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-07-16T03:23:23Z",
+      "side": 1,
+      "message": "remove",
+      "range": {
+        "startLine": 283,
+        "startChar": 3,
+        "endLine": 283,
+        "endChar": 6
+      },
+      "revId": "20d9625e778688eab147c9f04100e1e7fa5320e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bd740476_867d56c4",
+        "filename": "src/chromiumos/tast/internal/planner/run.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 284,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-07-16T03:23:23Z",
+      "side": 1,
+      "message": "In total it would take O(nm) time, where n \u003d |purgeable| and m \u003d |tests| if tests never purge files.\nGiven there are only 1000 or so tests, I guess it will not be problematic, but it may be worth mentioning.",
+      "revId": "20d9625e778688eab147c9f04100e1e7fa5320e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

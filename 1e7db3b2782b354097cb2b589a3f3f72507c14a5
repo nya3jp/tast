@@ -73,6 +73,24 @@
     },
     {
       "key": {
+        "uuid": "6ec8d807_4fa8cc65",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1206284
+      },
+      "writtenOn": "2020-07-16T13:12:23Z",
+      "side": 1,
+      "message": "2nd sources means during manufacturing, different components can be used (for cost/availability reasons) as long as they are considered feature identical\n\ne.g. (these are 2nd sourceable components that are def\u0027d in autotest)\nhttps://cs.corp.google.com/chromeos_public/src/third_party/autotest/files/client/common_lib/cros/network/interface.py?q\u003dintel+wifi+f:autotest\u0026g\u003d0\u0026l\u003d27\n\nthis dataset will not come from hardwarefeature (cause that just focuses on the specs/features) and doesn\u0027t understand the concept of 2nd sourcing\n\ni\u0027m fine starting with hwfeatures, but think we should include the full dataset domain eventually to support these types of cases",
+      "parentUuid": "aef7daf9_99c8ac9d",
+      "revId": "1e7db3b2782b354097cb2b589a3f3f72507c14a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f41211a1_1adcd257",
         "filename": "src/chromiumos/tast/bundle/args.go",
         "patchSetId": 6
@@ -108,6 +126,30 @@
       "side": 1,
       "message": "Sorry, I could not understand what you meant.\nThe HardwareFeatures object here is only supplied and consumed by Tast.\nTherefore any other fields than the ones Tast is interested in are already kept empty.",
       "parentUuid": "f41211a1_1adcd257",
+      "range": {
+        "startLine": 151,
+        "startChar": 3,
+        "endLine": 151,
+        "endChar": 6
+      },
+      "revId": "1e7db3b2782b354097cb2b589a3f3f72507c14a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b26a36c7_74538fa1",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1206284
+      },
+      "writtenOn": "2020-07-16T13:12:23Z",
+      "side": 1,
+      "message": "see previous comment\n\nDUT -\u003e labconfig + mfgconfig + designconfig ... it\u0027s more than just hardwarefeatures\n\nthis is a nit on naming",
+      "parentUuid": "c9314440_799e7668",
       "range": {
         "startLine": 151,
         "startChar": 3,

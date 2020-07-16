@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "aef7daf9_99c8ac9d",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-07-16T05:41:58Z",
+      "side": 1,
+      "message": "What do you mean by \"a 2nd sourced component\"? Is it same as \"something infra scheduler don\u0027t do\"?\n\nI think it is OK when Tast requires more filtering than done in the infra scheduler. In such case we will need to add more data inside Tast code here by introducing another data struct, in order to store information polled from DUT by Tast. That is #2 scenario, and will be enclosed inside the Tast codebase.\n\nOur intention is that hardwareFeature should cover what it covers only.\nWhen the shceduler in the infra introduce a new hardware feature for filtering, it will be added to the config proto. Then that field becomes also available in the code here, so that we can implement the counterpart in Tast more smoothly.",
+      "parentUuid": "d32e10af_5f3aba84",
+      "revId": "1e7db3b2782b354097cb2b589a3f3f72507c14a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f41211a1_1adcd257",
         "filename": "src/chromiumos/tast/bundle/args.go",
         "patchSetId": 6
@@ -66,6 +84,30 @@
       "writtenOn": "2020-07-15T21:19:29Z",
       "side": 1,
       "message": "narrow slice of everything known about the dut",
+      "range": {
+        "startLine": 151,
+        "startChar": 3,
+        "endLine": 151,
+        "endChar": 6
+      },
+      "revId": "1e7db3b2782b354097cb2b589a3f3f72507c14a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c9314440_799e7668",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-07-16T05:41:58Z",
+      "side": 1,
+      "message": "Sorry, I could not understand what you meant.\nThe HardwareFeatures object here is only supplied and consumed by Tast.\nTherefore any other fields than the ones Tast is interested in are already kept empty.",
+      "parentUuid": "f41211a1_1adcd257",
       "range": {
         "startLine": 151,
         "startChar": 3,
@@ -98,6 +140,30 @@
       "revId": "1e7db3b2782b354097cb2b589a3f3f72507c14a5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a5a47c20_4cdf71a2",
+        "filename": "src/chromiumos/tast/bundle/args_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-07-16T05:41:58Z",
+      "side": 1,
+      "message": "Right, we are going to decouple this with infra protos.\nThis line is tentatively added only for adding unit test for current code.\nWe will get rid of this when the main logic is fully decoupled from infra protos.",
+      "parentUuid": "30417bb6_7d85e8f3",
+      "range": {
+        "startLine": 16,
+        "startChar": 29,
+        "endLine": 16,
+        "endChar": 34
+      },
+      "revId": "1e7db3b2782b354097cb2b589a3f3f72507c14a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -13,12 +13,14 @@ type Registry struct {
 	allTests    []*TestInstance
 	testNames   map[string]struct{} // names of registered tests
 	allServices []*Service
+	allPres     map[string]Precondition
 }
 
 // NewRegistry returns a new test registry.
 func NewRegistry() *Registry {
 	return &Registry{
 		testNames: make(map[string]struct{}),
+		allPres:   make(map[string]Precondition),
 	}
 }
 
@@ -42,6 +44,15 @@ func (r *Registry) AddTestInstance(t *TestInstance) error {
 	t = t.clone()
 	if _, ok := r.testNames[t.Name]; ok {
 		return fmt.Errorf("test %q already registered", t.Name)
+	}
+	// Ensure equality of preconditions with the same name.
+	if t.Pre != nil {
+		name := t.Pre.String()
+		if pre, ok := r.allPres[name]; !ok {
+			r.allPres[name] = t.Pre
+		} else if pre != t.Pre {
+			return fmt.Errorf("precondition %s has multiple instances", name)
+		}
 	}
 	r.allTests = append(r.allTests, t)
 	r.testNames[t.Name] = struct{}{}

@@ -542,6 +542,29 @@ func TestInstantiateCompatAttrs(t *gotesting.T) {
 	}
 }
 
+type nonPointerPre struct{}
+
+func (p nonPointerPre) Prepare(ctx context.Context, s *PreState) interface{} { return nil }
+func (p nonPointerPre) Close(ctx context.Context, s *PreState)               {}
+func (p nonPointerPre) Timeout() time.Duration                               { return time.Minute }
+func (p nonPointerPre) String() string                                       { return "nonPointerPre" }
+
+func TestInstantiateNonPointerPrecondition(t *gotesting.T) {
+	if _, err := instantiate(&Test{
+		Func: TESTINSTANCETEST,
+		Pre:  &nonPointerPre{},
+	}); err != nil {
+		t.Fatal("Instanciate failed for pointer pre: ", err)
+	}
+
+	if _, err := instantiate(&Test{
+		Func: TESTINSTANCETEST,
+		Pre:  nonPointerPre{},
+	}); err == nil {
+		t.Fatal("Instanciate unexpectedly succeeded for non-pointer pre")
+	}
+}
+
 func TestSoftwareDeps(t *gotesting.T) {
 	test := TestInstance{SoftwareDeps: []string{"dep3", "dep1", "dep2", "depX"}}
 	got := test.ShouldRun(features([]string{"dep0", "dep2", "dep4"}, "eve"))

@@ -154,6 +154,9 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 		}
 		pre = p.Pre
 	}
+	if err := validatePre(pre); err != nil {
+		return nil, err
+	}
 
 	timeout := t.Timeout
 	if p.Timeout != 0 {
@@ -322,6 +325,19 @@ func validateManualAttr(attr []string) error {
 func validateAttr(attr []string) error {
 	if err := checkKnownAttrs(attr); err != nil {
 		return err
+	}
+	return nil
+}
+
+func validatePre(pre Precondition) error {
+	// Precondition must be a pointer type so that it is comparable.
+	// https://golang.org/ref/spec#Comparison_operators
+	if pre == nil {
+		return nil
+	}
+	v := reflect.ValueOf(pre)
+	if v.Kind() != reflect.Ptr {
+		return errors.New("precondition must be implemented by a pointer type")
 	}
 	return nil
 }

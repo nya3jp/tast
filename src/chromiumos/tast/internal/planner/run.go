@@ -176,6 +176,7 @@ func (p *prePlan) run(ctx context.Context, out OutputStream, purgeable []string)
 			ctx:   pctx,
 			close: p.pre != nil && i == len(p.tests)-1,
 		}
+		t.Pre = p.tests[0].Pre
 		if err := runTest(ctx, t, tout, p.pcfg, precfg, purgeable); err != nil {
 			return err
 		}

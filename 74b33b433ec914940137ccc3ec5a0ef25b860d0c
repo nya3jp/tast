@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d56b8b67_d034f332",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-16T03:41:54Z",
+      "side": 1,
+      "message": "Thanks Brendan for preparing a fix! While this change indeed preserves the previous behavior, I rather think it was a fault of the framework that it didn\u0027t check equality of preconditions with the same name (crbug.com/1100475). I sent out a change to update ChromePreWithVerboseConsent to return a singleton instance (crrev.com/c/2299792), as well as a framework change to ensure equality of preconditions (crrev.com/c/2300903).\n",
+      "revId": "74b33b433ec914940137ccc3ec5a0ef25b860d0c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

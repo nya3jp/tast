@@ -105,6 +105,39 @@ func TestAddTestModifyOriginal(t *gotesting.T) {
 	}
 }
 
+func TestAddTestConflictingPre(t *gotesting.T) {
+	reg := NewRegistry()
+
+	// There are different preconditions with the same name. Registering tests
+	// using them should result in errors.
+	pre1 := &fakePre{"fake_pre"}
+	pre2 := &fakePre{"fake_pre"}
+
+	if err := reg.AddTestInstance(&TestInstance{
+		Name: "pkg.Test1",
+		Func: func(context.Context, *State) {},
+		Pre:  pre1,
+	}); err != nil {
+		t.Fatal("AddTestInstance failed for pkg.Test1: ", err)
+	}
+
+	if err := reg.AddTestInstance(&TestInstance{
+		Name: "pkg.Test2",
+		Func: func(context.Context, *State) {},
+		Pre:  pre1,
+	}); err != nil {
+		t.Fatal("AddTestInstance failed for pkg.Test2: ", err)
+	}
+
+	if err := reg.AddTestInstance(&TestInstance{
+		Name: "pkg.Test3",
+		Func: func(context.Context, *State) {},
+		Pre:  pre2,
+	}); err == nil {
+		t.Fatal("AddTestInstance unexpectedly succeeded for pkg.Test3")
+	}
+}
+
 func TestAllServices(t *gotesting.T) {
 	reg := NewRegistry()
 	allSvcs := []*Service{

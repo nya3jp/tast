@@ -34,6 +34,24 @@
       "revId": "9eab95251f9bcf3b7708bad2a4566bbe4a6508fc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b2ff68fe_aab81b67",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/remote_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 198,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-07-17T10:53:39Z",
+      "side": 1,
+      "message": "Thanks for the detailed explanation!",
+      "parentUuid": "ed49440b_45c26524",
+      "revId": "9eab95251f9bcf3b7708bad2a4566bbe4a6508fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

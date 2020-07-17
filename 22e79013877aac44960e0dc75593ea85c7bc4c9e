@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "30f5f5a6_e35854a5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1241666
+      },
+      "writtenOn": "2020-07-17T23:19:00Z",
+      "side": 1,
+      "message": "Trivial documentation fix.",
+      "revId": "22e79013877aac44960e0dc75593ea85c7bc4c9e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

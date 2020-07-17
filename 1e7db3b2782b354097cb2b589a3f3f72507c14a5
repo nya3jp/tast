@@ -108,6 +108,24 @@
     },
     {
       "key": {
+        "uuid": "50f3bfaa_054014da",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-07-17T03:37:15Z",
+      "side": 1,
+      "message": "I agree. Thanks.",
+      "parentUuid": "6ec8d807_4fa8cc65",
+      "revId": "1e7db3b2782b354097cb2b589a3f3f72507c14a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f41211a1_1adcd257",
         "filename": "src/chromiumos/tast/bundle/args.go",
         "patchSetId": 6
@@ -179,6 +197,30 @@
     },
     {
       "key": {
+        "uuid": "87397654_52096ebf",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-07-17T03:37:15Z",
+      "side": 1,
+      "message": "Got it. It was named so only because it was copy of the variable that exist in the evaluation environment of the CEL expression named \"dut\", and also its type was DUTConfigConstraint_DUT (inner class).",
+      "parentUuid": "b26a36c7_74538fa1",
+      "range": {
+        "startLine": 151,
+        "startChar": 3,
+        "endLine": 151,
+        "endChar": 6
+      },
+      "revId": "1e7db3b2782b354097cb2b589a3f3f72507c14a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "30417bb6_7d85e8f3",
         "filename": "src/chromiumos/tast/bundle/args_test.go",
         "patchSetId": 6
@@ -220,6 +262,23 @@
         "endLine": 16,
         "endChar": 34
       },
+      "revId": "1e7db3b2782b354097cb2b589a3f3f72507c14a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "142ec69f_6701bdc2",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-07-17T03:37:15Z",
+      "side": 1,
+      "message": "This was wrong. The datatype is configpb.HardwareFeatures now.",
       "revId": "1e7db3b2782b354097cb2b589a3f3f72507c14a5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false

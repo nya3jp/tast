@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "acad1f43_414406ac",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/remote_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 198,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-07-17T06:47:45Z",
+      "side": 1,
+      "message": "Will you tell me a bit more about how this works?\nWhat I imagined is that invoked remote test instance is run with -build\u003dfalse because it no longer need to build itself, becuase it is after the parent tast binary already builds itself, but not sure.",
+      "revId": "9eab95251f9bcf3b7708bad2a4566bbe4a6508fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

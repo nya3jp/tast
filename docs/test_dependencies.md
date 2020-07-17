@@ -86,7 +86,7 @@ The following software features are defined:
     hardware becomes non-responsive.
 *   `lock_core_pattern` - Ability to lock down |core_pattern| from further
     modifications.
-    `memfd_create` - memfd_create function implemented in the kernel.
+*   `memfd_create` - memfd_create function implemented in the kernel.
 *   `memd` - [Memory stats collection daemon].
 *   `ml_service` - ML Service daemon.
 *   `mosys` - Ability to run mosys command.

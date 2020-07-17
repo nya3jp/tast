@@ -16,6 +16,24 @@
       "revId": "9eab95251f9bcf3b7708bad2a4566bbe4a6508fc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ed49440b_45c26524",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/remote_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 198,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-17T07:11:11Z",
+      "side": 1,
+      "message": "Of course! I know this is a bit complicated...\n\nmeta.RunTests test is a Tast remote test to run the \"tast\" command itself for end-to-end testing of Tast framework (that is why it is called a \"meta\" test).\n\nWhen the user runs \"tast run -build\u003dfalse DUT meta.RunTests\", the situation is simple. The tast command does not rebuild any test, but just run remote test bundles already installed to the chroot, and meta.RunTests test runs the \"tast\" command recursively which in turn invokes some local tests using local test bundles already installed to the DUT.\n\nMore interesting case is \"tast run -build\u003dtrue DUT meta.RunTests\". First of all the tast command builds remote/local test bundles, and pushes local test bundles to the DUT. Pushed bundle paths are different from preinstalled ones (/usr/local/libexec/tast/bundles/local/cros vs. /usr/local/libexec/tast/bundles/local_pushed/cros). This path is decided in Config.DeriveDefaults:\nhttps://source.corp.google.com/chromeos_public/src/platform/tast/src/chromiumos/tast/cmd/tast/internal/run/config.go;l\u003d278\nThen meta.RunTests is run. The test invokes the tast command, but here it should not set \"-build\u003dtrue\" because it will change the test\u0027s behavior significantly from the -build\u003dfalse case (e.g. when the test is run in the lab). Instead, we pass a bunch of -local* options to use local test binaries pushed in the first invocation of the tast command. At the end of the day, file push happens only at once in the beginning, and meta tests use pushed files to perform the test scenarios.",
+      "parentUuid": "acad1f43_414406ac",
+      "revId": "9eab95251f9bcf3b7708bad2a4566bbe4a6508fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

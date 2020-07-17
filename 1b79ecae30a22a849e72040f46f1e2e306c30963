@@ -50,6 +50,23 @@
       "revId": "1b79ecae30a22a849e72040f46f1e2e306c30963",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f9808406_7779c21e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000175
+      },
+      "writtenOn": "2020-07-17T05:45:36Z",
+      "side": 1,
+      "message": "Oka-san, Thanks.",
+      "revId": "1b79ecae30a22a849e72040f46f1e2e306c30963",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

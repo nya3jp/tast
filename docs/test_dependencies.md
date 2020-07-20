@@ -90,6 +90,7 @@ The following software features are defined:
 *   `memfd_create` - memfd_create function implemented in the kernel.
 *   `memd` - [Memory stats collection daemon].
 *   `ml_service` - ML Service daemon.
+*   `ml_benchmark_drivers` - [ML benchmarking suite](http://go/roadrollerda)
 *   `mosys` - Ability to run mosys command.
 *   `ndk_translation` - Availability of 32-bit NDK translation library for ARC.
 *   `ndk_translation64` - Availability of 64-bit NDK translation library for

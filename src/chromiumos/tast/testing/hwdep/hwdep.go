@@ -228,6 +228,17 @@ func WifiMACAddrRandomize() Condition {
 	)
 }
 
+// WifiMarvell returns a hardware dependency condition that is satisfied iff
+// the DUT's using a Marvel WiFi chip.
+func WifiMarvell() Condition {
+	// TODO(crbug.com/1070299): we don't yet have relevant fields in device.Config
+	// about WiFi chip, so list the known platforms here for now.
+	return SkipOnPlatform(
+		"bob", "kevin", "elm", "hana", "kitty",
+		"mighty", "jaq", "fievel", "tiger", "jerry",
+	)
+}
+
 func hasBattery(f *dep.HardwareFeatures) (bool, error) {
 	if f.DC == nil {
 		return false, errors.New("device.Config is not given")

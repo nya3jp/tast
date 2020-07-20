@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e28b872c_d0f547a4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1377451
+      },
+      "writtenOn": "2020-07-20T06:23:18Z",
+      "side": 1,
+      "message": "Adds the flag ml_benchmark to the local_test_runner",
+      "revId": "4f530dcbe142c556b5d01446b9eb221cd307e6fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

@@ -22,6 +22,30 @@
       "revId": "69180ba076260c0c6c045d652f7a715bb81be4d5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ab24d65c_d627beac",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 233,
+      "author": {
+        "id": 1371981
+      },
+      "writtenOn": "2020-07-21T02:29:54Z",
+      "side": 1,
+      "message": "Ah, yes, thanks. Also rename this to WifiNotMarvell.",
+      "parentUuid": "cab7f4c5_e64b9384",
+      "range": {
+        "startLine": 232,
+        "startChar": 7,
+        "endLine": 233,
+        "endChar": 18
+      },
+      "revId": "69180ba076260c0c6c045d652f7a715bb81be4d5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

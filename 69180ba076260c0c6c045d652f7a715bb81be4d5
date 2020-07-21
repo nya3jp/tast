@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "3cf43640_df655350",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 232,
+      "author": {
+        "id": 1371981
+      },
+      "writtenOn": "2020-07-21T05:44:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0e9478b3_826c95ef",
+      "range": {
+        "startLine": 232,
+        "startChar": 21,
+        "endLine": 232,
+        "endChar": 27
+      },
+      "revId": "69180ba076260c0c6c045d652f7a715bb81be4d5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "cab7f4c5_e64b9384",
         "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
         "patchSetId": 1

@@ -16,6 +16,23 @@
       "revId": "4f530dcbe142c556b5d01446b9eb221cd307e6fb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "64b84359_e7780d92",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-07-21T07:29:20Z",
+      "side": 1,
+      "message": "The code itself looks ok, if the USE flag is set somehow, which is the question in the parent CL. I\u0027ll revisit here after it.",
+      "revId": "4f530dcbe142c556b5d01446b9eb221cd307e6fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

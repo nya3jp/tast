@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "b28141c3_3904acdd",
+        "filename": "src/chromiumos/tast/bundle/args_test.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-22T08:50:02Z",
+      "side": 1,
+      "message": "Thanks for adding this test!",
+      "range": {
+        "startLine": 94,
+        "startChar": 5,
+        "endLine": 94,
+        "endChar": 16
+      },
+      "revId": "650130e7ed77c879821e86285d348c59918854ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2b711841_95a1c1f0",
         "filename": "src/chromiumos/tast/internal/runner/args.go",
         "patchSetId": 8
@@ -13,6 +36,121 @@
       "writtenOn": "2020-07-22T08:09:53Z",
       "side": 1,
       "message": "This should also be changed to use configpb.HardwareFeatures for consistency and avoiding using the inner struct.",
+      "revId": "650130e7ed77c879821e86285d348c59918854ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2535b84b_66cee05a",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-22T08:50:02Z",
+      "side": 1,
+      "message": "I guess we want to replace this with HardwareFeatures.",
+      "range": {
+        "startLine": 221,
+        "startChar": 26,
+        "endLine": 221,
+        "endChar": 49
+      },
+      "revId": "650130e7ed77c879821e86285d348c59918854ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "24ede819_3544ba6a",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 229,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-22T08:50:02Z",
+      "side": 1,
+      "message": "Need to update MarshalJSON/UnmarshalJSON for the new field?",
+      "range": {
+        "startLine": 229,
+        "startChar": 27,
+        "endLine": 229,
+        "endChar": 38
+      },
+      "revId": "650130e7ed77c879821e86285d348c59918854ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5ae1bb40_d8b90262",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-22T08:50:02Z",
+      "side": 1,
+      "message": "This function now returns DUT as well. Can you rename it?",
+      "range": {
+        "startLine": 162,
+        "startChar": 5,
+        "endLine": 162,
+        "endChar": 20
+      },
+      "revId": "650130e7ed77c879821e86285d348c59918854ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e60ba8e0_f0b04f54",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-22T08:50:02Z",
+      "side": 1,
+      "message": "Can you continue to assign to continue.HardwareFeatures for better protocol compatibility?",
+      "range": {
+        "startLine": 255,
+        "startChar": 10,
+        "endLine": 255,
+        "endChar": 20
+      },
+      "revId": "650130e7ed77c879821e86285d348c59918854ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "225dca1c_6ca6d19d",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-22T08:50:02Z",
+      "side": 1,
+      "message": "Same here: can you check f.DC as well for better protocol compatibility?",
+      "range": {
+        "startLine": 162,
+        "startChar": 9,
+        "endLine": 162,
+        "endChar": 66
+      },
       "revId": "650130e7ed77c879821e86285d348c59918854ee",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

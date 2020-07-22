@@ -218,6 +218,9 @@ type GetDUTInfoResult struct {
 	// of this field are handled in MarshalJSON/UnmarshalJSON respectively.
 	DeviceConfig *device.Config `json:"-"`
 
+	// ChromeOSVersion contains the DUT's Chrome OS Version
+	ChromeOSVersion string `json:"chromeOSVersion,omitempty"`
+
 	// Warnings contains descriptions of non-fatal errors encountered while determining features.
 	Warnings []string `json:"warnings,omitempty"`
 }
@@ -368,6 +371,8 @@ type Config struct {
 	// successfully downloaded and installed before. This prevents downloading private test bundles for
 	// every runner invocation.
 	PrivateBundlesStampPath string
+	// LSBReleaseFile contains the path to lsb-release. By default, it should be /etc/lsb-release
+	ChromeOSReleaseBuilder string
 }
 
 // readArgs parses runtime arguments.

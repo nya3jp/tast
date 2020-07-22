@@ -46,9 +46,12 @@ func handleGetDUTInfo(args *Args, cfg *Config, w io.Writer) error {
 		warnings = append(warnings, ws...)
 	}
 
+	chromeOSVersion := cfg.ChromeOSReleaseBuilder
+
 	res := GetDUTInfoResult{
 		SoftwareFeatures: features,
 		DeviceConfig:     dc,
+		ChromeOSVersion:  chromeOSVersion,
 		Warnings:         warnings,
 	}
 	if err := json.NewEncoder(w).Encode(&res); err != nil {

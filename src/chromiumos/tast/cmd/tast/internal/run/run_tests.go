@@ -14,6 +14,13 @@ func runTests(ctx context.Context, cfg *Config) ([]TestResult, error) {
 	if err := getDUTInfo(ctx, cfg); err != nil {
 		return nil, errors.Wrap(err, "failed to get DUT software features")
 	}
+
+	if cfg.chromeOSVersion == "" {
+		cfg.Logger.Log("Chrome OS Version: not available from target")
+	} else {
+		cfg.Logger.Logf("Chrome OS Version: %v", cfg.chromeOSVersion)
+	}
+
 	if err := getInitialSysInfo(ctx, cfg); err != nil {
 		return nil, errors.Wrap(err, "failed to get initial sysinfo")
 	}

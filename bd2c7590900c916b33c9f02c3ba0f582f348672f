@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "75f0e300_e25b09c7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-22T04:51:13Z",
+      "side": 1,
+      "message": "Sorry for delay, I was ooo yesterday.\n",
+      "revId": "bd2c7590900c916b33c9f02c3ba0f582f348672f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

@@ -1,0 +1,228 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d4ec8608_1ec629c5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-22T09:21:21Z",
+      "side": 1,
+      "message": "Thanks for sending this change early!\n\nI will be offline later this week for national holidays, sorry.\n",
+      "revId": "61dfe9d4b35ec77dff4ce55f888d8323eb148a2c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c69cb86b_b195bc69",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/deps.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-22T09:21:21Z",
+      "side": 1,
+      "message": "Let\u0027s assign res.ChromeOSVersion to cfg.chromeOSVersion as-is so that we can programatically tell if cfg.chromeOSVersion is a valid value or not (without sharing a constant \"not available from target\" to the whole framework). Later we can check if cfg.chromeOSVersion is empty and print \"not available from target\".",
+      "range": {
+        "startLine": 71,
+        "startChar": 6,
+        "endLine": 71,
+        "endChar": 51
+      },
+      "revId": "61dfe9d4b35ec77dff4ce55f888d8323eb148a2c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d0193179_d154b64e",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/deps_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-22T09:21:21Z",
+      "side": 1,
+      "message": "When we extract the version from CHROMEOS_RELEASE_BUILDER_PATH (see my other comment), this string will be like \"hatch-release/R86-13314.0.0\".",
+      "range": {
+        "startLine": 77,
+        "startChar": 20,
+        "endLine": 77,
+        "endChar": 45
+      },
+      "revId": "61dfe9d4b35ec77dff4ce55f888d8323eb148a2c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bbad536f_50881d08",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/deps_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-22T09:21:21Z",
+      "side": 1,
+      "message": "nit: const chromeOSVersion \u003d ...",
+      "range": {
+        "startLine": 77,
+        "startChar": 1,
+        "endLine": 77,
+        "endChar": 16
+      },
+      "revId": "61dfe9d4b35ec77dff4ce55f888d8323eb148a2c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a3ffdf8d_2c0c1485",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-22T09:21:21Z",
+      "side": 1,
+      "message": "Same here (see my another comment)",
+      "range": {
+        "startLine": 41,
+        "startChar": 1,
+        "endLine": 41,
+        "endChar": 45
+      },
+      "revId": "61dfe9d4b35ec77dff4ce55f888d8323eb148a2c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cd68cbb2_edc1f2e9",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-22T09:21:21Z",
+      "side": 1,
+      "message": "Logs are available in td.logbuf. See newLocalTestData() for details.",
+      "range": {
+        "startLine": 66,
+        "startChar": 1,
+        "endLine": 66,
+        "endChar": 63
+      },
+      "revId": "61dfe9d4b35ec77dff4ce55f888d8323eb148a2c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c140a278_3634f7dc",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-22T09:21:21Z",
+      "side": 1,
+      "message": "You can just call strings.Contains for the entire log contents without iterating lines.",
+      "range": {
+        "startLine": 70,
+        "startChar": 1,
+        "endLine": 70,
+        "endChar": 84
+      },
+      "revId": "61dfe9d4b35ec77dff4ce55f888d8323eb148a2c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4b9c5c03_9d09fff5",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 526,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-22T09:21:21Z",
+      "side": 1,
+      "message": "You can use the lsbrelease package to extract this information.\nhttps://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/lsbrelease\n\nFor unit tests it is likely you have to add a new function to the lsbrelease package that allows specifying a file path.",
+      "range": {
+        "startLine": 526,
+        "startChar": 5,
+        "endLine": 526,
+        "endChar": 23
+      },
+      "revId": "61dfe9d4b35ec77dff4ce55f888d8323eb148a2c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "122f15db_29c6ac17",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 527,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-22T09:21:21Z",
+      "side": 1,
+      "message": "CHROMEOS_RELEASE_BUILDER_PATH is the most suitable version to print.",
+      "range": {
+        "startLine": 527,
+        "startChar": 24,
+        "endLine": 527,
+        "endChar": 48
+      },
+      "revId": "61dfe9d4b35ec77dff4ce55f888d8323eb148a2c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5f9e2c04_5b065d1e",
+        "filename": "src/chromiumos/tast/internal/runner/features_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-22T09:21:21Z",
+      "side": 1,
+      "message": "You can use `` (backquotes) for multi-line strings.",
+      "range": {
+        "startLine": 25,
+        "startChar": 16,
+        "endLine": 25,
+        "endChar": 19
+      },
+      "revId": "61dfe9d4b35ec77dff4ce55f888d8323eb148a2c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -132,6 +132,7 @@ type Config struct {
 	initialSysInfo     *runner.SysInfoState  // initial state of system info (logs, crashes, etc.) on DUT before testing
 	softwareFeatures   *dep.SoftwareFeatures // software features of the DUT
 	deviceConfig       *device.Config        // hardware features of the DUT
+	osVersion          string                // Chrome OS Version
 }
 
 // NewConfig returns a new configuration for executing test runners in the supplied mode.

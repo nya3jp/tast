@@ -19,6 +19,23 @@
     },
     {
       "key": {
+        "uuid": "a0c39ffb_9f10e1b9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-07-22T18:04:33Z",
+      "side": 1,
+      "message": "Thanks all for the comments. These are my initial response to comments. I think I can use lsbrelease.go but I am not sure how I can do unit test for the hard-coded /etc/lsb-release. I will spend more time to figure it out and keep you all updated.\n\nThanks.\n",
+      "revId": "61dfe9d4b35ec77dff4ce55f888d8323eb148a2c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c69cb86b_b195bc69",
         "filename": "src/chromiumos/tast/cmd/tast/internal/run/deps.go",
         "patchSetId": 2
@@ -180,6 +197,30 @@
     },
     {
       "key": {
+        "uuid": "51026579_334ac06b",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 526,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-07-22T18:04:33Z",
+      "side": 1,
+      "message": "Hi Shuhei:\n\nI have a question. I looked at the lsbrelease.go and it seems like that it always open the path /etc/lsb-release. It is fine in normal operation. However, in case of unit test for feature.go, the path would not be /etc/lsb-release. Right now, I am using a member LSBReleaseFile in Config to manipulate the path in feature_test.go. Do you have any suggestion on how I can address this issue on unit testing?\n\nWe can discuss this next week after you come back from holiday.\n\nThanks.\n\nSeewai",
+      "parentUuid": "4b9c5c03_9d09fff5",
+      "range": {
+        "startLine": 526,
+        "startChar": 5,
+        "endLine": 526,
+        "endChar": 23
+      },
+      "revId": "61dfe9d4b35ec77dff4ce55f888d8323eb148a2c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "122f15db_29c6ac17",
         "filename": "src/chromiumos/tast/internal/runner/features.go",
         "patchSetId": 2
@@ -214,6 +255,30 @@
       "writtenOn": "2020-07-22T15:54:29Z",
       "side": 1,
       "message": "is there a reason to do this via opening the file, rather than just \u0027cat /etc/lsb-release\u0027 (via exec.Command) and then reading the stdout?",
+      "range": {
+        "startLine": 535,
+        "startChar": 1,
+        "endLine": 535,
+        "endChar": 15
+      },
+      "revId": "61dfe9d4b35ec77dff4ce55f888d8323eb148a2c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b667779f_cfe318c8",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 535,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-07-22T18:04:33Z",
+      "side": 1,
+      "message": "Hi Derek:\n\nI think the performance generally better if we open the file instead of executing a shell command to wait for output because we don\u0027t need to fork a new process. However, I don\u0027t think it matter much in this case because /etc/lsb-release is in general. Shuhei also has comment on reading /etc/lsb-release. I will discuss with him next week on this matter. I will update the comments next week.\n\nThanks.\n\nSeewai",
+      "parentUuid": "2d188c86_f8130f42",
       "range": {
         "startLine": 535,
         "startChar": 1,

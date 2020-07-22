@@ -203,6 +203,29 @@
     },
     {
       "key": {
+        "uuid": "2d188c86_f8130f42",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 535,
+      "author": {
+        "id": 1313390
+      },
+      "writtenOn": "2020-07-22T15:54:29Z",
+      "side": 1,
+      "message": "is there a reason to do this via opening the file, rather than just \u0027cat /etc/lsb-release\u0027 (via exec.Command) and then reading the stdout?",
+      "range": {
+        "startLine": 535,
+        "startChar": 1,
+        "endLine": 535,
+        "endChar": 15
+      },
+      "revId": "61dfe9d4b35ec77dff4ce55f888d8323eb148a2c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "5f9e2c04_5b065d1e",
         "filename": "src/chromiumos/tast/internal/runner/features_test.go",
         "patchSetId": 2

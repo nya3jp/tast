@@ -167,6 +167,7 @@ func main() {
 		// The autotest-capability package tries to install this to /etc but it's diverted to /usr/local.
 		AutotestCapabilityDir:   autocaps.DefaultCapabilityDir,
 		PrivateBundlesStampPath: "/usr/local/share/tast/.private-bundles-downloaded",
+		LSBReleaseFile:          "/etc/lsb-release",
 	}
 	if kvs, err := lsbrelease.Load(); err == nil {
 		if bp := kvs[lsbrelease.BuilderPath]; bp != "" {

@@ -46,9 +46,13 @@ func handleGetDUTInfo(args *Args, cfg *Config, w io.Writer) error {
 		warnings = append(warnings, ws...)
 	}
 
+	chromeOSVersion, osVersionWarnings := getChromeOSVersion(cfg.LSBReleaseFile)
+	warnings = append(warnings, osVersionWarnings...)
+
 	res := GetDUTInfoResult{
 		SoftwareFeatures: features,
 		DeviceConfig:     dc,
+		ChromeOSVersion:  chromeOSVersion,
 		Warnings:         warnings,
 	}
 	if err := json.NewEncoder(w).Encode(&res); err != nil {
@@ -516,4 +520,38 @@ func findAMDSOC(parsed *lscpuResult) (device.Config_SOC, error) {
 		return device.Config_SOC_STONEY_RIDGE, nil
 	}
 	return device.Config_SOC_UNSPECIFIED, errors.Errorf("unknown AMD model: %s", model)
+}
+
+// getChromeOSVersion retrieve the ChromeOSVersion from /etc/lsb-release
+func getChromeOSVersion(lsbReleaseFileName string) (chromeOSVersion string, warnings []string) {
+	chromeOSVersionKey := "CHROMEOS_RELEASE_VERSION"
+	notAvailStr := ""
+	// If /etc/lsb-release doesn't exist, just print out a warning
+	if _, err := os.Stat(lsbReleaseFileName); os.IsNotExist(err) {
+		warnings = append(warnings, "Chrome OS Version is not available because lsb-release does not exist on target")
+		return notAvailStr, warnings
+	}
+
+	lsbReleaseFile, err := os.Open(lsbReleaseFileName)
+	if err != nil {
+		warnings = append(warnings, fmt.Sprintf("cannot open %v: %v", lsbReleaseFileName, err))
+		return notAvailStr, warnings
+	}
+	defer lsbReleaseFile.Close()
+
+	sc := bufio.NewScanner(lsbReleaseFile)
+	for sc.Scan() {
+		strs := strings.Split(sc.Text(), "=")
+		if len(strs) == 2 && strings.TrimSpace(strs[0]) == chromeOSVersionKey {
+			return strings.TrimSpace(strs[1]), warnings
+		}
+	}
+	if err = sc.Err(); err != nil {
+		warnings = append(warnings, fmt.Sprintf("Error in reading %v: %v", lsbReleaseFileName, err))
+		return notAvailStr, warnings
+	}
+
+	warnings = append(warnings, fmt.Sprintf("Cannot not find %v in %v",
+		chromeOSVersionKey, lsbReleaseFileName))
+	return notAvailStr, warnings
 }

@@ -22,6 +22,27 @@ func TestGetDUTInfo(t *testing.T) {
 
 	if err := testutil.WriteFiles(td, map[string]string{
 		"use_flags": "# here's a comment\nfoo\nbar\n",
+		"lsb-release": "CHROMEOS_RELEASE_APPID={9A3BE5D2-C3DC-4AE6-9943-E2C113895DC5}\n" +
+			"CHROMEOS_BOARD_APPID={9A3BE5D2-C3DC-4AE6-9943-E2C113895DC5}\n" +
+			"CHROMEOS_CANARY_APPID={90F229CE-83E2-4FAF-8479-E368A34938B1}\n" +
+			"DEVICETYPE=CHROMEBOOK\n" +
+			"GOOGLE_RELEASE=13312.0.2020_07_02_1108\n" +
+			"CHROMEOS_RELEASE_BOARD=octopus\n" +
+			"CHROMEOS_RELEASE_BRANCH_NUMBER=0\n" +
+			"CHROMEOS_RELEASE_TRACK=testimage-channel\n" +
+			"CHROMEOS_RELEASE_KEYSET=devkeys\n" +
+			"CHROMEOS_RELEASE_NAME=Chromium OS\n" +
+			"CHROMEOS_AUSERVER=http://abc.mtv.corp.google.com:8080/updatev\n" +
+			"CHROMEOS_ARC_VERSION=6633360\n" +
+			"CHROMEOS_ARC_ANDROID_SDK_VERSION=28\n" +
+			"CHROMEOS_DEVSERVER=http://abc.mtv.corp.google.com:8080\n" +
+			"CHROMEOS_RELEASE_BUILD_NUMBER=13312\n" +
+			"CHROMEOS_RELEASE_CHROME_MILESTONE=86\n" +
+			"CHROMEOS_RELEASE_PATCH_NUMBER=2020_07_02_1108\n" +
+			"CHROMEOS_RELEASE_BUILD_TYPE=Test Build - abc\n" +
+			"CHROMEOS_RELEASE_UNIBUILD=1\n" +
+			"CHROMEOS_RELEASE_VERSION=13312.0.2020_07_02_1108\n" +
+			"CHROMEOS_RELEASE_DESCRIPTION=13312.0.2020_07_02_1108 (Test Build - abc) developer-build xyz\n",
 	}); err != nil {
 		t.Fatal(err)
 	}
@@ -36,6 +57,7 @@ func TestGetDUTInfo(t *testing.T) {
 			"foo_glob":     "\"f*\"",
 			"not_bar_glob": "!\"b*\"",
 		},
+		LSBReleaseFile: filepath.Join(td, "lsb-release"),
 	}
 	status, stdout, _, sig := callRun(
 		t, nil,
@@ -58,6 +80,7 @@ func TestGetDUTInfo(t *testing.T) {
 			Available:   []string{"foo_glob", "foobar", "other"},
 			Unavailable: []string{"not_bar_glob", "not_foo"},
 		},
+		ChromeOSVersion: "13312.0.2020_07_02_1108",
 	}
 	if !reflect.DeepEqual(res, exp) {
 		t.Errorf("%v wrote result %+v; want %+v", sig, res, exp)
@@ -83,7 +106,10 @@ func TestGetSoftwareFeaturesNoFile(t *testing.T) {
 	if err := json.NewDecoder(stdout).Decode(&res); err != nil {
 		t.Fatalf("%v gave bad output: %v", sig, err)
 	}
-	exp := GetDUTInfoResult{}
+	chromeOSVersionWarning := "Chrome OS Version is not available because lsb-release does not exist on target"
+	exp := GetDUTInfoResult{
+		Warnings: []string{chromeOSVersionWarning},
+	}
 	if !reflect.DeepEqual(res, exp) {
 		t.Errorf("%v wrote result %+v; want %+v", sig, res, exp)
 	}

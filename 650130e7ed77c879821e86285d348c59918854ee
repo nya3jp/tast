@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2b711841_95a1c1f0",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-07-22T08:09:53Z",
+      "side": 1,
+      "message": "This should also be changed to use configpb.HardwareFeatures for consistency and avoiding using the inner struct.",
+      "revId": "650130e7ed77c879821e86285d348c59918854ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

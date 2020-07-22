@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5b7f5864_1b4677b7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-07-22T23:00:50Z",
+      "side": 1,
+      "message": "Thanks for Shuhei\u0027s suggestion, I have resolved the unit test issue. Also, I have addressed other comments from Shuhei and Derek. Please review again. Thanks.",
+      "revId": "b0e2fa770e20b84507e6e19210164c3cea338eee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

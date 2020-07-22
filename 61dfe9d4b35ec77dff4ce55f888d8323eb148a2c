@@ -59,6 +59,30 @@
     },
     {
       "key": {
+        "uuid": "1c42fc5d_c14ea3c3",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/deps.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-07-22T23:00:50Z",
+      "side": 1,
+      "message": "Changed. Please review.",
+      "parentUuid": "c69cb86b_b195bc69",
+      "range": {
+        "startLine": 71,
+        "startChar": 6,
+        "endLine": 71,
+        "endChar": 51
+      },
+      "revId": "61dfe9d4b35ec77dff4ce55f888d8323eb148a2c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "d0193179_d154b64e",
         "filename": "src/chromiumos/tast/cmd/tast/internal/run/deps_test.go",
         "patchSetId": 2
@@ -105,6 +129,54 @@
     },
     {
       "key": {
+        "uuid": "abd1ef8e_8b21d152",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/deps_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-07-22T23:00:50Z",
+      "side": 1,
+      "message": "I changed my code to use CHROMEOS_RELEASE_BUILDER_PATH but I just found out that CHROMEOS_RELEASE_BUILDER_PATH was not always available in /etc/lsb-release. My test machine\u0027s /etc/lsb-release did not have it. Therefore, I added code to handle the case that CHROMEOS_RELEASE_BUILDER_PATH is not available in main.go. Please review.",
+      "parentUuid": "d0193179_d154b64e",
+      "range": {
+        "startLine": 77,
+        "startChar": 20,
+        "endLine": 77,
+        "endChar": 45
+      },
+      "revId": "61dfe9d4b35ec77dff4ce55f888d8323eb148a2c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b0b59b53_992b69f9",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/deps_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-07-22T23:00:50Z",
+      "side": 1,
+      "message": "Changed. Please review.",
+      "parentUuid": "bbad536f_50881d08",
+      "range": {
+        "startLine": 77,
+        "startChar": 1,
+        "endLine": 77,
+        "endChar": 16
+      },
+      "revId": "61dfe9d4b35ec77dff4ce55f888d8323eb148a2c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "a3ffdf8d_2c0c1485",
         "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests_test.go",
         "patchSetId": 2
@@ -116,6 +188,30 @@
       "writtenOn": "2020-07-22T09:21:21Z",
       "side": 1,
       "message": "Same here (see my another comment)",
+      "range": {
+        "startLine": 41,
+        "startChar": 1,
+        "endLine": 41,
+        "endChar": 45
+      },
+      "revId": "61dfe9d4b35ec77dff4ce55f888d8323eb148a2c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "26ea8907_236ab44f",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-07-22T23:00:50Z",
+      "side": 1,
+      "message": "Changed. Please review.",
+      "parentUuid": "a3ffdf8d_2c0c1485",
       "range": {
         "startLine": 41,
         "startChar": 1,
@@ -151,6 +247,30 @@
     },
     {
       "key": {
+        "uuid": "37d3d3e2_c4638617",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-07-22T23:00:50Z",
+      "side": 1,
+      "message": "Changed. Please review.",
+      "parentUuid": "cd68cbb2_edc1f2e9",
+      "range": {
+        "startLine": 66,
+        "startChar": 1,
+        "endLine": 66,
+        "endChar": 63
+      },
+      "revId": "61dfe9d4b35ec77dff4ce55f888d8323eb148a2c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c140a278_3634f7dc",
         "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests_test.go",
         "patchSetId": 2
@@ -171,6 +291,30 @@
       "revId": "61dfe9d4b35ec77dff4ce55f888d8323eb148a2c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "13d6ba67_b55154c6",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-07-22T23:00:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c140a278_3634f7dc",
+      "range": {
+        "startLine": 70,
+        "startChar": 1,
+        "endLine": 70,
+        "endChar": 84
+      },
+      "revId": "61dfe9d4b35ec77dff4ce55f888d8323eb148a2c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -221,6 +365,30 @@
     },
     {
       "key": {
+        "uuid": "d25129f2_c26e80f1",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 526,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-07-22T23:00:50Z",
+      "side": 1,
+      "message": "Shuhei, I figured out that you meant. I have addressed the the issue in the unit test. Please review. Thanks for the suggestion.",
+      "parentUuid": "51026579_334ac06b",
+      "range": {
+        "startLine": 526,
+        "startChar": 5,
+        "endLine": 526,
+        "endChar": 23
+      },
+      "revId": "61dfe9d4b35ec77dff4ce55f888d8323eb148a2c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "122f15db_29c6ac17",
         "filename": "src/chromiumos/tast/internal/runner/features.go",
         "patchSetId": 2
@@ -232,6 +400,30 @@
       "writtenOn": "2020-07-22T09:21:21Z",
       "side": 1,
       "message": "CHROMEOS_RELEASE_BUILDER_PATH is the most suitable version to print.",
+      "range": {
+        "startLine": 527,
+        "startChar": 24,
+        "endLine": 527,
+        "endChar": 48
+      },
+      "revId": "61dfe9d4b35ec77dff4ce55f888d8323eb148a2c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "592e0b75_2999c475",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 527,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-07-22T23:00:50Z",
+      "side": 1,
+      "message": "I changed my code to use CHROMEOS_RELEASE_BUILDER_PATH but I just found out that CHROMEOS_RELEASE_BUILDER_PATH was not always available in /etc/lsb-release. My test machine\u0027s /etc/lsb-release did not have it. Therefore, I added code to handle the case that CHROMEOS_RELEASE_BUILDER_PATH is not available in main.go. Please review.",
+      "parentUuid": "122f15db_29c6ac17",
       "range": {
         "startLine": 527,
         "startChar": 24,
@@ -291,6 +483,30 @@
     },
     {
       "key": {
+        "uuid": "4f0fe395_93cd8d08",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 535,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-07-22T23:00:50Z",
+      "side": 1,
+      "message": "Derek, I have changed the code without reading /etc/lsb-release. Please review. Thanks.",
+      "parentUuid": "b667779f_cfe318c8",
+      "range": {
+        "startLine": 535,
+        "startChar": 1,
+        "endLine": 535,
+        "endChar": 15
+      },
+      "revId": "61dfe9d4b35ec77dff4ce55f888d8323eb148a2c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "5f9e2c04_5b065d1e",
         "filename": "src/chromiumos/tast/internal/runner/features_test.go",
         "patchSetId": 2
@@ -302,6 +518,30 @@
       "writtenOn": "2020-07-22T09:21:21Z",
       "side": 1,
       "message": "You can use `` (backquotes) for multi-line strings.",
+      "range": {
+        "startLine": 25,
+        "startChar": 16,
+        "endLine": 25,
+        "endChar": 19
+      },
+      "revId": "61dfe9d4b35ec77dff4ce55f888d8323eb148a2c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2498bc5d_e17204cc",
+        "filename": "src/chromiumos/tast/internal/runner/features_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-07-22T23:00:50Z",
+      "side": 1,
+      "message": "I found that it is not necessary with the new implementation. Therefore, I removed that part of the code.",
+      "parentUuid": "5f9e2c04_5b065d1e",
       "range": {
         "startLine": 25,
         "startChar": 16,

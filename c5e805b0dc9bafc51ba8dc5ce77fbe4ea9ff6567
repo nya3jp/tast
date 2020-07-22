@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e56acff2_19dedb48",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 9
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-07-22T08:49:36Z",
+      "side": 1,
+      "message": "need to add either a unit test or manual test line to verify hwdep.go TouchScreen() receives the expected value.",
+      "revId": "c5e805b0dc9bafc51ba8dc5ce77fbe4ea9ff6567",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a95f1c7a_f487d60f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-07-22T08:49:36Z",
+      "side": 1,
+      "message": "WIP",
+      "revId": "c5e805b0dc9bafc51ba8dc5ce77fbe4ea9ff6567",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

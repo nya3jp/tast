@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "85da097e_541b22c4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-07-22T06:41:08Z",
+      "side": 1,
+      "message": "WIP: Still need to figure out how to enhance unit to parse full.txt output. Manual test passed. Unit all passed, but no new test for parsing full.txt",
+      "revId": "2bf156bf76b0a454587b343cb451ef0da981dce0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

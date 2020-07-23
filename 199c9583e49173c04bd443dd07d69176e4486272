@@ -16,6 +16,201 @@
       "revId": "199c9583e49173c04bd443dd07d69176e4486272",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3d2e8fc9_acf8c5a1",
+        "filename": "docs/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1401350
+      },
+      "writtenOn": "2020-07-23T11:29:54Z",
+      "side": 1,
+      "message": "#3 and #4",
+      "range": {
+        "startLine": 8,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 30
+      },
+      "revId": "199c9583e49173c04bd443dd07d69176e4486272",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b7d9dc5e_bfd23c70",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1401350
+      },
+      "writtenOn": "2020-07-23T11:29:54Z",
+      "side": 1,
+      "message": "This part looks a little unusual. Same for the other 2 dotted parts.",
+      "range": {
+        "startLine": 14,
+        "startChar": 2,
+        "endLine": 16,
+        "endChar": 3
+      },
+      "revId": "199c9583e49173c04bd443dd07d69176e4486272",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e5ef1942_86de2c34",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1401350
+      },
+      "writtenOn": "2020-07-23T11:29:54Z",
+      "side": 1,
+      "message": "You can use [testexec package](https://...) to hide the link behind the text. Same for the other links.",
+      "range": {
+        "startLine": 57,
+        "startChar": 205,
+        "endLine": 57,
+        "endChar": 366
+      },
+      "revId": "199c9583e49173c04bd443dd07d69176e4486272",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "02bd9b83_4df9b642",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1401350
+      },
+      "writtenOn": "2020-07-23T11:29:54Z",
+      "side": 1,
+      "message": "Trailing whitespace, please delete.",
+      "revId": "199c9583e49173c04bd443dd07d69176e4486272",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4a687953_7beca9c8",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1401350
+      },
+      "writtenOn": "2020-07-23T11:29:54Z",
+      "side": 1,
+      "message": "Please link the codelab #3, and change the text to \"Codelab #3\"",
+      "range": {
+        "startLine": 142,
+        "startChar": 313,
+        "endLine": 142,
+        "endChar": 329
+      },
+      "revId": "199c9583e49173c04bd443dd07d69176e4486272",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ff0c2160_f8513172",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 1401350
+      },
+      "writtenOn": "2020-07-23T11:29:54Z",
+      "side": 1,
+      "message": "Trailing whitespace, please delete.",
+      "revId": "199c9583e49173c04bd443dd07d69176e4486272",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "513952ba_b09bee47",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 1401350
+      },
+      "writtenOn": "2020-07-23T11:29:54Z",
+      "side": 1,
+      "message": "Can you add here the \"errors.Is(err, context.DeadlineExceeded)\" error handling? It seems useful if you want to decide which kind of error do you have after the poll.",
+      "range": {
+        "startLine": 174,
+        "startChar": 0,
+        "endLine": 176,
+        "endChar": 1
+      },
+      "revId": "199c9583e49173c04bd443dd07d69176e4486272",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ef90daa4_a7c7874c",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 1401350
+      },
+      "writtenOn": "2020-07-23T11:29:54Z",
+      "side": 1,
+      "message": "periodically executes",
+      "range": {
+        "startLine": 178,
+        "startChar": 18,
+        "endLine": 178,
+        "endChar": 39
+      },
+      "revId": "199c9583e49173c04bd443dd07d69176e4486272",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dd5e4ae7_86a3aebc",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 1401350
+      },
+      "writtenOn": "2020-07-23T11:29:54Z",
+      "side": 1,
+      "message": "Please add these to the example with some values. This way it does not require additional search if someone wants to use one of these.",
+      "range": {
+        "startLine": 179,
+        "startChar": 90,
+        "endLine": 179,
+        "endChar": 117
+      },
+      "revId": "199c9583e49173c04bd443dd07d69176e4486272",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

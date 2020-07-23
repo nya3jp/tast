@@ -263,6 +263,9 @@ func SupportsNV12Overlays() Condition {
 			f.DC.Soc == device.Config_SOC_BAY_TRAIL ||
 			f.DC.Soc == device.Config_SOC_BROADWELL ||
 			f.DC.Soc == device.Config_SOC_BRASWELL ||
+			f.DC.Soc == device.Config_SOC_SKYLAKE_U ||
+			f.DC.Soc == device.Config_SOC_SKYLAKE_Y ||
+			f.DC.Soc == device.Config_SOC_APOLLO_LAKE ||
 			f.DC.Soc == device.Config_SOC_MT8173 ||
 			f.DC.Soc == device.Config_SOC_MT8176 ||
 			f.DC.Soc == device.Config_SOC_MT8183 ||

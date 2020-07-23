@@ -42,6 +42,40 @@
     },
     {
       "key": {
+        "uuid": "e6a48db6_9c4c17e3",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-23T11:39:28Z",
+      "side": 1,
+      "message": "Codelabs are something a user goes trough to get comfortable with a project. This is more like a how to perform certain tasks in tast. Maybe name it into HowTo?",
+      "revId": "199c9583e49173c04bd443dd07d69176e4486272",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3c86aa05_49340fe5",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-23T11:39:28Z",
+      "side": 1,
+      "message": "Move this section later as it\u0027s not as relevant as other sections.",
+      "revId": "199c9583e49173c04bd443dd07d69176e4486272",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b7d9dc5e_bfd23c70",
         "filename": "docs/codelab_4.md",
         "patchSetId": 1
@@ -88,6 +122,97 @@
     },
     {
       "key": {
+        "uuid": "ee7bf8c0_fb81a12f",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-23T11:39:28Z",
+      "side": 1,
+      "message": "Please explain why you would use this instead of the standard go exec package.",
+      "revId": "199c9583e49173c04bd443dd07d69176e4486272",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a009cd2f_3da1da4f",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-23T11:39:28Z",
+      "side": 1,
+      "message": "C",
+      "range": {
+        "startLine": 57,
+        "startChar": 3,
+        "endLine": 57,
+        "endChar": 4
+      },
+      "revId": "199c9583e49173c04bd443dd07d69176e4486272",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3606e5da_092d64b1",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-23T11:39:28Z",
+      "side": 1,
+      "message": "Link to the package documentation.",
+      "revId": "199c9583e49173c04bd443dd07d69176e4486272",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a7d0b4c1_00b05150",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-23T11:39:28Z",
+      "side": 1,
+      "message": "Shorten explanation or use comments in the code.",
+      "revId": "199c9583e49173c04bd443dd07d69176e4486272",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0cb82a5f_d210682c",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-23T11:39:28Z",
+      "side": 1,
+      "message": "I\u0027s use native go code in this case. You won\u0027t require login and starting Chrome just to check if a fie exists.",
+      "revId": "199c9583e49173c04bd443dd07d69176e4486272",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "02bd9b83_4df9b642",
         "filename": "docs/codelab_4.md",
         "patchSetId": 1
@@ -99,6 +224,103 @@
       "writtenOn": "2020-07-23T11:29:54Z",
       "side": 1,
       "message": "Trailing whitespace, please delete.",
+      "revId": "199c9583e49173c04bd443dd07d69176e4486272",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "27013ae8_b3c38e74",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-23T11:39:28Z",
+      "side": 1,
+      "message": "Also mention the chromeTestAPIConn() for test API access. Also give an example using promises.",
+      "revId": "199c9583e49173c04bd443dd07d69176e4486272",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "848cdfcf_4a63baa2",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-23T11:39:28Z",
+      "side": 1,
+      "message": "unmarshalled. You can and will use other types.",
+      "range": {
+        "startLine": 120,
+        "startChar": 261,
+        "endLine": 120,
+        "endChar": 284
+      },
+      "revId": "199c9583e49173c04bd443dd07d69176e4486272",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9d4da9f5_1163e728",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-23T11:39:28Z",
+      "side": 1,
+      "message": "chrome.Eval()",
+      "range": {
+        "startLine": 120,
+        "startChar": 9,
+        "endLine": 120,
+        "endChar": 40
+      },
+      "revId": "199c9583e49173c04bd443dd07d69176e4486272",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4550a285_408fc89e",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-23T11:39:28Z",
+      "side": 1,
+      "message": "Maybe move this to its own section. It\u0027s not relate to evaluating javascript.",
+      "revId": "199c9583e49173c04bd443dd07d69176e4486272",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "61e7fbaf_28a1e3c4",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-23T11:39:28Z",
+      "side": 1,
+      "message": "Move this section in codelab_3 as it\u0027s designed for UI testing.",
       "revId": "199c9583e49173c04bd443dd07d69176e4486272",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -128,6 +350,92 @@
     },
     {
       "key": {
+        "uuid": "6948b7ae_7749ec7a",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-23T11:39:28Z",
+      "side": 1,
+      "message": "Waiting in tests.",
+      "range": {
+        "startLine": 157,
+        "startChar": 4,
+        "endLine": 157,
+        "endChar": 23
+      },
+      "revId": "199c9583e49173c04bd443dd07d69176e4486272",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c5571ffe_946cfd2a",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-23T11:39:28Z",
+      "side": 1,
+      "message": "move link outside paragraph",
+      "range": {
+        "startLine": 158,
+        "startChar": 180,
+        "endLine": 158,
+        "endChar": 307
+      },
+      "revId": "199c9583e49173c04bd443dd07d69176e4486272",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f5b1b8a4_753c1542",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-23T11:39:28Z",
+      "side": 1,
+      "message": "testing.Poll()",
+      "range": {
+        "startLine": 158,
+        "startChar": 123,
+        "endLine": 158,
+        "endChar": 167
+      },
+      "revId": "199c9583e49173c04bd443dd07d69176e4486272",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "77b12d6b_452a584c",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-23T11:39:28Z",
+      "side": 1,
+      "message": "Explicitly state that sleeping in tests is wrong in most situations. Also link to https://chromium.googlesource.com/chromiumos/platform/tast/+/refs/heads/master/docs/writing_tests.md#contexts-and-timeouts",
+      "revId": "199c9583e49173c04bd443dd07d69176e4486272",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ff0c2160_f8513172",
         "filename": "docs/codelab_4.md",
         "patchSetId": 1
@@ -139,6 +447,29 @@
       "writtenOn": "2020-07-23T11:29:54Z",
       "side": 1,
       "message": "Trailing whitespace, please delete.",
+      "revId": "199c9583e49173c04bd443dd07d69176e4486272",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "32c4a21c_bc8d5b98",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-23T11:39:28Z",
+      "side": 1,
+      "message": "we can stop waiting and return an error with testing.PollBreak()",
+      "range": {
+        "startLine": 165,
+        "startChar": 33,
+        "endLine": 165,
+        "endChar": 93
+      },
       "revId": "199c9583e49173c04bd443dd07d69176e4486272",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -185,6 +516,23 @@
         "endLine": 178,
         "endChar": 39
       },
+      "revId": "199c9583e49173c04bd443dd07d69176e4486272",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "38139c55_513f6e85",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-23T11:39:28Z",
+      "side": 1,
+      "message": "MAabe remove this paragraph and improve the testing.Poll documentation.",
       "revId": "199c9583e49173c04bd443dd07d69176e4486272",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

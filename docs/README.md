@@ -5,6 +5,8 @@
 *   [Quickstart](quickstart.md)
 *   [Codelab #1](codelab_1.md)
 *   [Codelab #2](codelab_2.md)
+*   [Codelab #3](codelab_3.md)
+*   [HowTo](howto.md)
 *   [Getting Help](getting_help.md)
 
 ## Tast tests

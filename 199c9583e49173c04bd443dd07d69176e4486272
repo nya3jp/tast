@@ -651,6 +651,24 @@
     },
     {
       "key": {
+        "uuid": "eb596ac2_c3d72560",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-24T09:59:58Z",
+      "side": 1,
+      "message": "Sure",
+      "parentUuid": "ff574b6b_cd94f1b4",
+      "revId": "199c9583e49173c04bd443dd07d69176e4486272",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4a687953_7beca9c8",
         "filename": "docs/codelab_4.md",
         "patchSetId": 1
@@ -1055,6 +1073,24 @@
       "side": 1,
       "message": "You mean the Context and Timouts paragraph in the writing_tests document you linked above?",
       "parentUuid": "38139c55_513f6e85",
+      "revId": "199c9583e49173c04bd443dd07d69176e4486272",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "193e753d_f6be9549",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-24T09:59:58Z",
+      "side": 1,
+      "message": "In the go code comments.",
+      "parentUuid": "9e8bb3f7_fddb7273",
       "revId": "199c9583e49173c04bd443dd07d69176e4486272",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

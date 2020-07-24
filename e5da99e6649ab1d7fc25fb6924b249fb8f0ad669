@@ -16,6 +16,367 @@
       "revId": "e5da99e6649ab1d7fc25fb6924b249fb8f0ad669",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "34d27bfd_023cb269",
+        "filename": "docs/howto.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-24T09:59:58Z",
+      "side": 1,
+      "message": "I just noticed, but you use osscs.corp.google.com for the public documentation. Please replace with links from source.chromium.org for people outside Google.\n\nPlease use the same conventions as the tast documentation when refering to functions:\nhttps://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md\n\nThe format is [package.function()](link to documentation)",
+      "revId": "e5da99e6649ab1d7fc25fb6924b249fb8f0ad669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f8b8a5e9_0d083606",
+        "filename": "docs/howto.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-24T09:59:58Z",
+      "side": 1,
+      "message": "Refer to this as a HowTo document.",
+      "range": {
+        "startLine": 1,
+        "startChar": 2,
+        "endLine": 1,
+        "endChar": 54
+      },
+      "revId": "e5da99e6649ab1d7fc25fb6924b249fb8f0ad669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "96144580_4e68de0a",
+        "filename": "docs/howto.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-24T09:59:58Z",
+      "side": 1,
+      "message": "testexec.CommandContext() and keep the link",
+      "range": {
+        "startLine": 9,
+        "startChar": 170,
+        "endLine": 9,
+        "endChar": 223
+      },
+      "revId": "e5da99e6649ab1d7fc25fb6924b249fb8f0ad669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "43a90da0_77f04d13",
+        "filename": "docs/howto.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-24T09:59:58Z",
+      "side": 1,
+      "message": "Too detailed for this doc.",
+      "range": {
+        "startLine": 10,
+        "startChar": 131,
+        "endLine": 10,
+        "endChar": 393
+      },
+      "revId": "e5da99e6649ab1d7fc25fb6924b249fb8f0ad669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "db5fafcf_6e3a8919",
+        "filename": "docs/howto.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-24T09:59:58Z",
+      "side": 1,
+      "message": "os.Stat() with the link to the package.",
+      "range": {
+        "startLine": 46,
+        "startChar": 14,
+        "endLine": 46,
+        "endChar": 18
+      },
+      "revId": "e5da99e6649ab1d7fc25fb6924b249fb8f0ad669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0b0af99d_a6501c7c",
+        "filename": "docs/howto.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-24T09:59:58Z",
+      "side": 1,
+      "message": "You need to check: os.IsNotExist(err) for the absence of the file.\nStat can return other errors and those need to be handled as well.",
+      "range": {
+        "startLine": 48,
+        "startChar": 51,
+        "endLine": 48,
+        "endChar": 54
+      },
+      "revId": "e5da99e6649ab1d7fc25fb6924b249fb8f0ad669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d91b7df4_053fab83",
+        "filename": "docs/howto.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-24T09:59:58Z",
+      "side": 1,
+      "message": "Don\u0027t show two ways to achieve the same result. Using the Files App will not work for any test that does not use Chrome.",
+      "revId": "e5da99e6649ab1d7fc25fb6924b249fb8f0ad669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b0f4870d_7ba5d469",
+        "filename": "docs/howto.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-24T09:59:58Z",
+      "side": 1,
+      "message": "resolve(false)",
+      "revId": "e5da99e6649ab1d7fc25fb6924b249fb8f0ad669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b1417035_0428633e",
+        "filename": "docs/howto.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-24T09:59:58Z",
+      "side": 1,
+      "message": "Use the go error convention: Unexpected inner text: want %s; got %s",
+      "range": {
+        "startLine": 110,
+        "startChar": 28,
+        "endLine": 110,
+        "endChar": 77
+      },
+      "revId": "e5da99e6649ab1d7fc25fb6924b249fb8f0ad669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4e6ed62c_8292ddb9",
+        "filename": "docs/howto.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-24T09:59:58Z",
+      "side": 1,
+      "message": "Find the Javascript path for an element",
+      "range": {
+        "startLine": 119,
+        "startChar": 4,
+        "endLine": 119,
+        "endChar": 33
+      },
+      "revId": "e5da99e6649ab1d7fc25fb6924b249fb8f0ad669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f663aeb4_2e87add3",
+        "filename": "docs/howto.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-24T09:59:58Z",
+      "side": 1,
+      "message": "use this as the link to the testing package",
+      "range": {
+        "startLine": 127,
+        "startChar": 132,
+        "endLine": 127,
+        "endChar": 146
+      },
+      "revId": "e5da99e6649ab1d7fc25fb6924b249fb8f0ad669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "65e12484_f5a6bca7",
+        "filename": "docs/howto.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-24T09:59:58Z",
+      "side": 1,
+      "message": "move before the if below.",
+      "revId": "e5da99e6649ab1d7fc25fb6924b249fb8f0ad669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d7be6450_84d4df1f",
+        "filename": "docs/howto.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-24T09:59:58Z",
+      "side": 1,
+      "message": "Don\u0027t use commented out code.\n\nif err :\u003d doSomething(); err !\u003d nil {\n  // In case something went wrong we can stop waiting and return an error with testing.PollBreak().\n  return testing.PollBreak(errors.Wrap(err, \"failed to do something critical\"))\n}\n\nis more realistic.",
+      "revId": "e5da99e6649ab1d7fc25fb6924b249fb8f0ad669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "212d3f89_08a08d42",
+        "filename": "docs/howto.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-24T09:59:58Z",
+      "side": 1,
+      "message": "Maybe move this check to it\u0027s own section, it comes up pretty often.",
+      "range": {
+        "startLine": 146,
+        "startChar": 46,
+        "endLine": 146,
+        "endChar": 139
+      },
+      "revId": "e5da99e6649ab1d7fc25fb6924b249fb8f0ad669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0304ec88_bec6ab7a",
+        "filename": "docs/howto.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-24T09:59:58Z",
+      "side": 1,
+      "message": "a network connection",
+      "range": {
+        "startLine": 173,
+        "startChar": 84,
+        "endLine": 173,
+        "endChar": 137
+      },
+      "revId": "e5da99e6649ab1d7fc25fb6924b249fb8f0ad669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f5b7c236_f84cf497",
+        "filename": "docs/howto.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-24T09:59:58Z",
+      "side": 1,
+      "message": "Does this work?",
+      "range": {
+        "startLine": 173,
+        "startChar": 160,
+        "endLine": 173,
+        "endChar": 292
+      },
+      "revId": "e5da99e6649ab1d7fc25fb6924b249fb8f0ad669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1e421afb_e5c6338f",
+        "filename": "docs/howto.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-24T09:59:58Z",
+      "side": 1,
+      "message": "remove",
+      "range": {
+        "startLine": 196,
+        "startChar": 343,
+        "endLine": 196,
+        "endChar": 372
+      },
+      "revId": "e5da99e6649ab1d7fc25fb6924b249fb8f0ad669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

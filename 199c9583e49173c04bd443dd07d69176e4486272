@@ -1097,6 +1097,24 @@
     },
     {
       "key": {
+        "uuid": "15a43962_02b8718d",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2020-07-24T15:01:46Z",
+      "side": 1,
+      "message": "I removed the paragraph. However the testing.Poll() comments seem fine, they already covered everything I wrote here.",
+      "parentUuid": "193e753d_f6be9549",
+      "revId": "199c9583e49173c04bd443dd07d69176e4486272",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "dd5e4ae7_86a3aebc",
         "filename": "docs/codelab_4.md",
         "patchSetId": 1

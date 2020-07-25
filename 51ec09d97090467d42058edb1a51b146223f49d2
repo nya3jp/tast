@@ -16,6 +16,52 @@
       "revId": "51ec09d97090467d42058edb1a51b146223f49d2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "31f1e540_01b461cd",
+        "filename": "docs/howto.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1401350
+      },
+      "writtenOn": "2020-07-25T13:07:14Z",
+      "side": 1,
+      "message": "This is really wild that you can use go variables and expressions in the JS code. What are the limitations here?",
+      "range": {
+        "startLine": 95,
+        "startChar": 2,
+        "endLine": 96,
+        "endChar": 104
+      },
+      "revId": "51ec09d97090467d42058edb1a51b146223f49d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5e6079d6_be28044e",
+        "filename": "docs/howto.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1401350
+      },
+      "writtenOn": "2020-07-25T13:07:14Z",
+      "side": 1,
+      "message": "Please add a link to codelab 3.",
+      "range": {
+        "startLine": 110,
+        "startChar": 309,
+        "endLine": 110,
+        "endChar": 321
+      },
+      "revId": "51ec09d97090467d42058edb1a51b146223f49d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

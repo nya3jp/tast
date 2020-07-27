@@ -19,6 +19,138 @@
     },
     {
       "key": {
+        "uuid": "e4025478_f9b0a327",
+        "filename": "docs/howto.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-27T07:35:30Z",
+      "side": 1,
+      "message": "Is this relevant?",
+      "range": {
+        "startLine": 1,
+        "startChar": 17,
+        "endLine": 1,
+        "endChar": 32
+      },
+      "revId": "51ec09d97090467d42058edb1a51b146223f49d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ebfa4eb9_9947dfab",
+        "filename": "docs/howto.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-27T07:35:30Z",
+      "side": 1,
+      "message": "techniques?",
+      "range": {
+        "startLine": 5,
+        "startChar": 199,
+        "endLine": 5,
+        "endChar": 243
+      },
+      "revId": "51ec09d97090467d42058edb1a51b146223f49d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "969cd636_8be75ea1",
+        "filename": "docs/howto.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-27T07:35:30Z",
+      "side": 1,
+      "message": "space",
+      "range": {
+        "startLine": 5,
+        "startChar": 126,
+        "endLine": 5,
+        "endChar": 127
+      },
+      "revId": "51ec09d97090467d42058edb1a51b146223f49d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "046a88f8_9dc7ae03",
+        "filename": "docs/howto.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-27T07:35:30Z",
+      "side": 1,
+      "message": "Bad example, you should use native go code in this case and not string parsing. Maybe just leave it out.",
+      "range": {
+        "startLine": 28,
+        "startChar": 282,
+        "endLine": 28,
+        "endChar": 355
+      },
+      "revId": "51ec09d97090467d42058edb1a51b146223f49d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6a9eb728_ab180c1e",
+        "filename": "docs/howto.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-27T07:35:30Z",
+      "side": 1,
+      "message": "In the tast style you almost always do:\nif error {\n // handle error\n}\n// no error path\n\nIf you want to check if a file is missing:\n\nif fileinfo, err :\u003d os.Stat(/path/to/file/myfile); err \u003d\u003d nil {\n  // file found error\n} else if !os.IsNotExist(err) {\n  // stat error handling\n}\n// file is missing",
+      "revId": "51ec09d97090467d42058edb1a51b146223f49d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9cd50e91_c2fa5132",
+        "filename": "docs/howto.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-27T07:35:30Z",
+      "side": 1,
+      "message": "a value, it will be unmarshaled into the given interface parameter. If umarshalling fails an error will be returned.",
+      "range": {
+        "startLine": 67,
+        "startChar": 352,
+        "endLine": 67,
+        "endChar": 530
+      },
+      "revId": "51ec09d97090467d42058edb1a51b146223f49d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "31f1e540_01b461cd",
         "filename": "docs/howto.md",
         "patchSetId": 6
@@ -30,6 +162,30 @@
       "writtenOn": "2020-07-25T13:07:14Z",
       "side": 1,
       "message": "This is really wild that you can use go variables and expressions in the JS code. What are the limitations here?",
+      "range": {
+        "startLine": 95,
+        "startChar": 2,
+        "endLine": 96,
+        "endChar": 104
+      },
+      "revId": "51ec09d97090467d42058edb1a51b146223f49d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "25ceb8d7_21dc54e7",
+        "filename": "docs/howto.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-27T07:35:30Z",
+      "side": 1,
+      "message": "I don\u0027t think you can 😞. You to use string interpolation to make this work. There are also no functions liker Errorf defined in javacript.",
+      "parentUuid": "31f1e540_01b461cd",
       "range": {
         "startLine": 95,
         "startChar": 2,
@@ -58,6 +214,52 @@
         "startChar": 309,
         "endLine": 110,
         "endChar": 321
+      },
+      "revId": "51ec09d97090467d42058edb1a51b146223f49d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1c518944_4e0c61b0",
+        "filename": "docs/howto.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-27T07:35:30Z",
+      "side": 1,
+      "message": "does not introduce unnecessary delays and race conditions in integration tests.\n\nnote: testing.Sleep also honors the context.",
+      "range": {
+        "startLine": 113,
+        "startChar": 356,
+        "endLine": 113,
+        "endChar": 413
+      },
+      "revId": "51ec09d97090467d42058edb1a51b146223f49d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a88d50f5_e7d14094",
+        "filename": "docs/howto.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-27T07:35:30Z",
+      "side": 1,
+      "message": "Maybe just link to the documentation.",
+      "range": {
+        "startLine": 145,
+        "startChar": 0,
+        "endLine": 145,
+        "endChar": 435
       },
       "revId": "51ec09d97090467d42058edb1a51b146223f49d2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",

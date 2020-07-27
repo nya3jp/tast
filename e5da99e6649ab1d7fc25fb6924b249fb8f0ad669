@@ -54,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "239621a6_41aedbc1",
+        "filename": "docs/howto.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-27T07:35:30Z",
+      "side": 1,
+      "message": "You are now using links to source code with line numbers, that will become stale after a few weeks. As in the writing_tests.md doc, you can link directly to the documentation in godoc. Example: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#New\nThis will not become stale and is more useful to test writers.",
+      "parentUuid": "2b7110d1_0815a0fc",
+      "revId": "e5da99e6649ab1d7fc25fb6924b249fb8f0ad669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f8b8a5e9_0d083606",
         "filename": "docs/howto.md",
         "patchSetId": 2

@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8882ac4d_a4bcbbf9",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2020-07-27T14:20:26Z",
+      "side": 1,
+      "message": "Comment: Ah, that\u0027s sad, I thought all panels would have EDID :-(",
+      "range": {
+        "startLine": 12,
+        "startChar": 35,
+        "endLine": 12,
+        "endChar": 52
+      },
+      "revId": "9b1d352ab591f4fad091daa6ac305f2a0088dfc5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1c2877c5_89afb353",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2020-07-27T14:20:26Z",
+      "side": 1,
+      "message": "The most important part of landing this code was indeed to avoid \nrunning GetDisplayMedia() on devices without an internal display,\nfor reasons unrelated to their capacities anyway. So if this works\nhere, I\u0027m all for cleaning up the code :-)",
+      "range": {
+        "startLine": 18,
+        "startChar": 9,
+        "endLine": 18,
+        "endChar": 28
+      },
+      "revId": "9b1d352ab591f4fad091daa6ac305f2a0088dfc5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "16a96383_3d4ec69b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2020-07-27T14:20:26Z",
+      "side": 1,
+      "message": "LGTM, thanks for cleaning up !",
+      "revId": "9b1d352ab591f4fad091daa6ac305f2a0088dfc5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0ab7257c_1ef97b51",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 216,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2020-07-27T14:20:26Z",
+      "side": 1,
+      "message": "s/drmfiles/drmFiles/ ? Probably other variables need that too:\nl.214, l.223 cardMatcher, l225 fileName etc.",
+      "range": {
+        "startLine": 216,
+        "startChar": 2,
+        "endLine": 216,
+        "endChar": 10
+      },
+      "revId": "9b1d352ab591f4fad091daa6ac305f2a0088dfc5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

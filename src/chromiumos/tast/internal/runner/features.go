@@ -211,23 +211,30 @@ func newDeviceConfig() (dc *device.Config, warns []string) {
 	}
 
 	hasInternalDisplay := func() bool {
-		// Intel and AMD usually hang the panel at card0-eDP-1 (this
-		// file only exists on those platforms).
-		if card0Edid, err := ioutil.ReadFile("/sys/class/drm/card0-eDP-1/edid"); err != nil {
-			if !os.IsNotExist(err) {
-				return false
-			}
-		} else {
-			return len(card0Edid) > 0
+		const drmsysfs = "/sys/class/drm"
+
+		drmfiles, err := ioutil.ReadDir(drmsysfs)
+		if err != nil {
+			return false
 		}
-		// ARM-based chromebooks hang the panel at card1-DSI-1.
-		if card1Connected, err := ioutil.ReadFile("/sys/class/drm/card1-DSI-1/status"); err != nil {
-			if !os.IsNotExist(err) {
-				return false
+
+		// eDP displays show up as card*-eDP-1
+		// MIPI panels show up as card*-DSI-1
+		cardmatch := regexp.MustCompile(`^card[0-9]-(eDP|DSI)-1$`)
+		for _, file := range drmfiles {
+			filename := file.Name()
+
+			if cardmatch.MatchString(filename) {
+				if cardConnected, err := ioutil.ReadFile(path.Join(drmsysfs, filename, "status")); err != nil {
+					if !os.IsNotExist(err) {
+						return false
+					}
+				} else {
+					return strings.HasPrefix(string(cardConnected), "connected")
+				}
 			}
-		} else {
-			return strings.HasPrefix(string(card1Connected), "connected")
 		}
+
 		// No indication of internal panel connected and recognised.
 		return false
 	}()

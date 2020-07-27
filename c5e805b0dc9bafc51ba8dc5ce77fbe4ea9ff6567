@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "266e3222_ebe1d8cb",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 9
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-07-27T10:49:34Z",
+      "side": 1,
+      "message": "example.Touch.hwdep would cover the path.",
+      "parentUuid": "e56acff2_19dedb48",
+      "revId": "c5e805b0dc9bafc51ba8dc5ce77fbe4ea9ff6567",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a95f1c7a_f487d60f",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 9

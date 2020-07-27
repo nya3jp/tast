@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b64c481f_8c6cea6f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 15
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-07-27T10:49:34Z",
+      "side": 1,
+      "message": "I found older patchset did not propagate the added HardwareFeatures to tests, because this change was missing. Now I confirmed it propagates and reads the new field when running via the tast command with a DUT.\nhttps://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/2249194/8..15/src/chromiumos/tast/cmd/tast/internal/run/deps.go",
+      "revId": "033e8abbbf7af3beb78e5679245b332cfc3a6923",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

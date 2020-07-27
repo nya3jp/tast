@@ -65,6 +65,48 @@
     },
     {
       "key": {
+        "uuid": "6c6fde67_cf5c0cdb",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-07-27T10:49:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2535b84b_66cee05a",
+      "range": {
+        "startLine": 221,
+        "startChar": 26,
+        "endLine": 221,
+        "endChar": 49
+      },
+      "revId": "650130e7ed77c879821e86285d348c59918854ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a32fff05_84f0282d",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-07-27T10:49:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2b711841_95a1c1f0",
+      "revId": "650130e7ed77c879821e86285d348c59918854ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "24ede819_3544ba6a",
         "filename": "src/chromiumos/tast/internal/runner/args.go",
         "patchSetId": 8
@@ -85,6 +127,30 @@
       "revId": "650130e7ed77c879821e86285d348c59918854ee",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7da053fc_2a7e5121",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 229,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-07-27T10:49:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "24ede819_3544ba6a",
+      "range": {
+        "startLine": 229,
+        "startChar": 27,
+        "endLine": 229,
+        "endChar": 38
+      },
+      "revId": "650130e7ed77c879821e86285d348c59918854ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -111,6 +177,30 @@
     },
     {
       "key": {
+        "uuid": "94d02e4f_608e6fe9",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-07-27T10:49:34Z",
+      "side": 1,
+      "message": "Done.\nIt will be changed to newHardwareFeatures when the migration is completed.",
+      "parentUuid": "5ae1bb40_d8b90262",
+      "range": {
+        "startLine": 162,
+        "startChar": 5,
+        "endLine": 162,
+        "endChar": 20
+      },
+      "revId": "650130e7ed77c879821e86285d348c59918854ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e60ba8e0_f0b04f54",
         "filename": "src/chromiumos/tast/internal/runner/features.go",
         "patchSetId": 8
@@ -134,6 +224,30 @@
     },
     {
       "key": {
+        "uuid": "8a940ad9_d099f054",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-07-27T10:49:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e60ba8e0_f0b04f54",
+      "range": {
+        "startLine": 255,
+        "startChar": 10,
+        "endLine": 255,
+        "endChar": 20
+      },
+      "revId": "650130e7ed77c879821e86285d348c59918854ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "225dca1c_6ca6d19d",
         "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
         "patchSetId": 8
@@ -154,6 +268,30 @@
       "revId": "650130e7ed77c879821e86285d348c59918854ee",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8748c0ce_503d161c",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-07-27T10:49:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "225dca1c_6ca6d19d",
+      "range": {
+        "startLine": 162,
+        "startChar": 9,
+        "endLine": 162,
+        "endChar": 66
+      },
+      "revId": "650130e7ed77c879821e86285d348c59918854ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

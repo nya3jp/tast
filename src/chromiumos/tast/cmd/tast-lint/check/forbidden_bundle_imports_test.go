@@ -58,15 +58,19 @@ import (
 	"chromiumos/tast/local/bar/baz"
 	"chromiumos/tast/local/bundles/cros/bar/baz"
 	"chromiumos/tast/local/bundles/cros/foo/baz"
+	"chromiumos/tast/local/bundles/crosint/bar"
+	"chromiumos/tast/local/bundles/crosint/bar/baz"
 	"chromiumos/tast/local/bundles/crosint/foo"
+	"chromiumos/tast/local/bundles/crosint/foo/baz"
 	"chromiumos/tast/remote/bundles/cros/foo/baz"
 )
 `,
 			"src/chromiumos/tast/local/bundles/cros/foo/testfile.go",
 			[]string{
-				"src/chromiumos/tast/local/bundles/cros/foo/testfile.go:5:2: import of chromiumos/tast/local/bundles/cros/bar/baz is only allowed from chromiumos/tast/local/bundles/cros/bar or its descendant",
-				"src/chromiumos/tast/local/bundles/cros/foo/testfile.go:7:2: import of chromiumos/tast/local/bundles/crosint/foo is only allowed from chromiumos/tast/local/bundles/crosint/foo or its descendant",
-				"src/chromiumos/tast/local/bundles/cros/foo/testfile.go:8:2: import of chromiumos/tast/remote/bundles/cros/foo/baz is only allowed from chromiumos/tast/remote/bundles/cros/foo or its descendant",
+				"src/chromiumos/tast/local/bundles/cros/foo/testfile.go:5:2: import of chromiumos/tast/local/bundles/cros/bar/baz is only allowed from chromiumos/tast/local/bundles/*/bar or its descendant",
+				"src/chromiumos/tast/local/bundles/cros/foo/testfile.go:7:2: import of chromiumos/tast/local/bundles/crosint/bar is only allowed from chromiumos/tast/local/bundles/*/bar or its descendant",
+				"src/chromiumos/tast/local/bundles/cros/foo/testfile.go:8:2: import of chromiumos/tast/local/bundles/crosint/bar/baz is only allowed from chromiumos/tast/local/bundles/*/bar or its descendant",
+				"src/chromiumos/tast/local/bundles/cros/foo/testfile.go:11:2: import of chromiumos/tast/remote/bundles/cros/foo/baz is only allowed from chromiumos/tast/remote/bundles/*/foo or its descendant",
 			},
 		},
 		{
@@ -80,7 +84,7 @@ import (
 `,
 			"src/chromiumos/tast/remote/bundles/cros/testfile.go",
 			[]string{
-				"src/chromiumos/tast/remote/bundles/cros/testfile.go:4:2: import of chromiumos/tast/local/bundles/cros/bar is only allowed from chromiumos/tast/local/bundles/cros/bar or its descendant",
+				"src/chromiumos/tast/remote/bundles/cros/testfile.go:4:2: import of chromiumos/tast/local/bundles/cros/bar is only allowed from chromiumos/tast/local/bundles/*/bar or its descendant",
 			},
 		},
 		{
@@ -92,7 +96,7 @@ import (
 `,
 			"src/chromiumos/tast/local/foo/testfile.go",
 			[]string{
-				"src/chromiumos/tast/local/foo/testfile.go:4:2: import of chromiumos/tast/local/bundles/cros/foo is only allowed from chromiumos/tast/local/bundles/cros/foo or its descendant",
+				"src/chromiumos/tast/local/foo/testfile.go:4:2: import of chromiumos/tast/local/bundles/cros/foo is only allowed from chromiumos/tast/local/bundles/*/foo or its descendant",
 			},
 		},
 	} {

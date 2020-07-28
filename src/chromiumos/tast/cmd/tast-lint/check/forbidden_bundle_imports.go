@@ -15,6 +15,11 @@ import (
 	"strings"
 )
 
+const (
+	crosBundle    = "chromiumos/tast/local/bundles/cros"
+	crosintBundle = crosBundle + "int"
+)
+
 var bundleCategoryRegex = regexp.MustCompile(`^(chromiumos/tast/(?:local|remote)/bundles/\w+)/(\w+)`)
 
 // parseBundlePackage analyzes full package path and returns matching bundle prefix and the category name.
@@ -66,6 +71,11 @@ func ForbiddenBundleImports(fs *token.FileSet, f *ast.File) []*Issue {
 
 		categoryPkg := path.Join(bundlePkg, category)
 		if strings.HasPrefix(mypkg+"/", categoryPkg+"/") {
+			continue
+		}
+
+		// Allow crosint packages to import from the corresponding cros package.
+		if bundlePkg == crosBundle && strings.HasPrefix(mypkg+"/", path.Join(crosintBundle, category)+"/") {
 			continue
 		}
 

@@ -109,7 +109,9 @@ func newRemoteTestData(t *gotesting.T, stdout, stderr string, status int) *remot
 	td.cfg.devservers = mockDevservers
 	td.cfg.buildArtifactsURL = mockBuildArtifactsURL
 	td.cfg.downloadMode = planner.DownloadLazy
+	td.cfg.localRunner = mockLocalRunner
 	td.cfg.localBundleDir = mockLocalBundleDir
+	td.cfg.localDataDir = mockLocalDataDir
 	td.cfg.remoteOutDir = filepath.Join(td.cfg.ResDir, "out.tmp")
 
 	// Create a symlink to ourselves that can be executed as a fake test runner.
@@ -193,11 +195,15 @@ func TestRemoteRun(t *gotesting.T) {
 		t.Fatal(err)
 	}
 	runFlags := []string{
+		"-build=false",
 		"-keyfile=" + td.cfg.KeyFile,
 		"-keydir=",
 		"-remoterunner=" + td.cfg.remoteRunner,
 		"-remotebundledir=" + td.cfg.remoteBundleDir,
 		"-remotedatadir=" + td.cfg.remoteDataDir,
+		"-localrunner=" + td.cfg.localRunner,
+		"-localbundledir=" + td.cfg.localBundleDir,
+		"-localdatadir=" + td.cfg.localDataDir,
 	}
 	expArgs := runner.Args{
 		Mode: runner.RunTestsMode,

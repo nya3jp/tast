@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ef0de7cc_9ed894fc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-07-28T22:20:08Z",
+      "side": 1,
+      "message": "Hi Everybody:\n\nI have just pushed new changes to address review comments. Please take review again.\n\nThanks.\n\nSeewai",
+      "revId": "d88e74b741c2274cf7b1509168c466c91aebb45a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

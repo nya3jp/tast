@@ -82,6 +82,30 @@
     },
     {
       "key": {
+        "uuid": "26fe2b44_2dd7a973",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 181,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-07-28T22:20:08Z",
+      "side": 1,
+      "message": "New output for the DUT that does not have CHROMEOS_RELEASE_BUILDER_PATH is now looking like this\n2020/07/28 14:11:30 Target version: octopusR86-13361.0.2020_07_22_1253(Test Build - seewaifu)\n\nPlease check if it is ok. Thanks.",
+      "parentUuid": "cac1f9ca_5a7891db",
+      "range": {
+        "startLine": 181,
+        "startChar": 32,
+        "endLine": 181,
+        "endChar": 104
+      },
+      "revId": "b0e2fa770e20b84507e6e19210164c3cea338eee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "978ea1f2_44ac2230",
         "filename": "src/chromiumos/tast/cmd/tast/internal/run/config.go",
         "patchSetId": 3
@@ -93,6 +117,30 @@
       "writtenOn": "2020-07-28T01:40:18Z",
       "side": 1,
       "message": "Can you name it osVersion? (see my other comments)",
+      "range": {
+        "startLine": 135,
+        "startChar": 1,
+        "endLine": 135,
+        "endChar": 16
+      },
+      "revId": "b0e2fa770e20b84507e6e19210164c3cea338eee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a9217ed7_bf60c84f",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/config.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-07-28T22:20:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "978ea1f2_44ac2230",
       "range": {
         "startLine": 135,
         "startChar": 1,
@@ -128,6 +176,30 @@
     },
     {
       "key": {
+        "uuid": "a9aa7031_12a0f70f",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-07-28T22:20:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c07e2901_c6f20f1e",
+      "range": {
+        "startLine": 19,
+        "startChar": 18,
+        "endLine": 19,
+        "endChar": 35
+      },
+      "revId": "b0e2fa770e20b84507e6e19210164c3cea338eee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "454591ee_fc51ade9",
         "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests_test.go",
         "patchSetId": 3
@@ -139,6 +211,30 @@
       "writtenOn": "2020-07-28T01:40:18Z",
       "side": 1,
       "message": "nit: you can use %q to print strings in a quoted format.",
+      "range": {
+        "startLine": 67,
+        "startChar": 24,
+        "endLine": 67,
+        "endChar": 28
+      },
+      "revId": "b0e2fa770e20b84507e6e19210164c3cea338eee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "50f01ab6_8c18a08b",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-07-28T22:20:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "454591ee_fc51ade9",
       "range": {
         "startLine": 67,
         "startChar": 24,
@@ -174,6 +270,30 @@
     },
     {
       "key": {
+        "uuid": "10f05455_ecec121e",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-07-28T22:20:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "eb11c947_4cb6b275",
+      "range": {
+        "startLine": 222,
+        "startChar": 1,
+        "endLine": 222,
+        "endChar": 16
+      },
+      "revId": "b0e2fa770e20b84507e6e19210164c3cea338eee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "3da4b2d6_3983eee3",
         "filename": "src/chromiumos/tast/internal/runner/args.go",
         "patchSetId": 3
@@ -197,6 +317,30 @@
     },
     {
       "key": {
+        "uuid": "f7c0b2b7_a89905fc",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 374,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-07-28T22:20:08Z",
+      "side": 1,
+      "message": "I have modified the comment. Please review.",
+      "parentUuid": "3da4b2d6_3983eee3",
+      "range": {
+        "startLine": 374,
+        "startChar": 4,
+        "endLine": 374,
+        "endChar": 24
+      },
+      "revId": "b0e2fa770e20b84507e6e19210164c3cea338eee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "48c067e8_f9053495",
         "filename": "src/chromiumos/tast/internal/runner/args.go",
         "patchSetId": 3
@@ -208,6 +352,30 @@
       "writtenOn": "2020-07-28T01:40:18Z",
       "side": 1,
       "message": "Same here: \"OSVersion\"",
+      "range": {
+        "startLine": 375,
+        "startChar": 1,
+        "endLine": 375,
+        "endChar": 23
+      },
+      "revId": "b0e2fa770e20b84507e6e19210164c3cea338eee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "89867cf9_0f353bb8",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 375,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-07-28T22:20:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "48c067e8_f9053495",
       "range": {
         "startLine": 375,
         "startChar": 1,

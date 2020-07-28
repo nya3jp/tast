@@ -38,6 +38,7 @@ Below is the list of most popular groups and their associated extra attributes:
        *  `wificell_func`: verify basic WiFi functionalities nightly.
        *  `wificell_cq`: Similar to wificell_func, but triggered by CLs that
           touch specific code paths.
+       *  `wificell_perf`: measure WiFi performance.
     *  Stability (optional): if `wificell_unstable` is present, the test is yet
        to be verified as stable; otherwise, the test is stable.
 *   `group:labqual` - Tests that must pass for devices to go to a low-touch lab.

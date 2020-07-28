@@ -228,6 +228,17 @@ func WifiMACAddrRandomize() Condition {
 	)
 }
 
+// WifiNotMarvell returns a hardware dependency condition that is satisfied iff
+// the DUT's not using a Marvell WiFi chip.
+func WifiNotMarvell() Condition {
+	// TODO(crbug.com/1070299): we don't yet have relevant fields in device.Config
+	// about WiFi chip, so list the known platforms here for now.
+	return SkipOnPlatform(
+		"bob", "kevin", "elm", "hana", "kitty",
+		"mighty", "jaq", "fievel", "tiger", "jerry",
+	)
+}
+
 func hasBattery(f *dep.HardwareFeatures) (bool, error) {
 	if f.DC == nil {
 		return false, errors.New("device.Config is not given")
@@ -263,6 +274,9 @@ func SupportsNV12Overlays() Condition {
 			f.DC.Soc == device.Config_SOC_BAY_TRAIL ||
 			f.DC.Soc == device.Config_SOC_BROADWELL ||
 			f.DC.Soc == device.Config_SOC_BRASWELL ||
+			f.DC.Soc == device.Config_SOC_SKYLAKE_U ||
+			f.DC.Soc == device.Config_SOC_SKYLAKE_Y ||
+			f.DC.Soc == device.Config_SOC_APOLLO_LAKE ||
 			f.DC.Soc == device.Config_SOC_MT8173 ||
 			f.DC.Soc == device.Config_SOC_MT8176 ||
 			f.DC.Soc == device.Config_SOC_MT8183 ||

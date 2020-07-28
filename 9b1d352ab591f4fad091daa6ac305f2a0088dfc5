@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "ccba33f6_bada10f2",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1129199
+      },
+      "writtenOn": "2020-07-28T00:01:53Z",
+      "side": 1,
+      "message": "Yeah I think kevin was weird. Hopefully the last one of that kind.",
+      "parentUuid": "8882ac4d_a4bcbbf9",
+      "range": {
+        "startLine": 12,
+        "startChar": 35,
+        "endLine": 12,
+        "endChar": 52
+      },
+      "revId": "9b1d352ab591f4fad091daa6ac305f2a0088dfc5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1c2877c5_89afb353",
         "filename": "/COMMIT_MSG",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2020-07-27T14:20:26Z",
       "side": 1,
       "message": "The most important part of landing this code was indeed to avoid \nrunning GetDisplayMedia() on devices without an internal display,\nfor reasons unrelated to their capacities anyway. So if this works\nhere, I\u0027m all for cleaning up the code :-)",
+      "range": {
+        "startLine": 18,
+        "startChar": 9,
+        "endLine": 18,
+        "endChar": 28
+      },
+      "revId": "9b1d352ab591f4fad091daa6ac305f2a0088dfc5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0bd9137b_3a7c2a6e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1129199
+      },
+      "writtenOn": "2020-07-28T00:01:53Z",
+      "side": 1,
+      "message": "Sure, let\u0027s see if the new code works better, it\u0027s equally important to make sure that the tests _actually_ runs on all platforms that have an internal display ,-)",
+      "parentUuid": "1c2877c5_89afb353",
       "range": {
         "startLine": 18,
         "startChar": 9,
@@ -85,6 +133,30 @@
       "revId": "9b1d352ab591f4fad091daa6ac305f2a0088dfc5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "826b9875_353ebc38",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 216,
+      "author": {
+        "id": 1129199
+      },
+      "writtenOn": "2020-07-28T00:01:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0ab7257c_1ef97b51",
+      "range": {
+        "startLine": 216,
+        "startChar": 2,
+        "endLine": 216,
+        "endChar": 10
+      },
+      "revId": "9b1d352ab591f4fad091daa6ac305f2a0088dfc5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

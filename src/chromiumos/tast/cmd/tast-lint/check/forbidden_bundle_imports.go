@@ -36,6 +36,8 @@ func parseBundlePackage(p string) (bundlePkg, category string, ok bool) {
 func ForbiddenBundleImports(fs *token.FileSet, f *ast.File) []*Issue {
 	filename := fs.Position(f.Package).Filename
 	mypkg := strings.TrimPrefix(filepath.Dir(filename), "src/")
+	myBundlePkg, myCategory, isBundle := parseBundlePackage(mypkg)
+	myBundlePath := path.Dir(myBundlePkg)
 
 	// Ignore known valid use cases.
 	var allowMap = map[string]string{
@@ -64,10 +66,13 @@ func ForbiddenBundleImports(fs *token.FileSet, f *ast.File) []*Issue {
 			continue
 		}
 
-		categoryPkg := path.Join(bundlePkg, category)
-		if strings.HasPrefix(mypkg+"/", categoryPkg+"/") {
+		// Allow import from package category across bundles.
+		bundlePath := path.Dir(bundlePkg)
+		if isBundle && myBundlePath == bundlePath && myCategory == category {
 			continue
 		}
+
+		categoryPkg := path.Join(bundlePath, "*", category)
 
 		issues = append(issues, &Issue{
 			Pos:  fs.Position(im.Pos()),

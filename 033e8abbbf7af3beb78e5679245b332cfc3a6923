@@ -16,6 +16,69 @@
       "revId": "033e8abbbf7af3beb78e5679245b332cfc3a6923",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2ba750f1_a679f754",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 15
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-28T01:47:48Z",
+      "side": 1,
+      "message": "Looking good overall!\n",
+      "revId": "033e8abbbf7af3beb78e5679245b332cfc3a6923",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da89958d_2d353e59",
+        "filename": "src/chromiumos/tast/bundle/args_test.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-28T01:47:48Z",
+      "side": 1,
+      "message": "Mind checking err here?",
+      "range": {
+        "startLine": 116,
+        "startChar": 1,
+        "endLine": 116,
+        "endChar": 21
+      },
+      "revId": "033e8abbbf7af3beb78e5679245b332cfc3a6923",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5d306ba5_be7c5761",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-28T01:47:48Z",
+      "side": 1,
+      "message": "Here we want to prefer HardwareFeatures when it is present. So the logic would be:\n\n if HardwareFeature is available {\n   if HardwareFeature contains TouchSupport {\n     return nil\n   }\n   return TouchSupport is not available\n }\n if DeviceConfig is available {\n   if DeviceConfig contains TouchSupport {\n     return nil\n   }\n   return TouchSupport is not available\n }\n return HardwareFeatures is not available",
+      "range": {
+        "startLine": 163,
+        "startChar": 2,
+        "endLine": 164,
+        "endChar": 114
+      },
+      "revId": "033e8abbbf7af3beb78e5679245b332cfc3a6923",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

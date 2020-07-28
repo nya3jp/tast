@@ -16,6 +16,207 @@
       "revId": "b0e2fa770e20b84507e6e19210164c3cea338eee",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dab0acfb_0aa2bdc8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-28T01:40:18Z",
+      "side": 1,
+      "message": "Thanks, this change looks mostly good! My comments are relatively minor.",
+      "revId": "b0e2fa770e20b84507e6e19210164c3cea338eee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "eff27de6_41e65c9e",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-28T01:40:18Z",
+      "side": 1,
+      "message": "That is true, thanks for catching this!",
+      "range": {
+        "startLine": 176,
+        "startChar": 3,
+        "endLine": 176,
+        "endChar": 73
+      },
+      "revId": "b0e2fa770e20b84507e6e19210164c3cea338eee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cac1f9ca_5a7891db",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 181,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-28T01:40:18Z",
+      "side": 1,
+      "message": "nit: Let\u0027s use fmt.Sprintf since this formatting is a bit involved.\n\nAlso, can you format the string in the following way?\n\n ${CHROMEOS_RELEASE_BOARD} R${CHROMEOS_RELEASE_CHROME_MILESTONE}-${CHROMEOS_RELEASE_VERSION} (${CHROMEOS_RELEASE_BUILD_TYPE})\n\nThis string intentionally does not resemble the CHROMEOS_RELEASE_BUILDER_PATH format so that readers are not confused with real builder paths.",
+      "range": {
+        "startLine": 181,
+        "startChar": 32,
+        "endLine": 181,
+        "endChar": 104
+      },
+      "revId": "b0e2fa770e20b84507e6e19210164c3cea338eee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "978ea1f2_44ac2230",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/config.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-28T01:40:18Z",
+      "side": 1,
+      "message": "Can you name it osVersion? (see my other comments)",
+      "range": {
+        "startLine": 135,
+        "startChar": 1,
+        "endLine": 135,
+        "endChar": 16
+      },
+      "revId": "b0e2fa770e20b84507e6e19210164c3cea338eee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c07e2901_c6f20f1e",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-28T01:40:18Z",
+      "side": 1,
+      "message": "\"Target version\"",
+      "range": {
+        "startLine": 19,
+        "startChar": 18,
+        "endLine": 19,
+        "endChar": 35
+      },
+      "revId": "b0e2fa770e20b84507e6e19210164c3cea338eee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "454591ee_fc51ade9",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-28T01:40:18Z",
+      "side": 1,
+      "message": "nit: you can use %q to print strings in a quoted format.",
+      "range": {
+        "startLine": 67,
+        "startChar": 24,
+        "endLine": 67,
+        "endChar": 28
+      },
+      "revId": "b0e2fa770e20b84507e6e19210164c3cea338eee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eb11c947_4cb6b275",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-28T01:40:18Z",
+      "side": 1,
+      "message": "Can you name it simply \"OSVersion\"? We *might* support non-CrOS devices in the future.",
+      "range": {
+        "startLine": 222,
+        "startChar": 1,
+        "endLine": 222,
+        "endChar": 16
+      },
+      "revId": "b0e2fa770e20b84507e6e19210164c3cea338eee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3da4b2d6_3983eee3",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 374,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-28T01:40:18Z",
+      "side": 1,
+      "message": "This comment is stale.",
+      "range": {
+        "startLine": 374,
+        "startChar": 4,
+        "endLine": 374,
+        "endChar": 24
+      },
+      "revId": "b0e2fa770e20b84507e6e19210164c3cea338eee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "48c067e8_f9053495",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 375,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-28T01:40:18Z",
+      "side": 1,
+      "message": "Same here: \"OSVersion\"",
+      "range": {
+        "startLine": 375,
+        "startChar": 1,
+        "endLine": 375,
+        "endChar": 23
+      },
+      "revId": "b0e2fa770e20b84507e6e19210164c3cea338eee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

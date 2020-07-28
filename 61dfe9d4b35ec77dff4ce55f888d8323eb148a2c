@@ -507,6 +507,30 @@
     },
     {
       "key": {
+        "uuid": "d4a03864_801a57e0",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 535,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-28T01:40:18Z",
+      "side": 1,
+      "message": "I\u0027d rather think that we need a clear reason if we run cat instead of opening the file directly. Starting an external process and reading its output has much more complexity than opening a file in the process directly.",
+      "parentUuid": "4f0fe395_93cd8d08",
+      "range": {
+        "startLine": 535,
+        "startChar": 1,
+        "endLine": 535,
+        "endChar": 15
+      },
+      "revId": "61dfe9d4b35ec77dff4ce55f888d8323eb148a2c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "5f9e2c04_5b065d1e",
         "filename": "src/chromiumos/tast/internal/runner/features_test.go",
         "patchSetId": 2

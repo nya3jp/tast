@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "71cec21f_7b3a33c3",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_bundle_imports.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-29T01:58:36Z",
+      "side": 1,
+      "message": "Can you add a unit test?",
+      "revId": "24901c772c50ba50654517a69d18af6e5f4bd8f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3b077930_86706d08",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_bundle_imports.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-29T01:58:36Z",
+      "side": 1,
+      "message": "cros and crosint are not the only bundles we have today, so this is kind of yet another allowlisting. Can you change it to allow arbitrary bundles?",
+      "range": {
+        "startLine": 19,
+        "startChar": 1,
+        "endLine": 20,
+        "endChar": 35
+      },
+      "revId": "24901c772c50ba50654517a69d18af6e5f4bd8f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -216,7 +216,8 @@ func newDeviceConfigAndHardwareFeatures() (dc *device.Config, retFeatures *confi
 		Soc: soc,
 	}
 	features := &configpb.HardwareFeatures{
-		Screen: &configpb.HardwareFeatures_Screen{},
+		Screen:      &configpb.HardwareFeatures_Screen{},
+		Fingerprint: &configpb.HardwareFeatures_Fingerprint{},
 	}
 
 	hasInternalDisplay := func() bool {
@@ -248,6 +249,7 @@ func newDeviceConfigAndHardwareFeatures() (dc *device.Config, retFeatures *confi
 		return false
 	}()
 	if hasInternalDisplay {
+		features.Screen.PanelProperties = &configpb.Component_DisplayPanel_Properties{}
 		config.HardwareFeatures = append(config.HardwareFeatures, device.Config_HARDWARE_FEATURE_INTERNAL_DISPLAY)
 	}
 
@@ -273,7 +275,9 @@ func newDeviceConfigAndHardwareFeatures() (dc *device.Config, retFeatures *confi
 		}
 		return (fi.Mode() & os.ModeCharDevice) != 0
 	}()
+	features.Fingerprint.Location = configpb.HardwareFeatures_Fingerprint_NOT_PRESENT
 	if hasFingerprint {
+		features.Fingerprint.Location = configpb.HardwareFeatures_Fingerprint_LOCATION_UNKNOWN
 		config.HardwareFeatures = append(config.HardwareFeatures, device.Config_HARDWARE_FEATURE_FINGERPRINT)
 	}
 

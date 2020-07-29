@@ -173,6 +173,92 @@ func TestTouchscreen(t *testing.T) {
 		true)
 }
 
+func TestFingerprint(t *testing.T) {
+	c := Fingerprint()
+
+	for _, tc := range []struct {
+		Fingerprint     configpb.HardwareFeatures_Fingerprint_Location
+		expectSatisfied bool
+	}{
+		{configpb.HardwareFeatures_Fingerprint_NOT_PRESENT, false},
+		{configpb.HardwareFeatures_Fingerprint_LOCATION_UNKNOWN, true},
+	} {
+		verifyCondition(
+			t, c,
+			&device.Config{
+				Id: &device.ConfigId{
+					PlatformId: &device.PlatformId{
+						Value: "dummy_platform",
+					},
+				},
+			},
+			&configpb.HardwareFeatures{
+				Fingerprint: &configpb.HardwareFeatures_Fingerprint{
+					Location: tc.Fingerprint,
+				},
+			},
+			tc.expectSatisfied)
+	}
+
+	verifyCondition(
+		t, c,
+		&device.Config{
+			Id: &device.ConfigId{
+				PlatformId: &device.PlatformId{
+					Value: "dummy_platform",
+				},
+			},
+			HardwareFeatures: []device.Config_HardwareFeature{
+				device.Config_HARDWARE_FEATURE_FINGERPRINT,
+			},
+		},
+		nil,
+		true)
+}
+
+func TestInternalDisplay(t *testing.T) {
+	c := InternalDisplay()
+
+	for _, tc := range []struct {
+		PanelProperties *configpb.Component_DisplayPanel_Properties
+		expectSatisfied bool
+	}{
+		{&configpb.Component_DisplayPanel_Properties{}, true},
+		{nil, false},
+	} {
+		verifyCondition(
+			t, c,
+			&device.Config{
+				Id: &device.ConfigId{
+					PlatformId: &device.PlatformId{
+						Value: "dummy_platform",
+					},
+				},
+			},
+			&configpb.HardwareFeatures{
+				Screen: &configpb.HardwareFeatures_Screen{
+					PanelProperties: tc.PanelProperties,
+				},
+			},
+			tc.expectSatisfied)
+	}
+
+	verifyCondition(
+		t, c,
+		&device.Config{
+			Id: &device.ConfigId{
+				PlatformId: &device.PlatformId{
+					Value: "dummy_platform",
+				},
+			},
+			HardwareFeatures: []device.Config_HardwareFeature{
+				device.Config_HARDWARE_FEATURE_INTERNAL_DISPLAY,
+			},
+		},
+		nil,
+		true)
+}
+
 func TestCEL(t *testing.T) {
 	for i, c := range []struct {
 		input    Deps

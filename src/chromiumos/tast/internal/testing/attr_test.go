@@ -73,6 +73,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 		{
 			attrs: []string{"group:runtime_probe"},
 		},
+		{
+			attrs: []string{"group:storage-qual"},
+		},
 
 		// Invalid cases.
 		{

@@ -173,6 +173,49 @@ func TestTouchscreen(t *testing.T) {
 		true)
 }
 
+func TestFingerprint(t *testing.T) {
+	c := Fingerprint()
+
+	for _, tc := range []struct {
+		Fingerprint     configpb.HardwareFeatures_Fingerprint_Location
+		expectSatisfied bool
+	}{
+		{configpb.HardwareFeatures_Fingerprint_NOT_PRESENT, false},
+		{configpb.HardwareFeatures_Fingerprint_LOCATION_UNKNOWN, true},
+	} {
+		verifyCondition(
+			t, c,
+			&device.Config{
+				Id: &device.ConfigId{
+					PlatformId: &device.PlatformId{
+						Value: "dummy_platform",
+					},
+				},
+			},
+			&configpb.HardwareFeatures{
+				Fingerprint: &configpb.HardwareFeatures_Fingerprint{
+					Location: tc.Fingerprint,
+				},
+			},
+			tc.expectSatisfied)
+	}
+
+	verifyCondition(
+		t, c,
+		&device.Config{
+			Id: &device.ConfigId{
+				PlatformId: &device.PlatformId{
+					Value: "dummy_platform",
+				},
+			},
+			HardwareFeatures: []device.Config_HardwareFeature{
+				device.Config_HARDWARE_FEATURE_FINGERPRINT,
+			},
+		},
+		nil,
+		true)
+}
+
 func TestCEL(t *testing.T) {
 	for i, c := range []struct {
 		input    Deps

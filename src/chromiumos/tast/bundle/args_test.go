@@ -106,6 +106,9 @@ func TestMarshal(t *testing.T) {
 			Screen: &configpb.HardwareFeatures_Screen{
 				TouchSupport: configpb.HardwareFeatures_PRESENT,
 			},
+			Fingerprint: &configpb.HardwareFeatures_Fingerprint{
+				Location: configpb.HardwareFeatures_Fingerprint_NOT_PRESENT,
+			},
 		},
 	}
 	b, err := in.MarshalJSON()

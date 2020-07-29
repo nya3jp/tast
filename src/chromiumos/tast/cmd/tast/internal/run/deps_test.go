@@ -79,6 +79,9 @@ func TestGetDUTInfo(t *testing.T) {
 		Screen: &configpb.HardwareFeatures_Screen{
 			TouchSupport: configpb.HardwareFeatures_PRESENT,
 		},
+		Fingerprint: &configpb.HardwareFeatures_Fingerprint{
+			Location: configpb.HardwareFeatures_Fingerprint_NOT_PRESENT,
+		},
 	}
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		checkArgs(t, args, &runner.Args{

@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "8bb4e7c7_9510bc19",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_bundle_imports.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1432569
+      },
+      "writtenOn": "2020-07-29T06:15:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "71cec21f_7b3a33c3",
+      "revId": "24901c772c50ba50654517a69d18af6e5f4bd8f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3b077930_86706d08",
         "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_bundle_imports.go",
         "patchSetId": 1
@@ -39,6 +57,30 @@
       "revId": "24901c772c50ba50654517a69d18af6e5f4bd8f8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "43a4da62_672057bd",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_bundle_imports.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1432569
+      },
+      "writtenOn": "2020-07-29T06:15:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3b077930_86706d08",
+      "range": {
+        "startLine": 19,
+        "startChar": 1,
+        "endLine": 20,
+        "endChar": 35
+      },
+      "revId": "24901c772c50ba50654517a69d18af6e5f4bd8f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

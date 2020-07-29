@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b1db5794_bebc8290",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1432569
+      },
+      "writtenOn": "2020-07-29T06:15:13Z",
+      "side": 1,
+      "message": "Thanks for the feedback! I changed it to work across arbitrary bundles. The only thing is, ideally I would like to have it emit an error if a file in a public bundle tries to import a file from a private one but I\u0027m not sure how to tell whether a bundle is public or private (or maybe it\u0027s safe to assume that cros is the only public bundle and the rest are private?)",
+      "revId": "72d29a6b7129e46877f44fbbd64a93e407205bcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

@@ -16,6 +16,46 @@
       "revId": "d88e74b741c2274cf7b1509168c466c91aebb45a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1dbe57a4_57a186fd",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-29T05:50:48Z",
+      "side": 1,
+      "message": "Thanks! LGTM % some minor nits.",
+      "revId": "d88e74b741c2274cf7b1509168c466c91aebb45a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "aad27854_a12da438",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-29T05:50:48Z",
+      "side": 1,
+      "message": "nit: osVersion since this is a JSON field name.\n\nhttps://google.github.io/styleguide/jsoncstyleguide.xml?showone\u003dProperty_Name_Format#Property_Name_Format",
+      "range": {
+        "startLine": 222,
+        "startChar": 25,
+        "endLine": 222,
+        "endChar": 34
+      },
+      "revId": "d88e74b741c2274cf7b1509168c466c91aebb45a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

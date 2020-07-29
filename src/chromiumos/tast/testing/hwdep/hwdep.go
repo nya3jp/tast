@@ -186,6 +186,12 @@ func TouchScreen() Condition {
 // iff the DUT has fingerprint sensor.
 func Fingerprint() Condition {
 	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
+		if f.Features != nil {
+			if f.Features.Fingerprint.Location != configpb.HardwareFeatures_Fingerprint_NOT_PRESENT {
+				return nil
+			}
+			return errors.New("DUT does not have fingerprint sensor")
+		}
 		if f.DC == nil {
 			return errors.New("device.Config is not given")
 		}
@@ -203,6 +209,12 @@ func Fingerprint() Condition {
 // iff the DUT has an internal display, e.g. Chromeboxes and Chromebits don't.
 func InternalDisplay() Condition {
 	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
+		if f.Features != nil {
+			if f.Features.Screen.PanelProperties != nil {
+				return nil
+			}
+			return errors.New("DUT does not have an internal display")
+		}
 		if f.DC == nil {
 			return errors.New("device.Config is not given")
 		}

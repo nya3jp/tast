@@ -105,6 +105,12 @@ func TestMarshal(t *testing.T) {
 		HardwareFeatures: &configpb.HardwareFeatures{
 			Screen: &configpb.HardwareFeatures_Screen{
 				TouchSupport: configpb.HardwareFeatures_PRESENT,
+				PanelProperties: &configpb.Component_DisplayPanel_Properties{
+					DiagonalMilliinch: 11000,
+				},
+			},
+			Fingerprint: &configpb.HardwareFeatures_Fingerprint{
+				Location: configpb.HardwareFeatures_Fingerprint_NOT_PRESENT,
 			},
 		},
 	}

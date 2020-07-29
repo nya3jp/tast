@@ -36,6 +36,24 @@
     },
     {
       "key": {
+        "uuid": "34267ac2_cf0d0813",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-29T05:51:47Z",
+      "side": 1,
+      "message": "Note: LGTM % nits means: please feel free to submit the change after addressing these minor comments without waiting for another iteration of reviews.",
+      "parentUuid": "1dbe57a4_57a186fd",
+      "revId": "d88e74b741c2274cf7b1509168c466c91aebb45a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "aad27854_a12da438",
         "filename": "src/chromiumos/tast/internal/runner/args.go",
         "patchSetId": 4

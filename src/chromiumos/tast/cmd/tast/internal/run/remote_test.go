@@ -275,7 +275,8 @@ func TestRemoteRunCopyOutput(t *gotesting.T) {
 	}
 }
 
-func TestRemoteFailure(t *gotesting.T) {
+// TODO(crbug.com/1003952): Re-enable this test after fixing a race condition.
+func disabledTestRemoteFailure(t *gotesting.T) {
 	// Make the test runner print a message to stderr and fail.
 	const errorMsg = "Whoops, something failed\n"
 	td := newRemoteTestData(t, "", errorMsg, 1)

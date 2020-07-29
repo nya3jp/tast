@@ -16,6 +16,75 @@
       "revId": "72d29a6b7129e46877f44fbbd64a93e407205bcb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9446bbd1_d9e7e1d6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-07-29T15:31:15Z",
+      "side": 1,
+      "message": "I thought, it would cause a build error, wouldn\u0027t it...?",
+      "parentUuid": "b1db5794_bebc8290",
+      "revId": "72d29a6b7129e46877f44fbbd64a93e407205bcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f4dc9315_99109167",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-07-29T15:31:15Z",
+      "side": 1,
+      "message": "Thank you for making the change. Defer to nya@ for the review as he started to take a look.",
+      "revId": "72d29a6b7129e46877f44fbbd64a93e407205bcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cbe6c5ad_f72edfe4",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_bundle_imports.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-07-29T15:31:15Z",
+      "side": 1,
+      "message": "nit: path.Dir",
+      "revId": "72d29a6b7129e46877f44fbbd64a93e407205bcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "54f96a87_7e343296",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_bundle_imports.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-07-29T15:31:15Z",
+      "side": 1,
+      "message": "nit: path.Dir",
+      "revId": "72d29a6b7129e46877f44fbbd64a93e407205bcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

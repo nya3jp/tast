@@ -54,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "4a19c90d_97b74f21",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-07-30T03:24:37Z",
+      "side": 1,
+      "message": "Hidehiko\u0027s right, private repos are not checked out on building public bundles so we don\u0027t need to worry about the case.",
+      "parentUuid": "9446bbd1_d9e7e1d6",
+      "revId": "72d29a6b7129e46877f44fbbd64a93e407205bcb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "cbe6c5ad_f72edfe4",
         "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_bundle_imports.go",
         "patchSetId": 2

@@ -130,6 +130,30 @@
     },
     {
       "key": {
+        "uuid": "b6898b91_91ce2944",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 181,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-07-30T16:02:10Z",
+      "side": 1,
+      "message": "I agree that it will be easier to read with a space. I have made the changes. Thanks for the suggestion.",
+      "parentUuid": "01129d4b_c68cb29e",
+      "range": {
+        "startLine": 181,
+        "startChar": 32,
+        "endLine": 181,
+        "endChar": 104
+      },
+      "revId": "b0e2fa770e20b84507e6e19210164c3cea338eee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "978ea1f2_44ac2230",
         "filename": "src/chromiumos/tast/cmd/tast/internal/run/config.go",
         "patchSetId": 3

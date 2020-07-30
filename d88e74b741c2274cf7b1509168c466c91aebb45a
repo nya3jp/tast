@@ -54,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "0c5b28f7_3ab0585d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-07-30T16:02:10Z",
+      "side": 1,
+      "message": "Thanks. I think the output is clearer and code is cleaner with your suggestion. I have made the change.",
+      "parentUuid": "34267ac2_cf0d0813",
+      "revId": "d88e74b741c2274cf7b1509168c466c91aebb45a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "aad27854_a12da438",
         "filename": "src/chromiumos/tast/internal/runner/args.go",
         "patchSetId": 4
@@ -65,6 +83,30 @@
       "writtenOn": "2020-07-29T05:50:48Z",
       "side": 1,
       "message": "nit: osVersion since this is a JSON field name.\n\nhttps://google.github.io/styleguide/jsoncstyleguide.xml?showone\u003dProperty_Name_Format#Property_Name_Format",
+      "range": {
+        "startLine": 222,
+        "startChar": 25,
+        "endLine": 222,
+        "endChar": 34
+      },
+      "revId": "d88e74b741c2274cf7b1509168c466c91aebb45a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e0c7acb5_0266a681",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-07-30T16:02:10Z",
+      "side": 1,
+      "message": "Good to know. Thanks. I have made the change.",
+      "parentUuid": "aad27854_a12da438",
       "range": {
         "startLine": 222,
         "startChar": 25,

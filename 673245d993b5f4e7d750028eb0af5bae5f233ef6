@@ -42,6 +42,30 @@
     },
     {
       "key": {
+        "uuid": "50140716_c7d1f860",
+        "filename": "docs/howto.md",
+        "patchSetId": 8
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2020-07-31T14:57:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6ada29bc_51bdd445",
+      "range": {
+        "startLine": 17,
+        "startChar": 16,
+        "endLine": 17,
+        "endChar": 17
+      },
+      "revId": "673245d993b5f4e7d750028eb0af5bae5f233ef6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "24cf9807_34893cdf",
         "filename": "docs/howto.md",
         "patchSetId": 8
@@ -62,6 +86,30 @@
       "revId": "673245d993b5f4e7d750028eb0af5bae5f233ef6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7e5941c9_654130bf",
+        "filename": "docs/howto.md",
+        "patchSetId": 8
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2020-07-31T14:57:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "24cf9807_34893cdf",
+      "range": {
+        "startLine": 114,
+        "startChar": 235,
+        "endLine": 114,
+        "endChar": 266
+      },
+      "revId": "673245d993b5f4e7d750028eb0af5bae5f233ef6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

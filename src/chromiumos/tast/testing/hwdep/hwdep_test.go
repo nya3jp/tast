@@ -184,7 +184,7 @@ func TestCEL(t *testing.T) {
 		{D(SkipOnPlatform("platform_id1", "platform_id2")), "not_implemented"},
 		{D(TouchScreen()), "dut.hardware_features.screen.touch_support == api.HardwareFeatures.Present.PRESENT"},
 		{D(Fingerprint()), "dut.hardware_features.fingerprint.location != api.HardwareFeatures.Fingerprint.Location.NOT_PRESENT"},
-		{D(InternalDisplay()), "dut.hardware_features.screen.milliinch.value != 0U"},
+		{D(InternalDisplay()), "dut.hardware_features.screen.panel_properties.diagonal_milliinch != 0"},
 		{D(Wifi80211ac()), "not_implemented"},
 
 		{D(TouchScreen(), Fingerprint()),

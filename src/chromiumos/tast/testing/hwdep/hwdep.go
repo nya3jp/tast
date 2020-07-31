@@ -212,7 +212,7 @@ func InternalDisplay() Condition {
 			}
 		}
 		return errors.New("DUT does not have an internal display")
-	}, CEL: "dut.hardware_features.screen.milliinch.value != 0U",
+	}, CEL: "dut.hardware_features.screen.panel_properties.diagonal_milliinch != 0",
 	}
 }
 

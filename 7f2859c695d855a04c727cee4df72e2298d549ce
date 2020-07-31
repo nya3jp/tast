@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "29ec1b34_5acd2155",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-07-31T04:36:09Z",
+      "side": 1,
+      "message": "Could you update the document?\n\ndocs/test_dependencies.md",
+      "revId": "7f2859c695d855a04c727cee4df72e2298d549ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

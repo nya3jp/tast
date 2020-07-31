@@ -376,6 +376,30 @@
     },
     {
       "key": {
+        "uuid": "b69fb88d_b7b1abbf",
+        "filename": "docs/howto.md",
+        "patchSetId": 7
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-31T14:40:30Z",
+      "side": 1,
+      "message": "It\u0027s already present in \"Checking wrapped errors\".\n\nI also think it\u0027s better to keep the examples focused to make things easier for people getting started with tast.",
+      "parentUuid": "6d116eac_79d827f4",
+      "range": {
+        "startLine": 140,
+        "startChar": 1,
+        "endLine": 143,
+        "endChar": 1
+      },
+      "revId": "ab215d416a46207f1c7523e017418178acc53ee3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b0a7e98f_66bff951",
         "filename": "docs/howto.md",
         "patchSetId": 7

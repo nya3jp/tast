@@ -209,6 +209,31 @@ func (d *DUT) Reboot(ctx context.Context) error {
 	return nil
 }
 
+// Suspend suspends the DUT.
+func (d *DUT) Suspend(ctx context.Context) error {
+	// Run the suspend command with a short timeout. This command can block for long time
+	// if the network interface of the DUT goes down before the SSH command finishes.
+	suspendCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+	d.Conn().Command("powerd_dbus_suspend", "--suspend_for_sec=10").Run(suspendCtx) // ignore the error
+
+	if err := testingutil.Poll(ctx, func(ctx context.Context) error {
+		// Set a short timeout to the iteration in case of any SSH operations
+		// blocking for long time. For example, the network interface of the DUT
+		// might go down in the middle of readBootID and it might block for
+		// long time.
+		ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+		defer cancel()
+		if err := d.WaitConnect(ctx); err != nil {
+			return errors.Wrap(err, "failed to connect to DUT")
+		}
+		return nil
+	}, &testingutil.PollOptions{Timeout: 3 * time.Minute}); err != nil {
+		return errors.Wrap(err, "failed to wait for DUT to resume")
+	}
+	return nil
+}
+
 // KeyFile returns the path to the SSH private key used to connect to the DUT.
 // This is provided for tests that may need to establish SSH connections to additional hosts
 // (e.g. a host running a servod instance).

@@ -23,12 +23,13 @@ const pingServiceName = "tast.core.Ping"
 
 // pingServer is an implementation of the Ping gRPC service.
 type pingServer struct {
+	s *testing.ServiceState
 	// onPing is called when Ping is called by gRPC clients.
-	onPing func(context.Context) error
+	onPing func(context.Context, *testing.ServiceState) error
 }
 
 func (s *pingServer) Ping(ctx context.Context, _ *PingRequest) (*PingResponse, error) {
-	if err := s.onPing(ctx); err != nil {
+	if err := s.onPing(ctx, s.s); err != nil {
 		return nil, err
 	}
 	return &PingResponse{}, nil
@@ -60,7 +61,7 @@ func (p *pingPair) Close(ctx context.Context) error {
 //
 // It panics if it fails to start a local client/server pair. Returned pingPair
 // should be closed with pingPair.Close after its use.
-func newPingPair(ctx context.Context, t *gotesting.T, onPing func(context.Context) error) *pingPair {
+func newPingPair(ctx context.Context, t *gotesting.T, onPing func(context.Context, *testing.ServiceState) error) *pingPair {
 	t.Helper()
 
 	sr, cw := io.Pipe()
@@ -68,7 +69,7 @@ func newPingPair(ctx context.Context, t *gotesting.T, onPing func(context.Contex
 
 	svc := &testing.Service{
 		Register: func(srv *grpc.Server, s *testing.ServiceState) {
-			RegisterPingServer(srv, &pingServer{onPing})
+			RegisterPingServer(srv, &pingServer{s, onPing})
 		},
 	}
 
@@ -106,7 +107,7 @@ func newPingPair(ctx context.Context, t *gotesting.T, onPing func(context.Contex
 func TestRPCSuccess(t *gotesting.T) {
 	ctx := testing.WithTestContext(context.Background(), &testing.TestContext{})
 	called := false
-	pp := newPingPair(ctx, t, func(context.Context) error {
+	pp := newPingPair(ctx, t, func(context.Context, *testing.ServiceState) error {
 		called = true
 		return nil
 	})
@@ -126,7 +127,7 @@ func TestRPCSuccess(t *gotesting.T) {
 func TestRPCFailure(t *gotesting.T) {
 	ctx := testing.WithTestContext(context.Background(), &testing.TestContext{})
 	called := false
-	pp := newPingPair(ctx, t, func(context.Context) error {
+	pp := newPingPair(ctx, t, func(context.Context, *testing.ServiceState) error {
 		called = true
 		return errors.New("failure")
 	})
@@ -146,7 +147,7 @@ func TestRPCFailure(t *gotesting.T) {
 func TestRPCNoTestContext(t *gotesting.T) {
 	ctx := testing.WithTestContext(context.Background(), &testing.TestContext{})
 	called := false
-	pp := newPingPair(ctx, t, func(context.Context) error {
+	pp := newPingPair(ctx, t, func(context.Context, *testing.ServiceState) error {
 		called = true
 		return nil
 	})
@@ -162,7 +163,7 @@ func TestRPCNoTestContext(t *gotesting.T) {
 
 func TestRPCRejectUndeclaredServices(t *gotesting.T) {
 	ctx := testing.WithTestContext(context.Background(), &testing.TestContext{})
-	pp := newPingPair(ctx, t, func(context.Context) error { return nil })
+	pp := newPingPair(ctx, t, func(context.Context, *testing.ServiceState) error { return nil })
 	defer pp.Close(ctx)
 
 	callCtx := testing.WithTestContext(ctx, &testing.TestContext{
@@ -180,7 +181,7 @@ func TestRPCForwardTestContext(t *gotesting.T) {
 	called := false
 	var deps []string
 	var depsOK bool
-	pp := newPingPair(ctx, t, func(ctx context.Context) error {
+	pp := newPingPair(ctx, t, func(ctx context.Context, s *testing.ServiceState) error {
 		called = true
 		deps, depsOK = testing.ContextSoftwareDeps(ctx)
 		return nil
@@ -216,7 +217,7 @@ func TestRPCForwardLogs(t *gotesting.T) {
 	ctx = testing.WithTestContext(ctx, &testing.TestContext{})
 
 	called := false
-	pp := newPingPair(ctx, t, func(ctx context.Context) error {
+	pp := newPingPair(ctx, t, func(ctx context.Context, s *testing.ServiceState) error {
 		called = true
 		logging.ContextLog(ctx, exp)
 		return nil
@@ -247,7 +248,7 @@ func TestRPCForwardTiming(t *gotesting.T) {
 	ctx = timing.NewContext(ctx, log)
 
 	called := false
-	pp := newPingPair(ctx, t, func(ctx context.Context) error {
+	pp := newPingPair(ctx, t, func(ctx context.Context, s *testing.ServiceState) error {
 		called = true
 		_, st := timing.Start(ctx, stageName)
 		st.End()
@@ -271,5 +272,36 @@ func TestRPCForwardTiming(t *gotesting.T) {
 			t.Fatal("Failed to marshal timing JSON: ", err)
 		}
 		t.Errorf("Unexpected timing log: got %s, want a single %q entry", string(b), stageName)
+	}
+}
+
+func TestRPCServiceScopedContext(t *gotesting.T) {
+	const exp = "hello"
+
+	logs := make(chan string, 1)
+	ctx := context.Background()
+	ctx = logging.NewContext(ctx, func(msg string) { logs <- msg })
+	ctx = testing.WithTestContext(ctx, &testing.TestContext{})
+
+	called := false
+	pp := newPingPair(ctx, t, func(ctx context.Context, s *testing.ServiceState) error {
+		called = true
+		logging.ContextLog(s.ServiceContext(), exp)
+		return nil
+	})
+	defer pp.Close(ctx)
+
+	callCtx := testing.WithTestContext(ctx, &testing.TestContext{
+		ServiceDeps: []string{pingServiceName},
+	})
+	if _, err := pp.Client.Ping(callCtx, &PingRequest{}); err != nil {
+		t.Error("Ping failed: ", err)
+	}
+	if !called {
+		t.Error("onPing not called")
+	}
+
+	if msg := <-logs; msg != exp {
+		t.Errorf("Got log %q; want %q", msg, exp)
 	}
 }

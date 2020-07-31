@@ -5,6 +5,8 @@
 package testing
 
 import (
+	"context"
+
 	"google.golang.org/grpc"
 )
 
@@ -18,5 +20,21 @@ type Service struct {
 
 // ServiceState holds state relevant to a gRPC service.
 type ServiceState struct {
-	// Nothing is provided for now.
+	// ctx is a service-scoped context. It can be used to emit logs with
+	// testing.ContextLog. It is canceled on gRPC server shutdown.
+	ctx context.Context
+}
+
+// NewServiceState creates a new ServiceState.
+func NewServiceState(ctx context.Context) *ServiceState {
+	return &ServiceState{
+		ctx: ctx,
+	}
+}
+
+// Context returns a service-scoped context. The context can be used to emit
+// logs with testing.ContextLog. The context is canceled on gRPC server
+// shutdown.
+func (s *ServiceState) Context() context.Context {
+	return s.ctx
 }

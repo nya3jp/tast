@@ -16,6 +16,379 @@
       "revId": "ab215d416a46207f1c7523e017418178acc53ee3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "539a4cd0_077778f0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-31T14:18:18Z",
+      "side": 1,
+      "message": "LGTM % remaining nits",
+      "revId": "ab215d416a46207f1c7523e017418178acc53ee3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0789d5fc_dce080aa",
+        "filename": "docs/howto.md",
+        "patchSetId": 7
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-31T14:18:18Z",
+      "side": 1,
+      "message": "remove",
+      "range": {
+        "startLine": 1,
+        "startChar": 13,
+        "endLine": 1,
+        "endChar": 15
+      },
+      "revId": "ab215d416a46207f1c7523e017418178acc53ee3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6a60ef0a_6c802859",
+        "filename": "docs/howto.md",
+        "patchSetId": 7
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-31T14:18:18Z",
+      "side": 1,
+      "message": "the",
+      "range": {
+        "startLine": 45,
+        "startChar": 7,
+        "endLine": 45,
+        "endChar": 8
+      },
+      "revId": "ab215d416a46207f1c7523e017418178acc53ee3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "44893512_e955ad50",
+        "filename": "docs/howto.md",
+        "patchSetId": 7
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-31T14:18:18Z",
+      "side": 1,
+      "message": "end with a dot.",
+      "range": {
+        "startLine": 45,
+        "startChar": 40,
+        "endLine": 45,
+        "endChar": 41
+      },
+      "revId": "ab215d416a46207f1c7523e017418178acc53ee3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0ca4030e_b685fd4e",
+        "filename": "docs/howto.md",
+        "patchSetId": 7
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-31T14:18:18Z",
+      "side": 1,
+      "message": "nit: remove, not really useful",
+      "range": {
+        "startLine": 52,
+        "startChar": 0,
+        "endLine": 52,
+        "endChar": 176
+      },
+      "revId": "ab215d416a46207f1c7523e017418178acc53ee3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "45a23edb_4d50cd28",
+        "filename": "docs/howto.md",
+        "patchSetId": 7
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-31T14:18:18Z",
+      "side": 1,
+      "message": "// File found, report error.",
+      "range": {
+        "startLine": 59,
+        "startChar": 1,
+        "endLine": 59,
+        "endChar": 20
+      },
+      "revId": "ab215d416a46207f1c7523e017418178acc53ee3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "69ab55fa_1fdc5c53",
+        "filename": "docs/howto.md",
+        "patchSetId": 7
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-31T14:18:18Z",
+      "side": 1,
+      "message": "// Do error handling here.",
+      "range": {
+        "startLine": 61,
+        "startChar": 1,
+        "endLine": 61,
+        "endChar": 23
+      },
+      "revId": "ab215d416a46207f1c7523e017418178acc53ee3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "66e72e79_4e507a24",
+        "filename": "docs/howto.md",
+        "patchSetId": 7
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-31T14:18:18Z",
+      "side": 1,
+      "message": ",",
+      "range": {
+        "startLine": 65,
+        "startChar": 38,
+        "endLine": 65,
+        "endChar": 39
+      },
+      "revId": "ab215d416a46207f1c7523e017418178acc53ee3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b515b07a_7d153b2f",
+        "filename": "docs/howto.md",
+        "patchSetId": 7
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-31T14:18:18Z",
+      "side": 1,
+      "message": "You need to do one of:\n1. return reject(new Error..\n2. throw(new Error\n\nBoth does not make much sense.",
+      "range": {
+        "startLine": 96,
+        "startChar": 3,
+        "endLine": 96,
+        "endChar": 23
+      },
+      "revId": "ab215d416a46207f1c7523e017418178acc53ee3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6f5f44d8_adc14f74",
+        "filename": "docs/howto.md",
+        "patchSetId": 7
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-31T14:18:18Z",
+      "side": 1,
+      "message": "remove",
+      "range": {
+        "startLine": 103,
+        "startChar": 110,
+        "endLine": 103,
+        "endChar": 137
+      },
+      "revId": "ab215d416a46207f1c7523e017418178acc53ee3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "69144171_cc026b36",
+        "filename": "docs/howto.md",
+        "patchSetId": 7
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-31T14:18:18Z",
+      "side": 1,
+      "message": "the connection to tast\u0027s test extension.",
+      "range": {
+        "startLine": 103,
+        "startChar": 40,
+        "endLine": 103,
+        "endChar": 62
+      },
+      "revId": "ab215d416a46207f1c7523e017418178acc53ee3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "98b5991e_05a27184",
+        "filename": "docs/howto.md",
+        "patchSetId": 7
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-31T14:18:18Z",
+      "side": 1,
+      "message": "Also mention that the connection from TestAPIConn does not need to be closed.",
+      "revId": "ab215d416a46207f1c7523e017418178acc53ee3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6588290b_8ac23657",
+        "filename": "docs/howto.md",
+        "patchSetId": 7
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-31T14:18:18Z",
+      "side": 1,
+      "message": "use space",
+      "range": {
+        "startLine": 106,
+        "startChar": 92,
+        "endLine": 106,
+        "endChar": 93
+      },
+      "revId": "ab215d416a46207f1c7523e017418178acc53ee3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0bb5020b_3dee9c45",
+        "filename": "docs/howto.md",
+        "patchSetId": 7
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-31T14:18:18Z",
+      "side": 1,
+      "message": "// Do",
+      "range": {
+        "startLine": 126,
+        "startChar": 2,
+        "endLine": 126,
+        "endChar": 4
+      },
+      "revId": "ab215d416a46207f1c7523e017418178acc53ee3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ff48c399_2ad7ca49",
+        "filename": "docs/howto.md",
+        "patchSetId": 7
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-31T14:18:18Z",
+      "side": 1,
+      "message": "no need to separate based on the error type, it\u0027s printed to the user.\n\njust use s.Fatal(\"Did not reach expected state: \", err)",
+      "range": {
+        "startLine": 140,
+        "startChar": 1,
+        "endLine": 143,
+        "endChar": 1
+      },
+      "revId": "ab215d416a46207f1c7523e017418178acc53ee3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b0a7e98f_66bff951",
+        "filename": "docs/howto.md",
+        "patchSetId": 7
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-31T14:18:18Z",
+      "side": 1,
+      "message": "nit: the link to testing.Poll should suffice to discover these options.",
+      "range": {
+        "startLine": 145,
+        "startChar": 0,
+        "endLine": 146,
+        "endChar": 21
+      },
+      "revId": "ab215d416a46207f1c7523e017418178acc53ee3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7ffe0a8c_bf982a95",
+        "filename": "docs/howto.md",
+        "patchSetId": 7
+      },
+      "lineNbr": 189,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-07-31T14:18:18Z",
+      "side": 1,
+      "message": "nit: keel the links within each section.",
+      "revId": "ab215d416a46207f1c7523e017418178acc53ee3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

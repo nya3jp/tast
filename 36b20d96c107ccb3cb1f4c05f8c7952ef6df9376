@@ -33,6 +33,23 @@
       "revId": "36b20d96c107ccb3cb1f4c05f8c7952ef6df9376",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0862ea41_68f964a9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-07-31T18:16:11Z",
+      "side": 1,
+      "message": "I have run the unit tests, one remote test and one local test. They all worked as expected.",
+      "revId": "36b20d96c107ccb3cb1f4c05f8c7952ef6df9376",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

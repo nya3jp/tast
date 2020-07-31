@@ -10,6 +10,7 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"os"
 	"strings"
 	"time"
 
@@ -206,6 +207,66 @@ func (d *DUT) Reboot(ctx context.Context) error {
 	}, &testingutil.PollOptions{Timeout: 3 * time.Minute}); err != nil {
 		return errors.Wrap(err, "failed to wait for DUT to reboot")
 	}
+	return nil
+}
+
+// Suspend suspends the DUT.
+func (d *DUT) Suspend(ctx context.Context) error {
+	f, _ := os.Create("/tmp/output.txt")
+	f.WriteString("Suspending...\n")
+	// Run the suspend command with a short timeout. This command can block for long time
+	// if the network interface of the DUT goes down before the SSH command finishes.
+	suspendCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+	d.Conn().Command("powerd_dbus_suspend", "--suspend_for_sec=10").Run(suspendCtx) // ignore the error
+	f.WriteString("Suspended\n")
+
+	f.WriteString("\nBefore Disconnect: ")
+	if d.Connected(ctx) {
+		f.WriteString("Connected")
+	} else {
+		f.WriteString("Disconnected")
+	}
+
+	// TODO(lnishan): Not sure if this is needed.
+	d.Disconnect(ctx)
+	f.WriteString("\nAfter Disconnect: ")
+	if d.Connected(ctx) {
+		f.WriteString("Connected")
+	} else {
+		f.WriteString("Disconnected")
+	}
+
+	time.Sleep(90 * time.Second)
+	f.WriteString("\nAfter Sleep: ")
+	if d.Connected(ctx) {
+		f.WriteString("Connected")
+	} else {
+		f.WriteString("Disconnected")
+	}
+
+	if err := testingutil.Poll(ctx, func(ctx context.Context) error {
+		// Set a short timeout to the iteration in case of any SSH operations
+		// blocking for long time. For example, the network interface of the DUT
+		// might go down in the middle of readBootID and it might block for
+		// long time.
+		ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+		defer cancel()
+		if err := d.WaitConnect(ctx); err != nil {
+			return errors.Wrap(err, "failed to connect to DUT")
+		}
+		return nil
+	}, &testingutil.PollOptions{Timeout: 3 * time.Minute}); err != nil {
+		return errors.Wrap(err, "failed to wait for DUT to resume")
+	}
+
+	f.WriteString("\nAfter WaitConnect: ")
+	if d.Connected(ctx) {
+		f.WriteString("Connected")
+	} else {
+		f.WriteString("Disconnected")
+	}
+
 	return nil
 }
 

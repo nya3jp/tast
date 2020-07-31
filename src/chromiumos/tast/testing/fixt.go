@@ -10,3 +10,11 @@ import (
 
 // Fixture represents a fixture that must be satisfied before a test is run.
 type Fixture = testing.Fixture
+
+// Fixt represents a fixture that must be registered into the framework using testing.RegisterFixt
+// method.
+type Fixt = testing.Fixt
+
+type FixtState = testing.FixtState
+
+type FixtTestState = testing.FixtTestState

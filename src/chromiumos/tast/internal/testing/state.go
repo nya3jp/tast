@@ -142,7 +142,46 @@ type PreState struct {
 // This is a State for fixtures. See State's documentation for general
 // guidance on how to treat FixtState in fixtures.
 type FixtState struct {
-	// TODO(oka): implement it.
+	preValue interface{}
+}
+
+func (s *FixtState) PreValue() interface{} {
+	return s.preValue
+}
+
+func (s *FixtState) Name() string {
+	// TODO
+	return "the name"
+}
+
+func (s *FixtState) Fatal(fmt string, args ...interface{}) {
+	// TODO
+}
+func (s *FixtState) Log(fmt string, args ...interface{}) {
+	// TODO
+}
+
+func (s *FixtState) RequiredVar(name string) string {
+	// TODO
+	return "foo"
+}
+func (s *FixtState) OutDir() string {
+	// TODO
+	return "dir"
+}
+
+// FixtTestState is the state per test.
+type FixtTestState struct {
+}
+
+func (s *FixtTestState) PreValue() interface{} {
+	// TODO
+	return nil
+}
+
+func (s *FixtTestState) OutDir() string {
+	// TODO
+	return "per_test_outdir"
 }
 
 // TestConfig contains details about how an individual test should be run.

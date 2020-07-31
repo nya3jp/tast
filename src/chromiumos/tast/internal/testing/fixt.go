@@ -152,6 +152,8 @@ type Fixture interface {
 	// Adjust is called in descending order (parents to children)
 	// when fixtures are nested.
 	//
+	// If Adjust returns false, it indicated fixtures couldn't properly adjusted. In such a case
+	// framework will
 	// s.Fatal or s.Error can be used to report errors in Adjust. When s.Fatal is called Adjust
 	// immediately aborts.
 	// If errors are reported in Adjust, the following methods are called in order to reset the
@@ -171,7 +173,14 @@ type Fixture interface {
 	//
 	// ctx and s allow accessing test's metadata. For example,
 	// s.OutDir returns the output directory for the current test.
-	Adjust(ctx context.Context, s *State)
+	Adjust(ctx context.Context, s *FixtTestState) error
+
+	// PostTest is called after a test.
+	//
+	// PostTest is called in acsending order (children to parents) when fixtures are nested.
+	//
+	//
+	PostTest(ctx context.Context, s *FixtTestState)
 
 	// Close is called by the framework to tear down the fixture.
 	//

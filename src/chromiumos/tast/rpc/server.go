@@ -30,8 +30,13 @@ func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service) error {
 	// Register the reflection service for easier debugging.
 	reflection.Register(srv)
 
+	// Create a service-scoped context.
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	ctx = logging.NewContext(ctx, ls.Log)
+
 	for _, svc := range svcs {
-		svc.Register(srv, &testing.ServiceState{})
+		svc.Register(srv, testing.NewServiceState(ctx))
 	}
 
 	if err := srv.Serve(newPipeListener(r, w)); err != nil && err != io.EOF {

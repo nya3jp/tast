@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e6f75269_357cf672",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-01T01:14:33Z",
+      "side": 1,
+      "message": "I just resolved conflict with master. I have rerun my test and verified my changes.",
+      "revId": "f4181bc6f6d7921ff1f73f54975ef5824035e471",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

@@ -134,6 +134,7 @@ type Config struct {
 	softwareFeatures   *dep.SoftwareFeatures      // software features of the DUT
 	deviceConfig       *device.Config             // hardware features of the DUT. Deprecated. Use hardwareFeatures instead.
 	hardwareFeatures   *configpb.HardwareFeatures // hardware features of the DUT.
+	osVersion          string                     // Chrome OS Version
 }
 
 // NewConfig returns a new configuration for executing test runners in the supplied mode.

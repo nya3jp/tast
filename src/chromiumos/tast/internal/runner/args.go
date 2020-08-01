@@ -220,6 +220,9 @@ type GetDUTInfoResult struct {
 	DeviceConfig     *device.Config             `json:"-"`
 	HardwareFeatures *configpb.HardwareFeatures `json:"-"`
 
+	// OSVersion contains the DUT's OS Version
+	OSVersion string `json:"osVersion,omitempty"`
+
 	// Warnings contains descriptions of non-fatal errors encountered while determining features.
 	Warnings []string `json:"warnings,omitempty"`
 }
@@ -388,6 +391,11 @@ type Config struct {
 	// successfully downloaded and installed before. This prevents downloading private test bundles for
 	// every runner invocation.
 	PrivateBundlesStampPath string
+	// OSVersion contains the value of CHROMEOS_RELEASE_BUILDER_PATH in /etc/lsb-release
+	// or combination of CHROMEOS_RELEASE_BOARD, CHROMEOS_RELEASE_CHROME_MILESTONE,
+	// CHROMEOS_RELEASE_BUILD_TYPE and CHROMEOS_RELEASE_VERSION if CHROMEOS_RELEASE_BUILDER_PATH
+	// is not available in /etc/lsb-release
+	OSVersion string
 }
 
 // readArgs parses runtime arguments.

@@ -24,7 +24,7 @@ import (
 )
 
 // writeGetDUTInfoResult writes runner.GetDUTInfoResult to w.
-func writeGetDUTInfoResult(w io.Writer, avail, unavail []string, dc *device.Config, hf *configpb.HardwareFeatures) error {
+func writeGetDUTInfoResult(w io.Writer, avail, unavail []string, dc *device.Config, hf *configpb.HardwareFeatures, osVersion string) error {
 	res := runner.GetDUTInfoResult{
 		SoftwareFeatures: &dep.SoftwareFeatures{
 			Available:   avail,
@@ -32,13 +32,15 @@ func writeGetDUTInfoResult(w io.Writer, avail, unavail []string, dc *device.Conf
 		},
 		DeviceConfig:     dc,
 		HardwareFeatures: hf,
+		OSVersion:        osVersion,
 	}
 	return json.NewEncoder(w).Encode(&res)
 }
 
 // checkRunnerTestDepsArgs calls setRunnerTestDepsArgs using cfg and verifies
 // that it sets runner args as specified per checkDeps, avail, and unavail.
-func checkRunnerTestDepsArgs(t *testing.T, cfg *Config, checkDeps bool, avail, unavail []string, dc *device.Config, hf *configpb.HardwareFeatures) {
+func checkRunnerTestDepsArgs(t *testing.T, cfg *Config, checkDeps bool,
+	avail, unavail []string, dc *device.Config, hf *configpb.HardwareFeatures, osVersion string) {
 	t.Helper()
 	args := runner.Args{
 		Mode:     runner.RunTestsMode,
@@ -80,6 +82,7 @@ func TestGetDUTInfo(t *testing.T) {
 			TouchSupport: configpb.HardwareFeatures_PRESENT,
 		},
 	}
+	osVersion := "octopus-release/R86-13312.0.2020_07_02_1108"
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		checkArgs(t, args, &runner.Args{
 			Mode: runner.GetDUTInfoMode,
@@ -89,7 +92,7 @@ func TestGetDUTInfo(t *testing.T) {
 			},
 		})
 
-		writeGetDUTInfoResult(stdout, avail, unavail, dc, hf)
+		writeGetDUTInfoResult(stdout, avail, unavail, dc, hf, osVersion)
 		return 0
 	}
 	td.cfg.checkTestDeps = true
@@ -97,7 +100,7 @@ func TestGetDUTInfo(t *testing.T) {
 	if err := getDUTInfo(context.Background(), &td.cfg); err != nil {
 		t.Fatalf("getDUTInfo(%+v) failed: %v", td.cfg, err)
 	}
-	checkRunnerTestDepsArgs(t, &td.cfg, true, avail, unavail, dc, hf)
+	checkRunnerTestDepsArgs(t, &td.cfg, true, avail, unavail, dc, hf, osVersion)
 
 	// Make sure device-config.txt is created.
 	if b, err := ioutil.ReadFile(filepath.Join(td.cfg.ResDir, "device-config.txt")); err != nil {
@@ -135,7 +138,7 @@ func TestGetDUTInfoNoDeviceConfig(t *testing.T) {
 
 		// Note: if both avail/unavail are empty, it is handled as an error.
 		// Add dummy here to avoid it.
-		writeGetDUTInfoResult(stdout, []string{"dep1"}, nil, nil, nil)
+		writeGetDUTInfoResult(stdout, []string{"dep1"}, nil, nil, nil, "")
 		return 0
 	}
 	td.cfg.checkTestDeps = true
@@ -158,7 +161,7 @@ func TestGetDUTInfoNoCheckTestDeps(t *testing.T) {
 	if err := getDUTInfo(context.Background(), &td.cfg); err != nil {
 		t.Fatalf("getDUTInfo(%+v) failed: %v", td.cfg, err)
 	}
-	checkRunnerTestDepsArgs(t, &td.cfg, false, nil, nil, nil, nil)
+	checkRunnerTestDepsArgs(t, &td.cfg, false, nil, nil, nil, nil, "")
 }
 
 func TestGetSoftwareFeaturesNoFeatures(t *testing.T) {
@@ -172,7 +175,7 @@ func TestGetSoftwareFeaturesNoFeatures(t *testing.T) {
 				RequestDeviceConfig: true,
 			},
 		})
-		writeGetDUTInfoResult(stdout, []string{}, []string{}, nil, nil)
+		writeGetDUTInfoResult(stdout, []string{}, []string{}, nil, nil, "")
 		return 0
 	}
 	td.cfg.checkTestDeps = true

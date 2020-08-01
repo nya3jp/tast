@@ -26,6 +26,7 @@ func TestGetDUTInfo(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	osVersion := "octopus-release/R86-13312.0.2020_07_02_1108"
 	cfg := Config{
 		Type:         LocalRunner,
 		USEFlagsFile: filepath.Join(td, "use_flags"),
@@ -36,6 +37,7 @@ func TestGetDUTInfo(t *testing.T) {
 			"foo_glob":     "\"f*\"",
 			"not_bar_glob": "!\"b*\"",
 		},
+		OSVersion: osVersion,
 	}
 	status, stdout, _, sig := callRun(
 		t, nil,
@@ -58,6 +60,7 @@ func TestGetDUTInfo(t *testing.T) {
 			Available:   []string{"foo_glob", "foobar", "other"},
 			Unavailable: []string{"not_bar_glob", "not_foo"},
 		},
+		OSVersion: osVersion,
 	}
 	if !reflect.DeepEqual(res, exp) {
 		t.Errorf("%v wrote result %+v; want %+v", sig, res, exp)

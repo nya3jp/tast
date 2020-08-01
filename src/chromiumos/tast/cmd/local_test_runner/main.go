@@ -169,6 +169,15 @@ func main() {
 	if kvs, err := lsbrelease.Load(); err == nil {
 		if bp := kvs[lsbrelease.BuilderPath]; bp != "" {
 			cfg.DefaultBuildArtifactsURL = "gs://chromeos-image-archive/" + bp + "/"
+			cfg.OSVersion = bp
+		} else {
+			// Sometimes CHROMEOS_RELEASE_BUILDER_PATH is not in /etc/lsb-release.
+			// Make up the string in this case
+			board := kvs[lsbrelease.Board]
+			osVersion := kvs[lsbrelease.Version]
+			milestone := kvs[lsbrelease.Milestone]
+			buildType := kvs[lsbrelease.BuildType]
+			cfg.OSVersion = fmt.Sprintf("%vR%v-%v (%v)", board, milestone, osVersion, buildType)
 		}
 	}
 	os.Exit(runner.Run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, &args, &cfg))

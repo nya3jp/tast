@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+	"strings"
 	gotesting "testing"
 
 	"chromiumos/tast/internal/dep"
@@ -35,6 +36,8 @@ func TestRunTestsGetDUTInfo(t *gotesting.T) {
 
 	called := false
 
+	osVersion := "octopus-release/R86-13312.0.2020_07_02_1108"
+
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case runner.GetDUTInfoMode:
@@ -45,6 +48,7 @@ func TestRunTestsGetDUTInfo(t *gotesting.T) {
 				SoftwareFeatures: &dep.SoftwareFeatures{
 					Available: []string{"foo"}, // must report non-empty features
 				},
+				OSVersion: osVersion,
 			})
 		default:
 			t.Errorf("Unexpected args.Mode = %v", args.Mode)
@@ -56,6 +60,11 @@ func TestRunTestsGetDUTInfo(t *gotesting.T) {
 
 	if _, err := runTests(context.Background(), &td.cfg); err != nil {
 		t.Error("runTests failed: ", err)
+	}
+
+	expectedOSVersion := "Target version: " + osVersion
+	if !strings.Contains(td.logbuf.String(), expectedOSVersion) {
+		t.Errorf("Cannot find %q in log buffer %v", expectedOSVersion, td.logbuf.String())
 	}
 	if !called {
 		t.Error("runTests did not call getSoftwareFeatures")

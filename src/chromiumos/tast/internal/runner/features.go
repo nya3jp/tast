@@ -48,10 +48,13 @@ func handleGetDUTInfo(args *Args, cfg *Config, w io.Writer) error {
 		warnings = append(warnings, ws...)
 	}
 
+	osVersion := cfg.OSVersion
+
 	res := GetDUTInfoResult{
 		SoftwareFeatures: features,
 		DeviceConfig:     dc,
 		HardwareFeatures: hwFeatures,
+		OSVersion:        osVersion,
 		Warnings:         warnings,
 	}
 	if err := json.NewEncoder(w).Encode(&res); err != nil {

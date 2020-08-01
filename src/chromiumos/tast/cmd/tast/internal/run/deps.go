@@ -66,6 +66,9 @@ func getDUTInfo(ctx context.Context, cfg *Config) error {
 	for _, warn := range res.Warnings {
 		cfg.Logger.Log(warn)
 	}
+
+	cfg.osVersion = res.OSVersion
+
 	cfg.Logger.Debug("Software features supported by DUT: ", strings.Join(res.SoftwareFeatures.Available, " "))
 	if res.DeviceConfig != nil {
 		cfg.Logger.Debug("Got DUT device.Config data; dumping to ", deviceConfigFile)

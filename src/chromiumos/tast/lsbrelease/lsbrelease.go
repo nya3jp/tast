@@ -38,6 +38,9 @@ const (
 	// ReleaseAppID is a key for the release Omaha app ID.
 	ReleaseAppID = "CHROMEOS_RELEASE_APPID"
 
+	// BuildType is a key for Chrome Release Build Type (e.g "Test Build - username")
+	BuildType = "CHROMEOS_RELEASE_BUILD_TYPE"
+
 	// ARCSDKVersion is a key for the Android SDK Version of the current
 	// ARC image installed on the DUT.
 	ARCSDKVersion = "CHROMEOS_ARC_ANDROID_SDK_VERSION"

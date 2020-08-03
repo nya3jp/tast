@@ -16,6 +16,23 @@
       "revId": "1fb35fc288e077df00dd35fda6b8f138c980a24a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "98f37907_d81198bd",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-03T09:03:43Z",
+      "side": 1,
+      "message": "Thanks for updating the doc! Yes, it\u0027s now changed.\n",
+      "revId": "1fb35fc288e077df00dd35fda6b8f138c980a24a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

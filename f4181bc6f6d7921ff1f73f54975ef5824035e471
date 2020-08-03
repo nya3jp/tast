@@ -33,6 +33,23 @@
       "revId": "f4181bc6f6d7921ff1f73f54975ef5824035e471",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a08afe0c_4971e267",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-03T23:30:08Z",
+      "side": 1,
+      "message": "Failure was due to timeout. Resubmit to CQ",
+      "revId": "f4181bc6f6d7921ff1f73f54975ef5824035e471",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

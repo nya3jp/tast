@@ -2,6 +2,126 @@
   "comments": [
     {
       "key": {
+        "uuid": "39760287_9f4afb88",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 16
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-03T09:31:37Z",
+      "side": 1,
+      "message": "I really like the new doc, thanks for adding it!",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 67
+      },
+      "revId": "62af677283400de4fecfddca6f9a78211d80df06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f7b1cdfe_92db0b9d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 16
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-03T09:31:37Z",
+      "side": 1,
+      "message": "Can you also update README.md to link to the new doc?",
+      "revId": "62af677283400de4fecfddca6f9a78211d80df06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "341ca9cb_07821f53",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 16
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-03T09:31:37Z",
+      "side": 1,
+      "message": "Thanks very much for this doc, I really like it!",
+      "revId": "62af677283400de4fecfddca6f9a78211d80df06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2a682ddd_31c814a1",
+        "filename": "docs/howto.md",
+        "patchSetId": 16
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-03T09:31:37Z",
+      "side": 1,
+      "message": "It seems like some double-quotes in this file are \\u201c/\\u201d instead of ASCII 0x22. Please try to use 0x22 consistently.",
+      "revId": "62af677283400de4fecfddca6f9a78211d80df06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "98bf5701_a67464c1",
+        "filename": "docs/howto.md",
+        "patchSetId": 16
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-03T09:31:37Z",
+      "side": 1,
+      "message": "huge nit: How-To",
+      "range": {
+        "startLine": 1,
+        "startChar": 7,
+        "endLine": 1,
+        "endChar": 12
+      },
+      "revId": "62af677283400de4fecfddca6f9a78211d80df06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c7eb1421_8a837034",
+        "filename": "docs/howto.md",
+        "patchSetId": 16
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-03T09:31:37Z",
+      "side": 1,
+      "message": "s/tast/Tast/g",
+      "range": {
+        "startLine": 5,
+        "startChar": 122,
+        "endLine": 5,
+        "endChar": 126
+      },
+      "revId": "62af677283400de4fecfddca6f9a78211d80df06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "4cee757a_1214a477",
         "filename": "docs/howto.md",
         "patchSetId": 16
@@ -18,6 +138,52 @@
         "startChar": 40,
         "endLine": 12,
         "endChar": 64
+      },
+      "revId": "62af677283400de4fecfddca6f9a78211d80df06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f7f41f12_0235eae6",
+        "filename": "docs/howto.md",
+        "patchSetId": 16
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-03T09:31:37Z",
+      "side": 1,
+      "message": "Actually I\u0027m afraid that context.DeadlineExceeded is not a good example. context.Context.Err can return context.Canceled as well context.DeadlineExceeded, and it\u0027s not useful to distinguish the two. Also, changing error handling by whether an error is timeout or anything else is not very popular in real-world Tast tests.\n\nI rather recommend writing a small example of a function that returns a known error and its caller exermining an error with errors.Is. For example, a recent change crrev.com/c/2294599 is a great example.",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 12,
+        "endChar": 223
+      },
+      "revId": "62af677283400de4fecfddca6f9a78211d80df06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f1d56ace_1add4699",
+        "filename": "docs/howto.md",
+        "patchSetId": 16
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-03T09:31:37Z",
+      "side": 1,
+      "message": "In Tast tests, chromiumos/tast/errors is recommended over the standard errors package.\n\nCan you link here instead?\nhttps://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/errors#Is",
+      "range": {
+        "startLine": 21,
+        "startChar": 15,
+        "endLine": 21,
+        "endChar": 45
       },
       "revId": "62af677283400de4fecfddca6f9a78211d80df06",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
@@ -48,6 +214,75 @@
     },
     {
       "key": {
+        "uuid": "2d5c1aa5_19b2a3bd",
+        "filename": "docs/howto.md",
+        "patchSetId": 16
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-03T09:31:37Z",
+      "side": 1,
+      "message": "s/ChromeOS/Chrome OS/g",
+      "range": {
+        "startLine": 24,
+        "startChar": 3,
+        "endLine": 24,
+        "endChar": 11
+      },
+      "revId": "62af677283400de4fecfddca6f9a78211d80df06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7e661d49_4390ddf8",
+        "filename": "docs/howto.md",
+        "patchSetId": 16
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-03T09:31:37Z",
+      "side": 1,
+      "message": "s/linux/Linux/g",
+      "range": {
+        "startLine": 24,
+        "startChar": 24,
+        "endLine": 24,
+        "endChar": 29
+      },
+      "revId": "62af677283400de4fecfddca6f9a78211d80df06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6e51403f_e401fdf0",
+        "filename": "docs/howto.md",
+        "patchSetId": 16
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-03T09:31:37Z",
+      "side": 1,
+      "message": "This quotation is \\u201C, not ASCII 0x22. :)",
+      "range": {
+        "startLine": 27,
+        "startChar": 53,
+        "endLine": 27,
+        "endChar": 54
+      },
+      "revId": "62af677283400de4fecfddca6f9a78211d80df06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ca0d8c5d_fc8e74c3",
         "filename": "docs/howto.md",
         "patchSetId": 16
@@ -71,6 +306,52 @@
     },
     {
       "key": {
+        "uuid": "e96a1db6_6bfb5f63",
+        "filename": "docs/howto.md",
+        "patchSetId": 16
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-03T09:31:37Z",
+      "side": 1,
+      "message": "Double-quotes are needed",
+      "range": {
+        "startLine": 67,
+        "startChar": 28,
+        "endLine": 67,
+        "endChar": 48
+      },
+      "revId": "62af677283400de4fecfddca6f9a78211d80df06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6b5b2a12_8aec294e",
+        "filename": "docs/howto.md",
+        "patchSetId": 16
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-03T09:31:37Z",
+      "side": 1,
+      "message": "In general, it is preferred that normal code flow is not indented.\nhttps://github.com/golang/go/wiki/CodeReviewComments#indent-error-flow\n\nSo in this case I recommend something like:\n\n fileInfo, err :\u003d os.Stat(\"/path/to/file/myfile\")\n if os.IsNotExist(err) {\n   return ...  // File was not found\n }\n if err !\u003d nil {\n   return ...  // Unknown error occurred\n }\n // File exists, fileInfo is valid",
+      "range": {
+        "startLine": 68,
+        "startChar": 1,
+        "endLine": 68,
+        "endChar": 29
+      },
+      "revId": "62af677283400de4fecfddca6f9a78211d80df06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "416b5ff2_94cc7f30",
         "filename": "docs/howto.md",
         "patchSetId": 16
@@ -87,6 +368,75 @@
         "startChar": 4,
         "endLine": 78,
         "endChar": 14
+      },
+      "revId": "62af677283400de4fecfddca6f9a78211d80df06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a190e6fe_b18ccf58",
+        "filename": "docs/howto.md",
+        "patchSetId": 16
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-03T09:31:37Z",
+      "side": 1,
+      "message": "s/Javascript/JavaScript/g",
+      "range": {
+        "startLine": 78,
+        "startChar": 4,
+        "endLine": 78,
+        "endChar": 14
+      },
+      "revId": "62af677283400de4fecfddca6f9a78211d80df06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cf783db7_e31c355b",
+        "filename": "docs/howto.md",
+        "patchSetId": 16
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-03T09:31:37Z",
+      "side": 1,
+      "message": "Strictly speaking, it\u0027s chrome.Conn.Eval.",
+      "range": {
+        "startLine": 79,
+        "startChar": 6,
+        "endLine": 79,
+        "endChar": 17
+      },
+      "revId": "62af677283400de4fecfddca6f9a78211d80df06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5147885e_c4f17706",
+        "filename": "docs/howto.md",
+        "patchSetId": 16
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-03T09:31:37Z",
+      "side": 1,
+      "message": "style: Please put the opening brace as the same line as \"if\"",
+      "range": {
+        "startLine": 92,
+        "startChar": 49,
+        "endLine": 93,
+        "endChar": 1
       },
       "revId": "62af677283400de4fecfddca6f9a78211d80df06",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
@@ -140,6 +490,75 @@
     },
     {
       "key": {
+        "uuid": "12d0570d_095c1dff",
+        "filename": "docs/howto.md",
+        "patchSetId": 16
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-03T09:31:37Z",
+      "side": 1,
+      "message": "s/chrome/Chrome/g",
+      "range": {
+        "startLine": 97,
+        "startChar": 30,
+        "endLine": 97,
+        "endChar": 36
+      },
+      "revId": "62af677283400de4fecfddca6f9a78211d80df06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "62d536f4_cf60a87a",
+        "filename": "docs/howto.md",
+        "patchSetId": 16
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-03T09:31:37Z",
+      "side": 1,
+      "message": "s/url/URL/g",
+      "range": {
+        "startLine": 97,
+        "startChar": 54,
+        "endLine": 97,
+        "endChar": 57
+      },
+      "revId": "62af677283400de4fecfddca6f9a78211d80df06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "73b59557_c211f0b7",
+        "filename": "docs/howto.md",
+        "patchSetId": 16
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-03T09:31:37Z",
+      "side": 1,
+      "message": "Optional: Since this JS expression is long, it might be easier to read if we define a constant.\n\n const code \u003d `return new Promise((resolve, reject) \u003d\u003e {\n   ...\n `\n var foundIt bool\n if err :\u003d conn.Eval(ctx, code, \u0026foundIt); err !\u003d nil {\n   ...\n }",
+      "range": {
+        "startLine": 101,
+        "startChar": 22,
+        "endLine": 101,
+        "endChar": 29
+      },
+      "revId": "62af677283400de4fecfddca6f9a78211d80df06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f01c3871_e525ac6e",
         "filename": "docs/howto.md",
         "patchSetId": 16
@@ -156,6 +575,52 @@
         "startChar": 103,
         "endLine": 128,
         "endChar": 111
+      },
+      "revId": "62af677283400de4fecfddca6f9a78211d80df06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b3c7d19f_dbb16453",
+        "filename": "docs/howto.md",
+        "patchSetId": 16
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-03T09:31:37Z",
+      "side": 1,
+      "message": "condition is not accessible here because it was assigned in the if clause.\n\nCorrectly:\n\n condition, err :\u003d checkCondition(...)\n if err !\u003d nil {\n   ...\n }\n\n if condition !\u003d expectedCondition {\n   ...\n }",
+      "range": {
+        "startLine": 144,
+        "startChar": 4,
+        "endLine": 144,
+        "endChar": 13
+      },
+      "revId": "62af677283400de4fecfddca6f9a78211d80df06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "82304c34_6347bcda",
+        "filename": "docs/howto.md",
+        "patchSetId": 16
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-03T09:31:37Z",
+      "side": 1,
+      "message": "An excessive paren here.",
+      "range": {
+        "startLine": 153,
+        "startChar": 1,
+        "endLine": 153,
+        "endChar": 3
       },
       "revId": "62af677283400de4fecfddca6f9a78211d80df06",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",

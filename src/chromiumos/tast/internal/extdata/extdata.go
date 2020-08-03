@@ -304,7 +304,6 @@ func runDownloads(ctx context.Context, dataDir string, jobs []*downloadJob, cl d
 	for i := 0; i < parallelism; i++ {
 		go func() {
 			for job := range jobCh {
-				logging.ContextLog(ctx, "Downloading ", job.link.ComputedURL)
 				start := time.Now()
 				size, err := runDownload(ctx, dataDir, job, cl)
 				duration := time.Since(start)

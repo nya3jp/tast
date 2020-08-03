@@ -1,0 +1,165 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4cee757a_1214a477",
+        "filename": "docs/howto.md",
+        "patchSetId": 16
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1401350
+      },
+      "writtenOn": "2020-08-03T09:22:54Z",
+      "side": 1,
+      "message": "nit: wrap it into ``` ```. Same for the other source like texts. Check Codelab #1 for reference.",
+      "range": {
+        "startLine": 12,
+        "startChar": 40,
+        "endLine": 12,
+        "endChar": 64
+      },
+      "revId": "62af677283400de4fecfddca6f9a78211d80df06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2db3d414_8d25974f",
+        "filename": "docs/howto.md",
+        "patchSetId": 16
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1401350
+      },
+      "writtenOn": "2020-08-03T09:22:54Z",
+      "side": 1,
+      "message": "nit: Linux",
+      "range": {
+        "startLine": 24,
+        "startChar": 24,
+        "endLine": 24,
+        "endChar": 50
+      },
+      "revId": "62af677283400de4fecfddca6f9a78211d80df06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ca0d8c5d_fc8e74c3",
+        "filename": "docs/howto.md",
+        "patchSetId": 16
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1401350
+      },
+      "writtenOn": "2020-08-03T09:22:54Z",
+      "side": 1,
+      "message": "nit: it would nicer in a sentence.",
+      "range": {
+        "startLine": 39,
+        "startChar": 0,
+        "endLine": 39,
+        "endChar": 27
+      },
+      "revId": "62af677283400de4fecfddca6f9a78211d80df06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "416b5ff2_94cc7f30",
+        "filename": "docs/howto.md",
+        "patchSetId": 16
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1401350
+      },
+      "writtenOn": "2020-08-03T09:22:54Z",
+      "side": 1,
+      "message": "nit: JavaScript\nSame for the other 8 occureances.",
+      "range": {
+        "startLine": 78,
+        "startChar": 4,
+        "endLine": 78,
+        "endChar": 14
+      },
+      "revId": "62af677283400de4fecfddca6f9a78211d80df06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "450ec009_5b0363ce",
+        "filename": "docs/howto.md",
+        "patchSetId": 16
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1401350
+      },
+      "writtenOn": "2020-08-03T09:22:54Z",
+      "side": 1,
+      "message": "nit: URL",
+      "range": {
+        "startLine": 97,
+        "startChar": 54,
+        "endLine": 97,
+        "endChar": 57
+      },
+      "revId": "62af677283400de4fecfddca6f9a78211d80df06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "664e9525_565c63b8",
+        "filename": "docs/howto.md",
+        "patchSetId": 16
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1401350
+      },
+      "writtenOn": "2020-08-03T09:22:54Z",
+      "side": 1,
+      "message": "nit: Chrome\nSame for the other occurances (apart from links and source).",
+      "range": {
+        "startLine": 97,
+        "startChar": 30,
+        "endLine": 97,
+        "endChar": 36
+      },
+      "revId": "62af677283400de4fecfddca6f9a78211d80df06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f01c3871_e525ac6e",
+        "filename": "docs/howto.md",
+        "patchSetId": 16
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1401350
+      },
+      "writtenOn": "2020-08-03T09:22:54Z",
+      "side": 1,
+      "message": "nit: Chrome OS",
+      "range": {
+        "startLine": 128,
+        "startChar": 103,
+        "endLine": 128,
+        "endChar": 111
+      },
+      "revId": "62af677283400de4fecfddca6f9a78211d80df06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

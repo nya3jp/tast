@@ -283,6 +283,52 @@
     },
     {
       "key": {
+        "uuid": "c1bd21f0_07d06dee",
+        "filename": "docs/howto.md",
+        "patchSetId": 16
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-08-03T13:19:51Z",
+      "side": 1,
+      "message": "Do you have some other examples?\nIn general, Tast prefers Go functions, rather than command line, if possible.\nE.g., os.Stat/Lstat will be preferred than \"ls\". os.Mkdirs() is preferred than \"mkdir\" etc.\n\nI understand that it is not the main focus of this section itself, and ls is just an example. However, regardless of the focus, I imagine it could be confusing that the way written in the example is not a recommended approach, specifically for the engs who\u0027re new to tast,",
+      "range": {
+        "startLine": 27,
+        "startChar": 41,
+        "endLine": 27,
+        "endChar": 73
+      },
+      "revId": "62af677283400de4fecfddca6f9a78211d80df06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "700b8db5_173233ef",
+        "filename": "docs/howto.md",
+        "patchSetId": 16
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-08-03T13:19:51Z",
+      "side": 1,
+      "message": "Could you mention that it is possible to pass testexec.DumpLogOnError which outputs stderr to the log message in case of command execution failure?\nThat is often useful on diagnosing errors.",
+      "range": {
+        "startLine": 27,
+        "startChar": 81,
+        "endLine": 27,
+        "endChar": 83
+      },
+      "revId": "62af677283400de4fecfddca6f9a78211d80df06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ca0d8c5d_fc8e74c3",
         "filename": "docs/howto.md",
         "patchSetId": 16
@@ -299,6 +345,29 @@
         "startChar": 0,
         "endLine": 39,
         "endChar": 27
+      },
+      "revId": "62af677283400de4fecfddca6f9a78211d80df06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6d4f7318_90404be5",
+        "filename": "docs/howto.md",
+        "patchSetId": 16
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-08-03T13:19:51Z",
+      "side": 1,
+      "message": "how about following the go\u0027s manner?\n\nGo heavily prefers shorter names, unlike other languages.\ns/windows/ws/ s/window/w/ in the code may be more like a go code, IMHO.",
+      "range": {
+        "startLine": 46,
+        "startChar": 0,
+        "endLine": 46,
+        "endChar": 7
       },
       "revId": "62af677283400de4fecfddca6f9a78211d80df06",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
@@ -536,6 +605,29 @@
     },
     {
       "key": {
+        "uuid": "b99f6f4f_f29ab4db",
+        "filename": "docs/howto.md",
+        "patchSetId": 16
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-08-03T13:19:51Z",
+      "side": 1,
+      "message": "nit/recommendation: \"found\"",
+      "range": {
+        "startLine": 100,
+        "startChar": 4,
+        "endLine": 100,
+        "endChar": 11
+      },
+      "revId": "62af677283400de4fecfddca6f9a78211d80df06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "73b59557_c211f0b7",
         "filename": "docs/howto.md",
         "patchSetId": 16
@@ -553,6 +645,46 @@
         "endLine": 101,
         "endChar": 29
       },
+      "revId": "62af677283400de4fecfddca6f9a78211d80df06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6c004368_5610252f",
+        "filename": "docs/howto.md",
+        "patchSetId": 16
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-08-03T13:19:51Z",
+      "side": 1,
+      "message": "nit: \"return\" is unneeded.\n\n`new Promise((resolve, reject) \u003d\u003e { ... })`",
+      "range": {
+        "startLine": 101,
+        "startChar": 26,
+        "endLine": 101,
+        "endChar": 33
+      },
+      "revId": "62af677283400de4fecfddca6f9a78211d80df06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b71c98cd_447ef26f",
+        "filename": "docs/howto.md",
+        "patchSetId": 16
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-08-03T13:19:51Z",
+      "side": 1,
+      "message": "nit: Let\u0027s avoid using global var. \n\nconst element \u003d ...;",
       "revId": "62af677283400de4fecfddca6f9a78211d80df06",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

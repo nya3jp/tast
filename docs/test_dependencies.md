@@ -198,6 +198,7 @@ in the [tast-use-flags] package. Local changes to the `tast-use-flags` ebuild
 have to be pushed to the DUT manually to take effect:
 
 ```
+cros_workon-$BOARD start chromeos-base/tast-use-flags
 emerge-$BOARD chromeos-base/tast-use-flags
 cros deploy --root=/usr/local $HOST chromeos-base/tast-use-flags
 ```

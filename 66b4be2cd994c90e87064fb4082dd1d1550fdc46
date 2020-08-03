@@ -33,6 +33,24 @@
       "revId": "66b4be2cd994c90e87064fb4082dd1d1550fdc46",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0a93dbf6_2bd427ce",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1324920
+      },
+      "writtenOn": "2020-08-03T06:55:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "88fb1ace_af485f59",
+      "revId": "66b4be2cd994c90e87064fb4082dd1d1550fdc46",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

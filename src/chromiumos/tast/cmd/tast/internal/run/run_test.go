@@ -9,14 +9,17 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"net"
 	"path/filepath"
 	"reflect"
+	"strconv"
 	gotesting "testing"
 	"time"
 
 	"github.com/google/subcommands"
 
 	"chromiumos/tast/internal/control"
+	"chromiumos/tast/internal/faketlw"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/testing"
 )
@@ -127,6 +130,42 @@ func TestRunDownloadPrivateBundles(t *gotesting.T) {
 	}
 	if !called {
 		t.Errorf("Run did not call downloadPrivateBundles")
+	}
+}
+
+func TestRunTLW(t *gotesting.T) {
+	const targetName = "the_dut"
+
+	td := newLocalTestData(t)
+	defer td.close()
+
+	host, portStr, err := net.SplitHostPort(td.cfg.Target)
+	if err != nil {
+		t.Fatal("net.SplitHostPort: ", err)
+	}
+	port, err := strconv.ParseUint(portStr, 10, 32)
+	if err != nil {
+		t.Fatal("strconv.ParseUint: ", err)
+	}
+
+	// Start a TLW server that resolves "the_dut:22" to the real target addr/port.
+	tlw, tlwAddr := faketlw.StartWiringServer(t, faketlw.WithDUTPortMap(map[faketlw.NamePort]faketlw.NamePort{
+		{Name: targetName, Port: 22}: {Name: host, Port: int32(port)},
+	}))
+	defer tlw.Stop()
+
+	td.cfg.runLocal = true
+	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		mw := control.NewMessageWriter(stdout)
+		mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
+		mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
+		return 0
+	}
+	td.cfg.Target = targetName
+	td.cfg.tlwServer = tlwAddr
+
+	if status, _ := Run(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
+		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
 	}
 }
 

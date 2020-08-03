@@ -9,13 +9,17 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net"
 	"os"
 	"path"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/google/subcommands"
+	"go.chromium.org/chromiumos/config/go/api/test/tls"
+	"google.golang.org/grpc"
 
 	"chromiumos/tast/cmd/tast/internal/build"
 	"chromiumos/tast/internal/runner"
@@ -77,6 +81,14 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []TestResult)
 		}
 	}()
 
+	if err := connectToTLW(ctx, cfg); err != nil {
+		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to TLW server: %v", err), nil
+	}
+
+	if err := resolveTarget(ctx, cfg); err != nil {
+		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to resolve target: %v", err), nil
+	}
+
 	hst, err := connectToTarget(ctx, cfg)
 	if err != nil {
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to %s: %v", cfg.Target, err), nil
@@ -115,6 +127,52 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []TestResult)
 	default:
 		return errorStatusf(cfg, subcommands.ExitFailure, "Unhandled mode %d", cfg.mode), nil
 	}
+}
+
+// connectToTLW connects to a TLW service if its address is provided, and stores
+// the connection to cfg.tlwConn.
+func connectToTLW(ctx context.Context, cfg *Config) error {
+	if cfg.tlwServer == "" {
+		return nil
+	}
+
+	conn, err := grpc.DialContext(ctx, cfg.tlwServer, grpc.WithInsecure())
+	if err != nil {
+		return err
+	}
+	cfg.tlwConn = conn
+	return nil
+}
+
+// resolveTarget resolves cfg.Target using the TLW service if available.
+func resolveTarget(ctx context.Context, cfg *Config) error {
+	if cfg.tlwConn == nil {
+		return nil
+	}
+
+	var opts ssh.Options
+	if err := ssh.ParseTarget(cfg.Target, &opts); err != nil {
+		return err
+	}
+	host, portStr, err := net.SplitHostPort(opts.Hostname)
+	if err != nil {
+		host = opts.Hostname
+		portStr = "22"
+	}
+	port, err := strconv.ParseUint(portStr, 10, 16)
+	if err != nil {
+		return err
+	}
+
+	// Use the OpenDutPort API to resolve the target.
+	req := &tls.OpenDutPortRequest{Name: host, Port: int32(port)}
+	res, err := tls.NewWiringClient(cfg.tlwConn).OpenDutPort(ctx, req)
+	if err != nil {
+		return err
+	}
+
+	cfg.Target = fmt.Sprintf("%s@%s:%d", opts.User, res.GetAddress(), res.GetPort())
+	return nil
 }
 
 // prepare prepares the DUT for running tests. When instructed in cfg, it builds

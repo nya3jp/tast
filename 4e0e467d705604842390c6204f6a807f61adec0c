@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4231c505_039cb845",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-03T06:13:23Z",
+      "side": 1,
+      "message": "chromeos-base/cros-config-api is in chromeos-base/tast-build-deps, so it should be fine to delete these files. Thanks!\n",
+      "revId": "4e0e467d705604842390c6204f6a807f61adec0c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

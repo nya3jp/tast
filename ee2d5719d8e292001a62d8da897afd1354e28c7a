@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "89351079_bf3fd816",
+        "filename": "docs/howto.md",
+        "patchSetId": 15
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1401350
+      },
+      "writtenOn": "2020-08-03T07:58:21Z",
+      "side": 1,
+      "message": "The links are not working. You should use \"[Codelab #1]: codelab_1.md\" format.\nSame for the other links.",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 26
+      },
+      "revId": "ee2d5719d8e292001a62d8da897afd1354e28c7a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

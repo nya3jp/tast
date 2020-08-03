@@ -17,6 +17,7 @@ import (
 
 	configpb "go.chromium.org/chromiumos/config/go/api"
 	"go.chromium.org/chromiumos/infra/proto/go/device"
+	"google.golang.org/grpc"
 
 	"chromiumos/tast/cmd/tast/internal/build"
 	"chromiumos/tast/cmd/tast/internal/logging"
@@ -91,6 +92,7 @@ type Config struct {
 	buildArtifactsURL      string               // Google Cloud Storage URL of build artifacts
 	downloadPrivateBundles bool                 // whether to download private bundles if missing
 	downloadMode           planner.DownloadMode // strategy to download external data files
+	tlwServer              string               // address of the TLW server if available
 
 	localRunner    string // path to executable that runs local test bundles
 	localBundleDir string // dir where packaged local test bundles are installed
@@ -135,6 +137,7 @@ type Config struct {
 	deviceConfig       *device.Config             // hardware features of the DUT. Deprecated. Use hardwareFeatures instead.
 	hardwareFeatures   *configpb.HardwareFeatures // hardware features of the DUT.
 	osVersion          string                     // Chrome OS Version
+	tlwConn            *grpc.ClientConn           // TLW gRPC service connection
 }
 
 // NewConfig returns a new configuration for executing test runners in the supplied mode.
@@ -183,6 +186,7 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 	f.Var(ddf, "downloaddata", fmt.Sprintf("strategy to download external data files (%s; default %q)", ddf.QuotedValues(), ddf.Default()))
 	f.BoolVar(&c.continueAfterFailure, "continueafterfailure", true, "try to run remaining tests after bundle/DUT crash or lost SSH connection")
 	f.IntVar(&c.sshRetries, "sshretries", 0, "number of SSH connect retries")
+	f.StringVar(&c.tlwServer, "tlwserver", "", "TLW server address")
 
 	f.StringVar(&c.localRunner, "localrunner", "", "executable that runs local test bundles")
 	f.StringVar(&c.localBundleDir, "localbundledir", "", "directory containing builtin local test bundles")
@@ -240,12 +244,20 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 // It should be called at the completion of testing.
 func (c *Config) Close(ctx context.Context) error {
 	closeEphemeralDevserver(ctx, c) // ignore error; not meaningful if c.hst is dead
-	var err error
+	var firstErr error
 	if c.hst != nil {
-		err = c.hst.Close(ctx)
+		if err := c.hst.Close(ctx); err != nil && firstErr == nil {
+			firstErr = err
+		}
 		c.hst = nil
 	}
-	return err
+	if c.tlwConn != nil {
+		if err := c.tlwConn.Close(); err != nil && firstErr == nil {
+			firstErr = err
+		}
+		c.tlwConn = nil
+	}
+	return firstErr
 }
 
 // DeriveDefaults sets default config values to unset members, possibly deriving from

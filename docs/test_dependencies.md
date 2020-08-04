@@ -53,8 +53,8 @@ The following software features are defined:
 *   `cros_config` - `cros_config` utility is available.
 *   `cros_internal` - Functionality that is only available in internal builds of
     Chrome OS (i.e. ones built using `chromeos-overlay`).
-*   `cros_video_decoder` - Whether [media::VideoDecoder]-based video decoders
-    are supported.
+*   `cros_video_decoder` - Whether the [media::VideoDecoder]-based video decoder
+    is supported and enabled.
 *   `crossystem` - Chrome OS firmware/system interface utility.
 *   `crostini_stable` - Boards that can run Crostini tests reliably.
 *   `crostini_unstable` - Boards that cannot run Crostini tests reliably.
@@ -82,6 +82,8 @@ The following software features are defined:
     (scripts, daemons) installed and configured appropriately.
 *   `iwlwifi_rescan` - Ability to remove/rescan WiFi PCI device when the
     hardware becomes non-responsive.
+*   `legacy_video_decoder` - Whether the [media::VideoDecoder]-based video decoder
+    implementation is not supported/enabled, hence using the legacy one.
 *   `lock_core_pattern` - Ability to lock down |core_pattern| from further
     modifications.
 *   `memfd_create` - memfd_create function implemented in the kernel.

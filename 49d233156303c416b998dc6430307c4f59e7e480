@@ -16,6 +16,29 @@
       "revId": "49d233156303c416b998dc6430307c4f59e7e480",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b5ff7b8a_4c291648",
+        "filename": "docs/howto.md",
+        "patchSetId": 20
+      },
+      "lineNbr": 214,
+      "author": {
+        "id": 1401350
+      },
+      "writtenOn": "2020-08-04T09:12:53Z",
+      "side": 1,
+      "message": "This abbreviation wasn\u0027t introduced before. Is is simpler to just use test device.",
+      "range": {
+        "startLine": 214,
+        "startChar": 253,
+        "endLine": 214,
+        "endChar": 256
+      },
+      "revId": "49d233156303c416b998dc6430307c4f59e7e480",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

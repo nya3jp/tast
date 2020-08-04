@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c1f9c38e_b58fb298",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 249,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-08-04T11:13:14Z",
+      "side": 1,
+      "message": "This change would work because this is conceiled inside Tast, however, I would like to confirm if this is consistent with the infra scheduler. (then we can make these consistent with the CEL fields.)\n\nWhen a device has no internal display, how the dut struct fields will be set?\nI think we have several possible options:\n- Screen is nil (when there is no touchscreen neither)\n- Screen.PanelProperties is nil\n- Screen.PanelProperties.DiagonalMilliinch \u003d\u003d 0",
+      "revId": "315f497a1116853b4896884b9d3596147d43b004",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

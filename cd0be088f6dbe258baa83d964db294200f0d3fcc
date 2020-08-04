@@ -16,6 +16,23 @@
       "revId": "cd0be088f6dbe258baa83d964db294200f0d3fcc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5cd1b925_c9ee9324",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-08-04T17:21:36Z",
+      "side": 1,
+      "message": "The error was \n\ntclint-1-r1: [P13651 10:06:11.547 client.go:1380 I] cipd: successfully fetched chromiumos/infra/tclint/linux-amd64:O4btRfV3d9-QpZcWagaH08KXzjfRkw848EswbM6ReFkC in 0.5s\ntclint-1-r1: Instance: chromiumos/infra/tclint/linux-amd64:O4btRfV3d9-QpZcWagaH08KXzjfRkw848EswbM6ReFkC\ntclint-1-r1: !!! Fetched file: tclint-1.zip VERIFY FAILED!\ntclint-1-r1: !!! Reason: Filesize does not match recorded size\ntclint-1-r1: !!! Got:      8649125\ntclint-1-r1: !!! Expected: 8647884",
+      "revId": "cd0be088f6dbe258baa83d964db294200f0d3fcc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

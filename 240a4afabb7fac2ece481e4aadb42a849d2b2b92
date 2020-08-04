@@ -22,6 +22,30 @@
       "revId": "240a4afabb7fac2ece481e4aadb42a849d2b2b92",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ac85f770_c2ff8313",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-08-04T17:21:36Z",
+      "side": 0,
+      "message": "I was thinking uprevving the tclint to recent version by crrev/c/2332065 should recognize this change as a valid CEL.\nHowever looking some logs some instances still applied old linter (and found this as error) and some ohters are failing to verify the fetched new version of tclint. Maybe I missed something is with the uprevving?\n\ntclint-1-r1: [P13643 10:14:24.521 client.go:1380 I] cipd: successfully fetched chromiumos/infra/tclint/linux-amd64:O4btRfV3d9-QpZcWagaH08KXzjfRkw848EswbM6ReFkC in 0.4s\ntclint-1-r1: Instance: chromiumos/infra/tclint/linux-amd64:O4btRfV3d9-QpZcWagaH08KXzjfRkw848EswbM6ReFkC\ntclint-1-r1: !!! Fetched file: tclint-1.zip VERIFY FAILED!\ntclint-1-r1: !!! Reason: Filesize does not match recorded size\ntclint-1-r1: !!! Got:      8649125\ntclint-1-r1: !!! Expected: 8647884",
+      "parentUuid": "c00c15b4_6948af5a",
+      "range": {
+        "startLine": 187,
+        "startChar": 26,
+        "endLine": 187,
+        "endChar": 29
+      },
+      "revId": "240a4afabb7fac2ece481e4aadb42a849d2b2b92",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

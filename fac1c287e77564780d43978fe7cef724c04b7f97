@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "07e1f671_10e598be",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2020-08-04T15:17:42Z",
+      "side": 1,
+      "message": "tast-owners@ PTAL, tiny CL\n\nOthers FYI\n\n",
+      "revId": "fac1c287e77564780d43978fe7cef724c04b7f97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c7f3c17a_0951e2f5",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2020-08-04T15:17:42Z",
+      "side": 1,
+      "message": "FTR here\u0027s the existing precondition.",
+      "range": {
+        "startLine": 81,
+        "startChar": 0,
+        "endLine": 81,
+        "endChar": 60
+      },
+      "revId": "fac1c287e77564780d43978fe7cef724c04b7f97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

@@ -1334,6 +1334,30 @@
     },
     {
       "key": {
+        "uuid": "46d9b046_73756432",
+        "filename": "docs/howto.md",
+        "patchSetId": 16
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-04T10:37:53Z",
+      "side": 1,
+      "message": "Seems not done?",
+      "parentUuid": "cfabbd17_ef5f6836",
+      "range": {
+        "startLine": 101,
+        "startChar": 26,
+        "endLine": 101,
+        "endChar": 33
+      },
+      "revId": "62af677283400de4fecfddca6f9a78211d80df06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b71c98cd_447ef26f",
         "filename": "docs/howto.md",
         "patchSetId": 16

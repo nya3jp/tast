@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5009b975_6acf50d1",
+        "filename": "docs/howto.md",
+        "patchSetId": 21
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-04T10:37:53Z",
+      "side": 1,
+      "message": "nit: In Go documentations I rarely see appending () to indicate that an identifier is a function (it\u0027s more usual in C++ and other languages). We might want to write this simply as \"... errors.Is can be used\".",
+      "range": {
+        "startLine": 11,
+        "startChar": 226,
+        "endLine": 11,
+        "endChar": 237
+      },
+      "revId": "a9d593165bfe1e31b1e413cd7650c5eb4aa9e9e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ebabad1e_1c0f329a",
+        "filename": "docs/howto.md",
+        "patchSetId": 21
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-04T10:37:53Z",
+      "side": 1,
+      "message": "This might be a bit difficult to understand for readers without context. I recommend making the example self-contained, e.g.\n\n\n var ErrWindowNotFound \u003d errors.New(\"window not found\")\n\n // FindMinimizedWindow returns a minimized window, if any. If there is no minimized\n // window, ErrWindowNotFound is returned.\n func FindMinimizedWindow() (*Window, error) {\n   ws, err :\u003d findAllWindows()\n   if err !\u003d nil {\n     return nil, err\n   }\n   for _, w :\u003d range ws {\n     if w.Minimized {\n       return w, nil\n     }\n   }\n   return nil, ErrWindowNotFound\n }\n\n func someFunction(...) error {\n   w, err :\u003d FindMinimizedWindow()\n   if err !\u003d nil {\n     if errors.Is(err, ErrWindowNotFound) {\n       return nil\n     }\n     return err\n   }\n   ...\n }",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 1
+      },
+      "revId": "a9d593165bfe1e31b1e413cd7650c5eb4aa9e9e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "12762e4d_ecc3e9ba",
+        "filename": "docs/howto.md",
+        "patchSetId": 21
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-04T10:37:53Z",
+      "side": 1,
+      "message": "I thought single backquote is sufficient for inline code, e.g. The `CommandContext` function. Do you know what\u0027s the difference?",
+      "range": {
+        "startLine": 36,
+        "startChar": 4,
+        "endLine": 36,
+        "endChar": 7
+      },
+      "revId": "a9d593165bfe1e31b1e413cd7650c5eb4aa9e9e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c2b0e751_86dc70a4",
+        "filename": "docs/howto.md",
+        "patchSetId": 21
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-04T10:37:53Z",
+      "side": 1,
+      "message": "style: Prefer single quotes in JS code.\nhttps://google.github.io/styleguide/jsguide.html#features-strings-use-single-quotes",
+      "range": {
+        "startLine": 113,
+        "startChar": 40,
+        "endLine": 113,
+        "endChar": 42
+      },
+      "revId": "a9d593165bfe1e31b1e413cd7650c5eb4aa9e9e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "56e26b01_c28df12a",
+        "filename": "docs/howto.md",
+        "patchSetId": 21
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-04T10:37:53Z",
+      "side": 1,
+      "message": "Parentheses are needed around \"if\" conditions. Also, calling resolve/reject does not stop the function execution, so we have to return.\n\n if (element \u003d\u003d\u003d null) {\n   resolve(false);\n   return;\n }\n if (element.innerText !\u003d\u003d \u0027some text\u0027) {\n   reject(new Error(\u0027...\u0027));\n   return;\n }\n resolve(true);",
+      "range": {
+        "startLine": 115,
+        "startChar": 2,
+        "endLine": 115,
+        "endChar": 17
+      },
+      "revId": "a9d593165bfe1e31b1e413cd7650c5eb4aa9e9e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0097f54a_0f146f6b",
+        "filename": "docs/howto.md",
+        "patchSetId": 21
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-04T10:37:53Z",
+      "side": 1,
+      "message": "found",
+      "range": {
+        "startLine": 124,
+        "startChar": 32,
+        "endLine": 124,
+        "endChar": 39
+      },
+      "revId": "a9d593165bfe1e31b1e413cd7650c5eb4aa9e9e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

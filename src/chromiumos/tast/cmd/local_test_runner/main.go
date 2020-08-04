@@ -102,6 +102,7 @@ func main() {
 			"houdini64":               "houdini64",
 			"hostap_hwsim":            "wifi_hostap_test",
 			"iwlwifi_rescan":          "iwlwifi_rescan",
+			"legacy_video_decoder":    "disable_cros_video_decoder",
 			"lock_core_pattern":       `"kernel-3_10" || "kernel-3_14" || "kernel-3_18"`,
 			// QEMU has implemented memfd_create, but we haven't updated
 			// to a release with the change (https://bugs.launchpad.net/qemu/+bug/1734792).

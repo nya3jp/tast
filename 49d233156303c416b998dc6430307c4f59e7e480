@@ -19,6 +19,29 @@
     },
     {
       "key": {
+        "uuid": "0dda40c0_05aea1b8",
+        "filename": "docs/howto.md",
+        "patchSetId": 20
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2020-08-04T09:19:41Z",
+      "side": 1,
+      "message": "nit: link to the specific function\n\nhttps://golang.org/pkg/os/#Stat",
+      "range": {
+        "startLine": 89,
+        "startChar": 36,
+        "endLine": 89,
+        "endChar": 39
+      },
+      "revId": "49d233156303c416b998dc6430307c4f59e7e480",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b5ff7b8a_4c291648",
         "filename": "docs/howto.md",
         "patchSetId": 20

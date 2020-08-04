@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9d7c820a_0bd5f10b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2020-08-04T18:25:42Z",
+      "side": 1,
+      "message": "Note that TLS and TLW are separate\n\ngo/what-is-tls",
+      "revId": "3b718465dfc18a21064fe880b539ba208e22babe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

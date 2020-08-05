@@ -35,7 +35,7 @@ func diagnoseSSHDrop(ctx context.Context, cfg *Config, outDir string) string {
 	}
 
 	cfg.Logger.Log("Reconnecting to diagnose lost SSH connection")
-	const reconnectTimeout = time.Minute
+	const reconnectTimeout = 3 * time.Minute
 	if err := testingutil.Poll(ctx, func(ctx context.Context) error {
 		_, err := connectToTarget(ctx, cfg)
 		return err

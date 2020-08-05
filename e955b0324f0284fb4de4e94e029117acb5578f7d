@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9625b015_0ab77e3a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1300299
+      },
+      "writtenOn": "2020-08-05T19:17:36Z",
+      "side": 1,
+      "message": "And checked it *didn\u0027t* upload the crashes the various tests created, right? \n\nJust checking!",
+      "range": {
+        "startLine": 12,
+        "startChar": 5,
+        "endLine": 14,
+        "endChar": 0
+      },
+      "revId": "e955b0324f0284fb4de4e94e029117acb5578f7d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c11a74ca_a292e942",
+        "filename": "src/chromiumos/tast/internal/runner/sys_info.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1300299
+      },
+      "writtenOn": "2020-08-05T19:17:36Z",
+      "side": 1,
+      "message": "It feels a little weird to have this here. It doesn\u0027t match the description of what the function does at all. It\u0027s not copying into temporary directories nor writing JSON structs",
+      "range": {
+        "startLine": 111,
+        "startChar": 0,
+        "endLine": 114,
+        "endChar": 0
+      },
+      "revId": "e955b0324f0284fb4de4e94e029117acb5578f7d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

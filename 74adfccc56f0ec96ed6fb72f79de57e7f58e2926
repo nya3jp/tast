@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c797f4d8_ac40a588",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1305461
+      },
+      "writtenOn": "2020-08-05T23:39:28Z",
+      "side": 1,
+      "message": "+nya for general idea and to check in on whether it makes sense to upload crashes from here or if there\u0027s a better way to do it.\n\nUnit tests are broken right now; I can fix that but first I want to establish whether the overall design is reasonable, or if there\u0027s somewhere else we should exec crash_sender.",
+      "revId": "74adfccc56f0ec96ed6fb72f79de57e7f58e2926",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

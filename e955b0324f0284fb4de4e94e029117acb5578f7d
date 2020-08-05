@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "83f5b1b0_144dfafb",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1305461
+      },
+      "writtenOn": "2020-08-05T23:39:28Z",
+      "side": 1,
+      "message": "Clarified message, but this *should* upload crashes that tests cause, just not the crash-reporter tests.",
+      "parentUuid": "9625b015_0ab77e3a",
+      "range": {
+        "startLine": 12,
+        "startChar": 5,
+        "endLine": 14,
+        "endChar": 0
+      },
+      "revId": "e955b0324f0284fb4de4e94e029117acb5578f7d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c11a74ca_a292e942",
         "filename": "src/chromiumos/tast/internal/runner/sys_info.go",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2020-08-05T19:17:36Z",
       "side": 1,
       "message": "It feels a little weird to have this here. It doesn\u0027t match the description of what the function does at all. It\u0027s not copying into temporary directories nor writing JSON structs",
+      "range": {
+        "startLine": 111,
+        "startChar": 0,
+        "endLine": 114,
+        "endChar": 0
+      },
+      "revId": "e955b0324f0284fb4de4e94e029117acb5578f7d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "45734e4e_f8e24bca",
+        "filename": "src/chromiumos/tast/internal/runner/sys_info.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1305461
+      },
+      "writtenOn": "2020-08-05T23:39:28Z",
+      "side": 1,
+      "message": "That\u0027s true. The reason I had it here was that this is where the tast code grabs crashes, and uploading crashes feels similar to grabbing them. I\u0027m happy to put it elsewhere, but I\u0027m not sure exactly where it makes sense to have the logic. Adding someone from the tast team to help guide that.",
+      "parentUuid": "c11a74ca_a292e942",
       "range": {
         "startLine": 111,
         "startChar": 0,

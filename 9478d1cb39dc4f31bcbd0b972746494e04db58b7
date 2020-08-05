@@ -16,6 +16,92 @@
       "revId": "9478d1cb39dc4f31bcbd0b972746494e04db58b7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "af4448bb_0878b428",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 22
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-08-05T01:42:45Z",
+      "side": 1,
+      "message": "Defer to nya@ with minor fix requests.",
+      "revId": "9478d1cb39dc4f31bcbd0b972746494e04db58b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "35349897_8d0d58cc",
+        "filename": "docs/howto.md",
+        "patchSetId": 22
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-08-05T01:42:45Z",
+      "side": 1,
+      "message": "nit: DumpLogOnError is a value rather than a function. Could you remove ()?",
+      "range": {
+        "startLine": 47,
+        "startChar": 99,
+        "endLine": 47,
+        "endChar": 101
+      },
+      "revId": "9478d1cb39dc4f31bcbd0b972746494e04db58b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "16efde22_410b1330",
+        "filename": "docs/howto.md",
+        "patchSetId": 22
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-08-05T01:42:45Z",
+      "side": 1,
+      "message": "nit/style: could you align indenting with other code snippets? (\u003d using a tab for indent)",
+      "range": {
+        "startLine": 87,
+        "startChar": 0,
+        "endLine": 87,
+        "endChar": 1
+      },
+      "revId": "9478d1cb39dc4f31bcbd0b972746494e04db58b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c71f6947_97f30cd9",
+        "filename": "docs/howto.md",
+        "patchSetId": 22
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-08-05T01:42:45Z",
+      "side": 1,
+      "message": "nit/optional/style: like testing.Poll, I often see the JS code snipet is inlined in the caller, if there\u0027s no special reasons to do.",
+      "range": {
+        "startLine": 121,
+        "startChar": 0,
+        "endLine": 121,
+        "endChar": 13
+      },
+      "revId": "9478d1cb39dc4f31bcbd0b972746494e04db58b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

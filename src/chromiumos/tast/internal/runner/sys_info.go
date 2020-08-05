@@ -108,6 +108,9 @@ func handleCollectSysInfo(ctx context.Context, args *Args, cfg *Config, w io.Wri
 	if err != nil {
 		return err
 	}
+	if err := crash.UploadCrashes(ctx); err != nil {
+		return err
+	}
 	if res.CrashDir, err = ioutil.TempDir("", "tast_crashes."); err != nil {
 		return err
 	}

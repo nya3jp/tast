@@ -6,11 +6,15 @@
 package crash
 
 import (
+	"context"
 	"errors"
+	"io/ioutil"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 
+	tasterrors "chromiumos/tast/errors"
 	"chromiumos/tast/fsutil"
 )
 
@@ -47,6 +51,10 @@ const (
 	CompressedLogExt = ".log.gz"
 
 	lsbReleasePath = "/etc/lsb-release"
+
+	// mockConsentPath is the location of a file, which, if present on test images, will cause
+	// crash_sender to ignore consent checks when uploading.
+	mockConsentPath = "/run/crash_reporter/mock-consent"
 )
 
 // DefaultDirs returns all standard directories to which crashes are written.
@@ -148,4 +156,26 @@ func CopyNewFiles(dstDir string, newPaths, oldPaths []string, maxPerExec int) (
 // CopySystemInfo copies system information relevant to crash dumps (e.g. lsb-release) into dstDir.
 func CopySystemInfo(dstDir string) error {
 	return fsutil.CopyFile(lsbReleasePath, filepath.Join(dstDir, filepath.Base(lsbReleasePath)))
+}
+
+// UploadCrashes runs crash_sender to upload crashes to the crash server.
+// Special flags:
+//  * Don't sleep between crash uploads
+//  * Don't delete crashes after uploading them (so tast can copy them to the output dir)
+//  * Upload crashes even though this is a test device (as long as the crashes are on an official build)
+//  * Ignore bandwidth limits and crashes per day limits
+func UploadCrashes(ctx context.Context) error {
+	// First, create the mock consent file to allow uploads.
+	if err := ioutil.WriteFile(mockConsentPath, nil, 0644); err != nil {
+		return tasterrors.Wrap(err, "failed writing mock consent file")
+	}
+	defer os.Remove(mockConsentPath)
+
+	// Then, run crash_sender.
+	cmd := exec.Command("/sbin/crash_sender", "--max_spread_time=0", "--delete_crashes=false", "--ignore_test_image", "--ignore_rate_limits")
+	if err := cmd.Run(); err != nil {
+		return err
+	}
+
+	return nil
 }

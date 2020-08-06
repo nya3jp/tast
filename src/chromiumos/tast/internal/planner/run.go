@@ -27,8 +27,8 @@ import (
 
 const (
 	exitTimeout     = 30 * time.Second // extra time granted to test-related funcs to exit
-	preTestTimeout  = 15 * time.Second // timeout for TestConfig.TestHook
-	postTestTimeout = 15 * time.Second // timeout for a closure returned by TestConfig.TestHook
+	preTestTimeout  = 3 * time.Minute  // timeout for TestConfig.TestHook
+	postTestTimeout = 3 * time.Minute  // timeout for a closure returned by TestConfig.TestHook
 )
 
 // DownloadMode specifies a strategy to download external data files.

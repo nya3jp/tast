@@ -1,0 +1,33 @@
+// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package tast.core;
+option go_package = "chromiumos/tast/bundle";
+
+// FixtureService provides services to prepare or close single remote fixture.
+// Currently we don't support Adjust, PostTest, and nested fixtures.
+service FixtureService {
+    rpc Prepare(PrepareRequest) returns (PrepareResponse) {}
+    rpc Close(CloseRequest) returns (CloseResponse) {}
+}
+
+message PrepareRequest {
+    // name of the fixture to prepare.
+    string name = 1;
+}
+
+message PrepareResponse {
+    string success = 1;
+}
+
+message CloseRequest {
+    // name of the fixture to close.
+    string name = 1;
+}
+
+message CloseResponse {
+    string success = 1;
+}

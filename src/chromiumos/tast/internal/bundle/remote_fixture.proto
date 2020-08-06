@@ -1,0 +1,79 @@
+// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package tast.core;
+option go_package = "chromiumos/tast/internal/bundle";
+
+// FixtureService provides methods to set up or tear down single remote fixture.
+// Currently we don't support Reset, PreTest, PostTest, and nested remote fixtures.
+service FixtureService {
+    rpc RunFixture(RunFixtureRequest) returns (stream RunFixtureResponse) {}
+}
+
+// RunFixtureRequest is the request to RunFixture.
+message RunFixtureRequest {
+    // Name is the name of the fixture to run method.
+    string name = 1;
+    enum Method {
+        SetUp = 0;
+        TearDown = 1;
+    }
+    // Method is the method of the fixture to run.
+    Method method = 2;
+    // Config is the configuration the framework needs to run the fixture.
+    RunFixtureConfig config = 3;
+}
+
+// RunFixtureConfig contains information the framework needs to run fixtures.
+message RunFixtureConfig {
+    // TastVars contains names and values of runtime variables used to pass out-of-band data to
+    // the fixture.
+    map<string, string> test_vars = 1;
+
+    // DataDir is the path to the directory containing fixture data files.
+    string data_dir = 2;
+    // OutDir is the path to the base directory under which fixtures should write output files.
+    string out_dir = 3;
+    // TempDir is the path to the directory under which temporary files for fixtures are written.
+    string temp_dir = 4;
+
+    // Target is the DUT connection spec as [<user>@]host[:<port>].
+    string target = 5;
+    // KeyFile is the path to the SSH private key to use to connect to the DUT.
+    string key_file = 6;
+    // KeyDir is the directory containing SSH private keys (typically $HOME/.ssh).
+    string key_dir = 7;
+    // LocalBundleDir is the directory on the DUT where local test bundle executables are
+    // located. This path is used by remote fixture to invoke gRPC services in local test.
+    string local_bundle_dir = 8;
+
+    // TODO(crbug.com/1115853): Add devservers and build_artifacts_url to support downloading
+    // external data files.
+
+    // TODO(oka): Consider adding download_mode to select lazy/eager download.
+}
+
+// RunFixtureError describes an error encountered while running fixtures.
+message RunFixtureError {
+    string reason = 1;
+    string file = 2;
+    int32 line = 3;
+    string stack = 4;
+}
+
+// RunFixtureResponse is the control message the server streams to the caller.
+message RunFixtureResponse {
+    oneof control {
+        // Log is the log message.
+        string log = 1;
+        // Error is the error message.
+        RunFixtureError error = 2;
+    }
+    // Timestamp is the timestamp of the event.
+    google.protobuf.Timestamp timestamp = 3;
+}

@@ -3,13 +3,14 @@
 
 package rpc
 
-import proto "github.com/golang/protobuf/proto"
-import fmt "fmt"
-import math "math"
-
 import (
-	context "golang.org/x/net/context"
+	context "context"
+	fmt "fmt"
+	proto "github.com/golang/protobuf/proto"
 	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
+	math "math"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -17,24 +18,76 @@ var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
 
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the proto package it is being compiled against.
+// A compilation error at this line likely means your copy of the
+// proto package needs to be updated.
+const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
+
 type ReadLogsRequest struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *ReadLogsRequest) Reset()                    { *m = ReadLogsRequest{} }
-func (m *ReadLogsRequest) String() string            { return proto.CompactTextString(m) }
-func (*ReadLogsRequest) ProtoMessage()               {}
-func (*ReadLogsRequest) Descriptor() ([]byte, []int) { return fileDescriptor1, []int{0} }
+func (m *ReadLogsRequest) Reset()         { *m = ReadLogsRequest{} }
+func (m *ReadLogsRequest) String() string { return proto.CompactTextString(m) }
+func (*ReadLogsRequest) ProtoMessage()    {}
+func (*ReadLogsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_9c8ad1e4de00dd2b, []int{0}
+}
+
+func (m *ReadLogsRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ReadLogsRequest.Unmarshal(m, b)
+}
+func (m *ReadLogsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ReadLogsRequest.Marshal(b, m, deterministic)
+}
+func (m *ReadLogsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ReadLogsRequest.Merge(m, src)
+}
+func (m *ReadLogsRequest) XXX_Size() int {
+	return xxx_messageInfo_ReadLogsRequest.Size(m)
+}
+func (m *ReadLogsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ReadLogsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ReadLogsRequest proto.InternalMessageInfo
 
 type ReadLogsResponse struct {
 	// entry is an emitted log entry. It is missing for an initial
 	// ReadLogsResponse to indicate success of subscription.
-	Entry *LogEntry `protobuf:"bytes,1,opt,name=entry" json:"entry,omitempty"`
+	Entry                *LogEntry `protobuf:"bytes,1,opt,name=entry,proto3" json:"entry,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}  `json:"-"`
+	XXX_unrecognized     []byte    `json:"-"`
+	XXX_sizecache        int32     `json:"-"`
 }
 
-func (m *ReadLogsResponse) Reset()                    { *m = ReadLogsResponse{} }
-func (m *ReadLogsResponse) String() string            { return proto.CompactTextString(m) }
-func (*ReadLogsResponse) ProtoMessage()               {}
-func (*ReadLogsResponse) Descriptor() ([]byte, []int) { return fileDescriptor1, []int{1} }
+func (m *ReadLogsResponse) Reset()         { *m = ReadLogsResponse{} }
+func (m *ReadLogsResponse) String() string { return proto.CompactTextString(m) }
+func (*ReadLogsResponse) ProtoMessage()    {}
+func (*ReadLogsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_9c8ad1e4de00dd2b, []int{1}
+}
+
+func (m *ReadLogsResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ReadLogsResponse.Unmarshal(m, b)
+}
+func (m *ReadLogsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ReadLogsResponse.Marshal(b, m, deterministic)
+}
+func (m *ReadLogsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ReadLogsResponse.Merge(m, src)
+}
+func (m *ReadLogsResponse) XXX_Size() int {
+	return xxx_messageInfo_ReadLogsResponse.Size(m)
+}
+func (m *ReadLogsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ReadLogsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ReadLogsResponse proto.InternalMessageInfo
 
 func (m *ReadLogsResponse) GetEntry() *LogEntry {
 	if m != nil {
@@ -44,13 +97,36 @@ func (m *ReadLogsResponse) GetEntry() *LogEntry {
 }
 
 type LogEntry struct {
-	Msg string `protobuf:"bytes,1,opt,name=msg" json:"msg,omitempty"`
+	Msg                  string   `protobuf:"bytes,1,opt,name=msg,proto3" json:"msg,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *LogEntry) Reset()                    { *m = LogEntry{} }
-func (m *LogEntry) String() string            { return proto.CompactTextString(m) }
-func (*LogEntry) ProtoMessage()               {}
-func (*LogEntry) Descriptor() ([]byte, []int) { return fileDescriptor1, []int{2} }
+func (m *LogEntry) Reset()         { *m = LogEntry{} }
+func (m *LogEntry) String() string { return proto.CompactTextString(m) }
+func (*LogEntry) ProtoMessage()    {}
+func (*LogEntry) Descriptor() ([]byte, []int) {
+	return fileDescriptor_9c8ad1e4de00dd2b, []int{2}
+}
+
+func (m *LogEntry) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_LogEntry.Unmarshal(m, b)
+}
+func (m *LogEntry) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_LogEntry.Marshal(b, m, deterministic)
+}
+func (m *LogEntry) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_LogEntry.Merge(m, src)
+}
+func (m *LogEntry) XXX_Size() int {
+	return xxx_messageInfo_LogEntry.Size(m)
+}
+func (m *LogEntry) XXX_DiscardUnknown() {
+	xxx_messageInfo_LogEntry.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_LogEntry proto.InternalMessageInfo
 
 func (m *LogEntry) GetMsg() string {
 	if m != nil {
@@ -65,6 +141,24 @@ func init() {
 	proto.RegisterType((*LogEntry)(nil), "tast.core.LogEntry")
 }
 
+func init() { proto.RegisterFile("logging.proto", fileDescriptor_9c8ad1e4de00dd2b) }
+
+var fileDescriptor_9c8ad1e4de00dd2b = []byte{
+	// 188 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0xcd, 0xc9, 0x4f, 0x4f,
+	0xcf, 0xcc, 0x4b, 0xd7, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0xe2, 0x2c, 0x49, 0x2c, 0x2e, 0xd1,
+	0x4b, 0xce, 0x2f, 0x4a, 0x55, 0x12, 0xe4, 0xe2, 0x0f, 0x4a, 0x4d, 0x4c, 0xf1, 0xc9, 0x4f, 0x2f,
+	0x0e, 0x4a, 0x2d, 0x2c, 0x4d, 0x2d, 0x2e, 0x51, 0xb2, 0xe5, 0x12, 0x40, 0x08, 0x15, 0x17, 0xe4,
+	0xe7, 0x15, 0xa7, 0x0a, 0x69, 0x72, 0xb1, 0xa6, 0xe6, 0x95, 0x14, 0x55, 0x4a, 0x30, 0x2a, 0x30,
+	0x6a, 0x70, 0x1b, 0x09, 0xeb, 0xc1, 0x4d, 0xd0, 0xf3, 0xc9, 0x4f, 0x77, 0x05, 0x49, 0x05, 0x41,
+	0x54, 0x28, 0xc9, 0x70, 0x71, 0xc0, 0x84, 0x84, 0x04, 0xb8, 0x98, 0x73, 0x8b, 0xd3, 0xc1, 0x9a,
+	0x38, 0x83, 0x40, 0x4c, 0xa3, 0x10, 0x2e, 0x76, 0x1f, 0x88, 0x5b, 0x84, 0x3c, 0xb9, 0x38, 0x60,
+	0xf6, 0x08, 0x49, 0x21, 0x19, 0x88, 0xe6, 0x1e, 0x29, 0x69, 0xac, 0x72, 0x10, 0x87, 0x29, 0x31,
+	0x68, 0x30, 0x1a, 0x30, 0x3a, 0x89, 0x46, 0x09, 0x27, 0x67, 0x14, 0xe5, 0xe7, 0x66, 0x96, 0xe6,
+	0xe6, 0x17, 0xeb, 0x83, 0x94, 0xeb, 0x17, 0x15, 0x24, 0x27, 0xb1, 0x81, 0xbd, 0x6b, 0x0c, 0x08,
+	0x00, 0x00, 0xff, 0xff, 0xd5, 0xa9, 0x93, 0xa5, 0xff, 0x00, 0x00, 0x00,
+}
+
 // Reference imports to suppress errors if they are not otherwise used.
 var _ context.Context
 var _ grpc.ClientConn
@@ -73,8 +167,9 @@ var _ grpc.ClientConn
 // is compatible with the grpc package it is being compiled against.
 const _ = grpc.SupportPackageIsVersion4
 
-// Client API for Logging service
-
+// LoggingClient is the client API for Logging service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type LoggingClient interface {
 	// ReadLogs subscribes to logs emitted by gRPC services.
 	// At the beginning of the call, one ReadLogsResponse with empty entry is
@@ -94,7 +189,7 @@ func NewLoggingClient(cc *grpc.ClientConn) LoggingClient {
 }
 
 func (c *loggingClient) ReadLogs(ctx context.Context, opts ...grpc.CallOption) (Logging_ReadLogsClient, error) {
-	stream, err := grpc.NewClientStream(ctx, &_Logging_serviceDesc.Streams[0], c.cc, "/tast.core.Logging/ReadLogs", opts...)
+	stream, err := c.cc.NewStream(ctx, &_Logging_serviceDesc.Streams[0], "/tast.core.Logging/ReadLogs", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -124,8 +219,7 @@ func (x *loggingReadLogsClient) Recv() (*ReadLogsResponse, error) {
 	return m, nil
 }
 
-// Server API for Logging service
-
+// LoggingServer is the server API for Logging service.
 type LoggingServer interface {
 	// ReadLogs subscribes to logs emitted by gRPC services.
 	// At the beginning of the call, one ReadLogsResponse with empty entry is
@@ -134,6 +228,14 @@ type LoggingServer interface {
 	// when the client closes the request stream or any error occurs.
 	// At most one client can have an active call of this method at a time.
 	ReadLogs(Logging_ReadLogsServer) error
+}
+
+// UnimplementedLoggingServer can be embedded to have forward compatible implementations.
+type UnimplementedLoggingServer struct {
+}
+
+func (*UnimplementedLoggingServer) ReadLogs(srv Logging_ReadLogsServer) error {
+	return status.Errorf(codes.Unimplemented, "method ReadLogs not implemented")
 }
 
 func RegisterLoggingServer(s *grpc.Server, srv LoggingServer) {
@@ -179,22 +281,4 @@ var _Logging_serviceDesc = grpc.ServiceDesc{
 		},
 	},
 	Metadata: "logging.proto",
-}
-
-func init() { proto.RegisterFile("logging.proto", fileDescriptor1) }
-
-var fileDescriptor1 = []byte{
-	// 188 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0xcd, 0xc9, 0x4f, 0x4f,
-	0xcf, 0xcc, 0x4b, 0xd7, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0xe2, 0x2c, 0x49, 0x2c, 0x2e, 0xd1,
-	0x4b, 0xce, 0x2f, 0x4a, 0x55, 0x12, 0xe4, 0xe2, 0x0f, 0x4a, 0x4d, 0x4c, 0xf1, 0xc9, 0x4f, 0x2f,
-	0x0e, 0x4a, 0x2d, 0x2c, 0x4d, 0x2d, 0x2e, 0x51, 0xb2, 0xe5, 0x12, 0x40, 0x08, 0x15, 0x17, 0xe4,
-	0xe7, 0x15, 0xa7, 0x0a, 0x69, 0x72, 0xb1, 0xa6, 0xe6, 0x95, 0x14, 0x55, 0x4a, 0x30, 0x2a, 0x30,
-	0x6a, 0x70, 0x1b, 0x09, 0xeb, 0xc1, 0x4d, 0xd0, 0xf3, 0xc9, 0x4f, 0x77, 0x05, 0x49, 0x05, 0x41,
-	0x54, 0x28, 0xc9, 0x70, 0x71, 0xc0, 0x84, 0x84, 0x04, 0xb8, 0x98, 0x73, 0x8b, 0xd3, 0xc1, 0x9a,
-	0x38, 0x83, 0x40, 0x4c, 0xa3, 0x10, 0x2e, 0x76, 0x1f, 0x88, 0x5b, 0x84, 0x3c, 0xb9, 0x38, 0x60,
-	0xf6, 0x08, 0x49, 0x21, 0x19, 0x88, 0xe6, 0x1e, 0x29, 0x69, 0xac, 0x72, 0x10, 0x87, 0x29, 0x31,
-	0x68, 0x30, 0x1a, 0x30, 0x3a, 0x89, 0x46, 0x09, 0x27, 0x67, 0x14, 0xe5, 0xe7, 0x66, 0x96, 0xe6,
-	0xe6, 0x17, 0xeb, 0x83, 0x94, 0xeb, 0x17, 0x15, 0x24, 0x27, 0xb1, 0x81, 0xbd, 0x6b, 0x0c, 0x08,
-	0x00, 0x00, 0xff, 0xff, 0xd5, 0xa9, 0x93, 0xa5, 0xff, 0x00, 0x00, 0x00,
 }

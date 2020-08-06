@@ -8,18 +8,6 @@ import (
 	"context"
 )
 
-// FixtState is the state the framework passes to Prepare and Close.
-// TODO(oka): Move the following states to the best place.
-// TODO(oka): Determine the best name for the types. e.g. FixtState or FixtureState?
-type FixtState struct{}
-
-// FixtAdjustState is the state the framework passes to Adjust.
-type FixtAdjustState struct{}
-
-// FixtPostTestState is the state the framework passes to PostTest.
-// TODO(oka): Consider if we can use just State.
-type FixtPostTestState struct{}
-
 // FixtureImpl provides implementation of the fixture registered to the framework.
 type FixtureImpl interface {
 	// Prepare is the method framework calls to set up the fixture.

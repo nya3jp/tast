@@ -8,26 +8,22 @@ import (
 	"context"
 )
 
-// FixtState is the state the framework passes to Prepare and Close.
-// TODO(oka): Move the following states to the best place.
-// TODO(oka): Determine the best name for the types. e.g. FixtState or FixtureState?
-type FixtState struct{}
-
-// FixtAdjustState is the state the framework passes to Adjust.
-type FixtAdjustState struct{}
-
-// FixtPostTestState is the state the framework passes to PostTest.
-// TODO(oka): Consider if we can use just State.
-type FixtPostTestState struct{}
-
-// Fixture provides implementation the fixture registered into the framework.
-// TODO(oka): This type might not be referenced by the tests. Consider using Fixture as the name of
-// the struct referenced from the tests.
-type Fixture interface {
+// FixtureImpl provides implementation of the fixture registered to the framework.
+type FixtureImpl interface {
 	// Prepare is the method framework calls to set up the fixture.
 	//
 	// ctx and s allow accessing fixture's metadata.
-	// TODO(oka): determine the details.
+	// ctx dones't contain information about software dependencies because only tests declare
+	// software dependencies.
+	//
+	// TODO(oka): Consider updating ContextSoftwareDeps API so that it's meaningful for fixture
+	// scoped contexts. For tests, ContextSoftwareDeps returns the dependencies the test declares,
+	// and utility methods (e.g. arc.New) use it to check that tests declare proper software
+	// dependencies. For fixtures, it is uncertain what ContextSoftwareDeps should return. One
+	// might think it could return the intersection of the software deps of the tests depending on
+	// the fixture, but it doesn't work considering arc.New checks OR condition of the software
+	// deps. Still, fixtures can call functions like arc.New that calls ContextSoftwareDeps. It
+	// indicates that we need to reconsider ContextSoftwareDeps API.
 	//
 	// The return value is made available to the direct children of the entity graph, as long as
 	// this fixture and a child live in the same process.
@@ -58,19 +54,21 @@ type Fixture interface {
 	// Adjust is called by the framework before each test.
 	//
 	// ctx and s allow accessing test's metadata.
-	// TODO(oka): determine the details. Note that s doesn't provide Error or Fatal.
 	//
 	// If errors are reported in Adjust, the following methods are called in order to reset the
 	// fixture:
-	// TODO(oka): Consider PostTest calls
 	//  - Descendant fixtures' Close in ascending order
 	//  - This fixture's Close
 	//  - This fixture's Prepare
 	//  - Descendant fixtures' Prepare in descending order
+	// Errors in Adjust doesn't affect ascendant fixtures.
+	// After the fixture is reset, Adjust method is called again before running the test.
+	// To avoid an infinite loop, if Adjust returns an error just after the fixture is set up, then
+	// all the remaining tests depending on this fixture are marked as failed without actually
+	// running.
+	//
 	// Reporting errors in Adjust is valid when light-weight adjusting doesn't restore the
 	// precondition the fixture declares.
-	// If Adjust returns error just after Prepare is called, then
-	// all the remaining tests depending on this fixture are marked failed without actually running.
 	//
 	// Adjust is called in descending order (parents to children) when fixtures are nested.
 	//
@@ -79,17 +77,15 @@ type Fixture interface {
 	// This method is the best place to do a light-weight cleanup of the
 	// system environment to the original one when the fixture was
 	// set up, e.g. closing open Chrome tabs.
-	// This method can do a setup for the test runs next. e.g. redirect logs to a file in the
+	// This method also can do a setup for the test runs next. e.g. redirect logs to a file in the
 	// test's output directory.
 	Adjust(ctx context.Context, s *FixtAdjustState) error
 
 	// PostTest is called by the framework after each test.
 	//
 	// ctx and s allow accessing test's metadata.
-	// TODO(oka): determine the details.
 	//
-	// PostTest is called in ascending order (children to parent)
-	// when fixtures are nested.
+	// PostTest is called in ascending order (children to parent) when fixtures are nested.
 	//
 	// s.Fatal or s.Error can be used to report errors in PostTest. When s.Fatal is called PostTest
 	// immediately aborts. The error is marked as the test failure.

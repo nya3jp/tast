@@ -6,7 +6,52 @@ package testing
 
 import (
 	"context"
+	"time"
 )
+
+// Fixture represents fixtures to register to the framework.
+type Fixture struct {
+	// Name is the name of the fixture.
+	// Tests and fixtures use the name to specify the fixture.
+	// TODO(oka): We may want to decide the naming convention of the name, e.g. snake case.
+	Name string
+
+	// Desc is the description of the fixture.
+	Desc string
+
+	// Contacts is a list of email addresses of persons and groups who are familiar with the
+	// fixture. At least one personal email address of an active committer should be specified so
+	// that we can file bugs or ask for code review.
+	Contacts []string
+
+	// Impl is the implementation of the fixture.
+	Impl FixtureImpl
+
+	// Parent specifies the parent fixture name, or empty if it has no parent.
+	Parent string
+
+	// SetUpTimeout is the timeout applied to SetUp.
+	// Even if fixtures are nested, the timeout is applied only to this stage.
+	SetUpTimeout time.Duration
+
+	// ResetTimeout is the timeout applied to Reset.
+	// Even if fixtures are nested, the timeout is applied only to this stage.
+	ResetTimeout time.Duration
+
+	// PreTestTimeout is the timeout applied to PreTest.
+	// Even if fixtures are nested, the timeout is applied only to this stage.
+	PreTestTimeout time.Duration
+
+	// PostTestTimeout is the timeout applied to PostTest.
+	// Even if fixtures are nested, the timeout is applied only to this stage.
+	PostTestTimeout time.Duration
+
+	// TearDownTimeout is the timeout applied to TearDown.
+	// Even if fixtures are nested, the timeout is applied only to this stage.
+	TearDownTimeout time.Duration
+
+	// TODO(oka): Add Data, Vars, ServiceDeps and Param fields.
+}
 
 // FixtureImpl provides implementation of the fixture registered to the framework.
 type FixtureImpl interface {
@@ -63,7 +108,7 @@ type FixtureImpl interface {
 	//  - This fixture's TearDown
 	//  - This fixture's SetUp
 	//  - Descendant fixtures' SetUp in descending order
-	// Consequently, errors Adjust returns don't affect ascendant fixtures.
+	// Consequently, errors Reset returns don't affect ascendant fixtures.
 	//
 	// Returning an error from Reset is valid when light-weight reset doesn't restore the
 	// condition the fixture declares.

@@ -6,7 +6,44 @@ package testing
 
 import (
 	"context"
+	"time"
 )
+
+// Fixture is used to register the fixture into the framework.
+type Fixture struct {
+	// Name is the name of the fixture.
+	// Tests and fixtures use the name to specify the fixture.
+	// TODO(oka): We may want to decide the naming convention of the name, e.g. snake case.
+	Name string
+
+	// Desc is the description of the fixture.
+	Desc string
+
+	// Contacts is a list of email addresses of persons and groups who are familiar with the
+	// fixture. At least one personal email address of an active committer should be specified so
+	// that we can file bugs or ask for code review.
+	Contacts []string
+
+	// Impl is the implementation of the fixture.
+	Impl FixtureImpl
+
+	// Parent specifies the parent fixture name, or empty if it has no parent.
+	Parent string
+
+	// PrepareTimeout is the timeout applied to Prepare.
+	// Even if fixtures are nested, the timeout is applied only to this stage.
+	PrepareTimeout time.Duration
+
+	// AdjustTimeout is the timeout applied to Adjust.
+	// Even if fixtures are nested, the timeout is applied only to this stage.
+	AdjustTimeout time.Duration
+
+	// CloseTimeout is the timeout applied to Close.
+	// Even if fixtures are nested, the timeout is applied only to this stage.
+	CloseTimeout time.Duration
+
+	// TODO(oka): Add Data, Vars, ServiceDeps and Param fields.
+}
 
 // FixtureImpl provides implementation of the fixture registered to the framework.
 type FixtureImpl interface {

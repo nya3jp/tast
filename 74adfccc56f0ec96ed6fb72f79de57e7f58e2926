@@ -16,6 +16,52 @@
       "revId": "74adfccc56f0ec96ed6fb72f79de57e7f58e2926",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "65e5d4a6_fbf33be1",
+        "filename": "src/chromiumos/tast/internal/crash/crash.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-06T09:11:20Z",
+      "side": 1,
+      "message": "I\u0027m not sure if we can assume that users are always fine with uploading crash dumps, especially for non-Googlers.\n\nDo we want to upload crashes even for local runs? Or is it enough to target CrOS lab runs only?",
+      "range": {
+        "startLine": 169,
+        "startChar": 0,
+        "endLine": 172,
+        "endChar": 33
+      },
+      "revId": "74adfccc56f0ec96ed6fb72f79de57e7f58e2926",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "87b1f652_f3f30bf9",
+        "filename": "src/chromiumos/tast/internal/crash/crash.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-06T09:11:20Z",
+      "side": 1,
+      "message": "Does this return immediately, or block until uploading is finished?",
+      "range": {
+        "startLine": 175,
+        "startChar": 1,
+        "endLine": 175,
+        "endChar": 138
+      },
+      "revId": "74adfccc56f0ec96ed6fb72f79de57e7f58e2926",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

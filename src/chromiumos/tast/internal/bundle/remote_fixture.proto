@@ -1,0 +1,76 @@
+// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package tast.core;
+option go_package = "chromiumos/tast/internal/bundle";
+
+// FixtureService provides methods to set up or tear down single remote fixture.
+// Currently we don't support Reset, PreTest, PostTest, and nested remote fixtures.
+service FixtureService {
+    rpc Run(RunRequest) returns (stream RunResponse) {}
+}
+
+message RunRequest {
+    // name of the fixture to run method.
+    string name = 1;
+    enum Method {
+        SetUp = 0;
+        TearDown = 1;
+    }
+    // method of the fixture to run.
+    Method method = 2;
+    // config is the configuration the framework needs to run the fixture.
+    Config config = 3;
+}
+
+message Config {
+    // test_vars contains names and values of runtime variables used to pass out-of-band data to
+    // the fixture.
+    map<string, string> test_vars = 1;
+
+    // data_dir is the path to the directory containing fixture data files.
+    string data_dir = 2;
+    // out_dir is the path to the base directory under which fixtures should write output files.
+    string out_dir = 3;
+    // temp_dir is the path to the directory under which temporary files for fixtures are written.
+	string temp_dir = 4;
+
+	// target is the DUT connection spec as [<user>@]host[:<port>].
+    string target = 5;
+	// key_file is the path to the SSH private key to use to connect to the DUT.
+    string key_file = 6;
+	// key_dir is the directory containing SSH private keys (typically $HOME/.ssh).
+    string key_dir = 7;
+    // local_bundle_dir is the directory on the DUT where local test bundle executables are
+    // located. This path is used by remote fixture to invoke gRPC services in local test.
+    string local_bundle_dir = 8;
+
+    // devservers contains URLs of devservers that can be used to download files.
+    repeated string devservers = 9;
+	// build_artifacts_url is the URL of Google Cloud Storage directory, ending with a slash,
+	// containing build artifacts for the current Chrome OS image.
+    // If it is empty, DefaultBuildArtifactsURL in runner.Config is used.
+    string build_artifacts_url = 10;
+
+    // TODO(oka): Consider adding download_mode to select lazy/eager download.
+}
+
+// Error describes an error encountered while running fixtures.
+message Error {
+    string reason = 1;
+    string file = 2;
+    int32 line = 3;
+    string stack = 4;
+}
+
+message RunResponse {
+    oneof control {
+        // log message.
+        string log = 1;
+        // error message.
+        Error error = 2;
+    }
+}

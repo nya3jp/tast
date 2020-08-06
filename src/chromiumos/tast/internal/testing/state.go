@@ -102,8 +102,8 @@ type RootState struct {
 	hasErr bool // true if any error was reported
 }
 
-// baseState is a base type for State and PreState. It provides methods common
-// to State and PreState.
+// baseState is a base type for *State. It provides methods common
+// to them.
 type baseState struct {
 	root     *RootState // root state for the test
 	subtests []string   // subtest names; used to prefix error messages
@@ -253,7 +253,7 @@ func NewContext(ctx context.Context, s StateForContext) context.Context {
 }
 
 // DataPath returns the absolute path to use to access a data file previously
-// registered via Test.Data.
+// registered via Test.Data or Fixt.Data.
 func (s *baseState) DataPath(p string) string {
 	for _, f := range s.root.test.Data {
 		if f == p {
@@ -264,24 +264,25 @@ func (s *baseState) DataPath(p string) string {
 	return ""
 }
 
-// Param returns Val specified at the Param struct for the current test case.
+// Param returns Val specified at the Param struct for the current entity.
 func (s *State) Param() interface{} {
 	return s.root.test.Val
 }
 
-// DataFileSystem returns an http.FileSystem implementation that serves a test's data files.
+// DataFileSystem returns an http.FileSystem implementation that serves a entity's data files.
 //
 //	srv := httptest.NewServer(http.FileServer(s.DataFileSystem()))
 //	defer srv.Close()
 //	resp, err := http.Get(srv.URL+"/data_file.html")
 func (s *baseState) DataFileSystem() *dataFS { return (*dataFS)(s) }
 
-// OutDir returns a directory into which the test may place arbitrary files
-// that should be included with the test results.
+// OutDir returns a directory into which the entity may place arbitrary files
+// that should be included with the results.
 func (s *baseState) OutDir() string { return s.root.cfg.OutDir }
 
-// Var returns the value for the named variable, which must have been registered via Test.Vars.
-// If a value was not supplied at runtime via the -var flag to "tast run", ok will be false.
+// Var returns the value for the named variable, which must have been registered via the entity's
+// Vars field.
+// If the value was not supplied at runtime via the -var flag to "tast run", ok will be false.
 func (s *baseState) Var(name string) (val string, ok bool) {
 	seen := false
 	for _, n := range s.root.test.Vars {
@@ -352,11 +353,13 @@ func (s *State) Run(ctx context.Context, name string, run func(context.Context, 
 func (s *State) PreValue() interface{} { return s.root.preValue }
 
 // SoftwareDeps returns software dependencies declared in the currently running test.
+// FixtState shouldn't call this method and the result of which is undetermined.
+// TODO(oka): avoid providing this method for FixtState.
 func (s *baseState) SoftwareDeps() []string {
 	return append([]string(nil), s.root.test.SoftwareDeps...)
 }
 
-// ServiceDeps returns service dependencies declared in the currently running test.
+// ServiceDeps returns service dependencies declared in the currently running entity.
 func (s *baseState) ServiceDeps() []string {
 	return append([]string(nil), s.root.test.ServiceDeps...)
 }
@@ -382,7 +385,7 @@ func (s *baseState) Meta() *Meta {
 }
 
 // RPCHint returns information needed to establish gRPC connections.
-// It can only be called by remote tests.
+// It can only be called by remote entities.
 func (s *baseState) RPCHint() *RPCHint {
 	if s.root.cfg.RemoteData == nil {
 		s.Fatal("RPCHint unavailable (is test non-remote?)")
@@ -393,7 +396,7 @@ func (s *baseState) RPCHint() *RPCHint {
 }
 
 // DUT returns a shared SSH connection.
-// It can only be called by remote tests.
+// It can only be called by remote entities.
 func (s *baseState) DUT() *dut.DUT {
 	if s.root.cfg.RemoteData == nil {
 		s.Fatal("DUT unavailable (is test non-remote?)")
@@ -412,9 +415,9 @@ func (s *baseState) Logf(format string, args ...interface{}) {
 	s.root.out.Log(fmt.Sprintf(format, args...))
 }
 
-// Error formats its arguments using default formatting and marks the test
+// Error formats its arguments using default formatting and marks the entity
 // as having failed (using the arguments as a reason for the failure)
-// while letting the test continue execution.
+// while letting the entity continue execution.
 func (s *baseState) Error(args ...interface{}) {
 	s.recordError()
 	fullMsg, lastMsg, err := s.formatError(args...)
@@ -430,7 +433,7 @@ func (s *baseState) Errorf(format string, args ...interface{}) {
 	s.root.out.Error(e)
 }
 
-// Fatal is similar to Error but additionally immediately ends the test.
+// Fatal is similar to Error but additionally immediately ends the entity.
 func (s *baseState) Fatal(args ...interface{}) {
 	s.recordError()
 	fullMsg, lastMsg, err := s.formatError(args...)
@@ -448,7 +451,7 @@ func (s *baseState) Fatalf(format string, args ...interface{}) {
 	runtime.Goexit()
 }
 
-// HasError reports whether the test has already reported errors.
+// HasError reports whether the entity has already reported errors.
 func (s *baseState) HasError() bool {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -607,4 +610,249 @@ func NewError(err error, fullMsg, lastMsg string, skipFrames int) *Error {
 		Line:   ln,
 		Stack:  trace,
 	}
+}
+
+// TODO(oka): Remove method duplications between Fixt*State and baseState in a sensible manner.
+// For example:
+//  - Define the term "entity" as a collective term for fixtures and tests, and create an entity
+// scoped struct.
+//  - Define the struct for handling errors.
+
+// FixtState is the state the framework passes to Fixture.Prepare and Fixture.Close.
+type FixtState struct {
+}
+
+// CloudStorage returns a client for Google Cloud Storage.
+func (s *FixtState) CloudStorage() *CloudStorage {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// DataFileSystem returns an http.FileSystem implementation that serves the fixture's data files.
+//
+// See baseState.DataFileSystem for details.
+func (s *FixtState) DataFileSystem() *dataFS {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// DataPath returns the absolute path to use to access a data file previously
+// registered via Fixt.Data.
+func (s *FixtState) DataPath(p string) string {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// DUT returns a shared SSH connection.
+// It can only be called by remote fixtures.
+func (s *FixtState) DUT() *dut.DUT {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// Error formats its arguments using default formatting and marks the fixture
+// as having failed (using the arguments as a reason for the failure)
+// while letting the fixture continue execution.
+func (s *FixtState) Error(args ...interface{}) {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// Errorf is similar to Error but formats its arguments using fmt.Sprintf.
+func (s *FixtState) Errorf(format string, args ...interface{}) {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// Fatal is similar to Error but additionally immediately ends the fixture.
+func (s *FixtState) Fatal(args ...interface{}) {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// Fatalf is similar to Fatal but formats its arguments using fmt.Sprintf.
+func (s *FixtState) Fatalf(format string, args ...interface{}) {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// HasError reports whether the fixture has already reported errors.
+func (s *FixtState) HasError() bool {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// Log formats its arguments using default formatting and logs them.
+func (s *FixtState) Log(args ...interface{}) {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// Logf is similar to Log but formats its arguments using fmt.Sprintf.
+func (s *FixtState) Logf(format string, args ...interface{}) {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// OutDir returns a directory into which the fixture may place arbitrary files
+// that should be included with the results.
+func (s *FixtState) OutDir() string {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// Var returns the value for the named variable, which must have been registered via the fixture's
+// Vars field.
+// If the value was not supplied at runtime via the -var flag to "tast run", ok will be false.
+func (s *FixtState) Var(name string) (val string, ok bool) {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// RequiredVar is similar to Var but aborts the test if the named variable was not supplied.
+func (s *FixtState) RequiredVar(name string) string {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// RPCHint returns information needed to establish gRPC connections.
+// It can only be called by remote fixtures.
+func (s *FixtState) RPCHint() *RPCHint {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// ServiceDeps returns service dependencies declared in the currently running fixture.
+func (s *FixtState) ServiceDeps() []string {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// Param returns Val specified at the Param struct for the current fixture.
+func (s *FixtState) Param() interface{} {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// ParentValue returns the parent fixture value if the fixture has a parent in the same process.
+// ParentValue returns nil otherwise.
+func (s *FixtState) ParentValue() interface{} {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// FixtAdjustState is the state the framework passes to Adjust.
+type FixtAdjustState struct{}
+
+// CloudStorage returns a client for Google Cloud Storage.
+func (s *FixtAdjustState) CloudStorage() *CloudStorage {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// DUT returns a shared SSH connection.
+// It can only be called by remote fixtures.
+func (s *FixtAdjustState) DUT() *dut.DUT {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// RPCHint returns information needed to establish gRPC connections.
+// It can only be called by remote fixtures.
+func (s *FixtAdjustState) RPCHint() *RPCHint {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// Log formats its arguments using default formatting and logs them.
+func (s *FixtAdjustState) Log(args ...interface{}) {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// Logf is similar to Log but formats its arguments using fmt.Sprintf.
+func (s *FixtAdjustState) Logf(format string, args ...interface{}) {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// OutDir returns a directory into which the fixture may place arbitrary files
+// that should be included with the results.
+func (s *FixtAdjustState) OutDir() string {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// FixtPostTestState is the state the framework passes to PostTest.
+type FixtPostTestState struct{}
+
+// CloudStorage returns a client for Google Cloud Storage.
+func (s *FixtPostTestState) CloudStorage() *CloudStorage {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// DUT returns a shared SSH connection.
+// It can only be called by remote fixtures.
+func (s *FixtPostTestState) DUT() *dut.DUT {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// RPCHint returns information needed to establish gRPC connections.
+// It can only be called by remote fixtures.
+func (s *FixtPostTestState) RPCHint() *RPCHint {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// Log formats its arguments using default formatting and logs them.
+func (s *FixtPostTestState) Log(args ...interface{}) {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// Logf is similar to Log but formats its arguments using fmt.Sprintf.
+func (s *FixtPostTestState) Logf(format string, args ...interface{}) {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// OutDir returns a directory into which the fixture may place arbitrary files
+// that should be included with the results.
+func (s *FixtPostTestState) OutDir() string {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// Error formats its arguments using default formatting and marks the fixture
+// as having failed (using the arguments as a reason for the failure)
+// while letting the fixture continue execution.
+func (s *FixtPostTestState) Error(args ...interface{}) {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// Errorf is similar to Error but formats its arguments using fmt.Sprintf.
+func (s *FixtPostTestState) Errorf(format string, args ...interface{}) {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// Fatal is similar to Error but additionally immediately ends the fixture.
+func (s *FixtPostTestState) Fatal(args ...interface{}) {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// Fatalf is similar to Fatal but formats its arguments using fmt.Sprintf.
+func (s *FixtPostTestState) Fatalf(format string, args ...interface{}) {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// HasError reports whether the fixture has already reported errors.
+func (s *FixtPostTestState) HasError() bool {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
 }

@@ -1,0 +1,48 @@
+// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package tast.core;
+option go_package = "chromiumos/tast/internal/bundle";
+
+// FixtureService provides methods to set up or tear down single remote fixture.
+// Currently we don't support Reset, PreTest, PostTest, and nested remote fixtures.
+service FixtureService {
+    rpc Run(RunRequest) returns (stream RunResponse) {}
+}
+
+message RunRequest {
+    // name of the fixture to run method.
+    string name = 1;
+    enum Method {
+        SetUp = 0;
+        TearDown = 1;
+    }
+    // method of the fixture to run.
+    Method method = 2;
+    // config is the configuration the framework needs to run the fixture.
+    Config config = 3;
+}
+
+message Config {
+    // TODO(oka): Add fields referring to the bundle.RunTestsArgs struct.
+}
+
+// Error describes an error encountered while running fixtures.
+message Error {
+    string reason = 1;
+    string file = 2;
+    int32 line = 3;
+    string stack = 4;
+}
+
+message RunResponse {
+    oneof control {
+        // log message.
+        string log = 1;
+        // error message.
+        Error error = 2;
+    }
+}

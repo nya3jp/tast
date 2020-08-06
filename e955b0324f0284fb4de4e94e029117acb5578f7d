@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "3cd06022_5b02e362",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1300299
+      },
+      "writtenOn": "2020-08-06T00:14:11Z",
+      "side": 1,
+      "message": "Yes, don\u0027t send the ones created by the various crash tests",
+      "parentUuid": "83f5b1b0_144dfafb",
+      "range": {
+        "startLine": 12,
+        "startChar": 5,
+        "endLine": 14,
+        "endChar": 0
+      },
+      "revId": "e955b0324f0284fb4de4e94e029117acb5578f7d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c11a74ca_a292e942",
         "filename": "src/chromiumos/tast/internal/runner/sys_info.go",
         "patchSetId": 1

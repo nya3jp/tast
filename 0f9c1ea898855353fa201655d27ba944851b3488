@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "df144b00_c76ed845",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1206284
+      },
+      "writtenOn": "2020-08-07T12:19:43Z",
+      "side": 1,
+      "message": "we should really revisit test coverage rules for tast changes\n\nthis seems like way too much testing/fanout that probably buys very little\n\ni can help out here if anyone wants to partner up and revisiting hw test coverage rules on cq",
+      "revId": "0f9c1ea898855353fa201655d27ba944851b3488",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

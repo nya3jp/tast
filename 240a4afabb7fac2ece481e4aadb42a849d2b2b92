@@ -46,6 +46,30 @@
       "revId": "240a4afabb7fac2ece481e4aadb42a849d2b2b92",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "97eaf340_66faa7d2",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 1206284
+      },
+      "writtenOn": "2020-08-07T12:39:00Z",
+      "side": 0,
+      "message": "added pprabhu@ for some help around tclint",
+      "parentUuid": "ac85f770_c2ff8313",
+      "range": {
+        "startLine": 187,
+        "startChar": 26,
+        "endLine": 187,
+        "endChar": 29
+      },
+      "revId": "240a4afabb7fac2ece481e4aadb42a849d2b2b92",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

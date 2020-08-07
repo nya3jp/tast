@@ -107,6 +107,30 @@
     },
     {
       "key": {
+        "uuid": "f0aa0315_7cd84d28",
+        "filename": "src/chromiumos/tast/internal/crash/crash.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-07T10:22:47Z",
+      "side": 1,
+      "message": "\u003e Do non-googlers ever run tast tests on official builds?\nIIUC yes, partners have access to test images from internal official builders.\n\nActually I\u0027m not sure either how to limit the feature to CrOS labs. Can you post to chromeos-infra-discuss or somewhere to ask? I\u0027m afraid that enabling this feature everywhere can be risky.",
+      "parentUuid": "55184294_57582885",
+      "range": {
+        "startLine": 169,
+        "startChar": 0,
+        "endLine": 172,
+        "endChar": 33
+      },
+      "revId": "74adfccc56f0ec96ed6fb72f79de57e7f58e2926",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "87b1f652_f3f30bf9",
         "filename": "src/chromiumos/tast/internal/crash/crash.go",
         "patchSetId": 2
@@ -142,6 +166,30 @@
       "side": 1,
       "message": "It blocks",
       "parentUuid": "87b1f652_f3f30bf9",
+      "range": {
+        "startLine": 175,
+        "startChar": 1,
+        "endLine": 175,
+        "endChar": 138
+      },
+      "revId": "74adfccc56f0ec96ed6fb72f79de57e7f58e2926",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "680b16a7_6dcff3b9",
+        "filename": "src/chromiumos/tast/internal/crash/crash.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-07T10:22:47Z",
+      "side": 1,
+      "message": "I see. Since this code path is enabled for local runs as well, I\u0027m afraid that users will see the tast command to freeze for a while at the end of the test if it causes crashes.",
+      "parentUuid": "525928ee_a3085582",
       "range": {
         "startLine": 175,
         "startChar": 1,

@@ -71,9 +71,10 @@ func main() {
 			// TODO(b/73436929) Grunt cannot run 720p due to performance issue,
 			// we should remove grunt after hardware encoding supported.
 			// daisy variants' cameras don't support 1280x720.
-			"camera_720p":             "!snow && !skate && !spring && !grunt",
-			"camera_legacy":           `!"arc-camera1" && !"arc-camera3"`,
-			"chrome":                  "!chromeless_tty && !rialto",
+			"camera_720p":   "!snow && !skate && !spring && !grunt",
+			"camera_legacy": `!"arc-camera1" && !"arc-camera3"`,
+			// TODO(https://crbug.com/1109025): Re-enable on zork once it is fixed.
+			"chrome":                  "!chromeless_tty && !rialto && !zork",
 			"chrome_internal":         "chrome_internal",
 			"crashpad":                "!force_breakpad",
 			"cros_config":             "unibuild",

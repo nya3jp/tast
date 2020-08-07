@@ -70,6 +70,30 @@
       "revId": "240a4afabb7fac2ece481e4aadb42a849d2b2b92",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7469dab5_08700951",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 1002639
+      },
+      "writtenOn": "2020-08-07T16:21:40Z",
+      "side": 0,
+      "message": "The version you are fetching there is \u003e3 months old (even then the CIPD fetch shouldn\u0027t fail..)\n\nIn any case, I\u0027ve released a new version: JWbE1OOypcIR7PTWuJsDP_WMIoKE2jujjfCGBu_h9zsC\n\nCan you try one more time and ping / email me if you\u0027re still seeing this error?",
+      "parentUuid": "97eaf340_66faa7d2",
+      "range": {
+        "startLine": 187,
+        "startChar": 26,
+        "endLine": 187,
+        "endChar": 29
+      },
+      "revId": "240a4afabb7fac2ece481e4aadb42a849d2b2b92",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

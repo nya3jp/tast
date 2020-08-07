@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "db2a7ddf_4e499311",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1161844
+      },
+      "writtenOn": "2020-08-07T19:17:03Z",
+      "side": 1,
+      "message": "Yes, TLS APIs are src/config/proto/chromiumos/config/api/test/tls/common.proto",
+      "parentUuid": "d664dcbc_30f99ddb",
+      "revId": "3b718465dfc18a21064fe880b539ba208e22babe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f95af373_a1e72874",
         "filename": "src/chromiumos/tast/cmd/tast/internal/run/run.go",
         "patchSetId": 4

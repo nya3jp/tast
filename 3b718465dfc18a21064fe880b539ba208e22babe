@@ -16,6 +16,41 @@
       "revId": "3b718465dfc18a21064fe880b539ba208e22babe",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d664dcbc_30f99ddb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-08-07T09:48:46Z",
+      "side": 1,
+      "message": "Let me see if I understood correctly; Do you mean that all of this change is TLW rather than TLS, because all of the API functions are categorized as wiring? src/config/proto/chromiumos/config/api/test/tls/wiring.proto",
+      "parentUuid": "9d7c820a_0bd5f10b",
+      "revId": "3b718465dfc18a21064fe880b539ba208e22babe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f95af373_a1e72874",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-08-07T09:48:46Z",
+      "side": 1,
+      "message": "does this error include request details?",
+      "revId": "3b718465dfc18a21064fe880b539ba208e22babe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

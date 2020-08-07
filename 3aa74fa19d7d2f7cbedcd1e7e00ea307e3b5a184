@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2a1e1046_ca948300",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1305461
+      },
+      "writtenOn": "2020-08-07T22:20:24Z",
+      "side": 1,
+      "message": "More failure examples:\n\nhttps://tastboard.corp.google.com/test/ui.ChromeCrashLoggedIn.broker_crashpad_mock_consent\nhttps://tastboard.corp.google.com/test/assistant.TimeQuery\nhttps://tastboard.corp.google.com/test/camera.CCAUISanity.real\nhttps://tastboard.corp.google.com/test/graphics.ScreenshotCLI\nhttps://tastboard.corp.google.com/test/example.Keyboard\nhttps://tastboard.corp.google.com/test/video.DecodeAccel.vp9_show_existing_frame\n",
+      "revId": "3aa74fa19d7d2f7cbedcd1e7e00ea307e3b5a184",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

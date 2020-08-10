@@ -5,8 +5,8 @@
 Please file bug reports and feature requests in the [Chromium issue tracker],
 using the following components:
 
-*   `Tests>Tast>Framework`: Core framework issues.
-*   `Tests>Tast`: Everything else.
+*   `Test>Tast>Framework`: Core framework issues.
+*   `Test>Tast`: Everything else.
 
 [Chromium issue tracker]: https://bugs.chromium.org/p/chromium/issues/list
 

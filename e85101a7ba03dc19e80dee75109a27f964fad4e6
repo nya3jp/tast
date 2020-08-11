@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "896d7881_7c996a5c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-11T02:20:08Z",
+      "side": 1,
+      "message": "Still work in process. Need the design review to be approved first. \n\nhttps://docs.google.com/document/d/18ZlpEsTIWLAT8m14DFlL4Ru4gQYMe7qRv0VTO5knLuc/edit#\n\nThanks.",
+      "revId": "e85101a7ba03dc19e80dee75109a27f964fad4e6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

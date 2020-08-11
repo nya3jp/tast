@@ -22,6 +22,30 @@
       "revId": "386529962e34da58c0fc0320eab897c0ef589f1a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3dc89063_c0520cb4",
+        "filename": "src/chromiumos/tast/internal/testing/service.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-11T08:20:32Z",
+      "side": 1,
+      "message": "It sounds fine to provide testing.ServiceState.Log. Let me do that.\n\nHowever I still think providing a service-scoped context is aligned to the overall context/state design in Tast --- for every entity (test/precondition/fixture/service) we want to consistently provide context and state tied to the entity and its lifetime. Currently the only context.Context available to services are ones passed to gRPC methods, which are requested-scoped (and thus canceled after a gRPC method call finishes).",
+      "parentUuid": "5e201cc0_1af89fd1",
+      "range": {
+        "startLine": 38,
+        "startChar": 23,
+        "endLine": 38,
+        "endChar": 30
+      },
+      "revId": "386529962e34da58c0fc0320eab897c0ef589f1a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

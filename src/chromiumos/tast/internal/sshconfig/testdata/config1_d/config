@@ -1,0 +1,22 @@
+# Copyright 2020 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+Include non_existing_file  # Test non-existing include file.
+
+Include octopus_config     # Test include file at top.
+
+Host test*                 # Test simple wildcard.
+    HostName %h.google.com # Test format %h.
+    Port 2224
+
+Host !*google.com eve*     # Test patterns with negate.
+    Include port_config    # Test include file without Host keyword.
+    HostName 127.0.0.1     # Use other rule for port.
+
+Host hello*                # Test nest include.
+    user goodday
+    Include hello_config   # Test nest include.
+
+Host 0:0:0:0:0:ffff:*1
+    Port 2222

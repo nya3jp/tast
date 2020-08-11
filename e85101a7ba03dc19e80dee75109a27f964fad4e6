@@ -36,6 +36,23 @@
     },
     {
       "key": {
+        "uuid": "29fb7011_6c64bd25",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-11T17:46:28Z",
+      "side": 1,
+      "message": "Forget to press the Save button in one comment before I hit reply. Please see additional comments.",
+      "revId": "e85101a7ba03dc19e80dee75109a27f964fad4e6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d303abe5_43293956",
         "filename": "src/chromiumos/tast/cmd/tast/internal/run/run.go",
         "patchSetId": 1
@@ -111,6 +128,30 @@
       "writtenOn": "2020-08-11T08:11:20Z",
       "side": 1,
       "message": "Design: This file exports many symbols like callbacks, but I think ultimately we only want three things:\n\n1. A function to parse an SSH config file. (a simple function is enough; stateful parser types are not needed)\n2. A struct that represents the whole SSH config.\n3. A struct that represents the config for a particular host.\n\nFor example, signatures would be something like:\n\n package sshconfig\n\n // Parse parses an SSH config file at filename and returns the parsed config.\n func Parse(filename string) (*Config, error)\n\n // Config holds an SSH config for multiple hosts.\n type Config struct { ... }\n\n // HostConfig returns a per-host SSH config for hostname.\n func (c *Config) HostConfig(hostname string) *HostConfig\n\n // HostConfig holds an SSH config for a particular host.\n type HostConfig struct { ... }\n\n // HostName returns the real host name for the host.\n func (c *HostConfig) HostName() string\n\n // Port returns the SSH port number for the host.\n func (c *HostConfig) Port() int\n\nCan you try to clean up the exported symbols to follow the signatures above?",
+      "range": {
+        "startLine": 3,
+        "startChar": 0,
+        "endLine": 3,
+        "endChar": 29
+      },
+      "revId": "e85101a7ba03dc19e80dee75109a27f964fad4e6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5fa8fbc7_d31aa57d",
+        "filename": "src/chromiumos/tast/ssh/sshconfig.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-11T17:46:28Z",
+      "side": 1,
+      "message": "\u003e A struct that represents the whole SSH config.\n\nI was thinking of about doing this before. However, I decided not to do it based on two reasons.\n\n1. Conditional Include \n\nWe can have a ~/.ssh/config like this\n\nHost XYZ*\n    Include ~/.ssh/xyz.conf\n\nHost ABC*\n    Include ~/.ssh/abc.conf\n\nHost *\n     Port 22\n\nLet\u0027s say the host name we use is ABC_test.google.com. We will never need to include xyz.conf. Furthermore, I think the including xyz.conf might change the behavior. For example, let\u0027s say xyz.conf is like this.\n\nHost XYZ1*\n     Hostname %h.google.com\n     Port 2222\n\nHost XYZ2 *\n     Hostname %h.googler.com\n     Port 2223\n\nHost *\n     Hostname %h.c.googler.com\n     Port 2224\n\nIf we simply xyz.conf regardless the condition, we would include last \"Host *\" in xyz.conf which will affect the rest of .ssh/config. For the input of test.google.com, user will get test.google.com.c.goolger.com:2224 instead of the expect value test.google.com:22.\n\nThe other way is to have the structure of Config to support some kind of hierarchical structure. It is doable, but the structure may be too complicate for the current use.\n\n2. We don\u0027t need the rest of the files if we get what we need in the first few lines of the file. We usually only need to parse the file once. Therefore, I don\u0027t think it is necessary to parse the whole file. \n\nIf there is a need to reuse the same information, please let me know. I will redesign the host structure to support hierarchical definition. \n\nFor now, here is what I suggest\n\n package sshconfig\n // Parse parses an SSH config file at filename and returns the parsed config.\n func Parse(hostname, filename string) (*HostConfig, error)\n\n // HostConfig holds an SSH config for a particular host.\n type HostConfig struct { ... }\n \n// HostName returns the real host name for the host.\n func (c *HostConfig) HostName() string\n\n // Port returns the SSH port number for the host.\n func (c *HostConfig) Port() int\n\n\nPlease let me know what you think.\n\nThanks.",
+      "parentUuid": "23fc8dad_c0e5429c",
       "range": {
         "startLine": 3,
         "startChar": 0,

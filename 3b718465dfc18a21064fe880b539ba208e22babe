@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "d6f7aa34_87dc833b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-11T08:37:16Z",
+      "side": 1,
+      "message": "Done s/TLS/TLW/g.",
+      "parentUuid": "db2a7ddf_4e499311",
+      "revId": "3b718465dfc18a21064fe880b539ba208e22babe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f95af373_a1e72874",
         "filename": "src/chromiumos/tast/cmd/tast/internal/run/run.go",
         "patchSetId": 4
@@ -69,6 +87,24 @@
       "revId": "3b718465dfc18a21064fe880b539ba208e22babe",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "92c01c13_b6ba09c5",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-11T08:37:16Z",
+      "side": 1,
+      "message": "It doesn\u0027t include the request details, but the RPC error message is included. For example, if we intentionally break the unit test:\n\n Failed to resolve target: rpc error: code \u003d Unknown desc \u003d not found in DUT port map: the_dut:22",
+      "parentUuid": "f95af373_a1e72874",
+      "revId": "3b718465dfc18a21064fe880b539ba208e22babe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

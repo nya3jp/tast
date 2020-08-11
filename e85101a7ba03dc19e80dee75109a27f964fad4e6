@@ -19,6 +19,23 @@
     },
     {
       "key": {
+        "uuid": "79d84c09_1bbac5bc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-11T17:17:51Z",
+      "side": 1,
+      "message": "Hi Shuhei:\n\nThanks for the suggestion. Also, I have questions regarding the review comments. Please take a look when have time.\n\nThanks.\n\nSeewai\n",
+      "revId": "e85101a7ba03dc19e80dee75109a27f964fad4e6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d303abe5_43293956",
         "filename": "src/chromiumos/tast/cmd/tast/internal/run/run.go",
         "patchSetId": 1
@@ -30,6 +47,30 @@
       "writtenOn": "2020-08-11T08:11:20Z",
       "side": 1,
       "message": "We don\u0027t need the fallback behavior since OpenSSH doesn\u0027t do so as well. Let\u0027s simply rewrite cfg.Target before connectToTarget.",
+      "range": {
+        "startLine": 85,
+        "startChar": 2,
+        "endLine": 86,
+        "endChar": 36
+      },
+      "revId": "e85101a7ba03dc19e80dee75109a27f964fad4e6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "06b4cf91_1a387aaa",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-11T17:17:51Z",
+      "side": 1,
+      "message": "Will do",
+      "parentUuid": "d303abe5_43293956",
       "range": {
         "startLine": 85,
         "startChar": 2,

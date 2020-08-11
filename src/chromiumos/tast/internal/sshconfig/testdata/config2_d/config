@@ -1,0 +1,18 @@
+# Copyright 2020 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+Include hana_*                         # Test include file with wildcard.
+
+Host *zone
+    HostName fe00::1ff:ffff:7f00:1%%%h # Test format %%%h.
+    Port 2230
+
+Host prefix*                           # Test host match two rules.
+    HostName tworules.google.com
+
+Host *suffix                           # Test host match two rules.
+    Port 2231
+
+Host !*:* *
+    Port 22

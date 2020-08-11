@@ -23,6 +23,7 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/build"
 	"chromiumos/tast/internal/runner"
+	"chromiumos/tast/internal/sshconfig"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/ssh"
 	"chromiumos/tast/timing"
@@ -80,6 +81,16 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []*EntityResu
 			status.FailedBeforeRun = true
 		}
 	}()
+
+	// Check if host name needs to be resolved.
+	alternateTarget, err := sshconfig.ResolveHost(cfg.Target)
+	if err != nil {
+		cfg.Logger.Logf("Error in reading SSH configuaration files: %v", err)
+	} else if alternateTarget != cfg.Target {
+		cfg.Logger.Logf("Use target %v instead of %v to connect according to SSH configuration files",
+			alternateTarget, cfg.Target)
+		cfg.Target = alternateTarget // Change targets according to SSH configuration files.
+	}
 
 	if err := connectToTLW(ctx, cfg); err != nil {
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to TLW server: %v", err), nil

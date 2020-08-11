@@ -46,6 +46,30 @@
       "revId": "386529962e34da58c0fc0320eab897c0ef589f1a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ced1fc8a_79ef58ab",
+        "filename": "src/chromiumos/tast/internal/testing/service.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-08-11T10:13:55Z",
+      "side": 1,
+      "message": "Thank you for the explanation.\nReconsidering it, I agree to have Context() method is aligned to the overall design of Tast.\n\nI feel having an example can be helpful for understanding the usage of it.\nI believe you added this method for some concrete usage. Could you document the usage concisely as an example?\n\nFor Log and Logf method, I actually don\u0027t care much if they are not added in this CL.",
+      "parentUuid": "3dc89063_c0520cb4",
+      "range": {
+        "startLine": 38,
+        "startChar": 23,
+        "endLine": 38,
+        "endChar": 30
+      },
+      "revId": "386529962e34da58c0fc0320eab897c0ef589f1a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

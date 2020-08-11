@@ -77,7 +77,19 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []TestResult)
 		}
 	}()
 
+	// First try to use the target as is
 	hst, err := connectToTarget(ctx, cfg)
+	if err != nil {
+		// TODO: There is a performance issue with this approach. It took 10 seconds to get a failure from connectedToTarget
+		cfg.Logger.Log("Fail to connect to the target at the first time")
+		alternateTarget := ssh.GetRealHost(cfg.Target)
+		if alternateTarget != cfg.Target {
+			cfg.Logger.Logf("Cannot use target as is %v, use %v, which is resolved by ~/.ssh/config, instead",
+				cfg.Target, alternateTarget)
+			cfg.Target = alternateTarget
+			hst, err = connectToTarget(ctx, cfg)
+		}
+	}
 	if err != nil {
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to %s: %v", cfg.Target, err), nil
 	}

@@ -19,6 +19,7 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/build"
 	"chromiumos/tast/internal/runner"
+	"chromiumos/tast/internal/sshconfig"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/ssh"
 	"chromiumos/tast/timing"
@@ -77,6 +78,15 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []TestResult)
 		}
 	}()
 
+	// First try to use the target as is
+	alternateTarget, err := sshconfig.GetResolvedHost(cfg.Target)
+	if err != nil {
+		cfg.Logger.Logf("Error in reading SSH configaration files:", err)
+	} else if alternateTarget != cfg.Target {
+		cfg.Logger.Logf("Use target %v instead of %v to connect according to SSH configuration files",
+			alternateTarget, cfg.Target)
+		cfg.Target = alternateTarget
+	}
 	hst, err := connectToTarget(ctx, cfg)
 	if err != nil {
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to %s: %v", cfg.Target, err), nil

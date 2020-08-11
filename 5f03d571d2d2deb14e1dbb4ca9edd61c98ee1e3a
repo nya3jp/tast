@@ -68,6 +68,30 @@
       "revId": "5f03d571d2d2deb14e1dbb4ca9edd61c98ee1e3a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "da3cfc33_f4b18c31",
+        "filename": "src/chromiumos/tast/rpc/remote_fixture.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-08-11T11:25:36Z",
+      "side": 1,
+      "message": "I don\u0027t fully understand how existing services convey logs.\nCould you tell me some pointer I can refer to?",
+      "parentUuid": "1ee9da46_faeea9c4",
+      "range": {
+        "startLine": 24,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 1
+      },
+      "revId": "5f03d571d2d2deb14e1dbb4ca9edd61c98ee1e3a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

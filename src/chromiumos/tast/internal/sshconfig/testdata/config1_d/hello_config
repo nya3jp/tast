@@ -1,0 +1,14 @@
+# Copyright 2020 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+Host *google.com
+    HostName %h
+    Port 2226
+Host "!*googler.com" *.*
+    HostName %h
+    Port 2227
+Host !"*googler.com" *
+    HostName %h.c.googler.com
+Host !hello22* *
+    Port 2228

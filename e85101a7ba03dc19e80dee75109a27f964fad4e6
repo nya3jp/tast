@@ -16,6 +16,138 @@
       "revId": "e85101a7ba03dc19e80dee75109a27f964fad4e6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d303abe5_43293956",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-11T08:11:20Z",
+      "side": 1,
+      "message": "We don\u0027t need the fallback behavior since OpenSSH doesn\u0027t do so as well. Let\u0027s simply rewrite cfg.Target before connectToTarget.",
+      "range": {
+        "startLine": 85,
+        "startChar": 2,
+        "endLine": 86,
+        "endChar": 36
+      },
+      "revId": "e85101a7ba03dc19e80dee75109a27f964fad4e6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4e2e132c_63dec632",
+        "filename": "src/chromiumos/tast/ssh/sshconfig.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-11T08:11:20Z",
+      "side": 1,
+      "message": "chromiumos/tast/ssh is a package imported from both the framework and Tast tests. But we don\u0027t plan to provide the config parser to Tast tests --- providing something to Tast tests means that we have to maintain its API compatibility, so we don\u0027t want to bother to do so until it becomes really needed.\n\nSo, can you move the config parser to chromiumos/tast/internal/sshconfig? Packages under chromiumos/tast/internal are private to the framework and can\u0027t be imported from Tast tests.",
+      "revId": "e85101a7ba03dc19e80dee75109a27f964fad4e6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "23fc8dad_c0e5429c",
+        "filename": "src/chromiumos/tast/ssh/sshconfig.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-11T08:11:20Z",
+      "side": 1,
+      "message": "Design: This file exports many symbols like callbacks, but I think ultimately we only want three things:\n\n1. A function to parse an SSH config file. (a simple function is enough; stateful parser types are not needed)\n2. A struct that represents the whole SSH config.\n3. A struct that represents the config for a particular host.\n\nFor example, signatures would be something like:\n\n package sshconfig\n\n // Parse parses an SSH config file at filename and returns the parsed config.\n func Parse(filename string) (*Config, error)\n\n // Config holds an SSH config for multiple hosts.\n type Config struct { ... }\n\n // HostConfig returns a per-host SSH config for hostname.\n func (c *Config) HostConfig(hostname string) *HostConfig\n\n // HostConfig holds an SSH config for a particular host.\n type HostConfig struct { ... }\n\n // HostName returns the real host name for the host.\n func (c *HostConfig) HostName() string\n\n // Port returns the SSH port number for the host.\n func (c *HostConfig) Port() int\n\nCan you try to clean up the exported symbols to follow the signatures above?",
+      "range": {
+        "startLine": 3,
+        "startChar": 0,
+        "endLine": 3,
+        "endChar": 29
+      },
+      "revId": "e85101a7ba03dc19e80dee75109a27f964fad4e6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e20ce9d6_d42b9bba",
+        "filename": "src/chromiumos/tast/ssh/sshconfig.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-11T08:11:20Z",
+      "side": 1,
+      "message": "style: Please always end comment sentences with a period.\nhttps://github.com/golang/go/wiki/CodeReviewComments#comment-sentences",
+      "range": {
+        "startLine": 16,
+        "startChar": 71,
+        "endLine": 16,
+        "endChar": 79
+      },
+      "revId": "e85101a7ba03dc19e80dee75109a27f964fad4e6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a067300b_49845043",
+        "filename": "src/chromiumos/tast/ssh/sshconfig.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 225,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-11T08:11:20Z",
+      "side": 1,
+      "message": "This function does two things: expanding tildes and making the path absolute.\n\nLet\u0027s focus on one thing here, i.e. expanding tildes. Then callers can call filepath.Abs separately.",
+      "range": {
+        "startLine": 225,
+        "startChar": 5,
+        "endLine": 225,
+        "endChar": 15
+      },
+      "revId": "e85101a7ba03dc19e80dee75109a27f964fad4e6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "668c5253_1754dd34",
+        "filename": "src/chromiumos/tast/ssh/sshconfig.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 225,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-11T08:11:20Z",
+      "side": 1,
+      "message": "Let\u0027s return (string, error) because the function may fail (e.g. when a user is not found for \"~user/foo\").",
+      "range": {
+        "startLine": 225,
+        "startChar": 26,
+        "endLine": 225,
+        "endChar": 34
+      },
+      "revId": "e85101a7ba03dc19e80dee75109a27f964fad4e6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

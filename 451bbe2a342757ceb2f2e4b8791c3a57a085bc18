@@ -1,0 +1,337 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a2b9ab6f_198197ff",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-11T03:52:52Z",
+      "side": 1,
+      "message": "Sorry for delayed review. I\u0027d like to discuss several points offline later.\n",
+      "revId": "451bbe2a342757ceb2f2e4b8791c3a57a085bc18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b8f682ee_0859bbe4",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-11T03:52:52Z",
+      "side": 1,
+      "message": "General: Let\u0027s use consistent verbs for fixture-related operations. For example:\n\n- To call Prepare: prepare the fixture/environment\n- To call Close and Prepare: re-prepare the fixture/environment\n- To call Close: close the fixture/environment\n- To call Adjust: adjust the fixture/environment\n\nThat said, now that the Adjust method has a clear purpose, I think that \"reset\" or something similar is a better method name in place of \"adjust\". IMHO \"adjust\" doesn\u0027t have a meaning to restore the state to original one. https://www.ldoceonline.com/dictionary/adjust\n\nLet\u0027s discuss wording offline later.",
+      "revId": "451bbe2a342757ceb2f2e4b8791c3a57a085bc18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d27717b7_b7ebf88d",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-11T03:52:52Z",
+      "side": 1,
+      "message": "Wording: After thinking twice, I think it\u0027s good to include a short summary of operations expected in each method. In this case:\n\n Prepare is called by the framework to prepare the environment with possibly heavy-weight operations.",
+      "range": {
+        "startLine": 25,
+        "startChar": 12,
+        "endLine": 25,
+        "endChar": 64
+      },
+      "revId": "451bbe2a342757ceb2f2e4b8791c3a57a085bc18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4990c22c_814faea0",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-11T03:52:52Z",
+      "side": 1,
+      "message": "Wording: The context and state passed to this method are fixture-scoped, i.e. the context is alive and the state is valid until Close returns. The context and state are associated with the fixture itself, not with any test depending on the fixture. For example, testing.ContextOutDir(ctx) returns the output directory allocated for the fixture itself. testing.ContextSoftwareDeps fails for the context since fixtures can\u0027t declare software dependencies.",
+      "range": {
+        "startLine": 27,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 26
+      },
+      "revId": "451bbe2a342757ceb2f2e4b8791c3a57a085bc18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6bdbb32d_ef32fd7e",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-11T03:52:52Z",
+      "side": 1,
+      "message": "Nice description of the problem!",
+      "range": {
+        "startLine": 31,
+        "startChar": 0,
+        "endLine": 38,
+        "endChar": 65
+      },
+      "revId": "451bbe2a342757ceb2f2e4b8791c3a57a085bc18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0a55d806_574a8c4d",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-11T03:52:52Z",
+      "side": 1,
+      "message": "Wording: this fixture in the entity graph",
+      "range": {
+        "startLine": 40,
+        "startChar": 65,
+        "endLine": 40,
+        "endChar": 81
+      },
+      "revId": "451bbe2a342757ceb2f2e4b8791c3a57a085bc18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "79446be0_658b4247",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-11T03:52:52Z",
+      "side": 1,
+      "message": "Wording: Adjust (and PostTest)",
+      "range": {
+        "startLine": 43,
+        "startChar": 26,
+        "endLine": 43,
+        "endChar": 38
+      },
+      "revId": "451bbe2a342757ceb2f2e4b8791c3a57a085bc18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "29051eff_f125f1de",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-11T03:52:52Z",
+      "side": 1,
+      "message": "Wording: Mind removing this blank line to make it clear that this is one paragraph?",
+      "range": {
+        "startLine": 52,
+        "startChar": 0,
+        "endLine": 52,
+        "endChar": 3
+      },
+      "revId": "451bbe2a342757ceb2f2e4b8791c3a57a085bc18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4afec356_972e9b44",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-11T03:52:52Z",
+      "side": 1,
+      "message": "Wording: to do a light-weight adjustment of the environment to the original state.",
+      "range": {
+        "startLine": 66,
+        "startChar": 50,
+        "endLine": 66,
+        "endChar": 55
+      },
+      "revId": "451bbe2a342757ceb2f2e4b8791c3a57a085bc18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "95ea1c1f_fa4fe683",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-11T03:52:52Z",
+      "side": 1,
+      "message": "Wording: The context and state passed to this method are test-scoped, i.e. the context is alive and the state is valid until PostTest returns. The context and state are associated with the next test, not with the fixture itself. For example, testing.ContextOutDir(ctx) returns the output directory allocated for the next test.",
+      "range": {
+        "startLine": 68,
+        "startChar": 0,
+        "endLine": 68,
+        "endChar": 46
+      },
+      "revId": "451bbe2a342757ceb2f2e4b8791c3a57a085bc18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e63deff0_3fd5fd3c",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-11T03:52:52Z",
+      "side": 1,
+      "message": "Wording: If Adjust returns a non-nil error, the framework closes and re-prepares the fixture to recover. To be accurate, the following methods are called:",
+      "range": {
+        "startLine": 70,
+        "startChar": 7,
+        "endLine": 70,
+        "endChar": 36
+      },
+      "revId": "451bbe2a342757ceb2f2e4b8791c3a57a085bc18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3f26a919_f5cc4984",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-11T03:52:52Z",
+      "side": 1,
+      "message": "Wording: Consequently, errors returned Adjust don\u0027t affect ascendant fixtures.",
+      "range": {
+        "startLine": 76,
+        "startChar": 4,
+        "endLine": 76,
+        "endChar": 55
+      },
+      "revId": "451bbe2a342757ceb2f2e4b8791c3a57a085bc18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d6e6b043_0b630c4b",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-11T03:52:52Z",
+      "side": 1,
+      "message": "Mark: align wording",
+      "range": {
+        "startLine": 77,
+        "startChar": 25,
+        "endLine": 77,
+        "endChar": 30
+      },
+      "revId": "451bbe2a342757ceb2f2e4b8791c3a57a085bc18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8934a607_8a3e9da1",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-11T03:52:52Z",
+      "side": 1,
+      "message": "Mark: align wording",
+      "range": {
+        "startLine": 78,
+        "startChar": 84,
+        "endLine": 78,
+        "endChar": 90
+      },
+      "revId": "451bbe2a342757ceb2f2e4b8791c3a57a085bc18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4580e53c_572c2e5f",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-11T03:52:52Z",
+      "side": 1,
+      "message": "Important: I wonder if this is actually true. Let\u0027s say there are two fixtures A -\u003e B (B depends on A). When the first call of B.Adjust fails, all tests depending on B are marked failed... and I guess we don\u0027t want to call A.PostTest in this case.\n\nThis behavior has large implication. Let\u0027s discuss this offline later...",
+      "range": {
+        "startLine": 87,
+        "startChar": 1,
+        "endLine": 87,
+        "endChar": 76
+      },
+      "revId": "451bbe2a342757ceb2f2e4b8791c3a57a085bc18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

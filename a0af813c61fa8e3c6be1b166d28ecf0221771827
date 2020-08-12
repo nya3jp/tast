@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ce80d28e_1b9559f8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 11
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-12T05:26:04Z",
+      "side": 1,
+      "message": "Thank you for patience! I now have trivial comments only.\n",
+      "revId": "a0af813c61fa8e3c6be1b166d28ecf0221771827",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f24e183c_668700e1",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-12T05:26:04Z",
+      "side": 1,
+      "message": "state is not passed.",
+      "range": {
+        "startLine": 66,
+        "startChar": 16,
+        "endLine": 66,
+        "endChar": 25
+      },
+      "revId": "a0af813c61fa8e3c6be1b166d28ecf0221771827",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0d21c184_f9e1cb8a",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-12T05:26:04Z",
+      "side": 1,
+      "message": "Can you also update this paragraph to avoid mentioning them as test-scoped?",
+      "range": {
+        "startLine": 88,
+        "startChar": 0,
+        "endLine": 91,
+        "endChar": 49
+      },
+      "revId": "a0af813c61fa8e3c6be1b166d28ecf0221771827",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ac0d0091_daf9eee6",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-12T05:26:04Z",
+      "side": 1,
+      "message": "Ditto.",
+      "range": {
+        "startLine": 112,
+        "startChar": 0,
+        "endLine": 112,
+        "endChar": 89
+      },
+      "revId": "a0af813c61fa8e3c6be1b166d28ecf0221771827",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

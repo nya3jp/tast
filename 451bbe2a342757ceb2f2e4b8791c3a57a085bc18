@@ -36,6 +36,24 @@
     },
     {
       "key": {
+        "uuid": "55f750fb_bf06a4cf",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-08-12T01:56:35Z",
+      "side": 1,
+      "message": "Thanks. Renamed as follows.\n- Adjust -\u003e Reset\n- Prepare -\u003e SetUp\n- Close -\u003e TearDown\n\nAlso updated some wordings to be consistent.",
+      "parentUuid": "b8f682ee_0859bbe4",
+      "revId": "451bbe2a342757ceb2f2e4b8791c3a57a085bc18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d27717b7_b7ebf88d",
         "filename": "src/chromiumos/tast/internal/testing/fixt.go",
         "patchSetId": 7
@@ -59,6 +77,30 @@
     },
     {
       "key": {
+        "uuid": "a49e0e2d_cee829fe",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-08-12T01:56:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d27717b7_b7ebf88d",
+      "range": {
+        "startLine": 25,
+        "startChar": 12,
+        "endLine": 25,
+        "endChar": 64
+      },
+      "revId": "451bbe2a342757ceb2f2e4b8791c3a57a085bc18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4990c22c_814faea0",
         "filename": "src/chromiumos/tast/internal/testing/fixt.go",
         "patchSetId": 7
@@ -79,6 +121,30 @@
       "revId": "451bbe2a342757ceb2f2e4b8791c3a57a085bc18",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0f684d4d_1b746e97",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-08-12T01:56:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4990c22c_814faea0",
+      "range": {
+        "startLine": 27,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 26
+      },
+      "revId": "451bbe2a342757ceb2f2e4b8791c3a57a085bc18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -128,6 +194,30 @@
     },
     {
       "key": {
+        "uuid": "ca88d646_439af67e",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-08-12T01:56:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0a55d806_574a8c4d",
+      "range": {
+        "startLine": 40,
+        "startChar": 65,
+        "endLine": 40,
+        "endChar": 81
+      },
+      "revId": "451bbe2a342757ceb2f2e4b8791c3a57a085bc18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "79446be0_658b4247",
         "filename": "src/chromiumos/tast/internal/testing/fixt.go",
         "patchSetId": 7
@@ -148,6 +238,30 @@
       "revId": "451bbe2a342757ceb2f2e4b8791c3a57a085bc18",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8b806c57_5516b886",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-08-12T01:56:35Z",
+      "side": 1,
+      "message": "Done.\nNow we have PreTest and PostTest. I\u0027m not sure if my wording looks natural...",
+      "parentUuid": "79446be0_658b4247",
+      "range": {
+        "startLine": 43,
+        "startChar": 26,
+        "endLine": 43,
+        "endChar": 38
+      },
+      "revId": "451bbe2a342757ceb2f2e4b8791c3a57a085bc18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -174,6 +288,30 @@
     },
     {
       "key": {
+        "uuid": "76600622_53742cb6",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-08-12T01:56:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "29051eff_f125f1de",
+      "range": {
+        "startLine": 52,
+        "startChar": 0,
+        "endLine": 52,
+        "endChar": 3
+      },
+      "revId": "451bbe2a342757ceb2f2e4b8791c3a57a085bc18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4afec356_972e9b44",
         "filename": "src/chromiumos/tast/internal/testing/fixt.go",
         "patchSetId": 7
@@ -194,6 +332,30 @@
       "revId": "451bbe2a342757ceb2f2e4b8791c3a57a085bc18",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "547ce2d3_305399fc",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-08-12T01:56:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4afec356_972e9b44",
+      "range": {
+        "startLine": 66,
+        "startChar": 50,
+        "endLine": 66,
+        "endChar": 55
+      },
+      "revId": "451bbe2a342757ceb2f2e4b8791c3a57a085bc18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -220,6 +382,30 @@
     },
     {
       "key": {
+        "uuid": "28725b9b_7d6c78c4",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-08-12T01:56:35Z",
+      "side": 1,
+      "message": "We splitted Reset and PreTest. As discussed, I removed s from Reset\u0027s signature.\nI think providing ctx is still meaningful for logging.",
+      "parentUuid": "95ea1c1f_fa4fe683",
+      "range": {
+        "startLine": 68,
+        "startChar": 0,
+        "endLine": 68,
+        "endChar": 46
+      },
+      "revId": "451bbe2a342757ceb2f2e4b8791c3a57a085bc18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e63deff0_3fd5fd3c",
         "filename": "src/chromiumos/tast/internal/testing/fixt.go",
         "patchSetId": 7
@@ -240,6 +426,30 @@
       "revId": "451bbe2a342757ceb2f2e4b8791c3a57a085bc18",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "30a03cb3_5f28bb30",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-08-12T01:56:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e63deff0_3fd5fd3c",
+      "range": {
+        "startLine": 70,
+        "startChar": 7,
+        "endLine": 70,
+        "endChar": 36
+      },
+      "revId": "451bbe2a342757ceb2f2e4b8791c3a57a085bc18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -266,6 +476,30 @@
     },
     {
       "key": {
+        "uuid": "13baac8b_7a56fa20",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-08-12T01:56:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3f26a919_f5cc4984",
+      "range": {
+        "startLine": 76,
+        "startChar": 4,
+        "endLine": 76,
+        "endChar": 55
+      },
+      "revId": "451bbe2a342757ceb2f2e4b8791c3a57a085bc18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d6e6b043_0b630c4b",
         "filename": "src/chromiumos/tast/internal/testing/fixt.go",
         "patchSetId": 7
@@ -286,6 +520,30 @@
       "revId": "451bbe2a342757ceb2f2e4b8791c3a57a085bc18",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ef0cef44_93a64334",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-08-12T01:56:35Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "d6e6b043_0b630c4b",
+      "range": {
+        "startLine": 77,
+        "startChar": 25,
+        "endLine": 77,
+        "endChar": 30
+      },
+      "revId": "451bbe2a342757ceb2f2e4b8791c3a57a085bc18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -312,6 +570,30 @@
     },
     {
       "key": {
+        "uuid": "bd2e9123_7c67e2ab",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-08-12T01:56:35Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "8934a607_8a3e9da1",
+      "range": {
+        "startLine": 78,
+        "startChar": 84,
+        "endLine": 78,
+        "endChar": 90
+      },
+      "revId": "451bbe2a342757ceb2f2e4b8791c3a57a085bc18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4580e53c_572c2e5f",
         "filename": "src/chromiumos/tast/internal/testing/fixt.go",
         "patchSetId": 7
@@ -332,6 +614,30 @@
       "revId": "451bbe2a342757ceb2f2e4b8791c3a57a085bc18",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "12ec18c8_de632d89",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-08-12T01:56:35Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "4580e53c_572c2e5f",
+      "range": {
+        "startLine": 87,
+        "startChar": 1,
+        "endLine": 87,
+        "endChar": 76
+      },
+      "revId": "451bbe2a342757ceb2f2e4b8791c3a57a085bc18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

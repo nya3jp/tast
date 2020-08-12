@@ -643,3 +643,214 @@ func (s *TestHookState) TestInstance() *TestInstance {
 func (s *TestHookState) Purgeable() []string {
 	return append([]string(nil), s.root.cfg.Purgeable...)
 }
+
+// TODO(oka): Remove method duplications between Fixt*State and baseState in a sensible manner.
+// For example:
+//  - Define the term "entity" as a collective term for fixtures and tests, and create an entity
+// scoped struct.
+//  - Define the struct for handling errors.
+
+// FixtState is the state the framework passes to Fixture.SetUp and Fixture.TearDown.
+type FixtState struct {
+}
+
+// CloudStorage returns a client for Google Cloud Storage.
+func (s *FixtState) CloudStorage() *CloudStorage {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// DataFileSystem returns an http.FileSystem implementation that serves the fixture's data files.
+//
+// See baseState.DataFileSystem for details.
+func (s *FixtState) DataFileSystem() *dataFS {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// DataPath returns the absolute path to use to access a data file previously
+// registered via Fixt.Data.
+func (s *FixtState) DataPath(p string) string {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// DUT returns a shared SSH connection.
+// It can only be called by remote fixtures.
+func (s *FixtState) DUT() *dut.DUT {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// Error formats its arguments using default formatting and marks the fixture
+// as having failed (using the arguments as a reason for the failure)
+// while letting the fixture continue execution.
+func (s *FixtState) Error(args ...interface{}) {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// Errorf is similar to Error but formats its arguments using fmt.Sprintf.
+func (s *FixtState) Errorf(format string, args ...interface{}) {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// Fatal is similar to Error but additionally immediately ends the fixture.
+func (s *FixtState) Fatal(args ...interface{}) {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// Fatalf is similar to Fatal but formats its arguments using fmt.Sprintf.
+func (s *FixtState) Fatalf(format string, args ...interface{}) {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// FixtContext returns fixture-scoped context. i.e. the context is alive until TearDown returns.
+// The context is also associated with the fixture metadata. For example,
+// testing.ContextOutDir(ctx) returns the output directory allocated to the fixture.
+func (s *FixtState) FixtContext() context.Context {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// HasError reports whether the fixture has already reported errors.
+func (s *FixtState) HasError() bool {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// Log formats its arguments using default formatting and logs them.
+func (s *FixtState) Log(args ...interface{}) {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// Logf is similar to Log but formats its arguments using fmt.Sprintf.
+func (s *FixtState) Logf(format string, args ...interface{}) {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// OutDir returns a directory into which the fixture may place arbitrary files
+// that should be included with the results.
+func (s *FixtState) OutDir() string {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// Var returns the value for the named variable, which must have been registered via the fixture's
+// Vars field.
+// If the value was not supplied at runtime via the -var flag to "tast run", ok will be false.
+func (s *FixtState) Var(name string) (val string, ok bool) {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// RequiredVar is similar to Var but aborts the test if the named variable was not supplied.
+func (s *FixtState) RequiredVar(name string) string {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// RPCHint returns information needed to establish gRPC connections.
+// It can only be called by remote fixtures.
+func (s *FixtState) RPCHint() *RPCHint {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// ServiceDeps returns service dependencies declared in the currently running fixture.
+func (s *FixtState) ServiceDeps() []string {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// Param returns Val specified at the Param struct for the current fixture.
+func (s *FixtState) Param() interface{} {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// ParentValue returns the parent fixture value if the fixture has a parent in the same process.
+// ParentValue returns nil otherwise.
+func (s *FixtState) ParentValue() interface{} {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// FixtTestState is the state the framework passes to PreTest and PostTest.
+type FixtTestState struct{}
+
+// CloudStorage returns a client for Google Cloud Storage.
+func (s *FixtTestState) CloudStorage() *CloudStorage {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// DUT returns a shared SSH connection.
+// It can only be called by remote fixtures.
+func (s *FixtTestState) DUT() *dut.DUT {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// RPCHint returns information needed to establish gRPC connections.
+// It can only be called by remote fixtures.
+func (s *FixtTestState) RPCHint() *RPCHint {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// Log formats its arguments using default formatting and logs them.
+func (s *FixtTestState) Log(args ...interface{}) {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// Logf is similar to Log but formats its arguments using fmt.Sprintf.
+func (s *FixtTestState) Logf(format string, args ...interface{}) {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// OutDir returns a directory into which the fixture may place arbitrary files
+// that should be included with the results.
+func (s *FixtTestState) OutDir() string {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// Error formats its arguments using default formatting and marks the fixture
+// as having failed (using the arguments as a reason for the failure)
+// while letting the fixture continue execution.
+func (s *FixtTestState) Error(args ...interface{}) {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// Errorf is similar to Error but formats its arguments using fmt.Sprintf.
+func (s *FixtTestState) Errorf(format string, args ...interface{}) {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// Fatal is similar to Error but additionally immediately ends the fixture.
+func (s *FixtTestState) Fatal(args ...interface{}) {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// Fatalf is similar to Fatal but formats its arguments using fmt.Sprintf.
+func (s *FixtTestState) Fatalf(format string, args ...interface{}) {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}
+
+// HasError reports whether the fixture has already reported errors.
+func (s *FixtTestState) HasError() bool {
+	// TODO(oka): Implement it.
+	panic("to be implemented")
+}

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f4ee21d4_f239f675",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 32
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2020-08-12T19:58:14Z",
+      "side": 1,
+      "message": "Perhaps you could elaborate a bit?\n\n\"Indicates if Chrome supports proprietary video codecs (e.g. H.264). \nThis is supported by Chrome official builds and Chromium builds with\nthe |propietary_codecs| build flag set.\"",
+      "range": {
+        "startLine": 125,
+        "startChar": 36,
+        "endLine": 125,
+        "endChar": 63
+      },
+      "revId": "9c647cfa0b1d7d5e7824a9dc752751e93b3c04d9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

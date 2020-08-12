@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "95b096e6_a2e9298a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-12T04:23:56Z",
+      "side": 1,
+      "message": "Removing CR+2 to request another review iteration.\n\nOh wait, I changed my mind. testing.ServiceState.Context was too simple name and users won\u0027t tell the difference between the context passed to gRPC methods and contexts obtained via testing.ServiceState.Context.\n\nSo I renamed the method from Context to ServiceContext, hoping that it will signal that it\u0027s something different from usual contexts.\n",
+      "revId": "b17f664a6ffb5ed91dde0422623ae0eca9c48dbd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "dd4d1a2d_4d57f84f",
+        "filename": "src/chromiumos/tast/rpc/remote_fixture.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-08-12T07:59:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "67997baa_2780fe88",
+      "range": {
+        "startLine": 8,
+        "startChar": 37,
+        "endLine": 8,
+        "endChar": 40
+      },
+      "revId": "5f03d571d2d2deb14e1dbb4ca9edd61c98ee1e3a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b6c7f7c2_9d5df37d",
         "filename": "src/chromiumos/tast/rpc/remote_fixture.proto",
         "patchSetId": 4
@@ -116,6 +140,30 @@
       "revId": "5f03d571d2d2deb14e1dbb4ca9edd61c98ee1e3a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2e278b30_c80e215d",
+        "filename": "src/chromiumos/tast/rpc/remote_fixture.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-08-12T07:59:53Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "da3cfc33_f4b18c31",
+      "range": {
+        "startLine": 24,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 1
+      },
+      "revId": "5f03d571d2d2deb14e1dbb4ca9edd61c98ee1e3a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

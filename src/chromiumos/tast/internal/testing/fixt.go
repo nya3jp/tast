@@ -8,14 +8,6 @@ import (
 	"context"
 )
 
-// FixtState is the state the framework passes to SetUp and TearDown.
-// TODO(oka): Move the following states to the best place.
-type FixtState struct{}
-
-// FixtTestState is the state the framework passes to PostTest.
-// TODO(oka): Consider if we can use just State.
-type FixtTestState struct{}
-
 // FixtureImpl provides implementation of the fixture registered to the framework.
 type FixtureImpl interface {
 	// SetUp is called by the framework to set up the environment with possibly heavy-weight

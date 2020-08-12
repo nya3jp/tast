@@ -22,6 +22,30 @@
       "revId": "9c2694053fd38d10d0f16e6d2c0a03f9b6870a55",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ef62721f_228c8988",
+        "filename": "src/chromiumos/tast/internal/testing/service.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-12T03:24:37Z",
+      "side": 1,
+      "message": "Done. When a remote bundle starts a local bundle for gRPC services, it starts Logging.ReadLogs gRPC streaming call to watch for logs emitted by gRPC services. Thus logs emitted via this context appear in test logs.",
+      "parentUuid": "5b8fbcab_a4db5a4c",
+      "range": {
+        "startLine": 48,
+        "startChar": 21,
+        "endLine": 48,
+        "endChar": 31
+      },
+      "revId": "9c2694053fd38d10d0f16e6d2c0a03f9b6870a55",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

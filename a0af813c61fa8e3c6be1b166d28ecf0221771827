@@ -42,6 +42,30 @@
     },
     {
       "key": {
+        "uuid": "e7a15f84_15cf5d1f",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-08-12T05:47:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f24e183c_668700e1",
+      "range": {
+        "startLine": 66,
+        "startChar": 16,
+        "endLine": 66,
+        "endChar": 25
+      },
+      "revId": "a0af813c61fa8e3c6be1b166d28ecf0221771827",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0d21c184_f9e1cb8a",
         "filename": "src/chromiumos/tast/internal/testing/fixt.go",
         "patchSetId": 11
@@ -65,6 +89,30 @@
     },
     {
       "key": {
+        "uuid": "4fb3d6ac_198c590c",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-08-12T05:47:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0d21c184_f9e1cb8a",
+      "range": {
+        "startLine": 88,
+        "startChar": 0,
+        "endLine": 91,
+        "endChar": 49
+      },
+      "revId": "a0af813c61fa8e3c6be1b166d28ecf0221771827",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ac0d0091_daf9eee6",
         "filename": "src/chromiumos/tast/internal/testing/fixt.go",
         "patchSetId": 11
@@ -85,6 +133,30 @@
       "revId": "a0af813c61fa8e3c6be1b166d28ecf0221771827",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6c886883_ef15de54",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-08-12T05:47:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ac0d0091_daf9eee6",
+      "range": {
+        "startLine": 112,
+        "startChar": 0,
+        "endLine": 112,
+        "endChar": 89
+      },
+      "revId": "a0af813c61fa8e3c6be1b166d28ecf0221771827",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

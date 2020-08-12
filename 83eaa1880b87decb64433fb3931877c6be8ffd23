@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "f131e2f6_6e91ce5b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 7
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1362700
+      },
+      "writtenOn": "2020-08-12T19:02:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2e03be2b_914951c3",
+      "revId": "83eaa1880b87decb64433fb3931877c6be8ffd23",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "377e0aa0_3c331593",
         "filename": "/COMMIT_MSG",
         "patchSetId": 7
@@ -90,6 +108,24 @@
     },
     {
       "key": {
+        "uuid": "0e671422_08eab029",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 7
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1362700
+      },
+      "writtenOn": "2020-08-12T19:02:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "377e0aa0_3c331593",
+      "revId": "83eaa1880b87decb64433fb3931877c6be8ffd23",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "698f7f88_40fb5a12",
         "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
         "patchSetId": 7
@@ -116,6 +152,24 @@
         "id": 1111649
       },
       "writtenOn": "2020-07-01T21:21:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "698f7f88_40fb5a12",
+      "revId": "83eaa1880b87decb64433fb3931877c6be8ffd23",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4ecf2993_f453feca",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1362700
+      },
+      "writtenOn": "2020-08-12T19:02:13Z",
       "side": 1,
       "message": "Done",
       "parentUuid": "698f7f88_40fb5a12",

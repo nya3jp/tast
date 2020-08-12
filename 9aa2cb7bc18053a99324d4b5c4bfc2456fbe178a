@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "75b70f5d_e5478f69",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-12T04:33:43Z",
+      "side": 1,
+      "message": "Oh wait... I realized that we want to cancel the context on completion of each method because otherwise we can\u0027t enforce timeouts declared in metadata (e.g. SetUpTimeout).\n\nSo let\u0027s stop calling them fixture-scoped, instead say they\u0027re associated with the fixture metadata. As for real fixture-scoped contexts, I guess we provide them via testing.FixtState.FixtContext or something (similar to testing.ServiceState.ServiceContext).\n\nHow about:\n\n The context and state passed to SetUp are associated with the fixture metadata. For example, testing.ContextOutDir(ctx) and s.OutDir() return the output directory allocated for the fixture itself. testing.ContextSoftwareDeps(ctx) fails since fixtures can\u0027t declare software dependencies.",
+      "range": {
+        "startLine": 24,
+        "startChar": 67,
+        "endLine": 25,
+        "endChar": 55
+      },
+      "revId": "9aa2cb7bc18053a99324d4b5c4bfc2456fbe178a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7cee689b_f6b55cb4",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-12T04:33:43Z",
+      "side": 1,
+      "message": "Sorry, I somehow thought that this is a comment for Adjust method, and that\u0027s why I suggested \"Adjust (and PostTest)\". But given that this is a comment for SetUp, I think it\u0027s perfectly natural to write this as \"in Reset, PreTest and PostTest\".",
+      "range": {
+        "startLine": 43,
+        "startChar": 19,
+        "endLine": 43,
+        "endChar": 51
+      },
+      "revId": "9aa2cb7bc18053a99324d4b5c4bfc2456fbe178a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "96488db9_c2ae8db8",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-12T04:33:43Z",
+      "side": 1,
+      "message": "Let\u0027s use the term \"reset\".",
+      "range": {
+        "startLine": 66,
+        "startChar": 17,
+        "endLine": 66,
+        "endChar": 27
+      },
+      "revId": "9aa2cb7bc18053a99324d4b5c4bfc2456fbe178a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

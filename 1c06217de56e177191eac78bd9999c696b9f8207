@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6ac01597_9c4e34e2",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 711,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-12T05:31:58Z",
+      "side": 1,
+      "message": "Can you also add FixtContext?",
+      "revId": "1c06217de56e177191eac78bd9999c696b9f8207",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -48,6 +48,30 @@
     },
     {
       "key": {
+        "uuid": "d1733c6f_cae66c49",
+        "filename": "src/chromiumos/tast/rpc/remote_fixture.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-08-12T07:59:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b6c7f7c2_9d5df37d",
+      "range": {
+        "startLine": 23,
+        "startChar": 4,
+        "endLine": 23,
+        "endChar": 23
+      },
+      "revId": "5f03d571d2d2deb14e1dbb4ca9edd61c98ee1e3a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1ee9da46_faeea9c4",
         "filename": "src/chromiumos/tast/rpc/remote_fixture.proto",
         "patchSetId": 4

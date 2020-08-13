@@ -36,6 +36,9 @@ const (
 	RPCMode = 2
 	// ExportMetadataMode indicates that the bundle should compose and dump test metadata.
 	ExportMetadataMode = 3
+	// ListFixturesMode indicates that the bundle should write information about all the fixtures
+	// to stdout as a JSON array of testing.FixtureInfo structs and exit.
+	ListFixturesMode = 4
 )
 
 // Args is used to pass arguments from test runners to test bundles.

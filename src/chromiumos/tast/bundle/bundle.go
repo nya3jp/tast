@@ -68,6 +68,9 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
+	case ListFixturesMode:
+		// TODO(oka): Implement ListFixturesMode.
+		panic("to be implemented")
 	case ExportMetadataMode:
 		tests, err := testsToRun(cfg, nil)
 		if err != nil {

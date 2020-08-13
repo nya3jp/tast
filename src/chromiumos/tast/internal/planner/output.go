@@ -34,7 +34,8 @@ type entityOutputStream struct {
 	ei  *testing.EntityInfo
 
 	mu    sync.Mutex
-	ended bool
+	hasErr bool
+	ended  bool
 }
 
 var _ testing.OutputStream = &entityOutputStream{}
@@ -73,6 +74,7 @@ func (w *entityOutputStream) Error(e *testing.Error) error {
 	if w.ended {
 		return errAlreadyEnded
 	}
+	w.hasErr = true
 	return w.out.EntityError(w.ei, e)
 }
 
@@ -86,4 +88,11 @@ func (w *entityOutputStream) End(skipReasons []string, timingLog *timing.Log) er
 	}
 	w.ended = true
 	return w.out.EntityEnd(w.ei, skipReasons, timingLog)
+}
+
+// HasError reports if any error has been reported.
+func (w *entityOutputStream) HasError() bool {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	return w.hasErr
 }

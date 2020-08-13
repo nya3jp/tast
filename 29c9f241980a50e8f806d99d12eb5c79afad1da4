@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "777ed3e4_e1940bc6",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1000107
+      },
+      "writtenOn": "2020-08-13T14:48:48Z",
+      "side": 1,
+      "message": "I don\u0027t think this is technically a requirement, though it works for Chrome OS.  Someone (I think Stephen Boyd) pointed to the proper place.  I didn\u0027t do it for trogdor (sorry) but I did mention it in CL:2229355.  I think we want to use:\n\n  /sys/bus/soc/devices/soc0/\n\nDoes that exist for you and work?  For trogdor I get:\n\n  family:Snapdragon\n  revision:1.1\n  soc_id:425\n\nFor cheza I get:\n\n  family:Snapdragon\n  machine:SDM845\n  revision:2.1\n  soc_id:321\n\nHuh, I wonder why it doesn\u0027t have the machine for trogdor?  In any case, maybe this is the right place to be looking?",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 54
+      },
+      "revId": "29c9f241980a50e8f806d99d12eb5c79afad1da4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6cb877dc_d267021b",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 1

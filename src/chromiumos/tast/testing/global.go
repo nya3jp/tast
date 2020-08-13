@@ -36,3 +36,8 @@ func AddTest(t *Test) {
 func AddService(s *Service) {
 	testing.AddService(s)
 }
+
+// AddFixture adds fixture f to the global registry.
+func AddFixture(f *Fixture) {
+	testing.AddFixture(f)
+}

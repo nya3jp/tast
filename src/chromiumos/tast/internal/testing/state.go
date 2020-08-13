@@ -233,14 +233,19 @@ type RuntimeConfig struct {
 	Purgeable []string
 }
 
+// NewEntityRoot returns a new EntityRoot object.
+func NewEntityRoot(out OutputStream, cfg *TestConfig) *EntityRoot {
+	return &EntityRoot{
+		cfg: cfg,
+		out: out,
+	}
+}
+
 // NewTestEntityRoot returns a new TestEntityRoot object.
 func NewTestEntityRoot(test *TestInstance, out OutputStream, cfg *RuntimeConfig) *TestEntityRoot {
 	return &TestEntityRoot{
-		entityRoot: &EntityRoot{
-			cfg: cfg,
-			out: out,
-		},
-		test: test,
+		entityRoot: NewEntityRoot(out, cfg),
+		test:       test,
 	}
 }
 
@@ -283,6 +288,13 @@ func (r *TestEntityRoot) newTestHookState() *TestHookState {
 	}
 }
 
+// newFixtState creates a FixtState for a fixture.
+func (r *EntityRoot) newFixtState() *FixtState {
+	return &FixtState{
+		globalMixin: r.newGlobalMixin("", r.HasError()),
+	}
+}
+
 // RunWithTestState runs f, passing a Context and a State for a test.
 // If f panics, it recovers and reports the error via the State.
 // f is run within a goroutine to avoid making the calling goroutine exit if
@@ -309,6 +321,12 @@ func (r *TestEntityRoot) RunWithPreState(ctx context.Context, f func(ctx context
 // f calls s.Fatal (which calls runtime.Goexit).
 func (r *TestEntityRoot) RunWithTestHookState(ctx context.Context, f func(ctx context.Context, s *TestHookState)) {
 	s := r.newTestHookState()
+	ctx = NewContext(ctx, s.entityContext(), func(msg string) { s.Log(msg) })
+	runAndRecover(func() { f(ctx, s) }, s)
+}
+
+func (r *EntityRoot) RunWithFixtState(ctx context.Context, f func(ctx context.Context, s *FixtState)) {
+	s := r.newFixtState()
 	ctx = NewContext(ctx, s.entityContext(), func(msg string) { s.Log(msg) })
 	runAndRecover(func() { f(ctx, s) }, s)
 }

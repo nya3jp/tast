@@ -53,6 +53,24 @@
     },
     {
       "key": {
+        "uuid": "79428f56_206b7b83",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-13T02:22:21Z",
+      "side": 1,
+      "message": "I have changed the function signature for most functions. Please check.",
+      "parentUuid": "fbd540af_8ab44743",
+      "revId": "9534e953480d37d8fe3422856b2bb6f4a203091b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "4cd3d870_ef435383",
         "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
         "patchSetId": 3
@@ -99,6 +117,54 @@
     },
     {
       "key": {
+        "uuid": "210e7e7d_3bc11355",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-13T02:22:21Z",
+      "side": 1,
+      "message": "Done. Please check.",
+      "parentUuid": "4cd3d870_ef435383",
+      "range": {
+        "startLine": 18,
+        "startChar": 5,
+        "endLine": 18,
+        "endChar": 15
+      },
+      "revId": "9534e953480d37d8fe3422856b2bb6f4a203091b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fd4d5e7d_f41ea166",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-13T02:22:21Z",
+      "side": 1,
+      "message": "I have addressed this issue. Please check if it is sufficient.",
+      "parentUuid": "b21d5c76_f8db1d97",
+      "range": {
+        "startLine": 18,
+        "startChar": 16,
+        "endLine": 18,
+        "endChar": 22
+      },
+      "revId": "9534e953480d37d8fe3422856b2bb6f4a203091b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e13a9868_3025333c",
         "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
         "patchSetId": 3
@@ -122,6 +188,30 @@
     },
     {
       "key": {
+        "uuid": "c441298c_6ff00a03",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-13T02:22:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e13a9868_3025333c",
+      "range": {
+        "startLine": 25,
+        "startChar": 5,
+        "endLine": 25,
+        "endChar": 17
+      },
+      "revId": "9534e953480d37d8fe3422856b2bb6f4a203091b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e23a859e_b88b7c68",
         "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
         "patchSetId": 3
@@ -133,6 +223,30 @@
       "writtenOn": "2020-08-12T10:36:22Z",
       "side": 1,
       "message": "I\u0027d say the returned name is not a \"real\" host but rather something like \"resolved\" host.\n\nHost about naming the function \"ResolveHostName\"?\n\nNote that Get* is discouraged naming in Go. When possible, starting function names with a verb is preferred.\n\nc.f. https://golang.org/doc/effective_go.html#names",
+      "range": {
+        "startLine": 33,
+        "startChar": 5,
+        "endLine": 33,
+        "endChar": 16
+      },
+      "revId": "9534e953480d37d8fe3422856b2bb6f4a203091b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "71782c90_d75b6036",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-13T02:22:21Z",
+      "side": 1,
+      "message": "I changed it to GetResolvedHost. Please let me know if it is ok.",
+      "parentUuid": "e23a859e_b88b7c68",
       "range": {
         "startLine": 33,
         "startChar": 5,
@@ -168,6 +282,30 @@
     },
     {
       "key": {
+        "uuid": "168b8657_37fffb83",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-13T02:22:21Z",
+      "side": 1,
+      "message": "I have added additional comments. Please check if it is sufficient.",
+      "parentUuid": "104e00fe_7351e417",
+      "range": {
+        "startLine": 43,
+        "startChar": 23,
+        "endLine": 43,
+        "endChar": 36
+      },
+      "revId": "9534e953480d37d8fe3422856b2bb6f4a203091b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "2194740e_acb49f91",
         "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
         "patchSetId": 3
@@ -179,6 +317,30 @@
       "writtenOn": "2020-08-12T10:36:22Z",
       "side": 1,
       "message": "Let\u0027s use net.SplitHostPort.\nhttps://godoc.org/net#SplitHostPort\n\nParticularly this won\u0027t work for IPv6 addresses. And there is a real IPv6 user :)  crrev.com/c/2146107",
+      "range": {
+        "startLine": 45,
+        "startChar": 0,
+        "endLine": 48,
+        "endChar": 2
+      },
+      "revId": "9534e953480d37d8fe3422856b2bb6f4a203091b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "20c64886_c42ba501",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-13T02:22:21Z",
+      "side": 1,
+      "message": "net.SplitHostPort cannot handle host name without port. I changed my code to use it but I also added additional handling for different cases.",
+      "parentUuid": "2194740e_acb49f91",
       "range": {
         "startLine": 45,
         "startChar": 0,
@@ -214,6 +376,30 @@
     },
     {
       "key": {
+        "uuid": "a79cd23f_b77bddad",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-13T02:22:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "865b779b_1f146a51",
+      "range": {
+        "startLine": 87,
+        "startChar": 13,
+        "endLine": 87,
+        "endChar": 36
+      },
+      "revId": "9534e953480d37d8fe3422856b2bb6f4a203091b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "de21d5bc_1e030513",
         "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
         "patchSetId": 3
@@ -225,6 +411,30 @@
       "writtenOn": "2020-08-12T10:36:22Z",
       "side": 1,
       "message": "Can you try to reduce nesting?\n\nc.f.\nhttps://github.com/golang/go/wiki/CodeReviewComments#indent-error-flow",
+      "range": {
+        "startLine": 224,
+        "startChar": 1,
+        "endLine": 224,
+        "endChar": 31
+      },
+      "revId": "9534e953480d37d8fe3422856b2bb6f4a203091b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "799d32bc_e80d1254",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 224,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-13T02:22:21Z",
+      "side": 1,
+      "message": "I have tried to reduce nesting. Please check if it is ok. Thanks.",
+      "parentUuid": "de21d5bc_1e030513",
       "range": {
         "startLine": 224,
         "startChar": 1,

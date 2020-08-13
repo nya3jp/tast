@@ -8,6 +8,7 @@ package command
 import (
 	"fmt"
 	"io"
+	"log"
 )
 
 // StatusError implements the error interface and contains an additional status code.
@@ -37,7 +38,9 @@ func WriteError(w io.Writer, err error) int {
 	var status int
 
 	if se, ok := err.(*StatusError); ok {
-		msg = se.msg
+		// se == nil here.
+		log.Printf("WriteError; se = %v", se)
+		msg = se.msg // here!
 		status = se.status
 	} else {
 		msg = err.Error()

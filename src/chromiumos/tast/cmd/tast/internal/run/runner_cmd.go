@@ -10,8 +10,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"os/exec"
+	"strings"
 
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/ssh"
@@ -103,9 +105,19 @@ func runTestRunnerCommand(r runnerCmd, args *runner.Args, out interface{}) error
 	r.SetStderr(&stderr)
 
 	b, err := r.Output()
+
+	// for verbose logging
+	verboseLog := stderr.Bytes()
+	verboseLog2 := ""
+	for _, l := range strings.Split(string(verboseLog), "\n") {
+		verboseLog2 += "  " + l + "\n"
+	}
+	log.Println("verboseLog:", string(verboseLog2))
+
 	if err != nil {
 		// Append the first line of stderr, which often contains useful info
 		// for debugging to users.
+
 		if split := bytes.SplitN(stderr.Bytes(), []byte(","), 2); len(split) > 0 {
 			err = fmt.Errorf("%s: %s", err, string(split[0]))
 		}

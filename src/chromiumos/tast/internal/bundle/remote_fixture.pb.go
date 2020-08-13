@@ -25,42 +25,15 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
-type RunFixtureRequest_Method int32
-
-const (
-	RunFixtureRequest_SetUp    RunFixtureRequest_Method = 0
-	RunFixtureRequest_TearDown RunFixtureRequest_Method = 1
-)
-
-var RunFixtureRequest_Method_name = map[int32]string{
-	0: "SetUp",
-	1: "TearDown",
-}
-
-var RunFixtureRequest_Method_value = map[string]int32{
-	"SetUp":    0,
-	"TearDown": 1,
-}
-
-func (x RunFixtureRequest_Method) String() string {
-	return proto.EnumName(RunFixtureRequest_Method_name, int32(x))
-}
-
-func (RunFixtureRequest_Method) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_5cb9905fdd848d3a, []int{0, 0}
-}
-
 // RunFixtureRequest is the request to RunFixture.
 type RunFixtureRequest struct {
-	// Name is the name of the fixture to run method.
-	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Method is the method of the fixture to run.
-	Method RunFixtureRequest_Method `protobuf:"varint,2,opt,name=method,proto3,enum=tast.core.RunFixtureRequest_Method" json:"method,omitempty"`
-	// Config is the configuration the framework needs to run the fixture.
-	Config               *RunFixtureConfig `protobuf:"bytes,3,opt,name=config,proto3" json:"config,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
-	XXX_unrecognized     []byte            `json:"-"`
-	XXX_sizecache        int32             `json:"-"`
+	// Types that are valid to be assigned to Control:
+	//	*RunFixtureRequest_SetUp
+	//	*RunFixtureRequest_TearDown
+	Control              isRunFixtureRequest_Control `protobuf_oneof:"control"`
+	XXX_NoUnkeyedLiteral struct{}                    `json:"-"`
+	XXX_unrecognized     []byte                      `json:"-"`
+	XXX_sizecache        int32                       `json:"-"`
 }
 
 func (m *RunFixtureRequest) Reset()         { *m = RunFixtureRequest{} }
@@ -88,23 +61,139 @@ func (m *RunFixtureRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_RunFixtureRequest proto.InternalMessageInfo
 
-func (m *RunFixtureRequest) GetName() string {
+type isRunFixtureRequest_Control interface {
+	isRunFixtureRequest_Control()
+}
+
+type RunFixtureRequest_SetUp struct {
+	SetUp *RunFixtureSetUpRequest `protobuf:"bytes,1,opt,name=set_up,json=setUp,proto3,oneof"`
+}
+
+type RunFixtureRequest_TearDown struct {
+	TearDown *RunFixtureTearDownRequest `protobuf:"bytes,2,opt,name=tear_down,json=tearDown,proto3,oneof"`
+}
+
+func (*RunFixtureRequest_SetUp) isRunFixtureRequest_Control() {}
+
+func (*RunFixtureRequest_TearDown) isRunFixtureRequest_Control() {}
+
+func (m *RunFixtureRequest) GetControl() isRunFixtureRequest_Control {
+	if m != nil {
+		return m.Control
+	}
+	return nil
+}
+
+func (m *RunFixtureRequest) GetSetUp() *RunFixtureSetUpRequest {
+	if x, ok := m.GetControl().(*RunFixtureRequest_SetUp); ok {
+		return x.SetUp
+	}
+	return nil
+}
+
+func (m *RunFixtureRequest) GetTearDown() *RunFixtureTearDownRequest {
+	if x, ok := m.GetControl().(*RunFixtureRequest_TearDown); ok {
+		return x.TearDown
+	}
+	return nil
+}
+
+// XXX_OneofWrappers is for the internal use of the proto package.
+func (*RunFixtureRequest) XXX_OneofWrappers() []interface{} {
+	return []interface{}{
+		(*RunFixtureRequest_SetUp)(nil),
+		(*RunFixtureRequest_TearDown)(nil),
+	}
+}
+
+// RunFixtureSetUpRequest requests setting up a fixture.
+// This request should be set only once.
+type RunFixtureSetUpRequest struct {
+	// Name is the name of the fixture to run method.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Config is the configuration the framework needs to run the fixture.
+	Config               *RunFixtureConfig `protobuf:"bytes,2,opt,name=config,proto3" json:"config,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
+	XXX_unrecognized     []byte            `json:"-"`
+	XXX_sizecache        int32             `json:"-"`
+}
+
+func (m *RunFixtureSetUpRequest) Reset()         { *m = RunFixtureSetUpRequest{} }
+func (m *RunFixtureSetUpRequest) String() string { return proto.CompactTextString(m) }
+func (*RunFixtureSetUpRequest) ProtoMessage()    {}
+func (*RunFixtureSetUpRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5cb9905fdd848d3a, []int{1}
+}
+
+func (m *RunFixtureSetUpRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_RunFixtureSetUpRequest.Unmarshal(m, b)
+}
+func (m *RunFixtureSetUpRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_RunFixtureSetUpRequest.Marshal(b, m, deterministic)
+}
+func (m *RunFixtureSetUpRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RunFixtureSetUpRequest.Merge(m, src)
+}
+func (m *RunFixtureSetUpRequest) XXX_Size() int {
+	return xxx_messageInfo_RunFixtureSetUpRequest.Size(m)
+}
+func (m *RunFixtureSetUpRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_RunFixtureSetUpRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_RunFixtureSetUpRequest proto.InternalMessageInfo
+
+func (m *RunFixtureSetUpRequest) GetName() string {
 	if m != nil {
 		return m.Name
 	}
 	return ""
 }
 
-func (m *RunFixtureRequest) GetMethod() RunFixtureRequest_Method {
-	if m != nil {
-		return m.Method
-	}
-	return RunFixtureRequest_SetUp
-}
-
-func (m *RunFixtureRequest) GetConfig() *RunFixtureConfig {
+func (m *RunFixtureSetUpRequest) GetConfig() *RunFixtureConfig {
 	if m != nil {
 		return m.Config
+	}
+	return nil
+}
+
+// RunFixtureSetUpRequest requests tearing down a fixture.
+// After the fixture is torn down, the RPC call will be closed.
+type RunFixtureTearDownRequest struct {
+	Token                *RunFixtureSetUpDone `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
+	XXX_unrecognized     []byte               `json:"-"`
+	XXX_sizecache        int32                `json:"-"`
+}
+
+func (m *RunFixtureTearDownRequest) Reset()         { *m = RunFixtureTearDownRequest{} }
+func (m *RunFixtureTearDownRequest) String() string { return proto.CompactTextString(m) }
+func (*RunFixtureTearDownRequest) ProtoMessage()    {}
+func (*RunFixtureTearDownRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5cb9905fdd848d3a, []int{2}
+}
+
+func (m *RunFixtureTearDownRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_RunFixtureTearDownRequest.Unmarshal(m, b)
+}
+func (m *RunFixtureTearDownRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_RunFixtureTearDownRequest.Marshal(b, m, deterministic)
+}
+func (m *RunFixtureTearDownRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RunFixtureTearDownRequest.Merge(m, src)
+}
+func (m *RunFixtureTearDownRequest) XXX_Size() int {
+	return xxx_messageInfo_RunFixtureTearDownRequest.Size(m)
+}
+func (m *RunFixtureTearDownRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_RunFixtureTearDownRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_RunFixtureTearDownRequest proto.InternalMessageInfo
+
+func (m *RunFixtureTearDownRequest) GetToken() *RunFixtureSetUpDone {
+	if m != nil {
+		return m.Token
 	}
 	return nil
 }
@@ -138,7 +227,7 @@ func (m *RunFixtureConfig) Reset()         { *m = RunFixtureConfig{} }
 func (m *RunFixtureConfig) String() string { return proto.CompactTextString(m) }
 func (*RunFixtureConfig) ProtoMessage()    {}
 func (*RunFixtureConfig) Descriptor() ([]byte, []int) {
-	return fileDescriptor_5cb9905fdd848d3a, []int{1}
+	return fileDescriptor_5cb9905fdd848d3a, []int{3}
 }
 
 func (m *RunFixtureConfig) XXX_Unmarshal(b []byte) error {
@@ -230,7 +319,7 @@ func (m *RunFixtureError) Reset()         { *m = RunFixtureError{} }
 func (m *RunFixtureError) String() string { return proto.CompactTextString(m) }
 func (*RunFixtureError) ProtoMessage()    {}
 func (*RunFixtureError) Descriptor() ([]byte, []int) {
-	return fileDescriptor_5cb9905fdd848d3a, []int{2}
+	return fileDescriptor_5cb9905fdd848d3a, []int{4}
 }
 
 func (m *RunFixtureError) XXX_Unmarshal(b []byte) error {
@@ -279,14 +368,46 @@ func (m *RunFixtureError) GetStack() string {
 	return ""
 }
 
+type RunFixtureSetUpDone struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *RunFixtureSetUpDone) Reset()         { *m = RunFixtureSetUpDone{} }
+func (m *RunFixtureSetUpDone) String() string { return proto.CompactTextString(m) }
+func (*RunFixtureSetUpDone) ProtoMessage()    {}
+func (*RunFixtureSetUpDone) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5cb9905fdd848d3a, []int{5}
+}
+
+func (m *RunFixtureSetUpDone) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_RunFixtureSetUpDone.Unmarshal(m, b)
+}
+func (m *RunFixtureSetUpDone) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_RunFixtureSetUpDone.Marshal(b, m, deterministic)
+}
+func (m *RunFixtureSetUpDone) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RunFixtureSetUpDone.Merge(m, src)
+}
+func (m *RunFixtureSetUpDone) XXX_Size() int {
+	return xxx_messageInfo_RunFixtureSetUpDone.Size(m)
+}
+func (m *RunFixtureSetUpDone) XXX_DiscardUnknown() {
+	xxx_messageInfo_RunFixtureSetUpDone.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_RunFixtureSetUpDone proto.InternalMessageInfo
+
 // RunFixtureResponse is the control message the server streams to the caller.
 type RunFixtureResponse struct {
 	// Types that are valid to be assigned to Control:
 	//	*RunFixtureResponse_Log
 	//	*RunFixtureResponse_Error
+	//	*RunFixtureResponse_SetUpDone
 	Control isRunFixtureResponse_Control `protobuf_oneof:"control"`
 	// Timestamp is the timestamp of the event.
-	Timestamp            *timestamp.Timestamp `protobuf:"bytes,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	Timestamp            *timestamp.Timestamp `protobuf:"bytes,4,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
 	XXX_unrecognized     []byte               `json:"-"`
 	XXX_sizecache        int32                `json:"-"`
@@ -296,7 +417,7 @@ func (m *RunFixtureResponse) Reset()         { *m = RunFixtureResponse{} }
 func (m *RunFixtureResponse) String() string { return proto.CompactTextString(m) }
 func (*RunFixtureResponse) ProtoMessage()    {}
 func (*RunFixtureResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_5cb9905fdd848d3a, []int{3}
+	return fileDescriptor_5cb9905fdd848d3a, []int{6}
 }
 
 func (m *RunFixtureResponse) XXX_Unmarshal(b []byte) error {
@@ -329,9 +450,15 @@ type RunFixtureResponse_Error struct {
 	Error *RunFixtureError `protobuf:"bytes,2,opt,name=error,proto3,oneof"`
 }
 
+type RunFixtureResponse_SetUpDone struct {
+	SetUpDone *RunFixtureSetUpDone `protobuf:"bytes,3,opt,name=set_up_done,json=setUpDone,proto3,oneof"`
+}
+
 func (*RunFixtureResponse_Log) isRunFixtureResponse_Control() {}
 
 func (*RunFixtureResponse_Error) isRunFixtureResponse_Control() {}
+
+func (*RunFixtureResponse_SetUpDone) isRunFixtureResponse_Control() {}
 
 func (m *RunFixtureResponse) GetControl() isRunFixtureResponse_Control {
 	if m != nil {
@@ -354,6 +481,13 @@ func (m *RunFixtureResponse) GetError() *RunFixtureError {
 	return nil
 }
 
+func (m *RunFixtureResponse) GetSetUpDone() *RunFixtureSetUpDone {
+	if x, ok := m.GetControl().(*RunFixtureResponse_SetUpDone); ok {
+		return x.SetUpDone
+	}
+	return nil
+}
+
 func (m *RunFixtureResponse) GetTimestamp() *timestamp.Timestamp {
 	if m != nil {
 		return m.Timestamp
@@ -366,58 +500,64 @@ func (*RunFixtureResponse) XXX_OneofWrappers() []interface{} {
 	return []interface{}{
 		(*RunFixtureResponse_Log)(nil),
 		(*RunFixtureResponse_Error)(nil),
+		(*RunFixtureResponse_SetUpDone)(nil),
 	}
 }
 
 func init() {
-	proto.RegisterEnum("tast.core.RunFixtureRequest_Method", RunFixtureRequest_Method_name, RunFixtureRequest_Method_value)
 	proto.RegisterType((*RunFixtureRequest)(nil), "tast.core.RunFixtureRequest")
+	proto.RegisterType((*RunFixtureSetUpRequest)(nil), "tast.core.RunFixtureSetUpRequest")
+	proto.RegisterType((*RunFixtureTearDownRequest)(nil), "tast.core.RunFixtureTearDownRequest")
 	proto.RegisterType((*RunFixtureConfig)(nil), "tast.core.RunFixtureConfig")
 	proto.RegisterMapType((map[string]string)(nil), "tast.core.RunFixtureConfig.TestVarsEntry")
 	proto.RegisterType((*RunFixtureError)(nil), "tast.core.RunFixtureError")
+	proto.RegisterType((*RunFixtureSetUpDone)(nil), "tast.core.RunFixtureSetUpDone")
 	proto.RegisterType((*RunFixtureResponse)(nil), "tast.core.RunFixtureResponse")
 }
 
 func init() { proto.RegisterFile("remote_fixture.proto", fileDescriptor_5cb9905fdd848d3a) }
 
 var fileDescriptor_5cb9905fdd848d3a = []byte{
-	// 561 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x53, 0xcd, 0x52, 0xdb, 0x3e,
-	0x10, 0x8f, 0x09, 0x71, 0xe2, 0xe5, 0xff, 0xa7, 0xa9, 0x86, 0x69, 0x43, 0xda, 0x0e, 0x21, 0xbd,
-	0xa4, 0x17, 0xa7, 0x63, 0x2e, 0x4c, 0xb9, 0x51, 0x60, 0xb8, 0x70, 0x31, 0xb4, 0x87, 0x5e, 0x3c,
-	0xc2, 0xd9, 0x18, 0x4d, 0x6c, 0x29, 0x95, 0xd6, 0xb4, 0x79, 0x9c, 0xbe, 0x47, 0x1f, 0xa5, 0x0f,
-	0xd3, 0x91, 0x64, 0x48, 0x3f, 0x28, 0x37, 0xfd, 0xf4, 0xfb, 0x58, 0xad, 0xb4, 0x82, 0x1d, 0x8d,
-	0x95, 0x22, 0xcc, 0xe6, 0xe2, 0x2b, 0xd5, 0x1a, 0xe3, 0xa5, 0x56, 0xa4, 0x58, 0x44, 0xdc, 0x50,
-	0x9c, 0x2b, 0x8d, 0xc3, 0xbd, 0x42, 0xa9, 0xa2, 0xc4, 0xa9, 0x23, 0xae, 0xeb, 0xf9, 0x94, 0x44,
-	0x85, 0x86, 0x78, 0xb5, 0xf4, 0xda, 0xf1, 0xf7, 0x00, 0x9e, 0xa6, 0xb5, 0x3c, 0xf3, 0x01, 0x29,
-	0x7e, 0xae, 0xd1, 0x10, 0x63, 0xb0, 0x29, 0x79, 0x85, 0x83, 0x60, 0x14, 0x4c, 0xa2, 0xd4, 0xad,
-	0xd9, 0x11, 0x84, 0x15, 0xd2, 0x8d, 0x9a, 0x0d, 0x36, 0x46, 0xc1, 0x64, 0x3b, 0x79, 0x1d, 0xdf,
-	0x97, 0x89, 0xff, 0x4a, 0x88, 0x2f, 0x9c, 0x34, 0x6d, 0x2c, 0xec, 0x00, 0xc2, 0x5c, 0xc9, 0xb9,
-	0x28, 0x06, 0xed, 0x51, 0x30, 0xd9, 0x4a, 0x5e, 0x3c, 0x68, 0x7e, 0xef, 0x24, 0x69, 0x23, 0x1d,
-	0xef, 0x43, 0xe8, 0x63, 0x58, 0x04, 0x9d, 0x4b, 0xa4, 0x0f, 0xcb, 0x7e, 0x8b, 0xfd, 0x07, 0xbd,
-	0x2b, 0xe4, 0xfa, 0x44, 0x7d, 0x91, 0xfd, 0x60, 0xfc, 0x63, 0x03, 0xfa, 0x7f, 0xfa, 0xd9, 0x19,
-	0x44, 0x84, 0x86, 0xb2, 0x5b, 0xae, 0xcd, 0x20, 0x18, 0xb5, 0x27, 0x5b, 0xc9, 0x9b, 0x47, 0xea,
-	0xc5, 0x57, 0x68, 0xe8, 0x23, 0xd7, 0xe6, 0x54, 0x92, 0x5e, 0xa5, 0x3d, 0x6a, 0x20, 0xdb, 0x85,
-	0xde, 0x8c, 0x13, 0xcf, 0x66, 0x42, 0xbb, 0x9e, 0xa3, 0xb4, 0x6b, 0xf1, 0x89, 0xd0, 0xec, 0x39,
-	0x74, 0x55, 0x4d, 0x8e, 0x69, 0x3b, 0x26, 0x54, 0x35, 0x59, 0x62, 0x17, 0x7a, 0x84, 0xd5, 0xd2,
-	0x31, 0x9b, 0xde, 0x63, 0xb1, 0xa5, 0x9e, 0x41, 0x48, 0x5c, 0x17, 0x48, 0x83, 0x8e, 0xb7, 0x78,
-	0x64, 0x2d, 0x0b, 0x5c, 0x65, 0x73, 0x51, 0xe2, 0x20, 0xf4, 0x96, 0x05, 0xae, 0xce, 0x44, 0x89,
-	0xb6, 0x8c, 0xa5, 0x6c, 0x58, 0xd7, 0x7b, 0x16, 0xb8, 0xb2, 0x59, 0x13, 0xe8, 0x97, 0x2a, 0xe7,
-	0x65, 0x76, 0x5d, 0xcb, 0x59, 0x89, 0x4e, 0xd1, 0x73, 0x8a, 0x6d, 0xb7, 0x7f, 0xec, 0xb6, 0x4f,
-	0x84, 0x1e, 0x1e, 0xc1, 0xff, 0xbf, 0xf5, 0xc7, 0xfa, 0xd0, 0x5e, 0xe0, 0xaa, 0x79, 0x5a, 0xbb,
-	0x64, 0x3b, 0xd0, 0xb9, 0xe5, 0x65, 0x8d, 0x4d, 0x93, 0x1e, 0xbc, 0xdb, 0x38, 0x0c, 0xc6, 0x05,
-	0x3c, 0x59, 0xdf, 0xd6, 0xa9, 0xd6, 0xca, 0x75, 0xa1, 0x91, 0x1b, 0x25, 0x9b, 0x84, 0x06, 0xd9,
-	0x91, 0x71, 0x1d, 0xf8, 0x0c, 0xb7, 0xb6, 0x7b, 0xa5, 0x90, 0xe8, 0xae, 0xa8, 0x93, 0xba, 0xb5,
-	0x2d, 0x66, 0x88, 0xe7, 0x8b, 0xe6, 0x76, 0x3c, 0x18, 0x7f, 0x0b, 0x80, 0xfd, 0x3a, 0x44, 0x66,
-	0xa9, 0xa4, 0xb1, 0x01, 0xed, 0x52, 0x15, 0xbe, 0xd2, 0x79, 0x2b, 0xb5, 0x80, 0x25, 0xd0, 0x41,
-	0x7b, 0x12, 0x57, 0x69, 0x2b, 0x19, 0x3e, 0xf8, 0xb2, 0xee, 0xac, 0xe7, 0xad, 0xd4, 0x4b, 0xd9,
-	0x21, 0x44, 0xf7, 0x83, 0xdf, 0x4c, 0xe0, 0x30, 0xf6, 0x5f, 0x23, 0xbe, 0xfb, 0x1a, 0xf1, 0xd5,
-	0x9d, 0x22, 0x5d, 0x8b, 0x8f, 0x23, 0xe8, 0xe6, 0x4a, 0x92, 0x56, 0x65, 0x92, 0xc1, 0x76, 0x93,
-	0x7e, 0x89, 0xfa, 0x56, 0xe4, 0xc8, 0x2e, 0x00, 0xd6, 0x25, 0xd9, 0xcb, 0xc7, 0x3e, 0xc4, 0xf0,
-	0xd5, 0x3f, 0x58, 0xdf, 0xe9, 0xb8, 0xf5, 0x36, 0x38, 0xde, 0xff, 0xb4, 0x97, 0xdf, 0x68, 0x55,
-	0x89, 0xba, 0x52, 0x66, 0x6a, 0xe5, 0x53, 0x21, 0x09, 0xb5, 0xe4, 0xe5, 0xd4, 0xbf, 0xf3, 0x75,
-	0xe8, 0x4e, 0x7b, 0xf0, 0x33, 0x00, 0x00, 0xff, 0xff, 0xe0, 0x45, 0x43, 0x96, 0xf9, 0x03, 0x00,
-	0x00,
+	// 621 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x54, 0x4d, 0x53, 0x13, 0x4d,
+	0x10, 0xce, 0x12, 0xf2, 0xb1, 0x4d, 0xbd, 0xbc, 0x38, 0x22, 0x86, 0xf8, 0x01, 0x6c, 0x79, 0x88,
+	0x97, 0x8d, 0x15, 0x3c, 0x50, 0x78, 0xb1, 0x20, 0x50, 0xdc, 0x2c, 0x57, 0xf4, 0xe0, 0x65, 0x6b,
+	0xd8, 0x74, 0xe2, 0x56, 0x76, 0x67, 0xe2, 0x4c, 0x2f, 0x98, 0x5f, 0xe3, 0x1f, 0xf3, 0xe6, 0x1f,
+	0xb1, 0xe6, 0x03, 0x82, 0x56, 0xa2, 0xb7, 0x79, 0xa6, 0x9f, 0xa7, 0x9f, 0xee, 0xde, 0xe9, 0x85,
+	0x6d, 0x85, 0xa5, 0x24, 0x4c, 0xc7, 0xf9, 0x37, 0xaa, 0x14, 0xc6, 0x33, 0x25, 0x49, 0xb2, 0x90,
+	0xb8, 0xa6, 0x38, 0x93, 0x0a, 0xbb, 0x7b, 0x13, 0x29, 0x27, 0x05, 0xf6, 0x6d, 0xe0, 0xaa, 0x1a,
+	0xf7, 0x29, 0x2f, 0x51, 0x13, 0x2f, 0x67, 0x8e, 0x1b, 0x7d, 0x0f, 0xe0, 0x41, 0x52, 0x89, 0x73,
+	0x97, 0x20, 0xc1, 0xaf, 0x15, 0x6a, 0x62, 0xc7, 0xd0, 0xd4, 0x48, 0x69, 0x35, 0xeb, 0x04, 0xfb,
+	0x41, 0x6f, 0x63, 0x70, 0x10, 0xdf, 0xa5, 0x8c, 0x17, 0xec, 0x0f, 0x48, 0x1f, 0x67, 0x5e, 0x72,
+	0x51, 0x4b, 0x1a, 0xda, 0x60, 0x76, 0x0a, 0x21, 0x21, 0x57, 0xe9, 0x48, 0xde, 0x88, 0xce, 0x9a,
+	0x95, 0xbf, 0x58, 0x2a, 0xbf, 0x44, 0xae, 0x86, 0xf2, 0x46, 0x2c, 0x32, 0xb4, 0xc9, 0x5f, 0x9d,
+	0x84, 0xd0, 0xca, 0xa4, 0x20, 0x25, 0x8b, 0x88, 0xc3, 0xce, 0x72, 0x4b, 0xc6, 0x60, 0x5d, 0xf0,
+	0x12, 0x6d, 0x8d, 0x61, 0x62, 0xcf, 0xec, 0x10, 0x9a, 0x99, 0x14, 0xe3, 0x7c, 0xe2, 0xad, 0x9f,
+	0x2c, 0xb5, 0x3e, 0xb5, 0x94, 0xc4, 0x53, 0xa3, 0xf7, 0xb0, 0xbb, 0xb2, 0x2c, 0xf6, 0x1a, 0x1a,
+	0x24, 0xa7, 0x28, 0xfc, 0x28, 0x9e, 0xaf, 0x1e, 0xc5, 0x50, 0x0a, 0x4c, 0x1c, 0x39, 0xfa, 0xb1,
+	0x06, 0x5b, 0x7f, 0xfa, 0xb1, 0x73, 0x33, 0x1a, 0x4d, 0xe9, 0x35, 0x57, 0xba, 0x13, 0xec, 0xd7,
+	0x7b, 0x1b, 0x83, 0x97, 0x7f, 0xa9, 0x2f, 0xbe, 0x44, 0x4d, 0x9f, 0xb8, 0xd2, 0x67, 0x82, 0xd4,
+	0xdc, 0x4c, 0xc7, 0x41, 0xb6, 0x0b, 0xed, 0x11, 0x27, 0x9e, 0x8e, 0x72, 0x65, 0xdb, 0x0c, 0x93,
+	0x96, 0xc1, 0xc3, 0x5c, 0xb1, 0xc7, 0xd0, 0x92, 0x15, 0xd9, 0x48, 0xdd, 0x46, 0x9a, 0xb2, 0x22,
+	0x13, 0xd8, 0x85, 0x36, 0x61, 0x39, 0xb3, 0x91, 0x75, 0xa7, 0x31, 0xd8, 0x84, 0x76, 0xa0, 0x49,
+	0x5c, 0x4d, 0x90, 0x3a, 0x0d, 0x27, 0x71, 0xc8, 0x48, 0xa6, 0x38, 0x4f, 0xc7, 0x79, 0x81, 0x9d,
+	0xa6, 0x93, 0x4c, 0x71, 0x7e, 0x9e, 0x17, 0x68, 0x6c, 0x4c, 0xc8, 0x24, 0x6b, 0x39, 0xcd, 0x14,
+	0xe7, 0x26, 0x57, 0x0f, 0xb6, 0x0a, 0x99, 0xf1, 0x22, 0xbd, 0xaa, 0xc4, 0xa8, 0x40, 0xcb, 0x68,
+	0x5b, 0xc6, 0xa6, 0xbd, 0x3f, 0xb1, 0xd7, 0xc3, 0x5c, 0x75, 0xdf, 0xc0, 0x7f, 0xbf, 0xf5, 0xc7,
+	0xb6, 0xa0, 0x3e, 0xc5, 0xb9, 0xff, 0x9a, 0xe6, 0xc8, 0xb6, 0xa1, 0x71, 0xcd, 0x8b, 0x0a, 0x7d,
+	0x93, 0x0e, 0x1c, 0xaf, 0x1d, 0x05, 0xd1, 0x04, 0xfe, 0x5f, 0x4c, 0xeb, 0x4c, 0x29, 0x69, 0xbb,
+	0x50, 0xc8, 0xb5, 0x14, 0x3e, 0x83, 0x47, 0xe6, 0x95, 0xd8, 0x0e, 0x5c, 0x0e, 0x7b, 0x36, 0x77,
+	0x45, 0x2e, 0xd0, 0x8e, 0xa8, 0x91, 0xd8, 0xb3, 0x31, 0xd3, 0xc4, 0xb3, 0xa9, 0x9f, 0x8e, 0x03,
+	0xd1, 0x23, 0x78, 0xb8, 0xe4, 0x2b, 0x47, 0x3f, 0x03, 0x60, 0xf7, 0xd7, 0x46, 0xcf, 0xa4, 0xd0,
+	0x26, 0x6f, 0xbd, 0x90, 0x13, 0x57, 0xc0, 0x45, 0x2d, 0x31, 0x80, 0x0d, 0xa0, 0x81, 0xa6, 0x40,
+	0xff, 0x20, 0xbb, 0x4b, 0x3f, 0xb8, 0x6d, 0xc1, 0xec, 0x90, 0xa5, 0xb2, 0xb7, 0xb0, 0xe1, 0xf6,
+	0x2f, 0x1d, 0x49, 0x5f, 0xe6, 0x3f, 0x5f, 0xde, 0x45, 0x2d, 0x09, 0xf5, 0x2d, 0x60, 0x47, 0x10,
+	0xde, 0xad, 0xba, 0xed, 0xc8, 0x38, 0xbb, 0x9f, 0x41, 0x7c, 0xfb, 0x33, 0x88, 0x2f, 0x6f, 0x19,
+	0xc9, 0x82, 0x7c, 0x6f, 0xf5, 0x06, 0x1c, 0x36, 0xef, 0x5c, 0xd4, 0x75, 0x9e, 0x21, 0x7b, 0x07,
+	0xb0, 0xb0, 0x66, 0x4f, 0x97, 0x56, 0xe4, 0x17, 0xa7, 0xfb, 0x6c, 0x45, 0xd4, 0xcd, 0x2a, 0xaa,
+	0xf5, 0x82, 0x57, 0xc1, 0xc9, 0xc1, 0xe7, 0xbd, 0xec, 0x8b, 0x92, 0x65, 0x5e, 0x95, 0x52, 0xf7,
+	0x8d, 0xa0, 0x9f, 0x0b, 0x42, 0x25, 0x78, 0xd1, 0x77, 0x4f, 0xe8, 0xaa, 0x69, 0xeb, 0x3d, 0xfc,
+	0x15, 0x00, 0x00, 0xff, 0xff, 0xa5, 0x0f, 0x49, 0xc2, 0xed, 0x04, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -432,7 +572,7 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type FixtureServiceClient interface {
-	RunFixture(ctx context.Context, in *RunFixtureRequest, opts ...grpc.CallOption) (FixtureService_RunFixtureClient, error)
+	RunFixture(ctx context.Context, opts ...grpc.CallOption) (FixtureService_RunFixtureClient, error)
 }
 
 type fixtureServiceClient struct {
@@ -443,28 +583,27 @@ func NewFixtureServiceClient(cc *grpc.ClientConn) FixtureServiceClient {
 	return &fixtureServiceClient{cc}
 }
 
-func (c *fixtureServiceClient) RunFixture(ctx context.Context, in *RunFixtureRequest, opts ...grpc.CallOption) (FixtureService_RunFixtureClient, error) {
+func (c *fixtureServiceClient) RunFixture(ctx context.Context, opts ...grpc.CallOption) (FixtureService_RunFixtureClient, error) {
 	stream, err := c.cc.NewStream(ctx, &_FixtureService_serviceDesc.Streams[0], "/tast.core.FixtureService/RunFixture", opts...)
 	if err != nil {
 		return nil, err
 	}
 	x := &fixtureServiceRunFixtureClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
 	return x, nil
 }
 
 type FixtureService_RunFixtureClient interface {
+	Send(*RunFixtureRequest) error
 	Recv() (*RunFixtureResponse, error)
 	grpc.ClientStream
 }
 
 type fixtureServiceRunFixtureClient struct {
 	grpc.ClientStream
+}
+
+func (x *fixtureServiceRunFixtureClient) Send(m *RunFixtureRequest) error {
+	return x.ClientStream.SendMsg(m)
 }
 
 func (x *fixtureServiceRunFixtureClient) Recv() (*RunFixtureResponse, error) {
@@ -477,14 +616,14 @@ func (x *fixtureServiceRunFixtureClient) Recv() (*RunFixtureResponse, error) {
 
 // FixtureServiceServer is the server API for FixtureService service.
 type FixtureServiceServer interface {
-	RunFixture(*RunFixtureRequest, FixtureService_RunFixtureServer) error
+	RunFixture(FixtureService_RunFixtureServer) error
 }
 
 // UnimplementedFixtureServiceServer can be embedded to have forward compatible implementations.
 type UnimplementedFixtureServiceServer struct {
 }
 
-func (*UnimplementedFixtureServiceServer) RunFixture(req *RunFixtureRequest, srv FixtureService_RunFixtureServer) error {
+func (*UnimplementedFixtureServiceServer) RunFixture(srv FixtureService_RunFixtureServer) error {
 	return status.Errorf(codes.Unimplemented, "method RunFixture not implemented")
 }
 
@@ -493,15 +632,12 @@ func RegisterFixtureServiceServer(s *grpc.Server, srv FixtureServiceServer) {
 }
 
 func _FixtureService_RunFixture_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(RunFixtureRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(FixtureServiceServer).RunFixture(m, &fixtureServiceRunFixtureServer{stream})
+	return srv.(FixtureServiceServer).RunFixture(&fixtureServiceRunFixtureServer{stream})
 }
 
 type FixtureService_RunFixtureServer interface {
 	Send(*RunFixtureResponse) error
+	Recv() (*RunFixtureRequest, error)
 	grpc.ServerStream
 }
 
@@ -513,6 +649,14 @@ func (x *fixtureServiceRunFixtureServer) Send(m *RunFixtureResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
+func (x *fixtureServiceRunFixtureServer) Recv() (*RunFixtureRequest, error) {
+	m := new(RunFixtureRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 var _FixtureService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "tast.core.FixtureService",
 	HandlerType: (*FixtureServiceServer)(nil),
@@ -522,6 +666,7 @@ var _FixtureService_serviceDesc = grpc.ServiceDesc{
 			StreamName:    "RunFixture",
 			Handler:       _FixtureService_RunFixture_Handler,
 			ServerStreams: true,
+			ClientStreams: true,
 		},
 	},
 	Metadata: "remote_fixture.proto",

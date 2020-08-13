@@ -52,6 +52,14 @@ func AddService(s *Service) {
 	}
 }
 
+// AddFixture adds fixture f to the global registry.
+func AddFixture(f *Fixture) {
+	if err := GlobalRegistry().AddFixture(f); err != nil {
+		file, line := realCaller()
+		registrationErrors = append(registrationErrors, fmt.Errorf("%s:%d: %v", file, line, err))
+	}
+}
+
 func realCaller() (file string, line int) {
 	pc, file, line, _ := runtime.Caller(2)
 	f := runtime.FuncForPC(pc)

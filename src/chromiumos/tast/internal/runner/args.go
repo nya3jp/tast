@@ -21,6 +21,7 @@ import (
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/dep"
+	"chromiumos/tast/internal/testing"
 )
 
 // RunMode describes the runner's behavior.
@@ -48,6 +49,9 @@ const (
 	// install them to the DUT, write a JSON-marshaled DownloadPrivateBundlesResult struct to stdout and exit.
 	// This mode is only supported by local_test_runner.
 	DownloadPrivateBundlesMode = 6
+	// ListFixturesMode indicates that the runner should write information about fixtures to stdout
+	// as a JSON serialized ListFixturesResult.
+	ListFixturesMode = 7
 )
 
 // Args provides a backward- and forward-compatible way to pass arguments from the tast executable to test runners.
@@ -60,6 +64,8 @@ type Args struct {
 	RunTests *RunTestsArgs `json:"runTests,omitempty"`
 	// ListTests contains arguments used by ListTestsMode.
 	ListTests *ListTestsArgs `json:"listTests,omitempty"`
+	// ListFixtures contains arguments used by ListFixturesMode.
+	ListFixtures *ListFixturesArgs `json:"listFixtures,omitempty"`
 	// CollectSysInfo contains arguments used by CollectSysInfoMode.
 	CollectSysInfo *CollectSysInfoArgs `json:"collectSysInfo,omitempty"`
 	// GetDUTInfo contains arguments used by GetDUTInfoMode.
@@ -167,6 +173,18 @@ type ListTestsArgs struct {
 	BundleArgs bundle.ListTestsArgs `json:"bundleArgs"`
 	// BundleGlob is a glob-style path matching test bundles to execute.
 	BundleGlob string `json:"bundleGlob,omitempty"`
+}
+
+// ListFixturesArgs is nested within Args and contains arguments used by ListFixturesMode.
+type ListFixturesArgs struct {
+	// BundleGlob is a glob-style path matching test bundles to execute.
+	BundleGlob string `json:"bundleGlob,omitempty"`
+}
+
+// ListFixturesResult holds the result of a ListFixturesMode command.
+type ListFixturesResult struct {
+	// Fixtures maps bundle path to the fixtures it contains.
+	Fixtures map[string][]*testing.FixtureInfo `json:"fixtures,omitempty"`
 }
 
 // GetSysInfoStateResult holds the result of a GetSysInfoStateMode command.

@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "803bff20_5aa963a9",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1296737
+      },
+      "writtenOn": "2020-08-13T15:31:52Z",
+      "side": 1,
+      "message": "Add \"Cq-Depend: chromium:2354314\" above this.",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 6
+      },
+      "revId": "5511ec912a65e7c6421af7399cb3dbe78a7581c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "555e65d7_1550bd4f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1296737
+      },
+      "writtenOn": "2020-08-13T15:31:52Z",
+      "side": 1,
+      "message": "LGTM % the comment below. Adding tast-owners for owners review.",
+      "revId": "5511ec912a65e7c6421af7399cb3dbe78a7581c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

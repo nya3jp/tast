@@ -304,8 +304,8 @@ func (d *downloader) download(ctx context.Context, tests []*testing.TestInstance
 // additional time may be allotted for preconditions and pre/post-test hooks.
 func buildStages(t *testing.TestInstance, tout testing.OutputStream, pcfg *Config, precfg *preConfig, tcfg *testing.TestConfig) []stage {
 	var stages []stage
-	addStage := func(f stageFunc, ctxTimeout, runTimeout time.Duration) {
-		stages = append(stages, stage{f, ctxTimeout, runTimeout})
+	addStage := func(f stageFunc, ctxTimeout, exitTimeout time.Duration) {
+		stages = append(stages, stage{f, ctxTimeout, exitTimeout})
 	}
 
 	root := testing.NewRootState(t, tout, tcfg)
@@ -367,7 +367,7 @@ func buildStages(t *testing.TestInstance, tout testing.OutputStream, pcfg *Confi
 				postTestFunc = pcfg.TestHook(ctx, s)
 			}
 		})
-	}, preTestTimeout, preTestTimeout+exitTimeout)
+	}, preTestTimeout, exitTimeout)
 
 	// Prepare the test's precondition (if any) if setup was successful.
 	if t.Pre != nil {
@@ -379,7 +379,7 @@ func buildStages(t *testing.TestInstance, tout testing.OutputStream, pcfg *Confi
 				s.Logf("Preparing precondition %q", t.Pre)
 				root.SetPreValue(t.Pre.Prepare(ctx, s))
 			})
-		}, t.Pre.Timeout(), t.Pre.Timeout()+exitTimeout)
+		}, t.Pre.Timeout(), exitTimeout)
 	}
 
 	// Next, run the test function itself if no errors have been reported so far.
@@ -388,7 +388,7 @@ func buildStages(t *testing.TestInstance, tout testing.OutputStream, pcfg *Confi
 			return
 		}
 		root.RunWithTestState(ctx, t.Func)
-	}, t.Timeout, t.Timeout+timeoutOrDefault(t.ExitTimeout, exitTimeout))
+	}, t.Timeout, timeoutOrDefault(t.ExitTimeout, exitTimeout))
 
 	// If this is the final test using this precondition, close it
 	// (even if setup, t.Pre.Prepare, or t.Func failed).
@@ -398,7 +398,7 @@ func buildStages(t *testing.TestInstance, tout testing.OutputStream, pcfg *Confi
 				s.Logf("Closing precondition %q", t.Pre.String())
 				t.Pre.Close(ctx, s)
 			})
-		}, t.Pre.Timeout(), t.Pre.Timeout()+exitTimeout)
+		}, t.Pre.Timeout(), exitTimeout)
 	}
 
 	// Finally, run the post-test functions unconditionally.
@@ -408,7 +408,7 @@ func buildStages(t *testing.TestInstance, tout testing.OutputStream, pcfg *Confi
 				postTestFunc(ctx, s)
 			}
 		})
-	}, postTestTimeout, postTestTimeout+exitTimeout)
+	}, postTestTimeout, exitTimeout)
 
 	return stages
 }

@@ -12,9 +12,9 @@ import (
 // stage represents part of the execution of a single test (i.e. a Test.Run call).
 // Examples of stages include running a test setup function, a test function itself, or a test cleanup function.
 type stage struct {
-	f          stageFunc     // code to run for stage
-	ctxTimeout time.Duration // used for context passed to f
-	runTimeout time.Duration // used to wait for f to return; typically slightly longer than ctxTimeout
+	f           stageFunc     // code to run for stage
+	ctxTimeout  time.Duration // used for context passed to f
+	exitTimeout time.Duration // used to wait for f to return after ctxTimeout
 }
 
 // stageFunc encapsulates the work done by a stage.
@@ -48,7 +48,7 @@ func runStages(ctx context.Context, stages []stage) bool {
 		select {
 		case <-stageCh:
 			// The stage finished, so wait for the next one.
-		case <-time.After(st.runTimeout):
+		case <-time.After(st.ctxTimeout + st.exitTimeout):
 			// TODO(derat): Do more to try to kill the runaway function.
 			return false
 		}

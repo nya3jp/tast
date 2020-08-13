@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fd2c0d0b_cbf94e2c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 20
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-13T12:22:38Z",
+      "side": 1,
+      "message": "Nice!\n",
+      "revId": "013ea1a4271b5428fba7d15e5111be3984c2495f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d0313e80_0c3e5517",
+        "filename": "src/chromiumos/tast/internal/bundle/remote_fixture.proto",
+        "patchSetId": 20
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-13T12:22:38Z",
+      "side": 1,
+      "message": "typo: is",
+      "range": {
+        "startLine": 26,
+        "startChar": 14,
+        "endLine": 26,
+        "endChar": 16
+      },
+      "revId": "013ea1a4271b5428fba7d15e5111be3984c2495f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

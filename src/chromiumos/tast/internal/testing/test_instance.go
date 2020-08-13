@@ -150,13 +150,24 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 	pre := t.Pre
 	if p.Pre != nil {
 		if t.Pre != nil {
-			return nil, errors.New("Param has Pre specified and its enclosing Test also has Pre specified," +
-				"but only one can be specified")
+			return nil, errors.New("Param has Pre specified and its enclosing Test also has Pre specified, but only one can be specified")
 		}
 		pre = p.Pre
 	}
 	if err := validatePre(pre); err != nil {
 		return nil, err
+	}
+
+	fixt := t.Fixture
+	if p.Fixture != "" {
+		if t.Fixture != "" {
+			return nil, errors.New("Param has Fixture specified and its enclosing Test also has Fixture specified, but only one can be specified")
+		}
+		fixt = p.Fixture
+	}
+
+	if pre != nil && fixt != "" {
+		return nil, errors.New("Fixture and Pre cannot be set simultaneously")
 	}
 
 	timeout := t.Timeout
@@ -184,7 +195,7 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 		HardwareDeps: hwDeps,
 		ServiceDeps:  append([]string(nil), t.ServiceDeps...),
 		Pre:          pre,
-		Fixture:      t.Fixture,
+		Fixture:      fixt,
 		Timeout:      timeout,
 	}, nil
 }

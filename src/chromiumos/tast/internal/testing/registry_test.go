@@ -157,3 +157,23 @@ func TestAllServices(t *gotesting.T) {
 		t.Errorf("AllServices() = %v; want %v", svcs, allSvcs)
 	}
 }
+
+func TestAllFixtures(t *gotesting.T) {
+	reg := NewRegistry()
+	allFixts := []*Fixture{
+		{Name: "a"},
+		{Name: "b"},
+		{Name: "c"},
+	}
+
+	for _, f := range allFixts {
+		if err := reg.AddFixture(f); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	fixts := reg.AllFixtures()
+	if len(fixts) != 3 {
+		t.Errorf("len(AllFixtures()) = %d; want 3", len(fixts))
+	}
+}

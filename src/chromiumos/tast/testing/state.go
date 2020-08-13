@@ -34,6 +34,18 @@ type PreState = testing.PreState
 // guidance on how to treat TestHookState in test hooks.
 type TestHookState = testing.TestHookState
 
+// FixtState holds state relevant to the execution of a fixture.
+//
+// This is a State for fixtures. See State's documentation for general
+// guidance on how to treat FixtState in fixtures.
+type FixtState = testing.FixtState
+
+// FixtTestState holds state relevant to the execution of test hooks in a fixture.
+//
+// This is a State for fixtures. See State's documentation for general
+// guidance on how to treat FixtTestState in fixtures.
+type FixtTestState = testing.FixtTestState
+
 // Meta contains information about how the "tast" process used to initiate testing was run.
 // It is used by remote tests in the "meta" category that run the tast executable to test Tast's behavior.
 type Meta = testing.Meta

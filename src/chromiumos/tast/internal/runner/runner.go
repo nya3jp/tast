@@ -76,6 +76,9 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Args,
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
+	case ListFixturesMode:
+		// TODO(oka): Implement ListFixutresMode.
+		panic("to be implemented")
 	case RunTestsMode:
 		if args.report {
 			// Success is always reported when running tests on behalf of the tast command.

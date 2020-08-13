@@ -48,6 +48,54 @@
     },
     {
       "key": {
+        "uuid": "3e27e347_3a0156a4",
+        "filename": "src/chromiumos/tast/internal/bundle/remote_fixture.proto",
+        "patchSetId": 15
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-08-13T07:05:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3ae15c1c_197d92ff",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 3
+      },
+      "revId": "a80fbfa6106adad48e3517f72a9ddfa2d1eaed5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1aa9a2ff_8ceeb90e",
+        "filename": "src/chromiumos/tast/internal/bundle/remote_fixture.proto",
+        "patchSetId": 15
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-08-13T07:05:47Z",
+      "side": 1,
+      "message": "Done.\nRun is not direcly under bundle/ but associated with interfaces.\nThat said, I admit RunRequest is confusing and agree to rename Run to RunFixture entirely.",
+      "parentUuid": "39bfa891_ea9d1f5b",
+      "range": {
+        "startLine": 13,
+        "startChar": 8,
+        "endLine": 13,
+        "endChar": 11
+      },
+      "revId": "a80fbfa6106adad48e3517f72a9ddfa2d1eaed5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "08407157_a7fc21cb",
         "filename": "src/chromiumos/tast/internal/bundle/remote_fixture.proto",
         "patchSetId": 15
@@ -68,6 +116,30 @@
       "revId": "a80fbfa6106adad48e3517f72a9ddfa2d1eaed5f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2084f310_5af44091",
+        "filename": "src/chromiumos/tast/internal/bundle/remote_fixture.proto",
+        "patchSetId": 15
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-08-13T07:05:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "08407157_a7fc21cb",
+      "range": {
+        "startLine": 17,
+        "startChar": 2,
+        "endLine": 18,
+        "endChar": 4
+      },
+      "revId": "a80fbfa6106adad48e3517f72a9ddfa2d1eaed5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -118,6 +190,30 @@
     },
     {
       "key": {
+        "uuid": "a1d48d7d_1b62e596",
+        "filename": "src/chromiumos/tast/internal/bundle/remote_fixture.proto",
+        "patchSetId": 15
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-08-13T07:05:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a438a04b_7ecfd056",
+      "range": {
+        "startLine": 55,
+        "startChar": 0,
+        "endLine": 55,
+        "endChar": 73
+      },
+      "revId": "a80fbfa6106adad48e3517f72a9ddfa2d1eaed5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f9eaedb7_b17f5ba7",
         "filename": "src/chromiumos/tast/internal/bundle/remote_fixture.proto",
         "patchSetId": 15
@@ -138,6 +234,30 @@
       "revId": "a80fbfa6106adad48e3517f72a9ddfa2d1eaed5f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "64b8ba60_248411b2",
+        "filename": "src/chromiumos/tast/internal/bundle/remote_fixture.proto",
+        "patchSetId": 15
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-08-13T07:05:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f9eaedb7_b17f5ba7",
+      "range": {
+        "startLine": 70,
+        "startChar": 0,
+        "endLine": 74,
+        "endChar": 24
+      },
+      "revId": "a80fbfa6106adad48e3517f72a9ddfa2d1eaed5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

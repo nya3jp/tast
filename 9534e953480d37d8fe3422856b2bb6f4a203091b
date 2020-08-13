@@ -165,6 +165,54 @@
     },
     {
       "key": {
+        "uuid": "c64ad672_88d46f9d",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-13T11:00:46Z",
+      "side": 1,
+      "message": "Sorry, but in this case I think it makes sense to pass *hostConfig as a parameter and fill the fields as we go, since multiple readHostConfig calls fill hostConfig fields partially. Let me reverse my second suggestion above.",
+      "parentUuid": "fd4d5e7d_f41ea166",
+      "range": {
+        "startLine": 18,
+        "startChar": 16,
+        "endLine": 18,
+        "endChar": 22
+      },
+      "revId": "9534e953480d37d8fe3422856b2bb6f4a203091b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d514e908_5ade1624",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-13T11:00:46Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "210e7e7d_3bc11355",
+      "range": {
+        "startLine": 18,
+        "startChar": 5,
+        "endLine": 18,
+        "endChar": 15
+      },
+      "revId": "9534e953480d37d8fe3422856b2bb6f4a203091b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e13a9868_3025333c",
         "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
         "patchSetId": 3
@@ -259,6 +307,30 @@
     },
     {
       "key": {
+        "uuid": "6ad4578e_80a2082c",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-13T11:00:46Z",
+      "side": 1,
+      "message": "Thanks! But since Get* is generally not popular in Go, I recommend starting the name with Resolve.",
+      "parentUuid": "71782c90_d75b6036",
+      "range": {
+        "startLine": 33,
+        "startChar": 5,
+        "endLine": 33,
+        "endChar": 16
+      },
+      "revId": "9534e953480d37d8fe3422856b2bb6f4a203091b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "104e00fe_7351e417",
         "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
         "patchSetId": 3
@@ -303,6 +375,30 @@
       "revId": "9534e953480d37d8fe3422856b2bb6f4a203091b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a18db3c0_bddee809",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-13T11:00:46Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "168b8657_37fffb83",
+      "range": {
+        "startLine": 43,
+        "startChar": 23,
+        "endLine": 43,
+        "endChar": 36
+      },
+      "revId": "9534e953480d37d8fe3422856b2bb6f4a203091b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -444,6 +540,30 @@
       "revId": "9534e953480d37d8fe3422856b2bb6f4a203091b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "875f7564_216f438c",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 224,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-13T11:00:46Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "799d32bc_e80d1254",
+      "range": {
+        "startLine": 224,
+        "startChar": 1,
+        "endLine": 224,
+        "endChar": 31
+      },
+      "revId": "9534e953480d37d8fe3422856b2bb6f4a203091b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

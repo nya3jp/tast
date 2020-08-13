@@ -16,6 +16,144 @@
       "revId": "de401b1b7b329222f060bf31339a9cf896645a5f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3ad16880_c922cb6d",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-13T11:00:46Z",
+      "side": 1,
+      "message": "By passing callbacks to configParser, it is generally usable, but on the other hand callbacks make it more difficult to tell the actual code execution path due to indirection.\n\nGo has clear preference of simpleness and directness. So if we can avoid callbacks that would be great.\n\nIn this case, the parser is used to parse host configs only. Can we make the parser specialized for host configs and avoid callbacks?",
+      "range": {
+        "startLine": 26,
+        "startChar": 5,
+        "endLine": 26,
+        "endChar": 18
+      },
+      "revId": "de401b1b7b329222f060bf31339a9cf896645a5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8523f2f4_60b61b84",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-13T11:00:46Z",
+      "side": 1,
+      "message": "nit: Can you use host \u003d\u003d \"\" instead? Comparing the length with 0 is a bit indirect.",
+      "range": {
+        "startLine": 62,
+        "startChar": 1,
+        "endLine": 62,
+        "endChar": 20
+      },
+      "revId": "de401b1b7b329222f060bf31339a9cf896645a5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "36089c4c_8b589c28",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-13T11:00:46Z",
+      "side": 1,
+      "message": "As I commented elsewhere, can you pass *hostConfig and not return hostConfig? Sorry. :(",
+      "range": {
+        "startLine": 85,
+        "startChar": 64,
+        "endLine": 85,
+        "endChar": 90
+      },
+      "revId": "de401b1b7b329222f060bf31339a9cf896645a5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b9429856_6998f316",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-13T11:00:46Z",
+      "side": 1,
+      "message": "Currently we stop parsing the config files when we find the match. But can you always continue to the end?\n\nBy skipping parsing, we might miss config errors in the latter part of config files. This means that, depending on the host name the user specifies, we sometimes see config errors, sometimes not. This is a bit surprising behavior to users. Fortunately the cost is not large even if we parse all config files.",
+      "range": {
+        "startLine": 104,
+        "startChar": 1,
+        "endLine": 104,
+        "endChar": 13
+      },
+      "revId": "de401b1b7b329222f060bf31339a9cf896645a5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2c108913_b5190bdf",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-13T11:00:46Z",
+      "side": 1,
+      "message": "defer should not be used in a loop usually.\n\nc.f. https://www.google.com/search?hl\u003den\u0026gl\u003dus\u0026q\u003dgolang+defer+loop",
+      "range": {
+        "startLine": 157,
+        "startChar": 2,
+        "endLine": 157,
+        "endChar": 36
+      },
+      "revId": "de401b1b7b329222f060bf31339a9cf896645a5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ae5bec59_84151a60",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-13T11:00:46Z",
+      "side": 1,
+      "message": "After the loop we have to check sc.Err() for errors.",
+      "range": {
+        "startLine": 190,
+        "startChar": 2,
+        "endLine": 190,
+        "endChar": 3
+      },
+      "revId": "de401b1b7b329222f060bf31339a9cf896645a5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

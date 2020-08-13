@@ -121,7 +121,7 @@ func runTestsAndReport(ctx context.Context, args *Args, cfg *Config, stdout io.W
 	for i, t := range tests {
 		testNames[i] = t.Name
 	}
-	mw.WriteMessage(&control.RunStart{Time: time.Now(), TestNames: testNames, NumTests: len(tests)})
+	mw.WriteMessage(&control.RunStart{Time: time.Now(), TestNames: testNames})
 
 	ctx = logging.NewContext(ctx, func(msg string) {
 		mw.WriteMessage(&control.RunLog{Time: time.Now(), Text: msg})
@@ -165,7 +165,7 @@ func runTestsAndReport(ctx context.Context, args *Args, cfg *Config, stdout io.W
 		}
 	}
 
-	mw.WriteMessage(&control.RunEnd{Time: time.Now(), OutDir: bundleArgs.RunTests.OutDir})
+	mw.WriteMessage(&control.RunEnd{Time: time.Now()})
 }
 
 // runTestsAndLog runs bundles serially to perform testing and logs human-readable results to stdout.

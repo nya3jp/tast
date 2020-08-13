@@ -84,12 +84,6 @@ type TestError struct {
 // If cfg.CollectSysInfo is true, system information generated on the DUT during testing
 // (e.g. logs and crashes) will also be written to the results dir.
 func WriteResults(ctx context.Context, cfg *Config, results []TestResult, complete bool) error {
-	f, err := os.Create(filepath.Join(cfg.ResDir, resultsFilename))
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-
 	// We don't want to bail out before writing test results if sys info collection fails,
 	// but we'll still return the error later.
 	sysInfoErr := collectSysInfo(ctx, cfg)
@@ -97,10 +91,18 @@ func WriteResults(ctx context.Context, cfg *Config, results []TestResult, comple
 		cfg.Logger.Log("Failed collecting system info: ", sysInfoErr)
 	}
 
-	enc := json.NewEncoder(f)
-	enc.SetIndent("", "  ")
-	if err = enc.Encode(results); err != nil {
-		return err
+	{
+		f, err := os.Create(filepath.Join(cfg.ResDir, resultsFilename))
+		if err != nil {
+			return err
+		}
+		defer f.Close()
+
+		enc := json.NewEncoder(f)
+		enc.SetIndent("", "  ")
+		if err = enc.Encode(results); err != nil {
+			return err
+		}
 	}
 
 	ml := 0
@@ -229,9 +231,6 @@ func (r *resultsHandler) handleRunStart(ctx context.Context, msg *control.RunSta
 	r.testsToRun = msg.TestNames
 	if len(msg.TestNames) > 0 {
 		r.numTests = len(msg.TestNames)
-	} else {
-		// Fallback path for old runners that don't set TestNames: https://crbug.com/889119
-		r.numTests = msg.NumTests
 	}
 	r.setProgress("Starting testing")
 	return nil

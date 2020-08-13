@@ -52,9 +52,6 @@ type RunStart struct {
 	// TestNames contains the names of tests to run, in the order in which they'll be executed.
 	// Note that some of these tests may later be skipped (see TestEnd).
 	TestNames []string `json:"runStartTestNames"`
-	// NumTests is the number of tests that will be run.
-	// TODO(derat): Delete this after 20190715; the tast command now uses TestNames instead: https://crbug.com/889119
-	NumTests int `json:"runStartNumTests"`
 }
 
 func (*RunStart) isMsg() {}
@@ -87,10 +84,6 @@ func (*RunError) isMsg() {}
 type RunEnd struct {
 	// Time is the device-local time at which the run ended.
 	Time time.Time `json:"runEndTime"`
-	// OutDir is the base directory under which tests wrote output files.
-	// DEPRECATED: Client should always set OutDir in the request.
-	// TODO(crbug.com/1000549): Remove this field after 20191201.
-	OutDir string `json:"runEndOutDir"`
 }
 
 func (*RunEnd) isMsg() {}

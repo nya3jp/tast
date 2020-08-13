@@ -127,6 +127,10 @@ func getTests(args *Args, bundles []string) (tests []*testing.TestInfo,
 	}
 	sort.Strings(bundlesWithTests)
 	for _, b := range bundlesWithTests {
+		// Set bundle name.
+		for _, t := range bundleTests[b] {
+			t.Bundle = b
+		}
 		tests = append(tests, bundleTests[b]...)
 	}
 	return tests, bundlesWithTests, nil

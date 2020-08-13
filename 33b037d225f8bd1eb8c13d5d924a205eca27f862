@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "15dec224_6f893f94",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 33
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2020-08-13T01:56:04Z",
+      "side": 1,
+      "message": "How about calling this \"proprietary_codecs\" instead? (i.e. drop \"supports_\")\nI feel \"supports_\" is redundant because this name should represent a supported feature.",
+      "range": {
+        "startLine": 140,
+        "startChar": 4,
+        "endLine": 140,
+        "endChar": 31
+      },
+      "revId": "33b037d225f8bd1eb8c13d5d924a205eca27f862",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

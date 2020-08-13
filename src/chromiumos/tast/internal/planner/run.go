@@ -135,7 +135,7 @@ func (p *plan) run(ctx context.Context, out OutputStream) error {
 	dl.BeforeRun(ctx, p.testsToRun())
 
 	for _, s := range p.skips {
-		tout := NewTestOutputStream(out, s.test.TestInfo())
+		tout := newTestOutputStream(out, s.test.TestInfo())
 		reportSkippedTest(tout, s.result)
 	}
 
@@ -184,7 +184,7 @@ func (p *prePlan) run(ctx context.Context, out OutputStream, dl *downloader) err
 	defer cancel()
 
 	for i, t := range p.tests {
-		tout := NewTestOutputStream(out, t.TestInfo())
+		tout := newTestOutputStream(out, t.TestInfo())
 		precfg := &preConfig{
 			ctx:   pctx,
 			close: p.pre != nil && i == len(p.tests)-1,
@@ -215,7 +215,7 @@ type preConfig struct {
 //
 // runTest runs a test on a goroutine. If a test does not finish after reaching
 // its timeout, this function returns with an error without waiting for its finish.
-func runTest(ctx context.Context, t *testing.TestInstance, tout *TestOutputStream, pcfg *Config, precfg *preConfig, dl *downloader) error {
+func runTest(ctx context.Context, t *testing.TestInstance, tout *testOutputStream, pcfg *Config, precfg *preConfig, dl *downloader) error {
 	dl.BeforeTest(ctx, t)
 
 	// Attach a log that the test can use to report timing events.
@@ -423,7 +423,7 @@ func timeoutOrDefault(timeout, def time.Duration) time.Duration {
 
 // reportSkippedTest is called instead of runTest for a test that is skipped due to
 // having unsatisfied dependencies.
-func reportSkippedTest(tout *TestOutputStream, result *testing.ShouldRunResult) {
+func reportSkippedTest(tout *testOutputStream, result *testing.ShouldRunResult) {
 	tout.Start()
 	for _, msg := range result.Errors {
 		_, fn, ln, _ := runtime.Caller(0)
@@ -437,7 +437,7 @@ func reportSkippedTest(tout *TestOutputStream, result *testing.ShouldRunResult) 
 }
 
 // dumpGoroutines dumps all goroutines to tout.
-func dumpGoroutines(tout *TestOutputStream) {
+func dumpGoroutines(tout *testOutputStream) {
 	tout.Log("Dumping all goroutines")
 	if err := func() error {
 		p := pprof.Lookup("goroutine")

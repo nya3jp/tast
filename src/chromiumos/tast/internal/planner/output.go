@@ -25,11 +25,11 @@ type OutputStream interface {
 	TestEnd(t *testing.TestInfo, skipReasons []string, timingLog *timing.Log) error
 }
 
-// TestOutputStream wraps planner.OutputStream for a single test.
+// testOutputStream wraps planner.OutputStream for a single test.
 //
-// TestOutputStream implements testing.OutputStream. TestOutputStream is goroutine-safe;
+// testOutputStream implements testing.OutputStream. testOutputStream is goroutine-safe;
 // it is safe to call its methods concurrently from multiple goroutines.
-type TestOutputStream struct {
+type testOutputStream struct {
 	out OutputStream
 	t   *testing.TestInfo
 
@@ -37,17 +37,17 @@ type TestOutputStream struct {
 	ended bool
 }
 
-var _ testing.OutputStream = &TestOutputStream{}
+var _ testing.OutputStream = &testOutputStream{}
 
-// NewTestOutputStream creates TestOutputStream for out and t.
-func NewTestOutputStream(out OutputStream, t *testing.TestInfo) *TestOutputStream {
-	return &TestOutputStream{out: out, t: t}
+// newTestOutputStream creates testOutputStream for out and t.
+func newTestOutputStream(out OutputStream, t *testing.TestInfo) *testOutputStream {
+	return &testOutputStream{out: out, t: t}
 }
 
 var errAlreadyEnded = errors.New("test has already ended")
 
 // Start reports that the test has started. It should be called exactly once.
-func (w *TestOutputStream) Start() error {
+func (w *testOutputStream) Start() error {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	if w.ended {
@@ -57,7 +57,7 @@ func (w *TestOutputStream) Start() error {
 }
 
 // Log reports an informational log from the test.
-func (w *TestOutputStream) Log(msg string) error {
+func (w *testOutputStream) Log(msg string) error {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	if w.ended {
@@ -67,7 +67,7 @@ func (w *TestOutputStream) Log(msg string) error {
 }
 
 // Log reports an error from the test.
-func (w *TestOutputStream) Error(e *testing.Error) error {
+func (w *testOutputStream) Error(e *testing.Error) error {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	if w.ended {
@@ -78,7 +78,7 @@ func (w *TestOutputStream) Error(e *testing.Error) error {
 
 // End reports that the test has ended. After End is called, all methods will
 // fail with an error.
-func (w *TestOutputStream) End(skipReasons []string, timingLog *timing.Log) error {
+func (w *testOutputStream) End(skipReasons []string, timingLog *timing.Log) error {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	if w.ended {

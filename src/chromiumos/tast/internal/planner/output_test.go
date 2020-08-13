@@ -66,7 +66,7 @@ func (s *outputSink) ReadAll() ([]control.Msg, error) {
 func TestTestOutputStream(t *gotesting.T) {
 	sink := newOutputSink()
 	test := &testing.TestInfo{Name: "pkg.Test"}
-	tout := NewTestOutputStream(sink, test)
+	tout := newTestOutputStream(sink, test)
 
 	tout.Start()
 	tout.Log("hello")

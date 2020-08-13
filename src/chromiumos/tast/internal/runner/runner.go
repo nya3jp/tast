@@ -95,6 +95,7 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Args,
 	default:
 		return command.WriteError(stderr, command.NewStatusErrorf(statusBadArgs, "invalid mode %v", args.Mode))
 	}
+
 }
 
 // runTestsAndReport runs bundles serially to perform testing and writes control messages to stdout.

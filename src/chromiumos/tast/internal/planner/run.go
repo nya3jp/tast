@@ -238,10 +238,9 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *TestOutputStrea
 		PreCtx:       precfg.ctx,
 		Purgeable:    dl.Purgeable(),
 	}
-	root := testing.NewRootState(t, tout, tcfg)
-	stages := buildStages(t, pcfg, precfg, tcfg)
+	stages := buildStages(t, tout, pcfg, precfg, tcfg)
 
-	ok := runStages(ctx, root, stages)
+	ok := runStages(ctx, stages)
 	if !ok {
 		// If runStages reported that the test didn't finish, print diagnostic messages.
 		const msg = "Test did not return on timeout (see log for goroutine dump)"
@@ -303,16 +302,17 @@ func (d *downloader) download(ctx context.Context, tests []*testing.TestInstance
 //
 // The time allotted to the test is generally the sum of t.Timeout and t.ExitTimeout, but
 // additional time may be allotted for preconditions and pre/post-test hooks.
-func buildStages(t *testing.TestInstance, pcfg *Config, precfg *preConfig, tcfg *testing.TestConfig) []stage {
+func buildStages(t *testing.TestInstance, tout testing.OutputStream, pcfg *Config, precfg *preConfig, tcfg *testing.TestConfig) []stage {
 	var stages []stage
 	addStage := func(f stageFunc, ctxTimeout, runTimeout time.Duration) {
 		stages = append(stages, stage{f, ctxTimeout, runTimeout})
 	}
 
+	root := testing.NewRootState(t, tout, tcfg)
 	var postTestFunc func(ctx context.Context, s *testing.TestHookState)
 
 	// First, perform setup and run the pre-test function.
-	addStage(func(ctx context.Context, root *testing.RootState) {
+	addStage(func(ctx context.Context) {
 		root.RunWithTestState(ctx, func(ctx context.Context, s *testing.State) {
 			// The test bundle is responsible for ensuring t.Timeout is nonzero before calling Run,
 			// but we call s.Fatal instead of panicking since it's arguably nicer to report individual
@@ -371,7 +371,7 @@ func buildStages(t *testing.TestInstance, pcfg *Config, precfg *preConfig, tcfg 
 
 	// Prepare the test's precondition (if any) if setup was successful.
 	if t.Pre != nil {
-		addStage(func(ctx context.Context, root *testing.RootState) {
+		addStage(func(ctx context.Context) {
 			if root.HasError() {
 				return
 			}
@@ -383,7 +383,7 @@ func buildStages(t *testing.TestInstance, pcfg *Config, precfg *preConfig, tcfg 
 	}
 
 	// Next, run the test function itself if no errors have been reported so far.
-	addStage(func(ctx context.Context, root *testing.RootState) {
+	addStage(func(ctx context.Context) {
 		if root.HasError() {
 			return
 		}
@@ -393,7 +393,7 @@ func buildStages(t *testing.TestInstance, pcfg *Config, precfg *preConfig, tcfg 
 	// If this is the final test using this precondition, close it
 	// (even if setup, t.Pre.Prepare, or t.Func failed).
 	if precfg.close {
-		addStage(func(ctx context.Context, root *testing.RootState) {
+		addStage(func(ctx context.Context) {
 			root.RunWithPreState(ctx, func(ctx context.Context, s *testing.PreState) {
 				s.Logf("Closing precondition %q", t.Pre.String())
 				t.Pre.Close(ctx, s)
@@ -402,7 +402,7 @@ func buildStages(t *testing.TestInstance, pcfg *Config, precfg *preConfig, tcfg 
 	}
 
 	// Finally, run the post-test functions unconditionally.
-	addStage(func(ctx context.Context, root *testing.RootState) {
+	addStage(func(ctx context.Context) {
 		root.RunWithTestHookState(ctx, func(ctx context.Context, s *testing.TestHookState) {
 			if postTestFunc != nil {
 				postTestFunc(ctx, s)

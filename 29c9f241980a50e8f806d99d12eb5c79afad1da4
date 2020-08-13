@@ -1,0 +1,84 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6cb877dc_d267021b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-08-13T14:46:47Z",
+      "side": 1,
+      "message": "FYI: yamaguchi@ who\u0027s looking at f20 deps support.",
+      "revId": "29c9f241980a50e8f806d99d12eb5c79afad1da4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f810573e_585c5443",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 386,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-08-13T14:46:47Z",
+      "side": 1,
+      "message": "Could you use errors.Wrap() and wrap err, for investigation in case of errors?",
+      "range": {
+        "startLine": 386,
+        "startChar": 47,
+        "endLine": 386,
+        "endChar": 73
+      },
+      "revId": "29c9f241980a50e8f806d99d12eb5c79afad1da4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "914e83d4_0859d62b",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 389,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-08-13T14:46:47Z",
+      "side": 1,
+      "message": "nit: no need.",
+      "range": {
+        "startLine": 389,
+        "startChar": 23,
+        "endLine": 389,
+        "endChar": 26
+      },
+      "revId": "29c9f241980a50e8f806d99d12eb5c79afad1da4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "07a0e1d5_19dc8038",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 389,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-08-13T14:46:47Z",
+      "side": 1,
+      "message": "Could you add the comment summarizing the format of compatible file?\nIt would help readers to understand the following code.",
+      "revId": "29c9f241980a50e8f806d99d12eb5c79afad1da4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

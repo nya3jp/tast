@@ -67,6 +67,8 @@ type Config struct {
 	TestHook func(context.Context, *testing.TestHookState) func(context.Context, *testing.TestHookState)
 	// DownloadMode specifies a strategy to download external data files.
 	DownloadMode DownloadMode
+	// Fixtures is a map from a fixture name to its metadata.
+	Fixtures map[string]*testing.Fixture
 }
 
 // RunTests runs a set of tests, writing outputs to out.
@@ -78,13 +80,17 @@ type Config struct {
 // RunTests runs tests on goroutines. If a test does not finish after reaching
 // its timeout, this function returns with an error without waiting for its finish.
 func RunTests(ctx context.Context, tests []*testing.TestInstance, out OutputStream, pcfg *Config) error {
-	plan := buildPlan(tests, pcfg)
+	plan, err := buildPlan(tests, pcfg)
+	if err != nil {
+		return err
+	}
 	return plan.run(ctx, out)
 }
 
 // plan holds a top-level plan of test execution.
 type plan struct {
 	skips    []*skippedTest
+	fixtPlan *fixtPlan
 	prePlans []*prePlan
 	pcfg     *Config
 }
@@ -94,7 +100,7 @@ type skippedTest struct {
 	result *testing.ShouldRunResult
 }
 
-func buildPlan(tests []*testing.TestInstance, pcfg *Config) *plan {
+func buildPlan(tests []*testing.TestInstance, pcfg *Config) (*plan, error) {
 	var runs []*testing.TestInstance
 	var skips []*skippedTest
 	for _, t := range tests {
@@ -109,13 +115,15 @@ func buildPlan(tests []*testing.TestInstance, pcfg *Config) *plan {
 		return skips[i].test.Name < skips[j].test.Name
 	})
 
+	var fixtTests []*testing.TestInstance
 	preMap := make(map[string][]*testing.TestInstance)
 	for _, t := range runs {
-		var preName string
 		if t.Pre != nil {
-			preName = t.Pre.String()
+			preName := t.Pre.String()
+			preMap[preName] = append(preMap[preName], t)
+		} else {
+			fixtTests = append(fixtTests, t)
 		}
-		preMap[preName] = append(preMap[preName], t)
 	}
 
 	preNames := make([]string, 0, len(preMap))
@@ -128,7 +136,12 @@ func buildPlan(tests []*testing.TestInstance, pcfg *Config) *plan {
 	for i, preName := range preNames {
 		prePlans[i] = buildPrePlan(preMap[preName], pcfg)
 	}
-	return &plan{skips, prePlans, pcfg}
+
+	fixtPlan, err := buildFixtPlan(fixtTests, pcfg)
+	if err != nil {
+		return nil, err
+	}
+	return &plan{skips, fixtPlan, prePlans, pcfg}, nil
 }
 
 func (p *plan) run(ctx context.Context, out OutputStream) error {
@@ -140,6 +153,11 @@ func (p *plan) run(ctx context.Context, out OutputStream) error {
 		reportSkippedTest(tout, s.result)
 	}
 
+	st := newFixtureStack(p.pcfg)
+	if err := p.fixtPlan.run(ctx, st, out, dl); err != nil {
+		return err
+	}
+
 	for _, pp := range p.prePlans {
 		if err := pp.run(ctx, out, dl); err != nil {
 			return err
@@ -149,9 +167,130 @@ func (p *plan) run(ctx context.Context, out OutputStream) error {
 }
 
 func (p *plan) testsToRun() []*testing.TestInstance {
-	var tests []*testing.TestInstance
+	tests := p.fixtPlan.testsToRun()
 	for _, pp := range p.prePlans {
 		tests = append(tests, pp.testsToRun()...)
+	}
+	return tests
+}
+
+// TODO
+type fixtPlan struct {
+	pcfg     *Config
+	fixt     *testing.Fixture
+	tests    []*testing.TestInstance
+	children []*fixtPlan
+}
+
+// TODO
+func buildFixtPlan(tests []*testing.TestInstance, pcfg *Config) (*fixtPlan, error) {
+	// topFixt is the name of the implicit top-level fixture.
+	const topFixt = ""
+
+	// Build a fixture tree relevant to the given tests.
+	tree := make(map[string][]string) // fixture name to its child names
+	seen := make(map[string]struct{}) // set of fixture names seen so far
+	for _, t := range tests {
+		cur := t.Fixture
+		for cur != topFixt {
+			if _, ok := seen[cur]; ok {
+				break
+			}
+			seen[cur] = struct{}{}
+			f, ok := pcfg.Fixtures[cur]
+			if !ok {
+				return nil, fmt.Errorf("fixture %q not found", cur)
+			}
+			tree[f.Parent] = append(tree[f.Parent], cur)
+			cur = f.Parent
+		}
+	}
+	for _, children := range tree {
+		sort.Strings(children)
+	}
+
+	// Build a map from fixture names to tests.
+	testMap := make(map[string][]*testing.TestInstance)
+	for _, t := range tests {
+		testMap[t.Fixture] = append(testMap[t.Fixture], t)
+	}
+	for _, ts := range testMap {
+		sort.Slice(ts, func(i, j int) bool {
+			return ts[i].Name < ts[j].Name
+		})
+	}
+
+	// Traverse the tree to build a tree of fixtPlan.
+	var traverse func(cur string) *fixtPlan
+	traverse = func(cur string) *fixtPlan {
+		var children []*fixtPlan
+		for _, child := range tree[cur] {
+			children = append(children, traverse(child))
+		}
+		return &fixtPlan{
+			pcfg:     pcfg,
+			fixt:     pcfg.Fixtures[cur],
+			tests:    testMap[cur],
+			children: children,
+		}
+	}
+	return traverse(topFixt), nil
+}
+
+func (p *fixtPlan) run(ctx context.Context, st *fixtureStack, out OutputStream, dl *downloader) error {
+	fi := p.fixt.EntityInfo()
+	ce := &testing.CurrentEntity{
+		ServiceDeps: fi.ServiceDeps,
+		// TODO(crbug.com/1035940): Provide access to the output directory.
+		// SoftwareDeps is not set; fixtures can't declare SoftwareDeps.
+	}
+	fout := newEntityOutputStream(out, fi)
+
+	// Create a fixture-scoped context.
+	logger := func(msg string) { fout.Log(msg) }
+	ctx, cancel := context.WithCancel(testing.NewContext(ctx, ce, logger))
+	defer cancel()
+
+	// Set up the fixture if needed.
+	if err := st.Push(ctx, p.fixt); err != nil {
+		return err
+	}
+	// Do not defer st.Pop call here. It is correct to not call TearDown when
+	// returning an error because it happens only when the timeout is ignored.
+
+	// Run direct child tests first.
+	for _, t := range p.tests {
+		tout := newEntityOutputStream(out, t.EntityInfo())
+		if st.Alive() {
+			if err := runTest(ctx, t, tout, p.pcfg, st, &preConfig{}, dl); err != nil {
+				return err
+			}
+			if err := st.Reset(ctx); err != nil {
+				return err
+			}
+		} else {
+			// TODO: Mark t as failed.
+		}
+	}
+
+	// Run child fixtures.
+	for _, c := range p.children {
+		if err := c.run(ctx, st, out, dl); err != nil {
+			return err
+		}
+	}
+
+	// Tear down the fixture if needed.
+	if err := st.Pop(ctx); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (p *fixtPlan) testsToRun() []*testing.TestInstance {
+	tests := append([]*testing.TestInstance(nil), p.tests...)
+	for _, c := range p.children {
+		tests = append(tests, c.testsToRun()...)
 	}
 	return tests
 }
@@ -181,6 +320,10 @@ func (p *prePlan) run(ctx context.Context, out OutputStream, dl *downloader) err
 	pctx, cancel := context.WithCancel(testing.NewContext(ctx, ec, plog.Log))
 	defer cancel()
 
+	// Create an empty fixture stack. Tests using preconditions can't depend on
+	// fixtures.
+	st := newFixtureStack(p.pcfg)
+
 	for i, t := range p.tests {
 		ti := t.EntityInfo()
 		plog.SetCurrentTest(ti)
@@ -189,7 +332,7 @@ func (p *prePlan) run(ctx context.Context, out OutputStream, dl *downloader) err
 			ctx:   pctx,
 			close: p.pre != nil && i == len(p.tests)-1,
 		}
-		if err := runTest(ctx, t, tout, p.pcfg, precfg, dl); err != nil {
+		if err := runTest(ctx, t, tout, p.pcfg, st, precfg, dl); err != nil {
 			return err
 		}
 	}
@@ -244,7 +387,7 @@ type preConfig struct {
 //
 // runTest runs a test on a goroutine. If a test does not finish after reaching
 // its timeout, this function returns with an error without waiting for its finish.
-func runTest(ctx context.Context, t *testing.TestInstance, tout *entityOutputStream, pcfg *Config, precfg *preConfig, dl *downloader) error {
+func runTest(ctx context.Context, t *testing.TestInstance, tout *entityOutputStream, pcfg *Config, st *fixtureStack, precfg *preConfig, dl *downloader) error {
 	dl.BeforeTest(ctx, t)
 
 	// Attach a log that the test can use to report timing events.
@@ -265,10 +408,11 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *entityOutputStr
 		Vars:         pcfg.Vars,
 		CloudStorage: testing.NewCloudStorage(pcfg.Devservers),
 		RemoteData:   pcfg.RemoteData,
+		FixtureValue: st.Val(),
 		PreCtx:       precfg.ctx,
 		Purgeable:    dl.Purgeable(),
 	}
-	stages := buildStages(t, tout, pcfg, precfg, rcfg)
+	stages := buildStages(t, tout, pcfg, st, precfg, rcfg)
 
 	ok := runStages(ctx, stages)
 	if !ok {
@@ -366,7 +510,7 @@ func createEntityOutDir(baseDir, name string) (string, error) {
 //
 // The time allotted to the test is generally the sum of t.Timeout and t.ExitTimeout, but
 // additional time may be allotted for preconditions and pre/post-test hooks.
-func buildStages(t *testing.TestInstance, tout testing.OutputStream, pcfg *Config, precfg *preConfig, rcfg *testing.RuntimeConfig) []stage {
+func buildStages(t *testing.TestInstance, tout testing.OutputStream, pcfg *Config, st *fixtureStack, precfg *preConfig, rcfg *testing.RuntimeConfig) []stage {
 	var stages []stage
 	addStage := func(f stageFunc, ctxTimeout, exitTimeout time.Duration) {
 		stages = append(stages, stage{f, ctxTimeout, exitTimeout})
@@ -421,6 +565,8 @@ func buildStages(t *testing.TestInstance, tout testing.OutputStream, pcfg *Confi
 		})
 	}, preTestTimeout, exitTimeout)
 
+	// TODO(crbug.com/1035940): Support fixture pre-test hooks.
+
 	// Prepare the test's precondition (if any) if setup was successful.
 	if t.Pre != nil {
 		addStage(func(ctx context.Context) {
@@ -452,6 +598,8 @@ func buildStages(t *testing.TestInstance, tout testing.OutputStream, pcfg *Confi
 			})
 		}, t.Pre.Timeout(), exitTimeout)
 	}
+
+	// TODO(crbug.com/1035940): Support fixture post-test hooks.
 
 	// Finally, run the post-test functions unconditionally.
 	addStage(func(ctx context.Context) {

@@ -2,6 +2,75 @@
   "comments": [
     {
       "key": {
+        "uuid": "3ae15c1c_197d92ff",
+        "filename": "src/chromiumos/tast/internal/bundle/remote_fixture.proto",
+        "patchSetId": 15
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-13T06:22:20Z",
+      "side": 1,
+      "message": "seems like tab and space are mixed.",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 3
+      },
+      "revId": "a80fbfa6106adad48e3517f72a9ddfa2d1eaed5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "39bfa891_ea9d1f5b",
+        "filename": "src/chromiumos/tast/internal/bundle/remote_fixture.proto",
+        "patchSetId": 15
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-13T06:22:20Z",
+      "side": 1,
+      "message": "Considering generated code, we might want to name this as RunFixture (otherwise Run/RunRequest/RunResponse are directly under the bundle package and not associated with \"fixture\")",
+      "range": {
+        "startLine": 13,
+        "startChar": 8,
+        "endLine": 13,
+        "endChar": 11
+      },
+      "revId": "a80fbfa6106adad48e3517f72a9ddfa2d1eaed5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "08407157_a7fc21cb",
+        "filename": "src/chromiumos/tast/internal/bundle/remote_fixture.proto",
+        "patchSetId": 15
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-13T06:22:20Z",
+      "side": 1,
+      "message": "nit: Can you follow the Go standard comment format since these protos are used exclusively in Tast?\n\n // Name is a name of the fixture...",
+      "range": {
+        "startLine": 17,
+        "startChar": 2,
+        "endLine": 18,
+        "endChar": 4
+      },
+      "revId": "a80fbfa6106adad48e3517f72a9ddfa2d1eaed5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "255cae52_348b249b",
         "filename": "src/chromiumos/tast/internal/bundle/remote_fixture.proto",
         "patchSetId": 15
@@ -18,6 +87,53 @@
         "startChar": 0,
         "endLine": 55,
         "endChar": 73
+      },
+      "revId": "a80fbfa6106adad48e3517f72a9ddfa2d1eaed5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a438a04b_7ecfd056",
+        "filename": "src/chromiumos/tast/internal/bundle/remote_fixture.proto",
+        "patchSetId": 15
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-13T06:22:20Z",
+      "side": 1,
+      "message": "As we discussed offline, devservers and build_artifacts_url are not neceesary ATM.",
+      "parentUuid": "255cae52_348b249b",
+      "range": {
+        "startLine": 55,
+        "startChar": 0,
+        "endLine": 55,
+        "endChar": 73
+      },
+      "revId": "a80fbfa6106adad48e3517f72a9ddfa2d1eaed5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f9eaedb7_b17f5ba7",
+        "filename": "src/chromiumos/tast/internal/bundle/remote_fixture.proto",
+        "patchSetId": 15
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-13T06:22:20Z",
+      "side": 1,
+      "message": "I think it\u0027s good to include timestamps as well.",
+      "range": {
+        "startLine": 70,
+        "startChar": 0,
+        "endLine": 74,
+        "endChar": 24
       },
       "revId": "a80fbfa6106adad48e3517f72a9ddfa2d1eaed5f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",

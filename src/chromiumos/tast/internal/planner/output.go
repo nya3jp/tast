@@ -87,3 +87,54 @@ func (w *entityOutputStream) End(skipReasons []string, timingLog *timing.Log) er
 	w.ended = true
 	return w.out.EntityEnd(w.ei, skipReasons, timingLog)
 }
+
+// nullOutputStream is an implementation of testing.OutputStream that discards
+// all logs and errors.
+type nullOutputStream struct{}
+
+var _ testing.OutputStream = &nullOutputStream{}
+
+func newNullOutputStream() *nullOutputStream {
+	return &nullOutputStream{}
+}
+
+func (w *nullOutputStream) Log(msg string) error {
+	return nil
+}
+
+func (w *nullOutputStream) Error(e *testing.Error) error {
+	return nil
+}
+
+// teeOutputStream is an implementation of testing.OutputStream that collects
+// errors in a slice before forwarding them to a parent OutputStream.
+type teeOutputStream struct {
+	parent testing.OutputStream
+
+	mu     sync.Mutex
+	errors []*testing.Error
+}
+
+var _ testing.OutputStream = &teeOutputStream{}
+
+func newTeeOutputStream(parent testing.OutputStream) *teeOutputStream {
+	return &teeOutputStream{parent: parent}
+}
+
+func (w *teeOutputStream) Log(msg string) error {
+	return w.parent.Log(msg)
+}
+
+func (w *teeOutputStream) Error(e *testing.Error) error {
+	w.mu.Lock()
+	w.errors = append(w.errors, e)
+	w.mu.Unlock()
+	return w.parent.Error(e)
+}
+
+// Errors returns a collected list of errors.
+func (w *teeOutputStream) Errors() []*testing.Error {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	return append([]*testing.Error(nil), w.errors...)
+}

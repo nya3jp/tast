@@ -119,7 +119,9 @@ type Param struct {
 	// Can only be set if the enclosing test doesn't have one already set.
 	Pre Precondition
 
-	// TODO(oka): Consider adding Fixture.
+	// Fixture is the name of the fixture the test depends on.
+	// Can only be set if the enclosing test doesn't have one already set.
+	Fixture string
 
 	// Timeout contains the maximum duration for which Func may run before the test is aborted.
 	// Can only be set if the enclosing test doesn't have one already set.

@@ -78,7 +78,6 @@ func features(available []string, model string) *dep.Features {
 }
 
 func TestInstantiate(t *gotesting.T) {
-	pre := &fakePre{}
 	got, err := instantiate(&Test{
 		Func:         TESTINSTANCETEST,
 		Desc:         "hello",
@@ -88,8 +87,6 @@ func TestInstantiate(t *gotesting.T) {
 		Vars:         []string{"var1", "var2"},
 		SoftwareDeps: []string{"dep1", "dep2"},
 		HardwareDeps: hwdep.D(hwdep.Model("model1", "model2")),
-		Pre:          pre,
-		Fixture:      "fixt",
 		Timeout:      123 * time.Second,
 		ServiceDeps:  []string{"svc1", "svc2"},
 	})
@@ -114,10 +111,9 @@ func TestInstantiate(t *gotesting.T) {
 		Vars:         []string{"var1", "var2"},
 		SoftwareDeps: []string{"dep1", "dep2"},
 		Timeout:      123 * time.Second,
-		Fixture:      "fixt",
 		ServiceDeps:  []string{"svc1", "svc2"},
 	}}
-	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(TestInstance{}, "Func", "HardwareDeps", "Pre")); diff != "" {
+	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(TestInstance{}, "Func", "HardwareDeps")); diff != "" {
 		t.Errorf("Got unexpected test instances (-got +want):\n%s", diff)
 	}
 	if len(got) == 1 {
@@ -129,9 +125,6 @@ func TestInstantiate(t *gotesting.T) {
 		}
 		if result := got[0].ShouldRun(features([]string{"dep1", "dep2"}, "modelX")); result.OK() {
 			t.Error("Got unexpected HardwareDeps: ShouldRun returned true for modelX")
-		}
-		if got[0].Pre != pre {
-			t.Errorf("Got unexpected Pre: got %v, want %v", got[0].Pre, pre)
 		}
 	}
 }
@@ -221,8 +214,68 @@ func TestInstantiateParams(t *gotesting.T) {
 	}
 }
 
-func TestInstantiateParamsPre(t *gotesting.T) {
+func TestInstantiateFixture(t *gotesting.T) {
+	// Registration without params should succeed.
+	got, err := instantiate(&Test{
+		Func:    TESTINSTANCETEST,
+		Fixture: "fixt1",
+	})
+	if err != nil {
+		t.Fatal("Failed to instantiate test: ", err)
+	}
+	if len(got) != 1 {
+		t.Fatalf("Got %d test instances; want 1", len(got))
+	}
+	if got[0].Fixture != "fixt1" {
+		t.Fatalf("TestInstance.Fixture = %q; want %q", got[0].Fixture, "fixt1")
+	}
+
+	// Duplicated fields should be rejected.
+	if _, err := instantiate(&Test{
+		Func:    TESTINSTANCETEST,
+		Fixture: "fixt1",
+		Params: []Param{{
+			Fixture: "fixt2",
+		}},
+	}); err == nil {
+		t.Error("instantiate succeeded unexpectedly for duplicated Pre")
+	}
+
+	// OK if the field in the base test is unset.
+	got, err = instantiate(&Test{
+		Func: TESTINSTANCETEST,
+		Params: []Param{{
+			Fixture: "fixt2",
+		}},
+	})
+	if err != nil {
+		t.Fatal("Failed to instantiate test: ", err)
+	}
+	if len(got) != 1 {
+		t.Fatalf("Got %d test instances; want 1", len(got))
+	}
+	if got[0].Fixture != "fixt2" {
+		t.Fatalf("TestInstance.Fixture = %q; want %q", got[0].Fixture, "fixt2")
+	}
+}
+
+func TestInstantiatePre(t *gotesting.T) {
 	pre := &fakePre{}
+
+	// Registration without params should succeed.
+	got, err := instantiate(&Test{
+		Func: TESTINSTANCETEST,
+		Pre:  pre,
+	})
+	if err != nil {
+		t.Fatal("Failed to instantiate test: ", err)
+	}
+	if len(got) != 1 {
+		t.Fatalf("Got %d test instances; want 1", len(got))
+	}
+	if got[0].Pre != pre {
+		t.Fatalf("TestInstance.Pre = %v; want %v", got[0].Pre, pre)
+	}
 
 	// Duplicated fields should be rejected.
 	if _, err := instantiate(&Test{
@@ -236,7 +289,7 @@ func TestInstantiateParamsPre(t *gotesting.T) {
 	}
 
 	// OK if the field in the base test is unset.
-	got, err := instantiate(&Test{
+	got, err = instantiate(&Test{
 		Func: TESTINSTANCETEST,
 		Params: []Param{{
 			Pre: pre,

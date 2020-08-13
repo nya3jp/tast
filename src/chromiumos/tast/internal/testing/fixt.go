@@ -6,7 +6,6 @@ package testing
 
 import (
 	"context"
-	"fmt"
 	"time"
 )
 
@@ -67,13 +66,14 @@ type Fixture struct {
 }
 
 // TODO
-func (f *Fixture) EntityInfo() *EntityInfo {
-	return &EntityInfo{
-		Name:     fmt.Sprintf("fixture.%s", f.Name),
-		Desc:     f.Desc,
-		Contacts: append([]string(nil), f.Contacts...),
-		Fixture:  f.Parent,
-		Type:     EntityFixture,
+func (f *Fixture) TestInfo() *TestInfo {
+	return &TestInfo{
+		Name:        f.Name,
+		Desc:        f.Desc,
+		Contacts:    append([]string(nil), f.Contacts...),
+		Fixture:     f.Parent,
+		ServiceDeps: f.ServiceDeps,
+		Type:        EntityFixture,
 	}
 }
 

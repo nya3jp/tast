@@ -219,13 +219,18 @@ type TestConfig struct {
 	Purgeable []string
 }
 
+// NewEntityRoot returns a new EntityRoot object.
+func NewEntityRoot(out OutputStream, cfg *TestConfig) *EntityRoot {
+	return &EntityRoot{
+		cfg: cfg,
+		out: out,
+	}
+}
+
 // NewTestRoot returns a new TestRoot object.
 func NewTestRoot(test *TestInstance, out OutputStream, cfg *TestConfig) *TestRoot {
 	return &TestRoot{
-		entityRoot: &EntityRoot{
-			cfg: cfg,
-			out: out,
-		},
+		entityRoot: NewEntityRoot(out, cfg),
 		test: test,
 	}
 }
@@ -267,6 +272,12 @@ func (r *TestRoot) newTestHookState() *TestHookState {
 		globalMixin: r.entityRoot.newGlobalMixin("", r.HasError()),
 		testMixin:   r.newTestMixin(),
 	}
+}
+
+func (r *EntityRoot) RunWithFixtState(ctx context.Context, f func(ctx context.Context, s *FixtState)) {
+	s := r.newFixtState()
+	ctx = NewContext(ctx, s.testContext(), func(msg string) { s.Log(msg) })
+	runAndRecover(func() { f(ctx, s) }, s)
 }
 
 // RunWithTestState runs f, passing a Context and a State for a test.

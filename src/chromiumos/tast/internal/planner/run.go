@@ -67,6 +67,12 @@ type Config struct {
 	TestHook func(context.Context, *testing.TestHookState) func(context.Context, *testing.TestHookState)
 	// DownloadMode specifies a strategy to download external data files.
 	DownloadMode DownloadMode
+	// Fixtures is a map from a fixture name to its metadata.
+	Fixtures map[string]*testing.Fixture
+	// BaseFixtureName is a name of a base fixture.
+	BaseFixtureName string
+	// BaseFixtureImpl is an implementation of a base fixture.
+	BaseFixtureImpl testing.FixtureImpl
 }
 
 // RunTests runs a set of tests, writing outputs to out.
@@ -78,13 +84,17 @@ type Config struct {
 // RunTests runs tests on goroutines. If a test does not finish after reaching
 // its timeout, this function returns with an error without waiting for its finish.
 func RunTests(ctx context.Context, tests []*testing.TestInstance, out OutputStream, pcfg *Config) error {
-	plan := buildPlan(tests, pcfg)
+	plan, err := buildPlan(tests, pcfg)
+	if err != nil {
+		return err
+	}
 	return plan.run(ctx, out)
 }
 
 // plan holds a top-level plan of test execution.
 type plan struct {
 	skips    []*skippedTest
+	fixtPlan *fixtPlan
 	prePlans []*prePlan
 	pcfg     *Config
 }
@@ -94,7 +104,7 @@ type skippedTest struct {
 	result *testing.ShouldRunResult
 }
 
-func buildPlan(tests []*testing.TestInstance, pcfg *Config) *plan {
+func buildPlan(tests []*testing.TestInstance, pcfg *Config) (*plan, error) {
 	var runs []*testing.TestInstance
 	var skips []*skippedTest
 	for _, t := range tests {
@@ -109,13 +119,15 @@ func buildPlan(tests []*testing.TestInstance, pcfg *Config) *plan {
 		return skips[i].test.Name < skips[j].test.Name
 	})
 
+	var fixtTests []*testing.TestInstance
 	preMap := make(map[string][]*testing.TestInstance)
 	for _, t := range runs {
-		var preName string
 		if t.Pre != nil {
-			preName = t.Pre.String()
+			preName := t.Pre.String()
+			preMap[preName] = append(preMap[preName], t)
+		} else {
+			fixtTests = append(fixtTests, t)
 		}
-		preMap[preName] = append(preMap[preName], t)
 	}
 
 	preNames := make([]string, 0, len(preMap))
@@ -128,7 +140,12 @@ func buildPlan(tests []*testing.TestInstance, pcfg *Config) *plan {
 	for i, preName := range preNames {
 		prePlans[i] = buildPrePlan(preMap[preName], pcfg)
 	}
-	return &plan{skips, prePlans, pcfg}
+
+	fixtPlan, err := buildFixtPlan(fixtTests, pcfg)
+	if err != nil {
+		return nil, err
+	}
+	return &plan{skips, fixtPlan, prePlans, pcfg}, nil
 }
 
 func (p *plan) run(ctx context.Context, out OutputStream) error {
@@ -140,6 +157,10 @@ func (p *plan) run(ctx context.Context, out OutputStream) error {
 		reportSkippedTest(tout, s.result)
 	}
 
+	if err := p.fixtPlan.run(ctx, out, dl); err != nil {
+		return err
+	}
+
 	for _, pp := range p.prePlans {
 		if err := pp.run(ctx, out, dl); err != nil {
 			return err
@@ -149,11 +170,184 @@ func (p *plan) run(ctx context.Context, out OutputStream) error {
 }
 
 func (p *plan) testsToRun() []*testing.TestInstance {
-	var tests []*testing.TestInstance
+	tests := p.fixtPlan.testsToRun()
 	for _, pp := range p.prePlans {
 		tests = append(tests, pp.testsToRun()...)
 	}
 	return tests
+}
+
+// fixtTree represents a fixture tree.
+// At the beginning of fixture plan execution, a clone of a fixture tree is
+// created, and finished tests are removed from the tree as we execute the plan
+// to remember which tests are still to be run.
+// A fixture tree is considered empty if it contains no test. An empty fixture
+// tree must not appear as a subtree of another fixture tree so that we can
+// check if a fixture tree is empty in O(1).
+type fixtTree struct {
+	fixt *testing.Fixture
+
+	// Following fields are updated as we execute a plan.
+	tests    []*testing.TestInstance
+	children []*fixtTree
+}
+
+// Empty returns if a tree has no test.
+// An empty fixture tree must not appear as a subtree of another fixture tree
+// so that we can check if a fixture tree is empty in O(1).
+func (t *fixtTree) Empty() bool {
+	return len(t.tests) == 0 && len(t.children) == 0
+}
+
+// Clone returns a deep copy of fixtTree.
+func (t *fixtTree) Clone() *fixtTree {
+	children := make([]*fixtTree, len(t.children))
+	for i, child := range t.children {
+		children[i] = child.Clone()
+	}
+	return &fixtTree{
+		fixt:     t.fixt,
+		tests:    append([]*testing.TestInstance(nil), t.tests...),
+		children: children,
+	}
+}
+
+// TODO
+type fixtPlan struct {
+	pcfg *Config
+	tree *fixtTree // original fixture tree; must not be modified
+}
+
+// TODO
+func buildFixtPlan(tests []*testing.TestInstance, pcfg *Config) (*fixtPlan, error) {
+	// Build a graph of fixtures relevant to the given tests.
+	graph := make(map[string][]string) // fixture name to its child names
+	seen := make(map[string]struct{})  // set of fixture names seen so far
+	for _, t := range tests {
+		cur := t.Fixture
+		for cur != pcfg.BaseFixtureName {
+			if cur == "" {
+				return nil, fmt.Errorf("cannot run test %q because it does not depend on base fixture %q", t.Name, pcfg.BaseFixtureName)
+			}
+			if _, ok := seen[cur]; ok {
+				break
+			}
+			seen[cur] = struct{}{}
+			f, ok := pcfg.Fixtures[cur]
+			if !ok {
+				return nil, fmt.Errorf("fixture %q not found", cur)
+			}
+			graph[f.Parent] = append(graph[f.Parent], cur)
+			cur = f.Parent
+		}
+	}
+	for _, children := range graph {
+		sort.Strings(children)
+	}
+
+	// Build a map from fixture names to tests.
+	testMap := make(map[string][]*testing.TestInstance)
+	for _, t := range tests {
+		testMap[t.Fixture] = append(testMap[t.Fixture], t)
+	}
+	for _, ts := range testMap {
+		sort.Slice(ts, func(i, j int) bool {
+			return ts[i].Name < ts[j].Name
+		})
+	}
+
+	// Traverse the graph to build a fixture tree.
+	var traverse func(cur string) *fixtTree
+	traverse = func(cur string) *fixtTree {
+		var children []*fixtTree
+		for _, child := range graph[cur] {
+			children = append(children, traverse(child))
+		}
+		return &fixtTree{
+			fixt:     pcfg.Fixtures[cur],
+			tests:    testMap[cur],
+			children: children,
+		}
+	}
+	tree := traverse(pcfg.BaseFixtureName)
+
+	// Metadata of a base fixture should be unavailable in the registry.
+	if tree.fixt != nil {
+		return nil, fmt.Errorf("BUG: metadata for base fixture %q is unexpectedly available", pcfg.BaseFixtureName)
+	}
+	tree.fixt = &testing.Fixture{
+		Name: pcfg.BaseFixtureName,
+		Impl: pcfg.BaseFixtureImpl,
+	}
+
+	return &fixtPlan{pcfg: pcfg, tree: tree}, nil
+}
+
+func (p *fixtPlan) run(ctx context.Context, out OutputStream, dl *downloader) error {
+	tree := p.tree.Clone()
+	stack := newFixtureStack(p.pcfg, out)
+	return runFixtTree(ctx, tree, stack, p.pcfg, out, dl)
+}
+
+func (p *fixtPlan) testsToRun() []*testing.TestInstance {
+	var tests []*testing.TestInstance
+
+	var traverse func(tree *fixtTree)
+	traverse = func(tree *fixtTree) {
+		tests = append(tests, tree.tests...)
+		for _, subtree := range tree.children {
+			traverse(subtree)
+		}
+	}
+	traverse(p.tree)
+
+	return tests
+}
+
+// runFixtTree runs tests in a fixture tree.
+// tree is clobbered as tests are run.
+func runFixtTree(ctx context.Context, tree *fixtTree, stack *fixtureStack, pcfg *Config, out OutputStream, dl *downloader) error {
+	for !tree.Empty() {
+		// Push a fixture to the stack, calling its SetUp if the stack is alive.
+		ctx, err := stack.Push(ctx, tree.fixt)
+		if err != nil {
+			return err
+		}
+		// Do not defer stack.Pop call here. It is correct to not call TearDown when
+		// returning an error because it happens only when the timeout is ignored.
+
+		// Run direct child tests first.
+		for stack.Status() != statusZombie && len(tree.tests) > 0 {
+			t := tree.tests[0]
+			tree.tests = tree.tests[1:]
+			tout := newEntityOutputStream(out, t.EntityInfo())
+			if err := runTest(ctx, t, tout, pcfg, &preConfig{}, stack, dl); err != nil {
+				return err
+			}
+			if err := stack.Reset(); err != nil {
+				return err
+			}
+		}
+
+		// Run child fixtures recursively.
+		for stack.Status() != statusZombie && len(tree.children) > 0 {
+			subtree := tree.children[0]
+			if err := runFixtTree(ctx, subtree, stack, pcfg, out, dl); err != nil {
+				return err
+			}
+			// It is possible that a recursive call of runFixtTree aborted in middle of
+			// execution due to reset failures. Remove the subtree only when it is empty.
+			if subtree.Empty() {
+				tree.children = tree.children[1:]
+			}
+		}
+
+		// Pop the fixture from the stack, calling its TearDown if it is not dead.
+		if err := stack.Pop(); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // prePlan holds execution plan of tests using the same precondition.
@@ -181,6 +375,10 @@ func (p *prePlan) run(ctx context.Context, out OutputStream, dl *downloader) err
 	pctx, cancel := context.WithCancel(testing.NewContext(ctx, ec, plog.Log))
 	defer cancel()
 
+	// Create an empty fixture stack. Tests using preconditions can't depend on
+	// fixtures.
+	stack := newFixtureStack(p.pcfg, out)
+
 	for i, t := range p.tests {
 		ti := t.EntityInfo()
 		plog.SetCurrentTest(ti)
@@ -189,7 +387,7 @@ func (p *prePlan) run(ctx context.Context, out OutputStream, dl *downloader) err
 			ctx:   pctx,
 			close: p.pre != nil && i == len(p.tests)-1,
 		}
-		if err := runTest(ctx, t, tout, p.pcfg, precfg, dl); err != nil {
+		if err := runTest(ctx, t, tout, p.pcfg, precfg, stack, dl); err != nil {
 			return err
 		}
 	}
@@ -244,8 +442,8 @@ type preConfig struct {
 //
 // runTest runs a test on a goroutine. If a test does not finish after reaching
 // its timeout, this function returns with an error without waiting for its finish.
-func runTest(ctx context.Context, t *testing.TestInstance, tout *entityOutputStream, pcfg *Config, precfg *preConfig, dl *downloader) error {
-	dl.BeforeTest(ctx, t)
+func runTest(ctx context.Context, t *testing.TestInstance, tout *entityOutputStream, pcfg *Config, precfg *preConfig, stack *fixtureStack, dl *downloader) error {
+	fixtCtx := ctx
 
 	// Attach a log that the test can use to report timing events.
 	timingLog := timing.NewLog()
@@ -259,16 +457,30 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *entityOutputStr
 	tout.Start(outDir)
 	defer tout.End(nil, timingLog)
 
+	switch stack.Status() {
+	case statusAlive:
+	case statusDead:
+		msg := fmt.Sprintf("[Fixture failure] %s: SetUp failed", stack.ZombieName())
+		tout.Error(testing.NewError(nil, msg, msg, 0))
+		return nil
+	case statusZombie:
+		return errors.New("BUG: Cannot run a test on a zombie fixture stack")
+	}
+
 	rcfg := &testing.RuntimeConfig{
 		DataDir:      filepath.Join(pcfg.DataDir, testing.RelativeDataDir(t.Pkg)),
 		OutDir:       outDir,
 		Vars:         pcfg.Vars,
 		CloudStorage: testing.NewCloudStorage(pcfg.Devservers),
 		RemoteData:   pcfg.RemoteData,
+		FixtCtx:      fixtCtx,
+		FixtValue:    stack.Val(),
 		PreCtx:       precfg.ctx,
 		Purgeable:    dl.Purgeable(),
 	}
 	stages := buildStages(t, tout, pcfg, precfg, rcfg)
+
+	dl.BeforeTest(ctx, t)
 
 	ok := runStages(ctx, stages)
 	if !ok {
@@ -366,7 +578,7 @@ func createEntityOutDir(baseDir, name string) (string, error) {
 //
 // The time allotted to the test is generally the sum of t.Timeout and t.ExitTimeout, but
 // additional time may be allotted for preconditions and pre/post-test hooks.
-func buildStages(t *testing.TestInstance, tout testing.OutputStream, pcfg *Config, precfg *preConfig, rcfg *testing.RuntimeConfig) []stage {
+func buildStages(t *testing.TestInstance, tout testing.OutputStream, pcfg *Config, ecfg *preConfig, rcfg *testing.RuntimeConfig) []stage {
 	var stages []stage
 	addStage := func(f stageFunc, ctxTimeout, exitTimeout time.Duration) {
 		stages = append(stages, stage{f, ctxTimeout, exitTimeout})
@@ -421,6 +633,8 @@ func buildStages(t *testing.TestInstance, tout testing.OutputStream, pcfg *Confi
 		})
 	}, preTestTimeout, exitTimeout)
 
+	// TODO(crbug.com/1035940): Support fixture pre-test hooks.
+
 	// Prepare the test's precondition (if any) if setup was successful.
 	if t.Pre != nil {
 		addStage(func(ctx context.Context) {
@@ -444,7 +658,7 @@ func buildStages(t *testing.TestInstance, tout testing.OutputStream, pcfg *Confi
 
 	// If this is the final test using this precondition, close it
 	// (even if setup, t.Pre.Prepare, or t.Func failed).
-	if precfg.close {
+	if ecfg.close {
 		addStage(func(ctx context.Context) {
 			root.RunWithPreState(ctx, func(ctx context.Context, s *testing.PreState) {
 				s.Logf("Closing precondition %q", t.Pre.String())
@@ -452,6 +666,8 @@ func buildStages(t *testing.TestInstance, tout testing.OutputStream, pcfg *Confi
 			})
 		}, t.Pre.Timeout(), exitTimeout)
 	}
+
+	// TODO(crbug.com/1035940): Support fixture post-test hooks.
 
 	// Finally, run the post-test functions unconditionally.
 	addStage(func(ctx context.Context) {

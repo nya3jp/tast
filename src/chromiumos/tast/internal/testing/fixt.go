@@ -30,17 +30,11 @@ type Fixture struct {
 	// Parent specifies the parent fixture name, or empty if it has no parent.
 	Parent string
 
-	// PrepareTimeout is the timeout applied to Prepare.
-	// Even if fixtures are nested, the timeout is applied only to this stage.
-	PrepareTimeout time.Duration
-
-	// AdjustTimeout is the timeout applied to Adjust.
-	// Even if fixtures are nested, the timeout is applied only to this stage.
-	AdjustTimeout time.Duration
-
-	// CloseTimeout is the timeout applied to Close.
-	// Even if fixtures are nested, the timeout is applied only to this stage.
-	CloseTimeout time.Duration
+	SetUpTimeout    time.Duration
+	ResetTimeout    time.Duration
+	PreTestTimeout  time.Duration
+	PostTestTimeout time.Duration
+	TearDownTimeout time.Duration
 
 	// TODO(oka): Add Data, Vars, ServiceDeps and Param fields.
 }

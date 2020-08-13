@@ -285,7 +285,7 @@ func (Config_VideoAcceleration) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_8272a55f8dc33811, []int{0, 5}
 }
 
-// Next Tag: 34
+// Next Tag: 35
 type Config_SOC int32
 
 const (
@@ -326,6 +326,7 @@ const (
 	Config_SOC_SC7180         Config_SOC = 31
 	Config_SOC_JASPER_LAKE    Config_SOC = 32
 	Config_SOC_TIGER_LAKE     Config_SOC = 33
+	Config_SOC_MT8192         Config_SOC = 34
 )
 
 var Config_SOC_name = map[int32]string{
@@ -363,6 +364,7 @@ var Config_SOC_name = map[int32]string{
 	31: "SOC_SC7180",
 	32: "SOC_JASPER_LAKE",
 	33: "SOC_TIGER_LAKE",
+	34: "SOC_MT8192",
 }
 
 var Config_SOC_value = map[string]int32{
@@ -400,6 +402,7 @@ var Config_SOC_value = map[string]int32{
 	"SOC_SC7180":         31,
 	"SOC_JASPER_LAKE":    32,
 	"SOC_TIGER_LAKE":     33,
+	"SOC_MT8192":         34,
 }
 
 func (x Config_SOC) String() string {

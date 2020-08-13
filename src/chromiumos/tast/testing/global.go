@@ -43,6 +43,7 @@ func AddFixture(f *Fixture) {
 	// For now, fixtures are available to meta tests only.
 	caller.Check(2, []string{
 		"chromiumos/tast/local/bundles/cros/meta/fixture",
+		"chromiumos/tast/remote/fixture", // For remote meta tests.
 	})
 	testing.AddFixture(f)
 }

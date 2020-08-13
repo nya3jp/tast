@@ -226,12 +226,24 @@ type RuntimeConfig struct {
 	// RemoteData contains information relevant to remote tests.
 	// This is nil for local tests.
 	RemoteData *RemoteData
+	// FixtureValue is a value returned by a parent fixture.
+	// It is nil if not available.
+	FixtureValue interface{}
 	// PreCtx is the context that lives as long as the precondition.
 	// It can be accessed only from testing.PreState.
 	PreCtx context.Context
 	// Purgeable is a list of file paths which are not used for now and thus
 	// can be deleted if the disk space is low.
 	Purgeable []string
+}
+
+// NewEntityRoot returns a new EntityRoot object.
+func NewEntityRoot(ce *CurrentEntity, cfg *RuntimeConfig, out OutputStream) *EntityRoot {
+	return &EntityRoot{
+		ce:  ce,
+		cfg: cfg,
+		out: out,
+	}
 }
 
 // NewTestEntityRoot returns a new TestEntityRoot object.
@@ -242,12 +254,8 @@ func NewTestEntityRoot(test *TestInstance, cfg *RuntimeConfig, out OutputStream)
 		ServiceDeps:  test.ServiceDeps,
 	}
 	return &TestEntityRoot{
-		entityRoot: &EntityRoot{
-			ce:  ce,
-			cfg: cfg,
-			out: out,
-		},
-		test: test,
+		entityRoot: NewEntityRoot(ce, cfg, out),
+		test:       test,
 	}
 }
 
@@ -290,6 +298,13 @@ func (r *TestEntityRoot) newTestHookState() *TestHookState {
 	}
 }
 
+// newFixtState creates a FixtState for a fixture.
+func (r *EntityRoot) newFixtState() *FixtState {
+	return &FixtState{
+		globalMixin: r.newGlobalMixin("", r.HasError()),
+	}
+}
+
 // RunWithTestState runs f, passing a Context and a State for a test.
 // If f panics, it recovers and reports the error via the State.
 // f is run within a goroutine to avoid making the calling goroutine exit if
@@ -317,6 +332,16 @@ func (r *TestEntityRoot) RunWithPreState(ctx context.Context, f func(ctx context
 func (r *TestEntityRoot) RunWithTestHookState(ctx context.Context, f func(ctx context.Context, s *TestHookState)) {
 	s := r.newTestHookState()
 	ctx = NewContext(ctx, r.entityRoot.ce, func(msg string) { s.Log(msg) })
+	runAndRecover(func() { f(ctx, s) }, s)
+}
+
+// RunWithFixtState runs f, passing a Context and a State for a fixture.
+// If f panics, it recovers and reports the error via the FixtState.
+// f is run within a goroutine to avoid making the calling goroutine exit if
+// f calls s.Fatal (which calls runtime.Goexit).
+func (r *EntityRoot) RunWithFixtState(ctx context.Context, f func(ctx context.Context, s *FixtState)) {
+	s := r.newFixtState()
+	ctx = NewContext(ctx, r.ce, func(msg string) { s.Log(msg) })
 	runAndRecover(func() { f(ctx, s) }, s)
 }
 

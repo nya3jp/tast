@@ -368,7 +368,7 @@ func findSOC() (device.Config_SOC, error) {
 
 	switch vendorID {
 	case "ARM":
-		return findArmSOC(&parsed)
+		return findArmSOC()
 	case "Qualcomm":
 		return findQualcommSOC(&parsed)
 	case "GenuineIntel":
@@ -380,35 +380,27 @@ func findSOC() (device.Config_SOC, error) {
 	}
 }
 
-func findArmSOC(parsed *lscpuResult) (device.Config_SOC, error) {
-	model, ok := parsed.find("Model:")
-	if !ok {
+func findArmSOC() (device.Config_SOC, error) {
+	c, err := ioutil.ReadFile("/sys/firmware/devicetree/base/compatible")
+	if err != nil {
 		return device.Config_SOC_UNSPECIFIED, errors.New("ARM model not found")
 	}
 
-	// SOC_MT8176 is unsupported, since there are no devices.
+	compatible := string(c[:])
+	model := strings.ToLower(compatible[strings.LastIndex(compatible, ",")+1:])
+	model = strings.Replace(model, "\x00", "", -1)
+
 	switch model {
-	case "1":
-		return device.Config_SOC_RK3288, nil
-	case "2":
+	case "mt8173":
 		return device.Config_SOC_MT8173, nil
-	case "3":
-		return device.Config_SOC_TEGRA_K1, nil
-	case "4":
-		// RK3399 and MT8183 share the same model. RK3399 is hex core, and MT8183 is octa core,
-		// so disambiguate by the number of CPUs.
-		cpus, ok := parsed.find("CPU(s):")
-		if !ok {
-			return device.Config_SOC_UNSPECIFIED, errors.New("unknown number of cores")
-		}
-		switch cpus {
-		case "8":
-			return device.Config_SOC_MT8183, nil
-		case "6":
-			return device.Config_SOC_RK3399, nil
-		default:
-			return device.Config_SOC_UNSPECIFIED, errors.Errorf("unknown ARM SOC (model=%s, cpus=%s)", model, cpus)
-		}
+	case "mt8183":
+		return device.Config_SOC_MT8183, nil
+	case "mt8192":
+		return device.Config_SOC_MT8192, nil
+	case "rk3288":
+		return device.Config_SOC_RK3288, nil
+	case "rk3399":
+		return device.Config_SOC_RK3399, nil
 	default:
 		return device.Config_SOC_UNSPECIFIED, errors.Errorf("unknown ARM model: %s", model)
 	}

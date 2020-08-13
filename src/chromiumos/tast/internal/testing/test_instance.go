@@ -75,6 +75,7 @@ type TestInstance struct {
 	HardwareDeps dep.HardwareDeps
 	ServiceDeps  []string
 	Pre          Precondition
+	Fixture      string
 	Timeout      time.Duration
 }
 
@@ -183,6 +184,7 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 		HardwareDeps: hwDeps,
 		ServiceDeps:  append([]string(nil), t.ServiceDeps...),
 		Pre:          pre,
+		Fixture:      t.Fixture,
 		Timeout:      timeout,
 	}, nil
 }
@@ -437,6 +439,7 @@ type TestInfo struct {
 	Vars         []string         `json:"vars,omitempty"`
 	SoftwareDeps dep.SoftwareDeps `json:"softwareDeps,omitempty"`
 	ServiceDeps  []string         `json:"serviceDeps,omitempty"`
+	Fixture      string           `json:"fixture,omitempty"`
 	Timeout      time.Duration    `json:"timeout"`
 }
 
@@ -452,6 +455,7 @@ func (t *TestInstance) TestInfo() *TestInfo {
 		Vars:         append([]string(nil), t.Vars...),
 		SoftwareDeps: append([]string(nil), t.SoftwareDeps...),
 		ServiceDeps:  append([]string(nil), t.ServiceDeps...),
+		Fixture:      t.Fixture,
 		Timeout:      t.Timeout,
 	}
 }

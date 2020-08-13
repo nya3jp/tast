@@ -89,6 +89,7 @@ func TestInstantiate(t *gotesting.T) {
 		SoftwareDeps: []string{"dep1", "dep2"},
 		HardwareDeps: hwdep.D(hwdep.Model("model1", "model2")),
 		Pre:          pre,
+		Fixture:      "fixt",
 		Timeout:      123 * time.Second,
 		ServiceDeps:  []string{"svc1", "svc2"},
 	})
@@ -113,6 +114,7 @@ func TestInstantiate(t *gotesting.T) {
 		Vars:         []string{"var1", "var2"},
 		SoftwareDeps: []string{"dep1", "dep2"},
 		Timeout:      123 * time.Second,
+		Fixture:      "fixt",
 		ServiceDeps:  []string{"svc1", "svc2"},
 	}}
 	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(TestInstance{}, "Func", "HardwareDeps", "Pre")); diff != "" {
@@ -601,6 +603,7 @@ func TestTestInfo(t *gotesting.T) {
 		Vars:         []string{"var1", "var2"},
 		SoftwareDeps: []string{"dep1", "dep2"},
 		ServiceDeps:  []string{"svc1", "svc2"},
+		Fixture:      "fixt",
 		Timeout:      time.Hour,
 	}
 
@@ -615,10 +618,11 @@ func TestTestInfo(t *gotesting.T) {
 		Vars:         []string{"var1", "var2"},
 		SoftwareDeps: []string{"dep1", "dep2"},
 		ServiceDeps:  []string{"svc1", "svc2"},
+		Fixture:      "fixt",
 		Timeout:      time.Hour,
 	}
-	if !reflect.DeepEqual(got, want) {
-		t.Fatalf("TestInfo = %#v; want %#v", *got, *want)
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Got unexpected TestInfo (-got +want):\n%s", diff)
 	}
 }
 

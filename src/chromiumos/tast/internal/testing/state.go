@@ -146,6 +146,7 @@ type TestHookState struct {
 }
 
 // TestConfig contains details about how an individual test should be run.
+// TODO(oka): Rename to EntityConfig.
 type TestConfig struct {
 	// DataDir is the directory in which the test's data files are located.
 	DataDir string
@@ -162,6 +163,9 @@ type TestConfig struct {
 	// PreCtx is the context that lives as long as the precondition.
 	// It can be accessed only from testing.PreState.
 	PreCtx context.Context
+	// TODO(oka): Add FixtCtx, which lives as long as the fixture, which can be accessed
+	// only from testing.FixtState.
+
 	// Purgeable is a list of file paths which are not used for now and thus
 	// can be deleted if the disk space is low.
 	Purgeable []string
@@ -215,6 +219,22 @@ func (r *RootState) RunWithTestHookState(ctx context.Context, f func(ctx context
 	s := r.newTestHookState()
 	ctx = NewContext(ctx, s.testContext(), func(msg string) { s.Log(msg) })
 	runAndRecover(func() { f(ctx, s) }, s)
+}
+
+// RunWithFixtState runs f, passing a Context and a State for a test hook.
+// If f panics, it recovers and reports the error via the TestHookState.
+// f is run within a goroutine to avoid making the calling goroutine exit if
+// f calls s.Fatal (which calls runtime.Goexit).
+func (r *RootState) RunWithFixtState(ctx context.Context, f func(ctx context.Context, s *FixtState)) {
+	s := r.newFixtState()
+	_ = s
+	// ctx = NewContext(ctx, s.testContext(), func(msg string) { s.Log(msg) })
+	// runAndRecover(func() { f(ctx, s) }, s)
+	panic("hoge")
+}
+
+func (r *RootState) newFixtState() *FixtState {
+	panic("hoge!")
 }
 
 type errorReporter interface {

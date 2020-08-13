@@ -81,6 +81,16 @@ func RunTests(ctx context.Context, tests []*testing.TestInstance, out OutputStre
 	return plan.run(ctx, out)
 }
 
+func RunFixture(ctx context.Context, fixt *testing.Fixture, out testing.OutputStream, pcfg *Config) error {
+	// TODO(oka): generate FixtState properly.
+	s_ := &testing.FixtState{}
+
+	fixt.Impl.SetUp(ctx_, s_)
+
+	fixt.Impl.TearDown(ctx_, s_)
+
+}
+
 // plan holds a top-level plan of test execution.
 type plan struct {
 	skips    []*skippedTest

@@ -39,6 +39,30 @@
       "revId": "013ea1a4271b5428fba7d15e5111be3984c2495f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ab6c1f06_b94eddc7",
+        "filename": "src/chromiumos/tast/internal/bundle/remote_fixture.proto",
+        "patchSetId": 20
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-08-13T12:34:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d0313e80_0c3e5517",
+      "range": {
+        "startLine": 26,
+        "startChar": 14,
+        "endLine": 26,
+        "endChar": 16
+      },
+      "revId": "013ea1a4271b5428fba7d15e5111be3984c2495f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

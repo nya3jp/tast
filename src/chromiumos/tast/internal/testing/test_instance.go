@@ -75,6 +75,7 @@ type TestInstance struct {
 	HardwareDeps dep.HardwareDeps
 	ServiceDeps  []string
 	Pre          Precondition
+	Fixt         string
 	Timeout      time.Duration
 }
 
@@ -156,6 +157,19 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 	}
 	if err := validatePre(pre); err != nil {
 		return nil, err
+	}
+
+	fixt := t.Fixt
+	if p.Fixt != "" {
+		if t.Fixt != "" {
+			return nil, errors.New("Param has Fixt specified and its enclosing Test also has Fixt specified," +
+				"but only one can be specified")
+		}
+		fixt = p.Fixt
+	}
+
+	if pre != nil && fixt != "" {
+		return nil, errors.New("Fixt and Pre cannot be set simultaneously")
 	}
 
 	timeout := t.Timeout

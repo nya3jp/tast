@@ -7,8 +7,6 @@ package planner
 import (
 	"context"
 	"time"
-
-	"chromiumos/tast/internal/testing"
 )
 
 // stage represents part of the execution of a single test (i.e. a Test.Run call).
@@ -20,12 +18,12 @@ type stage struct {
 }
 
 // stageFunc encapsulates the work done by a stage.
-type stageFunc func(ctx context.Context, root *testing.RootState)
+type stageFunc func(ctx context.Context)
 
 // runStages runs a sequence of "stages" (i.e. functions) on behalf of Test.Run.
 // If all stages finish, true is returned.
 // If a stage's function has not returned before its run timeout is reached, false is returned immediately.
-func runStages(ctx context.Context, root *testing.RootState, stages []stage) bool {
+func runStages(ctx context.Context, stages []stage) bool {
 	// stageCh is used to signal each stage's completion to the main goroutine.
 	stageCh := make(chan struct{}, len(stages))
 
@@ -37,7 +35,7 @@ func runStages(ctx context.Context, root *testing.RootState, stages []stage) boo
 		runStage := func(st stage) {
 			rctx, rcancel := context.WithTimeout(ctx, st.ctxTimeout)
 			defer rcancel()
-			st.f(rctx, root)
+			st.f(rctx)
 			stageCh <- struct{}{}
 		}
 		for _, st := range stages {

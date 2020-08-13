@@ -89,6 +89,7 @@ func TestInstantiate(t *gotesting.T) {
 		SoftwareDeps: []string{"dep1", "dep2"},
 		HardwareDeps: hwdep.D(hwdep.Model("model1", "model2")),
 		Pre:          pre,
+		Fixture:      "fixt",
 		Timeout:      123 * time.Second,
 		ServiceDeps:  []string{"svc1", "svc2"},
 	})
@@ -113,6 +114,7 @@ func TestInstantiate(t *gotesting.T) {
 		Vars:         []string{"var1", "var2"},
 		SoftwareDeps: []string{"dep1", "dep2"},
 		Timeout:      123 * time.Second,
+		Fixture:      "fixt",
 		ServiceDeps:  []string{"svc1", "svc2"},
 	}}
 	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(TestInstance{}, "Func", "HardwareDeps", "Pre")); diff != "" {

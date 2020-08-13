@@ -108,6 +108,7 @@ The following software features are defined:
 *   `no_ubsan` - Build was not built with Undefined Behavior Sanitizer.
 *   `oci` - The ability to use the `run_oci` program to execute code within
     [OCI] containers.
+*   `ocr` - [Optical Character Recognition Service] daemon.
 *   `plugin_vm` - The ability to run Plugin VMs.
 *   `qemu` - For tests exclusive to Chrome OS QEMU images.
 *   `reboot` - The ability to reboot reliably during a remote test.
@@ -165,6 +166,7 @@ The following software features are defined:
 [sandboxed]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/linux_sandboxing.md
 [Memory stats collection daemon]: https://chromium.googlesource.com/chromiumos/platform2/+/master/metrics/memd/
 [OCI]: https://www.opencontainers.org/
+[Optical Character Recognition Service]: https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/ocr/README.md
 [screenshot command]: https://chromium.googlesource.com/chromiumos/platform2/+/master/screenshot/
 [Trusted Platform Module]: https://en.wikipedia.org/wiki/Trusted_Platform_Module
 [Transparent Hugepage]: https://www.kernel.org/doc/Documentation/vm/transhuge.txt

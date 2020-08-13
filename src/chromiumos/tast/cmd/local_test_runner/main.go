@@ -129,8 +129,9 @@ func main() {
 			"no_symlink_mount":       "!lxc", // boards using LXC set CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT=n
 			"no_ubsan":               "!ubsan",
 			"oci":                    "containers && !moblab", // run_oci doesn't work on Moblab: https://crbug.com/951691
-			"plugin_vm":              "pita",                  // boards that can run Plugin VM.
-			"pstore":                 "!betty && !tast_vm",    // These boards don't support pstore: https://crbug.com/971899
+			"ocr":                    "ocr",
+			"plugin_vm":              "pita",               // boards that can run Plugin VM.
+			"pstore":                 "!betty && !tast_vm", // These boards don't support pstore: https://crbug.com/971899
 			"qemu":                   "betty || tast_vm",
 			"reboot":                 "!betty && !tast_vm",           // weird missing-runner-after-reboot bug: https://crbug.com/909955
 			"screenshot":             "display_backlight && !rk3399", // screenshot command broken on RK3399: https://crbug.com/880597

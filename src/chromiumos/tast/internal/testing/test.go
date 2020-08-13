@@ -75,6 +75,9 @@ type Test struct {
 	// Pre contains a precondition that must be met before the test is run.
 	Pre Precondition
 
+	// Fixture is the name of the fixture the test depends on.
+	Fixture string
+
 	// Timeout contains the maximum duration for which Func may run before the test is aborted.
 	// This should almost always be omitted when defining tests; a reasonable default will be used.
 	// This field is serialized as an integer nanosecond count.
@@ -116,6 +119,8 @@ type Param struct {
 	// Pre contains a precondition that must be met before the test is run.
 	// Can only be set if the enclosing test doesn't have one already set.
 	Pre Precondition
+
+	// TODO(oka): Consider adding Fixture.
 
 	// Timeout contains the maximum duration for which Func may run before the test is aborted.
 	// Can only be set if the enclosing test doesn't have one already set.

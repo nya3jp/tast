@@ -89,6 +89,9 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Args,
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
+	case ListFixturesMode:
+		// TODO(oka): Implement ListFixutresMode.
+		panic("to be implemented")
 	default:
 		return command.WriteError(stderr, command.NewStatusErrorf(statusBadArgs, "invalid mode %v", args.Mode))
 	}

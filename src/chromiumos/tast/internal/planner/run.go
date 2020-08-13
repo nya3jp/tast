@@ -85,6 +85,34 @@ type Config struct {
 	StartFixtureImpl testing.FixtureImpl
 }
 
+type FixtState struct {
+	stack *fixtureStack
+}
+
+func SetUpFixture(ctx context.Context, name string, out OutputStream, pcfg *Config) (*FixtState, error) {
+	stack := newFixtureStack(pcfg, out)
+
+	fixt, ok := testing.GlobalRegistry().AllFixtures()[name]
+	if !ok {
+		return nil, fmt.Errorf("Fixture %q not found", name)
+	}
+
+	// Push a fixture to the stack. This will call SetUp if the fixture stack is green.
+	if err := stack.Push(ctx, fixt); err != nil {
+		return nil, err
+	}
+
+	if stack.Status() == statusRed {
+		return nil, fmt.Errorf("Set up fixture %q failed", name)
+	}
+
+	return &FixtState{stack}, nil
+}
+
+func TearDownFixture(ctx context.Context, s *FixtState) error {
+	return s.stack.Pop(ctx)
+}
+
 // RunTests runs a set of tests, writing outputs to out.
 //
 // RunTests is responsible for building an efficient plan to run the given tests.
@@ -250,7 +278,9 @@ func buildFixtPlan(tests []*testing.TestInstance, pcfg *Config) (*fixtPlan, erro
 			seen[cur] = struct{}{}
 			f, ok := pcfg.Fixtures[cur]
 			if !ok {
-				return nil, fmt.Errorf("fixture %q not found", cur)
+				// cur is a remote fixture.
+				f = testing.DoNothingFixture()
+				continue
 			}
 			graph[f.Parent] = append(graph[f.Parent], cur)
 			cur = f.Parent

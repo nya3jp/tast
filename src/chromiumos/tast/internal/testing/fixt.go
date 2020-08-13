@@ -17,6 +17,29 @@ type FixtureInfo struct {
 	Parent string `json:"parent,omitempty"`
 }
 
+type doNothingFixtureImpl struct{}
+
+func (*doNothingFixtureImpl) SetUp(ctx context.Context, s *FixtState) interface{} { return 0 }
+func (*doNothingFixtureImpl) Reset(ctx context.Context) error                     { return nil }
+func (*doNothingFixtureImpl) PreTest(ctx context.Context, s *FixtTestState)       {}
+func (*doNothingFixtureImpl) PostTest(ctx context.Context, s *FixtTestState)      {}
+func (*doNothingFixtureImpl) TearDown(ctx context.Context, s *FixtState)          {}
+
+// DoNothingFixture returns the fixture that does nothing, which are used in the place of already
+// run remote fixtures internally.
+func DoNothingFixture() *Fixture {
+	return &Fixture{
+		Name:            "do nothing",
+		Desc:            "fixture that does nothing",
+		Impl:            &doNothingFixtureImpl{},
+		SetUpTimeout:    1 * time.Minute,
+		ResetTimeout:    1 * time.Minute,
+		PreTestTimeout:  1 * time.Minute,
+		PostTestTimeout: 1 * time.Minute,
+		TearDownTimeout: 1 * time.Minute,
+	}
+}
+
 // Fixture represents fixtures to register to the framework.
 type Fixture struct {
 	// Name is the name of the fixture.

@@ -235,6 +235,9 @@ type RuntimeConfig struct {
 	// PreCtx is the context that lives as long as the precondition.
 	// It can be accessed only from testing.PreState.
 	PreCtx context.Context
+	// TODO(oka): Add FixtCtx, which lives as long as the fixture, which can be accessed
+	// only from testing.FixtState.
+
 	// Purgeable is a list of file paths which are not used for now and thus
 	// can be deleted if the disk space is low.
 	Purgeable []string
@@ -306,6 +309,10 @@ func (r *EntityRoot) NewFixtState() *FixtState {
 	return &FixtState{
 		globalMixin: r.newGlobalMixin("", r.HasError()),
 	}
+}
+
+type errorReporter interface {
+	Error(args ...interface{})
 }
 
 // NewContext creates a new context associated with the entity.

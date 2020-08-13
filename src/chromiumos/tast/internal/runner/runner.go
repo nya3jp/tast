@@ -6,6 +6,7 @@ package runner
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -77,8 +78,24 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Args,
 		}
 		return statusSuccess
 	case ListFixturesMode:
-		// TODO(oka): Implement ListFixutresMode.
-		panic("to be implemented")
+		log.Println(">>> runner; ListFixtures")
+		defer log.Println("<<< runner; ListFixtures")
+		fixts, err := getFixtures(args.ListFixtures.BundleGlob)
+		if err != nil {
+			return command.WriteError(stderr, err)
+		}
+		log.Printf("Got fixtures %#v", fixts)
+		res := &ListFixturesResult{Fixtures: fixts}
+		b, err2 := json.Marshal(res)
+		if err2 != nil {
+			return command.WriteError(stderr, err2)
+		}
+		log.Printf("Got fixtures (marshalized) %v", string(b))
+
+		if _, err2 = stdout.Write(b); err2 != nil {
+			return command.WriteError(stderr, err2)
+		}
+		return statusSuccess
 	case RunTestsMode:
 		if args.report {
 			// Success is always reported when running tests on behalf of the tast command.

@@ -66,6 +66,30 @@
     },
     {
       "key": {
+        "uuid": "61449850_62fb3605",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-14T08:22:07Z",
+      "side": 1,
+      "message": "I still see callbacks in PS7.\n\nCan you try dropping match/done/setValue in configParser?",
+      "parentUuid": "32dd3383_908c0a21",
+      "range": {
+        "startLine": 26,
+        "startChar": 5,
+        "endLine": 26,
+        "endChar": 18
+      },
+      "revId": "de401b1b7b329222f060bf31339a9cf896645a5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "8523f2f4_60b61b84",
         "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
         "patchSetId": 4
@@ -195,6 +219,30 @@
       "side": 1,
       "message": "Please check if my latest commit addresses your concern.",
       "parentUuid": "b9429856_6998f316",
+      "range": {
+        "startLine": 104,
+        "startChar": 1,
+        "endLine": 104,
+        "endChar": 13
+      },
+      "revId": "de401b1b7b329222f060bf31339a9cf896645a5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "318d9e0a_3cc5e9bf",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-14T08:22:07Z",
+      "side": 1,
+      "message": "In PS7, we still skip parsing sometimes, e.g. when Host/Match do not match, or when we got a complete hostConfig in the middle of parsing.\n\nCan you try dropping needCallback/acceptInclude in configParser?",
+      "parentUuid": "5d57b63c_24ec3e61",
       "range": {
         "startLine": 104,
         "startChar": 1,

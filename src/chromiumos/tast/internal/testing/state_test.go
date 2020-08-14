@@ -7,6 +7,7 @@ package testing
 import (
 	"context"
 	"fmt"
+	"go/token"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -784,5 +785,149 @@ func TestCloudStorage(t *gotesting.T) {
 
 	if got != want {
 		t.Errorf("CloudStorage returned %v; want %v", got, want)
+	}
+}
+
+func TestStateExports(t *gotesting.T) {
+	for _, tc := range []struct {
+		state   interface{}
+		methods []string
+	}{
+		{
+			State{},
+			[]string{
+				"CloudStorage",
+				"DUT",
+				"DataFileSystem",
+				"DataPath",
+				"Error",
+				"Errorf",
+				"Fatal",
+				"Fatalf",
+				"HasError",
+				"Log",
+				"Logf",
+				"Meta",
+				"OutDir",
+				"Param",
+				"PreValue",
+				"RPCHint",
+				"RequiredVar",
+				"Run",
+				"ServiceDeps",
+				"SoftwareDeps",
+				"Var",
+			},
+		},
+		{
+			PreState{},
+			[]string{
+				"CloudStorage",
+				"DUT",
+				"DataFileSystem",
+				"DataPath",
+				"Error",
+				"Errorf",
+				"Fatal",
+				"Fatalf",
+				"HasError",
+				"Log",
+				"Logf",
+				"Meta",
+				"OutDir",
+				"PreCtx",
+				"RPCHint",
+				"RequiredVar",
+				"ServiceDeps",
+				"SoftwareDeps",
+				"Var",
+			},
+		},
+		{
+			TestHookState{},
+			[]string{
+				"CloudStorage",
+				"DUT",
+				"DataFileSystem",
+				"DataPath",
+				"Error",
+				"Errorf",
+				"Fatal",
+				"Fatalf",
+				"HasError",
+				"Log",
+				"Logf",
+				"Meta",
+				"OutDir",
+				"Purgeable",
+				"RPCHint",
+				"RequiredVar",
+				"ServiceDeps",
+				"SoftwareDeps",
+				"TestInstance",
+				"Var",
+			},
+		},
+		{
+			FixtState{},
+			[]string{
+				"CloudStorage",
+				"DUT",
+				"DataFileSystem",
+				"DataPath",
+				"Error",
+				"Errorf",
+				"Fatal",
+				"Fatalf",
+				"FixtContext",
+				"HasError",
+				"Log",
+				"Logf",
+				"OutDir",
+				"Param",
+				"ParentValue",
+				"RPCHint",
+				"RequiredVar",
+				"ServiceDeps",
+				"Var",
+			},
+		},
+		{
+			FixtTestState{},
+			[]string{
+				"CloudStorage",
+				"DUT",
+				"Error",
+				"Errorf",
+				"Fatal",
+				"Fatalf",
+				"HasError",
+				"Log",
+				"Logf",
+				"OutDir",
+				"RPCHint",
+			},
+		},
+	} {
+		tv := reflect.TypeOf(tc.state)
+		t.Run(tv.Name(), func(t *gotesting.T) {
+			// Check that no public field is exported.
+			for i := 0; i < tv.NumField(); i++ {
+				name := tv.Field(i).Name
+				if token.IsExported(name) {
+					t.Errorf("Field %s is exposed", name)
+				}
+			}
+
+			// Check that expected methods are exported.
+			tp := reflect.PtrTo(tv)
+			var methods []string
+			for i := 0; i < tp.NumMethod(); i++ {
+				methods = append(methods, tp.Method(i).Name)
+			}
+			if diff := cmp.Diff(methods, tc.methods); diff != "" {
+				t.Errorf("Methods unmatch (-got +want):\n%s", diff)
+			}
+		})
 	}
 }

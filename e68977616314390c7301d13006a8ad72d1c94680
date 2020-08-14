@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b2c36335_9721fca3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 43
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2020-08-14T08:36:24Z",
+      "side": 1,
+      "message": "lgtm % nits.\n\nNote: when you address review comments, please mark each comment as \"Done\".",
+      "revId": "e68977616314390c7301d13006a8ad72d1c94680",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d6a2ae4e_4594d9a4",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 43
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2020-08-14T08:36:24Z",
+      "side": 1,
+      "message": "trailing space",
+      "range": {
+        "startLine": 48,
+        "startChar": 79,
+        "endLine": 48,
+        "endChar": 80
+      },
+      "revId": "e68977616314390c7301d13006a8ad72d1c94680",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "65a1ded9_4675acd2",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 43
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2020-08-14T08:36:24Z",
+      "side": 1,
+      "message": "unrelated change",
+      "revId": "e68977616314390c7301d13006a8ad72d1c94680",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

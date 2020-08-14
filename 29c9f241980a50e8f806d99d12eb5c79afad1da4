@@ -73,6 +73,30 @@
     },
     {
       "key": {
+        "uuid": "21fea95d_aecd3c3d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1141149
+      },
+      "writtenOn": "2020-08-14T06:07:07Z",
+      "side": 1,
+      "message": "Currently there\u0027s no existing field about soc info in firmware on MTK devices, so we can only rely on dts. We can create a node about soc info, and let the driver read it and register a soc device. Not sure if this might be unnecessary. Example in CL:2352406",
+      "parentUuid": "4b0a92a1_b7ac56b7",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 54
+      },
+      "revId": "29c9f241980a50e8f806d99d12eb5c79afad1da4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "6cb877dc_d267021b",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 1

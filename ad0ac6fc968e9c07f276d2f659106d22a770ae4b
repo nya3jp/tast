@@ -16,6 +16,24 @@
       "revId": "ad0ac6fc968e9c07f276d2f659106d22a770ae4b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a53b11e4_49307bfb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1425092
+      },
+      "writtenOn": "2020-08-14T16:33:34Z",
+      "side": 1,
+      "message": "The tast USE flag is defined in crrev/c/2354314. No boards include the ocr flag by default yet, because we are looking into installing the package via DLC.",
+      "parentUuid": "770834b1_aded5ffa",
+      "revId": "ad0ac6fc968e9c07f276d2f659106d22a770ae4b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

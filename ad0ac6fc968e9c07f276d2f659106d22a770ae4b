@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "770834b1_aded5ffa",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-08-14T02:42:58Z",
+      "side": 1,
+      "message": "No file seems define ocr USE flag. Is it just \"not yet\"? Which file will define it?",
+      "revId": "ad0ac6fc968e9c07f276d2f659106d22a770ae4b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

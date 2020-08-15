@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3d91a6e4_4d19d1fe",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-15T00:41:15Z",
+      "side": 1,
+      "message": "I have done following for the latest commit\n\n1. Rewrote the parser to parse all files even if we got the host name and port in the first file.\n2. The new parser would populate a new sshConfig which support hierarchical configuration which meant the host must match all level of the configurations in order to apply the rule.\n3. Added support for double quote. I didn\u0027t realized double quote is allowed in ssh config earlier.\n   Example:\n   Host \"test*google.com\"\n4. Added check if the file existed before open. I have check the current ssh behavior. It does not consider including a non-existing file is an error, but including a file without permission is. \n5. Modified unit test to add cases for hierarchical definition and double quote\n\nPlease review. Thanks\n\n",
+      "revId": "e3decb67eedf4b44e38c45fe1d53b2bda462a4fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

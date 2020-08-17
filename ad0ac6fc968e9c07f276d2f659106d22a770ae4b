@@ -34,6 +34,24 @@
       "revId": "ad0ac6fc968e9c07f276d2f659106d22a770ae4b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e90866d5_7923cf6b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-08-17T02:14:04Z",
+      "side": 1,
+      "message": "The linked CL is to add the USE flag to be usable in Tast.\nAs you can find in the ebuild file, what it does it to dump whether each is enabled or not of the listed USE flags into a file on device, which is referred on Tast runtime to filter the tests.\n\nSo, even if it is installed via DLC, unless the board does not have the USE flag, the test won\u0027t run. Could you share more detailed plan how to install/run the tests?",
+      "parentUuid": "a53b11e4_49307bfb",
+      "revId": "ad0ac6fc968e9c07f276d2f659106d22a770ae4b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

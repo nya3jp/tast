@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9ee8c9c3_f9bec8c3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-17T08:53:56Z",
+      "side": 1,
+      "message": "Fixed vet errors.",
+      "revId": "ff2ac73cc3bb18b3bb6e4606628e243e7708902e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

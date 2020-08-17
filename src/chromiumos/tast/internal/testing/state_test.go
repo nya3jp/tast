@@ -512,23 +512,15 @@ func TestDataPathNotDeclared(t *gotesting.T) {
 	root := NewRootState(&test, &out, &TestConfig{DataDir: "/data"})
 	s := root.newTestState()
 
-	// Request an undeclared data path to cause a fatal error. Do this in a goroutine
-	// so the main goroutine that's running the test won't exit.
-	done := make(chan bool)
-	go func() {
-		defer close(done)
+	// Request an undeclared data path to cause a panic.
+	func() {
+		defer func() {
+			if recover() == nil {
+				t.Error("DataPath did not panic")
+			}
+		}()
 		s.DataPath("bar")
 	}()
-	<-done
-
-	exp := outputData{
-		Errs: []*Error{
-			{Reason: "Test data \"bar\" wasn't declared in definition passed to testing.AddTest"},
-		},
-	}
-	if diff := cmp.Diff(out.Data, exp, outputDataCmpOpts...); diff != "" {
-		t.Errorf("Bad test report (-got +want):\n%s", diff)
-	}
 }
 
 func TestDataFileServer(t *gotesting.T) {
@@ -586,8 +578,8 @@ func TestDataFileServer(t *gotesting.T) {
 	if str, err := get(file2); err == nil {
 		t.Errorf("GET %v returned %q; want error", file2, str)
 	}
-	if !s.HasError() {
-		t.Error("State doesn't contain error after requesting unregistered file")
+	if s.HasError() {
+		t.Error("State contains error after requesting unregistered file")
 	}
 }
 
@@ -657,20 +649,18 @@ func TestVars(t *gotesting.T) {
 
 func TestMeta(t *gotesting.T) {
 	meta := Meta{TastPath: "/foo/bar", Target: "example.net", RunFlags: []string{"-foo", "-bar"}}
-	getMeta := func(test *TestInstance, cfg *TestConfig) (*State, *Meta) {
+	getMeta := func(test *TestInstance, cfg *TestConfig) (meta *Meta, ok bool) {
 		var out outputSink
 		root := NewRootState(test, &out, cfg)
 		s := root.newTestState()
 
-		// Meta can call Fatal, which results in a call to runtime.Goexit(),
-		// so run this in a goroutine to isolate it from the test.
-		mch := make(chan *Meta)
-		go func() {
-			var meta *Meta
-			defer func() { mch <- meta }()
-			meta = s.Meta()
+		// Meta can panic, so run with recover.
+		defer func() {
+			if recover() != nil {
+				ok = false
+			}
 		}()
-		return s, <-mch
+		return s.Meta(), true
 	}
 
 	const (
@@ -679,8 +669,8 @@ func TestMeta(t *gotesting.T) {
 	)
 
 	// Meta info should be provided to tests in the "meta" package.
-	if s, m := getMeta(&TestInstance{Name: metaTest}, &TestConfig{RemoteData: &RemoteData{Meta: &meta}}); s.HasError() {
-		t.Errorf("Meta() reported error for %v", metaTest)
+	if m, ok := getMeta(&TestInstance{Name: metaTest}, &TestConfig{RemoteData: &RemoteData{Meta: &meta}}); !ok {
+		t.Errorf("Meta() panicked for %v", metaTest)
 	} else if m == nil {
 		t.Errorf("Meta() = nil for %v", metaTest)
 	} else if !reflect.DeepEqual(*m, meta) {
@@ -688,15 +678,15 @@ func TestMeta(t *gotesting.T) {
 	}
 
 	// Tests not in the "meta" package shouldn't have access to meta info.
-	if s, m := getMeta(&TestInstance{Name: nonMetaTest}, &TestConfig{RemoteData: &RemoteData{Meta: &meta}}); !s.HasError() {
-		t.Errorf("Meta() didn't report error for %v", nonMetaTest)
+	if m, ok := getMeta(&TestInstance{Name: nonMetaTest}, &TestConfig{RemoteData: &RemoteData{Meta: &meta}}); ok {
+		t.Errorf("Meta() didn't panic for %v", nonMetaTest)
 	} else if m != nil {
 		t.Errorf("Meta() = %+v for %v", *m, nonMetaTest)
 	}
 
 	// Check that newState doesn't crash or somehow get a non-nil Meta struct when initially passed a nil struct.
-	if s, m := getMeta(&TestInstance{Name: metaTest}, &TestConfig{}); !s.HasError() {
-		t.Error("Meta() didn't report error for nil info")
+	if m, ok := getMeta(&TestInstance{Name: metaTest}, &TestConfig{}); ok {
+		t.Error("Meta() didn't panic for nil info")
 	} else if m != nil {
 		t.Errorf("Meta() = %+v despite nil info", *m)
 	}
@@ -704,20 +694,18 @@ func TestMeta(t *gotesting.T) {
 
 func TestRPCHint(t *gotesting.T) {
 	hint := RPCHint{LocalBundleDir: "/path/to/bundles"}
-	getHint := func(test *TestInstance, cfg *TestConfig) (*State, *RPCHint) {
+	getHint := func(test *TestInstance, cfg *TestConfig) (hint *RPCHint, ok bool) {
 		var out outputSink
 		root := NewRootState(test, &out, cfg)
 		s := root.newTestState()
 
-		// RPCHint can call Fatal, which results in a call to runtime.Goexit(),
-		// so run this in a goroutine to isolate it from the test.
-		mch := make(chan *RPCHint)
-		go func() {
-			var hint *RPCHint
-			defer func() { mch <- hint }()
-			hint = s.RPCHint()
+		// RPCHint can panic, so run with recover.
+		defer func() {
+			if recover() != nil {
+				ok = false
+			}
 		}()
-		return s, <-mch
+		return s.RPCHint(), true
 	}
 
 	const (
@@ -726,8 +714,8 @@ func TestRPCHint(t *gotesting.T) {
 	)
 
 	// RPCHint should be provided to remote tests.
-	if s, h := getHint(&TestInstance{Name: remoteTest}, &TestConfig{RemoteData: &RemoteData{RPCHint: &hint}}); s.HasError() {
-		t.Errorf("RPCHint() reported error for %v", remoteTest)
+	if h, ok := getHint(&TestInstance{Name: remoteTest}, &TestConfig{RemoteData: &RemoteData{RPCHint: &hint}}); !ok {
+		t.Errorf("RPCHint() panicked for %v", remoteTest)
 	} else if h == nil {
 		t.Errorf("RPCHint() = nil for %v", remoteTest)
 	} else if !reflect.DeepEqual(*h, hint) {
@@ -735,28 +723,28 @@ func TestRPCHint(t *gotesting.T) {
 	}
 
 	// Local tests shouldn't have access to RPCHint.
-	if s, h := getHint(&TestInstance{Name: localTest}, &TestConfig{}); !s.HasError() {
-		t.Errorf("RPCHint() didn't report error for %v", localTest)
+	if h, ok := getHint(&TestInstance{Name: localTest}, &TestConfig{}); ok {
+		t.Errorf("RPCHint() didn't panic for %v", localTest)
 	} else if h != nil {
 		t.Errorf("RPCHint() = %+v for %v", *h, localTest)
 	}
 }
 
 func TestDUT(t *gotesting.T) {
-	callDUT := func(test *TestInstance, cfg *TestConfig) *State {
+	callDUT := func(test *TestInstance, cfg *TestConfig) (ok bool) {
 		var out outputSink
 		root := NewRootState(test, &out, cfg)
 		s := root.newTestState()
 
-		// DUT can call Fatal, which results in a call to runtime.Goexit(),
+		// DUT can panic, so run with recover.
 		// so run this in a goroutine to isolate it from the test.
-		done := make(chan struct{})
-		go func() {
-			defer close(done)
-			s.DUT()
+		defer func() {
+			if recover() != nil {
+				ok = false
+			}
 		}()
-		<-done
-		return s
+		s.DUT()
+		return true
 	}
 
 	const (
@@ -765,13 +753,13 @@ func TestDUT(t *gotesting.T) {
 	)
 
 	// DUT should be provided to remote tests.
-	if s := callDUT(&TestInstance{Name: remoteTest}, &TestConfig{RemoteData: &RemoteData{}}); s.HasError() {
-		t.Errorf("DUT() reported error for %v", remoteTest)
+	if ok := callDUT(&TestInstance{Name: remoteTest}, &TestConfig{RemoteData: &RemoteData{}}); !ok {
+		t.Errorf("DUT() panicked for %v", remoteTest)
 	}
 
 	// Local tests shouldn't have access to DUT.
-	if s := callDUT(&TestInstance{Name: localTest}, &TestConfig{}); !s.HasError() {
-		t.Errorf("DUT() didn't report error for %v", localTest)
+	if ok := callDUT(&TestInstance{Name: localTest}, &TestConfig{}); ok {
+		t.Errorf("DUT() didn't panic for %v", localTest)
 	}
 }
 

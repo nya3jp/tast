@@ -33,6 +33,667 @@
       "revId": "e3decb67eedf4b44e38c45fe1d53b2bda462a4fb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8f44d441_442e91d5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-17T08:46:38Z",
+      "side": 1,
+      "message": "Thanks for the update! Now that the overall structure is getting nice, let me go into more details.\n\nBTW it seems parsing SSH configs is more difficult than we initially expected. Anyway I hope writing this code is a good Go exercise for you. :)\n",
+      "revId": "e3decb67eedf4b44e38c45fe1d53b2bda462a4fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9c3004f3_1c387afb",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-17T08:46:38Z",
+      "side": 1,
+      "message": "style nit: typically end-of-line comments start with lower letters.\n\nc.f. example code in https://github.com/golang/go/wiki/CodeReviewComments#crypto-rand and other sections",
+      "range": {
+        "startLine": 24,
+        "startChar": 0,
+        "endLine": 26,
+        "endChar": 52
+      },
+      "revId": "e3decb67eedf4b44e38c45fe1d53b2bda462a4fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e5c4fd99_4d1a4d17",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-17T08:46:38Z",
+      "side": 1,
+      "message": "I\u0027m surprised to see SSH configs form a tree of arbitrary depth! Can you add more comment here explaining why? I think it\u0027s surprising as well to average readers.",
+      "range": {
+        "startLine": 29,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 61
+      },
+      "revId": "e3decb67eedf4b44e38c45fe1d53b2bda462a4fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "780870f6_b7c1d5b9",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-17T08:46:38Z",
+      "side": 1,
+      "message": "JFYI, no action required: Idiomatic way to provide debug pretty printer functions is to implement fmt.Stringer or fmt.GoStringer. Then you can pretty-print an object easily with %v / %#v.\n\nhttps://godoc.org/fmt#Stringer\nhttps://godoc.org/fmt#GoStringer\n\nHowever in this case we want to pretty-print with indent parameter, so this way looks okay to me.",
+      "range": {
+        "startLine": 38,
+        "startChar": 21,
+        "endLine": 38,
+        "endChar": 26
+      },
+      "revId": "e3decb67eedf4b44e38c45fe1d53b2bda462a4fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "590bde76_a6723515",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-17T08:46:38Z",
+      "side": 1,
+      "message": "Since re is the same for all configParser instances, we can initialize it as a global variable.\n\n var splitRe \u003d regexp.MustCompile(`...`)\n\nThen we now have only one field in the struct, so I recommend removing the struct entirely and converting readFiles/readFile to normal functions, passing openedFiles as a function argument, e.g.\n\n func readFile(configFileName string, parentConfig *sshConfig, openedFiles map[string]struct{}) error\n\nSince the parser is actually not very stateful, I recommend implementing it as functions, rather than methods, so that we can ensure statelessness easily.",
+      "range": {
+        "startLine": 50,
+        "startChar": 0,
+        "endLine": 53,
+        "endChar": 1
+      },
+      "revId": "e3decb67eedf4b44e38c45fe1d53b2bda462a4fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6135a6c6_d3905b9c",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-17T08:46:38Z",
+      "side": 1,
+      "message": "nit: Here we want to do:\n\n1. Gather a list of default config files\n2. Call ResolveHostFromFiles\n\nSo I recommend writing code in this way, e.g.\n\n var paths []string\n if homeDir, err :\u003d os.UserHomeDir(); err \u003d\u003d nil {\n   paths \u003d append(paths, ...)\n }\n paths \u003d append(paths, ...)\n return ResolveHostFromFiles(addr, paths)",
+      "range": {
+        "startLine": 57,
+        "startChar": 0,
+        "endLine": 61,
+        "endChar": 34
+      },
+      "revId": "e3decb67eedf4b44e38c45fe1d53b2bda462a4fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c7b1ce72_57226a71",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-17T08:46:38Z",
+      "side": 1,
+      "message": "It seems like top-level block can declare parameters.\n\n [nya@hibiki .ssh]% cat testconf\n Hostname bar\n\n [nya@hibiki .ssh]% ssh -F testconf foo\n ssh: Could not resolve hostname bar: No address associated with hostname\n\nThen we have to initialize this with a new map.",
+      "range": {
+        "startLine": 77,
+        "startChar": 2,
+        "endLine": 77,
+        "endChar": 58
+      },
+      "revId": "e3decb67eedf4b44e38c45fe1d53b2bda462a4fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b343b6ba_f34e32d7",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-17T08:46:38Z",
+      "side": 1,
+      "message": "style: For an empty slice, nil is preferred.\nhttps://github.com/golang/go/wiki/CodeReviewComments#declaring-empty-slices\n\nAlternatively you can just omit subBlocks field here (as well as patterns above). Go struct fields are initialized with zero values, and the zero value of a slice is nil.",
+      "range": {
+        "startLine": 78,
+        "startChar": 14,
+        "endLine": 78,
+        "endChar": 28
+      },
+      "revId": "e3decb67eedf4b44e38c45fe1d53b2bda462a4fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "923efd45_61c2619a",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-17T08:46:38Z",
+      "side": 1,
+      "message": "Since we skip non-existent files in readFile anyway, we don\u0027t need to skip here.",
+      "range": {
+        "startLine": 83,
+        "startChar": 2,
+        "endLine": 86,
+        "endChar": 3
+      },
+      "revId": "e3decb67eedf4b44e38c45fe1d53b2bda462a4fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "544c3672_8b79a610",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-17T08:46:38Z",
+      "side": 1,
+      "message": "style nit:\n\n if err :\u003d parser.readFiles(f, \u0026sc); err !\u003d nil { ... }\n\nIn general, when calling a function that returns an error only, please try to use this style always. When calling a function returning multiple values, whether to use this style depends on the situation.\nc.f. https://github.com/golang/go/wiki/CodeReviewComments#indent-error-flow",
+      "range": {
+        "startLine": 87,
+        "startChar": 2,
+        "endLine": 88,
+        "endChar": 8
+      },
+      "revId": "e3decb67eedf4b44e38c45fe1d53b2bda462a4fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eea7b552_5b71abbe",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-17T08:46:38Z",
+      "side": 1,
+      "message": "I initally wondered why we use assymmetric conditions for host and port, but now I see that they\u0027re treated differently:\n\n- If a host config is found, override a host name in a command line with it. (host: config wins)\n- If a port is set in a command line, override a port config with it. (port: command line wins)\n\nCan you add a brief comment explaining this?",
+      "range": {
+        "startLine": 93,
+        "startChar": 0,
+        "endLine": 98,
+        "endChar": 2
+      },
+      "revId": "e3decb67eedf4b44e38c45fe1d53b2bda462a4fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b104d7a7_2022d515",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-17T08:46:38Z",
+      "side": 1,
+      "message": "style nit: \n\n if _, opened :\u003d ...; opened {\n   ...\n }",
+      "range": {
+        "startLine": 133,
+        "startChar": 1,
+        "endLine": 134,
+        "endChar": 11
+      },
+      "revId": "e3decb67eedf4b44e38c45fe1d53b2bda462a4fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2607f4c3_c6c47cad",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-17T08:46:38Z",
+      "side": 1,
+      "message": "Now we don\u0027t ignore opened files, so we can now remove this comment.",
+      "range": {
+        "startLine": 134,
+        "startChar": 13,
+        "endLine": 134,
+        "endChar": 36
+      },
+      "revId": "e3decb67eedf4b44e38c45fe1d53b2bda462a4fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "990553f3_0c82e57b",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-17T08:46:38Z",
+      "side": 1,
+      "message": "This comment looks unintended.",
+      "range": {
+        "startLine": 154,
+        "startChar": 3,
+        "endLine": 154,
+        "endChar": 41
+      },
+      "revId": "e3decb67eedf4b44e38c45fe1d53b2bda462a4fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9c7edbd9_1a5b9112",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-17T08:46:38Z",
+      "side": 1,
+      "message": "style: nil or omit",
+      "range": {
+        "startLine": 159,
+        "startChar": 15,
+        "endLine": 159,
+        "endChar": 33
+      },
+      "revId": "e3decb67eedf4b44e38c45fe1d53b2bda462a4fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5c3bd88d_725ab978",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-17T08:46:38Z",
+      "side": 1,
+      "message": "According to ssh_config(5), resolution of relative path includes differ by whether the top config file is /etc/ssh/ssh_config or ~/.ssh/config.\n\n\u003e Files without absolute paths are assumed to be in ~/.ssh if included in a user configuration file or /etc/ssh if included from the system configuration file.",
+      "range": {
+        "startLine": 173,
+        "startChar": 13,
+        "endLine": 173,
+        "endChar": 48
+      },
+      "revId": "e3decb67eedf4b44e38c45fe1d53b2bda462a4fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7fba5dba_08b7f69f",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-17T08:46:38Z",
+      "side": 1,
+      "message": "If top-level blocks can declare parameters, we have to change here.",
+      "range": {
+        "startLine": 177,
+        "startChar": 2,
+        "endLine": 177,
+        "endChar": 41
+      },
+      "revId": "e3decb67eedf4b44e38c45fe1d53b2bda462a4fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c0eefbe8_223cf034",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 224,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-17T08:46:38Z",
+      "side": 1,
+      "message": "Can you reorder top-level definitions so that methods for the same type come next to each other? (e.g. print and findHostPort)",
+      "range": {
+        "startLine": 224,
+        "startChar": 21,
+        "endLine": 224,
+        "endChar": 33
+      },
+      "revId": "e3decb67eedf4b44e38c45fe1d53b2bda462a4fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b09276c0_d01aee11",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 225,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-17T08:46:38Z",
+      "side": 1,
+      "message": "If top-level blocks can declare parameters, we have to change here.",
+      "range": {
+        "startLine": 225,
+        "startChar": 1,
+        "endLine": 225,
+        "endChar": 32
+      },
+      "revId": "e3decb67eedf4b44e38c45fe1d53b2bda462a4fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9eb3653f_a48ac3ad",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 226,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-17T08:46:38Z",
+      "side": 1,
+      "message": "We have to ignore matchBlock.",
+      "range": {
+        "startLine": 226,
+        "startChar": 6,
+        "endLine": 226,
+        "endChar": 15
+      },
+      "revId": "e3decb67eedf4b44e38c45fe1d53b2bda462a4fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "82ce14e5_eef9df39",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 232,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-17T08:46:38Z",
+      "side": 1,
+      "message": "This way, \"%%h\" is replaced to inputHostName.",
+      "range": {
+        "startLine": 231,
+        "startChar": 0,
+        "endLine": 232,
+        "endChar": 79
+      },
+      "revId": "e3decb67eedf4b44e38c45fe1d53b2bda462a4fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5aa572d4_ca021155",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 257,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-17T08:46:38Z",
+      "side": 1,
+      "message": "nit: This function resolves a wildcard (or glob) path to paths. So I\u0027d name this as something like resolveWildcard, resolveGlob, or resolveToPaths.",
+      "range": {
+        "startLine": 257,
+        "startChar": 5,
+        "endLine": 257,
+        "endChar": 16
+      },
+      "revId": "e3decb67eedf4b44e38c45fe1d53b2bda462a4fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8d2d1358_22364a4c",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 266,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-17T08:46:38Z",
+      "side": 1,
+      "message": "huge nit: filepath.Abs calls filepath.Clean, so this call is not strictly necessary.\nhttps://godoc.org/path/filepath#Abs",
+      "range": {
+        "startLine": 266,
+        "startChar": 22,
+        "endLine": 266,
+        "endChar": 36
+      },
+      "revId": "e3decb67eedf4b44e38c45fe1d53b2bda462a4fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dcdc28d4_3e2b8840",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 284,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-17T08:46:38Z",
+      "side": 1,
+      "message": "I guess we have to trim the leading tilde to extract a correct user name.",
+      "range": {
+        "startLine": 284,
+        "startChar": 13,
+        "endLine": 284,
+        "endChar": 27
+      },
+      "revId": "e3decb67eedf4b44e38c45fe1d53b2bda462a4fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "baad525f_906858a8",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 290,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-17T08:46:38Z",
+      "side": 1,
+      "message": "Can you use filepath.Join when joining file path components?\nhttps://godoc.org/path/filepath#Join",
+      "range": {
+        "startLine": 290,
+        "startChar": 8,
+        "endLine": 290,
+        "endChar": 38
+      },
+      "revId": "e3decb67eedf4b44e38c45fe1d53b2bda462a4fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2710703b_109e404f",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 298,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-17T08:46:38Z",
+      "side": 1,
+      "message": "What does this mean?",
+      "range": {
+        "startLine": 298,
+        "startChar": 1,
+        "endLine": 298,
+        "endChar": 17
+      },
+      "revId": "e3decb67eedf4b44e38c45fe1d53b2bda462a4fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7c789563_c06deae4",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 301,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-17T08:46:38Z",
+      "side": 1,
+      "message": "nit: This switch statement is a bit strange since we do early-return in two branches while we continue in the last branch. When a switch statement is used, I typically assumes that branches are peers.\n\nHow about organize this logic in the following way:\n\n host \u003d hostAndPort\n port \u003d \"\"\n\n if [host has the port part] {\n   [extract port from host]\n   if err !\u003d nil {\n     return \"\", \"\", err\n   }\n }\n if [host has surrounding IPv6 brackets] {\n   [trim brackets]\n }\n return host, port, nil",
+      "range": {
+        "startLine": 301,
+        "startChar": 1,
+        "endLine": 301,
+        "endChar": 7
+      },
+      "revId": "e3decb67eedf4b44e38c45fe1d53b2bda462a4fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "029f9df4_e21fa08c",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 326,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-17T08:46:38Z",
+      "side": 1,
+      "message": "Why don\u0027t we use net.JoinHostPort?\nhttps://godoc.org/net#JoinHostPort",
+      "range": {
+        "startLine": 326,
+        "startChar": 5,
+        "endLine": 326,
+        "endChar": 20
+      },
+      "revId": "e3decb67eedf4b44e38c45fe1d53b2bda462a4fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a8763ddd_a4ac16c3",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 333,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-17T08:46:38Z",
+      "side": 1,
+      "message": "I think we don\u0027t want to add [] to an IPv6 address when port is empty.",
+      "range": {
+        "startLine": 327,
+        "startChar": 0,
+        "endLine": 333,
+        "endChar": 2
+      },
+      "revId": "e3decb67eedf4b44e38c45fe1d53b2bda462a4fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

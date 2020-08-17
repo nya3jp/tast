@@ -281,8 +281,7 @@ func (s *baseState) DataPath(p string) string {
 			return filepath.Join(s.root.cfg.DataDir, p)
 		}
 	}
-	s.Fatalf("Test data %q wasn't declared in definition passed to testing.AddTest", p)
-	return ""
+	panic(fmt.Sprintf("Test data %q wasn't declared in definition passed to testing.AddTest", p))
 }
 
 // Param returns Val specified at the Param struct for the current test case.
@@ -312,7 +311,7 @@ func (s *baseState) Var(name string) (val string, ok bool) {
 		}
 	}
 	if !seen {
-		s.Fatalf("Variable %q was not registered in testing.Test.Vars", name)
+		panic(fmt.Sprintf("Variable %q was not registered in testing.Test.Vars", name))
 	}
 
 	val, ok = s.root.cfg.Vars[name]
@@ -323,7 +322,7 @@ func (s *baseState) Var(name string) (val string, ok bool) {
 func (s *baseState) RequiredVar(name string) string {
 	val, ok := s.Var(name)
 	if !ok {
-		s.Fatalf("Required variable %q not supplied via -var or -varsfile", name)
+		panic(fmt.Sprintf("Required variable %q not supplied via -var or -varsfile", name))
 	}
 	return val
 }
@@ -391,12 +390,10 @@ func (s *baseState) CloudStorage() *CloudStorage {
 // It can only be called by remote tests in the "meta" category.
 func (s *baseState) Meta() *Meta {
 	if parts := strings.SplitN(s.root.test.Name, ".", 2); len(parts) != 2 || parts[0] != metaCategory {
-		s.Fatalf("Meta info unavailable since test doesn't have category %q", metaCategory)
-		return nil
+		panic(fmt.Sprintf("Meta info unavailable since test doesn't have category %q", metaCategory))
 	}
 	if s.root.cfg.RemoteData == nil {
-		s.Fatal("Meta info unavailable (is test non-remote?)")
-		return nil
+		panic("Meta info unavailable (is test non-remote?)")
 	}
 	// Return a copy to make sure the test doesn't modify the original struct.
 	return s.root.cfg.RemoteData.Meta.clone()
@@ -406,8 +403,7 @@ func (s *baseState) Meta() *Meta {
 // It can only be called by remote tests.
 func (s *baseState) RPCHint() *RPCHint {
 	if s.root.cfg.RemoteData == nil {
-		s.Fatal("RPCHint unavailable (is test non-remote?)")
-		return nil
+		panic("RPCHint unavailable (is test non-remote?)")
 	}
 	// Return a copy to make sure the test doesn't modify the original struct.
 	return s.root.cfg.RemoteData.RPCHint.clone()
@@ -417,8 +413,7 @@ func (s *baseState) RPCHint() *RPCHint {
 // It can only be called by remote tests.
 func (s *baseState) DUT() *dut.DUT {
 	if s.root.cfg.RemoteData == nil {
-		s.Fatal("DUT unavailable (is test non-remote?)")
-		return nil
+		panic("DUT unavailable (is test non-remote?)")
 	}
 	return s.root.cfg.RemoteData.DUT
 }
@@ -591,14 +586,20 @@ func (d *dataFS) Open(name string) (http.File, error) {
 	}
 
 	// Chrome requests favicons automatically, but DataPath fails when asked for an unregistered file.
-	// Report an error for nonexistent files to avoid making tests fail (or create favicon files) unnecessarily.
-	// DataPath will still make the test fail if it attempts to use a file that exists but that wasn't
-	// declared as a dependency.
-	if _, err := os.Stat(filepath.Join((*baseState)(d).root.cfg.DataDir, name)); os.IsNotExist(err) {
-		return nil, errors.New("not found")
+	// Report an error for undeclared files to avoid making tests fail (or create favicon files) unnecessarily.
+	// DataPath will panic if it attempts to use a file that exists but that wasn't declared as a dependency.
+	path, err := func() (path string, err error) {
+		defer func() {
+			if recover() != nil {
+				err = errors.New("not found")
+			}
+		}()
+		return (*baseState)(d).DataPath(name), nil
+	}()
+	if err != nil {
+		return nil, err
 	}
-
-	return os.Open((*baseState)(d).DataPath(name))
+	return os.Open(path)
 }
 
 // NewError returns a new Error object containing reason rsn.

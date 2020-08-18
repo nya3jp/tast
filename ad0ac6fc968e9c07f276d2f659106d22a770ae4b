@@ -96,6 +96,24 @@
     },
     {
       "key": {
+        "uuid": "b0959ddf_4532d16e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-08-18T07:59:21Z",
+      "side": 1,
+      "message": "It sounds to me that the direction is still floating?\nCould you come up with a concrete (minimum) test case which use ocr, so that we can verify the behavior, actually? WDYT?",
+      "parentUuid": "559b3c67_7868d407",
+      "revId": "ad0ac6fc968e9c07f276d2f659106d22a770ae4b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "99784cee_4c2e22d3",
         "filename": "docs/test_dependencies.md",
         "patchSetId": 2

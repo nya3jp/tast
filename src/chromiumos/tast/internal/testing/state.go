@@ -275,7 +275,7 @@ func (r *TestRoot) newTestHookState() *TestHookState {
 // f calls s.Fatal (which calls runtime.Goexit).
 func (r *TestRoot) RunWithTestState(ctx context.Context, f func(ctx context.Context, s *State)) {
 	s := r.newTestState()
-	ctx = NewContext(ctx, s.testContext(), func(msg string) { s.Log(msg) })
+	ctx = NewContext(ctx, s.entityContext(), func(msg string) { s.Log(msg) })
 	runAndRecover(func() { f(ctx, s) }, s)
 }
 
@@ -285,7 +285,7 @@ func (r *TestRoot) RunWithTestState(ctx context.Context, f func(ctx context.Cont
 // f calls s.Fatal (which calls runtime.Goexit).
 func (r *TestRoot) RunWithPreState(ctx context.Context, f func(ctx context.Context, s *PreState)) {
 	s := r.newPreState()
-	ctx = NewContext(ctx, s.testContext(), func(msg string) { s.Log(msg) })
+	ctx = NewContext(ctx, s.entityContext(), func(msg string) { s.Log(msg) })
 	runAndRecover(func() { f(ctx, s) }, s)
 }
 
@@ -295,7 +295,7 @@ func (r *TestRoot) RunWithPreState(ctx context.Context, f func(ctx context.Conte
 // f calls s.Fatal (which calls runtime.Goexit).
 func (r *TestRoot) RunWithTestHookState(ctx context.Context, f func(ctx context.Context, s *TestHookState)) {
 	s := r.newTestHookState()
-	ctx = NewContext(ctx, s.testContext(), func(msg string) { s.Log(msg) })
+	ctx = NewContext(ctx, s.entityContext(), func(msg string) { s.Log(msg) })
 	runAndRecover(func() { f(ctx, s) }, s)
 }
 
@@ -344,16 +344,16 @@ func (r *TestRoot) SetPreValue(val interface{}) {
 	r.preValue = val
 }
 
-// NewContext returns a context.Context to be used for the test.
-func NewContext(ctx context.Context, tc *TestContext, log func(msg string)) context.Context {
+// NewContext returns a context.Context to be used for the entity.
+func NewContext(ctx context.Context, ec *EntityContext, log func(msg string)) context.Context {
 	ctx = logging.NewContext(ctx, log)
-	ctx = WithTestContext(ctx, tc)
+	ctx = WithEntityContext(ctx, ec)
 	return ctx
 }
 
-// testContext returns a TestContext for this state.
-func (s *testMixin) testContext() *TestContext {
-	return &TestContext{
+// entityContext returns a EntityContext for this state.
+func (s *testMixin) entityContext() *EntityContext {
+	return &EntityContext{
 		OutDir:       s.OutDir(),
 		SoftwareDeps: s.SoftwareDeps(),
 		ServiceDeps:  s.ServiceDeps(),

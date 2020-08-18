@@ -132,6 +132,24 @@
     },
     {
       "key": {
+        "uuid": "7b1f94ec_d82efe31",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-08-18T08:30:41Z",
+      "side": 1,
+      "message": "Oh I see. You already have some test.\nThen, could you set up ocr USE flags somehow, and make this CL depends on the change?\nAt this moment, there\u0027s no \"OCR\" enabled board, so the test you have will be just skipped always.\n\nI.e., could you manually test the behavior, at least?",
+      "parentUuid": "5e38b0d3_0d131398",
+      "revId": "ad0ac6fc968e9c07f276d2f659106d22a770ae4b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "99784cee_4c2e22d3",
         "filename": "docs/test_dependencies.md",
         "patchSetId": 2

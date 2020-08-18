@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "ea9c16f2_66e8620b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1296737
+      },
+      "writtenOn": "2020-08-18T02:02:50Z",
+      "side": 1,
+      "message": "\"that don\u0027t support installing the Optical Character Recognition service via DLC.\"",
+      "range": {
+        "startLine": 10,
+        "startChar": 39,
+        "endLine": 11,
+        "endChar": 47
+      },
+      "revId": "ad0ac6fc968e9c07f276d2f659106d22a770ae4b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "770834b1_aded5ffa",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 2
@@ -49,6 +72,47 @@
       "side": 1,
       "message": "The linked CL is to add the USE flag to be usable in Tast.\nAs you can find in the ebuild file, what it does it to dump whether each is enabled or not of the listed USE flags into a file on device, which is referred on Tast runtime to filter the tests.\n\nSo, even if it is installed via DLC, unless the board does not have the USE flag, the test won\u0027t run. Could you share more detailed plan how to install/run the tests?",
       "parentUuid": "a53b11e4_49307bfb",
+      "revId": "ad0ac6fc968e9c07f276d2f659106d22a770ae4b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "559b3c67_7868d407",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1296737
+      },
+      "writtenOn": "2020-08-18T02:02:50Z",
+      "side": 1,
+      "message": "I talked to the DLC team today and got a better idea of how we\u0027ll do this. We need to update our ocr ebuild to inherit from the dlc eclass and then add the ocr USE flag to a board to include it. We\u0027ll most likely start with eve since it already supports DLC. Then, we\u0027ll need to update our tast test to install the DLC using dlc_util.go before running the rest of the test. With all of that in place, the ocr tast dependency defined here will signify that a board is capable of installing the ocr DLC package and running the test. Please let us know if you\u0027d like any other info.",
+      "parentUuid": "e90866d5_7923cf6b",
+      "revId": "ad0ac6fc968e9c07f276d2f659106d22a770ae4b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "99784cee_4c2e22d3",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1296737
+      },
+      "writtenOn": "2020-08-18T02:02:50Z",
+      "side": 1,
+      "message": "Maybe we should change this to DLC?",
+      "range": {
+        "startLine": 109,
+        "startChar": 52,
+        "endLine": 109,
+        "endChar": 58
+      },
       "revId": "ad0ac6fc968e9c07f276d2f659106d22a770ae4b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

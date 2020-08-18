@@ -15,20 +15,20 @@ import (
 )
 
 func TestOutgoingMetadata(t *gotesting.T) {
-	tc := &testing.TestContext{
+	ec := &testing.EntityContext{
 		OutDir:       "/mock/outdir",
 		SoftwareDeps: []string{"chrome", "android_p"},
 		ServiceDeps:  []string{"tast.core.Ping"},
 	}
 
-	ctx := testing.WithTestContext(context.Background(), tc)
+	ctx := testing.WithEntityContext(context.Background(), ec)
 	md, err := outgoingMetadata(ctx)
 	if err != nil {
 		t.Fatal("outgoingMetadata failed: ", err)
 	}
 
 	exp := metadata.MD{
-		metadataSoftwareDeps: tc.SoftwareDeps,
+		metadataSoftwareDeps: ec.SoftwareDeps,
 	}
 	if diff := cmp.Diff(md, exp); diff != "" {
 		t.Errorf("outgoingMetadata returned unexpected MD (-got +want):\n%s", diff)
@@ -42,17 +42,17 @@ func TestOutgoingMetadataNoContext(t *gotesting.T) {
 	}
 }
 
-func TestIncomingTestContext(t *gotesting.T) {
+func TestIncomingEntityContext(t *gotesting.T) {
 	md := metadata.MD{
 		metadataSoftwareDeps: []string{"chrome", "android_p"},
 	}
 
-	tc := incomingTestContext(md)
+	ec := incomingEntityContext(md)
 
-	exp := &testing.TestContext{
+	exp := &testing.EntityContext{
 		SoftwareDeps: md[metadataSoftwareDeps],
 	}
-	if diff := cmp.Diff(tc, exp); diff != "" {
-		t.Errorf("incomingTestContext returned unexpected TestContext (-got +want):\n%s", diff)
+	if diff := cmp.Diff(ec, exp); diff != "" {
+		t.Errorf("incomingEntityContext returned unexpected EntityContext (-got +want):\n%s", diff)
 	}
 }

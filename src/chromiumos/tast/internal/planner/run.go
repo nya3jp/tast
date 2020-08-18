@@ -171,7 +171,7 @@ func buildPrePlan(tests []*testing.TestInstance, pcfg *Config) *prePlan {
 
 func (p *prePlan) run(ctx context.Context, out OutputStream, dl *downloader) error {
 	// Create a precondition-scoped context.
-	ptc := &testing.TestContext{
+	ec := &testing.EntityContext{
 		// OutDir is not available for a precondition-scoped context.
 		SoftwareDeps: append([]string(nil), p.tests[0].SoftwareDeps...),
 		ServiceDeps:  append([]string(nil), p.tests[0].ServiceDeps...),
@@ -180,7 +180,7 @@ func (p *prePlan) run(ctx context.Context, out OutputStream, dl *downloader) err
 		ptest := &testing.TestInfo{Name: p.pre.String()} // pseudo test for the precondition
 		out.TestLog(ptest, msg)
 	}
-	pctx, cancel := context.WithCancel(testing.NewContext(context.Background(), ptc, plog))
+	pctx, cancel := context.WithCancel(testing.NewContext(context.Background(), ec, plog))
 	defer cancel()
 
 	for i, t := range p.tests {

@@ -390,10 +390,6 @@ func (s *baseState) CloudStorage() *CloudStorage {
 // Meta returns information about how the "tast" process used to initiate testing was run.
 // It can only be called by remote tests in the "meta" category.
 func (s *baseState) Meta() *Meta {
-	if parts := strings.SplitN(s.root.test.Name, ".", 2); len(parts) != 2 || parts[0] != metaCategory {
-		s.Fatalf("Meta info unavailable since test doesn't have category %q", metaCategory)
-		return nil
-	}
 	if s.root.cfg.RemoteData == nil {
 		s.Fatal("Meta info unavailable (is test non-remote?)")
 		return nil

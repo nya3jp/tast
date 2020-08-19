@@ -41,10 +41,10 @@ func executeListCmd(t *gotesting.T, stdout io.Writer, args []string,
 }
 
 func TestListTests(t *gotesting.T) {
-	test1 := testing.TestInfo{Name: "pkg.Test1", Desc: "First description", Attr: []string{"attr1"}}
-	test2 := testing.TestInfo{Name: "pkg.Test2", Desc: "Second description"}
+	test1 := testing.EntityInfo{Name: "pkg.Test1", Desc: "First description", Attr: []string{"attr1"}}
+	test2 := testing.EntityInfo{Name: "pkg.Test2", Desc: "Second description"}
 	wrapper := stubRunWrapper{
-		runRes: []run.TestResult{{TestInfo: test1}, {TestInfo: test2}},
+		runRes: []run.EntityResult{{EntityInfo: test1}, {EntityInfo: test2}},
 	}
 
 	// Verify that the default one-test-per-line mode works.
@@ -63,11 +63,11 @@ func TestListTests(t *gotesting.T) {
 	if status := executeListCmd(t, &stdout, args, &wrapper, logging.NewDiscard()); status != subcommands.ExitSuccess {
 		t.Fatalf("listCmd.Execute(%v) returned status %v; want %v", args, status, subcommands.ExitSuccess)
 	}
-	var act []testing.TestInfo
+	var act []testing.EntityInfo
 	if err := json.Unmarshal(stdout.Bytes(), &act); err != nil {
 		t.Errorf("Failed to unmarshal output from listCmd.Execute(%v): %v", args, err)
 	}
-	if exp := []testing.TestInfo{test1, test2}; !reflect.DeepEqual(exp, act) {
+	if exp := []testing.EntityInfo{test1, test2}; !reflect.DeepEqual(exp, act) {
 		t.Errorf("listCmd.Execute(%v) printed %+v; want %+v", args, act, exp)
 	}
 }

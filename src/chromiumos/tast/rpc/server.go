@@ -67,7 +67,7 @@ func serverOpts(logger logging.SinkFunc) []grpc.ServerOption {
 			return nil, errors.New("metadata not available")
 		}
 		ctx = logging.NewContext(ctx, logger)
-		ctx = testing.WithTestContext(ctx, incomingTestContext(md))
+		ctx = testing.WithCurrentEntity(ctx, incomingCurrentContext(md))
 		tl = timing.NewLog()
 		ctx = timing.NewContext(ctx, tl)
 		return ctx, nil

@@ -16,7 +16,7 @@ import (
 // Note that testing.OutputStream is for a single entity in contrast.
 type OutputStream interface {
 	// EntityStart reports that an entity has started.
-	EntityStart(ei *testing.EntityInfo) error
+	EntityStart(ei *testing.EntityInfo, outDir string) error
 	// EntityLog reports an informational log message.
 	EntityLog(ei *testing.EntityInfo, msg string) error
 	// EntityError reports an error from an entity. An entity that reported one or more errors should be considered failure.
@@ -47,8 +47,8 @@ func newEntityOutputStream(out OutputStream, ei *testing.EntityInfo) *entityOutp
 
 var errAlreadyEnded = errors.New("test has already ended")
 
-// Start reports that the entity has started. It should be called exactly once.
-func (w *entityOutputStream) Start() error {
+// Start reports that the test has started. It should be called exactly once.
+func (w *entityOutputStream) Start(outDir string) error {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	if w.ended {
@@ -57,7 +57,7 @@ func (w *entityOutputStream) Start() error {
 	if w.ei.Name == "" {
 		return nil
 	}
-	return w.out.EntityStart(w.ei)
+	return w.out.EntityStart(w.ei, outDir)
 }
 
 // Log reports an informational log from the entity.

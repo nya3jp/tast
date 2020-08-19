@@ -269,6 +269,7 @@ func TestLocalCopyOutput(t *gotesting.T) {
 		testName = "pkg.Test"
 		outFile  = "somefile.txt"
 		outData  = "somedata"
+		outName  = "pkg.Test.tmp1234"
 	)
 
 	td := newLocalTestData(t)
@@ -277,14 +278,14 @@ func TestLocalCopyOutput(t *gotesting.T) {
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		mw := control.NewMessageWriter(stdout)
 		mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), TestNames: []string{testName}})
-		mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: testName}})
+		mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: testName}, OutDir: filepath.Join(td.cfg.localOutDir, outName)})
 		mw.WriteMessage(&control.EntityEnd{Time: time.Unix(3, 0), Name: testName})
 		mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0), OutDir: td.cfg.localOutDir})
 		return 0
 	}
 
 	if err := testutil.WriteFiles(filepath.Join(td.hostDir, td.cfg.localOutDir), map[string]string{
-		filepath.Join(testName, outFile): outData,
+		filepath.Join(outName, outFile): outData,
 	}); err != nil {
 		t.Fatal(err)
 	}

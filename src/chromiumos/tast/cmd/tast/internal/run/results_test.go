@@ -108,14 +108,14 @@ func TestReadTestOutput(t *gotesting.T) {
 	mw.WriteMessage(&control.RunStart{Time: runStartTime,
 		TestNames: []string{test1Name, test2Name, test3Name}, NumTests: 3})
 	mw.WriteMessage(&control.RunLog{Time: runLogTime, Text: runLogText})
-	mw.WriteMessage(&control.EntityStart{Time: test1StartTime, Info: testing.EntityInfo{Name: test1Name, Desc: test1Desc}})
+	mw.WriteMessage(&control.EntityStart{Time: test1StartTime, Info: testing.EntityInfo{Name: test1Name, Desc: test1Desc}, OutDir: filepath.Join(outDir, test1Name)})
 	mw.WriteMessage(&control.EntityLog{Time: test1LogTime, Text: test1LogText})
 	mw.WriteMessage(&control.EntityEnd{Time: test1EndTime, Name: test1Name})
-	mw.WriteMessage(&control.EntityStart{Time: test2StartTime, Info: testing.EntityInfo{Name: test2Name, Desc: test2Desc}})
+	mw.WriteMessage(&control.EntityStart{Time: test2StartTime, Info: testing.EntityInfo{Name: test2Name, Desc: test2Desc}, OutDir: filepath.Join(outDir, test2Name)})
 	mw.WriteMessage(&control.EntityError{Time: test2ErrorTime, Error: testing.Error{
 		Reason: test2ErrorReason, File: test2ErrorFile, Line: test2ErrorLine, Stack: test2ErrorStack}})
 	mw.WriteMessage(&control.EntityEnd{Time: test2EndTime, Name: test2Name})
-	mw.WriteMessage(&control.EntityStart{Time: test3StartTime, Info: testing.EntityInfo{Name: test3Name, Desc: test3Desc}})
+	mw.WriteMessage(&control.EntityStart{Time: test3StartTime, Info: testing.EntityInfo{Name: test3Name, Desc: test3Desc}, OutDir: filepath.Join(outDir, test3Name)})
 	mw.WriteMessage(&control.EntityEnd{Time: test3EndTime, Name: test3Name, SkipReasons: []string{skipReason}})
 	mw.WriteMessage(&control.RunEnd{Time: runEndTime, OutDir: outDir})
 
@@ -124,10 +124,7 @@ func TestReadTestOutput(t *gotesting.T) {
 		Logger: logging.NewSimple(&logBuf, 0, false), // drop debug messages
 		ResDir: filepath.Join(tempDir, "results"),
 	}
-	crf := func(testName, dst string) error {
-		return os.Rename(filepath.Join(outDir, testName), dst)
-	}
-	results, unstartedTests, err := readTestOutput(context.Background(), &cfg, &b, crf, nil)
+	results, unstartedTests, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, nil)
 	if err != nil {
 		t.Fatal("readTestOutput failed:", err)
 	}
@@ -535,19 +532,16 @@ func TestWritePartialResults(t *gotesting.T) {
 	b := bytes.Buffer{}
 	mw := control.NewMessageWriter(&b)
 	mw.WriteMessage(&control.RunStart{Time: run1Start, TestNames: []string{test1Name, test2Name, test3Name}})
-	mw.WriteMessage(&control.EntityStart{Time: test1Start, Info: testing.EntityInfo{Name: test1Name}})
+	mw.WriteMessage(&control.EntityStart{Time: test1Start, Info: testing.EntityInfo{Name: test1Name}, OutDir: filepath.Join(outDir, test1Name)})
 	mw.WriteMessage(&control.EntityEnd{Time: test1End, Name: test1Name})
-	mw.WriteMessage(&control.EntityStart{Time: test2Start, Info: testing.EntityInfo{Name: test2Name}})
+	mw.WriteMessage(&control.EntityStart{Time: test2Start, Info: testing.EntityInfo{Name: test2Name}, OutDir: filepath.Join(outDir, test2Name)})
 	mw.WriteMessage(&control.EntityError{Time: test2Error, Error: testing.Error{Reason: test2Reason}})
 
 	cfg := Config{
 		Logger: logging.NewSimple(&bytes.Buffer{}, 0, false),
 		ResDir: filepath.Join(tempDir, "results"),
 	}
-	crf := func(testName, dst string) error {
-		return os.Rename(filepath.Join(outDir, testName), dst)
-	}
-	results, unstarted, err := readTestOutput(context.Background(), &cfg, &b, crf, nil)
+	results, unstarted, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, nil)
 	if err == nil {
 		t.Fatal("readTestOutput unexpectedly succeeded")
 	}
@@ -598,12 +592,12 @@ func TestWritePartialResults(t *gotesting.T) {
 	// Write control messages describing another run containing the third test.
 	b.Reset()
 	mw.WriteMessage(&control.RunStart{Time: run2Start, TestNames: []string{test4Name}})
-	mw.WriteMessage(&control.EntityStart{Time: test4Start, Info: testing.EntityInfo{Name: test4Name}})
+	mw.WriteMessage(&control.EntityStart{Time: test4Start, Info: testing.EntityInfo{Name: test4Name}, OutDir: filepath.Join(outDir, test4Name)})
 	mw.WriteMessage(&control.EntityEnd{Time: test4End, Name: test4Name})
 	mw.WriteMessage(&control.RunEnd{Time: run2End})
 
 	// The results for the third test should be appended to the existing streamed results file.
-	if _, _, err := readTestOutput(context.Background(), &cfg, &b, crf, nil); err != nil {
+	if _, _, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, nil); err != nil {
 		t.Error("readTestOutput failed: ", err)
 	}
 	if files, err = testutil.ReadFiles(cfg.ResDir); err != nil {

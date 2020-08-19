@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7330fd9a_cf51c671",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/local.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 286,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-19T09:52:47Z",
+      "side": 1,
+      "message": "Nice observation.",
+      "range": {
+        "startLine": 282,
+        "startChar": 0,
+        "endLine": 286,
+        "endChar": 85
+      },
+      "revId": "80cd7b06991758b64b83a93af0d8f8c569ea4f2c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d5b7f5fb_ac9303dd",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/local.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 355,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-19T09:52:47Z",
+      "side": 1,
+      "message": "I guess we can always request to run local tests even if there were fixture errors. Instead we can include fixture errors in the RunTests reques. Then local test runner can make tests fail immediately by those fixture errors. In this way we can avoid logic duplication.",
+      "range": {
+        "startLine": 355,
+        "startChar": 5,
+        "endLine": 355,
+        "endChar": 81
+      },
+      "revId": "80cd7b06991758b64b83a93af0d8f8c569ea4f2c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ecdc3afb_9545421f",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/local.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 413,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-19T09:52:47Z",
+      "side": 1,
+      "message": "Yes I was wondering the same thing... let\u0027s discuss how to deal with TearDown errors later.",
+      "range": {
+        "startLine": 410,
+        "startChar": 4,
+        "endLine": 413,
+        "endChar": 73
+      },
+      "revId": "80cd7b06991758b64b83a93af0d8f8c569ea4f2c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

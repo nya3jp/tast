@@ -83,7 +83,7 @@ type TestError struct {
 // any tests failed) and false if it was aborted.
 // If cfg.CollectSysInfo is true, system information generated on the DUT during testing
 // (e.g. logs and crashes) will also be written to the results dir.
-func WriteResults(ctx context.Context, cfg *Config, results []TestResult, complete bool) error {
+func WriteResults(ctx context.Context, cfg *Config, results []*TestResult, complete bool) error {
 	f, err := os.Create(filepath.Join(cfg.ResDir, resultsFilename))
 	if err != nil {
 		return err
@@ -172,7 +172,7 @@ type resultsHandler struct {
 	runStart, runEnd time.Time              // test-runner-reported times at which run started and ended
 	numTests         int                    // total number of tests that are expected to run
 	testsToRun       []string               // names of tests that will be run in their expected order
-	results          []TestResult           // information about completed tests
+	results          []*TestResult          // information about completed tests
 	res              *TestResult            // currently-running test, if any (i.e. last element of results)
 	seenTests        map[string]struct{}    // names of tests seen so far
 	stage            *timing.Stage          // current test's timing stage
@@ -185,7 +185,7 @@ type resultsHandler struct {
 func newResultsHandler(cfg *Config, crf copyAndRemoveFunc, df diagnoseRunErrorFunc) (*resultsHandler, error) {
 	r := &resultsHandler{
 		cfg:       cfg,
-		results:   make([]TestResult, 0),
+		results:   make([]*TestResult, 0),
 		seenTests: make(map[string]struct{}),
 		crf:       crf,
 		diagFunc:  df,
@@ -280,13 +280,13 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.TestS
 	}
 	ctx, r.stage = timing.Start(ctx, msg.Test.Name)
 
-	r.results = append(r.results, TestResult{
+	r.results = append(r.results, &TestResult{
 		TestInfo:         msg.Test,
 		Start:            msg.Time,
 		OutDir:           r.getTestOutputDir(msg.Test.Name),
 		testStartMsgTime: time.Now(),
 	})
-	r.res = &r.results[len(r.results)-1]
+	r.res = r.results[len(r.results)-1]
 	r.seenTests[msg.Test.Name] = struct{}{}
 
 	// Write a partial TestResult object to record that we started the test.
@@ -477,7 +477,7 @@ func (r *resultsHandler) handleMessage(ctx context.Context, msg interface{}) err
 // run but were not started (likely due to an error). unstarted is nil if the list of
 // tests was unavailable; see readTestOutput.
 func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interface{}, ech <-chan error) (
-	results []TestResult, unstarted []string, err error) {
+	results []*TestResult, unstarted []string, err error) {
 	// If a test is incomplete when we finish reading messages, rewrite its entry at the
 	// end of the streamed results file to make sure that all of its errors are recorded.
 	defer func() {
@@ -636,7 +636,7 @@ func readMessages(r io.Reader, mch chan<- interface{}, ech chan<- error) {
 //
 // df may be nil if diagnosis is unavailable.
 func readTestOutput(ctx context.Context, cfg *Config, r io.Reader, crf copyAndRemoveFunc, df diagnoseRunErrorFunc) (
-	results []TestResult, unstarted []string, err error) {
+	results []*TestResult, unstarted []string, err error) {
 	rh, err := newResultsHandler(cfg, crf, df)
 	if err != nil {
 		return nil, nil, err
@@ -652,12 +652,12 @@ func readTestOutput(ctx context.Context, cfg *Config, r io.Reader, crf copyAndRe
 
 // readTestList decodes JSON-serialized testing.Test objects from r and
 // copies them into an array of TestResult objects.
-func readTestList(r io.Reader) ([]TestResult, error) {
+func readTestList(r io.Reader) ([]*TestResult, error) {
 	var ts []testing.TestInfo
 	if err := json.NewDecoder(r).Decode(&ts); err != nil {
 		return nil, err
 	}
-	results := make([]TestResult, len(ts))
+	results := make([]*TestResult, len(ts))
 	for i := 0; i < len(ts); i++ {
 		results[i].TestInfo = ts[i]
 	}
@@ -666,7 +666,7 @@ func readTestList(r io.Reader) ([]TestResult, error) {
 
 // unmatchedTestPatterns returns any glob test patterns in the supplied slice
 // that failed to match any tests in results.
-func unmatchedTestPatterns(patterns []string, results []TestResult) []string {
+func unmatchedTestPatterns(patterns []string, results []*TestResult) []string {
 	// TODO(derat): Consider also checking attribute expressions.
 	if testing.GetTestPatternType(patterns) != testing.TestPatternGlobs {
 		return nil

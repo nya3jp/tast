@@ -144,7 +144,7 @@ func (td *remoteTestData) close() {
 }
 
 // run calls remote and records the Args struct that was passed to the fake runner.
-func (td *remoteTestData) run(t *gotesting.T) ([]TestResult, error) {
+func (td *remoteTestData) run(t *gotesting.T) ([]*TestResult, error) {
 	res, rerr := runRemoteTests(context.Background(), &td.cfg)
 
 	f, err := os.Open(filepath.Join(td.dir, fakeRunnerArgsFile))

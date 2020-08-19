@@ -61,9 +61,16 @@ type TestResult struct {
 	// SkipReason contains a human-readable explanation of why the test was skipped.
 	// It is empty if the test actually ran.
 	SkipReason string `json:"skipReason"`
+}
 
-	testStartMsgTime time.Time // time at which TestStart control message was received
-	logFile          *os.File  // test's log file
+// testState keeps track of states of a currently running test.
+type testState struct {
+	// Result is the test result message. It is modified as we receive control
+	// messages.
+	Result TestResult
+
+	// LogFile is a file handle of the log file for the test.
+	LogFile *os.File
 }
 
 // TestError describes an error that occurred while running a test.
@@ -173,7 +180,7 @@ type resultsHandler struct {
 	numTests         int                    // total number of tests that are expected to run
 	testsToRun       []string               // names of tests that will be run in their expected order
 	results          []*TestResult          // information about completed tests
-	res              *TestResult            // currently-running test, if any (i.e. last element of results)
+	current          *testState             // currently-running test, if any
 	seenTests        map[string]struct{}    // names of tests seen so far
 	stage            *timing.Stage          // current test's timing stage
 	crf              copyAndRemoveFunc      // function used to copy and remove files from DUT
@@ -185,7 +192,6 @@ type resultsHandler struct {
 func newResultsHandler(cfg *Config, crf copyAndRemoveFunc, df diagnoseRunErrorFunc) (*resultsHandler, error) {
 	r := &resultsHandler{
 		cfg:       cfg,
-		results:   make([]*TestResult, 0),
 		seenTests: make(map[string]struct{}),
 		crf:       crf,
 		diagFunc:  df,
@@ -204,9 +210,9 @@ func newResultsHandler(cfg *Config, crf copyAndRemoveFunc, df diagnoseRunErrorFu
 }
 
 func (r *resultsHandler) close() {
-	if r.res != nil {
-		r.cfg.Logger.RemoveWriter(r.res.logFile)
-		r.res.logFile.Close()
+	if r.current != nil {
+		r.cfg.Logger.RemoveWriter(r.current.LogFile)
+		r.current.LogFile.Close()
 	}
 	r.streamWriter.close()
 }
@@ -255,8 +261,8 @@ func (r *resultsHandler) handleRunEnd(ctx context.Context, msg *control.RunEnd) 
 	if r.runStart.IsZero() {
 		return errors.New("no RunStart message before RunEnd")
 	}
-	if r.res != nil {
-		return fmt.Errorf("got RunEnd message while %s still running", r.res.Name)
+	if r.current != nil {
+		return fmt.Errorf("got RunEnd message while %s still running", r.current.Result.Name)
 	}
 	if !r.runEnd.IsZero() {
 		return errors.New("multiple RunEnd messages")
@@ -270,9 +276,9 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.TestS
 	if r.runStart.IsZero() {
 		return errors.New("no RunStart message before TestStart")
 	}
-	if r.res != nil {
+	if r.current != nil {
 		return fmt.Errorf("got TestStart message for %s while %s still running",
-			msg.Test.Name, r.res.Name)
+			msg.Test.Name, r.current.Result.Name)
 	}
 	if _, ok := r.seenTests[msg.Test.Name]; ok {
 		return fmt.Errorf("got TestStart message for already-seen test %s -- two tests with same name?",
@@ -280,34 +286,35 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.TestS
 	}
 	ctx, r.stage = timing.Start(ctx, msg.Test.Name)
 
-	r.results = append(r.results, &TestResult{
-		TestInfo:         msg.Test,
-		Start:            msg.Time,
-		OutDir:           r.getTestOutputDir(msg.Test.Name),
-		testStartMsgTime: time.Now(),
-	})
-	r.res = r.results[len(r.results)-1]
+	r.current = &testState{
+		Result: TestResult{
+			TestInfo: msg.Test,
+			Start:    msg.Time,
+			OutDir:   r.getTestOutputDir(msg.Test.Name),
+		},
+	}
+	r.results = append(r.results, &r.current.Result)
 	r.seenTests[msg.Test.Name] = struct{}{}
 
 	// Write a partial TestResult object to record that we started the test.
 	var err error
-	if err = r.streamWriter.write(r.res, false); err != nil {
+	if err = r.streamWriter.write(&r.current.Result, false); err != nil {
 		return err
 	}
 
-	if err = os.MkdirAll(r.res.OutDir, 0755); err != nil {
+	if err = os.MkdirAll(r.current.Result.OutDir, 0755); err != nil {
 		return err
 	}
-	if r.res.logFile, err = os.Create(
-		filepath.Join(r.res.OutDir, testLogFilename)); err != nil {
+	if r.current.LogFile, err = os.Create(
+		filepath.Join(r.current.Result.OutDir, testLogFilename)); err != nil {
 		return err
 	}
-	if err = r.cfg.Logger.AddWriter(r.res.logFile, log.LstdFlags); err != nil {
+	if err = r.cfg.Logger.AddWriter(r.current.LogFile, log.LstdFlags); err != nil {
 		return err
 	}
 
-	r.cfg.Logger.Log("Started test ", r.res.Name)
-	r.setProgress("Running " + r.res.Name)
+	r.cfg.Logger.Log("Started test ", r.current.Result.Name)
+	r.setProgress("Running " + r.current.Result.Name)
 	return nil
 }
 
@@ -319,11 +326,11 @@ func (r *resultsHandler) handleTestLog(ctx context.Context, msg *control.TestLog
 
 // handleTestError handles TestError control messages from test runners.
 func (r *resultsHandler) handleTestError(ctx context.Context, msg *control.TestError) error {
-	if r.res == nil {
+	if r.current == nil {
 		return errors.New("got TestError message while no test was running")
 	}
 
-	r.res.Errors = append(r.res.Errors, TestError{msg.Time, msg.Error})
+	r.current.Result.Errors = append(r.current.Result.Errors, TestError{msg.Time, msg.Error})
 
 	ts := msg.Time.Format(testOutputTimeFmt)
 	r.cfg.Logger.Logf("[%s] Error at %s:%d: %s", ts, filepath.Base(msg.Error.File), msg.Error.Line, msg.Error.Reason)
@@ -335,7 +342,7 @@ func (r *resultsHandler) handleTestError(ctx context.Context, msg *control.TestE
 
 // handleTestEnd handles TestEnd control messages from test runners.
 func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.TestEnd) error {
-	if r.res == nil || msg.Name != r.res.Name {
+	if r.current == nil || msg.Name != r.current.Result.Name {
 		return fmt.Errorf("got TestEnd message for not-started test %s", msg.Name)
 	}
 
@@ -351,7 +358,7 @@ func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.TestEnd
 
 	if len(msg.DeprecatedMissingSoftwareDeps) == 0 && len(msg.SkipReasons) == 0 {
 		r.cfg.Logger.Logf("Completed test %s in %v with %d error(s)",
-			msg.Name, msg.Time.Sub(r.res.Start).Round(time.Millisecond), len(r.res.Errors))
+			msg.Name, msg.Time.Sub(r.current.Result.Start).Round(time.Millisecond), len(r.current.Result.Errors))
 	} else {
 		var reasons []string
 		if len(msg.DeprecatedMissingSoftwareDeps) > 0 {
@@ -360,27 +367,27 @@ func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.TestEnd
 		if len(msg.SkipReasons) > 0 {
 			reasons = append(reasons, msg.SkipReasons...)
 		}
-		r.res.SkipReason = strings.Join(reasons, ", ")
-		r.cfg.Logger.Logf("Skipped test %s due to missing dependencies: %s", msg.Name, r.res.SkipReason)
+		r.current.Result.SkipReason = strings.Join(reasons, ", ")
+		r.cfg.Logger.Logf("Skipped test %s due to missing dependencies: %s", msg.Name, r.current.Result.SkipReason)
 	}
 
-	r.res.End = msg.Time
+	r.current.Result.End = msg.Time
 
 	// Replace the earlier partial TestResult object with the now-complete version.
-	if err := r.streamWriter.write(r.res, true); err != nil {
+	if err := r.streamWriter.write(&r.current.Result, true); err != nil {
 		return err
 	}
 
-	if err := r.cfg.Logger.RemoveWriter(r.res.logFile); err != nil {
+	if err := r.cfg.Logger.RemoveWriter(r.current.LogFile); err != nil {
 		r.cfg.Logger.Log(err)
 	}
-	if err := r.res.logFile.Close(); err != nil {
+	if err := r.current.LogFile.Close(); err != nil {
 		r.cfg.Logger.Log(err)
 	}
 
 	// Pull finished test output files in a separate goroutine if the test is not skipped.
-	if r.res.SkipReason == "" {
-		res := r.res
+	if r.current.Result.SkipReason == "" {
+		res := r.current.Result
 		r.pullers.Add(1)
 		go func() {
 			defer r.pullers.Done()
@@ -391,7 +398,7 @@ func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.TestEnd
 		}()
 	}
 
-	r.res = nil
+	r.current = nil
 	r.stage = nil
 	return nil
 }
@@ -481,9 +488,9 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 	// If a test is incomplete when we finish reading messages, rewrite its entry at the
 	// end of the streamed results file to make sure that all of its errors are recorded.
 	defer func() {
-		if r.res != nil {
-			r.res.Errors = append(r.res.Errors, TestError{time.Now(), testing.Error{Reason: incompleteTestMsg}})
-			r.streamWriter.write(r.res, true)
+		if r.current != nil {
+			r.current.Result.Errors = append(r.current.Result.Errors, TestError{time.Now(), testing.Error{Reason: incompleteTestMsg}})
+			r.streamWriter.write(&r.current.Result, true)
 		}
 	}()
 
@@ -533,8 +540,8 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 		msg := fmt.Sprintf("Got global error: %v", runErr)
 		if r.diagFunc != nil {
 			var testName string
-			if r.res != nil {
-				testName = r.res.Name
+			if r.current != nil {
+				testName = r.current.Result.Name
 			}
 			if dm := r.diagFunc(ctx, testName); dm != "" {
 				msg = dm
@@ -544,8 +551,8 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 		// Log the message. If the error interrupted a test, the message will be written to the test's
 		// log, and we also save it as an error within the test's result.
 		r.cfg.Logger.Log(msg)
-		if r.res != nil {
-			r.res.Errors = append(r.res.Errors, TestError{time.Now(), testing.Error{Reason: msg}})
+		if r.current != nil {
+			r.current.Result.Errors = append(r.current.Result.Errors, TestError{time.Now(), testing.Error{Reason: msg}})
 		}
 		return r.results, unstarted, runErr
 	}

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7b64cd28_0b3ab438",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 12
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-19T22:08:48Z",
+      "side": 1,
+      "message": "Hi Shuhei:\n\nThanks for the good advise. I do have a question regarding unit test. Currently, my unit test does not use ~/.ssh or ~. I tested those cases manually. We can discuss it in our 1-on-1.\n\nThanks.\n\nSeewai",
+      "revId": "25a7b89ba13db41735f87cded32b14c61c89cc97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

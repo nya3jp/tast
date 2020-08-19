@@ -35,12 +35,12 @@ import (
 func noOpCopyAndRemove(testName, dst string) error { return nil }
 
 // readStreamedResults decodes newline-terminated, JSON-marshaled EntityResult structs from r.
-func readStreamedResults(t *gotesting.T, r io.Reader) []EntityResult {
-	var results []EntityResult
+func readStreamedResults(t *gotesting.T, r io.Reader) []*EntityResult {
+	var results []*EntityResult
 	dec := json.NewDecoder(r)
 	for dec.More() {
-		res := EntityResult{}
-		if err := dec.Decode(&res); err != nil {
+		res := &EntityResult{}
+		if err := dec.Decode(res); err != nil {
 			t.Errorf("Failed to decode result: %v", err)
 		}
 		results = append(results, res)
@@ -51,7 +51,7 @@ func readStreamedResults(t *gotesting.T, r io.Reader) []EntityResult {
 // testResultsEqual returns true if a and b are equivalent.
 // Time fields in EntityError structs are ignored, as time.Now is used
 // to generate timestamps for certain types of errors.
-func testResultsEqual(a, b []EntityResult) bool {
+func testResultsEqual(a, b []*EntityResult) bool {
 	return cmp.Equal(a, b, cmpopts.IgnoreUnexported(EntityResult{}), cmpopts.IgnoreFields(EntityError{}, "Time"))
 }
 
@@ -143,7 +143,7 @@ func TestReadTestOutput(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	expRes := []EntityResult{
+	expRes := []*EntityResult{
 		{
 			EntityInfo: testing.EntityInfo{Name: test1Name, Desc: test1Desc},
 			Start:      test1StartTime,
@@ -175,7 +175,7 @@ func TestReadTestOutput(t *gotesting.T) {
 			OutDir:     filepath.Join(cfg.ResDir, testLogsDir, test3Name),
 		},
 	}
-	var actRes []EntityResult
+	var actRes []*EntityResult
 	if err := json.Unmarshal([]byte(files[resultsFilename]), &actRes); err != nil {
 		t.Errorf("Failed to decode %v: %v", resultsFilename, err)
 	}
@@ -472,7 +472,7 @@ func TestWriteResultsCollectSysInfo(t *gotesting.T) {
 	}
 	td.cfg.collectSysInfo = true
 	td.cfg.initialSysInfo = &runner.SysInfoState{}
-	if err := WriteResults(context.Background(), &td.cfg, []EntityResult{}, true); err != nil {
+	if err := WriteResults(context.Background(), &td.cfg, []*EntityResult{}, true); err != nil {
 		t.Fatal("WriteResults failed: ", err)
 	}
 }
@@ -486,7 +486,7 @@ func TestWriteResultsCollectSysInfoFailure(t *gotesting.T) {
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) { return 1 }
 	td.cfg.collectSysInfo = true
 	td.cfg.initialSysInfo = &runner.SysInfoState{}
-	err := WriteResults(context.Background(), &td.cfg, []EntityResult{}, true)
+	err := WriteResults(context.Background(), &td.cfg, []*EntityResult{}, true)
 	if err == nil {
 		t.Fatal("WriteResults didn't report expected error")
 	}
@@ -559,7 +559,7 @@ func TestWritePartialResults(t *gotesting.T) {
 		t.Fatal(err)
 	}
 	streamRes := readStreamedResults(t, bytes.NewBufferString(files[streamedResultsFilename]))
-	expRes := []EntityResult{
+	expRes := []*EntityResult{
 		{
 			EntityInfo: testing.EntityInfo{Name: test1Name},
 			Start:      test1Start,
@@ -610,7 +610,7 @@ func TestWritePartialResults(t *gotesting.T) {
 		t.Fatal(err)
 	}
 	streamRes = readStreamedResults(t, bytes.NewBufferString(files[streamedResultsFilename]))
-	expRes = append(expRes, EntityResult{
+	expRes = append(expRes, &EntityResult{
 		EntityInfo: testing.EntityInfo{Name: test4Name},
 		Start:      test4Start,
 		End:        test4End,
@@ -713,7 +713,7 @@ func TestWriteResultsUnmatchedGlobs(t *gotesting.T) {
 	baseCfg.ResDir = td
 
 	// Report that two tests were executed.
-	results := []EntityResult{
+	results := []*EntityResult{
 		{EntityInfo: testing.EntityInfo{Name: "pkg.Test1"}},
 		{EntityInfo: testing.EntityInfo{Name: "pkg.Test2"}},
 	}

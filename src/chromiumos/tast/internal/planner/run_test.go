@@ -17,6 +17,7 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/dep"
@@ -78,7 +79,7 @@ func TestRunSuccess(t *gotesting.T) {
 	msgs := runTestsAndReadAll(t, tests, &Config{OutDir: od})
 
 	want := []control.Msg{
-		&control.TestStart{Test: *tests[0].TestInfo()},
+		&control.TestStart{Test: *tests[0].TestInfo(), OutDir: filepath.Join(od, "pkg.Test")},
 		&control.TestEnd{Name: tests[0].Name},
 	}
 	if diff := cmp.Diff(msgs, want); diff != "" {
@@ -474,7 +475,7 @@ func TestRunSkipStages(t *gotesting.T) {
 				},
 			}
 			msgs := runTestsAndReadAll(t, tests, pcfg)
-			if diff := cmp.Diff(msgs, tc.want); diff != "" {
+			if diff := cmp.Diff(msgs, tc.want, cmpopts.IgnoreFields(control.TestStart{}, "OutDir")); diff != "" {
 				t.Error("Output mismatch (-got +want):\n", diff)
 			}
 		})

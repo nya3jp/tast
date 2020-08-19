@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path/filepath"
 	"time"
 
 	"chromiumos/tast/bundle"
@@ -119,11 +118,7 @@ func runRemoteTestsOnce(ctx context.Context, cfg *Config, patterns []string) (re
 		return nil, nil, fmt.Errorf("close stdin: %v", err)
 	}
 
-	crf := func(testName, dst string) error {
-		src := filepath.Join(args.RunTests.BundleArgs.OutDir, testName)
-		return os.Rename(src, dst)
-	}
-	results, unstarted, rerr := readTestOutput(ctx, cfg, stdout, crf, nil)
+	results, unstarted, rerr := readTestOutput(ctx, cfg, stdout, os.Rename, nil)
 
 	// Check that the runner exits successfully first so that we don't give a useless error
 	// about incorrectly-formed output instead of e.g. an error about the runner being missing.

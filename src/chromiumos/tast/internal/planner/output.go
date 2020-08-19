@@ -16,7 +16,7 @@ import (
 // Note that testing.OutputStream is for a single test in contrast.
 type OutputStream interface {
 	// TestStart reports that a test t has started.
-	TestStart(t *testing.TestInfo) error
+	TestStart(t *testing.TestInfo, outDir string) error
 	// TestLog reports an informational log message from t.
 	TestLog(t *testing.TestInfo, msg string) error
 	// TestError reports an error from a test t. A test that reported one or more errors should be considered failure.
@@ -47,13 +47,13 @@ func newTestOutputStream(out OutputStream, t *testing.TestInfo) *testOutputStrea
 var errAlreadyEnded = errors.New("test has already ended")
 
 // Start reports that the test has started. It should be called exactly once.
-func (w *testOutputStream) Start() error {
+func (w *testOutputStream) Start(outDir string) error {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	if w.ended {
 		return errAlreadyEnded
 	}
-	return w.out.TestStart(w.t)
+	return w.out.TestStart(w.t, outDir)
 }
 
 // Log reports an informational log from the test.

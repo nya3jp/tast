@@ -103,6 +103,12 @@ type TestStart struct {
 	// Test contains details about the entity.
 	// TODO(crbug.com/1035940): Consider renaming to Entity.
 	Test testing.TestInfo `json:"testStartTest"`
+	// OutDir is a directory path where output files for the entity is written.
+	// OutDir can be empty if the test is being skipped.
+	// TODO(crbug.com/1035940): Do not use TestStart for skipped tests. OutDir
+	// being conditionally empty is weird.
+	// When set, OutDir is a direct subdirectory of bundle.RunTestsArgs.OutDir.
+	OutDir string `json:"testStartOutDir"`
 }
 
 func (*TestStart) isMsg() {}

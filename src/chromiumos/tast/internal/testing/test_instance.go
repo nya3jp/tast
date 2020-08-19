@@ -426,7 +426,8 @@ func (t *TestInstance) Proto() *testpb.Test {
 	return &r
 }
 
-// TestInfo is a serialized form of TestInstance.
+// TestInfo is a JSON-serializable description of an entity.
+// TODO(crbug.com/1035940): Consider renaming to EntityInfo.
 type TestInfo struct {
 	// See TestInstance for details of the fields.
 

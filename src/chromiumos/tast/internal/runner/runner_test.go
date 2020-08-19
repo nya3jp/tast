@@ -359,21 +359,21 @@ func TestRunTests(t *gotesting.T) {
 	failed := make(map[string]struct{})
 	var name string
 	for _, msg := range msgs {
-		if ts, ok := msg.(*control.TestStart); ok {
-			if ts.Test.Name < name {
-				t.Errorf("Saw unsorted test %q after %q", ts.Test.Name, name)
+		if ts, ok := msg.(*control.EntityStart); ok {
+			if ts.Info.Name < name {
+				t.Errorf("Saw unsorted test %q after %q", ts.Info.Name, name)
 			}
-			name = ts.Test.Name
+			name = ts.Info.Name
 			tests[name] = struct{}{}
-		} else if _, ok := msg.(*control.TestError); ok {
+		} else if _, ok := msg.(*control.EntityError); ok {
 			failed[name] = struct{}{}
 		}
 	}
 	if len(tests) != 3 {
-		t.Errorf("Got TestStart messages for %v test(s); want 3", len(tests))
+		t.Errorf("Got EntityStart messages for %v test(s); want 3", len(tests))
 	}
 	if len(failed) != 1 {
-		t.Errorf("Got TestError messages for %v test(s); want 1", len(failed))
+		t.Errorf("Got EntityError messages for %v test(s); want 1", len(failed))
 	}
 
 	if stderr.Len() != 0 {

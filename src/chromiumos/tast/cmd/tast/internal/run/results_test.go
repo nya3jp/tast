@@ -34,12 +34,12 @@ import (
 // noOpCopyAndRemove can be passed to readTestOutput by tests.
 func noOpCopyAndRemove(testName, dst string) error { return nil }
 
-// readStreamedResults decodes newline-terminated, JSON-marshaled TestResult structs from r.
-func readStreamedResults(t *gotesting.T, r io.Reader) []TestResult {
-	var results []TestResult
+// readStreamedResults decodes newline-terminated, JSON-marshaled EntityResult structs from r.
+func readStreamedResults(t *gotesting.T, r io.Reader) []EntityResult {
+	var results []EntityResult
 	dec := json.NewDecoder(r)
 	for dec.More() {
-		res := TestResult{}
+		res := EntityResult{}
 		if err := dec.Decode(&res); err != nil {
 			t.Errorf("Failed to decode result: %v", err)
 		}
@@ -49,10 +49,10 @@ func readStreamedResults(t *gotesting.T, r io.Reader) []TestResult {
 }
 
 // testResultsEqual returns true if a and b are equivalent.
-// Time fields in TestError structs are ignored, as time.Now is used
+// Time fields in EntityError structs are ignored, as time.Now is used
 // to generate timestamps for certain types of errors.
-func testResultsEqual(a, b []TestResult) bool {
-	return cmp.Equal(a, b, cmpopts.IgnoreUnexported(TestResult{}), cmpopts.IgnoreFields(TestError{}, "Time"))
+func testResultsEqual(a, b []EntityResult) bool {
+	return cmp.Equal(a, b, cmpopts.IgnoreUnexported(EntityResult{}), cmpopts.IgnoreFields(EntityError{}, "Time"))
 }
 
 func TestReadTestOutput(t *gotesting.T) {
@@ -108,15 +108,15 @@ func TestReadTestOutput(t *gotesting.T) {
 	mw.WriteMessage(&control.RunStart{Time: runStartTime,
 		TestNames: []string{test1Name, test2Name, test3Name}, NumTests: 3})
 	mw.WriteMessage(&control.RunLog{Time: runLogTime, Text: runLogText})
-	mw.WriteMessage(&control.TestStart{Time: test1StartTime, Test: testing.TestInfo{Name: test1Name, Desc: test1Desc}})
-	mw.WriteMessage(&control.TestLog{Time: test1LogTime, Text: test1LogText})
-	mw.WriteMessage(&control.TestEnd{Time: test1EndTime, Name: test1Name})
-	mw.WriteMessage(&control.TestStart{Time: test2StartTime, Test: testing.TestInfo{Name: test2Name, Desc: test2Desc}})
-	mw.WriteMessage(&control.TestError{Time: test2ErrorTime, Error: testing.Error{
+	mw.WriteMessage(&control.EntityStart{Time: test1StartTime, Info: testing.EntityInfo{Name: test1Name, Desc: test1Desc}})
+	mw.WriteMessage(&control.EntityLog{Time: test1LogTime, Text: test1LogText})
+	mw.WriteMessage(&control.EntityEnd{Time: test1EndTime, Name: test1Name})
+	mw.WriteMessage(&control.EntityStart{Time: test2StartTime, Info: testing.EntityInfo{Name: test2Name, Desc: test2Desc}})
+	mw.WriteMessage(&control.EntityError{Time: test2ErrorTime, Error: testing.Error{
 		Reason: test2ErrorReason, File: test2ErrorFile, Line: test2ErrorLine, Stack: test2ErrorStack}})
-	mw.WriteMessage(&control.TestEnd{Time: test2EndTime, Name: test2Name})
-	mw.WriteMessage(&control.TestStart{Time: test3StartTime, Test: testing.TestInfo{Name: test3Name, Desc: test3Desc}})
-	mw.WriteMessage(&control.TestEnd{Time: test3EndTime, Name: test3Name, SkipReasons: []string{skipReason}})
+	mw.WriteMessage(&control.EntityEnd{Time: test2EndTime, Name: test2Name})
+	mw.WriteMessage(&control.EntityStart{Time: test3StartTime, Info: testing.EntityInfo{Name: test3Name, Desc: test3Desc}})
+	mw.WriteMessage(&control.EntityEnd{Time: test3EndTime, Name: test3Name, SkipReasons: []string{skipReason}})
 	mw.WriteMessage(&control.RunEnd{Time: runEndTime, OutDir: outDir})
 
 	var logBuf bytes.Buffer
@@ -143,16 +143,16 @@ func TestReadTestOutput(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	expRes := []TestResult{
+	expRes := []EntityResult{
 		{
-			TestInfo: testing.TestInfo{Name: test1Name, Desc: test1Desc},
-			Start:    test1StartTime,
-			End:      test1EndTime,
-			OutDir:   filepath.Join(cfg.ResDir, testLogsDir, test1Name),
+			EntityInfo: testing.EntityInfo{Name: test1Name, Desc: test1Desc},
+			Start:      test1StartTime,
+			End:        test1EndTime,
+			OutDir:     filepath.Join(cfg.ResDir, testLogsDir, test1Name),
 		},
 		{
-			TestInfo: testing.TestInfo{Name: test2Name, Desc: test2Desc},
-			Errors: []TestError{
+			EntityInfo: testing.EntityInfo{Name: test2Name, Desc: test2Desc},
+			Errors: []EntityError{
 				{
 					Time: test2ErrorTime,
 					Error: testing.Error{
@@ -168,24 +168,24 @@ func TestReadTestOutput(t *gotesting.T) {
 			OutDir: filepath.Join(cfg.ResDir, testLogsDir, test2Name),
 		},
 		{
-			TestInfo:   testing.TestInfo{Name: test3Name, Desc: test3Desc},
+			EntityInfo: testing.EntityInfo{Name: test3Name, Desc: test3Desc},
 			Start:      test3StartTime,
 			End:        test3EndTime,
 			SkipReason: skipReason,
 			OutDir:     filepath.Join(cfg.ResDir, testLogsDir, test3Name),
 		},
 	}
-	var actRes []TestResult
+	var actRes []EntityResult
 	if err := json.Unmarshal([]byte(files[resultsFilename]), &actRes); err != nil {
 		t.Errorf("Failed to decode %v: %v", resultsFilename, err)
 	}
-	if !cmp.Equal(actRes, expRes, cmp.AllowUnexported(TestResult{}, hwdep.Deps{})) {
+	if !cmp.Equal(actRes, expRes, cmp.AllowUnexported(EntityResult{}, hwdep.Deps{})) {
 		t.Errorf("%v contains %+v; want %+v", resultsFilename, actRes, expRes)
 	}
 
 	// The streamed results file should contain the same set of results.
 	streamRes := readStreamedResults(t, bytes.NewBufferString(files[streamedResultsFilename]))
-	if !cmp.Equal(streamRes, expRes, cmp.AllowUnexported(TestResult{}, hwdep.Deps{})) {
+	if !cmp.Equal(streamRes, expRes, cmp.AllowUnexported(EntityResult{}, hwdep.Deps{})) {
 		t.Errorf("%v contains %+v; want %+v", streamedResultsFilename, streamRes, expRes)
 	}
 
@@ -252,10 +252,10 @@ func TestReadTestOutputTimingLog(t *gotesting.T) {
 	b := bytes.Buffer{}
 	mw := control.NewMessageWriter(&b)
 	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 2})
-	mw.WriteMessage(&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestInfo{Name: testName1}})
-	mw.WriteMessage(&control.TestEnd{Time: time.Unix(3, 0), Name: testName1, TimingLog: testLog1})
-	mw.WriteMessage(&control.TestStart{Time: time.Unix(4, 0), Test: testing.TestInfo{Name: testName2}})
-	mw.WriteMessage(&control.TestEnd{Time: time.Unix(5, 0), Name: testName2, TimingLog: testLog2})
+	mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: testName1}})
+	mw.WriteMessage(&control.EntityEnd{Time: time.Unix(3, 0), Name: testName1, TimingLog: testLog1})
+	mw.WriteMessage(&control.EntityStart{Time: time.Unix(4, 0), Info: testing.EntityInfo{Name: testName2}})
+	mw.WriteMessage(&control.EntityEnd{Time: time.Unix(5, 0), Name: testName2, TimingLog: testLog2})
 	mw.WriteMessage(&control.RunEnd{Time: time.Unix(6, 0)})
 
 	td := testutil.TempDir(t)
@@ -311,7 +311,7 @@ func TestPerTestLogContainsRunError(t *gotesting.T) {
 	b := bytes.Buffer{}
 	mw := control.NewMessageWriter(&b)
 	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 1})
-	mw.WriteMessage(&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestInfo{Name: testName}})
+	mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: testName}})
 	mw.WriteMessage(&control.RunError{Time: time.Unix(3, 0), Error: testing.Error{Reason: errorMsg}})
 
 	cfg := Config{Logger: logging.NewSimple(&bytes.Buffer{}, 0, false), ResDir: td}
@@ -363,41 +363,41 @@ func TestValidateMessages(t *gotesting.T) {
 		}},
 		{"unfinished test", []string{"test1", "test2"}, []control.Msg{
 			&control.RunStart{Time: time.Unix(1, 0), TestNames: []string{"test1", "test2"}},
-			&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestInfo{Name: "test1"}},
-			&control.TestEnd{Time: time.Unix(3, 0), Name: "test1"},
-			&control.TestStart{Time: time.Unix(4, 0), Test: testing.TestInfo{Name: "test2"}},
+			&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: "test1"}},
+			&control.EntityEnd{Time: time.Unix(3, 0), Name: "test1"},
+			&control.EntityStart{Time: time.Unix(4, 0), Info: testing.EntityInfo{Name: "test2"}},
 			&control.RunEnd{Time: time.Unix(5, 0), OutDir: ""},
 		}},
-		{"TestStart before RunStart", nil, []control.Msg{
-			&control.TestStart{Time: time.Unix(1, 0), Test: testing.TestInfo{Name: "test1"}},
+		{"EntityStart before RunStart", nil, []control.Msg{
+			&control.EntityStart{Time: time.Unix(1, 0), Info: testing.EntityInfo{Name: "test1"}},
 			&control.RunStart{Time: time.Unix(2, 0), TestNames: []string{"test1"}},
-			&control.TestEnd{Time: time.Unix(3, 0), Name: "test1"},
+			&control.EntityEnd{Time: time.Unix(3, 0), Name: "test1"},
 			&control.RunEnd{Time: time.Unix(4, 0), OutDir: ""},
 		}},
-		{"TestError without TestStart", nil, []control.Msg{
+		{"EntityError without EntityStart", nil, []control.Msg{
 			&control.RunStart{Time: time.Unix(1, 0)},
-			&control.TestError{Time: time.Unix(2, 0), Error: testing.Error{}},
+			&control.EntityError{Time: time.Unix(2, 0), Error: testing.Error{}},
 			&control.RunEnd{Time: time.Unix(3, 0), OutDir: ""},
 		}},
-		{"wrong TestEnd", []string{"test1"}, []control.Msg{
+		{"wrong EntityEnd", []string{"test1"}, []control.Msg{
 			&control.RunStart{Time: time.Unix(1, 0), TestNames: []string{"test1"}},
-			&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestInfo{Name: "test1"}},
-			&control.TestEnd{Time: time.Unix(3, 0), Name: "test2"},
+			&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: "test1"}},
+			&control.EntityEnd{Time: time.Unix(3, 0), Name: "test2"},
 			&control.RunEnd{Time: time.Unix(3, 0), OutDir: ""},
 		}},
-		{"no TestEnd", []string{"test1"}, []control.Msg{
+		{"no EntityEnd", []string{"test1"}, []control.Msg{
 			&control.RunStart{Time: time.Unix(1, 0), TestNames: []string{"test1", "test2"}},
-			&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestInfo{Name: "test1"}},
-			&control.TestStart{Time: time.Unix(3, 0), Test: testing.TestInfo{Name: "test2"}},
-			&control.TestEnd{Time: time.Unix(4, 0), Name: "test2"},
+			&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: "test1"}},
+			&control.EntityStart{Time: time.Unix(3, 0), Info: testing.EntityInfo{Name: "test2"}},
+			&control.EntityEnd{Time: time.Unix(4, 0), Name: "test2"},
 			&control.RunEnd{Time: time.Unix(5, 0), OutDir: ""},
 		}},
-		{"TestStart with already-seen name", []string{"test1"}, []control.Msg{
+		{"EntityStart with already-seen name", []string{"test1"}, []control.Msg{
 			&control.RunStart{Time: time.Unix(1, 0), TestNames: []string{"test1", "test2"}},
-			&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestInfo{Name: "test1"}},
-			&control.TestEnd{Time: time.Unix(3, 0), Name: "test1"},
-			&control.TestStart{Time: time.Unix(4, 0), Test: testing.TestInfo{Name: "test1"}},
-			&control.TestEnd{Time: time.Unix(5, 0), Name: "test1"},
+			&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: "test1"}},
+			&control.EntityEnd{Time: time.Unix(3, 0), Name: "test1"},
+			&control.EntityStart{Time: time.Unix(4, 0), Info: testing.EntityInfo{Name: "test1"}},
+			&control.EntityEnd{Time: time.Unix(5, 0), Name: "test1"},
 			&control.RunEnd{Time: time.Unix(6, 0), OutDir: ""},
 		}},
 	} {
@@ -472,7 +472,7 @@ func TestWriteResultsCollectSysInfo(t *gotesting.T) {
 	}
 	td.cfg.collectSysInfo = true
 	td.cfg.initialSysInfo = &runner.SysInfoState{}
-	if err := WriteResults(context.Background(), &td.cfg, []TestResult{}, true); err != nil {
+	if err := WriteResults(context.Background(), &td.cfg, []EntityResult{}, true); err != nil {
 		t.Fatal("WriteResults failed: ", err)
 	}
 }
@@ -486,7 +486,7 @@ func TestWriteResultsCollectSysInfoFailure(t *gotesting.T) {
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) { return 1 }
 	td.cfg.collectSysInfo = true
 	td.cfg.initialSysInfo = &runner.SysInfoState{}
-	err := WriteResults(context.Background(), &td.cfg, []TestResult{}, true)
+	err := WriteResults(context.Background(), &td.cfg, []EntityResult{}, true)
 	if err == nil {
 		t.Fatal("WriteResults didn't report expected error")
 	}
@@ -530,15 +530,15 @@ func TestWritePartialResults(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	// Make the runner output end abruptly without a TestEnd control message for the second test,
+	// Make the runner output end abruptly without a EntityEnd control message for the second test,
 	// and without any messages for the third test.
 	b := bytes.Buffer{}
 	mw := control.NewMessageWriter(&b)
 	mw.WriteMessage(&control.RunStart{Time: run1Start, TestNames: []string{test1Name, test2Name, test3Name}})
-	mw.WriteMessage(&control.TestStart{Time: test1Start, Test: testing.TestInfo{Name: test1Name}})
-	mw.WriteMessage(&control.TestEnd{Time: test1End, Name: test1Name})
-	mw.WriteMessage(&control.TestStart{Time: test2Start, Test: testing.TestInfo{Name: test2Name}})
-	mw.WriteMessage(&control.TestError{Time: test2Error, Error: testing.Error{Reason: test2Reason}})
+	mw.WriteMessage(&control.EntityStart{Time: test1Start, Info: testing.EntityInfo{Name: test1Name}})
+	mw.WriteMessage(&control.EntityEnd{Time: test1End, Name: test1Name})
+	mw.WriteMessage(&control.EntityStart{Time: test2Start, Info: testing.EntityInfo{Name: test2Name}})
+	mw.WriteMessage(&control.EntityError{Time: test2Error, Error: testing.Error{Reason: test2Reason}})
 
 	cfg := Config{
 		Logger: logging.NewSimple(&bytes.Buffer{}, 0, false),
@@ -559,19 +559,19 @@ func TestWritePartialResults(t *gotesting.T) {
 		t.Fatal(err)
 	}
 	streamRes := readStreamedResults(t, bytes.NewBufferString(files[streamedResultsFilename]))
-	expRes := []TestResult{
+	expRes := []EntityResult{
 		{
-			TestInfo: testing.TestInfo{Name: test1Name},
-			Start:    test1Start,
-			End:      test1End,
-			OutDir:   filepath.Join(cfg.ResDir, testLogsDir, test1Name),
+			EntityInfo: testing.EntityInfo{Name: test1Name},
+			Start:      test1Start,
+			End:        test1End,
+			OutDir:     filepath.Join(cfg.ResDir, testLogsDir, test1Name),
 		},
-		// No TestEnd message was received for the second test, so its entry in the streamed results
+		// No EntityEnd message was received for the second test, so its entry in the streamed results
 		// file should have an empty end time. The error should be included, though.
 		{
-			TestInfo: testing.TestInfo{Name: test2Name},
-			Start:    test2Start,
-			Errors: []TestError{
+			EntityInfo: testing.EntityInfo{Name: test2Name},
+			Start:      test2Start,
+			Errors: []EntityError{
 				{Error: testing.Error{Reason: test2Reason}},
 				{Error: testing.Error{Reason: incompleteTestMsg}},
 			},
@@ -598,8 +598,8 @@ func TestWritePartialResults(t *gotesting.T) {
 	// Write control messages describing another run containing the third test.
 	b.Reset()
 	mw.WriteMessage(&control.RunStart{Time: run2Start, TestNames: []string{test4Name}})
-	mw.WriteMessage(&control.TestStart{Time: test4Start, Test: testing.TestInfo{Name: test4Name}})
-	mw.WriteMessage(&control.TestEnd{Time: test4End, Name: test4Name})
+	mw.WriteMessage(&control.EntityStart{Time: test4Start, Info: testing.EntityInfo{Name: test4Name}})
+	mw.WriteMessage(&control.EntityEnd{Time: test4End, Name: test4Name})
 	mw.WriteMessage(&control.RunEnd{Time: run2End})
 
 	// The results for the third test should be appended to the existing streamed results file.
@@ -610,11 +610,11 @@ func TestWritePartialResults(t *gotesting.T) {
 		t.Fatal(err)
 	}
 	streamRes = readStreamedResults(t, bytes.NewBufferString(files[streamedResultsFilename]))
-	expRes = append(expRes, TestResult{
-		TestInfo: testing.TestInfo{Name: test4Name},
-		Start:    test4Start,
-		End:      test4End,
-		OutDir:   filepath.Join(cfg.ResDir, testLogsDir, test4Name),
+	expRes = append(expRes, EntityResult{
+		EntityInfo: testing.EntityInfo{Name: test4Name},
+		Start:      test4Start,
+		End:        test4End,
+		OutDir:     filepath.Join(cfg.ResDir, testLogsDir, test4Name),
 	})
 	if !testResultsEqual(streamRes, expRes) {
 		t.Errorf("%v contains %+v; want %+v", streamedResultsFilename, streamRes, expRes)
@@ -643,36 +643,36 @@ func TestUnfinishedTest(t *gotesting.T) {
 		runLine  = 12
 		diagMsg  = "SSH connection was lost"
 	)
-	incompleteErr := TestError{Error: testing.Error{Reason: incompleteTestMsg}}
-	testErr := TestError{Error: testing.Error{Reason: testMsg}}
+	incompleteErr := EntityError{Error: testing.Error{Reason: incompleteTestMsg}}
+	testErr := EntityError{Error: testing.Error{Reason: testMsg}}
 	runReason := fmt.Sprintf("Got global error: %s:%d: %s", runFile, runLine, runMsg)
-	runErr := TestError{Error: testing.Error{Reason: runReason}}
-	diagErr := TestError{Error: testing.Error{Reason: diagMsg}}
+	runErr := EntityError{Error: testing.Error{Reason: runReason}}
+	diagErr := EntityError{Error: testing.Error{Reason: diagMsg}}
 
 	// diagnoseRunErrorFunc implementations.
 	emptyDiag := func(context.Context, string) string { return "" }
 	goodDiag := func(context.Context, string) string { return diagMsg }
 
 	for i, tc := range []struct {
-		writeTestErr bool // write a TestError control message with testMsg
+		writeTestErr bool // write a EntityError control message with testMsg
 		writeRunErr  bool // write a RunError control message with runMsg
 		diagFunc     diagnoseRunErrorFunc
-		expErrs      []TestError
+		expErrs      []EntityError
 	}{
-		{false, false, nil, []TestError{incompleteErr}},                      // no test or run error
-		{true, false, nil, []TestError{testErr, incompleteErr}},              // test error reported
-		{false, true, nil, []TestError{runErr, incompleteErr}},               // run error attributed to test
-		{true, true, nil, []TestError{testErr, runErr, incompleteErr}},       // test error reported, then run error
-		{true, true, emptyDiag, []TestError{testErr, runErr, incompleteErr}}, // failed diagnosis, so report run error
-		{true, true, goodDiag, []TestError{testErr, diagErr, incompleteErr}}, // successful diagnosis replaces run error
+		{false, false, nil, []EntityError{incompleteErr}},                      // no test or run error
+		{true, false, nil, []EntityError{testErr, incompleteErr}},              // test error reported
+		{false, true, nil, []EntityError{runErr, incompleteErr}},               // run error attributed to test
+		{true, true, nil, []EntityError{testErr, runErr, incompleteErr}},       // test error reported, then run error
+		{true, true, emptyDiag, []EntityError{testErr, runErr, incompleteErr}}, // failed diagnosis, so report run error
+		{true, true, goodDiag, []EntityError{testErr, diagErr, incompleteErr}}, // successful diagnosis replaces run error
 	} {
 		// Report that the test started but didn't finish.
 		b := bytes.Buffer{}
 		mw := control.NewMessageWriter(&b)
 		mw.WriteMessage(&control.RunStart{Time: tm, NumTests: 1})
-		mw.WriteMessage(&control.TestStart{Time: tm, Test: testing.TestInfo{Name: testName}})
+		mw.WriteMessage(&control.EntityStart{Time: tm, Info: testing.EntityInfo{Name: testName}})
 		if tc.writeTestErr {
-			mw.WriteMessage(&control.TestError{Time: tm, Error: testing.Error{Reason: testMsg}})
+			mw.WriteMessage(&control.EntityError{Time: tm, Error: testing.Error{Reason: testMsg}})
 		}
 		if tc.writeRunErr {
 			mw.WriteMessage(&control.RunError{Time: tm, Error: testing.Error{Reason: runMsg, File: runFile, Line: runLine}})
@@ -699,7 +699,7 @@ func TestUnfinishedTest(t *gotesting.T) {
 			t.Errorf("readTestOutput returned non-zero end time %v", res[0].End)
 		}
 		// Ignore timestamps since run errors contain time.Now.
-		if !cmp.Equal(res[0].Errors, tc.expErrs, cmpopts.IgnoreFields(TestError{}, "Time"), cmp.AllowUnexported(hwdep.Deps{})) {
+		if !cmp.Equal(res[0].Errors, tc.expErrs, cmpopts.IgnoreFields(EntityError{}, "Time"), cmp.AllowUnexported(hwdep.Deps{})) {
 			t.Errorf("readTestOutput returned errors %+v; want %+v", res[0].Errors, tc.expErrs)
 		}
 	}
@@ -713,9 +713,9 @@ func TestWriteResultsUnmatchedGlobs(t *gotesting.T) {
 	baseCfg.ResDir = td
 
 	// Report that two tests were executed.
-	results := []TestResult{
-		{TestInfo: testing.TestInfo{Name: "pkg.Test1"}},
-		{TestInfo: testing.TestInfo{Name: "pkg.Test2"}},
+	results := []EntityResult{
+		{EntityInfo: testing.EntityInfo{Name: "pkg.Test1"}},
+		{EntityInfo: testing.EntityInfo{Name: "pkg.Test2"}},
 	}
 
 	// This matches the message logged by WriteResults followed by patterns that

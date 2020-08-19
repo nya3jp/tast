@@ -30,23 +30,23 @@ func (s *outputSink) RunLog(msg string) error {
 	return s.mw.WriteMessage(&control.RunLog{Text: msg})
 }
 
-func (s *outputSink) TestStart(t *testing.TestInfo) error {
-	return s.mw.WriteMessage(&control.TestStart{Test: *t})
+func (s *outputSink) EntityStart(ei *testing.EntityInfo) error {
+	return s.mw.WriteMessage(&control.EntityStart{Info: *ei})
 }
 
-func (s *outputSink) TestLog(t *testing.TestInfo, msg string) error {
-	return s.mw.WriteMessage(&control.TestLog{Text: msg})
+func (s *outputSink) EntityLog(ei *testing.EntityInfo, msg string) error {
+	return s.mw.WriteMessage(&control.EntityLog{Text: msg})
 }
 
-func (s *outputSink) TestError(t *testing.TestInfo, e *testing.Error) error {
+func (s *outputSink) EntityError(ei *testing.EntityInfo, e *testing.Error) error {
 	// Clear Error fields except for Reason.
 	e = &testing.Error{Reason: e.Reason}
-	return s.mw.WriteMessage(&control.TestError{Error: *e})
+	return s.mw.WriteMessage(&control.EntityError{Error: *e})
 }
 
-func (s *outputSink) TestEnd(t *testing.TestInfo, skipReasons []string, timingLog *timing.Log) error {
+func (s *outputSink) EntityEnd(ei *testing.EntityInfo, skipReasons []string, timingLog *timing.Log) error {
 	// Drop timingLog.
-	return s.mw.WriteMessage(&control.TestEnd{Name: t.Name, SkipReasons: skipReasons})
+	return s.mw.WriteMessage(&control.EntityEnd{Name: ei.Name, SkipReasons: skipReasons})
 }
 
 // ReadAll reads all control messages written to the sink.
@@ -65,8 +65,8 @@ func (s *outputSink) ReadAll() ([]control.Msg, error) {
 
 func TestTestOutputStream(t *gotesting.T) {
 	sink := newOutputSink()
-	test := &testing.TestInfo{Name: "pkg.Test"}
-	tout := newTestOutputStream(sink, test)
+	test := &testing.EntityInfo{Name: "pkg.Test"}
+	tout := newEntityOutputStream(sink, test)
 
 	tout.Start()
 	tout.Log("hello")
@@ -80,11 +80,11 @@ func TestTestOutputStream(t *gotesting.T) {
 	}
 
 	want := []control.Msg{
-		&control.TestStart{Test: *test},
-		&control.TestLog{Text: "hello"},
-		&control.TestError{Error: testing.Error{Reason: "faulty"}},
-		&control.TestLog{Text: "world"},
-		&control.TestEnd{Name: "pkg.Test"},
+		&control.EntityStart{Info: *test},
+		&control.EntityLog{Text: "hello"},
+		&control.EntityError{Error: testing.Error{Reason: "faulty"}},
+		&control.EntityLog{Text: "world"},
+		&control.EntityEnd{Name: "pkg.Test"},
 	}
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Error("Output mismatch (-got +want):\n", diff)

@@ -607,8 +607,8 @@ func TestTestInfo(t *gotesting.T) {
 		Timeout:      time.Hour,
 	}
 
-	got := test.TestInfo()
-	want := &TestInfo{
+	got := test.EntityInfo()
+	want := &EntityInfo{
 		Name:         "pkg.Test",
 		Pkg:          "chromiumos/foo/bar",
 		Desc:         "Description",
@@ -622,7 +622,7 @@ func TestTestInfo(t *gotesting.T) {
 		Timeout:      time.Hour,
 	}
 	if diff := cmp.Diff(got, want); diff != "" {
-		t.Errorf("Got unexpected TestInfo (-got +want):\n%s", diff)
+		t.Errorf("Got unexpected EntityInfo (-got +want):\n%s", diff)
 	}
 }
 

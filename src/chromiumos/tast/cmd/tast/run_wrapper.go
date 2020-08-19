@@ -13,18 +13,18 @@ import (
 // runWrapper is a wrapper that allows functions from the run package to be stubbed out for testing.
 type runWrapper interface {
 	// run calls run.Run.
-	run(ctx context.Context, cfg *run.Config) (run.Status, []run.TestResult)
+	run(ctx context.Context, cfg *run.Config) (run.Status, []run.EntityResult)
 	// writeResults calls run.WriteResults.
-	writeResults(ctx context.Context, cfg *run.Config, results []run.TestResult, complete bool) error
+	writeResults(ctx context.Context, cfg *run.Config, results []run.EntityResult, complete bool) error
 }
 
 // realRunWrapper is a runWrapper implementation that calls the real functions in the run package.
 type realRunWrapper struct{}
 
-func (w realRunWrapper) run(ctx context.Context, cfg *run.Config) (run.Status, []run.TestResult) {
+func (w realRunWrapper) run(ctx context.Context, cfg *run.Config) (run.Status, []run.EntityResult) {
 	return run.Run(ctx, cfg)
 }
 
-func (w realRunWrapper) writeResults(ctx context.Context, cfg *run.Config, results []run.TestResult, complete bool) error {
+func (w realRunWrapper) writeResults(ctx context.Context, cfg *run.Config, results []run.EntityResult, complete bool) error {
 	return run.WriteResults(ctx, cfg, results, complete)
 }

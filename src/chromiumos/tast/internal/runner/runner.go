@@ -98,7 +98,7 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Args,
 }
 
 // runTestsAndReport runs bundles serially to perform testing and writes control messages to stdout.
-// Fatal errors are reported via RunError messages, while test errors are reported via TestError messages.
+// Fatal errors are reported via RunError messages, while test errors are reported via EntityError messages.
 func runTestsAndReport(ctx context.Context, args *Args, cfg *Config, stdout io.Writer) {
 	mw := control.NewMessageWriter(stdout)
 
@@ -239,7 +239,7 @@ func setUpBaseOutDir(args *bundle.Args) (created bool, err error) {
 
 // logMessages reads control messages from r and logs them to lg.
 // It is used to print human-readable test output when the runner is executed manually rather
-// than via the tast command. An error is returned if any TestError messages are read.
+// than via the tast command. An error is returned if any EntityError messages are read.
 func logMessages(r io.Reader, lg *log.Logger) *command.StatusError {
 	numTests := 0
 	testFailed := false              // true if error seen for current test
@@ -257,18 +257,18 @@ func logMessages(r io.Reader, lg *log.Logger) *command.StatusError {
 			lg.Print(v.Text)
 		case *control.RunError:
 			return command.NewStatusErrorf(v.Status, "error: [%s:%d] %v", filepath.Base(v.Error.File), v.Error.Line, v.Error.Reason)
-		case *control.TestStart:
-			lg.Print("Running ", v.Test.Name)
+		case *control.EntityStart:
+			lg.Print("Running ", v.Info.Name)
 			testFailed = false
 			if numTests == 0 {
 				startTime = v.Time
 			}
-		case *control.TestLog:
+		case *control.EntityLog:
 			lg.Print(v.Text)
-		case *control.TestError:
+		case *control.EntityError:
 			lg.Printf("Error: [%s:%d] %v", filepath.Base(v.Error.File), v.Error.Line, v.Error.Reason)
 			testFailed = true
-		case *control.TestEnd:
+		case *control.EntityEnd:
 			var reasons []string
 			if len(v.DeprecatedMissingSoftwareDeps) > 0 {
 				reasons = append(reasons, "missing SoftwareDeps: "+strings.Join(v.DeprecatedMissingSoftwareDeps, " "))

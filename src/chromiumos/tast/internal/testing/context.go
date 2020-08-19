@@ -11,15 +11,15 @@ import (
 // contextKeyType is the key type for objects attached to context.Context.
 type contextKeyType string
 
-// testContextKey is the key used for attaching a *TestContext to a context.Context.
-const testContextKey contextKeyType = "TestContext"
+// currentEntityKey is the key used for attaching a CurrentEntity to a context.Context.
+const currentEntityKey contextKeyType = "CurrentEntity"
 
-// TestContext contains information about the currently running test.
+// CurrentEntity contains information about the currently running entity.
 //
 // Information in this struct is accessible from anywhere via context.Context
 // and testing.Context* functions. Each member should have strong reason to be
-// accessible without testing.State.
-type TestContext struct {
+// accessible without testing.*State.
+type CurrentEntity struct {
 	// OutDir is a directory where the current test can save output files.
 	OutDir string
 	// SoftwareDeps is a list of software dependencies declared in the current test.
@@ -28,40 +28,40 @@ type TestContext struct {
 	ServiceDeps []string
 }
 
-// WithTestContext attaches TestContext to context.Context. This function can't
-// be called from tests.
-func WithTestContext(ctx context.Context, tc *TestContext) context.Context {
-	return context.WithValue(ctx, testContextKey, tc)
+// WithCurrentEntity attaches CurrentEntity to context.Context. This function can't
+// be called from user code.
+func WithCurrentEntity(ctx context.Context, ec *CurrentEntity) context.Context {
+	return context.WithValue(ctx, currentEntityKey, ec)
 }
 
 // ContextOutDir is similar to OutDir but takes context instead. It is intended to be
 // used by packages providing support for tests that need to write files.
 func ContextOutDir(ctx context.Context) (dir string, ok bool) {
-	tc, ok := ctx.Value(testContextKey).(*TestContext)
-	if !ok || tc.OutDir == "" {
+	ec, ok := ctx.Value(currentEntityKey).(*CurrentEntity)
+	if !ok || ec.OutDir == "" {
 		return "", false
 	}
-	return tc.OutDir, true
+	return ec.OutDir, true
 }
 
 // ContextSoftwareDeps is similar to SoftwareDeps but takes context instead.
 // It is intended to be used by packages providing support for tests that want to
 // make sure tests declare proper dependencies.
 func ContextSoftwareDeps(ctx context.Context) ([]string, bool) {
-	tc, ok := ctx.Value(testContextKey).(*TestContext)
+	ec, ok := ctx.Value(currentEntityKey).(*CurrentEntity)
 	if !ok {
 		return nil, false
 	}
-	return append([]string(nil), tc.SoftwareDeps...), true
+	return append([]string(nil), ec.SoftwareDeps...), true
 }
 
 // ContextServiceDeps is similar to ServiceDeps but takes context instead.
 // It is intended to be used by packages providing support for tests that want to
 // make sure tests declare proper dependencies.
 func ContextServiceDeps(ctx context.Context) ([]string, bool) {
-	tc, ok := ctx.Value(testContextKey).(*TestContext)
+	ec, ok := ctx.Value(currentEntityKey).(*CurrentEntity)
 	if !ok {
 		return nil, false
 	}
-	return append([]string(nil), tc.ServiceDeps...), true
+	return append([]string(nil), ec.ServiceDeps...), true
 }

@@ -144,7 +144,7 @@ func (td *remoteTestData) close() {
 }
 
 // run calls remote and records the Args struct that was passed to the fake runner.
-func (td *remoteTestData) run(t *gotesting.T) ([]TestResult, error) {
+func (td *remoteTestData) run(t *gotesting.T) ([]EntityResult, error) {
 	res, rerr := runRemoteTests(context.Background(), &td.cfg)
 
 	f, err := os.Open(filepath.Join(td.dir, fakeRunnerArgsFile))
@@ -166,8 +166,8 @@ func TestRemoteRun(t *gotesting.T) {
 	b := bytes.Buffer{}
 	mw := control.NewMessageWriter(&b)
 	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 1})
-	mw.WriteMessage(&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestInfo{Name: testName}})
-	mw.WriteMessage(&control.TestEnd{Time: time.Unix(3, 0), Name: testName})
+	mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: testName}})
+	mw.WriteMessage(&control.EntityEnd{Time: time.Unix(3, 0), Name: testName})
 	mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0), OutDir: ""})
 
 	td := newRemoteTestData(t, b.String(), "", 0)
@@ -241,8 +241,8 @@ func TestRemoteRunCopyOutput(t *gotesting.T) {
 	b := bytes.Buffer{}
 	mw := control.NewMessageWriter(&b)
 	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 1})
-	mw.WriteMessage(&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestInfo{Name: testName}})
-	mw.WriteMessage(&control.TestEnd{Time: time.Unix(3, 0), Name: testName})
+	mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: testName}})
+	mw.WriteMessage(&control.EntityEnd{Time: time.Unix(3, 0), Name: testName})
 	mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0), OutDir: outDir})
 
 	td := newRemoteTestData(t, b.String(), "", 0)

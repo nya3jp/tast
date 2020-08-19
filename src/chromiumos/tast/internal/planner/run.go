@@ -27,8 +27,8 @@ import (
 
 const (
 	exitTimeout     = 30 * time.Second // extra time granted to test-related funcs to exit
-	preTestTimeout  = 3 * time.Minute  // timeout for TestConfig.TestHook
-	postTestTimeout = 3 * time.Minute  // timeout for a closure returned by TestConfig.TestHook
+	preTestTimeout  = 3 * time.Minute  // timeout for RuntimeConfig.TestHook
+	postTestTimeout = 3 * time.Minute  // timeout for a closure returned by RuntimeConfig.TestHook
 )
 
 // DownloadMode specifies a strategy to download external data files.
@@ -135,7 +135,7 @@ func (p *plan) run(ctx context.Context, out OutputStream) error {
 	dl.BeforeRun(ctx, p.testsToRun())
 
 	for _, s := range p.skips {
-		tout := newTestOutputStream(out, s.test.TestInfo())
+		tout := newEntityOutputStream(out, s.test.EntityInfo())
 		reportSkippedTest(tout, s.result)
 	}
 
@@ -171,20 +171,20 @@ func buildPrePlan(tests []*testing.TestInstance, pcfg *Config) *prePlan {
 
 func (p *prePlan) run(ctx context.Context, out OutputStream, dl *downloader) error {
 	// Create a precondition-scoped context.
-	ptc := &testing.TestContext{
+	ec := &testing.CurrentEntity{
 		// OutDir is not available for a precondition-scoped context.
 		SoftwareDeps: append([]string(nil), p.tests[0].SoftwareDeps...),
 		ServiceDeps:  append([]string(nil), p.tests[0].ServiceDeps...),
 	}
 	plog := func(msg string) {
-		ptest := &testing.TestInfo{Name: p.pre.String()} // pseudo test for the precondition
-		out.TestLog(ptest, msg)
+		ptest := &testing.EntityInfo{Name: p.pre.String()} // pseudo test for the precondition
+		out.EntityLog(ptest, msg)
 	}
-	pctx, cancel := context.WithCancel(testing.NewContext(context.Background(), ptc, plog))
+	pctx, cancel := context.WithCancel(testing.NewContext(context.Background(), ec, plog))
 	defer cancel()
 
 	for i, t := range p.tests {
-		tout := newTestOutputStream(out, t.TestInfo())
+		tout := newEntityOutputStream(out, t.EntityInfo())
 		precfg := &preConfig{
 			ctx:   pctx,
 			close: p.pre != nil && i == len(p.tests)-1,
@@ -215,7 +215,7 @@ type preConfig struct {
 //
 // runTest runs a test on a goroutine. If a test does not finish after reaching
 // its timeout, this function returns with an error without waiting for its finish.
-func runTest(ctx context.Context, t *testing.TestInstance, tout *testOutputStream, pcfg *Config, precfg *preConfig, dl *downloader) error {
+func runTest(ctx context.Context, t *testing.TestInstance, tout *entityOutputStream, pcfg *Config, precfg *preConfig, dl *downloader) error {
 	dl.BeforeTest(ctx, t)
 
 	// Attach a log that the test can use to report timing events.
@@ -229,7 +229,7 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *testOutputStrea
 	if pcfg.OutDir != "" { // often left blank for unit tests
 		outDir = filepath.Join(pcfg.OutDir, t.Name)
 	}
-	tcfg := &testing.TestConfig{
+	rcfg := &testing.RuntimeConfig{
 		DataDir:      filepath.Join(pcfg.DataDir, testing.RelativeDataDir(t.Pkg)),
 		OutDir:       outDir,
 		Vars:         pcfg.Vars,
@@ -238,7 +238,7 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *testOutputStrea
 		PreCtx:       precfg.ctx,
 		Purgeable:    dl.Purgeable(),
 	}
-	stages := buildStages(t, tout, pcfg, precfg, tcfg)
+	stages := buildStages(t, tout, pcfg, precfg, rcfg)
 
 	ok := runStages(ctx, stages)
 	if !ok {
@@ -302,13 +302,13 @@ func (d *downloader) download(ctx context.Context, tests []*testing.TestInstance
 //
 // The time allotted to the test is generally the sum of t.Timeout and t.ExitTimeout, but
 // additional time may be allotted for preconditions and pre/post-test hooks.
-func buildStages(t *testing.TestInstance, tout testing.OutputStream, pcfg *Config, precfg *preConfig, tcfg *testing.TestConfig) []stage {
+func buildStages(t *testing.TestInstance, tout testing.OutputStream, pcfg *Config, precfg *preConfig, rcfg *testing.RuntimeConfig) []stage {
 	var stages []stage
 	addStage := func(f stageFunc, ctxTimeout, exitTimeout time.Duration) {
 		stages = append(stages, stage{f, ctxTimeout, exitTimeout})
 	}
 
-	root := testing.NewTestEntityRoot(t, tout, tcfg)
+	root := testing.NewTestEntityRoot(t, tout, rcfg)
 	var postTestFunc func(ctx context.Context, s *testing.TestHookState)
 
 	// First, perform setup and run the pre-test function.
@@ -321,14 +321,14 @@ func buildStages(t *testing.TestInstance, tout testing.OutputStream, pcfg *Confi
 				s.Fatal("Invalid timeout ", t.Timeout)
 			}
 
-			if tcfg.OutDir != "" { // often left blank for unit tests
-				if err := os.MkdirAll(tcfg.OutDir, 0755); err != nil {
+			if rcfg.OutDir != "" { // often left blank for unit tests
+				if err := os.MkdirAll(rcfg.OutDir, 0755); err != nil {
 					s.Fatal("Failed to create output dir: ", err)
 				}
 				// Make the directory world-writable so that tests can create files as other users,
 				// and set the sticky bit to prevent users from deleting other users' files.
 				// (The mode passed to os.MkdirAll is modified by umask, so we need an explicit chmod.)
-				if err := os.Chmod(tcfg.OutDir, 0777|os.ModeSticky); err != nil {
+				if err := os.Chmod(rcfg.OutDir, 0777|os.ModeSticky); err != nil {
 					s.Fatal("Failed to set permissions on output dir: ", err)
 				}
 			}
@@ -351,7 +351,7 @@ func buildStages(t *testing.TestInstance, tout testing.OutputStream, pcfg *Confi
 			}
 
 			// In remote tests, reconnect to the DUT if needed.
-			if tcfg.RemoteData != nil {
+			if rcfg.RemoteData != nil {
 				dt := s.DUT()
 				if !dt.Connected(ctx) {
 					s.Log("Reconnecting to DUT")
@@ -423,7 +423,7 @@ func timeoutOrDefault(timeout, def time.Duration) time.Duration {
 
 // reportSkippedTest is called instead of runTest for a test that is skipped due to
 // having unsatisfied dependencies.
-func reportSkippedTest(tout *testOutputStream, result *testing.ShouldRunResult) {
+func reportSkippedTest(tout *entityOutputStream, result *testing.ShouldRunResult) {
 	tout.Start()
 	for _, msg := range result.Errors {
 		_, fn, ln, _ := runtime.Caller(0)
@@ -437,7 +437,7 @@ func reportSkippedTest(tout *testOutputStream, result *testing.ShouldRunResult) 
 }
 
 // dumpGoroutines dumps all goroutines to tout.
-func dumpGoroutines(tout *testOutputStream) {
+func dumpGoroutines(tout *entityOutputStream) {
 	tout.Log("Dumping all goroutines")
 	if err := func() error {
 		p := pprof.Lookup("goroutine")

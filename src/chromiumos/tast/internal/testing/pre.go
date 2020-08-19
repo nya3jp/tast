@@ -20,7 +20,7 @@ type Precondition interface {
 
 	// Close is called immediately after completing the final test that depends on the precondition.
 	// This method may be called without an earlier call to Prepare in rare cases (e.g. if
-	// TestConfig.PreTestFunc fails); preconditions must be able to handle this.
+	// RuntimeConfig.PreTestFunc fails); preconditions must be able to handle this.
 	Close(ctx context.Context, s *PreState)
 
 	// String returns a short, underscore-separated name for the precondition.

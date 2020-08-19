@@ -73,18 +73,18 @@ const (
 	preFailPrefix = "[Precondition failure] " // the prefix used then a precondition failure is logged.
 )
 
-// OutputStream is an interface to report streamed outputs of a test.
-// Note that planner.OutputStream is for multiple tests in contrast.
+// OutputStream is an interface to report streamed outputs of an entity.
+// Note that planner.OutputStream is for multiple entities in contrast.
 type OutputStream interface {
-	// Log reports an informational log message from a test.
+	// Log reports an informational log message from an entity.
 	Log(msg string) error
 
-	// Error reports an error from by a test. A test that reported one or more
-	// errors should be considered failure.
+	// Error reports an error from by an entity. An entity that reported one or
+	// more errors should be considered failure.
 	Error(e *Error) error
 }
 
-// Error describes an error encountered while running a test.
+// Error describes an error encountered while running an entity.
 type Error struct {
 	Reason string `json:"reason"`
 	File   string `json:"file"`
@@ -92,13 +92,13 @@ type Error struct {
 	Stack  string `json:"stack"`
 }
 
-// RemoteData contains information relevant to remote tests.
+// RemoteData contains information relevant to remote entities.
 type RemoteData struct {
 	// Meta contains information about how the tast process was run.
 	Meta *Meta
 	// RPCHint contains information needed to establish gRPC connections.
 	RPCHint *RPCHint
-	// DUT is an SSH connection shared among remote tests.
+	// DUT is an SSH connection shared among remote entities.
 	DUT *dut.DUT
 }
 
@@ -123,7 +123,7 @@ func (m *Meta) clone() *Meta {
 // RPCHint contains information needed to establish gRPC connections.
 type RPCHint struct {
 	// LocalBundleDir is the directory on the DUT where local test bundle executables are located.
-	// This path is used by remote tests to invoke gRPC services in local test bundles.
+	// This path is used by remote entities to invoke gRPC services in local test bundles.
 	LocalBundleDir string
 }
 
@@ -136,12 +136,12 @@ func (h *RPCHint) clone() *RPCHint {
 // EntityRoot is the root of all State objects associated with an entity.
 // EntityRoot keeps track of states shared among all State objects associated
 // with an entity (e.g. whether any error has been reported), as well as
-// immutable entity information such as TestConfig. Make sure to create State
+// immutable entity information such as RuntimeConfig. Make sure to create State
 // objects for an entity from the same EntityRoot.
 // EntityRoot must be kept private to the framework.
 type EntityRoot struct {
-	cfg *TestConfig  // details about how to run an entity
-	out OutputStream // stream to which logging messages and errors are reported
+	cfg *RuntimeConfig // details about how to run an entity
+	out OutputStream   // stream to which logging messages and errors are reported
 
 	mu       sync.Mutex // protects hasError
 	hasError bool       // true if any error was reported from any associated State object
@@ -211,8 +211,8 @@ type TestHookState struct {
 	*testMixin
 }
 
-// TestConfig contains details about how an individual test should be run.
-type TestConfig struct {
+// RuntimeConfig contains details about how an individual test should be run.
+type RuntimeConfig struct {
 	// DataDir is the directory in which the test's data files are located.
 	DataDir string
 	// OutDir is the directory to which the test will write output files.
@@ -234,7 +234,7 @@ type TestConfig struct {
 }
 
 // NewTestEntityRoot returns a new TestEntityRoot object.
-func NewTestEntityRoot(test *TestInstance, out OutputStream, cfg *TestConfig) *TestEntityRoot {
+func NewTestEntityRoot(test *TestInstance, out OutputStream, cfg *RuntimeConfig) *TestEntityRoot {
 	return &TestEntityRoot{
 		entityRoot: &EntityRoot{
 			cfg: cfg,
@@ -289,7 +289,7 @@ func (r *TestEntityRoot) newTestHookState() *TestHookState {
 // f calls s.Fatal (which calls runtime.Goexit).
 func (r *TestEntityRoot) RunWithTestState(ctx context.Context, f func(ctx context.Context, s *State)) {
 	s := r.newTestState()
-	ctx = NewContext(ctx, s.testContext(), func(msg string) { s.Log(msg) })
+	ctx = NewContext(ctx, s.currentEntity(), func(msg string) { s.Log(msg) })
 	runAndRecover(func() { f(ctx, s) }, s)
 }
 
@@ -299,7 +299,7 @@ func (r *TestEntityRoot) RunWithTestState(ctx context.Context, f func(ctx contex
 // f calls s.Fatal (which calls runtime.Goexit).
 func (r *TestEntityRoot) RunWithPreState(ctx context.Context, f func(ctx context.Context, s *PreState)) {
 	s := r.newPreState()
-	ctx = NewContext(ctx, s.testContext(), func(msg string) { s.Log(msg) })
+	ctx = NewContext(ctx, s.currentEntity(), func(msg string) { s.Log(msg) })
 	runAndRecover(func() { f(ctx, s) }, s)
 }
 
@@ -309,7 +309,7 @@ func (r *TestEntityRoot) RunWithPreState(ctx context.Context, f func(ctx context
 // f calls s.Fatal (which calls runtime.Goexit).
 func (r *TestEntityRoot) RunWithTestHookState(ctx context.Context, f func(ctx context.Context, s *TestHookState)) {
 	s := r.newTestHookState()
-	ctx = NewContext(ctx, s.testContext(), func(msg string) { s.Log(msg) })
+	ctx = NewContext(ctx, s.currentEntity(), func(msg string) { s.Log(msg) })
 	runAndRecover(func() { f(ctx, s) }, s)
 }
 
@@ -318,7 +318,7 @@ type errorReporter interface {
 }
 
 // runAndRecover runs f synchronously, and recovers and reports an error if it panics.
-// f is run within a goroutine to avoid making the calling goroutine exit if the test
+// f is run within a goroutine to avoid making the calling goroutine exit if the entity
 // calls s.Fatal (which calls runtime.Goexit).
 func runAndRecover(f func(), s errorReporter) {
 	done := make(chan struct{}, 1)
@@ -341,7 +341,7 @@ func (r *EntityRoot) HasError() bool {
 	return r.hasError
 }
 
-// recordError records that the test has reported an error.
+// recordError records that the entity has reported an error.
 func (r *EntityRoot) recordError() {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -358,16 +358,16 @@ func (r *TestEntityRoot) SetPreValue(val interface{}) {
 	r.preValue = val
 }
 
-// NewContext returns a context.Context to be used for the test.
-func NewContext(ctx context.Context, tc *TestContext, log func(msg string)) context.Context {
+// NewContext returns a context.Context to be used for the entity.
+func NewContext(ctx context.Context, ec *CurrentEntity, log func(msg string)) context.Context {
 	ctx = logging.NewContext(ctx, log)
-	ctx = WithTestContext(ctx, tc)
+	ctx = WithCurrentEntity(ctx, ec)
 	return ctx
 }
 
-// testContext returns a TestContext for this state.
-func (s *testMixin) testContext() *TestContext {
-	return &TestContext{
+// currentEntity returns a CurrentEntity for this state.
+func (s *testMixin) currentEntity() *CurrentEntity {
+	return &CurrentEntity{
 		OutDir:       s.OutDir(),
 		SoftwareDeps: s.SoftwareDeps(),
 		ServiceDeps:  s.ServiceDeps(),
@@ -390,18 +390,18 @@ func (s *State) Param() interface{} {
 	return s.testRoot.test.Val
 }
 
-// DataFileSystem returns an http.FileSystem implementation that serves a test's data files.
+// DataFileSystem returns an http.FileSystem implementation that serves an entity's data files.
 //
 //	srv := httptest.NewServer(http.FileServer(s.DataFileSystem()))
 //	defer srv.Close()
 //	resp, err := http.Get(srv.URL+"/data_file.html")
 func (s *testMixin) DataFileSystem() *dataFS { return (*dataFS)(s) }
 
-// OutDir returns a directory into which the test may place arbitrary files
-// that should be included with the test results.
+// OutDir returns a directory into which the entity may place arbitrary files
+// that should be included with the entity results.
 func (s *testMixin) OutDir() string { return s.testRoot.entityRoot.cfg.OutDir }
 
-// Var returns the value for the named variable, which must have been registered via Test.Vars.
+// Var returns the value for the named variable, which must have been registered via Vars.
 // If a value was not supplied at runtime via the -var flag to "tast run", ok will be false.
 func (s *testMixin) Var(name string) (val string, ok bool) {
 	seen := false
@@ -419,7 +419,7 @@ func (s *testMixin) Var(name string) (val string, ok bool) {
 	return val, ok
 }
 
-// RequiredVar is similar to Var but aborts the test if the named variable was not supplied.
+// RequiredVar is similar to Var but aborts the entity if the named variable was not supplied.
 func (s *testMixin) RequiredVar(name string) string {
 	val, ok := s.Var(name)
 	if !ok {
@@ -479,12 +479,12 @@ func (s *State) Run(ctx context.Context, name string, run func(context.Context, 
 // nil will be returned if the test did not declare a precondition.
 func (s *State) PreValue() interface{} { return s.testRoot.preValue }
 
-// SoftwareDeps returns software dependencies declared in the currently running test.
+// SoftwareDeps returns software dependencies declared in the currently running entity.
 func (s *testMixin) SoftwareDeps() []string {
 	return append([]string(nil), s.testRoot.test.SoftwareDeps...)
 }
 
-// ServiceDeps returns service dependencies declared in the currently running test.
+// ServiceDeps returns service dependencies declared in the currently running entity.
 func (s *testMixin) ServiceDeps() []string {
 	return append([]string(nil), s.testRoot.test.ServiceDeps...)
 }
@@ -508,20 +508,20 @@ func (s *State) Meta() *Meta {
 }
 
 // RPCHint returns information needed to establish gRPC connections.
-// It can only be called by remote tests.
+// It can only be called by remote entities.
 func (s *globalMixin) RPCHint() *RPCHint {
 	if s.entityRoot.cfg.RemoteData == nil {
-		panic("RPCHint unavailable (is test non-remote?)")
+		panic("RPCHint unavailable (running non-remote?)")
 	}
-	// Return a copy to make sure the test doesn't modify the original struct.
+	// Return a copy to make sure the entity doesn't modify the original struct.
 	return s.entityRoot.cfg.RemoteData.RPCHint.clone()
 }
 
 // DUT returns a shared SSH connection.
-// It can only be called by remote tests.
+// It can only be called by remote entities.
 func (s *globalMixin) DUT() *dut.DUT {
 	if s.entityRoot.cfg.RemoteData == nil {
-		panic("DUT unavailable (is test non-remote?)")
+		panic("DUT unavailable (running non-remote?)")
 	}
 	return s.entityRoot.cfg.RemoteData.DUT
 }
@@ -536,9 +536,9 @@ func (s *globalMixin) Logf(format string, args ...interface{}) {
 	s.entityRoot.out.Log(fmt.Sprintf(format, args...))
 }
 
-// Error formats its arguments using default formatting and marks the test
+// Error formats its arguments using default formatting and marks the entity
 // as having failed (using the arguments as a reason for the failure)
-// while letting the test continue execution.
+// while letting the entity continue execution.
 func (s *globalMixin) Error(args ...interface{}) {
 	s.recordError()
 	fullMsg, lastMsg, err := s.formatError(args...)
@@ -554,7 +554,7 @@ func (s *globalMixin) Errorf(format string, args ...interface{}) {
 	s.entityRoot.out.Error(e)
 }
 
-// Fatal is similar to Error but additionally immediately ends the test.
+// Fatal is similar to Error but additionally immediately ends the entity.
 func (s *globalMixin) Fatal(args ...interface{}) {
 	s.recordError()
 	fullMsg, lastMsg, err := s.formatError(args...)
@@ -572,7 +572,7 @@ func (s *globalMixin) Fatalf(format string, args ...interface{}) {
 	runtime.Goexit()
 }
 
-// HasError reports whether the test has already reported errors.
+// HasError reports whether the entity has already reported errors.
 func (s *globalMixin) HasError() bool {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -646,7 +646,7 @@ func (s *globalMixin) formatErrorf(format string, args ...interface{}) (fullMsg,
 	return fullMsg, lastMsg, err
 }
 
-// recordError records that the test has reported an error.
+// recordError records that the entity has reported an error.
 func (s *globalMixin) recordError() {
 	s.entityRoot.recordError()
 	s.mu.Lock()

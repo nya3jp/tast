@@ -16,20 +16,20 @@ func TestContextOutDir(t *testing.T) {
 	ctx := context.Background()
 
 	if _, ok := ContextOutDir(ctx); ok {
-		t.Error("ContextOutDir unexpectedly succeeded for context without TestContext")
+		t.Error("ContextOutDir unexpectedly succeeded for context without CurrentEntity")
 	}
 
-	tc := &TestContext{OutDir: testOutDir}
-	ctx = WithTestContext(ctx, tc)
+	ec := &CurrentEntity{OutDir: testOutDir}
+	ctx = WithCurrentEntity(ctx, ec)
 
 	if outDir, ok := ContextOutDir(ctx); !ok {
-		t.Error("ContextOutDir failed for context with TestContext")
+		t.Error("ContextOutDir failed for context with CurrentEntity")
 	} else if outDir != testOutDir {
 		t.Errorf("ContextOutDir = %q; want %q", outDir, testOutDir)
 	}
 
-	tc = &TestContext{OutDir: ""}
-	ctx = WithTestContext(ctx, tc)
+	ec = &CurrentEntity{OutDir: ""}
+	ctx = WithCurrentEntity(ctx, ec)
 
 	if _, ok := ContextOutDir(ctx); ok {
 		t.Error("ContextOutDir unexpectedly succeeded for empty OutDir")
@@ -42,14 +42,14 @@ func TestContextSoftwareDeps(t *testing.T) {
 	ctx := context.Background()
 
 	if _, ok := ContextSoftwareDeps(ctx); ok {
-		t.Error("ContextSoftwareDeps unexpectedly succeeded for context without TestContext")
+		t.Error("ContextSoftwareDeps unexpectedly succeeded for context without CurrentEntity")
 	}
 
-	tc := &TestContext{SoftwareDeps: testSoftwareDeps}
-	ctx = WithTestContext(ctx, tc)
+	ec := &CurrentEntity{SoftwareDeps: testSoftwareDeps}
+	ctx = WithCurrentEntity(ctx, ec)
 
 	if softwareDeps, ok := ContextSoftwareDeps(ctx); !ok {
-		t.Error("ContextSoftwareDeps failed for context with TestContext")
+		t.Error("ContextSoftwareDeps failed for context with CurrentEntity")
 	} else if !reflect.DeepEqual(softwareDeps, testSoftwareDeps) {
 		t.Errorf("ContextSoftwareDeps = %q; want %q", softwareDeps, testSoftwareDeps)
 	}
@@ -61,14 +61,14 @@ func TestContextServiceDeps(t *testing.T) {
 	ctx := context.Background()
 
 	if _, ok := ContextServiceDeps(ctx); ok {
-		t.Error("ContextServiceDeps unexpectedly succeeded for context without TestContext")
+		t.Error("ContextServiceDeps unexpectedly succeeded for context without CurrentEntity")
 	}
 
-	tc := &TestContext{ServiceDeps: testServiceDeps}
-	ctx = WithTestContext(ctx, tc)
+	ec := &CurrentEntity{ServiceDeps: testServiceDeps}
+	ctx = WithCurrentEntity(ctx, ec)
 
 	if serviceDeps, ok := ContextServiceDeps(ctx); !ok {
-		t.Error("ContextServiceDeps failed for context with TestContext")
+		t.Error("ContextServiceDeps failed for context with CurrentEntity")
 	} else if !reflect.DeepEqual(serviceDeps, testServiceDeps) {
 		t.Errorf("ContextServiceDeps = %q; want %q", serviceDeps, testServiceDeps)
 	}

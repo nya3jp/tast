@@ -19,7 +19,7 @@ Bundles write JSON-marshaled control messages to stdout. These messages are
 relayed by the test runner back to the tast command. When a test bundle
 encounters a (non-test) error, it writes a descriptive message to stderr and
 exits with a nonzero status code. Otherwise, bundles exit with 0 (i.e. even
-if one or more tests fail) -- runners learn about failed tests via TestError
+if one or more tests fail) -- runners learn about failed tests via EntityError
 control messages.
 
 The tast command contains a hardcoded assumption that the main function for

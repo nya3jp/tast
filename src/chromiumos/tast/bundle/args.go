@@ -27,7 +27,7 @@ type RunMode int
 
 const (
 	// RunTestsMode indicates that the bundle should run all matched tests and write the results to stdout as
-	// a sequence of JSON-marshaled control.Test* control messages.
+	// a sequence of JSON-marshaled control.Entity* control messages.
 	RunTestsMode RunMode = 0
 	// ListTestsMode indicates that the bundle should write information about matched tests to stdout as a
 	// JSON array of testing.Test structs and exit.

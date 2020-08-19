@@ -19,7 +19,7 @@ import (
 )
 
 // runRemoteTests runs the remote test runner and reads its output.
-func runRemoteTests(ctx context.Context, cfg *Config) ([]TestResult, error) {
+func runRemoteTests(ctx context.Context, cfg *Config) ([]EntityResult, error) {
 	cfg.Logger.Status("Running remote tests on target")
 	ctx, st := timing.Start(ctx, "run_remote_tests")
 	defer st.End()
@@ -31,7 +31,7 @@ func runRemoteTests(ctx context.Context, cfg *Config) ([]TestResult, error) {
 	// fails and the directory is left for debugging.
 	defer os.Remove(cfg.remoteOutDir)
 
-	runTests := func(ctx context.Context, patterns []string) (results []TestResult, unstarted []string, err error) {
+	runTests := func(ctx context.Context, patterns []string) (results []EntityResult, unstarted []string, err error) {
 		return runRemoteTestsOnce(ctx, cfg, patterns)
 	}
 	beforeRetry := func(ctx context.Context) bool { return true }
@@ -49,7 +49,7 @@ func runRemoteTests(ctx context.Context, cfg *Config) ([]TestResult, error) {
 // Results from started tests and the names of tests that should have been
 // started but weren't (in the order in which they should've been run) are
 // returned.
-func runRemoteTestsOnce(ctx context.Context, cfg *Config, patterns []string) (results []TestResult, unstarted []string, err error) {
+func runRemoteTestsOnce(ctx context.Context, cfg *Config, patterns []string) (results []EntityResult, unstarted []string, err error) {
 	ctx, st := timing.Start(ctx, "run_remote_tests_once")
 	defer st.End()
 

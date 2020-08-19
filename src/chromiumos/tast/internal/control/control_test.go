@@ -24,14 +24,14 @@ func TestWriteAndRead(t *gotesting.T) {
 	msgs := []Msg{
 		&RunStart{time.Unix(1, 0), []string{"pkg.MyTest"}, 1},
 		&RunLog{time.Unix(2, 0), "run message"},
-		&TestStart{time.Unix(3, 0), testing.TestInfo{
+		&EntityStart{time.Unix(3, 0), testing.EntityInfo{
 			Name: "pkg.MyTest",
 			Desc: "test description",
 			Attr: []string{"attr1", "attr2"},
 		}},
-		&TestLog{time.Unix(4, 0), "here's a log message"},
-		&TestError{time.Unix(5, 0), testing.Error{Reason: "whoops", File: "file.go", Line: 20, Stack: "stack"}},
-		&TestEnd{time.Unix(6, 0), "pkg.MyTest", []string{"dep"}, []string{"errHwdep"}, timing.NewLog()},
+		&EntityLog{time.Unix(4, 0), "here's a log message"},
+		&EntityError{time.Unix(5, 0), testing.Error{Reason: "whoops", File: "file.go", Line: 20, Stack: "stack"}},
+		&EntityEnd{time.Unix(6, 0), "pkg.MyTest", []string{"dep"}, []string{"errHwdep"}, timing.NewLog()},
 		&RunEnd{time.Unix(7, 0), "/tmp/out"},
 		&RunError{time.Unix(8, 0), testing.Error{Reason: "whoops again", File: "file2.go", Line: 30, Stack: "stack 2"}, 1},
 		&Heartbeat{Time: time.Unix(9, 0)},

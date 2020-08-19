@@ -176,7 +176,7 @@ func checkArgs(t *gotesting.T, args, exp *runner.Args) {
 // errorCounts returns a map from test names in rs to the number of errors reported by each.
 // This is useful for tests that just want to quickly check the results of a test run.
 // Detailed tests for result generation are in results_test.go.
-func errorCounts(rs []TestResult) map[string]int {
+func errorCounts(rs []EntityResult) map[string]int {
 	testErrs := make(map[string]int)
 	for _, r := range rs {
 		testErrs[r.Name] = len(r.Errors)
@@ -277,8 +277,8 @@ func TestLocalCopyOutput(t *gotesting.T) {
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		mw := control.NewMessageWriter(stdout)
 		mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), TestNames: []string{testName}})
-		mw.WriteMessage(&control.TestStart{Time: time.Unix(2, 0), Test: testing.TestInfo{Name: testName}})
-		mw.WriteMessage(&control.TestEnd{Time: time.Unix(3, 0), Name: testName})
+		mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: testName}})
+		mw.WriteMessage(&control.EntityEnd{Time: time.Unix(3, 0), Name: testName})
 		mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0), OutDir: td.cfg.localOutDir})
 		return 0
 	}
@@ -369,7 +369,7 @@ func TestLocalDataFiles(t *gotesting.T) {
 	)
 
 	// Make local_test_runner list two tests containing the first three files (with overlap).
-	tests := []testing.TestInfo{
+	tests := []testing.EntityInfo{
 		{Name: category + ".Test1", Pkg: categoryPkg, Data: []string{file1, file2}},
 		{Name: category + ".Test2", Pkg: categoryPkg, Data: []string{file2, file3, extFile1, extFile2}},
 	}

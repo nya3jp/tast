@@ -158,11 +158,11 @@ func (ew *eventWriter) RunLog(msg string) error {
 	return ew.mw.WriteMessage(&control.RunLog{Time: time.Now(), Text: msg})
 }
 
-func (ew *eventWriter) TestStart(t *testing.TestInfo) error {
+func (ew *eventWriter) TestStart(t *testing.TestInfo, outDir string) error {
 	if ew.lg != nil {
 		ew.lg.Info(fmt.Sprintf("%s: ======== start", t.Name))
 	}
-	return ew.mw.WriteMessage(&control.TestStart{Time: time.Now(), Test: *t})
+	return ew.mw.WriteMessage(&control.TestStart{Time: time.Now(), Test: *t, OutDir: outDir})
 }
 
 func (ew *eventWriter) TestLog(t *testing.TestInfo, msg string) error {

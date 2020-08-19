@@ -30,8 +30,8 @@ func (s *outputSink) RunLog(msg string) error {
 	return s.mw.WriteMessage(&control.RunLog{Text: msg})
 }
 
-func (s *outputSink) TestStart(t *testing.TestInfo) error {
-	return s.mw.WriteMessage(&control.TestStart{Test: *t})
+func (s *outputSink) TestStart(t *testing.TestInfo, outDir string) error {
+	return s.mw.WriteMessage(&control.TestStart{Test: *t, OutDir: outDir})
 }
 
 func (s *outputSink) TestLog(t *testing.TestInfo, msg string) error {
@@ -68,7 +68,7 @@ func TestTestOutputStream(t *gotesting.T) {
 	test := &testing.TestInfo{Name: "pkg.Test"}
 	tout := newTestOutputStream(sink, test)
 
-	tout.Start()
+	tout.Start("/tmp/out")
 	tout.Log("hello")
 	tout.Error(&testing.Error{Reason: "faulty", File: "world.go"})
 	tout.Log("world")
@@ -80,7 +80,7 @@ func TestTestOutputStream(t *gotesting.T) {
 	}
 
 	want := []control.Msg{
-		&control.TestStart{Test: *test},
+		&control.TestStart{Test: *test, OutDir: "/tmp/out"},
 		&control.TestLog{Text: "hello"},
 		&control.TestError{Error: testing.Error{Reason: "faulty"}},
 		&control.TestLog{Text: "world"},

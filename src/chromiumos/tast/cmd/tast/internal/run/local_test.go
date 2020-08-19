@@ -176,7 +176,7 @@ func checkArgs(t *gotesting.T, args, exp *runner.Args) {
 // errorCounts returns a map from test names in rs to the number of errors reported by each.
 // This is useful for tests that just want to quickly check the results of a test run.
 // Detailed tests for result generation are in results_test.go.
-func errorCounts(rs []EntityResult) map[string]int {
+func errorCounts(rs []*EntityResult) map[string]int {
 	testErrs := make(map[string]int)
 	for _, r := range rs {
 		testErrs[r.Name] = len(r.Errors)

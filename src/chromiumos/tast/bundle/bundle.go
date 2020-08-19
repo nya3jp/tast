@@ -60,9 +60,9 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 		if err != nil {
 			return command.WriteError(stderr, err)
 		}
-		var infos []*testing.TestInfo
+		var infos []*testing.EntityInfo
 		for _, test := range tests {
-			infos = append(infos, test.TestInfo())
+			infos = append(infos, test.EntityInfo())
 		}
 		if err := testing.WriteTestsAsJSON(stdout, infos); err != nil {
 			return command.WriteError(stderr, err)
@@ -158,35 +158,35 @@ func (ew *eventWriter) RunLog(msg string) error {
 	return ew.mw.WriteMessage(&control.RunLog{Time: time.Now(), Text: msg})
 }
 
-func (ew *eventWriter) TestStart(t *testing.TestInfo) error {
+func (ew *eventWriter) EntityStart(ei *testing.EntityInfo) error {
 	if ew.lg != nil {
-		ew.lg.Info(fmt.Sprintf("%s: ======== start", t.Name))
+		ew.lg.Info(fmt.Sprintf("%s: ======== start", ei.Name))
 	}
-	return ew.mw.WriteMessage(&control.TestStart{Time: time.Now(), Test: *t})
+	return ew.mw.WriteMessage(&control.EntityStart{Time: time.Now(), Info: *ei})
 }
 
-func (ew *eventWriter) TestLog(t *testing.TestInfo, msg string) error {
+func (ew *eventWriter) EntityLog(ei *testing.EntityInfo, msg string) error {
 	if ew.lg != nil {
-		ew.lg.Info(fmt.Sprintf("%s: %s", t.Name, msg))
+		ew.lg.Info(fmt.Sprintf("%s: %s", ei.Name, msg))
 	}
-	return ew.mw.WriteMessage(&control.TestLog{Time: time.Now(), Text: msg})
+	return ew.mw.WriteMessage(&control.EntityLog{Time: time.Now(), Text: msg})
 }
 
-func (ew *eventWriter) TestError(t *testing.TestInfo, e *testing.Error) error {
+func (ew *eventWriter) EntityError(ei *testing.EntityInfo, e *testing.Error) error {
 	if ew.lg != nil {
-		ew.lg.Info(fmt.Sprintf("%s: Error at %s:%d: %s", t.Name, filepath.Base(e.File), e.Line, e.Reason))
+		ew.lg.Info(fmt.Sprintf("%s: Error at %s:%d: %s", ei.Name, filepath.Base(e.File), e.Line, e.Reason))
 	}
-	return ew.mw.WriteMessage(&control.TestError{Time: time.Now(), Error: *e})
+	return ew.mw.WriteMessage(&control.EntityError{Time: time.Now(), Error: *e})
 }
 
-func (ew *eventWriter) TestEnd(t *testing.TestInfo, skipReasons []string, timingLog *timing.Log) error {
+func (ew *eventWriter) EntityEnd(ei *testing.EntityInfo, skipReasons []string, timingLog *timing.Log) error {
 	if ew.lg != nil {
-		ew.lg.Info(fmt.Sprintf("%s: ======== end", t.Name))
+		ew.lg.Info(fmt.Sprintf("%s: ======== end", ei.Name))
 	}
 
-	return ew.mw.WriteMessage(&control.TestEnd{
+	return ew.mw.WriteMessage(&control.EntityEnd{
 		Time:        time.Now(),
-		Name:        t.Name,
+		Name:        ei.Name,
 		SkipReasons: skipReasons,
 		TimingLog:   timingLog,
 	})
@@ -195,7 +195,7 @@ func (ew *eventWriter) TestEnd(t *testing.TestInfo, skipReasons []string, timing
 // runTests runs tests per args and cfg and writes control messages to stdout.
 //
 // If an error is encountered in the test harness (as opposed to in a test), an error is returned.
-// Otherwise, nil is returned (test errors will be reported via TestError control messages).
+// Otherwise, nil is returned (test errors will be reported via EntityError control messages).
 func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 	bt bundleType, tests []*testing.TestInstance) error {
 	mw := control.NewMessageWriter(stdout)

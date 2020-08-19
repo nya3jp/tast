@@ -95,18 +95,20 @@ type RunEnd struct {
 
 func (*RunEnd) isMsg() {}
 
-// TestStart describes the start of an individual test.
+// TestStart describes the start of an individual entity.
+// TODO(crbug.com/1035940): Consider renaming to EntityStart.
 type TestStart struct {
-	// Time is the device-local time at which the test started.
+	// Time is the device-local time at which the entity started.
 	Time time.Time `json:"testStartTime"`
-	// Test contains details about the test.
-	// Some fields, e.g. Func (containing the test function), are dropped during marshaling.
+	// Test contains details about the entity.
+	// TODO(crbug.com/1035940): Consider renaming to Entity.
 	Test testing.TestInfo `json:"testStartTest"`
 }
 
 func (*TestStart) isMsg() {}
 
-// TestLog contains an informative logging message produced by a test.
+// TestLog contains an informative logging message produced by an entity.
+// TODO(crbug.com/1035940): Consider renaming to EntityLog.
 type TestLog struct {
 	// Time is the device-local time at which the message was logged.
 	Time time.Time `json:"testLogTime"`
@@ -116,7 +118,8 @@ type TestLog struct {
 
 func (*TestLog) isMsg() {}
 
-// TestError contains an error produced by a test.
+// TestError contains an error produced by an entity.
+// TODO(crbug.com/1035940): Consider renaming to EntityError.
 type TestError struct {
 	// Time is the device-local time at which the error occurred.
 	Time time.Time `json:"testErrorTime"`
@@ -126,11 +129,12 @@ type TestError struct {
 
 func (*TestError) isMsg() {}
 
-// TestEnd describes the end of an individual test.
+// TestEnd describes the end of an individual entity.
+// TODO(crbug.com/1035940): Consider renaming to EntityEnd.
 type TestEnd struct {
-	// Time is the device-local time at which the test ended.
+	// Time is the device-local time at which the entity ended.
 	Time time.Time `json:"testEndTime"`
-	// Name is the name of the test, matching the earlier TestStart.Test.Name.
+	// Name is the name of the entity, matching the earlier TestStart.Test.Name.
 	Name string `json:"testEndName"`
 	// DeprecatedMissingSoftwareDeps contains software dependencies declared by the test that were
 	// not present on the DUT. If non-empty, the test was skipped.
@@ -138,8 +142,9 @@ type TestEnd struct {
 	DeprecatedMissingSoftwareDeps []string `json:"testEndMissingSoftwareDeps"`
 	// SkipReasons contains messages describing why the test was skipped.
 	// If non-empty, the test was skipped.
+	// In the case of non-test entities, this field is always empty.
 	SkipReasons []string `json:"testEndHardwareDepsUnsatisfiedReasons"`
-	// TimingLog contains test-reported timing information to be incorporated into the main timing.json file.
+	// TimingLog contains entity-reported timing information to be incorporated into the main timing.json file.
 	TimingLog *timing.Log `json:"testEndTimingLog"`
 }
 

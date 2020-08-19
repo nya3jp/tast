@@ -6,6 +6,7 @@ package testing
 
 import (
 	"context"
+	"fmt"
 	"time"
 )
 
@@ -59,6 +60,17 @@ type Fixture struct {
 	TearDownTimeout time.Duration
 
 	// TODO(oka): Add Data, Vars, ServiceDeps and Param fields.
+}
+
+// TODO
+func (f *Fixture) EntityInfo() *EntityInfo {
+	return &EntityInfo{
+		Name:     fmt.Sprintf("fixture.%s", f.Name),
+		Desc:     f.Desc,
+		Contacts: append([]string(nil), f.Contacts...),
+		Fixture:  f.Parent,
+		Type:     EntityFixture,
+	}
 }
 
 // FixtureImpl provides implementation of the fixture registered to the framework.

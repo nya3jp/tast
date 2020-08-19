@@ -76,7 +76,7 @@ func connectToTarget(ctx context.Context, cfg *Config) (*ssh.Conn, error) {
 
 // runLocalTests executes tests as described by cfg on hst and returns the results.
 // It is only used for RunTestsMode.
-func runLocalTests(ctx context.Context, cfg *Config) ([]TestResult, error) {
+func runLocalTests(ctx context.Context, cfg *Config) ([]EntityResult, error) {
 	cfg.Logger.Status("Running local tests on target")
 	ctx, st := timing.Start(ctx, "run_local_tests")
 	defer st.End()
@@ -86,7 +86,7 @@ func runLocalTests(ctx context.Context, cfg *Config) ([]TestResult, error) {
 		return nil, errors.Wrapf(err, "failed to connect to %s", cfg.Target)
 	}
 
-	runTests := func(ctx context.Context, patterns []string) (results []TestResult, unstarted []string, err error) {
+	runTests := func(ctx context.Context, patterns []string) (results []EntityResult, unstarted []string, err error) {
 		return runLocalTestsOnce(ctx, cfg, hst, patterns)
 	}
 	beforeRetry := func(ctx context.Context) bool {
@@ -159,7 +159,7 @@ func startLocalRunner(ctx context.Context, cfg *Config, hst *ssh.Conn, args *run
 // started but weren't (in the order in which they should've been run) are
 // returned.
 func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns []string) (
-	results []TestResult, unstarted []string, err error) {
+	results []EntityResult, unstarted []string, err error) {
 	ctx, st := timing.Start(ctx, "run_local_tests_once")
 	defer st.End()
 

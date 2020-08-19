@@ -19,7 +19,7 @@ func TestListLocalTests(t *gotesting.T) {
 	td := newLocalTestData(t)
 	defer td.close()
 
-	tests := []testing.TestInfo{
+	tests := []testing.EntityInfo{
 		{Name: "pkg.Test", Desc: "This is a test", Attr: []string{"attr1", "attr2"}},
 		{Name: "pkg.AnotherTest", Desc: "Another test"},
 	}
@@ -51,7 +51,7 @@ func TestListLocalTests(t *gotesting.T) {
 
 func TestListRemoteList(t *gotesting.T) {
 	// Make the runner print serialized tests.
-	tests := []testing.TestInfo{
+	tests := []testing.EntityInfo{
 		{Name: "pkg.Test1", Desc: "First description", Attr: []string{"attr1", "attr2"}, Pkg: "pkg"},
 		{Name: "pkg2.Test2", Desc: "Second description", Attr: []string{"attr3"}, Pkg: "pkg2"},
 	}

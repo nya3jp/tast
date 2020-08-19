@@ -12,78 +12,78 @@ import (
 	"chromiumos/tast/timing"
 )
 
-// OutputStream is an interface to report streamed outputs of multiple test runs.
-// Note that testing.OutputStream is for a single test in contrast.
+// OutputStream is an interface to report streamed outputs of multiple entity runs.
+// Note that testing.OutputStream is for a single entity in contrast.
 type OutputStream interface {
-	// TestStart reports that a test t has started.
-	TestStart(t *testing.TestInfo) error
-	// TestLog reports an informational log message from t.
-	TestLog(t *testing.TestInfo, msg string) error
-	// TestError reports an error from a test t. A test that reported one or more errors should be considered failure.
-	TestError(t *testing.TestInfo, e *testing.Error) error
-	// TestEnd reports that a test t has ended. If skipReasons is not empty it is considered skipped.
-	TestEnd(t *testing.TestInfo, skipReasons []string, timingLog *timing.Log) error
+	// EntityStart reports that an entity has started.
+	EntityStart(ei *testing.EntityInfo) error
+	// EntityLog reports an informational log message.
+	EntityLog(ei *testing.EntityInfo, msg string) error
+	// EntityError reports an error from an entity. An entity that reported one or more errors should be considered failure.
+	EntityError(ei *testing.EntityInfo, e *testing.Error) error
+	// EntityEnd reports that an entity has ended. If skipReasons is not empty it is considered skipped.
+	EntityEnd(ei *testing.EntityInfo, skipReasons []string, timingLog *timing.Log) error
 }
 
-// testOutputStream wraps planner.OutputStream for a single test.
+// entityOutputStream wraps planner.OutputStream for a single entity.
 //
-// testOutputStream implements testing.OutputStream. testOutputStream is goroutine-safe;
+// entityOutputStream implements testing.OutputStream. entityOutputStream is goroutine-safe;
 // it is safe to call its methods concurrently from multiple goroutines.
-type testOutputStream struct {
+type entityOutputStream struct {
 	out OutputStream
-	t   *testing.TestInfo
+	ei  *testing.EntityInfo
 
 	mu    sync.Mutex
 	ended bool
 }
 
-var _ testing.OutputStream = &testOutputStream{}
+var _ testing.OutputStream = &entityOutputStream{}
 
-// newTestOutputStream creates testOutputStream for out and t.
-func newTestOutputStream(out OutputStream, t *testing.TestInfo) *testOutputStream {
-	return &testOutputStream{out: out, t: t}
+// newEntityOutputStream creates entityOutputStream for out and ei.
+func newEntityOutputStream(out OutputStream, ei *testing.EntityInfo) *entityOutputStream {
+	return &entityOutputStream{out: out, ei: ei}
 }
 
 var errAlreadyEnded = errors.New("test has already ended")
 
-// Start reports that the test has started. It should be called exactly once.
-func (w *testOutputStream) Start() error {
+// Start reports that the entity has started. It should be called exactly once.
+func (w *entityOutputStream) Start() error {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	if w.ended {
 		return errAlreadyEnded
 	}
-	return w.out.TestStart(w.t)
+	return w.out.EntityStart(w.ei)
 }
 
-// Log reports an informational log from the test.
-func (w *testOutputStream) Log(msg string) error {
+// Log reports an informational log from the entity.
+func (w *entityOutputStream) Log(msg string) error {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	if w.ended {
 		return errAlreadyEnded
 	}
-	return w.out.TestLog(w.t, msg)
+	return w.out.EntityLog(w.ei, msg)
 }
 
-// Log reports an error from the test.
-func (w *testOutputStream) Error(e *testing.Error) error {
+// Log reports an error from the entity.
+func (w *entityOutputStream) Error(e *testing.Error) error {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	if w.ended {
 		return errAlreadyEnded
 	}
-	return w.out.TestError(w.t, e)
+	return w.out.EntityError(w.ei, e)
 }
 
-// End reports that the test has ended. After End is called, all methods will
+// End reports that the entity has ended. After End is called, all methods will
 // fail with an error.
-func (w *testOutputStream) End(skipReasons []string, timingLog *timing.Log) error {
+func (w *entityOutputStream) End(skipReasons []string, timingLog *timing.Log) error {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	if w.ended {
 		return errAlreadyEnded
 	}
 	w.ended = true
-	return w.out.TestEnd(w.t, skipReasons, timingLog)
+	return w.out.EntityEnd(w.ei, skipReasons, timingLog)
 }

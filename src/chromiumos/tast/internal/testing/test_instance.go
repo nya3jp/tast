@@ -426,6 +426,17 @@ func (t *TestInstance) Proto() *testpb.Test {
 	return &r
 }
 
+// EntityType represents a type of an entity.
+type EntityType int
+
+const (
+	// EntityTest represents a test.
+	EntityTest EntityType = 0
+
+	// EntityFixture represents a fixture.
+	EntityFixture EntityType = 1
+)
+
 // EntityInfo is a JSON-serializable description of an entity.
 type EntityInfo struct {
 	// See TestInstance for details of the fields.
@@ -441,6 +452,7 @@ type EntityInfo struct {
 	ServiceDeps  []string         `json:"serviceDeps,omitempty"`
 	Fixture      string           `json:"fixture,omitempty"`
 	Timeout      time.Duration    `json:"timeout"`
+	Type         EntityType       `json:"entityType"`
 }
 
 // EntityInfo converts TestInstance to EntityInfo.

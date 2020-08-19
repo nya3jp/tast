@@ -65,6 +65,18 @@ type Fixture struct {
 	// TODO(oka): Add Data, Vars and Param fields.
 }
 
+// EntityInfo returns EntityInfo for the fixture.
+func (f *Fixture) EntityInfo() *EntityInfo {
+	return &EntityInfo{
+		Name:        f.Name,
+		Desc:        f.Desc,
+		Contacts:    append([]string(nil), f.Contacts...),
+		ServiceDeps: append([]string(nil), f.ServiceDeps...),
+		Fixture:     f.Parent,
+		Type:        EntityFixture,
+	}
+}
+
 // FixtureImpl provides implementation of the fixture registered to the framework.
 type FixtureImpl interface {
 	// SetUp is called by the framework to set up the environment with possibly heavy-weight

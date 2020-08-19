@@ -426,8 +426,8 @@ func (t *TestInstance) Proto() *testpb.Test {
 	return &r
 }
 
-// TestInfo is a serialized form of TestInstance.
-type TestInfo struct {
+// EntityInfo is a JSON-serializable description of an entity.
+type EntityInfo struct {
 	// See TestInstance for details of the fields.
 
 	Name         string           `json:"name"`
@@ -443,9 +443,9 @@ type TestInfo struct {
 	Timeout      time.Duration    `json:"timeout"`
 }
 
-// TestInfo converts TestInstance to TestInfo.
-func (t *TestInstance) TestInfo() *TestInfo {
-	return &TestInfo{
+// EntityInfo converts TestInstance to EntityInfo.
+func (t *TestInstance) EntityInfo() *EntityInfo {
+	return &EntityInfo{
 		Name:         t.Name,
 		Pkg:          t.Pkg,
 		Desc:         t.Desc,
@@ -461,7 +461,7 @@ func (t *TestInstance) TestInfo() *TestInfo {
 }
 
 // WriteTestsAsJSON marshals ts to JSON and writes the resulting data to w.
-func WriteTestsAsJSON(w io.Writer, ts []*TestInfo) error {
+func WriteTestsAsJSON(w io.Writer, ts []*EntityInfo) error {
 	b, err := json.Marshal(ts)
 	if err != nil {
 		return err

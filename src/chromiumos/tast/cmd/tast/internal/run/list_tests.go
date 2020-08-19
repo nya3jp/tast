@@ -14,8 +14,8 @@ import (
 )
 
 // listTests returns the whole tests to run.
-func listTests(ctx context.Context, cfg *Config) ([]TestResult, error) {
-	var tests []testing.TestInfo
+func listTests(ctx context.Context, cfg *Config) ([]EntityResult, error) {
+	var tests []testing.EntityInfo
 	if cfg.runLocal {
 		hst, err := connectToTarget(ctx, cfg)
 		if err != nil {
@@ -35,27 +35,27 @@ func listTests(ctx context.Context, cfg *Config) ([]TestResult, error) {
 		tests = append(tests, remoteTests...)
 	}
 
-	results := make([]TestResult, len(tests))
+	results := make([]EntityResult, len(tests))
 	for i := 0; i < len(tests); i++ {
-		results[i].TestInfo = tests[i]
+		results[i].EntityInfo = tests[i]
 	}
 	return results, nil
 }
 
 // listLocalTests returns a list of local tests to run.
-func listLocalTests(ctx context.Context, cfg *Config, hst *ssh.Conn) ([]testing.TestInfo, error) {
+func listLocalTests(ctx context.Context, cfg *Config, hst *ssh.Conn) ([]testing.EntityInfo, error) {
 	return runListTestsCommand(
 		localRunnerCommand(ctx, cfg, hst), cfg.Patterns, cfg.localBundleGlob())
 }
 
 // listRemoteTests returns a list of remote tests to run.
-func listRemoteTests(ctx context.Context, cfg *Config) ([]testing.TestInfo, error) {
+func listRemoteTests(ctx context.Context, cfg *Config) ([]testing.EntityInfo, error) {
 	return runListTestsCommand(
 		remoteRunnerCommand(ctx, cfg), cfg.Patterns, cfg.remoteBundleGlob())
 }
 
-func runListTestsCommand(r runnerCmd, ptns []string, glob string) ([]testing.TestInfo, error) {
-	var ts []testing.TestInfo
+func runListTestsCommand(r runnerCmd, ptns []string, glob string) ([]testing.EntityInfo, error) {
+	var ts []testing.EntityInfo
 	if err := runTestRunnerCommand(
 		r,
 		&runner.Args{

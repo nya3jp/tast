@@ -70,6 +70,14 @@ type entityState struct {
 
 	// logFile is a file handle of the log file for the entity.
 	logFile *os.File
+
+	// IntermediateOutDir is a directory path on the target where intermediate
+	// output files for the test is saved.
+	IntermediateOutDir string
+
+	// FinalOutDir is a directory path on the host where final output files
+	// for the test is saved.
+	FinalOutDir string
 }
 
 // EntityError describes an error that occurred while running an entity.
@@ -160,9 +168,9 @@ func WriteResults(ctx context.Context, cfg *Config, results []*EntityResult, com
 	return sysInfoErr
 }
 
-// copyAndRemoveFunc copies the output files of testName on a DUT to dst on the
-// local machine and then removes the directory on the DUT.
-type copyAndRemoveFunc func(testName, dst string) error
+// copyAndRemoveFunc copies src on a DUT to dst on the local machine and then
+// removes the directory on the DUT.
+type copyAndRemoveFunc func(src, dst string) error
 
 // diagnoseRunErrorFunc is called after a run error is encountered while reading test results to get additional
 // information about the cause of the error. An empty string should be returned if additional information
@@ -179,8 +187,8 @@ type resultsHandler struct {
 	numTests         int                    // total number of tests that are expected to run
 	testsToRun       []string               // names of tests that will be run in their expected order
 	results          []*EntityResult        // information about tests seen so far; the last element can be ongoing and shared with current
-	current          *entityState           // currently-running test, if any
-	seenTests        map[string]struct{}    // names of tests seen so far
+	current          *entityState           // currently-running entity, if any
+	seenTimes        map[string]int         // count of entity names seen so far
 	stage            *timing.Stage          // current test's timing stage
 	crf              copyAndRemoveFunc      // function used to copy and remove files from DUT
 	diagFunc         diagnoseRunErrorFunc   // called to diagnose run errors; may be nil
@@ -191,7 +199,7 @@ type resultsHandler struct {
 func newResultsHandler(cfg *Config, crf copyAndRemoveFunc, df diagnoseRunErrorFunc) (*resultsHandler, error) {
 	r := &resultsHandler{
 		cfg:       cfg,
-		seenTests: make(map[string]struct{}),
+		seenTimes: make(map[string]int),
 		crf:       crf,
 		diagFunc:  df,
 	}
@@ -279,21 +287,27 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.Entit
 		return fmt.Errorf("got TestStart message for %s while %s still running",
 			msg.Info.Name, r.current.result.Name)
 	}
-	if _, ok := r.seenTests[msg.Info.Name]; ok {
-		return fmt.Errorf("got EntityStart message for already-seen test %s -- two tests with same name?",
-			msg.Info.Name)
-	}
 	ctx, r.stage = timing.Start(ctx, msg.Info.Name)
+
+	finalOutDir := filepath.Join(r.cfg.ResDir, testLogsDir, msg.Info.Name)
+
+	// Add a number suffix to the output directory name in case of conflict.
+	seenCnt := r.seenTimes[msg.Info.Name]
+	if seenCnt > 0 {
+		finalOutDir += fmt.Sprintf(".%d", seenCnt)
+	}
+	r.seenTimes[msg.Info.Name]++
 
 	r.current = &entityState{
 		result: EntityResult{
 			EntityInfo: msg.Info,
 			Start:      msg.Time,
-			OutDir:     r.getTestOutputDir(msg.Info.Name),
+			OutDir:     finalOutDir,
 		},
+		IntermediateOutDir: msg.OutDir,
+		FinalOutDir:        finalOutDir,
 	}
 	r.results = append(r.results, &r.current.result)
-	r.seenTests[msg.Info.Name] = struct{}{}
 
 	// Write a partial EntityResult object to record that we started the test.
 	var err error
@@ -385,13 +399,13 @@ func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.EntityE
 
 	// Pull finished test output files in a separate goroutine if the test is not skipped.
 	if r.current.result.SkipReason == "" {
-		res := r.current.result
+		state := r.current
 		r.pullers.Add(1)
 		go func() {
 			defer r.pullers.Done()
-			if err := moveTestOutputData(r.crf, res.Name, r.getTestOutputDir(res.Name)); err != nil {
+			if err := moveTestOutputData(r.crf, state.IntermediateOutDir, state.FinalOutDir); err != nil {
 				// This may be written to a log of an irrelevant test.
-				r.cfg.Logger.Logf("Failed to copy output data of %s: %v", res.Name, err)
+				r.cfg.Logger.Logf("Failed to copy output data of %s: %v", state.result.Name, err)
 			}
 		}()
 	}
@@ -406,11 +420,6 @@ func (r *resultsHandler) handleHeartbeat(ctx context.Context, msg *control.Heart
 	return nil
 }
 
-// getTestOutputDir returns the directory into which data should be stored for a test named testName.
-func (r *resultsHandler) getTestOutputDir(testName string) string {
-	return filepath.Join(r.cfg.ResDir, testLogsDir, testName)
-}
-
 // moveTestOutputData moves per-test output data using crf. dstDir is the path
 // to the destination directory, typically ending with testName. dstDir should
 // already exist.
@@ -418,15 +427,15 @@ func (r *resultsHandler) getTestOutputDir(testName string) string {
 // This function is not associated to resultsHandler because it runs on a
 // separate goroutine that does not own resultsHandler and can be suffered from
 // data races.
-func moveTestOutputData(crf copyAndRemoveFunc, testName, dstDir string) error {
+func moveTestOutputData(crf copyAndRemoveFunc, outDir, dstDir string) error {
 	tmpDir, err := ioutil.TempDir(filepath.Dir(dstDir), "pulltmp.")
 	if err != nil {
 		return err
 	}
 	defer os.RemoveAll(tmpDir)
 
-	srcDir := filepath.Join(tmpDir, testName)
-	if err := crf(testName, srcDir); err != nil {
+	srcDir := filepath.Join(tmpDir, "files")
+	if err := crf(outDir, srcDir); err != nil {
 		return err
 	}
 
@@ -527,7 +536,7 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 		// Let callers distinguish between an empty list and a missing list.
 		unstarted = make([]string, 0)
 		for _, name := range r.testsToRun {
-			if _, ok := r.seenTests[name]; !ok {
+			if r.seenTimes[name] == 0 {
 				unstarted = append(unstarted, name)
 			}
 		}

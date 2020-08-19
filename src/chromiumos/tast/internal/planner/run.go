@@ -222,13 +222,20 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *testOutputStrea
 	timingLog := timing.NewLog()
 	ctx = timing.NewContext(ctx, timingLog)
 
-	tout.Start()
-	defer tout.End(nil, timingLog)
-
 	var outDir string
 	if pcfg.OutDir != "" { // often left blank for unit tests
-		outDir = filepath.Join(pcfg.OutDir, t.Name)
+		var err error
+		outDir, err = ioutil.TempDir(pcfg.OutDir, t.Name+".")
+		if err != nil {
+			return err
+		}
+		// No need to defer os.RemoveAll(outDir) since the directory is collected
+		// and removed by the client.
 	}
+
+	tout.Start(outDir)
+	defer tout.End(nil, timingLog)
+
 	tcfg := &testing.TestConfig{
 		DataDir:      filepath.Join(pcfg.DataDir, testing.RelativeDataDir(t.Pkg)),
 		OutDir:       outDir,
@@ -322,9 +329,6 @@ func buildStages(t *testing.TestInstance, tout testing.OutputStream, pcfg *Confi
 			}
 
 			if tcfg.OutDir != "" { // often left blank for unit tests
-				if err := os.MkdirAll(tcfg.OutDir, 0755); err != nil {
-					s.Fatal("Failed to create output dir: ", err)
-				}
 				// Make the directory world-writable so that tests can create files as other users,
 				// and set the sticky bit to prevent users from deleting other users' files.
 				// (The mode passed to os.MkdirAll is modified by umask, so we need an explicit chmod.)

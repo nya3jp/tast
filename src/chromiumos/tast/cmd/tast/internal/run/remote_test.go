@@ -233,6 +233,7 @@ func TestRemoteRunCopyOutput(t *gotesting.T) {
 		testName = "pkg.Test"
 		outFile  = "somefile.txt"
 		outData  = "somedata"
+		outName  = "pkg.Test.tmp1234"
 	)
 
 	outDir := testutil.TempDir(t)
@@ -241,7 +242,7 @@ func TestRemoteRunCopyOutput(t *gotesting.T) {
 	b := bytes.Buffer{}
 	mw := control.NewMessageWriter(&b)
 	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 1})
-	mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: testName}})
+	mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: testName}, OutDir: filepath.Join(outDir, outName)})
 	mw.WriteMessage(&control.EntityEnd{Time: time.Unix(3, 0), Name: testName})
 	mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0), OutDir: outDir})
 
@@ -255,7 +256,7 @@ func TestRemoteRunCopyOutput(t *gotesting.T) {
 	td.cfg.remoteOutDir = outDir
 
 	if err := testutil.WriteFiles(outDir, map[string]string{
-		filepath.Join(testName, outFile): outData,
+		filepath.Join(outName, outFile): outData,
 	}); err != nil {
 		t.Fatal(err)
 	}

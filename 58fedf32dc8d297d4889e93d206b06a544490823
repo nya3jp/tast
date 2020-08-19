@@ -16,6 +16,230 @@
       "revId": "58fedf32dc8d297d4889e93d206b06a544490823",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "43a4d32d_bce9df51",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-19T09:40:41Z",
+      "side": 1,
+      "message": "I haven\u0027t looked at unit tests yet, sorry. Let me review them tomorrow.\n",
+      "revId": "58fedf32dc8d297d4889e93d206b06a544490823",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "faf46e47_36f46521",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-19T09:40:41Z",
+      "side": 1,
+      "message": "Example seems missing :)",
+      "range": {
+        "startLine": 32,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 2
+      },
+      "revId": "58fedf32dc8d297d4889e93d206b06a544490823",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c46134c9_ecc7c048",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-19T09:40:41Z",
+      "side": 1,
+      "message": "nit: You can keep arguments in one line, it seems easier to read. Note that Go doesn\u0027t have explicit line length limit.\nhttps://golang.org/doc/effective_go.html#formatting",
+      "range": {
+        "startLine": 94,
+        "startChar": 27,
+        "endLine": 95,
+        "endChar": 33
+      },
+      "revId": "58fedf32dc8d297d4889e93d206b06a544490823",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e4b452af_0b0f7cb2",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-19T09:40:41Z",
+      "side": 1,
+      "message": "It seems like you accidentally removed the code to insert to openedFiles?",
+      "range": {
+        "startLine": 123,
+        "startChar": 1,
+        "endLine": 123,
+        "endChar": 42
+      },
+      "revId": "58fedf32dc8d297d4889e93d206b06a544490823",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5eb9fd3a_7bb3504c",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-19T09:40:41Z",
+      "side": 1,
+      "message": "This logic is partially overlapped with two other functions, readFiles and resolvePathToPaths. It\u0027s great if we can consolidate the logic.\n\nMy suggestion is to change the signature of resolvePathToPaths in the following way:\n\n // resolvePathToPaths expands a path pattern to a list of absolute paths.\n // It will resolve leading tildes and wildcards so that each resolved path can be used by os.Open.\n // If the given pattern is relative, they are considered relative to baseDir.\n func resolvePathToPaths(pattern, baseDir string) ([]string, error)\n\nThen includeFiles can be replaced with readFiles.",
+      "range": {
+        "startLine": 169,
+        "startChar": 2,
+        "endLine": 169,
+        "endChar": 75
+      },
+      "revId": "58fedf32dc8d297d4889e93d206b06a544490823",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3d797adf_61e81bed",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-19T09:40:41Z",
+      "side": 1,
+      "message": "Strictly speaking, this behavior is different from OpenSSH\u0027s. It doesn\u0027t find two directories, but it looks for exactly one directory according to the starting configuration file path.\n\nTo replicate the behavior, I guess we have to pass baseDir all the way down from ResolveHostFromFiles.",
+      "range": {
+        "startLine": 174,
+        "startChar": 0,
+        "endLine": 180,
+        "endChar": 47
+      },
+      "revId": "58fedf32dc8d297d4889e93d206b06a544490823",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ab1f9f18_f0db31f2",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 270,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-19T09:40:41Z",
+      "side": 1,
+      "message": "Thanks for detailed comments! I guess this comment is better placed in unit tests? WDYT?",
+      "range": {
+        "startLine": 223,
+        "startChar": 0,
+        "endLine": 270,
+        "endChar": 0
+      },
+      "revId": "58fedf32dc8d297d4889e93d206b06a544490823",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ceed3ce2_c1c4a7e6",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 355,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-19T09:40:41Z",
+      "side": 1,
+      "message": "This is a bit tricky condition because (sc.patterns !\u003d nil \u0026\u0026 ...) is evaluated for two cases, hostBlock and notInBlock.\n\nFor explicitness, I recommend using a switch statement, e.g.\n\n switch sc.blockType {\n   case notInBlock:\n     // Always accept.\n   case hostBlock:\n     if !matchHost(inputHostName, sc.patterns) {\n       return \"\", \"\"\n     }\n   case matchBlock:\n     // Always reject - match is not supported.\n     return \"\", \"\"\n }",
+      "range": {
+        "startLine": 354,
+        "startChar": 4,
+        "endLine": 355,
+        "endChar": 66
+      },
+      "revId": "58fedf32dc8d297d4889e93d206b06a544490823",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5d72d479_bb2f0beb",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 359,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-19T09:40:41Z",
+      "side": 1,
+      "message": "huge nit: values !\u003d nil check is not needed (len(values) \u003d\u003d 1 is sufficient)",
+      "range": {
+        "startLine": 359,
+        "startChar": 4,
+        "endLine": 359,
+        "endChar": 17
+      },
+      "revId": "58fedf32dc8d297d4889e93d206b06a544490823",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4bdbbba3_aaa2ab2a",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 365,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-19T09:40:41Z",
+      "side": 1,
+      "message": "Nice, I believe this approach works.",
+      "range": {
+        "startLine": 362,
+        "startChar": 2,
+        "endLine": 365,
+        "endChar": 68
+      },
+      "revId": "58fedf32dc8d297d4889e93d206b06a544490823",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

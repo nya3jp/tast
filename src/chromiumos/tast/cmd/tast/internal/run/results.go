@@ -82,7 +82,7 @@ type EntityError struct {
 // any tests failed) and false if it was aborted.
 // If cfg.CollectSysInfo is true, system information generated on the DUT during testing
 // (e.g. logs and crashes) will also be written to the results dir.
-func WriteResults(ctx context.Context, cfg *Config, results []EntityResult, complete bool) error {
+func WriteResults(ctx context.Context, cfg *Config, results []*EntityResult, complete bool) error {
 	f, err := os.Create(filepath.Join(cfg.ResDir, resultsFilename))
 	if err != nil {
 		return err
@@ -171,7 +171,7 @@ type resultsHandler struct {
 	runStart, runEnd time.Time              // test-runner-reported times at which run started and ended
 	numTests         int                    // total number of tests that are expected to run
 	testsToRun       []string               // names of tests that will be run in their expected order
-	results          []EntityResult         // information about completed tests
+	results          []*EntityResult        // information about completed tests
 	res              *EntityResult          // currently-running test, if any (i.e. last element of results)
 	seenTests        map[string]struct{}    // names of tests seen so far
 	stage            *timing.Stage          // current test's timing stage
@@ -184,7 +184,7 @@ type resultsHandler struct {
 func newResultsHandler(cfg *Config, crf copyAndRemoveFunc, df diagnoseRunErrorFunc) (*resultsHandler, error) {
 	r := &resultsHandler{
 		cfg:       cfg,
-		results:   make([]EntityResult, 0),
+		results:   make([]*EntityResult, 0),
 		seenTests: make(map[string]struct{}),
 		crf:       crf,
 		diagFunc:  df,
@@ -279,13 +279,13 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.Entit
 	}
 	ctx, r.stage = timing.Start(ctx, msg.Info.Name)
 
-	r.results = append(r.results, EntityResult{
+	r.results = append(r.results, &EntityResult{
 		EntityInfo:       msg.Info,
 		Start:            msg.Time,
 		OutDir:           r.getTestOutputDir(msg.Info.Name),
 		testStartMsgTime: time.Now(),
 	})
-	r.res = &r.results[len(r.results)-1]
+	r.res = r.results[len(r.results)-1]
 	r.seenTests[msg.Info.Name] = struct{}{}
 
 	// Write a partial EntityResult object to record that we started the test.
@@ -476,7 +476,7 @@ func (r *resultsHandler) handleMessage(ctx context.Context, msg interface{}) err
 // run but were not started (likely due to an error). unstarted is nil if the list of
 // tests was unavailable; see readTestOutput.
 func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interface{}, ech <-chan error) (
-	results []EntityResult, unstarted []string, err error) {
+	results []*EntityResult, unstarted []string, err error) {
 	// If a test is incomplete when we finish reading messages, rewrite its entry at the
 	// end of the streamed results file to make sure that all of its errors are recorded.
 	defer func() {
@@ -635,7 +635,7 @@ func readMessages(r io.Reader, mch chan<- interface{}, ech chan<- error) {
 //
 // df may be nil if diagnosis is unavailable.
 func readTestOutput(ctx context.Context, cfg *Config, r io.Reader, crf copyAndRemoveFunc, df diagnoseRunErrorFunc) (
-	results []EntityResult, unstarted []string, err error) {
+	results []*EntityResult, unstarted []string, err error) {
 	rh, err := newResultsHandler(cfg, crf, df)
 	if err != nil {
 		return nil, nil, err
@@ -651,7 +651,7 @@ func readTestOutput(ctx context.Context, cfg *Config, r io.Reader, crf copyAndRe
 
 // unmatchedTestPatterns returns any glob test patterns in the supplied slice
 // that failed to match any tests in results.
-func unmatchedTestPatterns(patterns []string, results []EntityResult) []string {
+func unmatchedTestPatterns(patterns []string, results []*EntityResult) []string {
 	// TODO(derat): Consider also checking attribute expressions.
 	if testing.GetTestPatternType(patterns) != testing.TestPatternGlobs {
 		return nil

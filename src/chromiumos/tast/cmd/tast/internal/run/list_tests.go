@@ -14,7 +14,7 @@ import (
 )
 
 // listTests returns the whole tests to run.
-func listTests(ctx context.Context, cfg *Config) ([]EntityResult, error) {
+func listTests(ctx context.Context, cfg *Config) ([]*EntityResult, error) {
 	var tests []testing.EntityInfo
 	if cfg.runLocal {
 		hst, err := connectToTarget(ctx, cfg)
@@ -35,9 +35,9 @@ func listTests(ctx context.Context, cfg *Config) ([]EntityResult, error) {
 		tests = append(tests, remoteTests...)
 	}
 
-	results := make([]EntityResult, len(tests))
+	results := make([]*EntityResult, len(tests))
 	for i := 0; i < len(tests); i++ {
-		results[i].EntityInfo = tests[i]
+		results[i] = &EntityResult{EntityInfo: tests[i]}
 	}
 	return results, nil
 }

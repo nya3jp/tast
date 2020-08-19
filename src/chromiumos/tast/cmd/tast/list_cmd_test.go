@@ -44,7 +44,7 @@ func TestListTests(t *gotesting.T) {
 	test1 := testing.TestInfo{Name: "pkg.Test1", Desc: "First description", Attr: []string{"attr1"}}
 	test2 := testing.TestInfo{Name: "pkg.Test2", Desc: "Second description"}
 	wrapper := stubRunWrapper{
-		runRes: []run.TestResult{{TestInfo: test1}, {TestInfo: test2}},
+		runRes: []*run.TestResult{{TestInfo: test1}, {TestInfo: test2}},
 	}
 
 	// Verify that the default one-test-per-line mode works.

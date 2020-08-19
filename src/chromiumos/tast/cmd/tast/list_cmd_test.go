@@ -44,7 +44,7 @@ func TestListTests(t *gotesting.T) {
 	test1 := testing.EntityInfo{Name: "pkg.Test1", Desc: "First description", Attr: []string{"attr1"}}
 	test2 := testing.EntityInfo{Name: "pkg.Test2", Desc: "Second description"}
 	wrapper := stubRunWrapper{
-		runRes: []run.EntityResult{{EntityInfo: test1}, {EntityInfo: test2}},
+		runRes: []*run.EntityResult{{EntityInfo: test1}, {EntityInfo: test2}},
 	}
 
 	// Verify that the default one-test-per-line mode works.

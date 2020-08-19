@@ -10,7 +10,7 @@ import (
 	"chromiumos/tast/errors"
 )
 
-func runTests(ctx context.Context, cfg *Config) ([]EntityResult, error) {
+func runTests(ctx context.Context, cfg *Config) ([]*EntityResult, error) {
 	if err := getDUTInfo(ctx, cfg); err != nil {
 		return nil, errors.Wrap(err, "failed to get DUT software features")
 	}
@@ -26,7 +26,7 @@ func runTests(ctx context.Context, cfg *Config) ([]EntityResult, error) {
 	}
 	cfg.startedRun = true
 
-	var results []EntityResult
+	var results []*EntityResult
 	if cfg.runLocal {
 		lres, err := runLocalTests(ctx, cfg)
 		results = append(results, lres...)

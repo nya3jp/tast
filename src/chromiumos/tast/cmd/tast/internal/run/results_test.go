@@ -35,12 +35,12 @@ import (
 func noOpCopyAndRemove(testName, dst string) error { return nil }
 
 // readStreamedResults decodes newline-terminated, JSON-marshaled TestResult structs from r.
-func readStreamedResults(t *gotesting.T, r io.Reader) []TestResult {
-	var results []TestResult
+func readStreamedResults(t *gotesting.T, r io.Reader) []*TestResult {
+	var results []*TestResult
 	dec := json.NewDecoder(r)
 	for dec.More() {
-		res := TestResult{}
-		if err := dec.Decode(&res); err != nil {
+		res := &TestResult{}
+		if err := dec.Decode(res); err != nil {
 			t.Errorf("Failed to decode result: %v", err)
 		}
 		results = append(results, res)
@@ -51,7 +51,7 @@ func readStreamedResults(t *gotesting.T, r io.Reader) []TestResult {
 // testResultsEqual returns true if a and b are equivalent.
 // Time fields in TestError structs are ignored, as time.Now is used
 // to generate timestamps for certain types of errors.
-func testResultsEqual(a, b []TestResult) bool {
+func testResultsEqual(a, b []*TestResult) bool {
 	return cmp.Equal(a, b, cmpopts.IgnoreUnexported(TestResult{}), cmpopts.IgnoreFields(TestError{}, "Time"))
 }
 
@@ -143,7 +143,7 @@ func TestReadTestOutput(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	expRes := []TestResult{
+	expRes := []*TestResult{
 		{
 			TestInfo: testing.TestInfo{Name: test1Name, Desc: test1Desc},
 			Start:    test1StartTime,
@@ -175,7 +175,7 @@ func TestReadTestOutput(t *gotesting.T) {
 			OutDir:     filepath.Join(cfg.ResDir, testLogsDir, test3Name),
 		},
 	}
-	var actRes []TestResult
+	var actRes []*TestResult
 	if err := json.Unmarshal([]byte(files[resultsFilename]), &actRes); err != nil {
 		t.Errorf("Failed to decode %v: %v", resultsFilename, err)
 	}
@@ -472,7 +472,7 @@ func TestWriteResultsCollectSysInfo(t *gotesting.T) {
 	}
 	td.cfg.collectSysInfo = true
 	td.cfg.initialSysInfo = &runner.SysInfoState{}
-	if err := WriteResults(context.Background(), &td.cfg, []TestResult{}, true); err != nil {
+	if err := WriteResults(context.Background(), &td.cfg, []*TestResult{}, true); err != nil {
 		t.Fatal("WriteResults failed: ", err)
 	}
 }
@@ -486,7 +486,7 @@ func TestWriteResultsCollectSysInfoFailure(t *gotesting.T) {
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) { return 1 }
 	td.cfg.collectSysInfo = true
 	td.cfg.initialSysInfo = &runner.SysInfoState{}
-	err := WriteResults(context.Background(), &td.cfg, []TestResult{}, true)
+	err := WriteResults(context.Background(), &td.cfg, []*TestResult{}, true)
 	if err == nil {
 		t.Fatal("WriteResults didn't report expected error")
 	}
@@ -559,7 +559,7 @@ func TestWritePartialResults(t *gotesting.T) {
 		t.Fatal(err)
 	}
 	streamRes := readStreamedResults(t, bytes.NewBufferString(files[streamedResultsFilename]))
-	expRes := []TestResult{
+	expRes := []*TestResult{
 		{
 			TestInfo: testing.TestInfo{Name: test1Name},
 			Start:    test1Start,
@@ -610,7 +610,7 @@ func TestWritePartialResults(t *gotesting.T) {
 		t.Fatal(err)
 	}
 	streamRes = readStreamedResults(t, bytes.NewBufferString(files[streamedResultsFilename]))
-	expRes = append(expRes, TestResult{
+	expRes = append(expRes, &TestResult{
 		TestInfo: testing.TestInfo{Name: test4Name},
 		Start:    test4Start,
 		End:      test4End,
@@ -713,7 +713,7 @@ func TestWriteResultsUnmatchedGlobs(t *gotesting.T) {
 	baseCfg.ResDir = td
 
 	// Report that two tests were executed.
-	results := []TestResult{
+	results := []*TestResult{
 		{TestInfo: testing.TestInfo{Name: "pkg.Test1"}},
 		{TestInfo: testing.TestInfo{Name: "pkg.Test2"}},
 	}

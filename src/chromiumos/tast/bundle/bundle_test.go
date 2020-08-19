@@ -157,15 +157,15 @@ func TestRunTests(t *gotesting.T) {
 		&control.RunLog{Text: preRunMsg},
 		&control.RunLog{Text: "Devserver status: using pseudo client"},
 		&control.RunLog{Text: "Found 0 external linked data file(s), need to download 0"},
-		&control.TestStart{Test: *tests[0].TestInfo()},
-		&control.TestLog{Text: preTestMsg},
-		&control.TestLog{Text: postTestMsg},
-		&control.TestEnd{Name: name1},
-		&control.TestStart{Test: *tests[1].TestInfo()},
-		&control.TestLog{Text: preTestMsg},
-		&control.TestError{},
-		&control.TestLog{Text: postTestMsg},
-		&control.TestEnd{Name: name2},
+		&control.EntityStart{Info: *tests[0].EntityInfo()},
+		&control.EntityLog{Text: preTestMsg},
+		&control.EntityLog{Text: postTestMsg},
+		&control.EntityEnd{Name: name1},
+		&control.EntityStart{Info: *tests[1].EntityInfo()},
+		&control.EntityLog{Text: preTestMsg},
+		&control.EntityError{},
+		&control.EntityLog{Text: postTestMsg},
+		&control.EntityEnd{Name: name2},
 		&control.RunLog{Text: postRunMsg},
 	} {
 		if ai, err := r.ReadMessage(); err != nil {
@@ -178,29 +178,29 @@ func TestRunTests(t *gotesting.T) {
 				} else if am.Text != em.Text {
 					t.Errorf("Got RunLog containing %q at %d; want %q", am.Text, i, em.Text)
 				}
-			case *control.TestStart:
-				if am, ok := ai.(*control.TestStart); !ok {
-					t.Errorf("Got %v at %d; want TestStart", ai, i)
-				} else if am.Test.Name != em.Test.Name {
-					t.Errorf("Got TestStart with Test %q at %d; want %q", am.Test.Name, i, em.Test.Name)
+			case *control.EntityStart:
+				if am, ok := ai.(*control.EntityStart); !ok {
+					t.Errorf("Got %v at %d; want EntityStart", ai, i)
+				} else if am.Info.Name != em.Info.Name {
+					t.Errorf("Got EntityStart with Test %q at %d; want %q", am.Info.Name, i, em.Info.Name)
 				}
-			case *control.TestEnd:
-				if am, ok := ai.(*control.TestEnd); !ok {
-					t.Errorf("Got %v at %d; want TestEnd", ai, i)
+			case *control.EntityEnd:
+				if am, ok := ai.(*control.EntityEnd); !ok {
+					t.Errorf("Got %v at %d; want EntityEnd", ai, i)
 				} else if am.Name != em.Name {
-					t.Errorf("Got TestEnd for %q at %d; want %q", am.Name, i, em.Name)
+					t.Errorf("Got EntityEnd for %q at %d; want %q", am.Name, i, em.Name)
 				} else if am.TimingLog == nil {
-					t.Error("Got TestEnd with missing timing log at ", i)
+					t.Error("Got EntityEnd with missing timing log at ", i)
 				}
-			case *control.TestError:
-				if _, ok := ai.(*control.TestError); !ok {
-					t.Errorf("Got %v at %d; want TestError", ai, i)
+			case *control.EntityError:
+				if _, ok := ai.(*control.EntityError); !ok {
+					t.Errorf("Got %v at %d; want EntityError", ai, i)
 				}
-			case *control.TestLog:
-				if am, ok := ai.(*control.TestLog); !ok {
-					t.Errorf("Got %v at %d; want TestLog", ai, i)
+			case *control.EntityLog:
+				if am, ok := ai.(*control.EntityLog); !ok {
+					t.Errorf("Got %v at %d; want EntityLog", ai, i)
 				} else if am.Text != em.Text {
-					t.Errorf("Got TestLog containing %q at %d; want %q", am.Text, i, em.Text)
+					t.Errorf("Got EntityLog containing %q at %d; want %q", am.Text, i, em.Text)
 				}
 			}
 		}
@@ -248,7 +248,7 @@ func TestRunTestsTimeout(t *gotesting.T) {
 		t.Fatalf("runTests(..., %+v, ...) succeeded unexpectedly", args)
 	}
 
-	// TestStart, TestError and TestEnd should be observed exactly once for the first test.
+	// EntityStart, EntityError and EntityEnd should be observed exactly once for the first test.
 	seenStart := 0
 	seenError := 0
 	seenEnd := 0
@@ -257,33 +257,33 @@ func TestRunTestsTimeout(t *gotesting.T) {
 	for r.More() {
 		if msg, err := r.ReadMessage(); err != nil {
 			t.Error("ReadMessage failed: ", err)
-		} else if ts, ok := msg.(*control.TestStart); ok {
-			if ts.Test.Name != name1 {
-				t.Errorf("TestStart.Test.Name = %q; want %q", ts.Test.Name, name1)
+		} else if ts, ok := msg.(*control.EntityStart); ok {
+			if ts.Info.Name != name1 {
+				t.Errorf("EntityStart.Test.Name = %q; want %q", ts.Info.Name, name1)
 			}
 			seenStart++
-		} else if tl, ok := msg.(*control.TestLog); ok {
+		} else if tl, ok := msg.(*control.EntityLog); ok {
 			// The log should contain stack traces, including this test function.
 			if strings.Contains(tl.Text, "TestRunTestsTimeout") {
 				foundMe = true
 			}
-		} else if _, ok := msg.(*control.TestError); ok {
+		} else if _, ok := msg.(*control.EntityError); ok {
 			seenError++
-		} else if te, ok := msg.(*control.TestEnd); ok {
+		} else if te, ok := msg.(*control.EntityEnd); ok {
 			if te.Name != name1 {
-				t.Errorf("TestEnd.Name = %q; want %q", te.Name, name1)
+				t.Errorf("EntityEnd.Name = %q; want %q", te.Name, name1)
 			}
 			seenEnd++
 		}
 	}
 	if seenStart != 1 {
-		t.Errorf("Got TestStart %d time(s); want 1 time", seenStart)
+		t.Errorf("Got EntityStart %d time(s); want 1 time", seenStart)
 	}
 	if seenError != 1 {
-		t.Errorf("Got TestError %d time(s); want 1 time", seenError)
+		t.Errorf("Got EntityError %d time(s); want 1 time", seenError)
 	}
 	if seenEnd != 1 {
-		t.Errorf("Got TestEnd %d time(s); want 1 time", seenEnd)
+		t.Errorf("Got EntityEnd %d time(s); want 1 time", seenEnd)
 	}
 	if !foundMe {
 		t.Error("Stack trace not found")
@@ -353,11 +353,11 @@ func TestRunTestsMissingDeps(t *gotesting.T) {
 			t.Fatal("Failed to read message:", err)
 		}
 		switch m := msg.(type) {
-		case *control.TestStart:
-			testName = m.Test.Name
-		case *control.TestEnd:
+		case *control.EntityStart:
+			testName = m.Info.Name
+		case *control.EntityEnd:
 			testSkipped[testName] = len(m.SkipReasons) > 0 || len(m.DeprecatedMissingSoftwareDeps) > 0
-		case *control.TestError:
+		case *control.EntityError:
 			testFailed[testName] = append(testFailed[testName], m.Error)
 		}
 	}
@@ -658,9 +658,9 @@ func TestRunList(t *gotesting.T) {
 		testing.AddTestInstance(test)
 	}
 
-	var infos []*testing.TestInfo
+	var infos []*testing.EntityInfo
 	for _, test := range tests {
-		infos = append(infos, test.TestInfo())
+		infos = append(infos, test.EntityInfo())
 	}
 
 	var exp bytes.Buffer

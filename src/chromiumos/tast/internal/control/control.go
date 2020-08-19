@@ -9,15 +9,15 @@
 //
 //	RunStart (run started)
 //		RunLog (run logged a message)
-//		TestStart (first test started)
-//			TestLog (first test logged a message)
-//		TestEnd (first test ended)
-//		TestStart (second test started)
-//			TestLog (second test logged a message)
-//			TestError (second test encountered an error)
-//			TestError (second test encountered another error)
-//			TestLog (second test logged another message)
-//		TestEnd (second test ended)
+//		EntityStart (first test started)
+//			EntityLog (first test logged a message)
+//		EntityEnd (first test ended)
+//		EntityStart (second test started)
+//			EntityLog (second test logged a message)
+//			EntityError (second test encountered an error)
+//			EntityError (second test encountered another error)
+//			EntityLog (second test logged another message)
+//		EntityEnd (second test ended)
 //	RunEnd (run ended)
 //
 // Control messages of different types are unmarshaled into a single messageUnion
@@ -50,7 +50,7 @@ type RunStart struct {
 	// Time is the device-local time at which the run started.
 	Time time.Time `json:"runStartTime"`
 	// TestNames contains the names of tests to run, in the order in which they'll be executed.
-	// Note that some of these tests may later be skipped (see TestEnd).
+	// Note that some of these tests may later be skipped (see EntityEnd).
 	TestNames []string `json:"runStartTestNames"`
 	// NumTests is the number of tests that will be run.
 	// TODO(derat): Delete this after 20190715; the tast command now uses TestNames instead: https://crbug.com/889119
@@ -95,42 +95,41 @@ type RunEnd struct {
 
 func (*RunEnd) isMsg() {}
 
-// TestStart describes the start of an individual test.
-type TestStart struct {
-	// Time is the device-local time at which the test started.
+// EntityStart describes the start of an individual entity.
+type EntityStart struct {
+	// Time is the device-local time at which the entity started.
 	Time time.Time `json:"testStartTime"`
-	// Test contains details about the test.
-	// Some fields, e.g. Func (containing the test function), are dropped during marshaling.
-	Test testing.TestInfo `json:"testStartTest"`
+	// Info contains details about the entity.
+	Info testing.EntityInfo `json:"testStartTest"`
 }
 
-func (*TestStart) isMsg() {}
+func (*EntityStart) isMsg() {}
 
-// TestLog contains an informative logging message produced by a test.
-type TestLog struct {
+// EntityLog contains an informative logging message produced by an entity.
+type EntityLog struct {
 	// Time is the device-local time at which the message was logged.
 	Time time.Time `json:"testLogTime"`
 	// Text is the actual message.
 	Text string `json:"testLogText"`
 }
 
-func (*TestLog) isMsg() {}
+func (*EntityLog) isMsg() {}
 
-// TestError contains an error produced by a test.
-type TestError struct {
+// EntityError contains an error produced by an entity.
+type EntityError struct {
 	// Time is the device-local time at which the error occurred.
 	Time time.Time `json:"testErrorTime"`
 	// Error describes the error that occurred.
 	Error testing.Error `json:"testErrorError"`
 }
 
-func (*TestError) isMsg() {}
+func (*EntityError) isMsg() {}
 
-// TestEnd describes the end of an individual test.
-type TestEnd struct {
-	// Time is the device-local time at which the test ended.
+// EntityEnd describes the end of an individual entity.
+type EntityEnd struct {
+	// Time is the device-local time at which the entity ended.
 	Time time.Time `json:"testEndTime"`
-	// Name is the name of the test, matching the earlier TestStart.Test.Name.
+	// Name is the name of the entity, matching the earlier EntityStart.Test.Name.
 	Name string `json:"testEndName"`
 	// DeprecatedMissingSoftwareDeps contains software dependencies declared by the test that were
 	// not present on the DUT. If non-empty, the test was skipped.
@@ -138,12 +137,13 @@ type TestEnd struct {
 	DeprecatedMissingSoftwareDeps []string `json:"testEndMissingSoftwareDeps"`
 	// SkipReasons contains messages describing why the test was skipped.
 	// If non-empty, the test was skipped.
+	// In the case of non-test entities, this field is always empty.
 	SkipReasons []string `json:"testEndHardwareDepsUnsatisfiedReasons"`
-	// TimingLog contains test-reported timing information to be incorporated into the main timing.json file.
+	// TimingLog contains entity-reported timing information to be incorporated into the main timing.json file.
 	TimingLog *timing.Log `json:"testEndTimingLog"`
 }
 
-func (*TestEnd) isMsg() {}
+func (*EntityEnd) isMsg() {}
 
 // Heartbeat is sent periodically to assert that the bundle is alive.
 type Heartbeat struct {
@@ -159,10 +159,10 @@ type messageUnion struct {
 	*RunLog
 	*RunError
 	*RunEnd
-	*TestStart
-	*TestLog
-	*TestError
-	*TestEnd
+	*EntityStart
+	*EntityLog
+	*EntityError
+	*EntityEnd
 	*Heartbeat
 }
 
@@ -192,14 +192,14 @@ func (mw *MessageWriter) WriteMessage(msg Msg) error {
 		return mw.enc.Encode(&messageUnion{RunError: v})
 	case *RunEnd:
 		return mw.enc.Encode(&messageUnion{RunEnd: v})
-	case *TestStart:
-		return mw.enc.Encode(&messageUnion{TestStart: v})
-	case *TestLog:
-		return mw.enc.Encode(&messageUnion{TestLog: v})
-	case *TestError:
-		return mw.enc.Encode(&messageUnion{TestError: v})
-	case *TestEnd:
-		return mw.enc.Encode(&messageUnion{TestEnd: v})
+	case *EntityStart:
+		return mw.enc.Encode(&messageUnion{EntityStart: v})
+	case *EntityLog:
+		return mw.enc.Encode(&messageUnion{EntityLog: v})
+	case *EntityError:
+		return mw.enc.Encode(&messageUnion{EntityError: v})
+	case *EntityEnd:
+		return mw.enc.Encode(&messageUnion{EntityEnd: v})
 	case *Heartbeat:
 		return mw.enc.Encode(&messageUnion{Heartbeat: v})
 	default:
@@ -236,14 +236,14 @@ func (mr *MessageReader) ReadMessage() (Msg, error) {
 		return mu.RunError, nil
 	case mu.RunEnd != nil:
 		return mu.RunEnd, nil
-	case mu.TestStart != nil:
-		return mu.TestStart, nil
-	case mu.TestLog != nil:
-		return mu.TestLog, nil
-	case mu.TestError != nil:
-		return mu.TestError, nil
-	case mu.TestEnd != nil:
-		return mu.TestEnd, nil
+	case mu.EntityStart != nil:
+		return mu.EntityStart, nil
+	case mu.EntityLog != nil:
+		return mu.EntityLog, nil
+	case mu.EntityError != nil:
+		return mu.EntityError, nil
+	case mu.EntityEnd != nil:
+		return mu.EntityEnd, nil
 	case mu.Heartbeat != nil:
 		return mu.Heartbeat, nil
 	default:

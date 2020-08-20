@@ -211,6 +211,8 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns []
 				Devservers:        cfg.devservers,
 				WaitUntilReady:    cfg.waitUntilReady,
 				HeartbeatInterval: heartbeatInterval,
+				SortTests:         cfg.SortTests,
+				DetachDuration:    cfg.detachDuration,
 			},
 			BundleGlob:        cfg.localBundleGlob(),
 			Devservers:        cfg.devservers,
@@ -239,7 +241,17 @@ func runLocalRunner(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns []
 		}
 		return diagnoseLocalRunError(ctx, cfg, outDir)
 	}
-	results, unstarted, rerr := readTestOutput(ctx, cfg, handle.stdout, crf, df)
+	var rerr error
+	var dh *DetachHandler
+	results, unstarted, dh, rerr = readTestOutput(ctx, cfg, handle.stdout, crf, df)
+
+	cfg.Logger.Logf("readTestOutput returned %v, %v", results, unstarted)
+
+	if rerr == nil && dh != nil {
+		// wait for detached running mode to finish
+		detachDuration := time.Duration(cfg.detachDuration) * time.Second
+		results, unstarted, rerr = waitForDetachCompletes(ctx, cfg, dh, detachDuration, crf, df)
+	}
 
 	// Check that the runner exits successfully first so that we don't give a useless error
 	// about incorrectly-formed output instead of e.g. an error about the runner being missing.
@@ -313,4 +325,66 @@ func diagnoseLocalRunError(ctx context.Context, cfg *Config, outDir string) stri
 		return ""
 	}
 	return "Lost SSH connection: " + diagnoseSSHDrop(ctx, cfg, outDir)
+}
+
+func waitForDetachCompletes(ctx context.Context, cfg *Config, dh *DetachHandler, timeout time.Duration,
+	crf copyAndRemoveFunc, df diagnoseRunErrorFunc) (
+	results []TestResult, unstarted []string, err error) {
+	cfg.Logger.Log("Waiting for detach mode to complete. Duration: ", timeout)
+
+	var hst *ssh.Conn
+	localOutFile := filepath.Join(cfg.ResDir, "local-bundles-run.log")
+	remoteOutFile := filepath.Join(cfg.localOutDir, "local-bundles-run.log")
+
+	checkInterval := 5 * time.Second
+	endTime := time.Now().Add(timeout)
+L:
+	for {
+		select {
+		case <-time.After(checkInterval):
+			if time.Now().After(endTime) {
+				cfg.Logger.Log("Timeout waiting run ends.")
+				break L
+			}
+
+			cfg.Logger.Log("Checking DUT detach mode status...")
+			if hst, err = connectToTarget(ctx, cfg); err != nil {
+				cfg.Logger.Log("Target is not accessible: ", err)
+				continue
+			}
+			if err = copyFromHost(ctx, cfg, hst, remoteOutFile, localOutFile); err != nil {
+				cfg.Logger.Log("Failed to copy file: ", err)
+				continue
+			}
+
+			runEnd, err := dh.isRunEnd(ctx, cfg, localOutFile)
+			if err != nil {
+				cfg.Logger.Log("Got erorr but still waiting for RunEnd message: ", err)
+				continue
+			}
+			if !runEnd {
+				cfg.Logger.Log("Still waiting for RunEnd message.")
+				continue
+			}
+			// run ends
+			cfg.Logger.Log("Run ends.")
+			break L
+		case <-ctx.Done():
+			return results, unstarted, ctx.Err()
+		}
+	}
+
+	if hst, err = connectToTarget(ctx, cfg); err != nil {
+		cfg.Logger.Log("Failed reconnecting to target: ", err)
+		return nil, nil, err
+	}
+
+	cfg.Logger.Logf("Connected to target. Copying test results from %q to %q...",
+		remoteOutFile, localOutFile)
+
+	if err = moveFromHost(ctx, cfg, hst, remoteOutFile, localOutFile); err != nil {
+		return nil, nil, err
+	}
+
+	return dh.readTestOutputLog(ctx, cfg, localOutFile, crf, df)
 }

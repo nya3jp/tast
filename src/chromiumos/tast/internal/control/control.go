@@ -58,6 +58,12 @@ type RunLog struct {
 	Text string `json:"runLogText"`
 }
 
+// DetachStart describes the start of test run in detach mode.
+type DetachStart struct {
+	// Time is the device-local time at which the run started.
+	Time time.Time `json:"detachStartTime"`
+}
+
 // RunError describes a fatal, high-level error encountered during the run.
 // This may be encountered at any time (including before RunStart) and
 // indicates that the run has been aborted.
@@ -133,6 +139,7 @@ type messageUnion struct {
 	*RunLog
 	*RunError
 	*RunEnd
+	*DetachStart
 	*TestStart
 	*TestLog
 	*TestError
@@ -166,6 +173,8 @@ func (mw *MessageWriter) WriteMessage(msg interface{}) error {
 		return mw.enc.Encode(&messageUnion{RunError: v})
 	case *RunEnd:
 		return mw.enc.Encode(&messageUnion{RunEnd: v})
+	case *DetachStart:
+		return mw.enc.Encode(&messageUnion{DetachStart: v})
 	case *TestStart:
 		return mw.enc.Encode(&messageUnion{TestStart: v})
 	case *TestLog:
@@ -210,6 +219,8 @@ func (mr *MessageReader) ReadMessage() (interface{}, error) {
 		return mu.RunError, nil
 	case mu.RunEnd != nil:
 		return mu.RunEnd, nil
+	case mu.DetachStart != nil:
+		return mu.DetachStart, nil
 	case mu.TestStart != nil:
 		return mu.TestStart, nil
 	case mu.TestLog != nil:

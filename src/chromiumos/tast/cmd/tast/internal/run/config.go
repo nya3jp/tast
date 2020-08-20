@@ -82,6 +82,7 @@ type Config struct {
 	checkPortageDeps   bool   // check whether test bundle's dependencies are installed before building
 	installPortageDeps bool   // install old or missing test bundle dependencies; no-op if checkPortageDeps is false
 
+	SortTests              bool     // sort tests in alphabetic order
 	useEphemeralDevserver  bool     // start an ephemeral devserver if no devserver is specified
 	extraAllowedBuckets    []string // extra Google Cloud Storage buckets ephemeral devserver is allowed to access
 	devservers             []string // list of devserver URLs; set by -devservers but may be dynamically modified
@@ -109,6 +110,8 @@ type Config struct {
 	testVars       map[string]string // names and values of variables used to pass out-of-band data to tests
 	varsFiles      []string          // paths to variable files
 	defaultVarsDir string            // dir containing default variable files
+
+	detachDuration int // the detach mode running duration, in seconds
 
 	msgTimeout             time.Duration // timeout for reading control messages; default used if zero
 	localRunnerWaitTimeout time.Duration // timeout for waiting for local_test_runner to exit; default used if zero
@@ -176,6 +179,8 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 	f.BoolVar(&c.continueAfterFailure, "continueafterfailure", false, "try to run remaining tests after bundle/DUT crash or lost SSH connection")
 	f.IntVar(&c.sshRetries, "sshretries", 0, "number of SSH connect retries")
 
+	f.BoolVar(&c.SortTests, "sorttests", true, "sort tests in alphabetic order")
+
 	f.StringVar(&c.localRunner, "localrunner", "", "executable that runs local test bundles")
 	f.StringVar(&c.localBundleDir, "localbundledir", "", "directory containing builtin local test bundles")
 	f.StringVar(&c.localDataDir, "localdatadir", "", "directory containing builtin local test data")
@@ -188,6 +193,8 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 
 	// Some flags are only relevant if we're running tests rather than listing them.
 	if c.mode == RunTestsMode {
+		f.IntVar(&c.detachDuration, "detachduration", 0, "duration running in detach mode")
+
 		f.StringVar(&c.ResDir, "resultsdir", "", "directory for test results")
 		f.BoolVar(&c.collectSysInfo, "sysinfo", true, "collect system information (logs, crashes, etc.)")
 		f.BoolVar(&c.waitUntilReady, "waituntilready", true, "wait until DUT is ready before running tests")

@@ -73,7 +73,8 @@ func newPingPair(ctx context.Context, t *gotesting.T, onPing func(context.Contex
 
 	stopped := make(chan error, 1)
 	go func() {
-		stopped <- RunServer(sr, sw, []*testing.Service{svc})
+		testVars := map[string]string{}
+		stopped <- RunServer(sr, sw, []*testing.Service{svc}, testVars)
 	}()
 	stopServer := func() error {
 		// Close the client pipes. This will let the gRPC server close the singleton

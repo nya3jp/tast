@@ -6,11 +6,13 @@ package bundle
 
 import (
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/golang/protobuf/proto"
@@ -78,6 +80,11 @@ type RunTestsArgs struct {
 	// Names correspond to testing.Test.Vars and values are accessed using testing.State.Var.
 	TestVars map[string]string `json:"testVars,omitempty"`
 
+	// SortTests indicates if the test cases order need sorting
+	SortTests bool `json:"sortests,omitempty"`
+	// DetachDuration defines the duration running in detach mode.
+	DetachDuration int `json:"detachDuration,omitempty"`
+
 	// DataDir is the path to the directory containing test data files.
 	DataDir string `json:"dataDir,omitempty"`
 	// OutDir is the path to the base directory under which tests should write output files.
@@ -106,6 +113,9 @@ type RunTestsArgs struct {
 	// This path is used by remote tests to invoke gRPC services in local test bundles.
 	// It is only relevant for remote tests.
 	LocalBundleDir string `json:"localBundleDir,omitempty"`
+	// LocalOutDir is the path to the base directory under which gRPC services should write output files.
+	// This path can be used by remote tests to let gRPC services store test data in the DUT.
+	LocalOutDir string `json:"localOutDir,omitempty"`
 
 	// CheckSoftwareDeps is true if each test's SoftwareDeps field should be checked against
 	// AvailableSoftwareFeatures and UnavailableSoftwareFeatures.
@@ -181,6 +191,8 @@ type ListTestsArgs struct {
 	// Patterns contains patterns (either empty to list all tests, exactly one attribute expression,
 	// or one or more globs) describing which tests to list.
 	Patterns []string `json:"patterns,omitempty"`
+	// SortTests indicates if the test cases order need sorting
+	SortTests bool `json:"sortests,omitempty"`
 }
 
 // bundleType describes the type of tests contained in a test bundle (i.e. local or remote).
@@ -214,6 +226,18 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, bt
 		dump := flags.Bool("dumptests", false, "dump all tests as a JSON-marshaled array of testing.Test structs")
 		exportMetadata := flags.Bool("exportmetadata", false, "export all test metadata as a protobuf-marshaled message")
 		rpc := flags.Bool("rpc", false, "run gRPC server")
+
+		vars := make(map[string]string)
+		varsFunc := command.RepeatedFlag(func(v string) error {
+			parts := strings.SplitN(v, "=", 2)
+			if len(parts) != 2 {
+				return errors.New(`want "name=value"`)
+			}
+			vars[parts[0]] = parts[1]
+			return nil
+		})
+		flags.Var(&varsFunc, "var", `runtime variable to pass to tests, as "name=value" (can be repeated)`)
+
 		if err := flags.Parse(clArgs); err != nil {
 			return command.NewStatusErrorf(statusBadArgs, "%v", err)
 		}
@@ -228,6 +252,9 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, bt
 		}
 		if *rpc {
 			args.Mode = RPCMode
+			args.RunTests = &RunTestsArgs{
+				TestVars: vars,
+			}
 			return nil
 		}
 	}

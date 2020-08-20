@@ -196,6 +196,11 @@ func TestRemoteRun(t *gotesting.T) {
 		"-remoterunner=" + td.cfg.remoteRunner,
 		"-remotebundledir=" + td.cfg.remoteBundleDir,
 		"-remotedatadir=" + td.cfg.remoteDataDir,
+		"-localrunner=" + td.cfg.localRunner,
+		"-localbundledir=" + td.cfg.localBundleDir,
+		"-localdatadir=" + td.cfg.localDataDir,
+		"-buildworkspace=" + td.cfg.buildWorkspace,
+		"-buildbundle=" + td.cfg.buildBundle,
 	}
 	expArgs := runner.Args{
 		Mode: runner.RunTestsMode,

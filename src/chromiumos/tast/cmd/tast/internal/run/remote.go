@@ -29,25 +29,39 @@ func runRemoteTests(ctx context.Context, cfg *Config) ([]TestResult, error) {
 	if err != nil {
 		return nil, err
 	}
+	// Put flags that will be used by sub-tests into runFlags
+	runFlags := []string{
+		"-keyfile=" + cfg.KeyFile,
+		"-keydir=" + cfg.KeyDir,
+		"-remoterunner=" + cfg.remoteRunner,
+		"-remotebundledir=" + cfg.remoteBundleDir,
+		"-remotedatadir=" + cfg.remoteDataDir,
+		"-localrunner=" + cfg.localRunner,
+		"-localbundledir=" + cfg.localBundleDir,
+		"-localdatadir=" + cfg.localDataDir,
+		"-buildworkspace=" + cfg.buildWorkspace,
+		"-buildbundle=" + cfg.buildBundle,
+	}
+
+	// vars from -defaultvarsdir and -varsfile have already been put to testVars
+	for k, v := range cfg.testVars {
+		runFlags = append(runFlags, "-var="+k+"="+v)
+	}
+
 	args := runner.Args{
 		Mode: runner.RunTestsMode,
 		RunTests: &runner.RunTestsArgs{
 			BundleArgs: bundle.RunTestsArgs{
-				Patterns: cfg.Patterns,
-				TestVars: cfg.testVars,
-				DataDir:  cfg.remoteDataDir,
-				OutDir:   cfg.remoteOutDir,
-				Target:   cfg.Target,
-				KeyFile:  cfg.KeyFile,
-				KeyDir:   cfg.KeyDir,
-				TastPath: exe,
-				RunFlags: []string{
-					"-keyfile=" + cfg.KeyFile,
-					"-keydir=" + cfg.KeyDir,
-					"-remoterunner=" + cfg.remoteRunner,
-					"-remotebundledir=" + cfg.remoteBundleDir,
-					"-remotedatadir=" + cfg.remoteDataDir,
-				},
+				Patterns:          cfg.Patterns,
+				TestVars:          cfg.testVars,
+				DataDir:           cfg.remoteDataDir,
+				OutDir:            cfg.remoteOutDir,
+				Target:            cfg.Target,
+				KeyFile:           cfg.KeyFile,
+				KeyDir:            cfg.KeyDir,
+				TastPath:          exe,
+				RunFlags:          runFlags,
+				LocalOutDir:       cfg.localOutDir,
 				LocalBundleDir:    cfg.localBundleDir,
 				Devservers:        cfg.devservers,
 				HeartbeatInterval: heartbeatInterval,
@@ -97,7 +111,7 @@ func runRemoteTests(ctx context.Context, cfg *Config) ([]TestResult, error) {
 		src := filepath.Join(args.RunTests.BundleArgs.OutDir, testName)
 		return os.Rename(src, dst)
 	}
-	results, _, rerr := readTestOutput(ctx, cfg, stdout, crf, nil)
+	results, _, _, rerr := readTestOutput(ctx, cfg, stdout, crf, nil)
 
 	// Check that the runner exits successfully first so that we don't give a useless error
 	// about incorrectly-formed output instead of e.g. an error about the runner being missing.

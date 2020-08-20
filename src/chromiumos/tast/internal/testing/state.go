@@ -75,6 +75,11 @@ type RPCHint struct {
 	// LocalBundleDir is the directory on the DUT where local test bundle executables are located.
 	// This path is used by remote tests to invoke gRPC services in local test bundles.
 	LocalBundleDir string
+	// LocalOutDir is the directory under which gRPC services should write output files.
+	// This path can be used by remote tests to let gRPC services store test data in the DUT.
+	LocalOutDir string
+	//TestVars holds all test variables and will pass to local bundle services
+	TestVars map[string]string
 }
 
 // clone returns a deep copy of h.
@@ -230,6 +235,13 @@ func (s *State) RequiredVar(name string) string {
 	return val
 }
 
+// CheckVar is similar to Var but doesn't check the Test.Vars registration.
+// It is useful when the variable is not used in test case but in other logics like precondition.
+func (s *State) CheckVar(name string) (val string, ok bool) {
+	val, ok = s.root.cfg.Vars[name]
+	return val, ok
+}
+
 // Run starts a new subtest with an unique name. Error messages are prepended with the subtest
 // name during its execution. If Fatal/Fatalf is called from inside a subtest, only that subtest
 // is stopped; its parent continues. Returns true if the subtest passed.
@@ -274,6 +286,12 @@ func (s *State) Run(ctx context.Context, name string, run func(context.Context, 
 // nil will be returned if the test did not declare a precondition.
 func (s *State) PreValue() interface{} { return s.root.preValue }
 
+// SetPreValue sets the precondition value
+func (s *State) SetPreValue(v interface{}) { s.root.preValue = v }
+
+// Pre returns the precondition
+func (s *State) Pre() interface{} { return s.root.test.Pre }
+
 // SoftwareDeps returns software dependencies declared in the currently running test.
 func (s *State) SoftwareDeps() []string {
 	return append([]string(nil), s.root.test.SoftwareDeps...)
@@ -312,7 +330,10 @@ func (s *State) RPCHint() *RPCHint {
 		return nil
 	}
 	// Return a copy to make sure the test doesn't modify the original struct.
-	return s.root.cfg.RemoteData.RPCHint.clone()
+	copy := s.root.cfg.RemoteData.RPCHint.clone()
+	// append testName to localOutDir
+	copy.LocalOutDir = filepath.Join(copy.LocalOutDir, s.root.test.Name)
+	return copy
 }
 
 // DUT returns a shared SSH connection.

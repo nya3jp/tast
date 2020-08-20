@@ -180,6 +180,7 @@ func defaultAllowedBuckets() map[string]struct{} {
 		"chromeos-image-archive":        {},
 		"chromeos-test-assets-private":  {},
 		"chromiumos-test-assets-public": {},
+		"mtbf-testing":                  {},
 	}
 }
 

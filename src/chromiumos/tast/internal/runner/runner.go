@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path"
 	"path/filepath"
 	"runtime"
 	"runtime/debug"
@@ -154,9 +155,41 @@ func runTestsAndReport(ctx context.Context, args *Args, cfg *Config, stdout io.W
 		// Hereafter, heartbeat messages are sent by bundles.
 		hbw.Stop()
 
+		var stdoutR *io.PipeReader
+		var stdoutW = stdout
+		fd := int(os.Stdout.Fd())
+		if bundleArgs.RunTests.DetachDuration > 0 {
+			stdoutfile, err := os.Create(path.Join(bundleArgs.RunTests.OutDir, "local-bundles-run.log"))
+			if err != nil {
+				mw.WriteMessage(newRunErrorMessagef(statusError, "Failed to create local log file in base out dir: %v", err))
+				return
+			}
+			defer stdoutfile.Close()
+			fd = int(stdoutfile.Fd())
+
+			// From now on, write all to log file
+			mw.WriteMessage(&control.DetachStart{
+				Time: time.Now(),
+			})
+			mw = control.NewMessageWriter(stdoutfile)
+
+			stdoutR, stdoutW = io.Pipe()
+			// go func(w io.Writer, f io.Writer, r *io.PipeReader) {
+			// 	tee := io.TeeReader(r, f)
+			// 	if _, err := io.Copy(w, tee); err != nil {
+			// 		mw.WriteMessage(newRunErrorMessagef(statusError, "Failed to do io copy between stdout streams: %v", err))
+			// 	}
+			// }(stdout, stdoutfile, stdoutR)
+			go func(f io.Writer, r *io.PipeReader) {
+				if _, err := io.Copy(f, r); err != nil {
+					mw.WriteMessage(newRunErrorMessagef(statusError, "Failed to do io copy between stdout streams: %v", err))
+				}
+			}(stdoutfile, stdoutR)
+		}
+
 		for _, bundle := range bundles {
 			// Copy each bundle's output (consisting of control messages) directly to stdout.
-			if err := runBundle(bundle, bundleArgs, stdout); err != nil {
+			if err := runBundle(bundle, bundleArgs, stdoutW, fd); err != nil {
 				// TODO(derat): The tast command currently aborts the run as soon as it sees a RunError
 				// message, but consider changing that and continuing to run other bundles here.
 				// If we execute additional bundles, be sure to return immediately for statusInterrupted.

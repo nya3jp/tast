@@ -565,6 +565,39 @@ func TestVars(t *gotesting.T) {
 	}
 }
 
+func TestCheckVars(t *gotesting.T) {
+	const (
+		validName = "valid" // registered by test and provided
+		unsetName = "unset" // registered by test but not provided at runtime
+		unregName = "unreg" // not registered by test but provided at runtime
+
+		validValue = "valid value"
+		unregValue = "unreg value"
+	)
+
+	test := &TestInstance{Vars: []string{validName, unsetName}}
+	cfg := &TestConfig{Vars: map[string]string{validName: validValue, unregName: unregValue}}
+	or := newOutputReader()
+	s := newState(test, or.ch, cfg)
+	defer close(or.ch)
+
+	for _, tc := range []struct {
+		name  string // name to pass to Var/RequiredVar
+		value string // expected variable value to be returned
+		ok    bool   // expected 'ok' return value (only used if req is false)
+	}{
+		{validName, validValue, true},
+		{unsetName, "", false},
+		{unregName, unregValue, true},
+	} {
+		funcCall := fmt.Sprintf("CheckVar(%q)", tc.name)
+
+		if value, ok := s.CheckVar(tc.name); value != tc.value || ok != tc.ok {
+			t.Errorf("%s = (%q, %v); want (%q, %v)", funcCall, value, ok, tc.value, tc.ok)
+		}
+	}
+}
+
 func TestMeta(t *gotesting.T) {
 	meta := Meta{TastPath: "/foo/bar", Target: "example.net", RunFlags: []string{"-foo", "-bar"}}
 	getMeta := func(test *TestInstance, cfg *TestConfig) (*State, *Meta) {
@@ -612,7 +645,6 @@ func TestMeta(t *gotesting.T) {
 }
 
 func TestRPCHint(t *gotesting.T) {
-	hint := RPCHint{LocalBundleDir: "/path/to/bundles"}
 	getHint := func(test *TestInstance, cfg *TestConfig) (*State, *RPCHint) {
 		or := newOutputReader()
 		s := newState(test, or.ch, cfg)
@@ -633,13 +665,22 @@ func TestRPCHint(t *gotesting.T) {
 		localTest  = "do.Locally"
 	)
 
+	hintInput := RPCHint{
+		LocalBundleDir: "/path/to/bundles",
+		LocalOutDir:    "",
+	}
+	hintOutPut := RPCHint{
+		LocalBundleDir: "/path/to/bundles",
+		LocalOutDir:    remoteTest,
+	}
+
 	// RPCHint should be provided to remote tests.
-	if s, h := getHint(&TestInstance{Name: remoteTest}, &TestConfig{RemoteData: &RemoteData{RPCHint: &hint}}); s.HasError() {
+	if s, h := getHint(&TestInstance{Name: remoteTest}, &TestConfig{RemoteData: &RemoteData{RPCHint: &hintInput}}); s.HasError() {
 		t.Errorf("RPCHint() reported error for %v", remoteTest)
 	} else if h == nil {
 		t.Errorf("RPCHint() = nil for %v", remoteTest)
-	} else if !reflect.DeepEqual(*h, hint) {
-		t.Errorf("RPCHint() = %+v for %v; want %+v", *h, remoteTest, hint)
+	} else if !reflect.DeepEqual(*h, hintOutPut) {
+		t.Errorf("RPCHint() = %+v for %v; want %+v", *h, remoteTest, hintOutPut)
 	}
 
 	// Local tests shouldn't have access to RPCHint.

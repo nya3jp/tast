@@ -169,17 +169,24 @@ type diagnoseRunErrorFunc func(ctx context.Context, testName string) string
 type resultsHandler struct {
 	cfg *Config
 
-	runStart, runEnd time.Time              // test-runner-reported times at which run started and ended
-	numTests         int                    // total number of tests that are expected to run
-	testsToRun       []string               // names of tests that will be run in their expected order
-	results          []TestResult           // information about completed tests
-	res              *TestResult            // currently-running test, if any (i.e. last element of results)
-	seenTests        map[string]struct{}    // names of tests seen so far
-	stage            *timing.Stage          // current test's timing stage
-	crf              copyAndRemoveFunc      // function used to copy and remove files from DUT
-	diagFunc         diagnoseRunErrorFunc   // called to diagnose run errors; may be nil
-	streamWriter     *streamedResultsWriter // used to write results as control messages are read
-	pullers          sync.WaitGroup         // used to wait for puller goroutines
+	runStart, runEnd       time.Time              // test-runner-reported times at which run started and ended
+	detachStart, detachEnd time.Time              // detach mode start and end time.
+	detachStarted          bool                   // Detach mode in progress
+	numTests               int                    // total number of tests that are expected to run
+	testsToRun             []string               // names of tests that will be run in their expected order
+	results                []TestResult           // information about completed tests
+	res                    *TestResult            // currently-running test, if any (i.e. last element of results)
+	seenTests              map[string]struct{}    // names of tests seen so far
+	stage                  *timing.Stage          // current test's timing stage
+	crf                    copyAndRemoveFunc      // function used to copy and remove files from DUT
+	diagFunc               diagnoseRunErrorFunc   // called to diagnose run errors; may be nil
+	streamWriter           *streamedResultsWriter // used to write results as control messages are read
+	pullers                sync.WaitGroup         // used to wait for puller goroutines
+}
+
+// DetachHandler contains the context of result handling
+type DetachHandler struct {
+	rh *resultsHandler
 }
 
 func newResultsHandler(cfg *Config, crf copyAndRemoveFunc, df diagnoseRunErrorFunc) (*resultsHandler, error) {
@@ -200,6 +207,22 @@ func newResultsHandler(cfg *Config, crf copyAndRemoveFunc, df diagnoseRunErrorFu
 		return nil, err
 	}
 
+	return r, nil
+}
+
+func cloneResultsHandler(cfg *Config, rh *resultsHandler, crf copyAndRemoveFunc, df diagnoseRunErrorFunc) (
+	*resultsHandler, error) {
+	r := rh
+	r.crf = crf
+	r.diagFunc = df
+	r.detachEnd = time.Now()
+	r.detachStarted = false
+
+	var err error
+	fn := filepath.Join(r.cfg.ResDir, streamedResultsFilename)
+	if r.streamWriter, err = newStreamedResultsWriter(fn); err != nil {
+		return nil, err
+	}
 	return r, nil
 }
 
@@ -234,6 +257,14 @@ func (r *resultsHandler) handleRunStart(ctx context.Context, msg *control.RunSta
 		r.numTests = msg.NumTests
 	}
 	r.setProgress("Starting testing")
+	return nil
+}
+
+// handleDetachStart handles DetachStart control messages from test runners.
+func (r *resultsHandler) handleDetachStart(ctx context.Context, msg *control.DetachStart) error {
+	r.detachStart = msg.Time
+	r.detachStarted = true
+	r.cfg.Logger.Log("Running tests in detach mode... ")
 	return nil
 }
 
@@ -459,6 +490,8 @@ func (r *resultsHandler) handleMessage(ctx context.Context, msg interface{}) err
 		return r.handleRunEnd(ctx, v)
 	case *control.TestStart:
 		return r.handleTestStart(ctx, v)
+	case *control.DetachStart:
+		return r.handleDetachStart(ctx, v)
 	case *control.TestLog:
 		return r.handleTestLog(ctx, v)
 	case *control.TestError:
@@ -502,6 +535,10 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 				}
 				if err := r.handleMessage(ctx, msg); err != nil {
 					return err
+				}
+				if r.detachStarted {
+					// in detach mode
+					return nil
 				}
 			case err := <-ech:
 				return err
@@ -550,6 +587,10 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 		return r.results, unstarted, runErr
 	}
 
+	if r.detachStarted {
+		// in detach mode
+		return r.results, unstarted, nil
+	}
 	if r.runEnd.IsZero() {
 		return r.results, unstarted, errors.New("no RunEnd message")
 	}
@@ -636,10 +677,10 @@ func readMessages(r io.Reader, mch chan<- interface{}, ech chan<- error) {
 //
 // df may be nil if diagnosis is unavailable.
 func readTestOutput(ctx context.Context, cfg *Config, r io.Reader, crf copyAndRemoveFunc, df diagnoseRunErrorFunc) (
-	results []TestResult, unstarted []string, err error) {
+	results []TestResult, unstarted []string, dh *DetachHandler, err error) {
 	rh, err := newResultsHandler(cfg, crf, df)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, dh, err
 	}
 	defer rh.close()
 
@@ -647,7 +688,67 @@ func readTestOutput(ctx context.Context, cfg *Config, r io.Reader, crf copyAndRe
 	ech := make(chan error)
 	go readMessages(r, mch, ech)
 
-	return rh.processMessages(ctx, mch, ech)
+	results, unstarted, rerr := rh.processMessages(ctx, mch, ech)
+	if rh.detachStarted {
+		dh = &DetachHandler{
+			rh,
+		}
+	}
+	return results, unstarted, dh, rerr
+}
+
+// readTestOutputLog reads test runner output from log file and returns the results.
+// df may be nil if diagnosis is unavailable.
+func (dh *DetachHandler) readTestOutputLog(ctx context.Context, cfg *Config, f string, crf copyAndRemoveFunc, df diagnoseRunErrorFunc) (
+	results []TestResult, unstarted []string, err error) {
+	file, err := os.Open(f)
+	if err != nil {
+		return nil, nil, err
+	}
+	rh, err := cloneResultsHandler(cfg, dh.rh, crf, df)
+	if err != nil {
+		return nil, nil, err
+	}
+	defer rh.close()
+
+	mch := make(chan interface{})
+	ech := make(chan error)
+	go readMessages(file, mch, ech)
+
+	results, unstarted, rerr := rh.processMessages(ctx, mch, ech)
+	return results, unstarted, rerr
+}
+
+// isRunEnd checks whether or not the test in detach mode has completee
+// by parsing the log and finding the "RunEnd" message.
+func (dh *DetachHandler) isRunEnd(ctx context.Context, cfg *Config, f string) (bool, error) {
+	file, err := os.Open(f)
+	if err != nil {
+		return false, err
+	}
+	mch := make(chan interface{})
+	ech := make(chan error)
+	go readMessages(file, mch, ech)
+
+	for {
+		select {
+		case msg := <-mch:
+			if msg == nil {
+				// If the channel is closed, we'll read the zero value.
+				return false, nil
+			}
+			switch msg.(type) {
+			case *control.RunEnd:
+				return true, nil
+			}
+		case err := <-ech:
+			return false, err
+		case <-time.After(defaultMsgTimeout):
+			return false, errors.New("timeout reading messages")
+		case <-ctx.Done():
+			return false, ctx.Err()
+		}
+	}
 }
 
 // readTestList decodes JSON-serialized testing.Test objects from r and

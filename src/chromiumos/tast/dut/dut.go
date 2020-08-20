@@ -63,6 +63,20 @@ func (d *DUT) Conn() *ssh.Conn {
 	return d.hst
 }
 
+// GetHostname get the DUT's host name
+func (d *DUT) GetHostname() string {
+	return d.sopt.Hostname
+}
+
+// GetARCDeviceID get the DUT's device ID of ARC++
+func (d *DUT) GetARCDeviceID(ctx context.Context) (string, error) {
+	out, err := d.Command("android-sh", "-c", "/system/bin/getprop ro.serialno").Output(ctx)
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimSpace(string(out)), nil
+}
+
 // Close releases the DUT's resources.
 func (d *DUT) Close(ctx context.Context) error {
 	return d.Disconnect(ctx)
@@ -117,6 +131,13 @@ func (d *DUT) Command(name string, args ...string) *ssh.Cmd {
 // DEPRECATED: use linuxssh.GetFile(ctx, d.Conn(), src, dst)
 func (d *DUT) GetFile(ctx context.Context, src, dst string) error {
 	return linuxssh.GetFile(ctx, d.hst, src, dst)
+}
+
+// PushFiles copies files or directories from the local machine to the DUT.
+// Symbol links will be dereferenced.
+func (d *DUT) PushFiles(ctx context.Context, files map[string]string) error {
+	_, err := linuxssh.PutFiles(ctx, d.hst, files, linuxssh.DereferenceSymlinks)
+	return err
 }
 
 // WaitUnreachable waits for the DUT to become unreachable.

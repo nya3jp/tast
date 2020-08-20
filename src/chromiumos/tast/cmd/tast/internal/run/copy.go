@@ -46,6 +46,20 @@ func moveFromHost(ctx context.Context, cfg *Config, hst *ssh.Conn, src, dst stri
 	return nil
 }
 
+// copyFromHost copies the tree rooted at src on hst to dst on the local system and deletes src from hst.
+// src is appended to cfg.hstCopyBasePath to support unit tests.
+func copyFromHost(ctx context.Context, cfg *Config, hst *ssh.Conn, src, dst string) error {
+	undo := setAnnounceCmdForCopy(cfg, hst)
+	defer undo()
+
+	src = filepath.Join(cfg.hstCopyBasePath, src)
+	cfg.Logger.Debugf("Copying %s from host to %s", src, dst)
+	if err := linuxssh.GetFile(ctx, hst, src, dst); err != nil {
+		return err
+	}
+	return nil
+}
+
 // deleteFromHost is a wrapper around hst.DeleteTree that should be used instead of calling DeleteTree directly.
 // baseDir is appended to cfg.hstCopyBasePath to support unit tests.
 func deleteFromHost(ctx context.Context, cfg *Config, hst *ssh.Conn, baseDir string, files []string) error {

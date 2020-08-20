@@ -319,6 +319,84 @@ Several blog posts discuss these patterns in more detail:
 [Go Concurrency Patterns: Context]: https://blog.golang.org/context
 [Go Concurrency Patterns: Timing out, moving on]: https://blog.golang.org/go-concurrency-patterns-timing-out-and
 
+### Reserve time for cleanup task
+
+For any function with a corresponding cleanup function, prefer using the [defer]
+statement to keep the two function calls close together (see the
+[Startup and shutdown](#startup-and-shutdown) section for detail):
+```go
+a := NewA(ctx, ...)
+defer func() {
+  a.CleanUp(ctx)
+}
+```
+In this case, we should reserve some time for the cleanup.
+
+However, it is easy to go wrong. An example of the wrong way to reserve time for
+cleanup:
+```go
+a := NewA(ctx, ...)
+defer func() {
+  a.CleanUp(ctx)
+}
+ctx, cancel := ctxutil.Shorten(ctx, timeReserveForCleanup)
+defer cancel()
+```
+It is wrong because when the deferred unnamed function is called, the `ctx` it
+uses is the shortened one, not the original one. It could be fixed by placing
+the shortened ctx to another variable, say `sCtx`. However, the following main
+logic needs to use `sCtx` instead of regular `ctx`. Things could get worse when
+we have multiple cleanup deferred calls, leading to `sCtx1`, `sCtx2`, etc.
+
+Also, we should consider the case that `NewA(ctx, ...)` may consume too much 
+time that makes a.CleanUp() have no time to run.
+
+The right way to create an object and reserve time for cleaning it up:
+```go
+// NewA shall reserve time for a.CleanUp() when creating A.
+a, err := NewA(ctx, ...)
+if err != nil {
+  // Handle the error and return early.
+  return
+}
+defer func(ctx context.Context) {
+  a.CleanUp(ctx)
+}(ctx)
+// Define a method to reserve time for cleanup.
+ctx, cancel := a.ReserveForCleanUp(ctx)
+defer cancel()
+```
+First of all, NewA() shall reserve time for cleanup at the beginning of the
+object creation. It is to avoid that when the object is created, it may leave
+insufficient time for `a.CleanUp(ctx)` to run.
+Secondly, it binds the original `ctx` when the deferred function is defined so
+that the cleanup function can use the original `ctx`. 
+Finally, we can shorten `ctx` for the rest of the code so that they won't
+consume the time reserved for the cleanup function. Note that we can define a 
+method to do that in case time to reserve for cleanup varies according to the
+things it creates.
+
+Another approach is to reserve time before `NewA()` is called and give the
+cleanup function the original context. For example:
+```go
+origCtx := ctx
+ctx, cancel := ctxutil.Shroten(ctx, timeForACleanUp)
+defer cancel()
+a, err := NewA(ctx, ...)
+if err != nil {
+  // Handle the error and return early.
+  return
+}
+defer func(ctx context.Context) {
+  a.CleanUp(ctx)
+}(origCtx)
+
+```
+Note that the time needed for a.CleanUp() shall be a public constant defined
+in A's package.
+
+[ctxutil.Shorten]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/ctxutil#Shorten
+
 ### Concurrency
 
 Concurrency is rare in integration tests, but it enables doing things like

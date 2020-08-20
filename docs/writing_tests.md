@@ -319,6 +319,61 @@ Several blog posts discuss these patterns in more detail:
 [Go Concurrency Patterns: Context]: https://blog.golang.org/context
 [Go Concurrency Patterns: Timing out, moving on]: https://blog.golang.org/go-concurrency-patterns-timing-out-and
 
+### Reserve time for cleanup logic.
+
+For some function that has a corresponding inverse function to perform the
+cleanup task, we use [defer] statements to do so (see section
+[Startup and shutdown](#startup-and-shutdown) for more detail):
+```go
+a := NewA(ctx, ...)
+defer func() {
+  // Perform the cleanup for A. For example:
+  a.CleanUp(ctx)
+}
+```
+However, we should reserve some time for the cleanup. If we use
+[ctxutil.Shorten] to shorten the context intuitively:
+```go
+a := NewA(ctx, ...)
+defer func() {
+  // Perform the cleanup for A. For example:
+  a.CleanUp(ctx)
+}
+ctx, cancel := ctxutil.Shorten(ctx, timeReserveForCleanup)
+defer cancel()
+```
+It is wrong because when the deferred unnamed function is called, the `ctx` it
+uses is the shortened one, not the original one. We can fix that by placing the
+shortened ctx to another variable, say `sCtx`. However, the following main
+logic needs to use `sCtx` instead of regualr `ctx`. Things could get worse when
+we have multiple cleanup deferred calls, we need `sCtx1`, `sCtx2`, etc.
+
+Now we come to a pattern for this situation:
+```go
+a := NewA(ctx, ...)
+defer func(ctx contect.Context) {
+  a.CleanUp(ctx)
+}(ctx)
+ctx, cancel := ctxutil.Shorten(ctx, timeReserveForCleanup)
+defer cancel()
+```
+We bind the original ctx when the deferred funciton is defined. Then we store
+the shortened context to the default variable, `ctx`, right after the deferred
+cleanup logic. Moreover, for the object that needs some time to clean up, it
+shall provide a function that shortens the context:
+```go
+a := NewA(ctx, ...)
+// defer cleanup.
+defer func(ctx contect.Context) {
+  a.CleanUp(ctx)
+}(ctx)
+ctx, cancel := a.ReserveForCleanUp(ctx)
+defer cancel()
+```
+
+[ctxutil.Shorten]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/ctxutil#Shorten
+[Defer, Panic, and Recover]: https://blog.golang.org/defer-panic-and-recover
+
 ### Concurrency
 
 Concurrency is rare in integration tests, but it enables doing things like

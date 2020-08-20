@@ -319,6 +319,58 @@ Several blog posts discuss these patterns in more detail:
 [Go Concurrency Patterns: Context]: https://blog.golang.org/context
 [Go Concurrency Patterns: Timing out, moving on]: https://blog.golang.org/go-concurrency-patterns-timing-out-and
 
+### Reserve time for clean-up task
+
+For any function with a corresponding clean-up function, prefer using the [defer]
+statement to keep the two function calls close together (see the
+[Startup and shutdown](#startup-and-shutdown) section for detail):
+```go
+a := pkga.NewA(ctx, ...)
+defer func() {
+  if err := a.CleanUp(ctx); err != nil {
+    // ...
+  }
+}
+```
+Before creating `A`, make sure that the clean-up function has sufficient time to
+run:
+```go
+ctxForCleanUpA := ctx
+ctx, cancel := ctxutil.Shorten(ctx, pkga.TimeForCleanUpA)
+defer cancel()
+a := pkga.NewA(ctx, ...)
+defer func() {
+  if err := a.CleanUp(ctxForCleanUpA); err != nil {
+    // ...
+  }
+}()
+```
+
+It [ctxutil.Shorten]s `ctx` before calling `pkga.NewA` to ensure that after
+`pkga.NewA()`, `a.CleanUp()` still has time to perform the clean-up. Note that
+`pkga` should provide `TimeForCleanUpA` constant for its callers to reserve time
+for `a.CleanUp()`.
+Also, instead of assigning the shortened `ctx` to `sCtx`, it copies the original
+`ctx` to `ctxForCleanUpA` before shortening it. It is because we want to use
+`ctx` for the main logic and leave the longer name for the clean-up logic.
+
+Another approach was used but discouraged now:
+```go
+a := pkga.NewA(ctx, ...)
+defer func(ctx context.Context) {
+  if err := a.CleanUp(ctx); err != nil {
+    // ...
+  }
+}(ctx)
+ctx, cancel := a.ReserveForCleanUp(ctx)
+defer cancel()
+```
+The reason why it is discouraged is because it needs `pkga.NewA()` to shorten
+`ctx` at the beginning of the function to ensure that it leaves enough time for
+`a.CleanUp()` to call.
+
+[ctxutil.Shorten]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/ctxutil#Shorten
+
 ### Concurrency
 
 Concurrency is rare in integration tests, but it enables doing things like

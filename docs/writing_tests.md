@@ -310,6 +310,58 @@ Several blog posts discuss these patterns in more detail:
 *   [Go Concurrency Patterns: Context]
 *   [Go Concurrency Patterns: Timing out, moving on]
 
+#### Reserve time for cleanup logic.
+
+For some function that has a corresponding inverse function to perform the
+cleanup task, we often place it in a deferred function so that it is called
+at the end of the test / function scope:
+```go
+a := NewA(ctx, ...)
+defer func() {
+  // Perform the clean-up for A. For example:
+  a.CleanUp(ctx)
+}
+```
+However, we should reserve some time for the clean-up. If we shorten ctx
+intuitively:
+```go
+a := NewA(ctx, ...)
+defer func() {
+  // Perform the clean-up for A. For example:
+  a.CleanUp(ctx)
+}
+ctx, cancel := ctxutil.Shorten(ctx, timeReserveForCleanup)
+defer cancel()
+```
+It is wrong because when the deferred unnamed function is called, the ctx it
+uses is the shortened one, not the original one. We can fix that by placing the
+shortened ctx to another variable, say `sCtx`. However, the following main
+logic needs to use `sCtx` instead of regualr `ctx`. Things could get worse when
+we have multiple clean-up deferred calls, we need `sCtx1`, `sCtx2`, etc.
+
+Now we come to a pattern for this situation::
+```go
+a := NewA(ctx, ...)
+defer func(ctx contect.Context) {
+  a.CleanUp(ctx)
+}(ctx)
+ctx, cancel := ctxutil.Shorten(ctx, timeReserveForCleanup)
+defer cancel()
+```
+We bind the original ctx when the deferred funciton is defined. Then we store
+the shortened context to the default variable, `ctx`, right after the deferred
+clean-up logic. Moreover, for the object that needs some time to clean up, it
+shall provide a function that shortens the context:
+```go
+a := NewA(ctx, ...)
+// defer clean-up.
+defer func(ctx contect.Context) {
+  a.CleanUp(ctx)
+}(ctx)
+ctx, cancel := a.ReserveForCleanUp(ctx)
+defer cancel()
+```
+
 [context.Context]: https://golang.org/pkg/context/
 [channel]: https://tour.golang.org/concurrency/2
 [select]: https://tour.golang.org/concurrency/5

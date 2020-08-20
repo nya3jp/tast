@@ -39,6 +39,29 @@
       "revId": "de0a15e705c3a0dfdd2410517e495308c9efb973",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b6c6aadb_47d1aa04",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-08-20T05:27:30Z",
+      "side": 1,
+      "message": "This is not true. How about adding something like:\nThe last element can represent an ongoing test, be shared with current, and be modified through it.",
+      "range": {
+        "startLine": 182,
+        "startChar": 44,
+        "endLine": 182,
+        "endChar": 77
+      },
+      "revId": "de0a15e705c3a0dfdd2410517e495308c9efb973",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

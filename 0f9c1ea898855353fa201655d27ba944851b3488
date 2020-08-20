@@ -33,6 +33,23 @@
       "revId": "0f9c1ea898855353fa201655d27ba944851b3488",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "88246ff1_22959bf5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-08-20T01:47:29Z",
+      "side": 1,
+      "message": "cros_test_platform is failing solidly, but I still not sure if this is related to this change based on the error reporting failing to start ARC boot. Retrying once more.\n\u003e 2020/08/19 01:19:39 [01:19:38.557] Error at boot.go:103: Failed to start ARC: Android failed to boot in very early stage: net.tcp.default_init_rwnd property is not set which shows that Android init did not come up: context deadline ",
+      "revId": "0f9c1ea898855353fa201655d27ba944851b3488",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

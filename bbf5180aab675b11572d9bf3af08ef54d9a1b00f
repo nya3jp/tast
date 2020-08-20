@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a856293_ea4b138d",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 342,
+      "author": {
+        "id": 1371981
+      },
+      "writtenOn": "2020-08-20T09:45:05Z",
+      "side": 1,
+      "message": "nit: remove?",
+      "range": {
+        "startLine": 342,
+        "startChar": 44,
+        "endLine": 342,
+        "endChar": 45
+      },
+      "revId": "bbf5180aab675b11572d9bf3af08ef54d9a1b00f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8e58022d_4af7d2bb",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 372,
+      "author": {
+        "id": 1371981
+      },
+      "writtenOn": "2020-08-20T09:45:05Z",
+      "side": 1,
+      "message": "I guess these belong to the previous section?\n\nWe can have these for this section, I guess:\n\n[ctxutil.Shorten]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/ctxutil#Shorten\n[Defer, Panic, and Recover]: https://blog.golang.org/defer-panic-and-recover",
+      "range": {
+        "startLine": 365,
+        "startChar": 0,
+        "endLine": 372,
+        "endChar": 112
+      },
+      "revId": "bbf5180aab675b11572d9bf3af08ef54d9a1b00f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

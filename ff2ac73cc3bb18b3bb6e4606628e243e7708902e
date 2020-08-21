@@ -63,6 +63,30 @@
       "revId": "ff2ac73cc3bb18b3bb6e4606628e243e7708902e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2fe8e2b8_b518b71c",
+        "filename": "src/chromiumos/tast/internal/testing/state_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 582,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-08-21T13:13:25Z",
+      "side": 1,
+      "message": "Thanks for the explanation!",
+      "parentUuid": "520e8856_4e4acba2",
+      "range": {
+        "startLine": 582,
+        "startChar": 0,
+        "endLine": 582,
+        "endChar": 68
+      },
+      "revId": "ff2ac73cc3bb18b3bb6e4606628e243e7708902e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

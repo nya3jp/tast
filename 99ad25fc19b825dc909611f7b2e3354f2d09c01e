@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6037f342_6b6d8226",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-08-21T07:42:52Z",
+      "side": 1,
+      "message": "I\u0027ll review it after the former CL is settled.",
+      "revId": "99ad25fc19b825dc909611f7b2e3354f2d09c01e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

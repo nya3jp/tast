@@ -25,6 +25,23 @@
     },
     {
       "key": {
+        "uuid": "76f43596_fef20507",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-08-21T13:40:46Z",
+      "side": 1,
+      "message": "Could you update the test line?",
+      "revId": "ad0ac6fc968e9c07f276d2f659106d22a770ae4b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "770834b1_aded5ffa",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 2
@@ -165,6 +182,23 @@
       "revId": "ad0ac6fc968e9c07f276d2f659106d22a770ae4b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "207b6b47_d67dd07c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-08-21T13:40:46Z",
+      "side": 1,
+      "message": "Thank you for making sure. LGTM with minor request.",
+      "revId": "ad0ac6fc968e9c07f276d2f659106d22a770ae4b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {

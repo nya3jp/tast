@@ -341,6 +341,11 @@ type SysInfoState struct {
 type DownloadPrivateBundlesArgs struct {
 	// Devservers contains URLs of devservers that can be used to download files.
 	Devservers []string `json:"devservers,omitempty"`
+
+	// TLWServer contains host and port name of TLW server that can be used for downloading files.
+	// Should be set exclusively with Devservers.
+	TLWServer string `json:"tlsserver,omitempty"`
+
 	// BuildArtifactsURL is the URL of Google Cloud Storage directory, ending with a slash,
 	// containing build artifacts for the current Chrome OS image.
 	// If it is empty, DefaultBuildArtifactsURL in runner.Config is used.

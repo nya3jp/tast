@@ -86,7 +86,11 @@ func CopyLogFileUpdates(src, dst string, exclude []string, origSizes InodeSizes)
 		if origSizes != nil {
 			origSize = origSizes[stat.Ino]
 		}
-		if info.Size() <= origSize {
+		if info.Size() == origSize {
+			return nil
+		}
+		if info.Size() < origSize {
+			warnings[sp] = fmt.Errorf("%s is shorter than original (now %d, original %d)", sp, info.Size(), origSize)
 			return nil
 		}
 

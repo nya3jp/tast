@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "adb164a9_fe18786c",
+        "filename": "src/chromiumos/tast/internal/logs/logs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-08-21T15:30:20Z",
+      "side": 1,
+      "message": "As an alternative option, I am thinking of treating this case as origSize\u003d0, so that all file contents should be output as the diff, if it does not affect other part of the ecosystem in a bad manner.\nWDYT?",
+      "revId": "033da2a8c2b952fc6657293befab44191c58ca77",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

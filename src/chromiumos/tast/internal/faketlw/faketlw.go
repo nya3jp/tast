@@ -9,9 +9,12 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"net/http"
 	"testing"
 
+	"github.com/golang/protobuf/ptypes"
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
+	"go.chromium.org/chromiumos/config/go/api/test/tls/dependencies/longrunning"
 	"google.golang.org/grpc"
 )
 
@@ -39,7 +42,8 @@ func WithDUTPortMap(m map[NamePort]NamePort) WiringServerOption {
 // WiringServer is a fake implementation of tls.WiringServer.
 type WiringServer struct {
 	tls.UnimplementedWiringServer
-	cfg wiringServerConfig
+	cfg        wiringServerConfig
+	httpServed bool
 }
 
 var _ tls.WiringServer = &WiringServer{}
@@ -61,6 +65,37 @@ func (s *WiringServer) OpenDutPort(ctx context.Context, req *tls.OpenDutPortRequ
 		return nil, fmt.Errorf("not found in DUT port map: %s:%d", src.Name, src.Port)
 	}
 	return &tls.OpenDutPortResponse{Address: dst.Name, Port: dst.Port}, nil
+}
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "This is data file.")
+}
+
+// CacheForDut implements tls WiringServer.CacheForDUT
+func (s *WiringServer) CacheForDut(ctx context.Context, req *tls.CacheForDutRequest) (*longrunning.Operation, error) {
+	if !s.httpServed {
+		s.httpServed = true
+		http.HandleFunc("/", handler)
+		go http.ListenAndServe(":2222", nil)
+	}
+	// TODO: compose URL from server address and requested file name
+	url := "http://127.0.0.1:2222/foo/bar"
+	m, err := ptypes.MarshalAny(&tls.CacheForDutResponse{Url: url})
+	if err != nil {
+		return nil, err
+	}
+	op := longrunning.Operation{
+		Name: "CacheForDUT0001",
+		// This fake service always finishes the operation right away.
+		// Need to implement fake longrunning operation server if we were to emulate a call
+		// that takes some time before finishing.
+		Done: true,
+		Result: &longrunning.Operation_Response{
+			Response: m,
+		},
+	}
+
+	return &op, nil
 }
 
 // StartWiringServer is a convenient method for unit tests which starts a gRPC

@@ -282,7 +282,7 @@ func handleDownloadPrivateBundles(ctx context.Context, args *Args, cfg *Config, 
 	// Download the archive via devserver.
 	archiveURL := args.DownloadPrivateBundles.BuildArtifactsURL + "tast_bundles.tar.bz2"
 	logging.ContextLogf(ctx, "Downloading private bundles from %s", archiveURL)
-	cl := devserver.NewClient(ctx, args.DownloadPrivateBundles.Devservers)
+	cl := devserver.NewClient(ctx, args.DownloadPrivateBundles.Devservers, args.DownloadPrivateBundles.TLWServer)
 
 	r, err := cl.Open(ctx, archiveURL)
 	if err != nil {

@@ -13,10 +13,14 @@ import (
 
 // NewClient creates a Client from a list of devservers. If the list is empty,
 // PseudoClient is returned. Otherwise RealClient is returned.
-func NewClient(ctx context.Context, devservers []string) Client {
+func NewClient(ctx context.Context, devservers []string, tlsserver string) Client {
 	if len(devservers) == 0 {
-		logging.ContextLog(ctx, "Devserver status: using pseudo client")
-		return NewPseudoClient()
+		if tlsserver == "" {
+			logging.ContextLog(ctx, "Devserver status: using pseudo client")
+			return NewPseudoClient()
+		}
+		logging.ContextLog(ctx, "Devserver status: using TLS client")
+		return NewTLWClient(tlsserver)
 	}
 
 	const timeout = 3 * time.Second

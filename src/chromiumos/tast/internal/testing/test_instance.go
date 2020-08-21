@@ -368,7 +368,7 @@ func validateVars(category, name string, vars []string) error {
 		if len(parts) == 3 && parts[0] == category && parts[1] == name && validVarLastPartRE.MatchString(parts[2]) {
 			continue
 		}
-		return fmt.Errorf("valiable name %s violates our naming convention defined in https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Runtime-variables", v)
+		return fmt.Errorf("variable name %s violates our naming convention defined in https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Runtime-variables", v)
 	}
 	return nil
 }

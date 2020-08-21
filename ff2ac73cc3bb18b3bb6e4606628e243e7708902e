@@ -39,6 +39,30 @@
       "revId": "ff2ac73cc3bb18b3bb6e4606628e243e7708902e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "520e8856_4e4acba2",
+        "filename": "src/chromiumos/tast/internal/testing/state_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 582,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-21T11:27:48Z",
+      "side": 1,
+      "message": "Sorry, I should have written this in the CL description. I added one, and here\u0027s a copy:\n\ntesting.dataFS had a bug where it calls s.DataPath for undeclared data files (it checked whether it is safe to call s.DataPath by checking os.Stat for a file path that would be returned by s.DataPath, but the check unexpectedly passes if a file is not declared in the current test but in different tests). In this case we used to call s.Fatal on HTTP server goroutines, which reports an error via testing.State and terminates the goroutine with runtime.Goexit. Though I guess calling runtime.Goexit on HTTP server goroutines is not really expected in general HTTP server implementations, it somehow worked with httptest.Server. If we simply replace the s.Fatal call in dataFS with panic, panic will abort the whole process, not only the panicking goroutine. It is not desirable to abort the test bundle only because unexpected file paths are requested to the web server. For this reason, this patch fixes dataFS.Open to correctly check whether a requested file is declared. This fix is done atomically with s.Fatal -\u003e panic change because it is difficult to do the two changes separately.",
+      "parentUuid": "ae7909f3_54b7500f",
+      "range": {
+        "startLine": 582,
+        "startChar": 0,
+        "endLine": 582,
+        "endChar": 68
+      },
+      "revId": "ff2ac73cc3bb18b3bb6e4606628e243e7708902e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

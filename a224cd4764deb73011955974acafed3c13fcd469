@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "afb4f538_6699e764",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 599,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-21T11:27:48Z",
+      "side": 0,
+      "message": "Note that this check was incorrect; dataFS might allow accessing undeclared files if they exist on the disk.",
+      "range": {
+        "startLine": 597,
+        "startChar": 0,
+        "endLine": 599,
+        "endChar": 2
+      },
+      "revId": "a224cd4764deb73011955974acafed3c13fcd469",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

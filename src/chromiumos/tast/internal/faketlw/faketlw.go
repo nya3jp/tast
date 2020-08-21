@@ -9,10 +9,16 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"net/http"
 	"testing"
 
+	"github.com/golang/protobuf/ptypes"
+	"github.com/golang/protobuf/ptypes/empty"
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
+	"go.chromium.org/chromiumos/config/go/api/test/tls/dependencies/longrunning"
 	"google.golang.org/grpc"
+
+	"chromiumos/tast/errors"
 )
 
 // NamePort represents a simple name/port pair.
@@ -22,7 +28,9 @@ type NamePort struct {
 }
 
 type wiringServerConfig struct {
-	dutPortMap map[NamePort]NamePort
+	dutPortMap    map[NamePort]NamePort
+	cacheFileMap  map[string]string
+	operationName string
 }
 
 // WiringServerOption is an option passed to NewWiringServer to customize WiringServer.
@@ -36,10 +44,19 @@ func WithDUTPortMap(m map[NamePort]NamePort) WiringServerOption {
 	}
 }
 
+// WithCacheFileMap returns an option that sets the file URL map used to resolve
+// CacheForDUT requests.
+func WithCacheFileMap(m map[string]string) WiringServerOption {
+	return func(cfg *wiringServerConfig) {
+		cfg.cacheFileMap = m
+	}
+}
+
 // WiringServer is a fake implementation of tls.WiringServer.
 type WiringServer struct {
 	tls.UnimplementedWiringServer
-	cfg wiringServerConfig
+	cfg        wiringServerConfig
+	httpServed bool
 }
 
 var _ tls.WiringServer = &WiringServer{}
@@ -63,6 +80,39 @@ func (s *WiringServer) OpenDutPort(ctx context.Context, req *tls.OpenDutPortRequ
 	return &tls.OpenDutPortResponse{Address: dst.Name, Port: dst.Port}, nil
 }
 
+func handler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "This is data file.")
+}
+
+// CacheForDut implements tls WiringServer.CacheForDUT
+func (s *WiringServer) CacheForDut(ctx context.Context, req *tls.CacheForDutRequest) (*longrunning.Operation, error) {
+	if !s.httpServed {
+		s.httpServed = true
+		http.HandleFunc("/", handler)
+		go http.ListenAndServe(":2222", nil)
+	}
+	url, ok := s.cfg.cacheFileMap[req.Url]
+	if !ok {
+		return nil, errors.New("RPC ERRR")
+	}
+	// TODO: compose URL from server address and requested file name
+	url = "http://127.0.0.1:2222" + url
+	m, err := ptypes.MarshalAny(&tls.CacheForDutResponse{Url: url})
+	if err != nil {
+		return nil, err
+	}
+	op := longrunning.Operation{
+		Name: s.cfg.operationName,
+		// Always return undone to test the path for waiting operation finished.
+		Done: false,
+		Result: &longrunning.Operation_Response{
+			Response: m,
+		},
+	}
+
+	return &op, nil
+}
+
 // StartWiringServer is a convenient method for unit tests which starts a gRPC
 // server serving WiringServer in the background.
 // Callers are responsible for stopping the server by srv.Stop.
@@ -72,6 +122,9 @@ func StartWiringServer(t *testing.T, opts ...WiringServerOption) (srv *grpc.Serv
 	srv = grpc.NewServer()
 	tls.RegisterWiringServer(srv, ws)
 
+	opserver := NewOperationsServer("operation0001")
+	longrunning.RegisterOperationsServer(srv, opserver)
+
 	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
 		t.Fatal("Failed to listen: ", err)
@@ -80,4 +133,48 @@ func StartWiringServer(t *testing.T, opts ...WiringServerOption) (srv *grpc.Serv
 	go srv.Serve(lis)
 
 	return srv, lis.Addr().String()
+}
+
+// OperationsServer is a fake implementation of longrunning.Operations.
+type OperationsServer struct {
+	longrunning.UnimplementedOperationsServer
+	operationName string
+}
+
+// NewOperationsServer constructs a new OperationsServer from given options.
+func NewOperationsServer(operationName string) OperationsServer {
+	return OperationsServer{
+		operationName: operationName,
+	}
+}
+
+// GetOperation implements longrunning.GetOperation.
+func (s OperationsServer) GetOperation(ctx context.Context, req *longrunning.GetOperationRequest) (*longrunning.Operation, error) {
+	url := "http://127.0.0.1:2222/foo/bar"
+	m, err := ptypes.MarshalAny(&tls.CacheForDutResponse{Url: url})
+	if err != nil {
+		return nil, errors.Wrap(err, "Failed to marshal data in GetOperation")
+	}
+	return &longrunning.Operation{
+		Done: true,
+		Name: "dummy",
+		Result: &longrunning.Operation_Response{
+			Response: m,
+		},
+	}, nil
+}
+
+// CancelOperation implements longrunning.CancelOperation.
+func (s OperationsServer) CancelOperation(ctx context.Context, req *longrunning.CancelOperationRequest) (*empty.Empty, error) {
+	return nil, nil
+}
+
+// DeleteOperation implements longrunning.CancelOperation.
+func (s OperationsServer) DeleteOperation(ctx context.Context, req *longrunning.DeleteOperationRequest) (*empty.Empty, error) {
+	return nil, nil
+}
+
+// ListOperations implements longrunning.ListOperations.
+func (s OperationsServer) ListOperations(ctx context.Context, req *longrunning.ListOperationsRequest) (*longrunning.ListOperationsResponse, error) {
+	return nil, nil
 }

@@ -55,6 +55,8 @@ type Config struct {
 	Features dep.Features
 	// Devservers contains URLs of devservers that can be used to download files.
 	Devservers []string
+	// TLSServer is the address of TLS server
+	TLSServer string
 	// BuildArtifactsURL is the URL of Google Cloud Storage directory, ending with a slash,
 	// containing build artifacts for the current Chrome OS image.
 	BuildArtifactsURL string
@@ -263,7 +265,7 @@ type downloader struct {
 }
 
 func newDownloader(ctx context.Context, pcfg *Config) *downloader {
-	cl := devserver.NewClient(ctx, pcfg.Devservers)
+	cl := devserver.NewClient(ctx, pcfg.Devservers, pcfg.TLSServer)
 	return &downloader{
 		pcfg: pcfg,
 		cl:   cl,

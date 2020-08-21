@@ -7,8 +7,10 @@ package faketlw
 import (
 	"context"
 	"testing"
+	"time"
 
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
+	"go.chromium.org/chromiumos/config/go/api/test/tls/dependencies/longrunning"
 	"google.golang.org/grpc"
 )
 
@@ -40,5 +42,41 @@ func TestWiringServer_OpenDutPort(t *testing.T) {
 	res, err = cl.OpenDutPort(ctx, req)
 	if err == nil {
 		t.Errorf("OpenDutPort(%q, %d): unexpectedly succeeded", req.Name, req.Port)
+	}
+}
+
+func TestWiringServer_CacheForDut(t *testing.T) {
+	ctx := context.Background()
+	fileMap := map[string]string{
+		"gs://foo/bar/baz": "/foo/bar/baz",
+	}
+	srv, addr := StartWiringServer(t, WithCacheFileMap(fileMap))
+	defer srv.Stop()
+
+	conn, err := grpc.Dial(addr, grpc.WithInsecure())
+	if err != nil {
+		t.Fatal("Failed to Dial: ", err)
+	}
+	defer conn.Close()
+
+	cl := tls.NewWiringClient(conn)
+
+	req := &tls.CacheForDutRequest{Url: "gs://foo/bar/baz", DutName: "dut001"}
+	op, err := cl.CacheForDut(ctx, req)
+	if err != nil {
+		t.Fatalf("CacheForDUT(%q, %q): %v", req.DutName, req.Url, err)
+	}
+	opcli := longrunning.NewOperationsClient(conn)
+	for {
+		if op.GetDone() {
+			break
+		}
+		time.Sleep(1 * time.Second)
+		op, err = opcli.GetOperation(ctx, &longrunning.GetOperationRequest{
+			Name: op.GetName(),
+		})
+		if err != nil {
+			t.Fatal("Failed to get Operation: ", err)
+		}
 	}
 }

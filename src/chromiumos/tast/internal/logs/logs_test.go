@@ -18,19 +18,20 @@ import (
 // and then returns the copied data as a map from relative filename to content,
 // along with a set containing all copied relative paths (including empty files and broken symlinks).
 func getUpdates(dir string, exclude []string, sizes InodeSizes) (
-	updates map[string]string, paths map[string]struct{}, err error) {
+	updates map[string]string, paths map[string]struct{}, warnings map[string]error, err error) {
 	var dest string
 	if dest, err = ioutil.TempDir("", "tast_logs."); err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	defer os.RemoveAll(dest)
 
-	if _, err = CopyLogFileUpdates(dir, dest, exclude, sizes); err != nil {
-		return nil, nil, err
+	warns, err := CopyLogFileUpdates(dir, dest, exclude, sizes)
+	if err != nil {
+		return nil, nil, warns, err
 	}
 
 	if updates, err = testutil.ReadFiles(dest); err != nil {
-		return nil, nil, err
+		return nil, nil, warns, err
 	}
 
 	paths = make(map[string]struct{})
@@ -40,7 +41,7 @@ func getUpdates(dir string, exclude []string, sizes InodeSizes) (
 		}
 		return err
 	})
-	return updates, paths, err
+	return updates, paths, warns, err
 }
 
 func TestCopyUpdates(t *testing.T) {
@@ -49,6 +50,7 @@ func TestCopyUpdates(t *testing.T) {
 
 	orig := map[string]string{
 		"vegetables":               "kale\ncauliflower\n",
+		"fish":                     "salmon\ntuna\n",
 		"baked_goods/desserts":     "cake\n",
 		"baked_goods/breads":       "",
 		"baked_goods/stale_crumbs": "two days old\n",
@@ -68,9 +70,12 @@ func TestCopyUpdates(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	updates, _, err := getUpdates(sd, exclude, sizes)
+	updates, _, warnings, err := getUpdates(sd, exclude, sizes)
 	if err != nil {
 		t.Fatal(err)
+	}
+	if len(warnings) != 0 {
+		t.Errorf("getUpdates(%q, %v) returned warnings: %v", sd, sizes, warnings)
 	}
 	if len(updates) != 0 {
 		t.Errorf("getUpdates(%q, %v) = %v; want none", sd, sizes, updates)
@@ -117,12 +122,20 @@ func TestCopyUpdates(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	// Truncate existing file. Should be detected for a warning.
+	if err = testutil.WriteFiles(sd, map[string]string{
+		"fish": "salmon\n",
+	}); err != nil {
+		t.Fatal(err)
+	}
+
 	exp := map[string]string{
 		"vegetables":             "eggplant\n",
+		"fish":                   "salmon\n",
 		"baked_goods/breads.old": "ciabatta\n",
 		"baked_goods/breads":     "sourdough\n",
 	}
-	updates, paths, err := getUpdates(sd, exclude, sizes)
+	updates, paths, warnings, err := getUpdates(sd, exclude, sizes)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -133,5 +146,16 @@ func TestCopyUpdates(t *testing.T) {
 		if _, ok := paths[p]; ok {
 			t.Errorf("Unwanted path %q was copied", p)
 		}
+	}
+
+	// Expect 1 warning
+	truncated := filepath.Join(sd, "fish")
+	if _, ok := warnings[truncated]; ok {
+		delete(warnings, truncated)
+	} else {
+		t.Errorf("getUpdates(%q, %v) expected warning not found: %v", sd, sizes, warnings)
+	}
+	if len(warnings) != 0 {
+		t.Errorf("getUpdates(%q, %v) returned unexpected warnings: %v", sd, sizes, warnings)
 	}
 }

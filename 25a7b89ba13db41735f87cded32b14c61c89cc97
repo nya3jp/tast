@@ -42,6 +42,30 @@
     },
     {
       "key": {
+        "uuid": "69c18116_1fda5117",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-22T00:23:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5b3788e5_dbed0f08",
+      "range": {
+        "startLine": 21,
+        "startChar": 5,
+        "endLine": 21,
+        "endChar": 23
+      },
+      "revId": "25a7b89ba13db41735f87cded32b14c61c89cc97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ad909544_bcadaf9a",
         "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
         "patchSetId": 12
@@ -65,6 +89,30 @@
     },
     {
       "key": {
+        "uuid": "870bc519_ece586bc",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-22T00:23:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ad909544_bcadaf9a",
+      "range": {
+        "startLine": 82,
+        "startChar": 5,
+        "endLine": 82,
+        "endChar": 14
+      },
+      "revId": "25a7b89ba13db41735f87cded32b14c61c89cc97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b9f60a59_3b9156fa",
         "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
         "patchSetId": 12
@@ -76,6 +124,30 @@
       "writtenOn": "2020-08-21T05:33:56Z",
       "side": 1,
       "message": "How about using filepath.Dir(f) as baseDir? Then we need less magic strings (e.g. \"/etc/ssh/ssh_config\"), and it\u0027ll be easier to write unit tests because we can avoid reading /etc/ssh or ~/.ssh in unit tests.",
+      "range": {
+        "startLine": 127,
+        "startChar": 0,
+        "endLine": 130,
+        "endChar": 3
+      },
+      "revId": "25a7b89ba13db41735f87cded32b14c61c89cc97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2bde8359_a916b539",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-22T00:23:13Z",
+      "side": 1,
+      "message": "Your suggestion is simple and elegant. I only have one concern -- do we need to support -F like ssh in future? If so, I cannot rely on the base dir in ResolveHostFromFiles because the path can be from anywhere. I have tested with ssh that it will only look at ~/.ssh in this case. Here is an example:\n\nseewaifu@seewaifu:~$ cat t.conf\nInclude abc.conf\n\nseewaifu@seewaifu:~$ cat .ssh/abc.conf\nHost abc\n    HostName 127.0.0.1\n    Port 2223\n    User root\n\nseewaifu@seewaifu:~$ cat abc.conf\nHost abc\n    HostName NonExistingHost\n    Port 2223\n    User NonExistingUser\n\nseewaifu@seewaifu:~$ ssh -F t.conf abc\nPassword: \nlocalhost ~ # exit\nlogout\nConnection to 127.0.0.1 closed.\n\nssh will pick up abc.conf from .ssh instead of my home directory. \n\nThe change is simple, but I do want to discuss a little bit first. Thanks.",
+      "parentUuid": "b9f60a59_3b9156fa",
       "range": {
         "startLine": 127,
         "startChar": 0,
@@ -134,6 +206,54 @@
     },
     {
       "key": {
+        "uuid": "afab3338_c8726961",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-22T00:23:13Z",
+      "side": 1,
+      "message": "readFiles is also used by Include which can include wildcard.How about I simply change it to read?",
+      "parentUuid": "8b0ea62b_de212cb7",
+      "range": {
+        "startLine": 131,
+        "startChar": 11,
+        "endLine": 131,
+        "endChar": 20
+      },
+      "revId": "25a7b89ba13db41735f87cded32b14c61c89cc97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e92d9d8b_79eb5eba",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-22T00:23:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "04820198_fb3f712e",
+      "range": {
+        "startLine": 131,
+        "startChar": 2,
+        "endLine": 131,
+        "endChar": 17
+      },
+      "revId": "25a7b89ba13db41735f87cded32b14c61c89cc97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "52d166ea_bb967342",
         "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
         "patchSetId": 12
@@ -154,6 +274,30 @@
       "revId": "25a7b89ba13db41735f87cded32b14c61c89cc97",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fc572a82_b70d1dce",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 194,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-22T00:23:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "52d166ea_bb967342",
+      "range": {
+        "startLine": 194,
+        "startChar": 3,
+        "endLine": 194,
+        "endChar": 41
+      },
+      "revId": "25a7b89ba13db41735f87cded32b14c61c89cc97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -180,6 +324,30 @@
     },
     {
       "key": {
+        "uuid": "a5a2e261_535c2abe",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 200,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-22T00:23:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4ed6dc02_7b01345f",
+      "range": {
+        "startLine": 200,
+        "startChar": 22,
+        "endLine": 200,
+        "endChar": 35
+      },
+      "revId": "25a7b89ba13db41735f87cded32b14c61c89cc97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "84cf01de_3e64302e",
         "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
         "patchSetId": 12
@@ -191,6 +359,30 @@
       "writtenOn": "2020-08-21T05:33:56Z",
       "side": 1,
       "message": "This name is a bit surprising to readers because it\u0027s not obvious how to resolve a path to multiple paths. Readers can know that the former \"path\" can contain wildcards after reading comments, but it\u0027s much better if the function signature explain it.\n\nProperly naming things and consistently call them in established names is a key to make code readable. In this case, I really recommend naming \"paths with wildcards\" differently than mere \"paths\", and using the term consistently throughout the code.\n\nFor example, you can decide to use \"glob\" for path-with-wildcard (you can pick any term that makes sense). If we do so, we can rename like:\n\n func resolvePathToPaths(f, baseDir string)\n -\u003e\n func resolveGlobToPaths(glob, baseDir string)\n\n func readFiles(configFileName, baseDir string, ...)\n -\u003e\n func readFilesByGlob(glob, baseDir string, ...)\n\nand so on.",
+      "range": {
+        "startLine": 247,
+        "startChar": 5,
+        "endLine": 247,
+        "endChar": 23
+      },
+      "revId": "25a7b89ba13db41735f87cded32b14c61c89cc97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e2819b89_e6f83e5d",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 247,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-22T00:23:13Z",
+      "side": 1,
+      "message": "I don\u0027t really want to call it *Glob* because glob does not take care of tilde and does not use base directory. How about \"expandFilePath\" which I think it is an appropriate name? Let\u0027s discuss it. Thanks.",
+      "parentUuid": "84cf01de_3e64302e",
       "range": {
         "startLine": 247,
         "startChar": 5,
@@ -226,6 +418,30 @@
     },
     {
       "key": {
+        "uuid": "99a98dbe_3e269a7f",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig_test.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-22T00:23:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fa0cc503_f5489e1c",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 20,
+        "endChar": 1
+      },
+      "revId": "25a7b89ba13db41735f87cded32b14c61c89cc97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6aa5850d_a1bcc62c",
         "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig_test.go",
         "patchSetId": 12
@@ -237,6 +453,30 @@
       "writtenOn": "2020-08-21T05:33:56Z",
       "side": 1,
       "message": "This test contains many significantly different test scenarios. Generally a unit test should concentrate on a single aspect of the behavior of an API. For example,\n\n TestGetReadHostFromFiles_Success - GetReadHostFromFiles successfully resolves a host name using a config\n TestGetReadHostFromFiles_NoMatch - GetReadHostFromFiles returns the original host name due to no match\n ...\n TestGetReadHostFromFiles_MatchBlock - GetReadHostFromFiles does not support \"match\" block\n ...\n TestGetReadHostFromFiles_MissingInitialFiles - GetReadHostFromFiles succeeds even if initial files are missing\n TestGetReadHostFromFiles_MissingIncludeFiles - GetReadHostFromFiles succeeds even if included files are missing\n\nI recommend reading some articles about unit testing. There are several good internal resources, e.g. go/unit-test-practices.",
+      "range": {
+        "startLine": 83,
+        "startChar": 5,
+        "endLine": 83,
+        "endChar": 29
+      },
+      "revId": "25a7b89ba13db41735f87cded32b14c61c89cc97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "205132e6_2fedd1a4",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig_test.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-22T00:23:13Z",
+      "side": 1,
+      "message": "Thanks for the link. I took a quick look at the link and found that my unit did not follow the standard. I have broken it down. Also, my unit test was testing ResloveHostWithFromFiles instead of ResolveHost which was called by run.go. Therefore, I combined these two functions into one. Hope it is ok.",
+      "parentUuid": "6aa5850d_a1bcc62c",
       "range": {
         "startLine": 83,
         "startChar": 5,
@@ -269,6 +509,30 @@
       "revId": "25a7b89ba13db41735f87cded32b14c61c89cc97",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a60e7362_467c188b",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig_test.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-22T00:23:13Z",
+      "side": 1,
+      "message": "I have broken the test cases down to different functions. Please check.",
+      "parentUuid": "b54ce8f4_09b82a4e",
+      "range": {
+        "startLine": 92,
+        "startChar": 1,
+        "endLine": 92,
+        "endChar": 15
+      },
+      "revId": "25a7b89ba13db41735f87cded32b14c61c89cc97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

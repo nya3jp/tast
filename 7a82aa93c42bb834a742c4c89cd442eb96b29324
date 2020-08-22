@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "75e9f08d_cc0ce860",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 13
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-22T00:23:13Z",
+      "side": 1,
+      "message": "Hi Shuhei:\n\nThank you for the suggestion. I have rewritten the unit test. Please take a look if the new ones look ok. Also, I merged ResolveHost and ResolveHostWithFiles to one function because my old unit test was actually testing ResolveHostWithFiles instead of testing ResolveHost directly.\n\nI do want to discuss with you on the your comment on using base path instead of hardcoded ~/.ssh/ and /etc/ssh for searching include files. Please take a look at my comments.\n\nThanks.\n\nSeewai  ",
+      "revId": "7a82aa93c42bb834a742c4c89cd442eb96b29324",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

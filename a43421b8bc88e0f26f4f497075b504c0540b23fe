@@ -16,6 +16,29 @@
       "revId": "a43421b8bc88e0f26f4f497075b504c0540b23fe",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "351f3850_0e866f90",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-24T07:41:00Z",
+      "side": 1,
+      "message": "TODO(nya): Update docs, e.g. replace \"entry points\" with \"user code\"",
+      "range": {
+        "startLine": 8,
+        "startChar": 19,
+        "endLine": 8,
+        "endChar": 30
+      },
+      "revId": "a43421b8bc88e0f26f4f497075b504c0540b23fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

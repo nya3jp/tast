@@ -49,15 +49,15 @@ const (
 // allowedPkgs is the list of Go packages that can use this package.
 var allowedPkgs = []string{
 	"chromiumos/tast/cmd/tast/internal/symbolize",
-	"chromiumos/tast/local/arc",                   // For SDKVersion.
-	"chromiumos/tast/local/bundles/cros/arc",      // For Version.
-	"chromiumos/tast/local/bundles/cros/firmware", // For Board.
+	"chromiumos/tast/local/arc",              // For SDKVersion.
+	"chromiumos/tast/local/bundles/cros/arc", // For Version.
 	"chromiumos/tast/local/bundles/cros/platform/updateserver",
 	"chromiumos/tast/local/crash",
 	"chromiumos/tast/local/graphics/trace",
 	"chromiumos/tast/local/rialto",
 	"chromiumos/tast/lsbrelease",
 	"chromiumos/tast/remote/bundles/cros/firmware", // For finding firmware file.
+	"chromiumos/tast/remote/firmware/reporters",    // For Board.
 	"main", // for local_test_runner
 }
 

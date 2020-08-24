@@ -160,6 +160,30 @@
     },
     {
       "key": {
+        "uuid": "bf447205_ffab8ff0",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-24T12:57:36Z",
+      "side": 1,
+      "message": "That\u0027s a valid concern, thanks for catching it. OpenSSH\u0027s behavior is a bit weird :(\n\nIt seems to me that better solution is to allow callers to specify baseDir. For example:\n\n type File struct {\n   Path string\n   BaseDir string\n }\n\n func ResolveHost(addr string)\n\n func ResolveHostFromFiles(addr string, files []*File)",
+      "parentUuid": "2bde8359_a916b539",
+      "range": {
+        "startLine": 127,
+        "startChar": 0,
+        "endLine": 130,
+        "endChar": 3
+      },
+      "revId": "25a7b89ba13db41735f87cded32b14c61c89cc97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "04820198_fb3f712e",
         "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
         "patchSetId": 12
@@ -251,6 +275,30 @@
       "revId": "25a7b89ba13db41735f87cded32b14c61c89cc97",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f9f5e33a_b7a5a059",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-24T12:57:36Z",
+      "side": 1,
+      "message": "It is perfectly fine to call readFiles from include. But I\u0027m afraid that callers of ResolveHostFromFiles don\u0027t expect that file paths given to the function is resolved for wildcards.",
+      "parentUuid": "afab3338_c8726961",
+      "range": {
+        "startLine": 131,
+        "startChar": 11,
+        "endLine": 131,
+        "endChar": 20
+      },
+      "revId": "25a7b89ba13db41735f87cded32b14c61c89cc97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     },
     {
       "key": {
@@ -383,6 +431,30 @@
       "side": 1,
       "message": "I don\u0027t really want to call it *Glob* because glob does not take care of tilde and does not use base directory. How about \"expandFilePath\" which I think it is an appropriate name? Let\u0027s discuss it. Thanks.",
       "parentUuid": "84cf01de_3e64302e",
+      "range": {
+        "startLine": 247,
+        "startChar": 5,
+        "endLine": 247,
+        "endChar": 23
+      },
+      "revId": "25a7b89ba13db41735f87cded32b14c61c89cc97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3e25fadc_547949ad",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 247,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-24T12:57:36Z",
+      "side": 1,
+      "message": "As I pointed out in another comment, one of the most critical factors to make this code more readable is to name \"path-with-wildcard-and-tilde\" as something other than \"path\". I don\u0027t stick with \"glob\", but please try to pick a name that is different from \"path\".\n\n\"path-with-wildcard-and-tilde\" has 2 properties different from conventional paths.\n\n1. Wildcards are expanded (e.g. \"config/*.conf\")\n2. Leading tildes are expanded (e.g. ~/.ssh/some.conf\")\n\nNote that I think supporting a base path is not special to \"path-with-wildcard-and-tilde\"; that\u0027s a conventional relative path.\n\nFYI, I proposed \"glob\" because it captures the property 1 at least. It doesn\u0027t capture the property 2, but I don\u0027t know a good word that captures the both properties. I\u0027m open to any proposal.",
+      "parentUuid": "e2819b89_e6f83e5d",
       "range": {
         "startLine": 247,
         "startChar": 5,

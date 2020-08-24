@@ -16,6 +16,52 @@
       "revId": "7a82aa93c42bb834a742c4c89cd442eb96b29324",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b7eb9ef9_38e2055a",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-24T12:57:36Z",
+      "side": 1,
+      "message": "Actually I prefer your last approach to have ResolveHost and ResolveHostFromFiles because the latter function can be called from unit tests to avoid interaction with real SSH config files. If you don\u0027t like having ResolveHostFromFiles unused from outside the package, you can just unexport it.\n\nSpecially handling empty configFiles might be okay for current use cases, but it\u0027s generally not good idea. In general, when a function takes a slice of things, there is usually a reasonable empty-slice behavior inferred from non-empty-slice behavior, so we should not deviate from it without concrete reasons.\n\nFor example, let\u0027s say we define a function that returns a logical AND of boolean values.\n\n func logicalAnd(bs ...boolean) boolean\n\nWhat should it return for empty arguments (i.e. logicalAnd())? If one doesn\u0027t think carefully, they might decide to panic in this case.\n\n func logicalAnd(bs ...boolean) boolean {\n   if len(bs) \u003d\u003d 0 {\n     panic(\"empty slice\")\n   }\n   ...\n }\n\nBut the reasonable implementation is to return true in this case (it might be obvious to you). If we implement this function to panic, then this logic will explode in some use cases.",
+      "range": {
+        "startLine": 94,
+        "startChar": 0,
+        "endLine": 98,
+        "endChar": 2
+      },
+      "revId": "7a82aa93c42bb834a742c4c89cd442eb96b29324",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "160b3d5d_3b399919",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-24T12:57:36Z",
+      "side": 1,
+      "message": "For readers, the distinction of read and readFile is not obvious because their names sound similiar and also they have exactly the exactly same signature.\n\n func read(configFileName, baseDir string, openedFiles map[string]struct{}, sc *block) error\n func readFile(configFileName, baseDir string, openedFiles map[string]struct{}, parentConfig *block) error\nFunction names and argument names are super important documentation for readers. While Go generally recommends shorter names, it doesn\u0027t mean that we can drop meaningful explanations from function/argument names. Please try to name them for readability.\n\nThis comment is closely related to my another comment about paths and globs. You don\u0027t need to use the term \"globs\", let\u0027s say we use a term \"foo\". Then we can change signatures in the following way:\n\n func readFoo(foo, baseDir string, ...) error\n func readPath(path, baseDir string, ...) error",
+      "range": {
+        "startLine": 125,
+        "startChar": 12,
+        "endLine": 125,
+        "endChar": 16
+      },
+      "revId": "7a82aa93c42bb834a742c4c89cd442eb96b29324",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

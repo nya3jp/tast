@@ -58,7 +58,11 @@ type Fixture struct {
 	// Even if fixtures are nested, the timeout is applied only to this stage.
 	TearDownTimeout time.Duration
 
-	// TODO(oka): Add Data, Vars, ServiceDeps and Param fields.
+	// ServiceDeps contains a list of RPC service names in local test bundles that this remote fixture
+	// will access. This field is valid only for remote fixtures.
+	ServiceDeps []string
+
+	// TODO(oka): Add Data, Vars and Param fields.
 }
 
 // FixtureImpl provides implementation of the fixture registered to the framework.

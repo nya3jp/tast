@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "281eda04_ba5d4e39",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-25T23:16:13Z",
+      "side": 1,
+      "message": "Still work in progress. I have not figured out how to test it properly. I did test it with one remote test based one another remote test. Please review it and make sure I am in the right direction. Thanks.",
+      "revId": "7ae3086f7f97fc8e419dcab970d574a7c33b045f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

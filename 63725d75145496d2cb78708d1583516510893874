@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "060604ed_e4b3a340",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 14
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-25T00:38:47Z",
+      "side": 1,
+      "message": "Thanks for the suggestions. They were very helpful. I think the new naming of the functions should describe what they do clearly. I also addressed the issue of base directory based on the suggestion. Please check. \n\nThanks.",
+      "revId": "63725d75145496d2cb78708d1583516510893874",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

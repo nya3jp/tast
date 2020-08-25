@@ -184,6 +184,30 @@
     },
     {
       "key": {
+        "uuid": "5bd53f81_e0ecfce4",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-25T00:38:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bf447205_ffab8ff0",
+      "range": {
+        "startLine": 127,
+        "startChar": 0,
+        "endLine": 130,
+        "endChar": 3
+      },
+      "revId": "25a7b89ba13db41735f87cded32b14c61c89cc97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "04820198_fb3f712e",
         "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
         "patchSetId": 12
@@ -299,6 +323,30 @@
       "revId": "25a7b89ba13db41735f87cded32b14c61c89cc97",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2e4816c3_30ef2134",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-25T00:38:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f9f5e33a_b7a5a059",
+      "range": {
+        "startLine": 131,
+        "startChar": 11,
+        "endLine": 131,
+        "endChar": 20
+      },
+      "revId": "25a7b89ba13db41735f87cded32b14c61c89cc97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -467,6 +515,30 @@
     },
     {
       "key": {
+        "uuid": "5d2c3eed_63acf4dc",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 247,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-25T00:38:47Z",
+      "side": 1,
+      "message": "How about findFileNamesMatchingPattern? I looked the man page for glob:\n\nglob, globfree - find pathnames matching a pattern, free memory from glob()\n\nI think it is pretty close the idea of glob. We did a little bit more but still fit the idea of finding names based on a pattern.\n\nI agreed that my naming of the variable is confusing. It is really a pattern and not a file name.\n\nI also changed the name of the function from read to readFilesMatchingPattern. I hope it can avoid confusion.",
+      "parentUuid": "3e25fadc_547949ad",
+      "range": {
+        "startLine": 247,
+        "startChar": 5,
+        "endLine": 247,
+        "endChar": 23
+      },
+      "revId": "25a7b89ba13db41735f87cded32b14c61c89cc97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "fa0cc503_f5489e1c",
         "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig_test.go",
         "patchSetId": 12
@@ -558,6 +630,30 @@
       "revId": "25a7b89ba13db41735f87cded32b14c61c89cc97",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "56560ecc_e9731969",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig_test.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-25T00:38:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "205132e6_2fedd1a4",
+      "range": {
+        "startLine": 83,
+        "startChar": 5,
+        "endLine": 83,
+        "endChar": 29
+      },
+      "revId": "25a7b89ba13db41735f87cded32b14c61c89cc97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {

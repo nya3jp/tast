@@ -539,6 +539,30 @@
     },
     {
       "key": {
+        "uuid": "c24cae5e_2193cf2c",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 247,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-25T02:06:26Z",
+      "side": 1,
+      "message": "\"pattern\" sounds good to me, thanks for a nice word selection. :)",
+      "parentUuid": "5d2c3eed_63acf4dc",
+      "range": {
+        "startLine": 247,
+        "startChar": 5,
+        "endLine": 247,
+        "endChar": 23
+      },
+      "revId": "25a7b89ba13db41735f87cded32b14c61c89cc97",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fa0cc503_f5489e1c",
         "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig_test.go",
         "patchSetId": 12

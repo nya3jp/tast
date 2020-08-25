@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "770735cd_2d2de62b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 14
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-25T02:06:26Z",
+      "side": 1,
+      "message": "No action required, FYI: In the end of the day, this CL got fairly large. I usually recommend keeping a CL \u003c200~300 LoC (excluding unit tests) for faster review. See go/small-cls as well.\n\nFrom next time, let\u0027s try to split CL to smaller pieces. This CL is okay to keep as is.",
+      "revId": "63725d75145496d2cb78708d1583516510893874",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "060604ed_e4b3a340",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 14
@@ -16,6 +33,184 @@
       "revId": "63725d75145496d2cb78708d1583516510893874",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "92cf90a9_d1fdf432",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-25T02:06:26Z",
+      "side": 1,
+      "message": "For exported APIs (i.e. ResolveHostFromFiles), I recommend NOT supporting tildes.\n\nThere\u0027s no necessity to support tildes in arguments of ResolveHostFromFiles (in contrast to \"include\" in config files where supporting tildes are necessary from config spec). Of course, it is possible that users of this package may really want to expand tildes, but if there\u0027s such need, we can just export expandLeadingTilde.\n\nIn general, please avoid coupling two unrelated things in a function --- in this case, expanding tildes and parsing config files.",
+      "range": {
+        "startLine": 133,
+        "startChar": 2,
+        "endLine": 136,
+        "endChar": 3
+      },
+      "revId": "63725d75145496d2cb78708d1583516510893874",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8b223036_fb468d44",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig_test.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-25T02:06:26Z",
+      "side": 1,
+      "message": "This file is a bit long. Let\u0027s try to make them compact.\n\nFor example, we can consolidate unit tests using only a single config file into one unit test case with subtests.\n\n func TestResolveHostFromFilesSingleConfig(t *testing.T) {\n   for _, tc :\u003d range []struct {\n     name   string // test case name\n     config string // config file content\n     host   string // input host name\n     want   string // expected resolved host name\n   }{\n     {\n       name:   \"first match wins\",\n       config: \"Host hana\\nHostname a\\nPort 1\\nHost hana\\nHostname b\\nPort 2\\n\",\n       host:   \"hana\",\n       want:   \"a:1\",\n     },\n     ...\n   } {\n     t.Run(tc.name, func(t *testing.T) {\n       ...\n     })\n   }\n }\n\nWe may still need to write separate unit tests for those using multiple config files. For those cases, we may still be able to make them shorter by introducing more utility functions.",
+      "revId": "63725d75145496d2cb78708d1583516510893874",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "430bc5cc_d7085728",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig_test.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-25T02:06:26Z",
+      "side": 1,
+      "message": "Variables and types have different name space, so usually we don\u0027t have to suffix types as \"type\".\n\n type testData struct { ... }",
+      "range": {
+        "startLine": 17,
+        "startChar": 5,
+        "endLine": 17,
+        "endChar": 17
+      },
+      "revId": "63725d75145496d2cb78708d1583516510893874",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5933dcec_b776f12d",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig_test.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 889,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-25T02:06:26Z",
+      "side": 1,
+      "message": "huge nit: Usually unit test utility functions take *testing.T as the first argument.",
+      "range": {
+        "startLine": 889,
+        "startChar": 74,
+        "endLine": 889,
+        "endChar": 86
+      },
+      "revId": "63725d75145496d2cb78708d1583516510893874",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e294220f_3b25e7e9",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig_test.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 892,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-25T02:06:26Z",
+      "side": 1,
+      "message": "style: Please start unit test error messages with capital letters. Note that we have to start error messages in `error` type with lower letters.\nhttps://github.com/golang/go/wiki/CodeReviewComments#error-strings",
+      "range": {
+        "startLine": 892,
+        "startChar": 12,
+        "endLine": 892,
+        "endChar": 21
+      },
+      "revId": "63725d75145496d2cb78708d1583516510893874",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5c718afc_742f1d57",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig_test.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 892,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-25T02:06:26Z",
+      "side": 1,
+      "message": "In usual Go calling conventions, for a function that returns (T, error), T value should not be read if non-nil error is returned. There are a few exceptions to this rule (e.g. io.Reader.Read https://godoc.org/io#Reader), but in such cases it should be noted explicitly in comments.\n\nSo in this case I do recommend calling t.Fatalf instead to abort test execution without inspecting resolvedHost, or calling \"return\" immediately after t.Errorf (if we want to continue).",
+      "range": {
+        "startLine": 892,
+        "startChar": 4,
+        "endLine": 892,
+        "endChar": 10
+      },
+      "revId": "63725d75145496d2cb78708d1583516510893874",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bae2e733_dca40052",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig_test.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 894,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-25T02:06:26Z",
+      "side": 1,
+      "message": "Can you format the message a bit more clearly to help readers when debugging? Typical way is to use pseudo Go code style, e.g.\n\n t.Logf(\"ResolveHostFromFiles(%q) \u003d %q\", data.input, resolvedHost)\n\nhttps://github.com/golang/go/wiki/CodeReviewComments#useful-test-failures",
+      "range": {
+        "startLine": 894,
+        "startChar": 8,
+        "endLine": 894,
+        "endChar": 19
+      },
+      "revId": "63725d75145496d2cb78708d1583516510893874",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4643ea46_a3550507",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig_test.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 896,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-25T02:06:26Z",
+      "side": 1,
+      "message": "style: Please print actual value first, then expected value. e.g.\n\n t.Errorf(\"ResolveHostFromFiles(%q) \u003d %q; want %q\", data.input, resolvedHost, data.expected)\n\nhttps://github.com/golang/go/wiki/CodeReviewComments#useful-test-failures",
+      "range": {
+        "startLine": 896,
+        "startChar": 12,
+        "endLine": 896,
+        "endChar": 41
+      },
+      "revId": "63725d75145496d2cb78708d1583516510893874",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

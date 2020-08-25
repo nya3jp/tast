@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2703c9e0_031a48e6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-25T09:27:03Z",
+      "side": 1,
+      "message": "I\u0027ve updated the documentation according to last offline discussion. PTAL.\n",
+      "revId": "b1ff1d01684af109abe9132adc793bbd148286df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

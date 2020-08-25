@@ -31,7 +31,7 @@ func TestRemoteMissingTarget(t *gotesting.T) {
 	// Remote should fail if -target wasn't passed.
 	stdin := newBufferWithArgs(t, &Args{Mode: RunTestsMode, RunTests: &RunTestsArgs{}})
 	stderr := bytes.Buffer{}
-	if status := Remote(nil, stdin, &bytes.Buffer{}, &stderr); status != statusError {
+	if status := Remote(nil, stdin, &bytes.Buffer{}, &stderr, RemoteDelegate{}); status != statusError {
 		t.Errorf("Remote() = %v; want %v", status, statusError)
 	}
 	if len(stderr.String()) == 0 {
@@ -54,7 +54,7 @@ func TestRemoteCantConnect(t *gotesting.T) {
 		RunTests: &RunTestsArgs{Target: td.Srv.Addr().String()},
 	}
 	stderr := bytes.Buffer{}
-	if status := Remote(nil, newBufferWithArgs(t, &args), &bytes.Buffer{}, &stderr); status != statusError {
+	if status := Remote(nil, newBufferWithArgs(t, &args), &bytes.Buffer{}, &stderr, RemoteDelegate{}); status != statusError {
 		t.Errorf("Remote(%+v) = %v; want %v", args, status, statusError)
 	}
 	if len(stderr.String()) == 0 {
@@ -102,7 +102,7 @@ func TestRemoteDUT(t *gotesting.T) {
 			KeyFile: td.UserKeyFile,
 		},
 	}
-	if status := Remote(nil, newBufferWithArgs(t, &args), &bytes.Buffer{}, &bytes.Buffer{}); status != statusSuccess {
+	if status := Remote(nil, newBufferWithArgs(t, &args), &bytes.Buffer{}, &bytes.Buffer{}, RemoteDelegate{}); status != statusSuccess {
 		t.Errorf("Remote(%+v) = %v; want %v", args, status, statusSuccess)
 	}
 	if realOutput != output {
@@ -143,7 +143,7 @@ func TestRemoteReconnectBetweenTests(t *gotesting.T) {
 			KeyFile: td.UserKeyFile,
 		},
 	}
-	if status := Remote(nil, newBufferWithArgs(t, &args), &bytes.Buffer{}, &bytes.Buffer{}); status != statusSuccess {
+	if status := Remote(nil, newBufferWithArgs(t, &args), &bytes.Buffer{}, &bytes.Buffer{}, RemoteDelegate{}); status != statusSuccess {
 		t.Errorf("Remote(%+v) = %v; want %v", args, status, statusSuccess)
 	}
 	if conn1 != true {

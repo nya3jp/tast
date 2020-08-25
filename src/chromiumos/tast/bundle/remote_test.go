@@ -31,7 +31,7 @@ func TestRemoteMissingTarget(t *gotesting.T) {
 	// Remote should fail if -target wasn't passed.
 	stdin := newBufferWithArgs(t, &Args{Mode: RunTestsMode, RunTests: &RunTestsArgs{}})
 	stderr := bytes.Buffer{}
-	if status := Remote(nil, stdin, &bytes.Buffer{}, &stderr); status != statusError {
+	if status := Remote(nil, stdin, &bytes.Buffer{}, &stderr, RemoteDelegate{}); status != statusError {
 		t.Errorf("Remote() = %v; want %v", status, statusError)
 	}
 	if len(stderr.String()) == 0 {
@@ -54,7 +54,7 @@ func TestRemoteCantConnect(t *gotesting.T) {
 		RunTests: &RunTestsArgs{Target: td.Srv.Addr().String()},
 	}
 	stderr := bytes.Buffer{}
-	if status := Remote(nil, newBufferWithArgs(t, &args), &bytes.Buffer{}, &stderr); status != statusError {
+	if status := Remote(nil, newBufferWithArgs(t, &args), &bytes.Buffer{}, &stderr, RemoteDelegate{}); status != statusError {
 		t.Errorf("Remote(%+v) = %v; want %v", args, status, statusError)
 	}
 	if len(stderr.String()) == 0 {
@@ -102,7 +102,7 @@ func TestRemoteDUT(t *gotesting.T) {
 			KeyFile: td.UserKeyFile,
 		},
 	}
-	if status := Remote(nil, newBufferWithArgs(t, &args), &bytes.Buffer{}, &bytes.Buffer{}); status != statusSuccess {
+	if status := Remote(nil, newBufferWithArgs(t, &args), &bytes.Buffer{}, &bytes.Buffer{}, RemoteDelegate{}); status != statusSuccess {
 		t.Errorf("Remote(%+v) = %v; want %v", args, status, statusSuccess)
 	}
 	if realOutput != output {
@@ -143,7 +143,7 @@ func TestRemoteReconnectBetweenTests(t *gotesting.T) {
 			KeyFile: td.UserKeyFile,
 		},
 	}
-	if status := Remote(nil, newBufferWithArgs(t, &args), &bytes.Buffer{}, &bytes.Buffer{}); status != statusSuccess {
+	if status := Remote(nil, newBufferWithArgs(t, &args), &bytes.Buffer{}, &bytes.Buffer{}, RemoteDelegate{}); status != statusSuccess {
 		t.Errorf("Remote(%+v) = %v; want %v", args, status, statusSuccess)
 	}
 	if conn1 != true {
@@ -152,4 +152,62 @@ func TestRemoteReconnectBetweenTests(t *gotesting.T) {
 	if conn2 != true {
 		t.Errorf("Remote(%+v) didn't pass live connection to second test", args)
 	}
+}
+
+// TestRemoteTestHooks makes sure hook function is called at the end of a test.
+func TestRemoteTestHooks(t *gotesting.T) {
+	td := sshtest.NewTestData(userKey, hostKey, nil)
+	defer td.Close()
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
+	defer restore()
+
+	// Add two test instances.
+	testing.AddTestInstance(&testing.TestInstance{Name: "pkg.Test1", Func: func(context.Context, *testing.State) {}})
+	testing.AddTestInstance(&testing.TestInstance{Name: "pkg.Test2", Func: func(context.Context, *testing.State) {}})
+
+	// Set up test argument.
+	outDir := testutil.TempDir(t)
+	defer os.RemoveAll(outDir)
+	args := Args{
+		Mode: RunTestsMode,
+		RunTests: &RunTestsArgs{
+			OutDir:  outDir,
+			Target:  td.Srv.Addr().String(),
+			KeyFile: td.UserKeyFile,
+		},
+	}
+
+	// Set up input and output buffers.
+	stdin := newBufferWithArgs(t, &args)
+	stderr := bytes.Buffer{}
+
+	// ranPreHookCount keeps the number of times prehook function was called.
+	// ranPostHookCount keepts the number of times posthoook functions was called.
+	var ranPreHookCount, ranPostHookCount int
+
+	// Test Remote function.
+	if status := Remote(nil, stdin, &bytes.Buffer{}, &stderr, RemoteDelegate{
+		TestHook: func(context.Context, *testing.TestHookState) func(context.Context, *testing.TestHookState) {
+			ranPreHookCount++
+			return func(context.Context, *testing.TestHookState) {
+				ranPostHookCount++
+			}
+		},
+	}); status != statusSuccess {
+		t.Errorf("Remote(%+v) = %v; want %v", args, status, statusSuccess)
+	}
+
+	// Make sure prehook function was called twice.
+	if ranPreHookCount != 2 {
+		t.Errorf("Remote(%+v) test pre hook was called %v times; want 2 times", args, ranPreHookCount)
+	}
+	// Make sure posthook function was called twice.
+	if ranPostHookCount != 2 {
+		t.Errorf("Remote(%+v) test post hook was called %v times; want 2 times", args, ranPostHookCount)
+	}
+	// Make sure there are no unexpected errors from test functions.
+	if stderr.String() != "" {
+		t.Errorf("Remote(%+v) unexpectedly wrote %q to stderr", args, stderr.String())
+	}
+
 }

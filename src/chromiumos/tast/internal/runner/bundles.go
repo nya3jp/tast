@@ -79,9 +79,10 @@ type testsOrError struct {
 	err    *command.StatusError
 }
 
-// getTests returns tests in bundles matched by args.Patterns. It does this by executing
-// each bundle to ask it to marshal and print its tests. A slice of paths to bundles
-// with matched tests is also returned.
+// getTests returns tests in bundles matched by args.Patterns. It does this by
+// executing each bundle to ask it to marshal and print its tests. getTests
+// fills the Bundle field in EntityInfo too. A slice of paths to bundles with
+// matched tests is also returned.
 func getTests(args *Args, bundles []string) (tests []*testing.EntityInfo,
 	bundlesWithTests []string, statusErr *command.StatusError) {
 	bundleArgs, err := args.bundleArgs(bundle.ListTestsMode)
@@ -109,12 +110,15 @@ func getTests(args *Args, bundles []string) (tests []*testing.EntityInfo,
 		}()
 	}
 
-	// Read results into a map from bundle to that bundle's tests.
+	// Read results into a map from bundle to that bundle's tests, setting the bundle path.
 	bundleTests := make(map[string][]*testing.EntityInfo)
 	for i := 0; i < len(bundles); i++ {
 		toe := <-ch
 		if toe.err != nil {
 			return nil, nil, toe.err
+		}
+		for _, t := range toe.tests {
+			t.Bundle = toe.bundle
 		}
 		if len(toe.tests) > 0 {
 			bundleTests[toe.bundle] = toe.tests

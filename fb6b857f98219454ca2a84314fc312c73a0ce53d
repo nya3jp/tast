@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e983fd1a_65c47414",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-26T01:52:44Z",
+      "side": 1,
+      "message": "Reconsidered a naming. Now testing.TestContext is testing.CurrentEntity.\n",
+      "revId": "fb6b857f98219454ca2a84314fc312c73a0ce53d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

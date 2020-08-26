@@ -312,8 +312,10 @@ func SupportsNV12Overlays() Condition {
 // Since there are no way to get whether an EC supports force discharging on a device or not,
 // list up the models known not to support force discharging here.
 var modelsWithoutForceDischargeSupport = []string{
+	"arcada_signed",
 	"celes",
 	"drallion",
+	"drallion360",
 	"lulu",
 	"sarien_signed",
 }

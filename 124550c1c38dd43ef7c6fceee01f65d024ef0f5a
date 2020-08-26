@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8eb89c4b_3095ca23",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 16
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-26T07:37:31Z",
+      "side": 1,
+      "message": "I just remembered that I forgot to remove the tilde handling code in the public function. I just removed it. I am still working on the unit test. It is not done yet. Still work in progress.",
+      "revId": "124550c1c38dd43ef7c6fceee01f65d024ef0f5a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

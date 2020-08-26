@@ -16,6 +16,46 @@
       "revId": "7ae3086f7f97fc8e419dcab970d574a7c33b045f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7b3bcf48_d93be167",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-26T07:35:46Z",
+      "side": 1,
+      "message": "The direction looks good to me!\n\nRe: testing, it\u0027s a bit difficult to test in unit tests... I recommend adding an integration test in chromiumos/tast/remote/bundles/cros/meta.\n",
+      "revId": "7ae3086f7f97fc8e419dcab970d574a7c33b045f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4237f553_45b44577",
+        "filename": "src/chromiumos/tast/rpc/client.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-26T07:35:46Z",
+      "side": 1,
+      "message": "I want to avoid adding baserpc.FileSystem here because it can be used from tests, as well as FaillogService.\n\nLet\u0027s discuss in the other CL about the approach to copy back the archive file.",
+      "range": {
+        "startLine": 127,
+        "startChar": 1,
+        "endLine": 127,
+        "endChar": 32
+      },
+      "revId": "7ae3086f7f97fc8e419dcab970d574a7c33b045f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

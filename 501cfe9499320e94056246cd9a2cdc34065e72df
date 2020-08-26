@@ -50,6 +50,24 @@
       "revId": "501cfe9499320e94056246cd9a2cdc34065e72df",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8c0ebb12_da855d55",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 45
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1362700
+      },
+      "writtenOn": "2020-08-26T03:48:46Z",
+      "side": 1,
+      "message": "Yes, it does the same for me\n\n                       \"oci\":                    \"containers \u0026\u0026 !moblab\", // run_oci doesn\u0027t work on Moblab: https://crbug.com/951691\n                        \"ocr\":                    \"ocr\",\n                        \"plugin_vm\":              \"pita\", // boards that can run Plugin VM.\n                        \"proprietary_codecs\":     \"chrome_internal || chrome_media\",\n                        \"pstore\":                 \"!betty \u0026\u0026 !tast_vm\", // These boards don\u0027t support pstore:",
+      "parentUuid": "c79ab562_56a101e3",
+      "revId": "501cfe9499320e94056246cd9a2cdc34065e72df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

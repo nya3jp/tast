@@ -19,6 +19,29 @@
     },
     {
       "key": {
+        "uuid": "ebe7863d_da84a9ed",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-08-26T05:45:56Z",
+      "side": 1,
+      "message": "Don\u0027t we have to rename tests to entities in this sturct?",
+      "range": {
+        "startLine": 172,
+        "startChar": 1,
+        "endLine": 172,
+        "endChar": 9
+      },
+      "revId": "fb6b857f98219454ca2a84314fc312c73a0ce53d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b2cc4957_33a65dce",
         "filename": "src/chromiumos/tast/internal/testing/context.go",
         "patchSetId": 4

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5f0b821e_e884f837",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-26T01:39:24Z",
+      "side": 1,
+      "message": "I wonder if we want to merge this with EntityInfo. WDYT?",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 1
+      },
+      "revId": "d58c29fc5ba7084186d6ddd9f7df758e75e9ae13",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

@@ -16,6 +16,29 @@
       "revId": "fb6b857f98219454ca2a84314fc312c73a0ce53d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b2cc4957_33a65dce",
+        "filename": "src/chromiumos/tast/internal/testing/context.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-08-26T05:31:54Z",
+      "side": 1,
+      "message": "optional: CurrentEntity\n?\nI think this * represents a pointer, but we also use * as a glob, so it can be a bit confusing.",
+      "range": {
+        "startLine": 14,
+        "startChar": 52,
+        "endLine": 14,
+        "endChar": 66
+      },
+      "revId": "fb6b857f98219454ca2a84314fc312c73a0ce53d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

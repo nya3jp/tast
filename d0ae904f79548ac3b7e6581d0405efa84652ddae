@@ -22,6 +22,30 @@
       "revId": "d0ae904f79548ac3b7e6581d0405efa84652ddae",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2284677c_b30c1c7c",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-26T06:01:13Z",
+      "side": 1,
+      "message": "At this moment resultsHandler processes test results only, so I kept comments as is. I will update them in a separate change, e.g. crrev.com/c/2364372.",
+      "parentUuid": "4960e935_eabfdfb6",
+      "range": {
+        "startLine": 182,
+        "startChar": 62,
+        "endLine": 182,
+        "endChar": 66
+      },
+      "revId": "d0ae904f79548ac3b7e6581d0405efa84652ddae",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

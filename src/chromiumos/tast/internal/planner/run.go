@@ -308,7 +308,7 @@ func buildStages(t *testing.TestInstance, tout testing.OutputStream, pcfg *Confi
 		stages = append(stages, stage{f, ctxTimeout, exitTimeout})
 	}
 
-	root := testing.NewTestEntityRoot(t, tout, rcfg)
+	root := testing.NewTestEntityRoot(t, rcfg, tout)
 	var postTestFunc func(ctx context.Context, s *testing.TestHookState)
 
 	// First, perform setup and run the pre-test function.

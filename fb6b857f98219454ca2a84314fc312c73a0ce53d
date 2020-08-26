@@ -42,6 +42,30 @@
     },
     {
       "key": {
+        "uuid": "42bb3315_b0cea7b9",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-26T06:27:43Z",
+      "side": 1,
+      "message": "At this moment, no... numTests and testsToRun should not contain non-test entities, otherwise resultsHandler will malfunction.",
+      "parentUuid": "ebe7863d_da84a9ed",
+      "range": {
+        "startLine": 172,
+        "startChar": 1,
+        "endLine": 172,
+        "endChar": 9
+      },
+      "revId": "fb6b857f98219454ca2a84314fc312c73a0ce53d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b2cc4957_33a65dce",
         "filename": "src/chromiumos/tast/internal/testing/context.go",
         "patchSetId": 4
@@ -62,6 +86,30 @@
       "revId": "fb6b857f98219454ca2a84314fc312c73a0ce53d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d9345ac5_3ffdebf3",
+        "filename": "src/chromiumos/tast/internal/testing/context.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-26T06:27:43Z",
+      "side": 1,
+      "message": "That\u0027s a good point, let me do so.",
+      "parentUuid": "b2cc4957_33a65dce",
+      "range": {
+        "startLine": 14,
+        "startChar": 52,
+        "endLine": 14,
+        "endChar": 66
+      },
+      "revId": "fb6b857f98219454ca2a84314fc312c73a0ce53d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

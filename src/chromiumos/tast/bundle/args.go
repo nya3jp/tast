@@ -146,6 +146,10 @@ type RunTestsArgs struct {
 	// periodically from runners (before running bundles) and bundles. If this value is not
 	// positive, heartbeat messages are not sent.
 	HeartbeatInterval time.Duration `json:"heartbeatInterval,omitempty"`
+
+	// SetUpFailure is a non-empty error message if errors have happened on test setup (e.g.
+	// fixture SetUp) and tests shouldn't run.
+	SetUpFailure string `json:"setUpFxilure,omitempty"`
 }
 
 // Features returns dep.Features to be used to check test dependencies.

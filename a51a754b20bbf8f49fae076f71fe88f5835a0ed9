@@ -22,6 +22,30 @@
       "revId": "a51a754b20bbf8f49fae076f71fe88f5835a0ed9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ad440c53_5320d72e",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 434,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-26T06:27:59Z",
+      "side": 1,
+      "message": "Good point, done.",
+      "parentUuid": "537442fe_3b744f23",
+      "range": {
+        "startLine": 434,
+        "startChar": 25,
+        "endLine": 434,
+        "endChar": 26
+      },
+      "revId": "a51a754b20bbf8f49fae076f71fe88f5835a0ed9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

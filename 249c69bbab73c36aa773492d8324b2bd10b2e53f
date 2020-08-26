@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "efbb7913_5e79b9bd",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 49
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2020-08-26T06:42:49Z",
+      "side": 1,
+      "message": "The original version has 80-character rule per line. Can\u0027t we follow that rule?\nIt seems that not all lines in this file follow the rule, but most of lines do.\n\nSame for the \"proprietary_codecs\" below.",
+      "revId": "249c69bbab73c36aa773492d8324b2bd10b2e53f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "98079e28_bfb28bf0",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 49
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2020-08-26T06:42:49Z",
+      "side": 1,
+      "message": "Please don\u0027t include unrelated changes",
+      "revId": "249c69bbab73c36aa773492d8324b2bd10b2e53f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

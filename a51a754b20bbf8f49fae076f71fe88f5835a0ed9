@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "537442fe_3b744f23",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 434,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-08-26T05:43:02Z",
+      "side": 1,
+      "message": "I guess the 0 value has meaning. Could you document that if the filed is not filled, it represents a test?",
+      "range": {
+        "startLine": 434,
+        "startChar": 25,
+        "endLine": 434,
+        "endChar": 26
+      },
+      "revId": "a51a754b20bbf8f49fae076f71fe88f5835a0ed9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

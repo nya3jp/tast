@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "50a6433a_af1a4e44",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-26T06:32:48Z",
+      "side": 1,
+      "message": "typo: Failure",
+      "range": {
+        "startLine": 152,
+        "startChar": 34,
+        "endLine": 152,
+        "endChar": 37
+      },
+      "revId": "cb37b7c273f8fa3cc15f47fb58ec438d70d6cd8e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1340c6a1_cdddebdc",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-26T06:32:48Z",
+      "side": 1,
+      "message": "nit: s/failure/error/g (error is a consistent term in the framework)\n\nAlso what do you think about making this []string to allow reporting multiple errors?",
+      "range": {
+        "startLine": 152,
+        "startChar": 1,
+        "endLine": 152,
+        "endChar": 13
+      },
+      "revId": "cb37b7c273f8fa3cc15f47fb58ec438d70d6cd8e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

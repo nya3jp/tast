@@ -500,7 +500,7 @@ func TestInstantiateVarDeps(t *gotesting.T) {
 	}{
 		{vars: []string{"a"}},
 		{vars: []string{"a", "servo"}, varDeps: []string{"servo"}},
-		{vars: []string{"servo"}, varDeps: []string{"servo", "example.PublicVars.foo"}, wantError: true},
+		{vars: []string{"servo"}, varDeps: []string{"servo", "meta.LocalVarDeps.var"}, wantError: true},
 	} {
 		if _, err := instantiate(&Test{
 			Func:    TESTINSTANCETEST,
@@ -649,10 +649,10 @@ func TestInstantiateNonPointerPrecondition(t *gotesting.T) {
 }
 
 func TestVarDeps(t *gotesting.T) {
-	test := TestInstance{VarDeps: []string{"servo", "example.PublicVars.foo"}}
+	test := TestInstance{VarDeps: []string{"servo", "meta.LocalVarDeps.var"}}
 	got := test.ShouldRun(features(nil, "eve", map[string]string{"servo": "_", "foo": "_"}))
 	want := &ShouldRunResult{
-		SkipReasons: []string{"var example.PublicVars.foo not provided"},
+		SkipReasons: []string{"var meta.LocalVarDeps.var not provided"},
 	}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("ShouldRun() = %+v; want %+v", got, want)
@@ -724,7 +724,7 @@ func TestTestClone(t *gotesting.T) {
 		timeout = time.Minute
 	)
 	attr := []string{"a", "b"}
-	varDeps := []string{"servo", "example.PublicVars.foo"}
+	varDeps := []string{"servo", "meta.LocalVarDeps.var"}
 	softwareDeps := []string{"sw1", "sw2"}
 	serviceDeps := []string{"svc1", "svc2"}
 	f := func(context.Context, *State) {}

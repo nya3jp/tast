@@ -100,6 +100,24 @@
     },
     {
       "key": {
+        "uuid": "821110cb_42072a4c",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig_test.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-26T20:23:27Z",
+      "side": 1,
+      "message": "I have changed the structure unit tests and reduced almost 600 lines. All tests used one single set of the config files except for two test cases. I didn\u0027t use the structure that you suggested. I used a common test function instead. It is easy for me to read. Also, I also add comments to the test configuration to indicate what each rule is trying to test. I hope it is ok. Please review.",
+      "parentUuid": "8b223036_fb468d44",
+      "revId": "63725d75145496d2cb78708d1583516510893874",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "430bc5cc_d7085728",
         "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig_test.go",
         "patchSetId": 14

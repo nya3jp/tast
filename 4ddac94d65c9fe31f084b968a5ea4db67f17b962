@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d6dfa5db_19b225e5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 17
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-26T20:23:27Z",
+      "side": 1,
+      "message": "Hi Shuhei:\n\nI have changed the unit test structure and reduce almost 600 lines. I didn\u0027t do exactly what you suggested. I hope it is ok. Please check.\n\nThanks.\n\nSeewai\n",
+      "revId": "4ddac94d65c9fe31f084b968a5ea4db67f17b962",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

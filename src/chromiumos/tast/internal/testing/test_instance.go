@@ -441,6 +441,10 @@ type TestInfo struct {
 	ServiceDeps  []string         `json:"serviceDeps,omitempty"`
 	Fixture      string           `json:"fixture,omitempty"`
 	Timeout      time.Duration    `json:"timeout"`
+
+	// Bundle is the bundle path. This field will be filled by runners.
+	// TODO(oka): Consider updating the return value of runners without changing this struct.
+	Bundle string `json:"bundle,omitempty"`
 }
 
 // TestInfo converts TestInstance to TestInfo.

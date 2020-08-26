@@ -140,6 +140,7 @@ func (h *RPCHint) clone() *RPCHint {
 // objects for an entity from the same EntityRoot.
 // EntityRoot must be kept private to the framework.
 type EntityRoot struct {
+	ce  *CurrentEntity // current entity info to be available via context.Context
 	cfg *RuntimeConfig // details about how to run an entity
 	out OutputStream   // stream to which logging messages and errors are reported
 
@@ -234,9 +235,15 @@ type RuntimeConfig struct {
 }
 
 // NewTestEntityRoot returns a new TestEntityRoot object.
-func NewTestEntityRoot(test *TestInstance, out OutputStream, cfg *RuntimeConfig) *TestEntityRoot {
+func NewTestEntityRoot(test *TestInstance, cfg *RuntimeConfig, out OutputStream) *TestEntityRoot {
+	ce := &CurrentEntity{
+		OutDir:       cfg.OutDir,
+		SoftwareDeps: test.SoftwareDeps,
+		ServiceDeps:  test.ServiceDeps,
+	}
 	return &TestEntityRoot{
 		entityRoot: &EntityRoot{
+			ce:  ce,
 			cfg: cfg,
 			out: out,
 		},
@@ -289,7 +296,7 @@ func (r *TestEntityRoot) newTestHookState() *TestHookState {
 // f calls s.Fatal (which calls runtime.Goexit).
 func (r *TestEntityRoot) RunWithTestState(ctx context.Context, f func(ctx context.Context, s *State)) {
 	s := r.newTestState()
-	ctx = NewContext(ctx, s.currentEntity(), func(msg string) { s.Log(msg) })
+	ctx = NewContext(ctx, r.entityRoot.ce, func(msg string) { s.Log(msg) })
 	runAndRecover(func() { f(ctx, s) }, s)
 }
 
@@ -299,7 +306,7 @@ func (r *TestEntityRoot) RunWithTestState(ctx context.Context, f func(ctx contex
 // f calls s.Fatal (which calls runtime.Goexit).
 func (r *TestEntityRoot) RunWithPreState(ctx context.Context, f func(ctx context.Context, s *PreState)) {
 	s := r.newPreState()
-	ctx = NewContext(ctx, s.currentEntity(), func(msg string) { s.Log(msg) })
+	ctx = NewContext(ctx, r.entityRoot.ce, func(msg string) { s.Log(msg) })
 	runAndRecover(func() { f(ctx, s) }, s)
 }
 
@@ -309,7 +316,7 @@ func (r *TestEntityRoot) RunWithPreState(ctx context.Context, f func(ctx context
 // f calls s.Fatal (which calls runtime.Goexit).
 func (r *TestEntityRoot) RunWithTestHookState(ctx context.Context, f func(ctx context.Context, s *TestHookState)) {
 	s := r.newTestHookState()
-	ctx = NewContext(ctx, s.currentEntity(), func(msg string) { s.Log(msg) })
+	ctx = NewContext(ctx, r.entityRoot.ce, func(msg string) { s.Log(msg) })
 	runAndRecover(func() { f(ctx, s) }, s)
 }
 
@@ -363,15 +370,6 @@ func NewContext(ctx context.Context, ec *CurrentEntity, log func(msg string)) co
 	ctx = logging.NewContext(ctx, log)
 	ctx = WithCurrentEntity(ctx, ec)
 	return ctx
-}
-
-// currentEntity returns a CurrentEntity for this state.
-func (s *testMixin) currentEntity() *CurrentEntity {
-	return &CurrentEntity{
-		OutDir:       s.OutDir(),
-		SoftwareDeps: s.SoftwareDeps(),
-		ServiceDeps:  s.ServiceDeps(),
-	}
 }
 
 // DataPath returns the absolute path to use to access a data file previously

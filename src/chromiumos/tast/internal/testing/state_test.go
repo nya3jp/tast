@@ -58,7 +58,7 @@ var outputDataCmpOpts = []cmp.Option{
 
 func TestLog(t *gotesting.T) {
 	var out outputSink
-	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &out, &RuntimeConfig{})
+	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
 	s := root.newTestState()
 	s.Log("msg ", 1)
 	s.Logf("msg %d", 2)
@@ -70,7 +70,7 @@ func TestLog(t *gotesting.T) {
 
 func TestNestedRun(t *gotesting.T) {
 	var out outputSink
-	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &out, &RuntimeConfig{})
+	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
 	s := root.newTestState()
 	ctx := context.Background()
 
@@ -101,7 +101,7 @@ func TestNestedRun(t *gotesting.T) {
 
 func TestRunReturn(t *gotesting.T) {
 	var out outputSink
-	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &out, &RuntimeConfig{})
+	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
 	s := root.newTestState()
 	ctx := context.Background()
 
@@ -134,7 +134,7 @@ func TestRunReturn(t *gotesting.T) {
 
 func TestParallelRun(t *gotesting.T) {
 	var out outputSink
-	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &out, &RuntimeConfig{})
+	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
 	s := root.newTestState()
 	ctx := context.Background()
 
@@ -182,7 +182,7 @@ func TestParallelRun(t *gotesting.T) {
 
 func TestReportError(t *gotesting.T) {
 	var out outputSink
-	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &out, &RuntimeConfig{})
+	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
 	s := root.newTestState()
 
 	// Keep these lines next to each other (see below comparison).
@@ -224,7 +224,7 @@ func TestReportError(t *gotesting.T) {
 
 func TestInheritError(t *gotesting.T) {
 	var out outputSink
-	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &out, &RuntimeConfig{})
+	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
 
 	s1 := root.newTestState()
 	if s1.HasError() {
@@ -255,7 +255,7 @@ func TestInheritError(t *gotesting.T) {
 
 func TestReportErrorInPrecondition(t *gotesting.T) {
 	var out outputSink
-	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &out, &RuntimeConfig{})
+	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
 	s := root.newPreState()
 
 	// Keep these lines next to each other (see below comparison).
@@ -301,7 +301,7 @@ func errorFunc() error {
 
 func TestExtractErrorSimple(t *gotesting.T) {
 	var out outputSink
-	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &out, &RuntimeConfig{})
+	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
 	s := root.newTestState()
 
 	err := errorFunc()
@@ -326,7 +326,7 @@ func TestExtractErrorSimple(t *gotesting.T) {
 
 func TestExtractErrorHeuristic(t *gotesting.T) {
 	var out outputSink
-	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &out, &RuntimeConfig{})
+	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
 	s := root.newTestState()
 
 	err := errorFunc()
@@ -354,7 +354,7 @@ func TestExtractErrorHeuristic(t *gotesting.T) {
 
 func TestRunUsePrefix(t *gotesting.T) {
 	var out outputSink
-	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &out, &RuntimeConfig{})
+	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
 	s := root.newTestState()
 
 	ctx := context.Background()
@@ -388,7 +388,7 @@ func TestRunUsePrefix(t *gotesting.T) {
 
 func TestRunNonFatal(t *gotesting.T) {
 	var out outputSink
-	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &out, &RuntimeConfig{})
+	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
 	s := root.newTestState()
 
 	// Log the fatal message in a goroutine so the main goroutine that's running the test won't exit.
@@ -425,7 +425,7 @@ func TestRunNonFatal(t *gotesting.T) {
 
 func TestFatal(t *gotesting.T) {
 	var out outputSink
-	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &out, &RuntimeConfig{})
+	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
 	s := root.newTestState()
 
 	// Log the fatal message in a goroutine so the main goroutine that's running the test won't exit.
@@ -454,7 +454,7 @@ func TestFatal(t *gotesting.T) {
 
 func TestFatalInPrecondition(t *gotesting.T) {
 	var out outputSink
-	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &out, &RuntimeConfig{})
+	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
 	s := root.newPreState()
 
 	// Log the fatal message in a goroutine so the main goroutine that's running the test won't exit.
@@ -495,7 +495,7 @@ func TestDataPathDeclared(t *gotesting.T) {
 		{"foo/bar", filepath.Join(dataDir, "foo/bar")},
 	} {
 		var out outputSink
-		root := NewTestEntityRoot(&test, &out, &RuntimeConfig{DataDir: dataDir})
+		root := NewTestEntityRoot(&test, &RuntimeConfig{DataDir: dataDir}, &out)
 		s := root.newTestState()
 		if act := s.DataPath(tc.in); act != tc.exp {
 			t.Errorf("DataPath(%q) = %q; want %q", tc.in, act, tc.exp)
@@ -509,7 +509,7 @@ func TestDataPathNotDeclared(t *gotesting.T) {
 		Timeout: time.Minute,
 		Data:    []string{"foo"},
 	}
-	root := NewTestEntityRoot(&test, &out, &RuntimeConfig{DataDir: "/data"})
+	root := NewTestEntityRoot(&test, &RuntimeConfig{DataDir: "/data"}, &out)
 	s := root.newTestState()
 
 	// Request an undeclared data path to cause a panic.
@@ -542,7 +542,7 @@ func TestDataFileServer(t *gotesting.T) {
 
 	test := TestInstance{Data: []string{file1}}
 	var out outputSink
-	root := NewTestEntityRoot(&test, &out, &RuntimeConfig{DataDir: td})
+	root := NewTestEntityRoot(&test, &RuntimeConfig{DataDir: td}, &out)
 	s := root.newTestState()
 
 	srv := httptest.NewServer(http.FileServer(s.DataFileSystem()))
@@ -596,7 +596,7 @@ func TestVars(t *gotesting.T) {
 	test := &TestInstance{Vars: []string{validName, unsetName}}
 	cfg := &RuntimeConfig{Vars: map[string]string{validName: validValue, unregName: unregValue}}
 	var out outputSink
-	root := NewTestEntityRoot(test, &out, cfg)
+	root := NewTestEntityRoot(test, cfg, &out)
 	s := root.newTestState()
 
 	for _, tc := range []struct {
@@ -651,7 +651,7 @@ func TestMeta(t *gotesting.T) {
 	meta := Meta{TastPath: "/foo/bar", Target: "example.net", RunFlags: []string{"-foo", "-bar"}}
 	getMeta := func(test *TestInstance, cfg *RuntimeConfig) (meta *Meta, ok bool) {
 		var out outputSink
-		root := NewTestEntityRoot(test, &out, cfg)
+		root := NewTestEntityRoot(test, cfg, &out)
 		s := root.newTestState()
 
 		// Meta can panic, so run with recover.
@@ -696,7 +696,7 @@ func TestRPCHint(t *gotesting.T) {
 	hint := RPCHint{LocalBundleDir: "/path/to/bundles"}
 	getHint := func(test *TestInstance, cfg *RuntimeConfig) (hint *RPCHint, ok bool) {
 		var out outputSink
-		root := NewTestEntityRoot(test, &out, cfg)
+		root := NewTestEntityRoot(test, cfg, &out)
 		s := root.newTestState()
 
 		// RPCHint can panic, so run with recover.
@@ -733,7 +733,7 @@ func TestRPCHint(t *gotesting.T) {
 func TestDUT(t *gotesting.T) {
 	callDUT := func(test *TestInstance, cfg *RuntimeConfig) (ok bool) {
 		var out outputSink
-		root := NewTestEntityRoot(test, &out, cfg)
+		root := NewTestEntityRoot(test, cfg, &out)
 		s := root.newTestState()
 
 		// DUT can panic, so run with recover.
@@ -767,7 +767,7 @@ func TestCloudStorage(t *gotesting.T) {
 	want := NewCloudStorage(nil)
 
 	var out outputSink
-	root := NewTestEntityRoot(&TestInstance{Name: "example.Test"}, &out, &RuntimeConfig{CloudStorage: want})
+	root := NewTestEntityRoot(&TestInstance{Name: "example.Test"}, &RuntimeConfig{CloudStorage: want}, &out)
 	s := root.newTestState()
 	got := s.CloudStorage()
 

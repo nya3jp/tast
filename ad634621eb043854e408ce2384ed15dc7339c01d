@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e9817b68_453922a0",
+        "filename": "src/chromiumos/tast/internal/runner/bundles.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-27T08:45:01Z",
+      "side": 1,
+      "message": "nit:\n\n for _, t :\u003d range toe.tests {\n   t.Bundle \u003d toe.bundle\n }",
+      "range": {
+        "startLine": 119,
+        "startChar": 5,
+        "endLine": 120,
+        "endChar": 6
+      },
+      "revId": "ad634621eb043854e408ce2384ed15dc7339c01d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a183806a_0041e1a2",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 445,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-27T08:45:01Z",
+      "side": 1,
+      "message": "I guess we want to set a bundle name, not a bundle path (i.e. \"cros\" instead of \"/usr/local/tast/libexec/bundles/local/cros\"). Otherwise it\u0027s not easy to match local bundles and remote bundles.",
+      "range": {
+        "startLine": 445,
+        "startChar": 18,
+        "endLine": 445,
+        "endChar": 30
+      },
+      "revId": "ad634621eb043854e408ce2384ed15dc7339c01d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

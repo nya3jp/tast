@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a684eae2_df39afff",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-27T00:28:38Z",
+      "side": 1,
+      "message": "I have change the code to use linuxssh, so \"tast.cros.baserpc.FileSystem\" is no longer needed. I also move the faillog package to baserpc. Please check. Thanks.",
+      "revId": "8180c59c5d2b1b033fa866e7610f0c4b593684d9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

@@ -16,6 +16,69 @@
       "revId": "4ddac94d65c9fe31f084b968a5ea4db67f17b962",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c2c945a7_fe1b34e2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 17
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-27T09:44:32Z",
+      "side": 1,
+      "message": "Nice! We\u0027re very close to finish.\n",
+      "revId": "4ddac94d65c9fe31f084b968a5ea4db67f17b962",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e80a038a_f6af8809",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig_test.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-27T09:44:32Z",
+      "side": 1,
+      "message": "testData is useful when passing multiple scenarios, but at this moment []*testData doesn\u0027t appear anywhere. How about passing them as is, i.e.\n\n func testForResolveHostFromDefaultConfig(t *testing.T, input, expected string)",
+      "range": {
+        "startLine": 23,
+        "startChar": 55,
+        "endLine": 23,
+        "endChar": 69
+      },
+      "revId": "4ddac94d65c9fe31f084b968a5ea4db67f17b962",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2297bfce_0772c32f",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig_test.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-27T09:44:32Z",
+      "side": 1,
+      "message": "Now that config files are all static, we can commit them to Git!\n\n\"testdata\" is a directory name used to hold data files for unit tests.\nhttps://golang.org/pkg/cmd/go/internal/test/\n\nWhen unit tests are run, current working directory is the directory containing the unit test code, so accessing data files is easy like:\n\n ioutil.ReadFile(\"testdata/foo.txt\")",
+      "range": {
+        "startLine": 24,
+        "startChar": 1,
+        "endLine": 26,
+        "endChar": 0
+      },
+      "revId": "4ddac94d65c9fe31f084b968a5ea4db67f17b962",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

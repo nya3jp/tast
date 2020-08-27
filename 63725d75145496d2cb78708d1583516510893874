@@ -118,6 +118,24 @@
     },
     {
       "key": {
+        "uuid": "b5ec8494_cb8ac9dc",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig_test.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-27T09:44:32Z",
+      "side": 1,
+      "message": "Any way to make unit tests compact is okay, thanks!",
+      "parentUuid": "821110cb_42072a4c",
+      "revId": "63725d75145496d2cb78708d1583516510893874",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "430bc5cc_d7085728",
         "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig_test.go",
         "patchSetId": 14

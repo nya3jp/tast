@@ -104,6 +104,24 @@
       "revId": "501cfe9499320e94056246cd9a2cdc34065e72df",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fcb1ca15_5a351987",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 45
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1111649
+      },
+      "writtenOn": "2020-08-27T17:03:24Z",
+      "side": 1,
+      "message": "Please run gofmt. Comments continue to move around when I cherry-pick this patch.",
+      "parentUuid": "8c0ebb12_da855d55",
+      "revId": "501cfe9499320e94056246cd9a2cdc34065e72df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

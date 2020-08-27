@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7e6eb110_a8240c00",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 52
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1111649
+      },
+      "writtenOn": "2020-08-27T17:03:24Z",
+      "side": 1,
+      "message": "Please maintain the original formatting. The columns were indented.",
+      "revId": "395657208fefef3ee4c4f2a6b7c650c55bc3696e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f9b53b3e_fb3e9902",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 52
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1111649
+      },
+      "writtenOn": "2020-08-27T17:03:24Z",
+      "side": 1,
+      "message": "Unrelated change.",
+      "revId": "395657208fefef3ee4c4f2a6b7c650c55bc3696e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9a0f7e37_a192c5f4",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 52
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1111649
+      },
+      "writtenOn": "2020-08-27T17:03:24Z",
+      "side": 1,
+      "message": "Unrelated change.",
+      "revId": "395657208fefef3ee4c4f2a6b7c650c55bc3696e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

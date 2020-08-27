@@ -59,6 +59,30 @@
     },
     {
       "key": {
+        "uuid": "3dfc16e9_9382235e",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig_test.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-27T21:40:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e80a038a_f6af8809",
+      "range": {
+        "startLine": 23,
+        "startChar": 55,
+        "endLine": 23,
+        "endChar": 69
+      },
+      "revId": "4ddac94d65c9fe31f084b968a5ea4db67f17b962",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2297bfce_0772c32f",
         "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig_test.go",
         "patchSetId": 17
@@ -79,6 +103,30 @@
       "revId": "4ddac94d65c9fe31f084b968a5ea4db67f17b962",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8d1389d5_fb6ab633",
+        "filename": "src/chromiumos/tast/internal/sshconfig/sshconfig_test.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-08-27T21:40:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2297bfce_0772c32f",
+      "range": {
+        "startLine": 24,
+        "startChar": 1,
+        "endLine": 26,
+        "endChar": 0
+      },
+      "revId": "4ddac94d65c9fe31f084b968a5ea4db67f17b962",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "28a41ca3_24f83b60",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 19
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-08-28T10:41:51Z",
+      "side": 1,
+      "message": "BTW, please remember to remove \"WIP\" from the CL description.",
+      "range": {
+        "startLine": 7,
+        "startChar": 51,
+        "endLine": 7,
+        "endChar": 52
+      },
+      "revId": "e40d765053b4f03d3b7e4f93273887fa1ade963d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "e744ecde_4ed5699d",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 19

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7e353ae9_555ffe1c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-08-28T15:58:02Z",
+      "side": 1,
+      "message": "LGTM.\n\nFYI: For short term, we\u0027re ok to use infra/device/config.proto, but eventually they needs to migrate into config/proto somehow.\n\nFYI: yamaguchi@ who\u0027re working on f20 migration.",
+      "revId": "a7b68275d4b4ae1f5a91f8bd582ffbc8ddc5a787",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

@@ -34,6 +34,41 @@
       "revId": "a7b68275d4b4ae1f5a91f8bd582ffbc8ddc5a787",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4c6448e4_7c8926e3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-08-28T16:49:05Z",
+      "side": 1,
+      "message": "fyi",
+      "revId": "a7b68275d4b4ae1f5a91f8bd582ffbc8ddc5a787",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "71999491_d6262cdf",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-08-28T16:49:05Z",
+      "side": 1,
+      "message": "I hope infra team enrich the documentation :-).\n\nIn short, infra/proto was the older schema, and infra team is moving to config/proto. Eventually, infra will take the responsibility of the scheduling, and the new protobuf will be the schema describing the test dependencies shared between Tast and the infra. AFAIK, there\u0027s no concrete ETA yet, though.",
+      "parentUuid": "2ba84a20_6ee7fff5",
+      "revId": "a7b68275d4b4ae1f5a91f8bd582ffbc8ddc5a787",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

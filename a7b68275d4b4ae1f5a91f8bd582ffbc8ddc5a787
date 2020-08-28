@@ -16,6 +16,24 @@
       "revId": "a7b68275d4b4ae1f5a91f8bd582ffbc8ddc5a787",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2ba84a20_6ee7fff5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1326157
+      },
+      "writtenOn": "2020-08-28T16:39:48Z",
+      "side": 1,
+      "message": "Thanks Hidehiko. Could you please help me understand what you mean by migrating into config/proto? I see there is a repo at src/config/proto, but I\u0027m unable to find any documentation about how to use it.",
+      "parentUuid": "7e353ae9_555ffe1c",
+      "revId": "a7b68275d4b4ae1f5a91f8bd582ffbc8ddc5a787",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

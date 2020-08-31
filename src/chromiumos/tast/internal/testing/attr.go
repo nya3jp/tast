@@ -184,8 +184,38 @@ Tests in this group are not used for build verification.
 		Contacts: []string{"chromeos-platform-syd@google.com"},
 		Desc:     `A group of Flashrom destructive tests.`,
 	},
+	// TODO(yich): Remove this group after change all hwsec_destructive tast to hwsec_destructive_func.
 	{
 		Name:     "hwsec_destructive",
+		Contacts: []string{"cros-hwsec@google.com"},
+		Desc:     `A group of HWSec destructive tests that wipe and recreate encstateful in the tests.`,
+	},
+	{
+		Name:     "hwsec_destructive_crosbolt",
+		Contacts: []string{"cros-hwsec@google.com"},
+		Desc: `A group of HWSec destructive performance tests tests that wipe and recreate encstateful in the tests,
+and run regularly by the crosbolt team.`,
+		Subattrs: []*attr{
+			{
+				Name: "crosbolt_perbuild",
+				Desc: `Indicates that this test should run for every Chrome OS build.`,
+			},
+			{
+				Name: "crosbolt_nightly",
+				Desc: `Indicates that this test should run nightly.`,
+			},
+			{
+				Name: "crosbolt_weekly",
+				Desc: `Indicates that this test should run weekly.`,
+			},
+			{
+				Name: "crosbolt_memory_nightly",
+				Desc: `Indicates that this test is a memory test and should run nightly.`,
+			},
+		},
+	},
+	{
+		Name:     "hwsec_destructive_func",
 		Contacts: []string{"cros-hwsec@google.com"},
 		Desc:     `A group of HWSec destructive tests that wipe and recreate encstateful in the tests.`,
 	},

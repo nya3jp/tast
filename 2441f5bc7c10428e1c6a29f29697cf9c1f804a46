@@ -1,0 +1,113 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "451da3f5_74647871",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1300049
+      },
+      "writtenOn": "2020-08-31T05:30:24Z",
+      "side": 1,
+      "message": "Besides the comments in attr.go, I\u0027d suggest adding at least one hwsec eng as a reviewer and/or cc the hwsec team in these CLs, as I already left the hwsec team.",
+      "revId": "2441f5bc7c10428e1c6a29f29697cf9c1f804a46",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2b09d6ed_0623b7e7",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 189,
+      "author": {
+        "id": 1300049
+      },
+      "writtenOn": "2020-08-31T05:30:24Z",
+      "side": 1,
+      "message": "I think you can just rename this to hwsec_destructive_func and make corresponding changes in this CL. You will also need to touch control.hwsec-destructive on the autotest side in another CL, and make those 2 CLs depend on each other. It\u0027s up to you though.",
+      "range": {
+        "startLine": 189,
+        "startChar": 13,
+        "endLine": 189,
+        "endChar": 30
+      },
+      "revId": "2441f5bc7c10428e1c6a29f29697cf9c1f804a46",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "03f5565d_41c3601f",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 1300049
+      },
+      "writtenOn": "2020-08-31T05:30:24Z",
+      "side": 1,
+      "message": "Like other perf test groups above, maybe add the desc:\n\"Tests in this group are not used for build verification.\"",
+      "range": {
+        "startLine": 196,
+        "startChar": 2,
+        "endLine": 196,
+        "endChar": 7
+      },
+      "revId": "2441f5bc7c10428e1c6a29f29697cf9c1f804a46",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "89ec1896_ef399b75",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 1300049
+      },
+      "writtenOn": "2020-08-31T05:30:24Z",
+      "side": 1,
+      "message": "AFAIK, there\u0027s no \"crosbolt team\" now. Each team is responsible for their own perf tests, although they all run in one of the crosbolt_perf_* suites. Maybe you can say something like\n\"run regularly in the crosbolt_perf_* suites\"?",
+      "range": {
+        "startLine": 197,
+        "startChar": 4,
+        "endLine": 197,
+        "endChar": 39
+      },
+      "revId": "2441f5bc7c10428e1c6a29f29697cf9c1f804a46",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f643daad_6a173e24",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 214,
+      "author": {
+        "id": 1300049
+      },
+      "writtenOn": "2020-08-31T05:30:24Z",
+      "side": 1,
+      "message": "Do you need all those 4 subattrs for now or soon? If not, I\u0027d suggest you to add new ones only when needed.",
+      "range": {
+        "startLine": 199,
+        "startChar": 3,
+        "endLine": 214,
+        "endChar": 5
+      },
+      "revId": "2441f5bc7c10428e1c6a29f29697cf9c1f804a46",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

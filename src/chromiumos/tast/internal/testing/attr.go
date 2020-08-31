@@ -185,7 +185,21 @@ Tests in this group are not used for build verification.
 		Desc:     `A group of Flashrom destructive tests.`,
 	},
 	{
-		Name:     "hwsec_destructive",
+		Name:     "hwsec_destructive_crosbolt",
+		Contacts: []string{"cros-hwsec@google.com"},
+		Desc: `A group of HWSec destructive performance tests that wipe and recreate encstateful in the tests,
+and run regularly in the crosbolt_perf_* suites.
+
+Tests in this group are not used for build verification.`,
+		Subattrs: []*attr{
+			{
+				Name: "hwsec_destructive_crosbolt_perbuild",
+				Desc: `Indicates that this test should run for every Chrome OS build.`,
+			},
+		},
+	},
+	{
+		Name:     "hwsec_destructive_func",
 		Contacts: []string{"cros-hwsec@google.com"},
 		Desc:     `A group of HWSec destructive tests that wipe and recreate encstateful in the tests.`,
 	},

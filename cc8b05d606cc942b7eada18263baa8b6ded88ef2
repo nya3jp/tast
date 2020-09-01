@@ -50,6 +50,121 @@
       "revId": "cc8b05d606cc942b7eada18263baa8b6ded88ef2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b22b2d5e_bf57eb74",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 325,
+      "author": {
+        "id": 1002858
+      },
+      "writtenOn": "2020-09-01T06:32:43Z",
+      "side": 1,
+      "message": "Most of the rest of this doc avoids using \"we\".  How about \"For any function with a corresponding cleanup function, prefer using the [defer] statement to keep the two function calls close together\"",
+      "range": {
+        "startLine": 324,
+        "startChar": 0,
+        "endLine": 325,
+        "endChar": 47
+      },
+      "revId": "cc8b05d606cc942b7eada18263baa8b6ded88ef2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "091e3f15_9d79a4ac",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 334,
+      "author": {
+        "id": 1002858
+      },
+      "writtenOn": "2020-09-01T06:32:43Z",
+      "side": 1,
+      "message": "I think you should move this sentence to a new line and start off with \"An example of the wrong way to reserve time for cleanup\".  Otherwise, someone skimming through this quickly might see \"should reserve some time\" and then a code snippet and not read further.",
+      "range": {
+        "startLine": 333,
+        "startChar": 54,
+        "endLine": 334,
+        "endChar": 53
+      },
+      "revId": "cc8b05d606cc942b7eada18263baa8b6ded88ef2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "64c10257_438a71aa",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 345,
+      "author": {
+        "id": 1002858
+      },
+      "writtenOn": "2020-09-01T06:32:43Z",
+      "side": 1,
+      "message": "could",
+      "range": {
+        "startLine": 345,
+        "startChar": 52,
+        "endLine": 345,
+        "endChar": 55
+      },
+      "revId": "cc8b05d606cc942b7eada18263baa8b6ded88ef2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "136bd83f_41848870",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 348,
+      "author": {
+        "id": 1002858
+      },
+      "writtenOn": "2020-09-01T06:32:43Z",
+      "side": 1,
+      "message": ", leading to",
+      "range": {
+        "startLine": 348,
+        "startChar": 39,
+        "endLine": 348,
+        "endChar": 48
+      },
+      "revId": "cc8b05d606cc942b7eada18263baa8b6ded88ef2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fead9d06_bdaa8b2c",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 350,
+      "author": {
+        "id": 1002858
+      },
+      "writtenOn": "2020-09-01T06:32:43Z",
+      "side": 1,
+      "message": "\"The right way to reserve time:\" to match the suggestion above",
+      "range": {
+        "startLine": 350,
+        "startChar": 0,
+        "endLine": 350,
+        "endChar": 44
+      },
+      "revId": "cc8b05d606cc942b7eada18263baa8b6ded88ef2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

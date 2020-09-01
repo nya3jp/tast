@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f07c1539_9dd19cae",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 53
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2020-09-01T15:24:37Z",
+      "side": 1,
+      "message": "I only have one comment.",
+      "revId": "28262acb52d2f21e33c5bdb3dedd4e94b9fa288a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "80dc202e_f6f3f138",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 53
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2020-09-01T15:24:37Z",
+      "side": 1,
+      "message": "Could you move this line at L111 because software dependencies are sorted in alphabetical order in this document?\n\nI\u0027m sorry that I couldn\u0027t catch this earlier!",
+      "revId": "28262acb52d2f21e33c5bdb3dedd4e94b9fa288a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

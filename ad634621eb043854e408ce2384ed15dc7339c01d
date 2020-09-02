@@ -117,6 +117,30 @@
       "revId": "ad634621eb043854e408ce2384ed15dc7339c01d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d31f89a9_824d95ed",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 445,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-09-02T09:02:41Z",
+      "side": 1,
+      "message": "The bundle path is used by tast to classify local tests.\nAs long as they are different for different bundle, whether it\u0027s the full path or not doesn\u0027t matter IIUC. I might not fully understand your concern though. Feel free to ping me about it.\nFor now, let me submit this as is.",
+      "parentUuid": "7c1754a2_498bd7f4",
+      "range": {
+        "startLine": 445,
+        "startChar": 18,
+        "endLine": 445,
+        "endChar": 30
+      },
+      "revId": "ad634621eb043854e408ce2384ed15dc7339c01d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

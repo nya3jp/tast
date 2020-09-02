@@ -26,9 +26,8 @@ import (
 )
 
 const (
-	exitTimeout     = 30 * time.Second // extra time granted to test-related funcs to exit
-	preTestTimeout  = 3 * time.Minute  // timeout for RuntimeConfig.TestHook
-	postTestTimeout = 3 * time.Minute  // timeout for a closure returned by RuntimeConfig.TestHook
+	preTestTimeout  = 3 * time.Minute // timeout for RuntimeConfig.TestHook
+	postTestTimeout = 3 * time.Minute // timeout for a closure returned by RuntimeConfig.TestHook
 )
 
 // DownloadMode specifies a strategy to download external data files.
@@ -238,19 +237,16 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *entityOutputStr
 		PreCtx:       precfg.ctx,
 		Purgeable:    dl.Purgeable(),
 	}
-	stages := buildStages(t, tout, pcfg, precfg, rcfg)
+	root := testing.NewTestEntityRoot(t, rcfg, tout)
 
-	ok := runStages(ctx, stages)
-	if !ok {
-		// If runStages reported that the test didn't finish, print diagnostic messages.
-		const msg = "Test did not return on timeout (see log for goroutine dump)"
+	if err := runTestWithRoot(ctx, t, root, pcfg, precfg); err != nil {
+		// If runTestWithRoot reported that the test didn't finish, print diagnostic messages.
+		msg := fmt.Sprintf("%v (see log for goroutine dump)", err)
 		tout.Error(testing.NewError(nil, msg, msg, 0))
 		dumpGoroutines(tout)
+		return err
 	}
 
-	if !ok {
-		return errors.New("test did not return on timeout")
-	}
 	return nil
 }
 
@@ -298,119 +294,119 @@ func (d *downloader) download(ctx context.Context, tests []*testing.TestInstance
 	d.purgeable = extdata.Ensure(ctx, d.pcfg.DataDir, d.pcfg.BuildArtifactsURL, tests, d.cl)
 }
 
-// buildStages builds stages to run a test.
+// runTestWithRoot runs a test with TestEntityRoot.
 //
 // The time allotted to the test is generally the sum of t.Timeout and t.ExitTimeout, but
 // additional time may be allotted for preconditions and pre/post-test hooks.
-func buildStages(t *testing.TestInstance, tout testing.OutputStream, pcfg *Config, precfg *preConfig, rcfg *testing.RuntimeConfig) []stage {
-	var stages []stage
-	addStage := func(f stageFunc, ctxTimeout, exitTimeout time.Duration) {
-		stages = append(stages, stage{f, ctxTimeout, exitTimeout})
-	}
+func runTestWithRoot(ctx context.Context, t *testing.TestInstance, root *testing.TestEntityRoot, pcfg *Config, precfg *preConfig) error {
+	// codeName is included in error messages if the user code ignores the timeout.
+	// For compatibility, the same fixed name is used for tests, preconditions and test hooks.
+	const codeName = "Test"
 
-	root := testing.NewTestEntityRoot(t, rcfg, tout)
 	var postTestFunc func(ctx context.Context, s *testing.TestHookState)
 
+	ctx = root.NewContext(ctx)
+	testState := root.NewTestState()
+
 	// First, perform setup and run the pre-test function.
-	addStage(func(ctx context.Context) {
-		root.RunWithTestState(ctx, func(ctx context.Context, s *testing.State) {
-			// The test bundle is responsible for ensuring t.Timeout is nonzero before calling Run,
-			// but we call s.Fatal instead of panicking since it's arguably nicer to report individual
-			// test failures instead of aborting the entire run.
-			if t.Timeout <= 0 {
-				s.Fatal("Invalid timeout ", t.Timeout)
-			}
+	if err := safeCall(ctx, codeName, preTestTimeout, defaultGracePeriod, errorOnPanic(testState), func(ctx context.Context) {
+		// The test bundle is responsible for ensuring t.Timeout is nonzero before calling Run,
+		// but we call s.Fatal instead of panicking since it's arguably nicer to report individual
+		// test failures instead of aborting the entire run.
+		if t.Timeout <= 0 {
+			testState.Fatal("Invalid timeout ", t.Timeout)
+		}
 
-			if rcfg.OutDir != "" { // often left blank for unit tests
-				if err := os.MkdirAll(rcfg.OutDir, 0755); err != nil {
-					s.Fatal("Failed to create output dir: ", err)
-				}
-				// Make the directory world-writable so that tests can create files as other users,
-				// and set the sticky bit to prevent users from deleting other users' files.
-				// (The mode passed to os.MkdirAll is modified by umask, so we need an explicit chmod.)
-				if err := os.Chmod(rcfg.OutDir, 0777|os.ModeSticky); err != nil {
-					s.Fatal("Failed to set permissions on output dir: ", err)
-				}
+		outDir := testState.OutDir()
+		if outDir != "" { // often left blank for unit tests
+			if err := os.MkdirAll(outDir, 0755); err != nil {
+				testState.Fatal("Failed to create output dir: ", err)
 			}
+			// Make the directory world-writable so that tests can create files as other users,
+			// and set the sticky bit to prevent users from deleting other users' files.
+			// (The mode passed to os.MkdirAll is modified by umask, so we need an explicit chmod.)
+			if err := os.Chmod(outDir, 0777|os.ModeSticky); err != nil {
+				testState.Fatal("Failed to set permissions on output dir: ", err)
+			}
+		}
 
-			// Make sure all required data files exist.
-			for _, fn := range t.Data {
-				fp := s.DataPath(fn)
-				if _, err := os.Stat(fp); err == nil {
-					continue
-				}
-				ep := fp + testing.ExternalErrorSuffix
-				if data, err := ioutil.ReadFile(ep); err == nil {
-					s.Errorf("Required data file %s missing: %s", fn, string(data))
-				} else {
-					s.Errorf("Required data file %s missing", fn)
-				}
+		// Make sure all required data files exist.
+		for _, fn := range t.Data {
+			fp := testState.DataPath(fn)
+			if _, err := os.Stat(fp); err == nil {
+				continue
 			}
-			if s.HasError() {
-				return
+			ep := fp + testing.ExternalErrorSuffix
+			if data, err := ioutil.ReadFile(ep); err == nil {
+				testState.Errorf("Required data file %s missing: %s", fn, string(data))
+			} else {
+				testState.Errorf("Required data file %s missing", fn)
 			}
+		}
+		if testState.HasError() {
+			return
+		}
 
-			// In remote tests, reconnect to the DUT if needed.
-			if rcfg.RemoteData != nil {
-				dt := s.DUT()
-				if !dt.Connected(ctx) {
-					s.Log("Reconnecting to DUT")
-					if err := dt.Connect(ctx); err != nil {
-						s.Fatal("Failed to reconnect to DUT: ", err)
-					}
+		// In remote tests, reconnect to the DUT if needed.
+		if pcfg.RemoteData != nil {
+			dt := testState.DUT()
+			if !dt.Connected(ctx) {
+				testState.Log("Reconnecting to DUT")
+				if err := dt.Connect(ctx); err != nil {
+					testState.Fatal("Failed to reconnect to DUT: ", err)
 				}
 			}
-		})
+		}
 
-		root.RunWithTestHookState(ctx, func(ctx context.Context, s *testing.TestHookState) {
-			if pcfg.TestHook != nil {
-				postTestFunc = pcfg.TestHook(ctx, s)
-			}
-		})
-	}, preTestTimeout, exitTimeout)
+		if pcfg.TestHook != nil {
+			postTestFunc = pcfg.TestHook(ctx, root.NewTestHookState())
+		}
+	}); err != nil {
+		return err
+	}
 
 	// Prepare the test's precondition (if any) if setup was successful.
-	if t.Pre != nil {
-		addStage(func(ctx context.Context) {
-			if root.HasError() {
-				return
-			}
-			root.RunWithPreState(ctx, func(ctx context.Context, s *testing.PreState) {
-				s.Logf("Preparing precondition %q", t.Pre)
-				root.SetPreValue(t.Pre.Prepare(ctx, s))
-			})
-		}, t.Pre.Timeout(), exitTimeout)
+	if !root.HasError() && t.Pre != nil {
+		preState := root.NewPreState()
+		if err := safeCall(ctx, codeName, t.Pre.Timeout(), defaultGracePeriod, errorOnPanic(preState), func(ctx context.Context) {
+			preState.Logf("Preparing precondition %q", t.Pre)
+			root.SetPreValue(t.Pre.Prepare(ctx, preState))
+		}); err != nil {
+			return err
+		}
 	}
 
 	// Next, run the test function itself if no errors have been reported so far.
-	addStage(func(ctx context.Context) {
-		if root.HasError() {
-			return
+	if !root.HasError() {
+		if err := safeCall(ctx, codeName, t.Timeout, timeoutOrDefault(t.ExitTimeout, defaultGracePeriod), errorOnPanic(testState), func(ctx context.Context) {
+			t.Func(ctx, testState)
+		}); err != nil {
+			return err
 		}
-		root.RunWithTestState(ctx, t.Func)
-	}, t.Timeout, timeoutOrDefault(t.ExitTimeout, exitTimeout))
+	}
 
 	// If this is the final test using this precondition, close it
 	// (even if setup, t.Pre.Prepare, or t.Func failed).
 	if precfg.close {
-		addStage(func(ctx context.Context) {
-			root.RunWithPreState(ctx, func(ctx context.Context, s *testing.PreState) {
-				s.Logf("Closing precondition %q", t.Pre.String())
-				t.Pre.Close(ctx, s)
-			})
-		}, t.Pre.Timeout(), exitTimeout)
+		preState := root.NewPreState()
+		if err := safeCall(ctx, codeName, t.Pre.Timeout(), defaultGracePeriod, errorOnPanic(preState), func(ctx context.Context) {
+			preState.Logf("Closing precondition %q", t.Pre.String())
+			t.Pre.Close(ctx, preState)
+		}); err != nil {
+			return err
+		}
 	}
 
 	// Finally, run the post-test functions unconditionally.
-	addStage(func(ctx context.Context) {
-		root.RunWithTestHookState(ctx, func(ctx context.Context, s *testing.TestHookState) {
-			if postTestFunc != nil {
-				postTestFunc(ctx, s)
-			}
-		})
-	}, postTestTimeout, exitTimeout)
+	if postTestFunc != nil {
+		if err := safeCall(ctx, codeName, postTestTimeout, defaultGracePeriod, errorOnPanic(testState), func(ctx context.Context) {
+			postTestFunc(ctx, root.NewTestHookState())
+		}); err != nil {
+			return err
+		}
+	}
 
-	return stages
+	return nil
 }
 
 // timeoutOrDefault returns timeout if positive or def otherwise.

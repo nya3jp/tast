@@ -59,7 +59,7 @@ var outputDataCmpOpts = []cmp.Option{
 func TestLog(t *gotesting.T) {
 	var out outputSink
 	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
-	s := root.newTestState()
+	s := root.NewTestState()
 	s.Log("msg ", 1)
 	s.Logf("msg %d", 2)
 	exp := outputData{Logs: []string{"msg 1", "msg 2"}}
@@ -71,7 +71,7 @@ func TestLog(t *gotesting.T) {
 func TestNestedRun(t *gotesting.T) {
 	var out outputSink
 	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
-	s := root.newTestState()
+	s := root.NewTestState()
 	ctx := context.Background()
 
 	s.Run(ctx, "p1", func(ctx context.Context, s *State) {
@@ -102,7 +102,7 @@ func TestNestedRun(t *gotesting.T) {
 func TestRunReturn(t *gotesting.T) {
 	var out outputSink
 	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
-	s := root.newTestState()
+	s := root.NewTestState()
 	ctx := context.Background()
 
 	if res := s.Run(ctx, "p1", func(ctx context.Context, s *State) {
@@ -135,7 +135,7 @@ func TestRunReturn(t *gotesting.T) {
 func TestParallelRun(t *gotesting.T) {
 	var out outputSink
 	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
-	s := root.newTestState()
+	s := root.NewTestState()
 	ctx := context.Background()
 
 	var wg sync.WaitGroup
@@ -183,7 +183,7 @@ func TestParallelRun(t *gotesting.T) {
 func TestReportError(t *gotesting.T) {
 	var out outputSink
 	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
-	s := root.newTestState()
+	s := root.NewTestState()
 
 	// Keep these lines next to each other (see below comparison).
 	s.Error("error ", 1)
@@ -226,7 +226,7 @@ func TestInheritError(t *gotesting.T) {
 	var out outputSink
 	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
 
-	s1 := root.newTestState()
+	s1 := root.NewTestState()
 	if s1.HasError() {
 		t.Error("First State: HasError()=true initially; want false")
 	}
@@ -236,7 +236,7 @@ func TestInheritError(t *gotesting.T) {
 	}
 
 	// The second state should be aware of the error reported to the first state.
-	s2 := root.newTestState()
+	s2 := root.NewTestState()
 	if !s2.HasError() {
 		t.Error("Second State: HasError()=false initially; want true")
 	}
@@ -256,7 +256,7 @@ func TestInheritError(t *gotesting.T) {
 func TestReportErrorInPrecondition(t *gotesting.T) {
 	var out outputSink
 	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
-	s := root.newPreState()
+	s := root.NewPreState()
 
 	// Keep these lines next to each other (see below comparison).
 	s.Error("error ", 1)
@@ -302,7 +302,7 @@ func errorFunc() error {
 func TestExtractErrorSimple(t *gotesting.T) {
 	var out outputSink
 	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
-	s := root.newTestState()
+	s := root.NewTestState()
 
 	err := errorFunc()
 	s.Error(err)
@@ -327,7 +327,7 @@ func TestExtractErrorSimple(t *gotesting.T) {
 func TestExtractErrorHeuristic(t *gotesting.T) {
 	var out outputSink
 	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
-	s := root.newTestState()
+	s := root.NewTestState()
 
 	err := errorFunc()
 	s.Error("Failed something  :  ", err)
@@ -355,7 +355,7 @@ func TestExtractErrorHeuristic(t *gotesting.T) {
 func TestRunUsePrefix(t *gotesting.T) {
 	var out outputSink
 	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
-	s := root.newTestState()
+	s := root.NewTestState()
 
 	ctx := context.Background()
 	s.Run(ctx, "f1", func(ctx context.Context, s *State) {
@@ -389,7 +389,7 @@ func TestRunUsePrefix(t *gotesting.T) {
 func TestRunNonFatal(t *gotesting.T) {
 	var out outputSink
 	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
-	s := root.newTestState()
+	s := root.NewTestState()
 
 	// Log the fatal message in a goroutine so the main goroutine that's running the test won't exit.
 	done := make(chan bool)
@@ -426,7 +426,7 @@ func TestRunNonFatal(t *gotesting.T) {
 func TestFatal(t *gotesting.T) {
 	var out outputSink
 	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
-	s := root.newTestState()
+	s := root.NewTestState()
 
 	// Log the fatal message in a goroutine so the main goroutine that's running the test won't exit.
 	done := make(chan bool)
@@ -455,7 +455,7 @@ func TestFatal(t *gotesting.T) {
 func TestFatalInPrecondition(t *gotesting.T) {
 	var out outputSink
 	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
-	s := root.newPreState()
+	s := root.NewPreState()
 
 	// Log the fatal message in a goroutine so the main goroutine that's running the test won't exit.
 	done := make(chan bool)
@@ -496,7 +496,7 @@ func TestDataPathDeclared(t *gotesting.T) {
 	} {
 		var out outputSink
 		root := NewTestEntityRoot(&test, &RuntimeConfig{DataDir: dataDir}, &out)
-		s := root.newTestState()
+		s := root.NewTestState()
 		if act := s.DataPath(tc.in); act != tc.exp {
 			t.Errorf("DataPath(%q) = %q; want %q", tc.in, act, tc.exp)
 		}
@@ -510,7 +510,7 @@ func TestDataPathNotDeclared(t *gotesting.T) {
 		Data:    []string{"foo"},
 	}
 	root := NewTestEntityRoot(&test, &RuntimeConfig{DataDir: "/data"}, &out)
-	s := root.newTestState()
+	s := root.NewTestState()
 
 	// Request an undeclared data path to cause a panic.
 	func() {
@@ -543,7 +543,7 @@ func TestDataFileServer(t *gotesting.T) {
 	test := TestInstance{Data: []string{file1}}
 	var out outputSink
 	root := NewTestEntityRoot(&test, &RuntimeConfig{DataDir: td}, &out)
-	s := root.newTestState()
+	s := root.NewTestState()
 
 	srv := httptest.NewServer(http.FileServer(s.DataFileSystem()))
 	defer srv.Close()
@@ -597,7 +597,7 @@ func TestVars(t *gotesting.T) {
 	cfg := &RuntimeConfig{Vars: map[string]string{validName: validValue, unregName: unregValue}}
 	var out outputSink
 	root := NewTestEntityRoot(test, cfg, &out)
-	s := root.newTestState()
+	s := root.NewTestState()
 
 	for _, tc := range []struct {
 		req   bool   // if true, call RequiredVar instead of Var
@@ -652,7 +652,7 @@ func TestMeta(t *gotesting.T) {
 	getMeta := func(test *TestInstance, cfg *RuntimeConfig) (meta *Meta, ok bool) {
 		var out outputSink
 		root := NewTestEntityRoot(test, cfg, &out)
-		s := root.newTestState()
+		s := root.NewTestState()
 
 		// Meta can panic, so run with recover.
 		defer func() {
@@ -697,7 +697,7 @@ func TestRPCHint(t *gotesting.T) {
 	getHint := func(test *TestInstance, cfg *RuntimeConfig) (hint *RPCHint, ok bool) {
 		var out outputSink
 		root := NewTestEntityRoot(test, cfg, &out)
-		s := root.newTestState()
+		s := root.NewTestState()
 
 		// RPCHint can panic, so run with recover.
 		defer func() {
@@ -734,7 +734,7 @@ func TestDUT(t *gotesting.T) {
 	callDUT := func(test *TestInstance, cfg *RuntimeConfig) (ok bool) {
 		var out outputSink
 		root := NewTestEntityRoot(test, cfg, &out)
-		s := root.newTestState()
+		s := root.NewTestState()
 
 		// DUT can panic, so run with recover.
 		// so run this in a goroutine to isolate it from the test.
@@ -768,7 +768,7 @@ func TestCloudStorage(t *gotesting.T) {
 
 	var out outputSink
 	root := NewTestEntityRoot(&TestInstance{Name: "example.Test"}, &RuntimeConfig{CloudStorage: want}, &out)
-	s := root.newTestState()
+	s := root.NewTestState()
 	got := s.CloudStorage()
 
 	if got != want {

@@ -93,6 +93,30 @@
       "revId": "ad634621eb043854e408ce2384ed15dc7339c01d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7c1754a2_498bd7f4",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 445,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-02T08:52:58Z",
+      "side": 1,
+      "message": "Hmm, you might be right, I\u0027m still not very confident... let\u0027s try filling a full path, and revisit it when we migrate to the gRPC protocol.",
+      "parentUuid": "8b85fc13_43d8ca39",
+      "range": {
+        "startLine": 445,
+        "startChar": 18,
+        "endLine": 445,
+        "endChar": 30
+      },
+      "revId": "ad634621eb043854e408ce2384ed15dc7339c01d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

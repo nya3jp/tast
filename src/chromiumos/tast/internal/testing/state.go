@@ -265,8 +265,8 @@ func (r *TestEntityRoot) newTestMixin() *testMixin {
 	}
 }
 
-// newTestState creates a State for a test.
-func (r *TestEntityRoot) newTestState() *State {
+// NewTestState creates a State for a test.
+func (r *TestEntityRoot) NewTestState() *State {
 	return &State{
 		globalMixin: r.entityRoot.newGlobalMixin("", r.HasError()),
 		testMixin:   r.newTestMixin(),
@@ -274,71 +274,30 @@ func (r *TestEntityRoot) newTestState() *State {
 	}
 }
 
-// newPreState creates a PreState for a precondition.
-func (r *TestEntityRoot) newPreState() *PreState {
+// NewPreState creates a PreState for a precondition.
+func (r *TestEntityRoot) NewPreState() *PreState {
 	return &PreState{
 		globalMixin: r.entityRoot.newGlobalMixin(preFailPrefix, r.HasError()),
 		testMixin:   r.newTestMixin(),
 	}
 }
 
-// newTestHookState creates a TestHookState for a test hook.
-func (r *TestEntityRoot) newTestHookState() *TestHookState {
+// NewTestHookState creates a TestHookState for a test hook.
+func (r *TestEntityRoot) NewTestHookState() *TestHookState {
 	return &TestHookState{
 		globalMixin: r.entityRoot.newGlobalMixin("", r.HasError()),
 		testMixin:   r.newTestMixin(),
 	}
 }
 
-// RunWithTestState runs f, passing a Context and a State for a test.
-// If f panics, it recovers and reports the error via the State.
-// f is run within a goroutine to avoid making the calling goroutine exit if
-// f calls s.Fatal (which calls runtime.Goexit).
-func (r *TestEntityRoot) RunWithTestState(ctx context.Context, f func(ctx context.Context, s *State)) {
-	s := r.newTestState()
-	ctx = NewContext(ctx, r.entityRoot.ce, func(msg string) { s.Log(msg) })
-	runAndRecover(func() { f(ctx, s) }, s)
+// NewContext creates a new context associated with the entity.
+func (r *EntityRoot) NewContext(ctx context.Context) context.Context {
+	return NewContext(ctx, r.ce, func(msg string) { r.out.Log(msg) })
 }
 
-// RunWithPreState runs f, passing a Context and a State for a precondition.
-// If f panics, it recovers and reports the error via the PreState.
-// f is run within a goroutine to avoid making the calling goroutine exit if
-// f calls s.Fatal (which calls runtime.Goexit).
-func (r *TestEntityRoot) RunWithPreState(ctx context.Context, f func(ctx context.Context, s *PreState)) {
-	s := r.newPreState()
-	ctx = NewContext(ctx, r.entityRoot.ce, func(msg string) { s.Log(msg) })
-	runAndRecover(func() { f(ctx, s) }, s)
-}
-
-// RunWithTestHookState runs f, passing a Context and a State for a test hook.
-// If f panics, it recovers and reports the error via the TestHookState.
-// f is run within a goroutine to avoid making the calling goroutine exit if
-// f calls s.Fatal (which calls runtime.Goexit).
-func (r *TestEntityRoot) RunWithTestHookState(ctx context.Context, f func(ctx context.Context, s *TestHookState)) {
-	s := r.newTestHookState()
-	ctx = NewContext(ctx, r.entityRoot.ce, func(msg string) { s.Log(msg) })
-	runAndRecover(func() { f(ctx, s) }, s)
-}
-
-type errorReporter interface {
-	Error(args ...interface{})
-}
-
-// runAndRecover runs f synchronously, and recovers and reports an error if it panics.
-// f is run within a goroutine to avoid making the calling goroutine exit if the entity
-// calls s.Fatal (which calls runtime.Goexit).
-func runAndRecover(f func(), s errorReporter) {
-	done := make(chan struct{}, 1)
-	go func() {
-		defer func() {
-			if r := recover(); r != nil {
-				s.Error("Panic: ", r)
-			}
-			done <- struct{}{}
-		}()
-		f()
-	}()
-	<-done
+// NewContext creates a new context associated with the entity.
+func (r *TestEntityRoot) NewContext(ctx context.Context) context.Context {
+	return r.entityRoot.NewContext(ctx)
 }
 
 // HasError checks if any error has been reported.

@@ -166,7 +166,7 @@ func TestRunLogAfterTimeout(t *gotesting.T) {
 	// An error is written with a goroutine dump.
 	want := []control.Msg{
 		&control.EntityStart{Info: *tests[0].EntityInfo()},
-		&control.EntityError{Error: testing.Error{Reason: "Test did not return on timeout (see log for goroutine dump)"}},
+		&control.EntityError{Error: testing.Error{Reason: "pkg.Test did not return on timeout (see log for goroutine dump)"}},
 		&control.EntityLog{Text: "Dumping all goroutines"},
 		// A goroutine dump follows. Do not compare them as the content is undeterministic.
 	}

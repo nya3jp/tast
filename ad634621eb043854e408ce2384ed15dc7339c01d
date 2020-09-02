@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "1c811bb9_329cc081",
+        "filename": "src/chromiumos/tast/internal/runner/bundles.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-09-02T07:02:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e9817b68_453922a0",
+      "range": {
+        "startLine": 119,
+        "startChar": 5,
+        "endLine": 120,
+        "endChar": 6
+      },
+      "revId": "ad634621eb043854e408ce2384ed15dc7339c01d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a183806a_0041e1a2",
         "filename": "src/chromiumos/tast/internal/testing/test_instance.go",
         "patchSetId": 5
@@ -45,6 +69,30 @@
       "revId": "ad634621eb043854e408ce2384ed15dc7339c01d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8b85fc13_43d8ca39",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 445,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-09-02T07:02:55Z",
+      "side": 1,
+      "message": "toe.bundle in bundle.go contains the bundle path, and if we most naturally fills the field, it will be the bundle path. I\u0027m not sure if runners should trim it.\nI think runners can return raw information, without assuming how it\u0027s used, and let tast to handle the information.",
+      "parentUuid": "a183806a_0041e1a2",
+      "range": {
+        "startLine": 445,
+        "startChar": 18,
+        "endLine": 445,
+        "endChar": 30
+      },
+      "revId": "ad634621eb043854e408ce2384ed15dc7339c01d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

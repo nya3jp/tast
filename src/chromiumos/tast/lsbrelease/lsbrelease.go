@@ -32,6 +32,12 @@ const (
 	// Milestone is a key for milestone number (e.g. "74")
 	Milestone = "CHROMEOS_RELEASE_CHROME_MILESTONE"
 
+	// BuildNumber is a key for the build number (e.g. "12345")
+	BuildNumber = "CHROMEOS_RELEASE_BUILD_NUMBER"
+
+	// PatchNumber is a key for the patch number (e.g. "0.0")
+	PatchNumber = "CHROMEOS_RELEASE_PATCH_NUMBER"
+
 	// Version is a key for Chrome OS version (e.g. "12345.0.0")
 	Version = "CHROMEOS_RELEASE_VERSION"
 
@@ -40,6 +46,9 @@ const (
 
 	// BuildType is a key for Chrome Release Build Type (e.g "Test Build - username")
 	BuildType = "CHROMEOS_RELEASE_BUILD_TYPE"
+
+	// ReleaseTrack is a key for the device's release track (e.g. "stable-channel")
+	ReleaseTrack = "CHROMEOS_RELEASE_TRACK"
 
 	// ARCSDKVersion is a key for the Android SDK Version of the current
 	// ARC image installed on the DUT.
@@ -52,6 +61,7 @@ var allowedPkgs = []string{
 	"chromiumos/tast/local/arc",              // For SDKVersion.
 	"chromiumos/tast/local/bundles/cros/arc", // For Version.
 	"chromiumos/tast/local/bundles/cros/platform/updateserver",
+	"chromiumos/tast/local/bundles/cros/platform", // To confirm OS version can be parsed.
 	"chromiumos/tast/local/crash",
 	"chromiumos/tast/local/graphics/trace",
 	"chromiumos/tast/local/rialto",

@@ -33,6 +33,24 @@
       "revId": "28262acb52d2f21e33c5bdb3dedd4e94b9fa288a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "348a65d2_de63fb2f",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 53
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1362700
+      },
+      "writtenOn": "2020-09-02T00:54:54Z",
+      "side": 1,
+      "message": "Done. Does everything else look okay?",
+      "parentUuid": "80dc202e_f6f3f138",
+      "revId": "28262acb52d2f21e33c5bdb3dedd4e94b9fa288a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -277,6 +277,9 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		RemoteData:        rd,
 		TestHook:          cfg.testHook,
 		DownloadMode:      args.RunTests.DownloadMode,
+		Fixtures:          testing.GlobalRegistry().AllFixtures(),
+		BaseFixtureName:   "",
+		BaseFixtureImpl:   &rootFixture{},
 	}
 
 	if err := planner.RunTests(ctx, tests, ew, pcfg); err != nil {
@@ -337,6 +340,16 @@ func prepareTempDir(tempDir string) (restore func(), err error) {
 		}
 	}, nil
 }
+
+type rootFixture struct{}
+
+var _ testing.FixtureImpl = &rootFixture{}
+
+func (f *rootFixture) SetUp(ctx context.Context, s *testing.FixtState) interface{} { return nil }
+func (f *rootFixture) Reset(ctx context.Context) error                             { return nil }
+func (f *rootFixture) PreTest(ctx context.Context, s *testing.FixtTestState)       {}
+func (f *rootFixture) PostTest(ctx context.Context, s *testing.FixtTestState)      {}
+func (f *rootFixture) TearDown(ctx context.Context, s *testing.FixtState)          {}
 
 // lockStdIO replaces os.Stdin, os.Stdout and os.Stderr with closed pipes and
 // returns the original files. This function can be called at the beginning of

@@ -27,6 +27,7 @@ import (
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/expr"
+	"chromiumos/tast/lsbrelease"
 )
 
 const autotestCapPrefix = "autotest-capability:" // prefix for autotest-capability feature names
@@ -35,7 +36,7 @@ const autotestCapPrefix = "autotest-capability:" // prefix for autotest-capabili
 // and JSON-marshals a GetDUTInfoResult struct to w.
 func handleGetDUTInfo(args *Args, cfg *Config, w io.Writer) error {
 	features, warnings, err := getSoftwareFeatures(
-		cfg.SoftwareFeatureDefinitions, cfg.USEFlagsFile, args.GetDUTInfo.ExtraUSEFlags, cfg.AutotestCapabilityDir)
+		cfg.SoftwareFeatureDefinitions, cfg.USEFlagsFile, cfg.LSBReleaseFile, args.GetDUTInfo.ExtraUSEFlags, cfg.AutotestCapabilityDir)
 	if err != nil {
 		return err
 	}
@@ -65,7 +66,7 @@ func handleGetDUTInfo(args *Args, cfg *Config, w io.Writer) error {
 
 // getSoftwareFeatures implements the main function of GetDUTInfoMode (i.e., except input/output
 // conversion for RPC).
-func getSoftwareFeatures(definitions map[string]string, useFlagsFile string, extraUSEFlags []string, autotestCapsDir string) (
+func getSoftwareFeatures(definitions map[string]string, useFlagsFile, lsbReleaseFile string, extraUSEFlags []string, autotestCapsDir string) (
 	features *dep.SoftwareFeatures, warnings []string, err error) {
 	if useFlagsFile == "" {
 		return nil, nil, command.NewStatusErrorf(statusBadArgs, "feature enumeration unsupported")
@@ -82,6 +83,16 @@ func getSoftwareFeatures(definitions map[string]string, useFlagsFile string, ext
 		return nil, nil, command.NewStatusErrorf(statusError, "failed to read %v: %v", useFlagsFile, err)
 	}
 	flags = append(flags, extraUSEFlags...)
+
+	if lsbReleaseFile == "" {
+		warnings = append(warnings, "lsb-release path is not specified; board names in software feature definitions will not work")
+	} else if lr, err := lsbrelease.LoadFrom(lsbReleaseFile); err != nil {
+		warnings = append(warnings, fmt.Sprintf("failed to read lsbrelease; board names in software feature definitions will not work: %v", err))
+	} else if board, ok := lr[lsbrelease.Board]; !ok {
+		warnings = append(warnings, fmt.Sprintf("failed to find boardname in lsbrelease; board names in software feature definitions will not work"))
+	} else {
+		flags = append(flags, "board:"+board)
+	}
 
 	var autotestCaps map[string]autocaps.State
 	if autotestCapsDir != "" {

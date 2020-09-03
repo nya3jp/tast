@@ -21,21 +21,25 @@ func TestGetDUTInfo(t *testing.T) {
 	defer os.RemoveAll(td)
 
 	if err := testutil.WriteFiles(td, map[string]string{
-		"use_flags": "# here's a comment\nfoo\nbar\n",
+		"use_flags":  "# here's a comment\nfoo\nbar\n",
+		"lsbrelease": "CHROMEOS_RELEASE_BOARD=betty\n",
 	}); err != nil {
 		t.Fatal(err)
 	}
 
 	osVersion := "octopus-release/R86-13312.0.2020_07_02_1108"
 	cfg := Config{
-		Type:         LocalRunner,
-		USEFlagsFile: filepath.Join(td, "use_flags"),
+		Type:           LocalRunner,
+		USEFlagsFile:   filepath.Join(td, "use_flags"),
+		LSBReleaseFile: filepath.Join(td, "lsbrelease"),
 		SoftwareFeatureDefinitions: map[string]string{
 			"foobar":       "foo && bar",
 			"not_foo":      "!foo",
 			"other":        "baz",
 			"foo_glob":     "\"f*\"",
 			"not_bar_glob": "!\"b*\"",
+			"board":        `"board:betty"`,
+			"not_board":    `"board:eve"`,
 		},
 		OSVersion: osVersion,
 	}
@@ -57,8 +61,8 @@ func TestGetDUTInfo(t *testing.T) {
 	}
 	exp := GetDUTInfoResult{
 		SoftwareFeatures: &dep.SoftwareFeatures{
-			Available:   []string{"foo_glob", "foobar", "other"},
-			Unavailable: []string{"not_bar_glob", "not_foo"},
+			Available:   []string{"board", "foo_glob", "foobar", "other"},
+			Unavailable: []string{"not_bar_glob", "not_board", "not_foo"},
 		},
 		OSVersion: osVersion,
 	}

@@ -19,6 +19,9 @@ import (
 	"chromiumos/tast/caller"
 )
 
+// Path is to the path for lsb-release file on the device.
+const Path = "/etc/lsb-release"
+
 // Keys in /etc/lsb-release. See the following doc for details:
 //  https://chromium.googlesource.com/chromiumos/docs/+/master/os_config.md#LSB
 const (
@@ -58,6 +61,7 @@ const (
 // allowedPkgs is the list of Go packages that can use this package.
 var allowedPkgs = []string{
 	"chromiumos/tast/cmd/tast/internal/symbolize",
+	"chromiumos/tast/internal/runner",        // For SoftwareDeps check.
 	"chromiumos/tast/local/arc",              // For SDKVersion.
 	"chromiumos/tast/local/bundles/cros/arc", // For Version.
 	"chromiumos/tast/local/bundles/cros/platform/updateserver",
@@ -78,8 +82,15 @@ var allowedPkgs = []string{
 // explicitly permitted by allowedPkgs.
 func Load() (map[string]string, error) {
 	caller.Check(2, allowedPkgs)
+	return LoadFrom(Path)
+}
 
-	f, err := os.Open("/etc/lsb-release")
+// LoadFrom loads the LSB-release map from the given path, and returns
+// a parsed key-value map.
+func LoadFrom(path string) (map[string]string, error) {
+	caller.Check(2, allowedPkgs)
+
+	f, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}

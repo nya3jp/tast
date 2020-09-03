@@ -102,6 +102,7 @@ func main() {
 			"houdini":                 "houdini",
 			"houdini64":               "houdini64",
 			"hostap_hwsim":            "wifi_hostap_test",
+			"igt":                     `("video_cards_amdgpu" || "video_cards_intel") && ("kernel-5_4" || "kernel-4_19" || "kernel-4_14")`,
 			"iwlwifi_rescan":          "iwlwifi_rescan",
 			"legacy_video_decoder":    "disable_cros_video_decoder",
 			"lock_core_pattern":       `"kernel-3_10" || "kernel-3_14" || "kernel-3_18"`,

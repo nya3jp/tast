@@ -71,6 +71,7 @@ The following software features are defined:
 *   `encrypted_reboot_vault` - Whether the system can setup an encrypted reboot vault in the stateful partition.
 *   `firewall` - Standard Chrome OS network firewall rules.
 *   `flashrom` - Userspace utility to update firmware.
+*   `fwupd` - Userspace utility to automatically update firmware.
 *   `google_virtual_keyboard` - The proprietary Google onscreen virtual keyboard
     (as opposed to the builtin open-source virtual keyboard).
 *   `gpu_sandboxing` - Chrome's GPU process is [sandboxed].

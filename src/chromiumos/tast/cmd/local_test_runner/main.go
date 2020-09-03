@@ -95,6 +95,7 @@ func main() {
 			"encrypted_reboot_vault":  `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14")`,
 			"firewall":                "!moblab", // Moblab has relaxed iptables rules
 			"flashrom":                "!betty && !tast_vm",
+			"fwupd":                   "!betty && !tast_vm",                     // apply same restriction as flashrom
 			"google_virtual_keyboard": "chrome_internal && internal && !moblab", // doesn't work on Moblab: https://crbug.com/949912
 			"gpu_sandboxing":          "!betty && !tast_vm",                     // no GPU sandboxing on VMs: https://crbug.com/914688
 			"graphics_debugfs":        `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14" || "kernel-3_18")`,

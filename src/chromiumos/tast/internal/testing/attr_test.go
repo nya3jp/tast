@@ -68,6 +68,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 			attrs: []string{"group:flashrom"},
 		},
 		{
+			attrs: []string{"group:fwupd"},
+		},
+		{
 			attrs: []string{"group:hwsec_destructive_func"},
 		},
 		{

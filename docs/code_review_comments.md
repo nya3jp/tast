@@ -4,6 +4,8 @@ This document collects common comments made during reviews of Tast tests.
 
 Tast code should also follow Go's established best practices as described in
 [Effective Go] and [Go Code Review Comments].
+go/go-style (internal document similar to public style guides) is also a good
+read and source of style suggestions.
 
 [Effective Go]: https://golang.org/doc/effective_go.html
 [Go Code Review Comments]: https://github.com/golang/go/wiki/CodeReviewComments

@@ -254,16 +254,23 @@ func Messages(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 				"cannot",
 				"could",
 				"couldn't",
+				"didn't",
+				"error",
 				"expected",
 				"failed",
 				"found",
+				"get",
+				"getting",
 				"got",
 				"invalid",
 				"no",
+				"the",
 				"too",
 				"unexpected",
 				"unknown",
+				"unsupported",
 			}
+
 			for _, word := range words {
 				if !strings.HasPrefix(strings.ToLower(args[0].val), word+" ") {
 					continue

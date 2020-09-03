@@ -185,6 +185,11 @@ Tests in this group are not used for build verification.
 		Desc:     `A group of Flashrom destructive tests.`,
 	},
 	{
+		Name:     "fwupd",
+		Contacts: []string{"chromeos-platform-syd@google.com"},
+		Desc:     "A group of Fwupdtool install tests.",
+	},
+	{
 		Name:     "hwsec_destructive",
 		Contacts: []string{"cros-hwsec@google.com"},
 		Desc:     `A group of HWSec destructive tests that wipe and recreate encstateful in the tests.`,

@@ -214,6 +214,15 @@ When submitting changes to add new `USE` flags to the [tast-use-flags] package,
 please use [Cq-Depend] in your commit messages to ensure that changes land in
 the correct order.
 
+In addition, the board name is available to calculate the software dependencies.
+Another imaginarry feature named `vm_graphics` may be described
+
+```go
+"vm_graphics": `"board:betty-pi-arc"`,
+```
+
+so the tests with `vm_graphics` runs only on betty-pi-arc boards.
+
 If you're having trouble finding a way to specify your test's dependencies,
 please ask for help on the [tast-users mailing list].
 

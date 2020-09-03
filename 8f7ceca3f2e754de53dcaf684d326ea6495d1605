@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ddbff9e9_e720d4e2",
+        "filename": "src/chromiumos/tast/internal/planner/safe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-09-03T04:14:11Z",
+      "side": 1,
+      "message": "unused?",
+      "range": {
+        "startLine": 14,
+        "startChar": 6,
+        "endLine": 14,
+        "endChar": 24
+      },
+      "revId": "8f7ceca3f2e754de53dcaf684d326ea6495d1605",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "cdc9ec05_cf3f5003",
+        "filename": "src/chromiumos/tast/internal/planner/safe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-09-03T04:14:11Z",
+      "side": 1,
+      "message": "nit: I found in Effective Go,\n\u003e Go has no line length limit. Don\u0027t worry about overflowing a punched card. If a line feels too long, wrap it and indent with an extra tab.\n\nCould you follow this advice?",
+      "range": {
+        "startLine": 30,
+        "startChar": 2,
+        "endLine": 30,
+        "endChar": 3
+      },
+      "revId": "8f7ceca3f2e754de53dcaf684d326ea6495d1605",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c1c7eba5_e829ece4",
+        "filename": "src/chromiumos/tast/internal/planner/safe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-09-03T04:14:11Z",
+      "side": 1,
+      "message": "Could you document how name is used?",
+      "range": {
+        "startLine": 48,
+        "startChar": 35,
+        "endLine": 48,
+        "endChar": 39
+      },
+      "revId": "8f7ceca3f2e754de53dcaf684d326ea6495d1605",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5ed9295b_e1b88884",
+        "filename": "src/chromiumos/tast/internal/planner/safe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-09-03T04:14:11Z",
+      "side": 1,
+      "message": "How about calling it gracePeriod ?\nhttps://source.corp.google.com/search?q\u003dgracePeriod.*time%5C.Duration\u0026sq\u003d",
+      "range": {
+        "startLine": 48,
+        "startChar": 57,
+        "endLine": 48,
+        "endChar": 68
+      },
+      "revId": "8f7ceca3f2e754de53dcaf684d326ea6495d1605",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

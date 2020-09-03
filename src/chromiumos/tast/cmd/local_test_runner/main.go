@@ -48,7 +48,8 @@ func main() {
 		CleanupLogsPausedPath: "/var/lib/cleanup_logs_paused",
 		// The tast-use-flags package attempts to install this file to /etc,
 		// but it gets diverted to /usr/local since it's installed for test images.
-		USEFlagsFile: "/usr/local/etc/tast_use_flags.txt",
+		USEFlagsFile:   "/usr/local/etc/tast_use_flags.txt",
+		LSBReleaseFile: lsbrelease.Path,
 		SoftwareFeatureDefinitions: map[string]string{
 			// This list is documented at docs/test_dependencies.md.
 			// All USE flags referenced here must be listed in IUSE in the tast-use-flags ebuild.

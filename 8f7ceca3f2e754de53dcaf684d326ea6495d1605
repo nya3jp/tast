@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "c9a270a7_dd6bd0cb",
+        "filename": "src/chromiumos/tast/internal/planner/safe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-09-03T04:28:55Z",
+      "side": 1,
+      "message": "Well, nvm. I started to think putting this here can be easier for the API user.",
+      "parentUuid": "198a50b7_15942231",
+      "range": {
+        "startLine": 14,
+        "startChar": 6,
+        "endLine": 14,
+        "endChar": 24
+      },
+      "revId": "8f7ceca3f2e754de53dcaf684d326ea6495d1605",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9d1ff7cd_1386740c",
         "filename": "src/chromiumos/tast/internal/planner/safe.go",
         "patchSetId": 1
@@ -69,6 +93,30 @@
       "revId": "8f7ceca3f2e754de53dcaf684d326ea6495d1605",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aa36d398_0c81096f",
+        "filename": "src/chromiumos/tast/internal/planner/safe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-09-03T04:28:55Z",
+      "side": 1,
+      "message": "nvm",
+      "parentUuid": "9d1ff7cd_1386740c",
+      "range": {
+        "startLine": 24,
+        "startChar": 5,
+        "endLine": 24,
+        "endChar": 17
+      },
+      "revId": "8f7ceca3f2e754de53dcaf684d326ea6495d1605",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {

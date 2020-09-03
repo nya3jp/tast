@@ -25,6 +25,53 @@
     },
     {
       "key": {
+        "uuid": "198a50b7_15942231",
+        "filename": "src/chromiumos/tast/internal/planner/safe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-09-03T04:26:10Z",
+      "side": 1,
+      "message": "I see. You have moved this from run.go.\nI think you don\u0027t necessarily have to move this. The default does not pertain to safeCall.",
+      "parentUuid": "ddbff9e9_e720d4e2",
+      "range": {
+        "startLine": 14,
+        "startChar": 6,
+        "endLine": 14,
+        "endChar": 24
+      },
+      "revId": "8f7ceca3f2e754de53dcaf684d326ea6495d1605",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9d1ff7cd_1386740c",
+        "filename": "src/chromiumos/tast/internal/planner/safe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-09-03T04:26:10Z",
+      "side": 1,
+      "message": "same here. I think the method doesn\u0027t necessarily pertain to safeCall.",
+      "range": {
+        "startLine": 24,
+        "startChar": 5,
+        "endLine": 24,
+        "endChar": 17
+      },
+      "revId": "8f7ceca3f2e754de53dcaf684d326ea6495d1605",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "cdc9ec05_cf3f5003",
         "filename": "src/chromiumos/tast/internal/planner/safe.go",
         "patchSetId": 1

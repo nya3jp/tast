@@ -402,6 +402,10 @@ type Config struct {
 	// the system image. These USE flags are used by expressions in SoftwareFeatureDefinitions to determine
 	// available software features.
 	USEFlagsFile string
+	// LSBReleaseFile contains the path to the lsb-release file to determine board name used for
+	// the expresisons in SoftwareFeatureDefinitions. If empty, it is interpreted as "/etc/lsb-release"
+	// as the default value. This field is for the testing purpose.
+	LSBReleaseFile string
 	// SoftwareFeatureDefinitions maps from software feature names (e.g. "myfeature") to boolean expressions
 	// used to compose them from USE flags (e.g. "a && !(b || c)"). The USE flags used in these expressions
 	// must be listed in USEFlagsFile if they were set when building the system image.

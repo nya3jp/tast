@@ -189,10 +189,10 @@ images built to run on virtual machines. Instead of adding a `real_hardware` or
 additional meaning beyond the original intent, add a `biometrics_daemon` feature
 that precisely communicates the test's actual requirement.
 
-Features are composed from USE flags, which are statically defined when the
-system image is built. [local_test_runner] lists boolean expressions that are
-used to generate features; for example, an imaginary feature named `hd_audio`
-with the expression
+Features are composed from USE flags and board names, which are statically
+defined when the system image is built. [local_test_runner] lists boolean
+expressions that are used to generate features; for example, an imaginary
+feature named `hd_audio` with the expression
 
 ```go
 cras && (audio_chipset_a || audio_chipset_b) && !broken_headphone_jack
@@ -201,6 +201,15 @@ cras && (audio_chipset_a || audio_chipset_b) && !broken_headphone_jack
 will be reported as available on systems where the `cras` USE flag is set,
 either `audio_chipset_a` or `audio_chipset_b` is set, and
 `broken_headphone_jack` is explicitly *not* set.
+
+A feature can depend on board names, too. Another imaginary feature
+named `vm_graphics` with the expression
+
+```go
+"board:betty-pi-arc"
+```
+
+will be reported as available on `betty-pi-arc` board only.
 
 Before a new `USE` flag can be used in an expression, it must be added to `IUSE`
 in the [tast-use-flags] package. Local changes to the `tast-use-flags` ebuild

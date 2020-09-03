@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5065ae1c_1956b716",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance.go",
+        "patchSetId": 22
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-09-03T04:56:52Z",
+      "side": 1,
+      "message": "Fixture",
+      "range": {
+        "startLine": 165,
+        "startChar": 37,
+        "endLine": 165,
+        "endChar": 41
+      },
+      "revId": "b1debe072d7f76e4a186233b4ad25bf4dc0df40b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "eea52b56_e523a079",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance.go",
+        "patchSetId": 22
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-09-03T04:56:52Z",
+      "side": 1,
+      "message": "Could you concat it?",
+      "range": {
+        "startLine": 165,
+        "startChar": 99,
+        "endLine": 166,
+        "endChar": 5
+      },
+      "revId": "b1debe072d7f76e4a186233b4ad25bf4dc0df40b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

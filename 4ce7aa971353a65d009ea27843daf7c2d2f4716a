@@ -39,6 +39,30 @@
       "revId": "4ce7aa971353a65d009ea27843daf7c2d2f4716a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "91f922da_fe8cde02",
+        "filename": "src/chromiumos/tast/internal/planner/run_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-07T05:23:06Z",
+      "side": 1,
+      "message": "That\u0027s a good point, I agree we don\u0027t bother to introduce an incompatibility now. Let me fix the name to \"Test\".",
+      "parentUuid": "af14b8be_aaee8925",
+      "range": {
+        "startLine": 169,
+        "startChar": 53,
+        "endLine": 169,
+        "endChar": 56
+      },
+      "revId": "4ce7aa971353a65d009ea27843daf7c2d2f4716a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

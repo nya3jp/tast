@@ -143,6 +143,30 @@
     },
     {
       "key": {
+        "uuid": "d6a56633_29bb56bb",
+        "filename": "src/chromiumos/tast/internal/planner/safe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-07T05:22:54Z",
+      "side": 1,
+      "message": "I don\u0027t care line length in Go code, but I\u0027m conservative in code comments because an English sentence can be way longer than a Go statement.\n\nIt seems internal Go style has different recommendations about line length of Go code vs. code comments.\n\ngo/go-style/guide#line-length\ngo/go-style/decisions#comment-line-length",
+      "parentUuid": "cdc9ec05_cf3f5003",
+      "range": {
+        "startLine": 30,
+        "startChar": 2,
+        "endLine": 30,
+        "endChar": 3
+      },
+      "revId": "8f7ceca3f2e754de53dcaf684d326ea6495d1605",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "c1c7eba5_e829ece4",
         "filename": "src/chromiumos/tast/internal/planner/safe.go",
         "patchSetId": 1
@@ -186,6 +210,54 @@
       "revId": "8f7ceca3f2e754de53dcaf684d326ea6495d1605",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fbb43089_3bc1dc6a",
+        "filename": "src/chromiumos/tast/internal/planner/safe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-07T05:22:54Z",
+      "side": 1,
+      "message": "Sounds nice.",
+      "parentUuid": "5ed9295b_e1b88884",
+      "range": {
+        "startLine": 48,
+        "startChar": 57,
+        "endLine": 48,
+        "endChar": 68
+      },
+      "revId": "8f7ceca3f2e754de53dcaf684d326ea6495d1605",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b428f8b1_228b468d",
+        "filename": "src/chromiumos/tast/internal/planner/safe.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-07T05:22:54Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c1c7eba5_e829ece4",
+      "range": {
+        "startLine": 48,
+        "startChar": 35,
+        "endLine": 48,
+        "endChar": 39
+      },
+      "revId": "8f7ceca3f2e754de53dcaf684d326ea6495d1605",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

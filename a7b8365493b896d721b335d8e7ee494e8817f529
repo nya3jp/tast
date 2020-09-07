@@ -45,6 +45,30 @@
       "revId": "a7b8365493b896d721b335d8e7ee494e8817f529",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c1937a95_54cd8e11",
+        "filename": "docs/code_review_comments.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2020-09-07T10:13:06Z",
+      "side": 1,
+      "message": "just saw your response: there is no wait for now.",
+      "parentUuid": "f05af42b_e0f9cfdf",
+      "range": {
+        "startLine": 12,
+        "startChar": 19,
+        "endLine": 12,
+        "endChar": 30
+      },
+      "revId": "a7b8365493b896d721b335d8e7ee494e8817f529",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

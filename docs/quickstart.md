@@ -14,6 +14,10 @@ flag that's reachable from your workstation via SSH. An image running in a
 downloaded rather than one built in your chroot, make sure that it's a recent
 version.
 
+**WARNING: Potential data loss:**  Many Tast tests remove all user profiles from
+the device when run, including any local state. Prefer to use a device that doesn't
+have any local state you care about.
+
 [Chrome OS chroot]: http://www.chromium.org/chromium-os/quick-start-guide
 [Simple Chrome]: https://chromium.googlesource.com/chromiumos/docs/+/master/simple_chrome_workflow.md
 [virtual machine]: https://chromium.googlesource.com/chromiumos/docs/+/master/cros_vm.md
@@ -63,6 +67,9 @@ Any [modern editor] supports Go. The following are the instructions to setup
 [Microsoft Go plugin]: https://code.visualstudio.com/docs/languages/go
 
 ## Run a prebuilt test
+
+**WARNING: Potential data loss:** As noted above, running this test (and many others)
+will delete all existing user profiles, including any local state.
 
 In your chroot, run the following:
 

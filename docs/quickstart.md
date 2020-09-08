@@ -14,6 +14,10 @@ flag that's reachable from your workstation via SSH. An image running in a
 downloaded rather than one built in your chroot, make sure that it's a recent
 version.
 
+Using Tast on a device for the first time will remove all user profiles from the
+device, including any local state, so don't use a device with local state you wish
+to preserve.
+
 [Chrome OS chroot]: http://www.chromium.org/chromium-os/quick-start-guide
 [Simple Chrome]: https://chromium.googlesource.com/chromiumos/docs/+/master/simple_chrome_workflow.md
 [virtual machine]: https://chromium.googlesource.com/chromiumos/docs/+/master/cros_vm.md
@@ -63,6 +67,9 @@ Any [modern editor] supports Go. The following are the instructions to setup
 [Microsoft Go plugin]: https://code.visualstudio.com/docs/languages/go
 
 ## Run a prebuilt test
+
+WARNING: Potential data loss: Running a Tast test for the first time will remove
+any existing user profiles from the device, including any local state.
 
 In your chroot, run the following:
 

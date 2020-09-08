@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "bebe0bf6_506496f8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-08T08:44:29Z",
+      "side": 1,
+      "message": "Thanks for the change! LGTM, but I want to wait until next Tast reviewers sync.\n",
+      "revId": "a7b8365493b896d721b335d8e7ee494e8817f529",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "225df2db_2ad2682c",
         "filename": "docs/code_review_comments.md",
         "patchSetId": 4

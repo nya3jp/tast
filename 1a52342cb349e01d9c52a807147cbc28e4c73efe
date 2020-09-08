@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "505fb356_d654e867",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1409117
+      },
+      "writtenOn": "2020-09-08T06:38:37Z",
+      "side": 1,
+      "message": "Hi, this behaviour caused me some strife as a new Tast user today, so I thought I\u0027d add a note about it to the quickstart guide I was following. Please let me know if the wording needs amending for accuracy etc.",
+      "revId": "1a52342cb349e01d9c52a807147cbc28e4c73efe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

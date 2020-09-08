@@ -14,6 +14,10 @@ flag that's reachable from your workstation via SSH. An image running in a
 downloaded rather than one built in your chroot, make sure that it's a recent
 version.
 
+<a name="dataloss"></a> **WARNING: Potential data loss:**  Many Tast tests
+remove all user profiles from the device when run, including any local state.
+Prefer to have a device specifically for testing.
+
 [Chrome OS chroot]: http://www.chromium.org/chromium-os/quick-start-guide
 [Simple Chrome]: https://chromium.googlesource.com/chromiumos/docs/+/master/simple_chrome_workflow.md
 [virtual machine]: https://chromium.googlesource.com/chromiumos/docs/+/master/cros_vm.md
@@ -64,6 +68,9 @@ Any [modern editor] supports Go. The following are the instructions to setup
 
 ## Run a prebuilt test
 
+**WARNING: Potential data loss:** Tast [may delete](#dataloss) profiles and
+local state.
+
 In your chroot, run the following:
 
 ```sh
@@ -75,6 +82,9 @@ device, the test should log in and load a webpage. After the test is done, take
 a look at the results in `/tmp/tast/results/latest` in your chroot.
 
 ## Build and run a test
+
+**WARNING: Potential data loss:** Tast [may delete](#dataloss) profiles and
+local state.
 
 The previous step ran a test that was already built into your device's system
 image, but you can also use the `tast` command to quickly rebuild all tests and

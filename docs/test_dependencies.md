@@ -132,6 +132,7 @@ The following software features are defined:
 *   `tpm1` - Indicate a Trusted Platform Module supporting TPMv1.2 is available. Note that TPMv2 is not backward compatible.
 *   `tpm2` - Indicate a Trusted Platform Module supporting TPMv2 is available.
 *   `transparent_hugepage` - [Transparent Hugepage] support in the Linux kernel.
+*   `untrusted_vm` - The ability to run an untrusted VM.
 *   `usbguard` - The ability to allow or block USB devices based on policy.
 *   `vaapi` - Whether or not VA-API is supported by this DUT.
 *   `video_overlays` - The kernel [DRM/KMS] version atomic commits and the underlying hardware display controller support the NV12 DRM Plane format needed to promote videos to [hardware overlays].

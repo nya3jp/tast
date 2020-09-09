@@ -147,6 +147,7 @@ func main() {
 			"tpm1":                   "!mocktpm && !tast_vm && !tpm2", // Indicate tpm1.2 is available
 			"tpm2":                   "!mocktpm && !tast_vm && tpm2",  // Indicate tpm2 is available
 			"transparent_hugepage":   "transparent_hugepage",
+			"untrusted_vm":           `"kernel-4_19" || "kernel-5_4"`,
 			"usbguard":               "usbguard",
 			"vaapi":                  "vaapi",
 			// drm_atomic is a necessary but not sufficient condition to support

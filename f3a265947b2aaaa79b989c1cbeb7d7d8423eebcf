@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2363596f_851f2c53",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1116026
+      },
+      "writtenOn": "2020-09-09T05:20:00Z",
+      "side": 1,
+      "message": "I suspect we\u0027ll want to gate the tests on HardwareDeps instead; fwupd should be enabled everywhere, but individual tests should only run on devices with the relevant hardware.",
+      "revId": "f3a265947b2aaaa79b989c1cbeb7d7d8423eebcf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d02e2214_c46025b0",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 1116026
+      },
+      "writtenOn": "2020-09-09T05:20:00Z",
+      "side": 1,
+      "message": "The fwupd tests shouldn\u0027t be destructive. Do they need their own group?",
+      "revId": "f3a265947b2aaaa79b989c1cbeb7d7d8423eebcf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

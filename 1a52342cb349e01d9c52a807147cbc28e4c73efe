@@ -59,6 +59,30 @@
     },
     {
       "key": {
+        "uuid": "56fe7af5_93ffc4ea",
+        "filename": "docs/quickstart.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1409117
+      },
+      "writtenOn": "2020-09-09T06:15:17Z",
+      "side": 1,
+      "message": "Thank you for the correction. How is this patchset?\n\nI think perhaps it\u0027s most important to make new users aware that this _might_ happen, rather than giving too much detail about exactly when it happens. What do you think?",
+      "parentUuid": "c3950aa8_25ce1792",
+      "range": {
+        "startLine": 17,
+        "startChar": 29,
+        "endLine": 17,
+        "endChar": 43
+      },
+      "revId": "1a52342cb349e01d9c52a807147cbc28e4c73efe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "139f028e_86320770",
         "filename": "docs/quickstart.md",
         "patchSetId": 3
@@ -73,6 +97,24 @@
       "revId": "1a52342cb349e01d9c52a807147cbc28e4c73efe",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "507d2583_93793c90",
+        "filename": "docs/quickstart.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1409117
+      },
+      "writtenOn": "2020-09-09T06:15:17Z",
+      "side": 1,
+      "message": "Yes, it can. My thought was just to add a reminder next to the first Tast command the user might run, in case they are impatient and skip reading the introduction.",
+      "parentUuid": "139f028e_86320770",
+      "revId": "1a52342cb349e01d9c52a807147cbc28e4c73efe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -16,6 +16,46 @@
       "revId": "607e0b66f4e635e7ca074a2a09d10f45fb8e9dee",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ab5fd55b_04f4604c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-09T09:40:38Z",
+      "side": 1,
+      "message": "LGTM with a nit. Thanks!\n",
+      "revId": "607e0b66f4e635e7ca074a2a09d10f45fb8e9dee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dfe4306a_ac594f06",
+        "filename": "src/chromiumos/tast/bundle/remote_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-09T09:40:38Z",
+      "side": 1,
+      "message": "Thanks for adding more comments. Some are useful, but others do not add much value --- for example, \"set up temporary directory\" is obvious from the code. Please try to add comments for information not obvious from code.\n\nSee also: go/tott/563",
+      "range": {
+        "startLine": 169,
+        "startChar": 1,
+        "endLine": 169,
+        "endChar": 31
+      },
+      "revId": "607e0b66f4e635e7ca074a2a09d10f45fb8e9dee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

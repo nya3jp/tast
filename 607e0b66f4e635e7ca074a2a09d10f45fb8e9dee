@@ -56,6 +56,30 @@
       "revId": "607e0b66f4e635e7ca074a2a09d10f45fb8e9dee",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "48af8cf1_cc6221b0",
+        "filename": "src/chromiumos/tast/bundle/remote_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-09-09T16:14:31Z",
+      "side": 1,
+      "message": "I agree that I went a bit overboard on the comments. :-)",
+      "parentUuid": "dfe4306a_ac594f06",
+      "range": {
+        "startLine": 169,
+        "startChar": 1,
+        "endLine": 169,
+        "endChar": 31
+      },
+      "revId": "607e0b66f4e635e7ca074a2a09d10f45fb8e9dee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

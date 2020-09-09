@@ -16,6 +16,63 @@
       "revId": "1a52342cb349e01d9c52a807147cbc28e4c73efe",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "536309cb_7464ac9f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-09-09T02:00:47Z",
+      "side": 1,
+      "message": "\u003e Patch Set 3:\n\u003e \n\u003e WARNING: gwsq was unable to find a reviewer who is not on vacation. As a fallback, gwsq is ignoring vacations and assigning bhansknecht.\n\nHmmm interesting... Actually, I\u0027m assigned and not on vacation...",
+      "revId": "1a52342cb349e01d9c52a807147cbc28e4c73efe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c3950aa8_25ce1792",
+        "filename": "docs/quickstart.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-09-09T02:00:47Z",
+      "side": 1,
+      "message": "IIUC: the removal happens here:\n\nhttps://chromium.git.corp.google.com/chromiumos/platform/tast-tests/+/19bbe354fb1f2e9fa79184cf5ef68921fde632cc/src/chromiumos/tast/local/chrome/chrome.go#912\n\nSo, if the test does not restart Chrome without KeepState (or a few tests that remove it), the user profiles are preserved. E.g., running example.Pass should not remove the profile IIUC.\n\nCould you rephrase to reflect what happens actually?",
+      "range": {
+        "startLine": 17,
+        "startChar": 29,
+        "endLine": 17,
+        "endChar": 43
+      },
+      "revId": "1a52342cb349e01d9c52a807147cbc28e4c73efe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "139f028e_86320770",
+        "filename": "docs/quickstart.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-09-09T02:00:47Z",
+      "side": 1,
+      "message": "This is duplicate of the above, so can be merged into above?\nActually, this is not only for prebuilt test but also for any test run.",
+      "revId": "1a52342cb349e01d9c52a807147cbc28e4c73efe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

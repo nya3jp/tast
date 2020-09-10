@@ -22,6 +22,23 @@
       "revId": "6c74c1055a88ac8a12b73b70e7fc9a2dc3bf1b00",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d29e7232_5c7cfdb1",
+        "filename": "docs/quickstart.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-09-10T02:21:44Z",
+      "side": 1,
+      "message": "Could you make this shorter and link to your new comment instead? E.g.:\n\n**WARNING: Potential data loss:** Tast may remove profiles and local state. Please see [here].\n\n(here with a link).\n\nAlso, cold you add it to the section \"Build and run a test\", too, if this is for engs newly for Tast?",
+      "revId": "6c74c1055a88ac8a12b73b70e7fc9a2dc3bf1b00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

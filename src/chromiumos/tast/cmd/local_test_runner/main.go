@@ -84,7 +84,7 @@ func main() {
 			"crosvm_no_gpu":           `!"crosvm-gpu" || !"virtio_gpu"`,
 			"crossystem":              "!betty && !tast_vm", // VMs don't support few crossystem sub-commands: https://crbug.com/974615
 			"cups":                    "cups",
-			"diagnostics":             "diagnostics",
+			"diagnostics":             "diagnostics && !betty && !tast_vm", // VMs do not have hardware to diagnose. https://crbug.com/1126619
 			"display_backlight":       "display_backlight",
 			"dlc":                     "dlc && dlc_test",
 			"dptf":                    "dptf",

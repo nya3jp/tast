@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "67782ea5_55ad9b53",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-09-10T10:11:16Z",
+      "side": 1,
+      "message": "Tast lgtm.",
+      "revId": "c54b80247b75592052d1956c9561eb62526081d9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9e52c9e9_90055fb7",
         "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
         "patchSetId": 1

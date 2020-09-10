@@ -22,6 +22,30 @@
       "revId": "c54b80247b75592052d1956c9561eb62526081d9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "213ae4af_e86c45d7",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2020-09-10T07:19:26Z",
+      "side": 1,
+      "message": "The concept of trusted/untrusted VM are common among all VMs on Chrome OS.\nThough we don\u0027t plan to use features requiring untrusted VMs on other VMs than Crostini, it\u0027s possible in theory.\n\nThe definition of trusted/untrusted VM is here.\nhttps://docs.google.com/document/d/1FHfGY9okPX-6JaWzfMMQ8WD4G0frnu81ALIqjuFMz3s/edit#heading\u003dh.c02tf8ovv6sm\n\nFor me, I want to use this dependency for CL:2398052",
+      "parentUuid": "9e52c9e9_90055fb7",
+      "range": {
+        "startLine": 150,
+        "startChar": 3,
+        "endLine": 150,
+        "endChar": 17
+      },
+      "revId": "c54b80247b75592052d1956c9561eb62526081d9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

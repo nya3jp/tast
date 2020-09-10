@@ -16,6 +16,23 @@
       "revId": "1b25a48e9e7d383226a567cff31b4a9abb3e6ca1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f8ea54e4_21f90239",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-09-10T17:52:48Z",
+      "side": 1,
+      "message": "LGTM. Defer to Brendan for final check.",
+      "revId": "1b25a48e9e7d383226a567cff31b4a9abb3e6ca1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

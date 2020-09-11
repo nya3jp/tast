@@ -24,6 +24,11 @@ func NewFakeClient(files map[string][]byte) *FakeClient {
 	return &FakeClient{files}
 }
 
+// TearDown does nothing.
+func (c *FakeClient) TearDown() error {
+	return nil
+}
+
 // Open simulates a download from Google Cloud Storage.
 func (c *FakeClient) Open(ctx context.Context, gsURL string) (io.ReadCloser, error) {
 	data, ok := c.files[gsURL]

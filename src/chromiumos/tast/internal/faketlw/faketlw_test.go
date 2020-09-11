@@ -9,7 +9,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"testing"
-	"time"
 
 	"github.com/golang/protobuf/ptypes"
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
@@ -70,17 +69,14 @@ func TestWiringServer_CacheForDut(t *testing.T) {
 		t.Fatalf("CacheForDUT(%q, %q): %v", req.DutName, req.Url, err)
 	}
 	opcli := longrunning.NewOperationsClient(conn)
-	for {
-		if op.GetDone() {
-			break
-		}
-		time.Sleep(1 * time.Microsecond)
-		op, err = opcli.GetOperation(ctx, &longrunning.GetOperationRequest{
-			Name: op.GetName(),
-		})
-		if err != nil {
-			t.Fatal("Failed to get Operation: ", err)
-		}
+	op, err = opcli.WaitOperation(ctx, &longrunning.WaitOperationRequest{
+		Name: op.GetName(),
+	})
+	if err != nil {
+		t.Fatal("Failed to wait Operation: ", err)
+	}
+	if !op.GetDone() {
+		t.Fatalf("operation did not finish")
 	}
 	resp := &tls.CacheForDutResponse{}
 	if err := ptypes.UnmarshalAny(op.GetResponse(), resp); err != nil {

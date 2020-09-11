@@ -132,6 +132,11 @@ type RunTestsArgs struct {
 
 	// Devservers contains URLs of devservers that can be used to download files.
 	Devservers []string `json:"devservers,omitempty"`
+	// TLWServer contains address of Test Lab Service Wiring APIs.
+	TLWServer string `json:"tlwServer,omitempty"`
+	// DUTName contains given DUT identifier to be passed to TLS Wiring API.
+	DUTName string `json:"dutName,omitempty"`
+
 	// BuildArtifactsURL is the URL of Google Cloud Storage directory, ending with a slash,
 	// containing build artifacts for the current Chrome OS image.
 	// If it is empty, DefaultBuildArtifactsURL in runner.Config is used.

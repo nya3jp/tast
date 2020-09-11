@@ -484,6 +484,8 @@ func downloadPrivateBundles(ctx context.Context, cfg *Config, hst *ssh.Conn) err
 			Mode: runner.DownloadPrivateBundlesMode,
 			DownloadPrivateBundles: &runner.DownloadPrivateBundlesArgs{
 				Devservers:        cfg.devservers,
+				TLWServer:         cfg.tlwServer,
+				DUTName:           cfg.Target,
 				BuildArtifactsURL: cfg.buildArtifactsURL,
 			},
 		},

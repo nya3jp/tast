@@ -169,7 +169,15 @@ func (s *WiringServer) fillCache(srcURL string) (string, error) {
 
 // GetOperation implements longrunning.GetOperation.
 func (s *WiringServer) GetOperation(ctx context.Context, req *longrunning.GetOperationRequest) (*longrunning.Operation, error) {
-	name := req.Name
+	return s.finishOperation(req.Name)
+}
+
+// WaitOperation implements longrunning.WaitOperation.
+func (s *WiringServer) WaitOperation(ctx context.Context, req *longrunning.WaitOperationRequest) (*longrunning.Operation, error) {
+	return s.finishOperation(req.Name)
+}
+
+func (s *WiringServer) finishOperation(name string) (*longrunning.Operation, error) {
 	o, ok := s.operation(name)
 	if !ok {
 		// TODO(yamaguchi): Check the exact error format returned by the real service.
@@ -181,7 +189,7 @@ func (s *WiringServer) GetOperation(ctx context.Context, req *longrunning.GetOpe
 	}
 	m, err := ptypes.MarshalAny(&tls.CacheForDutResponse{Url: cacheURL})
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to marshal data in GetOperation")
+		return nil, errors.Wrap(err, "failed to marshal data")
 	}
 	return &longrunning.Operation{
 		Done: true,

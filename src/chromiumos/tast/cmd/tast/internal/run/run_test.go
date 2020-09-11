@@ -109,6 +109,7 @@ func TestRunDownloadPrivateBundles(t *gotesting.T) {
 		case runner.DownloadPrivateBundlesMode:
 			exp := runner.DownloadPrivateBundlesArgs{
 				Devservers:        td.cfg.devservers,
+				DUTName:           td.cfg.Target,
 				BuildArtifactsURL: td.cfg.buildArtifactsURL,
 			}
 			if !reflect.DeepEqual(*args.DownloadPrivateBundles, exp) {

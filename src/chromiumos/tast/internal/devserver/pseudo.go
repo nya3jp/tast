@@ -56,6 +56,11 @@ func NewPseudoClient(opts ...PseudoClientOption) *PseudoClient {
 	return &PseudoClient{cl: o.cl, baseURL: o.baseURL}
 }
 
+// TearDown does nothing.
+func (c *PseudoClient) TearDown() error {
+	return nil
+}
+
 // Open downloads a file on GCS directly from storage.googleapis.com.
 func (c *PseudoClient) Open(ctx context.Context, gsURL string) (io.ReadCloser, error) {
 	bucket, path, err := ParseGSURL(gsURL)

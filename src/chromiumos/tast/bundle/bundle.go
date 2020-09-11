@@ -277,6 +277,7 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		RemoteData:        rd,
 		TestHook:          cfg.testHook,
 		DownloadMode:      args.RunTests.DownloadMode,
+		Fixtures:          testing.GlobalRegistry().AllFixtures(),
 	}
 
 	if err := planner.RunTests(ctx, tests, ew, pcfg); err != nil {

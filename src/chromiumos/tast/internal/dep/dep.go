@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Package dep deals with software/hardware dependencies of tests.
+// Package dep deals with dependencies of tests.
 package dep
 
 import (
@@ -10,8 +10,13 @@ import (
 	"strings"
 )
 
-// Features contains information about all features of the DUT.
+// Features conveys actual values test dependencies are checked against.
+// TODO(oka): rename the struct name.
 type Features struct {
+	// Var contains runtime variables.
+	// If it is nil, variable dependency checks should not be performed.
+	Var map[string]string
+
 	// Software contains information about software features.
 	// If it is nil, software dependency checks should not be performed.
 	Software *SoftwareFeatures
@@ -21,8 +26,9 @@ type Features struct {
 	Hardware *HardwareFeatures
 }
 
-// Deps contains all information about all dependencies to features of the DUT.
+// Deps contains all information about dependencies tests have.
 type Deps struct {
+	Var      []string
 	Software SoftwareDeps
 	Hardware HardwareDeps
 }
@@ -43,10 +49,17 @@ func (r *CheckResult) OK() bool {
 	return len(r.SkipReasons) == 0 && len(r.Errors) == 0
 }
 
-// Check returns whether d is satisfied on the DUT having features f.
+// Check returns whether d is satisfied on f.
 func (d *Deps) Check(f *Features) *CheckResult {
 	var reasons []string
 	var errs []string
+	if f.Var != nil {
+		for _, v := range d.Var {
+			if _, ok := f.Var[v]; !ok {
+				reasons = append(reasons, fmt.Sprintf("var %s not provided", v))
+			}
+		}
+	}
 	if f.Software != nil {
 		missing, unknown := missingSoftwareDeps(d.Software, f.Software)
 		if len(missing) > 0 {

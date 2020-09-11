@@ -69,6 +69,7 @@ type TestInstance struct {
 	Attr         []string
 	Data         []string
 	Vars         []string
+	VarDeps      []string
 	SoftwareDeps dep.SoftwareDeps
 	// HardwareDeps field is not in the protocol yet. When the scheduler in infra is
 	// implemented, it is needed.
@@ -135,6 +136,10 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 		return nil, err
 	}
 
+	if err := validateVarDeps(t.VarDeps, t.Vars); err != nil {
+		return nil, err
+	}
+
 	swDeps := append(append([]string(nil), t.SoftwareDeps...), p.ExtraSoftwareDeps...)
 	hwDeps := dep.MergeHardwareDeps(t.HardwareDeps, p.ExtraHardwareDeps)
 	if err := hwDeps.Validate(); err != nil {
@@ -191,6 +196,7 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 		Attr:         attrs,
 		Data:         data,
 		Vars:         append([]string(nil), t.Vars...),
+		VarDeps:      append([]string(nil), t.VarDeps...),
 		SoftwareDeps: swDeps,
 		HardwareDeps: hwDeps,
 		ServiceDeps:  append([]string(nil), t.ServiceDeps...),
@@ -335,6 +341,32 @@ func validateManualAttr(attr []string) error {
 	return nil
 }
 
+// allowedVarDeps declares allowed variable names for VarDeps.
+var allowedVarDeps = []string{"servo", "meta.LocalVarDeps.var"}
+
+func validateVarDeps(varDeps, vars []string) error {
+	allowed := make(map[string]struct{})
+	for _, v := range allowedVarDeps {
+		allowed[v] = struct{}{}
+	}
+	for _, v := range varDeps {
+		if _, ok := allowed[v]; !ok {
+			return fmt.Errorf("variable %q in VarDeps should be included in %q", v, allowedVarDeps)
+		}
+	}
+
+	varSet := make(map[string]struct{})
+	for _, v := range vars {
+		varSet[v] = struct{}{}
+	}
+	for _, v := range varDeps {
+		if _, ok := varSet[v]; !ok {
+			return fmt.Errorf("variable %q in VarDeps should be included in Vars", v)
+		}
+	}
+	return nil
+}
+
 func validateAttr(attr []string) error {
 	if err := checkKnownAttrs(attr); err != nil {
 		return err
@@ -391,6 +423,7 @@ func (t *TestInstance) clone() *TestInstance {
 	ret.Attr = append([]string(nil), ret.Attr...)
 	ret.Data = append([]string(nil), ret.Data...)
 	ret.Vars = append([]string(nil), ret.Vars...)
+	ret.VarDeps = append([]string(nil), ret.VarDeps...)
 	ret.SoftwareDeps = append([]string(nil), ret.SoftwareDeps...)
 	ret.ServiceDeps = append([]string(nil), ret.ServiceDeps...)
 	return ret
@@ -407,6 +440,7 @@ type ShouldRunResult = dep.CheckResult
 // In case of not, in addition, the reason why it should be skipped is also returned.
 func (t *TestInstance) ShouldRun(f *dep.Features) *ShouldRunResult {
 	deps := dep.Deps{
+		Var:      t.VarDeps,
 		Software: t.SoftwareDeps,
 		Hardware: t.HardwareDeps,
 	}
@@ -472,6 +506,7 @@ type EntityInfo struct {
 	Attr         []string         `json:"attr"`
 	Data         []string         `json:"data"`
 	Vars         []string         `json:"vars,omitempty"`
+	VarDeps      []string         `json:"varDeps,omitempty"`
 	SoftwareDeps dep.SoftwareDeps `json:"softwareDeps,omitempty"`
 	ServiceDeps  []string         `json:"serviceDeps,omitempty"`
 	Fixture      string           `json:"fixture,omitempty"`
@@ -489,6 +524,7 @@ func (t *TestInstance) EntityInfo() *EntityInfo {
 		Attr:         append([]string(nil), t.Attr...),
 		Data:         append([]string(nil), t.Data...),
 		Vars:         append([]string(nil), t.Vars...),
+		VarDeps:      append([]string(nil), t.VarDeps...),
 		SoftwareDeps: append([]string(nil), t.SoftwareDeps...),
 		ServiceDeps:  append([]string(nil), t.ServiceDeps...),
 		Fixture:      t.Fixture,

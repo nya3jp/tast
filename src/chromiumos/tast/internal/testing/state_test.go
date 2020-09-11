@@ -792,6 +792,7 @@ func TestStateExports(t *gotesting.T) {
 				"Errorf",
 				"Fatal",
 				"Fatalf",
+				"FixtValue",
 				"HasError",
 				"Log",
 				"Logf",

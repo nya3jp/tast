@@ -226,12 +226,27 @@ type RuntimeConfig struct {
 	// RemoteData contains information relevant to remote tests.
 	// This is nil for local tests.
 	RemoteData *RemoteData
+	// FixtValue is a value returned by a parent fixture.
+	// It is nil if not available.
+	FixtValue interface{}
+	// FixtCtx is the context that lives as long as the fixture.
+	// It can be accessed only from testing.FixtState.
+	FixtCtx context.Context
 	// PreCtx is the context that lives as long as the precondition.
 	// It can be accessed only from testing.PreState.
 	PreCtx context.Context
 	// Purgeable is a list of file paths which are not used for now and thus
 	// can be deleted if the disk space is low.
 	Purgeable []string
+}
+
+// NewEntityRoot returns a new EntityRoot object.
+func NewEntityRoot(ce *CurrentEntity, cfg *RuntimeConfig, out OutputStream) *EntityRoot {
+	return &EntityRoot{
+		ce:  ce,
+		cfg: cfg,
+		out: out,
+	}
 }
 
 // NewTestEntityRoot returns a new TestEntityRoot object.
@@ -242,12 +257,8 @@ func NewTestEntityRoot(test *TestInstance, cfg *RuntimeConfig, out OutputStream)
 		ServiceDeps:  test.ServiceDeps,
 	}
 	return &TestEntityRoot{
-		entityRoot: &EntityRoot{
-			ce:  ce,
-			cfg: cfg,
-			out: out,
-		},
-		test: test,
+		entityRoot: NewEntityRoot(ce, cfg, out),
+		test:       test,
 	}
 }
 
@@ -287,6 +298,13 @@ func (r *TestEntityRoot) NewTestHookState() *TestHookState {
 	return &TestHookState{
 		globalMixin: r.entityRoot.newGlobalMixin("", r.HasError()),
 		testMixin:   r.newTestMixin(),
+	}
+}
+
+// NewFixtState creates a FixtState for a fixture.
+func (r *EntityRoot) NewFixtState() *FixtState {
+	return &FixtState{
+		globalMixin: r.newGlobalMixin("", r.HasError()),
 	}
 }
 
@@ -536,6 +554,12 @@ func (s *globalMixin) HasError() bool {
 	return s.hasError
 }
 
+// FixtValue returns the fixture value if the test depends on a fixture in the same process.
+// FixtValue returns nil otherwise.
+func (s *State) FixtValue() interface{} {
+	return s.entityRoot.cfg.FixtValue
+}
+
 // PreCtx returns a context that lives as long as the precondition.
 // Can only be called from inside a precondition; it panics otherwise.
 func (s *PreState) PreCtx() context.Context {
@@ -693,8 +717,7 @@ type FixtState struct {
 // The context is also associated with the fixture metadata. For example,
 // testing.ContextOutDir(ctx) returns the output directory allocated to the fixture.
 func (s *FixtState) FixtContext() context.Context {
-	// TODO(oka): Implement it.
-	panic("to be implemented")
+	return s.entityRoot.cfg.FixtCtx
 }
 
 // Param returns Val specified at the Param struct for the current fixture.
@@ -706,8 +729,7 @@ func (s *FixtState) Param() interface{} {
 // ParentValue returns the parent fixture value if the fixture has a parent in the same process.
 // ParentValue returns nil otherwise.
 func (s *FixtState) ParentValue() interface{} {
-	// TODO(oka): Implement it.
-	panic("to be implemented")
+	return s.entityRoot.cfg.FixtValue
 }
 
 // FixtTestState is the state the framework passes to PreTest and PostTest.

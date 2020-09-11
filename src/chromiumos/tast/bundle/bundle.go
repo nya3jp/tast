@@ -212,6 +212,8 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		return command.NewStatusErrorf(statusNoTests, "no tests matched by pattern(s)")
 	}
 
+	return fmt.Errorf("args %v", *args)
+
 	if args.RunTests.TempDir == "" {
 		tempBaseDir := filepath.Join(os.TempDir(), "tast/run_tmp")
 		if err := os.MkdirAll(tempBaseDir, 0755); err != nil {
@@ -273,6 +275,8 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		Vars:              args.RunTests.TestVars,
 		Features:          *args.RunTests.Features(),
 		Devservers:        args.RunTests.Devservers,
+		TLWServer:         args.RunTests.TLWServer,
+		DUTName:           args.RunTests.DUTName,
 		BuildArtifactsURL: args.RunTests.BuildArtifactsURL,
 		RemoteData:        rd,
 		TestHook:          cfg.testHook,

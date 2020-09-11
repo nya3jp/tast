@@ -93,6 +93,7 @@ type Config struct {
 	downloadPrivateBundles bool                 // whether to download private bundles if missing
 	downloadMode           planner.DownloadMode // strategy to download external data files
 	tlwServer              string               // address of the TLW server if available
+	dutName                string               // name of the DUT recognized by TLW server
 
 	localRunner    string // path to executable that runs local test bundles
 	localBundleDir string // dir where packaged local test bundles are installed

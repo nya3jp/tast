@@ -8,7 +8,6 @@ import (
 	"bufio"
 	"bytes"
 	"context"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -18,6 +17,7 @@ import (
 	"sort"
 	"time"
 
+	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/devserver"
 	"chromiumos/tast/internal/extdata"
@@ -54,6 +54,10 @@ type Config struct {
 	Features dep.Features
 	// Devservers contains URLs of devservers that can be used to download files.
 	Devservers []string
+	// TLWServer is the address of TLW server
+	TLWServer string
+	// DutName is the name given by the infra scheduler
+	DutName string
 	// BuildArtifactsURL is the URL of Google Cloud Storage directory, ending with a slash,
 	// containing build artifacts for the current Chrome OS image.
 	BuildArtifactsURL string
@@ -130,7 +134,10 @@ func buildPlan(tests []*testing.TestInstance, pcfg *Config) *plan {
 }
 
 func (p *plan) run(ctx context.Context, out OutputStream) error {
-	dl := newDownloader(ctx, p.pcfg)
+	dl, err := newDownloader(ctx, p.pcfg)
+	if err != nil {
+		return errors.Wrap(err, "failed to create new downloader: ")
+	}
 	dl.BeforeRun(ctx, p.testsToRun())
 
 	for _, s := range p.skips {
@@ -258,12 +265,15 @@ type downloader struct {
 	purgeable []string
 }
 
-func newDownloader(ctx context.Context, pcfg *Config) *downloader {
-	cl := devserver.NewClient(ctx, pcfg.Devservers)
+func newDownloader(ctx context.Context, pcfg *Config) (*downloader, error) {
+	cl, err := devserver.NewClient(ctx, pcfg.Devservers, pcfg.TLWServer, pcfg.DutName)
+	if err != nil {
+		return nil, errors.Wrapf(err, "devserver.NewClient(devservers=%v, TLWServer=%s)", pcfg.Devservers, pcfg.TLWServer)
+	}
 	return &downloader{
 		pcfg: pcfg,
 		cl:   cl,
-	}
+	}, nil
 }
 
 // BeforeRun must be called before running a set of tests. It downloads external

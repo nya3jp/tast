@@ -112,6 +112,11 @@ func TestMarshal(t *testing.T) {
 			Fingerprint: &configpb.HardwareFeatures_Fingerprint{
 				Location: configpb.HardwareFeatures_Fingerprint_NOT_PRESENT,
 			},
+			EmbeddedController: &configpb.HardwareFeatures_EmbeddedController{
+				Present: configpb.HardwareFeatures_NOT_PRESENT,
+				EcType:  configpb.HardwareFeatures_EmbeddedController_EC_TYPE_UNKNOWN,
+				Part:    &configpb.Component_EmbeddedController{PartNumber: "my_part_number"},
+			},
 		},
 	}
 	b, err := in.MarshalJSON()

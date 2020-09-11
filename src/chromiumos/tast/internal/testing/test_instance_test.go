@@ -120,10 +120,10 @@ func TestInstantiate(t *gotesting.T) {
 		if got[0].Func == nil {
 			t.Error("Got nil Func")
 		}
-		if result := got[0].ShouldRun(features([]string{"dep1", "dep2"}, "model1")); !result.OK() {
+		if result := got[0].ShouldRun(features([]string{"dep1", "dep2"}, "model1"), nil); !result.OK() {
 			t.Error("Got unexpected HardwareDeps: ShouldRun returned false for model1: ", result)
 		}
-		if result := got[0].ShouldRun(features([]string{"dep1", "dep2"}, "modelX")); result.OK() {
+		if result := got[0].ShouldRun(features([]string{"dep1", "dep2"}, "modelX"), nil); result.OK() {
 			t.Error("Got unexpected HardwareDeps: ShouldRun returned true for modelX")
 		}
 	}
@@ -196,19 +196,19 @@ func TestInstantiateParams(t *gotesting.T) {
 		if got[0].Func == nil {
 			t.Error("Got nil Func for the first test instance")
 		}
-		if result := got[0].ShouldRun(features([]string{"dep0", "dep1"}, "model1")); !result.OK() {
+		if result := got[0].ShouldRun(features([]string{"dep0", "dep1"}, "model1"), nil); !result.OK() {
 			t.Error("Got unexpected HardwareDeps for first test instance: ShouldRun returned false for model1: ", result)
 		}
-		if result := got[0].ShouldRun(features([]string{"dep0", "dep1"}, "model2")); result.OK() {
+		if result := got[0].ShouldRun(features([]string{"dep0", "dep1"}, "model2"), nil); result.OK() {
 			t.Error("Got unexpected HardwareDeps for first test instance: ShouldRun returned true for model2")
 		}
 		if got[1].Func == nil {
 			t.Error("Got nil Func for the second test instance")
 		}
-		if result := got[1].ShouldRun(features([]string{"dep0", "dep2"}, "model2")); !result.OK() {
+		if result := got[1].ShouldRun(features([]string{"dep0", "dep2"}, "model2"), nil); !result.OK() {
 			t.Error("Got unexpected HardwareDeps for second test instance: ShouldRun returned false for model2: ", result)
 		}
-		if result := got[1].ShouldRun(features([]string{"dep0", "dep2"}, "model1")); result.OK() {
+		if result := got[1].ShouldRun(features([]string{"dep0", "dep2"}, "model1"), nil); result.OK() {
 			t.Error("Got unexpected HardwareDeps for second test instance: ShouldRun returned true for model1")
 		}
 	}
@@ -624,7 +624,7 @@ func TestInstantiateNonPointerPrecondition(t *gotesting.T) {
 
 func TestSoftwareDeps(t *gotesting.T) {
 	test := TestInstance{SoftwareDeps: []string{"dep3", "dep1", "dep2", "depX"}}
-	got := test.ShouldRun(features([]string{"dep0", "dep2", "dep4"}, "eve"))
+	got := test.ShouldRun(features([]string{"dep0", "dep2", "dep4"}, "eve"), nil)
 	want := &ShouldRunResult{
 		SkipReasons: []string{"missing SoftwareDeps: dep1, dep3, depX"},
 		Errors:      []string{"unknown SoftwareDeps: depX"},
@@ -636,7 +636,7 @@ func TestSoftwareDeps(t *gotesting.T) {
 
 func TestHardwareDeps(t *gotesting.T) {
 	test := TestInstance{HardwareDeps: hwdep.D(hwdep.Model("eve"))}
-	got := test.ShouldRun(features(nil, "samus"))
+	got := test.ShouldRun(features(nil, "samus"), nil)
 	want := &ShouldRunResult{SkipReasons: []string{"ModelId did not match"}}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("ShouldRun() = %+v; want %+v", got, want)

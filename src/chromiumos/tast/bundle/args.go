@@ -82,7 +82,9 @@ type RunTestsArgs struct {
 
 	// TestVars contains names and values of runtime variables used to pass out-of-band data to tests.
 	// Names correspond to testing.Test.Vars and values are accessed using testing.State.Var.
-	TestVars map[string]string `json:"testVars,omitempty"`
+	//
+	// omitempty is not set so that empty map doesn't become nil.
+	TestVars map[string]string `json:"testVars"`
 
 	// DataDir is the path to the directory containing test data files.
 	DataDir string `json:"dataDir,omitempty"`
@@ -156,6 +158,7 @@ type RunTestsArgs struct {
 func (a *RunTestsArgs) Features() *dep.Features {
 	var f dep.Features
 	if a.CheckSoftwareDeps {
+		f.Var = a.TestVars
 		f.Software = &dep.SoftwareFeatures{
 			Available:   a.AvailableSoftwareFeatures,
 			Unavailable: a.UnavailableSoftwareFeatures,

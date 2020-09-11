@@ -11,7 +11,7 @@ import (
 	"strconv"
 )
 
-// ForbiddenImports makes sure blacklisted errors packages are not imported.
+// ForbiddenImports makes sure blocked errors packages are not imported.
 func ForbiddenImports(fs *token.FileSet, f *ast.File) []*Issue {
 	var issues []*Issue
 

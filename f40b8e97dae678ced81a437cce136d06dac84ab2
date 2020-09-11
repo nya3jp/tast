@@ -33,6 +33,23 @@
       "revId": "f40b8e97dae678ced81a437cce136d06dac84ab2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6c0dec7c_286806a6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-09-11T17:44:19Z",
+      "side": 1,
+      "message": "resubmit",
+      "revId": "f40b8e97dae678ced81a437cce136d06dac84ab2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

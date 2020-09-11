@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4d43364b_b982d1b7",
+        "filename": "src/chromiumos/tast/internal/planner/fixt_test.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-11T05:19:08Z",
+      "side": 1,
+      "message": "Note: PreTest/PostTest are not implemented yet because I need more refactoring to the planner to do that. I\u0027ll support them later.",
+      "range": {
+        "startLine": 73,
+        "startChar": 0,
+        "endLine": 80,
+        "endChar": 0
+      },
+      "revId": "8f2b7dfd0bc8bdc75e8baf4002bd28cf41a8da1e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

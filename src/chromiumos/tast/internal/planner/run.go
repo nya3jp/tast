@@ -96,7 +96,7 @@ func buildPlan(tests []*testing.TestInstance, pcfg *Config) *plan {
 	var runs []*testing.TestInstance
 	var skips []*skippedTest
 	for _, t := range tests {
-		r := t.ShouldRun(&pcfg.Features)
+		r := t.ShouldRun(&pcfg.Features, pcfg.Vars)
 		if r.OK() {
 			runs = append(runs, t)
 		} else {

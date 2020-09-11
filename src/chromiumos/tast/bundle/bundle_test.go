@@ -303,23 +303,25 @@ func TestRunTestsMissingDeps(t *gotesting.T) {
 	defer restore()
 
 	const (
-		validName   = "foo.Valid"
-		missingName = "foo.Missing"
-		unregName   = "foo.Unregistered"
+		validName      = "foo.Valid"
+		missingName    = "foo.Missing"
+		missingVarName = "foo.MissingVar"
+		unregName      = "foo.Unregistered"
 
 		validDep   = "valid"
 		missingDep = "missing"
 		unregDep   = "unreg"
 	)
 
-	// Register three tests: one with a satisfied dep, another with a missing dep,
-	// and a third with an unregistered dep.
+	// Register four tests: one with a satisfied dep, another with a missing SW dep,
+	// another with a missing var dep, and a fourth with an unregistered dep.
 	testRan := make(map[string]bool)
 	makeFunc := func(name string) testing.TestFunc {
 		return func(context.Context, *testing.State) { testRan[name] = true }
 	}
 	testing.AddTestInstance(&testing.TestInstance{Name: validName, Func: makeFunc(validName), SoftwareDeps: []string{validDep}})
 	testing.AddTestInstance(&testing.TestInstance{Name: missingName, Func: makeFunc(missingName), SoftwareDeps: []string{missingDep}})
+	testing.AddTestInstance(&testing.TestInstance{Name: missingVarName, Func: makeFunc(missingVarName), Vars: []string{"nosuchvariable"}, VarDeps: []string{"nosuchvariable"}})
 	testing.AddTestInstance(&testing.TestInstance{Name: unregName, Func: makeFunc(unregName), SoftwareDeps: []string{unregDep}})
 
 	tmpDir := testutil.TempDir(t)
@@ -331,6 +333,7 @@ func TestRunTestsMissingDeps(t *gotesting.T) {
 			OutDir:                      tmpDir,
 			DataDir:                     tmpDir,
 			CheckSoftwareDeps:           true,
+			TestVars:                    map[string]string{},
 			AvailableSoftwareFeatures:   []string{validDep},
 			UnavailableSoftwareFeatures: []string{missingDep},
 		},
@@ -371,6 +374,7 @@ func TestRunTestsMissingDeps(t *gotesting.T) {
 	}{
 		{validName, true, false, false},
 		{missingName, false, false, true},
+		{missingVarName, false, false, true},
 		{unregName, false, true, true},
 	} {
 		if testRan[tc.name] && !tc.shouldRun {

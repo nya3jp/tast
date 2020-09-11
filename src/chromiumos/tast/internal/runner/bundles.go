@@ -8,7 +8,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -26,6 +25,7 @@ import (
 	"golang.org/x/sys/unix"
 
 	"chromiumos/tast/bundle"
+	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/devserver"
 	"chromiumos/tast/internal/logging"
@@ -282,7 +282,14 @@ func handleDownloadPrivateBundles(ctx context.Context, args *Args, cfg *Config, 
 	// Download the archive via devserver.
 	archiveURL := args.DownloadPrivateBundles.BuildArtifactsURL + "tast_bundles.tar.bz2"
 	logging.ContextLogf(ctx, "Downloading private bundles from %s", archiveURL)
-	cl := devserver.NewClient(ctx, args.DownloadPrivateBundles.Devservers)
+	cl, err := devserver.NewClient(ctx, args.DownloadPrivateBundles.Devservers,
+		args.DownloadPrivateBundles.TLWServer,
+		args.DownloadPrivateBundles.DUTName)
+	if err != nil {
+		return errors.Wrapf(err, "failed to create new client [devservers=%v, TLWServer=%s]",
+			args.DownloadPrivateBundles.Devservers, args.DownloadPrivateBundles.TLWServer)
+	}
+	defer cl.TearDown()
 
 	r, err := cl.Open(ctx, archiveURL)
 	if err != nil {

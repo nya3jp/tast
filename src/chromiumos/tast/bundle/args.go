@@ -154,7 +154,9 @@ type RunTestsArgs struct {
 
 // Features returns dep.Features to be used to check test dependencies.
 func (a *RunTestsArgs) Features() *dep.Features {
-	var f dep.Features
+	f := &dep.Features{
+		Var: a.TestVars,
+	}
 	if a.CheckSoftwareDeps {
 		f.Software = &dep.SoftwareFeatures{
 			Available:   a.AvailableSoftwareFeatures,
@@ -165,7 +167,7 @@ func (a *RunTestsArgs) Features() *dep.Features {
 			Features: a.HardwareFeatures,
 		}
 	}
-	return &f
+	return f
 }
 
 // MarshalJSON marshals the RunTestsArgs struct into JSON.

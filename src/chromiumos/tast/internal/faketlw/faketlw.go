@@ -9,10 +9,20 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"net/http"
+	"net/http/httptest"
+	"net/url"
 	"testing"
 
+	"github.com/golang/protobuf/ptypes"
+	"github.com/golang/protobuf/ptypes/empty"
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
+	"go.chromium.org/chromiumos/config/go/api/test/tls/dependencies/longrunning"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
+	"chromiumos/tast/errors"
 )
 
 // NamePort represents a simple name/port pair.
@@ -22,7 +32,9 @@ type NamePort struct {
 }
 
 type wiringServerConfig struct {
-	dutPortMap map[NamePort]NamePort
+	dutPortMap   map[NamePort]NamePort
+	cacheFileMap map[string][]byte
+	dutName      string
 }
 
 // WiringServerOption is an option passed to NewWiringServer to customize WiringServer.
@@ -36,21 +48,97 @@ func WithDUTPortMap(m map[NamePort]NamePort) WiringServerOption {
 	}
 }
 
+// WithCacheFileMap returns an option that sets the files to be fetched by
+// CacheForDUT requests.
+func WithCacheFileMap(m map[string][]byte) WiringServerOption {
+	return func(cfg *wiringServerConfig) {
+		cfg.cacheFileMap = m
+	}
+}
+
+// WithDutName returns an option that sets the expected DUT name to be requested by
+// CacheForDut requests.
+func WithDutName(n string) WiringServerOption {
+	return func(cfg *wiringServerConfig) {
+		cfg.dutName = n
+	}
+}
+
+type operation struct {
+	name    string
+	srcURL  string
+	content []byte
+}
+
+type operationsMap map[string]operation
+
 // WiringServer is a fake implementation of tls.WiringServer.
 type WiringServer struct {
 	tls.UnimplementedWiringServer
-	cfg wiringServerConfig
+	cfg         wiringServerConfig
+	opServer    operationsServer
+	cacheServer cacheServer
+}
+
+type cacheServer struct {
+	cachedFiles map[string][]byte
+	hs          *httptest.Server
+}
+
+func newCacheServer() cacheServer {
+	c := cacheServer{
+		cachedFiles: map[string][]byte{},
+	}
+	mux := http.NewServeMux()
+	mux.Handle("/", http.HandlerFunc(c.handleHTTP))
+	c.hs = httptest.NewServer(mux)
+	return c
+}
+
+func (c *cacheServer) fillCache(key string, content []byte) {
+	c.cachedFiles[key] = content
+}
+
+func (c *cacheServer) address() string {
+	return c.hs.Listener.Addr().String()
+}
+
+func (c *cacheServer) handleHTTP(w http.ResponseWriter, r *http.Request) {
+	k, err := cacheKey(r.URL.String())
+	if err != nil {
+		http.NotFound(w, r)
+	}
+	content, ok := c.cachedFiles[k]
+	if !ok {
+		http.NotFound(w, r)
+		return
+	}
+	w.Write(content)
 }
 
 var _ tls.WiringServer = &WiringServer{}
 
 // NewWiringServer constructs a new WiringServer from given options.
-func NewWiringServer(opts ...WiringServerOption) *WiringServer {
+// The caller is responsible for calling Shutdown() of the returned object.
+func NewWiringServer(opts ...WiringServerOption) (*WiringServer, error) {
 	var cfg wiringServerConfig
 	for _, opt := range opts {
 		opt(&cfg)
 	}
-	return &WiringServer{cfg: cfg}
+
+	ws := &WiringServer{
+		cfg: cfg,
+	}
+
+	ws.opServer = newOperationsServer(ws.onLoaded)
+	ws.cacheServer = newCacheServer()
+
+	return ws, nil
+}
+
+// Shutdown shuts down the serer.
+func (s *WiringServer) Shutdown() {
+	s.cacheServer.hs.Close()
 }
 
 // OpenDutPort implements tls.WiringServer.OpenDutPort.
@@ -63,14 +151,89 @@ func (s *WiringServer) OpenDutPort(ctx context.Context, req *tls.OpenDutPortRequ
 	return &tls.OpenDutPortResponse{Address: dst.Name, Port: dst.Port}, nil
 }
 
-// StartWiringServer is a convenient method for unit tests which starts a gRPC
-// server serving WiringServer in the background.
-// Callers are responsible for stopping the server by srv.Stop.
-func StartWiringServer(t *testing.T, opts ...WiringServerOption) (srv *grpc.Server, addr string) {
-	ws := NewWiringServer(opts...)
+// CacheForDut implements tls WiringServer.CacheForDUT
+func (s *WiringServer) CacheForDut(ctx context.Context, req *tls.CacheForDutRequest) (*longrunning.Operation, error) {
+	if req.DutName != s.cfg.dutName {
+		return nil, fmt.Errorf("wrong DUT name: got %q, want %q", req.DutName, s.cfg.dutName)
+	}
+	content, ok := s.cfg.cacheFileMap[req.Url]
+	if !ok {
+		return nil, fmt.Errorf("not found in cache file map: %s", req.Url)
+	}
 
-	srv = grpc.NewServer()
+	operationName := fmt.Sprintf("CacheForDUTOperation_%s", req.Url)
+	s.opServer.Start(operationName, operation{
+		name:    operationName,
+		srcURL:  req.Url,
+		content: content,
+	})
+	op := longrunning.Operation{
+		Name: operationName,
+		// Pretend operation is not finished yet in order to test the code path for
+		// waiting the operation to finish.
+		Done: false,
+	}
+
+	return &op, nil
+}
+
+func (s *WiringServer) onLoaded(srcURL string) (string, error) {
+	cacheURL, err := cacheURL(s.cacheServer.address(), srcURL)
+	if err != nil {
+		return "", errors.Wrap(err, "failed to generate cache URL")
+	}
+	k, err := cacheKey(cacheURL)
+	if err != nil {
+		return "", errors.Wrapf(err, "failed to generate cache key: %s", cacheURL)
+	}
+	content, ok := s.cfg.cacheFileMap[srcURL]
+	if !ok {
+		return "", fmt.Errorf("requrested URL does not exist: %s", srcURL)
+	}
+	s.cacheServer.fillCache(k, content)
+	return cacheURL, nil
+}
+
+// cacheURL composes a URL of a fake cached file.
+func cacheURL(srvAddress, src string) (string, error) {
+	u := fmt.Sprintf("http://%s/?s=%s", srvAddress, url.QueryEscape(src))
+	p, err := url.Parse(u)
+	if err != nil {
+		return "", errors.Wrapf(err, "failed to parse URL: %s", u)
+	}
+	return p.String(), nil
+}
+
+// cacheKey generates the internal key used for matching a URL generated by CacheForDUT,
+// and a one that is passed to the HTTP handler.
+func cacheKey(cacheURL string) (string, error) {
+	u, err := url.Parse(cacheURL)
+	if err != nil {
+		return "", err
+	}
+
+	// The query parameter name should be kept consistent with cacheURL.
+	q := u.Query()["s"]
+	if len(q) != 1 {
+		return "", fmt.Errorf("failed to find query in cache URL %s", cacheURL)
+	}
+	return q[0], nil
+}
+
+// StartWiringServer is a convenient method for unit tests which starts a gRPC
+// server serving WiringServer in the background. It also starts an HTTP server
+// for serving cached files by CacheForDUT.
+// Callers are responsible for stopping the server by stopFunc().
+func StartWiringServer(t *testing.T, opts ...WiringServerOption) (stopFunc func(), addr string) {
+	ws, err := NewWiringServer(opts...)
+	if err != nil {
+		t.Fatal("Failed to start new Wiring Server: ", err)
+	}
+
+	srv := grpc.NewServer()
 	tls.RegisterWiringServer(srv, ws)
+
+	longrunning.RegisterOperationsServer(srv, ws.opServer)
 
 	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
@@ -79,5 +242,67 @@ func StartWiringServer(t *testing.T, opts ...WiringServerOption) (srv *grpc.Serv
 
 	go srv.Serve(lis)
 
-	return srv, lis.Addr().String()
+	return func() {
+		ws.Shutdown()
+		srv.Stop()
+	}, lis.Addr().String()
+}
+
+// operationsServer is a fake implementation of longrunning.Operations.
+type operationsServer struct {
+	longrunning.UnimplementedOperationsServer
+	operations operationsMap
+	// loadedCallback is called with source URL when an operation is finished, and should return cache URL.
+	loadedCallback func(string) (string, error)
+}
+
+func newOperationsServer(loadedCallback func(string) (string, error)) operationsServer {
+	return operationsServer{
+		loadedCallback: loadedCallback,
+		operations:     map[string]operation{},
+	}
+}
+
+func (s *operationsServer) Start(name string, o operation) {
+	s.operations[name] = o
+}
+
+// GetOperation implements longrunning.GetOperation.
+func (s operationsServer) GetOperation(ctx context.Context, req *longrunning.GetOperationRequest) (*longrunning.Operation, error) {
+	name := req.Name
+	o, ok := s.operations[name]
+	if !ok {
+		// TODO(yamaguchi): Check the exact error format returned by the real service.
+		return nil, status.Errorf(codes.NotFound, "operation name %s not found", name)
+	}
+	cacheURL, err := s.loadedCallback(o.srcURL)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to fill cache")
+	}
+	m, err := ptypes.MarshalAny(&tls.CacheForDutResponse{Url: cacheURL})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to marshal data in GetOperation")
+	}
+	return &longrunning.Operation{
+		Done: true,
+		Name: name,
+		Result: &longrunning.Operation_Response{
+			Response: m,
+		},
+	}, nil
+}
+
+// CancelOperation implements longrunning.CancelOperation.
+func (s operationsServer) CancelOperation(ctx context.Context, req *longrunning.CancelOperationRequest) (*empty.Empty, error) {
+	return nil, errors.New("Not implemented")
+}
+
+// DeleteOperation implements longrunning.CancelOperation.
+func (s operationsServer) DeleteOperation(ctx context.Context, req *longrunning.DeleteOperationRequest) (*empty.Empty, error) {
+	return nil, errors.New("Not implemented")
+}
+
+// ListOperations implements longrunning.ListOperations.
+func (s operationsServer) ListOperations(ctx context.Context, req *longrunning.ListOperationsRequest) (*longrunning.ListOperationsResponse, error) {
+	return nil, errors.New("Not implemented")
 }

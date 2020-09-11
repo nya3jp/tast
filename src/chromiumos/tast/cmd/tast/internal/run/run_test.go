@@ -149,10 +149,13 @@ func TestRunTLW(t *gotesting.T) {
 	}
 
 	// Start a TLW server that resolves "the_dut:22" to the real target addr/port.
-	tlw, tlwAddr := faketlw.StartWiringServer(t, faketlw.WithDUTPortMap(map[faketlw.NamePort]faketlw.NamePort{
+	stopFunc, tlwAddr, err := faketlw.StartWiringServer(t, faketlw.WithDUTPortMap(map[faketlw.NamePort]faketlw.NamePort{
 		{Name: targetName, Port: 22}: {Name: host, Port: int32(port)},
 	}))
-	defer tlw.Stop()
+	if err != nil {
+		t.Fatal("Failed to start fake wiring server: ", err)
+	}
+	defer stopFunc()
 
 	td.cfg.runLocal = true
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {

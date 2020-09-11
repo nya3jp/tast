@@ -139,6 +139,11 @@ func (c *RealClient) Status() string {
 	return fmt.Sprint(c.servers)
 }
 
+// TearDown does nothing.
+func (c *RealClient) TearDown() error {
+	return nil
+}
+
 // Open downloads a file on GCS via devservers. It returns an error if no devserver is up.
 func (c *RealClient) Open(ctx context.Context, gsURL string) (io.ReadCloser, error) {
 	bucket, path, err := ParseGSURL(gsURL)

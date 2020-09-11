@@ -6,17 +6,35 @@ package devserver
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"time"
 
 	"chromiumos/tast/internal/logging"
 )
 
-// NewClient creates a Client from a list of devservers. If the list is empty,
-// PseudoClient is returned. Otherwise RealClient is returned.
-func NewClient(ctx context.Context, devservers []string) Client {
+// NewClient creates a Client from a list of devservers or a TLW server.
+// If tlwServer is non-empty, TLWClient is returned.
+// If devserver contains 1 or more element, RealClient is returned.
+// If the oth are empty, PseudoClient is returned.
+func NewClient(ctx context.Context, devservers []string, tlwServer, dutName string) (Client, error) {
+	if tlwServer != "" {
+		if len(devservers) > 0 {
+			return nil, fmt.Errorf("both tlwServer (%q) and devservers (%v) are set", tlwServer, devservers)
+		}
+		if dutName == "" {
+			return nil, errors.New("dutName should be set when TLW server is used")
+		}
+		cl, err := NewTLWClient(ctx, tlwServer, dutName)
+		if err != nil {
+			return nil, err
+		}
+		logging.ContextLog(ctx, "Devserver status: using TLW client")
+		return cl, nil
+	}
 	if len(devservers) == 0 {
 		logging.ContextLog(ctx, "Devserver status: using pseudo client")
-		return NewPseudoClient()
+		return NewPseudoClient(), nil
 	}
 
 	const timeout = 3 * time.Second
@@ -25,5 +43,5 @@ func NewClient(ctx context.Context, devservers []string) Client {
 
 	cl := NewRealClient(ctx, devservers, nil)
 	logging.ContextLogf(ctx, "Devserver status: %s", cl.Status())
-	return cl
+	return cl, nil
 }

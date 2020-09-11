@@ -17,4 +17,8 @@ type Client interface {
 	// Callers are responsible to close the/ returned io.ReadCloser after use.
 	// If the file does not exist, os.ErrNotExist is returned.
 	Open(ctx context.Context, gsURL string) (io.ReadCloser, error)
+
+	// TearDown should be called once when the Client is destructed,
+	// regardless of whether Open was called or not.
+	TearDown() error
 }

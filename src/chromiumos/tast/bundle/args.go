@@ -161,6 +161,10 @@ type RunTestsArgs struct {
 func (a *RunTestsArgs) Features() *dep.Features {
 	var f dep.Features
 	if a.CheckSoftwareDeps {
+		f.Var = make(map[string]string)
+		for k, v := range a.TestVars {
+			f.Var[k] = v
+		}
 		f.Software = &dep.SoftwareFeatures{
 			Available:   a.AvailableSoftwareFeatures,
 			Unavailable: a.UnavailableSoftwareFeatures,

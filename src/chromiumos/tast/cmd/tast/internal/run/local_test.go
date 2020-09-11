@@ -195,6 +195,7 @@ func TestLocalSuccess(t *gotesting.T) {
 					DataDir:           mockLocalDataDir,
 					OutDir:            mockLocalOutDir,
 					Devservers:        mockDevservers,
+					DUTName:           td.cfg.Target,
 					BuildArtifactsURL: mockBuildArtifactsURL,
 					DownloadMode:      planner.DownloadLazy,
 					HeartbeatInterval: heartbeatInterval,

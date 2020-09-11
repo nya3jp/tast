@@ -93,6 +93,7 @@ type Config struct {
 	downloadPrivateBundles bool                 // whether to download private bundles if missing
 	downloadMode           planner.DownloadMode // strategy to download external data files
 	tlwServer              string               // address of the TLW server if available
+	dutName                string               // name of the DUT recognized by TLW server
 
 	localRunner    string // path to executable that runs local test bundles
 	localBundleDir string // dir where packaged local test bundles are installed
@@ -187,6 +188,7 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 	f.BoolVar(&c.continueAfterFailure, "continueafterfailure", true, "try to run remaining tests after bundle/DUT crash or lost SSH connection")
 	f.IntVar(&c.sshRetries, "sshretries", 0, "number of SSH connect retries")
 	f.StringVar(&c.tlwServer, "tlwserver", "", "TLW server address")
+	f.StringVar(&c.dutName, "dutname", "", "DUT name given by the infra scheduler")
 
 	f.StringVar(&c.localRunner, "localrunner", "", "executable that runs local test bundles")
 	f.StringVar(&c.localBundleDir, "localbundledir", "", "directory containing builtin local test bundles")

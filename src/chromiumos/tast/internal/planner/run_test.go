@@ -18,6 +18,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
+	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/devserver/devservertest"
@@ -624,12 +625,237 @@ func TestRunExternalData(t *gotesting.T) {
 	}
 }
 
+func TestRunFixture(t *gotesting.T) {
+	const (
+		val1 = "val1"
+		val2 = "val2"
+	)
+	fixt1 := &testing.Fixture{
+		Name: "fixt1",
+		Impl: newFakeFixture(withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
+			return val1
+		})),
+	}
+	fixt2 := &testing.Fixture{
+		Name: "fixt2",
+		Impl: newFakeFixture(withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
+			return val2
+		})),
+		Parent: "fixt1",
+	}
+	cfg := &Config{
+		Fixtures: map[string]*testing.Fixture{
+			fixt1.Name: fixt1,
+			fixt2.Name: fixt2,
+		},
+	}
+
+	tests := []*testing.TestInstance{{
+		Name: "pkg.Test0",
+		Func: func(ctx context.Context, s *testing.State) {
+			s.Log("Test 0")
+			if val := s.FixtValue(); val != nil {
+				t.Errorf("pkg.Test0: FixtValue() = %v; want nil", val)
+			}
+		},
+		Timeout: time.Minute,
+	}, {
+		Name:    "pkg.Test1",
+		Fixture: "fixt1",
+		Func: func(ctx context.Context, s *testing.State) {
+			s.Log("Test 1")
+			if val := s.FixtValue(); val != val1 {
+				t.Errorf("pkg.Test1: FixtValue() = %v; want %v", val, val1)
+			}
+		},
+		Timeout: time.Minute,
+	}, {
+		Name:    "pkg.Test2",
+		Fixture: "fixt2",
+		Func: func(ctx context.Context, s *testing.State) {
+			s.Log("Test 2")
+			if val := s.FixtValue(); val != val2 {
+				t.Errorf("pkg.Test2: FixtValue() = %v; want %v", val, val2)
+			}
+		},
+		Timeout: time.Minute,
+	}}
+
+	msgs := runTestsAndReadAll(t, tests, cfg)
+
+	want := []control.Msg{
+		&control.EntityStart{Info: *tests[0].EntityInfo()},
+		&control.EntityLog{Text: "Test 0"},
+		&control.EntityEnd{Name: tests[0].Name},
+		&control.EntityStart{Info: *fixt1.EntityInfo()},
+		&control.EntityStart{Info: *tests[1].EntityInfo()},
+		&control.EntityLog{Text: "Test 1"},
+		&control.EntityEnd{Name: tests[1].Name},
+		&control.EntityStart{Info: *fixt2.EntityInfo()},
+		&control.EntityStart{Info: *tests[2].EntityInfo()},
+		&control.EntityLog{Text: "Test 2"},
+		&control.EntityEnd{Name: tests[2].Name},
+		&control.EntityEnd{Name: fixt2.Name},
+		&control.EntityEnd{Name: fixt1.Name},
+	}
+	if diff := cmp.Diff(msgs, want); diff != "" {
+		t.Error("Output mismatch (-got +want):\n", diff)
+	}
+}
+
+func TestRunFixtureSetUpFailure(t *gotesting.T) {
+	fixt1 := &testing.Fixture{
+		Name: "fixt1",
+		Impl: newFakeFixture(withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
+			s.Error("Setup failure")
+			return nil
+		})),
+	}
+	fixt2 := &testing.Fixture{
+		Name:   "fixt2",
+		Impl:   newFakeFixture(),
+		Parent: "fixt1",
+	}
+	cfg := &Config{
+		Fixtures: map[string]*testing.Fixture{
+			fixt1.Name: fixt1,
+			fixt2.Name: fixt2,
+		},
+	}
+
+	tests := []*testing.TestInstance{{
+		Name: "pkg.Test0",
+		Func: func(ctx context.Context, s *testing.State) {
+			s.Log("Test 0")
+		},
+		Timeout: time.Minute,
+	}, {
+		Name:    "pkg.Test1",
+		Fixture: "fixt1",
+		Func: func(ctx context.Context, s *testing.State) {
+			s.Log("Test 1")
+		},
+		Timeout: time.Minute,
+	}, {
+		Name:    "pkg.Test2",
+		Fixture: "fixt2",
+		Func: func(ctx context.Context, s *testing.State) {
+			s.Log("Test 2")
+		},
+		Timeout: time.Minute,
+	}}
+
+	msgs := runTestsAndReadAll(t, tests, cfg)
+
+	want := []control.Msg{
+		// pkg.Test0 runs successfully.
+		&control.EntityStart{Info: *tests[0].EntityInfo()},
+		&control.EntityLog{Text: "Test 0"},
+		&control.EntityEnd{Name: tests[0].Name},
+		// fixt1 fails to set up.
+		&control.EntityStart{Info: *fixt1.EntityInfo()},
+		&control.EntityError{Error: testing.Error{Reason: "Setup failure"}},
+		&control.EntityEnd{Name: fixt1.Name},
+		// All tests depending on fixt1 fail.
+		&control.EntityStart{Info: *tests[1].EntityInfo()},
+		&control.EntityError{Error: testing.Error{Reason: "[Fixture failure] fixt1: Setup failed"}},
+		&control.EntityEnd{Name: tests[1].Name},
+		&control.EntityStart{Info: *tests[2].EntityInfo()},
+		&control.EntityError{Error: testing.Error{Reason: "[Fixture failure] fixt1: Setup failed"}},
+		&control.EntityEnd{Name: tests[2].Name},
+	}
+	if diff := cmp.Diff(msgs, want); diff != "" {
+		t.Error("Output mismatch (-got +want):\n", diff)
+	}
+}
+
+func TestRunFixtureResetFailure(t *gotesting.T) {
+	fixt1 := &testing.Fixture{
+		Name: "fixt1",
+		Impl: newFakeFixture(withReset(func(ctx context.Context) error {
+			logging.ContextLog(ctx, "Reset 1")
+			return errors.New("failure")
+		})),
+	}
+	fixt2 := &testing.Fixture{
+		Name: "fixt2",
+		Impl: newFakeFixture(withReset(func(ctx context.Context) error {
+			logging.ContextLog(ctx, "Reset 2")
+			return nil
+		})),
+		Parent: "fixt1",
+	}
+	cfg := &Config{
+		Fixtures: map[string]*testing.Fixture{
+			fixt1.Name: fixt1,
+			fixt2.Name: fixt2,
+		},
+	}
+
+	tests := []*testing.TestInstance{{
+		Name: "pkg.Test0",
+		Func: func(ctx context.Context, s *testing.State) {
+			s.Log("Test 0")
+		},
+		Timeout: time.Minute,
+	}, {
+		Name:    "pkg.Test1",
+		Fixture: "fixt1",
+		Func: func(ctx context.Context, s *testing.State) {
+			s.Log("Test 1")
+		},
+		Timeout: time.Minute,
+	}, {
+		Name:    "pkg.Test2",
+		Fixture: "fixt2",
+		Func: func(ctx context.Context, s *testing.State) {
+			s.Log("Test 2")
+		},
+		Timeout: time.Minute,
+	}}
+
+	msgs := runTestsAndReadAll(t, tests, cfg)
+
+	want := []control.Msg{
+		// pkg.Test0 runs successfully.
+		&control.EntityStart{Info: *tests[0].EntityInfo()},
+		&control.EntityLog{Text: "Test 0"},
+		&control.EntityEnd{Name: tests[0].Name},
+		// fixt1 sets up successfully.
+		&control.EntityStart{Info: *fixt1.EntityInfo()},
+		// pkg.Test1 runs successfully.
+		&control.EntityStart{Info: *tests[1].EntityInfo()},
+		&control.EntityLog{Text: "Test 1"},
+		&control.EntityEnd{Name: tests[1].Name},
+		// fixt1 fails to reset. It is torn down.
+		&control.EntityLog{Text: "Reset 1"},
+		&control.EntityLog{Text: "Fixture failed to reset: failure; recovering"},
+		&control.EntityEnd{Name: fixt1.Name},
+		&control.EntityStart{Info: *fixt1.EntityInfo()},
+		// fixt2 sets up successfully.
+		&control.EntityStart{Info: *fixt2.EntityInfo()},
+		// pkg.Test2 runs successfully.
+		&control.EntityStart{Info: *tests[2].EntityInfo()},
+		&control.EntityLog{Text: "Test 2"},
+		&control.EntityEnd{Name: tests[2].Name},
+		// fixt1 fails to reset again. Fixtures are torn down anyway.
+		&control.EntityLog{Text: "Reset 1"},
+		&control.EntityLog{Text: "Fixture failed to reset: failure; recovering"},
+		&control.EntityEnd{Name: fixt2.Name},
+		&control.EntityEnd{Name: fixt1.Name},
+	}
+	if diff := cmp.Diff(msgs, want); diff != "" {
+		t.Error("Output mismatch (-got +want):\n", diff)
+	}
+}
+
 func TestRunPrecondition(t *gotesting.T) {
 	type data struct{}
 	preData := &data{}
 
 	// The test should be able to access the data via State.PreValue.
 	tests := []*testing.TestInstance{{
+		Name: "pkg.Test",
 		// Use a precondition that returns the struct that we declared earlier from its Prepare method.
 		Pre: &testPre{
 			name:        "pre",
@@ -822,6 +1048,7 @@ func TestRunHasError(t *gotesting.T) {
 
 func TestAttachStateToContext(t *gotesting.T) {
 	tests := []*testing.TestInstance{{
+		Name: "pkg.Test",
 		Func: func(ctx context.Context, s *testing.State) {
 			logging.ContextLog(ctx, "msg ", 1)
 			logging.ContextLogf(ctx, "msg %d", 2)
@@ -845,12 +1072,18 @@ func TestAttachStateToContext(t *gotesting.T) {
 func TestRunPlan(t *gotesting.T) {
 	pre1 := &testPre{name: "pre1"}
 	pre2 := &testPre{name: "pre2"}
+	fixt1 := &testing.Fixture{Name: "fixt1", Impl: newFakeFixture()}
+	fixt2 := &testing.Fixture{Name: "fixt2", Impl: newFakeFixture(), Parent: "fixt1"}
 	cfg := &Config{
 		Features: dep.Features{
 			Software: &dep.SoftwareFeatures{
 				Available:   []string{"yes"},
 				Unavailable: []string{"no"},
 			},
+		},
+		Fixtures: map[string]*testing.Fixture{
+			fixt1.Name: fixt1,
+			fixt2.Name: fixt2,
 		},
 	}
 
@@ -877,6 +1110,41 @@ func TestRunPlan(t *gotesting.T) {
 				"pkg.Test5",
 				"pkg.Test1",
 				"pkg.Test6",
+			},
+		},
+		{
+			name: "fixt",
+			tests: []*testing.TestInstance{
+				{Name: "pkg.Test6", Fixture: "fixt2"},
+				{Name: "pkg.Test5", Fixture: "fixt1"},
+				{Name: "pkg.Test4"},
+				{Name: "pkg.Test3"},
+				{Name: "pkg.Test2", Fixture: "fixt1"},
+				{Name: "pkg.Test1", Fixture: "fixt2"},
+			},
+			wantOrder: []string{
+				"pkg.Test3",
+				"pkg.Test4",
+				"fixt1",
+				"pkg.Test2",
+				"pkg.Test5",
+				"fixt2",
+				"pkg.Test1",
+				"pkg.Test6",
+			},
+		},
+		{
+			name: "fixt_and_pre",
+			tests: []*testing.TestInstance{
+				{Name: "pkg.Test1", Pre: pre1},
+				{Name: "pkg.Test2", Fixture: "fixt1"},
+				{Name: "pkg.Test3"},
+			},
+			wantOrder: []string{
+				"pkg.Test3",
+				"fixt1",
+				"pkg.Test2",
+				"pkg.Test1",
 			},
 		},
 		{

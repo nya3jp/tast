@@ -90,3 +90,25 @@ func TestTestOutputStream(t *gotesting.T) {
 		t.Error("Output mismatch (-got +want):\n", diff)
 	}
 }
+
+func TestTestOutputStreamUnnamedEntity(t *gotesting.T) {
+	sink := newOutputSink()
+	test := &testing.EntityInfo{} // unnamed entity
+	tout := newEntityOutputStream(sink, test)
+
+	tout.Start()
+	tout.Log("hello")
+	tout.Error(&testing.Error{Reason: "faulty", File: "world.go"})
+	tout.Log("world")
+	tout.End(nil, nil)
+
+	got, err := sink.ReadAll()
+	if err != nil {
+		t.Fatal("ReadAll: ", err)
+	}
+
+	var want []control.Msg
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Error("Output mismatch (-got +want):\n", diff)
+	}
+}

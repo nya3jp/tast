@@ -54,6 +54,9 @@ func (w *entityOutputStream) Start() error {
 	if w.ended {
 		return errAlreadyEnded
 	}
+	if w.ei.Name == "" {
+		return nil
+	}
 	return w.out.EntityStart(w.ei)
 }
 
@@ -63,6 +66,10 @@ func (w *entityOutputStream) Log(msg string) error {
 	defer w.mu.Unlock()
 	if w.ended {
 		return errAlreadyEnded
+	}
+	if w.ei.Name == "" {
+		// TODO(crbug.com/1035940): Consider emitting RunLog.
+		return nil
 	}
 	return w.out.EntityLog(w.ei, msg)
 }
@@ -75,6 +82,10 @@ func (w *entityOutputStream) Error(e *testing.Error) error {
 		return errAlreadyEnded
 	}
 	w.hasErr = true
+	if w.ei.Name == "" {
+		// TODO(crbug.com/1035940): Consider emitting RunError.
+		return nil
+	}
 	return w.out.EntityError(w.ei, e)
 }
 
@@ -85,6 +96,9 @@ func (w *entityOutputStream) End(skipReasons []string, timingLog *timing.Log) er
 	defer w.mu.Unlock()
 	if w.ended {
 		return errAlreadyEnded
+	}
+	if w.ei.Name == "" {
+		return nil
 	}
 	w.ended = true
 	return w.out.EntityEnd(w.ei, skipReasons, timingLog)

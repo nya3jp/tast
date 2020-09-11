@@ -179,6 +179,60 @@ func TestTouchscreen(t *testing.T) {
 		true)
 }
 
+func TestChromeEC(t *testing.T) {
+	c := ChromeEC()
+
+	// Verify ECType defined with Boxster.
+	for _, tc := range []struct {
+		ECPresent       configpb.HardwareFeatures_Present
+		ECType          configpb.HardwareFeatures_EmbeddedController_EmbeddedControllerType
+		expectSatisfied bool
+	}{
+		{
+			configpb.HardwareFeatures_PRESENT,
+			configpb.HardwareFeatures_EmbeddedController_EC_CHROME,
+			true,
+		},
+		{
+			configpb.HardwareFeatures_PRESENT_UNKNOWN,
+			configpb.HardwareFeatures_EmbeddedController_EC_CHROME,
+			false,
+		},
+		{
+			configpb.HardwareFeatures_NOT_PRESENT,
+			configpb.HardwareFeatures_EmbeddedController_EC_CHROME,
+			false,
+		},
+		{
+			configpb.HardwareFeatures_PRESENT,
+			configpb.HardwareFeatures_EmbeddedController_EC_TYPE_UNKNOWN,
+			false,
+		},
+		{
+			configpb.HardwareFeatures_PRESENT,
+			configpb.HardwareFeatures_EmbeddedController_EC_WILCO,
+			false,
+		},
+	} {
+		verifyCondition(
+			t, c,
+			&device.Config{
+				Id: &device.ConfigId{
+					PlatformId: &device.PlatformId{
+						Value: "dummy_platform",
+					},
+				},
+			},
+			&configpb.HardwareFeatures{
+				EmbeddedController: &configpb.HardwareFeatures_EmbeddedController{
+					Present: tc.ECPresent,
+					EcType:  tc.ECType,
+				},
+			},
+			tc.expectSatisfied)
+	}
+}
+
 func TestFingerprint(t *testing.T) {
 	c := Fingerprint()
 

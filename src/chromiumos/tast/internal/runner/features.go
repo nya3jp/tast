@@ -216,8 +216,9 @@ func newDeviceConfigAndHardwareFeatures() (dc *device.Config, retFeatures *confi
 		Soc: soc,
 	}
 	features := &configpb.HardwareFeatures{
-		Screen:      &configpb.HardwareFeatures_Screen{},
-		Fingerprint: &configpb.HardwareFeatures_Fingerprint{},
+		Screen:             &configpb.HardwareFeatures_Screen{},
+		Fingerprint:        &configpb.HardwareFeatures_Fingerprint{},
+		EmbeddedController: &configpb.HardwareFeatures_EmbeddedController{},
 	}
 
 	hasInternalDisplay := func() bool {

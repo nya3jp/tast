@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "865bf1f7_43c191d0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2020-09-14T21:45:10Z",
+      "side": 1,
+      "message": "I\u0027m not sure how this squares with the PSA:\nhttps://groups.google.com/a/chromium.org/g/tast-users/c/itmql-n7bWA/m/ySUqUTG4BAAJ",
+      "revId": "ed2e48a12b3740cdfcae20a389c21bbd7ac86765",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b385b299_b2d62d64",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 266,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2020-09-14T21:45:10Z",
+      "side": 1,
+      "message": "Would it make more sense to just track \"Wifi80211ax\", similar to the 80211ac condition at line 233? While the test you\u0027re writing is specifically looking at the HE PHY, the fundamental hardware concern is \"should this WiFi chip support the .11ax standard\", right? There are other 802.11ax tests we might write that aren\u0027t about the HE PHY.",
+      "range": {
+        "startLine": 266,
+        "startChar": 5,
+        "endLine": 266,
+        "endChar": 21
+      },
+      "revId": "ed2e48a12b3740cdfcae20a389c21bbd7ac86765",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

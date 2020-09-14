@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "ccbbe2b3_58ce3286",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2020-09-14T22:10:13Z",
+      "side": 1,
+      "message": "I mean, I don\u0027t think any of these WiFi pseudo-hwdeps really do. There is no useful proto definition for WiFi right now, IIUC.\n\nI\u0027ll leave this up to the Tast folks to decide if that should block.",
+      "parentUuid": "39134320_972905ff",
+      "revId": "ed2e48a12b3740cdfcae20a389c21bbd7ac86765",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b385b299_b2d62d64",
         "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
         "patchSetId": 1

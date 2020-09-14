@@ -63,6 +63,30 @@
       "revId": "386d0b5d7cdb859dbd8f17be89db613fc31169f7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d54b4c25_d3c05de6",
+        "filename": "src/chromiumos/tast/internal/dep/dep.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-09-14T10:21:57Z",
+      "side": 1,
+      "message": "Reconsidering about it, using \"Deps\" for actual values can be confusing.\nHow about simlply \"Values\" or \"Got\"?",
+      "parentUuid": "6005c824_c6a3aec9",
+      "range": {
+        "startLine": 49,
+        "startChar": 15,
+        "endLine": 49,
+        "endChar": 20
+      },
+      "revId": "386d0b5d7cdb859dbd8f17be89db613fc31169f7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fdd90ca8_5f6e826a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1141149
+      },
+      "writtenOn": "2020-09-14T12:57:11Z",
+      "side": 1,
+      "message": "Hi Hidehiko, mt8192 is now able to use jedec info. Both kernel and ATF patches are merged. Can you help review this test scripts? Thanks!",
+      "revId": "1af98356934e78130dfd2dbdd30f96427b300937",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

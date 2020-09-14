@@ -691,24 +691,19 @@ func TestTestClone(t *gotesting.T) {
 
 	// Checks that tst's fields still contain the above values.
 	checkTest := func(msg string, tst *TestInstance) {
-		if tst.Name != name {
-			t.Errorf("%s set Name to %q; want %q", msg, tst.Name, name)
-		}
 		// Go doesn't allow checking functions for equality.
 		if tst.Func == nil {
 			t.Errorf("%s set Func to nil; want %p", msg, f)
 		}
-		if !reflect.DeepEqual(tst.Attr, attr) {
-			t.Errorf("%s set Attr to %v; want %v", msg, tst.Attr, attr)
+		want := &TestInstance{
+			Name:         name,
+			Attr:         attr,
+			SoftwareDeps: softwareDeps,
+			ServiceDeps:  serviceDeps,
+			Timeout:      timeout,
 		}
-		if !reflect.DeepEqual(tst.SoftwareDeps, softwareDeps) {
-			t.Errorf("%s set SoftwareDeps to %v; want %v", msg, tst.SoftwareDeps, softwareDeps)
-		}
-		if !reflect.DeepEqual(tst.ServiceDeps, serviceDeps) {
-			t.Errorf("%s set ServiceDeps to %v; want %v", msg, tst.ServiceDeps, serviceDeps)
-		}
-		if tst.Timeout != timeout {
-			t.Errorf("%s set Timeout to %v; want %v", msg, tst.Timeout, timeout)
+		if diff := cmp.Diff(tst, want, cmpopts.IgnoreFields(TestInstance{}, "Func", "HardwareDeps")); diff != "" {
+			t.Errorf("Unexpected instance after %s; (-got +want):\n%v", msg, diff)
 		}
 	}
 

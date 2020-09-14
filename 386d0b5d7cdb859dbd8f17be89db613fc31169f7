@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6d388946_178c74e7",
+        "filename": "src/chromiumos/tast/internal/dep/dep.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-14T08:01:18Z",
+      "side": 1,
+      "message": "It\u0027s really nice to see that the previous refactoring of dependencies helped :)",
+      "revId": "386d0b5d7cdb859dbd8f17be89db613fc31169f7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4db19fd4_1176ac00",
+        "filename": "src/chromiumos/tast/internal/dep/dep.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-14T08:01:18Z",
+      "side": 1,
+      "message": "Features type was introduced to carry all feature-related data needed to determine dependencies fulfillment. It\u0027s nicer if we can put vars in Features. Of course, runtime variables are not \"features\", so we want to rename the type if we go this path. WDYT?",
+      "range": {
+        "startLine": 49,
+        "startChar": 15,
+        "endLine": 49,
+        "endChar": 20
+      },
+      "revId": "386d0b5d7cdb859dbd8f17be89db613fc31169f7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

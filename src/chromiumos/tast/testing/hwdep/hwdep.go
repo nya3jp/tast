@@ -236,6 +236,15 @@ func Wifi80211ac() Condition {
 	return SkipOnPlatform("kip", "guado")
 }
 
+// Wifi80211ax returns a hardware dependency condition that is satisfied
+// iff the DUT's WiFi module supports 802.11ax.
+func Wifi80211ax() Condition {
+	// Note: this is currently an allowlist. We can consider switching this to a
+	// blocklist/skiplist if we start adding too many relevant devices.
+	// TODO(crbug.com/1070299): replace this when we have hwdep for WiFi chips.
+	return Platform("hatch")
+}
+
 // WifiMACAddrRandomize returns a hardware dependency condition that is satisfied
 // iff the DUT support WiFi MAC Address Randomization.
 func WifiMACAddrRandomize() Condition {

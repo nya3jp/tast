@@ -261,6 +261,14 @@ func WifiNotMarvell() Condition {
 	)
 }
 
+// WifiHasHESupport returns a hardware dependency condition that is satisfied iff
+// the DUT supports HE throughput options.
+func WifiHasHESupport() Condition {
+	// Note: this is currently an allowlist. We can consider switching this to a
+	// blocklist/skiplist if we start adding too many relevant devices.
+	return Platform("hatch")
+}
+
 func hasBattery(f *dep.HardwareFeatures) (bool, error) {
 	if f.DC == nil {
 		return false, errors.New("device.Config is not given")

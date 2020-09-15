@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "817b4a05_a756c672",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-09-15T12:17:17Z",
+      "side": 1,
+      "message": "I think the change is OK as a tentative implementation if marked as TODO like other related ones.",
+      "revId": "ad6eb7f69926fde7986c31b360e8a9cadf66dc9c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "32ca5eeb_92a99a3c",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-09-15T12:17:17Z",
+      "side": 1,
+      "message": "Please add the same TODO like other wifi-related ones.\n\t// TODO(crbug.com/1070299): replace this when we have hwdep for WiFi chips.",
+      "revId": "ad6eb7f69926fde7986c31b360e8a9cadf66dc9c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

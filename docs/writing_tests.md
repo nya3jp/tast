@@ -994,17 +994,14 @@ If one violates this convention, runtime error will happen.
 
 This feature is for internal developers, who has access to `tast-tests-private` package.
 
-#### What is it
+Secret variables allow you to store secret key/value pairs in a private repository, and use them
+from public tests. For example, you can store secret GAIA credentails in a private repository and
+have public tests accesing them.
 
-This feature allows you to store secret key/value pairs in a private repository, and use them from public tests.
+To explain how to do it, let `foo.Bar` be a test need access to secret username and password.
 
-For example, tests no longer have to be private just because they access secret GAIA credentials.
-
-#### How to do it
-
-Let `foo.Bar` be the test which should access secret username and password.
-
-If the variables are only used from the test, create the file `tast-tests-private/vars/foo.Bar.yaml` with the contents:
+If the variables are only used from the test, create the file `tast-tests-private/vars/foo.Bar.yaml`
+with the contents:
 
 ```Yaml
 foo.Bar.user: someone@something.com
@@ -1018,8 +1015,10 @@ foo.user: someone@something.com
 foo.password: whatever
 ```
 
-Then the test can access the variables just like normal variables assigned to the `tast` command with `-var`.
-Secret variables cannot be used to define global variables.
+Secret variables cannot define global variables.
+
+Tests can access the variables just like normal variables assigned to the `tast` command
+with `-var`.
 
 **Don't log secrets in tests** to avoid possible data leakage.
 
@@ -1041,12 +1040,12 @@ func Bar(ctx context.Context, s *testing.State) {
 
 See [example.SecretVars](https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/bundles/cros/example/secret_vars.go) for working example.
 
-#### Naming convention
+Summarizing the naming conventions:
 
-* The file defining `foo.Bar.something` should be `foo.Bar.yaml`
-* The file defining `foo.something` should be `foo.yaml`
+* Variable `foo.something` should be defined in `foo.yaml`.
+* Variable `foo.Bar.something` should be defined in `foo.Bar.yaml`.
 
-If one violates this convention, Tast linter will complain. Please honor the linter errors.
+Voilations of the naming convention will cause linter or runtime errors.
 
 ## Parameterized tests
 

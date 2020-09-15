@@ -104,6 +104,24 @@
       "revId": "c54b80247b75592052d1956c9561eb62526081d9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9bee3b9e_0decafe5",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 1273836
+      },
+      "writtenOn": "2020-09-15T03:23:56Z",
+      "side": 1,
+      "message": "Probably no. I think we only support simple logical computations over USE flags. So, we\u0027ll need to modify it when we get newer version of kernels.",
+      "parentUuid": "559518dc_f6a8cb22",
+      "revId": "c54b80247b75592052d1956c9561eb62526081d9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

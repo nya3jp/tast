@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6162fcba_816e302c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-09-15T08:31:53Z",
+      "side": 1,
+      "message": "LGTM, but please address my comment before submitting.",
+      "revId": "32df7a7a353f5f82f00262957b1a96157b8c720c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d670b8f7_72edd5db",
+        "filename": "proto/infra/README",
+        "patchSetId": 7
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-09-15T08:31:53Z",
+      "side": 1,
+      "message": "The commit hash can be different, IIUC.\n\nCould you run the script again, after your infra/proto CL is landed and sync\u0027ed entier repository to ToT?",
+      "revId": "32df7a7a353f5f82f00262957b1a96157b8c720c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

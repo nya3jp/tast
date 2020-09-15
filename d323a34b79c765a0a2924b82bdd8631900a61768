@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d4fa4194_b67f4816",
+        "filename": "src/chromiumos/tast/internal/dep/dep.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-09-15T03:21:36Z",
+      "side": 1,
+      "message": "\u003e \"checkes\" is a possible misspelling of \"checks\".\n\nPlease fix.",
+      "parentUuid": "d054ad1d_30d2c949",
+      "range": {
+        "startLine": 17,
+        "startChar": 24,
+        "endLine": 17,
+        "endChar": 31
+      },
+      "revId": "d323a34b79c765a0a2924b82bdd8631900a61768",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

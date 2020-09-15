@@ -91,6 +91,24 @@
     },
     {
       "key": {
+        "uuid": "93ef7c50_99a758a8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1432127
+      },
+      "writtenOn": "2020-09-15T19:53:01Z",
+      "side": 1,
+      "message": "I\u0027m assuming that since these changes pertain to when we want to use actual wifi hwdeps, I should land this CL as an interim. I think the suggested proposed change is fine (although I\u0027m not very familiar with the wifi hwdep discussion).",
+      "parentUuid": "0c074965_0e68c086",
+      "revId": "ed2e48a12b3740cdfcae20a389c21bbd7ac86765",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b385b299_b2d62d64",
         "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
         "patchSetId": 1

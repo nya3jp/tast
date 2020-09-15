@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "ad6ac4bc_efa710e5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-09-15T04:06:40Z",
+      "side": 1,
+      "message": "+seewaifu FYI",
+      "revId": "3b5742b9aa3374c186fe4dab09d7d5a9f3c572bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7c36032e_d45b4920",
         "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
         "patchSetId": 6

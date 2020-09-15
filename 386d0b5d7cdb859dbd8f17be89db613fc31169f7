@@ -87,6 +87,30 @@
       "revId": "386d0b5d7cdb859dbd8f17be89db613fc31169f7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "67b013aa_3cce53f8",
+        "filename": "src/chromiumos/tast/internal/dep/dep.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-09-15T03:26:48Z",
+      "side": 1,
+      "message": "I\u0027d like to agree with you on naming before actually conducting renaming.\nMay I go with the original name for this change, and rename the field after this change?\nPTAL.",
+      "parentUuid": "d54b4c25_d3c05de6",
+      "range": {
+        "startLine": 49,
+        "startChar": 15,
+        "endLine": 49,
+        "endChar": 20
+      },
+      "revId": "386d0b5d7cdb859dbd8f17be89db613fc31169f7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

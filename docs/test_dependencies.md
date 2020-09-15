@@ -297,15 +297,48 @@ Examples of their expected use cases are:
 ### Adding new hardware conditions
 
 In order to guarantee forward compatibility in Chrome OS infra,
-each `Condition` should be based on the `device.Config` protobuf schema.
+each `Condition` should be based on the
+`chromiumos.config.api.HardwareFeatures` protobuf schema.
 
 For example, the `hwdep.Touchscreen()` can check
-whether `device.Config.hardware_features` contains
-`HARDWARE_FEATURE_TOUCHSCREEN`.
+whether `Screen.TouchSupport` is set to `HardwareFeatures_PRESENT`.
 
 Any condition should not depend on any other surrounding environment,
 such as some command execution on DUT or reading some config file on DUT, etc.
 
-Note that currently the `device.Config` instance is generated
-internally by the Tast runtime, so only limited fields are filled.
-In the future, Chrome OS infra will provide the instance.
+Note that currently a `chromiumos.config.api.HardwareFeatures` instance is
+generated internally by Tast at runtime, so only limited fields are filled.
+In the future, Chrome OS infra test scheduler will be responsible for checking
+such conditions before running Tast tests.
+
+Please contact and collaborate with the infra team when you need a new type of
+hardware constraints in Tast.
+(If you are not a Google employee, please collaborate with your Google contact.
+)
+
+Here is an example end-to-end workflow:
+Let’s assume that a developer wants to add a new Tast test which requires a new
+hardware feature to be used in the test hardware constraints (e.g. “wifi chip
+vendor name is X”).
+
+1. The developer asks the infra team for that hardware feature.
+    + Send an email to g/cros-boxster-discuss and CC pprabhu@, for contacting
+      and collaborating with the infra team.
+
+    + The developer may propose a change to the schema
+     [(config/api/topology.proto)][1] as a means of clarifying the data or
+     concept they need.
+
+    * The infra team approves it and adds a new field in the .proto file
+     [(config/api/topology.proto)][1].  [(Example CL)][2]
+2. The developer waits until the .proto file in #1 is updated, then implements
+   some functions in the Tast framework supporting the new feature(s) using the
+   new message type.
+    * The Tast team reviews and approves such a change to Tast.
+    [Here is an example CL][3] which puts some data into the protobuf in Tast.
+3. The developer writes test(s) with hwdeps in its test metadata using the
+   above function in Tast.
+
+[1]: https://source.chromium.org/chromium/infra/infra/+/master:go/src/go.chromium.org/chromiumos/config/proto/chromiumos/config/api/topology.proto
+[2]: https://chromium-review.googlesource.com/c/chromiumos/config/+/2249691/4/proto/chromiumos/config/api/topology.proto
+[3]: https://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/2335615

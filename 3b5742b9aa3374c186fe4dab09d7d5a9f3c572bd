@@ -42,6 +42,30 @@
     },
     {
       "key": {
+        "uuid": "4fc975ca_2a8a58e0",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-09-15T07:01:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7c36032e_d45b4920",
+      "range": {
+        "startLine": 51,
+        "startChar": 22,
+        "endLine": 51,
+        "endChar": 41
+      },
+      "revId": "3b5742b9aa3374c186fe4dab09d7d5a9f3c572bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "367a9a60_da861e9e",
         "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
         "patchSetId": 6
@@ -53,6 +77,30 @@
       "writtenOn": "2020-09-14T07:48:36Z",
       "side": 1,
       "message": "Currently DutName is ignored in this method, so users of faketls can\u0027t write unit tests that exercises scenarios where DUT names are wrong. Can you try supporting it?",
+      "range": {
+        "startLine": 115,
+        "startChar": 23,
+        "endLine": 115,
+        "endChar": 34
+      },
+      "revId": "3b5742b9aa3374c186fe4dab09d7d5a9f3c572bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ac97396d_7d74a817",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-09-15T07:01:19Z",
+      "side": 1,
+      "message": "Added check for whtether expected DUT name was passed or not.",
+      "parentUuid": "367a9a60_da861e9e",
       "range": {
         "startLine": 115,
         "startChar": 23,
@@ -88,6 +136,30 @@
     },
     {
       "key": {
+        "uuid": "09ca85d3_02fb0da3",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-09-15T07:01:19Z",
+      "side": 1,
+      "message": "Changed to encupsulate inside the wiring server class.",
+      "parentUuid": "b94f0507_915cc640",
+      "range": {
+        "startLine": 149,
+        "startChar": 34,
+        "endLine": 149,
+        "endChar": 47
+      },
+      "revId": "3b5742b9aa3374c186fe4dab09d7d5a9f3c572bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e7ca14fa_36fa5896",
         "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
         "patchSetId": 6
@@ -108,6 +180,30 @@
       "revId": "3b5742b9aa3374c186fe4dab09d7d5a9f3c572bd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d300adb6_331706a1",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-09-15T07:01:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e7ca14fa_36fa5896",
+      "range": {
+        "startLine": 180,
+        "startChar": 5,
+        "endLine": 180,
+        "endChar": 21
+      },
+      "revId": "3b5742b9aa3374c186fe4dab09d7d5a9f3c572bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -134,6 +230,30 @@
     },
     {
       "key": {
+        "uuid": "eeae10f5_fef0aac6",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-09-15T07:01:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "80773445_450add51",
+      "range": {
+        "startLine": 202,
+        "startChar": 33,
+        "endLine": 202,
+        "endChar": 39
+      },
+      "revId": "3b5742b9aa3374c186fe4dab09d7d5a9f3c572bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7105e916_b5f43da1",
         "filename": "src/chromiumos/tast/internal/faketlw/faketlw_test.go",
         "patchSetId": 6
@@ -154,6 +274,30 @@
       "revId": "3b5742b9aa3374c186fe4dab09d7d5a9f3c572bd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a22f6f5b_cbc6c0d0",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-09-15T07:01:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7105e916_b5f43da1",
+      "range": {
+        "startLine": 76,
+        "startChar": 2,
+        "endLine": 76,
+        "endChar": 29
+      },
+      "revId": "3b5742b9aa3374c186fe4dab09d7d5a9f3c572bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -200,6 +344,30 @@
       "revId": "3b5742b9aa3374c186fe4dab09d7d5a9f3c572bd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "405f04a8_005cd321",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-09-15T07:01:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f10194e8_38f479bd",
+      "range": {
+        "startLine": 94,
+        "startChar": 13,
+        "endLine": 94,
+        "endChar": 29
+      },
+      "revId": "3b5742b9aa3374c186fe4dab09d7d5a9f3c572bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

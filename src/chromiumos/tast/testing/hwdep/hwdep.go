@@ -233,7 +233,9 @@ func InternalDisplay() Condition {
 func Wifi80211ac() Condition {
 	// Some of guado and kip SKUs do not support 802.11ac.
 	// TODO(crbug.com/1070299): replace this when we have hwdep for WiFi chips.
-	return SkipOnPlatform("kip", "guado")
+	c := SkipOnPlatform("kip", "guado")
+	c.CEL = "dut.hardware_features.wifi.supported_wlan_protocols.exists(x, x == api.Component.Wifi.WLANProtocol.IEEE_802_11_AC)"
+	return c
 }
 
 // Wifi80211ax returns a hardware dependency condition that is satisfied
@@ -249,7 +251,7 @@ func Wifi80211ax() Condition {
 // iff the DUT support WiFi MAC Address Randomization.
 func WifiMACAddrRandomize() Condition {
 	// TODO(crbug.com/1070299): replace this when we have hwdep for WiFi chips.
-	return SkipOnPlatform(
+	c := SkipOnPlatform(
 		// mwifiex in 3.10 kernel does not support it.
 		"kitty",
 		// Broadcom driver has only NL80211_FEATURE_SCHED_SCAN_RANDOM_MAC_ADDR
@@ -257,6 +259,8 @@ func WifiMACAddrRandomize() Condition {
 		// for all supported scan types.
 		"mickey", "minnie", "speedy",
 	)
+	c.CEL = "not_implemented"
+	return c
 }
 
 // WifiNotMarvell returns a hardware dependency condition that is satisfied iff
@@ -264,10 +268,12 @@ func WifiMACAddrRandomize() Condition {
 func WifiNotMarvell() Condition {
 	// TODO(crbug.com/1070299): we don't yet have relevant fields in device.Config
 	// about WiFi chip, so list the known platforms here for now.
-	return SkipOnPlatform(
+	c := SkipOnPlatform(
 		"bob", "kevin", "oak", "elm", "hana", "kitty",
 		"mighty", "jaq", "fievel", "tiger", "jerry",
 	)
+	c.CEL = "not_implemented"
+	return c
 }
 
 func hasBattery(f *dep.HardwareFeatures) (bool, error) {

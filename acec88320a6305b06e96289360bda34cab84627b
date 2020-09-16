@@ -16,6 +16,29 @@
       "revId": "acec88320a6305b06e96289360bda34cab84627b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8237462e_dfa3cf96",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 8
+      },
+      "lineNbr": 360,
+      "author": {
+        "id": 1371981
+      },
+      "writtenOn": "2020-09-16T00:45:24Z",
+      "side": 1,
+      "message": "In Tast reviewer sync this week, one case is mentioned that if NewA takes much time, it can leave insufficient time for Cleanup. e.g.\n\nAssume ctx has 1 minutes deadline, and timeReserveForCleanup is 10s. If NewA takes 55 seconds, then there\u0027s not sufficient time reserved for a.CleanUp. So, NewA might need to use the shorten-ed context.",
+      "range": {
+        "startLine": 354,
+        "startChar": 0,
+        "endLine": 360,
+        "endChar": 14
+      },
+      "revId": "acec88320a6305b06e96289360bda34cab84627b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

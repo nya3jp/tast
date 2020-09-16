@@ -33,6 +33,24 @@
       "revId": "32df7a7a353f5f82f00262957b1a96157b8c720c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b52f44bc_4cd41a5d",
+        "filename": "proto/infra/README",
+        "patchSetId": 7
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1141149
+      },
+      "writtenOn": "2020-09-16T05:18:21Z",
+      "side": 1,
+      "message": "Done. Now the hash is this CL:2412604",
+      "parentUuid": "d670b8f7_72edd5db",
+      "revId": "32df7a7a353f5f82f00262957b1a96157b8c720c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

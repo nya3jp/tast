@@ -63,6 +63,30 @@
       "revId": "acec88320a6305b06e96289360bda34cab84627b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "00d6ffb7_69f93b24",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 8
+      },
+      "lineNbr": 360,
+      "author": {
+        "id": 1371981
+      },
+      "writtenOn": "2020-09-16T07:07:12Z",
+      "side": 1,
+      "message": "I guess both (Shorten in caller and in NewA) worth to be mentioned as examples for the readers to choose.\n\nHowever, I also had some problems with both patterns when trying to fix the wrong usage in WiFi tests. I had a mail in tast-reviewer asking for some suggestions. Let\u0027s also see how it goes?\n\nFWIW, I found some other useful thoughts in previous discussion in crbug.com/1049020.",
+      "parentUuid": "1765af7f_8b490dcb",
+      "range": {
+        "startLine": 354,
+        "startChar": 0,
+        "endLine": 360,
+        "endChar": 14
+      },
+      "revId": "acec88320a6305b06e96289360bda34cab84627b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

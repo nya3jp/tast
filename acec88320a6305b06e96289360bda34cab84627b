@@ -39,6 +39,30 @@
       "revId": "acec88320a6305b06e96289360bda34cab84627b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1765af7f_8b490dcb",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 8
+      },
+      "lineNbr": 360,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-09-16T05:31:26Z",
+      "side": 1,
+      "message": "Indeed. Then we have to adjust the below recommendation as ReserveForCleanUp() must not be a method of object a. Or we need NewA() shorten the context to reserve for its CleanUp() call. WDYT?",
+      "parentUuid": "8237462e_dfa3cf96",
+      "range": {
+        "startLine": 354,
+        "startChar": 0,
+        "endLine": 360,
+        "endChar": 14
+      },
+      "revId": "acec88320a6305b06e96289360bda34cab84627b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

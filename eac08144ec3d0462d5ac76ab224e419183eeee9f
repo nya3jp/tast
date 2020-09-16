@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "82c96504_05324224",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-09-16T10:16:06Z",
+      "side": 1,
+      "message": "PTAL\n\nThis is intended to make sure wifi dependencies are applied (instead of simply ignored) to those tests using the dependency after F20.",
+      "revId": "eac08144ec3d0462d5ac76ab224e419183eeee9f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

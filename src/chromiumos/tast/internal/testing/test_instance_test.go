@@ -794,6 +794,11 @@ func TestWriteTestMetadataWithTCLint(t *gotesting.T) {
 				"someone1@chromium.org",
 				"someone2@chromium.org",
 			},
+		}, {
+			Name: "test002",
+			HardwareDeps: hwdep.D(
+				hwdep.Wifi80211ac(),
+			),
 		},
 	}
 
@@ -801,7 +806,7 @@ func TestWriteTestMetadataWithTCLint(t *gotesting.T) {
 	if err := WriteTestsAsProto(&b, in); err != nil {
 		t.Fatal("Failed to export metadata as protobuf message")
 	}
-	cmd := exec.Command("/usr/bin/tclint", "metadata", "-binary", "/dev/stdin")
+	cmd := exec.Command("/home/yamaguchi/.local/cipd/tclint", "metadata", "-binary", "/dev/stdin")
 	cmd.Stdin = &b
 	t.Log("Verifying output with tclint")
 	ob, err := cmd.CombinedOutput()

@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ddfc7315_969ef3af",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-17T05:35:42Z",
+      "side": 1,
+      "message": "typo: CacheForDut",
+      "range": {
+        "startLine": 59,
+        "startChar": 3,
+        "endLine": 59,
+        "endChar": 14
+      },
+      "revId": "f8427054431f6a8dddda9864ce7a8f41251753fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fd7ae619_2893fcab",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-17T05:35:42Z",
+      "side": 1,
+      "message": "style: WithDUTName",
+      "range": {
+        "startLine": 60,
+        "startChar": 5,
+        "endLine": 60,
+        "endChar": 16
+      },
+      "revId": "f8427054431f6a8dddda9864ce7a8f41251753fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4a315e2c_d64e99c0",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-17T05:35:42Z",
+      "side": 1,
+      "message": "Currently WiringServer implements both gRPC server and HTTP server. It\u0027s nicer if a single component (type) focuses on a single goal. For this, I recommend moving the HTTP server to another type.\n\nFor example:\n\n* WiringServer\n    * owns cacheServer\n    * implements gRPC methods\n    * maintains operations map\n    * not aware of how cached files are served\n* cacheServer\n    * implements the HTTP handler\n    * maintains cached file map\n    * not aware of operations",
+      "range": {
+        "startLine": 83,
+        "startChar": 5,
+        "endLine": 83,
+        "endChar": 17
+      },
+      "revId": "f8427054431f6a8dddda9864ce7a8f41251753fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "98ff3323_66a1676e",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-17T05:35:42Z",
+      "side": 1,
+      "message": "I recommend httptest for this light-weight HTTP server. We can avoid some boilerplate.\n\nhttps://godoc.org/net/http/httptest#NewServer",
+      "range": {
+        "startLine": 109,
+        "startChar": 1,
+        "endLine": 120,
+        "endChar": 0
+      },
+      "revId": "f8427054431f6a8dddda9864ce7a8f41251753fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "634f6789_b6649c1f",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-17T05:35:42Z",
+      "side": 1,
+      "message": "Can we pass ctx in the method argument?",
+      "range": {
+        "startLine": 126,
+        "startChar": 15,
+        "endLine": 126,
+        "endChar": 36
+      },
+      "revId": "f8427054431f6a8dddda9864ce7a8f41251753fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

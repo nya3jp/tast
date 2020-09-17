@@ -111,6 +111,30 @@
       "revId": "acec88320a6305b06e96289360bda34cab84627b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b9850bef_b37821fd",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 8
+      },
+      "lineNbr": 360,
+      "author": {
+        "id": 1371981
+      },
+      "writtenOn": "2020-09-17T10:22:21Z",
+      "side": 1,
+      "message": "Hmm..., the new pattern will need both the caller and callee to handle the shorten. I think when there are multiple steps need tearing down in NewA call, it would be OK as it should shorten for partial teardown along the way. But it is kind of redundant when NewA is simple. e.g. If NewA has only one cmd.Exec and return, then we\u0027re just moving the Shorten before NewA into NewA.\n\nIn the case, as the same shorten is already done in NewA, make NewA return the shorten-ed context might be simpler which can relax the caller\u0027s shorten. But then will encounter the problem you had with the context state and the close function might be less flexible (if bind with the input context).",
+      "parentUuid": "d69b7871_45659c0e",
+      "range": {
+        "startLine": 354,
+        "startChar": 0,
+        "endLine": 360,
+        "endChar": 14
+      },
+      "revId": "acec88320a6305b06e96289360bda34cab84627b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

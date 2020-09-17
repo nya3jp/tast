@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e3cded4f_5b0f98d3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-17T02:47:34Z",
+      "side": 1,
+      "message": "LGTM. Katherine and Brendan, can you review the doc change?\n",
+      "revId": "c7f1fc801df14510caf64537c7ddc9d893d089c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "128f77ff_2ad8e182",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 307,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-17T02:47:34Z",
+      "side": 1,
+      "message": "nit: Please try to wrap at ~80 cols.\ngo/md-style#80",
+      "range": {
+        "startLine": 307,
+        "startChar": 71,
+        "endLine": 307,
+        "endChar": 86
+      },
+      "revId": "c7f1fc801df14510caf64537c7ddc9d893d089c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

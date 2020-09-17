@@ -16,6 +16,161 @@
       "revId": "c3b16e0eb26f72c4db7e2b9057e289e1f4d7f652",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "24e9fbd4_3223889c",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-17T02:43:52Z",
+      "side": 1,
+      "message": "USE flags and board names",
+      "range": {
+        "startLine": 190,
+        "startChar": 27,
+        "endLine": 190,
+        "endChar": 36
+      },
+      "revId": "c3b16e0eb26f72c4db7e2b9057e289e1f4d7f652",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dc265f4a_bd69a70e",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-17T02:43:52Z",
+      "side": 1,
+      "message": "Let\u0027s insert an example involving board names here",
+      "revId": "c3b16e0eb26f72c4db7e2b9057e289e1f4d7f652",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "14aca1ee_5ee8b15c",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 218,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-17T02:43:52Z",
+      "side": 1,
+      "message": "IMHO appending a new sentence mentioning board names after describing that software features are boolean expressions of USE flags is a bit misleading. Instead I recommend updating the existing sentences to clearly say that software features are defined with USE flags AND board names. See my comments above.",
+      "range": {
+        "startLine": 217,
+        "startChar": 0,
+        "endLine": 218,
+        "endChar": 63
+      },
+      "revId": "c3b16e0eb26f72c4db7e2b9057e289e1f4d7f652",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b7cba26a_a7996446",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-17T02:43:52Z",
+      "side": 1,
+      "message": "Can you align the format with hd_audio example above?",
+      "range": {
+        "startLine": 221,
+        "startChar": 0,
+        "endLine": 221,
+        "endChar": 38
+      },
+      "revId": "c3b16e0eb26f72c4db7e2b9057e289e1f4d7f652",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "1dbd487e_407c7e99",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 394,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-17T02:43:52Z",
+      "side": 1,
+      "message": "nit: lsb-release",
+      "range": {
+        "startLine": 394,
+        "startChar": 44,
+        "endLine": 394,
+        "endChar": 54
+      },
+      "revId": "c3b16e0eb26f72c4db7e2b9057e289e1f4d7f652",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3b9cf78a_34e4100e",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 396,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-17T02:43:52Z",
+      "side": 1,
+      "message": "nit: field",
+      "range": {
+        "startLine": 396,
+        "startChar": 31,
+        "endLine": 396,
+        "endChar": 35
+      },
+      "revId": "c3b16e0eb26f72c4db7e2b9057e289e1f4d7f652",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "53e8403b_f61a6f08",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-17T02:43:52Z",
+      "side": 1,
+      "message": "lsb-release\n\nThat said, can you define a common constant in the lsbrelease package?",
+      "range": {
+        "startLine": 88,
+        "startChar": 25,
+        "endLine": 88,
+        "endChar": 35
+      },
+      "revId": "c3b16e0eb26f72c4db7e2b9057e289e1f4d7f652",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

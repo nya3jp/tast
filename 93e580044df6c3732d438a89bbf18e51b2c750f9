@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ee7112d5_e1b242d6",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-17T02:34:15Z",
+      "side": 1,
+      "message": "Even if we drop omitempty, test bundles still get nil map if Tast CLI is old and sends RunTestsArgs missing TestVars.\n\nhttps://play.golang.org/p/RtmvjPe6QDa\n\nThis means that it is a protocol change requiring force-update of Tast CLI. It\u0027s nice if we can avoid this whenever possible.\n\n\nInstead I recommend cloning TestVars into a new non-nil map in Features method below. Then we can make sure dep.Features.Var is non-nil when RunTestsArgs.CheckSoftwareDeps is true.",
+      "range": {
+        "startLine": 85,
+        "startChar": 0,
+        "endLine": 86,
+        "endChar": 62
+      },
+      "revId": "93e580044df6c3732d438a89bbf18e51b2c750f9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

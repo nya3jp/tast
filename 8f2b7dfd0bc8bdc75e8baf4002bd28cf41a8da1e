@@ -2,6 +2,115 @@
   "comments": [
     {
       "key": {
+        "uuid": "1c834cc0_bccd145c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 26
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-09-17T15:00:10Z",
+      "side": 1,
+      "message": "nit",
+      "revId": "8f2b7dfd0bc8bdc75e8baf4002bd28cf41a8da1e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "40e918f2_09f138c7",
+        "filename": "src/chromiumos/tast/internal/planner/fixt.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-09-17T15:00:10Z",
+      "side": 1,
+      "message": "Could you write about where the analogy holds between traffic light and fixture state?",
+      "range": {
+        "startLine": 20,
+        "startChar": 44,
+        "endLine": 20,
+        "endChar": 57
+      },
+      "revId": "8f2b7dfd0bc8bdc75e8baf4002bd28cf41a8da1e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fca59302_90260932",
+        "filename": "src/chromiumos/tast/internal/planner/fixt.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-09-17T15:00:10Z",
+      "side": 1,
+      "message": "nit: a yellow\nsame for others.",
+      "range": {
+        "startLine": 72,
+        "startChar": 21,
+        "endLine": 72,
+        "endChar": 30
+      },
+      "revId": "8f2b7dfd0bc8bdc75e8baf4002bd28cf41a8da1e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c045c97d_c21e04ca",
+        "filename": "src/chromiumos/tast/internal/planner/fixt.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-09-17T15:00:10Z",
+      "side": 1,
+      "message": "nit: fixtures from the bottom of",
+      "range": {
+        "startLine": 75,
+        "startChar": 9,
+        "endLine": 75,
+        "endChar": 19
+      },
+      "revId": "8f2b7dfd0bc8bdc75e8baf4002bd28cf41a8da1e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5e7702b7_e8f0ad29",
+        "filename": "src/chromiumos/tast/internal/planner/fixt.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 235,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-09-17T15:00:10Z",
+      "side": 1,
+      "message": "Is this comment incomplete?",
+      "range": {
+        "startLine": 235,
+        "startChar": 44,
+        "endLine": 235,
+        "endChar": 45
+      },
+      "revId": "8f2b7dfd0bc8bdc75e8baf4002bd28cf41a8da1e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "4d43364b_b982d1b7",
         "filename": "src/chromiumos/tast/internal/planner/fixt_test.go",
         "patchSetId": 26

@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "06e039c0_ccefa739",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-09-17T16:04:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ddfc7315_969ef3af",
+      "range": {
+        "startLine": 59,
+        "startChar": 3,
+        "endLine": 59,
+        "endChar": 14
+      },
+      "revId": "f8427054431f6a8dddda9864ce7a8f41251753fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fd7ae619_2893fcab",
         "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
         "patchSetId": 9
@@ -45,6 +69,30 @@
       "revId": "f8427054431f6a8dddda9864ce7a8f41251753fc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c0effbee_85d9d3dd",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-09-17T16:04:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fd7ae619_2893fcab",
+      "range": {
+        "startLine": 60,
+        "startChar": 5,
+        "endLine": 60,
+        "endChar": 16
+      },
+      "revId": "f8427054431f6a8dddda9864ce7a8f41251753fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "d06b630a_dacd3edf",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-09-17T16:04:35Z",
+      "side": 1,
+      "message": "Done\nMoved operations map into Operations server.",
+      "parentUuid": "4a315e2c_d64e99c0",
+      "range": {
+        "startLine": 83,
+        "startChar": 5,
+        "endLine": 83,
+        "endChar": 17
+      },
+      "revId": "f8427054431f6a8dddda9864ce7a8f41251753fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "98ff3323_66a1676e",
         "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
         "patchSetId": 9
@@ -94,6 +166,30 @@
     },
     {
       "key": {
+        "uuid": "2f6a4685_93bb5565",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-09-17T16:04:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "98ff3323_66a1676e",
+      "range": {
+        "startLine": 109,
+        "startChar": 1,
+        "endLine": 120,
+        "endChar": 0
+      },
+      "revId": "f8427054431f6a8dddda9864ce7a8f41251753fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "634f6789_b6649c1f",
         "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
         "patchSetId": 9
@@ -114,6 +210,30 @@
       "revId": "f8427054431f6a8dddda9864ce7a8f41251753fc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7f539358_40306d4b",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-09-17T16:04:35Z",
+      "side": 1,
+      "message": "After the change above, testhttp.Server.Close does not take context as an argument.",
+      "parentUuid": "634f6789_b6649c1f",
+      "range": {
+        "startLine": 126,
+        "startChar": 15,
+        "endLine": 126,
+        "endChar": 36
+      },
+      "revId": "f8427054431f6a8dddda9864ce7a8f41251753fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

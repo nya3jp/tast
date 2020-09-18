@@ -262,7 +262,9 @@ func Wifi80211ax() Condition {
 	// Note: this is currently an allowlist. We can consider switching this to a
 	// blocklist/skiplist if we start adding too many relevant devices.
 	// TODO(crbug.com/1070299): replace this when we have hwdep for WiFi chips.
-	return Platform("hatch")
+	c := Platform("hatch")
+	c.CEL = "dut.hardware_features.wifi.supported_wlan_protocols.exists(x, x == api.Component.Wifi.WLANProtocol.IEEE_802_11_AX)"
+	return c
 }
 
 // WifiMACAddrRandomize returns a hardware dependency condition that is satisfied

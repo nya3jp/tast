@@ -265,7 +265,7 @@ func WifiNotMarvell() Condition {
 	// TODO(crbug.com/1070299): we don't yet have relevant fields in device.Config
 	// about WiFi chip, so list the known platforms here for now.
 	return SkipOnPlatform(
-		"bob", "kevin", "elm", "hana", "kitty",
+		"bob", "kevin", "oak", "elm", "hana", "kitty",
 		"mighty", "jaq", "fievel", "tiger", "jerry",
 	)
 }

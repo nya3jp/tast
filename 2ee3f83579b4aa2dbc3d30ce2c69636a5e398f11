@@ -1,0 +1,234 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ef122866_b09c5369",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-18T09:26:33Z",
+      "side": 1,
+      "message": "name and content look unused.",
+      "range": {
+        "startLine": 68,
+        "startChar": 0,
+        "endLine": 70,
+        "endChar": 15
+      },
+      "revId": "2ee3f83579b4aa2dbc3d30ce2c69636a5e398f11",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "13aea903_76ae5738",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-18T09:26:33Z",
+      "side": 1,
+      "message": "Can you move cacheServer-related definitions to the bottom of the file? Currently they appear between the definition of WiringServer and NewWiringServer.",
+      "range": {
+        "startLine": 83,
+        "startChar": 0,
+        "endLine": 83,
+        "endChar": 25
+      },
+      "revId": "2ee3f83579b4aa2dbc3d30ce2c69636a5e398f11",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "908b90e6_5289c75e",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-18T09:26:33Z",
+      "side": 1,
+      "message": "Can you return a pointer instead of a value? Returning a value copies cacheServer, but cacheServer is not meant to be copied.",
+      "range": {
+        "startLine": 88,
+        "startChar": 22,
+        "endLine": 88,
+        "endChar": 33
+      },
+      "revId": "2ee3f83579b4aa2dbc3d30ce2c69636a5e398f11",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "50c5551b_979451d1",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-18T09:26:33Z",
+      "side": 1,
+      "message": "FYI: Did you know that c.handleHTTP continues to point a temporary cacheServer locally allocated here? That\u0027s a trickiness caused by returning cacheServer as a value.",
+      "range": {
+        "startLine": 93,
+        "startChar": 34,
+        "endLine": 93,
+        "endChar": 46
+      },
+      "revId": "2ee3f83579b4aa2dbc3d30ce2c69636a5e398f11",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1f3c4ca9_6df7c5db",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-18T09:26:33Z",
+      "side": 1,
+      "message": "We can skip ServeMux because the only handler is handleHTTP. The only thing you have to do is to rename handleHTTP to ServeHTTP.\n\nhttps://godoc.org/net/http#Handler",
+      "range": {
+        "startLine": 94,
+        "startChar": 1,
+        "endLine": 94,
+        "endChar": 31
+      },
+      "revId": "2ee3f83579b4aa2dbc3d30ce2c69636a5e398f11",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ba474fc7_475192db",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-18T09:26:33Z",
+      "side": 1,
+      "message": "I recommend reporting the error message with http.Error.\nhttps://godoc.org/net/http#Error\n\nAlso, return is missing here.",
+      "range": {
+        "startLine": 109,
+        "startChar": 2,
+        "endLine": 109,
+        "endChar": 21
+      },
+      "revId": "2ee3f83579b4aa2dbc3d30ce2c69636a5e398f11",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "04760996_63172915",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-18T09:26:33Z",
+      "side": 1,
+      "message": "nit\u0026optional: I guess we can return the result of fmt.Sprintf as is.",
+      "range": {
+        "startLine": 199,
+        "startChar": 1,
+        "endLine": 204,
+        "endChar": 23
+      },
+      "revId": "2ee3f83579b4aa2dbc3d30ce2c69636a5e398f11",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b65f9c16_656ad473",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 252,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-18T09:26:33Z",
+      "side": 1,
+      "message": "operationsServer looks generally usable with loadedCallback abstraction, but on the other hand GetOperation hard-codes CacheForDutResponse. I\u0027d suggest choosing from two: being generic, or being specific to CacheForDut.\n\nAlso it\u0027s nicer if we can avoid callbacks. Callbacks make the code less readable due to its dynamism.\n\nMy recommendation is to merge operationsServer to WiringServer. In this approach WiringServer would implement two gRPC services. It might sound contrary to my earlier suggestion to split WiringServer and cacheServer, but in this case two gRPC services are closely tied with bidirectional interaction, so it sounds natural to implement them in a single struct. Then we don\u0027t need callbacks, and it sounds fine to hard-code CacheForDutResponse in GetOperation.",
+      "range": {
+        "startLine": 252,
+        "startChar": 5,
+        "endLine": 252,
+        "endChar": 21
+      },
+      "revId": "2ee3f83579b4aa2dbc3d30ce2c69636a5e398f11",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a7815b55_64a6ccb0",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 259,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-18T09:26:33Z",
+      "side": 1,
+      "message": "ditto: Please return a pointer.",
+      "range": {
+        "startLine": 259,
+        "startChar": 70,
+        "endLine": 259,
+        "endChar": 86
+      },
+      "revId": "2ee3f83579b4aa2dbc3d30ce2c69636a5e398f11",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "46bb9e76_ea964fba",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 297,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-18T09:26:33Z",
+      "side": 1,
+      "message": "style: Please start with lower letters.",
+      "range": {
+        "startLine": 297,
+        "startChar": 25,
+        "endLine": 297,
+        "endChar": 40
+      },
+      "revId": "2ee3f83579b4aa2dbc3d30ce2c69636a5e398f11",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

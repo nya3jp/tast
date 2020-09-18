@@ -793,6 +793,7 @@ func TestWriteTestMetadataWithTCLint(t *gotesting.T) {
 			Name: "test002",
 			HardwareDeps: hwdep.D(
 				hwdep.Wifi80211ac(),
+				hwdep.Wifi80211ax(),
 			),
 		},
 	}

@@ -837,6 +837,7 @@ func TestWriteTestMetadataWithTCLint(t *gotesting.T) {
 			HardwareDeps: hwdep.D(
 				hwdep.ChromeEC(),
 				hwdep.Wifi80211ac(),
+				hwdep.Wifi80211ax(),
 			),
 		},
 	}

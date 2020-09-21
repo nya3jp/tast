@@ -5,6 +5,7 @@
 package planner
 
 import (
+	"image"
 	"sync"
 
 	"chromiumos/tast/errors"
@@ -23,6 +24,8 @@ type OutputStream interface {
 	EntityError(ei *testing.EntityInfo, e *testing.Error) error
 	// EntityEnd reports that an entity has ended. If skipReasons is not empty it is considered skipped.
 	EntityEnd(ei *testing.EntityInfo, skipReasons []string, timingLog *timing.Log) error
+	// ReportScreenshot reports that a screenshot was taken for automated diff testing.
+	ReportScreenshot(name string, screenshot *image.RGBA, keyValueMap map[string]string) error
 }
 
 // entityOutputStream wraps planner.OutputStream for a single entity.
@@ -64,6 +67,11 @@ func (w *entityOutputStream) Log(msg string) error {
 		return errAlreadyEnded
 	}
 	return w.out.EntityLog(w.ei, msg)
+}
+
+// ReportScreenshot reports that a screenshot has been taken for automated diff testing.
+func (w *entityOutputStream) ReportScreenshot(name string, screenshot *image.RGBA, keyValueMap map[string]string) error {
+	return w.out.ReportScreenshot(name, screenshot, keyValueMap)
 }
 
 // Log reports an error from the entity.

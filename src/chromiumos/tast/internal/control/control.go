@@ -30,6 +30,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"image"
 	"io"
 	"sync"
 	"time"
@@ -145,6 +146,16 @@ type EntityEnd struct {
 
 func (*EntityEnd) isMsg() {}
 
+// ScreenshotReport describes a screenshot taken on the DUT.
+type ScreenshotReport struct {
+	Time        time.Time         `json:"screenshotReportTime"`
+	TestName    string            `json:screenshotReportTestName`
+	Screenshot  image.RGBA        `json:screenshotReportScreenshot`
+	KeyValueMap map[string]string `json:screenshotReportKeyValueMap`
+}
+
+func (*ScreenshotReport) isMsg() {}
+
 // Heartbeat is sent periodically to assert that the bundle is alive.
 type Heartbeat struct {
 	// Time is the device-local time at which this message was generated.
@@ -163,6 +174,7 @@ type messageUnion struct {
 	*EntityLog
 	*EntityError
 	*EntityEnd
+	*ScreenshotReport
 	*Heartbeat
 }
 
@@ -200,6 +212,8 @@ func (mw *MessageWriter) WriteMessage(msg Msg) error {
 		return mw.enc.Encode(&messageUnion{EntityError: v})
 	case *EntityEnd:
 		return mw.enc.Encode(&messageUnion{EntityEnd: v})
+	case *ScreenshotReport:
+		return mw.enc.Encode(&messageUnion{ScreenshotReport: v})
 	case *Heartbeat:
 		return mw.enc.Encode(&messageUnion{Heartbeat: v})
 	default:
@@ -244,6 +258,8 @@ func (mr *MessageReader) ReadMessage() (Msg, error) {
 		return mu.EntityError, nil
 	case mu.EntityEnd != nil:
 		return mu.EntityEnd, nil
+	case mu.ScreenshotReport != nil:
+		return mu.ScreenshotReport, nil
 	case mu.Heartbeat != nil:
 		return mu.Heartbeat, nil
 	default:

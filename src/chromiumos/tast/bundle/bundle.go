@@ -8,6 +8,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"image"
 	"io"
 	"io/ioutil"
 	"log/syslog"
@@ -163,6 +164,10 @@ func (ew *eventWriter) EntityStart(ei *testing.EntityInfo) error {
 		ew.lg.Info(fmt.Sprintf("%s: ======== start", ei.Name))
 	}
 	return ew.mw.WriteMessage(&control.EntityStart{Time: time.Now(), Info: *ei})
+}
+
+func (ew *eventWriter) ReportScreenshot(name string, screenshot *image.RGBA, keyValueMap map[string]string) error {
+	return ew.mw.WriteMessage(&control.ScreenshotReport{Time: time.Now(), TestName: name, Screenshot: *screenshot, KeyValueMap: keyValueMap})
 }
 
 func (ew *eventWriter) EntityLog(ei *testing.EntityInfo, msg string) error {

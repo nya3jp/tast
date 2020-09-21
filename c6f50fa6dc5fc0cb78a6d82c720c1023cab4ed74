@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "5b5d6228_f2fa509f",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 9
+      },
+      "lineNbr": 383,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-09-21T04:20:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f529757b_470818dc",
+      "range": {
+        "startLine": 383,
+        "startChar": 25,
+        "endLine": 383,
+        "endChar": 27
+      },
+      "revId": "c6f50fa6dc5fc0cb78a6d82c720c1023cab4ed74",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "eb60c0a0_34acfe49",
         "filename": "docs/writing_tests.md",
         "patchSetId": 9
@@ -45,6 +69,30 @@
       "revId": "c6f50fa6dc5fc0cb78a6d82c720c1023cab4ed74",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4ca8ddf9_bc2a7d4a",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 9
+      },
+      "lineNbr": 392,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-09-21T04:20:43Z",
+      "side": 1,
+      "message": "Update the example in the beginning of the subsection to:\ndefer func() {                                                                                                                     \n  if err :\u003d a.CleanUp(ctx); err !\u003d nil {                                                                                           \n    // ...                                                                                                                         \n  }                                                                                                                                \n} \n\nto show that it is necessary to early binding the original ctx to the defer function.  However, we recommend to clone the original ctx before shortening it before calling NewA(). So it is also okay to use ctxForCleanUpA directly in the defer function.",
+      "parentUuid": "eb60c0a0_34acfe49",
+      "range": {
+        "startLine": 390,
+        "startChar": 0,
+        "endLine": 392,
+        "endChar": 10
+      },
+      "revId": "c6f50fa6dc5fc0cb78a6d82c720c1023cab4ed74",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

@@ -135,6 +135,30 @@
       "revId": "acec88320a6305b06e96289360bda34cab84627b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8e754b82_8b9188ba",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 8
+      },
+      "lineNbr": 360,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-09-21T04:20:43Z",
+      "side": 1,
+      "message": "My proposal is used to solve the following issues:\n1. NewA should be run with shortened ctx to reserve time for its produced object\u0027s cleanup.\n2. We proposed to add a.ReserveForCleanUp(ctx) method for struct A instead of non-method function as it provides a clearer context of which struct\u0027s clean up function it reserves the ctx for. However, it cannot be called before the object is created.\n\nNow, we either ask NewA to call reserveForCleanUp() at the beginning of the implementation, or ask A provide a non-method-function ReserveForCleanUpA(ctx) for A\u0027s caller to shorten ctx before NewA. After the discussion, I feel the second approach outweigh the first one as it reduces one implicit rule NewA() should follow.\n\nUploaded a new patchset to recommend the second approach.",
+      "parentUuid": "b9850bef_b37821fd",
+      "range": {
+        "startLine": 354,
+        "startChar": 0,
+        "endLine": 360,
+        "endChar": 14
+      },
+      "revId": "acec88320a6305b06e96289360bda34cab84627b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

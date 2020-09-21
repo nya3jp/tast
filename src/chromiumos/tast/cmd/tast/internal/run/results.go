@@ -401,6 +401,17 @@ func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.EntityE
 	return nil
 }
 
+// handleSkiaScreenshot deals with skia screenshots by transmitting them to the skia server and using the results of that for the tests.
+func (r *resultsHandler) handleSkiaScreenshot(ctx context.Context, msg *control.SkiaScreenshot) error {
+	entityInfo := r.current.result.EntityInfo
+	testName := entityInfo.Pkg + "/" + entityInfo.Name
+	if len(msg.TestName) > 0 {
+		testName = testName + "/" + msg.TestName
+	}
+	fmt.Printf("Recieved screenshot for test %s with params %v\n", testName, msg.KeyValueMap)
+	return nil
+}
+
 // handleHeartbeat handles Heartbeat control messages from test executables.
 func (r *resultsHandler) handleHeartbeat(ctx context.Context, msg *control.Heartbeat) error {
 	return nil
@@ -470,6 +481,8 @@ func (r *resultsHandler) handleMessage(ctx context.Context, msg interface{}) err
 		return r.handleTestError(ctx, v)
 	case *control.EntityEnd:
 		return r.handleTestEnd(ctx, v)
+	case *control.SkiaScreenshot:
+		return r.handleSkiaScreenshot(ctx, v)
 	case *control.Heartbeat:
 		return r.handleHeartbeat(ctx, v)
 	default:

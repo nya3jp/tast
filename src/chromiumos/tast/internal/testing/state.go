@@ -53,6 +53,7 @@ package testing
 import (
 	"context"
 	"fmt"
+	"image"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -82,6 +83,9 @@ type OutputStream interface {
 	// Error reports an error from by an entity. An entity that reported one or
 	// more errors should be considered failure.
 	Error(e *Error) error
+
+	// SkiaScreenshot reports that a screenshot has been taken to send for skia for diff testing.
+	SkiaScreenshot(name string, screenshot *image.RGBA, keyValueMap map[string]string) error
 }
 
 // Error describes an error encountered while running an entity.
@@ -532,6 +536,11 @@ func (s *globalMixin) Log(args ...interface{}) {
 // Logf is similar to Log but formats its arguments using fmt.Sprintf.
 func (s *globalMixin) Logf(format string, args ...interface{}) {
 	s.entityRoot.out.Log(fmt.Sprintf(format, args...))
+}
+
+// SkiaScreenshot reports that a screenshot has been taken to send for skia for diff testing.
+func (s *globalMixin) SkiaScreenshot(name string, screenshot *image.RGBA, keyValueMap map[string]string) error {
+	return s.entityRoot.out.SkiaScreenshot(name, screenshot, keyValueMap)
 }
 
 // Error formats its arguments using default formatting and marks the entity

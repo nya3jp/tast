@@ -198,8 +198,7 @@ func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns
 	// Read stderr in the background so it can be included in error messages.
 	stderrReader := newFirstLineReader(handle.stderr)
 
-	crf := func(testName, dst string) error {
-		src := filepath.Join(args.RunTests.BundleArgs.OutDir, testName)
+	crf := func(src, dst string) error {
 		return moveFromHost(ctx, cfg, hst, src, dst)
 	}
 	df := func(ctx context.Context, outDir string) string {

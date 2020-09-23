@@ -26,7 +26,6 @@ import (
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/testing"
-	"chromiumos/tast/testing/hwdep"
 	"chromiumos/tast/testutil"
 	"chromiumos/tast/timing"
 )
@@ -179,13 +178,13 @@ func TestReadTestOutput(t *gotesting.T) {
 	if err := json.Unmarshal([]byte(files[resultsFilename]), &actRes); err != nil {
 		t.Errorf("Failed to decode %v: %v", resultsFilename, err)
 	}
-	if !cmp.Equal(actRes, expRes, cmp.AllowUnexported(EntityResult{}, hwdep.Deps{})) {
+	if !cmp.Equal(actRes, expRes) {
 		t.Errorf("%v contains %+v; want %+v", resultsFilename, actRes, expRes)
 	}
 
 	// The streamed results file should contain the same set of results.
 	streamRes := readStreamedResults(t, bytes.NewBufferString(files[streamedResultsFilename]))
-	if !cmp.Equal(streamRes, expRes, cmp.AllowUnexported(EntityResult{}, hwdep.Deps{})) {
+	if !cmp.Equal(streamRes, expRes) {
 		t.Errorf("%v contains %+v; want %+v", streamedResultsFilename, streamRes, expRes)
 	}
 
@@ -699,7 +698,7 @@ func TestUnfinishedTest(t *gotesting.T) {
 			t.Errorf("readTestOutput returned non-zero end time %v", res[0].End)
 		}
 		// Ignore timestamps since run errors contain time.Now.
-		if !cmp.Equal(res[0].Errors, tc.expErrs, cmpopts.IgnoreFields(EntityError{}, "Time"), cmp.AllowUnexported(hwdep.Deps{})) {
+		if !cmp.Equal(res[0].Errors, tc.expErrs, cmpopts.IgnoreFields(EntityError{}, "Time")) {
 			t.Errorf("readTestOutput returned errors %+v; want %+v", res[0].Errors, tc.expErrs)
 		}
 	}

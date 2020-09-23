@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "6024ee17_df379397",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2020-09-23T12:50:25Z",
+      "side": 1,
+      "message": "pleas add CQ-DEPEND\u003dchromium:2418275",
+      "revId": "59ea7dd48e8966274ff48568fcd626a138c17e29",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "35cd62ad_5dbcbf25",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 3

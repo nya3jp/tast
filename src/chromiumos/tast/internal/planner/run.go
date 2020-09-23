@@ -470,15 +470,15 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *entityOutputStr
 	timingLog := timing.NewLog()
 	ctx = timing.NewContext(ctx, timingLog)
 
-	tout.Start()
+	outDir, err := createEntityOutDir(pcfg.OutDir, t.Name)
+	if err != nil {
+		return err
+	}
+
+	tout.Start(outDir)
 	defer tout.End(nil, timingLog)
 
 	dl.BeforeTest(ctx, t)
-
-	var outDir string
-	if pcfg.OutDir != "" { // often left blank for unit tests
-		outDir = filepath.Join(pcfg.OutDir, t.Name)
-	}
 
 	switch stack.Status() {
 	case statusGreen:
@@ -558,6 +558,40 @@ func (d *downloader) download(ctx context.Context, tests []*testing.TestInstance
 	d.purgeable = extdata.Ensure(ctx, d.pcfg.DataDir, d.pcfg.BuildArtifactsURL, tests, d.cl)
 }
 
+func createEntityOutDir(baseDir, name string) (string, error) {
+	// baseDir can be blank for unit tests.
+	if baseDir == "" {
+		return "", nil
+	}
+
+	if err := os.MkdirAll(baseDir, 0755); err != nil {
+		return "", err
+	}
+
+	var outDir string
+	// First try to make a fixed-name directory. This allows unit tests to be deterministic.
+	if err := os.Mkdir(filepath.Join(baseDir, name), 0755); err == nil {
+		outDir = filepath.Join(baseDir, name)
+	} else if os.IsExist(err) {
+		// The directory already exists. Use ioutil.TempDir to create a randomly named one.
+		var err error
+		outDir, err = ioutil.TempDir(baseDir, name+".")
+		if err != nil {
+			return "", err
+		}
+	} else {
+		return "", err
+	}
+
+	// Make the directory world-writable so that tests can create files as other users,
+	// and set the sticky bit to prevent users from deleting other users' files.
+	// (The mode passed to os.MkdirAll is modified by umask, so we need an explicit chmod.)
+	if err := os.Chmod(outDir, 0777|os.ModeSticky); err != nil {
+		return "", err
+	}
+	return outDir, nil
+}
+
 // runTestWithRoot runs a test with TestEntityRoot.
 //
 // The time allotted to the test is generally the sum of t.Timeout and t.ExitTimeout, but
@@ -579,19 +613,6 @@ func runTestWithRoot(ctx context.Context, t *testing.TestInstance, root *testing
 		// test failures instead of aborting the entire run.
 		if t.Timeout <= 0 {
 			testState.Fatal("Invalid timeout ", t.Timeout)
-		}
-
-		outDir := testState.OutDir()
-		if outDir != "" { // often left blank for unit tests
-			if err := os.MkdirAll(outDir, 0755); err != nil {
-				testState.Fatal("Failed to create output dir: ", err)
-			}
-			// Make the directory world-writable so that tests can create files as other users,
-			// and set the sticky bit to prevent users from deleting other users' files.
-			// (The mode passed to os.MkdirAll is modified by umask, so we need an explicit chmod.)
-			if err := os.Chmod(outDir, 0777|os.ModeSticky); err != nil {
-				testState.Fatal("Failed to set permissions on output dir: ", err)
-			}
 		}
 
 		// Make sure all required data files exist.
@@ -688,7 +709,7 @@ func timeoutOrDefault(timeout, def time.Duration) time.Duration {
 // reportSkippedTest is called instead of runTest for a test that is skipped due to
 // having unsatisfied dependencies.
 func reportSkippedTest(tout *entityOutputStream, result *testing.ShouldRunResult) {
-	tout.Start()
+	tout.Start("")
 	for _, msg := range result.Errors {
 		_, fn, ln, _ := runtime.Caller(0)
 		tout.Error(&testing.Error{

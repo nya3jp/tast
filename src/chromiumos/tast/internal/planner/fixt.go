@@ -298,7 +298,8 @@ func (f *statefulFixture) RunSetUp(ctx context.Context) error {
 	s := f.root.NewFixtState()
 	name := fmt.Sprintf("%s:SetUp", f.fixt.Name)
 
-	f.fout.Start()
+	// TODO(crbug.com/1127163): Support OutDir.
+	f.fout.Start("")
 
 	var val interface{}
 	if err := safeCall(ctx, name, f.fixt.SetUpTimeout, defaultGracePeriod, errorOnPanic(s), func(ctx context.Context) {

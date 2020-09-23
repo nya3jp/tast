@@ -30,8 +30,8 @@ func (s *outputSink) RunLog(msg string) error {
 	return s.mw.WriteMessage(&control.RunLog{Text: msg})
 }
 
-func (s *outputSink) EntityStart(ei *testing.EntityInfo) error {
-	return s.mw.WriteMessage(&control.EntityStart{Info: *ei})
+func (s *outputSink) EntityStart(ei *testing.EntityInfo, outDir string) error {
+	return s.mw.WriteMessage(&control.EntityStart{Info: *ei, OutDir: outDir})
 }
 
 func (s *outputSink) EntityLog(ei *testing.EntityInfo, msg string) error {
@@ -68,7 +68,7 @@ func TestTestOutputStream(t *gotesting.T) {
 	test := &testing.EntityInfo{Name: "pkg.Test"}
 	tout := newEntityOutputStream(sink, test)
 
-	tout.Start()
+	tout.Start("/tmp/out")
 	tout.Log("hello")
 	tout.Error(&testing.Error{Reason: "faulty", File: "world.go"})
 	tout.Log("world")
@@ -80,7 +80,7 @@ func TestTestOutputStream(t *gotesting.T) {
 	}
 
 	want := []control.Msg{
-		&control.EntityStart{Info: *test},
+		&control.EntityStart{Info: *test, OutDir: "/tmp/out"},
 		&control.EntityLog{Name: "pkg.Test", Text: "hello"},
 		&control.EntityError{Name: "pkg.Test", Error: testing.Error{Reason: "faulty"}},
 		&control.EntityLog{Name: "pkg.Test", Text: "world"},
@@ -96,7 +96,7 @@ func TestTestOutputStreamUnnamedEntity(t *gotesting.T) {
 	test := &testing.EntityInfo{} // unnamed entity
 	tout := newEntityOutputStream(sink, test)
 
-	tout.Start()
+	tout.Start("/tmp/out")
 	tout.Log("hello")
 	tout.Error(&testing.Error{Reason: "faulty", File: "world.go"})
 	tout.Log("world")

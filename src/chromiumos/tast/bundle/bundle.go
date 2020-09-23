@@ -158,11 +158,11 @@ func (ew *eventWriter) RunLog(msg string) error {
 	return ew.mw.WriteMessage(&control.RunLog{Time: time.Now(), Text: msg})
 }
 
-func (ew *eventWriter) EntityStart(ei *testing.EntityInfo) error {
+func (ew *eventWriter) EntityStart(ei *testing.EntityInfo, outDir string) error {
 	if ew.lg != nil {
 		ew.lg.Info(fmt.Sprintf("%s: ======== start", ei.Name))
 	}
-	return ew.mw.WriteMessage(&control.EntityStart{Time: time.Now(), Info: *ei})
+	return ew.mw.WriteMessage(&control.EntityStart{Time: time.Now(), Info: *ei, OutDir: outDir})
 }
 
 func (ew *eventWriter) EntityLog(ei *testing.EntityInfo, msg string) error {

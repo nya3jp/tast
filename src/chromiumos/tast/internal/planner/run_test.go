@@ -938,11 +938,11 @@ func TestRunPreconditionContext(t *gotesting.T) {
 	want := []control.Msg{
 		&control.EntityStart{Info: *tests[0].EntityInfo()},
 		&control.EntityLog{Name: tests[0].Name, Text: `Preparing precondition "pre"`},
-		&control.EntityLog{Name: "pre", Text: "Log via PreCtx"},
+		&control.EntityLog{Name: tests[0].Name, Text: "Log via PreCtx"},
 		&control.EntityEnd{Name: tests[0].Name},
 		&control.EntityStart{Info: *tests[1].EntityInfo()},
 		&control.EntityLog{Name: tests[1].Name, Text: `Preparing precondition "pre"`},
-		&control.EntityLog{Name: "pre", Text: "Log via PreCtx"},
+		&control.EntityLog{Name: tests[1].Name, Text: "Log via PreCtx"},
 		&control.EntityLog{Name: tests[1].Name, Text: `Closing precondition "pre"`},
 		&control.EntityEnd{Name: tests[1].Name},
 	}

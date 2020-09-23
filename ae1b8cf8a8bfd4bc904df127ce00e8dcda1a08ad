@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2eafb163_cbc86104",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-09-23T02:08:35Z",
+      "side": 1,
+      "message": "I think this sentence is ambiguous:\n- does it mean infra scheduler is not yet providing device configs\n- or the tentative implementation in Tast is not filling the EmbeddedController field with the runtime value?",
+      "range": {
+        "startLine": 11,
+        "startChar": 28,
+        "endLine": 11,
+        "endChar": 59
+      },
+      "revId": "ae1b8cf8a8bfd4bc904df127ce00e8dcda1a08ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8c4d9195_7adc0d51",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-09-23T02:08:35Z",
+      "side": 1,
+      "message": "Will you try like https://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/2413967/2/src/chromiumos/tast/internal/testing/test_instance_test.go\n\nand see chromiumos/tast/internal/testing and chromiumos/tast/testing pass?\nIf not, tclint may need to be uprevved to assure the CEL is correct.\nAlso see crbug.com/1129566.",
+      "revId": "ae1b8cf8a8bfd4bc904df127ce00e8dcda1a08ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "76641024_3e980939",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-09-23T02:08:35Z",
+      "side": 1,
+      "message": "I think this field is always returned with this zero value, so that this patch does not affect actual device test executions at this time. If so, I suggest make it stated clearer in the CL description.",
+      "revId": "ae1b8cf8a8bfd4bc904df127ce00e8dcda1a08ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

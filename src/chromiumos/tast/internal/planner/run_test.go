@@ -102,8 +102,8 @@ func TestRunPanic(t *gotesting.T) {
 	msgs := runTestsAndReadAll(t, tests, &Config{})
 	want := []control.Msg{
 		&control.EntityStart{Info: *tests[0].EntityInfo()},
-		&control.EntityError{Error: testing.Error{Reason: "Panic: intentional panic"}},
-		&control.EntityEnd{Name: tests[0].Name},
+		&control.EntityError{Name: "pkg.Test", Error: testing.Error{Reason: "Panic: intentional panic"}},
+		&control.EntityEnd{Name: "pkg.Test"},
 	}
 	if diff := cmp.Diff(msgs, want); diff != "" {
 		t.Error("Output mismatch (-got +want):\n", diff)
@@ -126,8 +126,8 @@ func TestRunDeadline(t *gotesting.T) {
 	// but within the exit delay should be available.
 	want := []control.Msg{
 		&control.EntityStart{Info: *tests[0].EntityInfo()},
-		&control.EntityError{Error: testing.Error{Reason: "Saw timeout within test"}},
-		&control.EntityEnd{Name: tests[0].Name},
+		&control.EntityError{Name: "pkg.Test", Error: testing.Error{Reason: "Saw timeout within test"}},
+		&control.EntityEnd{Name: "pkg.Test"},
 	}
 	if diff := cmp.Diff(msgs, want); diff != "" {
 		t.Error("Output mismatch (-got +want):\n", diff)
@@ -167,8 +167,8 @@ func TestRunLogAfterTimeout(t *gotesting.T) {
 	// An error is written with a goroutine dump.
 	want := []control.Msg{
 		&control.EntityStart{Info: *tests[0].EntityInfo()},
-		&control.EntityError{Error: testing.Error{Reason: "Test did not return on timeout (see log for goroutine dump)"}},
-		&control.EntityLog{Text: "Dumping all goroutines"},
+		&control.EntityError{Name: "pkg.Test", Error: testing.Error{Reason: "Test did not return on timeout (see log for goroutine dump)"}},
+		&control.EntityLog{Name: "pkg.Test", Text: "Dumping all goroutines"},
 		// A goroutine dump follows. Do not compare them as the content is undeterministic.
 	}
 	if diff := cmp.Diff(msgs[:len(want)], want); diff != "" {
@@ -246,9 +246,9 @@ func TestRunSkipStages(t *gotesting.T) {
 			},
 			want: []control.Msg{
 				&control.EntityStart{Info: testing.EntityInfo{Name: "0", Timeout: time.Minute}},
-				&control.EntityLog{Text: "preTest: OK"},
-				&control.EntityLog{Text: "test: OK"},
-				&control.EntityLog{Text: "postTest: OK"},
+				&control.EntityLog{Name: "0", Text: "preTest: OK"},
+				&control.EntityLog{Name: "0", Text: "test: OK"},
+				&control.EntityLog{Name: "0", Text: "postTest: OK"},
 				&control.EntityEnd{Name: "0"},
 			},
 		},
@@ -259,13 +259,13 @@ func TestRunSkipStages(t *gotesting.T) {
 			},
 			want: []control.Msg{
 				&control.EntityStart{Info: testing.EntityInfo{Name: "0", Timeout: time.Minute}},
-				&control.EntityLog{Text: "preTest: OK"},
-				&control.EntityLog{Text: `Preparing precondition "pre1"`},
-				&control.EntityLog{Text: "prepare: OK"},
-				&control.EntityLog{Text: "test: OK"},
-				&control.EntityLog{Text: `Closing precondition "pre1"`},
-				&control.EntityLog{Text: "close: OK"},
-				&control.EntityLog{Text: "postTest: OK"},
+				&control.EntityLog{Name: "0", Text: "preTest: OK"},
+				&control.EntityLog{Name: "0", Text: `Preparing precondition "pre1"`},
+				&control.EntityLog{Name: "0", Text: "prepare: OK"},
+				&control.EntityLog{Name: "0", Text: "test: OK"},
+				&control.EntityLog{Name: "0", Text: `Closing precondition "pre1"`},
+				&control.EntityLog{Name: "0", Text: "close: OK"},
+				&control.EntityLog{Name: "0", Text: "postTest: OK"},
 				&control.EntityEnd{Name: "0"},
 			},
 		},
@@ -276,10 +276,10 @@ func TestRunSkipStages(t *gotesting.T) {
 			},
 			want: []control.Msg{
 				&control.EntityStart{Info: testing.EntityInfo{Name: "0", Timeout: time.Minute}},
-				&control.EntityError{Error: testing.Error{Reason: "preTest: Intentional error"}},
-				&control.EntityLog{Text: `Closing precondition "pre1"`},
-				&control.EntityLog{Text: "close: OK"},
-				&control.EntityLog{Text: "postTest: OK"},
+				&control.EntityError{Name: "0", Error: testing.Error{Reason: "preTest: Intentional error"}},
+				&control.EntityLog{Name: "0", Text: `Closing precondition "pre1"`},
+				&control.EntityLog{Name: "0", Text: "close: OK"},
+				&control.EntityLog{Name: "0", Text: "postTest: OK"},
 				&control.EntityEnd{Name: "0"},
 			},
 		},
@@ -290,9 +290,9 @@ func TestRunSkipStages(t *gotesting.T) {
 			},
 			want: []control.Msg{
 				&control.EntityStart{Info: testing.EntityInfo{Name: "0", Timeout: time.Minute}},
-				&control.EntityError{Error: testing.Error{Reason: "Panic: preTest: Intentional panic"}},
-				&control.EntityLog{Text: `Closing precondition "pre1"`},
-				&control.EntityLog{Text: "close: OK"},
+				&control.EntityError{Name: "0", Error: testing.Error{Reason: "Panic: preTest: Intentional panic"}},
+				&control.EntityLog{Name: "0", Text: `Closing precondition "pre1"`},
+				&control.EntityLog{Name: "0", Text: "close: OK"},
 				&control.EntityEnd{Name: "0"},
 			},
 		},
@@ -303,12 +303,12 @@ func TestRunSkipStages(t *gotesting.T) {
 			},
 			want: []control.Msg{
 				&control.EntityStart{Info: testing.EntityInfo{Name: "0", Timeout: time.Minute}},
-				&control.EntityLog{Text: "preTest: OK"},
-				&control.EntityLog{Text: `Preparing precondition "pre1"`},
-				&control.EntityError{Error: testing.Error{Reason: "[Precondition failure] prepare: Intentional error"}},
-				&control.EntityLog{Text: `Closing precondition "pre1"`},
-				&control.EntityLog{Text: "close: OK"},
-				&control.EntityLog{Text: "postTest: OK"},
+				&control.EntityLog{Name: "0", Text: "preTest: OK"},
+				&control.EntityLog{Name: "0", Text: `Preparing precondition "pre1"`},
+				&control.EntityError{Name: "0", Error: testing.Error{Reason: "[Precondition failure] prepare: Intentional error"}},
+				&control.EntityLog{Name: "0", Text: `Closing precondition "pre1"`},
+				&control.EntityLog{Name: "0", Text: "close: OK"},
+				&control.EntityLog{Name: "0", Text: "postTest: OK"},
 				&control.EntityEnd{Name: "0"},
 			},
 		},
@@ -319,12 +319,12 @@ func TestRunSkipStages(t *gotesting.T) {
 			},
 			want: []control.Msg{
 				&control.EntityStart{Info: testing.EntityInfo{Name: "0", Timeout: time.Minute}},
-				&control.EntityLog{Text: "preTest: OK"},
-				&control.EntityLog{Text: `Preparing precondition "pre1"`},
-				&control.EntityError{Error: testing.Error{Reason: "[Precondition failure] Panic: prepare: Intentional panic"}},
-				&control.EntityLog{Text: `Closing precondition "pre1"`},
-				&control.EntityLog{Text: "close: OK"},
-				&control.EntityLog{Text: "postTest: OK"},
+				&control.EntityLog{Name: "0", Text: "preTest: OK"},
+				&control.EntityLog{Name: "0", Text: `Preparing precondition "pre1"`},
+				&control.EntityError{Name: "0", Error: testing.Error{Reason: "[Precondition failure] Panic: prepare: Intentional panic"}},
+				&control.EntityLog{Name: "0", Text: `Closing precondition "pre1"`},
+				&control.EntityLog{Name: "0", Text: "close: OK"},
+				&control.EntityLog{Name: "0", Text: "postTest: OK"},
 				&control.EntityEnd{Name: "0"},
 			},
 		},
@@ -336,20 +336,20 @@ func TestRunSkipStages(t *gotesting.T) {
 			},
 			want: []control.Msg{
 				&control.EntityStart{Info: testing.EntityInfo{Name: "0", Timeout: time.Minute}},
-				&control.EntityLog{Text: "preTest: OK"},
-				&control.EntityLog{Text: `Preparing precondition "pre1"`},
-				&control.EntityLog{Text: "prepare: OK"},
-				&control.EntityLog{Text: "test: OK"},
-				&control.EntityLog{Text: "postTest: OK"},
+				&control.EntityLog{Name: "0", Text: "preTest: OK"},
+				&control.EntityLog{Name: "0", Text: `Preparing precondition "pre1"`},
+				&control.EntityLog{Name: "0", Text: "prepare: OK"},
+				&control.EntityLog{Name: "0", Text: "test: OK"},
+				&control.EntityLog{Name: "0", Text: "postTest: OK"},
 				&control.EntityEnd{Name: "0"},
 				&control.EntityStart{Info: testing.EntityInfo{Name: "1", Timeout: time.Minute}},
-				&control.EntityLog{Text: "preTest: OK"},
-				&control.EntityLog{Text: `Preparing precondition "pre1"`},
-				&control.EntityLog{Text: "prepare: OK"},
-				&control.EntityLog{Text: "test: OK"},
-				&control.EntityLog{Text: `Closing precondition "pre1"`},
-				&control.EntityLog{Text: "close: OK"},
-				&control.EntityLog{Text: "postTest: OK"},
+				&control.EntityLog{Name: "1", Text: "preTest: OK"},
+				&control.EntityLog{Name: "1", Text: `Preparing precondition "pre1"`},
+				&control.EntityLog{Name: "1", Text: "prepare: OK"},
+				&control.EntityLog{Name: "1", Text: "test: OK"},
+				&control.EntityLog{Name: "1", Text: `Closing precondition "pre1"`},
+				&control.EntityLog{Name: "1", Text: "close: OK"},
+				&control.EntityLog{Name: "1", Text: "postTest: OK"},
 				&control.EntityEnd{Name: "1"},
 			},
 		},
@@ -361,22 +361,22 @@ func TestRunSkipStages(t *gotesting.T) {
 			},
 			want: []control.Msg{
 				&control.EntityStart{Info: testing.EntityInfo{Name: "0", Timeout: time.Minute}},
-				&control.EntityLog{Text: "preTest: OK"},
-				&control.EntityLog{Text: `Preparing precondition "pre1"`},
-				&control.EntityLog{Text: "prepare: OK"},
-				&control.EntityLog{Text: "test: OK"},
-				&control.EntityLog{Text: `Closing precondition "pre1"`},
-				&control.EntityLog{Text: "close: OK"},
-				&control.EntityLog{Text: "postTest: OK"},
+				&control.EntityLog{Name: "0", Text: "preTest: OK"},
+				&control.EntityLog{Name: "0", Text: `Preparing precondition "pre1"`},
+				&control.EntityLog{Name: "0", Text: "prepare: OK"},
+				&control.EntityLog{Name: "0", Text: "test: OK"},
+				&control.EntityLog{Name: "0", Text: `Closing precondition "pre1"`},
+				&control.EntityLog{Name: "0", Text: "close: OK"},
+				&control.EntityLog{Name: "0", Text: "postTest: OK"},
 				&control.EntityEnd{Name: "0"},
 				&control.EntityStart{Info: testing.EntityInfo{Name: "1", Timeout: time.Minute}},
-				&control.EntityLog{Text: "preTest: OK"},
-				&control.EntityLog{Text: `Preparing precondition "pre2"`},
-				&control.EntityLog{Text: "prepare: OK"},
-				&control.EntityLog{Text: "test: OK"},
-				&control.EntityLog{Text: `Closing precondition "pre2"`},
-				&control.EntityLog{Text: "close: OK"},
-				&control.EntityLog{Text: "postTest: OK"},
+				&control.EntityLog{Name: "1", Text: "preTest: OK"},
+				&control.EntityLog{Name: "1", Text: `Preparing precondition "pre2"`},
+				&control.EntityLog{Name: "1", Text: "prepare: OK"},
+				&control.EntityLog{Name: "1", Text: "test: OK"},
+				&control.EntityLog{Name: "1", Text: `Closing precondition "pre2"`},
+				&control.EntityLog{Name: "1", Text: "close: OK"},
+				&control.EntityLog{Name: "1", Text: "postTest: OK"},
 				&control.EntityEnd{Name: "1"},
 			},
 		},
@@ -388,19 +388,19 @@ func TestRunSkipStages(t *gotesting.T) {
 			},
 			want: []control.Msg{
 				&control.EntityStart{Info: testing.EntityInfo{Name: "0", Timeout: time.Minute}},
-				&control.EntityLog{Text: "preTest: OK"},
-				&control.EntityLog{Text: `Preparing precondition "pre1"`},
-				&control.EntityError{Error: testing.Error{Reason: "[Precondition failure] prepare: Intentional error"}},
-				&control.EntityLog{Text: "postTest: OK"},
+				&control.EntityLog{Name: "0", Text: "preTest: OK"},
+				&control.EntityLog{Name: "0", Text: `Preparing precondition "pre1"`},
+				&control.EntityError{Name: "0", Error: testing.Error{Reason: "[Precondition failure] prepare: Intentional error"}},
+				&control.EntityLog{Name: "0", Text: "postTest: OK"},
 				&control.EntityEnd{Name: "0"},
 				&control.EntityStart{Info: testing.EntityInfo{Name: "1", Timeout: time.Minute}},
-				&control.EntityLog{Text: "preTest: OK"},
-				&control.EntityLog{Text: `Preparing precondition "pre1"`},
-				&control.EntityLog{Text: "prepare: OK"},
-				&control.EntityLog{Text: "test: OK"},
-				&control.EntityLog{Text: `Closing precondition "pre1"`},
-				&control.EntityLog{Text: "close: OK"},
-				&control.EntityLog{Text: "postTest: OK"},
+				&control.EntityLog{Name: "1", Text: "preTest: OK"},
+				&control.EntityLog{Name: "1", Text: `Preparing precondition "pre1"`},
+				&control.EntityLog{Name: "1", Text: "prepare: OK"},
+				&control.EntityLog{Name: "1", Text: "test: OK"},
+				&control.EntityLog{Name: "1", Text: `Closing precondition "pre1"`},
+				&control.EntityLog{Name: "1", Text: "close: OK"},
+				&control.EntityLog{Name: "1", Text: "postTest: OK"},
 				&control.EntityEnd{Name: "1"},
 			},
 		},
@@ -599,7 +599,7 @@ func TestRunExternalData(t *gotesting.T) {
 				&control.EntityStart{Info: *tests[1].EntityInfo()},
 				&control.EntityEnd{Name: tests[1].Name},
 				&control.EntityStart{Info: *tests[2].EntityInfo()},
-				&control.EntityError{Error: testing.Error{Reason: "Required data file file3.txt missing: failed to download gs://bucket/file3.txt: file does not exist"}},
+				&control.EntityError{Name: tests[2].Name, Error: testing.Error{Reason: "Required data file file3.txt missing: failed to download gs://bucket/file3.txt: file does not exist"}},
 				&control.EntityEnd{Name: tests[2].Name},
 			}
 			if diff := cmp.Diff(msgs, want); diff != "" {
@@ -685,15 +685,15 @@ func TestRunFixture(t *gotesting.T) {
 
 	want := []control.Msg{
 		&control.EntityStart{Info: *tests[0].EntityInfo()},
-		&control.EntityLog{Text: "Test 0"},
+		&control.EntityLog{Name: tests[0].Name, Text: "Test 0"},
 		&control.EntityEnd{Name: tests[0].Name},
 		&control.EntityStart{Info: *fixt1.EntityInfo()},
 		&control.EntityStart{Info: *tests[1].EntityInfo()},
-		&control.EntityLog{Text: "Test 1"},
+		&control.EntityLog{Name: tests[1].Name, Text: "Test 1"},
 		&control.EntityEnd{Name: tests[1].Name},
 		&control.EntityStart{Info: *fixt2.EntityInfo()},
 		&control.EntityStart{Info: *tests[2].EntityInfo()},
-		&control.EntityLog{Text: "Test 2"},
+		&control.EntityLog{Name: tests[2].Name, Text: "Test 2"},
 		&control.EntityEnd{Name: tests[2].Name},
 		&control.EntityEnd{Name: fixt2.Name},
 		&control.EntityEnd{Name: fixt1.Name},
@@ -750,18 +750,18 @@ func TestRunFixtureSetUpFailure(t *gotesting.T) {
 	want := []control.Msg{
 		// pkg.Test0 runs successfully.
 		&control.EntityStart{Info: *tests[0].EntityInfo()},
-		&control.EntityLog{Text: "Test 0"},
+		&control.EntityLog{Name: tests[0].Name, Text: "Test 0"},
 		&control.EntityEnd{Name: tests[0].Name},
 		// fixt1 fails to set up.
 		&control.EntityStart{Info: *fixt1.EntityInfo()},
-		&control.EntityError{Error: testing.Error{Reason: "Setup failure"}},
+		&control.EntityError{Name: fixt1.Name, Error: testing.Error{Reason: "Setup failure"}},
 		&control.EntityEnd{Name: fixt1.Name},
 		// All tests depending on fixt1 fail.
 		&control.EntityStart{Info: *tests[1].EntityInfo()},
-		&control.EntityError{Error: testing.Error{Reason: "[Fixture failure] fixt1: Setup failed"}},
+		&control.EntityError{Name: tests[1].Name, Error: testing.Error{Reason: "[Fixture failure] fixt1: Setup failed"}},
 		&control.EntityEnd{Name: tests[1].Name},
 		&control.EntityStart{Info: *tests[2].EntityInfo()},
-		&control.EntityError{Error: testing.Error{Reason: "[Fixture failure] fixt1: Setup failed"}},
+		&control.EntityError{Name: tests[2].Name, Error: testing.Error{Reason: "[Fixture failure] fixt1: Setup failed"}},
 		&control.EntityEnd{Name: tests[2].Name},
 	}
 	if diff := cmp.Diff(msgs, want); diff != "" {
@@ -819,28 +819,28 @@ func TestRunFixtureResetFailure(t *gotesting.T) {
 	want := []control.Msg{
 		// pkg.Test0 runs successfully.
 		&control.EntityStart{Info: *tests[0].EntityInfo()},
-		&control.EntityLog{Text: "Test 0"},
+		&control.EntityLog{Name: tests[0].Name, Text: "Test 0"},
 		&control.EntityEnd{Name: tests[0].Name},
 		// fixt1 sets up successfully.
 		&control.EntityStart{Info: *fixt1.EntityInfo()},
 		// pkg.Test1 runs successfully.
 		&control.EntityStart{Info: *tests[1].EntityInfo()},
-		&control.EntityLog{Text: "Test 1"},
+		&control.EntityLog{Name: tests[1].Name, Text: "Test 1"},
 		&control.EntityEnd{Name: tests[1].Name},
 		// fixt1 fails to reset. It is torn down.
-		&control.EntityLog{Text: "Reset 1"},
-		&control.EntityLog{Text: "Fixture failed to reset: failure; recovering"},
+		&control.EntityLog{Name: fixt1.Name, Text: "Reset 1"},
+		&control.EntityLog{Name: fixt1.Name, Text: "Fixture failed to reset: failure; recovering"},
 		&control.EntityEnd{Name: fixt1.Name},
 		&control.EntityStart{Info: *fixt1.EntityInfo()},
 		// fixt2 sets up successfully.
 		&control.EntityStart{Info: *fixt2.EntityInfo()},
 		// pkg.Test2 runs successfully.
 		&control.EntityStart{Info: *tests[2].EntityInfo()},
-		&control.EntityLog{Text: "Test 2"},
+		&control.EntityLog{Name: tests[2].Name, Text: "Test 2"},
 		&control.EntityEnd{Name: tests[2].Name},
 		// fixt1 fails to reset again. Fixtures are torn down anyway.
-		&control.EntityLog{Text: "Reset 1"},
-		&control.EntityLog{Text: "Fixture failed to reset: failure; recovering"},
+		&control.EntityLog{Name: fixt1.Name, Text: "Reset 1"},
+		&control.EntityLog{Name: fixt1.Name, Text: "Fixture failed to reset: failure; recovering"},
 		&control.EntityEnd{Name: fixt2.Name},
 		&control.EntityEnd{Name: fixt1.Name},
 	}
@@ -877,8 +877,8 @@ func TestRunPrecondition(t *gotesting.T) {
 
 	want := []control.Msg{
 		&control.EntityStart{Info: *tests[0].EntityInfo()},
-		&control.EntityLog{Text: `Preparing precondition "pre"`},
-		&control.EntityLog{Text: `Closing precondition "pre"`},
+		&control.EntityLog{Name: tests[0].Name, Text: `Preparing precondition "pre"`},
+		&control.EntityLog{Name: tests[0].Name, Text: `Closing precondition "pre"`},
 		&control.EntityEnd{Name: tests[0].Name},
 	}
 	if diff := cmp.Diff(msgs, want); diff != "" {
@@ -937,13 +937,13 @@ func TestRunPreconditionContext(t *gotesting.T) {
 
 	want := []control.Msg{
 		&control.EntityStart{Info: *tests[0].EntityInfo()},
-		&control.EntityLog{Text: `Preparing precondition "pre"`},
-		&control.EntityLog{Text: "Log via PreCtx"},
+		&control.EntityLog{Name: tests[0].Name, Text: `Preparing precondition "pre"`},
+		&control.EntityLog{Name: "pre", Text: "Log via PreCtx"},
 		&control.EntityEnd{Name: tests[0].Name},
 		&control.EntityStart{Info: *tests[1].EntityInfo()},
-		&control.EntityLog{Text: `Preparing precondition "pre"`},
-		&control.EntityLog{Text: "Log via PreCtx"},
-		&control.EntityLog{Text: `Closing precondition "pre"`},
+		&control.EntityLog{Name: tests[1].Name, Text: `Preparing precondition "pre"`},
+		&control.EntityLog{Name: "pre", Text: "Log via PreCtx"},
+		&control.EntityLog{Name: tests[1].Name, Text: `Closing precondition "pre"`},
 		&control.EntityEnd{Name: tests[1].Name},
 	}
 	if diff := cmp.Diff(msgs, want); diff != "" {
@@ -1060,8 +1060,8 @@ func TestAttachStateToContext(t *gotesting.T) {
 
 	want := []control.Msg{
 		&control.EntityStart{Info: *tests[0].EntityInfo()},
-		&control.EntityLog{Text: "msg 1"},
-		&control.EntityLog{Text: "msg 2"},
+		&control.EntityLog{Name: tests[0].Name, Text: "msg 1"},
+		&control.EntityLog{Name: tests[0].Name, Text: "msg 2"},
 		&control.EntityEnd{Name: tests[0].Name},
 	}
 	if diff := cmp.Diff(msgs, want); diff != "" {

@@ -111,6 +111,8 @@ type EntityLog struct {
 	Time time.Time `json:"testLogTime"`
 	// Text is the actual message.
 	Text string `json:"testLogText"`
+	// Name is the name of the entity, matching the earlier EntityStart.Test.Name.
+	Name string `json:"testLogName"`
 }
 
 func (*EntityLog) isMsg() {}
@@ -121,6 +123,8 @@ type EntityError struct {
 	Time time.Time `json:"testErrorTime"`
 	// Error describes the error that occurred.
 	Error testing.Error `json:"testErrorError"`
+	// Name is the name of the entity, matching the earlier EntityStart.Test.Name.
+	Name string `json:"testErrorName"`
 }
 
 func (*EntityError) isMsg() {}

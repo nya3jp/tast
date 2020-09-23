@@ -35,13 +35,13 @@ func (s *outputSink) EntityStart(ei *testing.EntityInfo) error {
 }
 
 func (s *outputSink) EntityLog(ei *testing.EntityInfo, msg string) error {
-	return s.mw.WriteMessage(&control.EntityLog{Text: msg})
+	return s.mw.WriteMessage(&control.EntityLog{Text: msg, Name: ei.Name})
 }
 
 func (s *outputSink) EntityError(ei *testing.EntityInfo, e *testing.Error) error {
 	// Clear Error fields except for Reason.
 	e = &testing.Error{Reason: e.Reason}
-	return s.mw.WriteMessage(&control.EntityError{Error: *e})
+	return s.mw.WriteMessage(&control.EntityError{Error: *e, Name: ei.Name})
 }
 
 func (s *outputSink) EntityEnd(ei *testing.EntityInfo, skipReasons []string, timingLog *timing.Log) error {
@@ -81,9 +81,9 @@ func TestTestOutputStream(t *gotesting.T) {
 
 	want := []control.Msg{
 		&control.EntityStart{Info: *test},
-		&control.EntityLog{Text: "hello"},
-		&control.EntityError{Error: testing.Error{Reason: "faulty"}},
-		&control.EntityLog{Text: "world"},
+		&control.EntityLog{Name: "pkg.Test", Text: "hello"},
+		&control.EntityError{Name: "pkg.Test", Error: testing.Error{Reason: "faulty"}},
+		&control.EntityLog{Name: "pkg.Test", Text: "world"},
 		&control.EntityEnd{Name: "pkg.Test"},
 	}
 	if diff := cmp.Diff(got, want); diff != "" {

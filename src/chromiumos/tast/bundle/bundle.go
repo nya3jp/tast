@@ -169,14 +169,14 @@ func (ew *eventWriter) EntityLog(ei *testing.EntityInfo, msg string) error {
 	if ew.lg != nil {
 		ew.lg.Info(fmt.Sprintf("%s: %s", ei.Name, msg))
 	}
-	return ew.mw.WriteMessage(&control.EntityLog{Time: time.Now(), Text: msg})
+	return ew.mw.WriteMessage(&control.EntityLog{Time: time.Now(), Text: msg, Name: ei.Name})
 }
 
 func (ew *eventWriter) EntityError(ei *testing.EntityInfo, e *testing.Error) error {
 	if ew.lg != nil {
 		ew.lg.Info(fmt.Sprintf("%s: Error at %s:%d: %s", ei.Name, filepath.Base(e.File), e.Line, e.Reason))
 	}
-	return ew.mw.WriteMessage(&control.EntityError{Time: time.Now(), Error: *e})
+	return ew.mw.WriteMessage(&control.EntityError{Time: time.Now(), Error: *e, Name: ei.Name})
 }
 
 func (ew *eventWriter) EntityEnd(ei *testing.EntityInfo, skipReasons []string, timingLog *timing.Log) error {

@@ -28,7 +28,7 @@ func TestWriteAndRead(t *gotesting.T) {
 			Name: "pkg.MyTest",
 			Desc: "test description",
 			Attr: []string{"attr1", "attr2"},
-		}},
+		}, "/tmp/out/test1"},
 		&EntityLog{time.Unix(4, 0), "here's a log message", "pkg.MyTest"},
 		&EntityError{time.Unix(5, 0), testing.Error{Reason: "whoops", File: "file.go", Line: 20, Stack: "stack"}, "pkg.MyTest"},
 		&EntityEnd{time.Unix(6, 0), "pkg.MyTest", []string{"dep"}, []string{"errHwdep"}, timing.NewLog()},

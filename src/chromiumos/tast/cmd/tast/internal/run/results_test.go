@@ -26,7 +26,6 @@ import (
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/testing"
-	"chromiumos/tast/testing/hwdep"
 	"chromiumos/tast/testutil"
 	"chromiumos/tast/timing"
 )
@@ -46,13 +45,6 @@ func readStreamedResults(t *gotesting.T, r io.Reader) []*EntityResult {
 		results = append(results, res)
 	}
 	return results
-}
-
-// testResultsEqual returns true if a and b are equivalent.
-// Time fields in EntityError structs are ignored, as time.Now is used
-// to generate timestamps for certain types of errors.
-func testResultsEqual(a, b []*EntityResult) bool {
-	return cmp.Equal(a, b, cmpopts.IgnoreUnexported(EntityResult{}), cmpopts.IgnoreFields(EntityError{}, "Time"))
 }
 
 func TestReadTestOutput(t *gotesting.T) {
@@ -179,14 +171,14 @@ func TestReadTestOutput(t *gotesting.T) {
 	if err := json.Unmarshal([]byte(files[resultsFilename]), &actRes); err != nil {
 		t.Errorf("Failed to decode %v: %v", resultsFilename, err)
 	}
-	if !cmp.Equal(actRes, expRes, cmp.AllowUnexported(EntityResult{}, hwdep.Deps{})) {
-		t.Errorf("%v contains %+v; want %+v", resultsFilename, actRes, expRes)
+	if diff := cmp.Diff(actRes, expRes); diff != "" {
+		t.Errorf("%v mismatch (-got +want):\n%s", resultsFilename, diff)
 	}
 
 	// The streamed results file should contain the same set of results.
 	streamRes := readStreamedResults(t, bytes.NewBufferString(files[streamedResultsFilename]))
-	if !cmp.Equal(streamRes, expRes, cmp.AllowUnexported(EntityResult{}, hwdep.Deps{})) {
-		t.Errorf("%v contains %+v; want %+v", streamedResultsFilename, streamRes, expRes)
+	if diff := cmp.Diff(streamRes, expRes); diff != "" {
+		t.Errorf("%v mismatch (-got +want):\n%s", streamedResultsFilename, diff)
 	}
 
 	test1LogPath := filepath.Join(testLogsDir, test1Name, testLogFilename)
@@ -578,13 +570,13 @@ func TestWritePartialResults(t *gotesting.T) {
 			OutDir: filepath.Join(cfg.ResDir, testLogsDir, test2Name),
 		},
 	}
-	if !testResultsEqual(streamRes, expRes) {
-		t.Errorf("%v contains %+v; want %+v", streamedResultsFilename, streamRes, expRes)
+	if diff := cmp.Diff(streamRes, expRes, cmpopts.IgnoreFields(EntityError{}, "Time")); diff != "" {
+		t.Errorf("%v mismatch (-got +want):\n%s", streamedResultsFilename, diff)
 	}
 
 	// The returned results should contain the same data.
-	if !testResultsEqual(results, expRes) {
-		t.Errorf("Returned results contain contain %+v; want %+v", results, expRes)
+	if diff := cmp.Diff(results, expRes, cmpopts.IgnoreFields(EntityError{}, "Time")); diff != "" {
+		t.Errorf("Returned results mismatch (-got +want):\n%s", diff)
 	}
 
 	// Output files should be saved for finished tests.
@@ -616,8 +608,8 @@ func TestWritePartialResults(t *gotesting.T) {
 		End:        test4End,
 		OutDir:     filepath.Join(cfg.ResDir, testLogsDir, test4Name),
 	})
-	if !testResultsEqual(streamRes, expRes) {
-		t.Errorf("%v contains %+v; want %+v", streamedResultsFilename, streamRes, expRes)
+	if diff := cmp.Diff(streamRes, expRes, cmpopts.IgnoreFields(EntityError{}, "Time")); diff != "" {
+		t.Errorf("%v mismatch (-got +want):\n%s", streamedResultsFilename, diff)
 	}
 
 	// Output files for the earlier run should not be clobbered.
@@ -699,7 +691,7 @@ func TestUnfinishedTest(t *gotesting.T) {
 			t.Errorf("readTestOutput returned non-zero end time %v", res[0].End)
 		}
 		// Ignore timestamps since run errors contain time.Now.
-		if !cmp.Equal(res[0].Errors, tc.expErrs, cmpopts.IgnoreFields(EntityError{}, "Time"), cmp.AllowUnexported(hwdep.Deps{})) {
+		if !cmp.Equal(res[0].Errors, tc.expErrs, cmpopts.IgnoreFields(EntityError{}, "Time")) {
 			t.Errorf("readTestOutput returned errors %+v; want %+v", res[0].Errors, tc.expErrs)
 		}
 	}

@@ -101,6 +101,10 @@ type EntityStart struct {
 	Time time.Time `json:"testStartTime"`
 	// Info contains details about the entity.
 	Info testing.EntityInfo `json:"testStartTest"`
+	// OutDir is a directory path where output files for the entity is written.
+	// OutDir can be empty if the entity is being skipped.
+	// When set, OutDir is a direct subdirectory of bundle.RunTestsArgs.OutDir.
+	OutDir string `json:"testStartOutDir"`
 }
 
 func (*EntityStart) isMsg() {}

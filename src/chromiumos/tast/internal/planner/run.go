@@ -16,6 +16,7 @@ import (
 	"runtime"
 	"runtime/pprof"
 	"sort"
+	"sync"
 	"time"
 
 	"chromiumos/tast/internal/dep"
@@ -391,11 +392,8 @@ func (p *prePlan) run(ctx context.Context, out OutputStream, dl *downloader) err
 		SoftwareDeps: append([]string(nil), p.tests[0].SoftwareDeps...),
 		ServiceDeps:  append([]string(nil), p.tests[0].ServiceDeps...),
 	}
-	plog := func(msg string) {
-		ptest := &testing.EntityInfo{Name: p.pre.String()} // pseudo test for the precondition
-		out.EntityLog(ptest, msg)
-	}
-	pctx, cancel := context.WithCancel(testing.NewContext(context.Background(), ec, plog))
+	plog := newPreLogger(out)
+	pctx, cancel := context.WithCancel(testing.NewContext(ctx, ec, plog.Log))
 	defer cancel()
 
 	// Create an empty fixture stack. Tests using preconditions can't depend on
@@ -403,7 +401,9 @@ func (p *prePlan) run(ctx context.Context, out OutputStream, dl *downloader) err
 	stack := newFixtureStack(p.pcfg, out)
 
 	for i, t := range p.tests {
-		tout := newEntityOutputStream(out, t.EntityInfo())
+		ti := t.EntityInfo()
+		plog.SetCurrentTest(ti)
+		tout := newEntityOutputStream(out, ti)
 		precfg := &preConfig{
 			ctx:   pctx,
 			close: p.pre != nil && i == len(p.tests)-1,
@@ -417,6 +417,35 @@ func (p *prePlan) run(ctx context.Context, out OutputStream, dl *downloader) err
 
 func (p *prePlan) testsToRun() []*testing.TestInstance {
 	return append([]*testing.TestInstance(nil), p.tests...)
+}
+
+// preLogger is a logger behind precondition-scoped contexts. It emits
+// precondition logs to OutputStream just as if they are emitted by a currently
+// running test. Call SetCurrentTest to set a current test.
+type preLogger struct {
+	out OutputStream
+
+	mu sync.Mutex
+	ti *testing.EntityInfo
+}
+
+func newPreLogger(out OutputStream) *preLogger {
+	return &preLogger{out: out}
+}
+
+// Log emits a log message to OutputStream just as if it is emitted by the
+// current test. SetCurrentTest must be called before calling this method.
+func (l *preLogger) Log(msg string) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	l.out.EntityLog(l.ti, msg)
+}
+
+// SetCurrentTest sets the current test.
+func (l *preLogger) SetCurrentTest(ti *testing.EntityInfo) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	l.ti = ti
 }
 
 // preConfig contains information needed to interact with a precondition for

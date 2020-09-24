@@ -202,11 +202,7 @@ func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns
 		src := filepath.Join(args.RunTests.BundleArgs.OutDir, testName)
 		return moveFromHost(ctx, cfg, hst, src, dst)
 	}
-	df := func(ctx context.Context, testName string) string {
-		outDir := cfg.ResDir
-		if testName != "" {
-			outDir = filepath.Join(outDir, testLogsDir, testName)
-		}
+	df := func(ctx context.Context, outDir string) string {
 		return diagnoseLocalRunError(ctx, cfg, outDir)
 	}
 	results, unstarted, rerr := readTestOutput(ctx, cfg, handle.stdout, crf, df)

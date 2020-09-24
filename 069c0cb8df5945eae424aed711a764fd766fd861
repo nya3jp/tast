@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "55d2964c_c80c8d26",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 7
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-09-24T17:06:50Z",
+      "side": 1,
+      "message": "I think -ephemeraldevserver\u003dfalse is also needed, or otherwise an ephemeral devserver will still be used. (confirmed by log)\nhttps://source.chromium.org/chromiumos/chromiumos/codesearch/+/master:src/platform/tast/src/chromiumos/tast/cmd/tast/internal/run/run.go;l\u003d114;drc\u003d569da6c55c3a11df6f45bd755ee8d14ffe436211",
+      "range": {
+        "startLine": 18,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 62
+      },
+      "revId": "069c0cb8df5945eae424aed711a764fd766fd861",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fb4116e9_d516f06c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-09-24T17:06:50Z",
+      "side": 1,
+      "message": "FYI",
+      "revId": "069c0cb8df5945eae424aed711a764fd766fd861",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

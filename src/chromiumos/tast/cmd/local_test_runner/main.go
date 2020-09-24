@@ -38,13 +38,14 @@ func main() {
 		},
 	}
 	cfg := runner.Config{
-		Type:              runner.LocalRunner,
-		KillStaleRunners:  true,
-		SystemLogDir:      "/var/log",
-		SystemLogExcludes: []string{"journal"}, // journald binary logs: https://crbug.com/931951
-		UnifiedLogSubdir:  "unified",           // destination for exported unified system logs
-		SystemInfoFunc:    writeSystemInfo,     // save additional system info at end of run
-		SystemCrashDirs:   crash.DefaultDirs(),
+		Type:                  runner.LocalRunner,
+		KillStaleRunners:      true,
+		SystemLogDir:          "/var/log",
+		SystemLogExcludes:     []string{"journal"}, // journald binary logs: https://crbug.com/931951
+		UnifiedLogSubdir:      "unified",           // destination for exported unified system logs
+		SystemInfoFunc:        writeSystemInfo,     // save additional system info at end of run
+		SystemCrashDirs:       crash.DefaultDirs(),
+		CleanupLogsPausedPath: "/var/lib/cleanup_logs_paused",
 		// The tast-use-flags package attempts to install this file to /etc,
 		// but it gets diverted to /usr/local since it's installed for test images.
 		USEFlagsFile: "/usr/local/etc/tast_use_flags.txt",

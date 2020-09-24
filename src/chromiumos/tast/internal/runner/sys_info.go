@@ -33,6 +33,10 @@ func handleGetSysInfoState(ctx context.Context, cfg *Config, w io.Writer) error 
 
 	res := GetSysInfoStateResult{}
 
+	if err := suspendLogCleanup(cfg.CleanupLogsPausedPath); err != nil {
+		res.Warnings = append(res.Warnings, fmt.Sprintf("Failed to pause log cleanup: %v", err))
+	}
+
 	var err error
 	var warnings map[string]error
 	if res.State.LogInodeSizes, warnings, err = logs.GetLogInodeSizes(
@@ -120,6 +124,10 @@ func handleCollectSysInfo(ctx context.Context, args *Args, cfg *Config, w io.Wri
 	// TODO(derat): Decide if it's worthwhile to call crash.CopySystemInfo here to get /etc/lsb-release.
 	// Doing so makes it harder to exercise this code in unit tests.
 
+	if err := resumeLogCleanup(cfg.CleanupLogsPausedPath); err != nil {
+		res.Warnings = append(res.Warnings, fmt.Sprintf("Failed to resume log cleanup: %v", err))
+	}
+
 	return json.NewEncoder(w).Encode(res)
 }
 
@@ -155,4 +163,12 @@ func writeUnifiedLog(ctx context.Context, path, cursor string, fm logs.UnifiedLo
 		err = closeErr
 	}
 	return err
+}
+
+func suspendLogCleanup(cleanupLogsPausedPath string) error {
+	return ioutil.WriteFile(cleanupLogsPausedPath, nil, 0666)
+}
+
+func resumeLogCleanup(cleanupLogsPausedPath string) error {
+	return os.Remove(cleanupLogsPausedPath)
 }

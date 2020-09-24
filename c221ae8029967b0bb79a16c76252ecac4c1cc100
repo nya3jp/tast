@@ -34,6 +34,24 @@
       "revId": "c221ae8029967b0bb79a16c76252ecac4c1cc100",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "256f40a8_cc68621e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-24T07:02:09Z",
+      "side": 1,
+      "message": "Thanks for the pointer.\n\nIIUC the requirement is that we need to use credentials available only on the host? Then we can write a remote test that calls a gRPC service to generate a screenshot and calls goldctl directly.",
+      "parentUuid": "c18a371f_1d5f368d",
+      "revId": "c221ae8029967b0bb79a16c76252ecac4c1cc100",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

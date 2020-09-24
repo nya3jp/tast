@@ -167,9 +167,8 @@ type copyAndRemoveFunc func(testName, dst string) error
 // diagnoseRunErrorFunc is called after a run error is encountered while reading test results to get additional
 // information about the cause of the error. An empty string should be returned if additional information
 // is unavailable.
-// testName is the name of the test that was running when a run error occurred. It might be empty if an run error
-// occurred outside of tests.
-type diagnoseRunErrorFunc func(ctx context.Context, testName string) string
+// outDir is a path to a directory where extra output files can be written.
+type diagnoseRunErrorFunc func(ctx context.Context, outDir string) string
 
 // resultsHandler processes the output from a test binary.
 type resultsHandler struct {
@@ -537,11 +536,11 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 		// Try to get a more-specific diagnosis of what went wrong.
 		msg := fmt.Sprintf("Got global error: %v", runErr)
 		if r.diagFunc != nil {
-			var testName string
+			outDir := r.cfg.ResDir
 			if r.current != nil {
-				testName = r.current.result.Name
+				outDir = filepath.Join(r.cfg.ResDir, testLogsDir, r.current.result.Name)
 			}
-			if dm := r.diagFunc(ctx, testName); dm != "" {
+			if dm := r.diagFunc(ctx, outDir); dm != "" {
 				msg = dm
 			}
 		}

@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4762175f_a6bb58db",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 17
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-24T09:52:23Z",
+      "side": 1,
+      "message": "Thanks, LGTM with nits.\n",
+      "revId": "8591b0c2fb97f1ca69b4c7a9b27ceff263b85843",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "35cc1bc0_32cd5cae",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-24T09:52:23Z",
+      "side": 1,
+      "message": "Can you insert a blank line above to separate immutable fields and mutable fields?\n\nc.f.\nhttps://golang.org/doc/effective_go.html#commentary\n\u003e Grouping can also indicate relationships between items, such as the fact that a set of variables is protected by a mutex.\n\nSame for cacheServer.",
+      "range": {
+        "startLine": 81,
+        "startChar": 1,
+        "endLine": 81,
+        "endChar": 27
+      },
+      "revId": "8591b0c2fb97f1ca69b4c7a9b27ceff263b85843",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3a87d457_e1dddb7e",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 251,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-24T09:52:23Z",
+      "side": 1,
+      "message": "nit: Can you use a consistent naming for mutex (Mux vs. Mtx)?\n\nOptional: \"mu\" is a popular name for mutex.\nhttps://source.corp.google.com/search?q\u003d%5C%20sync.Mutex",
+      "range": {
+        "startLine": 251,
+        "startChar": 1,
+        "endLine": 251,
+        "endChar": 15
+      },
+      "revId": "8591b0c2fb97f1ca69b4c7a9b27ceff263b85843",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

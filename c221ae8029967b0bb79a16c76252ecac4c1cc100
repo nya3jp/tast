@@ -16,6 +16,24 @@
       "revId": "c221ae8029967b0bb79a16c76252ecac4c1cc100",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c18a371f_1d5f368d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2020-09-24T06:19:58Z",
+      "side": 1,
+      "message": "Design proposal at go/cros-screendiff, but I don\u0027t believe it addresses this specific issue yet.\n\nIn general though we need to send these files to Skia Gold using goldctl binary and I believe Matt thought it would be better to run this on the server (not sure if running on DUT is impossible or just less desirable)",
+      "parentUuid": "f37a74a3_755eb909",
+      "revId": "c221ae8029967b0bb79a16c76252ecac4c1cc100",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

@@ -386,6 +386,8 @@ type Config struct {
 	SystemInfoFunc func(ctx context.Context, dir string) error
 	// SystemCrashDirs contains directories where crash dumps are written when processes crash.
 	SystemCrashDirs []string
+	// CleanupLogsPausedPath is a path to the marker file on the DUT to pause log cleanup.
+	CleanupLogsPausedPath string
 
 	// USEFlagsFile contains the path to a file listing a subset of USE flags that were set when building
 	// the system image. These USE flags are used by expressions in SoftwareFeatureDefinitions to determine

@@ -257,7 +257,8 @@ func TestRunSysInfo(t *gotesting.T) {
 		SystemInfoFunc: func(ctx context.Context, dir string) error {
 			return ioutil.WriteFile(filepath.Join(dir, customLogFile), []byte(customLogData), 0644)
 		},
-		SystemCrashDirs: []string{filepath.Join(td, crashesDir)},
+		SystemCrashDirs:       []string{filepath.Join(td, crashesDir)},
+		CleanupLogsPausedPath: filepath.Join(td, "cleanup_logs_paused"),
 	}
 	status, stdout, _, sig := callRun(t, nil, &Args{Mode: GetSysInfoStateMode}, nil, &cfg)
 	if status != statusSuccess {
@@ -269,6 +270,10 @@ func TestRunSysInfo(t *gotesting.T) {
 	}
 	if len(getRes.Warnings) > 0 {
 		t.Errorf("%v produced warning(s): %v", sig, getRes.Warnings)
+	}
+
+	if _, err := os.Stat(cfg.CleanupLogsPausedPath); err != nil {
+		t.Errorf("Cleanup logs paused file not created: %v", err)
 	}
 
 	if err := testutil.WriteFiles(td, map[string]string{
@@ -313,6 +318,10 @@ func TestRunSysInfo(t *gotesting.T) {
 		if exp := map[string]string{newCrashFile: newCrashData}; !reflect.DeepEqual(act, exp) {
 			t.Errorf("%v collected crashes %v; want %v", sig, act, exp)
 		}
+	}
+
+	if _, err := os.Stat(cfg.CleanupLogsPausedPath); !os.IsNotExist(err) {
+		t.Errorf("Cleanup logs paused file not deleted: %v", err)
 	}
 }
 

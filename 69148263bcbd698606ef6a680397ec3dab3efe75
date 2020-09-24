@@ -1,0 +1,153 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9ceb9410_a4ec993d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 16
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-24T06:00:11Z",
+      "side": 1,
+      "message": "Nice, I guess this will be a last iteration.\n",
+      "revId": "69148263bcbd698606ef6a680397ec3dab3efe75",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fe5f7251_466c83cc",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-24T06:00:11Z",
+      "side": 1,
+      "message": "operations is a mutable field that can be modified concurrently. Can you protect it with a mutex?",
+      "range": {
+        "startLine": 80,
+        "startChar": 0,
+        "endLine": 80,
+        "endChar": 26
+      },
+      "revId": "69148263bcbd698606ef6a680397ec3dab3efe75",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0410971e_01a15b62",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-24T06:00:11Z",
+      "side": 1,
+      "message": "This function never returns an error, how about reverting to the original signature?",
+      "range": {
+        "startLine": 87,
+        "startChar": 49,
+        "endLine": 87,
+        "endChar": 73
+      },
+      "revId": "69148263bcbd698606ef6a680397ec3dab3efe75",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "88be850f_8330f35c",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-24T06:00:11Z",
+      "side": 1,
+      "message": "nit: let\u0027s include this in the struct initialization above.",
+      "range": {
+        "startLine": 98,
+        "startChar": 1,
+        "endLine": 98,
+        "endChar": 34
+      },
+      "revId": "69148263bcbd698606ef6a680397ec3dab3efe75",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7234d9ab_e2f2e70f",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 225,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-24T06:00:11Z",
+      "side": 1,
+      "message": "huge nit: can we delete this blank line? RegisterWiringServer and RegisterOperationsServer are siblings.",
+      "revId": "69148263bcbd698606ef6a680397ec3dab3efe75",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d9207115_4cc838ed",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 242,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-24T06:00:11Z",
+      "side": 1,
+      "message": "Same here: let us protect cachedFiles with a mutex.",
+      "range": {
+        "startLine": 242,
+        "startChar": 0,
+        "endLine": 242,
+        "endChar": 30
+      },
+      "revId": "69148263bcbd698606ef6a680397ec3dab3efe75",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9b67bc05_6381fbbc",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 260,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-24T06:00:11Z",
+      "side": 1,
+      "message": "nit: httptest.Server has a convenient field URL that contains \"http://ipaddr:port\". I suggest using it.\nhttps://godoc.org/net/http/httptest#Server",
+      "range": {
+        "startLine": 258,
+        "startChar": 0,
+        "endLine": 260,
+        "endChar": 1
+      },
+      "revId": "69148263bcbd698606ef6a680397ec3dab3efe75",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

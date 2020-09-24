@@ -182,22 +182,23 @@ type diagnoseRunErrorFunc func(ctx context.Context, outDir string) string
 type resultsHandler struct {
 	cfg *Config
 
-	runStart, runEnd time.Time              // test-runner-reported times at which run started and ended
-	numTests         int                    // total number of tests that are expected to run
-	testsToRun       []string               // names of tests that will be run in their expected order
-	results          []*EntityResult        // information about tests seen so far; the last element can be ongoing and shared with current
-	current          *entityState           // currently-running entity, if any
-	seenTimes        map[string]int         // count of entity names seen so far
-	stage            *timing.Stage          // current test's timing stage
-	crf              copyAndRemoveFunc      // function used to copy and remove files from DUT
-	diagFunc         diagnoseRunErrorFunc   // called to diagnose run errors; may be nil
-	streamWriter     *streamedResultsWriter // used to write results as control messages are read
-	pullers          sync.WaitGroup         // used to wait for puller goroutines
+	runStart, runEnd time.Time               // test-runner-reported times at which run started and ended
+	numTests         int                     // total number of tests that are expected to run
+	testsToRun       []string                // names of tests that will be run in their expected order
+	results          []*EntityResult         // information about tests seen so far; the last element can be ongoing and shared with current
+	currents         map[string]*entityState // currently-running entities, if any
+	seenTimes        map[string]int          // count of entity names seen so far
+	stage            *timing.Stage           // current test's timing stage
+	crf              copyAndRemoveFunc       // function used to copy and remove files from DUT
+	diagFunc         diagnoseRunErrorFunc    // called to diagnose run errors; may be nil
+	streamWriter     *streamedResultsWriter  // used to write results as control messages are read
+	pullers          sync.WaitGroup          // used to wait for puller goroutines
 }
 
 func newResultsHandler(cfg *Config, crf copyAndRemoveFunc, df diagnoseRunErrorFunc) (*resultsHandler, error) {
 	r := &resultsHandler{
 		cfg:       cfg,
+		currents:  make(map[string]*entityState),
 		seenTimes: make(map[string]int),
 		crf:       crf,
 		diagFunc:  df,
@@ -216,10 +217,11 @@ func newResultsHandler(cfg *Config, crf copyAndRemoveFunc, df diagnoseRunErrorFu
 }
 
 func (r *resultsHandler) close() {
-	if r.current != nil {
-		r.cfg.Logger.RemoveWriter(r.current.logFile)
-		r.current.logFile.Close()
+	for _, state := range r.currents {
+		r.cfg.Logger.RemoveWriter(state.logFile)
+		state.logFile.Close()
 	}
+	r.currents = nil
 	r.streamWriter.close()
 }
 
@@ -267,8 +269,8 @@ func (r *resultsHandler) handleRunEnd(ctx context.Context, msg *control.RunEnd) 
 	if r.runStart.IsZero() {
 		return errors.New("no RunStart message before RunEnd")
 	}
-	if r.current != nil {
-		return fmt.Errorf("got RunEnd message while %s still running", r.current.result.Name)
+	if len(r.currents) > 0 {
+		return fmt.Errorf("got RunEnd message while %d entities still running", len(r.currents))
 	}
 	if !r.runEnd.IsZero() {
 		return errors.New("multiple RunEnd messages")
@@ -282,10 +284,6 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.Entit
 	if r.runStart.IsZero() {
 		return errors.New("no RunStart message before EntityStart")
 	}
-	if r.current != nil {
-		return fmt.Errorf("got TestStart message for %s while %s still running",
-			msg.Info.Name, r.current.result.Name)
-	}
 	ctx, r.stage = timing.Start(ctx, msg.Info.Name)
 
 	finalOutDir := filepath.Join(r.cfg.ResDir, testLogsDir, msg.Info.Name)
@@ -297,7 +295,7 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.Entit
 	}
 	r.seenTimes[msg.Info.Name]++
 
-	r.current = &entityState{
+	state := &entityState{
 		result: EntityResult{
 			EntityInfo: msg.Info,
 			Start:      msg.Time,
@@ -306,27 +304,28 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.Entit
 		IntermediateOutDir: msg.OutDir,
 		FinalOutDir:        finalOutDir,
 	}
-	r.results = append(r.results, &r.current.result)
+	r.currents[msg.Info.Name] = state
+	r.results = append(r.results, &state.result)
 
 	// Write a partial EntityResult object to record that we started the test.
 	var err error
-	if err = r.streamWriter.write(&r.current.result, false); err != nil {
+	if err = r.streamWriter.write(&state.result, false); err != nil {
 		return err
 	}
 
-	if err = os.MkdirAll(r.current.result.OutDir, 0755); err != nil {
+	if err = os.MkdirAll(state.result.OutDir, 0755); err != nil {
 		return err
 	}
-	if r.current.logFile, err = os.Create(
-		filepath.Join(r.current.result.OutDir, testLogFilename)); err != nil {
+	if state.logFile, err = os.Create(
+		filepath.Join(state.result.OutDir, testLogFilename)); err != nil {
 		return err
 	}
-	if err = r.cfg.Logger.AddWriter(r.current.logFile, log.LstdFlags); err != nil {
+	if err = r.cfg.Logger.AddWriter(state.logFile, log.LstdFlags); err != nil {
 		return err
 	}
 
-	r.cfg.Logger.Log("Started test ", r.current.result.Name)
-	r.setProgress("Running " + r.current.result.Name)
+	r.cfg.Logger.Log("Started test ", state.result.Name)
+	r.setProgress("Running " + state.result.Name)
 	return nil
 }
 
@@ -338,11 +337,12 @@ func (r *resultsHandler) handleTestLog(ctx context.Context, msg *control.EntityL
 
 // handleTestError handles TestError control messages from test runners.
 func (r *resultsHandler) handleTestError(ctx context.Context, msg *control.EntityError) error {
-	if r.current == nil {
-		return errors.New("got TestError message while no test was running")
+	state := r.currents[msg.Name]
+	if state == nil {
+		return fmt.Errorf("got TestError message for %s while it was not running", msg.Name)
 	}
 
-	r.current.result.Errors = append(r.current.result.Errors, EntityError{msg.Time, msg.Error})
+	state.result.Errors = append(state.result.Errors, EntityError{msg.Time, msg.Error})
 
 	ts := msg.Time.Format(testOutputTimeFmt)
 	r.cfg.Logger.Logf("[%s] Error at %s:%d: %s", ts, filepath.Base(msg.Error.File), msg.Error.Line, msg.Error.Reason)
@@ -353,8 +353,9 @@ func (r *resultsHandler) handleTestError(ctx context.Context, msg *control.Entit
 }
 
 func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.EntityEnd) error {
-	if r.current == nil || msg.Name != r.current.result.Name {
-		return fmt.Errorf("got TestEnd message for not-started test %s", msg.Name)
+	state := r.currents[msg.Name]
+	if state == nil {
+		return fmt.Errorf("got TestEnd message for %s while it was not running", msg.Name)
 	}
 
 	// If the test reported timing stages, import them under the current stage.
@@ -369,7 +370,7 @@ func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.EntityE
 
 	if len(msg.DeprecatedMissingSoftwareDeps) == 0 && len(msg.SkipReasons) == 0 {
 		r.cfg.Logger.Logf("Completed test %s in %v with %d error(s)",
-			msg.Name, msg.Time.Sub(r.current.result.Start).Round(time.Millisecond), len(r.current.result.Errors))
+			msg.Name, msg.Time.Sub(state.result.Start).Round(time.Millisecond), len(state.result.Errors))
 	} else {
 		var reasons []string
 		if len(msg.DeprecatedMissingSoftwareDeps) > 0 {
@@ -378,27 +379,26 @@ func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.EntityE
 		if len(msg.SkipReasons) > 0 {
 			reasons = append(reasons, msg.SkipReasons...)
 		}
-		r.current.result.SkipReason = strings.Join(reasons, ", ")
-		r.cfg.Logger.Logf("Skipped test %s due to missing dependencies: %s", msg.Name, r.current.result.SkipReason)
+		state.result.SkipReason = strings.Join(reasons, ", ")
+		r.cfg.Logger.Logf("Skipped test %s due to missing dependencies: %s", msg.Name, state.result.SkipReason)
 	}
 
-	r.current.result.End = msg.Time
+	state.result.End = msg.Time
 
 	// Replace the earlier partial TestResult object with the now-complete version.
-	if err := r.streamWriter.write(&r.current.result, true); err != nil {
+	if err := r.streamWriter.write(&state.result, true); err != nil {
 		return err
 	}
 
-	if err := r.cfg.Logger.RemoveWriter(r.current.logFile); err != nil {
+	if err := r.cfg.Logger.RemoveWriter(state.logFile); err != nil {
 		r.cfg.Logger.Log(err)
 	}
-	if err := r.current.logFile.Close(); err != nil {
+	if err := state.logFile.Close(); err != nil {
 		r.cfg.Logger.Log(err)
 	}
 
 	// Pull finished test output files in a separate goroutine.
-	if r.current.IntermediateOutDir != "" {
-		state := r.current
+	if state.IntermediateOutDir != "" {
 		r.pullers.Add(1)
 		go func() {
 			defer r.pullers.Done()
@@ -409,7 +409,7 @@ func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.EntityE
 		}()
 	}
 
-	r.current = nil
+	delete(r.currents, msg.Name)
 	r.stage = nil
 	return nil
 }
@@ -494,9 +494,9 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 	// If a test is incomplete when we finish reading messages, rewrite its entry at the
 	// end of the streamed results file to make sure that all of its errors are recorded.
 	defer func() {
-		if r.current != nil {
-			r.current.result.Errors = append(r.current.result.Errors, EntityError{time.Now(), testing.Error{Reason: incompleteTestMsg}})
-			r.streamWriter.write(&r.current.result, true)
+		for _, state := range r.currents {
+			state.result.Errors = append(state.result.Errors, EntityError{time.Now(), testing.Error{Reason: incompleteTestMsg}})
+			r.streamWriter.write(&state.result, true)
 		}
 	}()
 
@@ -544,10 +544,19 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 	if runErr != nil {
 		// Try to get a more-specific diagnosis of what went wrong.
 		msg := fmt.Sprintf("Got global error: %v", runErr)
+
+		// Find an entity that started most recently.
+		var lastState *entityState
+		for _, state := range r.currents {
+			if lastState == nil || state.result.Start.After(lastState.result.Start) {
+				lastState = state
+			}
+		}
+
 		if r.diagFunc != nil {
 			outDir := r.cfg.ResDir
-			if r.current != nil {
-				outDir = r.current.FinalOutDir
+			if lastState != nil {
+				outDir = lastState.FinalOutDir
 			}
 			if dm := r.diagFunc(ctx, outDir); dm != "" {
 				msg = dm
@@ -557,8 +566,8 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 		// Log the message. If the error interrupted a test, the message will be written to the test's
 		// log, and we also save it as an error within the test's result.
 		r.cfg.Logger.Log(msg)
-		if r.current != nil {
-			r.current.result.Errors = append(r.current.result.Errors, EntityError{time.Now(), testing.Error{Reason: msg}})
+		if lastState != nil {
+			lastState.result.Errors = append(lastState.result.Errors, EntityError{time.Now(), testing.Error{Reason: msg}})
 		}
 		return r.results, unstarted, runErr
 	}

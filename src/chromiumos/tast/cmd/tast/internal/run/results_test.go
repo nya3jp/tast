@@ -100,10 +100,10 @@ func TestReadTestOutput(t *gotesting.T) {
 	mw.WriteMessage(&control.RunStart{Time: runStartTime, TestNames: []string{test1Name, test2Name, test3Name}, NumTests: 3})
 	mw.WriteMessage(&control.RunLog{Time: runLogTime, Text: runLogText})
 	mw.WriteMessage(&control.EntityStart{Time: test1StartTime, Info: testing.EntityInfo{Name: test1Name, Desc: test1Desc}, OutDir: filepath.Join(outDir, test1Name)})
-	mw.WriteMessage(&control.EntityLog{Time: test1LogTime, Text: test1LogText})
+	mw.WriteMessage(&control.EntityLog{Time: test1LogTime, Name: test1Name, Text: test1LogText})
 	mw.WriteMessage(&control.EntityEnd{Time: test1EndTime, Name: test1Name})
 	mw.WriteMessage(&control.EntityStart{Time: test2StartTime, Info: testing.EntityInfo{Name: test2Name, Desc: test2Desc}, OutDir: filepath.Join(outDir, test2Name)})
-	mw.WriteMessage(&control.EntityError{Time: test2ErrorTime, Error: testing.Error{Reason: test2ErrorReason, File: test2ErrorFile, Line: test2ErrorLine, Stack: test2ErrorStack}})
+	mw.WriteMessage(&control.EntityError{Time: test2ErrorTime, Name: test2Name, Error: testing.Error{Reason: test2ErrorReason, File: test2ErrorFile, Line: test2ErrorLine, Stack: test2ErrorStack}})
 	mw.WriteMessage(&control.EntityEnd{Time: test2EndTime, Name: test2Name})
 	mw.WriteMessage(&control.EntityStart{Time: test3StartTime, Info: testing.EntityInfo{Name: test3Name, Desc: test3Desc}})
 	mw.WriteMessage(&control.EntityEnd{Time: test3EndTime, Name: test3Name, SkipReasons: []string{skipReason}})
@@ -304,6 +304,99 @@ func TestReadTestOutputSameEntity(t *gotesting.T) {
 	}
 }
 
+func TestReadTestOutputConcurrentEntity(t *gotesting.T) {
+	const (
+		fixt1Name    = "foo.Fixture1"
+		fixt2Name    = "foo.Fixture2"
+		fixt1LogText = "Log from fixture 1"
+		fixt2ErrText = "Error from fixture 2"
+		fixt1OutFile = "out1.txt"
+		fixt2OutFile = "out2.txt"
+		fixt1OutData = "Output from fixture 1"
+		fixt2OutData = "Output from fixture 2"
+	)
+
+	epoch := time.Unix(0, 0)
+
+	tempDir := testutil.TempDir(t)
+	defer os.RemoveAll(tempDir)
+
+	outDir := filepath.Join(tempDir, "out")
+	if err := testutil.WriteFiles(outDir, map[string]string{
+		filepath.Join(fixt1Name, fixt1OutFile): fixt1OutData,
+		filepath.Join(fixt2Name, fixt2OutFile): fixt2OutData,
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	b := bytes.Buffer{}
+	mw := control.NewMessageWriter(&b)
+	mw.WriteMessage(&control.RunStart{Time: epoch})
+	mw.WriteMessage(&control.EntityStart{Time: epoch, Info: testing.EntityInfo{Name: fixt1Name, Type: testing.EntityFixture}, OutDir: filepath.Join(outDir, fixt1Name)})
+	mw.WriteMessage(&control.EntityStart{Time: epoch, Info: testing.EntityInfo{Name: fixt2Name, Type: testing.EntityFixture}, OutDir: filepath.Join(outDir, fixt2Name)})
+	mw.WriteMessage(&control.EntityLog{Time: epoch, Name: fixt1Name, Text: fixt1LogText})
+	mw.WriteMessage(&control.EntityError{Time: epoch, Name: fixt2Name, Error: testing.Error{Reason: fixt2ErrText}})
+	mw.WriteMessage(&control.EntityEnd{Time: epoch, Name: fixt2Name})
+	mw.WriteMessage(&control.EntityEnd{Time: epoch, Name: fixt1Name})
+	mw.WriteMessage(&control.RunEnd{Time: epoch})
+
+	var logBuf bytes.Buffer
+	cfg := Config{
+		Logger: logging.NewSimple(&logBuf, 0, false),
+		ResDir: filepath.Join(tempDir, "results"),
+	}
+	results, unstartedTests, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, nil)
+	if err != nil {
+		t.Fatal("readTestOutput failed:", err)
+	}
+	if len(unstartedTests) != 0 {
+		t.Errorf("readTestOutput reported unstarted tests %v", unstartedTests)
+	}
+	if err = WriteResults(context.Background(), &cfg, results, true); err != nil {
+		t.Fatal("WriteResults failed:", err)
+	}
+
+	files, err := testutil.ReadFiles(cfg.ResDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	expRes := []*EntityResult{
+		{
+			EntityInfo: testing.EntityInfo{Name: fixt1Name, Type: testing.EntityFixture},
+			Start:      epoch,
+			End:        epoch,
+			OutDir:     filepath.Join(cfg.ResDir, testLogsDir, fixt1Name),
+		},
+		{
+			EntityInfo: testing.EntityInfo{Name: fixt2Name, Type: testing.EntityFixture},
+			Start:      epoch,
+			End:        epoch,
+			OutDir:     filepath.Join(cfg.ResDir, testLogsDir, fixt2Name),
+			Errors: []EntityError{{
+				Time:  epoch,
+				Error: testing.Error{Reason: fixt2ErrText},
+			}},
+		},
+	}
+	var actRes []*EntityResult
+	if err := json.Unmarshal([]byte(files[resultsFilename]), &actRes); err != nil {
+		t.Errorf("Failed to decode %v: %v", resultsFilename, err)
+	}
+	if diff := cmp.Diff(actRes, expRes); diff != "" {
+		t.Errorf("%v mismatch (-got +want):\n%s", resultsFilename, diff)
+	}
+
+	fixt1OutPath := filepath.Join(testLogsDir, fixt1Name, fixt1OutFile)
+	if files[fixt1OutPath] != fixt1OutData {
+		t.Errorf("%s contains %q; want %q", fixt1OutPath, files[fixt1OutPath], fixt1OutData)
+	}
+	fixt2OutPath := filepath.Join(testLogsDir, fixt2Name, fixt2OutFile)
+	if files[fixt2OutPath] != fixt2OutData {
+		t.Errorf("%s contains %q; want %q", fixt2OutPath, files[fixt2OutPath], fixt2OutData)
+	}
+}
+
 func TestReadTestOutputTimingLog(t *gotesting.T) {
 	const (
 		testName1 = "pkg.Test1"
@@ -458,11 +551,11 @@ func TestValidateMessages(t *gotesting.T) {
 			&control.EntityEnd{Time: time.Unix(3, 0), Name: "test2"},
 			&control.RunEnd{Time: time.Unix(3, 0), OutDir: ""},
 		}},
-		{"no EntityEnd", []string{"test1"}, []control.Msg{
+		{"no EntityEnd", []string{"test1", "test2"}, []control.Msg{
 			&control.RunStart{Time: time.Unix(1, 0), TestNames: []string{"test1", "test2"}},
 			&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: "test1"}},
-			&control.EntityStart{Time: time.Unix(3, 0), Info: testing.EntityInfo{Name: "test2"}},
-			&control.EntityEnd{Time: time.Unix(4, 0), Name: "test2"},
+			&control.EntityEnd{Time: time.Unix(3, 0), Name: "test1"},
+			&control.EntityStart{Time: time.Unix(4, 0), Info: testing.EntityInfo{Name: "test2"}},
 			&control.RunEnd{Time: time.Unix(5, 0), OutDir: ""},
 		}},
 	} {
@@ -603,7 +696,7 @@ func TestWritePartialResults(t *gotesting.T) {
 	mw.WriteMessage(&control.EntityStart{Time: test1Start, Info: testing.EntityInfo{Name: test1Name}, OutDir: filepath.Join(outDir, test1Name)})
 	mw.WriteMessage(&control.EntityEnd{Time: test1End, Name: test1Name})
 	mw.WriteMessage(&control.EntityStart{Time: test2Start, Info: testing.EntityInfo{Name: test2Name}, OutDir: filepath.Join(outDir, test2Name)})
-	mw.WriteMessage(&control.EntityError{Time: test2Error, Error: testing.Error{Reason: test2Reason}})
+	mw.WriteMessage(&control.EntityError{Time: test2Error, Name: test2Name, Error: testing.Error{Reason: test2Reason}})
 
 	cfg := Config{
 		Logger: logging.NewSimple(&bytes.Buffer{}, 0, false),
@@ -734,7 +827,7 @@ func TestUnfinishedTest(t *gotesting.T) {
 		mw.WriteMessage(&control.RunStart{Time: tm, NumTests: 1})
 		mw.WriteMessage(&control.EntityStart{Time: tm, Info: testing.EntityInfo{Name: testName}})
 		if tc.writeTestErr {
-			mw.WriteMessage(&control.EntityError{Time: tm, Error: testing.Error{Reason: testMsg}})
+			mw.WriteMessage(&control.EntityError{Time: tm, Name: testName, Error: testing.Error{Reason: testMsg}})
 		}
 		if tc.writeRunErr {
 			mw.WriteMessage(&control.RunError{Time: tm, Error: testing.Error{Reason: runMsg, File: runFile, Line: runLine}})

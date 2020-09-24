@@ -140,16 +140,6 @@ Various files and directories are created within the results directory:
 [perf]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/common/perf
 [timing]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/timing
 
-## Running local tests manually on the DUT
-
-If you need to run one or more local tests manually on a DUT (e.g. because you
-don't have a Chrome OS chroot containing the `tast` executable), the
-`local_test_runner` executable can be started directly on the DUT:
-
-```shell
-local_test_runner ui.ChromeLogin
-```
-
 ## Reset the device owner of the DUT after test run
 
 Tast resets the device owner of the DUT before test run, and after the test run,

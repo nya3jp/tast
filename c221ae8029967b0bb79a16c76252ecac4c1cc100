@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f37a74a3_755eb909",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-09-24T05:47:35Z",
+      "side": 1,
+      "message": "Adding a new control message type requires a strong justification...\n\nCan you give me more details about your requirements? In particular, isn\u0027t it sufficient to save screenshots as test output files?\nhttps://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Output-files\n",
+      "revId": "c221ae8029967b0bb79a16c76252ecac4c1cc100",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

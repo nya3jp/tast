@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a994e246_ee030d3c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1304283
+      },
+      "writtenOn": "2020-09-25T17:32:26Z",
+      "side": 1,
+      "message": "Wasn\u0027t sure the best place to put this utility, hopefully this is alright.",
+      "revId": "753bfda60ed49b7ea8868bdab51e5eac2feba2cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

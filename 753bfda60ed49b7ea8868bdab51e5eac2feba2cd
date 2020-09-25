@@ -164,6 +164,29 @@
     },
     {
       "key": {
+        "uuid": "0aec5d1d_e3d669df",
+        "filename": "src/chromiumos/tast/testing/util.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1192536
+      },
+      "writtenOn": "2020-09-25T21:53:36Z",
+      "side": 1,
+      "message": "I think this should be a parameter because most people probably want to send SIGKILL.  I used SIGINT for ippusb_bridge because I knew that it did a clean shutdown for that signal.  Hidehiko\u0027s idea of following up with a SIGKILL after a short time is good, too.",
+      "range": {
+        "startLine": 76,
+        "startChar": 45,
+        "endLine": 76,
+        "endChar": 51
+      },
+      "revId": "753bfda60ed49b7ea8868bdab51e5eac2feba2cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ab6e23f4_d082f044",
         "filename": "src/chromiumos/tast/testing/util.go",
         "patchSetId": 1

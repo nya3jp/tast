@@ -2,6 +2,40 @@
   "comments": [
     {
       "key": {
+        "uuid": "64c5ab3d_8ea5505c",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-09-25T20:26:25Z",
+      "side": 1,
+      "message": "What problem is this CL trying to fix? Could you file a bug?",
+      "revId": "753bfda60ed49b7ea8868bdab51e5eac2feba2cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "efe6d3d3_63fd7e0e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-09-25T20:26:25Z",
+      "side": 1,
+      "message": "And, please run tests.",
+      "revId": "753bfda60ed49b7ea8868bdab51e5eac2feba2cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "a994e246_ee030d3c",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 1
@@ -16,6 +50,120 @@
       "revId": "753bfda60ed49b7ea8868bdab51e5eac2feba2cd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bf13046b_b32e8e91",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-09-25T20:26:25Z",
+      "side": 1,
+      "message": "I don\u0027t think this is for tast repository, but for tast-tests repository. Please find my comment at L77, too.",
+      "revId": "753bfda60ed49b7ea8868bdab51e5eac2feba2cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fc2bcdbe_616173dd",
+        "filename": "src/chromiumos/tast/testing/util.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-09-25T20:26:25Z",
+      "side": 1,
+      "message": "This is not going to be used in Tast framework, right?\nCould you move to tast-tests repository, instead?",
+      "revId": "753bfda60ed49b7ea8868bdab51e5eac2feba2cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "aad1b0cb_2498fa55",
+        "filename": "src/chromiumos/tast/testing/util.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-09-25T20:26:25Z",
+      "side": 1,
+      "message": "Shouldn\u0027t be SIGKILL?\n\nOr, maybe retry with SIGKILL later to ensure the process is killed?",
+      "range": {
+        "startLine": 76,
+        "startChar": 45,
+        "endLine": 76,
+        "endChar": 51
+      },
+      "revId": "753bfda60ed49b7ea8868bdab51e5eac2feba2cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ab6e23f4_d082f044",
+        "filename": "src/chromiumos/tast/testing/util.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-09-25T20:26:25Z",
+      "side": 1,
+      "message": "Do you want to keep trying to kill remaining processes?",
+      "revId": "753bfda60ed49b7ea8868bdab51e5eac2feba2cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d3ff8bf3_61f41747",
+        "filename": "src/chromiumos/tast/testing/util.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-09-25T20:26:25Z",
+      "side": 1,
+      "message": "Maybe it should wait after the loop, otherwise the accumulation of the waiting time may become large.",
+      "revId": "753bfda60ed49b7ea8868bdab51e5eac2feba2cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8ce17498_653cab96",
+        "filename": "src/chromiumos/tast/testing/util.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-09-25T20:26:25Z",
+      "side": 1,
+      "message": "How to ensure the process is collected?\nTechnically, this has timing issue, because the PID may be reused later. Could you document?",
+      "range": {
+        "startLine": 82,
+        "startChar": 4,
+        "endLine": 86,
+        "endChar": 4
+      },
+      "revId": "753bfda60ed49b7ea8868bdab51e5eac2feba2cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
     }
   ]
 }

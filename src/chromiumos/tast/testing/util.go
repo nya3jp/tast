@@ -6,8 +6,12 @@ package testing
 
 import (
 	"context"
+	"syscall"
 	"time"
 
+	"github.com/shirou/gopsutil/process"
+
+	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/testingutil"
 )
 
@@ -50,4 +54,40 @@ func Poll(ctx context.Context, f func(context.Context) error, opts *PollOptions)
 // duration isn't long enough) or slower (when the duration is too long).
 func Sleep(ctx context.Context, d time.Duration) error {
 	return testingutil.Sleep(ctx, d)
+}
+
+// KillProcessByName sends SIGINT to the first process found with the given
+// name, and then waits for the process to exit before returning.
+//
+// If no process with that name is found, returns nil.
+// If killing the process fails, or if the process does not exit within 10
+// seconds, returns an error.
+func KillProcessByName(ctx context.Context, name string) error {
+	ps, err := process.Processes()
+	if err != nil {
+		return errors.Wrap(err, "failed to list running processes")
+	}
+
+	for _, p := range ps {
+		if processName, err := p.Name(); err != nil || processName != name {
+			continue
+		}
+
+		if err := syscall.Kill(int(p.Pid), syscall.SIGINT); err != nil && err != syscall.ESRCH {
+			return errors.Wrapf(err, "failed to kill %s", name)
+		}
+
+		// Wait for the process to exit.
+		if err := Poll(ctx, func(ctx context.Context) error {
+			// We need a fresh process.Process since it caches attributes.
+			// TODO(crbug.com/1131511): Clean up error handling here when gpsutil has been upreved.
+			if _, err := process.NewProcess(p.Pid); err == nil {
+				return errors.Errorf("pid %d is still running", p.Pid)
+			}
+			return nil
+		}, &PollOptions{Timeout: 10 * time.Second}); err != nil {
+			return errors.Wrapf(err, "failed to wait for %s to exit", name)
+		}
+	}
+	return nil
 }

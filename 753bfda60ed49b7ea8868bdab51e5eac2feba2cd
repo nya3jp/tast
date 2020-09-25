@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "085a68fe_6585fb76",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1304283
+      },
+      "writtenOn": "2020-09-25T20:41:22Z",
+      "side": 1,
+      "message": "+cc bmgordon who suggested that we add such a utility, since several different tests were using similar logic.",
+      "parentUuid": "64c5ab3d_8ea5505c",
+      "revId": "753bfda60ed49b7ea8868bdab51e5eac2feba2cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "efe6d3d3_63fd7e0e",
         "filename": "/COMMIT_MSG",
         "patchSetId": 1
@@ -30,6 +48,24 @@
       "writtenOn": "2020-09-25T20:26:25Z",
       "side": 1,
       "message": "And, please run tests.",
+      "revId": "753bfda60ed49b7ea8868bdab51e5eac2feba2cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7c2b1e7b_09f02e8e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1304283
+      },
+      "writtenOn": "2020-09-25T20:41:22Z",
+      "side": 1,
+      "message": "I will run tests, but this code doesn\u0027t have any; I\u0027m not sure where tests for library functions should live.",
+      "parentUuid": "efe6d3d3_63fd7e0e",
       "revId": "753bfda60ed49b7ea8868bdab51e5eac2feba2cd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
@@ -81,6 +117,24 @@
       "writtenOn": "2020-09-25T20:26:25Z",
       "side": 1,
       "message": "This is not going to be used in Tast framework, right?\nCould you move to tast-tests repository, instead?",
+      "revId": "753bfda60ed49b7ea8868bdab51e5eac2feba2cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ffaba73c_8995bef4",
+        "filename": "src/chromiumos/tast/testing/util.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1304283
+      },
+      "writtenOn": "2020-09-25T20:41:22Z",
+      "side": 1,
+      "message": "You\u0027re probably correct. Should I just create a new library within tast-tests/src/chromiumos/tast/common for the code?",
+      "parentUuid": "fc2bcdbe_616173dd",
       "revId": "753bfda60ed49b7ea8868bdab51e5eac2feba2cd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true

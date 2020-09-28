@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d033d3f1_91381d6d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 24
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-09-28T05:54:57Z",
+      "side": 1,
+      "message": "With this commandline, I have only confirmed that it calls CacheForDUT (but not actual download), because current fleet-tlw hasn\u0027t implemented it.",
+      "revId": "50fafaa422600b9e08cbf4388182b118c1ee3eaf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

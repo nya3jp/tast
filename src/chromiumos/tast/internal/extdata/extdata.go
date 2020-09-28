@@ -163,7 +163,7 @@ func prepareDownloads(ctx context.Context, dataDir, artifactsURL string, tests [
 		}
 		purgeableSet[destPath] = struct{}{}
 		return nil
-	}); err != nil {
+	}); err != nil && !os.IsNotExist(err) {
 		logging.ContextLog(ctx, "Failed to walk data directory: ", err)
 	}
 

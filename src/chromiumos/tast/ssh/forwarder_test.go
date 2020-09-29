@@ -17,14 +17,18 @@ func TestForwarder(t *testing.T) {
 	defer local.Close()
 
 	connFunc := func() (net.Conn, error) { return local, nil }
-	fwd, err := newForwarder("127.0.0.1:0", connFunc, nil)
+	listener, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatalf("Failed to listen a port: %s", err)
+	}
+	fwd, err := newForwarder(listener, connFunc, nil)
 	if err != nil {
 		t.Fatal("newForwarder failed:", err)
 	}
-	t.Log("Forwarder listening at", fwd.LocalAddr())
+	t.Log("Forwarder listening at", fwd.ListenAddr())
 	defer fwd.Close()
 
-	conn, err := net.Dial("tcp", fwd.LocalAddr().String())
+	conn, err := net.Dial("tcp", fwd.ListenAddr().String())
 	if err != nil {
 		t.Fatal("Dial failed:", err)
 	}
@@ -70,7 +74,11 @@ func TestForwarderError(t *testing.T) {
 	// Make the forwarder receive an error when it tries to open the remote connection,
 	connErr := errors.New("intentional error")
 	connFunc := func() (net.Conn, error) { return nil, connErr }
-	fwd, err := newForwarder("127.0.0.1:0", connFunc, errFunc)
+	listener, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatalf("Failed to listen a port: %s", err)
+	}
+	fwd, err := newForwarder(listener, connFunc, errFunc)
 	if err != nil {
 		t.Fatal("newForwarder failed:", err)
 	}
@@ -78,7 +86,7 @@ func TestForwarderError(t *testing.T) {
 
 	// We should be able to establish a connection to the forwarder's local address,
 	// but the error handler should receive the connection error.
-	conn, err := net.Dial("tcp", fwd.LocalAddr().String())
+	conn, err := net.Dial("tcp", fwd.ListenAddr().String())
 	if err != nil {
 		t.Fatal("Dial failed:", err)
 	}

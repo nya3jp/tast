@@ -105,13 +105,24 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []*EntityResu
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to %s: %v", cfg.Target, err), nil
 	}
 
+	if cfg.tlwServer != "" {
+		f, err := hst.ForwardRemoteToLocal("tcp", "127.0.0.1:0", cfg.tlwServer, func(e error) {
+			cfg.Logger.Logf("TLW server port forwarding failed: %v", e)
+		})
+		if err != nil {
+			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to set up remote-to-local port forwarding for TLW server: %v", err), nil
+		}
+		defer f.Close()
+		cfg.tlwServerForDUT = f.ListenAddr().String()
+	}
+
 	// Start an ephemeral devserver if necessary. Devservers are required in
 	// prepare (to download private bundles if -downloadprivatebundles if set)
 	// and in local (to download external data files).
 	// TODO(crbug.com/982181): Once we move the logic to download external data
 	// files to the prepare, try restricting the lifetime of the ephemeral
 	// devserver.
-	if cfg.runLocal && len(cfg.devservers) == 0 && cfg.useEphemeralDevserver {
+	if cfg.runLocal && len(cfg.devservers) == 0 && cfg.tlwServer == "" && cfg.useEphemeralDevserver {
 		if err := startEphemeralDevserver(ctx, hst, cfg); err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start ephemeral devserver: %v", err), nil
 		}
@@ -484,7 +495,7 @@ func downloadPrivateBundles(ctx context.Context, cfg *Config, hst *ssh.Conn) err
 			Mode: runner.DownloadPrivateBundlesMode,
 			DownloadPrivateBundles: &runner.DownloadPrivateBundlesArgs{
 				Devservers:        cfg.devservers,
-				TLWServer:         cfg.tlwServer,
+				TLWServer:         cfg.tlwServerForDUT,
 				DUTName:           cfg.Target,
 				BuildArtifactsURL: cfg.buildArtifactsURL,
 			},

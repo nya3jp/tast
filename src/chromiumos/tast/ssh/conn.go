@@ -290,10 +290,30 @@ func (s *Conn) ListenTCP(addr *net.TCPAddr) (net.Listener, error) {
 }
 
 // NewForwarder creates a new Forwarder that forwards connections from localAddr to remoteAddr using s.
+// Deprecated. Use ForwardLocalToRemote instead for naming consistency.
+func (s *Conn) NewForwarder(localAddr, remoteAddr string, errFunc func(error)) (*Forwarder, error) {
+	return s.ForwardLocalToRemote(localAddr, remoteAddr, errFunc)
+}
+
+// ForwardLocalToRemote creates a new Forwarder that forwards connections from localAddr to remoteAddr using s.
 // localAddr is passed to net.Listen and typically takes the form "host:port" or "ip:port".
 // remoteAddr uses the same format but is resolved by the remote SSH server.
 // If non-nil, errFunc will be invoked asynchronously on a goroutine with connection or forwarding errors.
-func (s *Conn) NewForwarder(localAddr, remoteAddr string, errFunc func(error)) (*Forwarder, error) {
+func (s *Conn) ForwardLocalToRemote(localAddr, remoteAddr string, errFunc func(error)) (*Forwarder, error) {
 	connFunc := func() (net.Conn, error) { return s.cl.Dial("tcp", remoteAddr) }
-	return newForwarder(localAddr, connFunc, errFunc)
+	l, err := net.Listen("tcp", localAddr)
+	if err != nil {
+		return nil, err
+	}
+	return newForwarder(&l, connFunc, errFunc)
+}
+
+// ForwardRemoteToLocal creates a new Forwarder that forwards connections from DUT to localaddr
+func (s *Conn) ForwardRemoteToLocal(remoteAddr *net.TCPAddr, localAddr string, errFunc func(error)) (*Forwarder, error) {
+	connFunc := func() (net.Conn, error) { return net.Dial("tcp", localAddr) }
+	l, err := s.ListenTCP(remoteAddr)
+	if err != nil {
+		return nil, err
+	}
+	return newForwarder(&l, connFunc, errFunc)
 }

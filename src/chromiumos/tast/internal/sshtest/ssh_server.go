@@ -16,6 +16,7 @@ import (
 	"log"
 	"net"
 	"os/exec"
+	"strconv"
 	"sync/atomic"
 	"syscall"
 	"time"
@@ -43,8 +44,9 @@ const (
 // Only "exec" requests and pings (using SSH_MSG_IGNORE) are supported.
 // "exec" requests are handled using a caller-supplied function.
 type SSHServer struct {
-	cfg      *ssh.ServerConfig
-	listener net.Listener
+	cfg         *ssh.ServerConfig
+	listener    net.Listener
+	fwdListener net.Listener // listener for reverse port forwarding
 
 	answerPings  bool          // if true, ping requests will be answered
 	rejectConns  int64         // number of connections to reject (used as counter)
@@ -138,13 +140,48 @@ func (s *SSHServer) Addr() net.Addr {
 	return s.listener.Addr()
 }
 
+func handleForward(sConn *ssh.ServerConn, src net.Conn, port uint32) error {
+	defer src.Close()
+
+	m := struct {
+		// RFC4254 SSH Connection Protocol  7.2. TCP/IP Forwarding Channels
+		// https://tools.ietf.org/html/rfc4254#section-7.2
+		addressThatWasConnected string
+		portThatWasConnected    uint32
+		originatorIPAddress     string
+		originatorPort          uint32
+	}{"127.0.0.1", port, "127.0.0.1", port}
+	fwdChannel, _, err := sConn.OpenChannel("forwarded-tcpip", ssh.Marshal(m))
+	if err != nil {
+		return err
+	}
+
+	ch := make(chan error)
+	go func() {
+		_, err := io.Copy(fwdChannel, src)
+		ch <- err
+	}()
+	go func() {
+		_, err := io.Copy(src, fwdChannel)
+		ch <- err
+	}()
+
+	var firstErr error
+	for i := 0; i < 2; i++ {
+		if err := <-ch; err != io.EOF && firstErr == nil {
+			firstErr = err
+		}
+	}
+	return firstErr
+}
+
 // handleConn services a new incoming connection on conn.
 func (s *SSHServer) handleConn(conn net.Conn) error {
 	if atomic.AddInt64(&s.rejectConns, -1) >= 0 {
 		return errors.New("intentionally rejecting")
 	}
 
-	_, chans, reqs, err := ssh.NewServerConn(conn, s.cfg)
+	sConn, chans, reqs, err := ssh.NewServerConn(conn, s.cfg)
 	if err != nil {
 		return fmt.Errorf("failed to handshake: %v", err)
 	}
@@ -160,10 +197,40 @@ func (s *SSHServer) handleConn(conn net.Conn) error {
 					req.Reply(false, nil)
 				}
 			case sshMsgTCPIPForward:
-				// Always respond with a fixed, arbitrary selected port number.
-				// golang.org/x/crypto/ssh ignores it anyway when requesting
-				// port forwarding with an explicit port number.
-				req.Reply(true, makeIntPayload(12345))
+				s.fwdListener, err = net.Listen("tcp", "127.0.0.1:0")
+				if err != nil {
+					log.Print("Failed to dial: ", err)
+					req.Reply(false, nil)
+					break
+				}
+				_, port, err := net.SplitHostPort(s.fwdListener.Addr().String())
+				if err != nil {
+					log.Print("Failed to split host and port: ", err)
+					req.Reply(false, nil)
+					break
+				}
+				p, err := strconv.Atoi(port)
+				if err != nil {
+					log.Print("Failed to parse port number: ", err)
+					req.Reply(false, nil)
+					break
+				}
+				intPort := uint32(p)
+
+				go func() {
+					for {
+						local, err := s.fwdListener.Accept()
+						if err != nil {
+							break
+						}
+						go func() {
+							if err := handleForward(sConn, local, intPort); err != nil {
+								log.Print("Error while handling port forwarding: ", err)
+							}
+						}()
+					}
+				}()
+				req.Reply(true, makeIntPayload(uint32(intPort)))
 			default:
 				req.Reply(false, nil)
 			}

@@ -6,7 +6,6 @@ package ssh
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net"
@@ -19,6 +18,8 @@ import (
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/agent"
 	"golang.org/x/crypto/ssh/terminal"
+
+	"chromiumos/tast/errors"
 )
 
 const (
@@ -290,10 +291,58 @@ func (s *Conn) ListenTCP(addr *net.TCPAddr) (net.Listener, error) {
 }
 
 // NewForwarder creates a new Forwarder that forwards connections from localAddr to remoteAddr using s.
+// Deprecated. Use ForwardLocalToRemote instead for naming consistency.
+func (s *Conn) NewForwarder(localAddr, remoteAddr string, errFunc func(error)) (*Forwarder, error) {
+	return s.ForwardLocalToRemote("tcp", localAddr, remoteAddr, errFunc)
+}
+
+func checkSupportedNetwork(network string) error {
+	allowList := map[string]struct{}{
+		"tcp":  {},
+		"tcp4": {},
+		"tcp6": {},
+	}
+	_, ok := allowList[network]
+	if !ok {
+		return fmt.Errorf("unsupported network type: %s", network)
+	}
+	return nil
+}
+
+// ForwardLocalToRemote creates a new Forwarder that forwards connections from localAddr to remoteAddr using s.
+// network is passed to net.Listen. Only TCP networks are supported.
 // localAddr is passed to net.Listen and typically takes the form "host:port" or "ip:port".
 // remoteAddr uses the same format but is resolved by the remote SSH server.
 // If non-nil, errFunc will be invoked asynchronously on a goroutine with connection or forwarding errors.
-func (s *Conn) NewForwarder(localAddr, remoteAddr string, errFunc func(error)) (*Forwarder, error) {
-	connFunc := func() (net.Conn, error) { return s.cl.Dial("tcp", remoteAddr) }
-	return newForwarder(localAddr, connFunc, errFunc)
+func (s *Conn) ForwardLocalToRemote(network, localAddr, remoteAddr string, errFunc func(error)) (*Forwarder, error) {
+	if err := checkSupportedNetwork(network); err != nil {
+		return nil, err
+	}
+	connFunc := func() (net.Conn, error) { return s.cl.Dial(network, remoteAddr) }
+	l, err := net.Listen(network, localAddr)
+	if err != nil {
+		return nil, err
+	}
+	return newForwarder(l, connFunc, errFunc)
+}
+
+// ForwardRemoteToLocal creates a new Forwarder that forwards connections from DUT to localaddr.
+// network is passed to net.Dial. Only TCP networks are supported.
+// remoteAddr is resolved by the remote SSH server and typically takes the form "host:port" or "ip:port".
+// localAddr takes the same format but is passed to net.Listen on the local machine.
+// If non-nil, errFunc will be invoked asynchronously on a goroutine with connection or forwarding errors.
+func (s *Conn) ForwardRemoteToLocal(network, remoteAddr, localAddr string, errFunc func(error)) (*Forwarder, error) {
+	if err := checkSupportedNetwork(network); err != nil {
+		return nil, err
+	}
+	ip, port, err := parseIPAddressAndPort(remoteAddr)
+	if err != nil {
+		return nil, err
+	}
+	connFunc := func() (net.Conn, error) { return net.Dial(network, localAddr) }
+	l, err := s.ListenTCP(&net.TCPAddr{IP: ip, Port: port})
+	if err != nil {
+		return nil, err
+	}
+	return newForwarder(l, connFunc, errFunc)
 }

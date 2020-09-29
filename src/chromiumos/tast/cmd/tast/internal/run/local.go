@@ -178,7 +178,7 @@ func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns
 				DataDir:           cfg.localDataDir,
 				OutDir:            cfg.localOutDir,
 				Devservers:        cfg.devservers,
-				TLWServer:         cfg.tlwServer,
+				TLWServer:         cfg.dutTLWAddress,
 				DUTName:           cfg.Target,
 				WaitUntilReady:    cfg.waitUntilReady,
 				HeartbeatInterval: heartbeatInterval,

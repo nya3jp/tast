@@ -297,3 +297,8 @@ func (s *Conn) NewForwarder(localAddr, remoteAddr string, errFunc func(error)) (
 	connFunc := func() (net.Conn, error) { return s.cl.Dial("tcp", remoteAddr) }
 	return newForwarder(localAddr, connFunc, errFunc)
 }
+
+// NewRemoteForwarder creates a new Forwarder that forwards connections from DUT to localaddr
+func (s *Conn) NewRemoteForwarder(localAddr string, errFunc func(error)) (*Forwarder, error) {
+	return newRemoteForwarder(s, localAddr, errFunc)
+}

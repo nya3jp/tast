@@ -97,7 +97,34 @@ func TestRunEphemeralDevserver(t *gotesting.T) {
 func TestRunDownloadPrivateBundles(t *gotesting.T) {
 	td := newLocalTestData(t)
 	defer td.close()
+	testRunDownloadProvateBundles(t, td)
+}
 
+func TestRunDownloadPrivateBundlesWithTLW(t *gotesting.T) {
+	const targetName = "dut001"
+	td := newLocalTestData(t)
+	defer td.close()
+
+	host, portStr, err := net.SplitHostPort(td.cfg.Target)
+	if err != nil {
+		t.Fatal("net.SplitHostPort: ", err)
+	}
+	port, err := strconv.ParseUint(portStr, 10, 32)
+	if err != nil {
+		t.Fatal("strconv.ParseUint: ", err)
+	}
+
+	// Start a TLW server that resolves "the_dut:22" to the real target addr/port.
+	stopFunc, tlwAddr := faketlw.StartWiringServer(t, faketlw.WithDUTPortMap(map[faketlw.NamePort]faketlw.NamePort{
+		{Name: targetName, Port: 22}: {Name: host, Port: int32(port)},
+	}))
+	defer stopFunc()
+
+	td.cfg.tlwServerForDUT = tlwAddr
+	testRunDownloadProvateBundles(t, td)
+}
+
+func testRunDownloadProvateBundles(t *gotesting.T, td *localTestData) {
 	td.cfg.runLocal = true
 	called := false
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
@@ -111,6 +138,7 @@ func TestRunDownloadPrivateBundles(t *gotesting.T) {
 				Devservers:        td.cfg.devservers,
 				DUTName:           td.cfg.Target,
 				BuildArtifactsURL: td.cfg.buildArtifactsURL,
+				TLWServer:         td.cfg.tlwServerForDUT,
 			}
 			if !reflect.DeepEqual(*args.DownloadPrivateBundles, exp) {
 				t.Errorf("got args %+v; want %+v", *args.DownloadPrivateBundles, exp)

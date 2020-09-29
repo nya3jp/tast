@@ -10,17 +10,19 @@ import (
 	"crypto/rsa"
 	"crypto/subtle"
 	"encoding/binary"
-	"errors"
 	"fmt"
 	"io"
 	"log"
 	"net"
 	"os/exec"
+	"strconv"
 	"sync/atomic"
 	"syscall"
 	"time"
 
 	"golang.org/x/crypto/ssh"
+
+	"chromiumos/tast/errors"
 )
 
 const (
@@ -43,8 +45,10 @@ const (
 // Only "exec" requests and pings (using SSH_MSG_IGNORE) are supported.
 // "exec" requests are handled using a caller-supplied function.
 type SSHServer struct {
-	cfg      *ssh.ServerConfig
-	listener net.Listener
+	cfg             *ssh.ServerConfig
+	listener        net.Listener
+	fwdListener     net.Listener // listener for reverse port forwarding
+	fwdListenerDone chan struct{}
 
 	answerPings  bool          // if true, ping requests will be answered
 	rejectConns  int64         // number of connections to reject (used as counter)
@@ -112,6 +116,13 @@ func NewSSHServer(pk *rsa.PublicKey, hk *rsa.PrivateKey, handler ExecHandler) (*
 
 // Close instructs the server to stop listening for connections.
 func (s *SSHServer) Close() error {
+	if s.fwdListenerDone != nil {
+		close(s.fwdListenerDone)
+		s.fwdListenerDone = nil
+	}
+	if s.fwdListener != nil {
+		s.fwdListener.Close()
+	}
 	return s.listener.Close()
 }
 
@@ -138,13 +149,68 @@ func (s *SSHServer) Addr() net.Addr {
 	return s.listener.Addr()
 }
 
+func splitHostPort(addr string) (string, uint32, error) {
+	host, port, err := net.SplitHostPort(addr)
+	if err != nil {
+		return "", 0, errors.Wrapf(err, "failed to split host and port")
+	}
+	p, err := strconv.Atoi(port)
+	if err != nil {
+		return "", 0, errors.Wrapf(err, "failed to parse port number")
+	}
+	return host, uint32(p), err
+}
+
+func handleForward(sConn *ssh.ServerConn, src net.Conn) error {
+	defer src.Close()
+
+	localHost, localPort, err := splitHostPort(src.LocalAddr().String())
+	if err != nil {
+		return err
+	}
+	remoteHost, remotePort, err := splitHostPort(src.RemoteAddr().String())
+	if err != nil {
+		return err
+	}
+	m := struct {
+		// RFC4254 SSH Connection Protocol  7.2. TCP/IP Forwarding Channels
+		// https://tools.ietf.org/html/rfc4254#section-7.2
+		addressThatWasConnected string
+		portThatWasConnected    uint32
+		originatorIPAddress     string
+		originatorPort          uint32
+	}{localHost, localPort, remoteHost, remotePort}
+	fwdChannel, _, err := sConn.OpenChannel("forwarded-tcpip", ssh.Marshal(m))
+	if err != nil {
+		return err
+	}
+
+	ch := make(chan error)
+	go func() {
+		_, err := io.Copy(fwdChannel, src)
+		ch <- err
+	}()
+	go func() {
+		_, err := io.Copy(src, fwdChannel)
+		ch <- err
+	}()
+
+	var firstErr error
+	for i := 0; i < 2; i++ {
+		if err := <-ch; err != io.EOF && firstErr == nil {
+			firstErr = err
+		}
+	}
+	return firstErr
+}
+
 // handleConn services a new incoming connection on conn.
 func (s *SSHServer) handleConn(conn net.Conn) error {
 	if atomic.AddInt64(&s.rejectConns, -1) >= 0 {
 		return errors.New("intentionally rejecting")
 	}
 
-	_, chans, reqs, err := ssh.NewServerConn(conn, s.cfg)
+	sConn, chans, reqs, err := ssh.NewServerConn(conn, s.cfg)
 	if err != nil {
 		return fmt.Errorf("failed to handshake: %v", err)
 	}
@@ -160,10 +226,31 @@ func (s *SSHServer) handleConn(conn net.Conn) error {
 					req.Reply(false, nil)
 				}
 			case sshMsgTCPIPForward:
-				// Always respond with a fixed, arbitrary selected port number.
-				// golang.org/x/crypto/ssh ignores it anyway when requesting
-				// port forwarding with an explicit port number.
-				req.Reply(true, makeIntPayload(12345))
+				var err error
+				s.fwdListener, err = net.Listen("tcp", "127.0.0.1:0")
+				if err != nil {
+					log.Print("Failed to listen: ", err)
+					req.Reply(false, nil)
+					break
+				}
+				s.fwdListenerDone = make(chan struct{})
+				port := s.fwdListener.Addr().(*net.TCPAddr).Port
+
+				go func() {
+					for {
+						local, err := s.fwdListener.Accept()
+						if err != nil {
+							log.Print("Error while accepting: ", err)
+							break
+						}
+						go func() {
+							if err := handleForward(sConn, local); err != nil {
+								log.Print("Error while handling port forwarding: ", err)
+							}
+						}()
+					}
+				}()
+				req.Reply(true, makeIntPayload(uint32(port)))
 			default:
 				req.Reply(false, nil)
 			}

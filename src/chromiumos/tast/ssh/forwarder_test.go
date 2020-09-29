@@ -17,14 +17,18 @@ func TestForwarder(t *testing.T) {
 	defer local.Close()
 
 	connFunc := func() (net.Conn, error) { return local, nil }
-	fwd, err := newForwarder("127.0.0.1:0", connFunc, nil)
+	listener, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatalf("Failed to listen a port: %s", err)
+	}
+	fwd, err := newForwarder(&listener, connFunc, nil)
 	if err != nil {
 		t.Fatal("newForwarder failed:", err)
 	}
-	t.Log("Forwarder listening at", fwd.LocalAddr())
+	t.Log("Forwarder listening at", fwd.ListenAddr())
 	defer fwd.Close()
 
-	conn, err := net.Dial("tcp", fwd.LocalAddr().String())
+	conn, err := net.Dial("tcp", fwd.ListenAddr().String())
 	if err != nil {
 		t.Fatal("Dial failed:", err)
 	}
@@ -70,7 +74,11 @@ func TestForwarderError(t *testing.T) {
 	// Make the forwarder receive an error when it tries to open the remote connection,
 	connErr := errors.New("intentional error")
 	connFunc := func() (net.Conn, error) { return nil, connErr }
-	fwd, err := newForwarder("127.0.0.1:0", connFunc, errFunc)
+	listener, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatalf("Failed to listen a port: %s", err)
+	}
+	fwd, err := newForwarder(&listener, connFunc, errFunc)
 	if err != nil {
 		t.Fatal("newForwarder failed:", err)
 	}
@@ -78,7 +86,7 @@ func TestForwarderError(t *testing.T) {
 
 	// We should be able to establish a connection to the forwarder's local address,
 	// but the error handler should receive the connection error.
-	conn, err := net.Dial("tcp", fwd.LocalAddr().String())
+	conn, err := net.Dial("tcp", fwd.ListenAddr().String())
 	if err != nil {
 		t.Fatal("Dial failed:", err)
 	}
@@ -91,5 +99,37 @@ func TestForwarderError(t *testing.T) {
 		}
 	case <-time.After(time.Minute):
 		t.Fatal("Didn't receive any error")
+	}
+}
+
+func TestParseIpAddressAndPort(t *testing.T) {
+	var testData = []struct {
+		input string
+		ip    net.IP
+		port  int
+	}{
+		{"127.0.0.1:0", net.IP{127, 0, 0, 1}, 0},
+		{"[::ffff]:12345", net.IP{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff}, 12345},
+		{"127.0.0:2", nil, 0},
+		{"127.0.0.1", nil, 0},
+	}
+	for _, td := range testData {
+		ip, port, err := parseIPAddressAndPort(td.input)
+		expectFail := td.ip == nil
+		if expectFail {
+			if err == nil {
+				t.Errorf("%q succeeded unexpectedly", td.input)
+			}
+			continue
+		}
+		if !ip.Equal(td.ip) {
+			t.Errorf("%q got %s want %s", td.input, ip, td.ip)
+		}
+		if port != td.port {
+			t.Errorf("%q got %d want %d", td.input, port, td.port)
+		}
+		if err != nil {
+			t.Errorf("%q failed unexpectedly: %s", td.input, err)
+		}
 	}
 }

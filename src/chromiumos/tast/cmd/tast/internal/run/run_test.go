@@ -111,9 +111,13 @@ func TestRunDownloadPrivateBundles(t *gotesting.T) {
 				Devservers:        td.cfg.devservers,
 				DUTName:           td.cfg.Target,
 				BuildArtifactsURL: td.cfg.buildArtifactsURL,
+				TLWServer:         td.cfg.dutTLWAddress,
 			}
 			if !reflect.DeepEqual(*args.DownloadPrivateBundles, exp) {
 				t.Errorf("got args %+v; want %+v", *args.DownloadPrivateBundles, exp)
+			}
+			if td.cfg.dutTLWAddress == "" {
+				t.Error("TLW address for DUT was not filled.")
 			}
 			called = true
 			json.NewEncoder(stdout).Encode(&runner.DownloadPrivateBundlesResult{})

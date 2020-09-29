@@ -105,6 +105,14 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []*EntityResu
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to %s: %v", cfg.Target, err), nil
 	}
 
+	f, err := hst.NewRemoteForwarder(cfg.tlwServer, func(e error) {
+		cfg.Logger.Logf("remote forwarder error: %s", e)
+	})
+	if err != nil {
+		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to forward a remote port: %v", err), nil
+	}
+	cfg.dutTLWAddress = f.LocalAddr().String()
+
 	// Start an ephemeral devserver if necessary. Devservers are required in
 	// prepare (to download private bundles if -downloadprivatebundles if set)
 	// and in local (to download external data files).
@@ -484,7 +492,7 @@ func downloadPrivateBundles(ctx context.Context, cfg *Config, hst *ssh.Conn) err
 			Mode: runner.DownloadPrivateBundlesMode,
 			DownloadPrivateBundles: &runner.DownloadPrivateBundlesArgs{
 				Devservers:        cfg.devservers,
-				TLWServer:         cfg.tlwServer,
+				TLWServer:         cfg.dutTLWAddress,
 				DUTName:           cfg.Target,
 				BuildArtifactsURL: cfg.buildArtifactsURL,
 			},

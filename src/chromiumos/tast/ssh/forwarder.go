@@ -20,7 +20,7 @@ import (
 //  [client] <- TCP -> [Forwarder] <- SSH -> [sshd] <- TCP -> [server]
 type Forwarder struct {
 	connFunc func() (net.Conn, error) // opens remote conns
-	ls       net.Listener             // listens for local conns
+	ls       net.Listener             // listens for the forwarded conns
 
 	errFunc func(error) // called when error is encountered while forwarding; may be nil
 	mutex   sync.Mutex  // protects errFunc
@@ -107,4 +107,40 @@ func (f *Forwarder) handleConn(local net.Conn) error {
 		}
 	}
 	return firstErr
+}
+
+// newRemoteForwarder returns a Forwarder that listens at a port of the remote
+// host being connected via ssh, and calls connFunc to open a local port in
+// response to each incoming connection. Traffic is copied between the local
+// and remote connections.
+//
+// localAddr is passed to net.Listen and typically takes the form "host:port" or "ip:port".
+// If non-nil, errFunc will be invoked asynchronously on a goroutine with connection or forwarding errors.
+func newRemoteForwarder(conn *Conn, localAddr string, connFunc func() (net.Conn, error), errFunc func(error)) (*Forwarder, error) {
+	f := Forwarder{
+		connFunc: connFunc,
+		errFunc:  errFunc,
+	}
+	var err error
+	f.ls, err = conn.ListenTCP(&net.TCPAddr{IP: net.IPv4(127, 0, 0, 1), Port: 0})
+	if err != nil {
+		return nil, err
+	}
+
+	// Start a goroutine that services the remote listener and launches
+	// a new goroutine to handle each incoming connection.
+	go func() {
+		for {
+			c, err := f.ls.Accept()
+			if err != nil {
+				break
+			}
+			if err := f.handleConn(c); err != nil && f.errFunc != nil {
+				f.mutex.Lock()
+				f.mutex.Unlock()
+			}
+		}
+	}()
+
+	return &f, nil
 }

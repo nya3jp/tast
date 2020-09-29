@@ -98,10 +98,22 @@ func runLocalTests(ctx context.Context, cfg *Config) ([]*EntityResult, error) {
 		}
 		// The ephemeral devserver uses the SSH connection to the DUT, so a new devserver needs
 		// to be created if a new SSH connection was established.
-		if cfg.ephemeralDevserver != nil && hst != oldHst {
-			if devErr := startEphemeralDevserver(ctx, hst, cfg); devErr != nil {
-				cfg.Logger.Log("Failed restarting ephemeral devserver: ", connErr)
-				return false
+		if hst != oldHst {
+			if cfg.ephemeralDevserver != nil {
+				if devErr := startEphemeralDevserver(ctx, hst, cfg); devErr != nil {
+					cfg.Logger.Log("Failed restarting ephemeral devserver: ", connErr)
+					return false
+				}
+			}
+			if cfg.tlwServerForDUT != "" {
+				f, err := hst.ForwardRemoteToLocal("tcp", "127.0.0.1:0", cfg.tlwServer, func(e error) {
+					cfg.Logger.Logf("remote forwarder error: %s", e)
+				})
+				if err != nil {
+					cfg.Logger.Log("Failed reconnecting remote port forwarding: ", err)
+					return false
+				}
+				cfg.tlwServerForDUT = f.ListenAddr().String()
 			}
 		}
 		return true
@@ -178,7 +190,7 @@ func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns
 				DataDir:           cfg.localDataDir,
 				OutDir:            cfg.localOutDir,
 				Devservers:        cfg.devservers,
-				TLWServer:         cfg.tlwServer,
+				TLWServer:         cfg.tlwServerForDUT,
 				DUTName:           cfg.Target,
 				WaitUntilReady:    cfg.waitUntilReady,
 				HeartbeatInterval: heartbeatInterval,

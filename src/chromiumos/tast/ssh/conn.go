@@ -19,6 +19,8 @@ import (
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/agent"
 	"golang.org/x/crypto/ssh/terminal"
+
+	tasterrors "chromiumos/tast/errors"
 )
 
 const (
@@ -290,10 +292,69 @@ func (s *Conn) ListenTCP(addr *net.TCPAddr) (net.Listener, error) {
 }
 
 // NewForwarder creates a new Forwarder that forwards connections from localAddr to remoteAddr using s.
+// Deprecated. Use ForwardLocalToRemote instead for naming consistency.
+func (s *Conn) NewForwarder(localAddr, remoteAddr string, errFunc func(error)) (*Forwarder, error) {
+	return s.ForwardLocalToRemote("tcp", localAddr, remoteAddr, errFunc)
+}
+
+func checkSupportedProtocol(protocol string) error {
+	allowList := map[string]struct{}{
+		"tcp":  struct{}{},
+		"tcp4": struct{}{},
+		"tcp6": struct{}{},
+	}
+	_, ok := allowList[protocol]
+	if !ok {
+		return fmt.Errorf("unsupported protocol type: %s", protocol)
+	}
+	return nil
+}
+
+// ForwardLocalToRemote creates a new Forwarder that forwards connections from localAddr to remoteAddr using s.
 // localAddr is passed to net.Listen and typically takes the form "host:port" or "ip:port".
 // remoteAddr uses the same format but is resolved by the remote SSH server.
 // If non-nil, errFunc will be invoked asynchronously on a goroutine with connection or forwarding errors.
-func (s *Conn) NewForwarder(localAddr, remoteAddr string, errFunc func(error)) (*Forwarder, error) {
-	connFunc := func() (net.Conn, error) { return s.cl.Dial("tcp", remoteAddr) }
-	return newForwarder(localAddr, connFunc, errFunc)
+func (s *Conn) ForwardLocalToRemote(protocol, localAddr, remoteAddr string, errFunc func(error)) (*Forwarder, error) {
+	if err := checkSupportedProtocol(protocol); err != nil {
+		return nil, err
+	}
+	connFunc := func() (net.Conn, error) { return s.cl.Dial(protocol, remoteAddr) }
+	l, err := net.Listen("tcp", localAddr)
+	if err != nil {
+		return nil, err
+	}
+	return newForwarder(l, connFunc, errFunc)
+}
+
+func parseIPAddressAndPort(s string) (net.IP, int, error) {
+	host, portStr, err := net.SplitHostPort(s)
+	if err != nil {
+		return nil, 0, tasterrors.Wrapf(err, "invalid host/port: %s", s)
+	}
+	ip := net.ParseIP(host)
+	if ip == nil {
+		return nil, 0, fmt.Errorf("invalid IP address in host: %s", host)
+	}
+	p, err := strconv.ParseInt(portStr, 10, 0)
+	if err != nil {
+		return nil, 0, tasterrors.Wrapf(err, "invalid port number: %s", portStr)
+	}
+	return ip, int(p), nil
+}
+
+// ForwardRemoteToLocal creates a new Forwarder that forwards connections from DUT to localaddr
+func (s *Conn) ForwardRemoteToLocal(protocol, remoteAddr, localAddr string, errFunc func(error)) (*Forwarder, error) {
+	if err := checkSupportedProtocol(protocol); err != nil {
+		return nil, err
+	}
+	ip, port, err := parseIPAddressAndPort(remoteAddr)
+	if err != nil {
+		return nil, err
+	}
+	connFunc := func() (net.Conn, error) { return net.Dial(protocol, localAddr) }
+	l, err := s.ListenTCP(&net.TCPAddr{IP: ip, Port: port})
+	if err != nil {
+		return nil, err
+	}
+	return newForwarder(l, connFunc, errFunc)
 }

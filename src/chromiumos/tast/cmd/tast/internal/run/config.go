@@ -138,6 +138,7 @@ type Config struct {
 	hardwareFeatures   *configpb.HardwareFeatures // hardware features of the DUT.
 	osVersion          string                     // Chrome OS Version
 	tlwConn            *grpc.ClientConn           // TLW gRPC service connection
+	tlwServerForDUT    string                     // TLW address accessible from DUT.
 }
 
 // NewConfig returns a new configuration for executing test runners in the supplied mode.

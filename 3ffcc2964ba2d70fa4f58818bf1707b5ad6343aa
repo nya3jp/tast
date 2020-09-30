@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "72993b3d_c34b828c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 12
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-09-30T06:23:05Z",
+      "side": 1,
+      "message": "I added allowList for varDeps. PTAL.",
+      "revId": "3ffcc2964ba2d70fa4f58818bf1707b5ad6343aa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

@@ -244,6 +244,10 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 				Desc: `Measures WiFi performance using Wificell fixture nightly.`,
 			},
 			{
+				Name: "wificell_stress",
+				Desc: `Stress tests WiFi functionalities using Wificell fixture.`,
+			},
+			{
 				Name: "wificell_unstable",
 				Desc: `Indicates that this test is yet to be verified as stable.`,
 			},

@@ -406,7 +406,7 @@ func (p *prePlan) run(ctx context.Context, out OutputStream, dl *downloader) err
 		tout := newEntityOutputStream(out, t.EntityInfo())
 		precfg := &preConfig{
 			ctx:   pctx,
-			close: p.pre != nil && i == len(p.tests)-1,
+			close: p.pre != nil && i >= 0,
 		}
 		if err := runTest(ctx, t, tout, p.pcfg, precfg, stack, dl); err != nil {
 			return err

@@ -38,6 +38,9 @@ func TestModel(t *testing.T) {
 		{"eve", true},
 		{"kevin", true},
 		{"nocturne", false},
+		{"eve_signed", true},
+		{"kevin_signed", true},
+		{"nocturne_signed", false},
 	} {
 		verifyCondition(
 			t, c,
@@ -63,6 +66,9 @@ func TestSkipOnModel(t *testing.T) {
 		{"eve", false},
 		{"kevin", false},
 		{"nocturne", true},
+		{"eve_signed", false},
+		{"kevin_signed", false},
+		{"nocturne_signed", true},
 	} {
 		verifyCondition(
 			t, c,

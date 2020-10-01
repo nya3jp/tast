@@ -37,7 +37,8 @@ func modelListed(dc *device.Config, names ...string) (bool, error) {
 	if dc == nil || dc.Id == nil || dc.Id.ModelId == nil {
 		return false, errors.New("device.Config does not have ModelId")
 	}
-	modelID := strings.ToLower(dc.Id.ModelId.Value)
+	// Remove the suffix _signed since it is not a part of a model name.
+	modelID := strings.TrimSuffix(strings.ToLower(dc.Id.ModelId.Value), "_signed")
 	for _, name := range names {
 		if name == modelID {
 			return true, nil
@@ -327,12 +328,12 @@ func SupportsNV12Overlays() Condition {
 // Since there are no way to get whether an EC supports force discharging on a device or not,
 // list up the models known not to support force discharging here.
 var modelsWithoutForceDischargeSupport = []string{
-	"arcada_signed",
+	"arcada",
 	"celes",
 	"drallion",
 	"drallion360",
 	"lulu",
-	"sarien_signed",
+	"sarien",
 }
 
 // ForceDischarge returns a hardware dependency condition that is satisfied iff the DUT

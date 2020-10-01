@@ -395,7 +395,7 @@ func TestRunTestsMissingDeps(t *gotesting.T) {
 	}
 }
 
-func TestRunTestsSkipTestWithPrecondition(t *gotesting.T) {
+func disabledTestRunTestsSkipTestWithPrecondition(t *gotesting.T) {
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
 

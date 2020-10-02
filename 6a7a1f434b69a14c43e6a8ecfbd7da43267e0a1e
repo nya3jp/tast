@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7c84610d_36097266",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 13
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-02T05:38:01Z",
+      "side": 1,
+      "message": "Sorry, I overlooked the review request. LGTM.\n",
+      "revId": "6a7a1f434b69a14c43e6a8ecfbd7da43267e0a1e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "35c31eaf_ddd3ee70",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-10-02T02:00:01Z",
+      "side": 1,
+      "message": "The code LG.\n\nCould you add test entries in hwdep_test.go in the same directory?",
+      "revId": "a95f15e5aa3a3c2eef4597aa22924572ed1fca5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6039aba5_794f9d80",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 28
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-02T04:04:37Z",
+      "side": 1,
+      "message": "I\u0027m sorry that I overlooked this earlier, but testing.CloudStorage also constructs PseudoClient/RealClient in newClientForURLs.\n\ntesting.CloudStorage is an object available to Tast tests that allows downloading files from GCS. It\u0027s used by a few tests to download huge files from GCS during tests.\n\nWe have to modify CloudStorage to support TLW as well. Let us do it in a separate change.",
+      "revId": "b7f4dea4cdedf1e71ebc8fe80fd9d8b0060a4cdc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "086c54da_21ed82fd",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 28
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-02T04:04:37Z",
+      "side": 1,
+      "message": "Nice! LGTM with nits.\n",
+      "revId": "b7f4dea4cdedf1e71ebc8fe80fd9d8b0060a4cdc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "61cd1505_1765fe98",
+        "filename": "src/chromiumos/tast/internal/devserver/devserver.go",
+        "patchSetId": 28
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-02T04:04:37Z",
+      "side": 1,
+      "message": "nit: I guess it\u0027s simpler to move this inside the next if clause.",
+      "range": {
+        "startLine": 21,
+        "startChar": 1,
+        "endLine": 23,
+        "endChar": 2
+      },
+      "revId": "b7f4dea4cdedf1e71ebc8fe80fd9d8b0060a4cdc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "205a4df9_c7c927d5",
+        "filename": "src/chromiumos/tast/internal/devserver/fake.go",
+        "patchSetId": 28
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-02T04:04:37Z",
+      "side": 1,
+      "message": "Can you say \"TearDown does nothing\"?\n\nIn this way we can describe that calling TearDown is not necessary for FakeClient, and we don\u0027t need to call TearDown in the case of FakeClient (e.g. unit tests for FakeClient).\n\nSame applies for PseudoClient/RealClient.",
+      "range": {
+        "startLine": 27,
+        "startChar": 3,
+        "endLine": 27,
+        "endChar": 39
+      },
+      "revId": "b7f4dea4cdedf1e71ebc8fe80fd9d8b0060a4cdc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    }
+  ]
+}

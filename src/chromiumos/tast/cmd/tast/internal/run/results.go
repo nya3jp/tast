@@ -305,7 +305,11 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.Entit
 		FinalOutDir:        finalOutDir,
 	}
 	r.currents[msg.Info.Name] = state
-	r.results = append(r.results, &state.result)
+	// Do not include fixture results in the output.
+	// TODO(crbug.com/1135078): Consider reporting fixture results.
+	if state.result.Type == testing.EntityTest {
+		r.results = append(r.results, &state.result)
+	}
 
 	// Write a partial EntityResult object to record that we started the test.
 	var err error

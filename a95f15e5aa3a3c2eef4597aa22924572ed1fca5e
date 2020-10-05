@@ -16,6 +16,24 @@
       "revId": "a95f15e5aa3a3c2eef4597aa22924572ed1fca5e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "92bb81af_53b48757",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1412469
+      },
+      "writtenOn": "2020-10-05T05:08:13Z",
+      "side": 1,
+      "message": "Added test cases for [SkipOn]Model. Thanks for the advice!",
+      "parentUuid": "35c31eaf_ddd3ee70",
+      "revId": "a95f15e5aa3a3c2eef4597aa22924572ed1fca5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     }
   ]
 }

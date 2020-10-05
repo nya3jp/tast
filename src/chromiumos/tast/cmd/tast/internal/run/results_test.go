@@ -272,21 +272,7 @@ func TestReadTestOutputSameEntity(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	expRes := []*EntityResult{
-		{
-			EntityInfo: testing.EntityInfo{Name: fixtName, Type: testing.EntityFixture},
-			Start:      epoch,
-			End:        epoch,
-			OutDir:     filepath.Join(cfg.ResDir, testLogsDir, fixtName),
-		},
-		{
-			EntityInfo: testing.EntityInfo{Name: fixtName, Type: testing.EntityFixture},
-			Start:      epoch,
-			End:        epoch,
-			OutDir:     filepath.Join(cfg.ResDir, testLogsDir, fixtName+".1"),
-		},
-	}
-	var actRes []*EntityResult
+	var expRes, actRes []*EntityResult
 	if err := json.Unmarshal([]byte(files[resultsFilename]), &actRes); err != nil {
 		t.Errorf("Failed to decode %v: %v", resultsFilename, err)
 	}
@@ -361,25 +347,7 @@ func TestReadTestOutputConcurrentEntity(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	expRes := []*EntityResult{
-		{
-			EntityInfo: testing.EntityInfo{Name: fixt1Name, Type: testing.EntityFixture},
-			Start:      epoch,
-			End:        epoch,
-			OutDir:     filepath.Join(cfg.ResDir, testLogsDir, fixt1Name),
-		},
-		{
-			EntityInfo: testing.EntityInfo{Name: fixt2Name, Type: testing.EntityFixture},
-			Start:      epoch,
-			End:        epoch,
-			OutDir:     filepath.Join(cfg.ResDir, testLogsDir, fixt2Name),
-			Errors: []EntityError{{
-				Time:  epoch,
-				Error: testing.Error{Reason: fixt2ErrText},
-			}},
-		},
-	}
-	var actRes []*EntityResult
+	var expRes, actRes []*EntityResult
 	if err := json.Unmarshal([]byte(files[resultsFilename]), &actRes); err != nil {
 		t.Errorf("Failed to decode %v: %v", resultsFilename, err)
 	}

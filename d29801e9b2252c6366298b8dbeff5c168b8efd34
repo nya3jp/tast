@@ -1,6 +1,7 @@
 {
   "comments": [
     {
+      "unresolved": false,
       "key": {
         "uuid": "bf87f3f6_6f7ccd0b",
         "filename": "/PATCHSET_LEVEL",
@@ -14,8 +15,76 @@
       "side": 1,
       "message": "Thank you for review, and sorry for delayed update. PTAL.",
       "revId": "d29801e9b2252c6366298b8dbeff5c168b8efd34",
-      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
-      "unresolved": false
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "17f5e3b8_19293e6e",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 205,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-06T07:54:11Z",
+      "side": 1,
+      "message": "A feature can depend on board names too.",
+      "range": {
+        "startLine": 205,
+        "startChar": 0,
+        "endLine": 205,
+        "endChar": 3
+      },
+      "revId": "d29801e9b2252c6366298b8dbeff5c168b8efd34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7d2dbfdb_a7bed4eb",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 406,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-06T07:54:11Z",
+      "side": 1,
+      "message": "typo: expressions",
+      "range": {
+        "startLine": 406,
+        "startChar": 8,
+        "endLine": 406,
+        "endChar": 19
+      },
+      "revId": "d29801e9b2252c6366298b8dbeff5c168b8efd34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "06fec969_eb8b05f9",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 407,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-06T07:54:11Z",
+      "side": 1,
+      "message": "I wonder if we need the default value. Can we just set \"/etc/lsb-release\" in local_test_runner/main.go, and treat empty LSBReleaseFile as not supporting board names in software feature expressions?\n\nI\u0027m particularly afraid of unintentionally reading /etc/lsb-release in unit tests. It might be not the case for current tests, but it sounds easy to forget.",
+      "range": {
+        "startLine": 406,
+        "startChar": 51,
+        "endLine": 407,
+        "endChar": 64
+      },
+      "revId": "d29801e9b2252c6366298b8dbeff5c168b8efd34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

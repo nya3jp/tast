@@ -42,6 +42,30 @@
     },
     {
       "key": {
+        "uuid": "8094a6b1_201bf6c0",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-10-06T03:00:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "24e9fbd4_3223889c",
+      "range": {
+        "startLine": 190,
+        "startChar": 27,
+        "endLine": 190,
+        "endChar": 36
+      },
+      "revId": "c3b16e0eb26f72c4db7e2b9057e289e1f4d7f652",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "dc265f4a_bd69a70e",
         "filename": "docs/test_dependencies.md",
         "patchSetId": 1
@@ -56,6 +80,24 @@
       "revId": "c3b16e0eb26f72c4db7e2b9057e289e1f4d7f652",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6e6dbee8_468563fa",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-10-06T03:00:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dc265f4a_bd69a70e",
+      "revId": "c3b16e0eb26f72c4db7e2b9057e289e1f4d7f652",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -82,6 +124,30 @@
     },
     {
       "key": {
+        "uuid": "f6527f2c_fd35803f",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 218,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-10-06T03:00:02Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "14aca1ee_5ee8b15c",
+      "range": {
+        "startLine": 217,
+        "startChar": 0,
+        "endLine": 218,
+        "endChar": 63
+      },
+      "revId": "c3b16e0eb26f72c4db7e2b9057e289e1f4d7f652",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b7cba26a_a7996446",
         "filename": "docs/test_dependencies.md",
         "patchSetId": 1
@@ -102,6 +168,30 @@
       "revId": "c3b16e0eb26f72c4db7e2b9057e289e1f4d7f652",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "565ad52a_b61ff2a5",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-10-06T03:00:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b7cba26a_a7996446",
+      "range": {
+        "startLine": 221,
+        "startChar": 0,
+        "endLine": 221,
+        "endChar": 38
+      },
+      "revId": "c3b16e0eb26f72c4db7e2b9057e289e1f4d7f652",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
     },
     {
       "key": {
@@ -128,6 +218,30 @@
     },
     {
       "key": {
+        "uuid": "413f3c66_5839b24f",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 394,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-10-06T03:00:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1dbd487e_407c7e99",
+      "range": {
+        "startLine": 394,
+        "startChar": 44,
+        "endLine": 394,
+        "endChar": 54
+      },
+      "revId": "c3b16e0eb26f72c4db7e2b9057e289e1f4d7f652",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3b9cf78a_34e4100e",
         "filename": "src/chromiumos/tast/internal/runner/args.go",
         "patchSetId": 1
@@ -151,6 +265,30 @@
     },
     {
       "key": {
+        "uuid": "d9fdc479_6ea35781",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 396,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-10-06T03:00:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3b9cf78a_34e4100e",
+      "range": {
+        "startLine": 396,
+        "startChar": 31,
+        "endLine": 396,
+        "endChar": 35
+      },
+      "revId": "c3b16e0eb26f72c4db7e2b9057e289e1f4d7f652",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "53e8403b_f61a6f08",
         "filename": "src/chromiumos/tast/internal/runner/features.go",
         "patchSetId": 1
@@ -162,6 +300,30 @@
       "writtenOn": "2020-09-17T02:43:52Z",
       "side": 1,
       "message": "lsb-release\n\nThat said, can you define a common constant in the lsbrelease package?",
+      "range": {
+        "startLine": 88,
+        "startChar": 25,
+        "endLine": 88,
+        "endChar": 35
+      },
+      "revId": "c3b16e0eb26f72c4db7e2b9057e289e1f4d7f652",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4f527d59_5a43ba15",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-10-06T03:00:02Z",
+      "side": 1,
+      "message": "Good catch. Done.",
+      "parentUuid": "53e8403b_f61a6f08",
       "range": {
         "startLine": 88,
         "startChar": 25,

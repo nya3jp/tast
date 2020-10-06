@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bf87f3f6_6f7ccd0b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-10-06T03:00:02Z",
+      "side": 1,
+      "message": "Thank you for review, and sorry for delayed update. PTAL.",
+      "revId": "d29801e9b2252c6366298b8dbeff5c168b8efd34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
+      "unresolved": false
+    }
+  ]
+}

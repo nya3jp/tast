@@ -193,8 +193,9 @@ func TestRPCForwardCurrentEntity(t *gotesting.T) {
 	}
 
 	callCtx := testing.WithCurrentEntity(ctx, &testing.CurrentEntity{
-		ServiceDeps:  []string{pingServiceName},
-		SoftwareDeps: expectedDeps,
+		ServiceDeps:     []string{pingServiceName},
+		HasSoftwareDeps: true,
+		SoftwareDeps:    expectedDeps,
 	})
 	if _, err := pp.Client.Ping(callCtx, &PingRequest{}); err != nil {
 		t.Error("Ping failed: ", err)

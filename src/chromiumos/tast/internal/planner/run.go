@@ -397,8 +397,9 @@ func (p *prePlan) run(ctx context.Context, out OutputStream, dl *downloader) err
 	// Create a precondition-scoped context.
 	ec := &testing.CurrentEntity{
 		// OutDir is not available for a precondition-scoped context.
-		SoftwareDeps: append([]string(nil), p.tests[0].SoftwareDeps...),
-		ServiceDeps:  append([]string(nil), p.tests[0].ServiceDeps...),
+		HasSoftwareDeps: true,
+		SoftwareDeps:    append([]string(nil), p.tests[0].SoftwareDeps...),
+		ServiceDeps:     append([]string(nil), p.tests[0].ServiceDeps...),
 	}
 	plog := newPreLogger(out)
 	pctx, cancel := context.WithCancel(testing.NewContext(ctx, ec, plog.Log))

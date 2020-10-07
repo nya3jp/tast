@@ -258,9 +258,10 @@ type TestEntityRoot struct {
 // NewTestEntityRoot returns a new TestEntityRoot object.
 func NewTestEntityRoot(test *TestInstance, cfg *RuntimeConfig, out OutputStream) *TestEntityRoot {
 	ce := &CurrentEntity{
-		OutDir:       cfg.OutDir,
-		SoftwareDeps: test.SoftwareDeps,
-		ServiceDeps:  test.ServiceDeps,
+		OutDir:          cfg.OutDir,
+		HasSoftwareDeps: true,
+		SoftwareDeps:    test.SoftwareDeps,
+		ServiceDeps:     test.ServiceDeps,
 	}
 	return &TestEntityRoot{
 		entityRoot: NewEntityRoot(ce, cfg, out),

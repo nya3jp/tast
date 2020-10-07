@@ -45,7 +45,14 @@ func TestContextSoftwareDeps(t *testing.T) {
 		t.Error("ContextSoftwareDeps unexpectedly succeeded for context without CurrentEntity")
 	}
 
-	ec := &CurrentEntity{SoftwareDeps: testSoftwareDeps}
+	if _, ok := ContextSoftwareDeps(WithCurrentEntity(ctx, &CurrentEntity{})); ok {
+		t.Error("ContextSoftwareDeps unexpectedly succeeded for context without SoftwareDeps")
+	}
+
+	ec := &CurrentEntity{
+		HasSoftwareDeps: true,
+		SoftwareDeps:    testSoftwareDeps,
+	}
 	ctx = WithCurrentEntity(ctx, ec)
 
 	if softwareDeps, ok := ContextSoftwareDeps(ctx); !ok {

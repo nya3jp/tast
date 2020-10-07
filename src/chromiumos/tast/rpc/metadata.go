@@ -6,7 +6,6 @@ package rpc
 
 import (
 	"context"
-	"errors"
 
 	"google.golang.org/grpc/metadata"
 
@@ -15,29 +14,33 @@ import (
 
 // Keys of metadata.MD. Allowed characters are [a-z0-9._-].
 const (
-	metadataSoftwareDeps = "tast-testcontext-softwaredeps"
-	metadataTiming       = "tast-timing"
+	metadataSoftwareDeps    = "tast-testcontext-softwaredeps"
+	metadataHasSoftwareDeps = "tast-testcontext-hassoftwaredeps"
+	metadataTiming          = "tast-timing"
 )
 
 // outgoingMetadata extracts CurrentEntity from ctx and converts it to metadata.MD.
 // It is called on gRPC clients to forward CurrentEntity over gRPC.
-func outgoingMetadata(ctx context.Context) (metadata.MD, error) {
-	swDeps, ok := testing.ContextSoftwareDeps(ctx)
-	if !ok {
-		return nil, errors.New("SoftwareDeps not available (using a wrong context?)")
-	}
-	return metadata.MD{
+func outgoingMetadata(ctx context.Context) metadata.MD {
+	swDeps, hasSwDeps := testing.ContextSoftwareDeps(ctx)
+	md := metadata.MD{
 		metadataSoftwareDeps: swDeps,
-	}, nil
+	}
+	if hasSwDeps {
+		md[metadataHasSoftwareDeps] = []string{"1"}
+	}
+	return md
 }
 
 // incomingCurrentContext creates CurrentEntity from metadata.MD.
 // It is called on gRPC servers to forward CurrentEntity over gRPC.
 func incomingCurrentContext(md metadata.MD) *testing.CurrentEntity {
+	hasSoftwareDeps := len(md[metadataHasSoftwareDeps]) > 0
 	softwareDeps := md[metadataSoftwareDeps]
 	return &testing.CurrentEntity{
 		// TODO(crbug.com/969627): Support OutDir.
-		SoftwareDeps: softwareDeps,
+		HasSoftwareDeps: hasSoftwareDeps,
+		SoftwareDeps:    softwareDeps,
 		// ServiceDeps is not forwarded.
 	}
 }

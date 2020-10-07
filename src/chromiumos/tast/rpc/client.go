@@ -146,10 +146,7 @@ func clientOpts() []grpc.DialOption {
 			return nil, status.Errorf(codes.FailedPrecondition, "refusing to call %s because it is not declared in ServiceDeps", method)
 		}
 
-		md, err := outgoingMetadata(ctx)
-		if err != nil {
-			return nil, status.Errorf(codes.FailedPrecondition, "refusing to call %s: %v", method, err)
-		}
+		md := outgoingMetadata(ctx)
 		return metadata.NewOutgoingContext(ctx, md), nil
 	}
 

@@ -20,11 +20,14 @@ const currentEntityKey contextKeyType = "CurrentEntity"
 // and testing.Context* functions. Each member should have strong reason to be
 // accessible without testing.*State.
 type CurrentEntity struct {
-	// OutDir is a directory where the current test can save output files.
+	// OutDir is a directory where the current entity can save output files.
 	OutDir string
-	// SoftwareDeps is a list of software dependencies declared in the current test.
+	// HasSoftwareDeps indicates if software dependencies are available for the
+	// current entity. It is true only for tests.
+	HasSoftwareDeps bool
+	// SoftwareDeps is a list of software dependencies declared in the current entity.
 	SoftwareDeps []string
-	// ServiceDeps is a list of service dependencies declared in the current test.
+	// ServiceDeps is a list of service dependencies declared in the current entity.
 	ServiceDeps []string
 }
 
@@ -50,6 +53,9 @@ func ContextOutDir(ctx context.Context) (dir string, ok bool) {
 func ContextSoftwareDeps(ctx context.Context) ([]string, bool) {
 	ec, ok := ctx.Value(currentEntityKey).(*CurrentEntity)
 	if !ok {
+		return nil, false
+	}
+	if !ec.HasSoftwareDeps {
 		return nil, false
 	}
 	return append([]string(nil), ec.SoftwareDeps...), true

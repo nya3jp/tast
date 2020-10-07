@@ -16,6 +16,46 @@
       "message": "PTAL.",
       "revId": "9cc78eb14428a5dc751df271be8e892ee15e7209",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5a495730_7c11a2bc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-07T03:19:10Z",
+      "side": 1,
+      "message": "Thanks! LGTM with one small suggestion for warning messages.",
+      "revId": "9cc78eb14428a5dc751df271be8e892ee15e7209",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "eac75bb3_5061d157",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-07T03:19:10Z",
+      "side": 1,
+      "message": "To clarify the consequence of this, how about adding a bit more of context:\n\n lsb-release path is not specified; board names in software feature definitions will not work\n\nI recommend similar messages for other warnings below.",
+      "range": {
+        "startLine": 88,
+        "startChar": 31,
+        "endLine": 88,
+        "endChar": 66
+      },
+      "revId": "9cc78eb14428a5dc751df271be8e892ee15e7209",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

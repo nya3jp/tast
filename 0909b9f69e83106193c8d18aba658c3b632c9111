@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "54663fb0_de58a8f8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1271173
+      },
+      "writtenOn": "2020-10-07T09:52:03Z",
+      "side": 1,
+      "message": "Hi Tast Reviewer:\nThe CL will be used in crrev.com/c/2454953.",
+      "revId": "0909b9f69e83106193c8d18aba658c3b632c9111",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

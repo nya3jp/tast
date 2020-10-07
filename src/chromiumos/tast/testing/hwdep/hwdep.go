@@ -383,3 +383,13 @@ func NoForceDischarge() Condition {
 		return nil
 	}}
 }
+
+// X86 returns a hardware dependency condition matching x86 ABI compatible platform.
+func X86() Condition {
+	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
+		if f.DC.Cpu == device.Config_X86 || f.DC.Cpu == device.Config_X86_64 {
+			return nil
+		}
+		return errors.New("DUT's CPU is not x86 compatible")
+	}}
+}

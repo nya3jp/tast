@@ -73,23 +73,32 @@ const (
 	preFailPrefix = "[Precondition failure] " // the prefix used then a precondition failure is logged.
 )
 
-// OutputStream is an interface to report streamed outputs of an entity.
-// Note that planner.OutputStream is for multiple entities in contrast.
-type OutputStream interface {
-	// Log reports an informational log message from an entity.
-	Log(msg string) error
-
-	// Error reports an error from by an entity. An entity that reported one or
-	// more errors should be considered failure.
-	Error(e *Error) error
-}
-
-// Error describes an error encountered while running an entity.
-type Error struct {
-	Reason string `json:"reason"`
-	File   string `json:"file"`
-	Line   int    `json:"line"`
-	Stack  string `json:"stack"`
+// RuntimeConfig contains details about how an individual test should be run.
+type RuntimeConfig struct {
+	// DataDir is the directory in which the test's data files are located.
+	DataDir string
+	// OutDir is the directory to which the test will write output files.
+	OutDir string
+	// Vars contains names and values of out-of-band variables passed to tests at runtime.
+	// Names must be registered in Test.Vars and values may be accessed using State.Var.
+	Vars map[string]string
+	// CloudStorage is a client to read files on Google Cloud Storage.
+	CloudStorage *CloudStorage
+	// RemoteData contains information relevant to remote tests.
+	// This is nil for local tests.
+	RemoteData *RemoteData
+	// FixtValue is a value returned by a parent fixture.
+	// It is nil if not available.
+	FixtValue interface{}
+	// FixtCtx is the context that lives as long as the fixture.
+	// It can be accessed only from testing.FixtState.
+	FixtCtx context.Context
+	// PreCtx is the context that lives as long as the precondition.
+	// It can be accessed only from testing.PreState.
+	PreCtx context.Context
+	// Purgeable is a list of file paths which are not used for now and thus
+	// can be deleted if the disk space is low.
+	Purgeable []string
 }
 
 // RemoteData contains information relevant to remote entities.
@@ -133,6 +142,50 @@ func (h *RPCHint) clone() *RPCHint {
 	return &hc
 }
 
+// OutputStream is an interface to report streamed outputs of an entity.
+// Note that planner.OutputStream is for multiple entities in contrast.
+type OutputStream interface {
+	// Log reports an informational log message from an entity.
+	Log(msg string) error
+
+	// Error reports an error from by an entity. An entity that reported one or
+	// more errors should be considered failure.
+	Error(e *Error) error
+}
+
+// Error describes an error encountered while running an entity.
+type Error struct {
+	Reason string `json:"reason"`
+	File   string `json:"file"`
+	Line   int    `json:"line"`
+	Stack  string `json:"stack"`
+}
+
+// NewError returns a new Error object containing reason rsn.
+// skipFrames contains the number of frames to skip to get the code that's reporting
+// the error: the caller should pass 0 to report its own frame, 1 to skip just its own frame,
+// 2 to additionally skip the frame that called it, and so on.
+func NewError(err error, fullMsg, lastMsg string, skipFrames int) *Error {
+	// Also skip the NewError frame.
+	skipFrames++
+
+	// runtime.Caller starts counting stack frames at the point of the code that
+	// invoked Caller.
+	_, fn, ln, _ := runtime.Caller(skipFrames)
+
+	trace := fmt.Sprintf("%s\n%s", lastMsg, stack.New(skipFrames))
+	if err != nil {
+		trace += fmt.Sprintf("\n%+v", err)
+	}
+
+	return &Error{
+		Reason: fullMsg,
+		File:   fn,
+		Line:   ln,
+		Stack:  trace,
+	}
+}
+
 // EntityRoot is the root of all State objects associated with an entity.
 // EntityRoot keeps track of states shared among all State objects associated
 // with an entity (e.g. whether any error has been reported), as well as
@@ -148,6 +201,49 @@ type EntityRoot struct {
 	hasError bool       // true if any error was reported from any associated State object
 }
 
+// NewEntityRoot returns a new EntityRoot object.
+func NewEntityRoot(ce *CurrentEntity, cfg *RuntimeConfig, out OutputStream) *EntityRoot {
+	return &EntityRoot{
+		ce:  ce,
+		cfg: cfg,
+		out: out,
+	}
+}
+
+func (r *EntityRoot) newGlobalMixin(errPrefix string, hasError bool) *globalMixin {
+	return &globalMixin{
+		entityRoot: r,
+		errPrefix:  errPrefix,
+		hasError:   hasError,
+	}
+}
+
+// NewFixtState creates a FixtState for a fixture.
+func (r *EntityRoot) NewFixtState() *FixtState {
+	return &FixtState{
+		globalMixin: r.newGlobalMixin("", r.HasError()),
+	}
+}
+
+// NewContext creates a new context associated with the entity.
+func (r *EntityRoot) NewContext(ctx context.Context) context.Context {
+	return NewContext(ctx, r.ce, func(msg string) { r.out.Log(msg) })
+}
+
+// HasError checks if any error has been reported.
+func (r *EntityRoot) HasError() bool {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	return r.hasError
+}
+
+// recordError records that the entity has reported an error.
+func (r *EntityRoot) recordError() {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	r.hasError = true
+}
+
 // TestEntityRoot is the root of all State objects associated with a test.
 // TestEntityRoot is very similar to EntityRoot, but it contains additional states and
 // immutable test information.
@@ -157,96 +253,6 @@ type TestEntityRoot struct {
 	test       *TestInstance // test being run
 
 	preValue interface{} // value returned by test.Pre.Prepare; may be nil
-}
-
-// globalMixin implements common methods for all State types.
-// A globalMixin object must not be shared among multiple State objects.
-type globalMixin struct {
-	entityRoot *EntityRoot
-	errPrefix  string // prefix to be added to error messages
-
-	mu       sync.Mutex // protects hasError
-	hasError bool       // true if any error was reported from this State object or subtests' State objects
-}
-
-// testMixin implements common methods for State types associated with a test.
-// A testMixin object must not be shared among multiple State objects.
-type testMixin struct {
-	testRoot *TestEntityRoot
-}
-
-// State holds state relevant to the execution of a single test.
-//
-// Parts of its interface are patterned after Go's testing.T type.
-//
-// State contains many pieces of data, and it's unclear which are actually being
-// used when it's passed to a function. You should minimize the number of
-// functions taking State as an argument. Instead you can pass State's derived
-// values (e.g. s.DataPath("file.txt")) or ctx (to use with ContextLog or
-// ContextOutDir etc.).
-//
-// It is intended to be safe when called concurrently by multiple goroutines
-// while a test is running.
-type State struct {
-	*globalMixin
-	*testMixin
-	testRoot *TestEntityRoot
-	subtests []string // subtest names
-}
-
-// PreState holds state relevant to the execution of a single precondition.
-//
-// This is a State for preconditions. See State's documentation for general
-// guidance on how to treat PreState in preconditions.
-type PreState struct {
-	*globalMixin
-	*testMixin
-}
-
-// TestHookState holds state relevant to the execution of a test hook.
-//
-// This is a State for test hooks. See State's documentation for general
-// guidance on how to treat TestHookState in test hooks.
-type TestHookState struct {
-	*globalMixin
-	*testMixin
-}
-
-// RuntimeConfig contains details about how an individual test should be run.
-type RuntimeConfig struct {
-	// DataDir is the directory in which the test's data files are located.
-	DataDir string
-	// OutDir is the directory to which the test will write output files.
-	OutDir string
-	// Vars contains names and values of out-of-band variables passed to tests at runtime.
-	// Names must be registered in Test.Vars and values may be accessed using State.Var.
-	Vars map[string]string
-	// CloudStorage is a client to read files on Google Cloud Storage.
-	CloudStorage *CloudStorage
-	// RemoteData contains information relevant to remote tests.
-	// This is nil for local tests.
-	RemoteData *RemoteData
-	// FixtValue is a value returned by a parent fixture.
-	// It is nil if not available.
-	FixtValue interface{}
-	// FixtCtx is the context that lives as long as the fixture.
-	// It can be accessed only from testing.FixtState.
-	FixtCtx context.Context
-	// PreCtx is the context that lives as long as the precondition.
-	// It can be accessed only from testing.PreState.
-	PreCtx context.Context
-	// Purgeable is a list of file paths which are not used for now and thus
-	// can be deleted if the disk space is low.
-	Purgeable []string
-}
-
-// NewEntityRoot returns a new EntityRoot object.
-func NewEntityRoot(ce *CurrentEntity, cfg *RuntimeConfig, out OutputStream) *EntityRoot {
-	return &EntityRoot{
-		ce:  ce,
-		cfg: cfg,
-		out: out,
-	}
 }
 
 // NewTestEntityRoot returns a new TestEntityRoot object.
@@ -259,14 +265,6 @@ func NewTestEntityRoot(test *TestInstance, cfg *RuntimeConfig, out OutputStream)
 	return &TestEntityRoot{
 		entityRoot: NewEntityRoot(ce, cfg, out),
 		test:       test,
-	}
-}
-
-func (r *EntityRoot) newGlobalMixin(errPrefix string, hasError bool) *globalMixin {
-	return &globalMixin{
-		entityRoot: r,
-		errPrefix:  errPrefix,
-		hasError:   hasError,
 	}
 }
 
@@ -301,35 +299,9 @@ func (r *TestEntityRoot) NewTestHookState() *TestHookState {
 	}
 }
 
-// NewFixtState creates a FixtState for a fixture.
-func (r *EntityRoot) NewFixtState() *FixtState {
-	return &FixtState{
-		globalMixin: r.newGlobalMixin("", r.HasError()),
-	}
-}
-
-// NewContext creates a new context associated with the entity.
-func (r *EntityRoot) NewContext(ctx context.Context) context.Context {
-	return NewContext(ctx, r.ce, func(msg string) { r.out.Log(msg) })
-}
-
 // NewContext creates a new context associated with the entity.
 func (r *TestEntityRoot) NewContext(ctx context.Context) context.Context {
 	return r.entityRoot.NewContext(ctx)
-}
-
-// HasError checks if any error has been reported.
-func (r *EntityRoot) HasError() bool {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	return r.hasError
-}
-
-// recordError records that the entity has reported an error.
-func (r *EntityRoot) recordError() {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	r.hasError = true
 }
 
 // HasError checks if any error has been reported.
@@ -349,137 +321,19 @@ func NewContext(ctx context.Context, ec *CurrentEntity, log func(msg string)) co
 	return ctx
 }
 
-// DataPath returns the absolute path to use to access a data file previously
-// registered via Test.Data.
-func (s *testMixin) DataPath(p string) string {
-	for _, f := range s.testRoot.test.Data {
-		if f == p {
-			return filepath.Join(s.testRoot.entityRoot.cfg.DataDir, p)
-		}
-	}
-	panic(fmt.Sprintf("Test data %q wasn't declared in definition passed to testing.AddTest", p))
-}
+// globalMixin implements common methods for all State types.
+// A globalMixin object must not be shared among multiple State objects.
+type globalMixin struct {
+	entityRoot *EntityRoot
+	errPrefix  string // prefix to be added to error messages
 
-// Param returns Val specified at the Param struct for the current test case.
-func (s *State) Param() interface{} {
-	return s.testRoot.test.Val
-}
-
-// DataFileSystem returns an http.FileSystem implementation that serves an entity's data files.
-//
-//	srv := httptest.NewServer(http.FileServer(s.DataFileSystem()))
-//	defer srv.Close()
-//	resp, err := http.Get(srv.URL+"/data_file.html")
-func (s *testMixin) DataFileSystem() *dataFS { return (*dataFS)(s) }
-
-// OutDir returns a directory into which the entity may place arbitrary files
-// that should be included with the entity results.
-func (s *testMixin) OutDir() string { return s.testRoot.entityRoot.cfg.OutDir }
-
-// Var returns the value for the named variable, which must have been registered via Vars.
-// If a value was not supplied at runtime via the -var flag to "tast run", ok will be false.
-func (s *testMixin) Var(name string) (val string, ok bool) {
-	seen := false
-	for _, n := range s.testRoot.test.Vars {
-		if n == name {
-			seen = true
-			break
-		}
-	}
-	if !seen {
-		panic(fmt.Sprintf("Variable %q was not registered in testing.Test.Vars", name))
-	}
-
-	val, ok = s.testRoot.entityRoot.cfg.Vars[name]
-	return val, ok
-}
-
-// RequiredVar is similar to Var but aborts the entity if the named variable was not supplied.
-func (s *testMixin) RequiredVar(name string) string {
-	val, ok := s.Var(name)
-	if !ok {
-		panic(fmt.Sprintf("Required variable %q not supplied via -var or -varsfile", name))
-	}
-	return val
-}
-
-// Run starts a new subtest with an unique name. Error messages are prepended with the subtest
-// name during its execution. If Fatal/Fatalf is called from inside a subtest, only that subtest
-// is stopped; its parent continues. Returns true if the subtest passed.
-func (s *State) Run(ctx context.Context, name string, run func(context.Context, *State)) bool {
-	subtests := append([]string(nil), s.subtests...)
-	subtests = append(subtests, name)
-	ns := &State{
-		// Set hasError to false; State for a subtest always starts with no error.
-		globalMixin: s.testRoot.entityRoot.newGlobalMixin(strings.Join(subtests, "/")+": ", false),
-		testMixin:   s.testRoot.newTestMixin(),
-		testRoot:    s.testRoot,
-		subtests:    subtests,
-	}
-
-	finished := make(chan struct{})
-
-	go func() {
-		ctx, cancel := context.WithCancel(ctx)
-		defer cancel()
-
-		ctx, st := timing.Start(ctx, name)
-		defer func() {
-			st.End()
-			close(finished)
-		}()
-
-		s.Logf("Starting subtest %s", strings.Join(subtests, "/"))
-		run(ctx, ns)
-	}()
-
-	<-finished
-
-	ns.mu.Lock()
-	defer ns.mu.Unlock()
-	// Bubble up errors to the parent State. Note that errors are already
-	// reported to TestEntityRoot, so it is sufficient to set hasError directly.
-	if ns.hasError {
-		s.mu.Lock()
-		defer s.mu.Unlock()
-		s.hasError = true
-	}
-
-	return !ns.hasError
-}
-
-// PreValue returns a value supplied by the test's precondition, which must have been declared via Test.Pre
-// when the test was registered. Callers should cast the returned empty interface to the correct pointer
-// type; see the relevant precondition's documentation for specifics.
-// nil will be returned if the test did not declare a precondition.
-func (s *State) PreValue() interface{} { return s.testRoot.preValue }
-
-// SoftwareDeps returns software dependencies declared in the currently running entity.
-func (s *testMixin) SoftwareDeps() []string {
-	return append([]string(nil), s.testRoot.test.SoftwareDeps...)
-}
-
-// ServiceDeps returns service dependencies declared in the currently running entity.
-func (s *testMixin) ServiceDeps() []string {
-	return append([]string(nil), s.testRoot.test.ServiceDeps...)
+	mu       sync.Mutex // protects hasError
+	hasError bool       // true if any error was reported from this State object or subtests' State objects
 }
 
 // CloudStorage returns a client for Google Cloud Storage.
 func (s *globalMixin) CloudStorage() *CloudStorage {
 	return s.entityRoot.cfg.CloudStorage
-}
-
-// Meta returns information about how the "tast" process used to initiate testing was run.
-// It can only be called by remote tests in the "meta" category.
-func (s *State) Meta() *Meta {
-	if parts := strings.SplitN(s.testRoot.test.Name, ".", 2); len(parts) != 2 || parts[0] != metaCategory {
-		panic(fmt.Sprintf("Meta info unavailable since test doesn't have category %q", metaCategory))
-	}
-	if s.testRoot.entityRoot.cfg.RemoteData == nil {
-		panic("Meta info unavailable (is test non-remote?)")
-	}
-	// Return a copy to make sure the test doesn't modify the original struct.
-	return s.testRoot.entityRoot.cfg.RemoteData.Meta.clone()
 }
 
 // RPCHint returns information needed to establish gRPC connections.
@@ -554,18 +408,6 @@ func (s *globalMixin) HasError() bool {
 	return s.hasError
 }
 
-// FixtValue returns the fixture value if the test depends on a fixture in the same process.
-// FixtValue returns nil otherwise.
-func (s *State) FixtValue() interface{} {
-	return s.entityRoot.cfg.FixtValue
-}
-
-// PreCtx returns a context that lives as long as the precondition.
-// Can only be called from inside a precondition; it panics otherwise.
-func (s *PreState) PreCtx() context.Context {
-	return s.testRoot.entityRoot.cfg.PreCtx
-}
-
 // errorSuffix matches the well-known error message suffixes for formatError.
 var errorSuffix = regexp.MustCompile(`(\s*:\s*|\s+)$`)
 
@@ -635,6 +477,30 @@ func (s *globalMixin) recordError() {
 	s.hasError = true
 }
 
+// testMixin implements common methods for State types associated with a test.
+// A testMixin object must not be shared among multiple State objects.
+type testMixin struct {
+	testRoot *TestEntityRoot
+}
+
+// DataPath returns the absolute path to use to access a data file previously
+// registered via Test.Data.
+func (s *testMixin) DataPath(p string) string {
+	for _, f := range s.testRoot.test.Data {
+		if f == p {
+			return filepath.Join(s.testRoot.entityRoot.cfg.DataDir, p)
+		}
+	}
+	panic(fmt.Sprintf("Test data %q wasn't declared in definition passed to testing.AddTest", p))
+}
+
+// DataFileSystem returns an http.FileSystem implementation that serves an entity's data files.
+//
+//	srv := httptest.NewServer(http.FileServer(s.DataFileSystem()))
+//	defer srv.Close()
+//	resp, err := http.Get(srv.URL+"/data_file.html")
+func (s *testMixin) DataFileSystem() *dataFS { return (*dataFS)(s) }
+
 // dataFS implements http.FileSystem.
 type dataFS testMixin
 
@@ -665,29 +531,163 @@ func (d *dataFS) Open(name string) (http.File, error) {
 	return os.Open(path)
 }
 
-// NewError returns a new Error object containing reason rsn.
-// skipFrames contains the number of frames to skip to get the code that's reporting
-// the error: the caller should pass 0 to report its own frame, 1 to skip just its own frame,
-// 2 to additionally skip the frame that called it, and so on.
-func NewError(err error, fullMsg, lastMsg string, skipFrames int) *Error {
-	// Also skip the NewError frame.
-	skipFrames++
+// OutDir returns a directory into which the entity may place arbitrary files
+// that should be included with the entity results.
+func (s *testMixin) OutDir() string { return s.testRoot.entityRoot.cfg.OutDir }
 
-	// runtime.Caller starts counting stack frames at the point of the code that
-	// invoked Caller.
-	_, fn, ln, _ := runtime.Caller(skipFrames)
-
-	trace := fmt.Sprintf("%s\n%s", lastMsg, stack.New(skipFrames))
-	if err != nil {
-		trace += fmt.Sprintf("\n%+v", err)
+// Var returns the value for the named variable, which must have been registered via Vars.
+// If a value was not supplied at runtime via the -var flag to "tast run", ok will be false.
+func (s *testMixin) Var(name string) (val string, ok bool) {
+	seen := false
+	for _, n := range s.testRoot.test.Vars {
+		if n == name {
+			seen = true
+			break
+		}
+	}
+	if !seen {
+		panic(fmt.Sprintf("Variable %q was not registered in testing.Test.Vars", name))
 	}
 
-	return &Error{
-		Reason: fullMsg,
-		File:   fn,
-		Line:   ln,
-		Stack:  trace,
+	val, ok = s.testRoot.entityRoot.cfg.Vars[name]
+	return val, ok
+}
+
+// RequiredVar is similar to Var but aborts the entity if the named variable was not supplied.
+func (s *testMixin) RequiredVar(name string) string {
+	val, ok := s.Var(name)
+	if !ok {
+		panic(fmt.Sprintf("Required variable %q not supplied via -var or -varsfile", name))
 	}
+	return val
+}
+
+// SoftwareDeps returns software dependencies declared in the currently running entity.
+func (s *testMixin) SoftwareDeps() []string {
+	return append([]string(nil), s.testRoot.test.SoftwareDeps...)
+}
+
+// ServiceDeps returns service dependencies declared in the currently running entity.
+func (s *testMixin) ServiceDeps() []string {
+	return append([]string(nil), s.testRoot.test.ServiceDeps...)
+}
+
+// State holds state relevant to the execution of a single test.
+//
+// Parts of its interface are patterned after Go's testing.T type.
+//
+// State contains many pieces of data, and it's unclear which are actually being
+// used when it's passed to a function. You should minimize the number of
+// functions taking State as an argument. Instead you can pass State's derived
+// values (e.g. s.DataPath("file.txt")) or ctx (to use with ContextLog or
+// ContextOutDir etc.).
+//
+// It is intended to be safe when called concurrently by multiple goroutines
+// while a test is running.
+type State struct {
+	*globalMixin
+	*testMixin
+	testRoot *TestEntityRoot
+	subtests []string // subtest names
+}
+
+// Param returns Val specified at the Param struct for the current test case.
+func (s *State) Param() interface{} {
+	return s.testRoot.test.Val
+}
+
+// Run starts a new subtest with an unique name. Error messages are prepended with the subtest
+// name during its execution. If Fatal/Fatalf is called from inside a subtest, only that subtest
+// is stopped; its parent continues. Returns true if the subtest passed.
+func (s *State) Run(ctx context.Context, name string, run func(context.Context, *State)) bool {
+	subtests := append([]string(nil), s.subtests...)
+	subtests = append(subtests, name)
+	ns := &State{
+		// Set hasError to false; State for a subtest always starts with no error.
+		globalMixin: s.testRoot.entityRoot.newGlobalMixin(strings.Join(subtests, "/")+": ", false),
+		testMixin:   s.testRoot.newTestMixin(),
+		testRoot:    s.testRoot,
+		subtests:    subtests,
+	}
+
+	finished := make(chan struct{})
+
+	go func() {
+		ctx, cancel := context.WithCancel(ctx)
+		defer cancel()
+
+		ctx, st := timing.Start(ctx, name)
+		defer func() {
+			st.End()
+			close(finished)
+		}()
+
+		s.Logf("Starting subtest %s", strings.Join(subtests, "/"))
+		run(ctx, ns)
+	}()
+
+	<-finished
+
+	ns.mu.Lock()
+	defer ns.mu.Unlock()
+	// Bubble up errors to the parent State. Note that errors are already
+	// reported to TestEntityRoot, so it is sufficient to set hasError directly.
+	if ns.hasError {
+		s.mu.Lock()
+		defer s.mu.Unlock()
+		s.hasError = true
+	}
+
+	return !ns.hasError
+}
+
+// PreValue returns a value supplied by the test's precondition, which must have been declared via Test.Pre
+// when the test was registered. Callers should cast the returned empty interface to the correct pointer
+// type; see the relevant precondition's documentation for specifics.
+// nil will be returned if the test did not declare a precondition.
+func (s *State) PreValue() interface{} { return s.testRoot.preValue }
+
+// Meta returns information about how the "tast" process used to initiate testing was run.
+// It can only be called by remote tests in the "meta" category.
+func (s *State) Meta() *Meta {
+	if parts := strings.SplitN(s.testRoot.test.Name, ".", 2); len(parts) != 2 || parts[0] != metaCategory {
+		panic(fmt.Sprintf("Meta info unavailable since test doesn't have category %q", metaCategory))
+	}
+	if s.testRoot.entityRoot.cfg.RemoteData == nil {
+		panic("Meta info unavailable (is test non-remote?)")
+	}
+	// Return a copy to make sure the test doesn't modify the original struct.
+	return s.testRoot.entityRoot.cfg.RemoteData.Meta.clone()
+}
+
+// FixtValue returns the fixture value if the test depends on a fixture in the same process.
+// FixtValue returns nil otherwise.
+func (s *State) FixtValue() interface{} {
+	return s.entityRoot.cfg.FixtValue
+}
+
+// PreState holds state relevant to the execution of a single precondition.
+//
+// This is a State for preconditions. See State's documentation for general
+// guidance on how to treat PreState in preconditions.
+type PreState struct {
+	*globalMixin
+	*testMixin
+}
+
+// PreCtx returns a context that lives as long as the precondition.
+// Can only be called from inside a precondition; it panics otherwise.
+func (s *PreState) PreCtx() context.Context {
+	return s.testRoot.entityRoot.cfg.PreCtx
+}
+
+// TestHookState holds state relevant to the execution of a test hook.
+//
+// This is a State for test hooks. See State's documentation for general
+// guidance on how to treat TestHookState in test hooks.
+type TestHookState struct {
+	*globalMixin
+	*testMixin
 }
 
 // TestInstance returns TestInstance of the test being run.

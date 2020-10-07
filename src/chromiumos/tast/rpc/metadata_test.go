@@ -16,42 +16,66 @@ import (
 
 func TestOutgoingMetadata(t *gotesting.T) {
 	ec := &testing.CurrentEntity{
-		OutDir:       "/mock/outdir",
-		SoftwareDeps: []string{"chrome", "android_p"},
-		ServiceDeps:  []string{"tast.core.Ping"},
+		OutDir:          "/mock/outdir",
+		HasSoftwareDeps: true,
+		SoftwareDeps:    []string{"chrome", "android_p"},
+		ServiceDeps:     []string{"tast.core.Ping"},
 	}
 
 	ctx := testing.WithCurrentEntity(context.Background(), ec)
-	md, err := outgoingMetadata(ctx)
-	if err != nil {
-		t.Fatal("outgoingMetadata failed: ", err)
-	}
+	md := outgoingMetadata(ctx)
 
 	exp := metadata.MD{
-		metadataSoftwareDeps: ec.SoftwareDeps,
+		metadataSoftwareDeps:    ec.SoftwareDeps,
+		metadataHasSoftwareDeps: []string{"1"},
 	}
 	if diff := cmp.Diff(md, exp); diff != "" {
 		t.Errorf("outgoingMetadata returned unexpected MD (-got +want):\n%s", diff)
 	}
 }
 
-func TestOutgoingMetadataNoContext(t *gotesting.T) {
-	_, err := outgoingMetadata(context.Background())
-	if err == nil {
-		t.Fatal("outgoingMetadata unexpectedly succeeded")
+func TestOutgoingMetadataNoSoftwareDeps(t *gotesting.T) {
+	ec := &testing.CurrentEntity{
+		OutDir:      "/mock/outdir",
+		ServiceDeps: []string{"tast.core.Ping"},
+	}
+
+	ctx := testing.WithCurrentEntity(context.Background(), ec)
+	md := outgoingMetadata(ctx)
+
+	exp := metadata.MD{
+		metadataSoftwareDeps: nil,
+	}
+	if diff := cmp.Diff(md, exp); diff != "" {
+		t.Errorf("outgoingMetadata returned unexpected MD (-got +want):\n%s", diff)
 	}
 }
 
 func TestIncomingCurrentEntity(t *gotesting.T) {
 	md := metadata.MD{
-		metadataSoftwareDeps: []string{"chrome", "android_p"},
+		metadataHasSoftwareDeps: []string{"1"},
+		metadataSoftwareDeps:    []string{"chrome", "android_p"},
 	}
 
 	ec := incomingCurrentContext(md)
 
 	exp := &testing.CurrentEntity{
-		SoftwareDeps: md[metadataSoftwareDeps],
+		HasSoftwareDeps: true,
+		SoftwareDeps:    md[metadataSoftwareDeps],
 	}
+	if diff := cmp.Diff(ec, exp); diff != "" {
+		t.Errorf("incomingCurrentContext returned unexpected CurrentEntity (-got +want):\n%s", diff)
+	}
+}
+
+func TestIncomingCurrentEntityNoSoftwareDeps(t *gotesting.T) {
+	md := metadata.MD{
+		metadataSoftwareDeps: nil,
+	}
+
+	ec := incomingCurrentContext(md)
+
+	exp := &testing.CurrentEntity{}
 	if diff := cmp.Diff(ec, exp); diff != "" {
 		t.Errorf("incomingCurrentContext returned unexpected CurrentEntity (-got +want):\n%s", diff)
 	}

@@ -235,6 +235,9 @@ func TestFixtureStackContext(t *gotesting.T) {
 		} else if diff := cmp.Diff(svcs, serviceDeps); diff != "" {
 			t.Errorf("ServiceDeps mismatch (-got +want):\n%s", diff)
 		}
+		if _, ok := testing.ContextSoftwareDeps(ctx); ok {
+			t.Error("SoftwareDeps unexpectedly available")
+		}
 	}
 
 	ff := newFakeFixture(

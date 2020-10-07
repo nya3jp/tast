@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9ff154c7_fffd78c4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-07T05:29:06Z",
+      "side": 1,
+      "message": "PTAL w/ some questions.",
+      "revId": "aacba20a31021711c88033caf412a59303eeaa68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "47181cd9_5271f241",
+        "filename": "src/chromiumos/tast/ssh/forwarder.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-07T05:29:06Z",
+      "side": 1,
+      "message": "Now this is used in the both direction for local port fowarding and remote port forwarding.",
+      "revId": "aacba20a31021711c88033caf412a59303eeaa68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "eea85d6e_61e99838",
+        "filename": "src/chromiumos/tast/ssh/forwarder.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-07T05:29:06Z",
+      "side": 1,
+      "message": "The names \"local\" and \"remote\" are actually flipped when using this for the remote port forwarding.\nShould we rename them like source and destination? (I am afraid these are still confusing as the copy happens bidirectionally.)",
+      "revId": "aacba20a31021711c88033caf412a59303eeaa68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "25994ea4_75cc385f",
+        "filename": "src/chromiumos/tast/ssh/forwarder.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-07T05:29:06Z",
+      "side": 1,
+      "message": "I am not sure what unit test should be written for this function.\nIs it not needed because this shares most of the logic as newForwarder?\nIf we were to test this, should Conn be replaced with a test-specific derived class that partiall mocks conn.ListenTCP?",
+      "revId": "aacba20a31021711c88033caf412a59303eeaa68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

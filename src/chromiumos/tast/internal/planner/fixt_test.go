@@ -21,6 +21,8 @@ import (
 type fakeFixture struct {
 	setUpFunc    func(ctx context.Context, s *testing.FixtState) interface{}
 	resetFunc    func(ctx context.Context) error
+	preTestFunc  func(ctx context.Context, s *testing.FixtTestState)
+	postTestFunc func(ctx context.Context, s *testing.FixtTestState)
 	tearDownFunc func(ctx context.Context, s *testing.FixtState)
 }
 
@@ -42,6 +44,20 @@ func withReset(f func(ctx context.Context) error) fakeFixtureOption {
 	}
 }
 
+// withPreTest returns an option to set a function called back on PreTest.
+func withPreTest(f func(ctx context.Context, s *testing.FixtTestState)) fakeFixtureOption {
+	return func(ff *fakeFixture) {
+		ff.preTestFunc = f
+	}
+}
+
+// withPostTest returns an option to set a function called back on PostTest.
+func withPostTest(f func(ctx context.Context, s *testing.FixtTestState)) fakeFixtureOption {
+	return func(ff *fakeFixture) {
+		ff.postTestFunc = f
+	}
+}
+
 // withTearDown returns an option to set a function called back on TearDown.
 func withTearDown(f func(ctx context.Context, s *testing.FixtState)) fakeFixtureOption {
 	return func(ff *fakeFixture) {
@@ -54,6 +70,8 @@ func newFakeFixture(opts ...fakeFixtureOption) *fakeFixture {
 	ff := &fakeFixture{
 		setUpFunc:    func(ctx context.Context, s *testing.FixtState) interface{} { return nil },
 		resetFunc:    func(ctx context.Context) error { return nil },
+		preTestFunc:  func(ctx context.Context, s *testing.FixtTestState) {},
+		postTestFunc: func(ctx context.Context, s *testing.FixtTestState) {},
 		tearDownFunc: func(ctx context.Context, s *testing.FixtState) {},
 	}
 	for _, opt := range opts {
@@ -71,11 +89,11 @@ func (f *fakeFixture) Reset(ctx context.Context) error {
 }
 
 func (f *fakeFixture) PreTest(ctx context.Context, s *testing.FixtTestState) {
-	panic("not implemented")
+	f.preTestFunc(ctx, s)
 }
 
 func (f *fakeFixture) PostTest(ctx context.Context, s *testing.FixtTestState) {
-	panic("not implemented")
+	f.postTestFunc(ctx, s)
 }
 
 func (f *fakeFixture) TearDown(ctx context.Context, s *testing.FixtState) {
@@ -254,6 +272,16 @@ func TestFixtureStackContext(t *gotesting.T) {
 			})
 			return nil
 		}),
+		withPreTest(func(ctx context.Context, s *testing.FixtTestState) {
+			t.Run("PreTest", func(t *gotesting.T) {
+				verifyContext(t, ctx)
+			})
+		}),
+		withPostTest(func(ctx context.Context, s *testing.FixtTestState) {
+			t.Run("PostTest", func(t *gotesting.T) {
+				verifyContext(t, ctx)
+			})
+		}),
 		withTearDown(func(ctx context.Context, s *testing.FixtState) {
 			t.Run("TearDown", func(t *gotesting.T) {
 				verifyContext(t, ctx)
@@ -266,18 +294,26 @@ func TestFixtureStackContext(t *gotesting.T) {
 		ServiceDeps: serviceDeps,
 	}
 
+	troot := testing.NewTestEntityRoot(&testing.TestInstance{}, &testing.RuntimeConfig{}, nil)
+
 	if err := stack.Push(ctx, fixt); err != nil {
 		t.Fatal("Push: ", err)
 	}
 	if err := stack.Reset(ctx); err != nil {
 		t.Fatal("Reset: ", err)
 	}
+	if err := stack.PreTest(ctx, troot); err != nil {
+		t.Fatal("PreTest: ", err)
+	}
+	if err := stack.PostTest(ctx, troot); err != nil {
+		t.Fatal("PostTest: ", err)
+	}
 	if err := stack.Pop(ctx); err != nil {
 		t.Fatal("Pop: ", err)
 	}
 }
 
-// TestFixtureStackState checks testing.FixtState passed to fixture methods.
+// TestFixtureStackState checks state objects passed to fixture methods.
 func TestFixtureStackState(t *gotesting.T) {
 	const localBundleDir = "/path/to/local/bundles"
 
@@ -291,22 +327,36 @@ func TestFixtureStackState(t *gotesting.T) {
 	}
 	stack := newFixtureStack(cfg, newOutputSink())
 
-	verifyState := func(t *gotesting.T, s *testing.FixtState) {
+	verifyFixtState := func(t *gotesting.T, s *testing.FixtState) {
 		if dir := s.RPCHint().LocalBundleDir; dir != localBundleDir {
 			t.Errorf("RPCHint.LocalBundleDir = %q; want %q", dir, localBundleDir)
 		}
 	}
 
+	verifyFixtTestState := func(t *gotesting.T, s *testing.FixtTestState) {
+		t.Error("Always fail")
+	}
+
 	ff := newFakeFixture(
 		withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
 			t.Run("SetUp", func(t *gotesting.T) {
-				verifyState(t, s)
+				verifyFixtState(t, s)
 			})
 			return nil
 		}),
+		withPreTest(func(ctx context.Context, s *testing.FixtTestState) {
+			t.Run("PreTest", func(t *gotesting.T) {
+				verifyFixtTestState(t, s)
+			})
+		}),
+		withPostTest(func(ctx context.Context, s *testing.FixtTestState) {
+			t.Run("PostTest", func(t *gotesting.T) {
+				verifyFixtTestState(t, s)
+			})
+		}),
 		withTearDown(func(ctx context.Context, s *testing.FixtState) {
 			t.Run("TearDown", func(t *gotesting.T) {
-				verifyState(t, s)
+				verifyFixtState(t, s)
 			})
 		}))
 
@@ -468,6 +518,14 @@ func TestFixtureStackOutputGreen(t *gotesting.T) {
 					logging.ContextLogf(ctx, "Reset %d via Context", id)
 					return nil
 				}),
+				withPreTest(func(ctx context.Context, s *testing.FixtTestState) {
+					logging.ContextLogf(ctx, "PreTest %d via Context", id)
+					s.Logf("PreTest %d via State", id)
+				}),
+				withPostTest(func(ctx context.Context, s *testing.FixtTestState) {
+					logging.ContextLogf(ctx, "PostTest %d via Context", id)
+					s.Logf("PostTest %d via State", id)
+				}),
 				withTearDown(func(ctx context.Context, s *testing.FixtState) {
 					logging.ContextLogf(ctx, "TearDown %d via Context", id)
 					logging.ContextLogf(s.FixtContext(), "TearDown %d via Fixture-scoped Context", id)
@@ -544,6 +602,12 @@ func TestFixtureStackOutputRed(t *gotesting.T) {
 					logging.ContextLogf(ctx, "Reset %d", id)
 					return nil
 				}),
+				withPreTest(func(ctx context.Context, s *testing.FixtTestState) {
+					logging.ContextLogf(ctx, "PreTest %d", id)
+				}),
+				withPostTest(func(ctx context.Context, s *testing.FixtTestState) {
+					logging.ContextLogf(ctx, "PostTest %d", id)
+				}),
 				withTearDown(func(ctx context.Context, s *testing.FixtState) {
 					logging.ContextLogf(ctx, "TearDown %d", id)
 				})),
@@ -614,6 +678,12 @@ func TestFixtureStackOutputYellow(t *gotesting.T) {
 						return errors.New("failure")
 					}
 					return nil
+				}),
+				withPreTest(func(ctx context.Context, s *testing.FixtTestState) {
+					logging.ContextLogf(ctx, "PreTest %d", id)
+				}),
+				withPostTest(func(ctx context.Context, s *testing.FixtTestState) {
+					logging.ContextLogf(ctx, "PostTest %d", id)
 				}),
 				withTearDown(func(ctx context.Context, s *testing.FixtState) {
 					logging.ContextLogf(ctx, "TearDown %d", id)

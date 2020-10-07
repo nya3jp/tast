@@ -300,6 +300,13 @@ func (r *TestEntityRoot) NewTestHookState() *TestHookState {
 	}
 }
 
+// NewFixtTestState creates a FixtTestState for a test.
+func (r *TestEntityRoot) NewFixtTestState() *FixtTestState {
+	return &FixtTestState{
+		globalMixin: r.entityRoot.newGlobalMixin("", r.HasError()),
+	}
+}
+
 // NewContext creates a new context associated with the entity.
 func (r *TestEntityRoot) NewContext(ctx context.Context) context.Context {
 	return r.entityRoot.NewContext(ctx)
@@ -313,6 +320,18 @@ func (r *TestEntityRoot) HasError() bool {
 // SetPreValue sets a precondition value available to the test.
 func (r *TestEntityRoot) SetPreValue(val interface{}) {
 	r.preValue = val
+}
+
+// TestInstance returns a TestInstance associated with this root.
+// Returned TestInstance must not be modified.
+func (r *TestEntityRoot) TestInstance() *TestInstance {
+	return r.test
+}
+
+// OutDir returns a directory into which the entity may place arbitrary files
+// that should be included with the test results.
+func (r *TestEntityRoot) OutDir() string {
+	return r.entityRoot.cfg.OutDir
 }
 
 // NewContext returns a context.Context to be used for the entity.

@@ -839,9 +839,7 @@ func TestRunFixtureResetFailure(t *gotesting.T) {
 		&control.EntityStart{Info: *tests[2].EntityInfo()},
 		&control.EntityLog{Name: tests[2].Name, Text: "Test 2"},
 		&control.EntityEnd{Name: tests[2].Name},
-		// fixt1 fails to reset again. Fixtures are torn down anyway.
-		&control.EntityLog{Name: fixt1.Name, Text: "Reset 1"},
-		&control.EntityLog{Name: fixt1.Name, Text: "Fixture failed to reset: failure; recovering"},
+		// Fixtures are torn down.
 		&control.EntityEnd{Name: fixt2.Name},
 		&control.EntityEnd{Name: fixt1.Name},
 	}

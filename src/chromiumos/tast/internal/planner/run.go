@@ -349,8 +349,10 @@ func runFixtTree(ctx context.Context, tree *fixtTree, stack *fixtureStack, pcfg 
 				if err := runTest(ctx, t, tout, pcfg, &preConfig{}, stack, dl); err != nil {
 					return err
 				}
-				if err := stack.Reset(ctx); err != nil {
-					return err
+				if stack.Status() != statusYellow && !tree.Empty() {
+					if err := stack.Reset(ctx); err != nil {
+						return err
+					}
 				}
 			}
 

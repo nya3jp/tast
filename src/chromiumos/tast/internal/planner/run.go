@@ -524,7 +524,7 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *entityOutputStr
 		DataDir:      filepath.Join(pcfg.DataDir, testing.RelativeDataDir(t.Pkg)),
 		OutDir:       outDir,
 		Vars:         pcfg.Vars,
-		CloudStorage: testing.NewCloudStorage(pcfg.Devservers),
+		CloudStorage: testing.NewCloudStorage(pcfg.Devservers, pcfg.TLWServer, pcfg.DUTName),
 		RemoteData:   pcfg.RemoteData,
 		FixtCtx:      fixtCtx,
 		FixtValue:    stack.Val(),

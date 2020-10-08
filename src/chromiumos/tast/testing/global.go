@@ -8,7 +8,6 @@ import (
 	"regexp"
 	"runtime"
 
-	"chromiumos/tast/caller"
 	"chromiumos/tast/internal/testing"
 )
 
@@ -40,9 +39,5 @@ func AddService(s *Service) {
 
 // AddFixture adds fixture f to the global registry.
 func AddFixture(f *Fixture) {
-	// For now, fixtures are available to meta tests only.
-	caller.Check(2, []string{
-		"chromiumos/tast/local/bundles/cros/meta/fixture",
-	})
 	testing.AddFixture(f)
 }

@@ -6,6 +6,7 @@ package planner
 
 import (
 	"context"
+	"sync/atomic"
 	"time"
 
 	"chromiumos/tast/errors"
@@ -47,10 +48,43 @@ func errorOnPanic(e errorReporter) panicHandler {
 // reasons (e.g. f ignored the timeout, ctx was canceled). In other cases, it
 // returns nil.
 func safeCall(ctx context.Context, name string, timeout, gracePeriod time.Duration, ph panicHandler, f func(ctx context.Context)) error {
-	done := make(chan interface{}, 1)
+	// Two goroutines race for a token below.
+	// The main goroutine attempts to take a token when it sees timeout
+	// or context cancellation. If it successfully takes a token, safeCall
+	// returns immediately without waiting for f to finish, and ph will
+	// never be called.
+	// A background goroutine attempts to take a token when it finishes
+	// calling f. If it successfully takes a token, it calls recover and
+	// ph (if it recovered from a panic). Until the goroutine finishes
+	// safeCall will not return.
+
+	var token uintptr
+	// takeToken returns true if it is called first time.
+	takeToken := func() bool {
+		return atomic.CompareAndSwapUintptr(&token, 0, 1)
+	}
+
+	done := make(chan struct{}) // closed when the background goroutine finishes
+
+	// Start a background goroutine that calls into the user code.
 	go func() {
+		defer close(done)
+
 		defer func() {
-			done <- recover()
+			// Always call recover to avoid crashing the process.
+			val := recover()
+
+			// If the main goroutine already returned from safeCall, do not call ph.
+			if !takeToken() {
+				return
+			}
+
+			// If we recovered from a panic, call ph. Note that we must call
+			// ph on this goroutine to include the panic location in the
+			// stack trace.
+			if val != nil {
+				ph(val)
+			}
 		}()
 
 		ctx, cancel := context.WithTimeout(ctx, timeout)
@@ -58,15 +92,19 @@ func safeCall(ctx context.Context, name string, timeout, gracePeriod time.Durati
 		f(ctx)
 	}()
 
+	// Block returning from safeCall if the background goroutine is still calling ph.
+	defer func() {
+		if !takeToken() {
+			<-done
+		}
+	}()
+
 	// Allow f to clean up after timeout for gracePeriod.
 	tm := time.NewTimer(timeout + gracePeriod)
 	defer tm.Stop()
 
 	select {
-	case val := <-done:
-		if val != nil {
-			ph(val)
-		}
+	case <-done:
 		return nil
 	case <-tm.C:
 		return errors.Errorf("%s did not return on timeout", name)

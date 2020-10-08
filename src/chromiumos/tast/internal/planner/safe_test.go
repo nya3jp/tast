@@ -6,6 +6,8 @@ package planner
 
 import (
 	"context"
+	"runtime/debug"
+	"strings"
 	"testing"
 	"time"
 )
@@ -71,20 +73,28 @@ func TestSafeCallContextCancel(t *testing.T) {
 	}
 }
 
-func TestSafeCallPanic(t *testing.T) {
-	const msg = "panicking"
+const panicMsg = "panicking"
 
+func callPanic(ctx context.Context) {
+	panic(panicMsg)
+}
+
+func TestSafeCallPanic(t *testing.T) {
 	panicked := false
 	onPanic := func(val interface{}) {
 		panicked = true
-		if s, ok := val.(string); !ok || s != msg {
-			t.Errorf("onPanic: got %v, want %v", val, msg)
+		if s, ok := val.(string); !ok || s != panicMsg {
+			t.Errorf("onPanic: got %v, want %v", val, panicMsg)
+		}
+		// The current call stack should contain the location where panic was called.
+		stack := string(debug.Stack())
+		const funcName = "callPanic"
+		if !strings.Contains(stack, funcName) {
+			t.Errorf("Stack does not contain %q:\n%s", funcName, stack)
 		}
 	}
 
-	if err := safeCall(context.Background(), "", time.Minute, time.Minute, onPanic, func(ctx context.Context) {
-		panic(msg)
-	}); err != nil {
+	if err := safeCall(context.Background(), "", time.Minute, time.Minute, onPanic, callPanic); err != nil {
 		t.Fatal("safeCall: ", err)
 	}
 	if !panicked {

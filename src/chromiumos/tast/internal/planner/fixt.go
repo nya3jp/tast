@@ -180,7 +180,7 @@ func (st *fixtureStack) Push(ctx context.Context, fixt *testing.Fixture) error {
 		// TODO(crbug.com/1127165): Support DataDir.
 		// TODO(crbug.com/1127163): Support OutDir.
 		// TODO(crbug.com/1127166): Support Vars.
-		CloudStorage: testing.NewCloudStorage(st.cfg.Devservers),
+		CloudStorage: testing.NewCloudStorage(st.cfg.Devservers, st.cfg.TLWServer, st.cfg.DUTName),
 		RemoteData:   st.cfg.RemoteData,
 		FixtValue:    st.Val(),
 		FixtCtx:      ctx,

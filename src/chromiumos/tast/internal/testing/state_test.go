@@ -764,7 +764,7 @@ func TestDUT(t *gotesting.T) {
 }
 
 func TestCloudStorage(t *gotesting.T) {
-	want := NewCloudStorage(nil)
+	want := NewCloudStorage(nil, "", "")
 
 	var out outputSink
 	root := NewTestEntityRoot(&TestInstance{Name: "example.Test"}, &RuntimeConfig{CloudStorage: want}, &out)

@@ -8,29 +8,28 @@ import (
 	"context"
 	"io"
 	"sync"
-	"time"
 
 	"chromiumos/tast/internal/devserver"
-	"chromiumos/tast/internal/logging"
 )
 
 // CloudStorage allows Tast tests to read files on Google Cloud Storage.
 type CloudStorage struct {
 	// newClient is called to construct devserver.Client on the first call of Open lazily.
 	// This is usually newClientForURLs, but might be different in unit tests.
-	newClient func(ctx context.Context) devserver.Client
+	newClient func(ctx context.Context) (devserver.Client, error)
 
-	once sync.Once
-	cl   devserver.Client
+	once    sync.Once
+	cl      devserver.Client
+	initErr error
 }
 
 // NewCloudStorage constructs a new CloudStorage from a list of Devserver URLs.
 // This function is for the framework; tests should call testing.State.CloudStorage
 // to get an instance.
-func NewCloudStorage(devservers []string) *CloudStorage {
+func NewCloudStorage(devservers []string, tlwServer, dutName string) *CloudStorage {
 	return &CloudStorage{
-		newClient: func(ctx context.Context) devserver.Client {
-			return newClientForURLs(ctx, devservers)
+		newClient: func(ctx context.Context) (devserver.Client, error) {
+			return newClientForURLs(ctx, devservers, tlwServer, dutName)
 		},
 	}
 }
@@ -39,20 +38,14 @@ func NewCloudStorage(devservers []string) *CloudStorage {
 // closing the returned io.ReadCloser.
 func (c *CloudStorage) Open(ctx context.Context, url string) (io.ReadCloser, error) {
 	c.once.Do(func() {
-		c.cl = c.newClient(ctx)
+		c.cl, c.initErr = c.newClient(ctx)
 	})
+	if c.initErr != nil {
+		return nil, c.initErr
+	}
 	return c.cl.Open(ctx, url)
 }
 
-func newClientForURLs(ctx context.Context, urls []string) devserver.Client {
-	if len(urls) == 0 {
-		logging.ContextLog(ctx, "Warning: Directly accessing Cloud Storage files because no devserver is available (using old tast command?)")
-		return devserver.NewPseudoClient()
-	}
-
-	const timeout = 3 * time.Second
-	ctx, cancel := context.WithTimeout(ctx, timeout)
-	defer cancel()
-
-	return devserver.NewRealClient(ctx, urls, nil)
+func newClientForURLs(ctx context.Context, urls []string, tlwServer, dutName string) (devserver.Client, error) {
+	return devserver.NewClient(ctx, urls, tlwServer, dutName)
 }

@@ -14,6 +14,8 @@ import (
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
 	"go.chromium.org/chromiumos/config/go/api/test/tls/dependencies/longrunning"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func TestWiringServer_OpenDutPort(t *testing.T) {
@@ -101,16 +103,43 @@ func TestWiringServer_CacheForDut(t *testing.T) {
 	if res.StatusCode != http.StatusOK {
 		t.Fatalf("Got status %d %v", res.StatusCode, httpReq)
 	}
+}
 
-	req = &tls.CacheForDutRequest{Url: "gs://non-existent-resource", DutName: "dut001"}
-	_, err = cl.CacheForDut(ctx, req)
-	if err == nil {
-		t.Fatalf("CacheForDUT(%q, %q) unexpectedly succeded", req.DutName, req.Url)
+func TestWiringServer_CacheForDut_Errors(t *testing.T) {
+	ctx := context.Background()
+	fileMap := map[string][]byte{
+		"gs://foo/bar/baz": []byte("content of foo/bar/baz"),
 	}
+	stopFunc, addr := StartWiringServer(t, WithCacheFileMap(fileMap), WithDUTName("dut001"))
+	defer stopFunc()
 
-	req = &tls.CacheForDutRequest{Url: "gs://foo/bar/baz", DutName: "dut002"}
-	_, err = cl.CacheForDut(ctx, req)
-	if err == nil {
-		t.Fatalf("CacheForDUT(%q, %q) unexpectedly succeded", req.DutName, req.Url)
+	conn, err := grpc.Dial(addr, grpc.WithInsecure())
+	if err != nil {
+		t.Fatal("Failed to Dial: ", err)
+	}
+	defer conn.Close()
+
+	cl := tls.NewWiringClient(conn)
+
+	var errCases = []struct {
+		req          *tls.CacheForDutRequest
+		expectedCode codes.Code
+	}{
+		{&tls.CacheForDutRequest{Url: "gs://non-existent-resource", DutName: "dut001"}, codes.NotFound},
+		{&tls.CacheForDutRequest{Url: "gs://foo/bar/baz", DutName: "dut002"}, codes.InvalidArgument},
+	}
+	for _, c := range errCases {
+		req := c.req
+		_, err = cl.CacheForDut(ctx, req)
+		if err == nil {
+			t.Fatalf("CacheForDUT(%q, %q) unexpectedly succeded", req.DutName, req.Url)
+		}
+		st, ok := status.FromError(err)
+		if !ok {
+			t.Fatalf("Failed to get error status: %v", err)
+		}
+		if st.Code() != c.expectedCode {
+			t.Fatalf("CacheForDUT(%q, %q) returned unexpected status code: got %s, want %s", req.DutName, req.Url, st.Code(), codes.NotFound)
+		}
 	}
 }

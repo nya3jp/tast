@@ -328,6 +328,11 @@ func (p *fixtPlan) testsToRun() []*testing.TestInstance {
 // runFixtTree runs tests in a fixture tree.
 // tree is modified as tests are run.
 func runFixtTree(ctx context.Context, tree *fixtTree, stack *fixtureStack, pcfg *Config, out OutputStream, dl *downloader) error {
+	// Note about invariants:
+	// On entering this function, if the fixture stack is green, it is clean.
+	// Thus we don't need to reset fixtures before running a next test.
+	// On returning from this function, if the fixture stack was green and the
+	// fixture tree was non-empty on entering this function, the stack is dirty.
 	for !tree.Empty() {
 		if err := func() error {
 			// Create a fixture-scoped context.
@@ -349,8 +354,10 @@ func runFixtTree(ctx context.Context, tree *fixtTree, stack *fixtureStack, pcfg 
 				if err := runTest(ctx, t, tout, pcfg, &preConfig{}, stack, dl); err != nil {
 					return err
 				}
-				if err := stack.Reset(ctx); err != nil {
-					return err
+				if !tree.Empty() {
+					if err := stack.Reset(ctx); err != nil {
+						return err
+					}
 				}
 			}
 
@@ -364,6 +371,11 @@ func runFixtTree(ctx context.Context, tree *fixtTree, stack *fixtureStack, pcfg 
 				// execution due to reset failures. Remove the subtree only when it is empty.
 				if subtree.Empty() {
 					tree.children = tree.children[1:]
+				}
+				if stack.Status() != statusYellow && !tree.Empty() {
+					if err := stack.Reset(ctx); err != nil {
+						return err
+					}
 				}
 			}
 
@@ -419,6 +431,11 @@ func (p *prePlan) run(ctx context.Context, out OutputStream, dl *downloader) err
 		}
 		if err := runTest(ctx, t, tout, p.pcfg, precfg, stack, dl); err != nil {
 			return err
+		}
+		if i < len(p.tests)-1 {
+			if err := stack.Reset(ctx); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
@@ -488,6 +505,10 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *entityOutputStr
 	defer tout.End(nil, timingLog)
 
 	dl.BeforeTest(ctx, t)
+
+	if err := stack.MarkDirty(); err != nil {
+		return err
+	}
 
 	switch stack.Status() {
 	case statusGreen:

@@ -101,11 +101,17 @@ func (s fixtureStatus) String() string {
 //  |       | Pop        |           | | |                      | Pop |
 //  |       |            +-----------+ | |                      |     |
 //  +-------+--------------------------+ +----------------------+-----+
+//
+// A fixture stack is clean or dirty. A stack is initially clean. A clean stack
+// can be marked dirty with MarkDirty. It is an error to call MarkDirty on a
+// dirty stack. The dirty flag can be cleared by Reset. MarkDirty can be called
+// before running a test to make sure Reset is called for sure between tests.
 type fixtureStack struct {
 	cfg *Config
 	out OutputStream
 
 	stack []*statefulFixture // fixtures on a traverse path, root to leaf
+	dirty bool
 }
 
 // newFixtureStack creates a new empty fixture stack.
@@ -208,6 +214,8 @@ func (st *fixtureStack) Pop(ctx context.Context) error {
 
 // Reset resets all fixtures on the stack if the stack is green.
 //
+// Reset clears the dirty flag of the stack.
+//
 // Reset is called in bottom-to-top order. If any fixture fails to reset, the
 // fixture and fixture stack becomes yellow.
 //
@@ -219,6 +227,8 @@ func (st *fixtureStack) Pop(ctx context.Context) error {
 // If the stack is red, Reset does nothing. If the stack is yellow, it is an
 // error to call this method.
 func (st *fixtureStack) Reset(ctx context.Context) error {
+	st.dirty = false
+
 	switch st.Status() {
 	case statusGreen:
 	case statusRed:
@@ -239,6 +249,19 @@ func (st *fixtureStack) Reset(ctx context.Context) error {
 			return nil
 		}
 	}
+	return nil
+}
+
+// MarkDirty marks the fixture stack dirty. It returns an error if the stack is
+// already dirty.
+//
+// The dirty flag can be cleared by calling Reset. MarkDirty can be called
+// before running a test to make sure Reset is called for sure between tests.
+func (st *fixtureStack) MarkDirty() error {
+	if st.dirty {
+		return errors.New("BUG: MarkDirty called for a dirty stack")
+	}
+	st.dirty = true
 	return nil
 }
 

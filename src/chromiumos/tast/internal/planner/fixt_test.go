@@ -221,6 +221,30 @@ func TestFixtureStackStatusTransitionYellow(t *gotesting.T) {
 	}
 }
 
+// TestFixtureStackMarkDirty tests dirtiness check of fixture stacks.
+func TestFixtureStackMarkDirty(t *gotesting.T) {
+	ctx := context.Background()
+	stack := newFixtureStack(&Config{}, newOutputSink())
+
+	if err := stack.MarkDirty(); err != nil {
+		t.Errorf("MarkDirty failed for initial stack: %v", err)
+	}
+	if err := stack.MarkDirty(); err == nil {
+		t.Error("MarkDirty unexpectedly succeeded for a dirty stack")
+	}
+
+	if err := stack.Reset(ctx); err != nil {
+		t.Errorf("Reset failed: %v", err)
+	}
+
+	if err := stack.MarkDirty(); err != nil {
+		t.Errorf("MarkDirty failed for reset stack: %v", err)
+	}
+	if err := stack.MarkDirty(); err == nil {
+		t.Error("MarkDirty unexpectedly succeeded for a dirty stack")
+	}
+}
+
 // TestFixtureStackContext checks context.Context passed to fixture methods.
 func TestFixtureStackContext(t *gotesting.T) {
 	serviceDeps := []string{"svc1", "svc2"}

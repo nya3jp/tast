@@ -839,10 +839,129 @@ func TestRunFixtureResetFailure(t *gotesting.T) {
 		&control.EntityStart{Info: *tests[2].EntityInfo()},
 		&control.EntityLog{Name: tests[2].Name, Text: "Test 2"},
 		&control.EntityEnd{Name: tests[2].Name},
-		// fixt1 fails to reset again. Fixtures are torn down anyway.
-		&control.EntityLog{Name: fixt1.Name, Text: "Reset 1"},
-		&control.EntityLog{Name: fixt1.Name, Text: "Fixture failed to reset: failure; recovering"},
+		// Fixtures are torn down.
 		&control.EntityEnd{Name: fixt2.Name},
+		&control.EntityEnd{Name: fixt1.Name},
+	}
+	if diff := cmp.Diff(msgs, want); diff != "" {
+		t.Error("Output mismatch (-got +want):\n", diff)
+	}
+}
+
+func TestRunFixtureMinimumReset(t *gotesting.T) {
+	fixt1 := &testing.Fixture{
+		Name: "fixt1",
+		Impl: newFakeFixture(withReset(func(ctx context.Context) error {
+			logging.ContextLog(ctx, "Reset 1")
+			return nil
+		})),
+	}
+	fixt2 := &testing.Fixture{
+		Name: "fixt2",
+		Impl: newFakeFixture(withReset(func(ctx context.Context) error {
+			logging.ContextLog(ctx, "Reset 2")
+			return nil
+		})),
+		Parent: "fixt1",
+	}
+	fixt3 := &testing.Fixture{
+		Name: "fixt3",
+		Impl: newFakeFixture(withReset(func(ctx context.Context) error {
+			logging.ContextLog(ctx, "Reset 3")
+			return nil
+		})),
+		Parent: "fixt1",
+	}
+	cfg := &Config{
+		Fixtures: map[string]*testing.Fixture{
+			fixt1.Name: fixt1,
+			fixt2.Name: fixt2,
+			fixt3.Name: fixt3,
+		},
+	}
+
+	tests := []*testing.TestInstance{{
+		Name:    "pkg.Test0",
+		Func:    func(ctx context.Context, s *testing.State) {},
+		Timeout: time.Minute,
+	}, {
+		Name:    "pkg.Test1",
+		Fixture: "fixt1",
+		Func:    func(ctx context.Context, s *testing.State) {},
+		Timeout: time.Minute,
+	}, {
+		Name:    "pkg.Test2",
+		Fixture: "fixt1",
+		Func:    func(ctx context.Context, s *testing.State) {},
+		Timeout: time.Minute,
+	}, {
+		Name:    "pkg.Test3",
+		Fixture: "fixt2",
+		Func:    func(ctx context.Context, s *testing.State) {},
+		Timeout: time.Minute,
+	}, {
+		Name:    "pkg.Test4",
+		Fixture: "fixt2",
+		Func:    func(ctx context.Context, s *testing.State) {},
+		Timeout: time.Minute,
+	}, {
+		Name:    "pkg.Test5",
+		Fixture: "fixt3",
+		Func:    func(ctx context.Context, s *testing.State) {},
+		Timeout: time.Minute,
+	}, {
+		Name:    "pkg.Test6",
+		Fixture: "fixt3",
+		Func:    func(ctx context.Context, s *testing.State) {},
+		Timeout: time.Minute,
+	}}
+
+	msgs := runTestsAndReadAll(t, tests, cfg)
+
+	want := []control.Msg{
+		// pkg.Test0 runs.
+		&control.EntityStart{Info: *tests[0].EntityInfo()},
+		&control.EntityEnd{Name: tests[0].Name},
+		// fixt1 starts.
+		&control.EntityStart{Info: *fixt1.EntityInfo()},
+		// pkg.Test1 runs.
+		&control.EntityStart{Info: *tests[1].EntityInfo()},
+		&control.EntityEnd{Name: tests[1].Name},
+		// fixt1 is reset for pkg.Test2.
+		&control.EntityLog{Name: fixt1.Name, Text: "Reset 1"},
+		// pkg.Test2 runs.
+		&control.EntityStart{Info: *tests[2].EntityInfo()},
+		&control.EntityEnd{Name: tests[2].Name},
+		// fixt1 is reset for pkg.Test3. fixt2 is NOT reset.
+		&control.EntityLog{Name: fixt1.Name, Text: "Reset 1"},
+		// fixt2 starts.
+		&control.EntityStart{Info: *fixt2.EntityInfo()},
+		// pkg.Test3 runs.
+		&control.EntityStart{Info: *tests[3].EntityInfo()},
+		&control.EntityEnd{Name: tests[3].Name},
+		// fixt1 and fixt2 are reset for pkg.Test4.
+		&control.EntityLog{Name: fixt1.Name, Text: "Reset 1"},
+		&control.EntityLog{Name: fixt2.Name, Text: "Reset 2"},
+		// pkg.Test4 runs.
+		&control.EntityStart{Info: *tests[4].EntityInfo()},
+		&control.EntityEnd{Name: tests[4].Name},
+		// fixt2 ends.
+		&control.EntityEnd{Name: fixt2.Name},
+		// fixt1 is reset for pkg.Test5. fixt2 is NOT reset.
+		&control.EntityLog{Name: fixt1.Name, Text: "Reset 1"},
+		// fixt3 starts.
+		&control.EntityStart{Info: *fixt3.EntityInfo()},
+		// pkg.Test5 runs.
+		&control.EntityStart{Info: *tests[5].EntityInfo()},
+		&control.EntityEnd{Name: tests[5].Name},
+		// fixt1 and fixt3 are reset for pkg.Test5.
+		&control.EntityLog{Name: fixt1.Name, Text: "Reset 1"},
+		&control.EntityLog{Name: fixt3.Name, Text: "Reset 3"},
+		// pkg.Test6 runs.
+		&control.EntityStart{Info: *tests[6].EntityInfo()},
+		&control.EntityEnd{Name: tests[6].Name},
+		// fixt3 and fixt1 end. They are NOT reset.
+		&control.EntityEnd{Name: fixt3.Name},
 		&control.EntityEnd{Name: fixt1.Name},
 	}
 	if diff := cmp.Diff(msgs, want); diff != "" {

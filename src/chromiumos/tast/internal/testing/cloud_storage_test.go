@@ -14,7 +14,7 @@ import (
 )
 
 func TestNewCloudStorage(t *testing.T) {
-	cs := NewCloudStorage(nil)
+	cs := NewCloudStorage(nil, "", "")
 	if cs == nil {
 		t.Error("NewCloudStorage returned nil")
 	}
@@ -28,10 +28,10 @@ func TestCloudStorageOpen(t *testing.T) {
 
 	// Create CloudStorage using a fake devserver client.
 	cs := &CloudStorage{
-		newClient: func(ctx context.Context) devserver.Client {
+		newClient: func(ctx context.Context) (devserver.Client, error) {
 			return devserver.NewFakeClient(map[string][]byte{
 				fakeURL: []byte(fakeContent),
-			})
+			}), nil
 		},
 	}
 
@@ -52,8 +52,8 @@ func TestCloudStorageOpen(t *testing.T) {
 func TestCloudStorageOpenMissing(t *testing.T) {
 	// Create CloudStorage using a fake devserver client.
 	cs := &CloudStorage{
-		newClient: func(ctx context.Context) devserver.Client {
-			return devserver.NewFakeClient(nil)
+		newClient: func(ctx context.Context) (devserver.Client, error) {
+			return devserver.NewFakeClient(nil), nil
 		},
 	}
 

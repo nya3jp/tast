@@ -450,6 +450,17 @@ const (
 	EntityFixture EntityType = 1
 )
 
+func (t EntityType) String() string {
+	switch t {
+	case EntityTest:
+		return "test"
+	case EntityFixture:
+		return "fixture"
+	default:
+		return fmt.Sprintf("unknown(%d)", int(t))
+	}
+}
+
 // EntityInfo is a JSON-serializable description of an entity.
 type EntityInfo struct {
 	// See TestInstance for details of the fields.

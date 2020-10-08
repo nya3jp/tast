@@ -327,7 +327,7 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.Entit
 		return err
 	}
 
-	r.cfg.Logger.Log("Started test ", state.result.Name)
+	r.cfg.Logger.Logf("Started %v %s", state.result.Type, state.result.Name)
 	r.setProgress("Running " + state.result.Name)
 	return nil
 }
@@ -372,8 +372,8 @@ func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.EntityE
 	}
 
 	if len(msg.DeprecatedMissingSoftwareDeps) == 0 && len(msg.SkipReasons) == 0 {
-		r.cfg.Logger.Logf("Completed test %s in %v with %d error(s)",
-			msg.Name, msg.Time.Sub(state.result.Start).Round(time.Millisecond), len(state.result.Errors))
+		r.cfg.Logger.Logf("Completed %v %s in %v with %d error(s)",
+			state.result.Type, msg.Name, msg.Time.Sub(state.result.Start).Round(time.Millisecond), len(state.result.Errors))
 	} else {
 		var reasons []string
 		if len(msg.DeprecatedMissingSoftwareDeps) > 0 {

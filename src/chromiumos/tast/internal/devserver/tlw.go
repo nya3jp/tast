@@ -15,6 +15,8 @@ import (
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
 	"go.chromium.org/chromiumos/config/go/api/test/tls/dependencies/longrunning"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"chromiumos/tast/errors"
 )
@@ -55,6 +57,13 @@ func (c *TLWClient) Open(ctx context.Context, gsURL string) (io.ReadCloser, erro
 	cl := tls.NewWiringClient(c.conn)
 	op, err := cl.CacheForDut(ctx, &req)
 	if err != nil {
+		st, ok := status.FromError(err)
+		if !ok {
+			return nil, errors.Wrapf(err, "failed to get status code")
+		}
+		if st.Code() == codes.NotFound {
+			return nil, errors.Wrapf(os.ErrNotExist, "%s not found", gsURL)
+		}
 		// TODO(crbug/1112616): check what RPC error returned by the actual TLW API.
 		return nil, errors.Wrapf(err, "failed to call CacheForDut(%v)", req)
 	}

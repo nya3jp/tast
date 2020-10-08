@@ -14,6 +14,8 @@ import (
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
 	"go.chromium.org/chromiumos/config/go/api/test/tls/dependencies/longrunning"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func TestWiringServer_OpenDutPort(t *testing.T) {
@@ -106,6 +108,13 @@ func TestWiringServer_CacheForDut(t *testing.T) {
 	_, err = cl.CacheForDut(ctx, req)
 	if err == nil {
 		t.Fatalf("CacheForDUT(%q, %q) unexpectedly succeded", req.DutName, req.Url)
+	}
+	st, ok := status.FromError(err)
+	if !ok {
+		t.Fatalf("Failed to get error status: %v", err)
+	}
+	if st.Code() != codes.NotFound {
+		t.Fatalf("Unexpected status code: got %s, want %s", st.Code(), codes.NotFound)
 	}
 
 	req = &tls.CacheForDutRequest{Url: "gs://foo/bar/baz", DutName: "dut002"}

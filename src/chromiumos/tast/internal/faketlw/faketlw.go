@@ -122,7 +122,7 @@ func (s *WiringServer) CacheForDut(ctx context.Context, req *tls.CacheForDutRequ
 	}
 	_, ok := s.cfg.cacheFileMap[req.Url]
 	if !ok {
-		return nil, fmt.Errorf("not found in cache file map: %s", req.Url)
+		return nil, status.Errorf(codes.NotFound, "not found in cache file map: %s", req.Url)
 	}
 
 	operationName := fmt.Sprintf("CacheForDUTOperation_%s", req.Url)
@@ -181,7 +181,7 @@ func (s *WiringServer) finishOperation(name string) (*longrunning.Operation, err
 	o, ok := s.operation(name)
 	if !ok {
 		// TODO(yamaguchi): Check the exact error format returned by the real service.
-		return nil, status.Errorf(codes.NotFound, "operation name %s not found", name)
+		return nil, status.Errorf(codes.InvalidArgument, "operation name %s not found", name)
 	}
 	cacheURL, err := s.fillCache(o.srcURL)
 	if err != nil {

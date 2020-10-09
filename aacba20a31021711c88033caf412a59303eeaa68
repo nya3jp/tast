@@ -1,6 +1,29 @@
 {
   "comments": [
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "db3e6804_eb5f8741",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-09T02:58:25Z",
+      "side": 1,
+      "message": "Let\u0027s fill this field.",
+      "range": {
+        "startLine": 14,
+        "startChar": 5,
+        "endLine": 14,
+        "endChar": 8
+      },
+      "revId": "aacba20a31021711c88033caf412a59303eeaa68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "9ff154c7_fffd78c4",
@@ -14,6 +37,46 @@
       "writtenOn": "2020-10-07T05:29:06Z",
       "side": 1,
       "message": "PTAL w/ some questions.",
+      "revId": "aacba20a31021711c88033caf412a59303eeaa68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "43f046f3_45a1a812",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-09T02:58:25Z",
+      "side": 1,
+      "message": "Hi, sorry for delay. My first pass...\n",
+      "revId": "aacba20a31021711c88033caf412a59303eeaa68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6999868e_718e105d",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/config.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-09T02:58:25Z",
+      "side": 1,
+      "message": "huge nit: How about tlwServerForDUT for symmetricity with tlwServer?",
+      "range": {
+        "startLine": 141,
+        "startChar": 1,
+        "endLine": 141,
+        "endChar": 14
+      },
       "revId": "aacba20a31021711c88033caf412a59303eeaa68",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -37,6 +100,52 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "d73cbf66_40d070b9",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-09T02:58:25Z",
+      "side": 1,
+      "message": "We have to close f once we\u0027re done with it.",
+      "range": {
+        "startLine": 108,
+        "startChar": 1,
+        "endLine": 108,
+        "endChar": 2
+      },
+      "revId": "aacba20a31021711c88033caf412a59303eeaa68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "50a1c3f8_0bb2b15f",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-09T02:58:25Z",
+      "side": 1,
+      "message": "style: Please capitalize.\n\nAlso it\u0027s nice to mention why we forward the port, e.g.\n\n TLW server port forwarding failed: %v\n\n Failed to set up remote-to-local port forwarding for TLW server: %v",
+      "range": {
+        "startLine": 109,
+        "startChar": 19,
+        "endLine": 109,
+        "endChar": 25
+      },
+      "revId": "aacba20a31021711c88033caf412a59303eeaa68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "46711da6_8fc6c967",
         "filename": "src/chromiumos/tast/cmd/tast/internal/run/run.go",
         "patchSetId": 5
@@ -48,6 +157,116 @@
       "writtenOn": "2020-10-07T09:24:36Z",
       "side": 1,
       "message": "This should also stop booting ephemeral devserer when using TLW, otherwise it will fail in devserver.NewClient, because both TLW and devservers will be set. (startEphemeralDevserver adds a devserver address to cfg.)",
+      "revId": "aacba20a31021711c88033caf412a59303eeaa68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ac4dadb0_a0b663fc",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-09T02:58:25Z",
+      "side": 1,
+      "message": "Yes, I think we can skip starting ephemeral devserver when cfg.tlwServer !\u003d \"\".",
+      "parentUuid": "46711da6_8fc6c967",
+      "revId": "aacba20a31021711c88033caf412a59303eeaa68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1ee401ed_7a1ae7cf",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-09T02:58:25Z",
+      "side": 1,
+      "message": "style: no period at the end",
+      "range": {
+        "startLine": 120,
+        "startChar": 47,
+        "endLine": 120,
+        "endChar": 48
+      },
+      "revId": "aacba20a31021711c88033caf412a59303eeaa68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "626f38b3_c013f65f",
+        "filename": "src/chromiumos/tast/ssh/conn.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 302,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-09T02:58:25Z",
+      "side": 1,
+      "message": "Can we allow specifying remote addr, just like NewForwarder?\n\nNote that this package is shared to tests, so we have to design new APIs carefully.",
+      "range": {
+        "startLine": 302,
+        "startChar": 34,
+        "endLine": 302,
+        "endChar": 50
+      },
+      "revId": "aacba20a31021711c88033caf412a59303eeaa68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "45dfa013_52d8741b",
+        "filename": "src/chromiumos/tast/ssh/conn.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 302,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-09T02:58:25Z",
+      "side": 1,
+      "message": "\"NewForwarder\" and \"NewRemoteForwarder\" sounds assymmetric. Also it\u0027s not very clear whether \"remote forwarder\" forwards connection from remote to local, or from local to remote.\n\nI recommend adding \"ForwardLocalToRemote\" and \"ForwardRemoteToLocal\", and deprecating \"NewForwarder\". We don\u0027t need to delete NewForwarder now since there are usage in tests (but you\u0027re welcome to do it in a follow-up CL).",
+      "range": {
+        "startLine": 302,
+        "startChar": 15,
+        "endLine": 302,
+        "endChar": 33
+      },
+      "revId": "aacba20a31021711c88033caf412a59303eeaa68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fd831b0e_41ef7a1c",
+        "filename": "src/chromiumos/tast/ssh/forwarder.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-09T02:58:25Z",
+      "side": 1,
+      "message": "We have to update this comment too...",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 20,
+        "endChar": 70
+      },
       "revId": "aacba20a31021711c88033caf412a59303eeaa68",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -71,6 +290,75 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "b1c8ed69_60e2ca83",
+        "filename": "src/chromiumos/tast/ssh/forwarder.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-09T02:58:25Z",
+      "side": 1,
+      "message": "Let us update this function to take net.Listener instead of localAddr. Then we can reuse this function for remote-to-local forwarders.",
+      "range": {
+        "startLine": 35,
+        "startChar": 18,
+        "endLine": 35,
+        "endChar": 34
+      },
+      "revId": "aacba20a31021711c88033caf412a59303eeaa68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "76236fb1_ec009955",
+        "filename": "src/chromiumos/tast/ssh/forwarder.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-09T02:58:25Z",
+      "side": 1,
+      "message": "need to update.",
+      "range": {
+        "startLine": 67,
+        "startChar": 29,
+        "endLine": 67,
+        "endChar": 56
+      },
+      "revId": "aacba20a31021711c88033caf412a59303eeaa68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "56af7a43_8e80fa0d",
+        "filename": "src/chromiumos/tast/ssh/forwarder.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-09T02:58:25Z",
+      "side": 1,
+      "message": "We have to rename this method. Maybe ListenAddr?",
+      "range": {
+        "startLine": 75,
+        "startChar": 0,
+        "endLine": 78,
+        "endChar": 1
+      },
+      "revId": "aacba20a31021711c88033caf412a59303eeaa68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "eea85d6e_61e99838",
         "filename": "src/chromiumos/tast/ssh/forwarder.go",
         "patchSetId": 5
@@ -88,6 +376,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "f6b38c98_4112fb8e",
+        "filename": "src/chromiumos/tast/ssh/forwarder.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-09T02:58:25Z",
+      "side": 1,
+      "message": "It\u0027s difficult, but src and dst may be okay. Though data forwarding is bidirectional, port forwarding is unidirectional.",
+      "parentUuid": "eea85d6e_61e99838",
+      "revId": "aacba20a31021711c88033caf412a59303eeaa68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "25994ea4_75cc385f",
         "filename": "src/chromiumos/tast/ssh/forwarder.go",
         "patchSetId": 5
@@ -99,6 +405,24 @@
       "writtenOn": "2020-10-07T05:29:06Z",
       "side": 1,
       "message": "I am not sure what unit test should be written for this function.\nIs it not needed because this shares most of the logic as newForwarder?\nIf we were to test this, should Conn be replaced with a test-specific derived class that partiall mocks conn.ListenTCP?",
+      "revId": "aacba20a31021711c88033caf412a59303eeaa68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "94f1e177_4a0df691",
+        "filename": "src/chromiumos/tast/ssh/forwarder.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-09T02:58:25Z",
+      "side": 1,
+      "message": "We can think of Forwarder as a general forwarding type that takes net.Listener and connFunc. As I suggested above I believe we can use the same constructor (newForwarder) for both directions, then we don\u0027t need to test two directions differently.",
+      "parentUuid": "25994ea4_75cc385f",
       "revId": "aacba20a31021711c88033caf412a59303eeaa68",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

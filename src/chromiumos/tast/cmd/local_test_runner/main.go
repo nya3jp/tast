@@ -146,9 +146,9 @@ func main() {
 			"smartdim":               "smartdim",
 			"storage_wearout_detect": "storage_wearout_detect && !betty && !tast_vm", // Skip wearout checks for VMs and eMMC < 5.0
 			"tablet_mode":            "touchview",
-			"tpm":                    "!mocktpm && !tast_vm",
-			"tpm1":                   "!mocktpm && !tast_vm && !tpm2", // Indicate tpm1.2 is available
-			"tpm2":                   "!mocktpm && !tast_vm && tpm2",  // Indicate tpm2 is available
+			"tpm":                    "!tast_vm",
+			"tpm1":                   "!tast_vm && !tpm2", // Indicate tpm1.2 is available
+			"tpm2":                   "!tast_vm && tpm2",  // Indicate tpm2 is available
 			"transparent_hugepage":   "transparent_hugepage",
 			"untrusted_vm":           `"kernel-4_19" || "kernel-5_4"`,
 			"usbguard":               "usbguard",

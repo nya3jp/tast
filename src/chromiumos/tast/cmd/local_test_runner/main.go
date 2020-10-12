@@ -137,7 +137,7 @@ func main() {
 			"proprietary_codecs":     "chrome_internal || chrome_media",
 			"pstore":                 "!betty && !tast_vm", // These boards don't support pstore: https://crbug.com/971899
 			"qemu":                   "betty || tast_vm",
-			"reboot":                 "!betty && !tast_vm",           // weird missing-runner-after-reboot bug: https://crbug.com/909955
+			"reboot":                 "!tast_vm",                     // weird missing-runner-after-reboot bug: https://crbug.com/909955
 			"screenshot":             "display_backlight && !rk3399", // screenshot command broken on RK3399: https://crbug.com/880597
 			"selinux":                "selinux",
 			"selinux_current":        "selinux && !selinux_experimental",
@@ -146,9 +146,9 @@ func main() {
 			"smartdim":               "smartdim",
 			"storage_wearout_detect": "storage_wearout_detect && !betty && !tast_vm", // Skip wearout checks for VMs and eMMC < 5.0
 			"tablet_mode":            "touchview",
-			"tpm":                    "!mocktpm && !tast_vm",
-			"tpm1":                   "!mocktpm && !tast_vm && !tpm2", // Indicate tpm1.2 is available
-			"tpm2":                   "!mocktpm && !tast_vm && tpm2",  // Indicate tpm2 is available
+			"tpm":                    "!tast_vm",
+			"tpm1":                   "!tast_vm && !tpm2", // Indicate tpm1.2 is available
+			"tpm2":                   "!tast_vm && tpm2",  // Indicate tpm2 is available
 			"transparent_hugepage":   "transparent_hugepage",
 			"untrusted_vm":           `"kernel-4_19" || "kernel-5_4"`,
 			"usbguard":               "usbguard",

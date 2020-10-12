@@ -26,6 +26,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "189c2179_72e05a62",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-12T06:17:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "db3e6804_eb5f8741",
+      "range": {
+        "startLine": 14,
+        "startChar": 5,
+        "endLine": 14,
+        "endChar": 8
+      },
+      "revId": "aacba20a31021711c88033caf412a59303eeaa68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "9ff154c7_fffd78c4",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 5
@@ -81,6 +105,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a97943d4_c2b5fd3c",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/config.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-12T06:17:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6999868e_718e105d",
+      "range": {
+        "startLine": 141,
+        "startChar": 1,
+        "endLine": 141,
+        "endChar": 14
+      },
+      "revId": "aacba20a31021711c88033caf412a59303eeaa68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c5ffd4e5_1ac47c08",
@@ -121,6 +169,48 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0f54f2ea_8c9103c4",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-12T06:17:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d73cbf66_40d070b9",
+      "range": {
+        "startLine": 108,
+        "startChar": 1,
+        "endLine": 108,
+        "endChar": 2
+      },
+      "revId": "aacba20a31021711c88033caf412a59303eeaa68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "09be3f3b_fffb51e7",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-12T06:17:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c5ffd4e5_1ac47c08",
+      "revId": "aacba20a31021711c88033caf412a59303eeaa68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "50a1c3f8_0bb2b15f",
@@ -134,6 +224,30 @@
       "writtenOn": "2020-10-09T02:58:25Z",
       "side": 1,
       "message": "style: Please capitalize.\n\nAlso it\u0027s nice to mention why we forward the port, e.g.\n\n TLW server port forwarding failed: %v\n\n Failed to set up remote-to-local port forwarding for TLW server: %v",
+      "range": {
+        "startLine": 109,
+        "startChar": 19,
+        "endLine": 109,
+        "endChar": 25
+      },
+      "revId": "aacba20a31021711c88033caf412a59303eeaa68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "22f69b96_bf21551a",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-12T06:17:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "50a1c3f8_0bb2b15f",
       "range": {
         "startLine": 109,
         "startChar": 19,
@@ -179,6 +293,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "59c988eb_5806f44a",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-12T06:17:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ac4dadb0_a0b663fc",
+      "revId": "aacba20a31021711c88033caf412a59303eeaa68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1ee401ed_7a1ae7cf",
@@ -192,6 +324,30 @@
       "writtenOn": "2020-10-09T02:58:25Z",
       "side": 1,
       "message": "style: no period at the end",
+      "range": {
+        "startLine": 120,
+        "startChar": 47,
+        "endLine": 120,
+        "endChar": 48
+      },
+      "revId": "aacba20a31021711c88033caf412a59303eeaa68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fc251777_9b9c4dd3",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-12T06:17:09Z",
+      "side": 1,
+      "message": "This was not right when run without TLW server.\nRevised to split the test for w/TLW.",
+      "parentUuid": "1ee401ed_7a1ae7cf",
       "range": {
         "startLine": 120,
         "startChar": 47,
@@ -248,6 +404,54 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "451a49a6_8f5dd342",
+        "filename": "src/chromiumos/tast/ssh/conn.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 302,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-12T06:17:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "45dfa013_52d8741b",
+      "range": {
+        "startLine": 302,
+        "startChar": 15,
+        "endLine": 302,
+        "endChar": 33
+      },
+      "revId": "aacba20a31021711c88033caf412a59303eeaa68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0602f1df_885b0b5f",
+        "filename": "src/chromiumos/tast/ssh/conn.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 302,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-12T06:17:09Z",
+      "side": 1,
+      "message": "Done.\nI overlooked the case forwarding from another host in the remote network that is not the ssh server itself.",
+      "parentUuid": "626f38b3_c013f65f",
+      "range": {
+        "startLine": 302,
+        "startChar": 34,
+        "endLine": 302,
+        "endChar": 50
+      },
+      "revId": "aacba20a31021711c88033caf412a59303eeaa68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "fd831b0e_41ef7a1c",
@@ -261,6 +465,30 @@
       "writtenOn": "2020-10-09T02:58:25Z",
       "side": 1,
       "message": "We have to update this comment too...",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 20,
+        "endChar": 70
+      },
+      "revId": "aacba20a31021711c88033caf412a59303eeaa68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "09f2c417_bba82ed8",
+        "filename": "src/chromiumos/tast/ssh/forwarder.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-12T06:17:09Z",
+      "side": 1,
+      "message": "Done. Does this make sense?",
+      "parentUuid": "fd831b0e_41ef7a1c",
       "range": {
         "startLine": 13,
         "startChar": 0,
@@ -311,6 +539,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bc3b9013_a735de15",
+        "filename": "src/chromiumos/tast/ssh/forwarder.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-12T06:17:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b1c8ed69_60e2ca83",
+      "range": {
+        "startLine": 35,
+        "startChar": 18,
+        "endLine": 35,
+        "endChar": 34
+      },
+      "revId": "aacba20a31021711c88033caf412a59303eeaa68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "76236fb1_ec009955",
@@ -334,6 +586,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "017bda1a_af5ede2d",
+        "filename": "src/chromiumos/tast/ssh/forwarder.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-12T06:17:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "76236fb1_ec009955",
+      "range": {
+        "startLine": 67,
+        "startChar": 29,
+        "endLine": 67,
+        "endChar": 56
+      },
+      "revId": "aacba20a31021711c88033caf412a59303eeaa68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "56af7a43_8e80fa0d",
@@ -347,6 +623,30 @@
       "writtenOn": "2020-10-09T02:58:25Z",
       "side": 1,
       "message": "We have to rename this method. Maybe ListenAddr?",
+      "range": {
+        "startLine": 75,
+        "startChar": 0,
+        "endLine": 78,
+        "endChar": 1
+      },
+      "revId": "aacba20a31021711c88033caf412a59303eeaa68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5091bf55_0098bd60",
+        "filename": "src/chromiumos/tast/ssh/forwarder.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-12T06:17:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "56af7a43_8e80fa0d",
       "range": {
         "startLine": 75,
         "startChar": 0,
@@ -392,6 +692,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "78ddd678_f2b2c3bd",
+        "filename": "src/chromiumos/tast/ssh/forwarder.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-12T06:17:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f6b38c98_4112fb8e",
+      "revId": "aacba20a31021711c88033caf412a59303eeaa68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "25994ea4_75cc385f",
@@ -423,6 +741,24 @@
       "side": 1,
       "message": "We can think of Forwarder as a general forwarding type that takes net.Listener and connFunc. As I suggested above I believe we can use the same constructor (newForwarder) for both directions, then we don\u0027t need to test two directions differently.",
       "parentUuid": "25994ea4_75cc385f",
+      "revId": "aacba20a31021711c88033caf412a59303eeaa68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0da3bc7d_7ffcf5f1",
+        "filename": "src/chromiumos/tast/ssh/forwarder.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-12T06:17:09Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "94f1e177_4a0df691",
       "revId": "aacba20a31021711c88033caf412a59303eeaa68",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

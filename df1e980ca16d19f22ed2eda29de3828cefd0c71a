@@ -16,6 +16,24 @@
       "message": "Required data file crostini_vm_amd64.zip missing: failed to download gs://termina-component-testing/88/13519.0.0/chromeos_intel64-archive/files.zip: failed to download from http://100.115.219.139:8082: got status 404\nRequired data file crostini_container_metadata_buster_amd64.tar.xz missing: failed to download gs://cros-containers-staging/88/images/debian/buster/amd64/test/20200929_00:34/lxd.tar.xz: failed to download from http://100.115.219.139:8082: got status 404\nRequired data file crostini_container_rootfs_buster_amd64.tar.xz missing: failed to download gs://cros-containers-staging/88/images/debian/buster/amd64/test/20200929_00:34/rootfs.tar.xz: failed to download from http://100.115.168.195:8082: got status 404\n\nIt looks like the devservers in the labs aren\u0027t serving files from the new buckets. Is there something else that needs to be changed to make this work?",
       "revId": "df1e980ca16d19f22ed2eda29de3828cefd0c71a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e4048923_68c242b4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1309946
+      },
+      "writtenOn": "2020-10-13T16:36:14Z",
+      "side": 1,
+      "message": "I tried running a local dev server on my workstation with \"start_devserver --static_dir\u003d/tmp/static --infra_removal\" to see if the same issue occurred, but it worked just fine, all the files were staged correctly and sent to the device.",
+      "parentUuid": "6ddbf7eb_47ea3a19",
+      "revId": "df1e980ca16d19f22ed2eda29de3828cefd0c71a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

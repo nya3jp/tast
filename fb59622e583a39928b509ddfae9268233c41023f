@@ -1,0 +1,136 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c810cc5c_37877751",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-13T05:57:36Z",
+      "side": 1,
+      "message": "the_dut doesn\u0027t appear. Maybe \"dut001\"?",
+      "range": {
+        "startLine": 117,
+        "startChar": 38,
+        "endLine": 117,
+        "endChar": 45
+      },
+      "revId": "fb59622e583a39928b509ddfae9268233c41023f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1c3df1a7_2cc0b4b6",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-13T05:57:36Z",
+      "side": 1,
+      "message": "Don\u0027t we need to assign td.cfg.Target \u003d targetName?",
+      "revId": "fb59622e583a39928b509ddfae9268233c41023f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "941f3db1_9dd5ba2f",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-13T05:57:36Z",
+      "side": 1,
+      "message": "typo: private",
+      "range": {
+        "startLine": 127,
+        "startChar": 20,
+        "endLine": 127,
+        "endChar": 27
+      },
+      "revId": "fb59622e583a39928b509ddfae9268233c41023f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "536516cd_fc8ffbd8",
+        "filename": "src/chromiumos/tast/ssh/conn.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 303,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-13T05:57:36Z",
+      "side": 1,
+      "message": "While you\u0027re at it, can you add \"network\" parameter to ForwardLocalToRemote/ForwardRemoteToLocal so that we can extend it to forward non-TCP connections (e.g. Unix domain sockets) later?\n\nWe don\u0027t need to support non-TCP connections at this moment. That is, we can have a hard-coded allowlist of supported protocols (\"tcp\", \"tcp4\", \"tcp6\").",
+      "range": {
+        "startLine": 303,
+        "startChar": 57,
+        "endLine": 303,
+        "endChar": 62
+      },
+      "revId": "fb59622e583a39928b509ddfae9268233c41023f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "055d9958_70930eca",
+        "filename": "src/chromiumos/tast/ssh/conn.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 312,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-13T05:57:36Z",
+      "side": 1,
+      "message": "It\u0027s nice to have symmetricity in API, i.e. accepting remoteAddr in string.",
+      "range": {
+        "startLine": 312,
+        "startChar": 36,
+        "endLine": 312,
+        "endChar": 59
+      },
+      "revId": "fb59622e583a39928b509ddfae9268233c41023f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bd1b5496_3bcea7c6",
+        "filename": "src/chromiumos/tast/ssh/forwarder.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-13T05:57:36Z",
+      "side": 1,
+      "message": "net.Listener is an interface, so let us pass them as values.\nhttps://github.com/golang/go/wiki/CodeReviewComments#pass-values",
+      "range": {
+        "startLine": 36,
+        "startChar": 27,
+        "endLine": 36,
+        "endChar": 40
+      },
+      "revId": "fb59622e583a39928b509ddfae9268233c41023f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

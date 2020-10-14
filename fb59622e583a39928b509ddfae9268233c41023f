@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a05fa2d9_2465474e",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-14T05:41:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c810cc5c_37877751",
+      "range": {
+        "startLine": 117,
+        "startChar": 38,
+        "endLine": 117,
+        "endChar": 45
+      },
+      "revId": "fb59622e583a39928b509ddfae9268233c41023f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1c3df1a7_2cc0b4b6",
@@ -41,6 +65,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cb9fd54a_c0d53423",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-14T05:41:52Z",
+      "side": 1,
+      "message": "The test connects to the ssh server started in the function in sshtest package, and its host name is filled to cfg.Target by newLocalTestData.\nTherefore we should keep it as-is for the test to succeed.",
+      "parentUuid": "1c3df1a7_2cc0b4b6",
+      "revId": "fb59622e583a39928b509ddfae9268233c41023f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "941f3db1_9dd5ba2f",
@@ -54,6 +96,30 @@
       "writtenOn": "2020-10-13T05:57:36Z",
       "side": 1,
       "message": "typo: private",
+      "range": {
+        "startLine": 127,
+        "startChar": 20,
+        "endLine": 127,
+        "endChar": 27
+      },
+      "revId": "fb59622e583a39928b509ddfae9268233c41023f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2ccd51cc_4b351934",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-14T05:41:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "941f3db1_9dd5ba2f",
       "range": {
         "startLine": 127,
         "startChar": 20,
@@ -87,6 +153,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "315b2af1_0c8d70a6",
+        "filename": "src/chromiumos/tast/ssh/conn.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 303,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-14T05:41:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "536516cd_fc8ffbd8",
+      "range": {
+        "startLine": 303,
+        "startChar": 57,
+        "endLine": 303,
+        "endChar": 62
+      },
+      "revId": "fb59622e583a39928b509ddfae9268233c41023f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "055d9958_70930eca",
@@ -110,6 +200,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e4285adf_505c2e00",
+        "filename": "src/chromiumos/tast/ssh/conn.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 312,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-14T05:41:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "055d9958_70930eca",
+      "range": {
+        "startLine": 312,
+        "startChar": 36,
+        "endLine": 312,
+        "endChar": 59
+      },
+      "revId": "fb59622e583a39928b509ddfae9268233c41023f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "bd1b5496_3bcea7c6",
@@ -123,6 +237,30 @@
       "writtenOn": "2020-10-13T05:57:36Z",
       "side": 1,
       "message": "net.Listener is an interface, so let us pass them as values.\nhttps://github.com/golang/go/wiki/CodeReviewComments#pass-values",
+      "range": {
+        "startLine": 36,
+        "startChar": 27,
+        "endLine": 36,
+        "endChar": 40
+      },
+      "revId": "fb59622e583a39928b509ddfae9268233c41023f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "62e3d46b_6d3cdacf",
+        "filename": "src/chromiumos/tast/ssh/forwarder.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-14T05:41:52Z",
+      "side": 1,
+      "message": "Done\nSame for Forwarder struct.",
+      "parentUuid": "bd1b5496_3bcea7c6",
       "range": {
         "startLine": 36,
         "startChar": 27,

@@ -77,6 +77,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 			attrs: []string{"group:runtime_probe"},
 		},
 		{
+			attrs: []string{"group:rapid-ime-decoder"},
+		},
+		{
 			attrs: []string{"group:storage-qual"},
 		},
 

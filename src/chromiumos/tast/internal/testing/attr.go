@@ -209,6 +209,11 @@ Tests in this group are not used for build verification.`,
 		Desc:     `A group of tests that must pass reliably prior to lab deployments.`,
 	},
 	{
+		Name:     "rapid-ime-decoder",
+		Contacts: []string{"essential-inputs-team@google.com"},
+		Desc:     `A group of tests to validate libIMEdecoder.so releases.`,
+	},
+	{
 		Name:     "runtime_probe",
 		Contacts: []string{"chromeos-runtime-probe@google.com"},
 		Desc: `A group of tests that tests the functionality of runtime probe.

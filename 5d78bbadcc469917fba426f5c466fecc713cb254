@@ -18,6 +18,40 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "eb08c5a8_0cdeb7b5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-10-14T23:49:07Z",
+      "side": 1,
+      "message": "I have a question regarding the code. Please see my comment.\n\nThanks\n\nSeewai",
+      "revId": "5d78bbadcc469917fba426f5c466fecc713cb254",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "709fefed_cdacb42b",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/local.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-10-14T23:49:07Z",
+      "side": 1,
+      "message": "Sorry, I am just a bit confused. Why do you pass pass 127.0.0.1:0 as remote address and  cfg.tlwServer?\n\nfunc (s *Conn) ForwardRemoteToLocal(protocol, remoteAddr, localAddr string, errFunc func(error)) (*Forwarder, error)\n\nSome comments here will help. I always think 127.0.0.1 as local install of remote. Thanks.",
+      "revId": "5d78bbadcc469917fba426f5c466fecc713cb254",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ade3a995_70085586",

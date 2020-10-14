@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d0987faa_c5fc915c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-10-14T16:31:07Z",
+      "side": 1,
+      "message": "Looks good to me. Just one nit comment.",
+      "revId": "0339e61304ef49dc953eb8dc8609dc6d0d08fb5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9baa5101_0644623e",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 184,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-10-14T16:31:07Z",
+      "side": 1,
+      "message": "nit: I suggest \"invalid argument %s\"",
+      "revId": "0339e61304ef49dc953eb8dc8609dc6d0d08fb5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

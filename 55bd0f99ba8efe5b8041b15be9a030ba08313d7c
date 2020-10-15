@@ -16,6 +16,23 @@
       "message": "+yamaguchi for approval (seewaifu doesn\u0027t have a committer right yet)\n",
       "revId": "55bd0f99ba8efe5b8041b15be9a030ba08313d7c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cd90f8fb_aa52e489",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-10-15T00:18:45Z",
+      "side": 1,
+      "message": "Looks good.",
+      "revId": "55bd0f99ba8efe5b8041b15be9a030ba08313d7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

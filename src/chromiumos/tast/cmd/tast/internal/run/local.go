@@ -12,7 +12,10 @@ import (
 	"io"
 	"net"
 	"path/filepath"
+	"sync"
 	"time"
+
+	"golang.org/x/sync/errgroup"
 
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/ctxutil"
@@ -30,6 +33,60 @@ const (
 	defaultLocalRunnerWaitTimeout = 10 * time.Second // default timeout for waiting for local_test_runner to exit
 	heartbeatInterval             = time.Second      // interval for heartbeat messages
 )
+
+func connectToCompanionTargets(ctx context.Context, cfg *Config) ([]*ssh.Conn, error) {
+	ctx, st := timing.Start(ctx, "connect")
+	defer st.End()
+	cfg.Logger.Status("Connecting to companion targets")
+
+	var hsts = make([]*ssh.Conn, 0)
+
+	var g errgroup.Group
+	var mux sync.Mutex
+
+	for _, tgts := range cfg.compTargets {
+		for _, tgt := range tgts {
+			tgt := tgt
+			g.Go(func() error {
+				cfg.Logger.Logf("Connecting to %s", tgt)
+
+				o := ssh.Options{
+					ConnectTimeout:       sshConnectTimeout,
+					ConnectRetries:       cfg.sshRetries,
+					ConnectRetryInterval: sshRetryInterval,
+					KeyFile:              cfg.KeyFile,
+					KeyDir:               cfg.KeyDir,
+					WarnFunc:             func(s string) { cfg.Logger.Log(s) },
+				}
+				if err := ssh.ParseTarget(tgt, &o); err != nil {
+					return err
+				}
+				hst, err := ssh.New(ctx, &o)
+				if err != nil {
+					return err
+				}
+
+				mux.Lock()
+				defer mux.Unlock()
+				hsts = append(hsts, hst)
+
+				return nil
+			})
+		}
+	}
+
+	cleanHosts := func() {
+		for _, hst := range hsts {
+			hst.Close(ctx)
+		}
+	}
+
+	if err := g.Wait(); err != nil {
+		cleanHosts()
+		return nil, err
+	}
+	return hsts, nil
+}
 
 // connectToTarget establishes an SSH connection to the target specified in cfg.
 // The connection will be cached in cfg and should not be closed by the caller.

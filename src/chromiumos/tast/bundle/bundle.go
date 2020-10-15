@@ -15,7 +15,10 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"sync"
 	"time"
+
+	"golang.org/x/sync/errgroup"
 
 	"chromiumos/tast/dut"
 	"chromiumos/tast/internal/command"
@@ -257,15 +260,29 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 			// It is okay to ignore the error since we've finished testing at this point.
 			dt.Close(ctx)
 		}()
+		cdts, err := connectToCompanionTargets(ctx, args, cfg.beforeReboot)
+		if err != nil {
+			return command.NewStatusErrorf(statusError, "failed to connect to companion DUTs: %v", err)
+		}
+		defer func() {
+			testcontext.Log(ctx, "Disconnecting from companion DUTs")
+			for _, targets := range cdts {
+				for _, dt := range targets {
+					dt.Close(ctx)
+				}
+			}
+		}()
 
 		rd = &testing.RemoteData{
 			Meta: &testing.Meta{
-				TastPath: args.RunTests.TastPath,
-				Target:   args.RunTests.Target,
-				RunFlags: args.RunTests.RunFlags,
+				TastPath:    args.RunTests.TastPath,
+				Target:      args.RunTests.Target,
+				CompTargets: args.RunTests.CompTargets,
+				RunFlags:    args.RunTests.RunFlags,
 			},
-			RPCHint: testing.NewRPCHint(args.RunTests.LocalBundleDir, args.RunTests.TestVars),
-			DUT:     dt,
+			RPCHint:  testing.NewRPCHint(args.RunTests.LocalBundleDir, args.RunTests.TestVars),
+			DUT:      dt,
+			CompDUTs: cdts,
 		}
 	}
 
@@ -294,6 +311,42 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		}
 	}
 	return nil
+}
+
+func connectToCompanionTargets(ctx context.Context, args *Args, beforeReboot func(context.Context, *dut.DUT) error) (_ map[string][]*dut.DUT, retErr error) {
+	dts := make(map[string][]*dut.DUT)
+
+	if len(args.RunTests.CompTargets) == 0 {
+		return dts, nil
+	}
+
+	var g errgroup.Group
+	var mux sync.Mutex
+	for role, tgts := range args.RunTests.CompTargets {
+		role, tgts := role, tgts
+		for _, tgt := range tgts {
+			tgt := tgt
+			g.Go(func() error {
+				dt, err := dut.New(tgt, args.RunTests.KeyFile, args.RunTests.KeyDir, beforeReboot)
+				if err != nil {
+					return err
+				}
+				if err := dt.Connect(ctx); err != nil {
+					return err
+				}
+				mux.Lock()
+				defer mux.Unlock()
+				dts[role] = append(dts[role], dt)
+
+				return nil
+			})
+		}
+	}
+
+	if err := g.Wait(); err != nil {
+		return nil, err
+	}
+	return dts, nil
 }
 
 // connectToTarget connects to the target DUT and returns its connection.

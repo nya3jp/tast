@@ -65,6 +65,7 @@ func runRemoteTestsOnce(ctx context.Context, cfg *Config, patterns []string) (re
 				DataDir:     cfg.remoteDataDir,
 				OutDir:      cfg.remoteOutDir,
 				Target:      cfg.Target,
+				CompTargets: cfg.compTargets,
 				KeyFile:     cfg.KeyFile,
 				KeyDir:      cfg.KeyDir,
 				TastPath:    exe,

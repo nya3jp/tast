@@ -109,6 +109,11 @@ type RemoteData struct {
 	RPCHint *RPCHint
 	// DUT is an SSH connection shared among remote entities.
 	DUT *dut.DUT
+	// CompDUTs is an SSH connection shared among remote entities.
+	// The key of map would be any string. For example:
+	// `tast run -companionduts='host:10.240.31.174' -companionduts='presenter:10.240.31.174' ...`
+	// map would have two keys named "host" and "presenter" and each value of key has a DUT.
+	CompDUTs map[string][]*dut.DUT
 }
 
 // Meta contains information about how the "tast" process used to initiate testing was run.
@@ -118,6 +123,11 @@ type Meta struct {
 	TastPath string
 	// Target contains information about the DUT as "[<user>@]host[:<port>]".
 	Target string
+	// CompanionTargets contains information about the companion DUTs as "[<user>@]host[:<port>]".
+	// The key of map would be any string. For example:
+	// `tast run -companionduts='host:10.240.31.174' -companionduts='presenter:10.240.31.174' ...`
+	// map would have two keys named "host" and "presenter" and each value of key has a DUT.
+	CompTargets map[string][]string
 	// Flags contains flags that should be passed to the tast command's "list" and "run" subcommands.
 	RunFlags []string
 }
@@ -400,6 +410,24 @@ func (s *globalMixin) DUT() *dut.DUT {
 		panic("DUT unavailable (running non-remote?)")
 	}
 	return s.entityRoot.cfg.RemoteData.DUT
+}
+
+// CompDUTs returns a bunch shared SSH connections.
+// It can only be called by remote entities.
+func (s *globalMixin) CompDUTs() map[string][]*dut.DUT {
+	if s.entityRoot.cfg.RemoteData == nil {
+		panic("DUT unavailable (running non-remote?)")
+	}
+	return s.entityRoot.cfg.RemoteData.CompDUTs
+}
+
+// CompDUTsByRole returns a bunch shared SSH connections by a specific role.
+// It can only be called by remote entities.
+func (s *globalMixin) CompDUTsByRole(role string) []*dut.DUT {
+	if s.entityRoot.cfg.RemoteData == nil {
+		panic("DUT unavailable (running non-remote?)")
+	}
+	return s.entityRoot.cfg.RemoteData.CompDUTs[role]
 }
 
 // Log formats its arguments using default formatting and logs them.

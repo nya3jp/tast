@@ -78,6 +78,8 @@ type Config struct {
 	tastDir  string // base directory under which files are written
 	trunkDir string // path to Chrome OS checkout
 
+	compTargets map[string][]string //companion running DUTs
+
 	runLocal  bool // whether to run local tests
 	runRemote bool // whether to run remote tests
 
@@ -154,10 +156,11 @@ type Config struct {
 // trunkDir is the path to the Chrome OS checkout (within the chroot).
 func NewConfig(mode Mode, tastDir, trunkDir string) *Config {
 	return &Config{
-		mode:     mode,
-		tastDir:  tastDir,
-		trunkDir: trunkDir,
-		testVars: make(map[string]string),
+		mode:        mode,
+		tastDir:     tastDir,
+		trunkDir:    trunkDir,
+		testVars:    make(map[string]string),
+		compTargets: make(map[string][]string),
 	}
 }
 
@@ -208,6 +211,16 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 	f.StringVar(&c.remoteRunner, "remoterunner", "", "executable that runs remote test bundles")
 	f.StringVar(&c.remoteBundleDir, "remotebundledir", "", "directory containing builtin remote test bundles")
 	f.StringVar(&c.remoteDataDir, "remotedatadir", "", "directory containing builtin remote test data")
+
+	ctf := command.RepeatedFlag(func(v string) error {
+		parts := strings.SplitN(v, ":", 2)
+		if len(parts) != 2 {
+			return errors.New(`want "role:hostname"`)
+		}
+		c.compTargets[parts[0]] = append(c.compTargets[parts[0]], parts[1])
+		return nil
+	})
+	f.Var(&ctf, "companionduts", `companion duts when running test, as "role:hostname" (can be repeated)`)
 
 	// Some flags are only relevant if we're running tests rather than listing them.
 	if c.mode == RunTestsMode {

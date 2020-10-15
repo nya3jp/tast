@@ -702,6 +702,17 @@ func runTestWithRoot(ctx context.Context, t *testing.TestInstance, root *testing
 					testState.Fatal("Failed to reconnect to DUT: ", err)
 				}
 			}
+			mduts := testState.CompDUTs()
+			for _, duts := range mduts {
+				for _, d := range duts {
+					if d.Connected(ctx) {
+						testState.Logf("Reconnecting to Companion DUT %s", d.HostName())
+						if err := d.Connect(ctx); err != nil {
+							testState.Fatalf("Failed to reconnect to Companion DUT %s: %v", d.HostName(), err)
+						}
+					}
+				}
+			}
 		}
 
 		if pcfg.TestHook != nil {

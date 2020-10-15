@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f413cdf0_66562a72",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-15T04:46:47Z",
+      "side": 1,
+      "message": "Good catch, it is actually 1112616.",
+      "parentUuid": "94fbafea_3488a1f6",
+      "revId": "5d78bbadcc469917fba426f5c466fecc713cb254",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "709fefed_cdacb42b",
@@ -48,6 +66,24 @@
       "writtenOn": "2020-10-14T23:49:07Z",
       "side": 1,
       "message": "Sorry, I am just a bit confused. Why do you pass pass 127.0.0.1:0 as remote address and  cfg.tlwServer?\n\nfunc (s *Conn) ForwardRemoteToLocal(protocol, remoteAddr, localAddr string, errFunc func(error)) (*Forwarder, error)\n\nSome comments here will help. I always think 127.0.0.1 as local install of remote. Thanks.",
+      "revId": "5d78bbadcc469917fba426f5c466fecc713cb254",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "31e84d2d_0b94090b",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/local.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-15T04:46:47Z",
+      "side": 1,
+      "message": "remoteAddr in this context means the address interpreted in the network where the ssh server (\u003dhst) is in, just like the \"-R\" flag of the ssh command.\n\nI have added the similar explanation to ForwardLocalToRemote function godoc.",
+      "parentUuid": "709fefed_cdacb42b",
       "revId": "5d78bbadcc469917fba426f5c466fecc713cb254",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },

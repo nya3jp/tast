@@ -94,6 +94,9 @@ type RunTestsArgs struct {
 	// Target is the DUT connection spec as [<user>@]host[:<port>].
 	// It is only relevant for remote tests.
 	Target string `json:"target,omitempty"`
+	// CompTargets are the companion DUTs connection spec as [<user>@]host[:<port>].
+	// They are only relevant for remote tests with Target.
+	CompTargets map[string][]string `json:"companionduts,omitempty"`
 	// KeyFile is the path to the SSH private key to use to connect to the DUT.
 	// It is only relevant for remote tests.
 	KeyFile string `json:"keyFile,omitempty"`

@@ -15,6 +15,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/google/subcommands"
@@ -100,6 +101,11 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []*EntityResu
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to resolve target: %v", err), nil
 	}
 
+	chsts, err := connectToCompanionTargets(ctx, cfg)
+	if err != nil {
+		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to companion devices: %v", err), nil
+	}
+
 	hst, err := connectToTarget(ctx, cfg)
 	if err != nil {
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to %s: %v", cfg.Target, err), nil
@@ -129,7 +135,7 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []*EntityResu
 		defer closeEphemeralDevserver(ctx, cfg)
 	}
 
-	if err := prepare(ctx, cfg, hst); err != nil {
+	if err := prepare(ctx, cfg, hst, chsts); err != nil {
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to build and push: %v", err), nil
 	}
 
@@ -200,7 +206,7 @@ func resolveTarget(ctx context.Context, cfg *Config) error {
 // prepare prepares the DUT for running tests. When instructed in cfg, it builds
 // and pushes the local test runner and test bundles, and downloads private test
 // bundles.
-func prepare(ctx context.Context, cfg *Config, hst *ssh.Conn) error {
+func prepare(ctx context.Context, cfg *Config, hst *ssh.Conn, chsts []*ssh.Conn) error {
 	if cfg.build && cfg.downloadPrivateBundles {
 		// Usually it makes no sense to download prebuilt private bundles when
 		// building and pushing a fresh test bundle.
@@ -209,14 +215,50 @@ func prepare(ctx context.Context, cfg *Config, hst *ssh.Conn) error {
 
 	written := false
 
+	var conns = make([]*ssh.Conn, len(chsts))
+	copy(conns, chsts)
+	conns = append(conns, hst)
+
+	var arches = make(map[string][]*ssh.Conn)
+	for _, conn := range conns {
+		ar, err := getTargetArch(ctx, conn)
+		if err != nil {
+			return fmt.Errorf("failed to get arch for: %v", err)
+		}
+		arches[ar] = append(arches[ar], conn)
+	}
+
 	if cfg.build {
-		if err := buildAll(ctx, cfg, hst); err != nil {
+		errCh := make(chan error)
+		var wg sync.WaitGroup
+		if err := buildRemote(ctx, cfg); err != nil {
 			return err
 		}
-		if err := pushAll(ctx, cfg, hst); err != nil {
-			return err
+		for arch, conns := range arches {
+			wg.Add(1)
+			go func(arch string, conns []*ssh.Conn) {
+				defer wg.Done()
+				if err := buildLocal(ctx, cfg, arch); err != nil {
+					wg.Done()
+					errCh <- err
+					return
+				}
+				var iwg sync.WaitGroup
+				for _, conn := range conns {
+					iwg.Add(1)
+					go func(conn *ssh.Conn) {
+						defer iwg.Done()
+						if err := pushAll(ctx, cfg, conn, arch); err != nil {
+							iwg.Done()
+							errCh <- err
+							return
+						}
+					}(conn)
+				}
+				iwg.Wait()
+			}(arch, conns)
 		}
-		written = true
+		wg.Wait()
 	}
 
 	if cfg.downloadPrivateBundles {
@@ -239,31 +281,45 @@ func prepare(ctx context.Context, cfg *Config, hst *ssh.Conn) error {
 	return nil
 }
 
-// buildAll builds Go binaries as instructed in cfg.
-func buildAll(ctx context.Context, cfg *Config, hst *ssh.Conn) error {
-	if err := getTargetArch(ctx, cfg, hst); err != nil {
-		return fmt.Errorf("failed to get arch for %s: %v", cfg.Target, err)
-	}
-
-	// local_test_runner is required even if we are running only remote tests,
-	// e.g. to compute software dependencies.
+// buildLocal builds Go binaries for local cases as instructed in cfg.
+// local_test_runner is required even if we are running only remote tests,
+// e.g. to compute software dependencies.
+func buildLocal(ctx context.Context, cfg *Config, targetArch string) error {
 	tgts := []*build.Target{
 		{
 			Pkg:        localRunnerPkg,
-			Arch:       cfg.targetArch,
+			Arch:       targetArch,
 			Workspaces: cfg.commonWorkspaces(),
-			Out:        filepath.Join(cfg.buildOutDir, cfg.targetArch, path.Base(localRunnerPkg)),
+			Out:        filepath.Join(cfg.buildOutDir, targetArch, path.Base(localRunnerPkg)),
 		},
 	}
 
 	if cfg.runLocal {
 		tgts = append(tgts, &build.Target{
 			Pkg:        path.Join(localBundlePkgPathPrefix, cfg.buildBundle),
-			Arch:       cfg.targetArch,
+			Arch:       targetArch,
 			Workspaces: cfg.bundleWorkspaces(),
-			Out:        filepath.Join(cfg.buildOutDir, cfg.targetArch, localBundleBuildSubdir, cfg.buildBundle),
+			Out:        filepath.Join(cfg.buildOutDir, targetArch, localBundleBuildSubdir, cfg.buildBundle),
 		})
 	}
+
+	var names []string
+	for _, tgt := range tgts {
+		names = append(names, path.Base(tgt.Pkg))
+	}
+	cfg.Logger.Logf("Building %s", strings.Join(names, ", "))
+	start := time.Now()
+	if err := build.Build(ctx, cfg.buildCfg(), tgts); err != nil {
+		return fmt.Errorf("build failed: %v", err)
+	}
+	cfg.Logger.Logf("Built in %v", time.Now().Sub(start).Round(time.Millisecond))
+	return nil
+}
+
+// buildRemote builds Go binaries for remote cases only as instructed in cfg.
+func buildRemote(ctx context.Context, cfg *Config) error {
+	var tgts = []*build.Target{}
+
 	if cfg.runRemote {
 		tgts = append(tgts, &build.Target{
 			Pkg:        remoteRunnerPkg,
@@ -295,45 +351,37 @@ func buildAll(ctx context.Context, cfg *Config, hst *ssh.Conn) error {
 // saves it to cfg.targetArch. Note that this can be different from the kernel architecture
 // returned by "uname -m" on some boards (e.g. aarch64 kernel with armv7l userland).
 // TODO(crbug.com/982184): Get rid of this function.
-func getTargetArch(ctx context.Context, cfg *Config, hst *ssh.Conn) error {
-	if cfg.targetArch != "" {
-		return nil
-	}
-
+func getTargetArch(ctx context.Context, hst *ssh.Conn) (string, error) {
 	ctx, st := timing.Start(ctx, "get_arch")
 	defer st.End()
-	cfg.Logger.Debug("Getting architecture from target")
 
 	// Get the userland architecture by inspecting an arbitrary binary on the target.
 	out, err := hst.Command("file", "-b", "-L", "/sbin/init").CombinedOutput(ctx)
 	if err != nil {
-		return fmt.Errorf("file command failed: %v (output: %q)", err, string(out))
+		return "", fmt.Errorf("file command failed: %v (output: %q)", err, string(out))
 	}
 	s := string(out)
 
 	if strings.Contains(s, "x86-64") {
-		cfg.targetArch = "x86_64"
-	} else {
-		if strings.HasPrefix(s, "ELF 64-bit") {
-			cfg.targetArch = "aarch64"
-		} else {
-			cfg.targetArch = "armv7l"
-		}
+		return "x86_64", nil
 	}
-	return nil
+	if strings.HasPrefix(s, "ELF 64-bit") {
+		return "aarch64", nil
+	}
+	return "armv7l", nil
 }
 
 // pushAll pushes the freshly built local test runner, local test bundle executable
 // and local test data files to the DUT if necessary. If cfg.mode is
 // ListTestsMode data files are not pushed since they are not needed to build
 // a list of tests.
-func pushAll(ctx context.Context, cfg *Config, hst *ssh.Conn) error {
+func pushAll(ctx context.Context, cfg *Config, hst *ssh.Conn, targetArch string) error {
 	ctx, st := timing.Start(ctx, "push")
 	defer st.End()
 
 	// Push executables first. New test bundle is needed later to get the list of
 	// data files to push.
-	if err := pushExecutables(ctx, cfg, hst); err != nil {
+	if err := pushExecutables(ctx, cfg, hst, targetArch); err != nil {
 		return fmt.Errorf("failed to push local executables: %v", err)
 	}
 
@@ -359,8 +407,8 @@ func pushAll(ctx context.Context, cfg *Config, hst *ssh.Conn) error {
 
 // pushExecutables pushes the freshly built local test runner, local test bundle
 // executable to the DUT if necessary.
-func pushExecutables(ctx context.Context, cfg *Config, hst *ssh.Conn) error {
-	srcDir := filepath.Join(cfg.buildOutDir, cfg.targetArch)
+func pushExecutables(ctx context.Context, cfg *Config, hst *ssh.Conn, targetArch string) error {
+	srcDir := filepath.Join(cfg.buildOutDir, targetArch)
 
 	// local_test_runner is required even if we are running only remote tests,
 	// e.g. to compute software dependencies.

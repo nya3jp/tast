@@ -60,14 +60,15 @@ func runRemoteTestsOnce(ctx context.Context, cfg *Config, patterns []string) (re
 		Mode: runner.RunTestsMode,
 		RunTests: &runner.RunTestsArgs{
 			BundleArgs: bundle.RunTestsArgs{
-				Patterns: patterns,
-				TestVars: cfg.testVars,
-				DataDir:  cfg.remoteDataDir,
-				OutDir:   cfg.remoteOutDir,
-				Target:   cfg.Target,
-				KeyFile:  cfg.KeyFile,
-				KeyDir:   cfg.KeyDir,
-				TastPath: exe,
+				Patterns:    patterns,
+				TestVars:    cfg.testVars,
+				DataDir:     cfg.remoteDataDir,
+				OutDir:      cfg.remoteOutDir,
+				Target:      cfg.Target,
+				CompTargets: cfg.compTargets,
+				KeyFile:     cfg.KeyFile,
+				KeyDir:      cfg.KeyDir,
+				TastPath:    exe,
 				RunFlags: []string{
 					"-build=false",
 					"-keyfile=" + cfg.KeyFile,

@@ -15,6 +15,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	"chromiumos/tast/dut"
@@ -256,15 +257,29 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 			// It is okay to ignore the error since we've finished testing at this point.
 			dt.Close(ctx)
 		}()
+		cdts, err := connectToCompanionTargets(ctx, args, cfg.beforeReboot)
+		if err != nil {
+			return command.NewStatusErrorf(statusError, "failed to connect to companion DUTs: %v", err)
+		}
+		defer func() {
+			testcontext.Log(ctx, "Disconnecting from companion DUTs")
+			for _, targets := range cdts {
+				for _, dt := range targets {
+					dt.Close(ctx)
+				}
+			}
+		}()
 
 		rd = &testing.RemoteData{
 			Meta: &testing.Meta{
-				TastPath: args.RunTests.TastPath,
-				Target:   args.RunTests.Target,
-				RunFlags: args.RunTests.RunFlags,
+				TastPath:    args.RunTests.TastPath,
+				Target:      args.RunTests.Target,
+				CompTargets: args.RunTests.CompTargets,
+				RunFlags:    args.RunTests.RunFlags,
 			},
-			RPCHint: testing.NewRPCHint(args.RunTests.LocalBundleDir, args.RunTests.TestVars),
-			DUT:     dt,
+			RPCHint:  testing.NewRPCHint(args.RunTests.LocalBundleDir, args.RunTests.TestVars),
+			DUT:      dt,
+			CompDUTs: cdts,
 		}
 	}
 
@@ -293,6 +308,38 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		}
 	}
 	return nil
+}
+
+func connectToCompanionTargets(ctx context.Context, args *Args, beforeReboot func(context.Context, *dut.DUT) error) (_ map[string][]*dut.DUT, retErr error) {
+	dts := make(map[string][]*dut.DUT)
+
+	if len(args.RunTests.CompTargets) == 0 {
+		return dts, nil
+	}
+
+	var wg sync.WaitGroup
+	var mux sync.Mutex
+	for role, targets := range args.RunTests.CompTargets {
+		for _, target := range targets {
+			wg.Add(1)
+			go func(role, target string) {
+				defer wg.Done()
+				dt, err := dut.New(target, args.RunTests.KeyFile, args.RunTests.KeyDir, beforeReboot)
+				if err != nil {
+					return
+				}
+				if err := dt.Connect(ctx); err != nil {
+					return
+				}
+				mux.Lock()
+				defer mux.Unlock()
+				dts[role] = append(dts[role], dt)
+			}(role, target)
+		}
+	}
+
+	wg.Wait()
+	return dts, nil
 }
 
 // connectToTarget connects to the target DUT and returns its connection.

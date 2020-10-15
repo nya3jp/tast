@@ -12,6 +12,7 @@ import (
 	"io"
 	"net"
 	"path/filepath"
+	"sync"
 	"time"
 
 	"chromiumos/tast/bundle"
@@ -30,6 +31,58 @@ const (
 	defaultLocalRunnerWaitTimeout = 10 * time.Second // default timeout for waiting for local_test_runner to exit
 	heartbeatInterval             = time.Second      // interval for heartbeat messages
 )
+
+func connectToCompanionTargets(ctx context.Context, cfg *Config) ([]*ssh.Conn, error) {
+	ctx, st := timing.Start(ctx, "connect")
+	defer st.End()
+	cfg.Logger.Status("Connecting to target")
+
+	var wg sync.WaitGroup
+	var mux sync.Mutex
+	hsts := make([]*ssh.Conn, 0)
+	errCh := make(chan error)
+
+	for _, targets := range cfg.compTargets {
+		for _, target := range targets {
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				cfg.Logger.Logf("Connecting to %s", target)
+
+				o := ssh.Options{
+					ConnectTimeout:       sshConnectTimeout,
+					ConnectRetries:       cfg.sshRetries,
+					ConnectRetryInterval: sshRetryInterval,
+					KeyFile:              cfg.KeyFile,
+					KeyDir:               cfg.KeyDir,
+					WarnFunc:             func(s string) { cfg.Logger.Log(s) },
+				}
+				if err := ssh.ParseTarget(target, &o); err != nil {
+					errCh <- err
+					return
+				}
+				hst, err := ssh.New(ctx, &o)
+				if err != nil {
+					errCh <- err
+					return
+				}
+
+				mux.Lock()
+				defer mux.Unlock()
+				hsts = append(hsts, hst)
+			}()
+		}
+	}
+
+	wg.Wait()
+	select {
+	case err := <-errCh:
+		return hsts, err
+	default:
+	}
+
+	return hsts, nil
+}
 
 // connectToTarget establishes an SSH connection to the target specified in cfg.
 // The connection will be cached in cfg and should not be closed by the caller.

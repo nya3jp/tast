@@ -135,7 +135,7 @@ func TestReadTestOutput(t *gotesting.T) {
 			EntityInfo: testing.EntityInfo{Name: test1Name, Desc: test1Desc},
 			Start:      test1StartTime,
 			End:        test1EndTime,
-			OutDir:     filepath.Join(testLogsDir, test1Name),
+			OutDir:     filepath.Join(cfg.ResDir, testLogsDir, test1Name),
 		},
 		{
 			EntityInfo: testing.EntityInfo{Name: test2Name, Desc: test2Desc},
@@ -152,14 +152,14 @@ func TestReadTestOutput(t *gotesting.T) {
 			},
 			Start:  test2StartTime,
 			End:    test2EndTime,
-			OutDir: filepath.Join(testLogsDir, test2Name),
+			OutDir: filepath.Join(cfg.ResDir, testLogsDir, test2Name),
 		},
 		{
 			EntityInfo: testing.EntityInfo{Name: test3Name, Desc: test3Desc},
 			Start:      test3StartTime,
 			End:        test3EndTime,
 			SkipReason: skipReason,
-			OutDir:     filepath.Join(testLogsDir, test3Name),
+			OutDir:     filepath.Join(cfg.ResDir, testLogsDir, test3Name),
 		},
 	}
 	var actRes []*EntityResult
@@ -687,7 +687,7 @@ func TestWritePartialResults(t *gotesting.T) {
 			EntityInfo: testing.EntityInfo{Name: test1Name},
 			Start:      test1Start,
 			End:        test1End,
-			OutDir:     filepath.Join(testLogsDir, test1Name),
+			OutDir:     filepath.Join(cfg.ResDir, testLogsDir, test1Name),
 		},
 		// No EntityEnd message was received for the second test, so its entry in the streamed results
 		// file should have an empty end time. The error should be included, though.
@@ -698,7 +698,7 @@ func TestWritePartialResults(t *gotesting.T) {
 				{Error: testing.Error{Reason: test2Reason}},
 				{Error: testing.Error{Reason: incompleteTestMsg}},
 			},
-			OutDir: filepath.Join(testLogsDir, test2Name),
+			OutDir: filepath.Join(cfg.ResDir, testLogsDir, test2Name),
 		},
 	}
 	if diff := cmp.Diff(streamRes, expRes, cmpopts.IgnoreFields(EntityError{}, "Time")); diff != "" {
@@ -737,7 +737,7 @@ func TestWritePartialResults(t *gotesting.T) {
 		EntityInfo: testing.EntityInfo{Name: test4Name},
 		Start:      test4Start,
 		End:        test4End,
-		OutDir:     filepath.Join(testLogsDir, test4Name),
+		OutDir:     filepath.Join(cfg.ResDir, testLogsDir, test4Name),
 	})
 	if diff := cmp.Diff(streamRes, expRes, cmpopts.IgnoreFields(EntityError{}, "Time")); diff != "" {
 		t.Errorf("%v mismatch (-got +want):\n%s", streamedResultsFilename, diff)

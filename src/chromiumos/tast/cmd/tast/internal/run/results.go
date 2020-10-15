@@ -286,20 +286,20 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.Entit
 	}
 	ctx, r.stage = timing.Start(ctx, msg.Info.Name)
 
+	finalOutDir := filepath.Join(r.cfg.ResDir, testLogsDir, msg.Info.Name)
+
 	// Add a number suffix to the output directory name in case of conflict.
-	relOutDir := filepath.Join(testLogsDir, msg.Info.Name)
 	seenCnt := r.seenTimes[msg.Info.Name]
 	if seenCnt > 0 {
-		relOutDir += fmt.Sprintf(".%d", seenCnt)
+		finalOutDir += fmt.Sprintf(".%d", seenCnt)
 	}
 	r.seenTimes[msg.Info.Name]++
-	finalOutDir := filepath.Join(r.cfg.ResDir, relOutDir)
 
 	state := &entityState{
 		result: EntityResult{
 			EntityInfo: msg.Info,
 			Start:      msg.Time,
-			OutDir:     relOutDir,
+			OutDir:     finalOutDir,
 		},
 		IntermediateOutDir: msg.OutDir,
 		FinalOutDir:        finalOutDir,
@@ -317,10 +317,11 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.Entit
 		return err
 	}
 
-	if err = os.MkdirAll(finalOutDir, 0755); err != nil {
+	if err = os.MkdirAll(state.result.OutDir, 0755); err != nil {
 		return err
 	}
-	if state.logFile, err = os.Create(filepath.Join(finalOutDir, testLogFilename)); err != nil {
+	if state.logFile, err = os.Create(
+		filepath.Join(state.result.OutDir, testLogFilename)); err != nil {
 		return err
 	}
 	if err = r.cfg.Logger.AddWriter(state.logFile, log.LstdFlags); err != nil {

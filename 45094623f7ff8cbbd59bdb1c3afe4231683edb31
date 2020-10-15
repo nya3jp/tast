@@ -16,6 +16,24 @@
       "message": "Code change looks ok to me. Please provide an example on how the stack trace looks like on panic in the CL. Not as comment in the code. Just a comment inside this CL would be fine. Thanks.",
       "revId": "45094623f7ff8cbbd59bdb1c3afe4231683edb31",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "018512d7_29873554",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-15T00:11:56Z",
+      "side": 1,
+      "message": "Yes, it\u0027s nice to put an example output in CL description, thanks!",
+      "parentUuid": "7bac989d_e6e0a062",
+      "revId": "45094623f7ff8cbbd59bdb1c3afe4231683edb31",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

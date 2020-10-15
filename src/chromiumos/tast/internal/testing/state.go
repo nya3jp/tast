@@ -733,6 +733,12 @@ func (s *FixtState) ParentValue() interface{} {
 	return s.entityRoot.cfg.FixtValue
 }
 
+// OutDir returns a directory into which the entity may place arbitrary files
+// that should be included with the entity results.
+func (s *FixtState) OutDir() string {
+	return s.entityRoot.cfg.OutDir
+}
+
 // FixtTestState is the state the framework passes to PreTest and PostTest.
 type FixtTestState struct {
 	*globalMixin

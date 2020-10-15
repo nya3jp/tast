@@ -168,8 +168,17 @@ func (st *fixtureStack) Push(ctx context.Context, fixt *testing.Fixture) error {
 		return errors.New("BUG: fixture must not be pushed to a yellow stack")
 	}
 
+	var outDir string
+	if fixt.Name != "" {
+		dir, err := createEntityOutDir(st.cfg.OutDir, fixt.Name)
+		if err != nil {
+			return err
+		}
+		outDir = dir
+	}
+
 	ce := &testing.CurrentEntity{
-		// TODO(crbug.com/1127163): Support OutDir.
+		OutDir:      outDir,
 		ServiceDeps: fixt.ServiceDeps,
 	}
 	fout := newEntityOutputStream(st.out, fixt.EntityInfo())
@@ -178,8 +187,8 @@ func (st *fixtureStack) Push(ctx context.Context, fixt *testing.Fixture) error {
 
 	rcfg := &testing.RuntimeConfig{
 		// TODO(crbug.com/1127165): Support DataDir.
-		// TODO(crbug.com/1127163): Support OutDir.
 		// TODO(crbug.com/1127166): Support Vars.
+		OutDir:       outDir,
 		CloudStorage: testing.NewCloudStorage(st.cfg.Devservers, st.cfg.TLWServer, st.cfg.DUTName),
 		RemoteData:   st.cfg.RemoteData,
 		FixtValue:    st.Val(),
@@ -321,8 +330,7 @@ func (f *statefulFixture) RunSetUp(ctx context.Context) error {
 	s := f.root.NewFixtState()
 	name := fmt.Sprintf("%s:SetUp", f.fixt.Name)
 
-	// TODO(crbug.com/1127163): Support OutDir.
-	f.fout.Start("")
+	f.fout.Start(s.OutDir())
 
 	var val interface{}
 	if err := safeCall(ctx, name, f.fixt.SetUpTimeout, defaultGracePeriod, errorOnPanic(s), func(ctx context.Context) {

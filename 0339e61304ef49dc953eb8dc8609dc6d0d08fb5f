@@ -33,6 +33,24 @@
       "message": "nit: I suggest \"invalid argument %s\"",
       "revId": "0339e61304ef49dc953eb8dc8609dc6d0d08fb5f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0e3cbbad_e85ae583",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 184,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-15T09:10:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9baa5101_0644623e",
+      "revId": "0339e61304ef49dc953eb8dc8609dc6d0d08fb5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

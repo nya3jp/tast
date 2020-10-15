@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "97fff4ec_59f90ca1",
+        "filename": "src/chromiumos/tast/internal/testing/cloud_storage.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-15T09:10:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "04a02286_b1132909",
+      "range": {
+        "startLine": 43,
+        "startChar": 1,
+        "endLine": 43,
+        "endChar": 16
+      },
+      "revId": "c66acad32de69c1174da5aa1d208ade0c7352d55",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c0896c00_0d6e687b",
@@ -47,6 +71,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3d851904_86ca95d8",
+        "filename": "src/chromiumos/tast/internal/testing/cloud_storage_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-15T09:10:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c0896c00_0d6e687b",
+      "range": {
+        "startLine": 117,
+        "startChar": 2,
+        "endLine": 117,
+        "endChar": 21
+      },
+      "revId": "c66acad32de69c1174da5aa1d208ade0c7352d55",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b28f9e1c_0ac22b0f",
@@ -60,6 +108,30 @@
       "writtenOn": "2020-10-13T06:06:22Z",
       "side": 1,
       "message": "It is an important contract that we can distinguish not-exist and other transient errors because it is no use retrying if the file does not exist.\n\nCan you contract TLW owner to clarify the case, and update fake TLW to return a proper error code?",
+      "range": {
+        "startLine": 133,
+        "startChar": 0,
+        "endLine": 137,
+        "endChar": 5
+      },
+      "revId": "c66acad32de69c1174da5aa1d208ade0c7352d55",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "391c6cda_cd975835",
+        "filename": "src/chromiumos/tast/internal/testing/cloud_storage_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-15T09:10:59Z",
+      "side": 1,
+      "message": "Updated the fake TLW to return error status codes.\nHowever, I have found the devserver(client) class need to return its own styled errors.\nOther clients (real devserver client, and so) doesn not return status code like the grpc.\nEspecially in this case, Open can fail both at the TLW RPC or HTTP invoked inside it. So I don\u0027t think we should use RPC error code here.\n\nCurrently Open in other implementations return human-readable errors for debug purpose except this.",
+      "parentUuid": "b28f9e1c_0ac22b0f",
       "range": {
         "startLine": 133,
         "startChar": 0,

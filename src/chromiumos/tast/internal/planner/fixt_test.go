@@ -7,6 +7,8 @@ package planner
 import (
 	"context"
 	"fmt"
+	"os"
+	"path/filepath"
 	gotesting "testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -15,6 +17,7 @@ import (
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/testing"
+	"chromiumos/tast/testutil"
 )
 
 // fakeFixture is a customizable implementation of testing.FixtureImpl.
@@ -247,10 +250,13 @@ func TestFixtureStackMarkDirty(t *gotesting.T) {
 
 // TestFixtureStackContext checks context.Context passed to fixture methods.
 func TestFixtureStackContext(t *gotesting.T) {
+	const fixtureName = "fixt"
 	serviceDeps := []string{"svc1", "svc2"}
 
 	ctx := context.Background()
-	stack := newFixtureStack(&Config{}, newOutputSink())
+	baseOutDir := testutil.TempDir(t)
+	defer os.RemoveAll(baseOutDir)
+	stack := newFixtureStack(&Config{OutDir: baseOutDir}, newOutputSink())
 
 	verifyContext := func(t *gotesting.T, ctx context.Context) {
 		t.Helper()
@@ -261,6 +267,12 @@ func TestFixtureStackContext(t *gotesting.T) {
 		}
 		if _, ok := testing.ContextSoftwareDeps(ctx); ok {
 			t.Error("SoftwareDeps unexpectedly available")
+		}
+		outDir, ok := testing.ContextOutDir(ctx)
+		if !ok {
+			t.Error("OutDir not available")
+		} else if want := filepath.Join(baseOutDir, fixtureName); outDir != want {
+			t.Errorf("OutDir = %q; want %q", outDir, want)
 		}
 	}
 
@@ -286,6 +298,7 @@ func TestFixtureStackContext(t *gotesting.T) {
 		}))
 
 	fixt := &testing.Fixture{
+		Name:        fixtureName,
 		Impl:        ff,
 		ServiceDeps: serviceDeps,
 	}

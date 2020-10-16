@@ -16,6 +16,23 @@
       "message": "Just in case: I\u0027m waiting for your reply to my comments. Please reply to them once this change is ready for another iteration.\n",
       "revId": "acebe14a0dcb74fc621994f0abb26c8e954ac8f5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3b5f036a_eb4ca9aa",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1400377
+      },
+      "writtenOn": "2020-10-16T19:50:30Z",
+      "side": 1,
+      "message": "Shuhei, thanks for the reminder. I thought you could see my comments but I just noticed they are marked as \"draft\". Please check my reply, especially for the #129. Thanks!",
+      "revId": "acebe14a0dcb74fc621994f0abb26c8e954ac8f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

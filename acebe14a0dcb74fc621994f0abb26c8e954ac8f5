@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "19695914_b25e2f37",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-16T01:21:48Z",
+      "side": 1,
+      "message": "Just in case: I\u0027m waiting for your reply to my comments. Please reply to them once this change is ready for another iteration.\n",
+      "revId": "acebe14a0dcb74fc621994f0abb26c8e954ac8f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

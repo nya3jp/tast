@@ -103,6 +103,24 @@
       "message": "This is a test for the local function in conn.go in ssh package, however, conn_test.go is ssh_test package. Therefore I placed this here for avoiding exposing the function. Should I export it and move to conn_test.go instead?",
       "revId": "5d78bbadcc469917fba426f5c466fecc713cb254",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "46f09d3b_7b5d1e81",
+        "filename": "src/chromiumos/tast/ssh/forwarder_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-16T10:06:32Z",
+      "side": 1,
+      "message": "We want to avoid exporting symbols just for unit testing, especially when the package is imported from user code (Tast tests).\n\nHow about moving the function to util.go (or something like that) and testing it in util_test.go?",
+      "parentUuid": "ade3a995_70085586",
+      "revId": "5d78bbadcc469917fba426f5c466fecc713cb254",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

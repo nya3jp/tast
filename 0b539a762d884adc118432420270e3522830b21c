@@ -16,6 +16,144 @@
       "message": "Looks ok to me.",
       "revId": "0b539a762d884adc118432420270e3522830b21c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c77dc05e_7f736979",
+        "filename": "src/chromiumos/tast/ssh/conn.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-16T10:06:32Z",
+      "side": 1,
+      "message": "You can remove this import and use chromiumos/tast/errors exclusively.",
+      "range": {
+        "startLine": 9,
+        "startChar": 1,
+        "endLine": 9,
+        "endChar": 9
+      },
+      "revId": "0b539a762d884adc118432420270e3522830b21c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "26f2dacc_1e1b4884",
+        "filename": "src/chromiumos/tast/ssh/conn.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 302,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-16T10:06:32Z",
+      "side": 1,
+      "message": "nit: You can omit \"struct{}\" here because it\u0027s inferred from the map type.",
+      "range": {
+        "startLine": 302,
+        "startChar": 10,
+        "endLine": 302,
+        "endChar": 21
+      },
+      "revId": "0b539a762d884adc118432420270e3522830b21c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "beb179b2_9a30f011",
+        "filename": "src/chromiumos/tast/ssh/conn.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 318,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-16T10:06:32Z",
+      "side": 1,
+      "message": "\"network\" is the standard term in the net package.\nhttps://godoc.org/net",
+      "range": {
+        "startLine": 318,
+        "startChar": 36,
+        "endLine": 318,
+        "endChar": 44
+      },
+      "revId": "0b539a762d884adc118432420270e3522830b21c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "afaacbdf_d48ed17f",
+        "filename": "src/chromiumos/tast/ssh/conn.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 339,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-16T10:06:32Z",
+      "side": 1,
+      "message": "nit\u0026optional: For machine-sized int, you can use strconv.Atoi. Then you don\u0027t need to cast the returned value to int below.",
+      "range": {
+        "startLine": 339,
+        "startChar": 11,
+        "endLine": 339,
+        "endChar": 43
+      },
+      "revId": "0b539a762d884adc118432420270e3522830b21c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "049193c0_101dd10a",
+        "filename": "src/chromiumos/tast/ssh/forwarder_test.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-16T10:06:32Z",
+      "side": 1,
+      "message": "huge nit: IP",
+      "range": {
+        "startLine": 105,
+        "startChar": 12,
+        "endLine": 105,
+        "endChar": 17
+      },
+      "revId": "0b539a762d884adc118432420270e3522830b21c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e219389a_9c28e551",
+        "filename": "src/chromiumos/tast/ssh/forwarder_test.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-16T10:06:32Z",
+      "side": 1,
+      "message": "style: testData :\u003d",
+      "range": {
+        "startLine": 106,
+        "startChar": 1,
+        "endLine": 106,
+        "endChar": 15
+      },
+      "revId": "0b539a762d884adc118432420270e3522830b21c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

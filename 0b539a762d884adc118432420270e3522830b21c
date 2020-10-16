@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c95f762c_520edcb4",
+        "filename": "src/chromiumos/tast/ssh/conn.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-16T14:36:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c77dc05e_7f736979",
+      "range": {
+        "startLine": 9,
+        "startChar": 1,
+        "endLine": 9,
+        "endChar": 9
+      },
+      "revId": "0b539a762d884adc118432420270e3522830b21c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "26f2dacc_1e1b4884",
@@ -54,6 +78,30 @@
       "writtenOn": "2020-10-16T10:06:32Z",
       "side": 1,
       "message": "nit: You can omit \"struct{}\" here because it\u0027s inferred from the map type.",
+      "range": {
+        "startLine": 302,
+        "startChar": 10,
+        "endLine": 302,
+        "endChar": 21
+      },
+      "revId": "0b539a762d884adc118432420270e3522830b21c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3bebdbb7_290659bf",
+        "filename": "src/chromiumos/tast/ssh/conn.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 302,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-16T14:36:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "26f2dacc_1e1b4884",
       "range": {
         "startLine": 302,
         "startChar": 10,
@@ -87,6 +135,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "47cbef3e_2aa0501f",
+        "filename": "src/chromiumos/tast/ssh/conn.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 318,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-16T14:36:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "beb179b2_9a30f011",
+      "range": {
+        "startLine": 318,
+        "startChar": 36,
+        "endLine": 318,
+        "endChar": 44
+      },
+      "revId": "0b539a762d884adc118432420270e3522830b21c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "afaacbdf_d48ed17f",
@@ -100,6 +172,30 @@
       "writtenOn": "2020-10-16T10:06:32Z",
       "side": 1,
       "message": "nit\u0026optional: For machine-sized int, you can use strconv.Atoi. Then you don\u0027t need to cast the returned value to int below.",
+      "range": {
+        "startLine": 339,
+        "startChar": 11,
+        "endLine": 339,
+        "endChar": 43
+      },
+      "revId": "0b539a762d884adc118432420270e3522830b21c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c5b76941_6a98de69",
+        "filename": "src/chromiumos/tast/ssh/conn.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 339,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-16T14:36:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "afaacbdf_d48ed17f",
       "range": {
         "startLine": 339,
         "startChar": 11,
@@ -133,6 +229,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bb0abf65_b6e7895b",
+        "filename": "src/chromiumos/tast/ssh/forwarder_test.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-16T14:36:58Z",
+      "side": 1,
+      "message": "Done (in the new util_test.go)",
+      "parentUuid": "049193c0_101dd10a",
+      "range": {
+        "startLine": 105,
+        "startChar": 12,
+        "endLine": 105,
+        "endChar": 17
+      },
+      "revId": "0b539a762d884adc118432420270e3522830b21c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e219389a_9c28e551",
@@ -146,6 +266,30 @@
       "writtenOn": "2020-10-16T10:06:32Z",
       "side": 1,
       "message": "style: testData :\u003d",
+      "range": {
+        "startLine": 106,
+        "startChar": 1,
+        "endLine": 106,
+        "endChar": 15
+      },
+      "revId": "0b539a762d884adc118432420270e3522830b21c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "46343532_726a0077",
+        "filename": "src/chromiumos/tast/ssh/forwarder_test.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-16T14:36:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e219389a_9c28e551",
       "range": {
         "startLine": 106,
         "startChar": 1,

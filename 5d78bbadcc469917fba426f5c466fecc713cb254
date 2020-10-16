@@ -121,6 +121,24 @@
       "parentUuid": "ade3a995_70085586",
       "revId": "5d78bbadcc469917fba426f5c466fecc713cb254",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "575c2f9f_0cba0170",
+        "filename": "src/chromiumos/tast/ssh/forwarder_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-16T14:36:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "46f09d3b_7b5d1e81",
+      "revId": "5d78bbadcc469917fba426f5c466fecc713cb254",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

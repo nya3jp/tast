@@ -101,6 +101,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ee20b771_360d0784",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-16T14:00:03Z",
+      "side": 1,
+      "message": "Done\nAlso changed to unset cfg.devserers so as to make it same as normal use case. (although it had not affected as twlServer takes precedence over devservers)",
+      "parentUuid": "9e712035_0a51ca92",
+      "revId": "fb59622e583a39928b509ddfae9268233c41023f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "941f3db1_9dd5ba2f",

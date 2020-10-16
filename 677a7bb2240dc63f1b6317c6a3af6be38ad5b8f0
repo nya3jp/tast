@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cbc1fbc9_61dc1765",
+        "filename": "src/chromiumos/tast/internal/devserver/tlw.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-16T09:57:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ff105d79_1e5e2f4e",
+      "range": {
+        "startLine": 65,
+        "startChar": 14,
+        "endLine": 65,
+        "endChar": 16
+      },
+      "revId": "677a7bb2240dc63f1b6317c6a3af6be38ad5b8f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5b2fe86a_a8d05c68",
@@ -54,6 +78,30 @@
       "writtenOn": "2020-10-16T09:38:47Z",
       "side": 1,
       "message": "Can you use a pointer instead to avoid copying protocol messages?\n\nProtocol messages should not be copied. With upcoming update of protobuf, copying a message would result in go-vet failures.\nhttps://stackoverflow.com/questions/64183794/why-do-the-go-generated-protobuf-files-contain-mutex-locks",
+      "range": {
+        "startLine": 125,
+        "startChar": 13,
+        "endLine": 125,
+        "endChar": 37
+      },
+      "revId": "677a7bb2240dc63f1b6317c6a3af6be38ad5b8f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fb24c138_a86a3a4a",
+        "filename": "src/chromiumos/tast/internal/faketlw/faketlw_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-16T09:57:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5b2fe86a_a8d05c68",
       "range": {
         "startLine": 125,
         "startChar": 13,

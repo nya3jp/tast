@@ -48,6 +48,7 @@ The following software features are defined:
 *   `chrome_internal` - Functionality that is only available in internal builds
     of Chrome (e.g. official branding). Any test that specifies this dependency
     should also explicitly specify a `chrome` dependency.
+*   `coresched` - Whether device supports core scheduling feature for secure HT.
 *   `crashpad` - Whether the platform supports the crashpad crash handler for
     Chrome.
 *   `cros_config` - `cros_config` utility is available.

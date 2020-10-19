@@ -16,6 +16,46 @@
       "message": "I had missed to reply to all other comments, in the previous reply. PTAL the both.",
       "revId": "863f54505e368abaa858a9022716ea0141e8f38f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fc66ca13_0fb70c9c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 14
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-19T03:33:15Z",
+      "side": 1,
+      "message": "Looks nice! I have just one recommendation for the unit test.\n",
+      "revId": "863f54505e368abaa858a9022716ea0141e8f38f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b04e5ed3_190956a8",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_test.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-19T03:33:15Z",
+      "side": 1,
+      "message": "This check is tricky --- td.cfg.tlwServerForDUT is set in the middle of Run(). Also, this check just ensures that the TLWServer field is set to some value, but it doesn\u0027t check that it\u0027s a valid host/port forwarded to TLW.\n\nSo I recommend that we compare args.DownloadPrivateBundles fields ignoring TLWServer (you can do this by cmp.Diff and cmpopts), and adding another check that we can successfully connect to the TLW Server by actually starting a gRPC connection.",
+      "range": {
+        "startLine": 144,
+        "startChar": 4,
+        "endLine": 144,
+        "endChar": 46
+      },
+      "revId": "863f54505e368abaa858a9022716ea0141e8f38f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -28,6 +28,10 @@ type SysInfo struct {
 	CPUModel string
 	// HasKepler is true if "lspci -n -d <keplerID>" prints non-empty output.
 	HasKepler bool
+	// HasUsbCamera is true iff there's built-in USB camera.
+	HasUsbCamera bool
+	// HasMipiCamera is true iff there's built-in MIPI camera.
+	HasMipiCamera bool
 }
 
 // loadSysInfo returns a SysInfo struct describing the system where this code is running.
@@ -47,6 +51,23 @@ func loadSysInfo() (*SysInfo, error) {
 	// The lspci command can fail if the device doesn't have a PCI bus: https://crbug.com/888883
 	if out, err = exec.Command("lspci", "-n", "-d", keplerID).Output(); err == nil {
 		info.HasKepler = strings.TrimSpace(string(out)) != ""
+	}
+
+	// Queries camera configuration from CrOS config. For each built-in camera, the
+	// /camera/devices/*/interface config is either "usb" or "mipi".
+	for i := 0; ; i++ {
+		out, err := exec.Command("cros_config", fmt.Sprintf("/camera/devices/%v", i), "interface").Output()
+		if err != nil {
+			break
+		}
+		switch iface := string(out); iface {
+		case "usb":
+			info.HasUsbCamera = true
+		case "mipi":
+			info.HasMipiCamera = true
+		default:
+			return nil, fmt.Errorf("unknown camera interface %v", iface)
+		}
 	}
 
 	return &info, nil
@@ -81,6 +102,14 @@ func runDetector(rule *detectRule, info *SysInfo) (directives []string, err erro
 	case "kepler":
 		if info.HasKepler {
 			val = "kepler"
+		}
+	case "mipi_camera":
+		if info.HasMipiCamera {
+			val = "mipi_camera"
+		}
+	case "usb_camera":
+		if info.HasUsbCamera {
+			val = "usb_camera"
 		}
 	default:
 		return nil, fmt.Errorf("unknown detector %q", rule.Detector)

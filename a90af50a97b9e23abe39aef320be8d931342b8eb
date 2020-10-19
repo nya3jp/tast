@@ -33,6 +33,24 @@
       "message": "I am not familiar with autocaps enough, but maybe we should add a \"detector\" like other runtime probe caps...? hiroh@ could you help advise here? Thanks.",
       "revId": "a90af50a97b9e23abe39aef320be8d931342b8eb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ef1e43ed_e31dbb5f",
+        "filename": "src/chromiumos/tast/autocaps/caps.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1318626
+      },
+      "writtenOn": "2020-10-19T07:01:39Z",
+      "side": 1,
+      "message": "Adding a detector seems good; looks clearer in the capability file and I can selectively enable boards. Let me try to move this to a detector.",
+      "parentUuid": "2562a9e4_5ae9cb0b",
+      "revId": "a90af50a97b9e23abe39aef320be8d931342b8eb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

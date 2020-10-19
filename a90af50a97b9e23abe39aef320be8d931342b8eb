@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "59840e3d_6fe4b4a1",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001886
+      },
+      "writtenOn": "2020-10-19T04:33:44Z",
+      "side": 1,
+      "message": "Note that we will need to update/check the Autotest/Tauto implementation for this as well. There are some non-camera team owned autotest tests that might need to check those caps, such as http://b/171068373.",
+      "revId": "a90af50a97b9e23abe39aef320be8d931342b8eb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2562a9e4_5ae9cb0b",
+        "filename": "src/chromiumos/tast/autocaps/caps.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1001886
+      },
+      "writtenOn": "2020-10-19T04:33:44Z",
+      "side": 1,
+      "message": "I am not familiar with autocaps enough, but maybe we should add a \"detector\" like other runtime probe caps...? hiroh@ could you help advise here? Thanks.",
+      "revId": "a90af50a97b9e23abe39aef320be8d931342b8eb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

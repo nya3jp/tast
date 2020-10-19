@@ -13,6 +13,7 @@ import (
 	"google.golang.org/grpc"
 
 	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/protocol"
 )
 
 func TestRemoteLogging(t *testing.T) {
@@ -20,7 +21,7 @@ func TestRemoteLogging(t *testing.T) {
 	sv := newRemoteLoggingServer()
 
 	gs := grpc.NewServer()
-	RegisterLoggingServer(gs, sv)
+	protocol.RegisterLoggingServer(gs, sv)
 
 	lis, err := net.ListenTCP("tcp", nil)
 	if err != nil {

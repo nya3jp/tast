@@ -16,6 +16,7 @@ import (
 	"google.golang.org/grpc/reflection"
 
 	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/timing"
 )
@@ -25,7 +26,7 @@ import (
 func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service) error {
 	ls := newRemoteLoggingServer()
 	srv := grpc.NewServer(serverOpts(ls.Log)...)
-	RegisterLoggingServer(srv, ls)
+	protocol.RegisterLoggingServer(srv, ls)
 
 	// Register the reflection service for easier debugging.
 	reflection.Register(srv)

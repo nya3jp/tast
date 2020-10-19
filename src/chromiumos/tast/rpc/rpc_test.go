@@ -15,6 +15,7 @@ import (
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/timing"
 )
@@ -28,18 +29,18 @@ type pingServer struct {
 	onPing func(context.Context, *testing.ServiceState) error
 }
 
-func (s *pingServer) Ping(ctx context.Context, _ *PingRequest) (*PingResponse, error) {
+func (s *pingServer) Ping(ctx context.Context, _ *protocol.PingRequest) (*protocol.PingResponse, error) {
 	if err := s.onPing(ctx, s.s); err != nil {
 		return nil, err
 	}
-	return &PingResponse{}, nil
+	return &protocol.PingResponse{}, nil
 }
 
-var _ PingServer = (*pingServer)(nil)
+var _ protocol.PingServer = (*pingServer)(nil)
 
 // pingPair manages a local client/server pair of the Ping gRPC service.
 type pingPair struct {
-	Client PingClient
+	Client protocol.PingClient
 	// The server is missing here; it is implicitly owned by the background
 	// goroutine that calls RunServer.
 
@@ -69,7 +70,7 @@ func newPingPair(ctx context.Context, t *gotesting.T, onPing func(context.Contex
 
 	svc := &testing.Service{
 		Register: func(srv *grpc.Server, s *testing.ServiceState) {
-			RegisterPingServer(srv, &pingServer{s, onPing})
+			protocol.RegisterPingServer(srv, &pingServer{s, onPing})
 		},
 	}
 
@@ -98,7 +99,7 @@ func newPingPair(ctx context.Context, t *gotesting.T, onPing func(context.Contex
 
 	success = true
 	return &pingPair{
-		Client:     NewPingClient(cl.Conn),
+		Client:     protocol.NewPingClient(cl.Conn),
 		rpcClient:  cl,
 		stopServer: stopServer,
 	}
@@ -116,7 +117,7 @@ func TestRPCSuccess(t *gotesting.T) {
 	callCtx := testing.WithCurrentEntity(ctx, &testing.CurrentEntity{
 		ServiceDeps: []string{pingServiceName},
 	})
-	if _, err := pp.Client.Ping(callCtx, &PingRequest{}); err != nil {
+	if _, err := pp.Client.Ping(callCtx, &protocol.PingRequest{}); err != nil {
 		t.Error("Ping failed: ", err)
 	}
 	if !called {
@@ -136,7 +137,7 @@ func TestRPCFailure(t *gotesting.T) {
 	callCtx := testing.WithCurrentEntity(ctx, &testing.CurrentEntity{
 		ServiceDeps: []string{pingServiceName},
 	})
-	if _, err := pp.Client.Ping(callCtx, &PingRequest{}); err == nil {
+	if _, err := pp.Client.Ping(callCtx, &protocol.PingRequest{}); err == nil {
 		t.Error("Ping unexpectedly succeeded")
 	}
 	if !called {
@@ -153,7 +154,7 @@ func TestRPCNoCurrentEntity(t *gotesting.T) {
 	})
 	defer pp.Close(ctx)
 
-	if _, err := pp.Client.Ping(context.Background(), &PingRequest{}); err == nil {
+	if _, err := pp.Client.Ping(context.Background(), &protocol.PingRequest{}); err == nil {
 		t.Error("Ping unexpectedly succeeded for a context missing CurrentEntity")
 	}
 	if called {
@@ -169,7 +170,7 @@ func TestRPCRejectUndeclaredServices(t *gotesting.T) {
 	callCtx := testing.WithCurrentEntity(ctx, &testing.CurrentEntity{
 		ServiceDeps: []string{"foo.Bar"},
 	})
-	if _, err := pp.Client.Ping(callCtx, &PingRequest{}); err == nil {
+	if _, err := pp.Client.Ping(callCtx, &protocol.PingRequest{}); err == nil {
 		t.Error("Ping unexpectedly succeeded despite undeclared service")
 	}
 }
@@ -188,7 +189,7 @@ func TestRPCForwardCurrentEntity(t *gotesting.T) {
 	})
 	defer pp.Close(ctx)
 
-	if _, err := pp.Client.Ping(ctx, &PingRequest{}); err == nil {
+	if _, err := pp.Client.Ping(ctx, &protocol.PingRequest{}); err == nil {
 		t.Error("Ping unexpectedly succeeded for a context without CurrentEntity")
 	}
 
@@ -197,7 +198,7 @@ func TestRPCForwardCurrentEntity(t *gotesting.T) {
 		HasSoftwareDeps: true,
 		SoftwareDeps:    expectedDeps,
 	})
-	if _, err := pp.Client.Ping(callCtx, &PingRequest{}); err != nil {
+	if _, err := pp.Client.Ping(callCtx, &protocol.PingRequest{}); err != nil {
 		t.Error("Ping failed: ", err)
 	}
 	if !called {
@@ -228,7 +229,7 @@ func TestRPCForwardLogs(t *gotesting.T) {
 	callCtx := testing.WithCurrentEntity(ctx, &testing.CurrentEntity{
 		ServiceDeps: []string{pingServiceName},
 	})
-	if _, err := pp.Client.Ping(callCtx, &PingRequest{}); err != nil {
+	if _, err := pp.Client.Ping(callCtx, &protocol.PingRequest{}); err != nil {
 		t.Error("Ping failed: ", err)
 	}
 	if !called {
@@ -260,7 +261,7 @@ func TestRPCForwardTiming(t *gotesting.T) {
 	callCtx := testing.WithCurrentEntity(ctx, &testing.CurrentEntity{
 		ServiceDeps: []string{pingServiceName},
 	})
-	if _, err := pp.Client.Ping(callCtx, &PingRequest{}); err != nil {
+	if _, err := pp.Client.Ping(callCtx, &protocol.PingRequest{}); err != nil {
 		t.Error("Ping failed: ", err)
 	}
 	if !called {
@@ -295,7 +296,7 @@ func TestRPCServiceScopedContext(t *gotesting.T) {
 	callCtx := testing.WithCurrentEntity(ctx, &testing.CurrentEntity{
 		ServiceDeps: []string{pingServiceName},
 	})
-	if _, err := pp.Client.Ping(callCtx, &PingRequest{}); err != nil {
+	if _, err := pp.Client.Ping(callCtx, &protocol.PingRequest{}); err != nil {
 		t.Error("Ping failed: ", err)
 	}
 	if !called {

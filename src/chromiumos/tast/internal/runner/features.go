@@ -512,6 +512,8 @@ func findIntelSOC(parsed *lscpuResult) (device.Config_SOC, error) {
 		return device.Config_SOC_GEMINI_LAKE, nil
 	case INTEL_FAM6_ATOM_TREMONT_L:
 		return device.Config_SOC_JASPER_LAKE, nil
+	case INTEL_FAM6_TIGERLAKE_L:
+		return device.Config_SOC_TIGER_LAKE, nil
 	case INTEL_FAM6_CANNONLAKE_L:
 		return device.Config_SOC_CANNON_LAKE_Y, nil
 	case INTEL_FAM6_ATOM_GOLDMONT:

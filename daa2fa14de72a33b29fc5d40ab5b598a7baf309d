@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a7d0f714_11879c3e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1273510
+      },
+      "writtenOn": "2020-10-19T23:54:21Z",
+      "side": 1,
+      "message": "hidehiko@ PTAL\n\nihf@ FYI. video.MemCheck.* and video.Contents.* will be affected.",
+      "revId": "daa2fa14de72a33b29fc5d40ab5b598a7baf309d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e58a654a_f2e16230",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 515,
+      "author": {
+        "id": 1273510
+      },
+      "writtenOn": "2020-10-19T23:54:21Z",
+      "side": 1,
+      "message": "hidehiko@ Separately from this, I wonder if it\u0027s a good idea to remove [1] so that we err on the side of testing on an unsupported device rather than miss tests without noticing. WDYT?\n\n[1] http://cs/chromeos_public/src/platform/tast/src/chromiumos/tast/testing/hwdep/hwdep.go?l\u003d321\u0026rcl\u003d9a93d49fbb270cff080e1c821cd93ece99adf878",
+      "range": {
+        "startLine": 515,
+        "startChar": 1,
+        "endLine": 515,
+        "endChar": 5
+      },
+      "revId": "daa2fa14de72a33b29fc5d40ab5b598a7baf309d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

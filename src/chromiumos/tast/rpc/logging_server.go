@@ -8,6 +8,8 @@ import (
 	"container/list"
 	"errors"
 	"sync"
+
+	"chromiumos/tast/internal/protocol"
 )
 
 // remoteLoggingServer implements the tast.core.Logging gRPC service.
@@ -18,17 +20,17 @@ type remoteLoggingServer struct {
 	mu sync.Mutex
 	// inbox is a channel to send logs from gRPC servers to. It is nil if there is
 	// no client. Sending to this channel will never block.
-	inbox chan<- *LogEntry
+	inbox chan<- *protocol.LogEntry
 }
 
 func newRemoteLoggingServer() *remoteLoggingServer {
 	return &remoteLoggingServer{}
 }
 
-func (s *remoteLoggingServer) ReadLogs(srv Logging_ReadLogsServer) error {
+func (s *remoteLoggingServer) ReadLogs(srv protocol.Logging_ReadLogsServer) error {
 	ctx := srv.Context()
 
-	var logs <-chan *LogEntry
+	var logs <-chan *protocol.LogEntry
 	if err := func() error {
 		s.mu.Lock()
 		defer s.mu.Unlock()
@@ -37,7 +39,7 @@ func (s *remoteLoggingServer) ReadLogs(srv Logging_ReadLogsServer) error {
 			return errors.New("concurrent ReadLogs calls are disallowed")
 		}
 
-		dst, src := make(chan *LogEntry), make(chan *LogEntry)
+		dst, src := make(chan *protocol.LogEntry), make(chan *protocol.LogEntry)
 		logs, s.inbox = dst, src
 		go bufferedRelay(dst, src)
 		return nil
@@ -56,7 +58,7 @@ func (s *remoteLoggingServer) ReadLogs(srv Logging_ReadLogsServer) error {
 	}()
 
 	// Send an initial response to notify successful subscription.
-	if err := srv.Send(&ReadLogsResponse{}); err != nil {
+	if err := srv.Send(&protocol.ReadLogsResponse{}); err != nil {
 		return err
 	}
 
@@ -75,7 +77,7 @@ func (s *remoteLoggingServer) ReadLogs(srv Logging_ReadLogsServer) error {
 	for {
 		select {
 		case e := <-logs:
-			if err := srv.Send(&ReadLogsResponse{Entry: e}); err != nil {
+			if err := srv.Send(&protocol.ReadLogsResponse{Entry: e}); err != nil {
 				return err
 			}
 		case <-finCh:
@@ -86,7 +88,7 @@ func (s *remoteLoggingServer) ReadLogs(srv Logging_ReadLogsServer) error {
 	}
 }
 
-var _ LoggingServer = (*remoteLoggingServer)(nil)
+var _ protocol.LoggingServer = (*remoteLoggingServer)(nil)
 
 // Log sends msg to connected clients if any.
 // This method can be called on any goroutine.
@@ -96,7 +98,7 @@ func (s *remoteLoggingServer) Log(msg string) {
 	if s.inbox == nil {
 		return
 	}
-	s.inbox <- &LogEntry{Msg: msg}
+	s.inbox <- &protocol.LogEntry{Msg: msg}
 }
 
 // bufferedRelay receives logs from src and sends them to dst keeping the order.
@@ -104,7 +106,7 @@ func (s *remoteLoggingServer) Log(msg string) {
 // buffer of logs.
 // Once src is closed and all buffered logs are sent to dst, it closes dst and
 // returns.
-func bufferedRelay(dst chan<- *LogEntry, src <-chan *LogEntry) {
+func bufferedRelay(dst chan<- *protocol.LogEntry, src <-chan *protocol.LogEntry) {
 	var buf list.List
 
 loop:
@@ -123,14 +125,14 @@ loop:
 				break loop
 			}
 			buf.PushBack(msg)
-		case dst <- buf.Front().Value.(*LogEntry):
+		case dst <- buf.Front().Value.(*protocol.LogEntry):
 			buf.Remove(buf.Front())
 		}
 	}
 
 	for buf.Len() > 0 {
 		e := buf.Front()
-		dst <- e.Value.(*LogEntry)
+		dst <- e.Value.(*protocol.LogEntry)
 		buf.Remove(e)
 	}
 

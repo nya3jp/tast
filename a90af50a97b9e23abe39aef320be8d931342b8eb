@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "994d180e_d44481f7",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1318626
+      },
+      "writtenOn": "2020-10-19T11:58:36Z",
+      "side": 1,
+      "message": "CL for autotest: http://crrev.com/c/2484634",
+      "parentUuid": "59840e3d_6fe4b4a1",
+      "revId": "a90af50a97b9e23abe39aef320be8d931342b8eb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2562a9e4_5ae9cb0b",

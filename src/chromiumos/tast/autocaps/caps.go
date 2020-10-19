@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"regexp"
 
@@ -93,7 +94,49 @@ func Read(dir string, info *SysInfo) (map[string]State, error) {
 		}
 	}
 
+	// autotest-capability files installed by overlays cannot handle different caps for
+	// models/skus. Use CrOS config to query and override camera-related caps.
+	updateCameraCapsByCrosConfig(caps)
+
 	return caps, nil
+}
+
+// updateCameraCapsByCrosConfig updates camera-related caps by CrOS config. For each built-in
+// camera, the /camera/devices/*/interface config is either "usb" or "mipi".
+func updateCameraCapsByCrosConfig(caps map[string]State) {
+	hasUsb := false
+	hasMipi := false
+	for i := 0; ; i++ {
+		out, err := exec.Command("cros_config", fmt.Sprintf("/camera/devices/%v", i), "interface").Output()
+		if err != nil {
+			break
+		}
+		iface := string(out)
+		hasUsb = hasUsb || iface == "usb"
+		hasMipi = hasMipi || iface == "mipi"
+	}
+	if !hasUsb && !hasMipi {
+		// Some devices haven't migrated to use /camera/devices config so no camera is
+		// queried. Do not update caps in this case.
+		return
+	}
+
+	hasVivid := false
+	if s, ok := caps["vivid_camera"]; ok {
+		hasVivid = s == Yes
+	}
+
+	updateCaps := func(k string, b bool) {
+		if b {
+			caps[k] = Yes
+		} else {
+			caps[k] = No
+		}
+	}
+	updateCaps("builtin_usb_camera", hasUsb)
+	updateCaps("builtin_mipi_camera", hasMipi)
+	updateCaps("builtin_camera", hasUsb || hasMipi)
+	updateCaps("builtin_or_vivid_camera", hasUsb || hasMipi || hasVivid)
 }
 
 // readCapsFile reads the YAML file at path and updates the set of capabilities in caps.

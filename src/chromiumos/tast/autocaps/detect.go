@@ -28,6 +28,17 @@ type SysInfo struct {
 	CPUModel string
 	// HasKepler is true if "lspci -n -d <keplerID>" prints non-empty output.
 	HasKepler bool
+	// CameraInfo contains camera-related information queried from CrOS config. It's nil if the
+	// information is not available.
+	CameraInfo *CameraInfo
+}
+
+// CameraInfo contains information about camera configuration on the system.
+type CameraInfo struct {
+	// HasUsbCamera is true iff there's built-in USB camera.
+	HasUsbCamera bool
+	// HasMipiCamera is true iff there's built-in MIPI camera.
+	HasMipiCamera bool
 }
 
 // loadSysInfo returns a SysInfo struct describing the system where this code is running.
@@ -47,6 +58,28 @@ func loadSysInfo() (*SysInfo, error) {
 	// The lspci command can fail if the device doesn't have a PCI bus: https://crbug.com/888883
 	if out, err = exec.Command("lspci", "-n", "-d", keplerID).Output(); err == nil {
 		info.HasKepler = strings.TrimSpace(string(out)) != ""
+	}
+
+	// Queries camera configuration from CrOS config. For each built-in camera, the
+	// /camera/devices/*/interface config is either "usb" or "mipi".
+	hasUsb := false
+	hasMipi := false
+	for i := 0; ; i++ {
+		out, err := exec.Command("cros_config", fmt.Sprintf("/camera/devices/%v", i), "interface").Output()
+		if err != nil {
+			break
+		}
+		iface := string(out)
+		hasUsb = hasUsb || iface == "usb"
+		hasMipi = hasMipi || iface == "mipi"
+	}
+	// Some devices haven't migrated to use /camera/devices config so no camera is queried. Do
+	// not fill in camera info in this case.
+	if hasUsb || hasMipi {
+		info.CameraInfo = &CameraInfo{
+			HasUsbCamera:  hasUsb,
+			HasMipiCamera: hasMipi,
+		}
 	}
 
 	return &info, nil
@@ -76,6 +109,14 @@ var cpuModelMap = map[string]string{
 func runDetector(rule *detectRule, info *SysInfo) (directives []string, err error) {
 	var val string
 	switch rule.Detector {
+	case "usb_camera":
+		if info.CameraInfo != nil && info.CameraInfo.HasUsbCamera {
+			val = "usb_camera"
+		}
+	case "mipi_camera":
+		if info.CameraInfo != nil && info.CameraInfo.HasMipiCamera {
+			val = "mipi_camera"
+		}
 	case "intel_cpu":
 		val = cpuModelMap[info.CPUModel]
 	case "kepler":

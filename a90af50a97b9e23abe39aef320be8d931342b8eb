@@ -51,6 +51,24 @@
       "parentUuid": "2562a9e4_5ae9cb0b",
       "revId": "a90af50a97b9e23abe39aef320be8d931342b8eb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2b94fc54_a1257028",
+        "filename": "src/chromiumos/tast/autocaps/caps.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1318626
+      },
+      "writtenOn": "2020-10-19T08:15:26Z",
+      "side": 1,
+      "message": "Done in patch set #2. The yaml looks like\nhttps://chromium-review.googlesource.com/c/chromiumos/overlays/board-overlays/+/2484631",
+      "parentUuid": "ef1e43ed_e31dbb5f",
+      "revId": "a90af50a97b9e23abe39aef320be8d931342b8eb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1fe2ef56_b4524c11",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1318626
+      },
+      "writtenOn": "2020-10-19T10:36:44Z",
+      "side": 1,
+      "message": "patch set #3: simplified some logics.",
+      "revId": "8aa701f390cf31110f6e68762c4d258be3ef9fb3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

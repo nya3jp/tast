@@ -16,6 +16,24 @@
       "message": "Let\u0027s use the existing Tast helper for cros_config?\n\nhttp://cs/chromeos_public/src/platform/tast-tests/src/chromiumos/tast/local/crosconfig/crosconfig.go",
       "revId": "1e433f823c1f31a5414e0bc18f1720b2289efbe6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9565361c_5c8a079c",
+        "filename": "src/chromiumos/tast/autocaps/detect.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1318626
+      },
+      "writtenOn": "2020-10-19T09:06:58Z",
+      "side": 1,
+      "message": "Sure. Does this mean moving the crosconfig package into tast/src/chromiumos/tast?\n\nAlso the wrapper accepts a context arg. If using it, can we allow a context.TODO() here?",
+      "parentUuid": "7b3c5270_9def28c4",
+      "revId": "1e433f823c1f31a5414e0bc18f1720b2289efbe6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

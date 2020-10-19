@@ -34,6 +34,24 @@
       "parentUuid": "7b3c5270_9def28c4",
       "revId": "1e433f823c1f31a5414e0bc18f1720b2289efbe6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "77ace976_f80cc2fd",
+        "filename": "src/chromiumos/tast/autocaps/detect.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1001886
+      },
+      "writtenOn": "2020-10-19T09:30:22Z",
+      "side": 1,
+      "message": "Hmm I am not sure about what\u0027s the expected way to organize the meta-packages Tast. If it\u0027s cumbersome, I am ok to keep exec.Command() here. oka@ could you help advise here? \n\nFor context, maybe context.Background() or a short timeout could fit here?",
+      "parentUuid": "9565361c_5c8a079c",
+      "revId": "1e433f823c1f31a5414e0bc18f1720b2289efbe6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

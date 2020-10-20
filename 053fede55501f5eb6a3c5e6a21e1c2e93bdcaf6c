@@ -210,6 +210,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "4ae50f11_d6f9a016",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 294,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-20T09:46:52Z",
+      "side": 1,
+      "message": "Actually that\u0027s the approach I considered first. I definitely agree that it\u0027s best if we can do everything within gRPC.\n\nBut IIUC we have to register all services to grpc.Server before calling Serve:\nhttps://github.com/grpc/grpc-go/blob/master/server.go#L587\n\nThis means that we have to construct services before starting a gRPC server, which means that we can do nothing but to pass half-initialized testing.ServiceState to construct a service.\n\n\nBut as you said, it might be worth one extra round trip if we can reduce protocol complexity. So I\u0027m also fine with \"saving a message dump at some place beforehand\" approach I mentioned in the earlier comment.\n\nWDYT?",
+      "parentUuid": "f8468b2f_f6d1a1f1",
+      "range": {
+        "startLine": 285,
+        "startChar": 2,
+        "endLine": 294,
+        "endChar": 101
+      },
+      "revId": "053fede55501f5eb6a3c5e6a21e1c2e93bdcaf6c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "fdfcdf9d_2d2f5a16",
         "filename": "src/chromiumos/tast/internal/testing/service.go",
         "patchSetId": 1

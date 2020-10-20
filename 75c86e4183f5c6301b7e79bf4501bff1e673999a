@@ -1,0 +1,205 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d9fe2f91_d51a02b7",
+        "filename": "docs/getting_help.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-20T09:56:08Z",
+      "side": 1,
+      "message": "nit: I think we can make \"template\" a link, and keep \"test bug reports\" a plain text, since they are linked to the same URL at this moment.",
+      "range": {
+        "startLine": 11,
+        "startChar": 12,
+        "endLine": 11,
+        "endChar": 31
+      },
+      "revId": "75c86e4183f5c6301b7e79bf4501bff1e673999a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8e7b0e0c_128f88b9",
+        "filename": "docs/getting_help.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-20T09:56:08Z",
+      "side": 1,
+      "message": "(Googler only)",
+      "range": {
+        "startLine": 14,
+        "startChar": 30,
+        "endLine": 14,
+        "endChar": 31
+      },
+      "revId": "75c86e4183f5c6301b7e79bf4501bff1e673999a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "781e08a4_0a7b814a",
+        "filename": "docs/getting_help.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-20T09:56:08Z",
+      "side": 1,
+      "message": "Can you also mention go/tast-failures? It\u0027s another internal document for debugging test failures.",
+      "range": {
+        "startLine": 14,
+        "startChar": 34,
+        "endLine": 14,
+        "endChar": 39
+      },
+      "revId": "75c86e4183f5c6301b7e79bf4501bff1e673999a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "719322ea_639317b2",
+        "filename": "docs/getting_help.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-20T09:56:08Z",
+      "side": 1,
+      "message": "s/tast/Tast/g",
+      "range": {
+        "startLine": 14,
+        "startChar": 9,
+        "endLine": 14,
+        "endChar": 13
+      },
+      "revId": "75c86e4183f5c6301b7e79bf4501bff1e673999a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d88d270b_9bd29d55",
+        "filename": "docs/getting_help.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-20T09:56:08Z",
+      "side": 1,
+      "message": "I\u0027m not a native English speaker, but \"guidelines\" sounds a bit formal. How about \"tips\"?",
+      "range": {
+        "startLine": 14,
+        "startChar": 56,
+        "endLine": 14,
+        "endChar": 66
+      },
+      "revId": "75c86e4183f5c6301b7e79bf4501bff1e673999a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1ac86844_e2ae7e48",
+        "filename": "docs/getting_help.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-20T09:56:08Z",
+      "side": 1,
+      "message": "nit: Can you move [tast debugging guide] here to following the appearing order?",
+      "revId": "75c86e4183f5c6301b7e79bf4501bff1e673999a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d9d3a905_930e2ee9",
+        "filename": "docs/getting_help.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-20T09:56:08Z",
+      "side": 1,
+      "message": "nit: Can you move this entry to the top, since it would be the most popular component for core defects?",
+      "range": {
+        "startLine": 30,
+        "startChar": 27,
+        "endLine": 30,
+        "endChar": 49
+      },
+      "revId": "75c86e4183f5c6301b7e79bf4501bff1e673999a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f9900d2e_c559b29a",
+        "filename": "docs/getting_help.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-20T09:56:08Z",
+      "side": 1,
+      "message": "Do we still use this component? I thought it\u0027s already deprecate doesn\u0027t appear in UI.",
+      "range": {
+        "startLine": 31,
+        "startChar": 0,
+        "endLine": 31,
+        "endChar": 33
+      },
+      "revId": "75c86e4183f5c6301b7e79bf4501bff1e673999a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fadabda5_df8039f0",
+        "filename": "navbar.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-20T09:56:08Z",
+      "side": 1,
+      "message": "Let us use an expanded URL since this is a public document.\n\nhttps://bugs.chromium.org/p/chromium/issues/entry?template\u003dChrome+OS+Integration+Test+Defect+%28Tast+tests%29",
+      "range": {
+        "startLine": 9,
+        "startChar": 15,
+        "endLine": 9,
+        "endChar": 40
+      },
+      "revId": "75c86e4183f5c6301b7e79bf4501bff1e673999a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

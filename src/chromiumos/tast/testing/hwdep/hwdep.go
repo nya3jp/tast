@@ -317,8 +317,7 @@ func SupportsNV12Overlays() Condition {
 			f.DC.Soc == device.Config_SOC_APOLLO_LAKE ||
 			f.DC.Soc == device.Config_SOC_MT8173 ||
 			f.DC.Soc == device.Config_SOC_MT8176 ||
-			f.DC.Soc == device.Config_SOC_MT8183 ||
-			f.DC.Soc == device.Config_SOC_UNSPECIFIED {
+			f.DC.Soc == device.Config_SOC_MT8183 {
 			return errors.New("SoC does not support NV12 Overlays")
 		}
 		return nil

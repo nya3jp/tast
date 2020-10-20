@@ -104,6 +104,30 @@
       },
       "revId": "daa2fa14de72a33b29fc5d40ab5b598a7baf309d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "59844cd1_2dac88b8",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 515,
+      "author": {
+        "id": 1000221
+      },
+      "writtenOn": "2020-10-20T22:20:21Z",
+      "side": 1,
+      "message": "I think it is a good idea to bias towards testing. Please remove!",
+      "parentUuid": "207d1dee_68e5a1e1",
+      "range": {
+        "startLine": 515,
+        "startChar": 1,
+        "endLine": 515,
+        "endChar": 5
+      },
+      "revId": "daa2fa14de72a33b29fc5d40ab5b598a7baf309d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

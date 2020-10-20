@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3b3065f0_af7f2c5e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1196199
+      },
+      "writtenOn": "2020-10-20T01:32:47Z",
+      "side": 1,
+      "message": "LGTM. Defer tast-owners.",
+      "revId": "cfe532414e08fe71bb615941a450242394f98f4d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "43c1a7e5_2b028101",
+        "filename": "src/chromiumos/tast/autocaps/detect.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1196199
+      },
+      "writtenOn": "2020-10-20T01:32:47Z",
+      "side": 1,
+      "message": "nit: I would \nswitch string(out) {\ncase \"usb\":\n info.HasUsbCamera \u003d true\ncase \"mipi\":\n info.HasMipiCamera \u003d true\ndefault:\n // Just ignore..?\n}",
+      "revId": "cfe532414e08fe71bb615941a450242394f98f4d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

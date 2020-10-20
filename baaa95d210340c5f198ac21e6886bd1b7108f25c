@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fa8437fc_f1d61631",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 17
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-20T11:57:27Z",
+      "side": 1,
+      "message": "Added remote port forwarding to sshtest. PTAL.",
+      "revId": "baaa95d210340c5f198ac21e6886bd1b7108f25c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d3561a7b_1ddffa00",
+        "filename": "src/chromiumos/tast/internal/sshtest/ssh_server.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-20T11:57:27Z",
+      "side": 1,
+      "message": "I am not sure if it is collect to fill this with the remote host/port.\nIt works successfully even when this is set to other numbers (like 22222 or localPort)",
+      "revId": "baaa95d210340c5f198ac21e6886bd1b7108f25c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -18,6 +18,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "617701d2_37ed8065",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-10-20T15:42:42Z",
+      "side": 1,
+      "message": "CC+\u003dmcasas@ for the comment.",
+      "revId": "daa2fa14de72a33b29fc5d40ab5b598a7baf309d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e58a654a_f2e16230",
@@ -31,6 +48,30 @@
       "writtenOn": "2020-10-19T23:54:21Z",
       "side": 1,
       "message": "hidehiko@ Separately from this, I wonder if it\u0027s a good idea to remove [1] so that we err on the side of testing on an unsupported device rather than miss tests without noticing. WDYT?\n\n[1] http://cs/chromeos_public/src/platform/tast/src/chromiumos/tast/testing/hwdep/hwdep.go?l\u003d321\u0026rcl\u003d9a93d49fbb270cff080e1c821cd93ece99adf878",
+      "range": {
+        "startLine": 515,
+        "startChar": 1,
+        "endLine": 515,
+        "endChar": 5
+      },
+      "revId": "daa2fa14de72a33b29fc5d40ab5b598a7baf309d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f670fef0_a522054a",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 515,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-10-20T15:42:42Z",
+      "side": 1,
+      "message": "I\u0027m personally ok, but defer to graphics team for the decision, because it is designed for their tests.",
+      "parentUuid": "e58a654a_f2e16230",
       "range": {
         "startLine": 515,
         "startChar": 1,

@@ -234,6 +234,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "54af0792_6bd96103",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 294,
+      "author": {
+        "id": 1400377
+      },
+      "writtenOn": "2020-10-20T20:30:35Z",
+      "side": 1,
+      "message": "Shuhei,\n\nI summarized all approaches we discussed, with #1 modified by involving gRPC interceptors:\n\n1. A gRPC managemen service\n\nStart all services along with Management Service. Use gRPC interceptors to block all service calls except for those to the Management Service, until a StartUserServices() management call is received from client.\n\nThe FullMethod string in StreamServerInfo/UnaryServerInfo struct can be used to identify the destination of the calls in the interceptor and block them as needed.\n\nInterceptor code:\n\n\t// coreServices is a list services ready to serve as long as gRPC server is running. Other user defined services will start to serve after Management Service makes them ready.\n\tcoreServices :\u003d []string{\n\t\t\"/tast.core.Logging/\",\n\t\t\"/tast.cros.baserpc.FaillogService/\",\n\t\t\"/tast.core.Management/\",\n\t}\n\n\tif !serviceAllowed(info.FullMethod) {\n\t\treturn nil, fmt.Errorf(\"service is not ready: %s\", info.FullMethod)\n\t}\n\n- Extensible by adding new management service interfaces.\n- Useful to exchange any management messages when gRPC server is running.\n\n2. Run bundle in an intermediate state, waiting for parameter messages in protocol buffer from client on the SSH IO.\n- Complexity of handling SSH streaming IO and state transition\n\n3. Use a general command line flag with protocol buffer data as flag value\n- Protocol buffer data will be hex/base64 based\n- Extensible with extending protocol buffer definition\n\n4. Saving a message dump at some place beforehand\n- Message dump don\u0027t have to be protocol buffer, YAML will also work\n- Message dump file location will be passed in by a command line fag -configfile\n- Extensible by adding new parameters in the message dump\n\n5. Use a specific command line fags\n- Extensible with adding new command line flags\n\nMy Preference is 1, 5, 4, 3, 2. #1 is flexible and could be useful for further run-time management of gRPC services. #5, #4, #3 are basically same but #5 is more conceptually clear and saved one round-trip.\n\nThanks!\nXibin",
+      "parentUuid": "4ae50f11_d6f9a016",
+      "range": {
+        "startLine": 285,
+        "startChar": 2,
+        "endLine": 294,
+        "endChar": 101
+      },
+      "revId": "053fede55501f5eb6a3c5e6a21e1c2e93bdcaf6c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "fdfcdf9d_2d2f5a16",
         "filename": "src/chromiumos/tast/internal/testing/service.go",
         "patchSetId": 1

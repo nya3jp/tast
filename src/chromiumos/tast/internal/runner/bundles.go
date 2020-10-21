@@ -126,6 +126,7 @@ func getTests(args *Args, bundles []string) (tests []*testing.EntityInfo,
 		bundlesWithTests = append(bundlesWithTests, b)
 	}
 	sort.Strings(bundlesWithTests)
+
 	for _, b := range bundlesWithTests {
 		tests = append(tests, bundleTests[b]...)
 	}

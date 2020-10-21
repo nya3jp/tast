@@ -74,15 +74,113 @@ func (a *Args) PromoteDeprecated() {
 	// We don't have any deprecated fields right now.
 }
 
-// RunTestsArgs is nested within Args and contains arguments used by RunTestsMode.
-type RunTestsArgs struct {
-	// Patterns contains patterns (either empty to run all tests, exactly one attribute expression,
-	// or one or more globs) describing which tests to run.
-	Patterns []string `json:"patterns,omitempty"`
-
+// FeatureArgs includes all the feature related arguments.
+type FeatureArgs struct {
 	// TestVars contains names and values of runtime variables used to pass out-of-band data to tests.
 	// Names correspond to testing.Test.Vars and values are accessed using testing.State.Var.
 	TestVars map[string]string `json:"testVars,omitempty"`
+	// CheckSoftwareDeps is true if each test's SoftwareDeps field should be checked against
+	// AvailableSoftwareFeatures and UnavailableSoftwareFeatures.
+	CheckSoftwareDeps bool `json:"checkSoftwareDeps,omitempty"`
+	// AvailableSoftwareFeatures contains a list of software features supported by the DUT.
+	AvailableSoftwareFeatures []string `json:"availableSoftwareFeatures,omitempty"`
+	// UnavailableSoftwareFeatures contains a list of software features supported by the DUT.
+	UnavailableSoftwareFeatures []string `json:"unavailableSoftwareFeatures,omitempty"`
+	// DeviceConfig contains the hardware info about the DUT.
+	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON
+	// respectively.
+	// Deprecated. Use HardwareFeatures instead.
+	DeviceConfig *device.Config `json:"-"`
+	// HardwareFeatures contains the hardware info about DUT.
+	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON
+	// respectively.
+	HardwareFeatures *api.HardwareFeatures `json:"-"`
+}
+
+// jsonSpecialHandlingFields include all fields that are required to be handled in MarshalJSON/UnmarshalJSON
+// for marshaling and unmarshaling.
+type jsonSpecialHandlingFields struct {
+	DeviceConfig     []byte `json:"deviceConfig"`
+	HardwareFeatures []byte `json:"hardwareFeatures"`
+}
+
+// marshalSpecialFields marshals all fields that are required to be handled in MarshalJSON for marshaling.
+func (a *FeatureArgs) marshalSpecialFields() (*jsonSpecialHandlingFields, error) {
+	var dc []byte
+	if a.DeviceConfig != nil {
+		var err error
+		dc, err = proto.Marshal(a.DeviceConfig)
+		if err != nil {
+			return nil, err
+		}
+	}
+	var features []byte
+	if a.HardwareFeatures != nil {
+		var err error
+		features, err = proto.Marshal(a.HardwareFeatures)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &jsonSpecialHandlingFields{
+		DeviceConfig:     dc,
+		HardwareFeatures: features,
+	}, nil
+}
+
+// unmarshalSpecialFields marshals all fields that are required to be handled in UnmarshalJSON for unmarshaling.
+func (a *FeatureArgs) unmarshalSpecialFields(b []byte) error {
+	// Use alias to break the infinite recursion in json.Unmarshal.
+	type Alias FeatureArgs
+	aux := jsonSpecialHandlingFields{}
+	if err := json.Unmarshal(b, &aux); err != nil {
+		return err
+	}
+	if len(aux.DeviceConfig) > 0 {
+		var dc device.Config
+		if err := proto.Unmarshal(aux.DeviceConfig, &dc); err != nil {
+			return err
+		}
+		a.DeviceConfig = &dc
+	}
+	if len(aux.HardwareFeatures) > 0 {
+		var hw api.HardwareFeatures
+		if err := proto.Unmarshal(aux.HardwareFeatures, &hw); err != nil {
+			return err
+		}
+		a.HardwareFeatures = &hw
+	}
+	return nil
+}
+
+// Features returns dep.Features to be used to check test dependencies.
+func (a *FeatureArgs) Features() *dep.Features {
+	var f dep.Features
+	if a.CheckSoftwareDeps {
+		f.Var = make(map[string]string)
+		for k, v := range a.TestVars {
+			f.Var[k] = v
+		}
+		f.Software = &dep.SoftwareFeatures{
+			Available:   a.AvailableSoftwareFeatures,
+			Unavailable: a.UnavailableSoftwareFeatures,
+		}
+		f.Hardware = &dep.HardwareFeatures{
+			DC:       a.DeviceConfig,
+			Features: a.HardwareFeatures,
+		}
+	}
+	return &f
+}
+
+// RunTestsArgs is nested within Args and contains arguments used by RunTestsMode.
+type RunTestsArgs struct {
+	// FeatureArgs includes all the feature related arguments.
+	FeatureArgs
+
+	// Patterns contains patterns (either empty to run all tests, exactly one attribute expression,
+	// or one or more globs) describing which tests to run.
+	Patterns []string `json:"patterns,omitempty"`
 
 	// DataDir is the path to the directory containing test data files.
 	DataDir string `json:"dataDir,omitempty"`
@@ -113,23 +211,6 @@ type RunTestsArgs struct {
 	// It is only relevant for remote tests.
 	LocalBundleDir string `json:"localBundleDir,omitempty"`
 
-	// CheckSoftwareDeps is true if each test's SoftwareDeps field should be checked against
-	// AvailableSoftwareFeatures and UnavailableSoftwareFeatures.
-	CheckSoftwareDeps bool `json:"checkSoftwareDeps,omitempty"`
-	// AvailableSoftwareFeatures contains a list of software features supported by the DUT.
-	AvailableSoftwareFeatures []string `json:"availableSoftwareFeatures,omitempty"`
-	// UnavailableSoftwareFeatures contains a list of software features supported by the DUT.
-	UnavailableSoftwareFeatures []string `json:"unavailableSoftwareFeatures,omitempty"`
-	// DeviceConfig contains the hardware info about the DUT.
-	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON
-	// respectively.
-	// Deprecated. Use HardwareFeatures instead.
-	DeviceConfig *device.Config `json:"-"`
-	// HardwareFeatures contains the hardware info about DUT.
-	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON
-	// respectively.
-	HardwareFeatures *api.HardwareFeatures `json:"-"`
-
 	// Devservers contains URLs of devservers that can be used to download files.
 	Devservers []string `json:"devservers,omitempty"`
 	// TLWServer contains address of Test Lab Service Wiring APIs.
@@ -157,55 +238,21 @@ type RunTestsArgs struct {
 	SetUpErrors []string `json:"setUpErrors,omitempty"`
 }
 
-// Features returns dep.Features to be used to check test dependencies.
-func (a *RunTestsArgs) Features() *dep.Features {
-	var f dep.Features
-	if a.CheckSoftwareDeps {
-		f.Var = make(map[string]string)
-		for k, v := range a.TestVars {
-			f.Var[k] = v
-		}
-		f.Software = &dep.SoftwareFeatures{
-			Available:   a.AvailableSoftwareFeatures,
-			Unavailable: a.UnavailableSoftwareFeatures,
-		}
-		f.Hardware = &dep.HardwareFeatures{
-			DC:       a.DeviceConfig,
-			Features: a.HardwareFeatures,
-		}
-	}
-	return &f
-}
-
 // MarshalJSON marshals the RunTestsArgs struct into JSON.
 func (a *RunTestsArgs) MarshalJSON() ([]byte, error) {
-	var dc []byte
-	if a.DeviceConfig != nil {
-		var err error
-		dc, err = proto.Marshal(a.DeviceConfig)
-		if err != nil {
-			return nil, err
-		}
-	}
-	var features []byte
-	if a.HardwareFeatures != nil {
-		var err error
-		features, err = proto.Marshal(a.HardwareFeatures)
-		if err != nil {
-			return nil, err
-		}
+	fields, err := a.marshalSpecialFields()
+	if err != nil {
+		return nil, err
 	}
 
 	// Use alias to break the infinite recursion in json.Marshal.
 	type Alias RunTestsArgs
 	return json.Marshal(struct {
-		DeviceConfig     []byte `json:"deviceConfig"`
-		HardwareFeatures []byte `json:"hardwareFeatures"`
+		jsonSpecialHandlingFields
 		*Alias
 	}{
-		DeviceConfig:     dc,
-		HardwareFeatures: features,
-		Alias:            (*Alias)(a),
+		jsonSpecialHandlingFields: *fields,
+		Alias:                     (*Alias)(a),
 	})
 }
 
@@ -214,8 +261,7 @@ func (a *RunTestsArgs) UnmarshalJSON(b []byte) error {
 	// Use alias to break the infinite recursion in json.Unmarshal.
 	type Alias RunTestsArgs
 	aux := struct {
-		DeviceConfig     []byte `json:"deviceConfig"`
-		HardwareFeatures []byte `json:"hardwareFeatures"`
+		jsonSpecialHandlingFields
 		*Alias
 	}{
 		Alias: (*Alias)(a),
@@ -223,28 +269,56 @@ func (a *RunTestsArgs) UnmarshalJSON(b []byte) error {
 	if err := json.Unmarshal(b, &aux); err != nil {
 		return err
 	}
-	if len(aux.DeviceConfig) > 0 {
-		var dc device.Config
-		if err := proto.Unmarshal(aux.DeviceConfig, &dc); err != nil {
-			return err
-		}
-		a.DeviceConfig = &dc
-	}
-	if len(aux.HardwareFeatures) > 0 {
-		var hw api.HardwareFeatures
-		if err := proto.Unmarshal(aux.HardwareFeatures, &hw); err != nil {
-			return err
-		}
-		a.HardwareFeatures = &hw
+	if err := a.unmarshalSpecialFields(b); err != nil {
+		return err
 	}
 	return nil
 }
 
 // ListTestsArgs is nested within Args and contains arguments used by ListTestsMode.
 type ListTestsArgs struct {
+	// FeatureArgs includes all the feature related arguments.
+	FeatureArgs
 	// Patterns contains patterns (either empty to list all tests, exactly one attribute expression,
 	// or one or more globs) describing which tests to list.
 	Patterns []string `json:"patterns,omitempty"`
+}
+
+// MarshalJSON marshals the ListTestsArgs struct into JSON.
+func (a *ListTestsArgs) MarshalJSON() ([]byte, error) {
+	fields, err := a.marshalSpecialFields()
+	if err != nil {
+		return nil, err
+	}
+
+	// Use alias to break the infinite recursion in json.Marshal.
+	type Alias ListTestsArgs
+	return json.Marshal(struct {
+		jsonSpecialHandlingFields
+		*Alias
+	}{
+		jsonSpecialHandlingFields: *fields,
+		Alias:                     (*Alias)(a),
+	})
+}
+
+// UnmarshalJSON unmarshals JSON blob.
+func (a *ListTestsArgs) UnmarshalJSON(b []byte) error {
+	// Use alias to break the infinite recursion in json.Unmarshal.
+	type Alias ListTestsArgs
+	aux := struct {
+		jsonSpecialHandlingFields
+		*Alias
+	}{
+		Alias: (*Alias)(a),
+	}
+	if err := json.Unmarshal(b, &aux); err != nil {
+		return err
+	}
+	if err := a.unmarshalSpecialFields(b); err != nil {
+		return err
+	}
+	return nil
 }
 
 // bundleType describes the type of tests contained in a test bundle (i.e. local or remote).

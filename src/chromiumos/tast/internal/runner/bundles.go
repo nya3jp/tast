@@ -33,7 +33,7 @@ import (
 )
 
 // getBundlesAndTests returns matched tests and paths to the bundles containing them.
-func getBundlesAndTests(args *Args) (bundles []string, tests []*testing.EntityInfo, err *command.StatusError) {
+func getBundlesAndTests(args *Args) (bundles []string, tests []*testing.EntityWithRunnabilityInfo, err *command.StatusError) {
 	var glob string
 	switch args.Mode {
 	case RunTestsMode:
@@ -75,14 +75,14 @@ func getBundles(glob string) ([]string, *command.StatusError) {
 
 type testsOrError struct {
 	bundle string
-	tests  []*testing.EntityInfo
+	tests  []*testing.EntityWithRunnabilityInfo
 	err    *command.StatusError
 }
 
 // getTests returns tests in bundles matched by args.Patterns. It does this by executing
 // each bundle to ask it to marshal and print its tests. A slice of paths to bundles
 // with matched tests is also returned.
-func getTests(args *Args, bundles []string) (tests []*testing.EntityInfo,
+func getTests(args *Args, bundles []string) (tests []*testing.EntityWithRunnabilityInfo,
 	bundlesWithTests []string, statusErr *command.StatusError) {
 	bundleArgs, err := args.bundleArgs(bundle.ListTestsMode)
 	if err != nil {
@@ -99,7 +99,7 @@ func getTests(args *Args, bundles []string) (tests []*testing.EntityInfo,
 				ch <- testsOrError{bundle, nil, err}
 				return
 			}
-			ts := make([]*testing.EntityInfo, 0)
+			ts := make([]*testing.EntityWithRunnabilityInfo, 0)
 			if err := json.Unmarshal(out.Bytes(), &ts); err != nil {
 				ch <- testsOrError{bundle, nil,
 					command.NewStatusErrorf(statusBundleFailed, "bundle %v gave bad output: %v", bundle, err)}
@@ -110,7 +110,7 @@ func getTests(args *Args, bundles []string) (tests []*testing.EntityInfo,
 	}
 
 	// Read results into a map from bundle to that bundle's tests.
-	bundleTests := make(map[string][]*testing.EntityInfo)
+	bundleTests := make(map[string][]*testing.EntityWithRunnabilityInfo)
 	for i := 0; i < len(bundles); i++ {
 		toe := <-ch
 		if toe.err != nil {

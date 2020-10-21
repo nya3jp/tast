@@ -19,9 +19,20 @@ func TestListLocalTests(t *gotesting.T) {
 	td := newLocalTestData(t)
 	defer td.close()
 
-	tests := []testing.EntityInfo{
-		{Name: "pkg.Test", Desc: "This is a test", Attr: []string{"attr1", "attr2"}},
-		{Name: "pkg.AnotherTest", Desc: "Another test"},
+	tests := []testing.EntityListTestInfo{
+		{
+			EntityInfo: testing.EntityInfo{
+				Name: "pkg.Test",
+				Desc: "This is a test",
+				Attr: []string{"attr1", "attr2"},
+			},
+		},
+		{
+			EntityInfo: testing.EntityInfo{
+				Name: "pkg.AnotherTest",
+				Desc: "Another test",
+			},
+		},
 	}
 
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
@@ -51,9 +62,23 @@ func TestListLocalTests(t *gotesting.T) {
 
 func TestListRemoteList(t *gotesting.T) {
 	// Make the runner print serialized tests.
-	tests := []testing.EntityInfo{
-		{Name: "pkg.Test1", Desc: "First description", Attr: []string{"attr1", "attr2"}, Pkg: "pkg"},
-		{Name: "pkg2.Test2", Desc: "Second description", Attr: []string{"attr3"}, Pkg: "pkg2"},
+	tests := []testing.EntityListTestInfo{
+		{
+			EntityInfo: testing.EntityInfo{
+				Name: "pkg.Test1",
+				Desc: "First description",
+				Attr: []string{"attr1", "attr2"},
+				Pkg:  "pkg",
+			},
+		},
+		{
+			EntityInfo: testing.EntityInfo{
+				Name: "pkg2.Test2",
+				Desc: "Second description",
+				Attr: []string{"attr3"},
+				Pkg:  "pkg2",
+			},
+		},
 	}
 	b, err := json.Marshal(&tests)
 	if err != nil {
@@ -73,5 +98,50 @@ func TestListRemoteList(t *gotesting.T) {
 
 	if !reflect.DeepEqual(results, tests) {
 		t.Errorf("Unexpected list of remote tests: got %+v; want %+v", results, tests)
+	}
+}
+
+func TestListLocalTestsWithDep(t *gotesting.T) {
+	td := newLocalTestData(t)
+	defer td.close()
+
+	tests := []testing.EntityListTestInfo{
+		{
+			EntityInfo: testing.EntityInfo{
+				Name: "pkg.Test",
+				Desc: "This is a test",
+				Attr: []string{"attr1", "attr2"},
+			},
+		},
+		{
+			EntityInfo: testing.EntityInfo{
+				Name: "pkg.AnotherTest",
+				Desc: "Another test",
+			},
+		},
+	}
+
+	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		checkArgs(t, args, &runner.Args{
+			Mode:      runner.ListTestsMode,
+			ListTests: &runner.ListTestsArgs{BundleGlob: mockLocalBundleGlob},
+		})
+
+		json.NewEncoder(stdout).Encode(tests)
+		return 0
+	}
+
+	hst, err := connectToTarget(context.Background(), &td.cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	results, err := listLocalTests(context.Background(), &td.cfg, hst)
+	if err != nil {
+		t.Error("Failed to list local tests: ", err)
+	}
+
+	if !reflect.DeepEqual(results, tests) {
+		t.Errorf("Unexpected list of local tests: got %+v; want %+v", results, tests)
 	}
 }

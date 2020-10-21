@@ -532,8 +532,15 @@ func (t *TestInstance) EntityInfo() *EntityInfo {
 	}
 }
 
+// EntityListTestInfo is a JSON-serializable description of information of an entity to be used for listing test.
+type EntityListTestInfo struct {
+	// See TestInstance for details of the fields.
+	EntityInfo
+	SkipReason string `json:"skipReason"`
+}
+
 // WriteTestsAsJSON marshals ts to JSON and writes the resulting data to w.
-func WriteTestsAsJSON(w io.Writer, ts []*EntityInfo) error {
+func WriteTestsAsJSON(w io.Writer, ts []*EntityListTestInfo) error {
 	b, err := json.Marshal(ts)
 	if err != nil {
 		return err

@@ -36,7 +36,7 @@ func runRemoteTests(ctx context.Context, cfg *Config) ([]*EntityResult, error) {
 	beforeRetry := func(ctx context.Context) bool { return true }
 
 	start := time.Now()
-	results, err := runTestsWithRetry(ctx, cfg, cfg.Patterns, runTests, beforeRetry)
+	results, err := runTestsWithRetry(ctx, cfg, cfg.TestNames, runTests, beforeRetry)
 	elapsed := time.Since(start)
 	cfg.Logger.Logf("Ran %v remote test(s) in %v", len(results), elapsed.Round(time.Millisecond))
 	return results, err
@@ -60,8 +60,10 @@ func runRemoteTestsOnce(ctx context.Context, cfg *Config, patterns []string) (re
 		Mode: runner.RunTestsMode,
 		RunTests: &runner.RunTestsArgs{
 			BundleArgs: bundle.RunTestsArgs{
+				FeatureArgs: bundle.FeatureArgs{
+					TestVars: cfg.testVars,
+				},
 				Patterns: patterns,
-				TestVars: cfg.testVars,
 				DataDir:  cfg.remoteDataDir,
 				OutDir:   cfg.remoteOutDir,
 				Target:   cfg.Target,
@@ -89,7 +91,7 @@ func runRemoteTestsOnce(ctx context.Context, cfg *Config, patterns []string) (re
 			BundleGlob: cfg.remoteBundleGlob(),
 		},
 	}
-	setRunnerTestDepsArgs(cfg, &args)
+	setRunnerTestDepsArgs(cfg, &args.RunTests.BundleArgs.FeatureArgs)
 
 	// Backfill deprecated fields in case we're executing an old test runner.
 	args.FillDeprecated()

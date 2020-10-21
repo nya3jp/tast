@@ -95,22 +95,24 @@ func TestMarshal(t *testing.T) {
 	// 0-bytes data after marshal is treated as nil.
 	// Fill some fields to test non-nil case here.
 	in := &RunTestsArgs{
-		DeviceConfig: &device.Config{
-			Id: &device.ConfigId{
-				PlatformId: &device.PlatformId{Value: "platformId"},
-				ModelId:    &device.ModelId{Value: "modelId"},
-				BrandId:    &device.BrandId{Value: "brandId"},
-			},
-		},
-		HardwareFeatures: &configpb.HardwareFeatures{
-			Screen: &configpb.HardwareFeatures_Screen{
-				TouchSupport: configpb.HardwareFeatures_PRESENT,
-				PanelProperties: &configpb.Component_DisplayPanel_Properties{
-					DiagonalMilliinch: 11000,
+		FeatureArgs: FeatureArgs{
+			DeviceConfig: &device.Config{
+				Id: &device.ConfigId{
+					PlatformId: &device.PlatformId{Value: "platformId"},
+					ModelId:    &device.ModelId{Value: "modelId"},
+					BrandId:    &device.BrandId{Value: "brandId"},
 				},
 			},
-			Fingerprint: &configpb.HardwareFeatures_Fingerprint{
-				Location: configpb.HardwareFeatures_Fingerprint_NOT_PRESENT,
+			HardwareFeatures: &configpb.HardwareFeatures{
+				Screen: &configpb.HardwareFeatures_Screen{
+					TouchSupport: configpb.HardwareFeatures_PRESENT,
+					PanelProperties: &configpb.Component_DisplayPanel_Properties{
+						DiagonalMilliinch: 11000,
+					},
+				},
+				Fingerprint: &configpb.HardwareFeatures_Fingerprint{
+					Location: configpb.HardwareFeatures_Fingerprint_NOT_PRESENT,
+				},
 			},
 		},
 	}

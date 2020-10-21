@@ -8,7 +8,7 @@ we'll learn about the following:
 
 *   creating new contexts to limit the running time of operations
 *   declaring separate helper functions
-*   deciding when to run external commands vs. using native Go code
+*   deciding when to run external commands vs. using standard Go code
 *   using channels to communicate between goroutines
 *   waiting for asynchronous events
 *   cleaning up after ourselves
@@ -43,7 +43,7 @@ resolves the first two concerns above. For the third concern, we can use `dmesg
 risk of seeing a stale message, but it at least makes it less likely.
 
 We also need to think about how we're going to consume `dmesg --follow`'s output
-in our test. Go doesn't provide much builtin support for non-blocking I/O, but
+in our test. Go doesn't provide much standard support for non-blocking I/O, but
 it does make it easy to run code concurrently in a separate [goroutine] and pass
 data between goroutines using [channels]. (There are more helpful links about
 concurrency in Go in the [Concurrency] section of the [Writing Tests] doc.) We
@@ -202,12 +202,12 @@ cleanup will be automatically performed.
 }
 ```
 
-The final thing of note in this function is the use of native Go code like
+The final thing of note in this function is the use of standard Go code like
 `os.Create`, `f.Seek`, and `f.Write` instead of e.g. calling the `dd` command to
-write a file. When the work being performed is straightforward, native code is
-usually preferable, as it both makes it easier to see the exact operations that
-are being performed and provides vastly better error-reporting when something
-goes wrong.
+write a file. When the work being performed is straightforward, standard code
+is usually preferable, as it both makes it easier to see the exact operations
+that are being performed and provides vastly better error-reporting when
+something goes wrong.
 
 [information hiding]: https://en.wikipedia.org/wiki/Information_hiding
 [os.File]: https://golang.org/pkg/os/#File

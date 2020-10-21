@@ -16,6 +16,23 @@
       "message": "I was not sure if I needed to add a Cq-Depend: chromium:2488321\nsince I added a Cq-Depend to the commit of 2488321.\n",
       "revId": "b7604106a9ddcb80823e4f586b4a822d16cdc675",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "70eee080_933a7ddf",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1337146
+      },
+      "writtenOn": "2020-10-21T15:21:28Z",
+      "side": 1,
+      "message": "We get a build failure:\n tast-remote-tests-cros-0.0.1-r4108: vet: src/chromiumos/tast/local/input/gen/gen_constants.go:51:4: unknown field NativeType in struct literal\n tast-remote-tests-cros-0.0.1-r4108:  * ERROR: chromeos-base/tast-remote-tests-cros-0.0.1-r4108::chromiumos failed (compile phase):\n tast-remote-tests-cros-0.0.1-r4108:  *   (no error message)\n\nWhich is expected since we need  commit 2488321.\nIt looks to me that I should had\nCq-Depend: chromium:2488321 to this commit \nand remove Cq-Depend from crrev/c/2488321",
+      "revId": "b7604106a9ddcb80823e4f586b4a822d16cdc675",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

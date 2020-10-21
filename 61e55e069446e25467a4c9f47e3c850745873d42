@@ -97,6 +97,30 @@
       },
       "revId": "61e55e069446e25467a4c9f47e3c850745873d42",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "06b27d49_5f18eca9",
+        "filename": "docs/getting_help.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1358595
+      },
+      "writtenOn": "2020-10-21T17:26:53Z",
+      "side": 1,
+      "message": "Looking at the pages, I think here or the [Tast debugging guide] is probably the best location to add it.",
+      "parentUuid": "3c4eb196_1ce49a02",
+      "range": {
+        "startLine": 11,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 37
+      },
+      "revId": "61e55e069446e25467a4c9f47e3c850745873d42",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

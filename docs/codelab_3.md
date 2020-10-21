@@ -15,7 +15,7 @@ The chrome.Automation library uses the Chrome Accessibility Tree to view and
 control the current state of the UI. The Accessibility Tree has access to:
 * The Chrome Browser
 * The ChromeOS Desktop UI
-* Native Apps
+* Standard Apps
 * Web Apps/PWAs
 
 That being said, it does not have access to UI elements in containers or VMs
@@ -88,7 +88,7 @@ After running the test on a device, you should be able to find the UI dump at:
 The tree can be a little complex and unintuitive at times, but it should have
 nodes for anything we are looking for.
 
-> Note: You can inspect the native UI by enabling
+> Note: You can inspect the standard UI by enabling
 chrome://flags/#enable-ui-devtools on your device, going to
 chrome://inspect/#other, and clicking inspect under UiDevToolsClient. More
 details available [here].

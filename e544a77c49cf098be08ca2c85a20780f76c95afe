@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4059cdf5_10bbaf33",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-21T09:08:13Z",
+      "side": 1,
+      "message": "Can you also edit docs/test_dependencies.md to add a description of the new software feature?",
+      "revId": "e544a77c49cf098be08ca2c85a20780f76c95afe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "92079bc0_c90142a2",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-21T09:08:13Z",
+      "side": 1,
+      "message": "USE flags mentioned here needs to be listed in tast-use-flags-9999.ebuild. Can you create another CL that adds it?\nhttps://source.corp.google.com/chromeos_public/src/third_party/chromiumos-overlay/chromeos-base/tast-use-flags/tast-use-flags-9999.ebuild",
+      "range": {
+        "startLine": 81,
+        "startChar": 31,
+        "endLine": 81,
+        "endChar": 40
+      },
+      "revId": "e544a77c49cf098be08ca2c85a20780f76c95afe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

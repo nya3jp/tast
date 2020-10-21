@@ -74,15 +74,37 @@ func (a *Args) PromoteDeprecated() {
 	// We don't have any deprecated fields right now.
 }
 
-// RunTestsArgs is nested within Args and contains arguments used by RunTestsMode.
-type RunTestsArgs struct {
-	// Patterns contains patterns (either empty to run all tests, exactly one attribute expression,
-	// or one or more globs) describing which tests to run.
-	Patterns []string `json:"patterns,omitempty"`
-
+// FeatureArgs includes all the feature related arguments.
+type FeatureArgs struct {
 	// TestVars contains names and values of runtime variables used to pass out-of-band data to tests.
 	// Names correspond to testing.Test.Vars and values are accessed using testing.State.Var.
 	TestVars map[string]string `json:"testVars,omitempty"`
+	// CheckSoftwareDeps is true if each test's SoftwareDeps field should be checked against
+	// AvailableSoftwareFeatures and UnavailableSoftwareFeatures.
+	CheckSoftwareDeps bool `json:"checkSoftwareDeps,omitempty"`
+	// AvailableSoftwareFeatures contains a list of software features supported by the DUT.
+	AvailableSoftwareFeatures []string `json:"availableSoftwareFeatures,omitempty"`
+	// UnavailableSoftwareFeatures contains a list of software features supported by the DUT.
+	UnavailableSoftwareFeatures []string `json:"unavailableSoftwareFeatures,omitempty"`
+	// DeviceConfig contains the hardware info about the DUT.
+	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON
+	// respectively.
+	// Deprecated. Use HardwareFeatures instead.
+	DeviceConfig *device.Config `json:"-"`
+	// HardwareFeatures contains the hardware info about DUT.
+	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON
+	// respectively.
+	HardwareFeatures *api.HardwareFeatures `json:"-"`
+}
+
+// RunTestsArgs is nested within Args and contains arguments used by RunTestsMode.
+type RunTestsArgs struct {
+	// FeatureArgs includes all the feature related arguments.
+	FeatureRelatedArgs FeatureArgs `json:"featurerelatedargs,omitempty"`
+
+	// Patterns contains patterns (either empty to run all tests, exactly one attribute expression,
+	// or one or more globs) describing which tests to run.
+	Patterns []string `json:"patterns,omitempty"`
 
 	// DataDir is the path to the directory containing test data files.
 	DataDir string `json:"dataDir,omitempty"`
@@ -113,23 +135,6 @@ type RunTestsArgs struct {
 	// It is only relevant for remote tests.
 	LocalBundleDir string `json:"localBundleDir,omitempty"`
 
-	// CheckSoftwareDeps is true if each test's SoftwareDeps field should be checked against
-	// AvailableSoftwareFeatures and UnavailableSoftwareFeatures.
-	CheckSoftwareDeps bool `json:"checkSoftwareDeps,omitempty"`
-	// AvailableSoftwareFeatures contains a list of software features supported by the DUT.
-	AvailableSoftwareFeatures []string `json:"availableSoftwareFeatures,omitempty"`
-	// UnavailableSoftwareFeatures contains a list of software features supported by the DUT.
-	UnavailableSoftwareFeatures []string `json:"unavailableSoftwareFeatures,omitempty"`
-	// DeviceConfig contains the hardware info about the DUT.
-	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON
-	// respectively.
-	// Deprecated. Use HardwareFeatures instead.
-	DeviceConfig *device.Config `json:"-"`
-	// HardwareFeatures contains the hardware info about DUT.
-	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON
-	// respectively.
-	HardwareFeatures *api.HardwareFeatures `json:"-"`
-
 	// Devservers contains URLs of devservers that can be used to download files.
 	Devservers []string `json:"devservers,omitempty"`
 	// TLWServer contains address of Test Lab Service Wiring APIs.
@@ -158,7 +163,7 @@ type RunTestsArgs struct {
 }
 
 // Features returns dep.Features to be used to check test dependencies.
-func (a *RunTestsArgs) Features() *dep.Features {
+func (a *FeatureArgs) Features() *dep.Features {
 	var f dep.Features
 	if a.CheckSoftwareDeps {
 		f.Var = make(map[string]string)
@@ -178,7 +183,7 @@ func (a *RunTestsArgs) Features() *dep.Features {
 }
 
 // MarshalJSON marshals the RunTestsArgs struct into JSON.
-func (a *RunTestsArgs) MarshalJSON() ([]byte, error) {
+func (a *FeatureArgs) MarshalJSON() ([]byte, error) {
 	var dc []byte
 	if a.DeviceConfig != nil {
 		var err error
@@ -197,7 +202,7 @@ func (a *RunTestsArgs) MarshalJSON() ([]byte, error) {
 	}
 
 	// Use alias to break the infinite recursion in json.Marshal.
-	type Alias RunTestsArgs
+	type Alias FeatureArgs
 	return json.Marshal(struct {
 		DeviceConfig     []byte `json:"deviceConfig"`
 		HardwareFeatures []byte `json:"hardwareFeatures"`
@@ -210,9 +215,9 @@ func (a *RunTestsArgs) MarshalJSON() ([]byte, error) {
 }
 
 // UnmarshalJSON unmarshals JSON blob.
-func (a *RunTestsArgs) UnmarshalJSON(b []byte) error {
+func (a *FeatureArgs) UnmarshalJSON(b []byte) error {
 	// Use alias to break the infinite recursion in json.Unmarshal.
-	type Alias RunTestsArgs
+	type Alias FeatureArgs
 	aux := struct {
 		DeviceConfig     []byte `json:"deviceConfig"`
 		HardwareFeatures []byte `json:"hardwareFeatures"`
@@ -242,6 +247,8 @@ func (a *RunTestsArgs) UnmarshalJSON(b []byte) error {
 
 // ListTestsArgs is nested within Args and contains arguments used by ListTestsMode.
 type ListTestsArgs struct {
+	// FeatureArgs includes all the feature related arguments.
+	FeatureRelatedArgs FeatureArgs `json:"featurerelatedargs,omitempty"`
 	// Patterns contains patterns (either empty to list all tests, exactly one attribute expression,
 	// or one or more globs) describing which tests to list.
 	Patterns []string `json:"patterns,omitempty"`

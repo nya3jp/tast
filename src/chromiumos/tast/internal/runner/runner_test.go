@@ -489,16 +489,16 @@ func TestCheckDepsWhenRunManually(t *gotesting.T) {
 	if err != nil {
 		t.Fatal("bundleArgs failed: ", err)
 	}
-	if !bundleArgs.RunTests.CheckSoftwareDeps {
+	if !bundleArgs.RunTests.FeatureRelatedArgs.CheckSoftwareDeps {
 		t.Errorf("%s wouldn't request checking test deps", sig)
 	}
-	if exp := []string{"both", "third"}; !reflect.DeepEqual(bundleArgs.RunTests.AvailableSoftwareFeatures, exp) {
+	if exp := []string{"both", "third"}; !reflect.DeepEqual(bundleArgs.RunTests.FeatureRelatedArgs.AvailableSoftwareFeatures, exp) {
 		t.Errorf("%s would pass available features %v; want %v",
-			sig, bundleArgs.RunTests.AvailableSoftwareFeatures, exp)
+			sig, bundleArgs.RunTests.FeatureRelatedArgs.AvailableSoftwareFeatures, exp)
 	}
-	if exp := []string{"neither"}; !reflect.DeepEqual(bundleArgs.RunTests.UnavailableSoftwareFeatures, exp) {
+	if exp := []string{"neither"}; !reflect.DeepEqual(bundleArgs.RunTests.FeatureRelatedArgs.UnavailableSoftwareFeatures, exp) {
 		t.Errorf("%s would pass unavailable features %v; want %v",
-			sig, bundleArgs.RunTests.UnavailableSoftwareFeatures, exp)
+			sig, bundleArgs.RunTests.FeatureRelatedArgs.UnavailableSoftwareFeatures, exp)
 	}
 }
 

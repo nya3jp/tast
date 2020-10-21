@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"io/ioutil"
+	"reflect"
 	"testing"
 
 	"github.com/golang/protobuf/proto"
@@ -95,42 +96,52 @@ func TestMarshal(t *testing.T) {
 	// 0-bytes data after marshal is treated as nil.
 	// Fill some fields to test non-nil case here.
 	in := &RunTestsArgs{
-		DeviceConfig: &device.Config{
-			Id: &device.ConfigId{
-				PlatformId: &device.PlatformId{Value: "platformId"},
-				ModelId:    &device.ModelId{Value: "modelId"},
-				BrandId:    &device.BrandId{Value: "brandId"},
-			},
-		},
-		HardwareFeatures: &configpb.HardwareFeatures{
-			Screen: &configpb.HardwareFeatures_Screen{
-				TouchSupport: configpb.HardwareFeatures_PRESENT,
-				PanelProperties: &configpb.Component_DisplayPanel_Properties{
-					DiagonalMilliinch: 11000,
+		FeatureRelatedArgs: FeatureArgs{
+			AvailableSoftwareFeatures:   []string{"feature1"},
+			UnavailableSoftwareFeatures: []string{"feature2"},
+			DeviceConfig: &device.Config{
+				Id: &device.ConfigId{
+					PlatformId: &device.PlatformId{Value: "platformId"},
+					ModelId:    &device.ModelId{Value: "modelId"},
+					BrandId:    &device.BrandId{Value: "brandId"},
 				},
 			},
-			Fingerprint: &configpb.HardwareFeatures_Fingerprint{
-				Location: configpb.HardwareFeatures_Fingerprint_NOT_PRESENT,
-			},
-			EmbeddedController: &configpb.HardwareFeatures_EmbeddedController{
-				Present: configpb.HardwareFeatures_NOT_PRESENT,
-				EcType:  configpb.HardwareFeatures_EmbeddedController_EC_TYPE_UNKNOWN,
-				Part:    &configpb.Component_EmbeddedController{PartNumber: "my_part_number"},
+			HardwareFeatures: &configpb.HardwareFeatures{
+				Screen: &configpb.HardwareFeatures_Screen{
+					TouchSupport: configpb.HardwareFeatures_PRESENT,
+					PanelProperties: &configpb.Component_DisplayPanel_Properties{
+						DiagonalMilliinch: 11000,
+					},
+				},
+				Fingerprint: &configpb.HardwareFeatures_Fingerprint{
+					Location: configpb.HardwareFeatures_Fingerprint_NOT_PRESENT,
+				},
+				EmbeddedController: &configpb.HardwareFeatures_EmbeddedController{
+					Present: configpb.HardwareFeatures_NOT_PRESENT,
+					EcType:  configpb.HardwareFeatures_EmbeddedController_EC_TYPE_UNKNOWN,
+					Part:    &configpb.Component_EmbeddedController{PartNumber: "my_part_number"},
+				},
 			},
 		},
 	}
-	b, err := in.MarshalJSON()
+	b, err := json.Marshal(in)
 	if err != nil {
 		t.Fatal("Failed to marshalize JSON")
 	}
 	out := &RunTestsArgs{}
-	if err := out.UnmarshalJSON(b); err != nil {
+	if err := json.Unmarshal(b, out); err != nil {
 		t.Fatal("Failed to unmarshal JSON: ", err)
 	}
-	if !proto.Equal(in.DeviceConfig, out.DeviceConfig) {
-		t.Errorf("DeviceConfig did not match: want %v, got %v", in.DeviceConfig, out.DeviceConfig)
+	if !proto.Equal(in.FeatureRelatedArgs.DeviceConfig, out.FeatureRelatedArgs.DeviceConfig) {
+		t.Errorf("DeviceConfig did not match: want %v, got %v", in.FeatureRelatedArgs.DeviceConfig, out.FeatureRelatedArgs.DeviceConfig)
 	}
-	if !proto.Equal(in.HardwareFeatures, out.HardwareFeatures) {
-		t.Errorf("HardwareFeatures did not match: want %v, got %v", in.HardwareFeatures, out.HardwareFeatures)
+	if !proto.Equal(in.FeatureRelatedArgs.HardwareFeatures, out.FeatureRelatedArgs.HardwareFeatures) {
+		t.Errorf("HardwareFeatures did not match: want %v, got %v", in.FeatureRelatedArgs.HardwareFeatures, out.FeatureRelatedArgs.HardwareFeatures)
+	}
+	if !reflect.DeepEqual(in.FeatureRelatedArgs.AvailableSoftwareFeatures, out.FeatureRelatedArgs.AvailableSoftwareFeatures) {
+		t.Errorf("AvailableSoftwareFeatures did not match: want %v, got %v", in.FeatureRelatedArgs.AvailableSoftwareFeatures, out.FeatureRelatedArgs.AvailableSoftwareFeatures)
+	}
+	if !reflect.DeepEqual(in.FeatureRelatedArgs.UnavailableSoftwareFeatures, out.FeatureRelatedArgs.UnavailableSoftwareFeatures) {
+		t.Errorf("UnavailableSoftwareFeatures did not match: want %v, got %v", in.FeatureRelatedArgs.UnavailableSoftwareFeatures, out.FeatureRelatedArgs.UnavailableSoftwareFeatures)
 	}
 }

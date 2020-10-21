@@ -532,8 +532,23 @@ func (t *TestInstance) EntityInfo() *EntityInfo {
 	}
 }
 
+// EntityWithRunnabilityInfo is a JSON-serializable description of information of an entity to be used for listing test.
+type EntityWithRunnabilityInfo struct {
+	// See TestInstance for details of the fields.
+	EntityInfo
+	SkipReason string `json:"skipReason"`
+}
+
+// EntityWithRunnabilityInfo converts TestInstance to EntityWithRunnabilityInfo.
+func (t *TestInstance) EntityWithRunnabilityInfo() *EntityWithRunnabilityInfo {
+	return &EntityWithRunnabilityInfo{
+		EntityInfo: *t.EntityInfo(),
+		SkipReason: "",
+	}
+}
+
 // WriteTestsAsJSON marshals ts to JSON and writes the resulting data to w.
-func WriteTestsAsJSON(w io.Writer, ts []*EntityInfo) error {
+func WriteTestsAsJSON(w io.Writer, ts []*EntityWithRunnabilityInfo) error {
 	b, err := json.Marshal(ts)
 	if err != nil {
 		return err

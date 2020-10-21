@@ -544,8 +544,8 @@ func setManualDepsArgs(args *Args, cfg *Config, extraUSEFlags []string) error {
 	if err != nil {
 		return command.NewStatusErrorf(statusError, "%v", err)
 	}
-	args.RunTests.BundleArgs.CheckSoftwareDeps = true
-	args.RunTests.BundleArgs.AvailableSoftwareFeatures = features.Available
-	args.RunTests.BundleArgs.UnavailableSoftwareFeatures = features.Unavailable
+	args.RunTests.BundleArgs.FeatureRelatedArgs.CheckSoftwareDeps = true
+	args.RunTests.BundleArgs.FeatureRelatedArgs.AvailableSoftwareFeatures = features.Available
+	args.RunTests.BundleArgs.FeatureRelatedArgs.UnavailableSoftwareFeatures = features.Unavailable
 	return nil
 }

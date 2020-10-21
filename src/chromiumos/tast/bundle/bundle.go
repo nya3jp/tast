@@ -60,9 +60,20 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 		if err != nil {
 			return command.WriteError(stderr, err)
 		}
-		var infos []*testing.EntityInfo
+		var infos []*testing.EntityWithRunnabilityInfo
 		for _, test := range tests {
-			infos = append(infos, test.EntityInfo())
+			infos = append(infos, test.EntityWithRunnabilityInfo())
+		}
+		if features := args.ListTests.FeatureRelatedArgs.Features(); features != nil {
+			for i, test := range tests {
+				r := test.ShouldRun(features)
+				if !r.OK() {
+					var reasons []string
+					reasons = append(reasons, r.SkipReasons...)
+					reasons = append(reasons, r.Errors...)
+					infos[i].SkipReason = strings.Join(reasons, ", ")
+				}
+			}
 		}
 		if err := testing.WriteTestsAsJSON(stdout, infos); err != nil {
 			return command.WriteError(stderr, err)
@@ -270,8 +281,8 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 	pcfg := &planner.Config{
 		DataDir:           args.RunTests.DataDir,
 		OutDir:            args.RunTests.OutDir,
-		Vars:              args.RunTests.TestVars,
-		Features:          *args.RunTests.Features(),
+		Vars:              args.RunTests.FeatureRelatedArgs.TestVars,
+		Features:          *args.RunTests.FeatureRelatedArgs.Features(),
 		Devservers:        args.RunTests.Devservers,
 		TLWServer:         args.RunTests.TLWServer,
 		DUTName:           args.RunTests.DUTName,

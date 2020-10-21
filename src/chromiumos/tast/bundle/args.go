@@ -155,6 +155,13 @@ type RunTestsArgs struct {
 	// SetUpErrors contains error messages happened on test setup (e.g. fixture SetUp). If its
 	// length is non-zero, tests shouldn't run.
 	SetUpErrors []string `json:"setUpErrors,omitempty"`
+
+	// TotalShards specifies total number of shards to be used in a test run
+	TotalShards int `json:"TotalShards,omitempty"`
+	// ShardIndex specifies the index of shard to used in the current run
+	ShardIndex int ` json:"ShardIndex,omitempty"`
+	// TestsSkippedForSharding specificies the tests to be skip due to sharding
+	TestsSkippedForSharding []string `json:"TestsSkippedForSharding,omitempty"`
 }
 
 // Features returns dep.Features to be used to check test dependencies.
@@ -241,6 +248,10 @@ type ListTestsArgs struct {
 	// Patterns contains patterns (either empty to list all tests, exactly one attribute expression,
 	// or one or more globs) describing which tests to list.
 	Patterns []string `json:"patterns,omitempty"`
+	// TotalShards specifies total number of shards to be used in a test run
+	TotalShards int `json:"TotalShards,omitempty"`
+	// ShardIndex specifies the index of shard to used in the current run
+	ShardIndex int ` json:"ShardIndex,omitempty"`
 }
 
 // bundleType describes the type of tests contained in a test bundle (i.e. local or remote).

@@ -267,19 +267,25 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		}
 	}
 
+	testsSkippedForSharding := make(map[string]struct{})
+	for _, testName := range args.RunTests.TestsSkippedForSharding {
+		testsSkippedForSharding[testName] = struct{}{}
+	}
+
 	pcfg := &planner.Config{
-		DataDir:           args.RunTests.DataDir,
-		OutDir:            args.RunTests.OutDir,
-		Vars:              args.RunTests.TestVars,
-		Features:          *args.RunTests.Features(),
-		Devservers:        args.RunTests.Devservers,
-		TLWServer:         args.RunTests.TLWServer,
-		DUTName:           args.RunTests.DUTName,
-		BuildArtifactsURL: args.RunTests.BuildArtifactsURL,
-		RemoteData:        rd,
-		TestHook:          cfg.testHook,
-		DownloadMode:      args.RunTests.DownloadMode,
-		Fixtures:          testing.GlobalRegistry().AllFixtures(),
+		DataDir:                 args.RunTests.DataDir,
+		OutDir:                  args.RunTests.OutDir,
+		Vars:                    args.RunTests.TestVars,
+		Features:                *args.RunTests.Features(),
+		Devservers:              args.RunTests.Devservers,
+		TLWServer:               args.RunTests.TLWServer,
+		DUTName:                 args.RunTests.DUTName,
+		BuildArtifactsURL:       args.RunTests.BuildArtifactsURL,
+		RemoteData:              rd,
+		TestHook:                cfg.testHook,
+		DownloadMode:            args.RunTests.DownloadMode,
+		Fixtures:                testing.GlobalRegistry().AllFixtures(),
+		TestsSkippedForSharding: testsSkippedForSharding,
 	}
 
 	if err := planner.RunTests(ctx, tests, ew, pcfg); err != nil {

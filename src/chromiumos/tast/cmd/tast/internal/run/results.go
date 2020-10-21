@@ -384,7 +384,7 @@ func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.EntityE
 			reasons = append(reasons, msg.SkipReasons...)
 		}
 		state.result.SkipReason = strings.Join(reasons, ", ")
-		r.cfg.Logger.Logf("Skipped test %s due to missing dependencies: %s", msg.Name, state.result.SkipReason)
+		r.cfg.Logger.Logf("Skipped test %s due to reason(s): %s", msg.Name, state.result.SkipReason)
 	}
 
 	state.result.End = msg.Time

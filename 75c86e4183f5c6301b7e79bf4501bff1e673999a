@@ -67,6 +67,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "280e017b_79d858af",
+        "filename": "docs/getting_help.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-21T02:12:32Z",
+      "side": 1,
+      "message": "Oh I see, I could not spot the difference.\n\nActually I guess it\u0027s not very useful to link to the template definition in this page since users looking at this page are more likely interested in filing bugs.\n\nSo how about changing this to something like:\n\n Please file test bug reports using [the template (go/tast-test-bug)]",
+      "parentUuid": "9675eab4_f4777ce0",
+      "range": {
+        "startLine": 11,
+        "startChar": 12,
+        "endLine": 11,
+        "endChar": 31
+      },
+      "revId": "75c86e4183f5c6301b7e79bf4501bff1e673999a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "8e7b0e0c_128f88b9",
         "filename": "docs/getting_help.md",
         "patchSetId": 1
@@ -253,6 +277,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0724c629_479b72e3",
+        "filename": "docs/getting_help.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-21T02:12:32Z",
+      "side": 1,
+      "message": "It\u0027s nice to reorganize documentations, but at this moment we can just list both I think.",
+      "parentUuid": "297d3a17_cf592dd1",
+      "range": {
+        "startLine": 14,
+        "startChar": 34,
+        "endLine": 14,
+        "endChar": 39
+      },
+      "revId": "75c86e4183f5c6301b7e79bf4501bff1e673999a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1ac86844_e2ae7e48",
@@ -311,6 +359,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6181144c_14973cc2",
+        "filename": "docs/getting_help.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-21T02:12:32Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "d9d3a905_930e2ee9",
+      "range": {
+        "startLine": 30,
+        "startChar": 27,
+        "endLine": 30,
+        "endChar": 49
+      },
+      "revId": "75c86e4183f5c6301b7e79bf4501bff1e673999a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f9900d2e_c559b29a",
@@ -348,6 +420,30 @@
       "side": 1,
       "message": "mistake with git rebase -i.",
       "parentUuid": "f9900d2e_c559b29a",
+      "range": {
+        "startLine": 31,
+        "startChar": 0,
+        "endLine": 31,
+        "endChar": 33
+      },
+      "revId": "75c86e4183f5c6301b7e79bf4501bff1e673999a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "36b25100_5a3501e7",
+        "filename": "docs/getting_help.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-21T02:12:32Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "9a977d36_2840c166",
       "range": {
         "startLine": 31,
         "startChar": 0,

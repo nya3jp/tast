@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "24b58afe_ce9e037b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-10-21T23:47:31Z",
+      "side": 1,
+      "message": "Still work in progress. \n\n1. Bundles are sorted before they are run. Tests are sorted when they are run inside a bundle. My sharding implementation is based on sorted results and not the command line order.\n\n2. I have not tested my changes with two different bundles. I will do it later.\n\n3. I still need to figure out how to write the unit tests.\n\nPlease review my current approach. Thanks.\n\n",
+      "revId": "d8ccc9ea222c6574c329a3b59db96c96798092c9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -32,9 +32,9 @@ type Params struct {
 
 // TypeSpec describes a Go type to be defined in the generated code.
 type TypeSpec struct {
-	Name       string // type name, e.g "EventCode"
-	NativeType string // Go native type, e.g "uint16"
-	Desc       string // human-readable type description used in comment
+	Name        string // type name, e.g "EventCode"
+	BuiltInType string // Go built-in type, e.g "uint16"
+	Desc        string // human-readable type description used in comment
 }
 
 // GroupSpec describes how to make a group of constants.
@@ -98,7 +98,7 @@ package {{.PackageName}}
 {{/* Defines types */}}
 {{- range .Types}}
 // {{.Name}} {{.Desc}}
-type {{.Name}} {{.NativeType}}
+type {{.Name}} {{.BuiltInType}}
 {{- end}}
 
 {{/* Generates the constants for each group */}}

@@ -101,6 +101,9 @@ func (a *Args) bundleArgs(mode bundle.RunMode) (*bundle.Args, error) {
 			ba.ListTests = &bundle.ListTestsArgs{Patterns: a.RunTests.BundleArgs.Patterns}
 		case ListTestsMode:
 			ba.ListTests = &a.ListTests.BundleArgs
+			if a.RunTests != nil {
+				ba.RunTests = &a.RunTests.BundleArgs
+			}
 		default:
 			return nil, fmt.Errorf("can't make ListTests bundle args in runner mode %d", int(a.Mode))
 		}

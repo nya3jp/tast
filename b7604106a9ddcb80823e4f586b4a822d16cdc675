@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c1de0f9f_2f7d7a3f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1337146
+      },
+      "writtenOn": "2020-10-21T11:22:01Z",
+      "side": 1,
+      "message": "I was not sure if I needed to add a Cq-Depend: chromium:2488321\nsince I added a Cq-Depend to the commit of 2488321.\n",
+      "revId": "b7604106a9ddcb80823e4f586b4a822d16cdc675",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

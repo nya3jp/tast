@@ -13,6 +13,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 
+	"chromiumos/tast/bundle"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/timing"
 )
@@ -82,12 +83,12 @@ func getDUTInfo(ctx context.Context, cfg *Config) error {
 	return nil
 }
 
-func setRunnerTestDepsArgs(cfg *Config, args *runner.Args) {
-	args.RunTests.BundleArgs.CheckSoftwareDeps = cfg.checkTestDeps
+func setRunnerTestDepsArgs(cfg *Config, args *bundle.FeatureArgs) {
+	args.CheckSoftwareDeps = cfg.checkTestDeps
 	if cfg.softwareFeatures != nil {
-		args.RunTests.BundleArgs.AvailableSoftwareFeatures = cfg.softwareFeatures.Available
-		args.RunTests.BundleArgs.UnavailableSoftwareFeatures = cfg.softwareFeatures.Unavailable
-		args.RunTests.BundleArgs.DeviceConfig = cfg.deviceConfig
-		args.RunTests.BundleArgs.HardwareFeatures = cfg.hardwareFeatures
+		args.AvailableSoftwareFeatures = cfg.softwareFeatures.Available
+		args.UnavailableSoftwareFeatures = cfg.softwareFeatures.Unavailable
+		args.DeviceConfig = cfg.deviceConfig
+		args.HardwareFeatures = cfg.hardwareFeatures
 	}
 }

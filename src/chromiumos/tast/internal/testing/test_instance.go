@@ -512,6 +512,7 @@ type EntityInfo struct {
 	Fixture      string           `json:"fixture,omitempty"`
 	Timeout      time.Duration    `json:"timeout"`
 	Type         EntityType       `json:"entityType,omitempty"`
+	SkipReason   string           `json:"skipReason"`
 }
 
 // EntityInfo converts TestInstance to EntityInfo.

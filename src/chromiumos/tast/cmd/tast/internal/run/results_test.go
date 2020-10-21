@@ -155,10 +155,9 @@ func TestReadTestOutput(t *gotesting.T) {
 			OutDir: filepath.Join(cfg.ResDir, testLogsDir, test2Name),
 		},
 		{
-			EntityInfo: testing.EntityInfo{Name: test3Name, Desc: test3Desc},
+			EntityInfo: testing.EntityInfo{Name: test3Name, Desc: test3Desc, SkipReason: skipReason},
 			Start:      test3StartTime,
 			End:        test3EndTime,
-			SkipReason: skipReason,
 			OutDir:     filepath.Join(cfg.ResDir, testLogsDir, test3Name),
 		},
 	}

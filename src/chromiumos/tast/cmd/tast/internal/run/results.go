@@ -57,9 +57,6 @@ type EntityResult struct {
 	End time.Time `json:"end"`
 	// OutDir is the directory into which entity output is stored.
 	OutDir string `json:"outDir"`
-	// SkipReason contains a human-readable explanation of why the test was skipped.
-	// It is empty if the test actually ran.
-	SkipReason string `json:"skipReason"`
 }
 
 // entityState keeps track of states of a currently running entity.

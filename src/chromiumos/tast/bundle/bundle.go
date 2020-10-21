@@ -64,6 +64,18 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 		for _, test := range tests {
 			infos = append(infos, test.EntityInfo())
 		}
+		if args.RunTests != nil && args.RunTests.CheckSoftwareDeps {
+			features := args.RunTests.Features()
+			for i, test := range tests {
+				r := test.ShouldRun(features)
+				if !r.OK() {
+					var reasons []string
+					reasons = append(reasons, r.SkipReasons...)
+					reasons = append(reasons, r.Errors...)
+					infos[i].SkipReason = strings.Join(reasons, ", ")
+				}
+			}
+		}
 		if err := testing.WriteTestsAsJSON(stdout, infos); err != nil {
 			return command.WriteError(stderr, err)
 		}

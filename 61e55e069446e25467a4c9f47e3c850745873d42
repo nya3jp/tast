@@ -16,6 +16,46 @@
       "message": "fixed nya@\u0027s comments.",
       "revId": "61e55e069446e25467a4c9f47e3c850745873d42",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5e653714_036bf4e8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1358595
+      },
+      "writtenOn": "2020-10-21T16:11:29Z",
+      "side": 1,
+      "message": "Just one question about potentially linking green stainless.",
+      "revId": "61e55e069446e25467a4c9f47e3c850745873d42",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6d3147fa_68f1844f",
+        "filename": "docs/getting_help.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1358595
+      },
+      "writtenOn": "2020-10-21T16:11:29Z",
+      "side": 1,
+      "message": "Looks good overall. Quick question, do we want to also add a link to green stainless: https://docs.google.com/spreadsheets/d/1L85KKiVWB2miWR3Rsi4aumkubhuQw0F92Feon5CiuEs/edit#gid\u003d114241116\nor: https://dashboards.corp.google.com/_86acf8a8_50a5_48e0_829e_fbf1033d3ac6",
+      "range": {
+        "startLine": 11,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 37
+      },
+      "revId": "61e55e069446e25467a4c9f47e3c850745873d42",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

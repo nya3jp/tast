@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "47712462_05d9179b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1337146
+      },
+      "writtenOn": "2020-10-21T01:53:46Z",
+      "side": 1,
+      "message": "fixed using suggestion",
+      "revId": "75c86e4183f5c6301b7e79bf4501bff1e673999a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d9fe2f91_d51a02b7",
@@ -14,6 +31,30 @@
       "writtenOn": "2020-10-20T09:56:08Z",
       "side": 1,
       "message": "nit: I think we can make \"template\" a link, and keep \"test bug reports\" a plain text, since they are linked to the same URL at this moment.",
+      "range": {
+        "startLine": 11,
+        "startChar": 12,
+        "endLine": 11,
+        "endChar": 31
+      },
+      "revId": "75c86e4183f5c6301b7e79bf4501bff1e673999a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9675eab4_f4777ce0",
+        "filename": "docs/getting_help.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1337146
+      },
+      "writtenOn": "2020-10-21T01:53:46Z",
+      "side": 1,
+      "message": "Actually template opens the template page, while test bug reports open a new bugs report using the template.\nMaybe this is confusing?\n\nShould we just drop \"using the template\" from the sentence.",
+      "parentUuid": "d9fe2f91_d51a02b7",
       "range": {
         "startLine": 11,
         "startChar": 12,
@@ -116,6 +157,102 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b271c512_34af62e3",
+        "filename": "docs/getting_help.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1337146
+      },
+      "writtenOn": "2020-10-21T01:53:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d88d270b_9bd29d55",
+      "range": {
+        "startLine": 14,
+        "startChar": 56,
+        "endLine": 14,
+        "endChar": 66
+      },
+      "revId": "75c86e4183f5c6301b7e79bf4501bff1e673999a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "db16dcba_df1dd06a",
+        "filename": "docs/getting_help.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1337146
+      },
+      "writtenOn": "2020-10-21T01:53:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "719322ea_639317b2",
+      "range": {
+        "startLine": 14,
+        "startChar": 9,
+        "endLine": 14,
+        "endChar": 13
+      },
+      "revId": "75c86e4183f5c6301b7e79bf4501bff1e673999a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "297d3a17_cf592dd1",
+        "filename": "docs/getting_help.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1337146
+      },
+      "writtenOn": "2020-10-21T01:53:46Z",
+      "side": 1,
+      "message": "we have a lot of docs 😊\ngo/tast-debugging-guide\ngo/tast-failures\nboth of them are trying to be guides on how to debug test failures. Do we want to add go/tast-failures to go/tast-debugging-guide?",
+      "parentUuid": "781e08a4_0a7b814a",
+      "range": {
+        "startLine": 14,
+        "startChar": 34,
+        "endLine": 14,
+        "endChar": 39
+      },
+      "revId": "75c86e4183f5c6301b7e79bf4501bff1e673999a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f23865f0_b673cebc",
+        "filename": "docs/getting_help.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1337146
+      },
+      "writtenOn": "2020-10-21T01:53:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8e7b0e0c_128f88b9",
+      "range": {
+        "startLine": 14,
+        "startChar": 30,
+        "endLine": 14,
+        "endChar": 31
+      },
+      "revId": "75c86e4183f5c6301b7e79bf4501bff1e673999a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1ac86844_e2ae7e48",
@@ -129,6 +266,24 @@
       "writtenOn": "2020-10-20T09:56:08Z",
       "side": 1,
       "message": "nit: Can you move [tast debugging guide] here to following the appearing order?",
+      "revId": "75c86e4183f5c6301b7e79bf4501bff1e673999a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a558ae2f_77374490",
+        "filename": "docs/getting_help.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1337146
+      },
+      "writtenOn": "2020-10-21T01:53:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1ac86844_e2ae7e48",
       "revId": "75c86e4183f5c6301b7e79bf4501bff1e673999a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -181,6 +336,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "9a977d36_2840c166",
+        "filename": "docs/getting_help.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1337146
+      },
+      "writtenOn": "2020-10-21T01:53:46Z",
+      "side": 1,
+      "message": "mistake with git rebase -i.",
+      "parentUuid": "f9900d2e_c559b29a",
+      "range": {
+        "startLine": 31,
+        "startChar": 0,
+        "endLine": 31,
+        "endChar": 33
+      },
+      "revId": "75c86e4183f5c6301b7e79bf4501bff1e673999a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "fadabda5_df8039f0",
         "filename": "navbar.md",
         "patchSetId": 1
@@ -192,6 +371,30 @@
       "writtenOn": "2020-10-20T09:56:08Z",
       "side": 1,
       "message": "Let us use an expanded URL since this is a public document.\n\nhttps://bugs.chromium.org/p/chromium/issues/entry?template\u003dChrome+OS+Integration+Test+Defect+%28Tast+tests%29",
+      "range": {
+        "startLine": 9,
+        "startChar": 15,
+        "endLine": 9,
+        "endChar": 40
+      },
+      "revId": "75c86e4183f5c6301b7e79bf4501bff1e673999a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fe068b87_90841b56",
+        "filename": "navbar.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1337146
+      },
+      "writtenOn": "2020-10-21T01:53:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fadabda5_df8039f0",
       "range": {
         "startLine": 9,
         "startChar": 15,

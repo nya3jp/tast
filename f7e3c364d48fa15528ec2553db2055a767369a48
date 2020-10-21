@@ -16,6 +16,29 @@
       "message": "ihf@, tast-owners@ PTAL",
       "revId": "f7e3c364d48fa15528ec2553db2055a767369a48",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b4dc1139_26a665a7",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 309,
+      "author": {
+        "id": 1273510
+      },
+      "writtenOn": "2020-10-21T00:01:16Z",
+      "side": 1,
+      "message": "Ilja: what do you think if I also return nil here? I haven\u0027t come upon this case, but the rationale would be the same.",
+      "range": {
+        "startLine": 309,
+        "startChar": 3,
+        "endLine": 309,
+        "endChar": 9
+      },
+      "revId": "f7e3c364d48fa15528ec2553db2055a767369a48",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

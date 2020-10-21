@@ -18,6 +18,138 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bc58c593_55a4d715",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 17
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-21T09:51:42Z",
+      "side": 1,
+      "message": "Thanks for enhancing the fake SSH server.\n",
+      "revId": "baaa95d210340c5f198ac21e6886bd1b7108f25c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "286276d2_5831f4e0",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_test.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-21T09:51:42Z",
+      "side": 1,
+      "message": "style nit: if _, err :\u003d cl.CacheForDut(ctx, \u0026req); err !\u003d nil { ... }",
+      "range": {
+        "startLine": 145,
+        "startChar": 1,
+        "endLine": 146,
+        "endChar": 16
+      },
+      "revId": "baaa95d210340c5f198ac21e6886bd1b7108f25c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0bb9d64c_b6ee8db5",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_test.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-21T09:51:42Z",
+      "side": 1,
+      "message": "(*a.b).c can be written as simply a.b.c",
+      "range": {
+        "startLine": 176,
+        "startChar": 29,
+        "endLine": 176,
+        "endChar": 31
+      },
+      "revId": "baaa95d210340c5f198ac21e6886bd1b7108f25c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b1a2dc99_5499b3d4",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_test.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-21T09:51:42Z",
+      "side": 1,
+      "message": "Can you add more descriptive message, e.g. \"TLW server is not available: %v\"",
+      "range": {
+        "startLine": 177,
+        "startChar": 13,
+        "endLine": 177,
+        "endChar": 17
+      },
+      "revId": "baaa95d210340c5f198ac21e6886bd1b7108f25c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5f4524be_d6a8cdd7",
+        "filename": "src/chromiumos/tast/internal/sshtest/ssh_server.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-21T09:51:42Z",
+      "side": 1,
+      "message": "I think we don\u0027t need to store fwdListener in the field. It\u0027s initially stored but not read later.",
+      "range": {
+        "startLine": 50,
+        "startChar": 1,
+        "endLine": 50,
+        "endChar": 65
+      },
+      "revId": "baaa95d210340c5f198ac21e6886bd1b7108f25c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8bab9640_2185350d",
+        "filename": "src/chromiumos/tast/internal/sshtest/ssh_server.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-21T09:51:42Z",
+      "side": 1,
+      "message": "Can you stop forwarder goroutines on Close? Currently no one stops them.\n\nA possible way is to have chan struct{} in a field of SSHServer and close it here to broadcast a signal that forwarder goroutines should exit.",
+      "range": {
+        "startLine": 117,
+        "startChar": 20,
+        "endLine": 117,
+        "endChar": 35
+      },
+      "revId": "baaa95d210340c5f198ac21e6886bd1b7108f25c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d3561a7b_1ddffa00",
@@ -31,6 +163,47 @@
       "writtenOn": "2020-10-20T11:57:27Z",
       "side": 1,
       "message": "I am not sure if it is collect to fill this with the remote host/port.\nIt works successfully even when this is set to other numbers (like 22222 or localPort)",
+      "revId": "baaa95d210340c5f198ac21e6886bd1b7108f25c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "59ea32b6_91279552",
+        "filename": "src/chromiumos/tast/internal/sshtest/ssh_server.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-21T09:51:42Z",
+      "side": 1,
+      "message": "This looks correct to me. It\u0027s even okay to leave them empty since the client does not use those values yet...",
+      "parentUuid": "d3561a7b_1ddffa00",
+      "revId": "baaa95d210340c5f198ac21e6886bd1b7108f25c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c720db29_b38d7775",
+        "filename": "src/chromiumos/tast/internal/sshtest/ssh_server.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-21T09:51:42Z",
+      "side": 1,
+      "message": "nit: You can extract the port by:\n\n s.fwdListener.Addr().(*net.TCPAddr).Port",
+      "range": {
+        "startLine": 227,
+        "startChar": 4,
+        "endLine": 227,
+        "endChar": 64
+      },
       "revId": "baaa95d210340c5f198ac21e6886bd1b7108f25c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

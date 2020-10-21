@@ -184,6 +184,8 @@ func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns
 				HeartbeatInterval: heartbeatInterval,
 				BuildArtifactsURL: cfg.buildArtifactsURL,
 				DownloadMode:      cfg.downloadMode,
+				TotalShards:       cfg.totalShards,
+				ShardIndex:        cfg.shardIndex,
 			},
 			BundleGlob: cfg.localBundleGlob(),
 			Devservers: cfg.devservers,

@@ -83,6 +83,8 @@ type Config struct {
 	// StartFixtureImpl gives an implementation of a start fixture.
 	// If it is nil, a default stub implementation is used.
 	StartFixtureImpl testing.FixtureImpl
+	// TestsSkippedForSharding specifies the tests to be skip due to sharding.
+	TestsSkippedForSharding map[string]struct{}
 }
 
 // RunTests runs a set of tests, writing outputs to out.
@@ -118,6 +120,11 @@ func buildPlan(tests []*testing.TestInstance, pcfg *Config) (*plan, error) {
 	var runs []*testing.TestInstance
 	var skips []*skippedTest
 	for _, t := range tests {
+		if _, skipDueToSharding := pcfg.TestsSkippedForSharding[t.Name]; skipDueToSharding {
+			result := testing.ShouldRunResult{SkipReasons: []string{"Skips test due to sharding"}}
+			skips = append(skips, &skippedTest{test: t, result: &result})
+			continue
+		}
 		r := t.ShouldRun(&pcfg.Features)
 		if r.OK() {
 			runs = append(runs, t)

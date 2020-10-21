@@ -68,7 +68,7 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Args,
 		}
 		return statusSuccess
 	case ListTestsMode:
-		_, tests, err := getBundlesAndTests(args)
+		_, tests, _, err := getBundlesAndTests(args)
 		if err != nil {
 			return command.WriteError(stderr, err)
 		}
@@ -105,7 +105,7 @@ func runTestsAndReport(ctx context.Context, args *Args, cfg *Config, stdout io.W
 	hbw := control.NewHeartbeatWriter(mw, args.RunTests.BundleArgs.HeartbeatInterval)
 	defer hbw.Stop()
 
-	bundles, tests, statusErr := getBundlesAndTests(args)
+	bundles, tests, skipTestsPerBundle, statusErr := getBundlesAndTests(args)
 	if statusErr != nil {
 		mw.WriteMessage(newRunErrorMessagef(statusErr.Status(), "Failed enumerating tests: %v", statusErr))
 		return
@@ -155,6 +155,7 @@ func runTestsAndReport(ctx context.Context, args *Args, cfg *Config, stdout io.W
 
 		for _, bundle := range bundles {
 			// Copy each bundle's output (consisting of control messages) directly to stdout.
+			bundleArgs.RunTests.TestsSkippedForSharding = skipTestsPerBundle[bundle]
 			if err := runBundle(bundle, bundleArgs, stdout); err != nil {
 				// TODO(derat): The tast command currently aborts the run as soon as it sees a RunError
 				// message, but consider changing that and continuing to run other bundles here.

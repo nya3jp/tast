@@ -221,6 +221,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "fe807e93_a0471333",
+        "filename": "src/chromiumos/tast/internal/sshtest/ssh_server.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-22T06:04:05Z",
+      "side": 1,
+      "message": "err here is defined outside the goroutine function, so this might cause data race. Let us define a new variable in the scope.",
+      "range": {
+        "startLine": 221,
+        "startChar": 19,
+        "endLine": 221,
+        "endChar": 22
+      },
+      "revId": "baaa95d210340c5f198ac21e6886bd1b7108f25c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "c720db29_b38d7775",
         "filename": "src/chromiumos/tast/internal/sshtest/ssh_server.go",
         "patchSetId": 17

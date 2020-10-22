@@ -16,6 +16,23 @@
       "message": "I think CQ failures are not relevant to this change as I saw it failed by failing to boot ARC, based on the autotest log.\n\u003e [Precondition failure] Failed to start ARC",
       "revId": "88e3310bec374954b4fcf55677605ebfa7303d00",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "62c96d1d_a9725c53",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-22T03:23:50Z",
+      "side": 1,
+      "message": "I don\u0027t think the error is related to this change.\n\"repo sync failed\"\n\u003e error.GitError: external/gob/nest-internal/phx/phoenix-schema update-ref: fatal: \n\u003e 0108c821fae61fb3ccd9b0be5977078a69a20e89^0: not a valid SHA1\n",
+      "revId": "88e3310bec374954b4fcf55677605ebfa7303d00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

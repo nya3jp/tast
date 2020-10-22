@@ -34,6 +34,24 @@
       "parentUuid": "a44bf0c4_ddb00de8",
       "revId": "1e2819afbaac835939da43fdc594f23a3fb43e90",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6e93520c_848fa57f",
+        "filename": "docs/codelab_3.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-10-22T15:54:00Z",
+      "side": 1,
+      "message": "\u003e Following the terms in go/inclusive-codebase and looking at synonyms for the context in dictionary, this is what looked to be the most appropriate term.\n\u003e build-in did not look to match the context.\n\u003e \n\nThank you for reference.\nActually, it\u0027s the topic under discussion.\nCould you find the comment of B9 cell of go/includsive-codebase?\n\nAFAIK, \"Standard\" is not used in the context that it runs on the given platform directly. Actually, there should be non-standard applications that could run the given platform directly, too.\n\nI think I agreed one phrase of the comments of the cell, which is, if we have multiple variations of terms to replace current \"native\", it\u0027ll lead readers confused. So, I think it will be nice to be concluded what is the replacement in the sheet at least, or moreover Company-wide or Globally.\n\n\u003e Are you proposing we leave it as is (Native) for now and revisit it once we have some input from the other team? (what team are you thinking of?)\n\nSorry for unclearness.\n1) I wanted to make sure if this term is the result of consensus across teams (at least CrOS and Chrome browser), or this is just your proposal. (Looks like the latter, right?)\n2) If the former, I\u0027m happy to move forward. If the latter, my proposal is either:\n  2-1) could you drive the discussion to come up with the consensus within the org related to the current \"native app\" (\u003dCrOS + Cr browser at least)? Or\n  2-2) make a TODO (with tracking somewhere) and revisit it later.\n  2-3) or both :-).",
+      "parentUuid": "fa32842a_d850f718",
+      "revId": "1e2819afbaac835939da43fdc594f23a3fb43e90",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

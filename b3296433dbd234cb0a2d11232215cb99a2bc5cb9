@@ -1,6 +1,7 @@
 {
   "comments": [
     {
+      "unresolved": true,
       "key": {
         "uuid": "24474248_b1b6f4fc",
         "filename": "docs/writing_tests.md",
@@ -20,10 +21,34 @@
         "endChar": 48
       },
       "revId": "b3296433dbd234cb0a2d11232215cb99a2bc5cb9",
-      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
-      "unresolved": true
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c18a418e_46f69578",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 1018,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-10-22T10:47:07Z",
+      "side": 1,
+      "message": "Global variable means variables without dots. The definition is mentioned above in the Runtime variables seciton, but I added description for clarity.\nWe may want to use different name for the notion of global variables, because it conflicts with the Go\u0027s global variables. But I think we don\u0027t have to discuss it in this change.",
+      "parentUuid": "24474248_b1b6f4fc",
+      "range": {
+        "startLine": 1018,
+        "startChar": 0,
+        "endLine": 1018,
+        "endChar": 48
+      },
+      "revId": "b3296433dbd234cb0a2d11232215cb99a2bc5cb9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
       "key": {
         "uuid": "b57f9263_362977e8",
         "filename": "docs/writing_tests.md",
@@ -43,8 +68,31 @@
         "endChar": 10
       },
       "revId": "b3296433dbd234cb0a2d11232215cb99a2bc5cb9",
-      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
-      "unresolved": true
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d40ee005_28209227",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 1048,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-10-22T10:47:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b57f9263_362977e8",
+      "range": {
+        "startLine": 1048,
+        "startChar": 0,
+        "endLine": 1048,
+        "endChar": 10
+      },
+      "revId": "b3296433dbd234cb0a2d11232215cb99a2bc5cb9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

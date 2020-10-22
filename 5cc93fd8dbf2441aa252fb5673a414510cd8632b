@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6239fb92_1ee041cd",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-10-22T08:12:27Z",
+      "side": 1,
+      "message": "Thank you for making the change.\nI agree to hide framework internals from tests.\nBut I\u0027m not really sure it\u0027s good to move all the gRPC definitions to protocol/, because some protocols are just for tast \u003c-\u003e runner and some are just for runner \u003c-\u003e bundles .\n\nHow about just moving protocols to a new internal packages like testing vs internal/testing ?\n",
+      "revId": "5cc93fd8dbf2441aa252fb5673a414510cd8632b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

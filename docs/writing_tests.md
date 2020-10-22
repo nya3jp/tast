@@ -1265,7 +1265,7 @@ message CheckBootRequest {
 }
 ```
 
-Protocol buffers files should follow the
+Protocol buffers fiels should follow the
 [official protocol buffers style guide], as well as several Tast-specific
 guidelines:
 

@@ -139,7 +139,6 @@ func createLocalTestCategorizer(ctx context.Context, cfg *Config, hst *ssh.Conn)
 		&remoteFixts,
 	); err != nil {
 		panic(err) // here.
-		return nil, err
 	}
 	log.Printf("Got remoteFixts = %#v", remoteFixts) // OK.
 
@@ -153,7 +152,6 @@ func createLocalTestCategorizer(ctx context.Context, cfg *Config, hst *ssh.Conn)
 		&localFixts,
 	); err != nil {
 		panic(err)
-		return nil, err
 	}
 	log.Printf("Got localFixts = %#v", localFixts) // OK.
 

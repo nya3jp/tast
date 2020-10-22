@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a44bf0c4_ddb00de8",
+        "filename": "docs/codelab_3.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-10-22T06:08:00Z",
+      "side": 1,
+      "message": "\"native app\" is the technical term. E.g.\nhttps://developer.chrome.com/extensions/nativeMessaging#native-messaging-client\n\nIs this the name agreed across the team?",
+      "revId": "1e2819afbaac835939da43fdc594f23a3fb43e90",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

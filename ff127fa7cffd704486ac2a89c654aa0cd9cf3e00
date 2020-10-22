@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "463bec38_91338769",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-22T05:35:36Z",
+      "side": 1,
+      "message": "I discussed with Seewai offline. He will try another approach to resolve attribute expressions to a list of test names first.\n",
+      "revId": "ff127fa7cffd704486ac2a89c654aa0cd9cf3e00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

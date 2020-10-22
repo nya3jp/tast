@@ -16,6 +16,24 @@
       "message": "\"native app\" is the technical term. E.g.\nhttps://developer.chrome.com/extensions/nativeMessaging#native-messaging-client\n\nIs this the name agreed across the team?",
       "revId": "1e2819afbaac835939da43fdc594f23a3fb43e90",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fa32842a_d850f718",
+        "filename": "docs/codelab_3.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1337146
+      },
+      "writtenOn": "2020-10-22T12:01:37Z",
+      "side": 1,
+      "message": "Following the terms in go/inclusive-codebase and looking at synonyms for the context in dictionary, this is what looked to be the most appropriate term.\nbuild-in did not look to match the context.\n\nAre you proposing we leave it as is (Native) for now and revisit it once we have some input from the other team? (what team are you thinking of?)",
+      "parentUuid": "a44bf0c4_ddb00de8",
+      "revId": "1e2819afbaac835939da43fdc594f23a3fb43e90",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

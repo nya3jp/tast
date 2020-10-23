@@ -16,6 +16,23 @@
       "message": "Hi Shuhei:\n\nThis is a different CL. I still keep the other one so that we can compare which approach is better. What I do in this one is to change the patterns before I call bundle to run tests. \n\nI still need to figure out how to get rid of the warning message: \"One or more test patterns did not match any tests\"\n\nAlso, I don\u0027t know if it is a good idea to do this inside the loop of calling bundle to run tests:\nbundleArgs.RunTests.Patterns \u003d b.getTestNames() \n\nPlease advice.\n\nThanks.\n\nSeewai\n",
       "revId": "60a989bfd01a7221500e113c6f53e68e9afdfde1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dd91d3c8_4c41665c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-23T08:12:04Z",
+      "side": 1,
+      "message": "Hi Seewai, thanks for trying out this approach!\n\nThe root cause of the warning message you saw is that Tast CLI can\u0027t tell which tests were requested but do not exist.\n\nIn ToT, bundle.RunTestsArgs contains the following field specifying which tests to run:\n- Patterns []string\nTo tell which tests were requested but do not exist, Tast CLI simply compares Patterns with received test results. For example, if Patterns \u003d {\"pkg.A\", \"pkg.B\"} and Tast CLI only received a result for pkg.B, it means that pkg.A does not exist. Note that this method can\u0027t be applied if Patterns contains attribute expressions; that is why we have a check at the top of unmatchedTestPatterns.\n\nIn the proposed change, bundle.RunTestsArgs contains the following fields specifying which tests to run:\n- Patterns []string\n- TotalShards int\n- ShardIndex int\nSince runner/bundles may skip some tests matched by Patterns according to shard specification, now Tast CLI can\u0027t tell which tests were requested but did not exist. For example, let Patterns \u003d {\"pkg.A\", \"pkg.B\"} and Tast CLI only received a result for pkg.B (the same case as above). Tast CLI can\u0027t determine whether pkg.A does not exist or it was just skipped due to sharding.\n\n\nThere are at least two ways in my mind to resolve this issue.\n\nFirstly, we can modify Tast CLI to resolve a given patterns to a concrete list of test names before actually running tests by calling runners with ListTestsMode. Then Tast CLI can compute a shard subset of tests and send their concrete names to local/remote test runners again to actually run them. In this way we don\u0027t need any protocol change, though it will add one more round-trip between the host and the DUT.\n\nSecondly, we can look at TestNames field in the RunStart message. It is a message sent from runner to Tast CLI at the very beginning of a runner run, and the field contains names of tests to be run. We can compare the test names here and the given Pattern to see which tests did not exist. In this way we need a protocol change (sending shard info from Tast CLI to runners), but it will add no extra round-trip cost.\n\nThere are pros and cons to these approaches, but I like the first approach better despite an extra round trip, since the data flow is more static.\n",
+      "revId": "60a989bfd01a7221500e113c6f53e68e9afdfde1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

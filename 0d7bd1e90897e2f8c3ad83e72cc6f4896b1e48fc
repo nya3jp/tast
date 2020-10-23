@@ -1,0 +1,343 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "26fdb263_ffe561c4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-23T09:02:40Z",
+      "side": 1,
+      "message": "Thanks Xibin for the update! Overall approach looks good to me, so let me go into more details.",
+      "revId": "0d7bd1e90897e2f8c3ad83e72cc6f4896b1e48fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d6b50d27_6353db47",
+        "filename": "src/chromiumos/tast/internal/testing/service.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-23T09:02:40Z",
+      "side": 1,
+      "message": "Can you name it ServiceRoot to align with various types in state.go?",
+      "range": {
+        "startLine": 29,
+        "startChar": 5,
+        "endLine": 29,
+        "endChar": 18
+      },
+      "revId": "0d7bd1e90897e2f8c3ad83e72cc6f4896b1e48fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c367e162_527b0904",
+        "filename": "src/chromiumos/tast/internal/testing/service.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-23T09:02:40Z",
+      "side": 1,
+      "message": "Please define a constructor of ServiceParams and remove this setter. Then we can guarantee that ServiceParams is immutable.",
+      "range": {
+        "startLine": 34,
+        "startChar": 0,
+        "endLine": 37,
+        "endChar": 1
+      },
+      "revId": "0d7bd1e90897e2f8c3ad83e72cc6f4896b1e48fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "28cdbdd1_b4af40e2",
+        "filename": "src/chromiumos/tast/internal/testing/service.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-23T09:02:40Z",
+      "side": 1,
+      "message": "Can you add this field to ServiceRoot, not ServiceState, to align with other types in state.go?",
+      "range": {
+        "startLine": 51,
+        "startChar": 1,
+        "endLine": 51,
+        "endChar": 13
+      },
+      "revId": "0d7bd1e90897e2f8c3ad83e72cc6f4896b1e48fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7405e866_75462a26",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-23T09:02:40Z",
+      "side": 1,
+      "message": "While you\u0027re at it, can you unexport LocalBundleDir and create ExtractLocalBundleDir as well?",
+      "range": {
+        "startLine": 134,
+        "startChar": 0,
+        "endLine": 136,
+        "endChar": 22
+      },
+      "revId": "0d7bd1e90897e2f8c3ad83e72cc6f4896b1e48fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e3d5ed05_a8cce872",
+        "filename": "src/chromiumos/tast/rpc/bundle_params.proto",
+        "patchSetId": 5
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-23T09:02:40Z",
+      "side": 1,
+      "message": "style: s/Req/Request/g\n\nNote that we follow the protocol buffers style guide here, not Go styles.\n\n\nAlso, this is a message used to initialize gRPC server in test bundles, So I\u0027d name it like InitBundleServerRequest.",
+      "range": {
+        "startLine": 10,
+        "startChar": 8,
+        "endLine": 10,
+        "endChar": 23
+      },
+      "revId": "0d7bd1e90897e2f8c3ad83e72cc6f4896b1e48fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "37ee05ad_24f30d52",
+        "filename": "src/chromiumos/tast/rpc/bundle_params.proto",
+        "patchSetId": 5
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-23T09:02:40Z",
+      "side": 1,
+      "message": "ditto: InitBundleServerResponse",
+      "range": {
+        "startLine": 14,
+        "startChar": 8,
+        "endLine": 14,
+        "endChar": 23
+      },
+      "revId": "0d7bd1e90897e2f8c3ad83e72cc6f4896b1e48fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8b441cb0_4b78ab10",
+        "filename": "src/chromiumos/tast/rpc/bundle_params.proto",
+        "patchSetId": 5
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-23T09:02:40Z",
+      "side": 1,
+      "message": "style: only one space here",
+      "range": {
+        "startLine": 15,
+        "startChar": 6,
+        "endLine": 15,
+        "endChar": 9
+      },
+      "revId": "0d7bd1e90897e2f8c3ad83e72cc6f4896b1e48fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ac5e3d89_0feab91c",
+        "filename": "src/chromiumos/tast/rpc/bundle_params.proto",
+        "patchSetId": 5
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-23T09:02:40Z",
+      "side": 1,
+      "message": "style: error_message",
+      "range": {
+        "startLine": 16,
+        "startChar": 9,
+        "endLine": 16,
+        "endChar": 21
+      },
+      "revId": "0d7bd1e90897e2f8c3ad83e72cc6f4896b1e48fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2cd348ad_e497bc93",
+        "filename": "src/chromiumos/tast/rpc/client.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-23T09:02:40Z",
+      "side": 1,
+      "message": "We no longer need this.",
+      "range": {
+        "startLine": 154,
+        "startChar": 1,
+        "endLine": 154,
+        "endChar": 24
+      },
+      "revId": "0d7bd1e90897e2f8c3ad83e72cc6f4896b1e48fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f099fc54_d7339dff",
+        "filename": "src/chromiumos/tast/rpc/protobuf_raw.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-23T09:02:40Z",
+      "side": 1,
+      "message": "Please unexport functions in this file after moving callers in the bundle package to the rpc package.",
+      "range": {
+        "startLine": 1,
+        "startChar": 3,
+        "endLine": 1,
+        "endChar": 12
+      },
+      "revId": "0d7bd1e90897e2f8c3ad83e72cc6f4896b1e48fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "44e82f99_57e87939",
+        "filename": "src/chromiumos/tast/rpc/protobuf_raw.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-23T09:02:40Z",
+      "side": 1,
+      "message": "We can omit enforcing timeouts to simplify the implementation. In any case, connections to bundles are bounded by context deadline, so we won\u0027t freeze indefinitely.",
+      "range": {
+        "startLine": 20,
+        "startChar": 1,
+        "endLine": 21,
+        "endChar": 30
+      },
+      "revId": "0d7bd1e90897e2f8c3ad83e72cc6f4896b1e48fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5c5aa182_5b8079bb",
+        "filename": "src/chromiumos/tast/rpc/protobuf_raw.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-23T09:02:40Z",
+      "side": 1,
+      "message": "By omitting the timeout support, we can replace this by io.ReadFull.",
+      "range": {
+        "startLine": 46,
+        "startChar": 20,
+        "endLine": 46,
+        "endChar": 33
+      },
+      "revId": "0d7bd1e90897e2f8c3ad83e72cc6f4896b1e48fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "05afca52_2bf924e0",
+        "filename": "src/chromiumos/tast/rpc/rpc_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-23T09:02:40Z",
+      "side": 1,
+      "message": "You can inline it since params is used only here. It\u0027s rather safer because we won\u0027t accidentally access params outside of this goroutine, which would cause data races.",
+      "range": {
+        "startLine": 79,
+        "startChar": 31,
+        "endLine": 79,
+        "endChar": 37
+      },
+      "revId": "0d7bd1e90897e2f8c3ad83e72cc6f4896b1e48fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c3b22d90_b29614e5",
+        "filename": "src/chromiumos/tast/rpc/server.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-23T09:02:40Z",
+      "side": 1,
+      "message": "It makes more sense to include the initial raw protocol buffer communication in this function, rather in the bundle package, since it is part of \"running a gRPC server\".",
+      "range": {
+        "startLine": 25,
+        "startChar": 5,
+        "endLine": 25,
+        "endChar": 14
+      },
+      "revId": "0d7bd1e90897e2f8c3ad83e72cc6f4896b1e48fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

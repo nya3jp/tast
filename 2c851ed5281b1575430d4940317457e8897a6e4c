@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "da7f6188_6ca3a18a",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 199,
+      "author": {
+        "id": 1108259
+      },
+      "writtenOn": "2020-10-23T00:47:58Z",
+      "side": 1,
+      "message": "lspci is not available on some devices like ARM systems, filed crbug.com/1141705",
+      "range": {
+        "startLine": 199,
+        "startChar": 0,
+        "endLine": 199,
+        "endChar": 64
+      },
+      "revId": "2c851ed5281b1575430d4940317457e8897a6e4c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

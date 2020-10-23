@@ -13,16 +13,24 @@ import (
 )
 
 // WifiPeer holds the structure of a Chrome OS peer device for wifi tests.
-type WifiPeer struct {
-	Peers []*ssh.Conn
-}
+//type WifiPeer struct {
+//Peers []*ssh.Conn
+//}
 
 // MakePeers constructs the peer devices needed for the tests.
-func (peer *WifiPeer) MakePeers(ctx context.Context, testdut *dut.DUT,
-	count int) (_ []*ssh.Conn, retErr error) {
+func MakePeers(ctx context.Context, testdut *dut.DUT, count int) (peers []*ssh.Conn, retErr error) {
+	defer func() {
+		if retErr != nil {
+			for _, peer := range peers {
+				peer.Close(ctx)
+			}
+		}
+	}()
 	for i := 0; i < count; i++ {
-		newDut, _ := testdut.IthWifiPeerHost(ctx, i)
-		peer.Peers = append(peer.Peers, newDut)
+		if newDut, err := testdut.WifiPeerHost(ctx, i); err != nil {
+			return nil, err
+			peers = append(peers, newDut)
+		}
 	}
-	return peer.Peers, nil //TODO(hinton): Return any errors from the loop.
+	return peers, nil
 }

@@ -23,7 +23,7 @@ func TestRunTestsFailureBeforeRun(t *gotesting.T) {
 	// to run tests. local() shouldn't set startedRun to true since we failed before then.
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) { return 1 }
 	td.cfg.checkTestDeps = true
-	if _, err := runTests(context.Background(), &td.cfg); err == nil {
+	if _, _, err := runTests(context.Background(), &td.cfg); err == nil {
 		t.Errorf("runTests unexpectedly passed")
 	} else if td.cfg.startedRun {
 		t.Error("runTests incorrectly reported that run was started after early failure")
@@ -58,7 +58,7 @@ func TestRunTestsGetDUTInfo(t *gotesting.T) {
 
 	td.cfg.checkTestDeps = true
 
-	if _, err := runTests(context.Background(), &td.cfg); err != nil {
+	if _, _, err := runTests(context.Background(), &td.cfg); err != nil {
 		t.Error("runTests failed: ", err)
 	}
 
@@ -92,7 +92,7 @@ func TestRunTestsGetInitialSysInfo(t *gotesting.T) {
 
 	td.cfg.collectSysInfo = true
 
-	if _, err := runTests(context.Background(), &td.cfg); err != nil {
+	if _, _, err := runTests(context.Background(), &td.cfg); err != nil {
 		t.Error("runTests failed: ", err)
 	}
 	if !called {

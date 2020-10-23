@@ -55,6 +55,10 @@ type RunStart struct {
 	// NumTests is the number of tests that will be run.
 	// TODO(derat): Delete this after 20190715; the tast command now uses TestNames instead: https://crbug.com/889119
 	NumTests int `json:"runStartNumTests"`
+	// ShardStartIndex is the starting index of the list of tests to be run.
+	ShardStartIndex int `json:"ShardStartIndex"`
+	// ShardEndIndex is the ending index (non-inclusive) of the list of tests to be run.
+	ShardEndIndex int `json:"ShardEndIndex"`
 }
 
 func (*RunStart) isMsg() {}

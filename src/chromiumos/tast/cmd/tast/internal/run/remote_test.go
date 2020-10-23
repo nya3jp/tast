@@ -144,8 +144,8 @@ func (td *remoteTestData) close() {
 }
 
 // run calls remote and records the Args struct that was passed to the fake runner.
-func (td *remoteTestData) run(t *gotesting.T) ([]*EntityResult, error) {
-	res, rerr := runRemoteTests(context.Background(), &td.cfg)
+func (td *remoteTestData) run(t *gotesting.T) ([]*EntityResult, []string, error) {
+	res, testsNotInShard, rerr := runRemoteTests(context.Background(), &td.cfg)
 
 	f, err := os.Open(filepath.Join(td.dir, fakeRunnerArgsFile))
 	if err != nil {
@@ -157,7 +157,7 @@ func (td *remoteTestData) run(t *gotesting.T) ([]*EntityResult, error) {
 		t.Fatal(err)
 	}
 
-	return res, rerr
+	return res, testsNotInShard, rerr
 }
 
 func TestRemoteRun(t *gotesting.T) {
@@ -179,7 +179,7 @@ func TestRemoteRun(t *gotesting.T) {
 	td.cfg.remoteDataDir = "/tmp/data"
 	td.cfg.remoteOutDir = "/tmp/out"
 
-	res, err := td.run(t)
+	res, testsNotInShard, err := td.run(t)
 	if err != nil {
 		t.Errorf("runRemoteTests(%+v) failed: %v", td.cfg, err)
 	}
@@ -187,6 +187,9 @@ func TestRemoteRun(t *gotesting.T) {
 		t.Errorf("runRemoteTests(%+v) returned %v result(s); want 1", td.cfg, len(res))
 	} else if res[0].Name != testName {
 		t.Errorf("runRemoteTests(%+v) returned result for test %q; want %q", td.cfg, res[0].Name, testName)
+	}
+	if len(testsNotInShard) != 0 {
+		t.Errorf("runRemoteTests(%+v) returned %v test(s) not in shard; want 0", td.cfg, len(testsNotInShard))
 	}
 
 	glob := filepath.Join(td.cfg.remoteBundleDir, "*")
@@ -241,7 +244,7 @@ func TestRemoteRunCopyOutput(t *gotesting.T) {
 
 	b := bytes.Buffer{}
 	mw := control.NewMessageWriter(&b)
-	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 1})
+	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), TestNames: []string{testName}, NumTests: 1})
 	mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: testName}, OutDir: filepath.Join(outDir, outName)})
 	mw.WriteMessage(&control.EntityEnd{Time: time.Unix(3, 0), Name: testName})
 	mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0), OutDir: outDir})
@@ -261,7 +264,7 @@ func TestRemoteRunCopyOutput(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	if _, err := td.run(t); err != nil {
+	if _, _, err := td.run(t); err != nil {
 		t.Errorf("runRemoteTests(%+v) failed: %v", td.cfg, err)
 	}
 
@@ -276,6 +279,7 @@ func TestRemoteRunCopyOutput(t *gotesting.T) {
 	}
 }
 
+// disabledTestRemoteFailure is a test temporary disabled.
 // TODO(crbug.com/1003952): Re-enable this test after fixing a race condition.
 func disabledTestRemoteFailure(t *gotesting.T) {
 	// Make the test runner print a message to stderr and fail.
@@ -283,7 +287,7 @@ func disabledTestRemoteFailure(t *gotesting.T) {
 	td := newRemoteTestData(t, "", errorMsg, 1)
 	defer td.close()
 
-	if _, err := td.run(t); err == nil {
+	if _, _, err := td.run(t); err == nil {
 		t.Errorf("runRemoteTests(%v) unexpectedly passed", td.cfg)
 	} else if !strings.Contains(err.Error(), strings.TrimRight(errorMsg, "\n")) {
 		// The runner's error message should've been logged.

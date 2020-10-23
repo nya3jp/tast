@@ -155,6 +155,11 @@ type RunTestsArgs struct {
 	// SetUpErrors contains error messages happened on test setup (e.g. fixture SetUp). If its
 	// length is non-zero, tests shouldn't run.
 	SetUpErrors []string `json:"setUpErrors,omitempty"`
+
+	// TotalShards specifies total number of shards to be used in a test run
+	TotalShards int `json:"TotalShards,omitempty"`
+	// ShardIndex specifies the index of shard to used in the current run
+	ShardIndex int ` json:"ShardIndex,omitempty"`
 }
 
 // Features returns dep.Features to be used to check test dependencies.

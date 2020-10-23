@@ -22,7 +22,7 @@ import (
 
 func TestWriteAndRead(t *gotesting.T) {
 	msgs := []Msg{
-		&RunStart{time.Unix(1, 0), []string{"pkg.MyTest"}, 1},
+		&RunStart{time.Unix(1, 0), []string{"pkg.MyTest"}, 1, 0, 1},
 		&RunLog{time.Unix(2, 0), "run message"},
 		&EntityStart{time.Unix(3, 0), testing.EntityInfo{
 			Name: "pkg.MyTest",

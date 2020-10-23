@@ -212,7 +212,7 @@ func TestLocalSuccess(t *gotesting.T) {
 		return 0
 	}
 
-	if _, err := runLocalTests(context.Background(), &td.cfg); err != nil {
+	if _, _, err := runLocalTests(context.Background(), &td.cfg); err != nil {
 		t.Error("runLocalTest failed: ", err)
 	}
 }
@@ -260,7 +260,7 @@ func TestLocalProxy(t *gotesting.T) {
 		mockLocalRunner,
 	}, " ")
 
-	if _, err := runLocalTests(context.Background(), &td.cfg); err != nil {
+	if _, _, err := runLocalTests(context.Background(), &td.cfg); err != nil {
 		t.Error("runLocalTests failed: ", err)
 	}
 }
@@ -291,7 +291,7 @@ func TestLocalCopyOutput(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	if _, err := runLocalTests(context.Background(), &td.cfg); err != nil {
+	if _, _, err := runLocalTests(context.Background(), &td.cfg); err != nil {
 		t.Error("runLocalTests failed: ", err)
 	}
 
@@ -320,7 +320,7 @@ func disabledTestLocalExecFailure(t *gotesting.T) {
 		return 1
 	}
 
-	if _, err := runLocalTests(context.Background(), &td.cfg); err == nil {
+	if _, _, err := runLocalTests(context.Background(), &td.cfg); err == nil {
 		t.Error("runLocalTests unexpectedly passed")
 	}
 	if !strings.Contains(td.logbuf.String(), msg) {
@@ -343,7 +343,7 @@ func TestLocalWaitTimeout(t *gotesting.T) {
 
 	// After setting a short wait timeout, an error should be reported.
 	td.cfg.localRunnerWaitTimeout = time.Millisecond
-	if _, err := runLocalTests(context.Background(), &td.cfg); err == nil {
+	if _, _, err := runLocalTests(context.Background(), &td.cfg); err == nil {
 		t.Error("runLocalTests unexpectedly passed")
 	}
 }

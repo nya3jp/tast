@@ -22,6 +22,30 @@
       },
       "revId": "882d07c8db1c6a12df5b054be99df696d6afa09d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f9745f04_142a894a",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 231,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-23T07:43:05Z",
+      "side": 1,
+      "message": "Done.\nDelegating it to lspci sounds much more reasonable. Thanks!",
+      "parentUuid": "a85c4891_c67bb7e7",
+      "range": {
+        "startLine": 225,
+        "startChar": 1,
+        "endLine": 231,
+        "endChar": 2
+      },
+      "revId": "882d07c8db1c6a12df5b054be99df696d6afa09d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

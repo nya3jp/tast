@@ -16,6 +16,23 @@
       "message": "Let me retry this change...\n",
       "revId": "26ff2c6538d63cd12d36706f3aa3b75c1c4edd35",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "eda65f73_5a4ff050",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 1355869
+      },
+      "writtenOn": "2020-10-23T04:20:39Z",
+      "side": 1,
+      "message": "Do you want to warn others that this field is used by Tastboard and any changes should take this into account? If yes, then this may be a good place to put a comment, because changing whoever changes the path will have to change the test as well.",
+      "revId": "26ff2c6538d63cd12d36706f3aa3b75c1c4edd35",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

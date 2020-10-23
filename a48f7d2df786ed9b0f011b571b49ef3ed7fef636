@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d721389f_b83348d9",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-23T02:45:40Z",
+      "side": 1,
+      "message": "Please add:\n\n Cq-Depend: chromium:2482983",
+      "revId": "a48f7d2df786ed9b0f011b571b49ef3ed7fef636",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

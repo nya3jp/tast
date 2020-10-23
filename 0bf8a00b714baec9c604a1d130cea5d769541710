@@ -1,0 +1,113 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3921b878_f92c1e76",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 21
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-23T08:32:41Z",
+      "side": 1,
+      "message": "Nice! I now have minor comments only, so I guess this will be a last iteration...\n",
+      "revId": "0bf8a00b714baec9c604a1d130cea5d769541710",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "71c0c782_21338eb4",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run.go",
+        "patchSetId": 21
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-23T08:32:41Z",
+      "side": 1,
+      "message": "huge nit: Can you move this \"defer\" one line above to follow the pattern,\n\n x, err :\u003d ...\n if err !\u003d nil { ... }\n defer x.Close()",
+      "range": {
+        "startLine": 116,
+        "startChar": 2,
+        "endLine": 116,
+        "endChar": 17
+      },
+      "revId": "0bf8a00b714baec9c604a1d130cea5d769541710",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c944c73d_46497137",
+        "filename": "src/chromiumos/tast/internal/sshtest/ssh_server.go",
+        "patchSetId": 21
+      },
+      "lineNbr": 210,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-23T08:32:41Z",
+      "side": 1,
+      "message": "To make sure listeners are closed for sure and make the ownership clear, I recommend closing them in a deferred statement here, rather than after the for loop.",
+      "range": {
+        "startLine": 210,
+        "startChar": 2,
+        "endLine": 210,
+        "endChar": 33
+      },
+      "revId": "0bf8a00b714baec9c604a1d130cea5d769541710",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "632e3bc9_7a68e6be",
+        "filename": "src/chromiumos/tast/internal/sshtest/ssh_server.go",
+        "patchSetId": 21
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-23T08:32:41Z",
+      "side": 1,
+      "message": "We shouldn\u0027t add to fwdListeners if err !\u003d nil.",
+      "range": {
+        "startLine": 222,
+        "startChar": 4,
+        "endLine": 222,
+        "endChar": 52
+      },
+      "revId": "0bf8a00b714baec9c604a1d130cea5d769541710",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a5b79d18_49262cbe",
+        "filename": "src/chromiumos/tast/internal/sshtest/ssh_server.go",
+        "patchSetId": 21
+      },
+      "lineNbr": 237,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-23T08:32:41Z",
+      "side": 1,
+      "message": "nit: Can you move \"defer local.Close()\" from handleForward to here? It will make it clear that this goroutine owns the socket.",
+      "range": {
+        "startLine": 237,
+        "startChar": 7,
+        "endLine": 237,
+        "endChar": 12
+      },
+      "revId": "0bf8a00b714baec9c604a1d130cea5d769541710",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

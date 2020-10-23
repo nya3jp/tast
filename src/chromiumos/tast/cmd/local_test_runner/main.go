@@ -212,18 +212,22 @@ func writeSystemInfo(ctx context.Context, dir string) error {
 	}
 
 	var errs []string
-	for fn, cmd := range map[string]*exec.Cmd{
+	cmds := map[string]*exec.Cmd{
 		"upstart_jobs.txt": exec.CommandContext(ctx, "initctl", "list"),
 		"ps.txt":           exec.CommandContext(ctx, "ps", "auxwwf"),
 		"du_stateful.txt":  exec.CommandContext(ctx, "du", "-m", "/mnt/stateful_partition"),
-		"lspci.txt":        exec.CommandContext(ctx, "lspci", "-vvn"),
 		"mount.txt":        exec.CommandContext(ctx, "mount"),
 		"hostname.txt":     exec.CommandContext(ctx, "hostname"),
 		"uptime.txt":       exec.CommandContext(ctx, "uptime"),
 		"losetup.txt":      exec.CommandContext(ctx, "losetup"),
 		"df.txt":           exec.CommandContext(ctx, "df", "-mP"),
 		"dmesg.txt":        exec.CommandContext(ctx, "dmesg"),
-	} {
+	}
+	if _, err := os.Stat("/proc/bus/pci"); !os.IsNotExist(err) {
+		cmds["lspci.txt"] = exec.CommandContext(ctx, "lspci", "-vvn")
+	}
+
+	for fn, cmd := range cmds {
 		if err := runCmd(cmd, fn); err != nil {
 			errs = append(errs, fmt.Sprintf("failed running %q: %v", shutil.EscapeSlice(cmd.Args), err))
 		}

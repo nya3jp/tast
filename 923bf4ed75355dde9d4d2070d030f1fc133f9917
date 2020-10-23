@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "354b12d3_8a2bfb5e",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 515,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2020-10-23T16:04:36Z",
+      "side": 1,
+      "message": "Sorry I\u0027m late to the party. These changes LGTM, but made me think\nthe same will happen to JSL. Filed b/171564279, because I don\u0027t see\nthe JSL family identifier defined yet.",
+      "range": {
+        "startLine": 515,
+        "startChar": 6,
+        "endLine": 515,
+        "endChar": 28
+      },
+      "revId": "923bf4ed75355dde9d4d2070d030f1fc133f9917",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

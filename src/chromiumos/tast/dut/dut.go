@@ -10,6 +10,7 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"strconv"
 	"strings"
 	"time"
 
@@ -279,6 +280,12 @@ func (d *DUT) DefaultWifiRouterHost(ctx context.Context) (*ssh.Conn, error) {
 // DefaultWifiPcapHost connects to the default WiFi pcap router and returns SSH object.
 func (d *DUT) DefaultWifiPcapHost(ctx context.Context) (*ssh.Conn, error) {
 	return d.connectCompanionDevice(ctx, "-pcap")
+}
+
+// DefaultWifiPeerHost connects to the default WiFi peer and returns SSH object.
+func (d *DUT) DefaultWifiPeerHost(ctx context.Context, index int) (*ssh.Conn, error) {
+
+	return d.connectCompanionDevice(ctx, "-wifipeer"+strconv.Itoa(index))
 }
 
 // DefaultCameraboxChart connects to paired chart tablet in camerabox setup and returns SSH object.

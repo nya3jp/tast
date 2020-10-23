@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "42a8b168_96b85762",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1112100
+      },
+      "writtenOn": "2020-10-23T19:30:05Z",
+      "side": 1,
+      "message": "My first Go CL. It\u0027s simple, and it doesn\u0027t do much. After this gets in, I\u0027ll send another simple CL out to use this. This establishes the basic concept of a wifi peer device that we\u0027ll first be using with 802.11ax testing.",
+      "revId": "17b5b5dab05845c08872c42dc4c1c7020fbae5c1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

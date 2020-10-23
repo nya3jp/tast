@@ -68,7 +68,7 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Args,
 		}
 		return statusSuccess
 	case ListTestsMode:
-		_, tests, err := getBundlesAndTests(args)
+		_, tests, _, _, err := getBundlesAndTests(args)
 		if err != nil {
 			return command.WriteError(stderr, err)
 		}
@@ -105,7 +105,7 @@ func runTestsAndReport(ctx context.Context, args *Args, cfg *Config, stdout io.W
 	hbw := control.NewHeartbeatWriter(mw, args.RunTests.BundleArgs.HeartbeatInterval)
 	defer hbw.Stop()
 
-	bundles, tests, statusErr := getBundlesAndTests(args)
+	bundles, tests, startIndex, endIndex, statusErr := getBundlesAndTests(args)
 	if statusErr != nil {
 		mw.WriteMessage(newRunErrorMessagef(statusErr.Status(), "Failed enumerating tests: %v", statusErr))
 		return
@@ -121,7 +121,13 @@ func runTestsAndReport(ctx context.Context, args *Args, cfg *Config, stdout io.W
 	for i, t := range tests {
 		testNames[i] = t.Name
 	}
-	mw.WriteMessage(&control.RunStart{Time: time.Now(), TestNames: testNames, NumTests: len(tests)})
+	mw.WriteMessage(&control.RunStart{
+		Time:            time.Now(),
+		TestNames:       testNames,
+		NumTests:        len(tests),
+		ShardStartIndex: startIndex,
+		ShardEndIndex:   endIndex,
+	})
 
 	ctx = logging.NewContext(ctx, func(msg string) {
 		mw.WriteMessage(&control.RunLog{Time: time.Now(), Text: msg})
@@ -153,13 +159,20 @@ func runTestsAndReport(ctx context.Context, args *Args, cfg *Config, stdout io.W
 		// Hereafter, heartbeat messages are sent by bundles.
 		hbw.Stop()
 
-		for _, bundle := range bundles {
+		for _, b := range bundles {
+			if len(b.tests) == 0 {
+				continue
+			}
+			bundleArgs.RunTests.Patterns = b.getTestNames() // TODO: Check if it is a good idea to do so later.
 			// Copy each bundle's output (consisting of control messages) directly to stdout.
-			if err := runBundle(bundle, bundleArgs, stdout); err != nil {
+			if len(bundleArgs.RunTests.Patterns) == 0 {
+				continue
+			}
+			if err := runBundle(b.bundle, bundleArgs, stdout); err != nil {
 				// TODO(derat): The tast command currently aborts the run as soon as it sees a RunError
 				// message, but consider changing that and continuing to run other bundles here.
 				// If we execute additional bundles, be sure to return immediately for statusInterrupted.
-				mw.WriteMessage(newRunErrorMessagef(err.Status(), "Bundle %v failed: %v", bundle, err))
+				mw.WriteMessage(newRunErrorMessagef(err.Status(), "Bundle %v failed: %v", b.bundle, err))
 				return
 			}
 		}

@@ -15,7 +15,7 @@ import (
 // it should return nil as unstarted. Note that nil slice and non-nil empty
 // slice are distinguished in this case; non-nil empty slice is considered that
 // there is no remaining test.
-type runTestsFunc func(ctx context.Context, patterns []string) (results []*EntityResult, unstarted []string, err error)
+type runTestsFunc func(ctx context.Context, patterns []string) (results []*EntityResult, unstarted, testsNotInShard []string, err error)
 
 // beforeRetryFunc is a function to recover from premature runner exits.
 // If it is okay to proceed to retry, return true. Otherwise no further retry
@@ -26,11 +26,13 @@ type beforeRetryFunc func(ctx context.Context) bool
 // runTestsWithRetry runs local/remote tests in a loop. If cfg.continueAfterFailure
 // is true and runTests returns non-empty unstarted test names, it calls recover
 // followed by runTests again to restart testing.
-func runTestsWithRetry(ctx context.Context, cfg *Config, patterns []string, runTests runTestsFunc, beforeRetry beforeRetryFunc) ([]*EntityResult, error) {
+func runTestsWithRetry(ctx context.Context, cfg *Config, patterns []string, runTests runTestsFunc, beforeRetry beforeRetryFunc) ([]*EntityResult, []string, error) {
 	var allResults []*EntityResult
+	var testsNotInShard []string
 	for {
-		results, unstarted, rerr := runTests(ctx, patterns)
+		results, unstarted, currentTestsNotInShard, rerr := runTests(ctx, patterns)
 		allResults = append(allResults, results...)
+		testsNotInShard = append(testsNotInShard, currentTestsNotInShard...)
 		if rerr == nil {
 			break
 		}
@@ -39,7 +41,7 @@ func runTestsWithRetry(ctx context.Context, cfg *Config, patterns []string, runT
 
 		// If runTests didn't provide a list of remaining tests, give up.
 		if unstarted == nil {
-			return allResults, rerr
+			return allResults, testsNotInShard, rerr
 		}
 		// If we know that there are no more tests left to execute, report the overall run as having succeeded.
 		// The test that was in progress when the run failed will be reported as having failed.
@@ -48,16 +50,16 @@ func runTestsWithRetry(ctx context.Context, cfg *Config, patterns []string, runT
 		}
 		// If we don't want to try again, or we'd just be doing the same thing that we did last time, give up.
 		if !cfg.continueAfterFailure || reflect.DeepEqual(patterns, unstarted) {
-			return allResults, rerr
+			return allResults, testsNotInShard, rerr
 		}
 
 		cfg.Logger.Logf("Trying to run %v remaining test(s)", len(unstarted))
 
 		if !beforeRetry(ctx) {
-			return allResults, rerr
+			return allResults, testsNotInShard, rerr
 		}
 		patterns = unstarted
 	}
 
-	return allResults, nil
+	return allResults, testsNotInShard, nil
 }

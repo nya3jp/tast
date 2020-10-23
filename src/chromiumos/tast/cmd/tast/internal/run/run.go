@@ -73,7 +73,7 @@ func errorStatusf(cfg *Config, code subcommands.ExitStatus, format string, args 
 // Messages are logged using cfg.Logger as the run progresses.
 // If an error is encountered, status.ErrorMsg will be logged to cfg.Logger before returning,
 // but the caller may wish to log it again later to increase its prominence if additional messages are logged.
-func Run(ctx context.Context, cfg *Config) (status Status, results []*EntityResult) {
+func Run(ctx context.Context, cfg *Config) (status Status, results []*EntityResult, testsNotInShard []string) {
 	defer func() {
 		// If we didn't get to the point where we started trying to run tests,
 		// report that to the caller so they can avoid writing a useless results dir.
@@ -93,16 +93,16 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []*EntityResu
 	}
 
 	if err := connectToTLW(ctx, cfg); err != nil {
-		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to TLW server: %v", err), nil
+		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to TLW server: %v", err), nil, nil
 	}
 
 	if err := resolveTarget(ctx, cfg); err != nil {
-		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to resolve target: %v", err), nil
+		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to resolve target: %v", err), nil, nil
 	}
 
 	hst, err := connectToTarget(ctx, cfg)
 	if err != nil {
-		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to %s: %v", cfg.Target, err), nil
+		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to %s: %v", cfg.Target, err), nil, nil
 	}
 
 	// Start an ephemeral devserver if necessary. Devservers are required in
@@ -113,30 +113,30 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []*EntityResu
 	// devserver.
 	if cfg.runLocal && len(cfg.devservers) == 0 && cfg.useEphemeralDevserver {
 		if err := startEphemeralDevserver(ctx, hst, cfg); err != nil {
-			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start ephemeral devserver: %v", err), nil
+			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start ephemeral devserver: %v", err), nil, nil
 		}
 		defer closeEphemeralDevserver(ctx, cfg)
 	}
 
 	if err := prepare(ctx, cfg, hst); err != nil {
-		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to build and push: %v", err), nil
+		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to build and push: %v", err), nil, nil
 	}
 
 	switch cfg.mode {
 	case ListTestsMode:
 		results, err := listTests(ctx, cfg)
 		if err != nil {
-			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to list tests: %v", err), nil
+			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to list tests: %v", err), nil, nil
 		}
-		return successStatus, results
+		return successStatus, results, nil
 	case RunTestsMode:
-		results, err := runTests(ctx, cfg)
+		results, testsNotInShard, err := runTests(ctx, cfg)
 		if err != nil {
-			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to run tests: %v", err), results
+			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to run tests: %v", err), results, testsNotInShard
 		}
-		return successStatus, results
+		return successStatus, results, testsNotInShard
 	default:
-		return errorStatusf(cfg, subcommands.ExitFailure, "Unhandled mode %d", cfg.mode), nil
+		return errorStatusf(cfg, subcommands.ExitFailure, "Unhandled mode %d", cfg.mode), nil, nil
 	}
 }
 

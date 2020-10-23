@@ -76,17 +76,17 @@ func connectToTarget(ctx context.Context, cfg *Config) (*ssh.Conn, error) {
 
 // runLocalTests executes tests as described by cfg on hst and returns the results.
 // It is only used for RunTestsMode.
-func runLocalTests(ctx context.Context, cfg *Config) ([]*EntityResult, error) {
+func runLocalTests(ctx context.Context, cfg *Config) ([]*EntityResult, []string, error) {
 	cfg.Logger.Status("Running local tests on target")
 	ctx, st := timing.Start(ctx, "run_local_tests")
 	defer st.End()
 
 	hst, err := connectToTarget(ctx, cfg)
 	if err != nil {
-		return nil, errors.Wrapf(err, "failed to connect to %s", cfg.Target)
+		return nil, nil, errors.Wrapf(err, "failed to connect to %s", cfg.Target)
 	}
 
-	runTests := func(ctx context.Context, patterns []string) (results []*EntityResult, unstarted []string, err error) {
+	runTests := func(ctx context.Context, patterns []string) (results []*EntityResult, unstarted, testsNotInShards []string, err error) {
 		return runLocalTestsOnce(ctx, cfg, hst, patterns)
 	}
 	beforeRetry := func(ctx context.Context) bool {
@@ -108,10 +108,10 @@ func runLocalTests(ctx context.Context, cfg *Config) ([]*EntityResult, error) {
 	}
 
 	start := time.Now()
-	results, err := runTestsWithRetry(ctx, cfg, cfg.Patterns, runTests, beforeRetry)
+	results, testsNotInShard, err := runTestsWithRetry(ctx, cfg, cfg.Patterns, runTests, beforeRetry)
 	elapsed := time.Since(start)
 	cfg.Logger.Logf("Ran %v local test(s) in %v", len(results), elapsed.Round(time.Millisecond))
-	return results, err
+	return results, testsNotInShard, err
 }
 
 type localRunnerHandle struct {
@@ -159,7 +159,7 @@ func startLocalRunner(ctx context.Context, cfg *Config, hst *ssh.Conn, args *run
 // started but weren't (in the order in which they should've been run) are
 // returned.
 func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns []string) (
-	results []*EntityResult, unstarted []string, err error) {
+	results []*EntityResult, unstarted, testsNotInShard []string, err error) {
 	ctx, st := timing.Start(ctx, "run_local_tests_once")
 	defer st.End()
 
@@ -167,7 +167,7 @@ func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns
 	// TODO(crbug.com/1000549): Delete this workaround after 20191001.
 	// This workaround costs one round-trip time to the DUT.
 	if err := hst.Command("mkdir", "-p", cfg.localOutDir).Run(ctx); err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	args := runner.Args{
 		Mode: runner.RunTestsMode,
@@ -184,6 +184,8 @@ func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns
 				HeartbeatInterval: heartbeatInterval,
 				BuildArtifactsURL: cfg.buildArtifactsURL,
 				DownloadMode:      cfg.downloadMode,
+				TotalShards:       cfg.totalShards,
+				ShardIndex:        cfg.shardIndex,
 			},
 			BundleGlob: cfg.localBundleGlob(),
 			Devservers: cfg.devservers,
@@ -193,7 +195,7 @@ func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns
 
 	handle, err := startLocalRunner(ctx, cfg, hst, &args)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	defer handle.Close(ctx)
 
@@ -206,7 +208,7 @@ func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns
 	df := func(ctx context.Context, outDir string) string {
 		return diagnoseLocalRunError(ctx, cfg, outDir)
 	}
-	results, unstarted, rerr := readTestOutput(ctx, cfg, handle.stdout, crf, df)
+	results, unstarted, testsNotInShard, rerr := readTestOutput(ctx, cfg, handle.stdout, crf, df)
 
 	// Check that the runner exits successfully first so that we don't give a useless error
 	// about incorrectly-formed output instead of e.g. an error about the runner being missing.
@@ -217,9 +219,9 @@ func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns
 	wctx, wcancel := context.WithTimeout(ctx, timeout)
 	defer wcancel()
 	if err := handle.cmd.Wait(wctx); err != nil {
-		return results, unstarted, stderrReader.appendToError(err, stderrTimeout)
+		return results, unstarted, testsNotInShard, stderrReader.appendToError(err, stderrTimeout)
 	}
-	return results, unstarted, rerr
+	return results, unstarted, testsNotInShard, rerr
 }
 
 // formatBytes formats bytes as a human-friendly string.

@@ -97,7 +97,7 @@ type EntityError struct {
 // any tests failed) and false if it was aborted.
 // If cfg.CollectSysInfo is true, system information generated on the DUT during testing
 // (e.g. logs and crashes) will also be written to the results dir.
-func WriteResults(ctx context.Context, cfg *Config, results []*EntityResult, complete bool) error {
+func WriteResults(ctx context.Context, cfg *Config, results []*EntityResult, testsNotInShard []string, complete bool) error {
 	f, err := os.Create(filepath.Join(cfg.ResDir, resultsFilename))
 	if err != nil {
 		return err
@@ -146,10 +146,14 @@ func WriteResults(ctx context.Context, cfg *Config, results []*EntityResult, com
 			}
 		}
 	}
+	for _, t := range testsNotInShard {
+		pn := fmt.Sprintf("%-"+strconv.Itoa(ml)+"s", t)
+		cfg.Logger.Log(pn + "  [ SKIP ] Test is not in specified shard")
+	}
 
 	if complete {
 		// Let the user know if one or more of the globs that they supplied didn't match any tests.
-		if pats := unmatchedTestPatterns(cfg.Patterns, results); len(pats) > 0 {
+		if pats := unmatchedTestPatterns(cfg.Patterns, results, testsNotInShard); len(pats) > 0 {
 			cfg.Logger.Log("")
 			cfg.Logger.Log("One or more test patterns did not match any tests:")
 			for _, p := range pats {
@@ -185,6 +189,7 @@ type resultsHandler struct {
 	runStart, runEnd time.Time               // test-runner-reported times at which run started and ended
 	numTests         int                     // total number of tests that are expected to run
 	testsToRun       []string                // names of tests that will be run in their expected order
+	testsNotInShard  []string                // tests are going to be skipped because they are not in the current shard.
 	results          []*EntityResult         // information about tests seen so far; the last element can be ongoing and shared with current
 	currents         map[string]*entityState // currently-running entities, if any
 	seenTimes        map[string]int          // count of entity names seen so far
@@ -243,6 +248,14 @@ func (r *resultsHandler) handleRunStart(ctx context.Context, msg *control.RunSta
 	r.testsToRun = msg.TestNames
 	if len(msg.TestNames) > 0 {
 		r.numTests = len(msg.TestNames)
+		if msg.ShardEndIndex > 0 {
+			// ShardEndIndex should never be zero unless it is from older message.
+			// Added check to handle older message.
+			r.testsToRun = msg.TestNames[msg.ShardStartIndex:msg.ShardEndIndex]
+			r.testsNotInShard = append(r.testsNotInShard, msg.TestNames[0:msg.ShardStartIndex]...)
+			r.testsNotInShard = append(r.testsNotInShard, msg.TestNames[msg.ShardEndIndex:r.numTests]...)
+		}
+
 	} else {
 		// Fallback path for old runners that don't set TestNames: https://crbug.com/889119
 		r.numTests = msg.NumTests
@@ -494,7 +507,7 @@ func (r *resultsHandler) handleMessage(ctx context.Context, msg interface{}) err
 // run but were not started (likely due to an error). unstarted is nil if the list of
 // tests was unavailable; see readTestOutput.
 func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interface{}, ech <-chan error) (
-	results []*EntityResult, unstarted []string, err error) {
+	results []*EntityResult, unstarted, testsNotInShard []string, err error) {
 	// If a test is incomplete when we finish reading messages, rewrite its entry at the
 	// end of the streamed results file to make sure that all of its errors are recorded.
 	defer func() {
@@ -573,17 +586,17 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 		if lastState != nil {
 			lastState.result.Errors = append(lastState.result.Errors, EntityError{time.Now(), testing.Error{Reason: msg}})
 		}
-		return r.results, unstarted, runErr
+		return r.results, unstarted, r.testsNotInShard, runErr
 	}
 
 	if r.runEnd.IsZero() {
-		return r.results, unstarted, errors.New("no RunEnd message")
+		return r.results, unstarted, r.testsNotInShard, errors.New("no RunEnd message")
 	}
 	if len(unstarted) > 0 {
-		return r.results, unstarted, fmt.Errorf("%v test(s) are unstarted", len(unstarted))
+		return r.results, unstarted, r.testsNotInShard, fmt.Errorf("%v test(s) are unstarted", len(unstarted))
 	}
 
-	return r.results, unstarted, nil
+	return r.results, unstarted, r.testsNotInShard, nil
 }
 
 // streamedResultsWriter is used by resultsHandler to write a stream of JSON-marshaled TestResults
@@ -662,10 +675,10 @@ func readMessages(r io.Reader, mch chan<- interface{}, ech chan<- error) {
 //
 // df may be nil if diagnosis is unavailable.
 func readTestOutput(ctx context.Context, cfg *Config, r io.Reader, crf copyAndRemoveFunc, df diagnoseRunErrorFunc) (
-	results []*EntityResult, unstarted []string, err error) {
+	results []*EntityResult, unstarted, testsNotInShard []string, err error) {
 	rh, err := newResultsHandler(cfg, crf, df)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	defer rh.close()
 
@@ -678,7 +691,7 @@ func readTestOutput(ctx context.Context, cfg *Config, r io.Reader, crf copyAndRe
 
 // unmatchedTestPatterns returns any glob test patterns in the supplied slice
 // that failed to match any tests in results.
-func unmatchedTestPatterns(patterns []string, results []*EntityResult) []string {
+func unmatchedTestPatterns(patterns []string, results []*EntityResult, testsNotInShard []string) []string {
 	// TODO(derat): Consider also checking attribute expressions.
 	if testing.GetTestPatternType(patterns) != testing.TestPatternGlobs {
 		return nil
@@ -697,6 +710,14 @@ func unmatchedTestPatterns(patterns []string, results []*EntityResult) []string 
 			if re.MatchString(res.Name) {
 				matched = true
 				break
+			}
+		}
+		if !matched {
+			for _, t := range testsNotInShard {
+				if re.MatchString(t) {
+					matched = true
+					break
+				}
 			}
 		}
 		if !matched {

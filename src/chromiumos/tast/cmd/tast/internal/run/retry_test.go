@@ -14,27 +14,27 @@ import (
 )
 
 // runFirstTest is runTestsFunc that pretends to run the first test only. It returns remaining tests as unstarted.
-func runFirstTest(ctx context.Context, patterns []string) (results []*EntityResult, unstarted []string, err error) {
+func runFirstTest(ctx context.Context, patterns []string) (results []*EntityResult, unstarted, testsNotInShard []string, err error) {
 	if len(patterns) == 0 {
-		return nil, nil, nil
+		return nil, nil, nil, nil
 	}
-	return []*EntityResult{{}}, patterns[1:], errors.New("failure")
+	return []*EntityResult{{}}, patterns[1:], nil, errors.New("failure")
 }
 
 // runFirstTestNoUnstarted is runTestsFunc that pretends to run the first test only. It returns nil as unstarted.
-func runFirstTestNoUnstarted(ctx context.Context, patterns []string) (results []*EntityResult, unstarted []string, err error) {
+func runFirstTestNoUnstarted(ctx context.Context, patterns []string) (results []*EntityResult, unstarted, testsNotInShard []string, err error) {
 	if len(patterns) == 0 {
-		return nil, nil, nil
+		return nil, nil, nil, nil
 	}
-	return []*EntityResult{{}}, nil, errors.New("failure")
+	return []*EntityResult{{}}, nil, nil, errors.New("failure")
 }
 
 // runNoTestWithUnstarted is runTestsFunc that pretends to run no test. It returns patterns as unstarted as-is.
-func runNoTestWithUnstarted(ctx context.Context, patterns []string) (results []*EntityResult, unstarted []string, err error) {
+func runNoTestWithUnstarted(ctx context.Context, patterns []string) (results []*EntityResult, unstarted, testsNotInShard []string, err error) {
 	if len(patterns) == 0 {
-		return nil, nil, nil
+		return nil, nil, nil, nil
 	}
-	return nil, patterns, errors.New("failure")
+	return nil, patterns, nil, errors.New("failure")
 }
 
 // beforeRetrySuccess is beforeRetryFunc that returns success without doing anything.
@@ -49,12 +49,15 @@ func TestRunTestsWithRetry(t *testing.T) {
 	}
 
 	patterns := []string{"test1", "test2", "test3"}
-	results, err := runTestsWithRetry(context.Background(), cfg, patterns, runFirstTest, beforeRetrySuccess)
+	results, testsNotInShard, err := runTestsWithRetry(context.Background(), cfg, patterns, runFirstTest, beforeRetrySuccess)
 	if err != nil {
 		t.Fatal("runTestsWithRetry: ", err)
 	}
 	if len(results) != len(patterns) {
 		t.Errorf("runTestsWithRetry returned %d results; want %d", len(results), len(patterns))
+	}
+	if len(testsNotInShard) != 0 {
+		t.Errorf("runTestsWithRetry returned %d test(s) not in shard; want 0", len(testsNotInShard))
 	}
 }
 
@@ -65,12 +68,15 @@ func TestRunTestsWithRetryNoRetry(t *testing.T) {
 	}
 
 	patterns := []string{"test1", "test2", "test3"}
-	results, err := runTestsWithRetry(context.Background(), cfg, patterns, runFirstTest, beforeRetrySuccess)
+	results, testsNotInShard, err := runTestsWithRetry(context.Background(), cfg, patterns, runFirstTest, beforeRetrySuccess)
 	if err == nil {
 		t.Fatal("runTestsWithRetry succeeded unexpectedly")
 	}
 	if len(results) != 1 {
 		t.Errorf("runTestsWithRetry returned %d results; want %d", len(results), 1)
+	}
+	if len(testsNotInShard) != 0 {
+		t.Errorf("runTestsWithRetry returned %d test(s) not in shard; want 0", len(testsNotInShard))
 	}
 }
 
@@ -81,12 +87,15 @@ func TestRunTestsWithRetryNoUnstarted(t *testing.T) {
 	}
 
 	patterns := []string{"test1", "test2", "test3"}
-	results, err := runTestsWithRetry(context.Background(), cfg, patterns, runFirstTestNoUnstarted, beforeRetrySuccess)
+	results, testsNotInShard, err := runTestsWithRetry(context.Background(), cfg, patterns, runFirstTestNoUnstarted, beforeRetrySuccess)
 	if err == nil {
 		t.Fatal("runTestsWithRetry succeeded unexpectedly")
 	}
 	if len(results) != 1 {
 		t.Errorf("runTestsWithRetry returned %d results; want %d", len(results), 1)
+	}
+	if len(testsNotInShard) != 0 {
+		t.Errorf("runTestsWithRetry returned %d test(s) not in shard; want 0", len(testsNotInShard))
 	}
 }
 
@@ -97,12 +106,15 @@ func TestRunTestsWithRetryStuck(t *testing.T) {
 	}
 
 	patterns := []string{"test1", "test2", "test3"}
-	results, err := runTestsWithRetry(context.Background(), cfg, patterns, runNoTestWithUnstarted, beforeRetrySuccess)
+	results, testsNotInShard, err := runTestsWithRetry(context.Background(), cfg, patterns, runNoTestWithUnstarted, beforeRetrySuccess)
 	if err == nil {
 		t.Fatal("runTestsWithRetry succeeded unexpectedly")
 	}
 	if len(results) != 0 {
 		t.Errorf("runTestsWithRetry returned %d results; want %d", len(results), 0)
+	}
+	if len(testsNotInShard) != 0 {
+		t.Errorf("runTestsWithRetry returned %d test(s) not in shard; want 0", len(testsNotInShard))
 	}
 }
 
@@ -117,11 +129,14 @@ func TestRunTestsWithRetryBeforeRetry(t *testing.T) {
 	}
 
 	patterns := []string{"test1", "test2", "test3"}
-	results, err := runTestsWithRetry(context.Background(), cfg, patterns, runFirstTest, beforeRetryFailure)
+	results, testsNotInShard, err := runTestsWithRetry(context.Background(), cfg, patterns, runFirstTest, beforeRetryFailure)
 	if err == nil {
 		t.Fatal("runTestsWithRetry succeeded unexpectedly")
 	}
 	if len(results) != 1 {
 		t.Errorf("runTestsWithRetry returned %d results; want %d", len(results), 1)
+	}
+	if len(testsNotInShard) != 0 {
+		t.Errorf("runTestsWithRetry returned %d test(s) not in shard; want 0", len(testsNotInShard))
 	}
 }

@@ -10,9 +10,9 @@ import (
 	"chromiumos/tast/errors"
 )
 
-func runTests(ctx context.Context, cfg *Config) ([]*EntityResult, error) {
+func runTests(ctx context.Context, cfg *Config) ([]*EntityResult, []string, error) {
 	if err := getDUTInfo(ctx, cfg); err != nil {
-		return nil, errors.Wrap(err, "failed to get DUT software features")
+		return nil, nil, errors.Wrap(err, "failed to get DUT software features")
 	}
 
 	if cfg.osVersion == "" {
@@ -22,18 +22,20 @@ func runTests(ctx context.Context, cfg *Config) ([]*EntityResult, error) {
 	}
 
 	if err := getInitialSysInfo(ctx, cfg); err != nil {
-		return nil, errors.Wrap(err, "failed to get initial sysinfo")
+		return nil, nil, errors.Wrap(err, "failed to get initial sysinfo")
 	}
 	cfg.startedRun = true
 
 	var results []*EntityResult
+	var testsNotInShard []string
 	if cfg.runLocal {
-		lres, err := runLocalTests(ctx, cfg)
+		lres, ltestsNotInShard, err := runLocalTests(ctx, cfg)
 		results = append(results, lres...)
+		testsNotInShard = append(testsNotInShard, ltestsNotInShard...)
 		if err != nil {
 			// TODO(derat): While test runners are always supposed to report success even if tests fail,
 			// it'd probably be better to run both types here even if one fails.
-			return results, err
+			return results, nil, err
 		}
 	}
 
@@ -44,10 +46,11 @@ func runTests(ctx context.Context, cfg *Config) ([]*EntityResult, error) {
 
 	// Run remote tests and merge the results.
 	if !cfg.runRemote {
-		return results, nil
+		return results, nil, nil
 	}
 
-	rres, err := runRemoteTests(ctx, cfg)
+	rres, rtestsNotInShard, err := runRemoteTests(ctx, cfg)
 	results = append(results, rres...)
-	return results, err
+	testsNotInShard = append(testsNotInShard, rtestsNotInShard...)
+	return results, testsNotInShard, err
 }

@@ -104,6 +104,9 @@ type Config struct {
 	remoteDataDir   string // dir containing packaged remote test data
 	remoteOutDir    string // dir where intermediate outputs of remote tests are written
 
+	totalShards int // total number of shards to be used in a test run
+	shardIndex  int // specifies the index of shard to used in the current run
+
 	sshRetries           int       // number of SSH connect retries
 	continueAfterFailure bool      // try to run remaining local tests after bundle/DUT crash or lost SSH connection
 	checkTestDeps        bool      // whether test dependencies should be checked
@@ -187,6 +190,9 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 	f.BoolVar(&c.continueAfterFailure, "continueafterfailure", true, "try to run remaining tests after bundle/DUT crash or lost SSH connection")
 	f.IntVar(&c.sshRetries, "sshretries", 0, "number of SSH connect retries")
 	f.StringVar(&c.tlwServer, "tlwserver", "", "TLW server address")
+
+	f.IntVar(&c.totalShards, "totalshards", 1, "total number of shards to be used in a test run")
+	f.IntVar(&c.shardIndex, "shardindex", 0, "the index of shard to used in the current run")
 
 	f.StringVar(&c.localRunner, "localrunner", "", "executable that runs local test bundles")
 	f.StringVar(&c.localBundleDir, "localbundledir", "", "directory containing builtin local test bundles")

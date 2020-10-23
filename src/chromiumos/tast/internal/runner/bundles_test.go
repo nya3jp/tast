@@ -64,3 +64,94 @@ func TestKillSession(t *testing.T) {
 		t.Errorf("Didn't get 0 procs after calling killSession: %v", err)
 	}
 }
+
+// TestFindShardIndicesFirstEvenShard makes sure findShardIndices return correct indices for
+// the first shard of an evenly distributed shards.
+func TestFindShardIndicesFirstEvenShard(t *testing.T) {
+	if err := testFindShardIndices(t, 9, 3, 0, 0, 3, false); err != nil {
+		t.Errorf("Failed to get correct indices from findShardIndices for the first shard of an evenly distributed shards: %v", err)
+	}
+}
+
+// TestFindShardIndicesMiddleEvenShard makes sure findShardIndices return correct indices for
+// the middle shard of an evenly distributed shards.
+func TestFindShardIndicesMiddleEvenShard(t *testing.T) {
+	if err := testFindShardIndices(t, 9, 3, 1, 3, 6, false); err != nil {
+		t.Errorf("Failed to get correct indices from findShardIndices for the middle shard of an evenly distributed shards: %v", err)
+	}
+}
+
+// TestFindShardIndicesLastEvenShard makes sure findShardIndices return correct indices for
+// the last shard of an evenly distributed shards.
+func TestFindShardIndicesLastEvenShard(t *testing.T) {
+	if err := testFindShardIndices(t, 9, 3, 2, 6, 9, false); err != nil {
+		t.Errorf("Failed to get correct indices from findShardIndices for the last shard of an evenly distributed shards: %v", err)
+	}
+}
+
+// TestFindShardIndicesFirstUnevenShard makes sure findShardIndices return correct indices for
+// the first shard of an unevenly distributed shards.
+func TestFindShardIndicesFirstUnevenShard(t *testing.T) {
+	if err := testFindShardIndices(t, 11, 3, 0, 0, 4, false); err != nil {
+		fmt.Print("Error: ", err)
+		t.Errorf("Failed to get correct indices from findShardIndices for the first shard of an unevenly distributed shards: %v", err)
+	}
+}
+
+// TestFindShardIndicesMiddleUnevenShard makes sure findShardIndices return correct indices for
+// the middle shard of an unevenly distributed shards.
+func TestFindShardIndicesMiddleUnevenShard(t *testing.T) {
+	if err := testFindShardIndices(t, 11, 3, 1, 4, 8, false); err != nil {
+		t.Errorf("Failed to get correct indices from findShardIndices for the middle shard of an unevenly distributed shards: %v", err)
+	}
+}
+
+// TestFindShardIndicesLastUnevenShard makes sure findShardIndices return correct indices for
+// the last shard of an unevenly distributed shards.
+func TestFindShardIndicesLastUnevenShard(t *testing.T) {
+	if err := testFindShardIndices(t, 11, 3, 2, 8, 11, false); err != nil {
+		t.Errorf("Failed to get correct indices from findShardIndices for the last shard of an unevenly distributed shards: %v", err)
+	}
+}
+
+// TestFindShardIndicesMoreShardsThanTests makes sure findShardIndices return correct indices when
+// the number of shards is greater than number of tests.
+func TestFindShardIndicesMoreShardsThanTests(t *testing.T) {
+	if err := testFindShardIndices(t, 9, 10, 0, 0, 1, false); err != nil {
+		t.Errorf("Failed to get correct indices from findShardIndices when the number of shards is greater than number of tests: %v", err)
+	}
+}
+
+// TestFindShardIndicesInvalidIndex makes sure findShardIndices return error when
+// the shard index is out of range.
+func TestFindShardIndicesInvalidIndex(t *testing.T) {
+	if err := testFindShardIndices(t, 9, 3, 4, 0, 3, true); err != nil {
+		t.Errorf("Failed to get error from findShardIndices when the shard index is out of range: %v", err)
+	}
+	if err := testFindShardIndices(t, 9, 10, 11, 0, 3, true); err != nil {
+		t.Errorf("Failed to get error from findShardIndices when the shard index is out of range: %v", err)
+	}
+}
+
+// testFindShardIndices tests whether the function findShardIndices returning the correct indices.
+func testFindShardIndices(t *testing.T,
+	numTests, totalShards, shardIndex, wantedStartIndex, wantedEndIndex int,
+	wantError bool) (err error) {
+	startIndex, endIndex, commandErr := findShardIndices(numTests, totalShards, shardIndex)
+	if commandErr != nil {
+		if wantError {
+			return nil
+		}
+		return fmt.Errorf("failed to find shard indices: %v", commandErr)
+	}
+	if wantError {
+		return fmt.Errorf("test succeeded unexpectedly; getting startIndex %v endIndex %v", startIndex, endIndex)
+	}
+	if startIndex != wantedStartIndex {
+		return fmt.Errorf("findShardIndices returned start index %d results; want %d", startIndex, wantedStartIndex)
+	}
+	if endIndex != wantedEndIndex {
+		return fmt.Errorf("findShardIndices returned end index %d results; want %d", endIndex, wantedEndIndex)
+	}
+	return nil
+}

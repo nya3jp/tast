@@ -114,14 +114,14 @@ func TestReadTestOutput(t *gotesting.T) {
 		Logger: logging.NewSimple(&logBuf, 0, false), // drop debug messages
 		ResDir: filepath.Join(tempDir, "results"),
 	}
-	results, unstartedTests, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, nil)
+	results, unstartedTests, testsNotInShard, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, nil)
 	if err != nil {
 		t.Fatal("readTestOutput failed:", err)
 	}
 	if len(unstartedTests) != 0 {
 		t.Errorf("readTestOutput reported unstarted tests %v", unstartedTests)
 	}
-	if err = WriteResults(context.Background(), &cfg, results, true); err != nil {
+	if err = WriteResults(context.Background(), &cfg, results, testsNotInShard, true); err != nil {
 		t.Fatal("WriteResults failed:", err)
 	}
 
@@ -256,14 +256,14 @@ func TestReadTestOutputSameEntity(t *gotesting.T) {
 		Logger: logging.NewSimple(&logBuf, 0, false),
 		ResDir: filepath.Join(tempDir, "results"),
 	}
-	results, unstartedTests, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, nil)
+	results, unstartedTests, testsNotInShard, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, nil)
 	if err != nil {
 		t.Fatal("readTestOutput failed:", err)
 	}
 	if len(unstartedTests) != 0 {
 		t.Errorf("readTestOutput reported unstarted tests %v", unstartedTests)
 	}
-	if err = WriteResults(context.Background(), &cfg, results, true); err != nil {
+	if err = WriteResults(context.Background(), &cfg, results, testsNotInShard, true); err != nil {
 		t.Fatal("WriteResults failed:", err)
 	}
 
@@ -331,14 +331,14 @@ func TestReadTestOutputConcurrentEntity(t *gotesting.T) {
 		Logger: logging.NewSimple(&logBuf, 0, false),
 		ResDir: filepath.Join(tempDir, "results"),
 	}
-	results, unstartedTests, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, nil)
+	results, unstartedTests, testsNotInShard, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, nil)
 	if err != nil {
 		t.Fatal("readTestOutput failed:", err)
 	}
 	if len(unstartedTests) != 0 {
 		t.Errorf("readTestOutput reported unstarted tests %v", unstartedTests)
 	}
-	if err = WriteResults(context.Background(), &cfg, results, true); err != nil {
+	if err = WriteResults(context.Background(), &cfg, results, testsNotInShard, true); err != nil {
 		t.Fatal("WriteResults failed:", err)
 	}
 
@@ -399,7 +399,7 @@ func TestReadTestOutputTimingLog(t *gotesting.T) {
 		Logger: logging.NewSimple(&bytes.Buffer{}, 0, false),
 		ResDir: td,
 	}
-	if _, _, err := readTestOutput(ctx, &cfg, &b, noOpCopyAndRemove, nil); err != nil {
+	if _, _, _, err := readTestOutput(ctx, &cfg, &b, noOpCopyAndRemove, nil); err != nil {
 		t.Fatal("readTestOutput failed: ", err)
 	}
 
@@ -449,7 +449,7 @@ func TestPerTestLogContainsRunError(t *gotesting.T) {
 	mw.WriteMessage(&control.RunError{Time: time.Unix(3, 0), Error: testing.Error{Reason: errorMsg}})
 
 	cfg := Config{Logger: logging.NewSimple(&bytes.Buffer{}, 0, false), ResDir: td}
-	if _, _, err := readTestOutput(context.Background(), &cfg, &b, noOpCopyAndRemove, nil); err == nil {
+	if _, _, _, err := readTestOutput(context.Background(), &cfg, &b, noOpCopyAndRemove, nil); err == nil {
 		t.Fatal("readTestOutput didn't report run error")
 	} else if !strings.Contains(err.Error(), errorMsg) {
 		t.Fatalf("readTestOutput error %q doesn't contain %q", err.Error(), errorMsg)
@@ -536,7 +536,7 @@ func TestValidateMessages(t *gotesting.T) {
 			Logger: logging.NewSimple(&bytes.Buffer{}, 0, false),
 			ResDir: filepath.Join(tempDir, tc.desc),
 		}
-		if results, _, err := readTestOutput(context.Background(), &cfg, &b, noOpCopyAndRemove, nil); err == nil {
+		if results, _, _, err := readTestOutput(context.Background(), &cfg, &b, noOpCopyAndRemove, nil); err == nil {
 			t.Errorf("readTestOutput didn't fail for %s", tc.desc)
 		} else {
 			var resultNames []string
@@ -565,7 +565,7 @@ func TestReadTestOutputTimeout(t *gotesting.T) {
 		ResDir:     tempDir,
 		msgTimeout: time.Millisecond,
 	}
-	if _, _, err := readTestOutput(context.Background(), &cfg, pr, noOpCopyAndRemove, nil); err == nil {
+	if _, _, _, err := readTestOutput(context.Background(), &cfg, pr, noOpCopyAndRemove, nil); err == nil {
 		t.Error("readTestOutput didn't return error for message timeout")
 	}
 
@@ -574,7 +574,7 @@ func TestReadTestOutputTimeout(t *gotesting.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
 	start := time.Now()
-	if _, _, err := readTestOutput(ctx, &cfg, pr, noOpCopyAndRemove, nil); err == nil {
+	if _, _, _, err := readTestOutput(ctx, &cfg, pr, noOpCopyAndRemove, nil); err == nil {
 		t.Error("readTestOutput didn't return error for canceled context")
 	}
 	if elapsed := time.Now().Sub(start); elapsed >= cfg.msgTimeout {
@@ -598,7 +598,7 @@ func TestWriteResultsCollectSysInfo(t *gotesting.T) {
 	}
 	td.cfg.collectSysInfo = true
 	td.cfg.initialSysInfo = &runner.SysInfoState{}
-	if err := WriteResults(context.Background(), &td.cfg, []*EntityResult{}, true); err != nil {
+	if err := WriteResults(context.Background(), &td.cfg, []*EntityResult{}, nil, true); err != nil {
 		t.Fatal("WriteResults failed: ", err)
 	}
 }
@@ -612,7 +612,7 @@ func TestWriteResultsCollectSysInfoFailure(t *gotesting.T) {
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) { return 1 }
 	td.cfg.collectSysInfo = true
 	td.cfg.initialSysInfo = &runner.SysInfoState{}
-	err := WriteResults(context.Background(), &td.cfg, []*EntityResult{}, true)
+	err := WriteResults(context.Background(), &td.cfg, []*EntityResult{}, nil, true)
 	if err == nil {
 		t.Fatal("WriteResults didn't report expected error")
 	}
@@ -670,10 +670,11 @@ func TestWritePartialResults(t *gotesting.T) {
 		Logger: logging.NewSimple(&bytes.Buffer{}, 0, false),
 		ResDir: filepath.Join(tempDir, "results"),
 	}
-	results, unstarted, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, nil)
+	results, unstarted, testNotInShard, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, nil)
 	if err == nil {
 		t.Fatal("readTestOutput unexpectedly succeeded")
 	}
+	fmt.Println("testNotInShard ", testNotInShard)
 	if expUnstarted := []string{test3Name}; !reflect.DeepEqual(unstarted, expUnstarted) {
 		t.Errorf("readTestOutput returned unstarted tests %v; want %v", unstarted, expUnstarted)
 	}
@@ -726,7 +727,7 @@ func TestWritePartialResults(t *gotesting.T) {
 	mw.WriteMessage(&control.RunEnd{Time: run2End})
 
 	// The results for the third test should be appended to the existing streamed results file.
-	if _, _, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, nil); err != nil {
+	if _, _, _, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, nil); err != nil {
 		t.Error("readTestOutput failed: ", err)
 	}
 	if files, err = testutil.ReadFiles(cfg.ResDir); err != nil {
@@ -805,7 +806,7 @@ func TestUnfinishedTest(t *gotesting.T) {
 			Logger: logging.NewSimple(&bytes.Buffer{}, 0, false),
 			ResDir: filepath.Join(tempDir, strconv.Itoa(i)),
 		}
-		res, _, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, tc.diagFunc)
+		res, _, _, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, tc.diagFunc)
 		if err == nil {
 			t.Error("readTestOutput unexpectedly succeeded")
 			continue
@@ -863,7 +864,7 @@ func TestWriteResultsUnmatchedGlobs(t *gotesting.T) {
 		out := &bytes.Buffer{}
 		cfg.Logger = logging.NewSimple(out, 0, false)
 		cfg.Patterns = tc.patterns
-		if err := WriteResults(context.Background(), &cfg, results, tc.complete); err != nil {
+		if err := WriteResults(context.Background(), &cfg, results, nil, tc.complete); err != nil {
 			t.Errorf("WriteResults() failed for %v: %v", cfg.Patterns, err)
 			continue
 		}

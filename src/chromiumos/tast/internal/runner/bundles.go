@@ -32,8 +32,21 @@ import (
 	"chromiumos/tast/internal/testing"
 )
 
+type testsPerBundle struct {
+	bundle string
+	tests  []*testing.EntityInfo
+}
+
+func (b *testsPerBundle) getTestNames() (testNames []string) {
+	for _, t := range b.tests {
+		testNames = append(testNames, t.Name)
+	}
+	return testNames
+}
+
 // getBundlesAndTests returns matched tests and paths to the bundles containing them.
-func getBundlesAndTests(args *Args) (bundles []string, tests []*testing.EntityInfo, err *command.StatusError) {
+func getBundlesAndTests(args *Args) (bundleAndTests []testsPerBundle,
+	tests []*testing.EntityInfo, startIndex, endIndex int, err *command.StatusError) {
 	var glob string
 	switch args.Mode {
 	case RunTestsMode:
@@ -41,14 +54,15 @@ func getBundlesAndTests(args *Args) (bundles []string, tests []*testing.EntityIn
 	case ListTestsMode:
 		glob = args.ListTests.BundleGlob
 	default:
-		return nil, nil, command.NewStatusErrorf(statusBadArgs, "bundles unneeded for mode %v", args.Mode)
+		return nil, nil, 0, 0, command.NewStatusErrorf(statusBadArgs, "bundles unneeded for mode %v", args.Mode)
 	}
 
-	if bundles, err = getBundles(glob); err != nil {
-		return nil, nil, err
+	bundles, err := getBundles(glob)
+	if err != nil {
+		return nil, nil, 0, 0, err
 	}
-	tests, bundles, err = getTests(args, bundles)
-	return bundles, tests, err
+	tests, startIndex, endIndex, bundleAndTests, err = getTests(args, bundles)
+	return bundleAndTests, tests, startIndex, endIndex, err
 }
 
 // getBundles returns the full paths of all test bundles matched by glob.
@@ -83,10 +97,11 @@ type testsOrError struct {
 // each bundle to ask it to marshal and print its tests. A slice of paths to bundles
 // with matched tests is also returned.
 func getTests(args *Args, bundles []string) (tests []*testing.EntityInfo,
-	bundlesWithTests []string, statusErr *command.StatusError) {
+	startIndex, endIndex int,
+	bundlesWithTests []testsPerBundle, statusErr *command.StatusError) {
 	bundleArgs, err := args.bundleArgs(bundle.ListTestsMode)
 	if err != nil {
-		return nil, nil, command.NewStatusErrorf(statusBadArgs, "%v", err)
+		return nil, 0, 0, nil, command.NewStatusErrorf(statusBadArgs, "%v", err)
 	}
 
 	// Run all bundles in parallel.
@@ -114,7 +129,7 @@ func getTests(args *Args, bundles []string) (tests []*testing.EntityInfo,
 	for i := 0; i < len(bundles); i++ {
 		toe := <-ch
 		if toe.err != nil {
-			return nil, nil, toe.err
+			return nil, 0, 0, nil, toe.err
 		}
 		if len(toe.tests) > 0 {
 			bundleTests[toe.bundle] = toe.tests
@@ -123,13 +138,81 @@ func getTests(args *Args, bundles []string) (tests []*testing.EntityInfo,
 
 	// Sort both the tests and the bundles by bundle path.
 	for b := range bundleTests {
-		bundlesWithTests = append(bundlesWithTests, b)
+		bundlesWithTests = append(bundlesWithTests, testsPerBundle{bundle: b})
 	}
-	sort.Strings(bundlesWithTests)
+	sort.Slice(bundlesWithTests,
+		func(i, j int) bool { return bundlesWithTests[i].bundle < bundlesWithTests[j].bundle })
 	for _, b := range bundlesWithTests {
-		tests = append(tests, bundleTests[b]...)
+		tests = append(tests, bundleTests[b.bundle]...)
 	}
-	return tests, bundlesWithTests, nil
+	startIndex = 0
+	endIndex = len(tests)
+	if args.RunTests != nil {
+		// Get start and end indices for current shard
+		startIndex, endIndex, statusErr = findShardIndices(len(tests), args.RunTests.BundleArgs.TotalShards, args.RunTests.BundleArgs.ShardIndex)
+		if err != nil {
+			return nil, 0, 0, nil, statusErr
+		}
+	}
+
+	// Assign tests to each bundle.
+	testIndex := 0
+	for i, b := range bundlesWithTests {
+		testsInBundle := bundleTests[b.bundle]
+		start := testIndex
+		if testIndex < startIndex {
+			start = startIndex
+		}
+		end := testIndex + len(testsInBundle)
+		if end > endIndex {
+			end = endIndex
+		}
+		if start < end {
+			bundlesWithTests[i].tests = tests[start:end]
+		}
+		testIndex += len(testsInBundle)
+	}
+	return tests, startIndex, endIndex, bundlesWithTests, nil
+}
+
+// findShardIndices find the start and end index of a shard.
+func findShardIndices(numTests, totalShards, shardIndex int) (startIndex, endIndex int, err *command.StatusError) {
+	if totalShards < 2 && shardIndex == 0 {
+		return 0, numTests, nil
+	}
+	if totalShards < 1 {
+		totalShards = 1
+	}
+	if numTests <= totalShards {
+		if shardIndex < numTests {
+			return shardIndex, shardIndex + 1, nil
+		}
+		return 0, numTests, command.NewStatusErrorf(statusError, "invalid shard index: %v", shardIndex)
+	}
+	numTestsPerShard := numTests / totalShards
+	extraTests := numTests % totalShards
+	startIndex = shardIndex * numTestsPerShard
+
+	if extraTests > 0 {
+		// The number of tests would be different for different shard index.
+		if shardIndex <= extraTests {
+			// First few shards will have one extra test.
+			numTestsPerShard = numTestsPerShard + 1
+			startIndex = shardIndex * numTestsPerShard
+		} else {
+			startIndex = startIndex + extraTests
+		}
+	}
+
+	startIndex = shardIndex * numTestsPerShard
+	if shardIndex < 0 || startIndex >= numTests {
+		return 0, numTests, command.NewStatusErrorf(statusError, "invalid shard index: %v", shardIndex)
+	}
+	endIndex = startIndex + numTestsPerShard
+	if endIndex > numTests {
+		endIndex = numTests
+	}
+	return startIndex, endIndex, nil
 }
 
 // startBundleCmd creates and returns a new command running the test bundle at path using args.

@@ -166,7 +166,7 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 	rctx, rcancel := ctxutil.Shorten(ctx, wrt)
 	defer rcancel()
 
-	status, results := r.wrapper.run(rctx, r.cfg)
+	status, results, testsNotInShard := r.wrapper.run(rctx, r.cfg)
 	allTestsRun := status.ExitCode == subcommands.ExitSuccess
 	if len(results) == 0 && allTestsRun {
 		lg.Logf("No tests matched by pattern(s) %v", r.cfg.Patterns)
@@ -178,7 +178,7 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 	// if testing was interrupted, or even if no tests started due to the DUT not becoming ready:
 	// https://crbug.com/928445
 	if !status.FailedBeforeRun {
-		if err = r.wrapper.writeResults(ctx, r.cfg, results, allTestsRun); err != nil {
+		if err = r.wrapper.writeResults(ctx, r.cfg, results, testsNotInShard, allTestsRun); err != nil {
 			msg := fmt.Sprintf("Failed to write results: %v", err)
 			if status.ExitCode == subcommands.ExitSuccess {
 				status = run.Status{ExitCode: subcommands.ExitFailure, ErrorMsg: msg}

@@ -22,12 +22,12 @@ type stubRunWrapper struct {
 	writeErr  error               // error to return from writeResults
 }
 
-func (w *stubRunWrapper) run(ctx context.Context, cfg *run.Config) (run.Status, []*run.EntityResult) {
+func (w *stubRunWrapper) run(ctx context.Context, cfg *run.Config) (run.Status, []*run.EntityResult, []string) {
 	w.runCtx, w.runCfg = ctx, cfg
-	return w.runStatus, w.runRes
+	return w.runStatus, w.runRes, nil
 }
 
-func (w *stubRunWrapper) writeResults(ctx context.Context, cfg *run.Config, results []*run.EntityResult, complete bool) error {
+func (w *stubRunWrapper) writeResults(ctx context.Context, cfg *run.Config, results []*run.EntityResult, testsNotInShard []string, complete bool) error {
 	w.writeCtx, w.writeCfg, w.writeRes, w.writeComplete = ctx, cfg, results, complete
 	return w.writeErr
 }

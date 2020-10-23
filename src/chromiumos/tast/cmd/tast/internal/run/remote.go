@@ -85,6 +85,8 @@ func runRemoteTestsOnce(ctx context.Context, cfg *Config, patterns []string) (re
 				DUTName:           cfg.Target,
 				HeartbeatInterval: heartbeatInterval,
 				DownloadMode:      cfg.downloadMode,
+				TotalShards:       cfg.totalShards,
+				ShardIndex:        cfg.shardIndex,
 			},
 			BundleGlob: cfg.remoteBundleGlob(),
 		},

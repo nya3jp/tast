@@ -153,13 +153,20 @@ func runTestsAndReport(ctx context.Context, args *Args, cfg *Config, stdout io.W
 		// Hereafter, heartbeat messages are sent by bundles.
 		hbw.Stop()
 
-		for _, bundle := range bundles {
+		for _, b := range bundles {
+			if len(b.tests) == 0 {
+				continue
+			}
+			bundleArgs.RunTests.Patterns = b.getTestNames() // TODO: Check if it is a good idea to do so later.
 			// Copy each bundle's output (consisting of control messages) directly to stdout.
-			if err := runBundle(bundle, bundleArgs, stdout); err != nil {
+			if len(bundleArgs.RunTests.Patterns) == 0 {
+				continue
+			}
+			if err := runBundle(b.bundle, bundleArgs, stdout); err != nil {
 				// TODO(derat): The tast command currently aborts the run as soon as it sees a RunError
 				// message, but consider changing that and continuing to run other bundles here.
 				// If we execute additional bundles, be sure to return immediately for statusInterrupted.
-				mw.WriteMessage(newRunErrorMessagef(err.Status(), "Bundle %v failed: %v", bundle, err))
+				mw.WriteMessage(newRunErrorMessagef(err.Status(), "Bundle %v failed: %v", b.bundle, err))
 				return
 			}
 		}

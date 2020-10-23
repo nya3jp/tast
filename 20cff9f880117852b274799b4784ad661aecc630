@@ -16,6 +16,23 @@
       "message": "Thanks you!\n",
       "revId": "20cff9f880117852b274799b4784ad661aecc630",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "41f8c50e_a9e7ee7a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 22
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-23T11:07:16Z",
+      "side": 1,
+      "message": "Thanks so much!",
+      "revId": "20cff9f880117852b274799b4784ad661aecc630",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

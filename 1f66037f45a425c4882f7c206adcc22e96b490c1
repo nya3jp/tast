@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b24bffab_311889a8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-10-24T00:50:02Z",
+      "side": 1,
+      "message": "Hi Shuhei:\n\nI used a different approach. I added two parameters to the message control.RunStart: ShardStartIndex and ShardEndIndex. I don\u0027t have time to work on the unit test yet, but I have some idea how to do so. I will let you know after I am done with the unit tests.\n\nPlease review when you have time. Thanks.\n\nSeewai",
+      "revId": "1f66037f45a425c4882f7c206adcc22e96b490c1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

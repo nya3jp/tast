@@ -440,8 +440,8 @@ If you need to verify multiple related aspects of a single feature that requires
 a time-consuming setup process like logging in to Chrome, starting Android, or
 launching a container, it's often preferable to write a single test that just
 does the setup once and then verifies all aspects of the feature. As described
-in the next section, multiple errors can be reported by a single test, so
-coverage need not be reduced when tests are consolidated and an early
+in the [Errors and Logging] section, multiple errors can be reported by a single
+test, so coverage need not be reduced when tests are consolidated and an early
 expectation fails.
 
 For lightweight testing that doesn't need to interact with Chrome or restart
@@ -449,11 +449,20 @@ services, it's fine to use fine-grained tests — there's almost no per-test
 overhead in Tast; the overhead comes from repeating the same slow operations
 _within_ multiple tests.
 
+*** aside
+Not all time-consuming setup steps need to live within your test _body_.
+Some time-consuming steps can be specified as [preconditions], which give
+test authors the option not to consolidate tests with shared preconditions
+if they so desire.
+***
+
 [TotT 227]: http://go/tott/227
 [TotT 324]: http://go/tott/324
 [TotT 339]: http://go/tott/339
 [TotT 520]: http://go/tott/520
 [Unit Testing Best Practices Do's and Don'ts]: http://go/unit-test-practices#behavior-testing-dos-and-donts
+[Errors and Logging]: #errors-and-logging
+[preconditions]: #preconditions
 
 ### Device dependencies
 

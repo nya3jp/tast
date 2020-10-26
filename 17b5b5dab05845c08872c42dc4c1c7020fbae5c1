@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "831b5f9f_6cbd8542",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1112100
+      },
+      "writtenOn": "2020-10-26T20:46:08Z",
+      "side": 1,
+      "message": "Thanks. I get wordy, I know.",
+      "parentUuid": "877035e8_f09f988b",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 42
+      },
+      "revId": "17b5b5dab05845c08872c42dc4c1c7020fbae5c1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8e20bf73_a4b033e5",
@@ -37,6 +61,30 @@
       "writtenOn": "2020-10-26T04:00:18Z",
       "side": 1,
       "message": "The function, DUT.DefaultWifiPeerHost(), obtains i-th WiFi-peer\u0027s host name. It follows",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 12
+      },
+      "revId": "17b5b5dab05845c08872c42dc4c1c7020fbae5c1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e295bda6_ea081b80",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1112100
+      },
+      "writtenOn": "2020-10-26T20:46:08Z",
+      "side": 1,
+      "message": "Updated",
+      "parentUuid": "8e20bf73_a4b033e5",
       "range": {
         "startLine": 9,
         "startChar": 0,
@@ -93,6 +141,54 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e9286fa0_41ccdd8b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1112100
+      },
+      "writtenOn": "2020-10-26T20:46:08Z",
+      "side": 1,
+      "message": "Removed.  I have a local unittest, but it relies on a real machine, so I can\u0027t submit it yet. My next CL will have it functional with mocked out DUT objects.",
+      "parentUuid": "b057e8ba_86f6c3c2",
+      "range": {
+        "startLine": 10,
+        "startChar": 20,
+        "endLine": 10,
+        "endChar": 71
+      },
+      "revId": "17b5b5dab05845c08872c42dc4c1c7020fbae5c1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4097717e_99681c58",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1112100
+      },
+      "writtenOn": "2020-10-26T20:46:08Z",
+      "side": 1,
+      "message": "Thanks. Stupid double-spacing mac.",
+      "parentUuid": "f5dce6be_852e3351",
+      "range": {
+        "startLine": 10,
+        "startChar": 12,
+        "endLine": 10,
+        "endChar": 13
+      },
+      "revId": "17b5b5dab05845c08872c42dc4c1c7020fbae5c1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b7baeb97_5a2c4ba6",
@@ -110,6 +206,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "21c479e9_dcdb3813",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1112100
+      },
+      "writtenOn": "2020-10-26T20:46:08Z",
+      "side": 1,
+      "message": "I\u0027m, like 60% sure with what I\u0027m doing, but it needs to be done, so I just wanted the reviewers to know that if something looks weird, it\u0027s because Go is new to me, not that I\u0027m doing something fancy.",
+      "parentUuid": "b7baeb97_5a2c4ba6",
+      "revId": "17b5b5dab05845c08872c42dc4c1c7020fbae5c1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a5c7e911_cc31bc0d",
@@ -123,6 +237,30 @@
       "writtenOn": "2020-10-26T04:00:18Z",
       "side": 1,
       "message": "Please associate the CL to an issue.",
+      "range": {
+        "startLine": 14,
+        "startChar": 4,
+        "endLine": 14,
+        "endChar": 8
+      },
+      "revId": "17b5b5dab05845c08872c42dc4c1c7020fbae5c1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fc2acf69_20733bed",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1112100
+      },
+      "writtenOn": "2020-10-26T20:46:08Z",
+      "side": 1,
+      "message": "Okay. Done.",
+      "parentUuid": "a5c7e911_cc31bc0d",
       "range": {
         "startLine": 14,
         "startChar": 4,
@@ -163,6 +301,30 @@
       "writtenOn": "2020-10-26T04:00:18Z",
       "side": 1,
       "message": "index-th WiFi peer associated with the DUT",
+      "range": {
+        "startLine": 285,
+        "startChar": 39,
+        "endLine": 285,
+        "endChar": 56
+      },
+      "revId": "17b5b5dab05845c08872c42dc4c1c7020fbae5c1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c499bab8_0d950fd1",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 285,
+      "author": {
+        "id": 1112100
+      },
+      "writtenOn": "2020-10-26T20:46:08Z",
+      "side": 1,
+      "message": "Updated comment and name of function to show it returns the indexth peer.",
+      "parentUuid": "e06c1571_cf70d3fb",
       "range": {
         "startLine": 285,
         "startChar": 39,

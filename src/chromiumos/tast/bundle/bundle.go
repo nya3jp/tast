@@ -6,10 +6,12 @@ package bundle
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"log/syslog"
 	"os"
 	"path/filepath"
@@ -18,6 +20,7 @@ import (
 	"time"
 
 	"chromiumos/tast/dut"
+	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/logging"
@@ -25,6 +28,8 @@ import (
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/rpc"
 	"chromiumos/tast/timing"
+
+	"google.golang.org/grpc"
 )
 
 const (
@@ -69,8 +74,24 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 		}
 		return statusSuccess
 	case ListFixturesMode:
-		// TODO(oka): Implement ListFixturesMode.
-		panic("to be implemented")
+		fixts := testing.GlobalRegistry().AllFixtures()
+		log.Printf("bundle; got fixtures %#v", fixts)
+		var info []*testing.FixtureInfo
+		for name, f := range fixts {
+			info = append(info, &testing.FixtureInfo{
+				Name:   name,
+				Parent: f.Parent,
+			})
+		}
+		b, err := json.Marshal(info)
+		if err != nil {
+			return command.WriteError(stderr, err)
+		}
+		_, err = stdout.Write(b)
+		if err != nil {
+			return command.WriteError(stderr, err)
+		}
+		return statusSuccess
 	case ExportMetadataMode:
 		tests, err := testsToRun(cfg, nil)
 		if err != nil {
@@ -90,7 +111,14 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 		}
 		return statusSuccess
 	case RPCMode:
-		if err := rpc.RunServer(stdin, stdout, testing.GlobalRegistry().AllServices()); err != nil {
+		log.Println("Running RPC Mode")
+		svcs := testing.GlobalRegistry().AllServices()
+		svcs = append(svcs, &testing.Service{
+			Register: func(srv *grpc.Server, s *testing.ServiceState) {
+				bundle.RegisterFixtureServiceServer(srv, &FixtureService{})
+			},
+		})
+		if err := rpc.RunServer(stdin, stdout, svcs); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
@@ -279,6 +307,7 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		RemoteData:        rd,
 		TestHook:          cfg.testHook,
 		DownloadMode:      args.RunTests.DownloadMode,
+		StartFixtureName:  args.RunTests.StartFixtureName,
 		Fixtures:          testing.GlobalRegistry().AllFixtures(),
 	}
 

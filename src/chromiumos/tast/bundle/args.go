@@ -152,6 +152,8 @@ type RunTestsArgs struct {
 	// positive, heartbeat messages are not sent.
 	HeartbeatInterval time.Duration `json:"heartbeatInterval,omitempty"`
 
+	// StartFixtureName tells the name of the remote fixture that just has been set up.
+	StartFixtureName string `json:"startFixtureName,omitempty"`
 	// SetUpErrors contains error messages happened on test setup (e.g. fixture SetUp). If its
 	// length is non-zero, tests shouldn't run.
 	SetUpErrors []string `json:"setUpErrors,omitempty"`

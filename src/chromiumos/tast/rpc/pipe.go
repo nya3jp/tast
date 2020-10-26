@@ -150,3 +150,12 @@ func newPipeClientConn(ctx context.Context, r io.Reader, w io.Writer, extraOpts 
 	}, extraOpts...)
 	return grpc.DialContext(ctx, "", opts...)
 }
+
+// NewPipeClientConn constructs ClientConn based on r and w.
+//
+// The returned ClientConn is suitable for talking with a gRPC server over a
+// bidirectional pipe.
+func NewPipeClientConn(ctx context.Context, r io.Reader, w io.Writer, extraOpts ...grpc.DialOption) (*grpc.ClientConn, error) {
+	// TODO: inline.
+	return newPipeClientConn(ctx, r, w, extraOpts...)
+}

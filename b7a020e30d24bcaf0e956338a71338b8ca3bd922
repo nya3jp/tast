@@ -18,6 +18,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d761d92d_6aa36ae4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1323140
+      },
+      "writtenOn": "2020-10-26T23:19:14Z",
+      "side": 1,
+      "message": "PTAL?",
+      "revId": "b7a020e30d24bcaf0e956338a71338b8ca3bd922",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2fca048b_4e0750a4",
@@ -41,6 +58,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "10ca2bd9_832f18c5",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 453,
+      "author": {
+        "id": 1323140
+      },
+      "writtenOn": "2020-10-26T23:19:14Z",
+      "side": 1,
+      "message": "I think you\u0027re advising against implementing new preconditions in certain cases - if that\u0027s the case, that\u0027s not what I\u0027m getting at. Quoting Shuhei from the linked review: \"This test uses chrome.LoggedIn precondition, so I guess splitting the test adds almost no runtime overhead.\"\n\nI\u0027m trying to say that \"if you rely on something like chrome.LoggedIn, do so via tast precondition; you\u0027ll then be free to split the tests if you like with minimal overhead.\"",
+      "parentUuid": "2fca048b_4e0750a4",
+      "range": {
+        "startLine": 453,
+        "startChar": 4,
+        "endLine": 453,
+        "endChar": 28
+      },
+      "revId": "b7a020e30d24bcaf0e956338a71338b8ca3bd922",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1343bbc8_3948cbb6",
@@ -54,6 +95,30 @@
       "writtenOn": "2020-10-26T23:04:02Z",
       "side": 1,
       "message": "I am not sure I follow what you are trying to say here.",
+      "range": {
+        "startLine": 455,
+        "startChar": 13,
+        "endLine": 456,
+        "endChar": 18
+      },
+      "revId": "b7a020e30d24bcaf0e956338a71338b8ca3bd922",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d70c0262_42029163",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 456,
+      "author": {
+        "id": 1323140
+      },
+      "writtenOn": "2020-10-26T23:19:14Z",
+      "side": 1,
+      "message": "As above: in specific cases, e.g. relying on the chrome.LoggedIn precondition, more discretion is given to the test author about consolidation.",
+      "parentUuid": "1343bbc8_3948cbb6",
       "range": {
         "startLine": 455,
         "startChar": 13,

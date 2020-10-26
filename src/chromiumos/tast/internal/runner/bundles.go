@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -40,10 +41,13 @@ type fixtsOrError struct {
 
 // getFixtures returns mapping from bundle paths to fixtures.
 func getFixtures(bundleGlob string) (map[string][]*testing.FixtureInfo, *command.StatusError) {
+	log.Printf("runner; getFixtures(%v)", bundleGlob)
+
 	bundles, err := getBundles(bundleGlob)
 	if err != nil {
 		return nil, err
 	}
+	log.Printf("runner; getBundles(%v) = %v, %v", bundleGlob, bundles, err)
 
 	bundleArgs := &bundle.Args{
 		Mode: bundle.ListFixturesMode,
@@ -51,6 +55,7 @@ func getFixtures(bundleGlob string) (map[string][]*testing.FixtureInfo, *command
 	// Run all bundles in parallel.
 	ch := make(chan *fixtsOrError, len(bundles))
 	for _, bundle := range bundles {
+		log.Printf("runner; running bundle %v for getting fixtures", bundle)
 		bundle := bundle
 		go func() {
 			out := bytes.Buffer{}
@@ -59,6 +64,7 @@ func getFixtures(bundleGlob string) (map[string][]*testing.FixtureInfo, *command
 				return
 			}
 			b := out.Bytes()
+			log.Printf("runner; got fixtures %v from bundle %v", string(b), bundle)
 			fs := make([]*testing.FixtureInfo, 0)
 			if err := json.Unmarshal(b, &fs); err != nil {
 				ch <- &fixtsOrError{bundle, nil,
@@ -73,12 +79,14 @@ func getFixtures(bundleGlob string) (map[string][]*testing.FixtureInfo, *command
 	for i := 0; i < len(bundles); i++ {
 		foe := <-ch
 		if foe.err != nil {
+			log.Printf("runner; got error: %v", foe.err)
 			return nil, foe.err
 		}
 		if len(foe.fixts) > 0 {
 			bundleFixts[foe.bundle] = foe.fixts
 		}
 	}
+	log.Printf("runner; bundleFixts = %v", bundleFixts)
 
 	return bundleFixts, nil
 }

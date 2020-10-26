@@ -225,6 +225,10 @@ func (r *EntityRoot) NewFixtState() *FixtState {
 	}
 }
 
+type errorReporter interface {
+	Error(args ...interface{})
+}
+
 // NewContext creates a new context associated with the entity.
 func (r *EntityRoot) NewContext(ctx context.Context) context.Context {
 	return NewContext(ctx, r.ce, func(msg string) { r.out.Log(msg) })

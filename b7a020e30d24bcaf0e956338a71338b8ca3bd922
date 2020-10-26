@@ -127,6 +127,29 @@
       },
       "revId": "b7a020e30d24bcaf0e956338a71338b8ca3bd922",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ca4538ea_b5805ed1",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 456,
+      "author": {
+        "id": 1358595
+      },
+      "writtenOn": "2020-10-26T23:33:56Z",
+      "side": 1,
+      "message": "I think this wording will lead to people getting the wrong idea.\n\nMaybe something more along the lines of:\nIf your test has all of the time-consuming setup dealt with by a [precondition], splitting your test into multiple fine-grained tests should have little to no overhead.",
+      "range": {
+        "startLine": 453,
+        "startChar": 0,
+        "endLine": 456,
+        "endChar": 18
+      },
+      "revId": "b7a020e30d24bcaf0e956338a71338b8ca3bd922",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

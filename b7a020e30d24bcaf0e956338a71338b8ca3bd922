@@ -16,6 +16,52 @@
       "message": "tast-owners, PTAL - I thought this might be nice to add following discussion at https://crrev.com/c/2486556, since I started by giving the wrong advice and then doubling back twice.",
       "revId": "b7a020e30d24bcaf0e956338a71338b8ca3bd922",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2fca048b_4e0750a4",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 453,
+      "author": {
+        "id": 1358595
+      },
+      "writtenOn": "2020-10-26T23:04:02Z",
+      "side": 1,
+      "message": "This should probably be based around steps that are common setup in multiple tests and not about how time-consuming a step is. If a step is time-consuming but only used in a single test, it should not be a precondition.",
+      "range": {
+        "startLine": 453,
+        "startChar": 4,
+        "endLine": 453,
+        "endChar": 28
+      },
+      "revId": "b7a020e30d24bcaf0e956338a71338b8ca3bd922",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1343bbc8_3948cbb6",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 456,
+      "author": {
+        "id": 1358595
+      },
+      "writtenOn": "2020-10-26T23:04:02Z",
+      "side": 1,
+      "message": "I am not sure I follow what you are trying to say here.",
+      "range": {
+        "startLine": 455,
+        "startChar": 13,
+        "endLine": 456,
+        "endChar": 18
+      },
+      "revId": "b7a020e30d24bcaf0e956338a71338b8ca3bd922",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

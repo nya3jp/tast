@@ -80,9 +80,40 @@ type Config struct {
 	// Config.Fixtures. Instead, StartFixtureImpl gives an implementation of
 	// a start fixture.
 	StartFixtureName string
+	// SetUpErrors contains error messages happened on test setup (e.g. remote fixture SetUp). If its
+	// length is non-zero, tests shouldn't run.
+	SetUpErrors []string
 	// StartFixtureImpl gives an implementation of a start fixture.
 	// If it is nil, a default stub implementation is used.
 	StartFixtureImpl testing.FixtureImpl
+}
+
+type FixtState struct {
+	stack *fixtureStack
+}
+
+func SetUpFixture(ctx context.Context, name string, out OutputStream, pcfg *Config) (*FixtState, error) {
+	stack := newFixtureStack(pcfg, out)
+
+	fixt, ok := testing.GlobalRegistry().AllFixtures()[name]
+	if !ok {
+		return nil, fmt.Errorf("Fixture %q not found", name)
+	}
+
+	// Push a fixture to the stack. This will call SetUp if the fixture stack is green.
+	if err := stack.Push(ctx, fixt); err != nil {
+		return nil, err
+	}
+
+	if stack.Status() == statusRed {
+		return nil, fmt.Errorf("Set up fixture %q failed", name)
+	}
+
+	return &FixtState{stack}, nil
+}
+
+func TearDownFixture(ctx context.Context, s *FixtState) error {
+	return s.stack.Pop(ctx)
 }
 
 // RunTests runs a set of tests, writing outputs to out.

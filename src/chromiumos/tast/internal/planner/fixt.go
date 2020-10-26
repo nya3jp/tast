@@ -119,8 +119,19 @@ func newFixtureStack(cfg *Config, out OutputStream) *fixtureStack {
 	return &fixtureStack{cfg: cfg, out: out}
 }
 
+func (st *fixtureStack) remoteFixtureState() fixtureStatus {
+	if len(st.cfg.SetUpErrors) > 0 {
+		return statusRed
+	}
+	return statusGreen
+}
+
 // Status returns the current status of the fixture stack.
 func (st *fixtureStack) Status() fixtureStatus {
+	if s := st.remoteFixtureState(); s != statusGreen {
+		return s
+	}
+
 	for _, f := range st.stack {
 		if s := f.Status(); s != statusGreen {
 			return s
@@ -134,6 +145,10 @@ func (st *fixtureStack) Status() fixtureStatus {
 //
 // If there is no red fixture in the stack, an empty string is returned.
 func (st *fixtureStack) RedFixtureName() string {
+	if st.remoteFixtureState() == statusRed {
+		return st.cfg.StartFixtureName
+	}
+
 	for _, f := range st.stack {
 		if f.Status() == statusRed {
 			return f.Name()

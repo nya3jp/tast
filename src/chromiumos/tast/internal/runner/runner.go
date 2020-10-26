@@ -78,15 +78,20 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Args,
 		}
 		return statusSuccess
 	case ListFixturesMode:
+		log.Println(">>> runner; ListFixtures")
+		defer log.Println("<<< runner; ListFixtures")
 		fixts, err := getFixtures(args.ListFixtures.BundleGlob)
 		if err != nil {
 			return command.WriteError(stderr, err)
 		}
+		log.Printf("Got fixtures %#v", fixts)
 		res := &ListFixturesResult{Fixtures: fixts}
 		b, err2 := json.Marshal(res)
 		if err2 != nil {
 			return command.WriteError(stderr, err2)
 		}
+		log.Printf("Got fixtures (marshalized) %v", string(b))
+
 		if _, err2 = stdout.Write(b); err2 != nil {
 			return command.WriteError(stderr, err2)
 		}

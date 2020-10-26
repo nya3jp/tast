@@ -10,14 +10,24 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net"
+	"os"
+	"os/exec"
 	"path/filepath"
 	"time"
+
+	"github.com/golang/protobuf/ptypes"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/keepalive"
 
 	"chromiumos/tast/bundle"
 	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/errors"
+	ibundle "chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/runner"
+	"chromiumos/tast/internal/testing"
+	"chromiumos/tast/rpc"
 	"chromiumos/tast/ssh"
 	"chromiumos/tast/timing"
 )
@@ -74,6 +84,293 @@ func connectToTarget(ctx context.Context, cfg *Config) (*ssh.Conn, error) {
 	return cfg.hst, nil
 }
 
+// createFixtureClient creates remote fixture client.
+func createFixtureClient(ctx context.Context, remoteBundleDir string) (cl ibundle.FixtureServiceClient, clean func(), err error) {
+	remoteBundlePath := filepath.Join(remoteBundleDir, "cros")
+
+	if _, err := os.Stat(remoteBundlePath); os.IsNotExist(err) {
+		return nil, nil, fmt.Errorf("createFixtureClient: %v", err)
+	}
+	ctx, ctxCancel := context.WithCancel(ctx)
+
+	cmd := exec.CommandContext(ctx, remoteBundlePath, "-rpc")
+
+	stdin, err := cmd.StdinPipe()
+	if err != nil {
+		panic("todo")
+	}
+	// FIX: should we close stdin?
+
+	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		panic("todo")
+	}
+	// FIX: should we close stdout?
+
+	if err := cmd.Start(); err != nil {
+		panic("todo")
+	}
+	clean = func() {
+		// Kill the gRPC server.
+		ctxCancel()
+		if err := cmd.Wait(); err != nil {
+			// panic("todo")
+		}
+	}
+
+	conn, err := rpc.NewPipeClientConn(ctx, stdout, stdin, grpc.WithKeepaliveParams(keepalive.ClientParameters{Time: 10 * time.Second, Timeout: 1 * time.Minute}))
+	if err != nil {
+		panic("todo")
+	}
+	// FIX: should we defer to close conn?
+	cl = ibundle.NewFixtureServiceClient(conn)
+	return cl, clean, nil
+}
+
+type localTestsCategorizer func([]*testing.EntityInfo) map[string]map[string][]*testing.EntityInfo
+
+// createLocalTestCategorizer creates a function which categorizes given local tests by the bundle
+// name and the remote fixture name tests depend on.
+func createLocalTestCategorizer(ctx context.Context, cfg *Config, hst *ssh.Conn) (localTestsCategorizer, error) {
+	// TODO: move this to run/list_tests.go ?
+	var remoteFixts runner.ListFixturesResult
+	if err := runTestRunnerCommand(remoteRunnerCommand(ctx, cfg), &runner.Args{
+		Mode: runner.ListFixturesMode,
+		ListFixtures: &runner.ListFixturesArgs{
+			BundleGlob: cfg.remoteBundleGlob(),
+		},
+	},
+		&remoteFixts,
+	); err != nil {
+		panic(err) // here,
+	}
+	log.Printf("Got remoteFixts = %#v", remoteFixts) // OK.
+
+	var localFixts runner.ListFixturesResult
+	if err := runTestRunnerCommand(localRunnerCommand(ctx, cfg, hst), &runner.Args{
+		Mode: runner.ListFixturesMode,
+		ListFixtures: &runner.ListFixturesArgs{
+			BundleGlob: cfg.localBundleGlob(),
+		},
+	},
+		&localFixts,
+	); err != nil {
+		panic(err)
+	}
+	log.Printf("Got localFixts = %#v", localFixts) // OK.
+
+	if len(remoteFixts.Fixtures) > 1 { // bug
+		return nil, fmt.Errorf("BUG: there are > 1 remote bundles")
+	}
+	remoteFixtSet := make(map[string]bool)
+	for _, fs := range remoteFixts.Fixtures {
+		for _, f := range fs {
+			remoteFixtSet[f.Name] = true
+			if f.Parent != "" {
+				panic("nested remote fixtures are not supported")
+			}
+		}
+	}
+	localFixtParent := make(map[string]map[string]string) // bundle -> fixt -> parent
+	for b, fs := range localFixts.Fixtures {
+		localFixtParent[b] = make(map[string]string)
+		for _, f := range fs {
+			localFixtParent[b][f.Name] = f.Parent
+		}
+	}
+
+	log.Printf("Got remote fixture set %v", remoteFixtSet)
+
+	var findRemoteF func(string, string) string
+	findRemoteF = func(fixt, bundle string) string {
+		if fixt == "" {
+			return ""
+		}
+		// Found remote fixture.
+		if remoteFixtSet[fixt] {
+			if _, ok := localFixtParent[bundle][fixt]; ok {
+				panic("same name fixt in local and remote")
+			}
+			return fixt
+		}
+		p, ok := localFixtParent[bundle][fixt]
+		if !ok {
+			log.Panicf("No such remote fixture %q", fixt)
+		}
+		return findRemoteF(p, bundle)
+	}
+
+	// Categorize local tests by bundle and remote fixture dependency.
+	categorizeLocalTests := func(localTests []*testing.EntityInfo) map[string]map[string][]*testing.EntityInfo {
+		res := make(map[string]map[string][]*testing.EntityInfo) // bundle -> remote fixt -> tests
+		for _, t := range localTests {
+			if res[t.Bundle] == nil {
+				res[t.Bundle] = make(map[string][]*testing.EntityInfo)
+			}
+			rf := findRemoteF(t.Fixture, t.Bundle)
+			res[t.Bundle][rf] = append(res[t.Bundle][rf], t)
+		}
+		return res
+	}
+	return categorizeLocalTests, nil
+}
+
+// runFixtureAndTests runs fixture methods before and after runTests.
+func runFixtureAndTests(ctx context.Context, cfg *Config, cl ibundle.FixtureServiceClient, r string, runTests func(fixtErr []string) error) error {
+	// TODO(oka): Currently we run fixture no matter if the tests dependeing on it
+	// are all skipped. We don't know whether tests are skipped until we actually run them.
+	// Also, if fixture SetUp fails, all the tests depending on them are marked as failure,
+	// even if the tests will be skipped.
+	// To fix the issues consider collecting whether the tests are skipped beforehand.
+
+	// TODO: Consider having a central place to manage log files directory structure.
+	fixtResDir := filepath.Join(cfg.ResDir, "fixtures", r)
+	// TODO: rename testLogFilename to entityLogFilename ?
+	fixtLogPath := filepath.Join(fixtResDir, testLogFilename)
+
+	if err := os.MkdirAll(filepath.Dir(fixtLogPath), 0755); err != nil {
+		return err
+	}
+	log.Printf("Creating fixtLogFile %v", fixtLogPath)
+	fixtLogFile, err := os.Create(fixtLogPath)
+	if err != nil {
+		log.Panicf("creating log file: %v", err)
+	}
+	defer func() {
+		if err := fixtLogFile.Close(); err != nil {
+			panic(err)
+		}
+	}()
+
+	// Get client to run a remote fixture.
+	rfcl, err := cl.RunFixture(ctx)
+	if err != nil {
+		panic(err)
+	}
+
+	config := &ibundle.RunFixtureConfig{
+		TestVars:       cfg.testVars,
+		DataDir:        "/tmp/dat",
+		OutDir:         filepath.Join(cfg.localOutDir, "fixtures"), // ??
+		TempDir:        "/tmp",
+		Target:         cfg.Target,
+		KeyFile:        cfg.KeyFile,
+		KeyDir:         cfg.KeyDir,
+		LocalBundleDir: cfg.localBundleDir,
+	}
+
+	var fixtErrs []*ibundle.RunFixtureError
+
+	type fixtMethod int
+	const (
+		setUp fixtMethod = iota
+		tearDown
+	)
+
+	var token *ibundle.RunFixtureSetUpDone
+	// runFixt runs the method for the current fixture.
+	// runFixt leaves logging for the fixture open. Caller is responsible to close the log
+	// by calling closeLog if non-nil.
+	runFixt := func(method fixtMethod) error {
+		if err := cfg.Logger.AddWriter(fixtLogFile, log.LstdFlags); err != nil {
+			panic("todo")
+		}
+		defer func() {
+			if err := cfg.Logger.RemoveWriter(fixtLogFile); err != nil {
+				panic(err)
+			}
+		}()
+
+		switch method {
+		case setUp:
+			if err := rfcl.Send(&ibundle.RunFixtureRequest{
+				Control: &ibundle.RunFixtureRequest_SetUp{
+					SetUp: &ibundle.RunFixtureSetUpRequest{
+						Name:   r,
+						Config: config,
+					},
+				},
+			}); err != nil {
+				return fmt.Errorf("set up failed: %v", err)
+			}
+		case tearDown:
+			if err := rfcl.Send(&ibundle.RunFixtureRequest{
+				Control: &ibundle.RunFixtureRequest_TearDown{
+					TearDown: &ibundle.RunFixtureTearDownRequest{
+						Token: token,
+					},
+				},
+			}); err != nil {
+				return fmt.Errorf("tear down failed: %v", err)
+			}
+		}
+
+		for {
+			msg, err := rfcl.Recv()
+			if err == io.EOF {
+				// TearDown completed.
+				if method != tearDown {
+					return fmt.Errorf("connection has been closed while tear down method is not called")
+				}
+				// TODO: copy files under fixture's OutDir to fixtResDir.
+				return nil
+			} else if err != nil {
+				return fmt.Errorf("rfcl.Recv(): %v", err)
+			}
+			timestamp, err := ptypes.Timestamp(msg.Timestamp)
+			if err != nil {
+				return fmt.Errorf("ptypes.Timestamp(%v): %v", msg.Timestamp, err)
+			}
+			ts := timestamp.Format(testOutputTimeFmt)
+
+			// Handle messages from the runner.
+			switch v := msg.Control.(type) {
+			case *ibundle.RunFixtureResponse_Error:
+				fixtErrs = append(fixtErrs, v.Error)
+
+				cfg.Logger.Logf("[%s] Error at %s:%d: %s", ts, filepath.Base(v.Error.File), v.Error.Line, v.Error.Reason)
+				if v.Error.Stack != "" {
+					cfg.Logger.Logf("[%s] Stack trace:\n%s", ts, v.Error.Stack)
+				}
+			case *ibundle.RunFixtureResponse_Log:
+				cfg.Logger.Logf("[%s] %s", ts, v.Log)
+			case *ibundle.RunFixtureResponse_SetUpDone:
+				// Set up is done. We receive this message only when the method is set up.
+				if method != setUp {
+					return fmt.Errorf("received SetUpDone when set up method is not called")
+				}
+				token = v.SetUpDone
+				return nil
+			}
+			// TODO: Consider adding fixture end message. The message can have timing log
+			// to import with st.Import.
+		}
+	}
+
+	if r != "" {
+		if err := runFixt(setUp); err != nil {
+			return err
+		}
+	}
+
+	var fixtErrStr []string
+	for _, e := range fixtErrs {
+		fixtErrStr = append(fixtErrStr, fmt.Sprintf("fixture %s has failed: %v", r, e.Reason))
+	}
+
+	if err := runTests(fixtErrStr); err != nil {
+		return fmt.Errorf("runTests(): %v", err)
+	}
+
+	if r != "" {
+		if err := runFixt(tearDown); err != nil {
+			return err
+		}
+	}
+	// fixtErrStr is not used. Fixture errors are reported separately.
+	return nil
+}
+
 // runLocalTests executes tests as described by cfg on hst and returns the results.
 // It is only used for RunTestsMode.
 func runLocalTests(ctx context.Context, cfg *Config) ([]*EntityResult, error) {
@@ -86,44 +383,101 @@ func runLocalTests(ctx context.Context, cfg *Config) ([]*EntityResult, error) {
 		return nil, errors.Wrapf(err, "failed to connect to %s", cfg.Target)
 	}
 
-	runTests := func(ctx context.Context, patterns []string) (results []*EntityResult, unstarted []string, err error) {
-		return runLocalTestsOnce(ctx, cfg, hst, patterns)
-	}
-	beforeRetry := func(ctx context.Context) bool {
-		oldHst := hst
-		var connErr error
-		if hst, connErr = connectToTarget(ctx, cfg); connErr != nil {
-			cfg.Logger.Log("Failed reconnecting to target: ", connErr)
-			return false
+	// runMatchingTests runs local tests matching the given pattern, and returns the results of the
+	// run. fixtErrs are non-nil if fixture failures have happened.
+	runMatchingTests := func(ctx context.Context, patterns []string, startFixtureName string, fixtErrs []string) ([]*EntityResult, error) {
+		runTests := func(ctx context.Context, patterns []string) (results []*EntityResult, unstarted []string, err error) {
+			return runLocalTestsOnce(ctx, cfg, hst, patterns, startFixtureName, fixtErrs)
 		}
-		// The ephemeral devserver uses the SSH connection to the DUT, so a new devserver needs
-		// to be created if a new SSH connection was established.
-		if hst != oldHst {
-			if cfg.ephemeralDevserver != nil {
-				if devErr := startEphemeralDevserver(ctx, hst, cfg); devErr != nil {
-					cfg.Logger.Log("Failed restarting ephemeral devserver: ", connErr)
-					return false
+		beforeRetry := func(ctx context.Context) bool {
+			oldHst := hst
+			var connErr error
+			if hst, connErr = connectToTarget(ctx, cfg); connErr != nil {
+				cfg.Logger.Log("Failed reconnecting to target: ", connErr)
+				return false
+			}
+			// The ephemeral devserver uses the SSH connection to the DUT, so a new devserver needs to be
+			// created if a new SSH connection was established.
+			if hst != oldHst {
+				if cfg.ephemeralDevserver != nil {
+					if devErr := startEphemeralDevserver(ctx, hst, cfg); devErr != nil {
+						cfg.Logger.Log("Failed restarting ephemeral devserver: ", connErr)
+						return false
+					}
+				}
+				if cfg.tlwServerForDUT != "" {
+					f, err := hst.ForwardRemoteToLocal("tcp", "127.0.0.1:0", cfg.tlwServer, func(e error) {
+						cfg.Logger.Logf("remote forwarder error: %s", e)
+					})
+					if err != nil {
+						cfg.Logger.Log("Failed reconnecting remote port forwarding: ", err)
+						return false
+					}
+					cfg.tlwServerForDUT = f.ListenAddr().String()
 				}
 			}
-			if cfg.tlwServerForDUT != "" {
-				f, err := hst.ForwardRemoteToLocal("tcp", "127.0.0.1:0", cfg.tlwServer, func(e error) {
-					cfg.Logger.Logf("remote forwarder error: %s", e)
-				})
-				if err != nil {
-					cfg.Logger.Log("Failed reconnecting remote port forwarding: ", err)
-					return false
-				}
-				cfg.tlwServerForDUT = f.ListenAddr().String()
-			}
+			return true
 		}
-		return true
+		return runTestsWithRetry(ctx, cfg, patterns, runTests, beforeRetry)
 	}
 
+	cl, clean, err := createFixtureClient(ctx, cfg.remoteBundleDir)
+	if err != nil {
+		return nil, err
+	}
+	if clean != nil {
+		defer clean()
+	}
+
+	categorizeLocalTests, err := createLocalTestCategorizer(ctx, cfg, hst)
+	if err != nil {
+		log.Panicf("createLocalTestCategorizer: %v", err)
+	}
+
+	// List up local tests matching cfg.Patterns before running tests to categorize them.
+	lts, err := listLocalTests(ctx, cfg, hst)
+	if err != nil {
+		panic(err)
+	}
+	// TODO: Update listLocalTests to return []*testing.EntityInfo.
+	lpts := make([]*testing.EntityInfo, len(lts), len(lts))
+	for i, t := range lts {
+		lpts[i] = &t
+	}
+	b2rf2ts := categorizeLocalTests(lpts)
+
+	// Start running local tests.
 	start := time.Now()
-	results, err := runTestsWithRetry(ctx, cfg, cfg.Patterns, runTests, beforeRetry)
+
+	var entityResults []*EntityResult
+	for b, r2ts := range b2rf2ts {
+		cfg.Logger.Logf("Running tests in %v", b)
+
+		for r, ts := range r2ts {
+			pats := make([]string, len(ts), len(ts))
+			for i, t := range ts {
+				pats[i] = t.Name
+			}
+
+			// Here, we run fixtures and tests.
+			if err := runFixtureAndTests(ctx, cfg, cl, r, func(fixtErrs []string) error {
+				res, err := runMatchingTests(ctx, pats, r, fixtErrs)
+				if err != nil {
+					1
+					return fmt.Errorf("runMatchingTests(%#v, %#v): %v", pats, fixtErrs, err)
+				}
+				entityResults = append(entityResults, res...)
+				return nil
+			}); err != nil {
+				panic(err)
+			}
+		}
+	}
+
 	elapsed := time.Since(start)
-	cfg.Logger.Logf("Ran %v local test(s) in %v", len(results), elapsed.Round(time.Millisecond))
-	return results, err
+	cfg.Logger.Logf("Ran %v local test(s) in %v", len(entityResults), elapsed.Round(time.Millisecond))
+
+	return entityResults, nil
 }
 
 type localRunnerHandle struct {
@@ -170,7 +524,7 @@ func startLocalRunner(ctx context.Context, cfg *Config, hst *ssh.Conn, args *run
 // Results from started tests and the names of tests that should have been
 // started but weren't (in the order in which they should've been run) are
 // returned.
-func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns []string) (
+func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns []string, startFixtureName string, setUpErrs []string) (
 	results []*EntityResult, unstarted []string, err error) {
 	ctx, st := timing.Start(ctx, "run_local_tests_once")
 	defer st.End()
@@ -196,6 +550,8 @@ func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns
 				HeartbeatInterval: heartbeatInterval,
 				BuildArtifactsURL: cfg.buildArtifactsURL,
 				DownloadMode:      cfg.downloadMode,
+				StartFixtureName:  startFixtureName,
+				SetUpErrors:       setUpErrs,
 			},
 			BundleGlob: cfg.localBundleGlob(),
 			Devservers: cfg.devservers,

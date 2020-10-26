@@ -150,6 +150,30 @@
       },
       "revId": "b7a020e30d24bcaf0e956338a71338b8ca3bd922",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "08e470a5_81f90112",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 456,
+      "author": {
+        "id": 1323140
+      },
+      "writtenOn": "2020-10-26T23:40:08Z",
+      "side": 1,
+      "message": "Thanks for the suggestion - done in patch set 2.",
+      "parentUuid": "ca4538ea_b5805ed1",
+      "range": {
+        "startLine": 453,
+        "startChar": 0,
+        "endLine": 456,
+        "endChar": 18
+      },
+      "revId": "b7a020e30d24bcaf0e956338a71338b8ca3bd922",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -12,21 +12,30 @@ option go_package = "chromiumos/tast/internal/bundle";
 // FixtureService provides methods to set up or tear down single remote fixture.
 // Currently we don't support Reset, PreTest, PostTest, and nested remote fixtures.
 service FixtureService {
-    rpc RunFixture(RunFixtureRequest) returns (stream RunFixtureResponse) {}
+    rpc RunFixture(stream RunFixtureRequest) returns (stream RunFixtureResponse) {}
 }
 
 // RunFixtureRequest is the request to RunFixture.
 message RunFixtureRequest {
+    oneof control {
+        RunFixtureSetUpRequest set_up = 1;
+        RunFixtureTearDownRequest tear_down = 2;
+    }
+}
+
+// RunFixtureSetUpRequest requests setting up a fixture.
+// This request should be set only once.
+message RunFixtureSetUpRequest {
     // Name is the name of the fixture to run method.
     string name = 1;
-    enum Method {
-        SetUp = 0;
-        TearDown = 1;
-    }
-    // Method is the method of the fixture to run.
-    Method method = 2;
     // Config is the configuration the framework needs to run the fixture.
-    RunFixtureConfig config = 3;
+    RunFixtureConfig config = 2;
+}
+
+// RunFixtureSetUpRequest requests tearing down a fixture.
+// After the fixture is torn down, the RPC call will be closed.
+message RunFixtureTearDownRequest {
+    RunFixtureSetUpDone token = 1;
 }
 
 // RunFixtureConfig contains information the framework needs to run fixtures.
@@ -66,6 +75,9 @@ message RunFixtureError {
     string stack = 4;
 }
 
+// RunFixtureSetUpDone indicates fixture SetUp has been done.
+message RunFixtureSetUpDone {}
+
 // RunFixtureResponse is the control message the server streams to the caller.
 message RunFixtureResponse {
     oneof control {
@@ -73,7 +85,9 @@ message RunFixtureResponse {
         string log = 1;
         // Error is the error message.
         RunFixtureError error = 2;
+        // SetUpDone is the message sent when fixture SetUp has been done.
+        RunFixtureSetUpDone set_up_done = 3;
     }
     // Timestamp is the timestamp of the event.
-    google.protobuf.Timestamp timestamp = 3;
+    google.protobuf.Timestamp timestamp = 4;
 }

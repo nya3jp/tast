@@ -147,11 +147,14 @@ func getRemoteSHA1s(ctx context.Context, s *ssh.Conn, paths []string) (map[strin
 		if l == "" {
 			continue
 		}
-		f := strings.Fields(l)
+		f := strings.SplitN(l, " ", 2)
 		if len(f) != 2 {
 			return nil, fmt.Errorf("unexpected line %q from sha1sum", l)
 		}
-		sums[f[1]] = f[0]
+		if len(f[0]) != 40 {
+			return nil, fmt.Errorf("invalid sha1 in line %q from sha1sum", l)
+		}
+		sums[strings.TrimLeft(f[1], " ")] = f[0]
 	}
 	return sums, nil
 }

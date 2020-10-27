@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "549fc707_f144afad",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-10-27T04:35:23Z",
+      "side": 1,
+      "message": "In the latest commit,\n\n1. Rebased code.\n2. Fixed a bug when test cases for each shard are not the same.\n3. Add unit tests to function to calculate indices to be used in shard.\n\nTODO next: add more unit tests to different functions.\n\n",
+      "revId": "9843737761d8f6890e768850f77e339c2a496bdc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

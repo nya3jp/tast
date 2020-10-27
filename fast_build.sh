@@ -82,7 +82,7 @@ get_test_pkgs() {
 run_build() {
   local pkg="${1}"
   local dest="${2}"
-  go build -i -pkgdir "${PKGDIR}" -o "${dest}" "${pkg}"
+  go build -gcflags=all="-N -l -dwarflocationlists=true" -ldflags=-compressdwarf=false -i -pkgdir "${PKGDIR}" -o "${dest}" "${pkg}"
 }
 
 # Checks one or more packages.

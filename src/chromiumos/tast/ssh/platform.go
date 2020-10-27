@@ -26,6 +26,7 @@ func shellCmd(dir string, args []string) string {
 		// TODO(nya): Consider handling the directory error more gracefully.
 		cmd = fmt.Sprintf("cd %s > /dev/null 2>&1 || exit 125; %s", shutil.Escape(dir), cmd)
 	}
+	fmt.Println("[ericth shellCmd] ", cmd)
 	return cmd
 }
 

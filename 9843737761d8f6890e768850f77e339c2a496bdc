@@ -16,6 +16,23 @@
       "message": "In the latest commit,\n\n1. Rebased code.\n2. Fixed a bug when test cases for each shard are not the same.\n3. Add unit tests to function to calculate indices to be used in shard.\n\nTODO next: add more unit tests to different functions.\n\n",
       "revId": "9843737761d8f6890e768850f77e339c2a496bdc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "52afdc70_477a66b4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-27T10:13:45Z",
+      "side": 1,
+      "message": "Hi Seewai, sorry for delay.\n\nBut actually I\u0027m hesitant to add start/end indices to RunStart. It assumes that the sharding algorithm in runners/bundles always take a contiguous subset of tests. I feel better if the protocol is algorithm-agnostic.\n",
+      "revId": "9843737761d8f6890e768850f77e339c2a496bdc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

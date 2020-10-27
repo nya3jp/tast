@@ -52,6 +52,24 @@
       "parentUuid": "fa32842a_d850f718",
       "revId": "1e2819afbaac835939da43fdc594f23a3fb43e90",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "01bf08b2_cb27135b",
+        "filename": "docs/codelab_3.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1337146
+      },
+      "writtenOn": "2020-10-27T14:50:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6e93520c_848fa57f",
+      "revId": "1e2819afbaac835939da43fdc594f23a3fb43e90",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -16,6 +16,23 @@
       "message": "Fixed patch to include code review comments",
       "revId": "a0d176a76a2a2b18386002da04ef192ade8217bc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "46d545c2_5de98b0b",
+        "filename": "docs/codelab_3.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-10-27T15:32:50Z",
+      "side": 1,
+      "message": "recommendation: \"Replace \"Native Apps\" by more appropriate term.\"",
+      "revId": "a0d176a76a2a2b18386002da04ef192ade8217bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

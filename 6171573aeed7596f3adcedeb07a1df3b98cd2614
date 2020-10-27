@@ -16,6 +16,316 @@
       "message": "Shuhei, thanks for your review. All the comments are address and please check.",
       "revId": "6171573aeed7596f3adcedeb07a1df3b98cd2614",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4c4f2144_e5b1f25e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-27T10:00:36Z",
+      "side": 1,
+      "message": "Thanks for the update, looks nice!\n",
+      "revId": "6171573aeed7596f3adcedeb07a1df3b98cd2614",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c16ecb92_0055bc93",
+        "filename": "src/chromiumos/tast/internal/planner/fixt_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 324,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-27T10:00:36Z",
+      "side": 1,
+      "message": "The point of this test is to make sure Config.RemoteData is available via testing.FixtState. So it\u0027s enough to check only one field (LocalBundleDir) only; we can omit checking vars.",
+      "range": {
+        "startLine": 322,
+        "startChar": 2,
+        "endLine": 324,
+        "endChar": 3
+      },
+      "revId": "6171573aeed7596f3adcedeb07a1df3b98cd2614",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e39ca547_a375002d",
+        "filename": "src/chromiumos/tast/internal/testing/service.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-27T10:00:36Z",
+      "side": 1,
+      "message": "We usually call them as \"runtime variables\", not \"runtime test variables\". So can you update the doc, and rename the field testVars -\u003e vars?",
+      "range": {
+        "startLine": 30,
+        "startChar": 1,
+        "endLine": 31,
+        "endChar": 27
+      },
+      "revId": "6171573aeed7596f3adcedeb07a1df3b98cd2614",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1d77c701_26a8296f",
+        "filename": "src/chromiumos/tast/internal/testing/service_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-27T10:00:36Z",
+      "side": 1,
+      "message": "huge nit: return is not necessary.",
+      "range": {
+        "startLine": 19,
+        "startChar": 3,
+        "endLine": 19,
+        "endChar": 9
+      },
+      "revId": "6171573aeed7596f3adcedeb07a1df3b98cd2614",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7d2d6000_c389cd2d",
+        "filename": "src/chromiumos/tast/internal/testing/service_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-27T10:00:36Z",
+      "side": 1,
+      "message": "This check is not necessary (we check recover() \u003d\u003d nil above).",
+      "range": {
+        "startLine": 61,
+        "startChar": 2,
+        "endLine": 63,
+        "endChar": 3
+      },
+      "revId": "6171573aeed7596f3adcedeb07a1df3b98cd2614",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b20b1a73_ceda9d2f",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-27T10:00:36Z",
+      "side": 1,
+      "message": "Thanks for taking care of localBundleDir :)",
+      "range": {
+        "startLine": 134,
+        "startChar": 1,
+        "endLine": 136,
+        "endChar": 22
+      },
+      "revId": "6171573aeed7596f3adcedeb07a1df3b98cd2614",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1aab234e_e17bcb54",
+        "filename": "src/chromiumos/tast/rpc/bundle_messages.proto",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-27T10:00:36Z",
+      "side": 1,
+      "message": "I\u0027ve just landed a change to gather all protocol definitions (not implementations) in chromiumos/tast/internal/protocol: crrev.com/c/2484110\n\nCan you please move this to the package?",
+      "revId": "6171573aeed7596f3adcedeb07a1df3b98cd2614",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "39388d69_009efbb1",
+        "filename": "src/chromiumos/tast/rpc/client.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-27T10:00:36Z",
+      "side": 1,
+      "message": "huge nit: can you name it \"clean\" to match the struct field name?",
+      "range": {
+        "startLine": 85,
+        "startChar": 1,
+        "endLine": 85,
+        "endChar": 11
+      },
+      "revId": "6171573aeed7596f3adcedeb07a1df3b98cd2614",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "68b61251_3b2b75d9",
+        "filename": "src/chromiumos/tast/rpc/client.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-27T10:00:36Z",
+      "side": 1,
+      "message": "nit:\n\n bundle returned error: %s\n\nto match with the standard error formatting.",
+      "range": {
+        "startLine": 112,
+        "startChar": 41,
+        "endLine": 112,
+        "endChar": 50
+      },
+      "revId": "6171573aeed7596f3adcedeb07a1df3b98cd2614",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b2efdab8_4cf20bab",
+        "filename": "src/chromiumos/tast/rpc/protobuf_raw_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-27T10:00:36Z",
+      "side": 1,
+      "message": "It\u0027s nice to avoid concurrency since concurrency is not the point of sendRawMessage/receiveRawMessage.\n\nbytes.Buffer implements io.Reader/io.Writer, which is useful in unit tests.\n\n want :\u003d SomeMessageType{ ... }\n\n var buf bytes.Buffer\n if err :\u003d sendRawMessage(\u0026buf, \u0026want); err !\u003d nil { ... }\n\n var got SomeMessageType\n if err :\u003d receiveRawMessage(\u0026buf, \u0026got); err !\u003d nil { ... }\n\n // got and want must be the same here",
+      "range": {
+        "startLine": 15,
+        "startChar": 5,
+        "endLine": 15,
+        "endChar": 20
+      },
+      "revId": "6171573aeed7596f3adcedeb07a1df3b98cd2614",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "555f3d93_3f48f6f2",
+        "filename": "src/chromiumos/tast/rpc/rpc_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-27T10:00:36Z",
+      "side": 1,
+      "message": "style: nil\n\nhttps://github.com/golang/go/wiki/CodeReviewComments#declaring-empty-slices",
+      "range": {
+        "startLine": 95,
+        "startChar": 29,
+        "endLine": 95,
+        "endChar": 48
+      },
+      "revId": "6171573aeed7596f3adcedeb07a1df3b98cd2614",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e7e302af_8310b8c2",
+        "filename": "src/chromiumos/tast/rpc/rpc_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-27T10:00:36Z",
+      "side": 1,
+      "message": "Calling initBundleServer here is a bit odd --- I expect RunServer and newClient to be a matching pair.\n\nCan you try moving initBundleServer call in Dial to newClient? Then I guess we don\u0027t need to call initBundleServer here.",
+      "range": {
+        "startLine": 96,
+        "startChar": 11,
+        "endLine": 96,
+        "endChar": 27
+      },
+      "revId": "6171573aeed7596f3adcedeb07a1df3b98cd2614",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "015cf791_22b5273e",
+        "filename": "src/chromiumos/tast/rpc/server.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-27T10:00:36Z",
+      "side": 1,
+      "message": "nit: initReq",
+      "range": {
+        "startLine": 118,
+        "startChar": 1,
+        "endLine": 118,
+        "endChar": 10
+      },
+      "revId": "6171573aeed7596f3adcedeb07a1df3b98cd2614",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4140f5f2_f46bc554",
+        "filename": "src/chromiumos/tast/rpc/server.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-27T10:00:36Z",
+      "side": 1,
+      "message": "Since it\u0027s simple we can consolidate sendRPCParamsRsp calls and inline it.\n\n initReq :\u003d \u0026InitBundleServerRequest{}\n err :\u003d receiveRawMessage(r, initReq)\n res :\u003d \u0026InitBundleServerResponse{\n   Success: err \u003d\u003d nil,\n }\n if err !\u003d nil {\n   res.ErrorMessage \u003d err.Error()\n }\n return sendRawMessage(r, res)",
+      "range": {
+        "startLine": 119,
+        "startChar": 1,
+        "endLine": 128,
+        "endChar": 2
+      },
+      "revId": "6171573aeed7596f3adcedeb07a1df3b98cd2614",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

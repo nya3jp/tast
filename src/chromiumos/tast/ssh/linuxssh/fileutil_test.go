@@ -182,24 +182,27 @@ func TestPutFilesUnchanged(t *testing.T) {
 	defer td.Close()
 
 	files := map[string]string{
-		"src1":     "1",
-		"dir/src2": "2",
+		"src1":        "1",
+		"dir/src2":    "2",
+		"dir 2/src 3": "3",
 	}
 	tmpDir, srcDir := initFileTest(t, files)
 	defer os.RemoveAll(tmpDir)
 
 	dstDir := filepath.Join(tmpDir, "dst")
 	if err := testutil.WriteFiles(dstDir, map[string]string{
-		"dst1":     "1",
-		"dir/dst2": "2",
+		"dst1":        "1",
+		"dir/dst2":    "2",
+		"dir 2/dst 3": "3",
 	}); err != nil {
 		t.Fatal(err)
 	}
 
 	// No bytes should be sent since the dest dir already contains the renamed source files.
 	if n, err := PutFiles(td.Ctx, td.Hst, map[string]string{
-		filepath.Join(srcDir, "src1"):     filepath.Join(dstDir, "dst1"),
-		filepath.Join(srcDir, "dir/src2"): filepath.Join(dstDir, "dir/dst2"),
+		filepath.Join(srcDir, "src1"):        filepath.Join(dstDir, "dst1"),
+		filepath.Join(srcDir, "dir/src2"):    filepath.Join(dstDir, "dir/dst2"),
+		filepath.Join(srcDir, "dir 2/src 3"): filepath.Join(dstDir, "dir 2/dst 3"),
 	}, PreserveSymlinks); err != nil {
 		t.Fatal(err)
 	} else if n != 0 {

@@ -216,7 +216,11 @@ func newDeviceConfigAndHardwareFeatures() (dc *device.Config, retFeatures *confi
 
 	soc, err := findSOC()
 	if err != nil {
-		warns = append(warns, fmt.Sprintf("Unknown SOC: %v", err))
+		warns = append(warns, fmt.Sprintf("unknown SOC: %v", err))
+	}
+	cpu, err := findArchitecture()
+	if err != nil {
+		warns = append(warns, fmt.Sprintf("unknown CPU: %v", err))
 	}
 	config := &device.Config{
 		Id: &device.ConfigId{
@@ -225,6 +229,7 @@ func newDeviceConfigAndHardwareFeatures() (dc *device.Config, retFeatures *confi
 			BrandId:    brand,
 		},
 		Soc: soc,
+		Cpu: cpu,
 	}
 	features := &configpb.HardwareFeatures{
 		Screen:      &configpb.HardwareFeatures_Screen{},
@@ -367,6 +372,34 @@ func (r *lscpuResult) find(name string) (data string, ok bool) {
 	return "", false
 }
 
+func findArchitecture() (device.Config_Architecture, error) {
+	b, err := exec.Command("lscpu", "--json").Output()
+	if err != nil {
+		return device.Config_ARCHITECTURE_UNDEFINED, err
+	}
+	var parsed lscpuResult
+	if err := json.Unmarshal(b, &parsed); err != nil {
+		return device.Config_ARCHITECTURE_UNDEFINED, errors.Wrap(err, "failed to parse lscpu result")
+	}
+	arch, ok := parsed.find("Architecture:")
+	if !ok {
+		return device.Config_ARCHITECTURE_UNDEFINED, errors.New("Architecture not found")
+	}
+
+	switch arch {
+	case "x86_64":
+		return device.Config_X86_64, nil
+	case "i686":
+		return device.Config_X86, nil
+	case "aarch64":
+		return device.Config_ARM64, nil
+	case "armv7l", "armv8l":
+		return device.Config_ARM, nil
+	default:
+		return device.Config_ARCHITECTURE_UNDEFINED, errors.Errorf("unknown Architecture: %q", arch)
+	}
+}
+
 func findSOC() (device.Config_SOC, error) {
 	b, err := exec.Command("lscpu", "--json").Output()
 	if err != nil {
@@ -378,7 +411,7 @@ func findSOC() (device.Config_SOC, error) {
 	}
 	vendorID, ok := parsed.find("Vendor ID:")
 	if !ok {
-		return device.Config_SOC_UNSPECIFIED, errors.New("vendor ID not found")
+		return device.Config_SOC_UNSPECIFIED, errors.New("Vendor ID not found")
 	}
 
 	switch vendorID {

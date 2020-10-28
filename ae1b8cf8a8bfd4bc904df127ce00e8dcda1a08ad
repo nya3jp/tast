@@ -103,6 +103,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "0ac7a852_7d938b6a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1326157
+      },
+      "writtenOn": "2020-10-28T21:00:00Z",
+      "side": 1,
+      "message": "Latest PS adds a Cq-Depend for a tclint uprev, which addresses two of the errors in my above gpaste. Latest patch set has two errors in the test_instance_test.go: http://go/paste/6096415127240704",
+      "parentUuid": "2c873580_e77a1c18",
+      "revId": "ae1b8cf8a8bfd4bc904df127ce00e8dcda1a08ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "76641024_3e980939",
         "filename": "src/chromiumos/tast/internal/runner/features.go",
         "patchSetId": 1

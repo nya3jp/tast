@@ -214,9 +214,9 @@ func newDeviceConfigAndHardwareFeatures() (dc *device.Config, retFeatures *confi
 		warns = append(warns, fmt.Sprintf("unknown brand-id: %v", err))
 	}
 
-	soc, err := findSOC()
+	info, err := cpuInfo()
 	if err != nil {
-		warns = append(warns, fmt.Sprintf("Unknown SOC: %v", err))
+		warns = append(warns, fmt.Sprintf("unknown CPU information: %v", err))
 	}
 	config := &device.Config{
 		Id: &device.ConfigId{
@@ -224,7 +224,8 @@ func newDeviceConfigAndHardwareFeatures() (dc *device.Config, retFeatures *confi
 			ModelId:    model,
 			BrandId:    brand,
 		},
-		Soc: soc,
+		Soc: info.soc,
+		Cpu: info.cpuArch,
 	}
 	features := &configpb.HardwareFeatures{
 		Screen:      &configpb.HardwareFeatures_Screen{},
@@ -367,23 +368,67 @@ func (r *lscpuResult) find(name string) (data string, ok bool) {
 	return "", false
 }
 
-func findSOC() (device.Config_SOC, error) {
+type cpuConfig struct {
+	cpuArch device.Config_Architecture
+	soc     device.Config_SOC
+}
+
+// cpuInfo returns a structure containing field data from the "lscpu" command
+// which outputs CPU architecture information from "sysfs" and "/proc/cpuinfo".
+func cpuInfo() (cpuConfig, error) {
+	errInfo := cpuConfig{device.Config_ARCHITECTURE_UNDEFINED, device.Config_SOC_UNSPECIFIED}
 	b, err := exec.Command("lscpu", "--json").Output()
 	if err != nil {
-		return device.Config_SOC_UNSPECIFIED, err
+		return errInfo, err
 	}
 	var parsed lscpuResult
 	if err := json.Unmarshal(b, &parsed); err != nil {
-		return device.Config_SOC_UNSPECIFIED, errors.Wrap(err, "failed to parse lscpu result")
+		return errInfo, errors.Wrap(err, "failed to parse lscpu result")
 	}
+	soc, err := findSOC(parsed)
+	if err != nil {
+		return errInfo, errors.Wrap(err, "failed to find SOC")
+	}
+	arch, err := findArchitecture(parsed)
+	if err != nil {
+		return errInfo, errors.Wrap(err, "failed to find CPU architecture")
+	}
+	return cpuConfig{arch, soc}, nil
+}
+
+// findArchitecture returns an architecture configuration based from parsed output
+// data value of the "Architecture" field.
+func findArchitecture(parsed lscpuResult) (device.Config_Architecture, error) {
+	arch, ok := parsed.find("Architecture:")
+	if !ok {
+		return device.Config_ARCHITECTURE_UNDEFINED, errors.New("failed to find Architecture field")
+	}
+
+	switch arch {
+	case "x86_64":
+		return device.Config_X86_64, nil
+	case "i686":
+		return device.Config_X86, nil
+	case "aarch64":
+		return device.Config_ARM64, nil
+	case "armv7l", "armv8l":
+		return device.Config_ARM, nil
+	default:
+		return device.Config_ARCHITECTURE_UNDEFINED, errors.Errorf("unknown architecture: %q", arch)
+	}
+}
+
+// findSOC returns a SOC configuration based from parsed output data value of the
+// "Vendor ID" and other related fields.
+func findSOC(parsed lscpuResult) (device.Config_SOC, error) {
 	vendorID, ok := parsed.find("Vendor ID:")
 	if !ok {
-		return device.Config_SOC_UNSPECIFIED, errors.New("vendor ID not found")
+		return device.Config_SOC_UNSPECIFIED, errors.New("failed to find Vendor ID field")
 	}
 
 	switch vendorID {
 	case "ARM":
-		return findArmSOC()
+		return findARMSOC()
 	case "Qualcomm":
 		return findQualcommSOC(&parsed)
 	case "GenuineIntel":
@@ -395,7 +440,8 @@ func findSOC() (device.Config_SOC, error) {
 	}
 }
 
-func findArmSOC() (device.Config_SOC, error) {
+// findARMSOC returns an ARM SOC configuration based on "soc_id" from "/sys/bus/soc/devices".
+func findARMSOC() (device.Config_SOC, error) {
 	// Platforms with SMCCC >= 1.2 should implement get_soc functions in firmware
 	const socSysFS = "/sys/bus/soc/devices"
 	socs, err := ioutil.ReadDir(socSysFS)
@@ -421,7 +467,7 @@ func findArmSOC() (device.Config_SOC, error) {
 	// Example: google,krane-sku176\x00google,krane\x00mediatek,mt8183\x00
 	c, err := ioutil.ReadFile("/sys/firmware/devicetree/base/compatible")
 	if err != nil {
-		return device.Config_SOC_UNSPECIFIED, errors.Wrap(err, "ARM model not found")
+		return device.Config_SOC_UNSPECIFIED, errors.Wrap(err, "failed to find ARM model")
 	}
 
 	compatible := string(c)
@@ -442,10 +488,11 @@ func findArmSOC() (device.Config_SOC, error) {
 	}
 }
 
+// findQualcommSOC returns a Qualcomm SOC configuration based on "Model" field.
 func findQualcommSOC(parsed *lscpuResult) (device.Config_SOC, error) {
 	model, ok := parsed.find("Model:")
 	if !ok {
-		return device.Config_SOC_UNSPECIFIED, errors.New("Qualcomm model not found")
+		return device.Config_SOC_UNSPECIFIED, errors.New("failed to find Qualcomm model")
 	}
 
 	switch model {
@@ -456,20 +503,22 @@ func findQualcommSOC(parsed *lscpuResult) (device.Config_SOC, error) {
 	}
 }
 
+// findIntelSOC returns an Intel SOC configuration based on "CPU family", "Model",
+// and "Model name" fields.
 func findIntelSOC(parsed *lscpuResult) (device.Config_SOC, error) {
 	if family, ok := parsed.find("CPU family:"); !ok {
-		return device.Config_SOC_UNSPECIFIED, errors.New("Intel family not found")
+		return device.Config_SOC_UNSPECIFIED, errors.New("failed to find Intel family")
 	} else if family != "6" {
 		return device.Config_SOC_UNSPECIFIED, errors.Errorf("unknown Intel family: %s", family)
 	}
 
 	modelStr, ok := parsed.find("Model:")
 	if !ok {
-		return device.Config_SOC_UNSPECIFIED, errors.New("Intel model not found")
+		return device.Config_SOC_UNSPECIFIED, errors.New("failed to find Intel model")
 	}
 	model, err := strconv.ParseInt(modelStr, 10, 64)
 	if err != nil {
-		return device.Config_SOC_UNSPECIFIED, errors.Wrapf(err, "failed to parse intel model: %q", modelStr)
+		return device.Config_SOC_UNSPECIFIED, errors.Wrapf(err, "failed to parse Intel model: %q", modelStr)
 	}
 	switch model {
 	case INTEL_FAM6_KABYLAKE_L:
@@ -478,7 +527,7 @@ func findIntelSOC(parsed *lscpuResult) (device.Config_SOC, error) {
 		// Note that Pentium brand is unsupported.
 		modelName, ok := parsed.find("Model name:")
 		if !ok {
-			return device.Config_SOC_UNSPECIFIED, errors.New("Intel model name not found")
+			return device.Config_SOC_UNSPECIFIED, errors.New("failed to find Intel model name")
 		}
 		for _, e := range []struct {
 			soc device.Config_SOC
@@ -522,7 +571,7 @@ func findIntelSOC(parsed *lscpuResult) (device.Config_SOC, error) {
 		// SKYLAKE_U and SKYLAKE_Y share the same model. Parse model name.
 		modelName, ok := parsed.find("Model name:")
 		if !ok {
-			return device.Config_SOC_UNSPECIFIED, errors.New("Intel model name not found")
+			return device.Config_SOC_UNSPECIFIED, errors.New("failed to find Intel model name")
 		}
 		for _, e := range []struct {
 			soc device.Config_SOC
@@ -557,10 +606,11 @@ func findIntelSOC(parsed *lscpuResult) (device.Config_SOC, error) {
 	}
 }
 
+// findAMDSOC returns an AMD SOC configuration based on "Model" field.
 func findAMDSOC(parsed *lscpuResult) (device.Config_SOC, error) {
 	model, ok := parsed.find("Model:")
 	if !ok {
-		return device.Config_SOC_UNSPECIFIED, errors.New("AMD model not found")
+		return device.Config_SOC_UNSPECIFIED, errors.New("failed to find AMD model")
 	}
 	if model == "112" {
 		return device.Config_SOC_STONEY_RIDGE, nil

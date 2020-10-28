@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1859dba8_8619fb25",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1400377
+      },
+      "writtenOn": "2020-10-28T21:58:17Z",
+      "side": 1,
+      "message": "Thanks Shuhei. It was a good exercise addressing your comments.",
+      "revId": "af95c4845f93683242aeea0c2fff8a1cf2e50f07",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c6c48016_a44af40a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-10-28T23:08:03Z",
+      "side": 1,
+      "message": "Hi Everybody:\n\nI used a new approach suggested by Shuhei which will retrieve the test names that would match the user specified test pattern. Then, I calculate the actual tests within the specified shard. Then, I only send those test to bundles.go.\n\nI have added a few unit tests. Please review.\n\nThanks.\n\nSeewai\n",
+      "revId": "2f2cedfcfc068a5049aafe9e0376cc1a1935519a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -85,6 +85,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "2c873580_e77a1c18",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1326157
+      },
+      "writtenOn": "2020-10-28T17:27:16Z",
+      "side": 1,
+      "message": "Nvm, I see now that it\u0027s a portage package. I\u0027m working on uprevving to see if that will fix the issue.",
+      "parentUuid": "043d839b_c29c7c8d",
+      "revId": "ae1b8cf8a8bfd4bc904df127ce00e8dcda1a08ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "76641024_3e980939",
         "filename": "src/chromiumos/tast/internal/runner/features.go",
         "patchSetId": 1

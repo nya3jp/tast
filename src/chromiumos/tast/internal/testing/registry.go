@@ -69,6 +69,9 @@ func (r *Registry) AddService(s *Service) error {
 
 // AddFixture adds f to the registry.
 func (r *Registry) AddFixture(f *Fixture) error {
+	if err := validateFixture(f); err != nil {
+		return err
+	}
 	if _, ok := r.allFixtures[f.Name]; ok {
 		return fmt.Errorf("fixture %q already registered", f.Name)
 	}

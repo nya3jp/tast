@@ -6,7 +6,10 @@ package testing
 
 import (
 	"context"
+	"regexp"
 	"time"
+
+	"chromiumos/tast/errors"
 )
 
 // FixtureInfo is a JSON-serializable fixture information other processes need.
@@ -67,6 +70,17 @@ func (f *Fixture) EntityInfo() *EntityInfo {
 		Fixture:     f.Parent,
 		Type:        EntityFixture,
 	}
+}
+
+// fixtureNameRegexp defines the valid fixture name pattern.
+var fixtureNameRegexp = regexp.MustCompile(`^[a-z][A-Za-z0-9]*$`)
+
+// validateFixture validates a user-supplied Fixture metadata.
+func validateFixture(f *Fixture) error {
+	if !fixtureNameRegexp.MatchString(f.Name) {
+		return errors.Errorf("invalid fixture name: %q", f.Name)
+	}
+	return nil
 }
 
 // FixtureImpl provides implementation of the fixture registered to the framework.

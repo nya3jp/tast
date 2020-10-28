@@ -1,0 +1,159 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "44b0e247_c49380ae",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1202079
+      },
+      "writtenOn": "2020-10-28T19:41:55Z",
+      "side": 1,
+      "message": "+1 % nits (deferring to Hidehiko)",
+      "revId": "9258a3326914981652f1e78bfe270aed95e840df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3ac5b2b7_67f2ce68",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 217,
+      "author": {
+        "id": 1202079
+      },
+      "writtenOn": "2020-10-28T19:41:55Z",
+      "side": 1,
+      "message": "optional:\n\nsince findSOC and findArchitecture are very similar and called just once, what about having just one function that collects the related CPU info?\n\n  // \"cpuInfo\" or the name that you like\n  func cpuInfo() (device.Config_Architecture, device.Config_SOC, err) {\n    // pseudo code\n    out \u003d exec.Command(\"lscpu\", \"--json\").Output()\n    parsed \u003d json.Unmarshal(b, \u0026parsed)\n    arch \u003d findArchitecture(parsed)\n    soc \u003d findSoc(parsed)\n\n    // It could also return a cpuInfo struct if more data is needed.\n    return arch, soc\n  }",
+      "range": {
+        "startLine": 217,
+        "startChar": 1,
+        "endLine": 217,
+        "endChar": 22
+      },
+      "revId": "9258a3326914981652f1e78bfe270aed95e840df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f2b6c7f4_0a2be3ca",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 232,
+      "author": {
+        "id": 1202079
+      },
+      "writtenOn": "2020-10-28T19:41:55Z",
+      "side": 1,
+      "message": "nit: Cpu -\u003e CPU\nnit: Although Arch might be a better name, since this is more about architectures and not CPUs.\n\nAnd following the same principle:\n- Soc should be SOC \n- Id should be ID\n(but that can be addressed in a different CL)\n\nhttps://github.com/golang/go/wiki/CodeReviewComments#initialisms",
+      "range": {
+        "startLine": 232,
+        "startChar": 1,
+        "endLine": 232,
+        "endChar": 2
+      },
+      "revId": "9258a3326914981652f1e78bfe270aed95e840df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9d843ae6_1ab04317",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 375,
+      "author": {
+        "id": 1202079
+      },
+      "writtenOn": "2020-10-28T19:41:55Z",
+      "side": 1,
+      "message": "nit: add docstring for this func",
+      "range": {
+        "startLine": 375,
+        "startChar": 5,
+        "endLine": 375,
+        "endChar": 21
+      },
+      "revId": "9258a3326914981652f1e78bfe270aed95e840df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a89f4f9e_522167b6",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 386,
+      "author": {
+        "id": 1202079
+      },
+      "writtenOn": "2020-10-28T19:41:55Z",
+      "side": 1,
+      "message": "nit: Archi... -\u003e archi...",
+      "range": {
+        "startLine": 386,
+        "startChar": 59,
+        "endLine": 386,
+        "endChar": 60
+      },
+      "revId": "9258a3326914981652f1e78bfe270aed95e840df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ab042582_f7d8b6ee",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 399,
+      "author": {
+        "id": 1202079
+      },
+      "writtenOn": "2020-10-28T19:41:55Z",
+      "side": 1,
+      "message": "nit: probably this should be in lowercase.",
+      "range": {
+        "startLine": 399,
+        "startChar": 70,
+        "endLine": 399,
+        "endChar": 71
+      },
+      "revId": "9258a3326914981652f1e78bfe270aed95e840df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "07ae2620_dc8212bb",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 414,
+      "author": {
+        "id": 1202079
+      },
+      "writtenOn": "2020-10-28T19:41:55Z",
+      "side": 1,
+      "message": "nit: old message was ok. returned errors should not be capitalized.",
+      "range": {
+        "startLine": 414,
+        "startChar": 52,
+        "endLine": 414,
+        "endChar": 53
+      },
+      "revId": "9258a3326914981652f1e78bfe270aed95e840df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

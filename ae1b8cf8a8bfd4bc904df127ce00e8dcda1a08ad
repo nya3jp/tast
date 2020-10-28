@@ -1,6 +1,7 @@
 {
   "comments": [
     {
+      "unresolved": true,
       "key": {
         "uuid": "2eafb163_cbc86104",
         "filename": "/COMMIT_MSG",
@@ -20,10 +21,34 @@
         "endChar": 59
       },
       "revId": "ae1b8cf8a8bfd4bc904df127ce00e8dcda1a08ad",
-      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
-      "unresolved": true
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "de7e76cb_dab6d556",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1326157
+      },
+      "writtenOn": "2020-10-28T17:04:52Z",
+      "side": 1,
+      "message": "By this, I meant that while Boxster now contains a topology to represent the new EmbeddedController type, it does not yet contain data representing each board\u0027s EmbeddedController type. That backfill is being actively worked here: https://crbug.com/1139017\n\nI have updated the commit message to clarify my meaning.",
+      "parentUuid": "2eafb163_cbc86104",
+      "range": {
+        "startLine": 11,
+        "startChar": 28,
+        "endLine": 11,
+        "endChar": 59
+      },
+      "revId": "ae1b8cf8a8bfd4bc904df127ce00e8dcda1a08ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
       "key": {
         "uuid": "8c4d9195_7adc0d51",
         "filename": "/COMMIT_MSG",
@@ -37,10 +62,28 @@
       "side": 1,
       "message": "Will you try like https://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/2413967/2/src/chromiumos/tast/internal/testing/test_instance_test.go\n\nand see chromiumos/tast/internal/testing and chromiumos/tast/testing pass?\nIf not, tclint may need to be uprevved to assure the CEL is correct.\nAlso see crbug.com/1129566.",
       "revId": "ae1b8cf8a8bfd4bc904df127ce00e8dcda1a08ad",
-      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
-      "unresolved": true
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "043d839b_c29c7c8d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1326157
+      },
+      "writtenOn": "2020-10-28T17:04:52Z",
+      "side": 1,
+      "message": "In tast/src/chromiumos/tast/internal/testing/test_instance_test.go, I changed TestWriteTestMetadataWithTCLint\u0027s test002 to use hwdep.ChromeEC(). This yielded the following errors: http://go/paste/5350563823747072\n\nWith test002 unmodified, the test passes.\n\nSo, it sounds like tclint will need to be uprevved. How can I get started with that?",
+      "parentUuid": "8c4d9195_7adc0d51",
+      "revId": "ae1b8cf8a8bfd4bc904df127ce00e8dcda1a08ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
       "key": {
         "uuid": "76641024_3e980939",
         "filename": "src/chromiumos/tast/internal/runner/features.go",
@@ -54,8 +97,25 @@
       "side": 1,
       "message": "I think this field is always returned with this zero value, so that this patch does not affect actual device test executions at this time. If so, I suggest make it stated clearer in the CL description.",
       "revId": "ae1b8cf8a8bfd4bc904df127ce00e8dcda1a08ad",
-      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba",
-      "unresolved": true
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5ade5de9_8461ca42",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 1326157
+      },
+      "writtenOn": "2020-10-28T17:04:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "76641024_3e980939",
+      "revId": "ae1b8cf8a8bfd4bc904df127ce00e8dcda1a08ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

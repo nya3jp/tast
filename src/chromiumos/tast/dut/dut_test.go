@@ -4,7 +4,11 @@
 
 package dut
 
-import "testing"
+import (
+	"testing"
+
+	"chromiumos/tast/ssh"
+)
 
 func TestCompanionDeviceHostnames(t *testing.T) {
 	testcases := []struct {
@@ -57,7 +61,8 @@ func TestCompanionDeviceHostnames(t *testing.T) {
 		},
 	}
 	for _, tc := range testcases {
-		ret, err := companionDeviceHostname(tc.Host, tc.Suffix)
+		dut := DUT{sopt: ssh.Options{Hostname: tc.Host}}
+		ret, err := dut.CompanionDeviceHostname(tc.Suffix)
 		if tc.ShouldFail {
 			if err == nil {
 				t.Errorf("companionDeviceHostname(%q, %q) succeeded, which should fail",

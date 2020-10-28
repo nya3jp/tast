@@ -27,6 +27,16 @@ const (
 	reconnectRetryDelay = time.Second
 )
 
+// Suffix names for forward compatibility.
+const (
+	// CompanionSuffixPcap is a companion suffix for the pcap.
+	CompanionSuffixPcap = "-pcap"
+	// CompanionSuffixRouter is a companion suffix for the router.
+	CompanionSuffixRouter = "-router"
+	// CompanionSuffixTablet is a companion suffix for the tablet.
+	CompanionSuffixTablet = "-tablet"
+)
+
 // DUT represents a "Device Under Test" against which remote tests are run.
 type DUT struct {
 	sopt         ssh.Options
@@ -234,10 +244,11 @@ func (d *DUT) HostName() string { return d.sopt.Hostname }
 // e.g. when DUT is connected with IP address.
 var ErrCompanionHostname = errors.New("cannot derive default companion device hostname")
 
-// companionDeviceHostname derives the hostname of companion device from test target
+// CompanionDeviceHostname derives the hostname of companion device from test target
 // with the convention in Autotest.
 // (see server/cros/dnsname_mangler.py in Autotest)
-func companionDeviceHostname(dutHost, suffix string) (string, error) {
+func (d *DUT) CompanionDeviceHostname(suffix string) (string, error) {
+	dutHost := d.sopt.Hostname
 	// Try split out port part.
 	if host, _, err := net.SplitHostPort(dutHost); err == nil {
 		dutHost = host
@@ -249,9 +260,9 @@ func companionDeviceHostname(dutHost, suffix string) (string, error) {
 	}
 
 	// Companion device hostname convention: append suffix after the first sub-domain string.
-	d := strings.SplitN(dutHost, ".", 2)
-	d[0] = d[0] + suffix
-	return strings.Join(d, "."), nil
+	hostname := strings.SplitN(dutHost, ".", 2)
+	hostname[0] = hostname[0] + suffix
+	return strings.Join(hostname, "."), nil
 }
 
 // connectCompanionDevice connects to a companion device in test environment. e.g. WiFi AP.
@@ -261,7 +272,7 @@ func companionDeviceHostname(dutHost, suffix string) (string, error) {
 // target should be specified in test variables.
 func (d *DUT) connectCompanionDevice(ctx context.Context, suffix string) (*ssh.Conn, error) {
 	var sopt ssh.Options
-	hostname, err := companionDeviceHostname(d.sopt.Hostname, suffix)
+	hostname, err := d.CompanionDeviceHostname(suffix)
 	if err != nil {
 		return nil, err
 	}
@@ -278,16 +289,18 @@ func (d *DUT) connectCompanionDevice(ctx context.Context, suffix string) (*ssh.C
 }
 
 // DefaultWifiRouterHost connects to the default WiFi router and returns SSH object.
+// DEPRECATED: Connect using CompanionDeviceHostname() instead.
 func (d *DUT) DefaultWifiRouterHost(ctx context.Context) (*ssh.Conn, error) {
-	return d.connectCompanionDevice(ctx, "-router")
+	return d.connectCompanionDevice(ctx, CompanionSuffixRouter)
 }
 
 // DefaultWifiPcapHost connects to the default WiFi pcap router and returns SSH object.
+// DEPRECATED: Connect using CompanionDeviceHostname() instead.
 func (d *DUT) DefaultWifiPcapHost(ctx context.Context) (*ssh.Conn, error) {
-	return d.connectCompanionDevice(ctx, "-pcap")
+	return d.connectCompanionDevice(ctx, CompanionSuffixPcap)
 }
 
 // DefaultCameraboxChart connects to paired chart tablet in camerabox setup and returns SSH object.
 func (d *DUT) DefaultCameraboxChart(ctx context.Context) (*ssh.Conn, error) {
-	return d.connectCompanionDevice(ctx, "-tablet")
+	return d.connectCompanionDevice(ctx, CompanionSuffixTablet)
 }

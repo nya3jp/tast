@@ -27,6 +27,16 @@ const (
 	reconnectRetryDelay = time.Second
 )
 
+// Suffix names for forward compatibility.
+const (
+	// CompanionSuffixPcap is a companion suffix for the pcap.
+	CompanionSuffixPcap = "-pcap"
+	// CompanionSuffixRouter is a companion suffix for the router.
+	CompanionSuffixRouter = "-router"
+	// CompanionSuffixTablet is a companion suffix for the tablet.
+	CompanionSuffixTablet = "-tablet"
+)
+
 // DUT represents a "Device Under Test" against which remote tests are run.
 type DUT struct {
 	sopt ssh.Options
@@ -228,6 +238,13 @@ func (d *DUT) HostName() string { return d.sopt.Hostname }
 // e.g. when DUT is connected with IP address.
 var ErrCompanionHostname = errors.New("cannot derive default companion device hostname")
 
+// CompanionDeviceHostname derives the hostname of companion device from test target
+// with the convention in Autotest.
+// (see server/cros/dnsname_mangler.py in Autotest)
+func (d *DUT) CompanionDeviceHostname(suffix string) (string, error) {
+	return companionDeviceHostname(d.sopt.Hostname, suffix)
+}
+
 // companionDeviceHostname derives the hostname of companion device from test target
 // with the convention in Autotest.
 // (see server/cros/dnsname_mangler.py in Autotest)
@@ -273,15 +290,15 @@ func (d *DUT) connectCompanionDevice(ctx context.Context, suffix string) (*ssh.C
 
 // DefaultWifiRouterHost connects to the default WiFi router and returns SSH object.
 func (d *DUT) DefaultWifiRouterHost(ctx context.Context) (*ssh.Conn, error) {
-	return d.connectCompanionDevice(ctx, "-router")
+	return d.connectCompanionDevice(ctx, CompanionSuffixRouter)
 }
 
 // DefaultWifiPcapHost connects to the default WiFi pcap router and returns SSH object.
 func (d *DUT) DefaultWifiPcapHost(ctx context.Context) (*ssh.Conn, error) {
-	return d.connectCompanionDevice(ctx, "-pcap")
+	return d.connectCompanionDevice(ctx, CompanionSuffixPcap)
 }
 
 // DefaultCameraboxChart connects to paired chart tablet in camerabox setup and returns SSH object.
 func (d *DUT) DefaultCameraboxChart(ctx context.Context) (*ssh.Conn, error) {
-	return d.connectCompanionDevice(ctx, "-tablet")
+	return d.connectCompanionDevice(ctx, CompanionSuffixTablet)
 }

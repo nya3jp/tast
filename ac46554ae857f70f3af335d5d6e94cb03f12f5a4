@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "12da9abe_1daa3fab",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-10-28T02:22:24Z",
+      "side": 1,
+      "message": "LGTM.\n# I thought I marked CR+2 in the previous iteration, but it seems like I made a misoperation...",
+      "revId": "ac46554ae857f70f3af335d5d6e94cb03f12f5a4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -41,6 +41,9 @@ The following software features are defined:
 *   `camera_720p` - The ability to capture video with frame size 1280x720.
 *   `camera_legacy` - Using [Linux Video Capture] in Chrome, and [Camera HAL1]
     in Android if ARC++ is available.
+*   `cert_provision` - The ability to use an additional cert_provision library
+    that supports an interface for provisioning machine-wide certificates and
+    using them for signing data on top of cryptohome dbus interface.
 *   `chrome` - Support for performing user login via Chrome (i.e. using
     `session_manager` and `cryptohome`). This also implies that the
     [chromeos-chrome] Portage package is installed (which also installs Chrome
